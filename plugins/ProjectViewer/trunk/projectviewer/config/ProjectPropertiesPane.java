@@ -24,11 +24,14 @@ import java.awt.Point;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JTextField;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -36,6 +39,7 @@ import javax.swing.JPopupMenu;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.ServiceManager;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.browser.VFSFileChooserDialog;
 import org.gjt.sp.jedit.io.VFSManager;
@@ -57,8 +61,9 @@ import projectviewer.vpt.VPTRoot;
  *  @author		Marcelo Vanzin
  *  @author		Matt Payne (made slight changes for urlRoot)
  */
-public class ProjectPropertiesPane extends OptionPaneBase
-								   implements ActionListener
+class ProjectPropertiesPane extends OptionPaneBase
+							implements ActionListener,
+									   ItemListener
 {
 
 	public final static String DEFAULT_URL = "http://";
@@ -75,8 +80,11 @@ public class ProjectPropertiesPane extends OptionPaneBase
 
 	private JButton	chooseRoot;
 	private JButton chooseGroup;
-
+	private JComboBox vcServices;
 	private JPopupMenu groupPopupMenu;
+
+	private ProjectOptions options;
+	private String currVC;
 
 	private boolean ok;
 	private boolean isNew;
@@ -85,14 +93,14 @@ public class ProjectPropertiesPane extends OptionPaneBase
 
 	//{{{ Constructors
 
-	/** Builds the dialog. */
-	public ProjectPropertiesPane(VPTProject p, boolean isNew) {
-		this(p, isNew, null);
-	}
-
-	public ProjectPropertiesPane(VPTProject p, boolean isNew, String lookupPath) {
+	ProjectPropertiesPane(ProjectOptions options,
+						  VPTProject p,
+						  boolean isNew,
+						  String lookupPath)
+	{
 		super("projectviewer.project_props",
 			  "projectviewer.project.options");
+		this.options = options;
 		this.project = p;
 		this.ok = true;
 		this.isNew = isNew;
@@ -163,6 +171,28 @@ public class ProjectPropertiesPane extends OptionPaneBase
 
 	} //}}}
 
+
+	public void itemStateChanged(ItemEvent e)
+	{
+		VersionControlService svc = null;
+		String svcname = (String) e.getItem();
+
+		if (!svcname.equals(prop("vc_none"))) {
+			svc = (VersionControlService)
+				ServiceManager.getService(VersionControlService.class.getName(),
+										  svcname);
+		}
+
+		if (svc != null) {
+			if (e.getStateChange() == ItemEvent.SELECTED) {
+				options.addOptions(svc);
+			} else if (e.getStateChange() == ItemEvent.DESELECTED) {
+				options.removeOptions(svc);
+			}
+		}
+	}
+
+
 	//{{{ _save() method
 	/** Updates the project with the info supplied by the user. */
 	protected void _save() {
@@ -218,6 +248,23 @@ public class ProjectPropertiesPane extends OptionPaneBase
 			} else {
 				project.setURL(null);
 			}
+
+			String vcsvc = (String) vcServices.getSelectedItem();
+			if (vcServices.getSelectedIndex() > 0) {
+				project.setProperty(VersionControlService.VC_SERVICE_KEY,
+									vcsvc);
+			} else {
+				project.removeProperty(VersionControlService.VC_SERVICE_KEY);
+			}
+			if (currVC != null && !currVC.equals(vcsvc)) {
+				VersionControlService svc;
+				svc = (VersionControlService)
+					ServiceManager.getService(VersionControlService.class.getName(),
+											  currVC);
+				if (svc != null) {
+					svc.dissociate(project);
+				}
+			}
 		}
 	} //}}}
 
@@ -254,8 +301,31 @@ public class ProjectPropertiesPane extends OptionPaneBase
 		}
 		chooseGroup = new JButton(parent.getName());
 		chooseGroup.addActionListener(this);
-
 		addComponent(chooseGroup, "parent_group");
+
+		// Version control services
+		int selidx = 0;
+		ProjectViewerConfig config = ProjectViewerConfig.getInstance();
+		String[] vcs = ServiceManager.getServiceNames(VersionControlService.class.getName());
+		currVC = project.getProperty(VersionControlService.VC_SERVICE_KEY);
+		vcServices = new JComboBox();
+		vcServices.addItem(prop("vc_none"));
+
+		for (String vc : vcs) {
+			if (config.isExtensionEnabled(VersionControlService.class.getName(), vc)) {
+				vcServices.addItem(vc);
+				if (currVC != null && vc.equals(currVC)) {
+					selidx = vcServices.getItemCount() - 1;
+				}
+			}
+		}
+
+		if (vcServices.getItemCount() > 1) {
+			vcServices.addItemListener(this);
+			vcServices.setSelectedIndex(selidx);
+			addComponent(vcServices, "vc_service");
+		}
+
 	} //}}}
 
 	//{{{ isOK() method

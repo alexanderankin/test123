@@ -25,6 +25,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
+import javax.swing.Icon;
 import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
@@ -53,6 +54,7 @@ public final class VPTCellRenderer extends DefaultTreeCellRenderer {
 	//}}}
 
 	//{{{ Private members
+	private IconComposer ic;
 	private JTree tree;
 	private VPTNode node;
 	private boolean expanded;
@@ -61,20 +63,22 @@ public final class VPTCellRenderer extends DefaultTreeCellRenderer {
 	private int row;
 	//}}}
 
-	public VPTCellRenderer() {
-		this(false);
-	}
-
 	/**
 	 *	Constructs a new renderer that optionally sets the node's tooltip
 	 *	to the the VPTNode's path, for openable nodes.
-	 *
-	 *	@since	PV 2.1.3.6
 	 */
-	public VPTCellRenderer(boolean useTooltips) {
+	VPTCellRenderer(boolean useTooltips)
+	{
 		setBorder(new EmptyBorder(1,0,1,0));
 		this.useTooltips = useTooltips;
 	}
+
+
+	void setIconComposer(IconComposer ic)
+	{
+		this.ic = ic;
+	}
+
 
 	//{{{ +getTreeCellRendererComponent(JTree, Object, boolean, boolean, boolean, int, boolean) : Component
 	public Component getTreeCellRendererComponent(JTree tree, Object value,
@@ -105,8 +109,13 @@ public final class VPTCellRenderer extends DefaultTreeCellRenderer {
 		if (this.node != null) {
 			FontMetrics fm;
 			boolean underlined;
-			
-			setIcon(node.getIcon(expanded));
+
+			Icon icon = node.getIcon(expanded);
+			if (node.isFile() && ic != null) {
+				icon = ic.composeIcon((VPTFile) node, icon);
+			}
+
+			setIcon(icon);
 			setBackground(node.getBackgroundColor(selected));
 			setForeground(node.getForegroundColor(selected));
 			underlined = (node.canOpen() && node.isOpened());
@@ -120,18 +129,18 @@ public final class VPTCellRenderer extends DefaultTreeCellRenderer {
 			if (node.getClipType() != CLIP_NOCLIP) {
 				Rectangle bounds = tree.getRowBounds(row);
 				String toShow = getText();
-	
+
 				int width = fm.stringWidth(toShow);
 				int textStart = (int) bounds.getX();
 				if (getIcon() != null)
 					textStart += getIcon().getIconWidth() + getIconTextGap();
-	
+
 				if(textStart < tree.getParent().getWidth()
 						&& textStart + width > tree.getParent().getWidth()) {
 					// figure out how much to clip
 					int availableWidth = tree.getParent().getWidth() - textStart
 											- fm.stringWidth("...");
-	
+
 					int shownChars = 0;
 					for (int i = 1; i < toShow.length(); i++) {
 						width = (node.getClipType() == CLIP_START)
@@ -142,7 +151,7 @@ public final class VPTCellRenderer extends DefaultTreeCellRenderer {
 						else
 							break;
 					}
-	
+
 					if (shownChars > 0) {
 						// ask the node whether it wants to be clipped at the start or
 						// at the end of the string
@@ -171,8 +180,8 @@ public final class VPTCellRenderer extends DefaultTreeCellRenderer {
 
 		super.paintComponent(g);
 	} //}}}
-	
-	
+
+
 	/**
 	 * Returns the desired row height based on the given node. This is
 	 * used by the tree handling code to set a fixed row height for the
