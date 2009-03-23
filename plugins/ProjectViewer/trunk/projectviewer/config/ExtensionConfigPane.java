@@ -25,7 +25,10 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.DefaultListCellRenderer;
@@ -88,15 +91,9 @@ public class ExtensionConfigPane
 	{
 		JLabel help;
 		List<ManagedService> services = mgr.getServices();
+		Collections.sort(services, new ServiceComparator());
 
 		setLayout(new BorderLayout());
-
-		if (services == null) {
-			/* This shouldn't really happen. */
-			JLabel msg = new JLabel(prop("no_exts"));
-			add(BorderLayout.CENTER, msg);
-			return;
-		}
 
 		types = new JComboBox();
 		types.setRenderer(new ServiceRenderer());
@@ -139,6 +136,18 @@ public class ExtensionConfigPane
 	}
 
 
+	private class ServiceComparator implements Comparator<ManagedService>
+	{
+
+		public int compare(ManagedService o1,
+						   ManagedService o2)
+		{
+			return o1.getServiceName().compareTo(o2.getServiceName());
+		}
+
+	}
+
+
 	private class ServiceData
 	{
 
@@ -146,6 +155,7 @@ public class ExtensionConfigPane
 		{
 			String type = svc.getServiceClass().getName();
 			String[] names = ServiceManager.getServiceNames(type);
+			Arrays.sort(names);
 			this.service = svc;
 			if (names == null) {
 				cbs = null;

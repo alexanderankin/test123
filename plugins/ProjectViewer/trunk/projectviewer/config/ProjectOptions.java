@@ -49,11 +49,6 @@ public class ProjectOptions extends OptionsDialog {
 	private static VPTProject		p;
 	private static boolean			isNew;
 
-	private static final ExtensionManager.ManagedService service = new MService();
-	static {
-		ExtensionManager.getInstance().register(service);
-	}
-
 	//{{{ +_run(VPTProject)_ : VPTProject
 	/**
 	 *	Shows the project options dialog for the given project.
@@ -342,29 +337,6 @@ public class ProjectOptions extends OptionsDialog {
 			}
 		}
 
-	}
-
-
-	/**
-	 * Dummy implementation of a managed service, just to allow
-	 * the user to enable or disable version control extensions.
-	 */
-	private static class MService implements ExtensionManager.ManagedService
-	{
-		public Class getServiceClass()
-		{
-			return VersionControlService.class;
-		}
-
-		public String getServiceName()
-		{
-			return jEdit.getProperty("projectviewer.extensions.version_control");
-		}
-
-		public void updateExtensions(List<Object> l)
-		{
-
-		}
 	}
 
 }

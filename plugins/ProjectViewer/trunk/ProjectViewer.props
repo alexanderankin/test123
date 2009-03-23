@@ -381,6 +381,7 @@ projectviewer.options.ext_cfg.help=Choose a category and select/unselect extensi
 projectviewer.extensions.context_menu=Context Menu Actions
 projectviewer.extensions.custom_nodes=Custom Node Types
 projectviewer.extensions.file_filters=File Filters
-projectviewer.extensions.version_control=Version Control Status
+projectviewer.extensions.node_props=Node Properties
+projectviewer.extensions.version_control=Version Control
 #}}}
 
