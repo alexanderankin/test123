@@ -146,7 +146,7 @@ public class GlobalResultsView extends JPanel implements
 				GlobalRecord rec = refs.get(i);
 				String file = rec.getFile().replace("/", File.separator);
 				int line = rec.getLine();
-				parent.addSourceLink(new FileMarker(file, line - 1));
+				parent.addSourceLink(new FileMarker(file, line - 1, rec.getText()));
 			}
 			if (refs.size() == 1 && GlobalOptionPane.isJumpImmediately())
 				new GlobalReference(refs.get(0)).jump(view);
