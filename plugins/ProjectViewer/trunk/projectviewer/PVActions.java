@@ -20,6 +20,7 @@ package projectviewer;
 
 //{{{ Imports
 import java.awt.Component;
+import java.awt.FontMetrics;
 import java.awt.Window;
 
 import java.io.ByteArrayOutputStream;
@@ -375,212 +376,47 @@ public final class PVActions {
 		}
 	} //}}}
 
-	//{{{ Base64 CoDec (See RFC 3548)
-
+	//{{{ +_clipText()_ : String
 	/**
-	 *	Base64 encoding alphabet. Maps a 6-bit value to a character in the
-	 *	US-ASCII encoding.
-	 */
-	private final static byte[] alphabet = new byte[] {
-		'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
-		'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
-		'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
-		'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f',
-		'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
-		'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
-		'w', 'x', 'y', 'z', '0', '1', '2', '3',
-		'4', '5', '6', '7',	'8', '9', '+', '/'
-	};
-
-	/**
-	 *	Base64 decoding alphabet. Maps a US-ASCII character value to a 6-bit
-	 *	integer value. The table is shifted 43 positions, so that position 0
-	 *	maps to character '+' (ASCII value 43). It's larger than the encoding
-	 *	alphabet because the alphabet is not contiguous in the ASCII table.
-	 */
-	private final static byte[] reverse = new byte[] {
-		0x3E, 0x00, 0x00, 0x00, 0x3F, 0x34, 0x35, 0x36,
-		0x37, 0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x00,
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
-		0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
-		0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11,
-		0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19,
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x1A, 0x1B,
-		0x1C, 0x1D, 0x1E, 0x1F, 0x20, 0x21, 0x22, 0x23,
-		0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x2B,
-		0x2C, 0x2D, 0x2E, 0x2F, 0x30, 0x31, 0x32, 0x33
-	};
-
-	/** The character to use for padding the base64 encoded string. */
-	private final static byte padding = '=';
-
-	//{{{ +_encodeBase64(byte[])_ : byte[]
-	/**
-	 *	Encodes a byte array into a base64-encoded byte array. For more
-	 *	details about the algorithm, see
-	 *	<a href="http://www.faqs.org/rfcs/rfc3548.html">RFC 3548</a>. This
-	 *	implementation does not create (76-byte) chunks for MIME encoding.
+	 * Returns a string that fits in the given bounds based on the
+	 * given metrics. If the given string doesn't fit, it will be
+	 * clipped either at the start or the end, being prepended or
+	 * appended with an ellipsis to signal the clipping.
 	 *
-	 *	<p>Note by Marcelo Vanzin: I know about Jakarta Commons Codec. In fact,
-	 *	I used it when my first implementation was not working well. But I don't
-	 *	want to add another jar to the plugin, and I don't want to add a
-	 *	dependency on the Jakarta Commons plugin (and add Codec there) either.</p>
+	 * @param	base		The base string.
+	 * @param	maxwidth	Width within which the string should fit.
+	 * @param	metrics		Font metrics to use.
+	 * @param	clipEnd		true if should clip the end of the string.
+	 *
+	 * @return A clipped version of the base string, or the base one
+	 *         if it fits.
+	 *
+	 * @since	PV 3.0.0
 	 */
-	public static byte[] encodeBase64(byte[] data) {
-		if (data == null || data.length == 0) {
-			throw new IllegalArgumentException("Null or empty data!");
-		}
+	public static String clipText(String base,
+								  int maxWidth,
+								  FontMetrics metrics,
+								  boolean clipEnd)
+	{
+		int width = metrics.stringWidth(base);
 
-		int octets, pads, idx;
-		byte[] result;
-
-		// the resulting array of chars
-		idx = (data.length / 3) * 4;
-		if (data.length % 3 != 0) {
-			idx += 4;
-		}
-		result = new byte[idx];
-		idx = 0;
-
-		for (int i = 0; i < data.length; i++) {
-			octets = 0x0;
-			pads = 0;
-
-			// first octet
-			octets = (data[i] & 0x7F) << 16;
-			if (data[i] < 0) {
-				octets = octets | 0x800000;
+		if (width > maxWidth) {
+			int i;
+			maxWidth -= metrics.stringWidth("...");
+			for (i = base.length(); i > 1 && width > maxWidth; i--) {
+				width = (clipEnd)
+					  ? metrics.stringWidth(base.substring(0, i))
+					  : metrics.stringWidth(base.substring(base.length() - i));
 			}
-			i++;
-			// second octet
-			if (i < data.length) {
-				octets = octets | ((data[i] & 0x7F) << 8);
-				if (data[i] < 0) {
-					octets = octets | 0x8000;
-				}
-				i++;
-				// third octet
-				if (i < data.length) {
-					octets = octets | (data[i] & 0x7F);
-					if (data[i] < 0) {
-						octets = octets | 0x80;
-					}
-				} else {
-					pads = 1;
-				}
+
+			if (clipEnd) {
+				return base.substring(0, i) + "...";
 			} else {
-				pads = 2;
-			}
-
-			// encodes into base64
-			result[idx++] = alphabet[(octets >>> 18) & 0x3F];
-			result[idx++] = alphabet[(octets >>> 12) & 0x3F];
-
-			switch (pads) {
-				case 2:
-					result[idx++] = padding;
-					result[idx++] = padding;
-					break;
-
-				case 1:
-					result[idx++] = alphabet[(octets >>> 6) & 0x3F];
-					result[idx++] = padding;
-					break;
-
-				default:
-					result[idx++] = alphabet[(octets >>> 6) & 0x3F];
-					result[idx++] = alphabet[octets & 0x3F];
-					break;
+				return  "..." + base.substring(base.length() - i);
 			}
 		}
-
-		return result;
+		return base;
 	} //}}}
-
-	//{{{ +_decodeBase64(String)_ : byte[]
-	/**
-	 *	Decodes a Base64-encoded string into a byte array. Very little error
-	 *	checking is done here - it's not guaranteed that an invalid base64
-	 *	string will cause errors, since the alphabet is not being checked
-	 *	for the sake of speed.
-	 *
-	 *	@throws	IllegalArgumentException	If the string length is not a multiple
-	 *										of 4 (generally, lack of padding).
-	 *	@throws	ArrayIndexOutOfBoundsException	If an unrecognized character is
-	 *											found in the stream.
-	 */
-	public static byte[] decodeBase64(String data) {
-		if (data.length() % 4 != 0) {
-			throw new IllegalArgumentException("Wrong size for base64 stream.");
-		}
-
-		int octets, bCount, idx;
-		byte[] result;
-
-		bCount = (data.length() / 4) * 3;
-		if (data.charAt(data.length() - 1) == padding) bCount--;
-		if (data.charAt(data.length() - 2) == padding) bCount--;
-
-		result = new byte[bCount];
-		idx = 0;
-
-		for (int i = 0; bCount > 0; i++) {
-			octets = 0;
-
-			// decodes the stream
-			octets = (reverse[data.charAt(i) - 43]) << 18;
-			octets = octets | ((reverse[data.charAt(++i) - 43]) << 12);
-
-			if (bCount > 1) {
-				octets = octets | ((reverse[data.charAt(++i) - 43]) << 6);
-				if (bCount > 2) {
-					octets = octets | (reverse[data.charAt(++i) - 43]);
-				}
-			}
-
-			// breaks the bits into 3 bytes
-			switch (bCount) {
-				case 2:
-					result[idx++] = (byte) (octets >>> 16);
-					result[idx++] = (byte) (octets >>> 8);
-					bCount -= 2;
-					break;
-
-				case 1:
-					result[idx++] = (byte) (octets >>> 16);
-					bCount --;
-					break;
-
-				default:
-					result[idx++] = (byte) (octets >>> 16);
-					result[idx++] = (byte) (octets >>> 8);
-					result[idx++] = (byte) (octets & 0xFF);
-					bCount -= 3;
-					break;
-			}
-		}
-
-		return result;
-	} //}}}
-
-	//{{{ +_serialize(Object)_ : String
-	public static String serialize(Object o) {
-		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-		try {
-			ObjectOutputStream oos = new ObjectOutputStream(bytes);
-			oos.writeObject(o);
-			oos.flush();
-
-			return new String(PVActions.encodeBase64(bytes.toByteArray()), "US-ASCII");
-		} catch (Exception e) {
-			Log.log(Log.ERROR, PVActions.class, "Error writing object to project file.");
-			Log.log(Log.ERROR, PVActions.class, e);
-			return null;
-		}
-
-	} //}}}
-
-	//}}}
 
 }
 
