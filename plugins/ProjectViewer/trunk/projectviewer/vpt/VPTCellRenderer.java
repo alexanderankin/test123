@@ -30,6 +30,8 @@ import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.tree.DefaultTreeCellRenderer;
+
+import projectviewer.PVActions;
 //}}}
 
 /**
@@ -130,40 +132,16 @@ public final class VPTCellRenderer extends DefaultTreeCellRenderer {
 				Rectangle bounds = tree.getRowBounds(row);
 				String toShow = getText();
 
-				int width = fm.stringWidth(toShow);
-				int textStart = (int) bounds.getX();
-				if (getIcon() != null)
-					textStart += getIcon().getIconWidth() + getIconTextGap();
-
-				if(textStart < tree.getParent().getWidth()
-						&& textStart + width > tree.getParent().getWidth()) {
-					// figure out how much to clip
-					int availableWidth = tree.getParent().getWidth() - textStart
-											- fm.stringWidth("...");
-
-					int shownChars = 0;
-					for (int i = 1; i < toShow.length(); i++) {
-						width = (node.getClipType() == CLIP_START)
-							? fm.stringWidth(toShow.substring(toShow.length() - i, toShow.length()))
-							: fm.stringWidth(toShow.substring(0, i));
-						if (width < availableWidth)
-							shownChars++;
-						else
-							break;
-					}
-
-					if (shownChars > 0) {
-						// ask the node whether it wants to be clipped at the start or
-						// at the end of the string
-						if (node.getClipType() == CLIP_START) {
-							toShow = "..." +
-								toShow.substring(toShow.length() - shownChars, toShow.length());
-						} else {
-							toShow = toShow.substring(0, shownChars) + "...";
-						}
-						setText(toShow);
-					}
+				int maxWidth = tree.getParent().getWidth() - (int) bounds.getX();
+				if (getIcon() != null) {
+					maxWidth  -= (getIcon().getIconWidth() + getIconTextGap());
 				}
+
+				toShow = PVActions.clipText(toShow,
+											maxWidth,
+											fm,
+											node.getClipType() == CLIP_END);
+				setText(toShow);
 			} //}}}
 
 			// underlines the string if needed

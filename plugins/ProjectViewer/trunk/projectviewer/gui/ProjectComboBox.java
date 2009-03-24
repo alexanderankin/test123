@@ -43,6 +43,7 @@ import javax.swing.border.EtchedBorder;
 import org.gjt.sp.jedit.View;
 
 import projectviewer.ProjectViewer;
+import projectviewer.PVActions;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTRoot;
 //}}}
@@ -180,13 +181,14 @@ public class ProjectComboBox extends JButton
 	public void paintComponent(Graphics g) {
 		g.clearRect(0, 0, getWidth(), getHeight());
 
-		// set the clip so long project names don't overlap the arrow
-		g.setClip(0, 0, getWidth() - 20, getHeight());
+		// Figure out how much of the text to paint.
+		String text = getText();
+		setText(PVActions.clipText(text,
+								   getWidth() - 20,
+								   getFontMetrics(getFont()),
+								   true));
 		super.paintComponent(g);
-		g.setClip(null);
-		g.setColor(getBackground());
-		g.fillRect(getWidth() - 20, 0, 20, getHeight());
-		g.setColor(getForeground());
+		setText(text);
 
 		int[] x = new int[3];
 		int[] y = new int[3];
@@ -195,9 +197,9 @@ public class ProjectComboBox extends JButton
 		x[1] = x[0] + 10;
 		x[2] = x[0] + 5;
 
-		y[0] = (getHeight() - 6) / 2;
+		y[0] = 8;
 		y[1] = y[0];
-		y[2] = y[0] + 6;
+		y[2] = getHeight() - y[0];
 
 		g.fillPolygon(x, y, 3);
 	} //}}}
