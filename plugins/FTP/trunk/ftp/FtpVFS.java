@@ -40,6 +40,7 @@ import org.gjt.sp.util.Log;
 /**
 * FTP VFS.
 * @author Slava Pestov
+* @author Vadim Voituk
 * @version $Id$
 */
 public class FtpVFS extends VFS
@@ -184,8 +185,7 @@ public class FtpVFS extends VFS
 	} //}}}
 	
 	//{{{ _canonPath() method
-	public String _canonPath(Object _session, String path, Component comp)
-	throws IOException
+	public String _canonPath(Object _session, String path, Component comp) throws IOException
 	{
 		FtpAddress address = new FtpAddress(path);
 		
