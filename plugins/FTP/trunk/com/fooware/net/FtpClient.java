@@ -86,7 +86,7 @@ public class FtpClient {
 	/**
 	 * Return an enumeration of all the responses received from the FTP server.
 	 */
-	public Enumeration getAllResponses() {
+	public Enumeration<FtpResponse> getAllResponses() {
 		return responseArchive.elements();
 	}
 
@@ -256,7 +256,7 @@ public class FtpClient {
 	 * number. It is not necessary to do more than one.<BR>
 	 */
 	public void dataPort() throws IOException, UnknownHostException {
-		StringBuffer command = new StringBuffer("PORT ");
+		StringBuilder command = new StringBuilder("PORT ");
 		String host = cmdSocket.getLocalAddress().getHostAddress();
 		command.append(host.replace('.', ','));
 		if (dataSocket != null) {

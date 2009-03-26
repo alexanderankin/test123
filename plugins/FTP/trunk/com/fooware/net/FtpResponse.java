@@ -187,7 +187,7 @@ public class FtpResponse {
     //
 
     private void setMessage(BufferedReader in) throws IOException {
-        StringBuffer buffer = new StringBuffer();
+    	StringBuilder buffer = new StringBuilder();
         String line;
         do
         {

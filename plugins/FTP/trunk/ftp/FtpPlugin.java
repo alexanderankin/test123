@@ -26,7 +26,6 @@ package ftp;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.OperatingSystem;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.browser.VFSBrowser;
@@ -50,41 +49,27 @@ public class FtpPlugin extends EditPlugin
 	//{{{ showOpenFTPDialog() method
 	public static void showOpenFTPDialog(View view, boolean secure)
 	{
-		if(secure && !OperatingSystem.hasJava14())
-		{
-			GUIUtilities.error(view,"vfs.sftp.no-java14",null);
-			return;
-		}
-
 		String path = ((FtpVFS)VFSManager.getVFSForProtocol(FtpVFS.getProtocol(secure)))
 			.showBrowseDialog(new Object[1],view);
-		if(path != null)
-		{
-			String[] files = GUIUtilities.showVFSFileDialog(
-				view,path,VFSBrowser.OPEN_DIALOG,true);
-			if(files == null)
-				return;
+		if(path == null)
+			return;
+		String[] files = GUIUtilities.showVFSFileDialog(view, path, VFSBrowser.OPEN_DIALOG, true);
+		if (files == null)
+			return;
 
-			Buffer buffer = null;
-			for(int i = 0; i < files.length; i++)
-			{
-				Buffer _buffer = jEdit.openFile(null,files[i]);
-				if(_buffer != null)
-					buffer = _buffer;
-			}
-			if(buffer != null)
-				view.setBuffer(buffer);
+		Buffer buffer = null;
+		for (int i = 0; i < files.length; i++) {
+			Buffer _buffer = jEdit.openFile((View)null, files[i]);
+			if (_buffer != null)
+				buffer = _buffer;
 		}
+		if (buffer != null)
+			view.setBuffer(buffer);
 	} //}}}
 
 	//{{{ showSaveFTPDialog() method
 	public static void showSaveFTPDialog(View view, boolean secure)
 	{
-		if(secure && !OperatingSystem.hasJava14()) 
-		{
-			GUIUtilities.error(view,"vfs.sftp.no-java14",null);
-			return;
-		}
 
 		String path = ( (FtpVFS)VFSManager.getVFSForProtocol(FtpVFS.getProtocol(secure)) )
 			.showBrowseDialog(new Object[1],view);
@@ -100,26 +85,6 @@ public class FtpPlugin extends EditPlugin
 	} //}}}
 
 	//{{{ Private members
-
-	//{{{ copy() method
-	// Useless method? by Vadim Voituk 
-	/*private static void copy(InputStream in, OutputStream out) throws IOException
-	{
-		try
-		{
-			byte[] buf = new byte[4096];
-			int count;
-			while((count = in.read(buf,0,buf.length)) != -1)
-			{
-				out.write(buf,0,count);
-			}
-		}
-		finally
-		{
-			in.close();
-			out.close();
-		}
-	}*/ //}}}
 
 	//}}}
 }
