@@ -164,13 +164,29 @@ You can close unused connections at any other time using the
 <appendix id="changes"><title>Change log</title>
 
  <itemizedlist>
-    <listitem><para> <emphasis role="bold">Version 0.9.5</emphasis>
-   Requires java 1.5 and jEdit 4.3pre12. </para>
-	<itemizedlist>
-		<listitem><para>Fixed: Empty Passwords Disallowed (# 1802173 - Vadim Voituk)</para></listitem>
-   		<listitem><para>Fixed: Password in address not detected (# 1712941 - Jakub Roztocil) </para></listitem>
-   		<listitem><para>Fixed: Weird directory listing with wu-ftpd (# 1929705 - Vadim Voituk) </para></listitem>
-	</itemizedlist> </listitem>
+ 	
+ 	<listitem>
+ 		<para>
+ 			<emphasis role="bold">Version 0.9.6</emphasis>
+ 			Requires Java 1.5+ and jEdit 4.3pre17+.
+ 		</para>
+ 		<itemizedlist>
+ 			<listitem><para>jEdit 4.3pre17 compatibility improvements</para></listitem>
+ 			<listitem><para>jsch lib updated to version 0.1.41 </para></listitem>
+ 		</itemizedlist>
+ 	</listitem>
+ 
+    <listitem>
+    	<para>
+    		<emphasis role="bold">Version 0.9.5</emphasis>
+   			Requires java 1.5 and jEdit 4.3pre12.
+   		</para>
+		<itemizedlist>
+			<listitem><para>Fixed: Empty Passwords Disallowed (# 1802173 - Vadim Voituk)</para></listitem>
+   			<listitem><para>Fixed: Password in address not detected (# 1712941 - Jakub Roztocil) </para></listitem>
+   			<listitem><para>Fixed: Weird directory listing with wu-ftpd (# 1929705 - Vadim Voituk) </para></listitem>
+		</itemizedlist>
+	</listitem>
 
 
     <listitem><para> <emphasis role="bold">Version 0.9.4</emphasis>
