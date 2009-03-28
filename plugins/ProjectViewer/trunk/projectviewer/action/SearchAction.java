@@ -94,7 +94,7 @@ public class SearchAction extends Action {
 			} else if (node.isLeaf()) {
 				node = (VPTNode) node.getParent();
 			}
-			
+
 			String selected = jEdit.getActiveView().getTextArea().getSelectedText();
 			SearchAndReplace.setSearchFileSet(new NodeFileSet(node));
 			SearchDialog.showSearchDialog(jEdit.getActiveView(),
@@ -185,7 +185,7 @@ public class SearchAction extends Action {
 			while(e.hasMoreElements()) {
 				VPTNode n = (VPTNode) e.nextElement();
 				if (n.isFile()) {
-					VFSFile f;
+					String url;
 					if (pFilter != null &&
 						!pFilter.matcher(n.getNodePath()).matches())
 					{
@@ -193,15 +193,11 @@ public class SearchAction extends Action {
 						continue;
 					}
 
-					f = ((VPTFile)n).getFile();
-					if (f == null || !f.isReadable()) {
-						continue;
-					}
-
+					url = ((VPTFile)n).getURL();
 					if (skipBinary) {
 						InputStream is = null;
 						try {
-							is = new FileInputStream(n.getNodePath());
+							is = new FileInputStream(url);
 							if (MiscUtilities.isBinary(is)) {
 								continue;
 							}
@@ -212,7 +208,7 @@ public class SearchAction extends Action {
 							if (is != null)  try { is.close(); } catch (Exception ex) { }
 						}
 					}
-					fileset.add(n.getNodePath());
+					fileset.add(url);
 				} else if (n.getAllowsChildren() && isRecursive()) {
 					addFiles(n, fileset);
 				}
