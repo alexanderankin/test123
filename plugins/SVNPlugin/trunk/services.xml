@@ -13,7 +13,7 @@
     </SERVICE>
 
     <!-- let ProjectViewer display svn state with icons -->
-    <SERVICE CLASS="projectviewer.config.VersionControlService" NAME="ProjectViewer Version Control State Display">
+    <SERVICE CLASS="projectviewer.config.VersionControlService" NAME="Subversion">
         new ise.plugin.svn.pv.VersionControlState();
     </SERVICE>
 </SERVICES>
