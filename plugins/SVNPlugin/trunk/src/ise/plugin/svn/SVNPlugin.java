@@ -34,11 +34,9 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import ise.plugin.svn.gui.OutputPanel;
-import ise.plugin.svn.pv.SVNProvider;
 import java.awt.event.*;
 import javax.swing.*;
 
-import projectviewer.vpt.IconComposer;
 
 public class SVNPlugin extends EBPlugin {
 
@@ -71,11 +69,8 @@ public class SVNPlugin extends EBPlugin {
             panelMap.clear();
             panelMap = null;
         }
-        //IconComposer.setVersionControlProvider( null );
     }
 
     public void start() {
-        // this needs work, it is very slow for large projects
-        //IconComposer.setVersionControlProvider( new SVNProvider() );
     }
 }
