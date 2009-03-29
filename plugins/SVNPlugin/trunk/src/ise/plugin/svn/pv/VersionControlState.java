@@ -47,7 +47,11 @@ public class VersionControlState implements VersionControlService {
         return new ImageIcon( VersionControlState.class.getClassLoader().getResource( name ) );
     }
 
+    // Caching mechanism is a hold over from working with a previous version of PV,
+    // it doesn't seem to be necessary now, but I'm keeping the code here in case
+    // I discover it's necessary.
     // <String for path, CacheItem for last time path status was pulled from SVN and state at that time>
+    /*
     private static HashMap<String, CacheItem> cache = new HashMap<String, CacheItem>();
 
     class CacheItem {
@@ -58,6 +62,7 @@ public class VersionControlState implements VersionControlService {
         }
     }
     private long refreshTime = 60 * 1000;   // one minute, may need to adjust this
+    */
 
     /**
      * This method should return an integer identifying the current
@@ -74,10 +79,12 @@ public class VersionControlState implements VersionControlService {
      */
     public int getFileState( VPTFile f ) {
         String path = f.getNodePath();
+        /* not using the caching for now
         CacheItem item = cache.get( path );
         if ( item != null && item.lastUpdate > System.currentTimeMillis() - refreshTime ) {
             return item.state;
         }
+        */
         SVNData data = new SVNData();
         List<String> paths = new ArrayList<String>();
         paths.add( path );
@@ -98,47 +105,52 @@ public class VersionControlState implements VersionControlService {
             e.printStackTrace();
             status = null;
         }
+
+        //CacheItem cacheItem = null;
         if ( status == null ) {
-            cache.put( path, new CacheItem( NONE ) );
+        //    cacheItem = new CacheItem(NONE ));
             return NONE;
         }
 
         if ( status.getAdded() != null ) {
-            cache.put( path, new CacheItem( LOCAL_ADD ) );
+        //    cacheItem = new CacheItem(LOCAL_ADD ));
             return LOCAL_ADD;
         }
         else if ( status.getConflicted() != null ) {
-            cache.put( path, new CacheItem( CONFLICT ) );
+        //    cacheItem = new CacheItem(CONFLICT ));
             return CONFLICT;
         }
         else if ( status.getDeleted() != null ) {
-            cache.put( path, new CacheItem( DELETED ) );
+        //    cacheItem = new CacheItem(DELETED ));
             return DELETED;
         }
         else if ( status.getLocked() != null ) {
-            cache.put( path, new CacheItem( LOCKED ) );
+        //    cacheItem = new CacheItem(LOCKED ));
             return LOCKED;
         }
         else if ( status.getMissing() != null ) {
-            cache.put( path, new CacheItem( LOCAL_RM ) );
+        //    cacheItem = new CacheItem(LOCAL_RM ));
             return LOCAL_RM;
         }
         else if ( status.getModified() != null ) {
-            cache.put( path, new CacheItem( LOCAL_MOD ) );
+        //    cacheItem = new CacheItem(LOCAL_MOD ));
             return LOCAL_MOD;
         }
         else if ( status.getOutOfDate() != null ) {
-            cache.put( path, new CacheItem( NEED_UPDATE ) );
+        //    cacheItem = new CacheItem(NEED_UPDATE ));
             return NEED_UPDATE;
         }
         else if ( status.getUnversioned() != null ) {
-            cache.put( path, new CacheItem( UNVERSIONED ) );
+        //    cacheItem = new CacheItem(UNVERSIONED ));
             return UNVERSIONED;
         }
         else {
-            cache.put( path, new CacheItem( NORMAL ) );
+        //    cacheItem = new CacheItem(NORMAL ));
             return NORMAL;
         }
+        //if (cacheItem != null) {
+        //    cache.put( path, cacheItem );
+        //}
     }
 
 
