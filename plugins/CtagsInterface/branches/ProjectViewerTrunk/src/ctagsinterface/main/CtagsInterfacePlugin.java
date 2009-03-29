@@ -32,6 +32,7 @@ import ctagsinterface.db.TagDB;
 import ctagsinterface.dialogs.ChangeDbSettings;
 import ctagsinterface.dockables.TagList;
 import ctagsinterface.jedit.BufferWatcher;
+import ctagsinterface.jedit.TagTooltip;
 import ctagsinterface.main.Parser.TagHandler;
 import ctagsinterface.options.ActionsOptionPane;
 import ctagsinterface.options.GeneralOptionPane;
@@ -72,6 +73,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		updateActions();
 		jEdit.addActionSet(actions);
 		iconProvider = new KindIconProvider();
+		TagTooltip.start();
 	}
 
 	public void stop()
@@ -79,7 +81,10 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		if (watcher != null)
 			watcher.shutdown();
 		if ((db != null) && (! db.isFailed()))
+		{
+			TagTooltip.stop();
 			db.shutdown();
+		}
 	}
 	
 	static public TagDB getDB() {
@@ -403,20 +408,26 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		JEditTextArea ta = view.getTextArea();
 		int line = ta.getCaretLine();
 		int index = ta.getCaretPosition() - ta.getLineStartOffset(line);
-		String text = ta.getLineText(line);
+		return getTagAt(ta, line, index);
+	}
+
+	public static String getTagAt(JEditTextArea textArea, int line,
+		int offsetInLine)
+	{
+		String text = textArea.getLineText(line);
 		Pattern pat = Pattern.compile(GeneralOptionPane.getPattern());
 		Matcher m = pat.matcher(text);
 		int end = -1;
 		int start = -1;
 		String selected = "";
-		while (end <= index) {
+		while (end <= offsetInLine) {
 			if (! m.find())
 				return null;
 			end = m.end();
 			start = m.start();
 			selected = m.group();
 		}
-		if (start > index || selected.length() == 0)
+		if (start > offsetInLine || selected.length() == 0)
 			return null;
 		return selected;
 	}

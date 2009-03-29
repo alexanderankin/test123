@@ -29,6 +29,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	static public final String UPDATE_ON_LOAD = OPTION + "updateOnLoad";
 	static public final String UPDATE_ON_SAVE = OPTION + "updateOnSave";
 	static public final String BACKGROUND = OPTION + "background";
+	static public final String TOOLTIPS = OPTION + "tooltips";
 	static public final String PREVIEW_VERTICAL_SPLIT = OPTION + "previewVerticalSplit";
 	static public final String PREVIEW_TOOLBAR = OPTION + "previewToolbar";
 	static public final String PREVIEW_WRAP = OPTION + "previewWrap";
@@ -39,6 +40,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	JCheckBox updateOnLoad;
 	JCheckBox updateOnSave;
 	JCheckBox background;
+	JCheckBox tooltips;
 	JCheckBox previewVerticalSplitter;
 	JCheckBox previewToolbar;
 	JCheckBox previewWrap;
@@ -68,6 +70,10 @@ public class GeneralOptionPane extends AbstractOptionPane {
 			jEdit.getBooleanProperty(BACKGROUND));
 		addComponent(background);
 
+		tooltips = new JCheckBox(jEdit.getProperty(MESSAGE + "showTooltips"),
+			jEdit.getBooleanProperty(TOOLTIPS));
+		addComponent(tooltips);
+		
 		JPanel previewPanel = new JPanel();
 		previewPanel.setLayout(new GridLayout(0, 1));
 		previewPanel.setBorder(new TitledBorder(jEdit.getProperty(
@@ -109,6 +115,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
 		jEdit.setBooleanProperty(UPDATE_ON_LOAD, updateOnLoad.isSelected());
 		jEdit.setBooleanProperty(UPDATE_ON_SAVE, updateOnSave.isSelected());
 		jEdit.setBooleanProperty(BACKGROUND, background.isSelected());
+		jEdit.setBooleanProperty(TOOLTIPS, tooltips.isSelected());
 		jEdit.setBooleanProperty(PREVIEW_VERTICAL_SPLIT, previewVerticalSplitter.isSelected());
 		jEdit.setBooleanProperty(PREVIEW_TOOLBAR, previewToolbar.isSelected());
 		jEdit.setBooleanProperty(PREVIEW_WRAP, previewWrap.isSelected());
@@ -142,6 +149,9 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	}
 	public static boolean getUpdateInBackground() {
 		return jEdit.getBooleanProperty(BACKGROUND, true);
+	}
+	public static boolean getShowTooltips() {
+		return jEdit.getBooleanProperty(TOOLTIPS, true);
 	}
 	public static boolean getPreviewVerticalSplit() {
 		return jEdit.getBooleanProperty(PREVIEW_VERTICAL_SPLIT, true);
