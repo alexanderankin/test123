@@ -29,14 +29,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ise.plugin.svn.pv;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.JOptionPane;
 
 /**
  * Does nothing, just a placeholder for actions until they are complete.
  */
 public class NullActor extends NodeActor {
-
     public void actionPerformed( ActionEvent ae ) {
         JOptionPane.showMessageDialog(view, "Operation not yet available.", "Error", JOptionPane.ERROR_MESSAGE);
     }
