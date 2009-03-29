@@ -125,6 +125,7 @@ messages.CtagsInterface.dbMappingsFile=Database SQL mappings file:
 messages.CtagsInterface.rebuildNewDb=Rebuild the new database using current projects and source trees (might take a while)
 messages.CtagsInterface.cannotSwitchDatabase=Cannot switch to the new database settings due to an internal error.
 messages.CtagsInterface.changeDbSettingsDialogTitle=Database settings
+messages.CtagsInterface.showTooltips=Show tag tooltips
 
 # projectviewer option pane
 plugin.projectviewer.ctagsinterface.main.CtagsInterfacePlugin.option-pane=CtagsInterface-ProjectDependencies
