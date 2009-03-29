@@ -172,7 +172,7 @@ public class CheckoutAction extends SVNAction implements PropertyChangeListener 
         project.setRootPath( path );
 
         // dialog for the project properties
-        final ProjectPropertiesPane pp_pane = new ProjectPropertiesPane( project, true, path );
+        final ProjectPropertiesPane pp_pane = new ProjectPropertiesPane( null, project, true, path );
         final JDialog dialog = new JDialog( getView(), "Create Project", true );
         JPanel panel = new JPanel( new BorderLayout() );
         panel.setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );

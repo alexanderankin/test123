@@ -11,6 +11,7 @@ import java.util.*;
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.data.StatusData;
 import ise.plugin.svn.command.Status;
+import ise.plugin.svn.io.*;
 
 /**
  * Provide version control icons for file status to ProjectViewer.
@@ -87,7 +88,7 @@ public class VersionControlState implements VersionControlService {
         // way too expensive, time-wise.
         data.setRemote( false );
 
-        data.setOut( null );
+        data.setOut( new ConsolePrintStream(new NullOutputStream()) );
         Status command = new Status();
         StatusData status = null;
         try {
@@ -172,6 +173,7 @@ public class VersionControlState implements VersionControlService {
                 return null;
         }
     }
+
 
 
     /**

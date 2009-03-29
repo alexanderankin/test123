@@ -32,7 +32,7 @@ options.svnplugin.label=Subversion
 options.svnplugin.code=new ise.plugin.svn.gui.SubversionOptions()
 
 # ProjectViewer option pane
-plugin.projectviewer.ise.plugin.svn.SVNPlugin.option-pane=ise.plugin.svn.pv.options
+plugin.projectviewer.ise.plugin.svn.SVNPlugin.vc-option-pane=ise.plugin.svn.pv.options
 options.ise.plugin.svn.pv.options.label=Subversion settings
 options.ise.plugin.svn.pv.options.code=new ise.plugin.svn.gui.PVSVNOptionPane()
 
