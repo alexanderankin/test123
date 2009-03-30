@@ -32,7 +32,6 @@ import javax.swing.JTextField;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.AbstractOptionPane;
 
-import projectviewer.config.ProjectOptions;
 import projectviewer.vpt.VPTProject;
 
 /**
@@ -48,6 +47,7 @@ public class P4OptionPane extends AbstractOptionPane
 {
 
     private P4Config    config;
+    private VPTProject  proj;
 
     private JComboBox   editorType;
     private JTextField  editorCommand;
@@ -55,14 +55,15 @@ public class P4OptionPane extends AbstractOptionPane
     private JTextField  p4config;
     private JTextField  user;
 
-    public P4OptionPane() {
-        super(jEdit.getProperty("p4plugin.config.project_option_pane.name"));
+    public P4OptionPane(VPTProject proj) {
+        super("p4-plugin-pv-cfg");
+        this.proj = proj;
     }
 
     //{{{ _init() method
     /** Initializes the option pane. */
     protected void _init() {
-        config = P4Config.getProjectConfig(ProjectOptions.getProject());
+        config = P4Config.getProjectConfig(proj);
 
         if (config == null) {
             config = new P4Config();
@@ -123,13 +124,12 @@ public class P4OptionPane extends AbstractOptionPane
     }
 
     private void setProjectConfig(P4Config config) {
-        VPTProject p = ProjectOptions.getProject();
-        p.removeProperty(P4Config.KEY);
+        proj.removeProperty(P4Config.KEY);
         if (config != null) {
-            config.save(p.getProperties());
+            config.save(proj.getProperties());
         } else {
             config = new P4Config();
-            config.clean(p.getProperties());
+            config.clean(proj.getProperties());
         }
     }
 

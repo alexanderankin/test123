@@ -23,6 +23,8 @@ package p4plugin;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
+import org.gjt.sp.jedit.OptionGroup;
+import org.gjt.sp.jedit.OptionPane;
 import org.gjt.sp.jedit.io.VFSFile;
 
 import projectviewer.config.VersionControlService;
@@ -31,6 +33,7 @@ import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTProject;
 
 import p4plugin.config.P4Config;
+import p4plugin.config.P4OptionPane;
 
 
 /**
@@ -65,6 +68,16 @@ public class P4Service implements VersionControlService
         P4Config config = new P4Config();
         config.clean(proj.getProperties());
 	}
+
+    public OptionPane getOptionPane(VPTProject proj)
+    {
+        return new P4OptionPane(proj);
+    }
+
+    public OptionGroup getOptionGroup(VPTProject proj)
+    {
+        return null;
+    }
 
 }
 

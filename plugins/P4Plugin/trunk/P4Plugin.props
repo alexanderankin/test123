@@ -66,13 +66,9 @@ p4plugin_submit.label=Submit File
 p4plugin_sync.label=Sync File/Directory
 #}}}
 
-#{{{ PV extensions
-plugin.projectviewer.p4plugin.P4Plugin.vc-option-pane=p4-plugin-pv-cfg
-options.p4-plugin-pv-cfg.code=new p4plugin.config.P4OptionPane();
-options.p4-plugin-pv-cfg.label=Perforce
-#}}}
-
 #{{{ GUI messages
+options.p4-plugin-pv-cfg.label=Perforce
+
 p4plugin.config.project_option_pane.name=Perforce
 p4plugin.config.no_config_warn=P4 WARNING: No config detected, 'p4' might not work.
 p4plugin.file_filter_desc=Perfoce Repository Files
