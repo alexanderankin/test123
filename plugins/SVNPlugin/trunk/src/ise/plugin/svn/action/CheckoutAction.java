@@ -28,22 +28,23 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.action;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.event.ActionListener;
+//import java.awt.BorderLayout;
+//import java.awt.FlowLayout;
+//import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 import javax.swing.*;
 import projectviewer.ProjectManager;
 import projectviewer.ProjectViewer;
-import projectviewer.config.ProjectPropertiesPane;
+//import projectviewer.config.ProjectPropertiesPane;
+import projectviewer.config.ProjectOptions;
 import projectviewer.importer.RootImporter;
 import projectviewer.vpt.*;
 import ise.plugin.svn.gui.CheckoutDialog;
 import ise.plugin.svn.gui.OutputPanel;
 import ise.plugin.svn.library.GUIUtils;
-import ise.plugin.svn.library.PrivilegedAccessor;
+//import ise.plugin.svn.library.PrivilegedAccessor;
 import ise.plugin.svn.io.*;
 import ise.plugin.svn.data.*;
 import ise.plugin.svn.*;
@@ -170,88 +171,18 @@ public class CheckoutAction extends SVNAction implements PropertyChangeListener 
         final VPTProject project = new VPTProject( project_name );
 
         project.setRootPath( path );
+        ProjectOptions.run(project, null, path, null, true);
+        VPTGroup group = ( VPTGroup ) project.getParent();
+        if ( group == null ) {
+            group = VPTRoot.getInstance();
+        }
+        ProjectManager.getInstance().addProject(project, group);
+        ProjectViewer.setActiveNode(jEdit.getActiveView(), project);
+        RootImporter ipi = new RootImporter(project, null, ProjectViewer.getViewer(jEdit.getActiveView()), jEdit.getActiveView());
+        ipi.setLockProject(false);
+        ipi.doImport();
 
-        // dialog for the project properties
-        final ProjectPropertiesPane pp_pane = new ProjectPropertiesPane( null, project, true, path );
-        final JDialog dialog = new JDialog( getView(), "Create Project", true );
-        JPanel panel = new JPanel( new BorderLayout() );
-        panel.setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
-        panel.add( pp_pane, BorderLayout.CENTER );
-        JPanel btn_panel = new JPanel( new FlowLayout( FlowLayout.RIGHT, 3, 3 ) );
-        JButton ok_btn = new JButton( " OK " );
-        ok_btn.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        dialog.setVisible( false );
-                        dialog.dispose();
-
-                        boolean ok = false;
-                        try {
-                            // save the panel and check the 'isOK' method result
-                            pp_pane.save();
-                            Boolean b = ( Boolean ) PrivilegedAccessor.invokeMethod( pp_pane, "isOK", null );
-                            ok = b.booleanValue();
-                        }
-                        catch ( Exception e ) {
-                            e.printStackTrace();
-                            return ;
-                        }
-                        if ( ok ) {
-                            final ProjectManager pm = ProjectManager.getInstance();
-                            if ( pm != null ) {
-                                try {
-                                    // add the project to ProjectViewer, but first
-                                    // get the group. If the user picked one, it will be
-                                    // a project property, otherwise, default to the root project group
-                                    VPTGroup group = ( VPTGroup ) project.getParent();
-                                    if ( group == null ) {
-                                        group = VPTRoot.getInstance();
-                                    }
-                                    pm.addProject( project, group );
-
-                                    // offer to import the files just checked out into ProjectViewer.
-                                    // Note that Importers are runnable, so add the importer to the
-                                    // event queue for handling.  If Importer.doImport is called here,
-                                    // there will be a deadlock.
-                                    RootImporter importer = new RootImporter( project, ProjectViewer.getViewer( getView() ), true );
-                                    SwingUtilities.invokeLater( importer );
-
-                                    /// TODO: I wonder about this -- if the import happens later
-                                    // (because of the invokeLater), will the save happen correctly?
-                                    pm.save();
-                                    saveProjectSVNInfo( project.getName() );
-
-                                    // set ProjectViewer to show the new node
-                                    ProjectViewer.setActiveNode( getView(), project );
-
-                                    // make ProjectViewer visible
-                                    getView().getDockableWindowManager().showDockableWindow( "projectviewer" );
-
-                                }
-                                catch ( Exception e ) {
-                                    e.printStackTrace( System.err );
-                                }
-                            }
-                        }
-                    }
-                }
-                                );
-        JButton cancel_btn = new JButton( "Cancel" );
-        cancel_btn.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        dialog.setVisible( false );
-                        dialog.dispose();
-                    }
-                }
-                                    );
-        btn_panel.add( ok_btn );
-        btn_panel.add( cancel_btn );
-
-        panel.add( btn_panel, BorderLayout.SOUTH );
-        dialog.setContentPane( panel );
-        pp_pane.init();
-        dialog.pack();
-        GUIUtils.center( getView(), dialog );
-        dialog.setVisible( true );
+        saveProjectSVNInfo( project.getName() );
     }
 
     private void saveProjectSVNInfo( String projectName ) {
