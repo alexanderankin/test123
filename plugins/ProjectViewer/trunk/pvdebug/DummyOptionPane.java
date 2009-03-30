@@ -53,7 +53,7 @@ public class DummyOptionPane extends AbstractOptionPane {
 		JLabel caption = new JLabel("Dummy option pane");
 		add(BorderLayout.CENTER,caption);
 	} //}}}
-	
+
 	//{{{ #_save() : void
 	protected void _save() {
 		Log.log(Log.ERROR, this, "Dummy save");

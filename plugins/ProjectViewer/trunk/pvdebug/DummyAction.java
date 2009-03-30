@@ -57,7 +57,6 @@ public class DummyAction extends Action {
 	/** Creates a new project. */
 	public void actionPerformed(ActionEvent e) {
 		JOptionPane.showMessageDialog(viewer, "Dummy action test");
-		ProjectOptions.run(null, null, null, "dummy");
 	} //}}}
 
 }
