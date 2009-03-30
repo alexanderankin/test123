@@ -1,10 +1,19 @@
 package ctagsinterface.jedit;
 
+import java.awt.Component;
+import java.awt.Point;
 import java.util.Vector;
+
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JList;
+import javax.swing.SwingUtilities;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.gui.CompletionPopup;
+import org.gjt.sp.jedit.gui.CompletionPopup.Candidates;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.textarea.TextAreaPainter;
 
 import superabbrevs.SuperAbbrevs;
 import ctagsinterface.db.Query;
@@ -26,22 +35,66 @@ public class TagCompletion {
 			return;
 		if (tags.size() > 1)
 		{
-			String [] completions = new String[tags.size()];
-			for (int i = 0; i < tags.size(); i++)
-				completions[i] = completion.getCompletionString(tags.get(i));
-			EnhancedCompletion options = new EnhancedCompletion(
-					view, prefix, completions)
-			{
-				public void insert(int index) {
-					completion.complete(tags.get(index));
-				}
-			};
 			JEditTextArea ta = view.getTextArea();
-			new EnhancedCompletionPopup(view, ta.getCaretPosition(),
-				options, true);
+			int caret = ta.getCaretPosition();
+			Point location = ta.offsetToXY(caret - prefix.length());
+			TextAreaPainter painter = ta.getPainter();
+			location.y += painter.getFontMetrics().getHeight();
+			SwingUtilities.convertPointToScreen(location, painter);
+			CompletionPopup popup = new CompletionPopup(view,
+				location);
+			TagCandidates candidates = completion.new TagCandidates(tags);
+			popup.reset(candidates, true);
 		}
 		else
 			completion.complete(tags.get(0));
+	}
+	
+	private class TagCandidates implements Candidates
+	{
+		private Vector<Tag> tags;
+		private DefaultListCellRenderer renderer;
+		
+		@SuppressWarnings("serial")
+		public TagCandidates(final Vector<Tag> tags)
+		{
+			this.tags = tags;
+			renderer = new DefaultListCellRenderer() {
+				@Override
+				public Component getListCellRendererComponent(JList list,
+						Object value, int index, boolean isSelected,
+						boolean cellHasFocus)
+				{
+					super.getListCellRendererComponent(list,
+						null, index, isSelected, cellHasFocus);
+					setText(getCompletionString(tags.get(index)));
+					return this;
+				}
+				
+			};
+		}
+		public void complete(int index)
+		{
+			TagCompletion.this.complete(tags.get(index));
+		}
+		public Component getCellRenderer(JList list, int index,
+				boolean isSelected, boolean cellHasFocus)
+		{
+			return renderer.getListCellRendererComponent(list,
+				null, index, isSelected, cellHasFocus);
+		}
+		public String getDescription(int index)
+		{
+			return null;
+		}
+		public int getSize()
+		{
+			return tags.size();
+		}
+		public boolean isValid()
+		{
+			return true;
+		}
 	}
 	
 	public TagCompletion(View view, String prefix)
