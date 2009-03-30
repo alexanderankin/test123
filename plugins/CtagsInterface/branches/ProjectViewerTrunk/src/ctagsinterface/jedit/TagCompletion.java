@@ -4,9 +4,9 @@ import java.util.Vector;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 import superabbrevs.SuperAbbrevs;
-
 import ctagsinterface.db.Query;
 import ctagsinterface.db.TagDB;
 import ctagsinterface.main.CtagsInterfacePlugin;
@@ -16,6 +16,33 @@ public class TagCompletion {
 
 	private View view;
 	private String prefix;
+	
+	public static void complete(View view, String prefix)
+	{
+		final TagCompletion completion = new TagCompletion(view,
+			prefix);
+		final Vector<Tag> tags = completion.getCompletions();
+		if (tags == null || tags.isEmpty())
+			return;
+		if (tags.size() > 1)
+		{
+			String [] completions = new String[tags.size()];
+			for (int i = 0; i < tags.size(); i++)
+				completions[i] = completion.getCompletionString(tags.get(i));
+			EnhancedCompletion options = new EnhancedCompletion(
+					view, prefix, completions)
+			{
+				public void insert(int index) {
+					completion.complete(tags.get(index));
+				}
+			};
+			JEditTextArea ta = view.getTextArea();
+			new EnhancedCompletionPopup(view, ta.getCaretPosition(),
+				options, true);
+		}
+		else
+			completion.complete(tags.get(0));
+	}
 	
 	public TagCompletion(View view, String prefix)
 	{
@@ -91,4 +118,5 @@ public class TagCompletion {
 		String abbrev = createAbbrev(sig);
 		SuperAbbrevs.expandAbbrev(view, abbrev, null);
 	}
+	
 }
