@@ -32,6 +32,7 @@ import ctagsinterface.db.TagDB;
 import ctagsinterface.dialogs.ChangeDbSettings;
 import ctagsinterface.dockables.TagList;
 import ctagsinterface.jedit.BufferWatcher;
+import ctagsinterface.jedit.TagCompletion;
 import ctagsinterface.jedit.TagTooltip;
 import ctagsinterface.main.Parser.TagHandler;
 import ctagsinterface.options.ActionsOptionPane;
@@ -290,6 +291,37 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		jumpToTags(view, tags);
 	}
 
+	// Actions: Offer code completion options from the DB
+	public static void completeFromDb(final View view)
+	{
+		String prefix = getCompletionPrefix(view);
+		if (prefix == null)
+			return;
+		TagCompletion completion = new TagCompletion(view, prefix);
+		Vector<Tag> tags = completion.getCompletions();
+		if (tags == null || tags.isEmpty())
+			return;
+		Tag tag = tags.get(0);
+		if (tags.size() > 1)
+		{
+			String [] completions = new String[tags.size()];
+			for (int i = 0; i < tags.size(); i++)
+				completions[i] = completion.getCompletionString(tags.get(i));
+			String sel = (String) JOptionPane.showInputDialog(view,
+				"Select completion", "Code completion dialog",
+				JOptionPane.QUESTION_MESSAGE, null, completions,
+				completions[0]);
+			if (sel == null)
+				return;
+			for (int i = 0; i < completions.length; i++)
+				if (sel == completions[i]) {
+					tag = tags.get(i);
+					break;
+				}
+		}
+		completion.complete(tag);
+	}
+	
 	// Actions: Offer code completion options
 	public static void complete(final View view)
 	{
@@ -327,44 +359,6 @@ public class CtagsInterfacePlugin extends EditPlugin {
 			"Completion dialog", 0, null, options, options[0]);
 	}
 	
-	// Actions: Offer code completion options
-	public static void completeFromDb(final View view)
-	{
-		String prefix = getCompletionPrefix(view);
-		if (prefix == null)
-			return;
-		Vector<String> completions = new Vector<String>();
-		Query q = db.getTagPrefixQuery(prefix);
-		String project = getScopeName(view);
-		if (project != null)
-			db.makeProjectScopedQuery(q, project);
-		try {
-			ResultSet rs = db.query(q);
-			while (rs.next())
-				completions.add(rs.getString(TagDB.TAGS_NAME));
-			rs.close();
-		} catch (SQLException e) {
-		}
-		if (completions.isEmpty()) {
-			JOptionPane.showMessageDialog(view, "No completions");
-			return;
-		}
-		String [] options = new String[completions.size()];
-		int i = 0;
-		for (String completion: completions) {
-			options[i] = completion;
-			i++;
-		}
-		String sel = (String) JOptionPane.showInputDialog(view,
-			"Select completion:", "Completion dialog", 0,
-			null, options, options[0]);
-		if (sel == null)
-			return;
-		String completion = sel.substring(prefix.length());
-		view.getBuffer().insert(
-			view.getTextArea().getCaretPosition(), completion);
-	}
-
 	// Returns the prefix for code completion
 	public static String getCompletionPrefix(View view) {
 		String tag = view.getTextArea().getSelectedText();
