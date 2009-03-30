@@ -25,7 +25,7 @@ import org.gjt.sp.jedit.OptionGroup;
 import org.gjt.sp.jedit.OptionPane;
 import org.gjt.sp.jedit.io.VFSFile;
 
-import projectviewer.config.VersionControlService;
+import projectviewer.config.OptionsService;
 
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTProject;
@@ -37,35 +37,12 @@ import projectviewer.vpt.VPTProject;
  *	@author		Marcelo Vanzin
  *	@version	$Id$
  */
-public class DummyVC implements VersionControlService
+public class DummyOptions implements OptionsService
 {
-
-	private final static Icon ICON =
-		new ImageIcon(VersionControlService.class.getResource("/projectviewer/images/file_state_not_found.png"));
-
-	public int getFileState(VPTFile f)
-	{
-		return 1;
-	}
-
-	public Icon getIcon(int state)
-	{
-		return ICON;
-	}
-
-	public Class getPlugin()
-	{
-		return PVDebugPlugin.class;
-	}
-
-	public void dissociate(VPTProject proj)
-	{
-
-	}
 
     public OptionPane getOptionPane(VPTProject proj)
     {
-        return new DummyOptionPane("dummyvc");
+        return new DummyOptionPane("dummy");
     }
 
     public OptionGroup getOptionGroup(VPTProject proj)
