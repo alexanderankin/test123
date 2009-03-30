@@ -62,14 +62,11 @@ public class PVSVNOptionPane extends AbstractOptionPane {
     
     private String projectName = null;
     
-
-    public PVSVNOptionPane() {
-        super( "ise.plugin.svn" );
-        setLayout( new KappaLayout() );
-    }
+    private static final String internalName = "ise.plugin.svn.pv.options";
     
+
     public PVSVNOptionPane(String projectName) {
-        super( "ise.plugin.svn" );
+        super( internalName );
         setLayout( new KappaLayout() );
         this.projectName = projectName;
     }
@@ -85,7 +82,7 @@ public class PVSVNOptionPane extends AbstractOptionPane {
         url = new HistoryTextField(URL);
         url.setText( jEdit.getProperty( PVHelper.PREFIX + projectName + ".url" ) );
         url.setColumns( 30 );
-
+        
         // username field
         username_label = new JLabel( jEdit.getProperty( PVHelper.PREFIX + "username.label" ) );
         username = new HistoryTextField(USERNAME);
@@ -124,15 +121,14 @@ public class PVSVNOptionPane extends AbstractOptionPane {
     // #_save() : void
     /** Saves properties from the option pane. */
     protected void _save() {
-        String name = getProjectName();
         jEdit.setProperty(
-            PVHelper.PREFIX + name + ".url",
+            PVHelper.PREFIX + projectName + ".url",
             ( url == null ? "" : url.getText() )
         );
         url.addCurrentToHistory();
 
         jEdit.setProperty(
-            PVHelper.PREFIX + name + ".username",
+            PVHelper.PREFIX + projectName + ".username",
             ( username == null ? "" : username.getText() )
         );
         username.addCurrentToHistory();
@@ -144,7 +140,7 @@ public class PVSVNOptionPane extends AbstractOptionPane {
         }
         pwd = PasswordHandler.encryptPassword(pwd);
         jEdit.setProperty(
-            PVHelper.PREFIX + name + ".password",
+            PVHelper.PREFIX + projectName + ".password",
             pwd
         );
     }
@@ -157,11 +153,6 @@ public class PVSVNOptionPane extends AbstractOptionPane {
     private String getProjectRoot() {
         String project_root = PVHelper.getProjectRoot((View)SwingUtilities.getRoot(this)) == null ? "" : PVHelper.getProjectRoot((View)SwingUtilities.getRoot(this));
         return project_root;
-    }
-
-    
-    public String getName() {
-        return "ise.plugin.svn.pv.options";   
     }
 
     class Runner extends SwingWorker<List<SVNInfo>, Object> {

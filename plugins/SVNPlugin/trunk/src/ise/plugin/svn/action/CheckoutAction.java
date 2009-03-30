@@ -28,23 +28,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.action;
 
-//import java.awt.BorderLayout;
-//import java.awt.FlowLayout;
-//import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 import javax.swing.*;
 import projectviewer.ProjectManager;
 import projectviewer.ProjectViewer;
-//import projectviewer.config.ProjectPropertiesPane;
 import projectviewer.config.ProjectOptions;
+import projectviewer.config.VersionControlService;
 import projectviewer.importer.RootImporter;
 import projectviewer.vpt.*;
 import ise.plugin.svn.gui.CheckoutDialog;
 import ise.plugin.svn.gui.OutputPanel;
 import ise.plugin.svn.library.GUIUtils;
-//import ise.plugin.svn.library.PrivilegedAccessor;
 import ise.plugin.svn.io.*;
 import ise.plugin.svn.data.*;
 import ise.plugin.svn.*;
@@ -69,6 +65,8 @@ public class CheckoutAction extends SVNAction implements PropertyChangeListener 
         if ( data == null )
             throw new IllegalArgumentException( "data may not be null" );
         this.data = data;
+        setUsername( data.getUsername() );
+        setPassword( data.getPassword() );
     }
 
     public void propertyChange( PropertyChangeEvent pce ) {
@@ -85,6 +83,19 @@ public class CheckoutAction extends SVNAction implements PropertyChangeListener 
         data = dialog.getValues();
         if ( data == null ) {
             return ;        // user canceled
+        }
+
+        if ( data.getUsername() == null ) {
+            verifyLogin( data.getPaths().get( 0 ) );
+            if ( isCanceled() ) {
+                return ;
+            }
+            data.setUsername( getUsername() );
+            data.setPassword( getPassword() );
+        }
+        else {
+            setUsername( data.getUsername() );
+            setPassword( data.getPassword() );
         }
 
         data.setOut( new ConsolePrintStream( getView() ) );
@@ -169,19 +180,35 @@ public class CheckoutAction extends SVNAction implements PropertyChangeListener 
         index = index == -1 ? 0 : index + 1;
         String project_name = path.substring( index );
         final VPTProject project = new VPTProject( project_name );
+
+        // set some project properties so the user doesn't have to
         project.setRootPath( path );
-        ProjectOptions.run(project, true, null);
+        saveProjectSVNInfo( project.getName() );
+        project.setProperty( VersionControlService.VC_SERVICE_KEY, "Subversion" );
+
+        // show the 'create project' dialog
+        ProjectOptions.run( project, true, null );
+
+        // get the group as set in the 'create project' dialog
         VPTGroup group = ( VPTGroup ) project.getParent();
         if ( group == null ) {
             group = VPTRoot.getInstance();
         }
-        ProjectManager.getInstance().addProject(project, group);
-        ProjectViewer.setActiveNode(jEdit.getActiveView(), project);
-        RootImporter ipi = new RootImporter(project, null, ProjectViewer.getViewer(jEdit.getActiveView()), jEdit.getActiveView());
-        ipi.setLockProject(false);
+
+        // actually add the project to ProjectManager and set it as the active project
+        ProjectManager.getInstance().addProject( project, group );
+        ProjectViewer.setActiveNode( jEdit.getActiveView(), project );
+
+        // import the checked out files into the project. This next line is a suggestion
+        // from Marcelo that will automatically choose the 'Use CVS or SVN Entries' for
+        // importing the files.
+        projectviewer.importer.ImportUtils.saveFilter( project.getProperties(), new projectviewer.importer.CVSEntriesFilter(), "projectviewer.import" );
+        RootImporter ipi = new RootImporter( project, null, ProjectViewer.getViewer( jEdit.getActiveView() ), jEdit.getActiveView() );
+        ipi.setLockProject( false );
         ipi.doImport();
 
-        saveProjectSVNInfo( project.getName() );
+        // now show ProjectViewer
+        getView().getDockableWindowManager().showDockableWindow( "projectviewer" );
     }
 
     private void saveProjectSVNInfo( String projectName ) {
