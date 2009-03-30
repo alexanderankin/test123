@@ -62,7 +62,7 @@ public class ProjectOptions
 	/**
 	 * Shows the project options dialog for the given project.
 	 *
-	 * @param	project		The project to edit (null to create a new one).
+	 * @param	proj		The project to edit (null to create a new one).
 	 * @param	isNew		If a non-null project is provided, whether to
 	 *						treat is as a new project.
 	 * @param	parent		The parent node where to insert new projects;
