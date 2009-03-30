@@ -137,6 +137,7 @@ public class TagCompletion {
 	public String createAbbrev(String signature)
 	{
 		StringBuffer sb = new StringBuffer();
+		boolean startParam = false;
 		for (int i = 0; i < signature.length(); i++)
 		{
 			char c = signature.charAt(i);
@@ -145,16 +146,27 @@ public class TagCompletion {
 				sb.append("}");
 				// fall through
 			case '(':
+				startParam = true;
 				sb.append(c);
-				sb.append("${");
-				sb.append(i + 1);
-				sb.append(":");
 				break;
 			case ')':
 				sb.append("}");
-				// fall through
-			default:
 				sb.append(c);
+				break;
+			case ' ':
+			case '\t':
+			case '\n':
+				sb.append(c);
+				break;
+			default:
+				if (startParam) {
+					startParam = false;
+					sb.append("${");
+					sb.append(i + 1);
+					sb.append(":");
+				}
+				sb.append(c);
+				break;
 			}
 		}
 		return sb.toString();
