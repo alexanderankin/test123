@@ -87,12 +87,14 @@ public class ProjectFilterPane extends OptionPaneBase
 	private FilterTabelModel model;
 
 	private int editingRow;
+	private VPTProject proj;
 	//}}}
 
-	ProjectFilterPane()
+	ProjectFilterPane(VPTProject proj)
 	{
 		super("projectviewer.optiongroup.filter",
 			  "projectviewer.filterconfig");
+		this.proj = proj;
 	}
 
 	//{{{ #_init() : void
@@ -169,10 +171,10 @@ public class ProjectFilterPane extends OptionPaneBase
 		gbc.fill = GridBagConstraints.BOTH;
 
 		// load global filter list
-		if (ProjectOptions.getProject() == null) {
+		if (proj == null) {
 			model = new FilterTabelModel(ProjectManager.getInstance().getGlobalFilterList());
 		} else {
-			model = new FilterTabelModel(ProjectOptions.getProject().getFilterList());
+			model = new FilterTabelModel(proj.getFilterList());
 		}
 		filterTable = new JTable(model);
 		filterTable.addMouseListener(new MouseHandler());
@@ -227,11 +229,11 @@ public class ProjectFilterPane extends OptionPaneBase
 	//{{{ +_save() : void
 	public void _save()
 	{
-		if (ProjectOptions.getProject() == null) {
+		if (proj == null) {
 			ProjectManager.getInstance().setGlobalFilterList(model.getFilterList());
 		} else {
-			ProjectOptions.getProject().setFilterList(model.getFilterList());
-			ProjectViewer.nodeStructureChangedFlat(ProjectOptions.getProject());
+			proj.setFilterList(model.getFilterList());
+			ProjectViewer.nodeStructureChangedFlat(proj);
 		}
 	}//}}}
 

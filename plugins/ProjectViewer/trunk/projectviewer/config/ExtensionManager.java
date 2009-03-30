@@ -64,6 +64,8 @@ public class ExtensionManager
 												  "file_filters"));
 		dummyServices.add(new DummyManagedService(VersionControlService.class,
 												  "version_control"));
+		dummyServices.add(new DummyManagedService(OptionsService.class,
+												  "option_panes"));
 	}
 
 	/**

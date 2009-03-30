@@ -30,12 +30,17 @@ import projectviewer.vpt.VPTProject;
  * a project. Plugins implementing this service should provide it
  * through jEdit's service.xml interface.
  *
+ * The interface extends {@link OptionsService}; the option pane or
+ * option group returned by this service is only shown if the service
+ * is chosen as the "version control service" for a project.
+ *
  * @author	Marcelo Vanzin
  * @since	PV 3.0.0
  * @version	$Id$
  */
 
-public interface VersionControlService {
+public interface VersionControlService extends OptionsService
+{
 
 	/** Key in the project's properties identifying the version control service. */
 	public static final String VC_SERVICE_KEY = "projectviewer.version_control_service";

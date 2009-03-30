@@ -71,7 +71,6 @@ class ProjectPropertiesPane extends OptionPaneBase
 	//{{{ Instance Variables
 
 	private int result;
-	private String lookupPath;
 	private VPTProject project;
 
 	private JTextField projName;
@@ -95,8 +94,7 @@ class ProjectPropertiesPane extends OptionPaneBase
 
 	ProjectPropertiesPane(ProjectOptions options,
 						  VPTProject p,
-						  boolean isNew,
-						  String lookupPath)
+						  boolean isNew)
 	{
 		super("projectviewer.project_props",
 			  "projectviewer.project.options");
@@ -104,7 +102,6 @@ class ProjectPropertiesPane extends OptionPaneBase
 		this.project = p;
 		this.ok = true;
 		this.isNew = isNew;
-		this.lookupPath = lookupPath;
 	}
 
 	//}}}
@@ -123,9 +120,6 @@ class ProjectPropertiesPane extends OptionPaneBase
 
 			if (root.length() > 0) {
 				path = VFSManager.getVFSForPath(root).getParentOfPath(root);
-			} else if (lookupPath != null) {
-				path = VFSManager.getVFSForPath(lookupPath)
-				                 .getParentOfPath(lookupPath);
 			} else {
 				path = jEdit.getProperty("projectviewer.filechooser.directory",
 										 System.getProperty("user.home"));

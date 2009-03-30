@@ -86,8 +86,6 @@ public class EditProjectAction extends Action {
 	/** Creates a new project. */
 	public void actionPerformed(ActionEvent e) {
 		VPTNode selected = null;
-		String lookupPath = null;
-
 		VPTProject proj = null;
 		VPTProject lockedProj = null;
 		String oldName = null;
@@ -111,12 +109,8 @@ public class EditProjectAction extends Action {
 		if (!forceNew) {
 			if (viewer != null) {
 				selected = viewer.getSelectedNode();
-				if (selected != null) {
-					lookupPath = selected.getNodePath();
-				} else {
-					selected = viewer.getRoot();
-					if (lookupPath == null && selected.isProject())
-						lookupPath = selected.getNodePath();
+				if (selected.isGroup()) {
+					parent = (VPTGroup) selected;
 				}
 				proj = VPTNode.findProjectFor(selected);
 			} else {
@@ -142,7 +136,8 @@ public class EditProjectAction extends Action {
 			return;
 		}
 		lockedProj = proj;
-		proj = ProjectOptions.run(proj, parent, lookupPath);
+
+		proj = ProjectOptions.run(proj, proj == null, parent);
 
 		if (proj != null) {
 			if (add) {

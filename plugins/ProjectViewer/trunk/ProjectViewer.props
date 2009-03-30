@@ -37,7 +37,7 @@ options.projectviewer.optiongroup.context_menu.code=new projectviewer.config.Con
 options.projectviewer.optiongroup.external_apps.label=External Applications
 options.projectviewer.optiongroup.external_apps.code=new projectviewer.config.ProjectAppConfigPane();
 options.projectviewer.optiongroup.filter.label=Filtered view
-options.projectviewer.optiongroup.filter.code=new projectviewer.config.ProjectFilterPane();
+options.projectviewer.optiongroup.filter.code=new projectviewer.config.ProjectFilterPane(null);
 options.projectviewer.optiongroup.extensions.label=Extensions
 options.projectviewer.optiongroup.extensions.code=new projectviewer.config.ExtensionConfigPane();
 
@@ -385,6 +385,7 @@ projectviewer.extensions.context_menu=Context Menu Actions
 projectviewer.extensions.custom_nodes=Custom Node Types
 projectviewer.extensions.file_filters=File Filters
 projectviewer.extensions.node_props=Node Properties
+projectviewer.extensions.option_panes=Option Panes
 projectviewer.extensions.version_control=Version Control
 #}}}
 

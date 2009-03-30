@@ -19,7 +19,9 @@
 package projectviewer.config;
 
 //{{{ Imports
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JOptionPane;
 
@@ -28,6 +30,8 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.OptionGroup;
+import org.gjt.sp.jedit.OptionPane;
+import org.gjt.sp.jedit.ServiceManager;
 import org.gjt.sp.jedit.gui.OptionsDialog;
 
 import projectviewer.vpt.VPTGroup;
@@ -42,302 +46,257 @@ import projectviewer.vpt.VPTProject;
  *  @author		Marcelo Vanzin
  *	@version	$Id$
  */
-public class ProjectOptions extends OptionsDialog {
+public class ProjectOptions
+{
 
-	//{{{ Static Members
-	private static String			lookupPath;
-	private static VPTProject		p;
-	private static boolean			isNew;
+	private VPTProject				p;
+	private boolean					isNew;
 
-	//{{{ +_run(VPTProject)_ : VPTProject
-	/**
-	 *	Shows the project options dialog for the given project.
-	 *
-	 *	@param	project	The project to edit or null to create a new one.
-	 *	@return	The new or modified project, or null if p was null and
-	 *			dialog was cancelled.
-	 */
-	public static VPTProject run(VPTProject project) {
-		return run(project, null, null);
-	} //}}}
-
-	//{{{ +_run(VPTProject, VPTGroup, String)_ : VPTProject
-	/**
-	 *	Shows the project options dialog for the given project, with an
-	 *	optional default start folder where to open the file chooser
-	 *	dialog.
-	 *
-	 *	<p>Method is sychronized so that the use of the static variables
-	 *	is safe.</p>
-	 *
-	 *	@param	project	The project to edit or null to create a new one.
-	 *  @param	parent	If creating a new project, the parent where the
-	 *					project should be added (null is ok).
-	 *	@param	startPath	Where to open the "choose root" file dialog.
-	 *	@return	The new or modified project, or null if p was null and
-	 *			dialog was cancelled.
-	 */
-	public static VPTProject run(VPTProject project,
-								 VPTGroup parent,
-								 String startPath)
-	{
-		return run(project, parent, startPath, null);
-	} //}}}
-
-	//{{{ +_run(VPTProject, VPTGroup, String, String)_ : VPTProject
-	/**
-	 *	Shows the project options dialog for the given project, with an
-	 *	optional default start folder where to open the file chooser
-	 *	dialog.
-	 *
-	 *	<p>Method is sychronized so that the use of the static variables
-	 *	is safe.</p>
-	 *
-	 *	@param	project	The project to edit or null to create a new one.
-	 *  @param	parent	If creating a new project, the parent where the
-	 *					project should be added (null is ok).
-	 *	@param	startPath	Where to open the "choose root" file dialog.
-	 *	@param	startPane	The name of the option pane to be shown by
-	 *						default. If null, will show the main project
-	 *						options pane.
-	 *	@return	The new or modified project, or null if p was null and
-	 *			dialog was cancelled.
-	 *	@since	PV 2.1.3.4
-	 */
-	public static synchronized VPTProject run(VPTProject project,
-												VPTGroup parent,
-												String startPath,
-												String startPane)
-	{
-		String title;
-		if (project == null) {
-			p = new VPTProject("");
-			p.setParent(parent);
-			p.setRootPath("");
-			isNew = true;
-			title = "projectviewer.create_project";
-		} else {
-			p = project;
-			isNew = false;
-			title = "projectviewer.edit_project";
-		}
-
-		lookupPath = startPath;
-		new ProjectOptions(jEdit.getActiveView(), title, startPane);
-		if (isNew && p != null) {
-			p.setParent(null);
-		}
-		project = p;
-		p = null;
-		return project;
-	} //}}}
-
-	//{{{ +_getProject()_ : VPTProject
-	/**
-	 *	Returns the project currently being edited, or null if the
-	 *	dialog is not active.
-	 *
-	 *	@since	PV 2.1.0.1
-	 */
-	public static VPTProject getProject() {
-		return p;
-	} //}}}
-
-	//}}}
-
-	//{{{ Instance Variables
-
-	private PVOptionTreeModel		paneModel;
+	private ProjectOptionsDialog.PVOptionTreeModel	paneModel;
 	private ProjectPropertiesPane	pOptPane;
 
-	//}}}
+	private Map<OptionsService, OptionGroup>	groups;
+	private Map<OptionsService, OptionPane>		panes;
 
-	//{{{ -ProjectOptions(View, String) : <init>
-	private ProjectOptions(View view, String name, String pane) {
-		super(JOptionPane.getFrameForComponent(view), name, pane);
-		setModal(true);
-	} //}}}
 
-	public void setTitle(String title) {
-		if (!isNew) {
-			super.setTitle(title + " (" + p.getName() + ")");
-		} else {
-			super.setTitle(title);
+	/**
+	 * Shows the project options dialog for the given project.
+	 *
+	 * @param	project		The project to edit (null to create a new one).
+	 * @param	isNew		If a non-null project is provided, whether to
+	 *						treat is as a new project.
+	 * @param	parent		The parent node where to insert new projects;
+	 *						may be null.
+	 *
+	 * @return The project with updated information, or null if the user
+	 *         cancelled the dialog.
+	 *
+	 * @since	PV 3.0.0
+	 */
+	public static VPTProject run(VPTProject proj,
+								 boolean isNew,
+								 VPTGroup parent)
+	{
+		ProjectOptions dlg = new ProjectOptions(proj, isNew, parent);
+		return dlg.run();
+	}
+
+
+	private ProjectOptions(VPTProject proj,
+						   boolean isNew,
+						   VPTGroup parent)
+	{
+		this.p = proj;
+		this.isNew = isNew;
+		if (p == null) {
+			this.isNew = true;
+			p = new VPTProject("");
+			p.setRootPath("");
+		}
+		if (p.getParent() == null) {
+			p.setParent(parent);
 		}
 	}
 
-	//{{{ +cancel() : void
-	/**
-	 *	Called when the cancel button is pressed. Sets the project to null
-	 *	if "isNew" is true.
-	 */
-	public void cancel() {
-		p = null;
-		dispose();
-	} //}}}
 
-	//{{{ +ok() : void
-	/**
-	 *	Called when ok is pressed. Verifies if the project's properties are OK
-	 *	before closing the dialog.
-	 */
-	public void ok() {
-		super.ok(false);
-		if (pOptPane.isOK()) {
-			dispose();
+	private VPTProject run()
+	{
+		String title;
+		title = (isNew) ? "projectviewer.create_project"
+		                : "projectviewer.edit_project";
+
+		new ProjectOptionsDialog(jEdit.getActiveView(), title);
+		if (isNew && p != null) {
+			p.setParent(null);
 		}
-	} //}}}
-
-	//{{{ #getDefaultGroup() : OptionGroup
-	protected OptionGroup getDefaultGroup() {
-		return (OptionGroup) paneModel.getRoot();
-	} //}}}
-
-	//{{{ #createOptionTreeModel() : OptionTreeModel
-	protected OptionTreeModel createOptionTreeModel() {
-		paneModel = new PVOptionTreeModel();
-
-		pOptPane = new ProjectPropertiesPane(this, p, isNew, lookupPath);
-		addOptionPane(pOptPane);
-
-		addOptionPane(new AutoReimportPane(p));
-		addOptionPane(new ProjectFilterPane());
-
-		EditPlugin[] eplugins = jEdit.getPlugins();
-		for (int i = 0; i < eplugins.length; i++) {
-			addRemoveOptions(eplugins[i].getClassName(),
-							 "option-pane",
-							 "option-group",
-							 true);
-		}
-
-		return paneModel;
-	} //}}}
+		return p;
+	}
 
 
 	void removeOptions(VersionControlService svc)
 	{
-		PVOptionGroup root = (PVOptionGroup) paneModel.getRoot();
-		addRemoveOptions(svc.getPlugin().getName(),
-						 "vc-option-pane",
-						 "vc-option-group",
-						 false);
+		addRemoveOptions(svc, false);
 	}
 
 
 	void addOptions(VersionControlService svc)
 	{
-		addRemoveOptions(svc.getPlugin().getName(),
-						 "vc-option-pane",
-						 "vc-option-group",
-						 true);
+		addRemoveOptions(svc, true);
 	}
 
 
-	private void addRemoveOptions(String plugin,
-								  String pane,
-								  String group,
+	private void addRemoveOptions(OptionsService svc,
 								  boolean add)
 	{
-		PVOptionGroup root = (PVOptionGroup) paneModel.getRoot();
+		ProjectOptionsDialog.PVOptionGroup root =
+			(ProjectOptionsDialog.PVOptionGroup) paneModel.getRoot();
+		OptionPane pane;
+		OptionGroup group;
 
-		// Look for a single option pane
-		String property = "plugin.projectviewer." + plugin + "." + pane;
-		if ((property = jEdit.getProperty(property)) != null) {
-			if (add) {
-				root.addOptionPane(property);
-				paneModel.addRemoveMember(root, property, true);
-			} else {
-				paneModel.addRemoveMember(root, property, false);
+		// Single option pane.
+		if (add) {
+			if ((pane = panes.get(svc)) == null) {
+				pane = svc.getOptionPane(p);
+			}
+			if (pane != null) {
+				root.addOptionPane(pane);
+				panes.put(svc, pane);
+				paneModel.addRemoveMember(root, pane, true);
+			}
+		} else {
+			pane = panes.get(svc);
+			if (pane != null) {
+				paneModel.addRemoveMember(root, pane, false);
 			}
 		}
 
-		// Look for an option group
-		property = "plugin.projectviewer." + plugin + "." + group;
-		if ((property = jEdit.getProperty(property)) != null) {
-			if (add) {
-				OptionGroup newgroup =
-					new OptionGroup("plugin." + plugin,
-						jEdit.getProperty("plugin." + plugin + ".name"),
-						property);
-				root.addOptionGroup(newgroup);
-				paneModel.addRemoveMember(root, newgroup.getLabel(), true);
-			} else {
-				String label = jEdit.getProperty(property + ".label");
-				paneModel.addRemoveMember(root, label, false);
+		// Option group;
+		if (add) {
+			if ((group = groups.get(svc)) == null) {
+				group = svc.getOptionGroup(p);
+			}
+			if (group != null) {
+				root.addOptionGroup(group);
+				paneModel.addRemoveMember(root, group, true);
+				groups.put(svc, group);
+			}
+		} else {
+			group = groups.get(svc);
+			if (group != null) {
+				paneModel.addRemoveMember(root, group, false);
 			}
 		}
 	}
 
-	private class PVOptionGroup extends OptionGroup
+
+	private class ProjectOptionsDialog extends OptionsDialog
 	{
 
-		PVOptionGroup()
+		private ProjectOptionsDialog(View view,
+									 String name)
 		{
-			super(null);
+			super(JOptionPane.getFrameForComponent(view), name, null);
 		}
 
 
-		int getIndexByName(String name)
+		public void setTitle(String title)
 		{
-			for (int i = 0; i < members.size(); i++) {
-				Object o = members.get(i);
-				if (o instanceof String) {
-					if (name.equals((String)o)) {
-						return i;
-					}
-				} else if (o instanceof OptionGroup) {
-					if (name.equals(((OptionGroup)o).getLabel())) {
-						return i;
-					}
-				} else if (o instanceof AbstractOptionPane) {
-					if (name.equals(((AbstractOptionPane)o).getName())) {
-						return i;
-					}
-				} else {
-					throw new InternalError();
+			if (p.getName() != null && p.getName().length() > 0) {
+				super.setTitle(title + " (" + p.getName() + ")");
+			}
+		}
+
+
+		/**
+		 *	Called when the cancel button is pressed. Sets the project to null
+		 *	if "isNew" is true.
+		 */
+		public void cancel() {
+			p = null;
+			dispose();
+		}
+
+
+		/**
+		 *	Called when ok is pressed. Verifies if the project's properties are OK
+		 *	before closing the dialog.
+		 */
+		public void ok()
+		{
+			super.ok(false);
+			if (pOptPane.isOK()) {
+				dispose();
+			}
+		}
+
+
+		protected OptionGroup getDefaultGroup()
+		{
+			return (OptionGroup) paneModel.getRoot();
+		}
+
+
+		protected OptionTreeModel createOptionTreeModel()
+		{
+			ProjectViewerConfig cfg = ProjectViewerConfig.getInstance();
+			PVOptionGroup root;
+
+			paneModel = new PVOptionTreeModel();
+			root = (PVOptionGroup) paneModel.getRoot();
+
+			pOptPane = new ProjectPropertiesPane(ProjectOptions.this,
+												 p, isNew);
+			addOptionPane(pOptPane);
+
+			addOptionPane(new AutoReimportPane(p));
+			addOptionPane(new ProjectFilterPane(p));
+
+			groups = new HashMap<OptionsService, OptionGroup>();
+			panes = new HashMap<OptionsService, OptionPane>();
+
+			String[] popts;
+			String type = OptionsService.class.getName();
+			popts = ServiceManager.getServiceNames(type);
+			for (String svcname : popts) {
+				OptionsService svc = (OptionsService)
+					ServiceManager.getService(type, svcname);
+				if (cfg.isExtensionEnabled(type, svc.getClass().getName())) {
+					addRemoveOptions(svc, true);
 				}
 			}
-			return -1;
+
+			return paneModel;
 		}
 
-		void remove(int idx)
+
+		private class PVOptionGroup extends OptionGroup
 		{
-			members.remove(idx);
+
+			PVOptionGroup()
+			{
+				super(null);
+			}
+
+
+			void remove(int idx)
+			{
+				members.remove(idx);
+			}
+
+		}
+
+
+		private class PVOptionTreeModel extends OptionTreeModel
+		{
+
+			PVOptionTreeModel()
+			{
+				super(new PVOptionGroup());
+			}
+
+
+			void addRemoveMember(PVOptionGroup grp,
+								 Object member,
+								 boolean add)
+			{
+				int idx = grp.getMemberIndex(member);
+				if (idx == -1) {
+					return;
+				}
+
+				Object[] path = new Object[] { grp };
+				int[] indices = new int[] { idx };
+				Object[] children = new Object[] { grp.getMember(idx) };
+				if (add) {
+					fireNodesInserted(this, path, indices, children);
+				} else {
+					fireNodesRemoved(this, path, indices, children);
+					grp.remove(idx);
+				}
+			}
+
 		}
 
 	}
-
-	private class PVOptionTreeModel extends OptionTreeModel
-	{
-
-		PVOptionTreeModel()
-		{
-			super(new PVOptionGroup());
-		}
-
-
-		void addRemoveMember(PVOptionGroup grp,
-							 String member,
-							 boolean add)
-		{
-			int idx = grp.getIndexByName(member);
-			if (idx == -1) {
-				return;
-			}
-
-			Object[] path = new Object[] { grp };
-			int[] indices = new int[] { idx };
-			Object[] children = new Object[] { grp.getMember(idx) };
-			if (add) {
-				paneModel.fireNodesInserted(this, path, indices, children);
-			} else {
-				paneModel.fireNodesRemoved(this, path, indices, children);
-				grp.remove(idx);
-			}
-		}
-
-	}
-
 }
 
