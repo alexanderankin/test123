@@ -25,7 +25,7 @@ import java.util.List;
 
 import org.gjt.sp.jedit.jEdit;
 import common.gui.EasyOptionPane;
-import projectviewer.config.ProjectOptions;
+import projectviewer.vpt.VPTProject;
 
 /**
  *  Option pane with main plugin configuration.
@@ -37,7 +37,7 @@ import projectviewer.config.ProjectOptions;
 public class MainOptionPane extends EasyOptionPane
 {
 
-    public MainOptionPane()
+    public MainOptionPane(VPTProject proj)
     {
         super("poptions-main");
 
@@ -45,7 +45,7 @@ public class MainOptionPane extends EasyOptionPane
         lst.add("checkbox,poptions.main.enabled,poptions.enabled");
 
         setComponentSpec(lst);
-        setPropertyStore(ProjectOptions.getProject().getProperties());
+        setPropertyStore(proj.getProperties());
     }
 
 }

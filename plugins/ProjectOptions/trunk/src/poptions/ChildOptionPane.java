@@ -25,7 +25,7 @@ import java.util.List;
 
 import org.gjt.sp.jedit.jEdit;
 import common.gui.EasyOptionPane;
-import projectviewer.config.ProjectOptions;
+import projectviewer.vpt.VPTProject;
 
 /**
  *  Base class for the child option panes (implements some common code).
@@ -37,10 +37,11 @@ import projectviewer.config.ProjectOptions;
 public abstract class ChildOptionPane extends EasyOptionPane
 {
 
-    public ChildOptionPane(String name)
+    public ChildOptionPane(String name,
+                           VPTProject proj)
     {
         super(name);
-        setPropertyStore(ProjectOptions.getProject().getProperties());
+        setPropertyStore(proj.getProperties());
     }
 
     public void _save()

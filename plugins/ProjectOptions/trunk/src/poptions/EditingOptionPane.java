@@ -31,6 +31,8 @@ import org.gjt.sp.util.Log;
 
 import common.gui.EasyOptionPane;
 
+import projectviewer.vpt.VPTProject;
+
 /**
  *  Option pane with configurable editing actions.
  *
@@ -41,9 +43,9 @@ import common.gui.EasyOptionPane;
 public class EditingOptionPane extends ChildOptionPane
 {
 
-    public EditingOptionPane()
+    public EditingOptionPane(VPTProject proj)
     {
-        super("poptions-editing");
+        super("poptions-editing", proj);
 
         List lst = new LinkedList();
         lst.add("combo,options.editing.wrap,poptions.buffer.wrap,none:soft:hard");

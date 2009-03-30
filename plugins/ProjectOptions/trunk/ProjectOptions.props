@@ -16,22 +16,16 @@ plugin.poptions.ProjectOptionsPlugin.depend.1=jdk 1.5
 
 plugin.poptions.ProjectOptionsPlugin.depend.2=plugin CommonControlsPlugin 0.9.4
 plugin.poptions.ProjectOptionsPlugin.depend.3=plugin projectviewer.ProjectPlugin 2.9.0.0
-#}}}
 
-#{{{ PV extensions
-plugin.projectviewer.poptions.ProjectOptionsPlugin.option-group=poptions-main \
-	poptions-editing
+options.poptions.label=Custom Optons
 #}}}
 
 #{{{ Main pane
-options.poptions-main.code=new poptions.MainOptionPane();
 options.poptions-main.label=Main
-
 poptions.main.enabled=Use Custom Options
 #}}}
 
 #{{{ Editing pane
-options.poptions-editing.code=new poptions.EditingOptionPane();
 options.poptions-editing.label=Editing
 poptions.editing.whitespace=WhiteSpace Plugin
 #}}}
