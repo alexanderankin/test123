@@ -19,6 +19,7 @@ import superabbrevs.SuperAbbrevs;
 import ctagsinterface.db.Query;
 import ctagsinterface.db.TagDB;
 import ctagsinterface.main.CtagsInterfacePlugin;
+import ctagsinterface.main.KindIconProvider;
 import ctagsinterface.main.Tag;
 
 public class TagCompletion {
@@ -67,6 +68,11 @@ public class TagCompletion {
 				{
 					super.getListCellRendererComponent(list,
 						null, index, isSelected, cellHasFocus);
+					Tag tag = tags.get(index);
+					String kind = tag.getKind();
+					if (kind == null)
+						kind = "";
+					setIcon(KindIconProvider.getIcon(kind));
 					setText(getCompletionString(tags.get(index)));
 					return this;
 				}
@@ -109,20 +115,10 @@ public class TagCompletion {
 		sb.append(tag.getName());
 		String signature = tag.getExtension("signature");
 		if (signature != null && signature.length() > 0)
-			sb.append(signature + " ");
-		StringBuffer details = new StringBuffer();
+			sb.append(signature);
 		String namespace = tag.getNamespace();
 		if (namespace != null && namespace.length() > 0)
-			details.append(namespace);
-		String kind = tag.getKind();
-		if (kind != null && kind.length() > 0)
-		{
-			if (details.length() > 0)
-				details.append(" ");
-			details.append(tag.getKind());
-		}
-		if (details.length() > 0)
-			sb.append(" (" + details.toString() + ")");
+			sb.append(" - " + namespace);
 		return sb.toString();
 	}
 	
