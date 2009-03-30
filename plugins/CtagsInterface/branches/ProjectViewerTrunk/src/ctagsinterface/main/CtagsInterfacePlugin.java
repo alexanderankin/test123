@@ -297,29 +297,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		String prefix = getCompletionPrefix(view);
 		if (prefix == null)
 			return;
-		TagCompletion completion = new TagCompletion(view, prefix);
-		Vector<Tag> tags = completion.getCompletions();
-		if (tags == null || tags.isEmpty())
-			return;
-		Tag tag = tags.get(0);
-		if (tags.size() > 1)
-		{
-			String [] completions = new String[tags.size()];
-			for (int i = 0; i < tags.size(); i++)
-				completions[i] = completion.getCompletionString(tags.get(i));
-			String sel = (String) JOptionPane.showInputDialog(view,
-				"Select completion", "Code completion dialog",
-				JOptionPane.QUESTION_MESSAGE, null, completions,
-				completions[0]);
-			if (sel == null)
-				return;
-			for (int i = 0; i < completions.length; i++)
-				if (sel == completions[i]) {
-					tag = tags.get(i);
-					break;
-				}
-		}
-		completion.complete(tag);
+		TagCompletion.complete(view, prefix);
 	}
 	
 	// Actions: Offer code completion options
