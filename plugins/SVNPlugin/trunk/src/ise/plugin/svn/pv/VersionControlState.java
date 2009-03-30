@@ -8,10 +8,14 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import java.util.*;
 
+import org.gjt.sp.jedit.OptionGroup;
+import org.gjt.sp.jedit.OptionPane;
+
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.data.StatusData;
 import ise.plugin.svn.command.Status;
 import ise.plugin.svn.io.*;
+import ise.plugin.svn.gui.PVSVNOptionPane;
 
 /**
  * Provide version control icons for file status to ProjectViewer.
@@ -210,5 +214,32 @@ public class VersionControlState implements VersionControlService {
      * @param proj The project.
      */
     public void dissociate( VPTProject proj ) {}
+
+	/**
+	 * This method should return the option pane to be shown. As with
+	 * regular jEdit option panes, the label to be shown in the dialog
+	 * should be defined by the "option.[pane_name].label" property.
+	 *
+	 * @param	project	The project that will be edited.
+	 *
+	 * @return An OptionPane instance, or null for no option pane.
+	 */
+     public OptionPane getOptionPane(VPTProject project) {
+        return new PVSVNOptionPane(project.getName());   
+     }
+
+
+	/**
+	 * This should return an OptionGroup to be shown. As with regular
+	 * jEdit option groups, the label to be shown in the dialog
+	 * should be defined by the "option.[group_name].label" property.
+	 *
+	 * @param	project	The project that will be edited.
+	 *
+	 * @return null
+	 */
+     public OptionGroup getOptionGroup(VPTProject project) {
+        return null;   
+     }
 
 }

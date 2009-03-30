@@ -33,9 +33,9 @@ import java.util.*;
 import javax.swing.*;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.AbstractOptionPane;
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.HistoryTextField;
 
-import projectviewer.config.ProjectOptions;
 import ise.java.awt.KappaLayout;
 import ise.plugin.svn.PVHelper;
 import ise.plugin.svn.library.PasswordHandler;
@@ -59,31 +59,42 @@ public class PVSVNOptionPane extends AbstractOptionPane {
     private HistoryTextField username;
     private JLabel password_label;
     private JPasswordField password;
+    
+    private String projectName = null;
+    
 
     public PVSVNOptionPane() {
         super( "ise.plugin.svn" );
         setLayout( new KappaLayout() );
     }
+    
+    public PVSVNOptionPane(String projectName) {
+        super( "ise.plugin.svn" );
+        setLayout( new KappaLayout() );
+        this.projectName = projectName;
+    }
 
     /** Initialises the option pane. */
     protected void _init() {
-        String project_name = getProjectName();
+        if ( projectName == null ) {
+            projectName = getProjectName();
+        }
 
         // url field
         url_label = new JLabel( jEdit.getProperty( PVHelper.PREFIX + "url.label" ) );
         url = new HistoryTextField(URL);
-        url.setText( jEdit.getProperty( PVHelper.PREFIX + project_name + ".url" ) );
+        url.setText( jEdit.getProperty( PVHelper.PREFIX + projectName + ".url" ) );
         url.setColumns( 30 );
 
         // username field
         username_label = new JLabel( jEdit.getProperty( PVHelper.PREFIX + "username.label" ) );
         username = new HistoryTextField(USERNAME);
-        username.setText( jEdit.getProperty( PVHelper.PREFIX + project_name + ".username" ) );
+        username.setText( jEdit.getProperty( PVHelper.PREFIX + projectName + ".username" ) );
         username.setColumns( 30 );
 
         // password field
         password_label = new JLabel( jEdit.getProperty( PVHelper.PREFIX + "password.label" ) );
-        String pwd = jEdit.getProperty( PVHelper.PREFIX + project_name + ".password" );
+        String pwd = jEdit.getProperty( PVHelper.PREFIX + projectName + ".password" );
         pwd = PasswordHandler.decryptPassword(pwd);
         password = new JPasswordField( pwd, 30 );
 
@@ -139,21 +150,19 @@ public class PVSVNOptionPane extends AbstractOptionPane {
     }
 
     private String getProjectName() {
-        String project_name = "";
-        if ( ProjectOptions.getProject().getName() != null ) {
-            project_name = ProjectOptions.getProject().getName();
-        }
-        return project_name;
+        projectName = PVHelper.getProjectName((View)SwingUtilities.getRoot(this)) == null ? "" : PVHelper.getProjectName((View)SwingUtilities.getRoot(this));
+        return projectName;
     }
 
     private String getProjectRoot() {
-        String project_root = "";
-        if ( ProjectOptions.getProject().getRootPath() != null ) {
-            project_root = ProjectOptions.getProject().getRootPath();
-        }
+        String project_root = PVHelper.getProjectRoot((View)SwingUtilities.getRoot(this)) == null ? "" : PVHelper.getProjectRoot((View)SwingUtilities.getRoot(this));
         return project_root;
     }
 
+    
+    public String getName() {
+        return "ise.plugin.svn.pv.options";   
+    }
 
     class Runner extends SwingWorker<List<SVNInfo>, Object> {
 

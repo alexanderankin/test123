@@ -169,9 +169,8 @@ public class CheckoutAction extends SVNAction implements PropertyChangeListener 
         index = index == -1 ? 0 : index + 1;
         String project_name = path.substring( index );
         final VPTProject project = new VPTProject( project_name );
-
         project.setRootPath( path );
-        ProjectOptions.run(project, null, path, null, true);
+        ProjectOptions.run(project, true, null);
         VPTGroup group = ( VPTGroup ) project.getParent();
         if ( group == null ) {
             group = VPTRoot.getInstance();
