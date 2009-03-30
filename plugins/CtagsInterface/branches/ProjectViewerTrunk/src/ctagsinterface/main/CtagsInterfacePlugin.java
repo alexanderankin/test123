@@ -301,7 +301,7 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	}
 	
 	// Actions: Offer code completion options
-	public static void complete(final View view)
+	public static void completeByContext(final View view)
 	{
 		Tag context = CaretContext.getContext(view);
 		if (context == null) {

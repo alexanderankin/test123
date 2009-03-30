@@ -36,9 +36,9 @@
 			ctagsinterface.main.CtagsInterfacePlugin.tagAllProjects(view);
 		</CODE>
 	</ACTION>
-	<ACTION NAME="ctags-interface-complete" NO_REPEAT="TRUE">
+	<ACTION NAME="ctags-interface-complete-by-context" NO_REPEAT="TRUE">
 		<CODE>
-			ctagsinterface.main.CtagsInterfacePlugin.complete(view);
+			ctagsinterface.main.CtagsInterfacePlugin.completeByContext(view);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="ctags-interface-change-db-settings" NO_REPEAT="TRUE">
