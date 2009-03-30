@@ -22,6 +22,8 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -83,7 +85,7 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 	private boolean toolbarShown;
 	private JSplitPane split;
 	
-	public Preview(View view) {
+	public Preview(final View view) {
 		super(new BorderLayout());
 		this.view = view;
 		timer = null;
@@ -96,6 +98,27 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 		tags.addListSelectionListener(this);
 		tags.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent me) {
+				if (me.getButton() == MouseEvent.BUTTON3) {
+					final int index = tags.locationToIndex(me.getPoint());
+					if (index < 0)
+						return;
+					final Tag t = (Tag) tagModel.get(index);
+					JPopupMenu menu = new JPopupMenu();
+					menu.add(new AbstractAction() {
+						@Override
+						public Object getValue(String key) {
+							if (key.equals(Action.NAME))
+								return "Copy absolute path to clipboard";
+							return super.getValue(key);
+						}
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							Registers.setRegister('$', t.getFile());
+						}
+					});
+					menu.show(view, me.getXOnScreen(), me.getYOnScreen());
+					return;
+				}
 				if (me.getClickCount() < 2 || tags.getSelectedIndex() < 0)
 					return;
 				Tag t = (Tag) tagModel.getElementAt(tags.getSelectedIndex());
