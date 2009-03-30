@@ -384,7 +384,7 @@ public final class PVActions {
 	 * appended with an ellipsis to signal the clipping.
 	 *
 	 * @param	base		The base string.
-	 * @param	maxwidth	Width within which the string should fit.
+	 * @param	maxWidth	Width within which the string should fit.
 	 * @param	metrics		Font metrics to use.
 	 * @param	clipEnd		true if should clip the end of the string.
 	 *
