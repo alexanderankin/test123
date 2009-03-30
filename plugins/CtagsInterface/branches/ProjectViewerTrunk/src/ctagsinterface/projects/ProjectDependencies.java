@@ -18,17 +18,20 @@ import javax.swing.JScrollPane;
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.OptionGroup;
+import org.gjt.sp.jedit.OptionPane;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.RolloverButton;
 
 import projectviewer.ProjectManager;
-import projectviewer.config.ProjectOptions;
+import projectviewer.config.OptionsService;
 import projectviewer.vpt.VPTProject;
 import ctagsinterface.db.TagDB;
 import ctagsinterface.main.CtagsInterfacePlugin;
 
 @SuppressWarnings("serial")
-public class ProjectDependencies extends AbstractOptionPane {
+public class ProjectDependencies extends AbstractOptionPane
+{
 
 	private static final String PROJECT_DEPENDENCY = "projectDependency";
 	private static final String TREE_DEPENDENCY = "treeDependency";
@@ -36,8 +39,11 @@ public class ProjectDependencies extends AbstractOptionPane {
 	JList trees;
 	DefaultListModel projectsModel;
 	DefaultListModel treesModel;
-	public ProjectDependencies() {
+	VPTProject project;
+	
+	public ProjectDependencies(VPTProject project) {
 		super("CtagsInterface-ProjectDependencies");
+		this.project = project;
 	}
 
 	private interface DependencyAsker {
@@ -74,10 +80,9 @@ public class ProjectDependencies extends AbstractOptionPane {
 	}
 
 	private Vector<String> getListProperty(String propertyName) {
-		return getListProperty(ProjectOptions.getProject(), propertyName);
+		return getListProperty(project, propertyName);
 	}
 	private void setListProperty(String propertyName, Vector<String> list) {
-		VPTProject project = ProjectOptions.getProject();
 		for (int i = 0; i < list.size(); i++)
 			project.setProperty(propertyName + i, list.get(i));
 		for (int i = list.size(); true; i++) {
@@ -174,5 +179,17 @@ public class ProjectDependencies extends AbstractOptionPane {
 		Vector<String> treeDeps = getListProperty(project, TREE_DEPENDENCY);
 		map.put(TagDB.DIR_ORIGIN, treeDeps);
 		return map;
+	}
+
+	public static class ProjectDependencyOptionService
+		implements OptionsService
+	{
+		public OptionGroup getOptionGroup(VPTProject proj) {
+			return null;
+		}
+	
+		public OptionPane getOptionPane(VPTProject proj) {
+			return new ProjectDependencies(proj);
+		}
 	}
 }
