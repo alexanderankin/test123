@@ -51,7 +51,7 @@ public class TagCompletion {
 			completion.complete(tags.get(0));
 	}
 	
-	private class TagCandidates implements Candidates
+	class TagCandidates implements Candidates
 	{
 		private Vector<Tag> tags;
 		private DefaultListCellRenderer renderer;
@@ -78,12 +78,20 @@ public class TagCompletion {
 					if (kind == null)
 						kind = "";
 					setIcon(KindIconProvider.getIcon(kind));
-					setText(getCompletionString(tags.get(index)));
+					String prefix = (index <= 9) ? index + ": " : "";
+					setText(prefix + getCompletionString(tag));
 					return this;
 				}
-				
 			};
 		}
+		
+		public int indexForKey(char ch)
+		{
+			if (Character.isDigit(ch))
+				return ch - '0';
+			return (-1);
+		}
+		
 		public void complete(int index)
 		{
 			TagCompletion.this.complete(tags.get(index));
@@ -151,7 +159,8 @@ public class TagCompletion {
 				sb.append(c);
 				break;
 			case ')':
-				sb.append("}");
+				if (! startParam) // Case of 'f()' - no parameters
+					sb.append("}");
 				sb.append(c);
 				break;
 			case ' ':

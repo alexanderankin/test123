@@ -3,6 +3,7 @@ package ctagsinterface.jedit;
 import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.Point;
+import java.awt.event.KeyEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -12,6 +13,7 @@ import javax.swing.JTextArea;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.CompletionPopup;
 
+import ctagsinterface.jedit.TagCompletion.TagCandidates;
 import ctagsinterface.main.Tag;
 import ctagsinterface.options.GeneralOptionPane;
 
@@ -35,6 +37,7 @@ public class TagCompletionPopup extends CompletionPopup {
 		setContentPane(p);
 	}
 	
+	
 	public void setSelectedTag(Tag tag)
 	{
 		if (! GeneralOptionPane.getCompleteDesc())
@@ -45,5 +48,23 @@ public class TagCompletionPopup extends CompletionPopup {
 			sb.append(ext + ": " + tag.getExtension(ext) + "\n");
 		desc.setText(sb.toString());
 	}
-	
+
+	@Override
+	protected void keyTyped(KeyEvent e)
+	{
+		char ch = e.getKeyChar();
+		int index = ((TagCandidates) getCandidates()).indexForKey(ch);
+		if (index >= 0 && index < getCandidates().getSize())
+		{
+			setSelectedIndex(index);
+			if(doSelectedCompletion())
+			{
+				e.consume();
+				dispose();
+			}
+			return;
+		}
+		super.keyTyped(e);
+	}
+
 }
