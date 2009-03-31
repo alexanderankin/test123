@@ -51,23 +51,6 @@ public class VersionControlState implements VersionControlService {
         return new ImageIcon( VersionControlState.class.getClassLoader().getResource( name ) );
     }
 
-    // Caching mechanism is a hold over from working with a previous version of PV,
-    // it doesn't seem to be necessary now, but I'm keeping the code here in case
-    // I discover it's necessary.
-    // <String for path, CacheItem for last time path status was pulled from SVN and state at that time>
-    /*
-    private static HashMap<String, CacheItem> cache = new HashMap<String, CacheItem>();
-
-    class CacheItem {
-        int state;
-        long lastUpdate = System.currentTimeMillis();
-        public CacheItem( int state ) {
-            this.state = state;
-        }
-    }
-    private long refreshTime = 60 * 1000;   // one minute, may need to adjust this
-    */
-
     /**
      * This method should return an integer identifying the current
      * state of the given file.
@@ -83,12 +66,6 @@ public class VersionControlState implements VersionControlService {
      */
     public int getFileState( VPTFile f ) {
         String path = f.getNodePath();
-        /* not using the caching for now
-        CacheItem item = cache.get( path );
-        if ( item != null && item.lastUpdate > System.currentTimeMillis() - refreshTime ) {
-            return item.state;
-        }
-        */
         SVNData data = new SVNData();
         List<String> paths = new ArrayList<String>();
         paths.add( path );
@@ -106,55 +83,40 @@ public class VersionControlState implements VersionControlService {
             status = command.getStatus( data );
         }
         catch ( Exception e ) {
-            e.printStackTrace();
             status = null;
         }
 
-        //CacheItem cacheItem = null;
         if ( status == null ) {
-        //    cacheItem = new CacheItem(NONE ));
             return NONE;
         }
 
         if ( status.getAdded() != null ) {
-        //    cacheItem = new CacheItem(LOCAL_ADD ));
             return LOCAL_ADD;
         }
         else if ( status.getConflicted() != null ) {
-        //    cacheItem = new CacheItem(CONFLICT ));
             return CONFLICT;
         }
         else if ( status.getDeleted() != null ) {
-        //    cacheItem = new CacheItem(DELETED ));
             return DELETED;
         }
         else if ( status.getLocked() != null ) {
-        //    cacheItem = new CacheItem(LOCKED ));
             return LOCKED;
         }
         else if ( status.getMissing() != null ) {
-        //    cacheItem = new CacheItem(LOCAL_RM ));
             return LOCAL_RM;
         }
         else if ( status.getModified() != null ) {
-        //    cacheItem = new CacheItem(LOCAL_MOD ));
             return LOCAL_MOD;
         }
         else if ( status.getOutOfDate() != null ) {
-        //    cacheItem = new CacheItem(NEED_UPDATE ));
             return NEED_UPDATE;
         }
         else if ( status.getUnversioned() != null ) {
-        //    cacheItem = new CacheItem(UNVERSIONED ));
             return UNVERSIONED;
         }
         else {
-        //    cacheItem = new CacheItem(NORMAL ));
             return NORMAL;
         }
-        //if (cacheItem != null) {
-        //    cache.put( path, cacheItem );
-        //}
     }
 
 
@@ -185,6 +147,7 @@ public class VersionControlState implements VersionControlService {
                 return ADDED_ICON;
             case UNVERSIONED:
             case NONE:
+                return UNVERSIONED_ICON;
             default:
                 return null;
         }
@@ -215,31 +178,31 @@ public class VersionControlState implements VersionControlService {
      */
     public void dissociate( VPTProject proj ) {}
 
-	/**
-	 * This method should return the option pane to be shown. As with
-	 * regular jEdit option panes, the label to be shown in the dialog
-	 * should be defined by the "option.[pane_name].label" property.
-	 *
-	 * @param	project	The project that will be edited.
-	 *
-	 * @return An OptionPane instance, or null for no option pane.
-	 */
+    /**
+     * This method should return the option pane to be shown. As with
+     * regular jEdit option panes, the label to be shown in the dialog
+     * should be defined by the "option.[pane_name].label" property.
+     *
+     * @param	project	The project that will be edited.
+     *
+     * @return An OptionPane instance, or null for no option pane.
+     */
      public OptionPane getOptionPane(VPTProject project) {
-        return new PVSVNOptionPane(project.getName());   
+        return new PVSVNOptionPane(project.getName());
      }
 
 
-	/**
-	 * This should return an OptionGroup to be shown. As with regular
-	 * jEdit option groups, the label to be shown in the dialog
-	 * should be defined by the "option.[group_name].label" property.
-	 *
-	 * @param	project	The project that will be edited.
-	 *
-	 * @return null
-	 */
+    /**
+     * This should return an OptionGroup to be shown. As with regular
+     * jEdit option groups, the label to be shown in the dialog
+     * should be defined by the "option.[group_name].label" property.
+     *
+     * @param	project	The project that will be edited.
+     *
+     * @return null
+     */
      public OptionGroup getOptionGroup(VPTProject project) {
-        return null;   
+        return null;
      }
 
 }
