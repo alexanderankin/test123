@@ -10,7 +10,6 @@ import javax.swing.SwingUtilities;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.gui.CompletionPopup;
 import org.gjt.sp.jedit.gui.CompletionPopup.Candidates;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.TextAreaPainter;
@@ -42,9 +41,10 @@ public class TagCompletion {
 			TextAreaPainter painter = ta.getPainter();
 			location.y += painter.getFontMetrics().getHeight();
 			SwingUtilities.convertPointToScreen(location, painter);
-			CompletionPopup popup = new CompletionPopup(view,
+			TagCompletionPopup popup = new TagCompletionPopup(view,
 				location);
-			TagCandidates candidates = completion.new TagCandidates(tags);
+			TagCandidates candidates = completion.new TagCandidates(tags,
+				popup);
 			popup.reset(candidates, true);
 		}
 		else
@@ -55,20 +55,25 @@ public class TagCompletion {
 	{
 		private Vector<Tag> tags;
 		private DefaultListCellRenderer renderer;
+		private TagCompletionPopup popup;
 		
 		@SuppressWarnings("serial")
-		public TagCandidates(final Vector<Tag> tags)
+		public TagCandidates(final Vector<Tag> tags,
+			TagCompletionPopup popup)
 		{
 			this.tags = tags;
+			this.popup = popup;
 			renderer = new DefaultListCellRenderer() {
 				@Override
 				public Component getListCellRendererComponent(JList list,
 						Object value, int index, boolean isSelected,
 						boolean cellHasFocus)
 				{
+					Tag tag = tags.get(index);
+					if (isSelected)
+						TagCandidates.this.popup.setSelectedTag(tag);
 					super.getListCellRendererComponent(list,
 						null, index, isSelected, cellHasFocus);
-					Tag tag = tags.get(index);
 					String kind = tag.getKind();
 					if (kind == null)
 						kind = "";
