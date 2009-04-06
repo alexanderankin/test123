@@ -1,6 +1,17 @@
 package ctagsinterface.jedit;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.util.Vector;
+
+import javax.swing.JToolTip;
+import javax.swing.Popup;
+import javax.swing.PopupFactory;
+import javax.swing.SwingWorker;
+import javax.swing.Timer;
+import javax.swing.ToolTipManager;
 
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
@@ -78,7 +89,75 @@ public class TagTooltip extends TextAreaExtension
 			ta.putClientProperty("TagTooltip", null);
 		}
 	}
-
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public String getToolTipText(final int x, final int y) {
+		int offset = textArea.xyToOffset(x, y);
+		JEditBuffer buffer = textArea.getBuffer();
+		int line = buffer.getLineOfOffset(offset);
+		int index = offset - buffer.getLineStartOffset(line);
+		final String tag = CtagsInterfacePlugin.getTagAt(textArea, line,
+			index);
+		if ((tag == null) || (tag.length() == 0))
+			return null;
+		SwingWorker w = new SwingWorker<Void,Void>() {
+			String tooltip;
+			@Override
+			protected void done() {
+				JToolTip tt = textArea.createToolTip();
+				tt.setTipText(tooltip);
+				PopupFactory factory = PopupFactory.getSharedInstance();
+				int x1 = textArea.getLocationOnScreen().x + x;
+				int y1 = textArea.getLocationOnScreen().y + y;
+				final Popup popup = factory.getPopup(textArea, tt, x1, y1);
+				popup.show();
+				int d = ToolTipManager.sharedInstance().getDismissDelay();
+				final ActionListener dismiss = new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						popup.hide();
+					}
+				};
+				final Timer t = new Timer(d, dismiss);
+				t.restart();
+				textArea.getPainter().addMouseMotionListener(
+					new MouseMotionListener() {
+						private void dismiss() {
+							t.stop();
+							dismiss.actionPerformed(null);
+						}
+						public void mouseDragged(MouseEvent e) {
+							dismiss();
+						}
+						public void mouseMoved(MouseEvent e) {
+							dismiss();
+						}
+					});
+			}
+			@Override
+			protected Void doInBackground() throws Exception {
+				Vector<Tag> tags = CtagsInterfacePlugin.queryScopedTag(
+						textArea.getView(), tag);
+				if (tags == null || tags.isEmpty())
+					return null;
+				StringBuffer sb = new StringBuffer("<html>");
+				boolean first = true;
+				for (Tag t: tags) {
+					if (! first)
+						sb.append("<br>");
+					else
+						first = false;
+					sb.append(getTagString(t));
+				}
+				sb.append("</html>");
+				tooltip = sb.toString();
+				return null;
+			}
+		};
+		w.execute();
+		return null;
+	}
+	
 	private String getTagString(Tag tag)
 	{
 		StringBuffer sb = new StringBuffer();
@@ -99,31 +178,6 @@ public class TagTooltip extends TextAreaExtension
 		}
 		if (details.length() > 0)
 			sb.append(" (" + details.toString() + ")");
-		return sb.toString();
-	}
-	
-	@Override
-	public String getToolTipText(int x, int y) {
-		int offset = textArea.xyToOffset(x, y);
-		JEditBuffer buffer = textArea.getBuffer();
-		int line = buffer.getLineOfOffset(offset);
-		int index = offset - buffer.getLineStartOffset(line);
-		String tag = CtagsInterfacePlugin.getTagAt(textArea, line,
-			index);
-		Vector<Tag> tags = CtagsInterfacePlugin.queryScopedTag(
-			textArea.getView(), tag);
-		if (tags == null || tags.isEmpty())
-			return null;
-		StringBuffer sb = new StringBuffer("<html>");
-		boolean first = true;
-		for (Tag t: tags) {
-			if (! first)
-				sb.append("<br>");
-			else
-				first = false;
-			sb.append(getTagString(t));
-		}
-		sb.append("</html>");
 		return sb.toString();
 	}
 
