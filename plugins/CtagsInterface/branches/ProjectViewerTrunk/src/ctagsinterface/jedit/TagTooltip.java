@@ -2,6 +2,8 @@ package ctagsinterface.jedit;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.util.Vector;
@@ -138,6 +140,7 @@ public class TagTooltip extends TextAreaExtension
 		private boolean dismissed = false;
 		private ActionListener dismiss;
 		private MouseMotionListener mml;
+		private KeyListener kl;
 		
 		private DelayedTooltip(int x, int y, String tag) {
 			this.x = x;
@@ -148,6 +151,8 @@ public class TagTooltip extends TextAreaExtension
 					dismissed = true;
 					if (mml != null)
 						textArea.getPainter().removeMouseMotionListener(mml);
+					if (kl != null)
+						textArea.getPainter().removeKeyListener(kl);
 					if (timer != null)
 						timer.stop();
 					if (popup != null)
@@ -155,23 +160,32 @@ public class TagTooltip extends TextAreaExtension
 				}
 			};
 			mml = new MouseMotionListener() {
-				public void mouseDragged(MouseEvent e) {
-					dismiss.actionPerformed(null);
-				}
-				public void mouseMoved(MouseEvent e) {
-					dismiss.actionPerformed(null);
-				}
+				public void mouseDragged(MouseEvent e) { dismiss(); }
+				public void mouseMoved(MouseEvent e) { dismiss(); }
 			};
 			textArea.getPainter().addMouseMotionListener(mml);
+			kl = new KeyListener() {
+				public void keyPressed(KeyEvent e) { dismiss(); }
+				public void keyReleased(KeyEvent e) { dismiss(); }
+				public void keyTyped(KeyEvent e) { dismiss(); }
+			};
+			textArea.getPainter().addKeyListener(kl);
 		}
 
+		private void dismiss() {
+			dismiss.actionPerformed(null);
+		}
+		
 		@Override
 		protected void done() {
 			if (dismissed)
 				return;
 			JToolTip tt = textArea.createToolTip();
 			try {
-				tt.setTipText(get());
+				String ttText = get();
+				if (ttText == null)
+					return;
+				tt.setTipText(ttText);
 			} catch (Exception e) {
 				return;
 			}
