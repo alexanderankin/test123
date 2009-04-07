@@ -1,13 +1,12 @@
 package nested.manager ;
 
-import java.io.File ;
-import java.io.BufferedReader ;
-import java.io.FileReader ;
-
-import java.util.TreeMap ;
-
-import java.util.regex.* ;
-import java.awt.Color ;
+import java.awt.Color;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class NestedReader {
 	

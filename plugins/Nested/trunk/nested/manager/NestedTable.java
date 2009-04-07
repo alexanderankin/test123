@@ -1,10 +1,12 @@
 package nested.manager ;
 
-import javax.swing.JTable ;
-import javax.swing.table.TableColumn ; 
-import java.awt.Color ;
-import javax.swing.table.TableCellEditor;
+import java.awt.Color;
 
+import javax.swing.JTable;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableColumn;
+
+@SuppressWarnings("serial")
 public class NestedTable extends JTable {
 	
 	public NestedTable( ){

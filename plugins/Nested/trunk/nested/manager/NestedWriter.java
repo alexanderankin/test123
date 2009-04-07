@@ -1,10 +1,13 @@
 package nested.manager ;
 
-import java.util.TreeMap ;
-import java.io.* ;
-import org.gjt.sp.util.SyntaxUtilities ;
-import org.gjt.sp.jedit.jEdit ;
-import java.util.Collection ;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.util.TreeMap;
+
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.util.SyntaxUtilities;
 
 public class NestedWriter {
 	

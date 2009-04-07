@@ -1,12 +1,13 @@
 package nested.manager ;
 
-import javax.swing.JTable ;
-import javax.swing.JLabel ;
-import javax.swing.table.TableCellRenderer ;
-import javax.swing.table.DefaultTableCellRenderer ;
-import java.awt.Component ;
-import java.awt.Color ;
+import java.awt.Color;
+import java.awt.Component;
 
+import javax.swing.JLabel;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
+
+@SuppressWarnings("serial")
 public class ColorTableCellRenderer extends DefaultTableCellRenderer {
  
   JLabel label = new JLabel();
