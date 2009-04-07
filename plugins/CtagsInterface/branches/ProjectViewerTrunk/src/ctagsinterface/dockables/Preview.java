@@ -105,13 +105,11 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 					final Tag t = (Tag) tagModel.get(index);
 					JPopupMenu menu = new JPopupMenu();
 					menu.add(new AbstractAction() {
-						@Override
 						public Object getValue(String key) {
 							if (key.equals(Action.NAME))
 								return "Copy absolute path to clipboard";
 							return super.getValue(key);
 						}
-						@Override
 						public void actionPerformed(ActionEvent e) {
 							Registers.setRegister('$', t.getFile());
 						}
