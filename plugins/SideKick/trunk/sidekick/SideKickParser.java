@@ -29,6 +29,7 @@ import java.util.*;
 import javax.swing.JPanel;
 
 import org.gjt.sp.jedit.*;
+
 import errorlist.DefaultErrorSource;
 import org.gjt.sp.util.Log;
 
@@ -241,6 +242,14 @@ public abstract class SideKickParser {
 		catch ( Exception e ) {
 		}
 		return null;
+	} //}}}
+
+	//{{{ getCompletionPopup() method
+	public SideKickCompletionPopup getCompletionPopup(View view, 
+		int caretPosition, SideKickCompletion complete, boolean active)
+	{
+		return new SideKickCompletionPopup(view, this, caretPosition,
+			complete, active);
 	} //}}}
 
 	//{{{ getPanel() method
