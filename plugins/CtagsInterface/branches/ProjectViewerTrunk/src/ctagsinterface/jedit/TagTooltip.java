@@ -101,59 +101,7 @@ public class TagTooltip extends TextAreaExtension
 			index);
 		if ((tag == null) || (tag.length() == 0))
 			return null;
-		SwingWorker w = new SwingWorker<Void,Void>() {
-			String tooltip;
-			@Override
-			protected void done() {
-				JToolTip tt = textArea.createToolTip();
-				tt.setTipText(tooltip);
-				PopupFactory factory = PopupFactory.getSharedInstance();
-				int x1 = textArea.getLocationOnScreen().x + x;
-				int y1 = textArea.getLocationOnScreen().y + y;
-				final Popup popup = factory.getPopup(textArea, tt, x1, y1);
-				popup.show();
-				int d = ToolTipManager.sharedInstance().getDismissDelay();
-				final ActionListener dismiss = new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						popup.hide();
-					}
-				};
-				final Timer t = new Timer(d, dismiss);
-				t.restart();
-				textArea.getPainter().addMouseMotionListener(
-					new MouseMotionListener() {
-						private void dismiss() {
-							t.stop();
-							dismiss.actionPerformed(null);
-						}
-						public void mouseDragged(MouseEvent e) {
-							dismiss();
-						}
-						public void mouseMoved(MouseEvent e) {
-							dismiss();
-						}
-					});
-			}
-			@Override
-			protected Void doInBackground() throws Exception {
-				Vector<Tag> tags = CtagsInterfacePlugin.queryScopedTag(
-						textArea.getView(), tag);
-				if (tags == null || tags.isEmpty())
-					return null;
-				StringBuffer sb = new StringBuffer("<html>");
-				boolean first = true;
-				for (Tag t: tags) {
-					if (! first)
-						sb.append("<br>");
-					else
-						first = false;
-					sb.append(getTagString(t));
-				}
-				sb.append("</html>");
-				tooltip = sb.toString();
-				return null;
-			}
-		};
+		SwingWorker w = new DelayedTooltip(x, y, tag);
 		w.execute();
 		return null;
 	}
@@ -179,6 +127,82 @@ public class TagTooltip extends TextAreaExtension
 		if (details.length() > 0)
 			sb.append(" (" + details.toString() + ")");
 		return sb.toString();
+	}
+
+	private final class DelayedTooltip extends SwingWorker<String, Void> {
+		private int x;
+		private int y;
+		private String tag;
+		private Timer timer = null;
+		private Popup popup = null;
+		private boolean dismissed = false;
+		private ActionListener dismiss;
+		private MouseMotionListener mml;
+		
+		private DelayedTooltip(int x, int y, String tag) {
+			this.x = x;
+			this.y = y;
+			this.tag = tag;
+			dismiss = new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					dismissed = true;
+					if (mml != null)
+						textArea.getPainter().removeMouseMotionListener(mml);
+					if (timer != null)
+						timer.stop();
+					if (popup != null)
+						popup.hide();
+				}
+			};
+			mml = new MouseMotionListener() {
+				public void mouseDragged(MouseEvent e) {
+					dismiss.actionPerformed(null);
+				}
+				public void mouseMoved(MouseEvent e) {
+					dismiss.actionPerformed(null);
+				}
+			};
+			textArea.getPainter().addMouseMotionListener(mml);
+		}
+
+		@Override
+		protected void done() {
+			if (dismissed)
+				return;
+			JToolTip tt = textArea.createToolTip();
+			try {
+				tt.setTipText(get());
+			} catch (Exception e) {
+				return;
+			}
+			PopupFactory factory = PopupFactory.getSharedInstance();
+			int x1 = textArea.getLocationOnScreen().x + x;
+			int y1 = textArea.getLocationOnScreen().y + y;
+			popup = factory.getPopup(textArea, tt, x1, y1);
+			popup.show();
+			int d = ToolTipManager.sharedInstance().getDismissDelay();
+			timer = new Timer(d, dismiss);
+			timer.start();
+		}
+
+		@Override
+		protected String doInBackground() throws Exception {
+			Vector<Tag> tags = CtagsInterfacePlugin.queryScopedTag(
+					textArea.getView(), tag);
+			if (tags == null || tags.isEmpty())
+				return null;
+			StringBuffer sb = new StringBuffer("<html>");
+			boolean first = true;
+			for (Tag t: tags) {
+				if (! first)
+					sb.append("<br>");
+				else
+					first = false;
+				sb.append(getTagString(t));
+			}
+			sb.append("</html>");
+			return sb.toString();
+		}
 	}
 
 	private static class Attacher implements EBComponent
