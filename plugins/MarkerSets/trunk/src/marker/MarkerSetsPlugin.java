@@ -2,6 +2,7 @@ package marker;
 
 import java.awt.Color;
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -290,7 +291,8 @@ public class MarkerSetsPlugin extends EBPlugin {
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
 			JOptionPane.showMessageDialog(jEdit.getActiveView(),
-				"Failed to save marker sets. Error:\n" + e.getStackTrace());
+				"Failed to save marker sets. Error:\n" +
+				Arrays.toString(e.getStackTrace()));
 			return;
 		}
 	}
