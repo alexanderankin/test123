@@ -1,14 +1,12 @@
 package nested ;
 
-import org.gjt.sp.jedit.* ;
-import org.gjt.sp.jedit.textarea.* ;
-import org.gjt.sp.jedit.msg.*;
-import org.gjt.sp.jedit.gui.*;
-import org.gjt.sp.util.Log ;
+import nested.manager.NestedTableModel;
 
-import nested.manager.NestedTableModel ; 
-
-import java.io.File ;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EBPlugin;
+import org.gjt.sp.jedit.msg.EditPaneUpdate;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.textarea.TextAreaPainter;
 
 public class Plugin extends EBPlugin {
 	

@@ -1,13 +1,18 @@
 package nested.manager; 
 
-import javax.swing.JPanel ;
-import javax.swing.JScrollPane ;
-import org.gjt.sp.jedit.View ;
-import java.awt.BorderLayout ;
+import java.awt.BorderLayout;
 
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
+import org.gjt.sp.jedit.View;
+
+@SuppressWarnings("serial")
 public class NestedManagerPanel extends JPanel {
 
 	private NestedTable table ;
+	
+	@SuppressWarnings("unused")
 	private View view ; 
 	
 	public NestedManagerPanel( View view) {

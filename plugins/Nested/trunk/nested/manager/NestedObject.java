@@ -1,7 +1,8 @@
 package nested.manager ;
 
-import java.awt.Color ;
-import org.gjt.sp.jedit.jEdit ;
+import java.awt.Color;
+
+import org.gjt.sp.jedit.jEdit;
 
 public class NestedObject {
 	
