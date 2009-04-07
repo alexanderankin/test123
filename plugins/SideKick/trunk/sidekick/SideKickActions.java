@@ -26,6 +26,7 @@ package sidekick;
 import javax.swing.tree.*;
 import javax.swing.Timer;
 import java.awt.event.*;
+
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
 
@@ -155,16 +156,13 @@ public class SideKickActions
 
 		boolean active = (mode == COMPLETE_COMMAND)
 			|| autoCompletePopupGetFocus;
-		popup = new SideKickCompletionPopup(view,parser,
-			textArea.getCaretPosition(), complete, active)
-		{
-			/** forget reference to this popup when it is disposed */
-			public void dispose()
-			{
-				super.dispose();
+		popup = parser.getCompletionPopup(view,
+			textArea.getCaretPosition(), complete, active);
+		popup.addWindowListener(new WindowAdapter() {
+			public void windowClosed(WindowEvent e) {
 				popup = null;
 			}
-		};
+		});
 	} //}}}
 
 	//{{{ selectAsset() method
