@@ -193,7 +193,8 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 
 			BufferUpdate bu = (BufferUpdate) message;
 			Buffer buffer = bu.getBuffer();
-			if (bu.getWhat() == BufferUpdate.DIRTY_CHANGED)
+			if (bu.getWhat() == BufferUpdate.DIRTY_CHANGED ||
+				bu.getWhat() == BufferUpdate.CREATED)
 			{
 				int index = bufferSet.indexOf(buffer);
 				if (index >= 0  && index < getTabCount())
