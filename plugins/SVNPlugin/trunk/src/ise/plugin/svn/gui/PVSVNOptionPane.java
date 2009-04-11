@@ -29,6 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ise.plugin.svn.gui;
 
 // imports
+import java.io.File;
 import java.util.*;
 import javax.swing.*;
 import org.gjt.sp.jedit.jEdit;
@@ -46,6 +47,11 @@ import ise.plugin.svn.io.*;
 import static ise.plugin.svn.gui.HistoryModelNames.*;
 
 import org.tmatesoft.svn.core.wc.SVNInfo;
+import org.tmatesoft.svn.core.wc.SVNClientManager;
+import org.tmatesoft.svn.core.wc.SVNStatus;
+import org.tmatesoft.svn.core.wc.SVNStatusClient;
+import org.tmatesoft.svn.core.wc.SVNWCClient;
+import org.tmatesoft.svn.core.internal.wc.admin.SVNAdminAreaFactory;
 
 /**
  * Option pane for setting the url, username, and password for subversion via
@@ -59,13 +65,17 @@ public class PVSVNOptionPane extends AbstractOptionPane {
     private HistoryTextField username;
     private JLabel password_label;
     private JPasswordField password;
-    
-    private String projectName = null;
-    
-    private static final String internalName = "ise.plugin.svn.pv.options";
-    
+    private JLabel fileformat_label;
+    private JComboBox fileformat;
 
-    public PVSVNOptionPane(String projectName) {
+    private int wcVersion = -1;
+
+    private String projectName = null;
+    private File projectRoot = new File( PVHelper.getProjectRoot( jEdit.getActiveView() ) );
+
+    private static final String internalName = "ise.plugin.svn.pv.options";
+
+    public PVSVNOptionPane( String projectName ) {
         super( internalName );
         setLayout( new KappaLayout() );
         this.projectName = projectName;
@@ -79,21 +89,40 @@ public class PVSVNOptionPane extends AbstractOptionPane {
 
         // url field
         url_label = new JLabel( jEdit.getProperty( PVHelper.PREFIX + "url.label" ) );
-        url = new HistoryTextField(URL);
+        url = new HistoryTextField( URL );
         url.setText( jEdit.getProperty( PVHelper.PREFIX + projectName + ".url" ) );
         url.setColumns( 30 );
-        
+
         // username field
         username_label = new JLabel( jEdit.getProperty( PVHelper.PREFIX + "username.label" ) );
-        username = new HistoryTextField(USERNAME);
+        username = new HistoryTextField( USERNAME );
         username.setText( jEdit.getProperty( PVHelper.PREFIX + projectName + ".username" ) );
         username.setColumns( 30 );
 
         // password field
         password_label = new JLabel( jEdit.getProperty( PVHelper.PREFIX + "password.label" ) );
         String pwd = jEdit.getProperty( PVHelper.PREFIX + projectName + ".password" );
-        pwd = PasswordHandler.decryptPassword(pwd);
+        pwd = PasswordHandler.decryptPassword( pwd );
         password = new JPasswordField( pwd, 30 );
+
+        // subversion file format
+        fileformat_label = new JLabel( jEdit.getProperty( "ips.Subversion_file_format>", "Subversion file format:" ) );
+        fileformat = new JComboBox( new String[] {"1.3", "1.4", "1.5"} );
+        fileformat.setEditable( false );
+        String wc_item;
+        switch ( getWCVersion() ) {
+            case SVNAdminAreaFactory.WC_FORMAT_13:
+                wc_item = "1.3";
+                break;
+            case SVNAdminAreaFactory.WC_FORMAT_14:
+                wc_item = "1.4";
+                break;
+            case SVNAdminAreaFactory.WC_FORMAT_15:
+            default:
+                wc_item = "1.5";
+                break;
+        }
+        fileformat.setSelectedItem( wc_item );
 
         // initially, some parts are not visible, they are made visible in the
         // swing worker thread.
@@ -102,9 +131,11 @@ public class PVSVNOptionPane extends AbstractOptionPane {
         username.setVisible( false );
         password_label.setVisible( false );
         password.setVisible( false );
+        fileformat_label.setVisible( false );
+        fileformat.setVisible( false );
 
         // add the components to the option panel
-        add( "0, 0, 3, 1, W,  , 3", new JLabel( "<html><b>" + jEdit.getProperty("ips.Subversion_Settings", "Subversion Settings") + "</b>" ) );
+        add( "0, 0, 3, 1, W,  , 3", new JLabel( "<html><b>" + jEdit.getProperty( "ips.Subversion_Settings", "Subversion Settings" ) + "</b>" ) );
 
         add( "0, 1, 1, 1, E,  , 3", url_label );
         add( "1, 1, 2, 1, 0, w, 3", url );
@@ -114,6 +145,9 @@ public class PVSVNOptionPane extends AbstractOptionPane {
 
         add( "0, 3, 1, 1, E,  , 3", password_label );
         add( "1, 3, 2, 1, 0, w, 3", password );
+
+        add( "0, 4, 1, 1, E,  , 3", fileformat_label );
+        add( "1, 4, 2, 1, 0, w, 3", fileformat );
 
         ( new Runner() ).execute();
     }
@@ -138,20 +172,58 @@ public class PVSVNOptionPane extends AbstractOptionPane {
         for ( int i = 0; i < pwd_chars.length; i++ ) {
             pwd_chars[ i ] = '0';
         }
-        pwd = PasswordHandler.encryptPassword(pwd);
+        pwd = PasswordHandler.encryptPassword( pwd );
         jEdit.setProperty(
             PVHelper.PREFIX + projectName + ".password",
             pwd
         );
+
+        // possibly change working copy format
+        try {
+            int current_wc_format = getWCVersion();
+            String new_wc_format = ( String ) fileformat.getSelectedItem();
+            int wc_format;
+            if ( new_wc_format.equals( "1.3" ) ) {
+                wc_format = SVNAdminAreaFactory.WC_FORMAT_13;
+            }
+            else if ( new_wc_format.equals( "1.4" ) ) {
+                wc_format = SVNAdminAreaFactory.WC_FORMAT_14;
+            }
+            else {
+                wc_format = SVNAdminAreaFactory.WC_FORMAT_15;
+            }
+            if ( wc_format != current_wc_format ) {
+                SVNWCClient wc_client = SVNClientManager.newInstance().getWCClient();
+                wc_client.doSetWCFormat( projectRoot, wc_format );
+            }
+        }
+        catch ( Exception e ) {
+            JOptionPane.showMessageDialog( jEdit.getActiveView(), jEdit.getProperty( "ips.Unable_to_convert_working_copy_file_format>", "Unable to convert working copy file format:" ) + "\n" + e.getMessage(), jEdit.getProperty( "ips.Error", "Error" ), JOptionPane.ERROR_MESSAGE );
+        }
+    }
+
+    private int getWCVersion() {
+        if ( wcVersion != -1 ) {
+            return wcVersion;
+        }
+        try {
+            SVNStatusClient st_client = SVNClientManager.newInstance().getStatusClient();
+            SVNStatus status = st_client.doStatus( projectRoot, false );
+            wcVersion = status.getWorkingCopyFormat();
+            return wcVersion;
+        }
+        catch ( Exception e ) {
+            return SVNAdminAreaFactory.WC_FORMAT_15;
+        }
     }
 
     private String getProjectName() {
-        projectName = PVHelper.getProjectName((View)SwingUtilities.getRoot(this)) == null ? "" : PVHelper.getProjectName((View)SwingUtilities.getRoot(this));
+        projectName = PVHelper.getProjectName( ( View ) SwingUtilities.getRoot( this ) ) == null ? "" : PVHelper.getProjectName( ( View ) SwingUtilities.getRoot( this ) );
         return projectName;
     }
 
     private String getProjectRoot() {
-        String project_root = PVHelper.getProjectRoot((View)SwingUtilities.getRoot(this)) == null ? "" : PVHelper.getProjectRoot((View)SwingUtilities.getRoot(this));
+        String project_root = PVHelper.getProjectRoot( ( View ) SwingUtilities.getRoot( this ) ) == null ? "" : PVHelper.getProjectRoot( ( View ) SwingUtilities.getRoot( this ) );
         return project_root;
     }
 
@@ -161,7 +233,7 @@ public class PVSVNOptionPane extends AbstractOptionPane {
         public List<SVNInfo> doInBackground() {
             try {
                 // adjust the UI while fetching the svn info
-                url_label.setText( jEdit.getProperty("ips.Just_a_moment,_attempting_to_fetch_current_SVN_info...", "Just a moment, attempting to fetch current SVN info...") );
+                url_label.setText( jEdit.getProperty( "ips.Just_a_moment,_attempting_to_fetch_current_SVN_info...", "Just a moment, attempting to fetch current SVN info..." ) );
 
                 // fetch any existing svn info
                 java.util.List<String> info_path = new java.util.ArrayList<String>();
@@ -169,7 +241,7 @@ public class PVSVNOptionPane extends AbstractOptionPane {
                 SVNData info_data = new SVNData();
                 info_data.setOut( new ConsolePrintStream( new NullOutputStream() ) );
                 info_data.setPaths( info_path );
-                info_data.setPathsAreURLs(false);
+                info_data.setPathsAreURLs( false );
                 Info info = new Info();
                 List<SVNInfo> results = info.info( info_data );
                 info_data.getOut().close();
@@ -204,6 +276,8 @@ public class PVSVNOptionPane extends AbstractOptionPane {
                 username.setVisible( true );
                 password_label.setVisible( true );
                 password.setVisible( true );
+                fileformat_label.setVisible( true );
+                fileformat.setVisible( true );
             }
             catch ( Exception e ) {     // NOPMD
                 // ignored
