@@ -32,6 +32,7 @@ import java.awt.event.ActionEvent;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 
@@ -100,10 +101,16 @@ public class StatusAction extends SVNAction {
             setUsername( data.getUsername() );
             setPassword( data.getPassword() );
         }
-        
+
         if ( data.getOut() == null ) {
             data.setOut( new ConsolePrintStream( getView() ) );
         }
+
+        int response = JOptionPane.showConfirmDialog( getView(), jEdit.getProperty("ips.Check_status_against_repository?", "Check status against repository?"), jEdit.getProperty("ips.Status", "Status"), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE );
+        if ( response == JOptionPane.CANCEL_OPTION ) {
+            return ;
+        }
+        data.setRemote(response == JOptionPane.YES_OPTION);
 
         getView().getDockableWindowManager().showDockableWindow( "subversion" );
         final OutputPanel output_panel = SVNPlugin.getOutputPanel( getView() );
