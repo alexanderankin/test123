@@ -74,7 +74,14 @@ public class StatusResultsPanel extends JPanel {
 
         setBorder( new EmptyBorder( 3, 3, 3, 3 ) );
 
-        JLabel label = new JLabel( jEdit.getProperty("ips.Status_checked_against_revision>", "Status checked against revision:") + " " + results.getRevision() );
+        String revision_msg;
+        if (results.getRevision() == -1) {
+            revision_msg = jEdit.getProperty("ips.Status_checked_locally>", "Status checked locally:");
+        }
+        else {
+            revision_msg = jEdit.getProperty("ips.Status_checked_against_revision>", "Status checked against revision:") + " " + results.getRevision();
+        }
+        JLabel label = new JLabel( revision_msg );
         label.setBorder( new EmptyBorder( 6, 3, 6, 3 ) );
         add( label, BorderLayout.NORTH );
 

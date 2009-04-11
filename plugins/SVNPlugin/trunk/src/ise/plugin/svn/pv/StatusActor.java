@@ -73,10 +73,6 @@ public class StatusActor extends NodeActor {
                 cd.setPassword( password );
             }
 
-            // do not check if working copy is different than remote copy, a local
-            // check should be good enough
-            cd.setRemote( false );
-
             cd.setOut( new ConsolePrintStream( view ) );
 
             StatusAction action = new StatusAction( view, cd );
