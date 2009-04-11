@@ -40,6 +40,7 @@ import javax.swing.border.EmptyBorder;
 import ise.plugin.svn.data.StatusData;
 import ise.plugin.svn.action.*;
 import ise.plugin.svn.library.GUIUtils;
+import ise.plugin.svn.pv.VersionControlState;
 import org.tmatesoft.svn.core.wc.SVNStatus;
 import org.tmatesoft.svn.core.wc.SVNStatusType;
 import org.gjt.sp.jedit.jEdit;
@@ -61,6 +62,8 @@ public class StatusResultsPanel extends JPanel {
     private static Color background = jEdit.getColorProperty("view.bgColor", Color.WHITE);
     private static Color selection = jEdit.getColorProperty("view.selectionColor", Color.LIGHT_GRAY);
 
+    private VersionControlState versionControlState = new VersionControlState();
+
 
     public StatusResultsPanel( StatusData results, View view, String username, String password ) {
         super( new BorderLayout() );
@@ -81,50 +84,50 @@ public class StatusResultsPanel extends JPanel {
 
         List<SVNStatus> list = results.getConflicted();
         if ( list != null ) {
-            root.add( createNode( jEdit.getProperty( "ise.plugin.svn.gui.StatusResultsPanel.conflicted", "Files with conflicts (need fixed?):" ), list ) );
+            root.add( createNode( jEdit.getProperty( "ise.plugin.svn.gui.StatusResultsPanel.conflicted", "Files with conflicts (need fixed?):" ), list, VersionControlState.CONFLICT ) );
             added = true;
             hasConflicts = true;
         }
 
         list = results.getOutOfDate();
         if ( list != null ) {
-            root.add( createNode( jEdit.getProperty( "ise.plugin.svn.gui.StatusResultsPanel.outofdate", "Out of date files (need updated?):" ), list ) );
+            root.add( createNode( jEdit.getProperty( "ise.plugin.svn.gui.StatusResultsPanel.outofdate", "Out of date files (need updated?):" ), list, VersionControlState.NEED_UPDATE ) );
             added = true;
         }
 
         list = results.getModified();
         if ( list != null ) {
-            root.add( createNode( jEdit.getProperty( "ise.plugin.svn.gui.StatusResultsPanel.modified", "Modified files (need committed?):" ), list ) );
+            root.add( createNode( jEdit.getProperty( "ise.plugin.svn.gui.StatusResultsPanel.modified", "Modified files (need committed?):" ), list, VersionControlState.LOCAL_MOD ) );
             added = true;
         }
 
         list = results.getAdded();
         if ( list != null ) {
-            root.add( createNode( jEdit.getProperty( "ise.plugin.svn.gui.StatusResultsPanel.added", "Added files (need committed?):" ), list ) );
+            root.add( createNode( jEdit.getProperty( "ise.plugin.svn.gui.StatusResultsPanel.added", "Added files (need committed?):" ), list, VersionControlState.LOCAL_ADD ) );
             added = true;
         }
 
         list = results.getUnversioned();
         if ( list != null ) {
-            root.add( createNode( jEdit.getProperty( "ise.plugin.svn.gui.StatusResultsPanel.unversioned", "Unversioned files (need added?):" ), list ) );
+            root.add( createNode( jEdit.getProperty( "ise.plugin.svn.gui.StatusResultsPanel.unversioned", "Unversioned files (need added?):" ), list, VersionControlState.UNVERSIONED ) );
             added = true;
         }
 
         list = results.getDeleted();
         if ( list != null ) {
-            root.add( createNode( jEdit.getProperty( "ise.plugin.svn.gui.StatusResultsPanel.deleted", "Deleted files (need committed?):" ), list ) );
+            root.add( createNode( jEdit.getProperty( "ise.plugin.svn.gui.StatusResultsPanel.deleted", "Deleted files (need committed?):" ), list, VersionControlState.DELETED ) );
             added = true;
         }
 
         list = results.getMissing();
         if ( list != null ) {
-            root.add( createNode( jEdit.getProperty( "ise.plugin.svn.gui.StatusResultsPanel.missing", "Missing files (need deleted?):" ), list ) );
+            root.add( createNode( jEdit.getProperty( "ise.plugin.svn.gui.StatusResultsPanel.missing", "Missing files (need deleted?):" ), list, VersionControlState.DELETED ) );
             added = true;
         }
 
         list = results.getLocked();
         if (list != null) {
-            root.add( createNode(jEdit.getProperty("ips.Locked_files>", "Locked files:"), list));
+            root.add( createNode(jEdit.getProperty("ips.Locked_files>", "Locked files:"), list, VersionControlState.LOCKED));
             added = true;
         }
 
@@ -143,10 +146,10 @@ public class StatusResultsPanel extends JPanel {
         }
     }
 
-    private DefaultMutableTreeNode createNode( String title, List<SVNStatus> values ) {
+    private DefaultMutableTreeNode createNode( String title, List<SVNStatus> values, int iconIndex ) {
         DefaultMutableTreeNode node = new DefaultMutableTreeNode( title );
         for ( SVNStatus status : values ) {
-            DefaultMutableTreeNode child = new DefaultMutableTreeNode( new Status(status) );
+            DefaultMutableTreeNode child = new DefaultMutableTreeNode( new Status(status, iconIndex) );
             node.add( child );
         }
         return node;
@@ -154,8 +157,11 @@ public class StatusResultsPanel extends JPanel {
 
     class Status {
         private SVNStatus status;
-        public Status(SVNStatus s) {
+        int iconIndex = 0;
+
+        public Status(SVNStatus s, int iconIndex) {
             status = s;
+            this.iconIndex = iconIndex;
         }
         public String toString() {
             StringBuilder sb = new StringBuilder();
@@ -180,6 +186,10 @@ public class StatusResultsPanel extends JPanel {
 
         public SVNStatus getStatus() {
             return status;
+        }
+
+        public Icon getIcon() {
+            return versionControlState.getIcon(iconIndex);
         }
     }
 
@@ -444,10 +454,14 @@ public class StatusResultsPanel extends JPanel {
             int row,
             boolean hasFocus ) {
 
-            Component r = super.getTreeCellRendererComponent(
+            JLabel r = (JLabel)super.getTreeCellRendererComponent(
                         tree, value, sel,
                         expanded, leaf, row,
                         hasFocus );
+            Object userObject = ((DefaultMutableTreeNode)value).getUserObject();
+            if (userObject instanceof Status) {
+                r.setIcon(((Status)userObject).getIcon());
+            }
 
             r.setBackground( sel ? StatusResultsPanel.selection : StatusResultsPanel.background );
             return r;
