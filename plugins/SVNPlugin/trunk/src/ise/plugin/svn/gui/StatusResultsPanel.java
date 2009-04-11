@@ -41,6 +41,7 @@ import ise.plugin.svn.data.StatusData;
 import ise.plugin.svn.action.*;
 import ise.plugin.svn.library.GUIUtils;
 import org.tmatesoft.svn.core.wc.SVNStatus;
+import org.tmatesoft.svn.core.wc.SVNStatusType;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 
@@ -157,8 +158,26 @@ public class StatusResultsPanel extends JPanel {
             status = s;
         }
         public String toString() {
-            return status.getFile().toString();
+            StringBuilder sb = new StringBuilder();
+            sb.append(status.getFile().toString());
+            boolean contents_changed = SVNStatusType.STATUS_MODIFIED.equals(status.getContentsStatus());
+            boolean properties_changed = SVNStatusType.STATUS_MODIFIED.equals(status.getPropertiesStatus());
+            if (contents_changed) {
+                sb.append(" (").append(jEdit.getProperty("ips.Contents", "Contents")).append(" ");
+            }
+            if (properties_changed) {
+                sb.append(contents_changed ? jEdit.getProperty("ips._and_Properties", " and Properties") : " (" + jEdit.getProperty("ips.Properties", "Properties"));
+            }
+            if (contents_changed || properties_changed) {
+                sb.append(" ").append(jEdit.getProperty("ips.modified", "modified")).append(")");
+            }
+            return sb.toString();
         }
+
+        public String getFilename() {
+            return status.getFile().getAbsolutePath();
+        }
+
         public SVNStatus getStatus() {
             return status;
         }
@@ -225,7 +244,7 @@ public class StatusResultsPanel extends JPanel {
                         List<String> paths = new ArrayList<String>();
                         for ( TreePath path : tree_paths ) {
                             if ( path != null && path.getPathCount() > 2 ) {
-                                paths.add( ( ( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject().toString() );
+                                paths.add(((Status)(( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject()).getFilename() );
                             }
                         }
                         UpdateAction action = new UpdateAction( view, paths, username, password );
@@ -247,7 +266,7 @@ public class StatusResultsPanel extends JPanel {
                         for ( TreePath path : tree_paths ) {
                             if ( path != null && path.getPathCount() > 2 ) {
                                 DefaultMutableTreeNode type = ( DefaultMutableTreeNode ) path.getPathComponent( 1 );
-                                String pathname = (( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject().toString();
+                                String pathname = ((Status)(( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject()).getFilename();
                                 if ( type != null ) {
                                     String comp = type.getUserObject().toString();
                                     // really should get these strings replaced
@@ -306,7 +325,7 @@ public class StatusResultsPanel extends JPanel {
                         List<String> paths = new ArrayList<String>();
                         for ( TreePath path : tree_paths ) {
                             if ( path != null && path.getPathCount() > 2 ) {
-                                paths.add( (( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject().toString());
+                                paths.add(((Status)(( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject()).getFilename() );
                             }
                         }
                         RevertAction action = new RevertAction( view, paths, username, password );
@@ -324,7 +343,8 @@ public class StatusResultsPanel extends JPanel {
                             JOptionPane.showMessageDialog( view, jEdit.getProperty("ips.Please_select_a_single_entry.", "Please select a single entry."), jEdit.getProperty("ips.Too_many_selections", "Too many selections"), JOptionPane.ERROR_MESSAGE );
                             return ;
                         }
-                        String path = ( ( DefaultMutableTreeNode ) tree_paths[ 0 ].getLastPathComponent() ).getUserObject().toString();
+                        TreePath tree_path = tree_paths[0];
+                        String path = ((Status)(( DefaultMutableTreeNode ) tree_path.getLastPathComponent() ).getUserObject()).getFilename();
                         DiffAction action = new DiffAction( view, path, username, password );
                         action.actionPerformed( ae );
                     }
@@ -342,7 +362,7 @@ public class StatusResultsPanel extends JPanel {
                         List<String> paths = new ArrayList<String>();
                         for ( TreePath path : tree_paths ) {
                             if ( path != null && path.getPathCount() > 2 ) {
-                                paths.add( ( ( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject().toString() );
+                                paths.add(((Status)(( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject()).getFilename() );
                             }
                         }
                         AddAction action = new AddAction( view, paths, username, password );
@@ -362,7 +382,7 @@ public class StatusResultsPanel extends JPanel {
                         List<String> paths = new ArrayList<String>();
                         for ( TreePath path : tree_paths ) {
                             if ( path != null && path.getPathCount() > 2 ) {
-                                paths.add( ( ( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject().toString() );
+                                paths.add(((Status)(( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject()).getFilename() );
                             }
                         }
                         LogAction action = new LogAction( view, paths, username, password );
@@ -382,7 +402,7 @@ public class StatusResultsPanel extends JPanel {
                         List<String> paths = new ArrayList<String>();
                         for ( TreePath path : tree_paths ) {
                             if ( path != null && path.getPathCount() > 2 ) {
-                                paths.add( ( ( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject().toString() );
+                                paths.add(((Status)(( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject()).getFilename() );
                             }
                         }
                         DeleteAction action = new DeleteAction( view, paths, username, password );
@@ -402,7 +422,7 @@ public class StatusResultsPanel extends JPanel {
                         List<String> paths = new ArrayList<String>();
                         for ( TreePath path : tree_paths ) {
                             if ( path != null && path.getPathCount() > 2 ) {
-                                paths.add( ( ( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject().toString() );
+                                paths.add(((Status)(( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject()).getFilename() );
                             }
                         }
                         UnlockAction action = new UnlockAction( view, paths, username, password, false );

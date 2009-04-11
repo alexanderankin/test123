@@ -105,7 +105,7 @@ public class Property {
                 String value = data.getValue();
                 PropertyHandler handler = new PropertyHandler( file );
                 if ( name != null ) {
-                    wc_client.doSetProperty( file, name, SVNPropertyValue.create( value ), data.getForce(), SVNDepth.fromRecurse(data.getRecursive()), handler, ( Collection ) null );
+                    wc_client.doSetProperty( file, name, SVNPropertyValue.create( value ), data.getForce(), SVNDepth.fromRecurse( data.getRecursive() ), handler, ( Collection ) null );
                 }
                 else {
                     // check for multiple properties
@@ -116,7 +116,7 @@ public class Property {
                         if ( key != null ) {
                             name = key.toString();
                             value = String.valueOf( me.getValue() );
-                            wc_client.doSetProperty( file, name, SVNPropertyValue.create( value ), data.getForce(), SVNDepth.fromRecurse(data.getRecursive()), handler, ( Collection ) null );
+                            wc_client.doSetProperty( file, name, SVNPropertyValue.create( value ), data.getForce(), SVNDepth.fromRecurse( data.getRecursive() ), handler, ( Collection ) null );
                         }
                     }
                 }
@@ -180,7 +180,7 @@ public class Property {
                 PropertyHandler handler = new PropertyHandler( path );
                 // svnkit 1.2.x:
                 // doGetProperty(SVNURL url, String propName, SVNRevision pegRevision, SVNRevision revision, SVNDepth depth, ISVNPropertyHandler handler)
-                wc_client.doGetProperty( svnurl, data.getName(), SVNRevision.UNDEFINED, data.getRevision(), SVNDepth.fromRecurse(data.isRecursive()), handler );
+                wc_client.doGetProperty( svnurl, data.getName(), SVNRevision.UNDEFINED, data.getRevision(), SVNDepth.fromRecurse( data.isRecursive() ), handler );
                 mergeResults( handler.getResults() );
             }
         }
@@ -189,7 +189,7 @@ public class Property {
                 PropertyHandler handler = new PropertyHandler( file );
                 // svnkit 1.2.x:
                 // doGetProperty(File path, String propName, SVNRevision pegRevision, SVNRevision revision, SVNDepth depth, ISVNPropertyHandler handler, Collection changeLists)
-                wc_client.doGetProperty( file, data.getName(), SVNRevision.UNDEFINED, data.getRevision(), SVNDepth.fromRecurse(data.isRecursive()), handler, null );
+                wc_client.doGetProperty( file, data.getName(), SVNRevision.UNDEFINED, data.getRevision(), SVNDepth.fromRecurse( data.isRecursive() ), handler, null );
                 mergeResults( handler.getResults() );
             }
         }
@@ -243,10 +243,10 @@ public class Property {
                 prop = new Properties();
                 results.put( key, prop );
             }
-            if ( property.getName() != null && property.getValue() != null && property.getValue().getString() != null ) {
-                prop.setProperty( property.getName(), property.getValue().getString() );
-                out.println( "F " + path + ": " + property.getName() + " = " + property.getValue().getString() );
-            }
+            String name = property.getName();
+            String value = SVNPropertyValue.getPropertyAsString(property.getValue());
+            prop.setProperty( name, value );
+            out.println( "F " + key + ": " + value + " = " + value );
         }
 
         public void handleProperty( long revision, SVNPropertyData property ) {
@@ -258,8 +258,10 @@ public class Property {
                 prop = new Properties();
                 results.put( path, prop );
             }
-            prop.setProperty( property.getName(), property.getValue().getString() );
-            out.println( "R " + path + ": " + property.getName() + " = " + property.getValue().getString() );
+            String key = property.getName();
+            String value = SVNPropertyValue.getPropertyAsString(property.getValue());
+            prop.setProperty( key, value );
+            out.println( "R " + path + ": " + key + " = " + value );
         }
 
         public void handleProperty( SVNURL url, SVNPropertyData property ) {
@@ -269,8 +271,10 @@ public class Property {
                 prop = new Properties();
                 results.put( key, prop );
             }
-            prop.setProperty( property.getName(), property.getValue().getString() );
-            out.println( "U " + key + ": " + property.getName() + " = " + property.getValue().getString() );
+            String name = property.getName();
+            String value = SVNPropertyValue.getPropertyAsString(property.getValue());
+            prop.setProperty( name, value );
+            out.println( "U " + key + ": " + name + " = " + value );
         }
 
         public String getPath() {
@@ -316,6 +320,6 @@ public class Property {
         catch ( Exception e ) {
             e.printStackTrace();
         }
-    }
+}
     */
 }

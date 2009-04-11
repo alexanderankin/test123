@@ -50,6 +50,8 @@ import javax.swing.table.*;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
+import org.tmatesoft.svn.core.wc.SVNRevision;
+
 /**
  * A panel to display SVN properties.
  *
@@ -110,12 +112,11 @@ public class PropertyPanel extends JPanel {
 
 
         // create sub-panels, one per file found in results
-        Set < Map.Entry < String, Properties >> result_set = results.entrySet();
         int row = 0;
-        for ( Map.Entry<String, Properties> result : result_set ) {
+        for ( String fn : results.keySet() ) {
+            final String filename = fn;
             // fetch the properties and load them into a table
-            final String filename = result.getKey();
-            Properties props = result.getValue();
+            Properties props = results.get(filename);
             final BestRowTable props_table = new BestRowTable( );
 
             // declare buttons here so table action listeners can react
@@ -143,16 +144,15 @@ public class PropertyPanel extends JPanel {
                                                    );
 
             // fill the table
-            Set < Map.Entry < Object, Object >> entrySet = props.entrySet();
             int i = 0;
-            for ( Map.Entry<Object, Object> me : entrySet ) {
-                Object key = me.getKey();
-                Object value = me.getValue();
-                if ( key == null || value == null ) {
+            for (Enumeration en = props.propertyNames(); en.hasMoreElements();) {
+                String key = (String)en.nextElement();
+                String value = props.getProperty(key);
+                if ( value == null ) {
                     continue;
                 }
-                model.setValueAt( key.toString(), i, 0 );
-                model.setValueAt( value.toString(), i, 1 );
+                model.setValueAt( key, i, 0 );
+                model.setValueAt( value, i, 1 );
                 ++i;
             }
 
@@ -201,6 +201,7 @@ public class PropertyPanel extends JPanel {
                                 data.setUsername( originalData.getUsername() );
                                 data.setPassword( originalData.getPassword() );
                             }
+                            data.setRevision(SVNRevision.WORKING);
                             Property property = new Property();
                             try {
                                 property.doSetProperties( data );
@@ -208,6 +209,12 @@ public class PropertyPanel extends JPanel {
                             catch ( Exception e ) {
                                 e.printStackTrace();
                             }
+                            SwingUtilities.invokeLater( new Runnable() {
+                                        public void run() {
+                                            props_table.doLayout();
+                                        }
+                                    }
+                                                      );
                         }
                     }
                 );
