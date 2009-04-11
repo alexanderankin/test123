@@ -32,6 +32,11 @@ Subversion is a powerful, open source version control system designed as a repla
 The SVNPlugin is a plugin for using Subversion from within jEdit.  This is an all Java implementation, using the SVNKit library internally, so no external libraries or subversion clients are required.  This guide assumes you have some experience with Subversion.
 </p>
 <p>
+<b><i>
+As of version 1.2.3, this plugin supports backwards compatibility with older svn clients.  This means your working copy file formats will NOT be automatically upgraded to the latest version, as was the case in the past.  You can change the working copy version on a per project basis by using the project properties in ProjectViewer.
+</i></b>
+</p>
+<p>
 For Subversion command reference and general Subversion information, see the official Subversion reference manual:
 
    <a href="http://svnbook.red-bean.com/index.en.html" title="English"
@@ -309,8 +314,7 @@ Project Viewer will automatically switch to your new project so you can begin wo
 <li>
 Right click on the top node of your project and select "Properties".  Select
 "Subversion settings" from the left panel.  The URL should be filled in for you.
-If the repository requires a username and password, fill them in here, or leave the
-fields blank if the repository allows anonymous access:<br>
+If the repository requires a username and password, fill them in here, or leave the fields blank if the repository allows anonymous access.  The format of your working copies is also displayed.  You can change this value if you need to for compatibility with other SVN clients.<br>
 <br>
 <img src="subversion_settings.jpg"><br>
 <br>
