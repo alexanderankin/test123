@@ -6,7 +6,7 @@
      
      See INSTALL.txt
 -->
-<project name="SuperAbbrevs" default="dist" basedir=".">
+<project name="SuperAbbrevs" default="build" basedir=".">
 	
 	<description>
 			This is an ant build.xml file for building the SuperAbbrevs plugin for jEdit.
