@@ -32,6 +32,7 @@ import jdiff.JDiffPlugin;
 import jdiff.component.*;
 import jdiff.util.Diff;
 
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
@@ -149,17 +150,17 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
 
             // for drawing the diffs for the left text area
             leftRectangle = new Rectangle(
-                        centerRectangle.x,                                          // 4
-                        centerRectangle.y,                                          // 0
-                        centerRectangle.width / 3,                                  // (40 - 4 - 4) / 3 = 8
+                        centerRectangle.x,                                            // 4
+                        centerRectangle.y,                                            // 0
+                        centerRectangle.width / 3,                                    // (40 - 4 - 4) / 3 = 8
                         Math.max( 1, pixelsPerLine * leftVisibleLineCount )
                     );
 
             // for drawing the diffs for the right text area
             rightRectangle = new Rectangle(
-                        centerRectangle.x + ( centerRectangle.width - ( centerRectangle.width / 3 ) ),                   // 4 + (32 - 8) = 28
-                        centerRectangle.y,                                          // 0
-                        centerRectangle.width / 3,                                  // 8
+                        centerRectangle.x + ( centerRectangle.width - ( centerRectangle.width / 3 ) ),                     // 4 + (32 - 8) = 28
+                        centerRectangle.y,                                            // 0
+                        centerRectangle.width / 3,                                    // 8
                         Math.max( 1, pixelsPerLine * rightVisibleLineCount )
                     );
 
@@ -168,7 +169,7 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
             rightBorder = new Rectangle( rightRectangle );
 
             // make the left and right rectangles match the view background
-            gfx.setColor( jEdit.getColorProperty("view.bgColor", Color.WHITE) );
+            gfx.setColor( jEdit.getColorProperty( "view.bgColor", Color.WHITE ) );
             gfx.fillRect( leftRectangle.x, leftRectangle.y, leftRectangle.width, leftRectangle.height );
             gfx.fillRect( rightRectangle.x, rightRectangle.y, rightRectangle.width, rightRectangle.height );
 
@@ -375,7 +376,7 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
 
             if ( hunk.line0 > line_number ) {
                 // after this line, didn't find a line with a corresponding hunk
-                if (jEdit.getBooleanProperty("jdiff.beep-on-error")) {
+                if ( jEdit.getBooleanProperty( "jdiff.beep-on-error" ) ) {
                     leftTextArea.getToolkit().beep();
                 }
                 break;
@@ -384,8 +385,16 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
             // on a line with a right arrow --
             // get the text from the left text area to move to the right
             leftTextArea.selectNone();
+            int line_count = leftTextArea.getLineCount();
             int start_sel = leftTextArea.getLineStartOffset( hunk.line0 );
-            int end_sel = leftTextArea.getLineStartOffset( hunk.line0 + hunk.deleted );
+            int end_sel;
+            if (hunk.line0 + hunk.deleted >= line_count - 1) {
+                // at bottom of buffer, select to end of buffer
+                end_sel = leftTextArea.getBufferLength();
+            }
+            else {
+                end_sel = leftTextArea.getLineStartOffset( hunk.line0 + hunk.deleted );
+            }
             leftTextArea.setCaretPosition( start_sel );
             Selection.Range leftSelection;
             if ( hunk.deleted == 0 ) {
@@ -398,17 +407,29 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
 
             // replace text on right with text from left
             rightTextArea.selectNone();
-            start_sel = rightTextArea.getLineStartOffset( hunk.line1 );
-            end_sel = rightTextArea.getLineStartOffset( hunk.line1 + hunk.inserted );
-            rightTextArea.setCaretPosition( start_sel );
-            Selection.Range selection;
-            if ( hunk.inserted == 0 ) {
-                selection = new Selection.Range( start_sel, start_sel );
+            line_count = rightTextArea.getLineCount();
+            if ( hunk.line1 >= line_count - 1 ) {
+                // at bottom of buffer, need special handling
+                String rightlinesep = rightTextArea.getBuffer().getStringProperty(Buffer.LINESEP);
+                if (rightTextArea.getText().endsWith(rightlinesep)) {
+                    rightlinesep = "";
+                }
+                rightTextArea.setText(rightTextArea.getText() + rightlinesep + leftText);
+                rightTextArea.goToBufferEnd(false);
             }
             else {
-                selection = new Selection.Range( start_sel, end_sel );
+                start_sel = rightTextArea.getLineStartOffset( hunk.line1 );
+                end_sel = rightTextArea.getLineStartOffset( hunk.line1 + hunk.inserted );
+                rightTextArea.setCaretPosition( start_sel );
+                Selection.Range selection;
+                if ( hunk.inserted == 0 ) {
+                    selection = new Selection.Range( start_sel, start_sel );
+                }
+                else {
+                    selection = new Selection.Range( start_sel, end_sel );
+                }
+                rightTextArea.setSelectedText( selection, leftText );
             }
-            rightTextArea.setSelectedText( selection, leftText );
             rightTextArea.selectNone();
             DualDiff.refreshFor( rightTextArea.getView() );
             break;
@@ -434,7 +455,7 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
 
             if ( hunk.line1 > line_number ) {
                 // after this line, didn't find a line with a corresponding hunk
-                if (jEdit.getBooleanProperty("jdiff.beep-on-error")) {
+                if ( jEdit.getBooleanProperty( "jdiff.beep-on-error" ) ) {
                     rightTextArea.getToolkit().beep();
                 }
                 break;
@@ -443,8 +464,16 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
             // on a line with a left arrow --
             // get the text from the right text area to move to the left
             rightTextArea.selectNone();
+            int line_count = rightTextArea.getLineCount();
             int start_sel = rightTextArea.getLineStartOffset( hunk.line1 );
-            int end_sel = rightTextArea.getLineStartOffset( hunk.line1 + hunk.inserted );
+            int end_sel;
+            if (hunk.line1 + hunk.inserted >= line_count - 1) {
+                // at bottom of buffer. select to tend of buffer
+                end_sel = rightTextArea.getBufferLength();
+            }
+            else {
+                end_sel = rightTextArea.getLineStartOffset( hunk.line1 + hunk.inserted );
+            }
             rightTextArea.setCaretPosition( start_sel );
             Selection.Range rightSelection;
             if ( hunk.inserted == 0 ) {
@@ -457,17 +486,27 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
 
             // replace text on left with text from right
             leftTextArea.selectNone();
-            start_sel = leftTextArea.getLineStartOffset( hunk.line0 );
-            end_sel = leftTextArea.getLineStartOffset( hunk.line0 + hunk.deleted );
-            leftTextArea.setCaretPosition( start_sel );
-            Selection.Range leftSelection;
-            if ( hunk.deleted == 0 ) {
-                leftSelection = new Selection.Range( start_sel, start_sel );
+            line_count = leftTextArea.getLineCount();
+            if(hunk.line0 >= line_count - 1) {
+                String leftlinesep = leftTextArea.getBuffer().getStringProperty(Buffer.LINESEP);
+                if (leftTextArea.getText().endsWith(leftlinesep)) {
+                    leftlinesep = "";
+                }
+                leftTextArea.setText(leftTextArea.getText() + leftlinesep + rightText);
             }
             else {
-                leftSelection = new Selection.Range( start_sel, end_sel );
+                start_sel = leftTextArea.getLineStartOffset( hunk.line0 );
+                end_sel = leftTextArea.getLineStartOffset( hunk.line0 + hunk.deleted );
+                leftTextArea.setCaretPosition( start_sel );
+                Selection.Range leftSelection;
+                if ( hunk.deleted == 0 ) {
+                    leftSelection = new Selection.Range( start_sel, start_sel );
+                }
+                else {
+                    leftSelection = new Selection.Range( start_sel, end_sel );
+                }
+                leftTextArea.setSelectedText( leftSelection, rightText );
             }
-            leftTextArea.setSelectedText( leftSelection, rightText );
             leftTextArea.selectNone();
             DualDiff.refreshFor( leftTextArea.getView() );
             break;
