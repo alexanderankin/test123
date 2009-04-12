@@ -66,7 +66,7 @@ public class FileMarker implements Comparable {
 	}
 	
 	public String toString() {
-		return shortcutStr + file + "(" + getLine() + "): " + getLineText();
+		return shortcutStr + file + "(" + (getLine() + 1) + "): " + getLineText();
 	}
 	
 	public int getLine() {
@@ -108,6 +108,8 @@ public class FileMarker implements Comparable {
 	
 	public void createPosition(Buffer b)
 	{
+		if (b.getLineCount() <= line)
+			return;
 		pos = b.createPosition(b.getLineStartOffset(line));
 		buffer = b;
 	}
