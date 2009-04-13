@@ -553,7 +553,6 @@ public class DualDiff implements EBComponent {
                             // and caret positions
                             EditPane[] editPanes = view.getEditPanes();
                             String splitConfig = view.getSplitConfig();
-                            System.out.println( "+++++ splitConfig: " + splitConfig );
                             if ( splitConfig != null ) {
                                 splitConfigs.put( view, splitConfig );
                             }
