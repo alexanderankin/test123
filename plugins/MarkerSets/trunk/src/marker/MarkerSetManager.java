@@ -37,7 +37,9 @@ import marker.tree.SourceLinkTree.SourceLinkTreeNodeRenderer;
 import marker.tree.SourceLinkTree.SubtreePopupMenuProvider;
 
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.gui.RolloverButton;
 
 
 @SuppressWarnings("serial")
@@ -50,6 +52,8 @@ public class MarkerSetManager extends JPanel {
 	private JComboBox active;
 	private JCheckBox bufferScope;
 	private boolean selfUpdate;
+	private JButton next;
+	private JButton prev;
 	
 	public MarkerSetManager(View view)
 	{
@@ -108,6 +112,20 @@ public class MarkerSetManager extends JPanel {
 		MarkerSetsPlugin.addChangeListener(new ChangeListener() {
 			public void changed(Event e, FileMarker m, MarkerSet ms) {
 				updateTree();
+			}
+		});
+		prev = new RolloverButton(GUIUtilities.loadIcon("ArrowL.png"));
+		northPanel.add(prev);
+		prev.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				MarkerSetsPlugin.getActiveMarkerSet().prevMarker(MarkerSetManager.this.view);
+			}
+		});
+		next = new RolloverButton(GUIUtilities.loadIcon("ArrowR.png"));
+		northPanel.add(next);
+		next.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				MarkerSetsPlugin.getActiveMarkerSet().nextMarker(MarkerSetManager.this.view);
 			}
 		});
 		updateTree();
