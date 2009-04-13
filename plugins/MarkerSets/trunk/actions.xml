@@ -33,6 +33,16 @@
 			marker.MarkerSetsPlugin.exportMarkerSets(view);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="markersets-next-marker" NO_REPEAT="TRUE">
+		<CODE>
+			marker.MarkerSetsPlugin.getActiveMarkerSet().nextMarker(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="markersets-prev-marker" NO_REPEAT="TRUE">
+		<CODE>
+			marker.MarkerSetsPlugin.getActiveMarkerSet().prevMarker(view);
+		</CODE>
+	</ACTION>
 	
 </ACTIONS>
 

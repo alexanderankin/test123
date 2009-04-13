@@ -415,5 +415,9 @@ public class MarkerSetsPlugin extends EBPlugin {
 			return;
 		exportXml(fc.getSelectedFile().getAbsolutePath());
 	}
+	static public MarkerSet getActiveMarkerSet()
+	{
+		return active;
+	}
 }
 

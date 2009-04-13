@@ -7,6 +7,7 @@ import java.util.Vector;
 import marker.MarkerSetsPlugin.Event;
 
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
@@ -24,20 +25,42 @@ public class MarkerSet {
 	private String name;
 	private Vector<FileMarker> markers;
 	private Color color;
+	private int currentMarker;
 	
 	public MarkerSet(String name) {
 		this.name = name;
 		color = Color.black;
 		markers = new Vector<FileMarker>();
+		currentMarker = -1;
 	}
 	public MarkerSet(Element node) {
 		markers = new Vector<FileMarker>();
 		importXml(node);
+		currentMarker = -1;
 	}
 	public void setColor(Color c) { color = c; }
 	public Color getColor() { return color; }
 	
 	public String getName() { return name; }
+
+	public void nextMarker(View view) {
+		int size = markers.size();
+		if (size == 0)
+			return;
+		currentMarker++;
+		if (currentMarker >= size)
+			currentMarker = 0;
+		markers.get(currentMarker).jump(view);
+	}
+	public void prevMarker(View view) {
+		int size = markers.size();
+		if (size == 0)
+			return;
+		currentMarker--;
+		if (currentMarker < 0 || currentMarker >= size)
+			currentMarker = size - 1;
+		markers.get(currentMarker).jump(view);
+	}
 	
 	// Returns true if the marker was added, false if removed
 	public boolean toggle(FileMarker marker) {
