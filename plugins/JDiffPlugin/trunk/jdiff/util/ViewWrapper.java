@@ -25,6 +25,10 @@ import org.gjt.sp.jedit.View;
  * This class is to interact with some private methods in the View class, in
  * particular, to get and set the split configuration of the view so the
  * configuration can be restored after a diff.
+ * TODO: this is a hack.  The View class has been fixed so access to get/setSplitConfig
+ * are both public now.  I'm leaving this code in place for the moment, but it isn't
+ * called from anywhere.  This class and PrivilegedAccessor can both be removed
+ * after the release of jEdit 4.3pre17.
  */
 public class ViewWrapper {
 
