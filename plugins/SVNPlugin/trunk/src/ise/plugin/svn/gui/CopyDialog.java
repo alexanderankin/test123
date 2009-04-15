@@ -256,6 +256,7 @@ public class CopyDialog extends JDialog {
                         CopyDialog.this.setVisible( false );
                         CopyDialog.this.dispose();
                         path.addCurrentToHistory();
+                        commentList.save();
                     }
                 }
                                 );
