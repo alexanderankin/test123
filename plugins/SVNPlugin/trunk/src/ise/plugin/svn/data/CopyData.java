@@ -73,43 +73,43 @@ public class CopyData extends SVNData implements Serializable {
 
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append(title);
-        sb.append("[");
-        if (sourceFile != null) {
-            sb.append("sourceFile:").append(sourceFile).append(", ");
+        sb.append( title );
+        sb.append( "[" );
+        if ( sourceFile != null ) {
+            sb.append( "sourceFile:" ).append( sourceFile ).append( ", " );
         }
-        if (sourceFiles != null) {
-            sb.append("sourceFiles:");
-            for(File f : sourceFiles) {
-                sb.append(f.getAbsolutePath()).append(", ");
+        if ( sourceFiles != null ) {
+            sb.append( "sourceFiles:" );
+            for ( File f : sourceFiles ) {
+                sb.append( f.getAbsolutePath() ).append( ", " );
             }
         }
-        if (sourceURL != null) {
-            sb.append("sourceURL:").append(sourceURL).append(", ");
+        if ( sourceURL != null ) {
+            sb.append( "sourceURL:" ).append( sourceURL ).append( ", " );
         }
-        if (sourceURLs != null) {
-            sb.append("sourceURLs:");
-            for (SVNURL url : sourceURLs) {
-                sb.append(url.toString()).append(", ");
+        if ( sourceURLs != null ) {
+            sb.append( "sourceURLs:" );
+            for ( SVNURL url : sourceURLs ) {
+                sb.append( url.toString() ).append( ", " );
             }
         }
-        sb.append("destinationFile:").append(destinationFile).append(", ");
-        sb.append("destinationURL:").append(destinationURL).append(", ");
-        sb.append("isMove:").append(isMove).append(", ");
-        sb.append("message:").append(message).append("]");
+        sb.append( "destinationFile:" ).append( destinationFile ).append( ", " );
+        sb.append( "destinationURL:" ).append( destinationURL ).append( ", " );
+        sb.append( "isMove:" ).append( isMove ).append( ", " );
+        sb.append( "message:" ).append( message ).append( "]" );
         return sb.toString();
     }
 
 
     // set/get commit message
-    public void setMessage(String m) {
+    public void setMessage( String m ) {
         message = m;
     }
     public String getMessage() {
         return message == null || message.length() == 0 ? "copying" : message;
     }
 
-    public void setTitle(String s) {
+    public void setTitle( String s ) {
         title = s;
     }
 
@@ -125,11 +125,27 @@ public class CopyData extends SVNData implements Serializable {
         this.revision = revision;
     }
 
+    @Override
+    public List<String> getPaths() {
+        List<String> list = new ArrayList<String>();
+        if ( sourceFiles != null && sourceFiles.size() > 0 ) {
+            for ( File file : sourceFiles ) {
+                list.add( file.getAbsolutePath() );
+            }
+        }
+        else if ( sourceFile != null ) {
+            list.add( sourceFile.getAbsolutePath() );
+        }
+        else {
+            list = null;
+        }
+        return list;
+    }
 
     // set/get single source file to copy
     public File getSourceFile() {
-        if (sourceFiles != null) {
-            return sourceFiles.get(0);
+        if ( sourceFiles != null ) {
+            return sourceFiles.get( 0 );
         }
         return sourceFile;
     }
@@ -138,27 +154,27 @@ public class CopyData extends SVNData implements Serializable {
     }
 
     // Set/get filenames for copying multiple files to the destination.
-    public void setSourceFiles(List<File> files) {
+    public void setSourceFiles( List<File> files ) {
         sourceFiles = files;
     }
-    
+
     /**
      * @return null array if no source files specified    
      */
     public SVNCopySource[] getSourceFiles() {
-        if (sourceFiles == null) {
+        if ( sourceFiles == null ) {
             sourceFiles = new ArrayList<File>();
         }
-        if (sourceFile != null && !sourceFiles.contains(sourceFile)) {
-            sourceFiles.add(sourceFile);
+        if ( sourceFile != null && !sourceFiles.contains( sourceFile ) ) {
+            sourceFiles.add( sourceFile );
         }
-        SVNCopySource[] sources = new SVNCopySource[sourceFiles.size()];
-        for (int i = 0; i < sourceFiles.size(); i++) {
-            File f = sourceFiles.get(i);
-            SVNCopySource source = new SVNCopySource(SVNRevision.UNDEFINED, getRevision(), f);
-            sources[i] = source;
+        SVNCopySource[] sources = new SVNCopySource[ sourceFiles.size() ];
+        for ( int i = 0; i < sourceFiles.size(); i++ ) {
+            File f = sourceFiles.get( i );
+            SVNCopySource source = new SVNCopySource( SVNRevision.UNDEFINED, getRevision(), f );
+            sources[ i ] = source;
         }
-        
+
         return sources.length == 0 ? null : sources;
     }
 
@@ -171,17 +187,17 @@ public class CopyData extends SVNData implements Serializable {
     }
 
     public SVNCopySource[] getSourceURLs() {
-        if (sourceURLs == null) {
+        if ( sourceURLs == null ) {
             sourceURLs = new ArrayList<SVNURL>();
         }
-        if (sourceURL != null && !sourceURLs.contains(sourceURL)) {
-            sourceURLs.add(sourceURL);
+        if ( sourceURL != null && !sourceURLs.contains( sourceURL ) ) {
+            sourceURLs.add( sourceURL );
         }
-        SVNCopySource[] sources = new SVNCopySource[sourceURLs.size()];
-        for (int i = 0; i < sourceURLs.size(); i++) {
-            SVNURL f = sourceURLs.get(i);
-            SVNCopySource source = new SVNCopySource(SVNRevision.UNDEFINED, getRevision(), f);
-            sources[i] = source;
+        SVNCopySource[] sources = new SVNCopySource[ sourceURLs.size() ];
+        for ( int i = 0; i < sourceURLs.size(); i++ ) {
+            SVNURL f = sourceURLs.get( i );
+            SVNCopySource source = new SVNCopySource( SVNRevision.UNDEFINED, getRevision(), f );
+            sources[ i ] = source;
         }
         return sources.length == 0 ? null : sources;
     }
@@ -210,7 +226,7 @@ public class CopyData extends SVNData implements Serializable {
     }
 
     // set/get is this a move rather than a copy
-    public void setIsMove(boolean b) {
+    public void setIsMove( boolean b ) {
         isMove = b;
     }
     public boolean getIsMove() {
