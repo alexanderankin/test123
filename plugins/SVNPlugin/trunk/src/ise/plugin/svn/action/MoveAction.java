@@ -53,7 +53,6 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 
 import org.tmatesoft.svn.core.SVNCommitInfo;
-import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.wc.SVNCopySource;
 
 
@@ -113,78 +112,25 @@ public class MoveAction extends SVNAction {
              * working copy -> working copy
              * repository -> repository
              */
-            class Runner extends SwingWorker<TreeMap<String, SVNCommitInfo>, Object> {
+            class Runner extends SwingWorker<SVNCommitInfo, Object> {
 
                 private int where2where;
                 private String errorMessage = null;
+                SVNCommitInfo result = null;
 
                 @Override
-                public TreeMap<String, SVNCommitInfo> doInBackground() {
-                    TreeMap<String, SVNCommitInfo> results = new TreeMap<String, SVNCommitInfo>();
+                public SVNCommitInfo doInBackground() {
                     try {
+                        data.setIsMove( true );
                         if ( data.getSourceFiles() != null ) {
-                            for ( SVNCopySource source : data.getSourceFiles() ) {
-                                if ( source == null ) {
-                                    continue;
-                                }
-                                File file = source.getFile();
-                                CopyData cd = new CopyData();
-                                cd.setSourceFile( file );
-                                cd.setRevision( data.getRevision() );
-                                cd.setIsMove( true );
-                                String destination = "";
-                                if ( data.getDestinationFile() != null ) {
-                                    // working copy -> working copy
-                                    where2where = W2W;
-                                    if ( data.getSourceFiles().length > 1 ) {
-                                        checkDestination( data.getDestinationFile() );
-                                    }
-
-                                    // if destination is a directory, figure out
-                                    // the new file names of the copies
-                                    if ( data.getDestinationFile().isDirectory() ) {
-                                        File f = new File( data.getDestinationFile(), file.getName() );
-                                        destination = f.getAbsolutePath();
-                                    }
-                                    else {
-                                        destination = data.getDestinationFile().getAbsolutePath();
-                                    }
-                                    cd.setDestinationFile( data.getDestinationFile() );
-                                }
-                                cd.setOut( data.getOut() );
-                                cd.setMessage( data.getMessage() );
-                                Copy copy = new Copy();
-                                SVNCommitInfo result = copy.copy( cd );
-                                if ( result != null ) {
-                                    results.put( destination, result );
-                                }
-                            }
+                            where2where = W2W;
+                            Copy copy = new Copy();
+                            result = copy.copy( data );
                         }
                         else if ( data.getSourceURLs() != null ) {
-                            for ( SVNCopySource source : data.getSourceURLs() ) {
-                                if ( source == null ) {
-                                    continue;
-                                }
-                                SVNURL url = source.getURL();
-                                CopyData cd = new CopyData();
-                                String destination = "";
-                                cd.setSourceURL( url );
-                                cd.setRevision( data.getRevision() );
-                                cd.setIsMove( true );
-                                if ( data.getDestinationURL() != null ) {
-                                    // repository -> repository
-                                    where2where = U2U;
-                                    String segment = url.toString().substring( url.toString().lastIndexOf( "/" ) );
-                                    destination = data.getDestinationURL().toString() + segment;
-                                    cd.setDestinationURL( data.getDestinationURL().appendPath( segment, true ) );
-                                }
-                                cd.setOut( data.getOut() );
-                                Copy copy = new Copy();
-                                SVNCommitInfo result = copy.copy( cd );
-                                if ( result != null ) {
-                                    results.put( destination, result );
-                                }
-                            }
+                            where2where = U2U;
+                            Copy copy = new Copy();
+                            result = copy.copy( data );
                         }
                     }
                     catch ( Exception e ) {
@@ -195,7 +141,7 @@ public class MoveAction extends SVNAction {
                     finally {
                         data.getOut().close();
                     }
-                    return results;
+                    return result;
                 }
 
                 @Override
@@ -219,36 +165,38 @@ public class MoveAction extends SVNAction {
                             panel.addTab( jEdit.getProperty( "ips.Move_Error", "Move Error" ), error_panel );
                             return ;
                         }
-                        TreeMap<String, SVNCommitInfo> results = get();
+                        result = get();
                         switch ( where2where ) {
-                            case W2W: {
-                                    // SVNCommitInfo in results will be null in these
-                                    // cases since there is no actual commit.  These
-                                    // files will be scheduled for svn add.
-                                    AddResults ar = new AddResults();
-                                    for ( String path : results.keySet() ) {
-                                        ar.addPath( path );
-                                    }
-                                    JPanel results_panel = new AddResultsPanel( ar, AddResultsPanel.ADD, getView(), getUsername(), getPassword() );
-                                    panel.addTab( jEdit.getProperty( "ips.Move", "Move" ), results_panel );
+                            case W2W:
+                                // SVNCommitInfo in 'result' will be null in this
+                                // case since there is no actual commit.  These
+                                // files will be scheduled for svn add.
+                                AddResults ar = new AddResults();
+                                for ( SVNCopySource source : data.getSourceFiles() ) {
+                                    ar.addPath( source.getFile().getAbsolutePath() );
+                                }
+                                JPanel results_panel = new AddResultsPanel( ar, AddResultsPanel.ADD, getView(), getUsername(), getPassword() );
+                                panel.addTab( jEdit.getProperty( "ips.Move", "Move" ), results_panel );
 
-                                    // open the file(s) and signal ProjectViewer to possibly add the file
-                                    for ( String path : results.keySet() ) {
-                                        File f = new File( path );
-                                        if ( !f.isDirectory() ) {
-                                            Buffer buffer = jEdit.openFile( getView(), path );
-                                            BufferUpdate bu = new BufferUpdate( buffer, getView(), BufferUpdate.SAVED );
-                                            EditBus.send( bu );
-                                        }
+                                // open the file(s) and signal ProjectViewer to possibly add the file
+                                for ( SVNCopySource source : data.getSourceFiles() ) {
+                                    File f = source.getFile();
+                                    if ( !f.isDirectory() ) {
+                                        Buffer buffer = jEdit.openFile( getView(), f.getAbsolutePath() );
+                                        BufferUpdate bu = new BufferUpdate( buffer, getView(), BufferUpdate.SAVED );
+                                        EditBus.send( bu );
                                     }
                                 }
                                 break;
-                            case U2U: {
-                                    // these cases result in an immediate commit, so
-                                    // the SVNCommitInfo objects in the map are valid
-                                    JPanel results_panel = new CopyResultsPanel( results, data.getDestinationURL().toString(), true );
-                                    panel.addTab( jEdit.getProperty( "ips.Move", "Move" ), results_panel );
+                            case U2U:
+                                // these cases result in an immediate commit, so
+                                // the SVNCommitInfo objects in the map are valid
+                                HashMap<String, SVNCommitInfo> results = new HashMap<String, SVNCommitInfo>();
+                                for ( SVNCopySource source : data.getSourceURLs() ) {
+                                    results.put( source.getURL().toString(), result );
                                 }
+                                results_panel = new CopyResultsPanel( results, data.getDestinationURL().toString(), true );
+                                panel.addTab( jEdit.getProperty( "ips.Move", "Move" ), results_panel );
                                 break;
                             default:
                                 // this shouldn't happen, so I'll just quietly
@@ -258,13 +206,6 @@ public class MoveAction extends SVNAction {
                     catch ( Exception e ) {
                         // ignored
                         e.printStackTrace();
-                    }
-                }
-
-                private void checkDestination( File destination ) throws Exception {
-                    // destination must be a directory and must exist
-                    if ( !destination.exists() || !destination.isDirectory() ) {
-                        throw new Exception( "Invalid destination: " + destination.getAbsolutePath() + "\nMove destination must be an existing directory under version control." );
                     }
                 }
             }
