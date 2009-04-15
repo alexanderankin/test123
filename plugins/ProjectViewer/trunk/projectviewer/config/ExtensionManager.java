@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.ServiceManager;
@@ -51,8 +52,9 @@ public class ExtensionManager
 	}
 	//}}}
 
-	private List<ManagedService> dummyServices;
-	private List<WeakReference<ManagedService>> services;
+	private final List<ManagedService> dummyServices;
+	private final List<WeakReference<ManagedService>> services;
+	private final ReentrantLock lock;
 
 	private ExtensionManager()
 	{
@@ -66,6 +68,7 @@ public class ExtensionManager
 												  "version_control"));
 		dummyServices.add(new DummyManagedService(OptionsService.class,
 												  "option_panes"));
+		lock = new ReentrantLock();
 	}
 
 	/**
@@ -113,13 +116,29 @@ public class ExtensionManager
 	 */
 	public void reloadExtensions()
 	{
-		for (Iterator<WeakReference<ManagedService>> it = services.iterator();
-			 it.hasNext(); ) {
-			WeakReference<ManagedService> ref = it.next();
-			if (ref.get() != null) {
-				ref.get().updateExtensions(loadExtensions(ref.get().getServiceClass()));
-			} else {
-				it.remove();
+		/*
+		 * Make sure we don't allow recursive nor concurrent calls to this function.
+		 */
+		boolean locked = false;
+		if (!lock.isHeldByCurrentThread()) {
+			if (!(locked = lock.tryLock())) {
+				return;
+			}
+		}
+		try {
+			for (Iterator<WeakReference<ManagedService>> it = services.iterator();
+				 it.hasNext(); ) {
+				ManagedService svc = it.next().get();
+				if (svc != null) {
+					List<Object> exts = loadExtensions(svc.getServiceClass());
+					svc.updateExtensions(exts);
+				} else {
+					it.remove();
+				}
+			}
+		} finally {
+			if (locked) {
+				lock.unlock();
 			}
 		}
 	}
@@ -134,17 +153,23 @@ public class ExtensionManager
 		ProjectViewerConfig config = ProjectViewerConfig.getInstance();
 		String[] extensions = ServiceManager.getServiceNames(clazz.getName());
 		List<Object> lst = null;
-		for (String ext : extensions) {
-			Object svc = ServiceManager.getService(clazz.getName(), ext);
-			if (config.isExtensionEnabled(clazz.getName(),
-										  svc.getClass().getName())) {
-				if (svc != null) {
-					if (lst == null) {
-						lst = new LinkedList<Object>();
+
+		lock.lock();
+		try {
+			for (String ext : extensions) {
+				Object svc = ServiceManager.getService(clazz.getName(), ext);
+				if (config.isExtensionEnabled(clazz.getName(),
+											  svc.getClass().getName())) {
+					if (svc != null) {
+						if (lst == null) {
+							lst = new LinkedList<Object>();
+						}
+						lst.add(svc);
 					}
-					lst.add(svc);
 				}
 			}
+		} finally {
+			lock.unlock();
 		}
 		return lst;
 	}
