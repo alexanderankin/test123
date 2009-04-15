@@ -260,6 +260,7 @@ public class MoveDialog extends JDialog {
                         MoveDialog.this.setVisible( false );
                         MoveDialog.this.dispose();
                         path.addCurrentToHistory();
+                        commentList.save();
                     }
                 }
                                 );
