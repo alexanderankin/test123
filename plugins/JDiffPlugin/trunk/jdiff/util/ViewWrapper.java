@@ -27,9 +27,14 @@ import org.gjt.sp.jedit.View;
  * configuration can be restored after a diff.
  * TODO: this is a hack.  The View class has been fixed so access to get/setSplitConfig
  * are both public now.  I'm leaving this code in place for the moment, but it isn't
- * called from anywhere.  This class and PrivilegedAccessor can both be removed
+ * called from anywhere.  This class and PrivilegedAccessor could both be removed
  * after the release of jEdit 4.3pre17.
+ *
+ * @deprecated As of jEdit 4.3pre16, org.gjt.sp.View has been modified to allow
+ * public access to set/getSplitConfig.  This class was used to access those
+ * methods when they were non-public. 
  */
+@Deprecated 
 public class ViewWrapper {
 
     // the view to wrap

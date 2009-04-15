@@ -21,11 +21,15 @@ import java.lang.reflect.*;
  *                                       "/ise/library/PrivilegedAccessor" ) );
  * </pre>
  *
+ * @deprecated As of jEdit 4.3pre16, org.gjt.sp.View has been modified to allow
+ * public access to set/getSplitConfig.  This class was used to access those
+ * methods when they were non-public.
+ *
  * @author Charlie Hubbard (chubbard@iss.net)
  * @author Prashant Dhokte (pdhokte@iss.net)
  * @author Dale Anson (danson@germane-software.com)
  */
-
+@Deprecated
 public class PrivilegedAccessor {
 
     /**
