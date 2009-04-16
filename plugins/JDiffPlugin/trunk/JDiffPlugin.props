@@ -2,7 +2,7 @@
 # Author: Andre Kaplan
 plugin.jdiff.JDiffPlugin.name=JDiff Plugin
 plugin.jdiff.JDiffPlugin.author=André Kaplan/Mark Wickens, Dale Anson
-plugin.jdiff.JDiffPlugin.version=2.2.1
+plugin.jdiff.JDiffPlugin.version=2.3.0
 plugin.jdiff.JDiffPlugin.docs=docs/index.html
 plugin.jdiff.JDiffPlugin.description=JDiffPlugin is a visual diff and merge utility for jEdit.
 
@@ -96,6 +96,8 @@ options.jdiff.ignore-all-whitespace=Ignore all whitespace
 options.jdiff.ui-options.label=UI Options:
 options.jdiff.auto-show-dockable=Automatically show dockable on diff
 options.jdiff.show-line-diff=Show line diff in dockable
+options.jdiff.horiz-scroll=Scroll horizontally to next/prev diff
+options.jdiff.select-word=Select first word of next/prev diff
 options.jdiff.beep-on-error=Beep on error
 options.jdiff.restore-view=Restore View after diff
 
