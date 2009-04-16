@@ -20,7 +20,7 @@ license can be found in the file COPYING.DOC.txt included with
 jEdit.</p>
 
 <hr>
-<a name="presentation"> 
+<a name="presentation">
 
 <h3>Presentation</h3>
 
@@ -63,7 +63,7 @@ jEdit.</p>
 </ul>
 
 <hr>
-<a name="usage"> 
+<a name="usage">
 
 <h3>Usage</h3>
 
@@ -103,7 +103,7 @@ Diff</b></p>
 <ol>
 <li>Open the dockable.</li>
 
-<li>Click the 'Diff' button: 
+<li>Click the 'Diff' button:
 
 <p><img alt="" src="delta.png"></p>
 </li>
@@ -111,10 +111,10 @@ Diff</b></p>
 
 <p>Figure 1 shows the result</p>
 
-<img alt="" src="diff_overview.jpg" format="JPG"> 
+<img alt="" src="diff_overview.jpg" format="JPG">
 
 <hr>
-<a name="display"> 
+<a name="display">
 
 <h3>Display</h3>
 
@@ -245,7 +245,7 @@ vertical space in the top or bottom docking areas when the line
 overview is also displayed.</p>
 
 <hr>
-<a name="other_commands"> 
+<a name="other_commands">
 
 <h3>Other commands</h3>
 
@@ -288,7 +288,7 @@ normal method</p>
 </ul>
 
 <hr>
-<a name="options"> 
+<a name="options">
 
 <h3>Options</h3>
 
@@ -414,7 +414,7 @@ overview.</li>
 </ul>
 
 <hr>
-<a name="license"> 
+<a name="license">
 
 <h3>License</h3>
 
@@ -423,7 +423,7 @@ href=
 "http://www.fsf.org/copyleft/gpl.html">http://www.fsf.org/copyleft/gpl.html</a></p>
 
 <hr>
-<a name="feedback"> 
+<a name="feedback">
 
 <h3>Feedback</h3>
 
@@ -446,15 +446,89 @@ Sourceforge Bug Tracker at <a href=
 </ul>
 
 <hr>
-<a name="history"> 
+<a name="history">
 
 <h3>History</h3>
 
 <ul>
 <li>
-<p>Version 1.8. Bug fixes, added "Diff" and "Refresh" buttons to
+<p>
+Version 2.3.0 (Dale Anson)<br>
+- applied patch from Sean McNamara to optionally scroll text areas to first diff and
+to optionally select the first word of the diff<br>
+- adjusted line diff to scroll to make first diff visible<br>
+</p>
+</li>
+<li>
+<p>
+Version 2.2.1 (Dale Anson)
+Bug fix release:<br>
+- 2755385, problem with moving diff hunk from one side to the other
+when hunk is at bottom of buffer.<br>
+- 2540573, added option for user to decide if the View should be
+restored after a diff, added message to user indicating if files had been
+closed during diff.<br>
+</p>
+</li>
+<li>
+<p>
+Version 2.2.0 (Dale Anson)<br>
+- fix for 2095399, don't unsplit and resplit when the view is already
+set correctly for a diff.<br>
+- added option to turn off annoying beeps<br>
+</p>
+</li>
+<li>
+<p>
+Version 2.1.0 (Dale Anson)<br>
+- fix for 1963921, rendering problem in overview bar<br>
+- added scrollbar to line diff so the end of long lines can
+actually be seen<br>
+- fixes to better follow look and feel, editor scheme settings, and
+user color settings<br>
+- added code to auto-identify the patch file type so the user
+doesn't have to know the type and appropriate error messages can be
+displayed for unsupported types<br>
+- fix for 1996223, JDiff now restores split configuration to its
+previous state after a diff<br>
+- fix for 1969175, JDiff was showing dockable when it shouldn't<br>
+</p>
+</li>
+<li>
+<p>
+Version 2.0 (Dale Anson)<br>
+- added ability to apply normal and unified diff<br>
+- added EditBus message needed by SVNPlugin to know when diff
+session is ended<br>
+</p>
+</li>
+<li>
+<p>
+Version 1.9.0 (Dale Anson)<br>
+- Added dependency on CommonControls plugin.<br>
+- Moved button tooltip text to props file.<br>
+- Fix for 1888242.<br>
+- Major code clean up and refactoring to clean up display repainting
+problems.<br>
+- Removed code and references to the virtual overview, that hasn't
+worked since jEdit 4.2 and can't be fixed easily due to changes in jEdit's
+Display Manager.<br>
+- Fixed the little left and right arrows so they are the same size.<br>
+- Fixed line diff to use same anti-alias setting used in the main text
+area.<br>
+- Fix for 1891865.<br>
+- Added optional layouts for toolbar and line diff.<br>
+- Fix for 1892782.<br>
+- Added Diff and Refresh buttons to toolbar.<br>
+</p>
+</li>
+<li>
+<p>
+Version 1.8 (Dale Anson)<br>
+Bug fixes, added "Diff" and "Refresh" buttons to
 merge controls, major code refactoring to clean up the various
-painting issues.</p>
+painting issues.<br>
+</p>
 </li>
 
 <li>
@@ -484,7 +558,7 @@ Andr??.</p>
 </ul>
 
 <hr>
-<a name="credits"> 
+<a name="credits">
 
 <h3>Credits</h3>
 
