@@ -90,7 +90,7 @@ public class ProjectFilterPane extends OptionPaneBase
 	private VPTProject proj;
 	//}}}
 
-	ProjectFilterPane(VPTProject proj)
+	public ProjectFilterPane(VPTProject proj)
 	{
 		super("projectviewer.optiongroup.filter",
 			  "projectviewer.filterconfig");
