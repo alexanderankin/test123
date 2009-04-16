@@ -305,21 +305,22 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
 
     private void adjustButtons( ) {
         // adjust buttons
-        SwingUtilities.invokeLater( new Runnable() {
-                    public void run() {
-                        boolean enabled = BasicMergeToolBarUI.this.view.getEditPanes().length == 2;
-                        diff.setEnabled( enabled );
-                        next.setEnabled( enabled );
-                        prev.setEnabled( enabled );
-                        move_right.setEnabled( enabled );
-                        move_left.setEnabled( enabled );
-                        unsplit.setEnabled( enabled );
-                        swap.setEnabled( enabled );
-                        refresh.setEnabled( enabled );
-                        BasicMergeToolBarUI.this.toolbar.repaint();
-                    }
+        SwingUtilities.invokeLater(
+            new Runnable() {
+                public void run() {
+                    boolean enabled = BasicMergeToolBarUI.this.view.getEditPanes().length == 2;
+                    diff.setEnabled( enabled );
+                    next.setEnabled( enabled );
+                    prev.setEnabled( enabled );
+                    move_right.setEnabled( enabled );
+                    move_left.setEnabled( enabled );
+                    unsplit.setEnabled( enabled );
+                    swap.setEnabled( enabled );
+                    refresh.setEnabled( enabled );
+                    BasicMergeToolBarUI.this.toolbar.repaint();
                 }
-                                  );
+            }
+        );
     }
 
 }
