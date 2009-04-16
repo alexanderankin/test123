@@ -20,11 +20,12 @@
 
 package jdiff;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.awt.Color;
 import java.awt.Font;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
@@ -922,6 +923,82 @@ public class DualDiff implements EBComponent {
         }
     }
 
+    /**
+     * @return the index of the first character where <code>left</code> is not the
+     * same as <code>right</code>.
+     */
+    private static int firstNoMatch( String left, String right ) {
+        if ( left == null || right == null ) {
+            return 0;
+        }
+        boolean ignoreCase = jEdit.getBooleanProperty( "jdiff.ignore-case" );
+        if ( ignoreCase ) {
+            if ( left == right || left.equalsIgnoreCase( right ) ) {
+                return -1;
+            }
+        }
+        else {
+            if ( left == right || left.equals( right ) ) {
+                return -1;
+            }
+        }
+
+        if ( left.charAt( 0 ) != right.charAt( 0 ) ) {
+            return 0;
+        }
+
+        int minLength = Math.min( left.length(), right.length() );
+        if ( ignoreCase ) {
+            left = left.toLowerCase();
+            right = right.toLowerCase();
+        }
+
+        int i;
+        for ( i = 0; i < minLength; i++ ) {
+            if ( left.charAt( i ) != right.charAt( i ) ) {
+                break;
+            }
+        }
+        return i;
+    }
+
+    private static void centerOnDiff( TextArea leftTextArea, TextArea rightTextArea ) {
+        if ( leftTextArea == null || rightTextArea == null ) {
+            return ;
+        }
+
+        String leftLine = getCurrentLineText( leftTextArea );
+        String rightLine = getCurrentLineText( rightTextArea );
+
+        int diffOffset = firstNoMatch( leftLine, rightLine );
+
+        leftTextArea.setCaretPosition( leftTextArea.getCaretPosition() + diffOffset, true );
+        rightTextArea.setCaretPosition( rightTextArea.getCaretPosition() + diffOffset, true );
+
+        alignCaretLeft( leftTextArea );
+        alignCaretLeft( rightTextArea );
+    }
+
+    private static String getCurrentLineText( TextArea ta ) {
+        if ( ta == null ) {
+            return "";
+        }
+        int caretPosition = ta.getCaretPosition();
+        int lineOffset = ta.getLineOfOffset( caretPosition );
+        return ta.getLineText( lineOffset );
+    }
+
+    private static void alignCaretLeft( TextArea ta ) {
+        int caretPhysOffset = ta.getCaretPosition();
+        int caretPhysLine = ta.getLineOfOffset( caretPhysOffset );
+        int caretPhysLineStartOffset = ta.getLineStartOffset( caretPhysLine );
+        int caretRelOffset = caretPhysOffset - caretPhysLineStartOffset;
+        // caretLocation will be (X,Y) relative to the current view area
+        Point caretLocation = ta.offsetToXY( caretPhysLine, caretRelOffset );
+        // to scroll the caret to the left, we need to add caretLocation.x to the horizontalOffset
+        ta.setHorizontalOffset( -1 * ( Math.abs( ta.getHorizontalOffset() ) + caretLocation.x ) );
+    }
+
     private void nextDiff0() {
         Diff.Change hunk = this.edits;
         int firstLine = this.textArea0.getCaretLine();
@@ -945,6 +1022,17 @@ public class DualDiff implements EBComponent {
                 this.textArea1.setCaretPosition( caret_position, false );
                 this.textArea1.scrollToCaret( false );
                 this.textArea1.scrollUpLine();
+
+                // maybe move the caret to the first actual diff character
+                if ( jEdit.getBooleanProperty( "jdiff.horiz-scroll" ) ) {
+                    centerOnDiff( this.textArea0, this.textArea1 );
+
+                    // maybe select the first diff word
+                    if ( jEdit.getBooleanProperty( "jdiff.select-word" ) ) {
+                        this.textArea0.selectWord();
+                        this.textArea1.selectWord();
+                    }
+                }
 
                 if ( this.textArea0.getFirstLine() != line &&
                         jEdit.getBooleanProperty( "jdiff.beep-on-error" ) ) {
@@ -982,6 +1070,17 @@ public class DualDiff implements EBComponent {
                 this.textArea0.setCaretPosition( caret_position, false );
                 this.textArea0.scrollToCaret( false );
                 this.textArea0.scrollUpLine();
+
+                // maybe move the caret to the first actual diff character
+                if ( jEdit.getBooleanProperty( "jdiff.horiz-scroll" ) ) {
+                    centerOnDiff( this.textArea0, this.textArea1 );
+
+                    // maybe select the first diff word
+                    if ( jEdit.getBooleanProperty( "jdiff.select-word" ) ) {
+                        this.textArea0.selectWord();
+                        this.textArea1.selectWord();
+                    }
+                }
 
                 if ( this.textArea1.getFirstLine() != line &&
                         jEdit.getBooleanProperty( "jdiff.beep-on-error" ) ) {

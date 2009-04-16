@@ -20,6 +20,8 @@
 
 package jdiff.options;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
@@ -35,17 +37,24 @@ import ise.java.awt.KappaLayout;
 
 
 public class JDiffOptionPane extends AbstractOptionPane {
+    // diff options
     private JCheckBox ignoreCase;
     private JCheckBox trimWhitespace;
     private JCheckBox ignoreAmountOfWhitespace;
     private JCheckBox ignoreAllWhitespace;
+
+    // ui options
     private JCheckBox autoShowDockable;
     private JCheckBox beepOnError;
+    private JCheckBox showLineDiff;
+    private JCheckBox restoreView;
+    private JCheckBox horizScroll;
+    private JCheckBox selectWord;
+
+    // dockable ui options
     private JRadioButton horizontal;
     private JRadioButton vertical;
     private JRadioButton compact;
-    private JCheckBox showLineDiff;
-    private JCheckBox restoreView;
 
     public JDiffOptionPane() {
         super( "jdiff-general" );
@@ -53,9 +62,7 @@ public class JDiffOptionPane extends AbstractOptionPane {
 
 
     public void _init() {
-        setBorder( BorderFactory.createEmptyBorder( 3, 3, 3, 3 ) );
-    
-        // diff options        
+        // diff options
         JLabel diff_options_label = new JLabel( jEdit.getProperty( "options.diff-options.label", "Diff Options:" ) );
         ignoreCase = createCheckBox( "jdiff.ignore-case", false );
         trimWhitespace = createCheckBox( "jdiff.trim-whitespace", false );
@@ -66,8 +73,22 @@ public class JDiffOptionPane extends AbstractOptionPane {
         JLabel ui_options_label = new JLabel( jEdit.getProperty( "options.ui-options.label", "UI Options:" ) );
         autoShowDockable = createCheckBox( "jdiff.auto-show-dockable", false );
         showLineDiff = createCheckBox( "jdiff.show-line-diff", true );
+        horizScroll = createCheckBox( "jdiff.horiz-scroll", false );
+        selectWord = createCheckBox( "jdiff.select-word", false );
+        selectWord.setEnabled( false );
         beepOnError = createCheckBox( "jdiff.beep-on-error", true );
         restoreView = createCheckBox( "jdiff.restore-view", true );
+
+        // only enable selectWord if horizScroll is selected
+        horizScroll.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    boolean selected = ( ( JCheckBox ) ae.getSource() ).isSelected();
+                    selectWord.setEnabled( selected );
+                    selectWord.setSelected( selected );
+                }
+            }
+        );
 
         // dockable UI options
         int orientation = jEdit.getIntegerProperty( "jdiff.toolbar-orientation", MergeToolBar.HORIZONTAL );
@@ -98,24 +119,29 @@ public class JDiffOptionPane extends AbstractOptionPane {
         }
         JLabel orientation_label = new JLabel( jEdit.getProperty( "options.toolbar-orientation.label", "Merge Toolbar Orientation:" ) );
 
-        addComponent( diff_options_label );
-        addComponent( ignoreCase );
-        addComponent( trimWhitespace );
-        addComponent( ignoreAmountOfWhitespace );
-        addComponent( ignoreAllWhitespace );
-        
-        addComponent( KappaLayout.createVerticalStrut( 11 ) );
-        addComponent( ui_options_label );
-        addComponent( autoShowDockable );
-        addComponent( showLineDiff );
-        addComponent( beepOnError );
-        addComponent( restoreView );
-        
-        addComponent( KappaLayout.createVerticalStrut( 11 ) );
-        addComponent( orientation_label );
-        addComponent( horizontal );
-        addComponent( vertical );
-        addComponent( compact );
+        setLayout( new KappaLayout() );
+        setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
+        add( "0,  0, 2, 1, W, 0, 2", diff_options_label );
+        add( "0,  1, 2, 1, W, 0, 2", ignoreCase );
+        add( "0,  2, 2, 1, W, 0, 2", trimWhitespace );
+        add( "0,  3, 2, 1, W, 0, 2", ignoreAmountOfWhitespace );
+        add( "0,  4, 2, 1, W, 0, 2", ignoreAllWhitespace );
+
+        add( "0,  5, 2, 1, W, 0, 2", KappaLayout.createVerticalStrut( 11 ) );
+        add( "0,  6, 2, 1, W, 0, 2", ui_options_label );
+        add( "0,  7, 2, 1, W, 0, 2", autoShowDockable );
+        add( "0,  8, 2, 1, W, 0, 2", showLineDiff );
+        add( "0,  9, 2, 1, W, 0, 2", horizScroll );
+        add( "0, 10, 1, 1, W, 0, 2", KappaLayout.createHorizontalStrut( 16, true ) );
+        add( "1, 10, 1, 1, W, 0, 2", selectWord );
+        add( "0, 12, 2, 1, W, 0, 2", beepOnError );
+        add( "0, 13, 2, 1, W, 0, 2", restoreView );
+
+        add( "0, 14, 2, 1, W, 0, 2", KappaLayout.createVerticalStrut( 11 ) );
+        add( "0, 15, 2, 1, W, 0, 2", orientation_label );
+        add( "0, 16, 2, 1, W, 0, 2", horizontal );
+        add( "0, 17, 2, 1, W, 0, 2", vertical );
+        add( "0, 18, 2, 1, W, 0, 2", compact );
     }
 
 
@@ -137,6 +163,8 @@ public class JDiffOptionPane extends AbstractOptionPane {
         jEdit.setBooleanProperty( "jdiff.ignore-all-whitespace", ignoreAllWhitespace.isSelected() );
         jEdit.setBooleanProperty( "jdiff.auto-show-dockable", autoShowDockable.isSelected() );
         jEdit.setBooleanProperty( "jdiff.show-line-diff", showLineDiff.isSelected() );
+        jEdit.setBooleanProperty( "jdiff.horiz-scroll", horizScroll.isSelected() );
+        jEdit.setBooleanProperty( "jdiff.select-word", selectWord.isSelected() );
         jEdit.setBooleanProperty( "jdiff.beep-on-error", beepOnError.isSelected() );
         jEdit.setBooleanProperty( "jdiff.restore-view", restoreView.isSelected() );
 
