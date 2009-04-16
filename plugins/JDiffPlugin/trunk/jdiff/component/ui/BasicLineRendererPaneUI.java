@@ -34,7 +34,7 @@ public class BasicLineRendererPaneUI extends DiffLineOverviewUI implements Chang
     private JScrollPane scrollPane = null;
     private DiffLineModel model;
     private LineRenderer lineRenderer = null;
-    private Color fgColor = jEdit.getColorProperty("view.fgColor", Color.BLACK);
+    private Color fgColor = jEdit.getColorProperty( "view.fgColor", Color.BLACK );
 
     /**
      * Required by super class.
@@ -86,7 +86,7 @@ public class BasicLineRendererPaneUI extends DiffLineOverviewUI implements Chang
      */
     public void installComponents() {
         lineRenderer = new LineRenderer( );
-        scrollPane = new JScrollPane(lineRenderer);
+        scrollPane = new JScrollPane( lineRenderer );
         lineRendererPane.add( scrollPane, BorderLayout.CENTER );
     }
 
@@ -131,6 +131,25 @@ public class BasicLineRendererPaneUI extends DiffLineOverviewUI implements Chang
     public void stateChanged( ChangeEvent event ) {
         // paint lines or clear, depends on the view and the model.
         lineRenderer.repaint();
+        if ( lineRendererPane.getModel() != null ) {
+            String leftLine = lineRendererPane.getModel().getLeftLine();
+            String rightLine = lineRendererPane.getModel().getRightLine();
+            String longLine = leftLine.length() > rightLine.length() ? leftLine : rightLine;
+            String shortLine = leftLine.length() <= rightLine.length() ? leftLine : rightLine;
+            int offset = shortLine.length();
+            for ( int i = 0; i < shortLine.length(); i++ ) {
+                if ( shortLine.charAt( i ) != longLine.charAt( i ) ) {
+                    offset = i;
+                    break;
+                }
+            }
+            int max_length = longLine.length();
+            float percent = ( float ) offset / ( float ) max_length;
+            final int vp_offset = ( int ) ( ( float ) scrollPane.getViewport().getViewRect().width * percent );
+            Point p = scrollPane.getViewport().getViewPosition();
+            p.x = vp_offset;
+            scrollPane.getViewport().setViewPosition( p );
+        }
     }
 
     /**
@@ -162,7 +181,7 @@ public class BasicLineRendererPaneUI extends DiffLineOverviewUI implements Chang
          * @return 600 x 100
          */
         public Dimension getPreferredSize() {
-            return new Dimension(preferredWidth, preferredHeight);
+            return new Dimension( preferredWidth, preferredHeight );
         }
 
         public Dimension getMinimumSize() {
@@ -223,7 +242,7 @@ public class BasicLineRendererPaneUI extends DiffLineOverviewUI implements Chang
             gfx.drawLine( x, y, x + left_width, y );
             gfx.drawLine( x, y, x, y + tick_height );
             gfx.drawLine( x + left_width, y, x + left_width, y + tick_height );
-            preferredWidth = Math.max(minimumSize.width, x + left_width + leftMargin);
+            preferredWidth = Math.max( minimumSize.width, x + left_width + leftMargin );
 
             // draw text of left line
             Color color;
@@ -236,8 +255,8 @@ public class BasicLineRendererPaneUI extends DiffLineOverviewUI implements Chang
                 char c = leftChars.get( i );
                 color = leftColors.get( i );
                 gfx.setColor( color );
-                gfx.fillRect(x, y0 - fm.getHeight() + fm.getDescent(), fm.charWidth(c), fm.getHeight());
-                gfx.setColor(fgColor);
+                gfx.fillRect( x, y0 - fm.getHeight() + fm.getDescent(), fm.charWidth( c ), fm.getHeight() );
+                gfx.setColor( fgColor );
                 gfx.drawString( String.valueOf( c ), x, y0 );
                 x += fm.charWidth( c );
             }
@@ -250,8 +269,8 @@ public class BasicLineRendererPaneUI extends DiffLineOverviewUI implements Chang
                 char c = rightChars.get( i );
                 color = rightColors.get( i );
                 gfx.setColor( color );
-                gfx.fillRect(x, y1 - fm.getHeight() + fm.getDescent(), fm.charWidth(c), fm.getHeight());
-                gfx.setColor(fgColor);
+                gfx.fillRect( x, y1 - fm.getHeight() + fm.getDescent(), fm.charWidth( c ), fm.getHeight() );
+                gfx.setColor( fgColor );
                 gfx.drawString( String.valueOf( c ), x, y1 );
                 x += fm.charWidth( c );
             }
@@ -266,7 +285,7 @@ public class BasicLineRendererPaneUI extends DiffLineOverviewUI implements Chang
             gfx.drawLine( x, y, x + right_width, y );
             gfx.drawLine( x, y, x, y - tick_height );
             gfx.drawLine( x + right_width, y, x + right_width, y - tick_height );
-            preferredWidth = Math.max(preferredWidth, x + right_width + leftMargin);
+            preferredWidth = Math.max( preferredWidth, x + right_width + leftMargin );
 
             scrollPane.revalidate();
         }
