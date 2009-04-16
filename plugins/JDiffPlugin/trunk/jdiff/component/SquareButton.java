@@ -22,6 +22,9 @@ import java.awt.Dimension;
 import javax.swing.Icon;
 import javax.swing.JButton;
 
+/**
+ * A 30 x 30 JButton.
+ */
 public class SquareButton extends JButton {
     private Dimension size = new Dimension(30, 30);
 
