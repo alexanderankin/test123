@@ -26,7 +26,7 @@ import common.threads.WorkerThreadPool;
  *Description of the Class
  *
  * @author     svu
- * @created    16 Сентябрь 2001 г.
+ * @created    2001
  */
 public class CommonControlsPlugin extends EditPlugin
 {
