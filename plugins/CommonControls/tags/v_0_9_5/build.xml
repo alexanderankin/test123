@@ -1,0 +1,53 @@
+<!-- ================================================== -->
+<!-- Build file for the CommonControls plugin           -->
+<!-- :tabSize=4:indentSize=4:noTabs=true:               -->
+<!-- :folding=explicit:collapseFolds=1:                 -->
+<!-- ================================================== -->
+<project name="CommonControls" default="build" basedir=".">
+
+    <property file="build.properties" />
+    <property file="../build.properties" />
+    <property name="build.support" value="../build-support" />
+
+    <property name="javadoc.packagenames" value="common.*" />
+    <property name="plugin.dependencies" value="" />
+    <property name="dist.target" value="dist.complete" />
+    <property name="user-doc.xml" value="${basedir}/users-guide.xml" />
+
+    <import file="${build.support}/plugin-build.xml" />
+
+    <selector id="compileFiles">
+        <filename name="**/*.java" />
+    </selector>
+
+    <target name="build.post" depends="kappalayout"/>
+
+    <target name="kappalayout">
+        <javac deprecation="on" debug="on" nowarn="on" destdir="build/classes" srcdir=".">
+            <include name="ise/**/*"/>
+        </javac>
+        <tstamp/>
+        <jar jarfile="${install.dir}/kappalayout.jar">
+            <manifest>
+                <attribute name="AppName" value="kappalayout" />
+                <attribute name="Author" value="Dale Anson" />
+                <attribute name="Created-By" value="${user.name}" />
+                <attribute name="Created-On" value="${TODAY}"/>
+            </manifest>
+            <fileset dir="build/classes">
+                <include name="ise/**/*" />
+            </fileset>
+        </jar>
+    </target>
+
+    <selector id="packageFiles">
+        <or>
+            <filename name="**/*.props"/>
+            <filename name="*.html"/>
+            <filename name="**/*.gif"/>
+            <filename name="**/*.png"/>
+        </or>
+    </selector>
+
+</project>
+
