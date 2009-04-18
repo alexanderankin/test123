@@ -39,9 +39,9 @@ import ise.java.awt.KappaLayout;
 
 
 public class JDiffOptionPane implements OptionPane {
-    
+
     private JPanel panel = null;
-    
+
     // diff options
     private JCheckBox ignoreCase;
     private JCheckBox trimWhitespace;
@@ -60,30 +60,30 @@ public class JDiffOptionPane implements OptionPane {
     private JRadioButton horizontal;
     private JRadioButton vertical;
     private JRadioButton compact;
-    
+
     /**
-     * @return the name of this panel    
+     * @return the name of this panel
      */
     public String getName() {
-        return jEdit.getProperty("jdiff-general");   
+        return jEdit.getProperty("jdiff.general");
     }
-    
+
     /**
-     * @return the panel to display the general options for JDiff    
+     * @return the panel to display the general options for JDiff
      */
     public Component getComponent() {
         if (panel == null) {
-            createPanel();   
+            createPanel();
         }
         return panel;
     }
-    
+
     /**
      * Initialize the panel, create the components and apply current settings.
      */
     public void init() {
         if (panel == null) {
-            createPanel();   
+            createPanel();
         }
         ignoreCase.setSelected(jEdit.getBooleanProperty( "jdiff.ignore-case", false ));
         trimWhitespace.setSelected(jEdit.getBooleanProperty( "jdiff.trim-whitespace", false ));
@@ -97,7 +97,7 @@ public class JDiffOptionPane implements OptionPane {
         selectWord.setEnabled( horizScroll.isSelected() );
         beepOnError.setSelected(jEdit.getBooleanProperty( "jdiff.beep-on-error", true ));
         restoreView.setSelected(jEdit.getBooleanProperty( "jdiff.restore-view", true ));
- 
+
         int orientation = jEdit.getIntegerProperty( "jdiff.toolbar-orientation", MergeToolBar.HORIZONTAL );
         switch ( orientation ) {
             case MergeToolBar.VERTICAL:
@@ -118,7 +118,7 @@ public class JDiffOptionPane implements OptionPane {
         }
     }
 
-    // actually create and layout the option panel here    
+    // actually create and layout the option panel here
     private void createPanel() {
         // diff options
         JLabel diff_options_label = new JLabel( jEdit.getProperty( "options.diff-options.label", "Diff Options:" ) );
@@ -179,13 +179,13 @@ public class JDiffOptionPane implements OptionPane {
 
         panel = new JPanel();
         panel.setLayout( new KappaLayout() );
-        panel.setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
+        panel.setBorder( BorderFactory.createEmptyBorder( 12, 11, 11, 12 ) );
         panel.add( "0,  0, 2, 1, W, 0, 2", diff_options_label );
         panel.add( "0,  1, 2, 1, W, 0, 2", ignoreCase );
         panel.add( "0,  2, 2, 1, W, 0, 2", trimWhitespace );
         panel.add( "0,  3, 2, 1, W, 0, 2", ignoreAmountOfWhitespace );
         panel.add( "0,  4, 2, 1, W, 0, 2", ignoreAllWhitespace );
-        
+
         panel.add( "0,  5, 2, 1, W, 0, 2", KappaLayout.createVerticalStrut( 11 ) );
         panel.add( "0,  6, 2, 1, W, 0, 2", ui_options_label );
         panel.add( "0,  7, 2, 1, W, 0, 2", autoShowDockable );
@@ -195,14 +195,14 @@ public class JDiffOptionPane implements OptionPane {
         panel.add( "1, 10, 1, 1, W, 0, 2", selectWord );
         panel.add( "0, 12, 2, 1, W, 0, 2", beepOnError );
         panel.add( "0, 13, 2, 1, W, 0, 2", restoreView );
-        
+
         panel.add( "0, 14, 2, 1, W, 0, 2", KappaLayout.createVerticalStrut( 11 ) );
         panel.add( "0, 15, 2, 1, W, 0, 2", orientation_label );
         panel.add( "0, 16, 2, 1, W, 0, 2", horizontal );
         panel.add( "0, 17, 2, 1, W, 0, 2", vertical );
         panel.add( "0, 18, 2, 1, W, 0, 2", compact );
     }
-    
+
     /**
      * Save the user settings for the general options.
      */

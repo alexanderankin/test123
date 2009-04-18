@@ -9,7 +9,7 @@ plugin.jdiff.JDiffPlugin.description=JDiffPlugin is a visual diff and merge util
 # Dependencies
 plugin.jdiff.JDiffPlugin.depend.0=jdk 1.5
 plugin.jdiff.JDiffPlugin.depend.1=jedit 04.03.15.00
-plugin.jdiff.JDiffPlugin.depend.2=plugin CommonControlsPlugin 0.9.4
+plugin.jdiff.JDiffPlugin.depend.2=plugin CommonControlsPlugin 0.9.5
 plugin.jdiff.JDiffPlugin.activate=defer
 
 # Menu
@@ -32,8 +32,7 @@ plugin.jdiff.JDiffPlugin.menu=\
     jdiff.apply-patch
 
 plugin.jdiff.JDiffPlugin.option-group=jdiff.general \
-    jdiff.overview \
-    jdiff.highlight
+    jdiff.overview
 
 # titles for DockableWindowManager
 jdiff-lines.title=Diff
@@ -83,9 +82,7 @@ jdiff.highlight-invalid-color=\#909090
 options.jdiff.general.code=new jdiff.options.JDiffOptionPane();
 options.jdiff.general.label=General
 options.jdiff.overview.code=new jdiff.options.JDiffOverviewOptionPane();
-options.jdiff.overview.label=Overview colors
-options.jdiff.highlight.code=new jdiff.options.JDiffHighlightOptionPane();
-options.jdiff.highlight.label=Highlight colors
+options.jdiff.overview.label=Colors
 
 options.jdiff.diff-options.label=Diff options:
 options.jdiff.ignore-case=Ignore case
@@ -106,13 +103,7 @@ options.jdiff.toolbar-horizontal=Horizontal
 options.jdiff.toolbar-vertical=Vertical
 options.jdiff.toolbar-compact=Compact
 
-## no longer used:
-options.jdiff.overview-display=Global overview display:
-options.jdiff.physical-overview=Physical overview
-options.jdiff.virtual-overview=Virtual overview
-##
-
-options.jdiff.overview=Overview colors:
+options.jdiff.overview=Colors:
 options.jdiff.overview-changed-color=Changed lines color:\ 
 options.jdiff.overview-deleted-color=Deleted lines color:\ 
 options.jdiff.overview-inserted-color=Inserted lines color:\ 
