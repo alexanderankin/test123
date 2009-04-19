@@ -39,12 +39,20 @@ import marker.tree.SourceLinkTree.SubtreePopupMenuProvider;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.RolloverButton;
 
 
 @SuppressWarnings("serial")
 public class MarkerSetManager extends JPanel {
 	
+	private static final String MSG_BASE = "marker-set-manager.msg.";
+	private static final String MSG_GROUP_BY = MSG_BASE + "groupBy";
+	private static final String MSG_ACTIVE_MARKER_SET = MSG_BASE + "activeMarkerSet";
+	private static final String MSG_NEW = MSG_BASE + "new";
+	private static final String MSG_BUFFER_SCOPE = MSG_BASE + "bufferScope";
+	private static final String MSG_SET_SHORTCUT = MSG_BASE + "setShortcut";
+	private static final String MSG_SHORTCUT_FOR_MARKER = MSG_BASE + "shortcutLabel";
 	private View view;
 	private SourceLinkTree markers;
 	private JComboBox structure;
@@ -69,7 +77,7 @@ public class MarkerSetManager extends JPanel {
 		JPanel structurePanel = new JPanel();
 		structurePanel.setAlignmentX(0);
 		northPanel.add(structurePanel);
-		structurePanel.add(new JLabel("Group markers by:"));
+		structurePanel.add(new JLabel(jEdit.getProperty(MSG_GROUP_BY)));
 		structure = new JComboBox(builders);
 		structurePanel.add(structure);
 		markers = new SourceLinkTree(view);
@@ -85,7 +93,7 @@ public class MarkerSetManager extends JPanel {
 		structure.setSelectedIndex(0);
 		JPanel activePanel = new JPanel();
 		northPanel.add(activePanel);
-		activePanel.add(new JLabel("Active marker set:"));
+		activePanel.add(new JLabel(jEdit.getProperty(MSG_ACTIVE_MARKER_SET)));
 		active = new JComboBox(MarkerSetsPlugin.getMarkerSetNames());
 		activePanel.add(active);
 		active.addItemListener(new ItemListener() {
@@ -93,7 +101,7 @@ public class MarkerSetManager extends JPanel {
 				MarkerSetsPlugin.setActiveMarkerSet(active.getSelectedItem().toString());
 			}
 		});
-		JButton newMarkerSet = new JButton("New...");
+		JButton newMarkerSet = new JButton(jEdit.getProperty(MSG_NEW));
 		northPanel.add(newMarkerSet);
 		newMarkerSet.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -102,7 +110,7 @@ public class MarkerSetManager extends JPanel {
 		});
 		markers.addSourceLinkTreeModelListener(new MarkerTreeListener());
 		selfUpdate = false;
-		bufferScope = new JCheckBox("Buffer scope");
+		bufferScope = new JCheckBox(jEdit.getProperty(MSG_BUFFER_SCOPE));
 		northPanel.add(bufferScope);
 		bufferScope.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -178,10 +186,12 @@ public class MarkerSetManager extends JPanel {
 			if (! (userObj instanceof FileMarker))
 				return;
 			final FileMarker marker = (FileMarker) userObj;
-			popup.add(new AbstractAction("Set shortcut ...") {
+			popup.add(new AbstractAction(jEdit.getProperty(
+				MarkerSetManager.MSG_SET_SHORTCUT))
+			{
 				public void actionPerformed(ActionEvent e) {
 					String shortcut = JOptionPane.showInputDialog(
-						view, "Shortcut for marker:");
+						view, jEdit.getProperty(MarkerSetManager.MSG_SHORTCUT_FOR_MARKER));
 					if (shortcut == null || shortcut.length() == 0)
 						return;
 					marker.setShortcut(shortcut);

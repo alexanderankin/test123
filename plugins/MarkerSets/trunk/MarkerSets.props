@@ -43,5 +43,9 @@ marker-set-manager.label=Marker Sets
 plugin.marker.MarkerSetsPlugin.docs=index.html
 
 # messages
-#class-browser.msg.title=Class Browser
-#class-browser.msg.no-selected-class=For this action to work, you must either
+marker-set-manager.msg.groupBy=Group markers by:
+marker-set-manager.msg.activeMarkerSet=Active marker set:
+marker-set-manager.msg.new=New...
+marker-set-manager.msg.bufferScope=Buffer scope
+marker-set-manager.msg.setShortcut=Set shortcut ...
+marker-set-manager.msg.shortcutLabel=Shortcut for marker:
