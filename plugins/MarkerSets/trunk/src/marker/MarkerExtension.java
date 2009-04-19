@@ -21,6 +21,7 @@ public class MarkerExtension extends TextAreaExtension {
 	{
 		String path = editPane.getBuffer().getPath();
 		JEditTextArea ta = editPane.getTextArea();
+		int x = 0;
 		int width = ta.getGutter().getWidth();
 		int lineHeight = ta.getPainter().getFontMetrics().getHeight();
 		Collection<MarkerSet> markerSets = MarkerSetsPlugin.getMarkerSets();
@@ -31,7 +32,7 @@ public class MarkerExtension extends TextAreaExtension {
 			FileMarker marker = ms.getMarkerFor(path, physicalLine);
 			if (marker == null)
 				continue;
-			gfx.fillRect(0, y, width, lineHeight);
+			gfx.fillRect(x, y, width, lineHeight);
 		}
 		gfx.setColor(c);
 	}
