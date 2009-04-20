@@ -538,21 +538,23 @@ public class DualDiff implements EBComponent {
                             DualDiff.removeFrom( view );
                             view.getDockableWindowManager().hideDockableWindow( JDIFF_LINES );
 
-                            // always restore caret positions/viewports regardless of
+                            // possibly restore caret positions/viewports regardless of
                             // restore split config setting
-                            HashMap<String, List<Integer>> cps = caretPositions.get( view );
-                            if ( cps != null ) {
-                                for ( EditPane ep : view.getEditPanes() ) {
-                                    List<Integer> values = cps.get( ep.getBuffer().getPath( false ) );
-                                    if ( values != null ) {
-                                        int caret_position = values.get(0);
-                                        int first_physical_line = values.get(1);
-                                        ep.getTextArea().setCaretPosition( caret_position );
-                                        ep.getTextArea().setFirstPhysicalLine(first_physical_line);
+                            if ( jEdit.getBooleanProperty( "jdiff.restore-caret", true ) ) {
+                                HashMap < String, List < Integer >> cps = caretPositions.get( view );
+                                if ( cps != null ) {
+                                    for ( EditPane ep : view.getEditPanes() ) {
+                                        List<Integer> values = cps.get( ep.getBuffer().getPath( false ) );
+                                        if ( values != null ) {
+                                            int caret_position = values.get( 0 );
+                                            int first_physical_line = values.get( 1 );
+                                            ep.getTextArea().setCaretPosition( caret_position );
+                                            ep.getTextArea().setFirstPhysicalLine( first_physical_line );
+                                        }
                                     }
+                                    cps = null;
+                                    caretPositions.remove( view );
                                 }
-                                cps = null;
-                                caretPositions.remove( view );
                             }
 
                             // let others know that the diff session is over --
@@ -586,14 +588,14 @@ public class DualDiff implements EBComponent {
                             // at this point, the View is split, so capture the
                             // caret positions and first physical lines for the two files
                             editPanes = view.getEditPanes();
-                            HashMap<String, List<Integer>> cps = new HashMap<String, List<Integer>>(); // <String = buffer path, List<Integer> = [0] caret position, [1] first physical line
+                            HashMap < String, List < Integer >> cps = new HashMap < String, List < Integer >> (); // <String = buffer path, List<Integer> = [0] caret position, [1] first physical line
                             List<Integer> values = new ArrayList<Integer>();
-                            values.add(editPanes[ 0 ].getTextArea().getCaretPosition());
-                            values.add(editPanes[ 0 ].getTextArea().getFirstPhysicalLine());
+                            values.add( editPanes[ 0 ].getTextArea().getCaretPosition() );
+                            values.add( editPanes[ 0 ].getTextArea().getFirstPhysicalLine() );
                             cps.put( editPanes[ 0 ].getBuffer().getPath( false ), values );
                             values = new ArrayList<Integer>();
-                            values.add(editPanes[ 1 ].getTextArea().getCaretPosition());
-                            values.add(editPanes[ 1 ].getTextArea().getFirstPhysicalLine());
+                            values.add( editPanes[ 1 ].getTextArea().getCaretPosition() );
+                            values.add( editPanes[ 1 ].getTextArea().getFirstPhysicalLine() );
                             cps.put( editPanes[ 1 ].getBuffer().getPath( false ), values );
                             caretPositions.put( view, cps );
 

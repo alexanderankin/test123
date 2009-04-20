@@ -18,6 +18,16 @@ Foundation; with no Invariant Sections, Front-Cover Texts or
 Back-Cover Texts, each as defined in the license. A copy of the
 license can be found in the file COPYING.DOC.txt included with
 jEdit.</p>
+<hr>
+<a href="#presentation">Presentation</a><br>
+<a href="#usage">Usage</a><br>
+<a href="#display">Display</a><br>
+<a href="#other_commands">Other commands</a><br>
+<a href="#options">Options</a><br>
+<a href="#license">License</a><br>
+<a href="#feedback">Feedback</a><br>
+<a href="#history">Change log</a><br>
+<a href="#credits">Credits</a><br><br>
 
 <hr>
 <a name="presentation">
@@ -290,19 +300,19 @@ normal method</p>
 <hr>
 <a name="options">
 
-<h3>Options</h3>
+<h3>JDiff Options</h3>
 
-<p>These settings can be made in the JDiff options panel, Plugins
--&gt; Plugin Options... -&gt; JDiff Plugin</p>
+<p>These settings can be made in the JDiff General options panel, Plugins
+-&gt; Plugin Options... -&gt; JDiff Plugin -&gt; General</p>
 
-<h3>Line comparison options</h3>
+<h3>Diff options</h3>
 
-<p>You can configure how JDiff compares lines by default. JDiff
+<p>You can configure how JDiff performs a diff. JDiff
 can:</p>
 
 <ul>
 <li>
-<p>Ignore case: upper-cased lines are compared.</p>
+<p>Ignore case: lines are compared without regard for case.</p>
 </li>
 
 <li>
@@ -335,33 +345,41 @@ if leading and trailing whitespaces were removed.</p>
 </li>
 </ul>
 
+<h3>UI Options</h3>
+You can control these user interface options:
+
+<ul>
+   <li>Automatically show dockable on diff: when starting a dual diff, automatically show the control and line diff dockable.</li>
+   <li>Show line diff in dockable: show the line diff as part of the control and line diff dockable.  Some people don't need the line diff and use a horizontal or vertical control layout to help conserve screen space.</li>
+   <li>Scroll horizontally to next/prev diff: this is useful when diffing files with long lines, JDiff will automatically scroll the text area so the first diff is in view.</li>
+   <li>Select first word of next/prev diff: if checked, the first work of a diff section will be selected, which can help speed editing of diffs.</li>
+   <li>Beep on error: JDiff can make noise when there is an error.  It's pretty annoying, but some people like it. :)</li>
+   <li>Restore View after diff: JDiff can restore the split pane configuration to how it was before a diff session was started.  This is useful for those cases where you might have the view split into 3 or more sections.  After the diff session is ended, JDiff will restore the view to the same split configuration as before the diff session started.</li>
+   <li>Restore caret positions after diff: JDiff can also restore the caret position for each text area after a diff session has ended.</li>
+</ul>
+
 <h3>Control layout</h3>
-
-<p>Automatically display dockable on diff: When starting a new
-diff from the plugin menu, if on, this setting will cause the
-diff dockable to be displayed immediately so the merge controls
-are quickly accessible.</p>
-
-<p>Show line diffs in dockable: Toggles display of the line diff
-in the dockable. Turning this off will reduce the amount of
-screen space the dockable occupies.</p>
 
 <p>Merge control layout</p>
 
 <ul>
 <li>Horizontal: default, merge control buttons in a single
-horizontal line. Best used docked at top or bottom.</li>
+horizontal line. Best used docked at top or bottom.<br>
+<img src="horizontal_controls.jpg"><br><br></li>
 
 <li>Vertical: merge controls in a single vertical line. Best used
-docked at the left or right. Not a good choice when the line
-overview is also on.</li>
+docked at the left or right.<br><br>
+<img src="vertical_controls.jpg"><br><br></li>
 
 <li>Compact: merge controls in 2 columns of 4 buttons. Occupies
 smallest amount of screen space when used with the line
-overview.</li>
+overview.<br><br>
+<img src="compact_controls.jpg"><br><br></li>
 </ul>
 
-<h3>Overview colors</h3>
+<h3>Colors</h3>
+<p>These settings can be made in the JDiff Colors options panel, Plugins
+-&gt; Plugin Options... -&gt; JDiff Plugin -&gt; Colors</p>
 
 <p>You can configure the colors of:</p>
 
@@ -391,28 +409,8 @@ overview.</li>
 </li>
 </ul>
 
-<h3>Highlight colors</h3>
-
-<p>You can configure the colors of:</p>
-
-<ul>
-<li>
-<p>Changed lines</p>
-</li>
-
-<li>
-<p>Deleted lines</p>
-</li>
-
-<li>
-<p>Inserted lines</p>
-</li>
-
-<li>
-<p>Invalid lines</p>
-</li>
-</ul>
-
+These colors are applied in the text area, the local and global overviews, 
+and the line diff.  In the text area and local and global overviews, the colors are applied per diff chunk.  In the line diff, the colors are applied per character, so it is easy to tell exactly the difference between two lines.
 <hr>
 <a name="license">
 

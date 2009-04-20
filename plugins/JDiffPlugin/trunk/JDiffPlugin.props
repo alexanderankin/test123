@@ -97,6 +97,7 @@ options.jdiff.horiz-scroll=Scroll horizontally to next/prev diff
 options.jdiff.select-word=Select first word of next/prev diff
 options.jdiff.beep-on-error=Beep on error
 options.jdiff.restore-view=Restore View after diff
+options.jdiff.restore-caret=Restore caret positions after diff
 
 options.jdiff.orientation.label=Merge Toolbar Orientation:
 options.jdiff.toolbar-horizontal=Horizontal

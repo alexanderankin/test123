@@ -53,6 +53,7 @@ public class JDiffOptionPane implements OptionPane {
     private JCheckBox beepOnError;
     private JCheckBox showLineDiff;
     private JCheckBox restoreView;
+    private JCheckBox restoreCaret;
     private JCheckBox horizScroll;
     private JCheckBox selectWord;
 
@@ -97,6 +98,7 @@ public class JDiffOptionPane implements OptionPane {
         selectWord.setEnabled( horizScroll.isSelected() );
         beepOnError.setSelected(jEdit.getBooleanProperty( "jdiff.beep-on-error", true ));
         restoreView.setSelected(jEdit.getBooleanProperty( "jdiff.restore-view", true ));
+        restoreCaret.setSelected(jEdit.getBooleanProperty( "jdiff.restore-caret", true));
 
         int orientation = jEdit.getIntegerProperty( "jdiff.toolbar-orientation", MergeToolBar.HORIZONTAL );
         switch ( orientation ) {
@@ -136,6 +138,7 @@ public class JDiffOptionPane implements OptionPane {
         selectWord.setEnabled( horizScroll.isSelected() );
         beepOnError = createCheckBox( "jdiff.beep-on-error", true );
         restoreView = createCheckBox( "jdiff.restore-view", true );
+        restoreCaret = createCheckBox( "jdiff.restore-caret", true);
 
         // only enable selectWord if horizScroll is selected
         horizScroll.addActionListener(
@@ -195,12 +198,13 @@ public class JDiffOptionPane implements OptionPane {
         panel.add( "1, 10, 1, 1, W, 0, 2", selectWord );
         panel.add( "0, 12, 2, 1, W, 0, 2", beepOnError );
         panel.add( "0, 13, 2, 1, W, 0, 2", restoreView );
+        panel.add( "0, 14, 2, 1, W, 0, 2", restoreCaret );
 
-        panel.add( "0, 14, 2, 1, W, 0, 2", KappaLayout.createVerticalStrut( 11 ) );
-        panel.add( "0, 15, 2, 1, W, 0, 2", orientation_label );
-        panel.add( "0, 16, 2, 1, W, 0, 2", horizontal );
-        panel.add( "0, 17, 2, 1, W, 0, 2", vertical );
-        panel.add( "0, 18, 2, 1, W, 0, 2", compact );
+        panel.add( "0, 15, 2, 1, W, 0, 2", KappaLayout.createVerticalStrut( 11 ) );
+        panel.add( "0, 16, 2, 1, W, 0, 2", orientation_label );
+        panel.add( "0, 17, 2, 1, W, 0, 2", horizontal );
+        panel.add( "0, 18, 2, 1, W, 0, 2", vertical );
+        panel.add( "0, 19, 2, 1, W, 0, 2", compact );
     }
 
     /**
@@ -228,6 +232,7 @@ public class JDiffOptionPane implements OptionPane {
         jEdit.setBooleanProperty( "jdiff.select-word", selectWord.isSelected() );
         jEdit.setBooleanProperty( "jdiff.beep-on-error", beepOnError.isSelected() );
         jEdit.setBooleanProperty( "jdiff.restore-view", restoreView.isSelected() );
+        jEdit.setBooleanProperty( "jdiff.restore-caret", restoreCaret.isSelected() );
 
         // virtual overview has been removed, since it hasn't worked since jEdit 4.2,
         // so make sure the property is false
