@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -57,6 +58,7 @@ public class MarkerSetManager extends JPanel {
 	private SourceLinkTree markers;
 	private JComboBox structure;
 	private MarkerTreeBuilder [] builders;
+	private DefaultComboBoxModel activeModel;
 	private JComboBox active;
 	private JCheckBox bufferScope;
 	private boolean selfUpdate;
@@ -94,11 +96,16 @@ public class MarkerSetManager extends JPanel {
 		JPanel activePanel = new JPanel();
 		northPanel.add(activePanel);
 		activePanel.add(new JLabel(jEdit.getProperty(MSG_ACTIVE_MARKER_SET)));
-		active = new JComboBox(MarkerSetsPlugin.getMarkerSetNames());
+		activeModel = new DefaultComboBoxModel();
+		active = new JComboBox(activeModel);
 		activePanel.add(active);
+		updateActiveComboBox();
 		active.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				MarkerSetsPlugin.setActiveMarkerSet(active.getSelectedItem().toString());
+				String selected = (String) active.getSelectedItem();
+				if (selected == null)
+					return;
+				MarkerSetsPlugin.setActiveMarkerSet(selected);
 			}
 		});
 		JButton newMarkerSet = new JButton(jEdit.getProperty(MSG_NEW));
@@ -120,6 +127,7 @@ public class MarkerSetManager extends JPanel {
 		MarkerSetsPlugin.addChangeListener(new ChangeListener() {
 			public void changed(Event e, FileMarker m, MarkerSet ms) {
 				updateTree();
+				updateActiveComboBox();
 			}
 		});
 		prev = new RolloverButton(GUIUtilities.loadIcon("ArrowL.png"));
@@ -137,6 +145,19 @@ public class MarkerSetManager extends JPanel {
 			}
 		});
 		updateTree();
+	}
+
+	private void updateActiveComboBox()
+	{
+		ItemListener [] ils = active.getItemListeners();
+		for (ItemListener il: ils)
+			active.removeItemListener(il);
+		activeModel.removeAllElements();
+		for (String name: MarkerSetsPlugin.getMarkerSetNames())
+			activeModel.addElement(name);
+		for (ItemListener il: ils)
+			active.addItemListener(il);
+		active.setSelectedItem(MarkerSetsPlugin.getActiveMarkerSet().getName());
 	}
 
 	public void bufferChanged(Buffer b)
@@ -209,7 +230,8 @@ public class MarkerSetManager extends JPanel {
 			if (parent == null)
 				return;
 			selfUpdate = true;
-			MarkerSet ms = (MarkerSet) parent.getUserObject();
+			Object userObject = parent.getUserObject();
+			MarkerSet ms = ((MarkerSetNode) userObject).getMarkerSet();
 			if (node == parent)
 				MarkerSetsPlugin.removeMarkerSet(ms);
 			else {
