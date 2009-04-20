@@ -1232,7 +1232,6 @@ public class DualDiff implements EBComponent {
                     public void run() {
                         DualDiff.this.diffOverview0.repaint();
                         DualDiff.this.diffOverview0.synchroScrollRight();
-
                         DualDiff.this.diffOverview1.repaint();
                     }
                 };
@@ -1241,7 +1240,6 @@ public class DualDiff implements EBComponent {
                     public void run() {
                         DualDiff.this.diffOverview1.repaint();
                         DualDiff.this.diffOverview1.synchroScrollLeft();
-
                         DualDiff.this.diffOverview0.repaint();
                     }
                 };
@@ -1262,8 +1260,6 @@ public class DualDiff implements EBComponent {
 
 
         public void scrolledHorizontally( TextArea textArea ) {
-            // Log.log(Log.DEBUG, this, "**** Adjustment " + e);
-
             if ( textArea == DualDiff.this.textArea0 ) {
                 SwingUtilities.invokeLater( this.syncWithRightHoriz );
             }
