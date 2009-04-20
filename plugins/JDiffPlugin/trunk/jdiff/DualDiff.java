@@ -110,8 +110,11 @@ public class DualDiff implements EBComponent {
 
     private DiffLineOverview diffLineOverview;
 
+    private static final String JDIFF_LINES = "jdiff-lines";
+    private static final String BEEP_ON_ERROR = "jdiff.beep-on-error";
+
     private static HashMap<View, String> splitConfigs = new HashMap<View, String>();
-    private static HashMap < View, HashMap < String, Integer >> caretPositions = new HashMap < View, HashMap < String, Integer >> ();
+    private static HashMap < View, HashMap < String, List<Integer> >> caretPositions = new HashMap < View, HashMap < String, List<Integer> >> ();
 
     private DualDiff( View view ) {
         this( view, ignoreCaseDefault, trimWhitespaceDefault,
@@ -530,22 +533,32 @@ public class DualDiff implements EBComponent {
                                 }
                             }
 
-                            // restore caret positions regardless
-                            HashMap<String, Integer> cps = caretPositions.get( view );
+                            // turn off DualDiff so auto-scroll is deactivated before
+                            // restoring caret and viewport.
+                            DualDiff.removeFrom( view );
+                            view.getDockableWindowManager().hideDockableWindow( JDIFF_LINES );
+
+                            // always restore caret positions/viewports regardless of
+                            // restore split config setting
+                            HashMap<String, List<Integer>> cps = caretPositions.get( view );
                             if ( cps != null ) {
                                 for ( EditPane ep : view.getEditPanes() ) {
-                                    Integer caret_position = cps.get( ep.getBuffer().getPath( false ) );
-                                    if ( caret_position != null ) {
+                                    List<Integer> values = cps.get( ep.getBuffer().getPath( false ) );
+                                    if ( values != null ) {
+                                        int caret_position = values.get(0);
+                                        int first_physical_line = values.get(1);
                                         ep.getTextArea().setCaretPosition( caret_position );
-                                        ep.getTextArea().scrollToCaret( true );
+                                        ep.getTextArea().setFirstPhysicalLine(first_physical_line);
                                     }
                                 }
                                 cps = null;
                                 caretPositions.remove( view );
                             }
-                            DualDiff.removeFrom( view );
-                            view.getDockableWindowManager().hideDockableWindow( "jdiff-lines" );
+
+                            // let others know that the diff session is over --
+                            // the SVN Plugin needs this, others might be interested.
                             EditBus.send( new DiffMessage( view, DiffMessage.OFF ) );
+
                             view.invalidate();
                             view.validate();
                         }
@@ -559,10 +572,10 @@ public class DualDiff implements EBComponent {
                             }
 
                             // split the view -- if already split correctly,
-                            // don't split.  This might be a bit of a hack, in
+                            // don't split.  This might be a bit of a hack in
                             // the case where the view is split in two, but
-                            // horizontally rather than vertically, I'm checking
-                            // the output of the split config.  If it ends with
+                            // horizontally rather than vertically. I'm checking
+                            // the output of the split config, if it ends with
                             // "horizontal", the view is split horizontally and
                             // needs to be split vertically.
                             if ( editPanes.length != 2 || ( splitConfig != null && !splitConfig.endsWith( "horizontal" ) ) ) {
@@ -571,20 +584,26 @@ public class DualDiff implements EBComponent {
                             }
 
                             // at this point, the View is split, so capture the
-                            // caret positions for the two files
+                            // caret positions and first physical lines for the two files
                             editPanes = view.getEditPanes();
-                            HashMap<String, Integer> cps = new HashMap<String, Integer>();
-                            cps.put( editPanes[ 0 ].getBuffer().getPath( false ), editPanes[ 0 ].getTextArea().getCaretPosition() );
-                            cps.put( editPanes[ 1 ].getBuffer().getPath( false ), editPanes[ 1 ].getTextArea().getCaretPosition() );
+                            HashMap<String, List<Integer>> cps = new HashMap<String, List<Integer>>(); // <String = buffer path, List<Integer> = [0] caret position, [1] first physical line
+                            List<Integer> values = new ArrayList<Integer>();
+                            values.add(editPanes[ 0 ].getTextArea().getCaretPosition());
+                            values.add(editPanes[ 0 ].getTextArea().getFirstPhysicalLine());
+                            cps.put( editPanes[ 0 ].getBuffer().getPath( false ), values );
+                            values = new ArrayList<Integer>();
+                            values.add(editPanes[ 1 ].getTextArea().getCaretPosition());
+                            values.add(editPanes[ 1 ].getTextArea().getFirstPhysicalLine());
+                            cps.put( editPanes[ 1 ].getBuffer().getPath( false ), values );
                             caretPositions.put( view, cps );
 
                             DualDiff.addTo( view );
                             DockableWindowManager dwm = view.getDockableWindowManager();
-                            if ( !dwm.isDockableWindowVisible( "jdiff-lines" ) && jEdit.getBooleanProperty( "jdiff.auto-show-dockable" ) ) {
-                                if ( dwm.getDockableWindow( "jdiff-lines" ) == null ) {
-                                    dwm.addDockableWindow( "jdiff-lines" );
+                            if ( !dwm.isDockableWindowVisible( JDIFF_LINES ) && jEdit.getBooleanProperty( "jdiff.auto-show-dockable" ) ) {
+                                if ( dwm.getDockableWindow( JDIFF_LINES ) == null ) {
+                                    dwm.addDockableWindow( JDIFF_LINES );
                                 }
-                                dwm.showDockableWindow( "jdiff-lines" );
+                                dwm.showDockableWindow( JDIFF_LINES );
                             }
 
                             EditBus.send( new DiffMessage( view, DiffMessage.ON ) );
@@ -620,7 +639,7 @@ public class DualDiff implements EBComponent {
             view.validate();
         }
         else {
-            if ( jEdit.getBooleanProperty( "jdiff.beep-on-error" ) ) {
+            if ( jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
                 view.getToolkit().beep();
             }
         }
@@ -651,7 +670,7 @@ public class DualDiff implements EBComponent {
             view.validate();
         }
         else {
-            if ( jEdit.getBooleanProperty( "jdiff.beep-on-error" ) ) {
+            if ( jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
                 view.getToolkit().beep();
             }
         }
@@ -679,7 +698,7 @@ public class DualDiff implements EBComponent {
             view.validate();
         }
         else {
-            if ( jEdit.getBooleanProperty( "jdiff.beep-on-error" ) ) {
+            if ( jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
                 view.getToolkit().beep();
             }
         }
@@ -707,7 +726,7 @@ public class DualDiff implements EBComponent {
             view.validate();
         }
         else {
-            if ( jEdit.getBooleanProperty( "jdiff.beep-on-error" ) ) {
+            if ( jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
                 view.getToolkit().beep();
             }
         }
@@ -735,7 +754,7 @@ public class DualDiff implements EBComponent {
             view.validate();
         }
         else {
-            if ( jEdit.getBooleanProperty( "jdiff.beep-on-error" ) ) {
+            if ( jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
                 view.getToolkit().beep();
             }
         }
@@ -757,7 +776,7 @@ public class DualDiff implements EBComponent {
         // there were 2 visible diffs.
         DualDiff dualDiff = DualDiff.getDualDiffFor( editPane.getView() );
         if ( dualDiff == null ) {
-            if ( jEdit.getBooleanProperty( "jdiff.beep-on-error" ) ) {
+            if ( jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
                 editPane.getToolkit().beep();
             }
             return ;
@@ -770,7 +789,7 @@ public class DualDiff implements EBComponent {
             dualDiff.nextDiff1();
         }
         else {
-            if ( jEdit.getBooleanProperty( "jdiff.beep-on-error" ) ) {
+            if ( jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
                 editPane.getToolkit().beep();
             }
         }
@@ -779,7 +798,7 @@ public class DualDiff implements EBComponent {
     public static void prevDiff( EditPane editPane ) {
         DualDiff dualDiff = DualDiff.getDualDiffFor( editPane.getView() );
         if ( dualDiff == null ) {
-            if ( jEdit.getBooleanProperty( "jdiff.beep-on-error" ) ) {
+            if ( jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
                 editPane.getToolkit().beep();
             }
             return ;
@@ -792,7 +811,7 @@ public class DualDiff implements EBComponent {
             dualDiff.prevDiff1();
         }
         else {
-            if ( jEdit.getBooleanProperty( "jdiff.beep-on-error" ) ) {
+            if ( jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
                 editPane.getToolkit().beep();
             }
         }
@@ -801,7 +820,7 @@ public class DualDiff implements EBComponent {
     public static void moveRight( EditPane editPane ) {
         DualDiff dualDiff = DualDiff.getDualDiffFor( editPane.getView() );
         if ( dualDiff == null ) {
-            if ( jEdit.getBooleanProperty( "jdiff.beep-on-error" ) ) {
+            if ( jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
                 editPane.getToolkit().beep();
             }
             return ;
@@ -822,7 +841,7 @@ public class DualDiff implements EBComponent {
 
     public static void diffNormalOutput( View view ) {
         if ( !DualDiff.isEnabledFor( view ) ) {
-            if ( jEdit.getBooleanProperty( "jdiff.beep-on-error" ) ) {
+            if ( jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
                 view.getToolkit().beep();
             }
             return ;
@@ -1035,14 +1054,14 @@ public class DualDiff implements EBComponent {
                 }
 
                 if ( this.textArea0.getFirstLine() != line &&
-                        jEdit.getBooleanProperty( "jdiff.beep-on-error" ) ) {
+                        jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
                     this.textArea0.getToolkit().beep();
                 }
                 return ;
             }
         }
 
-        if ( jEdit.getBooleanProperty( "jdiff.beep-on-error" ) ) {
+        if ( jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
             this.textArea1.getToolkit().beep();
         }
     }
@@ -1083,14 +1102,14 @@ public class DualDiff implements EBComponent {
                 }
 
                 if ( this.textArea1.getFirstLine() != line &&
-                        jEdit.getBooleanProperty( "jdiff.beep-on-error" ) ) {
+                        jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
                     this.textArea1.getToolkit().beep();
                 }
                 return ;
             }
         }
 
-        if ( jEdit.getBooleanProperty( "jdiff.beep-on-error" ) ) {
+        if ( jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
             this.textArea1.getToolkit().beep();
         }
     }
@@ -1120,7 +1139,7 @@ public class DualDiff implements EBComponent {
                     this.textArea1.scrollToCaret( false );
                     this.textArea1.scrollUpLine();
                     if ( this.textArea0.getFirstLine() != line &&
-                            jEdit.getBooleanProperty( "jdiff.beep-on-error" ) ) {
+                            jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
                         this.textArea0.getToolkit().beep();
                     }
                     return ;
@@ -1128,7 +1147,7 @@ public class DualDiff implements EBComponent {
             }
         }
 
-        if ( jEdit.getBooleanProperty( "jdiff.beep-on-error" ) ) {
+        if ( jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
             this.textArea0.getToolkit().beep();
         }
     }
@@ -1159,7 +1178,7 @@ public class DualDiff implements EBComponent {
                     this.textArea0.scrollUpLine();
 
                     if ( this.textArea1.getFirstLine() != line &&
-                            jEdit.getBooleanProperty( "jdiff.beep-on-error" ) ) {
+                            jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
                         this.textArea1.getToolkit().beep();
                     }
                     return ;
@@ -1167,7 +1186,7 @@ public class DualDiff implements EBComponent {
             }
         }
 
-        if ( jEdit.getBooleanProperty( "jdiff.beep-on-error" ) ) {
+        if ( jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
             this.textArea1.getToolkit().beep();
         }
     }
@@ -1263,8 +1282,8 @@ public class DualDiff implements EBComponent {
         public void focusGained( FocusEvent e ) {
             //Log.log( Log.DEBUG, this, "**** focusGained " + e );
             if ( jEdit.getBooleanProperty( "jdiff.auto-show-dockable" ) ) {
-                if ( !view.getDockableWindowManager().isDockableWindowVisible( "jdiff-lines" ) ) {  // NOPMD ifs on separate lines for readability
-                    view.getDockableWindowManager().showDockableWindow( "jdiff-lines" );
+                if ( !view.getDockableWindowManager().isDockableWindowVisible( JDIFF_LINES ) ) {  // NOPMD ifs on separate lines for readability
+                    view.getDockableWindowManager().showDockableWindow( JDIFF_LINES );
                 }
             }
         }
