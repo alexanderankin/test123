@@ -79,7 +79,7 @@ public abstract class DiffOverview extends JComponent {
             leftOffset = hunk.line0;
             rightOffset = hunk.line1;
 
-            // before current hunk
+            // before current hunk (between hunks) -- scroll is 1 - 1
             if ( ( leftFirstLine >= prevLeftOffset )
                     && ( leftFirstLine < leftOffset )
                ) {
@@ -87,20 +87,28 @@ public abstract class DiffOverview extends JComponent {
                 break;
             }
 
-            // in current hunk
+            // in current hunk -- scroll 1 - 1 until end of smaller side, then
+            // only scroll larger side until past this hunk
             if ( ( leftFirstLine >= leftOffset )
                     && ( leftFirstLine < ( leftOffset + hunk.deleted ) )
                ) {
-                rightFirstLine = rightOffset + ( leftFirstLine - prevLeftOffset );
+                if ( hunk.deleted >= hunk.inserted ) {
+                    rightFirstLine = leftFirstLine - leftOffset + rightOffset > hunk.inserted ?
+                            rightOffset + hunk.inserted - 1 :
+                            leftOffset + leftFirstLine - rightFirstLine;
+                }
+                else {
+                    /// TODO: fill this in!
+                }
                 break;
             }
 
-            // advance to next hunk?
+            // prep for advance to next hunk
             prevLeftOffset = leftOffset + hunk.deleted;
             prevRightOffset = rightOffset + hunk.inserted;
 
             if ( hunk.link == null ) {
-                // after/in last hunk
+                // after last hunk
                 rightFirstLine = prevRightOffset + ( leftFirstLine - prevLeftOffset );
                 break;
             }
@@ -131,7 +139,7 @@ public abstract class DiffOverview extends JComponent {
             leftOffset = hunk.line0;
             rightOffset = hunk.line1;
 
-            // before current hunk
+            // before current hunk (between hunks) -- scroll is 1 - 1
             if ( ( rightFirstLine >= prevRightOffset )
                     && ( rightFirstLine < rightOffset )
                ) {
@@ -139,20 +147,28 @@ public abstract class DiffOverview extends JComponent {
                 break;
             }
 
-            // in current hunk
+            // in current hunk -- scroll 1 - 1 until end of smaller side, then
+            // only scroll larger side until past this hunk
             if ( ( rightFirstLine >= rightOffset )
                     && ( rightFirstLine < ( rightOffset + hunk.inserted ) )
                ) {
-                leftFirstLine = leftOffset + ( rightFirstLine - prevRightOffset );
+                if ( hunk.inserted >= hunk.deleted ) {
+                    leftFirstLine = rightFirstLine - rightOffset + leftOffset > hunk.deleted ?
+                            leftOffset + hunk.deleted - 1 :
+                            rightOffset + rightFirstLine - leftFirstLine;
+                }
+                else {
+                    /// TODO: fill this in!
+                }
                 break;
             }
 
-            // advance to next hunk?
+            // prep for advance to next hunk
             prevLeftOffset = leftOffset + hunk.deleted;
             prevRightOffset = rightOffset + hunk.inserted;
 
             if ( hunk.link == null ) {
-                // after/in last hunk
+                // after last hunk
                 leftFirstLine = prevLeftOffset + ( rightFirstLine - prevRightOffset );
                 break;
             }
