@@ -112,6 +112,8 @@ public class DualDiff implements EBComponent {
 
     private static final String JDIFF_LINES = "jdiff-lines";
     private static final String BEEP_ON_ERROR = "jdiff.beep-on-error";
+    private static final String HORIZ_SCROLL = "jdiff.horiz-scroll";
+    private static final String SELECT_WORD = "jdiff.select-word";
 
     private static HashMap<View, String> splitConfigs = new HashMap<View, String>();
     private static HashMap < View, HashMap < String, List<Integer> >> caretPositions = new HashMap < View, HashMap < String, List<Integer> >> ();
@@ -993,8 +995,8 @@ public class DualDiff implements EBComponent {
 
         int diffOffset = firstNoMatch( leftLine, rightLine );
 
-        leftTextArea.setCaretPosition( leftTextArea.getCaretPosition() + diffOffset, true );
-        rightTextArea.setCaretPosition( rightTextArea.getCaretPosition() + diffOffset, true );
+        leftTextArea.setCaretPosition( leftTextArea.getCaretPosition() + diffOffset, false );
+        rightTextArea.setCaretPosition( rightTextArea.getCaretPosition() + diffOffset, false );
 
         alignCaretLeft( leftTextArea );
         alignCaretLeft( rightTextArea );
@@ -1045,11 +1047,11 @@ public class DualDiff implements EBComponent {
                 this.textArea1.scrollUpLine();
 
                 // maybe move the caret to the first actual diff character
-                if ( jEdit.getBooleanProperty( "jdiff.horiz-scroll" ) ) {
+                if ( jEdit.getBooleanProperty( HORIZ_SCROLL ) ) {
                     centerOnDiff( this.textArea0, this.textArea1 );
 
                     // maybe select the first diff word
-                    if ( jEdit.getBooleanProperty( "jdiff.select-word" ) ) {
+                    if ( jEdit.getBooleanProperty( SELECT_WORD ) ) {
                         this.textArea0.selectWord();
                         this.textArea1.selectWord();
                     }
@@ -1093,11 +1095,11 @@ public class DualDiff implements EBComponent {
                 this.textArea0.scrollUpLine();
 
                 // maybe move the caret to the first actual diff character
-                if ( jEdit.getBooleanProperty( "jdiff.horiz-scroll" ) ) {
+                if ( jEdit.getBooleanProperty( HORIZ_SCROLL ) ) {
                     centerOnDiff( this.textArea0, this.textArea1 );
 
                     // maybe select the first diff word
-                    if ( jEdit.getBooleanProperty( "jdiff.select-word" ) ) {
+                    if ( jEdit.getBooleanProperty( SELECT_WORD ) ) {
                         this.textArea0.selectWord();
                         this.textArea1.selectWord();
                     }
@@ -1140,6 +1142,18 @@ public class DualDiff implements EBComponent {
                     this.textArea1.setCaretPosition( caret_position, false );
                     this.textArea1.scrollToCaret( false );
                     this.textArea1.scrollUpLine();
+
+                    // maybe move the caret to the first actual diff character
+                    if ( jEdit.getBooleanProperty( HORIZ_SCROLL ) ) {
+                        centerOnDiff( textArea0, textArea1 );
+
+                        // maybe select the first diff word
+                        if ( jEdit.getBooleanProperty( SELECT_WORD ) ) {
+                            textArea0.selectWord();
+                            textArea1.selectWord();
+                        }
+                    }
+
                     if ( this.textArea0.getFirstLine() != line &&
                             jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
                         this.textArea0.getToolkit().beep();
@@ -1178,6 +1192,17 @@ public class DualDiff implements EBComponent {
                     this.textArea0.setCaretPosition( caret_position, false );
                     this.textArea0.scrollToCaret( false );
                     this.textArea0.scrollUpLine();
+
+                    // maybe move the caret to the first actual diff character
+                    if ( jEdit.getBooleanProperty( HORIZ_SCROLL ) ) {
+                        centerOnDiff( textArea0, textArea1 );
+
+                        // maybe select the first diff word
+                        if ( jEdit.getBooleanProperty( SELECT_WORD ) ) {
+                            textArea0.selectWord();
+                            textArea1.selectWord();
+                        }
+                    }
 
                     if ( this.textArea1.getFirstLine() != line &&
                             jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
