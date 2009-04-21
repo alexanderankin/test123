@@ -79,6 +79,7 @@ public abstract class DiffOverview extends JComponent {
             leftOffset = hunk.line0;
             rightOffset = hunk.line1;
 
+            // before current hunk
             if ( ( leftFirstLine >= prevLeftOffset )
                     && ( leftFirstLine < leftOffset )
                ) {
@@ -86,17 +87,20 @@ public abstract class DiffOverview extends JComponent {
                 break;
             }
 
+            // in current hunk
             if ( ( leftFirstLine >= leftOffset )
                     && ( leftFirstLine < ( leftOffset + hunk.deleted ) )
                ) {
-                rightFirstLine = rightOffset;
+                rightFirstLine = rightOffset + ( leftFirstLine - prevLeftOffset );
                 break;
             }
 
+            // advance to next hunk?
             prevLeftOffset = leftOffset + hunk.deleted;
             prevRightOffset = rightOffset + hunk.inserted;
 
             if ( hunk.link == null ) {
+                // after/in last hunk
                 rightFirstLine = prevRightOffset + ( leftFirstLine - prevLeftOffset );
                 break;
             }
@@ -127,6 +131,7 @@ public abstract class DiffOverview extends JComponent {
             leftOffset = hunk.line0;
             rightOffset = hunk.line1;
 
+            // before current hunk
             if ( ( rightFirstLine >= prevRightOffset )
                     && ( rightFirstLine < rightOffset )
                ) {
@@ -134,17 +139,20 @@ public abstract class DiffOverview extends JComponent {
                 break;
             }
 
+            // in current hunk
             if ( ( rightFirstLine >= rightOffset )
                     && ( rightFirstLine < ( rightOffset + hunk.inserted ) )
                ) {
-                leftFirstLine = leftOffset;
+                leftFirstLine = leftOffset + ( rightFirstLine - prevRightOffset );
                 break;
             }
 
+            // advance to next hunk?
             prevLeftOffset = leftOffset + hunk.deleted;
             prevRightOffset = rightOffset + hunk.inserted;
 
             if ( hunk.link == null ) {
+                // after/in last hunk
                 leftFirstLine = prevLeftOffset + ( rightFirstLine - prevRightOffset );
                 break;
             }
