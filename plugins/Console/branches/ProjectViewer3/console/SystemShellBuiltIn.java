@@ -345,7 +345,6 @@ public abstract class SystemShellBuiltIn
 		{
 			SystemShell.ConsoleState state = getConsoleState(console);
 
-			String newDir;
 			if(args.size() == 0)
 			{
 				state.setCurrentDirectory(console,
@@ -360,8 +359,14 @@ public abstract class SystemShellBuiltIn
 				{
 					state.setCurrentDirectory(console,
 						MiscUtilities.constructPath(
-						state.currentDirectory,
-						(String)args.elementAt(0)));
+						state.currentDirectory, arg));
+					if(OperatingSystem.isDOSDerived()) {
+						int colonPos = arg.indexOf(":");
+						if (colonPos > 0) {
+							char driveLetter = arg.charAt(0);
+							args = state.changeDrive(driveLetter);
+						}
+					}					
 				}
 			}
 		}
