@@ -1027,29 +1027,29 @@ public class DualDiff implements EBComponent {
         int caretLine = this.textArea0.getCaretLine();
         for ( ; hunk != null; hunk = hunk.next ) {
             if ( hunk.line0 > caretLine + ( ( hunk.deleted == 0 ) ? 1 : 0 ) ) {
-                int line = hunk.line0;  
+                int line = hunk.line0;
 
                 // move the caret to the start of the first line of the diff
                 int caret_position = textArea0.getLineStartOffset( line );
                 textArea0.setCaretPosition( caret_position, false );
-                
+
                 // scroll so line is visible
                 int visibleLines = textArea0.getVisibleLines();
                 int leftLineCount = textArea0.getLineCount();
                 int distance = 1;
-                if (line > leftLineCount - visibleLines) {
-                    textArea0.setFirstLine(leftLineCount - visibleLines);
-                    distance = line - (leftLineCount - visibleLines);
+                if ( line > leftLineCount - visibleLines ) {
+                    textArea0.setFirstLine( leftLineCount - visibleLines );
+                    distance = line - ( leftLineCount - visibleLines );
                 }
                 else {
-                    textArea0.setFirstLine(line - 1);   
+                    textArea0.setFirstLine( line - 1 );
                 }
-                
-                // move caret in other text area to start of diff hunk 
+
+                // move caret in other text area to start of diff hunk
                 // and scroll to it
-                caret_position = textArea1.getLineStartOffset(hunk.line1);
-                this.textArea1.setCaretPosition(caret_position, false);
-                this.textArea1.setFirstLine(hunk.line1 - distance);
+                caret_position = textArea1.getLineStartOffset( hunk.line1 );
+                this.textArea1.setCaretPosition( caret_position, false );
+                this.textArea1.setFirstLine( hunk.line1 - distance );
 
                 // maybe move the caret to the first actual diff character
                 if ( jEdit.getBooleanProperty( HORIZ_SCROLL ) ) {
@@ -1081,28 +1081,28 @@ public class DualDiff implements EBComponent {
         for ( ; hunk != null; hunk = hunk.next ) {
             if ( hunk.line1 > caretLine + ( ( hunk.inserted == 0 ) ? 1 : 0 ) ) {
                 int line = hunk.line1;
-                
+
                 // move the caret to the start of the first line of the diff
                 int caret_position = textArea1.getLineStartOffset( line );
                 textArea1.setCaretPosition( caret_position, false );
-                
+
                 // scroll so line is visible
                 int visibleLines = textArea1.getVisibleLines();
                 int rightLineCount = textArea1.getLineCount();
                 int distance = 1;
-                if (line > rightLineCount - visibleLines) {
-                    textArea1.setFirstLine(rightLineCount - visibleLines);
-                    distance = line - (rightLineCount - visibleLines);
+                if ( line > rightLineCount - visibleLines ) {
+                    textArea1.setFirstLine( rightLineCount - visibleLines );
+                    distance = line - ( rightLineCount - visibleLines );
                 }
                 else {
-                    textArea1.setFirstLine(line - 1);   
+                    textArea1.setFirstLine( line - 1 );
                 }
-                
-                // move caret in other text area to start of diff hunk 
+
+                // move caret in other text area to start of diff hunk
                 // and scroll to it
-                caret_position = textArea0.getLineStartOffset(hunk.line0);
-                this.textArea0.setCaretPosition(caret_position, false);
-                this.textArea0.setFirstLine(hunk.line0 - distance);
+                caret_position = textArea0.getLineStartOffset( hunk.line0 );
+                this.textArea0.setCaretPosition( caret_position, false );
+                this.textArea0.setFirstLine( hunk.line0 - distance );
 
                 // maybe move the caret to the first actual diff character
                 if ( jEdit.getBooleanProperty( HORIZ_SCROLL ) ) {
@@ -1137,32 +1137,32 @@ public class DualDiff implements EBComponent {
                 // go to start of current hunk.  If caret line is after end of
                 // current hunk, but before the next hunk, go to start of current
                 // hunk.
-                if ( hunk.line0 + hunk.deleted > caretLine ||    // NOPMD caret is in current hunk
-                        hunk.next == null ||                     // caret is after last hunk
+                if ( hunk.line0 + hunk.deleted > caretLine ||     // NOPMD caret is in current hunk
+                        hunk.next == null ||                      // caret is after last hunk
                         hunk.next.line0 >= caretLine ) {         // caret is before next hunk
                     int line = hunk.line0;      // first line of diff hunk
-         
+
                     // move caret to start of diff hunk
                     int caret_position = textArea0.getLineStartOffset( line );
                     this.textArea0.setCaretPosition( caret_position, false );
-                    
+
                     // scroll so line is visible
                     int visibleLines = textArea0.getVisibleLines();
                     int leftLineCount = textArea0.getLineCount();
                     int distance = 1;
-                    if (line > leftLineCount - visibleLines) {
-                        textArea0.setFirstLine(leftLineCount - visibleLines);
-                        distance = line - (leftLineCount - visibleLines);
+                    if ( line > leftLineCount - visibleLines ) {
+                        textArea0.setFirstLine( leftLineCount - visibleLines );
+                        distance = line - ( leftLineCount - visibleLines );
                     }
                     else {
-                        textArea0.setFirstLine(line - 1);
+                        textArea0.setFirstLine( line - 1 );
                     }
-                    
+
                     // move caret in other text area to start of diff hunk
                     // and scroll to it
                     caret_position = textArea1.getLineStartOffset( hunk.line1 );
                     this.textArea1.setCaretPosition( caret_position, false );
-                    this.textArea1.setFirstLine(hunk.line1 - distance);
+                    this.textArea1.setFirstLine( hunk.line1 - distance );
 
                     // maybe move the caret to the first actual diff character
                     if ( jEdit.getBooleanProperty( HORIZ_SCROLL ) ) {
@@ -1198,32 +1198,32 @@ public class DualDiff implements EBComponent {
                 // go to start of current hunk.  If caret line is after end of
                 // current hunk, but before current hunk, go to start of current
                 // hunk.
-                if ( hunk.line1 + hunk.inserted > caretLine ||   // NOPMD caret is in current hunk
-                        hunk.next == null ||                     // caret is after last hunk
+                if ( hunk.line1 + hunk.inserted > caretLine ||    // NOPMD caret is in current hunk
+                        hunk.next == null ||                      // caret is after last hunk
                         hunk.next.line1 >= caretLine ) {         // caret is before next hunk
                     int line = hunk.line1;      // first line of hunk
-                    
+
                     // move caret to start of diff hunk
                     int caret_position = textArea1.getLineStartOffset( line );
                     this.textArea1.setCaretPosition( caret_position, false );
-                    
+
                     // scroll so line is visible
                     int visibleLines = textArea1.getVisibleLines();
                     int rightLineCount = textArea1.getLineCount();
                     int distance = 1;
-                    if (line > rightLineCount - visibleLines) {
-                        textArea1.setFirstLine(rightLineCount - visibleLines);
-                        distance = line - (rightLineCount - visibleLines);
+                    if ( line > rightLineCount - visibleLines ) {
+                        textArea1.setFirstLine( rightLineCount - visibleLines );
+                        distance = line - ( rightLineCount - visibleLines );
                     }
                     else {
-                        textArea1.setFirstLine(line - 1);
+                        textArea1.setFirstLine( line - 1 );
                     }
-                    
+
                     // move caret in other text area to start of diff hunk
                     // and scroll to it
                     caret_position = textArea0.getLineStartOffset( hunk.line0 );
                     this.textArea0.setCaretPosition( caret_position, false );
-                    this.textArea0.setFirstLine(hunk.line0 - distance);
+                    this.textArea0.setFirstLine( hunk.line0 - distance );
 
                     // maybe move the caret to the first actual diff character
                     if ( jEdit.getBooleanProperty( HORIZ_SCROLL ) ) {
