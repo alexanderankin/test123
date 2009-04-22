@@ -255,7 +255,7 @@ public class DualDiff implements EBComponent {
             FileLine[] fileLines1 = this.getFileLines( buf1 );
 
             Diff d = new Diff( fileLines0, fileLines1 );
-            this.edits = d.diff_2( false );
+            this.edits = d.diff_2();
             this.diffOverview0 = new DiffLocalOverview( DualDiff.this );
             this.diffOverview1 = new DiffGlobalPhysicalOverview( DualDiff.this );
         }
@@ -861,7 +861,7 @@ public class DualDiff implements EBComponent {
         FileLine[] fileLines1 = dualDiff.getFileLines( buf1 );
 
         Diff d = new Diff( fileLines0, fileLines1 );
-        Diff.Change script = d.diff_2( false );
+        Diff.Change script = d.diff_2();
 
         // Files are identical: return
         if ( script == null ) {
@@ -1025,7 +1025,7 @@ public class DualDiff implements EBComponent {
     private void nextDiff0() {
         Diff.Change hunk = this.edits;
         int firstLine = this.textArea0.getCaretLine();
-        for ( ; hunk != null; hunk = hunk.link ) {
+        for ( ; hunk != null; hunk = hunk.next ) {
             if ( hunk.line0 > firstLine + ( ( hunk.deleted == 0 ) ? 1 : 0 ) ) {
                 int line = 0;
                 if ( hunk.deleted == 0 && hunk.line0 > 0 ) {
@@ -1073,7 +1073,7 @@ public class DualDiff implements EBComponent {
     private void nextDiff1() {
         Diff.Change hunk = this.edits;
         int firstLine = this.textArea1.getCaretLine();
-        for ( ; hunk != null; hunk = hunk.link ) {
+        for ( ; hunk != null; hunk = hunk.next ) {
             if ( hunk.line1 > firstLine + ( ( hunk.inserted == 0 ) ? 1 : 0 ) ) {
                 int line = 0;
                 if ( hunk.inserted == 0 && hunk.line1 > 0 ) {
@@ -1120,32 +1120,39 @@ public class DualDiff implements EBComponent {
 
     private void prevDiff0() {
         Diff.Change hunk = this.edits;
-        int firstLine = this.textArea0.getFirstLine();
-        for ( ; hunk != null; hunk = hunk.link ) {
-            if ( hunk.line0 < firstLine ) {
-                /// TODO: this is wrong -- suppose the caret is at the bottom of the textarea
-                // and there are several diff hunks visible on the screen.  This will find the
-                // first visible hunk, which isn't necessarily the first hunk preceding the
-                // caret position.
-                if ( hunk.link == null || hunk.link.line0 >= firstLine ) {  // NOPMD ifs on separate lines for readability
-                    int line = 0;
-                    if ( hunk.deleted == 0 && hunk.line0 > 0 ) {
-                        line = hunk.line0; // - 1;
-                    }
-                    else {
-                        line = hunk.line0;
-                    }
-                    this.textArea0.setFirstLine( line );
-
-                    // move the caret to the start of the first line of the diff
+        int caretLine = this.textArea0.getCaretLine();
+        for ( ; hunk != null; hunk = hunk.next ) {
+            if ( hunk.line0 < caretLine ) {
+                // hunk starts before the caret line.  If caret line is in hunk,
+                // go to start of current hunk.  If caret line is after end of
+                // current hunk, but before the next hunk, go to start of current
+                // hunk.
+                if ( hunk.line0 + hunk.deleted > caretLine ||    // NOPMD caret is in current hunk
+                        hunk.next == null ||                     // caret is after last hunk
+                        hunk.next.line0 >= caretLine ) {         // caret is before next hunk
+                    int line = hunk.line0;      // first line of diff hunk
+         
+                    // move caret to start of diff hunk
                     int caret_position = textArea0.getLineStartOffset( line );
                     this.textArea0.setCaretPosition( caret_position, false );
-                    this.textArea0.scrollToCaret( false );
-                    this.textArea0.scrollUpLine();
+                    
+                    // scroll so line is visible
+                    int visibleLines = textArea0.getVisibleLines();
+                    int leftLineCount = textArea0.getLineCount();
+                    int distance = 1;
+                    if (line > leftLineCount - visibleLines) {
+                        textArea0.setFirstLine(leftLineCount - visibleLines);
+                        distance = line - (leftLineCount - visibleLines);
+                    }
+                    else {
+                        textArea0.setFirstLine(line - 1);
+                    }
+                    
+                    // move caret in other text area to start of diff hunk
+                    // and scroll to it
                     caret_position = textArea1.getLineStartOffset( hunk.line1 );
                     this.textArea1.setCaretPosition( caret_position, false );
-                    this.textArea1.scrollToCaret( false );
-                    this.textArea1.scrollUpLine();
+                    this.textArea1.setFirstLine(hunk.line1 - distance);
 
                     // maybe move the caret to the first actual diff character
                     if ( jEdit.getBooleanProperty( HORIZ_SCROLL ) ) {
@@ -1174,32 +1181,39 @@ public class DualDiff implements EBComponent {
 
     private void prevDiff1() {
         Diff.Change hunk = this.edits;
-        int firstLine = this.textArea1.getFirstLine();
-        for ( ; hunk != null; hunk = hunk.link ) {
-            if ( hunk.line1 < firstLine ) {
-                /// TODO: this is wrong -- suppose the caret is at the bottom of the textarea
-                // and there are several diff hunks visible on the screen.  This will find the
-                // first visible hunk, which isn't necessarily the first hunk preceding the
-                // caret position.
-                if ( hunk.link == null || hunk.link.line1 >= firstLine ) {  // NOPMD ifs on separate lines for readability
-                    int line = 0;
-                    if ( hunk.inserted == 0 && hunk.line1 > 0 ) {
-                        line = hunk.line1; // - 1;
-                    }
-                    else {
-                        line = hunk.line1;
-                    }
-                    this.textArea1.setFirstLine( line );
-
-                    // move the caret to the start of the first line of the diff
+        int caretLine = this.textArea1.getCaretLine();
+        for ( ; hunk != null; hunk = hunk.next ) {
+            if ( hunk.line1 < caretLine ) {
+                // hunk starts before the caret line.  If caret line is in hunk,
+                // go to start of current hunk.  If caret line is after end of
+                // current hunk, but before current hunk, go to start of current
+                // hunk.
+                if ( hunk.line1 + hunk.inserted > caretLine ||   // NOPMD caret is in current hunk
+                        hunk.next == null ||                     // caret is after last hunk
+                        hunk.next.line1 >= caretLine ) {         // caret is before next hunk
+                    int line = hunk.line1;      // first line of hunk
+                    
+                    // move caret to start of diff hunk
                     int caret_position = textArea1.getLineStartOffset( line );
                     this.textArea1.setCaretPosition( caret_position, false );
-                    this.textArea1.scrollToCaret( false );
-                    this.textArea1.scrollUpLine();
+                    
+                    // scroll so line is visible
+                    int visibleLines = textArea1.getVisibleLines();
+                    int rightLineCount = textArea1.getLineCount();
+                    int distance = 1;
+                    if (line > rightLineCount - visibleLines) {
+                        textArea1.setFirstLine(rightLineCount - visibleLines);
+                        distance = line - (rightLineCount - visibleLines);
+                    }
+                    else {
+                        textArea1.setFirstLine(line - 1);
+                    }
+                    
+                    // move caret in other text area to start of diff hunk
+                    // and scroll to it
                     caret_position = textArea0.getLineStartOffset( hunk.line0 );
                     this.textArea0.setCaretPosition( caret_position, false );
-                    this.textArea0.scrollToCaret( false );
-                    this.textArea0.scrollUpLine();
+                    this.textArea0.setFirstLine(hunk.line0 - distance);
 
                     // maybe move the caret to the first actual diff character
                     if ( jEdit.getBooleanProperty( HORIZ_SCROLL ) ) {

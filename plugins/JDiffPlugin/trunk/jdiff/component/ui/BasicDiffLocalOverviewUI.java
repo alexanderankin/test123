@@ -368,7 +368,7 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
         JEditTextArea rightTextArea = model.getRightTextArea();
 
         Diff.Change hunk = model.getEdits();
-        for ( ; hunk != null; hunk = hunk.link ) {
+        for ( ; hunk != null; hunk = hunk.next ) {
             // find the hunk pertaining to this line number
             if ( ( hunk.line0 + Math.max( 0, hunk.deleted - 1 ) ) < line_number ) {
                 continue;   // before this line, keep looking
@@ -447,7 +447,7 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
         JEditTextArea leftTextArea = model.getLeftTextArea();
         JEditTextArea rightTextArea = model.getRightTextArea();
         Diff.Change hunk = model.getEdits();
-        for ( ; hunk != null; hunk = hunk.link ) {
+        for ( ; hunk != null; hunk = hunk.next ) {
             // find the hunk pertaining to this line number
             if ( ( hunk.line1 + Math.max( 0, hunk.inserted - 1 ) ) < line_number ) {
                 continue;   // before this line, keep looking

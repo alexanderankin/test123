@@ -91,11 +91,11 @@ public class DiffTextAreaModel {
             FileLine[] fileLines1 = this.getFileLines( buf1 );
 
             Diff d = new Diff( fileLines0, fileLines1 );
-            edits = d.diff_2( false );
+            edits = d.diff_2();
             leftHunkMap = new HashMap<Integer, Diff.Change>();
             rightHunkMap = new HashMap<Integer, Diff.Change>();
             Diff.Change hunk = edits;
-            for ( ; hunk != null; hunk = hunk.link ) {
+            for ( ; hunk != null; hunk = hunk.next ) {
                 for (int i = 0; i < Math.max(1, hunk.deleted); i++) {
                     leftHunkMap.put(hunk.line0 + i, hunk);
                 }

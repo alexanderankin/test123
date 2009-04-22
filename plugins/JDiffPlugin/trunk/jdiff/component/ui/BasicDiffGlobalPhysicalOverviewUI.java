@@ -144,7 +144,7 @@ public class BasicDiffGlobalPhysicalOverviewUI extends DiffGlobalPhysicalOvervie
 
             int leftOffset = 0;
             int rightOffset = 0;
-            for ( ; hunk != null; hunk = hunk.link ) {
+            for ( ; hunk != null; hunk = hunk.next ) {
                 leftOffset = hunk.line0;
                 rightOffset = hunk.line1;
 

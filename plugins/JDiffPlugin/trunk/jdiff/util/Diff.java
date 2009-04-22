@@ -17,7 +17,7 @@ import java.util.HashMap;
    inputs.  Our results are actually better (smaller change list, smaller
    total size of changes), but it would be nice to know why.  Perhaps
    there is a memory overwrite bug in GNU diff 1.15.
-
+ 
   @author Stuart D. Gathman, translated from GNU diff 1.15
     Copyright (C) 2000  Business Management Systems, Inc.
 <p>
@@ -35,7 +35,7 @@ import java.util.HashMap;
     GNU General Public License</a>
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-
+ 
  */
 
 public class Diff {
@@ -68,13 +68,13 @@ public class Diff {
 
     private int[] xvec, yvec;        /* Vectors being compared. */
     private int[] fdiag;                /* Vector, indexed by diagonal, containing
-                                       the X coordinate of the point furthest
-                                       along the given diagonal in the forward
-                                       search of the edit matrix. */
+                                               the X coordinate of the point furthest
+                                               along the given diagonal in the forward
+                                               search of the edit matrix. */
     private int[] bdiag;                /* Vector, indexed by diagonal, containing
-                                       the X coordinate of the point furthest
-                                       along the given diagonal in the backward
-                                       search of the edit matrix. */
+                                               the X coordinate of the point furthest
+                                               along the given diagonal in the backward
+                                               search of the edit matrix. */
     private int fdiagoff, bdiagoff;
     private final FileData[] filevec = new FileData[ 2 ];
     private int cost;
@@ -405,6 +405,10 @@ public class Diff {
         return script;
     }
 
+    public Change diff_2() {
+        return diff_2(false);   
+    }
+    
     /* Report the differences of two files.  DEPTH is the current directory
        depth. */
     public Change diff_2( final boolean reverse ) {
@@ -459,8 +463,11 @@ public class Diff {
        which the insertion was done; vice versa for INSERTED and LINE1.  */
 
     public static class Change {
-        /** Previous or next edit command. */
-        public Change link;
+        /** Previous edit command. */
+        public Change prev;
+
+        /** Next edit command */
+        public Change next;
 
         /** # lines of file 1 changed here.  */
         public final int inserted;
@@ -487,15 +494,18 @@ public class Diff {
 
            If DELETED is 0 then LINE0 is the number of the line before
            which the insertion was done; vice versa for INSERTED and LINE1.  */
-        public Change( int line0, int line1, int deleted, int inserted, Change old ) {
+        public Change( int line0, int line1, int deleted, int inserted, Change next ) {
             this.line0 = line0;
             this.line1 = line1;
             this.inserted = inserted;
             this.deleted = deleted;
-            this.link = old;
+            this.next = next;
+            if ( next != null ) {
+                next.prev = this;
+            }
 
-            this.last0 = line0 + (deleted == 0 ? 0 : deleted - 1);
-            this.last1 = line1 + (inserted == 0 ? 0 : inserted - 1);
+            this.last0 = line0 + ( deleted == 0 ? 0 : deleted - 1 );
+            this.last1 = line1 + ( inserted == 0 ? 0 : inserted - 1 );
         }
 
         public String toString() {
@@ -509,11 +519,11 @@ public class Diff {
             return sb.toString();
         }
 
-        public boolean equals(Object o) {
-            if (!(o instanceof Change)) {
+        public boolean equals( Object o ) {
+            if ( !( o instanceof Change ) ) {
                 return false;
             }
-            Change c = (Change)o;
+            Change c = ( Change ) o;
             return line0 == c.line0 && line1 == c.line1 && deleted == c.deleted && inserted == c.inserted;
         }
     }

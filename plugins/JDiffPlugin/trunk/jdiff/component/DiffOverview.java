@@ -75,7 +75,7 @@ public abstract class DiffOverview extends JComponent {
         int prevRightOffset = 0;
         int leftOffset = 0;
         int rightOffset = 0;
-        for ( ; hunk != null; hunk = hunk.link ) {
+        for ( ; hunk != null; hunk = hunk.next ) {
             leftOffset = hunk.line0;
             rightOffset = hunk.line1;
 
@@ -104,7 +104,7 @@ public abstract class DiffOverview extends JComponent {
             prevLeftOffset = leftOffset + hunk.deleted;
             prevRightOffset = rightOffset + hunk.inserted;
 
-            if ( hunk.link == null ) {
+            if ( hunk.next == null ) {
                 // after last hunk
                 rightFirstLine = prevRightOffset + ( leftFirstLine - prevLeftOffset );
                 break;
@@ -132,7 +132,7 @@ public abstract class DiffOverview extends JComponent {
         int prevRightOffset = 0;
         int leftOffset = 0;
         int rightOffset = 0;
-        for ( ; hunk != null; hunk = hunk.link ) {
+        for ( ; hunk != null; hunk = hunk.next ) {
             leftOffset = hunk.line0;
             rightOffset = hunk.line1;
 
@@ -161,7 +161,7 @@ public abstract class DiffOverview extends JComponent {
             prevLeftOffset = leftOffset + hunk.deleted;
             prevRightOffset = rightOffset + hunk.inserted;
 
-            if ( hunk.link == null ) {
+            if ( hunk.next == null ) {
                 // after last hunk
                 leftFirstLine = prevLeftOffset + ( rightFirstLine - prevRightOffset );
                 break;
