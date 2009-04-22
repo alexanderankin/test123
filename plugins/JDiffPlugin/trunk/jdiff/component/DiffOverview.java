@@ -97,9 +97,6 @@ public abstract class DiffOverview extends JComponent {
                             rightOffset + hunk.inserted - 1 :
                             leftOffset + leftFirstLine - rightFirstLine;
                 }
-                else {
-                    /// TODO: fill this in!
-                }
                 break;
             }
 
@@ -157,9 +154,6 @@ public abstract class DiffOverview extends JComponent {
                             leftOffset + hunk.deleted - 1 :
                             rightOffset + rightFirstLine - leftFirstLine;
                 }
-                else {
-                    /// TODO: fill this in!
-                }
                 break;
             }
 
@@ -188,8 +182,5 @@ public abstract class DiffOverview extends JComponent {
      * Default implementation does nothing, this is for subclasses to override.
      */
     public void moveLeft( int line_number ) {}
-
-    /**
-     */
 
 }
