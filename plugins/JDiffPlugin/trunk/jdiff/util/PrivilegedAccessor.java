@@ -135,6 +135,7 @@ public class PrivilegedAccessor {
      * Return the named method with a method signature matching classTypes
      * from the given class.
      */
+    @SuppressWarnings("unchecked")
     public static Method getMethod( Class thisClass, String methodName, Class[] classTypes ) throws NoSuchMethodException {
         if ( thisClass == null )
             throw new NoSuchMethodException( "Invalid method : " + methodName );
