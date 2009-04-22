@@ -1123,6 +1123,10 @@ public class DualDiff implements EBComponent {
         int firstLine = this.textArea0.getFirstLine();
         for ( ; hunk != null; hunk = hunk.link ) {
             if ( hunk.line0 < firstLine ) {
+                /// TODO: this is wrong -- suppose the caret is at the bottom of the textarea
+                // and there are several diff hunks visible on the screen.  This will find the
+                // first visible hunk, which isn't necessarily the first hunk preceding the
+                // caret position.
                 if ( hunk.link == null || hunk.link.line0 >= firstLine ) {  // NOPMD ifs on separate lines for readability
                     int line = 0;
                     if ( hunk.deleted == 0 && hunk.line0 > 0 ) {
@@ -1173,6 +1177,10 @@ public class DualDiff implements EBComponent {
         int firstLine = this.textArea1.getFirstLine();
         for ( ; hunk != null; hunk = hunk.link ) {
             if ( hunk.line1 < firstLine ) {
+                /// TODO: this is wrong -- suppose the caret is at the bottom of the textarea
+                // and there are several diff hunks visible on the screen.  This will find the
+                // first visible hunk, which isn't necessarily the first hunk preceding the
+                // caret position.
                 if ( hunk.link == null || hunk.link.line1 >= firstLine ) {  // NOPMD ifs on separate lines for readability
                     int line = 0;
                     if ( hunk.inserted == 0 && hunk.line1 > 0 ) {
