@@ -33,7 +33,7 @@ public class DiffNormalOutput extends DiffOutput {
     public void writeScript(Diff.Change script) throws IOException {
         Diff.Change hunk = script;
 
-        for (; hunk != null; hunk = hunk.link) {
+        for (; hunk != null; hunk = hunk.next) {
             this.writeHunk(hunk);
         }
 

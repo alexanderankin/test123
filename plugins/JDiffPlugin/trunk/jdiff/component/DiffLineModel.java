@@ -103,7 +103,7 @@ public class DiffLineModel {
             rightLines[ i ] = new FileLine( text, text );
         }
         Diff d = new Diff( leftLines, rightLines );
-        Diff.Change edits = d.diff_2( false );
+        Diff.Change edits = d.diff_2();
 
         if ( edits == null ) {
             // lines are identical
@@ -129,7 +129,7 @@ public class DiffLineModel {
         // calculate the colors per character, use the same colors the user has
         // defined for the text area diff coloring.
         Color color;
-        for ( Diff.Change hunk = edits; hunk != null; hunk = hunk.link ) {
+        for ( Diff.Change hunk = edits; hunk != null; hunk = hunk.next ) {
             // left line colors
             if ( hunk.deleted == 0 ) {
                 color = JDiffPlugin.overviewInvalidColor;

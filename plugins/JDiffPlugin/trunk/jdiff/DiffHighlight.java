@@ -79,7 +79,7 @@ public class DiffHighlight extends TextAreaExtension {
             Color color;
 
             if ( this.position == DiffHighlight.LEFT ) {
-                for ( ; hunk != null; hunk = hunk.link ) {
+                for ( ; hunk != null; hunk = hunk.next ) {
                     if ( hunk.line0 > physicalLine ) {
                         break;
                     }
@@ -115,7 +115,7 @@ public class DiffHighlight extends TextAreaExtension {
                 }
             }
             else { // DiffHighlight.RIGHT
-                for ( ; hunk != null; hunk = hunk.link ) {
+                for ( ; hunk != null; hunk = hunk.next ) {
                     if ( hunk.line1 > physicalLine ) {
                         break;
                     }
