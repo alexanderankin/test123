@@ -90,13 +90,16 @@ public class MibSidekickParser extends SideKickParser
 			while (iterator.hasNext())
 			{
 				MibLoaderLog.LogEntry logEntry =  iterator.next();
-				if (logEntry.getLineNumber() == -1)
+				if (logEntry.getLineNumber() == -1 ||
+				    !logEntry.getFile().getAbsolutePath().equals(buffer.getPath()))
 				{
 					continue;
 				}
 				int line = logEntry.getLineNumber() -1;
 				int endColumn = buffer.getLineLength(line);
-				errorSource.addError(ErrorSource.ERROR, buffer.getPath(),
+				int type = logEntry.getType() == MibLoaderLog.LogEntry.WARNING ? ErrorSource.WARNING : ErrorSource.ERROR;
+				errorSource.addError(type,
+						     buffer.getPath(),
 						     line,
 						     logEntry.getColumnNumber() -1,
 						     endColumn,
