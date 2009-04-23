@@ -97,7 +97,7 @@ public class UpdateAction extends SVNAction {
             }
             data.setUsername( getUsername() );
             data.setPassword( getPassword() );
-            
+
             data.setOut( new ConsolePrintStream( getView() ) );
 
             // show dialog
@@ -153,6 +153,9 @@ public class UpdateAction extends SVNAction {
                 protected void done() {
                     try {
                         UpdateData data = get();
+                        if ( data == null ) {
+                            return ;
+                        }
                         JPanel results_panel = new UpdateResultsPanel( getView(), data );
                         panel.addTab( jEdit.getProperty( "ips.Update", "Update" ), results_panel );
                         for ( String path : data.getPaths() ) {
