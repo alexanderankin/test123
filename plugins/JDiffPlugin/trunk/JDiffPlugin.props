@@ -93,6 +93,7 @@ options.jdiff.ignore-all-whitespace=Ignore all whitespace
 options.jdiff.ui-options.label=UI Options:
 options.jdiff.auto-show-dockable=Automatically show dockable on diff
 options.jdiff.show-line-diff=Show line diff in dockable
+options.jdiff.synchroscroll-on=Synchronize scrolling between left and right text areas
 options.jdiff.horiz-scroll=Scroll horizontally to next/prev diff
 options.jdiff.select-word=Select first word of next/prev diff
 options.jdiff.beep-on-error=Beep on error
