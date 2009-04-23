@@ -61,115 +61,118 @@ public abstract class DiffOverview extends JComponent {
     }
 
     public void synchroScrollRight() {
-        Diff.Change hunk = this.edits;
+        Diff.Change hunk = edits;
 
-        int leftFirstLine = this.textArea0.getFirstLine();
+        int leftFirstLine = textArea0.getFirstLine();
         int rightFirstLine = -1;
+        int rightMaxFirstLine = textArea1.getLineCount() - textArea1.getVisibleLines() + 1;
 
         if ( hunk == null ) {
-            this.textArea1.setFirstLine( leftFirstLine );
+            // no diffs, so scroll to same line number
+            textArea1.setFirstLine( Math.min( leftFirstLine, rightMaxFirstLine ) );
             return ;
         }
 
-        int prevLeftOffset = 0;
-        int prevRightOffset = 0;
-        int leftOffset = 0;
-        int rightOffset = 0;
         for ( ; hunk != null; hunk = hunk.next ) {
-            leftOffset = hunk.line0;
-            rightOffset = hunk.line1;
-
-            // before current hunk (between hunks) -- scroll is 1 - 1
-            if ( ( leftFirstLine >= prevLeftOffset )
-                    && ( leftFirstLine < leftOffset )
-               ) {
-                rightFirstLine = prevRightOffset + ( leftFirstLine - prevLeftOffset );
-                break;
+            // if left side is scrolled to bottom, scroll right to bottom
+            if ( leftFirstLine + textArea0.getVisibleLines() >= textArea0.getLineCount() ) {
+                textArea1.setFirstLine( rightMaxFirstLine );
+                return ;
             }
 
-            // in current hunk -- scroll 1 - 1 until end of smaller side, then
-            // only scroll larger side until past this hunk
-            if ( ( leftFirstLine >= leftOffset )
-                    && ( leftFirstLine < ( leftOffset + hunk.deleted ) )
-               ) {
-                if ( hunk.deleted >= hunk.inserted ) {
-                    rightFirstLine = leftFirstLine - leftOffset + rightOffset > hunk.inserted ?
-                            rightOffset + hunk.inserted - 1 :
-                            leftOffset + leftFirstLine - rightFirstLine;
-                }
-                break;
+            // if before first hunk scroll line per line
+            if (leftFirstLine < hunk.line0) {
+                textArea1.setFirstLine(leftFirstLine);
+                return;
             }
 
-            // prep for advance to next hunk
-            prevLeftOffset = leftOffset + hunk.deleted;
-            prevRightOffset = rightOffset + hunk.inserted;
-
-            if ( hunk.next == null ) {
-                // after last hunk
-                rightFirstLine = prevRightOffset + ( leftFirstLine - prevLeftOffset );
-                break;
+            // if on the first line of a hunk, align the corresponding hunk
+            if ( leftFirstLine == hunk.line0 ) {
+                rightFirstLine = Math.min( hunk.line1, rightMaxFirstLine );
+                textArea1.setFirstLine( rightFirstLine );
+                return ;
             }
-        }
 
-        if ( rightFirstLine >= 0 ) {
-            this.textArea1.setFirstLine( rightFirstLine );
+            // if in a hunk (but after the first line), scroll a proportional amount.
+            if ( leftFirstLine > hunk.line0 && leftFirstLine <= hunk.line0 + hunk.deleted ) {
+                float percent = ( float ) ( leftFirstLine - hunk.line0 ) / ( float ) hunk.deleted;
+                int distance = ( int ) ( ( float ) ( hunk.inserted ) * percent );
+                textArea1.setFirstLine(hunk.line1 + distance);
+                return ;
+            }
+
+            // if between hunks scroll line per line
+            if ( leftFirstLine > hunk.line0 + hunk.deleted && ( hunk.next != null && leftFirstLine < hunk.next.line0 ) ) {
+                int distance = leftFirstLine - ( hunk.line0 + hunk.deleted );
+                textArea1.setFirstLine( hunk.line1 + hunk.inserted + distance );
+                return ;
+            }
+
+            // if after last hunk scroll line per line
+            if ( leftFirstLine > hunk.line0 + hunk.deleted && hunk.next == null) {
+                int distance = leftFirstLine - ( hunk.line0 + hunk.deleted );
+                textArea1.setFirstLine( hunk.line1 + hunk.inserted + distance );
+                return ;
+            }
         }
     }
 
 
     public void synchroScrollLeft() {
-        Diff.Change hunk = this.edits;
+        Diff.Change hunk = edits;
 
+        int rightFirstLine = textArea1.getFirstLine();
         int leftFirstLine = -1;
-        int rightFirstLine = this.textArea1.getFirstLine();
+        int leftMaxFirstLine = textArea0.getLineCount() - textArea0.getVisibleLines() + 1;
 
         if ( hunk == null ) {
-            this.textArea0.setFirstLine( rightFirstLine );
+            // no diffs, so scroll to same line number
+            textArea0.setFirstLine( Math.min( rightFirstLine, leftMaxFirstLine ) );
             return ;
         }
 
-        int prevLeftOffset = 0;
-        int prevRightOffset = 0;
-        int leftOffset = 0;
-        int rightOffset = 0;
+
         for ( ; hunk != null; hunk = hunk.next ) {
-            leftOffset = hunk.line0;
-            rightOffset = hunk.line1;
-
-            // before current hunk (between hunks) -- scroll is 1 - 1
-            if ( ( rightFirstLine >= prevRightOffset )
-                    && ( rightFirstLine < rightOffset )
-               ) {
-                leftFirstLine = prevLeftOffset + ( rightFirstLine - prevRightOffset );
-                break;
+            // if left side is scrolled to bottom, scroll right to bottom
+            if ( rightFirstLine + textArea1.getVisibleLines() >= textArea1.getLineCount() ) {
+                textArea0.setFirstLine( leftMaxFirstLine );
+                return ;
             }
 
-            // in current hunk -- scroll 1 - 1 until end of smaller side, then
-            // only scroll larger side until past this hunk
-            if ( ( rightFirstLine >= rightOffset )
-                    && ( rightFirstLine < ( rightOffset + hunk.inserted ) )
-               ) {
-                if ( hunk.inserted >= hunk.deleted ) {
-                    leftFirstLine = rightFirstLine - rightOffset + leftOffset > hunk.deleted ?
-                            leftOffset + hunk.deleted - 1 :
-                            rightOffset + rightFirstLine - leftFirstLine;
-                }
-                break;
+            // if before first hunk scroll line per line
+            if (rightFirstLine < hunk.line1) {
+                textArea0.setFirstLine(rightFirstLine);
+                return;
             }
 
-            // prep for advance to next hunk
-            prevLeftOffset = leftOffset + hunk.deleted;
-            prevRightOffset = rightOffset + hunk.inserted;
-
-            if ( hunk.next == null ) {
-                // after last hunk
-                leftFirstLine = prevLeftOffset + ( rightFirstLine - prevRightOffset );
-                break;
+            // if on the first line of a hunk, align the corresponding hunk
+            if ( rightFirstLine == hunk.line1 ) {
+                leftFirstLine = Math.min( hunk.line0, leftMaxFirstLine );
+                textArea0.setFirstLine( leftFirstLine );
+                return ;
             }
-        }
 
-        if ( leftFirstLine >= 0 ) {
-            this.textArea0.setFirstLine( leftFirstLine );
+            // if in a hunk (but after the first line), scroll a proportional amount
+            if ( rightFirstLine > hunk.line1 && rightFirstLine <= hunk.line1 + hunk.inserted ) {
+                float percent = ( float ) ( rightFirstLine - hunk.line1 ) / ( float ) hunk.inserted;
+                int distance = ( int ) ( ( float ) ( hunk.deleted ) * percent );
+                textArea0.setFirstLine(hunk.line0 + distance);
+                return ;
+            }
+
+            // if between hunks scroll line per line
+            if ( rightFirstLine > hunk.line1 + hunk.inserted && ( hunk.next != null && rightFirstLine < hunk.next.line1 ) ) {
+                int distance = rightFirstLine - ( hunk.line1 + hunk.inserted );
+                textArea0.setFirstLine( hunk.line0 + hunk.deleted + distance );
+                return ;
+            }
+
+            // if after last hunk scroll line per line
+            if ( rightFirstLine > hunk.line1 + hunk.inserted && hunk.next == null) {
+                int distance = rightFirstLine - ( hunk.line1 + hunk.inserted );
+                textArea0.setFirstLine( hunk.line0 + hunk.deleted + distance );
+                return ;
+            }
         }
     }
 
