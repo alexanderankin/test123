@@ -27,6 +27,7 @@ import javax.swing.JComponent;
 import jdiff.DualDiff;
 import jdiff.util.Diff;
 
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 public abstract class DiffOverview extends JComponent {
@@ -61,9 +62,13 @@ public abstract class DiffOverview extends JComponent {
     }
 
     public void synchroScrollRight() {
+        if (!jEdit.getBooleanProperty("jdiff.synchroscroll-on", true) ) {
+            return;
+        }
         Diff.Change hunk = edits;
 
         int leftFirstLine = textArea0.getFirstLine();
+        int rightFirstLine = textArea1.getFirstLine();
         int rightMaxFirstLine = textArea1.getLineCount() - textArea1.getVisibleLines() + 1;
 
         if ( hunk == null ) {
@@ -73,32 +78,55 @@ public abstract class DiffOverview extends JComponent {
         }
 
         for ( ; hunk != null; hunk = hunk.next ) {
-            // if left side is scrolled to bottom, scroll right to bottom
+            // if left side is scrolled to bottom, scroll right to bottom.
             if ( leftFirstLine + textArea0.getVisibleLines() >= textArea0.getLineCount() ) {
-                // System.out.println( "+++++ left scrolling to bottom" );
                 textArea1.setFirstLine( rightMaxFirstLine );
                 return ;
             }
 
             // if before first hunk, scroll line per line
             if ( leftFirstLine < hunk.line0 && hunk.prev == null ) {
-                // System.out.println( "+++++ left before first hunk" );
                 textArea1.setFirstLine( leftFirstLine );
                 return ;
             }
 
             // if in a hunk, scroll a proportional amount.
             if ( leftFirstLine >= hunk.line0 && leftFirstLine < hunk.line0 + hunk.deleted ) {
-                float percent = ( float ) ( leftFirstLine - hunk.line0 ) / ( float ) hunk.deleted;
-                int distance = ( int ) ( ( float ) ( hunk.inserted ) * percent );
-                // System.out.println( "+++++ left in a hunk, distance = " + distance + ", percent = " + percent );
+                int distance = 0;
+                // 5 cases:
+                // 1. hunk.deleted = 0, hunk.inserted > 0
+                // 2. hunk.deleted > 0, hunk.inserted = 0;
+                // 3. hunk.deleted =    hunk.inserted
+                // 4. hunk.deleted >    hunk.inserted
+                // 5. hunk.deleted <    hunk.inserted
+                // I think I have these in the right order to avoid divide by 0 errors.
+                // Note there is no possibility of both hunk.deleted and hunk.inserted
+                // both being 0, the diff algorithm will not produce such a hunk.
+                if ( hunk.deleted == 0 && hunk.inserted > 0 ) {
+                    distance = rightFirstLine - hunk.line1;
+                }
+                else if ( hunk.deleted > 0 && hunk.inserted == 0 ) {
+                    distance = 0;
+                }
+                else if ( hunk.deleted == hunk.inserted ) {
+                    distance = leftFirstLine - hunk.line0;
+                }
+                else if ( hunk.deleted > hunk.inserted ) {
+                    int left_increment = hunk.deleted / hunk.inserted;
+                    int right_increment = ( int ) Math.round( ( float ) ( hunk.inserted * left_increment ) / ( float ) hunk.deleted );
+                    distance = ( ( leftFirstLine - hunk.line0 ) / left_increment ) * right_increment;
+                }
+                else if ( hunk.deleted < hunk.inserted ) {
+                    int right_increment = hunk.inserted / hunk.deleted;
+                    int left_increment = ( int ) Math.round( ( float ) ( hunk.deleted * right_increment ) / ( float ) hunk.inserted );
+                    distance = ( ( leftFirstLine - hunk.line0 ) / left_increment ) * right_increment;
+                }
                 textArea1.setFirstLine( hunk.line1 + distance );
                 return ;
             }
 
             // if between hunks, scroll line per line
             if ( leftFirstLine > hunk.line0 + hunk.deleted && ( hunk.next != null && leftFirstLine < hunk.next.line0 ) ) {
-                // System.out.println( "+++++ left between hunks" );
                 int distance = leftFirstLine - ( hunk.line0 + hunk.deleted );
                 textArea1.setFirstLine( hunk.line1 + hunk.inserted + distance );
                 return ;
@@ -106,7 +134,6 @@ public abstract class DiffOverview extends JComponent {
 
             // if after last hunk scroll line per line
             if ( leftFirstLine > hunk.line0 + hunk.deleted && hunk.next == null ) {
-                // System.out.println( "+++++ left after last hunk" );
                 int distance = leftFirstLine - ( hunk.line0 + hunk.deleted );
                 textArea1.setFirstLine( hunk.line1 + hunk.inserted + distance );
                 return ;
@@ -116,8 +143,12 @@ public abstract class DiffOverview extends JComponent {
 
 
     public void synchroScrollLeft() {
+        if (!jEdit.getBooleanProperty("jdiff.synchroscroll-on", true) ) {
+            return;
+        }
         Diff.Change hunk = edits;
 
+        int leftFirstLine = textArea0.getFirstLine();
         int rightFirstLine = textArea1.getFirstLine();
         int leftMaxFirstLine = textArea0.getLineCount() - textArea0.getVisibleLines() + 1;
 
@@ -131,30 +162,53 @@ public abstract class DiffOverview extends JComponent {
         for ( ; hunk != null; hunk = hunk.next ) {
             // if right side is scrolled to bottom, scroll left to bottom
             if ( rightFirstLine + textArea1.getVisibleLines() >= textArea1.getLineCount() ) {
-                // System.out.println( "+++++ right scrolling to bottom" );
                 textArea0.setFirstLine( leftMaxFirstLine );
                 return ;
             }
 
             // if before first hunk, scroll line per line
             if ( rightFirstLine < hunk.line1 && hunk.prev == null ) {
-                // System.out.println( "+++++ right before first hunk" );
                 textArea0.setFirstLine( rightFirstLine );
                 return ;
             }
 
             // if in a hunk, scroll a proportional amount
             if ( rightFirstLine >= hunk.line1 && rightFirstLine < hunk.line1 + hunk.inserted ) {
-                float percent = ( float ) ( rightFirstLine - hunk.line1 ) / ( float ) hunk.inserted;
-                int distance = ( int ) ( ( float ) ( hunk.deleted ) * percent );
-                // System.out.println( "+++++ right in a hunk, distance = " + distance + ", percent = " + percent );
+                int distance = 0;
+                // 5 cases:
+                // 1. hunk.inserted = 0, hunk.deleted > 0
+                // 2. hunk.inserted > 0, hunk.deleted = 0;
+                // 3. hunk.inserted =    hunk.deleted
+                // 4. hunk.inserted >    hunk.deleted
+                // 5. hunk.inserted <    hunk.deleted
+                // I think I have these in the right order to avoid divide by 0 errors.
+                // Note there is no possibility of both hunk.deleted and hunk.inserted
+                // both being 0, the diff algorithm will not produce such a hunk.
+                if ( hunk.inserted == 0 && hunk.deleted > 0 ) {
+                    distance = leftFirstLine - hunk.line0;
+                }
+                else if ( hunk.inserted > 0 && hunk.deleted == 0 ) {
+                    distance = 0;
+                }
+                else if ( hunk.inserted == hunk.deleted ) {
+                    distance = rightFirstLine - hunk.line1;
+                }
+                else if ( hunk.inserted > hunk.deleted ) {
+                    int right_increment = hunk.inserted / hunk.deleted;
+                    int left_increment = ( int ) Math.round( ( float ) ( hunk.deleted * right_increment ) / ( float ) hunk.inserted );
+                    distance = ( ( rightFirstLine - hunk.line1 ) / right_increment ) * left_increment;
+                }
+                else if ( hunk.inserted < hunk.deleted ) {
+                    int left_increment = hunk.deleted / hunk.inserted;
+                    int right_increment = ( int ) Math.round( ( float ) ( hunk.inserted * left_increment ) / ( float ) hunk.deleted );
+                    distance = ( ( rightFirstLine - hunk.line1 ) / right_increment ) * left_increment;
+                }
                 textArea0.setFirstLine( hunk.line0 + distance );
                 return ;
             }
 
             // if between hunks, scroll line per line
             if ( rightFirstLine > hunk.line1 + hunk.inserted && ( hunk.next != null && rightFirstLine < hunk.next.line1 ) ) {
-                // System.out.println( "+++++ right between hunks" );
                 int distance = rightFirstLine - ( hunk.line1 + hunk.inserted );
                 textArea0.setFirstLine( hunk.line0 + hunk.deleted + distance );
                 return ;
@@ -162,7 +216,6 @@ public abstract class DiffOverview extends JComponent {
 
             // if after last hunk, scroll line per line
             if ( rightFirstLine > hunk.line1 + hunk.inserted && hunk.next == null ) {
-                // System.out.println( "+++++ right after last hunk" );
                 int distance = rightFirstLine - ( hunk.line1 + hunk.inserted );
                 textArea0.setFirstLine( hunk.line0 + hunk.deleted + distance );
                 return ;

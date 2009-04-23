@@ -54,6 +54,7 @@ public class JDiffOptionPane implements OptionPane {
     private JCheckBox showLineDiff;
     private JCheckBox restoreView;
     private JCheckBox restoreCaret;
+    private JCheckBox synchroScroll;
     private JCheckBox horizScroll;
     private JCheckBox selectWord;
 
@@ -93,6 +94,7 @@ public class JDiffOptionPane implements OptionPane {
 
         autoShowDockable.setSelected(jEdit.getBooleanProperty( "jdiff.auto-show-dockable", false ));
         showLineDiff.setSelected(jEdit.getBooleanProperty( "jdiff.show-line-diff", true ));
+        synchroScroll.setSelected(jEdit.getBooleanProperty( "jdiff.synchroscroll-on", true));
         horizScroll.setSelected(jEdit.getBooleanProperty( "jdiff.horiz-scroll", false ));
         selectWord.setSelected(jEdit.getBooleanProperty( "jdiff.select-word", false ));
         selectWord.setEnabled( horizScroll.isSelected() );
@@ -133,6 +135,7 @@ public class JDiffOptionPane implements OptionPane {
         JLabel ui_options_label = new JLabel( jEdit.getProperty( "options.ui-options.label", "UI Options:" ) );
         autoShowDockable = createCheckBox( "jdiff.auto-show-dockable", false );
         showLineDiff = createCheckBox( "jdiff.show-line-diff", true );
+        synchroScroll = createCheckBox("jdiff.synchroscroll-on", true);
         horizScroll = createCheckBox( "jdiff.horiz-scroll", false );
         selectWord = createCheckBox( "jdiff.select-word", false );
         selectWord.setEnabled( horizScroll.isSelected() );
@@ -193,9 +196,10 @@ public class JDiffOptionPane implements OptionPane {
         panel.add( "0,  6, 2, 1, W, 0, 2", ui_options_label );
         panel.add( "0,  7, 2, 1, W, 0, 2", autoShowDockable );
         panel.add( "0,  8, 2, 1, W, 0, 2", showLineDiff );
-        panel.add( "0,  9, 2, 1, W, 0, 2", horizScroll );
-        panel.add( "0, 10, 1, 1, W, 0, 2", KappaLayout.createHorizontalStrut( 16, true ) );
-        panel.add( "1, 10, 1, 1, W, 0, 2", selectWord );
+        panel.add( "0,  9, 2, 1, W, 0, 2", synchroScroll );
+        panel.add( "0, 10, 2, 1, W, 0, 2", horizScroll );
+        panel.add( "0, 11, 1, 1, W, 0, 2", KappaLayout.createHorizontalStrut( 16, true ) );
+        panel.add( "1, 11, 1, 1, W, 0, 2", selectWord );
         panel.add( "0, 12, 2, 1, W, 0, 2", beepOnError );
         panel.add( "0, 13, 2, 1, W, 0, 2", restoreView );
         panel.add( "0, 14, 2, 1, W, 0, 2", restoreCaret );
@@ -228,6 +232,7 @@ public class JDiffOptionPane implements OptionPane {
         jEdit.setBooleanProperty( "jdiff.ignore-all-whitespace", ignoreAllWhitespace.isSelected() );
         jEdit.setBooleanProperty( "jdiff.auto-show-dockable", autoShowDockable.isSelected() );
         jEdit.setBooleanProperty( "jdiff.show-line-diff", showLineDiff.isSelected() );
+        jEdit.setBooleanProperty( "jdiff.synchroscroll-on", synchroScroll.isSelected() );
         jEdit.setBooleanProperty( "jdiff.horiz-scroll", horizScroll.isSelected() );
         jEdit.setBooleanProperty( "jdiff.select-word", selectWord.isSelected() );
         jEdit.setBooleanProperty( "jdiff.beep-on-error", beepOnError.isSelected() );
