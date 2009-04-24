@@ -34,10 +34,9 @@ import sidekick.SideKickParser;
 
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeModel;
-import java.io.File;
-import java.io.IOException;
+import javax.swing.text.Segment;
+import java.io.*;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Collection;
 
 /**
@@ -57,6 +56,11 @@ public class MibSidekickParser extends SideKickParser
 		MibLoader loader = new MibLoader();
 		try
 		{
+			if (buffer.isDirty())
+			{
+				// the buffer is dirty, we cannot parse it
+				return null;
+			}
 			File file = new File(buffer.getPath());
 			loader.addDir(file.getParentFile());
 			for (File path : searchPath)
@@ -72,7 +76,7 @@ public class MibSidekickParser extends SideKickParser
 			TreeModel model = tree.getTree().getModel();
 			Object root = model.getRoot();
 			int count = model.getChildCount(root);
-			for (int i =0;i<count;i++)
+			for (int i = 0; i < count; i++)
 			{
 				Object child = model.getChild(root, i);
 				datas.root.add((MutableTreeNode) child);
@@ -95,15 +99,15 @@ public class MibSidekickParser extends SideKickParser
 				{
 					continue;
 				}
-				int line = logEntry.getLineNumber() -1;
+				int line = logEntry.getLineNumber() - 1;
 				int endColumn = buffer.getLineLength(line);
 				int type = logEntry.getType() == MibLoaderLog.LogEntry.WARNING ? ErrorSource.WARNING : ErrorSource.ERROR;
 				errorSource.addError(type,
-						     buffer.getPath(),
-						     line,
-						     logEntry.getColumnNumber() -1,
-						     endColumn,
-						     logEntry.getMessage());
+				                     buffer.getPath(),
+				                     line,
+				                     logEntry.getColumnNumber() - 1,
+				                     endColumn,
+				                     logEntry.getMessage());
 			}
 
 
