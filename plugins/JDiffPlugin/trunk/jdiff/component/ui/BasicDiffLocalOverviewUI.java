@@ -602,7 +602,9 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
                         leftRectangle.height = 1;
                     }
                     else {
-                        leftRectangle.height = Math.max( 1, pixelsPerLine * hunk.deleted );
+                        // possibly adjust for partially visible hunk, hunk may be scrolled partially off screen
+                        int adjust = leftFirstLine > hunk.line0 ? leftFirstLine - hunk.line0 : 0;
+                        leftRectangle.height = Math.max( 1, pixelsPerLine * (hunk.deleted - adjust ) );
                     }
                     leftRectangle.y = centerRectangle.y + ( ( i - leftFirstLine ) * pixelsPerLine );
                     gfx.setColor( JDiffPlugin.leftCursorColor );
@@ -621,7 +623,9 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
                         rightRectangle.height = 1;
                     }
                     else {
-                        rightRectangle.height = Math.max( 1, pixelsPerLine * hunk.inserted );
+                        // possibly adjust for partially visible hunk, hunk may be scrolled partially off screen
+                        int adjust = rightFirstLine > hunk.line1 ? rightFirstLine - hunk.line1 : 0;
+                        rightRectangle.height = Math.max( 1, pixelsPerLine * (hunk.inserted - adjust) );
                     }
                     rightRectangle.y = centerRectangle.y + ( ( i - rightFirstLine ) * pixelsPerLine );
                     gfx.setColor( JDiffPlugin.rightCursorColor );
