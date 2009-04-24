@@ -21,7 +21,6 @@
 package jdiff;
 
 import java.awt.Color;
-import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 
 import java.util.HashMap;
@@ -64,14 +63,9 @@ public class DiffHighlight extends TextAreaExtension {
         final int start, final int end, final int y
     ) {
         if ( this.isEnabled() ) {
-            try {
-                if ( ( this.textArea.getLineStartOffset( physicalLine ) == -1 )
-                        || ( this.textArea.getLineEndOffset( physicalLine ) == -1 )
-                   ) {
-                    return ;
-                }
-            }
-            catch ( Exception e ) {
+            // make sure line is valid
+            if ( this.textArea.getLineStartOffset( physicalLine ) == -1 ||
+                    this.textArea.getLineEndOffset( physicalLine ) == -1 ) {
                 return ;
             }
 
@@ -80,74 +74,47 @@ public class DiffHighlight extends TextAreaExtension {
 
             if ( this.position == DiffHighlight.LEFT ) {
                 for ( ; hunk != null; hunk = hunk.next ) {
-                    if ( hunk.line0 > physicalLine ) {
-                        break;
-                    }
+                    if ( hunk.line0 <= physicalLine && physicalLine <= hunk.last0 ) {
+                        TextAreaPainter painter = this.textArea.getPainter();
+                        int height = hunk.deleted == 0 ? y : painter.getFontMetrics().getHeight();
 
-                    if ( hunk.deleted == 0 ) {
-                        if ( hunk.line0 != physicalLine ) {
+                        if ( hunk.deleted == 0 ) {
+                            if ( hunk.line0 != physicalLine ) {
+                                continue;
+                            }
+                            color = JDiffPlugin.highlightInvalidColor;
+                            gfx.setColor( color );
+                            gfx.drawLine( 0, y, painter.getWidth() - 1, height );
                             continue;
                         }
-                        color = JDiffPlugin.highlightInvalidColor;
-                        TextAreaPainter painter = this.textArea.getPainter();
+
+                        color = hunk.inserted == 0 ? JDiffPlugin.highlightDeletedColor : JDiffPlugin.highlightChangedColor;
                         gfx.setColor( color );
-                        gfx.drawLine( 0, y, painter.getWidth() - 1, y );
-                        continue;
+                        gfx.fillRect( 0, y, painter.getWidth(), height );
+                        break;
                     }
-
-                    if ( ( hunk.line0 + hunk.deleted - 1 ) < physicalLine ) {
-                        continue;
-                    }
-
-                    if ( hunk.inserted == 0 ) {
-                        color = JDiffPlugin.highlightDeletedColor;
-                    }
-                    else {
-                        color = JDiffPlugin.highlightChangedColor;
-                    }
-
-                    TextAreaPainter painter = this.textArea.getPainter();
-                    FontMetrics fm = painter.getFontMetrics();
-                    gfx.setColor( color );
-                    gfx.fillRect( 0, y, painter.getWidth(), fm.getHeight() );
-
-                    break;
                 }
             }
             else { // DiffHighlight.RIGHT
                 for ( ; hunk != null; hunk = hunk.next ) {
-                    if ( hunk.line1 > physicalLine ) {
-                        break;
-                    }
-
-                    if ( hunk.inserted == 0 ) {
-                        if ( hunk.line1 != physicalLine ) {
+                    if ( hunk.line1 <= physicalLine && physicalLine <= hunk.last1 ) {
+                        TextAreaPainter painter = this.textArea.getPainter();
+                        int height = hunk.inserted == 0 ? y : painter.getFontMetrics().getHeight();
+                        if ( hunk.inserted == 0 ) {
+                            if ( hunk.line1 != physicalLine ) {
+                                continue;
+                            }
+                            color = JDiffPlugin.highlightInvalidColor;
+                            gfx.setColor( color );
+                            gfx.drawLine( 0, y, painter.getWidth() - 1, height );
                             continue;
                         }
-                        color = JDiffPlugin.highlightInvalidColor;
-                        TextAreaPainter painter = this.textArea.getPainter();
+
+                        color = hunk.deleted == 0 ? JDiffPlugin.highlightInsertedColor :JDiffPlugin.highlightChangedColor;
                         gfx.setColor( color );
-                        gfx.drawLine( 0, y, painter.getWidth() - 1, y );
-                        continue;
+                        gfx.fillRect( 0, y, painter.getWidth(), height );
+                        break;
                     }
-
-                    if ( ( hunk.line1 + hunk.inserted - 1 ) < physicalLine ) {
-                        continue;
-                    }
-
-                    if ( hunk.deleted == 0 ) {
-                        color = JDiffPlugin.highlightInsertedColor;
-                    }
-                    else {
-                        color = JDiffPlugin.highlightChangedColor;
-                    }
-
-                    TextAreaPainter painter = this.textArea.getPainter();
-                    FontMetrics fm = painter.getFontMetrics();
-                    gfx.setColor( color );
-                    gfx.fillRect( 0, y, painter.getWidth(), fm.getHeight() );
-
-                    break;
                 }
             }
         }
