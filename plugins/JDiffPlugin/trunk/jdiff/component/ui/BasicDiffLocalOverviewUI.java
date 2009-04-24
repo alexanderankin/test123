@@ -608,7 +608,7 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
                     }
                     leftRectangle.y = centerRectangle.y + ( ( i - leftFirstLine ) * pixelsPerLine );
                     gfx.setColor( JDiffPlugin.leftCursorColor );
-                    gfx.drawRect( leftRectangle.x - 3, leftRectangle.y, 1, leftRectangle.height );
+                    gfx.drawRect( leftRectangle.x - 3, leftRectangle.y, 1, leftRectangle.height - 1 );
                     break;
                 }
             }
@@ -629,7 +629,7 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
                     }
                     rightRectangle.y = centerRectangle.y + ( ( i - rightFirstLine ) * pixelsPerLine );
                     gfx.setColor( JDiffPlugin.rightCursorColor );
-                    gfx.drawRect( rightRectangle.x + rightRectangle.width + 1, rightRectangle.y, 1, rightRectangle.height );
+                    gfx.drawRect( rightRectangle.x + rightRectangle.width + 1, rightRectangle.y, 1, rightRectangle.height - 1 );
                     break;
                 }
             }
