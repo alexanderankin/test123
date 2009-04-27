@@ -212,12 +212,12 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
                     // found a diff for a line, set the color and size.  Set the
                     // size all at once for the height of the hunk to minimize looping.
                     if ( hunk.lines0 == 0 ) {
-                        color = JDiffPlugin.overviewInvalidColor;
+                        color = JDiffPlugin.highlightInvalidColor;
                         leftRectangle.height = 1;
                         leftRectangle.y = centerRectangle.y + ( ( hunk.first0 - leftFirstLine ) * pixelsPerLine );
                     }
                     else {
-                        color = hunk.lines1 == 0 ? JDiffPlugin.overviewDeletedColor : JDiffPlugin.overviewChangedColor;
+                        color = hunk.lines1 == 0 ? JDiffPlugin.highlightDeletedColor : JDiffPlugin.highlightChangedColor;
                         // might be in the middle of a hunk because the hunk is
                         // scrolling off the top of the screen
                         visible_lines = hunk.first0 >= leftFirstLine ? hunk.lines0 : Math.max( 1, hunk.last0 - leftFirstLine + 1 );
@@ -275,12 +275,12 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
                 int visible_lines = 0;
                 if ( hunk != null ) {
                     if ( hunk.lines1 == 0 ) {
-                        color = JDiffPlugin.overviewInvalidColor;
+                        color = JDiffPlugin.highlightInvalidColor;
                         rightRectangle.height = 1;
                         rightRectangle.y = centerRectangle.y + ( ( hunk.first1 - rightFirstLine ) * pixelsPerLine );
                     }
                     else {
-                        color = hunk.lines0 == 0 ? JDiffPlugin.overviewInsertedColor : JDiffPlugin.overviewChangedColor;
+                        color = hunk.lines0 == 0 ? JDiffPlugin.highlightInsertedColor : JDiffPlugin.highlightChangedColor;
                         // might be in the middle of a hunk because the hunk is
                         // scrolling off the top of the screen
                         visible_lines = hunk.first1 >= rightFirstLine ? hunk.lines1 : Math.max( 1, hunk.last1 - rightFirstLine + 1 );

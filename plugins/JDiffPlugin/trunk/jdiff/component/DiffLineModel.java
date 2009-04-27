@@ -132,14 +132,14 @@ public class DiffLineModel {
         for ( Diff.Change hunk = edits; hunk != null; hunk = hunk.next ) {
             // left line colors
             if ( hunk.lines0 == 0 ) {
-                color = JDiffPlugin.overviewInvalidColor;
+                color = JDiffPlugin.highlightInvalidColor;
             }
             else {
                 if ( hunk.lines1 == 0 ) {
-                    color = JDiffPlugin.overviewDeletedColor;
+                    color = JDiffPlugin.highlightDeletedColor;
                 }
                 else {
-                    color = JDiffPlugin.overviewChangedColor;
+                    color = JDiffPlugin.highlightChangedColor;
                 }
             }
             for ( int i = 0; i < hunk.lines0; i++ ) {
@@ -148,14 +148,14 @@ public class DiffLineModel {
 
             // right line colors
             if ( hunk.lines1 == 0 ) {
-                color = JDiffPlugin.overviewInvalidColor;
+                color = JDiffPlugin.highlightInvalidColor;
             }
             else {
                 if ( hunk.lines0 == 0 ) {
-                    color = JDiffPlugin.overviewDeletedColor;
+                    color = JDiffPlugin.highlightDeletedColor;
                 }
                 else {
-                    color = JDiffPlugin.overviewChangedColor;
+                    color = JDiffPlugin.highlightChangedColor;
                 }
             }
             for ( int i = 0; i < hunk.lines1; i++ ) {
