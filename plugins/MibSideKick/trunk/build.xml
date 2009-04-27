@@ -16,7 +16,11 @@
 		<pathelement location="${install.dir}/ErrorList.jar"/>
 		<pathelement location="${install.dir}/SideKick.jar"/>
 	</path>
-	
+
+	<selector id="packageFiles">
+        <filename name="docs/MibSideKick.html" />
+	</selector>
+
 	<target name="build.post">
 		<copy todir="${install.dir}">
 			<fileset dir="${basedir}/lib">
