@@ -44,16 +44,7 @@ import org.gjt.sp.jedit.jEdit;
 public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI implements ChangeListener, PropertyChangeListener {
 
     private RevisionSelectionPanel controller;
-
-    private ButtonGroup bg = null;
-    private JRadioButton head_rb = new JRadioButton( jEdit.getProperty( "ips.HEAD", "HEAD" ) );
-    private JRadioButton base_rb = new JRadioButton( jEdit.getProperty( "ips.BASE", "BASE" ) );
-    private JRadioButton working_rb = new JRadioButton( jEdit.getProperty( "ips.WORKING", "WORKING" ) );
-    private JRadioButton revision_number_rb = new JRadioButton( jEdit.getProperty( "ips.Revision", "Revision" ) + ":" );
-    private RevisionTextField revision_number = null;
-    private JRadioButton date_rb = new JRadioButton( jEdit.getProperty( "ips.Date", "Date" ) + ":" );
-    private JSpinner date_spinner = null;
-    private JButton date_popup = null;
+    private RenderPane renderPane;
 
     private static Color background = jEdit.getColorProperty( "view.bgColor", Color.WHITE );
     private static Color foreground = jEdit.getColorProperty( "view.fgColor", Color.BLACK );
@@ -65,6 +56,7 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
 
     public void installUI( JComponent c ) {
         controller = ( RevisionSelectionPanel ) c;
+        controller.setLayout( createLayoutManager() );
         installDefaults();
         installComponents();
         installListeners();
@@ -82,192 +74,16 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
      * Create and install any sub-components.
      */
     public void installComponents() {
-        bg = new ButtonGroup();
-        bg.add( revision_number_rb );
-        bg.add( date_rb );
-        bg.add( head_rb );
-        bg.add( base_rb );
-        bg.add( working_rb );
-
-        if ( controller.getModel().getShowBase() && SVNRevision.BASE.equals( controller.getModel().getDefaultRevision() ) ) {
-            base_rb.setSelected( true );
-        }
-        else if ( controller.getModel().getShowWorking() && SVNRevision.WORKING.equals( controller.getModel().getDefaultRevision() ) ) {
-            working_rb.setSelected( true );
-        }
-        else {
-            head_rb.setSelected( true );
-        }
-
-        // set up the revision number entry field
-        revision_number = new RevisionTextField();
-        revision_number.setText( "0" );
-        revision_number.setRevisionModel( controller.getModel() );
-        revision_number.setHorizontalAlignment( JTextField.RIGHT );
-        revision_number.setPreferredSize( new Dimension( 150, revision_number.getPreferredSize().height ) );
-        revision_number.setForeground( foreground );
-        revision_number.setBackground( background );
-        revision_number.setEnabled( false );
-        revision_number.getDocument().addDocumentListener(
-            // notify listeners of changes to the revision, this allows another
-            // RevisionSelectionPanel to synchronize its revision field to this
-            // revision field
-            new DocumentListener() {
-                public void changedUpdate( DocumentEvent de ) {
-                    changed( de );
-                }
-
-                public void insertUpdate( DocumentEvent de ) {
-                    changed( de );
-                }
-
-                public void removeUpdate( DocumentEvent de ) {
-                    changed( de );
-                }
-
-                private void changed( DocumentEvent de ) {
-                    PropertyChangeEvent pce = new PropertyChangeEvent( BasicRevisionSelectionPanelUI.this, "revision", null, SVNRevision.parse( revision_number.getText() ) );
-                    controller.firePropertyChanged( pce );
-                }
-            }
-        );
-
-        // set up date chooser
-        date_spinner = getDateChooser();
-        ImageIcon icon = new ImageIcon( RevisionSelectionPanel.class.getClassLoader().getResource( "ise/plugin/svn/gui/dateselector/images/10px.calendar.icon.gif" ) );
-        date_popup = icon == null ? new JButton( "D" ) : new JButton( icon );
-        date_popup.setMargin( new Insets( 1, 1, 1, 1 ) );
-
-        if ( controller.getModel().getDirection() == SwingConstants.HORIZONTAL ) {
-            controller.add( "0, 0, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
-            if ( controller.getModel().getShowHead() ) {
-                controller.add( "0, 1, 1, 1, W, , 3", head_rb );
-            }
-            if ( controller.getModel().getShowBase() ) {
-                controller.add( "0, 2, 1, 1, W, , 3", base_rb );
-            }
-            if ( controller.getModel().getShowWorking() ) {
-                controller.add( "0, 3, 1, 1, W, , 3", working_rb );
-            }
-            controller.add( "1, 1, 1, 1, 0,  , 0", KappaLayout.createHorizontalStrut( 21, true ) );
-            if ( controller.getModel().getShowNumber() ) {
-                controller.add( "2, 1, 1, 1, W, , 3", revision_number_rb );
-                controller.add( "3, 1, 1, 1, W, , 3", revision_number );
-            }
-            if ( controller.getModel().getShowDate() ) {
-                controller.add( "2, 2, 1, 1, W, , 3", date_rb );
-                controller.add( "3, 2, 1, 1, W, , 3", date_spinner );
-                controller.add( "4, 2, 1, 1,  , , 3", date_popup );
-            }
-        }
-        else {
-            controller.add( "0, 0, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
-            if ( controller.getModel().getShowHead() ) {
-                controller.add( "0, 1, 2, 1, W, , 3", head_rb );
-            }
-            if ( controller.getModel().getShowBase() ) {
-                controller.add( "0, 2, 2, 1, W, , 3", base_rb );
-            }
-            if ( controller.getModel().getShowWorking() ) {
-                controller.add( "0, 3, 2, 1, W, , 3", working_rb );
-            }
-            if ( controller.getModel().getShowNumber() ) {
-                controller.add( "0, 4, 1, 1, W, w, 3", revision_number_rb );
-                controller.add( "1, 4, 1, 1, W, , 3", revision_number );
-            }
-            if ( controller.getModel().getShowDate() ) {
-                controller.add( "0, 5, 1, 1, W, , 3", date_rb );
-                controller.add( "1, 5, 1, 1, W, , 3", date_spinner );
-                controller.add( "2, 5, 1, 1,  , , 3", date_popup );
-            }
-        }
-        controller.repaint();
+        renderPane = new RenderPane();
+        controller.add( renderPane, BorderLayout.CENTER );
     }
-
+    
     /**
      * Install any action listeners, mouse listeners, etc.
      */
     public void installListeners() {
         controller.addChangeListener( this );
         controller.addPropertyChangeListener( this );
-        ActionListener al = new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        revision_number.setEnabled ( BasicRevisionSelectionPanelUI.this.revision_number_rb.isSelected() );
-                        date_spinner.setEnabled ( BasicRevisionSelectionPanelUI.this.date_rb.isSelected() );
-                        date_popup.setEnabled( BasicRevisionSelectionPanelUI.this.date_rb.isSelected() );
-                    }
-                };
-
-        revision_number_rb.addActionListener( al );
-        date_rb.addActionListener( al );
-        head_rb.addActionListener( al );
-        base_rb.addActionListener( al );
-        if ( controller.getModel().getShowWorking() ) {
-            working_rb.addActionListener( al );
-        }
-
-        revision_number_rb.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        BasicRevisionSelectionPanelUI.this.revision_number.setEnabled( BasicRevisionSelectionPanelUI.this.revision_number_rb.isSelected() );
-                        if ( BasicRevisionSelectionPanelUI.this.revision_number.isEnabled() ) {
-                            Number number = Integer.parseInt( revision_number.getText() );
-                            controller.getModel().setRevision( SVNRevision.create( number.longValue() ) );
-                        }
-                    }
-                }
-                                            );
-        date_rb.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        BasicRevisionSelectionPanelUI.this.date_spinner.setEnabled( BasicRevisionSelectionPanelUI.this.date_rb.isSelected() );
-                        BasicRevisionSelectionPanelUI.this.date_popup.setEnabled( BasicRevisionSelectionPanelUI.this.date_rb.isSelected() );
-                        if ( BasicRevisionSelectionPanelUI.this.date_spinner.isEnabled() ) {
-                            Date date = ( Date ) date_spinner.getValue();
-                            controller.getModel().setRevision( SVNRevision.create( date ) );
-                        }
-                    }
-                }
-                                 );
-        head_rb.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        controller.getModel().setRevision( SVNRevision.HEAD );
-                    }
-                }
-                                 );
-        base_rb.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        controller.getModel().setRevision( SVNRevision.BASE );
-                    }
-                }
-                                 );
-        if ( controller.getModel().getShowWorking() ) {
-            working_rb.addActionListener( new ActionListener() {
-                        public void actionPerformed( ActionEvent ae ) {
-                            controller.getModel().setRevision( SVNRevision.WORKING );
-                        }
-                    }
-                                        );
-        }
-
-        date_popup.addActionListener(
-            new ActionListener() {
-                public void actionPerformed( ActionEvent ae ) {
-                    Dialog parent = GUIUtils.getParentDialog( controller );
-                    final DateSelectorDialog dsd = new DateSelectorDialog( parent );
-                    dsd.setLocation( new Point( parent.getLocation().x + date_popup.getLocation().x, parent.getLocation().y + date_popup.getLocation().y ) );
-                    dsd.addActionListener(
-                        new ActionListener() {
-                            public void actionPerformed( ActionEvent ae ) {
-                                Date date = dsd.getSelectedDate();
-                                if ( date != null ) {
-                                    date_spinner.getModel().setValue( date );
-                                }
-                            }
-                        }
-                    );
-                    dsd.setVisible( true );
-                }
-            }
-        );
     }
 
     /**
@@ -299,29 +115,12 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
         controller.removeChangeListener( this );
     }
 
-    /**
-     * @return a KappaLayout
-     */
-    protected LayoutManager createLayoutManager() {
-        return new KappaLayout();
-    }
-
     public void stateChanged( ChangeEvent event ) {
         uninstallComponents();
         installComponents();
-
-        // set enabled
-        boolean b = controller.getModel().isEnabled();
-        head_rb.setEnabled( b );
-        base_rb.setEnabled( b );
-        revision_number_rb.setEnabled( b );
-        date_rb.setEnabled( b );
-        working_rb.setEnabled( b );
-        revision_number.setEnabled( revision_number_rb.isSelected() );
-        date_spinner.setEnabled( date_rb.isSelected() );
-        date_popup.setEnabled( date_rb.isSelected() );
-
-        controller.repaint();
+        renderPane.setEnabled( controller.getModel().isEnabled() );
+        controller.invalidate();
+        controller.validate();
     }
 
     public void propertyChange( PropertyChangeEvent pce ) {
@@ -332,55 +131,281 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
             // avoid endless recursion
             return ;
         }
-        if ( revision_number_rb.isEnabled() && "revision".equals( pce.getPropertyName() ) ) {
-            revision_number_rb.setSelected( true );
-            revision_number.setText( String.valueOf( ( ( SVNRevision ) pce.getNewValue() ).getNumber() ) );
-            revision_number.setEnabled( true );
+        renderPane.propertyChange( pce );
+    }
+
+
+    protected LayoutManager createLayoutManager() {
+        return new BorderLayout();
+    }
+
+    public class RenderPane extends JPanel {
+
+        private ButtonGroup bg = null;
+        private JRadioButton head_rb = new JRadioButton( jEdit.getProperty( "ips.HEAD", "HEAD" ) );
+        private JRadioButton base_rb = new JRadioButton( jEdit.getProperty( "ips.BASE", "BASE" ) );
+        private JRadioButton working_rb = new JRadioButton( jEdit.getProperty( "ips.WORKING", "WORKING" ) );
+        private JRadioButton revision_number_rb = new JRadioButton( jEdit.getProperty( "ips.Revision", "Revision" ) + ":" );
+        private RevisionTextField revision_number = null;
+        private JRadioButton date_rb = new JRadioButton( jEdit.getProperty( "ips.Date", "Date" ) + ":" );
+        private JSpinner date_spinner = null;
+        private JButton date_popup = null;
+
+        public RenderPane() {
+            initUI();
+            initListeners();
+        }
+
+        private void initUI() {
+            setLayout(new KappaLayout());
+            bg = new ButtonGroup();
+            bg.add( revision_number_rb );
+            bg.add( date_rb );
+            bg.add( head_rb );
+            bg.add( base_rb );
+            bg.add( working_rb );
+
+            if ( controller.getModel().getShowBase() && SVNRevision.BASE.equals( controller.getModel().getDefaultRevision() ) ) {
+                base_rb.setSelected( true );
+            }
+            else if ( controller.getModel().getShowWorking() && SVNRevision.WORKING.equals( controller.getModel().getDefaultRevision() ) ) {
+                working_rb.setSelected( true );
+            }
+            else {
+                head_rb.setSelected( true );
+            }
+
+            // set up the revision number entry field
+            revision_number = new RevisionTextField();
+            revision_number.setText( "0" );
+            revision_number.setRevisionModel( controller.getModel() );
+            revision_number.setHorizontalAlignment( JTextField.RIGHT );
+            revision_number.setPreferredSize( new Dimension( 150, revision_number.getPreferredSize().height ) );
+            revision_number.setForeground( foreground );
+            revision_number.setBackground( background );
+            revision_number.setEnabled( false );
+            revision_number.getDocument().addDocumentListener(
+                // notify listeners of changes to the revision, this allows another
+                // RevisionSelectionPanel to synchronize its revision field to this
+                // revision field
+                new DocumentListener() {
+                    public void changedUpdate( DocumentEvent de ) {
+                        changed( de );
+                    }
+
+                    public void insertUpdate( DocumentEvent de ) {
+                        changed( de );
+                    }
+
+                    public void removeUpdate( DocumentEvent de ) {
+                        changed( de );
+                    }
+
+                    private void changed( DocumentEvent de ) {
+                        PropertyChangeEvent pce = new PropertyChangeEvent( BasicRevisionSelectionPanelUI.this, "revision", null, SVNRevision.parse( revision_number.getText() ) );
+                        controller.firePropertyChanged( pce );
+                    }
+                }
+            );
+
+            // set up date chooser
+            date_spinner = getDateChooser();
+            ImageIcon icon = new ImageIcon( RevisionSelectionPanel.class.getClassLoader().getResource( "ise/plugin/svn/gui/dateselector/images/10px.calendar.icon.gif" ) );
+            date_popup = icon == null ? new JButton( "D" ) : new JButton( icon );
+            date_popup.setMargin( new Insets( 1, 1, 1, 1 ) );
+
+            if ( controller.getModel().getDirection() == SwingConstants.HORIZONTAL ) {
+                add( "0, 0, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
+                if ( controller.getModel().getShowHead() ) {
+                    add( "0, 1, 1, 1, W, , 3", head_rb );
+                }
+                if ( controller.getModel().getShowBase() ) {
+                    add( "0, 2, 1, 1, W, , 3", base_rb );
+                }
+                if ( controller.getModel().getShowWorking() ) {
+                    add( "0, 3, 1, 1, W, , 3", working_rb );
+                }
+                add( "1, 1, 1, 1, 0,  , 0", KappaLayout.createHorizontalStrut( 21, true ) );
+                if ( controller.getModel().getShowNumber() ) {
+                    add( "2, 1, 1, 1, W, , 3", revision_number_rb );
+                    add( "3, 1, 1, 1, W, , 3", revision_number );
+                }
+                if ( controller.getModel().getShowDate() ) {
+                    add( "2, 2, 1, 1, W, , 3", date_rb );
+                    add( "3, 2, 1, 1, W, , 3", date_spinner );
+                    add( "4, 2, 1, 1,  , , 3", date_popup );
+                }
+            }
+            else {
+                add( "0, 0, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
+                if ( controller.getModel().getShowHead() ) {
+                    add( "0, 1, 2, 1, W, , 3", head_rb );
+                }
+                if ( controller.getModel().getShowBase() ) {
+                    add( "0, 2, 2, 1, W, , 3", base_rb );
+                }
+                if ( controller.getModel().getShowWorking() ) {
+                    add( "0, 3, 2, 1, W, , 3", working_rb );
+                }
+                if ( controller.getModel().getShowNumber() ) {
+                    add( "0, 4, 1, 1, W, w, 3", revision_number_rb );
+                    add( "1, 4, 1, 1, W, , 3", revision_number );
+                }
+                if ( controller.getModel().getShowDate() ) {
+                    add( "0, 5, 1, 1, W, , 3", date_rb );
+                    add( "1, 5, 1, 1, W, , 3", date_spinner );
+                    add( "2, 5, 1, 1,  , , 3", date_popup );
+                }
+            }
+            controller.repaint();
+        }
+
+        private void initListeners() {
+            ActionListener al = new ActionListener() {
+                        public void actionPerformed( ActionEvent ae ) {
+                            revision_number.setEnabled ( revision_number_rb.isSelected() );
+                            date_spinner.setEnabled ( date_rb.isSelected() );
+                            date_popup.setEnabled( date_rb.isSelected() );
+                        }
+                    };
+
+            revision_number_rb.addActionListener( al );
+            date_rb.addActionListener( al );
+            head_rb.addActionListener( al );
+            base_rb.addActionListener( al );
+            if ( controller.getModel().getShowWorking() ) {
+                working_rb.addActionListener( al );
+            }
+
+            revision_number_rb.addActionListener( new ActionListener() {
+                        public void actionPerformed( ActionEvent ae ) {
+                            RenderPane.this.revision_number.setEnabled( revision_number_rb.isSelected() );
+                            if ( revision_number.isEnabled() ) {
+                                Number number = Integer.parseInt( revision_number.getText() );
+                                controller.getModel().setRevision( SVNRevision.create( number.longValue() ) );
+                            }
+                        }
+                    }
+                                                );
+            date_rb.addActionListener( new ActionListener() {
+                        public void actionPerformed( ActionEvent ae ) {
+                            date_spinner.setEnabled( date_rb.isSelected() );
+                            date_popup.setEnabled( date_rb.isSelected() );
+                            if ( date_spinner.isEnabled() ) {
+                                Date date = ( Date ) date_spinner.getValue();
+                                controller.getModel().setRevision( SVNRevision.create( date ) );
+                            }
+                        }
+                    }
+                                     );
+            head_rb.addActionListener( new ActionListener() {
+                        public void actionPerformed( ActionEvent ae ) {
+                            controller.getModel().setRevision( SVNRevision.HEAD );
+                        }
+                    }
+                                     );
+            base_rb.addActionListener( new ActionListener() {
+                        public void actionPerformed( ActionEvent ae ) {
+                            controller.getModel().setRevision( SVNRevision.BASE );
+                        }
+                    }
+                                     );
+            if ( controller.getModel().getShowWorking() ) {
+                working_rb.addActionListener( new ActionListener() {
+                            public void actionPerformed( ActionEvent ae ) {
+                                controller.getModel().setRevision( SVNRevision.WORKING );
+                            }
+                        }
+                                            );
+            }
+
+            date_popup.addActionListener(
+                new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        Dialog parent = GUIUtils.getParentDialog( controller );
+                        final DateSelectorDialog dsd = new DateSelectorDialog( parent );
+                        dsd.setLocation( new Point( parent.getLocation().x + date_popup.getLocation().x, parent.getLocation().y + date_popup.getLocation().y ) );
+                        dsd.addActionListener(
+                            new ActionListener() {
+                                public void actionPerformed( ActionEvent ae ) {
+                                    Date date = dsd.getSelectedDate();
+                                    if ( date != null ) {
+                                        date_spinner.getModel().setValue( date );
+                                    }
+                                }
+                            }
+                        );
+                        dsd.setVisible( true );
+                    }
+                }
+            );
+        }
+
+        private JSpinner getDateChooser() {
+            Calendar calendar = Calendar.getInstance();
+            Date initDate = calendar.getTime();
+            Date latestDate = calendar.getTime();
+            calendar.add( Calendar.YEAR, -10 );
+            Date earliestDate = calendar.getTime();
+            SpinnerDateModel model = new SpinnerDateModel( initDate, earliestDate, latestDate, Calendar.DAY_OF_MONTH );
+            date_spinner = new JSpinner( model ) {
+                        public void processFocusEvent( FocusEvent fe ) {
+                            try {
+                                commitEdit();
+                            }
+                            catch ( java.text.ParseException pe ) {}    // NOPMD
+                        }
+                    }
+                    ;
+            JSpinner.DateEditor date_editor = new JSpinner.DateEditor( date_spinner, jEdit.getProperty( "ips.DateFormat", "dd MMM yyyy HH:mm" ) );
+            date_editor.getTextField().addPropertyChangeListener( new PropertyChangeListener() {
+                        // this is necessary because JSpinner won't automatically keep its internal
+                        // model up to date.
+                        public void propertyChange( PropertyChangeEvent pce ) {
+                            try {
+                                date_spinner.commitEdit();
+                            }
+                            catch ( java.text.ParseException pe ) {}    // NOPMD
+                        }
+                    }
+                                                                );
+            date_spinner.setEditor( date_editor );
+            date_spinner.addChangeListener( new ChangeListener() {
+                        public void stateChanged( ChangeEvent ce ) {
+                            if ( date_spinner.isEnabled() ) {
+                                Date date = ( Date ) date_spinner.getValue();
+                                controller.getModel().setRevision( SVNRevision.create( date ) );
+                            }
+                        }
+                    }
+                                          );
+            date_spinner.setPreferredSize( new Dimension( 150, date_spinner.getPreferredSize().height ) );
+            date_spinner.setForeground( foreground );
+            date_spinner.setBackground( background );
+            date_spinner.setEnabled( false );
+            return date_spinner;
+        }
+
+        public void propertyChange( PropertyChangeEvent pce ) {
+            if ( revision_number_rb.isEnabled() && "revision".equals( pce.getPropertyName() ) ) {
+                revision_number_rb.setSelected( true );
+                revision_number.setText( String.valueOf( ( ( SVNRevision ) pce.getNewValue() ).getNumber() ) );
+                revision_number.setEnabled( true );
+                repaint();
+            }
+        }
+
+        public void setEnabled( boolean b ) {
+            head_rb.setEnabled( b );
+            base_rb.setEnabled( b );
+            revision_number_rb.setEnabled( b );
+            date_rb.setEnabled( b );
+            working_rb.setEnabled( b );
+            revision_number.setEnabled( revision_number_rb.isSelected() );
+            date_spinner.setEnabled( date_rb.isSelected() );
+            date_popup.setEnabled( date_rb.isSelected() );
+            repaint();
         }
     }
 
-    private JSpinner getDateChooser() {
-        Calendar calendar = Calendar.getInstance();
-        Date initDate = calendar.getTime();
-        Date latestDate = calendar.getTime();
-        calendar.add( Calendar.YEAR, -10 );
-        Date earliestDate = calendar.getTime();
-        SpinnerDateModel model = new SpinnerDateModel( initDate, earliestDate, latestDate, Calendar.DAY_OF_MONTH );
-        date_spinner = new JSpinner( model ) {
-                    public void processFocusEvent( FocusEvent fe ) {
-                        try {
-                            commitEdit();
-                        }
-                        catch ( java.text.ParseException pe ) {}    // NOPMD
-                    }
-                }
-                ;
-        JSpinner.DateEditor date_editor = new JSpinner.DateEditor( date_spinner, jEdit.getProperty( "ips.DateFormat", "dd MMM yyyy HH:mm" ) );
-        date_editor.getTextField().addPropertyChangeListener( new PropertyChangeListener() {
-                    // this is necessary because JSpinner won't automatically keep its internal
-                    // model up to date.
-                    public void propertyChange( PropertyChangeEvent pce ) {
-                        try {
-                            date_spinner.commitEdit();
-                        }
-                        catch ( java.text.ParseException pe ) {}    // NOPMD
-                    }
-                }
-                                                            );
-        date_spinner.setEditor( date_editor );
-        date_spinner.addChangeListener( new ChangeListener() {
-                    public void stateChanged( ChangeEvent ce ) {
-                        if ( BasicRevisionSelectionPanelUI.this.date_spinner.isEnabled() ) {
-                            Date date = ( Date ) date_spinner.getValue();
-                            controller.getModel().setRevision( SVNRevision.create( date ) );
-                        }
-                    }
-                }
-                                      );
-        date_spinner.setPreferredSize( new Dimension( 150, date_spinner.getPreferredSize().height ) );
-        date_spinner.setForeground( foreground );
-        date_spinner.setBackground( background );
-        date_spinner.setEnabled( false );
-        return date_spinner;
-    }
 }
