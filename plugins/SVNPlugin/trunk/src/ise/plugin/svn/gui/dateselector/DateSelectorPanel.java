@@ -103,12 +103,12 @@ public class DateSelectorPanel extends JPanel implements DateSelector {
     //  can be internationalized.
     //
     private String[] months =
-        { jEdit.getProperty("ips.Jan", "Jan"), jEdit.getProperty("ips.Feb", "Feb"),
-            jEdit.getProperty("ips.Mar", "Mar"), jEdit.getProperty("ips.Apr", "Apr"),
-            jEdit.getProperty("ips.May", "May"), jEdit.getProperty("ips.Jun", "Jun"),
-          jEdit.getProperty("ips.Jul", "Jul"), jEdit.getProperty("ips.Aug", "Aug"),
-          jEdit.getProperty("ips.Sep", "Sep"), jEdit.getProperty("ips.Oct", "Oct"),
-          jEdit.getProperty("ips.Nov", "Nov"), jEdit.getProperty("ips.Dec", "Dec")
+        { jEdit.getProperty( "ips.Jan", "Jan" ), jEdit.getProperty( "ips.Feb", "Feb" ),
+          jEdit.getProperty( "ips.Mar", "Mar" ), jEdit.getProperty( "ips.Apr", "Apr" ),
+          jEdit.getProperty( "ips.May", "May" ), jEdit.getProperty( "ips.Jun", "Jun" ),
+          jEdit.getProperty( "ips.Jul", "Jul" ), jEdit.getProperty( "ips.Aug", "Aug" ),
+          jEdit.getProperty( "ips.Sep", "Sep" ), jEdit.getProperty( "ips.Oct", "Oct" ),
+          jEdit.getProperty( "ips.Nov", "Nov" ), jEdit.getProperty( "ips.Dec", "Dec" )
         };
 
     private static final int DAYS_IN_WEEK = 7;  // days in a week
@@ -235,11 +235,11 @@ public class DateSelectorPanel extends JPanel implements DateSelector {
             if ( e.getActionCommand().equals( "D" ) ) {
                 String text = ( ( JButton ) e.getSource() ).getText();
 
-                if ( text.length() > 0 )    //  <=0 means click on blank square. Ignore.
+                if ( text.length() > 0 )     //  <=0 means click on blank square. Ignore.
                 { calendar.set
-                    ( calendar.get( Calendar.YEAR ),   // Reset the calendar
-                      calendar.get( Calendar.MONTH ),   // to be the choosen
-                      Integer.parseInt( text )     // date.
+                    ( calendar.get( Calendar.YEAR ),    // Reset the calendar
+                      calendar.get( Calendar.MONTH ),    // to be the choosen
+                      Integer.parseInt( text )      // date.
                     );
                     selected = calendar.getTime();
                     fireActionEvent( SELECT_ACTION, selected.toString() );
@@ -273,68 +273,68 @@ public class DateSelectorPanel extends JPanel implements DateSelector {
 
     private void updateCalendarDisplay() {
         try {
-        setVisible( false ); // improves paint speed & reduces flicker
+            setVisible( false ); // improves paint speed & reduces flicker
 
-        clearHighlight();
+            clearHighlight();
 
-        // The buttons that comprise the calendar are in a single
-        // dimentioned array that was added to a 6x7 grid layout in
-        // order. Because of the linear structure, it's easy to
-        // lay out the calendar just by changing the labels on
-        // the buttons. Here's the algorithm used below
-        //
-        //  1) find out the offset to the first day of the month.
-        //  2) clear everything up to that offset
-        //  3) add the days of the month
-        //  4) clear everything else
+            // The buttons that comprise the calendar are in a single
+            // dimentioned array that was added to a 6x7 grid layout in
+            // order. Because of the linear structure, it's easy to
+            // lay out the calendar just by changing the labels on
+            // the buttons. Here's the algorithm used below
+            //
+            //  1) find out the offset to the first day of the month.
+            //  2) clear everything up to that offset
+            //  3) add the days of the month
+            //  4) clear everything else
 
-        int month = calendar.get( Calendar.MONTH );
-        int year = calendar.get( Calendar.YEAR );
+            int month = calendar.get( Calendar.MONTH );
+            int year = calendar.get( Calendar.YEAR );
 
-        fireActionEvent( CHANGE_ACTION, months[ month ] + " " + year );
+            fireActionEvent( CHANGE_ACTION, months[ month ] + " " + year );
 
-        calendar.set( year, month, 1 ); // first day of the current month.
+            calendar.set( year, month, 1 ); // first day of the current month.
 
-        int first_day_offset = calendar.get( Calendar.DAY_OF_WEEK );  /* 1 */
+            int first_day_offset = calendar.get( Calendar.DAY_OF_WEEK );  /* 1 */
 
-        assert Calendar.SUNDAY == 0;
-        assert first_day_offset < days.length;
+            assert Calendar.SUNDAY == 0;
+            assert first_day_offset < days.length;
 
-        int i = 0;
-        while ( i < first_day_offset - 1 )           /* 2 */
-            days[ i++ ].setText( "" );
+            int i = 0;
+            while ( i < first_day_offset - 1 )            /* 2 */
+                days[ i++ ].setText( "" );
 
-        int day_of_month = 1;
-        for ( ; i < days.length; ++i )           /* 3 */
-        {
-            // Can't get calendar.equals(today) to work, so do it manually
+            int day_of_month = 1;
+            for ( ; i < days.length; ++i )            /* 3 */
+            {
+                // Can't get calendar.equals(today) to work, so do it manually
 
-            if ( calendar.get( Calendar.MONTH ) == today.get( Calendar.MONTH )
-                    && calendar.get( Calendar.YEAR ) == today.get( Calendar.YEAR )
-                    && calendar.get( Calendar.DATE ) == today.get( Calendar.DATE ) ) {
-                highlight( days[ i ] );
+                if ( calendar.get( Calendar.MONTH ) == today.get( Calendar.MONTH )
+                        && calendar.get( Calendar.YEAR ) == today.get( Calendar.YEAR )
+                        && calendar.get( Calendar.DATE ) == today.get( Calendar.DATE ) ) {
+                    highlight( days[ i ] );
+                }
+
+                days[ i ].setText( String.valueOf( day_of_month ) );
+
+                calendar.roll( Calendar.DATE,    /*up=*/ true ); // forward one day
+
+                day_of_month = calendar.get( Calendar.DATE );
+                if ( day_of_month == 1 )
+                    break;
             }
 
-            days[ i ].setText( String.valueOf( day_of_month ) );
+            // Note that we break out of the previous loop with i positioned
+            // at the last day we added, thus the following ++ *must* be a
+            // preincrement becasue we want to start clearing at the cell
+            // after that.
 
-            calendar.roll( Calendar.DATE,   /*up=*/ true ); // forward one day
+            while ( ++i < days.length )             /* 4 */
+                days[ i ].setText( "" );
 
-            day_of_month = calendar.get( Calendar.DATE );
-            if ( day_of_month == 1 )
-                break;
+            setVisible( true );
         }
-
-        // Note that we break out of the previous loop with i positioned
-        // at the last day we added, thus the following ++ *must* be a
-        // preincrement becasue we want to start clearing at the cell
-        // after that.
-
-        while ( ++i < days.length )            /* 4 */
-            days[ i ].setText( "" );
-
-        setVisible( true );
-        }
-        catch(Exception e) {
+        catch ( Exception e ) {
             e.printStackTrace();
         }
     }
