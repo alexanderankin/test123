@@ -78,7 +78,7 @@ public class MoveDialog extends JDialog {
      * @param defaultLocalDestination local file system destination
      */
     public MoveDialog( View view, List<File> files, String defaultLocalDestination ) {
-        super( ( JFrame ) view, jEdit.getProperty("ips.Move", "Move"), true );
+        super( ( JFrame ) view, jEdit.getProperty( "ips.Move", "Move" ), true );
         if ( files == null || files.size() == 0 ) {
             throw new IllegalArgumentException( "no source file(s) to move" );
         }
@@ -96,7 +96,7 @@ public class MoveDialog extends JDialog {
      * @param files the remote urls to copy
      */
     public MoveDialog( View view, String defaultRemoteDestination, List<String> urls ) {
-        super( ( JFrame ) view, jEdit.getProperty("ips.Move", "Move"), true );
+        super( ( JFrame ) view, jEdit.getProperty( "ips.Move", "Move" ), true );
         if ( urls == null || urls.size() == 0 ) {
             throw new IllegalArgumentException( "no source url(s) to move" );
         }
@@ -114,17 +114,17 @@ public class MoveDialog extends JDialog {
 
         JLabel to_copy_label = null;
         if ( local ) {
-            to_copy_label = new JLabel( jEdit.getProperty("ips.Move", "Move") + " " + ( toCopy.size() == 1 ? jEdit.getProperty("ips.this_file>", "this file:") : jEdit.getProperty("ips.these_files>", "these files:") ) );
+            to_copy_label = new JLabel( jEdit.getProperty( "ips.Move", "Move" ) + " " + ( toCopy.size() == 1 ? jEdit.getProperty( "ips.this_file>", "this file:" ) : jEdit.getProperty( "ips.these_files>", "these files:" ) ) );
         }
         else {
-            to_copy_label = new JLabel( jEdit.getProperty("ips.Move", "Move") + " " + ( urlsToCopy.size() == 1 ? jEdit.getProperty("ips.this_URL>", "this URL:") : jEdit.getProperty("ips.these_URLs>", "these URLs:") ) );
+            to_copy_label = new JLabel( jEdit.getProperty( "ips.Move", "Move" ) + " " + ( urlsToCopy.size() == 1 ? jEdit.getProperty( "ips.this_URL>", "this URL:" ) : jEdit.getProperty( "ips.these_URLs>", "these URLs:" ) ) );
         }
 
         BestRowTable file_table = new BestRowTable();
 
         // create table model
         fileTableModel = new DefaultTableModel( new String[] {
-                    ( local ? jEdit.getProperty("ips.File", "File") : jEdit.getProperty("ips.URL", "URL") )
+                    ( local ? jEdit.getProperty( "ips.File", "File" ) : jEdit.getProperty( "ips.URL", "URL" ) )
                 }
                 , local ? toCopy.size() : urlsToCopy.size() ) ;
 
@@ -147,14 +147,14 @@ public class MoveDialog extends JDialog {
         file_table.packRows();
 
         // revision selection panel
-        final RevisionSelectionPanel revision_panel = new RevisionSelectionPanel( jEdit.getProperty("ips.Move_from_this_revision>", "Move from this revision:"), SwingConstants.HORIZONTAL, true );
+        final RevisionSelectionPanel revision_panel = new RevisionSelectionPanel( jEdit.getProperty( "ips.Move_from_this_revision>", "Move from this revision:" ), SwingConstants.HORIZONTAL, true );
 
         // destination
-        JLabel path_label = new JLabel( jEdit.getProperty("ips.To_this_location>", "To this location:") );
-        path = new HistoryTextField(MOVE_PATH);
+        JLabel path_label = new JLabel( jEdit.getProperty( "ips.To_this_location>", "To this location:" ) );
+        path = new HistoryTextField( MOVE_PATH );
         path.setText( defaultLocalDestination );
         path.setColumns( 30 );
-        JButton browse_local_btn = new JButton( jEdit.getProperty("ips.Browse_Local...", "Browse Local...") );
+        JButton browse_local_btn = new JButton( jEdit.getProperty( "ips.Browse_Local...", "Browse Local..." ) );
         browse_local_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         String[] dirs = GUIUtilities.showVFSFileDialog( view, defaultLocalDestination, toCopy == null ? VFSBrowser.OPEN_DIALOG : toCopy.size() == 1 ? VFSBrowser.OPEN_DIALOG : VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false );
@@ -162,7 +162,7 @@ public class MoveDialog extends JDialog {
                             String filename = dirs[ 0 ];
                             File f = new File( filename );
                             if ( f.exists() && f.isFile() ) {
-                                int overwrite = JOptionPane.showConfirmDialog( view, jEdit.getProperty("ips.File_exists,_okay_to_overwrite?", "File exists, okay to overwrite?"), jEdit.getProperty("ips.File_exists", "File exists"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
+                                int overwrite = JOptionPane.showConfirmDialog( view, jEdit.getProperty( "ips.File_exists,_okay_to_overwrite?", "File exists, okay to overwrite?" ), jEdit.getProperty( "ips.File_exists", "File exists" ), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
                                 if ( overwrite == JOptionPane.NO_OPTION ) {
                                     return ;
                                 }
@@ -173,11 +173,11 @@ public class MoveDialog extends JDialog {
                     }
                 }
                                           );
-        JButton browse_remote_btn = new JButton( jEdit.getProperty("ips.Browse_Remote...", "Browse Remote...") );
+        JButton browse_remote_btn = new JButton( jEdit.getProperty( "ips.Browse_Remote...", "Browse Remote..." ) );
         browse_remote_btn.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
-                    final JDialog dialog = new JDialog( view, jEdit.getProperty("ips.Select_Repository_Destination", "Select Repository Destination") );
+                    final JDialog dialog = new JDialog( view, jEdit.getProperty( "ips.Select_Repository_Destination", "Select Repository Destination" ) );
                     dialog.setModal( true );
                     JPanel panel = new JPanel( new LambdaLayout() );
                     panel.setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
@@ -185,7 +185,7 @@ public class MoveDialog extends JDialog {
                     panel.add( "0, 0, 1, 1, 0, wh, 3", burp );
                     KappaLayout btn_layout = new KappaLayout();
                     JPanel button_panel = new JPanel( btn_layout );
-                    JButton ok_btn = new JButton( jEdit.getProperty("ips.Ok", "Ok") );
+                    JButton ok_btn = new JButton( jEdit.getProperty( "ips.Ok", "Ok" ) );
                     ok_btn.addActionListener(
                         new ActionListener() {
                             public void actionPerformed( ActionEvent ae ) {
@@ -199,7 +199,7 @@ public class MoveDialog extends JDialog {
                             }
                         }
                     );
-                    JButton cancel_btn = new JButton( jEdit.getProperty("ips.Cancel", "Cancel") );
+                    JButton cancel_btn = new JButton( jEdit.getProperty( "ips.Cancel", "Cancel" ) );
                     cancel_btn.addActionListener(
                         new ActionListener() {
                             public void actionPerformed( ActionEvent ae ) {
@@ -222,13 +222,13 @@ public class MoveDialog extends JDialog {
             }
         );
 
-        JLabel comment_label = new JLabel( jEdit.getProperty("ips.Enter_comment_for_this_move>", "Enter comment for this move:") );
+        JLabel comment_label = new JLabel( jEdit.getProperty( "ips.Enter_comment_for_this_move>", "Enter comment for this move:" ) );
         comment = new JTextArea( 3, 30 );
         comment.setLineWrap( true );
         comment.setWrapStyleWord( true );
 
         // list for previous comments
-        final PropertyComboBox commentList = new PropertyComboBox( "ise.plugin.svn.comment." );
+        commentList = new PropertyComboBox( "ise.plugin.svn.comment." );
         commentList.setEditable( false );
         commentList.addItemListener( new ItemListener() {
                     public void itemStateChanged( ItemEvent e ) {
@@ -243,8 +243,8 @@ public class MoveDialog extends JDialog {
         // ok and cancel buttons
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
-        JButton ok_btn = new JButton( jEdit.getProperty("ips.Ok", "Ok") );
-        JButton cancel_btn = new JButton( jEdit.getProperty("ips.Cancel", "Cancel") );
+        JButton ok_btn = new JButton( jEdit.getProperty( "ips.Ok", "Ok" ) );
+        JButton cancel_btn = new JButton( jEdit.getProperty( "ips.Cancel", "Cancel" ) );
         btn_panel.add( "0, 0, 1, 1, 0, w, 3", ok_btn );
         btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancel_btn );
         kl.makeColumnsSameWidth( 0, 1 );
@@ -252,7 +252,7 @@ public class MoveDialog extends JDialog {
         ok_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         if ( path == null || path.getText().length() == 0 ) {
-                            JOptionPane.showMessageDialog( MoveDialog.this, jEdit.getProperty("ips.Directory_is_required.", "Directory is required."), jEdit.getProperty("ips.Error", "Error"), JOptionPane.ERROR_MESSAGE );
+                            JOptionPane.showMessageDialog( MoveDialog.this, jEdit.getProperty( "ips.Directory_is_required.", "Directory is required." ), jEdit.getProperty( "ips.Error", "Error" ), JOptionPane.ERROR_MESSAGE );
                             return ;
                         }
                         revision = revision_panel.getRevision();
@@ -260,6 +260,11 @@ public class MoveDialog extends JDialog {
                         MoveDialog.this.setVisible( false );
                         MoveDialog.this.dispose();
                         path.addCurrentToHistory();
+                        String msg = comment.getText();
+                        if ( msg == null || msg.length() == 0 ) {
+                            msg = jEdit.getProperty( "ips.no_comment", "no comment" );
+                        }
+                        commentList.addValue( msg );
                         commentList.save();
                     }
                 }
@@ -303,7 +308,7 @@ public class MoveDialog extends JDialog {
 
             if ( commentList != null && commentList.getModel().getSize() > 0 ) {
                 commentList.setPreferredSize( new Dimension( 500, commentList.getPreferredSize().height ) );
-                panel.add( "0, 11, 8, 1, W,  , 3", new JLabel( jEdit.getProperty("ips.Select_a_previous_comment>", "Select a previous comment:") ) );
+                panel.add( "0, 11, 8, 1, W,  , 3", new JLabel( jEdit.getProperty( "ips.Select_a_previous_comment>", "Select a previous comment:" ) ) );
                 panel.add( "0, 12, 8, 1, W, w, 3", commentList );
             }
         }
@@ -362,12 +367,7 @@ public class MoveDialog extends JDialog {
 
         String msg = comment.getText();
         if ( msg == null || msg.length() == 0 ) {
-            msg = jEdit.getProperty("ips.no_comment", "no comment");
-        }
-        else {
-            if ( commentList != null ) {
-                commentList.addValue( msg );
-            }
+            msg = jEdit.getProperty( "ips.no_comment", "no comment" );
         }
         cd.setMessage( msg );
 

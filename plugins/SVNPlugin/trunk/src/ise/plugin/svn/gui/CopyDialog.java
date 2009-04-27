@@ -78,7 +78,7 @@ public class CopyDialog extends JDialog {
      * @param defaultLocalDestination remote repository destination
      */
     public CopyDialog( View view, List<File> files, String defaultLocalDestination, String defaultRemoteDestination ) {
-        super( ( JFrame ) view, jEdit.getProperty("ips.Copy", "Copy"), true );
+        super( ( JFrame ) view, jEdit.getProperty( "ips.Copy", "Copy" ), true );
         if ( files == null || files.size() == 0 ) {
             throw new IllegalArgumentException( "no source file(s) to copy" );
         }
@@ -96,7 +96,7 @@ public class CopyDialog extends JDialog {
      * @param files the remote urls to copy
      */
     public CopyDialog( View view, String defaultLocalDestination, String defaultRemoteDestination, List<String> urls ) {
-        super( ( JFrame ) view, jEdit.getProperty("ips.Copy", "Copy"), true );
+        super( ( JFrame ) view, jEdit.getProperty( "ips.Copy", "Copy" ), true );
         if ( urls == null || urls.size() == 0 ) {
             throw new IllegalArgumentException( "no source url(s) to copy" );
         }
@@ -115,17 +115,17 @@ public class CopyDialog extends JDialog {
 
         JLabel to_copy_label = null;
         if ( toCopy != null ) {
-            to_copy_label = new JLabel( jEdit.getProperty("ips.Copy", "Copy") + " " + ( toCopy.size() == 1 ? jEdit.getProperty("ips.this_file>", "this file:") : jEdit.getProperty("ips.these_files>", "these files:") ) );
+            to_copy_label = new JLabel( jEdit.getProperty( "ips.Copy", "Copy" ) + " " + ( toCopy.size() == 1 ? jEdit.getProperty( "ips.this_file>", "this file:" ) : jEdit.getProperty( "ips.these_files>", "these files:" ) ) );
         }
         else {
-            to_copy_label = new JLabel( jEdit.getProperty("ips.Copy", "Copy") + " " + ( urlsToCopy.size() == 1 ? jEdit.getProperty("ips.this_URL>", "this URL:") : jEdit.getProperty("ips.these_URLs>", "these URLs:") ) );
+            to_copy_label = new JLabel( jEdit.getProperty( "ips.Copy", "Copy" ) + " " + ( urlsToCopy.size() == 1 ? jEdit.getProperty( "ips.this_URL>", "this URL:" ) : jEdit.getProperty( "ips.these_URLs>", "these URLs:" ) ) );
         }
 
         BestRowTable file_table = new BestRowTable();
 
         // create table model
         fileTableModel = new DefaultTableModel( new String[] {
-                    ( toCopy != null ? jEdit.getProperty("ips.File", "File") : jEdit.getProperty("ips.URL", "URL") )
+                    ( toCopy != null ? jEdit.getProperty( "ips.File", "File" ) : jEdit.getProperty( "ips.URL", "URL" ) )
                 }
                 , toCopy != null ? toCopy.size() : urlsToCopy.size() ) ;
 
@@ -148,14 +148,14 @@ public class CopyDialog extends JDialog {
         file_table.packRows();
 
         // revision selection panel
-        final RevisionSelectionPanel revision_panel = new RevisionSelectionPanel( jEdit.getProperty("ips.Copy_from_this_revision>", "Copy from this revision:"), SwingConstants.HORIZONTAL, true );
+        final RevisionSelectionPanel revision_panel = new RevisionSelectionPanel( jEdit.getProperty( "ips.Copy_from_this_revision>", "Copy from this revision:" ), SwingConstants.HORIZONTAL, true );
 
         // destination
-        JLabel path_label = new JLabel( jEdit.getProperty("ips.To_this_location>", "To this location:") );
-        path = new HistoryTextField(COPY_PATH);
+        JLabel path_label = new JLabel( jEdit.getProperty( "ips.To_this_location>", "To this location:" ) );
+        path = new HistoryTextField( COPY_PATH );
         path.setText( defaultLocalDestination );
         path.setColumns( 30 );
-        JButton browse_local_btn = new JButton( jEdit.getProperty("ips.Browse_Local...", "Browse Local...") );
+        JButton browse_local_btn = new JButton( jEdit.getProperty( "ips.Browse_Local...", "Browse Local..." ) );
         browse_local_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         String[] dirs = GUIUtilities.showVFSFileDialog( view, defaultLocalDestination, VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false );
@@ -168,11 +168,11 @@ public class CopyDialog extends JDialog {
                     }
                 }
                                           );
-        JButton browse_remote_btn = new JButton( jEdit.getProperty("ips.Browse_Remote...", "Browse Remote...") );
+        JButton browse_remote_btn = new JButton( jEdit.getProperty( "ips.Browse_Remote...", "Browse Remote..." ) );
         browse_remote_btn.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
-                    final JDialog dialog = new JDialog( view, jEdit.getProperty("ips.Select_Repository_Destination", "Select Repository Destination") );
+                    final JDialog dialog = new JDialog( view, jEdit.getProperty( "ips.Select_Repository_Destination", "Select Repository Destination" ) );
                     dialog.setModal( true );
                     JPanel panel = new JPanel( new LambdaLayout() );
                     panel.setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
@@ -180,7 +180,7 @@ public class CopyDialog extends JDialog {
                     panel.add( "0, 0, 1, 1, 0, wh, 3", burp );
                     KappaLayout btn_layout = new KappaLayout();
                     JPanel button_panel = new JPanel( btn_layout );
-                    JButton ok_btn = new JButton( jEdit.getProperty("ips.Ok", "Ok") );
+                    JButton ok_btn = new JButton( jEdit.getProperty( "ips.Ok", "Ok" ) );
                     ok_btn.addActionListener(
                         new ActionListener() {
                             public void actionPerformed( ActionEvent ae ) {
@@ -194,7 +194,7 @@ public class CopyDialog extends JDialog {
                             }
                         }
                     );
-                    JButton cancel_btn = new JButton( jEdit.getProperty("ips.Cancel", "Cancel") );
+                    JButton cancel_btn = new JButton( jEdit.getProperty( "ips.Cancel", "Cancel" ) );
                     cancel_btn.addActionListener(
                         new ActionListener() {
                             public void actionPerformed( ActionEvent ae ) {
@@ -217,13 +217,13 @@ public class CopyDialog extends JDialog {
             }
         );
 
-        JLabel comment_label = new JLabel( jEdit.getProperty("ips.Enter_comment_for_this_copy>", "Enter comment for this copy:") );
+        JLabel comment_label = new JLabel( jEdit.getProperty( "ips.Enter_comment_for_this_copy>", "Enter comment for this copy:" ) );
         comment = new JTextArea( 3, 30 );
         comment.setLineWrap( true );
         comment.setWrapStyleWord( true );
 
         // list for previous comments
-        final PropertyComboBox commentList = new PropertyComboBox( "ise.plugin.svn.comment." );
+        commentList = new PropertyComboBox( "ise.plugin.svn.comment." );
         commentList.setEditable( false );
         commentList.addItemListener( new ItemListener() {
                     public void itemStateChanged( ItemEvent e ) {
@@ -238,8 +238,8 @@ public class CopyDialog extends JDialog {
         // ok and cancel buttons
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
-        JButton ok_btn = new JButton( jEdit.getProperty("ips.Ok", "Ok") );
-        JButton cancel_btn = new JButton( jEdit.getProperty("ips.Cancel", "Cancel") );
+        JButton ok_btn = new JButton( jEdit.getProperty( "ips.Ok", "Ok" ) );
+        JButton cancel_btn = new JButton( jEdit.getProperty( "ips.Cancel", "Cancel" ) );
         btn_panel.add( "0, 0, 1, 1, 0, w, 3", ok_btn );
         btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancel_btn );
         kl.makeColumnsSameWidth( 0, 1 );
@@ -247,7 +247,7 @@ public class CopyDialog extends JDialog {
         ok_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         if ( path == null || path.getText().length() == 0 ) {
-                            JOptionPane.showMessageDialog( CopyDialog.this, jEdit.getProperty("ips.Directory_is_required.", "Directory is required."), jEdit.getProperty("ips.Error", "Error"), JOptionPane.ERROR_MESSAGE );
+                            JOptionPane.showMessageDialog( CopyDialog.this, jEdit.getProperty( "ips.Directory_is_required.", "Directory is required." ), jEdit.getProperty( "ips.Error", "Error" ), JOptionPane.ERROR_MESSAGE );
                             return ;
                         }
                         revision = revision_panel.getRevision();
@@ -297,7 +297,7 @@ public class CopyDialog extends JDialog {
 
         if ( commentList != null && commentList.getModel().getSize() > 0 ) {
             commentList.setPreferredSize( new Dimension( 500, commentList.getPreferredSize().height ) );
-            panel.add( "0, 11, 8, 1, W,  , 3", new JLabel( jEdit.getProperty("ips.Select_a_previous_comment>", "Select a previous comment:") ) );
+            panel.add( "0, 11, 8, 1, W,  , 3", new JLabel( jEdit.getProperty( "ips.Select_a_previous_comment>", "Select a previous comment:" ) ) );
             panel.add( "0, 12, 8, 1, W, w, 3", commentList );
         }
 
@@ -310,9 +310,12 @@ public class CopyDialog extends JDialog {
     }
 
     protected void _save() {
-        if ( commentList != null ) {
-            commentList.save();
+        String msg = comment.getText();
+        if ( msg == null || msg.length() == 0 ) {
+            msg = jEdit.getProperty( "ips.no_comment", "no comment" );
         }
+        commentList.addValue( msg );
+        commentList.save();
     }
 
     public CopyData getData() {
@@ -361,12 +364,7 @@ public class CopyDialog extends JDialog {
 
         String msg = comment.getText();
         if ( msg == null || msg.length() == 0 ) {
-            msg = jEdit.getProperty("ips.no_comment", "no comment");
-        }
-        else {
-            if ( commentList != null ) {
-                commentList.addValue( msg );
-            }
+            msg = jEdit.getProperty( "ips.no_comment", "no comment" );
         }
         cd.setMessage( msg );
 

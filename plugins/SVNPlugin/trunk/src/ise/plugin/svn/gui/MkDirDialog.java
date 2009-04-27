@@ -64,7 +64,7 @@ public class MkDirDialog extends JDialog {
 
 
     public MkDirDialog( View view, String defaultDestination ) {
-        super( ( JFrame ) view, jEdit.getProperty("ips.mkdir", "mkdir"), true );
+        super( ( JFrame ) view, jEdit.getProperty( "ips.mkdir", "mkdir" ), true );
         this.view = view;
         this.defaultDestination = defaultDestination;
         init();
@@ -78,15 +78,15 @@ public class MkDirDialog extends JDialog {
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
 
         // let user pick the directory to create
-        JLabel path_label = new JLabel( jEdit.getProperty("ips.Create_new_directory_at_this_location>", "Create new directory at this location:") );
-        path = new HistoryTextField(MKDIR_PATH);
+        JLabel path_label = new JLabel( jEdit.getProperty( "ips.Create_new_directory_at_this_location>", "Create new directory at this location:" ) );
+        path = new HistoryTextField( MKDIR_PATH );
         path.setText( defaultDestination == null ? "" : defaultDestination );
         path.setColumns( 30 );
-        JButton browse_remote_btn = new JButton( jEdit.getProperty("ips.Browse_Remote...", "Browse Remote...") );
+        JButton browse_remote_btn = new JButton( jEdit.getProperty( "ips.Browse_Remote...", "Browse Remote..." ) );
         browse_remote_btn.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
-                    final JDialog dialog = new JDialog( view, jEdit.getProperty("ips.Select_Repository_Parent_Directory", "Select Repository Parent Directory") );
+                    final JDialog dialog = new JDialog( view, jEdit.getProperty( "ips.Select_Repository_Parent_Directory", "Select Repository Parent Directory" ) );
                     dialog.setModal( true );
                     JPanel panel = new JPanel( new LambdaLayout() );
                     panel.setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
@@ -94,7 +94,7 @@ public class MkDirDialog extends JDialog {
                     panel.add( "0, 0, 1, 1, 0, wh, 3", burp );
                     KappaLayout btn_layout = new KappaLayout();
                     JPanel button_panel = new JPanel( btn_layout );
-                    JButton ok_btn = new JButton( jEdit.getProperty("ips.Ok", "Ok") );
+                    JButton ok_btn = new JButton( jEdit.getProperty( "ips.Ok", "Ok" ) );
                     ok_btn.addActionListener(
                         new ActionListener() {
                             public void actionPerformed( ActionEvent ae ) {
@@ -107,7 +107,7 @@ public class MkDirDialog extends JDialog {
                             }
                         }
                     );
-                    JButton cancel_btn = new JButton( jEdit.getProperty("ips.Cancel", "Cancel") );
+                    JButton cancel_btn = new JButton( jEdit.getProperty( "ips.Cancel", "Cancel" ) );
                     cancel_btn.addActionListener(
                         new ActionListener() {
                             public void actionPerformed( ActionEvent ae ) {
@@ -130,13 +130,13 @@ public class MkDirDialog extends JDialog {
             }
         );
 
-        JLabel label = new JLabel( jEdit.getProperty("ips.Enter_commit_comment>", "Enter commit comment:") );
+        JLabel label = new JLabel( jEdit.getProperty( "ips.Enter_commit_comment>", "Enter commit comment:" ) );
         comment = new JTextArea( 5, 50 );
         comment.setLineWrap( true );
         comment.setWrapStyleWord( true );
 
         // list for previous comments
-        final PropertyComboBox commentList = new PropertyComboBox( "ise.plugin.svn.comment." );
+        commentList = new PropertyComboBox( "ise.plugin.svn.comment." );
         commentList.setEditable( false );
         commentList.addItemListener( new ItemListener() {
                     public void itemStateChanged( ItemEvent e ) {
@@ -151,18 +151,18 @@ public class MkDirDialog extends JDialog {
         // buttons
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
-        JButton ok_btn = new JButton( jEdit.getProperty("ips.Ok", "Ok") );
-        JButton cancel_btn = new JButton( jEdit.getProperty("ips.Cancel", "Cancel") );
+        JButton ok_btn = new JButton( jEdit.getProperty( "ips.Ok", "Ok" ) );
+        JButton cancel_btn = new JButton( jEdit.getProperty( "ips.Cancel", "Cancel" ) );
         btn_panel.add( "0, 0, 1, 1, 0, w, 3", ok_btn );
         btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancel_btn );
         kl.makeColumnsSameWidth( 0, 1 );
 
         ok_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
-                        MkDirDialog.this._save();
                         MkDirDialog.this.setVisible( false );
                         MkDirDialog.this.dispose();
                         path.addCurrentToHistory();
+                        MkDirDialog.this._save();
                     }
                 }
                                 );
@@ -177,7 +177,7 @@ public class MkDirDialog extends JDialog {
                                     );
 
         /// TODO: field for bug number
-        JLabel bug_label = new JLabel( jEdit.getProperty("ips.Issue_>>", "Issue #:") );
+        JLabel bug_label = new JLabel( jEdit.getProperty( "ips.Issue_>>", "Issue #:" ) );
         JTextField bug_field = new JTextField( 10 );
 
         // add the components to the option panel
@@ -197,7 +197,7 @@ public class MkDirDialog extends JDialog {
 
         if ( commentList != null && commentList.getModel().getSize() > 0 ) {
             commentList.setPreferredSize( new Dimension( 600, commentList.getPreferredSize().height ) );
-            panel.add( "0, 6, 6, 1, W,  , 3", new JLabel( jEdit.getProperty("ips.Select_a_previous_comment>", "Select a previous comment:") ) );
+            panel.add( "0, 6, 6, 1, W,  , 3", new JLabel( jEdit.getProperty( "ips.Select_a_previous_comment>", "Select a previous comment:" ) ) );
             panel.add( "0, 7, 6, 1, W, w, 3", commentList );
         }
         panel.add( "0, 8, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
@@ -211,6 +211,11 @@ public class MkDirDialog extends JDialog {
 
     protected void _save() {
         if ( commentList != null ) {
+            String msg = comment.getText();
+            if ( msg == null || msg.length() == 0 ) {
+                msg = jEdit.getProperty( "ips.no_comment", "no comment" );
+            }
+            commentList.addValue( msg );
             commentList.save();
         }
     }
@@ -223,12 +228,7 @@ public class MkDirDialog extends JDialog {
             commitData.setPaths( paths );
             String msg = comment.getText();
             if ( msg == null || msg.length() == 0 ) {
-                msg = jEdit.getProperty("ips.no_comment", "no comment");
-            }
-            else {
-                if ( commentList != null ) {
-                    commentList.addValue( msg );
-                }
+                msg = jEdit.getProperty( "ips.no_comment", "no comment" );
             }
             commitData.setCommitMessage( msg );
         }
