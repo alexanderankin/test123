@@ -74,12 +74,12 @@ public class DiffHighlight extends TextAreaExtension {
 
             if ( this.position == DiffHighlight.LEFT ) {
                 for ( ; hunk != null; hunk = hunk.next ) {
-                    if ( hunk.line0 <= physicalLine && physicalLine <= hunk.last0 ) {
+                    if ( hunk.first0 <= physicalLine && physicalLine <= hunk.last0 ) {
                         TextAreaPainter painter = this.textArea.getPainter();
-                        int height = hunk.deleted == 0 ? y : painter.getFontMetrics().getHeight();
+                        int height = hunk.lines0 == 0 ? y : painter.getFontMetrics().getHeight();
 
-                        if ( hunk.deleted == 0 ) {
-                            if ( hunk.line0 != physicalLine ) {
+                        if ( hunk.lines0 == 0 ) {
+                            if ( hunk.first0 != physicalLine ) {
                                 continue;
                             }
                             color = JDiffPlugin.highlightInvalidColor;
@@ -88,7 +88,7 @@ public class DiffHighlight extends TextAreaExtension {
                             continue;
                         }
 
-                        color = hunk.inserted == 0 ? JDiffPlugin.highlightDeletedColor : JDiffPlugin.highlightChangedColor;
+                        color = hunk.lines1 == 0 ? JDiffPlugin.highlightDeletedColor : JDiffPlugin.highlightChangedColor;
                         gfx.setColor( color );
                         gfx.fillRect( 0, y, painter.getWidth(), height );
                         break;
@@ -97,11 +97,11 @@ public class DiffHighlight extends TextAreaExtension {
             }
             else { // DiffHighlight.RIGHT
                 for ( ; hunk != null; hunk = hunk.next ) {
-                    if ( hunk.line1 <= physicalLine && physicalLine <= hunk.last1 ) {
+                    if ( hunk.first1 <= physicalLine && physicalLine <= hunk.last1 ) {
                         TextAreaPainter painter = this.textArea.getPainter();
-                        int height = hunk.inserted == 0 ? y : painter.getFontMetrics().getHeight();
-                        if ( hunk.inserted == 0 ) {
-                            if ( hunk.line1 != physicalLine ) {
+                        int height = hunk.lines1 == 0 ? y : painter.getFontMetrics().getHeight();
+                        if ( hunk.lines1 == 0 ) {
+                            if ( hunk.first1 != physicalLine ) {
                                 continue;
                             }
                             color = JDiffPlugin.highlightInvalidColor;
@@ -110,7 +110,7 @@ public class DiffHighlight extends TextAreaExtension {
                             continue;
                         }
 
-                        color = hunk.deleted == 0 ? JDiffPlugin.highlightInsertedColor :JDiffPlugin.highlightChangedColor;
+                        color = hunk.lines0 == 0 ? JDiffPlugin.highlightInsertedColor :JDiffPlugin.highlightChangedColor;
                         gfx.setColor( color );
                         gfx.fillRect( 0, y, painter.getWidth(), height );
                         break;

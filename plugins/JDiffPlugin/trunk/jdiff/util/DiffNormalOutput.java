@@ -43,18 +43,18 @@ public class DiffNormalOutput extends DiffOutput {
 
     /** Writes a hunk of a normal diff. */
     protected void writeHunk(Diff.Change hunk) throws IOException {
-        int deletes = hunk.deleted;
-        int inserts = hunk.inserted;
+        int deletes = hunk.lines0;
+        int inserts = hunk.lines1;
 
         if (deletes == 0 && inserts == 0) {
             return;
         }
 
         // Determine range of line numbers involved in each file.
-        int first0 = hunk.line0;
-        int first1 = hunk.line1;
-        int last0 = hunk.line0 + hunk.deleted - 1;
-        int last1 = hunk.line1 + hunk.inserted - 1;
+        int first0 = hunk.first0;
+        int first1 = hunk.first1;
+        int last0 = hunk.first0 + hunk.lines0 - 1;
+        int last1 = hunk.first1 + hunk.lines1 - 1;
 
         // Write out the line number header for this hunk
         this.writeNumberRange(',', first0, last0);
