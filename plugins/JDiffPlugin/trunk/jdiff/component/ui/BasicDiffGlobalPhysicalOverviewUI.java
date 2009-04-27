@@ -145,14 +145,14 @@ public class BasicDiffGlobalPhysicalOverviewUI extends DiffGlobalPhysicalOvervie
             int leftOffset = 0;
             int rightOffset = 0;
             for ( ; hunk != null; hunk = hunk.next ) {
-                leftOffset = hunk.line0;
-                rightOffset = hunk.line1;
+                leftOffset = hunk.first0;
+                rightOffset = hunk.first1;
 
-                if ( hunk.inserted == 0 && hunk.deleted != 0 ) { // DELETE
+                if ( hunk.lines1 == 0 && hunk.lines0 != 0 ) { // DELETE
                     leftColor = JDiffPlugin.overviewDeletedColor;
                     rightColor = JDiffPlugin.overviewInvalidColor;
                 }
-                else if ( hunk.inserted != 0 && hunk.deleted == 0 ) { // INSERT
+                else if ( hunk.lines1 != 0 && hunk.lines0 == 0 ) { // INSERT
                     leftColor = JDiffPlugin.overviewInvalidColor;
                     rightColor = JDiffPlugin.overviewInsertedColor;
                 }
@@ -163,8 +163,8 @@ public class BasicDiffGlobalPhysicalOverviewUI extends DiffGlobalPhysicalOvervie
 
                 left.y = inner.y + ( int ) Math.round( leftOffset * pixelsPerLine );
                 right.y = inner.y + ( int ) Math.round( rightOffset * pixelsPerLine );
-                left.height = Math.max( 1, ( int ) Math.round( hunk.deleted * pixelsPerLine ) );
-                right.height = Math.max( 1, ( int ) Math.round( hunk.inserted * pixelsPerLine ) );
+                left.height = Math.max( 1, ( int ) Math.round( hunk.lines0 * pixelsPerLine ) );
+                right.height = Math.max( 1, ( int ) Math.round( hunk.lines1 * pixelsPerLine ) );
                 gfx.setColor( leftColor );
                 gfx.fillRect( left.x, left.y, left.width, left.height );
                 gfx.setColor( rightColor );

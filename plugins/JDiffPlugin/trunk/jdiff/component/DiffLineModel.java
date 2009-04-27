@@ -131,35 +131,35 @@ public class DiffLineModel {
         Color color;
         for ( Diff.Change hunk = edits; hunk != null; hunk = hunk.next ) {
             // left line colors
-            if ( hunk.deleted == 0 ) {
+            if ( hunk.lines0 == 0 ) {
                 color = JDiffPlugin.overviewInvalidColor;
             }
             else {
-                if ( hunk.inserted == 0 ) {
+                if ( hunk.lines1 == 0 ) {
                     color = JDiffPlugin.overviewDeletedColor;
                 }
                 else {
                     color = JDiffPlugin.overviewChangedColor;
                 }
             }
-            for ( int i = 0; i < hunk.deleted; i++ ) {
-                leftColors.set( hunk.line0 + i, color );
+            for ( int i = 0; i < hunk.lines0; i++ ) {
+                leftColors.set( hunk.first0 + i, color );
             }
 
             // right line colors
-            if ( hunk.inserted == 0 ) {
+            if ( hunk.lines1 == 0 ) {
                 color = JDiffPlugin.overviewInvalidColor;
             }
             else {
-                if ( hunk.deleted == 0 ) {
+                if ( hunk.lines0 == 0 ) {
                     color = JDiffPlugin.overviewDeletedColor;
                 }
                 else {
                     color = JDiffPlugin.overviewChangedColor;
                 }
             }
-            for ( int i = 0; i < hunk.inserted; i++ ) {
-                rightColors.set( hunk.line1 + i, color );
+            for ( int i = 0; i < hunk.lines1; i++ ) {
+                rightColors.set( hunk.first1 + i, color );
             }
         }
     }

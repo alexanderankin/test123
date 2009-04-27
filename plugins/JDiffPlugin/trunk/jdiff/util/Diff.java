@@ -17,7 +17,7 @@ import java.util.HashMap;
    inputs.  Our results are actually better (smaller change list, smaller
    total size of changes), but it would be nice to know why.  Perhaps
    there is a memory overwrite bug in GNU diff 1.15.
- 
+
   @author Stuart D. Gathman, translated from GNU diff 1.15
     Copyright (C) 2000  Business Management Systems, Inc.
 <p>
@@ -35,7 +35,7 @@ import java.util.HashMap;
     GNU General Public License</a>
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- 
+
  */
 
 public class Diff {
@@ -202,7 +202,7 @@ public class Diff {
                 for ( d = fmax; d >= fmin; d -= 2 ) {
                     int dd = d - fmid;
                     if ( ( fd[ fdiagoff + d ] - xoff ) * 2 - dd > 12 * ( c + ( dd > 0 ? dd : -dd ) ) ) {
-                        if ( fd[ fdiagoff + d ] * 2 - dd > best
+                        if ( fd[ fdiagoff + d ] * 2 - dd > best         // NOPMD
                                 && fd[ fdiagoff + d ] - xoff > 20
                                 && fd[ fdiagoff + d ] - d - yoff > 20 ) {
                             int k;
@@ -230,7 +230,7 @@ public class Diff {
                 for ( d = bmax; d >= bmin; d -= 2 ) {
                     int dd = d - bmid;
                     if ( ( xlim - bd[ bdiagoff + d ] ) * 2 + dd > 12 * ( c + ( dd > 0 ? dd : -dd ) ) ) {
-                        if ( ( xlim - bd[ bdiagoff + d ] ) * 2 + dd > best
+                        if ( ( xlim - bd[ bdiagoff + d ] ) * 2 + dd > best          // NOPMD
                                 && xlim - bd[ bdiagoff + d ] > 20
                                 && ylim - ( bd[ bdiagoff + d ] - d ) > 20 ) {
                             /* We have a good enough best diagonal;
@@ -350,7 +350,7 @@ public class Diff {
 
         while ( i0 < len0 || i1 < len1 ) {
             if ( changed0[ 1 + i0 ] || changed1[ 1 + i1 ] ) {
-                int line0 = i0, line1 = i1;
+                int first0 = i0, first1 = i1;
 
                 /* Find # lines changed here in each file.  */
                 while ( changed0[ 1 + i0 ] )
@@ -359,7 +359,7 @@ public class Diff {
                     ++i1;
 
                 /* Record this change.  */
-                script = new Change( line0, line1, i0 - line0, i1 - line1, script );
+                script = new Change( first0, first1, i0 - first0, i1 - first1, script );
             }
 
             /* We have reached lines in the two files that match each other.  */
@@ -385,7 +385,7 @@ public class Diff {
 
         while ( i0 >= 0 || i1 >= 0 ) {
             if ( changed0[ i0 ] || changed1[ i1 ] ) {
-                int line0 = i0, line1 = i1;
+                int first0 = i0, first1 = i1;
 
                 /* Find # lines changed here in each file.  */
                 while ( changed0[ i0 ] )
@@ -394,7 +394,7 @@ public class Diff {
                     --i1;
 
                 /* Record this change.  */
-                script = new Change( i0, i1, line0 - i0, line1 - i1, script );
+                script = new Change( i0, i1, first0 - i0, first1 - i1, script );
             }
 
             /* We have reached lines in the two files that match each other.  */
@@ -406,9 +406,9 @@ public class Diff {
     }
 
     public Change diff_2() {
-        return diff_2(false);   
+        return diff_2(false);
     }
-    
+
     /* Report the differences of two files.  DEPTH is the current directory
        depth. */
     public Change diff_2( final boolean reverse ) {
@@ -469,22 +469,22 @@ public class Diff {
         /** Next edit command */
         public Change next;
 
-        /** # lines of file 1 changed here.  */
-        public final int inserted;
+        /** Line number of 1st changed line of file 0.  */
+        public final int first0;
+
+        /** Line number of 1st changed line of file 1.  */
+        public final int first1;
 
         /** # lines of file 0 changed here.  */
-        public final int deleted;
+        public final int lines0;
 
-        /** Line number of 1st deleted line.  */
-        public final int line0;
+        /** # lines of file 1 changed here.  */
+        public final int lines1;
 
-        /** Line number of last deleted line. */
+        /** Line number of last changed line of file 0. */
         public final int last0;
 
-        /** Line number of 1st inserted line.  */
-        public final int line1;
-
-        /*  line number of last inserted line. */
+        /*  line number of last changed line of file 1. */
         public final int last1;
 
         /** Cons an additional entry onto the front of an edit script OLD.
@@ -494,28 +494,26 @@ public class Diff {
 
            If DELETED is 0 then LINE0 is the number of the line before
            which the insertion was done; vice versa for INSERTED and LINE1.  */
-        public Change( int line0, int line1, int deleted, int inserted, Change next ) {
-            this.line0 = line0;
-            this.line1 = line1;
-            this.inserted = inserted;
-            this.deleted = deleted;
+        public Change( int first0, int first1, int lines0, int lines1, Change next ) {
+            this.first0 = first0;
+            this.first1 = first1;
+            this.lines1 = lines1;
+            this.lines0 = lines0;
             this.next = next;
             if ( next != null ) {
                 next.prev = this;
             }
 
-            this.last0 = line0 + ( deleted == 0 ? 0 : deleted - 1 );
-            this.last1 = line1 + ( inserted == 0 ? 0 : inserted - 1 );
+            this.last0 = first0 + ( lines0 == 0 ? 0 : lines0 - 1 );
+            this.last1 = first1 + ( lines1 == 0 ? 0 : lines1 - 1 );
         }
 
         public String toString() {
-            StringBuffer sb = new StringBuffer();
-            sb.append( "Change[" );
-            sb.append( "line0=" ).append( line0 ).append( ",deleted=" ).append( deleted );
+            StringBuffer sb = new StringBuffer(100);
+            sb.append( "Change[first0=" ).append( first0 ).append( ",lines0=" ).append( lines0 );
             sb.append( ",last0=" ).append( last0 );
-            sb.append( ",line1=" ).append( line1 ).append( ",inserted=" ).append( inserted );
-            sb.append( ",last1=" ).append( last1 );
-            sb.append( "]" );
+            sb.append( ",first1=" ).append( first1 ).append( ",lines1=" ).append( lines1 );
+            sb.append( ",last1=" ).append( last1 ).append( ']' );
             return sb.toString();
         }
 
@@ -524,7 +522,11 @@ public class Diff {
                 return false;
             }
             Change c = ( Change ) o;
-            return line0 == c.line0 && line1 == c.line1 && deleted == c.deleted && inserted == c.inserted;
+            return first0 == c.first0 && first1 == c.first1 && lines0 == c.lines0 && lines1 == c.lines1;
+        }
+
+        public int hashCode() {
+            return first0 + (first1 << 8) + (lines0 << 16) + (lines1 << 24);
         }
     }
 

@@ -213,17 +213,17 @@ public class LineRendererPane extends JComponent implements EBComponent, CaretLi
             if ( source == textArea0 ) {
                 int caretLine = textArea0.getCaretLine();
                 for ( ; hunk != null; hunk = hunk.next ) {
-                    if ( caretLine >= hunk.line0 && caretLine < hunk.line0 + hunk.deleted ) {
+                    if ( caretLine >= hunk.first0 && caretLine < hunk.first0 + hunk.lines0 ) {
                         // in a hunk
-                        if ( hunk.deleted == 0 && hunk.line0 > 0 ) {
+                        if ( hunk.lines0 == 0 && hunk.first0 > 0 ) {
                             leftLine = "";
                         }
                         else {
                             leftLine = textArea0.getLineText( caretLine );
                         }
-                        int offset = caretLine - hunk.line0;
-                        if ( offset < hunk.inserted ) {
-                            rightLine = textArea1.getLineText( hunk.line1 + offset );
+                        int offset = caretLine - hunk.first0;
+                        if ( offset < hunk.lines1 ) {
+                            rightLine = textArea1.getLineText( hunk.first1 + offset );
                         }
                         else {
                             rightLine = "";
@@ -235,17 +235,17 @@ public class LineRendererPane extends JComponent implements EBComponent, CaretLi
             else {
                 int caretLine = textArea1.getCaretLine();
                 for ( ; hunk != null; hunk = hunk.next ) {
-                    if ( caretLine >= hunk.line1 && caretLine < hunk.line1 + hunk.inserted ) {
+                    if ( caretLine >= hunk.first1 && caretLine < hunk.first1 + hunk.lines1 ) {
                         // in a hunk
-                        if ( hunk.inserted == 0 && hunk.line1 > 0 ) {
+                        if ( hunk.lines1 == 0 && hunk.first1 > 0 ) {
                             rightLine = "";
                         }
                         else {
                             rightLine = textArea1.getLineText( caretLine );
                         }
-                        int offset = caretLine - hunk.line1;
-                        if ( offset < hunk.deleted ) {
-                            leftLine = textArea0.getLineText( hunk.line0 + offset );
+                        int offset = caretLine - hunk.first1;
+                        if ( offset < hunk.lines0 ) {
+                            leftLine = textArea0.getLineText( hunk.first0 + offset );
                         }
                         else {
                             leftLine = "";
