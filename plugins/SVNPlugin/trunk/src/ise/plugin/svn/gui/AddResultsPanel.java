@@ -40,7 +40,6 @@ import ise.plugin.svn.library.GUIUtils;
 import ise.java.awt.LambdaLayout;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.GUIUtilities;
 
 /**
  * Used for both Add and Revert, and now Delete and Resolved, and lock, unlock
@@ -83,26 +82,26 @@ public class AddResultsPanel extends JPanel {
             String good_label_text = "";
             switch ( action ) {
                 case ADD:
-                    good_label_text = jEdit.getProperty("ips.Scheduled_for_add", "Scheduled for add") + ":";
+                    good_label_text = jEdit.getProperty( "ips.Scheduled_for_add", "Scheduled for add" ) + ":";
                     break;
                 case REVERT:
-                    good_label_text = jEdit.getProperty("ips.Reverted", "Reverted") + ":";
+                    good_label_text = jEdit.getProperty( "ips.Reverted", "Reverted" ) + ":";
                     break;
                 case DELETE:
-                    good_label_text = jEdit.getProperty("ips.Scheduled_for_delete", "Scheduled for delete") + ":";
+                    good_label_text = jEdit.getProperty( "ips.Scheduled_for_delete", "Scheduled for delete" ) + ":";
                     break;
                 case RESOLVED:
-                    good_label_text = jEdit.getProperty("ips.Resolved", "Resolved") + ":";
+                    good_label_text = jEdit.getProperty( "ips.Resolved", "Resolved" ) + ":";
                     break;
                 case LOCK:
-                    good_label_text = jEdit.getProperty("ips.Locked", "Locked") + ":";
+                    good_label_text = jEdit.getProperty( "ips.Locked", "Locked" ) + ":";
                     break;
                 case UNLOCK:
-                    good_label_text = jEdit.getProperty("ips.Unlocked", "Unlocked") + ":";
+                    good_label_text = jEdit.getProperty( "ips.Unlocked", "Unlocked" ) + ":";
                     break;
                 case REMOTE_DELETE:
-                    DeleteResults dr = (DeleteResults)results;
-                    good_label_text = jEdit.getProperty("ips.Deleted_from_repository,_new_revision", "Deleted from repository, new revision") + " " + dr.getRevision() + ":";
+                    DeleteResults dr = ( DeleteResults ) results;
+                    good_label_text = jEdit.getProperty( "ips.Deleted_from_repository,_new_revision", "Deleted from repository, new revision" ) + " " + dr.getRevision() + ":";
                     break;
             }
             JLabel good_label = new JLabel( good_label_text );
@@ -116,10 +115,8 @@ public class AddResultsPanel extends JPanel {
             }
 
             // create the table, one column to contain the filename
-            JTable good_table = new JTable( data, new String[] {jEdit.getProperty("ips.Path", "Path")} );
-            if ( action == ADD || action == DELETE ) {
-                good_table.addMouseListener( new TableMouseListener( good_table ) );
-            }
+            JTable good_table = new JTable( data, new String[] {jEdit.getProperty( "ips.Path", "Path" ) } );
+            good_table.addMouseListener( new TableMouseListener( good_table ) );
 
             top_panel.add( good_label, BorderLayout.NORTH );
             top_panel.add( GUIUtils.createTablePanel( good_table ), BorderLayout.CENTER );
@@ -134,25 +131,25 @@ public class AddResultsPanel extends JPanel {
             String bad_label_text = "";
             switch ( action ) {
                 case ADD:
-                    bad_label_text = jEdit.getProperty("ips.Unable_to_schedule_for_add", "Unable to schedule for add") + ":";
+                    bad_label_text = jEdit.getProperty( "ips.Unable_to_schedule_for_add", "Unable to schedule for add" ) + ":";
                     break;
                 case REVERT:
-                    bad_label_text = jEdit.getProperty("ips.Unable_to_revert", "Unable to revert") + ":";
+                    bad_label_text = jEdit.getProperty( "ips.Unable_to_revert", "Unable to revert" ) + ":";
                     break;
                 case DELETE:
-                    bad_label_text = jEdit.getProperty("ips.Unable_to_schedule_for_delete", "Unable to schedule for delete") + ":";
+                    bad_label_text = jEdit.getProperty( "ips.Unable_to_schedule_for_delete", "Unable to schedule for delete" ) + ":";
                     break;
                 case RESOLVED:
-                    bad_label_text = jEdit.getProperty("ips.Unable_to_resolve", "Unable to resolve") + ":";
+                    bad_label_text = jEdit.getProperty( "ips.Unable_to_resolve", "Unable to resolve" ) + ":";
                     break;
                 case LOCK:
-                    bad_label_text = jEdit.getProperty("ips.Unable_to_lock", "Unable to lock") + ":";
+                    bad_label_text = jEdit.getProperty( "ips.Unable_to_lock", "Unable to lock" ) + ":";
                     break;
                 case UNLOCK:
-                    bad_label_text = jEdit.getProperty("ips.Unable_to_unlock", "Unable to unlock") + ":";
+                    bad_label_text = jEdit.getProperty( "ips.Unable_to_unlock", "Unable to unlock" ) + ":";
                     break;
                 case REMOTE_DELETE:
-                    bad_label_text = jEdit.getProperty("ips.Unable_to_delete_from_repository", "Unable to delete from repository") + ":";
+                    bad_label_text = jEdit.getProperty( "ips.Unable_to_delete_from_repository", "Unable to delete from repository" ) + ":";
                     break;
             }
             JLabel bad_label = new JLabel( bad_label_text );
@@ -168,7 +165,7 @@ public class AddResultsPanel extends JPanel {
                 ++i;
             }
 
-            JTable bad_table = new JTable( data, new String[] {jEdit.getProperty("ips.Path", "Path"), jEdit.getProperty("ips.Error_Message", "Error Message")} );
+            JTable bad_table = new JTable( data, new String[] {jEdit.getProperty( "ips.Path", "Path" ), jEdit.getProperty( "ips.Error_Message", "Error Message" ) } );
 
             if ( top ) {
                 ++con.y;
@@ -199,18 +196,16 @@ public class AddResultsPanel extends JPanel {
         }
 
         private void handleClick( MouseEvent me ) {
-            if ( AddResultsPanel.this.action != REMOTE_DELETE ) {
-                if ( me.isPopupTrigger() ) {
-                    JPopupMenu popup = getPopupMenu( table );
-                    if ( popup != null ) {
-                        GUIUtils.showPopupMenu( popup, table, me.getX(), me.getY() );
-                    }
+            if ( me.isPopupTrigger() && ( AddResultsPanel.this.action == ADD || AddResultsPanel.this.action == DELETE ) ) {
+                JPopupMenu popup = getPopupMenu( table );
+                if ( popup != null ) {
+                    GUIUtils.showPopupMenu( popup, table, me.getX(), me.getY() );
                 }
-                else if ( me.getClickCount() == 2 ) {
-                    // on double-click, open file in jEdit
-                    String filename = ( String ) table.getValueAt( table.getSelectedRow(), table.getSelectedColumn() );
-                    jEdit.openFile( view, filename );
-                }
+            }
+            else if ( me.getClickCount() == 2 ) {
+                // on double-click, open file in jEdit
+                String filename = ( String ) table.getValueAt( table.getSelectedRow(), table.getSelectedColumn() );
+                jEdit.openFile( view, filename );
             }
         }
     }
@@ -230,11 +225,11 @@ public class AddResultsPanel extends JPanel {
             paths.put( ( String ) table.getValueAt( rows[ row ], 0 ), "" );
         }
 
-        JMenuItem mi = new JMenuItem( jEdit.getProperty("ips.Commit", "Commit") );
+        JMenuItem mi = new JMenuItem( jEdit.getProperty( "ips.Commit", "Commit" ) );
         popup.add( mi );
         mi.addActionListener( new CommitAction( view, paths, username, password ) );
 
-        mi = new JMenuItem( jEdit.getProperty("ips.Revert", "Revert") );
+        mi = new JMenuItem( jEdit.getProperty( "ips.Revert", "Revert" ) );
         popup.add( mi );
         ArrayList<String> files = new ArrayList<String>( paths.keySet() );
         mi.addActionListener( new RevertAction( view, files, username, password ) );
