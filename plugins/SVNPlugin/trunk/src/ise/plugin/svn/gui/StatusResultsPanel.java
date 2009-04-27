@@ -223,7 +223,7 @@ public class StatusResultsPanel extends JPanel {
             }
             else if ( e.getClickCount() == 2 && status != null) {
                 // for double-click on a text file, open the file in jEdit
-                jEdit.openFile( view, status.toString() );
+                jEdit.openFile( view, status.getFilename() );
             }
         }
     }
