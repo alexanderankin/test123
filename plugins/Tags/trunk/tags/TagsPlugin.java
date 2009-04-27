@@ -51,7 +51,7 @@ import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.HistoryModel;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.BufferUpdate;
-import org.gjt.sp.jedit.msg.CaretChanging;
+import org.gjt.sp.jedit.msg.PositionChanging;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.search.CurrentBufferSet;
@@ -274,8 +274,8 @@ public class TagsPlugin extends EBPlugin
 	//{{{ pushPosition() method
 	public static void pushPosition(View view)
 	{
-		// CaretChanging
-		EditBus.send(new CaretChanging(view.getTextArea()));
+		// PositionChanging
+		EditBus.send(new PositionChanging(view.getTextArea()));
 		TagStackModel model = getTagStack(view);
 		try
 		{
