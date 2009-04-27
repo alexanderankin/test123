@@ -129,8 +129,8 @@ public class BasicDiffGlobalPhysicalOverviewUI extends DiffGlobalPhysicalOvervie
             leftRectangle = new Rectangle( left );
             rightRectangle = new Rectangle( right );
 
-            Color leftColor = JDiffPlugin.overviewInvalidColor;
-            Color rightColor = JDiffPlugin.overviewInvalidColor;
+            Color leftColor = JDiffPlugin.highlightInvalidColor;
+            Color rightColor = JDiffPlugin.highlightInvalidColor;
 
             gfx.setColor( Color.black );
             gfx.drawRect( left.x - 1, left.y - 1, left.width + 1, left.height + 1 );
@@ -149,16 +149,16 @@ public class BasicDiffGlobalPhysicalOverviewUI extends DiffGlobalPhysicalOvervie
                 rightOffset = hunk.first1;
 
                 if ( hunk.lines1 == 0 && hunk.lines0 != 0 ) { // DELETE
-                    leftColor = JDiffPlugin.overviewDeletedColor;
-                    rightColor = JDiffPlugin.overviewInvalidColor;
+                    leftColor = JDiffPlugin.highlightDeletedColor;
+                    rightColor = JDiffPlugin.highlightInvalidColor;
                 }
                 else if ( hunk.lines1 != 0 && hunk.lines0 == 0 ) { // INSERT
-                    leftColor = JDiffPlugin.overviewInvalidColor;
-                    rightColor = JDiffPlugin.overviewInsertedColor;
+                    leftColor = JDiffPlugin.highlightInvalidColor;
+                    rightColor = JDiffPlugin.highlightInsertedColor;
                 }
                 else { // CHANGE
-                    leftColor = JDiffPlugin.overviewChangedColor;
-                    rightColor = JDiffPlugin.overviewChangedColor;
+                    leftColor = JDiffPlugin.highlightChangedColor;
+                    rightColor = JDiffPlugin.highlightChangedColor;
                 }
 
                 left.y = inner.y + ( int ) Math.round( leftOffset * pixelsPerLine );
