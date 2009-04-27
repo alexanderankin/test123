@@ -52,7 +52,7 @@ public class TitledDateSelector extends JPanel implements DateSelector {
         title.setFont ( title.getFont().deriveFont( Font.BOLD ) );
 
         selector.addActionListener
-( new ActionListener() {
+        ( new ActionListener() {
               public void actionPerformed( ActionEvent e ) {
                   if ( e.getID() == DateSelectorPanel.CHANGE_ACTION )
                       title.setText( e.getActionCommand() );
