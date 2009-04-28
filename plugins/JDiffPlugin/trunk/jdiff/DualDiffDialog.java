@@ -223,8 +223,8 @@ public class DualDiffDialog extends JDialog {
             }
             editPanes[ 0 ].setBuffer( baseBuffer );
             editPanes[ 1 ].setBuffer( newBuffer );
-            if ( !DualDiff.isEnabledFor( DualDiffDialog.this.view ) ) {
-                DualDiff.toggleFor( DualDiffDialog.this.view );
+            if ( !DualDiffManager.isEnabledFor( DualDiffDialog.this.view ) ) {
+                DualDiffManager.toggleFor( DualDiffDialog.this.view );
             }
         }
     }

@@ -27,7 +27,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.plaf.ComponentUI;
 
-import jdiff.DualDiff;
+import jdiff.DualDiffManager;
 import jdiff.JDiffPlugin;
 import jdiff.component.*;
 import jdiff.util.Diff;
@@ -431,7 +431,7 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
                 rightTextArea.setSelectedText( selection, leftText );
             }
             rightTextArea.selectNone();
-            DualDiff.refreshFor( rightTextArea.getView() );
+            DualDiffManager.refreshFor( rightTextArea.getView() );
             break;
         }
     }
@@ -508,7 +508,7 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
                 leftTextArea.setSelectedText( leftSelection, rightText );
             }
             leftTextArea.selectNone();
-            DualDiff.refreshFor( leftTextArea.getView() );
+            DualDiffManager.refreshFor( leftTextArea.getView() );
             break;
         }
     }

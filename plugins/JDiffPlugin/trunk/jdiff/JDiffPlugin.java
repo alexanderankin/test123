@@ -28,6 +28,7 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 
+import jdiff.util.DualDiffUtil;
 
 public class JDiffPlugin extends EBPlugin
 {
@@ -68,7 +69,7 @@ public class JDiffPlugin extends EBPlugin
 
     public void handleMessage(EBMessage message) {
         if (message instanceof PropertiesChanged) {
-            DualDiff.propertiesChanged();
+            DualDiffUtil.propertiesChanged();
             JDiffPlugin.propertiesChanged();
         }
     }
