@@ -24,6 +24,7 @@ import java.util.*;
 import jdiff.*;
 import jdiff.text.FileLine;
 import jdiff.util.Diff;
+import jdiff.util.DualDiffUtil;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
@@ -143,17 +144,17 @@ public class DiffTextAreaModel {
 
             text = buffer.getText( start, len );
             canonical = text;
-            if ( DualDiff.getIgnoreCaseFor(dualDiff.getView()) ) {
+            if ( DualDiffManager.getIgnoreCaseFor(dualDiff.getView()) ) {
                 canonical = canonical.toUpperCase();
             }
-            if ( DualDiff.getTrimWhitespaceFor(dualDiff.getView()) && !DualDiff.getIgnoreAllWhitespaceFor(dualDiff.getView()) ) {
-                canonical = dualDiff.trimWhitespaces( canonical );
+            if ( DualDiffManager.getTrimWhitespaceFor(dualDiff.getView()) && !DualDiffManager.getIgnoreAllWhitespaceFor(dualDiff.getView()) ) {
+                canonical = DualDiffUtil.trimWhitespaces( canonical );
             }
-            if ( DualDiff.getIgnoreAmountOfWhitespaceFor(dualDiff.getView()) && !DualDiff.getIgnoreAllWhitespaceFor(dualDiff.getView()) ) {
-                canonical = dualDiff.squeezeRepeatedWhitespaces( canonical );
+            if ( DualDiffManager.getIgnoreAmountOfWhitespaceFor(dualDiff.getView()) && !DualDiffManager.getIgnoreAllWhitespaceFor(dualDiff.getView()) ) {
+                canonical = DualDiffUtil.squeezeRepeatedWhitespaces( canonical );
             }
-            if ( DualDiff.getIgnoreAllWhitespaceFor(dualDiff.getView()) ) {
-                canonical = dualDiff.removeWhitespaces( canonical );
+            if ( DualDiffManager.getIgnoreAllWhitespaceFor(dualDiff.getView()) ) {
+                canonical = DualDiffUtil.removeWhitespaces( canonical );
             }
 
             lines[ i ] = new FileLine( text, canonical );

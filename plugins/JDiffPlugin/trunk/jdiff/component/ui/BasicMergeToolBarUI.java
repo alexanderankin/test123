@@ -33,7 +33,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.*;
 
-import jdiff.DualDiff;
+import jdiff.DualDiffManager;
 import jdiff.component.*;
 
 import ise.java.awt.KappaLayout;
@@ -182,7 +182,7 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
                     if ( view != null ) {
-                        DualDiff.moveLeft( BasicMergeToolBarUI.this.view.getEditPane() );
+                        DualDiffManager.moveLeft( BasicMergeToolBarUI.this.view.getEditPane() );
                     }
                 }
             }
@@ -192,7 +192,7 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
                     if ( view != null ) {
-                        DualDiff.moveRight( BasicMergeToolBarUI.this.view.getEditPane() );
+                        DualDiffManager.moveRight( BasicMergeToolBarUI.this.view.getEditPane() );
                     }
                 }
             }
@@ -202,7 +202,7 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
                     if ( view != null ) {
-                        DualDiff.nextDiff( BasicMergeToolBarUI.this.view.getEditPane() );
+                        DualDiffManager.nextDiff( BasicMergeToolBarUI.this.view.getEditPane() );
                     }
                 }
             }
@@ -212,7 +212,7 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
                     if ( view != null ) {
-                        DualDiff.prevDiff( BasicMergeToolBarUI.this.view.getEditPane() );
+                        DualDiffManager.prevDiff( BasicMergeToolBarUI.this.view.getEditPane() );
                     }
                 }
             }
@@ -222,7 +222,7 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
                     View view = toolbar.getView();
-                    DualDiff.getDualDiffFor( view ).toggleFor( view );
+                    DualDiffManager.toggleFor( view );
                     toolbar.repaint();
                 }
             }
@@ -247,7 +247,7 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
                     View view = toolbar.getView();
-                    DualDiff.getDualDiffFor( view ).toggleFor( view );
+                    DualDiffManager.toggleFor( view );
                     toolbar.repaint();
                 }
             }
@@ -257,7 +257,7 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
                     View view = toolbar.getView();
-                    DualDiff.getDualDiffFor( view ).refreshFor( view );
+                    DualDiffManager.refreshFor( view );
                     toolbar.repaint();
                 }
             }

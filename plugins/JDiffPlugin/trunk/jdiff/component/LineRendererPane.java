@@ -30,6 +30,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import jdiff.DualDiff;
+import jdiff.DualDiffManager;
 import jdiff.component.ui.*;
 import jdiff.util.Diff;
 
@@ -195,7 +196,7 @@ public class LineRendererPane extends JComponent implements EBComponent, CaretLi
                 LineRendererPane.this.setModel(null);
                 return ;
             }
-            DualDiff dualDiff = DualDiff.getDualDiffFor( LineRendererPane.this.view );
+            DualDiff dualDiff = DualDiffManager.getDualDiffFor( LineRendererPane.this.view );
             if ( dualDiff == null ) {
                 LineRendererPane.this.setModel(null);
                 return ;
