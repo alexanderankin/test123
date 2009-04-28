@@ -15,36 +15,69 @@ import jdiff.util.patch.*;
 
 public class DualDiffManager {
 
+    // keys for some properties
     public static final String JDIFF_LINES = "jdiff-lines";
     public static final String BEEP_ON_ERROR = "jdiff.beep-on-error";
     public static final String HORIZ_SCROLL = "jdiff.horiz-scroll";
     public static final String SELECT_WORD = "jdiff.select-word";
 
+    // map dual diff to view
     private static HashMap<View, DualDiff> dualDiffs = new HashMap<View, DualDiff>();
+    
+    // map the split config of a view just prior to dual diff to the view so it
+    // can be restored later
     private static HashMap<View, String> splitConfigs = new HashMap<View, String>();
+    
+    // map the caret positions of the text areas in the view to the view so they
+    // can be restored later.  The inner hashmap maps
+    // <String = buffer path, List<Integer> = [0] caret position, [1] first physical line>
     private static HashMap< View, HashMap < String, List<Integer> >> caretPositions = new HashMap < View, HashMap < String, List<Integer> >> ();
-
+    
+    /**
+     * @param view A View to find the corresponding DualDiff.    
+     * @return The DualDiff for the given view, or null if there is no DualDiff
+     * for this View.
+     */
     public static DualDiff getDualDiffFor( View view ) {
         return ( DualDiff ) dualDiffs.get( view );
     }
-
+    
+    /**
+     * @return true if there is a DualDiff enabled for the given View.    
+     */
     public static boolean isEnabledFor( View view ) {
         return ( dualDiffs.get( view ) != null );
     }
-
+    
+    /**
+     * Creating a new EditPane in a View will cause the DualDiff to be removed
+     * from the View.
+     */
     public static void editPaneCreated( View view ) {
         DualDiffManager.removeFrom( view );
     }
-
+    
+    /**
+     * Removing an EditPane from a View will cause the DualDiff to be removed
+     * and highlighting in the text area to be removed.
+     */
     public static void editPaneDestroyed( View view, EditPane editPane ) {
         DualDiffManager.removeFrom( view );
         DiffHighlight.removeHighlightFrom( editPane );
     }
-
+    
+    /**
+     * If the Buffer underlying the TextArea of the EditPane is changed, the
+     * corresponding DualDiff will be refreshed.
+     */
     public static void editPaneBufferChanged( View view ) {
         DualDiffManager.refreshFor( view );
     }
-
+    
+    /**
+     * Adds a DualDiff to the given View.  This creates a new DualDiff, adds it to
+     * the View, sets up the highlighters and overviews.
+     */
     public static void addTo( View view ) {
         DualDiff dualDiff = new DualDiff( view );
 
@@ -61,7 +94,10 @@ public class DualDiffManager {
         dualDiffs.put( view, dualDiff );
         diffLineOverview.reset();
     }
-
+    
+    /**
+     * Removes a DualDiff from the given View.    
+     */
     public static void removeFrom( View view ) {
         DualDiff dualDiff = ( DualDiff ) dualDiffs.get( view );
 
@@ -106,7 +142,10 @@ public class DualDiffManager {
             JOptionPane.showMessageDialog( view, "JDiff encountered this problem while restoring perspective:\n\nFile closed during diff:\n" + filename, "JDiff Error", JOptionPane.ERROR_MESSAGE );
         }
     }
-
+    
+    /**
+     * Toggle the DualDiff for the given View on or off.    
+     */
     public static void toggleFor( final View view ) {
         Runnable r = new Runnable() {
                     public void run() {
@@ -195,11 +234,11 @@ public class DualDiffManager {
                             
                             // possibly show the dockable
                             DockableWindowManager dwm = view.getDockableWindowManager();
-                            if ( !dwm.isDockableWindowVisible( DualDiffManager.JDIFF_LINES ) && jEdit.getBooleanProperty( "jdiff.auto-show-dockable" ) ) {
-                                if ( dwm.getDockableWindow( DualDiffManager.JDIFF_LINES ) == null ) {
-                                    dwm.addDockableWindow( DualDiffManager.JDIFF_LINES );
+                            if ( !dwm.isDockableWindowVisible( JDIFF_LINES ) && jEdit.getBooleanProperty( "jdiff.auto-show-dockable" ) ) {
+                                if ( dwm.getDockableWindow( JDIFF_LINES ) == null ) {
+                                    dwm.addDockableWindow( JDIFF_LINES );
                                 }
-                                dwm.showDockableWindow( DualDiffManager.JDIFF_LINES );
+                                dwm.showDockableWindow( JDIFF_LINES );
                             }
 
                             EditBus.send( new DiffMessage( view, DiffMessage.ON ) );
@@ -222,7 +261,10 @@ public class DualDiffManager {
                 };
         SwingUtilities.invokeLater( r );
     }
-
+    
+    /**
+     * Refresh the DualDiff for the given View.    
+     */
     public static void refreshFor( View view ) {
         DualDiff dualDiff = DualDiffManager.getDualDiffFor( view );
         if ( dualDiff != null ) {
@@ -357,11 +399,6 @@ public class DualDiffManager {
     }
 
     public static void nextDiff( EditPane editPane ) {
-        // danson, the nextDiff0 and nextDiff1 weren't working correctly, they
-        // were using the first visible line rather than the caret line to
-        // calculate the next diff position.  Using the first physical line
-        // meant the "next" diff was always the first visible diff, even if
-        // there were 2 visible diffs.
         DualDiff dualDiff = DualDiffManager.getDualDiffFor( editPane.getView() );
         if ( dualDiff == null ) {
             if ( jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
