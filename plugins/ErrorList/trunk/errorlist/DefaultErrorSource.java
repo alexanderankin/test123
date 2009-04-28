@@ -325,8 +325,10 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 		//{{{ DefaultError constructor
 		/**
 		 * Creates a new default error.
+		 * @param source The ErrorSource
 		 * @param type The error type
 		 * @param path The path
+		 * @param lineIndex The line Index
 		 * @param start The start offset
 		 * @param end The end offset
 		 * @param error The error message
@@ -399,7 +401,7 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 		{
 			return path;
 		} //}}}
-		
+
 		/**
 		 * Changes the filePath of this error
 		 * @param newPath the new path
@@ -667,7 +669,7 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 			{
 				return "";
 			}
-			
+
 			public int getErrorType() { return 0; }
 			public ErrorSource getErrorSource() { return null; }
 			public Buffer getBuffer() { return null; }
