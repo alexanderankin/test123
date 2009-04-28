@@ -402,6 +402,7 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 			return path;
 		} //}}}
 
+		//{{{ setFilePath() method
 		/**
 		 * Changes the filePath of this error
 		 * @param newPath the new path
@@ -410,7 +411,7 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 		{
 			path = newPath;
 			name = path.substring(path.lastIndexOf('/'));
-		}
+		}// }}}
 
 		//{{{ getFileName() method
 		/**
