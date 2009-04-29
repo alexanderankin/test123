@@ -309,6 +309,8 @@ public class MarkerSetsPlugin extends EBPlugin {
 		final Runnable moveCaret = new Runnable() {
 			public void run() {
 				JEditTextArea ta = view.getTextArea();
+				if (ta.getLineCount() <= line)
+					return;
 				ta.setCaretPosition(ta.getLineStartOffset(line));
 			}
 		};
