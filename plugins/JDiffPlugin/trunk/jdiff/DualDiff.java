@@ -76,9 +76,9 @@ public class DualDiff implements EBComponent {
 
     private DiffOverview diffOverview1;
 
-    private final ScrollHandler scrollHandler;
-
     private DiffLineOverview diffLineOverview;
+
+    private final ScrollHandler scrollHandler;
 
     protected DualDiff( View view ) {
         this( view, DualDiffUtil.ignoreCaseDefault, DualDiffUtil.trimWhitespaceDefault,
@@ -106,13 +106,13 @@ public class DualDiff implements EBComponent {
         this.initOverviews();
         this.addOverviews();
     }
-    
+
     public EditPane getEditPane0() {
-        return editPane0;   
+        return editPane0;
     }
-    
+
     public EditPane getEditPane1() {
-        return editPane1;   
+        return editPane1;
     }
 
     public TextArea getTextArea0() {
@@ -245,34 +245,36 @@ public class DualDiff implements EBComponent {
             edits = d.diff_2();
             diffOverview0 = new DiffLocalOverview( this );
             diffOverview1 = new DiffGlobalPhysicalOverview( this );
+            diffLineOverview = new DiffLineOverview(this, view);
         }
     }
 
     private void addOverviews() {
-        this.textArea0.addLeftOfScrollBar( this.diffOverview0 );
-        this.textArea1.addLeftOfScrollBar( this.diffOverview1 );
+        textArea0.addLeftOfScrollBar( diffOverview0 );
+        textArea1.addLeftOfScrollBar( diffOverview1 );
+        setDiffLineOverview( diffLineOverview );
     }
 
     // remove overviews and merge controls
     protected void removeOverviews() {
-        this.textArea0.removeLeftOfScrollBar( this.diffOverview0 );
-        this.textArea1.removeLeftOfScrollBar( this.diffOverview1 );
+        textArea0.removeLeftOfScrollBar( this.diffOverview0 );
+        textArea1.removeLeftOfScrollBar( this.diffOverview1 );
     }
 
     protected void refresh() {
-        this.removeHandlers();
-        this.disableHighlighters();
+        removeHandlers();
+        disableHighlighters();
 
-        this.removeOverviews();
-        this.initOverviews();
-        this.addOverviews();
+        removeOverviews();
+        initOverviews();
+        addOverviews();
 
-        this.enableHighlighters();
-        this.addHandlers();
+        enableHighlighters();
+        addHandlers();
 
         diffLineOverview.clear();
-        this.diffOverview0.synchroScrollRight();
-        this.diffOverview1.repaint();
+        diffOverview0.synchroScrollRight();
+        diffOverview1.repaint();
     }
 
     protected void enableHighlighters() {
