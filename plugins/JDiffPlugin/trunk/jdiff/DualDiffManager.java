@@ -2,6 +2,7 @@ package jdiff;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.*;
 import javax.swing.*;
 
 import org.gjt.sp.jedit.*;
@@ -103,6 +104,8 @@ public class DualDiffManager {
     public static void removeFrom( View view ) {
         DualDiff dualDiff = ( DualDiff ) dualDiffs.get( view );
         dualDiffs.remove( view );
+        splitConfigs.remove( view );
+        caretPositions.remove( view );
         if ( dualDiff != null ) {
             EditBus.removeFromBus( dualDiff );
             dualDiff.removeHandlers();
@@ -123,21 +126,25 @@ public class DualDiffManager {
             return ;
         }
 
-        String[] tokens = splitConfig.split( " " );
+        // in the split config string, only file names are enclosed in double quotes,
+        // so use a regex to pick them out without having to parse the string any
+        // more meaningfully.
         HashSet<String> filenames = new HashSet<String>();
-        for ( int i = 0; i < tokens.length; i++ ) {
-            String token = tokens[ i ];
-            // tokens starting and ending with " are probably file names
-            if ( token.startsWith( "\"" ) && token.endsWith( "\"" )
-                    && ( tokens[ i + 1 ].equals( "buffer" ) || tokens[ i + 1 ].equals( "buff" ) ) ) {
-                token = token.substring( 1, token.length() - 1 );
-                if ( jEdit.getBuffer( token ) == null ) {
-                    filenames.add( token );
+        Pattern p = Pattern.compile( "\"(.*?)\"" );
+        Matcher m = p.matcher( splitConfig );
+        while ( m.find() ) {
+            String match = m.group( 1 );
+            if ( match != null ) {
+                if (match.equals("global") || match.equals("view") || match.equals("editpane")) {
+                    continue;   
                 }
+                filenames.add( match );
             }
         }
         for ( String filename : filenames ) {
-            JOptionPane.showMessageDialog( view, "JDiff encountered this problem while restoring perspective:\n\nFile closed during diff:\n" + filename, "JDiff Error", JOptionPane.ERROR_MESSAGE );
+            if ( jEdit.getBuffer( filename ) == null ) {
+                JOptionPane.showMessageDialog( view, "JDiff encountered this problem while restoring perspective:\n\nFile closed during diff:\n" + filename, "JDiff Error", JOptionPane.ERROR_MESSAGE );
+            }
         }
     }
 
@@ -156,10 +163,20 @@ public class DualDiffManager {
     private static void toggleOffFor( final View view ) {
         Runnable r = new Runnable() {
                     public void run() {
+                        // get stored configurations so they can be restored
+                        String splitConfig = splitConfigs.get( view );
+                        HashMap < String, List < Integer >> carets = caretPositions.get( view );
+
+                        // turn off DualDiff so auto-scroll is deactivated before
+                        // restoring caret and viewport.  "removeFrom" also cleans up
+                        // the splitConfigs and caretPositions maps.
+                        DualDiffManager.removeFrom( view );
+
+                        // turn off the dockable if it is visible
+                        view.getDockableWindowManager().hideDockableWindow( JDIFF_LINES );
 
                         // possibly restore split config, see tracker 2540573
                         if ( jEdit.getBooleanProperty( "jdiff.restore-view", true ) ) {
-                            String splitConfig = splitConfigs.get( view );
                             if ( splitConfig != null ) {
                                 validateConfig( view, splitConfig );
                                 view.setSplitConfig( null, splitConfig );
@@ -168,30 +185,20 @@ public class DualDiffManager {
                                 view.unsplit();
                             }
                         }
-                        splitConfigs.remove( view );
 
-                        // turn off DualDiff so auto-scroll is deactivated before
-                        // restoring caret and viewport.
-                        DualDiffManager.removeFrom( view );
-                        view.getDockableWindowManager().hideDockableWindow( JDIFF_LINES );
-
-                        // possibly restore caret positions/viewports regardless of
+                        // possibly restore caret positions/viewports independent of
                         // restore split config setting
-                        if ( jEdit.getBooleanProperty( "jdiff.restore-caret", true ) ) {
-                            HashMap < String, List < Integer >> cps = caretPositions.get( view );
-                            if ( cps != null ) {
-                                for ( EditPane ep : view.getEditPanes() ) {
-                                    List<Integer> values = cps.get( ep.getBuffer().getPath( false ) );
-                                    if ( values != null ) {
-                                        int caret_position = values.get( 0 );
-                                        int first_physical_line = values.get( 1 );
-                                        ep.getTextArea().setCaretPosition( caret_position );
-                                        ep.getTextArea().setFirstPhysicalLine( first_physical_line );
-                                    }
+                        if ( jEdit.getBooleanProperty( "jdiff.restore-caret", true ) && carets != null ) {
+                            for ( EditPane ep : view.getEditPanes() ) {
+                                List<Integer> values = carets.get( ep.getBuffer().getPath( false ) );
+                                if ( values != null ) {
+                                    int caret_position = values.get( 0 );
+                                    int first_physical_line = values.get( 1 );
+                                    ep.getTextArea().setCaretPosition( caret_position );
+                                    ep.getTextArea().setFirstPhysicalLine( first_physical_line );
                                 }
-                                cps = null;
-                                caretPositions.remove( view );
                             }
+                            carets = null;
                         }
 
                         // let others know that the diff session is over --
@@ -216,20 +223,20 @@ public class DualDiffManager {
                         }
 
                         // split the view -- if already split correctly,
-                        // don't split.  This might be a bit of a hack in
-                        // the case where the view is split in two, but
-                        // horizontally rather than vertically. I'm checking
-                        // the output of the split config, if it ends with
-                        // "horizontal", the view is split horizontally and
-                        // needs to be split vertically.
+                        // don't split.
+                        boolean horizontal = false;
+                        JSplitPane splitPane = view.getSplitPane();
+                        if ( splitPane != null ) {
+                            horizontal = splitPane.getOrientation() == JSplitPane.HORIZONTAL_SPLIT;
+                        }
                         EditPane[] editPanes = view.getEditPanes();
-                        if ( editPanes.length != 2 || ( splitConfig != null && splitConfig.endsWith( "horizontal" ) ) ) {
+                        if ( editPanes.length != 2 || horizontal ) {
                             view.unsplit();
                             view.splitVertically();
                         }
                         editPanes = view.getEditPanes();
 
-                        // caret positions and first physical lines for the two files
+                        // remember caret positions and first physical lines for the two files
                         HashMap < String, List < Integer >> cps = new HashMap < String, List < Integer >> (); // <String = buffer path, List<Integer> = [0] caret position, [1] first physical line
                         List<Integer> values = new ArrayList<Integer>();
                         values.add( editPanes[ 0 ].getTextArea().getCaretPosition() );
@@ -294,7 +301,7 @@ public class DualDiffManager {
             }
         }
     }
-    
+
     /**
      * @return The diff ignoreCase setting for the given View.    
      */
@@ -309,7 +316,7 @@ public class DualDiffManager {
 
         return dualDiff.getIgnoreCase();
     }
-    
+
     /**
      * Toggle the diff ignoreCase setting for the given view.    
      */
@@ -331,7 +338,7 @@ public class DualDiffManager {
             }
         }
     }
-    
+
     /**
      * @return The diff trimWhitespace setting for the given View.    
      */
@@ -343,7 +350,7 @@ public class DualDiffManager {
 
         return dualDiff.getTrimWhitespace();
     }
-    
+
     /**
      * Toggle the diff trimWhitespace setting for the given View.    
      */
@@ -365,7 +372,7 @@ public class DualDiffManager {
             }
         }
     }
-    
+
     /**
      * @return The diff ignoreAmountOfWhitepace setting for the given View.    
      */
@@ -377,7 +384,7 @@ public class DualDiffManager {
 
         return dualDiff.getIgnoreAmountOfWhitespace();
     }
-    
+
     /**
      * Toggle the diff ignoreAmountOfWhitespace for the given View.    
      */
@@ -399,7 +406,7 @@ public class DualDiffManager {
             }
         }
     }
-    
+
     /**
      * @return The diff ignoreAllWhitespace setting for the given View.    
      */
@@ -411,7 +418,7 @@ public class DualDiffManager {
 
         return dualDiff.getIgnoreAllWhitespace();
     }
-    
+
     /**
      * Toggle the diff ignoreAllWhitespace setting for the given View.    
      */
@@ -433,7 +440,7 @@ public class DualDiffManager {
             }
         }
     }
-    
+
     /**
      * Move to the next diff in the given EditPane.    
      */
@@ -458,7 +465,7 @@ public class DualDiffManager {
             }
         }
     }
-    
+
     /**
      * Move to the previous diff in the given EditPane.    
      */
@@ -483,7 +490,7 @@ public class DualDiffManager {
             }
         }
     }
-    
+
     /**
      * Moves the current diff hunk from the left text area to the right text area.    
      */
@@ -498,7 +505,7 @@ public class DualDiffManager {
         editPane = editPane.getView().getEditPanes() [ 0 ];
         dualDiff.getDiffOverview0().moveRight( editPane.getTextArea().getCaretLine() );
     }
-    
+
     /**
      * Moves the current diff hunk from the right text area to the left text area.    
      */
@@ -511,7 +518,7 @@ public class DualDiffManager {
         editPane = editPane.getView().getEditPanes() [ 1 ];
         dualDiff.getDiffOverview0().moveLeft( editPane.getTextArea().getCaretLine() );
     }
-    
+
     /**
      * TODO: This probably doesn't belong in DualDiffManager and should go into
      * a separate class with the applyPatch method.
