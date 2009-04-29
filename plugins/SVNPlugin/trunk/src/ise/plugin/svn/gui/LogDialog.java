@@ -56,7 +56,6 @@ public class LogDialog extends JDialog {
     private LogData data = null;
 
     private boolean recursive = false;
-    private SVNRevision startRevision = SVNRevision.create( 0L );
     private SVNRevision endRevision = SVNRevision.HEAD;
 
     private static Color background = jEdit.getColorProperty( "view.bgColor", Color.WHITE );
@@ -125,7 +124,6 @@ public class LogDialog extends JDialog {
                     public void actionPerformed( ActionEvent ae ) {
                         AbstractButton btn = ( AbstractButton ) ae.getSource();
                         if ( btn.isSelected() ) {
-                            startRevision = SVNRevision.create( 0L );
                             endRevision = SVNRevision.HEAD;
                         }
                     }
@@ -251,8 +249,8 @@ public class LogDialog extends JDialog {
         panel.add( "0, 5, 2, 1, W,  , 3", new JLabel( jEdit.getProperty( "ips.Revision_Range>", "Revision Range:" ) ) );
         panel.add( "0, 6, 2, 1, W,  , 3", show_all );
         panel.add( "0, 7, 2, 1, W,  , 3", revision_range );
-        panel.add( "0, 8, 1, 1, W,  , 3", start_revision_panel );
-        panel.add( "1, 8, 1, 1, E,  , 3", end_revision_panel );
+        panel.add( "0, 8, 1, 1, W, w, 3", start_revision_panel );
+        panel.add( "1, 8, 1, 1, E, w, 3", end_revision_panel );
         panel.add( "0, 9, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
 
         panel.add( "0, 10, 1, 1, W, , 3", stopOnCopy );
