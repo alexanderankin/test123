@@ -45,7 +45,7 @@ import javax.swing.SwingUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EditPane;
-import jdiff.DualDiff;
+import jdiff.DualDiffManager;
 
 /**
  * ActionListener to perform sort of an svn diff.  While subversion can do a diff,
@@ -195,7 +195,7 @@ public class RemoteDiffAction extends SVNAction {
 
                     // show JDiff
                     getView().unsplit();
-                    DualDiff.toggleFor( getView() );
+                    DualDiffManager.toggleFor( getView() );
 
                     Runnable r = new Runnable() {
                                 public void run() {

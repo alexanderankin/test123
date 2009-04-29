@@ -41,7 +41,7 @@ import ise.plugin.svn.library.GUIUtils;
 import ise.java.awt.KappaLayout;
 import org.tmatesoft.svn.core.wc.SVNStatus;
 import org.gjt.sp.jedit.View;
-import jdiff.DualDiff;
+import jdiff.DualDiffManager;
 import jdiff.DiffMessage;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EditPane;
@@ -261,7 +261,7 @@ public class ResolveConflictDialog extends JDialog implements EBComponent {
 
             // show JDiff
             view.unsplit();
-            DualDiff.toggleFor( view );
+            DualDiffManager.toggleFor( view );
 
             Runnable runner = new Runnable() {
                         public void run() {
@@ -297,7 +297,7 @@ public class ResolveConflictDialog extends JDialog implements EBComponent {
                                                             editPanes[ 1 ].getTextArea().removeTopComponent( theirs_panel );
 
                                                             // close JDiff and unsplit the view
-                                                            DualDiff.toggleFor( view );
+                                                            DualDiffManager.toggleFor( view );
                                                             Runnable r2d2 = new Runnable() {
                                                                         public void run() {
                                                                             view.unsplit();
@@ -378,7 +378,7 @@ public class ResolveConflictDialog extends JDialog implements EBComponent {
                                                             editPanes[ 1 ].getTextArea().removeTopComponent( theirs_panel );
 
                                                             // close JDiff and unsplit the view
-                                                            DualDiff.toggleFor( view );
+                                                            DualDiffManager.toggleFor( view );
                                                             Runnable r2d2 = new Runnable() {
                                                                         public void run() {
                                                                             view.unsplit();
@@ -495,7 +495,7 @@ public class ResolveConflictDialog extends JDialog implements EBComponent {
                 null,                   // SVNLock localLock,
                 null,                   // Map entryProperties,
                 null,                   // String changelistName,
-                -1);                    // int wcFormatVersion    
-        }                           
-    }                               
+                -1);                    // int wcFormatVersion
+        }
+    }
 }
