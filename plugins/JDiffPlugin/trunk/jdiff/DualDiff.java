@@ -33,6 +33,7 @@ import jdiff.component.DiffLocalOverview;
 import jdiff.component.DiffGlobalPhysicalOverview;
 import jdiff.component.DiffOverview;
 import jdiff.component.DiffLineOverview;
+import jdiff.component.DiffTextAreaModel;
 import jdiff.text.FileLine;
 import jdiff.util.Diff;
 import jdiff.util.DualDiffUtil;
@@ -46,6 +47,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.jedit.textarea.TextAreaPainter;
@@ -140,6 +142,7 @@ public class DualDiff implements EBComponent {
     }
 
     public void handleMessage( EBMessage message ) {
+        System.out.println("+++++ handle message");
         if ( message instanceof BufferUpdate ) {
             BufferUpdate bu = ( BufferUpdate ) message;
             Buffer b0 = ( Buffer ) this.textArea0.getBuffer();
@@ -168,6 +171,13 @@ public class DualDiff implements EBComponent {
             else if ( epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED ) {
                 DualDiffManager.editPaneBufferChanged( view );
             }
+        }
+        else if ( message instanceof PropertiesChanged ) {
+            setIgnoreCase( jEdit.getBooleanProperty( "jdiff.ignore-case", false ) );
+            setTrimWhitespace( jEdit.getBooleanProperty( "jdiff.trim-whitespace", false ) );
+            setIgnoreAmountOfWhitespace( jEdit.getBooleanProperty( "jdiff.ignore-amount-whitespace", false ) );
+            setIgnoreAllWhitespace( jEdit.getBooleanProperty( "jdiff.ignore-all-whitespace", false ) );
+            refresh();
         }
     }
 
@@ -245,7 +255,7 @@ public class DualDiff implements EBComponent {
             edits = d.diff_2();
             diffOverview0 = new DiffLocalOverview( this );
             diffOverview1 = new DiffGlobalPhysicalOverview( this );
-            diffLineOverview = new DiffLineOverview(this, view);
+            diffLineOverview = new DiffLineOverview( this, view );
         }
     }
 
@@ -273,7 +283,10 @@ public class DualDiff implements EBComponent {
         addHandlers();
 
         diffLineOverview.clear();
+        DiffTextAreaModel taModel = new DiffTextAreaModel( this );
+        diffOverview0.setModel( taModel );
         diffOverview0.synchroScrollRight();
+        diffOverview1.setModel( taModel );
         diffOverview1.repaint();
     }
 
@@ -469,8 +482,8 @@ public class DualDiff implements EBComponent {
                 // go to start of current hunk.  If caret line is after end of
                 // current hunk, but before the next hunk, go to start of current
                 // hunk.
-                if ( hunk.first0 + hunk.lines0 > caretLine ||      // NOPMD caret is in current hunk
-                        hunk.next == null ||                       // caret is after last hunk
+                if ( hunk.first0 + hunk.lines0 > caretLine ||       // NOPMD caret is in current hunk
+                        hunk.next == null ||                        // caret is after last hunk
                         hunk.next.first0 >= caretLine ) {         // caret is before next hunk
                     int line = hunk.first0;      // first line of diff hunk
 
@@ -530,8 +543,8 @@ public class DualDiff implements EBComponent {
                 // go to start of current hunk.  If caret line is after end of
                 // current hunk, but before current hunk, go to start of current
                 // hunk.
-                if ( hunk.first1 + hunk.lines1 > caretLine ||     // NOPMD caret is in current hunk
-                        hunk.next == null ||                       // caret is after last hunk
+                if ( hunk.first1 + hunk.lines1 > caretLine ||      // NOPMD caret is in current hunk
+                        hunk.next == null ||                        // caret is after last hunk
                         hunk.next.first1 >= caretLine ) {         // caret is before next hunk
                     int line = hunk.first1;      // first line of hunk
 
