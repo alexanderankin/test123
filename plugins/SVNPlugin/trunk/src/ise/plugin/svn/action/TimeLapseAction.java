@@ -43,7 +43,7 @@ import javax.swing.SwingUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EditPane;
-import jdiff.DualDiff;
+import jdiff.DualDiffManager;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.io.SVNFileRevision;
@@ -281,7 +281,7 @@ public class TimeLapseAction extends SVNAction {
                 }
 
                 // show JDiff
-                DualDiff.toggleFor( getView() );
+                DualDiffManager.toggleFor( getView() );
 
                 SwingUtilities.invokeLater( new Runnable() {
                             public void run() {
