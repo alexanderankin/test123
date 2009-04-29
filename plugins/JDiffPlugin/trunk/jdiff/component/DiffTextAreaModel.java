@@ -76,11 +76,12 @@ public class DiffTextAreaModel {
     }
 
     private void prepData() {
-        EditPane[] editPanes = dualDiff.getView().getEditPanes();
-        Buffer buf0 = editPanes[0].getBuffer();
-        Buffer buf1 = editPanes[1].getBuffer();
-        leftTextArea = editPanes[0].getTextArea();
-        rightTextArea = editPanes[1].getTextArea();
+        EditPane editPane0 = dualDiff.getEditPane0();
+        EditPane editPane1 = dualDiff.getEditPane1();
+        Buffer buf0 = editPane0.getBuffer();
+        Buffer buf1 = editPane1.getBuffer();
+        leftTextArea = editPane0.getTextArea();
+        rightTextArea = editPane1.getTextArea();
 
         if ( !buf0.isLoaded() || !buf1.isLoaded() ) {
             edits = null;
