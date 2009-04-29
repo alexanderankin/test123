@@ -142,7 +142,6 @@ public class DualDiff implements EBComponent {
     }
 
     public void handleMessage( EBMessage message ) {
-        System.out.println("+++++ handle message");
         if ( message instanceof BufferUpdate ) {
             BufferUpdate bu = ( BufferUpdate ) message;
             Buffer b0 = ( Buffer ) this.textArea0.getBuffer();
