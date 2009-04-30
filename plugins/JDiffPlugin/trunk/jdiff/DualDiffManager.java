@@ -17,7 +17,9 @@ import jdiff.util.patch.*;
 /**
  * The DualDiffManager provides the API to handle DualDiffs with only knowing 
  * the View and adjusting the diff settings globally for all DualDiffs.  Each 
- * View may have at most 1 DualDiff.
+ * View may have at most 1 DualDiff.  This class provides some convenience 
+ * methods for finding a DualDiff and acting on it.  This class does not act
+ * on Views or EditPane, rather, it delegates to the DualDiff for such work. 
  */
 public class DualDiffManager {
 
@@ -56,67 +58,26 @@ public class DualDiffManager {
     }
 
     /**
-     * Creating a new EditPane in a View will cause the DualDiff to be removed
-     * from the View.
-     */
-    public static void editPaneCreated( View view ) {
-        DualDiffManager.removeFrom( view );
-    }
-
-    /**
-     * Removing an EditPane from a View will cause the DualDiff to be removed
-     * and highlighting in the text area to be removed.
-     */
-    public static void editPaneDestroyed( View view, EditPane editPane ) {
-        DualDiffManager.removeFrom( view );
-        DiffHighlight.removeHighlightFrom( editPane );
-    }
-
-    /**
-     * If the Buffer underlying the TextArea of the EditPane is changed, the
-     * corresponding DualDiff will be refreshed.
-     */
-    public static void editPaneBufferChanged( View view ) {
-        DualDiffManager.refreshFor( view );
-    }
-
-    /**
-     * Adds a DualDiff to the given View.  This creates a new DualDiff, adds it to
-     * the View, sets up the highlighters and overviews.
+     * Creates and applies a DualDiff to the given View.
      */
     public static void addTo( View view ) {
+        removeFrom( view );
         DualDiff dualDiff = new DualDiff( view );
         dualDiffs.put( view, dualDiff );
-
-
-        dualDiff.enableHighlighters();
-        dualDiff.addHandlers();
-
-        dualDiff.getDiffOverview0().synchroScrollRight();
-        dualDiff.getDiffOverview1().repaint();
-
-        EditBus.addToBus( dualDiff );
     }
 
     /**
+     * TODO: check if some of this method should move to DualDiff 
      * Removes a DualDiff from the given View.
      */
     public static void removeFrom( View view ) {
-        DualDiff dualDiff = ( DualDiff ) dualDiffs.get( view );
         dualDiffs.remove( view );
         splitConfigs.remove( view );
         caretPositions.remove( view );
-        if ( dualDiff != null ) {
-            EditBus.removeFromBus( dualDiff );
-            dualDiff.removeHandlers();
-            dualDiff.disableHighlighters();
-            dualDiff.removeOverviews();
-            dualDiff.getDiffLineOverview().setModel( null );
-            dualDiff = null;
-        }
     }
 
     /*
+     * TODO: I don't like the name of this method.
      * Go through the split config and check if any of the files listed in the
      * config have been closed since the config was cached.  Let the user know
      * if any file have been closed.
@@ -135,8 +96,8 @@ public class DualDiffManager {
         while ( m.find() ) {
             String match = m.group( 1 );
             if ( match != null ) {
-                if (match.equals("global") || match.equals("view") || match.equals("editpane")) {
-                    continue;   
+                if ( match.equals( "global" ) || match.equals( "view" ) || match.equals( "editpane" ) ) {
+                    continue;
                 }
                 filenames.add( match );
             }
@@ -160,6 +121,7 @@ public class DualDiffManager {
         }
     }
 
+    // TODO: move as much of this functionality to DualDiff as possible
     private static void toggleOffFor( final View view ) {
         Runnable r = new Runnable() {
                     public void run() {
@@ -212,6 +174,7 @@ public class DualDiffManager {
         SwingUtilities.invokeLater( r );
     }
 
+    // TODO: move as much of this functionality to DualDiff as possible
     private static void toggleOnFor( final View view ) {
         Runnable r = new Runnable() {
                     public void run() {
@@ -261,21 +224,6 @@ public class DualDiffManager {
                         }
 
                         EditBus.send( new DiffMessage( view, DiffMessage.ON ) );
-                        view.invalidate();
-                        view.validate();
-
-                        // make sure the divider is in the middle.  For some reason,
-                        // the left side would be much smaller than the right side, this
-                        // takes care of that.
-                        SwingUtilities.invokeLater( new Runnable() {
-                                    public void run() {
-                                        view.invalidate();
-                                        view.validate();
-                                        JSplitPane sp = view.getSplitPane();
-                                        sp.setDividerLocation( 0.5 );
-                                    }
-                                }
-                                                  );
                     }
                 };
         SwingUtilities.invokeLater( r );
@@ -288,12 +236,6 @@ public class DualDiffManager {
         DualDiff dualDiff = DualDiffManager.getDualDiffFor( view );
         if ( dualDiff != null ) {
             dualDiff.refresh();
-
-            JSplitPane sp = view.getSplitPane();
-            sp.setDividerLocation( 0.5 );
-
-            view.invalidate();
-            view.validate();
         }
         else {
             if ( jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
@@ -310,10 +252,6 @@ public class DualDiffManager {
         if ( dualDiff == null ) {
             return false;
         }
-
-        JSplitPane sp = view.getSplitPane();
-        sp.setDividerLocation( 0.5 );
-
         return dualDiff.getIgnoreCase();
     }
 
@@ -325,12 +263,6 @@ public class DualDiffManager {
         if ( dualDiff != null ) {
             dualDiff.toggleIgnoreCase();
             dualDiff.refresh();
-
-            JSplitPane sp = view.getSplitPane();
-            sp.setDividerLocation( 0.5 );
-
-            view.invalidate();
-            view.validate();
         }
         else {
             if ( jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
@@ -359,12 +291,6 @@ public class DualDiffManager {
         if ( dualDiff != null ) {
             dualDiff.toggleTrimWhitespace();
             dualDiff.refresh();
-
-            JSplitPane sp = view.getSplitPane();
-            sp.setDividerLocation( 0.5 );
-
-            view.invalidate();
-            view.validate();
         }
         else {
             if ( jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
@@ -381,7 +307,6 @@ public class DualDiffManager {
         if ( dualDiff == null ) {
             return false;
         }
-
         return dualDiff.getIgnoreAmountOfWhitespace();
     }
 
@@ -393,12 +318,6 @@ public class DualDiffManager {
         if ( dualDiff != null ) {
             dualDiff.toggleIgnoreAmountOfWhitespace();
             dualDiff.refresh();
-
-            JSplitPane sp = view.getSplitPane();
-            sp.setDividerLocation( 0.5 );
-
-            view.invalidate();
-            view.validate();
         }
         else {
             if ( jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
@@ -415,7 +334,6 @@ public class DualDiffManager {
         if ( dualDiff == null ) {
             return false;
         }
-
         return dualDiff.getIgnoreAllWhitespace();
     }
 
@@ -427,12 +345,6 @@ public class DualDiffManager {
         if ( dualDiff != null ) {
             dualDiff.toggleIgnoreAllWhitespace();
             dualDiff.refresh();
-
-            JSplitPane sp = view.getSplitPane();
-            sp.setDividerLocation( 0.5 );
-
-            view.invalidate();
-            view.validate();
         }
         else {
             if ( jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
@@ -445,6 +357,9 @@ public class DualDiffManager {
      * Move to the next diff in the given EditPane.    
      */
     public static void nextDiff( EditPane editPane ) {
+        if ( editPane == null ) {
+            return ;
+        }
         DualDiff dualDiff = DualDiffManager.getDualDiffFor( editPane.getView() );
         if ( dualDiff == null ) {
             if ( jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
@@ -453,10 +368,10 @@ public class DualDiffManager {
             return ;
         }
 
-        if ( dualDiff.getEditPane0() == editPane ) {
+        if ( editPane.equals( dualDiff.getEditPane0() ) ) {
             dualDiff.nextDiff0();
         }
-        else if ( dualDiff.getEditPane1() == editPane ) {
+        else if ( editPane.equals( dualDiff.getEditPane1() ) ) {
             dualDiff.nextDiff1();
         }
         else {
@@ -470,6 +385,9 @@ public class DualDiffManager {
      * Move to the previous diff in the given EditPane.    
      */
     public static void prevDiff( EditPane editPane ) {
+        if ( editPane == null ) {
+            return ;
+        }
         DualDiff dualDiff = DualDiffManager.getDualDiffFor( editPane.getView() );
         if ( dualDiff == null ) {
             if ( jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
@@ -478,10 +396,10 @@ public class DualDiffManager {
             return ;
         }
 
-        if ( dualDiff.getEditPane0() == editPane ) {
+        if ( editPane.equals( dualDiff.getEditPane0() ) ) {
             dualDiff.prevDiff0();
         }
-        else if ( dualDiff.getEditPane1() == editPane ) {
+        else if ( editPane.equals( dualDiff.getEditPane1() ) ) {
             dualDiff.prevDiff1();
         }
         else {
@@ -495,6 +413,9 @@ public class DualDiffManager {
      * Moves the current diff hunk from the left text area to the right text area.    
      */
     public static void moveRight( EditPane editPane ) {
+        if ( editPane == null ) {
+            return ;
+        }
         DualDiff dualDiff = DualDiffManager.getDualDiffFor( editPane.getView() );
         if ( dualDiff == null ) {
             if ( jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
@@ -502,21 +423,26 @@ public class DualDiffManager {
             }
             return ;
         }
-        editPane = editPane.getView().getEditPanes() [ 0 ];
-        dualDiff.getDiffOverview0().moveRight( editPane.getTextArea().getCaretLine() );
+        if ( editPane.equals( dualDiff.getEditPane0() ) ) {
+            dualDiff.moveRight();
+        }
     }
 
     /**
      * Moves the current diff hunk from the right text area to the left text area.    
      */
     public static void moveLeft( EditPane editPane ) {
+        if ( editPane == null ) {
+            return ;
+        }
         DualDiff dualDiff = DualDiffManager.getDualDiffFor( editPane.getView() );
         if ( dualDiff == null ) {
             editPane.getToolkit().beep();
             return ;
         }
-        editPane = editPane.getView().getEditPanes() [ 1 ];
-        dualDiff.getDiffOverview0().moveLeft( editPane.getTextArea().getCaretLine() );
+        if ( editPane.equals( dualDiff.getEditPane1() ) ) {
+            dualDiff.moveLeft();
+        }
     }
 
     /**
@@ -629,6 +555,4 @@ public class DualDiffManager {
             JOptionPane.showMessageDialog( view, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE );
         }
     }
-
-
 }
