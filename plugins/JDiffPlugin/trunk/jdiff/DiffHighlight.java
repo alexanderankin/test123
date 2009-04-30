@@ -214,9 +214,7 @@ public class DiffHighlight extends TextAreaExtension {
 
 
     public static TextAreaExtension addHighlightTo( EditPane editPane, Diff.Change edits, Position position ) {
-        TextAreaExtension textAreaHighlight = new DiffHighlight(
-                    editPane.getTextArea(), edits, position
-                );
+        TextAreaExtension textAreaHighlight = new DiffHighlight(editPane.getTextArea(), edits, position);
         highlights.put( editPane, textAreaHighlight );
         return textAreaHighlight;
     }

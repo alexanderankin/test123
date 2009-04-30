@@ -42,6 +42,7 @@ import jdiff.util.ScrollHandler;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
@@ -54,33 +55,25 @@ import org.gjt.sp.jedit.textarea.TextAreaPainter;
 
 
 public class DualDiff implements EBComponent {
+    // diff options
     private boolean ignoreCase;
-
     private boolean trimWhitespace;
-
     private boolean ignoreAmountOfWhitespace;
-
     private boolean ignoreAllWhitespace;
 
-    private View view;
-
-    private EditPane editPane0;
-
-    private EditPane editPane1;
-
-    private JEditTextArea textArea0;
-
-    private JEditTextArea textArea1;
-
+    // the actual diffs
     private Diff.Change edits;
 
+    // gui objects this dual diff is acting on
+    private View view;
+    private EditPane editPane0;
+    private EditPane editPane1;
+    private JEditTextArea textArea0;
+    private JEditTextArea textArea1;
     private DiffOverview diffOverview0;
-
     private DiffOverview diffOverview1;
-
     private DiffLineOverview diffLineOverview;
-
-    private final ScrollHandler scrollHandler;
+    private ScrollHandler scrollHandler;
 
     protected DualDiff( View view ) {
         this( view, DualDiffUtil.ignoreCaseDefault, DualDiffUtil.trimWhitespaceDefault,
@@ -89,24 +82,24 @@ public class DualDiff implements EBComponent {
 
     protected DualDiff( View view, boolean ignoreCase, boolean trimWhitespace,
             boolean ignoreAmountOfWhiteSpace, boolean ignoreAllWhiteSpace ) {
+
+        // diff options
         this.ignoreCase = ignoreCase;
         this.trimWhitespace = trimWhitespace;
         this.ignoreAmountOfWhitespace = ignoreAmountOfWhiteSpace;
         this.ignoreAllWhitespace = ignoreAllWhiteSpace;
 
+        // gui objects
         this.view = view;
-
         EditPane[] editPanes = this.view.getEditPanes();
-
         this.editPane0 = editPanes[ 0 ];
         this.editPane1 = editPanes[ 1 ];
-
         this.textArea0 = this.editPane0.getTextArea();
         this.textArea1 = this.editPane1.getTextArea();
         scrollHandler = new ScrollHandler( this );
 
-        this.initOverviews();
-        this.addOverviews();
+        // initialize
+        refresh();
     }
 
     public EditPane getEditPane0() {
@@ -157,21 +150,19 @@ public class DualDiff implements EBComponent {
         else if ( message instanceof EditPaneUpdate ) {
             EditPaneUpdate epu = ( EditPaneUpdate ) message;
             EditPane editPane = epu.getEditPane();
-            View view = editPane.getView();
-            if ( !DualDiffManager.isEnabledFor( view ) ) {
+            if ( !view.equals( editPane.getView() ) ) {
+                // not my view
                 return ;
             }
-            if ( epu.getWhat() == EditPaneUpdate.CREATED ) {
-                DualDiffManager.editPaneCreated( view );
-            }
-            else if ( epu.getWhat() == EditPaneUpdate.DESTROYED ) {
-                DualDiffManager.editPaneDestroyed( view, editPane );
+            if ( epu.getWhat() == EditPaneUpdate.CREATED || epu.getWhat() == EditPaneUpdate.DESTROYED ) {
+                remove();
             }
             else if ( epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED ) {
-                DualDiffManager.editPaneBufferChanged( view );
+                refresh();
             }
         }
         else if ( message instanceof PropertiesChanged ) {
+            // update properties
             setIgnoreCase( jEdit.getBooleanProperty( "jdiff.ignore-case", false ) );
             setTrimWhitespace( jEdit.getBooleanProperty( "jdiff.trim-whitespace", false ) );
             setIgnoreAmountOfWhitespace( jEdit.getBooleanProperty( "jdiff.ignore-amount-whitespace", false ) );
@@ -181,7 +172,7 @@ public class DualDiff implements EBComponent {
     }
 
     public boolean getIgnoreCase() {
-        return this.ignoreCase;
+        return ignoreCase;
     }
 
     public void setIgnoreCase( boolean ignoreCase ) {
@@ -189,11 +180,11 @@ public class DualDiff implements EBComponent {
     }
 
     public void toggleIgnoreCase() {
-        this.ignoreCase = !this.ignoreCase;
+        ignoreCase = !ignoreCase;
     }
 
     public boolean getTrimWhitespace() {
-        return this.trimWhitespace;
+        return trimWhitespace;
     }
 
     public void setTrimWhitespace( boolean trimWhitespace ) {
@@ -201,11 +192,11 @@ public class DualDiff implements EBComponent {
     }
 
     public void toggleTrimWhitespace() {
-        this.trimWhitespace = !this.trimWhitespace;
+        trimWhitespace = !trimWhitespace;
     }
 
     public boolean getIgnoreAmountOfWhitespace() {
-        return this.ignoreAmountOfWhitespace;
+        return ignoreAmountOfWhitespace;
     }
 
     public void setIgnoreAmountOfWhitespace( boolean ignoreAmountOfWhitespace ) {
@@ -217,7 +208,7 @@ public class DualDiff implements EBComponent {
     }
 
     public boolean getIgnoreAllWhitespace() {
-        return this.ignoreAllWhitespace;
+        return ignoreAllWhitespace;
     }
 
     public void setIgnoreAllWhitespace( boolean ignoreAllWhitespace ) {
@@ -225,7 +216,7 @@ public class DualDiff implements EBComponent {
     }
 
     public void toggleIgnoreAllWhitespace() {
-        this.ignoreAllWhitespace = !this.ignoreAllWhitespace;
+        ignoreAllWhitespace = !ignoreAllWhitespace;
     }
 
     public void setDiffLineOverview( DiffLineOverview diffLineOverview ) {
@@ -236,8 +227,7 @@ public class DualDiff implements EBComponent {
         return diffLineOverview;
     }
 
-    // initialize the overviews and merge controls
-    private void initOverviews() {
+    private void installOverviews() {
         Buffer buf0 = this.editPane0.getBuffer();
         Buffer buf1 = this.editPane1.getBuffer();
 
@@ -256,106 +246,125 @@ public class DualDiff implements EBComponent {
             diffOverview1 = new DiffGlobalPhysicalOverview( this );
             diffLineOverview = new DiffLineOverview( this, view );
         }
-    }
-
-    private void addOverviews() {
         textArea0.addLeftOfScrollBar( diffOverview0 );
         textArea1.addLeftOfScrollBar( diffOverview1 );
+
         setDiffLineOverview( diffLineOverview );
     }
 
     // remove overviews and merge controls
     protected void removeOverviews() {
-        textArea0.removeLeftOfScrollBar( this.diffOverview0 );
-        textArea1.removeLeftOfScrollBar( this.diffOverview1 );
+        if ( textArea0 != null && diffOverview0 != null ) {
+            textArea0.removeLeftOfScrollBar( diffOverview0 );
+        }
+        if ( textArea1 != null && diffOverview1 != null ) {
+            textArea1.removeLeftOfScrollBar( diffOverview1 );
+        }
     }
 
+    // removes this DualDiff and reinstalls it
     protected void refresh() {
+        // remove
+        EditBus.removeFromBus( this );
         removeHandlers();
-        disableHighlighters();
-
+        removeHighlighters();
         removeOverviews();
-        initOverviews();
-        addOverviews();
 
-        enableHighlighters();
-        addHandlers();
+        // install
+        installOverviews();
+        installHighlighters();
+        installHandlers();
 
+        // reset overviews
         diffLineOverview.clear();
         DiffTextAreaModel taModel = new DiffTextAreaModel( this );
         diffOverview0.setModel( taModel );
         diffOverview0.synchroScrollRight();
         diffOverview1.setModel( taModel );
         diffOverview1.repaint();
+
+        EditBus.addToBus( this );
+
+        // make sure View divider is in the middle
+        SwingUtilities.invokeLater( new Runnable() {
+                    public void run() {
+                        JSplitPane sp = view.getSplitPane();
+                        if ( sp != null ) {
+                            sp.setDividerLocation( 0.5 );
+                        }
+                        view.invalidate();
+                        view.validate();
+                    }
+                }
+                                  );
     }
 
-    protected void enableHighlighters() {
-        DiffHighlight diffHighlight0 = ( DiffHighlight ) DiffHighlight
-                .getHighlightFor( this.editPane0 );
+    // removes this DualDiff from our View
+    protected void remove() {
+        EditBus.removeFromBus( this );
+        removeOverviews();
+        removeHighlighters();
+        removeHandlers();
+        getDiffLineOverview().setModel( null );
+        DualDiffManager.removeFrom( view );
+    }
 
+    private void installHighlighters() {
+        DiffHighlight diffHighlight0 = ( DiffHighlight ) DiffHighlight.getHighlightFor( editPane0 );
         if ( diffHighlight0 == null ) {
-            diffHighlight0 = ( DiffHighlight ) DiffHighlight.addHighlightTo(
-                        this.editPane0, this.edits, DiffHighlight.LEFT );
-            this.textArea0.getPainter().addExtension(
-                TextAreaPainter.BELOW_SELECTION_LAYER, diffHighlight0 );
+            diffHighlight0 = ( DiffHighlight ) DiffHighlight.addHighlightTo( editPane0, edits, DiffHighlight.LEFT );
+            textArea0.getPainter().addExtension( TextAreaPainter.BELOW_SELECTION_LAYER, diffHighlight0 );
         }
         else {
-            diffHighlight0.setEdits( this.edits );
+            diffHighlight0.setEdits( edits );
             diffHighlight0.setPosition( DiffHighlight.LEFT );
         }
-
-        DiffHighlight diffHighlight1 = ( DiffHighlight ) DiffHighlight
-                .getHighlightFor( this.editPane1 );
-
-        if ( diffHighlight1 == null ) {
-            diffHighlight1 = ( DiffHighlight ) DiffHighlight.addHighlightTo(
-                        this.editPane1, this.edits, DiffHighlight.RIGHT );
-            this.textArea1.getPainter().addExtension(
-                TextAreaPainter.BELOW_SELECTION_LAYER, diffHighlight1 );
-        }
-        else {
-            diffHighlight1.setEdits( this.edits );
-            diffHighlight1.setPosition( DiffHighlight.RIGHT );
-        }
-
         diffHighlight0.setEnabled( true );
         diffHighlight0.updateTextArea();
+
+        DiffHighlight diffHighlight1 = ( DiffHighlight ) DiffHighlight.getHighlightFor( editPane1 );
+        if ( diffHighlight1 == null ) {
+            diffHighlight1 = ( DiffHighlight ) DiffHighlight.addHighlightTo( editPane1, edits, DiffHighlight.RIGHT );
+            textArea1.getPainter().addExtension( TextAreaPainter.BELOW_SELECTION_LAYER, diffHighlight1 );
+        }
+        else {
+            diffHighlight1.setEdits( edits );
+            diffHighlight1.setPosition( DiffHighlight.RIGHT );
+        }
         diffHighlight1.setEnabled( true );
         diffHighlight1.updateTextArea();
     }
 
-    protected void disableHighlighters() {
-        DiffHighlight diffHighlight0 = ( DiffHighlight ) DiffHighlight
-                .getHighlightFor( this.editPane0 );
-
+    protected void removeHighlighters() {
+        DiffHighlight diffHighlight0 = ( DiffHighlight ) DiffHighlight.getHighlightFor( editPane0 );
         if ( diffHighlight0 != null ) {
             diffHighlight0.setEnabled( false );
             diffHighlight0.updateTextArea();
+            DiffHighlight.removeHighlightFrom( editPane0 );
         }
 
-        DiffHighlight diffHighlight1 = ( DiffHighlight ) DiffHighlight
-                .getHighlightFor( this.editPane1 );
-
+        DiffHighlight diffHighlight1 = ( DiffHighlight ) DiffHighlight.getHighlightFor( editPane1 );
         if ( diffHighlight1 != null ) {
             diffHighlight1.setEnabled( false );
             diffHighlight1.updateTextArea();
+            DiffHighlight.removeHighlightFrom( editPane1 );
         }
     }
 
-    protected void addHandlers() {
-        this.textArea0.addScrollListener( this.scrollHandler );
-        this.textArea0.addFocusListener( this.scrollHandler );
+    protected void installHandlers() {
+        textArea0.addScrollListener( scrollHandler );
+        textArea0.addFocusListener( scrollHandler );
 
-        this.textArea1.addScrollListener( this.scrollHandler );
-        this.textArea1.addFocusListener( this.scrollHandler );
+        textArea1.addScrollListener( scrollHandler );
+        textArea1.addFocusListener( scrollHandler );
     }
 
     protected void removeHandlers() {
-        this.textArea0.removeScrollListener( this.scrollHandler );
-        this.textArea0.removeFocusListener( this.scrollHandler );
+        textArea0.removeScrollListener( scrollHandler );
+        textArea0.removeFocusListener( scrollHandler );
 
-        this.textArea1.removeScrollListener( this.scrollHandler );
-        this.textArea1.removeFocusListener( this.scrollHandler );
+        textArea1.removeScrollListener( scrollHandler );
+        textArea1.removeFocusListener( scrollHandler );
     }
 
     public Font getFont() {
@@ -481,8 +490,8 @@ public class DualDiff implements EBComponent {
                 // go to start of current hunk.  If caret line is after end of
                 // current hunk, but before the next hunk, go to start of current
                 // hunk.
-                if ( hunk.first0 + hunk.lines0 > caretLine ||       // NOPMD caret is in current hunk
-                        hunk.next == null ||                        // caret is after last hunk
+                if ( hunk.first0 + hunk.lines0 > caretLine ||               // NOPMD caret is in current hunk
+                        hunk.next == null ||                                // caret is after last hunk
                         hunk.next.first0 >= caretLine ) {         // caret is before next hunk
                     int line = hunk.first0;      // first line of diff hunk
 
@@ -542,8 +551,8 @@ public class DualDiff implements EBComponent {
                 // go to start of current hunk.  If caret line is after end of
                 // current hunk, but before current hunk, go to start of current
                 // hunk.
-                if ( hunk.first1 + hunk.lines1 > caretLine ||      // NOPMD caret is in current hunk
-                        hunk.next == null ||                        // caret is after last hunk
+                if ( hunk.first1 + hunk.lines1 > caretLine ||              // NOPMD caret is in current hunk
+                        hunk.next == null ||                                // caret is after last hunk
                         hunk.next.first1 >= caretLine ) {         // caret is before next hunk
                     int line = hunk.first1;      // first line of hunk
 
@@ -592,5 +601,13 @@ public class DualDiff implements EBComponent {
         if ( jEdit.getBooleanProperty( DualDiffManager.BEEP_ON_ERROR ) ) {
             this.textArea1.getToolkit().beep();
         }
+    }
+
+    protected void moveRight() {
+        diffOverview0.moveRight( textArea0.getCaretLine() );
+    }
+
+    protected void moveLeft() {
+        diffOverview1.moveLeft( textArea1.getCaretLine() );
     }
 }
