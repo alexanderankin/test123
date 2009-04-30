@@ -8,7 +8,6 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBPlugin;
-import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.View;
 
 import org.gjt.sp.jedit.buffer.FoldHandler;
@@ -17,7 +16,7 @@ import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.EditorExitRequested;
 
-import org.gjt.sp.util.Log;
+//import org.gjt.sp.util.Log;
 
 /**
  * This plugin stores buffer-local properties in a file and restores those
@@ -25,16 +24,16 @@ import org.gjt.sp.util.Log;
  * separated string:
  * <ul>
  * <li>Line separator string, values n, r, rn
- * <li>getStringProperty("lineSeparator") Character encoding string
+ * <li>getStringProperty("lineSeparator")        Character encoding string
  * <li>buffer.getStringProperty(Buffer.ENCODING) gzip on disk boolean, values t, f
  * <li>buffer.getBooleanProperty(Buffer.GZIPPED) edit mode string
- * <li>buffer.getMode().getName() fold mode string
- * <li>buffer.getFoldHandler().getName() word wrap string
- * <li>buffer.getStringProperty("wrap"); wrap width int
- * <li>buffer.getIntProperty("maxLineLength"); tab width int
- * <li>buffer.getIntProperty("tabSize") indent width int
- * <li>buffer.getIntProperty("indentSize") soft tabs boolean, t = soft tabs, f =hard tabs
- * <li>buffer.getBooleanProperty("noTabs")
+ * <li>buffer.getMode().getName()                edit mode string
+ * <li>buffer.getFoldHandler().getName()         fold mode string
+ * <li>buffer.getStringProperty("wrap");         word wrap string
+ * <li>buffer.getIntProperty("maxLineLength");   wrap width int
+ * <li>buffer.getIntProperty("tabSize")          tab width int
+ * <li>buffer.getIntProperty("indentSize")       indent width int
+ * <li>buffer.getBooleanProperty("noTabs")       soft tabs boolean, t = soft tabs, f = hard tabs
  * </ul>
  * <p>
  * example:n|ISO-8859-1|f|java|indent|none|76|3|3|t
@@ -80,7 +79,7 @@ public class BufferLocalPlugin extends EBPlugin {
                                     map.remove( it.next() );
                                 }
                             }
-                            catch ( Exception e ) {
+                            catch ( Exception e ) {     // NOPMD
                                 // ignored
                             }
                         }
@@ -159,7 +158,7 @@ public class BufferLocalPlugin extends EBPlugin {
                 map.load( in );
                 in.close();
             }
-            catch ( Exception e ) {
+            catch ( Exception e ) {     // NOPMD
                 // ignored, don't worry about what doesn't work
             }
         }
@@ -187,7 +186,7 @@ public class BufferLocalPlugin extends EBPlugin {
                 out.close();
             }
         }
-        catch ( Exception e ) {
+        catch ( Exception e ) {     // NOPMD
             // ignored
         }
     }
@@ -205,10 +204,10 @@ public class BufferLocalPlugin extends EBPlugin {
             Object what = bu.getWhat();
             Buffer buffer = bu.getBuffer();
             String file = buffer.getPath();
-            Log.log(Log.DEBUG, this, "+++++ file: " + file);
+            //Log.log(Log.DEBUG, this, "+++++ file: " + file);
             if ( BufferUpdate.LOADED.equals( what ) || BufferUpdate.SAVED.equals( what ) ) {
                 String props = map.getProperty( file );
-                Log.log(Log.DEBUG, this, "+++++ props: " + props);
+                //Log.log(Log.DEBUG, this, "+++++ props: " + props);
                 if ( props != null ) {
                     // parse the stored properties
                     String[] tokens = props.split( "[\\|]" );
@@ -402,15 +401,15 @@ public class BufferLocalPlugin extends EBPlugin {
         else {
             prop.append( "rn|" );
         }
-        prop.append( enc ).append( "|" );
+        prop.append( enc ).append( '|' );
         prop.append( gz ? "t|" : "f|" );
-        prop.append( em ).append( "|" );
-        prop.append( fm ).append( "|" );
-        prop.append( wm ).append( "|" );
-        prop.append( String.valueOf( ll ) ).append( "|" );
-        prop.append( String.valueOf( tw ) ).append( "|" );
-        prop.append( String.valueOf( iw ) ).append( "|" );
-        prop.append( tabs ? "t" : "f" );
+        prop.append( em ).append( '|' );
+        prop.append( fm ).append( '|' );
+        prop.append( wm ).append( '|' );
+        prop.append( String.valueOf( ll ) ).append( '|' );
+        prop.append( String.valueOf( tw ) ).append( '|' );
+        prop.append( String.valueOf( iw ) ).append( '|' );
+        prop.append( tabs ? 't' : 'f' );
 
         return prop.toString();
     }
@@ -497,10 +496,10 @@ public class BufferLocalPlugin extends EBPlugin {
          * @return   Description of the Returned Value
          */
         public String toString() {
-            StringBuffer sb = new StringBuffer();
+            StringBuffer sb = new StringBuffer(50);
             sb.append( "BufferReference[" );
-            sb.append( buffer.getPath() ).append( "," );
-            sb.append( viewed.getTime().toString() ).append( "]" );
+            sb.append( buffer.getPath() ).append( ',' );
+            sb.append( viewed.getTime().toString() ).append( ']' );
             return sb.toString();
         }
     }
