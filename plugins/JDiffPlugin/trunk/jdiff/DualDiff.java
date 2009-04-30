@@ -101,35 +101,35 @@ public class DualDiff implements EBComponent {
         // initialize
         refresh();
     }
-    
+
     /**
      * @return the left EditPane    
      */
     public EditPane getEditPane0() {
         return editPane0;
     }
-    
+
     /**
      * @return the right EditPane    
      */
     public EditPane getEditPane1() {
         return editPane1;
     }
-    
+
     /**
      * @return the left text area    
      */
     public TextArea getTextArea0() {
         return textArea0;
     }
-    
+
     /**
      * @return the right text area
      */
     public TextArea getTextArea1() {
         return textArea1;
     }
-    
+
     /**
      * @return the DiffOverview for the left text area    
      */
@@ -143,29 +143,29 @@ public class DualDiff implements EBComponent {
     public DiffOverview getDiffOverview1() {
         return diffOverview1;
     }
-    
+
     /**
      * This is called only from dockables.xml.
      * @return the line diff dockable    
      */
     public DiffLineOverview getDiffLineOverview() {
-        return diffLineOverview;   
+        return diffLineOverview;
     }
-    
+
     /**
      * @return the View that this DualDiff is acting on.    
      */
     public View getView() {
         return view;
     }
-    
+
     /**
      * @return the diffs found between the left and right text areas.    
      */
     public Diff.Change getEdits() {
         return edits;
     }
-    
+
     /**
      * Handle messages from the EditBus.    
      */
@@ -174,7 +174,7 @@ public class DualDiff implements EBComponent {
             BufferUpdate bu = ( BufferUpdate ) message;
             Buffer b0 = ( Buffer ) textArea0.getBuffer();
             Buffer b1 = ( Buffer ) textArea1.getBuffer();
-            if ( b0.equals(bu.getBuffer()) || bu.getBuffer() != b1 ) {
+            if ( !b0.equals( bu.getBuffer() ) && !b1.equals( bu.getBuffer() ) ) {
                 // not my buffers
                 return ;
             }
@@ -400,7 +400,7 @@ public class DualDiff implements EBComponent {
     public Font getFont() {
         return textArea0.getPainter().getFont();
     }
-    
+
     /**
      * Provided so other components can use the background color of the
      * text area to paint themselves with the appropriate color.
@@ -525,8 +525,8 @@ public class DualDiff implements EBComponent {
                 // go to start of current hunk.  If caret line is after end of
                 // current hunk, but before the next hunk, go to start of current
                 // hunk.
-                if ( hunk.first0 + hunk.lines0 > caretLine ||               // NOPMD caret is in current hunk
-                        hunk.next == null ||                                // caret is after last hunk
+                if ( hunk.first0 + hunk.lines0 > caretLine ||                // NOPMD caret is in current hunk
+                        hunk.next == null ||                                 // caret is after last hunk
                         hunk.next.first0 >= caretLine ) {         // caret is before next hunk
                     int line = hunk.first0;      // first line of diff hunk
 
@@ -586,8 +586,8 @@ public class DualDiff implements EBComponent {
                 // go to start of current hunk.  If caret line is after end of
                 // current hunk, but before current hunk, go to start of current
                 // hunk.
-                if ( hunk.first1 + hunk.lines1 > caretLine ||              // NOPMD caret is in current hunk
-                        hunk.next == null ||                                // caret is after last hunk
+                if ( hunk.first1 + hunk.lines1 > caretLine ||               // NOPMD caret is in current hunk
+                        hunk.next == null ||                                 // caret is after last hunk
                         hunk.next.first1 >= caretLine ) {         // caret is before next hunk
                     int line = hunk.first1;      // first line of hunk
 
