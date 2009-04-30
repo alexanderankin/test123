@@ -1,24 +1,24 @@
 <project name="BufferLocal" default="dist" basedir=".">
     <!-- $Id$ -->
-    
+
     <!-- read build.props to override properties set below -->
     <property file="build.props"/>
 
     <!-- default location of jedit.jar -->
-    <property name="jedit.install.dir"  value="../.."/> 
-    
+    <property name="jedit.install.dir"  value="../.."/>
+
     <!-- jar name -->
     <property name="jar.name" value="BufferLocal.jar"/>
-    
+
     <!-- version number -->
     <property name="build.num" value="1.2.4"/>
-        
+
     <!-- where to put the finished plugin -->
     <property name="install.dir" value=".." />
-    
+
     <!-- source code directory, this is where the .java files live -->
     <property name="src.dir" location="src" />
-    
+
     <!-- configuration directory, this is where the configuration files for the
       plugin are placed for additional processing prior to getting jarred. -->
     <property name="config.dir" location="config" />
@@ -30,17 +30,24 @@
     <!-- the directory for the compiled classes. Files in this directory will be
       included in the finished jar file. -->
     <property name="classes.dir" location="classes" />
-    
-    
+
+    <condition property="can.reload.plugins">
+        <and>
+            <available classname="org.gjt.sp.jedit.jEdit"/>
+            <available classname="ReloadPluginTask"/>
+        </and>
+    </condition>
+
+
    <!-- ========================================================================
       Target: set classpath
    ========================================================================= -->
-   <target name="setClasspath">  
+   <target name="setClasspath">
       <path id="classpathref">
          <!-- required locations/jars -->
          <pathelement location="${classes.dir}" />
          <pathelement path="${java.class.path}"/>
-         
+
          <!-- required for jEdit plugin -->
          <pathelement location="${jedit.install.dir}/jedit.jar" />
       </path>
@@ -52,15 +59,15 @@
     <target name="compile"
             description="Compile"
             depends="init,setClasspath">
-        <javac deprecation="on" 
-               debug="on" 
-               nowarn="on" 
+        <javac deprecation="on"
+               debug="on"
+               nowarn="on"
                destdir="${classes.dir}"
                srcdir="${src.dir}">
             <classpath refid="classpathref" />
         </javac>
     </target>
-    
+
    <!-- ========================================================================
       Target: dist
       creates jar file suitable for dropping into jEdit, and puts it up one
@@ -69,8 +76,8 @@
     <target name="dist"
             description="Compiles, jars, puts the jar in the jEdit jars directory."
             depends="init,clean,compile,prep_files">
-        
-        
+
+
         <!-- make the plugin jar file -->
         <tstamp/>
         <jar jarfile="${install.dir}/${jar.name}">
@@ -97,12 +104,20 @@
                 <include name="**/*" />
             </fileset>
         </jar>
-        
+
+        <antcall target="reload"/>
+
+    </target>
+
+    <target name="reload" if="can.reload.plugins">
+        <echo>Reloading ${install.dir}/${ant.project.name}.jar</echo>
+        <taskdef name="reloadPlugin" classname="ReloadPluginTask"/>
+        <reloadPlugin jarfile="${install.dir}/${jar.name}"/>
     </target>
 
    <!-- ========================================================================
       Target: prep_files
-      prepares certain files for distribution by doing string replacement. 
+      prepares certain files for distribution by doing string replacement.
       Assumes that the configuration files and documentation files are ready.
    ========================================================================= -->
     <target name="prep_files">
@@ -135,7 +150,7 @@
         <replace dir="${doc.dir}" token="@@tstamp@@"
             value="${TODAY}" />
     </target>
-   
+
    <!-- ========================================================================
       Target: clean
       deletes all files from the build directory
@@ -145,19 +160,19 @@
          <fileset dir="${classes.dir}" includes="**/*" />
       </delete>
    </target>
-   
+
    <!-- ========================================================================
       Target: init
       this target creates the directories needed for this project and
       only needs to be done once.
    ========================================================================= -->
-    <target name="init" 
+    <target name="init"
             description="Create directory structure.">
         <fail unless="jedit.install.dir" message="Please set jedit.install.dir property."/>
         <mkdir dir="${src.dir}" />
         <mkdir dir="${classes.dir}" />
-        <mkdir dir="${doc.dir}" />          
+        <mkdir dir="${doc.dir}" />
         <mkdir dir="${config.dir}" />
     </target>
-    
+
 </project>
