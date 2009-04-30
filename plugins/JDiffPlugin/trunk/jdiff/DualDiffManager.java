@@ -15,11 +15,11 @@ import jdiff.util.*;
 import jdiff.util.patch.*;
 
 /**
- * The DualDiffManager provides the API to handle DualDiffs with only knowing 
- * the View and adjusting the diff settings globally for all DualDiffs.  Each 
- * View may have at most 1 DualDiff.  This class provides some convenience 
+ * The DualDiffManager provides the API to handle DualDiffs with only knowing
+ * the View and adjusting the diff settings globally for all DualDiffs.  Each
+ * View may have at most 1 DualDiff.  This class provides some convenience
  * methods for finding a DualDiff and acting on it.  This class does not act
- * on Views or EditPane, rather, it delegates to the DualDiff for such work. 
+ * on Views or EditPane, rather, it delegates to the DualDiff for such work.
  */
 public class DualDiffManager {
 
@@ -67,7 +67,7 @@ public class DualDiffManager {
     }
 
     /**
-     * TODO: check if some of this method should move to DualDiff 
+     * TODO: check if some of this method should move to DualDiff
      * Removes a DualDiff from the given View.
      */
     public static void removeFrom( View view ) {
@@ -244,7 +244,7 @@ public class DualDiffManager {
     }
 
     /**
-     * @return The diff ignoreCase setting for the given View.    
+     * @return The diff ignoreCase setting for the given View.
      */
     public static boolean getIgnoreCaseFor( View view ) {
         DualDiff dualDiff = DualDiffManager.getDualDiffFor( view );
@@ -255,7 +255,7 @@ public class DualDiffManager {
     }
 
     /**
-     * Toggle the diff ignoreCase setting for the given view.    
+     * Toggle the diff ignoreCase setting for the given view.
      */
     public static void toggleIgnoreCaseFor( View view ) {
         DualDiff dualDiff = DualDiffManager.getDualDiffFor( view );
@@ -271,7 +271,7 @@ public class DualDiffManager {
     }
 
     /**
-     * @return The diff trimWhitespace setting for the given View.    
+     * @return The diff trimWhitespace setting for the given View.
      */
     public static boolean getTrimWhitespaceFor( View view ) {
         DualDiff dualDiff = DualDiffManager.getDualDiffFor( view );
@@ -283,7 +283,7 @@ public class DualDiffManager {
     }
 
     /**
-     * Toggle the diff trimWhitespace setting for the given View.    
+     * Toggle the diff trimWhitespace setting for the given View.
      */
     public static void toggleTrimWhitespaceFor( View view ) {
         DualDiff dualDiff = DualDiffManager.getDualDiffFor( view );
@@ -299,7 +299,7 @@ public class DualDiffManager {
     }
 
     /**
-     * @return The diff ignoreAmountOfWhitepace setting for the given View.    
+     * @return The diff ignoreAmountOfWhitepace setting for the given View.
      */
     public static boolean getIgnoreAmountOfWhitespaceFor( View view ) {
         DualDiff dualDiff = DualDiffManager.getDualDiffFor( view );
@@ -310,7 +310,7 @@ public class DualDiffManager {
     }
 
     /**
-     * Toggle the diff ignoreAmountOfWhitespace for the given View.    
+     * Toggle the diff ignoreAmountOfWhitespace for the given View.
      */
     public static void toggleIgnoreAmountOfWhitespaceFor( View view ) {
         DualDiff dualDiff = DualDiffManager.getDualDiffFor( view );
@@ -326,7 +326,7 @@ public class DualDiffManager {
     }
 
     /**
-     * @return The diff ignoreAllWhitespace setting for the given View.    
+     * @return The diff ignoreAllWhitespace setting for the given View.
      */
     public static boolean getIgnoreAllWhitespaceFor( View view ) {
         DualDiff dualDiff = DualDiffManager.getDualDiffFor( view );
@@ -337,7 +337,7 @@ public class DualDiffManager {
     }
 
     /**
-     * Toggle the diff ignoreAllWhitespace setting for the given View.    
+     * Toggle the diff ignoreAllWhitespace setting for the given View.
      */
     public static void toggleIgnoreAllWhitespaceFor( View view ) {
         DualDiff dualDiff = DualDiffManager.getDualDiffFor( view );
@@ -353,7 +353,7 @@ public class DualDiffManager {
     }
 
     /**
-     * Move to the next diff in the given EditPane.    
+     * Move to the next diff in the given EditPane.
      */
     public static void nextDiff( EditPane editPane ) {
         if ( editPane == null ) {
@@ -381,7 +381,7 @@ public class DualDiffManager {
     }
 
     /**
-     * Move to the previous diff in the given EditPane.    
+     * Move to the previous diff in the given EditPane.
      */
     public static void prevDiff( EditPane editPane ) {
         if ( editPane == null ) {
@@ -409,7 +409,7 @@ public class DualDiffManager {
     }
 
     /**
-     * Moves the current diff hunk from the left text area to the right text area.    
+     * Moves the current diff hunk from the left text area to the right text area.
      */
     public static void moveRight( EditPane editPane ) {
         if ( editPane == null ) {
@@ -423,12 +423,12 @@ public class DualDiffManager {
             return ;
         }
         if ( editPane.equals( dualDiff.getEditPane0() ) ) {
-            dualDiff.moveRight();
+            dualDiff.moveRight(editPane.getTextArea().getCaretLine());
         }
     }
 
     /**
-     * Moves the current diff hunk from the right text area to the left text area.    
+     * Moves the current diff hunk from the right text area to the left text area.
      */
     public static void moveLeft( EditPane editPane ) {
         if ( editPane == null ) {
@@ -440,7 +440,7 @@ public class DualDiffManager {
             return ;
         }
         if ( editPane.equals( dualDiff.getEditPane1() ) ) {
-            dualDiff.moveLeft();
+            dualDiff.moveLeft(editPane.getTextArea().getCaretLine());
         }
     }
 
