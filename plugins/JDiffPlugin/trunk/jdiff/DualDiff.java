@@ -101,46 +101,81 @@ public class DualDiff implements EBComponent {
         // initialize
         refresh();
     }
-
+    
+    /**
+     * @return the left EditPane    
+     */
     public EditPane getEditPane0() {
         return editPane0;
     }
-
+    
+    /**
+     * @return the right EditPane    
+     */
     public EditPane getEditPane1() {
         return editPane1;
     }
-
+    
+    /**
+     * @return the left text area    
+     */
     public TextArea getTextArea0() {
         return textArea0;
     }
-
+    
+    /**
+     * @return the right text area
+     */
     public TextArea getTextArea1() {
         return textArea1;
     }
-
+    
+    /**
+     * @return the DiffOverview for the left text area    
+     */
     public DiffOverview getDiffOverview0() {
         return diffOverview0;
     }
 
+    /**
+     * @return the DiffOverview for the right text area    
+     */
     public DiffOverview getDiffOverview1() {
         return diffOverview1;
     }
-
+    
+    /**
+     * This is called only from dockables.xml.
+     * @return the line diff dockable    
+     */
+    public DiffLineOverview getDiffLineOverview() {
+        return diffLineOverview;   
+    }
+    
+    /**
+     * @return the View that this DualDiff is acting on.    
+     */
     public View getView() {
         return view;
     }
-
+    
+    /**
+     * @return the diffs found between the left and right text areas.    
+     */
     public Diff.Change getEdits() {
         return edits;
     }
-
+    
+    /**
+     * Handle messages from the EditBus.    
+     */
     public void handleMessage( EBMessage message ) {
         if ( message instanceof BufferUpdate ) {
             BufferUpdate bu = ( BufferUpdate ) message;
             Buffer b0 = ( Buffer ) textArea0.getBuffer();
             Buffer b1 = ( Buffer ) textArea1.getBuffer();
-            if ( bu.getBuffer() != b0 && bu.getBuffer() != b1 ) {
-                // Not concerned by this message
+            if ( b0.equals(bu.getBuffer()) || bu.getBuffer() != b1 ) {
+                // not my buffers
                 return ;
             }
             if ( bu.getWhat() == BufferUpdate.LOADED || bu.getWhat() == BufferUpdate.SAVED || bu.getWhat() == BufferUpdate.DIRTY_CHANGED ) {
@@ -219,50 +254,7 @@ public class DualDiff implements EBComponent {
         ignoreAllWhitespace = !ignoreAllWhitespace;
     }
 
-    public void setDiffLineOverview( DiffLineOverview diffLineOverview ) {
-        this.diffLineOverview = diffLineOverview;
-    }
-
-    public DiffLineOverview getDiffLineOverview() {
-        return diffLineOverview;
-    }
-
-    private void installOverviews() {
-        Buffer buf0 = editPane0.getBuffer();
-        Buffer buf1 = editPane1.getBuffer();
-
-        if ( !buf0.isLoaded() || !buf1.isLoaded() ) {
-            edits = null;
-            diffOverview0 = new DiffLocalOverview( this );
-            diffOverview1 = new DiffGlobalPhysicalOverview( this );
-        }
-        else {
-            FileLine[] fileLines0 = DualDiffUtil.getFileLines( this, buf0 );
-            FileLine[] fileLines1 = DualDiffUtil.getFileLines( this, buf1 );
-
-            Diff d = new Diff( fileLines0, fileLines1 );
-            edits = d.diff_2();
-            diffOverview0 = new DiffLocalOverview( this );
-            diffOverview1 = new DiffGlobalPhysicalOverview( this );
-            diffLineOverview = new DiffLineOverview( this, view );
-        }
-        textArea0.addLeftOfScrollBar( diffOverview0 );
-        textArea1.addLeftOfScrollBar( diffOverview1 );
-
-        setDiffLineOverview( diffLineOverview );
-    }
-
-    // remove overviews and merge controls
-    protected void removeOverviews() {
-        if ( textArea0 != null && diffOverview0 != null ) {
-            textArea0.removeLeftOfScrollBar( diffOverview0 );
-        }
-        if ( textArea1 != null && diffOverview1 != null ) {
-            textArea1.removeLeftOfScrollBar( diffOverview1 );
-        }
-    }
-
-    // removes this DualDiff and reinstalls it
+    // reinstalls this DualDiff for the same View
     protected void refresh() {
         // remove
         EditBus.removeFromBus( this );
@@ -300,13 +292,46 @@ public class DualDiff implements EBComponent {
     }
 
     // removes this DualDiff from our View
-    protected void remove() {
+    private void remove() {
         EditBus.removeFromBus( this );
         removeOverviews();
         removeHighlighters();
         removeHandlers();
-        getDiffLineOverview().setModel( null );
+        diffLineOverview.setModel( null );
         DualDiffManager.removeFrom( view );
+    }
+
+    private void installOverviews() {
+        Buffer buf0 = editPane0.getBuffer();
+        Buffer buf1 = editPane1.getBuffer();
+
+        if ( !buf0.isLoaded() || !buf1.isLoaded() ) {
+            edits = null;
+            diffOverview0 = new DiffLocalOverview( this );
+            diffOverview1 = new DiffGlobalPhysicalOverview( this );
+        }
+        else {
+            FileLine[] fileLines0 = DualDiffUtil.getFileLines( this, buf0 );
+            FileLine[] fileLines1 = DualDiffUtil.getFileLines( this, buf1 );
+
+            Diff d = new Diff( fileLines0, fileLines1 );
+            edits = d.diff_2();
+            diffOverview0 = new DiffLocalOverview( this );
+            diffOverview1 = new DiffGlobalPhysicalOverview( this );
+            diffLineOverview = new DiffLineOverview( this, view );
+        }
+        textArea0.addLeftOfScrollBar( diffOverview0 );
+        textArea1.addLeftOfScrollBar( diffOverview1 );
+    }
+
+    // remove overviews and merge controls
+    private void removeOverviews() {
+        if ( textArea0 != null && diffOverview0 != null ) {
+            textArea0.removeLeftOfScrollBar( diffOverview0 );
+        }
+        if ( textArea1 != null && diffOverview1 != null ) {
+            textArea1.removeLeftOfScrollBar( diffOverview1 );
+        }
     }
 
     private void installHighlighters() {
@@ -335,7 +360,7 @@ public class DualDiff implements EBComponent {
         diffHighlight1.updateTextArea();
     }
 
-    protected void removeHighlighters() {
+    private void removeHighlighters() {
         DiffHighlight diffHighlight0 = ( DiffHighlight ) DiffHighlight.getHighlightFor( editPane0 );
         if ( diffHighlight0 != null ) {
             diffHighlight0.setEnabled( false );
@@ -351,7 +376,7 @@ public class DualDiff implements EBComponent {
         }
     }
 
-    protected void installHandlers() {
+    private void installHandlers() {
         textArea0.addScrollListener( scrollHandler );
         textArea0.addFocusListener( scrollHandler );
 
@@ -359,7 +384,7 @@ public class DualDiff implements EBComponent {
         textArea1.addFocusListener( scrollHandler );
     }
 
-    protected void removeHandlers() {
+    private void removeHandlers() {
         textArea0.removeScrollListener( scrollHandler );
         textArea0.removeFocusListener( scrollHandler );
 
@@ -367,10 +392,20 @@ public class DualDiff implements EBComponent {
         textArea1.removeFocusListener( scrollHandler );
     }
 
+    /**
+     * Provided so other components can use the font of the
+     * text area in their own display.
+     * @return the font of the left text area.
+     */
     public Font getFont() {
         return textArea0.getPainter().getFont();
     }
-
+    
+    /**
+     * Provided so other components can use the background color of the
+     * text area to paint themselves with the appropriate color.
+     * @return the background color of the left text area.
+     */
     public Color getBackground() {
         return textArea0.getPainter().getBackground();
     }

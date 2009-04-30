@@ -179,7 +179,6 @@ public class DualDiffManager {
         Runnable r = new Runnable() {
                     public void run() {
                         // remember split configuration so it can be restored later
-                        // and caret positions
                         String splitConfig = view.getSplitConfig();
                         if ( splitConfig != null ) {
                             splitConfigs.put( view, splitConfig );
