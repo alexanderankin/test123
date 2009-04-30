@@ -137,14 +137,14 @@ public class DualDiff implements EBComponent {
     public void handleMessage( EBMessage message ) {
         if ( message instanceof BufferUpdate ) {
             BufferUpdate bu = ( BufferUpdate ) message;
-            Buffer b0 = ( Buffer ) this.textArea0.getBuffer();
-            Buffer b1 = ( Buffer ) this.textArea1.getBuffer();
+            Buffer b0 = ( Buffer ) textArea0.getBuffer();
+            Buffer b1 = ( Buffer ) textArea1.getBuffer();
             if ( bu.getBuffer() != b0 && bu.getBuffer() != b1 ) {
                 // Not concerned by this message
                 return ;
             }
             if ( bu.getWhat() == BufferUpdate.LOADED || bu.getWhat() == BufferUpdate.SAVED || bu.getWhat() == BufferUpdate.DIRTY_CHANGED ) {
-                this.refresh();
+                refresh();
             }
         }
         else if ( message instanceof EditPaneUpdate ) {
@@ -204,7 +204,7 @@ public class DualDiff implements EBComponent {
     }
 
     public void toggleIgnoreAmountOfWhitespace() {
-        this.ignoreAmountOfWhitespace = !this.ignoreAmountOfWhitespace;
+        ignoreAmountOfWhitespace = !ignoreAmountOfWhitespace;
     }
 
     public boolean getIgnoreAllWhitespace() {
@@ -228,8 +228,8 @@ public class DualDiff implements EBComponent {
     }
 
     private void installOverviews() {
-        Buffer buf0 = this.editPane0.getBuffer();
-        Buffer buf1 = this.editPane1.getBuffer();
+        Buffer buf0 = editPane0.getBuffer();
+        Buffer buf1 = editPane1.getBuffer();
 
         if ( !buf0.isLoaded() || !buf1.isLoaded() ) {
             edits = null;
@@ -376,8 +376,8 @@ public class DualDiff implements EBComponent {
     }
 
     protected void nextDiff0() {
-        Diff.Change hunk = this.edits;
-        int caretLine = this.textArea0.getCaretLine();
+        Diff.Change hunk = edits;
+        int caretLine = textArea0.getCaretLine();
         for ( ; hunk != null; hunk = hunk.next ) {
             if ( hunk.first0 > caretLine + ( ( hunk.lines0 == 0 ) ? 1 : 0 ) ) {
                 int line = hunk.first0;
@@ -401,36 +401,36 @@ public class DualDiff implements EBComponent {
                 // move caret in other text area to start of diff hunk
                 // and scroll to it
                 caret_position = textArea1.getLineStartOffset( hunk.first1 );
-                this.textArea1.setCaretPosition( caret_position, false );
-                this.textArea1.setFirstLine( hunk.first1 - distance );
+                textArea1.setCaretPosition( caret_position, false );
+                textArea1.setFirstLine( hunk.first1 - distance );
 
                 // maybe move the caret to the first actual diff character
                 if ( jEdit.getBooleanProperty( DualDiffManager.HORIZ_SCROLL ) ) {
-                    DualDiffUtil.centerOnDiff( this.textArea0, this.textArea1 );
+                    DualDiffUtil.centerOnDiff( textArea0, textArea1 );
 
                     // maybe select the first diff word
                     if ( jEdit.getBooleanProperty( DualDiffManager.SELECT_WORD ) ) {
-                        this.textArea0.selectWord();
-                        this.textArea1.selectWord();
+                        textArea0.selectWord();
+                        textArea1.selectWord();
                     }
                 }
 
-                if ( this.textArea0.getFirstLine() != line &&
+                if ( textArea0.getFirstLine() != line &&
                         jEdit.getBooleanProperty( DualDiffManager.BEEP_ON_ERROR ) ) {
-                    this.textArea0.getToolkit().beep();
+                    textArea0.getToolkit().beep();
                 }
                 return ;
             }
         }
 
         if ( jEdit.getBooleanProperty( DualDiffManager.BEEP_ON_ERROR ) ) {
-            this.textArea1.getToolkit().beep();
+            textArea1.getToolkit().beep();
         }
     }
 
     protected void nextDiff1() {
-        Diff.Change hunk = this.edits;
-        int caretLine = this.textArea1.getCaretLine();
+        Diff.Change hunk = edits;
+        int caretLine = textArea1.getCaretLine();
         for ( ; hunk != null; hunk = hunk.next ) {
             if ( hunk.first1 > caretLine + ( ( hunk.lines1 == 0 ) ? 1 : 0 ) ) {
                 int line = hunk.first1;
@@ -454,36 +454,36 @@ public class DualDiff implements EBComponent {
                 // move caret in other text area to start of diff hunk
                 // and scroll to it
                 caret_position = textArea0.getLineStartOffset( hunk.first0 );
-                this.textArea0.setCaretPosition( caret_position, false );
-                this.textArea0.setFirstLine( hunk.first0 - distance );
+                textArea0.setCaretPosition( caret_position, false );
+                textArea0.setFirstLine( hunk.first0 - distance );
 
                 // maybe move the caret to the first actual diff character
                 if ( jEdit.getBooleanProperty( DualDiffManager.HORIZ_SCROLL ) ) {
-                    DualDiffUtil.centerOnDiff( this.textArea0, this.textArea1 );
+                    DualDiffUtil.centerOnDiff( textArea0, textArea1 );
 
                     // maybe select the first diff word
                     if ( jEdit.getBooleanProperty( DualDiffManager.SELECT_WORD ) ) {
-                        this.textArea0.selectWord();
-                        this.textArea1.selectWord();
+                        textArea0.selectWord();
+                        textArea1.selectWord();
                     }
                 }
 
-                if ( this.textArea1.getFirstLine() != line &&
+                if ( textArea1.getFirstLine() != line &&
                         jEdit.getBooleanProperty( DualDiffManager.BEEP_ON_ERROR ) ) {
-                    this.textArea1.getToolkit().beep();
+                    textArea1.getToolkit().beep();
                 }
                 return ;
             }
         }
 
         if ( jEdit.getBooleanProperty( DualDiffManager.BEEP_ON_ERROR ) ) {
-            this.textArea1.getToolkit().beep();
+            textArea1.getToolkit().beep();
         }
     }
 
     protected void prevDiff0() {
-        Diff.Change hunk = this.edits;
-        int caretLine = this.textArea0.getCaretLine();
+        Diff.Change hunk = edits;
+        int caretLine = textArea0.getCaretLine();
         for ( ; hunk != null; hunk = hunk.next ) {
             if ( hunk.first0 < caretLine ) {
                 // hunk starts before the caret line.  If caret line is in hunk,
@@ -497,7 +497,7 @@ public class DualDiff implements EBComponent {
 
                     // move caret to start of diff hunk
                     int caret_position = textArea0.getLineStartOffset( line );
-                    this.textArea0.setCaretPosition( caret_position, false );
+                    textArea0.setCaretPosition( caret_position, false );
 
                     // scroll so line is visible
                     int visibleLines = textArea0.getVisibleLines();
@@ -514,8 +514,8 @@ public class DualDiff implements EBComponent {
                     // move caret in other text area to start of diff hunk
                     // and scroll to it
                     caret_position = textArea1.getLineStartOffset( hunk.first1 );
-                    this.textArea1.setCaretPosition( caret_position, false );
-                    this.textArea1.setFirstLine( hunk.first1 - distance );
+                    textArea1.setCaretPosition( caret_position, false );
+                    textArea1.setFirstLine( hunk.first1 - distance );
 
                     // maybe move the caret to the first actual diff character
                     if ( jEdit.getBooleanProperty( DualDiffManager.HORIZ_SCROLL ) ) {
@@ -528,9 +528,9 @@ public class DualDiff implements EBComponent {
                         }
                     }
 
-                    if ( this.textArea0.getFirstLine() != line &&
+                    if ( textArea0.getFirstLine() != line &&
                             jEdit.getBooleanProperty( DualDiffManager.BEEP_ON_ERROR ) ) {
-                        this.textArea0.getToolkit().beep();
+                        textArea0.getToolkit().beep();
                     }
                     return ;
                 }
@@ -538,13 +538,13 @@ public class DualDiff implements EBComponent {
         }
 
         if ( jEdit.getBooleanProperty( DualDiffManager.BEEP_ON_ERROR ) ) {
-            this.textArea0.getToolkit().beep();
+            textArea0.getToolkit().beep();
         }
     }
 
     protected void prevDiff1() {
-        Diff.Change hunk = this.edits;
-        int caretLine = this.textArea1.getCaretLine();
+        Diff.Change hunk = edits;
+        int caretLine = textArea1.getCaretLine();
         for ( ; hunk != null; hunk = hunk.next ) {
             if ( hunk.first1 < caretLine ) {
                 // hunk starts before the caret line.  If caret line is in hunk,
@@ -558,7 +558,7 @@ public class DualDiff implements EBComponent {
 
                     // move caret to start of diff hunk
                     int caret_position = textArea1.getLineStartOffset( line );
-                    this.textArea1.setCaretPosition( caret_position, false );
+                    textArea1.setCaretPosition( caret_position, false );
 
                     // scroll so line is visible
                     int visibleLines = textArea1.getVisibleLines();
@@ -575,8 +575,8 @@ public class DualDiff implements EBComponent {
                     // move caret in other text area to start of diff hunk
                     // and scroll to it
                     caret_position = textArea0.getLineStartOffset( hunk.first0 );
-                    this.textArea0.setCaretPosition( caret_position, false );
-                    this.textArea0.setFirstLine( hunk.first0 - distance );
+                    textArea0.setCaretPosition( caret_position, false );
+                    textArea0.setFirstLine( hunk.first0 - distance );
 
                     // maybe move the caret to the first actual diff character
                     if ( jEdit.getBooleanProperty( DualDiffManager.HORIZ_SCROLL ) ) {
@@ -589,9 +589,9 @@ public class DualDiff implements EBComponent {
                         }
                     }
 
-                    if ( this.textArea1.getFirstLine() != line &&
+                    if ( textArea1.getFirstLine() != line &&
                             jEdit.getBooleanProperty( DualDiffManager.BEEP_ON_ERROR ) ) {
-                        this.textArea1.getToolkit().beep();
+                        textArea1.getToolkit().beep();
                     }
                     return ;
                 }
@@ -599,7 +599,7 @@ public class DualDiff implements EBComponent {
         }
 
         if ( jEdit.getBooleanProperty( DualDiffManager.BEEP_ON_ERROR ) ) {
-            this.textArea1.getToolkit().beep();
+            textArea1.getToolkit().beep();
         }
     }
 
