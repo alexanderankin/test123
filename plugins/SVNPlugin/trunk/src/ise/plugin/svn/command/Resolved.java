@@ -92,7 +92,8 @@ public class Resolved {
                 File file = new File(path);
                 /// TODO: update for newer doResolve methods. Currently does the same thing as svnkit 1.1.8,
                 // not yet taking advantage of the new methods in svnkit 1.2.x.
-                client.doResolve(file, SVNDepth.fromRecurse(cd.getRecursive()), SVNConflictChoice.MERGED);
+                SVNDepth depth = cd.getRecursive() ? SVNDepth.INFINITY : SVNDepth.EMPTY;
+                client.doResolve(file, depth, SVNConflictChoice.MERGED);
                 results.addPath(path);
             }
             catch ( Exception e ) {

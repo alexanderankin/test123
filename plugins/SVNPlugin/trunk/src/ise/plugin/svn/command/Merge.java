@@ -93,6 +93,7 @@ public class Merge {
 
         try {
             System.out.println( data.toString() );
+            SVNDepth depth = data.getRecursive() ? SVNDepth.INFINITY : SVNDepth.EMPTY;
             if ( data.getFromFile() != null && data.getToFile() != null ) {
                 //local, revision, local, revision, destination
                 client.doMerge(
@@ -101,7 +102,7 @@ public class Merge {
                     data.getToFile(),
                     data.getEndRevision(),
                     data.getDestinationFile(),
-                    SVNDepth.fromRecurse(data.getRecursive()),
+                    depth,
                     !data.getIgnoreAncestry(),
                     data.getForce(),
                     data.getDryRun(),
@@ -115,7 +116,7 @@ public class Merge {
                     SVNURL.parseURIDecoded( data.getToPath() ),
                     data.getEndRevision(),
                     data.getDestinationFile(),
-                    SVNDepth.fromRecurse(data.getRecursive()),
+                    depth,
                     !data.getIgnoreAncestry(),
                     data.getForce(),
                     data.getDryRun(),
@@ -129,7 +130,7 @@ public class Merge {
                     data.getToFile(),
                     data.getEndRevision(),
                     data.getDestinationFile(),
-                    SVNDepth.fromRecurse(data.getRecursive()),
+                    depth,
                     !data.getIgnoreAncestry(),
                     data.getForce(),
                     data.getDryRun(),
@@ -143,7 +144,7 @@ public class Merge {
                     SVNURL.parseURIDecoded( data.getToPath() ),
                     data.getEndRevision(),
                     data.getDestinationFile(),
-                    SVNDepth.fromRecurse(data.getRecursive()),
+                    depth,
                     !data.getIgnoreAncestry(),
                     data.getForce(),
                     data.getDryRun(),

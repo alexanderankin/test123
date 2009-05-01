@@ -78,6 +78,7 @@ public class Status {
         // actually fetch the info
         StatusHandler handler = new StatusHandler( cd.getOut(), true );
         long revision = -1;
+        SVNDepth depth = cd.getRecursive() ? SVNDepth.INFINITY : SVNDepth.EMPTY;
         for ( String path : paths ) {
             File localPath = new File( path );
             // svnkit 1.1.8:
@@ -85,13 +86,13 @@ public class Status {
             // svnkit 1.2.x:
             // doStatus(File path, SVNRevision revision, SVNDepth depth, boolean remote, boolean reportAll, boolean includeIgnored, boolean collectParentExternals, ISVNStatusHandler handler, Collection changeLists)
             try {
-                revision = client.doStatus( localPath, SVNRevision.HEAD, SVNDepth.fromRecurse(cd.getRecursive()), cd.getRemote(), false, false, false, handler, null );
+                revision = client.doStatus( localPath, SVNRevision.HEAD, depth, cd.getRemote(), false, false, false, handler, null );
             }
             catch ( Exception e ) {
                 if ( cd.getRemote() ) {
                     // if disconnected, an error will be thrown if remote is true,
                     // so set remote to false and try again
-                    revision = client.doStatus( localPath, SVNRevision.HEAD, SVNDepth.fromRecurse(cd.getRecursive()), false, false, false, false, handler, null );
+                    revision = client.doStatus( localPath, SVNRevision.HEAD, depth, false, false, false, false, handler, null );
                 }
             }
         }
