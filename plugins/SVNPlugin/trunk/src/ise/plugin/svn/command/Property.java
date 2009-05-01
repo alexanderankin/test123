@@ -104,8 +104,9 @@ public class Property {
                 String name = data.getName();
                 String value = data.getValue();
                 PropertyHandler handler = new PropertyHandler( file );
+                SVNDepth depth = data.getRecursive() ? SVNDepth.INFINITY : SVNDepth.EMPTY;
                 if ( name != null ) {
-                    wc_client.doSetProperty( file, name, SVNPropertyValue.create( value ), data.getForce(), SVNDepth.fromRecurse( data.getRecursive() ), handler, ( Collection ) null );
+                    wc_client.doSetProperty( file, name, SVNPropertyValue.create( value ), data.getForce(), depth, handler, ( Collection ) null );
                 }
                 else {
                     // check for multiple properties
@@ -116,7 +117,7 @@ public class Property {
                         if ( key != null ) {
                             name = key.toString();
                             value = String.valueOf( me.getValue() );
-                            wc_client.doSetProperty( file, name, SVNPropertyValue.create( value ), data.getForce(), SVNDepth.fromRecurse( data.getRecursive() ), handler, ( Collection ) null );
+                            wc_client.doSetProperty( file, name, SVNPropertyValue.create( value ), data.getForce(), depth, handler, ( Collection ) null );
                         }
                     }
                 }
@@ -180,7 +181,8 @@ public class Property {
                 PropertyHandler handler = new PropertyHandler( path );
                 // svnkit 1.2.x:
                 // doGetProperty(SVNURL url, String propName, SVNRevision pegRevision, SVNRevision revision, SVNDepth depth, ISVNPropertyHandler handler)
-                wc_client.doGetProperty( svnurl, data.getName(), SVNRevision.UNDEFINED, data.getRevision(), SVNDepth.fromRecurse( data.isRecursive() ), handler );
+                SVNDepth depth = data.isRecursive() ? SVNDepth.INFINITY : SVNDepth.EMPTY;
+                wc_client.doGetProperty( svnurl, data.getName(), SVNRevision.UNDEFINED, data.getRevision(), depth, handler );
                 mergeResults( handler.getResults() );
             }
         }
@@ -189,7 +191,8 @@ public class Property {
                 PropertyHandler handler = new PropertyHandler( file );
                 // svnkit 1.2.x:
                 // doGetProperty(File path, String propName, SVNRevision pegRevision, SVNRevision revision, SVNDepth depth, ISVNPropertyHandler handler, Collection changeLists)
-                wc_client.doGetProperty( file, data.getName(), SVNRevision.UNDEFINED, data.getRevision(), SVNDepth.fromRecurse( data.isRecursive() ), handler, null );
+                SVNDepth depth = data.isRecursive() ? SVNDepth.INFINITY : SVNDepth.EMPTY;
+                wc_client.doGetProperty( file, data.getName(), SVNRevision.UNDEFINED, data.getRevision(), depth, handler, null );
                 mergeResults( handler.getResults() );
             }
         }

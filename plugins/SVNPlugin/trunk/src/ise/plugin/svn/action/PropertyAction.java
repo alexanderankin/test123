@@ -69,7 +69,6 @@ public class PropertyAction extends SVNAction {
             // ask if properties should be found for children
             if ( data.hasDirectory() && data.askRecursive() ) {
                 int answer = JOptionPane.showConfirmDialog( getView(), jEdit.getProperty( "ips.One_or_more_of_the_items_selected_is_a_directory.", "One or more of the items selected is a directory." ) + "\n" + jEdit.getProperty( "ips.Would_you_like_to_see_properties_for_subdirectories_and_files?", "Would you like to see properties for subdirectories and files?" ), jEdit.getProperty( "ips.Show_Child_Properties?", "Show Child Properties?" ), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
-
                 data.setRecursive( JOptionPane.YES_OPTION == answer );
             }
 

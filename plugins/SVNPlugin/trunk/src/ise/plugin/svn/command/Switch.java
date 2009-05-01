@@ -96,12 +96,13 @@ public class Switch {
                      boolean allowUnversionedObstructions,
                      boolean depthIsSticky)*/
 
+        SVNDepth depth = data.getRecursive() ? SVNDepth.INFINITY : SVNDepth.EMPTY;
         revision = client.doSwitch(
             localPath,
             data.getURL(),
             SVNRevision.UNDEFINED,  /// TODO: add peg revision to UpdateData
             data.getSVNRevision(),
-            SVNDepth.fromRecurse(data.getRecursive()),
+            depth,
             false,
             false);
 

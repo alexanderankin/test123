@@ -87,7 +87,8 @@ public class Revert {
         PrintStream out = cd.getOut();
         AddResults results = new AddResults();
         try {
-            client.doRevert(localPaths, SVNDepth.fromRecurse(cd.getRecursive()), null);
+            SVNDepth depth = cd.getRecursive() ? SVNDepth.INFINITY : SVNDepth.EMPTY;
+            client.doRevert(localPaths, depth, null);
             results.addPaths(paths);
         }
         catch ( Exception e ) {

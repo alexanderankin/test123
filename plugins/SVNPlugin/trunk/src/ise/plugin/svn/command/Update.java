@@ -94,8 +94,9 @@ public class Update {
         PrintStream out = data.getOut();
         long revision = -1;
 
+        SVNDepth depth = data.getRecursive() ? SVNDepth.INFINITY : SVNDepth.EMPTY;
         for ( File file : localPaths ) {
-            revision = client.doUpdate( file, data.getSVNRevision(), SVNDepth.fromRecurse(recursive), false, false );
+            revision = client.doUpdate( file, data.getSVNRevision(), depth, false, false );
         }
 
         out.flush();

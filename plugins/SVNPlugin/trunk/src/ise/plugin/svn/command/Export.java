@@ -99,7 +99,8 @@ public class Export {
                 File file = source.getFile();
                 // svnkit 1.2.x:
                 // doExport(File srcPath, File dstPath, SVNRevision pegRevision, SVNRevision revision, String eolStyle, boolean overwrite, SVNDepth depth)
-                revision = client.doExport( file, new File( destination, file.getName() ), peg_revision, data.getRevision(), data.getEOLStyle(), data.getForce(), SVNDepth.fromRecurse(data.getRecursive()) );
+                SVNDepth depth = data.getRecursive() ? SVNDepth.INFINITY : SVNDepth.EMPTY;
+                revision = client.doExport( file, new File( destination, file.getName() ), peg_revision, data.getRevision(), data.getEOLStyle(), data.getForce(), depth );
             }
         }
         else if ( data.getSourceURLs() != null ) {
@@ -109,7 +110,8 @@ public class Export {
                 String filename = url.getPath().substring(url.getPath().lastIndexOf("/") + 1);
                 // svnkit 1.2.x:
                 // doExport(SVNURL url, File dstPath, SVNRevision pegRevision, SVNRevision revision, String eolStyle, boolean overwrite, SVNDepth depth)
-                revision = client.doExport( url, new File( destination, filename), peg_revision, data.getRevision(), data.getEOLStyle(), data.getForce(), SVNDepth.fromRecurse(data.getRecursive()) );
+                SVNDepth depth = data.getRecursive() ? SVNDepth.INFINITY : SVNDepth.EMPTY;
+                revision = client.doExport( url, new File( destination, filename), peg_revision, data.getRevision(), data.getEOLStyle(), data.getForce(), depth );
             }
         }
 
