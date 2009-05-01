@@ -359,7 +359,9 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
     // copies a diff starting at the given line number in the left text area and
     // replaces the corresponding diff in the right text area
     public void moveRight( int line_number ) {
-        // TODO:  optimize to use the hunk maps from the model rather than looping
+        // TODO:  why is this method here?  It belongs in DualDiff.  The model
+        // has a reference to the DualDiff.  Fix the looping to better use the
+        // hunk offsets in Diff.Change.
         DiffTextAreaModel model = diffLocalOverview.getModel();
         if ( model == null ) {
             return ;
@@ -439,7 +441,9 @@ public class BasicDiffLocalOverviewUI extends DiffLocalOverviewUI implements Mou
     // copies a diff starting at the given line number in the right text area and
     // replaces the corresponding diff in the left text area
     public void moveLeft( int line_number ) {
-        // TODO:  optimize to use the hunk maps from the model rather than looping
+        // TODO:  why is this method here?  It belongs in DualDiff.  The model
+        // has a reference to the DualDiff.  Fix the looping to better use the
+        // hunk offsets in Diff.Change.
         DiffTextAreaModel model = diffLocalOverview.getModel();
         if ( model == null ) {
             return ;
