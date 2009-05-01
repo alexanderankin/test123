@@ -67,7 +67,6 @@ public class DualDiffManager {
     }
 
     /**
-     * TODO: check if some of this method should move to DualDiff
      * Removes a DualDiff from the given View.
      */
     public static void removeFrom( View view ) {
@@ -121,7 +120,6 @@ public class DualDiffManager {
         }
     }
 
-    // TODO: move as much of this functionality to DualDiff as possible
     private static void toggleOffFor( final View view ) {
         Runnable r = new Runnable() {
                     public void run() {
@@ -174,7 +172,6 @@ public class DualDiffManager {
         SwingUtilities.invokeLater( r );
     }
 
-    // TODO: move as much of this functionality to DualDiff as possible
     private static void toggleOnFor( final View view ) {
         Runnable r = new Runnable() {
                     public void run() {
@@ -422,9 +419,7 @@ public class DualDiffManager {
             }
             return ;
         }
-        if ( editPane.equals( dualDiff.getEditPane0() ) ) {
-            dualDiff.moveRight(editPane.getTextArea().getCaretLine());
-        }
+        dualDiff.moveRight( editPane );
     }
 
     /**
@@ -439,9 +434,7 @@ public class DualDiffManager {
             editPane.getToolkit().beep();
             return ;
         }
-        if ( editPane.equals( dualDiff.getEditPane1() ) ) {
-            dualDiff.moveLeft(editPane.getTextArea().getCaretLine());
-        }
+        dualDiff.moveLeft( editPane );
     }
 
     /**
