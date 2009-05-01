@@ -103,21 +103,21 @@ public class DualDiff implements EBComponent {
     }
 
     /**
-     * @return the left EditPane    
+     * @return the left EditPane
      */
     public EditPane getEditPane0() {
         return editPane0;
     }
 
     /**
-     * @return the right EditPane    
+     * @return the right EditPane
      */
     public EditPane getEditPane1() {
         return editPane1;
     }
 
     /**
-     * @return the left text area    
+     * @return the left text area
      */
     public TextArea getTextArea0() {
         return textArea0;
@@ -131,14 +131,14 @@ public class DualDiff implements EBComponent {
     }
 
     /**
-     * @return the DiffOverview for the left text area    
+     * @return the DiffOverview for the left text area
      */
     public DiffOverview getDiffOverview0() {
         return diffOverview0;
     }
 
     /**
-     * @return the DiffOverview for the right text area    
+     * @return the DiffOverview for the right text area
      */
     public DiffOverview getDiffOverview1() {
         return diffOverview1;
@@ -146,28 +146,28 @@ public class DualDiff implements EBComponent {
 
     /**
      * This is called only from dockables.xml.
-     * @return the line diff dockable    
+     * @return the line diff dockable
      */
     public DiffLineOverview getDiffLineOverview() {
         return diffLineOverview;
     }
 
     /**
-     * @return the View that this DualDiff is acting on.    
+     * @return the View that this DualDiff is acting on.
      */
     public View getView() {
         return view;
     }
 
     /**
-     * @return the diffs found between the left and right text areas.    
+     * @return the diffs found between the left and right text areas.
      */
     public Diff.Change getEdits() {
         return edits;
     }
 
     /**
-     * Handle messages from the EditBus.    
+     * Handle messages from the EditBus.
      */
     public void handleMessage( EBMessage message ) {
         if ( message instanceof BufferUpdate ) {
@@ -525,8 +525,8 @@ public class DualDiff implements EBComponent {
                 // go to start of current hunk.  If caret line is after end of
                 // current hunk, but before the next hunk, go to start of current
                 // hunk.
-                if ( hunk.first0 + hunk.lines0 > caretLine ||                // NOPMD caret is in current hunk
-                        hunk.next == null ||                                 // caret is after last hunk
+                if ( hunk.first0 + hunk.lines0 > caretLine ||                  // NOPMD caret is in current hunk
+                        hunk.next == null ||                                   // caret is after last hunk
                         hunk.next.first0 >= caretLine ) {         // caret is before next hunk
                     int line = hunk.first0;      // first line of diff hunk
 
@@ -586,8 +586,8 @@ public class DualDiff implements EBComponent {
                 // go to start of current hunk.  If caret line is after end of
                 // current hunk, but before current hunk, go to start of current
                 // hunk.
-                if ( hunk.first1 + hunk.lines1 > caretLine ||               // NOPMD caret is in current hunk
-                        hunk.next == null ||                                 // caret is after last hunk
+                if ( hunk.first1 + hunk.lines1 > caretLine ||                 // NOPMD caret is in current hunk
+                        hunk.next == null ||                                   // caret is after last hunk
                         hunk.next.first1 >= caretLine ) {         // caret is before next hunk
                     int line = hunk.first1;      // first line of hunk
 
@@ -638,11 +638,55 @@ public class DualDiff implements EBComponent {
         }
     }
 
-    protected void moveRight() {
-        diffOverview0.moveRight( textArea0.getCaretLine() );
+    /**
+     * Using the given EditPane as a basis, moves the hunk corresponding to the
+     * caret line of the given EditPane from the left text area to the right
+     * text area.
+     */
+    protected void moveRight( EditPane editPane ) {
+        if ( editPane == null ) {
+            return ;
+        }
+        if ( editPane.equals( editPane0 ) ) {
+            diffOverview0.moveRight( editPane.getTextArea().getCaretLine() );
+        }
+        else {
+            // want to move right but have right EditPane.  Need to find
+            // corresponding hunk from left EditPane and use first line of hunk.
+            Diff.Change hunk = edits;
+            int caretLine = editPane.getTextArea().getCaretLine();
+            for ( ; hunk != null; hunk = hunk.next ) {
+                if (hunk.first1 <= caretLine && caretLine <= hunk.last1) {
+                    diffOverview0.moveRight( hunk.first0 );
+                    return;
+                }
+            }
+        }
     }
 
-    protected void moveLeft() {
-        diffOverview1.moveLeft( textArea1.getCaretLine() );
+    /**
+     * Using the given EditPane as a basis, moves the hunk corresponding to the
+     * caret line of the given EditPane from the right text area to the left
+     * text area.
+     */
+    protected void moveLeft( EditPane editPane ) {
+        if ( editPane == null ) {
+            return ;
+        }
+        if ( editPane.equals( editPane1 ) ) {
+            diffOverview0.moveLeft( editPane.getTextArea().getCaretLine() );
+        }
+        else {
+            // want to move left but have left EditPane.  Need to find
+            // corresponding hunk from right EditPane and use first line of hunk.
+            Diff.Change hunk = edits;
+            int caretLine = editPane.getTextArea().getCaretLine();
+            for ( ; hunk != null; hunk = hunk.next ) {
+                if (hunk.first0 <= caretLine && caretLine <= hunk.last0) {
+                    diffOverview0.moveLeft( hunk.first1 );
+                    return;
+                }
+            }
+        }
     }
 }
