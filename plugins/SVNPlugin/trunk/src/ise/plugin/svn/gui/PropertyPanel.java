@@ -159,10 +159,10 @@ public class PropertyPanel extends JPanel {
             TableColumnModel column_model = props_table.getColumnModel();
             TableColumn column0 = column_model.getColumn( 0 );  // name
             column0.setPreferredWidth( 120 );
-            column0.setCellRenderer( new BestRowTable.NoWrapCellRenderer() );
+            column0.setCellRenderer( new NoWrapCellRenderer() );
             TableColumn column1 = column_model.getColumn( 1 );  // value
             column1.setPreferredWidth( 200 );
-            column1.setCellRenderer( new BestRowTable.NoWrapCellRenderer() );
+            column1.setCellRenderer( new NoWrapCellRenderer() );
 
             // add a mouse listener for the popup
             props_table.addMouseListener( new TableCellViewer( props_table ) );

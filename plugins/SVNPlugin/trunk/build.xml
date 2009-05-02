@@ -75,6 +75,7 @@
             <pathelement location="${install.dir}/ProjectViewer.jar"/>
             <pathelement location="${install.dir}/kappalayout.jar"/>
             <pathelement location="${install.dir}/JDiffPlugin.jar"/>
+            <pathelement location="${install.dir}/InfoViewer.jar"/>
         </path>
     </target>
 
@@ -166,7 +167,7 @@
         <reloadPlugin jarfile="${install.dir}/${plugin.ise.plugin.svn.SVNPlugin.name}.jar"/>
     </target>
 
-    
+
    <!-- ========================================================================
       Target: prep_files
       prepares certain files for distribution by doing string replacement.

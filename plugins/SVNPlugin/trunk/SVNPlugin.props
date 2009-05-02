@@ -18,6 +18,7 @@ plugin.ise.plugin.svn.SVNPlugin.depend.1=jedit 04.03.15.00
 plugin.ise.plugin.svn.SVNPlugin.depend.2=plugin projectviewer.ProjectPlugin 2.9.0
 plugin.ise.plugin.svn.SVNPlugin.depend.3=plugin CommonControlsPlugin 0.9.4
 plugin.ise.plugin.svn.SVNPlugin.depend.4=plugin jdiff.JDiffPlugin 3.0.0
+plugin.ise.plugin.svn.SVNPLugin.depend.5=plugin infoviewer.InfoViewerPlugin 1.5.9
 plugin.ise.plugin.svn.SVNPlugin.jars=trilead.jar svnkit.jar svnkit-cli.jar jna.jar
 
 # titles for DockableWindowManager
@@ -629,3 +630,4 @@ ips.Would_you_like_to_see_properties_for_subdirectories_and_files?=Would you lik
 ips.Subversion_file_format>=Subversion file format:
 ips.Error=Error
 ips.Unable_to_convert_working_copy_file_format>=Unable to convert working copy file format:
+ips.Bug_ID>=Bug ID:
