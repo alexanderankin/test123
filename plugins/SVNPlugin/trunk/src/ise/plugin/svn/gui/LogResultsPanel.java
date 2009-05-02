@@ -35,10 +35,12 @@ import java.io.File;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 import javax.swing.border.EmptyBorder;
+
 import ise.java.awt.LambdaLayout;
 import ise.plugin.svn.PVHelper;
 import ise.plugin.svn.action.CopyAction;
@@ -48,11 +50,16 @@ import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.data.LogResults;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.library.TableCellViewer;
+import ise.plugin.svn.data.PropertyData;
+import ise.plugin.svn.io.ConsolePrintStream;
+import ise.plugin.svn.command.Property;
+
 import org.tmatesoft.svn.core.SVNLogEntry;
 import org.tmatesoft.svn.core.SVNLogEntryPath;
 import org.tmatesoft.svn.core.wc.SVNInfo;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.SVNURL;
+
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
@@ -68,10 +75,13 @@ public class LogResultsPanel extends JPanel {
     private String username = null;
     private String password = null;
 
-    private static Color background = jEdit.getColorProperty("view.bgColor", Color.WHITE);
-    private static Color foreground = jEdit.getColorProperty("view.fgColor", Color.BLACK);
+    private static Color background = jEdit.getColorProperty( "view.bgColor", Color.WHITE );
+    private static Color foreground = jEdit.getColorProperty( "view.fgColor", Color.BLACK );
     //private static Color selection = jEdit.getColorProperty("view.selectionColor", Color.LIGHT_GRAY);
 
+    private Properties bugtraqProperties = null;
+    private String logRegex0 = null;
+    private String logRegex1 = null;
 
     /**
      * @param map with path/file name as key, a list of associated log entries as the value
@@ -83,13 +93,15 @@ public class LogResultsPanel extends JPanel {
      */
     public LogResultsPanel( LogResults logResults, boolean showPaths, View view, String username, String password ) {
         super( new LambdaLayout() );
-        if (logResults == null) {
-            return;
+        if ( logResults == null ) {
+            return ;
         }
         this.view = view;
         this.logResults = logResults;
         this.username = username;
         this.password = password;
+
+
         setBorder( new EmptyBorder( 3, 3, 3, 3 ) );
 
         LambdaLayout.Constraints con = LambdaLayout.createConstraint();
@@ -101,6 +113,9 @@ public class LogResultsPanel extends JPanel {
         Set < Map.Entry < String, List < SVNLogEntry >>> set = results.entrySet();
         for ( Map.Entry < String, List < SVNLogEntry >> me : set ) {
             String path = ( String ) me.getKey();
+            if ( bugtraqProperties == null ) {
+                loadCommitProperties( path );
+            }
             JLabel label = new JLabel( jEdit.getProperty( "ips.Path>", "Path:" ) + " " + path );
 
             // sort the entries
@@ -119,6 +134,7 @@ public class LogResultsPanel extends JPanel {
                 String revision = String.valueOf( entry.getRevision() );
                 String date = entry.getDate() != null ? new SimpleDateFormat( jEdit.getProperty( "ips.yyyy-MM-dd_HH>mm>ss_Z", "yyyy-MM-dd HH:mm:ss Z" ), Locale.getDefault() ).format( entry.getDate() ) : "---";
                 String author = entry.getAuthor();
+                //String comment = prepComment( entry.getMessage() );
                 String comment = entry.getMessage();
                 data[ i ][ 0 ] = revision;
                 data[ i ][ 1 ] = date;
@@ -139,13 +155,13 @@ public class LogResultsPanel extends JPanel {
                             // type is one of A (added), M (modified), D (deleted), or R (replaced)
                             // show this along with the path
                             char type = lep.getType();
-                            associated_files.append( type ).append( " " ).append(cp);
+                            associated_files.append( type ).append( ' ' ).append( cp );
                             associated_files.append( ( lep.getCopyPath() != null ) ? " (from "
-                                + lep.getCopyPath() + " revision "
-                                + lep.getCopyRevision() + ")" : "" ).append(ls);
+                                    + lep.getCopyPath() + " revision "
+                                    + lep.getCopyRevision() + ")" : "" ).append( ls );
                         }
                         else {
-                            associated_files.append(cp).append(ls);
+                            associated_files.append( cp ).append( ls );
                         }
                     }
                     data[ i ][ 4 ] = associated_files.toString();
@@ -164,20 +180,22 @@ public class LogResultsPanel extends JPanel {
             TableColumn column0 = column_model.getColumn( 0 );  // revision
             column0.setMaxWidth( 60 );
             column0.setPreferredWidth( 60 );
-            column0.setCellRenderer( new BestRowTable.NoWrapCellRenderer() );
+            column0.setCellRenderer( new NoWrapCellRenderer() );
             TableColumn column1 = column_model.getColumn( 1 );  // date
             column1.setMaxWidth( 190 );
             column1.setPreferredWidth( 190 );
-            column1.setCellRenderer( new BestRowTable.NoWrapCellRenderer() );
+            column1.setCellRenderer( new NoWrapCellRenderer() );
             TableColumn column2 = column_model.getColumn( 2 );  // author
             column2.setMaxWidth( 100 );
             column2.setPreferredWidth( 100 );
-            column2.setCellRenderer( new BestRowTable.NoWrapCellRenderer() );
+            column2.setCellRenderer( new NoWrapCellRenderer() );
             TableColumn column3 = column_model.getColumn( 3 );  // comment
-            column3.setCellRenderer( new BestRowTable.WrapCellRenderer() );
+            WrapCellRenderer commentRenderer = new WrapCellRenderer();
+            commentRenderer.setSearcher( new WordSearcher( commentRenderer, logRegex0, logRegex1 ) );
+            column3.setCellRenderer( commentRenderer );
             if ( showPaths ) {
                 TableColumn column4 = column_model.getColumn( 4 );    // paths
-                column4.setCellRenderer( new BestRowTable.NoWrapCellRenderer() );
+                column4.setCellRenderer( new NoWrapCellRenderer() );
             }
 
             table.packRows();
@@ -213,8 +231,8 @@ public class LogResultsPanel extends JPanel {
 
         public LogTable( String[][] rowData, String[] columnNames ) {
             super( rowData, columnNames );
-            setBackground(LogResultsPanel.background);
-            setForeground(LogResultsPanel.foreground);
+            setBackground( LogResultsPanel.background );
+            setForeground( LogResultsPanel.foreground );
         }
 
         public void setPath( String path ) {
@@ -274,6 +292,7 @@ public class LogResultsPanel extends JPanel {
         final int[] rows = table.getSelectedRows();
         JPopupMenu popup = new JPopupMenu();
 
+        // Undelete
         // if displaying paths, check the individual paths for those starting
         // with "D", which indicates a deleted file.  Show "Undelete" menu item
         // for such paths.
@@ -341,6 +360,8 @@ public class LogResultsPanel extends JPanel {
 
             }
         }
+
+        // Diff
         if ( rows.length == 2 ) {
             final String path = table.getPath();
             JMenuItem mi = new JMenuItem( jEdit.getProperty( "ips.Diff", "Diff" ) );
@@ -356,7 +377,26 @@ public class LogResultsPanel extends JPanel {
                     }
                                 );
         }
+
+        // Open browser
+        if (col == 3) {
+            final String url = fetchUrl((String)table.getValueAt(row, col));
+            if (url != null) {
+                JMenuItem mi = new JMenuItem("Open link in browser");
+                popup.add(mi);
+                mi.addActionListener(
+                    new ActionListener() {
+                        public void actionPerformed( ActionEvent ae ) {
+                            infoviewer.InfoViewerPlugin.openURL(view, url);
+                        }
+                    }
+                );
+            }
+        }
+
         //popup.addSeparator();
+
+        // Zoom
         JMenuItem mi = new JMenuItem( jEdit.getProperty( "ips.Zoom", "Zoom" ) );
         mi.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
@@ -368,5 +408,132 @@ public class LogResultsPanel extends JPanel {
         popup.add( mi );
 
         return popup;
+    }
+
+    private String fetchUrl( String comment ) {
+        String url = bugtraqProperties.getProperty( "bugtraq:url" );
+        if ( url == null ) {
+            return comment;
+        }
+        String logregex = bugtraqProperties.getProperty( "bugtraq:logregex" );
+        if ( logregex == null ) {
+            // TODO: check, should bugtraq:message be used?
+            return comment;
+        }
+        String regex0 = null;
+        String regex1 = null;
+        if ( logregex != null && logregex.length() > 0 ) {
+            if ( logregex.indexOf( '\n' ) > 0 ) {
+                String[] parts = logregex.split( "\n" );
+                regex0 = parts[ 0 ];
+                regex1 = parts[ 1 ];
+            }
+            else {
+                regex0 = logregex;
+            }
+        }
+
+        if ( regex1 == null || regex1.length() == 0 ) {
+            // only have regex0 to find bug pattern
+            Pattern p = Pattern.compile( regex0, Pattern.DOTALL );
+            Matcher m = p.matcher( comment );
+            if ( m.find() ) {
+                int start = m.start();
+                int end = m.end();
+                String bug_number = comment.substring( start, end );
+                url = url.replaceAll( "%BUGID%", bug_number );
+                return url;
+            }
+        }
+        else {
+            // have both regex0 and regex1.  Use regex0 to find the bug id string,
+            // then use regex1 to find the actual bug id within that string.
+            Pattern p = Pattern.compile( regex0, Pattern.DOTALL );
+            Matcher m = p.matcher( comment );
+            if ( m.find() ) {
+                int start = m.start();
+                int end = m.end();
+                String bug_string = comment.substring( start, end );
+                p = Pattern.compile( regex1, Pattern.DOTALL );
+                m = p.matcher( bug_string );
+                if ( m.find() ) {
+                    int s = m.start();
+                    int e = m.end();
+                    int length = e - s;
+                    start += s;
+                    end = start + length;
+                    String bug_number = comment.substring( start, start + length );
+                    url = url.replaceAll( "%BUGID%", bug_number );
+                    return url;
+                }
+            }
+        }
+        return null;
+    }
+
+    // load the tsvn and bugtraq properties associated with the given path.
+    // This loads properties starting with tsvn: and bugtraq: from the given
+    // path, then works up through parent paths until the project root is
+    // reached.
+    private void loadCommitProperties( String path ) {
+        String projectRoot = PVHelper.getProjectRoot( path );
+        bugtraqProperties = new Properties();
+        do {
+            PropertyData data = new PropertyData();
+            data.setOut( new ConsolePrintStream( view ) );
+            data.addPath( path );
+            data.setPathsAreURLs( false );
+            data.setRecursive( false );
+            data.setAskRecursive( false );
+            data.setRevision( SVNRevision.WORKING );
+            data.setPegRevision( SVNRevision.UNDEFINED );
+            String[] credentials = PVHelper.getSVNLogin( path );
+            data.setUsername( credentials[ 0 ] );
+            data.setPassword( credentials[ 1 ] );
+            Property cmd = new Property();
+            try {
+                cmd.doGetProperties( data );
+            }
+            catch ( Exception e ) {
+                // ProjectViewer allows adding paths to a project that are not
+                // under the project root.  The typical use case is that all
+                // files are under the root, so the 'while' loop makes sense. In
+                // the case where a path is added to a project and that path is
+                // not under the project root, eventually a parent path will not
+                // be under version control and the Property command will throw
+                // an exception, which is probably why flow ended up in this
+                // catch block.  Do one more check for the properties at the
+                // project root.
+                path = projectRoot;
+                continue;
+            }
+            if ( cmd.getProperties() != null ) {
+                TreeMap map = cmd.getProperties();
+                for ( Object key : map.keySet() ) {
+                    Properties props = cmd.getProperties().get( key );
+                    for ( Object name : props.keySet() ) {
+                        if ( ( name.toString().startsWith( "tsvn:" ) || name.toString().startsWith( "bugtraq:" ) ) && !bugtraqProperties.containsKey( name ) ) {
+                            bugtraqProperties.setProperty( name.toString(), props.getProperty( name.toString() ) );
+                            //System.out.println( "+++++ " + name.toString() + " = " + props.getProperty( name.toString() ) );
+                        }
+                    }
+                }
+            }
+            File f = new File( path );
+            path = f.getParent();
+        }
+        while ( path.startsWith( projectRoot ) );
+
+        String logregex = bugtraqProperties.getProperty( "bugtraq:logregex" );
+        if ( logregex != null && logregex.length() > 0 ) {
+            if ( logregex.indexOf( '\n' ) > 0 ) {
+                String[] parts = logregex.split( "\n" );
+                logRegex0 = parts[ 0 ];
+                logRegex1 = parts[ 1 ];
+            }
+            else {
+                logRegex0 = logregex;
+            }
+        }
     }
 }

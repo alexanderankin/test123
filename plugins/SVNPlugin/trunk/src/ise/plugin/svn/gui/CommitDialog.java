@@ -33,6 +33,7 @@ import java.awt.Dimension;
 import java.awt.event.*;
 import java.io.File;
 import java.util.*;
+import java.util.regex.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
@@ -66,13 +67,23 @@ public class CommitDialog extends JDialog {
     private Map<String, String> nodes = null;
 
     private String projectRoot = null;
-    private Properties projectProperties = new Properties();
+    private Properties bugtraqProperties = new Properties();
 
-    private JTextField bug_field = null;
-    private JTextArea comment = null;
+    private JButton okButton;
+    private JButton cancelButton;
+    private JTextField bugField = null;
+    private JTextPane comment = null;
     private PropertyComboBox commentList = null;
+    private DefaultTableModel fileTableModel;
+    private LoginPanel login = null;
+    private JCheckBox recursiveCheckbox = null;
+
+    private String logRegex0 = null;
+    private String logRegex1 = null;
+    private boolean foundBugId = false;
 
     private CommitData commitData = null;
+    private String commitMessageTemplate = null;
 
 
     public CommitDialog( View view, Map<String, String> nodes ) {
@@ -90,16 +101,20 @@ public class CommitDialog extends JDialog {
     }
 
     protected void init( boolean showLogin ) {
-        projectRoot = PVHelper.getProjectRoot( view );
+        installDefaults();
+        installComponents( showLogin );
+        installListeners();
+    }
 
+    private void installDefaults() {
+        projectRoot = PVHelper.getProjectRoot( view );
         commitData = new CommitData();
 
-        JPanel panel = new JPanel( new LambdaLayout() );
-        panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
-
-        JLabel file_label = new JLabel( jEdit.getProperty( "ips.Committing_these_files>", "Committing these files:" ) );
-        BestRowTable file_table = new BestRowTable();
-        final DefaultTableModel file_table_model = new DefaultTableModel(
+        // create the table model to show the files to be committed.  The
+        // table has 3 columns, first column is a checkbox to allow the user
+        // to unselect files to be committed, second column is filename,
+        // third column is file status (modified, added, etc).
+        fileTableModel = new DefaultTableModel(
                     new String[] {
                         "", jEdit.getProperty( "ips.File", "File" ), jEdit.getProperty( "ips.Status", "Status" )
                     }, nodes.size() ) {
@@ -113,7 +128,6 @@ public class CommitDialog extends JDialog {
 
                     }
                 };
-        file_table.setModel( file_table_model );
 
         // load the table model, determine if recursive, accumulate file paths
         boolean recursive = false;
@@ -129,153 +143,95 @@ public class CommitDialog extends JDialog {
                     recursive = true;
                 }
                 paths.add( path );
-                file_table_model.setValueAt( true, i, 0 );
-                file_table_model.setValueAt( path, i, 1 );
-                file_table_model.setValueAt( status, i, 2 );
+                fileTableModel.setValueAt( true, i, 0 );
+                fileTableModel.setValueAt( path, i, 1 );
+                fileTableModel.setValueAt( status, i, 2 );
                 ++i;
             }
         }
         commitData.setPaths( paths );
         commitData.setRecursive( recursive );
 
+        // load commit properties from bugtraq and tsvn properties
+        loadCommitProperties( paths.get( 0 ) );
 
-        // table column widths
+        if ( jEdit.getBooleanProperty( "ise.plugin.svn.useTsvnTemplate", false ) ) {
+            commitMessageTemplate = bugtraqProperties.getProperty( "tsvn:logtemplate" );
+        }
+
+        String logregex = bugtraqProperties.getProperty( "bugtraq:logregex" );
+        if ( logregex != null && logregex.length() > 0 ) {
+            if ( logregex.indexOf( '\n' ) > 0 ) {
+                String[] parts = logregex.split( "\n" );
+                logRegex0 = parts[ 0 ];
+                logRegex1 = parts[ 1 ];
+            }
+            else {
+                logRegex0 = logregex;
+            }
+        }
+    }
+
+    private void installComponents( boolean showLogin ) {
+        JPanel panel = new JPanel( new LambdaLayout() );
+        panel.setBorder( new EmptyBorder( 12, 11, 11, 12 ) );
+
+        JLabel file_label = new JLabel( jEdit.getProperty( "ips.Committing_these_files>", "Committing these files:" ) );
+        BestRowTable file_table = new BestRowTable();
+        file_table.setModel( fileTableModel );
+
+        // table column widths, first column is checkbox to let user unselect file for commit,
+        // second column is filename, third column is status (modified, added, etc)
         file_table.getColumnModel().getColumn( 0 ).setMaxWidth( 25 );
         file_table.getColumnModel().getColumn( 1 ).setPreferredWidth( 450 );
         file_table.getColumnModel().getColumn( 2 ).setPreferredWidth( 50 );
         file_table.packRows();
 
-        // check for commit template stored in tsvn:logtemplate.  This also
-        // loads bugtraq properties.
-        // TODO: check other tsvn properties, add a setting for this.  Add
-        // ability for the user to set custom templates per project?
-        loadCommitProperties( paths.get( 0 ) );
-        String template = null;
-        if ( jEdit.getBooleanProperty( "ise.plugin.svn.useTsvnTemplate", false ) ) {
-            template = projectProperties.getProperty( "tsvn:logtemplate" );
-        }
+        // recursive checkbox, auto check if commitData indicated recursive
+        recursiveCheckbox = new JCheckBox( jEdit.getProperty( "ips.Recursively_commit?", "Recursively commit?" ) );
+        recursiveCheckbox.setSelected( commitData.getRecursive() );
 
-        final JCheckBox recursive_cb = new JCheckBox( jEdit.getProperty( "ips.Recursively_commit?", "Recursively commit?" ) );
-        recursive_cb.setSelected( recursive );
-
+        // text area for comment entry, autofill with tsvn template if it is available
         JLabel label = new JLabel( jEdit.getProperty( "ips.Enter_comment_for_this_commit>", "Enter comment for this commit:" ) );
-        comment = new JTextArea( 5, 50 );
-        comment.setLineWrap( true );
-        comment.setWrapStyleWord( true );
-        if ( template != null ) {
-            comment.setText( template );
+        comment = new JTextPane();
+        comment.setPreferredSize( new Dimension( 400, 100 ) );
+        comment.setBackground( view.getBackground() );
+        comment.setCaretColor( view.getEditPane().getTextArea().getPainter().getCaretColor() );
+        comment.setSelectionColor( view.getEditPane().getTextArea().getPainter().getSelectionColor() );
+        if ( commitMessageTemplate != null ) {
+            comment.setText( commitMessageTemplate );
         }
 
         // list for previous comments
-        final PropertyComboBox commentList = new PropertyComboBox( "ise.plugin.svn.comment." );
+        commentList = new PropertyComboBox( "ise.plugin.svn.comment." );
         commentList.setEditable( false );
-        commentList.addItemListener( new ItemListener() {
-                    public void itemStateChanged( ItemEvent e ) {
-                        if ( PropertyComboBox.SELECT.equals( commentList.getSelectedItem().toString() ) ) {
-                            return ;
-                        }
-                        comment.setText( commentList.getSelectedItem().toString() );
-                    }
-                }
-                                   );
 
         // possible login
-        final LoginPanel login = new LoginPanel( paths.get( 0 ) );
+        login = new LoginPanel( commitData.getPaths().get( 0 ) );
         login.setVisible( showLogin );
 
         // buttons
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
-        JButton ok_btn = new JButton( jEdit.getProperty( "ips.Ok", "Ok" ) );
-        JButton cancel_btn = new JButton( jEdit.getProperty( "ips.Cancel", "Cancel" ) );
-        btn_panel.add( "0, 0, 1, 1, 0, w, 3", ok_btn );
-        btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancel_btn );
+        okButton = new JButton( jEdit.getProperty( "ips.Ok", "Ok" ) );
+        cancelButton = new JButton( jEdit.getProperty( "ips.Cancel", "Cancel" ) );
+        btn_panel.add( "0, 0, 1, 1, 0, w, 3", okButton );
+        btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancelButton );
         kl.makeColumnsSameWidth( 0, 1 );
 
-        ok_btn.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        if ( bug_field != null && bug_field.getText().length() == 0 && projectProperties.getProperty( "bugtraq:warnifnoissue" ) != null ) {
-                            String bugtraq_warn = projectProperties.getProperty( "bugtraq:warnifnoissue" );
-                            boolean warn = "true".equals( bugtraq_warn ) || "yes".equals( bugtraq_warn );
-                            if ( warn ) {
-                                int ignore = JOptionPane.showConfirmDialog( CommitDialog.this.view, "Okay to commit without bug number?\n", "Confirm Commit", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
-                                if ( ignore != JOptionPane.YES_OPTION ) {
-                                    return ;
-                                }
-                            }
-                        }
-                        // get the paths
-                        List<String> paths = new ArrayList<String>();
-                        for ( int row = 0; row < file_table_model.getRowCount(); row++ ) {
-                            Boolean selected = ( Boolean ) file_table_model.getValueAt( row, 0 );
-                            if ( selected ) {
-                                paths.add( ( String ) file_table_model.getValueAt( row, 1 ) );
-                            }
-                        }
-
-                        if ( paths.size() == 0 ) {
-                            // nothing to commit, bail out
-                            commitData = null;
-                        }
-                        else {
-                            commitData.setPaths( paths );
-                            String msg = comment.getText();
-                            if ( msg == null || msg.length() == 0 ) {
-                                msg = jEdit.getProperty( "ips.no_comment", "no comment" );
-                            }
-                            else {
-                                if ( commentList != null ) {
-                                    commentList.addValue( msg );
-                                }
-                            }
-                            if ( projectProperties.getProperty( "bugtraq:message" ) != null && bug_field != null && bug_field.getText().length() > 0 ) {
-                                String bugtraq_message = projectProperties.getProperty( "bugtraq:message" );
-                                bugtraq_message = bugtraq_message.replaceAll( "%BUGID%", bug_field.getText() );
-                                String bugtraq_append = projectProperties.getProperty( "bugtraq:append" );
-                                boolean append = "true".equals( bugtraq_append ) || "yes".equals( bugtraq_append );
-                                if ( append ) {
-                                    msg += "\n" + bugtraq_message;
-                                }
-                                else {
-                                    msg = bugtraq_message + "\n" + msg;
-                                }
-                            }
-                            commitData.setCommitMessage( msg );
-
-                            commitData.setUsername( login.getUsername() );
-                            commitData.setPassword( login.getPassword() );
-                            commitData.setRecursive( recursive_cb.isSelected() );
-                        }
-                        CommitDialog.this._save();
-                        CommitDialog.this.setVisible( false );
-                        CommitDialog.this.dispose();
-                    }
-                }
-                                );
-
-        cancel_btn.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        commitData = null;
-                        CommitDialog.this.setVisible( false );
-                        CommitDialog.this.dispose();
-                    }
-                }
-                                    );
-
         // field for bug number
-        String bug_label_name = projectProperties.getProperty( "bugtraq:label" );
-        if ( bug_label_name != null && projectProperties.getProperty( "bugtraq:message" ) != null ) {
-            JLabel bug_label = new JLabel( bug_label_name );
-            // TODO: if bugtraq:number = yes, then need to make the textfield only accept numbers and commas
-            bug_field = new JTextField( 10 );
-            String bugtraq_number = projectProperties.getProperty( "bugtraq:number" );
-            if ( bugtraq_number != null && ( "true".equals( bugtraq_number ) || "yes".equals( bugtraq_number ) ) ) {
-                ( ( AbstractDocument ) bug_field.getDocument() ).setDocumentFilter( new NumericDocumentFilter() );
+        String bug_label_name = bugtraqProperties.getProperty( "bugtraq:label" );
+        if ( bug_label_name != null || bugtraqProperties.getProperty( "bugtraq:message" ) != null ) {
+            JLabel bug_label = new JLabel( bug_label_name == null ? jEdit.getProperty( "ips.Bug_ID>", "Bug ID:" ) : bug_label_name );
+            bugField = new JTextField( 10 );
+            String bugtraq_number = bugtraqProperties.getProperty( "bugtraq:number" );
+            if ( bugtraq_number != null && isTrue( bugtraq_number ) ) {
+                ( ( AbstractDocument ) bugField.getDocument() ).setDocumentFilter( new NumericDocumentFilter() );
             }
 
             // add the components to the option panel
             panel.add( "0, 0, 1, 1, W,  , 3", bug_label );
-            panel.add( "1, 0, 1, 1, W, w, 3", bug_field );
+            panel.add( "1, 0, 1, 1, W, w, 3", bugField );
             panel.add( "0, 1, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
         }
 
@@ -294,9 +250,9 @@ public class CommitDialog extends JDialog {
         file_scroller.getViewport().setPreferredSize( new Dimension( 600, Math.min( file_table.getBestHeight(), 200 ) ) );
         panel.add( "0, 8, 6, 1, W, w, 3", file_scroller );
 
-        if ( recursive ) {
+        if ( commitData.getRecursive() ) {
             panel.add( "0, 9, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
-            panel.add( "0, 10, 6, 1, W,  , 3", recursive_cb );
+            panel.add( "0, 10, 6, 1, W,  , 3", recursiveCheckbox );
         }
 
         if ( showLogin ) {
@@ -309,7 +265,115 @@ public class CommitDialog extends JDialog {
 
         setContentPane( panel );
         pack();
+    }
 
+    private void installListeners() {
+        comment.getDocument().addDocumentListener( new CommitMessageDocumentListener( comment, logRegex0, logRegex1 ) );
+        commentList.addItemListener( new ItemListener() {
+                    public void itemStateChanged( ItemEvent e ) {
+                        if ( PropertyComboBox.SELECT.equals( commentList.getSelectedItem().toString() ) ) {
+                            return ;
+                        }
+                        comment.setText( commentList.getSelectedItem().toString() );
+                    }
+                }
+                                   );
+        okButton.addActionListener( new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        // check/validate for entry in bug field
+                        if ( warn() ) {
+                            return ;
+                        }
+
+                        // get the paths
+                        List<String> paths = new ArrayList<String>();
+                        for ( int row = 0; row < fileTableModel.getRowCount(); row++ ) {
+                            Boolean selected = ( Boolean ) fileTableModel.getValueAt( row, 0 );
+                            if ( selected ) {
+                                paths.add( ( String ) fileTableModel.getValueAt( row, 1 ) );
+                            }
+                        }
+
+                        if ( paths.size() == 0 ) {
+                            // nothing to commit, bail out
+                            commitData = null;
+                        }
+                        else {
+                            commitData.setPaths( paths );
+                            String msg = comment.getText();
+                            if ( msg == null || msg.length() == 0 ) {
+                                msg = jEdit.getProperty( "ips.no_comment", "no comment" );
+                            }
+                            else {
+                                if ( commentList != null ) {
+                                    commentList.addValue( msg );
+                                }
+                            }
+                            if ( bugtraqProperties.getProperty( "bugtraq:message" ) != null && bugField != null && bugField.getText().length() > 0 ) {
+                                String bugtraq_message = bugtraqProperties.getProperty( "bugtraq:message" );
+                                bugtraq_message = bugtraq_message.replaceAll( "\n", " " );  // bugtraq standard says message must be single line
+                                String bug_text = bugField.getText();
+                                bug_text = bug_text.replaceAll(", ", ",");  // bugtraq standard says commas must not have space before or after
+                                bug_text = bug_text.replaceAll(" ,", ",");
+                                bugtraq_message = bugtraq_message.replaceAll( "%BUGID%", bug_text );
+                                boolean append = isTrue( bugtraqProperties.getProperty( "bugtraq:append" ) );
+                                if ( append ) {
+                                    msg += "\n" + bugtraq_message;
+                                }
+                                else {
+                                    msg = bugtraq_message + "\n" + msg;
+                                }
+                            }
+                            commitData.setCommitMessage( msg );
+
+                            commitData.setUsername( login.getUsername() );
+                            commitData.setPassword( login.getPassword() );
+                            commitData.setRecursive( recursiveCheckbox.isSelected() );
+                        }
+                        CommitDialog.this._save();
+                        CommitDialog.this.setVisible( false );
+                        CommitDialog.this.dispose();
+                    }
+                }
+                                  );
+
+        cancelButton.addActionListener( new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        commitData = null;
+                        CommitDialog.this.setVisible( false );
+                        CommitDialog.this.dispose();
+                    }
+                }
+                                      );
+
+    }
+
+    // check for entry in bug field, or if bugtraq:logregex is set, check for
+    // bug id in comment
+    private boolean warn() {
+        String bugtraq_warn = bugtraqProperties.getProperty( "bugtraq:warnifnoissue" );
+        boolean warn = isTrue( bugtraq_warn );
+        if ( warn && !foundBugId && bugField != null && bugField.getText().length() == 0 ) {
+            // no bug entered in bug field, and no bug id found via logregex
+            int ignore = JOptionPane.showConfirmDialog( CommitDialog.this.view, "Okay to commit without bug number?\n", "Confirm Commit", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
+            return ignore != JOptionPane.YES_OPTION;
+        }
+        else if ( warn && !foundBugId ) {
+            // bug id is entered in bug field, need to check it against logregex if there is one.
+            if ( logRegex0 != null ) {
+                String bug_text = bugField.getText();
+                bug_text = bug_text.replaceAll( ", ", "," );  // bugtraq standard says commas must not have space before or after
+                bug_text = bug_text.replaceAll( " ,", "," );
+                String regex = logRegex1 == null ? logRegex0 : logRegex1;
+                Pattern p = Pattern.compile( regex );
+                Matcher m = p.matcher( bug_text );
+                if ( !m.find() ) {
+                    int ignore = JOptionPane.showConfirmDialog( CommitDialog.this.view, "The bug number appears to be invalid.  Use it anyway?\n", "Confirm Bug ID", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
+                    return ignore != JOptionPane.YES_OPTION;
+                }
+            }
+        }
+        return false;
     }
 
     protected void _save() {
@@ -322,17 +386,20 @@ public class CommitDialog extends JDialog {
         return commitData;
     }
 
-    // load the tsvn and bugtraq properties associated with the given path
+    // load the tsvn and bugtraq properties associated with the given path.
+    // This loads properties starting with tsvn: and bugtraq: from the given
+    // path, then works up through parent paths until the project root is
+    // reached.
     private void loadCommitProperties( String path ) {
-        while ( path.startsWith( projectRoot ) ) {
+        do {
             PropertyData data = new PropertyData();
             data.setOut( new ConsolePrintStream( view ) );
             data.addPath( path );
             data.setPathsAreURLs( false );
             data.setRecursive( false );
             data.setAskRecursive( false );
-            data.setRevision(SVNRevision.WORKING);
-            data.setPegRevision(SVNRevision.UNDEFINED);
+            data.setRevision( SVNRevision.WORKING );
+            data.setPegRevision( SVNRevision.UNDEFINED );
             String[] credentials = PVHelper.getSVNLogin( path );
             data.setUsername( credentials[ 0 ] );
             data.setPassword( credentials[ 1 ] );
@@ -340,16 +407,27 @@ public class CommitDialog extends JDialog {
             try {
                 cmd.doGetProperties( data );
             }
-            catch ( Exception e ) {     // NOPMD
-                // oh well...
+            catch ( Exception e ) {
+                // ProjectViewer allows adding paths to a project that are not
+                // under the project root.  The typical use case is that all
+                // files are under the root, so the 'while' loop makes sense. In
+                // the case where a path is added to a project and that path is
+                // not under the project root, eventually a parent path will not
+                // be under version control and the Property command will throw
+                // an exception, which is probably why flow ended up in this
+                // catch block.  Do one more check for the properties at the
+                // project root.
+                path = projectRoot;
+                continue;
             }
             if ( cmd.getProperties() != null ) {
                 TreeMap map = cmd.getProperties();
                 for ( Object key : map.keySet() ) {
                     Properties props = cmd.getProperties().get( key );
                     for ( Object name : props.keySet() ) {
-                        if ( ( name.toString().startsWith( "tsvn:" ) || name.toString().startsWith( "bugtraq:" ) ) && !projectProperties.containsKey( name ) ) {
-                            projectProperties.setProperty( name.toString(), props.getProperty( name.toString() ) );
+                        if ( ( name.toString().startsWith( "tsvn:" ) || name.toString().startsWith( "bugtraq:" ) ) && !bugtraqProperties.containsKey( name ) ) {
+                            bugtraqProperties.setProperty( name.toString(), props.getProperty( name.toString() ) );
+                            //System.out.println( "+++++ " + name.toString() + " = " + props.getProperty( name.toString() ) );
                         }
                     }
                 }
@@ -357,6 +435,12 @@ public class CommitDialog extends JDialog {
             File f = new File( path );
             path = f.getParent();
         }
+        while ( path.startsWith( projectRoot ) );
+
+    }
+
+    private boolean isTrue( String value ) {
+        return "true".equals( value ) || "yes".equals( value );
     }
 
     class NumericDocumentFilter extends DocumentFilter {
@@ -398,13 +482,24 @@ public class CommitDialog extends JDialog {
         }
     }
 
-    public static void main ( String[] args ) {
-        TreeMap<String, String> files = new TreeMap<String, String>();
-        files.put( "/home/danson/src/plugins/SVNPlugin/src/ise/plugin/svn/gui/CommitDialog.java", "modified" );
-        files.put( "/home/danson/src/plugins/SVNPlugin/src/ise/plugin/svn/gui/AddDialog.java", "modified" );
-        files.put( "/home/danson/src/plugins/SVNPlugin/src/ise/plugin/svn/gui/DeleteDialog.java", "modified" );
-        files.put( "/home/danson/src/plugins/SVNPlugin/src/ise/plugin/svn/gui/LogDialog.java", "modified" );
-        CommitDialog d = new CommitDialog( null, files );
-        d.setVisible( true );
+    /**
+     * Highlights bug patterns as specified in bugtraq:logregex property.
+     */
+    class CommitMessageDocumentListener implements DocumentListener {
+        private WordSearcher searcher = null;
+
+        public CommitMessageDocumentListener( JTextPane comp, String regex0, String regex1 ) {
+            searcher = new WordSearcher( comp, regex0, regex1 );
+        }
+
+        public void insertUpdate( DocumentEvent evt ) {
+            foundBugId = searcher.search();
+        }
+
+        public void removeUpdate( DocumentEvent evt ) {
+            foundBugId = searcher.search();
+        }
+
+        public void changedUpdate( DocumentEvent evt ) {}
     }
 }
