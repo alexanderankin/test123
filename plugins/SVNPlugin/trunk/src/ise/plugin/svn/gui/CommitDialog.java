@@ -170,6 +170,13 @@ public class CommitDialog extends JDialog {
                 logRegex0 = logregex;
             }
         }
+        if ( logRegex0 == null ) {
+            // if no logregex, use bugtraq:message as the regex
+            String regex = bugtraqProperties.getProperty( "bugtraq:message" );  // NOPMD
+            if ( regex != null ) {
+                logRegex0 = regex.replaceAll( "%BUGID%", "(.*?)" ) + "$";
+            }
+        }
     }
 
     private void installComponents( boolean showLogin ) {
@@ -313,8 +320,8 @@ public class CommitDialog extends JDialog {
                                 String bugtraq_message = bugtraqProperties.getProperty( "bugtraq:message" );
                                 bugtraq_message = bugtraq_message.replaceAll( "\n", " " );  // bugtraq standard says message must be single line
                                 String bug_text = bugField.getText();
-                                bug_text = bug_text.replaceAll(", ", ",");  // bugtraq standard says commas must not have space before or after
-                                bug_text = bug_text.replaceAll(" ,", ",");
+                                bug_text = bug_text.replaceAll( ", ", "," );  // bugtraq standard says commas must not have space before or after
+                                bug_text = bug_text.replaceAll( " ,", "," );
                                 bugtraq_message = bugtraq_message.replaceAll( "%BUGID%", bug_text );
                                 boolean append = isTrue( bugtraqProperties.getProperty( "bugtraq:append" ) );
                                 if ( append ) {
@@ -358,19 +365,17 @@ public class CommitDialog extends JDialog {
             int ignore = JOptionPane.showConfirmDialog( CommitDialog.this.view, "Okay to commit without bug number?\n", "Confirm Commit", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
             return ignore != JOptionPane.YES_OPTION;
         }
-        else if ( warn && !foundBugId ) {
+        else if ( warn && !foundBugId && logRegex0 != null ) {
             // bug id is entered in bug field, need to check it against logregex if there is one.
-            if ( logRegex0 != null ) {
-                String bug_text = bugField.getText();
-                bug_text = bug_text.replaceAll( ", ", "," );  // bugtraq standard says commas must not have space before or after
-                bug_text = bug_text.replaceAll( " ,", "," );
-                String regex = logRegex1 == null ? logRegex0 : logRegex1;
-                Pattern p = Pattern.compile( regex );
-                Matcher m = p.matcher( bug_text );
-                if ( !m.find() ) {
-                    int ignore = JOptionPane.showConfirmDialog( CommitDialog.this.view, "The bug number appears to be invalid.  Use it anyway?\n", "Confirm Bug ID", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
-                    return ignore != JOptionPane.YES_OPTION;
-                }
+            String bug_text = bugField.getText();
+            bug_text = bug_text.replaceAll( ", ", "," );  // bugtraq standard says commas must not have space before or after
+            bug_text = bug_text.replaceAll( " ,", "," );
+            String regex = logRegex1 == null ? logRegex0 : logRegex1;
+            Pattern p = Pattern.compile( regex );
+            Matcher m = p.matcher( bug_text );
+            if ( !m.find() ) {
+                int ignore = JOptionPane.showConfirmDialog( CommitDialog.this.view, "The bug number appears to be invalid.  Use it anyway?\n", "Confirm Bug ID", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
+                return ignore != JOptionPane.YES_OPTION;
             }
         }
         return false;
