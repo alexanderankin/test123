@@ -1,6 +1,7 @@
 package ise.plugin.svn.gui;
 
 import java.awt.*;
+import java.io.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.table.*;
@@ -21,7 +22,7 @@ public class WrapCellRenderer extends JTextPane implements TableCellRenderer {
 
     private WordSearcher searcher = null;
 
-    public void setSearcher(WordSearcher searcher) {
+    public void setSearcher( WordSearcher searcher ) {
         this.searcher = searcher;
     }
 
@@ -30,11 +31,11 @@ public class WrapCellRenderer extends JTextPane implements TableCellRenderer {
     public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column ) {
         this.table = table;
         this.column = column;
-        setEditable(false);
+        setEditable( false );
         String content = value == null ? "" : value.toString().trim();
         setText( content );
         setBackground( isSelected ? selection : background );
-        if (searcher != null) {
+        if ( searcher != null ) {
             searcher.search();
         }
         return this;
@@ -51,9 +52,24 @@ public class WrapCellRenderer extends JTextPane implements TableCellRenderer {
             d.width = table.getColumnModel().getColumn( column ).getWidth();
             FontMetrics fm = getFontMetrics( getFont() );
             int stringWidth = fm.stringWidth( getText() );
-            int rows = ( stringWidth / d.width ) + 2;
-            d.height = ( fm.getAscent() + fm.getDescent() ) * rows;
+            int rows = ( stringWidth / d.width ) + countLines(getText());
+
+            d.height = ( fm.getHeight() * rows ) + 5;   // 5 pixels for padding
         }
         return d;
+    }
+
+    private int countLines( String text ) {
+        try {
+            BufferedReader reader = new BufferedReader( new StringReader( text ) );
+            int lines = 0;
+            while ( reader.readLine() != null ) {
+                ++lines;
+            }
+            return lines;
+        }
+        catch ( Exception e ) {
+            return 1;
+        }
     }
 }

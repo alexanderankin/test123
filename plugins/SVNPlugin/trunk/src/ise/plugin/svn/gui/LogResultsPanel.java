@@ -134,7 +134,6 @@ public class LogResultsPanel extends JPanel {
                 String revision = String.valueOf( entry.getRevision() );
                 String date = entry.getDate() != null ? new SimpleDateFormat( jEdit.getProperty( "ips.yyyy-MM-dd_HH>mm>ss_Z", "yyyy-MM-dd HH:mm:ss Z" ), Locale.getDefault() ).format( entry.getDate() ) : "---";
                 String author = entry.getAuthor();
-                //String comment = prepComment( entry.getMessage() );
                 String comment = entry.getMessage();
                 data[ i ][ 0 ] = revision;
                 data[ i ][ 1 ] = date;
@@ -379,15 +378,17 @@ public class LogResultsPanel extends JPanel {
         }
 
         // Open browser
-        if (col == 3) {
-            final String url = fetchUrl((String)table.getValueAt(row, col));
-            if (url != null) {
-                JMenuItem mi = new JMenuItem("Open link in browser");
-                popup.add(mi);
+        if ( col == 3 ) {
+            final List<String> urls = fetchUrl( ( String ) table.getValueAt( row, col ) );
+            if ( urls != null ) {
+                JMenuItem mi = new JMenuItem( urls.size() > 1 ? "Open links in browser" : "Open link in browser" );
+                popup.add( mi );
                 mi.addActionListener(
                     new ActionListener() {
                         public void actionPerformed( ActionEvent ae ) {
-                            infoviewer.InfoViewerPlugin.openURL(view, url);
+                            for ( String url : urls ) {
+                                infoviewer.InfoViewerPlugin.openURL( view, url );
+                            }
                         }
                     }
                 );
@@ -410,15 +411,30 @@ public class LogResultsPanel extends JPanel {
         return popup;
     }
 
-    private String fetchUrl( String comment ) {
+    private List<String> fetchUrl( String comment ) {
         String url = bugtraqProperties.getProperty( "bugtraq:url" );
         if ( url == null ) {
-            return comment;
+            return null;
         }
         String logregex = bugtraqProperties.getProperty( "bugtraq:logregex" );
         if ( logregex == null ) {
-            // TODO: check, should bugtraq:message be used?
-            return comment;
+            // if no logregex, use bugtraq:message as the regex
+            String regex = bugtraqProperties.getProperty( "bugtraq:message" );
+            if ( regex == null ) {
+                return null;
+            }
+            regex = regex.replace( "%BUGID%", "(.*?)" ) + "$";   // NOPMD
+            Pattern p = Pattern.compile( regex, Pattern.DOTALL );
+            Matcher m = p.matcher( comment );
+            if ( m.find() ) {
+                String bug_number = m.group( 1 );
+                List<String> list = new ArrayList<String>();
+                String[] bugs = bug_number.split( "," );
+                for ( String bug : bugs ) {
+                    list.add( url.replaceAll( "%BUGID%", bug ) );
+                }
+                return list;
+            }
         }
         String regex0 = null;
         String regex1 = null;
@@ -432,6 +448,9 @@ public class LogResultsPanel extends JPanel {
                 regex0 = logregex;
             }
         }
+        else {
+            return null;
+        }
 
         if ( regex1 == null || regex1.length() == 0 ) {
             // only have regex0 to find bug pattern
@@ -440,9 +459,13 @@ public class LogResultsPanel extends JPanel {
             if ( m.find() ) {
                 int start = m.start();
                 int end = m.end();
+                List<String> list = new ArrayList<String>();
                 String bug_number = comment.substring( start, end );
-                url = url.replaceAll( "%BUGID%", bug_number );
-                return url;
+                String[] bugs = bug_number.split( "," );
+                for ( String bug : bugs ) {
+                    list.add( url.replaceAll( "%BUGID%", bug ) );
+                }
+                return list;
             }
         }
         else {
@@ -462,9 +485,13 @@ public class LogResultsPanel extends JPanel {
                     int length = e - s;
                     start += s;
                     end = start + length;
+                    List<String> list = new ArrayList<String>();
                     String bug_number = comment.substring( start, start + length );
-                    url = url.replaceAll( "%BUGID%", bug_number );
-                    return url;
+                    String[] bugs = bug_number.split( "," );
+                    for ( String bug : bugs ) {
+                        list.add( url.replaceAll( "%BUGID%", bug ) );
+                    }
+                    return list;
                 }
             }
         }
@@ -533,6 +560,13 @@ public class LogResultsPanel extends JPanel {
             }
             else {
                 logRegex0 = logregex;
+            }
+        }
+        else {
+            // if no logregex, use bugtraq:message as the regex
+            String regex = bugtraqProperties.getProperty( "bugtraq:message" );
+            if ( regex != null ) {
+                logRegex0 = regex.replace( "%BUGID%", "(.*?)" ) + "$";
             }
         }
     }
