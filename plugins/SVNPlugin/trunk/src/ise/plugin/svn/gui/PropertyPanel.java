@@ -187,7 +187,8 @@ public class PropertyPanel extends JPanel {
                 add_btn.addActionListener(
                     new ActionListener() {
                         public void actionPerformed( ActionEvent ae ) {
-                            PropertyEditor dialog = new PropertyEditor( view, null, null, true );
+                            File f = new File(filename);
+                            PropertyEditor dialog = new PropertyEditor( view, null, null, f.isDirectory() );
                             GUIUtils.center( view, dialog );
                             dialog.setVisible( true );
                             PropertyData data = dialog.getPropertyData();
