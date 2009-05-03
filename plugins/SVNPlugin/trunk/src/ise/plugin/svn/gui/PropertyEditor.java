@@ -83,13 +83,7 @@ public class PropertyEditor extends JDialog {
                 "svn:keywords",                                 // Date, Revision, Author, HeadURL, Id
                 "svn:eol-style",                                // native, CRLF, CR, LF
                 "svn:externals",
-                "svn:special",
-                "bugtraq:url",
-                "bugtraq:warnifnoissue",                        // boolean
-                "bugtraq:label",
-                "bugtraq:message",
-                "bugtraq:number",                               // boolean
-                "bugtraq:append" };                         // boolean
+                "svn:special" };
 
     // default property names that can be applied to directories.  Most get
     // text values, but a few get specific values, see comments below for each
@@ -107,7 +101,8 @@ public class PropertyEditor extends JDialog {
                 "bugtraq:label",
                 "bugtraq:message",
                 "bugtraq:number",                               // boolean
-                "bugtraq:append" };                         // boolean
+                "bugtraq:append",                               // boolean
+                "bugtraq:logregex"};
 
     // names of properties that only take a boolean value
     private String[] boolean_names = new String[] {"bugtraq:warnifnoissue", "bugtraq:number", "bugtraq:append"};
