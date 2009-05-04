@@ -19,8 +19,8 @@ Author: Dale Anson
 <a href="#3">Handling individual files</a><br>
 <a href="#4">How to undelete a deleted file</a><br>
 <a href="#41">Merging</a><br>
-<a href="issuetrackers.html">Bugtraq</a><br>
-<a href="#5">Licenses</a><br>
+<a href="#5">Bugtraq</a><br>
+<a href="#50">Licenses</a><br>
 </p>
 <hr>
 <p>
@@ -515,9 +515,60 @@ If you have already committed your changes, you can do a "reverse merge":
 <li>Click the "Ok" button.</li>
 <li>Resolve any conflicts, build, run unit tests, etc, then commit your trunk code.</li>
 </ol>
+
 <hr>
 <p>
-<a name="5"><h2>Licenses</h2></a>
+<a name="5"><h2>Bugtraq</h2></a>
+</p>
+
+<p>
+Bugtraq is a way to integrate Subversion with issue trackers.  This plugin fully
+supports the Bugtraq standard.
+</p>
+<p>
+Bugtraq properties are set on folders, and the properties are applied to all files/directories
+under that folder.  Typically, these properties are set on the "trunk" folder and folders within
+"branches".  The SVNPlugin will check up the directory structure until the project root is
+reached and use any Bugtraq properties found.  Note that if the Bugtraq properties are only
+set on "trunk" and users checkout a folder below that, they won't have access to the Bugtraq
+properties.  You can apply the properties recursively in this case.
+</p>
+<p>
+<img src="bugtraq_properties.jpg">
+</p>
+<p>
+This image shows 6 of the 7 possible Bugtraq properties:
+<ul>
+<li>bugtraq:number -- if true, allows only numbers and commas to be entered into the bug entry field on the commit dialog.</li>
+<li>bugtraq:label -- this text is displayed in the commit dialog next to the bug entry field.</li>
+<li>bugtraq:warnifnoissue -- if true, this will cause the commit dialog to display a warning if the bug entry field is empty.</li>
+<li>bugtraq:message -- this text is added to the commit message with the bug id from the bug entry field included in the message.</li>
+<li>bugtraq:append -- if true, the bugtraq:message text is added at the end of the commit message, otherwise, it is inserted before the commit message.</li>
+<li>bugtraq:url -- this is used in the svn log display to link to a bug tracker.  If there is a bug number in the log message, you can right click on the message
+and select "Open link in browser" to open a browser window with the contents of the appropriate issue tracker.</li>
+</ul>
+</p>
+<p>
+The property not shown above is "bugtraq:logregex".
+If two expressions are set, then the first expression is used to find a
+string which relates to a bug ID but may contain more than just the bug ID
+(e.g. "Issue #123" or "resolves issue 123").
+The second expression is then used to extract the bare bug ID from the string
+extracted with the first expression.
+An example:
+if you want to catch every pattern "issue #XXX" and "issue #890, #789" inside
+a log message you could use the following regex strings:<br>
+[Ii]ssue #?(\d+)(,? ?#?(\d+))+<br>
+(\d+)
+
+</p>
+<p>
+More details are available in the <a href="issuetrackers.html">Bugtraq specification</a>.<br>
+</p>
+
+<hr>
+<p>
+<a name="50"><h2>Licenses</h2></a>
 </p>
 
 <p>
