@@ -423,7 +423,12 @@ public class LogResultsPanel extends JPanel {
             if ( regex == null ) {
                 return null;
             }
-            regex = regex.replace( "%BUGID%", "(.*?)" ) + "$";   // NOPMD
+            // example: Issue ID: %BUGID% More text
+            // becomes: Issue ID: (.*?) More text$
+            // The bugtraq standard says the message line will be on a single
+            // line.  It will be either the first line or the last line,
+            // depending on the value of bugtraq:append.
+            regex = regex.replace( "%BUGID%", "(.*?)" ) + "$";
             Pattern p = Pattern.compile( regex, Pattern.DOTALL );
             Matcher m = p.matcher( comment );
             if ( m.find() ) {

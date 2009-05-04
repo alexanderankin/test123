@@ -1,20 +1,40 @@
 <html>
 <body>
+<h2>Bugtraq</h2>
+Bugtraq is a standard for Subversion clients to make it easier to integrate
+Subversion with issue tracking software.  These links contain detailed information
+about how this standard was developed and how it is implemented:
+<p>
+<ul>
+<li><a href="http://markphip.blogspot.com/2007/01/integrating-subversion-with-your-issue.html">
+http://markphip.blogspot.com/2007/01/integrating-subversion-with-your-issue.html
+</a></li>
+<li><a href="http://tortoisesvn.net/issuetracker_integration">
+http://tortoisesvn.net/issuetracker_integration
+</a></li>
+</ul
+<p>
+Below is the technical specification for Bugtrak and some details about how
+the SVNPlugin for jEdit has implemented this standard.
+<p>
 
 <pre>
 
-Updated to include some details for jEdit SVNPlugin.
 
 Integration of Subversion (GUI) clients with Bug Tracking Tools:
 ================================================================================
+
+Updated to include some details for jEdit SVNPlugin.
 
 I. Preface
 ==========
 This document is primarily intended for writers of various GUI clients for
 Subversion.  Clients such as TortoiseSVN, Subclipse, RapidSVN, PySVN and many
 others.
-SVNPlugin: SVNPlugin fully supports this standard.
-
+</pre>
+<i>SVNPlugin: SVNPlugin fully supports this standard.</i>
+<p>
+<pre>
 The goal of this document is to outline a common technique for defining and then
 integrating these GUI clients with third party bug tracking software.
 
@@ -101,8 +121,10 @@ value : "true"/"yes" or "false"/"no"
 If set to "true", then the clients will warn the user if the issue text box is
 left empty. But it must _not_ block the commit, only give the user a chance to
 enter an issue number in case (s)he forgot it.
-
-SVNPlugin: Will also warn if bugtraq:logregex is set and no match was found.
+</pre>
+<i>SVNPlugin: Will also warn if bugtraq:logregex is set and no match was found.</i>
+<p>
+<pre>
 
 ---------
 
@@ -116,10 +138,12 @@ user has to enter the issue number. If this is not set, then a default value
 should be used, e.g. "Bug-ID / Issue-Number :". Keep in mind though that most
 GUI clients don't resize their windows according to the size of GUI elements. So
 keep the size of the label string below 20-25 chars.
-
-SVNPlugin: If this is not set, and bugtraq:message is set, then SVNPlugin uses
+</pre>
+<i>SVNPlugin: If this is not set, and bugtraq:message is set, then SVNPlugin uses
 "Bug ID:" as the default value for this property.  This default value is set
-in the SVNPlugin.props file so it can be localized.
+in the SVNPlugin.props file so it can be localized.</i>
+<p>
+<pre>
 ---------
 
 ---------
@@ -143,10 +167,12 @@ client must make sure that there's no whitespace chars before and after the
 comma. And also the whole issue number string must be trimmed.
 Note: if the bugtraq:logregex property is set, then this property should be
 ignored for parsing the log message but only be used to show the issue ID edit box.
-
-SVNPlugin: Collapses the value of this property to a single line.  Removes spaces
+</pre>
+<i>SVNPlugin: Collapses the value of this property to a single line.  Removes spaces
 before and after commas in issue number.  Validates using logregex property if
-available.  Uses this value in SVN Log viewer as logregex if logregex is not set.
+available.  Uses this value in SVN Log viewer as logregex if logregex is not set.</i>
+<p>
+<pre>
 ---------
 
 ---------
@@ -163,9 +189,11 @@ number is given. Not all commits are assigned to an issue!
 Note: if the property bugtraq:logregex is set and this property is set to false,
 then the client should use the regex against the created string which is added
 to the log message to check if the bug ID is valid.
-
-SVNPlugin: Supports this check.  See above, SVNPlugin also removes spaces
-before and after commas in issue number.
+</pre>
+<i>SVNPlugin: Supports this check.  See above, SVNPlugin also removes spaces
+before and after commas in issue number.</i>
+<p>
+<pre>
 ---------
 
 ---------
