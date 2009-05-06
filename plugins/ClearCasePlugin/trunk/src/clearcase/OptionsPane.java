@@ -76,7 +76,8 @@ public class OptionsPane extends AbstractOptionPane implements ActionListener
         }
         */
         pathField.setText(path);
-        reloadDelayField.setValue(new Integer(reloadDelay));
+    	reloadDelayField.setValue(Integer.valueOf(
+    		ClearCasePlugin.getFileReloadDelay()));
 
         saveButton.setText("...");
         saveButton.setBounds(new Rectangle(288, 33, 36, 24));

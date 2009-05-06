@@ -6,73 +6,73 @@
 
 	<ACTION NAME="ClearCasePlugin-uncheckout">
 		<CODE>
-			ClearCasePlugin.unCheckOut(view);
+			clearcase.ClearCasePlugin.unCheckOut(view);
 		</CODE>
 	</ACTION>
 
 	<ACTION NAME="ClearCasePlugin-checkin">
 		<CODE>
-			ClearCasePlugin.checkIn(view);
+			clearcase.ClearCasePlugin.checkIn(view);
 		</CODE>
 	</ACTION>
 
 	<ACTION NAME="ClearCasePlugin-checkout">
 		<CODE>
-			ClearCasePlugin.checkOut(view);
+			clearcase.ClearCasePlugin.checkOut(view);
 		</CODE>
 	</ACTION>
 
 	<ACTION NAME="ClearCasePlugin-addtocontrol">
 		<CODE>
-			ClearCasePlugin.addToSourceControl(view);
+			clearcase.ClearCasePlugin.addToSourceControl(view);
 		</CODE>
 	</ACTION>
     
 	<ACTION NAME="ClearCasePlugin-history">
 		<CODE>
-			ClearCasePlugin.showHistory(view);
+			clearcase.ClearCasePlugin.showHistory(view);
 		</CODE>
 	</ACTION>
 
 	<ACTION NAME="ClearCasePlugin-diffpred">
 		<CODE>
-			ClearCasePlugin.compareToPreviousVersion(view);
+			clearcase.ClearCasePlugin.compareToPreviousVersion(view);
 		</CODE>
 	</ACTION>
 
 	<ACTION NAME="ClearCasePlugin-version">
 		<CODE>
-			ClearCasePlugin.showVersionTree(view);
+			clearcase.ClearCasePlugin.showVersionTree(view);
 		</CODE>
 	</ACTION>
 
 	<ACTION NAME="ClearCasePlugin-updatebuffer">
 		<CODE>
-			ClearCasePlugin.updateBuffer(view);
+			clearcase.ClearCasePlugin.updateBuffer(view);
 		</CODE>
 	</ACTION>
 
 	<ACTION NAME="ClearCasePlugin-findcheckout">
 		<CODE>
-			ClearCasePlugin.findCheckouts(view);
+			clearcase.ClearCasePlugin.findCheckouts(view);
 		</CODE>
 	</ACTION>
 
 	<ACTION NAME="ClearCasePlugin-details">
 		<CODE>
-			ClearCasePlugin.showDetails(view);
+			clearcase.ClearCasePlugin.showDetails(view);
 		</CODE>
 	</ACTION>
     
 	<ACTION NAME="ClearCasePlugin-merge">
 		<CODE>
-			ClearCasePlugin.merge(view);
+			clearcase.ClearCasePlugin.merge(view);
 		</CODE>
 	</ACTION>
         
 	<ACTION NAME="ClearCasePlugin-option">
 		<CODE>
-			new OptionDialog(view);
+			new clearcase.OptionDialog(view);
 		</CODE>
 	</ACTION>
 

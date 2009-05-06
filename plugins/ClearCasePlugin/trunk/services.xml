@@ -4,6 +4,6 @@
 
 <SERVICES>
 	<SERVICE CLASS="console.Shell" NAME="ClearCase">
-		new ClearCaseShell();
+		new clearcase.ClearCaseShell();
 	</SERVICE>
 </SERVICES>
