@@ -24,7 +24,7 @@ import sidekick.SideKickTree;
 public class OutlineTree extends SideKickTree implements EBComponent {
 	private OutlineParser parser = null;
 	
-	private OutlineTree(View view, boolean docked) {
+	public OutlineTree(View view, boolean docked) {
 		super(view,docked);
 		//remove(0);
 		//getComponentAt(1,1).setVisible(false);
