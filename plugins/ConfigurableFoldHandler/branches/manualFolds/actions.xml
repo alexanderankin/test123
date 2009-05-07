@@ -7,4 +7,14 @@
 			new BufferFoldStringsDialog(view).show();
 		</CODE>
 	</ACTION>
+	<ACTION NAME="configurablefoldhandler.create-temp-fold">
+		<CODE>
+			configurablefoldhandler.ConfigurableFoldHandlerPlugin.createTempFold(textArea);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="configurablefoldhandler.remove-temp-fold">
+		<CODE>
+			configurablefoldhandler.ConfigurableFoldHandlerPlugin.removeTempFold(textArea);
+		</CODE>
+	</ACTION>
 </ACTIONS>
