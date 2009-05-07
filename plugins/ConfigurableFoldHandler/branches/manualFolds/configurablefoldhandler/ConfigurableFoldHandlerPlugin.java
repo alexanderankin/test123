@@ -314,7 +314,11 @@ loop:	for(Iterator<JEditBuffer> iter = bufferStrings.keySet().iterator();
 			buffer.setProperty("tempFolds", tf);
 		}
 		int start = sel[0].getStartLine();
-		int end = sel[0].getEndLine(); 
+		int end = sel[0].getEndLine();
+		// If the selection ends in the first offset of a line,
+		// do not include this line in the fold.
+		if (sel[0].getEnd() == buffer.getLineStartOffset(end))
+			end--;
 		tf.add(start, end);
 		buffer.invalidateCachedFoldLevels();
 	}
