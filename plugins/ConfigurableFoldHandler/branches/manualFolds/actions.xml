@@ -9,12 +9,20 @@
 	</ACTION>
 	<ACTION NAME="configurablefoldhandler.create-temp-fold">
 		<CODE>
-			configurablefoldhandler.ConfigurableFoldHandlerPlugin.createTempFold(textArea);
+			import configurablefoldhandler.ConfigurableFoldHandlerPlugin;
+			ConfigurableFoldHandlerPlugin.createManualFold(textArea, false);
 		</CODE>
 	</ACTION>
-	<ACTION NAME="configurablefoldhandler.remove-temp-fold">
+	<ACTION NAME="configurablefoldhandler.create-persistent-fold">
 		<CODE>
-			configurablefoldhandler.ConfigurableFoldHandlerPlugin.removeTempFold(textArea);
+			import configurablefoldhandler.ConfigurableFoldHandlerPlugin;
+			ConfigurableFoldHandlerPlugin.createManualFold(textArea, true);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="configurablefoldhandler.remove-manual-fold">
+		<CODE>
+			import configurablefoldhandler.ConfigurableFoldHandlerPlugin;
+			ConfigurableFoldHandlerPlugin.removeManualFold(textArea);
 		</CODE>
 	</ACTION>
 </ACTIONS>
