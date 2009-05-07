@@ -32,7 +32,7 @@ public class TemporaryFolds {
 			if (includeFirst)
 				first--;
 			int last = end.get(i);
-			if (first < line && last > line)
+			if (first < line && last >= line)
 				return i;
 		}
 		return -1;
