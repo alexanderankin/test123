@@ -57,7 +57,7 @@ public class ConfigurableFoldHandler extends FoldHandler
 		FoldCounter counter = ConfigurableFoldHandlerPlugin.getInstance()
 			.getCounter(buffer);
 		
-		TemporaryFolds tf = (TemporaryFolds) buffer.getProperty("tempFolds");
+		ManualFolds tf = (ManualFolds) buffer.getProperty("tempFolds");
 		int tempFoldLevel = 0;
 		if (tf != null) 
 		{
