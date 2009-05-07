@@ -1,0 +1,50 @@
+Paste the text below into the Plugin Central Submission Tracker at https://sourceforge.net/tracker/?group_id=588&atid=625093
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+{{{ h4Jmf 4.3
+    Source: Source code is in SVN with the tag XXXX (no SVN release numbers, please)
+    Announcement: 
+    Requires Java 1.5
+    Requires jEdit 04.03.15.00
+    
+    Short Description: test with Java Media Framework, control audio-player from jEdit, assist in transcription of digital audio-interview
+    
+    Long Description: Test with Java Media Framework JMF
+Assist in transcription of digital audio-interview. Pause, back-step, forward-step , position from cue, insert cue in text, play functions with shortcuts from editor-window.
+
+-install Java Media Framework JMF. see README.txt
+
+-to invoke this plugin, select Plugins >h4Jmf.
+
+-to set short-cuts:
+Utilities > Global Options > Shortcuts
+in 'Edit Shortcuts' drop-down list: select Plugin: h4Jmf
+assign shortcuts to:
+player start
+player stop
+player rewind
+player forward
+insert time
+player position
+
+-to set options
+select Plugins > Plugin Options
+select h4Jmf
+options.h4Jmf.seconds=number of seconds to go back or forward on rewind,forward
+
+-choose .mp3 or .wav file
+(this will implicitly call player_begin)
+
+- begin to play with (via shortcuts or menu's)
+player start
+player stop
+player rewind
+player forward
+insert time
+player position
+
+-player close
+releases all JMF-resources
+
+ }}}
