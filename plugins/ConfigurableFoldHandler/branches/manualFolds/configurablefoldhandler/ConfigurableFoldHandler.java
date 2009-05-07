@@ -14,7 +14,7 @@ package configurablefoldhandler;
  */
 
 import javax.swing.text.Segment;
-import org.gjt.sp.jedit.Buffer;
+
 import org.gjt.sp.jedit.buffer.FoldHandler;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 /**
@@ -57,8 +57,18 @@ public class ConfigurableFoldHandler extends FoldHandler
 		FoldCounter counter = ConfigurableFoldHandlerPlugin.getInstance()
 			.getCounter(buffer);
 		
+		TemporaryFolds tf = (TemporaryFolds) buffer.getProperty("tempFolds");
+		int tempFoldLevel = 0;
+		if (tf != null) 
+		{
+			boolean current = tf.isFold(lineIndex);
+			boolean prev = tf.isFold(lineIndex - 1);
+			if (current != prev)
+				tempFoldLevel = current ? 1 : -1;
+		}
+
 		if(counter == null)
-			return 0;
+			return Math.max(0, tempFoldLevel);
 		
 		buffer.getLineText(lineIndex - 1, seg);
 		counter.count(seg);
@@ -69,7 +79,8 @@ public class ConfigurableFoldHandler extends FoldHandler
 		counter.count(seg);
 		int c2 = counter.getLeadingCloses();
 		
-		int foldLevel = buffer.getFoldLevel(lineIndex - 1) + folds + c1 - c2;
+		int foldLevel = buffer.getFoldLevel(lineIndex - 1) + folds + c1 - c2 +
+			tempFoldLevel;
 		return Math.max(0, foldLevel);
 	}
 }

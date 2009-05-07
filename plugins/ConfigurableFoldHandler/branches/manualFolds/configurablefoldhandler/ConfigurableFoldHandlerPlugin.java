@@ -25,6 +25,7 @@ package configurablefoldhandler;
 
 import java.util.HashMap;
 import java.util.Iterator;
+
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.Buffer;
@@ -33,6 +34,8 @@ import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.textarea.Selection;
 
 /**
  * plugin to insert a configurable fold handler into jEdit
@@ -43,14 +46,17 @@ public class ConfigurableFoldHandlerPlugin extends EBPlugin
 		new FoldStrings("{", "}");
 		
 	private String[] modeNames;
-	private HashMap defaultModeStringsMap = new HashMap();
+	private HashMap<String, FoldStrings> defaultModeStringsMap =
+		new HashMap<String, FoldStrings>();
 	
 	// default fold strings for modes / buffers that have none specified
 	private FoldStrings defFoldStrings;
 	
 	// store the fold strings for specific buffers and edit modes
-	private HashMap bufferStrings = new HashMap();
-	private HashMap modeStrings   = new HashMap();
+	private HashMap<JEditBuffer, FoldStrings> bufferStrings =
+		new HashMap<JEditBuffer, FoldStrings>();
+	private HashMap<String, FoldStrings> modeStrings =
+		new HashMap<String, FoldStrings>();
 	
 	private static ConfigurableFoldHandlerPlugin instance;
 	
@@ -83,7 +89,8 @@ public class ConfigurableFoldHandlerPlugin extends EBPlugin
 		Buffer[] buffers = jEdit.getBuffers();
 		int i;
 		
-loop:	for(Iterator iter = bufferStrings.keySet().iterator(); iter.hasNext(); )
+loop:	for(Iterator<JEditBuffer> iter = bufferStrings.keySet().iterator();
+			iter.hasNext(); )
 		{
 			Buffer curBuffer = (Buffer)iter.next();
 			
@@ -202,13 +209,10 @@ loop:	for(Iterator iter = bufferStrings.keySet().iterator(); iter.hasNext(); )
 	 */
 	public FoldCounter getCounter(JEditBuffer buffer)
 	{
-		FoldStrings foldStrings = (FoldStrings)bufferStrings.get(buffer);
+		FoldStrings foldStrings = bufferStrings.get(buffer);
 		
 		if(foldStrings == null)
-		{
-			foldStrings = (FoldStrings)modeStrings.get(
-				buffer.getStringProperty("mode"));
-		}
+			foldStrings = modeStrings.get(buffer.getStringProperty("mode"));
 		
 		if(foldStrings == null)
 			foldStrings = defFoldStrings;
@@ -252,7 +256,7 @@ loop:	for(Iterator iter = bufferStrings.keySet().iterator(); iter.hasNext(); )
 	 */
 	public FoldStrings getBufferFoldStrings(Buffer buffer)
 	{
-		return (FoldStrings)bufferStrings.get(buffer);
+		return bufferStrings.get(buffer);
 	}
 	
 	/**
@@ -267,7 +271,7 @@ loop:	for(Iterator iter = bufferStrings.keySet().iterator(); iter.hasNext(); )
 	 */
 	public FoldStrings getModeFoldStrings(String modeName)
 	{
-		return (FoldStrings)modeStrings.get(modeName);
+		return modeStrings.get(modeName);
 	}
 	
 	/**
@@ -277,7 +281,7 @@ loop:	for(Iterator iter = bufferStrings.keySet().iterator(); iter.hasNext(); )
 	 */
 	public FoldStrings getDefaultModeFoldStrings(String modeName)
 	{
-		return (FoldStrings)defaultModeStringsMap.get(modeName);
+		return defaultModeStringsMap.get(modeName);
 	}
 	
 	/**
@@ -292,5 +296,42 @@ loop:	for(Iterator iter = bufferStrings.keySet().iterator(); iter.hasNext(); )
 	public FoldStrings getDefaultFoldStrings()
 	{
 		return defFoldStrings;
+	}
+
+	/**
+	 * Creates a temporary fold for the selected text. 
+	 */
+	static public void createTempFold(JEditTextArea ta)
+	{
+		Selection [] sel = ta.getSelection();
+		if (sel.length != 1)
+			return;
+		JEditBuffer buffer = ta.getBuffer();
+		TemporaryFolds tf = (TemporaryFolds) buffer.getProperty("tempFolds");
+		if (tf == null)
+		{
+			tf = new TemporaryFolds();
+			buffer.setProperty("tempFolds", tf);
+		}
+		int start = sel[0].getStartLine();
+		int end = sel[0].getEndLine(); 
+		tf.add(start, end);
+		buffer.invalidateCachedFoldLevels();
+	}
+	/**
+	 * Removes the temporary fold at the caret position. 
+	 */
+	static public void removeTempFold(JEditTextArea ta)
+	{
+		JEditBuffer buffer = ta.getBuffer();
+		TemporaryFolds tf = (TemporaryFolds) buffer.getProperty("tempFolds");
+		if (tf == null)
+			return;
+		if (tf.remove(ta.getCaretLine()))
+		{
+			buffer.invalidateCachedFoldLevels();
+			if (tf.isEmpty())
+				buffer.setProperty("tempFolds", null);
+		}
 	}
 }

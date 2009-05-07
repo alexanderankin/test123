@@ -23,10 +23,8 @@ package configurablefoldhandler;
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-import java.lang.reflect.Method;
 
-import org.gjt.sp.util.Log;
-
+@SuppressWarnings("serial")
 public class FoldStringsException extends Exception
 {
 	public FoldStringsException(Throwable t)

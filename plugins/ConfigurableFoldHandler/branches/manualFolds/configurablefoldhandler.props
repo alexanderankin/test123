@@ -8,8 +8,13 @@ plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.depend.1=jdk 1.5
 plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.description=The ConfigurableFoldHandler plugin adds a new fold handler to jEdit that allows the user to specify the strings that define the start and end of a fold.
 
 # menu
-plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.menu=configurablefoldhandler.buffer-fold-strings
+plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.menu=\
+	configurablefoldhandler.buffer-fold-strings \
+	configurablefoldhandler.create-temp-fold \
+	configurablefoldhandler.remove-temp-fold
 configurablefoldhandler.buffer-fold-strings.label=Buffer fold strings
+configurablefoldhandler.create-temp-fold.label=Create temporary fold for selected text
+configurablefoldhandler.remove-temp-fold.label=Remove temporary fold at caret position
 
 # options pane
 plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.option-pane=configurablefoldhandler
