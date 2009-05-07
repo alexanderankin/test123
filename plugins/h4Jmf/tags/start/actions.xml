@@ -1,0 +1,51 @@
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="h4Jmf.choose-file">
+		<CODE>
+			wm.addDockableWindow(h4JmfPlugin.NAME);
+			wm.getDockableWindow(h4JmfPlugin.NAME).chooseFile();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="h4Jmf.player-begin">
+		<CODE>
+			wm.addDockableWindow(h4JmfPlugin.NAME);
+			wm.getDockableWindow(h4JmfPlugin.NAME).player_begin();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="h4Jmf.player-start">
+		<CODE>
+			wm.getDockableWindow(h4JmfPlugin.NAME).player_start();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="h4Jmf.player-stop">
+		<CODE>
+			wm.getDockableWindow(h4JmfPlugin.NAME).player_stop();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="h4Jmf.player-rewind">
+		<CODE>
+			wm.getDockableWindow(h4JmfPlugin.NAME).player_rewind();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="h4Jmf.player-forward">
+		<CODE>
+			wm.getDockableWindow(h4JmfPlugin.NAME).player_forward();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="h4Jmf.insert-time">
+		<CODE>
+			wm.getDockableWindow(h4JmfPlugin.NAME).insert_time();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="h4Jmf.player-position">
+		<CODE>
+			wm.getDockableWindow(h4JmfPlugin.NAME).player_position();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="h4Jmf.player-close">
+		<CODE>
+			wm.getDockableWindow(h4JmfPlugin.NAME).player_close();
+		</CODE>
+	</ACTION>
+</ACTIONS>
