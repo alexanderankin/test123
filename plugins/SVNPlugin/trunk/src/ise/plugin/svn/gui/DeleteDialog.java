@@ -28,16 +28,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.gui;
 
+import java.awt.Dimension;
 import java.awt.event.*;
-import java.util.List;
+import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.*;
 
 import org.gjt.sp.jedit.View;
 
 import ise.plugin.svn.data.DeleteData;
-import ise.java.awt.KappaLayout;
+import ise.java.awt.*;
 import org.gjt.sp.jedit.jEdit;
 
 
@@ -45,6 +47,14 @@ public class DeleteDialog extends JDialog {
 
     private List<String> paths = null;
     private DeleteData data = null;
+    private boolean showLogin = false;
+
+    private JCheckBox forceCheckbox;
+    private JCheckBox dryRunCheckbox;
+    private JCheckBox deleteFilesCheckbox;
+    private DefaultTableModel fileTableModel;
+    private JButton okButton;
+    private JButton cancelButton;
 
     /**
      * @param view the parent frame
@@ -55,21 +65,62 @@ public class DeleteDialog extends JDialog {
     }
 
     public DeleteDialog( View view, DeleteData data, boolean showLogin ) {
-        super( ( JFrame ) view, jEdit.getProperty("ips.Delete", "Delete"), true );
+        super( ( JFrame ) view, jEdit.getProperty( "ips.Delete", "Delete" ), true );
         if ( data == null ) {
             throw new IllegalArgumentException( "data may not be null" );
         }
         this.data = data;
+        paths = data.getPaths();
+        this.showLogin = showLogin;
+
+        installComponents();
+        installListeners();
+    }
+
+    private void installComponents() {
 
         JPanel panel = new JPanel( new KappaLayout() );
-        panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
+        panel.setBorder( new EmptyBorder( 12, 11, 11, 12 ) );
 
-        final JCheckBox force_cb = new JCheckBox( jEdit.getProperty("ips.Force", "Force") );
-        force_cb.setSelected( data.getForce() );
-        final JCheckBox dry_run_cb = new JCheckBox( jEdit.getProperty("ips.Dry_run", "Dry run") );
-        dry_run_cb.setSelected( data.getDryRun() );
-        final JCheckBox delete_files_cb = new JCheckBox( jEdit.getProperty("ips.Delete_files_from_file_system", "Delete files from file system") );
-        delete_files_cb.setSelected( data.getDeleteFiles() );
+        JLabel file_label = new JLabel( jEdit.getProperty( "ips.Delete", "Delete" ) + " " + ( paths.size() == 1 ? jEdit.getProperty( "ips.this_file", "this file" ) : jEdit.getProperty( "ips.these_files", "these files" ) ) + ":" );
+        BestRowTable file_table = new BestRowTable();
+        fileTableModel = new DefaultTableModel(
+                    new String[] {
+                        "", jEdit.getProperty( "ips.File", "File" )
+                    }, paths.size() ) {
+                    public Class getColumnClass( int index ) {
+                        if ( index == 0 ) {
+                            return Boolean.class;
+                        }
+                        else {
+                            return super.getColumnClass( index );
+                        }
+
+                    }
+                };
+        file_table.setModel( fileTableModel );
+
+        // load the table model
+        int i = 0;
+        for ( String path : paths ) {
+            if ( path != null ) {
+                fileTableModel.setValueAt( true, i, 0 );
+                fileTableModel.setValueAt( path, i, 1 );
+                ++i;
+            }
+        }
+        file_table.getColumnModel().getColumn( 0 ).setMaxWidth( 25 );
+        file_table.getColumnModel().getColumn( 1 ).setPreferredWidth( 625 );
+        file_table.packRows();
+
+        forceCheckbox = new JCheckBox( jEdit.getProperty( "ips.Force", "Force" ) );
+        forceCheckbox.setSelected( data.getForce() );
+
+        dryRunCheckbox = new JCheckBox( jEdit.getProperty( "ips.Dry_run", "Dry run" ) );
+        dryRunCheckbox.setSelected( data.getDryRun() );
+
+        deleteFilesCheckbox = new JCheckBox( jEdit.getProperty( "ips.Delete_files_from_file_system", "Delete files from file system" ) );
+        deleteFilesCheckbox.setSelected( data.getDeleteFiles() );
 
         // possible login
         final LoginPanel login = new LoginPanel( data.getPaths().get( 0 ) );
@@ -78,43 +129,71 @@ public class DeleteDialog extends JDialog {
 
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
-        JButton ok_btn = new JButton( jEdit.getProperty("ips.Ok", "Ok") );
-        JButton cancel_btn = new JButton( jEdit.getProperty("ips.Cancel", "Cancel") );
-        btn_panel.add( "0, 0, 1, 1, 0, w, 3", ok_btn );
-        btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancel_btn );
+        okButton = new JButton( jEdit.getProperty( "ips.Ok", "Ok" ) );
+        cancelButton = new JButton( jEdit.getProperty( "ips.Cancel", "Cancel" ) );
+        btn_panel.add( "0, 0, 1, 1, 0, w, 3", okButton );
+        btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancelButton );
         kl.makeColumnsSameWidth( 0, 1 );
 
-        ok_btn.addActionListener( new ActionListener() {
+        JScrollPane file_scroller = new JScrollPane( file_table );
+        file_scroller.getViewport().setPreferredSize( new Dimension( 600, Math.min( file_table.getBestHeight(), 250 ) ) );
+
+        panel.add( "0, 0, 1, 1, W, w , 3", file_label );
+        panel.add( "0, 1, 1, 1, W, wh, 3", file_scroller );
+
+        panel.add( "0, 2, 1, 1", KappaLayout.createVerticalStrut(11, true));
+
+        panel.add( "0, 3, 1, 1, W, w, 3", forceCheckbox );
+        panel.add( "0, 4, 1, 1, W, w, 3", dryRunCheckbox );
+        panel.add( "0, 5, 1, 1, W, w, 3", deleteFilesCheckbox );
+        if ( showLogin ) {
+            panel.add( KappaLayout.createVerticalStrut( 11 ), "0, 6, 1, 1" );
+            panel.add( login, "0, 7, 1, 1, 0, w, 0" );
+        }
+        panel.add( KappaLayout.createVerticalStrut( 11 ), "0, 8, 1, 1" );
+        panel.add( btn_panel, "0, 9, 1, 1, E" );
+        setContentPane( panel );
+        pack();
+    }
+
+    private void installListeners() {
+        okButton.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
-                        getData().setForce( force_cb.isSelected() );
-                        getData().setDryRun( dry_run_cb.isSelected() );
-                        getData().setDeleteFiles( delete_files_cb.isSelected() );
+                        // get the paths
+                        List<String> paths = new ArrayList<String>();
+                        for ( int row = 0; row < fileTableModel.getRowCount(); row++ ) {
+                            Boolean selected = ( Boolean ) fileTableModel.getValueAt( row, 0 );
+                            if ( selected ) {
+                                paths.add( ( String ) fileTableModel.getValueAt( row, 1 ) );
+                            }
+                        }
+
+                        if ( paths.size() == 0 ) {
+                            // nothing to add, bail out
+                            data = null;
+                        }
+                        else {
+                            data.setPaths( paths );
+                        }
+
+                        getData().setForce( forceCheckbox.isSelected() );
+                        getData().setDryRun( dryRunCheckbox.isSelected() );
+                        getData().setDeleteFiles( deleteFilesCheckbox.isSelected() );
                         DeleteDialog.this.setVisible( false );
                         DeleteDialog.this.dispose();
                     }
                 }
-                                );
+                                  );
 
-        cancel_btn.addActionListener( new ActionListener() {
+        cancelButton.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         DeleteDialog.this.data = null;
                         DeleteDialog.this.setVisible( false );
                         DeleteDialog.this.dispose();
                     }
                 }
-                                    );
+                                      );
 
-        panel.add( force_cb, "0, 0, 1, 1, W, w, 3" );
-        panel.add( dry_run_cb, "0, 1, 1, 1, W, w, 3" );
-        panel.add( delete_files_cb, "0, 2, 1, 1, W, w, 3" );
-        if ( showLogin ) {
-            panel.add( KappaLayout.createVerticalStrut( 11 ), "0, 3, 1, 1" );
-            panel.add( login, "0, 4, 1, 1, 0, w, 0" );
-        }
-        panel.add( KappaLayout.createVerticalStrut( 11 ), "0, 5, 1, 1" );
-        panel.add( btn_panel, "0, 6, 1, 1, E" );
-        setContentPane( panel );
-        pack();
     }
 
     public DeleteData getData() {
