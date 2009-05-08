@@ -1,5 +1,5 @@
 <project name="h4Jmf" default="build" basedir=".">
-	<!--with thanks to elberry-->
+	<!--with thanks to elberry Eric Berry-->
 	<property file="../build.properties"/>
 	<property file="build.properties"/>
 
@@ -7,7 +7,9 @@
 	<property name="compiler.source" value="1.5"/>
 	<property name="compiler.target" value="1.5"/>
 
-	<import file="../plugin-build.xml"/>
+
+	<import file="${build.support}/plugin-build.xml"/>
+
 
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>

@@ -13,7 +13,6 @@ important (at least under linux):
 
 to assist in transcription of digital audio-interview.Pause, back-step, forward-step , position from cue, insert cue in text, play functions with shortcuts from editor-window
 
-sources in jar under src/
 
 works under linux, not yet tested under windows
 
@@ -26,10 +25,6 @@ jedit-devel@lists.sourceforge.net
 jedit-cvs@lists.sourceforge.net
 http://jedit.svn.sourceforge.net/viewvc/jedit/
 https://sourceforge.net/scm/?type=svn&group_id=588
- create a tag in svn ???
-  svn mkdir https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/h4Jmf
-  svn mkdir https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/h4Jmf/tags/start
-  svn co https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/h4Jmf
 
 problems
 [JMF thread: SendEventQueue: com.sun.media.content.unknown.Handler] [error] Handler: INFO: e=javax.media.ResourceUnavailableEvent[source=com.sun.media.content.unknown.Handler@4845aa,message=Failed to prefetch: cannot open the audio device.]
