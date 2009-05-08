@@ -76,12 +76,12 @@ public class PropertyEditor extends JDialog {
     // values, but a few get specific values, see comments below for each
     // property name.
     private String[] default_file_prop_names = new String[] {
-                "",                                             // user defined
+                "",                                              // user defined
                 "svn:executable",
                 "svn:mime-type",
                 "svn:ignore",
-                "svn:keywords",                                 // Date, Revision, Author, HeadURL, Id
-                "svn:eol-style",                                // native, CRLF, CR, LF
+                "svn:keywords",                                  // Date, Revision, Author, HeadURL, Id
+                "svn:eol-style",                                 // native, CRLF, CR, LF
                 "svn:externals",
                 "svn:special" };
 
@@ -89,19 +89,19 @@ public class PropertyEditor extends JDialog {
     // text values, but a few get specific values, see comments below for each
     // property name.
     private String[] default_dir_prop_names = new String[] {
-                "",                                             // user defined
+                "",                                              // user defined
                 "svn:mime-type",
                 "svn:ignore",
-                "svn:keywords",                                 // Date, Revision, Author, HeadURL, Id
-                "svn:eol-style",                                // native, CRLF, CR, LF
+                "svn:keywords",                                  // Date, Revision, Author, HeadURL, Id
+                "svn:eol-style",                                 // native, CRLF, CR, LF
                 "svn:externals",
                 "svn:special",
                 "bugtraq:url",
-                "bugtraq:warnifnoissue",                        // boolean
+                "bugtraq:warnifnoissue",                         // boolean
                 "bugtraq:label",
                 "bugtraq:message",
-                "bugtraq:number",                               // boolean
-                "bugtraq:append",                               // boolean
+                "bugtraq:number",                                // boolean
+                "bugtraq:append",                                // boolean
                 "bugtraq:logregex"};
 
     // names of properties that only take a boolean value
@@ -173,7 +173,7 @@ public class PropertyEditor extends JDialog {
 
         // main panel/content pane for the dialog
         JPanel panel = new JPanel( new LambdaLayout() );
-        panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
+        panel.setBorder( new EmptyBorder( 12, 11, 11, 12 ) );
 
         // property name chooser, fill with the appropriate file or directory
         // property names
@@ -186,7 +186,10 @@ public class PropertyEditor extends JDialog {
         // eol list.  boolean and eol are single choice, keyword list is multiple
         // selection.
         JPanel value_entry_panel = new JPanel( new LambdaLayout() );
-        value_entry_panel.setBorder( BorderFactory.createTitledBorder( BorderFactory.createEtchedBorder(), jEdit.getProperty( "ips.Property_value", "Property value" ) ) );
+        value_entry_panel.setBorder(
+            BorderFactory.createCompoundBorder(
+                BorderFactory.createTitledBorder( BorderFactory.createEtchedBorder(), jEdit.getProperty( "ips.Property_value", "Property value" ) ),
+                BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) ) );
 
         // there are 2 radio buttons, the top one lets the user enter or select
         // property values, the second lets the user specify a file with the
@@ -261,7 +264,7 @@ public class PropertyEditor extends JDialog {
                     Object[] values = list.getSelectedValues();
                     StringBuffer sb = new StringBuffer();
                     for ( int i = 0; i < values.length; i++ ) {
-                        sb.append( values[ i ].toString() ).append( " " );
+                        sb.append( values[ i ].toString() ).append( ' ' );
                     }
                     text_value.setText( sb.toString().trim() );
                 }
@@ -289,7 +292,7 @@ public class PropertyEditor extends JDialog {
                                         }
                                         CardLayout cl = ( CardLayout ) value_entry_area.getLayout();
                                         cl.show( value_entry_area, "listarea" );
-                                        text_btn.setText( jEdit.getProperty("ips.Choose_a_value>", "Choose a value:") );
+                                        text_btn.setText( jEdit.getProperty( "ips.Choose_a_value>", "Choose a value:" ) );
                                         PropertyEditor.this.repaint();
                                         return ;
                                     }
@@ -317,7 +320,7 @@ public class PropertyEditor extends JDialog {
                                         }
                                         CardLayout cl = ( CardLayout ) value_entry_area.getLayout();
                                         cl.show( value_entry_area, "listarea" );
-                                        text_btn.setText( jEdit.getProperty("ips.Choose_one_or_more_values>", "Choose one or more values:") );
+                                        text_btn.setText( jEdit.getProperty( "ips.Choose_one_or_more_values>", "Choose one or more values:" ) );
                                         PropertyEditor.this.repaint();
                                         return ;
                                     }
@@ -339,7 +342,7 @@ public class PropertyEditor extends JDialog {
                                         }
                                         CardLayout cl = ( CardLayout ) value_entry_area.getLayout();
                                         cl.show( value_entry_area, "listarea" );
-                                        text_btn.setText( jEdit.getProperty("ips.Choose_a_value>", "Choose a value:") );
+                                        text_btn.setText( jEdit.getProperty( "ips.Choose_a_value>", "Choose a value:" ) );
                                         PropertyEditor.this.repaint();
                                         return ;
                                     }
