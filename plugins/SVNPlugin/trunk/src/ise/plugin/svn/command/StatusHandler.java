@@ -13,10 +13,8 @@
 */
 package ise.plugin.svn.command;
 
-import java.io.File;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.tmatesoft.svn.core.SVNCancelException;
@@ -56,6 +54,7 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
     private PrintStream out = null;
     private boolean isRemote;
 
+    private List<SVNStatus> normalFiles = null;
     private List<SVNStatus> modifiedFiles = null;
     private List<SVNStatus> conflictedFiles = null;
     private List<SVNStatus> deletedFiles = null;
@@ -96,6 +95,9 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
         if ( lockedFiles != null ) {
             sd.setLocked( lockedFiles );
         }
+        if ( normalFiles != null ) {
+            sd.setNormal( normalFiles );
+        }
         return sd;
     }
 
@@ -110,7 +112,6 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
          * item.
          */
         SVNStatusType contentsStatus = status.getContentsStatus();
-
         String pathChangeType = " ";
 
         boolean isAddedWithHistory = status.isCopied();
@@ -227,6 +228,10 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
              * The item was not modified (normal).
              */
             pathChangeType = " ";
+            if ( normalFiles == null ) {
+                normalFiles = new ArrayList<SVNStatus>();
+            }
+            normalFiles.add( status );
         }
 
         /*
@@ -363,7 +368,7 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
          * client's command "svn status"
          */
 
-        if (out != null) {
+        if ( out != null ) {
             out.println( pathChangeType
                     + propertiesChangeType
                     + ( isLocked ? "L" : " " )
@@ -379,7 +384,7 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
                         .valueOf( lastChangedRevision ) : "?" ) + offsets[ 1 ]
                     + ( status.getAuthor() != null ? status.getAuthor() : "?" )
                     + offsets[ 2 ] + status.getFile().getPath() );
-         }
+        }
     }
 
     /*

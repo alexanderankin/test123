@@ -29,7 +29,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ise.plugin.svn.data;
 
 import java.util.List;
-import java.util.ArrayList;
 import org.tmatesoft.svn.core.wc.SVNStatus;
 
 public class StatusData {
@@ -42,6 +41,7 @@ public class StatusData {
     private List<SVNStatus> missing;
     private List<SVNStatus> outOfDate;
     private List<SVNStatus> locked;
+    private List<SVNStatus> normal;
 
     /**
      * Returns the value of revision.
@@ -171,4 +171,11 @@ public class StatusData {
         this.locked = Locked;
     }
 
+    public List<SVNStatus> getNormal() {
+        return normal;
+    }
+
+    public void setNormal( List<SVNStatus> normal ) {
+        this.normal = normal;
+    }
 }

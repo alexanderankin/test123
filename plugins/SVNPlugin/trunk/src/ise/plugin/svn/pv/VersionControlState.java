@@ -76,7 +76,7 @@ public class VersionControlState implements VersionControlService {
         // way too expensive, time-wise.
         data.setRemote( false );
 
-        data.setOut( new ConsolePrintStream(new NullOutputStream()) );
+        data.setOut( new ConsolePrintStream( new NullOutputStream() ) );
         Status command = new Status();
         StatusData status = null;
         try {
@@ -114,8 +114,11 @@ public class VersionControlState implements VersionControlService {
         else if ( status.getUnversioned() != null ) {
             return UNVERSIONED;
         }
-        else {
+        else if ( status.getNormal() != null) {
             return NORMAL;
+        }
+        else {
+            return NONE;
         }
     }
 
@@ -183,13 +186,13 @@ public class VersionControlState implements VersionControlService {
      * regular jEdit option panes, the label to be shown in the dialog
      * should be defined by the "option.[pane_name].label" property.
      *
-     * @param	project	The project that will be edited.
+     * @param project The project that will be edited.
      *
      * @return An OptionPane instance, or null for no option pane.
      */
-     public OptionPane getOptionPane(VPTProject project) {
-        return new PVSVNOptionPane(project.getName());
-     }
+    public OptionPane getOptionPane( VPTProject project ) {
+        return new PVSVNOptionPane( project.getName() );
+    }
 
 
     /**
@@ -197,12 +200,12 @@ public class VersionControlState implements VersionControlService {
      * jEdit option groups, the label to be shown in the dialog
      * should be defined by the "option.[group_name].label" property.
      *
-     * @param	project	The project that will be edited.
+     * @param project The project that will be edited.
      *
      * @return null
      */
-     public OptionGroup getOptionGroup(VPTProject project) {
+    public OptionGroup getOptionGroup( VPTProject project ) {
         return null;
-     }
+    }
 
 }
