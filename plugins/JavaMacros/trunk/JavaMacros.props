@@ -6,7 +6,7 @@ plugin.javamacros.JavaMacrosPlugin.activate=startup
 # These two properties are required for all plugins
 plugin.javamacros.JavaMacrosPlugin.name=JavaMacros
 plugin.javamacros.JavaMacrosPlugin.author=Denis Dzenskevich
-plugin.javamacros.JavaMacrosPlugin.version=4.3
+plugin.javamacros.JavaMacrosPlugin.version=0.1
 
 # online help
 plugin.javamacros.JavaMacrosPlugin.docs=
