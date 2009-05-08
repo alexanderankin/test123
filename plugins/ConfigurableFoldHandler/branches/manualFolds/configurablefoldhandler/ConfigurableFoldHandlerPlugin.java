@@ -27,6 +27,8 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import javax.swing.JOptionPane;
+
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.Buffer;
@@ -354,10 +356,16 @@ loop:	for(Iterator<JEditBuffer> iter = bufferStrings.keySet().iterator();
 	 */
 	static public void createManualFold(JEditTextArea ta, boolean persistent)
 	{
+		JEditBuffer buffer = ta.getBuffer();
+		if (! (buffer.getFoldHandler() instanceof ConfigurableFoldHandler))
+		{
+			JOptionPane.showMessageDialog(ta.getView(), jEdit.getProperty(
+				"configurablefoldhandler.wrongfoldhandler"));
+			return;
+		}
 		Selection [] sel = ta.getSelection();
 		if (sel.length != 1)
 			return;
-		JEditBuffer buffer = ta.getBuffer();
 		ManualFolds mf = getManualFoldsFor(buffer, true);
 		int start = sel[0].getStartLine();
 		int end = sel[0].getEndLine();
@@ -374,6 +382,12 @@ loop:	for(Iterator<JEditBuffer> iter = bufferStrings.keySet().iterator();
 	static public void removeManualFold(JEditTextArea ta)
 	{
 		JEditBuffer buffer = ta.getBuffer();
+		if (! (buffer.getFoldHandler() instanceof ConfigurableFoldHandler))
+		{
+			JOptionPane.showMessageDialog(ta.getView(), jEdit.getProperty(
+				"configurablefoldhandler.wrongfoldhandler"));
+			return;
+		}
 		ManualFolds mf = getManualFoldsFor(buffer, false);
 		if (mf == null)
 			return;
