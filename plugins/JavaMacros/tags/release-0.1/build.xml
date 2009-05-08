@@ -1,5 +1,0 @@
-<project name="JavaMacros" default="build">
-    <property file="build.properties"/>
-	<property name="build.support" value="../build-support" />
-    <import file="${build.support}/plugin-build.xml" />
-</project>
