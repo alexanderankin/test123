@@ -86,13 +86,13 @@ public class Status {
             // svnkit 1.2.x:
             // doStatus(File path, SVNRevision revision, SVNDepth depth, boolean remote, boolean reportAll, boolean includeIgnored, boolean collectParentExternals, ISVNStatusHandler handler, Collection changeLists)
             try {
-                revision = client.doStatus( localPath, SVNRevision.HEAD, depth, cd.getRemote(), false, false, false, handler, null );
+                revision = client.doStatus( localPath, SVNRevision.HEAD, depth, cd.getRemote(), true, false, false, handler, null );
             }
             catch ( Exception e ) {
                 if ( cd.getRemote() ) {
                     // if disconnected, an error will be thrown if remote is true,
                     // so set remote to false and try again
-                    revision = client.doStatus( localPath, SVNRevision.HEAD, depth, false, false, false, false, handler, null );
+                    revision = client.doStatus( localPath, SVNRevision.HEAD, depth, false, true, false, false, handler, null );
                 }
             }
         }
