@@ -29,7 +29,7 @@ import org.gjt.sp.jedit.io.VFSFile;
 
 import projectviewer.config.VersionControlService;
 
-import projectviewer.vpt.VPTFile;
+import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 
 import p4plugin.config.P4Config;
@@ -48,7 +48,7 @@ import p4plugin.config.P4OptionPane;
 public class P4Service implements VersionControlService
 {
 
-	public int getFileState(VPTFile f)
+	public int getNodeState(VPTNode f)
 	{
 		return 0;
 	}
