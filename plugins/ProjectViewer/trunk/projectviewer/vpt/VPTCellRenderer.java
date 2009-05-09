@@ -113,8 +113,8 @@ public final class VPTCellRenderer extends DefaultTreeCellRenderer {
 			boolean underlined;
 
 			Icon icon = node.getIcon(expanded);
-			if (node.isFile() && ic != null) {
-				icon = ic.composeIcon((VPTFile) node, icon);
+			if (ic != null && (node.isFile() || node.isDirectory())) {
+				icon = ic.composeIcon(node, icon);
 			}
 
 			setIcon(icon);

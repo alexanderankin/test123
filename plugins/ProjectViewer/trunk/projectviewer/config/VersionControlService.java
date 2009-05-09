@@ -21,7 +21,7 @@ package projectviewer.config;
 import javax.swing.Icon;
 import org.gjt.sp.jedit.io.VFSFile;
 
-import projectviewer.vpt.VPTFile;
+import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 
 
@@ -41,31 +41,34 @@ import projectviewer.vpt.VPTProject;
 
 public interface VersionControlService extends OptionsService
 {
-
 	/** Key in the project's properties identifying the version control service. */
 	public static final String VC_SERVICE_KEY = "projectviewer.version_control_service";
 
+	/** Special value designating that no special status is available for the node. */
+	public static final int VC_STATUS_NORMAL = 0;
+
 	/**
 	 * This method should return an integer identifying the current
-	 * state of the given file.
+	 * state of the given node.
 	 *
-	 * This method will be called every time the file's tree node needs
+	 * This method will be called every time the tree node needs
 	 * to be repainted, so it shouldn't take long to return. It's
 	 * extremely encouraged that implementations do some sort of caching
 	 * to make this method return quickly.
 	 *
-	 * @param	f		The file.
+	 * @param	node		The node.
 	 *
-	 * @return A service-specific identifier for the file state.
+	 * @return A service-specific identifier for the file state, or
+	 *         VC_STATUS_NORMAL.
 	 */
-	public int getFileState(VPTFile f);
+	public int getNodeState(VPTNode node);
 
 
 	/**
 	 * This should return the status icon to be used to represent the
 	 * given state.
 	 *
-	 * @param	state	The value retrieved from {@link #getFileState(VPTFile)}.
+	 * @param	state	The value retrieved from {@link #getNodeState(VPTNode)}.
 	 *
 	 * @return The icon for the given state, or null for no icon.
 	 */
