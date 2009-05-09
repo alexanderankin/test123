@@ -102,28 +102,34 @@ public final class IconComposer {
 	 *   <li>bottom right: error list status (if ErrorList is available).</li>
 	 * </ul>
 	 *
-	 * @param	f			File node to query.
+	 * @param	node		Node to query.
 	 * @param	baseIcon	Icon where to overlay status icons.
 	 *
 	 * @return A new icon with the overlayed status icons.
 	 */
-	public Icon composeIcon(VPTFile f,
+	public Icon composeIcon(VPTNode node,
 							Icon baseIcon)
 	{
-		VFSFile vfsf = f.getFile();
 		int msg_state = MSG_STATE_NONE;
-		if (ProjectViewerConfig.getInstance().isErrorListAvailable()) {
-			msg_state = Helper.getMessageState(f.getURL());
+		int file_state = FILE_STATE_NORMAL;
+		if (node.isFile()) {
+			VPTFile f = (VPTFile) node;
+			VFSFile vfsf = f.getFile();
+			file_state = (vfsf != null) ? getFileState(vfsf, f.getURL())
+			                            : FILE_STATE_NOT_FOUND;
+			if (ProjectViewerConfig.getInstance().isErrorListAvailable()) {
+				msg_state = Helper.getMessageState(f.getURL());
+			}
 		}
-
-		int file_state = (vfsf != null) ? getFileState(vfsf, f.getURL()) : FILE_STATE_NOT_FOUND;
 
 		Icon tr = null; // unused
 
 		Icon tl = null; // vc_state
 		if (vcservice != null) {
-			int vcstate = vcservice.getFileState(f);
-			tl = vcservice.getIcon(vcstate);
+			int vcstate = vcservice.getNodeState(node);
+			if (vcstate != VersionControlService.VC_STATUS_NORMAL) {
+				tl = vcservice.getIcon(vcstate);
+			}
 		}
 
 		Icon bl = null; // file_state
