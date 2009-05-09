@@ -75,55 +75,71 @@ public class PropertyEditor extends JDialog {
     // default property names that can be applied to files.  Most get text
     // values, but a few get specific values, see comments below for each
     // property name.
-    private String[] default_file_prop_names = new String[] {
-                "",                                              // user defined
+    private String[] defaultFilePropNames = new String[] {
+                "",                                                 // user defined
                 "svn:executable",
                 "svn:mime-type",
                 "svn:ignore",
-                "svn:keywords",                                  // Date, Revision, Author, HeadURL, Id
-                "svn:eol-style",                                 // native, CRLF, CR, LF
+                "svn:keywords",                                     // Date, Revision, Author, HeadURL, Id
+                "svn:eol-style",                                    // native, CRLF, CR, LF
                 "svn:externals",
                 "svn:special" };
 
     // default property names that can be applied to directories.  Most get
     // text values, but a few get specific values, see comments below for each
     // property name.
-    private String[] default_dir_prop_names = new String[] {
-                "",                                              // user defined
+    private String[] defaultDirPropNames = new String[] {
+                "",                                                 // user defined
                 "svn:mime-type",
                 "svn:ignore",
-                "svn:keywords",                                  // Date, Revision, Author, HeadURL, Id
-                "svn:eol-style",                                 // native, CRLF, CR, LF
+                "svn:keywords",                                     // Date, Revision, Author, HeadURL, Id
+                "svn:eol-style",                                    // native, CRLF, CR, LF
                 "svn:externals",
                 "svn:special",
                 "bugtraq:url",
-                "bugtraq:warnifnoissue",                         // boolean
+                "bugtraq:warnifnoissue",                            // boolean
                 "bugtraq:label",
                 "bugtraq:message",
-                "bugtraq:number",                                // boolean
-                "bugtraq:append",                                // boolean
+                "bugtraq:number",                                   // boolean
+                "bugtraq:append",                                   // boolean
                 "bugtraq:logregex"};
 
     // names of properties that only take a boolean value
-    private String[] boolean_names = new String[] {"bugtraq:warnifnoissue", "bugtraq:number", "bugtraq:append"};
+    private String[] booleanNames = new String[] {"bugtraq:warnifnoissue", "bugtraq:number", "bugtraq:append"};
 
     // boolean values as understood by svn
-    private String[] boolean_choices = new String[] {"true", "false"};
+    private String[] booleanChoices = new String[] {"true", "false"};
 
     // name of keyword property
     // TODO: is using an array of any value?
-    private String[] keyword_names = new String[] {"svn:keywords"};
+    private String[] keywordNames = new String[] {"svn:keywords"};
 
     // keywords understood by svn
-    private String[] keyword_choices = new String[] {"Date", "Revision", "Author", "HeadURL", "Id"};
+    private String[] keywordChoices = new String[] {"Date", "Revision", "Author", "HeadURL", "Id"};
 
     // name of eol-style property
     // TODO: is using an array of any value?
-    private String[] eol_names = new String[] {"svn:eol-style"};
+    private String[] eolNames = new String[] {"svn:eol-style"};
 
     // eol-style values understood by svn
-    private String[] eol_choices = new String[] {"native", "CRLF", "CR", "LF"};
+    private String[] eolChoices = new String[] {"native", "CRLF", "CR", "LF"};
 
+    // components
+    private JButton browseButton;
+    private HistoryTextField fileHistory;
+    private JRadioButton fileButton;
+    private JRadioButton textButton;
+    private JTextArea textValue;
+    private JList listValue;
+    private JPanel valueEntryArea;
+    private JComboBox propChooser;
+    private JCheckBox recursiveCheckbox;
+    private JButton okButton;
+    private JButton cancelButton;
+
+    // card names for CardLayout for value selection area
+    private final String TEXTAREA = "textarea";
+    private final String LISTAREA = "listArea";
 
     /**
      * @param view parent frame for this dialog
@@ -143,33 +159,31 @@ public class PropertyEditor extends JDialog {
     }
 
     // initialize the dialog, build the gui, action listeners, etc.
-    // TODO: refactor, this grew to be big and ugly
     protected void _init() {
+        installComponents();
+        installListeners();
+    }
+
+    private void installComponents() {
 
         // for returning to the caller
         propertyData = new PropertyData();
 
         // file property names, these can be set as a jEdit property.  Defaults
         // to string array defined above.
-        String[] filePropNames = null;
         String file_props = jEdit.getProperty( "ise.plugin.svn.gui.PropertyEditor.defaultFilePropNames" );
-        if ( file_props == null || file_props.length() == 0 ) {
-            filePropNames = default_file_prop_names;
-        }
-        else {
-            filePropNames = file_props.split( "[,]" );
-        }
+        String[] filePropNames =
+            file_props == null || file_props.length() == 0 ?
+            defaultFilePropNames :
+            file_props.split( "[,]" );
 
         // directory property names, these can be set as a jEdit property.
         // Defaults to string array defined above.
-        String[] dirPropNames = null;
         String dir_props = jEdit.getProperty( "ise.plugin.svn.gui.PropertyEditor.defaultDirPropNames" );
-        if ( dir_props == null || dir_props.length() == 0 ) {
-            dirPropNames = default_dir_prop_names;
-        }
-        else {
-            dirPropNames = dir_props.split( "[,]" );
-        }
+        String[] dirPropNames =
+            dir_props == null || dir_props.length() == 0 ?
+            defaultDirPropNames :
+            dir_props.split( "[,]" );
 
         // main panel/content pane for the dialog
         JPanel panel = new JPanel( new LambdaLayout() );
@@ -178,8 +192,8 @@ public class PropertyEditor extends JDialog {
         // property name chooser, fill with the appropriate file or directory
         // property names
         JLabel prop_name_label = new JLabel( jEdit.getProperty( "ips.Property_name>", "Property name:" ) );
-        final JComboBox prop_chooser = new JComboBox( isDirectory ? dirPropNames : filePropNames );
-        prop_chooser.setEditable( true );
+        propChooser = new JComboBox( isDirectory ? dirPropNames : filePropNames );
+        propChooser.setEditable( true );
 
         // value entry panel, text entry or from file -- depending on the selected
         // property name, change to text field, boolean list, keyword list, or
@@ -189,53 +203,101 @@ public class PropertyEditor extends JDialog {
         value_entry_panel.setBorder(
             BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder( BorderFactory.createEtchedBorder(), jEdit.getProperty( "ips.Property_value", "Property value" ) ),
-                BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) ) );
+                BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) )
+            );
 
         // there are 2 radio buttons, the top one lets the user enter or select
         // property values, the second lets the user specify a file with the
         // property data.
-        final JRadioButton text_btn = new JRadioButton( jEdit.getProperty( "ips.Enter_a_text_value>", "Enter a text value:" ) );
-        text_btn.setSelected( true );
-        final JRadioButton file_btn = new JRadioButton( jEdit.getProperty( "ips.Or_load_value_from_file>", "Or load value from file:" ) );
+        textButton = new JRadioButton( jEdit.getProperty( "ips.Enter_a_textValue>", "Enter a text value:" ) );
+        textButton.setSelected( true );
+        fileButton = new JRadioButton( jEdit.getProperty( "ips.Or_load_value_from_file>", "Or load value from file:" ) );
         ButtonGroup bg = new ButtonGroup();
-        bg.add( text_btn );
-        bg.add( file_btn );
+        bg.add( textButton );
+        bg.add( fileButton );
 
         // for the area where the user can either enter a text value for the
         // property or select from a list, use a card layout to switch between
         // a text area or a jlist.
-        final JPanel value_entry_area = new JPanel( new CardLayout() );
+        valueEntryArea = new JPanel( new CardLayout() );
 
         // always set the actual value as text in this text area
-        final JTextArea text_value = new JTextArea( 8, 30 );
+        textValue = new JTextArea( 8, 30 );
         if ( value != null ) {
-            text_value.setText( value );
+            textValue.setText( value );
         }
         JPanel text_area_panel = new JPanel( new BorderLayout() );
-        text_area_panel.add( new JScrollPane( text_value ), BorderLayout.CENTER );
-        value_entry_area.add( text_area_panel, "textarea" );
+        text_area_panel.add( new JScrollPane( textValue ), BorderLayout.CENTER );
+        valueEntryArea.add( text_area_panel, TEXTAREA );
 
         // this list is used for keywords, eol-style, and boolean values.  The
         // list model is changed as appropriate.
-        final JList list_value = new JList();
-        list_value.setVisibleRowCount( 8 );
-        JPanel list_value_panel = new JPanel( new BorderLayout() );
-        list_value_panel.add( new JScrollPane( list_value ), BorderLayout.CENTER );
-        value_entry_area.add( list_value_panel, "listarea" );
+        listValue = new JList();
+        listValue.setVisibleRowCount( 8 );
+        JPanel listValue_panel = new JPanel( new BorderLayout() );
+        listValue_panel.add( new JScrollPane( listValue ), BorderLayout.CENTER );
+        valueEntryArea.add( listValue_panel, LISTAREA );
 
         // let the user choose a file for property data
-        final HistoryTextField file_value = new HistoryTextField( PATH );
-        file_value.setColumns( 30 );
-        file_value.setEnabled( false );
+        fileHistory = new HistoryTextField( PATH );
+        fileHistory.setColumns( 30 );
+        fileHistory.setEnabled( false );
 
-        final JButton browse_btn = new JButton( jEdit.getProperty( "ips.Browse...", "Browse..." ) );
-        browse_btn.setEnabled( false );
-        browse_btn.addActionListener(
+        final JButton browseButton = new JButton( jEdit.getProperty( "ips.Browse...", "Browse..." ) );
+        browseButton.setEnabled( false );
+
+        // lay out value entry panel
+        value_entry_panel.add( "0, 0, 7, 1, W, w, 3", textButton );
+        value_entry_panel.add( "0, 1, 1, 1", KappaLayout.createHorizontalStrut( 11, true ) );
+        value_entry_panel.add( "0, 2, 7, 1, W, wh, 3", valueEntryArea );
+        value_entry_panel.add( "0, 3, 1, 1", KappaLayout.createVerticalStrut( 6, true ) );
+        value_entry_panel.add( "0, 4, 7, 1, W, w, 3", fileButton );
+        value_entry_panel.add( "0, 5, 1, 1", KappaLayout.createHorizontalStrut( 11, true ) );
+        value_entry_panel.add( "1, 6, 5, 1, W, w, 3", fileHistory );
+        value_entry_panel.add( "6, 6, 1, 1, E,  , 3", browseButton );
+
+        // recursive checkbox
+        recursiveCheckbox = new JCheckBox( jEdit.getProperty( "ips.Apply_recursively?", "Apply recursively?" ) );
+        recursiveCheckbox.setSelected( false );
+        recursiveCheckbox.setEnabled( isDirectory );
+
+        // ok and cancel buttons
+        KappaLayout kl = new KappaLayout();
+        JPanel btn_panel = new JPanel( kl );
+        okButton = new JButton( jEdit.getProperty( "ips.Ok", "Ok" ) );
+        cancelButton = new JButton( jEdit.getProperty( "ips.Cancel", "Cancel" ) );
+        btn_panel.add( "0, 0, 1, 1, 0, w, 3", okButton );
+        btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancelButton );
+        kl.makeColumnsSameWidth( 0, 1 );
+
+        // add the components to the main content pane
+        panel.add( "0, 0, 1, 1, W,  , 6", prop_name_label );
+        panel.add( "1, 0, 5, 1, W, w, 4", propChooser );
+
+        panel.add( "0, 1, 6, 1, W, wh, 3", value_entry_panel );
+        panel.add( "0, 2, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
+
+        panel.add( "0, 3, 6, 1, W,  , 6", recursiveCheckbox );
+        panel.add( "0, 4, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
+
+        panel.add( "0, 5, 6, 1, E,  , 6", btn_panel );
+
+        setContentPane( panel );
+        pack();
+
+        // all happy now, so set the parameter that was passed in so everything
+        // looks pretty
+        propChooser.setSelectedItem( name == null ? "" : name );
+
+    }
+
+    private void installListeners() {
+        browseButton.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
                     String[] filename = GUIUtilities.showVFSFileDialog( view, PVHelper.getProjectRoot( view ), VFSBrowser.OPEN_DIALOG, false );
                     if ( filename != null && filename.length > 0 ) {
-                        file_value.setText( filename[ 0 ] );
+                        fileHistory.setText( filename[ 0 ] );
                     }
                 }
             }
@@ -244,20 +306,20 @@ public class PropertyEditor extends JDialog {
         // action listener for radio buttons, enable parts as needed
         ActionListener al = new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
-                        file_value.setEnabled( file_btn.isSelected() );
-                        browse_btn.setEnabled( file_btn.isSelected() );
-                        text_value.setEnabled( text_btn.isSelected() );
-                        list_value.setEnabled( text_btn.isSelected() );
+                        fileHistory.setEnabled( fileButton.isSelected() );
+                        browseButton.setEnabled( fileButton.isSelected() );
+                        textValue.setEnabled( textButton.isSelected() );
+                        listValue.setEnabled( textButton.isSelected() );
                     }
                 };
-        text_btn.addActionListener( al );
-        file_btn.addActionListener( al );
+        textButton.addActionListener( al );
+        fileButton.addActionListener( al );
 
-        // add a listener to the list_value so that when the user picks from
-        // the list, the selected values are put into the text_value in the
-        // right format.  text_value always holds the actual value that will
+        // add a listener to the listValue so that when the user picks from
+        // the list, the selected values are put into the textValue in the
+        // right format.  textValue always holds the actual value that will
         // be sent to svn, the list is just a convenience for the user.
-        list_value.addListSelectionListener(
+        listValue.addListSelectionListener(
             new ListSelectionListener() {
                 public void valueChanged( ListSelectionEvent lse ) {
                     JList list = ( JList ) lse.getSource();
@@ -266,14 +328,14 @@ public class PropertyEditor extends JDialog {
                     for ( int i = 0; i < values.length; i++ ) {
                         sb.append( values[ i ].toString() ).append( ' ' );
                     }
-                    text_value.setText( sb.toString().trim() );
+                    textValue.setText( sb.toString().trim() );
                 }
             }
         );
 
         // item listener for prop name chooser to use the right property value
         // selector
-        prop_chooser.addItemListener(
+        propChooser.addItemListener(
             new ItemListener() {
                 public void itemStateChanged( ItemEvent ie ) {
                     final String choice = ( String ) ie.getItem();
@@ -283,16 +345,16 @@ public class PropertyEditor extends JDialog {
 
                                 // check for boolean property name, if found,
                                 // show the boolean value list
-                                for ( String item : boolean_names ) {
+                                for ( String item : booleanNames ) {
                                     if ( item.equals( choice ) ) {
-                                        list_value.setListData( boolean_choices );
-                                        list_value.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
+                                        listValue.setListData( booleanChoices );
+                                        listValue.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
                                         if ( value != null ) {
-                                            list_value.setSelectedIndex( value.equals( "true" ) ? 0 : 1 );
+                                            listValue.setSelectedIndex( value.equals( "true" ) ? 0 : 1 );
                                         }
-                                        CardLayout cl = ( CardLayout ) value_entry_area.getLayout();
-                                        cl.show( value_entry_area, "listarea" );
-                                        text_btn.setText( jEdit.getProperty( "ips.Choose_a_value>", "Choose a value:" ) );
+                                        CardLayout cl = ( CardLayout ) valueEntryArea.getLayout();
+                                        cl.show( valueEntryArea, LISTAREA );
+                                        textButton.setText( jEdit.getProperty( "ips.Choose_a_value>", "Choose a value:" ) );
                                         PropertyEditor.this.repaint();
                                         return ;
                                     }
@@ -300,27 +362,27 @@ public class PropertyEditor extends JDialog {
 
                                 // check for keyword property name, if found,
                                 // show the keyword value list
-                                for ( String item : keyword_names ) {
+                                for ( String item : keywordNames ) {
                                     if ( item.equals( choice ) ) {
-                                        list_value.setListData( keyword_choices );
+                                        listValue.setListData( keywordChoices );
                                         // there can be multiple keywords
-                                        list_value.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
+                                        listValue.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
                                         if ( value != null ) {
                                             String[] values = value.split( " " );
                                             int[] selected = new int[ values.length ];
                                             for ( int j = 0; j < values.length; j++ ) {
-                                                for ( int i = 0; i < keyword_choices.length; i++ ) {
-                                                    if ( keyword_choices[ i ].equals( values[ j ] ) ) {
+                                                for ( int i = 0; i < keywordChoices.length; i++ ) {
+                                                    if ( keywordChoices[ i ].equals( values[ j ] ) ) {
                                                         selected[ j ] = i;
                                                         continue;
                                                     }
                                                 }
                                             }
-                                            list_value.setSelectedIndices( selected );
+                                            listValue.setSelectedIndices( selected );
                                         }
-                                        CardLayout cl = ( CardLayout ) value_entry_area.getLayout();
-                                        cl.show( value_entry_area, "listarea" );
-                                        text_btn.setText( jEdit.getProperty( "ips.Choose_one_or_more_values>", "Choose one or more values:" ) );
+                                        CardLayout cl = ( CardLayout ) valueEntryArea.getLayout();
+                                        cl.show( valueEntryArea, LISTAREA );
+                                        textButton.setText( jEdit.getProperty( "ips.Choose_one_or_more_values>", "Choose one or more values:" ) );
                                         PropertyEditor.this.repaint();
                                         return ;
                                     }
@@ -328,30 +390,30 @@ public class PropertyEditor extends JDialog {
 
                                 // check for eol-style property name, if found,
                                 // show the eol-style value list
-                                for ( String item : eol_names ) {
+                                for ( String item : eolNames ) {
                                     if ( item.equals( choice ) ) {
-                                        list_value.setListData( eol_choices );
-                                        list_value.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
+                                        listValue.setListData( eolChoices );
+                                        listValue.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
                                         if ( value != null ) {
-                                            for ( int i = 0; i < eol_choices.length; i++ ) {
-                                                if ( eol_choices[ i ].equals( value ) ) {
-                                                    list_value.setSelectedIndex( i );
+                                            for ( int i = 0; i < eolChoices.length; i++ ) {
+                                                if ( eolChoices[ i ].equals( value ) ) {
+                                                    listValue.setSelectedIndex( i );
                                                     return ;
                                                 }
                                             }
                                         }
-                                        CardLayout cl = ( CardLayout ) value_entry_area.getLayout();
-                                        cl.show( value_entry_area, "listarea" );
-                                        text_btn.setText( jEdit.getProperty( "ips.Choose_a_value>", "Choose a value:" ) );
+                                        CardLayout cl = ( CardLayout ) valueEntryArea.getLayout();
+                                        cl.show( valueEntryArea, LISTAREA );
+                                        textButton.setText( jEdit.getProperty( "ips.Choose_a_value>", "Choose a value:" ) );
                                         PropertyEditor.this.repaint();
                                         return ;
                                     }
                                 }
 
                                 // everything else is free-form text
-                                CardLayout cl = ( CardLayout ) value_entry_area.getLayout();
-                                cl.show( value_entry_area, "textarea" );
-                                text_btn.setText( "Enter a text value:" );
+                                CardLayout cl = ( CardLayout ) valueEntryArea.getLayout();
+                                cl.show( valueEntryArea, TEXTAREA );
+                                textButton.setText( "Enter a text value:" );
                                 PropertyEditor.this.repaint();
                             }
                         }
@@ -360,56 +422,33 @@ public class PropertyEditor extends JDialog {
             }
         );
 
-        // lay out value entry panel
-        value_entry_panel.add( "0, 0, 7, 1, W, w, 3", text_btn );
-        value_entry_panel.add( "0, 1, 1, 1", KappaLayout.createHorizontalStrut( 11, true ) );
-        value_entry_panel.add( "0, 2, 7, 1, W, wh, 3", value_entry_area );
-        value_entry_panel.add( "0, 3, 1, 1", KappaLayout.createVerticalStrut( 6, true ) );
-        value_entry_panel.add( "0, 4, 7, 1, W, w, 3", file_btn );
-        value_entry_panel.add( "0, 5, 1, 1", KappaLayout.createHorizontalStrut( 11, true ) );
-        value_entry_panel.add( "1, 6, 5, 1, W, w, 3", file_value );
-        value_entry_panel.add( "6, 6, 1, 1, E,  , 3", browse_btn );
-
-        // recursive checkbox
-        final JCheckBox recursive_cb = new JCheckBox( jEdit.getProperty( "ips.Apply_recursively?", "Apply recursively?" ) );
-        recursive_cb.setSelected( false );
-        recursive_cb.setEnabled( isDirectory );
-        recursive_cb.addActionListener(
+        recursiveCheckbox.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
-                    propertyData.setRecursive( recursive_cb.isSelected() );
+                    propertyData.setRecursive( recursiveCheckbox.isSelected() );
                 }
             }
         );
 
-        // ok and cancel buttons
-        KappaLayout kl = new KappaLayout();
-        JPanel btn_panel = new JPanel( kl );
-        JButton ok_btn = new JButton( jEdit.getProperty( "ips.Ok", "Ok" ) );
-        JButton cancel_btn = new JButton( jEdit.getProperty( "ips.Cancel", "Cancel" ) );
-        btn_panel.add( "0, 0, 1, 1, 0, w, 3", ok_btn );
-        btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancel_btn );
-        kl.makeColumnsSameWidth( 0, 1 );
-
-        ok_btn.addActionListener(
+        okButton.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
 
                     // get user-selected/entered property name
-                    Object item = prop_chooser.getSelectedItem();
+                    Object item = propChooser.getSelectedItem();
                     if ( item != null && item.toString().length() > 0 ) {
                         propertyData.setName( item.toString() );
 
-                        if ( text_btn.isSelected() ) {
+                        if ( textButton.isSelected() ) {
                             // get user selected/entered property value.  The lists put their values here also.
-                            propertyData.setValue( text_value.getText() == null ? "" : text_value.getText() );
+                            propertyData.setValue( textValue.getText() == null ? "" : textValue.getText() );
                         }
                         else {
                             // load properties from a file the user has selected
-                            String filename = file_value.getText();
+                            String filename = fileHistory.getText();
                             if ( filename == null || filename.length() == 0 ) {
                                 JOptionPane.showMessageDialog( view, jEdit.getProperty( "ips.No_filename_entered_for_property_value.", "No filename entered for property value." ), jEdit.getProperty( "ips.Error", "Error" ), JOptionPane.ERROR_MESSAGE );
-                                file_value.requestFocusInWindow();
+                                fileHistory.requestFocusInWindow();
                                 return ;
                             }
                             try {
@@ -428,12 +467,12 @@ public class PropertyEditor extends JDialog {
                     // all done
                     PropertyEditor.this.setVisible( false );
                     PropertyEditor.this.dispose();
-                    file_value.addCurrentToHistory();
+                    fileHistory.addCurrentToHistory();
                 }
             }
         );
 
-        cancel_btn.addActionListener(
+        cancelButton.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
                     propertyData = null;
@@ -442,27 +481,8 @@ public class PropertyEditor extends JDialog {
                 }
             }
         );
-
-        // add the components to the main content pane
-        panel.add( "0, 0, 1, 1, W,  , 6", prop_name_label );
-        panel.add( "1, 0, 5, 1, W, w, 4", prop_chooser );
-
-        panel.add( "0, 1, 6, 1, W, wh, 3", value_entry_panel );
-        panel.add( "0, 2, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
-
-        panel.add( "0, 3, 6, 1, W,  , 6", recursive_cb );
-        panel.add( "0, 4, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
-
-        panel.add( "0, 5, 6, 1, E,  , 6", btn_panel );
-
-        setContentPane( panel );
-        pack();
-
-        // all happy now, so set the parameter that was passed in so everything
-        // looks pretty
-        prop_chooser.setSelectedItem( name == null ? "" : name );
-
     }
+
 
     /**
      * @return null indicates user cancelled
