@@ -23,11 +23,10 @@ import javax.swing.ImageIcon;
 
 import org.gjt.sp.jedit.OptionGroup;
 import org.gjt.sp.jedit.OptionPane;
-import org.gjt.sp.jedit.io.VFSFile;
 
 import projectviewer.config.VersionControlService;
 
-import projectviewer.vpt.VPTFile;
+import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 
 
@@ -43,7 +42,7 @@ public class DummyVC implements VersionControlService
 	private final static Icon ICON =
 		new ImageIcon(VersionControlService.class.getResource("/projectviewer/images/file_state_not_found.png"));
 
-	public int getFileState(VPTFile f)
+	public int getNodeState(VPTNode f)
 	{
 		return 1;
 	}
