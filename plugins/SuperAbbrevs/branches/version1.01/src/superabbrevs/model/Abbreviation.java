@@ -4,16 +4,16 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 
-public class Abbrev implements Serializable, Comparable<Abbrev> {
+public class Abbreviation implements Serializable, Comparable<Abbreviation> {
 	/**
 	 * A short name of the abbreviation.
 	 */
 	private String name;
 
 	/**
-	 * The abbreviation that will get expanded.
+	 * The text that will be expanded into expansion string.
 	 */
-	private String abbreviation;
+	private String abbreviationText;
 
 	/**
 	 * The expansion of the abbreviation.
@@ -24,16 +24,37 @@ public class Abbrev implements Serializable, Comparable<Abbrev> {
 	 * True if the abbreviation should be indented when changed.
 	 */
 	private boolean autoIndent;
+	
+	/**
+	 * The area that should be replaced when the abbreviation is invoked as a 
+	 * command an no text has been selected.
+	 */
+	private ReplacementTypes replacementArea = ReplacementTypes.AT_CARET;
+	
+	/**
+	 * The area that should be replaced when the abbreviation is invoked as a 
+	 * command on a selection.
+	 */
+	private SelectionReplacementTypes selectionReplacementArea = SelectionReplacementTypes.NOTHING;
 
-	public String getAbbreviation() {
-		return abbreviation;
+	/**
+	 * Creates a new instance of Abbreviation
+	 */
+	public Abbreviation(String name, String abbreviationText, String expansion) {
+		setName(name);
+		setAbbreviationText(abbreviationText);
+		setExpansion(expansion);
+	}
+	
+	public String getAbbreviationText() {
+		return abbreviationText;
 	}
 
-	public void setAbbreviation(String abbreviation) {
-		String oldValue = this.abbreviation;
-		this.abbreviation = abbreviation;
+	public void setAbbreviationText(String abbreviation) {
+		String oldValue = this.abbreviationText;
+		this.abbreviationText = abbreviation;
 
-		propertySupport.firePropertyChange("abbreviation", oldValue,
+		propertySupport.firePropertyChange("abbreviationText", oldValue,
 				abbreviation);
 	}
 
@@ -66,50 +87,33 @@ public class Abbrev implements Serializable, Comparable<Abbrev> {
 		this.name = name;
 		propertySupport.firePropertyChange("name", oldValue, name);
 	}
-
-	public final WhenInvokedAsCommand whenInvokedAsCommand = new WhenInvokedAsCommand();
 	
-	public static class WhenInvokedAsCommand {
-		private ReplacementTypes replace = ReplacementTypes.AT_CARET;
-		
-		public void replace(ReplacementTypes replacementType) {
-			this.replace = replacementType;
-		}
-		
-		public ReplacementTypes replace() {
-			return replace;
-		}
-	}
-	
-	public final WhenInvokedAsCommandOnSelection whenInvokedAsCommandOnSelection = new WhenInvokedAsCommandOnSelection();
-	
-	public static class WhenInvokedAsCommandOnSelection {
-		private SelectionReplacementTypes replace = SelectionReplacementTypes.NOTHING;
-
-		public void replace(SelectionReplacementTypes replacementType) {
-			this.replace = replacementType;
-		}
-
-		public SelectionReplacementTypes replace() {
-			return replace;
-		}
+	public void setSelectionReplacementArea(SelectionReplacementTypes selectionReplacementArea) {
+		SelectionReplacementTypes oldValue = this.selectionReplacementArea;
+		this.selectionReplacementArea = selectionReplacementArea;
+		propertySupport.firePropertyChange("selectionReplacementArea", oldValue, selectionReplacementArea);
 	}
 
-	/**
-	 * Creates a new instance of Abbrev
-	 */
-	public Abbrev(String name, String abbreviation, String expansion) {
-		setName(name);
-		setAbbreviation(abbreviation);
-		setExpansion(expansion);
+	public SelectionReplacementTypes getSelectionReplacementArea() {
+		return selectionReplacementArea;
+	}
+
+	public void setReplacementArea(ReplacementTypes replacementArea) {
+		ReplacementTypes oldValue = this.replacementArea;
+		this.replacementArea = replacementArea;
+		propertySupport.firePropertyChange("replacementArea", oldValue, replacementArea);
+	}
+
+	public ReplacementTypes getReplacementArea() {
+		return replacementArea;
 	}
 
 	@Override
 	public String toString() {
-		return name + " (" + abbreviation + ")";
+		return name + " (" + abbreviationText + ")";
 	}
 
-	public int compareTo(Abbrev abbrev) {
+	public int compareTo(Abbreviation abbrev) {
 		return getName().compareToIgnoreCase(abbrev.getName());
 	}
 
@@ -154,7 +158,7 @@ public class Abbrev implements Serializable, Comparable<Abbrev> {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Abbrev other = (Abbrev) obj;
+		Abbreviation other = (Abbreviation) obj;
 		if (name == null) {
 			if (other.name != null)
 				return false;

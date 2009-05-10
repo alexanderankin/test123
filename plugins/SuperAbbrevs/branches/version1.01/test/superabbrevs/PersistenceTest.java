@@ -17,7 +17,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import superabbrevs.model.Abbrev;
+import superabbrevs.model.Abbreviation;
 import superabbrevs.model.Mode;
 
 public class PersistenceTest {
@@ -36,9 +36,9 @@ public class PersistenceTest {
 		};
 		
 		mode = new Mode("java");
-		mode.addAbbreviation(new Abbrev("For-loop", "for", "for (...) {}"));
-		mode.addAbbreviation(new Abbrev("While-loop", "while", "while (...) {}"));
-		mode.addAbbreviation(new Abbrev("if-statement", "if", "if (...) {}"));
+		mode.addAbbreviation(new Abbreviation("For-loop", "for", "for (...) {}"));
+		mode.addAbbreviation(new Abbreviation("While-loop", "while", "while (...) {}"));
+		mode.addAbbreviation(new Abbreviation("If-statement", "if", "if (...) {}"));
 	}
 	
 	@After
@@ -78,8 +78,8 @@ public class PersistenceTest {
 		Mode loadedMode = persistence.loadMode(mode.getName());
 		assertEquals(mode.getName(), loadedMode.getName());
 		
-		Set<Abbrev> expectedAbbrevs = mode.getAbbreviations();
-		Set<Abbrev> actualAbbrevs = loadedMode.getAbbreviations();
+		Set<Abbreviation> expectedAbbrevs = mode.getAbbreviations();
+		Set<Abbreviation> actualAbbrevs = loadedMode.getAbbreviations();
 		
 		assertEquals(expectedAbbrevs.size(), actualAbbrevs.size());
 		assertTrue(expectedAbbrevs.containsAll(actualAbbrevs));

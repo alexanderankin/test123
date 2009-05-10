@@ -3,7 +3,7 @@ package superabbrevs;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import superabbrevs.model.Abbrev;
+import superabbrevs.model.Abbreviation;
 
 public interface TextAreaHandler {
 
@@ -11,11 +11,11 @@ public interface TextAreaHandler {
 
 	public abstract String getModeAtCursor();
 
-	public abstract void showAbbrevsPopup(LinkedList<Abbrev> abbrevs);
+	public abstract void showAbbrevsPopup(LinkedList<Abbreviation> abbrevs);
 
-	public abstract void removeAbbrev(Abbrev abbrev);
+	public abstract void removeAbbrev(Abbreviation abbrev);
 
-	public abstract void expandAbbrev(Abbrev abbrev, boolean invokedAsACommand);
+	public abstract void expandAbbrev(Abbreviation abbrev, boolean invokedAsACommand);
 
 	public abstract boolean selectNextAbbrev();
 
@@ -23,6 +23,6 @@ public interface TextAreaHandler {
 
 	public abstract boolean isInTemplateMode();
 	
-	public abstract void showSearchDialog(ArrayList<Abbrev> abbrevs);
+	public abstract void showSearchDialog(ArrayList<Abbreviation> abbrevs);
 
 }

@@ -12,7 +12,7 @@ package superabbrevs;
 import java.util.LinkedList;
 import java.util.Set;
 
-import superabbrevs.model.Abbrev;
+import superabbrevs.model.Abbreviation;
 import superabbrevs.model.Mode;
 import trie.BackwardsTrie;
 import trie.Trie;
@@ -26,22 +26,22 @@ public class AbbrevsHandler {
 	private Persistence persistence = new Persistence();
 	
     
-    private static Cache<String,Trie<Abbrev>> cache = 
-            new Cache<String,Trie<Abbrev>>(10);
+    private static Cache<String,Trie<Abbreviation>> cache = 
+            new Cache<String,Trie<Abbreviation>>(10);
 
-    public LinkedList<Abbrev> getAbbrevs(String modeName, String text) {
-        Trie<Abbrev> trie = cache.get(modeName);
+    public LinkedList<Abbreviation> getAbbrevs(String modeName, String text) {
+        Trie<Abbreviation> trie = cache.get(modeName);
         if (trie == null) {
             // Load the abbreviation from disc
             Mode mode = persistence.loadMode(modeName);
-            trie = new BackwardsTrie<Abbrev>();
-            for(Abbrev abbrev : mode.getAbbreviations()) {
-                trie.put(abbrev.getAbbreviation(), abbrev);
+            trie = new BackwardsTrie<Abbreviation>();
+            for(Abbreviation abbrev : mode.getAbbreviations()) {
+                trie.put(abbrev.getAbbreviationText(), abbrev);
             }
             cache.put(modeName, trie);
         }
         
-        LinkedList<Abbrev> expansions = trie.scan(text); 
+        LinkedList<Abbreviation> expansions = trie.scan(text); 
         
         return expansions;
     }
@@ -50,7 +50,7 @@ public class AbbrevsHandler {
         cache.invalidate(mode);
     }
 
-    Set<Abbrev> getAbbrevs(String modeName) {
+    Set<Abbreviation> getAbbrevs(String modeName) {
         Mode mode = persistence.loadMode(modeName);
         return mode.getAbbreviations();
     }

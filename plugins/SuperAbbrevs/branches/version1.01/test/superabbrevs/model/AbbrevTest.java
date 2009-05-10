@@ -10,36 +10,36 @@ import org.junit.Test;
 
 
 public class AbbrevTest {
-	private Abbrev abbrev;
+	private Abbreviation abbrev;
 
 	@Before
 	public void setup() {
-		abbrev = new Abbrev("Test Abbrev", "Old abbrev", "Old expansion");
+		abbrev = new Abbreviation("Test Abbrev", "Old abbrev", "Old expansion");
 	}
 	
 	@Test
 	public void setReplementType() throws Exception {
-		ReplacementTypes replacementType = ReplacementTypes.WORD;
-		abbrev.whenInvokedAsCommand.replace(replacementType);
-		assertEquals(replacementType, abbrev.whenInvokedAsCommand.replace());
+		ReplacementTypes replaceArea = ReplacementTypes.WORD;
+		abbrev.setReplacementArea(replaceArea);
+		assertEquals(replaceArea, abbrev.getReplacementArea());
 	}
 	
 	@Test
 	public void setSelectionReplementType() throws Exception {
-		SelectionReplacementTypes replamentType = SelectionReplacementTypes.SELECTION;
-		abbrev.whenInvokedAsCommandOnSelection.replace(replamentType);
-		assertEquals(replamentType, abbrev.whenInvokedAsCommandOnSelection.replace());
+		SelectionReplacementTypes replaceArea = SelectionReplacementTypes.SELECTION;
+		abbrev.setSelectionReplacementArea(replaceArea);
+		assertEquals(replaceArea, abbrev.getSelectionReplacementArea());
 	}
 	
 	@Test
 	public void setAbbreviationFiresPropertyChangeEvent() throws Exception {
-		String propertyName = "abbreviation";
-		String oldValue = abbrev.getAbbreviation();
+		String propertyName = "abbreviationText";
+		String oldValue = abbrev.getAbbreviationText();
 		String newValue = "New value";
 		
 		PropertyChangedTestListener testListener = setExpectedPropertyChangeListener(
 				propertyName, oldValue, newValue);
-		abbrev.setAbbreviation(newValue);
+		abbrev.setAbbreviationText(newValue);
 		testListener.assertIsSatified();
 	}
 	

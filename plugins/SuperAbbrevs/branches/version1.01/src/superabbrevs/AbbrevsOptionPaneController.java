@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Set;
 
-import superabbrevs.model.Abbrev;
+import superabbrevs.model.Abbreviation;
 import superabbrevs.model.Mode;
 
 /**
@@ -26,7 +26,7 @@ public class AbbrevsOptionPaneController {
         this.modeService = modeService;
     }
     
-    public Set<Abbrev> loadsAbbrevs(String modeName) {
+    public Set<Abbreviation> loadsAbbrevs(String modeName) {
         return loadMode(modeName).getAbbreviations();
     }
     

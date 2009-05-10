@@ -6,14 +6,14 @@ import java.util.TreeSet;
 
 public class Mode {
     private String name;
-    private Set<Abbrev> abbreviations = new TreeSet<Abbrev>();
+    private Set<Abbreviation> abbreviations = new TreeSet<Abbreviation>();
     private ArrayList<Variable> variables = new ArrayList<Variable>();
 
-    public Set<Abbrev> getAbbreviations() {
+    public Set<Abbreviation> getAbbreviations() {
         return abbreviations;
     }
     
-    public void addAbbreviation(Abbrev abbrev) {
+    public void addAbbreviation(Abbreviation abbrev) {
     	abbreviations.add(abbrev);
     }
 

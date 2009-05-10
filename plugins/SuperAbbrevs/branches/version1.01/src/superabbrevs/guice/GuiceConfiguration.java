@@ -10,6 +10,10 @@ import superabbrevs.JEditInterface;
 import superabbrevs.JEditInterfaceImpl;
 import superabbrevs.TextAreaHandler;
 import superabbrevs.TextAreaHandlerImpl;
+import superabbrevs.io.PluginDirectory;
+import superabbrevs.io.PluginDirectoryImpl;
+import superabbrevs.serialization.ModeSerializer;
+import superabbrevs.serialization.XmlModeSerializer;
 
 import com.google.inject.Binder;
 import com.google.inject.Module;
@@ -35,5 +39,9 @@ public class GuiceConfiguration implements Module {
 
 		binder.bind(TextAreaHandler.class).to(TextAreaHandlerImpl.class);
 		binder.bind(InputHandler.class).to(InputHandlerImpl.class);
+		
+		binder.bind(ModeSerializer.class).to(XmlModeSerializer.class);
+		binder.bind(PluginDirectory.class).to(PluginDirectoryImpl.class);
+		
 	}
 }

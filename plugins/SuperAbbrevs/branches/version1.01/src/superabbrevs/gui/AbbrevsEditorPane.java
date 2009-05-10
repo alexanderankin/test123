@@ -20,7 +20,7 @@ import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
 import superabbrevs.gui.verifiers.NonEmptyTextVerifier;
-import superabbrevs.model.Abbrev;
+import superabbrevs.model.Abbreviation;
 import superabbrevs.model.ReplacementTypes;
 import superabbrevs.model.SelectionReplacementTypes;
 
@@ -31,7 +31,7 @@ public class AbbrevsEditorPane extends JPanel {
 		updateComponentState();
     }
 	
-	public void setAbbrev(Abbrev abbrev) {
+	public void setAbbrev(Abbreviation abbrev) {
 		saveActiveAbbrev();
 		activeAbbrev = abbrev;
 		updateComponentState();
@@ -39,10 +39,10 @@ public class AbbrevsEditorPane extends JPanel {
 
 	public void saveActiveAbbrev() {
 		if (activeAbbrev != null) {
-			activeAbbrev.setAbbreviation(abbrevJTextField.getText());
+			activeAbbrev.setAbbreviationText(abbrevJTextField.getText());
 			activeAbbrev.setExpansion(abbrevsEditorJTextArea.getText());
-			activeAbbrev.whenInvokedAsCommand.replace(getReplacementType());
-			activeAbbrev.whenInvokedAsCommandOnSelection.replace(getSelectionReplacementType());
+			activeAbbrev.setReplacementArea(getReplacementType());
+			activeAbbrev.setSelectionReplacementArea(getSelectionReplacementType());
 		}
 	}
 
@@ -60,14 +60,14 @@ public class AbbrevsEditorPane extends JPanel {
 		commandSelectionReplacementJComboBox.setEnabled(enabled);
 	}
 	
-	private void UpdatePanelValues(Abbrev abbrev) {
-		if ("".equals(abbrev.getAbbreviation())) {
+	private void UpdatePanelValues(Abbreviation abbrev) {
+		if ("".equals(abbrev.getAbbreviationText())) {
 			abbrevJTextField.requestFocus();
 		}
-		abbrevJTextField.setText(abbrev.getAbbreviation());
+		abbrevJTextField.setText(abbrev.getAbbreviationText());
 		abbrevsEditorJTextArea.setText(abbrev.getExpansion());
-		setReplacementType(abbrev.whenInvokedAsCommand.replace());
-		setSelectionReplacementType(abbrev.whenInvokedAsCommandOnSelection.replace());
+		setReplacementType(abbrev.getReplacementArea());
+		setSelectionReplacementType(abbrev.getSelectionReplacementArea());
 	}
 
 	private void ClearPanel() {
@@ -154,7 +154,7 @@ public class AbbrevsEditorPane extends JPanel {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				String text = abbrevJTextField.getText();
-				activeAbbrev.setAbbreviation(text);
+				activeAbbrev.setAbbreviationText(text);
 			}
         });
         abbrevJTextField.setInputVerifier(new NonEmptyTextVerifier());
@@ -200,7 +200,7 @@ public class AbbrevsEditorPane extends JPanel {
      */
     private ComboBoxModel commandInputSelectionModel = new DefaultComboBoxModel(SelectionReplacementTypes.values());
     
-	private Abbrev activeAbbrev;
+	private Abbreviation activeAbbrev;
 	private JLabel abbrevJLabel = new JLabel();
 	private JTextField abbrevJTextField = new JTextField();
 	private JScrollPane abbrevsEditorJScrollPane = new JScrollPane();

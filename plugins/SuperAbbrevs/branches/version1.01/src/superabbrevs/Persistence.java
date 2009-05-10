@@ -7,11 +7,10 @@ import java.io.IOException;
 
 import org.gjt.sp.util.IOUtilities;
 
-import superabbrevs.model.Abbrev;
+import superabbrevs.model.Abbreviation;
 import superabbrevs.model.Mode;
 import superabbrevs.model.ReplacementTypes;
 import superabbrevs.model.Variable;
-import superabbrevs.model.Abbrev.WhenInvokedAsCommand;
 import superabbrevs.utilities.Log;
 
 import com.thoughtworks.xstream.XStream;
@@ -81,7 +80,7 @@ public class Persistence {
 
     private static void setupFormating(XStream xstream) {
         xstream.alias("mode", Mode.class);
-        xstream.alias("abbreviation", Abbrev.class);
+        xstream.alias("abbreviation", Abbreviation.class);
         xstream.alias("variable", Variable.class);
     }
 }

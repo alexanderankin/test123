@@ -25,7 +25,7 @@ public class ModeRepositoryTest {
 	public void before() {
 		modeSerializer = context.mock(ModeSerializer.class);
 		pluginDirectory = context.mock(PluginDirectory.class);
-		modeRepository = new SimpleModeRepository(pluginDirectory, modeSerializer);
+		modeRepository = new FileBasedModeRepository(pluginDirectory, modeSerializer);
 	}
 	
 	@Test
@@ -50,7 +50,7 @@ public class ModeRepositoryTest {
 		context.checking(new Expectations() {{
 			oneOf(pluginDirectory).openModeFileForReading(modeName);
 			will(returnValue(input));
-			oneOf(modeSerializer).deserialize(input, modeName);
+			oneOf(modeSerializer).deserialize(input);
 		}});
 		
 		modeRepository.Load(modeName);

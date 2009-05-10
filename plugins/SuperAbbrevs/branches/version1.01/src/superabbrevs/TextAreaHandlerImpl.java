@@ -12,7 +12,7 @@ package superabbrevs;
 import org.gjt.sp.jedit.bsh.EvalError;
 import org.gjt.sp.jedit.bsh.ParseException;
 import org.gjt.sp.jedit.bsh.TargetError;
-import superabbrevs.model.Abbrev;
+import superabbrevs.model.Abbreviation;
 import java.awt.Point;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -85,19 +85,19 @@ public class TextAreaHandlerImpl implements TextAreaHandler {
     /* (non-Javadoc)
 	 * @see superabbrevs.TextAreaHandler#showAbbrevsPopup(java.util.LinkedList)
 	 */
-    public void showAbbrevsPopup(LinkedList<Abbrev> abbrevs) {
+    public void showAbbrevsPopup(LinkedList<Abbreviation> abbrevs) {
         int offset = textArea.getCaretPosition();
         Point location = textArea.offsetToXY(offset);
         location.y += textArea.getPainter().getFontMetrics().getHeight();
 
         SwingUtilities.convertPointToScreen(location,textArea.getPainter());
         
-        ScrollablePopupMenu<Abbrev> menu = 
-                new ScrollablePopupMenu<Abbrev>(view, location, abbrevs);
+        ScrollablePopupMenu<Abbreviation> menu = 
+                new ScrollablePopupMenu<Abbreviation>(view, location, abbrevs);
         
-        menu.addActionListener(new ScrollablePopupMenuListner<Abbrev>() {
-            public void selectedMenuItem(ScrollablePopupMenuEvent<Abbrev> event) {
-                Abbrev a = event.getSelectedObject();
+        menu.addActionListener(new ScrollablePopupMenuListner<Abbreviation>() {
+            public void selectedMenuItem(ScrollablePopupMenuEvent<Abbreviation> event) {
+                Abbreviation a = event.getSelectedObject();
                 removeAbbrev(a);
                 expandAbbrev(a, false);
             }
@@ -109,10 +109,10 @@ public class TextAreaHandlerImpl implements TextAreaHandler {
     /* (non-Javadoc)
 	 * @see superabbrevs.TextAreaHandler#removeAbbrev(superabbrevs.model.Abbrev)
 	 */
-    public void removeAbbrev(Abbrev abbrev) {
+    public void removeAbbrev(Abbreviation abbrev) {
         // the offset of the caret in the full text 
         int end = textArea.getCaretPosition();
-        int start = end - abbrev.getAbbreviation().length();
+        int start = end - abbrev.getAbbreviationText().length();
         textArea.setSelection(new Selection.Range(start, end));
         textArea.setSelectedText("");
     }
@@ -120,7 +120,7 @@ public class TextAreaHandlerImpl implements TextAreaHandler {
     /* (non-Javadoc)
 	 * @see superabbrevs.TextAreaHandler#expandAbbrev(superabbrevs.model.Abbrev, boolean)
 	 */
-    public void expandAbbrev(Abbrev abbrev, boolean invokedAsACommand) {
+    public void expandAbbrev(Abbreviation abbrev, boolean invokedAsACommand) {
         try {
             templateHandler.expandAbbrev(abbrev, invokedAsACommand);
         } catch (TargetError ex) {
@@ -159,14 +159,14 @@ public class TextAreaHandlerImpl implements TextAreaHandler {
     /* (non-Javadoc)
 	 * @see superabbrevs.TextAreaHandler#showSearchDialog(java.util.ArrayList)
 	 */
-    public void showSearchDialog(ArrayList<Abbrev> abbrevs) {
+    public void showSearchDialog(ArrayList<Abbreviation> abbrevs) {
         SearchDialogModel model = new SearchDialogModel(abbrevs);
         SearchDialog dialog = new SearchDialog(view, "Search for abbreviation", 
                 false, model);
         dialog.setLocationRelativeTo(view);
         dialog.addSearchAcceptedListener(new SearchAcceptedListener() {
             public void accepted(Object o) {
-                Abbrev a = (Abbrev)o;
+                Abbreviation a = (Abbreviation)o;
                 expandAbbrev(a, true);
             }
         });
