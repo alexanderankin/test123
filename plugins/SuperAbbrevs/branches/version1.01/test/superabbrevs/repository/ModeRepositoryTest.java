@@ -1,5 +1,7 @@
 package superabbrevs.repository;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -30,8 +32,8 @@ public class ModeRepositoryTest {
 	
 	@Test
 	public void modeRepositoryDelegatesSaveToModeSerializer() throws Exception {
-		final Mode mode = new Mode("Java");
-		final OutputStream output = new FileOutputStream("Java.xml");
+		final Mode mode = new Mode("java");
+		final OutputStream output = new ByteArrayOutputStream();
 		context.checking(new Expectations() {{
 			oneOf(pluginDirectory).openModeFileForWriting(mode.getName());
 			will(returnValue(output));
@@ -45,15 +47,15 @@ public class ModeRepositoryTest {
 	
 	@Test
 	public void modeRepositoryDelegatesLoadToModeSerializer() throws Exception {
-		final String modeName = "Java";
-		final InputStream input = new FileInputStream("Java.xml"); 
+		final String modeName = "java";
+		final InputStream input = new ByteArrayInputStream(new byte[0]); 
 		context.checking(new Expectations() {{
 			oneOf(pluginDirectory).openModeFileForReading(modeName);
 			will(returnValue(input));
 			oneOf(modeSerializer).deserialize(input);
 		}});
 		
-		modeRepository.Load(modeName);
+		modeRepository.load(modeName);
 		
 		context.assertIsSatisfied();
 	}

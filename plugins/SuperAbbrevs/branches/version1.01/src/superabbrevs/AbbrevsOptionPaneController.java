@@ -15,15 +15,16 @@ import superabbrevs.model.Mode;
 public class AbbrevsOptionPaneController {
     Hashtable<String,Mode> modes = new Hashtable<String, Mode>();
     
-    private Persistence persistence = new Persistence();
+    private final Persistence persistence;
 	private final ModeService modeService;
 
 	public ModeService getModeService() {
 		return modeService;
 	}
 
-	public AbbrevsOptionPaneController(ModeService modeService) {
+	public AbbrevsOptionPaneController(ModeService modeService, Persistence persistence) {
         this.modeService = modeService;
+        this.persistence = persistence;
     }
     
     public Set<Abbreviation> loadsAbbrevs(String modeName) {
@@ -42,7 +43,6 @@ public class AbbrevsOptionPaneController {
 
     public void saveAbbrevs() throws IOException {
         for(Mode mode : modes.values()) {
-            AbbrevsHandler.invalidateMode(mode.getName());
             persistence.saveMode(mode);  
         }
     }

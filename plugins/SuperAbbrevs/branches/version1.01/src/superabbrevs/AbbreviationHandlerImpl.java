@@ -9,11 +9,15 @@
 
 package superabbrevs;
 
+import java.io.FileNotFoundException;
 import java.util.LinkedList;
 import java.util.Set;
 
+import com.google.inject.Inject;
+
 import superabbrevs.model.Abbreviation;
 import superabbrevs.model.Mode;
+import superabbrevs.repository.ModeRepository;
 import trie.BackwardsTrie;
 import trie.Trie;
 
@@ -21,10 +25,13 @@ import trie.Trie;
  *
  * @author Sune Simonsen
  */
-public class AbbrevsHandler {
+public class AbbreviationHandlerImpl implements AbbreviationHandler {
+	private final ModeRepository modeRepository;
 	
-	private Persistence persistence = new Persistence();
-	
+	@Inject
+	public AbbreviationHandlerImpl(ModeRepository modeRepository) {
+		this.modeRepository = modeRepository;
+	}
     
     private static Cache<String,Trie<Abbreviation>> cache = 
             new Cache<String,Trie<Abbreviation>>(10);
@@ -33,7 +40,7 @@ public class AbbrevsHandler {
         Trie<Abbreviation> trie = cache.get(modeName);
         if (trie == null) {
             // Load the abbreviation from disc
-            Mode mode = persistence.loadMode(modeName);
+            Mode mode = modeRepository.load(modeName);
             trie = new BackwardsTrie<Abbreviation>();
             for(Abbreviation abbrev : mode.getAbbreviations()) {
                 trie.put(abbrev.getAbbreviationText(), abbrev);
@@ -46,12 +53,12 @@ public class AbbrevsHandler {
         return expansions;
     }
     
-    public static void invalidateMode(String mode) {
+    public void invalidateMode(String mode) {
         cache.invalidate(mode);
     }
 
-    Set<Abbreviation> getAbbrevs(String modeName) {
-        Mode mode = persistence.loadMode(modeName);
+    public Set<Abbreviation> getAbbrevs(String modeName) {
+        Mode mode = modeRepository.load(modeName);
         return mode.getAbbreviations();
     }
 }
