@@ -3,6 +3,7 @@ package ise.plugin.svn.pv;
 
 import projectviewer.config.VersionControlService;
 import projectviewer.vpt.VPTFile;
+import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -64,8 +65,10 @@ public class VersionControlState implements VersionControlService {
      *
      * @return A service-specific identifier for the file state.
      */
-    public int getFileState( VPTFile f ) {
-        String path = f.getNodePath();
+
+    public int getNodeState(VPTNode node)
+    {
+        String path = node.getNodePath();
         SVNData data = new SVNData();
         List<String> paths = new ArrayList<String>();
         paths.add( path );
@@ -207,5 +210,6 @@ public class VersionControlState implements VersionControlService {
     public OptionGroup getOptionGroup( VPTProject project ) {
         return null;
     }
+
 
 }
