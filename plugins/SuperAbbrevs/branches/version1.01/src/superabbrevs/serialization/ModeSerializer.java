@@ -8,5 +8,5 @@ import superabbrevs.model.Mode;
 public interface ModeSerializer {
 
 	void serialize(OutputStream output, Mode mode);
-	Mode deserialize(InputStream input, String modeName);
+	Mode deserialize(InputStream input);
 }

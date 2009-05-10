@@ -9,7 +9,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import superabbrevs.model.Abbrev;
+import superabbrevs.model.Abbreviation;
 import superabbrevs.model.Mode;
 
 public class AbbreviationJList extends JList implements PropertyChangeListener {
@@ -36,8 +36,8 @@ public class AbbreviationJList extends JList implements PropertyChangeListener {
 	}
 
 	private void updateModel() {
-		Abbrev selectedAbbrev = getSelectedValue();
-		Set<Abbrev> abbreviations = mode.getAbbreviations();
+		Abbreviation selectedAbbrev = getSelectedValue();
+		Set<Abbreviation> abbreviations = mode.getAbbreviations();
 		setModel(new AbbrevsListModel(abbreviations));
 		setSelectedValue(selectedAbbrev, true);
 	}
@@ -49,8 +49,8 @@ public class AbbreviationJList extends JList implements PropertyChangeListener {
 	}
 
 	@Override
-	public Abbrev getSelectedValue() {
-		return (Abbrev) super.getSelectedValue();
+	public Abbreviation getSelectedValue() {
+		return (Abbreviation) super.getSelectedValue();
 	}
 	
 	public boolean hasSelectedValue() {
@@ -58,7 +58,7 @@ public class AbbreviationJList extends JList implements PropertyChangeListener {
 	}
 
 	public void removeSelectedAbbreviation() {
-		Abbrev selectedValue = getSelectedValue();
+		Abbreviation selectedValue = getSelectedValue();
 		mode.getAbbreviations().remove(selectedValue);
 		updateModel();
 	}
@@ -67,7 +67,7 @@ public class AbbreviationJList extends JList implements PropertyChangeListener {
 		if (lastSelection != null) {
 			lastSelection.removePropertyChangeListener(this);
 		}
-		Abbrev selectedAbbrev = getSelectedValue();
+		Abbreviation selectedAbbrev = getSelectedValue();
 		if (selectedAbbrev != null) {
 			selectedAbbrev.addPropertyChangeListener(this);
 		}
@@ -77,17 +77,17 @@ public class AbbreviationJList extends JList implements PropertyChangeListener {
 
 	public void propertyChange(PropertyChangeEvent evt) {
 		String propertyName = evt.getPropertyName();
-		if ("abbreviation".equals(propertyName) || "name".equals(propertyName)) {
+		if ("abbreviationText".equals(propertyName) || "name".equals(propertyName)) {
 			updateModel();
 		}
 	}
 
 	public void addAbbrev(String name) {
-		Abbrev newAbbrev = new Abbrev(name, "", "");
+		Abbreviation newAbbrev = new Abbreviation(name, "", "");
 		mode.getAbbreviations().add(newAbbrev);
 		updateModel();
 		setSelectedValue(newAbbrev, true);
 	}
 	
-	private Abbrev lastSelection = null;
+	private Abbreviation lastSelection = null;
 }

@@ -40,7 +40,7 @@ import superabbrevs.AbbrevsOptionPaneController;
 import superabbrevs.SuperAbbrevsPlugin;
 import superabbrevs.gui.controls.ModesComboBox;
 import superabbrevs.gui.controls.abbreviationlist.AbbreviationJList;
-import superabbrevs.model.Abbrev;
+import superabbrevs.model.Abbreviation;
 
 /**
  * The abbreviation pane that is used to manage all the abbreviations in the 
@@ -174,7 +174,7 @@ public class AbbrevsManagerPane extends JPanel {
         return panel;
 	}
     private void abbrevsJListValueChanged(javax.swing.event.ListSelectionEvent evt) {
-    	Abbrev selectedAbbrev = abbrevsJList.getSelectedValue();
+    	Abbreviation selectedAbbrev = abbrevsJList.getSelectedValue();
     	updateComponentState();
 		abbrevEditorPane.setAbbrev(selectedAbbrev);
     }
@@ -340,7 +340,7 @@ public class AbbrevsManagerPane extends JPanel {
         }
 
         public void actionPerformed(ActionEvent e) {
-            Abbrev abbrev = abbrevsJList.getSelectedValue();
+            Abbreviation abbrev = abbrevsJList.getSelectedValue();
 
             String name = JOptionPane.showInputDialog(mainPanel,
                     "Enter the new name for the abbreviation", abbrev.getName());

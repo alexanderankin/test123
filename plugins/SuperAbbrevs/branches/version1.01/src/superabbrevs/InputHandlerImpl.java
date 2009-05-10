@@ -12,7 +12,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 import superabbrevs.gui.AbbrevsDialog;
-import superabbrevs.model.Abbrev;
+import superabbrevs.model.Abbreviation;
 
 import com.google.inject.Inject;
 
@@ -62,12 +62,12 @@ public class InputHandlerImpl implements InputHandler {
         } else {
             String getTextBeforeCaret = textAreaHandler.getTextBeforeCaret();
             String mode = textAreaHandler.getModeAtCursor();
-            LinkedList<Abbrev> abbrevs = 
+            LinkedList<Abbreviation> abbrevs = 
                     abbrevsHandler.getAbbrevs(mode, getTextBeforeCaret);
             
             if (abbrevs.size() == 1) {
                 // There is only one expansion
-                Abbrev a = abbrevs.getFirst();
+                Abbreviation a = abbrevs.getFirst();
                 textAreaHandler.removeAbbrev(a);
                 textAreaHandler.expandAbbrev(a, false);
             } else if (!abbrevs.isEmpty()) {
@@ -101,8 +101,8 @@ public class InputHandlerImpl implements InputHandler {
 	 */
     public void showSearchDialog() {
         String mode = textAreaHandler.getModeAtCursor();
-        Set<Abbrev> abbrevs = abbrevsHandler.getAbbrevs(mode);
-        textAreaHandler.showSearchDialog(new ArrayList<Abbrev>(abbrevs));
+        Set<Abbreviation> abbrevs = abbrevsHandler.getAbbrevs(mode);
+        textAreaHandler.showSearchDialog(new ArrayList<Abbreviation>(abbrevs));
     }
 
 	/* (non-Javadoc)

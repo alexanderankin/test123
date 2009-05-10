@@ -5,7 +5,7 @@ import java.util.Set;
 import javax.swing.AbstractListModel;
 
 import superabbrevs.collections.IndexedSortedSet;
-import superabbrevs.model.Abbrev;
+import superabbrevs.model.Abbreviation;
 
 /**
  * @author sune
@@ -17,8 +17,8 @@ public class AbbrevsListModel extends AbstractListModel {
     /**
      * Creates a new instance of AbbrevsModel
      */
-    public AbbrevsListModel(Set<Abbrev> abbrevs) {
-    	IndexedSortedSet<Abbrev> indexedSortedSet = new IndexedSortedSet<Abbrev>();
+    public AbbrevsListModel(Set<Abbreviation> abbrevs) {
+    	IndexedSortedSet<Abbreviation> indexedSortedSet = new IndexedSortedSet<Abbreviation>();
     	indexedSortedSet.addAll(abbrevs);
         this.abbrevs = indexedSortedSet;
     }
@@ -36,7 +36,7 @@ public class AbbrevsListModel extends AbstractListModel {
     }
     
     public int add(String name) {
-    	Abbrev abbrev = new Abbrev(name,"","");
+    	Abbreviation abbrev = new Abbreviation(name,"","");
         abbrevs.add(abbrev);
         int index = abbrevs.size()-1;
         fireIntervalAdded(this,index,index);
@@ -48,7 +48,7 @@ public class AbbrevsListModel extends AbstractListModel {
      * @param selection The index of the wanted abbreviation.
      * @return The abbreviation at the specified index.
      */
-    public Abbrev get(int selection) {
+    public Abbreviation get(int selection) {
         return abbrevs.get(selection);
     }
     
@@ -61,7 +61,7 @@ public class AbbrevsListModel extends AbstractListModel {
     }
     
     int update(int selection, String name) {
-        Abbrev selectedAbbrev = abbrevs.get(selection);
+        Abbreviation selectedAbbrev = abbrevs.get(selection);
         if (!selectedAbbrev.getName().equals(name)) {
             selectedAbbrev.setName(name);
             return abbrevs.indexOf(selectedAbbrev);
@@ -70,10 +70,10 @@ public class AbbrevsListModel extends AbstractListModel {
         }
     }
     
-    public IndexedSortedSet<Abbrev> getAbbrevs(){
+    public IndexedSortedSet<Abbreviation> getAbbrevs(){
         return abbrevs;
     }
     
     public boolean unsorted = false;
-    IndexedSortedSet<Abbrev> abbrevs;
+    IndexedSortedSet<Abbreviation> abbrevs;
 }

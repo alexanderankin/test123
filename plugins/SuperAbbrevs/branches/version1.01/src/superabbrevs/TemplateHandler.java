@@ -16,7 +16,7 @@ import java.io.IOException;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
-import superabbrevs.model.Abbrev;
+import superabbrevs.model.Abbreviation;
 import superabbrevs.model.ReplacementTypes;
 import superabbrevs.model.SelectionReplacementTypes;
 import superabbrevs.template.fields.EndField;
@@ -42,7 +42,7 @@ public class TemplateHandler {
         this.jedit = jedit;
     }
 
-    void expandAbbrev(Abbrev abbrev, boolean invokedAsACommand)
+    void expandAbbrev(Abbreviation abbrev, boolean invokedAsACommand)
             throws TargetError, ParseException, EvalError, IOException {
         
         String indent = getIndent(getSelectionStart());
@@ -186,11 +186,11 @@ public class TemplateHandler {
         }
     }
 
-    private void selectReplacementArea(Abbrev abbrev) {
+    private void selectReplacementArea(Abbreviation abbrev) {
         if (hasSelection()) {
-            selectReplacementArea(abbrev.whenInvokedAsCommandOnSelection.replace());
+            selectReplacementArea(abbrev.getSelectionReplacementArea());
         } else {
-            selectReplacementArea(abbrev.whenInvokedAsCommand.replace());
+            selectReplacementArea(abbrev.getReplacementArea());
         }
     }
 

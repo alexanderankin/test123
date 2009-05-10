@@ -11,7 +11,7 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
-import superabbrevs.model.Abbrev;
+import superabbrevs.model.Abbreviation;
 import superabbrevs.Paths;
 import superabbrevs.Persistence;
 import superabbrevs.model.Mode;
@@ -38,7 +38,7 @@ public class Migration {
     @SuppressWarnings("unused")
 	private void importOldAbbrevs() {
         for (org.gjt.sp.jedit.Mode mode : jEdit.getModes()) {
-            Hashtable<String, ArrayList<Abbrev>> newAbbrevs = loadAbbrevs(mode.getName());
+            Hashtable<String, ArrayList<Abbreviation>> newAbbrevs = loadAbbrevs(mode.getName());
             Hashtable<String, String> oldAbbrevs = readModeFile(mode.getName());
             
             if (oldAbbrevs != null) {
@@ -68,7 +68,7 @@ public class Migration {
 
     private void importOldAbbrevsForMode(
             String modeName, Hashtable<String, String> oldAbbrevs,
-            Hashtable<String, ArrayList<Abbrev>> newAbbrevs) {
+            Hashtable<String, ArrayList<Abbreviation>> newAbbrevs) {
 
         for (Entry<String, String> abbrev : oldAbbrevs.entrySet()) {
             insertIfNotExist(abbrev.getKey(), abbrev.getValue(), newAbbrevs);
@@ -85,12 +85,12 @@ public class Migration {
         }
     }
 
-    private static ArrayList<Abbrev> flatten(
-            Hashtable<String, ArrayList<Abbrev>> abbrevs) {
-        ArrayList<Abbrev> result = new ArrayList<Abbrev>();
+    private static ArrayList<Abbreviation> flatten(
+            Hashtable<String, ArrayList<Abbreviation>> abbrevs) {
+        ArrayList<Abbreviation> result = new ArrayList<Abbreviation>();
 
-        for (ArrayList<Abbrev> abbrevsList : abbrevs.values()) {
-            for (Abbrev abbrev : abbrevsList) {
+        for (ArrayList<Abbreviation> abbrevsList : abbrevs.values()) {
+            for (Abbreviation abbrev : abbrevsList) {
                 result.add(abbrev);
             }
         }
@@ -98,36 +98,36 @@ public class Migration {
     }
 
     private static void insertIfNotExist(String abbrev, String expansion,
-            Hashtable<String, ArrayList<Abbrev>> abbrevs) {
-        ArrayList<Abbrev> abbrevsList = abbrevs.get(abbrev);
+            Hashtable<String, ArrayList<Abbreviation>> abbrevs) {
+        ArrayList<Abbreviation> abbrevsList = abbrevs.get(abbrev);
         if (abbrevsList == null) {
-            abbrevsList = new ArrayList<Abbrev>();
+            abbrevsList = new ArrayList<Abbreviation>();
             abbrevs.put(abbrev, abbrevsList);
         }
 
         boolean found = false;
 
-        Iterator<Abbrev> iter = abbrevsList.iterator();
+        Iterator<Abbreviation> iter = abbrevsList.iterator();
         while (!found && iter.hasNext()) {
-            Abbrev ab = iter.next();
+            Abbreviation ab = iter.next();
             found = ab.getExpansion().equals(expansion);
         }
 
         if (!found) {
-            Abbrev ab = new Abbrev(abbrev, abbrev, expansion);
+            Abbreviation ab = new Abbreviation(abbrev, abbrev, expansion);
             abbrevsList.add(ab);
         }
     }
 
-    private Hashtable<String, ArrayList<Abbrev>> loadAbbrevs(String modeName) {
-        Hashtable<String, ArrayList<Abbrev>> result =
-                new Hashtable<String, ArrayList<Abbrev>>();
+    private Hashtable<String, ArrayList<Abbreviation>> loadAbbrevs(String modeName) {
+        Hashtable<String, ArrayList<Abbreviation>> result =
+                new Hashtable<String, ArrayList<Abbreviation>>();
 
-        for (Abbrev abbrev : persistence.loadMode(modeName).getAbbreviations()) {
-            ArrayList<Abbrev> abbrevs = result.get(abbrev.getAbbreviation());
+        for (Abbreviation abbrev : persistence.loadMode(modeName).getAbbreviations()) {
+            ArrayList<Abbreviation> abbrevs = result.get(abbrev.getAbbreviationText());
             if (abbrevs == null) {
-                abbrevs = new ArrayList<Abbrev>();
-                result.put(abbrev.getAbbreviation(), abbrevs);
+                abbrevs = new ArrayList<Abbreviation>();
+                result.put(abbrev.getAbbreviationText(), abbrevs);
             }
 
             abbrevs.add(abbrev);

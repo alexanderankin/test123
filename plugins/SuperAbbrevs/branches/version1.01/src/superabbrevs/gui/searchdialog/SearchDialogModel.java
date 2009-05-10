@@ -10,18 +10,18 @@ import java.util.Arrays;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
-import superabbrevs.model.Abbrev;
+import superabbrevs.model.Abbreviation;
 
 /**
  *
  * @author Sune Simonsen
  */
 public class SearchDialogModel implements TableModel {
-    Abbrev[] abbrevs;
-    ArrayList<Abbrev> matches = new ArrayList<Abbrev>();
+    Abbreviation[] abbrevs;
+    ArrayList<Abbreviation> matches = new ArrayList<Abbreviation>();
     
-    public SearchDialogModel(ArrayList<Abbrev> abbrevs) {
-        this.abbrevs = abbrevs.toArray(new Abbrev[abbrevs.size()]);
+    public SearchDialogModel(ArrayList<Abbreviation> abbrevs) {
+        this.abbrevs = abbrevs.toArray(new Abbreviation[abbrevs.size()]);
         Arrays.sort(this.abbrevs);
         searchTextChanged("");
     }
@@ -33,7 +33,7 @@ public class SearchDialogModel implements TableModel {
     public Object getValueAt(int rowIndex, int columnIndex) {
         switch (columnIndex) {
             case 0: return matches.get(rowIndex).getName(); 
-            default: return matches.get(rowIndex).getAbbreviation(); 
+            default: return matches.get(rowIndex).getAbbreviationText(); 
         }
     }
     
@@ -55,9 +55,9 @@ public class SearchDialogModel implements TableModel {
     public void searchTextChanged(String searchText) {
         searchText = searchText.toLowerCase();
         matches.clear();
-        for (Abbrev abbrev : abbrevs) {
+        for (Abbreviation abbrev : abbrevs) {
             if (abbrev.getName().toLowerCase().indexOf(searchText) != -1 ||
-                abbrev.getAbbreviation().toLowerCase().indexOf(searchText) != -1) {
+                abbrev.getAbbreviationText().toLowerCase().indexOf(searchText) != -1) {
                 matches.add(abbrev);
             }
         }

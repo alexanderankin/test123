@@ -7,7 +7,7 @@ import org.gjt.sp.jedit.bsh.Interpreter;
 
 import superabbrevs.JEditInterface;
 import superabbrevs.Paths;
-import superabbrevs.model.Abbrev;
+import superabbrevs.model.Abbreviation;
 import superabbrevs.model.ReplacementTypes;
 import superabbrevs.model.SelectionReplacementTypes;
 import superabbrevs.stdlib.Std;
@@ -40,7 +40,7 @@ public class TemplateInterpreter {
         return out.toString();
     }
     
-    public void setInput(Abbrev abbrev, boolean invokedAsACommand, String indent) 
+    public void setInput(Abbreviation abbrev, boolean invokedAsACommand, String indent) 
             throws IOException {
         
         tpg = new Tpg(indent, jedit);
@@ -56,9 +56,9 @@ public class TemplateInterpreter {
 
             if (invokedAsACommand) {
                 if (hasSelection()) {
-                    setInput(abbrev.whenInvokedAsCommandOnSelection.replace());
+                    setInput(abbrev.getSelectionReplacementArea());
                 } else {
-                    setInput(abbrev.whenInvokedAsCommand.replace());
+                    setInput(abbrev.getReplacementArea());
                 }
             }
 

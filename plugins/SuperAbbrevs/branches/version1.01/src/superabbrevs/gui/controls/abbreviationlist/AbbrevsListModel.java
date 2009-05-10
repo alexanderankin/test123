@@ -7,17 +7,17 @@ import java.util.List;
 
 import javax.swing.AbstractListModel;
 
-import superabbrevs.model.Abbrev;
+import superabbrevs.model.Abbreviation;
 
 public class AbbrevsListModel extends AbstractListModel {
-	private final List<Abbrev> items;
+	private final List<Abbreviation> items;
 	
-	public AbbrevsListModel(Collection<? extends Abbrev> abbrevs) {
-		items = new ArrayList<Abbrev>(abbrevs);
+	public AbbrevsListModel(Collection<? extends Abbreviation> abbrevs) {
+		items = new ArrayList<Abbreviation>(abbrevs);
 		sort();
 	}
 	
-	public boolean remove(Abbrev abbrev) {
+	public boolean remove(Abbreviation abbrev) {
 		
 		int index = items.indexOf(abbrev);
 		boolean exists = index != -1;
@@ -29,7 +29,7 @@ public class AbbrevsListModel extends AbstractListModel {
 		return exists;
 	}
 	
-	public Abbrev getElementAt(int index) {
+	public Abbreviation getElementAt(int index) {
 		return items.get(index);
 	}
 
