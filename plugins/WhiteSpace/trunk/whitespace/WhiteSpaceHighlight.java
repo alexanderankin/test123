@@ -155,57 +155,55 @@ public class WhiteSpaceHighlight extends TextAreaExtension
                 }
             }
 
-            // Leading whitespaces
-            int i0   = 0;
-            int idx0 = s.offset;
+            // Trailing whitespaces; have higher priority than leading whitespaces
+            int i_t   = count - 1;
+            int idx_t = s.offset + i_t;
 
-            leading:
-            for (painter = null; i0 < count; i0++, idx0++) {
-                char c = array[idx0];
-
-                if (c == ' ') {
-                    painter = spacePainters[0];
-                } else if (c == '\t') {
-                    painter = tabPainters[0];
-                } else {
-                    break leading;
-                }
-
-                if (painter != null) {
-                    ta.offsetToXY(physicalLine, i0, p0);
-                    painter.paint(gfx, p0.x + 1, p0.y + (height / 2));
-                    painter = null;
-                }
-            }
-
-            // Trailing whitespaces
-            int i1   = count - 1;
-            int idx1 = s.offset + count - 1;
-
-            trailing:
-            for (painter = null; i1 > i0; i1--, idx1--) {
-                char c = array[idx1];
+            for (painter = null; i_t >= 0; i_t--, idx_t--) {
+                char c = array[idx_t];
 
                 if (c == ' ') {
                     painter = spacePainters[2];
                 } else if (c == '\t') {
                     painter = tabPainters[2];
                 } else {
-                    break trailing;
+                    break;
                 }
 
                 if (painter != null) {
-                    ta.offsetToXY(physicalLine, i1, p0);
+                    ta.offsetToXY(physicalLine, i_t, p0);
+                    painter.paint(gfx, p0.x + 1, p0.y + (height / 2));
+                    painter = null;
+                }
+            }
+
+            // Leading whitespaces
+            int i_l   = 0;
+            int idx_l = s.offset;
+
+            for (painter = null; i_l < i_t; i_l++, idx_l++) {
+                char c = array[idx_l];
+
+                if (c == ' ') {
+                    painter = spacePainters[0];
+                } else if (c == '\t') {
+                    painter = tabPainters[0];
+                } else {
+                    break;
+                }
+
+                if (painter != null) {
+                    ta.offsetToXY(physicalLine, i_l, p0);
                     painter.paint(gfx, p0.x + 1, p0.y + (height / 2));
                     painter = null;
                 }
             }
 
             // Inner whitespaces
-            int i   = i0;
-            int idx = idx0;
-            for (; i <= i1; i++, idx++) {
-                char c = array[idx];
+            int i_i   = i_l;
+            int idx_i = idx_l;
+            for (painter = null; i_i <= i_t && i_i > 0; i_i++, idx_i++) {
+                char c = array[idx_i];
 
                 if (c == ' ') {
                     painter = spacePainters[1];
@@ -226,7 +224,7 @@ public class WhiteSpaceHighlight extends TextAreaExtension
                 }
 
                 if (painter != null) {
-                    ta.offsetToXY(physicalLine, i, p0);
+                    ta.offsetToXY(physicalLine, i_i, p0);
                     painter.paint(gfx, p0.x + 1, p0.y + (height / 2));
                     painter = null;
                 }
