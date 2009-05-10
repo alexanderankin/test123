@@ -15,11 +15,17 @@ import superabbrevs.model.Abbreviation;
 import superabbrevs.Paths;
 import superabbrevs.Persistence;
 import superabbrevs.model.Mode;
+import superabbrevs.repository.ModeRepository;
 import superabbrevs.utilities.Log;
 
 public class Migration {
 
-	private Persistence persistence = new Persistence();
+	private final ModeRepository modeRepository;
+	
+	public Migration(ModeRepository modeRepository) {
+		this.modeRepository = modeRepository;
+		
+	}
 	
     public static void Migrate() {
         Log.log(Log.Level.DEBUG, Migration.class, "Migrating old abbreviations");
@@ -77,12 +83,8 @@ public class Migration {
         Mode mode = new Mode(modeName);
         mode.getAbbreviations().addAll(flatten(newAbbrevs));
             
-        try {
-            // todo migrate variables
-            persistence.saveMode(mode);
-        } catch (IOException ex) {
-            Log.log(Log.Level.ERROR, Migration.class, ex);
-        }
+        // todo migrate variables
+        modeRepository.save(mode);
     }
 
     private static ArrayList<Abbreviation> flatten(
@@ -123,7 +125,7 @@ public class Migration {
         Hashtable<String, ArrayList<Abbreviation>> result =
                 new Hashtable<String, ArrayList<Abbreviation>>();
 
-        for (Abbreviation abbrev : persistence.loadMode(modeName).getAbbreviations()) {
+        for (Abbreviation abbrev : modeRepository.load(modeName).getAbbreviations()) {
             ArrayList<Abbreviation> abbrevs = result.get(abbrev.getAbbreviationText());
             if (abbrevs == null) {
                 abbrevs = new ArrayList<Abbreviation>();

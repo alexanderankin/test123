@@ -6,6 +6,7 @@ import java.util.Set;
 
 import superabbrevs.model.Abbreviation;
 import superabbrevs.model.Mode;
+import superabbrevs.repository.ModeRepository;
 
 /**
  * @author sune
@@ -15,16 +16,16 @@ import superabbrevs.model.Mode;
 public class AbbrevsOptionPaneController {
     Hashtable<String,Mode> modes = new Hashtable<String, Mode>();
     
-    private final Persistence persistence;
 	private final ModeService modeService;
+	private final ModeRepository modeRepository;
 
 	public ModeService getModeService() {
 		return modeService;
 	}
 
-	public AbbrevsOptionPaneController(ModeService modeService, Persistence persistence) {
+	public AbbrevsOptionPaneController(ModeService modeService, ModeRepository modeRepository) {
         this.modeService = modeService;
-        this.persistence = persistence;
+		this.modeRepository = modeRepository;
     }
     
     public Set<Abbreviation> loadsAbbrevs(String modeName) {
@@ -35,7 +36,7 @@ public class AbbrevsOptionPaneController {
     	if (modes.containsKey(modeName)) {
             return modes.get(modeName);
         } else {
-            Mode mode = persistence.loadMode(modeName);
+            Mode mode = modeRepository.load(modeName);
             modes.put(modeName, mode);
             return mode;
         }
@@ -43,7 +44,7 @@ public class AbbrevsOptionPaneController {
 
     public void saveAbbrevs() throws IOException {
         for(Mode mode : modes.values()) {
-            persistence.saveMode(mode);  
+            modeRepository.save(mode);  
         }
     }
 }

@@ -4,11 +4,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URL;
+
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.jEdit;
+
 import superabbrevs.Paths;
-import superabbrevs.Persistence;
 import superabbrevs.migration.Migration;
 import superabbrevs.utilities.Log;
 
@@ -67,7 +68,7 @@ public class Installation {
      * Get at resource from the jar file
      */
     private static URL getResource(String filename) {
-        return Persistence.class.getClassLoader().getResource(filename);
+        return Installation.class.getClassLoader().getResource(filename);
     }
     
     
