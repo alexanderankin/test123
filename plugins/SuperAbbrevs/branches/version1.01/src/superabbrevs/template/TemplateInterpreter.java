@@ -56,7 +56,7 @@ public class TemplateInterpreter {
 
             if (invokedAsACommand) {
                 if (hasSelection()) {
-                    setInput(abbrev.whenInvokedAsCommand.onSelection.replace());
+                    setInput(abbrev.whenInvokedAsCommandOnSelection.replace());
                 } else {
                     setInput(abbrev.whenInvokedAsCommand.replace());
                 }
@@ -64,8 +64,6 @@ public class TemplateInterpreter {
 
             // set the file name of the current buffer
             interpreter.set("filename", tpg.getFileName());
-            // we keep the selection variable for backwards compatibility
-            interpreter.set("selection", tpg.getSelection());
         } catch (EvalError ex) {
             assert false : "This should never happen";
         }

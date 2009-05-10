@@ -51,7 +51,7 @@ public class TemplateHandler {
         ti.setInput(abbrev, invokedAsACommand, indent);
 
         if (invokedAsACommand) {
-            selectReplacementArea(abbrev.whenInvokedAsCommand);
+            selectReplacementArea(abbrev);
         }        
 
         TemplateFactory tf = new TemplateFactory(ti, indent);
@@ -186,12 +186,11 @@ public class TemplateHandler {
         }
     }
 
-    private void selectReplacementArea(Abbrev.WhenInvokedAsCommand whenInvokedAsCommand) {
-    	SelectionReplacementTypes replacementType = whenInvokedAsCommand.onSelection.replace();
+    private void selectReplacementArea(Abbrev abbrev) {
         if (hasSelection()) {
-            selectReplacementArea(replacementType);
+            selectReplacementArea(abbrev.whenInvokedAsCommandOnSelection.replace());
         } else {
-            selectReplacementArea(whenInvokedAsCommand.replace());
+            selectReplacementArea(abbrev.whenInvokedAsCommand.replace());
         }
     }
 

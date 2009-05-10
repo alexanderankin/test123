@@ -42,7 +42,7 @@ public class AbbrevsEditorPane extends JPanel {
 			activeAbbrev.setAbbreviation(abbrevJTextField.getText());
 			activeAbbrev.setExpansion(abbrevsEditorJTextArea.getText());
 			activeAbbrev.whenInvokedAsCommand.replace(getReplacementType());
-			activeAbbrev.whenInvokedAsCommand.onSelection.replace(getSelectionReplacementType());
+			activeAbbrev.whenInvokedAsCommandOnSelection.replace(getSelectionReplacementType());
 		}
 	}
 
@@ -67,7 +67,7 @@ public class AbbrevsEditorPane extends JPanel {
 		abbrevJTextField.setText(abbrev.getAbbreviation());
 		abbrevsEditorJTextArea.setText(abbrev.getExpansion());
 		setReplacementType(abbrev.whenInvokedAsCommand.replace());
-		setSelectionReplacementType(abbrev.whenInvokedAsCommand.onSelection.replace());
+		setSelectionReplacementType(abbrev.whenInvokedAsCommandOnSelection.replace());
 	}
 
 	private void ClearPanel() {

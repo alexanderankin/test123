@@ -23,7 +23,7 @@ public class Abbrev implements Serializable, Comparable<Abbrev> {
 	/**
 	 * True if the abbreviation should be indented when changed.
 	 */
-	public boolean autoIndent;
+	private boolean autoIndent;
 
 	public String getAbbreviation() {
 		return abbreviation;
@@ -70,27 +70,28 @@ public class Abbrev implements Serializable, Comparable<Abbrev> {
 	public final WhenInvokedAsCommand whenInvokedAsCommand = new WhenInvokedAsCommand();
 	
 	public static class WhenInvokedAsCommand {
-		private ReplacementTypes replacementType = ReplacementTypes.AT_CARET;
+		private ReplacementTypes replace = ReplacementTypes.AT_CARET;
 		
 		public void replace(ReplacementTypes replacementType) {
-			this.replacementType = replacementType;
+			this.replace = replacementType;
 		}
 		
 		public ReplacementTypes replace() {
-			return replacementType;
+			return replace;
 		}
-		
-		public final OnSelection onSelection = new OnSelection();
-		public static class OnSelection {
-			private SelectionReplacementTypes replacementType = SelectionReplacementTypes.NOTHING;
+	}
+	
+	public final WhenInvokedAsCommandOnSelection whenInvokedAsCommandOnSelection = new WhenInvokedAsCommandOnSelection();
+	
+	public static class WhenInvokedAsCommandOnSelection {
+		private SelectionReplacementTypes replace = SelectionReplacementTypes.NOTHING;
 
-			public void replace(SelectionReplacementTypes replacementType) {
-				this.replacementType = replacementType;
-			}
+		public void replace(SelectionReplacementTypes replacementType) {
+			this.replace = replacementType;
+		}
 
-			public SelectionReplacementTypes replace() {
-				return replacementType;
-			}
+		public SelectionReplacementTypes replace() {
+			return replace;
 		}
 	}
 
