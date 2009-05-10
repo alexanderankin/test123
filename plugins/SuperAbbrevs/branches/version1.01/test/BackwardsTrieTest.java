@@ -39,8 +39,6 @@ public class BackwardsTrieTest extends TestCase {
      * Test of scan method, of class trie.SimpleTrie.
      */
     public void testScan() {
-        System.out.println("scan");
-        
         String key = "aba";
         
         LinkedList<Integer> expResult = new LinkedList<Integer>();
@@ -51,8 +49,6 @@ public class BackwardsTrieTest extends TestCase {
     }
     
     public void testScan1() {
-        System.out.println("scan1");
-        
         String key = "aabaa";
         
         LinkedList<Integer> expResult = new LinkedList<Integer>();
@@ -62,8 +58,6 @@ public class BackwardsTrieTest extends TestCase {
     }
     
     public void testScan2() {
-        System.out.println("scan2");
-        
         String key = "ab";
         
         LinkedList<Integer> expResult = new LinkedList<Integer>();
@@ -75,8 +69,6 @@ public class BackwardsTrieTest extends TestCase {
      * Test of remove method, of class trie.SimpleTrie.
      */
     public void testRemove() {
-        System.out.println("remove");
-        
         String key = "aba";
         boolean result = trie.remove(key, 4);
         assertTrue(result);

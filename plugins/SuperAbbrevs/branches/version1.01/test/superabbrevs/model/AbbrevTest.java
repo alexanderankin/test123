@@ -27,8 +27,8 @@ public class AbbrevTest {
 	@Test
 	public void setSelectionReplementType() throws Exception {
 		SelectionReplacementTypes replamentType = SelectionReplacementTypes.SELECTION;
-		abbrev.whenInvokedAsCommand.onSelection.replace(replamentType);
-		assertEquals(replamentType, abbrev.whenInvokedAsCommand.onSelection.replace());
+		abbrev.whenInvokedAsCommandOnSelection.replace(replamentType);
+		assertEquals(replamentType, abbrev.whenInvokedAsCommandOnSelection.replace());
 	}
 	
 	@Test

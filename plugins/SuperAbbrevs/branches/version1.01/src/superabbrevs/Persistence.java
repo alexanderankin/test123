@@ -9,7 +9,9 @@ import org.gjt.sp.util.IOUtilities;
 
 import superabbrevs.model.Abbrev;
 import superabbrevs.model.Mode;
+import superabbrevs.model.ReplacementTypes;
 import superabbrevs.model.Variable;
+import superabbrevs.model.Abbrev.WhenInvokedAsCommand;
 import superabbrevs.utilities.Log;
 
 import com.thoughtworks.xstream.XStream;
@@ -36,6 +38,7 @@ public class Persistence {
         } else {
             Log.log(Log.Level.DEBUG, Persistence.class, 
                         "Saving mode file " + modeFile);
+            
             modeFile.createNewFile();        
             FileOutputStream out = null;
             try {
@@ -45,7 +48,7 @@ public class Persistence {
 	            setupFormating(xstream);
 	            xstream.toXML(mode, out);   
             } finally {
-            	out.close();            	
+            	out.close();
             }
         }
     }
@@ -53,19 +56,23 @@ public class Persistence {
     public Mode loadMode(String mode) {
         File modeFile = getModeFileName(mode);
         FileInputStream in = null;
-        try {
-            in = new FileInputStream(modeFile);
-            XStream xstream = new XStream();
-            xstream.setMode(XStream.NO_REFERENCES);
-            setupFormating(xstream);
-            Mode result = (Mode) xstream.fromXML(in);
-            return result;
-        } catch (FileNotFoundException ex) {
-            // If the mode file does not exist return a empty abbreviation list
-            return new Mode(mode);
-        } finally {
-        	IOUtilities.closeQuietly(in);
-        }    
+        if (modeFile.exists() && modeFile.length() != 0) {
+        	try {
+                in = new FileInputStream(modeFile);
+                XStream xstream = new XStream();
+                xstream.setMode(XStream.NO_REFERENCES);
+                setupFormating(xstream);
+                Mode result = (Mode) xstream.fromXML(in);
+                return result;
+            } catch (FileNotFoundException ex) {
+                // If the mode file does not exist return a empty abbreviation list
+                return new Mode(mode);
+            } finally {
+            	IOUtilities.closeQuietly(in);
+            }
+		}
+        
+        return new Mode(mode);
     }
 
 	protected File getModeFileName(String mode) {
@@ -75,6 +82,6 @@ public class Persistence {
     private static void setupFormating(XStream xstream) {
         xstream.alias("mode", Mode.class);
         xstream.alias("abbreviation", Abbrev.class);
-        xstream.alias("Variable", Variable.class);
+        xstream.alias("variable", Variable.class);
     }
 }

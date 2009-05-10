@@ -1,5 +1,6 @@
 package superabbrevs;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -57,12 +58,18 @@ public class PersistenceTest {
 			
 			actualReader = new FileReader(tempFile);
 			String actual = IOUtils.toString(actualReader);
-			
+
 			assertEquals(expected, actual);
 		} finally {
 			IOUtils.closeQuietly(expectedReader);
 			IOUtils.closeQuietly(actualReader);
 		}
+	}
+	
+	@Test
+	public void loadNonExistingMode() throws Exception {
+		Mode loadedMode = persistence.loadMode(mode.getName());
+		assertTrue(loadedMode.getAbbreviations().isEmpty());
 	}
 	
 	@Test
