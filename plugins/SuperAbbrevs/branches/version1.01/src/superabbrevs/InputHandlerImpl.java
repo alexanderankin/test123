@@ -1,5 +1,6 @@
 package superabbrevs;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -25,7 +26,8 @@ public class InputHandlerImpl implements InputHandler {
     
     @Inject private JEditInterface jedit;
     
-    private AbbrevsHandler abbrevsHandler = new AbbrevsHandler();
+    @Inject
+    private AbbreviationHandler abbreviationHandler;
 
     public InputHandlerImpl() {
     }
@@ -63,7 +65,7 @@ public class InputHandlerImpl implements InputHandler {
             String getTextBeforeCaret = textAreaHandler.getTextBeforeCaret();
             String mode = textAreaHandler.getModeAtCursor();
             LinkedList<Abbreviation> abbrevs = 
-                    abbrevsHandler.getAbbrevs(mode, getTextBeforeCaret);
+            	abbreviationHandler.getAbbrevs(mode, getTextBeforeCaret);
             
             if (abbrevs.size() == 1) {
                 // There is only one expansion
@@ -101,7 +103,7 @@ public class InputHandlerImpl implements InputHandler {
 	 */
     public void showSearchDialog() {
         String mode = textAreaHandler.getModeAtCursor();
-        Set<Abbreviation> abbrevs = abbrevsHandler.getAbbrevs(mode);
+        Set<Abbreviation> abbrevs = abbreviationHandler.getAbbrevs(mode);
         textAreaHandler.showSearchDialog(new ArrayList<Abbreviation>(abbrevs));
     }
 
@@ -110,7 +112,7 @@ public class InputHandlerImpl implements InputHandler {
 	 */
 	public void showOptionsPane() {
 		AbbrevsOptionPaneController controller = 
-            new AbbrevsOptionPaneController(jedit);
+            new AbbrevsOptionPaneController(jedit, new Persistence());
 	    JDialog dialog = new AbbrevsDialog(view, false, controller);
 	    dialog.setVisible(true);
 	}

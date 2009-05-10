@@ -1,21 +1,8 @@
-/*
- * SimpleTrie.java
- *
- * Created on 13. juni 2007, 18:24
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
-
 package trie;
 
 import java.util.LinkedList;
 
-/**
- *
- * @author Sune Simonsen
- */
-public final class BackwardsTrie<T> implements Trie<T> {
+public class BackwardsTrie<T> implements Trie<T> {
     
     private final Node<T> root = new Node<T>();
 

@@ -1,9 +1,10 @@
 package superabbrevs.repository;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 
@@ -18,33 +19,50 @@ public class FileBasedModeRepository implements ModeRepository {
 	private final ModeSerializer modeSerializer;
 	private final PluginDirectory directory;
 
+	private List<ModeSavedListener> modeSavedListeners = 
+		new ArrayList<ModeSavedListener>();
+	
 	@Inject 
 	public FileBasedModeRepository(PluginDirectory directory, ModeSerializer modeSerializer) {
 		this.directory = directory;
 		this.modeSerializer = modeSerializer;
 	}
 
-	public void save(Mode mode) throws FileNotFoundException {
+	public void save(Mode mode) {
 		OutputStream output = null;
 		try {
 			output = directory.openModeFileForWriting(mode.getName());
 			modeSerializer.serialize(output, mode);
+			fireModeSavedEvent(mode);
 		} finally {
 			IOUtils.closeQuietly(output);
 		}
 	}
 
-	public Mode Load(String modeName) throws FileNotFoundException {
+	public Mode load(String modeName) {
 		InputStream input = null;
 		try {
-			if (new File(modeName).exists()) {
-				input = directory.openModeFileForReading(modeName); 
-				return modeSerializer.deserialize(input);
-			} else {
-				return new Mode(modeName);
-			}
+			input = directory.openModeFileForReading(modeName); 
+			return modeSerializer.deserialize(input);
+		} catch (Exception e) {
+			return new Mode(modeName);
 		} finally {
 			IOUtils.closeQuietly(input);
+		}
+	}
+
+	public void addModeSavedListener(ModeSavedListener listener) {
+		assert listener != null;
+		modeSavedListeners.add(listener);
+	}
+
+	public void removeModeSavedListener(ModeSavedListener listener) {
+		modeSavedListeners.remove(listener);
+	}
+	
+	private void fireModeSavedEvent(Mode mode) {
+		for (ModeSavedListener listener : modeSavedListeners) {
+			listener.modeWasSaved(mode);
 		}
 	}
 }

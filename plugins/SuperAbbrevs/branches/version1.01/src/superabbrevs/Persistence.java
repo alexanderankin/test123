@@ -9,7 +9,6 @@ import org.gjt.sp.util.IOUtilities;
 
 import superabbrevs.model.Abbreviation;
 import superabbrevs.model.Mode;
-import superabbrevs.model.ReplacementTypes;
 import superabbrevs.model.Variable;
 import superabbrevs.utilities.Log;
 
