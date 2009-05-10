@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Locale;
 
 import javax.swing.Icon;
 import javax.swing.JComponent;
@@ -20,9 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 
 import org.gjt.sp.jedit.EditBus;
-import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View.ViewConfig;
 import org.gjt.sp.jedit.gui.DockableWindowFactory;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
