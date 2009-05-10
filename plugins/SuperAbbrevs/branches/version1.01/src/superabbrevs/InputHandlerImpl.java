@@ -1,6 +1,5 @@
 package superabbrevs;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -14,6 +13,7 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 import superabbrevs.gui.AbbrevsDialog;
 import superabbrevs.model.Abbreviation;
+import superabbrevs.repository.ModeRepository;
 
 import com.google.inject.Inject;
 
@@ -26,8 +26,8 @@ public class InputHandlerImpl implements InputHandler {
     
     @Inject private JEditInterface jedit;
     
-    @Inject
-    private AbbreviationHandler abbreviationHandler;
+    @Inject private AbbreviationHandler abbreviationHandler;
+    @Inject private ModeRepository modeRepository;
 
     public InputHandlerImpl() {
     }
@@ -112,7 +112,7 @@ public class InputHandlerImpl implements InputHandler {
 	 */
 	public void showOptionsPane() {
 		AbbrevsOptionPaneController controller = 
-            new AbbrevsOptionPaneController(jedit, new Persistence());
+            new AbbrevsOptionPaneController(jedit, modeRepository);
 	    JDialog dialog = new AbbrevsDialog(view, false, controller);
 	    dialog.setVisible(true);
 	}
