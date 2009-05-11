@@ -16,7 +16,7 @@ public class TableCellViewer extends MouseAdapter {
 
     public TableCellViewer( JTable table ) {
         this.table = table;
-        ta = new JTextArea( 10, 40 );
+        ta = new JTextArea( 15, 60 );
         ta.setLineWrap( true );
         ta.setEditable( false );
         pm = new JPopupMenu();
