@@ -1,5 +1,0 @@
--dynamic menu's ?
--RTP , RTSP support ?
--using BeanShell scripting in actions ?
--docs/ dir ?
--javax.media.ResourceUnavailableEvent cannot open the audio device, inform user via pop-up?

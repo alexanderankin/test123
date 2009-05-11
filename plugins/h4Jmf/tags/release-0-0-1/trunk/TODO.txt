@@ -1,7 +1,0 @@
--dynamic menu's ?
--RTP , RTSP support ?
--using BeanShell scripting in actions ?
--docs/ dir ?
--javax.media.ResourceUnavailableEvent cannot open the audio device, inform user via pop-up?
--how can we get reference to plugin-instance from dockable panel? can we prevent dockable panel from being closed? if dockable panel is closed,reopened how to re-add  Player.getControlPanelComponent() ?
-
