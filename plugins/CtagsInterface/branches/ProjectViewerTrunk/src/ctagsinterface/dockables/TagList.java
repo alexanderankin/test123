@@ -42,7 +42,6 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 	JList tags;
 	DefaultListModel tagModel, filteredModel;
 	JMenuBar menu;
-	HashMap<String, HashSet<String>> menus;
 	static String [] extensionOrder = new String [] {
 		"class", "struct", "access" 
 	};
@@ -94,7 +93,7 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 		HashMap<String, HashSet<String>> menus =
 			new HashMap<String, HashSet<String>>();
 		menu = new JMenuBar();
-		add(BorderLayout.NORTH, menu);
+		add(menu, BorderLayout.NORTH);
 		for (int i = 0; i < tagModel.getSize(); i++) {
 			Tag tag = (Tag) tagModel.getElementAt(i);
 			filteredModel.addElement(tag);
@@ -121,6 +120,8 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 		Vector<String> keys = new Vector<String>(menus.keySet());
 		Collections.sort(keys);
 		for (final String key: keys) {
+			if (menus.get(key).size() < 2)
+				continue;	// Avoid redundant menus
 			JMenu m = new JMenu(key);
 			menu.add(m);
 			Vector<String> values = new Vector<String>(menus.get(key));
@@ -143,6 +144,7 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 				});
 			}
 		}
+		validate();
 	}
 
 	public void focusOnDefaultComponent() {
