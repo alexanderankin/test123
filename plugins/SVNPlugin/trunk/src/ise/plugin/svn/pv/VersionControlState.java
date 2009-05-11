@@ -2,7 +2,6 @@
 package ise.plugin.svn.pv;
 
 import projectviewer.config.VersionControlService;
-import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 import javax.swing.Icon;
@@ -65,10 +64,8 @@ public class VersionControlState implements VersionControlService {
      *
      * @return A service-specific identifier for the file state.
      */
-
-    public int getNodeState(VPTNode node)
-    {
-        String path = node.getNodePath();
+    public int getNodeState( VPTNode f ) {
+        String path = f.getNodePath();
         SVNData data = new SVNData();
         List<String> paths = new ArrayList<String>();
         paths.add( path );
@@ -88,11 +85,11 @@ public class VersionControlState implements VersionControlService {
         catch ( Exception e ) {
             status = null;
         }
-
         if ( status == null ) {
             return NONE;
         }
 
+        // checking file at a time, so just checking the status.getXXX is enough
         if ( status.getAdded() != null ) {
             return LOCAL_ADD;
         }
@@ -117,8 +114,11 @@ public class VersionControlState implements VersionControlService {
         else if ( status.getUnversioned() != null ) {
             return UNVERSIONED;
         }
-        else if ( status.getNormal() != null) {
+        else if ( status.getNormal() != null ) {
             return NORMAL;
+        }
+        else if ( status.getErrorFiles() != null ) {
+            return UNVERSIONED;
         }
         else {
             return NONE;

@@ -63,6 +63,7 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
     private List<SVNStatus> missingFiles = null;
     private List<SVNStatus> outOfDateFiles = null;
     private List<SVNStatus> lockedFiles = null;
+    private List<String> errorFiles = null;
 
     public StatusHandler( PrintStream out, boolean isRemote ) {
         this.out = out;
@@ -97,6 +98,9 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
         }
         if ( normalFiles != null ) {
             sd.setNormal( normalFiles );
+        }
+        if ( errorFiles != null ) {
+            sd.setErrorFiles( errorFiles );
         }
         return sd;
     }
@@ -416,4 +420,10 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
      */
     public void checkCancelled() throws SVNCancelException {}
 
+    public void addErrorFile( String filename ) {
+        if ( errorFiles == null ) {
+            errorFiles = new ArrayList<String>();
+        }
+        errorFiles.add( filename );
+    }
 }

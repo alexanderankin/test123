@@ -65,13 +65,13 @@ public class Status {
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
         // use the svnkit client manager
-        SVNClientManager clientManager = SVNClientManager.newInstance( options, new BasicAuthenticationManager(cd.getUsername(), cd.getDecryptedPassword()) );
+        SVNClientManager clientManager = SVNClientManager.newInstance( options, new BasicAuthenticationManager( cd.getUsername(), cd.getDecryptedPassword() ) );
 
         // get a client
         SVNStatusClient client = clientManager.getStatusClient();
 
         // set an event handler so that messages go to the streams for display
-        if (cd.getOut() != null) {
+        if ( cd.getOut() != null ) {
             client.setEventHandler( new SVNCommandEventProcessor( cd.getOut(), cd.getErr(), false ) );
         }
 
@@ -93,6 +93,10 @@ public class Status {
                     // if disconnected, an error will be thrown if remote is true,
                     // so set remote to false and try again
                     revision = client.doStatus( localPath, SVNRevision.HEAD, depth, false, true, false, false, handler, null );
+                }
+                else {
+                    // if here, then most likely the file isn't under version control at all
+                    handler.addErrorFile( path );
                 }
             }
         }

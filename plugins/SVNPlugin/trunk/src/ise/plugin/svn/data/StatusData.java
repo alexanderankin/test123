@@ -42,6 +42,84 @@ public class StatusData {
     private List<SVNStatus> outOfDate;
     private List<SVNStatus> locked;
     private List<SVNStatus> normal;
+    private List<String> errorFiles;
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append( "StatusData[" );
+        if ( added != null ) {
+            sb.append( "Added:\n" );
+            for ( SVNStatus status : added ) {
+                sb.append( '\t' ).append( status.getFile() ).append( '=' ).append( status.getContentsStatus() ).append( '\n' );
+            }
+            sb.append( '\n' );
+        }
+        else if ( getConflicted() != null ) {
+            sb.append( "Conflicted:\n" );
+            for ( SVNStatus status : conflicted ) {
+                sb.append( '\t' ).append( status.getFile() ).append( '=' ).append( status.getContentsStatus() ).append( '\n' );
+            }
+            sb.append( '\n' );
+        }
+        else if ( getDeleted() != null ) {
+            sb.append( "Deleted:\n" );
+            for ( SVNStatus status : deleted ) {
+                sb.append( '\t' ).append( status.getFile() ).append( '=' ).append( status.getContentsStatus() ).append( '\n' );
+            }
+            sb.append( '\n' );
+        }
+        else if ( getLocked() != null ) {
+            sb.append( "Locked:\n" );
+            for ( SVNStatus status : locked ) {
+                sb.append( '\t' ).append( status.getFile() ).append( '=' ).append( status.getContentsStatus() ).append( '\n' );
+            }
+            sb.append( '\n' );
+        }
+        else if ( getMissing() != null ) {
+            sb.append( "Missing:\n" );
+            for ( SVNStatus status : missing ) {
+                sb.append( '\t' ).append( status.getFile() ).append( '=' ).append( status.getContentsStatus() ).append( '\n' );
+            }
+            sb.append( '\n' );
+        }
+        else if ( getModified() != null ) {
+            sb.append( "Modified:\n" );
+            for ( SVNStatus status : modified ) {
+                sb.append( '\t' ).append( status.getFile() ).append( '=' ).append( status.getContentsStatus() ).append( '\n' );
+            }
+            sb.append( '\n' );
+        }
+        else if ( getOutOfDate() != null ) {
+            sb.append( "Out of date:\n" );
+            for ( SVNStatus status : outOfDate ) {
+                sb.append( '\t' ).append( status.getFile() ).append( '=' ).append( status.getContentsStatus() ).append( '\n' );
+            }
+            sb.append( '\n' );
+        }
+        else if ( getUnversioned() != null ) {
+            sb.append( "Unversioned:\n" );
+            for ( SVNStatus status : unversioned ) {
+                sb.append( '\t' ).append( status.getFile() ).append( '=' ).append( status.getContentsStatus() ).append( '\n' );
+            }
+            sb.append( '\n' );
+        }
+        else if ( getNormal() != null ) {
+            sb.append( "Normal:\n" );
+            for ( SVNStatus status : normal ) {
+                sb.append( '\t' ).append( status.getFile() ).append( '=' ).append( status.getContentsStatus() ).append( '\n' );
+            }
+            sb.append( '\n' );
+        }
+        else if ( getErrorFiles() != null ) {
+            sb.append( "Error files:\n" );
+            for ( String status : errorFiles ) {
+                sb.append( '\t' ).append( status ).append( '\n' );
+            }
+            sb.append( '\n' );
+        }
+        sb.append( "]\n" );
+        return sb.toString();
+    }
 
     /**
      * Returns the value of revision.
@@ -177,5 +255,13 @@ public class StatusData {
 
     public void setNormal( List<SVNStatus> normal ) {
         this.normal = normal;
+    }
+
+    public List<String> getErrorFiles() {
+        return errorFiles;
+    }
+
+    public void setErrorFiles( List<String> errorFiles ) {
+        this.errorFiles = errorFiles;
     }
 }
