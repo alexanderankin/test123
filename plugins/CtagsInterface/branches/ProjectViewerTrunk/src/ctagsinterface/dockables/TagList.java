@@ -92,13 +92,11 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 	public void setTagFilters() {
 		HashMap<String, HashSet<String>> menus =
 			new HashMap<String, HashSet<String>>();
-		if (menu == null) {
-			menu = new JMenuBar();
-			add(BorderLayout.NORTH, menu);
-		}
-		menu.removeAll();
+		menu = new JMenuBar();
+		add(BorderLayout.NORTH, menu);
 		for (int i = 0; i < tagModel.getSize(); i++) {
 			Tag tag = (Tag) tagModel.getElementAt(i);
+			filteredModel.addElement(tag);
 			for (String ext: tag.getExtensions()) {
 				HashSet<String> keys = menus.get(ext);
 				if (keys == null) {
@@ -120,6 +118,7 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 				m.add(item);
 				item.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
+						filteredModel.removeAllElements();
 						for (int i = 0; i < tagModel.getSize(); i++) {
 							Tag t = (Tag) tagModel.get(i);
 							if (value.equals(t.getExtension(key)))
