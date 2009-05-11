@@ -46,7 +46,8 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 	static String [] extensionOrder = new String [] {
 		"class", "struct", "access" 
 	};
-	
+	static final String MISSING_EXTENSION = "<none>";
+
 	public TagList(View view) {
 		super(new BorderLayout());
 		this.view = view;
@@ -97,13 +98,24 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 		for (int i = 0; i < tagModel.getSize(); i++) {
 			Tag tag = (Tag) tagModel.getElementAt(i);
 			filteredModel.addElement(tag);
+			Vector<String> missingExtensions = new Vector<String>(menus.keySet());
 			for (String ext: tag.getExtensions()) {
+				missingExtensions.remove(ext);
 				HashSet<String> keys = menus.get(ext);
 				if (keys == null) {
 					keys = new HashSet<String>();
 					menus.put(ext, keys);
+					if (i > 0) // Previous tags did not have this extension
+						keys.add(MISSING_EXTENSION);
 				}
 				keys.add(tag.getExtension(ext));
+			}
+			// Add a <missing extension> item to menus for missing extensions
+			for (String missing: missingExtensions) {
+				HashSet<String> keys = menus.get(missing);
+				if (keys == null)
+					continue;
+				keys.add(MISSING_EXTENSION);
 			}
 		}
 		Vector<String> keys = new Vector<String>(menus.keySet());
@@ -121,7 +133,10 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 						filteredModel.removeAllElements();
 						for (int i = 0; i < tagModel.getSize(); i++) {
 							Tag t = (Tag) tagModel.get(i);
-							if (value.equals(t.getExtension(key)))
+							String ext = t.getExtension(key);
+							if (ext == null)
+								ext = MISSING_EXTENSION;
+							if (value.equals(ext))
 								filteredModel.addElement(t);
 						}
 					}
