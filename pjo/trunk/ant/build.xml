@@ -160,6 +160,7 @@ jedit.svn.url=https://jedit.svn.sourceforge.net/svnroot/jedit
 			<echo>jedit.settings.dir=${jedit.settings.dir}</echo>
 			<echo>install.dir=${install.dir}</echo>
 			<ant antfile="build.xml" dir="@{pluginDownloadDir}" inheritall="true" target="clean"/>
+			<mkdir dir="@{pluginDownloadDir}/../dist"/>
 			<ant antfile="build.xml" dir="@{pluginDownloadDir}" inheritall="true" target="dist">
 				<property name="install.dir" value="@{pluginDownloadDir}/../dist" />
 			</ant>

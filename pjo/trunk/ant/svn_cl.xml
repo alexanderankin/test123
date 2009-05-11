@@ -2,9 +2,10 @@
 <project name="SVN Command Line Targets" basedir="." default="help">
 	<target name="checkout-plugin">
 		<property name="plugin.download.dir" value="${plugin.name}-${plugin.version}" />
+		<property name="plugin.svn.url" value="${jedit.svn.url}/plugins/${plugin.name}/tags/${plugin.tag}" />
 		<exec executable="svn" failonerror="true">
 			<arg value="co" />
-			<arg value="${jedit.svn.url}/plugins/${plugin.name}/tags/${plugin.tag}" />
+			<arg value="${plugin.svn.url}" />
 			<arg value="${plugin.download.dir}" />
 		</exec>
 	</target>
