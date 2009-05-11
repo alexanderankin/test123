@@ -119,11 +119,8 @@ public class ExtensionManager
 		/*
 		 * Make sure we don't allow recursive nor concurrent calls to this function.
 		 */
-		boolean locked = false;
-		if (!lock.isHeldByCurrentThread()) {
-			if (!(locked = lock.tryLock())) {
-				return;
-			}
+		if (lock.isHeldByCurrentThread() || !lock.tryLock()) {
+			return;
 		}
 		try {
 			for (Iterator<WeakReference<ManagedService>> it = services.iterator();
@@ -137,9 +134,7 @@ public class ExtensionManager
 				}
 			}
 		} finally {
-			if (locked) {
-				lock.unlock();
-			}
+			lock.unlock();
 		}
 	}
 
