@@ -1,12 +1,11 @@
 package superabbrevs.repository;
 
-import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
+import org.gjt.sp.util.IOUtilities;
 
 import superabbrevs.io.PluginDirectory;
 import superabbrevs.model.Mode;
@@ -35,7 +34,7 @@ public class FileBasedModeRepository implements ModeRepository {
 			modeSerializer.serialize(output, mode);
 			fireModeSavedEvent(mode);
 		} finally {
-			IOUtils.closeQuietly(output);
+			IOUtilities.closeQuietly(output);
 		}
 	}
 
@@ -47,7 +46,7 @@ public class FileBasedModeRepository implements ModeRepository {
 		} catch (Exception e) {
 			return new Mode(modeName);
 		} finally {
-			IOUtils.closeQuietly(input);
+			IOUtilities.closeQuietly(input);
 		}
 	}
 
