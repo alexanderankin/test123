@@ -1,19 +1,14 @@
 package superabbrevs.serialization;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.thoughtworks.xstream.XStream;
-
-import superabbrevs.Persistence;
 import superabbrevs.model.Abbreviation;
 import superabbrevs.model.Mode;
 import superabbrevs.model.ReplacementTypes;
-import superabbrevs.model.SelectionReplacementTypes;
 import superabbrevs.model.Variable;
-import superabbrevs.utilities.Log;
+
+import com.thoughtworks.xstream.XStream;
 
 public class XmlModeSerializer implements ModeSerializer {
 
