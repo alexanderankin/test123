@@ -48,6 +48,13 @@ implements h4JmfActions,EBComponent
  private Time duration=null;
  private Calendar clndr=Calendar.getInstance();
 
+ boolean jmf_ok=false;
+
+ public h4Jmf()
+ {
+  logger.info("no-args constructor");
+ }//
+
  public h4Jmf(View view,String position)
  {
   //super(new BorderLayout());
@@ -66,19 +73,29 @@ implements h4JmfActions,EBComponent
   //cnsl.append("SettingsDirectory="+jEdit.getSettingsDirectory());
   EditBus.addToBus(this);
   //sdf.setCalendar(clndr);
+  //check a few jmf-classes begin
+  Class tst=null;
+  try
+  {
+   tst=Class.forName("com.sun.media.codec.audio.mp3.JavaDecoder");
+   jmf_ok=true;
+   cnsl.append("jmf Java Media Framework seems to be installed.");
+  }
+  catch(Exception excptn)
+  {
+   cnsl.append("trying presence of jmf");
+   cnsl.append(excptn);
+   cnsl.append("jmf Java Media Framework does not seem to be installed!");
+   cnsl.append("see README for more info");
+  }
+  //check a few jmf-classes end
  }//constructor
 
- public void start()
- {
-  logger.info("start plugin but does not come here!!");
- }//start
- public void stop()
- {
-  logger.info("stop plugin but does not come here");
- }//stop
 
  public void chooseFile()
  {
+  if(! jmf_ok) return;
+
   String tmpdir=System.getProperty("java.io.tmpdir");
   String[] paths=GUIUtilities.showVFSFileDialog(view,tmpdir+File.separator,JFileChooser.OPEN_DIALOG,false);
   if(paths!=null && !paths[0].equals(filename))
@@ -172,6 +189,10 @@ implements h4JmfActions,EBComponent
         );
        }//gui_thread
       }//RealizeCompleteEvent
+      else if(e instanceof javax.media.ResourceUnavailableEvent)
+      {
+       cnsl.append(((javax.media.ResourceUnavailableEvent)e).getMessage());
+      }
      }//controllerUpdate
     }
    );
@@ -330,7 +351,7 @@ implements h4JmfActions,EBComponent
  //EBComponent interface
  public void handleMessage(EBMessage message)
  {
-  //logger.info(message.toString());
+  logger.info(message.toString());
   if(message instanceof PropertiesChanged)
   {
    //propertiesChanged();
@@ -339,7 +360,12 @@ implements h4JmfActions,EBComponent
  }
 }//h4Jmf
 /************
- 10:26:47 [AWT-EventQueue-0] [error] AWT-EventQueue-0: INFO: DockableWindowUpdate[what=ACTIVATED,dockable=h4Jmf,source=org.gjt.sp.jedit.gui.DockableWindowManagerImpl[,0,0,1024x669,layout=org.gjt.sp.jedit.gui.DockableLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]]
+DockableWindowUpdate[what=ACTIVATED,dockable=h4Jmf,source=org.gjt.sp.jedit.gui.DockableWindowManagerImpl[,0,0,1024x669,layout=org.gjt.sp.jedit.gui.DockableLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]]
+
+EditPaneUpdate[what=DESTROYED,source=org.gjt.sp.jedit.EditPane[active,editpane]]
+
+PluginUpdate[what=UNLOADED,exit=true,source=/downloads/jEdit/4.3pre16/jars/LatestVersion.jar,class=LatestVersionPlugin]
+
 
  javax.media.NotRealizedError: Cannot get control panel component on an unrealized player
 **************/
