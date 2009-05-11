@@ -1,6 +1,5 @@
 package superabbrevs;
 
-import java.io.FileNotFoundException;
 import java.util.LinkedList;
 import java.util.Set;
 

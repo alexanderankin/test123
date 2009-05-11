@@ -9,17 +9,16 @@
 
 package superabbrevs;
 
-import java.io.FileNotFoundException;
 import java.util.LinkedList;
 import java.util.Set;
-
-import com.google.inject.Inject;
 
 import superabbrevs.model.Abbreviation;
 import superabbrevs.model.Mode;
 import superabbrevs.repository.ModeRepository;
 import trie.BackwardsTrie;
 import trie.Trie;
+
+import com.google.inject.Inject;
 
 /**
  *
