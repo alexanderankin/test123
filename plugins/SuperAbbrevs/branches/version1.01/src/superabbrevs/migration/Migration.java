@@ -9,11 +9,12 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map.Entry;
+
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
-import superabbrevs.model.Abbreviation;
+
 import superabbrevs.Paths;
-import superabbrevs.Persistence;
+import superabbrevs.model.Abbreviation;
 import superabbrevs.model.Mode;
 import superabbrevs.repository.ModeRepository;
 import superabbrevs.utilities.Log;
