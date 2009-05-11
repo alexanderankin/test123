@@ -3,6 +3,8 @@ package ctagsinterface.main;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -22,6 +24,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JWindow;
+import javax.swing.Timer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -46,6 +49,8 @@ public class QuickSearchTagDialog extends JDialog {
 	View view;
 	Vector<QuickSearchTag> tagNames;
 	Query baseQuery;
+	Timer filterTimer;
+	
 	/** This window will contains the scroll with the items. */
 	private final JWindow window = new JWindow(this);
 	
@@ -107,6 +112,12 @@ public class QuickSearchTagDialog extends JDialog {
 				}
 			}
 		});
+		filterTimer = new Timer(500, new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				delayedSetFilter();
+			}
+		});
+		filterTimer.setRepeats(false);
 		prepareData();
 		pack();
 		setLocationRelativeTo(view);
@@ -160,6 +171,13 @@ public class QuickSearchTagDialog extends JDialog {
 	}
 
 	protected void setFilter() {
+		if (filterTimer.isRunning())
+			filterTimer.restart();
+		else
+			filterTimer.start();
+	}
+	
+	protected void delayedSetFilter() {
 		model.removeAllElements();
 		String input = name.getText();
 		if (! input.isEmpty()) {
