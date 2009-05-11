@@ -7,7 +7,7 @@ plugin.h4JmfPlugin.name=h4Jmf
 plugin.h4JmfPlugin.author=Herman Vierendeels
 
 # version number == jEdit version number
-plugin.h4JmfPlugin.version=4.3
+plugin.h4JmfPlugin.version=0.0.1
 
 
 # we only have one dependency, jEdit 4.2, since we use the new plugin API
