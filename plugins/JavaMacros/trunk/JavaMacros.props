@@ -13,8 +13,8 @@ plugin.javamacros.JavaMacrosPlugin.docs=
 plugin.javamacros.JavaMacrosPlugin.description=Uses compiled JVM class files as macros so macros can be written in any Java IDE
 plugin.javamacros.JavaMacrosPlugin.longdescription=description.html
 
-# we only have one dependency, jEdit 4.2final, since we use the new plugin API
 plugin.javamacros.JavaMacrosPlugin.depend.0=jedit 04.02.99.00
+plugin.javamacros.JavaMacrosPlugin.depend.1=jdk 1.5
 
 # plugin menu
 plugin.javamacros.JavaMacrosPlugin.menu=
