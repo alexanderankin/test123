@@ -12,7 +12,6 @@ import java.util.regex.Pattern;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.MiscUtilities;
 
-import superabbrevs.Paths;
 import superabbrevs.SuperAbbrevsPlugin;
 
 public class PluginDirectoryImpl implements PluginDirectory {
@@ -51,6 +50,6 @@ public class PluginDirectoryImpl implements PluginDirectory {
 		Matcher matcher = illegalCharectorPattern.matcher(modeName);
 		String fileName = matcher.replaceAll("_") + ".xml";
 		String path = MiscUtilities.constructPath(ABBREVS_DIR, fileName);
-		return new File(fileName);
+		return new File(path);
 	}
 }
