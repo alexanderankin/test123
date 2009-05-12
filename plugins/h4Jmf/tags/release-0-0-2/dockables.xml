@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!-- together with actions.xml -->
+
+
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+
+
+<DOCKABLES>
+	<DOCKABLE NAME="h4Jmf">
+		new h4Jmf(view, position);
+	</DOCKABLE>
+</DOCKABLES>
