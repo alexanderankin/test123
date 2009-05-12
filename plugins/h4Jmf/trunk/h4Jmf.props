@@ -1,6 +1,6 @@
 #the presence of this property also tells jEdit the plugin is using the new API
-##plugin.h4JmfPlugin.activate=defer
-plugin.h4JmfPlugin.activate=startup
+plugin.h4JmfPlugin.activate=defer
+##plugin.h4JmfPlugin.activate=startup
 
 # These two properties are required for all plugins
 plugin.h4JmfPlugin.name=h4Jmf
@@ -8,6 +8,8 @@ plugin.h4JmfPlugin.author=Herman Vierendeels
 
 # version number == jEdit version number
 plugin.h4JmfPlugin.version=0.0.1
+
+plugin.h4JmfPlugin.docs=description.html
 
 
 # we only have one dependency, jEdit 4.2, since we use the new plugin API

@@ -32,6 +32,7 @@ implements h4JmfActions,EBComponent
  private static final Logger logger=Logger.getLogger(h4Jmf.class.getName());
  private static String sdfs="HH:mm:ss.SS";
  private static SimpleDateFormat sdf=new SimpleDateFormat(sdfs);
+ volatile private static int count=0;
 
  private String filename;
  private View view;
@@ -60,6 +61,9 @@ implements h4JmfActions,EBComponent
   //super(new BorderLayout());
   super();
 
+  count++;
+  logger.info("args constructor "+count);
+
   this.setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
   //logger.info("view="+view+" position="+position);
   this.view=view;
@@ -71,6 +75,7 @@ implements h4JmfActions,EBComponent
   this.setPreferredSize(new Dimension(500,250));
   //cnsl.append("begin");
   //cnsl.append("SettingsDirectory="+jEdit.getSettingsDirectory());
+  cnsl.append("args constructor "+count);
   EditBus.addToBus(this);
   //sdf.setCalendar(clndr);
   //check a few jmf-classes begin
@@ -182,7 +187,9 @@ implements h4JmfActions,EBComponent
            {
             //jpnl_this.add(BorderLayout.NORTH,cpc);
             jpnl_this.add(cpc);
-	    jpnl_this.invalidate();
+	    //jpnl_this.invalidate();
+	    //getHeight() getWidth() setSize(Dimension).setSize(int width,int height)
+	    jpnl_this.revalidate();
            }
           }//run
          }
