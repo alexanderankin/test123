@@ -33,18 +33,20 @@ implements h4JmfActions,EBComponent
  private static String sdfs="HH:mm:ss.SS";
  private static SimpleDateFormat sdf=new SimpleDateFormat(sdfs);
  volatile private static int count=0;
+ volatile private static java.awt.Component cpc=null;
+ volatile private static Player playMP3=null;
 
- private String filename;
+ private String filename=null;
  private View view;
  Console cnsl=null;
- java.awt.Component cpc=null;
+ //java.awt.Component cpc=null;
 
  private URL url;
  private MediaLocator mediaLocator;
  private DataSource ds=null;
  //nog doen??? if commando (play, start etc) , set switch, unset switch when event confirmed in controllerUpdate
  // no more commands if command_busy set!!! nog doen???
- private Player playMP3;
+ //private Player playMP3;
  //private Time lsbr_time=null;
  private Time duration=null;
  private Calendar clndr=Calendar.getInstance();
@@ -58,9 +60,7 @@ implements h4JmfActions,EBComponent
 
  public h4Jmf(View view,String position)
  {
-  //super(new BorderLayout());
   super();
-
   count++;
   logger.info("args constructor "+count);
 
@@ -69,15 +69,22 @@ implements h4JmfActions,EBComponent
   this.view=view;
   //position.equals(DockableWindowManager.FLOATING);
   cnsl=new Console(100);
+  //cnsl.setPreferredSize(new Dimension(500,200));
   JScrollPane jscrllpn=new JScrollPane(cnsl);
+  //jscrllpn.setPreferredSize(new Dimension(500,200));
   //add(BorderLayout.SOUTH,jscrllpn);
   add(jscrllpn);
+  logger.info("cpc="+cpc);
+  if(cpc!=null)//after panel has been closed, new instance !!
+  {
+   cpc.setPreferredSize(new Dimension(500,50));
+   this.add(cpc);
+  }
   this.setPreferredSize(new Dimension(500,250));
   //cnsl.append("begin");
   //cnsl.append("SettingsDirectory="+jEdit.getSettingsDirectory());
   cnsl.append("args constructor "+count);
-  EditBus.addToBus(this);
-  //sdf.setCalendar(clndr);
+  //EditBus.addToBus(this);//moved to notufy
   //check a few jmf-classes begin
   Class tst=null;
   try
@@ -94,6 +101,7 @@ implements h4JmfActions,EBComponent
    cnsl.append("see README for more info");
   }
   //check a few jmf-classes end
+  logger.info("constructor end");
  }//constructor
 
 
@@ -125,9 +133,14 @@ implements h4JmfActions,EBComponent
   if(playMP3!=null)
   {
    logger.severe("playMP3!=null");
+   cnsl.append("playMP3!=null");
    return;
   }
-  if(url==null) return;
+  if(url==null)
+  {
+   cnsl.append("url==null");
+   return;
+  }
   mediaLocator=new MediaLocator(url); 
   try
   {
@@ -207,6 +220,7 @@ implements h4JmfActions,EBComponent
   catch(Exception e)
   {
    logger.severe(e.getMessage());
+   cnsl.append(e);
    return;
   }
   playMP3.realize();
@@ -216,13 +230,16 @@ implements h4JmfActions,EBComponent
  }//player_begin
  public void player_close()
  {
+  cnsl.append("trying to close()");
   if(playMP3!=null)
   {
    playMP3.close();
    cnsl.append("close()");
    if(cpc!=null) this.remove(cpc);
   }
+  cpc=null;
   playMP3=null;
+  filename=null;
  }//
  //nog doen!!! start forward rewind , kleine delay inbouwen ???
  public void player_start()
@@ -364,7 +381,31 @@ implements h4JmfActions,EBComponent
    //propertiesChanged();
   }
   //AWT-EventQueue-0: INFO: EditorExiting[source=null]
+  else if(message instanceof org.gjt.sp.jedit.msg.PluginUpdate)
+  {
+   Object what=((PluginUpdate)message).getWhat();
+   if(what.equals(PluginUpdate.DEACTIVATED))
+   {
+    if(playMP3!=null) playMP3.close();
+    playMP3=null;
+   }
+  }//PluginUpdate
+ }//handleMessage
+ //JComponent methods
+ /****if using these without call to super,view empty! no cnsl, no cpc*/
+ public void addNotify()
+ {
+  logger.info("");
+  super.addNotify();
+  EditBus.addToBus(this);
  }
+ public void removeNotify()
+ {
+  logger.info("");
+  super.removeNotify();
+  EditBus.removeFromBus(this);
+ }
+ //JComponent methods end
 }//h4Jmf
 /************
 DockableWindowUpdate[what=ACTIVATED,dockable=h4Jmf,source=org.gjt.sp.jedit.gui.DockableWindowManagerImpl[,0,0,1024x669,layout=org.gjt.sp.jedit.gui.DockableLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]]

@@ -7,7 +7,7 @@ plugin.h4JmfPlugin.name=h4Jmf
 plugin.h4JmfPlugin.author=Herman Vierendeels
 
 # version number == jEdit version number
-plugin.h4JmfPlugin.version=0.0.1
+plugin.h4JmfPlugin.version=0.0.2
 
 plugin.h4JmfPlugin.docs=description.html
 
@@ -16,7 +16,10 @@ plugin.h4JmfPlugin.docs=description.html
 plugin.h4JmfPlugin.depend.0=jedit 04.03.15.00
 plugin.h4JmfPlugin.depend.1=jdk 1.5
 
-plugin.h4JmfPlugin.description=test with Java Media Framework, control audio-player from jEdit, assist in transcription of digital audio-interview. \
+#does not seem to prevent plugin from loading if .jmfdir is not there!
+##plugin.h4JmfPlugin.files=$HOME/.jmfdir
+
+plugin.h4JmfPlugin.description=test with Java Media Framework, control audio-player from jEdit, assist in transcription of digital audio-interview.\n \
 Java Media Framework (jmf) should be installed first! see README
 
 # plugin menu

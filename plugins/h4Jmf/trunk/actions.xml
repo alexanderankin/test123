@@ -1,5 +1,7 @@
 <!DOCTYPE ACTIONS SYSTEM "actions.dtd">
-
+<!-- see org.gjt.sp.jedit.ActionSet -->
+<!-- together with dockables.xml??? -->
+<!-- org.gjt.sp.jedit.gui.DockableWindowManager wm -->
 <ACTIONS>
 	<ACTION NAME="h4Jmf.choose-file">
 		<CODE>
@@ -45,6 +47,7 @@
 	</ACTION>
 	<ACTION NAME="h4Jmf.player-close">
 		<CODE>
+			wm.addDockableWindow(h4JmfPlugin.NAME);
 			wm.getDockableWindow(h4JmfPlugin.NAME).player_close();
 		</CODE>
 	</ACTION>
