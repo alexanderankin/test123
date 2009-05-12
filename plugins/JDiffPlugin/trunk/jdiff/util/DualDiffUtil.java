@@ -148,6 +148,7 @@ public class DualDiffUtil {
     }
 
     public static FileLine[] getFileLines( DualDiff dualDiff, Buffer buffer ) {
+        buffer.readLock();
         FileLine[] lines = new FileLine[ buffer.getLineCount() ];
 
         for ( int i = buffer.getLineCount() - 1; i >= 0; i-- ) {
@@ -182,7 +183,7 @@ public class DualDiffUtil {
 
             lines[ i ] = new FileLine( text, canonical );
         }
-
+        buffer.readUnlock();
         return lines;
     }
 
