@@ -6,7 +6,6 @@ import java.util.regex.*;
 import javax.swing.*;
 
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.util.Log;
 
 import jdiff.component.*;
@@ -73,6 +72,12 @@ public class DualDiffManager {
         dualDiffs.remove( view );
         splitConfigs.remove( view );
         caretPositions.remove( view );
+
+        // let others know that the diff session is over --
+        // the SVN Plugin needs this, others might be interested.
+        // DualDiff also uses this message now to know to remove
+        // the overviews.
+        EditBus.send( new DiffMessage( view, DiffMessage.OFF ) );
     }
 
     /*
@@ -121,110 +126,82 @@ public class DualDiffManager {
     }
 
     private static void toggleOffFor( final View view ) {
-        Runnable r = new Runnable() {
-                    public void run() {
-                        // get stored configurations so they can be restored
-                        String splitConfig = splitConfigs.get( view );
-                        HashMap < String, List < Integer >> carets = caretPositions.get( view );
+        // get stored configurations so they can be restored
+        String splitConfig = splitConfigs.get( view );
+        HashMap < String, List < Integer >> carets = caretPositions.get( view );
 
-                        // turn off DualDiff so auto-scroll is deactivated before
-                        // restoring caret and viewport.  "removeFrom" also cleans up
-                        // the splitConfigs and caretPositions maps.
-                        DualDiffManager.removeFrom( view );
+        // turn off DualDiff so auto-scroll is deactivated before
+        // restoring caret and viewport.  "removeFrom" also cleans up
+        // the splitConfigs and caretPositions maps.
+        DualDiffManager.removeFrom( view );
 
-                        // turn off the dockable if it is visible
-                        view.getDockableWindowManager().hideDockableWindow( JDIFF_LINES );
+        // possibly restore split config, see tracker 2540573
+        if ( jEdit.getBooleanProperty( "jdiff.restore-view", true ) ) {
+            if ( splitConfig != null ) {
+                validateConfig( view, splitConfig );
+                view.setSplitConfig( null, splitConfig );
+            }
+            else {
+                view.unsplit();
+            }
+        }
 
-                        // possibly restore split config, see tracker 2540573
-                        if ( jEdit.getBooleanProperty( "jdiff.restore-view", true ) ) {
-                            if ( splitConfig != null ) {
-                                validateConfig( view, splitConfig );
-                                view.setSplitConfig( null, splitConfig );
-                            }
-                            else {
-                                view.unsplit();
-                            }
-                        }
+        // possibly restore caret positions/viewports independent of
+        // restore split config setting
+        if ( jEdit.getBooleanProperty( "jdiff.restore-caret", true ) && carets != null ) {
+            for ( EditPane ep : view.getEditPanes() ) {
+                List<Integer> values = carets.get( ep.getBuffer().getPath( false ) );
+                if ( values != null ) {
+                    int caret_position = values.get( 0 );
+                    int first_physical_line = values.get( 1 );
+                    ep.getTextArea().setCaretPosition( caret_position );
+                    ep.getTextArea().setFirstPhysicalLine( first_physical_line );
+                }
+            }
+            carets = null;
+        }
 
-                        // possibly restore caret positions/viewports independent of
-                        // restore split config setting
-                        if ( jEdit.getBooleanProperty( "jdiff.restore-caret", true ) && carets != null ) {
-                            for ( EditPane ep : view.getEditPanes() ) {
-                                List<Integer> values = carets.get( ep.getBuffer().getPath( false ) );
-                                if ( values != null ) {
-                                    int caret_position = values.get( 0 );
-                                    int first_physical_line = values.get( 1 );
-                                    ep.getTextArea().setCaretPosition( caret_position );
-                                    ep.getTextArea().setFirstPhysicalLine( first_physical_line );
-                                }
-                            }
-                            carets = null;
-                        }
-
-                        // let others know that the diff session is over --
-                        // the SVN Plugin needs this, others might be interested.
-                        // DualDiff also uses this message now to know to remove
-                        // the overviews.
-                        EditBus.send( new DiffMessage( view, DiffMessage.OFF ) );
-
-                        view.invalidate();
-                        view.validate();
-                    }
-                };
-        SwingUtilities.invokeLater( r );
+        view.invalidate();
+        view.validate();
     }
 
     private static void toggleOnFor( final View view ) {
-        Runnable r = new Runnable() {
-                    public void run() {
-                        // remember split configuration so it can be restored later
-                        String splitConfig = view.getSplitConfig();
-                        if ( splitConfig != null ) {
-                            splitConfigs.put( view, splitConfig );
-                        }
+        // remember split configuration so it can be restored later
+        String splitConfig = view.getSplitConfig();
+        if ( splitConfig != null ) {
+            splitConfigs.put( view, splitConfig );
+        }
 
-                        // split the view -- if already split correctly,
-                        // don't split.
-                        boolean horizontal = false;
-                        JSplitPane splitPane = view.getSplitPane();
-                        if ( splitPane != null ) {
-                            horizontal = splitPane.getOrientation() == JSplitPane.VERTICAL_SPLIT;
-                        }
-                        EditPane[] editPanes = view.getEditPanes();
-                        if ( editPanes.length != 2 || horizontal ) {
-                            view.unsplit();
-                            view.splitVertically();
-                        }
-                        editPanes = view.getEditPanes();
+        // split the view -- if already split correctly,
+        // don't split.
+        boolean horizontal = false;
+        JSplitPane splitPane = view.getSplitPane();
+        if ( splitPane != null ) {
+            horizontal = splitPane.getOrientation() == JSplitPane.VERTICAL_SPLIT;
+        }
+        EditPane[] editPanes = view.getEditPanes();
+        if ( editPanes.length != 2 || horizontal ) {
+            view.unsplit();
+            view.splitVertically();
+        }
+        editPanes = view.getEditPanes();
 
-                        // remember caret positions and first physical lines for the two files
-                        HashMap < String, List < Integer >> cps = new HashMap < String, List < Integer >> (); // <String = buffer path, List<Integer> = [0] caret position, [1] first physical line
-                        List<Integer> values = new ArrayList<Integer>();
-                        values.add( editPanes[ 0 ].getTextArea().getCaretPosition() );
-                        values.add( editPanes[ 0 ].getTextArea().getFirstPhysicalLine() );
-                        cps.put( editPanes[ 0 ].getBuffer().getPath( false ), values );
-                        values = new ArrayList<Integer>();
-                        values.add( editPanes[ 1 ].getTextArea().getCaretPosition() );
-                        values.add( editPanes[ 1 ].getTextArea().getFirstPhysicalLine() );
-                        cps.put( editPanes[ 1 ].getBuffer().getPath( false ), values );
-                        caretPositions.put( view, cps );
+        // remember caret positions and first physical lines for the two files
+        HashMap < String, List < Integer >> cps = new HashMap < String, List < Integer >> (); // <String = buffer path, List<Integer> = [0] caret position, [1] first physical line
+        List<Integer> values = new ArrayList<Integer>();
+        values.add( editPanes[ 0 ].getTextArea().getCaretPosition() );
+        values.add( editPanes[ 0 ].getTextArea().getFirstPhysicalLine() );
+        cps.put( editPanes[ 0 ].getBuffer().getPath( false ), values );
+        values = new ArrayList<Integer>();
+        values.add( editPanes[ 1 ].getTextArea().getCaretPosition() );
+        values.add( editPanes[ 1 ].getTextArea().getFirstPhysicalLine() );
+        cps.put( editPanes[ 1 ].getBuffer().getPath( false ), values );
+        caretPositions.put( view, cps );
 
-                        // create the dual diff
-                        DualDiffManager.addTo( view );
+        // create the dual diff
+        DualDiffManager.addTo( view );
 
-                        // possibly show the dockable
-                        DockableWindowManager dwm = view.getDockableWindowManager();
-                        if ( !dwm.isDockableWindowVisible( JDIFF_LINES ) && jEdit.getBooleanProperty( "jdiff.auto-show-dockable" ) ) {
-                            if ( dwm.getDockableWindow( JDIFF_LINES ) == null ) {
-                                dwm.addDockableWindow( JDIFF_LINES );
-                            }
-                            dwm.showDockableWindow( JDIFF_LINES );
-                        }
-
-                        EditBus.send( new DiffMessage( view, DiffMessage.ON ) );
-                    }
-                };
-        SwingUtilities.invokeLater( r );
+        EditBus.send( new DiffMessage( view, DiffMessage.ON ) );
     }
 
     /**

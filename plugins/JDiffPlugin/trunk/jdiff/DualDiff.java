@@ -46,6 +46,7 @@ import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
@@ -270,30 +271,39 @@ public class DualDiff implements EBComponent {
 
     // reinstalls this DualDiff for the same View
     protected void refresh() {
-        // remove
-        EditBus.removeFromBus( this );
-        removeHandlers();
-        removeHighlighters();
-        removeOverviews();
-
-        // install
-        installOverviews();
-        installHighlighters();
-        installHandlers();
-
-        // reset overviews
-        diffLineOverview.clear();
-        DiffTextAreaModel taModel = new DiffTextAreaModel( this );
-        diffOverview0.setModel( taModel );
-        diffOverview0.synchroScrollRight();
-        diffOverview1.setModel( taModel );
-        diffOverview1.repaint();
-
-        EditBus.addToBus( this );
-
-        // make sure View divider is in the middle
         SwingUtilities.invokeLater( new Runnable() {
                     public void run() {
+                        // remove
+                        EditBus.removeFromBus( DualDiff.this );
+                        removeHandlers();
+                        removeHighlighters();
+                        removeOverviews();
+
+                        // install
+                        installOverviews();
+                        installHighlighters();
+                        installHandlers();
+
+                        // reset overviews
+                        diffLineOverview.clear();
+                        DiffTextAreaModel taModel = new DiffTextAreaModel( DualDiff.this );
+                        diffOverview0.setModel( taModel );
+                        diffOverview0.synchroScrollRight();
+                        diffOverview1.setModel( taModel );
+                        diffOverview1.repaint();
+
+                        EditBus.addToBus( DualDiff.this );
+
+                        // possibly show the dockable
+                        DockableWindowManager dwm = view.getDockableWindowManager();
+                        if ( !dwm.isDockableWindowVisible( DualDiffManager.JDIFF_LINES ) && jEdit.getBooleanProperty( "jdiff.auto-show-dockable" ) ) {
+                            if ( dwm.getDockableWindow( DualDiffManager.JDIFF_LINES ) == null ) {
+                                dwm.addDockableWindow( DualDiffManager.JDIFF_LINES );
+                            }
+                            dwm.showDockableWindow( DualDiffManager.JDIFF_LINES );
+                        }
+
+                        // make sure View divider is in the middle
                         JSplitPane sp = view.getSplitPane();
                         if ( sp != null ) {
                             sp.setDividerLocation( 0.5 );
@@ -311,6 +321,10 @@ public class DualDiff implements EBComponent {
         removeOverviews();
         removeHighlighters();
         removeHandlers();
+        
+        // turn off the dockable if it is visible
+        view.getDockableWindowManager().hideDockableWindow( DualDiffManager.JDIFF_LINES );
+
         diffLineOverview.setModel( null );
         DualDiffManager.removeFrom( view );
     }
@@ -539,8 +553,8 @@ public class DualDiff implements EBComponent {
                 // go to start of current hunk.  If caret line is after end of
                 // current hunk, but before the next hunk, go to start of current
                 // hunk.
-                if ( hunk.first0 + hunk.lines0 > caretLine ||                   // NOPMD caret is in current hunk
-                        hunk.next == null ||                                    // caret is after last hunk
+                if ( hunk.first0 + hunk.lines0 > caretLine ||                     // NOPMD caret is in current hunk
+                        hunk.next == null ||                                      // caret is after last hunk
                         hunk.next.first0 >= caretLine ) {         // caret is before next hunk
                     int line = hunk.first0;      // first line of diff hunk
 
@@ -600,8 +614,8 @@ public class DualDiff implements EBComponent {
                 // go to start of current hunk.  If caret line is after end of
                 // current hunk, but before current hunk, go to start of current
                 // hunk.
-                if ( hunk.first1 + hunk.lines1 > caretLine ||                  // NOPMD caret is in current hunk
-                        hunk.next == null ||                                    // caret is after last hunk
+                if ( hunk.first1 + hunk.lines1 > caretLine ||                    // NOPMD caret is in current hunk
+                        hunk.next == null ||                                      // caret is after last hunk
                         hunk.next.first1 >= caretLine ) {         // caret is before next hunk
                     int line = hunk.first1;      // first line of hunk
 
