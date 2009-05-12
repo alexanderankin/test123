@@ -31,6 +31,7 @@ public class DiffMessage extends EBMessage {
     */
     public static final Object OFF = "OFF";
 
+    // should be either ON or OFF
     private Object what;
 
     public DiffMessage( View view, Object what ) {
