@@ -201,9 +201,13 @@ public class DualDiff implements EBComponent {
             }
         }
         else if ( message instanceof DiffMessage ) {
-            DiffMessage dm = (DiffMessage)message;
-            if (DiffMessage.OFF.equals(dm.getWhat())) {
-                remove();   
+            DiffMessage dm = ( DiffMessage ) message;
+            if ( !view.equals( dm.getView() ) ) {
+                // not my view
+                return ;
+            }
+            if ( DiffMessage.OFF.equals( dm.getWhat() ) ) {
+                remove();
             }
         }
         else if ( message instanceof PropertiesChanged ) {
@@ -535,8 +539,8 @@ public class DualDiff implements EBComponent {
                 // go to start of current hunk.  If caret line is after end of
                 // current hunk, but before the next hunk, go to start of current
                 // hunk.
-                if ( hunk.first0 + hunk.lines0 > caretLine ||                  // NOPMD caret is in current hunk
-                        hunk.next == null ||                                   // caret is after last hunk
+                if ( hunk.first0 + hunk.lines0 > caretLine ||                   // NOPMD caret is in current hunk
+                        hunk.next == null ||                                    // caret is after last hunk
                         hunk.next.first0 >= caretLine ) {         // caret is before next hunk
                     int line = hunk.first0;      // first line of diff hunk
 
@@ -596,8 +600,8 @@ public class DualDiff implements EBComponent {
                 // go to start of current hunk.  If caret line is after end of
                 // current hunk, but before current hunk, go to start of current
                 // hunk.
-                if ( hunk.first1 + hunk.lines1 > caretLine ||                 // NOPMD caret is in current hunk
-                        hunk.next == null ||                                   // caret is after last hunk
+                if ( hunk.first1 + hunk.lines1 > caretLine ||                  // NOPMD caret is in current hunk
+                        hunk.next == null ||                                    // caret is after last hunk
                         hunk.next.first1 >= caretLine ) {         // caret is before next hunk
                     int line = hunk.first1;      // first line of hunk
 
@@ -666,9 +670,9 @@ public class DualDiff implements EBComponent {
             Diff.Change hunk = edits;
             int caretLine = editPane.getTextArea().getCaretLine();
             for ( ; hunk != null; hunk = hunk.next ) {
-                if (hunk.first1 <= caretLine && caretLine <= hunk.last1) {
+                if ( hunk.first1 <= caretLine && caretLine <= hunk.last1 ) {
                     diffOverview0.moveRight( hunk.first0 );
-                    return;
+                    return ;
                 }
             }
         }
@@ -692,9 +696,9 @@ public class DualDiff implements EBComponent {
             Diff.Change hunk = edits;
             int caretLine = editPane.getTextArea().getCaretLine();
             for ( ; hunk != null; hunk = hunk.next ) {
-                if (hunk.first0 <= caretLine && caretLine <= hunk.last0) {
+                if ( hunk.first0 <= caretLine && caretLine <= hunk.last0 ) {
                     diffOverview0.moveLeft( hunk.first1 );
-                    return;
+                    return ;
                 }
             }
         }
