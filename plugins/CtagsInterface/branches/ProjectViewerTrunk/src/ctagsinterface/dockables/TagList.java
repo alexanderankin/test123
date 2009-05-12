@@ -40,8 +40,9 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 
 	View view;
 	JList tags;
-	DefaultListModel tagModel, filteredModel;
+	DefaultListModel tagModel;
 	JMenuBar menu;
+	Vector<Tag> allTags;
 	static String [] extensionOrder = new String [] {
 		"class", "struct", "access" 
 	};
@@ -51,8 +52,7 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 		super(new BorderLayout());
 		this.view = view;
 		tagModel = new DefaultListModel();
-		filteredModel = new DefaultListModel();
-		tags = new JList(filteredModel);
+		tags = new JList(tagModel);
 		add(new JScrollPane(tags), BorderLayout.CENTER);
 		tags.setCellRenderer(new TagListCellRenderer());
 		tags.addMouseListener(new MouseAdapter() {
@@ -74,29 +74,25 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 	}
 	
 	protected void jumpTo(int selectedIndex) {
-		Tag tag = (Tag) filteredModel.getElementAt(selectedIndex);
+		Tag tag = (Tag) tagModel.getElementAt(selectedIndex);
 		CtagsInterfacePlugin.jumpToTag(view, tag);
 	}
 
 	public void setTags(Vector<Tag> tags) {
-		tagModel.removeAllElements();
-		filteredModel.removeAllElements();
-		if (tags == null)
-			return;
-		for (int i = 0; i < tags.size(); i++)
-			tagModel.addElement(tags.get(i));
-		setTagFilters();
-			
-	}
-
-	public void setTagFilters() {
-		HashMap<String, HashSet<String>> menus =
-			new HashMap<String, HashSet<String>>();
+		// Reset the tag filter menu
 		menu = new JMenuBar();
 		add(menu, BorderLayout.NORTH);
-		for (int i = 0; i < tagModel.getSize(); i++) {
-			Tag tag = (Tag) tagModel.getElementAt(i);
-			filteredModel.addElement(tag);
+		validate();
+		// Update the tags and the filter menu
+		allTags = tags;
+		tagModel.removeAllElements();
+		if (tags == null)
+			return;
+		HashMap<String, HashSet<String>> menus =
+			new HashMap<String, HashSet<String>>();
+		for (int i = 0; i < allTags.size(); i++) {
+			Tag tag = (Tag) allTags.get(i);
+			tagModel.addElement(tag);
 			Vector<String> missingExtensions = new Vector<String>(menus.keySet());
 			for (String ext: tag.getExtensions()) {
 				missingExtensions.remove(ext);
@@ -131,20 +127,19 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 				m.add(item);
 				item.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						filteredModel.removeAllElements();
-						for (int i = 0; i < tagModel.getSize(); i++) {
-							Tag t = (Tag) tagModel.get(i);
+						tagModel.removeAllElements();
+						for (int i = 0; i < allTags.size(); i++) {
+							Tag t = (Tag) allTags.get(i);
 							String ext = t.getExtension(key);
 							if (ext == null)
 								ext = MISSING_EXTENSION;
 							if (value.equals(ext))
-								filteredModel.addElement(t);
+								tagModel.addElement(t);
 						}
 					}
 				});
 			}
 		}
-		validate();
 	}
 
 	public void focusOnDefaultComponent() {
@@ -156,7 +151,7 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 				int index, boolean isSelected, boolean cellHasFocus) {
 			JLabel l = (JLabel) super.getListCellRendererComponent(list, value, index,
 				isSelected, cellHasFocus);
-			Tag tag = (Tag) filteredModel.getElementAt(index);
+			Tag tag = (Tag) tagModel.getElementAt(index);
 			l.setText(getHtmlText(tag, index));
 			l.setFont(new Font("Monospaced", Font.PLAIN, 12));
 			ImageIcon icon = tag.getIcon();
