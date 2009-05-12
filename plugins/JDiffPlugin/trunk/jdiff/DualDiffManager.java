@@ -88,7 +88,7 @@ public class DualDiffManager {
 
         // in the split config string, only file names are enclosed in double quotes,
         // so use a regex to pick them out without having to parse the string any
-        // more meaningfully.
+        // more meaningfully. (bufferset scope is also in double quotes)
         HashSet<String> filenames = new HashSet<String>();
         Pattern p = Pattern.compile( "\"(.*?)\"" );
         Matcher m = p.matcher( splitConfig );
@@ -163,6 +163,8 @@ public class DualDiffManager {
 
                         // let others know that the diff session is over --
                         // the SVN Plugin needs this, others might be interested.
+                        // DualDiff also uses this message now to know to remove
+                        // the overviews.
                         EditBus.send( new DiffMessage( view, DiffMessage.OFF ) );
 
                         view.invalidate();
@@ -186,7 +188,7 @@ public class DualDiffManager {
                         boolean horizontal = false;
                         JSplitPane splitPane = view.getSplitPane();
                         if ( splitPane != null ) {
-                            horizontal = splitPane.getOrientation() == JSplitPane.HORIZONTAL_SPLIT;
+                            horizontal = splitPane.getOrientation() == JSplitPane.VERTICAL_SPLIT;
                         }
                         EditPane[] editPanes = view.getEditPanes();
                         if ( editPanes.length != 2 || horizontal ) {

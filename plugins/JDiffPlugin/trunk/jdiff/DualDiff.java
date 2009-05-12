@@ -53,7 +53,11 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.jedit.textarea.TextAreaPainter;
 
-
+/**
+ * This is the controller.  There are 2 DiffOverviews and optionally 1 DiffLineOverview
+ * as the views.  The models are a DiffTextAreaModel for the DiffOverviews and a
+ * DiffLineModel for the DiffLineOverview.
+ */
 public class DualDiff implements EBComponent {
     // diff options
     private boolean ignoreCase;
@@ -194,6 +198,12 @@ public class DualDiff implements EBComponent {
             }
             else if ( epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED ) {
                 refresh();
+            }
+        }
+        else if ( message instanceof DiffMessage ) {
+            DiffMessage dm = (DiffMessage)message;
+            if (DiffMessage.OFF.equals(dm.getWhat())) {
+                remove();   
             }
         }
         else if ( message instanceof PropertiesChanged ) {
