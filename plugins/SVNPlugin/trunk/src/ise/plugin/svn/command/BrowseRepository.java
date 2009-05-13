@@ -198,7 +198,7 @@ public class BrowseRepository {
                     + "'; revision: " + entry.getRevision() + "; date: " + entry.getDate() + ")" );
             DirTreeNode node = new DirTreeNode( entry.getName(), !( entry.getKind() == SVNNodeKind.DIR ) );
             String repositoryLocation = repository.getLocation().toString() + "/" + entry.getName();
-            node.setHasProperties(entry.hasProperties());
+            node.setHasProperties( entry.hasProperties() );
             if ( isExternal ) {
                 node.setExternal( true );
                 node.setRepositoryLocation( repositoryLocation );
@@ -263,7 +263,7 @@ public class BrowseRepository {
             repository = SVNRepositoryFactory.create( SVNURL.parseURIEncoded( url ) );
             String pwd = null;
             if ( password != null && password.length() > 0 ) {
-                pwd = PasswordHandler.decryptPassword(new String( password ));
+                pwd = PasswordHandler.decryptPassword( new String( password ) );
             }
             ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager( username, pwd );
             repository.setAuthenticationManager( authManager );
@@ -296,7 +296,7 @@ public class BrowseRepository {
             repository = SVNRepositoryFactory.create( SVNURL.parseURIEncoded( url ) );
             String pwd = null;
             if ( password != null && password.length() > 0 ) {
-                pwd = PasswordHandler.decryptPassword(new String( password ));
+                pwd = PasswordHandler.decryptPassword( new String( password ) );
             }
             ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager( username, pwd );
             repository.setAuthenticationManager( authManager );
@@ -309,7 +309,7 @@ public class BrowseRepository {
             ByteArrayOutputStream baos = new ByteArrayOutputStream( );
             repository.getFile( filepath , revision , fileproperties , baos );
 
-            String mimeType = ( String ) fileproperties.asMap().get( SVNProperty.MIME_TYPE );
+            String mimeType = fileproperties.getSVNPropertyValue( SVNProperty.MIME_TYPE ).getString();
             boolean isTextType = SVNProperty.isTextMimeType( mimeType );
 
             // copy the properties to a Properties
