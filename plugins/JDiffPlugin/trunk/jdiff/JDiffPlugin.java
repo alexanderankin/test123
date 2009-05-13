@@ -32,14 +32,14 @@ import jdiff.util.DualDiffUtil;
 
 public class JDiffPlugin extends EBPlugin
 {
-    
-    public static Color highlightChangedColor;
-    public static Color highlightDeletedColor;
-    public static Color highlightInsertedColor;
-    public static Color highlightInvalidColor;
+
+    public static Color overviewChangedColor;
+    public static Color overviewDeletedColor;
+    public static Color overviewInsertedColor;
+    public static Color overviewInvalidColor;
     public static Color leftCursorColor;
     public static Color rightCursorColor;
-    
+
     static {
         propertiesChanged();
     }
@@ -77,18 +77,18 @@ public class JDiffPlugin extends EBPlugin
 
     public static void propertiesChanged() {
         // colors
-        highlightChangedColor = GUIUtilities.parseColor(
-            jEdit.getProperty("jdiff.highlight-changed-color", "#FFFF90")
+        overviewChangedColor = GUIUtilities.parseColor(
+            jEdit.getProperty("jdiff.overview-changed-color", "#FFFF90")
         );
-        highlightDeletedColor = GUIUtilities.parseColor(
-            jEdit.getProperty("jdiff.highlight-deleted-color", "#FF9090")
+        overviewDeletedColor = GUIUtilities.parseColor(
+            jEdit.getProperty("jdiff.overview-deleted-color", "#FF9090")
         );
-        highlightInsertedColor = GUIUtilities.parseColor(
-            jEdit.getProperty("jdiff.highlight-inserted-color", "#D9FF90")
+        overviewInsertedColor = GUIUtilities.parseColor(
+            jEdit.getProperty("jdiff.overview-inserted-color", "#D9FF90")
         );
 
-        highlightInvalidColor = GUIUtilities.parseColor(
-            jEdit.getProperty("jdiff.highlight-invalid-color", "#909090")
+        overviewInvalidColor = GUIUtilities.parseColor(
+            jEdit.getProperty("jdiff.overview-invalid-color", "#909090")
         );
         leftCursorColor = jEdit.getColorProperty("jdiff.left-cursor-color", jEdit.getColorProperty("view.caretColor", Color.BLACK));
         rightCursorColor = jEdit.getColorProperty("jdiff.right-cursor-color", jEdit.getColorProperty("view.caretColor", Color.BLACK));

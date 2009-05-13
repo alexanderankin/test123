@@ -29,8 +29,12 @@ import org.gjt.sp.jedit.gui.ColorWellButton;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.OptionPane;
 
+// from CommonControls plugin
 import ise.java.awt.KappaLayout;
 
+/**
+ * Handles color options for overviews, text area highlighting, and hunk cursors.
+ */
 public class JDiffOverviewOptionPane implements OptionPane {
 
     private JPanel panel = null;
