@@ -901,7 +901,8 @@ public final class ProjectViewer extends JPanel
 		to the buffer on the EditPane on the PV tree. */
 	private void handleViewUpdateMessage(ViewUpdate vu) {
 		if (vu.getView() == view &&
-			vu.getWhat() == ViewUpdate.EDIT_PANE_CHANGED)
+			vu.getWhat() == ViewUpdate.EDIT_PANE_CHANGED &&
+			config.getFollowCurrentBuffer())
 		{
 			PVActions.focusActiveBuffer(view, treeRoot);
 		}
