@@ -169,17 +169,19 @@ public class ExportAction extends SVNAction {
             protected void done() {
                 try {
                     UpdateData export_data = get();
-                    if (data == null) {
-                        data.getOut().printError("Unable to export.");
-                        return;
+                    if ( data == null ) {
+                        data.getOut().printError( "Unable to export." );
+                        return ;
                     }
                     JPanel results_panel = new UpdateResultsPanel( getView(), export_data, true );
                     panel.addTab( jEdit.getProperty( "ips.Export", "Export" ), results_panel );
-                    for ( SVNCopySource source : data.getSourceFiles() ) {
-                        String path = source.getFile().toString();
-                        Buffer buffer = jEdit.getBuffer( path );
-                        if ( buffer != null ) {
-                            buffer.reload( getView() );
+                    if ( data.getSourceFiles() != null ) {
+                        for ( SVNCopySource source : data.getSourceFiles() ) {
+                            String path = source.getFile().toString();
+                            Buffer buffer = jEdit.getBuffer( path );
+                            if ( buffer != null ) {
+                                buffer.reload( getView() );
+                            }
                         }
                     }
                 }
