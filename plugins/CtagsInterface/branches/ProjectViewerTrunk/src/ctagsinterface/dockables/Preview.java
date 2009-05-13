@@ -309,7 +309,7 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 			ret = contents.toString();
 		}
 		catch (IOException ex) {
-			ex.printStackTrace();
+			//ex.printStackTrace();
 		}
 		finally {
 			try {
@@ -317,7 +317,7 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 					input.close();
 			}
 			catch (IOException ex) {
-				ex.printStackTrace();
+				//ex.printStackTrace();
 			}
 		}
 		return ret;
