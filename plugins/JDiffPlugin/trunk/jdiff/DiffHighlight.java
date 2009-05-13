@@ -82,13 +82,13 @@ public class DiffHighlight extends TextAreaExtension {
                             if ( hunk.first0 != physicalLine ) {
                                 continue;
                             }
-                            color = JDiffPlugin.highlightInvalidColor;
+                            color = JDiffPlugin.overviewInvalidColor;
                             gfx.setColor( color );
                             gfx.drawLine( 0, y, painter.getWidth() - 1, height );
                             continue;
                         }
 
-                        color = hunk.lines1 == 0 ? JDiffPlugin.highlightDeletedColor : JDiffPlugin.highlightChangedColor;
+                        color = hunk.lines1 == 0 ? JDiffPlugin.overviewDeletedColor : JDiffPlugin.overviewChangedColor;
                         gfx.setColor( color );
                         gfx.fillRect( 0, y, painter.getWidth(), height );
                         break;
@@ -104,13 +104,13 @@ public class DiffHighlight extends TextAreaExtension {
                             if ( hunk.first1 != physicalLine ) {
                                 continue;
                             }
-                            color = JDiffPlugin.highlightInvalidColor;
+                            color = JDiffPlugin.overviewInvalidColor;
                             gfx.setColor( color );
                             gfx.drawLine( 0, y, painter.getWidth() - 1, height );
                             continue;
                         }
 
-                        color = hunk.lines0 == 0 ? JDiffPlugin.highlightInsertedColor :JDiffPlugin.highlightChangedColor;
+                        color = hunk.lines0 == 0 ? JDiffPlugin.overviewInsertedColor :JDiffPlugin.overviewChangedColor;
                         gfx.setColor( color );
                         gfx.fillRect( 0, y, painter.getWidth(), height );
                         break;

@@ -73,11 +73,6 @@ jdiff.overview-invalid-color=\#CCCCCC
 jdiff.left-cursor-color=\#000000
 jdiff.right-cursor-color=\#000000
 
-jdiff.highlight-changed-color=\#FFFF90
-jdiff.highlight-deleted-color=\#FF9090
-jdiff.highlight-inserted-color=\#D9FF90
-jdiff.highlight-invalid-color=\#909090
-
 # Option panes titles
 options.jdiff.general.code=new jdiff.options.JDiffOptionPane();
 options.jdiff.general.label=General

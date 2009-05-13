@@ -35,9 +35,13 @@ import org.gjt.sp.jedit.jEdit;
 
 import jdiff.component.MergeToolBar;
 
+// from CommonControls plugin
 import ise.java.awt.KappaLayout;
 
-
+/**
+ * Handles the general options for JDiff -- diff whitespace options, restoring
+ * the View, beeping on error, etc.
+ */
 public class JDiffOptionPane implements OptionPane {
 
     private JPanel panel = null;
