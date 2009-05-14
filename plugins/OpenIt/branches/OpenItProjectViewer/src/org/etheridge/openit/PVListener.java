@@ -1,6 +1,7 @@
 /*
  * PVListener.java
  * Copyright (c) Thu Jun 22 MSD 2006 Denis Koryavov
+ * Copyright (c) 2009 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,31 +23,59 @@ package org.etheridge.openit;
 import javax.swing.SwingUtilities;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.EBMessage;
 
-import projectviewer.event.ProjectViewerAdapter;
-import projectviewer.event.ProjectViewerEvent;
+import projectviewer.event.ProjectUpdate;
+import projectviewer.event.StructureUpdate;
+import projectviewer.event.ViewerUpdate;
+import projectviewer.vpt.VPTNode;
 
-public class PVListener extends ProjectViewerAdapter {
-        public void projectLoaded(ProjectViewerEvent evt) {
-                refresh(evt.getProject().getRootPath());
-        }
-        
-        public void projectRemoved(ProjectViewerEvent evt) {
-                refresh("");
-        }
-        
-        public void groupActivated(ProjectViewerEvent evt) {
-                refresh("");
-        }
-        
-        private void refresh(final String sourcePath) {
-                if (jEdit.getBooleanProperty(OpenItProperties.IMPORT_FILES_FROM_CURRENT_PROJECT)) {
-                        SwingUtilities.invokeLater(new Runnable() {
-                                        public void run() {
-                                                jEdit.setProperty(OpenItProperties.SOURCE_PATH_STRING, sourcePath);
-                                                SourcePathManager.getInstance().refreshSourcePath();
-                                        }
-                        });
-                }
-        }
+public class PVListener implements EBComponent
+{
+
+	public void handleMessage(EBMessage message)
+	{
+		if (message instanceof ProjectUpdate)
+		{
+//			ProjectUpdate projectUpdate = (ProjectUpdate) message;
+		}
+		else if (message instanceof StructureUpdate)
+		{
+			StructureUpdate structureUpdate = (StructureUpdate) message;
+			if (structureUpdate.getType() == StructureUpdate.Type.PROJECT_REMOVED)
+			{
+				refresh("");
+			}
+		}
+		else if (message instanceof ViewerUpdate)
+		{
+			ViewerUpdate viewerUpdate = (ViewerUpdate) message;
+			if (viewerUpdate.getType() == ViewerUpdate.Type.PROJECT_LOADED)
+			{
+				VPTNode node = viewerUpdate.getNode();
+
+				refresh(node.getNodePath());
+			}
+			else if (viewerUpdate.getType() == ViewerUpdate.Type.GROUP_ACTIVATED)
+			{
+				refresh("");
+			}
+		}
+	}
+
+	private void refresh(final String sourcePath)
+	{
+		if (jEdit.getBooleanProperty(OpenItProperties.IMPORT_FILES_FROM_CURRENT_PROJECT))
+		{
+			SwingUtilities.invokeLater(new Runnable()
+			{
+				public void run()
+				{
+					jEdit.setProperty(OpenItProperties.SOURCE_PATH_STRING, sourcePath);
+					SourcePathManager.getInstance().refreshSourcePath();
+				}
+			});
+		}
+	}
 } 
