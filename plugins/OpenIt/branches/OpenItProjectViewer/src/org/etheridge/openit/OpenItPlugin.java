@@ -33,11 +33,9 @@ import org.etheridge.openit.OpenItProperties;
 import org.etheridge.openit.sourcepath.SourcePathFile;
 import org.etheridge.openit.SourcePathManager;
 
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EBPlugin;
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.ViewUpdate;
-import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
+import org.gjt.sp.jedit.*;
 
 /**
  * @author Matt Etheridge
@@ -49,7 +47,8 @@ public class OpenItPlugin extends EBPlugin {
         // maps from jEdit Views to the single FindFileWindow instance for that
         // view.
         private static Map msFindFileWindowMap = new HashMap();
-        
+
+	private PVListener pvListener;
         //{{{ start method.
         /**
          * Called on jEdit startup
@@ -70,7 +69,12 @@ public class OpenItPlugin extends EBPlugin {
                         jEdit.getBooleanProperty(OpenItProperties.DISPLAY_ICONS, true));
                 
                 // get the SourcePathManager singleton to force start of polling thread
-                SourcePathManager manager = SourcePathManager.getInstance();
+                SourcePathManager.getInstance();
+	        if (jEdit.getBooleanProperty(OpenItProperties.IMPORT_FILES_FROM_CURRENT_PROJECT))
+	        {
+		        pvListener = new PVListener();
+		        EditBus.addToBus(pvListener);
+	        }
         } 
         //}}}
         
@@ -80,6 +84,11 @@ public class OpenItPlugin extends EBPlugin {
          */
         public void stop() {
                 SourcePathManager.getInstance().stopSourcePathPolling();
+	        if (pvListener != null)
+	        {
+		        EditBus.removeFromBus(pvListener);
+		        pvListener = null;
+	        }
         } //}}}
         
         //{{{ handleMessage method.
@@ -106,8 +115,30 @@ public class OpenItPlugin extends EBPlugin {
                                 msFileSelectionListenerMap.remove(closedView);
                                 msFindFileWindowMap.remove(closedView);
                         }
-                        
                 }
+	        else if (message instanceof PropertiesChanged)
+	        {
+		        if (jEdit.getBooleanProperty(OpenItProperties.IMPORT_FILES_FROM_CURRENT_PROJECT))
+		        {
+			        if (pvListener == null)
+			        {
+				        pvListener = new PVListener();
+				        EditBus.addToBus(pvListener);
+				        jEdit.setProperty(OpenItProperties.SOURCE_PATH_STRING, "");
+					SourcePathManager.getInstance().refreshSourcePath();
+			        }
+		        }
+		        else
+		        {
+			        if (pvListener != null)
+			        {
+				        EditBus.removeFromBus(pvListener);
+				        pvListener = null;
+				        jEdit.setProperty(OpenItProperties.SOURCE_PATH_STRING, "");
+					SourcePathManager.getInstance().refreshSourcePath();
+			        }
+		        }
+	        }
         } 
         //}}}
         

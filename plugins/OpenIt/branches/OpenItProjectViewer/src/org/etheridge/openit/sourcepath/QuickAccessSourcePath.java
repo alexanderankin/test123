@@ -21,25 +21,14 @@
 
 package org.etheridge.openit.sourcepath;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.etheridge.openit.OpenItProperties;
-import org.etheridge.openit.sourcepath.SourcePath;
-import org.etheridge.openit.sourcepath.SourcePathElement;
-import org.etheridge.openit.sourcepath.SourcePathFile;
 import org.etheridge.openit.utility.OpenItRE;
-
 import org.gjt.sp.jedit.jEdit;
+import projectviewer.ProjectViewer;
+import projectviewer.vpt.VPTFile;
+import projectviewer.vpt.VPTProject;
 
-import projectviewer.*;
-
-import projectviewer.vpt.*;
+import java.util.*;
 
 /**
 * This class is a wrapper around a SourcePath that provides quicker access to 
@@ -238,7 +227,7 @@ public class QuickAccessSourcePath
                                 
                                 while (iter.hasNext()) {
                                         VPTFile vptFile = (VPTFile)iter.next();
-                                        result.put(vptFile.getFile().getAbsolutePath(), true);
+                                        result.put(vptFile.getNodePath(), true);
                                 }
                         }
                 }
