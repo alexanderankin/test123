@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+
+<article>
+
+	<articleinfo>
+		<title>JavaMacros plugin</title>
+		<author>
+			<firstname>Denis</firstname>
+			<surname>Dzenskevich</surname>
+			<email>Denis dot Dzenskevich at gmail dot com</email>
+		</author>
+		<edition>Version 0.1</edition>
+	</articleinfo>
+
+	<section id="summary">
+		<title>Summary</title>
+		<para>The JavaMacros plugin allows you to write macros in your favourite Java IDE.</para>
+        <para>The plugin uses compiled class files as macros instead of script files. This allows you to write
+        macros in Java or any other JVM language that compiles down to class files. The main advantage is
+        that IDE support is much better for Java then for script languages.</para>
+	</section>
+
+    <section id="usage">
+        <title>Usage</title>
+        <para>Supposed usage is as follows. Exact steps may differ depending on IDE choosen, or you
+        may wish to adopt it to be more convinient to you.</para>
+        <itemizedlist>
+            <listitem>create a new project in your IDE; it should:
+                <itemizedlist>
+                    <listitem>put compiled class files to either jEdit home or ~/.jedit directory</listitem>
+                    <listitem>have jedit.jar from jedit distribution and javamacros.jar from plugin
+                    distribution in its classpath</listitem>
+                </itemizedlist>
+            </listitem>
+            <listitem>create a Java package named "macros"; you can then create
+            subpackages of it to create macros hierarchy</listitem>
+            <listitem>create a class inside "macros" package or inside one of its
+            subpackages; the class must either implement javamacros.MacroClass or extend
+            javamacros.SelectionTransformerMacroClass; please see javadocs for further instructions
+            on how to write your macros</listitem>
+            <listitem>compile project</listitem>
+            <listitem>reload macros in jEdit (Macros->Rescan Macros); your Macros menu should now
+            contain folders and items mapped to subpackages and classes in your project</listitem>
+        </itemizedlist>
+    </section>
+
+	<section id="change-log">
+		<title>Change Log</title>
+		<itemizedlist>
+			<listitem>
+				<para>Version 0.1, Requires jEdit 4.3pre16 and Java 1.5</para>
+				<itemizedlist>
+					<listitem>
+						<para>Initial release.</para>
+					</listitem>
+				</itemizedlist>
+			</listitem>
+		</itemizedlist>
+	</section>
+
+</article>
