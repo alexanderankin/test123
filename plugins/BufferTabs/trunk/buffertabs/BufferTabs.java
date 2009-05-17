@@ -901,10 +901,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 							movingEnabled = !areBuffersSorted();
 						}
 						if (movingEnabled) {
-							//System.out.println( "moving tab from " + moving + " to " + index );
-							Buffer movedBuffer = bufferSet.getBuffer(mv);
-							bufferSet.addBufferAt(movedBuffer, index);
-							// moving the tab
+							jEdit.moveBuffer(editPane, mv, index);
 						}
 					}
 					else
