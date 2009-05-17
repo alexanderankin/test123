@@ -54,6 +54,8 @@ import java.awt.event.ActionEvent;
 import javax.swing.JDialog;
 import javax.swing.JProgressBar;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JFileChooser;
 import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -146,6 +148,16 @@ public class HunspellOptionPane extends AbstractOptionPane{
 
 		addComponent(p);
 		
+		//offline installation
+		addSeparator("options.spellcheck.hunspell.offline");
+		String url = jEdit.getProperty(HunspellDictsManager.OOO_DICTS_PROP);
+		String offlineMsg = jEdit.getProperty("options.spellcheck.hunspell.offline.msg",new Object[]{url});
+		JTextArea offlineTF = new JTextArea(offlineMsg);
+		offlineTF.setEditable(false);
+		JButton offlineButton = new JButton(new InstallOfflineAction());
+		addComponent(offlineButton);
+		addComponent(offlineTF);
+		
 		new Thread(){
 			public void run(){
 				ProgressObs po = new ProgressObs(this);
@@ -169,6 +181,49 @@ public class HunspellOptionPane extends AbstractOptionPane{
 		else jEdit.setProperty(HunspellEngineManager.HUNSPELL_LIBRARY_PROP,newLib);
 	}
 	
+
+	private class InstallOfflineAction extends AbstractAction{
+		InstallOfflineAction(){
+			super(jEdit.getProperty("options.spellcheck.hunspell.install-offline"));
+		}
+		public void actionPerformed(ActionEvent ae){
+			new Thread(){
+				public void run(){
+					//select file
+					JFileChooser chooser = new JFileChooser();
+					javax.swing.filechooser.FileFilter filter = new javax.swing.filechooser.FileFilter(){
+						public boolean accept(File f){return f.isDirectory() || f.getName().endsWith(".zip");}
+						public String getDescription(){return "dictionary archive (*.zip)";}
+					};
+					chooser.addChoosableFileFilter(filter);
+					int returnVal = chooser.showOpenDialog(GUIUtilities.getParentDialog(listAvailable));
+					if(returnVal == JFileChooser.APPROVE_OPTION) {
+						File archive = chooser.getSelectedFile();
+						
+						//install
+						ProgressObs po = new ProgressObs(this);
+						JDialog poDialog = po.asDialog(
+							GUIUtilities.getParentDialog(listAvailable),
+							jEdit.getProperty("options.spellcheck.hunspell.install-offline")
+						);
+
+						Dictionary installed = dictsManager.installOffline(archive,po);
+						poDialog.setVisible(false);
+						if(installed==null){
+							GUIUtilities.error(
+								GUIUtilities.getParentDialog(listAvailable),
+								"spell-check-hunspell-install-failed",
+								new String[]{});
+						}else{
+							((SortedListModel)listInstalled.getModel()).add(installed);
+
+						}
+					}
+				}
+			}.start();
+		}
+	}
+
 	private class InstallUpdateAction extends AbstractAction implements ListSelectionListener{
 		Dictionary currentDict;
 		int currentIndex;

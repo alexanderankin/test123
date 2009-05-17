@@ -38,7 +38,7 @@
 		<pathelement location="${install.dir}/ErrorList.jar"/>
 		<pathelement location="${install.dir}/CommonControls.jar"/>
 		<pathelement location="${install.dir}/kappalayout.jar"/>
-		<pathelement location="${install.dir}/Voxspell.jar"/>
+		<pathelement location="${install.dir}/VoxSpell.jar"/>
 	</path>
 	
 	<path id="hunspell.class.path">

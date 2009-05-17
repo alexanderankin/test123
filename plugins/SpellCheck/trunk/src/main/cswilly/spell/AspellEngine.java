@@ -40,14 +40,17 @@ class AspellEngine
   String         _aSpellWelcomeMsg;
   Process        _aSpellProcess;
   private List<String> args;
-  
+  private String encoding;
+  private boolean checkOffsets;
   /**
    * @param	aspellArgs	aspell command and arguments
    */
-  public AspellEngine( List<String> aspellArgs)
+  public AspellEngine( List<String> aspellArgs, String encoding, boolean checkOffsets)
     throws SpellException
   {
 	  args = aspellArgs;
+	  this.encoding = encoding;
+	  this.checkOffsets = checkOffsets;
     try
     {
 	  ProcessBuilder pb = new ProcessBuilder(aspellArgs);
@@ -68,10 +71,10 @@ class AspellEngine
 	  }
 
       _aSpellReader =
-        new BufferedReader( new InputStreamReader(is, "UTF-8") );
+        new BufferedReader( new InputStreamReader(is, encoding) );
 
       _aSpellWriter =
-        new BufferedWriter( new OutputStreamWriter( _aSpellProcess.getOutputStream(), "UTF-8" ) );
+        new BufferedWriter( new OutputStreamWriter( _aSpellProcess.getOutputStream(), encoding ) );
 
       _aSpellWelcomeMsg = _aSpellReader.readLine();
 	  if(_aSpellWelcomeMsg == null){
@@ -132,7 +135,7 @@ class AspellEngine
 		  /* correct a bug with aspell 0.50 reporting offsets as bytes
 		     counts even in utf-8
 		   */
-		  if(result.getType()!=Result.OK){
+		  if(checkOffsets&& result.getType()!=Result.OK){
 			  int oo = result.getOffset()+result.getOriginalWord().length();
 			  if(oo>line.length())oo=line.length();
 			  int o = line.substring(0,oo).lastIndexOf(result.getOriginalWord());
@@ -207,6 +210,6 @@ class AspellEngine
   }
   
   public String toString(){
-	  return "AspellEngine with "+args;
+	  return "AspellEngine[encoding="+encoding+",checkOffsets="+checkOffsets+",args="+args+" ]";
   }
 }

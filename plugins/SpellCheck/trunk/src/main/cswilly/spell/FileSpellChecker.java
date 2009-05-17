@@ -38,7 +38,8 @@ class FileSpellChecker
   private String[]       _aspellArgs;
   private AspellEngine _spellEngine          = null;
   private DialogValidator    _spellValidator       = null;
-
+  private String _encoding;
+  
   public static
   void main( String[] args )
   {
@@ -72,6 +73,7 @@ class FileSpellChecker
   {
     _aspellExeFilename = aspellExeFilename;
     _aspellArgs = aspellArgs;
+	_encoding = System.getProperty("file.encoding");
   }
 
   public FileSpellChecker()
@@ -164,7 +166,8 @@ class FileSpellChecker
 		  for(int i=0;i<_aspellArgs.length;i++){
 			  args.add(_aspellArgs[i]);
 		  }
-      _spellEngine = new AspellEngine(args);
+		  args.add("--encoding="+_encoding);
+      _spellEngine = new AspellEngine(args,_encoding,false);
 	  }
     return _spellEngine;
   }

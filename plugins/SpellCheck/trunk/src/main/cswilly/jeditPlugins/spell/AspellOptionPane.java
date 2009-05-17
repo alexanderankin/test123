@@ -48,6 +48,8 @@ import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.util.StandardUtilities;
 
 import common.gui.FileTextField;
 
@@ -108,6 +110,12 @@ public class AspellOptionPane
 	String otherParams = jEdit.getProperty( ASPELL_OTHER_PARAMS_PROP,"" );
 	propertyStore.put(ASPELL_OTHER_PARAMS_PROP,otherParams);
 	
+	String encoding = jEdit.getProperty(ASPELL_ENCODING_PROP, "UTF-8");
+	propertyStore.put(ASPELL_ENCODING_PROP,encoding);
+	
+	boolean check = Boolean.parseBoolean(jEdit.getProperty(ASPELL_CHECK_POS_PROP, "false"));
+	propertyStore.put(ASPELL_CHECK_POS_PROP,String.valueOf(check));
+	
     /* aspell executable */
     JLabel _aspellExeFilenameLabel = new JLabel();
     _aspellExeFilenameLabel.setText( jEdit.getProperty( "options.SpellCheck.aspellExe" ) );
@@ -128,6 +136,35 @@ public class AspellOptionPane
 
     addComponent(Box.createVerticalStrut( ASPELL_OPTION_VERTICAL_STRUT ));
 
+	/* encoding */
+	String[] encodings = MiscUtilities.getEncodings(true);
+	java.util.Arrays.sort(encodings,new StandardUtilities.StringCompare(true));
+	JComboBox encodingCombo = new JComboBox(encodings);
+	encodingCombo.setEditable(true);
+	encodingCombo.setSelectedItem(encoding);
+	
+	
+	TextFieldHandler encodingHandler = new TextFieldHandler(ASPELL_ENCODING_PROP);
+	encodingCombo.addFocusListener(encodingHandler);
+	encodingCombo.addActionListener(encodingHandler);
+	
+	
+	addComponent(jEdit.getProperty("options.SpellCheck.aspell-encoding"),encodingCombo);
+
+	/* check offsets */
+	JCheckBox checkOffsetsBox = new JCheckBox(jEdit.getProperty("options.SpellCheck.aspell-check-pos"));
+	checkOffsetsBox.setSelected(check);
+	checkOffsetsBox.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent ae){
+				propertyStore.put(ASPELL_CHECK_POS_PROP,
+					String.valueOf(((AbstractButton)ae.getSource()).isSelected()));
+			}
+	});
+	checkOffsetsBox.setToolTipText(jEdit.getProperty("options.SpellCheck.aspell-check-pos.tooltip"));
+	addComponent(checkOffsetsBox);
+	
+	
+	
     JPanel listingPanel = new JPanel( new BorderLayout( 5, 0 ) );
 
 	MutableComboBoxModel model2 = new DefaultComboBoxModel();

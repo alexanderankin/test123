@@ -70,6 +70,10 @@ public class AspellEngineManager implements EngineManager
   public static final String FILTER_AUTO						= "AUTO";
   /** root for properties holding the configured filter for each mode */
   public static final String FILTERS_PROP						= "spell-check-filter";					
+  /** property holding the encoding used to communicate with aspell */
+  public static final String ASPELL_ENCODING_PROP            = "spell-check-aspell-encoding";
+  /** property holding wether to check positions for each word */
+  public static final String ASPELL_CHECK_POS_PROP            = "spell-check-aspell-check-pos";
 
   /**
    * available modes for Aspell
@@ -103,7 +107,9 @@ public class AspellEngineManager implements EngineManager
 	
 	public Engine getEngine(String mode,String language,boolean terse) throws SpellException
   {
-	  List<String> aspellCommandLine = initCommandLine(mode,language,terse);
+	  String encoding = jEdit.getProperty(ASPELL_ENCODING_PROP,"UTF-8");
+	  boolean check = Boolean.parseBoolean(jEdit.getProperty(ASPELL_CHECK_POS_PROP,"false"));
+	  List<String> aspellCommandLine = initCommandLine(mode,language,terse,encoding);
 	  String aspellExeFilename = getAspellExeFilename();
 	  if(aspellExeFilename == null)throw new SpellException("Aspell executable is not defined");
 	  aspellCommandLine.add(0,aspellExeFilename);
@@ -114,7 +120,7 @@ public class AspellEngineManager implements EngineManager
 		for(int i=0;i<aspellCommandLine.size();i++)logStr+=" "+aspellCommandLine.get(i);
 		Log.log(Log.DEBUG,this,logStr);
 	
-		engine = new AspellEngine(aspellCommandLine);
+		engine = new AspellEngine(aspellCommandLine,encoding,check);
 		
 		engines.put(aspellCommandLine,engine);
 	}
@@ -125,7 +131,7 @@ public class AspellEngineManager implements EngineManager
 	  return null;
   }
   
-  private List<String> initCommandLine(String mode, String language,boolean terse){
+  private List<String> initCommandLine(String mode, String language,boolean terse, String encoding){
 	 String dict = language;
 	 if(dict == null) dict = SpellCheckPlugin.getMainLanguage();
 
@@ -133,7 +139,7 @@ public class AspellEngineManager implements EngineManager
     List<String> aspellCommandLine = new ArrayList<String>(4);
 	// use this option switch to prevent any encoding issue
 	// available at least since aspell 0.5.3
-	aspellCommandLine.add("--encoding=utf-8");
+	aspellCommandLine.add("--encoding="+encoding.toLowerCase());
 	
 	
 	AspellMarkupMode markup = getAspellMarkupMode();
@@ -229,7 +235,13 @@ public class AspellEngineManager implements EngineManager
   
   public void handleMessage(EBMessage message){
 	  if(message instanceof PropertiesChanged){
-		  //TODO : maybe initCommandLine() from here (but I won't have the language nor the node
+		  //TODO : maybe initCommandLine() from here (but I won't have the language nor the node)
+		  
+		  // flush engines to take into account a change of encoding / check offset props
+		  for(AspellEngine e:engines.values()){
+			  e.stop();
+		  }
+		  engines.clear();
 	  }
   }
   

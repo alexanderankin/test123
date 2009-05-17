@@ -30,8 +30,10 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Calendar;
+import java.util.Locale;
 
 import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 import java.text.DateFormat;
 
 import java.util.zip.*;
@@ -403,9 +405,45 @@ public class HunspellDictsManager{
 			po.setValue(100);
 			return true;
 		}
-		return doInstallDict(d,po);
+		return fetchAndInstallDict(d,po);
 	}
 	
+	/**
+	 * construct a fictitious Dictionary, based on the file name
+	 * and call doInstallDict()
+	 * @param	f	Zip archive of the dictionary to install
+	 * @param	po	observer to notify of any progress
+	 * @return	new Dictionary if successful
+	 */
+	public Dictionary installOffline(File f, ProgressObserver po){
+		if(!f.exists())throw new IllegalArgumentException("File '"+f+"' doesn't exist");
+		
+		// verify the file name
+		Pattern dictPattern = Pattern.compile("([a-z]{2})_([A-Z]{2})(:?(:?_|-)(.*))?\\.zip");
+		Matcher m = dictPattern.matcher(f.getName());
+		if(m.matches()){
+			// create fictituous dictionary
+			Dictionary d = new Dictionary();
+			d.lang = m.group(1);
+			d.country = m.group(2);
+			d.variant = m.group(3);
+			Locale l = d.variant != null ? 
+				new Locale(d.lang,d.country,d.variant)
+				: new Locale(d.lang,d.country);
+			d.descr = l.getDisplayName();
+			//remove .zip suffix
+			d.archiveName = f.getName().substring(0,f.getName().length()-4);
+			
+			// use file last modified time
+			if(doInstallDict(d,po,f,new Date(f.lastModified()))){
+				return d;
+			}else return null;
+		}else{
+			throw new IllegalArgumentException(
+				"File should be named like en_EN.zip or fr_FR-classique_1-3-2.zip");
+		}
+	}
+
 	
 	/**
 	 * public call to doUpdate()
@@ -556,7 +594,7 @@ public class HunspellDictsManager{
 			if(!installdir.renameTo(newinstall)){
 				Log.log(Log.ERROR,HunspellDictsManager.class,"exception while moving "+d.getKey()+" to "+newinstall.getPath());
 				GUIUtilities.error(null,"spell-check-update-move.error",new String[]{d.getKey(),newinstall.getPath(),"rename failed"});
-				return doRemoveDict(d,true) && doInstallDict(d,po);
+				return doRemoveDict(d,true) && fetchAndInstallDict(d,po);
 			}
 			
 			//dictionary
@@ -564,7 +602,7 @@ public class HunspellDictsManager{
 			
 			updateInstalledProp(d);
 
-			boolean inst = doInstallDict(d,po);
+			boolean inst = fetchAndInstallDict(d,po);
 			if(!inst){
 				try{
 					if(deleteFileTree(installdir)){
@@ -611,35 +649,12 @@ public class HunspellDictsManager{
 	}
 	
 	/**
-	 * fetch, expand, install dictionary
+	 * fetch dictionary and call doInstallDict
 	 * @param	d	dictionary to install
 	 * @param	po	observer
 	 * @return	installed ?
 	 */
-	private boolean doInstallDict(Dictionary d, ProgressObserver po){
-		File home = SpellCheckPlugin.getHomeDir(null);
-		
-		String dir = d.getDirectory();
-		
-		if(dir==null || "".equals(dir)){
-			throw new IllegalArgumentException("Invalid dictionary description for "+d);
-		}
-		
-		
-		File extractdir = new File(home,dir);
-		
-		if(!extractdir.exists())extractdir.mkdir();
-		if(!extractdir.isDirectory()){
-			try{
-			System.out.println("File "+extractdir.getCanonicalPath()+" exists");
-			}catch(IOException ieo){}
-			return false;
-		}else{
-			try{
-			Log.log(Log.DEBUG,HunspellDictsManager.class,"Expanding to "+extractdir.getCanonicalPath());
-			}catch(IOException ieo){}
-		}
-		
+	private boolean fetchAndInstallDict(Dictionary d, ProgressObserver po){
 
 		File f = null;
 		try{
@@ -689,9 +704,44 @@ public class HunspellDictsManager{
 		}
 		
 		Log.log(Log.DEBUG,HunspellDictsManager.class,"Download of "+d.archiveName+".zip finished");
+		return doInstallDict(d,po,f,modifdate);
+	}
+	
+	/**
+	 * expand, install dictionary
+	 * @param	d	dictionary to install
+	 * @param	po	observer
+	 * @return	installed ?
+	 */
+	private boolean doInstallDict(Dictionary d, ProgressObserver po, File f, Date modifDate){
 		po.setStatus("spell-check-hunspell-install");
 		po.setMaximum(3);
 		po.setValue(1);
+
+
+		File home = SpellCheckPlugin.getHomeDir(null);
+		
+		String dir = d.getDirectory();
+		
+		if(dir==null || "".equals(dir)){
+			throw new IllegalArgumentException("Invalid dictionary description for "+d);
+		}
+		
+		
+		File extractdir = new File(home,dir);
+		
+		if(!extractdir.exists())extractdir.mkdir();
+		if(!extractdir.isDirectory()){
+			try{
+			System.out.println("File "+extractdir.getCanonicalPath()+" exists");
+			}catch(IOException ieo){}
+			return false;
+		}else{
+			try{
+			Log.log(Log.DEBUG,HunspellDictsManager.class,"Expanding to "+extractdir.getCanonicalPath());
+			}catch(IOException ieo){}
+		}
+
 		//read file
 		ZipFile zip = null;
 		
@@ -791,8 +841,8 @@ public class HunspellDictsManager{
 		
 		//update dict
 		
-		d.installedDate = modifdate;
-		d.lastModified = modifdate;
+		d.installedDate = modifDate;
+		d.lastModified = modifDate;
 		d.installed = true;
 
 		
