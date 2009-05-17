@@ -47,7 +47,7 @@ class TestSpellChecker
 	l.add("O:\\local\\aspell\\aspell.exe");
   	l.add("pipe");
 
-    AspellEngine spellChecker = new AspellEngine( l );
+    AspellEngine spellChecker = new AspellEngine( l , "ISO-8859-1", false);
 
     String words;
     List results;

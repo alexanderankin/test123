@@ -169,6 +169,11 @@ public abstract class FutureAspell<T> implements Future<T>{
 		}
 	}
 	
+	protected static interface Processor<T>{
+		public void accumulate(String line) throws SpellException;
+		public T done(); 
+	}
+}
 	final class Abort extends Error
 	{
 		public Abort()
@@ -176,8 +181,4 @@ public abstract class FutureAspell<T> implements Future<T>{
 			super("Work request aborted");
 		}
 	}
-	protected static interface Processor<T>{
-		public void accumulate(String line) throws SpellException;
-		public T done(); 
-	}
-}
+

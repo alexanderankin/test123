@@ -1,7 +1,6 @@
 package cswilly.jeditPlugins.spell;
 
-import org.junit.internal.runners.CompositeRunner;
-import org.junit.internal.runners.JUnit4ClassRunner;
+import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runner.notification.RunListener;
 import org.junit.internal.runners.InitializationError;
 import org.junit.runner.JUnitCore;
@@ -11,6 +10,7 @@ import org.junit.runner.Result;
 import org.junit.internal.TextListener;
 
 import java.io.*;
+import javax.swing.JDialog;
 
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
@@ -19,6 +19,7 @@ import cswilly.jeditPlugins.spell.hunspellbridge.ProgressObs;
 
 public class InjEditTestNotifier extends RunListener{
 	private static Thread testThread = null;
+	private static JDialog pod = null;
 	private static ProgressObs po = null;
 	
 	/**
@@ -44,14 +45,15 @@ public class InjEditTestNotifier extends RunListener{
 				// 	System.out));
 				// }catch(Exception e){}
 					core.run(SpellCheckPluginTest.class);
-					if(po!=null)po.setVisible(false);
+					if(pod!=null)pod.setVisible(false);
 				}catch(Throwable t){
 					Log.log(Log.ERROR,InjEditTestNotifier.class,"Throwable : "+t.toString());
 				}
 			}
 		};
 		
-		po = new ProgressObs(jEdit.getActiveView(),"Tests runner",testThread);
+		po = new ProgressObs(testThread);
+		pod = po.asDialog(jEdit.getActiveView(),"Tests runner");
 
 		testThread.start();
 		
@@ -61,7 +63,7 @@ public class InjEditTestNotifier extends RunListener{
 		if(testThread == null)return;
 		testThread.stop();
 		testThread = null;	
-		if(po!=null)po.setVisible(false);
+		if(pod!=null)pod.setVisible(false);
 	}
 	
 	 public void testFailure(Failure failure) {
@@ -84,7 +86,7 @@ public class InjEditTestNotifier extends RunListener{
 		 Log.log(Log.ERROR,this,"finished : "+result);
 		 if(po!=null){
 			 po.setStatus("DONE !!!");
-			 po.setVisible(false);
+			 pod.setVisible(false);
 		 }
 	}
  	public void testRunStarted(Description description){

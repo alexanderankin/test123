@@ -12,11 +12,11 @@ plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.description=The SpellCheck Pl
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.longdescription=description.html
 ### These tell jEdit what JDK and jEdit version we require
 
-plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.depend.0=jedit 04.03.11.00
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.depend.0=jedit 04.03.15.00
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.depend.1=jdk 1.5
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.7
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.depend.3=plugin CommonControlsPlugin 0.9.4
-plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.depend.4=plugin voxspellcheck.VoxSpellPlugin 1.0.3
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.depend.4=plugin voxspellcheck.VoxSpellPlugin 1.0.5
 
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.jars=hunspell.jar jna.jar
 
@@ -65,6 +65,9 @@ options.SpellCheck.engineManager=Spell-checking engine:
 options.SpellCheck.disableSyntax=Disable syntax-aware spell-checking for this engine.
 options.SpellCheck.disableSyntax.tooltip=With this option checked, each and every word will be spell-checked by the engine.
 options.SpellCheck.spellcheckOnSaveSep=Misspelled words highlighting...
+options.SpellCheck.aspell-encoding=encoding to communicate with Aspell
+options.SpellCheck.aspell-check-pos=check offsets reported by Aspell
+options.SpellCheck.aspell-check-pos.tooltip=(slow: turn it on only when you encounter some drift in error locations)
 ### Menu item labels
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.menu=\
     spell-check-selection \
@@ -191,6 +194,11 @@ spell-check-hunspell-update-failed.broken.title=Update failed...
 spell-check-hunspell-update-failed.broken.message=Update of {0} failed and the old version has been uninstalled. Please retry...
 
 spell-check-hunspell-site=http://ftp.services.openoffice.org/pub/OpenOffice.org/contrib/dictionaries/
+
+#offline install
+options.spellcheck.hunspell.offline=Offline Installation
+options.spellcheck.hunspell.offline.msg=You can download manually your dictionary from\n{0}
+options.spellcheck.hunspell.install-offline=Select Dictionary...
 #syntax option pane
 options.SpellCheck.syntax.dialog.title=Token types picker...
 options.SpellCheck.syntax.dialog.message=Please pick the token types to spell-check.

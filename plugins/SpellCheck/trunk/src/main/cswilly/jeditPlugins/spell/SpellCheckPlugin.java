@@ -251,7 +251,7 @@ public class SpellCheckPlugin
 	  return validator;
   }
   
-  static EngineManager getEngineManager(){
+  public static EngineManager getEngineManager(){
 	  String engineName = jEdit.getProperty(ENGINE_MANAGER_PROP,"Aspell");
 	  
 	  EngineManager eng = (EngineManager)ServiceManager.getService(EngineManager.class.getName(), engineName);
