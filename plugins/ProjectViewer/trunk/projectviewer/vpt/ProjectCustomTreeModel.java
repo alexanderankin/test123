@@ -273,7 +273,7 @@ public abstract class ProjectCustomTreeModel extends ProjectTreeModel
                                VPTNode child)
     {
         List<VPTNode> lst = getCachedChildren(proj);
-        if (!lst.contains(child)) {
+        if (lst.contains(child)) {
             lst.remove(child);
             super.nodeStructureChanged(proj);
         }
