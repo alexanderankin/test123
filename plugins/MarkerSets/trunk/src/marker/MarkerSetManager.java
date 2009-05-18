@@ -62,6 +62,7 @@ public class MarkerSetManager extends JPanel {
 	private JComboBox active;
 	private JCheckBox bufferScope;
 	private boolean selfUpdate;
+	private boolean selfChangeActive;
 	private JButton next;
 	private JButton prev;
 	
@@ -100,12 +101,15 @@ public class MarkerSetManager extends JPanel {
 		active = new JComboBox(activeModel);
 		activePanel.add(active);
 		updateActiveComboBox();
+		selfChangeActive = false;
 		active.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				String selected = (String) active.getSelectedItem();
 				if (selected == null)
 					return;
+				selfChangeActive = true;
 				MarkerSetsPlugin.setActiveMarkerSet(selected);
+				selfChangeActive = false;
 			}
 		});
 		JButton newMarkerSet = new JButton(jEdit.getProperty(MSG_NEW));
@@ -127,7 +131,8 @@ public class MarkerSetManager extends JPanel {
 		MarkerSetsPlugin.addChangeListener(new ChangeListener() {
 			public void changed(Event e, FileMarker m, MarkerSet ms) {
 				updateTree();
-				updateActiveComboBox();
+				if (! selfChangeActive)
+					updateActiveComboBox();
 			}
 		});
 		prev = new RolloverButton(GUIUtilities.loadIcon("ArrowL.png"));
@@ -175,18 +180,24 @@ public class MarkerSetManager extends JPanel {
 		String path = null;
 		if (bufferScope.isSelected())
 			path = view.getBuffer().getPath();
+		String activeName = MarkerSetsPlugin.getActiveMarkerSet().getName();
+		addMarkerSetToTree(path, activeName);
+		names.remove(activeName);
 		for (String name: names)
-		{
-			MarkerSet ms = MarkerSetsPlugin.getMarkerSet(name);
-			SourceLinkParentNode msNode = markers.addSourceLinkParent(
-				new MarkerSetNode(ms));
-			Vector<FileMarker> children = ms.getMarkers();
-			for (FileMarker marker: children)
-				if (path == null || (marker.file.equals(path)))
-					msNode.addSourceLink(marker);
-		}
+			addMarkerSetToTree(path, name);
 		for (int i = 0; i < markers.getRowCount(); i++)
 			markers.expandRow(i);
+	}
+
+	private void addMarkerSetToTree(String path, String name)
+	{
+		MarkerSet ms = MarkerSetsPlugin.getMarkerSet(name);
+		SourceLinkParentNode msNode = markers.addSourceLinkParent(
+			new MarkerSetNode(ms));
+		Vector<FileMarker> children = ms.getMarkers();
+		for (FileMarker marker: children)
+			if (path == null || (marker.file.equals(path)))
+				msNode.addSourceLink(marker);
 	}
 
 	private class MarkerSetNode implements SubtreePopupMenuProvider
