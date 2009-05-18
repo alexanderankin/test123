@@ -1,0 +1,2 @@
+version=0.0.3
+ control most of Player without needing h4Jmf JPanel.

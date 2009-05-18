@@ -9,40 +9,84 @@
 			wm.getDockableWindow(h4JmfPlugin.NAME).chooseFile();
 		</CODE>
 	</ACTION>
+	<!-- implicitly done by choose-file
 	<ACTION NAME="h4Jmf.player-begin">
 		<CODE>
 			wm.addDockableWindow(h4JmfPlugin.NAME);
 			wm.getDockableWindow(h4JmfPlugin.NAME).player_begin();
 		</CODE>
 	</ACTION>
+	-->
 	<ACTION NAME="h4Jmf.player-start">
 		<CODE>
-			wm.getDockableWindow(h4JmfPlugin.NAME).player_start();
+			if(h4JmfPlugin.playMP3!=null)
+			{
+			 h4JmfPlugin.player_start();
+			}
+			else
+			{
+                         Macros.error(view,"first choose-file or open jmf-panel!");
+			}
 		</CODE>
 	</ACTION>
 	<ACTION NAME="h4Jmf.player-stop">
 		<CODE>
-			wm.getDockableWindow(h4JmfPlugin.NAME).player_stop();
+			if(h4JmfPlugin.playMP3!=null)
+			{
+			 h4JmfPlugin.player_stop();
+			}
+			else
+			{
+                         Macros.error(view,"first choose-file or open jmf-panel!");
+			}
 		</CODE>
 	</ACTION>
 	<ACTION NAME="h4Jmf.player-rewind">
 		<CODE>
-			wm.getDockableWindow(h4JmfPlugin.NAME).player_rewind();
+			if(h4JmfPlugin.playMP3!=null)
+			{
+			 h4JmfPlugin.player_rewind();
+			}
+			else
+			{
+                         Macros.error(view,"first choose-file or open jmf-panel!");
+			}
 		</CODE>
 	</ACTION>
 	<ACTION NAME="h4Jmf.player-forward">
 		<CODE>
-			wm.getDockableWindow(h4JmfPlugin.NAME).player_forward();
+			if(h4JmfPlugin.playMP3!=null)
+			{
+			 h4JmfPlugin.player_forward();
+			}
+			else
+			{
+                         Macros.error(view,"first choose-file or open jmf-panel!");
+			}
 		</CODE>
 	</ACTION>
 	<ACTION NAME="h4Jmf.insert-time">
 		<CODE>
-			wm.getDockableWindow(h4JmfPlugin.NAME).insert_time();
+			if(h4JmfPlugin.playMP3!=null)
+			{
+			 h4JmfPlugin.insert_time();
+			}
+			else
+			{
+                         Macros.error(view,"first choose-file or open jmf-panel!");
+			}
 		</CODE>
 	</ACTION>
 	<ACTION NAME="h4Jmf.player-position">
 		<CODE>
-			wm.getDockableWindow(h4JmfPlugin.NAME).player_position();
+			if(h4JmfPlugin.playMP3!=null)
+			{
+			 h4JmfPlugin.player_position();
+			}
+			else
+			{
+                         Macros.error(view,"first choose-file or open jmf-panel!");
+			}
 		</CODE>
 	</ACTION>
 	<ACTION NAME="h4Jmf.player-close">

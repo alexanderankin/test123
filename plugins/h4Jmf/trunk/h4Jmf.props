@@ -7,7 +7,7 @@ plugin.h4JmfPlugin.name=h4Jmf
 plugin.h4JmfPlugin.author=Herman Vierendeels
 
 # version number == jEdit version number
-plugin.h4JmfPlugin.version=0.0.2
+plugin.h4JmfPlugin.version=0.0.3
 
 plugin.h4JmfPlugin.docs=description.html
 
@@ -18,15 +18,17 @@ plugin.h4JmfPlugin.depend.1=jdk 1.5
 
 #does not seem to prevent plugin from loading if .jmfdir is not there!
 ##plugin.h4JmfPlugin.files=$HOME/.jmfdir
+##plugin.h4JmfPlugin.jars  here jmf jars ??
+##plugin.h4JmfPlugin.usePluginHome=true ???
 
 plugin.h4JmfPlugin.description=test with Java Media Framework, control audio-player from jEdit, assist in transcription of digital audio-interview.\n \
 Java Media Framework (jmf) should be installed first! see README
 
 # plugin menu
+##h4Jmf.player-begin implicitly done by choose-file
 plugin.h4JmfPlugin.menu=h4Jmf \
 	- \
 	h4Jmf.choose-file \
-	h4Jmf.player-begin \
 	h4Jmf.player-start \
 	h4Jmf.player-stop \
 	h4Jmf.player-rewind \
@@ -38,7 +40,7 @@ h4Jmf.label=h4Jmf
 h4Jmf.title=h4Jmf
 
 h4Jmf.choose-file.label=Choose mp3 file
-h4Jmf.player-begin.label=player begin
+##h4Jmf.player-begin.label=player begin
 h4Jmf.player-start.label=player start
 h4Jmf.player-stop.label=player stop
 h4Jmf.player-rewind.label=player rewind

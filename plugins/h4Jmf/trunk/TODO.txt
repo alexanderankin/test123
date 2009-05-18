@@ -3,5 +3,10 @@
 -using BeanShell scripting in actions ?
 -docs/ dir ?
 -javax.media.ResourceUnavailableEvent cannot open the audio device, inform user via pop-up?
--how can we get reference to plugin-instance from dockable panel? can we prevent dockable panel from being closed? if dockable panel is closed,reopened how to re-add  Player.getControlPanelComponent() ?
+-how can we get reference to running h4JmfPlugin-instance from BeanShell-script,from dockable h4Jmf JPanel? can we prevent dockable panel from being closed? if dockable panel is closed,reopened how to re-add  Player.getControlPanelComponent() ?
+- move commands to play,pause,forward,backward,insert time,position to h4JmfPlugin itself
+(so no more panel needed, will aso work if panel is closed, not docked!! 
+
+-methods in h4JmfPlugin that work with Player, recall them from separate thread,
+so gui-thread is not blocked!!
 

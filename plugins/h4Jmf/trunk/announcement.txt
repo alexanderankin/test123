@@ -2,49 +2,64 @@ Paste the text below into the Plugin Central Submission Tracker at https://sourc
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-{{{ h4Jmf 4.3
+{{{ h4Jmf 0.0.3
     Source: Source code is in SVN with the tag XXXX (no SVN release numbers, please)
     Announcement: 
     Requires Java 1.5
     Requires jEdit 04.03.15.00
     
-    Short Description: test with Java Media Framework, control audio-player from jEdit, assist in transcription of digital audio-interview
+    Short Description: test with Java Media Framework, control audio-player from jEdit, assist in transcription of digital audio-interview.
+ Java Media Framework (jmf) should be installed first! see README
     
-    Long Description: Test with Java Media Framework JMF
-Assist in transcription of digital audio-interview. Pause, back-step, forward-step , position from cue, insert cue in text, play functions with shortcuts from editor-window.
+    Long Description: <html>
+<head>
+<title>h4Jmf Plugin</title>
+</head>
+<body>
+<h3>Test with Java Media Framework JMF</h3>
+<ul>
+<li>Assist in transcription of digital audio-interview. Pause, back-step, forward-step , position from cue, insert cue in text, play functions with shortcuts from editor-window</li>
 
--install Java Media Framework JMF. see README.txt
+<li>FIRST install Java Media Framework JMF. see README.txt</li>
 
--to invoke this plugin, select Plugins >h4Jmf.
+<li>to invoke this plugin, select Plugins>h4Jmf</li>
 
--to set short-cuts:
-Utilities > Global Options > Shortcuts
-in 'Edit Shortcuts' drop-down list: select Plugin: h4Jmf
-assign shortcuts to:
-player start
-player stop
-player rewind
-player forward
-insert time
-player position
+<li>to set short-cuts:</li>
+Utilities > Global Options > Shortcuts<br>
+in 'Edit Shortcuts' drop-down list: select Plugin: h4Jmf<br>
 
--to set options
-select Plugins > Plugin Options
-select h4Jmf
-options.h4Jmf.seconds=number of seconds to go back or forward on rewind,forward
+<li>assign shortcuts to:</li>
+player start<br>
+player stop<br>
+player rewind<br>
+player forward<br>
+insert time<br>
+player position<br>
 
--choose .mp3 or .wav file
-(this will implicitly call player_begin)
+<li>to set options</li>
+select Plugins > Plugin Options<br>
+select h4Jmf<br>
+options.h4Jmf.seconds=number of seconds to go back or forward on rewind,forward<br>
 
-- begin to play with (via shortcuts or menu's)
-player start
-player stop
-player rewind
-player forward
-insert time
-player position
+<li>choose .mp3 or .wav file</li>
+(this will implicitly call player_begin)<br>
 
--player close
-releases all JMF-resources
+<li> begin to play with (via shortcuts or menu's)</li>
+player start<br>
+player stop<br>
+player rewind<br>
+player forward<br>
+insert time<br>
+player position<br>
 
+<li>player close</li>
+releases all JMF-resources<br>
+</ul>
+<ADDRESS>
+Herman Vierendeels Ternat Belgium<br>
+tshvr@users.sourceforge.net
+</ADDRESS>
+
+</body>
+</html>
  }}}

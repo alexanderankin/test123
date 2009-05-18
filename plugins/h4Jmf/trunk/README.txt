@@ -31,8 +31,15 @@ jedit-cvs@lists.sourceforge.net
 http://jedit.svn.sourceforge.net/viewvc/jedit/
 https://sourceforge.net/scm/?type=svn&group_id=588
 
+http://plugins.jedit.org/plugins/?h4Jmf
+
+http://www.beanshell.org/
+
 problems
 --------
+ Unable to handle format: mpeglayer3,
+  on a pure 64-bit linux-machine? convert mp3 to wav
+
  [JMF thread: SendEventQueue: com.sun.media.content.unknown.Handler] [error] Handler: INFO: e=javax.media.ResourceUnavailableEvent[source=com.sun.media.content.unknown.Handler@4845aa,message=Failed to prefetch: cannot open the audio device.]
    under linux , /sbin/fuser -v /dev/snd/*
 
@@ -45,3 +52,11 @@ problems
    $HOME/.jmfdir should contain good location of jmf jar's and lib's.
     should have been set by installing jmf
    $JAVA_HOME/jre/lib/ext/ should contain mp3plugin.jar,jmf.jar
+
+ java.lang.NoClassDefFoundError: h4JmfActions
+  JMF not there, plugin not loaded, class not found by menus',options
+
+alternatives
+ http://fmj-sf.net/ #Freedom for Media in Java
+ http://www.javazoom.net/   #JLayer MP3
+
