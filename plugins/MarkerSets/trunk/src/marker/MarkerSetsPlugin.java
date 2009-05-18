@@ -56,7 +56,8 @@ public class MarkerSetsPlugin extends EBPlugin {
 		MARKER_SET_REMOVED,
 		MARKER_ADDED,
 		MARKER_REMOVED,
-		MARKER_SET_CHANGED
+		MARKER_SET_CHANGED,
+		ACTIVE_MARKER_SET_CHANGED
 	}
 	
 	public interface ChangeListener
@@ -337,6 +338,7 @@ public class MarkerSetsPlugin extends EBPlugin {
 		if (newActive == null)
 			return false;
 		active = newActive;
+		notifyChange(Event.ACTIVE_MARKER_SET_CHANGED, active);
 		return true;
 	}
 	
@@ -372,7 +374,7 @@ public class MarkerSetsPlugin extends EBPlugin {
 				notifyChange(Event.MARKER_SET_CHANGED, ms);
 			}
 		}
-		active = ms;
+		setActiveMarkerSet(name);
 	}
 	static public void useGlobalMarkerSet()
 	{
