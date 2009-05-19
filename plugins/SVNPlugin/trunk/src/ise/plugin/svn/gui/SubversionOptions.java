@@ -41,39 +41,54 @@ import ise.java.awt.KappaLayout;
  * Plugin option pane.
  */
 public class SubversionOptions implements OptionPane {
-   private JPanel panel = null;
-   private JCheckBox useTsvnTemplate = null;
+    private JPanel panel = null;
+    private JCheckBox useTsvnTemplate = null;
+    private JSpinner maxLogs = null;
 
-   public SubversionOptions( ) {
-   }
+    public SubversionOptions( ) {}
 
-   public void init() {
-      if ( panel != null )
-         return ;
-      panel = new JPanel( new KappaLayout() );
+    public void init() {
+        if ( panel != null )
+            return ;
+        panel = new JPanel( new KappaLayout() );
 
 
-      useTsvnTemplate = new JCheckBox("Use tsvn:logtemplate property for commit template");
-      useTsvnTemplate.setSelected(jEdit.getBooleanProperty("ise.plugin.svn.useTsvnTemplate", false));
+        useTsvnTemplate = new JCheckBox( "Use tsvn:logtemplate property for commit template" );
+        useTsvnTemplate.setSelected( jEdit.getBooleanProperty( "ise.plugin.svn.useTsvnTemplate", false ) );
 
-      panel.add( useTsvnTemplate, "0, 0, 1, 1, 0, wh, 5" );
+        maxLogs = new JSpinner();
+        ( ( JSpinner.NumberEditor ) maxLogs.getEditor() ).getModel().setMinimum( Integer.valueOf( 1 ) );
+        int logRows = jEdit.getIntegerProperty("ise.plugin.svn.logRows", 1000); 
+        ( ( JSpinner.NumberEditor ) maxLogs.getEditor() ).getModel().setValue( logRows );
+        ((JSpinner.NumberEditor)maxLogs.getEditor()).getTextField().setForeground( jEdit.getColorProperty( "view.fgColor", Color.BLACK ) );
+        ((JSpinner.NumberEditor)maxLogs.getEditor()).getTextField().setBackground( jEdit.getColorProperty( "view.bgColor", Color.WHITE ) );
 
-   }
+        panel.add( useTsvnTemplate, "0, 0, 2, 1, 0, wh, 5" );
+        
+        JPanel max_logs_panel = new JPanel( new FlowLayout() );
+        max_logs_panel.add( new JLabel( jEdit.getProperty( "ips.Maximum_log_entries_to_show>", "Maximum log entries to show:" ) ) );
+        max_logs_panel.add( maxLogs );
+        panel.add( "0, 1, 2, 1, W,  , 5", max_logs_panel );
 
-   public void save() {
-       if (useTsvnTemplate != null) {
-           jEdit.setBooleanProperty("ise.plugin.svn.useTsvnTemplate", useTsvnTemplate.isSelected());
-       }
-   }
+    }
 
-   public Component getComponent() {
-      if ( panel == null )
-         init();
-      return panel;
-   }
+    public void save() {
+        if ( useTsvnTemplate != null ) {
+            jEdit.setBooleanProperty( "ise.plugin.svn.useTsvnTemplate", useTsvnTemplate.isSelected() );
+        }
+        if ( maxLogs != null ) {
+            jEdit.setIntegerProperty( "ise.plugin.svn.logRows", ( ( Integer ) maxLogs.getValue() ).intValue());
+        }
+    }
 
-   public String getName() {
-      return "subversion";
-   }
+    public Component getComponent() {
+        if ( panel == null )
+            init();
+        return panel;
+    }
+
+    public String getName() {
+        return "subversion";
+    }
 
 }

@@ -58,9 +58,6 @@ public class LogDialog extends JDialog {
     private boolean recursive = false;
     private SVNRevision endRevision = SVNRevision.HEAD;
 
-    private static Color background = jEdit.getColorProperty( "view.bgColor", Color.WHITE );
-    private static Color foreground = jEdit.getColorProperty( "view.fgColor", Color.LIGHT_GRAY );
-
     public LogDialog( View view, LogData data ) {
         super( ( JFrame ) view, jEdit.getProperty( "ips.Log_Settings", "Log Settings" ), true );
         if ( data == null ) {
@@ -162,9 +159,10 @@ public class LogDialog extends JDialog {
 
         final JSpinner max_logs = new JSpinner();
         ( ( JSpinner.NumberEditor ) max_logs.getEditor() ).getModel().setMinimum( Integer.valueOf( 1 ) );
-        ( ( JSpinner.NumberEditor ) max_logs.getEditor() ).getModel().setValue( Integer.valueOf( 1000 ) );
-        max_logs.setForeground( foreground );
-        max_logs.setBackground( background );
+        int logRows = jEdit.getIntegerProperty("ise.plugin.svn.logRows", 1000);
+        ( ( JSpinner.NumberEditor ) max_logs.getEditor() ).getModel().setValue( logRows );
+        ((JSpinner.NumberEditor)max_logs.getEditor()).getTextField().setForeground( jEdit.getColorProperty( "view.fgColor", Color.BLACK ) );
+        ((JSpinner.NumberEditor)max_logs.getEditor()).getTextField().setBackground( jEdit.getColorProperty( "view.bgColor", Color.WHITE ) );
 
         final JCheckBox stopOnCopy = new JCheckBox( jEdit.getProperty( "ips.Stop_on_copy", "Stop on copy" ) );
         final JCheckBox showPaths = new JCheckBox( jEdit.getProperty( "ips.Show_paths", "Show paths" ) );
