@@ -33,11 +33,15 @@ public class SourceLinkTree extends JTree
 	private MarkerTreeBuilder builder;
 	private HashSet<SourceLinkTreeModelListener> listeners;
 	private boolean multiple;
+	private boolean batch;
+	private HashSet<SourceLinkParentNode> batchNodesToUpdate;
 	
 	public SourceLinkTree(View view)
 	{
 		this.view = view;
 		multiple = true;
+		batch = false;
+		batchNodesToUpdate = null;
 		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		builder = new FlatTreeBuilder();
 		root = new DefaultMutableTreeNode();
@@ -100,6 +104,32 @@ public class SourceLinkTree extends JTree
 		});
 	}
 
+	public void startBatch()
+	{
+		batch = true;
+		batchNodesToUpdate = new HashSet<SourceLinkParentNode>();
+	}
+	public void endBatch()
+	{
+		if (! batch)
+			return;
+		batch = false;
+		for (SourceLinkParentNode node: batchNodesToUpdate)
+			node.updateStructure();
+		batchNodesToUpdate.clear();
+		batchNodesToUpdate = null;
+	}
+	public boolean isBatch()
+	{
+		return batch;
+	}
+	public void addBatchUpdate(SourceLinkParentNode node)
+	{
+		if (! batch)
+			return;
+		batchNodesToUpdate.add(node);
+	}
+
 	public void allowMultipleResults(boolean multiple)
 	{
 		if (this.multiple == multiple)
@@ -135,7 +165,7 @@ public class SourceLinkTree extends JTree
 	
 	public SourceLinkParentNode addSourceLinkParent(Object parent)
 	{
-		SourceLinkParentNode node = new SourceLinkParentNode(parent, builder);
+		SourceLinkParentNode node = new SourceLinkParentNode(this, parent, builder);
 		if (! multiple)
 			clear();
 		root.add(node);
@@ -235,24 +265,26 @@ public class SourceLinkTree extends JTree
 		implements PopupMenuProvider
 	{
 		private MarkerTreeBuilder builder;
-		
-		public SourceLinkParentNode(Object userObject, MarkerTreeBuilder builder)
+		private SourceLinkTree tree;
+
+		public SourceLinkParentNode(SourceLinkTree tree, Object userObject,
+			MarkerTreeBuilder builder)
 		{
 			super(userObject);
-			this.builder = builder;;
+			this.builder = builder;
+			this.tree = tree;
 		}
 		public void addSourceLink(FileMarker marker)
 		{
 			add(new SourceLinkLeafNode(marker));
 			updateStructure();
-			model.nodeStructureChanged(this);
 		}
 		@SuppressWarnings("unchecked")
 		public int [] getFileAndMarkerCounts()
 		{
 			int [] counts = new int[] { 0, 0 };
 			HashSet<String> files = new HashSet<String>();
-			Enumeration nodes = this.breadthFirstEnumeration();
+			Enumeration nodes = breadthFirstEnumeration();
 			while (nodes.hasMoreElements())
 			{
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode)
@@ -279,10 +311,18 @@ public class SourceLinkTree extends JTree
 			}
 			updateStructure();
 		}
-		private void updateStructure()
+		public void updateStructure()
 		{
-			if (builder.rebuildOnChange())
-				rebuild();
+			if (tree.isBatch())
+			{
+				tree.addBatchUpdate(this);
+			}
+			else
+			{
+				if (builder.rebuildOnChange())
+					rebuild();
+				model.nodeStructureChanged(this);
+			}
 		}
 		private void rebuild()
 		{
@@ -440,4 +480,5 @@ public class SourceLinkTree extends JTree
 			model.nodesWereRemoved(root, new int [] {i}, new Object [] { node });
 		}
 	}
+	
 }
