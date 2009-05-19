@@ -49,11 +49,13 @@ public class SearchResults extends JPanel {
 		tree.clear();
 		if (lines == null)
 			return;
+		tree.startBatch();
 		SourceLinkParentNode pn = tree.addSourceLinkParent(text);
 		for (int i = 0; i < lines.size(); i++)
 		{
 			FileLine line = lines.get(i);
 			pn.addSourceLink(new FileMarker(line.file, line.line - 1));
 		}
+		tree.endBatch();
 	}
 }
