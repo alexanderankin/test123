@@ -1,0 +1,36 @@
+plugin.lucene.LucenePlugin.activate=startup
+
+# general plugin information
+plugin.lucene.LucenePlugin.name=LucenePlugin
+plugin.lucene.LucenePlugin.author=Shlomy Reinstein
+plugin.lucene.LucenePlugin.version=0.1
+plugin.lucene.LucenePlugin.depend.0=jdk 1.5
+plugin.lucene.LucenePlugin.depend.1=jedit 04.03.17.00
+plugin.lucene.LucenePlugin.depend.2=plugin marker.MarkerSetsPlugin 0.1
+
+# Options
+plugin.lucene.LucenePlugin.option-pane=LucenePlugin
+options.LucenePlugin.code=new lucene.OptionPane();
+options.LucenePlugin.label=LucenePlugin
+options.LucenePlugin.index_path.label=Lucene index directory:
+options.LucenePlugin.exclude_dirs.label=Exclude directories that match:
+options.LucenePlugin.include_files.label=Include only files that match:
+options.LucenePlugin.exclude_files.label=... except files that match:
+
+options.LucenePlugin.include_files=.*\\.([ch]|cpp|java|inl|rc|ds[pw]|txt)$
+options.LucenePlugin.exclude_dirs=(debug|bin|build|icons|\\.svn)
+
+# action labels
+lucene-index.label=Index directory tree...
+lucene-find.label=Find text...
+
+# menu items
+plugin.lucene.LucenePlugin.menu=lucene-index lucene-find
+
+# docs
+plugin.lucene.LucenePlugin.docs=index.html
+plugin.lucene.LucenePlugin.description=LucenePlugin provides an interface to the Lucene engine.
+
+# dockables
+lucene-search.title=Lucene Search
+lucene-search.label=Lucene Search
