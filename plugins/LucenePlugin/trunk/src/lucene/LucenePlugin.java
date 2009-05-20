@@ -7,6 +7,7 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -31,19 +32,22 @@ public class LucenePlugin extends EBPlugin {
 	
 	static private Analyzer analyzer = new StandardAnalyzer();
 
-	private static boolean validDir(String path) {
+	private static boolean validDir(String path)
+	{
 		Pattern exc = Pattern.compile(OptionPane.excludeDirs(),Pattern.CASE_INSENSITIVE);
 		Matcher matcher = exc.matcher(path);
 		return (! matcher.matches());
 	}
-	private static boolean validFile(String path) {
+	private static boolean validFile(String path)
+	{
 		Pattern inc = Pattern.compile(OptionPane.includeFiles(),Pattern.CASE_INSENSITIVE);
 		Pattern exc = Pattern.compile(OptionPane.excludeFiles(),Pattern.CASE_INSENSITIVE);
 		Matcher incMatcher = inc.matcher(path);
 		Matcher excMatcher = exc.matcher(path);
 		return (incMatcher.matches() && (! excMatcher.matches()));
 	}
-	public static void find(View view) {
+	public static void find(View view)
+	{
 		String text = JOptionPane.showInputDialog("Enter text to search:");
 		if (text == null)
 			return;
@@ -62,9 +66,13 @@ public class LucenePlugin extends EBPlugin {
 		return OptionPane.indexPath() + File.separator + "meta";
 	}
 	public static void index(View view) {
-		String dir = JOptionPane.showInputDialog("Directory to index:");
-		if (dir == null)
+		JFileChooser fc = new JFileChooser();
+		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		fc.setDialogTitle("Add to Lucene Index");
+		int returnVal = fc.showDialog(view, "Add");
+		if (returnVal != JFileChooser.APPROVE_OPTION)
 			return;
+		String dir = fc.getSelectedFile().getPath();
         try {
     		IndexWriter contentWriter = new IndexWriter(contentDir(),
     			analyzer, MaxFieldLength.UNLIMITED);
