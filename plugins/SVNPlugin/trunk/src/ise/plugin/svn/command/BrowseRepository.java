@@ -35,6 +35,7 @@ import org.tmatesoft.svn.core.SVNDirEntry;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.SVNProperty;
+import org.tmatesoft.svn.core.SVNPropertyValue;
 import org.tmatesoft.svn.core.SVNProperties;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.auth.ISVNAuthenticationManager;
@@ -215,8 +216,8 @@ public class BrowseRepository {
                     BufferedReader br = new BufferedReader( new StringReader( value ) );
                     String line = br.readLine();
                     while ( line != null ) {
-                        String dir = line.substring( 0, line.indexOf( " " ) );
-                        String rep = line.substring( line.indexOf( " " ) + 1 );
+                        String dir = line.substring( 0, line.indexOf( ' ' ) );
+                        String rep = line.substring( line.indexOf( ' ' ) + 1 );
                         DirTreeNode node = new DirTreeNode( dir, false );
                         node.setExternal( true );
                         node.setRepositoryLocation( rep );
@@ -263,7 +264,7 @@ public class BrowseRepository {
             repository = SVNRepositoryFactory.create( SVNURL.parseURIEncoded( url ) );
             String pwd = null;
             if ( password != null && password.length() > 0 ) {
-                pwd = PasswordHandler.decryptPassword( new String( password ) );
+                pwd = PasswordHandler.decryptPassword( password );
             }
             ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager( username, pwd );
             repository.setAuthenticationManager( authManager );
@@ -296,7 +297,7 @@ public class BrowseRepository {
             repository = SVNRepositoryFactory.create( SVNURL.parseURIEncoded( url ) );
             String pwd = null;
             if ( password != null && password.length() > 0 ) {
-                pwd = PasswordHandler.decryptPassword( new String( password ) );
+                pwd = PasswordHandler.decryptPassword( password );
             }
             ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager( username, pwd );
             repository.setAuthenticationManager( authManager );
@@ -309,11 +310,12 @@ public class BrowseRepository {
             ByteArrayOutputStream baos = new ByteArrayOutputStream( );
             repository.getFile( filepath , revision , fileproperties , baos );
 
-            String mimeType = fileproperties.getSVNPropertyValue( SVNProperty.MIME_TYPE ).getString();
+            SVNPropertyValue mime_property = fileproperties.getSVNPropertyValue( SVNProperty.MIME_TYPE);
+            String mimeType = mime_property == null ? null : mime_property.getString();
             boolean isTextType = SVNProperty.isTextMimeType( mimeType );
 
             // copy the properties to a Properties
-            Properties props = convertMap( fileproperties.asMap() );
+            Properties props = convertMap( fileproperties );
 
             // ignore non-text files for now
             if ( isTextType ) {
@@ -321,10 +323,10 @@ public class BrowseRepository {
                 // the file name extension so that jEdit can apply highlighting.
                 // Insert the revision number into the file name just before the
                 // file extension (if any) to prevent overwriting.
-                int index = filepath.lastIndexOf( "." );
+                int index = filepath.lastIndexOf( '.' );
                 index = index < 0 ? 0 : index;
                 if ( index == 0 ) {
-                    int slash_index = filepath.lastIndexOf( "/" );
+                    int slash_index = filepath.lastIndexOf( '/' );
                     if ( slash_index > 0 && slash_index < filepath.length() ) {
                         index = slash_index + 1;
                     }
@@ -352,20 +354,18 @@ public class BrowseRepository {
         return outfile;
     }
 
-    // converts a Map to a Properties by taking the string value of the names
-    // and values
-    private Properties convertMap( Map<Object, Object> map ) {
+    // converts SVNProperties to a Properties by taking the string value of the
+    // names and values
+    private Properties convertMap( SVNProperties map ) {
         Properties props = new Properties();
-        if ( map.size() > 0 ) {
-            Set < Map.Entry < Object, Object >> set = map.entrySet();
-            for ( Map.Entry me : set ) {
-                Object name = me.getKey();
-                if ( name != null ) {
-                    Object value = me.getValue();
-                    if ( value != null ) {
-                        props.setProperty( name.toString(), value.toString() );
-                    }
-                }
+        Set names = map.nameSet();
+        for (Object name : names) {
+            if (name == null) {
+                continue;
+            }
+            SVNPropertyValue value = map.getSVNPropertyValue(name.toString());
+            if (value != null) {
+                props.setProperty(name.toString(), value.getString());
             }
         }
         return props;
