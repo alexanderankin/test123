@@ -26,6 +26,14 @@
     
     <!-- where to put distribution files -->
     <property name="dist.dir" location="dist"/>
+    
+    <!-- possible ability to auto-reload plugin -->
+    <condition property="can.reload.plugins">
+        <and>
+            <available classname="org.gjt.sp.jedit.jEdit"/>
+            <available classname="ReloadPluginTask"/>
+        </and>
+    </condition>
 
    <!-- ========================================================================
       Target: set classpath
@@ -100,6 +108,14 @@
         
         <!-- copy the plugin jar to the jedit plugin directory -->
         <copy file="${dist.dir}/${jar.name}" todir="${install.dir}"/>
+        <antcall target="reload"/>
+
+    </target>
+
+    <target name="reload" if="can.reload.plugins">
+        <echo>Reloading ${install.dir}/${jar.name}</echo>
+        <taskdef name="reloadPlugin" classname="ReloadPluginTask"/>
+        <reloadPlugin jarfile="${install.dir}/${jar.name}"/>
     </target>
 
    <!-- ========================================================================
