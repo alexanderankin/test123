@@ -243,7 +243,7 @@ public class PropertyEditor extends JDialog {
         fileHistory.setColumns( 30 );
         fileHistory.setEnabled( false );
 
-        final JButton browseButton = new JButton( jEdit.getProperty( "ips.Browse...", "Browse..." ) );
+        browseButton = new JButton( jEdit.getProperty( "ips.Browse...", "Browse..." ) );
         browseButton.setEnabled( false );
 
         // lay out value entry panel
