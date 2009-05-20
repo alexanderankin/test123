@@ -86,6 +86,7 @@ public class LogAction extends SVNAction {
     }
 
     public void actionPerformed( ActionEvent ae ) {
+        System.out.println( "+++++ LogAction 1, username = " + getUsername() + ", password = " + getPassword() );
         if ( paths != null && paths.size() > 0 ) {
             data = new LogData();
             data.setPaths( paths );
@@ -98,6 +99,7 @@ public class LogAction extends SVNAction {
             if ( data == null ) {
                 return ;     // null data signals user canceled
             }
+            System.out.println( "+++++ LogAction 2, username = " + getUsername() + ", password = " + getPassword() );
 
             if ( getUsername() == null ) {
                 verifyLogin( paths.get( 0 ) );
@@ -105,9 +107,10 @@ public class LogAction extends SVNAction {
                     return ;
                 }
             }
+            System.out.println( "+++++ LogAction 3, username = " + getUsername() + ", password = " + getPassword() );
             data.setUsername( getUsername() );
             data.setPassword( getPassword() );
-            
+
             data.setOut( new ConsolePrintStream( getView() ) );
 
             getView().getDockableWindowManager().showDockableWindow( "subversion" );
@@ -157,14 +160,8 @@ public class LogAction extends SVNAction {
                         if ( results == null ) {
                             return ;
                         }
-                        SwingUtilities.invokeLater(
-                            new Runnable() {
-                                public void run() {
-                                    JPanel results_panel = new LogResultsPanel( results, data.getShowPaths(), getView(), getUsername(), getPassword() );
-                                    panel.addTab( jEdit.getProperty( "ips.Log", "Log" ), results_panel );
-                                }
-                            }
-                        );
+                        JPanel results_panel = new LogResultsPanel( results, data.getShowPaths(), getView(), getUsername(), getPassword() );
+                        panel.addTab( jEdit.getProperty( "ips.Log", "Log" ), results_panel );
                     }
                     catch ( Exception e ) {
                         // ignored
