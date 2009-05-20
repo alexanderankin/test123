@@ -127,7 +127,6 @@ public class DualDiffManager {
     private static void toggleOffFor( final View view ) {
         // get stored configurations so they can be restored
         String splitConfig = splitConfigs.get( view );
-        System.out.println("+++++ toggleOff, splitConfig = " + splitConfig);
         HashMap < String, List < Integer >> carets = caretPositions.get( view );
 
         // turn off DualDiff so auto-scroll is deactivated before
@@ -168,7 +167,6 @@ public class DualDiffManager {
     private static void toggleOnFor( final View view ) {
         // remember split configuration so it can be restored later
         String splitConfig = view.getSplitConfig();
-        System.out.println("+++++ toggleOn, splitConfig = " + splitConfig);
         if ( splitConfig != null ) {
             splitConfigs.put( view, splitConfig );
         }
