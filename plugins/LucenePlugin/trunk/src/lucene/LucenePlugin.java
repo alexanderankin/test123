@@ -30,7 +30,6 @@ import lucene.OptionPane;
 public class LucenePlugin extends EBPlugin {
 	
 	static private Analyzer analyzer = new StandardAnalyzer();
-	static private int fileIndex = 0;
 
 	private static boolean validDir(String path) {
 		Pattern exc = Pattern.compile(OptionPane.excludeDirs(),Pattern.CASE_INSENSITIVE);
@@ -101,7 +100,7 @@ public class LucenePlugin extends EBPlugin {
 					int index = 0;
 					while ((line = input.readLine()) != null) {
 						index++;
-						contentWriter.addDocument(createLineDocument(index, line));
+						contentWriter.addDocument(createLineDocument(path, index, line));
 					}
 				}
 				finally {
@@ -114,27 +113,20 @@ public class LucenePlugin extends EBPlugin {
 		}
 	}
 
-	private static Document createLineDocument(int index, String line)
+	private static Document createLineDocument(String file, int index, String line)
 	{
 		Document doc = new Document();
-		doc.add(new Field("fileIndex", String.valueOf(fileIndex),
-			Field.Store.YES, Field.Index.NO));
-		doc.add(new Field("line", String.valueOf(index),
-				Field.Store.YES, Field.Index.NOT_ANALYZED));
-		doc.add(new Field("content", line, Field.Store.YES,
-			Field.Index.ANALYZED));
-		//System.err.println("Created line: index=" + index + " fileIndex=" + fileIndex + " content=" + line);
+		doc.add(new Field("file", file, Field.Store.YES, Field.Index.NO));
+		doc.add(new Field("line", String.valueOf(index), Field.Store.YES,
+			Field.Index.NOT_ANALYZED));
+		doc.add(new Field("content", line, Field.Store.YES, Field.Index.ANALYZED));
 		return doc;
 	}
 	private static Document createFileDocument(File f)
 	{
-		fileIndex++;
 		Document doc = new Document();
 		doc.add(new Field("file", f.getPath(), Field.Store.YES, Field.Index.NO));
-		doc.add(new Field("fileIndex", String.valueOf(fileIndex),
-			Field.Store.YES, Field.Index.NOT_ANALYZED));
 		doc.add(new Field("modified", String.valueOf(f.lastModified()), Field.Store.YES, Field.Index.NO));
-		//System.err.println("Created file: index=" + fileIndex + " name=" + f.getPath());
 		return doc;
 	}
 
@@ -168,19 +160,8 @@ public class LucenePlugin extends EBPlugin {
     	for (int i = 0; i < collector.docs.size(); i++)
     	{
     		Document doc = searcher.doc(collector.docs.get(i));
-        	Query metaQuery = new QueryParser("fileIndex", analyzer).parse(
-        		doc.get("fileIndex"));
-        	SearchResultCollector fileCollector = new SearchResultCollector();
-        	metaSearcher.search(metaQuery, fileCollector);
-        	if (fileCollector.docs.size() != 1)
-        	{
-        		JOptionPane.showMessageDialog(null, "Bad index - number of files with index " + doc.get("fileIndex") + " is not 1.");
-        		return null;
-        	}
-        	Document fileDoc = metaSearcher.doc(fileCollector.docs.get(0));
-    		results.add(new FileLine(fileDoc.get("file"),
-    			Integer.valueOf(doc.get("line")).intValue(),
-    			doc.get("content")));
+    		results.add(new FileLine(doc.get("file"),
+    			Integer.valueOf(doc.get("line")).intValue(), doc.get("content")));
     	}
     	searcher.close();
     	return results; 
