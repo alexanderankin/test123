@@ -56,7 +56,7 @@ public class SVNFile extends File {
     }
 
     public void setProperty(String name, String value) {
-        properties.setProperty(new String(name), new String(value));
+        properties.setProperty( name, value );
     }
 
     public void setProperties(Properties props) {
@@ -64,8 +64,7 @@ public class SVNFile extends File {
     }
 
     public String getProperty(String name) {
-        String value = properties.getProperty(name);
-        return value == null ? null : new String(value);
+        return properties.getProperty(name);
     }
 
     public Properties getProperties() {
