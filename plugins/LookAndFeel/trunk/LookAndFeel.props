@@ -17,9 +17,7 @@ lookandfeel.usejeditfont.label=Use jEdit Font
 
 lookandfeel.message.restart.title=Look And Feel plugin
 lookandfeel.message.restart.message=\
-  The {0} look and feel will now be installed.\n\
-  It might take a restart for the look and feel changes\n\
-  to take full effect.
+  It might take a restart for the look and feel changes to take full effect.
 
 lookandfeel.message.fnf.title=File invalid
 lookandfeel.message.fnf.message=\
