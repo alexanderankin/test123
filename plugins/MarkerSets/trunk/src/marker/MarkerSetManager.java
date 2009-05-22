@@ -139,14 +139,20 @@ public class MarkerSetManager extends JPanel {
 		northPanel.add(prev);
 		prev.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				MarkerSetsPlugin.getActiveMarkerSet().prevMarker(MarkerSetManager.this.view);
+				FileMarker m = MarkerSetsPlugin.getActiveMarkerSet().prevMarker(
+					MarkerSetManager.this.view);
+				if (m != null);
+					markers.select(m);
 			}
 		});
 		next = new RolloverButton(GUIUtilities.loadIcon("ArrowR.png"));
 		northPanel.add(next);
 		next.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				MarkerSetsPlugin.getActiveMarkerSet().nextMarker(MarkerSetManager.this.view);
+				FileMarker m = MarkerSetsPlugin.getActiveMarkerSet().nextMarker(
+					MarkerSetManager.this.view);
+				if (m != null)
+					markers.select(m);
 			}
 		});
 		updateTree();

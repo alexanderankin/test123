@@ -184,6 +184,20 @@ public class SourceLinkTree extends JTree
 		}
 	}
 
+	public void select(FileMarker m)
+	{
+		Enumeration<DefaultMutableTreeNode> e = root.depthFirstEnumeration();
+		while (e.hasMoreElements())
+		{
+			DefaultMutableTreeNode node = e.nextElement();
+			if (node.isLeaf() && (node.getUserObject() == m))
+			{
+				setSelectionPath(new TreePath(node.getPath()));
+				break;
+			}
+		}
+	}
+
 	public interface SourceLinkTreeModelListener
 	{
 		void nodeRemoved(DefaultMutableTreeNode node, SourceLinkParentNode parent,

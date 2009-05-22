@@ -43,23 +43,27 @@ public class MarkerSet {
 	
 	public String getName() { return name; }
 
-	public void nextMarker(View view) {
+	public FileMarker nextMarker(View view) {
 		int size = markers.size();
 		if (size == 0)
-			return;
+			return null;
 		currentMarker++;
 		if (currentMarker >= size)
 			currentMarker = 0;
-		markers.get(currentMarker).jump(view);
+		FileMarker marker = markers.get(currentMarker);
+		marker.jump(view);
+		return marker;
 	}
-	public void prevMarker(View view) {
+	public FileMarker prevMarker(View view) {
 		int size = markers.size();
 		if (size == 0)
-			return;
+			return null;
 		currentMarker--;
 		if (currentMarker < 0 || currentMarker >= size)
 			currentMarker = size - 1;
-		markers.get(currentMarker).jump(view);
+		FileMarker marker = markers.get(currentMarker);
+		marker.jump(view);
+		return marker;
 	}
 	
 	// Returns true if the marker was added, false if removed

@@ -177,7 +177,6 @@ public class MarkerSetsPlugin extends EBPlugin {
 				"marker-set-manager");
 		if (dockable != null)
 			dockable.bufferChanged(ep.getBuffer());
-			
 	}
 	
 	private void handleBufferUpdate(BufferUpdate bu)
