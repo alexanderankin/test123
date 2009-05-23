@@ -11,7 +11,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexWriter;
@@ -30,7 +29,7 @@ import lucene.OptionPane;
 
 public class LucenePlugin extends EBPlugin {
 	
-	static private Analyzer analyzer = new StandardAnalyzer();
+	static private Analyzer analyzer = new SourceCodeAnalyzer();
 
 	private static boolean validDir(String path)
 	{
@@ -135,6 +134,7 @@ public class LucenePlugin extends EBPlugin {
 		Document doc = new Document();
 		doc.add(new Field("file", f.getPath(), Field.Store.YES, Field.Index.NO));
 		doc.add(new Field("modified", String.valueOf(f.lastModified()), Field.Store.YES, Field.Index.NO));
+		doc.add(new Field("indexed", String.valueOf(System.currentTimeMillis()), Field.Store.YES, Field.Index.NO));
 		return doc;
 	}
 
@@ -163,7 +163,6 @@ public class LucenePlugin extends EBPlugin {
     			"No matches were found for \"" + queryString + "\"");
     		return null;
     	}
-    	Searcher metaSearcher = new IndexSearcher(metaDir());
     	Vector<FileLine> results = new Vector<FileLine>();
     	for (int i = 0; i < collector.docs.size(); i++)
     	{
