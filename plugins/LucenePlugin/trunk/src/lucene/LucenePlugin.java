@@ -13,6 +13,8 @@ import javax.swing.JOptionPane;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriter.MaxFieldLength;
 import org.apache.lucene.queryParser.ParseException;
@@ -56,6 +58,10 @@ public class LucenePlugin extends EBPlugin {
 			"lucene-search");
         sr.search(text);
 	}
+	private static String indexMetaDir()
+	{
+		return OptionPane.indexPath() + File.separator + "indexMeta";
+	}
 	private static String contentDir()
 	{
 		return OptionPane.indexPath() + File.separator + "content";
@@ -63,6 +69,21 @@ public class LucenePlugin extends EBPlugin {
 	private static String metaDir()
 	{
 		return OptionPane.indexPath() + File.separator + "meta";
+	}
+	public static void showIndexedDirs(View view)
+	{
+		try {
+			IndexReader r = IndexReader.open(indexMetaDir());
+	    	for (int i = 0; i < r.numDocs(); i++)
+	    	{
+	    		Document doc = r.document(i);
+	    		System.err.println(doc.get("dir"));
+	    	}
+		} catch (CorruptIndexException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	public static void index(View view) {
 		JFileChooser fc = new JFileChooser();
@@ -73,6 +94,9 @@ public class LucenePlugin extends EBPlugin {
 			return;
 		String dir = fc.getSelectedFile().getPath();
         try {
+        	IndexWriter indexMetaWriter = new IndexWriter(indexMetaDir(),
+        		analyzer, MaxFieldLength.UNLIMITED);
+        	indexMetaWriter.addDocument(createIndexMetaDocument(dir));
     		IndexWriter contentWriter = new IndexWriter(contentDir(),
     			analyzer, MaxFieldLength.UNLIMITED);
     		IndexWriter metaWriter = new IndexWriter(metaDir(),
@@ -80,6 +104,7 @@ public class LucenePlugin extends EBPlugin {
 			makeIndex(metaWriter, contentWriter, dir);
 			contentWriter.close();
 			metaWriter.close();
+        	indexMetaWriter.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return;
@@ -132,12 +157,20 @@ public class LucenePlugin extends EBPlugin {
 	private static Document createFileDocument(File f)
 	{
 		Document doc = new Document();
-		doc.add(new Field("file", f.getPath(), Field.Store.YES, Field.Index.NO));
-		doc.add(new Field("modified", String.valueOf(f.lastModified()), Field.Store.YES, Field.Index.NO));
-		doc.add(new Field("indexed", String.valueOf(System.currentTimeMillis()), Field.Store.YES, Field.Index.NO));
+		doc.add(new Field("file", f.getPath(), Field.Store.YES,
+			Field.Index.NOT_ANALYZED));
+		doc.add(new Field("modified", String.valueOf(f.lastModified()), Field.Store.YES,
+			Field.Index.NO));
+		doc.add(new Field("indexed", String.valueOf(System.currentTimeMillis()),
+			Field.Store.YES, Field.Index.NOT_ANALYZED));
 		return doc;
 	}
-
+	private static Document createIndexMetaDocument(String dir)
+	{
+		Document doc = new Document();
+		doc.add(new Field("dir", dir, Field.Store.YES, Field.Index.NOT_ANALYZED));
+		return doc;
+	}
     public void start() {
     }
 
