@@ -230,6 +230,8 @@ public class XercesParserImpl extends XmlParser
 					if (parent != null) parent.content.add(decl.getName());
 				}
 			}
+			System.out.println("abstract : "+name);
+			// TODO: elementDecl will be null
 		}
 		else {
 			elementDecl = new ElementDecl(info, name, null);

@@ -492,6 +492,27 @@ public class Resolver extends DefaultHandler2
 				new File(file).delete();
 			}
 		}
+		
+		//clear the properties ! 
+		int i=0;
+		String prop;
+		while(jEdit.getProperty(prop = "xml.cache"
+			+ ".public-id." + i++) != null)
+		{
+			System.out.println("unset "+prop);
+			jEdit.unsetProperty(prop);
+			jEdit.unsetProperty(prop+".uri");
+		}
+
+		i = 0;
+		while(jEdit.getProperty(prop = "xml.cache"
+			+ ".system-id." + i++) != null)
+		{
+			System.out.println("unset "+prop);
+			jEdit.unsetProperty(prop);
+			jEdit.unsetProperty(prop+".uri");
+		}
+		
 		resourceCache.clear();
 	} //}}}
 
@@ -540,6 +561,7 @@ public class Resolver extends DefaultHandler2
 	} //}}}
 
 	//{{{ resolvePublic() method
+	// TODO : remove systemId as it's not used and merge the 2 methods
 	private String resolvePublic(String systemId, String publicId) throws IOException
 		
 	{
@@ -624,6 +646,13 @@ public class Resolver extends DefaultHandler2
 		public int hashCode()
 		{
 			return id.hashCode();
+		}
+		public String toString(){
+			return "Resolver.Entry{"
+				+(type==SYSTEM?"SYSTEM":"PUBLIC")
+				+",id="+id
+				+",uri="+uri
+				+"}";
 		}
 	} //}}}
 	//{{{ VFSUpdateHandler class
