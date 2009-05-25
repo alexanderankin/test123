@@ -77,7 +77,7 @@ import xml.completion.IDDecl;
 
 public class XercesParserImpl extends XmlParser
 {
-	//{{{ SAXParserImpl constructor
+	//{{{ XercesParserImpl constructor
 	public XercesParserImpl()
 	{
 		super("xml");
@@ -110,7 +110,7 @@ public class XercesParserImpl extends XmlParser
 		XMLReader reader = null;
 		try
 		{
-			// One has to explicitly require the parser from XercesPlugin, otherwise
+			// One has to explicitely require the parser from XercesPlugin, otherwise
 			// one gets the crimson version bundled in the JRE and the rest fails
 			// miserably (at least on Mac OS X, JDK 5)
 			reader = XMLReaderFactory.createXMLReader("org.apache.xerces.parsers.SAXParser");
@@ -422,8 +422,8 @@ public class XercesParserImpl extends XmlParser
 		public InputSource resolveEntity (String name, String publicId, String baseURI, String systemId)
 			throws SAXException, java.io.IOException {
 
-			Log.log(Log.DEBUG,this,"resolveEntity PUBLIC=" + publicId
-				+ ", SYSTEM=" + systemId);
+			Log.log(Log.DEBUG,this,"resolveEntity("+name+","+publicId+","+baseURI+","+systemId+")");
+			
 			InputSource source = null;
 
 			try {
@@ -769,6 +769,7 @@ public class XercesParserImpl extends XmlParser
 		 */
 		public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException
 		{
+			Log.log(Log.DEBUG,XercesParserImpl.class,"simple resolveEnt("+publicId+","+systemId+")");
 			return resolveEntity(null, publicId, null, systemId);
 		}
 	} //}}}

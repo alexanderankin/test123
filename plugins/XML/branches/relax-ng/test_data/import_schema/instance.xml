@@ -14,7 +14,9 @@
   <!--  that one is correct : -->
   <comment>
   		<!-- the completion information is missing here ! -->
-  		<ipo:comment>erjrj</ipo:comment>
+  		<ipo:comment>erjrj
+		<!-- the completion information is misleading here : only string content -->
+		</ipo:comment>
   </comment>
   
 </purchaseReport>

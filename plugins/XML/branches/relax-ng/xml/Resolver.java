@@ -280,7 +280,7 @@ public class Resolver extends DefaultHandler2
 				catch(Exception ex2)
 				{
 					ex2.printStackTrace();
-					Log.log(Log.ERROR,CatalogManager.class,ex2);
+					Log.log(Log.ERROR,Resolver.class,ex2);
 				}
 				
 				
@@ -366,7 +366,7 @@ public class Resolver extends DefaultHandler2
 			// XXX: is this correct?
 			/* else if(systemId.startsWith("/"))
 				newSystemId = "file://" + systemId;*/
-			//need this to resolve actions.xds from actions.xsd
+			//need this to resolve xinclude.mod from user-guide.xml
 			//I don't understand this condition :  && !MiscUtilities.isURL(parent)
 			else if(parent != null)
 				newSystemId = parent + systemId;
@@ -495,8 +495,8 @@ public class Resolver extends DefaultHandler2
 		resourceCache.clear();
 	} //}}}
 
-	
-	private String resolveSystem(String id) throws IOException 
+	// TODO: remove package access (for XMLPlugin)
+	String resolveSystem(String id) throws IOException 
 	{
 		Entry e = new Entry(Entry.SYSTEM,id,null);
 		String uri = resourceCache.get(e);
