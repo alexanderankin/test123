@@ -5,6 +5,8 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
+import java.net.URL;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
@@ -155,9 +157,6 @@ public class Resolver extends DefaultHandler2
 	   */
 	private Catalog catalog = null;
 
-	/** Mapping of URLs to public IDs */
-	private HashMap<String,Entry> reverseResourceCache;
-	
 	/** Mapping from public ID to URLs */
 	private HashMap<Entry,String> resourceCache;
 	
@@ -200,7 +199,6 @@ public class Resolver extends DefaultHandler2
 		if(!loadedCache)
 		{
 			
-			reverseResourceCache = new HashMap<String,Entry>();
 			resourceCache = new HashMap<Entry,String>();
 			if (isUsingCache()) 
 				
@@ -228,7 +226,6 @@ public class Resolver extends DefaultHandler2
 				uri = jEdit.getProperty(prop + ".uri");
 				Entry se = new Entry(Entry.SYSTEM,id,uri);
 				resourceCache.put(se,uri);
-				reverseResourceCache.put(uri,se);
 			}
 			loadedCache = true;
 		}
@@ -315,19 +312,10 @@ public class Resolver extends DefaultHandler2
 		//catch an error message here
 		if(publicId == null && systemId == null)return null;
 		
-		/* we need this hack to support relative path names inside
-		 * cached files. we want them to be resolved relative to
-		 * the original system ID of the cached resource, not the
-		 * cache file name on disk. */
 		String parent;
 		if(current != null)
 		{
-			
-			Entry entry = (Entry)reverseResourceCache.get(current);
-			if(entry != null)
-				parent = entry.uri;
-			else
-				parent = MiscUtilities.getParentOfPath(current);
+			parent = MiscUtilities.getParentOfPath(current);
 		}
 		else
 			parent = null;
@@ -337,6 +325,10 @@ public class Resolver extends DefaultHandler2
 			Log.log(Log.DEBUG,Resolver.class,"parent="+parent);
 			if(systemId.startsWith(parent))
 			{
+				Log.log(Log.DEBUG,Resolver.class,"systemId starts with parent");
+				// TODO: this code path is not taken when viewing
+				// test_data/dtd/actions.xml, so the comment bellow
+				// is misleading and all the block should be removed
 				// first, try resolving a relative name,
 				// to handle jEdit built-in DTDs
 				newSystemId = systemId.substring(parent.length());
@@ -369,9 +361,14 @@ public class Resolver extends DefaultHandler2
 			//need this to resolve xinclude.mod from user-guide.xml
 			//I don't understand this condition :  && !MiscUtilities.isURL(parent)
 			else if(parent != null)
+			{
+				Log.log(Log.DEBUG,Resolver.class,"using parent !");
 				newSystemId = parent + systemId;
+			}
 		}
 
+		// don't throw the IOException, as we don't have a
+		// meaningful message to display to the user
 		if(newSystemId == null)
 			return null;
 
@@ -382,7 +379,8 @@ public class Resolver extends DefaultHandler2
 				VFSManager.waitForRequests();
 			Log.log(Log.DEBUG, getClass(), "Found open buffer for " + newSystemId);
 			InputSource source = new InputSource(publicId);
-			source.setSystemId(newSystemId);
+			//use the original systemId
+			source.setSystemId(systemId);
 			try
 			{
 				buf.readLock();
@@ -398,15 +396,23 @@ public class Resolver extends DefaultHandler2
 		else if(newSystemId.startsWith("file:")
 			|| newSystemId.startsWith("jeditresource:"))
 		{
-			// InputSource source = new InputSource(systemId);
-			 
-			// InputStream is = new URL(newSystemId).openStream();
-			InputSource is = new InputSource(newSystemId);
-			return is;
-			
+			// pretend to be reading the file from whatever the systemId was
+			// eg. http://slackerdoc.tigris.org/xsd/slackerdoc.xsd when we 
+			// are reading ~/.jedit/dtds/cache1345.xml
+			Log.log(Log.DEBUG,Resolver.class,"resolving to local file: "+newSystemId);
+			InputSource source = new InputSource(systemId);
+			source.setPublicId(publicId);
+			InputStream is = new URL(newSystemId).openStream();
+			source.setByteStream(is);
+			return source;
 		}
-		else if (getNetworkModeVal() == LOCAL) 
-			return null;
+		else if (getNetworkModeVal() == LOCAL)
+		{
+			Log.log(Log.DEBUG,Resolver.class,"refusing to fetch remote entity (configured for Local-only)");
+			// returning null would not be as informing
+			// TODO: prevent the 'premature end of file' error from showing
+			throw new IOException(jEdit.getProperty("xml.network.error"));
+		}
 		else
 		{
 			final String _newSystemId = newSystemId;
@@ -471,7 +477,9 @@ public class Resolver extends DefaultHandler2
 			}
 			else 
 			{
-				throw new IOException(jEdit.getProperty("xml.network-error"));
+				// returning null would not be as informing
+				// TODO: prevent the 'premature end of file' error from showing
+				throw new IOException(jEdit.getProperty("xml.network.error"));
 			}
 		}
 		
@@ -613,7 +621,6 @@ public class Resolver extends DefaultHandler2
 
 		Entry se = new Entry( Entry.SYSTEM, systemId, url );
 		resourceCache.put( se, url );
-		reverseResourceCache.put(url,se);
 	} //}}}
 
 	public static class Entry
