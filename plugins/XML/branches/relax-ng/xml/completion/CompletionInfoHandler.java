@@ -55,8 +55,11 @@ public class CompletionInfoHandler extends DefaultHandler
 	{
 		try
 		{
-			return CatalogManager.resolve(
-				loc.getSystemId(),publicId,systemId);
+			return Resolver.instance().resolveEntity(
+				null,//name
+				publicId,
+				loc.getSystemId(), //current
+				systemId);
 		}
 		catch(Exception e)
 		{

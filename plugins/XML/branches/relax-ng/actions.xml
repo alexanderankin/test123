@@ -73,13 +73,12 @@
     </ACTION>
     <ACTION NAME="xml-clear-cache">
         <CODE>
-            xml.CatalogManager.clearCache();
+            xml.Resolver.instance().clearCache();
         </CODE>
     </ACTION>
     <ACTION NAME="xml-reload-catalogs">
         <CODE>
             xml.Resolver.instance().reloadCatalogs();
-            xml.CatalogManager.reloadCatalogs();
         </CODE>
     </ACTION>
     <ACTION NAME="xml-select-element">

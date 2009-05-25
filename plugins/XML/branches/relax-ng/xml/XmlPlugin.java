@@ -151,7 +151,9 @@ public class XmlPlugin extends EBPlugin
 	public static String uriToFile(String uri)
 	{
 		if (uri.startsWith("http:/")) try {
-			String result = CatalogManager.resolveSystem(uri);
+			// TODO: document the usage of uriToFile in Resolver
+			//       and gain confidence that it doesn't loop
+			String result = Resolver.instance().resolveSystem(uri);
 			if (result != null) return result;
 		}
 		catch (Exception e) {
