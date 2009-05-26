@@ -29,7 +29,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ise.plugin.svn.gui;
 
 import java.awt.event.*;
-import java.util.List;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.border.EmptyBorder;
@@ -47,7 +46,6 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
  */
 public class RevisionDialog extends JDialog {
 
-    private View view = null;
     private transient SVNRevision revision = null;
 
     /**
@@ -56,7 +54,6 @@ public class RevisionDialog extends JDialog {
      */
     public RevisionDialog(View view, String title) {
         super( ( JFrame ) view, title, true );
-        this.view = view;
 
         JPanel panel = new JPanel( new KappaLayout() );
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
