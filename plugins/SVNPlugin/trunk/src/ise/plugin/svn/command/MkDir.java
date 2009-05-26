@@ -75,7 +75,7 @@ public class MkDir {
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
         // use the svnkit client manager
-        SVNClientManager clientManager = SVNClientManager.newInstance( options, new BasicAuthenticationManager(cd.getUsername(), cd.getPassword()) );
+        SVNClientManager clientManager = SVNClientManager.newInstance( options, new BasicAuthenticationManager(cd.getUsername(), cd.getDecryptedPassword()) );
 
         // get a commit client
         SVNCommitClient client = clientManager.getCommitClient();
@@ -127,7 +127,7 @@ public class MkDir {
         ci.setAuthor(info.getAuthor());
         ci.setDate(info.getDate());
         ci.setRevision(info.getNewRevision());
-        ci.setException(info.getErrorMessage() == null ? "" : info.getErrorMessage().toString());
+        ci.setException(info.getErrorMessage() == null ? "" : info.getErrorMessage().getFullMessage());
 
         cd.setPaths(result_paths);
         cd.setInfo(ci);
