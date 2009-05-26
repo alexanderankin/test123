@@ -160,8 +160,6 @@ public class LogDialog extends JDialog {
         ( ( JSpinner.NumberEditor ) max_logs.getEditor() ).getModel().setMinimum( Integer.valueOf( 1 ) );
         int logRows = jEdit.getIntegerProperty("ise.plugin.svn.logRows", 1000);
         ( ( JSpinner.NumberEditor ) max_logs.getEditor() ).getModel().setValue( logRows );
-        ((JSpinner.NumberEditor)max_logs.getEditor()).getTextField().setForeground( jEdit.getColorProperty( "view.fgColor", Color.BLACK ) );
-        ((JSpinner.NumberEditor)max_logs.getEditor()).getTextField().setBackground( jEdit.getColorProperty( "view.bgColor", Color.WHITE ) );
 
         final JCheckBox stopOnCopy = new JCheckBox( jEdit.getProperty( "ips.Stop_on_copy", "Stop on copy" ) );
         final JCheckBox showPaths = new JCheckBox( jEdit.getProperty( "ips.Show_paths", "Show paths" ) );
