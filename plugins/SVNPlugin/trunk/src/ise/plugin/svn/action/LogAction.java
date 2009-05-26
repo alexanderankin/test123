@@ -86,7 +86,6 @@ public class LogAction extends SVNAction {
     }
 
     public void actionPerformed( ActionEvent ae ) {
-        System.out.println( "+++++ LogAction 1, username = " + getUsername() + ", password = " + getPassword() );
         if ( paths != null && paths.size() > 0 ) {
             data = new LogData();
             data.setPaths( paths );
@@ -99,7 +98,6 @@ public class LogAction extends SVNAction {
             if ( data == null ) {
                 return ;     // null data signals user canceled
             }
-            System.out.println( "+++++ LogAction 2, username = " + getUsername() + ", password = " + getPassword() );
 
             if ( getUsername() == null ) {
                 verifyLogin( paths.get( 0 ) );
@@ -107,7 +105,6 @@ public class LogAction extends SVNAction {
                     return ;
                 }
             }
-            System.out.println( "+++++ LogAction 3, username = " + getUsername() + ", password = " + getPassword() );
             data.setUsername( getUsername() );
             data.setPassword( getPassword() );
 
