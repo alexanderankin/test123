@@ -1,0 +1,23 @@
+plugin.elementmatcher.ElementMatcherPlugin.name=ElementMatcher
+plugin.elementmatcher.ElementMatcherPlugin.author=Denis Dzenskevich
+plugin.elementmatcher.ElementMatcherPlugin.version=0.1
+
+plugin.elementmatcher.ElementMatcherPlugin.activate=startup
+
+# online help
+plugin.elementmatcher.ElementMatcherPlugin.docs=
+
+# dependencies
+plugin.elementmatcher.ElementMatcherPlugin.depend.0=jedit 04.03.16.00
+plugin.elementmatcher.ElementMatcherPlugin.depend.1=jdk 1.6
+plugin.elementmatcher.ElementMatcherPlugin.depend.2=plugin CommonControlsPlugin 0.9.5
+
+# bundled jars
+plugin.elementmatcher.ElementMatcherPlugin.jars=collections-generic-4.01.jar
+
+# option pane
+plugin.elementmatcher.ElementMatcherPlugin.option-pane=elementmatcher
+
+# options
+options.elementmatcher.label=Element Matcher
+options.elementmatcher.code=new elementmatcher.ElementMatcherOptionPane()
