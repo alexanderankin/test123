@@ -4,8 +4,11 @@ plugin.elementmatcher.ElementMatcherPlugin.version=0.1
 
 plugin.elementmatcher.ElementMatcherPlugin.activate=startup
 
+plugin.elementmatcher.description=Hyperlinks, emails, filenames and other text fragments recognizer 
+plugin.elementmatcher.longdescription=description.html
+
 # online help
-plugin.elementmatcher.ElementMatcherPlugin.docs=
+plugin.elementmatcher.ElementMatcherPlugin.docs=index.html
 
 # dependencies
 plugin.elementmatcher.ElementMatcherPlugin.depend.0=jedit 04.03.16.00
