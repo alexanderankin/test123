@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE SERVICES SYSTEM "services.dtd">
+
+<SERVICES>
+
+    <SERVICE CLASS="org.gjt.sp.jedit.gui.DynamicContextMenuService" NAME="WordContextMenu">
+        new elementmatcher.DynamicContextMenuServiceImpl();
+    </SERVICE>
+
+    <SERVICE CLASS="elementmatcher.ElementProvider" NAME="URLElementProvider">
+        new elementmatcher.elements.internet.URLElementProvider();
+    </SERVICE>
+    <SERVICE CLASS="elementmatcher.ElementProvider" NAME="FileElementProvider">
+        new elementmatcher.elements.file.FileElementProvider();
+    </SERVICE>
+    <SERVICE CLASS="elementmatcher.ElementProvider" NAME="RFCElementProvider">
+        new elementmatcher.elements.internet.RFCElementProvider();
+    </SERVICE>
+    <SERVICE CLASS="elementmatcher.ElementProvider" NAME="URNXMLElementProvider">
+        new elementmatcher.elements.internet.URNXMLElementProvider();
+    </SERVICE>
+
+</SERVICES>
