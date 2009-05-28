@@ -28,7 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.library;
 
-import java.awt.Component;
 import javax.swing.*;
 import java.util.*;
 import org.gjt.sp.jedit.jEdit;

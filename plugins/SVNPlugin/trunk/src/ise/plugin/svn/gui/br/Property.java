@@ -28,12 +28,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.gui.br;
 
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import javax.swing.JOptionPane;
-import javax.swing.JTree;
 import javax.swing.tree.TreePath;
-import org.gjt.sp.jedit.View;
 import ise.plugin.svn.action.*;
 import ise.plugin.svn.gui.DirTreeNode;
 import ise.plugin.svn.data.*;

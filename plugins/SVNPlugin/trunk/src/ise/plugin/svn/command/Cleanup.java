@@ -31,7 +31,6 @@ package ise.plugin.svn.command;
 import java.io.*;
 import java.util.*;
 
-import org.tmatesoft.svn.core.SVNLogEntryPath;
 import org.tmatesoft.svn.core.wc.SVNWCClient;
 import org.tmatesoft.svn.core.wc.ISVNOptions;
 import org.tmatesoft.svn.core.wc.SVNClientManager;

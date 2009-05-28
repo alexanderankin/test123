@@ -28,8 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.data;
 
-import org.tmatesoft.svn.core.wc.SVNRevision;
-
 
 public class DeleteData extends CommitData {
 

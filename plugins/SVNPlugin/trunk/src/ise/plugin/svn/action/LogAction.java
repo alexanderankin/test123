@@ -44,7 +44,6 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
