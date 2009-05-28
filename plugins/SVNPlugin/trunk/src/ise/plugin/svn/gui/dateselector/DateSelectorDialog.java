@@ -166,7 +166,7 @@ public class DateSelectorDialog extends PopupDialog implements DateSelector {
 
     //----------------------------------------------------------------------
     private static class Test {
-        public static void main( String[] args ) throws Exception {
+        public static void main( String[] args ) throws Exception {     // NOPMD
             final JFrame frame = new JFrame();
             frame.getContentPane().add( new JLabel( "Main Frame" ) );
             frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );

@@ -90,7 +90,7 @@ public class RevisionSelectionPanel extends JComponent {
         this.model = model;
     }
 
-    public void setUI( RevisionSelectionPanelUI ui ) {
+    public void setUI( RevisionSelectionPanelUI ui ) {      // NOPMD
         super.setUI( ui );
     }
 

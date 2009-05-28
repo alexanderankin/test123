@@ -191,7 +191,7 @@ public class PasswordHandler {
                 String plain = ph.decrypt(encrypted);
                 System.out.println("decrypted: " + plain);
                 if (testPassword.compareTo(plain) != 0) {
-                    throw new Exception("test failed!");
+                    throw new Exception("test failed!");        // NOPMD
                 }
         }
         catch (Exception e) {

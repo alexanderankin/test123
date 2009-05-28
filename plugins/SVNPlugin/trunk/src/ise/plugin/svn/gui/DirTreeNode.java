@@ -42,7 +42,6 @@ public class DirTreeNode extends DefaultMutableTreeNode implements Comparable<Di
     private boolean external = false;
     private boolean hasProperties = false;
     private String repositoryLocation = null;
-    private Properties properties = null;
 
     public DirTreeNode( Object userObject, boolean isLeaf ) {
         super( userObject );
@@ -119,7 +118,5 @@ public class DirTreeNode extends DefaultMutableTreeNode implements Comparable<Di
 
     public int hashCode() {
         return this.getUserObject().toString().toLowerCase().hashCode();
-        //TreePath path = new TreePath(getPath());
-        //return path.hashCode();
     }
 }

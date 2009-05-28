@@ -110,7 +110,7 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
                 doPaintCloseIcon = ( Boolean ) prop;
             }
         }
-        catch ( Exception ignored ) { /*Could probably be a ClassCastException*/
+        catch ( Exception ignored ) { /*Could probably be a ClassCastException*/    // NOPMD
         }
 
         super.addTab( title,
@@ -296,7 +296,7 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
         Object[] listeners = listenerList.getListenerList();
         for ( Object i : listeners ) {
             if ( i instanceof CloseableTabbedPaneListener ) {
-                if ( !( ( CloseableTabbedPaneListener ) i ).closeTab( tabIndexToClose ) ) {
+                if ( !( ( CloseableTabbedPaneListener ) i ).closeTab( tabIndexToClose ) ) {     // NOPMD
                     closeit = false;
                     break;
                 }
@@ -379,7 +379,7 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
                     doPaintCloseIcon = ( Boolean ) prop;
                 }
             }
-            catch ( Exception ignored ) { /*Could probably be a ClassCastException*/
+            catch ( Exception ignored ) { /*Could probably be a ClassCastException*/        // NOPMD
             }
             if ( doPaintCloseIcon ) {
                 x_pos = x;

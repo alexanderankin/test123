@@ -91,7 +91,7 @@ public final class SwingPropertyChangeSupport extends PropertyChangeSupport {
      * @see #SwingPropertyChangeSupport(Object sourceBean, boolean notifyOnEDT)
      * @since 1.6
      */
-    public final boolean isNotifyOnEDT() {
+    public boolean isNotifyOnEDT() {
         return notifyOnEDT;
     }
 

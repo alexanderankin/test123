@@ -272,7 +272,7 @@ public abstract class SwingWorker<T, V> implements Future<T>, Runnable {
     public SwingWorker() {
         Callable<T> callable =
                 new Callable<T>() {
-                    public T call() throws Exception {
+                    public T call() throws Exception {      // NOPMD
                         setState(StateValue.STARTED);
                         return doInBackground();
                     }
