@@ -142,10 +142,18 @@ public class BasicBlamePaneUI extends BlamePaneUI implements ChangeListener, Mou
             pixelsPerLine = model.getTextArea().getPainter().getFontMetrics().getHeight();
             int firstLine = model.getTextArea().getFirstPhysicalLine();
             int lastLine = model.getTextArea().getLastPhysicalLine();
-            gfx.setColor( jEdit.getColorProperty("view.fgColor", Color.BLACK) );
+            int caretLine = model.getTextArea().getCaretLine();
+            Color foreground = jEdit.getColorProperty( "view.fgColor", Color.BLACK );
+            Color highlight = jEdit.getColorProperty( "view.lineHighlightColor", Color.WHITE );
+            gfx.setColor( foreground );
             java.util.List<String> blame = model.getBlame();
             int descent = gfx.getFontMetrics().getDescent();
             for ( int i = firstLine; i <= lastLine; i++ ) {
+                if ( i == caretLine ) {
+                    gfx.setColor( highlight );
+                    gfx.fillRect( 0, ( i - firstLine ) * pixelsPerLine, size.width, pixelsPerLine );
+                    gfx.setColor( foreground );
+                }
                 if ( i >= 0 && i < blame.size() ) {
                     gfx.drawString( blame.get( i ), 3, ( ( i - firstLine + 1 ) * pixelsPerLine ) - descent );
                 }
