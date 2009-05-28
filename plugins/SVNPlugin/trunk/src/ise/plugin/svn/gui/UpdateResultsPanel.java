@@ -232,7 +232,7 @@ public class UpdateResultsPanel extends JPanel {
                             JOptionPane.showMessageDialog( view, jEdit.getProperty("ips.Please_select_one_file_at_a_time.", "Please select one file at a time."), jEdit.getProperty("ips.Error", "Error"), JOptionPane.ERROR_MESSAGE );
                             return ;
                         }
-                        String path = ( String ) table.getValueAt( 0, 0 );
+                        String path = ( String ) table.getValueAt( rows[0], 0 );
                         ResolveConflictDialog dialog = new ResolveConflictDialog( view, path );
                         dialog.setVisible( true );
                     }
