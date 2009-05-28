@@ -67,15 +67,10 @@ public class Update {
         }
 
         // convert paths to Files
-        boolean recursive = false;
         List<String> paths = data.getPaths();
         File[] localPaths = new File[ paths.size() ];
         for ( int i = 0; i < paths.size(); i++ ) {
             localPaths[ i ] = new File( paths.get( i ) );
-            // check for file existence?
-            if ( localPaths[ i ].isDirectory() ) {
-                recursive = true;
-            }
         }
 
         // use default svn config options

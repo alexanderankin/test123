@@ -35,8 +35,6 @@ import javax.swing.table.*;
 import javax.swing.event.*;
 import javax.swing.text.html.*;
 
-import org.gjt.sp.jedit.jEdit;
-
 /**
  * A JTable that lays out the rows based on the best height for the individual
  * rows.
@@ -44,8 +42,6 @@ import org.gjt.sp.jedit.jEdit;
 public class BestRowTable extends JTable {
 
     private int bestHeight = 0;
-    private static Color background = jEdit.getColorProperty( "view.bgColor", Color.WHITE );
-    private static Color selection = jEdit.getColorProperty( "view.selectionColor", Color.LIGHT_GRAY );
 
     public BestRowTable() {
         super();

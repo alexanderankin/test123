@@ -176,17 +176,6 @@ public class MkDirDialog extends JDialog {
                 }
                                     );
 
-        /// TODO: field for bug number
-        JLabel bug_label = new JLabel( jEdit.getProperty( "ips.Issue_>>", "Issue #:" ) );
-        JTextField bug_field = new JTextField( 10 );
-
-        // add the components to the option panel
-        /* TODO: make this work for bugtraq
-        panel.add( "0, 0, 1, 1, W,  , 3", bug_label );
-        panel.add( "1, 0, 1, 1, W, w, 3", bug_field );
-        panel.add( "0, 1, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
-        */
-
         panel.add( "0, 0, 6, 1, W,  , 3", path_label );
         panel.add( "0, 1, 6, 1, W, w, 3", path );
         panel.add( "0, 2, 6, 1, W,  , 3", browse_remote_btn );

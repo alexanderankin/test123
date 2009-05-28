@@ -148,7 +148,6 @@ public class PrivilegedAccessor {
         Class[] classTypes = getClassArray( args );
         Class c = instance.getClass();
         Method[] methods = c.getDeclaredMethods();
-        boolean found = false;
         while ( c != null ) {
             for ( int i = 0; i < methods.length; i++ ) {
                 Method method = methods[ i ];

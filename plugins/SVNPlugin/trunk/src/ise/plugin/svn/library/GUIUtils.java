@@ -83,7 +83,7 @@ public class GUIUtils {
    public static void fillScreen( Component frame ) {
       String version = System.getProperty( "java.version" );
       if ( version.startsWith( "1.4" ) || version.startsWith( "1.5" ) ) {
-         if ( frame instanceof Frame ) {
+         if ( frame instanceof Frame ) {        // NOPMD
             ( ( Frame ) frame ).setExtendedState( Frame.MAXIMIZED_BOTH );
             return ;
          }

@@ -82,12 +82,12 @@ public class Info {
 
         // use the svnkit client manager
         SVNClientManager clientManager;
-        if (data.pathsAreURLs()) {
+        if ( data.pathsAreURLs() ) {
             // use default svn config options
             ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
             // need to log in to remote repository for urls
-            clientManager = SVNClientManager.newInstance( options, new BasicAuthenticationManager(data.getUsername(), data.getDecryptedPassword()) );
+            clientManager = SVNClientManager.newInstance( options, new BasicAuthenticationManager( data.getUsername(), data.getDecryptedPassword() ) );
         }
         else {
             // get info from local working directory
@@ -233,6 +233,7 @@ public class Info {
     private int getLineCount( String s ) {
         int count = 1;
         BreakIterator boundary = BreakIterator.getLineInstance();
+        boundary.setText( s );
         int start = boundary.first();
         for ( int end = boundary.next(); end != BreakIterator.DONE; start = end, end = boundary.next() ) {
             ++count;
