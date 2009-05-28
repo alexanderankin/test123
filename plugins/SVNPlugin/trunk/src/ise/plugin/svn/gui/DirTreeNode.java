@@ -30,7 +30,6 @@ package ise.plugin.svn.gui;
 
 import java.util.*;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreePath;
 
 /**
  * Represents a node in a repository tree.  Overrides <code>isLeaf</code> so

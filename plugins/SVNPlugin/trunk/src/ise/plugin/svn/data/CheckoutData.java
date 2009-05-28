@@ -33,8 +33,6 @@ import java.util.*;
 
 import org.gjt.sp.jedit.MiscUtilities;
 
-import ise.plugin.svn.io.ConsolePrintStream;
-
 public class CheckoutData extends SVNData {
     private String url = "";
 

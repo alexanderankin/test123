@@ -31,7 +31,6 @@ package ise.plugin.svn.pv;
 import ise.plugin.svn.action.SwitchAction;
 import ise.plugin.svn.data.UpdateData;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import projectviewer.vpt.VPTNode;
 import java.util.*;
 
