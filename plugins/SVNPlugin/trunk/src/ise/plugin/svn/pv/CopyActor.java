@@ -28,26 +28,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.pv;
 
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
-import javax.swing.JPanel;
-import javax.swing.JOptionPane;
 import projectviewer.vpt.VPTNode;
-import ise.plugin.svn.gui.OutputPanel;
 
-import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.action.CopyAction;
 import ise.plugin.svn.data.CopyData;
-import ise.plugin.svn.data.AddResults;
 import ise.plugin.svn.library.GUIUtils;
 import ise.plugin.svn.gui.CopyDialog;
 import ise.plugin.svn.PVHelper;
 
-
-import org.tmatesoft.svn.core.wc.SVNInfo;
 
 public class CopyActor extends NodeActor {
 
