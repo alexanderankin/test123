@@ -4,8 +4,7 @@
 <!--
   - valid file
   - the dtd is referenced via a relative URI,
-    VALIDATION FAILS as the URI resolution is already done
-	and no file actions.dtd is here !
+    validation succeeds
   -->
 <ACTIONS>
    
