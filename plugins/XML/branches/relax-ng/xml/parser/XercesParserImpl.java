@@ -220,18 +220,38 @@ public class XercesParserImpl extends XmlParser
 
 		ElementDecl elementDecl = null;
 
-		if ( element.getAbstract() || element.getName().endsWith(".class")) {
+		 
+		if ( element.getAbstract()
+			/* I don't understand this condition.
+		       As far as I understand, every top level element can be
+			   head of a substitution group.
+			   An algorithm showing quadratic performance :
+			   		for each element e as argument to this method,
+					  for each element f in elements
+					    verify the substitution group of f and if e is the head, add f to parent
+			   TODO: write an example, fix the code
+		       || element.getName().endsWith(".class") */
+		   ) 
+		{
 
 			for (int j=0; j<elements.getLength(); ++j) {
 				XSElementDeclaration decl = (XSElementDeclaration)elements.item(j);
 				XSElementDeclaration group = decl.getSubstitutionGroupAffiliation();
 				if (group != null && group.getName().equals(name)) {
-					info.addElement(new ElementDecl(info, decl.getName(), null));
+					if(info.elementHash.get(decl.getName()) == null){
+						//only add it if it's undeclared or we'll get it twice in XML Insert
+						info.addElement(new ElementDecl(info, decl.getName(), null));
+					}
 					if (parent != null) parent.content.add(decl.getName());
 				}
 			}
-			System.out.println("abstract : "+name);
-			// TODO: elementDecl will be null
+			
+			/* we shouldn't care about the type of an abstract element,
+			   as it's not allowed in a document. Would it be the case,
+			   one should not forget to fix the NullPointerException on elementDecl
+			   that will arise when setting the attributes. Maybe use the type declaration
+			   for every element...*/
+			return;
 		}
 		else {
 			elementDecl = new ElementDecl(info, name, null);
@@ -396,6 +416,7 @@ public class XercesParserImpl extends XmlParser
 				XSObject attribute = attributes.item(i);
 				//indeed, it's possible (like for XMLSchema-instance),
 				//when one uses getModelForNamespace("http://www.w3.org/2001/XMLSchema-instance")
+				//or http://www.w3.org/XML/1998/namespace : see network.xml : base, lang, space
 				System.err.println("look! " + attribute.getName());
 			}
 
