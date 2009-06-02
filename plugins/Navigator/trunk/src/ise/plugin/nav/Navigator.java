@@ -269,14 +269,14 @@ public class Navigator implements ActionListener
                 catch (Exception e) {
                 	Log.log (Log.WARNING, this, "Unable to set caret position", e);
                 }
-                
+
                 ignoreUpdates = false;
                 return;
             }
         }
 
         // buffer isn't open
-        Buffer buffer = jEdit.openFile(editPane, path);
+        Buffer buffer = jEdit.openFile(editPane.getView(), path);
 
         // Now we can listen to events again
         ignoreUpdates = false;
@@ -366,7 +366,7 @@ public class Navigator implements ActionListener
         }
     	return items;
     }
-    
+
     synchronized public void forwardList()
     {
         if (current > history.size() - 2)
