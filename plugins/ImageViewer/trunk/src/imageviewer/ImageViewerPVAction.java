@@ -40,7 +40,7 @@ import org.gjt.sp.jedit.jEdit;
  */
 public class ImageViewerPVAction extends projectviewer.action.Action {
 
-    private JMenuItem menuItem = new JMenuItem( jEdit.getProperty( "imageviewr.showimage", "View Image" ) );
+    private JMenuItem menuItem = new JMenuItem( jEdit.getProperty( "imageviewer.showimage", "View Image" ) );
 
 
     public String getText() {
