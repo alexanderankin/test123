@@ -1,0 +1,44 @@
+<html>
+<body>
+<h1>ImageViewer Plugin</h1>
+<b>
+Author: Dale Anson
+</b>
+<br>
+<br>
+<h2>Introduction</h2>
+A simple image viewer.  This image viewer lets you view images from ProjectViewer
+or from the File System Browser in a dockable window.  Zoom in and zoom out
+are the only features.  There are no editing capabilities.
+<p>
+At this time, only .gif, .jpg, and .png files are supported as these are
+the file types supported internally by Java.
+<p>
+<h2>Usage</h2>
+To use, right click on an image file in ProjectViewer and select the
+"View Image" item.
+<p>
+In the File System Browser, click on Plugins, Image Viewer, View Image.
+<p>
+In the ImageViewer itself, there are three controls:
+<ul>
+<li>Clear - clear the ImageViewer display.</li>
+<li>Zoom in - zoom in on the image for a closer look</li>
+<li>Zoom out - zoom out on the image</li>
+</ul>
+<p>
+<b><i>A word of caution:</i></b> Zooming in is unrestricted by the plugin, but
+is likely restricted by your physical RAM.  It is quite easy to open a large
+size image and zoom in until you are out of memory.
+<h2>Options</h2>
+There are two options available on the plugin options:
+<ul>
+<li>Show images on mouse over in File System Browser</li>
+<li>Show images on mouse over in ProjectViewer</li>
+</ul>
+
+If these options are checked, then simply moving your mouse over an image
+file in either the File System Browser or ProjectViewer will display the
+image in ImageViewer.
+</body>
+</html>
