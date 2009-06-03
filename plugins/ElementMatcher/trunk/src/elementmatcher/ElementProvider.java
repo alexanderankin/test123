@@ -7,6 +7,10 @@ import java.awt.Color;
 
 public interface ElementProvider<T> {
 
+    public static String ENABLED_PROPERTY = "enabled";
+    public static String COLOR_PROPERTY = "color";
+    public static String UNDERLINE_PROPERTY = "underline";
+
     public Iterator<Element<T>> getElements(int line, Segment segment);
 
     public Iterator<Action> getActions(T data);
@@ -26,5 +30,7 @@ public interface ElementProvider<T> {
     public void setUnderline(boolean underline);
 
     public String getName();
+
+    public String getOptionsPrefix();
 
 }
