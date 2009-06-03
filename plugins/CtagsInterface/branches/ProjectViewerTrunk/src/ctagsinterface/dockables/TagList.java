@@ -41,7 +41,7 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 	View view;
 	JList tags;
 	DefaultListModel tagModel;
-	JMenuBar menu;
+	JMenuBar menu = null;
 	Vector<Tag> allTags;
 	static String [] extensionOrder = new String [] {
 		"class", "struct", "access" 
@@ -80,9 +80,13 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 
 	public void setTags(Vector<Tag> tags) {
 		// Reset the tag filter menu
-		menu = new JMenuBar();
-		add(menu, BorderLayout.NORTH);
-		validate();
+		if (menu == null)
+		{
+			menu = new JMenuBar();
+			add(menu, BorderLayout.NORTH);
+		}
+		else
+			menu.removeAll();
 		// Update the tags and the filter menu
 		allTags = tags;
 		tagModel.removeAllElements();
@@ -140,6 +144,8 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 				});
 			}
 		}
+		menu.validate();
+		repaint();
 	}
 
 	public void focusOnDefaultComponent() {
