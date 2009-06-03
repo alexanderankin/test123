@@ -119,6 +119,7 @@ jedit.svn.url=https://jedit.svn.sourceforge.net/svnroot/jedit
 		<attribute name="pluginTag" />
 		<attribute name="pluginDownloadDir" default="${sandbox.dir}/@{pluginName}-@{pluginVersion}/@{pluginName}" />
 		<sequential>
+			<mkdir dir="${sandbox.dir}/@{pluginName}-@{pluginVersion}" />
 			<ant antfile="${scm.targets.file}" target="checkout-plugin">
 				<property name="plugin.name" value="@{pluginName}" />
 				<property name="plugin.version" value="@{pluginVersion}" />
