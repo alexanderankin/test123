@@ -24,8 +24,8 @@
                 <filename name="services.xml" />
                 <filename name="*.props" />
                 <filename name="gatchan/**/*.png" />
-	    <filename name="docs/*.html" />
-	    </or>
+	            <filename name="docs/*.html" />
+	        </or>
         </and>
     </selector>
 </project>
