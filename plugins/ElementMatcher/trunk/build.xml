@@ -5,14 +5,14 @@
 
     <path id="project.class.path">
         <filelist>
-            <file name="D:\Java\lib\collections-generic-4.01\collections-generic-4.01.jar"/>
-            <file name="C:\Program Files\jEdit\jars\kappalayout.jar"/>
+            <file name="lib/collections-generic-4.01.jar"/>
+            <file name="${install.dir}/kappalayout.jar"/>
         </filelist>
     </path>
 
     <target name="build.post">
         <copy todir="${jedit.jars.dir}">
-            <fileset file="D:\Java\lib\collections-generic-4.01\collections-generic-4.01.jar"/>
+            <fileset file="lib/collections-generic-4.01.jar"/>
         </copy>
     </target>
 
