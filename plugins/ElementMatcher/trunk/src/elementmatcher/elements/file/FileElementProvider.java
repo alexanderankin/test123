@@ -14,6 +14,7 @@ import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
@@ -22,15 +23,21 @@ import java.util.regex.Pattern;
 public class FileElementProvider extends AbstractRegexElementProvider<File> {
 
     private static final Pattern PATTERN = Pattern.compile(
-            "(\\b[a-zA-Z]:([\\\\/][^\\\\/:\\*\\?<>\\n\\r\"]+)+(\\.[a-zA-Z0-9_]+)\\b)"
+            "(\\b[a-zA-Z]:([\\\\/][^\\\\/:\\*\\?<>\\n\\r\"]+)+\\b)"
             + "|"
-            + "(\\b[a-zA-Z]:([\\\\/][^\\\\/:\\*\\?<>\\n\\r\"]+)+\\b)");
+            + "(\\b[a-zA-Z]:([\\\\/][^\\\\/:\\*\\?<>\\n\\r\"]+)+(\\.[a-zA-Z0-9_]+)\\b)");
+    private static final char[] SEPARATOR_CHARS = ".,\\/![](){}\"~=;:@#$%^&`".toCharArray();
+
     private final OpenInJEditAction openInJEditAction = new OpenInJEditAction();
     private final OpenAction openAction = new OpenAction();
     private final OpenFolderAction openFolderAction = new OpenFolderAction();
     private final Action[] actions = new Action[] { openInJEditAction, openAction, openFolderAction };
     private final ResettableIterator<Action> actionIteratorInternal = new ObjectArrayIterator<Action>(actions);
     private final FilterIterator<Action> actionIterator = new FilterIterator<Action>(null, new EnabledActionPredicate());
+
+    static {
+        Arrays.sort(SEPARATOR_CHARS);
+    }
 
     public FileElementProvider() {
         super("FileElementProvider");
@@ -46,14 +53,24 @@ public class FileElementProvider extends AbstractRegexElementProvider<File> {
 
     @Override
     protected Element<File> getElementInternal(int line, Matcher match) {
-        File file = new File(match.group());
-        while (file != null && !file.exists()) {
-            file = file.getParentFile();
+        String path = match.group();
+        while (!path.isEmpty()) {
+            File file = new File(path);
+            if (file.exists()) {
+                return new Element<File>(this, line, match.start(), match.start() + path.length(), file);
+            }
+            // drop the last portion of path
+            int lastIndex = path.length() - 2;
+            while (lastIndex >= 0 && !isBadPathLetter(path.charAt(lastIndex))) {
+                --lastIndex;
+            }
+            path = path.substring(0, lastIndex);
         }
-        if (file == null) {
-            return null;
-        }
-        return new Element<File>(this, line, match.start(), match.start() + file.getAbsolutePath().length(), file);
+        return null;
+    }
+
+    private boolean isBadPathLetter(char c) {
+        return Arrays.binarySearch(SEPARATOR_CHARS, c) >= 0;
     }
 
     public Iterator<Action> getActions(File data) {

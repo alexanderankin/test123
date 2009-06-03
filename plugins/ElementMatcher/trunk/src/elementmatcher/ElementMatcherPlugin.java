@@ -28,10 +28,18 @@ import java.util.Map;
 // TODO: files in current directory recognizer???
 // TODO: recognize relative pathnames
 // TODO: recognize unix pathnames
+// TODO: provide auto-completion of pathnames after TAB (customized: enabled, key)
+// TODO: recognize file:/+<path>, with %xx notion (e. g. %20 for space)
+// BUG: in the following line only half of files matches  
+// 16:22:42 [main] [message] Log: java.class.path=C:\Program Files\Java\jdk1.6.0_14\jre\lib\alt-rt.jar;C:\Program Files\Java\jdk1.6.0_14\jre\lib\charsets.jar;C:\Program Files\Java\jdk1.6.0_14\jre\lib\deploy.jar;C:\Program Files\Java\jdk1.6.0_14\jre\lib\javaws.jar;C:\Program Files\Java\jdk1.6.0_14\jre\lib\jce.jar;C:\Program Files\Java\jdk1.6.0_14\jre\lib\jsse.jar;C:\Program Files\Java\jdk1.6.0_14\jre\lib\management-agent.jar;C:\Program Files\Java\jdk1.6.0_14\jre\lib\plugin.jar;C:\Program Files\Java\jdk1.6.0_14\jre\lib\resources.jar;C:\Program Files\Java\jdk1.6.0_14\jre\lib\rt.jar;C:\Program Files\Java\jdk1.6.0_14\jre\lib\ext\dnsns.jar;C:\Program Files\Java\jdk1.6.0_14\jre\lib\ext\localedata.jar;C:\Program Files\Java\jdk1.6.0_14\jre\lib\ext\sunjce_provider.jar;C:\Program Files\Java\jdk1.6.0_14\jre\lib\ext\sunmscapi.jar;C:\Program Files\Java\jdk1.6.0_14\jre\lib\ext\sunpkcs11.jar;D:\Java\JEditCustomization\out\production\ElementMatcher;C:\Program Files\jEdit\jedit.jar;D:\Java\lib\collections-generic-4.01\collections-generic-4.01.jar;D:\Soft\Idea9\lib\junit-4.5.jar;C:\Program Files\jEdit\jars\kappalayout.jar;D:\Soft\Idea9\lib\idea_rt.jar
+
 
 // --- RFCElementProvider
 // TODO: RFCElementProvider: cache rfc's and show rfc title in tooltip
 // TODO: RFCElementProvider: add action: open in browser tools.ietf.org/....
+
+// --- DateElementProvider
+// TODO: recognize dates like MS Word's Smart Tags (and show, like 25 June 2009, next Monday)
 public class ElementMatcherPlugin extends EBPlugin {
 
     public static final String NAME = ElementMatcherPlugin.class.getName();
