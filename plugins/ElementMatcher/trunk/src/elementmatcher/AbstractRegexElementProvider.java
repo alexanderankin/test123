@@ -50,23 +50,28 @@ public abstract class AbstractRegexElementProvider<T> extends AbstractElementPro
         private int line;
         private Matcher matcher;
         private Element<T> next;
+        private int position;
 
         private void reset(int line, Matcher matcher) {
             this.line = line;
             this.matcher = matcher;
             next = null;
+            position = 0;
         }
 
         public boolean hasNext() {
             if (next != null) {
                 return true;
             }
-            if (!matcher.find()) {
+            if (!matcher.find(position)) {
                 return false;
             }
             next = getElementInternal(line, matcher);
             if (next != null) {
+                position = next.lineOffset1;
                 return true;
+            } else {
+                position = matcher.end();
             }
             return hasNext();
         }

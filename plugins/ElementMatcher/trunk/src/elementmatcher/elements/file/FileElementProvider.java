@@ -26,7 +26,7 @@ public class FileElementProvider extends AbstractRegexElementProvider<File> {
             "(\\b[a-zA-Z]:([\\\\/][^\\\\/:\\*\\?<>\\n\\r\"]+)+\\b)"
             + "|"
             + "(\\b[a-zA-Z]:([\\\\/][^\\\\/:\\*\\?<>\\n\\r\"]+)+(\\.[a-zA-Z0-9_]+)\\b)");
-    private static final char[] SEPARATOR_CHARS = ".,\\/![](){}\"~=;:@#$%^&`".toCharArray();
+    private static final char[] SEPARATOR_CHARS = ".,\\/![](){}\"~=;:@#$%^&` ".toCharArray();
 
     private final OpenInJEditAction openInJEditAction = new OpenInJEditAction();
     private final OpenAction openAction = new OpenAction();

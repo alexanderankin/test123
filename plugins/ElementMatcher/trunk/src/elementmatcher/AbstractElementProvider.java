@@ -6,10 +6,6 @@ import java.text.MessageFormat;
 
 public abstract class AbstractElementProvider<T> implements ElementProvider<T> {
 
-    public static final String ENABLED_PROPERTY = "enabled";
-    public static final String COLOR_PROPERTY = "color";
-    public static final String UNDERLINE_PROPERTY = "underline";
-
     private final String name;
     private boolean enabled;
     private Color color;
@@ -17,12 +13,9 @@ public abstract class AbstractElementProvider<T> implements ElementProvider<T> {
 
     protected AbstractElementProvider(String name) {
         this.name = name;
-        enabled = jEdit.getBooleanProperty(getOptionsPrefix() + ENABLED_PROPERTY, true);
-        color = jEdit.getColorProperty(getOptionsPrefix() + COLOR_PROPERTY, Color.BLUE);
-        underline = jEdit.getBooleanProperty(getOptionsPrefix() + UNDERLINE_PROPERTY, true);
     }
 
-    protected String getOptionsPrefix() {
+    public String getOptionsPrefix() {
         return MessageFormat.format("{0}providers.{1}.", ElementMatcherPlugin.OPTION_PREFIX, name);
     }
 
@@ -36,7 +29,7 @@ public abstract class AbstractElementProvider<T> implements ElementProvider<T> {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-        jEdit.setBooleanProperty(getOptionsPrefix() + ENABLED_PROPERTY, true);
+        jEdit.setBooleanProperty(getOptionsPrefix() + ENABLED_PROPERTY, enabled);
     }
 
     public Color getColor() {
