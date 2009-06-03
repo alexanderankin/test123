@@ -15,11 +15,12 @@ import java.util.Iterator;
 import java.util.regex.Pattern;
 import java.util.regex.MatchResult;
 
+// TODO: remove = from email addresses
 public class URLElementProvider extends AbstractRegexElementProvider<URI> {
 
     private final Pattern regex = Pattern.compile(
             // generic URL
-            "(\\b(https?|ftp|gopher|telnet|file|mailto):(///?)[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]+\\b/?)" +
+            "(\\b(https?|ftp|gopher|telnet|file|mailto):(///?)[\\w\\d:#@%/;\\$\\(\\)~_\\?\\+\\-=\\\\\\.&]+\\b/?)" +
             "|" +
             // email address
             "(\\b[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)+(?:[a-zA-Z]{2}|com|org|net|gov|mil|biz|info|mobi|name|aero|jobs|museum)\\b)");
