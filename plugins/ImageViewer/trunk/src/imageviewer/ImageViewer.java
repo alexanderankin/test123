@@ -152,6 +152,10 @@ public class ImageViewer extends JPanel {
      */
     public void showImage( String filename ) {
         if ( isValidFilename( filename ) ) {
+            if (filename.equals(filenameLabel.getText())) {
+                // already showing this image
+                return;
+            }
             filenameLabel.setText( filename );
             ImageIcon icon = new ImageIcon( filename );
             image = icon.getImage();
