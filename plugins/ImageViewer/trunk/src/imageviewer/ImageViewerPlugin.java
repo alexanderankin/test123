@@ -205,6 +205,9 @@ public class ImageViewerPlugin extends EBPlugin {
             if ( major >= 3 || ( major >= 2 && minor >= 9 ) ) {
                 // have current svn version of PV
                 ProjectViewer pv = ProjectViewer.getViewer( view );
+                if ( pv == null ) {
+                    return ;
+                }
                 try {
                     Object treePanel = PrivilegedAccessor.invokeMethod( pv, "getTreePanel", null );
                     java.util.List treeList = ( java.util.List ) PrivilegedAccessor.getValue( treePanel, "trees" );
