@@ -18,40 +18,45 @@
     <li>
      Alan Ezust
     </li>
+    <li>
+     Shlomy Reinstein
+    </li>
    </ul>
    <p>
    Version: @@build.num@@</p>
    <p>Build Date: @@tstamp@@ </p>
   </div>
   <p>
-  <b>Introduction:</b>
-  </p>
-  <p>The Navigator Plugin provides a set of "Back" and "Forward" actions similar to a web browser. This is surprisingly
-  handy. </p>
+  <h3>Introduction:</h3>
   <p>
-  <b>Configuration:</b>
-  </p>
+  The Navigator Plugin provides a set of "Back" and "Forward" actions similar to a web browser. This is surprisingly
+  handy.
+  <p>
+
+  <h3>Configuration:</h3>
+
   <p>
   The Navigator works in a "visible" or an "invisible" way. I find it is handy to use shortcut keys for the actions
-  "back" and "forward". </p>
-  <p><b>Tip: </b>Bind the actions to Alt+RIGHT and Alt+LEFT and get used to them, because those shortcuts work in
-  IE/Firefox/Konqueror too. </p>
+  "back" and "forward".
   <p>
-  The Navigator buttons can become visible in many ways: </p>
+  <b>Tip: </b>Bind the actions to Alt+RIGHT and Alt+LEFT and get used to them, because those shortcuts work in
+  IE/Firefox/Konqueror too.
+  <p>
+  The Navigator buttons can become visible in many ways:
   <ol>
+   <li>
+    Go to Plugins - Plugin Options - Navigator and check "Show Navigator on toolbar".  This was broke for about 7 years,
+    is finally fixed in the 2.0 release and is probably the best choice if you generally use the jEdit tool bar.
+   </li>
    <li>
     Go to Global Options - ToolBar, add a button to the toolbar. Select the drop-down menu that lists all of the
     installed plugins, 	choose "Navigator" and you should see a list of Navigator's actions. 	Add "Back" and "Forward"
-    actions to your toolbar, and move them to the desired location.
+    actions to your toolbar, and move them to the desired location. This is not the best choice since the buttons won't
+    gray out when the history is empty.
    </li>
    <li>
     Go to Global Options - Docking and add a dockable for the Navigator to	one of the docking areas. These buttons will
     grey out if the corresponding stacks are empty.
-   </li>
-   <li>
-    The option in "Navigator Options" for adding buttons to the jEdit toolbar works, but you can't remove them again
-    without restarting jEdit. Since the plugin works fine without visible buttons, I don't care very much.	If you want
-    to fix it, be my guest :-)
    </li>
   </ol>
   <p>
@@ -59,8 +64,76 @@
   choose either "Back List" or "Forward List", then you can pick a specific location from the list popup.  You can also
   assign a shortcut to these lists (Alt-1 and Alt-2, perhaps) by going to the main menu, Utilities, Global Options,
   Shortcuts, choose Plugin: Navigator, and set the shortcut keys.
+
+  <h3>How Navigator works</h3>
+
+  Navigator tracks mouse clicks.  Each time you click into a text area in jEdit, the location of the caret in that
+  text area is recorded in the Navigator history.  Going back moves the caret to the previous position.  If that
+  previous position happened to be in a different file, then that file will be opened.
+  <p>
+  Navigator remembers edit panes, too.  So if you have a split pane, and are scrolling and clicking back and forth
+  between the panes, going back (or forward) will also set focus on the appropriate edit pane, even if you have the
+  same file open in both panes.  This works for as many splits as you have.
+  <p>
+  If you close an edit pane, the history for those files is not lost.  Quite often, you'll have just one edit pane
+  in your View (jEdit window), you'll split the view to compare a file or to see different parts of the same file,
+  then you'll close the view.  The history will be retained for any mouse clicks made during the split.  The splits
+  won't be restored as you go back or forward, though.
+  <p>
+  Each View (jEdit window) has its own Navigator and history.  This means that if you regularly work with two Views
+  open, going back in one View will not take you the other View, rather, the caret will move to the previous location
+  in the current view.  If you close a View, the history for that View is lost.
+  <p>
+  History is not persisted between jEdit sessions, so if you close jEdit, the history is lost.
+  <p>
+
   <h3>Changelog </h3>
+
   <ul>
+   <li>
+    <b>Version 2.0, all from Dale</b>
+    <ul>
+      <li>
+      Navigator mapped to Views again, so each View (jEdit window) has its own Navigator.  EditPanes are tracked also,
+      so if you have the same file open in a split pane, Navigator will correctly go back and forth appropriately.  This
+      is a better fix for bug 2493691.
+      </li>
+      <li>
+      Added "Clear" action to plugin menu so the history can be cleared.
+      </li>
+      <li>
+      Lots of code clean up, removed unused methods, restructured history model.
+      </li>
+      <li>
+      Fixed the "add to toolbar" option so it is no longer buggy.  It's still a hack, but it's a clean hack.
+      </li>
+      <li>
+      Modified the history popups to also show the actual text of the line.  This can make it easier to jump
+      to the right line since there is now a little bit of context displayed with the location.
+      </li>
+      <li>
+      Add text field to option panel so user can set the maximum size of the history.
+      </li>
+    </ul>
+   </li>
+
+   <li>
+   <b>Version 1.7, all from Shlomy</b>
+   <ul>
+    <li>Fixed bug #2493691: Navigator move to the wrong offset. When jumping
+    to a history location which is open in jEdit in another edit pane, that
+    edit pane could be made current in the view, but the caret location was set
+    in the originator edit pane (where the navigator jump command was issued).</li>
+    <li>Added an option to group history items by file - i.e. several history
+    positions in the same file will show up in the pop up as a single item - of
+    the first position in that file.</li>
+    <li>Made some cleanup, got rid of compilation warnings of unused
+    variables.</li>
+    <li>Made the history model a bit simpler, avoiding the redundant
+    "terminating null" in the history vector.</li>
+   </ul>
+   </li>
+
 
   <li>
     <b>Version 1.6 </b>
@@ -89,14 +162,16 @@
      </li>
     </ul>
    </li>
+
    <li>
     <b>Version 1.4 </b>
     <ul>
      <li>
-      New popup history actions: <b>back list</b>and <b>forward list</b>, for non-sequential history jumps. (shlomy reinstein)
+      New popup history actions: <b>back list</b> and <b>forward list</b>, for non-sequential history jumps. (shlomy reinstein)
      </li>
     </ul>
    </li>
+
    <li>
     <b>Version 1.2 </b>
     <ul>
@@ -106,8 +181,9 @@
      </li>
     </ul>
    </li>
+
    <li>
-    <b>Version 1.1</b>(alan ezust)
+    <b>Version 1.1</b> (alan ezust)
     <ul>
      <li>
       Listens to new (4.3pre3) EBMessage event: <tt>EditPaneUpdate.BUFFER_CHANGING</tt>.
@@ -117,6 +193,19 @@
      </li>
     </ul>
    </li>
+
+   <li>
+    <b>Version 1.0</b> (Dale Anson)
+    <ul>
+     <li>
+      Initial release.
+     </li>
+     <li>
+      Bugfixes
+     </li>
+    </ul>
+   </li>
+
   </ul>
  </body>
 </html>

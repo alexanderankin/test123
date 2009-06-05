@@ -1,19 +1,46 @@
+/*
+Copyright (c) 2002, Dale Anson
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+this list of conditions and the following disclaimer.
+* Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.
+* Neither the name of the author nor the names of its contributors
+may be used to endorse or promote products derived from this software without
+specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
 package ise.plugin.nav;
 
-import ise.plugin.nav.NavHistoryPopup.NavPositionItem;
-
 import java.awt.event.*;
-import java.util.Vector;
+import java.util.*;
 
 import javax.swing.*;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.PositionChanging;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.util.Log;
+import org.gjt.sp.jedit.textarea.TextAreaPainter;
 
 /**
  * NavigatorPlugin for keeping track of where we were.
@@ -23,12 +50,7 @@ import org.gjt.sp.util.Log;
  *
  * @version $Id$
  */
-public class Navigator implements ActionListener
-{
-    @SuppressWarnings("serial")
-    private class DontBother extends Exception
-    {
-    }
+public class Navigator implements ActionListener {
 
     /** Action command to go to the previous item. */
     public final static String BACK = "back";
@@ -48,18 +70,31 @@ public class Navigator implements ActionListener
     /** Action command to indicate that it is not okay to go forward. */
     public final static String CANNOT_GO_FORWARD = "cannotGoForward";
 
-    private Vector<NavPosition> history;
-    private int current;
+    // History is stored in 3 separate containers.  backHistory contains those
+    // positions reachable by the back button, forwardHistory contains those
+    // positions reachable by the forward button, and current contains the
+    // current position.  As the user moves back, the current position is pushed
+    // onto the forward stack, current becomes the position popped off of the
+    // back stack, and vice versa for when the user is moving forward through
+    // the history.  The actual Stack implementation is a NavStack, which
+    // respects the maxStackSize setting.
+    private Stack<NavPosition> backHistory;
+    private NavPosition current = null;
+    private Stack<NavPosition> forwardHistory;
+
+    // max size for history
+    private int maxStackSize = jEdit.getIntegerProperty( "navigator.maxStackSize", 512 );
+
+    // forward and back button models
     private DefaultButtonModel backButtonModel;
     private DefaultButtonModel forwardButtonModel;
-    private int maxStackSize = 512;
-    private EditPane editPane;
-    private boolean ignoreUpdates;
 
-    public Navigator(EditPane pane)
-    {
-        this(pane, "");
-    }
+    // the edit pane we're following
+    private View view;
+
+    // flag -- set to true to not addToHistory the nav position while switching to
+    // another view or edit pane
+    private boolean ignoreUpdates;
 
     /**
      * Constructor for Navigator
@@ -67,76 +102,102 @@ public class Navigator implements ActionListener
      * @param vw
      * @param position
      */
-    public Navigator(EditPane pane, String position)
-    {
-        this.editPane= pane;
+    public Navigator( View view ) {
+        this.view = view;
 
         backButtonModel = new DefaultButtonModel();
         forwardButtonModel = new DefaultButtonModel();
         ignoreUpdates = false;
 
-        backButtonModel.setActionCommand(Navigator.BACK);
-        forwardButtonModel.setActionCommand(Navigator.FORWARD);
-        backButtonModel.addActionListener(this);
-        forwardButtonModel.addActionListener(this);
+        backButtonModel.setActionCommand( Navigator.BACK );
+        forwardButtonModel.setActionCommand( Navigator.FORWARD );
+        backButtonModel.addActionListener( this );
+        forwardButtonModel.addActionListener( this );
 
-        // set up the history stacks
-        history = new Vector<NavPosition>();
-        clearStacks();
-        update();
+        SwingUtilities.invokeLater(
+            new Runnable() {
+                public void run() {
+                    // set up the history stacks
+                    backHistory = new NavStack<NavPosition>();
+                    forwardHistory = new NavStack<NavPosition>();
+                    clearHistory();
+                    current = currentPosition();
 
-        /*
-         * add a mouse listener to the view. Each mouse click on a text
-         * area in the view is stored
-         */
-
-        pane.getTextArea().getPainter().addMouseListener(new MouseAdapter()
-        {
-            public void mouseClicked(MouseEvent ce)
-            {
-                update();
+                    // add a mouse listener to each text area in the view. Each mouse click
+                    // on a text area is stored
+                    for ( EditPane editPane : Navigator.this.view.getEditPanes() ) {
+                        addMouseListenerTo( editPane );
+                    }
+                }
             }
-        });
-
+        );
     }
 
-    public ButtonModel getBackModel()
-    {
+    /**
+     * Adds a mouse listener to the text area of the given EditPane.  Each mouse
+     * click in the text area is recorded in the Navigator history.
+     */
+    public void addMouseListenerTo( EditPane editPane ) {
+        TextAreaPainter painter = editPane.getTextArea().getPainter();
+        MouseListener listeners[] = painter.getMouseListeners();
+        for ( MouseListener listener : listeners ) {
+            if ( listener instanceof NavMouseListener ) {
+                painter.removeMouseListener( listener );
+            }
+        }
+        painter.addMouseListener( new NavMouseListener() );
+    }
+
+    // special class just so I can find these and remove them from a text area
+    class NavMouseListener extends MouseAdapter {
+        public void mouseClicked( MouseEvent me ) {
+            addToHistory();
+        }
+    }
+
+    /**
+     * @return model for the back button
+     */
+    public ButtonModel getBackModel() {
         return backButtonModel;
     }
 
-    NavPosition currentPosition() throws DontBother
-    {
-        Buffer b = editPane.getBuffer();
-        JEditTextArea ta = editPane.getTextArea();
-        if (ta == null)
-            throw new DontBother();
-        int cp = ta.getCaretPosition();
-        if ((cp == 0) && b.getName().startsWith("Untitled"))
-            throw new DontBother();
-        NavPosition retval = new NavPosition(b, cp);
-        return retval;
-    }
-
-    public void update()
-    {
-
-        if (ignoreUpdates)
-        {
-            return;
-        }
-        try
-        {
-            update(currentPosition());
-        }
-        catch (DontBother db)
-        {
-        }
-    }
-
-    public ButtonModel getForwardModel()
-    {
+    /**
+     * @return model for the forward button
+     */
+    public ButtonModel getForwardModel() {
         return forwardButtonModel;
+    }
+
+    /**
+     * Calculate the current position and create a NavPosition.
+     */
+    private NavPosition currentPosition() {
+        JEditTextArea textarea = view.getEditPane().getTextArea();
+        if ( textarea == null ) {
+            // beats me how this is possible, but just in case
+            return null;
+        }
+
+        Buffer buffer = view.getBuffer();
+        if ( ( buffer.getLength() == 0 ) && buffer.getName().startsWith( "Untitled" ) ) {
+            // skip empty, untitled buffers
+            return null;
+        }
+
+        int caretPosition = textarea.getCaretPosition();
+        String linetext = textarea.getLineText( textarea.getCaretLine() );
+        return new NavPosition( view.getEditPane(), buffer, caretPosition, linetext );
+    }
+
+    /**
+     * Updates to current position unless ignoreUpdates is set.
+     */
+    public void addToHistory() {
+        if ( ignoreUpdates ) {
+            return ;
+        }
+        addToHistory( currentPosition() );
     }
 
     /**
@@ -146,15 +207,17 @@ public class Navigator implements ActionListener
      * @param node
      *                an instance of NavPosition.
      */
-    private void update(NavPosition node)
-    {
-        if (current == -1 || ! node.toString().equals(history.get(current).toString()))
-        {
-            current++;
-            history.setSize(current + 1);
-            history.set(current, node);
+    private void addToHistory( NavPosition node ) {
+        if ( node == null ) {
+            return ;
         }
-        setButtonState();
+        // don't add same node twice in a row
+        if ( backHistory.empty() || !current.equals( node ) ) {
+            backHistory.push( current );
+            current = node;
+            forwardHistory.clear();
+            setButtonState();
+        }
     }
 
     /**
@@ -165,31 +228,24 @@ public class Navigator implements ActionListener
      * @param ae
      *                the action event to kick a response.
      */
-    public void actionPerformed(ActionEvent ae)
-    {
-        if (ae.getActionCommand().equals(BACK))
-        {
+    public void actionPerformed( ActionEvent ae ) {
+        if ( ae.getActionCommand().equals( BACK ) ) {
             goBack();
         }
-        else if (ae.getActionCommand().equals(FORWARD))
-        {
+        else if ( ae.getActionCommand().equals( FORWARD ) ) {
             goForward();
         }
-        else if (ae.getActionCommand().equals(CAN_GO_BACK))
-        {
-            backButtonModel.setEnabled(true);
+        else if ( ae.getActionCommand().equals( CAN_GO_BACK ) ) {
+            backButtonModel.setEnabled( true );
         }
-        else if (ae.getActionCommand().equals(CANNOT_GO_BACK))
-        {
-            backButtonModel.setEnabled(false);
+        else if ( ae.getActionCommand().equals( CANNOT_GO_BACK ) ) {
+            backButtonModel.setEnabled( false );
         }
-        else if (ae.getActionCommand().equals(CAN_GO_FORWARD))
-        {
-            forwardButtonModel.setEnabled(true);
+        else if ( ae.getActionCommand().equals( CAN_GO_FORWARD ) ) {
+            forwardButtonModel.setEnabled( true );
         }
-        else if (ae.getActionCommand().equals(CANNOT_GO_FORWARD))
-        {
-            forwardButtonModel.setEnabled(false);
+        else if ( ae.getActionCommand().equals( CANNOT_GO_FORWARD ) ) {
+            forwardButtonModel.setEnabled( false );
         }
     }
 
@@ -199,34 +255,82 @@ public class Navigator implements ActionListener
      * @param node
      *                an invalid node
      */
-    public void remove(Object node)
-    {
-        if (history.remove(node))
-            current--;
+    public void remove( Object node ) {
+        backHistory.remove( node );
+        forwardHistory.remove( node );
     }
 
-    public void setMaxHistorySize(int size)
-    {
-        maxStackSize = size;
+    /**
+     * Set the maximum size of the back and forward history stacks.  Both
+     * stacks will be the same size.  The default is 512, which means a total of
+     * 1025 positions can be remembered (512 in back history, 512 in forward
+     * history, and 1 in current).
+     * @param size the new size, must be greater than 0.
+     */
+    public void setMaxHistorySize( int size ) {
+        if ( size > 0 ) {
+            maxStackSize = size;
+        }
     }
 
-    public int getMaxHistorySize()
-    {
+    /**
+     * @return the maximum size of the back and forward history stacks.
+     * Default is 512 entries.
+     */
+    public int getMaxHistorySize() {
         return maxStackSize;
     }
 
-    public void clearStacks()
-    {
-        history.clear();
-        current = -1;
+    /**
+     * Clears both the back and forward histories.
+     */
+    public void clearHistory() {
+        backHistory.clear();
+        current = null;
+        forwardHistory.clear();
         setButtonState();
     }
 
     /** Sets the state of the navigation buttons. */
-    private void setButtonState()
-    {
-        backButtonModel.setEnabled(current > 0);
-        forwardButtonModel.setEnabled(current < history.size() - 1);
+    private void setButtonState() {
+        backButtonModel.setEnabled( backHistory.size() > 0 );
+        forwardButtonModel.setEnabled( forwardHistory.size() > 0 );
+    }
+
+    /**
+     * @return the EditPane containing the buffer from the position in the
+     * given View.  If the EditPane is not found (e.g. it was closed), searches
+     * through all EditPanes in the view for the buffer, returning the EditPane
+     * containing the buffer if one is found.  If not, returns the current
+     * EditPane for the View.
+     */
+    private EditPane findEditPane( NavPosition position ) {
+        for ( EditPane editPane : view.getEditPanes() ) {
+            if ( editPane.equals( position.editPane ) ) {
+                // this is the preferred edit pane
+                return editPane;
+            }
+        }
+
+        // didn't find the preferred edit pane, probably because it was closed,
+        // so search all edit panes
+        for ( EditPane editPane : view.getEditPanes() ) {
+            Buffer[] buffers = editPane.getBufferSet().getAllBuffers();
+            for ( Buffer buffer : buffers ) {
+                if ( position.path.equals( buffer.getPath() ) ) {
+                    // found an edit pane containing the buffer.  Set the
+                    // preferred edit pane to the one where we found it.
+                    position.editPane = editPane;
+                    return editPane;
+                }
+            }
+        }
+
+        // didn't find any edit pane that contains the buffer, so just
+        // return the current EditPane
+        EditPane editPane = view.getEditPane();
+        position.editPane = editPane;
+        return editPane;
     }
 
     /**
@@ -235,167 +339,160 @@ public class Navigator implements ActionListener
      * @param o
      *                The new NavPosition value
      */
-    public void setPosition(NavPosition np)
-    {
-        String path = np.path;
-        int caret = np.caret;
-
-        if (path.equals(editPane.getBuffer().getPath())) try
-        {
-            // nav in current buffer, just set cursor position
-            editPane.getTextArea().setCaretPosition(caret, true);
-            return;
-        }
-        catch (Exception e) {
-        	Log.log(Log.WARNING, this, "Unable to set caret position", e);
+    public synchronized void setPosition( NavPosition position ) {
+        if ( position == null ) {
+            return ;
         }
 
-        // Stop listening to EditBus events while we are changing
-        // buffers
+        // stop listening to EditBus events while we are changing buffers
         ignoreUpdates = true;
 
-        // check if buffer is open
-        Buffer[] buffers = jEdit.getBuffers();
-        for (int i = 0; i < buffers.length; i++)
-        {
-            if (buffers[i].getPath().equals(path))
-            {
-                // found it
-            	editPane.setBuffer(buffers[i]);
-                EditBus.send(new PositionChanging(editPane));
-                try {
-                	editPane.getTextArea().setCaretPosition(caret, true);
-                }
-                catch (Exception e) {
-                	Log.log (Log.WARNING, this, "Unable to set caret position", e);
-                }
 
-                ignoreUpdates = false;
-                return;
+        // see if the buffer is already open in one of the current edit panes
+        EditPane editPaneForPosition = findEditPane( position );
+        Buffer[] buffers = editPaneForPosition.getBufferSet().getAllBuffers();
+        Buffer buffer = null;
+        String path = position.path;
+        for ( Buffer b : buffers ) {
+            if ( path.equals( b.getPath() ) ) {
+                buffer = b;
+                break;
             }
         }
 
-        // buffer isn't open
-        Buffer buffer = jEdit.openFile(editPane.getView(), path);
-
-        // Now we can listen to events again
-        ignoreUpdates = false;
-
-
-        if (buffer == null)
-        {
-            remove(np);
-            return; // nowhere to go, maybe the file got deleted?
+        if ( buffer == null ) {
+            // if here, then the buffer was not open in any edit pane.  Do not
+            // create a new edit pane for it, just open the buffer in the EditPane
+            // that was found by findEditPane.
+            buffer = jEdit.openFile( view, position.path );
+            if ( buffer == null ) {
+                // maybe the file was deleted, so there is nothing to open
+                remove( position );
+                ignoreUpdates = false;
+                return ;
+            }
         }
 
-        if (caret >= buffer.getLength())
-        {
+        // have EditPane and Buffer, display and move the caret
+        EditBus.send( new PositionChanging( view.getEditPane() ) );
+        editPaneForPosition.setBuffer( buffer );
+        int caret = position.caret;
+        if ( caret >= buffer.getLength() ) {
             caret = buffer.getLength() - 1;
         }
-        if (caret < 0)
-        {
+        if ( caret < 0 ) {
             caret = 0;
         }
-        try
-        {
-            editPane.getTextArea().setCaretPosition(caret, true);
+        try {
+            editPaneForPosition.getTextArea().setCaretPosition( caret, true );
+            editPaneForPosition.getTextArea().requestFocus();
         }
-        catch (NullPointerException npe)
-        {
+        catch ( NullPointerException positione ) {    // NOPMD
             // sometimes Buffer.markTokens throws a NPE here, catch
-            // it
-            // and silently ignore it.
+            // it and silently ignore it.
         }
-        editPane.getTextArea().requestFocus();
+        ignoreUpdates = false;
     }
 
-    synchronized public void backList()
-    {
-    	update();
-        if (current < 1)
-        {
-            JOptionPane.showMessageDialog(editPane, "No backward items", "Info",
-                    JOptionPane.INFORMATION_MESSAGE);
-            return;
+    /**
+     * Show a popup containing the back history list.
+     */
+    synchronized public void backList() {
+        if ( backHistory.size() == 0 ) {
+            JOptionPane.showMessageDialog( view, "No backward items", "Info", JOptionPane.INFORMATION_MESSAGE );
+            return ;
         }
-        Vector<NavPositionItem> list = getItemsForPopup(current - 1, -1);
-        new NavHistoryPopup(editPane.getView(), this, list, false);
+        new NavHistoryPopup( view, this, ( Vector ) backHistory.clone() );
     }
 
-    synchronized public void jump(int index)
-    {
-    	if (index < 0 || index >= history.size())
-    		return;
-    	current = index;
-        setPosition(history.get(current));
-        setButtonState();
+    /**
+     * Show a popup containing the forward history list.
+     */
+    synchronized public void forwardList() {
+        if ( forwardHistory.size() == 0 ) {
+            JOptionPane.showMessageDialog( view, "No forward items", "Info", JOptionPane.INFORMATION_MESSAGE );
+            return ;
+        }
+        new NavHistoryPopup( view, this, ( Vector ) forwardHistory.clone() );
     }
 
     /** Moves to the previous item in the "back" history. */
-    synchronized public void goBack()
-    {
-    	update();
-        if (current > 0)
-        {
-            try
-            {
-                history.set(current, currentPosition());
+    synchronized public void goBack() {
+        if ( backHistory.size() > 0 ) {
+            if ( current != null ) {
+                forwardHistory.push( current );
             }
-            catch (DontBother db)
-            {
-            }
-
-            current--;
-            setPosition(history.get(current));
+            current = backHistory.pop();
+            setPosition( current );
             setButtonState();
         }
-
-
-    }
-
-    private Vector<NavPositionItem> getItemsForPopup(int from, int to)
-    {
-        Vector<NavPositionItem> items = new Vector<NavPositionItem>();
-        while (from != to)
-        {
-        	items.add(new NavPositionItem(history.get(from), from));
-        	if (from < to)
-        		from++;
-        	else
-        		from--;
-        }
-    	return items;
-    }
-
-    synchronized public void forwardList()
-    {
-        if (current > history.size() - 2)
-        {
-            JOptionPane.showMessageDialog(editPane.getView(), "No forward items", "Info",
-                    JOptionPane.INFORMATION_MESSAGE);
-            return;
-        }
-        Vector<NavPositionItem> list = getItemsForPopup(current + 1, history.size());
-        new NavHistoryPopup(editPane.getView(), this, list, false);
     }
 
     /** Moves to the next item in the "forward" history. */
-    synchronized public void goForward()
-    {
-        if (current < history.size() - 1)
-        {
-            try
-            {
-                history.set(current, currentPosition());
+    synchronized public void goForward() {
+        if ( forwardHistory.size() > 0 ) {
+            if ( current != null ) {
+                backHistory.push( current );
             }
-            catch (DontBother db)
-            {
-            }
-
-            current++;
-            setPosition(history.get(current));
+            current = forwardHistory.pop();
+            setPosition( current );
             setButtonState();
         }
+    }
 
+    /**
+     * Jumps to a specific position in the history.
+     * @param position the position to jump to.
+     */
+    synchronized public void jump( NavPosition position ) {
+        ignoreUpdates = true;
+        // find the position, if it is in the back history, copy all positions
+        // after it to the forward history, vice versa if it is in the forward
+        // history
+        if ( backHistory.contains( position ) ) {
+            forwardHistory.push( current );
+            while ( true ) {
+                current = backHistory.pop();
+                if ( current.equals( position ) ) {
+                    break;
+                }
+                forwardHistory.push( current );
+            }
+        }
+        else if ( forwardHistory.contains( position ) ) {
+            backHistory.push( current );
+            while ( true ) {
+                current = forwardHistory.pop();
+                if ( current.equals( position ) ) {
+                    break;
+                }
+                backHistory.push( current );
+            }
+        }
+        else {
+            // this shouldn't happen, since the given position should have been
+            // picked from either the backList or the forwardList.  If somehow
+            // we do get here, then 'position' is a new position, so just insert
+            // it into the history at the current history location.
+            backHistory.push( current );
+            current = position;
+        }
+        setPosition( current );
+        setButtonState();
+        ignoreUpdates = false;
+    }
+
+    /**
+     * Stack that follows the maxStackSize setting.
+     */
+    class NavStack<E> extends Stack<E> {
+        public E push( E item ) {
+            super.push( item );
+            if ( size() > maxStackSize ) {
+                // remove oldest item
+                remove( 0 );
+            }
+            return item;
+        }
     }
 }
