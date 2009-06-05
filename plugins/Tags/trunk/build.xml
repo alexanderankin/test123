@@ -16,14 +16,13 @@
 	<property file="${user.home}/build.properties"/>
 
 	<property name="jar.name"  value="${ant.project.name}.jar"/>
-	<property name="docs-proc.target"  value="xsltproc"/>
 
 	<property name="jedit.install.dir"  value="../.."/>
 	<property name="src.dir" value="."/>
 	<property name="install.dir"  value=".."/>
 	<property name="build.dir" value="build"/>
 
-	<property name="rst2docbook" value="/usr/bin/rst2docbook.py"/>
+	<property name="rst2html" value="rst2html.py"/>
 
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
@@ -73,42 +72,18 @@
 		</jar>
 	</target>
 
-	<target name="docs" depends="init">
-		<antcall target="docs-${docs-proc.target}"/>
-	</target>
-
 	<!--
 	Users guide is maintained as reStructuredText and 
-	converted to DocBook XML.
+	converted to html.
 	-->
-	<target name="users-guide-to-docbook"
-		description="convert users-guide from reStructuredText to DocBook XML"
+	<target name="docs"
+		description="convert users-guide from reStructuredText to html"
 	>
 		<exec executable="python">
-			<arg value="${rst2docbook}"/>
+			<arg value="${rst2html}"/>
 			<arg value="doc/users-guide.txt"/>
-			<arg value="doc/users-guide.xml"/>
+			<arg value="doc/users-guide.html"/>
 		</exec>
-	</target>
-
-	<!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
-	<target name="docs-xsltproc">
-		<exec executable="xsltproc">
-			<arg value="--output"/>
-			<arg value="doc/index.html"/>
-			<arg value="--catalogs"/>
-			<arg value="doc/users-guide.xsl"/>
-			<arg value="doc/users-guide.xml"/>
-		</exec>
-	</target>
-
-	<!-- Generate docs with Xalan tool from xml.apache.org -->
-	<target name="docs-xalan">
-		<style
-			style="doc/users-guide.xsl"
-			in="doc/users-guide.xml"
-			out="doc/users-guide.html"
-		/>
 	</target>
 
 	<target name="clean">
@@ -116,8 +91,7 @@
 		<delete>
 			<fileset dir="." includes="**/*~"/>
 		</delete>
-		<delete file="doc/index.html"/>
-		<delete file="doc/docbook-wrapper.xsl"/>
+		<delete file="doc/users-guide.html"/>
 	</target>
 
 	<target name="tags">
