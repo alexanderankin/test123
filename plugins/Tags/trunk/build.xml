@@ -56,7 +56,7 @@
 		</javac>
 	</target>
 
-	<target name="dist" depends="compile,docs">
+	<target name="dist" depends="compile">
 		<mkdir dir="${install.dir}"/>
 
 		<jar jarfile="${install.dir}/${jar.name}">
@@ -71,7 +71,7 @@
 			</fileset>
 		</jar>
 	</target>
-
+	
 	<!--
 	Users guide is maintained as reStructuredText and 
 	converted to html.
@@ -91,6 +91,9 @@
 		<delete>
 			<fileset dir="." includes="**/*~"/>
 		</delete>
+	</target>
+	
+	<target name="clean-docs">
 		<delete file="doc/users-guide.html"/>
 	</target>
 
