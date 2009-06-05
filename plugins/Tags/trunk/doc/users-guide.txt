@@ -5,7 +5,7 @@ Tags Plugin
 :Authors: Kenrick Drew,
 			Ollie Rutherfurd,
 			Shlomy Reinstein
-:Version: 2.0.2
+:Version: 3.0.1
 
 .. $Id$
 
@@ -314,7 +314,7 @@ You can also write to:
 
 * jEdit-users mailing-list <jedit-users@lists.sourceforge.net>;
 * jEdit-devel mailing.list <jedit-devel@lists.sourceforge.net>.
-* Ollie Rutherfurd <oliver@jedit.org> (Current Maintainer)
+* Matthew Gilbert <gilbert@voxmea.net> (Current Maintainer)
 
 Credits
 =======
@@ -324,6 +324,11 @@ Credits
 
 Changelog
 =========
+
+* Version 3.0.1 (June 2009)
+
+  - Updated for 4.3.16 API changes (removed deprecated CaretChanging).
+  - Uses jEdit "view.font" property instead of hardcoded "Monospace" font.
 
 * Version 2.0.2 (???)
 
