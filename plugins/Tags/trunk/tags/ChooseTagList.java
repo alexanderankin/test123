@@ -42,6 +42,7 @@ import javax.swing.ListSelectionModel;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 //}}}
 
 public class ChooseTagList extends JList{
@@ -101,8 +102,10 @@ public class ChooseTagList extends JList{
 			searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT,0,0));
 
 			// setup
-			Font plain = new Font("Monospaced", Font.PLAIN, 12);
-			Font bold  = new Font("Monospaced", Font.BOLD, 12);
+			String font_name = jEdit.getProperty("view.font");
+			int font_size = jEdit.getIntegerProperty("view.fontsize");
+			Font plain = new Font(font_name, Font.PLAIN, font_size);
+			Font bold  = new Font(font_name, Font.BOLD, font_size);
 			indexLabel.setFont(plain); 
 			tagLabel.setFont(bold);
 			pathLabel.setFont(plain);
