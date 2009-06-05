@@ -5,7 +5,7 @@
 
 plugin.ise.plugin.nav.NavigatorPlugin.name=Navigator
 plugin.ise.plugin.nav.NavigatorPlugin.author=Dale Anson, Alan Ezust, Shlomy Reinstein
-plugin.ise.plugin.nav.NavigatorPlugin.version=1.7
+plugin.ise.plugin.nav.NavigatorPlugin.version=2.0
 plugin.ise.plugin.nav.NavigatorPlugin.activate=startup
 plugin.ise.plugin.nav.NavigatorPlugin.description=The Navigator Plugin \
     provides a set of "Back" and "Forward" actions similar to a web browser. \
@@ -24,7 +24,8 @@ options.navigator.label=Navigator
 options.navigator.code=new ise.plugin.nav.OptionPanel();
 
 navigator.options.groupByFile.label=Group history items by file
-navigator.options.showOnToolbar.label=Show Navigator on toolbar (buggy)
+navigator.options.showOnToolbar.label=Show Navigator on toolbar
+navigator.options.maxStackSize.label=Maximum history size:
 
 # title for DockableWindowManager
 Navigator.title=Navigator
@@ -45,7 +46,7 @@ navigator.menu.label=Navigator
 # menu separator to be inserted. This line also must start with the string
 # passed to the GUIUtilities.loadMenu method in createMenuItems. The items
 # are the action names as set in the actions.xml file.
-plugin.ise.plugin.nav.NavigatorPlugin.menu=navigator.back navigator.backList navigator.forward navigator.forwardList navigator.showdockable
+plugin.ise.plugin.nav.NavigatorPlugin.menu=navigator.back navigator.backList navigator.forward navigator.forwardList navigator.clearHistory navigator.showdockable
 #navigator.toolbar
 
 # the next three items are the labels to add to a submenu on
@@ -66,5 +67,10 @@ navigator.forward.icon=ArrowR.png
 navigator.forwardList.label=Forward list
 navigator.forwardList.icon=ArrowU.png
 
+navigator.clearHistory.label=Clear history
+
 #navigator.toolbar.label=Show on toolbar
 
+navigator.options.scopeGlobal.label=Global Scope, history maintained across jEdit
+navigator.options.scopeView.label=View scope, history maintained per View (jEdit window)
+navigator.options.scopeEditPane.label=EditPane scope, history maintained per edit pane
