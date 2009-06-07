@@ -39,8 +39,12 @@ import org.gjt.sp.jedit.jEdit;
 public class OptionPanel extends AbstractOptionPane {
 
     private static final String name = "navigator";
+
     private JCheckBox showOnToolbar = null;
     private JCheckBox groupByFile = null;
+
+    private JRadioButton viewScope = null;
+
     private NumberTextField maxStackSize = null;
 
 
@@ -53,7 +57,8 @@ public class OptionPanel extends AbstractOptionPane {
 
         // title
         addComponent( new JLabel( "<html><h3>Navigator</h3>" ) );
-        addComponent( new JLabel( "Configuration Options"));
+        addComponent( new JLabel( "Configuration Options" ) );
+
         // group by file
         groupByFile = new JCheckBox( jEdit.getProperty( "navigator.options.groupByFile.label" ) );
         groupByFile.setSelected( NavigatorPlugin.groupByFile() );
@@ -64,16 +69,39 @@ public class OptionPanel extends AbstractOptionPane {
         showOnToolbar.setSelected( NavigatorPlugin.showOnToolBars() );
         addComponent( showOnToolbar );
 
+        // navigator scope
+        addComponent( Box.createVerticalStrut( 11 ) );
+        addComponent( new JLabel( "Navigator Scope" ) );
+        viewScope = new JRadioButton( jEdit.getProperty( "navigator.viewScope.label", "View scope" ) );
+        JRadioButton editPaneScope = new JRadioButton( jEdit.getProperty( "navigator.editPaneScope.label", "EditPane scope" ) );
+        ButtonGroup buttonGroup = new ButtonGroup();
+        buttonGroup.add( viewScope );
+        buttonGroup.add( editPaneScope );
+        addComponent( viewScope );
+        addComponent( editPaneScope );
+        int scope = NavigatorPlugin.getScope();
+        viewScope.setSelected( scope == NavigatorPlugin.VIEW_SCOPE );
+        editPaneScope.setSelected( scope == NavigatorPlugin.EDITPANE_SCOPE );
+
         // max stack size
+        addComponent( Box.createVerticalStrut( 11 ) );
         maxStackSize = new NumberTextField();
-        maxStackSize.setMinValue(1);
-        maxStackSize.setValue(jEdit.getIntegerProperty("maxStackSize", 512));
-        addComponent( jEdit.getProperty("navigator.maxStackSize.label", "Maximum history size:"), maxStackSize);
+        maxStackSize.setMinValue( 1 );
+        maxStackSize.setValue( jEdit.getIntegerProperty( "maxStackSize", 512 ) );
+        addComponent( jEdit.getProperty( "navigator.maxStackSize.label", "Maximum history size:" ), maxStackSize );
     }
 
     public void _save() {
         jEdit.setBooleanProperty( name + ".groupByFile", groupByFile.isSelected() );
         jEdit.setBooleanProperty( NavigatorPlugin.showOnToolBarKey, showOnToolbar.isSelected() );
-        jEdit.setIntegerProperty( name + ".maxStackSize", maxStackSize.getValue());
+        jEdit.setIntegerProperty( name + ".maxStackSize", maxStackSize.getValue() );
+        int scope;
+        if ( viewScope.isSelected() ) {
+            scope = NavigatorPlugin.VIEW_SCOPE;
+        }
+        else {
+            scope = NavigatorPlugin.EDITPANE_SCOPE;
+        }
+        jEdit.setIntegerProperty( name + ".scope", scope );
     }
 }

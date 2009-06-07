@@ -45,7 +45,7 @@
          plugin.clearHistory(view);
       </CODE>
    </ACTION>
-   
+
     <ACTION NAME="navigator.showdockable">
         <CODE>
             view.getDockableWindowManager().showDockableWindow("Navigator");
@@ -63,6 +63,13 @@
     <CODE>
     ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
     plugin.hideButtons();
+    </CODE>
+    </ACTION>
+
+   <ACTION NAME="navigator.toggleScope" >
+    <CODE>
+    ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+    plugin.toggleScope();
     </CODE>
     </ACTION>
 </ACTIONS>

@@ -33,6 +33,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import javax.swing.*;
 import java.awt.event.*;
+import java.util.Collection;
 import java.util.Vector;
 import java.util.HashSet;
 
@@ -47,7 +48,7 @@ class NavHistoryPopup extends JPopupMenu {
     private boolean numberKeyProcessed = false;
     private Navigator navigator = null;
 
-    public NavHistoryPopup( View view, Navigator navigator, Vector<NavPosition> positions ) {
+    public NavHistoryPopup( View view, Navigator navigator, Collection<NavPosition> positions ) {
         this.navigator = navigator;
         this.view = view;
 
@@ -81,8 +82,9 @@ class NavHistoryPopup extends JPopupMenu {
     }
 
 
-    private Vector<NavPosition> groupByFile( Vector<NavPosition> positions ) {
-        Vector<NavPosition> items = new Vector<NavPosition>();
+    // TODO: confirm order is correct (not reversed)
+    private Collection<NavPosition> groupByFile( Collection<NavPosition> positions ) {
+        HashSet<NavPosition> items = new HashSet<NavPosition>();
         HashSet<String> paths = new HashSet<String>();
         for ( NavPosition pos: positions ) {
             if ( paths.add( pos.path ) ) {
