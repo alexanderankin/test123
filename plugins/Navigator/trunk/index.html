@@ -34,7 +34,33 @@
   <p>
 
   <h3>Configuration:</h3>
-
+  <p>
+  The Navigator configuration has these options:
+  <ul>
+  <li>
+  Group history items by file - if checked, the popup history will list only the first location in a file.
+  </li>
+  <li>
+  Show Navigator on toolbar - see below for more information about showing the Navigator "Back" and "Forward" buttons.
+  </li>
+  <li>
+  Scope: See the section "How Navigator Works" for a discussion of the difference between View and EditPane scope.
+  The scope can also be toggled using the Navigator menu.  If you find yourself regularly switching between scopes, you
+  can assign a shortcut to the toggle action.
+   <ul>
+      <li>
+      View scope
+      </li>
+      <li>
+      EditPane scope
+      </li>
+   </ul>
+   </li>
+   <li>
+   Maximum History Size - the maximum number of positions that Navigator will remember in either the back history
+   or the forward history.
+   </li>
+  </ul>
   <p>
   The Navigator works in a "visible" or an "invisible" way. I find it is handy to use shortcut keys for the actions
   "back" and "forward".
@@ -71,21 +97,40 @@
   text area is recorded in the Navigator history.  Going back moves the caret to the previous position.  If that
   previous position happened to be in a different file, then that file will be opened.
   <p>
-  Navigator remembers edit panes, too.  So if you have a split pane, and are scrolling and clicking back and forth
+  Some jEdit terminology: A <strong><i>View</i></strong> is a
+  main jEdit window.  You can open more Views by using the View menu and selecting "New View".  Within a View, an
+  <strong><i>EditPane</i></strong>
+  is the part of the View that contains the text area.  You can open more EditPanes by using the View menu and selecting
+  one of the "Splitting" options.  Each split is an EditPane.
+  <p>
+  <strong>View Scope:</strong>
+  <br>
+  In View scope, Navigator remembers edit panes.  So if you have a split pane, and are scrolling and clicking back and forth
   between the panes, going back (or forward) will also set focus on the appropriate edit pane, even if you have the
   same file open in both panes.  This works for as many splits as you have.
   <p>
   If you close an edit pane, the history for those files is not lost.  Quite often, you'll have just one edit pane
-  in your View (jEdit window), you'll split the view to compare a file or to see different parts of the same file,
+  in your View, you'll split the view to compare a file or to see different parts of the same file,
   then you'll close the view.  The history will be retained for any mouse clicks made during the split.  The splits
   won't be restored as you go back or forward, though.
   <p>
-  Each View (jEdit window) has its own Navigator and history.  This means that if you regularly work with two Views
+  Each View has its own Navigator and history.  This means that if you regularly work with two Views
   open, going back in one View will not take you the other View, rather, the caret will move to the previous location
   in the current view.  If you close a View, the history for that View is lost.
   <p>
   History is not persisted between jEdit sessions, so if you close jEdit, the history is lost.
   <p>
+  <strong>EditPane Scope:</strong>
+  <br>
+  In EditPane scope, Navigator keeps a separate history for each EditPane.  Going back or forward will cause the
+  caret to move only within the current EditPane.  To go back and forward in a different EditPane, you'll have
+  to switch to that EditPane.
+  <p>
+  If you close an EditPane, the history for files within that EditPane is lost.
+  <p>
+  If you change scope, no history is lost.  This means that you can be using View scope, change to EditPane scope to limit
+  back and forward browsing to the current EditPane, then switch back to View scope to browse the entire history.  Keep in
+  mind that while in EditPane scope, if you close an EditPane then the history for that EditPane will be lost.
 
   <h3>Changelog </h3>
 
@@ -94,9 +139,13 @@
     <b>Version 2.0, all from Dale</b>
     <ul>
       <li>
-      Navigator mapped to Views again, so each View (jEdit window) has its own Navigator.  EditPanes are tracked also,
+      Navigator mapped to Views again, so each View has its own Navigator.  EditPanes are tracked also,
       so if you have the same file open in a split pane, Navigator will correctly go back and forth appropriately.  This
       is a better fix for bug 2493691.
+      </li>
+      <li>
+      Added option for View or EditPane scope.  Originally, Navigator worked on View scope, then Alan changed it to
+      EditPane scope in version 1.2.  Now there is an option for the user to choose which scope is preferred.
       </li>
       <li>
       Added "Clear" action to plugin menu so the history can be cleared.

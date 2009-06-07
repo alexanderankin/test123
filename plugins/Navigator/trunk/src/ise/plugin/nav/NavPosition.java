@@ -99,6 +99,10 @@ public class NavPosition implements Comparable {
      * back and forward popup lists.
      */
     public String toHtml() {
-        return "<html><tt>" + path + ":" + ( lineno + 1 ) + "</tt><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + linetext;
+        // might need to escape the line text as it might already be html
+        String text = linetext;
+        text = text.replaceAll("[<]", "&lt;");
+        text = text.replaceAll("[>]", "&gt;");
+        return "<html><tt>" + path + ":" + ( lineno + 1 ) + "</tt><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + text;
     }
 }

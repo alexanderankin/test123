@@ -58,13 +58,26 @@ public class NavigatorPlugin extends EBPlugin {
 
     public final static String NAME = "Navigator";
 
+    /**
+     * VIEW_SCOPE indicates to Navigator that history is tracked per View.
+     */
+    public final static int VIEW_SCOPE = 1;
+
+    /**
+     * EDITPANE_SCOPE indicates to Navigator that history is tracked per EditPane.
+     */
+    public final static int EDITPANE_SCOPE = 2;
+
+    // the current scope
+    private static int scope = EDITPANE_SCOPE;
+
     // key into property file for show on toolbar value
     public static final String showOnToolBarKey = "navigator.showOnToolbar";
 
     /**
      * View/Navigator map.  Each View is assigned exactly one Navigator.
      */
-    private final static HashMap<View, Navigator> map = new HashMap<View, Navigator>();
+    private final static HashMap<View, Navigator> viewNavigatorMap = new HashMap<View, Navigator>();
 
     /**
      * View/toolbar map.  Each View has a single main toolbar, and if
@@ -125,7 +138,7 @@ public class NavigatorPlugin extends EBPlugin {
             new Runnable() {
                 public void run() {
                     if ( showOnToolBars() ) {
-                        for ( View view : map.keySet() ) {
+                        for ( View view : viewNavigatorMap.keySet() ) {
                             JToolBar toolbar = toolbarMap.get( view );
                             if ( toolbar == null ) {
                                 // only add toolbar if there isn't one already
@@ -156,6 +169,7 @@ public class NavigatorPlugin extends EBPlugin {
      * are started before the first View is actually created.
      */
     public void start() {
+        scope = jEdit.getIntegerProperty( "navigator.scope", EDITPANE_SCOPE );
         for ( View v : jEdit.getViews() ) {
             createNavigator( v );
         }
@@ -168,9 +182,51 @@ public class NavigatorPlugin extends EBPlugin {
      * from the main toolbar for each View.
      */
     public void stop() {
-        map.clear();
+        viewNavigatorMap.clear();
         clearToolBars( true );
         toolbarMap.clear();
+        jEdit.setIntegerProperty("navigator.scope", scope);
+    }
+
+    /**
+     * @return one of VIEW_SCOPE or EDITPANE_SCOPE
+     */
+    public static int getScope() {
+        return scope;
+    }
+
+    /**
+     * Set the scope of the Navigators.  All Navigators use the same scope.
+     * @param scope one of VIEW_SCOPE or EDITPANE_SCOPE.
+     */
+    public static void setScope( int scope ) {
+        switch ( scope ) {
+            case VIEW_SCOPE:
+            case EDITPANE_SCOPE:
+                NavigatorPlugin.scope = scope;
+        }
+    }
+
+    public static void toggleScope() {
+        String msg = null;
+        switch ( scope ) {
+            case VIEW_SCOPE:
+                scope = EDITPANE_SCOPE;
+                msg = jEdit.getProperty( "navigator.message.editPaneScope", "Navigator switched to EditPane scope." );
+                break;
+            case EDITPANE_SCOPE:
+                scope = VIEW_SCOPE;
+                msg = jEdit.getProperty( "navigator.message.viewScope", "Navigator switched to View scope." );
+                break;
+            default:
+                return;
+        }
+        jEdit.setIntegerProperty("navigator.scope", scope);
+        if ( msg != null ) {
+            for ( View view : viewNavigatorMap.keySet() ) {
+                view.getStatus().setMessage( msg );
+            }
+        }
     }
 
     /**
@@ -186,7 +242,7 @@ public class NavigatorPlugin extends EBPlugin {
      */
     public static void clearToolBars( boolean force ) {
         if ( force || !showOnToolBars() ) {
-            for ( View view : map.keySet() ) {
+            for ( View view : viewNavigatorMap.keySet() ) {
                 clearToolBar( view );
             }
             revalidateViews();
@@ -218,11 +274,11 @@ public class NavigatorPlugin extends EBPlugin {
         if ( view == null ) {
             return ;
         }
-        if ( map.containsKey( view ) ) {
+        if ( viewNavigatorMap.containsKey( view ) ) {
             // already have a Navigator for this view
             return ;
         }
-        map.put( view, navigator );
+        viewNavigatorMap.put( view, navigator );
     }
 
     /**
@@ -231,7 +287,7 @@ public class NavigatorPlugin extends EBPlugin {
      * @return the Navigator for the View, or null if there is no Navigator for this view
      */
     public static Navigator getNavigator( View view ) {
-        return map.get( view );
+        return viewNavigatorMap.get( view );
     }
 
     /**
@@ -324,7 +380,7 @@ public class NavigatorPlugin extends EBPlugin {
                 setToolBars();
             }
             else if ( what.equals( ViewUpdate.CLOSED ) ) {
-                map.remove( v );
+                viewNavigatorMap.remove( v );
                 toolbarMap.remove( v );
             }
         }
@@ -344,7 +400,7 @@ public class NavigatorPlugin extends EBPlugin {
             EditPaneUpdate epu = ( EditPaneUpdate ) message;
             if ( epu.getWhat() == EditPaneUpdate.CREATED ) {
                 EditPane editPane = epu.getEditPane();
-                Navigator nav = map.get( editPane.getView() );
+                Navigator nav = viewNavigatorMap.get( editPane.getView() );
                 if ( nav == null ) {
                     // this will add a mouse listener to the edit pane
                     createNavigator( editPane.getView() );
@@ -356,6 +412,13 @@ public class NavigatorPlugin extends EBPlugin {
                     nav.addMouseListenerTo( editPane );
                 }
             }
+            else if ( epu.getWhat() == EditPaneUpdate.DESTROYED && scope == EDITPANE_SCOPE ) {
+                EditPane editPane = epu.getEditPane();
+                Navigator nav = viewNavigatorMap.get( editPane.getView() );
+                if ( nav != null ) {
+                    nav.removeHistory( editPane );
+                }
+            }
         }
         else if ( message instanceof PropertiesChanged ) {
             if ( showOnToolBars() ) {
@@ -364,9 +427,10 @@ public class NavigatorPlugin extends EBPlugin {
             else {
                 clearToolBars();
             }
-            for (Navigator nav : map.values()) {
-                nav.setMaxHistorySize(jEdit.getIntegerProperty("navigator.maxStackSize", 512));
+            for ( Navigator nav : viewNavigatorMap.values() ) {
+                nav.setMaxHistorySize( jEdit.getIntegerProperty( "navigator.maxStackSize", 512 ) );
             }
+            setScope( jEdit.getIntegerProperty( "navigator.scope", EDITPANE_SCOPE ) );
         }
     }
 }
