@@ -4,7 +4,7 @@
 
 plugin.imageviewer.ImageViewerPlugin.name=ImageViewer
 plugin.imageviewer.ImageViewerPlugin.author=Dale Anson
-plugin.imageviewer.ImageViewerPlugin.version=1.0.0
+plugin.imageviewer.ImageViewerPlugin.version=1.1
 plugin.imageviewer.ImageViewerPlugin.activate=startup
 plugin.imageviewer.ImageViewerPlugin.description=Displays image files when selected from ProjectViewer or File Browser
 
@@ -26,6 +26,7 @@ imageviewer.zoomout=Zoom Out
 imageviewer.zoomin=Zoom In
 imageviewer.showimage.label=View Image
 
+# for File System Browser
 plugin.imageviewer.ImageViewerPlugin.browser-menu=imageviewer.showimage
 
 # for option pane
