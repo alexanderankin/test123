@@ -85,6 +85,10 @@ public class Navigator implements ActionListener {
     // max size for history
     private static int maxStackSize = jEdit.getIntegerProperty( "navigator.maxStackSize", 512 );
 
+    // EditPane - NavPosition map, stores the current position in the associated EditPane when
+    // using EditPane scope.  Not used in View scope.
+    private HashMap<EditPane, NavPosition> editPaneCurrentPositionMap = new HashMap<EditPane, NavPosition>();
+
     // forward and back button models
     private DefaultButtonModel backButtonModel;
     private DefaultButtonModel forwardButtonModel;
@@ -299,27 +303,34 @@ public class Navigator implements ActionListener {
     /**
      * Removes all navigation history for the given edit pane.
      */
-    public void removeHistory(EditPane editPane) {
-        for (NavPosition pos : backHistory) {
-            if (pos.editPane.equals(editPane)) {
-                backHistory.remove(pos);
+    public void removeHistory( EditPane editPane ) {
+        NavStack<NavPosition> tmpBack = new NavStack<NavPosition>();
+        for ( NavPosition pos : backHistory ) {
+            if ( !pos.editPane.equals( editPane ) ) {
+                tmpBack.add(pos);
             }
         }
-        for (NavPosition pos : forwardHistory) {
-            if (pos.editPane.equals(editPane)) {
-                forwardHistory.remove(pos);
+        backHistory = tmpBack;
+
+        NavStack<NavPosition> tmpForward = new NavStack<NavPosition>();
+        for ( NavPosition pos : forwardHistory ) {
+            if ( !pos.editPane.equals( editPane ) ) {
+                tmpForward.add(pos);
             }
         }
-        if (current.editPane.equals(editPane)) {
-            if (!backHistory.isEmpty()) {
+        forwardHistory = tmpForward;
+
+        if ( current.editPane.equals( editPane ) ) {
+            if ( !backHistory.isEmpty() ) {
                 current = backHistory.pop();
             }
-            else if (!forwardHistory.isEmpty()) {
+            else if ( !forwardHistory.isEmpty() ) {
                 current = forwardHistory.pop();
             }
             else {
                 current = currentPosition();
             }
+            editPaneCurrentPositionMap.put(editPane, current);
         }
     }
 
@@ -337,6 +348,12 @@ public class Navigator implements ActionListener {
      * EditPane for the View.
      */
     private EditPane findEditPane( NavPosition position ) {
+        // if using edit pane scope, use edit pane from position
+        if ( NavigatorPlugin.getScope() == NavigatorPlugin.EDITPANE_SCOPE ) {
+            return position.editPane;
+        }
+
+        // otherwise, find the proper edit pane
         for ( EditPane editPane : view.getEditPanes() ) {
             if ( editPane.equals( position.editPane ) ) {
                 // this is the preferred edit pane
@@ -407,7 +424,7 @@ public class Navigator implements ActionListener {
 
         // have EditPane and Buffer, display and move the caret
         EditBus.send( new PositionChanging( view.getEditPane() ) );
-        editPaneForPosition.setBuffer( buffer );
+        editPaneForPosition.setBuffer( buffer, true );
         int caret = position.caret;
         if ( caret >= buffer.getLength() ) {
             caret = buffer.getLength() - 1;
@@ -417,7 +434,6 @@ public class Navigator implements ActionListener {
         }
         try {
             editPaneForPosition.getTextArea().setCaretPosition( caret, true );
-            editPaneForPosition.getTextArea().requestFocus();
         }
         catch ( NullPointerException positione ) {    // NOPMD
             // sometimes Buffer.markTokens throws a NPE here, catch
@@ -434,7 +450,20 @@ public class Navigator implements ActionListener {
             JOptionPane.showMessageDialog( view, "No backward items", "Info", JOptionPane.INFORMATION_MESSAGE );
             return ;
         }
-        new NavHistoryPopup( view, this, ( Collection ) backHistory.clone() );
+        Collection<NavPosition> positions;
+        if ( NavigatorPlugin.getScope() == NavigatorPlugin.EDITPANE_SCOPE ) {
+            EditPane currentEditPane = view.getEditPane();
+            positions = new ArrayList<NavPosition>();
+            for ( NavPosition position : backHistory ) {
+                if ( position.editPane.equals( currentEditPane ) ) {
+                    positions.add( position );
+                }
+            }
+        }
+        else {
+            positions = ( Collection ) backHistory.clone();
+        }
+        new NavHistoryPopup( view, this, positions );
     }
 
     /**
@@ -445,13 +474,27 @@ public class Navigator implements ActionListener {
             JOptionPane.showMessageDialog( view, "No forward items", "Info", JOptionPane.INFORMATION_MESSAGE );
             return ;
         }
-        new NavHistoryPopup( view, this, ( Collection ) forwardHistory.clone() );
+        Collection<NavPosition> positions;
+        if ( NavigatorPlugin.getScope() == NavigatorPlugin.EDITPANE_SCOPE ) {
+            EditPane currentEditPane = view.getEditPane();
+            positions = new ArrayList<NavPosition>();
+            for ( NavPosition position : forwardHistory ) {
+                if ( position.editPane.equals( currentEditPane ) ) {
+                    positions.add( position );
+                }
+            }
+        }
+        else {
+            positions = ( Collection ) forwardHistory.clone();
+        }
+        new NavHistoryPopup( view, this, positions );
     }
 
     /** Moves to the previous item in the "back" history. */
     synchronized public void goBack() {
         if ( backHistory.size() > 0 ) {
             if ( NavigatorPlugin.getScope() == NavigatorPlugin.EDITPANE_SCOPE ) {
+                editPaneCurrentPositionMap.put(view.getEditPane(), currentPosition());
                 jumpToPrevious();
             }
             else {
@@ -480,6 +523,7 @@ public class Navigator implements ActionListener {
     synchronized public void goForward() {
         if ( forwardHistory.size() > 0 ) {
             if ( NavigatorPlugin.getScope() == NavigatorPlugin.EDITPANE_SCOPE ) {
+                editPaneCurrentPositionMap.put(view.getEditPane(), currentPosition());
                 jumpToNext();
             }
             else {
