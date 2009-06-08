@@ -32,17 +32,25 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
 
 /**
- * This object is used to mark caret positions in jEdit buffers. Implements
- * comparable so lists of these can be merged and sorted.
+ * This object is used to track caret positions from mouse clicks in jEdit buffers. 
  *
  * @author Dale Anson
  */
-public class NavPosition implements Comparable {
+public class NavPosition {
 
-    public EditPane editPane;
+    // hashCode of EditPane, used to identify specific EditPanes
+    public int editPane = 0;
+
+    // path of file in Buffer
     public String path = null;
+
+    // caret position
     public int caret = 0;
+
+    // line number of caret line
     public int lineno = 0;
+
+    // text of the caret line, used for back and forward list display
     public String linetext = "";
 
     /**
@@ -62,36 +70,44 @@ public class NavPosition implements Comparable {
         if ( caretPosition < 0 ) {
             throw new IllegalArgumentException( "caret position cannot less than 0" );
         }
-        this.editPane = editPane;
+        this.editPane = editPane.hashCode();
         path = buffer.getPath();
         caret = caretPosition;
         lineno = buffer.getLineOfOffset( caret );
         this.linetext = linetext == null ? "" : linetext;
     }
 
-    public boolean equals( NavPosition other ) {
-        // 2 nav positions are equal to each other if they have the same
-        // path and caret position
-        if ( other == null ) {
+    /**
+     * Two NavPositions are equal to each other if they have the same
+     * path, line number, and caret position.
+     */
+    @Override
+    public boolean equals( Object obj ) {
+        // check for reference equality
+        if ( this == obj ) {
+            return true;
+        }
+
+        // type check
+        if ( !( obj instanceof NavPosition ) ) {
             return false;
         }
-        return ( path.equals( other.path ) && caret == other.caret );
+
+        // cast to correct type
+        NavPosition other = ( NavPosition ) obj;
+        
+        // check fields
+        return ( path.equals( other.path ) && lineno == other.lineno && caret == other.caret );
     }
 
+    @Override
     public int hashCode() {
-        return toString().hashCode();
-    }
-
-    public int compareTo( Object other ) {
-        if ( other == null ) {
-            return 1;
-        }
-        return toString().compareTo( other.toString() );
+        return ( path + lineno + caret ).hashCode();
     }
 
     @Override
     public String toString() {
-        return path + ":" + ( lineno + 1 );
+        return editPane + ":" + path + ":" + ( lineno + 1 );
     }
 
     /**
@@ -101,8 +117,8 @@ public class NavPosition implements Comparable {
     public String toHtml() {
         // might need to escape the line text as it might already be html
         String text = linetext;
-        text = text.replaceAll("[<]", "&lt;");
-        text = text.replaceAll("[>]", "&gt;");
+        text = text.replaceAll( "[<]", "&lt;" );
+        text = text.replaceAll( "[>]", "&gt;" );
         return "<html><tt>" + path + ":" + ( lineno + 1 ) + "</tt><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + text;
     }
 }

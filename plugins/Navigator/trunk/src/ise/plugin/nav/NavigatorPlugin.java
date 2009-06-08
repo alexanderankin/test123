@@ -2,10 +2,10 @@
 /*
 Copyright (c) 2002, Dale Anson
 All rights reserved.
-
+ 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
-
+ 
 * Redistributions of source code must retain the above copyright notice,
 this list of conditions and the following disclaimer.
 * Redistributions in binary form must reproduce the above copyright notice,
@@ -14,7 +14,7 @@ and/or other materials provided with the distribution.
 * Neither the name of the author nor the names of its contributors
 may be used to endorse or promote products derived from this software without
 specific prior written permission.
-
+ 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -33,6 +33,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.util.HashMap;
 
+import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 
@@ -145,13 +146,18 @@ public class NavigatorPlugin extends EBPlugin {
                                 Navigator nav = createNavigator( view );
                                 toolbar = new NavToolBar( nav );
                                 Container viewToolbar = view.getToolBar();
-                                Component[] children = viewToolbar.getComponents();
-                                for ( Component child : children ) {
-                                    if ( child instanceof JToolBar ) {
-                                        ( ( JToolBar ) child ).add( toolbar );
-                                        toolbarMap.put( view, toolbar );
-                                        break;
+                                if ( viewToolbar != null ) {
+                                    Component[] children = viewToolbar.getComponents();
+                                    for ( Component child : children ) {
+                                        if ( child instanceof JToolBar ) {
+                                            ( ( JToolBar ) child ).add( toolbar );
+                                            toolbarMap.put( view, toolbar );
+                                            break;
+                                        }
                                     }
+                                }
+                                else {
+                                    JOptionPane.showMessageDialog(null, "jEdit toolbar is not visible, can't add Navigator buttons.", "Error", JOptionPane.ERROR_MESSAGE);   
                                 }
                             }
                         }
@@ -185,7 +191,7 @@ public class NavigatorPlugin extends EBPlugin {
         viewNavigatorMap.clear();
         clearToolBars( true );
         toolbarMap.clear();
-        jEdit.setIntegerProperty("navigator.scope", scope);
+        jEdit.setIntegerProperty( "navigator.scope", scope );
     }
 
     /**
@@ -219,9 +225,9 @@ public class NavigatorPlugin extends EBPlugin {
                 msg = jEdit.getProperty( "navigator.message.viewScope", "Navigator switched to View scope." );
                 break;
             default:
-                return;
+                return ;
         }
-        jEdit.setIntegerProperty("navigator.scope", scope);
+        jEdit.setIntegerProperty( "navigator.scope", scope );
         if ( msg != null ) {
             for ( View view : viewNavigatorMap.keySet() ) {
                 view.getStatus().setMessage( msg );
