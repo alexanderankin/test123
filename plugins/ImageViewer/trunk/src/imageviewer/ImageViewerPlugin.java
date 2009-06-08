@@ -56,13 +56,9 @@ public class ImageViewerPlugin extends EBPlugin {
     private static HashMap<View, ImageViewer> viewMap = new HashMap<View, ImageViewer>();
 
     // VFSDirectoryEntryTable to MouseAdapter map
-    // TODO: possible memory leak here -- if there are multiple Views and one is closed, then
-    // this table needs to be cleaned up
     private static HashMap<VFSDirectoryEntryTable, MouseAdapter> vfsAdapterMap = new HashMap<VFSDirectoryEntryTable, MouseAdapter>();
 
     // PV tree to MouseAdapter map
-    // TODO: possible memory leak here -- if there are multiple Views and one is closed, then
-    // this table needs to be cleaned up
     private static HashMap<JTree, MouseAdapter> pvAdapterMap = new HashMap<JTree, MouseAdapter>();
 
 
@@ -106,6 +102,12 @@ public class ImageViewerPlugin extends EBPlugin {
             }
             else if ( ViewUpdate.CLOSED.equals( message.getWhat() ) ) {
                 viewMap.remove( message.getView() );
+                
+                // remove and add mouse adapters.  This prevents any memory leaks
+                // from having references in the adapter maps for non-existent
+                // trees or file system browsers.
+                removeMouseAdapters();
+                addMouseAdapters();
             }
         }
         else if ( msg instanceof PropertiesChanged ) {
@@ -114,16 +116,10 @@ public class ImageViewerPlugin extends EBPlugin {
 
             // maybe turn off mouse adapters
             if ( !allowVFSMouseOver ) {
-                for ( VFSDirectoryEntryTable table : vfsAdapterMap.keySet() ) {
-                    table.removeMouseMotionListener( vfsAdapterMap.get( table ) );
-                }
-                vfsAdapterMap.clear();
+                removeVFSMouseAdapters();
             }
             if ( !allowPVMouseOver ) {
-                for ( JTree tree : pvAdapterMap.keySet() ) {
-                    tree.removeMouseMotionListener( pvAdapterMap.get( tree ) );
-                }
-                pvAdapterMap.clear();
+                removePVMouseAdapters();
             }
 
             // maybe start mouse adapters
@@ -139,6 +135,25 @@ public class ImageViewerPlugin extends EBPlugin {
                 addPVMouseAdapter( dwm.getView() );
             }
         }
+    }
+
+    private void removeMouseAdapters() {
+        removeVFSMouseAdapters();
+        removePVMouseAdapters();
+    }
+    
+    private void removeVFSMouseAdapters() {
+        for ( VFSDirectoryEntryTable table : vfsAdapterMap.keySet() ) {
+            table.removeMouseMotionListener( vfsAdapterMap.get( table ) );
+        }
+        vfsAdapterMap.clear();
+    }
+    
+    private void removePVMouseAdapters() {
+        for ( JTree tree : pvAdapterMap.keySet() ) {
+            tree.removeMouseMotionListener( pvAdapterMap.get( tree ) );
+        }
+        pvAdapterMap.clear();
     }
 
     /**

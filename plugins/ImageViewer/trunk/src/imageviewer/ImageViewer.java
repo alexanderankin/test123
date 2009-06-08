@@ -103,8 +103,7 @@ public class ImageViewer extends JPanel {
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
                     imageLabel.setIcon( null );
-                    ImageViewer.this.invalidate();
-                    ImageViewer.this.validate();
+                    ImageViewer.this.refresh();
                 }
             }
         );
@@ -113,16 +112,7 @@ public class ImageViewer extends JPanel {
                 public void actionPerformed( ActionEvent ae ) {
                     float width = originalWidth * 1.1f;
                     float height = originalHeight * 1.1f;
-                    originalWidth = width;
-                    originalHeight = height;
-                    if ( width > 0 && height > 0 ) {
-                        Image zoomImage = getScaledImage( image, ( int ) width, ( int ) height );
-                        ImageIcon icon = new ImageIcon( zoomImage );
-                        imageLabel.setIcon( icon );
-                        imageLabel.setSize( ( int ) width, ( int ) height );
-                        ImageViewer.this.invalidate();
-                        ImageViewer.this.validate();
-                    }
+                    zoom(width, height);
                 }
             }
         );
@@ -131,31 +121,22 @@ public class ImageViewer extends JPanel {
                 public void actionPerformed( ActionEvent ae ) {
                     float width = Math.max( 2, ( int ) ( ( float ) originalWidth * 0.9f ) );
                     float height = Math.max( 2, ( int ) ( ( float ) originalHeight * 0.9f ) );
-                    originalWidth = width;
-                    originalHeight = height;
-                    if ( width > 0 && height > 0 ) {
-                        Image zoomImage = getScaledImage( image, ( int ) width, ( int ) height );
-                        ImageIcon icon = new ImageIcon( zoomImage );
-                        imageLabel.setIcon( icon );
-                        imageLabel.setSize( ( int ) width, ( int ) height );
-                        ImageViewer.this.invalidate();
-                        ImageViewer.this.validate();
-                    }
+                    zoom(width, height);
                 }
             }
         );
     }
-    
+
     /**
      * Display the image in this ImageViewer.
      * @param filename the name of the image file to display.
      */
     public void showImage( String filename ) {
+        if ( filename.equals( filenameLabel.getText() ) ) {
+            // already showing this image
+            return ;
+        }
         if ( isValidFilename( filename ) ) {
-            if (filename.equals(filenameLabel.getText())) {
-                // already showing this image
-                return;
-            }
             filenameLabel.setText( filename );
             ImageIcon icon = new ImageIcon( filename );
             image = icon.getImage();
@@ -163,11 +144,15 @@ public class ImageViewer extends JPanel {
             originalHeight = ( float ) icon.getIconHeight();
             imageLabel.setIcon( icon );
             imageLabel.setSize( ( int ) originalWidth, ( int ) originalHeight );
-            invalidate();
-            validate();
+            refresh();
         }
     }
     
+    private void refresh() {
+        invalidate();
+        validate();
+    }
+
     /**
      * @return true if the filename, regardless of case, ends with .jpg, .gif, or .png.    
      */
@@ -178,19 +163,36 @@ public class ImageViewer extends JPanel {
         String name = filename.toLowerCase();
         return name.endsWith( ".jpg" ) || name.endsWith( ".gif" ) || name.endsWith( ".png" );
     }
+    
+    /**
+     * Zoom an image to the given width and height and refresh the display.
+     * @param width the desired width
+     * @param height the desired height
+     */
+    private void zoom( float width, float height ) {
+        originalWidth = width;
+        originalHeight = height;
+        if ( width > 0 && height > 0 ) {
+            Image zoomImage = getScaledImage( image, ( int ) width, ( int ) height );
+            ImageIcon icon = new ImageIcon( zoomImage );
+            imageLabel.setIcon( icon );
+            imageLabel.setSize( ( int ) width, ( int ) height );
+            refresh();
+        }
+    }
 
     /**
      * Resizes an image to the given width and height.
      * @param image source image to scale
-     * @param w desired width
-     * @param h desired height
+     * @param width desired width
+     * @param height desired height
      * @return the resized image
      */
-    private Image getScaledImage( Image image, int w, int h ) {
-        BufferedImage resizedImage = new BufferedImage( w, h, BufferedImage.TYPE_INT_RGB );
+    private Image getScaledImage( Image image, int width, int height ) {
+        BufferedImage resizedImage = new BufferedImage( width, height, BufferedImage.TYPE_INT_RGB );
         Graphics2D g2 = resizedImage.createGraphics();
         g2.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR );
-        g2.drawImage( image, 0, 0, w, h, null );
+        g2.drawImage( image, 0, 0, width, height, null );
         g2.dispose();
         return resizedImage;
     }
