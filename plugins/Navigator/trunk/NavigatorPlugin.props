@@ -78,3 +78,6 @@ navigator.options.scopeEditPane.label=EditPane scope, history maintained per edi
 
 navigator.message.viewScope=Navigator switched to View scope.
 navigator.message.editPaneScope=Navigator switched to EditPane scope.
+navigator.message.No_backward_items=No backward items
+navigator.message.No_forward_items=No forward items
+navigator.message.Info=Info
