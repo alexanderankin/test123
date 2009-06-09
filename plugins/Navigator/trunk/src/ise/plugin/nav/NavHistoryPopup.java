@@ -41,7 +41,10 @@ import java.util.List;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.jedit.gui.KeyEventWorkaround;
+
+import code2html.Code2HTML;
 
 class NavHistoryPopup extends JPopupMenu {
 
@@ -49,14 +52,17 @@ class NavHistoryPopup extends JPopupMenu {
     private View view;
     private boolean numberKeyProcessed = false;
     private Navigator navigator = null;
+    
+    private boolean useCSS = false;
+    private boolean showGutter = false;
 
     public NavHistoryPopup( View view, Navigator navigator, Collection<NavPosition> positions ) {
         this.navigator = navigator;
         this.view = view;
-        
+
         // positions is a Stack, so need to reverse the order
-        positions = new ArrayList<NavPosition>(positions);
-        Collections.reverse((List)positions);
+        positions = new ArrayList<NavPosition>( positions );
+        Collections.reverse( ( List ) positions );
 
         // create components
         JPanel contents = new JPanel( new BorderLayout() );
@@ -64,7 +70,7 @@ class NavHistoryPopup extends JPopupMenu {
             positions = groupByFile( positions );
         }
         list = new JList( positions.toArray() );
-        list.setCellRenderer(new CellRenderer());
+        list.setCellRenderer( new CellRenderer() );
         list.addMouseListener( new MouseHandler() );
 
         JScrollPane scroller = new JScrollPane( list );
@@ -78,6 +84,13 @@ class NavHistoryPopup extends JPopupMenu {
         addKeyListener( keyHandler );
         list.addKeyListener( keyHandler );
         this.view.setKeyEventInterceptor( keyHandler );
+        
+        // set Code2Html properties, don't want to use css, do want to show 
+        // the gutter.
+        useCSS     = jEdit.getBooleanProperty("code2html.use-css", false);
+        showGutter = jEdit.getBooleanProperty("code2html.show-gutter", true);
+        jEdit.setBooleanProperty("code2html.use-css", false);
+        jEdit.setBooleanProperty("code2html.show-gutter", true);
 
         // show components
         pack();
@@ -88,7 +101,7 @@ class NavHistoryPopup extends JPopupMenu {
     }
 
     private Collection<NavPosition> groupByFile( Collection<NavPosition> positions ) {
-        List<NavPosition> items = new ArrayList<NavPosition>(positions.size());
+        List<NavPosition> items = new ArrayList<NavPosition>( positions.size() );
         HashSet<String> paths = new HashSet<String>();
         for ( NavPosition pos: positions ) {
             if ( paths.add( pos.path ) ) {
@@ -139,6 +152,10 @@ class NavHistoryPopup extends JPopupMenu {
 
 
     public void dispose() {
+        // restore Code2Html properties to original values
+        jEdit.setBooleanProperty("code2html.use-css", useCSS);
+        jEdit.setBooleanProperty("code2html.show-gutter", showGutter);
+        
         view.setKeyEventInterceptor( null );
         setVisible( false );
         view.getTextArea().requestFocus();
@@ -169,7 +186,7 @@ class NavHistoryPopup extends JPopupMenu {
                 case '7':
                 case '8':
                 case '9':
-                    if ( numberKeyProcessed )         // Since many components have this handler
+                    if ( numberKeyProcessed )           // Since many components have this handler
                         return ;
 
                     /* There may actually be more than 9 items in the list, but since
@@ -266,23 +283,67 @@ class NavHistoryPopup extends JPopupMenu {
         }
     }
 
-    // Nothing special here, just needed a cell renderer that will show html.
-    // The NavPosition gives a 2 line html with the first line being the location,
-    // the second line being the text of the line.  The default JList cell
-    // renderer won't show both lines.  This one will.
+    // A cell renderer that will show html.  Delegates to the Code2HTML plugin
+    // to show the line preview with proper syntax highlighting.
     class CellRenderer extends JLabel implements ListCellRenderer {
         public Component getListCellRendererComponent(
             JList list,
-            Object value,             // value to display
-            int index,                // cell index
-            boolean isSelected,       // is the cell selected
-            boolean cellHasFocus )     // the list and the cell have the focus
+            Object value,               // value to display
+            int index,                  // cell index
+            boolean isSelected,         // is the cell selected
+            boolean cellHasFocus )      // the list and the cell have the focus
         {
-            String s = value == null ? "" : ((NavPosition)value).toHtml();
+            NavPosition pos = ( NavPosition ) value;
+            String s;
+            EditPane editPane = null;
+            for ( EditPane ep : view.getEditPanes() ) {
+                if ( ep.hashCode() == pos.editPane ) {
+                    editPane = ep;
+                    break;
+                }
+            }
+            if ( editPane == null ) {
+                s = pos.toHtml();       // non-syntax highlighted html
+            }
+            else {
+                // Have Code2HTML plugin create syntax highlighted html.
+                // First, create a selection for the text of the line
+                Buffer buffer = editPane.getBuffer();
+                int start = buffer.getLineStartOffset( pos.lineno );
+                int end = buffer.getLineEndOffset( pos.lineno );
+                Selection selection = new Selection.Rect( pos.lineno, start, pos.lineno, end );
+                Selection[] selections = new Selection[ 1 ];
+                selections[ 0 ] = selection;
+                
+                // Have code2html do the syntax highlighting
+                Code2HTML c2h = new Code2HTML(
+                            buffer,
+                            editPane.getTextArea().getPainter().getStyles(),
+                            selections
+                        );
+                s = c2h.getHtmlString();
+                
+                // clean up the output from code2html, it outputs html, head, and body tags,
+                // I just want what is between the pre tags
+                s = s.substring( s.indexOf( "<pre>" ), s.lastIndexOf( "</pre>" ) + "</pre>".length() );
+                while ( s.indexOf( "  " ) > -1 ) {
+                    s = s.replaceAll( "  ", " " );
+                }
+                
+                // add on the path, followed by the syntax highlighted line.  The line number
+                // is provided by code2html, that's why the useGutter property is set to true.
+                s = "<html><tt>" + pos.path + ":</tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + s.trim() ;
+                s = s.replaceAll("\n", "");
+                s = s.replaceAll("\r", "");
+            }
             setText( s );
             setEnabled( list.isEnabled() );
             setFont( list.getFont() );
             setOpaque( true );
+            setBackground(view.getBackground());
+            if (index % 2 == 0) {
+                setBackground(getBackground().darker());   
+            }
             return this;
         }
     }

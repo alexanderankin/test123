@@ -46,6 +46,9 @@
          
          <!-- required for jEdit plugin -->
          <pathelement location="${jedit.install.dir}/jedit.jar" />
+         
+         <!-- dependencies on other plugins -->
+         <pathelement location="${install.dir}/Code2HTML.jar"/>
       </path>
    </target>
    
