@@ -38,7 +38,8 @@
   The Navigator configuration has these options:
   <ul>
   <li>
-  Group history items by file - if checked, the popup history will list only the first location in a file.
+  Group history items by file - if checked, the popup history will list only the last location visited in a file.  This
+  makes it easy to quickly jump back to the last place you were working in a file.
   </li>
   <li>
   Show Navigator on toolbar - see below for more information about showing the Navigator "Back" and "Forward" buttons.
@@ -55,7 +56,8 @@
    </ul>
    See the section "How Navigator Works" for a discussion of the difference between View and EditPane scope.
    The scope can also be toggled using the Navigator menu.  If you find yourself regularly switching between scopes, you
-   can assign a shortcut to the toggle action.   
+   can assign a shortcut to the toggle action.  If you never split your Views, then you it doesn't matter which of these 
+   you use.
    </li>
    <li>
    Maximum History Size - the maximum number of positions that Navigator will remember in either the back history
@@ -146,7 +148,8 @@
       </li>
       <li>
       Added option for View or EditPane scope.  Originally, Navigator worked on View scope, then Alan changed it to
-      EditPane scope in version 1.2.  Now there is an option for the user to choose which scope is preferred.
+      EditPane scope in version 1.2.  Now there is an option for the user to choose which scope is preferred.  I find
+      View scope particularly nice when doing diffs.
       </li>
       <li>
       Added "Clear" action to plugin menu so the history can be cleared.

@@ -82,17 +82,19 @@ public class Navigator implements ActionListener {
     private NavPosition current = null;
     private NavStack<NavPosition> forwardHistory;
 
-    private HashMap<EditPane, NavPosition> editPaneCurrentPosition = new HashMap<EditPane, NavPosition>();
-
     // max size for history
-    private static int maxStackSize = jEdit.getIntegerProperty( "navigator.maxStackSize", 512 );
+    private int maxStackSize = jEdit.getIntegerProperty( "navigator.maxStackSize", 512 );
 
     // forward and back button models
     private DefaultButtonModel backButtonModel;
     private DefaultButtonModel forwardButtonModel;
 
-    // the edit pane we're following
+    // the view we're following
     private View view;
+
+    // the edit pane we're following, This will be null if following View, so
+    // this can be used as a simple check for the scope.
+    private EditPane _editPane;
 
     // flag -- set to true to not addToHistory the nav position while switching to
     // another view or edit pane
@@ -106,27 +108,43 @@ public class Navigator implements ActionListener {
      */
     public Navigator( View view ) {
         this.view = view;
-
-        backButtonModel = new DefaultButtonModel();
-        forwardButtonModel = new DefaultButtonModel();
-        ignoreUpdates = false;
-
-        backButtonModel.setActionCommand( Navigator.BACK );
-        forwardButtonModel.setActionCommand( Navigator.FORWARD );
-        backButtonModel.addActionListener( this );
-        forwardButtonModel.addActionListener( this );
-
-        // set up the history stacks
-        backHistory = new NavStack<NavPosition>();
-        forwardHistory = new NavStack<NavPosition>();
-        clearHistory();
-        current = currentPosition();
+        init();
 
         // add a mouse listener to each text area in the view. Each mouse click
         // on a text area is stored
         for ( EditPane editPane : Navigator.this.view.getEditPanes() ) {
             addMouseListenerTo( editPane );
         }
+    }
+
+    public Navigator( EditPane editPane ) {
+        this._editPane = editPane;
+        this.view = editPane.getView();
+        init();
+
+        // add a mouse listener to the EditPane. Each mouse click
+        // on a text area is stored
+        addMouseListenerTo( Navigator.this.getEditPane() );
+    }
+
+    // initialize this Navigator
+    private void init() {
+        ignoreUpdates = false;
+
+        // set up button models
+        backButtonModel = new DefaultButtonModel();
+        backButtonModel.setActionCommand( Navigator.BACK );
+        backButtonModel.addActionListener( this );
+
+        forwardButtonModel = new DefaultButtonModel();
+        forwardButtonModel.setActionCommand( Navigator.FORWARD );
+        forwardButtonModel.addActionListener( this );
+
+        // set up the history stacks
+        backHistory = new NavStack<NavPosition>( maxStackSize );
+        forwardHistory = new NavStack<NavPosition>( maxStackSize );
+        clearHistory();
+        current = currentPosition();
     }
 
     /**
@@ -136,19 +154,15 @@ public class Navigator implements ActionListener {
     public void addMouseListenerTo( EditPane editPane ) {
         TextAreaPainter painter = editPane.getTextArea().getPainter();
         MouseListener listeners[] = painter.getMouseListeners();
-        for ( MouseListener listener : listeners ) {
-            if ( listener instanceof NavMouseListener ) {
-                painter.removeMouseListener( listener );
-            }
-        }
-        painter.addMouseListener( new NavMouseListener() );
+        painter.addMouseListener( new NavMouseListener( this ) );
     }
 
-    // special class just so I can find these and remove them from a text area
-    class NavMouseListener extends MouseAdapter {
-        public void mouseClicked( MouseEvent me ) {
-            addToHistory();
-        }
+    public EditPane getEditPane() {
+        return _editPane;
+    }
+
+    public void setEditPane( EditPane editPane ) {
+        _editPane = editPane;
     }
 
     /**
@@ -169,7 +183,18 @@ public class Navigator implements ActionListener {
      * Calculate the current position and create a NavPosition.
      */
     private NavPosition currentPosition() {
-        JEditTextArea textarea = view.getEditPane().getTextArea();
+        EditPane editPane = getEditPane();
+        JEditTextArea textarea;
+        if ( editPane != null ) {
+            // edit pane scope
+            textarea = editPane.getTextArea();
+        }
+        else {
+            // view scope
+            editPane = view.getEditPane();
+            textarea = editPane.getTextArea();
+        }
+
         if ( textarea == null ) {
             // beats me how this is possible, but just in case
             return null;
@@ -177,13 +202,13 @@ public class Navigator implements ActionListener {
 
         Buffer buffer = view.getBuffer();
         if ( ( buffer.getLength() == 0 ) && buffer.getName().startsWith( "Untitled" ) ) {
-            // skip empty, untitled buffers
+            // skip empty untitled buffers
             return null;
         }
 
         int caretPosition = textarea.getCaretPosition();
         String linetext = textarea.getLineText( textarea.getCaretLine() );
-        return new NavPosition( view.getEditPane(), buffer, caretPosition, linetext );
+        return new NavPosition( editPane, buffer, caretPosition, linetext );
     }
 
     /**
@@ -207,23 +232,11 @@ public class Navigator implements ActionListener {
         if ( node == null ) {
             return ;
         }
-        if ( current == null ) {
-            current = node;
-        }
         // don't add same node twice in a row
-        if ( backHistory.isEmpty() || !current.equals( node ) ) {
+        if ( backHistory.empty() || !current.equals( node ) ) {
             backHistory.push( current );
             current = node;
-            EditPane editPane = getEditPaneFor( current );
-            if ( editPane != null ) {
-                editPaneCurrentPosition.put( editPane, current );
-            }
-            if (NavigatorPlugin.getScope() == NavigatorPlugin.EDITPANE_SCOPE) {
-                removeForwardHistory(editPane);   
-            }
-            else {
-                forwardHistory.clear();
-            }
+            forwardHistory.clear();
             setButtonState();
         }
     }
@@ -277,15 +290,9 @@ public class Navigator implements ActionListener {
      */
     public void setMaxHistorySize( int size ) {
         if ( size > 0 ) {
+            backHistory.setMaxSize( size );
+            forwardHistory.setMaxSize( size );
             maxStackSize = size;
-        }
-
-        // trim the stacks if necessary
-        while ( backHistory.size() > maxStackSize ) {
-            backHistory.removeLast();
-        }
-        while ( forwardHistory.size() > maxStackSize ) {
-            forwardHistory.removeLast();
         }
     }
 
@@ -302,71 +309,22 @@ public class Navigator implements ActionListener {
      */
     public void clearHistory() {
         backHistory.clear();
-        current = currentPosition();
+        current = null;
         forwardHistory.clear();
         setButtonState();
     }
 
     /**
-     * Removes all navigation history for the given edit pane.
+     * Sets the state of the navigation buttons.
      */
-    public void removeHistory( EditPane editPane ) {
-        removeBackHistory(editPane);
-        removeForwardHistory(editPane);
-        
-        if ( current.editPane == editPane.hashCode() ) {
-            if ( !backHistory.isEmpty() ) {
-                current = backHistory.pop();
-            }
-            else if ( !forwardHistory.isEmpty() ) {
-                current = forwardHistory.pop();
-            }
-            else {
-                current = currentPosition();
-            }
-        }
-    }
-    
-    private void removeBackHistory(EditPane editPane) {
-        NavStack<NavPosition> tmpBack = new NavStack<NavPosition>();
-        for ( NavPosition pos : backHistory ) {
-            if ( pos.editPane != editPane.hashCode() ) {
-                tmpBack.add( pos );
-            }
-        }
-        backHistory = tmpBack;
-
-    }
-    
-    private void removeForwardHistory(EditPane editPane) {
-        NavStack<NavPosition> tmpForward = new NavStack<NavPosition>();
-        for ( NavPosition pos : forwardHistory ) {
-            if ( pos.editPane != editPane.hashCode() ) {
-                tmpForward.add( pos );
-            }
-        }
-        forwardHistory = tmpForward;
-    }
-
-    /** Sets the state of the navigation buttons. */
     private void setButtonState() {
         backButtonModel.setEnabled( backHistory.size() > 0 );
         forwardButtonModel.setEnabled( forwardHistory.size() > 0 );
     }
 
     /**
-     * @return the EditPane corresponding to the EditPane for the given position.    
-     */
-    private EditPane getEditPaneFor( NavPosition position ) {
-        for ( EditPane editPane : view.getEditPanes() ) {
-            if ( editPane.hashCode() == position.editPane ) {
-                return editPane;
-            }
-        }
-        return null;
-    }
-
-    /**
+     * For View scope.  If scope is EditPane, then _editPane should not be
+     * null, and that EditPane is returned.
      * @return the EditPane containing the buffer from the position in the
      * given View.  If the EditPane is not found (e.g. it was closed), searches
      * through all EditPanes in the view for the buffer, returning the EditPane
@@ -374,37 +332,37 @@ public class Navigator implements ActionListener {
      * EditPane for the View.
      */
     private EditPane findEditPane( NavPosition position ) {
-
-        // attempt to find the proper edit pane
-        EditPane editPane = getEditPaneFor( position );
-        if ( editPane != null ) {
-            // this is the preferred edit pane
-            return editPane;
-        }
-
-        // if using edit pane scope and the edit pane wasn't found, we're in trouble
         if ( NavigatorPlugin.getScope() == NavigatorPlugin.EDITPANE_SCOPE ) {
-            return null;
+            if ( getEditPane() == null ) {
+                setEditPane( view.getEditPane() );
+            }
+            return getEditPane();
         }
 
+        for ( EditPane editPane : view.getEditPanes() ) {
+            if ( editPane.hashCode() == position.editPane ) {
+                // this is the preferred edit pane
+                return editPane;
+            }
+        }
 
         // didn't find the preferred edit pane, probably because it was closed,
         // so search all edit panes
-        for ( EditPane ep : view.getEditPanes() ) {
-            Buffer[] buffers = ep.getBufferSet().getAllBuffers();
+        for ( EditPane editPane : view.getEditPanes() ) {
+            Buffer[] buffers = editPane.getBufferSet().getAllBuffers();
             for ( Buffer buffer : buffers ) {
                 if ( position.path.equals( buffer.getPath() ) ) {
                     // found an edit pane containing the buffer.  Set the
                     // preferred edit pane to the one where we found it.
-                    position.editPane = ep.hashCode();
-                    return ep;
+                    position.editPane = editPane.hashCode();
+                    return editPane;
                 }
             }
         }
 
         // didn't find any edit pane that contains the buffer, so just
         // return the current EditPane
-        editPane = view.getEditPane();
+        EditPane editPane = view.getEditPane();
         position.editPane = editPane.hashCode();
         return editPane;
     }
@@ -415,7 +373,7 @@ public class Navigator implements ActionListener {
      * @param o
      *                The new NavPosition value
      */
-    public synchronized void setPosition( NavPosition position ) {
+    public void setPosition( NavPosition position ) {
         if ( position == null ) {
             return ;
         }
@@ -423,12 +381,8 @@ public class Navigator implements ActionListener {
         // stop listening to EditBus events while we are changing buffers
         ignoreUpdates = true;
 
-
         // see if the buffer is already open in one of the current edit panes
         EditPane editPaneForPosition = findEditPane( position );
-        if ( editPaneForPosition == null ) {
-            return ;
-        }
         Buffer[] buffers = editPaneForPosition.getBufferSet().getAllBuffers();
         Buffer buffer = null;
         String path = position.path;
@@ -454,7 +408,7 @@ public class Navigator implements ActionListener {
 
         // have EditPane and Buffer, display and move the caret
         EditBus.send( new PositionChanging( view.getEditPane() ) );
-        editPaneForPosition.setBuffer( buffer, true );
+        editPaneForPosition.setBuffer( buffer );
         int caret = position.caret;
         if ( caret >= buffer.getLength() ) {
             caret = buffer.getLength() - 1;
@@ -464,8 +418,9 @@ public class Navigator implements ActionListener {
         }
         try {
             editPaneForPosition.getTextArea().setCaretPosition( caret, true );
+            editPaneForPosition.getTextArea().requestFocus();
         }
-        catch ( NullPointerException positione ) {    // NOPMD
+        catch ( NullPointerException npe ) {    // NOPMD
             // sometimes Buffer.markTokens throws a NPE here, catch
             // it and silently ignore it.
         }
@@ -475,136 +430,62 @@ public class Navigator implements ActionListener {
     /**
      * Show a popup containing the back history list.
      */
-    synchronized public void backList() {
-        Collection<NavPosition> positions = getList(backHistory);
-        if ( positions.size() == 0 ) {
-            JOptionPane.showMessageDialog(
-                view,
-                jEdit.getProperty( "navigator.message.No_backward_items", "No backward items" ),
-                jEdit.getProperty( "navigator.message.Info", "Info" ),
-                JOptionPane.INFORMATION_MESSAGE );
+    public void backList() {
+        if ( backHistory.size() == 0 ) {
+            JOptionPane.showMessageDialog( view, "No backward items", "Info", JOptionPane.INFORMATION_MESSAGE );
             return ;
         }
-        new NavHistoryPopup( view, this, positions );
+        new NavHistoryPopup( view, this, ( Vector ) backHistory.clone() );
     }
 
     /**
      * Show a popup containing the forward history list.
      */
-    synchronized public void forwardList() {
-        Collection<NavPosition> positions = getList(forwardHistory);
-        if ( positions.size() == 0 ) {
-            JOptionPane.showMessageDialog(
-                view,
-                jEdit.getProperty( "navigator.message.No_forward_items", "No forward items" ),
-                jEdit.getProperty( "navigator.message.Info", "Info" ),
-                JOptionPane.INFORMATION_MESSAGE );
+    public void forwardList() {
+        if ( forwardHistory.size() == 0 ) {
+            JOptionPane.showMessageDialog( view, "No forward items", "Info", JOptionPane.INFORMATION_MESSAGE );
             return ;
         }
-        new NavHistoryPopup( view, this, positions );
-    }
-    
-    private Collection<NavPosition> getList(NavStack<NavPosition> stack) {
-        Collection<NavPosition> positions;
-        if ( NavigatorPlugin.getScope() == NavigatorPlugin.EDITPANE_SCOPE ) {
-            EditPane currentEditPane = view.getEditPane();
-            positions = new ArrayList<NavPosition>();
-            for ( NavPosition position : stack ) {
-                if ( position.editPane == currentEditPane.hashCode() ) {
-                    positions.add( position );
-                }
-            }
-        }
-        else {
-            positions = ( Collection ) stack.clone();
-        }
-        return positions;
+        new NavHistoryPopup( view, this, ( Vector ) forwardHistory.clone() );
     }
 
-    /** Moves to the previous item in the "back" history. */
-    synchronized public void goBack() {
+    /**
+     * Moves to the previous item in the "back" history.
+     */
+    public void goBack() {
         if ( backHistory.size() > 0 ) {
-            if ( NavigatorPlugin.getScope() == NavigatorPlugin.EDITPANE_SCOPE ) {
-                NavPosition position = editPaneCurrentPosition.get( view.getEditPane() );
-                if ( position == null ) {
-                    position = currentPosition();
-                    editPaneCurrentPosition.put(view.getEditPane(), position);
-                    addToHistory(position);
-                }
-                jumpToPrevious( position );
+            if ( current != null ) {
+                forwardHistory.push( current );
             }
-            else {
-                if ( current != null ) {
-                    forwardHistory.push( current );
-                }
-                current = backHistory.pop();
-                setPosition( current );
-                setButtonState();
-            }
+            current = backHistory.pop();
+            setPosition( current );
+            setButtonState();
         }
     }
 
-    // move to the previous NavPosition in the current EditPane
-    private void jumpToPrevious( NavPosition position ) {
-        rotateTo( position );
-        EditPane editPane = view.getEditPane();
-        int hashCode = editPane.hashCode();
-        for ( NavPosition p : backHistory ) {
-            if ( p.editPane == hashCode ) {
-                jump( p );
-                editPaneCurrentPosition.put( editPane, p );
-                break;
-            }
-        }
-    }
-
-    /** Moves to the next item in the "forward" history. */
-    synchronized public void goForward() {
+    /**
+     * Moves to the next item in the "forward" history.
+     */
+    public void goForward() {
         if ( forwardHistory.size() > 0 ) {
-            if ( NavigatorPlugin.getScope() == NavigatorPlugin.EDITPANE_SCOPE ) {
-                NavPosition position = editPaneCurrentPosition.get( view.getEditPane() );
-                if ( position == null ) {
-                    position = currentPosition();
-                    editPaneCurrentPosition.put(view.getEditPane(), position);
-                    addToHistory(position);
-                }
-                jumpToNext( position );
+            if ( current != null ) {
+                backHistory.push( current );
             }
-            else {
-                if ( current != null ) {
-                    backHistory.push( current );
-                }
-                current = forwardHistory.pop();
-                setPosition( current );
-                setButtonState();
-            }
+            current = forwardHistory.pop();
+            setPosition( current );
+            setButtonState();
         }
     }
 
-    // move to the next NavPosition in the current EditPane
-    private void jumpToNext( NavPosition position ) {
-        rotateTo( position );
-        EditPane editPane = view.getEditPane();
-        int hashCode = editPane.hashCode();
-        for ( NavPosition p : forwardHistory ) {
-            if ( p.editPane == hashCode ) {
-                jump( p );
-                editPaneCurrentPosition.put( editPane, p );
-                break;
-            }
-        }
-    }
-
-    // Rotates the stacks so the given position becomes the current position
-    private void rotateTo( NavPosition position ) {
-        if ( position.equals( current ) ) {
-            // already is current position
-            return ;
-        }
-
-        // find the position. If it is in the back history, copy all positions
+    /**
+     * Jumps to a specific position in the history.
+     * @param position the position to jump to.
+     */
+    public void jump( NavPosition position ) {
+        ignoreUpdates = true;
+        // find the position.  If it is in the back history, copy all positions
         // after it to the forward history, vice versa if it is in the forward
-        // history
+        // history.
         if ( backHistory.contains( position ) ) {
             forwardHistory.push( current );
             while ( true ) {
@@ -633,40 +514,8 @@ public class Navigator implements ActionListener {
             backHistory.push( current );
             current = position;
         }
-    }
-
-    /**
-     * Jumps to a specific position in the history.
-     * @param position the position to jump to.
-     */
-    synchronized public void jump( NavPosition position ) {
-        ignoreUpdates = true;
-        rotateTo( position );
-        setPosition( position );
+        setPosition( current );
         setButtonState();
         ignoreUpdates = false;
-    }
-
-    /**
-     * Stack that follows the maxStackSize setting.
-     */
-    static class NavStack<E> extends ArrayDeque<E> {
-        public void push( E item ) {
-            super.push( item );
-            if ( size() > maxStackSize ) {
-                removeLast();
-            }
-        }
-
-        public String toString() {
-            StringBuilder sb = new StringBuilder();
-            sb.append( "NavStack[" );
-            for ( Object o : NavStack.this ) {
-                sb.append( '\n' ).append( o.toString() ).append( ',' );
-            }
-            sb.deleteCharAt( sb.length() - 1 );
-            sb.append( ']' );
-            return sb.toString();
-        }
     }
 }

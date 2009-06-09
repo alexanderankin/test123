@@ -12,7 +12,7 @@ plugin.ise.plugin.nav.NavigatorPlugin.description=The Navigator Plugin \
     This is surprisingly handy.
 
 # dependencies
-plugin.ise.plugin.nav.NavigatorPlugin.depend.0=jdk 1.6
+plugin.ise.plugin.nav.NavigatorPlugin.depend.0=jdk 1.5
 plugin.ise.plugin.nav.NavigatorPlugin.depend.1=jedit 04.03.15.00
 
 # docs
@@ -46,7 +46,7 @@ navigator.menu.label=Navigator
 # menu separator to be inserted. This line also must start with the string
 # passed to the GUIUtilities.loadMenu method in createMenuItems. The items
 # are the action names as set in the actions.xml file.
-plugin.ise.plugin.nav.NavigatorPlugin.menu=navigator.back navigator.backList navigator.forward navigator.forwardList navigator.clearHistory navigator.toggleScope navigator.showdockable
+plugin.ise.plugin.nav.NavigatorPlugin.menu=navigator.back navigator.backList navigator.forward navigator.forwardList navigator.clearHistory navigator.toggleScope navigator.toggleGroupByFile navigator.showdockable
 #navigator.toolbar
 
 # the next three items are the labels to add to a submenu on
@@ -69,6 +69,7 @@ navigator.forwardList.icon=ArrowU.png
 
 navigator.clearHistory.label=Clear history
 navigator.toggleScope.label=Toggle scope
+navigator.toggleGroupByFile.label=Toggle group by file
 
 #navigator.toolbar.label=Show on toolbar
 
@@ -81,3 +82,4 @@ navigator.message.editPaneScope=Navigator switched to EditPane scope.
 navigator.message.No_backward_items=No backward items
 navigator.message.No_forward_items=No forward items
 navigator.message.Info=Info
+navigator.message.Navigator_history_cleared.=Navigator history cleared.

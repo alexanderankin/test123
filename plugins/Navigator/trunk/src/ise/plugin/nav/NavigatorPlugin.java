@@ -31,6 +31,7 @@ package ise.plugin.nav;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.event.MouseListener;
 import java.util.HashMap;
 
 import javax.swing.JOptionPane;
@@ -46,6 +47,7 @@ import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PositionChanging;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.msg.ViewUpdate;
+import org.gjt.sp.jedit.textarea.TextAreaPainter;
 
 
 /**
@@ -81,14 +83,23 @@ public class NavigatorPlugin extends EBPlugin {
     private final static HashMap<View, Navigator> viewNavigatorMap = new HashMap<View, Navigator>();
 
     /**
+     * EditPane/Navigator map.  If scope is by EditPane, then each EditPane is 
+     * assigned its own Navigator.
+     */
+    private final static HashMap<EditPane, Navigator> editPaneNavigatorMap = new HashMap<EditPane, Navigator>();
+
+    /**
      * View/toolbar map.  Each View has a single main toolbar, and if
      * the Navigator buttons are to be shown on the toolbar, they are
      * added to this main toolbar.
      */
     private final static HashMap<View, JToolBar> toolbarMap = new HashMap<View, JToolBar>();
 
+    
+    
     /**
-     * @return true if the Navigator buttons should be shown on the main toolbar for the View.
+     * @return true if the Navigator buttons should be shown on the main toolbar 
+     * for the View.
      */
     public static boolean showOnToolBars() {
         return jEdit.getBooleanProperty( showOnToolBarKey, false );
@@ -102,6 +113,13 @@ public class NavigatorPlugin extends EBPlugin {
         return jEdit.getBooleanProperty( "navigator.groupByFile" );
     }
 
+    /**
+     * Toggle group by file to on or off.    
+     */
+    public static void toggleGroupByFile() {
+        jEdit.setBooleanProperty("navigator.groupByFile", !groupByFile());
+    }
+    
     /**
      * Show the Navigator buttons on the main toolbar for the View.
      */
@@ -157,7 +175,7 @@ public class NavigatorPlugin extends EBPlugin {
                                     }
                                 }
                                 else {
-                                    JOptionPane.showMessageDialog(null, "jEdit toolbar is not visible, can't add Navigator buttons.", "Error", JOptionPane.ERROR_MESSAGE);   
+                                    JOptionPane.showMessageDialog( null, "jEdit toolbar is not visible, can't add Navigator buttons.", "Error", JOptionPane.ERROR_MESSAGE );
                                 }
                             }
                         }
@@ -172,23 +190,39 @@ public class NavigatorPlugin extends EBPlugin {
      * Create a Navigator for each currently open View.  Add the Navigator
      * buttons to the Views, depending on the user settings for the toolbar.
      * Note that when jEdit first starts up, this won't do anything as plugins
-     * are started before the first View is actually created.
+     * are started before the first View is actually created, so this is really
+     * only useful when reloading this plugin.
      */
     public void start() {
         scope = jEdit.getIntegerProperty( "navigator.scope", EDITPANE_SCOPE );
         for ( View v : jEdit.getViews() ) {
             createNavigator( v );
+            createNavigators( v );
         }
         clearToolBars();
         setToolBars();
     }
 
     /**
-     * Remove the Navigator from each View.  Remove the Navigator navigation buttons
-     * from the main toolbar for each View.
+     * Remove the Navigator from each View.  Remove the Navigator navigation
+     * buttons from the main toolbar for each View.  Removes nav mouse listeners
+     * from all edit panes.
      */
     public void stop() {
+        // remove mouse listeners from all edit panes
+        for ( EditPane editPane : editPaneNavigatorMap.keySet() ) {
+            TextAreaPainter painter = editPane.getTextArea().getPainter();
+            MouseListener listeners[] = painter.getMouseListeners();
+            for ( MouseListener listener : listeners ) {
+                if ( listener instanceof NavMouseListener ) {
+                    painter.removeMouseListener( listener );
+                }
+            }
+        }
+
+        // clean up
         viewNavigatorMap.clear();
+        editPaneNavigatorMap.clear();
         clearToolBars( true );
         toolbarMap.clear();
         jEdit.setIntegerProperty( "navigator.scope", scope );
@@ -212,7 +246,10 @@ public class NavigatorPlugin extends EBPlugin {
                 NavigatorPlugin.scope = scope;
         }
     }
-
+    
+    /**
+     * Toggle scope from view scope to edit pane scope or vice versa.    
+     */
     public static void toggleScope() {
         String msg = null;
         switch ( scope ) {
@@ -287,13 +324,28 @@ public class NavigatorPlugin extends EBPlugin {
         viewNavigatorMap.put( view, navigator );
     }
 
+    public static void addNavigator( EditPane editPane, Navigator navigator ) {
+        if ( editPane == null ) {
+            return ;
+        }
+
+        if ( editPaneNavigatorMap.containsKey( editPane ) ) {
+            // already have a Navigator for this EditPane
+            return ;
+        }
+        editPaneNavigatorMap.put( editPane, navigator );
+    }
+
     /**
-     * Gets the current Navigator for the given View.
+     * Gets the current Navigator for the given View.  If scope is EDITPANE_SCOPE,
+     * gets the Navigator for the current EditPane in the View.
      * @param view the View to find the Navigator for.
-     * @return the Navigator for the View, or null if there is no Navigator for this view
+     * @return Depending on the scope, returns either the Navigator for the View,
+     * or the Navigator for the current EditPane in the View.  Returns null if
+     * there is no Navigator for the View or EditPane.
      */
     public static Navigator getNavigator( View view ) {
-        return viewNavigatorMap.get( view );
+        return getScope() == EDITPANE_SCOPE ? editPaneNavigatorMap.get( view.getEditPane() ) : viewNavigatorMap.get( view );
     }
 
     /**
@@ -302,10 +354,35 @@ public class NavigatorPlugin extends EBPlugin {
      * @return a previously existing or a newly created Navigator for this View
      */
     public static Navigator createNavigator( View view ) {
-        Navigator navigator = getNavigator( view );
+        Navigator navigator = viewNavigatorMap.get( view );
         if ( navigator == null ) {
             navigator = new Navigator( view );
-            addNavigator( view, navigator );
+            viewNavigatorMap.put( view, navigator );
+        }
+        return navigator;
+    }
+
+    /**
+     * Create a Navigator for each EditPane in the given View.
+     * @param view the View containing the EditPanes to create Navigators for.
+     */
+    public static void createNavigators( View view ) {
+        EditPane[] editPanes = view.getEditPanes();
+        for ( EditPane editPane : editPanes ) {
+            createNavigator( editPane );
+        }
+    }
+
+    /**
+     * Create a Navigator for the given EditPane.
+     * @param editPane the EditPane to create a Navigator for.
+     * @return a previously existing or a newly created Navigator for this EditPane
+     */
+    public static Navigator createNavigator( EditPane editPane ) {
+        Navigator navigator = editPaneNavigatorMap.get( editPane );
+        if ( navigator == null ) {
+            navigator = new Navigator( editPane );
+            editPaneNavigatorMap.put( editPane, navigator );
         }
         return navigator;
     }
@@ -365,13 +442,21 @@ public class NavigatorPlugin extends EBPlugin {
     }
 
     /**
-     * Clear the Navigator history for the given view.
+     * Clear the Navigator history for the given view.  This clears the history
+     * for EditPanes contained by the View also.
      */
     public static void clearHistory( View view ) {
         Navigator navigator = getNavigator( view );
         if ( navigator != null ) {
             navigator.clearHistory();
         }
+        for ( EditPane editPane : view.getEditPanes() ) {
+            navigator = editPaneNavigatorMap.get( editPane );
+            if ( navigator != null ) {
+                navigator.clearHistory();
+            }
+        }
+        view.getStatus().setMessage( jEdit.getProperty( "navigator.message.Navigator_history_cleared.", "Navigator history cleared." ) );
     }
 
     public void handleMessage( EBMessage message ) {
@@ -405,6 +490,7 @@ public class NavigatorPlugin extends EBPlugin {
         else if ( message instanceof EditPaneUpdate ) {
             EditPaneUpdate epu = ( EditPaneUpdate ) message;
             if ( epu.getWhat() == EditPaneUpdate.CREATED ) {
+                // create/update Navigator for View scope
                 EditPane editPane = epu.getEditPane();
                 Navigator nav = viewNavigatorMap.get( editPane.getView() );
                 if ( nav == null ) {
@@ -417,13 +503,12 @@ public class NavigatorPlugin extends EBPlugin {
                     // mouse listener to this editPane
                     nav.addMouseListenerTo( editPane );
                 }
+                // create Navigator for EditPane scope
+                createNavigator( editPane );
             }
             else if ( epu.getWhat() == EditPaneUpdate.DESTROYED && scope == EDITPANE_SCOPE ) {
                 EditPane editPane = epu.getEditPane();
-                Navigator nav = viewNavigatorMap.get( editPane.getView() );
-                if ( nav != null ) {
-                    nav.removeHistory( editPane );
-                }
+                editPaneNavigatorMap.remove( editPane );
             }
         }
         else if ( message instanceof PropertiesChanged ) {

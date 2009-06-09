@@ -72,5 +72,13 @@
     plugin.toggleScope();
     </CODE>
     </ACTION>
+    
+   <ACTION NAME="navigator.toggleGroupByFile" >
+    <CODE>
+    ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+    plugin.toggleGroupByFile();
+    </CODE>
+    </ACTION>
+    
 </ACTIONS>
 
