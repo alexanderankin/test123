@@ -5,12 +5,16 @@
 
 	<ACTION NAME="lucene-find" NO_REPEAT="TRUE">
 		<CODE>
-			lucene.LucenePlugin.find(view);
+			gatchan.jedit.lucene.Index index = ((gatchan.jedit.lucene.LucenePlugin)jEdit.getPlugin("gatchan.jedit.lucene.LucenePlugin")).getIndex("jEdit");
+            index.addFile("/home/kpouer/dev/jEdit");
+            index.commit();
+            
 		</CODE>
 	</ACTION>
 	<ACTION NAME="lucene-index" NO_REPEAT="TRUE">
 		<CODE>
-			lucene.LucenePlugin.index(view);
+			gatchan.jedit.lucene.Index index = ((gatchan.jedit.lucene.LucenePlugin)jEdit.getPlugin("gatchan.jedit.lucene.LucenePlugin")).getIndex("jEdit");
+            index.search("Matthieu");
 		</CODE>
 	</ACTION>
 	
