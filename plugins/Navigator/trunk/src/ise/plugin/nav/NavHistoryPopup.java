@@ -33,9 +33,11 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import javax.swing.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Vector;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
@@ -51,6 +53,10 @@ class NavHistoryPopup extends JPopupMenu {
     public NavHistoryPopup( View view, Navigator navigator, Collection<NavPosition> positions ) {
         this.navigator = navigator;
         this.view = view;
+        
+        // positions is a Stack, so need to reverse the order
+        positions = new ArrayList<NavPosition>(positions);
+        Collections.reverse((List)positions);
 
         // create components
         JPanel contents = new JPanel( new BorderLayout() );
@@ -81,10 +87,8 @@ class NavHistoryPopup extends JPopupMenu {
         setPopupSize( 600, 200 );
     }
 
-
-    // TODO: confirm order is correct (not reversed)
     private Collection<NavPosition> groupByFile( Collection<NavPosition> positions ) {
-        HashSet<NavPosition> items = new HashSet<NavPosition>();
+        List<NavPosition> items = new ArrayList<NavPosition>(positions.size());
         HashSet<String> paths = new HashSet<String>();
         for ( NavPosition pos: positions ) {
             if ( paths.add( pos.path ) ) {
