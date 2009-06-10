@@ -107,7 +107,7 @@ public class PVSVNOptionPane extends AbstractOptionPane {
 
         // subversion file format
         fileformat_label = new JLabel( jEdit.getProperty( "ips.Subversion_file_format>", "Subversion file format:" ) );
-        fileformat = new JComboBox( new String[] {"1.3", "1.4", "1.5"} );
+        fileformat = new JComboBox( new String[] {"1.3", "1.4", "1.5", "1.6"} );
         fileformat.setEditable( false );
         String wc_item;
         switch ( getWCVersion() ) {
@@ -118,9 +118,13 @@ public class PVSVNOptionPane extends AbstractOptionPane {
                 wc_item = "1.4";
                 break;
             case SVNAdminAreaFactory.WC_FORMAT_15:
-            default:
                 wc_item = "1.5";
                 break;
+            case SVNAdminAreaFactory.WC_FORMAT_16:
+            default:
+                wc_item = "1.6";
+                break;
+                
         }
         fileformat.setSelectedItem( wc_item );
 
@@ -189,8 +193,11 @@ public class PVSVNOptionPane extends AbstractOptionPane {
             else if ( new_wc_format.equals( "1.4" ) ) {
                 wc_format = SVNAdminAreaFactory.WC_FORMAT_14;
             }
-            else {
+            else if ( new_wc_format.equals( "1.5" ) ) {
                 wc_format = SVNAdminAreaFactory.WC_FORMAT_15;
+            }
+            else {
+                wc_format = SVNAdminAreaFactory.WC_FORMAT_16;
             }
             if ( wc_format != current_wc_format ) {
                 SVNWCClient wc_client = SVNClientManager.newInstance().getWCClient();
