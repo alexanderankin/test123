@@ -2,7 +2,6 @@
 package gatchan.phpparser.parser;
 //{{{ Imports
 import java.util.ArrayList;
-import java.io.StringReader;
 import java.io.*;
 import java.util.List;
 import java.util.Stack;
