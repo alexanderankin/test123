@@ -46,7 +46,6 @@ package gatchan.phpparser.parser;
 
 //{{{ Imports
 import java.util.ArrayList;
-import java.io.StringReader;
 import java.io.*;
 import java.util.List;
 import java.util.Stack;
@@ -63,352 +62,343 @@ import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
  * @author Matthieu Casanova <chocolat.mou@gmail.com>
  * @version $Id$
  */
-public final class PHPParser
+public class PHPParser
 {
-
-  //{{{ Fields
-
-  //{{{ constants for methods and function distinction (some keywords are allowed in method classes
-
-  public static final int CONST_METHOD = 0;
-  public static final int CONST_FUNCTION = 1;
-  //}}}
-
-  //todo : fix the variables names bug
-  //todo : handle tilde operator
-
-  //todo: put this in an interface
-  public static final int ERROR = 2;
-  public static final int WARNING = 1;
-  public static final int INFO = 0;
-
-  /** The current segment. */
-  private OutlineableWithChildren currentSegment;
-
-  /** The message of the current ParseException. If it's null it's because the parse exception wasn't handled */
-  private String errorMessage;
-
-  private int errorStart = -1;
-  private int errorEnd = -1;
-  private PHPDocument phpDocument;
-
-  private static final String SYNTAX_ERROR_CHAR = "syntax error";
-  /**
-  * The point where html starts.
-  * It will be used by the token manager to create HTMLCode objects
-  */
-  private int htmlStart;
-  private int htmlLineStart;
-  private int htmlColumnStart;
-
-  //ast stack
-  private static final int AstStackIncrement = 100;
-  /** The stack of node. */
-  private Statement[] nodes;
-  /** The cursor in expression stack. */
-  private int nodePtr;
-
-  public static final boolean PARSER_DEBUG = false;
-
-  private final List parserListeners = new ArrayList();
-
-  private String path;
-
-  /** Tell if the parsing should be stopped. */
-  private boolean shouldStop;
-
-  private boolean php5Enabled;
-
-  private Stack scopeStack;
-
-  private Scope scope;
-
-  private List tempList = new ArrayList();
-  //}}}
-
-  //{{{ PHPParser()
-
-  public PHPParser() {
-  }
-
-  //}}}
-  //{{{ getPath()
-
-  /**
-   * Set the path of the file that is currently parsed.
-   * This path will be sent in parse errors and messages
-   *
-   * @param path the path of the parsed file
-   */
-  public void setPath(String path) {
-    this.path = path;
-  } //}}}
-  //{{{ getPath()
-
-  public String getPath() {
-    return path;
-  } //}}}
-  //{{{ setPhp5Enabled(boolean php5Enabled)
-  public void setPhp5Enabled(boolean php5Enabled) {
-    this.php5Enabled = php5Enabled;
-  } //}}}
-
-  //{{{ stop()
-
-  /**
-   * Ask the parser to stop his work.
-   */
-  public void stop() {
-    shouldStop = true;
-  }
-
-  //}}}
-  //{{{ isStopped()
-
-  public boolean isStopped() {
-    return shouldStop;
-  }
-
-  //}}}
-  //{{{ addParserListener(PHPParserListener listener)
-
-  public void addParserListener(PHPParserListener listener) {
-    if (!parserListeners.contains(listener)) {
-      parserListeners.add(listener);
-    }
-  }
-
-  //}}}
-  //{{{ removeParserListener(PHPParserListener listener)
-
-  public void removeParserListener(PHPParserListener listener) {
-    parserListeners.remove(listener);
-  }
-
-  //}}}
-  //{{{ fireParseError(PHPParseErrorEvent e)
-
-  public void fireParseError(PHPParseErrorEvent e) {
-    for (int i = 0;i < parserListeners.size();i++) {
-        PHPParserListener listener = (PHPParserListener) parserListeners.get(i);
-        listener.parseError(e);
-    }
-  }
-
-  //}}}
-
-  //{{{ fireParseError(String message, String expected, Token token)
-
-  public void fireParseError(String message, String expected, Token token) {
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          message,
-                                          expected,
-                                          token));
-  }
-
-  //{{{ fireParseError(String message, AstNode node)
-  public void fireParseError(String message, AstNode node)
-  {
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          message,
-                                          node.getSourceStart(),
-                                          node.getSourceEnd(),
-                                          node.getBeginLine(),
-                                          node.getEndLine(),
-                                          node.getBeginColumn(),
-                                          node.getEndColumn()));
-    } //}}}
-
-  //}}}
-  //{{{ fireParseMessage(PHPParseMessageEvent e)
-
-  public void fireParseMessage(PHPParseMessageEvent e) {
-    for (int i = 0;i < parserListeners.size();i++) {
-        PHPParserListener listener = (PHPParserListener) parserListeners.get(i);
-        listener.parseMessage(e);
-    }
-  }
-
-  //}}}
-  //{{{ phpParserTester(String strEval)
-
-  public final void phpParserTester(String strEval) throws ParseException {
-    StringReader stream = new StringReader(strEval);
-    if (jj_input_stream == null) {
-      jj_input_stream = new JavaCharStream(stream, 1, 1);
-      token_source = new PHPParserTokenManager(jj_input_stream);
-    }
-    ReInit(new StringReader(strEval));
-    init();
-    phpDocument = new PHPDocument("_root");
-    scope = new Scope();
-    scopeStack = new Stack();
-    scopeStack.push(scope);
-    currentSegment = phpDocument;
-    token_source.SwitchTo(PHPParserTokenManager.PHPPARSING);
-    phpTest();
-  }//}}}
-
-  //{{{ htmlParserTester(File fileName)
-
-  public final void htmlParserTester(File fileName) throws FileNotFoundException, ParseException {
-    Reader stream = new FileReader(fileName);
-    if (jj_input_stream == null) {
-      jj_input_stream = new JavaCharStream(stream, 1, 1);
-      token_source = new PHPParserTokenManager(jj_input_stream);
-    }
-    ReInit(stream);
-    init();
-    phpDocument = new PHPDocument("_root");
-    scope = new Scope();
-    scopeStack = new Stack();
-    scopeStack.push(scope);
-    currentSegment = phpDocument;
-    phpFile();
-  }
-
-  //}}}
-  //{{{ htmlParserTester(String strEval)
-
-  public final void htmlParserTester(String strEval) throws ParseException {
-    StringReader stream = new StringReader(strEval);
-    if (jj_input_stream == null) {
-      jj_input_stream = new JavaCharStream(stream, 1, 1);
-      token_source = new PHPParserTokenManager(jj_input_stream);
-    }
-    ReInit(stream);
-    init();
-    phpDocument = new PHPDocument("_root");
-    scope = new Scope();
-    scopeStack = new Stack();
-    scopeStack.push(scope);
-    currentSegment = phpDocument;
-    phpFile();
-  }
-
-  //}}}
-  //{{{ init()
-
-  /**
-   * Reinitialize the parser.
-   */
-  private void init() {
-    nodes = new Statement[AstStackIncrement];
-    nodePtr = -1;
-    htmlStart = 0;
-    htmlColumnStart = 0;
-    htmlLineStart = 0;
-  }
-
-  //}}}
-  //{{{ pushOnAstNodes(Statement node)
-
-  /**
-   * Add an php node on the stack.
-   * @param node the node that will be added to the stack
-   */
-  private void pushOnAstNodes(Statement node) {
-    try {
-      nodes[++nodePtr] = node;
-    } catch (IndexOutOfBoundsException e) {
-      int oldStackLength = nodes.length;
-      Statement[] oldStack = nodes;
-      nodes = new Statement[oldStackLength + AstStackIncrement];
-      System.arraycopy(oldStack, 0, nodes, 0, oldStackLength);
-      nodePtr = oldStackLength;
-      nodes[nodePtr] = node;
-    }
-  }
-
-  //}}}
-  //{{{ parse(String s)
-
-  public final void parse(String s) throws ParseException {
-    Reader reader = new StringReader(s);
-    parse(reader);
-  }
-
-  //}}}
-  //{{{ parse(Reader reader)
-
-  public final void parse(Reader reader) throws ParseException {
-    phpDocument = new PHPDocument("_root");
-    scope = new Scope();
-    scopeStack = new Stack();
-    scopeStack.push(scope);
-    currentSegment = phpDocument;
-    if (jj_input_stream == null) {
-      jj_input_stream = new JavaCharStream(reader, 1, 1);
-      token_source = new PHPParserTokenManager(jj_input_stream);
-    }
-    ReInit(reader);
-    init();
-    parse();
-    Statement[] astNodes = new Statement[nodes.length];
-    phpDocument.setNodes(astNodes);
-    System.arraycopy(nodes,0,astNodes,0,nodes.length);
-    phpDocument.analyzeCode(this);
-  }
-
-  //}}}
-  //{{{ createNewHTMLCode()
-
-  /**
-   * Put a new html block in the stack.
-   */
-  public final void createNewHTMLCode() {
-    int currentPosition = token.sourceStart;
-    if (currentPosition == htmlStart ||
-          currentPosition < htmlStart ||
-          currentPosition > jj_input_stream.getCurrentBuffer().length()) {
-      return;
-    }
-    // todo : reactivate this
-    //final String html = jj_input_stream.getCurrentBuffer().substring(htmlStart, currentPosition);
-    String html = "";
-    pushOnAstNodes(new HTMLCode(html, htmlStart,currentPosition,htmlLineStart,token.endLine,htmlColumnStart,token.endColumn));
-  }
-
-  //}}}
-  //{{{ error_skipto(int kind)
-
-  Token error_skipto(int kind) {
-    //  ParseException e = generateParseException();  // generate the exception object.
-    //  System.out.println(e.toString());  // print the error message
-    Token t;
-    do {
-      t = getNextToken();
-    } while (t.kind != kind && t.kind != PHPParserConstants.EOF && t.kind != PHPParserConstants.RBRACE);
-    return t;
-  }
-
-  //}}}
-  //{{{ parse()
-
-  public final void parse() throws ParseException {
-	  phpFile();
-  }
-
-  //}}}
-  //{{{ getPHPDocument()
-
-  public PHPDocument getPHPDocument() {
-    return phpDocument;
-  }
-
-  //}}}
-
-  //{{{ setTypeFromScope(Variable variable)
-  private void setTypeFromScope(Variable variable) {
-    VariableUsage usage = scope.getVariable(variable.getName(),variable.getBeginLine(),variable.getBeginColumn());
-    if (usage != null) {
-      variable.setType(usage.getType());
-    }
-  }
-
-  //}}}
+	//{{{ Fields
+
+	//{{{ constants for methods and function distinction (some keywords are allowed in method classes
+
+	public static final int CONST_METHOD = 0;
+	public static final int CONST_FUNCTION = 1;
+	//}}}
+
+	//todo : fix the variables names bug
+	//todo : handle tilde operator
+
+	//todo: put this in an interface
+	public static final int ERROR = 2;
+	public static final int WARNING = 1;
+	public static final int INFO = 0;
+
+	/** The current segment. */
+	private OutlineableWithChildren currentSegment;
+
+	/** The message of the current ParseException. If it's null it's because the parse exception wasn't handled */
+	private String errorMessage;
+
+	private int errorStart = -1;
+	private int errorEnd = -1;
+	private PHPDocument phpDocument;
+
+	private static final String SYNTAX_ERROR_CHAR = "syntax error";
+	/**
+	* The point where html starts.
+	* It will be used by the token manager to create HTMLCode objects
+	*/
+	private int htmlStart;
+	private int htmlLineStart;
+	private int htmlColumnStart;
+
+	//ast stack
+	private static final int AstStackIncrement = 100;
+	/** The stack of node. */
+	private Statement[] nodes;
+	/** The cursor in expression stack. */
+	private int nodePtr;
+
+	public static final boolean PARSER_DEBUG = false;
+
+	private final List parserListeners = new ArrayList();
+
+	private String path;
+
+	/** Tell if the parsing should be stopped. */
+	private boolean shouldStop;
+
+	private boolean php5Enabled;
+
+	private Stack scopeStack;
+
+	private Scope scope;
+
+	private final List tempList = new ArrayList();
+	//}}}
+
+	//{{{ PHPParser constructor
+	public PHPParser()
+	{
+	} //}}}
+
+	//{{{ setPath() method
+	/**
+	 * Set the path of the file that is currently parsed.
+	 * This path will be sent in parse errors and messages
+	 *
+	 * @param path the path of the parsed file
+	 */
+	public void setPath(String path)
+	{
+	 	 this.path = path;
+	} //}}}
+
+	//{{{ getPath()
+	public String getPath()
+	{
+		return path;
+	} //}}}
+
+	//{{{ setPhp5Enabled(boolean php5Enabled)
+	public void setPhp5Enabled(boolean php5Enabled)
+	{
+		this.php5Enabled = php5Enabled;
+	} //}}}
+
+	//{{{ stop()
+	/**
+	 * Ask the parser to stop his work.
+	 */
+	public void stop()
+	{
+		shouldStop = true;
+	} //}}}
+
+	//{{{ isStopped()
+	public boolean isStopped()
+	{
+		return shouldStop;
+	} //}}}
+
+	//{{{ addParserListener(PHPParserListener listener)
+	public void addParserListener(PHPParserListener listener)
+	{
+		if (!parserListeners.contains(listener))
+		{
+			parserListeners.add(listener);
+		}
+	} //}}}
+
+	//{{{ removeParserListener(PHPParserListener listener)
+	public void removeParserListener(PHPParserListener listener)
+	{
+		parserListeners.remove(listener);
+	} //}}}
+
+	//{{{ fireParseError(PHPParseErrorEvent e)
+	public void fireParseError(PHPParseErrorEvent e)
+	{
+		for (int i = 0;i < parserListeners.size();i++)
+		{
+			PHPParserListener listener = (PHPParserListener) parserListeners.get(i);
+			listener.parseError(e);
+		}
+	} //}}}
+
+	//{{{ fireParseError() methods
+	public void fireParseError(String message, String expected, Token token)
+	{
+		fireParseError(new PHPParseErrorEvent(ERROR,
+						      path,
+						      message,
+						      expected,
+						      token));
+	}
+
+	public void fireParseError(String message, AstNode node)
+	{
+		fireParseError(new PHPParseErrorEvent(ERROR,
+						      path,
+						      message,
+						      node.getSourceStart(),
+						      node.getSourceEnd(),
+						      node.getBeginLine(),
+						      node.getEndLine(),
+						      node.getBeginColumn(),
+						      node.getEndColumn()));
+	} //}}}
+
+	//{{{ fireParseMessage(PHPParseMessageEvent e)
+	public void fireParseMessage(PHPParseMessageEvent e)
+	{
+		for (int i = 0;i < parserListeners.size();i++)
+		{
+			PHPParserListener listener = (PHPParserListener) parserListeners.get(i);
+			listener.parseMessage(e);
+		}
+	} //}}}
+
+	//{{{ phpParserTester(String strEval)
+	public void phpParserTester(String strEval) throws ParseException
+	{
+		StringReader stream = new StringReader(strEval);
+		if (jj_input_stream == null)
+		{
+			jj_input_stream = new JavaCharStream(stream, 1, 1);
+			token_source = new PHPParserTokenManager(jj_input_stream);
+		}
+		ReInit(new StringReader(strEval));
+		init();
+		phpDocument = new PHPDocument("_root");
+		scope = new Scope();
+		scopeStack = new Stack();
+		scopeStack.push(scope);
+		currentSegment = phpDocument;
+		token_source.SwitchTo(PHPParserTokenManager.PHPPARSING);
+		phpTest();
+	} //}}}
+
+	//{{{ htmlParserTester() methods
+	public void htmlParserTester(File fileName) throws FileNotFoundException, ParseException
+	{
+		Reader stream = new FileReader(fileName);
+		if (jj_input_stream == null)
+		{
+			jj_input_stream = new JavaCharStream(stream, 1, 1);
+			token_source = new PHPParserTokenManager(jj_input_stream);
+		}
+		ReInit(stream);
+		init();
+		phpDocument = new PHPDocument("_root");
+		scope = new Scope();
+		scopeStack = new Stack();
+		scopeStack.push(scope);
+		currentSegment = phpDocument;
+		phpFile();
+	}
+
+	public void htmlParserTester(String strEval) throws ParseException
+	{
+		StringReader stream = new StringReader(strEval);
+		if (jj_input_stream == null)
+		{
+			jj_input_stream = new JavaCharStream(stream, 1, 1);
+			token_source = new PHPParserTokenManager(jj_input_stream);
+		}
+		ReInit(stream);
+		init();
+		phpDocument = new PHPDocument("_root");
+		scope = new Scope();
+		scopeStack = new Stack();
+		scopeStack.push(scope);
+		currentSegment = phpDocument;
+		phpFile();
+	} //}}}
+
+	//{{{ init()
+	/**
+	 * Reinitialize the parser.
+	 */
+	private void init()
+	{
+		nodes = new Statement[AstStackIncrement];
+		nodePtr = -1;
+		htmlStart = 0;
+		htmlColumnStart = 0;
+		htmlLineStart = 0;
+	} //}}}
+
+	//{{{ pushOnAstNodes(Statement node)
+	/**
+	 * Add an php node on the stack.
+	 * @param node the node that will be added to the stack
+	 */
+	private void pushOnAstNodes(Statement node)
+	{
+		try
+		{
+			nodes[++nodePtr] = node;
+		}
+		catch (IndexOutOfBoundsException e)
+		{
+			int oldStackLength = nodes.length;
+			Statement[] oldStack = nodes;
+			nodes = new Statement[oldStackLength + AstStackIncrement];
+			System.arraycopy(oldStack, 0, nodes, 0, oldStackLength);
+			nodePtr = oldStackLength;
+			nodes[nodePtr] = node;
+		}
+	} //}}}
+
+	//{{{ parse() methods
+	 public void parse() throws ParseException
+	 {
+	 	 phpFile();
+	 }
+
+	public void parse(String s) throws ParseException
+	{
+		Reader reader = new StringReader(s);
+		parse(reader);
+	}
+
+	public void parse(Reader reader) throws ParseException
+	{
+		phpDocument = new PHPDocument("_root");
+		scope = new Scope();
+		scopeStack = new Stack();
+		scopeStack.push(scope);
+		currentSegment = phpDocument;
+		if (jj_input_stream == null)
+		{
+			jj_input_stream = new JavaCharStream(reader, 1, 1);
+			token_source = new PHPParserTokenManager(jj_input_stream);
+		}
+		ReInit(reader);
+		init();
+		parse();
+		Statement[] astNodes = new Statement[nodes.length];
+		phpDocument.setNodes(astNodes);
+		System.arraycopy(nodes,0,astNodes,0,nodes.length);
+		phpDocument.analyzeCode(this);
+	} //}}}
+
+	//{{{ createNewHTMLCode()
+	/**
+	 * Put a new html block in the stack.
+	 */
+	public void createNewHTMLCode()
+	{
+		int currentPosition = token.sourceStart;
+		if (currentPosition == htmlStart ||
+		    currentPosition < htmlStart ||
+		    currentPosition > jj_input_stream.getCurrentBuffer().length())
+		{
+			return;
+		}
+		// todo : reactivate this
+		//final String html = jj_input_stream.getCurrentBuffer().substring(htmlStart, currentPosition);
+		String html = "";
+		pushOnAstNodes(new HTMLCode(html, htmlStart,currentPosition,htmlLineStart,token.endLine,htmlColumnStart,token.endColumn));
+	} //}}}
+
+	//{{{ error_skipto(int kind)
+	Token error_skipto(int kind)
+	{
+		//  ParseException e = generateParseException();  // generate the exception object.
+		//  System.out.println(e.toString());  // print the error message
+		Token t;
+		do
+		{
+			t = getNextToken();
+		}
+		while (t.kind != kind && t.kind != PHPParserConstants.EOF && t.kind != PHPParserConstants.RBRACE);
+		return t;
+	} //}}}
+
+	//{{{ getPHPDocument()
+	public PHPDocument getPHPDocument()
+	{
+		return phpDocument;
+	} //}}}
+
+	//{{{ setTypeFromScope(Variable variable)
+	private void setTypeFromScope(Variable variable)
+	{
+		VariableUsage usage = scope.getVariable(variable.getName(),variable.getBeginLine(),variable.getBeginColumn());
+		if (usage != null)
+		{
+			variable.setType(usage.getType());
+		}
+	} //}}}
 }
 
 PARSER_END(PHPParser)
@@ -3800,41 +3790,37 @@ Expression ClassIdentifier():
  */
 AbstractVariable VariableSuffix(Expression prefix) :
 {
-  AbstractVariable abstractVariable;
+	AbstractVariable abstractVariable;
 }
 {
-  (
-      abstractVariable = classAccess(prefix)
-    |
-      abstractVariable = staticClassAccess(prefix)
-    |
-      abstractVariable = arrayDeclarator(prefix)
-  )
-  {
-    return abstractVariable;
-  }
+	(
+		abstractVariable = classAccess(prefix)
+	|
+		abstractVariable = staticClassAccess(prefix)
+	|
+		abstractVariable = arrayDeclarator(prefix)
+	)
+	{
+		return abstractVariable;
+	}
 } //}}}
 
 //{{{ variableSuffixMethodCall()
 Expression variableSuffixMethodCall(Expression prefix) :
 {
-  Expression expr = prefix;
+	Expression expr = prefix;
 }
 {
-  [
-    expr = staticClassAccess(expr)
-  ]
-  (
-      expr = classAccess(expr)
-      [
-        expr = Arguments(expr)
-      ]
-    |
-      expr = arrayDeclarator(expr)
-  )*
-  {
-    return expr;
-  }
+	[ expr = staticClassAccess(expr) ]
+	(
+		expr = classAccess(expr)
+	 	[ expr = Arguments(expr) ]
+	|
+		expr = arrayDeclarator(expr)
+	)*
+	{
+		return expr;
+	}
 } //}}}
 
 //{{{ staticClassAccess()
@@ -3844,86 +3830,84 @@ Expression variableSuffixMethodCall(Expression prefix) :
  */
 ClassAccess staticClassAccess(Expression expr):
 {
-  Expression expr2;
-  ClassAccess ca;
-  Token staticClassAccess;
-  Token dollarToken, identifierToken;
+	Expression expr2;
+	ClassAccess ca;
+	Token staticClassAccess;
+	Token dollarToken, identifierToken;
 }
 {
-  staticClassAccess = <STATICCLASSACCESS>
-  try
-  {
-  (
-    //{{{ field access
-    dollarToken = <DOLLAR>
-    try {
-      identifierToken = <IDENTIFIER>
-      {
-        expr2 = new ConstantIdentifier(identifierToken);
-        ca = new ClassAccess(expr,expr2,PHPParserConstants.STATICCLASSACCESS,expr2.getSourceEnd(),expr2.getEndLine(),expr2.getEndColumn());
-      }
-    } catch (ParseException e) {
-      ca = new ClassAccess(expr,
-                           null,
-                           PHPParserConstants.STATICCLASSACCESS,
-                           dollarToken.sourceEnd,
-                           dollarToken.endLine,
-                           dollarToken.endColumn);
-      fireParseError("identifier expected","identifier",e.currentToken);
-    } //}}}
-    |
-     //{{{ method access
-     {
-       Expression arguments = null;
-       Token methodIdentifier;
-     }
-     try
-     {
-       methodIdentifier = methodIdentifier()
-       {
-         expr2 =  new ConstantIdentifier(methodIdentifier);
-       }
-       [
-         LOOKAHEAD(<LPAREN>)
-         arguments = methodCall(expr2)
-       ]
-       {
-         expr2.setType(new Type(Type.OBJECT_INT,expr2.toString()));
-         if (arguments == null)
-           arguments = expr2;
-         ca = new ClassAccess(expr,
-                              arguments,
-                              PHPParserConstants.STATICCLASSACCESS,
-                              arguments.getSourceEnd(),
-                              arguments.getEndLine(),
-                              arguments.getEndColumn());
-       }
-     }
-     catch (ParseException e)
-     {
-       ca = new ClassAccess(expr,
-                            null,
-                            PHPParserConstants.STATICCLASSACCESS,
-                            staticClassAccess.sourceEnd,
-                            staticClassAccess.endLine,
-                            staticClassAccess.endColumn);
-       fireParseError("identifier expected","identifier",e.currentToken);
-     } //}}}
-  )
-  }
-  catch (ParseException e)
-  {
-    ca = new ClassAccess(expr,
-                         null,
-                         PHPParserConstants.STATICCLASSACCESS,
-                         staticClassAccess.sourceEnd,
-                         staticClassAccess.endLine,
-                         staticClassAccess.endColumn);
-    fireParseError("field or method expected","identifier",e.currentToken);
-  }
-  {
-    return ca;
-  }
+	staticClassAccess = <STATICCLASSACCESS>
+	try
+	{
+		(
+			//{{{ field access
+			dollarToken = <DOLLAR>
+			try {
+				identifierToken = <IDENTIFIER>
+				{
+					expr2 = new ConstantIdentifier(identifierToken);
+					ca = new ClassAccess(expr,expr2,PHPParserConstants.STATICCLASSACCESS,expr2.getSourceEnd(),expr2.getEndLine(),expr2.getEndColumn());
+				}
+			} catch (ParseException e)
+			{
+				ca = new ClassAccess(expr,
+						     null,
+						     PHPParserConstants.STATICCLASSACCESS,
+						     dollarToken.sourceEnd,
+						     dollarToken.endLine,
+						     dollarToken.endColumn);
+				fireParseError("identifier expected","identifier",e.currentToken);
+			} //}}}
+		|
+			//{{{ method access
+			{
+				Expression arguments = null;
+				Token methodIdentifier;
+			}
+			try
+			{
+				methodIdentifier = methodIdentifier()
+				{
+					expr2 =  new ConstantIdentifier(methodIdentifier);
+				}
+				[ LOOKAHEAD(<LPAREN>) arguments = methodCall(expr2) ]
+				{
+					expr2.setType(new Type(Type.OBJECT_INT,expr2.toString()));
+					if (arguments == null)
+						arguments = expr2;
+					ca = new ClassAccess(expr,
+							     arguments,
+							     PHPParserConstants.STATICCLASSACCESS,
+							     arguments.getSourceEnd(),
+							     arguments.getEndLine(),
+							     arguments.getEndColumn());
+				}
+			}
+			catch (ParseException e)
+			{
+				ca = new ClassAccess(expr,
+						     null,
+						     PHPParserConstants.STATICCLASSACCESS,
+						     staticClassAccess.sourceEnd,
+						     staticClassAccess.endLine,
+						     staticClassAccess.endColumn);
+				fireParseError("identifier expected","identifier",e.currentToken);
+			} //}}}
+		)
+	}
+	catch (ParseException e)
+	{
+		ca = new ClassAccess(expr,
+				     null,
+				     PHPParserConstants.STATICCLASSACCESS,
+				     staticClassAccess.sourceEnd,
+				     staticClassAccess.endLine,
+				     staticClassAccess.endColumn);
+		fireParseError("field or method expected","identifier",e.currentToken);
+	}
+	{
+		return ca;
+	}
 } //}}}
 
 //{{{ staticClassAccess(Expression expr)
@@ -4028,73 +4012,63 @@ ClassAccess classAccess(Expression prefix) :
 //{{{ arrayDeclarator(Expression prefix)
 ArrayDeclarator arrayDeclarator(Expression prefix) :
 {
-  Token open;
-  Token close = null;
-  Expression expression = null;
-  int sourceEnd,endLine,endColumn;
+	Token open;
+	Token close = null;
+	Expression expression = null;
+	int sourceEnd,endLine,endColumn;
 }
 {
-  (
-    open = <LBRACKET>
-    [ expression = Expression() ]
-    try {
-      close = <RBRACKET>
-    } catch (ParseException e) {
-      //{{{ fireParseError
-      fireParseError(new PHPParseErrorEvent(ERROR,
-                                            path,
-                                            "']' expected",
-                                            "]",
-                                            e.currentToken.image,
-                                            e.currentToken.sourceStart,
-                                            e.currentToken.sourceEnd,
-                                            e.currentToken.beginLine,
-                                            e.currentToken.endLine,
-                                            e.currentToken.endColumn,
-                                            e.currentToken.endColumn+1)); //}}}
-    }
-  |
-    open = <LBRACE>
-    [ expression = Expression() ]
-    try {
-      close = <RBRACE>
-    } catch (ParseException e) {
-      //{{{ fireParseError
-      fireParseError(new PHPParseErrorEvent(ERROR,
-                                            path,
-                                            "'}' expected",
-                                            "}",
-                                            e.currentToken.image,
-                                            e.currentToken.sourceStart,
-                                            e.currentToken.sourceEnd,
-                                            e.currentToken.beginLine,
-                                            e.currentToken.endLine,
-                                            e.currentToken.endColumn,
-                                            e.currentToken.endColumn+1)); //}}}
-    }
-  )
-  {
-    if (close == null) {
-      if (expression == null) {
-        sourceEnd = open.sourceEnd;
-        endLine   = open.endLine;
-        endColumn = open.endColumn;
-      } else {
-        sourceEnd = expression.getSourceEnd();
-        endLine   = expression.getEndLine();
-        endColumn = expression.getEndColumn();
-      }
-    } else {
-      sourceEnd = open.sourceEnd;
-      endLine   = open.endLine;
-      endColumn = open.endColumn;
-    }
-    return new ArrayDeclarator(prefix,
-                               expression,
-                               sourceEnd,
-                               endLine,
-                               endColumn);
-  }
+	(
+		open = <LBRACKET>
+	 	[ expression = Expression() ]
+	 	try
+	 	{
+	 		close = <RBRACKET>
+	 	}
+	 	catch (ParseException e)
+	 	{
+	 		fireParseError("']' expected", "]", e.currentToken);
+	 	}
+	|
+		open = <LBRACE>
+		[ expression = Expression() ]
+		try
+		{
+			close = <RBRACE>
+		}
+		catch (ParseException e)
+		{
+			fireParseError("'}' expected", "}", e.currentToken);
+		}
+	)
+	{
+		if (close == null)
+		{
+			if (expression == null)
+			{
+				sourceEnd = open.sourceEnd;
+				endLine   = open.endLine;
+				endColumn = open.endColumn;
+			}
+			else
+			{
+				sourceEnd = expression.getSourceEnd();
+				endLine   = expression.getEndLine();
+				endColumn = expression.getEndColumn();
+			}
+		}
+		else
+		{
+			sourceEnd = open.sourceEnd;
+			endLine   = open.endLine;
+			endColumn = open.endColumn;
+		}
+		return new ArrayDeclarator(prefix,
+					   expression,
+					   sourceEnd,
+					   endLine,
+					   endColumn);
+	}
 } //}}}
 
 //}}}
