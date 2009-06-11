@@ -24,15 +24,13 @@ package gatchan.jedit.lucene;
 import lucene.SourceCodeAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.*;
-import org.apache.lucene.search.spans.SpanScorer;
-import org.apache.lucene.search.highlight.Highlighter;
-import org.apache.lucene.search.highlight.QueryScorer;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TopDocs;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSManager;
@@ -45,37 +43,14 @@ import java.io.*;
 /**
  * @author Matthieu Casanova
  */
-public class IndexImpl implements Index
+public class IndexImpl extends AbstractIndex implements Index
 {
-	private IndexWriter writer;
-
-	private Searcher searcher;
-
 	private String name;
-	private File path;
-
 
 	public IndexImpl(String name, File path)
 	{
+		super(path);
 		this.name = name;
-		this.path = path;
-	}
-
-	public void close()
-	{
-		closeWriter();
-		if (searcher != null)
-		{
-			try
-			{
-				searcher.close();
-			}
-			catch (IOException e)
-			{
-				Log.log(Log.ERROR, this, "Unable to close searcher", e);
-			}
-			searcher = null;
-		}
 	}
 
 	public String getName()
@@ -111,6 +86,7 @@ public class IndexImpl implements Index
 			{
 			}
 		}
+		LucenePlugin.CENTRAL.commit();
 	}
 
 	private void addFile(VFSFile file, Object session)
@@ -144,6 +120,7 @@ public class IndexImpl implements Index
 		try
 		{
 			writer.deleteDocuments(new Term("path", path));
+			LucenePlugin.CENTRAL.removeFile(path, name);
 		}
 		catch (IOException e)
 		{
@@ -163,7 +140,6 @@ public class IndexImpl implements Index
 			Query _query = parser.parse(query);
 			TopDocs docs = searcher.search(_query, 100);
 			ScoreDoc[] scoreDocs = docs.scoreDocs;
-			Highlighter highlighter = new Highlighter(new QueryScorer(_query));
 			for (ScoreDoc doc : scoreDocs)
 			{
 				Document document = searcher.doc(doc.doc);
@@ -183,35 +159,9 @@ public class IndexImpl implements Index
 		}
 	}
 
-	public void commit()
-	{
-		if (writer != null)
-		{
-			try
-			{
-				writer.optimize();
-			}
-			catch (IOException e)
-			{
-				Log.log(Log.ERROR, this, "Error while optimizing index", e);
-			}
-			closeWriter();
-		}
-		if (searcher != null)
-		{
-			try
-			{
-				searcher.close();
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();  
-			}
-		}
-	}
-
 	private void addDocument(VFSFile file, Object session)
 	{
+		Log.log(Log.DEBUG, this, "Index:"+name + " add " + file);
 		Document doc = new Document();
 		doc.add(new Field("path", file.getPath(), Field.Store.YES, Field.Index.ANALYZED));
 		Reader reader = null;
@@ -221,6 +171,7 @@ public class IndexImpl implements Index
 			                                                                                   false,
 			                                                                                   jEdit.getActiveView())));
 			doc.add(new Field("content", reader));
+			LucenePlugin.CENTRAL.addFile(file.getPath(), name);
 			writer.updateDocument(new Term("path", file.getPath()), doc);
 		}
 		catch (IOException e)
@@ -233,49 +184,4 @@ public class IndexImpl implements Index
 		}
 	}
 
-	private void openWriter()
-	{
-		if (writer != null)
-			return;
-		try
-		{
-			path.mkdirs();
-			writer = new IndexWriter(path, new SourceCodeAnalyzer(), IndexWriter.MaxFieldLength.LIMITED);
-		}
-		catch (IOException e)
-		{
-			Log.log(Log.ERROR, this, "Unable to open IndexWriter", e);
-		}
-	}
-
-	private void openSearcher()
-	{
-		if (searcher == null)
-		{
-			try
-			{
-				searcher = new IndexSearcher(path.getPath());
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
-		}
-	}
-
-	private void closeWriter()
-	{
-		if (writer != null)
-		{
-			try
-			{
-				writer.close();
-			}
-			catch (IOException e)
-			{
-				Log.log(Log.ERROR, this, "Unable to close IndexWriter", e);
-			}
-			writer = null;
-		}
-	}
 }
