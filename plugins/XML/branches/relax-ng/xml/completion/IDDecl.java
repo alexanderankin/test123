@@ -16,6 +16,7 @@
 package xml.completion;
 
 //{{{ Imports
+import java.util.Comparator;
 import org.gjt.sp.jedit.MiscUtilities;
 //}}}
 
@@ -44,13 +45,10 @@ public class IDDecl
 	} //}}}
 
 	//{{{ Compare class
-	public static class Compare implements MiscUtilities.Compare
+	public static class Compare implements Comparator<IDDecl>
 	{
-		public int compare(Object obj1, Object obj2)
+		public int compare(IDDecl id1, IDDecl id2)
 		{
-			IDDecl id1 = (IDDecl)obj1;
-			IDDecl id2 = (IDDecl)obj2;
-
 			return MiscUtilities.compareStrings(
 				id1.id,
 				id2.id,true);

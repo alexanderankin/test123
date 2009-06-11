@@ -21,7 +21,6 @@ import org.gjt.sp.jedit.*;
 import sidekick.*;
 import xml.completion.*;
 import xml.completion.ElementDecl.AttributeDecl;
-import xml.parser.TagParser;
 import xml.*;
 
 /**

@@ -730,11 +730,11 @@ public class XercesParserImpl extends XmlParser
 			if(element.getAttribute(aName) != null)
 				return;
 
-			ArrayList values;
+			ArrayList<String> values;
 
 			if(type.startsWith("("))
 			{
-				values = new ArrayList();
+				values = new ArrayList<String>();
 
 				StringTokenizer st = new StringTokenizer(
 					type.substring(1,type.length() - 1),"|");
