@@ -1,5 +1,5 @@
 /*
- * PrintResultProcessor.java
+ * Result.java
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
@@ -20,16 +20,26 @@
  */
 package gatchan.jedit.lucene;
 
-import org.gjt.sp.util.Log;
+import org.apache.lucene.document.Document;
 
 /**
  * @author Matthieu Casanova
  */
-public class PrintResultProcessor implements ResultProcessor
+public class Result
 {
-	public boolean process(float score, Result result)
+	private Document document;
+
+	public Result()
 	{
-		Log.log(Log.MESSAGE, this, result.getPath() + " score:" + score);
-		return true;
+	}
+
+	void setDocument(Document document)
+	{
+		this.document = document;
+	}
+
+	public String getPath()
+	{
+		return document.getField("path").stringValue();
 	}
 }
