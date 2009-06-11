@@ -47,6 +47,10 @@ public class PluginList extends Observable {
 		notifyObservers();
 	}
 	
+	public void clear() {
+	     plugins.clear();   
+	}
+	
 	public Plugin get(int i) {
 		try {
 			return plugins.get(i);
@@ -58,6 +62,20 @@ public class PluginList extends Observable {
 	
 	public int size() {
 		return plugins.size();
+	}
+	
+	/**
+ 	* @return the count of just the plugins in this list, does not count
+ 	* any library files.
+ 	*/
+	public int pluginCount() {
+        int count = 0;
+        for (Plugin plugin : plugins) {
+            if (!plugin.isLibrary()) {
+                ++count;   
+            }
+        }
+        return count;
 	}
 	
 	//{{{ Plugin
@@ -111,6 +129,35 @@ public class PluginList extends Observable {
 			return jar.getPlugin() == null;
 		}
 		
+		/**
+ 		 * @return true if the plugin should be activated on jEdit startup.		
+ 		 */
+		public boolean loadOnStartup() {
+		    if (jar == null) {
+		         return false;   
+		    }
+		    if (jar.getPlugin() == null) {
+		        return false;
+		    }
+		    String activate = jEdit.getProperty("plugin." + jar.getPlugin().getClassName() + ".activate", "defer");
+		    return "startup".equals(activate);
+		}
+		
+		public void setLoadOnStartup(boolean b) {
+		    jEdit.setProperty("plugin." + jar.getPlugin().getClassName() + ".activate", b ? "startup" : "defer");
+		    jEdit.saveSettings();
+		}
+		
+		public boolean canLoadOnStartup() {
+		    if (jar == null) {
+		         return false;   
+		    }
+		    if (jar.getPlugin() == null) {
+		        return false;
+		    }
+		    return true;
+		}
+		
 		public String toString() {
 			if (jar == null) {
 				return file.getName();
@@ -132,6 +179,28 @@ public class PluginList extends Observable {
 		{
 			return file.toString().hashCode();
 		}
+		
+        public boolean equals( Object obj ) 
+        {
+            // check for reference equality
+            if ( this == obj ) 
+            {
+                return true;
+            }
+    
+            // type check
+            if ( !( obj instanceof PluginList.Plugin ) ) 
+            {
+                return false;
+            }
+    
+            // cast to correct type
+            PluginList.Plugin other = ( PluginList.Plugin ) obj;
+            
+            // check fields
+            return getFile().equals(other.getFile() );
+        }
+		
 	} //}}}
 	
 }

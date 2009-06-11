@@ -30,8 +30,8 @@ public class CombinedPanel extends JTabbedPane implements DefaultFocusComponent
 	public CombinedPanel(View v, boolean selectReload) 
 	{
 		dwm = v.getDockableWindowManager();
-		JPanel reloader = ReloadPanel.getInstance();
-		JPanel activator = ActivationPanel.getInstance();
+		JPanel reloader = new ReloadPanel();
+		JPanel activator = new ActivationPanel();
 		
 		jsp = new JScrollPane (reloader);
 		jsp.addKeyListener(new KeyHandler());

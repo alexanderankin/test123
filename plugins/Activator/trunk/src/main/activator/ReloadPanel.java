@@ -20,22 +20,15 @@ import org.gjt.sp.jedit.PluginJAR;
 import common.gui.util.ConstraintFactory;
 
 public class ReloadPanel extends JPanel implements Observer {
-    private static ReloadPanel instance;
     List <PluginList.Plugin> plugins = new ArrayList<PluginList.Plugin>();
     HashMap<File, PluginList.Plugin> confirmed = new HashMap<File, PluginList.Plugin>();
     ConstraintFactory cf = new ConstraintFactory();
-    private ReloadPanel() {
+    
+    public ReloadPanel() {
         setLayout(new GridBagLayout());
         setBackground(Color.GRAY);
         update();
         PluginList.getInstance().addObserver(this);
-    }
-
-    public static ReloadPanel getInstance() {
-        if (instance == null) {
-            instance = new ReloadPanel();
-        }
-        return instance;
     }
 
     public void update(Observable o, Object arg) {

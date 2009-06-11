@@ -13,7 +13,6 @@ import java.awt.event.MouseListener;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -25,25 +24,32 @@ import javax.swing.table.DefaultTableModel;
 
 import org.gjt.sp.jedit.jEdit;
 
-import activator.PluginList;
-
 import common.gui.util.ConstraintFactory;
 
 public class ActivationPanel extends JPanel implements ActionListener,
 		MouseListener {
 
-	private static ActivationPanel instance;
 	private AbstractTableModel model;
 	private JTable table;
-	private JButton activate = new JButton("Activate");
-	private JButton deactivate = new JButton("Deactivate");
-	private JButton load = new JButton("Load");
-	private JButton unload = new JButton("Unload");
+	private JButton activate = new JButton(jEdit.getProperty("activator.Activate", "Activate"));
+	private JButton deactivate = new JButton(jEdit.getProperty("activator.Deactivate", "Deactivate"));
+	private JButton load = new JButton(jEdit.getProperty("activator.Load", "Load"));
+	private JButton unload = new JButton(jEdit.getProperty("activator.Unload", "Unload"));
+	
+	private boolean showLibraries = true;
+	
+	private Color background = jEdit.getColorProperty("view.bgColor");
+	private Color foreground = jEdit.getColorProperty("view.fgColor");
 
 	/**
 	@SuppressWarnings("static-access")
 	*/
-	private ActivationPanel() {
+	public ActivationPanel() {
+	    this(true);
+	}
+	
+	public ActivationPanel(boolean showButtons) {
+	    showLibraries = showButtons;
 		load.setEnabled(false);
 		unload.setEnabled(false);
 		activate.setEnabled(false);
@@ -62,16 +68,18 @@ public class ActivationPanel extends JPanel implements ActionListener,
 		ConstraintFactory cf = new ConstraintFactory();
 		add(new JScrollPane(table), cf.buildConstraints(0, 0, 10, 1, cf.N,
 				cf.BOTH));
-		add(load, cf.buildConstraints(0, 1, 1, 1, cf.CENTER, cf.NONE, 0, 0));
-		add(unload, cf.buildConstraints(1, 1, 1, 1, cf.CENTER, cf.NONE, 0, 0));
-		add(activate, cf.buildConstraints(2, 1, 1, 1, cf.CENTER, cf.NONE, 0, 0));
-		add(deactivate, cf.buildConstraints(3, 1, 1, 1, cf.CENTER, cf.NONE, 0, 0));
+		if (showButtons) {
+            add(load, cf.buildConstraints(0, 1, 1, 1, cf.CENTER, cf.NONE, 0, 0));
+            add(unload, cf.buildConstraints(1, 1, 1, 1, cf.CENTER, cf.NONE, 0, 0));
+            add(activate, cf.buildConstraints(2, 1, 1, 1, cf.CENTER, cf.NONE, 0, 0));
+            add(deactivate, cf.buildConstraints(3, 1, 1, 1, cf.CENTER, cf.NONE, 0, 0));
+		}
 		int row = jEdit.getIntegerProperty("activator.rowselected", 1);
 		ListSelectionModel smodel = table.getSelectionModel();
 		smodel.setSelectionInterval(row, row);
 		mouseReleased(null);
 	}
-
+	
 	public void setVisible(boolean isVisible) {
 		if (isVisible) {
 		int row = jEdit.getIntegerProperty("activator.rowselected", 1);
@@ -82,13 +90,6 @@ public class ActivationPanel extends JPanel implements ActionListener,
 		super.setVisible(isVisible);
 	}
 	
-	public static ActivationPanel getInstance() {
-		if (instance == null) {
-			instance = new ActivationPanel();
-		}
-		return instance;
-	}
-
 	// {{{ actionPerformed()
 	public void actionPerformed(ActionEvent e) {
 		int row = table.getSelectedRow();
@@ -105,28 +106,28 @@ public class ActivationPanel extends JPanel implements ActionListener,
 			PluginManager.loadPluginJAR(plugin.getFile().toString());
 			sw.stop();
 			jEdit.getActiveView().getStatus().setMessage(
-					plugin + " loaded in " + sw);
+					plugin + " " + jEdit.getProperty("activator.loaded_in", "loaded in") + " " + sw);
 		}
 		if (e.getSource() == unload) {
 			sw.start();
 			PluginManager.unloadPluginJAR(plugin.getJAR());
 			sw.stop();
 			jEdit.getActiveView().getStatus().setMessage(
-					plugin + " unloaded in " + sw);
+					plugin + " " + jEdit.getProperty("activator.unloaded_in", "unloaded in") + " " + sw);
 		}
 		if (e.getSource() == activate) {
 			sw.start();
 			plugin.getJAR().activatePlugin();
 			sw.stop();
 			jEdit.getActiveView().getStatus().setMessage(
-					plugin + " activated in " + sw);
+					plugin + " " + jEdit.getProperty("activator.activated_in", "activated in") + " " + sw);
 		}
 		if (e.getSource() == deactivate) {
 			sw.start();
 			plugin.getJAR().deactivatePlugin(false);
 			sw.stop();
 			jEdit.getActiveView().getStatus().setMessage(
-					plugin + " deactivated in " + sw);
+					plugin + " " + jEdit.getProperty("activator.deactivated_in", "deactivated in") + " " + sw);
 		}
 		// Re-select the thing that was selected
 		ListSelectionModel smodel =table.getSelectionModel();
@@ -192,21 +193,37 @@ public class ActivationPanel extends JPanel implements ActionListener,
 		}
 
 		public int getRowCount() {
-			return PluginList.getInstance().size();
+		    if (showLibraries) {
+		        return PluginList.getInstance().size();
+		    }
+		    else {
+		        return PluginList.getInstance().pluginCount();   
+		    }
 		}
 
 		public int getColumnCount() {
-			return 2;
+			return 3;
 		}
 
 		public String getColumnName(int col) {
 			switch (col) {
 			case 0:
-				return "Plugin";
+				return jEdit.getProperty("activator.Plugin", "Plugin");
 			case 1:
-				return "State";
+				return jEdit.getProperty("activator.State", "State");
+			case 2:
+			    return jEdit.getProperty("activator.Startup", "Start up");
 			default:
-				return "error";
+				return jEdit.getProperty("activator.error", "error");
+			}
+		}
+		
+		public Class getColumnClass(int col) {
+			switch (col) {
+			case 2:
+			    return Boolean.class;
+			default:
+				return String.class;
 			}
 		}
 
@@ -219,7 +236,30 @@ public class ActivationPanel extends JPanel implements ActionListener,
 			if (col == 1) {
 				return p.getStatus();
 			}
-			return "error";
+			
+			if (col == 2) {
+			    return p.canLoadOnStartup() && p.loadOnStartup();
+			}
+			return jEdit.getProperty("activator.error", "error");
+		}
+		
+		public void setValueAt(Object value, int row, int col) {
+		    if (col == 2) {
+		        PluginList.Plugin p = PluginList.getInstance().get(row);
+		        if (!p.isLibrary()) {
+		            boolean b = ((Boolean)value).booleanValue();
+		            p.setLoadOnStartup(b);   
+		        }
+		    }
+		}
+		
+		public boolean isCellEditable(int row, int col) {
+		    boolean rtn = false;
+		    if (col == 2) {
+                PluginList.Plugin p = PluginList.getInstance().get(row);
+                rtn = !p.isLibrary();
+		    }
+		    return rtn;
 		}
 
 		public void update(Observable o, Object arg) {
@@ -227,52 +267,32 @@ public class ActivationPanel extends JPanel implements ActionListener,
 		}
 	}// }}}
 
-}
 
-// {{{ ActivationRenderer
-class ActivationRenderer extends DefaultTableCellRenderer {
+    // {{{ ActivationRenderer
+    class ActivationRenderer extends DefaultTableCellRenderer {
+    
+        private static final long serialVersionUID = -3823797564394450958L;
+        
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int row, int column) {
+            super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
+                    row, column);
+            setForeground(ActivationPanel.this.foreground);
+            setBackground(isSelected ? table.getSelectionBackground() : ActivationPanel.this.background);
+            
+            if (column == 1) {
+                String displayName = value.toString();
+                if (value == LOADED) {
+                    displayName = "<html><font color=yellow>&#9830;</font> " + displayName;
+                } else if (value == ACTIVATED) {
+                    displayName = "<html><font color=green>&#9830;</font> " + displayName;
+                } else if (value == PluginList.ERROR) {
+                    displayName = "<html><font color=red>&#9830;</font> " + displayName;
+                }
+                setText(displayName);
+            }
+            return this;
+        }
+    } // }}}
 
-	private static final long serialVersionUID = -3823797564394450958L;
-	
-	public Component getTableCellRendererComponent(JTable table, Object value,
-			boolean isSelected, boolean hasFocus, int row, int column) {
-		super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
-				row, column);
-		setForeground(Color.BLACK);
-		if (column == 1) {
-			if (isSelected) {
-				setBackground(table.getSelectionBackground());
-				if (value == LOADED) {
-					setForeground(Color.YELLOW);
-				} else if (value == ACTIVATED) {
-					setForeground(Color.GREEN);
-				} else if (value == PluginList.ERROR) {
-					setForeground(Color.RED);
-				}
-			} else {
-				if (value == LOADED) {
-					setBackground(Color.YELLOW);
-				} else if (value == ACTIVATED) {
-					setBackground(Color.GREEN);
-				} else if (value == PluginList.ERROR) {
-					setBackground(Color.RED);
-				} else {
-					setBackground(Color.WHITE);
-				}
-			}
-		} else {
-			if (isSelected) {
-				setBackground(table.getSelectionBackground());
-			} else {
-				setBackground(Color.WHITE);
-			}
-		}
-
-		if (column == 2) {
-			return new JButton((Action) value);
-		}
-
-		return this;
-	}
 } // }}}
-

@@ -13,3 +13,22 @@ activator.reloader.title=Reloader
 activator.reloader.label=Reloader
 
 plugin.activator.ActivatorPlugin.menu=activator activator.reloader
+
+# plugin option pane
+plugin.activator.ActivatorPlugin.option-pane=activator
+options.activator.label=Activator
+options.activator.code=new activator.OptionPane()
+
+# various pieces of text for Activator
+activator.Activate=Activate
+activator.Deactivate=Deactivate
+activator.Load=Load
+activator.Unload=Unload
+activator.Plugin=Plugin
+activator.State=State
+activator.error=error
+activator.loaded_in=loaded in
+activator.unloaded_in=unloaded in
+activator.activated_in=activated in
+activator.deactivated_in=deactivated in
+activator.Startup=Start up

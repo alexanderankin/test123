@@ -31,5 +31,9 @@ public class ActivatorPlugin extends EBPlugin {
 	public void removeNotify() {
 		EditBus.removeFromBus(this);
 	}
+	
+	public void stop() {
+	    PluginList.getInstance().clear();   
+	}
 }
 
