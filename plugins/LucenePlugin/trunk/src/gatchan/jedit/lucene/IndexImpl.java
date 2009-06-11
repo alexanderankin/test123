@@ -151,7 +151,7 @@ public class IndexImpl implements Index
 		}
 	}
 
-	public void search(String query)
+	public void search(String query, ResultProcessor processor)
 	{
 		openSearcher();
 		if (searcher == null)
@@ -167,9 +167,10 @@ public class IndexImpl implements Index
 			for (ScoreDoc doc : scoreDocs)
 			{
 				Document document = searcher.doc(doc.doc);
-				Field field = document.getField("content");
-//				analyzer.tokenStream("content", new StringReader())
-				System.out.println(document.getField("path").stringValue());
+				if (!processor.process(doc, document))
+				{
+					break;
+				}
 			}
 		}
 		catch (ParseException e)
