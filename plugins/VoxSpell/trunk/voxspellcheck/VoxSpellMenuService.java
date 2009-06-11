@@ -37,10 +37,10 @@ public class VoxSpellMenuService extends DynamicContextMenuService
         
         StringBuffer word = new StringBuffer();
         JMenuItem[] items = null;
-        if (painter.check(ta, pos, word)) {
+        if (painter.check(pos, word)) {
             // Check to see if it was ignored or added to the user dictionary.
             // If it was then add the ability to reset.
-            if (painter.check(ta, pos, word, true)) {
+            if (painter.check(pos, word, true)) {
                 items = new EnhancedMenuItem[1];
                 items[0] = new EnhancedMenuItem("reset - \""+word+"\"", "voxspellcheck.resetWord",
                                                 jEdit.getActionContext());

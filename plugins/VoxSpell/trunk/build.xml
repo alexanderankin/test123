@@ -21,7 +21,7 @@
 
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
-		<!--<pathelement location="${install.dir}/.jar"/>-->
+		<pathelement location="${install.dir}/ErrorList.jar"/>
 		<pathelement location="${src.dir}"/>
 	</path>
 
