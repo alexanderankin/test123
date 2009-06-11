@@ -28,8 +28,10 @@ import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
+import java.io.FileFilter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -116,6 +118,22 @@ public class LucenePlugin extends EditPlugin
 				Log.log(Log.ERROR, this, e);
 			}
 		}
+	}
+
+	public Index chooseIndex()
+	{
+		File home = getPluginHome();
+		File[] indexes = home.listFiles(new FileFilter()
+		{
+			public boolean accept(File pathname)
+			{
+				return pathname.isDirectory();
+			}
+		});
+
+		Object ret = JOptionPane.showInputDialog(jEdit.getActiveView(), "Choose an index", "Choose an index", JOptionPane.QUESTION_MESSAGE, null, indexes,null);
+		System.out.println(ret);
+		return null;
 	}
 
 	private File getIndexFile(String name)
