@@ -106,42 +106,42 @@ public class VoxSpellPlugin extends EBPlugin
         new Thread(runner).start();
     }
     
-    static protected void scheduleEditPaneUpdate(final EditPane edit_pane)
+    static protected void scheduleEditPaneUpdate(final EditPane editpane)
     {
         final Runnable task = new Runnable() {
             public void run() {
-                updateEditPane(edit_pane);
+                updateEditPane(editpane);
             }
         };
         scheduleLater(task);
     }
     
-    static public void updateEditPane(EditPane edit_pane)
+    static public void updateEditPane(EditPane editpane)
     {
-        if (edit_pane == null)
+        if (editpane == null)
             return;
         
         VoxSpellPainter painter = null;
-        Buffer buffer = edit_pane.getBuffer();
-        TextArea text_area = edit_pane.getTextArea();
+        Buffer buffer = editpane.getBuffer();
+        TextArea text_area = editpane.getTextArea();
         
         if (buffer == null) {
-            scheduleEditPaneUpdate(edit_pane);
+            scheduleEditPaneUpdate(editpane);
             return;
         }
         
-        painter = getVoxSpellPainter(edit_pane);
+        painter = getVoxSpellPainter(editpane);
         if (painter == null) {
             String s = jEdit.getProperty("options.voxspellcheck.start_checking_on_activate");
             if (s.equals("true")) {
-                startSpelling(edit_pane);
+                startSpelling(editpane);
             }
-            painter = getVoxSpellPainter(edit_pane);
-        } 
+            painter = getVoxSpellPainter(editpane);
+        }
         if (painter != null) {
             Mode mode = buffer.getMode();
             if (mode == null) {
-                scheduleEditPaneUpdate(edit_pane);
+                scheduleEditPaneUpdate(editpane);
                 return;
             }
             
@@ -161,8 +161,8 @@ public class VoxSpellPlugin extends EBPlugin
             return;
         }
         
-        EditPane edit_pane = view.getEditPane();
-        if (edit_pane == null) {
+        EditPane editpane = view.getEditPane();
+        if (editpane == null) {
             final Runnable task = new Runnable() {
                 public void run() {
                     updateActiveView();
@@ -172,12 +172,12 @@ public class VoxSpellPlugin extends EBPlugin
             return;
         }
 
-        updateEditPane(edit_pane);
+        updateEditPane(editpane);
     }
    
     public void handleMessage(EBMessage msg)
     {
-        EditPane edit_pane = null;
+        EditPane editpane = null;
         if (msg instanceof BufferUpdate) {
             BufferUpdate bu = (BufferUpdate)msg;
             View view = bu.getView();
@@ -185,12 +185,12 @@ public class VoxSpellPlugin extends EBPlugin
                 updateActiveView();
                 return;
             }
-            edit_pane = view.getEditPane();
-            updateEditPane(edit_pane);
+            editpane = view.getEditPane();
+            updateEditPane(editpane);
         } else if (msg instanceof EditPaneUpdate) {
             EditPaneUpdate epu = (EditPaneUpdate)msg;
-            edit_pane = epu.getEditPane();
-            updateEditPane(edit_pane);
+            editpane = epu.getEditPane();
+            updateEditPane(editpane);
         }
     }
     
@@ -250,25 +250,25 @@ public class VoxSpellPlugin extends EBPlugin
         }
     }
     
-    public static void startSpelling(EditPane edit_pane)
+    public static void startSpelling(EditPane editpane)
     {
         if (checker == null || ignore_checker == null || user_checker == null) {
-            Log.log(Log.ERROR, edit_pane, "Not checking spelling, plugin is not" +
+            Log.log(Log.ERROR, editpane, "Not checking spelling, plugin is not" +
                     "initialized");
             return;
         }
         
-        Object obj = edit_pane.getClientProperty(prop_key);
+        Object obj = editpane.getClientProperty(prop_key);
         if (obj == null) {
-            TextAreaPainter cur_painter = edit_pane.getTextArea().getPainter();
+            TextAreaPainter cur_painter = editpane.getTextArea().getPainter();
             
-            VoxSpellPainter p = new VoxSpellPainter(edit_pane.getTextArea(), 
+            VoxSpellPainter p = new VoxSpellPainter(editpane.getTextArea(), 
                                                     checker,
                                                     user_checker,
                                                     ignore_checker);
             cur_painter.addExtension(TextAreaPainter.BELOW_SELECTION_LAYER, p);
-            edit_pane.putClientProperty(prop_key, p);
-            scheduleEditPaneUpdate(edit_pane);
+            editpane.putClientProperty(prop_key, p);
+            scheduleEditPaneUpdate(editpane);
         }
     }
     
@@ -284,7 +284,7 @@ public class VoxSpellPlugin extends EBPlugin
     
     public void start()
     {
-       if (this.ignore_checker == null) {
+        if (this.ignore_checker == null) {
             this.ignore_checker = new WordTrie();
         }
         
@@ -298,10 +298,10 @@ public class VoxSpellPlugin extends EBPlugin
             }
             this.suggestions = new SuggestionTree(this.checker);
         }
-
+        
         /* user dictionary comes after the suggestion tree so that the words
-         * in user_dict can be added to the suggestion tree.
-         */
+        * in user_dict can be added to the suggestion tree.
+        */
         if (this.user_checker == null) {
             this.user_checker = new WordTrie();
             loadUserDict();
@@ -314,7 +314,7 @@ public class VoxSpellPlugin extends EBPlugin
                 startSpelling(view.getEditPane());
             }
         }
-     }
+    }
     
     public void stop()
     {
@@ -493,3 +493,4 @@ public class VoxSpellPlugin extends EBPlugin
         editpane.getTextArea().repaint();
     }
 }
+

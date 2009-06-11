@@ -61,4 +61,22 @@
                 voxspellcheck.VoxSpellPlugin.stopSpelling(editPane);
         </CODE>
     </ACTION>
+    <ACTION NAME="voxspellcheck.checkAll">
+        <CODE>
+            voxspellcheck.VoxSpellPainter painter = voxspellcheck.VoxSpellPlugin.getVoxSpellPainter(editPane);
+            stop_after_check = false;
+            if (painter == null) {
+                stop_after_check = true;
+                voxspellcheck.VoxSpellPlugin.startSpelling(editPane);
+            }
+            painter.checkAll(editPane);
+            if (stop_after_check)
+                voxspellcheck.VoxSpellPlugin.stopSpelling(editPane);
+                
+            EditAction ea = jEdit.getAction("error-list");
+            if (ea == null)
+                return;
+            ea.invoke(view);
+        </CODE>
+    </ACTION>
 </ACTIONS>

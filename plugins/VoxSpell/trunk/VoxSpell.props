@@ -4,6 +4,7 @@ plugin.voxspellcheck.VoxSpellPlugin.author=Matthew Gilbert (gilbert@voxmea.net)
 plugin.voxspellcheck.VoxSpellPlugin.version=1.0.5
 plugin.voxspellcheck.VoxSpellPlugin.depend.0=jedit 04.03.15.00
 plugin.voxspellcheck.VoxSpellPlugin.depend.1=jdk 1.5
+plugin.voxspellcheck.VoxSpellPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.7
 plugin.voxspellcheck.VoxSpellPlugin.description=English Language Spell Checker
 plugin.voxspellcheck.VoxSpellPlugin.longdescription=description.html
 plugin.voxspellcheck.VoxSpellPlugin.docs=doc/index.html
@@ -22,10 +23,11 @@ options.voxspellcheck.use_custom_color.title=Use custom underline color?
 
 plugin.voxspellcheck.VoxSpellPlugin.menu=voxspellcheck.start voxspellcheck.stop - \
     voxspellcheck.addWord voxspellcheck.ignoreWord - voxspellcheck.reset - \
-    voxspellcheck.suggest
+    voxspellcheck.suggest - voxspellcheck.checkAll
 voxspellcheck.start.label=Start spell checking
 voxspellcheck.stop.label=Stop spell checking
 voxspellcheck.addWord.label=Add word
 voxspellcheck.ignoreWord.label=Ignore word
 voxspellcheck.reset.label=Reset ignored words
 voxspellcheck.suggest.label=Suggest a replacement word
+voxspellcheck.checkAll.label=Spell check entire document
