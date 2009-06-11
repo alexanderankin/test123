@@ -1,5 +1,5 @@
 /*
- * Index.java - The Index interface
+ * ResultProcessor.java - The result processor
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
@@ -20,27 +20,13 @@
  */
 package gatchan.jedit.lucene;
 
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.document.Document;
+
 /**
  * @author Matthieu Casanova
  */
-public interface Index
+public interface ResultProcessor
 {
-	/**
-	 * Release resources.
-	 */
-	void close();
-
-	void commit();
-
-	String getName();
-	void addFile(String path);
-	void removeFile(String path);
-
-	/**
-	 * Execute the given search query.
-	 *
-	 * @param query the query to execute
-	 * @param processor the processor that will get the results
-	 */
-	void search(String query, ResultProcessor processor);
+	boolean process(ScoreDoc scoreDoc, Document document);
 }
