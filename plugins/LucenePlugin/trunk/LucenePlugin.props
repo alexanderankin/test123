@@ -5,4 +5,4 @@ plugin.gatchan.jedit.lucene.LucenePlugin.author=Matthieu Casanova
 plugin.gatchan.jedit.lucene.LucenePlugin.version=1.0
 plugin.gatchan.jedit.lucene.LucenePlugin.depend.0=jdk 1.5
 plugin.gatchan.jedit.lucene.LucenePlugin.depend.1=jedit 04.03.17.00
-plugin.gatchan.jedit.lucene.LucenePlugin.jars=lucene-core-2.4.1.jar\
+plugin.gatchan.jedit.lucene.LucenePlugin.jars=lucene-core-2.4.1.jar

@@ -5,7 +5,7 @@
 
 	<ACTION NAME="lucene-find" NO_REPEAT="TRUE">
 		<CODE>
-			gatchan.jedit.lucene.Index index = ((gatchan.jedit.lucene.LucenePlugin)jEdit.getPlugin("gatchan.jedit.lucene.LucenePlugin")).getIndex("jEdit");
+			gatchan.jedit.lucene.Index index = gatchan.jedit.lucene.LucenePlugin.instance.getIndex("jEdit");
             index.addFile("/home/kpouer/dev/jEdit");
             index.commit();
             
@@ -13,8 +13,8 @@
 	</ACTION>
 	<ACTION NAME="lucene-index" NO_REPEAT="TRUE">
 		<CODE>
-			gatchan.jedit.lucene.Index index = ((gatchan.jedit.lucene.LucenePlugin)jEdit.getPlugin("gatchan.jedit.lucene.LucenePlugin")).getIndex("jEdit");
-            index.search("Matthieu");
+			gatchan.jedit.lucene.Index index = gatchan.jedit.lucene.LucenePlugin.instance.getIndex("jEdit");
+            index.search("Matthieu", new gatchan.jedit.lucene.PrintResultProcessor());
 		</CODE>
 	</ACTION>
 	

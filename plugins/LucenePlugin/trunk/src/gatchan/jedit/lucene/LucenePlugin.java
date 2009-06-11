@@ -21,34 +21,43 @@
 
 package gatchan.jedit.lucene;
 
-import org.gjt.sp.jedit.EBPlugin;
-import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
-import java.util.Map;
-import java.util.HashMap;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Matthieu Casanova
  */
-public class LucenePlugin extends EBPlugin
+public class LucenePlugin extends EditPlugin
 {
+	static CentralIndex CENTRAL;
+	private static final String CENTRAL_INDEX_NAME = "__CENTRAL__";
 	private Map<String, Index> indexMap = new HashMap<String, Index>();
 
+	public static LucenePlugin instance;
 	@Override
 	public void start()
 	{
-		super.start();
+		instance = this;
+		CENTRAL = new CentralIndex(getIndexFile(CENTRAL_INDEX_NAME));
+		EditBus.addToBus(CENTRAL);
 	}
 
 	@Override
 	public void stop()
 	{
-		super.stop();
+		EditBus.removeFromBus(CENTRAL);
+		CENTRAL.close();
+		CENTRAL = null;
+		instance = null;
 	}
 
 	/**
