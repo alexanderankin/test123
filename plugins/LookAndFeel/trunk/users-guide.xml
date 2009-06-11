@@ -82,13 +82,12 @@
     <title>Configuration</title>
     <para>
     To configure the Look And Feel plugin, open up the
-    <emphasis>Global Options Dialog</emphasis> and select the
+    <emphasis>Plugin Options Dialog</emphasis> and select the
     <guibutton>Look And Feel</guibutton> Option Pane:
   </para>
     <para>
-      <guimenu>Utilities</guimenu>&gt;
-    <guimenuitem>Global Options</guimenuitem>&gt;
-    <guilabel>Plugin Options</guilabel>&gt;
+      <guimenu>Plugins</guimenu>&gt;
+    <guimenuitem>Plugin Options</guimenuitem>&gt;
     <guilabel>Look And Feel</guilabel>
     </para>
     <sect1 id="use-jedit-font">
@@ -518,7 +517,7 @@ contact mark@ms-studio.com or visit http://www.ms-studio.com.
   </para>
     <para>
     The website for Lipstik is
-    <ulink url="http://regis.risp.pl/index.html">http://regis.risp.pl/index.html</ulink>.
+    <ulink url="https://sourceforge.net/projects/lipstiklf/">https://sourceforge.net/projects/lipstiklf/</ulink>.
   </para>
     <sect1 id="lipstik-license">
       <title>License</title>
