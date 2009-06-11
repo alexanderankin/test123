@@ -1,0 +1,24 @@
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<ACTIONS>
+    <ACTION NAME="lucene-add-to-index" NO_REPEAT="TRUE">
+        <CODE>
+                gatchan.jedit.lucene.LucenePlugin.instance.chooseIndex();
+
+
+
+
+		</CODE>
+    </ACTION>
+    <ACTION NAME="lucene-add-to-newindex" NO_REPEAT="TRUE">
+        <CODE>
+                String name = JOptionPane.showInputDialog(jEdit.getActiveView(), "Choose an index name", "Create an index", JOptionPane.QUESTION_MESSAGE);
+                gatchan.jedit.lucene.Index index = gatchan.jedit.lucene.LucenePlugin.instance.getIndex(name);
+                for (int i = 0;i &lt; files.length; i++)
+                {
+                    index.addFile(files[i].getPath());
+                }
+                index.commit();
+		</CODE>
+    </ACTION>
+</ACTIONS>
+
