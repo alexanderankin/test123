@@ -94,7 +94,18 @@ the Sourceforge Bug Tracker at
 <title>Change log</title>
 <itemizedlist>
 <listitem>
-<para>Version 1.1, Requires jEdit 4.2pre2</para><itemizedlist>
+<para>Version 1.2, Requires jEdit 4.3pre15, Java 1.5</para>
+<itemizedlist>
+<listitem>
+<para>Added console.caretColor property to scheme, kpouer</para></listitem>
+<para>Updated for jEdit 4.3pre15, danson</para></listitem>
+<para>Updated docs, danson</para></listitem>
+<para>Updates to Zenburn theme for JDiff highlight colors, danson</para></listitem>
+</itemizedlist>
+</listitem>
+<listitem>
+<para>Version 1.1, Requires jEdit 4.2pre2</para>
+<itemizedlist>
 <listitem>
 <para>Added <citetitle>danson</citetitle> and <citetitle>zenburn</citetitle> schemes, submitted by Dale Anson.</para></listitem>
 </itemizedlist>
