@@ -5,11 +5,23 @@
 <body>
 <h2>Activator plugin</h2>
 <p> Author: Brad Mace </p>
-<p> Maintainer: Alan Ezust </p> 
+<p> Maintainers: Alan Ezust, Dale Anson </p> 
 
-<p> The Activator plugin gives very convenient access to the features of loading/unloading plugins from inside jedit. This is especially useful as a developer's tool, when developing and testing plugins. </p>
+<p>The Activator plugin gives the user the ability to specify which plugins should activated on jEdit start up, and which should be deferred to start on first use.  This makes it possible for the user to control which plugins are available right away, which can improve the start up speed and immediate usefulness of jEdit.  For example, the PMD plugin is set by default to start on jEdit start up, so for a user that has the PMD plugin, but doesn't use it all that often, the Activator plugin can set the PMD plugin to not start on jEdit start up and only be loaded into memory when the user requests the PMD plugin to do something.  
+</p>
 
-<p> The Activator plugin contains two dockables, an Activator and a Reloader. Each dockable contains the other's main panel as a JTabPane, so the only difference between them is the default starting point. Only one Activator/Reloader instance can exist at any given time (others will be empty), so dock the view you like best. 
+<p>
+The activation setting for each plugin can be set in the Activator option panel, go to Plugins, Plugin Options, Activator.
+</p>
+
+<p>The Activator plugin also gives very convenient access to the features of loading/unloading plugins from inside jedit, which is especially useful as a developer's tool when developing and testing plugins. </p>
+</p>
+
+<p>For the developer, the Activator plugin contains a dockable with two tabs, an Activator and a Reloader.  The Reloader lets the user reload a plugin, for example, after compiling a new plugin.  Another use would be for the user who has downloaded a trial version of a plugin and wants to use it without restarting jEdit.  
+</p>
+
+<p>
+The dockable also provides additional features on the Activator tab.  From this tab, the selected plugin can be loaded and unloaded, and activated and deactivated.
 </p>
 <h3>Activator panel</h3>
 

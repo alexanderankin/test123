@@ -13,7 +13,6 @@ import common.gui.actions.CustomAction;
 class Reload extends CustomAction
 {
 	private String name;
-	private PluginList.Plugin plugin;
 	private PluginJAR jar;
 
 	public Reload(PluginJAR pluginJAR, String dispName)
@@ -27,11 +26,9 @@ class Reload extends CustomAction
 	public Reload(PluginList.Plugin plugin)
 	{
 		super(plugin.getJAR().getPlugin().getClassName());
-		this.plugin = plugin;
 		jar = plugin.getJAR();
 		name = jar.getPlugin().getClassName();
 		setToolTipText("Click to reload: " + name);
-		// setName(jar.getPlugin().getClassName());
 	}
 
 	public void actionPerformed(ActionEvent event)
