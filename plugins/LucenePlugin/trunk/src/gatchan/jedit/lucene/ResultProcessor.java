@@ -28,5 +28,5 @@ import org.apache.lucene.document.Document;
  */
 public interface ResultProcessor
 {
-	boolean process(ScoreDoc scoreDoc, Document document);
+	boolean process(float score, Result result);
 }

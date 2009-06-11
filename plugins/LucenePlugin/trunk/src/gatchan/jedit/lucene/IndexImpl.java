@@ -140,10 +140,12 @@ public class IndexImpl extends AbstractIndex implements Index
 			Query _query = parser.parse(query);
 			TopDocs docs = searcher.search(_query, 100);
 			ScoreDoc[] scoreDocs = docs.scoreDocs;
+			Result result = new Result();
 			for (ScoreDoc doc : scoreDocs)
 			{
 				Document document = searcher.doc(doc.doc);
-				if (!processor.process(doc, document))
+				result.setDocument(document);
+				if (!processor.process(doc.score, result))
 				{
 					break;
 				}
