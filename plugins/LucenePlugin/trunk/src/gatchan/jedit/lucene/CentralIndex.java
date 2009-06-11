@@ -31,6 +31,7 @@ import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.analysis.SimpleAnalyzer;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.index.Term;
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.Buffer;
@@ -44,11 +45,30 @@ import java.io.IOException;
  */
 public class CentralIndex extends AbstractIndex implements EBComponent
 {
-	private QueryParser parser = new MultiFieldQueryParser(new String[]{"path", "indexName"},new StandardAnalyzer());
+	private QueryParser parser = new MultiFieldQueryParser(new String[]{"path", "indexName"}, new StandardAnalyzer());
 
 	public CentralIndex(File indexFile)
 	{
 		super(indexFile);
+	}
+
+	void createIndex(Index index)
+	{
+
+	}
+
+	void deleteIndex(String name)
+	{
+		openWriter();
+		try
+		{
+			writer.deleteDocuments(new Term("indexName", name));
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		commit();
 	}
 
 	void addFile(String path, String indexName)
@@ -58,7 +78,7 @@ public class CentralIndex extends AbstractIndex implements EBComponent
 
 		try
 		{
-			Query query = parser.parse("+path:"+path+" +indexName:"+indexName);
+			Query query = parser.parse("+path:" + path + " +indexName:" + indexName);
 			TopDocs docs = searcher.search(query, 1);
 			if (docs.scoreDocs.length == 0)
 			{
@@ -81,10 +101,10 @@ public class CentralIndex extends AbstractIndex implements EBComponent
 	void removeFile(String path, String indexName)
 	{
 		openWriter();
-		QueryParser parser = new MultiFieldQueryParser(new String[]{"path", "indexName"},new SimpleAnalyzer());
+		QueryParser parser = new MultiFieldQueryParser(new String[]{"path", "indexName"}, new SimpleAnalyzer());
 		try
 		{
-			Query query = parser.parse("+path:"+path+" +indexName:"+indexName);
+			Query query = parser.parse("+path:" + path + " +indexName:" + indexName);
 			writer.deleteDocuments(query);
 		}
 		catch (ParseException e)

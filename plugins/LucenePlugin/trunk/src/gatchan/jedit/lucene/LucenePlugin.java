@@ -81,8 +81,13 @@ public class LucenePlugin extends EditPlugin
 		return index;
 	}
 
+	/**
+	 * Delete an index.
+	 * @param name the name of the index.
+	 */
 	public void removeIndex(String name)
 	{
+		CENTRAL.deleteIndex(name);
 		Index index = indexMap.remove(name);
 		if (index != null)
 			index.close();
