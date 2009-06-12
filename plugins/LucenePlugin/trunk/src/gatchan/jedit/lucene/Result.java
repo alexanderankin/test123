@@ -40,6 +40,6 @@ public class Result
 
 	public String getPath()
 	{
-		return document.getField("path").stringValue();
+		return document.getField("_path").stringValue();
 	}
 }
