@@ -1,4 +1,4 @@
-plugin.gatchan.jedit.lucene.LucenePlugin.activate=defer
+plugin.gatchan.jedit.lucene.LucenePlugin.activate=startup
 
 plugin.gatchan.jedit.lucene.LucenePlugin.name=LucenePlugin
 plugin.gatchan.jedit.lucene.LucenePlugin.author=Matthieu Casanova
@@ -6,4 +6,9 @@ plugin.gatchan.jedit.lucene.LucenePlugin.version=1.0
 plugin.gatchan.jedit.lucene.LucenePlugin.depend.0=jdk 1.5
 plugin.gatchan.jedit.lucene.LucenePlugin.depend.1=jedit 04.03.17.00
 plugin.gatchan.jedit.lucene.LucenePlugin.jars=lucene-core-2.4.1.jar
-plugin.gatchan.jedit.lucene.LucenePlugin.browser-menu=lucene-add-to-index lucene-add-to-newindex
+plugin.gatchan.jedit.lucene.LucenePlugin.browser-menu=lucene.add-to-index lucene.add-to-newindex
+plugin.gatchan.jedit.lucene.LucenePlugin.usePluginHome=true
+
+
+lucene.add-to-index.label=<html>Add selected file(s) to an <b>existing index</b></html>
+lucene.add-to-newindex.label=<html>Add selected file(s) to a <b>new index</b></html>
