@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Stack;
 
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.util.Log;
 
@@ -20,7 +21,7 @@ class Reload extends CustomAction
 		super(dispName);
 		name = dispName;
 		jar = pluginJAR;
-		setToolTipText("Click to reload: " + name);
+		setToolTipText(jEdit.getProperty("activator.Click_to_reload", "Click to reload:") + " " + name);
 	}
 
 	public Reload(PluginList.Plugin plugin)
@@ -28,7 +29,7 @@ class Reload extends CustomAction
 		super(plugin.getJAR().getPlugin().getClassName());
 		jar = plugin.getJAR();
 		name = jar.getPlugin().getClassName();
-		setToolTipText("Click to reload: " + name);
+		setToolTipText(jEdit.getProperty("activator.Click_to_reload", "Click to reload:") + " " + name);
 	}
 
 	public void actionPerformed(ActionEvent event)

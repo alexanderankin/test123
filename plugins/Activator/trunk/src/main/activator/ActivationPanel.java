@@ -236,6 +236,9 @@ public class ActivationPanel extends JPanel implements ActionListener,
 			}
 
 			if (col == 2) {
+			    if (p.isLibrary()) {
+			         return null;
+			    }
 			    return p.canLoadOnStartup() && p.loadOnStartup();
 			}
 			return jEdit.getProperty("activator.error", "error");

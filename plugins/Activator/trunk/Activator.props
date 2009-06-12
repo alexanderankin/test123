@@ -18,6 +18,7 @@ plugin.activator.ActivatorPlugin.menu=activator activator.reloader
 plugin.activator.ActivatorPlugin.option-pane=activator
 options.activator.label=Activator
 options.activator.code=new activator.OptionPane()
+activator.optionpane.label=<html><strong>Activator</strong><br>Use the checkboxes in the 'Start up' column to set which plugins start when jEdit starts.
 
 # various pieces of text for Activator
 activator.Activate=Activate
@@ -35,6 +36,8 @@ activator.Startup=Start up
 activator.Not_Loaded=Not Loaded
 activator.Loaded=Loaded
 activator.Library=Library
+activator.(library)=(library)
 activator.Error=Error
 activator.Activated=Activated
-activator.optionpane.label=<html><strong>Activator</strong><br>Use the checkboxes in the 'Start up' column to set which plugins start when jEdit starts.
+activator.Click_to_reload=Click to reload
+

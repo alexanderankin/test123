@@ -3,6 +3,11 @@ package activator;
 import java.util.*;
 
 //{{{ PluginComparator
+/**
+ * Sorts plugins in PluginList.  Sort first by type, with library jars
+ * after plugins, then by name, so plugins are listed first and sorted
+ * by name, followed by library jars sorted by name.
+ */
 class PluginComparator implements Comparator {
 	public int compare(Object alpha, Object beta) {
 		PluginList.Plugin a = (PluginList.Plugin) alpha;
