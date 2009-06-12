@@ -15,6 +15,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.PluginJAR;
 
 import common.gui.util.ConstraintFactory;
@@ -23,7 +24,7 @@ public class ReloadPanel extends JPanel implements Observer {
     List <PluginList.Plugin> plugins = new ArrayList<PluginList.Plugin>();
     HashMap<File, PluginList.Plugin> confirmed = new HashMap<File, PluginList.Plugin>();
     ConstraintFactory cf = new ConstraintFactory();
-    
+
     public ReloadPanel() {
         setLayout(new GridBagLayout());
         setBackground(Color.GRAY);
@@ -73,15 +74,13 @@ public class ReloadPanel extends JPanel implements Observer {
                 display_name = "<html><font color=red>&#9830;</font> " + display_name;
             }
             JButton button = new JButton(new Reload(jar, display_name));
-            button.setToolTipText("Click to reload: " + plugin.toString());
+            button.setToolTipText(jEdit.getProperty("activator.Click_to_reload", "Click to reload:") + " " + plugin.toString());
             button.setHorizontalAlignment(SwingConstants.LEFT);
             //			add(name,cf.buildConstraints(0,row,1,1));
             add(button, cf.buildConstraints(1,row,1,1));
             row++;
         }
     }
-
-
 }
 
 

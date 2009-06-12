@@ -7,10 +7,10 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.*;
 
 public class PluginList extends Observable {
-	public static final String LOADED = "Loaded";
-	public static final String ERROR = "Error";
-	public static final String ACTIVATED = "Activated";
-	public static final String NOT_LOADED = "Not Loaded";
+	public static final String LOADED = jEdit.getProperty("activator.Loaded", "Loaded");
+	public static final String ERROR = jEdit.getProperty("activator.Error", "Error");
+	public static final String ACTIVATED = jEdit.getProperty("activator.Activated", "Activated");
+	public static final String NOT_LOADED = jEdit.getProperty("activator.Not_Loaded", "Not Loaded");
 
 	private static PluginList instance;
 	private static List<Plugin> plugins = new ArrayList<Plugin>();
@@ -96,7 +96,7 @@ public class PluginList extends Observable {
 				return NOT_LOADED;
 			}
 			if (jar.getPlugin() == null) {
-				return LOADED+" (library)";
+				return LOADED + " " + jEdit.getProperty("activator.(library)", "(library)");
 			} else if (jar.getPlugin() instanceof EditPlugin.Deferred) {
 				return LOADED;
 			} else if (jar.getPlugin() instanceof EditPlugin.Broken) {

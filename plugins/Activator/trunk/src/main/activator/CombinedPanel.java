@@ -8,14 +8,15 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 
 /**
- * Combined Activator panel. Now we don't need to occupy two 
+ * Combined Activator panel. Now we don't need to occupy two
  * DockPanel spots.
- * 
+ *
  * @author alan dot ezust at gmail.com
  *
  */
@@ -27,36 +28,36 @@ public class CombinedPanel extends JTabbedPane implements DefaultFocusComponent
 	String dockableName;
 	DockableWindowManager dwm;
 
-	public CombinedPanel(View v, boolean selectReload) 
+	public CombinedPanel(View v, boolean selectReload)
 	{
 		dwm = v.getDockableWindowManager();
 		JPanel reloader = new ReloadPanel();
 		JPanel activator = new ActivationPanel();
-		
+
 		jsp = new JScrollPane (reloader);
 		jsp.addKeyListener(new KeyHandler());
 		jsb = jsp.getVerticalScrollBar();
 		int inc = jsb.getUnitIncrement();
 		jsb.setUnitIncrement(inc*20);
-		addTab("Activator", activator);
-		addTab("Reloader", jsp);
-		if (selectReload==true) 
+		addTab(jEdit.getProperty("activator.label", "Activator"), activator);
+		addTab(jEdit.getProperty("activator.reloader.label", "Reloader"), jsp);
+		if (selectReload==true)
 		{
 			setSelectedComponent(jsp);
 			dockableName = ActivatorPlugin.RELOADER;
 		}
-		else 
+		else
 		{
 			dockableName = ActivatorPlugin.NAME;
 		}
 	}
-    
-	public void dismiss() 
+
+	public void dismiss()
 	{
 		dwm.hideDockableWindow(dockableName);
 	}
-	
-	class KeyHandler implements KeyListener 
+
+	class KeyHandler implements KeyListener
 	{
 
 		public void keyPressed(KeyEvent e)
@@ -68,16 +69,16 @@ public class CombinedPanel extends JTabbedPane implements DefaultFocusComponent
 		public void keyTyped(KeyEvent e) { }
 		public void keyReleased(KeyEvent e) { }
 	}
-	
+
 	public void focusOnDefaultComponent()
 	{
 		try {
 			DefaultFocusComponent dcc = (DefaultFocusComponent) getSelectedComponent();
 			dcc.focusOnDefaultComponent();
 		}
-		catch (Exception e) 
+		catch (Exception e)
 		{
-			jsp.requestFocus();			
+			jsp.requestFocus();
 		}
 
 	}
