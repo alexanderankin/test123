@@ -134,6 +134,7 @@ public class CentralIndex extends AbstractIndex implements EBComponent
 				if (index != null)
 				{
 					index.addFile(document.getField("path").stringValue());
+					index.commit();
 				}
 			}
 		}
