@@ -20,21 +20,13 @@
  */
 package gatchan.jedit.lucene;
 
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.queryParser.MultiFieldQueryParser;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.analysis.SimpleAnalyzer;
-import org.apache.lucene.analysis.KeywordAnalyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.*;
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 
 import java.io.File;
@@ -45,8 +37,6 @@ import java.io.IOException;
  */
 public class CentralIndex extends AbstractIndex implements EBComponent
 {
-	private QueryParser parser = new MultiFieldQueryParser(new String[]{"path", "indexName"}, new StandardAnalyzer());
-
 	public CentralIndex(File indexFile)
 	{
 		super(indexFile);
@@ -78,19 +68,15 @@ public class CentralIndex extends AbstractIndex implements EBComponent
 
 		try
 		{
-			Query query = parser.parse("+path:" + path + " +indexName:" + indexName);
+			BooleanQuery query = getPathIndexQuery(path, indexName);
 			TopDocs docs = searcher.search(query, 1);
 			if (docs.scoreDocs.length == 0)
 			{
 				Document document = new Document();
-				document.add(new Field("path", path, Field.Store.NO, Field.Index.ANALYZED));
-				document.add(new Field("indexName", indexName, Field.Store.NO, Field.Index.ANALYZED));
+				document.add(new Field("path", path, Field.Store.YES, Field.Index.NOT_ANALYZED));
+				document.add(new Field("indexName", indexName, Field.Store.YES, Field.Index.NOT_ANALYZED));
 				writer.addDocument(document);
 			}
-		}
-		catch (ParseException e)
-		{
-			e.printStackTrace();
 		}
 		catch (IOException e)
 		{
@@ -98,18 +84,21 @@ public class CentralIndex extends AbstractIndex implements EBComponent
 		}
 	}
 
+	private BooleanQuery getPathIndexQuery(String path, String indexName)
+	{
+		BooleanQuery query = new BooleanQuery();
+		query.add(new BooleanClause(new TermQuery(new Term("path", path)), BooleanClause.Occur.MUST));
+		query.add(new BooleanClause(new TermQuery(new Term("indexName", indexName)), BooleanClause.Occur.MUST));
+		return query;
+	}
+
 	void removeFile(String path, String indexName)
 	{
 		openWriter();
-		QueryParser parser = new MultiFieldQueryParser(new String[]{"path", "indexName"}, new SimpleAnalyzer());
 		try
 		{
-			Query query = parser.parse("+path:" + path + " +indexName:" + indexName);
+			Query query = getPathIndexQuery(path, indexName);
 			writer.deleteDocuments(query);
-		}
-		catch (ParseException e)
-		{
-			e.printStackTrace();
 		}
 		catch (IOException e)
 		{
@@ -133,7 +122,7 @@ public class CentralIndex extends AbstractIndex implements EBComponent
 	{
 		try
 		{
-			Query query = parser.parse("path:" + buffer.getPath());
+			Query query = new TermQuery(new Term("path", buffer.getPath()));
 			openSearcher();
 			TopDocs docs = searcher.search(query, 100);
 			ScoreDoc[] scoreDocs = docs.scoreDocs;
@@ -147,10 +136,6 @@ public class CentralIndex extends AbstractIndex implements EBComponent
 					index.addFile(document.getField("path").stringValue());
 				}
 			}
-		}
-		catch (ParseException e)
-		{
-			e.printStackTrace();
 		}
 		catch (IOException e)
 		{

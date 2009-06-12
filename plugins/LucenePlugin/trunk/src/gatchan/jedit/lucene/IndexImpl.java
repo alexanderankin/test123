@@ -103,7 +103,7 @@ public class IndexImpl extends AbstractIndex implements Index
 			}
 			catch (IOException e)
 			{
-				Log.log(Log.ERROR, this, "Unable to lsit directory " + file.getPath(), e);
+				Log.log(Log.ERROR, this, "Unable to list directory " + file.getPath(), e);
 			}
 		}
 		else if (file.getType() == VFSFile.FILE)
@@ -119,7 +119,7 @@ public class IndexImpl extends AbstractIndex implements Index
 			return;
 		try
 		{
-			writer.deleteDocuments(new Term("path", path));
+			writer.deleteDocuments(new Term("_path", path));
 			LucenePlugin.CENTRAL.removeFile(path, name);
 		}
 		catch (IOException e)
@@ -165,7 +165,8 @@ public class IndexImpl extends AbstractIndex implements Index
 	{
 		Log.log(Log.DEBUG, this, "Index:"+name + " add " + file);
 		Document doc = new Document();
-		doc.add(new Field("path", file.getPath(), Field.Store.YES, Field.Index.ANALYZED));
+		doc.add(new Field("path", file.getPath(), Field.Store.NO, Field.Index.ANALYZED));
+		doc.add(new Field("_path", file.getPath(), Field.Store.YES, Field.Index.NOT_ANALYZED));
 		Reader reader = null;
 		try
 		{
@@ -174,7 +175,7 @@ public class IndexImpl extends AbstractIndex implements Index
 			                                                                                   jEdit.getActiveView())));
 			doc.add(new Field("content", reader));
 			LucenePlugin.CENTRAL.addFile(file.getPath(), name);
-			writer.updateDocument(new Term("path", file.getPath()), doc);
+			writer.updateDocument(new Term("_path", file.getPath()), doc);
 		}
 		catch (IOException e)
 		{
