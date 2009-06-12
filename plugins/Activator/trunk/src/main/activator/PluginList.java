@@ -11,28 +11,28 @@ public class PluginList extends Observable {
 	public static final String ERROR = "Error";
 	public static final String ACTIVATED = "Activated";
 	public static final String NOT_LOADED = "Not Loaded";
-	
+
 	private static PluginList instance;
 	private static List<Plugin> plugins = new ArrayList<Plugin>();
-	
+
 	private PluginList() {
 	}
-	
+
 	public static PluginList getInstance() {
 		if (instance == null) {
 			instance = new PluginList();
 		}
 		return instance;
 	}
-	
+
 	public void addPlugin(PluginJAR jar) {
 		plugins.add(new Plugin(jar));
 	}
-	
+
 	public void addPlugin(File file) {
 		plugins.add(new Plugin(file));
 	}
-	
+
 	public void update() {
 		plugins = new ArrayList<Plugin>();
 		for (PluginJAR pj : jEdit.getPluginJARs()) {
@@ -46,11 +46,11 @@ public class PluginList extends Observable {
 		setChanged();
 		notifyObservers();
 	}
-	
+
 	public void clear() {
-	     plugins.clear();   
+	     plugins.clear();
 	}
-	
+
 	public Plugin get(int i) {
 		try {
 			return plugins.get(i);
@@ -59,11 +59,11 @@ public class PluginList extends Observable {
 			return null;
 		}
 	}
-	
+
 	public int size() {
 		return plugins.size();
 	}
-	
+
 	/**
  	* @return the count of just the plugins in this list, does not count
  	* any library files.
@@ -72,12 +72,12 @@ public class PluginList extends Observable {
         int count = 0;
         for (Plugin plugin : plugins) {
             if (!plugin.isLibrary()) {
-                ++count;   
+                ++count;
             }
         }
         return count;
 	}
-	
+
 	//{{{ Plugin
 	class Plugin {
 		private PluginJAR jar;
@@ -90,7 +90,7 @@ public class PluginList extends Observable {
 		public Plugin(File file) {
 			this.file=file;
 		}
-		
+
 		public String getStatus() {
 			if (jar == null) {
 				return NOT_LOADED;
@@ -105,36 +105,36 @@ public class PluginList extends Observable {
 				return ACTIVATED;
 			}
 		}
-		
+
 		public PluginJAR getJAR() {
 			return jar;
 		}
-		
+
 		public File getFile() {
 			return file;
 		}
-		
+
 		public boolean isLoaded() {
 			return getStatus() != NOT_LOADED;
 		}
-		
+
 		public boolean isActivated() {
 			return getStatus() == ACTIVATED;
 		}
-		
+
 		public boolean isLibrary() {
 			if (jar == null) {
 				return false;
 			}
 			return jar.getPlugin() == null;
 		}
-		
+
 		/**
- 		 * @return true if the plugin should be activated on jEdit startup.		
+ 		 * @return true if the plugin should be activated on jEdit startup.
  		 */
 		public boolean loadOnStartup() {
 		    if (jar == null) {
-		         return false;   
+		         return false;
 		    }
 		    if (jar.getPlugin() == null) {
 		        return false;
@@ -142,22 +142,21 @@ public class PluginList extends Observable {
 		    String activate = jEdit.getProperty("plugin." + jar.getPlugin().getClassName() + ".activate", "defer");
 		    return "startup".equals(activate);
 		}
-		
+
 		public void setLoadOnStartup(boolean b) {
 		    jEdit.setProperty("plugin." + jar.getPlugin().getClassName() + ".activate", b ? "startup" : "defer");
-		    jEdit.saveSettings();
 		}
-		
+
 		public boolean canLoadOnStartup() {
 		    if (jar == null) {
-		         return false;   
+		         return false;
 		    }
 		    if (jar.getPlugin() == null) {
 		        return false;
 		    }
 		    return true;
 		}
-		
+
 		public String toString() {
 			if (jar == null) {
 				return file.getName();
@@ -179,28 +178,28 @@ public class PluginList extends Observable {
 		{
 			return file.toString().hashCode();
 		}
-		
-        public boolean equals( Object obj ) 
+
+        public boolean equals( Object obj )
         {
             // check for reference equality
-            if ( this == obj ) 
+            if ( this == obj )
             {
                 return true;
             }
-    
+
             // type check
-            if ( !( obj instanceof PluginList.Plugin ) ) 
+            if ( !( obj instanceof PluginList.Plugin ) )
             {
                 return false;
             }
-    
+
             // cast to correct type
             PluginList.Plugin other = ( PluginList.Plugin ) obj;
-            
+
             // check fields
             return getFile().equals(other.getFile() );
         }
-		
+
 	} //}}}
-	
+
 }

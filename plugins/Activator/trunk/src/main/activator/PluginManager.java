@@ -14,17 +14,18 @@ import org.gjt.sp.jedit.jEdit;
 
 public class PluginManager {
 	private PluginManager() {}
-	
+
 	//{{{ loadPluginJAR()
 	public static void loadPluginJAR(String jarPath)
 	{
 		jEdit.addPluginJAR(jarPath);
 		PluginJAR jar = jEdit.getPluginJAR(jarPath);
 		if(jar == null || jar.getPlugin() == null)
+		{
 			return;
+		}
 
-		String jars = jEdit.getProperty("plugin."
-			+ jar.getPlugin().getClassName() + ".jars");
+		String jars = jEdit.getProperty("plugin." + jar.getPlugin().getClassName() + ".jars");
 
 		if(jars != null)
 		{
@@ -46,10 +47,9 @@ public class PluginManager {
 			jar.activatePluginIfNecessary();
 	} //}}}
 
-	//{{{ unloadPluginJar()
 
 
-	
+
 	private static Stack<String> unloaded;
 	private static Set<String> unloadedSet;
 	/**
@@ -59,30 +59,27 @@ public class PluginManager {
 	 * @return a stack of strings, one for each deactivated plugin, in the reverse order
 	 *    they were unloaded.
 	 */
+	//{{{ unloadPluginJar()
 	public static Stack<String> unloadPluginJAR(PluginJAR jar)
 	{
 		unloaded = new Stack<String>();
 		unloadedSet = new HashSet<String>();
 		unloadedSet = Collections.synchronizedSet(unloadedSet);
-
-
-		
 		unloadRecursive(jar);
 		return unloaded;
-		
 	}
-	
+
 	private static void unloadRecursive(PluginJAR jar)
 	{
 		String[] dependents = jar.getDependentPlugins();
-		for (String dependent : dependents) 
+		for (String dependent : dependents)
 		{
-			if (!unloadedSet.contains(dependent)) 
+			if (!unloadedSet.contains(dependent))
 			{
 				unloadedSet.add(dependent);
 				PluginJAR _jar = jEdit.getPluginJAR(dependent);
 				if(_jar != null)  {
-					
+
 					unloadRecursive(_jar);
 				}
 			}
@@ -94,20 +91,20 @@ public class PluginManager {
 			new File(cachePath).delete();
 	} //}}}
 
-	
-	
+
+
 	public static String getPluginStatus(PluginJAR jar) {
 		if (jar == null) {
-			return "Not Loaded";
+			return jEdit.getProperty("activator.Not_Loaded", "Not Loaded");
 		}
 		if (jar.getPlugin() == null) {
-			return "Library";
+			return jEdit.getProperty("activator.Library", "Library");
 		} else if (jar.getPlugin() instanceof EditPlugin.Deferred) {
-			return "Loaded";
+			return jEdit.getProperty("activator.Loaded", "Loaded");
 		} else if (jar.getPlugin() instanceof EditPlugin.Broken) {
-			return "Error";
+			return jEdit.getProperty("activator.Error", "Error");
 		} else {
-			return "Activated";
+			return jEdit.getProperty("activator.Activated", "Activated");
 		}
 	}
 }
