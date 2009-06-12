@@ -21,19 +21,21 @@
 
 package gatchan.jedit.lucene;
 
-import org.apache.lucene.index.IndexFileNameFilter;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.io.VFS;
-import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.io.VFSFile;
+import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
 import javax.swing.*;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -125,15 +127,7 @@ public class LucenePlugin extends EditPlugin
 
 	public String chooseIndex()
 	{
-		File home = getPluginHome();
-		File[] indexes = home.listFiles(new IndexFileNameFilter());
-		if (indexes.length == 0)
-			return null;
-		String[] names = new String[indexes.length];
-		for (int i = 0; i < names.length; i++)
-		{
-			names[i] = indexes[i].getName();
-		}
+		String[] names = getIndexes();
 		String name = (String) JOptionPane.showInputDialog(jEdit.getActiveView(), "Choose an index", "Choose an index",
 		                                                   JOptionPane.QUESTION_MESSAGE, null, names, null);
 		return name;
@@ -164,6 +158,31 @@ public class LucenePlugin extends EditPlugin
 				index.commit();
 			}
 		});
+	}
+
+	/**
+	 * Returns the index list.
+	 * @return the index list
+	 */
+	public String[] getIndexes()
+	{
+		File home = getPluginHome();
+		File[] indexes = home.listFiles(new FileFilter()
+		{
+			public boolean accept(File pathname)
+			{
+				return pathname.isDirectory();
+			}
+		});
+		
+		if (indexes.length == 0)
+			return null;
+		List<String> names = new ArrayList<String>(indexes.length);
+		for (File index : indexes)
+		{
+			names.add(index.getName());
+		}
+		return names.toArray(new String[names.size()]);
 	}
 
 	private File getIndexFile(String name)
