@@ -18,7 +18,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
@@ -29,15 +28,14 @@ import common.gui.util.ConstraintFactory;
 public class ActivationPanel extends JPanel implements ActionListener,
 		MouseListener {
 
-	private AbstractTableModel model;
 	private JTable table;
 	private JButton activate = new JButton(jEdit.getProperty("activator.Activate", "Activate"));
 	private JButton deactivate = new JButton(jEdit.getProperty("activator.Deactivate", "Deactivate"));
 	private JButton load = new JButton(jEdit.getProperty("activator.Load", "Load"));
 	private JButton unload = new JButton(jEdit.getProperty("activator.Unload", "Unload"));
-	
+
 	private boolean showLibraries = true;
-	
+
 	private Color background = jEdit.getColorProperty("view.bgColor");
 	private Color foreground = jEdit.getColorProperty("view.fgColor");
 
@@ -47,7 +45,7 @@ public class ActivationPanel extends JPanel implements ActionListener,
 	public ActivationPanel() {
 	    this(true);
 	}
-	
+
 	public ActivationPanel(boolean showButtons) {
 	    showLibraries = showButtons;
 		load.setEnabled(false);
@@ -59,7 +57,7 @@ public class ActivationPanel extends JPanel implements ActionListener,
 		activate.addActionListener(this);
 		deactivate.addActionListener(this);
 		setLayout(new GridBagLayout());
-		model = new ActivationTableModel();
+		ActivationTableModel model = new ActivationTableModel();
 		table = new JTable(model);
 		table.addMouseListener(this);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -79,7 +77,7 @@ public class ActivationPanel extends JPanel implements ActionListener,
 		smodel.setSelectionInterval(row, row);
 		mouseReleased(null);
 	}
-	
+
 	public void setVisible(boolean isVisible) {
 		if (isVisible) {
 		int row = jEdit.getIntegerProperty("activator.rowselected", 1);
@@ -89,7 +87,7 @@ public class ActivationPanel extends JPanel implements ActionListener,
 		}
 		super.setVisible(isVisible);
 	}
-	
+
 	// {{{ actionPerformed()
 	public void actionPerformed(ActionEvent e) {
 		int row = table.getSelectedRow();
@@ -197,7 +195,7 @@ public class ActivationPanel extends JPanel implements ActionListener,
 		        return PluginList.getInstance().size();
 		    }
 		    else {
-		        return PluginList.getInstance().pluginCount();   
+		        return PluginList.getInstance().pluginCount();
 		    }
 		}
 
@@ -217,7 +215,7 @@ public class ActivationPanel extends JPanel implements ActionListener,
 				return jEdit.getProperty("activator.error", "error");
 			}
 		}
-		
+
 		public Class getColumnClass(int col) {
 			switch (col) {
 			case 2:
@@ -236,23 +234,23 @@ public class ActivationPanel extends JPanel implements ActionListener,
 			if (col == 1) {
 				return p.getStatus();
 			}
-			
+
 			if (col == 2) {
 			    return p.canLoadOnStartup() && p.loadOnStartup();
 			}
 			return jEdit.getProperty("activator.error", "error");
 		}
-		
+
 		public void setValueAt(Object value, int row, int col) {
 		    if (col == 2) {
 		        PluginList.Plugin p = PluginList.getInstance().get(row);
 		        if (!p.isLibrary()) {
 		            boolean b = ((Boolean)value).booleanValue();
-		            p.setLoadOnStartup(b);   
+		            p.setLoadOnStartup(b);
 		        }
 		    }
 		}
-		
+
 		public boolean isCellEditable(int row, int col) {
 		    boolean rtn = false;
 		    if (col == 2) {
@@ -270,16 +268,17 @@ public class ActivationPanel extends JPanel implements ActionListener,
 
     // {{{ ActivationRenderer
     class ActivationRenderer extends DefaultTableCellRenderer {
-    
+
         private static final long serialVersionUID = -3823797564394450958L;
-        
+
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus, int row, int column) {
-            super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
-                    row, column);
+
+            super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
             setForeground(ActivationPanel.this.foreground);
             setBackground(isSelected ? table.getSelectionBackground() : ActivationPanel.this.background);
-            
+
             if (column == 1) {
                 String displayName = value.toString();
                 if (value == LOADED) {
