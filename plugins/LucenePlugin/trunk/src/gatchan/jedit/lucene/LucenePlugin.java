@@ -26,6 +26,7 @@ import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
@@ -144,7 +145,7 @@ public class LucenePlugin extends EditPlugin
 	 * @param indexName the index name
 	 * @param files     the file array to add
 	 */
-	public void addToIndex(final String indexName, final File[] files)
+	public void addToIndex(final String indexName, final VFSFile[] files)
 	{
 		VFSManager.runInWorkThread(new Runnable()
 		{
@@ -156,7 +157,7 @@ public class LucenePlugin extends EditPlugin
 					Log.log(Log.ERROR, this, "Unable to get index " + indexName);
 					return;
 				}
-				for (File file : files)
+				for (VFSFile file : files)
 				{
 					index.addFile(file.getPath());
 				}
