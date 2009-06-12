@@ -536,8 +536,6 @@ public class ConsolePlugin extends EBPlugin
 	/**
 	 * Sets the value of the specified system shell environment variable.
 	 *
-	 * @param view
-	 *                The view
 	 * @param var
 	 *                The variable name
 	 * @param value

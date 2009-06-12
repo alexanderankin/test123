@@ -132,6 +132,8 @@ public class CommandOutputParser
 			}
 			else
 			{
+				if (errorSource.getErrorCount() == 0)
+					ErrorSource.registerErrorSource(errorSource);
 				errorSource.addError(lastError);
 				lastMatcher = null;
 				lastError = null;
