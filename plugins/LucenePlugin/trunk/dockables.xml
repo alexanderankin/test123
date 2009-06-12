@@ -4,7 +4,7 @@
 
 <DOCKABLES>
 	<DOCKABLE NAME="lucene-search" MOVABLE="TRUE">
-		new lucene.SearchResults(view);
+		new gatchan.jedit.lucene.SearchResults();
 	</DOCKABLE>
 </DOCKABLES>
 

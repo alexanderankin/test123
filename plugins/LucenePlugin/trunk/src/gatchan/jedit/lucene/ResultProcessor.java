@@ -21,6 +21,7 @@
 package gatchan.jedit.lucene;
 
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.document.Document;
 
 /**
