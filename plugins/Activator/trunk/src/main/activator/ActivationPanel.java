@@ -13,13 +13,19 @@ import java.awt.event.MouseListener;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.BorderFactory;
+import javax.swing.border.Border;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.UIManager;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 
 import org.gjt.sp.jedit.jEdit;
 
@@ -61,11 +67,10 @@ public class ActivationPanel extends JPanel implements ActionListener,
 		table = new JTable(model);
 		table.addMouseListener(this);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		table.setDefaultRenderer(table.getColumnClass(0),
-				new ActivationRenderer());
+		table.setDefaultRenderer(table.getColumnClass(0), new StringRenderer());
+		table.setDefaultRenderer(table.getColumnClass(2), new CheckBoxRenderer());
 		ConstraintFactory cf = new ConstraintFactory();
-		add(new JScrollPane(table), cf.buildConstraints(0, 0, 10, 1, cf.N,
-				cf.BOTH));
+		add(new JScrollPane(table), cf.buildConstraints(0, 0, 10, 1, cf.N, cf.BOTH));
 		if (showButtons) {
             add(load, cf.buildConstraints(0, 1, 1, 1, cf.CENTER, cf.NONE, 0, 0));
             add(unload, cf.buildConstraints(1, 1, 1, 1, cf.CENTER, cf.NONE, 0, 0));
@@ -236,9 +241,6 @@ public class ActivationPanel extends JPanel implements ActionListener,
 			}
 
 			if (col == 2) {
-			    if (p.isLibrary()) {
-			         return null;
-			    }
 			    return p.canLoadOnStartup() && p.loadOnStartup();
 			}
 			return jEdit.getProperty("activator.error", "error");
@@ -269,8 +271,8 @@ public class ActivationPanel extends JPanel implements ActionListener,
 	}// }}}
 
 
-    // {{{ ActivationRenderer
-    class ActivationRenderer extends DefaultTableCellRenderer {
+    // {{{ StringRenderer
+    class StringRenderer extends DefaultTableCellRenderer {
 
         private static final long serialVersionUID = -3823797564394450958L;
 
@@ -296,5 +298,65 @@ public class ActivationPanel extends JPanel implements ActionListener,
             return this;
         }
     } // }}}
+    
+    // {{{ CheckBoxRenderer
+    // checkbox renderer for the "Start up" column, only renders a checkbox
+    // if the row represents a plugin, not a library jar.
+    public class CheckBoxRenderer extends DefaultTableCellRenderer {
+    
+        private final BooleanRenderer booleanRenderer = new BooleanRenderer();
+    
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                              boolean isSelected, boolean hasFocus, int row, int column) {
+    
+            setBackground(isSelected ? table.getSelectionBackground() : ActivationPanel.this.background);
 
+            // if value is null, don't show a checkbox
+            if ( value == null ) {
+                return super.getTableCellRendererComponent(table, "", isSelected, hasFocus, row, column);
+            }
+            
+            // if this row represents a library jar, don't show a checkbox
+			PluginList.Plugin p = PluginList.getInstance().get(row);
+            if (p.isLibrary()) {
+                return super.getTableCellRendererComponent(table, "", isSelected, hasFocus, row, column);
+            }
+            
+            // do show a checkbox for plugins
+            return booleanRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        }
+    
+        // the actual checkbox renderer
+        private class BooleanRenderer extends JCheckBox implements TableCellRenderer
+        {
+            private final Border noFocusBorder = BorderFactory.createEmptyBorder(1, 1, 1, 1);
+    
+            public BooleanRenderer() {
+                super();
+                setHorizontalAlignment(JLabel.CENTER);
+                setBorderPainted(true);
+            }
+    
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                                   boolean isSelected, boolean hasFocus, int row, int column) {
+            if (isSelected) {
+                setForeground(table.getSelectionForeground());
+                super.setBackground(table.getSelectionBackground());
+            }
+            else {
+                setForeground(ActivationPanel.this.foreground);
+                setBackground(ActivationPanel.this.background);
+            }
+                setSelected((value != null && ((Boolean)value).booleanValue()));
+    
+                if (hasFocus) {
+                    setBorder(UIManager.getBorder("Table.focusCellHighlightBorder"));
+                } else {
+                    setBorder(noFocusBorder);
+                }
+                return this;
+            }
+        }
+    }  // }}}
 } // }}}
