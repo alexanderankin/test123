@@ -144,6 +144,12 @@ public class PluginList extends Observable {
 		}
 
 		public void setLoadOnStartup(boolean b) {
+		    if (jar == null) {
+		         return;
+		    }
+		    if (jar.getPlugin() == null) {
+		        return;
+		    }
 		    jEdit.setProperty("plugin." + jar.getPlugin().getClassName() + ".activate", b ? "startup" : "defer");
 		}
 
