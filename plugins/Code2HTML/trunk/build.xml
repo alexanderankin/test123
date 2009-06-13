@@ -33,6 +33,7 @@
 
 <project name="Code2HTML" default="dist" basedir=".">
 
+    <property file="../build.properties"/>
     <property file="build.properties"/>
 
     <property name="jedit.install.dir" value="../.."/>

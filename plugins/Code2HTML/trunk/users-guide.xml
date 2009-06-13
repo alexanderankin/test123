@@ -17,6 +17,10 @@
             <firstname>Andr&eacute;</firstname>
             <surname>Kaplan</surname>
         </author>
+        <author>
+            <firstname>Romain</firstname>
+            <surname>Francois</surname>
+        </author>
     </authorgroup>
 
     <legalnotice>
@@ -42,8 +46,8 @@
     <title>Presentation</title>
 
     <para>The Code2HTML plugin transforms the currently edited jEdit source file or the
-    current selection into a visually equivalent HTML file.
-    The generated HTML files keep the aspect (or very close) of the original jEdit
+    current selection into a visually equivalent HTML or Latex file.
+    The generated files keep the aspect (or very close) of the original jEdit
     buffer in these areas:
     </para>
 
@@ -54,13 +58,13 @@
     </itemizedlist>
 
     <para>
-    The generated HTML files can then be used for:
+    The generated HTML or Latex files can then be used for:
     </para>
 
     <itemizedlist>
         <listitem>Printing with a browser;</listitem>
         <listitem>Documentation: syntax highlighted code always looks better;</listitem>
-        <listitem>Web publication.</listitem>
+        <listitem>Publication.</listitem>
     </itemizedlist>
 
 </chapter>
@@ -75,13 +79,52 @@
 
     <itemizedlist>
         <listitem>Use or not CSS (Cascading Style Sheets);</listitem>
-        <listitem>Show or not line numbers;</listitem>
+        <listitem>Show the gutter, which includes the line numbers;</listitem>
         <listitem>Wrap code at a given column.</listitem>
-        <listitem>Add custom styles to the top-level &lt;body&gt; and &lt;pre&gt; tags.</listitem>
+        <!-- <listitem>Add custom styles to the top-level &lt;body&gt; and &lt;pre&gt; tags.</listitem> -->
     </itemizedlist>
 
 </chapter>
 
+<chapter id="commands">
+    <title>Commands</title>
+    
+    <para>
+    The Code2HTML plugin offers these commands:
+    </para>
+
+    <para>
+    Produce HTML using a cascading style sheet:    
+    <itemizedlist>
+        <listitem>HTMLize current buffer using CSS</listitem>		
+        <listitem>HTMLize current selection using CSS</listitem>		
+        <listitem>HTML current buffer using CSS (only content)</listitem>		
+        <listitem>HTML current selection (only content)</listitem>		
+        <listitem>CSS style definitions</listitem>
+    </itemizedlist>
+    </para>
+
+    <para>
+    Produce HTML with in-line styles:
+    <itemizedlist>
+        <listitem>HTMLize current buffer</listitem>		
+        <listitem>HTMLize current selection</listitem>		
+        <listitem>HTML current buffer (only content)</listitem>		
+        <listitem>HTML current selection (only content)</listitem>
+    </itemizedlist>
+    </para>
+    
+    <para>
+    Produce Latex:
+    <itemizedlist>
+        <listitem>Latex current buffer</listitem>		
+        <listitem>Latex current buffer (only content)</listitem>		
+        <listitem>Latex current selection</listitem>		
+        <listitem>Latex current selection (only content)</listitem>		
+        <listitem>Latex style definitions</listitem>		
+    </itemizedlist>
+    </para>
+</chapter>
 
 <chapter id="license">
     <title>License</title>
