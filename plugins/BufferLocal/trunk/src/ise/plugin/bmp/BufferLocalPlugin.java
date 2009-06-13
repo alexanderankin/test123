@@ -8,6 +8,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBPlugin;
+import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.View;
 
 import org.gjt.sp.jedit.buffer.FoldHandler;
@@ -15,6 +16,7 @@ import org.gjt.sp.jedit.buffer.FoldHandler;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.EditorExitRequested;
+import org.gjt.sp.jedit.msg.ViewUpdate;
 
 //import org.gjt.sp.util.Log;
 
@@ -132,12 +134,14 @@ public class BufferLocalPlugin extends EBPlugin {
 
     // storage for open buffers, key is filename as a String,
     // value is a BufferReference object
-    private HashMap openBuffers = new HashMap();
+    private HashMap<String, BufferReference> openBuffers = new HashMap<String, BufferReference>();
 
     // control for janitor thread
     private boolean canClean;
 
     public static String NAME = "bufferlocal";
+
+    private File configFile = null;
 
     /**
      * Load the stored buffer local properties. The properties are stored in a
@@ -149,12 +153,13 @@ public class BufferLocalPlugin extends EBPlugin {
         loadProperties();
 
         String dir = jEdit.getSettingsDirectory();
-        if ( dir == null )
+        if ( dir == null ) {
             dir = System.getProperty( "user.home" );
-        File f = new File( dir, ".bufferlocalplugin.cfg" );
-        if ( f.exists() ) {
+        }
+        configFile = new File( dir, ".bufferlocalplugin.cfg" );
+        if ( configFile.exists() ) {
             try {
-                BufferedInputStream in = new BufferedInputStream( new FileInputStream( f ) );
+                BufferedInputStream in = new BufferedInputStream( new FileInputStream( configFile ) );
                 map.load( in );
                 in.close();
             }
@@ -177,10 +182,16 @@ public class BufferLocalPlugin extends EBPlugin {
         canClean = false;
         janitor.interrupt();
         bufferCleaner.interrupt();
-        File f = new File( System.getProperty( "user.home" ), ".bufferlocalplugin.cfg" );
+        if ( configFile == null || !configFile.exists() ) {
+            String dir = jEdit.getSettingsDirectory();
+            if ( dir == null ) {
+                dir = System.getProperty( "user.home" );
+            }
+            configFile = new File( dir, ".bufferlocalplugin.cfg" );
+        }
         try {
             synchronized ( map ) {
-                BufferedOutputStream out = new BufferedOutputStream( new FileOutputStream( f ) );
+                BufferedOutputStream out = new BufferedOutputStream( new FileOutputStream( configFile ) );
                 map.store( out, "Machine generated for BufferLocalPlugin, DO NOT EDIT!" );
                 out.flush();
                 out.close();
@@ -211,16 +222,16 @@ public class BufferLocalPlugin extends EBPlugin {
                 if ( props != null ) {
                     // parse the stored properties
                     String[] tokens = props.split( "[\\|]" );
-                    String ls = tokens[0];
-                    String enc = tokens[1];
-                    String gz = tokens[2];
-                    String em = tokens[3];
-                    String fm = tokens[4];
-                    String wm = tokens[5];
-                    String ll = tokens[6];
-                    String tw = tokens[7];
-                    String iw = tokens[8];
-                    String tabs = tokens[9];
+                    String ls = tokens[ 0 ];
+                    String enc = tokens[ 1 ];
+                    String gz = tokens[ 2 ];
+                    String em = tokens[ 3 ];
+                    String fm = tokens[ 4 ];
+                    String wm = tokens[ 5 ];
+                    String ll = tokens[ 6 ];
+                    String tw = tokens[ 7 ];
+                    String iw = tokens[ 8 ];
+                    String tabs = tokens[ 9 ];
 
                     // apply the stored properties to the buffer
                     /// see comments above, don't need this right now
@@ -312,6 +323,12 @@ public class BufferLocalPlugin extends EBPlugin {
                 View view = epu.getEditPane().getView();
                 Buffer buffer = epu.getEditPane().getBuffer();
                 openBuffers.put( buffer.getPath(), new BufferReference( view, buffer ) );
+            }
+        }
+        else if ( message instanceof ViewUpdate ) {
+            ViewUpdate vu = ( ViewUpdate ) message;
+            if ( ViewUpdate.CREATED.equals( vu.getWhat() ) ) {
+                initView( vu.getView() );
             }
         }
     }
@@ -430,11 +447,17 @@ public class BufferLocalPlugin extends EBPlugin {
      * Gets a list of the currently open buffers and populates openBuffers.
      */
     private void initOpenBuffers() {
-        Buffer[] buffers = jEdit.getBuffers();
-        for ( int i = 0; i < buffers.length; i++ ) {
-            Buffer buffer = buffers[ i ];
-            BufferReference br = new BufferReference( null, buffer );
-            openBuffers.put( buffer.getPath(), br );
+        for ( View view : jEdit.getViews() ) {
+            initView( view );
+        }
+    }
+
+    private void initView( View view ) {
+        for ( EditPane editPane : view.getEditPanes() ) {
+            for ( Buffer buffer : editPane.getBufferSet().getAllBuffers() ) {
+                BufferReference br = new BufferReference( view, buffer );
+                openBuffers.put( buffer.getPath(), br );
+            }
         }
     }
 
@@ -496,7 +519,7 @@ public class BufferLocalPlugin extends EBPlugin {
          * @return   Description of the Returned Value
          */
         public String toString() {
-            StringBuffer sb = new StringBuffer(50);
+            StringBuffer sb = new StringBuffer( 50 );
             sb.append( "BufferReference[" );
             sb.append( buffer.getPath() ).append( ',' );
             sb.append( viewed.getTime().toString() ).append( ']' );

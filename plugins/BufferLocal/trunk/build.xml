@@ -3,6 +3,7 @@
 
     <!-- read build.props to override properties set below -->
     <property file="build.props"/>
+    <property file="config/BufferLocalPlugin.props"/>
 
     <!-- default location of jedit.jar -->
     <property name="jedit.install.dir"  value="../.."/>
@@ -11,7 +12,7 @@
     <property name="jar.name" value="BufferLocal.jar"/>
 
     <!-- version number -->
-    <property name="build.num" value="1.2.4"/>
+    <property name="build.num" value="${plugin.ise.plugin.bmp.BufferLocalPlugin.version}"/>
 
     <!-- where to put the finished plugin -->
     <property name="install.dir" value=".." />
