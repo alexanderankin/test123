@@ -1,0 +1,43 @@
+plugin.activator.ActivatorPlugin.name=Activator
+plugin.activator.ActivatorPlugin.author=Brad Mace, Alan Ezust, Dale Anson
+plugin.activator.ActivatorPlugin.version=1.3.0
+plugin.activator.ActivatorPlugin.depend.0=jdk 1.5.0
+plugin.activator.ActivatorPlugin.depend.1=jedit 04.03.15.00
+plugin.activator.ActivatorPlugin.depend.2=plugin CommonControlsPlugin 0.9.5
+plugin.activator.ActivatorPlugin.activate=defer
+plugin.activator.ActivatorPlugin.docs=docs/index.html
+plugin.activator.ActivatorPlugin.description=A convenient interface for (un|re)?loading plugins from a dockable.
+activator.title=Activator
+activator.label=Activator
+activator.reloader.title=Reloader
+activator.reloader.label=Reloader
+
+plugin.activator.ActivatorPlugin.menu=activator activator.reloader
+
+# plugin option pane
+plugin.activator.ActivatorPlugin.option-pane=activator
+options.activator.label=Activator
+options.activator.code=new activator.OptionPane()
+activator.optionpane.label=<html><strong>Activator</strong><br>Use the checkboxes in the 'Start up' column to set which plugins start when jEdit starts.
+
+# various pieces of text for Activator
+activator.Activate=Activate
+activator.Deactivate=Deactivate
+activator.Load=Load
+activator.Unload=Unload
+activator.Plugin=Plugin
+activator.State=State
+activator.error=error
+activator.loaded_in=loaded in
+activator.unloaded_in=unloaded in
+activator.activated_in=activated in
+activator.deactivated_in=deactivated in
+activator.Startup=Start up
+activator.Not_Loaded=Not Loaded
+activator.Loaded=Loaded
+activator.Library=Library
+activator.(library)=(library)
+activator.Error=Error
+activator.Activated=Activated
+activator.Click_to_reload=Click to reload
+
