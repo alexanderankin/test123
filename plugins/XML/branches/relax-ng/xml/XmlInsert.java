@@ -26,6 +26,7 @@ import java.util.List;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.util.Log;
 import sidekick.*;
 import xml.completion.*;
 import xml.parser.TagParser;
@@ -501,7 +502,13 @@ public class XmlInsert extends JPanel implements EBComponent
 					int line = Math.min(buffer.getLineCount() - 1,id.line);
 					int column = Math.min(buffer.getLineLength(line),id.column);
 					int offset = buffer.getLineStartOffset(line) + column;
+					// TODO: follow best practice from Navigator plugin
+					try{
 					textArea.setCaretPosition(offset);
+					}catch(NullPointerException npe){
+						Log.log(Log.ERROR,XmlInsert.class,"FIXME : setCaretPosition("+offset+")");
+						Log.log(Log.ERROR,XmlInsert.class,npe);
+					}
 				}
 				else
 				{

@@ -27,6 +27,9 @@ Position end;
 
 - schemas: element values should be choosable
 - ids in xml.root's other children
+    - it works now 
+      still some strange NPE in jEditBuffer.markTokens() : under investigation
+      Navigator silently catches it.
 - CatalogProperties complaints
 - ids are kind of hackish -- use something similar to a hypersearch result
 - html files before parsing complete -- don't show CDATA in popup
@@ -45,3 +48,5 @@ Position end;
   built-in namespaces, etc.
 - pluggable parsers, don't rely on Xerces-specific features, fail
   gracefully if some parser features are not available
+    - on the contrary, XercesParserImpl is more and more tied to Xerces.
+      This seems the way to go, as we depend on xerces plugin.

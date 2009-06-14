@@ -522,18 +522,18 @@ public class XercesParserImpl extends XmlParser
 
 			String currentURI = XmlPlugin.uriToFile(loc.getSystemId());
 
-			if(!buffer.getPath().equals(currentURI))
-				return;
-
 			// what do we do in this case?
-			if(loc.getLineNumber() == -1)
+			if(loc.getLineNumber() == -1){
+				Log.log(Log.WARNING,XercesParserImpl.class,"no location for "+qName);
 				return;
+			}
 
 			// add all attributes with type "ID" to the ids vector
 			for(int i = 0; i < attrs.getLength(); i++)
 			{
 				if(attrs.getType(i).equals("ID")
-					|| attrs.getLocalName(i).equalsIgnoreCase("id"))
+					// as in http://www.w3.org/TR/xml-id/
+					|| attrs.getQName(i).equals("xml:id"))
 				{
 					data.ids.add(new IDDecl(currentURI,
 						attrs.getValue(i),qName,
@@ -541,6 +541,9 @@ public class XercesParserImpl extends XmlParser
 						loc.getColumnNumber() - 1));
 				}
 			}
+
+			if(!buffer.getPath().equals(currentURI))
+				return;
 
 			buffer.readLock();
 
