@@ -53,7 +53,8 @@ public class LucenePlugin extends EditPlugin
 	public void start()
 	{
 		instance = this;
-		CENTRAL = new CentralIndex(getIndexFile(CENTRAL_INDEX_NAME));
+		File home = getPluginHome();
+		CENTRAL = new CentralIndex(new File(home, CENTRAL_INDEX_NAME));
 		EditBus.addToBus(CENTRAL);
 	}
 
@@ -173,15 +174,16 @@ public class LucenePlugin extends EditPlugin
 	public String[] getIndexes()
 	{
 		File home = getPluginHome();
-		File[] indexes = home.listFiles(new FileFilter()
+		File indexFolder = new File(home, "indexes");
+		File[] indexes = indexFolder.listFiles(new FileFilter()
 		{
 			public boolean accept(File pathname)
 			{
 				return pathname.isDirectory();
 			}
 		});
-		
-		if (indexes.length == 0)
+
+		if (indexes == null || indexes.length == 0)
 			return new String[0];
 		List<String> names = new ArrayList<String>(indexes.length);
 		for (File index : indexes)
@@ -196,6 +198,7 @@ public class LucenePlugin extends EditPlugin
 		File home = getPluginHome();
 		if (home == null)
 			return null;
-		return new File(home, name);
+		File indexFolder = new File(home, "indexes");
+		return new File(indexFolder, name);
 	}
 }
