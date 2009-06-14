@@ -1,36 +1,35 @@
 package gatchan.jedit.lucene;
 
+import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.util.StandardUtilities;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-public class SearchResults extends JPanel
+public class SearchResults extends JPanel implements EBComponent
 {
 	private JTextField searchField;
 	private JList list;
 	private JComboBox indexes;
 	private MyModel model;
+	private IndexComboBoxModel indexModel;
 //	private JTextPane preview;
 
 	public SearchResults()
 	{
 		super(new BorderLayout());
 		String[] items = LucenePlugin.instance.getIndexes();
-		if (items == null)
-		{
-			indexes = new JComboBox();
-		}
-		else
-		{
+		indexModel = new IndexComboBoxModel(items);
+		indexes = new JComboBox(indexModel);
 
-			indexes = new JComboBox(items);
-		}
 		JPanel panel = new JPanel(new BorderLayout());
 		add(panel, BorderLayout.NORTH);
 		panel.add(new JLabel("Search for:"), BorderLayout.WEST);
@@ -82,6 +81,29 @@ public class SearchResults extends JPanel
 		model.setFiles(files);
 	}
 
+	//{{{ addNotify() method
+	public void addNotify()
+	{
+		super.addNotify();
+		EditBus.addToBus(this);
+	} //}}}
+
+	//{{{ removeNotify() method
+	public void removeNotify()
+	{
+		super.removeNotify();
+		EditBus.removeFromBus(this);
+	} //}}}
+
+	public void handleMessage(EBMessage message)
+	{
+		if (message instanceof LuceneIndexUpdate)
+		{
+			String[] items = LucenePlugin.instance.getIndexes();
+			indexModel.setIndexes(items);
+		}
+	}
+
 	private static class MyModel extends AbstractListModel
 	{
 		private java.util.List<String> files = new ArrayList<String>();
@@ -100,6 +122,62 @@ public class SearchResults extends JPanel
 		public Object getElementAt(int index)
 		{
 			return files.get(index);
+		}
+	}
+
+	private static class IndexComboBoxModel extends AbstractListModel implements ComboBoxModel
+	{
+		private String[] indexes;
+
+		private String selectedItem;
+
+		private IndexComboBoxModel(String[] indexes)
+		{
+			setIndexes(indexes);
+		}
+
+		public int getSize()
+		{
+			return indexes.length;
+		}
+
+		public Object getElementAt(int index)
+		{
+			return indexes[index];
+		}
+
+		public void setIndexes(String[] indexes)
+		{
+			this.indexes = indexes;
+			if (indexes.length == 0)
+			{
+				selectedItem = null;
+			}
+			else
+			{
+				boolean selectedStillExists = false;
+				for (String index : indexes)
+				{
+					if (StandardUtilities.objectsEqual(selectedItem, index))
+					{
+						selectedStillExists = true;
+						break;
+					}
+				}
+				if (!selectedStillExists)
+					selectedItem = indexes[0];
+			}
+			fireContentsChanged(this, 0, indexes.length);
+		}
+
+		public void setSelectedItem(Object selectedItem)
+		{
+			this.selectedItem = (String) selectedItem;
+		}
+
+		public Object getSelectedItem()
+		{
+			return selectedItem;
 		}
 	}
 }
