@@ -33,10 +33,7 @@ import javax.swing.*;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Matthieu Casanova
@@ -65,6 +62,11 @@ public class LucenePlugin extends EditPlugin
 		CENTRAL.close();
 		CENTRAL = null;
 		instance = null;
+		Collection<Index> indexCollection = indexMap.values();
+		for (Index index : indexCollection)
+		{
+			index.close();
+		}
 	}
 
 	/**
