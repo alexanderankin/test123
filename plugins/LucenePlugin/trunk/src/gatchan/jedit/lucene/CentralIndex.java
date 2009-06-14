@@ -27,6 +27,8 @@ import org.apache.lucene.search.*;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 
 import java.io.File;
@@ -44,10 +46,10 @@ public class CentralIndex extends AbstractIndex implements EBComponent
 
 	void createIndex(Index index)
 	{
-
+		EditBus.send(new LuceneIndexUpdate(index.getName(), LuceneIndexUpdate.What.CREATED));
 	}
 
-	void deleteIndex(String name)
+	void removeIndex(String name)
 	{
 		openWriter();
 		try
@@ -59,6 +61,7 @@ public class CentralIndex extends AbstractIndex implements EBComponent
 			e.printStackTrace();
 		}
 		commit();
+		EditBus.send(new LuceneIndexUpdate(name, LuceneIndexUpdate.What.DESTROYED));
 	}
 
 	void addFile(String path, String indexName)
@@ -110,10 +113,16 @@ public class CentralIndex extends AbstractIndex implements EBComponent
 	{
 		if (message instanceof BufferUpdate)
 		{
-			BufferUpdate bufferUpdate = (BufferUpdate) message;
+			final BufferUpdate bufferUpdate = (BufferUpdate) message;
 			if (bufferUpdate.getWhat() == BufferUpdate.SAVED)
 			{
-				fileUpdated(bufferUpdate.getBuffer());
+				VFSManager.runInWorkThread(new Runnable()
+				{
+					public void run()
+					{
+						fileUpdated(bufferUpdate.getBuffer());
+					}
+				});
 			}
 		}
 	}

@@ -81,8 +81,14 @@ public class LucenePlugin extends EditPlugin
 		Index index = indexMap.get(name);
 		if (index == null)
 		{
-			index = new IndexImpl(name, getIndexFile(name));
+			File path = getIndexFile(name);
+			index = new IndexImpl(name, path);
 			indexMap.put(name, index);
+			if (!path.exists())
+			{
+				path.mkdirs();
+				CENTRAL.createIndex(index);
+			}
 		}
 		return index;
 	}
@@ -94,7 +100,7 @@ public class LucenePlugin extends EditPlugin
 	 */
 	public void removeIndex(String name)
 	{
-		CENTRAL.deleteIndex(name);
+		CENTRAL.removeIndex(name);
 		Index index = indexMap.remove(name);
 		if (index != null)
 			index.close();
@@ -176,7 +182,7 @@ public class LucenePlugin extends EditPlugin
 		});
 		
 		if (indexes.length == 0)
-			return null;
+			return new String[0];
 		List<String> names = new ArrayList<String>(indexes.length);
 		for (File index : indexes)
 		{
