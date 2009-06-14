@@ -1,8 +1,11 @@
 package ctagsinterface.main;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -161,6 +164,10 @@ public class Runner {
 		cmdLine.toArray(args);
 		try {
 			Process p = Runtime.getRuntime().exec(args);
+			StreamConsumer osc = new StreamConsumer(p.getInputStream());
+			osc.start();
+			StreamConsumer esc = new StreamConsumer(p.getErrorStream());
+			esc.start();
 			p.waitFor();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -189,4 +196,20 @@ public class Runner {
 		return null; 
 	}
 
+	private static class StreamConsumer extends Thread
+	{
+		private InputStream is;
+		public StreamConsumer(InputStream is) {
+			this.is = is;
+		}
+		public void run() {
+			try {
+				BufferedReader br = new BufferedReader(new InputStreamReader(is));
+				while (br.readLine() != null)
+					;
+			} catch (IOException ioe) {
+				ioe.printStackTrace();  
+			}
+		}
+	}
 }
