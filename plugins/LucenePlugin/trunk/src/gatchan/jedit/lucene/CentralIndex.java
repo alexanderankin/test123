@@ -64,11 +64,17 @@ public class CentralIndex extends AbstractIndex implements EBComponent
 		EditBus.send(new LuceneIndexUpdate(name, LuceneIndexUpdate.What.DESTROYED));
 	}
 
+	/**
+	 * Add a file to the index.
+	 *
+	 * @param path      the path to add
+	 * @param indexName the index that contains this path
+	 */
 	void addFile(String path, String indexName)
 	{
 		openWriter();
-		openSearcher();
 
+		Searcher searcher = getSearcher();
 		try
 		{
 			BooleanQuery query = getPathIndexQuery(path, indexName);
@@ -84,6 +90,10 @@ public class CentralIndex extends AbstractIndex implements EBComponent
 		catch (IOException e)
 		{
 			e.printStackTrace();
+		}
+		finally
+		{
+			closeSearcher(searcher);
 		}
 	}
 
@@ -129,10 +139,10 @@ public class CentralIndex extends AbstractIndex implements EBComponent
 
 	private void fileUpdated(Buffer buffer)
 	{
+		Searcher searcher = getSearcher();
 		try
 		{
 			Query query = new TermQuery(new Term("path", buffer.getPath()));
-			openSearcher();
 			TopDocs docs = searcher.search(query, 100);
 			ScoreDoc[] scoreDocs = docs.scoreDocs;
 			for (ScoreDoc doc : scoreDocs)
@@ -150,6 +160,10 @@ public class CentralIndex extends AbstractIndex implements EBComponent
 		catch (IOException e)
 		{
 			e.printStackTrace();
+		}
+		finally
+		{
+			closeSearcher(searcher);
 		}
 	}
 }

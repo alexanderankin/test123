@@ -1,25 +1,25 @@
 package gatchan.jedit.lucene;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.MultiFieldQueryParser;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TopDocs;
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSFile;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 public class LineIndexImpl extends IndexImpl
 {
+	public LineIndexImpl(String name, File path)
+	{
+		super(name, path);
+	}
+
 	protected void addDocument(VFSFile file, Object session)
 	{
 		Log.log(Log.DEBUG, this, "Index:"+getName() + " add " + file);
@@ -56,36 +56,8 @@ public class LineIndexImpl extends IndexImpl
 	}
 
 	@Override
-	public void search(String query, ResultProcessor processor)
+	protected Result getResultInstance()
 	{
-		openSearcher();
-		if (searcher == null)
-			return;
-		QueryParser parser = new MultiFieldQueryParser(
-			new String[]{"path", "content"}, getAnalyzer());
-		try
-		{
-			Query _query = parser.parse(query);
-			TopDocs docs = searcher.search(_query, 100);
-			ScoreDoc[] scoreDocs = docs.scoreDocs;
-			LineResult result = new LineResult();
-			for (ScoreDoc doc : scoreDocs)
-			{
-				Document document = searcher.doc(doc.doc);
-				result.setDocument(document);
-				if (!processor.process(doc.score, result))
-				{
-					break;
-				}
-			}
-		}
-		catch (ParseException e)
-		{
-			e.printStackTrace();
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
+		return new LineResult();
 	}
 }
