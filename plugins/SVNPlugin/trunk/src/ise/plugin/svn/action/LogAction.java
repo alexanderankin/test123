@@ -38,6 +38,7 @@ import ise.plugin.svn.gui.LogDialog;
 import ise.plugin.svn.gui.LogResultsPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
+import ise.plugin.svn.library.Logger;
 import ise.plugin.svn.library.swingworker.*;
 import java.awt.event.ActionEvent;
 import java.io.*;
@@ -85,19 +86,22 @@ public class LogAction extends SVNAction {
     }
 
     public void actionPerformed( ActionEvent ae ) {
+        
         if ( paths != null && paths.size() > 0 ) {
             data = new LogData();
             data.setPaths( paths );
             data.setPathsAreURLs( pathsAreUrls );
 
+            
             LogDialog dialog = new LogDialog( getView(), data );
             GUIUtils.center( getView(), dialog );
             dialog.setVisible( true );
             data = dialog.getData();
             if ( data == null ) {
+                
                 return ;     // null data signals user canceled
             }
-
+            
             if ( getUsername() == null ) {
                 verifyLogin( paths.get( 0 ) );
                 if ( isCanceled() ) {
@@ -112,7 +116,7 @@ public class LogAction extends SVNAction {
             getView().getDockableWindowManager().showDockableWindow( "subversion" );
             final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
             panel.showConsole();
-            Logger logger = panel.getLogger();
+            java.util.logging.Logger logger = panel.getLogger();
             logger.log( Level.INFO, jEdit.getProperty( "ips.Fetching_log_...", "Fetching log ..." ) );
             for ( Handler handler : logger.getHandlers() ) {
                 handler.flush();
@@ -123,8 +127,11 @@ public class LogAction extends SVNAction {
                 @Override
                 public LogResults doInBackground() {
                     try {
+                        
                         Log log = new Log( );
+                        
                         log.doLog( data );
+                        
                         return log.getLogEntries();
                     }
                     catch ( Exception e ) {
@@ -152,11 +159,15 @@ public class LogAction extends SVNAction {
                 @Override
                 protected void done() {
                     try {
+                        
                         final LogResults results = get();
+                        
                         if ( results == null ) {
                             return ;
                         }
+                        
                         JPanel results_panel = new LogResultsPanel( results, data.getShowPaths(), getView(), getUsername(), getPassword() );
+                        
                         panel.addTab( jEdit.getProperty( "ips.Log", "Log" ), results_panel );
                     }
                     catch ( Exception e ) {

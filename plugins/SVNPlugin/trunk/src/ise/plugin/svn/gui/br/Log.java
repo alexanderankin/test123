@@ -33,14 +33,18 @@ import javax.swing.tree.TreePath;
 import ise.plugin.svn.action.*;
 import ise.plugin.svn.gui.DirTreeNode;
 import ise.plugin.svn.data.*;
+import ise.plugin.svn.library.Logger;
+
 import java.util.*;
 
 
 public class Log extends BRAction {
 
     public void actionPerformed( ActionEvent ae ) {
+        
         TreePath[] tree_paths = tree.getSelectionPaths();
         if ( tree_paths.length == 0 ) {
+            
             return ;
         }
         List<String> paths = new ArrayList<String>();
@@ -67,7 +71,10 @@ public class Log extends BRAction {
         data.setPathsAreURLs( true );
         data.setUsername( username );
         data.setPassword( password );
+        
         LogAction action = new LogAction( view, data );
+        
         action.actionPerformed( ae );
+        
     }
 }

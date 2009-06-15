@@ -43,8 +43,7 @@ public class LogResults implements Serializable {
     /**
      * Returns the value of info.
      */
-    public SVNInfo getInfo()
-    {
+    public SVNInfo getInfo() {
         return info;
     }
 
@@ -52,8 +51,7 @@ public class LogResults implements Serializable {
      * Sets the value of info.
      * @param info The value to assign info.
      */
-    public void setInfo(SVNInfo info)
-    {
+    public void setInfo( SVNInfo info ) {
         this.info = info;
     }
 
@@ -61,8 +59,7 @@ public class LogResults implements Serializable {
      * @return map with the path of a file as the key and a list of associated
      * log entries as the value (in Perforce terms, the rest of the changelist).
      */
-    public TreeMap < String, List < SVNLogEntry >> getEntries()
-    {
+    public TreeMap < String, List < SVNLogEntry >> getEntries() {
         return entries;
     }
 
@@ -70,10 +67,7 @@ public class LogResults implements Serializable {
      * Sets the value of entries.
      * @param entries The value to assign entries.
      */
-    public void setEntries(TreeMap < String, List < SVNLogEntry >> entries)
-    {
+    public void setEntries( TreeMap < String, List < SVNLogEntry >> entries ) {
         this.entries = entries;
     }
-
-
 }

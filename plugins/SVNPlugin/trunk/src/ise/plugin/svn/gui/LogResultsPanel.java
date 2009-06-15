@@ -49,6 +49,7 @@ import ise.plugin.svn.data.CopyData;
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.data.LogResults;
 import ise.plugin.svn.library.GUIUtils;
+import ise.plugin.svn.library.Logger;
 import ise.plugin.svn.library.TableCellViewer;
 import ise.plugin.svn.data.PropertyData;
 import ise.plugin.svn.io.ConsolePrintStream;
@@ -109,13 +110,16 @@ public class LogResultsPanel extends JPanel {
         con.s = "w";
         con.p = 0;
 
+        
         TreeMap < String, List < SVNLogEntry >> results = logResults.getEntries();
         Set < Map.Entry < String, List < SVNLogEntry >>> set = results.entrySet();
         for ( Map.Entry < String, List < SVNLogEntry >> me : set ) {
+            
             String path = ( String ) me.getKey();
             if ( bugtraqProperties == null ) {
                 loadCommitProperties( path );
             }
+            
             JLabel label = new JLabel( jEdit.getProperty( "ips.Path>", "Path:" ) + " " + path );
 
             // sort the entries
@@ -130,6 +134,7 @@ public class LogResultsPanel extends JPanel {
             String[][] data = new String[ entries.size() ][ showPaths ? 5 : 4 ];
             Iterator it = entries.iterator();
             for ( int i = 0; it.hasNext(); i++ ) {
+                
                 SVNLogEntry entry = ( SVNLogEntry ) it.next();
                 String revision = String.valueOf( entry.getRevision() );
                 String date = entry.getDate() != null ? new SimpleDateFormat( jEdit.getProperty( "ips.yyyy-MM-dd_HH>mm>ss_Z", "yyyy-MM-dd HH:mm:ss Z" ), Locale.getDefault() ).format( entry.getDate() ) : "---";
@@ -508,9 +513,17 @@ public class LogResultsPanel extends JPanel {
     // path, then works up through parent paths until the project root is
     // reached.
     private void loadCommitProperties( String path ) {
+        if (path == null || path.length() == 0) {
+            return;   
+        }
+        
         String projectRoot = PVHelper.getProjectRoot( path );
+        if (projectRoot == null || projectRoot.length() == 0) {
+            return;   
+        }
         bugtraqProperties = new Properties();
         do {
+            
             PropertyData data = new PropertyData();
             data.setOut( new ConsolePrintStream( view ) );
             data.addPath( path );
@@ -527,6 +540,7 @@ public class LogResultsPanel extends JPanel {
                 cmd.doGetProperties( data );
             }
             catch ( Exception e ) {
+                
                 // ProjectViewer allows adding paths to a project that are not
                 // under the project root.  The typical use case is that all
                 // files are under the root, so the 'while' loop makes sense. In

@@ -48,7 +48,7 @@ public class CheckoutData extends SVNData {
     }
 
     public String toString() {
-        return "CheckoutData[url=" + getURL() + ", username=" + getUsername() + ", password=" + getPassword() + "]";
+        return "CheckoutData[url=" + getURL() + ", username=" + getUsername() + ", password=" + getPassword() + "]" + super.toString();
     }
 
     /**
