@@ -27,7 +27,7 @@ import org.apache.lucene.document.Document;
  */
 public class Result
 {
-	public Document document;
+	protected Document document;
 
 	public Result()
 	{
