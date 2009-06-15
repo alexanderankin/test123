@@ -12,6 +12,17 @@ public class IndexFactory
 		register("Line-based index", LineIndexImpl.class);
 	}
 
+	// Returns the type name of the given index
+	public static String getType(Index index)
+	{
+		Class c = index.getClass();
+		for (String type: indexes.keySet())
+		{
+			if (indexes.get(type) == c)
+				return type;
+		}
+		return null;
+	}
 	public static void register(String name, Class cls)
 	{
 		indexes.put(name, cls);

@@ -28,12 +28,22 @@ import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
 
 import javax.swing.*;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 
 /**
@@ -43,8 +53,9 @@ public class LucenePlugin extends EditPlugin
 {
 	static CentralIndex CENTRAL;
 	private static final String CENTRAL_INDEX_NAME = "__CENTRAL__";
+	private static final String INDEXES_FILE_NAME = "indexes.cfg";
 	private Map<String, Index> indexMap = new HashMap<String, Index>();
-
+	
 	public static LucenePlugin instance;
 
 	@Override
@@ -54,6 +65,66 @@ public class LucenePlugin extends EditPlugin
 		File home = getPluginHome();
 		CENTRAL = new CentralIndex(new File(home, CENTRAL_INDEX_NAME));
 		EditBus.addToBus(CENTRAL);
+		loadIndexes();
+	}
+
+	private void loadIndexes()
+	{
+		File f = new File(getPluginHome(), INDEXES_FILE_NAME);
+		if (! f.exists())
+			return;
+		BufferedReader reader = null;
+		try
+		{
+			reader = new BufferedReader(new FileReader(f));
+			String line;
+			while ((line = reader.readLine()) != null)
+			{
+				String name = line;
+				line = reader.readLine();
+				if (line == null)
+					break;
+				String [] parts = line.split(",");
+				if (parts.length < 2)
+					break;
+				String type = parts[0];
+				String analyzer = parts[1];
+				createIndex(name, type, analyzer);
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			IOUtilities.closeQuietly(reader);
+		}
+	}
+	private void saveProps()
+	{
+		File f = new File(getPluginHome(), INDEXES_FILE_NAME);
+		PrintWriter writer = null;
+		try
+		{
+			writer = new PrintWriter(new FileWriter(f));
+			for (String name: indexMap.keySet())
+			{
+				writer.println(name);
+				Index index = indexMap.get(name);
+				String type = IndexFactory.getType(index);
+				String analyzer = AnalyzerFactory.getAnalyzerName(index.getAnalyzer());
+				writer.println(type + "," + analyzer);
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			IOUtilities.closeQuietly(writer);
+		}
 	}
 
 	@Override
@@ -68,6 +139,7 @@ public class LucenePlugin extends EditPlugin
 		{
 			index.close();
 		}
+		saveProps();
 	}
 
 	/**
@@ -166,6 +238,7 @@ public class LucenePlugin extends EditPlugin
 			dlg.getIndexAnalyzer());
 		if (index == null)
 			return null;
+		// Update the properties
 		return index.getName();
 	}
 

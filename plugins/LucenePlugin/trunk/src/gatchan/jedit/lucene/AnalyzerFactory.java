@@ -29,6 +29,15 @@ public class AnalyzerFactory {
 		analyzers.keySet().toArray(names);
 		return names;
 	}
+	static String getAnalyzerName(Analyzer analyzer)
+	{
+		for (String name: analyzers.keySet())
+		{
+			if (analyzers.get(name).getClass() == analyzer.getClass())
+				return name;
+		}
+		return null;
+	}
 	static Analyzer getAnalyzer(String name)
 	{
 		return analyzers.get(name);
