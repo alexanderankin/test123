@@ -83,6 +83,7 @@ public class MkDirDialog extends JDialog {
         path.setText( defaultDestination == null ? "" : defaultDestination );
         path.setColumns( 30 );
         JButton browse_remote_btn = new JButton( jEdit.getProperty( "ips.Browse_Remote...", "Browse Remote..." ) );
+        browse_remote_btn.setMnemonic( KeyEvent.VK_R );
         browse_remote_btn.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
@@ -95,6 +96,7 @@ public class MkDirDialog extends JDialog {
                     KappaLayout btn_layout = new KappaLayout();
                     JPanel button_panel = new JPanel( btn_layout );
                     JButton ok_btn = new JButton( jEdit.getProperty( "ips.Ok", "Ok" ) );
+                    ok_btn.setMnemonic( KeyEvent.VK_O );
                     ok_btn.addActionListener(
                         new ActionListener() {
                             public void actionPerformed( ActionEvent ae ) {
@@ -108,6 +110,7 @@ public class MkDirDialog extends JDialog {
                         }
                     );
                     JButton cancel_btn = new JButton( jEdit.getProperty( "ips.Cancel", "Cancel" ) );
+                    cancel_btn.setMnemonic( KeyEvent.VK_C );
                     cancel_btn.addActionListener(
                         new ActionListener() {
                             public void actionPerformed( ActionEvent ae ) {
@@ -125,6 +128,8 @@ public class MkDirDialog extends JDialog {
                     dialog.setContentPane( panel );
                     dialog.pack();
                     GUIUtils.center( view, dialog );
+                    dialog.getRootPane().setDefaultButton( ok_btn );
+                    ok_btn.requestFocus();
                     dialog.setVisible( true );
                 }
             }
@@ -152,7 +157,9 @@ public class MkDirDialog extends JDialog {
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
         JButton ok_btn = new JButton( jEdit.getProperty( "ips.Ok", "Ok" ) );
+        ok_btn.setMnemonic( KeyEvent.VK_O );
         JButton cancel_btn = new JButton( jEdit.getProperty( "ips.Cancel", "Cancel" ) );
+        cancel_btn.setMnemonic( KeyEvent.VK_C );
         btn_panel.add( "0, 0, 1, 1, 0, w, 3", ok_btn );
         btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancel_btn );
         kl.makeColumnsSameWidth( 0, 1 );
@@ -196,6 +203,8 @@ public class MkDirDialog extends JDialog {
         setContentPane( panel );
         pack();
 
+        getRootPane().setDefaultButton( ok_btn );
+        ok_btn.requestFocus();
     }
 
     protected void _save() {

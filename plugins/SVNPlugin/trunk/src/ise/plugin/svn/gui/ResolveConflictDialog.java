@@ -150,8 +150,10 @@ public class ResolveConflictDialog extends JDialog implements EBComponent {
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
         JButton ok_btn = new JButton( "Ok" );
+        ok_btn.setMnemonic(KeyEvent.VK_O);
         ok_btn.addActionListener( getOkActionListener() );
         JButton cancel_btn = new JButton( "Cancel" );
+        cancel_btn.setMnemonic(KeyEvent.VK_C);
         cancel_btn.addActionListener( getCancelActionListener() );
         btn_panel.add( "0, 0, 1, 1, 0, w, 3", ok_btn );
         btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancel_btn );
@@ -168,6 +170,8 @@ public class ResolveConflictDialog extends JDialog implements EBComponent {
         setContentPane( contents );
         pack();
         GUIUtils.center( view, this );
+        getRootPane().setDefaultButton(ok_btn);
+        ok_btn.requestFocus();
     }
 
     /**

@@ -143,7 +143,9 @@ public class AddDialog extends JDialog {
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
         JButton ok_btn = new JButton( jEdit.getProperty("ips.Ok", "Ok") );
+        ok_btn.setMnemonic(KeyEvent.VK_O);
         JButton cancel_btn = new JButton( jEdit.getProperty("ips.Cancel", "Cancel") );
+        cancel_btn.setMnemonic(KeyEvent.VK_C);
         btn_panel.add( "0, 0, 1, 1, 0, w, 3", ok_btn );
         btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancel_btn );
         kl.makeColumnsSameWidth( 0, 1 );
@@ -205,9 +207,12 @@ public class AddDialog extends JDialog {
         panel.add( "0, 8, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
         panel.add( "0, 9, 1, 1, E,  , 0", btn_panel );
 
+        
         setContentPane( panel );
         pack();
-
+        
+        getRootPane().setDefaultButton(ok_btn);
+        ok_btn.requestFocus();
     }
 
     public SVNData getSVNData() {
