@@ -21,6 +21,7 @@
 
 package gatchan.jedit.lucene;
 
+import org.apache.lucene.analysis.Analyzer;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.io.VFS;
@@ -73,25 +74,34 @@ public class LucenePlugin extends EditPlugin
 	 * Return an index, or null.
 	 *
 	 * @param name the name of the index
-	 * @return the index or null if there is no settings directory or the index cannot be
-	 *         created
+	 * @return the index or null if there is no settings directory.
 	 */
 	public Index getIndex(String name)
 	{
 		if (getIndexFile(name) == null)
 			return null;
+		return indexMap.get(name);
+	}
 
-		Index index = indexMap.get(name);
+	public Index createIndex(String name, String type, String analyzerName)
+	{
+		Index index = getIndex(name);
+		if (index != null)
+			return index;
+
+		File path = getIndexFile(name);
+		index = IndexFactory.createIndex(type);
 		if (index == null)
+			return null;
+		index.setData(name, path);
+		Analyzer analyzer = AnalyzerFactory.getAnalyzer(analyzerName);
+		if (analyzer != null)
+			index.setAnalyzer(analyzer);
+		indexMap.put(name, index);
+		if (!path.exists())
 		{
-			File path = getIndexFile(name);
-			index = new IndexImpl(name, path);
-			indexMap.put(name, index);
-			if (!path.exists())
-			{
-				path.mkdirs();
-				CENTRAL.createIndex(index);
-			}
+			path.mkdirs();
+			CENTRAL.createIndex(index);
 		}
 		return index;
 	}
@@ -140,6 +150,23 @@ public class LucenePlugin extends EditPlugin
 		String name = (String) JOptionPane.showInputDialog(jEdit.getActiveView(), "Choose an index", "Choose an index",
 		                                                   JOptionPane.QUESTION_MESSAGE, null, names, null);
 		return name;
+	}
+
+	/*
+	 * Open the new index dialog.
+	 * Returns the name of the new index, or null if cancelled.
+	 */
+	public String createNewIndex()
+	{
+		NewIndexDialog dlg = new NewIndexDialog(jEdit.getActiveView());
+		dlg.setVisible(true);
+		if (! dlg.accepted())
+			return null;
+		Index index = createIndex(dlg.getIndexName(), dlg.getIndexType(),
+			dlg.getIndexAnalyzer());
+		if (index == null)
+			return null;
+		return index.getName();
 	}
 
 	/**

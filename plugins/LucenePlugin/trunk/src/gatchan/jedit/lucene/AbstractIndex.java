@@ -21,6 +21,7 @@
 package gatchan.jedit.lucene;
 
 import org.gjt.sp.util.Log;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Searcher;
@@ -38,12 +39,29 @@ public class AbstractIndex
 	protected IndexWriter writer;
 	protected Searcher searcher;
 	protected File path;
+	protected Analyzer analyzer;
+	protected String name;
+
+	public AbstractIndex()
+	{
+	}
 
 	public AbstractIndex(File path)
 	{
 		this.path = path;
 	}
 
+	public void setData(String name, File path)
+	{
+		this.name = name;
+		this.path = path;
+	}
+
+	public String getName()
+	{
+		return name;
+	}
+	
 	public void close()
 	{
 		closeWriter();
@@ -68,7 +86,7 @@ public class AbstractIndex
 		try
 		{
 			path.mkdirs();
-			writer = new IndexWriter(path, new SourceCodeAnalyzer(), IndexWriter.MaxFieldLength.LIMITED);
+			writer = new IndexWriter(path, getAnalyzer(), IndexWriter.MaxFieldLength.LIMITED);
 		}
 		catch (IOException e)
 		{
@@ -133,5 +151,17 @@ public class AbstractIndex
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public void setAnalyzer(Analyzer analyzer)
+	{
+		this.analyzer = analyzer;
+	}
+
+	public Analyzer getAnalyzer()
+	{
+		if (analyzer == null)
+			analyzer = new SourceCodeAnalyzer();
+		return analyzer;
 	}
 }

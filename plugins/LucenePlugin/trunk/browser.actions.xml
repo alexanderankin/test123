@@ -9,9 +9,10 @@
     </ACTION>
     <ACTION NAME="lucene.add-to-newindex" NO_REPEAT="TRUE">
         <CODE>
-            String indexName = Macros.input(view, "Choose an index name");
+        	import gatchan.jedit.lucene.LucenePlugin;
+			String indexName = LucenePlugin.instance.createNewIndex();
             if (indexName != null)
-                gatchan.jedit.lucene.LucenePlugin.instance.addToIndex(indexName, files);
+                LucenePlugin.instance.addToIndex(indexName, files);
         </CODE>
     </ACTION>
 </ACTIONS>
