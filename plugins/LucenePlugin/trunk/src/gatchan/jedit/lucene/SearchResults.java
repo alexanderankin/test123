@@ -74,7 +74,10 @@ public class SearchResults extends JPanel implements EBComponent
 		{
 			public boolean process(float score, Result result)
 			{
-				files.add(result.getPath());
+				String s = result.getPath();
+				if (result instanceof LineResult)
+					s += ":" + ((LineResult)result).getLine();
+				files.add(s);
 				return true;
 			}
 		});

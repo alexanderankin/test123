@@ -27,7 +27,7 @@ import org.apache.lucene.document.Document;
  */
 public class Result
 {
-	private Document document;
+	public Document document;
 
 	public Result()
 	{
@@ -36,6 +36,11 @@ public class Result
 	void setDocument(Document document)
 	{
 		this.document = document;
+	}
+
+	public Document getDocument()
+	{
+		return document;
 	}
 
 	public String getPath()

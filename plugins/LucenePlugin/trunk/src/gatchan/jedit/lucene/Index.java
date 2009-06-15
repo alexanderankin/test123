@@ -20,6 +20,10 @@
  */
 package gatchan.jedit.lucene;
 
+import java.io.File;
+
+import org.apache.lucene.analysis.Analyzer;
+
 /**
  * @author Matthieu Casanova
  */
@@ -35,6 +39,9 @@ public interface Index
 	String getName();
 	void addFile(String path);
 	void removeFile(String path);
+
+	void setData(String name, File path);
+	void setAnalyzer(Analyzer analyzer);
 
 	/**
 	 * Execute the given search query.
