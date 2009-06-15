@@ -48,6 +48,7 @@ import org.tmatesoft.svn.core.SVNException;
 
 import ise.plugin.svn.data.LogData;
 import ise.plugin.svn.data.LogResults;
+import ise.plugin.svn.library.Logger;
 
 
 public class Log {
@@ -63,6 +64,7 @@ public class Log {
      */
     public void doLog( LogData data ) throws CommandInitializationException, SVNException {
         SVNKit.setupLibrary();
+        
 
         // validate data values
         if ( data.getPaths() == null ) {
@@ -88,28 +90,37 @@ public class Log {
 
         // use default svn config options
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
+        
 
         // use the svnkit client manager
         SVNClientManager clientManager = SVNClientManager.newInstance( options, new BasicAuthenticationManager(data.getUsername(), data.getDecryptedPassword()) );
-
+        
+        
         // get a commit client
         SVNLogClient client = clientManager.getLogClient();
         SVNWCClient wc_client = clientManager.getWCClient();
-
+        
+        
         // set an event handler so that messages go to the commit data streams for display
         client.setEventHandler( new SVNCommandEventProcessor( data.getOut(), data.getErr(), false ) );
-
+        
+        
         out = data.getOut();
 
         if ( data.pathsAreURLs() ) {
+            
             for (String path : data.getPaths()) {
                 SVNURL svnurl = SVNURL.parseURIDecoded(path);
                 LogHandler handler = new LogHandler( path );
                 // files for logs, paths, peg revision, start revision,
                 // end revision, stop on copy, report paths, number of entries, handler
+                // TODO: check if there is a new method that will take multiple urls to avoid looping
+                
                 client.doLog( svnurl, null, data.getPegRevision(), data.getStartRevision(),
                     data.getEndRevision(), data.getStopOnCopy(), data.getShowPaths(), data.getMaxLogs(), handler );
+                
                 entries.put( handler.getPath(), handler.getEntries() );
+                
             }
         }
         else {

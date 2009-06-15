@@ -73,7 +73,7 @@ public class LogData extends CheckoutData {
 
 
     public String toString() {
-        return "LogData[startRevision=" + startRevision + ", endRevision=" + endRevision + "]";
+        return "LogData[startRevision=" + startRevision + ", endRevision=" + endRevision + "]" + super.toString();
     }
 
     public void setMaxLogs( int n ) {

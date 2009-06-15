@@ -226,8 +226,8 @@ public class SVNData implements Serializable {
     public String toString() {
         StringBuffer sb = new StringBuffer();
         try {
-            sb.append(getClass().getName()).append('[');
-            Field[] fields = getClass().getDeclaredFields();
+            sb.append(this.getClass().getName()).append('[');
+            Field[] fields = this.getClass().getDeclaredFields();
             for (Field field : fields) {
                 sb.append(field.getName()).append('=').append(PrivilegedAccessor.getValue(this, field.getName())).append(',');
             }
