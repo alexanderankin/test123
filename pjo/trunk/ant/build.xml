@@ -119,6 +119,7 @@ jedit.svn.url=https://jedit.svn.sourceforge.net/svnroot/jedit
 		<attribute name="pluginTag" />
 		<attribute name="pluginDownloadDir" default="${sandbox.dir}/@{pluginName}-@{pluginVersion}/@{pluginName}" />
 		<sequential>
+			<delete dir="@{pluginDownloadDir}" />
 			<mkdir dir="${sandbox.dir}/@{pluginName}-@{pluginVersion}" />
 			<ant antfile="${scm.targets.file}" target="checkout-plugin">
 				<property name="plugin.name" value="@{pluginName}" />
@@ -134,9 +135,11 @@ jedit.svn.url=https://jedit.svn.sourceforge.net/svnroot/jedit
 		<sequential>
 			<loadproperties>
 				<fileset dir="${sandbox.dir}/@{pluginName}-@{pluginVersion}">
-					<exclude name="**/build/**"/>
-					<exclude name="**/dist/**"/>
-					<include name="**/@{pluginName}.props"/>
+					<exclude name="@{pluginName}/build/**"/>
+					<exclude name="@{pluginName}/dist/**"/>
+					<exclude name="@{pluginName}/classes/**"/>
+					<exclude name="@{pluginName}/config/**"/>
+					<include name="**/*.props"/>
 				</fileset>
 				<filterchain>
 					<tokenfilter>
