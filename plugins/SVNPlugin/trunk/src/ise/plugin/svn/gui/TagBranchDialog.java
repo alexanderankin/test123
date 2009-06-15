@@ -69,8 +69,8 @@ public class TagBranchDialog extends JDialog {
     public static final int TAG_DIALOG = 1;
     public static final int BRANCH_DIALOG = 2;
     private int type = TAG_DIALOG;
-    public static String TAG = jEdit.getProperty("ips.Tag", "Tag");
-    public static String BRANCH = jEdit.getProperty("ips.Branch", "Branch");
+    public static String TAG = jEdit.getProperty( "ips.Tag", "Tag" );
+    public static String BRANCH = jEdit.getProperty( "ips.Branch", "Branch" );
 
     private CopyData data = null;
     private boolean canceled = false;
@@ -102,13 +102,13 @@ public class TagBranchDialog extends JDialog {
         panel.setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
 
         // source for tag/branch
-        JLabel to_copy_label = new JLabel( jEdit.getProperty("ips.Create", "Create") + " " + ( type == TAG_DIALOG ? jEdit.getProperty("ips.tag", "tag") : jEdit.getProperty("ips.branch", "branch") ) + " " + jEdit.getProperty("ips.from>", "from:") );
+        JLabel to_copy_label = new JLabel( jEdit.getProperty( "ips.Create", "Create" ) + " " + ( type == TAG_DIALOG ? jEdit.getProperty( "ips.tag", "tag" ) : jEdit.getProperty( "ips.branch", "branch" ) ) + " " + jEdit.getProperty( "ips.from>", "from:" ) );
         sourceFile = new HistoryTextField( URL );
         sourceFile.setText( toCopy );
         sourceFile.setEditable( false );
 
         // revision selection panel
-        final RevisionSelectionPanel tag_revision_panel = new RevisionSelectionPanel( jEdit.getProperty("ips.Create", "Create") + " " + ( type == TAG_DIALOG ? jEdit.getProperty("ips.tag", "tag") : jEdit.getProperty("ips.branch", "branch") ) + " " + jEdit.getProperty("ips.from_this_revision>", "from this revision:"), SwingConstants.HORIZONTAL, false );
+        final RevisionSelectionPanel tag_revision_panel = new RevisionSelectionPanel( jEdit.getProperty( "ips.Create", "Create" ) + " " + ( type == TAG_DIALOG ? jEdit.getProperty( "ips.tag", "tag" ) : jEdit.getProperty( "ips.branch", "branch" ) ) + " " + jEdit.getProperty( "ips.from_this_revision>", "from this revision:" ), SwingConstants.HORIZONTAL, false );
 
         JPanel source_panel = new JPanel( new LambdaLayout() );
         source_panel.add( "0, 0, 1, 1, W, w, 3", to_copy_label );
@@ -116,15 +116,16 @@ public class TagBranchDialog extends JDialog {
         source_panel.add( "0, 2, 1, 1, 0, w, 3", tag_revision_panel );
 
         // destination
-        JLabel path_label = new JLabel( jEdit.getProperty("ips.Create", "Create") + " " + ( type == TAG_DIALOG ? jEdit.getProperty("ips.tag", "tag") : jEdit.getProperty("ips.branch", "branch") ) + " " + jEdit.getProperty("ips.at_this_location>", "at this location:") );
+        JLabel path_label = new JLabel( jEdit.getProperty( "ips.Create", "Create" ) + " " + ( type == TAG_DIALOG ? jEdit.getProperty( "ips.tag", "tag" ) : jEdit.getProperty( "ips.branch", "branch" ) ) + " " + jEdit.getProperty( "ips.at_this_location>", "at this location:" ) );
         path = new HistoryTextField( COPY_PATH );
         path.setText( defaultDestination );
         path.setColumns( 30 );
-        JButton browse_remote_btn = new JButton( jEdit.getProperty("ips.Browse_Remote...", "Browse Remote...") );
+        JButton browse_remote_btn = new JButton( jEdit.getProperty( "ips.Browse_Remote...", "Browse Remote..." ) );
+        browse_remote_btn.setMnemonic( KeyEvent.VK_R );
         browse_remote_btn.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
-                    final JDialog dialog = new JDialog( view, jEdit.getProperty("ips.Select_Repository_Destination", "Select Repository Destination") );
+                    final JDialog dialog = new JDialog( view, jEdit.getProperty( "ips.Select_Repository_Destination", "Select Repository Destination" ) );
                     dialog.setModal( true );
                     JPanel panel = new JPanel( new LambdaLayout() );
                     panel.setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
@@ -132,7 +133,8 @@ public class TagBranchDialog extends JDialog {
                     panel.add( "0, 0, 1, 1, 0, wh, 3", burp );
                     KappaLayout btn_layout = new KappaLayout();
                     JPanel button_panel = new JPanel( btn_layout );
-                    JButton ok_btn = new JButton( jEdit.getProperty("ips.Ok", "Ok") );
+                    JButton ok_btn = new JButton( jEdit.getProperty( "ips.Ok", "Ok" ) );
+                    ok_btn.setMnemonic( KeyEvent.VK_O );
                     ok_btn.addActionListener(
                         new ActionListener() {
                             public void actionPerformed( ActionEvent ae ) {
@@ -145,7 +147,8 @@ public class TagBranchDialog extends JDialog {
                             }
                         }
                     );
-                    JButton cancel_btn = new JButton( jEdit.getProperty("ips.Cancel", "Cancel") );
+                    JButton cancel_btn = new JButton( jEdit.getProperty( "ips.Cancel", "Cancel" ) );
+                    cancel_btn.setMnemonic( KeyEvent.VK_C );
                     cancel_btn.addActionListener(
                         new ActionListener() {
                             public void actionPerformed( ActionEvent ae ) {
@@ -163,6 +166,8 @@ public class TagBranchDialog extends JDialog {
                     dialog.setContentPane( panel );
                     dialog.pack();
                     GUIUtils.center( view, dialog );
+                    dialog.getRootPane().setDefaultButton( ok_btn );
+                    ok_btn.requestFocus();
                     dialog.setVisible( true );
                 }
             }
@@ -170,7 +175,7 @@ public class TagBranchDialog extends JDialog {
 
 
 
-        JLabel comment_label = new JLabel( jEdit.getProperty("ips.Enter_comment_for_this", "Enter comment for this") + " " + ( type == TAG_DIALOG ? jEdit.getProperty("ips.tag>", "tag:") : jEdit.getProperty("ips.branch>", "branch:") ) );
+        JLabel comment_label = new JLabel( jEdit.getProperty( "ips.Enter_comment_for_this", "Enter comment for this" ) + " " + ( type == TAG_DIALOG ? jEdit.getProperty( "ips.tag>", "tag:" ) : jEdit.getProperty( "ips.branch>", "branch:" ) ) );
         comment = new JTextArea( 3, 40 );
         comment.setLineWrap( true );
         comment.setWrapStyleWord( true );
@@ -191,8 +196,10 @@ public class TagBranchDialog extends JDialog {
         // ok and cancel buttons
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
-        JButton ok_btn = new JButton( jEdit.getProperty("ips.Ok", "Ok") );
-        JButton cancel_btn = new JButton( jEdit.getProperty("ips.Cancel", "Cancel") );
+        JButton ok_btn = new JButton( jEdit.getProperty( "ips.Ok", "Ok" ) );
+        ok_btn.setMnemonic(KeyEvent.VK_O);
+        JButton cancel_btn = new JButton( jEdit.getProperty( "ips.Cancel", "Cancel" ) );
+        cancel_btn.setMnemonic(KeyEvent.VK_C);
         btn_panel.add( "0, 0, 1, 1, 0, w, 3", ok_btn );
         btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancel_btn );
         kl.makeColumnsSameWidth( 0, 1 );
@@ -203,14 +210,14 @@ public class TagBranchDialog extends JDialog {
                             source = SVNURL.parseURIDecoded( toCopy );
                         }
                         catch ( Exception e ) {
-                            JOptionPane.showMessageDialog( TagBranchDialog.this, jEdit.getProperty("ips.Source_URL_is_invalid.", "Source URL is invalid."), jEdit.getProperty("ips.Error", "Error"), JOptionPane.ERROR_MESSAGE );
+                            JOptionPane.showMessageDialog( TagBranchDialog.this, jEdit.getProperty( "ips.Source_URL_is_invalid.", "Source URL is invalid." ), jEdit.getProperty( "ips.Error", "Error" ), JOptionPane.ERROR_MESSAGE );
                             return ;
                         }
                         try {
                             destination = SVNURL.parseURIDecoded( path.getText() );
                         }
                         catch ( Exception e ) {
-                            JOptionPane.showMessageDialog( TagBranchDialog.this, jEdit.getProperty("ips.Destination_URL_is_invalid.", "Destination URL is invalid."), jEdit.getProperty("ips.Error", "Error"), JOptionPane.ERROR_MESSAGE );
+                            JOptionPane.showMessageDialog( TagBranchDialog.this, jEdit.getProperty( "ips.Destination_URL_is_invalid.", "Destination URL is invalid." ), jEdit.getProperty( "ips.Error", "Error" ), JOptionPane.ERROR_MESSAGE );
                             return ;
                         }
                         revision = tag_revision_panel.getRevision();
@@ -224,7 +231,7 @@ public class TagBranchDialog extends JDialog {
                         data.setDestinationURL( destination );
                         String msg = comment.getText();
                         if ( msg == null || msg.length() == 0 ) {
-                            msg = jEdit.getProperty("ips.no_comment", "no comment");
+                            msg = jEdit.getProperty( "ips.no_comment", "no comment" );
                         }
                         data.setMessage( msg );
 
@@ -269,7 +276,7 @@ public class TagBranchDialog extends JDialog {
 
         if ( commentList != null && commentList.getModel().getSize() > 0 ) {
             commentList.setPreferredSize( new Dimension( 500, commentList.getPreferredSize().height ) );
-            panel.add( "0, 11, 8, 1, W,  , 3", new JLabel( jEdit.getProperty("ips.Select_a_previous_comment>", "Select a previous comment:") ) );
+            panel.add( "0, 11, 8, 1, W,  , 3", new JLabel( jEdit.getProperty( "ips.Select_a_previous_comment>", "Select a previous comment:" ) ) );
             panel.add( "0, 12, 8, 1, W, w, 3", commentList );
         }
         panel.add( "0, 13, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
@@ -279,6 +286,8 @@ public class TagBranchDialog extends JDialog {
         setContentPane( panel );
         pack();
 
+        getRootPane().setDefaultButton(ok_btn);
+        ok_btn.requestFocus();
     }
 
     public CopyData getData() {

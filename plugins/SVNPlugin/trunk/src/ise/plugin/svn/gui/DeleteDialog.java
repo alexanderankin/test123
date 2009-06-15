@@ -130,7 +130,9 @@ public class DeleteDialog extends JDialog {
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
         okButton = new JButton( jEdit.getProperty( "ips.Ok", "Ok" ) );
+        okButton.setMnemonic(KeyEvent.VK_O);
         cancelButton = new JButton( jEdit.getProperty( "ips.Cancel", "Cancel" ) );
+        cancelButton.setMnemonic(KeyEvent.VK_C);
         btn_panel.add( "0, 0, 1, 1, 0, w, 3", okButton );
         btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancelButton );
         kl.makeColumnsSameWidth( 0, 1 );
@@ -154,6 +156,8 @@ public class DeleteDialog extends JDialog {
         panel.add( btn_panel, "0, 9, 1, 1, E" );
         setContentPane( panel );
         pack();
+        getRootPane().setDefaultButton(okButton);
+        okButton.requestFocus();
     }
 
     private void installListeners() {

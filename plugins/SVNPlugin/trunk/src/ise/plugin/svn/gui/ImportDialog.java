@@ -69,7 +69,7 @@ public class ImportDialog extends JDialog {
     private boolean canceled = false;
 
     public ImportDialog( View view ) {
-        super( ( JFrame ) view, jEdit.getProperty("ips.Import", "Import"), true );
+        super( ( JFrame ) view, jEdit.getProperty( "ips.Import", "Import" ), true );
         this.view = view;
         _init();
     }
@@ -78,30 +78,30 @@ public class ImportDialog extends JDialog {
     protected void _init() {
         JPanel panel = new JPanel( new KappaLayout() );
         panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
-        String project_name = PVHelper.getProjectName(view);
+        String project_name = PVHelper.getProjectName( view );
 
         // subversion repository url field
-        JLabel url_label = new JLabel( jEdit.getProperty("ips.To_this_repository_URL>", "To this repository URL:") );
-        url = new HistoryTextField(URL);
-        url.setText("");
-        url.setColumns(30);
+        JLabel url_label = new JLabel( jEdit.getProperty( "ips.To_this_repository_URL>", "To this repository URL:" ) );
+        url = new HistoryTextField( URL );
+        url.setText( "" );
+        url.setColumns( 30 );
 
         // populate url field from existing svn info, if available
         List<String> info_path = new ArrayList<String>();
-        info_path.add(PVHelper.getProjectRoot(view));
+        info_path.add( PVHelper.getProjectRoot( view ) );
         SVNData info_data = new SVNData();
-        info_data.setPaths(info_path);
+        info_data.setPaths( info_path );
         String url_text = null;
         List<SVNInfo> info_results = null;
         try {
-            info_results = new Info().getInfo(info_data);
+            info_results = new Info().getInfo( info_data );
         }
-        catch(Exception e) {
+        catch ( Exception e ) {
             info_results = null;
         }
-        if (info_results != null && info_results.size() > 0) {
-            SVNInfo svn_info = info_results.get(0);
-            if (svn_info != null && svn_info.getURL() != null) {
+        if ( info_results != null && info_results.size() > 0 ) {
+            SVNInfo svn_info = info_results.get( 0 );
+            if ( svn_info != null && svn_info.getURL() != null ) {
                 url_text = svn_info.getURL().toString();
             }
         }
@@ -110,11 +110,12 @@ public class ImportDialog extends JDialog {
         }
 
         // browse for url
-        JButton browse_remote_btn = new JButton( jEdit.getProperty("ips.Browse...", "Browse...") );
+        JButton browse_remote_btn = new JButton( jEdit.getProperty( "ips.Browse...", "Browse..." ) );
+        browse_remote_btn.setMnemonic( KeyEvent.VK_R );
         browse_remote_btn.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
-                    final JDialog dialog = new JDialog( view, jEdit.getProperty("ips.Select_Repository", "Select Repository") );
+                    final JDialog dialog = new JDialog( view, jEdit.getProperty( "ips.Select_Repository", "Select Repository" ) );
                     dialog.setModal( true );
                     JPanel panel = new JPanel( new LambdaLayout() );
                     panel.setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
@@ -122,7 +123,8 @@ public class ImportDialog extends JDialog {
                     panel.add( "0, 0, 1, 1, 0, wh, 3", burp );
                     KappaLayout btn_layout = new KappaLayout();
                     JPanel button_panel = new JPanel( btn_layout );
-                    JButton ok_btn = new JButton( jEdit.getProperty("ips.Ok", "Ok") );
+                    JButton ok_btn = new JButton( jEdit.getProperty( "ips.Ok", "Ok" ) );
+                    ok_btn.setMnemonic( KeyEvent.VK_O );
                     ok_btn.addActionListener(
                         new ActionListener() {
                             public void actionPerformed( ActionEvent ae ) {
@@ -135,7 +137,8 @@ public class ImportDialog extends JDialog {
                             }
                         }
                     );
-                    JButton cancel_btn = new JButton( jEdit.getProperty("ips.Cancel", "Cancel") );
+                    JButton cancel_btn = new JButton( jEdit.getProperty( "ips.Cancel", "Cancel" ) );
+                    cancel_btn.setMnemonic( KeyEvent.VK_C );
                     cancel_btn.addActionListener(
                         new ActionListener() {
                             public void actionPerformed( ActionEvent ae ) {
@@ -153,22 +156,25 @@ public class ImportDialog extends JDialog {
                     dialog.setContentPane( panel );
                     dialog.pack();
                     GUIUtils.center( view, dialog );
+                    dialog.getRootPane().setDefaultButton( ok_btn );
+                    ok_btn.requestFocus();
                     dialog.setVisible( true );
                 }
             }
         );
 
         // local destination directory
-        JLabel path_label = new JLabel( jEdit.getProperty("ips.Import_files_from_this_directory>", "Import files from this directory:") );
-        path = new HistoryTextField(PATH);
-        path.setText( PVHelper.getProjectRoot(view) );
+        JLabel path_label = new JLabel( jEdit.getProperty( "ips.Import_files_from_this_directory>", "Import files from this directory:" ) );
+        path = new HistoryTextField( PATH );
+        path.setText( PVHelper.getProjectRoot( view ) );
         path.setColumns( 30 );
-        JButton browse_btn = new JButton( jEdit.getProperty("ips.Browse", "Browse") );
+        JButton browse_btn = new JButton( jEdit.getProperty( "ips.Browse", "Browse" ) );
+        browse_btn.setMnemonic(KeyEvent.VK_B);
         browse_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
-                        String[] dirs = GUIUtilities.showVFSFileDialog( view, PVHelper.getProjectRoot(view), VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false );
-                        if (dirs != null && dirs.length > 0) {
-                            path.setText(dirs[0]);
+                        String[] dirs = GUIUtilities.showVFSFileDialog( view, PVHelper.getProjectRoot( view ), VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false );
+                        if ( dirs != null && dirs.length > 0 ) {
+                            path.setText( dirs[ 0 ] );
                         }
                     }
                 }
@@ -176,21 +182,23 @@ public class ImportDialog extends JDialog {
 
         // username field
         JLabel username_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "username.label" ) );
-        username = new HistoryTextField(USERNAME);
+        username = new HistoryTextField( USERNAME );
         username.setText( jEdit.getProperty( SVNAction.PREFIX + project_name + ".username" ) );
         username.setColumns( 30 );
 
         // password field
         JLabel password_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "password.label" ) );
         String pwd = jEdit.getProperty( SVNAction.PREFIX + project_name + ".password" );
-        pwd = PasswordHandler.decryptPassword(pwd);
+        pwd = PasswordHandler.decryptPassword( pwd );
         password = new JPasswordField( pwd, 30 );
 
         // buttons
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
-        JButton ok_btn = new JButton( jEdit.getProperty("ips.Ok", "Ok") );
-        JButton cancel_btn = new JButton( jEdit.getProperty("ips.Cancel", "Cancel") );
+        JButton ok_btn = new JButton( jEdit.getProperty( "ips.Ok", "Ok" ) );
+        ok_btn.setMnemonic(KeyEvent.VK_O);
+        JButton cancel_btn = new JButton( jEdit.getProperty( "ips.Cancel", "Cancel" ) );
+        cancel_btn.setMnemonic(KeyEvent.VK_C);
         btn_panel.add( "0, 0, 1, 1, 0, w, 3", ok_btn );
         btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancel_btn );
         kl.makeColumnsSameWidth( 0, 1 );
@@ -198,11 +206,11 @@ public class ImportDialog extends JDialog {
         ok_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         if ( url == null || url.getText().length() == 0 ) {
-                            JOptionPane.showMessageDialog( ImportDialog.this, jEdit.getProperty("ips.URL_is_required.", "URL is required."), jEdit.getProperty("ips.Error", "Error"), JOptionPane.ERROR_MESSAGE );
+                            JOptionPane.showMessageDialog( ImportDialog.this, jEdit.getProperty( "ips.URL_is_required.", "URL is required." ), jEdit.getProperty( "ips.Error", "Error" ), JOptionPane.ERROR_MESSAGE );
                             return ;
                         }
                         if ( path == null || path.getText().length() == 0 ) {
-                            JOptionPane.showMessageDialog( ImportDialog.this, jEdit.getProperty("ips.Directory_is_required.", "Directory is required."), jEdit.getProperty("ips.Error", "Error"), JOptionPane.ERROR_MESSAGE );
+                            JOptionPane.showMessageDialog( ImportDialog.this, jEdit.getProperty( "ips.Directory_is_required.", "Directory is required." ), jEdit.getProperty( "ips.Error", "Error" ), JOptionPane.ERROR_MESSAGE );
                             return ;
                         }
                         canceled = false;
@@ -246,6 +254,8 @@ public class ImportDialog extends JDialog {
         setContentPane( panel );
         pack();
 
+        getRootPane().setDefaultButton(ok_btn);
+        ok_btn.requestFocus();
     }
 
     public CopyData getData() {
@@ -255,12 +265,12 @@ public class ImportDialog extends JDialog {
 
         CopyData cd = new CopyData();
         try {
-            cd.setSourceFile(new File(path.getText()));
-            cd.setDestinationURL(SVNURL.parseURIDecoded(url.getText()));
-            cd.setUsername(username.getText());
-            cd.setPassword(PasswordHandler.encryptPassword(new String(password.getPassword())));
+            cd.setSourceFile( new File( path.getText() ) );
+            cd.setDestinationURL( SVNURL.parseURIDecoded( url.getText() ) );
+            cd.setUsername( username.getText() );
+            cd.setPassword( PasswordHandler.encryptPassword( new String( password.getPassword() ) ) );
         }
-        catch(Exception e) {
+        catch ( Exception e ) {
             e.printStackTrace();
         }
         return cd;

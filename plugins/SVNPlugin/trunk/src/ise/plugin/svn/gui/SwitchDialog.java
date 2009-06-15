@@ -54,7 +54,7 @@ public class SwitchDialog extends JDialog {
     private String path = null;
     private HistoryTextField from = null;
 
-    private SVNURL from_url  = null;
+    private SVNURL from_url = null;
     private SVNRevision revision = SVNRevision.HEAD;
 
     private boolean canceled = false;
@@ -66,14 +66,14 @@ public class SwitchDialog extends JDialog {
      * @param files the files to replace
      */
     public SwitchDialog( View view, UpdateData data ) {
-        super( ( JFrame ) view, jEdit.getProperty("ips.Switch", "Switch"), true );
+        super( ( JFrame ) view, jEdit.getProperty( "ips.Switch", "Switch" ), true );
         if ( data == null ) {
             throw new IllegalArgumentException( "no source file(s)" );
         }
         List<String> paths = data.getPaths();
         if ( paths.size() != 1 ) {
-            String msg = jEdit.getProperty("ips.Switch_can_only_be_applied_to_one_file_or_directory_at_a_time.", "Switch can only be applied to one file or directory at a time.");
-            JOptionPane.showMessageDialog( view, msg, jEdit.getProperty("ips.Switch_Error", "Switch Error"), JOptionPane.ERROR_MESSAGE );
+            String msg = jEdit.getProperty( "ips.Switch_can_only_be_applied_to_one_file_or_directory_at_a_time.", "Switch can only be applied to one file or directory at a time." );
+            JOptionPane.showMessageDialog( view, msg, jEdit.getProperty( "ips.Switch_Error", "Switch Error" ), JOptionPane.ERROR_MESSAGE );
             throw new IllegalArgumentException( msg );
         }
         this.view = view;
@@ -99,17 +99,17 @@ public class SwitchDialog extends JDialog {
             recursive = true;
         }
         List<String> paths = new ArrayList<String>();
-        paths.add(path);
+        paths.add( path );
         data.setPaths( paths );
         data.setRecursive( recursive );
 
         // source for switch
-        JLabel to_replace_label = new JLabel( jEdit.getProperty("ips.Replace", "Replace") + " " + (recursive ? jEdit.getProperty("ips.the_files_in_this_directory>", "the files in this directory:") : jEdit.getProperty("ips.this_file>", "this file:")) );
-        HistoryTextField to_replace_file = new HistoryTextField(PATH);
-        to_replace_file.setText(path);
-        to_replace_file.setEditable(false);
+        JLabel to_replace_label = new JLabel( jEdit.getProperty( "ips.Replace", "Replace" ) + " " + ( recursive ? jEdit.getProperty( "ips.the_files_in_this_directory>", "the files in this directory:" ) : jEdit.getProperty( "ips.this_file>", "this file:" ) ) );
+        HistoryTextField to_replace_file = new HistoryTextField( PATH );
+        to_replace_file.setText( path );
+        to_replace_file.setEditable( false );
 
-        final JCheckBox recursive_cb = new JCheckBox( jEdit.getProperty("ips.Recursively_switch?", "Recursively switch?") );
+        final JCheckBox recursive_cb = new JCheckBox( jEdit.getProperty( "ips.Recursively_switch?", "Recursively switch?" ) );
         recursive_cb.setSelected( recursive );
         recursive_cb.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
@@ -119,18 +119,19 @@ public class SwitchDialog extends JDialog {
                                       );
 
         // revision selection panel
-        final RevisionSelectionPanel revision_panel = new RevisionSelectionPanel( jEdit.getProperty("ips.At_this_revision>", "At this revision:"), SwingConstants.HORIZONTAL, false );
+        final RevisionSelectionPanel revision_panel = new RevisionSelectionPanel( jEdit.getProperty( "ips.At_this_revision>", "At this revision:" ), SwingConstants.HORIZONTAL, false );
 
         // destination
-        JLabel path_label = new JLabel( jEdit.getProperty("ips.With_file(s)_from_this_location>", "With file(s) from this location:") );
+        JLabel path_label = new JLabel( jEdit.getProperty( "ips.With_file(s)_from_this_location>", "With file(s) from this location:" ) );
         from = new HistoryTextField( COPY_PATH );
-        from.setText("");
+        from.setText( "" );
         from.setColumns( 30 );
-        JButton browse_remote_btn = new JButton( jEdit.getProperty("ips.Browse_Remote...", "Browse Remote...") );
+        JButton browse_remote_btn = new JButton( jEdit.getProperty( "ips.Browse_Remote...", "Browse Remote..." ) );
+        browse_remote_btn.setMnemonic( KeyEvent.VK_R );
         browse_remote_btn.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
-                    final JDialog dialog = new JDialog( view, jEdit.getProperty("ips.Select_Repository_Destination", "Select Repository Destination") );
+                    final JDialog dialog = new JDialog( view, jEdit.getProperty( "ips.Select_Repository_Destination", "Select Repository Destination" ) );
                     dialog.setModal( true );
                     JPanel panel = new JPanel( new LambdaLayout() );
                     panel.setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
@@ -138,7 +139,8 @@ public class SwitchDialog extends JDialog {
                     panel.add( "0, 0, 1, 1, 0, wh, 3", burp );
                     KappaLayout btn_layout = new KappaLayout();
                     JPanel button_panel = new JPanel( btn_layout );
-                    JButton ok_btn = new JButton( jEdit.getProperty("ips.Ok", "Ok") );
+                    JButton ok_btn = new JButton( jEdit.getProperty( "ips.Ok", "Ok" ) );
+                    ok_btn.setMnemonic( KeyEvent.VK_O );
                     ok_btn.addActionListener(
                         new ActionListener() {
                             public void actionPerformed( ActionEvent ae ) {
@@ -151,7 +153,8 @@ public class SwitchDialog extends JDialog {
                             }
                         }
                     );
-                    JButton cancel_btn = new JButton( jEdit.getProperty("ips.Cancel", "Cancel") );
+                    JButton cancel_btn = new JButton( jEdit.getProperty( "ips.Cancel", "Cancel" ) );
+                    cancel_btn.setMnemonic( KeyEvent.VK_C );
                     cancel_btn.addActionListener(
                         new ActionListener() {
                             public void actionPerformed( ActionEvent ae ) {
@@ -169,6 +172,8 @@ public class SwitchDialog extends JDialog {
                     dialog.setContentPane( panel );
                     dialog.pack();
                     GUIUtils.center( view, dialog );
+                    dialog.getRootPane().setDefaultButton( ok_btn );
+                    ok_btn.requestFocus();
                     dialog.setVisible( true );
                 }
             }
@@ -178,8 +183,10 @@ public class SwitchDialog extends JDialog {
         // ok and cancel buttons
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
-        JButton ok_btn = new JButton( jEdit.getProperty("ips.Ok", "Ok") );
-        JButton cancel_btn = new JButton( jEdit.getProperty("ips.Cancel", "Cancel") );
+        JButton ok_btn = new JButton( jEdit.getProperty( "ips.Ok", "Ok" ) );
+        ok_btn.setMnemonic(KeyEvent.VK_O);
+        JButton cancel_btn = new JButton( jEdit.getProperty( "ips.Cancel", "Cancel" ) );
+        cancel_btn.setMnemonic(KeyEvent.VK_C);
         btn_panel.add( "0, 0, 1, 1, 0, w, 3", ok_btn );
         btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancel_btn );
         kl.makeColumnsSameWidth( 0, 1 );
@@ -190,7 +197,7 @@ public class SwitchDialog extends JDialog {
                             from_url = SVNURL.parseURIDecoded( from.getText() );
                         }
                         catch ( Exception e ) {
-                            JOptionPane.showMessageDialog( SwitchDialog.this, jEdit.getProperty("ips.Destination_URL_is_invalid.", "Destination URL is invalid."), jEdit.getProperty("ips.Error", "Error"), JOptionPane.ERROR_MESSAGE );
+                            JOptionPane.showMessageDialog( SwitchDialog.this, jEdit.getProperty( "ips.Destination_URL_is_invalid.", "Destination URL is invalid." ), jEdit.getProperty( "ips.Error", "Error" ), JOptionPane.ERROR_MESSAGE );
                             return ;
                         }
                         revision = revision_panel.getRevision();
@@ -231,6 +238,8 @@ public class SwitchDialog extends JDialog {
         setContentPane( panel );
         pack();
 
+        getRootPane().setDefaultButton(ok_btn);
+        ok_btn.requestFocus();
     }
 
     public UpdateData getData() {

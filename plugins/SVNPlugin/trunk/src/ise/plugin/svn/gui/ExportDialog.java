@@ -141,6 +141,7 @@ public class ExportDialog extends JDialog {
         path.setText("");
         path.setColumns(30);
         JButton browse_local_btn = new JButton( jEdit.getProperty("ips.Browse_Local...", "Browse Local...") );
+        browse_local_btn.setMnemonic(KeyEvent.VK_B);
         browse_local_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
                         String[] dirs = GUIUtilities.showVFSFileDialog( view, System.getProperty( "user.home" ), VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false );
@@ -163,7 +164,9 @@ public class ExportDialog extends JDialog {
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
         JButton ok_btn = new JButton( jEdit.getProperty("ips.Ok", "Ok") );
+        ok_btn.setMnemonic(KeyEvent.VK_O);
         JButton cancel_btn = new JButton( jEdit.getProperty("ips.Cancel", "Cancel") );
+        cancel_btn.setMnemonic(KeyEvent.VK_C);
         btn_panel.add( "0, 0, 1, 1, 0, w, 3", ok_btn );
         btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancel_btn );
         kl.makeColumnsSameWidth( 0, 1 );
@@ -278,6 +281,8 @@ public class ExportDialog extends JDialog {
         setContentPane( panel );
         pack();
 
+        getRootPane().setDefaultButton(ok_btn);
+        ok_btn.requestFocus();
     }
 
     public ExportData getData() {
