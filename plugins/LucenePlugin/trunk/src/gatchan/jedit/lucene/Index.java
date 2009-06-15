@@ -37,6 +37,7 @@ public interface Index
 	void commit();
 
 	String getName();
+	Analyzer getAnalyzer();
 	void addFile(String path);
 	void removeFile(String path);
 
