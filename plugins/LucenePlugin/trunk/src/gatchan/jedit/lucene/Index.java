@@ -20,8 +20,6 @@
  */
 package gatchan.jedit.lucene;
 
-import java.io.File;
-
 import org.apache.lucene.analysis.Analyzer;
 
 /**
@@ -41,7 +39,6 @@ public interface Index
 	void addFile(String path);
 	void removeFile(String path);
 
-	void setData(String name, File path);
 	void setAnalyzer(Analyzer analyzer);
 
 	/**

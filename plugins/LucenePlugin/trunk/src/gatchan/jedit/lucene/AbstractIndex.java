@@ -20,16 +20,19 @@
  */
 package gatchan.jedit.lucene;
 
-import org.gjt.sp.util.Log;
+import lucene.SourceCodeAnalyzer;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Searcher;
+import org.gjt.sp.util.Log;
 
-import java.io.IOException;
 import java.io.File;
-
-import lucene.SourceCodeAnalyzer;
+import java.io.IOException;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Matthieu Casanova
@@ -37,45 +40,42 @@ import lucene.SourceCodeAnalyzer;
 public class AbstractIndex
 {
 	protected IndexWriter writer;
-	protected Searcher searcher;
+	private IndexReader reader;
 	protected File path;
 	protected Analyzer analyzer;
-	protected String name;
 
-	public AbstractIndex()
-	{
-	}
+	private final Map<IndexReader, Integer> readerMap = new ConcurrentHashMap<IndexReader, Integer>();
 
 	public AbstractIndex(File path)
 	{
 		this.path = path;
 	}
 
-	public void setData(String name, File path)
-	{
-		this.name = name;
-		this.path = path;
-	}
-
-	public String getName()
-	{
-		return name;
-	}
-	
 	public void close()
 	{
 		closeWriter();
-		if (searcher != null)
+		Set<IndexReader> readerSet = readerMap.keySet();
+		for (IndexReader indexReader : readerSet)
 		{
 			try
 			{
-				searcher.close();
+				indexReader.close();
 			}
 			catch (IOException e)
 			{
-				Log.log(Log.ERROR, this, "Unable to close searcher", e);
+				e.printStackTrace();
 			}
-			searcher = null;
+		}
+		if (reader != null)
+		{
+			try
+			{
+				reader.close();
+			}
+			catch (IOException e)
+			{
+				Log.log(Log.ERROR, this, "Unable to close reader", e);
+			}
 		}
 	}
 
@@ -94,19 +94,37 @@ public class AbstractIndex
 		}
 	}
 
-	protected void openSearcher()
+	protected IndexSearcher getSearcher()
 	{
-		if (searcher == null)
+		if (reader == null)
 		{
 			try
 			{
-				searcher = new IndexSearcher(path.getPath());
+				reader = IndexReader.open(path.getPath());
+				readerMap.put(reader, 0);
 			}
 			catch (IOException e)
 			{
-				e.printStackTrace();
+				Log.log(Log.ERROR, this, "Unable to open IndexReader", e);
 			}
 		}
+		else
+		{
+			try
+			{
+				IndexReader reader = this.reader.reopen();
+				if (reader != this.reader)
+				{
+					readerMap.put(reader, 0);
+					this.reader = reader;
+				}
+			}
+			catch (IOException e)
+			{
+				Log.log(Log.ERROR, this, "Unable to open reopen IndexReader", e);
+			}
+		}
+		return new MyIndexSearcher(reader);
 	}
 
 	protected void closeWriter()
@@ -137,19 +155,46 @@ public class AbstractIndex
 			{
 				Log.log(Log.ERROR, this, "Error while optimizing index", e);
 			}
-			closeWriter();
 		}
-		if (searcher != null)
+	}
+
+	private void readPlus(IndexReader reader)
+	{
+		int count = readerMap.get(reader);
+		readerMap.put(reader, count + 1);
+	}
+
+	private void readMinus(IndexReader reader)
+	{
+		int count = readerMap.get(reader) - 1;
+		readerMap.put(reader, count);
+		if (count == 0 && reader != this.reader)
 		{
 			try
 			{
-				searcher.close();
-				searcher = null;
+				reader.close();
 			}
 			catch (IOException e)
 			{
 				e.printStackTrace();
 			}
+			readerMap.remove(reader);
+		}
+	}
+
+	private class MyIndexSearcher extends IndexSearcher
+	{
+		private MyIndexSearcher(IndexReader r)
+		{
+			super(r);
+			readPlus(r);
+		}
+
+		@Override
+		public void close() throws IOException
+		{
+			super.close();
+			readMinus(reader);
 		}
 	}
 
@@ -164,4 +209,17 @@ public class AbstractIndex
 			analyzer = new SourceCodeAnalyzer();
 		return analyzer;
 	}
+
+	protected static void closeSearcher(Searcher searcher)
+	{
+		try
+		{
+			searcher.close();
+		}
+		catch (IOException e)
+		{
+			Log.log(Log.ERROR, AbstractIndex.class, e, e);
+		}
+	}
+
 }

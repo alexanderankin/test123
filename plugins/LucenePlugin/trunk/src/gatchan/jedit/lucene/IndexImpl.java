@@ -21,11 +21,6 @@
 
 package gatchan.jedit.lucene;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
@@ -34,19 +29,35 @@ import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.TopDocs;
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
+
+import java.io.*;
 
 /**
  * @author Matthieu Casanova
  */
 public class IndexImpl extends AbstractIndex implements Index
 {
+	private final String name;
+
+	public IndexImpl(String name, File path)
+	{
+		super(path);
+		this.name = name;
+	}
+
+	public String getName()
+	{
+		return name;
+	}
+
 	public void addFile(String path)
 	{
 		openWriter();
@@ -119,17 +130,16 @@ public class IndexImpl extends AbstractIndex implements Index
 
 	public void search(String query, ResultProcessor processor)
 	{
-		openSearcher();
+		Searcher searcher = getSearcher();
 		if (searcher == null)
 			return;
-		QueryParser parser = new MultiFieldQueryParser(
-			new String[]{"path", "content"}, getAnalyzer());
+		QueryParser parser = new MultiFieldQueryParser(new String[]{"path", "content"}, getAnalyzer());
 		try
 		{
 			Query _query = parser.parse(query);
 			TopDocs docs = searcher.search(_query, 100);
 			ScoreDoc[] scoreDocs = docs.scoreDocs;
-			Result result = new Result();
+			Result result = getResultInstance();
 			for (ScoreDoc doc : scoreDocs)
 			{
 				Document document = searcher.doc(doc.doc);
@@ -148,6 +158,22 @@ public class IndexImpl extends AbstractIndex implements Index
 		{
 			e.printStackTrace();
 		}
+		finally
+		{
+			try
+			{
+				searcher.close();
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+
+	protected Result getResultInstance()
+	{
+		return new Result();
 	}
 
 	protected void addDocument(VFSFile file, Object session)
@@ -175,4 +201,5 @@ public class IndexImpl extends AbstractIndex implements Index
 			IOUtilities.closeQuietly(reader);
 		}
 	}
+
 }

@@ -32,18 +32,7 @@ import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
 
 import javax.swing.*;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -162,10 +151,9 @@ public class LucenePlugin extends EditPlugin
 			return index;
 
 		File path = getIndexFile(name);
-		index = IndexFactory.createIndex(type);
+		index = IndexFactory.createIndex(type, name, path);
 		if (index == null)
 			return null;
-		index.setData(name, path);
 		Analyzer analyzer = AnalyzerFactory.getAnalyzer(analyzerName);
 		if (analyzer != null)
 			index.setAnalyzer(analyzer);
