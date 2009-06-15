@@ -2,6 +2,8 @@ package dockingFrames;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -12,6 +14,8 @@ import java.util.Map;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.gjt.sp.jedit.PerspectiveManager;
@@ -32,6 +36,18 @@ import bibliothek.gui.dock.SplitDockStation;
 import bibliothek.gui.dock.action.DefaultDockActionSource;
 import bibliothek.gui.dock.action.LocationHint;
 import bibliothek.gui.dock.action.actions.SimpleButtonAction;
+import bibliothek.gui.dock.common.CControl;
+import bibliothek.gui.dock.common.CGrid;
+import bibliothek.gui.dock.common.CGridArea;
+import bibliothek.gui.dock.common.CWorkingArea;
+import bibliothek.gui.dock.common.DefaultMultipleCDockable;
+import bibliothek.gui.dock.common.DefaultSingleCDockable;
+import bibliothek.gui.dock.common.EmptyMultipleCDockableFactory;
+import bibliothek.gui.dock.common.MultipleCDockable;
+import bibliothek.gui.dock.common.MultipleCDockableFactory;
+import bibliothek.gui.dock.common.MultipleCDockableLayout;
+import bibliothek.gui.dock.common.SingleCDockable;
+import bibliothek.gui.dock.common.intern.CDockable;
 import bibliothek.gui.dock.dockable.DefaultDockableFactory;
 import bibliothek.gui.dock.event.DockHierarchyEvent;
 import bibliothek.gui.dock.event.DockHierarchyListener;
@@ -45,92 +61,73 @@ import bibliothek.gui.dock.station.split.SplitNode;
 import bibliothek.gui.dock.themes.ThemeFactory;
 import bibliothek.gui.dock.title.DockTitle;
 import bibliothek.gui.dock.title.DockTitleVersion;
+import bibliothek.gui.dock.util.ComponentWindowProvider;
 import bibliothek.util.xml.XElement;
 import bibliothek.util.xml.XIO;
 
 @SuppressWarnings("serial")
 public class DfWindowManager extends DockableWindowManager {
 
-	public static enum Side {
-		LEFT, RIGHT, TOP, BOTTOM, NONE
-	}
-	
-	private static final String CENTER = "center";
-	private static final String MAIN = "main";
-	private static final String toggleDocksLayoutName = "toggleDocks";
-	
-
-	private DockController controller;
-	private SplitDockStation center;
 	private Map<String, DockStation> stations;
-	private Factory factory;
-	private Dockable mainPanel;
 	private PredefinedDockSituation situation;
-	private String theme;
-	private Map<String, Dockable> created = new HashMap<String, Dockable>();
-	private Map<String, Side> sides = new HashMap<String, Side>();
-	private CloseAction closeAction;
-	private Map<Side, DfDockingArea> areas = new HashMap<Side, DfDockingArea>();
-	private boolean hidden = false;
-	private FloatAction floatAction;
-	private DefaultDockActionSource dockedActionSource, floatActionSource;
-	private ScreenDockStation screenDock;
+	private Map<String, DefaultMultipleCDockable> created = new HashMap<String, DefaultMultipleCDockable>();
+	private CControl control;
+	private static JEditDockableFactory factory;
+	private CWorkingArea mainArea;
+	private CGrid grid;
 	
 	public DfWindowManager(View view, DockableWindowFactory instance,
-			ViewConfig config) {
+			ViewConfig config)
+	{
 		super(view, instance, config);
 		setLayout(new BorderLayout());
-		situation = new PredefinedDockSituation();
-        stations = new HashMap<String, DockStation>();
-		controller = new DockController();
-		setTheme(DfOptionPane.getThemeName());
-		closeAction = new CloseAction(controller);
-        center = new SplitDockStation();
-        stations.put(CENTER, center);
-        add(center.getComponent(), BorderLayout.CENTER);
-        controller.add(center);
-        controller.getProperties().set(EclipseTheme.THEME_CONNECTOR,
-        	new DefaultEclipseThemeConnector() {
-                @Override
-                public TitleBar getTitleBarKind(Dockable dockable) {
-                    if (dockable == mainPanel)
-                        return TitleBar.NONE_BORDERED;
-                    return super.getTitleBarKind(dockable);
-                }
-            });
-		situation.put(CENTER, center);
-        factory = new Factory();
-        situation.add(factory);
-        PerspectiveManager.setPerspectiveDirty(true);
+		control = new CControl(new ComponentWindowProvider(this));
+		factory = new JEditDockableFactory();
+		control.addMultipleDockableFactory("dockables", factory);
+		add(BorderLayout.CENTER, control.getContentArea());
+		mainArea = control.createWorkingArea("main");
+		grid = new CGrid(control);
+		grid.add(1, 1, 2, 2, mainArea);
+		control.getContentArea().deploy(grid);
+		setVisible(true);
+	}
 
-        sides.put(TOP, Side.TOP);
-        sides.put(BOTTOM, Side.BOTTOM);
-        sides.put(RIGHT, Side.RIGHT);
-        sides.put(LEFT, Side.LEFT);
-        areas.put(Side.BOTTOM, new DfDockingArea(Side.BOTTOM));
-        areas.put(Side.TOP, new DfDockingArea(Side.TOP));
-        areas.put(Side.LEFT, new DfDockingArea(Side.LEFT));
-        areas.put(Side.RIGHT, new DfDockingArea(Side.RIGHT));
-        screenDock = new ScreenDockStation(view);
-        screenDock.setShowing(true);
-        controller.add(screenDock);
-		floatAction = new FloatAction(screenDock);
-		dockedActionSource = new DefaultDockActionSource();
-		dockedActionSource.setHint(new LocationHint(LocationHint.DOCKABLE, LocationHint.RIGHT_OF_ALL));
-		dockedActionSource.add(closeAction);
-		dockedActionSource.add(floatAction);
-		floatActionSource = new DefaultDockActionSource();
-		floatActionSource.setHint(new LocationHint(LocationHint.DOCKABLE, LocationHint.RIGHT_OF_ALL));
-		floatActionSource.add(closeAction);
+	@Override
+	public void setMainPanel(JPanel panel) {
+		DefaultSingleCDockable mainDockable = new DefaultSingleCDockable("mainPanel", panel);
+        mainDockable.setLocation(mainArea.getStationLocation());
+        control.add(mainDockable);
+        mainDockable.removeAction(mainDockable.getAction(CDockable.ACTION_KEY_CLOSE));
+        mainDockable.setVisible(true);
+	}
+
+	@Override
+	public void showDockableWindow(String name) {
+		DefaultMultipleCDockable d = created.get(name);
+		if (d != null)
+			return;
+		d = createDefaultDockable(name);
+		if (d == null)
+			return;
+		String position = getDockablePosition(name);
+		if (position.equals(DockableWindowManager.BOTTOM))
+			grid.add(1, 3, 3, 1, d);
+		else if (position.equals(DockableWindowManager.TOP))
+			grid.add(0, 0, 3, 1, d);
+		else if (position.equals(DockableWindowManager.RIGHT))
+			grid.add(3, 0, 1, 3, d);
+		else if (position.equals(DockableWindowManager.LEFT))
+			grid.add(0, 1, 1, 3, d);
 	}
 
 	@Override
 	public void toggleDockAreas() {
+		/*
 		DfDockingLayout layout = new DfDockingLayout(this);
 		if (! hidden) {
 			layout.saveLayout(toggleDocksLayoutName, DockingLayout.NO_VIEW_INDEX);
-			for (Dockable d: created.values())
-				if (d.getDockParent() != null)
+			for (DefaultMultipleCDockable d: created.values())
+				if (d.get.getDockParent() != null)
 					d.getDockParent().drag(d);
 		} else {
 			layout.loadLayout(toggleDocksLayoutName, DockingLayout.NO_VIEW_INDEX);
@@ -139,28 +136,20 @@ public class DfWindowManager extends DockableWindowManager {
 		hidden = (! hidden);
 		if (view.getEditPane() != null)
 			view.getEditPane().requestFocus();
+			*/
 	}
 
 	private void setTheme(String name) {
-        ThemeFactory[] themes = DockUI.getDefaultDockUI().getThemes();
-        for (ThemeFactory t: themes) {
-        	if (t.getName().equals(name)) {
-        		controller.setTheme(t.create());
-        		theme = name;
-        		break;
-        	}
-        }
+		control.setTheme(name);
 	}
 	public PredefinedDockSituation getDockSituation() {
 		return situation;
 	}
 	
-	public Factory getDockFactory() {
-		return factory;
-	}
-	
 	@Override
 	public void applyDockingLayout(DockingLayout docking) {
+		/*
+		docking = null;
 		if (docking != null) {
 			DfDockingLayout layout = (DfDockingLayout) docking;
 			String filename = layout.getPersistenceFilename();
@@ -175,7 +164,9 @@ public class DfWindowManager extends DockableWindowManager {
 				}
 			}
 		}		
+		*/
 		super.applyDockingLayout(docking);
+		control.getContentArea().deploy(grid);
 	}
 
 	public Map<String, DockStation> getStationMap() {
@@ -190,10 +181,12 @@ public class DfWindowManager extends DockableWindowManager {
 
 	@Override
 	public void closeCurrentArea() {
+		/*
 		Dockable d = controller.getFocusedDockable();
-		Side side = getSide(d);
-		if (side != Side.NONE)
+		SplitDockProperty side = getSide(d);
+		if (side != null)
 			areas.get(side).show(null);
+			*/
 	}
 
 	@Override
@@ -203,62 +196,29 @@ public class DfWindowManager extends DockableWindowManager {
 	}
 
 	private class DfDockingArea implements DockingArea {
-		private Side side;
-		public DfDockingArea(Side side) {
-			this.side = side;
+		public DfDockingArea(SplitDockProperty side) {
 		}
 		public String getCurrent() {
 			return null;
 		}
 		public void show(String name) {
 			if (name == null) { // hide
-				DfDockingLayout layout = new DfDockingLayout(DfWindowManager.this);
-				layout.saveLayout(toggleDocksLayoutName, DockingLayout.NO_VIEW_INDEX);
-				while (true) {
-			        Leaf leaf = find(center.getRoot(), side);
-			        if( leaf != null ){
-			            if( !aside( leaf, side ))
-			                leaf = null;
-			        }
-			        if( leaf == null )
-			        	break;
-			        Dockable d = leaf.getDockable();
-			        d.getDockParent().drag(d);
-				}
-				if (view.getEditPane() != null)
-					view.getEditPane().requestFocus();
 			} else { // show
 				showDockableWindow(name);
 			}
 		}
 		public void showMostRecent() {
 		}
+		public String[] getDockables() {
+			// TODO Auto-generated method stub
+			return null;
+		}
 	}
 	
-	@Override
-	public DockingArea getBottomDockingArea() {
-		return areas.get(Side.BOTTOM);
-	}
-
 	@Override
 	public DockingLayout getDockingLayout(ViewConfig config) {
 		DfDockingLayout layout = new DfDockingLayout(this);
 		return layout;
-	}
-
-	@Override
-	public DockingArea getLeftDockingArea() {
-		return areas.get(Side.LEFT);
-	}
-
-	@Override
-	public DockingArea getRightDockingArea() {
-		return areas.get(Side.RIGHT);
-	}
-
-	@Override
-	public DockingArea getTopDockingArea() {
-		return areas.get(Side.TOP);
 	}
 
 	@Override
@@ -285,173 +245,20 @@ public class DfWindowManager extends DockableWindowManager {
 	protected void propertiesChanged() {
 		super.propertiesChanged();
 		String selectedTheme = DfOptionPane.getThemeName();
-		if (! selectedTheme.equals(theme))
-			setTheme(selectedTheme);
-	}
-
-	@Override
-	public void setMainPanel(JPanel panel) {
-		mainPanel = new MainDockable(panel);
-		center.drop(mainPanel);
-		situation.put(MAIN, mainPanel);
-	}
-
-	@Override
-	public void showDockableWindow(String name) {
-		Dockable d = created.get(name);
-		if (d != null) {
-			if (d.getController() != null) {
-				DockStation station = d.getDockParent();
-				if (station != null)
-					station.setFrontDockable(d);
-				else
-					d.getComponent().setVisible(true);
-				focusDockable(name);
-				return;
-			} else {
-				// Windows has been closed
-				created.remove(d);
-			}
-		}
-		d = createDefaultDockable(name);
-		if (d == null)
-			return;
-		String position = getDockablePosition(name);
-		Side side = sides.get(position);
-		if (side == null)
-			screenDock.drop(d);
-		else
-			drop(d, sides.get(position));
-		focusDockable(name);
+		control.setTheme(selectedTheme);
 	}
 
 	public void disposeDockableWindow(String name) {
-		Dockable d = created.get(name);
+		/*
+		DefaultMultipleCDockable d = created.get(name);
 		if (d != null) {
 			if (d.getController() != null)
 				d.getDockParent().drag(d);
 			created.remove(name);
 		}
+		*/
 	}
 
-    private void drop(Dockable dockable, Side side) {
-        Leaf leaf = find(center.getRoot(), side);
-       
-        if( leaf != null ){
-            if( !aside( leaf, side ))
-                leaf = null;
-        }
-       
-        if( leaf == null ){
-            switch( side ){
-                case BOTTOM:
-                    drop( dockable, SplitDockProperty.SOUTH );
-                    break;
-                case TOP:
-                    drop( dockable, SplitDockProperty.NORTH );
-                    break;
-                case LEFT:
-                    drop( dockable, SplitDockProperty.WEST );
-                    break;
-                case RIGHT:
-                    drop( dockable, SplitDockProperty.EAST );
-                    break;
-            }
-        }
-        else{
-            DockStation stack = leaf.getDockable().asDockStation();
-            if( stack == null ){
-                center.drop( dockable, center.getDockableProperty( leaf.getDockable() ) );
-            }
-            else{
-                stack.drop( dockable );
-            }
-        }
-    }
-   
-    private void drop(Dockable dockable, SplitDockProperty property) {
-        if(! center.drop(dockable, property))
-            center.drop(dockable);
-    }
- 
-    private Side getSide(Dockable d) {
-    	if (d == null)
-    		return Side.NONE;
-    	Component c = d.getComponent();
-        Leaf centerLeaf = center.getRoot().getLeaf( mainPanel );
-        if (c.getY() + c.getHeight() <= centerLeaf.getBounds().y)
-        	return Side.TOP;
-        if (c.getY() >= centerLeaf.getBounds().y + centerLeaf.getBounds().height)
-        	return Side.BOTTOM;
-        if (c.getX() + c.getWidth() <= centerLeaf.getBounds().x)
-        	return Side.LEFT;
-        if (c.getX() >= centerLeaf.getBounds().x + centerLeaf.getBounds().width)
-        	return Side.RIGHT;
-        return Side.NONE;
-    }
-    // tells whether the leaf is aside the center dockable on the given side
-    private boolean aside( Leaf leaf, Side side ){
-        Leaf centerLeaf = center.getRoot().getLeaf( mainPanel );
-       
-        switch( side ){
-            case TOP:
-                return leaf.getY() + leaf.getHeight() <= centerLeaf.getY();
-            case BOTTOM:
-                return leaf.getY() >= centerLeaf.getY() + centerLeaf.getHeight();
-            case LEFT:
-                return leaf.getX() + leaf.getWidth() <= centerLeaf.getX();
-            case RIGHT:
-                return leaf.getX() >= centerLeaf.getX() + centerLeaf.getHeight();
-        }
-        return false;
-    }
-   
-    private Leaf find(SplitNode parent, Side side) {
-        if( parent instanceof Leaf ){
-            Leaf leaf = (Leaf)parent;
-            if( leaf.getDockable() != center ){
-                return leaf;
-            }
-        }
-        if( parent instanceof Node ){
-            Node node = (Node)parent;
-           
-            Leaf left = find( node.getLeft(), side );
-            Leaf right = find( node.getRight(), side );
-           
-            if( left == null )
-                return right;
-            if( right == null )
-                return left;
-           
-            switch( side ){
-                case LEFT:
-                    if( left.getX() + left.getWidth()/2 < right.getX() + right.getWidth()/2 )
-                        return left;
-                    else
-                        return right;
-                case RIGHT:
-                    if( left.getX() + left.getWidth()/2 > right.getX() + right.getWidth()/2 )
-                        return left;
-                    else
-                        return right;
-                case TOP:
-                    if( left.getY() + left.getHeight()/2 < right.getY() + right.getHeight()/2 )
-                        return left;
-                    else
-                        return right;
-                case BOTTOM:
-                    if( left.getY() + left.getHeight()/2 > right.getY() + right.getHeight()/2 )
-                        return left;
-                    else
-                        return right;
-            }
-        }
-        if( parent instanceof Root ){
-            return find( ((Root)parent).getChild(), side );
-        }
-        return null;
-    }
 	private JEditDockable createDefaultDockable(String name) {
 		JComponent window = getDockable(name);
 		if (window == null)
@@ -459,47 +266,11 @@ public class DfWindowManager extends DockableWindowManager {
 		if (window == null)
 			return null;
 		String title = getDockableTitle(name);
-		final JEditDockable d = new JEditDockable(name, title, window);
+		final JEditDockable d = new JEditDockable(factory, name, title, window);
 		created.put(name, d);
-		d.setActionOffers(dockedActionSource);
-		d.addDockHierarchyListener(new DockHierarchyListener() {
-			public void controllerChanged(DockHierarchyEvent event) {
-			}
-			public void hierarchyChanged(DockHierarchyEvent event) {
-				if (d.getDockParent() instanceof ScreenDockStation)
-					d.setActionOffers(floatActionSource);
-				else
-					d.setActionOffers(dockedActionSource);
-			}
-		});
 		return d;
 	}
 
-	private static class FloatAction extends SimpleButtonAction {
-
-		private static Icon floatIcon;
-		private ScreenDockStation screenDock;
-		
-		{
-			URL url = DfWindowManager.class.getClassLoader().getResource(
-				"icons/window-raise.png");
-	        floatIcon = new ImageIcon(url);
-		}
-		
-		public FloatAction(ScreenDockStation screenDock) {
-			this.screenDock = screenDock;
-			setText("Float");
-			setTooltip("Float");
-			setIcon(floatIcon);
-		}
-		
-		@Override
-		public void action(Dockable dockable) {
-			dockable.getDockParent().drag(dockable);
-			screenDock.drop(dockable);
-		}
-	}
-	
 	private static class MainDockable extends DefaultDockable {
 		public MainDockable(JPanel panel) {
 			super(panel, (String)null);
@@ -510,61 +281,74 @@ public class DfWindowManager extends DockableWindowManager {
 			return null;
 		}
 	}
-	private static class JEditDockable extends DefaultDockable {
-		String name;
-		public JEditDockable(String name, String title, JComponent window) {
-			super(window, title);
+	private class JEditDockableFactory implements MultipleCDockableFactory<JEditDockable, JEditDockableLayout>
+	{
+		public JEditDockableLayout create() {
+			return new JEditDockableLayout();
+		}
+
+		public JEditDockable read(JEditDockableLayout layout) {
+			return createDefaultDockable(layout.getName());
+		}
+
+		public JEditDockableLayout write(JEditDockable dockable) {
+			return new JEditDockableLayout(dockable.getName());
+		}
+	}
+	private static class JEditDockableLayout implements MultipleCDockableLayout {
+		private String name;
+		public JEditDockableLayout() {
+		}
+		public JEditDockableLayout(String name) {
 			this.name = name;
-			setFactoryID("jEdit");
 		}
 		public String getName() {
 			return name;
 		}
+		public void readStream(DataInputStream in) throws IOException {
+			name = in.readUTF();
+		}
+		public void readXML(XElement element) {
+			name = element.getString();
+		}
+		public void writeStream(DataOutputStream out) throws IOException {
+			out.writeUTF(name);
+		}
+		public void writeXML(XElement element) {
+			element.setString(name);
+		}
 	}
-	private class Factory extends DefaultDockableFactory {
-
-		@Override
-		public String getID() {
-			return "jEdit";
-		}
-
-		@Override
-		public Object getLayout(DefaultDockable element,
-				Map<Dockable, Integer> children)
+	private static class JEditDockable extends DefaultMultipleCDockable {
+		private String name, title;
+		private JComponent window;
+		public JEditDockable(JEditDockableFactory factory, String name,
+			String title, JComponent window)
 		{
-			if (element instanceof JEditDockable) {
-				JEditDockable d = (JEditDockable) element;
-				return d.getName();
-			}
-			return super.getLayout(element, children);
+			super(factory, title, window);
 		}
+		public String getName() { return name; }
+	}
 
-		@Override
-		public DefaultDockable layout(Object layout, Map<Integer, Dockable> children)
-		{
-			String name = (String) layout;
-			return createDefaultDockable(name);
-		}
+	@Override
+	public DockingArea getBottomDockingArea() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-		@Override
-		public DefaultDockable layout(Object layout) {
-			return layout(layout, null);
-		}
+	@Override
+	public DockingArea getLeftDockingArea() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-		@Override
-		public Object read(XElement element) {
-			XElement child = element.getElement("Dockable");
-			if (child == null)
-				return super.read(element);
-			return child.getString("name");
-		}
+	@Override
+	public DockingArea getRightDockingArea() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-		@Override
-		public void write(Object layout, XElement element) {
-			XElement child = new XElement("Dockable");
-			child.addString("name", (String)layout);
-			element.addElement(child);
-		}
-		
+	@Override
+	public DockingArea getTopDockingArea() {
+		return null;
 	}
 }

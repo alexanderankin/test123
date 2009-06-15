@@ -27,13 +27,16 @@ public class DfDockingLayout extends
 	
 	@Override
 	public boolean loadLayout(String baseName, int viewIndex) {
+		/*
 		layoutFilename = getLayoutFilename(baseName, viewIndex);
+		*/
 		return true;
 	}
 	
 	@Override
 	public boolean saveLayout(String baseName, int viewIndex)
 	{
+		/*
 		String filename = getLayoutFilename(baseName, viewIndex);
 		DockSituation situation = wm.getDockSituation();
 		XElement root = new XElement("layout");
@@ -46,6 +49,7 @@ public class DfDockingLayout extends
 			e.printStackTrace();
 			return false;
 		}
+		*/
 		return true;
 	}
 	
