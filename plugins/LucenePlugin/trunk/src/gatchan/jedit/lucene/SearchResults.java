@@ -1,8 +1,11 @@
 package gatchan.jedit.lucene;
 
+import marker.FileMarker;
+
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.StandardUtilities;
 
@@ -52,8 +55,17 @@ public class SearchResults extends JPanel implements EBComponent
 		{
 			public void valueChanged(ListSelectionEvent e)
 			{
-				String path = (String) list.getSelectedValue();
-				jEdit.openFile(jEdit.getActiveView(), path);
+				Object obj = list.getSelectedValue();
+				View view = jEdit.getActiveView();
+				if (obj instanceof String)
+				{
+					String path = (String) list.getSelectedValue();
+					jEdit.openFile(view, path);
+				}
+				else if (obj instanceof FileMarker)
+				{
+					((FileMarker) obj).jump(view);
+				}
 			}
 		});
 //		HTMLDocument htmlDocument = new HTMLDocument();
@@ -69,15 +81,23 @@ public class SearchResults extends JPanel implements EBComponent
 		if (index == null)
 			return;
 
-		final java.util.List<String> files = new ArrayList<String>();
+		final java.util.List<Object> files = new ArrayList<Object>();
 		index.search(text, new ResultProcessor()
 		{
 			public boolean process(float score, Result result)
 			{
-				String s = result.getPath();
 				if (result instanceof LineResult)
-					s += ":" + ((LineResult)result).getLine();
-				files.add(s);
+				{
+					LineResult lr = (LineResult) result;
+					FileMarker marker = new FileMarker(lr.getPath(),
+						lr.getLine() - 1, lr.getText());
+					files.add(marker);
+				}
+				else
+				{
+					String s = result.getPath();
+					files.add(s);
+				}
 				return true;
 			}
 		});
@@ -109,9 +129,9 @@ public class SearchResults extends JPanel implements EBComponent
 
 	private static class MyModel extends AbstractListModel
 	{
-		private java.util.List<String> files = new ArrayList<String>();
+		private java.util.List<Object> files = new ArrayList<Object>();
 
-		public void setFiles(java.util.List<String> files)
+		public void setFiles(java.util.List<Object> files)
 		{
 			this.files = files;
 			fireContentsChanged(this, 0, files.size());

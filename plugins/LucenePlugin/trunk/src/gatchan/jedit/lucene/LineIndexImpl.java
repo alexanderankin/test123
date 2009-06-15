@@ -4,8 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import lucene.SourceCodeAnalyzer;
-
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
@@ -28,6 +26,8 @@ public class LineIndexImpl extends IndexImpl
 		BufferedReader reader = null;
 		try
 		{
+			writer.deleteDocuments(new Term("_path", file.getPath()));
+			LucenePlugin.CENTRAL.removeFile(file.getPath(), getName());
 			reader = new BufferedReader(new InputStreamReader(
 				file.getVFS()._createInputStream(session, file.getPath(), false,
 				jEdit.getActiveView())));
@@ -41,7 +41,7 @@ public class LineIndexImpl extends IndexImpl
 				i++;
 				doc.add(new Field("line", String.valueOf(i), Field.Store.YES, Field.Index.NOT_ANALYZED));
 				doc.add(new Field("content", line, Field.Store.YES, Field.Index.ANALYZED));
-				writer.updateDocument(new Term("_path", file.getPath()), doc);
+				writer.addDocument(doc);
 			}
 			LucenePlugin.CENTRAL.addFile(file.getPath(), getName());
 		}
@@ -61,8 +61,8 @@ public class LineIndexImpl extends IndexImpl
 		openSearcher();
 		if (searcher == null)
 			return;
-		SourceCodeAnalyzer analyzer = new SourceCodeAnalyzer();
-		QueryParser parser = new MultiFieldQueryParser(new String[]{"path", "content"}, analyzer);
+		QueryParser parser = new MultiFieldQueryParser(
+			new String[]{"path", "content"}, getAnalyzer());
 		try
 		{
 			Query _query = parser.parse(query);
