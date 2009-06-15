@@ -37,3 +37,14 @@ build.support=/Users/elberry/development/projects/jEdit/build-support
 junit.jar=/Users/elberry/development/dependencies/junit/junit-4.5.jar
 
 #::mode=properties::#
+# The Dockbook DTD - taken from the XML plugin.
+#docbookx.dtd=/usr/share/xml/docbook/schema/dtd/4.5/docbookx.dtd
+#docbook.catalog=/usr/share/xml/docbook/schema/dtd/4.5/docbook.cat
+#docbook.xsl=/usr/share/xml/docbook/stylesheet/nwalsh
+#xsltproc.executable=xsltproc
+
+#Needed by the ScalacPlugin build process.
+#scala.home=/home/elberry/development/applications/scala
+#jetty.home=/home/elberry/development/applications/jetty
+
+#::mode=properties::#
