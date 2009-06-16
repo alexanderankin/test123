@@ -97,7 +97,6 @@ public class DfWindowManager extends DockableWindowManager {
 		DefaultSingleCDockable mainDockable = new DefaultSingleCDockable("mainPanel", panel);
         mainDockable.setLocation(mainArea.getStationLocation());
         control.add(mainDockable);
-        mainDockable.removeAction(mainDockable.getAction(CDockable.ACTION_KEY_CLOSE));
         mainDockable.setVisible(true);
 	}
 
