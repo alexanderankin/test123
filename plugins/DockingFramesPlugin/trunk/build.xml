@@ -25,12 +25,14 @@
 
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar" />
-		<pathelement location="${install.dir}/DockingFrames.jar"/>
+		<pathelement location="${install.dir}/dockingFramesCommon.jar"/>
+		<pathelement location="${install.dir}/dockingFramesCore.jar"/>
 	</path>
 	
 	<target name="build.prepare" >
 	 	<mkdir dir="${build.dir}" />
-		<copy file="DockingFrames.jar" todir="${install.dir}" />
+		<copy file="dockingFramesCommon.jar" todir="${install.dir}" />
+		<copy file="dockingFramesCore.jar" todir="${install.dir}" />
 	</target>
 
 </project>
