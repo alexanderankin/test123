@@ -90,8 +90,10 @@ public class LucenePlugin extends EditPlugin
 			IOUtilities.closeQuietly(reader);
 		}
 	}
-	private void saveProps()
+	private void saveIndexes()
 	{
+		if (! getPluginHome().exists())
+			return;
 		File f = new File(getPluginHome(), INDEXES_FILE_NAME);
 		PrintWriter writer = null;
 		try
@@ -128,7 +130,7 @@ public class LucenePlugin extends EditPlugin
 		{
 			index.close();
 		}
-		saveProps();
+		saveIndexes();
 	}
 
 	/**
