@@ -161,6 +161,10 @@ public class SearchAction extends Action {
 		//{{{ #_getFiles(Component) : String[]
 		/** Returns an array with the files to be searched. */
 		protected String[] _getFiles(Component comp) {
+			if (node == null) {
+				return new String[0];
+			}
+
 			String filter = getFileFilter();
 			if (filter != null && filter.length() > 0 && !filter.equals("*")) {
 				pFilter = Pattern.compile(StandardUtilities.globToRE(filter));
@@ -214,6 +218,52 @@ public class SearchAction extends Action {
 				}
 			}
 		} //}}}
+
+
+		/**
+		 * Sets the directory where to search inside the project. This
+		 * method is really unoptimized since PV doesn't keep a mapping
+		 * of directory paths to VPTNode instances.
+		 *
+		 * @param	directory	Directory where to perform the search.
+		 */
+		public void setDirectory(String directory)
+		{
+			if (!directory.equals(node.getNodePath())) {
+				node = findDirectory(VPTNode.findProjectFor(node), directory);
+			}
+			if (node == null) {
+				Log.log(Log.WARNING, this,
+						"Directory not found in project: " + directory);
+			}
+		}
+
+
+		/**
+		 * Recursively look for a directory node matching the given path.
+		 *
+		 * @param	n		Node where to start search.
+		 * @param	path	Path being searched.
+		 *
+		 * @return Directory (or project) node matching the path, or null.
+		 */
+		private VPTNode findDirectory(VPTNode n,
+									  String path)
+		{
+			if (path.equals(n.getNodePath())) {
+				return n;
+			}
+			for (int i = 0; i < n.getChildCount(); i++) {
+				VPTNode child = (VPTNode) n.getChildAt(i);
+				if (child.isDirectory()) {
+					child = findDirectory(child, path);
+					if (child != null) {
+						return child;
+					}
+				}
+			}
+			return null;
+		}
 
 	} //}}}
 
