@@ -3,9 +3,13 @@ package dockingFrames;
 import javax.swing.JComboBox;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.gui.DockableWindowManager;
 
 import bibliothek.gui.DockUI;
+import bibliothek.gui.dock.common.CControl;
+import bibliothek.gui.dock.common.layout.ThemeMap;
 import bibliothek.gui.dock.themes.ThemeFactory;
 
 @SuppressWarnings("serial")
@@ -21,23 +25,38 @@ public class DfOptionPane extends AbstractOptionPane {
 	}
 
 	public static String getThemeName() {
-		return jEdit.getProperty(THEME_PROP, "Eclipse");
+		return jEdit.getProperty(THEME_PROP, "eclipse");
 	}
 	
 	@Override
 	protected void _init() {
-		theme = new JComboBox();
-        ThemeFactory[] themes = DockUI.getDefaultDockUI().getThemes();
-        for (ThemeFactory t: themes)
-        	theme.addItem(t.getName());
-        String selected = getThemeName();
-        theme.setSelectedItem(selected);
-		addComponent(jEdit.getProperty(THEME_LABEL), theme);
+		View view = jEdit.getActiveView();
+		if (view != null)
+		{
+			DockableWindowManager dwm = view.getDockableWindowManager();
+			theme = null;
+			if (dwm instanceof DfWindowManager)
+			{
+				DfWindowManager dfm = (DfWindowManager) dwm;
+				CControl control = dfm.getControl();
+				if (control != null)
+				{
+					ThemeMap themes = control.getThemes();
+					theme = new JComboBox();
+			        for (int i = 0; i < themes.size(); i++)
+			        	theme.addItem(themes.getKey(i));
+			        String selected = getThemeName();
+			        theme.setSelectedItem(selected);
+					addComponent(jEdit.getProperty(THEME_LABEL), theme);
+				}
+			}
+		}
 	}
 
 	@Override
 	protected void _save() {
-		jEdit.setProperty(THEME_PROP, theme.getSelectedItem().toString());
+		if (theme != null)
+			jEdit.setProperty(THEME_PROP, theme.getSelectedItem().toString());
 		jEdit.propertiesChanged();
 	}
 
