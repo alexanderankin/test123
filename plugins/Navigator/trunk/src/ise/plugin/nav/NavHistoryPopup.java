@@ -45,11 +45,11 @@ import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.jedit.gui.KeyEventWorkaround;
 
 // -- for Code2HTML 0.5
-import code2html.Code2HTML;
+//import code2html.Code2HTML;
 
 // -- for Code2HTML 0.6
-//import code2html.generic.GenericExporter;
-//import code2html.services.ExporterProvider;
+import code2html.generic.GenericExporter;
+import code2html.services.ExporterProvider;
 
 class NavHistoryPopup extends JPopupMenu {
 
@@ -91,7 +91,7 @@ class NavHistoryPopup extends JPopupMenu {
         this.view.setKeyEventInterceptor( keyHandler );
 
         // set Code2Html properties, don't want to use css, do want to show
-        // the gutter.
+        // the gutter since that gives us line numbers.
         useCSS     = jEdit.getBooleanProperty("code2html.use-css", false);
         showGutter = jEdit.getBooleanProperty("code2html.show-gutter", true);
         jEdit.setBooleanProperty("code2html.use-css", false);
@@ -322,28 +322,28 @@ class NavHistoryPopup extends JPopupMenu {
 
                 // Have code2html do the syntax highlighting
                 // -- this is for Code2HTML 0.5:
+                /*
                 Code2HTML c2h = new Code2HTML(
                             buffer,
                             editPane.getTextArea().getPainter().getStyles(),
                             selections
                         );
                 labelText = c2h.getHtmlString();
-
+                */
+                
                 // -- this is for Code2HTML 0.6:
-                /*
                 GenericExporter exporter = (GenericExporter)((ExporterProvider)ServiceManager.getService( "code2html.services.ExporterProvider", "html" )).getExporter(
                          buffer,
                          editPane.getTextArea().getPainter().getStyles(),
                          selections
                      );
                 labelText = exporter.getContentString();
-                */
 
                 // clean up the output from code2html, it outputs html, head, and body tags,
                 // I just want what is between the pre tags
                 // -- next line can be removed with Code2HTML 0.6 since the getContentString method
                 // will return only the <pre>...</pre> content.
-                labelText = labelText.substring( labelText.indexOf( "<pre>" ), labelText.lastIndexOf( "</pre>" ) + "</pre>".length() );
+                //labelText = labelText.substring( labelText.indexOf( "<pre>" ), labelText.lastIndexOf( "</pre>" ) + "</pre>".length() );
 
                 // reduce multiple spaces to single space
                 while ( labelText.indexOf( "  " ) > -1 ) {
