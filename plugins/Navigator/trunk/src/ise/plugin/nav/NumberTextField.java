@@ -65,6 +65,10 @@ public class NumberTextField extends JTextField {
     }
 
     public int getValue() {
+        String text = getText();
+        if (text == null || text.length() == 0) {
+            text = "0";   
+        }
         return Integer.parseInt(getText());
     }
 
@@ -89,7 +93,7 @@ public class NumberTextField extends JTextField {
             }
         }
 
-        public void remove( DocumentFilter.FilterBypass fb, int offset, int length )
+        public void remove( FilterBypass fb, int offset, int length )
         throws BadLocationException {
             super.remove( fb, offset, length );
         }
