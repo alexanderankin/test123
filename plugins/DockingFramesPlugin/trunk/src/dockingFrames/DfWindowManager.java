@@ -1,69 +1,36 @@
 package dockingFrames;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.gjt.sp.jedit.PerspectiveManager;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.View.ViewConfig;
 import org.gjt.sp.jedit.gui.DockableWindowFactory;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 
-import bibliothek.extension.gui.dock.theme.EclipseTheme;
-import bibliothek.extension.gui.dock.theme.eclipse.DefaultEclipseThemeConnector;
-import bibliothek.gui.DockController;
 import bibliothek.gui.DockStation;
-import bibliothek.gui.DockUI;
-import bibliothek.gui.Dockable;
 import bibliothek.gui.dock.DefaultDockable;
-import bibliothek.gui.dock.ScreenDockStation;
-import bibliothek.gui.dock.SplitDockStation;
-import bibliothek.gui.dock.action.DefaultDockActionSource;
-import bibliothek.gui.dock.action.LocationHint;
-import bibliothek.gui.dock.action.actions.SimpleButtonAction;
 import bibliothek.gui.dock.common.CControl;
 import bibliothek.gui.dock.common.CGrid;
-import bibliothek.gui.dock.common.CGridArea;
 import bibliothek.gui.dock.common.CWorkingArea;
 import bibliothek.gui.dock.common.DefaultMultipleCDockable;
 import bibliothek.gui.dock.common.DefaultSingleCDockable;
-import bibliothek.gui.dock.common.EmptyMultipleCDockableFactory;
-import bibliothek.gui.dock.common.MultipleCDockable;
 import bibliothek.gui.dock.common.MultipleCDockableFactory;
 import bibliothek.gui.dock.common.MultipleCDockableLayout;
-import bibliothek.gui.dock.common.SingleCDockable;
-import bibliothek.gui.dock.common.intern.CDockable;
-import bibliothek.gui.dock.dockable.DefaultDockableFactory;
-import bibliothek.gui.dock.event.DockHierarchyEvent;
-import bibliothek.gui.dock.event.DockHierarchyListener;
-import bibliothek.gui.dock.facile.action.CloseAction;
+import bibliothek.gui.dock.common.layout.ThemeMap;
 import bibliothek.gui.dock.layout.PredefinedDockSituation;
-import bibliothek.gui.dock.station.split.Leaf;
-import bibliothek.gui.dock.station.split.Node;
-import bibliothek.gui.dock.station.split.Root;
 import bibliothek.gui.dock.station.split.SplitDockProperty;
-import bibliothek.gui.dock.station.split.SplitNode;
-import bibliothek.gui.dock.themes.ThemeFactory;
 import bibliothek.gui.dock.title.DockTitle;
 import bibliothek.gui.dock.title.DockTitleVersion;
 import bibliothek.gui.dock.util.ComponentWindowProvider;
 import bibliothek.util.xml.XElement;
-import bibliothek.util.xml.XIO;
 
 @SuppressWarnings("serial")
 public class DfWindowManager extends DockableWindowManager {
@@ -139,7 +106,12 @@ public class DfWindowManager extends DockableWindowManager {
 	}
 
 	private void setTheme(String name) {
-		control.setTheme(name);
+		ThemeMap themes = control.getThemes();
+		themes.select(name);
+	}
+	public CControl getControl()
+	{
+		return control;
 	}
 	public PredefinedDockSituation getDockSituation() {
 		return situation;
@@ -244,7 +216,7 @@ public class DfWindowManager extends DockableWindowManager {
 	protected void propertiesChanged() {
 		super.propertiesChanged();
 		String selectedTheme = DfOptionPane.getThemeName();
-		control.setTheme(selectedTheme);
+		setTheme(selectedTheme);
 	}
 
 	public void disposeDockableWindow(String name) {
