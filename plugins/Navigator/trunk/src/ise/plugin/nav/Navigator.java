@@ -184,7 +184,7 @@ public class Navigator implements ActionListener {
      */
     private NavPosition currentPosition() {
         EditPane editPane = getEditPane();
-        JEditTextArea textarea;
+        JEditTextArea textarea = null;
         if ( editPane != null ) {
             // edit pane scope
             textarea = editPane.getTextArea();
@@ -192,11 +192,15 @@ public class Navigator implements ActionListener {
         else {
             // view scope
             editPane = view.getEditPane();
-            textarea = editPane.getTextArea();
+            if (editPane != null) {
+                // editPane could be null on Navigator startup
+                textarea = editPane.getTextArea();
+            }
         }
 
         if ( textarea == null ) {
-            // beats me how this is possible, but just in case
+            // textarea could be null on startup -- Navigator will be loaded by
+            // jEdit before there is a View or EditPane
             return null;
         }
 
@@ -421,6 +425,7 @@ public class Navigator implements ActionListener {
             editPaneForPosition.getTextArea().requestFocus();
         }
         catch ( NullPointerException npe ) {    // NOPMD
+            npe.printStackTrace();
             // sometimes Buffer.markTokens throws a NPE here, catch
             // it and silently ignore it.
         }
