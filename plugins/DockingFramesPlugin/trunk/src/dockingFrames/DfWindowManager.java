@@ -62,6 +62,7 @@ public class DfWindowManager extends DockableWindowManager {
 	@Override
 	public void setMainPanel(JPanel panel) {
 		DefaultSingleCDockable mainDockable = new DefaultSingleCDockable("mainPanel", panel);
+		mainDockable.setTitleShown(false);
         mainDockable.setLocation(mainArea.getStationLocation());
         control.add(mainDockable);
         mainDockable.setVisible(true);
