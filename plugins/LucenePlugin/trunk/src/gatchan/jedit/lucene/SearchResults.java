@@ -17,6 +17,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
+@SuppressWarnings("serial")
 public class SearchResults extends JPanel implements EBComponent
 {
 	private JTextField searchField;

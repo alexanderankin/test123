@@ -18,6 +18,7 @@ import javax.swing.KeyStroke;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 
+@SuppressWarnings("serial")
 public class NewIndexDialog extends JDialog
 {
 	static public final String OPTION = "lucene.option.";
