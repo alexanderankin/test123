@@ -298,19 +298,26 @@ public class DfWindowManager extends DockableWindowManager
 	}
 
 	@Override
-	public void hideDockableWindow(String name) {
-		// TODO Auto-generated method stub
-
+	public void hideDockableWindow(String name)
+	{
+		JEditDockable d = created.get(name);
+		if (d == null)
+			return;
+		d.setExtendedMode(ExtendedMode.MINIMIZED);
 	}
 
 	@Override
-	public boolean isDockableWindowDocked(String name) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean isDockableWindowDocked(String name)
+	{
+		JEditDockable d = created.get(name);
+		if (d == null)
+			return false;
+		return (d.getExtendedMode() == ExtendedMode.NORMALIZED);
 	}
 
 	@Override
-	public boolean isDockableWindowVisible(String name) {
+	public boolean isDockableWindowVisible(String name)
+	{
 		JComponent c = getDockable(name);
 		if (c == null)
 			return false;
@@ -318,24 +325,25 @@ public class DfWindowManager extends DockableWindowManager
 	}
 
 	@Override
-	protected void propertiesChanged() {
+	protected void propertiesChanged()
+	{
 		super.propertiesChanged();
 		String selectedTheme = DfOptionPane.getThemeName();
 		setTheme(selectedTheme);
 	}
 
-	public void disposeDockableWindow(String name) {
-		/*
-		DefaultMultipleCDockable d = created.get(name);
-		if (d != null) {
-			if (d.getController() != null)
-				d.getDockParent().drag(d);
-			created.remove(name);
-		}
-		*/
+	public void disposeDockableWindow(String name)
+	{
+		JEditDockable d = created.get(name);
+		if (d == null)
+			return;
+		d.setVisible(false);
+		created.remove(name);
+		control.remove(d);
 	}
 
-	private JEditDockable createDefaultDockable(String name) {
+	private JEditDockable createDefaultDockable(String name)
+	{
 		JComponent window = getDockable(name);
 		if (window == null)
 			window = createDockable(name);
@@ -349,42 +357,52 @@ public class DfWindowManager extends DockableWindowManager
 
 	private class JEditDockableFactory implements MultipleCDockableFactory<JEditDockable, JEditDockableLayout>
 	{
-		public JEditDockableLayout create() {
+		public JEditDockableLayout create()
+		{
 			return new JEditDockableLayout();
 		}
-
-		public JEditDockable read(JEditDockableLayout layout) {
+		public JEditDockable read(JEditDockableLayout layout)
+		{
 			return createDefaultDockable(layout.getName());
 		}
-
-		public JEditDockableLayout write(JEditDockable dockable) {
+		public JEditDockableLayout write(JEditDockable dockable)
+		{
 			return new JEditDockableLayout(dockable.getName());
 		}
 	}
-	private static class JEditDockableLayout implements MultipleCDockableLayout {
+	private static class JEditDockableLayout implements MultipleCDockableLayout
+	{
 		private String name;
-		public JEditDockableLayout() {
+		public JEditDockableLayout()
+		{
 		}
-		public JEditDockableLayout(String name) {
+		public JEditDockableLayout(String name)
+		{
 			this.name = name;
 		}
-		public String getName() {
+		public String getName()
+		{
 			return name;
 		}
-		public void readStream(DataInputStream in) throws IOException {
+		public void readStream(DataInputStream in) throws IOException
+		{
 			name = in.readUTF();
 		}
-		public void readXML(XElement element) {
+		public void readXML(XElement element)
+		{
 			name = element.getString();
 		}
-		public void writeStream(DataOutputStream out) throws IOException {
+		public void writeStream(DataOutputStream out) throws IOException
+		{
 			out.writeUTF(name);
 		}
-		public void writeXML(XElement element) {
+		public void writeXML(XElement element)
+		{
 			element.setString(name);
 		}
 	}
-	private static class JEditDockable extends DefaultMultipleCDockable {
+	private static class JEditDockable extends DefaultMultipleCDockable
+	{
 		private String name;
 		private JComponent window;
 		public JEditDockable(JEditDockableFactory factory, String name,
@@ -399,28 +417,32 @@ public class DfWindowManager extends DockableWindowManager
 	}
 
 	@Override
-	public DockingArea getBottomDockingArea() {
+	public DockingArea getBottomDockingArea()
+	{
 		if (bottom == null)
 			bottom = new DfDockingArea(DockableWindowManager.BOTTOM);
 		return bottom;
 	}
 
 	@Override
-	public DockingArea getLeftDockingArea() {
+	public DockingArea getLeftDockingArea()
+	{
 		if (left == null)
 			left = new DfDockingArea(DockableWindowManager.LEFT);
 		return left;
 	}
 
 	@Override
-	public DockingArea getRightDockingArea() {
+	public DockingArea getRightDockingArea()
+	{
 		if (right == null)
 			right = new DfDockingArea(DockableWindowManager.RIGHT);
 		return right;
 	}
 
 	@Override
-	public DockingArea getTopDockingArea() {
+	public DockingArea getTopDockingArea()
+	{
 		if (top == null)
 			top = new DfDockingArea(DockableWindowManager.TOP);
 		return top;
