@@ -92,9 +92,11 @@ public class LucenePlugin extends EditPlugin
 	}
 	private void saveIndexes()
 	{
-		if (! getPluginHome().exists())
+		File home = getPluginHome();
+		if (home == null || !home.mkdirs())
 			return;
-		File f = new File(getPluginHome(), INDEXES_FILE_NAME);
+		
+		File f = new File(home, INDEXES_FILE_NAME);
 		PrintWriter writer = null;
 		try
 		{
