@@ -3,6 +3,7 @@ package dockingFrames;
 import java.awt.BorderLayout;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -120,23 +121,17 @@ public class DfWindowManager extends DockableWindowManager {
 	
 	@Override
 	public void applyDockingLayout(DockingLayout docking) {
-		/*
-		docking = null;
 		if (docking != null) {
 			DfDockingLayout layout = (DfDockingLayout) docking;
 			String filename = layout.getPersistenceFilename();
 			if (filename != null) {
-				XElement root = null;
 				try {
-					root = XIO.readUTF(new FileInputStream(filename));
-					situation.readXML(root);
+					control.readXML(new File(filename));
 					return;
-				} catch (FileNotFoundException e) {
 				} catch (IOException e) {
 				}
 			}
 		}		
-		*/
 		super.applyDockingLayout(docking);
 		control.getContentArea().deploy(grid);
 	}
@@ -291,12 +286,12 @@ public class DfWindowManager extends DockableWindowManager {
 		}
 	}
 	private static class JEditDockable extends DefaultMultipleCDockable {
-		private String name, title;
-		private JComponent window;
+		private String name;
 		public JEditDockable(JEditDockableFactory factory, String name,
 			String title, JComponent window)
 		{
 			super(factory, title, window);
+			this.name = name;
 		}
 		public String getName() { return name; }
 	}

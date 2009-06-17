@@ -16,7 +16,7 @@ public class Provider implements DockingFrameworkProvider {
 	}
 
 	public DockingLayout createDockingLayout() {
-		return null;
+		return new DfDockingLayout();
 	}
 
 }
