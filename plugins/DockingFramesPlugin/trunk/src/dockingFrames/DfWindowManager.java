@@ -20,12 +20,15 @@ import bibliothek.gui.DockStation;
 import bibliothek.gui.dock.DefaultDockable;
 import bibliothek.gui.dock.common.CControl;
 import bibliothek.gui.dock.common.CGrid;
+import bibliothek.gui.dock.common.CLocation;
 import bibliothek.gui.dock.common.CWorkingArea;
 import bibliothek.gui.dock.common.DefaultMultipleCDockable;
 import bibliothek.gui.dock.common.DefaultSingleCDockable;
 import bibliothek.gui.dock.common.MultipleCDockableFactory;
 import bibliothek.gui.dock.common.MultipleCDockableLayout;
 import bibliothek.gui.dock.common.layout.ThemeMap;
+import bibliothek.gui.dock.common.location.CBaseLocation;
+import bibliothek.gui.dock.common.location.CContentAreaCenterLocation;
 import bibliothek.gui.dock.layout.PredefinedDockSituation;
 import bibliothek.gui.dock.station.split.SplitDockProperty;
 import bibliothek.gui.dock.title.DockTitle;
@@ -42,7 +45,7 @@ public class DfWindowManager extends DockableWindowManager {
 	private CControl control;
 	private static JEditDockableFactory factory;
 	private CWorkingArea mainArea;
-	private CGrid grid;
+	private DefaultSingleCDockable mainDockable;
 	
 	public DfWindowManager(View view, DockableWindowFactory instance,
 			ViewConfig config)
@@ -54,38 +57,41 @@ public class DfWindowManager extends DockableWindowManager {
 		control.addMultipleDockableFactory("dockables", factory);
 		add(BorderLayout.CENTER, control.getContentArea());
 		mainArea = control.createWorkingArea("main");
-		grid = new CGrid(control);
-		grid.add(1, 1, 2, 2, mainArea);
+		CGrid grid = new CGrid();
+		grid.add(0, 0, 1, 1, mainArea);
 		control.getContentArea().deploy(grid);
 		setVisible(true);
 	}
 
 	@Override
 	public void setMainPanel(JPanel panel) {
-		DefaultSingleCDockable mainDockable = new DefaultSingleCDockable("mainPanel", panel);
+		mainDockable = new DefaultSingleCDockable("mainPanel", panel);
 		mainDockable.setTitleShown(false);
-        mainDockable.setLocation(mainArea.getStationLocation());
-        control.add(mainDockable);
+		mainArea.add(mainDockable);
         mainDockable.setVisible(true);
 	}
 
 	@Override
 	public void showDockableWindow(String name) {
 		DefaultMultipleCDockable d = created.get(name);
-		if (d != null)
-			return;
-		d = createDefaultDockable(name);
 		if (d == null)
-			return;
+		{
+			d = createDefaultDockable(name);
+			if (d == null)
+				return;
+			control.add(d);
+		}
 		String position = getDockablePosition(name);
+		CContentAreaCenterLocation loc = CLocation.base().normal();
 		if (position.equals(DockableWindowManager.BOTTOM))
-			grid.add(1, 3, 3, 1, d);
+			d.setLocation(loc.rectangle(0.0, 0.8, 1.0, 0.2).stack());
 		else if (position.equals(DockableWindowManager.TOP))
-			grid.add(0, 0, 3, 1, d);
+			d.setLocation(loc.rectangle(0.0, 0.0, 1.0, 0.2).stack());
 		else if (position.equals(DockableWindowManager.RIGHT))
-			grid.add(3, 0, 1, 3, d);
+			d.setLocation(loc.rectangle(0.8, 0.0, 0.2, 0.8).stack());
 		else if (position.equals(DockableWindowManager.LEFT))
-			grid.add(0, 1, 1, 3, d);
+			d.setLocation(loc.rectangle(0.0, 0.0, 0.2, 0.8).stack());
+		d.setVisible(true);
 	}
 
 	@Override
@@ -133,7 +139,6 @@ public class DfWindowManager extends DockableWindowManager {
 			}
 		}		
 		super.applyDockingLayout(docking);
-		control.getContentArea().deploy(grid);
 	}
 
 	public Map<String, DockStation> getStationMap() {
