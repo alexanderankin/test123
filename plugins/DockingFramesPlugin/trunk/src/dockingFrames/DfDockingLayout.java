@@ -1,11 +1,9 @@
 package dockingFrames;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.io.File;
 import java.io.IOException;
 
-import bibliothek.gui.dock.layout.DockSituation;
-import bibliothek.util.xml.XElement;
+import org.gjt.sp.jedit.jEdit;
 
 public class DfDockingLayout extends
 		org.gjt.sp.jedit.gui.DockableWindowManager.DockingLayout {
@@ -18,8 +16,13 @@ public class DfDockingLayout extends
 	}
 	public DfDockingLayout(DfWindowManager manager) {
 		wm = manager;
-		saveLayout(TEMP_LAYOUT_NAME, NO_VIEW_INDEX);
-		layoutFilename = getLayoutFilename(TEMP_LAYOUT_NAME, NO_VIEW_INDEX);
+		// Save the layout, so it can be retrieved later, unless we're
+		// called during jEdit startup, when the perspective is loaded.
+		if (jEdit.isStartupDone())
+		{
+			saveLayout(TEMP_LAYOUT_NAME, NO_VIEW_INDEX);
+			layoutFilename = getLayoutFilename(TEMP_LAYOUT_NAME, NO_VIEW_INDEX);
+		}
 	}
 	public String getPersistenceFilename() {
 		return layoutFilename;
@@ -27,29 +30,20 @@ public class DfDockingLayout extends
 	
 	@Override
 	public boolean loadLayout(String baseName, int viewIndex) {
-		/*
 		layoutFilename = getLayoutFilename(baseName, viewIndex);
-		*/
 		return true;
 	}
 	
 	@Override
 	public boolean saveLayout(String baseName, int viewIndex)
 	{
-		/*
 		String filename = getLayoutFilename(baseName, viewIndex);
-		DockSituation situation = wm.getDockSituation();
-		XElement root = new XElement("layout");
 		try {
-			situation.writeXML(wm.getStationMap(), root);
-			BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
-			writer.write(root.toString());
-			writer.close();
+			wm.getControl().writeXML(new File(filename));
 		} catch (IOException e) {
 			e.printStackTrace();
 			return false;
 		}
-		*/
 		return true;
 	}
 	
