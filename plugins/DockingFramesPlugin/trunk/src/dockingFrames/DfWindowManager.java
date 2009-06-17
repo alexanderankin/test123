@@ -1,23 +1,25 @@
 package dockingFrames;
 
 import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Point;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View.ViewConfig;
 import org.gjt.sp.jedit.gui.DockableWindowFactory;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 
-import bibliothek.gui.DockStation;
-import bibliothek.gui.dock.DefaultDockable;
 import bibliothek.gui.dock.common.CControl;
 import bibliothek.gui.dock.common.CGrid;
 import bibliothek.gui.dock.common.CLocation;
@@ -26,27 +28,26 @@ import bibliothek.gui.dock.common.DefaultMultipleCDockable;
 import bibliothek.gui.dock.common.DefaultSingleCDockable;
 import bibliothek.gui.dock.common.MultipleCDockableFactory;
 import bibliothek.gui.dock.common.MultipleCDockableLayout;
+import bibliothek.gui.dock.common.event.CFocusListener;
+import bibliothek.gui.dock.common.intern.CDockable;
+import bibliothek.gui.dock.common.intern.CDockable.ExtendedMode;
 import bibliothek.gui.dock.common.layout.ThemeMap;
-import bibliothek.gui.dock.common.location.CBaseLocation;
 import bibliothek.gui.dock.common.location.CContentAreaCenterLocation;
-import bibliothek.gui.dock.layout.PredefinedDockSituation;
-import bibliothek.gui.dock.station.split.SplitDockProperty;
-import bibliothek.gui.dock.title.DockTitle;
-import bibliothek.gui.dock.title.DockTitleVersion;
+import bibliothek.gui.dock.common.location.CRectangleLocation;
 import bibliothek.gui.dock.util.ComponentWindowProvider;
 import bibliothek.util.xml.XElement;
 
 @SuppressWarnings("serial")
-public class DfWindowManager extends DockableWindowManager {
-
-	private Map<String, DockStation> stations;
-	private PredefinedDockSituation situation;
-	private Map<String, DefaultMultipleCDockable> created = new HashMap<String, DefaultMultipleCDockable>();
+public class DfWindowManager extends DockableWindowManager
+{
+	private Map<String, JEditDockable> created = new HashMap<String, JEditDockable>();
 	private CControl control;
 	private static JEditDockableFactory factory;
 	private CWorkingArea mainArea;
 	private DefaultSingleCDockable mainDockable;
-	
+	private DfDockingArea top, left, bottom, right;
+	private JEditDockable focused;
+
 	public DfWindowManager(View view, DockableWindowFactory instance,
 			ViewConfig config)
 	{
@@ -61,134 +62,237 @@ public class DfWindowManager extends DockableWindowManager {
 		grid.add(0, 0, 1, 1, mainArea);
 		control.getContentArea().deploy(grid);
 		setVisible(true);
+		control.addFocusListener(new CFocusListener() {
+			public void focusGained(CDockable dockable) {
+				if (dockable instanceof JEditDockable)
+					focused = (JEditDockable) dockable;
+			}
+			public void focusLost(CDockable dockable) {
+				if (focused == dockable)
+					focused = null;
+			}
+			
+		});
 	}
 
 	@Override
-	public void setMainPanel(JPanel panel) {
+	public void setMainPanel(JPanel panel)
+	{
 		mainDockable = new DefaultSingleCDockable("mainPanel", panel);
-		mainDockable.setTitleShown(false);
 		mainArea.add(mainDockable);
+		mainDockable.setTitleShown(false);
         mainDockable.setVisible(true);
 	}
 
-	@Override
-	public void showDockableWindow(String name) {
-		DefaultMultipleCDockable d = created.get(name);
+	private JEditDockable getJEditDockable(String name)
+	{
+		JEditDockable d = created.get(name);
 		if (d == null)
 		{
 			d = createDefaultDockable(name);
 			if (d == null)
-				return;
+				return null;
 			control.add(d);
 		}
-		String position = getDockablePosition(name);
-		CContentAreaCenterLocation loc = CLocation.base().normal();
-		if (position.equals(DockableWindowManager.BOTTOM))
-			d.setLocation(loc.rectangle(0.0, 0.8, 1.0, 0.2).stack());
-		else if (position.equals(DockableWindowManager.TOP))
-			d.setLocation(loc.rectangle(0.0, 0.0, 1.0, 0.2).stack());
-		else if (position.equals(DockableWindowManager.RIGHT))
-			d.setLocation(loc.rectangle(0.8, 0.0, 0.2, 0.8).stack());
-		else if (position.equals(DockableWindowManager.LEFT))
-			d.setLocation(loc.rectangle(0.0, 0.0, 0.2, 0.8).stack());
-		d.setVisible(true);
+		return d;
 	}
 
 	@Override
-	public void toggleDockAreas() {
-		/*
-		DfDockingLayout layout = new DfDockingLayout(this);
-		if (! hidden) {
-			layout.saveLayout(toggleDocksLayoutName, DockingLayout.NO_VIEW_INDEX);
-			for (DefaultMultipleCDockable d: created.values())
-				if (d.get.getDockParent() != null)
-					d.getDockParent().drag(d);
-		} else {
-			layout.loadLayout(toggleDocksLayoutName, DockingLayout.NO_VIEW_INDEX);
-			applyDockingLayout(layout);
-		}
-		hidden = (! hidden);
-		if (view.getEditPane() != null)
-			view.getEditPane().requestFocus();
-			*/
+	public void showDockableWindow(String name)
+	{
+		JEditDockable d = getJEditDockable(name);
+		if (d == null)
+			return;
+		String position = getDockablePosition(name);
+		CContentAreaCenterLocation center = CLocation.base().normal();
+		CRectangleLocation loc = null;
+		if (position.equals(DockableWindowManager.BOTTOM))
+			loc = center.rectangle(0.0, 0.8, 1.0, 0.2);
+		else if (position.equals(DockableWindowManager.TOP))
+			loc = center.rectangle(0.0, 0.0, 1.0, 0.2);
+		else if (position.equals(DockableWindowManager.RIGHT))
+			loc = center.rectangle(0.8, 0.0, 0.2, 0.8);
+		else if (position.equals(DockableWindowManager.LEFT))
+			loc = center.rectangle(0.0, 0.0, 0.2, 0.8);
+		if (loc != null)
+			d.setLocation(loc.stack());
+		else
+			d.setExtendedMode(ExtendedMode.EXTERNALIZED);
+		d.setVisible(true);
 	}
 
-	private void setTheme(String name) {
+	private void setTheme(String name)
+	{
 		ThemeMap themes = control.getThemes();
 		themes.select(name);
 	}
+
 	public CControl getControl()
 	{
 		return control;
 	}
-	public PredefinedDockSituation getDockSituation() {
-		return situation;
-	}
 	
 	@Override
-	public void applyDockingLayout(DockingLayout docking) {
-		if (docking != null) {
+	public void applyDockingLayout(DockingLayout docking)
+	{
+		if (docking != null)
+		{
 			DfDockingLayout layout = (DfDockingLayout) docking;
 			String filename = layout.getPersistenceFilename();
-			if (filename != null) {
-				try {
+			if (filename != null)
+			{
+				try
+				{
 					control.readXML(new File(filename));
 					return;
-				} catch (IOException e) {
+				}
+				catch (IOException e)
+				{
 				}
 			}
 		}		
 		super.applyDockingLayout(docking);
 	}
 
-	public Map<String, DockStation> getStationMap() {
-		return stations;
-	}
-	
 	@Override
 	protected void dockingPositionChanged(String dockableName,
-			String oldPosition, String newPosition) {
+			String oldPosition, String newPosition)
+	{
 		showDockableWindow(dockableName);
 	}
 
 	@Override
-	public void closeCurrentArea() {
-		/*
-		Dockable d = controller.getFocusedDockable();
-		SplitDockProperty side = getSide(d);
-		if (side != null)
-			areas.get(side).show(null);
-			*/
+	public JComponent floatDockableWindow(String name)
+	{
+		JEditDockable d = getJEditDockable(name);
+		d.setExtendedMode(ExtendedMode.EXTERNALIZED);
+		d.setVisible(true);
+		return d.getWindow();
 	}
 
-	@Override
-	public JComponent floatDockableWindow(String name) {
-		// TODO Auto-generated method stub
-		return null;
+	private void setDockablePosition(String name, String position)
+	{
+		jEdit.setProperty(name + ".dock-position", position);
 	}
 
-	private class DfDockingArea implements DockingArea {
-		public DfDockingArea(SplitDockProperty side) {
+	private class DfDockingArea implements DockingArea
+	{
+		private String position;
+		private JEditDockable recent;
+		public DfDockingArea(String position)
+		{
+			this.position = position;
 		}
-		public String getCurrent() {
+		private JEditDockable getCurrentDockable()
+		{
+			Vector<JEditDockable> dockables = getAreaDockables();
+			for (JEditDockable d: dockables)
+			{
+				if (d.isVisible())
+					return d;
+			}
 			return null;
 		}
-		public void show(String name) {
-			if (name == null) { // hide
-			} else { // show
+		public String getCurrent()
+		{
+			JEditDockable d = getCurrentDockable();
+			if (d == null)
+				return null;
+			return d.getName();
+		}
+		public void show(String name)
+		{
+			if (name == null) // hide
+			{
+				recent = getCurrentDockable();
+				Vector<JEditDockable> dockables = getAreaDockables();
+				for (JEditDockable d: dockables)
+					d.setExtendedMode(ExtendedMode.MINIMIZED);
+			}
+			else // show
+			{
+				setDockablePosition(name, position);
 				showDockableWindow(name);
 			}
 		}
-		public void showMostRecent() {
+		public void showMostRecent()
+		{
+			if (recent != null)
+				recent.setExtendedMode(ExtendedMode.NORMALIZED);
 		}
-		public String[] getDockables() {
-			// TODO Auto-generated method stub
-			return null;
+		private Point getLocation(Container c)
+		{
+			Point p = c.getLocation();
+			for ( ; c != null; c = c.getParent())
+			{
+				p.x += c.getX();
+				p.y += c.getY();
+			}
+			return p;
+		}
+		public boolean belongsToArea(JEditDockable d)
+		{
+			Container main = mainDockable.getContentPane();
+			JComponent c = d.getWindow();
+			Point mainPos = getLocation(main);
+			Point cPos = getLocation(c);
+			if (DockableWindowManager.BOTTOM.equals(position))
+				return (cPos.getY() >= mainPos.getY() + main.getHeight());
+			else if (DockableWindowManager.TOP.equals(position))
+				return (cPos.getY() + c.getHeight() <= mainPos.getY());
+			else if (DockableWindowManager.LEFT.equals(position))
+				return (cPos.getX() + c.getWidth() <= mainPos.getX());
+			else if (DockableWindowManager.RIGHT.equals(position))
+				return (cPos.getX() >= mainPos.getX() + main.getWidth());
+			return false;
+		}
+		private Vector<JEditDockable> getAreaDockables()
+		{
+			Vector<JEditDockable> dockables = new Vector<JEditDockable>();
+			for (JEditDockable d: created.values())
+			{
+				if (belongsToArea(d))
+					dockables.add(d);
+			}
+			return dockables;
+		}
+		public String [] getDockables()
+		{
+			Vector<JEditDockable> dockables = getAreaDockables();
+			String [] names = new String[dockables.size()];
+			for (int i = 0; i < dockables.size(); i++)
+				names[i] = dockables.get(i).getName();
+			return names;
 		}
 	}
-	
+
 	@Override
-	public DockingLayout getDockingLayout(ViewConfig config) {
+	public void closeCurrentArea()
+	{
+		if (focused == null)
+			return;
+		DfDockingArea area = (DfDockingArea) getTopDockingArea(); 
+		if (! area.belongsToArea(focused))
+		{
+			area = (DfDockingArea) getBottomDockingArea(); 
+			if (! area.belongsToArea(focused))
+			{
+				area = (DfDockingArea) getLeftDockingArea();
+				if (! area.belongsToArea(focused))
+				{
+					area = (DfDockingArea) getRightDockingArea();
+					if (! area.belongsToArea(focused))
+						area = null;
+				}
+			}
+		}
+		if (area != null)
+			area.show(null);
+	}
+
+	@Override
+	public DockingLayout getDockingLayout(ViewConfig config)
+	{
 		DfDockingLayout layout = new DfDockingLayout(this);
 		return layout;
 	}
@@ -243,16 +347,6 @@ public class DfWindowManager extends DockableWindowManager {
 		return d;
 	}
 
-	private static class MainDockable extends DefaultDockable {
-		public MainDockable(JPanel panel) {
-			super(panel, (String)null);
-		}
-
-		@Override
-		public DockTitle getDockTitle(DockTitleVersion version) {
-			return null;
-		}
-	}
 	private class JEditDockableFactory implements MultipleCDockableFactory<JEditDockable, JEditDockableLayout>
 	{
 		public JEditDockableLayout create() {
@@ -292,35 +386,43 @@ public class DfWindowManager extends DockableWindowManager {
 	}
 	private static class JEditDockable extends DefaultMultipleCDockable {
 		private String name;
+		private JComponent window;
 		public JEditDockable(JEditDockableFactory factory, String name,
 			String title, JComponent window)
 		{
 			super(factory, title, window);
 			this.name = name;
+			this.window = window;
 		}
 		public String getName() { return name; }
+		public JComponent getWindow() { return window; }
 	}
 
 	@Override
 	public DockingArea getBottomDockingArea() {
-		// TODO Auto-generated method stub
-		return null;
+		if (bottom == null)
+			bottom = new DfDockingArea(DockableWindowManager.BOTTOM);
+		return bottom;
 	}
 
 	@Override
 	public DockingArea getLeftDockingArea() {
-		// TODO Auto-generated method stub
-		return null;
+		if (left == null)
+			left = new DfDockingArea(DockableWindowManager.LEFT);
+		return left;
 	}
 
 	@Override
 	public DockingArea getRightDockingArea() {
-		// TODO Auto-generated method stub
-		return null;
+		if (right == null)
+			right = new DfDockingArea(DockableWindowManager.RIGHT);
+		return right;
 	}
 
 	@Override
 	public DockingArea getTopDockingArea() {
-		return null;
+		if (top == null)
+			top = new DfDockingArea(DockableWindowManager.TOP);
+		return top;
 	}
 }

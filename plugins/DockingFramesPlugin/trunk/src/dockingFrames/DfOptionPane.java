@@ -7,10 +7,8 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 
-import bibliothek.gui.DockUI;
 import bibliothek.gui.dock.common.CControl;
 import bibliothek.gui.dock.common.layout.ThemeMap;
-import bibliothek.gui.dock.themes.ThemeFactory;
 
 @SuppressWarnings("serial")
 public class DfOptionPane extends AbstractOptionPane {
