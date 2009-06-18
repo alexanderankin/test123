@@ -435,6 +435,7 @@ public class DfWindowManager extends DockableWindowManager
 			super(factory, title, window);
 			this.name = name;
 			this.window = window;
+			setCloseable(true);
 		}
 		public String getName() { return name; }
 		public JComponent getWindow() { return window; }
