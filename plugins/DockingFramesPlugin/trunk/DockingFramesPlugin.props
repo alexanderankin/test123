@@ -24,4 +24,8 @@ options.dockingFrames.code=new dockingFrames.DfOptionPane();
 # Option pane labels
 options.dockingFrames.theme.label=Dock theme:
 
+# Action labels
+docking-frames-prefs.label=Open preference dialog
 
+# Menu items
+plugin.dockingFrames.Plugin.menu=docking-frames-prefs
