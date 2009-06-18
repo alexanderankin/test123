@@ -235,7 +235,7 @@ public class DfWindowManager extends DockableWindowManager
 				recent = getCurrentDockable();
 				Vector<JEditDockable> dockables = getAreaDockables();
 				for (JEditDockable d: dockables)
-					d.setExtendedMode(ExtendedMode.MINIMIZED);
+					hideDockableWindow(d.getName());
 			}
 			else // show
 			{
