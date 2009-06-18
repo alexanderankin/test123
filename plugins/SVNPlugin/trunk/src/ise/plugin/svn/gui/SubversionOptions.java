@@ -51,12 +51,15 @@ public class SubversionOptions implements OptionPane {
         if ( panel != null )
             return ;
         panel = new JPanel( new KappaLayout() );
+        panel.setName("SubversionOptions");
 
 
         useTsvnTemplate = new JCheckBox( "Use tsvn:logtemplate property for commit template" );
+        useTsvnTemplate.setName("useTsvnTemplate");
         useTsvnTemplate.setSelected( jEdit.getBooleanProperty( "ise.plugin.svn.useTsvnTemplate", false ) );
 
         maxLogs = new JSpinner();
+        maxLogs.setName("maxLogs");
         ( ( JSpinner.NumberEditor ) maxLogs.getEditor() ).getModel().setMinimum( Integer.valueOf( 1 ) );
         int logRows = jEdit.getIntegerProperty("ise.plugin.svn.logRows", 1000); 
         ( ( JSpinner.NumberEditor ) maxLogs.getEditor() ).getModel().setValue( logRows );
