@@ -1,6 +1,7 @@
 package dockingFrames;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Point;
 import java.io.DataInputStream;
@@ -20,9 +21,14 @@ import org.gjt.sp.jedit.View.ViewConfig;
 import org.gjt.sp.jedit.gui.DockableWindowFactory;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 
+import bibliothek.extension.gui.dock.preference.PreferenceDialog;
+import bibliothek.extension.gui.dock.preference.PreferenceModel;
+import bibliothek.extension.gui.dock.preference.PreferenceTreeDialog;
+import bibliothek.extension.gui.dock.preference.PreferenceTreeModel;
 import bibliothek.gui.dock.common.CControl;
 import bibliothek.gui.dock.common.CGrid;
 import bibliothek.gui.dock.common.CLocation;
+import bibliothek.gui.dock.common.CPreferenceModel;
 import bibliothek.gui.dock.common.CWorkingArea;
 import bibliothek.gui.dock.common.DefaultMultipleCDockable;
 import bibliothek.gui.dock.common.DefaultSingleCDockable;
@@ -47,6 +53,7 @@ public class DfWindowManager extends DockableWindowManager
 	private DefaultSingleCDockable mainDockable;
 	private DfDockingArea top, left, bottom, right;
 	private JEditDockable focused;
+	private CPreferenceModel prefs;
 
 	public DfWindowManager(View view, DockableWindowFactory instance,
 			ViewConfig config)
@@ -62,17 +69,34 @@ public class DfWindowManager extends DockableWindowManager
 		grid.add(0, 0, 1, 1, mainArea);
 		control.getContentArea().deploy(grid);
 		setVisible(true);
-		control.addFocusListener(new CFocusListener() {
-			public void focusGained(CDockable dockable) {
+		prefs = new CPreferenceModel(control);
+		control.setPreferenceModel(prefs);
+		control.addFocusListener(new CFocusListener()
+		{
+			public void focusGained(CDockable dockable)
+			{
 				if (dockable instanceof JEditDockable)
 					focused = (JEditDockable) dockable;
 			}
-			public void focusLost(CDockable dockable) {
+			public void focusLost(CDockable dockable)
+			{
 				if (focused == dockable)
 					focused = null;
 			}
-			
 		});
+	}
+
+	static public void showPreferenceDialog(View view)
+	{
+		DfWindowManager dwm = (DfWindowManager) view.getDockableWindowManager();
+		CControl control = dwm.getControl();
+		Component owner = control.intern().getController().findRootWindow();
+		PreferenceModel model = control.getPreferenceModel();
+		if (model instanceof PreferenceTreeModel)
+			PreferenceTreeDialog.openDialog((PreferenceTreeModel)model, owner);
+		else
+			PreferenceDialog.openDialog(model, owner);
+		
 	}
 
 	@Override
