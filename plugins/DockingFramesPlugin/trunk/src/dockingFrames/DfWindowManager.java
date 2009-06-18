@@ -317,7 +317,8 @@ public class DfWindowManager extends DockableWindowManager
 		JEditDockable d = created.get(name);
 		if (d == null)
 			return;
-		d.setExtendedMode(ExtendedMode.MINIMIZED);
+		if (! minimizeDockable(d))
+			d.setExtendedMode(ExtendedMode.MINIMIZED);
 	}
 
 	@Override
@@ -376,6 +377,28 @@ public class DfWindowManager extends DockableWindowManager
 		return area;
 	}
 
+	private boolean minimizeDockable(JEditDockable d)
+	{
+		DfDockingArea area = getDockingAreaOf(d);
+		if (area == null)
+			return false;
+		CBaseLocation loc = CLocation.base();
+		CFlapIndexLocation mloc = null;
+		if (area.getPosition().equals(DockableWindowManager.BOTTOM))
+			mloc = loc.minimalSouth();
+		else if (area.getPosition().equals(DockableWindowManager.TOP))
+			mloc = loc.minimalNorth();
+		else if (area.getPosition().equals(DockableWindowManager.LEFT))
+			mloc = loc.minimalWest();
+		else if (area.getPosition().equals(DockableWindowManager.RIGHT))
+			mloc = loc.minimalEast();
+		if (mloc == null)
+			return false;
+		d.setLocation(mloc.stack());
+		d.setExtendedMode(ExtendedMode.MINIMIZED);
+		return true;
+	}
+
 	private class MinimizeAction extends CMinimizeAction
 	{
 		protected MinimizeAction()
@@ -387,26 +410,8 @@ public class DfWindowManager extends DockableWindowManager
 		{
 			if (dockable instanceof JEditDockable)
 			{
-				DfDockingArea area = getDockingAreaOf((JEditDockable) dockable);
-				if (area != null)
-				{
-					CBaseLocation loc = CLocation.base();
-					CFlapIndexLocation mloc = null;
-					if (area.getPosition().equals(DockableWindowManager.BOTTOM))
-						mloc = loc.minimalSouth();
-					else if (area.getPosition().equals(DockableWindowManager.TOP))
-						mloc = loc.minimalNorth();
-					else if (area.getPosition().equals(DockableWindowManager.LEFT))
-						mloc = loc.minimalWest();
-					else if (area.getPosition().equals(DockableWindowManager.RIGHT))
-						mloc = loc.minimalEast();
-					if (mloc != null)
-					{
-						dockable.setLocation(mloc.stack());
-						dockable.setExtendedMode(ExtendedMode.MINIMIZED);
-						return;
-					}
-				}
+				if (minimizeDockable((JEditDockable) dockable))
+					return;
 			}
 			super.action(dockable);
 		}
