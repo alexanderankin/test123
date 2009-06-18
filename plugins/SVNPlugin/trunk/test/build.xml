@@ -1,0 +1,88 @@
+<project name="svn_plugin_tests" default="test" basedir=".">
+    
+    <description>
+    Runs junit tests on the SVNPlugin.  Assumes a normal build of the plugin
+    has already happened and been deployed to the standard ${install.dir}.  The
+    test framework assumes the jEdit source is installed.  It will do a clean
+    build of jEdit and use the resulting build directory as the jEdit settings
+    directory and the jEdit installation.  Jars required by the plugin are
+    specified in the plugin.jars filelist and will be copied into the jEdit
+    build directory in a jars subdirectory.
+    </description>
+
+    <!-- general properties for plugins from the plugins directory -->
+    <property name="install.dir" location="/home/danson/.jedit/jars"/>
+    
+    <!-- location of the test framework -->
+    <property name="test.framework.home" location="/home/danson/src/jEditTestFramework"/>
+    
+    <!-- test source and classes -->
+    <property name="project.test.src.dir" location="${basedir}"/>
+    <property name="project.test.classes.dir" location="${basedir}/classes"/>
+    <mkdir dir="${project.test.classes.dir}"/>
+    <echo>project.test.classes.dir = ${project.test.classes.dir}</echo>
+
+    <path id="project.class.path">
+        <pathelement path="${project.test.classes.dir}"/>
+    </path>
+    
+    <path id="project.class.path">
+        <pathelement path="project.test.classes.dir"/>
+        <path>
+            <fileset dir="${install.dir}">
+                <include name="jna.jar"/>
+                <include name="svnkit-cli.jar"/>
+                <include name="svnkit.jar"/>
+                <include name="trilead.jar"/>
+                <include name="SVNPlugin.jar"/>
+                <include name="JDiffPlugin.jar"/>
+                <include name="ProjectViewer.jar"/>
+                <include name="CommonControls.jar"/>
+                <include name="kappalayout.jar"/>
+            </fileset>
+        </path>
+    </path>
+
+    <selector id="projectFiles">
+        <filename name="**/*.java" />
+    </selector>
+    
+    <!-- this selector holds all test cases -->
+    <selector id="testcases.all">
+        <or>
+            <filename name="test/**/*Test.java"/>
+        </or>
+    </selector>
+
+    <!-- this selector holds just one test -->
+    <selector id="testcases.current">
+        <filename name="test/OptionPaneTest.java"/>
+    </selector>
+
+    <!-- this selector controls which tests to run, set the refid to either
+    testcases.current to run just one test or testcases.all to run all tests. -->
+    <selector id="junit.testcases">
+        <or>
+            <selector refid="testcases.current"/>
+        </or>
+    </selector>
+    
+    <!-- marker property to indicate to the test framework that plugin jars
+    need to be copied -->
+    <property name="copyPluginJars" value=""/>
+    <filelist id="plugin.jars" dir="${install.dir}">
+        <file name="jna.jar"/>
+        <file name="svnkit-cli.jar"/>
+        <file name="svnkit.jar"/>
+        <file name="trilead.jar"/>
+        <file name="SVNPlugin.jar"/>
+        <file name="JDiffPlugin.jar"/>
+        <file name="ProjectViewer.jar"/>
+        <file name="CommonControls.jar"/>
+        <file name="kappalayout.jar"/>
+    </filelist>
+
+    <target name="test">
+        <ant antfile="${test.framework.home}/build.xml" target="test" inheritRefs="true"/>
+    </target>
+</project>
