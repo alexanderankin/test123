@@ -93,7 +93,7 @@ public class LucenePlugin extends EditPlugin
 	private void saveIndexes()
 	{
 		File home = getPluginHome();
-		if (home == null || !home.mkdirs())
+		if (home == null || ((!home.exists()) && (!home.mkdirs())))
 			return;
 		
 		File f = new File(home, INDEXES_FILE_NAME);
