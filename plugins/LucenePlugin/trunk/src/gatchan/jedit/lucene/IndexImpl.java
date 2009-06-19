@@ -128,8 +128,10 @@ public class IndexImpl extends AbstractIndex implements Index
 		}
 	}
 
-	public void search(String query, ResultProcessor processor)
+	public void search(String query, int max, ResultProcessor processor)
 	{
+		if (max < 1)
+			max = 1;
 		Searcher searcher = getSearcher();
 		if (searcher == null)
 			return;
@@ -137,14 +139,14 @@ public class IndexImpl extends AbstractIndex implements Index
 		try
 		{
 			Query _query = parser.parse(query);
-			TopDocs docs = searcher.search(_query, 100);
+			TopDocs docs = searcher.search(_query, max);
 			ScoreDoc[] scoreDocs = docs.scoreDocs;
 			Result result = getResultInstance();
 			for (ScoreDoc doc : scoreDocs)
 			{
 				Document document = searcher.doc(doc.doc);
 				result.setDocument(document);
-				if (!processor.process(doc.score, result))
+				if (!processor.process(_query, doc.score, result))
 				{
 					break;
 				}

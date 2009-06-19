@@ -20,11 +20,13 @@
  */
 package gatchan.jedit.lucene;
 
+import org.apache.lucene.search.Query;
+
 
 /**
  * @author Matthieu Casanova
  */
 public interface ResultProcessor
 {
-	boolean process(float score, Result result);
+	boolean process(Query query, float score, Result result);
 }
