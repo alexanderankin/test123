@@ -1,7 +1,6 @@
 package gatchan.jedit.lucene;
 
-import java.awt.Frame;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -51,13 +50,13 @@ public class NewIndexDialog extends JDialog
 		name = new JTextField(30);
 		p.add(name);
 		// Index type panel
-		p = new JPanel();
+		p = new JPanel(new FlowLayout(FlowLayout.LEADING));
 		add(p);
 		p.add(new JLabel(jEdit.getProperty(MESSAGE + "IndexType")));
 		type = new JComboBox(IndexFactory.getIndexNames());
 		p.add(type);
 		// Analyzer panel
-		p = new JPanel();
+		p = new JPanel(new FlowLayout(FlowLayout.LEADING));
 		add(p);
 		p.add(new JLabel(jEdit.getProperty(MESSAGE + "Analyzer")));
 		analyzer = new JComboBox(AnalyzerFactory.getAnalyzerNames());
