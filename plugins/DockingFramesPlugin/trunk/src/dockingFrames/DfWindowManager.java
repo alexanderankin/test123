@@ -64,7 +64,7 @@ public class DfWindowManager extends DockableWindowManager
 	private CPreferenceModel prefs;
 	private JEditDockStationListener listener;
 	private HashSet<DockStation> listenedStations;
-	
+
 	public DfWindowManager(View view, DockableWindowFactory instance,
 			ViewConfig config)
 	{
