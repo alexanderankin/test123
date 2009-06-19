@@ -1,0 +1,31 @@
+# jEdit only needs to load the plugin the first time the user accesses it
+# the presence of this property also tells jEdit the plugin is using the new API
+plugin.dockingFrames.Plugin.activate=defer
+
+# These two properties are required for all plugins
+plugin.dockingFrames.Plugin.name=DockingFramesPlugin
+plugin.dockingFrames.Plugin.author=Shlomy Reinstein
+plugin.dockingFrames.Plugin.description=DockingFramesPlugin
+
+plugin.dockingFrames.Plugin.version=1.0
+
+# Dependencies
+ 
+plugin.dockingFrames.Plugin.depend.0=jdk 1.5
+plugin.dockingFrames.Plugin.depend.1=jedit 04.03.15.00
+
+plugin.dockingFrames.Plugin.jars=dockingFramesCore.jar dockingFramesCommon.jar
+
+# Options
+plugin.dockingFrames.Plugin.option-pane=dockingFrames
+options.dockingFrames.label=DockingFramesPlugin
+options.dockingFrames.code=new dockingFrames.DfOptionPane();
+
+# Option pane labels
+options.dockingFrames.theme.label=Dock theme:
+
+# Action labels
+docking-frames-prefs.label=Open preference dialog
+
+# Menu items
+plugin.dockingFrames.Plugin.menu=docking-frames-prefs
