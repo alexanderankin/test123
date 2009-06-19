@@ -12,7 +12,7 @@ plugin.dockingFrames.Plugin.version=1.0
 # Dependencies
  
 plugin.dockingFrames.Plugin.depend.0=jdk 1.5
-plugin.dockingFrames.Plugin.depend.1=jedit 04.03.15.00
+plugin.dockingFrames.Plugin.depend.1=jedit 04.03.17.00
 
 plugin.dockingFrames.Plugin.jars=dockingFramesCore.jar dockingFramesCommon.jar
 
