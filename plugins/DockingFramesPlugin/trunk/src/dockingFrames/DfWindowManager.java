@@ -15,11 +15,13 @@ import java.util.Vector;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View.ViewConfig;
 import org.gjt.sp.jedit.gui.DockableWindowFactory;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
+import org.gjt.sp.jedit.msg.DockableWindowUpdate;
 
 import bibliothek.extension.gui.dock.preference.PreferenceDialog;
 import bibliothek.extension.gui.dock.preference.PreferenceModel;
@@ -146,6 +148,7 @@ public class DfWindowManager extends DockableWindowManager
 		else
 			d.setExtendedMode(ExtendedMode.EXTERNALIZED);
 		d.setVisible(true);
+		focusDockable(d.getName());
 	}
 
 	private void setTheme(String name)
