@@ -2,7 +2,8 @@ package gatchan.jedit.lucene;
 
 
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -11,6 +12,11 @@ import marker.FileMarker;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.highlight.Highlighter;
 import org.apache.lucene.search.highlight.QueryScorer;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.io.VFS;
+import org.gjt.sp.jedit.io.VFSFile;
+import org.gjt.sp.jedit.io.VFSManager;
 
 /*
  * A query result processor that collects the lines containing results,
@@ -52,7 +58,7 @@ public class MarkerListQueryProcessor implements ResultProcessor
 		StringBuilder sb = new StringBuilder();
 		ArrayList<Integer> lineStart = new ArrayList<Integer>();
 		try {
-			BufferedReader br = new BufferedReader(new FileReader(file));
+			BufferedReader br = getReader(file);
 			String s;
 			String sep = "\n";
 			while ((s = br.readLine()) != null)
@@ -86,5 +92,23 @@ public class MarkerListQueryProcessor implements ResultProcessor
 			marker = new FileMarker(file, line, lineText);
 			results.add(marker);
 		}
+	}
+	private BufferedReader getReader(String file)
+	{
+		Object session = null;
+		VFS vfs = VFSManager.getVFSForPath(file);
+		View view = jEdit.getActiveView();
+		session = vfs.createVFSSession(file, view);
+		VFSFile vfsFile;
+		BufferedReader reader = null;
+		try {
+			vfsFile = vfs._getFile(session, file, view);
+			reader = new BufferedReader(new InputStreamReader(
+				vfsFile.getVFS()._createInputStream(session,
+					vfsFile.getPath(), false, view)));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return reader;
 	}
 }
