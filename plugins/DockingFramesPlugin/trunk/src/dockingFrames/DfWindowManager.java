@@ -9,24 +9,25 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Vector;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
-import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View.ViewConfig;
 import org.gjt.sp.jedit.gui.DockableWindowFactory;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
-import org.gjt.sp.jedit.msg.DockableWindowUpdate;
 
 import bibliothek.extension.gui.dock.preference.PreferenceDialog;
 import bibliothek.extension.gui.dock.preference.PreferenceModel;
 import bibliothek.extension.gui.dock.preference.PreferenceTreeDialog;
 import bibliothek.extension.gui.dock.preference.PreferenceTreeModel;
+import bibliothek.gui.DockStation;
+import bibliothek.gui.Dockable;
 import bibliothek.gui.dock.common.CControl;
 import bibliothek.gui.dock.common.CGrid;
 import bibliothek.gui.dock.common.CLocation;
@@ -39,12 +40,14 @@ import bibliothek.gui.dock.common.MultipleCDockableLayout;
 import bibliothek.gui.dock.common.action.predefined.CMinimizeAction;
 import bibliothek.gui.dock.common.event.CFocusListener;
 import bibliothek.gui.dock.common.intern.CDockable;
+import bibliothek.gui.dock.common.intern.CommonDockable;
 import bibliothek.gui.dock.common.intern.CDockable.ExtendedMode;
 import bibliothek.gui.dock.common.layout.ThemeMap;
 import bibliothek.gui.dock.common.location.CBaseLocation;
 import bibliothek.gui.dock.common.location.CContentAreaCenterLocation;
 import bibliothek.gui.dock.common.location.CFlapIndexLocation;
 import bibliothek.gui.dock.common.location.CRectangleLocation;
+import bibliothek.gui.dock.event.DockStationListener;
 import bibliothek.gui.dock.util.ComponentWindowProvider;
 import bibliothek.util.xml.XElement;
 
@@ -59,7 +62,9 @@ public class DfWindowManager extends DockableWindowManager
 	private DfDockingArea top, left, bottom, right;
 	private JEditDockable focused;
 	private CPreferenceModel prefs;
-
+	private JEditDockStationListener listener;
+	private HashSet<DockStation> listenedStations;
+	
 	public DfWindowManager(View view, DockableWindowFactory instance,
 			ViewConfig config)
 	{
@@ -89,6 +94,8 @@ public class DfWindowManager extends DockableWindowManager
 					focused = null;
 			}
 		});
+		listener = new JEditDockStationListener();
+		listenedStations = new HashSet<DockStation>();
 	}
 
 	static public void showPreferenceDialog(View view)
@@ -101,7 +108,6 @@ public class DfWindowManager extends DockableWindowManager
 			PreferenceTreeDialog.openDialog((PreferenceTreeModel)model, owner);
 		else
 			PreferenceDialog.openDialog(model, owner);
-		
 	}
 
 	@Override
@@ -118,7 +124,7 @@ public class DfWindowManager extends DockableWindowManager
 		JEditDockable d = created.get(name);
 		if (d == null)
 		{
-			d = createDefaultDockable(name);
+			d = createJEditDockable(name, false);
 			if (d == null)
 				return null;
 			control.add(d);
@@ -161,7 +167,13 @@ public class DfWindowManager extends DockableWindowManager
 	{
 		return control;
 	}
-	
+
+	private void addDockStationListeners()
+	{
+		for (JEditDockable d: created.values())
+			d.registerListeners();
+	}
+
 	@Override
 	public void applyDockingLayout(DockingLayout docking)
 	{
@@ -174,6 +186,7 @@ public class DfWindowManager extends DockableWindowManager
 				try
 				{
 					control.readXML(new File(filename));
+					addDockStationListeners();
 					return;
 				}
 				catch (IOException e)
@@ -182,6 +195,7 @@ public class DfWindowManager extends DockableWindowManager
 			}
 		}		
 		super.applyDockingLayout(docking);
+		addDockStationListeners();
 	}
 
 	@Override
@@ -420,21 +434,83 @@ public class DfWindowManager extends DockableWindowManager
 		}
 	}
 
-	private JEditDockable createDefaultDockable(String name)
+	private JEditDockable createJEditDockable(String name, boolean fake)
 	{
 		JComponent window = getDockable(name);
 		if (window == null)
-			window = createDockable(name);
+		{
+			if (fake)
+				window = new JPanel();
+			else
+				window = createDockable(name);
+		}
 		if (window == null)
 			return null;
 		String title = getDockableTitle(name);
-		final JEditDockable d = new JEditDockable(factory, name, title, window);
+		final JEditDockable d = fake ?
+			new JEditDockable(factory, name, title) :
+			new JEditDockable(factory, name, title, window);
 		created.put(name, d);
 		MinimizeAction minimizeAction = new MinimizeAction();
 		d.putAction(CDockable.ACTION_KEY_MINIMIZE, minimizeAction);
 		return d;
 	}
 
+	private static class JEditDockStationListener implements DockStationListener
+	{
+		private JEditDockable getJEditDockable(Dockable d)
+		{
+			if (d instanceof CommonDockable)
+				return (JEditDockable) (((CommonDockable) d).getDockable());
+			return null;
+		}
+		public void dockableAdded(DockStation station, Dockable dockable)
+		{
+			JEditDockable d = getJEditDockable(dockable);
+			if (d == null)
+				return;
+			System.err.println("added: " + d.getName());
+		}
+		public void dockableAdding(DockStation station, Dockable dockable)
+		{
+			JEditDockable d = getJEditDockable(dockable);
+			if (d == null)
+				return;
+			System.err.println("adding: " + d.getName());
+		}
+		public void dockableRemoved(DockStation station, Dockable dockable)
+		{
+			JEditDockable d = getJEditDockable(dockable);
+			if (d == null)
+				return;
+			System.err.println("removed: " + d.getName());
+		}
+		public void dockableRemoving(DockStation station, Dockable dockable)
+		{
+			JEditDockable d = getJEditDockable(dockable);
+			if (d == null)
+				return;
+			System.err.println("removing: " + d.getName());
+		}
+		public void dockableSelected(DockStation station,
+				Dockable oldSelection, Dockable newSelection)
+		{
+			JEditDockable d = getJEditDockable(newSelection);
+			if (d == null)
+				return;
+			System.err.println("selected: " + d.getName());
+		}
+		public void dockableVisibiltySet(DockStation station,
+				Dockable dockable, boolean visible)
+		{
+			JEditDockable d = getJEditDockable(dockable);
+			if (d == null)
+				return;
+			System.err.println("visibilitySet: " + d.getName() + " - " + visible);
+			if (visible)
+				d.madeVisible();
+		}
+	}
 	private class JEditDockableFactory implements MultipleCDockableFactory<JEditDockable, JEditDockableLayout>
 	{
 		public JEditDockableLayout create()
@@ -443,7 +519,7 @@ public class DfWindowManager extends DockableWindowManager
 		}
 		public JEditDockable read(JEditDockableLayout layout)
 		{
-			return createDefaultDockable(layout.getName());
+			return createJEditDockable(layout.getName(), true);
 		}
 		public JEditDockableLayout write(JEditDockable dockable)
 		{
@@ -481,10 +557,22 @@ public class DfWindowManager extends DockableWindowManager
 			element.setString(name);
 		}
 	}
-	private static class JEditDockable extends DefaultMultipleCDockable
+	private class JEditDockable extends DefaultMultipleCDockable
 	{
 		private String name;
 		private JComponent window;
+
+		// This constructor is for fake dockables - for lazy construction
+		// of dockables.
+		public JEditDockable(JEditDockableFactory factory, String name,
+				String title)
+		{
+			super(factory, title, new JPanel());
+			this.name = name;
+			window = null;
+			setCloseable(true);
+		}
+		// This constructor is for real dockables.
 		public JEditDockable(JEditDockableFactory factory, String name,
 			String title, JComponent window)
 		{
@@ -495,6 +583,38 @@ public class DfWindowManager extends DockableWindowManager
 		}
 		public String getName() { return name; }
 		public JComponent getWindow() { return window; }
+		public void registerListeners()
+		{
+			if (window != null)
+				return;
+			if (intern() == null)
+				return;
+			DockStation station = intern().getDockParent();
+			if (station == null)
+				return;
+			if (station.isVisible(intern()))
+				madeVisible();
+			else if (! listenedStations.contains(station))
+			{
+				listenedStations.add(station);
+				station.addDockStationListener(listener);
+			}
+		}
+		public void madeVisible()
+		{
+			// Replace fake dockables with real ones when needed
+			if (window != null)
+				return;
+			window = createDockable(getName());
+			getContentPane().removeAll();
+			getContentPane().add(window, BorderLayout.CENTER);
+			DockStation station = intern().getDockParent();
+			if (station.getDockableCount() == 0)
+			{
+				station.removeDockStationListener(listener);
+				listenedStations.remove(station);
+			}
+		}
 	}
 
 	@Override
