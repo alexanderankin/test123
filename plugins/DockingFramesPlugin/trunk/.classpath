@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/dock"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jEdit"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Dock"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
