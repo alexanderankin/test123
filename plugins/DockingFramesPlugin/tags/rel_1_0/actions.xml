@@ -1,0 +1,10 @@
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="docking-frames-prefs" NO_REPEAT="TRUE">
+		<CODE>
+			dockingFrames.DfWindowManager.showPreferenceDialog(view);
+		</CODE>
+	</ACTION>
+</ACTIONS>
+
