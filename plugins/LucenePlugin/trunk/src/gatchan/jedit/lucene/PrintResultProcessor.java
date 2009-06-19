@@ -20,6 +20,7 @@
  */
 package gatchan.jedit.lucene;
 
+import org.apache.lucene.search.Query;
 import org.gjt.sp.util.Log;
 
 /**
@@ -27,7 +28,7 @@ import org.gjt.sp.util.Log;
  */
 public class PrintResultProcessor implements ResultProcessor
 {
-	public boolean process(float score, Result result)
+	public boolean process(Query q, float score, Result result)
 	{
 		Log.log(Log.MESSAGE, this, result.getPath() + " score:" + score);
 		return true;

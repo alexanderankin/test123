@@ -45,7 +45,8 @@ public interface Index
 	 * Execute the given search query.
 	 *
 	 * @param query the query to execute
+	 * @param max the maximal number of results to search for
 	 * @param processor the processor that will get the results
 	 */
-	void search(String query, ResultProcessor processor);
+	void search(String query, int max, ResultProcessor processor);
 }
