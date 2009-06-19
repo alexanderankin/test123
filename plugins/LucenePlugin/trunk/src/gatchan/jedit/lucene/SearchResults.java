@@ -1,30 +1,22 @@
 package gatchan.jedit.lucene;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Collections;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import marker.FileMarker;
 
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.highlight.Formatter;
-import org.apache.lucene.search.highlight.Highlighter;
-import org.apache.lucene.search.highlight.QueryScorer;
-import org.apache.lucene.search.highlight.TokenGroup;
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.StandardUtilities;
-
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 @SuppressWarnings("serial")
 public class SearchResults extends JPanel implements EBComponent
@@ -99,91 +91,6 @@ public class SearchResults extends JPanel implements EBComponent
 //		add(new JSplitPane(JSplitPane.VERTICAL_SPLIT, new JScrollPane(list), preview), BorderLayout.CENTER);
 	}
 
-	private class QueryResultProcessor implements ResultProcessor
-	{
-		private Index index;
-		private java.util.List<Object> files;
-		private int max;
-		public QueryResultProcessor(Index index,
-			java.util.List<Object> files, int max)
-		{
-			this.index = index;
-			this.files = files;
-			this.max = max;
-		}
-		public boolean process(Query query, float score, Result result)
-		{
-			if (result instanceof LineResult)
-			{
-				LineResult lr = (LineResult) result;
-				FileMarker marker = new FileMarker(lr.getPath(),
-					lr.getLine() - 1, lr.getText());
-				files.add(marker);
-			}
-			else
-			{
-				String s = result.getPath();
-				if (! lineResults.isSelected())
-				{
-					files.add(s);
-				}
-				else
-				{
-					ArrayList<FileMarker> markers =
-						findMatch(query, s, max - files.size());
-					for (FileMarker marker: markers)
-						files.add(marker);
-				}
-			}
-			return (files.size() < max);
-		}
-		private ArrayList<FileMarker> findMatch(Query query, String file,
-				int max)
-		{
-			SearchFormatter sf = new SearchFormatter(file, max);
-			QueryScorer scorer = new QueryScorer(query);
-			StringBuilder sb = new StringBuilder();
-			ArrayList<Integer> lineStart = new ArrayList<Integer>();
-			try {
-				BufferedReader br = new BufferedReader(new FileReader(file));
-				String s;
-				String sep = "\n";
-				while ((s = br.readLine()) != null)
-				{
-					if (sb.length() > 0)
-						sb.append(sep);
-					lineStart.add(sb.length());
-					sb.append(s);
-				}
-				Highlighter h = new Highlighter(sf, scorer);
-				h.setMaxDocCharsToAnalyze(sb.length());
-				h.getBestFragments(index.getAnalyzer(), sb.toString(), 0);
-				br.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			ArrayList<FileMarker> lines = new ArrayList<FileMarker>();
-			FileMarker marker = null;
-			for (int i: sf.positions)
-			{
-				int start = i, stop = i + 1;
-				// Find beginning and end of line
-				while ((start >= 0) && (sb.charAt(start) != '\n'))
-					start--;
-				start++;
-				while ((stop < sb.length()) && (sb.charAt(stop) != '\n'))
-					stop++;
-				String lineText = sb.substring(start, stop); 
-				int line = Collections.binarySearch(lineStart, i);
-				if (line < 0)
-					line = -line - 2;
-				marker = new FileMarker(file, line, lineText);
-				lines.add(marker);
-			}
-			return lines;
-		}
-	}
-	
 	public void search(String text)
 	{
 		Index index = LucenePlugin.instance.getIndex((String) indexes.getSelectedItem());
@@ -192,30 +99,13 @@ public class SearchResults extends JPanel implements EBComponent
 
 		final java.util.List<Object> files = new ArrayList<Object>();
 		int max = ((Integer)(maxResults.getValue())).intValue();
-		index.search(text, max, new QueryResultProcessor(index, files, max));
+		ResultProcessor processor;
+		if (lineResults.isSelected())
+			processor = new MarkerListQueryProcessor(index, files, max);
+		else
+			processor = new FileListQueryProcessor(index, files, max);
+		index.search(text, max, processor);
 		model.setFiles(files);
-	}
-
-	private class SearchFormatter implements Formatter
-	{
-		String file;
-		int max;
-		ArrayList<Integer> positions = new ArrayList<Integer>(0); 
-		public SearchFormatter(String file, int max)
-		{
-			this.file = file;
-			this.max = max;
-		}
-		public String highlightTerm(String originalText,
-			TokenGroup tokenGroup)
-		{
-	        if ((positions.size() < max) &&
-	        	(tokenGroup.getTotalScore() > 0))
-	        {
-	        	positions.add(tokenGroup.getStartOffset());
-	        }
-			return originalText;
-		}
 	}
 
 	//{{{ addNotify() method
