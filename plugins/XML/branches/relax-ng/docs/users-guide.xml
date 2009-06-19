@@ -710,10 +710,11 @@
 <title>Change log</title> <itemizedlist>
 
  <listitem><para><emphasis role="bold">Version 2.5</emphasis>
- Requires jEdit 4.3pre16, Java 1.5, ErrorList 1.4, SideKick 0.7.7 and XercesPlugin 2.9.0.
+ Requires jEdit 4.3pre16, Java 1.5, ErrorList 1.4.2, SideKick 0.7.7, BeautyPlugin 0.2.1 and XercesPlugin 2.9.0.
  </para>
  <itemizedlist>
   <listitem><para> Improved XML Completion (Greg Knittl - #2801814, 2809253) </para></listitem>
+  <listitem><para> Rewritten to use updated Xerces API (kerik-sf) </para></listitem>
   </itemizedlist>
 </listitem>
 
