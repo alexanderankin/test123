@@ -7,7 +7,7 @@ plugin.dockingFrames.Plugin.name=DockingFramesPlugin
 plugin.dockingFrames.Plugin.author=Shlomy Reinstein
 plugin.dockingFrames.Plugin.description=DockingFramesPlugin
 
-plugin.dockingFrames.Plugin.version=0.1
+plugin.dockingFrames.Plugin.version=1.0
 
 # Dependencies
  
