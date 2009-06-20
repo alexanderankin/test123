@@ -4,19 +4,23 @@ package gatchan.jedit.lucene;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import marker.FileMarker;
 
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.highlight.Highlighter;
 import org.apache.lucene.search.highlight.QueryScorer;
+import org.apache.lucene.analysis.TokenStream;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.util.IOUtilities;
 
 /*
  * A query result processor that collects the lines containing results,
@@ -25,22 +29,24 @@ import org.gjt.sp.jedit.io.VFSManager;
 public class MarkerListQueryProcessor implements ResultProcessor
 {
 	private Index index;
-	private java.util.List<Object> results;
+	private List<Object> results;
 	private int max;
+
 	public MarkerListQueryProcessor(Index index,
-		java.util.List<Object> results, int max)
+	                                List<Object> results, int max)
 	{
 		this.index = index;
 		this.results = results;
 		this.max = max;
 	}
+
 	public boolean process(Query query, float score, Result result)
 	{
 		if (result instanceof LineResult)
 		{
 			LineResult lr = (LineResult) result;
 			FileMarker marker = new FileMarker(lr.getPath(),
-				lr.getLine() - 1, lr.getText());
+			                                   lr.getLine() - 1, lr.getText());
 			results.add(marker);
 		}
 		else
@@ -50,6 +56,7 @@ public class MarkerListQueryProcessor implements ResultProcessor
 		}
 		return (results.size() < max);
 	}
+
 	private void addLinesMatching(Query query, String file, int max)
 	{
 		ArrayList<Integer> positions = new ArrayList<Integer>();
@@ -57,8 +64,10 @@ public class MarkerListQueryProcessor implements ResultProcessor
 		QueryScorer scorer = new QueryScorer(query);
 		StringBuilder sb = new StringBuilder();
 		ArrayList<Integer> lineStart = new ArrayList<Integer>();
-		try {
-			BufferedReader br = getReader(file);
+		BufferedReader br = null;
+		try
+		{
+			br = getReader(file);
 			String s;
 			String sep = "\n";
 			while ((s = br.readLine()) != null)
@@ -70,13 +79,22 @@ public class MarkerListQueryProcessor implements ResultProcessor
 			}
 			Highlighter h = new Highlighter(sf, scorer);
 			h.setMaxDocCharsToAnalyze(sb.length());
-			h.getBestFragments(index.getAnalyzer(), sb.toString(), 0);
+			String text = sb.toString();
+			TokenStream tokenStream = index.getAnalyzer().tokenStream("field", new StringReader(text));
+			h.getBestFragments(tokenStream, text, 0);
 			br.close();
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			e.printStackTrace();
 		}
-		FileMarker marker = null;
-		for (int i: positions)
+		finally
+		{
+			IOUtilities.closeQuietly(br);
+		}
+
+		FileMarker marker;
+		for (int i : positions)
 		{
 			int start = i, stop = i + 1;
 			// Find beginning and end of line
@@ -85,7 +103,7 @@ public class MarkerListQueryProcessor implements ResultProcessor
 			start++;
 			while ((stop < sb.length()) && (sb.charAt(stop) != '\n'))
 				stop++;
-			String lineText = sb.substring(start, stop); 
+			String lineText = sb.substring(start, stop);
 			int line = Collections.binarySearch(lineStart, i);
 			if (line < 0)
 				line = -line - 2;
@@ -93,20 +111,23 @@ public class MarkerListQueryProcessor implements ResultProcessor
 			results.add(marker);
 		}
 	}
+
 	private BufferedReader getReader(String file)
 	{
-		Object session = null;
 		VFS vfs = VFSManager.getVFSForPath(file);
 		View view = jEdit.getActiveView();
-		session = vfs.createVFSSession(file, view);
+		Object session = vfs.createVFSSession(file, view);
 		VFSFile vfsFile;
 		BufferedReader reader = null;
-		try {
+		try
+		{
 			vfsFile = vfs._getFile(session, file, view);
 			reader = new BufferedReader(new InputStreamReader(
 				vfsFile.getVFS()._createInputStream(session,
-					vfsFile.getPath(), false, view)));
-		} catch (IOException e) {
+				                                    vfsFile.getPath(), false, view)));
+		}
+		catch (IOException e)
+		{
 			e.printStackTrace();
 		}
 		return reader;
