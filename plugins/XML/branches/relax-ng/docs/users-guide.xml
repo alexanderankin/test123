@@ -716,6 +716,8 @@
   <listitem><para> Improved XML Completion (Greg Knittl - #2801814, 2809253) </para></listitem>
   <listitem><para> Rewritten to use updated Xerces API (kerik-sf) </para></listitem>
   </itemizedlist>
+
+
 </listitem>
 
 
