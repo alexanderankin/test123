@@ -210,7 +210,7 @@ public class IndexImpl extends AbstractIndex implements Index
 
 	private static class MyVFSFilter implements VFSFileFilter
 	{
-		private static final String[] suffixes = new String[]{"bak", "tgz", "gif", "class", "exe", "gif", "png", "jpg"};
+		private static final String[] suffixes = new String[]{"~", "bak", "tgz", "gif", "class", "exe", "gif", "png", "jpg"};
 
 		public boolean accept(VFSFile file)
 		{
