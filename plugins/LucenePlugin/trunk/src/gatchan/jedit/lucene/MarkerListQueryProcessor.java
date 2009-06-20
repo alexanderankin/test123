@@ -14,6 +14,7 @@ import marker.FileMarker;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.highlight.Highlighter;
 import org.apache.lucene.search.highlight.QueryScorer;
+import org.apache.lucene.search.highlight.Formatter;
 import org.apache.lucene.analysis.TokenStream;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
@@ -60,7 +61,7 @@ public class MarkerListQueryProcessor implements ResultProcessor
 	private void addLinesMatching(Query query, String file, int max)
 	{
 		List<Integer> positions = new ArrayList<Integer>();
-		SearchFormatter sf = new SearchFormatter(positions, max);
+		Formatter sf = new SearchFormatter(positions, max);
 		QueryScorer scorer = new QueryScorer(query);
 		StringBuilder sb = new StringBuilder();
 		List<Integer> lineStart = new ArrayList<Integer>();
