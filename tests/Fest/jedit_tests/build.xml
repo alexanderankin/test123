@@ -1,0 +1,42 @@
+<project name="jedit_tests" default="test" basedir=".">
+
+    <property name="test.framework.home" location="../"/>
+
+
+    <property name="project.test.src.dir" location="${basedir}"/>
+    <property name="project.test.classes.dir" location="${basedir}/jedit_tests_classes"/>
+    <mkdir dir="${project.test.classes.dir}"/>
+    
+    <path id="project.class.path">
+        <pathelement path="${project.test.classes.dir}"/>
+    </path>
+    
+    <selector id="projectFiles">
+        <filename name="**/*.java" />
+    </selector>
+    
+    <!-- this selector holds all test cases -->
+    <selector id="testcases.all">
+        <or>
+            <filename name="test/**/*Test.java"/>
+        </or>
+    </selector>
+
+    <!-- this selector holds just one test -->
+    <selector id="testcases.current">
+        <filename name="test/search/SearchAndReplaceTest.java"/>
+    </selector>
+
+    <!-- this selector controls which tests to run, set the refid to either
+    testcases.current to run just one test or testcases.all to run all tests. -->
+    <selector id="junit.testcases">
+        <or>
+            <selector refid="testcases.current"/>
+        </or>
+    </selector>
+    
+    <target name="test">
+        <ant antfile="${test.framework.home}/build.xml" target="test" inheritRefs="true"/>
+    </target>
+    
+</project>
