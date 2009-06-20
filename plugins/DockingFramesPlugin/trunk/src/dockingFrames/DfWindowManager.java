@@ -132,27 +132,37 @@ public class DfWindowManager extends DockableWindowManager
 		return d;
 	}
 
+	private CLocation getTargetLocation(JEditDockable d, String position)
+	{
+		DockingArea targetArea = null;
+		if (position.equals(DockableWindowManager.BOTTOM))
+			targetArea = getBottomDockingArea();
+		else if (position.equals(DockableWindowManager.TOP))
+			targetArea = getTopDockingArea();
+		else if (position.equals(DockableWindowManager.RIGHT))
+			targetArea = getRightDockingArea();
+		else if (position.equals(DockableWindowManager.LEFT))
+			targetArea = getLeftDockingArea();
+		if (targetArea != null)
+			return ((DfDockingArea) targetArea).getTargetLocationFor(d);
+		return null;
+	}
+
 	@Override
 	public void showDockableWindow(String name)
 	{
-		JEditDockable d = getJEditDockable(name);
+		final JEditDockable d = getJEditDockable(name);
 		if (d == null)
 			return;
 		String position = getDockablePosition(name);
-		CContentAreaCenterLocation center = CLocation.base().normal();
-		CRectangleLocation loc = null;
-		if (position.equals(DockableWindowManager.BOTTOM))
-			loc = center.rectangle(0.0, 0.8, 1.0, 0.2);
-		else if (position.equals(DockableWindowManager.TOP))
-			loc = center.rectangle(0.0, 0.0, 1.0, 0.2);
-		else if (position.equals(DockableWindowManager.RIGHT))
-			loc = center.rectangle(0.8, 0.0, 0.2, 0.8);
-		else if (position.equals(DockableWindowManager.LEFT))
-			loc = center.rectangle(0.0, 0.0, 0.2, 0.8);
-		if (loc != null)
-			d.setLocation(loc.stack());
-		else
+		if (position.equals(DockableWindowManager.FLOATING))
 			d.setExtendedMode(ExtendedMode.EXTERNALIZED);
+		else
+		{
+			CLocation loc = getTargetLocation(d, position);
+			if (loc != null)
+				d.setLocation(loc);
+		}
 		d.setVisible(true);
 		focusDockable(d.getName());
 	}
@@ -279,6 +289,8 @@ public class DfWindowManager extends DockableWindowManager
 		{
 			Container main = mainDockable.getContentPane();
 			JComponent c = d.getWindow();
+			if (c == null)
+				return false;
 			Point mainPos = getLocation(main);
 			Point cPos = getLocation(c);
 			if (DockableWindowManager.BOTTOM.equals(position))
@@ -308,6 +320,40 @@ public class DfWindowManager extends DockableWindowManager
 			for (int i = 0; i < dockables.size(); i++)
 				names[i] = dockables.get(i).getName();
 			return names;
+		}
+		public CLocation getTargetLocationFor(JEditDockable d)
+		{
+			// If the dockable is already in this area, do not move/resize it
+			if (belongsToArea(d))
+				return d.getBaseLocation();
+			// Otherwise, find the largest dockable in this area and use its location
+			JEditDockable preferred = null;
+			int preferredSize = 0;
+			Vector<JEditDockable> dockables = getAreaDockables();
+			for (JEditDockable dockable: dockables)
+			{
+				JComponent window = dockable.getWindow();
+				int size = window.getWidth() * window.getHeight();
+				if (size > preferredSize)
+				{
+					preferredSize = size;
+					preferred = dockable;
+				}
+			}
+			if (preferred != null)
+				return preferred.getBaseLocation();
+			// Otherwise, use a default location
+			CContentAreaCenterLocation center = CLocation.base().normal();
+			CRectangleLocation loc = null;
+			if (position.equals(DockableWindowManager.BOTTOM))
+				loc = center.rectangle(0.0, 0.8, 1.0, 0.2);
+			else if (position.equals(DockableWindowManager.TOP))
+				loc = center.rectangle(0.0, 0.0, 1.0, 0.2);
+			else if (position.equals(DockableWindowManager.RIGHT))
+				loc = center.rectangle(0.8, 0.0, 0.2, 0.8);
+			else if (position.equals(DockableWindowManager.LEFT))
+				loc = center.rectangle(0.0, 0.0, 0.2, 0.8);
+			return loc.stack();
 		}
 	}
 
