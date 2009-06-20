@@ -26,6 +26,7 @@ import java.util.List;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
 import sidekick.*;
 import xml.completion.*;
@@ -499,6 +500,9 @@ public class XmlInsert extends JPanel implements EBComponent
 					Buffer buffer = jEdit.openFile(view,id.uri);
 					if(buffer == null)
 						return;
+					// waiting for complete loading of buffer seems
+					// to prevent the NullPointerException
+					VFSManager.waitForRequests();
 					int line = Math.min(buffer.getLineCount() - 1,id.line);
 					int column = Math.min(buffer.getLineLength(line),id.column);
 					int offset = buffer.getLineStartOffset(line) + column;
