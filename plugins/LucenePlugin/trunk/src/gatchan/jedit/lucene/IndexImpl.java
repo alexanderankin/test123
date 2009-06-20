@@ -33,6 +33,7 @@ import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.TopDocs;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSFile;
+import org.gjt.sp.jedit.io.VFSFileFilter;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.IOUtilities;
@@ -46,6 +47,7 @@ import java.io.*;
 public class IndexImpl extends AbstractIndex implements Index
 {
 	private final String name;
+	private static final VFSFileFilter filter = new MyVFSFilter();
 
 	public IndexImpl(String name, File path)
 	{
@@ -95,9 +97,11 @@ public class IndexImpl extends AbstractIndex implements Index
 		{
 			try
 			{
-				VFSFile[] vfsFiles = file.getVFS()._listFiles(session, file.getPath(), jEdit.getActiveView());
-				for (VFSFile vfsFile : vfsFiles)
+				VFS vfs = file.getVFS();
+				String[] files = vfs._listDirectory(session, file.getPath(), filter, true, jEdit.getActiveView(), false, false);
+				for (String f : files)
 				{
+					VFSFile vfsFile = vfs._getFile(session, f, jEdit.getActiveView());
 					addFile(vfsFile, session);
 				}
 			}
@@ -180,7 +184,7 @@ public class IndexImpl extends AbstractIndex implements Index
 
 	protected void addDocument(VFSFile file, Object session)
 	{
-		Log.log(Log.DEBUG, this, "Index:"+name + " add " + file);
+		Log.log(Log.DEBUG, this, "Index:" + name + " add " + file);
 		Document doc = new Document();
 		doc.add(new Field("path", file.getPath(), Field.Store.NO, Field.Index.ANALYZED));
 		doc.add(new Field("_path", file.getPath(), Field.Store.YES, Field.Index.NOT_ANALYZED));
@@ -201,6 +205,40 @@ public class IndexImpl extends AbstractIndex implements Index
 		finally
 		{
 			IOUtilities.closeQuietly(reader);
+		}
+	}
+
+	private static class MyVFSFilter implements VFSFileFilter
+	{
+		private static final String[] suffixes = new String[]{"bak", "tgz", "gif", "class", "exe", "gif", "png", "jpg"};
+
+		public boolean accept(VFSFile file)
+		{
+			String name = file.getName();
+			if (file.getType() == VFSFile.DIRECTORY
+			    || file.getType() == VFSFile.FILESYSTEM)
+			{
+				return !(name.equals(".svn") || name.equals("CVS"));
+			}
+			else
+			{
+				return accept(name);
+			}
+		}
+
+		public boolean accept(String url)
+		{
+			for (String suffix : suffixes)
+			{
+				if (url.endsWith(suffix))
+					return false;
+			}
+			return true;
+		}
+
+		public String getDescription()
+		{
+			return null;
 		}
 	}
 
