@@ -108,12 +108,8 @@ public class BufferLocalPlugin extends EBPlugin {
                 setPriority( Thread.MIN_PRIORITY );
                 while ( removeStale ) {
                     try {
-                        System.out.println("+++++ closing files at " + new Date());
                         closeFiles();
-                        System.out.println("+++++ done cloding files at " + new Date());
-                        System.out.println("+++++ sleeping for " + staleTime);
                         sleep( ( long ) staleTime );
-                        System.out.println("+++++ done sleeping");
                     }
                     catch ( InterruptedException e ) {
                         // ignored
@@ -154,7 +150,6 @@ public class BufferLocalPlugin extends EBPlugin {
      * (if writable) otherwise, in $user.home.
      */
     public void start() {
-        //Log.log(Log.DEBUG, this, "+++++ start");
         loadProperties();
 
         String dir = jEdit.getSettingsDirectory();
@@ -226,16 +221,13 @@ public class BufferLocalPlugin extends EBPlugin {
      * @param message
      */
     public void handleMessage( EBMessage message ) {
-        //Log.log(Log.DEBUG, this, "+++++ got a message");
         if ( message instanceof BufferUpdate ) {
             BufferUpdate bu = ( BufferUpdate ) message;
             Object what = bu.getWhat();
             Buffer buffer = bu.getBuffer();
             String file = buffer.getPath();
-            //Log.log(Log.DEBUG, this, "+++++ file: " + file);
             if ( BufferUpdate.LOADED.equals( what ) || BufferUpdate.SAVED.equals( what ) ) {
                 String props = map.getProperty( file );
-                //Log.log(Log.DEBUG, this, "+++++ props: " + props);
                 if ( props != null ) {
                     // parse the stored properties
                     String[] tokens = props.split( "[\\|]" );
@@ -462,9 +454,6 @@ public class BufferLocalPlugin extends EBPlugin {
         int newStaleTime = jEdit.getIntegerProperty( NAME + ".staleTime", staleTime ) * ONE_MINUTE;
         boolean newRemoveStale = jEdit.getBooleanProperty( NAME + ".removeStale", removeStale );
         if (newStaleTime != staleTime || newRemoveStale != removeStale) {
-            System.out.println("+++++ newStaleTime = " + newStaleTime + ", old staleTime = " + staleTime );
-            System.out.println("+++++ newRemoveStale = " + newRemoveStale + ", removeStale = " + removeStale );
-            System.out.println("+++++ properties changed, restarting");
             staleTime = newStaleTime;
             removeStale = newRemoveStale;
             restartThreads();
