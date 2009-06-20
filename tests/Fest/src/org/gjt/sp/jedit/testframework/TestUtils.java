@@ -1,0 +1,332 @@
+/*
+* $Revision: 13763 $
+* $Date: 2008-09-23 04:02:41 -0600 (Tue, 23 Sep 2008) $
+* $Author: kerik-sf $
+*
+* Copyright (C) 2008 Eric Le Lay
+*
+* This program is free software; you can redistribute it and/or
+* modify it under the terms of the GNU General Public License
+* as published by the Free Software Foundation; either version 2
+* of the License, or any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
+
+package org.gjt.sp.jedit.testframework;
+
+
+//{{{ Imports
+
+import java.io.*;
+import java.awt.Dialog;
+import java.awt.Frame;
+import javax.swing.SwingUtilities;
+import javax.swing.JButton;
+
+import javax.swing.tree.*;
+import javax.swing.JTree;
+import java.util.Arrays;
+
+//{{{  jEdit
+import org.gjt.sp.jedit.*;
+
+//}}}
+
+//{{{ junit
+import org.junit.*;
+import static org.junit.Assert.*;
+//}}}
+
+//{{{ FEST...
+import org.fest.swing.fixture.*;
+import org.fest.swing.core.*;
+import org.fest.swing.finder.WindowFinder;
+import org.fest.swing.driver.BasicJTreeCellReader;
+import org.fest.swing.lock.ScreenLock;
+//}}}
+
+///}}}
+
+/**
+ * Provides methods to start jEdit and to dispose of the robot.
+ */
+public class TestUtils {
+
+    // key to environment settings holding value of jEdit settings directory,
+    // this is the directory that would be passed to jEdit in the -settings
+    // parameter on the command line.
+    public static final String ENV_JEDIT_SETTINGS = "test-jedit.settings";
+
+    // common environment variables
+    // TODO: confirm these are not used and can be removed
+    public static final String ENV_TESTS_DIR = "test-tests.dir";
+    public static final String ENV_IN_JEDIT = "test-in-jedit";
+
+    // frameFixture containing the main jEdit View
+    private static FrameFixture jEditFrame = null;
+
+    // the main robot for running the tests
+    private static Robot robot;
+
+    // press Ctrl+Shift+A to abort running tests
+    private static EmergencyAbortListener listener;
+
+    // TODO: why is this a Boolean rathe than a boolean?
+    private static Boolean injEdit = null;
+
+
+    /**
+     * Set up and start jEdit if necessary, or reuse an existing jEdit.    
+     */
+    public static void setUpjEdit() {
+        assert( robot == null );
+        Log.log( "Setting up jedit" );
+        if ( jEditFrame == null ) {
+            Log.log( "Starting a new jEdit" );
+            robot = BasicRobot.robotWithNewAwtHierarchy();
+            Log.log( "created robot" );
+            listener = EmergencyAbortListener.registerInToolkit();
+
+            String settings = System.getProperty( ENV_JEDIT_SETTINGS );
+            Log.log( "checking settings" );
+            assertTrue( "Forgot to set env. variable '" + ENV_JEDIT_SETTINGS + "'", settings != null );
+
+            Log.log( "settings = " + settings );
+            final String[] args = {"-settings=" + settings, "-norestore", "-nobackground"};
+            Thread runJeditThread = new Thread() {
+                        public void run() {
+                            jEdit.main( args );
+                        }
+                    };
+            runJeditThread.start();
+            jEditFrame = WindowFinder.findFrame( View.class ).withTimeout( 40000 ).using( robot );
+        }
+    }
+
+    public static Robot robot() {
+        return robot;
+    }
+
+    public static FrameFixture jEditFrame() {
+        return jEditFrame;
+    }
+
+    public static void tearDownjEdit() {
+        listener.unregister();
+        if ( jEditFrame != null ) {
+            robot.releaseMouseButtons();
+            ScreenLock.instance().release( robot );
+            Log.log( "tearDown done in jEdit" );
+        }
+        else if ( robot != null ) {
+            robot.cleanUp();
+        }
+        robot = null;
+        jEditFrame = null;
+
+    }
+
+    /**
+     * Set up and start jEdit if necessary.    
+     */
+    public static void beforeTest() {
+        Log.log( "beforeTest" );
+        setUpjEdit();
+    }
+
+    public static void afterTest() {
+        tearDownjEdit();
+    }
+
+    /**
+     * Set up and start jEdit if necessary.    
+     */
+    public static void beforeClass() {
+        Log.log( "before class" );
+        setUpjEdit();
+    }
+
+    public static void afterClass() {
+        Log.log( "after class" );
+        tearDownjEdit();
+    }
+
+    /**
+     * Convenience method to find a dialog with the given title.
+     * @param title the title of a dialog to find.
+     */
+    public static DialogFixture findDialogByTitle( String title ) {
+        return new DialogFixture( robot(), ( Dialog ) robot().finder().find( new FirstDialogMatcher( title ) ) );
+    }
+
+    /**
+     * Convenience method to find a window with the given title.  This is useful
+     * to find plugins in a floating dockable window.
+     * @param title the title of the window to find.
+     */
+    public static FrameFixture findFrameByTitle( String title ) {
+        return new FrameFixture( robot(), ( Frame ) robot().finder().find( new FirstFrameMatcher( title ) ) );
+    }
+
+    /**
+     * Convenience method to close a Buffer.
+     * @param view the View containing the Buffer
+     * @param buffer the Buffer to close
+     */
+    public static void close( final View view, final Buffer buffer ) {
+        SwingUtilities.invokeLater(
+            new Runnable() {
+                public void run() {
+                    jEdit.closeBuffer( view, buffer );
+                }
+            }
+        );
+        try {
+            Thread.sleep( 2000 );
+        }
+        catch ( InterruptedException ie ) {}
+
+        // TODO: change hard coded strings to jEdit properties for localization?
+        if ( buffer.isDirty() ) {
+            TestUtils.findDialogByTitle( "File Not Saved" ).button( AbstractButtonTextMatcher.withText( JButton.class, "No" ) ).click();
+        }
+    }
+
+    /**
+     * Convenience method to open a file in jEdit.
+     * @param filename the name of the file to open
+     * @return the Buffer containing the file
+     */
+    public static Buffer openFile( final String filename ) {
+        final View view = jEditFrame().targetCastedTo( View.class );
+        try {
+            SwingUtilities.invokeAndWait(
+                new Runnable() {
+                    public void run() {
+                        jEdit.openFile( view, filename );
+                    }
+                }
+            );
+        }
+        catch ( Exception e ) {
+            System.err.println( e );
+        }
+
+        try {
+            Thread.sleep( 1000 );
+        }
+        catch ( InterruptedException ie ) {}
+        return view.getBuffer();
+    }
+
+    /**
+     * Convenience method to create a new, empty Buffer in jEdit.
+     * @return reference to the new, empty Buffer.
+     */
+    public static Buffer newFile() {
+        final View view = jEditFrame().targetCastedTo( View.class );
+        try {
+            SwingUtilities.invokeAndWait(
+                new Runnable() {
+                    public void run() {
+                        jEdit.newFile( view );
+                    }
+                }
+            );
+        }
+        catch ( Exception e ) {
+            System.err.println( e );
+        }
+
+        try {
+            Thread.sleep( 1000 );
+        }
+        catch ( InterruptedException ie ) {}
+        return view.getBuffer();
+    }
+
+    /**
+     * Convenience method to get a reference to the main jEdit View.
+     * @return the View
+     */
+    public static View view() {
+        return jEditFrame().targetCastedTo( View.class );
+    }
+    
+
+    /**
+     * Convenience method to replace the text in a text component with new text.
+     * @param f the text component in question
+     * @param text the new text to display in the text component
+     */
+    public static void replaceText( JTextComponentFixture f, String text ) {
+        f.select( f.text() ).deleteText().enterText( text );
+    }
+
+    /**
+     * Convenience method to find the tree path for a JTree for the given string array.
+     * This is handy for example for finding a tree path in the Global Options dialog.
+     * @param treeFixture the JTree to search
+     * @param path an array of strings describing the path, for example {"jEdit", "Text Area"}
+     * would find the path in the Global Options dialog to the Text Area node in the tree.
+     * @return the tree path
+     */
+    public static TreePath getPathForStrings( JTreeFixture treeFixture, String[] path ) {
+        JTree tree = treeFixture.targetCastedTo( JTree.class );
+        BasicJTreeCellReader rdr = new BasicJTreeCellReader();
+        TreeModel mdl = tree.getModel();
+
+
+        Object parent = mdl.getRoot();
+        TreePath returnPath = new TreePath( parent );
+        for ( int i = 0;i < path.length;i++ ) {
+            boolean found = false;
+            for ( int iChild = 0;!found && iChild < mdl.getChildCount( parent );iChild++ ) {
+                Object val = mdl.getChild( parent, iChild );
+                String lbl = rdr.valueAt( tree, val );
+                if ( path[ i ].equals( lbl ) ) {
+                    returnPath = returnPath.pathByAddingChild( val );
+                    parent = val;
+                    found = true;
+                }
+            }
+            if ( !found ) {
+                throw new IllegalArgumentException( "Couldn't find path" + Arrays.asList( path ) + ", stopped at level " + i );
+            }
+        }
+        Log.log("tree path = " + returnPath);
+        return returnPath;
+    }
+
+    /**
+     * Convenience method to select a path in a JTree.
+     * @param treeFixture the JTree
+     * @param path the path to select
+     */
+    public static void selectPath( JTreeFixture treeFixture, String[] path ) {
+        JTree tree = treeFixture.targetCastedTo( JTree.class );
+        TreePath finalPath = getPathForStrings( treeFixture, path );
+
+        if ( !tree.isVisible( finalPath ) ) {
+            TreePath parentPath = new TreePath( finalPath.getPathComponent( 0 ) );
+            for ( int i = 1;i < finalPath.getPathCount();i++ ) {
+                TreePath curPath = parentPath.pathByAddingChild( finalPath.getPathComponent( i ) );
+                if ( !tree.isVisible( curPath ) ) {
+                    treeFixture.toggleRow( tree.getRowForPath( curPath.getParentPath() ) );
+                }
+                parentPath = curPath;
+            }
+        }
+
+        treeFixture.selectRow( tree.getRowForPath( finalPath ) );
+
+    }
+}
