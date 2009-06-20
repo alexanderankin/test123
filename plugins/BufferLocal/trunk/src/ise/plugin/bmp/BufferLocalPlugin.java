@@ -16,6 +16,7 @@ import org.gjt.sp.jedit.buffer.FoldHandler;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.EditorExitRequested;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 
 //import org.gjt.sp.util.Log;
@@ -57,12 +58,13 @@ import org.gjt.sp.jedit.msg.ViewUpdate;
 public class BufferLocalPlugin extends EBPlugin {
 
     // runs once every 10 minutes at a low priority to clean up the map
-    Thread janitor =
-        new Thread() {
+    Thread janitor = createJanitorThread();
+    
+    private Thread createJanitorThread() {
+        return new Thread() {
             public void run() {
                 setPriority( Thread.MIN_PRIORITY );
                 while ( canClean ) {
-                    loadProperties();
                     if ( map.size() > 0 ) {
                         synchronized ( map ) {
                             try {
@@ -94,29 +96,32 @@ public class BufferLocalPlugin extends EBPlugin {
                     }
                 }
             }
-        }
-        ;
+        };
+    }
 
     // runs once every staleTime minutes at a low priority to auto-close stale buffers
-    Thread bufferCleaner =
-        new Thread() {
+    Thread bufferCleaner = createBufferCleanerThread();
+    
+    private Thread createBufferCleanerThread() {
+        return new Thread() {
             public void run() {
                 setPriority( Thread.MIN_PRIORITY );
-                while ( canClean ) {
-                    loadProperties();
-                    if ( removeStale ) {
-                        closeFiles();
-                    }
+                while ( removeStale ) {
                     try {
+                        System.out.println("+++++ closing files at " + new Date());
+                        closeFiles();
+                        System.out.println("+++++ done cloding files at " + new Date());
+                        System.out.println("+++++ sleeping for " + staleTime);
                         sleep( ( long ) staleTime );
+                        System.out.println("+++++ done sleeping");
                     }
                     catch ( InterruptedException e ) {
                         // ignored
                     }
                 }
             }
-        }
-        ;
+        };
+    }
 
     private int ONE_MINUTE = 1000 * 60;
     private int TEN_MINUTES = ONE_MINUTE * 10;
@@ -169,7 +174,19 @@ public class BufferLocalPlugin extends EBPlugin {
         }
         initOpenBuffers();
         canClean = true;
+        restartThreads();
+    }
+    
+    private void restartThreads() {
+        if ( janitor.isAlive() ) {
+            janitor.interrupt();
+        }
+        janitor = createJanitorThread();
         janitor.start();
+        if ( bufferCleaner.isAlive() ) {
+            bufferCleaner.interrupt();
+        }
+        bufferCleaner = createBufferCleanerThread();
         bufferCleaner.start();
     }
 
@@ -331,6 +348,9 @@ public class BufferLocalPlugin extends EBPlugin {
                 initView( vu.getView() );
             }
         }
+        else if ( message instanceof PropertiesChanged ) {
+            loadProperties();   
+        }
     }
 
     /** Closes stale files right now.  */
@@ -439,8 +459,16 @@ public class BufferLocalPlugin extends EBPlugin {
      * stale files should be closed after the staleTime has been reached.
      */
     private void loadProperties() {
-        staleTime = jEdit.getIntegerProperty( NAME + ".staleTime", staleTime ) * ONE_MINUTE;
-        removeStale = jEdit.getBooleanProperty( NAME + ".removeStale", removeStale );
+        int newStaleTime = jEdit.getIntegerProperty( NAME + ".staleTime", staleTime ) * ONE_MINUTE;
+        boolean newRemoveStale = jEdit.getBooleanProperty( NAME + ".removeStale", removeStale );
+        if (newStaleTime != staleTime || newRemoveStale != removeStale) {
+            System.out.println("+++++ newStaleTime = " + newStaleTime + ", old staleTime = " + staleTime );
+            System.out.println("+++++ newRemoveStale = " + newRemoveStale + ", removeStale = " + removeStale );
+            System.out.println("+++++ properties changed, restarting");
+            staleTime = newStaleTime;
+            removeStale = newRemoveStale;
+            restartThreads();
+        }
     }
 
     /**
