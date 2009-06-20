@@ -7,8 +7,6 @@ import javax.swing.*;
 import javax.swing.event.*;
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.EditPlugin;
 
 
 /**
@@ -24,28 +22,22 @@ public class OptionPanel extends AbstractOptionPane {
     }
 
     public void _init() {
+        //setName("BufferLocalOptions");
         addComponent( new JLabel( "<html><h3>BufferLocal</h3>" ) );
         removeStale = new JCheckBox( "Close files not used" );
-        removeStale.setSelected( jEdit.getBooleanProperty( getName() + ".removeStale", false ) );
+        removeStale.setSelected( jEdit.getBooleanProperty( "bufferlocal.removeStale", false ) );
         addComponent( removeStale );
-        int stale_value = jEdit.getIntegerProperty( getName() + ".staleTime", 30 );
+        int stale_value = jEdit.getIntegerProperty( "bufferlocal.staleTime", 30 );
         if ( stale_value < 1 ) {
             stale_value = 30;
-            jEdit.setIntegerProperty(getName() + ".staleTime", 30);
+            jEdit.setIntegerProperty("bufferlocal.staleTime", 30);
         }
         spinner = new JSpinner( new SpinnerNumberModel( stale_value, 1, Integer.MAX_VALUE, 1 ) );
         addComponent( "for this many minutes", spinner );
     }
 
     public void _save() {
-        jEdit.setBooleanProperty( getName() + ".removeStale", removeStale.isSelected() );
-        jEdit.setIntegerProperty( getName() + ".staleTime", ( ( Number ) spinner.getValue() ).intValue() );
-        EditPlugin plugin = jEdit.getPlugin( "ise.plugin.bmp.BufferLocal" );
-        plugin.stop();
-        plugin.start();
-    }
-
-    public String getName() {
-        return "bufferlocal";
+        jEdit.setBooleanProperty( "bufferlocal.removeStale", removeStale.isSelected() );
+        jEdit.setIntegerProperty( "bufferlocal.staleTime", ( ( Number ) spinner.getValue() ).intValue() );
     }
 }
