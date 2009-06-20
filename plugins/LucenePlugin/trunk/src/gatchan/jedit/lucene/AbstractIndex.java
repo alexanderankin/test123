@@ -149,6 +149,7 @@ public class AbstractIndex
 		{
 			try
 			{
+				writer.commit();
 				writer.optimize();
 			}
 			catch (IOException e)
