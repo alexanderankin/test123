@@ -151,8 +151,8 @@ public class CssSideKickCompletion extends SideKickCompletion {
 	private boolean selectedProperty;
 	
 	
-	private static ArrayList cssUnits;
-	private static HashMap cssProperties;
+	private static ArrayList<String> cssUnits;
+	private static HashMap<String,ArrayList<String>> cssProperties;
 	
 	private static boolean initialized;
 	/* private static String COMPLETION_CONFIG_FILE = jEdit.getSettingsDirectory() 
@@ -210,7 +210,7 @@ public class CssSideKickCompletion extends SideKickCompletion {
 
 	//{{{ initCssProperties() method
 	private static void initCssProperties(Document doc) {
-		cssProperties = new HashMap();
+		cssProperties = new HashMap<String,ArrayList<String>>();
 
 		NodeList propertiesElements = doc.getElementsByTagName("properties");
 		if (propertiesElements.getLength() != 1) {
@@ -228,7 +228,7 @@ public class CssSideKickCompletion extends SideKickCompletion {
 
 			NodeList values = propEle.getElementsByTagName("*");
 			int valCount = values.getLength();
-			ArrayList valList = new ArrayList();
+			ArrayList<String> valList = new ArrayList<String>();
 
 			// loop values
 			for (int j = 0; j < valCount; j++) {
@@ -268,7 +268,7 @@ public class CssSideKickCompletion extends SideKickCompletion {
 	//{{{ initCssUnits() method
 	private static void initCssUnits(Document doc) {
 
-		cssUnits = new ArrayList();
+		cssUnits = new ArrayList<String>();
 		NodeList unitsElements = doc.getElementsByTagName("units");
 		NodeList units = ((Element)unitsElements.item(0)).getElementsByTagName("unit");
 		int unitsCount = units.getLength();

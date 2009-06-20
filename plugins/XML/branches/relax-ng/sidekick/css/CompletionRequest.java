@@ -38,7 +38,7 @@ public class CompletionRequest {
 		if (!CssSideKickCompletion.initialized()) {
 			CssSideKickCompletion.initialize();
 		}
-		completionList = new ArrayList();
+		completionList = new ArrayList<String>();
 		buffer = editPane.getBuffer();
 		textBeforeCaret = buffer.getText(0, caret);
 		word = getWord(textBeforeCaret);
@@ -100,7 +100,7 @@ public class CompletionRequest {
 
 	//{{{ Private members
 	
-	private List completionList;
+	private List<String> completionList;
 	private JEditBuffer buffer;
 	private String textBeforeCaret;
 	private String word;
@@ -121,7 +121,7 @@ public class CompletionRequest {
 
 	//{{{ findMatchedProperties() method
 	private ArrayList findMatchedProperties(String startsWith) {
-		ArrayList found = new ArrayList();
+		ArrayList<String> found = new ArrayList<String>();
 		Iterator it = CssSideKickCompletion.getCssProperties().keySet().iterator();
 		while (it.hasNext()) {
 			String n = (String) it.next();

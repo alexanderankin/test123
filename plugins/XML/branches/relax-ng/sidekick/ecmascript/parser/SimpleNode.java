@@ -48,7 +48,7 @@ public class SimpleNode implements Node, SideKickElement, EcmaScriptConstants,
     protected Token beginToken;
     protected Token endToken;
     protected boolean inserted = false;
-    protected LinkedList javadocComments;
+    protected LinkedList<Comment> javadocComments;
 
 
     public SimpleNode( int i ) {
@@ -439,7 +439,7 @@ public class SimpleNode implements Node, SideKickElement, EcmaScriptConstants,
     }
 
     private void findComments() {
-        javadocComments = new LinkedList();
+        javadocComments = new LinkedList<Comment>();
 
         Token token = getBeginToken();
         Comment aComment = null;
@@ -473,8 +473,7 @@ public class SimpleNode implements Node, SideKickElement, EcmaScriptConstants,
             findComments();
         }
 
-        return javadocComments.size() == 0 ? null : ( Comment ) javadocComments
-               .getFirst();
+        return javadocComments.size() == 0 ? null : javadocComments.getFirst();
     }
 
     public List getComments() {

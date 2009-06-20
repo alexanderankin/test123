@@ -99,7 +99,7 @@ public class TagParser
 	public static Tag findLastOpenTag(String text, int pos,
 		XmlParsedData data)
 	{
-		Stack tagStack = new Stack();
+		Stack<String> tagStack = new Stack<String>();
 
 		// some voodoo to skip inline scripts and comments and such...
 		// basically we do not look for stuff that looks like a tag
