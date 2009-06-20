@@ -59,11 +59,11 @@ public class MarkerListQueryProcessor implements ResultProcessor
 
 	private void addLinesMatching(Query query, String file, int max)
 	{
-		ArrayList<Integer> positions = new ArrayList<Integer>();
+		List<Integer> positions = new ArrayList<Integer>();
 		SearchFormatter sf = new SearchFormatter(positions, max);
 		QueryScorer scorer = new QueryScorer(query);
 		StringBuilder sb = new StringBuilder();
-		ArrayList<Integer> lineStart = new ArrayList<Integer>();
+		List<Integer> lineStart = new ArrayList<Integer>();
 		BufferedReader br = null;
 		try
 		{
@@ -82,7 +82,6 @@ public class MarkerListQueryProcessor implements ResultProcessor
 			String text = sb.toString();
 			TokenStream tokenStream = index.getAnalyzer().tokenStream("field", new StringReader(text));
 			h.getBestFragments(tokenStream, text, 0);
-			br.close();
 		}
 		catch (Exception e)
 		{
