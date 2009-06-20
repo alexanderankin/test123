@@ -185,9 +185,7 @@ public class IndexImpl extends AbstractIndex implements Index
 	protected void addDocument(VFSFile file, Object session)
 	{
 		Log.log(Log.DEBUG, this, "Index:" + name + " add " + file);
-		Document doc = new Document();
-		doc.add(new Field("path", file.getPath(), Field.Store.NO, Field.Index.ANALYZED));
-		doc.add(new Field("_path", file.getPath(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		Document doc = getEmptyDocument(file);
 		Reader reader = null;
 		try
 		{
@@ -206,6 +204,14 @@ public class IndexImpl extends AbstractIndex implements Index
 		{
 			IOUtilities.closeQuietly(reader);
 		}
+	}
+
+	protected Document getEmptyDocument(VFSFile file)
+	{
+		Document doc = new Document();
+		doc.add(new Field("path", file.getPath(), Field.Store.NO, Field.Index.ANALYZED));
+		doc.add(new Field("_path", file.getPath(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		return doc;
 	}
 
 	private static class MyVFSFilter implements VFSFileFilter

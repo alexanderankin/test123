@@ -1,7 +1,7 @@
 plugin.gatchan.jedit.lucene.LucenePlugin.activate=startup
 
 plugin.gatchan.jedit.lucene.LucenePlugin.name=LucenePlugin
-plugin.gatchan.jedit.lucene.LucenePlugin.author=Matthieu Casanova
+plugin.gatchan.jedit.lucene.LucenePlugin.author=Matthieu Casanova, Shlomy Reinstein
 plugin.gatchan.jedit.lucene.LucenePlugin.version=1.0
 plugin.gatchan.jedit.lucene.LucenePlugin.depend.0=jdk 1.5
 plugin.gatchan.jedit.lucene.LucenePlugin.depend.1=jedit 04.03.17.00
