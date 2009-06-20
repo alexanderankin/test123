@@ -36,6 +36,7 @@ import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSFileFilter;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
 
@@ -211,6 +212,12 @@ public class IndexImpl extends AbstractIndex implements Index
 		Document doc = new Document();
 		doc.add(new Field("path", file.getPath(), Field.Store.NO, Field.Index.ANALYZED));
 		doc.add(new Field("_path", file.getPath(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		String extension = MiscUtilities.getFileExtension(file.getPath());
+		if (extension.length() != 0)
+		{
+			doc.add(new Field("filetype", extension.substring(1), Field.Store.NO, Field.Index.NOT_ANALYZED));
+		}
+
 		return doc;
 	}
 
