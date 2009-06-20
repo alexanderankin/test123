@@ -185,7 +185,7 @@ class EditTagDialog extends EnhancedDialog
 	private ElementDecl element;
 	private Map entityHash;
 	private JCheckBox empty;
-	private List attributeModel;
+	private List<Attribute> attributeModel;
 	private JTable attributes;
 	private JTextArea preview;
 	private JButton ok;
@@ -195,16 +195,16 @@ class EditTagDialog extends EnhancedDialog
 	//}}}
 
 	//{{{ createAttributeModel() method
-	private ArrayList createAttributeModel(List declaredAttributes,
+	private ArrayList<Attribute> createAttributeModel(List declaredAttributes,
 		Map attributeValues, List ids)
 	{
-		ArrayList stringIDs = new ArrayList(ids.size());
+		ArrayList<String> stringIDs = new ArrayList<String>(ids.size());
 		for(int i = 0; i < ids.size(); i++)
 		{
 			stringIDs.add(((IDDecl)ids.get(i)).id);
 		}
 
-		ArrayList attributeModel = new ArrayList();
+		ArrayList<Attribute> attributeModel = new ArrayList<Attribute>();
 		for(int i = 0; i < declaredAttributes.size(); i++)
 		{
 			ElementDecl.AttributeDecl attr =
@@ -370,13 +370,10 @@ class EditTagDialog extends EnhancedDialog
 	} //}}}
 
 	//{{{ AttributeCompare class
-	static class AttributeCompare implements MiscUtilities.Compare
+	static class AttributeCompare implements java.util.Comparator<Attribute>
 	{
-		public int compare(Object obj1, Object obj2)
+		public int compare(Attribute attr1, Attribute attr2)
 		{
-			Attribute attr1 = (Attribute)obj1;
-			Attribute attr2 = (Attribute)obj2;
-
 			// put required attributes at the top
 			if(attr1.required && !attr2.required)
 				return -1;

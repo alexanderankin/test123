@@ -32,25 +32,28 @@ public class XsdElementDecl extends ElementDecl
 	 * Returns a List of ElementDecl objects which are equivalent to this one, if it is indeed
 	 * an abstract class.
 	 */
-	public List findReplacements(String prefix) 
+	public List<ElementDecl> findReplacements(String prefix) 
 	{	
 
 		String subGroupName = name;
 		if (!isAbstract()) return null;
 		
-		LinkedList retval = new LinkedList();
+		LinkedList<ElementDecl> retval = new LinkedList<ElementDecl>();
 		Iterator itr = completionInfo.elements.iterator();
-		while (itr.hasNext()) try 
+		while (itr.hasNext())
 		{
-			XsdElementDecl element = (XsdElementDecl) itr.next();
-			XSElementDeclaration subGroup = element.xsed.getSubstitutionGroupAffiliation();
-			if (subGroup != null && subGroup.getName().equals(subGroupName)) 
+			try 
 			{
-				retval.add(element.withPrefix(prefix));
+				XsdElementDecl element = (XsdElementDecl) itr.next();
+				XSElementDeclaration subGroup = element.xsed.getSubstitutionGroupAffiliation();
+				if (subGroup != null && subGroup.getName().equals(subGroupName)) 
+				{
+					retval.add(element.withPrefix(prefix));
+				}
 			}
+			catch (NullPointerException npe) {}
+			catch (ClassCastException cce) {}
 		}
-		catch (NullPointerException npe) {}
-		catch (ClassCastException cce) {}
 		return retval;
 	}
 

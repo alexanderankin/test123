@@ -18,6 +18,7 @@ package sidekick.html.parser.html;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.Arrays;
 
 /**
  * HtmlFormatter is a Visitor which traverses an HtmlDocument, dumping the
@@ -54,29 +55,16 @@ public class HtmlFormatter extends HtmlVisitor {
     protected int indentSize = 2;
     protected String lineSeparator = System.getProperty("line.separator");
     
-    protected static Set tagsIndentBlock = new HashSet();
-    protected static Set tagsNewlineBefore = new HashSet();
-    protected static Set tagsPreformatted = new HashSet();
-    protected static Set tagsTryMatch = new HashSet();
-    protected static final String[] tagsIndentStrings
-            = {"TABLE", "TR", "TD", "TH", "FORM", "HTML", "HEAD", "BODY", "SELECT"};
-    protected static final String[] tagsNewlineBeforeStrings
-            = {"P", "H1", "H2", "H3", "H4", "H5", "H6", "BR", "taglib"};//, "OL", "UL", "LI", "BR"};
-    protected static final String[] tagsPreformattedStrings
-            = {"PRE", "SCRIPT", "STYLE"};
-    protected static final String[] tagsTryMatchStrings
-            = {"A", "TD", "TH", "TR", "I", "B", "EM", "FONT", "TT", "UL"};
+    protected static Set<String> tagsIndentBlock = new HashSet<String>(
+    	Arrays.asList("TABLE", "TR", "TD", "TH", "FORM", "HTML",
+    				  "HEAD", "BODY", "SELECT"));
+    protected static Set<String> tagsNewlineBefore = new HashSet<String>(
+    	Arrays.asList("P", "H1", "H2", "H3", "H4", "H5", "H6", "BR", "taglib"));//, "OL", "UL", "LI", "BR"));
+    protected static Set<String> tagsPreformatted = new HashSet<String>(
+    	Arrays.asList("PRE", "SCRIPT", "STYLE"));
+    protected static Set<String> tagsTryMatch = new HashSet<String>(
+    	Arrays.asList("A", "TD", "TH", "TR", "I", "B","EM", "FONT", "TT", "UL"));
 
-    static {
-        for (int i = 0; i < tagsIndentStrings.length; i++)
-            tagsIndentBlock.add(tagsIndentStrings[i]);
-        for (int i = 0; i < tagsNewlineBeforeStrings.length; i++)
-            tagsNewlineBefore.add(tagsNewlineBeforeStrings[i]);
-        for (int i = 0; i < tagsPreformattedStrings.length; i++)
-            tagsPreformatted.add(tagsPreformattedStrings[i]);
-        for (int i = 0; i < tagsTryMatchStrings.length; i++)
-            tagsTryMatch.add(tagsTryMatchStrings[i]);
-    };
     protected TagBlockRenderer blockRenderer = new TagBlockRenderer();
     protected HtmlDocument.HtmlElement previousElement;
     protected boolean inPreBlock;

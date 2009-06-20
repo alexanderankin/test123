@@ -72,17 +72,17 @@ public class DTDGenerator extends DefaultHandler {
                                 // maximum number of attribute values to be saved
                                 // while checking for uniqueness
 
-    TreeMap elementList;   // alphabetical list of element types appearing in the document;
+    TreeMap<String,ElementDetails> elementList;   // alphabetical list of element types appearing in the document;
                            // each has the element name as a key and an ElementDetails object
                            // as the value
 
-    Stack elementStack;    // stack of elements currently open; each entry is a StackEntry
+    Stack<StackEntry> elementStack;    // stack of elements currently open; each entry is a StackEntry
                            // object
 
     public DTDGenerator () 
     {
-        elementList = new TreeMap();
-        elementStack = new Stack();
+        elementList = new TreeMap<String,ElementDetails>();
+        elementStack = new Stack<StackEntry>();
     }
 
     /**
@@ -182,11 +182,11 @@ public class DTDGenerator extends DefaultHandler {
         // process the element types encountered, in turn
 
         StringBuffer s = new StringBuffer();
-        Iterator e=elementList.keySet().iterator();
+        Iterator<String> e=elementList.keySet().iterator();
         while ( e.hasNext() )
         {
-            String elementname = (String) e.next();
-            ElementDetails ed = (ElementDetails) elementList.get(elementname); 
+            String elementname = e.next();
+            ElementDetails ed = elementList.get(elementname); 
             TreeMap children = ed.children;
             Set childKeys = children.keySet();
 
@@ -479,8 +479,8 @@ public class DTDGenerator extends DefaultHandler {
             parent.latestChild = name;
 
             // if we've seen this child of this parent before, get the details
-            TreeMap children = parentDetails.children;
-            ChildDetails c = (ChildDetails)children.get(name);
+            TreeMap<String,ChildDetails> children = parentDetails.children;
+            ChildDetails c = children.get(name);
             if (c==null) {
                 // this is the first time we've seen this child belonging to this parent
                 c = new ChildDetails();
@@ -572,18 +572,18 @@ public class DTDGenerator extends DefaultHandler {
         int occurrences;
         boolean hasCharacterContent;
         boolean sequenced;
-        TreeMap children;
-        Vector childseq;
-        TreeMap attributes;
+        TreeMap<String,ChildDetails> children;
+        Vector<ChildDetails> childseq;
+        TreeMap<String,AttributeDetails> attributes;
 
         public ElementDetails ( String name ) {
             this.name = name;
             this.occurrences = 0;
             this.hasCharacterContent = false;
             this.sequenced = true;
-            this.children = new TreeMap();
-            this.childseq = new Vector();
-            this.attributes = new TreeMap();
+            this.children = new TreeMap<String,ChildDetails>();
+            this.childseq = new Vector<ChildDetails>();
+            this.attributes = new TreeMap<String,AttributeDetails>();
         }
     }
 
@@ -609,7 +609,7 @@ public class DTDGenerator extends DefaultHandler {
         String name;            // name of the attribute
         int occurrences;        // number of occurrences of the attribute
         boolean unique;         // true if no duplicate values encountered
-        TreeSet values;         // set of all distinct values encountered for this attribute 
+        TreeSet<String> values;         // set of all distinct values encountered for this attribute 
         boolean allNames;       // true if all the attribute values are valid names
         boolean allNMTOKENs;    // true if all the attribute values are valid NMTOKENs
 
@@ -617,7 +617,7 @@ public class DTDGenerator extends DefaultHandler {
             this.name = name;
             this.occurrences = 0;
             this.unique = true;
-            this.values = new TreeSet();
+            this.values = new TreeSet<String>();
             this.allNames = true;
             this.allNMTOKENs = true;
         }

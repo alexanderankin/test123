@@ -58,13 +58,13 @@ public class Comment extends Object {
     /**
      * list of tags (instances of Comment.Tag)
      */
-    private ArrayList tags;
+    private ArrayList<Tag> tags;
 
     /**
      * list of lines that are not empty and not part of the tags (the comment
      * body)
      */
-    private ArrayList lines;
+    private ArrayList<String> lines;
 
     /**
      * comment body string lazily calculated from lines
@@ -93,8 +93,8 @@ public class Comment extends Object {
     public Comment(String comment) throws Exception {
         super();
         this.comment = comment;
-        tags = new ArrayList();
-        lines = new ArrayList();
+        tags = new ArrayList<Tag>();
+        lines = new ArrayList<String>();
         isJavadoc = false;
         parse();
 
@@ -533,7 +533,7 @@ public class Comment extends Object {
      *
      * @return list of javadoc tags
      */
-    public List getTags() {
+    public List<Tag> getTags() {
         return Collections.unmodifiableList(tags);
     }
 
@@ -567,8 +567,8 @@ public class Comment extends Object {
      *            javadoc tag key
      * @return List of Strings that are the javadoc tag values
      */
-    public List getTags(String key) {
-        List result = new LinkedList();
+    public List<String> getTags(String key) {
+        List<String> result = new LinkedList<String>();
         Iterator iter = tags.iterator();
 
         while (iter.hasNext()) {
@@ -590,13 +590,13 @@ public class Comment extends Object {
      *            javadoc tag key
      * @return List of Tag instances
      */
-    public List getTags(Pattern pattern) {
-        List result = new LinkedList();
-        Iterator iter = tags.iterator();
+    public List<Tag> getTags(Pattern pattern) {
+        List<Tag> result = new LinkedList<Tag>();
+        Iterator<Tag> iter = tags.iterator();
         Matcher matcher = null;
 
         while (iter.hasNext()) {
-            Tag tag = (Tag) iter.next();
+            Tag tag = iter.next();
 
             if (matcher == null) {
                 matcher = pattern.matcher(tag.key);
@@ -622,10 +622,10 @@ public class Comment extends Object {
      *         specified key
      */
     public boolean containsTag(String key) {
-        Iterator iter = tags.iterator();
+        Iterator<Tag> iter = tags.iterator();
 
         while (iter.hasNext()) {
-            Tag tag = (Tag) iter.next();
+            Tag tag = iter.next();
 
             if (tag.key.equals(key)) {
                 return true;

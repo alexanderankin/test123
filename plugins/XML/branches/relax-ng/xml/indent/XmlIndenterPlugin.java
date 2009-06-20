@@ -176,7 +176,7 @@ public class XmlIndenterPlugin {
     }
 
     public static List getEnumeratedProperty( String key ) {
-        List values = new ArrayList();
+        List<String> values = new ArrayList<String>();
         int i = 0;
         String value;
         while ( ( value = jEdit.getProperty( key + "." + i ) ) != null ) {
