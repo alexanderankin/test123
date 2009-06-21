@@ -1,5 +1,21 @@
 
-/* Copyright (C) 2008 Matthew Gilbert */
+/* 
+Copyright (C) 2008, 2009 Matthew Gilbert 
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
 
 package textobjects;
 
@@ -22,6 +38,7 @@ import org.gjt.sp.jedit.gui.InputHandler;
 import org.gjt.sp.jedit.TextUtilities;
 import org.gjt.sp.jedit.syntax.*;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
+import org.gjt.sp.util.StandardUtilities;
 
 public class TextObjectsPlugin extends EditPlugin
 {
@@ -1097,6 +1114,52 @@ public class TextObjectsPlugin extends EditPlugin
             ret_sel = new Selection.Range(start, end - end_len + 1);
         }
         return ret_sel;
+    }
+    
+    public static Selection indent(TextArea ta, int pos, boolean whole)
+    {
+        int line = ta.getLineOfOffset(pos);
+        String text = ta.getLineText(line);
+        int leading = StandardUtilities.getLeadingWhiteSpace(text);
+        
+        // Search backward first (start @ line so that back_line will always be
+        // > 0).
+        int back_line = line;
+        while (true) {
+            if (back_line == 0)
+                break;
+            if (StandardUtilities.getLeadingWhiteSpace(ta.getLineText(back_line)) != leading) {
+                ++back_line;
+                break;
+            }
+            --back_line;
+        }
+        
+        // Search forward (start @ line so that forward_line will always be
+        // < ta.numLines)
+        int forward_line = line;
+        final int last_line = ta.getLineCount();
+        while (true) {
+            if (forward_line >= (last_line - 1))
+                break;
+            if (StandardUtilities.getLeadingWhiteSpace(ta.getLineText(forward_line)) != leading) {
+                --forward_line;
+                break;
+            }
+            ++forward_line;
+        }
+        
+        back_line = java.lang.Math.max(0, back_line);
+        forward_line = java.lang.Math.max(0, forward_line);
+        
+        int start = ta.getLineStartOffset(back_line);
+        // Subtract 1 from getLineEndOffset to not include the newline. This
+        // puts the cursor on a newline instead of causing wrap.
+        int end = java.lang.Math.min(ta.getLineEndOffset(forward_line) - 1, ta.getBufferLength());
+        if (!whole) {
+            start += leading;
+        }
+        return new Selection.Range(start, end);
     }
    
     /* start keyboard handler */

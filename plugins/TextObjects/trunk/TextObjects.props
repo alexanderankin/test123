@@ -14,7 +14,8 @@ plugin.textobjects.TextObjectsPlugin.menu=textobjects.select-a-word - textobject
     textobjects.select-a-quote - textobjects.select-in-quote - textobjects.select-a-tick - textobjects.select-in-tick - \
     textobjects.select-a-back-tick - textobjects.select-in-back-tick - textobjects.select-a-paragraph - \
     textobjects.select-in-paragraph - textobjects.select-a-comment - textobjects.select-in-comment - \
-    textobjects.select-a-sentence - textobjects.select-in-sentence -
+    textobjects.select-a-sentence - textobjects.select-in-sentence - \
+    textobjects.select-a-indent - textobjects.select-in-indent
 
 textobjects.start-input-mode.label=Start TextObjects input mode
 
@@ -45,3 +46,6 @@ textobjects.select-in-comment.label=Select in comment
 
 textobjects.select-a-sentence.label=Select a sentence
 textobjects.select-in-sentence.label=Select in sentence
+
+textobjects.select-a-indent.label=Select an indent
+textobjects.select-in-indent.label=Select in indent
