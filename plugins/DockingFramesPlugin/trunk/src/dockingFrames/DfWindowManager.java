@@ -237,6 +237,15 @@ public class DfWindowManager extends DockableWindowManager
 		jEdit.setProperty(name + ".dock-position", position);
 	}
 
+	@Override
+	public void toggleDockAreas()
+	{
+		((DfDockingArea)getBottomDockingArea()).toggle();
+		((DfDockingArea)getTopDockingArea()).toggle();
+		((DfDockingArea)getRightDockingArea()).toggle();
+		((DfDockingArea)getLeftDockingArea()).toggle();
+	}
+
 	private class DfDockingArea implements DockingArea
 	{
 		private String position;
@@ -248,7 +257,7 @@ public class DfWindowManager extends DockableWindowManager
 		public String getPosition() { return position; }
 		private JEditDockable getCurrentDockable()
 		{
-			Vector<JEditDockable> dockables = getAreaDockables();
+			Vector<JEditDockable> dockables = getAreaDockables(false);
 			for (JEditDockable d: dockables)
 			{
 				if (d.isVisible())
@@ -268,7 +277,7 @@ public class DfWindowManager extends DockableWindowManager
 			if (name == null) // hide
 			{
 				recent = getCurrentDockable();
-				Vector<JEditDockable> dockables = getAreaDockables();
+				Vector<JEditDockable> dockables = getAreaDockables(false);
 				for (JEditDockable d: dockables)
 					hideDockableWindow(d.getName());
 			}
@@ -293,7 +302,7 @@ public class DfWindowManager extends DockableWindowManager
 			}
 			return p;
 		}
-		public boolean belongsToArea(JEditDockable d)
+		public boolean belongsToArea(JEditDockable d, boolean includeMinimized)
 		{
 			Container main = mainDockable.getContentPane();
 			JComponent c = d.getWindow();
@@ -302,28 +311,49 @@ public class DfWindowManager extends DockableWindowManager
 			Point mainPos = getLocation(main);
 			Point cPos = getLocation(c);
 			if (DockableWindowManager.BOTTOM.equals(position))
-				return (cPos.getY() >= mainPos.getY() + main.getHeight());
+				return (cPos.getY() >= (mainPos.getY() + main.getHeight()));
 			else if (DockableWindowManager.TOP.equals(position))
-				return (cPos.getY() + c.getHeight() <= mainPos.getY());
+				return ((cPos.getY() + c.getHeight()) <= mainPos.getY());
 			else if (DockableWindowManager.LEFT.equals(position))
-				return (cPos.getX() + c.getWidth() <= mainPos.getX());
+				return ((cPos.getX() + c.getWidth()) <= mainPos.getX());
 			else if (DockableWindowManager.RIGHT.equals(position))
-				return (cPos.getX() >= mainPos.getX() + main.getWidth());
+				return (cPos.getX() >= (mainPos.getX() + main.getWidth()));
 			return false;
 		}
-		private Vector<JEditDockable> getAreaDockables()
+		private Vector<JEditDockable> getAreaDockables(boolean includeMinimized)
 		{
 			Vector<JEditDockable> dockables = new Vector<JEditDockable>();
 			for (JEditDockable d: created.values())
 			{
-				if (belongsToArea(d))
+				if (belongsToArea(d, includeMinimized))
 					dockables.add(d);
 			}
 			return dockables;
 		}
+		private boolean toggleClose = true;
+		public void toggle()
+		{
+			if (toggleClose)
+			{
+				Vector<JEditDockable> dockables = getAreaDockables(false);
+				for (JEditDockable dockable: dockables)
+					minimizeDockable(dockable);
+			}
+			else
+			{
+				Vector<JEditDockable> dockables = getAreaDockables(true);
+				for (JEditDockable dockable: dockables)
+					dockable.setExtendedMode(ExtendedMode.NORMALIZED);
+			}
+			toggleClose = !toggleClose;
+		}
 		public String [] getDockables()
 		{
-			Vector<JEditDockable> dockables = getAreaDockables();
+			return getDockables(true);
+		}
+		public String [] getDockables(boolean includeMinimized)
+		{
+			Vector<JEditDockable> dockables = getAreaDockables(includeMinimized);
 			String [] names = new String[dockables.size()];
 			for (int i = 0; i < dockables.size(); i++)
 				names[i] = dockables.get(i).getName();
@@ -332,12 +362,12 @@ public class DfWindowManager extends DockableWindowManager
 		public CLocation getTargetLocationFor(JEditDockable d)
 		{
 			// If the dockable is already in this area, do not move/resize it
-			if ((! loadingLayout) && belongsToArea(d))
+			if ((! loadingLayout) && belongsToArea(d, false))
 				return d.getBaseLocation();
 			// Otherwise, find the largest dockable in this area and use its location
 			JEditDockable preferred = null;
 			int preferredSize = 0;
-			Vector<JEditDockable> dockables = getAreaDockables();
+			Vector<JEditDockable> dockables = getAreaDockables(false);
 			for (JEditDockable dockable: dockables)
 			{
 				JComponent window = dockable.getWindow();
@@ -431,16 +461,16 @@ public class DfWindowManager extends DockableWindowManager
 	private DfDockingArea getDockingAreaOf(JEditDockable dockable)
 	{
 		DfDockingArea area = (DfDockingArea) getTopDockingArea(); 
-		if (! area.belongsToArea(dockable))
+		if (! area.belongsToArea(dockable, false))
 		{
 			area = (DfDockingArea) getBottomDockingArea(); 
-			if (! area.belongsToArea(dockable))
+			if (! area.belongsToArea(dockable, false))
 			{
 				area = (DfDockingArea) getLeftDockingArea();
-				if (! area.belongsToArea(dockable))
+				if (! area.belongsToArea(dockable, false))
 				{
 					area = (DfDockingArea) getRightDockingArea();
-					if (! area.belongsToArea(dockable))
+					if (! area.belongsToArea(dockable, false))
 						area = null;
 				}
 			}
@@ -514,10 +544,13 @@ public class DfWindowManager extends DockableWindowManager
 	{
 		public void controllerChanged(DockHierarchyEvent event)
 		{
-			
+			System.err.println("controllerChanged: " +
+					((JEditDockable)(((CommonDockable) event.getDockable()).getDockable())).getName());
 		}
 		public void hierarchyChanged(DockHierarchyEvent event)
 		{
+			System.err.println("hierarchyChanged: " +
+					((JEditDockable)(((CommonDockable) event.getDockable()).getDockable())).getName());
 			DockStation station = event.getDockable().getDockParent();
 			if (! listenedStations.contains(station))
 			{
@@ -665,11 +698,14 @@ public class DfWindowManager extends DockableWindowManager
 				return;
 			if (station.isVisible(intern()))
 				madeVisible();
-			else if (! listenedStations.contains(station))
+			else
 			{
-				listenedStations.add(station);
-				station.addDockStationListener(listener);
 				intern().addDockHierarchyListener(hierarchyListener);
+				if (! listenedStations.contains(station))
+				{
+					listenedStations.add(station);
+					station.addDockStationListener(listener);
+				}
 			}
 		}
 		public void madeVisible()
