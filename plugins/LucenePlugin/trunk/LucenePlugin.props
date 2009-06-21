@@ -22,3 +22,11 @@ lucene.message.IndexName=Name:
 lucene.message.IndexType=Type:
 lucene.message.Analyzer=Analyzer:
 
+# Options
+plugin.gatchan.jedit.lucene.LucenePlugin.option-pane=Lucene
+options.Lucene.label=Lucene
+options.Lucene.code=new gatchan.jedit.lucene.OptionPane();
+lucene.options.IncludeGlobs=*
+lucene.options.IncludeGlobs.label=Include only files matching:
+lucene.options.ExcludeGlobs=*.*~ *.bak *.tgz *.gif *.class *.exe *.gif *.png *.jpg *.obj
+lucene.options.ExcludeGlobs.label=... except files matching:
