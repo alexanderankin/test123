@@ -125,7 +125,16 @@
 			textArea.setSelection(textobjects.TextObjectsPlugin.sentence(textArea, textArea.getCaretPosition(), false));
 		</CODE>
     </ACTION>
-    
+	<ACTION NAME="textobjects.select-a-indent">
+		<CODE>
+			textArea.setSelection(textobjects.TextObjectsPlugin.indent(textArea, textArea.getCaretPosition(), true));
+		</CODE>
+    </ACTION>
+	<ACTION NAME="textobjects.select-in-indent">
+		<CODE>
+			textArea.setSelection(textobjects.TextObjectsPlugin.indent(textArea, textArea.getCaretPosition(), false));
+		</CODE>
+    </ACTION>
     
     <!-- WORK IN PROGRESS Movement 
     <ACTION NAME="textobjects.forward-word">
