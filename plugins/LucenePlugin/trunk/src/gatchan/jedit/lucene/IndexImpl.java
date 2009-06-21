@@ -223,8 +223,6 @@ public class IndexImpl extends AbstractIndex implements Index
 
 	private static class MyVFSFilter implements VFSFileFilter
 	{
-		private static final String[] suffixes = new String[]{"~", "bak", "tgz", "gif", "class", "exe", "gif", "png", "jpg"};
-
 		public boolean accept(VFSFile file)
 		{
 			String name = file.getName();
@@ -241,12 +239,7 @@ public class IndexImpl extends AbstractIndex implements Index
 
 		public boolean accept(String url)
 		{
-			for (String suffix : suffixes)
-			{
-				if (url.endsWith(suffix))
-					return false;
-			}
-			return true;
+			return OptionPane.accept(url);
 		}
 
 		public String getDescription()
