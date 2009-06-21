@@ -47,6 +47,8 @@ import bibliothek.gui.dock.common.location.CBaseLocation;
 import bibliothek.gui.dock.common.location.CContentAreaCenterLocation;
 import bibliothek.gui.dock.common.location.CFlapIndexLocation;
 import bibliothek.gui.dock.common.location.CRectangleLocation;
+import bibliothek.gui.dock.event.DockHierarchyEvent;
+import bibliothek.gui.dock.event.DockHierarchyListener;
 import bibliothek.gui.dock.event.DockStationListener;
 import bibliothek.gui.dock.util.ComponentWindowProvider;
 import bibliothek.util.xml.XElement;
@@ -63,7 +65,9 @@ public class DfWindowManager extends DockableWindowManager
 	private JEditDockable focused;
 	private CPreferenceModel prefs;
 	private JEditDockStationListener listener;
+	private JEditDockHierarchyListener hierarchyListener;
 	private HashSet<DockStation> listenedStations;
+	private boolean loadingLayout;
 
 	public DfWindowManager(View view, DockableWindowFactory instance,
 			ViewConfig config)
@@ -96,6 +100,7 @@ public class DfWindowManager extends DockableWindowManager
 		});
 		listener = new JEditDockStationListener();
 		listenedStations = new HashSet<DockStation>();
+		loadingLayout = false;
 	}
 
 	static public void showPreferenceDialog(View view)
@@ -187,6 +192,7 @@ public class DfWindowManager extends DockableWindowManager
 	@Override
 	public void applyDockingLayout(DockingLayout docking)
 	{
+		loadingLayout = false;
 		if (docking != null)
 		{
 			DfDockingLayout layout = (DfDockingLayout) docking;
@@ -203,8 +209,10 @@ public class DfWindowManager extends DockableWindowManager
 				{
 				}
 			}
-		}		
+		}
+		loadingLayout = true;
 		super.applyDockingLayout(docking);
+		loadingLayout = false;
 		addDockStationListeners();
 	}
 
@@ -324,7 +332,7 @@ public class DfWindowManager extends DockableWindowManager
 		public CLocation getTargetLocationFor(JEditDockable d)
 		{
 			// If the dockable is already in this area, do not move/resize it
-			if (belongsToArea(d))
+			if ((! loadingLayout) && belongsToArea(d))
 				return d.getBaseLocation();
 			// Otherwise, find the largest dockable in this area and use its location
 			JEditDockable preferred = null;
@@ -502,6 +510,23 @@ public class DfWindowManager extends DockableWindowManager
 		return d;
 	}
 
+	private class JEditDockHierarchyListener implements DockHierarchyListener
+	{
+		public void controllerChanged(DockHierarchyEvent event)
+		{
+			
+		}
+		public void hierarchyChanged(DockHierarchyEvent event)
+		{
+			DockStation station = event.getDockable().getDockParent();
+			if (! listenedStations.contains(station))
+			{
+				listenedStations.add(station);
+				station.addDockStationListener(listener);
+			}
+		}
+	}
+
 	private static class JEditDockStationListener implements DockStationListener
 	{
 		private JEditDockable getJEditDockable(Dockable d)
@@ -644,6 +669,7 @@ public class DfWindowManager extends DockableWindowManager
 			{
 				listenedStations.add(station);
 				station.addDockStationListener(listener);
+				intern().addDockHierarchyListener(hierarchyListener);
 			}
 		}
 		public void madeVisible()
@@ -660,6 +686,7 @@ public class DfWindowManager extends DockableWindowManager
 				station.removeDockStationListener(listener);
 				listenedStations.remove(station);
 			}
+			intern().removeDockHierarchyListener(hierarchyListener);
 		}
 	}
 
