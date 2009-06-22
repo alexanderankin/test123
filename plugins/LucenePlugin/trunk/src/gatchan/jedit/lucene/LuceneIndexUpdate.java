@@ -34,7 +34,7 @@ public class LuceneIndexUpdate extends EBMessage
 		CREATED, DESTROYED
 	}
 
-	public LuceneIndexUpdate(String indexName, What what)
+	LuceneIndexUpdate(String indexName, What what)
 	{
 		super(indexName);
 		if(what == null)
