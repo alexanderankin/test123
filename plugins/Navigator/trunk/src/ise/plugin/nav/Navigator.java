@@ -152,6 +152,9 @@ public class Navigator implements ActionListener {
      * click in the text area is recorded in the Navigator history.
      */
     public void addMouseListenerTo( EditPane editPane ) {
+        if ( editPane == null ) {
+            return ;
+        }
         TextAreaPainter painter = editPane.getTextArea().getPainter();
         MouseListener listeners[] = painter.getMouseListeners();
         painter.addMouseListener( new NavMouseListener( this ) );
@@ -192,7 +195,7 @@ public class Navigator implements ActionListener {
         else {
             // view scope
             editPane = view.getEditPane();
-            if (editPane != null) {
+            if ( editPane != null ) {
                 // editPane could be null on Navigator startup
                 textarea = editPane.getTextArea();
             }
