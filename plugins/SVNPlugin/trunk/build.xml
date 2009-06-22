@@ -8,6 +8,7 @@
 
     <!-- default location of jedit.jar -->
     <property name="jedit.install.dir" value="../.."/>
+    <property name="jedit.plugins.dir" value="${install.dir}" />
 
 
     <!-- jar name -->
@@ -72,10 +73,10 @@
             <pathelement location="${jedit.install.dir}/jedit.jar" />
 
          <!-- dependencies -->
-            <pathelement location="${install.dir}/ProjectViewer.jar"/>
-            <pathelement location="${install.dir}/kappalayout.jar"/>
-            <pathelement location="${install.dir}/JDiffPlugin.jar"/>
-            <pathelement location="${install.dir}/InfoViewer.jar"/>
+            <pathelement location="${jedit.plugins.dir}/ProjectViewer.jar"/>
+            <pathelement location="${jedit.plugins.dir}/kappalayout.jar"/>
+            <pathelement location="${jedit.plugins.dir}/JDiffPlugin.jar"/>
+            <pathelement location="${jedit.plugins.dir}/InfoViewer.jar"/>
         </path>
     </target>
 
@@ -126,6 +127,7 @@
 
         <!-- make the plugin jar file -->
         <tstamp/>
+        <mkdir dir="${install.dir}" />
         <jar jarfile="${install.dir}/${plugin.ise.plugin.svn.SVNPlugin.name}.jar">
             <manifest>
                 <attribute name="AppName" value="${plugin.ise.plugin.svn.SVNPlugin.name}" />
