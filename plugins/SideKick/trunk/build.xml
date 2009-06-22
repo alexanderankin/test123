@@ -15,6 +15,8 @@
     <property name="compiler.source" value="1.5" />
     <property name="compiler.target" value="1.5" />
     <property name="build.support" value="../build-support" />
+    <property name="jedit.plugins.dir" value="${install.dir}" />
+
 
     <import file="${build.support}/plugin-build.xml" />
 
@@ -23,7 +25,7 @@
     here if the import is listed later.  Ant bug, maybe? -->
     <path id="project.class.path">
         <pathelement location="${jedit.install.dir}/jedit.jar" />
-        <pathelement location="${install.dir}/ErrorList.jar"/>
+        <pathelement location="${jedit.plugins.dir}/ErrorList.jar"/>
     </path>
 
 </project>
