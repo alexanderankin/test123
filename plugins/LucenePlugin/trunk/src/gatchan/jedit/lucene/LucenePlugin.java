@@ -148,6 +148,23 @@ public class LucenePlugin extends EditPlugin
 		return indexMap.get(name);
 	}
 
+	public Index getIndexForProject(String name)
+	{
+		Index index = getIndex(name);
+		if (index == null)
+		{
+			NewIndexDialog dlg = new NewIndexDialog(jEdit.getActiveView(), name);
+			dlg.setVisible(true);
+			if (dlg.accepted())
+			{
+				index = createIndex(dlg.getIndexName(), dlg.getIndexType(),
+					dlg.getIndexAnalyzer());
+			}
+				
+		}
+		return index;
+	}
+
 	public Index createIndex(String name, String type, String analyzerName)
 	{
 		Index index = getIndex(name);
@@ -239,8 +256,10 @@ public class LucenePlugin extends EditPlugin
 	 *
 	 * @param indexName the index name
 	 * @param files     the file array to add
+	 * @param sharedSession whether the VFS session can be shared by all files
 	 */
-	public void addToIndex(final String indexName, final VFSFile[] files)
+	public void addToIndex(final String indexName, final VFSFile[] files,
+		final boolean sharedSession)
 	{
 		VFSManager.runInWorkThread(new Runnable()
 		{
@@ -252,9 +271,14 @@ public class LucenePlugin extends EditPlugin
 					Log.log(Log.ERROR, this, "Unable to get index " + indexName);
 					return;
 				}
-				for (VFSFile file : files)
+				if (sharedSession)
+					index.addFiles(files);
+				else
 				{
-					index.addFile(file.getPath());
+					for (VFSFile file : files)
+					{
+						index.addFile(file.getPath());
+					}
 				}
 				index.commit();
 			}

@@ -21,6 +21,7 @@
 package gatchan.jedit.lucene;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.gjt.sp.jedit.io.VFSFile;
 
 /**
  * @author Matthieu Casanova
@@ -37,6 +38,7 @@ public interface Index
 	String getName();
 	Analyzer getAnalyzer();
 	void addFile(String path);
+	void addFiles(VFSFile[] files);
 	void removeFile(String path);
 
 	void setAnalyzer(Analyzer analyzer);

@@ -4,7 +4,7 @@
         <CODE>
             String indexName = gatchan.jedit.lucene.LucenePlugin.instance.chooseIndex();
             if (indexName != null)
-                gatchan.jedit.lucene.LucenePlugin.instance.addToIndex(indexName, files);
+                gatchan.jedit.lucene.LucenePlugin.instance.addToIndex(indexName, files, false);
         </CODE>
     </ACTION>
     <ACTION NAME="lucene.add-to-newindex" NO_REPEAT="TRUE">
@@ -12,7 +12,7 @@
         	import gatchan.jedit.lucene.LucenePlugin;
 			String indexName = LucenePlugin.instance.createNewIndex();
             if (indexName != null)
-                LucenePlugin.instance.addToIndex(indexName, files);
+                LucenePlugin.instance.addToIndex(indexName, files, false);
         </CODE>
     </ACTION>
 </ACTIONS>
