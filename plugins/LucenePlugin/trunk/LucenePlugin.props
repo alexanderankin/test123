@@ -7,7 +7,7 @@ plugin.gatchan.jedit.lucene.LucenePlugin.depend.0=jdk 1.5
 plugin.gatchan.jedit.lucene.LucenePlugin.depend.1=jedit 04.03.17.00
 plugin.gatchan.jedit.lucene.LucenePlugin.depend.2=plugin marker.MarkerSetsPlugin 0.2
 plugin.gatchan.jedit.lucene.LucenePlugin.depend.3=optional plugin projectviewer.ProjectPlugin 2.9.0.0
-plugin.gatchan.jedit.lucene.LucenePlugin.jars=lucene-core-2.4.1.jar
+plugin.gatchan.jedit.lucene.LucenePlugin.jars=lucene-core-2.4.1.jar lucene-highlighter-2.4.1.jar
 plugin.gatchan.jedit.lucene.LucenePlugin.browser-menu=\
 	lucene.add-to-index lucene.add-to-newindex
 plugin.gatchan.jedit.lucene.LucenePlugin.menu=lucene-search
@@ -33,5 +33,5 @@ options.Lucene.label=Lucene
 options.Lucene.code=new gatchan.jedit.lucene.OptionPane();
 lucene.options.IncludeGlobs=*
 lucene.options.IncludeGlobs.label=Include only files matching:
-lucene.options.ExcludeGlobs=*.*~ *.bak *.tgz *.gif *.class *.exe *.gif *.png *.jpg *.obj
+lucene.options.ExcludeGlobs=*.*~ *.bak *.bmp *.ico *.gif *.gif *.png *.jpg *.class *.exe  *.obj *.jar *.zip *.7z *.rar *.tgz *.wav *.mp3 *.ogg
 lucene.options.ExcludeGlobs.label=... except files matching:
