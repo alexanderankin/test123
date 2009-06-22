@@ -35,13 +35,34 @@ import java.io.File;
 import java.io.IOException;
 
 /**
+ * This index will contains documents to link files to indexes.
+ * Each document has the following fields :
+ * "indexName" and "path"
  * @author Matthieu Casanova
  */
 public class CentralIndex extends AbstractIndex implements EBComponent
 {
-	public CentralIndex(File indexFile)
+	CentralIndex(File indexFile)
 	{
 		super(indexFile);
+	}
+
+	public void handleMessage(EBMessage message)
+	{
+		if (message instanceof BufferUpdate)
+		{
+			final BufferUpdate bufferUpdate = (BufferUpdate) message;
+			if (bufferUpdate.getWhat() == BufferUpdate.SAVED)
+			{
+				VFSManager.runInWorkThread(new Runnable()
+				{
+					public void run()
+					{
+						fileUpdated(bufferUpdate.getBuffer());
+					}
+				});
+			}
+		}
 	}
 
 	void createIndex(Index index)
@@ -116,24 +137,6 @@ public class CentralIndex extends AbstractIndex implements EBComponent
 		catch (IOException e)
 		{
 			e.printStackTrace();
-		}
-	}
-
-	public void handleMessage(EBMessage message)
-	{
-		if (message instanceof BufferUpdate)
-		{
-			final BufferUpdate bufferUpdate = (BufferUpdate) message;
-			if (bufferUpdate.getWhat() == BufferUpdate.SAVED)
-			{
-				VFSManager.runInWorkThread(new Runnable()
-				{
-					public void run()
-					{
-						fileUpdated(bufferUpdate.getBuffer());
-					}
-				});
-			}
 		}
 	}
 
