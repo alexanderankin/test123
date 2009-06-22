@@ -53,6 +53,7 @@ public class OptionPanel extends AbstractOptionPane {
     }
 
     public void _init() {
+        setName( name );
         setBorder( BorderFactory.createEmptyBorder( 11, 11, 11, 11 ) );
 
         // title
@@ -61,11 +62,13 @@ public class OptionPanel extends AbstractOptionPane {
 
         // group by file
         groupByFile = new JCheckBox( jEdit.getProperty( "navigator.options.groupByFile.label" ) );
+        groupByFile.setName( "groupByFile" );
         groupByFile.setSelected( NavigatorPlugin.groupByFile() );
         addComponent( groupByFile );
 
         // show on toolbar
         showOnToolbar = new JCheckBox( jEdit.getProperty( "navigator.options.showOnToolbar.label" ) );
+        showOnToolbar.setName( "showOnToolbar" );
         showOnToolbar.setSelected( NavigatorPlugin.showOnToolBars() );
         addComponent( showOnToolbar );
 
@@ -73,7 +76,9 @@ public class OptionPanel extends AbstractOptionPane {
         addComponent( Box.createVerticalStrut( 11 ) );
         addComponent( new JLabel( "Navigator Scope" ) );
         viewScope = new JRadioButton( jEdit.getProperty( "navigator.viewScope.label", "View scope" ) );
+        viewScope.setName( "viewScope" );
         JRadioButton editPaneScope = new JRadioButton( jEdit.getProperty( "navigator.editPaneScope.label", "EditPane scope" ) );
+        editPaneScope.setName( "editPaneScope" );
         ButtonGroup buttonGroup = new ButtonGroup();
         buttonGroup.add( viewScope );
         buttonGroup.add( editPaneScope );
@@ -86,6 +91,7 @@ public class OptionPanel extends AbstractOptionPane {
         // max stack size
         addComponent( Box.createVerticalStrut( 11 ) );
         maxStackSize = new NumberTextField();
+        maxStackSize.setName( "maxStackSize" );
         maxStackSize.setMinValue( 1 );
         maxStackSize.setValue( jEdit.getIntegerProperty( "maxStackSize", 512 ) );
         addComponent( jEdit.getProperty( "navigator.maxStackSize.label", "Maximum history size:" ), maxStackSize );
