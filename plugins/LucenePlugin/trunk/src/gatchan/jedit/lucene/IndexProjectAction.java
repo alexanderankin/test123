@@ -42,7 +42,9 @@ public class IndexProjectAction extends Action
 				if (n.isFile())
 				{
 					VPTFile vptFile = (VPTFile) n;
-					files.add(vptFile.getFile());
+					VFSFile file = vptFile.getFile();
+					if (file != null)
+						files.add(file);
 				}
 			}
 			VFSFile [] fileArray = new VFSFile[files.size()];
