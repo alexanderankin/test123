@@ -10,6 +10,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import marker.FileMarker;
+import marker.tree.SourceLinkTree;
+import marker.tree.SourceLinkTree.SourceLinkParentNode;
 
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
@@ -22,11 +24,13 @@ import org.gjt.sp.util.StandardUtilities;
 public class SearchResults extends JPanel implements EBComponent
 {
 	private JTextField searchField;
+	private JPanel mainPanel;
 	private JList list;
 	private JCheckBox lineResults;
 	private JSpinner maxResults;
 	private JComboBox indexes;
 	private MyModel model;
+	private SourceLinkTree tree;
 	private IndexComboBoxModel indexModel;
 //	private JTextPane preview;
 
@@ -65,6 +69,7 @@ public class SearchResults extends JPanel implements EBComponent
 		panel.add(optionsPanel, BorderLayout.EAST);
 		model = new MyModel();
 		list = new JList(model);
+		tree = new SourceLinkTree(jEdit.getActiveView());
 
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		list.getSelectionModel().addListSelectionListener(new ListSelectionListener()
@@ -87,7 +92,11 @@ public class SearchResults extends JPanel implements EBComponent
 //		HTMLDocument htmlDocument = new HTMLDocument();
 //		preview = new JTextPane(htmlDocument);
 //		preview.setContentType("text/html");
-		add(new JScrollPane(list), BorderLayout.CENTER);
+		mainPanel = new JPanel(new CardLayout());
+		mainPanel.add(new JScrollPane(list), "list");
+		mainPanel.add(new JScrollPane(tree), "tree");
+		//add(mainPanel, new JScrollPane(tree));
+		add(mainPanel, BorderLayout.CENTER);
 //		add(new JSplitPane(JSplitPane.VERTICAL_SPLIT, new JScrollPane(list), preview), BorderLayout.CENTER);
 	}
 
@@ -105,7 +114,21 @@ public class SearchResults extends JPanel implements EBComponent
 		else
 			processor = new FileListQueryProcessor(index, files, max);
 		index.search(text, max, processor);
-		model.setFiles(files);
+		if (lineResults.isSelected())
+		{
+			SourceLinkParentNode parent = tree.addSourceLinkParent(text);
+			for (Object o: files)
+			{
+				FileMarker marker = (FileMarker) o;
+				parent.addSourceLink(marker);
+			}
+			((CardLayout) mainPanel.getLayout()).show(mainPanel, "tree");
+		}
+		else
+		{
+			model.setFiles(files);
+			((CardLayout) mainPanel.getLayout()).show(mainPanel, "list");
+		}
 	}
 
 	//{{{ addNotify() method
