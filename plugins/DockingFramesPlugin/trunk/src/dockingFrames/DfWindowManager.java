@@ -100,6 +100,7 @@ public class DfWindowManager extends DockableWindowManager
 		});
 		listener = new JEditDockStationListener();
 		listenedStations = new HashSet<DockStation>();
+		hierarchyListener = new JEditDockHierarchyListener();
 		loadingLayout = false;
 	}
 
@@ -552,6 +553,8 @@ public class DfWindowManager extends DockableWindowManager
 			System.err.println("hierarchyChanged: " +
 					((JEditDockable)(((CommonDockable) event.getDockable()).getDockable())).getName());
 			DockStation station = event.getDockable().getDockParent();
+			if (station == null)
+				return;
 			if (! listenedStations.contains(station))
 			{
 				listenedStations.add(station);
