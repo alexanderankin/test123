@@ -32,8 +32,11 @@ public class NewIndexDialog extends JDialog
 	{
 		GUIUtilities.saveGeometry(this, GEOMETRY);
 	} 
-	
+
 	public NewIndexDialog(Frame frame) {
+		this(frame, null);
+	}
+	public NewIndexDialog(Frame frame, String initialName) {
 		super(frame, jEdit.getProperty(MESSAGE + "NewIndexDialogTitle"), true);
 		addWindowListener(new java.awt.event.WindowAdapter()
 		{
@@ -49,6 +52,11 @@ public class NewIndexDialog extends JDialog
 		p.add(new JLabel(jEdit.getProperty(MESSAGE + "IndexName")));
 		name = new JTextField(30);
 		p.add(name);
+		if (initialName != null)
+		{
+			name.setText(initialName);
+			name.setEditable(false);
+		}
 		// Index type panel
 		p = new JPanel(new FlowLayout(FlowLayout.LEADING));
 		add(p);

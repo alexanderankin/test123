@@ -35,6 +35,7 @@ import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSFileFilter;
 import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.util.IOUtilities;
@@ -59,6 +60,29 @@ public class IndexImpl extends AbstractIndex implements Index
 	public String getName()
 	{
 		return name;
+	}
+
+	public void addFiles(VFSFile[] files)
+	{
+		if (files.length == 0)
+			return;
+		openWriter();
+		if (writer == null)
+			return;
+		String path = files[0].getPath();
+		VFS vfs = VFSManager.getVFSForPath(path);
+		View view = jEdit.getActiveView();
+		Object session = vfs.createVFSSession(path, view);
+		for (VFSFile file: files)
+			addDocument(file, session);
+		try
+		{
+			vfs._endVFSSession(session, view);
+		}
+		catch (IOException e)
+		{
+		}
+		LucenePlugin.CENTRAL.commit();
 	}
 
 	public void addFile(String path)

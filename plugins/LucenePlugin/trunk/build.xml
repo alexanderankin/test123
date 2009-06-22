@@ -18,6 +18,7 @@
 	
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar" />
+		<pathelement location="${install.dir}/ProjectViewer.jar"/>
 		<pathelement location="${install.dir}/MarkerSets.jar"/>
 		<pathelement location="${install.dir}/lucene-core-2.4.1.jar"/>
 		<pathelement location="${install.dir}/lucene-highlighter-2.4.1.jar"/>
