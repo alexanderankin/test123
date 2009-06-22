@@ -1,6 +1,7 @@
 package gatchan.jedit.lucene;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import lucene.SourceCodeAnalyzer;
 
@@ -11,10 +12,12 @@ import org.apache.lucene.analysis.StopAnalyzer;
 import org.apache.lucene.analysis.WhitespaceAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 
-public class AnalyzerFactory {
-	static final HashMap<String, Analyzer> analyzers = new HashMap<String, Analyzer>();
-	
-	static {
+public class AnalyzerFactory
+{
+	private static final Map<String, Analyzer> analyzers = new HashMap<String, Analyzer>();
+
+	static
+	{
 		analyzers.put("Standard", new StandardAnalyzer());
 		analyzers.put("Simple", new SimpleAnalyzer());
 		analyzers.put("Java identifier", new SourceCodeAnalyzer());
@@ -22,22 +25,24 @@ public class AnalyzerFactory {
 		analyzers.put("Keyword", new KeywordAnalyzer());
 		analyzers.put("Stop", new StopAnalyzer());
 	}
-	
-	static String [] getAnalyzerNames()
+
+	static String[] getAnalyzerNames()
 	{
-		String [] names = new String[analyzers.size()];
+		String[] names = new String[analyzers.size()];
 		analyzers.keySet().toArray(names);
 		return names;
 	}
+
 	static String getAnalyzerName(Analyzer analyzer)
 	{
-		for (String name: analyzers.keySet())
+		for (String name : analyzers.keySet())
 		{
 			if (analyzers.get(name).getClass() == analyzer.getClass())
 				return name;
 		}
 		return null;
 	}
+
 	static Analyzer getAnalyzer(String name)
 	{
 		return analyzers.get(name);
