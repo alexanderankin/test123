@@ -24,8 +24,7 @@
     the plugin.  All of these files will be copied to the jedit_settings/jar
     directory. -->
     <filelist id="plugin.jars" dir="${install.dir}">
-        <file name="Navigator.jar"/>
-        <file name="Code2HTML.jar"/>
+        <file name="BufferLocal.jar"/>
     </filelist>
 
     <!-- include everything needed to let jEdit load the plugin and run the 
@@ -53,7 +52,7 @@
 
     <!-- this selector holds just one test.  This is optional. -->
     <selector id="testcases.current">
-        <filename name="test/NavigatorTest.java"/>
+        <filename name="test/BufferLocalTest.java"/>
     </selector>
 
     <!-- this selector controls which tests to run, set the refid to either
