@@ -107,7 +107,7 @@ public class NavPosition {
 
     @Override
     public String toString() {
-        return editPane + ":" + path + ":" + ( lineno + 1 );
+        return path + ":" + ( lineno + 1 );
     }
 
     /**

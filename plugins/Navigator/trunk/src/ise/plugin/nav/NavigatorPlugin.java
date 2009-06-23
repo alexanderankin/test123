@@ -117,7 +117,15 @@ public class NavigatorPlugin extends EBPlugin {
      * Toggle group by file to on or off.    
      */
     public static void toggleGroupByFile() {
-        jEdit.setBooleanProperty("navigator.groupByFile", !groupByFile());
+        jEdit.setBooleanProperty("navigator.groupByFile", !groupByFile() );
+    }
+    
+    public static boolean combineLists() {
+        return jEdit.getBooleanProperty( "navigator.combineLists" );   
+    }
+    
+    public static void toggleCombineLists() {
+        jEdit.setBooleanProperty("navigator.combineLists", !combineLists() );  
     }
     
     /**

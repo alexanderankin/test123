@@ -25,6 +25,12 @@ options.navigator.label=Navigator
 options.navigator.code=new ise.plugin.nav.OptionPanel();
 
 navigator.options.groupByFile.label=Group history items by file
+
+navigator.options.combineLists.label=Combine "Back" and "Forward" lists
+navigator.options.showLineText.label=Show line text in "Back" and "Forward" lists
+navigator.options.showLineTextSyntax.label=Show syntax highlighting in "Back" and "Forward" lists
+navigator.options.showStripes.label=Show stripes in "Back" and "Forward" lists
+
 navigator.options.showOnToolbar.label=Show Navigator on toolbar
 navigator.options.maxStackSize.label=Maximum history size:
 
@@ -47,7 +53,7 @@ navigator.menu.label=Navigator
 # menu separator to be inserted. This line also must start with the string
 # passed to the GUIUtilities.loadMenu method in createMenuItems. The items
 # are the action names as set in the actions.xml file.
-plugin.ise.plugin.nav.NavigatorPlugin.menu=navigator.back navigator.backList navigator.forward navigator.forwardList navigator.clearHistory navigator.toggleScope navigator.toggleGroupByFile navigator.showdockable
+plugin.ise.plugin.nav.NavigatorPlugin.menu=navigator.back navigator.backList navigator.forward navigator.forwardList navigator.toggleCombineLists navigator.clearHistory navigator.toggleScope navigator.toggleGroupByFile navigator.showdockable
 #navigator.toolbar
 
 # the next three items are the labels to add to a submenu on
@@ -71,6 +77,8 @@ navigator.forwardList.icon=ArrowU.png
 navigator.clearHistory.label=Clear history
 navigator.toggleScope.label=Toggle scope
 navigator.toggleGroupByFile.label=Toggle group by file
+
+navigator.toggleCombineLists.label=Toggle combine lists
 
 #navigator.toolbar.label=Show on toolbar
 

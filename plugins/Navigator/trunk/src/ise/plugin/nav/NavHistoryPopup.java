@@ -62,6 +62,10 @@ class NavHistoryPopup extends JPopupMenu {
     private boolean showGutter = false;
 
     public NavHistoryPopup( View view, Navigator navigator, Collection<NavPosition> positions ) {
+        this( view, navigator, positions, null );
+    }
+
+    public NavHistoryPopup( View view, Navigator navigator, Collection<NavPosition> positions, NavPosition currentPosition ) {
         this.navigator = navigator;
         this.view = view;
 
@@ -77,6 +81,9 @@ class NavHistoryPopup extends JPopupMenu {
         list = new JList( positions.toArray() );
         list.setCellRenderer( new CellRenderer() );
         list.addMouseListener( new MouseHandler() );
+        if ( currentPosition != null ) {
+            list.setSelectedValue( currentPosition, true );
+        }
 
         JScrollPane scroller = new JScrollPane( list );
         contents.add( scroller, BorderLayout.CENTER );
@@ -191,7 +198,7 @@ class NavHistoryPopup extends JPopupMenu {
                 case '7':
                 case '8':
                 case '9':
-                    if ( numberKeyProcessed )            // Since many components have this handler
+                    if ( numberKeyProcessed )                    // Since many components have this handler
                         return ;
 
                     /* There may actually be more than 9 items in the list, but since
@@ -291,82 +298,89 @@ class NavHistoryPopup extends JPopupMenu {
     // A cell renderer that will show html.  Delegates to the Code2HTML plugin
     // to show the line preview with proper syntax highlighting.
     class CellRenderer extends JLabel implements ListCellRenderer {
+
+        public CellRenderer() {
+            setBorder( BorderFactory.createEmptyBorder( 1, 1, 6, 1 ) );
+        }
+
         public Component getListCellRendererComponent(
             JList list,
-            Object value,                // value to display
-            int index,                   // cell index
-            boolean isSelected,          // is the cell selected
-            boolean cellHasFocus )       // the list and the cell have the focus
+            Object value,                        // value to display
+            int index,                           // cell index
+            boolean isSelected,                  // is the cell selected
+            boolean cellHasFocus )               // the list and the cell have the focus
         {
             NavPosition pos = ( NavPosition ) value;
-            String labelText;
-            EditPane editPane = null;
-            for ( EditPane ep : view.getEditPanes() ) {
-                if ( ep.hashCode() == pos.editPane ) {
-                    editPane = ep;
-                    break;
-                }
-            }
-            if ( editPane == null ) {
-                labelText = pos.toHtml();       // non-syntax highlighted html
-            }
-            else {
-                // Have Code2HTML plugin create syntax highlighted html.
-                // First, create a selection for the text of the line
-                Buffer[] buffers = editPane.getBufferSet().getAllBuffers();
-                Buffer buffer = null;
-                for ( Buffer b : buffers ) {
-                    if ( b.getPath().equals( pos.path ) ) {
-                        buffer = b;
+            String labelText = pos.toString();
+            if ( jEdit.getBooleanProperty( "navigator.showLineText", true ) ) {
+                EditPane editPane = null;
+                for ( EditPane ep : view.getEditPanes() ) {
+                    if ( ep.hashCode() == pos.editPane ) {
+                        editPane = ep;
                         break;
                     }
                 }
-                if ( buffer == null ) {
-                    labelText = pos.toHtml();
+                if ( editPane == null || !jEdit.getBooleanProperty( "navigator.showLineTextSyntax", true ) ) {
+                    labelText = pos.toHtml();       // non-syntax highlighted html
                 }
                 else {
-                    int start = buffer.getLineStartOffset( pos.lineno );
-                    int end = buffer.getLineEndOffset( pos.lineno );
-                    Selection selection = new Selection.Rect( pos.lineno, start, pos.lineno, end );
-                    Selection[] selections = new Selection[ 1 ];
-                    selections[ 0 ] = selection;
-
-                    // Have code2html do the syntax highlighting
-                    // -- this is for Code2HTML 0.5:
-                    /*
-                    Code2HTML c2h = new Code2HTML(
-                                buffer,
-                                editPane.getTextArea().getPainter().getStyles(),
-                                selections
-                            );
-                    labelText = c2h.getHtmlString();
-                    */
-
-                    // -- this is for Code2HTML 0.6:
-                    GenericExporter exporter = ( GenericExporter ) ( ( ExporterProvider ) ServiceManager.getService( "code2html.services.ExporterProvider", "html" ) ).getExporter(
-                                buffer,
-                                editPane.getTextArea().getPainter().getStyles(),
-                                selections
-                            );
-                    labelText = exporter.getContentString();
-
-                    // clean up the output from code2html, it outputs html, head, and body tags,
-                    // I just want what is between the pre tags
-                    // -- next line can be removed with Code2HTML 0.6 since the getContentString method
-                    // will return only the <pre>...</pre> content.
-                    //labelText = labelText.substring( labelText.indexOf( "<pre>" ), labelText.lastIndexOf( "</pre>" ) + "</pre>".length() );
-
-                    // reduce multiple spaces to single space
-                    while ( labelText.indexOf( "  " ) > -1 ) {
-                        labelText = labelText.replaceAll( "  ", " " );
+                    // Have Code2HTML plugin create syntax highlighted html.
+                    // First, create a selection for the text of the line
+                    Buffer[] buffers = editPane.getBufferSet().getAllBuffers();
+                    Buffer buffer = null;
+                    for ( Buffer b : buffers ) {
+                        if ( b.getPath().equals( pos.path ) ) {
+                            buffer = b;
+                            break;
+                        }
                     }
+                    if ( buffer == null ) {
+                        labelText = pos.toHtml();
+                    }
+                    else {
+                        int start = buffer.getLineStartOffset( pos.lineno );
+                        int end = buffer.getLineEndOffset( pos.lineno );
+                        Selection selection = new Selection.Rect( pos.lineno, start, pos.lineno, end );
+                        Selection[] selections = new Selection[ 1 ];
+                        selections[ 0 ] = selection;
 
-                    // remove line separators.  Code2HTML only outputs \n, not \r.
-                    labelText = labelText.replaceAll( "\n", "" );
+                        // Have code2html do the syntax highlighting
+                        // -- this is for Code2HTML 0.5:
+                        /*
+                        Code2HTML c2h = new Code2HTML(
+                                    buffer,
+                                    editPane.getTextArea().getPainter().getStyles(),
+                                    selections
+                                );
+                        labelText = c2h.getHtmlString();
+                        */
 
-                    // add on the path, followed by the syntax highlighted line.  The line number
-                    // is provided by code2html, that's why the useGutter property is set to true.
-                    labelText = "<html><tt>" + pos.path + ":</tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + labelText.trim() ;
+                        // -- this is for Code2HTML 0.6:
+                        GenericExporter exporter = ( GenericExporter ) ( ( ExporterProvider ) ServiceManager.getService( "code2html.services.ExporterProvider", "html" ) ).getExporter(
+                                    buffer,
+                                    editPane.getTextArea().getPainter().getStyles(),
+                                    selections
+                                );
+                        labelText = exporter.getContentString();
+
+                        // clean up the output from code2html, it outputs html, head, and body tags,
+                        // I just want what is between the pre tags
+                        // -- next line can be removed with Code2HTML 0.6 since the getContentString method
+                        // will return only the <pre>...</pre> content.
+                        //labelText = labelText.substring( labelText.indexOf( "<pre>" ), labelText.lastIndexOf( "</pre>" ) + "</pre>".length() );
+
+                        // reduce multiple spaces to single space
+                        while ( labelText.indexOf( "  " ) > -1 ) {
+                            labelText = labelText.replaceAll( "  ", " " );
+                        }
+
+                        // remove line separators.  Code2HTML only outputs \n, not \r.
+                        labelText = labelText.replaceAll( "\n", "" );
+
+                        // add on the path, followed by the syntax highlighted line.  The line number
+                        // is provided by code2html, that's why the useGutter property is set to true.
+                        labelText = "<html><tt>" + pos.path + ":</tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + labelText.trim() ;
+                    }
                 }
             }
             setText( labelText );
@@ -374,8 +388,12 @@ class NavHistoryPopup extends JPopupMenu {
             setFont( list.getFont() );
             setOpaque( true );
             setBackground( view.getBackground() );
-            if ( index % 2 == 0 ) {
+            if ( jEdit.getBooleanProperty( "navigator.showStripes", true ) && index % 2 == 0 ) {
                 setBackground( getBackground().darker() );
+            }
+            if ( isSelected ) {
+                setBackground( list.getSelectionBackground() );
+                setForeground( list.getSelectionForeground() );
             }
             return this;
         }
