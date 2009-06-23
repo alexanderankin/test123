@@ -78,6 +78,7 @@
     <!-- plugin jar files will be copied to this directory -->
     <property name="test.jedit.jars" location="${test.jedit.settings.dir}/jars"/>
     <mkdir dir="${test.jedit.jars}"/>
+    <property name="test.jedit.jars-cache" location="${test.jedit.settings.dir}/jars-cache"/>
     
     <!-- where the source code for the test framework lives -->
     <property name="test.framework.src.dir" location="${test.framework.home}/src"/>
@@ -198,11 +199,11 @@
     Target: test
     Runs all tests as specified in the junit.testcases selector.
     ======================================================================== -->
-    <target name="test" description="Runs the jUnit tests." depends="createSettingsDir, deletePluginJars, copyPluginJars, compileTests">
+    <target name="test" description="Runs the jUnit tests." depends="prepSettingsDir, deletePluginJars, copyPluginJars, compileTests">
         <echo message="Running tests..."/>
 
         <mkdir dir="${test.output}"/>
-        <junit printsummary="${junit.printsummary}" haltonfailure="${junit.haltonfailure}" showoutput="${junit.showoutput}" fork="yes" >
+        <junit printsummary="${junit.printsummary}" haltonfailure="${junit.haltonfailure}" showoutput="${junit.showoutput}" fork="yes">
 
             <sysproperty key="test-jedit.settings" path="${test.jedit.settings.dir}"/>
             <sysproperty key="test-tests.dir" path="tests"/>
@@ -228,13 +229,22 @@
     </target>
 
     <!-- =======================================================================
-    Target: createSettingsDir
+    Target: pretSettingsDir
     Creates the directory specified in the test.jedit.settings.dir property.
     The plugin jars will be copied into the 'jars' subdirectory of this
     directory. This target also deletes any properties file that may have
     existed from previous test runs from this directory.
     ======================================================================== -->
-    <target name="createSettingsDir">    
+    <target name="prepSettingsDir">
+        <available file="${test.jedit.settings.dir}" type="dir" property="settings.dir.present"/>
+        <fail message="${test.jedit.settings.dir} does not exist, run build_jedit target first.">
+            <condition>
+                <not>
+                    <isset property="settings.dir.present"/>
+                </not>
+            </condition>
+        </fail>
+    
         <!-- need to create a jEdit properties file with 'firstTime' and
          'tip.show' both set to false to prevent the help viewer from
          showing on a clean build and to prevent the tips dialog from
@@ -244,6 +254,20 @@
         firstTime=false
         tip.show=false
         </echo>
+
+        <delete quiet="true" dir="${test.jedit.settings.dir}/DockableWindowManager"/>
+        <delete quiet="true">
+            <fileset dir="${test.jedit.settings.dir}">
+                <include name="activity.log"/>
+                <include name="perspective.xml"/>
+                <include name="server"/>
+            </fileset>
+        </delete>
+        <delete quiet="true">
+            <fileset dir="${test.jedit.settings.dir}/settings-backup">
+                <include name="**/*"/>
+            </fileset>
+        </delete>
     </target>
     
     
@@ -272,7 +296,7 @@
             </fileset>
         </delete>
         <delete quiet="true">
-            <fileset dir="${test.jedit.home}/jars-cache">
+            <fileset dir="${test.jedit.jars-cache}">
                 <include name="**/*"/>
             </fileset>
         </delete>
