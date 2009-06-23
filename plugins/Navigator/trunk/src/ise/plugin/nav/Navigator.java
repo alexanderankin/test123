@@ -443,7 +443,16 @@ public class Navigator implements ActionListener {
             JOptionPane.showMessageDialog( view, "No backward items", "Info", JOptionPane.INFORMATION_MESSAGE );
             return ;
         }
-        new NavHistoryPopup( view, this, ( Vector ) backHistory.clone() );
+        if ( jEdit.getBooleanProperty( "navigator.combineLists", false ) ) {
+            NavStack stack = new NavStack( backHistory.size() + forwardHistory.size() + 1 );
+            stack.addAll( backHistory );
+            stack.add( current );
+            stack.addAll( forwardHistory );
+            new NavHistoryPopup( view, this, ( Vector ) stack, current );
+        }
+        else {
+            new NavHistoryPopup( view, this, ( Vector ) backHistory.clone() );
+        }
     }
 
     /**
@@ -454,7 +463,16 @@ public class Navigator implements ActionListener {
             JOptionPane.showMessageDialog( view, "No forward items", "Info", JOptionPane.INFORMATION_MESSAGE );
             return ;
         }
-        new NavHistoryPopup( view, this, ( Vector ) forwardHistory.clone() );
+        if ( jEdit.getBooleanProperty( "navigator.combineLists", false ) ) {
+            NavStack stack = new NavStack( backHistory.size() + forwardHistory.size() + 1 );
+            stack.addAll( backHistory );
+            stack.add( current );
+            stack.addAll( forwardHistory );
+            new NavHistoryPopup( view, this, ( Vector ) stack, current );
+        }
+        else {
+            new NavHistoryPopup( view, this, ( Vector ) forwardHistory.clone() );
+        }
     }
 
     /**

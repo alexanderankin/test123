@@ -39,6 +39,13 @@
       </CODE>
    </ACTION>
 
+   <ACTION NAME="navigator.toggleCombineLists">
+      <CODE>
+         ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+         plugin.toggleCombineLists();
+      </CODE>
+   </ACTION>
+
    <ACTION NAME="navigator.clearHistory">
       <CODE>
          ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
