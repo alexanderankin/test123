@@ -56,20 +56,27 @@ public class NumberTextField extends JTextField {
         return maxValue;
     }
 
+    // if text field is empty, fill it with min value
     public void setMinValue(int value) {
         minValue = value;
+        String text = getText();
+        if (text == null || text.length() == 0) {
+            text = String.valueOf(minValue);
+        }
+        setText(text);
     }
 
     public int getMinValue() {
         return minValue;
     }
 
+    // if text field is empty, return min value
     public int getValue() {
         String text = getText();
         if (text == null || text.length() == 0) {
-            text = "0";   
+            text = String.valueOf(getMinValue());   
         }
-        return Integer.parseInt(getText());
+        return Integer.parseInt(text);
     }
 
     public void setValue(int value) {
