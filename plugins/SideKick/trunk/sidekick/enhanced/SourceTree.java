@@ -32,6 +32,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.util.HashMap;
+import java.util.StringTokenizer;
 
 import javax.swing.JLabel;
 import javax.swing.JPopupMenu;
@@ -254,21 +255,19 @@ public class SourceTree extends SideKickTree {
         } //}}}
 
         private void wrap(StringBuffer sb, String indent, String s) {
-        	int i = 0;
-        	int maxChars = 80 - indent.length();
-        	int len = s.length();
-        	while ((i < len) && (len - i > maxChars)) {
-        		if (i > 0) {
-        			sb.append("<br>");
-        			sb.append(indent);
+        	StringTokenizer st = new StringTokenizer(s, " \t\n", false);
+        	StringBuilder line = new StringBuilder();
+        	while (st.hasMoreTokens())
+        	{
+        		String t = st.nextToken();
+        		if (line.length() + t.length() >= 80)
+        		{
+        			sb.append(line + "<br>" + indent);
+        			line.setLength(0);
         		}
-        		int numChars = i + maxChars;
-        		if (len < numChars)
-        			numChars = len;
-        		sb.append(s.substring(i, numChars));
-        		i += maxChars;
+    			line.append(t + " ");
         	}
-        	sb.append(s.substring(i));
+    		sb.append(line);
         }
        
         private String getToolTipText(DefaultMutableTreeNode node, IAsset asset) {
