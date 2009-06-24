@@ -32,7 +32,7 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
 
 /**
- * This object is used to track caret positions from mouse clicks in jEdit buffers. 
+ * This object is used to track caret positions from PositionChanging events from the EditBus.
  *
  * @author Dale Anson
  */
@@ -95,7 +95,7 @@ public class NavPosition {
 
         // cast to correct type
         NavPosition other = ( NavPosition ) obj;
-        
+
         // check fields
         return ( path.equals( other.path ) && lineno == other.lineno && caret == other.caret );
     }
