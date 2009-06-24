@@ -218,17 +218,6 @@ public class NavigatorPlugin extends EBPlugin {
      * from all edit panes.
      */
     public void stop() {
-        // remove mouse listeners from all edit panes
-        for ( EditPane editPane : editPaneNavigatorMap.keySet() ) {
-            TextAreaPainter painter = editPane.getTextArea().getPainter();
-            MouseListener listeners[] = painter.getMouseListeners();
-            for ( MouseListener listener : listeners ) {
-                if ( listener instanceof NavMouseListener ) {
-                    painter.removeMouseListener( listener );
-                }
-            }
-        }
-
         // clean up
         viewNavigatorMap.clear();
         editPaneNavigatorMap.clear();
@@ -502,16 +491,6 @@ public class NavigatorPlugin extends EBPlugin {
                 // create/update Navigator for View scope
                 EditPane editPane = epu.getEditPane();
                 Navigator nav = viewNavigatorMap.get( editPane.getView() );
-                if ( nav == null ) {
-                    // this will add a mouse listener to the edit pane
-                    createNavigator( editPane.getView() );
-                    return ;
-                }
-                else {
-                    // navigator for the view already exists, so have it add a
-                    // mouse listener to this editPane
-                    nav.addMouseListenerTo( editPane );
-                }
                 // create Navigator for EditPane scope
                 createNavigator( editPane );
             }

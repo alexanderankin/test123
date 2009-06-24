@@ -110,11 +110,6 @@ public class Navigator implements ActionListener {
         this.view = view;
         init();
 
-        // add a mouse listener to each text area in the view. Each mouse click
-        // on a text area is stored
-        for ( EditPane editPane : Navigator.this.view.getEditPanes() ) {
-            addMouseListenerTo( editPane );
-        }
     }
 
     public Navigator( EditPane editPane ) {
@@ -122,9 +117,6 @@ public class Navigator implements ActionListener {
         this.view = editPane.getView();
         init();
 
-        // add a mouse listener to the EditPane. Each mouse click
-        // on a text area is stored
-        addMouseListenerTo( Navigator.this.getEditPane() );
     }
 
     // initialize this Navigator
@@ -147,18 +139,6 @@ public class Navigator implements ActionListener {
         current = currentPosition();
     }
 
-    /**
-     * Adds a mouse listener to the text area of the given EditPane.  Each mouse
-     * click in the text area is recorded in the Navigator history.
-     */
-    public void addMouseListenerTo( EditPane editPane ) {
-        if ( editPane == null ) {
-            return ;
-        }
-        TextAreaPainter painter = editPane.getTextArea().getPainter();
-        MouseListener listeners[] = painter.getMouseListeners();
-        painter.addMouseListener( new NavMouseListener( this ) );
-    }
 
     public EditPane getEditPane() {
         return _editPane;
