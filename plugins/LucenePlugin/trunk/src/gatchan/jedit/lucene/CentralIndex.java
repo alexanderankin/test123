@@ -28,11 +28,14 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 
 import java.io.File;
 import java.io.IOException;
+
+import javax.swing.JOptionPane;
 
 /**
  * This index will contains documents to link files to indexes.
@@ -75,7 +78,15 @@ public class CentralIndex extends AbstractIndex implements EBComponent
 		openWriter();
 		try
 		{
-			writer.deleteDocuments(new Term("indexName", name));
+			if (writer == null)
+			{
+				JOptionPane.showMessageDialog(jEdit.getActiveView(),
+					"Error: Can't complete removal of index " + name + ": Could not open meta-index.");
+			}
+			else
+			{
+				writer.deleteDocuments(new Term("indexName", name));
+			}
 		}
 		catch (IOException e)
 		{
