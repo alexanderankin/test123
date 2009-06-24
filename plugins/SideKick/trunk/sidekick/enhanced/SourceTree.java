@@ -253,29 +253,48 @@ public class SourceTree extends SideKickTree {
             return this;
         } //}}}
 
+        private void wrap(StringBuffer sb, String indent, String s) {
+        	int i = 0;
+        	int maxChars = 80 - indent.length();
+        	int len = s.length();
+        	while ((i < len) && (len - i > maxChars)) {
+        		if (i > 0) {
+        			sb.append("<br>");
+        			sb.append(indent);
+        		}
+        		int numChars = i + maxChars;
+        		if (len < numChars)
+        			numChars = len;
+        		sb.append(s.substring(i, numChars));
+        		i += maxChars;
+        	}
+        	sb.append(s.substring(i));
+        }
+       
         private String getToolTipText(DefaultMutableTreeNode node, IAsset asset) {
             //{{{ -getToolTipText(DefaultMutableTreeNode, IAsset): String
         	StringBuffer sb = new StringBuffer("<html><body>");
         	sb.append(asset.getLongString());
         	sb.append("<br><br>");
-        	int indent = 0;
+        	StringBuffer indent = new StringBuffer();
         	for (TreeNode n: node.getPath()) {
         		DefaultMutableTreeNode tn = (DefaultMutableTreeNode) n;
         		Object o = tn.getUserObject();
         		boolean last = (n == node);
         		if (last)
         			sb.append("<b>");
+        		String s;
         		if (o instanceof IAsset)
-        			sb.append(((IAsset) o).getShortString());
+        			s = ((IAsset) o).getShortString();
         		else
-        			sb.append(o.toString());
+        			s = o.toString();
+        		wrap(sb, indent.toString(), s);
         		if (last)
         			sb.append("</b>");
         		if (! last) {
             		sb.append("<br>");
-        			indent++;
-        			for (int j = 0; j < indent; j++)
-        				sb.append("&nbsp;&nbsp;");
+        			indent.append("&nbsp;&nbsp;");
+       				sb.append(indent.toString());
         		}
         	}
         	sb.append("</body></html>");
