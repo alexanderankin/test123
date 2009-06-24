@@ -1,5 +1,7 @@
 package gatchan.jedit.lucene;
 
+import gatchan.jedit.lucene.Index.ActivityListener;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,6 +25,8 @@ import org.gjt.sp.util.StandardUtilities;
 @SuppressWarnings("serial")
 public class SearchResults extends JPanel implements EBComponent
 {
+	private static final String MESSAGE_IDLE = "";
+	private static final String MESSAGE_INDEXING = "Indexing";
 	private JTextField searchField;
 	private JPanel mainPanel;
 	private JList list;
@@ -32,6 +36,7 @@ public class SearchResults extends JPanel implements EBComponent
 	private MyModel model;
 	private SourceLinkTree tree;
 	private IndexComboBoxModel indexModel;
+	private JLabel indexStatus;
 //	private JTextPane preview;
 
 	public SearchResults()
@@ -45,9 +50,36 @@ public class SearchResults extends JPanel implements EBComponent
 		maxPanel.add(BorderLayout.WEST, new JLabel("Max results:"));
 		maxPanel.add(BorderLayout.EAST, maxResults);
 
+		indexStatus = new JLabel();
 		String[] items = LucenePlugin.instance.getIndexes();
 		indexModel = new IndexComboBoxModel(items);
 		indexes = new JComboBox(indexModel);
+		indexes.addActionListener(new ActionListener()
+		{
+			private Index prevIndex = null;
+			private ActivityListener listener = new ActivityListener()
+			{
+				public void indexingEnded(Index index)
+				{
+					indexStatus.setText(MESSAGE_IDLE);
+				}
+				public void indexingStarted(Index index)
+				{
+					indexStatus.setText(MESSAGE_INDEXING);
+				}
+			}; 
+			public void actionPerformed(ActionEvent e)
+			{
+				if (prevIndex != null)
+					prevIndex.removeActivityListener(listener);
+				Index index = getSelectedIndex();
+				if (index == null)
+					return;
+				prevIndex = index;
+				indexStatus.setText(index.isChanging() ? MESSAGE_INDEXING : MESSAGE_IDLE);
+				index.addActivityListener(listener);
+			}
+		});
 
 		JPanel panel = new JPanel(new BorderLayout());
 		add(panel, BorderLayout.NORTH);
@@ -65,6 +97,7 @@ public class SearchResults extends JPanel implements EBComponent
 		optionsPanel.add(lineResults);
 		optionsPanel.add(maxPanel);
 		optionsPanel.add(indexes);
+		optionsPanel.add(indexStatus);
 		panel.add(searchField, BorderLayout.CENTER);
 		panel.add(optionsPanel, BorderLayout.EAST);
 		model = new MyModel();
@@ -98,11 +131,18 @@ public class SearchResults extends JPanel implements EBComponent
 		//add(mainPanel, new JScrollPane(tree));
 		add(mainPanel, BorderLayout.CENTER);
 //		add(new JSplitPane(JSplitPane.VERTICAL_SPLIT, new JScrollPane(list), preview), BorderLayout.CENTER);
+		if (indexes.getItemCount() > 0)
+			indexes.setSelectedIndex(0);
+	}
+
+	private Index getSelectedIndex()
+	{
+		return LucenePlugin.instance.getIndex((String) indexes.getSelectedItem());
 	}
 
 	public void search(String text)
 	{
-		Index index = LucenePlugin.instance.getIndex((String) indexes.getSelectedItem());
+		Index index = getSelectedIndex();
 		if (index == null)
 			return;
 

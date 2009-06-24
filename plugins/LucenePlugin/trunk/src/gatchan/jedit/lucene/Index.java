@@ -51,4 +51,13 @@ public interface Index
 	 * @param processor the processor that will get the results
 	 */
 	void search(String query, int max, ResultProcessor processor);
+
+	public interface ActivityListener
+	{
+		void indexingStarted(Index index);
+		void indexingEnded(Index index);
+	}
+	void addActivityListener(ActivityListener l);
+	void removeActivityListener(ActivityListener l);
+	boolean isChanging();
 }

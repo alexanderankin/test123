@@ -28,10 +28,13 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Searcher;
 import org.gjt.sp.util.Log;
 
+import gatchan.jedit.lucene.Index.ActivityListener;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -43,7 +46,7 @@ public class AbstractIndex
 	private IndexReader reader;
 	protected File path;
 	protected Analyzer analyzer;
-
+	protected Vector<ActivityListener> listeners = new Vector<ActivityListener>();
 	private final Map<IndexReader, Integer> readerMap = new ConcurrentHashMap<IndexReader, Integer>();
 
 	public AbstractIndex(File path)
@@ -223,4 +226,13 @@ public class AbstractIndex
 		}
 	}
 
+	public void addActivityListener(ActivityListener al)
+	{
+		listeners.add(al);
+	}
+
+	public void removeActivityListener(ActivityListener al)
+	{
+		listeners.remove(al);
+	}
 }

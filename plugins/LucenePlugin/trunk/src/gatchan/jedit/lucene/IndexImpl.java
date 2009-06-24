@@ -50,6 +50,7 @@ public class IndexImpl extends AbstractIndex implements Index
 {
 	private final String name;
 	private static final VFSFileFilter filter = new MyVFSFilter();
+	private int writerCount = 0;
 
 	public IndexImpl(String name, File path)
 	{
@@ -62,6 +63,29 @@ public class IndexImpl extends AbstractIndex implements Index
 		return name;
 	}
 
+	private void startActivity()
+	{
+		synchronized (this)
+		{
+			writerCount++;
+		}
+		for (ActivityListener al: listeners)
+			al.indexingStarted(this);
+	}
+	private void endActivity()
+	{
+		synchronized (this)
+		{
+			writerCount--;
+		}
+		for (ActivityListener al: listeners)
+			al.indexingEnded(this);
+	}
+	public synchronized boolean isChanging()
+	{
+		return (writerCount > 0);
+	}
+
 	public void addFiles(VFSFile[] files)
 	{
 		if (files.length == 0)
@@ -69,6 +93,7 @@ public class IndexImpl extends AbstractIndex implements Index
 		openWriter();
 		if (writer == null)
 			return;
+		startActivity();
 		String path = files[0].getPath();
 		VFS vfs = VFSManager.getVFSForPath(path);
 		View view = jEdit.getActiveView();
@@ -83,6 +108,7 @@ public class IndexImpl extends AbstractIndex implements Index
 		{
 		}
 		LucenePlugin.CENTRAL.commit();
+		endActivity();
 	}
 
 	public void addFile(String path)
@@ -91,6 +117,7 @@ public class IndexImpl extends AbstractIndex implements Index
 		if (writer == null)
 			return;
 		Object session = null;
+		startActivity();
 		VFS vfs = VFSManager.getVFSForPath(path);
 		try
 		{
@@ -114,6 +141,7 @@ public class IndexImpl extends AbstractIndex implements Index
 			}
 		}
 		LucenePlugin.CENTRAL.commit();
+		endActivity();
 	}
 
 	private void addFile(VFSFile file, Object session)
@@ -271,5 +299,4 @@ public class IndexImpl extends AbstractIndex implements Index
 			return null;
 		}
 	}
-
 }
