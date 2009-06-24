@@ -43,6 +43,7 @@ import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PositionChanging;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
@@ -95,8 +96,8 @@ public class NavigatorPlugin extends EBPlugin {
      */
     private final static HashMap<View, JToolBar> toolbarMap = new HashMap<View, JToolBar>();
 
-    
-    
+
+
     /**
      * @return true if the Navigator buttons should be shown on the main toolbar 
      * for the View.
@@ -117,17 +118,17 @@ public class NavigatorPlugin extends EBPlugin {
      * Toggle group by file to on or off.    
      */
     public static void toggleGroupByFile() {
-        jEdit.setBooleanProperty("navigator.groupByFile", !groupByFile() );
+        jEdit.setBooleanProperty( "navigator.groupByFile", !groupByFile() );
     }
-    
+
     public static boolean combineLists() {
-        return jEdit.getBooleanProperty( "navigator.combineLists" );   
+        return jEdit.getBooleanProperty( "navigator.combineLists" );
     }
-    
+
     public static void toggleCombineLists() {
-        jEdit.setBooleanProperty("navigator.combineLists", !combineLists() );  
+        jEdit.setBooleanProperty( "navigator.combineLists", !combineLists() );
     }
-    
+
     /**
      * Show the Navigator buttons on the main toolbar for the View.
      */
@@ -254,7 +255,7 @@ public class NavigatorPlugin extends EBPlugin {
                 NavigatorPlugin.scope = scope;
         }
     }
-    
+
     /**
      * Toggle scope from view scope to edit pane scope or vice versa.    
      */
@@ -473,7 +474,7 @@ public class NavigatorPlugin extends EBPlugin {
             ViewUpdate vu = ( ViewUpdate ) message;
             View v = vu.getView();
             Object what = vu.getWhat();
-            if ( what == ViewUpdate.CREATED ) {
+            if ( what.equals( ViewUpdate.CREATED ) ) {
                 createNavigator( v );
                 clearToolBars();
                 setToolBars();
@@ -514,9 +515,16 @@ public class NavigatorPlugin extends EBPlugin {
                 // create Navigator for EditPane scope
                 createNavigator( editPane );
             }
-            else if ( epu.getWhat() == EditPaneUpdate.DESTROYED && scope == EDITPANE_SCOPE ) {
+            else if ( epu.getWhat().equals( EditPaneUpdate.DESTROYED ) && scope == EDITPANE_SCOPE ) {
                 EditPane editPane = epu.getEditPane();
                 editPaneNavigatorMap.remove( editPane );
+            }
+            else if ( epu.getWhat().equals( EditPaneUpdate.BUFFER_CHANGED ) ) {
+                EditPane p = epu.getEditPane();
+                Navigator n = getNavigator( p.getView() );
+                if ( n != null ) {
+                    n.addToHistory();
+                }
             }
         }
         else if ( message instanceof PropertiesChanged ) {
