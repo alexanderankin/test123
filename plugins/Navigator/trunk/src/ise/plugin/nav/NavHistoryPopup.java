@@ -81,9 +81,6 @@ class NavHistoryPopup extends JPopupMenu {
         list = new JList( positions.toArray() );
         list.setCellRenderer( new CellRenderer() );
         list.addMouseListener( new MouseHandler() );
-        if ( currentPosition != null ) {
-            list.setSelectedValue( currentPosition, true );
-        }
 
         JScrollPane scroller = new JScrollPane( list );
         contents.add( scroller, BorderLayout.CENTER );
@@ -110,6 +107,9 @@ class NavHistoryPopup extends JPopupMenu {
         setVisible( true );
         list.requestFocus();
         setPopupSize( 600, 200 );
+        if ( currentPosition != null ) {
+            list.setSelectedValue( currentPosition, true );
+        }
     }
 
     private Collection<NavPosition> groupByFile( Collection<NavPosition> positions ) {

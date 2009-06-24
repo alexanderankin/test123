@@ -439,11 +439,12 @@ public class Navigator implements ActionListener {
      * Show a popup containing the back history list.
      */
     public void backList() {
-        if ( backHistory.size() == 0 ) {
+        boolean combineLists = jEdit.getBooleanProperty( "navigator.combineLists", false );
+        if ( backHistory.size() == 0 && !combineLists ) {
             JOptionPane.showMessageDialog( view, "No backward items", "Info", JOptionPane.INFORMATION_MESSAGE );
             return ;
         }
-        if ( jEdit.getBooleanProperty( "navigator.combineLists", false ) ) {
+        if ( combineLists ) {
             NavStack stack = new NavStack( backHistory.size() + forwardHistory.size() + 1 );
             stack.addAll( backHistory );
             stack.add( current );
@@ -459,11 +460,12 @@ public class Navigator implements ActionListener {
      * Show a popup containing the forward history list.
      */
     public void forwardList() {
-        if ( forwardHistory.size() == 0 ) {
+        boolean combineLists = jEdit.getBooleanProperty( "navigator.combineLists", false );
+        if ( forwardHistory.size() == 0 && !combineLists ) {
             JOptionPane.showMessageDialog( view, "No forward items", "Info", JOptionPane.INFORMATION_MESSAGE );
             return ;
         }
-        if ( jEdit.getBooleanProperty( "navigator.combineLists", false ) ) {
+        if ( combineLists ) {
             NavStack stack = new NavStack( backHistory.size() + forwardHistory.size() + 1 );
             stack.addAll( backHistory );
             stack.add( current );
