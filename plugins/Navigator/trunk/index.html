@@ -45,7 +45,7 @@
   Show Navigator on toolbar - see below for more information about showing the Navigator "Back" and "Forward" buttons.
   </li>
   <li>
-  Scope: 
+  Scope:
    <ul>
       <li>
       View scope
@@ -56,7 +56,7 @@
    </ul>
    See the section "How Navigator Works" for a discussion of the difference between View and EditPane scope.
    The scope can also be toggled using the Navigator menu.  If you find yourself regularly switching between scopes, you
-   can assign a shortcut to the toggle action.  If you never split your Views, then you it doesn't matter which of these 
+   can assign a shortcut to the toggle action.  If you never split your Views, then you it doesn't matter which of these
    you use.
    </li>
    <li>
@@ -95,10 +95,11 @@
   Shortcuts, choose Plugin: Navigator, and set the shortcut keys.
 
   <h3>How Navigator works</h3>
-
-  Navigator tracks mouse clicks.  Each time you click into a text area in jEdit, the location of the caret in that
-  text area is recorded in the Navigator history.  Going back moves the caret to the previous position.  If that
-  previous position happened to be in a different file, then that file will be opened.
+  Navigator tracks PositionChanging EditBus messages. These can be sent by the core, or plugins, to notify
+  Navigator that the current position should be saved.  Each time the buffer changes,
+  a plugin jumps the caret to another line in your buffer, or you mouse click in the TextArea, the location of
+  the caret is recorded in the Navigator history.  Going back moves the caret to the
+  previous position.  If that previous position happened to be in a different file, then that file will be opened.
   <p>
   Some jEdit terminology: A <strong><i>View</i></strong> is a
   main jEdit window.  You can open more Views by using the View menu and selecting "New View".  Within a View, an
@@ -114,8 +115,8 @@
   <p>
   If you close an edit pane, the history for those files is not lost.  Quite often, you'll have just one edit pane
   in your View, you'll split the view to compare a file or to see different parts of the same file,
-  then you'll close the view.  The history will be retained for any mouse clicks made during the split.  The splits
-  won't be restored as you go back or forward, though.
+  then you'll close the view.  The history will be retained for any PositionChanging events that were
+  tracked during the split.  The splits won't be restored as you go back or forward, though.
   <p>
   Each View has its own Navigator and history.  This means that if you regularly work with two Views
   open, going back in one View will not take you the other View, rather, the caret will move to the previous location
