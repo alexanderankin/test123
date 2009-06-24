@@ -132,7 +132,6 @@ public class LucenePlugin extends EditPlugin
 		{
 			index.close();
 		}
-		saveIndexes();
 	}
 
 	/**
@@ -179,6 +178,7 @@ public class LucenePlugin extends EditPlugin
 		if (analyzer != null)
 			index.setAnalyzer(analyzer);
 		indexMap.put(name, index);
+		saveIndexes();
 		if (!path.exists())
 		{
 			path.mkdirs();
@@ -196,6 +196,7 @@ public class LucenePlugin extends EditPlugin
 	{
 		CENTRAL.removeIndex(name);
 		Index index = indexMap.remove(name);
+		saveIndexes();
 		if (index != null)
 			index.close();
 		File indexFile = getIndexFile(name);

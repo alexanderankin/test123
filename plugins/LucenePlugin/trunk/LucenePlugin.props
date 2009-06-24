@@ -10,7 +10,7 @@ plugin.gatchan.jedit.lucene.LucenePlugin.depend.3=optional plugin projectviewer.
 plugin.gatchan.jedit.lucene.LucenePlugin.jars=lucene-core-2.4.1.jar lucene-highlighter-2.4.1.jar
 plugin.gatchan.jedit.lucene.LucenePlugin.browser-menu=\
 	lucene.add-to-index lucene.add-to-newindex
-plugin.gatchan.jedit.lucene.LucenePlugin.menu=lucene-search
+plugin.gatchan.jedit.lucene.LucenePlugin.menu=lucene-search  - lucene.remove-index
 plugin.gatchan.jedit.lucene.LucenePlugin.usePluginHome=true
 
 
@@ -18,6 +18,7 @@ lucene.add-to-index.label=<html>Add selected file(s) to an <b>existing index</b>
 lucene.add-to-newindex.label=<html>Add selected file(s) to a <b>new index</b></html>
 lucene-search.label=Search
 lucene-search.title=Search with Lucene
+lucene.remove-index.label=Delete an index
 
 lucene.message.NewIndexDialogTitle=New Lucene Index
 lucene.message.IndexName=Name:
