@@ -70,7 +70,7 @@ public class OptionPanel extends AbstractOptionPane {
         addComponent( new JLabel( "<html><h3>Navigator</h3>" ) );
         
         // navigator scope
-        addComponent( new JLabel( "Navigator Scope" ) );
+        addComponent( new JLabel( "<html><h4>Navigator Scope</h4>" ) );
         viewScope = new JRadioButton( jEdit.getProperty( "navigator.viewScope.label", "View scope" ) );
         viewScope.setName( "viewScope" );
         JRadioButton editPaneScope = new JRadioButton( jEdit.getProperty( "navigator.editPaneScope.label", "EditPane scope" ) );
@@ -84,9 +84,9 @@ public class OptionPanel extends AbstractOptionPane {
         viewScope.setSelected( scope == NavigatorPlugin.VIEW_SCOPE );
         editPaneScope.setSelected( scope == NavigatorPlugin.EDITPANE_SCOPE );
 
-        addComponent( Box.createVerticalStrut( 15 ) );
+        addComponent( Box.createVerticalStrut( 11 ) );
         
-        addComponent( new JLabel( "Configuration Options" ) );
+        addComponent( new JLabel( "<html><h4>Configuration Options</h4>" ) );
 
         // show on toolbar
         showOnToolbar = new JCheckBox( jEdit.getProperty( "navigator.options.showOnToolbar.label" ) );
