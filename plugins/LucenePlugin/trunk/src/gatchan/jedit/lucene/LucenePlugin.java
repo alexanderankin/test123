@@ -44,6 +44,7 @@ public class LucenePlugin extends EditPlugin
 	private static final String CENTRAL_INDEX_NAME = "__CENTRAL__";
 	private static final String INDEXES_FILE_NAME = "indexes.cfg";
 	private Map<String, Index> indexMap = new HashMap<String, Index>();
+	private ProjectWatcher projectWatcher = null;
 	
 	public static LucenePlugin instance;
 
@@ -55,6 +56,9 @@ public class LucenePlugin extends EditPlugin
 		CENTRAL = new CentralIndex(new File(home, CENTRAL_INDEX_NAME));
 		EditBus.addToBus(CENTRAL);
 		loadIndexes();
+		EditPlugin p = jEdit.getPlugin("projectviewer.ProjectPlugin", false);
+		if (p != null)
+			projectWatcher = new ProjectWatcher();
 	}
 
 	private void loadIndexes()
@@ -123,6 +127,11 @@ public class LucenePlugin extends EditPlugin
 	@Override
 	public void stop()
 	{
+		if (projectWatcher != null)
+		{
+			projectWatcher.stop();
+			projectWatcher = null;
+		}
 		EditBus.removeFromBus(CENTRAL);
 		CENTRAL.close();
 		CENTRAL = null;
