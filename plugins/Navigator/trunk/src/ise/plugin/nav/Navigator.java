@@ -373,7 +373,7 @@ public class Navigator implements ActionListener {
         if ( position == null ) {
             return ;
         }
-        Log.log("setPosition, setting to " + position);
+        Log.log( "setPosition, setting to " + position );
 
         // stop listening to EditBus events while we are changing buffers
         ignoreUpdates = true;
@@ -429,42 +429,33 @@ public class Navigator implements ActionListener {
      * Show a popup containing the back history list.
      */
     public void backList() {
-        boolean combineLists = jEdit.getBooleanProperty( "navigator.combineLists", false );
-        if ( backHistory.size() == 0 && !combineLists ) {
+        if ( backHistory.size() == 0 ) {
             JOptionPane.showMessageDialog( view, "No backward items", "Info", JOptionPane.INFORMATION_MESSAGE );
             return ;
         }
-        if ( combineLists ) {
-            NavStack stack = new NavStack( backHistory.size() + forwardHistory.size() + 1 );
-            stack.addAll( backHistory );
-            stack.add( current );
-            stack.addAll( forwardHistory );
-            new NavHistoryPopup( view, this, ( Vector ) stack, current );
-        }
-        else {
-            new NavHistoryPopup( view, this, ( Vector ) backHistory.clone() );
-        }
+        new NavHistoryPopup( view, this, ( Vector ) backHistory.clone() );
     }
 
     /**
      * Show a popup containing the forward history list.
      */
     public void forwardList() {
-        boolean combineLists = jEdit.getBooleanProperty( "navigator.combineLists", false );
-        if ( forwardHistory.size() == 0 && !combineLists ) {
+        if ( forwardHistory.size() == 0 ) {
             JOptionPane.showMessageDialog( view, "No forward items", "Info", JOptionPane.INFORMATION_MESSAGE );
             return ;
         }
-        if ( combineLists ) {
-            NavStack stack = new NavStack( backHistory.size() + forwardHistory.size() + 1 );
-            stack.addAll( backHistory );
-            stack.add( current );
-            stack.addAll( forwardHistory );
-            new NavHistoryPopup( view, this, ( Vector ) stack, current );
-        }
-        else {
-            new NavHistoryPopup( view, this, ( Vector ) forwardHistory.clone() );
-        }
+        new NavHistoryPopup( view, this, ( Vector ) forwardHistory.clone() );
+    }
+    
+    /**
+     * Show a popup containing the back history, current position, and forward history.    
+     */
+    public void combinedList() {
+        NavStack stack = new NavStack( backHistory.size() + forwardHistory.size() + 1 );
+        stack.addAll( backHistory );
+        stack.add( current );
+        stack.addAll( forwardHistory );
+        new NavHistoryPopup( view, this, ( Vector ) stack, current );
     }
 
     /**
@@ -480,8 +471,8 @@ public class Navigator implements ActionListener {
             return ;
         }
         NavPosition now = currentPosition();
-        if (!now.equals(current)) {
-            backHistory.push(current);
+        if ( !now.equals( current ) ) {
+            backHistory.push( current );
             current = now;
         }
         forwardHistory.push( current );

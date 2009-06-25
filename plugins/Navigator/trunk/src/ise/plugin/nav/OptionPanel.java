@@ -43,13 +43,13 @@ public class OptionPanel extends AbstractOptionPane {
 
     private JCheckBox showOnToolbar = null;
     private JCheckBox groupByFile = null;
-    private JCheckBox combineLists = null;
     private JCheckBox showLineText = null;
     private JCheckBox showLineTextSyntax = null;
     private JCheckBox showStripes = null;
 
     private JRadioButton viewScope = null;
 
+    private NumberTextField listSize = null;
     private NumberTextField maxStackSize = null;
 
 
@@ -68,7 +68,7 @@ public class OptionPanel extends AbstractOptionPane {
 
         // title
         addComponent( new JLabel( "<html><h3>Navigator</h3>" ) );
-        
+
         // navigator scope
         addComponent( new JLabel( "<html><h4>Navigator Scope</h4>" ) );
         viewScope = new JRadioButton( jEdit.getProperty( "navigator.viewScope.label", "View scope" ) );
@@ -85,7 +85,7 @@ public class OptionPanel extends AbstractOptionPane {
         editPaneScope.setSelected( scope == NavigatorPlugin.EDITPANE_SCOPE );
 
         addComponent( Box.createVerticalStrut( 11 ) );
-        
+
         addComponent( new JLabel( "<html><h4>Configuration Options</h4>" ) );
 
         // show on toolbar
@@ -94,30 +94,20 @@ public class OptionPanel extends AbstractOptionPane {
         showOnToolbar.setSelected( NavigatorPlugin.showOnToolBars() );
         addComponent( showOnToolbar );
 
-        addComponent( Box.createVerticalStrut( 11 ) );
-
         // group by file
         groupByFile = new JCheckBox( jEdit.getProperty( "navigator.options.groupByFile.label" ) );
         groupByFile.setName( "groupByFile" );
         groupByFile.setSelected( NavigatorPlugin.groupByFile() );
         addComponent( groupByFile );
 
-        addComponent( Box.createVerticalStrut( 11 ) );
-
-        // combine back and forward lists
-        combineLists = new JCheckBox( jEdit.getProperty( "navigator.options.combineLists.label", "Combine \"Back\" and \"Forward\" lists" ) );
-        combineLists.setName( "combineLists" );
-        combineLists.setSelected( NavigatorPlugin.combineLists() );
-        addComponent( combineLists );
-
         // show line text in back and forward lists
-        showLineText = new JCheckBox( jEdit.getProperty( "navigator.options.showLineText.label", "Show line text in \"Back\" and \"Forward\" lists" ) );
+        showLineText = new JCheckBox( jEdit.getProperty( "navigator.options.showLineText.label", "Show line text in history list" ) );
         showLineText.setName( "showLineText" );
         showLineText.setSelected( jEdit.getBooleanProperty( "navigator.showLineText", true ) );
         addComponent( showLineText );
 
         // show syntax highlighting in back and forward lists
-        showLineTextSyntax = new JCheckBox( jEdit.getProperty( "navigator.options.showLineTextSyntax.label", "Show syntax highlighting in \"Back\" and \"Forward\" lists" ) );
+        showLineTextSyntax = new JCheckBox( jEdit.getProperty( "navigator.options.showLineTextSyntax.label", "Show syntax highlighting in history list" ) );
         showLineTextSyntax.setName( "showLineTextSyntax" );
         showLineTextSyntax.setSelected( jEdit.getBooleanProperty( "navigator.showLineText", true ) && jEdit.getBooleanProperty( "navigator.showLineTextSyntax", true ) );
         JPanel syntaxPanel = new JPanel();
@@ -126,10 +116,18 @@ public class OptionPanel extends AbstractOptionPane {
         addComponent( syntaxPanel );
 
         // show stripes in back and forward lists
-        showStripes = new JCheckBox( jEdit.getProperty( "navigator.options.showStripes.label", "Show stripes in \"Back\" and \"Forward\" lists" ) );
+        showStripes = new JCheckBox( jEdit.getProperty( "navigator.options.showStripes.label", "Show stripes in history list" ) );
         showStripes.setName( "showStripes" );
         showStripes.setSelected( jEdit.getBooleanProperty( "navigator.showStripes", true ) );
         addComponent( showStripes );
+
+        // history list display size
+        addComponent( Box.createVerticalStrut( 11 ) );
+        listSize = new NumberTextField();
+        listSize.setName( "listSize" );
+        listSize.setMinValue( 1 );
+        listSize.setValue( jEdit.getIntegerProperty( "listSize", 10 ) );
+        addComponent( jEdit.getProperty( "navigator.listSize.label", "Visible rows in history list:" ), listSize );
 
         // max stack size
         addComponent( Box.createVerticalStrut( 11 ) );
@@ -153,10 +151,10 @@ public class OptionPanel extends AbstractOptionPane {
     public void _save() {
         jEdit.setBooleanProperty( name + ".groupByFile", groupByFile.isSelected() );
         jEdit.setBooleanProperty( NavigatorPlugin.showOnToolBarKey, showOnToolbar.isSelected() );
-        jEdit.setBooleanProperty( "navigator.combineLists", combineLists.isSelected() );
         jEdit.setBooleanProperty( "navigator.showLineText", showLineText.isSelected() );
         jEdit.setBooleanProperty( "navigator.showLineTextSyntax", showLineTextSyntax.isSelected() );
         jEdit.setBooleanProperty( "navigator.showStripes", showStripes.isSelected() );
+        jEdit.setIntegerProperty( "navigator.listSize", listSize.getValue() );
         jEdit.setIntegerProperty( name + ".maxStackSize", maxStackSize.getValue() );
         int scope;
         if ( viewScope.isSelected() ) {
