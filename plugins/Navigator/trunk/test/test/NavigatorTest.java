@@ -2,10 +2,11 @@ package test;
 
 import java.io.File;
 
+import java.awt.Point;
 import static java.awt.event.InputEvent.*;
 import static java.awt.event.KeyEvent.*;
 import javax.swing.*;
-import java.util.Random;
+import java.util.*;
 
 import org.junit.*;
 import static org.junit.Assert.*;
@@ -20,8 +21,8 @@ import org.gjt.sp.jedit.testframework.Log;
 import org.gjt.sp.jedit.testframework.TestUtils;
 
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.options.PluginOptions;
+import org.gjt.sp.jedit.textarea.TextArea;
 
 import ise.plugin.nav.*;
 
@@ -36,8 +37,18 @@ public class NavigatorTest {
         TestUtils.afterClass();
     }
 
+    @Before
+    public void beforeTest() {
+        jEdit.getPlugin( NavigatorPlugin.class.getName() ).getPluginJAR().activatePluginIfNecessary();
+    }
 
-    //@Test
+    @After
+    public void afterTest() {
+        jEdit.getPlugin( NavigatorPlugin.class.getName() ).getPluginJAR().deactivatePlugin( false );
+    }
+
+
+    @Test
     public void testOptionPane() {
         Log.log( "testOptionPane" );
 
@@ -109,7 +120,7 @@ public class NavigatorTest {
     }
 
 
-    //@Test
+    @Test
     public void testNumberTextField() {
         // for Navigator, min value is 1, max value is Integer.MAX_VALUE
         // open the plugin options and select the options pane
@@ -162,6 +173,41 @@ public class NavigatorTest {
     }
 
     @Test
+    public void testMovement() {
+        TestUtils.jEditFrame().menuItemWithPath( "File", "Close All" ).click();
+        Buffer buffer = createNumberBuffer();
+        View view = TestUtils.view();
+        assertTrue( "buffer is not showing", view.getBuffer().equals( buffer ) );
+
+        // clear navigator history
+        TestUtils.jEditFrame().menuItemWithPath( "Plugins" ).click();
+        TestUtils.robot().pressAndReleaseKeys( VK_DOWN, VK_DOWN, VK_DOWN, VK_DOWN, VK_RIGHT, VK_DOWN, VK_DOWN, VK_DOWN, VK_DOWN, VK_DOWN, VK_ENTER );
+        //Pause.pause(1000);
+        
+        Stack<Integer> lines = new Stack<Integer>();
+        TextArea textArea = view.getEditPane().getTextArea();
+        for ( int i = 1; i < 6; i++ ) {
+            Point p = new Point( 50, 14 * i );
+            int offset = textArea.xyToOffset( 50, 14 * i );
+            int line = textArea.getLineOfOffset( offset );
+            Log.log("offset = " + offset + ", line = " + line);
+            lines.push( line );
+            TestUtils.robot().click( textArea, p );
+        }
+     
+        lines.pop();  // remove current from list
+        for ( int i = 1; i < 5; i++ ) {
+            TestUtils.jEditFrame().menuItemWithPath( "Plugins" ).click();
+            //TestUtils.robot().pressAndReleaseKeys( VK_DOWN, VK_DOWN, VK_DOWN, VK_DOWN, VK_RIGHT, VK_ENTER );
+            TestUtils.jEditFrame().menuItemWithPath( "Plugins", "Navigator", "Back" ).click();
+            //Pause.pause( 1000 );
+            int caretLine = textArea.getCaretLine();
+            int backLine = lines.pop();
+            assertTrue( "wrong line, should be " + backLine + ", but is " + caretLine, caretLine == backLine );
+        }
+    }
+
+    @Test
     public void test2811070() {
         // a test for tracker 2811070:
         // The latest trunk version of Navigator does not use the history list correctly.
@@ -171,29 +217,67 @@ public class NavigatorTest {
         // "back" to go to A, but Navigator only allows one "back" which jumps directly to A.
         // If I later click "forward", it jumps to B. But there is no second "forward" to jump to C.
 
+        // prep for the test...
         TestUtils.jEditFrame().menuItemWithPath( "File", "Close All" ).click();
+        View view = TestUtils.view();
         
         // make 3 buffers:
         Buffer bufferA = createRandomBuffer();
+        String pathA = bufferA.getPath();
+        view.getEditPane().getTextArea().setCaretPosition(100);
+        
         Buffer bufferB = createRandomBuffer();
+        String pathB = bufferB.getPath();
+        view.getEditPane().getTextArea().setCaretPosition(100);
+        
         Buffer bufferC = createRandomBuffer();
-        jEdit.setProperty("navigator.back.shortcut", "A+LEFT");
-        jEdit.setProperty("navigator.forward.shortcut", "A+RIGHT");
+        String pathC = bufferC.getPath();
+        view.getEditPane().getTextArea().setCaretPosition(100);
 
-        // this is puzzling, the menu items for individual plugins can't be
-        // found by FEST.  
-        View view = TestUtils.view();
-        assertTrue( "bufferC is not showing", view.getBuffer().equals( bufferC ) );
-        TestUtils.jEditFrame().menuItemWithPath( "Plugins", "Navigator", "Back" ).click();
-        assertTrue( "bufferB is not showing", view.getBuffer().equals( bufferB ) );
-        TestUtils.jEditFrame().menuItemWithPath( "Plugins", "Navigator", "Back" ).click();
-        assertTrue( "bufferA is not showing", view.getBuffer().equals( bufferA ) );
-        TestUtils.jEditFrame().menuItemWithPath( "Plugins", "Navigator", "Forward" ).click();
-        assertTrue( "bufferB is not showing", view.getBuffer().equals( bufferB ) );
-        TestUtils.jEditFrame().menuItemWithPath( "Plugins", "Navigator", "Forward" ).click();
-        assertTrue( "bufferC is not showing", view.getBuffer().equals( bufferC ) );
+        // close the buffers        
+        jEdit._closeBuffer(view, bufferA);
+        Pause.pause(500);
+        jEdit._closeBuffer(view, bufferB);
+        Pause.pause(500);
+        jEdit._closeBuffer(view, bufferC);
+        Pause.pause(500);
         
+        // clear navigator history
+        // This is puzzling, the menu items for individual plugins can't be
+        // found by FEST using the menuItemWithPath method. Finding the 'Clear' 
+        // menu item the first time by using the arrow keys works, then 
+        // subsequent calls to the menu work with menuItemWithPath.
+        TestUtils.jEditFrame().menuItemWithPath( "Plugins" ).click();
+        TestUtils.robot().pressAndReleaseKeys( VK_DOWN, VK_DOWN, VK_DOWN, VK_DOWN, VK_RIGHT, VK_DOWN, VK_DOWN, VK_DOWN, VK_DOWN, VK_DOWN, VK_ENTER );
         
+        // re-open the buffers, now ready for testing
+        jEdit.openFile(view, pathA);
+        Pause.pause(500);
+        jEdit.openFile(view, pathB);
+        Pause.pause(500);
+        jEdit.openFile(view, pathC);
+        Pause.pause(500);
+       
+        // test back and forward
+        assertTrue( "bufferC is not showing", view.getBuffer().getPath().equals( pathC ) );
+        TestUtils.jEditFrame().menuItemWithPath( "Plugins", "Navigator", "Back" ).click();
+        Pause.pause( 500 );
+        assertTrue( "bufferB is not showing", view.getBuffer().getPath().equals( pathB ) );
+        TestUtils.jEditFrame().menuItemWithPath( "Plugins", "Navigator", "Back" ).click();
+        Pause.pause( 500 );
+        assertTrue( "bufferA is not showing", view.getBuffer().getPath().equals( pathA ) );
+        TestUtils.jEditFrame().menuItemWithPath( "Plugins", "Navigator", "Forward" ).click();
+        Pause.pause( 500 );
+        assertTrue( "bufferB is not showing", view.getBuffer().getPath().equals( pathB ) );
+        TestUtils.jEditFrame().menuItemWithPath( "Plugins", "Navigator", "Forward" ).click();
+        Pause.pause( 500 );
+        assertTrue( "bufferC is not showing", view.getBuffer().getPath().equals( pathC ) );
+    }
+
+    // create a buffer with a number per line
+    private Buffer createNumberBuffer() {
+        String contents = "0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n0\n";
+        return createBuffer( contents );
     }
 
     // create and save a buffer with some random text in it.
@@ -207,21 +291,24 @@ public class NavigatorTest {
             int randomNumber = ( int ) ( fraction );
             sb.append( sourceChars.charAt( randomNumber ) );
         }
+        return createBuffer( sb.toString() );
+    }
 
+    private Buffer createBuffer( final String contents ) {
         final Buffer buffer;
         File file;
         try {
             file = File.createTempFile( "navigator", ".test" );
             buffer = TestUtils.newFile();
-            final String text = sb.toString();
             SwingUtilities.invokeAndWait(
                 new Runnable() {
                     public void run() {
-                        buffer.insert( 0, text );
+                        buffer.insert( 0, contents );
                     }
                 }
             );
             buffer.save( TestUtils.view(), file.getAbsolutePath() );
+            Pause.pause( 1000 );
             return buffer;
         }
         catch ( Exception e ) {
