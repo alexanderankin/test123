@@ -68,11 +68,11 @@ import xml.completion.IDDecl;
 //}}}
 
 /**
- * This class should eventually replace SAXParserImpl.
- * The design goal is to use more recent APIs in Xerces, and to avoid
- * using internal or native interface classes, including the Grammar
- * class.
- * It is not fully working yet.
+ * A SideKick XML parser that uses this under the covers:
+ * reader = XMLReaderFactory.createXMLReader("org.apache.xerces.parsers.SAXParser");
+ *
+ * @author kerik-sf
+ * @version $Id$
  */
 
 public class XercesParserImpl extends XmlParser
@@ -220,7 +220,7 @@ public class XercesParserImpl extends XmlParser
 
 		ElementDecl elementDecl = null;
 
-		 
+
 		if ( element.getAbstract()
 			/* I don't understand this condition.
 		       As far as I understand, every top level element can be
@@ -231,7 +231,7 @@ public class XercesParserImpl extends XmlParser
 					    verify the substitution group of f and if e is the head, add f to parent
 			   TODO: write an example, fix the code
 		       || element.getName().endsWith(".class") */
-		   ) 
+		   )
 		{
 
 			for (int j=0; j<elements.getLength(); ++j) {
@@ -245,7 +245,7 @@ public class XercesParserImpl extends XmlParser
 					if (parent != null) parent.content.add(decl.getName());
 				}
 			}
-			
+
 			/* we shouldn't care about the type of an abstract element,
 			   as it's not allowed in a document. Would it be the case,
 			   one should not forget to fix the NullPointerException on elementDecl
@@ -446,7 +446,7 @@ public class XercesParserImpl extends XmlParser
 			throws SAXException, java.io.IOException {
 
 			Log.log(Log.DEBUG,this,"resolveEntity("+name+","+publicId+","+baseURI+","+systemId+")");
-			
+
 			InputSource source = null;
 
 			try {

@@ -42,6 +42,7 @@ import org.xml.sax.ext.DefaultHandler2;
  *
  * @author ezust
  * @author kerik-sf
+ * @version $Id$
  *
  */
 public class Resolver extends DefaultHandler2
