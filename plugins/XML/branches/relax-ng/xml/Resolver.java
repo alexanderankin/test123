@@ -39,12 +39,9 @@ import org.xml.sax.ext.DefaultHandler2;
 /**
  * Resolver grabs and caches DTDs and xml schemas.
  * It also serves as a resource resolver for jeditresource: links
- * It is meant to replace CatalogManager.
- * 
- * It is still under development and is not used yet.
- * It requires JDK 1.5.
- * 
+ *
  * @author ezust
+ * @author kerik-sf
  *
  */
 public class Resolver extends DefaultHandler2
@@ -60,21 +57,20 @@ public class Resolver extends DefaultHandler2
 	private static boolean loadedCache = false;
 	static private boolean loadedCatalogs = false;
 	public static final String NETWORK_PROPS = "xml.general.network";
-	
+
 	public static void reloadCatalogs()
 	{
 		loadedCatalogs = false;
 	} //}}}
-	
+
 	//{{{ Package-private members
 
 	//{{{ init() method
-	// copied from CatalogManager
 	void init()
 	{
 		//do this here, as it will never change until restart of jEdit
 		setUsingCache(jEdit.getSettingsDirectory() != null);
-		
+
 		// TODO: not sure about this handler : is it useful ?
 		EditBus.addToBus(vfsUpdateHandler = new VFSUpdateHandler());
 	} //}}}
@@ -133,23 +129,23 @@ public class Resolver extends DefaultHandler2
 	 * Cache downloaded remote files
 	 */
 	public static final String CACHE = NETWORK_PROPS + ".cache";
-	
+
 	// {{{ static variables
-	/** Internal catalog for DTDs which are packaged in 
+	/** Internal catalog for DTDs which are packaged in
 	 * XML.jar and jEdit.jar */
-	public static final String INTERNALCATALOG = 
+	public static final String INTERNALCATALOG =
 		"jeditresource:/XML.jar!/xml/dtds/catalog";
 	//a String : type-safety of the collection
 	private static String IGNORE = new String("IGNORE");
 	private static Resolver singleton = null;
 	private static String resourceDir;
-	
+
 	// }}}
-	
-	// {{{ Instance Variables 
+
+	// {{{ Instance Variables
 	private EBComponent vfsUpdateHandler;
-	/** Internal catalog for DTDs which are packaged in 
-	 * XML.jar and jEdit.jar 
+	/** Internal catalog for DTDs which are packaged in
+	 * XML.jar and jEdit.jar
 	   Parses and manages the catalog files
 	   Moved away from Xerces' XMLCatalogResolver,
 	   as it's really an overlay on top of commons-resolver
@@ -159,20 +155,20 @@ public class Resolver extends DefaultHandler2
 
 	/** Mapping from public ID to URLs */
 	private HashMap<Entry,String> resourceCache;
-	
+
 	/** Set of catalog files to load.
 	 *  A set is used to remove duplicates (either via symlinks or double entry by the user)
 	 */
 	private Set<String> catalogFiles;
-	
-	
-	
+
+
+
 	// }}}
-	
+
 	// {{{ instance()
-	
+
 	/**
-	 * 
+	 *
 	 * @return a global catalog resolver object you can use as an
 	 * LSResourceResolver or EntityResolver.
 	 */
@@ -181,11 +177,11 @@ public class Resolver extends DefaultHandler2
 			singleton = new Resolver();
 			singleton.load();
 		}
-			
+
 		return singleton;
 	}
 	// }}}
-	
+
 	/**
 	 * You can't create an object directly.
 	 * use @ref instance() to get a singleton instance.
@@ -198,14 +194,14 @@ public class Resolver extends DefaultHandler2
 	{
 		if(!loadedCache)
 		{
-			
+
 			resourceCache = new HashMap<Entry,String>();
-			if (isUsingCache()) 
-				
+			if (isUsingCache())
+
 			{
 				resourceDir = MiscUtilities.constructPath(
 					jEdit.getSettingsDirectory(),"dtds");
-				
+
 			}
 
 			int i;
@@ -231,15 +227,13 @@ public class Resolver extends DefaultHandler2
 		}
 		if (!loadedCatalogs) {
 			loadedCatalogs = true;
-			
+
 			catalog = new Catalog();
 			catalog.getCatalogManager().setPreferPublic(true);
-			//debug : 
-			//catalog.getCatalogManager().setVerbosity(Integer.MAX_VALUE);
 			catalog.setupReaders();
 			catalogFiles = new HashSet<String>();
 			catalogFiles.add(INTERNALCATALOG);
-			
+
 			try
 			{
 				Log.log(Log.MESSAGE,Resolver.class,
@@ -253,15 +247,15 @@ public class Resolver extends DefaultHandler2
 				Log.log(Log.ERROR,Resolver.class,ex1);
 				ex1.printStackTrace();
 			}
-			
-			
+
+
 			int i = 0;
 			String uri = null;
-			do { 
+			do {
 				String prop = "xml.catalog." + i++;
 				uri = jEdit.getProperty(prop);
 				if (uri == null) break;
-				
+
 				Log.log(Log.MESSAGE,Resolver.class,
 						"Loading catalog: " + uri);
 
@@ -279,8 +273,8 @@ public class Resolver extends DefaultHandler2
 					ex2.printStackTrace();
 					Log.log(Log.ERROR,Resolver.class,ex2);
 				}
-				
-				
+
+
 			} while (uri != null);
 
 		}
@@ -295,9 +289,9 @@ public class Resolver extends DefaultHandler2
 	 * @param current
 	 * @param systemId
 	 */
-	public InputSource resolveEntity(String name, String publicId, String current, 
+	public InputSource resolveEntity(String name, String publicId, String current,
 		String systemId) throws SAXException, java.io.IOException {
-		
+
 		load();
 		if(publicId != null && publicId.length() == 0)
 			publicId = null;
@@ -306,12 +300,12 @@ public class Resolver extends DefaultHandler2
 			systemId = null;
 
 		String newSystemId = null;
-		
+
 		Log.log(Log.DEBUG,Resolver.class,"Resolver.resolveEntity("+name+","+publicId+","+current+","+systemId+")");
-		
+
 		//catch an error message here
 		if(publicId == null && systemId == null)return null;
-		
+
 		String parent;
 		if(current != null)
 		{
@@ -397,7 +391,7 @@ public class Resolver extends DefaultHandler2
 			|| newSystemId.startsWith("jeditresource:"))
 		{
 			// pretend to be reading the file from whatever the systemId was
-			// eg. http://slackerdoc.tigris.org/xsd/slackerdoc.xsd when we 
+			// eg. http://slackerdoc.tigris.org/xsd/slackerdoc.xsd when we
 			// are reading ~/.jedit/dtds/cache1345.xml
 			Log.log(Log.DEBUG,Resolver.class,"resolving to local file: "+newSystemId);
 			InputSource source = new InputSource(systemId);
@@ -426,7 +420,7 @@ public class Resolver extends DefaultHandler2
 				{
 					View view = jEdit.getActiveView();
 					if (getNetworkModeVal() == ALWAYS
-                        || (getNetworkModeVal() == ASK 
+                        || (getNetworkModeVal() == ASK
                             && showDownloadResourceDialog(view,_newSystemId))
                         )
 					{
@@ -435,7 +429,7 @@ public class Resolver extends DefaultHandler2
 					}
 				}
 			};
-			
+
 			if(SwingUtilities.isEventDispatchThread())
 				run.run();
 			else
@@ -447,7 +441,6 @@ public class Resolver extends DefaultHandler2
 				catch(Exception e)
 				{
 					throw new RuntimeException(e);
-					// Log.log(Log.ERROR,CatalogManager.class,e);
 				}
 			}
 
@@ -475,19 +468,19 @@ public class Resolver extends DefaultHandler2
 
 				return source;
 			}
-			else 
+			else
 			{
 				// returning null would not be as informing
 				// TODO: prevent the 'premature end of file' error from showing
 				throw new IOException(jEdit.getProperty("xml.network.error"));
 			}
 		}
-		
+
 	} //}}}
 
 	public void clearCache()
 	{
-		
+
 
 		Iterator files = resourceCache.values().iterator();
 		while(files.hasNext())
@@ -500,8 +493,8 @@ public class Resolver extends DefaultHandler2
 				new File(file).delete();
 			}
 		}
-		
-		//clear the properties ! 
+
+		//clear the properties !
 		int i=0;
 		String prop;
 		while(jEdit.getProperty(prop = "xml.cache"
@@ -520,12 +513,12 @@ public class Resolver extends DefaultHandler2
 			jEdit.unsetProperty(prop);
 			jEdit.unsetProperty(prop+".uri");
 		}
-		
+
 		resourceCache.clear();
 	} //}}}
 
 	// TODO: remove package access (for XMLPlugin)
-	String resolveSystem(String id) throws IOException 
+	String resolveSystem(String id) throws IOException
 	{
 		Entry e = new Entry(Entry.SYSTEM,id,null);
 		String uri = resourceCache.get(e);
@@ -571,7 +564,7 @@ public class Resolver extends DefaultHandler2
 	//{{{ resolvePublic() method
 	// TODO : remove systemId as it's not used and merge the 2 methods
 	private String resolvePublic(String systemId, String publicId) throws IOException
-		
+
 	{
 		Entry e = new Entry(Entry.PUBLIC,publicId,null);
 		String uri = resourceCache.get(e);
@@ -691,34 +684,34 @@ public class Resolver extends DefaultHandler2
 		loadedCatalogs = false;
 	} //}}}
 
-	
+
 	static public boolean isUsingCache() {
 		if(jEdit.getSettingsDirectory() == null) return false;
 		return jEdit.getBooleanProperty(CACHE);
 	}
-	
+
 	static public void setUsingCache(boolean newCache) {
 		jEdit.setBooleanProperty(CACHE, newCache);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return the network mode: LOCAL, ASK, or ALWAYS
 	 */
 	static public String getNetworkMode() {
 		return jEdit.getProperty(NETWORK_PROPS + ".mode");
-		
+
 	}
 	/**
-	 * 
+	 *
 	 * @param newVal 0=ask, 1=local mode, 2=always download
 	 */
 	static public void setNetworkModeVal(int newVal) {
 		setNetworkMode(MODES[newVal]);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return 0=ask, 1=local mode, 2=always download
 	 */
 	static public int getNetworkModeVal() {
@@ -729,7 +722,7 @@ public class Resolver extends DefaultHandler2
 		}
 		return 0;
 	}
-	
+
 	static public void setNetworkMode(String newMode) {
 		jEdit.setProperty(NETWORK_PROPS + ".mode", newMode);
 	}
@@ -738,5 +731,5 @@ public class Resolver extends DefaultHandler2
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 }
