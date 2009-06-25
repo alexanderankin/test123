@@ -373,7 +373,6 @@ public class Navigator implements ActionListener {
         if ( position == null ) {
             return ;
         }
-        Log.log( "setPosition, setting to " + position );
 
         // stop listening to EditBus events while we are changing buffers
         ignoreUpdates = true;
