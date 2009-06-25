@@ -39,10 +39,10 @@
       </CODE>
    </ACTION>
 
-   <ACTION NAME="navigator.toggleCombineLists">
+   <ACTION NAME="navigator.combinedList">
       <CODE>
          ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
-         plugin.toggleCombineLists();
+         plugin.combinedList(view);
       </CODE>
    </ACTION>
 

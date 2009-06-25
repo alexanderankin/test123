@@ -13,7 +13,7 @@ plugin.ise.plugin.nav.NavigatorPlugin.description=The Navigator Plugin \
 
 # dependencies
 plugin.ise.plugin.nav.NavigatorPlugin.depend.0=jdk 1.5
-plugin.ise.plugin.nav.NavigatorPlugin.depend.1=jedit 04.03.15.00
+plugin.ise.plugin.nav.NavigatorPlugin.depend.1=jedit 04.03.17.00
 plugin.ise.plugin.nav.NavigatorPlugin.depend.2=plugin code2html.Code2HTMLPlugin 0.6
 
 # docs
@@ -26,12 +26,12 @@ options.navigator.code=new ise.plugin.nav.OptionPanel();
 
 navigator.options.groupByFile.label=Group history items by file
 
-navigator.options.combineLists.label=Combine "Back" and "Forward" lists
-navigator.options.showLineText.label=Show line text in "Back" and "Forward" lists
-navigator.options.showLineTextSyntax.label=Show syntax highlighting in "Back" and "Forward" lists
-navigator.options.showStripes.label=Show stripes in "Back" and "Forward" lists
+navigator.options.showLineText.label=Show line text in history list
+navigator.options.showLineTextSyntax.label=Show syntax highlighting in history list
+navigator.options.showStripes.label=Show stripes in history list
 
 navigator.options.showOnToolbar.label=Show Navigator on toolbar
+navigator.options.listSize.label=Visible rows in history list
 navigator.options.maxStackSize.label=Maximum history size:
 
 # title for DockableWindowManager
@@ -53,7 +53,7 @@ navigator.menu.label=Navigator
 # menu separator to be inserted. This line also must start with the string
 # passed to the GUIUtilities.loadMenu method in createMenuItems. The items
 # are the action names as set in the actions.xml file.
-plugin.ise.plugin.nav.NavigatorPlugin.menu=navigator.back navigator.backList navigator.forward navigator.forwardList navigator.toggleCombineLists navigator.clearHistory navigator.toggleScope navigator.toggleGroupByFile navigator.showdockable
+plugin.ise.plugin.nav.NavigatorPlugin.menu=navigator.back navigator.backList navigator.forward navigator.forwardList navigator.combinedList navigator.clearHistory navigator.toggleScope navigator.toggleGroupByFile navigator.showdockable
 #navigator.toolbar
 
 # the next three items are the labels to add to a submenu on
@@ -61,7 +61,7 @@ plugin.ise.plugin.nav.NavigatorPlugin.menu=navigator.back navigator.backList nav
 navigator.back.label=Back
 navigator.back.icon=ArrowL.png
 
-navigator.backList.label=Back list
+navigator.backList.label=Show back list
 navigator.backList.icon=ArrowD.png
 
 navigator.hidebuttons.label=Add Navigator Buttons
@@ -71,14 +71,14 @@ navigator.showdockable.label=Show Navigator Dockable
 navigator.forward.label=Forward
 navigator.forward.icon=ArrowR.png
 
-navigator.forwardList.label=Forward list
+navigator.forwardList.label=Show forward list
 navigator.forwardList.icon=ArrowU.png
 
 navigator.clearHistory.label=Clear history
 navigator.toggleScope.label=Toggle scope
 navigator.toggleGroupByFile.label=Toggle group by file
 
-navigator.toggleCombineLists.label=Toggle combine lists
+navigator.combinedList.label=Show combined list
 
 #navigator.toolbar.label=Show on toolbar
 

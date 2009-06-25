@@ -458,6 +458,20 @@ public class NavigatorPlugin extends EBPlugin {
             navigator.goForward();
         }
     }
+    
+    /**
+     * Wrapper for the 'combinedList' method of the Navigator for the given
+     * view.
+     *
+     * @param view
+     *                The view for the Navigator
+     */
+    public static void combinedList( View view ) {
+        Navigator navigator = getNavigator( view );
+        if ( navigator != null ) {
+            navigator.combinedList();
+        }
+    }
 
     /**
      * Clear the Navigator history for the given view.  This clears the history

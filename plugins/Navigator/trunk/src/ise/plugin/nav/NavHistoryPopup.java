@@ -31,13 +31,15 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
-import javax.swing.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
@@ -55,6 +57,7 @@ class NavHistoryPopup extends JPopupMenu {
 
     private JList list;
     private View view;
+    private NavPosition initialPosition = null;
     private boolean numberKeyProcessed = false;
     private Navigator navigator = null;
 
@@ -68,6 +71,7 @@ class NavHistoryPopup extends JPopupMenu {
     public NavHistoryPopup( View view, Navigator navigator, Collection<NavPosition> positions, NavPosition currentPosition ) {
         this.navigator = navigator;
         this.view = view;
+        initialPosition = currentPosition;
 
         // positions is a Stack, so need to reverse the order
         positions = new ArrayList<NavPosition>( positions );
@@ -80,6 +84,7 @@ class NavHistoryPopup extends JPopupMenu {
         }
         list = new JList( positions.toArray() );
         list.setCellRenderer( new CellRenderer() );
+        list.setVisibleRowCount( jEdit.getIntegerProperty( "navigator.listSize", 10 ) );
         list.addMouseListener( new MouseHandler() );
 
         JScrollPane scroller = new JScrollPane( list );
@@ -106,7 +111,6 @@ class NavHistoryPopup extends JPopupMenu {
         setLocation();
         setVisible( true );
         list.requestFocus();
-        setPopupSize( 600, 200 );
         if ( currentPosition != null ) {
             list.setSelectedValue( currentPosition, true );
         }
@@ -198,7 +202,7 @@ class NavHistoryPopup extends JPopupMenu {
                 case '7':
                 case '8':
                 case '9':
-                    if ( numberKeyProcessed )                    // Since many components have this handler
+                    if ( numberKeyProcessed )                        // Since many components have this handler
                         return ;
 
                     /* There may actually be more than 9 items in the list, but since
@@ -299,20 +303,23 @@ class NavHistoryPopup extends JPopupMenu {
     // to show the line preview with proper syntax highlighting.
     class CellRenderer extends JLabel implements ListCellRenderer {
 
+        private Border defaultBorder = BorderFactory.createEmptyBorder( 1, 1, 6, 1 );
+        private Border initialPositionBorder = BorderFactory.createCompoundBorder( LineBorder.createBlackLineBorder() , defaultBorder );
+
         public CellRenderer() {
-            setBorder( BorderFactory.createEmptyBorder( 1, 1, 6, 1 ) );
+            setBorder( defaultBorder );
         }
 
         public Component getListCellRendererComponent(
             JList list,
-            Object value,                        // value to display
-            int index,                           // cell index
-            boolean isSelected,                  // is the cell selected
-            boolean cellHasFocus )               // the list and the cell have the focus
+            Object value,                            // value to display
+            int index,                               // cell index
+            boolean isSelected,                      // is the cell selected
+            boolean cellHasFocus )                   // the list and the cell have the focus
         {
             NavPosition pos = ( NavPosition ) value;
             if ( pos == null ) {
-                return null;   
+                return null;
             }
             String labelText = pos.toString();
             if ( jEdit.getBooleanProperty( "navigator.showLineText", true ) ) {
@@ -398,6 +405,7 @@ class NavHistoryPopup extends JPopupMenu {
                 setBackground( list.getSelectionBackground() );
                 setForeground( list.getSelectionForeground() );
             }
+            setBorder( pos.equals( initialPosition ) ? initialPositionBorder : defaultBorder );
             return this;
         }
     }
