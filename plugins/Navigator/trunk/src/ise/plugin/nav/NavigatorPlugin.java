@@ -514,7 +514,7 @@ public class NavigatorPlugin extends EBPlugin {
                 // create/update Navigator for View scope
                 EditPane editPane = epu.getEditPane();
                 Navigator n = viewNavigatorMap.get( editPane.getView() );
-                if ( nav == null ) {
+                if ( n == null ) {
                     n = createNavigator( editPane.getView() );
                     if ( n != null ) {
                         n.addToHistory();
