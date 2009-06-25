@@ -31,7 +31,6 @@ package ise.plugin.nav;
 
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.event.MouseListener;
 import java.util.HashMap;
 
 import javax.swing.JOptionPane;
@@ -48,7 +47,6 @@ import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PositionChanging;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.msg.ViewUpdate;
-import org.gjt.sp.jedit.textarea.TextAreaPainter;
 
 
 /**
@@ -203,7 +201,7 @@ public class NavigatorPlugin extends EBPlugin {
      * only useful when reloading this plugin.
      */
     public void start() {
-        scope = jEdit.getIntegerProperty( "navigator.scope", EDITPANE_SCOPE );
+        scope = jEdit.getIntegerProperty( "navigator.scope", EDITPANE_SCOPE );      // NOPMD
         for ( View v : jEdit.getViews() ) {
             createNavigator( v );
             createNavigators( v );
@@ -343,7 +341,20 @@ public class NavigatorPlugin extends EBPlugin {
      * there is no Navigator for the View or EditPane.
      */
     public static Navigator getNavigator( View view ) {
-        return getScope() == EDITPANE_SCOPE ? editPaneNavigatorMap.get( view.getEditPane() ) : viewNavigatorMap.get( view );
+        Navigator navigator = null;
+        if ( getScope() == EDITPANE_SCOPE ) {
+            navigator = editPaneNavigatorMap.get( view.getEditPane() );
+            if ( navigator == null ) {
+                navigator = createNavigator( view.getEditPane() );
+            }
+        }
+        else {
+            navigator = viewNavigatorMap.get( view );
+            if ( navigator == null ) {
+                navigator = createNavigator( view );
+            }
+        }
+        return navigator;
     }
 
     /**
@@ -352,6 +363,9 @@ public class NavigatorPlugin extends EBPlugin {
      * @return a previously existing or a newly created Navigator for this View
      */
     public static Navigator createNavigator( View view ) {
+        if ( view == null ) {
+            return null;
+        }
         Navigator navigator = viewNavigatorMap.get( view );
         if ( navigator == null ) {
             navigator = new Navigator( view );
@@ -365,6 +379,9 @@ public class NavigatorPlugin extends EBPlugin {
      * @param view the View containing the EditPanes to create Navigators for.
      */
     public static void createNavigators( View view ) {
+        if ( view == null ) {
+            return ;
+        }
         EditPane[] editPanes = view.getEditPanes();
         for ( EditPane editPane : editPanes ) {
             createNavigator( editPane );
@@ -377,6 +394,9 @@ public class NavigatorPlugin extends EBPlugin {
      * @return a previously existing or a newly created Navigator for this EditPane
      */
     public static Navigator createNavigator( EditPane editPane ) {
+        if ( editPane == null ) {
+            return null;
+        }
         Navigator navigator = editPaneNavigatorMap.get( editPane );
         if ( navigator == null ) {
             navigator = new Navigator( editPane );
@@ -458,22 +478,23 @@ public class NavigatorPlugin extends EBPlugin {
     }
 
     public void handleMessage( EBMessage message ) {
-        // When we create a new View, create a new navigator for it
-        if ( message instanceof ViewUpdate ) {
-            ViewUpdate vu = ( ViewUpdate ) message;
-            View v = vu.getView();
-            Object what = vu.getWhat();
-            if ( what.equals( ViewUpdate.CREATED ) ) {
-                createNavigator( v );
-                clearToolBars();
-                setToolBars();
-            }
-            else if ( what.equals( ViewUpdate.CLOSED ) ) {
-                viewNavigatorMap.remove( v );
-                toolbarMap.remove( v );
+        // Note: handle messages in this order: BufferUpdate, then PositionChanging,
+        // then EditPaneUpdate last because of inheritance.
+        
+        // if a new buffer was created, need to add the first position in the
+        // buffer to the history
+        if ( message instanceof BufferUpdate ) {
+            BufferUpdate bu = ( BufferUpdate ) message;
+            if ( bu.getWhat().equals( BufferUpdate.CREATED ) ) {
+                if ( bu.getView() != null && bu.getView().getEditPane() != null ) {     // NOPMD
+                    Navigator n = getNavigator( bu.getView() );
+                    if ( n != null ) {
+                        n.addToHistory();
+                    }
+                }
             }
         }
-
+        
         // If the editpane changes its current position, we want to know
         // just before it happens so the last position can be recorded in the
         // history.
@@ -485,27 +506,52 @@ public class NavigatorPlugin extends EBPlugin {
                 n.addToHistory();
             }
         }
+
+        // add or remove Navigators if EditPane is created or destroyed
         else if ( message instanceof EditPaneUpdate ) {
             EditPaneUpdate epu = ( EditPaneUpdate ) message;
             if ( epu.getWhat() == EditPaneUpdate.CREATED ) {
                 // create/update Navigator for View scope
                 EditPane editPane = epu.getEditPane();
-                Navigator nav = viewNavigatorMap.get( editPane.getView() );
+                Navigator n = viewNavigatorMap.get( editPane.getView() );
+                if ( nav == null ) {
+                    n = createNavigator( editPane.getView() );
+                    if ( n != null ) {
+                        n.addToHistory();
+                    }
+                }
                 // create Navigator for EditPane scope
-                createNavigator( editPane );
+                n = createNavigator( editPane );
+                if ( n != null ) {
+                    n.addToHistory();
+                }
             }
             else if ( epu.getWhat().equals( EditPaneUpdate.DESTROYED ) && scope == EDITPANE_SCOPE ) {
                 EditPane editPane = epu.getEditPane();
                 editPaneNavigatorMap.remove( editPane );
             }
-            else if ( epu.getWhat().equals( EditPaneUpdate.BUFFER_CHANGED ) ) {
-                EditPane p = epu.getEditPane();
-                Navigator n = getNavigator( p.getView() );
+        }
+
+        // When we create a new View, create a new navigator for it
+        else if ( message instanceof ViewUpdate ) {
+            ViewUpdate vu = ( ViewUpdate ) message;
+            View v = vu.getView();
+            Object what = vu.getWhat();
+            if ( what.equals( ViewUpdate.CREATED ) ) {
+                Navigator n = createNavigator( v );
                 if ( n != null ) {
                     n.addToHistory();
                 }
+                clearToolBars();
+                setToolBars();
+            }
+            else if ( what.equals( ViewUpdate.CLOSED ) ) {
+                viewNavigatorMap.remove( v );
+                toolbarMap.remove( v );
             }
         }
+
+        // update properties for this plugin on PropertiesChanged message
         else if ( message instanceof PropertiesChanged ) {
             if ( showOnToolBars() ) {
                 setToolBars();

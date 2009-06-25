@@ -107,7 +107,8 @@ public class NavPosition {
 
     @Override
     public String toString() {
-        return path + ":" + ( lineno + 1 );
+        // lineno is 0-based, but gutter lines are 1-based, so add one
+        return path + ":" + ( lineno + 1 ) + ":" + caret;
     }
 
     /**

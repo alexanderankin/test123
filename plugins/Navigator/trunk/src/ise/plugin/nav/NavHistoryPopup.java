@@ -311,6 +311,9 @@ class NavHistoryPopup extends JPopupMenu {
             boolean cellHasFocus )               // the list and the cell have the focus
         {
             NavPosition pos = ( NavPosition ) value;
+            if ( pos == null ) {
+                return null;   
+            }
             String labelText = pos.toString();
             if ( jEdit.getBooleanProperty( "navigator.showLineText", true ) ) {
                 EditPane editPane = null;

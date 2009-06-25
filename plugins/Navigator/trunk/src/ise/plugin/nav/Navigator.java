@@ -40,7 +40,6 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.PositionChanging;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.jedit.textarea.TextAreaPainter;
 
 /**
  * NavigatorPlugin for keeping track of where we were.
@@ -188,13 +187,15 @@ public class Navigator implements ActionListener {
         }
 
         Buffer buffer = editPane.getBuffer();
-        if ( ( buffer.getLength() == 0 ) && buffer.getName().startsWith( "Untitled" ) ) {
+        if ( buffer == null || ( buffer.getLength() == 0 && buffer.getName().startsWith( "Untitled" ) ) ) {
             // skip empty untitled buffers
             return null;
         }
 
+        buffer.readLock();
         int caretPosition = textarea.getCaretPosition();
         String linetext = textarea.getLineText( textarea.getCaretLine() );
+        buffer.readUnlock();
         return new NavPosition( editPane, buffer, caretPosition, linetext );
     }
 
@@ -205,27 +206,35 @@ public class Navigator implements ActionListener {
         if ( ignoreUpdates ) {
             return ;
         }
-        addToHistory( currentPosition() );
+        NavPosition np = currentPosition();
+        addToHistory( np );
     }
 
     /**
-     * Updates the stacks and button state based on the given node. Pushes
-     * the node on to the "back" history, clears the "forward" history.
+     * Updates the stacks and button state based on the given position. Pushes
+     * the position on to the "back" history, clears the "forward" history.
      *
-     * @param node
+     * @param position
      *                an instance of NavPosition.
      */
-    private void addToHistory( NavPosition node ) {
-        if ( node == null ) {
+    private void addToHistory( NavPosition position ) {
+        if ( position == null ) {
             return ;
         }
-        // don't add same node twice in a row
-        if ( backHistory.empty() || !current.equals( node ) ) {
-            backHistory.push( current );
-            current = node;
-            forwardHistory.clear();
-            setButtonState();
+        if ( position.equals( current ) ) {
+            // don't add the same position twice in a row
+            return ;
         }
+        if ( current == null ) {
+            // first time addToHistory is called
+            current = position;
+            return ;
+        }
+
+        backHistory.push( current );
+        current = position;
+        forwardHistory.clear();
+        setButtonState();
     }
 
     /**
@@ -364,6 +373,7 @@ public class Navigator implements ActionListener {
         if ( position == null ) {
             return ;
         }
+        Log.log("setPosition, setting to " + position);
 
         // stop listening to EditBus events while we are changing buffers
         ignoreUpdates = true;
@@ -461,28 +471,39 @@ public class Navigator implements ActionListener {
      * Moves to the previous item in the "back" history.
      */
     public void goBack() {
-        if ( backHistory.size() > 0 ) {
-            if ( current != null ) {
-                forwardHistory.push( current );
-            }
-            current = backHistory.pop();
-            setPosition( current );
-            setButtonState();
+        if ( backHistory.size() == 0 ) {
+            // nowhere to go
+            return ;
         }
+        if ( current == null ) {
+            // haven't been anywhere yet
+            return ;
+        }
+        NavPosition now = currentPosition();
+        if (!now.equals(current)) {
+            backHistory.push(current);
+            current = now;
+        }
+        forwardHistory.push( current );
+        current = backHistory.pop();
+        setPosition( current );
+        setButtonState();
     }
 
     /**
      * Moves to the next item in the "forward" history.
      */
     public void goForward() {
-        if ( forwardHistory.size() > 0 ) {
-            if ( current != null ) {
-                backHistory.push( current );
-            }
-            current = forwardHistory.pop();
-            setPosition( current );
-            setButtonState();
+        if ( forwardHistory.size() == 0 ) {
+            // nowhere to go
+            return ;
         }
+        if ( current != null ) {
+            backHistory.push( current );
+        }
+        current = forwardHistory.pop();
+        setPosition( current );
+        setButtonState();
     }
 
     /**
