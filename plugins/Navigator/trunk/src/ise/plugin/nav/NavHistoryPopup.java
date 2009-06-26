@@ -304,7 +304,7 @@ class NavHistoryPopup extends JPopupMenu {
     class CellRenderer extends JLabel implements ListCellRenderer {
 
         private Border defaultBorder = BorderFactory.createEmptyBorder( 1, 1, 6, 1 );
-        private Border initialPositionBorder = BorderFactory.createCompoundBorder( LineBorder.createBlackLineBorder() , defaultBorder );
+        private Border initialPositionBorder = BorderFactory.createCompoundBorder( new LineBorder( getForeground() ) , defaultBorder );
 
         public CellRenderer() {
             setBorder( defaultBorder );
