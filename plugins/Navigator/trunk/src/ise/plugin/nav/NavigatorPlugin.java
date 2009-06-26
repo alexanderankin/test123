@@ -499,7 +499,7 @@ public class NavigatorPlugin extends EBPlugin {
         // buffer to the history
         if ( message instanceof BufferUpdate ) {
             BufferUpdate bu = ( BufferUpdate ) message;
-            if ( bu.getWhat().equals( BufferUpdate.CREATED ) ) {
+            if ( bu.getWhat().equals( BufferUpdate.LOADED ) ) {
                 if ( bu.getView() != null && bu.getView().getEditPane() != null ) {     // NOPMD
                     Navigator n = getNavigator( bu.getView() );
                     if ( n != null ) {
