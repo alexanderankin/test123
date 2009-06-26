@@ -123,10 +123,6 @@ public class NavigatorPlugin extends EBPlugin {
         return jEdit.getBooleanProperty( "navigator.combineLists" );
     }
 
-    public static void toggleCombineLists() {
-        jEdit.setBooleanProperty( "navigator.combineLists", !combineLists() );
-    }
-
     /**
      * Show the Navigator buttons on the main toolbar for the View.
      */
