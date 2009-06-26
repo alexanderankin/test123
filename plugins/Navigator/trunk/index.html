@@ -63,6 +63,24 @@
    Maximum History Size - the maximum number of positions that Navigator will remember in either the back history
    or the forward history.
    </li>
+   <li>
+   Show line text in history - in addition to showing the file name and line number of a position, the history
+   popup can also show the text of the line at that position, which can be helpful in finding the right position
+   to jump to.
+   </li>
+   <li>
+   Show syntax highlighting in history list - when showing the text at the position, the popup can also display that
+   text with the syntax highlighting used in the text area.
+   </li>
+   <li>
+   Show stripes in history list - selecting this option will cause the history list items to be displayed with
+   alternating colors in the list, which can make it easier to pick out the item you want.  On the other hand,
+   depending on the look and feel you are using, this can be horribly ugly.
+   </li>
+   <li>
+   Visible rows in history list - you can choose how many rows you'd like to see at once in the history list.
+   The default is 10 rows.
+   </li>
   </ul>
   <p>
   The Navigator works in a "visible" or an "invisible" way. I find it is handy to use shortcut keys for the actions
@@ -90,8 +108,8 @@
   </ol>
   <p>
   It is possible to access the previously visited locations directly.  From the main menu to Plugins - Navigator, then
-  choose either "Back List" or "Forward List", then you can pick a specific location from the list popup.  You can also
-  assign a shortcut to these lists (Alt+1 and Alt+2, perhaps) by going to the main menu, Utilities, Global Options,
+  choose either "Back List" or "Forward List" or "Combined List", then you can pick a specific location from the list popup.  You can also
+  assign a shortcut to these lists (Alt+1, Alt+2, and Alt+3, perhaps) by going to the main menu, Utilities, Global Options,
   Shortcuts, choose Plugin: Navigator, and set the shortcut keys.
 
   <h3>How Navigator works</h3>
@@ -113,7 +131,7 @@
   between the panes, going back (or forward) will also set focus on the appropriate edit pane, even if you have the
   same file open in both panes.  This works for as many splits as you have.
   <p>
-  If you close an edit pane, the history for those files is not lost.  Quite often, you'll have just one edit pane
+  If you close an edit pane, the history for those files is NOT lost.  Quite often, you'll have just one edit pane
   in your View, you'll split the view to compare a file or to see different parts of the same file,
   then you'll close the view.  The history will be retained for any PositionChanging events that were
   tracked during the split.  The splits won't be restored as you go back or forward, though.
