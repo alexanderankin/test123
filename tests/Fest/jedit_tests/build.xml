@@ -24,14 +24,14 @@
 
     <!-- this selector holds just one test -->
     <selector id="testcases.current">
-        <filename name="test/search/SearchAndReplaceTest.java"/>
+        <filename name="test/gui/StatusBarTest.java"/>
     </selector>
 
     <!-- this selector controls which tests to run, set the refid to either
     testcases.current to run just one test or testcases.all to run all tests. -->
     <selector id="junit.testcases">
         <or>
-            <selector refid="testcases.current"/>
+            <selector refid="testcases.all"/>
         </or>
     </selector>
     
