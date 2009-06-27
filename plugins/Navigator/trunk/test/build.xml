@@ -1,4 +1,4 @@
-<project name="bufferlocal_tests" default="test" basedir=".">
+<project name="Navigator_tests" default="test" basedir=".">
     
 
     <!-- general properties for plugins from the plugins directory, in 
