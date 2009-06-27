@@ -5,6 +5,12 @@
     This is the build file for the jEdit unit test framework based on Fest. This
     build file both builds the framework classes and runs unit tests.
     
+    The only target that should be called directly in this build file is
+    "compileFramework".  The only target that should be called indirectly is
+    "-test", which should be called from a project build file, such as the one
+    in jedit_tests/build.xml or from a plugin test build file.  All other
+    targets are used as necessary from these two targets.
+    
     This build file provides several main features:
     1. Does a clean build of jEdit from source.  
     2. Builds the test framework code.
@@ -51,7 +57,7 @@
     <!-- uncomment this property or set it in a calling build file to avoid 
     rebuilding jEdit each time -->
     <!--
-    <property name="dont_build_jedit" value=""/>
+    <property name="dont_-buildjEdit" value=""/>
     -->
 
     <!-- =======================================================================
@@ -160,10 +166,10 @@
     
     
     <!-- =======================================================================
-    Target: build_jedit
+    Target: -buildjEdit
     Calls "clean-all" and "build" in the main jEdit build file.
     ======================================================================== -->
-    <target name="build_jedit" description="Build jEdit, prerequisite for tests." unless="dont_build_jedit">
+    <target name="-buildjEdit" description="Build jEdit, prerequisite for tests." unless="dont_-buildjEdit">
         <ant antfile="${test.jedit.src}/build.xml" dir="${test.jedit.src}" target="clean-all" inheritall="false"/>
         <ant antfile="${test.jedit.src}/build.xml" dir="${test.jedit.src}" target="build" inheritall="false"/>
     </target>
@@ -173,7 +179,7 @@
     Target: compileFramework
     Builds jEdit, then compiles jEdit then the framework classes.
     ======================================================================== -->
-    <target name="compileFramework" description="Compile the test framework classes" depends="cleanFramework, build_jedit">
+    <target name="compileFramework" description="Compile the test framework classes" depends="-cleanFramework, -buildjEdit">
         <mkdir dir="${test.framework.classes.dir}" />
         <javac srcdir="${test.framework.src.dir}" destdir="${test.framework.classes.dir}" debug="true" source="1.5" target="1.5">
             <classpath refid="framework.class.path"/>
@@ -182,10 +188,19 @@
     
     
     <!-- =======================================================================
-    Target: compileTests
+    Target: -compileTests
     Compiles the test classes for the project.
     ======================================================================== -->
-    <target name="compileTests" description="Compile the project test classes" depends="cleanTests">
+    <target name="-compileTests" description="Compile the project test classes" depends="-cleanTests">
+        <available file="${project.test.src.dir}" type="dir" property="project.test.src.dir.present"/>
+        <fail message="Source code directory for project is not defined.  This target should not be called directly, it should be called from the 'test' target only.">
+            <condition>
+                <not>
+                    <isset property="project.test.src.dir.present"/>
+                </not>
+            </condition>
+        </fail>
+    
         <echo>project.test.classes.dir = ${project.test.classes.dir}</echo>
         <javac srcdir="${project.test.src.dir}" destdir="${project.test.classes.dir}" debug="true" source="1.5" target="1.5">
             <selector refid="projectFiles"/>
@@ -199,7 +214,7 @@
     Target: test
     Runs all tests as specified in the junit.testcases selector.
     ======================================================================== -->
-    <target name="test" description="Runs the jUnit tests." depends="prepSettingsDir, deletePluginJars, copyPluginJars, compileTests">
+    <target name="-test" description="Runs the jUnit tests." depends="-prepSettingsDir, -deletePluginJars, -copyPluginJars, -compileTests">
         <echo message="Running tests..."/>
 
         <mkdir dir="${test.output}"/>
@@ -235,9 +250,9 @@
     directory. This target also deletes any properties file that may have
     existed from previous test runs from this directory.
     ======================================================================== -->
-    <target name="prepSettingsDir">
+    <target name="-prepSettingsDir">
         <available file="${test.jedit.settings.dir}" type="dir" property="settings.dir.present"/>
-        <fail message="${test.jedit.settings.dir} does not exist, run build_jedit target first.">
+        <fail message="${test.jedit.settings.dir} does not exist, run -buildjEdit target first.">
             <condition>
                 <not>
                     <isset property="settings.dir.present"/>
@@ -272,12 +287,12 @@
     
     
     <!-- =======================================================================
-    Target: copyPluginJars 
+    Target: -copyPluginJars 
     Copies jars/files specified in a selector named "plugin.jars" to the 
-    designated jars directory.  Note that the property "copyPluginJars" must
+    designated jars directory.  Note that the property "-copyPluginJars" must
     exist, the value of this property does not matter.
     ======================================================================== -->
-    <target name="copyPluginJars" depends="deletePluginJars" if="copyPluginJars">
+    <target name="-copyPluginJars" depends="-deletePluginJars" if="-copyPluginJars">
         <!-- then copy the specified files into the jars directory -->
         <copy todir="${test.jedit.jars}">
             <filelist refid="plugin.jars"/>
@@ -285,11 +300,11 @@
     </target>
     
     <!-- =======================================================================
-    Target: deletePluginJars
+    Target: -deletePluginJars
     Deletes any jars and files from the jars and jars-cache directories in the
     test.jedit.settings.dir.
     ======================================================================== -->
-    <target name="deletePluginJars">
+    <target name="-deletePluginJars">
         <delete quiet="true">
             <fileset dir="${test.jedit.jars}">
                 <include name="**/*"/>
@@ -304,10 +319,10 @@
 
     
     <!-- =======================================================================
-    Target: cleanFramework
+    Target: -cleanFramework
     Removes compiled framework classes from the build directory.
     ======================================================================== -->
-    <target name="cleanFramework" description="Remove framework classes from the build directory">
+    <target name="-cleanFramework" description="Remove framework classes from the build directory">
         <echo message="Removing framework classes ..."/>
         <delete>
             <fileset dir="${test.framework.classes.dir}">
@@ -318,12 +333,22 @@
     
     
     <!-- =======================================================================
-    Target: cleanTests
+    Target: -cleanTests
     Removes compiled test classes.
     ======================================================================== -->
-    <target name="cleanTests" description="Remove unit tests from the project build directory">
+    <target name="-cleanTests" description="Remove unit tests from the project build directory">
         <echo message="Removing test classes ..."/>
-        <delete>
+        
+        <available file="${project.test.classes.dir}" type="dir" property="project.test.classes.dir.present"/>
+        <fail message="Classes directory for project is not defined.  This target should not be called directly.">
+            <condition>
+                <not>
+                    <isset property="project.test.classes.dir.present"/>
+                </not>
+            </condition>
+        </fail>
+    
+        <delete quiet="true">
             <fileset dir="${project.test.classes.dir}">
                 <include name="**/*"/>
             </fileset>
