@@ -36,7 +36,7 @@
     </selector>
     
     <target name="test">
-        <ant antfile="${test.framework.home}/build.xml" target="test" inheritRefs="true"/>
+        <ant antfile="${test.framework.home}/build.xml" target="-test" inheritRefs="true"/>
     </target>
     
 </project>
