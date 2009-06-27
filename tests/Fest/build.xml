@@ -292,7 +292,7 @@
     designated jars directory.  Note that the property "-copyPluginJars" must
     exist, the value of this property does not matter.
     ======================================================================== -->
-    <target name="-copyPluginJars" depends="-deletePluginJars" if="-copyPluginJars">
+    <target name="-copyPluginJars" depends="-deletePluginJars" if="copyPluginJars">
         <!-- then copy the specified files into the jars directory -->
         <copy todir="${test.jedit.jars}">
             <filelist refid="plugin.jars"/>
