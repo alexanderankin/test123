@@ -42,11 +42,7 @@ import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.msg.BufferUpdate;
-import org.gjt.sp.jedit.msg.EditPaneUpdate;
-import org.gjt.sp.jedit.msg.PositionChanging;
-import org.gjt.sp.jedit.msg.PropertiesChanged;
-import org.gjt.sp.jedit.msg.ViewUpdate;
+import org.gjt.sp.jedit.msg.*;
 
 
 /**
@@ -454,7 +450,7 @@ public class NavigatorPlugin extends EBPlugin {
             navigator.goForward();
         }
     }
-    
+
     /**
      * Wrapper for the 'combinedList' method of the Navigator for the given
      * view.
@@ -488,10 +484,11 @@ public class NavigatorPlugin extends EBPlugin {
     }
 
     public void handleMessage( EBMessage message ) {
-        // Note: handle messages in this order: BufferUpdate, then PositionChanging,
-        // then EditPaneUpdate last because of inheritance.
+        if (message == null) {
+            return;   
+        }
         
-        // if a new buffer was created, need to add the first position in the
+        // if a new buffer was loaded, need to add the first position in the
         // buffer to the history
         if ( message instanceof BufferUpdate ) {
             BufferUpdate bu = ( BufferUpdate ) message;
@@ -504,7 +501,15 @@ public class NavigatorPlugin extends EBPlugin {
                 }
             }
         }
-        
+
+        // Note: handle messages in this order: BufferChanging, then PositionChanging,
+        // then EditPaneUpdate last because of inheritance.
+
+        // Ignore BufferChanging messages.
+        if ( message instanceof BufferChanging ) {
+            return;
+        }
+
         // If the editpane changes its current position, we want to know
         // just before it happens so the last position can be recorded in the
         // history.
