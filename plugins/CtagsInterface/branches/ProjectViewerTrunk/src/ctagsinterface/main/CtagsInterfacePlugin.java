@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import org.gjt.sp.jedit.ActionSet;
 import org.gjt.sp.jedit.Buffer;
@@ -562,7 +563,12 @@ public class CtagsInterfacePlugin extends EditPlugin {
 			run.run();
 			return;
 		}
-		VFSManager.getIOThreadPool().addWorkRequest(run, inAWT);
+		if (inAWT)
+			SwingUtilities.invokeLater(run);
+		else {
+			Thread bgTask = new Thread(run);
+			bgTask.start();
+		}
 	}
 
 	private static StatusBar getStatusBar()
