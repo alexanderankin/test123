@@ -26,11 +26,6 @@ public class RecentBuffer extends JDialog implements KeyListener, MouseListener 
 	private View view;
 	private JList bufferList;
 	private BufferAccessMonitor bufAccessObj = null;
-	/*private Action switchBufferAction;
-	private Action closeAction;
-	private Action prevBufferAction;
-	private Action nextBufferAction;
-	private Action closeBufferAction;*/
 
 	/**
 	 * Default Constructor for the <tt>RecentBuffer</tt> object
@@ -51,20 +46,14 @@ public class RecentBuffer extends JDialog implements KeyListener, MouseListener 
 		setFocusTraversalKeysEnabled(false);
         this.setContentPane(panel);        
 		Buffer currBuff = view.getBuffer();		
-		Buffer [] tempBufferList =bufAccessObj.getBufferList(currBuff);
+		Buffer [] tempBufferList = bufAccessObj.getBufferList(currBuff);
 		// render this list
         bufferList = new JList(tempBufferList);
         bufferList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		BufferCellRenderer buffRenderer = new BufferCellRenderer();
         bufferList.setCellRenderer(buffRenderer);
-		int maxRows = tempBufferList.length;
-		try {
-			int maxRowsFromProps=Integer.parseInt(jEdit.getProperty(RecentBufferSwitcherPlugin.OPTION_PREFIX+ "numberofvisiblerows"));
-			if (maxRowsFromProps < maxRows) {
-				maxRows = maxRowsFromProps;
-			}
-		} catch(NumberFormatException e) {}
-        bufferList.setVisibleRowCount(maxRows);
+		int maxRowsFromProps = jEdit.getIntegerProperty(RecentBufferSwitcherPlugin.OPTION_PREFIX+ "numberofvisiblerows");
+        bufferList.setVisibleRowCount( Math.min( tempBufferList.length, maxRowsFromProps ) );
 		JScrollPane scrollPane = new JScrollPane(bufferList);
         this.getContentPane().add(scrollPane, BorderLayout.CENTER);
 		bufferList.setFocusTraversalKeysEnabled(false);
@@ -181,4 +170,3 @@ public class RecentBuffer extends JDialog implements KeyListener, MouseListener 
 		//}     
 	}	
 }
-

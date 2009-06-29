@@ -1,31 +1,24 @@
 package recentbuffer;
 
 // from Java:
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.util.Vector;
 import java.util.Collections;
+import java.util.Vector;
 
-// from Swing:
-import javax.swing.*;
-import javax.swing.event.*;
-
-// from jEdit:
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.*;
-import org.gjt.sp.jedit.io.*;
-import org.gjt.sp.jedit.msg.PropertiesChanged;
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.EditPane;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
-import org.gjt.sp.util.Log;
 /**
  * Implements a vector of BufferTime objects and sorts by most recently accessed
  *
  * @author Michael Thornhill
+ * @author Vadim Voituk
  * @version   $Revision: 1.1.1.1 $ $Date: 2005/10/06 13:51:34 $
  */
-public class BufferAccessMonitor extends Vector implements EBComponent {
+public class BufferAccessMonitor extends Vector<BufferTime> implements EBComponent {
 	/**
 	 * Default Constructor for the <tt>BufferAccessMonitor</tt> object, 
 	 * maintains a list of currently open buffers and orders them by most recently accessed
