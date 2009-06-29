@@ -608,8 +608,12 @@ public class XercesParserImpl extends XmlParser
 				if(model != null)
 				{
 					//get the prefix
-					String prefix=qName.substring(0,qName.length()-sName.length());
-
+					String prefix;
+					if (qName.length() == sName.length())
+						prefix = "";
+					else
+						prefix=qName.substring(0,qName.length()-sName.length()-1);
+					
 					//convert to Completion info
 					CompletionInfo info = modelToCompletionInfo(model);
 
