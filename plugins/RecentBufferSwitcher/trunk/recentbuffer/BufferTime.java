@@ -8,7 +8,7 @@ import org.gjt.sp.jedit.Buffer;
  * @author Michael Thornhill
  * @version   $Revision: 1.1.1.1 $ $Date: 2005/10/06 13:51:34 $
  */
-public class BufferTime implements Comparable {
+public class BufferTime implements Comparable<BufferTime> {
 	public long time = 0;
 	public Buffer buffer;		
 	
@@ -23,17 +23,10 @@ public class BufferTime implements Comparable {
 	/**
 	 * Sorts by time of objects
 	 */	
-	public int compareTo(Object o) {
-		if (!(o instanceof BufferTime))
+	public int compareTo(BufferTime o) {
+		if (o.time == 0)
 			return 0;
-		BufferTime b = (BufferTime)o;
-		long diff = b.time - time;
-		//long diff = time - b.time;
-		if (diff == 0)
-			return 0;
-		else if (diff < 0)
-			return -1;
-		return 1;
+		return o.time > time ? 1 : -1;
 	}
 	
 	public String toString() {			
