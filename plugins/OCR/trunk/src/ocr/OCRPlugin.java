@@ -40,14 +40,19 @@ public class OCRPlugin extends EditPlugin {
 		dlg.setFileFilter(filter);
 		if (dlg.showOpenDialog(view) != JFileChooser.APPROVE_OPTION)
 			return;
-		String text = readText(dlg.getSelectedFile());
-		Buffer b = jEdit.openFile(view, "imported.txt");
+		String text = readPictureFile(dlg.getSelectedFile());
+		Buffer b = getBufferForImportedText(view);
 		if (b == null)
 			return;
 		b.insert(0, text);
 	}
-	
-	static private String readText(File f)
+
+	static private Buffer getBufferForImportedText(View view)
+	{
+		return jEdit.newFile(view);
+	}
+
+	static private String readPictureFile(File f)
 	{
 		String path = f.getAbsolutePath();
 		String exe = jEdit.getProperty("options.ocr.gocrPath");
