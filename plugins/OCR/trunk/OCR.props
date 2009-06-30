@@ -1,0 +1,30 @@
+plugin.ocr.OCRPlugin.activate=startup
+
+# general plugin information
+plugin.ocr.OCRPlugin.name=OCR
+plugin.ocr.OCRPlugin.author=Shlomy Reinstein
+plugin.ocr.OCRPlugin.version=0.1
+plugin.ocr.OCRPlugin.depend.0=jdk 1.5
+plugin.ocr.OCRPlugin.depend.1=jedit 04.03.10.00
+
+# Label for options/actions/whatever of the plugin
+OCRPlugin.label=OCR
+
+# Options
+#plugin.browser.GlobalPlugin.option-pane=GlobalPlugin
+#options.GlobalPlugin.code=new options.GlobalOptionPane();
+#options.GlobalPlugin.label=GlobalPlugin
+options.ocr.gocrPath=D:\\dl\\gocr047.exe
+
+# action labels
+ocr-read-screen-rect.label=Read text from screen rectangle...
+ocr-read-picture.label=Read text from picture file...
+
+# menu items
+plugin.ocr.OCRPlugin.menu=ocr-read-screen-rect ocr-read-picture
+
+# docs
+plugin.ocr.OCRPlugin.docs=index.html
+plugin.ocr.OCRPlugin.description=OCR provides an interface to the GOCR tool.
+
+
