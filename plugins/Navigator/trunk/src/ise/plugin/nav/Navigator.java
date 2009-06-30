@@ -469,11 +469,18 @@ public class Navigator implements ActionListener {
             // haven't been anywhere yet
             return ;
         }
+        
+        // Possibly record current position.  Due to receiving mostly
+        // PositionChanging events, Navigator's "current" position could be one
+        // behind the actual current position.  If so, add it to the history
+        // before going back.
         NavPosition now = currentPosition();
         if ( !now.equals( current ) ) {
             backHistory.push( current );
             current = now;
         }
+        
+        // actually go back one position
         forwardHistory.push( current );
         current = backHistory.pop();
         setPosition( current );
