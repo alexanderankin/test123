@@ -1,0 +1,18 @@
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<!-- $Id: actions.xml 7606 2004-11-07 15:52:36Z orutherfurd $ -->
+
+<ACTIONS>
+
+	<ACTION NAME="ocr-read-screen-rect" NO_REPEAT="TRUE">
+		<CODE>
+			ocr.OCRPlugin.readScreenRect(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="ocr-read-picture" NO_REPEAT="TRUE">
+		<CODE>
+			ocr.OCRPlugin.readPicture(view);
+		</CODE>
+	</ACTION>
+	
+</ACTIONS>
+
