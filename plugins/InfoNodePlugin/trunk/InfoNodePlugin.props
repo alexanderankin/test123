@@ -1,0 +1,17 @@
+# jEdit only needs to load the plugin the first time the user accesses it
+# the presence of this property also tells jEdit the plugin is using the new API
+plugin.com.addictedtor.infonode.InfoNodePlugin.activate=defer
+
+# These two properties are required for all plugins
+plugin.com.addictedtor.infonode.InfoNodePlugin.name=InfoNodePlugin
+plugin.com.addictedtor.infonode.InfoNodePlugin.author=Romain Francois
+plugin.com.addictedtor.infonode.InfoNodePlugin.description=Docking window manager using info node
+plugin.com.addictedtor.infonode.InfoNodePlugin.usePluginHome=true 
+
+plugin.com.addictedtor.infonode.InfoNodePlugin.version=0.0-161
+
+# Dependencies
+plugin.com.addictedtor.infonode.InfoNodePlugin.depend.0=jdk 1.5
+plugin.com.addictedtor.infonode.InfoNodePlugin.depend.1=jedit 04.03.17.00
+plugin.com.addictedtor.infonode.InfoNodePlugin.jars=idw-gpl.jar
+

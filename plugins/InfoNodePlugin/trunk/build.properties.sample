@@ -1,0 +1,10 @@
+### you should not need/want to modify these properties, they are here to make
+### sure that the plugin builds, and moves its files to the ../inst/java directory
+
+# where to find jedit.jar
+jedit.install.dir=/opt/jedit
+# where to find the support files to build the plugin
+build.support=/home/romain/svn/build-support
+# where to install the various jars
+install.dir=/home/romain/.jedit/jars
+
