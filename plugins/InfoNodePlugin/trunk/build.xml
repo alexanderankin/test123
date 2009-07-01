@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<project name="InfoNodePlugin" default="build" basedir=".">
+
+	<property file="build.properties"/>
+	<property file="../build.properties"/>
+	<property name="dist.target" value="build" />
+	<property name="compiler.source" value="1.5" />
+	<property name="compiler.target" value="1.5" />
+	<property name="compiler.debug" value="on" />
+	<property name="src.dir" value="src" />
+	
+	<property name="jar_jedit" value="${jedit.install.dir}/jedit.jar" />
+	
+	<import file="${build.support}/plugin-build.xml" />
+
+	<selector id="packageFiles">
+	  <or>
+	    <filename name="icons/*.png" />
+	    <filename name="index.html" />
+	  </or>
+	 </selector>
+
+	<path id="project.class.path">
+		<pathelement location="${jar_jedit}" />
+		<pathelement location="${install.dir}/idw-gpl.jar"/>
+	</path>
+	
+	<target name="build.prepare" >
+	 	<mkdir dir="${build.dir}" />
+		<copy file="idw-gpl.jar" todir="${install.dir}" />
+	</target>
+
+	<!-- just to make eclipse happy, so that we can 
+	     create a java project from existing ant file -->
+			 
+	 <path id="eclipse_classpath">
+		<pathelement location="${jar_jedit}" />
+		<pathelement location="idw-gpl.jar" />
+	</path>
+	
+	<target name="unused">
+		<javac srcdir="src">
+			<classpath refid="eclipse_classpath" />
+		</javac>
+	</target>
+	
+	
+</project>
