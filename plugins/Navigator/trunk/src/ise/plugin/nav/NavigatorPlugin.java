@@ -484,10 +484,10 @@ public class NavigatorPlugin extends EBPlugin {
     }
 
     public void handleMessage( EBMessage message ) {
-        if (message == null) {
-            return;   
+        if ( message == null ) {
+            return ;
         }
-        
+
         // if a new buffer was loaded, need to add the first position in the
         // buffer to the history
         if ( message instanceof BufferUpdate ) {
@@ -505,9 +505,18 @@ public class NavigatorPlugin extends EBPlugin {
         // Note: handle messages in this order: BufferChanging, then PositionChanging,
         // then EditPaneUpdate last because of inheritance.
 
-        // Ignore BufferChanging messages.
+        // Record history only if the buffer is actually loaded.
         if ( message instanceof BufferChanging ) {
-            return;
+            BufferChanging bc = ( BufferChanging ) message;
+            if ( bc.getBuffer() != null && bc.getBuffer().isLoaded() ) {
+                EditPane p = bc.getEditPane();
+                if ( p != null ) {
+                    Navigator n = getNavigator( p.getView() );
+                    if ( n != null ) {
+                        n.addToHistory();
+                    }
+                }
+            }
         }
 
         // If the editpane changes its current position, we want to know
@@ -516,9 +525,11 @@ public class NavigatorPlugin extends EBPlugin {
         else if ( message instanceof PositionChanging ) {
             PositionChanging cc = ( PositionChanging ) message;
             EditPane p = cc.getEditPane();
-            Navigator n = getNavigator( p.getView() );
-            if ( n != null ) {
-                n.addToHistory();
+            if ( p != null ) {
+                Navigator n = getNavigator( p.getView() );
+                if ( n != null ) {
+                    n.addToHistory();
+                }
             }
         }
 
@@ -530,16 +541,10 @@ public class NavigatorPlugin extends EBPlugin {
                 EditPane editPane = epu.getEditPane();
                 Navigator n = viewNavigatorMap.get( editPane.getView() );
                 if ( n == null ) {
-                    n = createNavigator( editPane.getView() );
-                    if ( n != null ) {
-                        n.addToHistory();
-                    }
+                    createNavigator( editPane.getView() );
                 }
                 // create Navigator for EditPane scope
-                n = createNavigator( editPane );
-                if ( n != null ) {
-                    n.addToHistory();
-                }
+                createNavigator( editPane );
             }
             else if ( epu.getWhat().equals( EditPaneUpdate.DESTROYED ) && scope == EDITPANE_SCOPE ) {
                 EditPane editPane = epu.getEditPane();
