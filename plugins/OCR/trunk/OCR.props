@@ -11,9 +11,9 @@ plugin.ocr.OCRPlugin.depend.1=jedit 04.03.10.00
 OCRPlugin.label=OCR
 
 # Options
-#plugin.browser.GlobalPlugin.option-pane=GlobalPlugin
-#options.GlobalPlugin.code=new options.GlobalOptionPane();
-#options.GlobalPlugin.label=GlobalPlugin
+plugin.ocr.OCRPlugin.option-pane=ocr
+options.ocr.code=new ocr.OptionPane();
+options.ocr.label=OCR
 options.ocr.gocrPath=D:\\dl\\gocr047.exe
 
 # action labels
