@@ -3,6 +3,9 @@ package com.addictedtor.infonode;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.jEdit;
+
 import net.infonode.docking.View;
 
 /** 
@@ -21,7 +24,8 @@ public class JEditViewView extends View {
  	}
 	
 	public JEditViewView( org.gjt.sp.jedit.View view, JComponent component ){
-		super( "view", null, component ) ;
+		super( "view", GUIUtilities.loadIcon(jEdit
+				.getProperty("logo.icon.small")), component ) ;
 		this.view = view;
 	}
 	
