@@ -31,7 +31,11 @@ package imageviewer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
+import java.util.*;
 import javax.swing.*;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.GUIUtilities;
@@ -48,6 +52,7 @@ import org.gjt.sp.jedit.GUIUtilities;
 public class ImageViewer extends JPanel {
     private JLabel imageLabel;
     private JLabel filenameLabel;
+    private JViewport viewport;
     private JButton zoomIn;
     private JButton zoomOut;
     private JButton clear;
@@ -71,7 +76,9 @@ public class ImageViewer extends JPanel {
         imageLabel.setVerticalTextPosition( JLabel.BOTTOM );
         imageLabel.setHorizontalTextPosition( JLabel.CENTER );
         imageLabel.setHorizontalAlignment( JLabel.CENTER );
-        add( new JScrollPane( imageLabel ), BorderLayout.CENTER );
+        JScrollPane scroller = new JScrollPane( imageLabel );
+        viewport = scroller.getViewport();
+        add( scroller, BorderLayout.CENTER );
 
         // use another JLabel to show the name of the file being shown
         filenameLabel = new JLabel();
@@ -107,25 +114,77 @@ public class ImageViewer extends JPanel {
                 }
             }
         );
+
         zoomIn.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
-                    float width = originalWidth * 1.1f;
-                    float height = originalHeight * 1.1f;
-                    zoom(width, height);
+                    zoomIn();
                 }
             }
         );
+
         zoomOut.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
-                    float width = Math.max( 2, ( int ) ( ( float ) originalWidth * 0.9f ) );
-                    float height = Math.max( 2, ( int ) ( ( float ) originalHeight * 0.9f ) );
-                    zoom(width, height);
+                    zoomOut();
                 }
             }
         );
+
+        viewport.addMouseMotionListener( mouseAdapter );
+        viewport.addMouseListener( mouseAdapter );
+        viewport.addMouseWheelListener( mouseAdapter );
     }
+
+    /*
+     * MouseWheel zooms in/out.
+     * Mouse drag moves viewport.
+     * Double click centers point clicked.
+     */
+    MouseAdapter mouseAdapter = new MouseAdapter() {
+                Point previous = null;
+                Cursor oldCursor = null;
+                public void mouseDragged( MouseEvent me ) {
+                    if ( previous == null ) {
+                        previous = me.getPoint();
+                        return ;
+                    }
+                    Point now = me.getPoint();
+                    int dx = previous.x - now.x;
+                    int dy = previous.y - now.y;
+                    Point current = viewport.getViewPosition();
+                    Point to = new Point( current.x + dx, current.y + dy );
+                    viewport.setViewPosition( to );
+                    previous = now;
+                }
+
+                public void mousePressed( MouseEvent me ) {
+                    previous = me.getPoint();
+                    oldCursor = imageLabel.getCursor();
+                    imageLabel.setCursor( Cursor.getPredefinedCursor( Cursor.MOVE_CURSOR ) );
+                }
+
+                public void mouseReleased( MouseEvent me ) {
+                    previous = null;
+                    imageLabel.setCursor( oldCursor != null ? oldCursor : Cursor.getDefaultCursor() );
+                }
+
+                public void mouseClicked( MouseEvent me ) {
+                    if ( me.getClickCount() == 2 ) {
+                        center( me.getPoint() );
+                    }
+                }
+
+                public void mouseWheelMoved( MouseWheelEvent me ) {
+                    if ( me.getWheelRotation() > 0 ) {
+                        zoomIn();
+                    }
+                    else {
+                        zoomOut();
+                    }
+                }
+            };
+
 
     /**
      * Display the image in this ImageViewer.
@@ -137,17 +196,17 @@ public class ImageViewer extends JPanel {
             return ;
         }
         if ( isValidFilename( filename ) ) {
-            filenameLabel.setText( filename );
             ImageIcon icon = new ImageIcon( filename );
             image = icon.getImage();
             originalWidth = ( float ) icon.getIconWidth();
             originalHeight = ( float ) icon.getIconHeight();
             imageLabel.setIcon( icon );
             imageLabel.setSize( ( int ) originalWidth, ( int ) originalHeight );
+            filenameLabel.setText( filename + " (" + ( int ) originalWidth + "x" + ( int ) originalHeight + ")" );
             refresh();
         }
     }
-    
+
     private void refresh() {
         invalidate();
         validate();
@@ -163,7 +222,30 @@ public class ImageViewer extends JPanel {
         String name = filename.toLowerCase();
         return name.endsWith( ".jpg" ) || name.endsWith( ".gif" ) || name.endsWith( ".png" );
     }
-    
+
+    private void center( Point p ) {
+        int cx = viewport.getWidth() / 2;
+        int cy = viewport.getHeight() / 2;
+
+        int dx = p.x - cx;
+        int dy = p.y - cy;
+        Point current = viewport.getViewPosition();
+        Point to = new Point( current.x + dx, current.y + dy );
+        viewport.setViewPosition( to );
+    }
+
+    private void zoomIn() {
+        float width = originalWidth * 1.1f;
+        float height = originalHeight * 1.1f;
+        zoom( width, height );
+    }
+
+    private void zoomOut() {
+        float width = Math.max( 2, ( int ) ( ( float ) originalWidth * 0.9f ) );
+        float height = Math.max( 2, ( int ) ( ( float ) originalHeight * 0.9f ) );
+        zoom( width, height );
+    }
+
     /**
      * Zoom an image to the given width and height and refresh the display.
      * @param width the desired width
@@ -191,7 +273,10 @@ public class ImageViewer extends JPanel {
     private Image getScaledImage( Image image, int width, int height ) {
         BufferedImage resizedImage = new BufferedImage( width, height, BufferedImage.TYPE_INT_RGB );
         Graphics2D g2 = resizedImage.createGraphics();
-        g2.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR );
+        Map<RenderingHints.Key, Object> renderingHints = new HashMap<RenderingHints.Key, Object>();
+        renderingHints.put(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+        renderingHints.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g2.setRenderingHints( renderingHints );
         g2.drawImage( image, 0, 0, width, height, null );
         g2.dispose();
         return resizedImage;
