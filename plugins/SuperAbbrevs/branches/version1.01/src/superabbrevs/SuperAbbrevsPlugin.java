@@ -1,19 +1,24 @@
 package superabbrevs;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-
 import superabbrevs.guice.GuiceConfiguration;
 import superabbrevs.installation.Installation;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 public class SuperAbbrevsPlugin extends EditPlugin {
     
     public final static String NAME = "SuperAbbrevs";
+    private static Map<Buffer,InputHandler> inputHandlers = 
+    	new HashMap<Buffer, InputHandler>();
     
     @Override
     public void start() {
@@ -28,9 +33,8 @@ public class SuperAbbrevsPlugin extends EditPlugin {
     
     public static void handleAction(Actions action, View view, JEditTextArea textArea, 
             Buffer buffer) {
-    	JEditInterface jedit = new JEditInterfaceImpl(view, textArea, buffer);
-    	Injector injector = Guice.createInjector(new GuiceConfiguration(jedit));
-    	InputHandler inputHandler = injector.getInstance(InputHandler.class);
+    	
+    	InputHandler inputHandler = getInputHandler(view, textArea, buffer);
     	
     	switch (action) {
 		case Esc:              inputHandler.esc();              break;
@@ -41,6 +45,19 @@ public class SuperAbbrevsPlugin extends EditPlugin {
 		default: break;
 		}
     }
+
+	private static InputHandler getInputHandler(View view,
+			JEditTextArea textArea, Buffer buffer) {
+		InputHandler inputHandler = inputHandlers.get(buffer);
+    	
+    	if (inputHandler == null) {
+    		JEditInterface jedit = new JEditInterfaceImpl(view, textArea, buffer);
+        	Injector injector = Guice.createInjector(new GuiceConfiguration(jedit));
+        	inputHandler = injector.getInstance(InputHandler.class);
+        	inputHandlers.put(buffer, inputHandler);
+		}
+		return inputHandler;
+	}
     
     public boolean usePluginHome() {
         return true;

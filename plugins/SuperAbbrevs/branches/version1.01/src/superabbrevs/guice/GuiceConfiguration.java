@@ -5,6 +5,12 @@ import superabbrevs.AbbreviationHandlerImpl;
 import superabbrevs.InputHandler;
 import superabbrevs.InputHandlerImpl;
 import superabbrevs.JEditInterface;
+import superabbrevs.TemplateBufferListener;
+import superabbrevs.TemplateBufferListenerImpl;
+import superabbrevs.TemplateCaretListener;
+import superabbrevs.TemplateCaretListenerImpl;
+import superabbrevs.TemplateHandler;
+import superabbrevs.TemplateHandlerImpl;
 import superabbrevs.TextAreaHandler;
 import superabbrevs.TextAreaHandlerImpl;
 import superabbrevs.io.PluginDirectory;
@@ -32,6 +38,9 @@ public class GuiceConfiguration implements Module {
 		binder.bind(AbbreviationHandler.class).to(AbbreviationHandlerImpl.class);
 		binder.bind(ModeRepository.class).to(FileBasedModeRepository.class);
 		binder.bind(ModeSerializer.class).to(XmlModeSerializer.class);
-		binder.bind(PluginDirectory.class).to(PluginDirectoryImpl.class);		
+		binder.bind(PluginDirectory.class).to(PluginDirectoryImpl.class);	
+		binder.bind(TemplateCaretListener.class).to(TemplateCaretListenerImpl.class);
+		binder.bind(TemplateBufferListener.class).to(TemplateBufferListenerImpl.class);
+		binder.bind(TemplateHandler.class).to(TemplateHandlerImpl.class);
 	}
 }
