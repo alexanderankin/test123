@@ -31,14 +31,10 @@ import superabbrevs.template.TemplateInterpreter;
  */
 public class TemplateHandler {
 
-    private JEditTextArea textArea;
-    private Buffer buffer;
     private JEditInterface jedit;
 
     /** Creates a new instance of TemplateHandler */
     public TemplateHandler(JEditInterface jedit) {
-        this.textArea = jedit.getTextArea();
-        this.buffer = jedit.getBuffer();
         this.jedit = jedit;
     }
 
@@ -60,45 +56,45 @@ public class TemplateHandler {
         Template t = tf.createTemplate(abbrev.getExpansion());
         t.setOffset(templateStart);
 
-        textArea.setSelectedText(t.toString());
+        jedit.setSelectedText(t.toString());
 
         // select the current field in the template
         selectField(t);
 
         Handler h = new Handler(t, jedit);
-        Handler.putHandler(buffer, h);
-
-        TemplateCaretListener.putCaretListener(textArea,
-                new TemplateCaretListener());
+        Handler.putHandler(jedit, h);
+        jedit.addBufferListener(h);
+                
+        jedit.addCaretListener(new TemplateCaretListener(jedit, h));
     }
 
     public boolean isInTempateMode() {
-        return Handler.enabled(buffer);
+        return Handler.handleIsEnabled(jedit);
     }
 
     private String getIndent(int templateStart) {
         // the line number of the current line
-        int lineNumber = textArea.getLineOfOffset(templateStart);
+        int lineNumber = jedit.getLineOfOffset(templateStart);
 
         // the text on the current line
-        String line = textArea.getLineText(lineNumber);
+        String line = jedit.getLineText(lineNumber);
 
         return TextUtil.getIndent(line);
     }
 
     private int getSelectionStart() {
-        if (0 < textArea.getSelectionCount()) {
-            return textArea.getSelection(0).getStart();
+        if (0 < jedit.getSelectionCount()) {
+            return jedit.getSelectionStart(0);
         } else {
-            return textArea.getCaretPosition();
+            return jedit.getCaretPosition();
         }
     }
 
     private void selectChar() {
-        textArea.selectNone();
-        int caretPos = textArea.getCaretPosition();
-        if (caretPos < textArea.getBufferLength()) {
-            textArea.setSelection(new Selection.Range(caretPos, caretPos + 1));
+        jedit.selectNone();
+        int caretPos = jedit.getCaretPosition();
+        if (caretPos < jedit.getBufferLength()) {
+            jedit.setSelection(new Selection.Range(caretPos, caretPos + 1));
         }
     }
 
@@ -111,19 +107,18 @@ public class TemplateHandler {
 
         int start = field.getOffset();
         int end = start + field.getLength();
-        textArea.setCaretPosition(end);
-        textArea.addToSelection(new Selection.Range(start, end));
+        jedit.setCaretPosition(end);
+        jedit.addToSelection(new Selection.Range(start, end));
     }
 
     public boolean selectNextAbbrev() {
-        Handler h = Handler.getHandler(buffer);
+        Handler h = Handler.getHandler(jedit);
         Template t = h.getTemplate();
 
-        TemplateCaretListener listener =
-                TemplateCaretListener.removeCaretListener(textArea);
-
+        h.disable();        
+        
         if (t.getCurrentField() instanceof EndField) {
-            Handler.removeHandler(buffer);
+            Handler.removeHandler(jedit);
             return false;
         }
 
@@ -133,44 +128,46 @@ public class TemplateHandler {
         if (f != null) {
             int start = f.getOffset();
             int end = start + f.getLength();
-            textArea.setCaretPosition(end);
-            textArea.addToSelection(new Selection.Range(start, end));
+            jedit.setCaretPosition(end);
+            jedit.addToSelection(new Selection.Range(start, end));
         }
-        TemplateCaretListener.putCaretListener(textArea, listener);
-
+        
+        h.enable();
+        
         return true;
     }
 
     public void selectPrevAbbrev() {
-        Handler h = Handler.getHandler(buffer);
+        Handler h = Handler.getHandler(jedit);
         Template t = h.getTemplate();
 
         if (t != null) {
-            TemplateCaretListener listener =
-                    TemplateCaretListener.removeCaretListener(textArea);
+        	h.disable();
+        	
             t.prevField();
             SelectableField f = t.getCurrentField();
             if (f != null) {
                 int start = f.getOffset();
                 int end = start + f.getLength();
-                textArea.setCaretPosition(end);
-                textArea.addToSelection(new Selection.Range(start, end));
+                jedit.setCaretPosition(end);
+                jedit.addToSelection(new Selection.Range(start, end));
             }
-            TemplateCaretListener.putCaretListener(textArea, listener);
+            
+            h.enable();
         }
     }
 
     private void selectLines() {
-        int[] lines = textArea.getSelectedLines();
-        int start = textArea.getLineStartOffset(lines[0]);
-        int end = textArea.getLineEndOffset(lines[lines.length - 1]);
+        int[] lines = jedit.getSelectedLines();
+        int start = jedit.getLineStartOffset(lines[0]);
+        int end = jedit.getLineEndOffset(lines[lines.length - 1]);
 
-        textArea.setSelection(new Selection.Range(start, --end));
+        jedit.setSelection(new Selection.Range(start, --end));
     }
 
     private void selectReplacementArea(SelectionReplacementTypes replacementType) {
         switch (replacementType) {
-            case NOTHING: textArea.selectNone(); break;
+            case NOTHING: jedit.selectNone(); break;
             case SELECTED_LINES: selectLines(); break;
             case SELECTION: break;
         }
@@ -178,11 +175,11 @@ public class TemplateHandler {
 
     private void selectReplacementArea(ReplacementTypes replaceType) {
         switch (replaceType) {
-            case AT_CARET: textArea.selectNone(); break;
+            case AT_CARET: jedit.selectNone(); break;
             case CHAR: selectChar(); break;
-            case WORD: textArea.selectWord(); break;
-            case LINE: textArea.selectLine(); break;
-            case BUFFER: textArea.selectAll(); break;
+            case WORD: jedit.selectWord(); break;
+            case LINE: jedit.selectLine(); break;
+            case BUFFER: jedit.selectAll(); break;
         }
     }
 
@@ -195,6 +192,6 @@ public class TemplateHandler {
     }
 
 	private boolean hasSelection() {
-		return 1 == textArea.getSelectionCount();
+		return 1 == jedit.getSelectionCount();
 	}
 }

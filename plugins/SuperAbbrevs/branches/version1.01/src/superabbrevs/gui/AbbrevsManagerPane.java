@@ -370,7 +370,7 @@ public class AbbrevsManagerPane extends JPanel {
             abbrevsEditorJSplitPane.setDividerLocation(dl);
         } catch (Exception ex) {
             JOptionPane.showConfirmDialog(this, ex.getMessage(), "Exception",
-                    JOptionPane.ERROR);
+            		JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
         } finally {
             try { in.close(); } catch (Exception ex) {}
         }

@@ -20,13 +20,11 @@ import superabbrevs.JEditInterface;
  */
 public class Tpg {
     
-    private JEditTextArea textArea;
-    private Buffer buffer;
-    private StringBuffer out;
+	private StringBuffer out;
+	private final JEditInterface jedit;
 
     public Tpg(String indent, JEditInterface jedit) {
-        this.textArea = jedit.getTextArea();
-        this.buffer = jedit.getBuffer();
+		this.jedit = jedit;
     }
 
     public StringBuffer getOut() {
@@ -46,51 +44,51 @@ public class Tpg {
     }
     
     public String getWord() {
-        int line = textArea.getCaretLine();
-        if(textArea.getLineLength(line) != 0) {
-            String lineText = textArea.getLineText(line);
+        int line = jedit.getCaretLine();
+        if(jedit.getLineLength(line) != 0) {
+            String lineText = jedit.getLineText(line);
         
-            int lineStart = textArea.getLineStartOffset(line);
-            int offset = textArea.getCaretPosition() - lineStart;
+            int lineStart = jedit.getLineStartOffset(line);
+            int offset = jedit.getCaretPosition() - lineStart;
 
-            String noWordSep = buffer.getStringProperty("noWordSep");
+            String noWordSep = jedit.getNoWordSep();
 
-            if(offset == textArea.getLineLength(line)) offset--;
+            if(offset == jedit.getLineLength(line)) offset--;
 
             int wordStart = TextUtilities.findWordStart(lineText,offset,
                     noWordSep,true,false,false);
             int wordEnd = TextUtilities.findWordEnd(lineText,offset+1,
                     noWordSep,true,false,false);
             
-            return textArea.getText(lineStart+wordStart, wordEnd - wordStart);
+            return jedit.getText(lineStart+wordStart, wordEnd - wordStart);
         }
         return "";
     }
     
     public char getChar() {
-        int caretPos = textArea.getCaretPosition();
-        return textArea.getText().charAt(caretPos);
+        int caretPos = jedit.getCaretPosition();
+        return jedit.getText().charAt(caretPos);
     }
     
     public String getBufferText() {
-        return textArea.getText();
+        return jedit.getText();
     }
     
     public String getBufferTextBeforeCaret() {
-        return textArea.getText(0, textArea.getCaretPosition());
+        return jedit.getText(0, jedit.getCaretPosition());
     }
     
     public String getBufferTextAfterCaret() {
-        return textArea.getText(textArea.getCaretPosition(), textArea.getBufferLength());
+        return jedit.getText(jedit.getCaretPosition(), jedit.getBufferLength());
     }
     
     public String getSelection() {
-        String selection = textArea.getSelectedText();
+        String selection = jedit.getSelectedText();
         return selection == null ? "" : selection;
     }
     
     public String getFileName() {
-        return buffer.getName();
+        return jedit.getBufferName();
     }
 
     public String variable(int number, String value) {
@@ -113,11 +111,11 @@ public class Tpg {
     }
     
     private List<String> getSelectedLinesList() {
-        int[] selectedLinesNumbers = textArea.getSelectedLines();
+        int[] selectedLinesNumbers = jedit.getSelectedLines();
         List<String> selectedLines = new ArrayList<String>(
                 selectedLinesNumbers.length);
         for (int lineNumber : selectedLinesNumbers) {
-            selectedLines.add(textArea.getLineText(lineNumber));
+            selectedLines.add(jedit.getLineText(lineNumber));
         }
         return selectedLines;
     }
@@ -128,28 +126,28 @@ public class Tpg {
     }
     
     public String getLine() {
-        int line = textArea.getCaretLine();
-        if(textArea.getLineLength(line) != 0) {
-            return textArea.getLineText(line);
+        int line = jedit.getCaretLine();
+        if(jedit.getLineLength(line) != 0) {
+            return jedit.getLineText(line);
         }
         return "";
     }
     
     public String getLineBeforeCaret() {
-        int line = textArea.getCaretLine();
+        int line = jedit.getCaretLine();
         
-        if(textArea.getLineLength(line) != 0) {
-            int lineStart = textArea.getLineStartOffset(line);
-            return textArea.getText(lineStart, textArea.getCaretPosition());
+        if(jedit.getLineLength(line) != 0) {
+            int lineStart = jedit.getLineStartOffset(line);
+            return jedit.getText(lineStart, jedit.getCaretPosition());
         }
         return "";
     }
     
     public String getLineAfterCaret() {
-        int line = textArea.getCaretLine();
-        int lineEnd = textArea.getLineEndOffset(line);
-        if(textArea.getLineLength(line) != 0 && lineEnd < buffer.getLength()) {
-            return textArea.getText(textArea.getCaretPosition(), lineEnd);
+        int line = jedit.getCaretLine();
+        int lineEnd = jedit.getLineEndOffset(line);
+        if(jedit.getLineLength(line) != 0 && lineEnd < jedit.getBufferLength()) {
+            return jedit.getText(jedit.getCaretPosition(), lineEnd);
         }
         return "";
     }

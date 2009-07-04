@@ -74,7 +74,7 @@ public class TemplateInterpreter {
 	}
 
 	private boolean hasSelection() {
-		return 1 == jedit.getTextArea().getSelectionCount();
+		return 1 == jedit.getSelectionCount();
 	}
     
     private void setCaretChar() throws EvalError {

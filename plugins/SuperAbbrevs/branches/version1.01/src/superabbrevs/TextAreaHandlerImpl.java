@@ -39,14 +39,12 @@ import superabbrevs.utilities.Log;
  */
 public class TextAreaHandlerImpl implements TextAreaHandler {
     private TemplateHandler templateHandler;
+	private final JEditInterface jedit;
 
-    @Inject private JEditTextArea textArea;
-    @Inject private Buffer buffer;
-    @Inject private View view;
-    
     @Inject 
     public TextAreaHandlerImpl(JEditInterface jedit) {
-        this.templateHandler = new TemplateHandler(jedit);
+        this.jedit = jedit;
+		this.templateHandler = new TemplateHandler(jedit);
     }
     
     /* (non-Javadoc)
@@ -54,16 +52,16 @@ public class TextAreaHandlerImpl implements TextAreaHandler {
 	 */
     public String getTextBeforeCaret() {
         // the line number of the current line 
-        int line = textArea.getCaretLine();
+        int line = jedit.getCaretLine();
         // the start position of the current line in the full text  
-        int lineStart = buffer.getLineStartOffset(line);
+        int lineStart = jedit.getLineStartOffset(line);
         // the offset of the caret in the full text 
-        int caretPos = textArea.getCaretPosition();
+        int caretPos = jedit.getCaretPosition();
         // the offset of the caret in the current line 
         int caretPosition = caretPos - lineStart;
 
         // the text on the current line
-        String lineText = textArea.getLineText(line);
+        String lineText = jedit.getLineText(line);
         
         return lineText.substring(0,caretPosition);
     }
@@ -72,28 +70,17 @@ public class TextAreaHandlerImpl implements TextAreaHandler {
 	 * @see superabbrevs.TextAreaHandler#getModeAtCursor()
 	 */
     public String getModeAtCursor() {
-        // the offset of the caret in the full text 
-        int caretPos = textArea.getCaretPosition();
-
-        // a string indication the mode of the current buffer 
-        String mode = buffer.getContextSensitiveProperty(caretPos, "mode");
-        Log.log(Log.Level.DEBUG, TextAreaHandlerImpl.class, "Mode: " + mode + " " + 
-                buffer.getRuleSetAtOffset(caretPos).getModeName());
-        return buffer.getRuleSetAtOffset(caretPos).getModeName();
+        return jedit.getModeAtCursor();
     }
    
     /* (non-Javadoc)
 	 * @see superabbrevs.TextAreaHandler#showAbbrevsPopup(java.util.LinkedList)
 	 */
     public void showAbbrevsPopup(LinkedList<Abbreviation> abbrevs) {
-        int offset = textArea.getCaretPosition();
-        Point location = textArea.offsetToXY(offset);
-        location.y += textArea.getPainter().getFontMetrics().getHeight();
-
-        SwingUtilities.convertPointToScreen(location,textArea.getPainter());
+        Point location = jedit.getPopUpLocation();
         
         ScrollablePopupMenu<Abbreviation> menu = 
-                new ScrollablePopupMenu<Abbreviation>(view, location, abbrevs);
+                new ScrollablePopupMenu<Abbreviation>(jedit.getView(), location, abbrevs);
         
         menu.addActionListener(new ScrollablePopupMenuListner<Abbreviation>() {
             public void selectedMenuItem(ScrollablePopupMenuEvent<Abbreviation> event) {
@@ -111,10 +98,10 @@ public class TextAreaHandlerImpl implements TextAreaHandler {
 	 */
     public void removeAbbrev(Abbreviation abbrev) {
         // the offset of the caret in the full text 
-        int end = textArea.getCaretPosition();
+        int end = jedit.getCaretPosition();
         int start = end - abbrev.getAbbreviationText().length();
-        textArea.setSelection(new Selection.Range(start, end));
-        textArea.setSelectedText("");
+        jedit.setSelection(new Selection.Range(start, end));
+        jedit.setSelectedText("");
     }
     
     /* (non-Javadoc)
@@ -161,9 +148,9 @@ public class TextAreaHandlerImpl implements TextAreaHandler {
 	 */
     public void showSearchDialog(ArrayList<Abbreviation> abbrevs) {
         SearchDialogModel model = new SearchDialogModel(abbrevs);
-        SearchDialog dialog = new SearchDialog(view, "Search for abbreviation", 
+        SearchDialog dialog = new SearchDialog(jedit.getView(), "Search for abbreviation", 
                 false, model);
-        dialog.setLocationRelativeTo(view);
+        dialog.setLocationRelativeTo(jedit.getView());
         dialog.addSearchAcceptedListener(new SearchAcceptedListener() {
             public void accepted(Object o) {
                 Abbreviation a = (Abbreviation)o;

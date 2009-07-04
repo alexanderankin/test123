@@ -12,13 +12,20 @@ import java.util.regex.Pattern;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.MiscUtilities;
 
+import com.google.inject.Inject;
+
+import superabbrevs.JEditInterface;
 import superabbrevs.SuperAbbrevsPlugin;
 
 public class PluginDirectoryImpl implements PluginDirectory {
 
 	private Pattern illegalCharectorPattern = Pattern.compile("[/\\\\\\:\\?\"<>\\|]");
-	private static final String ABBREVS_DIR =
-        EditPlugin.getPluginHome(SuperAbbrevsPlugin.class).getPath();
+	private final JEditInterface jedit;
+	
+	@Inject
+	public PluginDirectoryImpl(JEditInterface jedit) {
+		this.jedit = jedit;
+	}
 	
 	public InputStream openModeFileForReading(String modeName) {
 		try {
@@ -49,7 +56,7 @@ public class PluginDirectoryImpl implements PluginDirectory {
 	private File modeNameToFile(String modeName) {
 		Matcher matcher = illegalCharectorPattern.matcher(modeName);
 		String fileName = matcher.replaceAll("_") + ".xml";
-		String path = MiscUtilities.constructPath(ABBREVS_DIR, fileName);
+		String path = MiscUtilities.constructPath(jedit.getPluginHome(), fileName);
 		return new File(path);
 	}
 }
