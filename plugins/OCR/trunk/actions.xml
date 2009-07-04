@@ -5,12 +5,12 @@
 
 	<ACTION NAME="ocr-read-screen-rect" NO_REPEAT="TRUE">
 		<CODE>
-			ocr.OCRPlugin.readScreenRect(view);
+			ocr.OCRPlugin.instance().readScreenRect(view);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="ocr-read-picture" NO_REPEAT="TRUE">
 		<CODE>
-			ocr.OCRPlugin.readPicture(view);
+			ocr.OCRPlugin.instance().readPicture(view);
 		</CODE>
 	</ACTION>
 	

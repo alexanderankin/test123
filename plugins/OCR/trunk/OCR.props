@@ -27,4 +27,6 @@ plugin.ocr.OCRPlugin.menu=ocr-read-screen-rect ocr-read-picture
 plugin.ocr.OCRPlugin.docs=index.html
 plugin.ocr.OCRPlugin.description=OCR provides an interface to the GOCR tool.
 
-
+# strings
+messages.ocr.preCaptureDialog=Close this window when ready to capture the desktop.
+titles.ocr.preCaptureDialog=Screen Capture

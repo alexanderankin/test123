@@ -18,15 +18,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 package ocr;
 import java.awt.AWTException;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
+import java.awt.BorderLayout;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.Toolkit;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
@@ -37,12 +35,15 @@ import java.io.InputStreamReader;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
@@ -52,7 +53,12 @@ public class OCRPlugin extends EditPlugin
 	private static final String SRC_IMAGE_FORMAT = "png";
 	private static final String DST_IMAGE_FORMAT = "ppm";
 
-	static public void readPicture(View view)
+	static public OCRPlugin instance()
+	{
+		return (OCRPlugin) jEdit.getPlugin("ocr.OCRPlugin");
+	}
+
+	public void readPicture(View view)
 	{
 		JFileChooser dlg = new JFileChooser();
 		FileFilter filter = new FileNameExtensionFilter("Picture file", "pbm");
@@ -62,7 +68,7 @@ public class OCRPlugin extends EditPlugin
 		importPictureFile(view, dlg.getSelectedFile());
 	}
 
-	static private Buffer importPictureFile(View v, File f)
+	private Buffer importPictureFile(View v, File f)
 	{
 		String text = readPictureFile(f);
 		Buffer b = getBufferForImportedText(v);
@@ -72,16 +78,31 @@ public class OCRPlugin extends EditPlugin
 		return b;
 	}
 
-	static public void readScreenRect(final View view)
+	public void readScreenRect(final View view)
 	{
+		JFrame frame = new JFrame(jEdit.getProperty("titles.ocr.preCaptureDialog"));
+		frame.setLayout(new BorderLayout());
+		frame.add(BorderLayout.CENTER, new JLabel(jEdit.getProperty(
+			"messages.ocr.preCaptureDialog")));
+		frame.setAlwaysOnTop(true);
+		frame.pack();
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
+		frame.addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentHidden(ComponentEvent e) {
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						captureScreen(view);
+					}
+				});
+			}
+		});
+	}
+
+	private void captureScreen(final View view) {
 		final Rectangle rect = new Rectangle(
 			Toolkit.getDefaultToolkit().getScreenSize());
-		try {
-			Thread.sleep(jEdit.getIntegerProperty(
-				OptionPane.OPTIONS_OCR_SCREEN_CAPTURE_DELAY) * 1000);
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}
 		Robot robot;
 		try {
 			robot = new Robot();
@@ -89,8 +110,8 @@ public class OCRPlugin extends EditPlugin
 			image.flush();
 			final JFrame f = new JFrame("Capture - select rectangle to import");
 			f.setBounds(rect);
-			final JPanel imagePanel = new ImagePanel(image, rect.getSize(),
-				new ImagePanel.SelectionListener() {
+			final JPanel imagePanel = new RectangleSelectionPanel(image,
+					rect.getSize(), new RectangleSelectionPanel.SelectionListener() {
 					public void rectSelected(Point [] p) {
 						final BufferedImage subImage = image.getSubimage(
 							p[0].x, p[0].y, p[1].x - p[0].x, p[1].y - p[0].y);
@@ -101,6 +122,7 @@ public class OCRPlugin extends EditPlugin
 							deleteTempFile(imageFile);
 						}
 						f.dispose();
+						view.setVisible(true);
 					}
 				});
 			f.add(imagePanel);
@@ -110,65 +132,12 @@ public class OCRPlugin extends EditPlugin
 		}
 	}
 
-	@SuppressWarnings("serial")
-	static private class ImagePanel extends JPanel
-	{
-		interface SelectionListener
-		{
-			void rectSelected(Point [] p);
-		}
-		BufferedImage image;
-		Dimension d;
-		Point [] p = new Point[2];
-		Point drag = null;
-		SelectionListener l;
-		public ImagePanel(BufferedImage image, Dimension d, SelectionListener l)
-		{
-			this.image = image;
-			this.d = d;
-			this.l = l;
-			addMouseListener(new MouseAdapter() {
-				@Override
-				public void mouseReleased(MouseEvent e) {
-					p[1] = e.getPoint();
-					ImagePanel.this.l.rectSelected(p);
-				}
-				@Override
-				public void mousePressed(MouseEvent e) {
-					p[0] = e.getPoint();
-				}
-			});
-			addMouseMotionListener(new MouseAdapter() {
-				@Override
-				public void mouseDragged(MouseEvent e) {
-					drag(e.getPoint());
-				}
-			});
-		}
-		public void drag(Point newDrag)
-		{
-			if (newDrag != null) {
-				Graphics g = getGraphics();
-				g.setXORMode(getBackground());
-				g.setColor(Color.BLUE);
-				if (drag != null)
-					g.drawRect(p[0].x, p[0].y, drag.x - p[0].x, drag.y - p[0].y);
-				drag = newDrag;
-				g.drawRect(p[0].x, p[0].y, drag.x - p[0].x, drag.y - p[0].y);
-			}
-		}
-		public void paintComponent(Graphics g)
-		{
-			g.drawImage(image, 0, 0, d.width, d.height, null);
-		}
-	}
-
-	static private void deleteTempFile(File f)
+	private void deleteTempFile(File f)
 	{
 		f.delete();
 	}
 
-	static private File writeImage(BufferedImage image)
+	File writeImage(BufferedImage image)
 	{
 		File srcImage = null, dstImage = null;
 		try {
@@ -184,7 +153,7 @@ public class OCRPlugin extends EditPlugin
 		return dstImage;
 	}
 
-	static private File convertImage(File srcImage)
+	private File convertImage(File srcImage)
 	{
 		File dstImage = null;
 		try {
@@ -200,12 +169,12 @@ public class OCRPlugin extends EditPlugin
 		return dstImage;
 	}
 
-	static private Buffer getBufferForImportedText(View view)
+	private Buffer getBufferForImportedText(View view)
 	{
 		return jEdit.newFile(view);
 	}
 
-	static private String readPictureFile(File f)
+	private String readPictureFile(File f)
 	{
 		String path = f.getAbsolutePath();
 		String exe = jEdit.getProperty(OptionPane.OPTIONS_OCR_GOCR_PATH);
