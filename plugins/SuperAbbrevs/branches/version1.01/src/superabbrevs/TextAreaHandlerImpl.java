@@ -32,6 +32,7 @@ import superabbrevs.gui.searchdialog.SearchAcceptedListener;
 import superabbrevs.gui.searchdialog.SearchDialog;
 import superabbrevs.gui.searchdialog.SearchDialogModel;
 import superabbrevs.utilities.Log;
+import superabbrevs.utilities.Log.Level;
 
 /**
  *
@@ -109,7 +110,10 @@ public class TextAreaHandlerImpl implements TextAreaHandler {
 	 */
     public void expandAbbrev(Abbreviation abbrev, boolean invokedAsACommand) {
         try {
+        	Log.log(Level.MESSAGE, TemplateHandlerImpl.class, 
+        			String.format("Expanding Abbreviation: %s to %s", abbrev, abbrev.getExpansion()));
             templateHandler.expandAbbrev(abbrev, invokedAsACommand);
+            Log.log(Level.MESSAGE, TemplateHandlerImpl.class, "Expanded Abbreviation");
         } catch (TargetError ex) {
             Log.log(Log.Level.ERROR, TemplateHandlerImpl.class, ex);
         } catch (ParseException ex) {

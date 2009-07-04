@@ -1,5 +1,8 @@
 package superabbrevs;
 
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
+
 import org.gjt.sp.jedit.buffer.BufferAdapter;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 
@@ -7,8 +10,10 @@ import com.google.inject.Inject;
 
 import superabbrevs.template.Template;
 import superabbrevs.template.WriteOutsideTemplateException;
+import superabbrevs.utilities.Log;
+import superabbrevs.utilities.Log.Level;
 
-public class TemplateBufferListenerImpl extends BufferAdapter implements TemplateBufferListener {
+public class TemplateBufferListenerImpl extends BufferAdapter implements TemplateBufferListener, CaretListener {
 
     private boolean justEdited = false;
     private int caret;
@@ -122,6 +127,7 @@ public class TemplateBufferListenerImpl extends BufferAdapter implements Templat
 	 * @see superabbrevs.TemplateBufferListener#stopListening()
 	 */
 	public void stopListening() {
+		jedit.removeCaretListener(this);
 		jedit.removeBufferListener(this);
 		listening = false;
 	}
@@ -131,6 +137,19 @@ public class TemplateBufferListenerImpl extends BufferAdapter implements Templat
 	 */
 	public void startListening() {
 		jedit.addBufferListener(this);
+		jedit.addCaretListener(this);
 		listening = true;
+	}
+	
+	public void caretUpdate(CaretEvent e){
+		if(justEdited()){
+			postEdit();
+		}
+		
+		int caret = jedit.getCaretPosition();
+		Template template = getTemplate();
+		if (!template.inCurrentField(caret)){
+			stopListening();
+		}
 	}
 } 

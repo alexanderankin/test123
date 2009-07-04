@@ -7,8 +7,6 @@ import superabbrevs.InputHandlerImpl;
 import superabbrevs.JEditInterface;
 import superabbrevs.TemplateBufferListener;
 import superabbrevs.TemplateBufferListenerImpl;
-import superabbrevs.TemplateCaretListener;
-import superabbrevs.TemplateCaretListenerImpl;
 import superabbrevs.TemplateHandler;
 import superabbrevs.TemplateHandlerImpl;
 import superabbrevs.TextAreaHandler;
@@ -22,6 +20,7 @@ import superabbrevs.serialization.XmlModeSerializer;
 
 import com.google.inject.Binder;
 import com.google.inject.Module;
+import com.google.inject.Scopes;
 
 public class GuiceConfiguration implements Module {
 	
@@ -33,14 +32,13 @@ public class GuiceConfiguration implements Module {
 
 	public void configure(Binder binder) {
 		binder.bind(JEditInterface.class).toInstance(jedit);
-		binder.bind(InputHandler.class).to(InputHandlerImpl.class);
-		binder.bind(TextAreaHandler.class).to(TextAreaHandlerImpl.class);
-		binder.bind(AbbreviationHandler.class).to(AbbreviationHandlerImpl.class);
-		binder.bind(ModeRepository.class).to(FileBasedModeRepository.class);
-		binder.bind(ModeSerializer.class).to(XmlModeSerializer.class);
-		binder.bind(PluginDirectory.class).to(PluginDirectoryImpl.class);	
-		binder.bind(TemplateCaretListener.class).to(TemplateCaretListenerImpl.class);
-		binder.bind(TemplateBufferListener.class).to(TemplateBufferListenerImpl.class);
-		binder.bind(TemplateHandler.class).to(TemplateHandlerImpl.class);
+		binder.bind(InputHandler.class).to(InputHandlerImpl.class).in(Scopes.SINGLETON);
+		binder.bind(TextAreaHandler.class).to(TextAreaHandlerImpl.class).in(Scopes.SINGLETON);
+		binder.bind(AbbreviationHandler.class).to(AbbreviationHandlerImpl.class).in(Scopes.SINGLETON);
+		binder.bind(ModeRepository.class).to(FileBasedModeRepository.class).in(Scopes.SINGLETON);
+		binder.bind(ModeSerializer.class).to(XmlModeSerializer.class).in(Scopes.SINGLETON);
+		binder.bind(PluginDirectory.class).to(PluginDirectoryImpl.class).in(Scopes.SINGLETON);	
+		binder.bind(TemplateBufferListener.class).to(TemplateBufferListenerImpl.class).in(Scopes.SINGLETON);
+		binder.bind(TemplateHandler.class).to(TemplateHandlerImpl.class).in(Scopes.SINGLETON);
 	}
 }
