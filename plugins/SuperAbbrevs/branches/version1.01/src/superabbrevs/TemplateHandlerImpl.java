@@ -35,13 +35,11 @@ import superabbrevs.template.TemplateInterpreter;
 public class TemplateHandlerImpl implements TemplateHandler {
 
     private final JEditInterface jedit;
-	private final TemplateCaretListener templateCaretListener;
 	private final TemplateBufferListener handler;
 
 	@Inject
-    public TemplateHandlerImpl(JEditInterface jedit, TemplateCaretListener templateCaretListener, TemplateBufferListener handler) {
+    public TemplateHandlerImpl(JEditInterface jedit, TemplateBufferListener handler) {
         this.jedit = jedit;
-		this.templateCaretListener = templateCaretListener;
 		this.handler = handler;
     }
 
@@ -70,7 +68,6 @@ public class TemplateHandlerImpl implements TemplateHandler {
 
         handler.setTemplate(t);
         handler.startListening();
-        templateCaretListener.startListening();
     }
 
     /* (non-Javadoc)
@@ -125,10 +122,9 @@ public class TemplateHandlerImpl implements TemplateHandler {
     public boolean selectNextAbbrev() {
         Template t = handler.getTemplate();
 
-        templateCaretListener.stopListening();
+        handler.stopListening();
         
         if (t.getCurrentField() instanceof EndField) {
-        	handler.stopListening();
             return false;
         }
 
@@ -142,7 +138,7 @@ public class TemplateHandlerImpl implements TemplateHandler {
             jedit.addToSelection(new Selection.Range(start, end));
         }
         
-        templateCaretListener.startListening();
+        handler.startListening();
         
         return true;
     }
@@ -153,7 +149,7 @@ public class TemplateHandlerImpl implements TemplateHandler {
     public void selectPrevAbbrev() {
         Template t = handler.getTemplate();
 
-        templateCaretListener.stopListening();
+        handler.stopListening();
         
         t.prevField();
         SelectableField f = t.getCurrentField();
@@ -164,7 +160,7 @@ public class TemplateHandlerImpl implements TemplateHandler {
             jedit.addToSelection(new Selection.Range(start, end));
         }
         
-        templateCaretListener.startListening();
+        handler.startListening();
     }
 
     private void selectLines() {

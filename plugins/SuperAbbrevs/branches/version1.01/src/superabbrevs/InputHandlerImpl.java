@@ -7,10 +7,6 @@ import java.util.Set;
 
 import javax.swing.JDialog;
 
-import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
-
 import superabbrevs.gui.AbbrevsDialog;
 import superabbrevs.model.Abbreviation;
 import superabbrevs.repository.ModeRepository;
