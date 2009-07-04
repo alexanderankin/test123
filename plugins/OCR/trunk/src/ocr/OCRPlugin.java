@@ -23,6 +23,8 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
@@ -33,6 +35,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import javax.imageio.ImageIO;
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -43,7 +46,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPlugin;
-import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
@@ -80,10 +82,17 @@ public class OCRPlugin extends EditPlugin
 
 	public void readScreenRect(final View view)
 	{
-		JFrame frame = new JFrame(jEdit.getProperty("titles.ocr.preCaptureDialog"));
+		final JFrame frame = new JFrame(jEdit.getProperty("titles.ocr.preCaptureDialog"));
 		frame.setLayout(new BorderLayout());
 		frame.add(BorderLayout.CENTER, new JLabel(jEdit.getProperty(
 			"messages.ocr.preCaptureDialog")));
+		JButton close = new JButton("Close");
+		frame.add(BorderLayout.SOUTH, close);
+		close.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frame.setVisible(false);
+			}
+		});
 		frame.setAlwaysOnTop(true);
 		frame.pack();
 		frame.setLocationRelativeTo(null);
