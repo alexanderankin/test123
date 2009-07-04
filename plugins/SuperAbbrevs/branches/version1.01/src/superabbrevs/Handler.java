@@ -1,46 +1,57 @@
 package superabbrevs;
 
-import org.gjt.sp.jedit.buffer.*;
-import org.gjt.sp.jedit.Buffer;
-import java.util.*;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.gjt.sp.jedit.buffer.BufferAdapter;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
+
 import superabbrevs.template.Template;
 import superabbrevs.template.WriteOutsideTemplateException;
 
 public class Handler extends BufferAdapter {
 
     private boolean disabled;
-    private JEditTextArea textArea;
     private boolean justEdited = false;
     private int caret;
     private int oldTemplateLength;
-    private Buffer buffer;
     private Template template;
+	private final JEditInterface jedit;
 
     public Template getTemplate() {
         return template;
     }
 
     public Handler(Template template, JEditInterface jedit) {
-        this.textArea = jedit.getTextArea();
-        //buffer = textArea.getBuffer();
-        this.buffer = jedit.getBuffer();
         this.template = template;
+		this.jedit = jedit;
     }
 
     public boolean justEdited() {
         return justEdited;
     }
+    
+    public void disable() {
+    	disabled = true;
+    }
+    
+    public void enable() {
+    	disabled = false;
+    }
 
     public boolean isDisabled() {
         return disabled;
+    }
+    
+    public boolean isEnabled() {
+    	return !disabled;
     }
 
     @Override
     public void contentInserted(JEditBuffer buffer, int startLine, int offset,
             int numLines, int length) {
 
-        if (!disabled) {
+        if (isEnabled()) {
             String insertedText = buffer.getText(offset, length);
 
             try {
@@ -61,7 +72,7 @@ public class Handler extends BufferAdapter {
 
                 justEdited = true;
             } catch (WriteOutsideTemplateException e) {
-                removeHandler(buffer);
+                removeHandler(jedit);
             //System.out.println("Handler removed "+e.getMessage());
             }
         }
@@ -71,7 +82,7 @@ public class Handler extends BufferAdapter {
     public void contentRemoved(JEditBuffer buffer, int startLine, int offset,
             int numLines, int length) {
 
-        if (!disabled) {
+        if (isEnabled()) {
             try {
                 oldTemplateLength = template.getLength() - length;
 
@@ -82,9 +93,9 @@ public class Handler extends BufferAdapter {
 
                 justEdited = true;
 
-                textArea.setCaretPosition(caret);
+                jedit.setCaretPosition(caret);
             } catch (WriteOutsideTemplateException e) {
-                removeHandler(buffer);
+                removeHandler(jedit);
             //System.out.println("Handler removed "+e.getMessage());
             }
         }
@@ -94,54 +105,43 @@ public class Handler extends BufferAdapter {
      * Method postEdit()
      */
     public void postEdit() {
-        disabled = true;
+        disable();
 
-        buffer.writeLock();
-
-        TemplateCaretListener listener = TemplateCaretListener.removeCaretListener(textArea);
-        Handler handler = removeHandler(buffer);
-
+        jedit.writeLock();
+        
         //remove the old template
-        buffer.remove(template.getOffset(), oldTemplateLength);
+        jedit.remove(template.getOffset(), oldTemplateLength);
 
         //insert the new template
-        buffer.insert(template.getOffset(), template.toString());
+        jedit.insert(template.getOffset(), template.toString());
 
-        putHandler(buffer, handler);
-        TemplateCaretListener.putCaretListener(textArea, listener);
+        jedit.writeUnlock();
 
-        buffer.writeUnlock();
+        jedit.setCaretPosition(caret);
 
-        textArea.setCaretPosition(caret);
-
-        disabled = false;
+        enable();
 
         justEdited = false;
     }
     private static Map<JEditBuffer, Handler> handlers = new HashMap<JEditBuffer, Handler>();
 
-    public static void putHandler(JEditBuffer buffer, Handler t) {
-        buffer.removeBufferListener(handlers.get(buffer));
-        buffer.addBufferListener(t);
-        handlers.put(buffer, t);
+    public static void putHandler(JEditInterface jedit, Handler handler) {
+        jedit.removeBufferListener(handlers.get(jedit.getBuffer()));
+        jedit.addBufferListener(handler);
+        handlers.put(jedit.getBuffer(), handler);
     }
 
-    public static Handler removeHandler(JEditBuffer buffer) {
-        Handler h = handlers.get(buffer);
-        buffer.removeBufferListener(h);
-        handlers.remove(buffer);
-        return h;
+    public static Handler getHandler(JEditInterface jedit) {
+        return handlers.get(jedit.getBuffer());
     }
 
-    public static Handler gethandler(JEditBuffer buffer) {
-        return handlers.get(buffer);
+    public static boolean handleIsEnabled(JEditInterface jedit) {
+        return null != handlers.get(jedit.getBuffer());
     }
 
-    public static Handler getHandler(Buffer buffer) {
-        return handlers.get(buffer);
-    }
-
-    public static boolean enabled(JEditBuffer buffer) {
-        return null != handlers.get(buffer);
-    }
+	public static void removeHandler(JEditInterface jedit) {
+		Handler h = handlers.get(jedit.getBuffer());
+        jedit.removeBufferListener(h);
+        handlers.remove(jedit.getBuffer());
+	}
 } 

@@ -28,7 +28,8 @@ public class SuperAbbrevsPlugin extends EditPlugin {
     
     public static void handleAction(Actions action, View view, JEditTextArea textArea, 
             Buffer buffer) {
-    	Injector injector = Guice.createInjector(new GuiceConfiguration(view, textArea, buffer));
+    	JEditInterface jedit = new JEditInterfaceImpl(view, textArea, buffer);
+    	Injector injector = Guice.createInjector(new GuiceConfiguration(jedit));
     	InputHandler inputHandler = injector.getInstance(InputHandler.class);
     	
     	switch (action) {

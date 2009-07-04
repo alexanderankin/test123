@@ -15,16 +15,15 @@ import com.google.inject.Inject;
 
 public class FileBasedModeRepository implements ModeRepository {
 
-	private final ModeSerializer modeSerializer;
-	private final PluginDirectory directory;
-
 	private List<ModeSavedListener> modeSavedListeners = 
 		new ArrayList<ModeSavedListener>();
+	private final ModeSerializer modeSerializer;
+	private final PluginDirectory directory;
 	
-	@Inject 
-	public FileBasedModeRepository(PluginDirectory directory, ModeSerializer modeSerializer) {
-		this.directory = directory;
+	@Inject
+	public FileBasedModeRepository(ModeSerializer modeSerializer, PluginDirectory directory) {
 		this.modeSerializer = modeSerializer;
+		this.directory = directory;
 	}
 
 	public void save(Mode mode) {

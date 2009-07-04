@@ -1,17 +1,16 @@
 package superabbrevs.guice;
 
-import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
-
+import superabbrevs.AbbreviationHandler;
+import superabbrevs.AbbreviationHandlerImpl;
 import superabbrevs.InputHandler;
 import superabbrevs.InputHandlerImpl;
 import superabbrevs.JEditInterface;
-import superabbrevs.JEditInterfaceImpl;
 import superabbrevs.TextAreaHandler;
 import superabbrevs.TextAreaHandlerImpl;
 import superabbrevs.io.PluginDirectory;
 import superabbrevs.io.PluginDirectoryImpl;
+import superabbrevs.repository.FileBasedModeRepository;
+import superabbrevs.repository.ModeRepository;
 import superabbrevs.serialization.ModeSerializer;
 import superabbrevs.serialization.XmlModeSerializer;
 
@@ -20,28 +19,19 @@ import com.google.inject.Module;
 
 public class GuiceConfiguration implements Module {
 	
-	private final View view;
-	private final JEditTextArea textArea;
-	private final Buffer buffer;
-
-	public GuiceConfiguration(View view, JEditTextArea textArea, Buffer buffer) {
-		this.view = view;
-		this.textArea = textArea;
-		this.buffer = buffer;
-	}
+	private final JEditInterface jedit;
 	
-	public void configure(Binder binder) {
-		binder.bind(View.class).toInstance(view);
-		binder.bind(JEditTextArea.class).toInstance(textArea);
-		binder.bind(Buffer.class).toInstance(buffer);
-		
-		binder.bind(JEditInterface.class).to(JEditInterfaceImpl.class);
+	public GuiceConfiguration(JEditInterface jedit) {
+		this.jedit = jedit;
+	}
 
-		binder.bind(TextAreaHandler.class).to(TextAreaHandlerImpl.class);
+	public void configure(Binder binder) {
+		binder.bind(JEditInterface.class).toInstance(jedit);
 		binder.bind(InputHandler.class).to(InputHandlerImpl.class);
-		
+		binder.bind(TextAreaHandler.class).to(TextAreaHandlerImpl.class);
+		binder.bind(AbbreviationHandler.class).to(AbbreviationHandlerImpl.class);
+		binder.bind(ModeRepository.class).to(FileBasedModeRepository.class);
 		binder.bind(ModeSerializer.class).to(XmlModeSerializer.class);
-		binder.bind(PluginDirectory.class).to(PluginDirectoryImpl.class);
-		
+		binder.bind(PluginDirectory.class).to(PluginDirectoryImpl.class);		
 	}
 }

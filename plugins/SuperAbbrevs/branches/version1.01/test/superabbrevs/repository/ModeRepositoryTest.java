@@ -17,7 +17,7 @@ import superabbrevs.serialization.ModeSerializer;
 
 public class ModeRepositoryTest {
 	private Mockery context = new Mockery();
-	private ModeRepository modeRepository;
+	private FileBasedModeRepository modeRepository;
 	private ModeSerializer modeSerializer;
 	private PluginDirectory pluginDirectory;
 	
@@ -25,7 +25,7 @@ public class ModeRepositoryTest {
 	public void before() {
 		modeSerializer = context.mock(ModeSerializer.class);
 		pluginDirectory = context.mock(PluginDirectory.class);
-		modeRepository = new FileBasedModeRepository(pluginDirectory, modeSerializer);
+		modeRepository = new FileBasedModeRepository(modeSerializer, pluginDirectory);
 	}
 	
 	@Test

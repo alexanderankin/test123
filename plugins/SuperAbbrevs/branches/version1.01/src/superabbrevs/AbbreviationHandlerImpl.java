@@ -25,9 +25,10 @@ import com.google.inject.Inject;
  * @author Sune Simonsen
  */
 public class AbbreviationHandlerImpl implements AbbreviationHandler {
-	private final ModeRepository modeRepository;
 	
-	@Inject
+	private final ModeRepository modeRepository;
+
+	@Inject 
 	public AbbreviationHandlerImpl(ModeRepository modeRepository) {
 		this.modeRepository = modeRepository;
 	}

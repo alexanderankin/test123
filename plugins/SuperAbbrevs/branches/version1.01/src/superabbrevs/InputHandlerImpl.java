@@ -19,17 +19,18 @@ import com.google.inject.Inject;
 
 public class InputHandlerImpl implements InputHandler {
 
-    @Inject private View view;
-	@Inject private JEditTextArea textArea;
-    @Inject private Buffer buffer;
-    @Inject private TextAreaHandler textAreaHandler;
-    
-    @Inject private JEditInterface jedit;
-    
-    @Inject private AbbreviationHandler abbreviationHandler;
-    @Inject private ModeRepository modeRepository;
+    private final JEditInterface jedit;
+	private final TextAreaHandler textAreaHandler;
+	private final AbbreviationHandler abbreviationHandler;
+	private final ModeRepository modeRepository;
 
-    public InputHandlerImpl() {
+	@Inject 
+    public InputHandlerImpl(JEditInterface jedit, TextAreaHandler textAreaHandler, 
+    		AbbreviationHandler abbreviationHandler, ModeRepository modeRepository) {
+				this.jedit = jedit;
+				this.textAreaHandler = textAreaHandler;
+				this.abbreviationHandler = abbreviationHandler;
+				this.modeRepository = modeRepository;
     }
     
     /* (non-Javadoc)
@@ -38,9 +39,9 @@ public class InputHandlerImpl implements InputHandler {
     public void esc() {
         if(textAreaHandler.isInTemplateMode()){
             // Stop the template mode
-            Handler.removeHandler(buffer);
+            Handler.removeHandler(jedit);
         } else {
-            textArea.selectNone();
+            jedit.selectNone();
         }
     }
     
@@ -48,19 +49,19 @@ public class InputHandlerImpl implements InputHandler {
 	 * @see superabbrevs.InputHandler#tab()
 	 */
     public void tab() {
-        if (!textArea.isEditable()){
+        if (!jedit.isEditable()){
             // beep if the textarea is not editable
-            textArea.getToolkit().beep();
+        	jedit.playBeep();
         } else if(textAreaHandler.isInTemplateMode()){
             // If we already is in template mode, jump to the next field
             boolean selectedNextAbbrev = textAreaHandler.selectNextAbbrev();
             if (!selectedNextAbbrev) {
                 tab();
             }
-        } else if(0 < textArea.getSelectionCount()){
+        } else if(0 < jedit.getSelectionCount()){
             // If there is a selection in the buffer use the default behavior
             // for the tab key
-            textArea.insertTabAndIndent();
+            jedit.insertTabAndIndent();
         } else {
             String getTextBeforeCaret = textAreaHandler.getTextBeforeCaret();
             String mode = textAreaHandler.getModeAtCursor();
@@ -78,7 +79,7 @@ public class InputHandlerImpl implements InputHandler {
                 textAreaHandler.showAbbrevsPopup(abbrevs);
             } else {
                 // There was no abbreviation to expand before the caret
-                textArea.insertTabAndIndent();
+                jedit.insertTabAndIndent();
             }
         }
     }
@@ -87,14 +88,14 @@ public class InputHandlerImpl implements InputHandler {
 	 * @see superabbrevs.InputHandler#shiftTab()
 	 */
     public void shiftTab() {
-        if (!textArea.isEditable()){
+        if (!jedit.isEditable()){
             // beep if the textarea is not editable
-            textArea.getToolkit().beep();
+            jedit.playBeep();
         } else if(textAreaHandler.isInTemplateMode()){
             // If we already is in template mode, jump to the next field
             textAreaHandler.selectPrevAbbrev();
         } else {
-            textArea.shiftIndentLeft();
+            jedit.shiftIndentLeft();
         }
     }
 
@@ -113,7 +114,7 @@ public class InputHandlerImpl implements InputHandler {
 	public void showOptionsPane() {
 		AbbrevsOptionPaneController controller = 
             new AbbrevsOptionPaneController(jedit, modeRepository);
-	    JDialog dialog = new AbbrevsDialog(view, false, controller);
+	    JDialog dialog = new AbbrevsDialog(jedit.getView(), false, controller);
 	    dialog.setVisible(true);
 	}
 }
