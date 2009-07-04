@@ -14,6 +14,8 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 import superabbrevs.gui.AbbrevsDialog;
 import superabbrevs.model.Abbreviation;
 import superabbrevs.repository.ModeRepository;
+import superabbrevs.utilities.Log;
+import superabbrevs.utilities.Log.Level;
 
 import com.google.inject.Inject;
 
@@ -39,7 +41,7 @@ public class InputHandlerImpl implements InputHandler {
     public void esc() {
         if(textAreaHandler.isInTemplateMode()){
             // Stop the template mode
-            Handler.removeHandler(jedit);
+        	textAreaHandler.stopTemplateMode();
         } else {
             jedit.selectNone();
         }
@@ -71,11 +73,14 @@ public class InputHandlerImpl implements InputHandler {
             if (abbrevs.size() == 1) {
                 // There is only one expansion
                 Abbreviation a = abbrevs.getFirst();
+                
+                Log.log(Level.NOTICE, InputHandlerImpl.class, 
+                		String.format("Expanding abbreviation: %s", a));
+                
                 textAreaHandler.removeAbbrev(a);
                 textAreaHandler.expandAbbrev(a, false);
             } else if (!abbrevs.isEmpty()) {
                 Collections.sort(abbrevs);
-                                                
                 textAreaHandler.showAbbrevsPopup(abbrevs);
             } else {
                 // There was no abbreviation to expand before the caret

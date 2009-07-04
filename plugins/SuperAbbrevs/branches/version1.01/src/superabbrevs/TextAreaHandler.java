@@ -25,4 +25,6 @@ public interface TextAreaHandler {
 	
 	public abstract void showSearchDialog(ArrayList<Abbreviation> abbrevs);
 
+	public abstract void stopTemplateMode();
+
 }

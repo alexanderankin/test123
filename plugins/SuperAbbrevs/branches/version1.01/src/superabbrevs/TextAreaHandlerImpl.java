@@ -38,13 +38,13 @@ import superabbrevs.utilities.Log;
  * @author Sune Simonsen
  */
 public class TextAreaHandlerImpl implements TextAreaHandler {
-    private TemplateHandler templateHandler;
+    private TemplateHandlerImpl templateHandler;
 	private final JEditInterface jedit;
 
     @Inject 
-    public TextAreaHandlerImpl(JEditInterface jedit) {
+    public TextAreaHandlerImpl(JEditInterface jedit, TemplateHandlerImpl templateHandler) {
         this.jedit = jedit;
-		this.templateHandler = new TemplateHandler(jedit);
+		this.templateHandler = templateHandler;
     }
     
     /* (non-Javadoc)
@@ -111,13 +111,13 @@ public class TextAreaHandlerImpl implements TextAreaHandler {
         try {
             templateHandler.expandAbbrev(abbrev, invokedAsACommand);
         } catch (TargetError ex) {
-            Log.log(Log.Level.ERROR, TemplateHandler.class, ex);
+            Log.log(Log.Level.ERROR, TemplateHandlerImpl.class, ex);
         } catch (ParseException ex) {
-            Log.log(Log.Level.ERROR, TemplateHandler.class, ex);
+            Log.log(Log.Level.ERROR, TemplateHandlerImpl.class, ex);
         } catch (EvalError ex) {
-            Log.log(Log.Level.ERROR, TemplateHandler.class, ex);
+            Log.log(Log.Level.ERROR, TemplateHandlerImpl.class, ex);
         } catch (IOException ex) {
-            Log.log(Log.Level.ERROR, TemplateHandler.class, ex);
+            Log.log(Log.Level.ERROR, TemplateHandlerImpl.class, ex);
         }
     }
     
@@ -159,4 +159,8 @@ public class TextAreaHandlerImpl implements TextAreaHandler {
         });
         dialog.setVisible(true);
     }
+
+	public void stopTemplateMode() {
+		templateHandler.stopTemplateMode();
+	}
 }
