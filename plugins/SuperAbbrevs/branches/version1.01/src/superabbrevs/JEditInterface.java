@@ -1,7 +1,6 @@
 package superabbrevs;
 
 import java.awt.Point;
-import java.awt.Window;
 import java.util.List;
 import java.util.SortedSet;
 
@@ -11,9 +10,7 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.buffer.BufferListener;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
-import org.gjt.sp.jedit.textarea.Selection.Range;
 
 public interface JEditInterface extends ModeService {
 
@@ -106,5 +103,5 @@ public interface JEditInterface extends ModeService {
 
 	public abstract void removeBufferListener(BufferListener listener);
 	
-	public String getPluginHome();
+	public abstract String getPluginHome();
 }
