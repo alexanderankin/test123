@@ -1,14 +1,6 @@
 package com.addictedtor.jeditr ;
 
-import javax.swing.SwingUtilities;
-
-import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBPlugin;
-import org.gjt.sp.jedit.ServiceManager;
-import org.gjt.sp.jedit.bsh.NameSpace;
-import org.gjt.sp.jedit.bsh.UtilEvalError;
-import org.gjt.sp.jedit.msg.EditPaneUpdate;
-import org.gjt.sp.jedit.msg.ViewUpdate;
 
 /**
  * Main class of the jeditr plugin
