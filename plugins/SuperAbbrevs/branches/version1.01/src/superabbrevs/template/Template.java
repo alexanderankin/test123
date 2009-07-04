@@ -45,20 +45,18 @@ public class Template {
     }
 
     private void updateOffsets() {
-        int o = this.offset;
+        int fieldLengthSum = 0;
 
-        Iterator<Field> iter = template.iterator();
-        while (iter.hasNext()) {
-            Field field = (Field) iter.next();
-
-            if (field instanceof SelectableField) {
+        for (Field field : template) {
+        	if (field instanceof SelectableField) {
                 SelectableField selectableField = (SelectableField) field;
-                selectableField.setOffset(o);
+                selectableField.setOffset(offset + fieldLengthSum);
             }
 
-            o += field.getLength();
-        }
-        length = o - this.offset;
+            fieldLengthSum += field.getLength();
+		}
+        
+        length = fieldLengthSum;
     }
 
     public void insert(int at, String s) throws WriteOutsideTemplateException {
