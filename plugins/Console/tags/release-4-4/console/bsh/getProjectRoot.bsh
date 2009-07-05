@@ -1,0 +1,33 @@
+/** This convenience function is used mostly by beanshell scripts from 
+ * 	commando commands, to get the project root at the time the user asks
+ *  to 'build project'.
+ *  by ezust
+ *  
+ * @param view the current view
+ * @param buffer the current buffer
+ * @return The root of the current view's project, 
+ * 			or the project that contains this buffer 
+ *          if no active project can be found. 
+ */
+getProjectRoot(View view, Buffer buffer) {
+	wm = view.getDockableWindowManager();
+	if (wm == null) return ".";
+	pv = wm.getDockable("projectviewer");
+	if (pv == null) return ".";
+	project = projectviewer.ProjectViewer.getActiveProject(view);
+	if (project != null) {
+		return project.getRootPath();
+	}
+	// no active project - find out which one it is based on the nodes
+	iterator = projectviewer.ProjectManager.getInstance().getProjects().iterator();
+	while (iterator.hasNext()) {
+		project =  iterator.next();
+		node = project.getChildNode(buffer.getPath());
+		if (node != null) {
+			return project.getRootPath();
+		}
+	}
+	return ".";
+}
+
+

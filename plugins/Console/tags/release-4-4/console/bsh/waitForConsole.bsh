@@ -1,0 +1,12 @@
+/* Blocks until the current command finishes. */
+waitForConsole(View view)
+{
+	import console.Shell;
+
+	view.getDockableWindowManager().addDockableWindow("console");
+	console = view.getDockableWindowManager().getDockable("console");
+	console.getShell().waitFor(console);
+}
+
+help.waitForConsole
+	= "usage: waitForConsole(View view)";
