@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="run-last-console-command">
+		<CODE>
+			view.getDockableWindowManager().addDockableWindow("console");
+			console = view.getDockableWindowManager().getDockable("console");
+			console.runLastCommand();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="commando">
+		<CODE>
+			new console.commando.CommandoDialog(view,null);
+		</CODE>
+	</ACTION>
+    <ACTION NAME="console-clear">
+       <CODE>
+          console = view.getDockableWindowManager().getDockable("console");
+          console.clear();
+       </CODE>
+    </ACTION>
+	<ACTION NAME="commando-compile">
+		<CODE>
+			console.ConsolePlugin.compile(view,buffer);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="commando-run">
+		<CODE>
+			console.ConsolePlugin.run(view,buffer);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="rescan-commands">
+		<CODE>
+			console.ConsolePlugin.rescanCommands();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="browse-commando-directory">
+		<CODE>
+			directory = console.ConsolePlugin.getUserCommandDirectory();
+			if(directory == null)
+				GUIUtilities.error(view,"no-settings",null);
+			else
+				VFSBrowser.browseDirectory(view,directory);
+		</CODE>
+	</ACTION>
+	
+	<ACTION NAME="chdir-pv-selected">
+		<CODE>
+			changeToPvSelected(view);
+	    </CODE>
+	</ACTION>
+	<ACTION NAME="chdir-pv-root">
+		<CODE>
+			changeToPvRoot(view);
+	    </CODE>
+	</ACTION>
+	
+</ACTIONS>
