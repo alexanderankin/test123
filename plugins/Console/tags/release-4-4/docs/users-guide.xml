@@ -1526,7 +1526,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
   <itemizedlist>
 
   <listitem id="ver4.4"><para>
-    <emphasis role="bold">Version 4.3.8</emphasis> Requires jEdit 4.3pre17, JDK 1.5, ErrorList 1.4, ProjectViewer 2.9 (optional). <itemizedlist>
+    <emphasis role="bold">Version 4.4</emphasis> Requires jEdit 4.3pre17, JDK 1.5, ErrorList 1.4, ProjectViewer 2.9 (optional). <itemizedlist>
     	<listitem><para> Updated to listen to ProjectViewer 2.9 project switch events. </para></listitem>
     	<listitem><para> Updated to use jEdit 4.2 EditBus registration technique (Shlomy Reinstein), for compatibility with MyDoggy Plugin. </para></listitem>
     	<listitem><para> System shell built-in cd changes drives as well as directories on windows. (Alan Ezust) </para></listitem>
