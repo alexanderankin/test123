@@ -4,8 +4,14 @@
 <!-- :folding=explicit:collapseFolds=1:                 -->
 <!-- ================================================== -->
 <project name="ProjectViewer" default="build" basedir=".">
-	<property file="../build.properties" />
+	<property file="../build.properties" />	
+	<property file="build.properties" />
+
+	<!-- You should set this property in your build.properties to 
+	     the location of the jedit "build-support/trunk" project
+	     checked out from jEdit's SVN repository -->
 	<property name="build.support" value="../build-support" />
+
 	<property name="javadoc.packagenames"	value="projectviewer.*" />
 	<property name="plugin.dependencies" 	value="ErrorList,InfoViewer" />
 	<property name="dist.target" 			value="dist.complete" />
