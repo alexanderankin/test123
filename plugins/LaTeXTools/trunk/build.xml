@@ -38,6 +38,7 @@
 	<property name="errorlist.jar"  				value="${jedit.jars.dir}/ErrorList.jar"/>
 	<property name="sidekick.jar"  				 	value="${jedit.jars.dir}/SideKick.jar"/>
 	<property name="console.jar"  					value="${jedit.jars.dir}/Console.jar"/>
+	<property name="gnuregexp.jar"					value="${jedit.jars.dir}/GnuRegexp.jar"/>
 
   <!-- ================================================ -->
   <!-- Classpath definitions                            -->
@@ -47,6 +48,7 @@
     <pathelement location="${sidekick.jar}"/>
     <pathelement location="${errorlist.jar}"/>
     <pathelement location="${console.jar}"/>
+    <pathelement location="${gnuregexp.jar}"/>
     <pathelement location="${local.jedit.jars}"/>
 	</path>
 
