@@ -97,7 +97,7 @@ public class NavPosition {
         NavPosition other = ( NavPosition ) obj;
 
         // check fields
-        return ( path.equals( other.path ) && lineno == other.lineno && caret == other.caret );
+        return ( path.equalsIgnoreCase( other.path ) && lineno == other.lineno && caret == other.caret );
     }
 
     @Override
