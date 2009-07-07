@@ -163,6 +163,8 @@ public class Navigator implements ActionListener {
 
     /**
      * Calculate the current position and create a NavPosition.
+     * @return the current position in the current edit pane.  Depending on
+     * circumstances (null components on jEdit start up), could return null.
      */
     private NavPosition currentPosition() {
         EditPane editPane = getEditPane();
@@ -403,11 +405,11 @@ public class Navigator implements ActionListener {
         }
 
         // have EditPane and Buffer, display and move the caret
-        EditBus.send( new PositionChanging( view.getEditPane() ) );
+        ///EditBus.send( new PositionChanging( view.getEditPane() ) );
         editPaneForPosition.setBuffer( buffer );
         int caret = position.caret;
-        if ( caret >= buffer.getLength() ) {
-            caret = buffer.getLength() - 1;
+        if ( caret > buffer.getLength() ) {
+            caret = buffer.getLength();
         }
         if ( caret < 0 ) {
             caret = 0;
@@ -445,23 +447,34 @@ public class Navigator implements ActionListener {
         }
         new NavHistoryPopup( view, this, ( Vector ) forwardHistory.clone() );
     }
-    
+
     /**
      * Show a popup containing the back history, current position, and forward history.    
      */
     public void combinedList() {
-        NavStack stack = new NavStack( backHistory.size() + forwardHistory.size() + 1 );
-        stack.addAll( backHistory );
-        stack.add( current );
-        stack.addAll( forwardHistory );
-        new NavHistoryPopup( view, this, ( Vector ) stack, current );
+        NavStack stack = new NavStack( backHistory.size() + forwardHistory.size() + ( current == null ? 0 : 1 ) );
+        if ( backHistory != null && backHistory.size() > 0 ) {
+            stack.addAll( backHistory );
+        }
+        if ( current != null ) {
+            stack.add( current );
+        }
+        if ( forwardHistory != null && forwardHistory.size() > 0 ) {
+            stack.addAll( forwardHistory );
+        }
+        if ( stack.size() > 0 ) {
+            new NavHistoryPopup( view, this, ( Vector ) stack, current );
+        }
+        else {
+            JOptionPane.showMessageDialog( view, "No history items", "Info", JOptionPane.INFORMATION_MESSAGE );
+        }
     }
 
     /**
      * Moves to the previous item in the "back" history.
      */
     public void goBack() {
-        if ( backHistory.size() == 0 ) {
+        if ( backHistory == null || backHistory.size() == 0 ) {
             // nowhere to go
             return ;
         }
@@ -469,22 +482,24 @@ public class Navigator implements ActionListener {
             // haven't been anywhere yet
             return ;
         }
-        
+
         // Possibly record current position.  Due to receiving mostly
         // PositionChanging events, Navigator's "current" position could be one
         // behind the actual current position.  If so, add it to the history
         // before going back.
         NavPosition now = currentPosition();
-        if ( !current.equals( now ) ) {
-            backHistory.push( current );
-            current = now;
+        if ( current.equals( now ) ) {
+            forwardHistory.push( current );
+            current = backHistory.pop();
+            setPosition( current );
+            setButtonState();
         }
-        
-        // actually go back one position
-        forwardHistory.push( current );
-        current = backHistory.pop();
-        setPosition( current );
-        setButtonState();
+        else {
+            backHistory.push(current);
+            current = now;
+            setPosition(current);
+            setButtonState();
+        }
     }
 
     /**
