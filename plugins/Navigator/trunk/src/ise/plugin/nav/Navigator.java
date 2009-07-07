@@ -475,7 +475,7 @@ public class Navigator implements ActionListener {
         // behind the actual current position.  If so, add it to the history
         // before going back.
         NavPosition now = currentPosition();
-        if ( !now.equals( current ) ) {
+        if ( !current.equals( now ) ) {
             backHistory.push( current );
             current = now;
         }
