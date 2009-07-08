@@ -283,7 +283,7 @@ public class MarkerSetsPlugin extends EBPlugin {
 				ms.exportXml(root);
 			Source source = new DOMSource(doc);
 	        File f = new File(file);
-	        Result result = new StreamResult(f);
+	        Result result = new StreamResult(f.toURI().getPath());
 	        Transformer trans = TransformerFactory.newInstance().newTransformer();
 	        trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
             trans.setOutputProperty(OutputKeys.INDENT, "yes");
