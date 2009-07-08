@@ -182,15 +182,13 @@ public class NavigatorTest {
         // clear navigator history
         TestUtils.jEditFrame().menuItemWithPath( "Plugins" ).click();
         TestUtils.robot().pressAndReleaseKeys( VK_DOWN, VK_DOWN, VK_DOWN, VK_DOWN, VK_RIGHT, VK_DOWN, VK_DOWN, VK_DOWN, VK_DOWN, VK_DOWN, VK_ENTER );
-        //Pause.pause(1000);
         
         Stack<Integer> lines = new Stack<Integer>();
         TextArea textArea = view.getEditPane().getTextArea();
         for ( int i = 1; i < 6; i++ ) {
             Point p = new Point( 50, 14 * i );
             int offset = textArea.xyToOffset( 50, 14 * i );
-            int line = textArea.getLineOfOffset( offset );
-            Log.log("offset = " + offset + ", line = " + line);
+            int line = textArea.getLineOfOffset( offset ) + 1;
             lines.push( line );
             TestUtils.robot().click( textArea, p );
         }
@@ -198,9 +196,7 @@ public class NavigatorTest {
         lines.pop();  // remove current from list
         for ( int i = 1; i < 5; i++ ) {
             TestUtils.jEditFrame().menuItemWithPath( "Plugins" ).click();
-            //TestUtils.robot().pressAndReleaseKeys( VK_DOWN, VK_DOWN, VK_DOWN, VK_DOWN, VK_RIGHT, VK_ENTER );
             TestUtils.jEditFrame().menuItemWithPath( "Plugins", "Navigator", "Back" ).click();
-            //Pause.pause( 1000 );
             int caretLine = textArea.getCaretLine();
             int backLine = lines.pop();
             assertTrue( "wrong line, should be " + backLine + ", but is " + caretLine, caretLine == backLine );
