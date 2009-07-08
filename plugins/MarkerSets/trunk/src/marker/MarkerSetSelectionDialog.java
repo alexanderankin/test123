@@ -52,13 +52,13 @@ public class MarkerSetSelectionDialog extends JDialog {
 				saveGeometry();	
 			}
 		});
-		JPanel namePanel = new JPanel();
+		JPanel namePanel = new JPanel(new BorderLayout());
 		add(namePanel, BorderLayout.NORTH);
-		namePanel.add(new JLabel("Marker set:"));
+		namePanel.add(new JLabel("Marker set:"), BorderLayout.WEST);
 		name = new JTextField(30);
-		namePanel.add(name);
+		namePanel.add(name, BorderLayout.CENTER);
 		color = new ColorWellButton(DEFAULT_COLOR);
-		namePanel.add(color);
+		namePanel.add(color, BorderLayout.EAST);
 		markerSets = new JList(MarkerSetsPlugin.getMarkerSetNames());
 		add(new JScrollPane(markerSets), BorderLayout.CENTER);
 		markerSets.addListSelectionListener(new ListSelectionListener() {
