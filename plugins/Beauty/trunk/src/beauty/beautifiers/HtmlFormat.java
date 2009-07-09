@@ -30,7 +30,7 @@ public class HtmlFormat extends Beautifier {
         HtmlFormatter formatter = null;
         try {
             HtmlParser parser = new HtmlParser(reader);
-            parser.setLineSeparator(getLineSeparator());
+            ///parser.setLineSeparator(getLineSeparator());
             HtmlDocument document = parser.HtmlDocument();
             document.setLineSeparator(getLineSeparator());
             document.accept(new HtmlCollector());
