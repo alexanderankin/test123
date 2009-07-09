@@ -31,10 +31,13 @@ package imageviewer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
+import java.text.*;
 import java.util.*;
 import javax.swing.*;
 import org.gjt.sp.jedit.jEdit;
@@ -50,14 +53,21 @@ import org.gjt.sp.jedit.GUIUtilities;
  * small icons or large images.
  */
 public class ImageViewer extends JPanel {
+    private String filename;
     private JLabel imageLabel;
     private JLabel filenameLabel;
+    private JLabel imagesizeLabel;
     private JViewport viewport;
+    private JPanel toolbar;
+    private JToolBar buttonPanel;
     private JButton zoomIn;
     private JButton zoomOut;
+    private JButton reload;
     private JButton clear;
     private float originalWidth = 0.0f;
     private float originalHeight = 0.0f;
+    private float zoomWidth = 0.0f;
+    private float zoomHeight = 0.0f;
 
     private Image image = null;
 
@@ -82,6 +92,7 @@ public class ImageViewer extends JPanel {
 
         // use another JLabel to show the name of the file being shown
         filenameLabel = new JLabel();
+        imagesizeLabel = new JLabel();
 
         // set up the zoom buttons
         clear = new JButton( GUIUtilities.loadIcon( "22x22/actions/edit-clear.png" ) );
@@ -90,15 +101,23 @@ public class ImageViewer extends JPanel {
         zoomIn.setToolTipText( jEdit.getProperty( "imageviewer.zoomin", "Zoom In" ) );
         zoomOut = new JButton( GUIUtilities.loadIcon( "22x22/actions/zoom-out.png" ) );
         zoomOut.setToolTipText( jEdit.getProperty( "imageviewer.zoomout", "Zoom Out" ) );
-        JPanel btnPanel = new JPanel( new FlowLayout( FlowLayout.RIGHT, 0, 3 ) );
-        btnPanel.add( clear );
-        btnPanel.add( zoomIn );
-        btnPanel.add( zoomOut );
+        reload = new JButton( GUIUtilities.loadIcon( "22x22/actions/document-reload.png" ) );
+        reload.setToolTipText( jEdit.getProperty( "imageviewer.reload", "Reload" ) );
+        buttonPanel = new JToolBar();
+        buttonPanel.add( clear );
+        buttonPanel.add( zoomIn );
+        buttonPanel.add( zoomOut );
+        buttonPanel.add( reload );
+
+        // inner panel for the filename and image size
+        JPanel dataPanel = new JPanel( new GridLayout( 2, 1 ) );
+        dataPanel.add( filenameLabel );
+        dataPanel.add( imagesizeLabel );
 
         // create a panel for the toolbar
-        JPanel toolbar = new JPanel( new BorderLayout() );
-        toolbar.add( filenameLabel, BorderLayout.WEST );
-        toolbar.add( btnPanel, BorderLayout.EAST );
+        toolbar = new JPanel( new BorderLayout() );
+        toolbar.add( dataPanel, BorderLayout.CENTER );
+        toolbar.add( buttonPanel, BorderLayout.EAST );
 
         // add the toolbar panel
         add( toolbar, BorderLayout.NORTH );
@@ -131,9 +150,27 @@ public class ImageViewer extends JPanel {
             }
         );
 
+        reload.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    showImage( filename, true );
+                }
+            }
+        );
+
         viewport.addMouseMotionListener( mouseAdapter );
         viewport.addMouseListener( mouseAdapter );
         viewport.addMouseWheelListener( mouseAdapter );
+
+        addComponentListener(
+            new ComponentAdapter() {
+                public void componentResized( ComponentEvent ce ) {
+                    if ( ce.getComponent().equals( ImageViewer.this ) ) {
+                        filenameLabel.setText( compressFilename( filename ) );
+                    }
+                }
+            }
+        );
     }
 
     /*
@@ -191,18 +228,26 @@ public class ImageViewer extends JPanel {
      * @param filename the name of the image file to display.
      */
     public void showImage( String filename ) {
-        if ( filename.equals( filenameLabel.getText() ) ) {
+        showImage( filename, false );
+    }
+
+    public void showImage( String filename, boolean reload ) {
+        if ( !reload && filename.equals( filenameLabel.getText() ) ) {
             // already showing this image
             return ;
         }
+        this.filename = filename;
         if ( isValidFilename( filename ) ) {
             ImageIcon icon = new ImageIcon( filename );
             image = icon.getImage();
             originalWidth = ( float ) icon.getIconWidth();
             originalHeight = ( float ) icon.getIconHeight();
+            zoomWidth = originalWidth;
+            zoomHeight = originalHeight;
             imageLabel.setIcon( icon );
             imageLabel.setSize( ( int ) originalWidth, ( int ) originalHeight );
-            filenameLabel.setText( filename + " (" + ( int ) originalWidth + "x" + ( int ) originalHeight + ")" );
+            filenameLabel.setText( compressFilename( filename ) );
+            imagesizeLabel.setText( (int)originalWidth + "x" + (int)originalHeight );
             refresh();
         }
     }
@@ -234,15 +279,20 @@ public class ImageViewer extends JPanel {
         viewport.setViewPosition( to );
     }
 
+    // zoom in 10%
     private void zoomIn() {
-        float width = originalWidth * 1.1f;
-        float height = originalHeight * 1.1f;
+        float width = zoomWidth * 1.1f;
+        float height = zoomHeight * 1.1f;
         zoom( width, height );
     }
 
+    // zoom out 10%
     private void zoomOut() {
-        float width = Math.max( 2, ( int ) ( ( float ) originalWidth * 0.9f ) );
-        float height = Math.max( 2, ( int ) ( ( float ) originalHeight * 0.9f ) );
+        float width = zoomWidth * 0.9f;
+        float height = zoomHeight * 0.9f;
+        if ( width < 1.0 || height < 1.0 ) {
+            return ;
+        }
         zoom( width, height );
     }
 
@@ -252,8 +302,8 @@ public class ImageViewer extends JPanel {
      * @param height the desired height
      */
     private void zoom( float width, float height ) {
-        originalWidth = width;
-        originalHeight = height;
+        zoomWidth = width;
+        zoomHeight = height;
         if ( width > 0 && height > 0 ) {
             Image zoomImage = getScaledImage( image, ( int ) width, ( int ) height );
             ImageIcon icon = new ImageIcon( zoomImage );
@@ -274,11 +324,64 @@ public class ImageViewer extends JPanel {
         BufferedImage resizedImage = new BufferedImage( width, height, BufferedImage.TYPE_INT_RGB );
         Graphics2D g2 = resizedImage.createGraphics();
         Map<RenderingHints.Key, Object> renderingHints = new HashMap<RenderingHints.Key, Object>();
-        renderingHints.put(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
-        renderingHints.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        renderingHints.put( RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY );
+        renderingHints.put( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR );
         g2.setRenderingHints( renderingHints );
         g2.drawImage( image, 0, 0, width, height, null );
         g2.dispose();
         return resizedImage;
+    }
+
+    /**
+     * Takes a long filename and converts it to a smaller string with portions removed
+     * from the middle so the filename fits in a display area of a certain width.  For
+     * example, given a name like "/home/username/mypictures/myfamilypictures/awesomegrouphug.jpg",
+     * this method might return "/home/username/.../awesomegrouphug.jpg".  The filename
+     * itself will never be removed.
+     * @param filename The filename to compress, if necessary, with an ellipsis in the middle.
+     */
+    private String compressFilename ( String filename ) {
+        int width = toolbar.getWidth() - buttonPanel.getWidth() - 6;
+        FontMetrics fm = getGraphics().getFontMetrics();
+        int stringWidth = fm.stringWidth( filename );
+        if ( stringWidth <= width ) {
+            return filename;
+        }
+
+        BreakIterator bi = BreakIterator.getWordInstance();
+        bi.setText( filename );
+        java.util.List<String> parts = new ArrayList<String>();
+        int start = bi.first();
+        for ( int end = bi.next(); end != BreakIterator.DONE; start = end, end = bi.next() ) {
+            parts.add( filename.substring( start, end ) );
+        }
+
+        int middle = parts.size() / 2;
+        java.util.List<String> startList = new ArrayList<String>( parts.subList( 0, middle ) );
+        java.util.List<String> endList = new ArrayList<String>( parts.subList( middle, parts.size() ) );
+        String beginning = listToString( startList );
+        String ending = listToString( endList );
+
+        String combined = beginning + "..." + ending;
+        while ( fm.stringWidth( combined ) > width ) {
+            if ( beginning.length() >= ending.length() || endList.size() == 1 ) {
+                startList.remove( startList.size() - 1 );
+                beginning = listToString( startList );
+            }
+            else {
+                endList.remove( 0 );
+                ending = listToString( endList );
+            }
+            combined = beginning + "..." + ending;
+        }
+        return combined;
+    }
+
+    private String listToString( java.util.List<String> list ) {
+        StringBuilder sb = new StringBuilder();
+        for ( String part : list ) {
+            sb.append( part );
+        }
+        return sb.toString();
     }
 }
