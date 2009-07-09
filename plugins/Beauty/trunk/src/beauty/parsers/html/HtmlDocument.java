@@ -131,16 +131,16 @@ public class HtmlDocument {
         public String toString() {
             StringBuffer s = new StringBuffer();
             s.append(tagStart);
-            if (tagStart.length() > 1 && !tagStart.endsWith(":"))
-                s.append(" ");  // got a jsp tag
+            if (isJspTag)
+                s.append(" ");
             s.append(tagName);
             for (Iterator iterator = attributeList.attributes.iterator(); iterator.hasNext();) {
                 Attribute attribute = (Attribute) iterator.next();
                 s.append(" ");
                 s.append(attribute.toString());
             }
-            if (tagEnd.length() > 1 && !tagEnd.startsWith("/"))
-                s.append(" ");  // got a jsp tag
+            if (isJspTag)
+                s.append(" ");
             s.append(tagEnd);
             return s.toString();
         }

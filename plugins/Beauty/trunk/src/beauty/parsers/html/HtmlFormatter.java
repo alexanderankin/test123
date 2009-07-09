@@ -1,17 +1,17 @@
 /*
- * HtmlFormatter.java -- HTML document pretty-printer
- * Copyright (C) 1999 Quiotix Corporation.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2, as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License (http://www.gnu.org/copyleft/gpl.txt)
- * for more details.
- */
+* HtmlFormatter.java -- HTML document pretty-printer
+* Copyright (C) 1999 Quiotix Corporation.
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License, version 2, as
+* published by the Free Software Foundation.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License (http://www.gnu.org/copyleft/gpl.txt)
+* for more details.
+*/
 
 package beauty.parsers.html;
 
@@ -54,7 +54,7 @@ public class HtmlFormatter extends HtmlVisitor {
     protected MarginWriter out;
     protected int rightMargin = 80;
     protected int indentSize = 2;
-    protected String lineSeparator = System.getProperty("line.separator");
+    protected String lineSeparator = System.getProperty( "line.separator" );
 
     protected static Set tagsIndentBlock = new HashSet();
     protected static Set tagsNewlineBefore = new HashSet();
@@ -65,30 +65,30 @@ public class HtmlFormatter extends HtmlVisitor {
 
     // these tags _should_ be block tags, so indent the block
     protected static final String[] tagsIndentStrings
-            = {"TABLE", "TR", "TD", "TH", "FORM", "HTML", "HEAD", "BODY", "SELECT", "OL", "UL", "LI", "DIV"};
+    = {"TABLE", "TR", "TD", "TH", "FORM", "HTML", "HEAD", "BODY", "SELECT", "OL", "UL", "LI", "DIV"};
 
     // always start these tags on a new line
     protected static final String[] tagsNewlineBeforeStrings
-            = {"P", "H1", "H2", "H3", "H4", "H5", "H6", "BR", "HR", "taglib", "OL", "UL", "LI"};
+    = {"P", "H1", "H2", "H3", "H4", "H5", "H6", "BR", "HR", "taglib", "OL", "UL", "LI"};
 
     // don't format inside these tags
     protected static final String[] tagsPreformattedStrings
-            = {"PRE", "SCRIPT", "STYLE"};
+    = {"PRE", "SCRIPT", "STYLE"};
 
     // these are often missing the closing tag, attempt to match
     protected static final String[] tagsTryMatchStrings
-            //= {"A", "TD", "TH", "TR", "I", "B", "EM", "FONT", "TT", "UL"};
-            = {"A", "I", "B", "EM", "FONT", "TT"};
+    //= {"A", "TD", "TH", "TR", "I", "B", "EM", "FONT", "TT", "UL"};
+    = {"A", "I", "B", "EM", "FONT", "TT"};
 
     static {
-        for (int i = 0; i < tagsIndentStrings.length; i++)
-            tagsIndentBlock.add(tagsIndentStrings[i]);
-        for (int i = 0; i < tagsNewlineBeforeStrings.length; i++)
-            tagsNewlineBefore.add(tagsNewlineBeforeStrings[i]);
-        for (int i = 0; i < tagsPreformattedStrings.length; i++)
-            tagsPreformatted.add(tagsPreformattedStrings[i]);
-        for (int i = 0; i < tagsTryMatchStrings.length; i++)
-            tagsTryMatch.add(tagsTryMatchStrings[i]);
+        for ( int i = 0; i < tagsIndentStrings.length; i++ )
+            tagsIndentBlock.add( tagsIndentStrings[ i ] );
+        for ( int i = 0; i < tagsNewlineBeforeStrings.length; i++ )
+            tagsNewlineBefore.add( tagsNewlineBeforeStrings[ i ] );
+        for ( int i = 0; i < tagsPreformattedStrings.length; i++ )
+            tagsPreformatted.add( tagsPreformattedStrings[ i ] );
+        for ( int i = 0; i < tagsTryMatchStrings.length; i++ )
+            tagsTryMatch.add( tagsTryMatchStrings[ i ] );
     };
     protected TagBlockRenderer blockRenderer = new TagBlockRenderer();
     protected HtmlDocument.HtmlElement previousElement;
@@ -96,161 +96,171 @@ public class HtmlFormatter extends HtmlVisitor {
 
     public HtmlFormatter() throws Exception {
         out = new MarginWriter();
-        out.setRightMargin(rightMargin);
-        out.setLineSeparator(lineSeparator);
+        out.setRightMargin( rightMargin );
+        out.setLineSeparator( lineSeparator );
     }
 
     public String toString() {
         return out.toString();
     }
 
-    public void setRightMargin(int margin) {
+    public void setRightMargin( int margin ) {
         rightMargin = margin;
-        out.setRightMargin(rightMargin);
+        out.setRightMargin( rightMargin );
     }
 
-    public void setIndent(int indent) {
+    public void setIndent( int indent ) {
         indentSize = indent;
     }
 
-    public void setLineSeparator(String ls) {
+    public void setLineSeparator( String ls ) {
         lineSeparator = ls;
-        out.setLineSeparator(lineSeparator);
+        out.setLineSeparator( lineSeparator );
     }
 
-    public void visit(HtmlDocument.TagBlock block) {
+    public void visit( HtmlDocument.TagBlock block ) {
         boolean indent;
         boolean preformat;
         int wasMargin = 0;
 
-        preformat = tagsPreformatted.contains(block.startTag.tagName.toUpperCase());
+        preformat = tagsPreformatted.contains( block.startTag.tagName.toUpperCase() );
 
-        if (tagsTryMatch.contains(block.startTag.tagName.toUpperCase())) {
+        if ( tagsTryMatch.contains( block.startTag.tagName.toUpperCase() ) ) {
             blockRenderer.start();
-            blockRenderer.setTargetWidth(out.getRightMargin() - out.getLeftMargin());
-            blockRenderer.visit(block);
+            blockRenderer.setTargetWidth( out.getRightMargin() - out.getLeftMargin() );
+            blockRenderer.visit( block );
             blockRenderer.finish();
-            if (!blockRenderer.hasBlownTarget()) {
-                if (preformat)
-                    out.print(blockRenderer.getString());
+            if ( !blockRenderer.hasBlownTarget() ) {
+                if ( preformat )
+                    out.print( blockRenderer.getString() );
                 else
-                    out.printAutoWrap(blockRenderer.getString());
+                    out.printAutoWrap( blockRenderer.getString() );
                 previousElement = block.endTag;
-                return;
+                return ;
             }
         }
 
         // Only will get here if we've failed the try-block test
-        indent = tagsIndentBlock.contains(block.startTag.tagName.toUpperCase());
-        if (preformat) {
+        indent = tagsIndentBlock.contains( block.startTag.tagName.toUpperCase() );
+        if ( preformat ) {
             wasMargin = out.getLeftMargin();
-            visit(block.startTag);
-            out.setLeftMargin(0);
+            visit( block.startTag );
+            out.setLeftMargin( 0 );
             inPreBlock = true;
-            visit(block.body);
+            visit( block.body );
             inPreBlock = false;
-            out.setLeftMargin(wasMargin);
-            visit(block.endTag);
-        } else if (indent) {
+            out.setLeftMargin( wasMargin );
+            visit( block.endTag );
+        }
+        else if ( indent ) {
             out.printlnSoft();
-            visit(block.startTag);
+            visit( block.startTag );
             out.printlnSoft();
-            out.setLeftMargin(out.getLeftMargin() + indentSize);
-            visit(block.body);
-            out.setLeftMargin(out.getLeftMargin() - indentSize);
+            out.setLeftMargin( out.getLeftMargin() + indentSize );
+            visit( block.body );
+            out.setLeftMargin( out.getLeftMargin() - indentSize );
             out.printlnSoft();
-            visit(block.endTag);
+            visit( block.endTag );
             out.printlnSoft();
             inPreBlock = false;
-        } else {
-            visit(block.startTag);
-            visit(block.body);
-            visit(block.endTag);
-        };
+        }
+        else {
+            visit( block.startTag );
+            visit( block.body );
+            visit( block.endTag );
+        }
     }
 
-    public void visit(HtmlDocument.Tag t) {
+    public void visit( HtmlDocument.Tag t ) {
         String s = t.toString();
         int hanging;
-        if (tagsNewlineBefore.contains(t.tagName.toUpperCase())
-                || out.getCurPosition() + s.length() > out.getRightMargin())
+        if ( tagsNewlineBefore.contains( t.tagName.toUpperCase() )
+                || out.getCurPosition() + s.length() > out.getRightMargin() )
             out.printlnSoft();
 
-        out.print(t.tagStart + t.tagName);
+        out.print( t.tagStart + t.tagName );
         hanging = t.tagName.length() + 1;
-        boolean splitAttrs = jEdit.getBooleanProperty("xmlindenter.splitAttributes", false);
-        if (splitAttrs) {
-            out.setLeftMargin(out.getLeftMargin() + indentSize);
-            out.print(lineSeparator);
+        boolean splitAttrs = jEdit.getBooleanProperty( "xmlindenter.splitAttributes", false );
+        if ( splitAttrs ) {
+            out.setLeftMargin( out.getLeftMargin() + indentSize );
+            out.print( lineSeparator );
         }
-        for (Iterator it = t.attributeList.attributes.iterator(); it.hasNext();) {
-            HtmlDocument.Attribute a = (HtmlDocument.Attribute) it.next();
-            if (splitAttrs) {
-                out.printAttr(a.toString());
-                if (it.hasNext()) {
-                    out.print(lineSeparator);
+        for ( Iterator it = t.attributeList.attributes.iterator(); it.hasNext(); ) {
+            HtmlDocument.Attribute a = ( HtmlDocument.Attribute ) it.next();
+            if ( splitAttrs ) {
+                out.printAttr( a.toString() );
+                if ( it.hasNext() ) {
+                    out.print( lineSeparator );
                 }
             }
             else {
-                out.printAutoWrap(" " + a.toString(), hanging);
+                out.printAutoWrap( " " + a.toString(), hanging );
             }
         }
-        if (splitAttrs) {
-            out.setLeftMargin(out.getLeftMargin() - indentSize);
+        if ( splitAttrs ) {
+            out.setLeftMargin( out.getLeftMargin() - indentSize );
         }
-        if (t.tagEnd.length() > 1 && !t.tagEnd.startsWith("/"))
-            out.print(" ");  // got a jsp tag
-        out.print(t.tagEnd);
+        if ( t.isJspTag ) {
+            out.print( " " );  // got a jsp tag
+        }
+        out.print( t.tagEnd );
+        System.out.println("+++++ might print new line after tag: " + t.toString());
+        if (t.tagEnd.endsWith("%>")){
+            out.println();   
+        }
         previousElement = t;
     }
 
-    public void visit(HtmlDocument.EndTag t) {
-        out.printAutoWrap(t.toString());
-        if (tagsNewlineBefore.contains(t.tagName.toUpperCase())) {
+    public void visit( HtmlDocument.EndTag t ) {
+        out.printAutoWrap( t.toString() );
+        if ( tagsNewlineBefore.contains( t.tagName.toUpperCase() ) ) {
             out.printlnSoft();
             ///out.print(lineSeparator);
         }
         else {
-            out.print(" ");
+            out.print( " " );
         }
         previousElement = t;
     }
 
-    public void visit(HtmlDocument.Comment c) {
-        out.print(c.toString());
+    public void visit( HtmlDocument.Comment c ) {
+        out.print( c.toString() );
         previousElement = c;
     }
 
-    public void visit(HtmlDocument.Text t) {
-        if (inPreBlock)
-            out.print(t.text);
+    public void visit( HtmlDocument.Text t ) {
+        System.out.println("+++++ Text section: " + t.toString());
+        if ( inPreBlock )
+            out.print( t.text );
         else {
-            t.text = t.text.replaceAll("[ ]+", " ");
+            t.text = t.text.replaceAll( "[ ]+", " " );
             int start = 0;
             int old_rm = out.getRightMargin();
-            out.setRightMargin(old_rm < 120 ? old_rm : 120);
-            while (start < t.text.length()) {
-                int index = t.text.indexOf(' ', start) + 1;
-                if (index == 0)
+            out.setRightMargin( old_rm < 120 ? old_rm : 120 );
+            while ( start < t.text.length() ) {
+                int index = t.text.indexOf( ' ', start ) + 1;
+                if ( index == 0 )
                     index = t.text.length();
-                out.printAutoWrap(t.text.substring(start, index));
+                out.printAutoWrap( t.text.substring( start, index ) );
                 start = index;
             }
-            out.setRightMargin(old_rm);
+            out.setRightMargin( old_rm );
         }
         previousElement = t;
     }
 
-    public void visit(HtmlDocument.Newline n) {
-        if (inPreBlock) {
-            out.print(lineSeparator);
-        } else if (previousElement instanceof HtmlDocument.Tag
+    public void visit( HtmlDocument.Newline n ) {
+        if ( inPreBlock ) {
+            out.print( lineSeparator );
+        }
+        else if ( previousElement instanceof HtmlDocument.Tag
                 || previousElement instanceof HtmlDocument.EndTag
                 || previousElement instanceof HtmlDocument.Comment
-                || previousElement instanceof HtmlDocument.Newline) {
+                || previousElement instanceof HtmlDocument.Newline ) {
             out.printlnSoft();
-        } else if (previousElement instanceof HtmlDocument.Text) {
-            out.print(" ");
+        }
+        else if ( previousElement instanceof HtmlDocument.Text ) {
+            out.print( " " );
         }
         previousElement = n;
     }
@@ -260,8 +270,7 @@ public class HtmlFormatter extends HtmlVisitor {
         inPreBlock = false;
     }
 
-    public void finish() {
-    }
+    public void finish() {}
 }
 
 
@@ -276,61 +285,61 @@ class MarginWriter {
     protected int leftMargin;
     protected int rightMargin;
     StringBuffer sb = null;
-    protected char[] spaces = new char[256];
-    protected String lineSeparator = System.getProperty("line.separator");
+    protected char[] spaces = new char[ 256 ];
+    protected String lineSeparator = System.getProperty( "line.separator" );
 
     public MarginWriter() {
         sb = new StringBuffer();
-        for (int i = 0; i < spaces.length; i++)
-            spaces[i] = ' ';
+        for ( int i = 0; i < spaces.length; i++ )
+            spaces[ i ] = ' ';
     }
 
     public String toString() {
         return sb.toString();
     }
 
-    public void print(String s) {
-        if (curPosition == 0 && leftMargin > 0) {
-            sb.append(spaces, 0, leftMargin);
+    public void print( String s ) {
+        if ( curPosition == 0 && leftMargin > 0 ) {
+            sb.append( spaces, 0, leftMargin );
             curPosition = leftMargin;
-        };
-        sb.append(s);
+        }
+        sb.append( s );
         curPosition += s.length();
     }
 
-    public void printAutoWrap(String s) {
-        if (curPosition > leftMargin
-                && curPosition + s.length() > rightMargin)
+    public void printAutoWrap( String s ) {
+        if ( curPosition > leftMargin
+                && curPosition + s.length() > rightMargin )
             println();
-        print(s);
+        print( s );
     }
 
-    public void printAutoWrap(String s, int hanging) {
-        if (curPosition > leftMargin
-                && curPosition + s.length() > rightMargin) {
+    public void printAutoWrap( String s, int hanging ) {
+        if ( curPosition > leftMargin
+                && curPosition + s.length() > rightMargin ) {
             println();
-            sb.append(spaces, 0, hanging + leftMargin);
+            sb.append( spaces, 0, hanging + leftMargin );
             curPosition = leftMargin + hanging;
-        };
-        print(s);
+        }
+        print( s );
     }
 
     public void println() {
         curPosition = 0;
-        sb.append(lineSeparator);
+        sb.append( lineSeparator );
     }
 
-    public void printAttr(String s) {
-        sb.append(spaces, 0, leftMargin);
-        print(s);
+    public void printAttr( String s ) {
+        sb.append( spaces, 0, leftMargin );
+        print( s );
     }
 
     public void printlnSoft() {
-        if (curPosition > 0)
+        if ( curPosition > 0 )
             println();
     }
 
-    public void setLeftMargin(int leftMargin) {
+    public void setLeftMargin( int leftMargin ) {
         this.leftMargin = leftMargin;
     }
 
@@ -338,7 +347,7 @@ class MarginWriter {
         return leftMargin;
     }
 
-    public void setRightMargin(int rightMargin) {
+    public void setRightMargin( int rightMargin ) {
         this.rightMargin = rightMargin;
     }
 
@@ -347,14 +356,14 @@ class MarginWriter {
     }
 
     public int getCurPosition() {
-        return (curPosition == 0 ? leftMargin : curPosition);
+        return ( curPosition == 0 ? leftMargin : curPosition );
     }
 
-    public void setCurPosition(int p) {
+    public void setCurPosition( int p ) {
         curPosition = p >= 0 ? p : 0;
     }
 
-    public void setLineSeparator(String ls) {
+    public void setLineSeparator( String ls ) {
         this.lineSeparator = ls;
     }
 }
@@ -379,10 +388,9 @@ class TagBlockRenderer extends HtmlVisitor {
         blownTarget = false;
     }
 
-    public void finish() {
-    }
+    public void finish() {}
 
-    public void setTargetWidth(int w) {
+    public void setTargetWidth( int w ) {
         targetWidth = w;
     }
 
@@ -398,38 +406,36 @@ class TagBlockRenderer extends HtmlVisitor {
         return blownTarget;
     }
 
-    public void visit(HtmlDocument.Tag t) {
-        if (s.length() < targetWidth)
+    public void visit( HtmlDocument.Tag t ) {
+        if ( s.length() < targetWidth )
             s += t.toString();
         else
             blownTarget = true;
     }
 
-    public void visit(HtmlDocument.EndTag t) {
-        if (s.length() < targetWidth)
+    public void visit( HtmlDocument.EndTag t ) {
+        if ( s.length() < targetWidth )
             s += t.toString();
         else
             blownTarget = true;
     }
 
-    public void visit(HtmlDocument.Comment c) {
-        if (s.length() < targetWidth)
+    public void visit( HtmlDocument.Comment c ) {
+        if ( s.length() < targetWidth )
             s += c.toString();
         else
             blownTarget = true;
     }
 
-    public void visit(HtmlDocument.Text t) {
-        if (s.length() < targetWidth)
+    public void visit( HtmlDocument.Text t ) {
+        if ( s.length() < targetWidth )
             s += t.toString();
         else
             blownTarget = true;
     }
 
-    public void visit(HtmlDocument.Newline n) {
+    public void visit( HtmlDocument.Newline n ) {
         multiLine = true;
         s += " ";
     }
 }
-
-

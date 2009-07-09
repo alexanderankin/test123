@@ -44,6 +44,12 @@
     <property name="classes.dir" location="${temp}/classes" />
 
 
+    <condition property="can.reload.plugins">
+        <and>
+            <available classname="org.gjt.sp.jedit.jEdit"/>
+            <available classname="ReloadPluginTask"/>
+        </and>
+    </condition>
 
    <!-- ========================================================================
       Target: set classpath
@@ -149,6 +155,14 @@
             </fileset>
         </jar>
 
+        <antcall target="reload"/>
+
+    </target>
+
+    <target name="reload" if="can.reload.plugins">
+        <echo>Reloading ${install.dir}/${ant.project.name}.jar</echo>
+        <taskdef name="reloadPlugin" classname="ReloadPluginTask"/>
+        <reloadPlugin jarfile="${install.dir}/${jar.name}"/>
     </target>
 
    <!-- ========================================================================

@@ -15,35 +15,34 @@ public interface HtmlParserConstants {
   int NEWLINE = 9;
   int QUOTE = 10;
   int EOL = 11;
-  int COMMENT_START = 12;
-  int DECL_START = 13;
-  int ENDTAG_START = 14;
-  int TAG_START = 15;
-  int JSP_TAG_START = 16;
-  int PCDATA = 17;
-  int TAG_SCRIPT = 19;
-  int TAG_STYLE = 20;
-  int TAG_NAME = 21;
-  int LST_ERROR = 22;
-  int ATTR_NAME = 24;
-  int TAG_END = 25;
-  int TAG_SLASHEND = 26;
-  int ATTR_EQ = 27;
-  int IMPLICIT_TAG_END = 28;
-  int LIT_ERROR = 29;
-  int ATTR_VAL = 31;
-  int LAV_ERROR = 32;
-  int COMMENT_END = 33;
-  int DASH = 34;
-  int COMMENT_EOL = 35;
-  int COMMENT_WORD = 36;
-  int DECL_ANY = 37;
-  int DECL_END = 38;
-  int SCRIPT_END = 39;
-  int STYLE_END = 40;
-  int BLOCK_EOL = 41;
-  int BLOCK_LBR = 42;
-  int BLOCK_WORD = 43;
+  int TAG_START = 12;
+  int ENDTAG_START = 13;
+  int COMMENT_START = 14;
+  int DECL_START = 15;
+  int PCDATA = 16;
+  int TAG_SCRIPT = 17;
+  int TAG_STYLE = 18;
+  int TAG_NAME = 19;
+  int LST_ERROR = 20;
+  int ATTR_NAME = 22;
+  int TAG_END = 23;
+  int TAG_SLASHEND = 24;
+  int ATTR_EQ = 25;
+  int IMPLICIT_TAG_END = 26;
+  int LIT_ERROR = 27;
+  int ATTR_VAL = 29;
+  int LAV_ERROR = 30;
+  int COMMENT_END = 31;
+  int DASH = 32;
+  int COMMENT_EOL = 33;
+  int COMMENT_WORD = 34;
+  int DECL_ANY = 35;
+  int DECL_END = 36;
+  int SCRIPT_END = 37;
+  int STYLE_END = 38;
+  int BLOCK_EOL = 39;
+  int BLOCK_LBR = 40;
+  int BLOCK_WORD = 41;
 
   int LexStyle = 0;
   int LexScript = 1;
@@ -67,25 +66,23 @@ public interface HtmlParserConstants {
     "<NEWLINE>",
     "<QUOTE>",
     "<EOL>",
+    "<TAG_START>",
+    "\"</\"",
     "<COMMENT_START>",
     "\"<!\"",
-    "\"</\"",
-    "<TAG_START>",
-    "\"<%\"",
     "<PCDATA>",
-    "<token of kind 18>",
-    "\"SCRIPT\"",
-    "\"STYLE\"",
+    "<TAG_SCRIPT>",
+    "<TAG_STYLE>",
     "<TAG_NAME>",
     "<LST_ERROR>",
-    "<token of kind 23>",
+    "<token of kind 21>",
     "<ATTR_NAME>",
     "<TAG_END>",
     "\"/>\"",
     "\"=\"",
     "\"<\"",
     "<LIT_ERROR>",
-    "<token of kind 30>",
+    "<token of kind 28>",
     "<ATTR_VAL>",
     "<LAV_ERROR>",
     "<COMMENT_END>",
@@ -94,8 +91,8 @@ public interface HtmlParserConstants {
     "<COMMENT_WORD>",
     "<DECL_ANY>",
     "\">\"",
-    "\"</SCRIPT>\"",
-    "\"</STYLE>\"",
+    "<SCRIPT_END>",
+    "<STYLE_END>",
     "<BLOCK_EOL>",
     "\"<\"",
     "<BLOCK_WORD>",

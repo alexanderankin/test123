@@ -1,10 +1,10 @@
 /*
- * HtmlParser.jj -- JavaCC grammar for HTML.
- * Copyright (C) 1999 Quiotix Corporation.
+ * HtmlParser.jj -- JavaCC grammar for HTML.  
+ * Copyright (C) 1999 Quiotix Corporation.  
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2, as
- * published by the Free Software Foundation.
+ * it under the terms of the GNU General Public License, version 2, as 
+ * published by the Free Software Foundation.  
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,38 +14,36 @@
  */
 
 
-/*
+/* 
  * JavaCC grammar file for HTML.
- *
+ * 
  * Author: Brian Goetz, Quiotix
  * Version: 1.03
  * Revision: $Id$
  *
- * This grammar parses an HTML document and produces a (flat) parse "tree"
+ * This grammar parses an HTML document and produces a (flat) parse "tree" 
  * representing the document.  It preserves almost all information in the
  * source document, including carriage control and spacing (except inside
- * of tags.)  See the HtmlDocument and HtmlDocument.* classes for a
+ * of tags.)  See the HtmlDocument and HtmlDocument.* classes for a 
  * description of the parse tree.  The parse tree supports traversal using
  * the commonly used "Visitor" pattern.  The HtmlDumper class is a visitor
- * which dumps out the tree to an output stream.
- *
+ * which dumps out the tree to an output stream.  
+ * 
  * It does not require begin tags to be matched with end tags, or validate
- * the names or contents of the tags (this can easily be done post-parsing;
- * see the HtmlCollector class (which matches begin tags with end tags)
- * for an example.)
- *
- * Notable edge cases include:
+ * the names or contents of the tags (this can easily be done post-parsing; 
+ * see the HtmlCollector class (which matches begin tags with end tags) 
+ * for an example.)  
+ * 
+ * Notable edge cases include: 
  * - Quoted string processing.  Quoted strings are matched inside of comments, and
  *   as tag attribute values.  Quoted strings are matched in normal text only
- *   to the extent that they do not span line breaks.
- *
- * Please direct comments, questions, gripes or praise to
- * html-parser@quiotix.com.  If you like it/hate it/use it, please let us know!
- *
- * Modified for Beauty plugin for jEdit, added ability to handle jsp.
+ *   to the extent that they do not span line breaks.  
+ * 
+ * Please direct comments, questions, gripes or praise to 
+ * html-parser@quiotix.com.  If you like it/hate it/use it, please let us know!  
  */
 
-options { IGNORE_CASE = true; STATIC = false; }
+options { IGNORE_CASE = true; STATIC = false; } 
 
 PARSER_BEGIN(HtmlParser)
 
@@ -53,11 +51,7 @@ package beauty.parsers.html;
 
 public class HtmlParser {
 
-  static String NL = System.getProperty("line.separator");
-
-  public void setLineSeparator(String ls) {
-    NL = ls;
-  }
+  final static String NL = System.getProperty("line.separator");
 
   private static String getTokenText(Token first, Token cur) {
     Token t;
@@ -66,9 +60,9 @@ public class HtmlParser {
     for (t=first; t != cur.next; t = t.next) {
       if (t.specialToken != null) {
         Token tt=t.specialToken;
-        while (tt.specialToken != null)
+        while (tt.specialToken != null) 
           tt = tt.specialToken;
-        for (; tt != null; tt = tt.next)
+        for (; tt != null; tt = tt.next) 
           sb.append(tt.image);
       };
       sb.append(t.image);
@@ -91,52 +85,34 @@ PARSER_END(HtmlParser)
 
 <*> TOKEN :
 {
-  <#ALPHA_CHAR: [
-       "\u0024",
-       "\u0041"-"\u005a",
-       "\u005f",
-       "\u0061"-"\u007a",
-       "\u00c0"-"\u00d6",       // Latin with diacritics
-       "\u00d8"-"\u00f6",       // Latin with diacritics
-       "\u00f8"-"\u00ff",       // Latin with diacritics
-       "\u0100"-"\u1fff",       // Latin Extended-A through Greek Extended
-       "\u3040"-"\u318f",       // Hiragana through Hangul Compatibility Jamo
-       "\u3300"-"\u337f",       // CJK Compatibility
-       "\u3400"-"\u3d2d",       // CJK Unified Ideographs Extension A
-       "\u4e00"-"\u9fff",       // CJK Unified Ideographs
-       "\uf900"-"\ufaff" ] >    // CJK Compatibility Ideographs
+  <#ALPHA_CHAR: ["a"-"z", "A"-"Z"] >
 | <#NUM_CHAR:   ["0"-"9"] >
 | <#ALPHANUM_CHAR: [ "a"-"z", "A"-"Z", "0"-"9" ] >
 | <#IDENTIFIER_CHAR: [ "a"-"z", "A"-"Z", "0"-"9", "_", "-", ".", ":" ] >
 | <#IDENTIFIER: <ALPHA_CHAR> (<IDENTIFIER_CHAR>)* >
-| <#QUOTED_STRING_NB: ( "'" ( ~["'", "\r", "\n"] )* "'" )
+| <#QUOTED_STRING_NB: ( "'" ( ~["'", "\r", "\n"] )* "'" ) 
                     | ( "\"" ( ~["\"", "\r", "\n"] )* "\"" ) >
 | <#QUOTED_STRING: ( "'" ( ~["'"] )* "'" ) | ( "\"" ( ~["\""] )* "\"" ) >
 | <#WHITESPACE: ( " " | "\t" | "\n" | "\r" ) >
 | <#NEWLINE:    ( "\r\n" | "\r" | "\n" ) >
-| <#QUOTE:      ( "'" | "\"" ) >
+| <#QUOTE:      ( "'" | "\"" )>
 }
 
-<DEFAULT> TOKEN :
+<DEFAULT> TOKEN : 
 {
-  <EOL:               ( " " | "\t" )* <NEWLINE> >
+  <EOL:            ( " " | "\t" )* <NEWLINE> >
+//| <TAG_START:      "<"       > : LexStartTag
+| <TAG_START:      "<%@" (<WHITESPACE>)* <IDENTIFIER> " " | "<" <IDENTIFIER> ":" | "<%" | "<" > : LexStartTag
+| <ENDTAG_START:   "</"      > : LexStartTag
 | <COMMENT_START:     "<!--" | "<%--"    >   : LexComment
-| <DECL_START:        "<!"      >            : LexDecl
-| <ENDTAG_START:      "</"      >            : LexStartTag
-| <TAG_START:         "<" | "<%@" | "<" <IDENTIFIER> ":" > : LexStartTag
-| <JSP_TAG_START:     "<%"      >            : LexInTag
-| <PCDATA:            ( ~["<", "\r", "\n"] )+ >
-}
-
-<LexStartTag> SPECIAL_TOKEN :
-{
-  < (<WHITESPACE>)+ >
+| <DECL_START:     "<!"      > : LexDecl
+| <PCDATA:         ( ~["<", "\r", "\n"] )+ >
 }
 
 <LexStartTag> TOKEN :
 {
-  <TAG_SCRIPT: "SCRIPT">    : LexInTag
-| <TAG_STYLE:  "STYLE">     : LexInTag
+  <TAG_SCRIPT: ("SCRIPT" | "script") >    : LexInTag
+| <TAG_STYLE:  ("STYLE"  | "style" ) >    : LexInTag
 | <TAG_NAME: <IDENTIFIER> > : LexInTag
 | <LST_ERROR: ~[]>          : DEFAULT
 }
@@ -149,11 +125,12 @@ PARSER_END(HtmlParser)
 <LexInTag> TOKEN :
 {
   <ATTR_NAME: <IDENTIFIER> >
+//| <TAG_END: ">" >                       : DEFAULT
 | <TAG_END: ">" | "%>" >                : DEFAULT
 | <TAG_SLASHEND: "/>" >                 : DEFAULT
 | <ATTR_EQ: "=" >                       : LexAttrVal
-| <IMPLICIT_TAG_END: "<">
-  {
+| <IMPLICIT_TAG_END: "<">               
+  { 
     Token t = new Token();
     t.image       = "<";
     t.kind        = TAG_START;
@@ -168,7 +145,7 @@ PARSER_END(HtmlParser)
   }                                     : LexStartTag
 | <LIT_ERROR: ~[]>
 }
-
+  
 <LexAttrVal> SPECIAL_TOKEN :
 {
   < <WHITESPACE> >
@@ -176,18 +153,18 @@ PARSER_END(HtmlParser)
 
 <LexAttrVal> TOKEN :
 {
-  <ATTR_VAL: <QUOTED_STRING>
+  <ATTR_VAL: <QUOTED_STRING> 
 | ( ~[">", "\"", "'", " ", "\t", "\n", "\r"] )+ > : LexInTag
 | <LAV_ERROR: ~[]>
 }
 
-<LexComment> TOKEN :
+<LexComment> TOKEN : 
 {
   < COMMENT_END:  ("--" (" ")* ">" | "->" | "--%>" ) > : DEFAULT
 | < DASH:         "-" >
 | < COMMENT_EOL:  <NEWLINE> >
-| < COMMENT_WORD: ( (~[ "\n", "\r", "'", "\"", "-" ])+
-                    | <QUOTED_STRING_NB>
+| < COMMENT_WORD: ( (~[ "\n", "\r", "'", "\"", "-" ])+ 
+                    | <QUOTED_STRING_NB> 
                     | <QUOTE> ) >
 }
 
@@ -198,19 +175,19 @@ PARSER_END(HtmlParser)
 }
 
 <LexScript> TOKEN : {
-  <SCRIPT_END:   "</SCRIPT>" > : DEFAULT
+  <SCRIPT_END:   ("</SCRIPT>" | "</script>") > : DEFAULT
 }
 
 <LexStyle> TOKEN : {
-  <STYLE_END:    "</STYLE>" > : DEFAULT
+  <STYLE_END:    ("</STYLE>" | "</style>") > : DEFAULT
 }
 
 <LexScript, LexStyle> TOKEN :
 {
   <BLOCK_EOL:    <NEWLINE> >
 | <BLOCK_LBR:    "<" >
-| <BLOCK_WORD:   ( <QUOTED_STRING_NB>
-                   | <QUOTE>
+| <BLOCK_WORD:   ( <QUOTED_STRING_NB> 
+                   | <QUOTE> 
                    | (~[ "\n", "\r", "'", "\"", "<"])+ ) >
 }
 
@@ -219,7 +196,7 @@ HtmlDocument HtmlDocument() :
   HtmlDocument.ElementSequence s;
 }
 {
-  s=ElementSequence() <EOF>
+  s=ElementSequence() <EOF> 
   { return new HtmlDocument(s); }
 }
 
@@ -240,16 +217,16 @@ HtmlDocument.HtmlElement Element() :
 }
 {
 (
-    LOOKAHEAD(2)
+    LOOKAHEAD(2) 
          e = Tag()        { return e; }
   |      e = EndTag()     { return e; }
   |      e = CommentTag() { return e; }
   |      e = DeclTag()    { return e; }
-  | LOOKAHEAD(2)
+  | LOOKAHEAD(2) 
          e = ScriptBlock() { return e; }
-  | LOOKAHEAD(2)
+  | LOOKAHEAD(2) 
          e = StyleBlock()  { return e; }
-  | LOOKAHEAD(2)
+  | LOOKAHEAD(2) 
              <TAG_START> text=<LST_ERROR>
                           { return new HtmlDocument.Text("<" + text.image); }
   |   text = <PCDATA>     { return new HtmlDocument.Text(text.image); }
@@ -257,21 +234,21 @@ HtmlDocument.HtmlElement Element() :
 )
 }
 
-HtmlDocument.Attribute Attribute() :
+HtmlDocument.Attribute Attribute() : 
 {
-  HtmlDocument.Attribute a;
+  HtmlDocument.Attribute a; 
   Token t1, t2=null;
 }
 {
   t1=<ATTR_NAME> [ <ATTR_EQ> t2=<ATTR_VAL> ]
-  { if (t2 == null)
-      return new HtmlDocument.Attribute(t1.image);
+  { if (t2 == null) 
+      return new HtmlDocument.Attribute(t1.image); 
     else
       return new HtmlDocument.Attribute(t1.image, t2.image);
   }
 }
 
-HtmlDocument.AttributeList AttributeList() :
+HtmlDocument.AttributeList AttributeList() : 
 {
   HtmlDocument.AttributeList alist = new HtmlDocument.AttributeList();
   HtmlDocument.Attribute a;
@@ -324,29 +301,26 @@ HtmlDocument.HtmlElement Tag() :
   }
 }
 
-
 HtmlDocument.ElementSequence BlockContents() : {
   Token t;
   StringBuffer s = new StringBuffer();
   HtmlDocument.ElementSequence e = new HtmlDocument.ElementSequence();
 }
 {
-  ( <BLOCK_EOL> {
+  ( <BLOCK_EOL> { 
       if (s.length() > 0) {
-        e.addElement(new HtmlDocument.Text(s.toString()));
+        e.addElement(new HtmlDocument.Text(s.toString())); 
         s.setLength(0);
       };
-      e.addElement(new HtmlDocument.Newline());
+      e.addElement(new HtmlDocument.Newline()); 
     }
-    | t=<BLOCK_WORD> { s.append(t.image); }
-    | t=<BLOCK_LBR>  { s.append(t.image); }
-  )*
-  {
-    if (s.length() > 0)
-      e.addElement(new HtmlDocument.Text(s.toString()));
-    // danson, removed next line, it causes an extra blank line to be inserted
-    // in script and style blocks
-    //e.addElement(new HtmlDocument.Newline());
+    | t=<BLOCK_WORD> { s.append(t.image); } 
+    | t=<BLOCK_LBR>  { s.append(t.image); } 
+  )* 
+  { 
+    if (s.length() > 0) 
+      e.addElement(new HtmlDocument.Text(s.toString())); 
+    e.addElement(new HtmlDocument.Newline()); 
     return e;
   }
 }
@@ -360,17 +334,17 @@ HtmlDocument.HtmlElement ScriptBlock() :
 {
   try {
     <TAG_START> <TAG_SCRIPT> alist=AttributeList() <TAG_END>
-    {
-      token_source.SwitchTo(LexScript);
+    { 
+      token_source.SwitchTo(LexScript); 
     }
     e=BlockContents()
     <SCRIPT_END>
-    {
-      return new HtmlDocument.TagBlock("SCRIPT", alist, e);
+    { 
+      return new HtmlDocument.TagBlock("SCRIPT", alist, e); 
     }
   }
   catch (ParseException ex) {
-    token_source.SwitchTo(DEFAULT);
+    token_source.SwitchTo(DEFAULT); 
     String s = getTokenText(firstToken, getNextToken());
     return new HtmlDocument.Text(s);
   }
@@ -386,17 +360,17 @@ HtmlDocument.HtmlElement StyleBlock() :
 {
   try {
     <TAG_START> <TAG_STYLE> alist=AttributeList() <TAG_END>
-    {
-      token_source.SwitchTo(LexStyle);
+    { 
+      token_source.SwitchTo(LexStyle); 
     }
     e=BlockContents()
     <STYLE_END>
-    {
-      return new HtmlDocument.TagBlock("STYLE", alist, e);
+    { 
+      return new HtmlDocument.TagBlock("STYLE", alist, e); 
     }
   }
   catch (ParseException ex) {
-    token_source.SwitchTo(DEFAULT);
+    token_source.SwitchTo(DEFAULT); 
     String s = getTokenText(firstToken, getNextToken());
     return new HtmlDocument.Text(s);
   }
@@ -414,7 +388,7 @@ HtmlDocument.HtmlElement EndTag() :
     { return new HtmlDocument.EndTag(t.image); }
   }
   catch (ParseException ex) {
-    token_source.SwitchTo(DEFAULT);
+    token_source.SwitchTo(DEFAULT); 
     String s = getTokenText(firstToken, getNextToken());
     return new HtmlDocument.Text(s);
   }
@@ -437,15 +411,14 @@ HtmlDocument.Comment CommentTag() :
   }
 }
 
+  
 HtmlDocument.Comment DeclTag() :
 {
-  Token s;
   Token t;
-  Token e;
 }
 {
-  s=<DECL_START> t=<DECL_ANY> e=<DECL_END>
-  {
-    return new HtmlDocument.Comment(s.image + t.image + e.image);
+  <DECL_START> t=<DECL_ANY> <DECL_END>
+  { 
+    return new HtmlDocument.Comment(t.image); 
   }
 }
