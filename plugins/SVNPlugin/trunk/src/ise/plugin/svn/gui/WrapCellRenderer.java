@@ -19,6 +19,7 @@ public class WrapCellRenderer extends JTextPane implements TableCellRenderer {
 
     private static Color background = jEdit.getColorProperty( "view.bgColor", Color.WHITE );
     private static Color selection = jEdit.getColorProperty( "view.selectionColor", Color.LIGHT_GRAY );
+    private static Color foreground = jEdit.getColorProperty( "view.fgColor", Color.BLACK );
 
     private WordSearcher searcher = null;
 
@@ -35,6 +36,7 @@ public class WrapCellRenderer extends JTextPane implements TableCellRenderer {
         String content = value == null ? "" : value.toString().trim();
         setText( content );
         setBackground( isSelected ? selection : background );
+        setForeground( foreground );
         if ( searcher != null ) {
             searcher.search();
         }
