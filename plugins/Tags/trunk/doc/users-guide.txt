@@ -325,6 +325,11 @@ Credits
 Changelog
 =========
 
+* Version 3.0.2 (July 2009)
+
+  - Adds target specification to build.xml to ensure it runs on all Java
+    versions supported by jEdit.
+
 * Version 3.0.1 (June 2009)
 
   - Updated for 4.3.16 API changes (removed deprecated CaretChanging).

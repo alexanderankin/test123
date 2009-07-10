@@ -3,7 +3,7 @@ plugin.tags.TagsPlugin.activate=options.tags.hasDynamicActions
 # general plugin information
 plugin.tags.TagsPlugin.name=Tags
 plugin.tags.TagsPlugin.author=Ollie Rutherfurd, Kenrick Drew, Shlomy Reinstein
-plugin.tags.TagsPlugin.version=3.0.1
+plugin.tags.TagsPlugin.version=3.0.2
 plugin.tags.TagsPlugin.docs=doc/users-guide.html
 plugin.tags.TagsPlugin.description=Tags allows jumping to source code tags \
   using tag files created by the "Exuberant Ctags" tool.
