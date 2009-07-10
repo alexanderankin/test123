@@ -217,7 +217,7 @@ public abstract class GenericExporter {
         long start = System.currentTimeMillis();
         this.paintLines( out, buffer, first, last );
         long end = System.currentTimeMillis();
-        Log.log( Log.DEBUG, this, "Time: " + ( end - start ) + " ms" );
+        //Log.log( Log.DEBUG, this, "Time: " + ( end - start ) + " ms" );
     }
 
 

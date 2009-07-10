@@ -57,7 +57,7 @@ public class LatexJeditConfig extends GenericJeditConfig implements Config {
 		 * Returns the gutter object
 		 * @return gutter object specific to latex (or null if the gutter is not displayed)
 		 */
-		@Override
+		
     public GenericGutter getGutter() {
         return this.gutter;
     }
@@ -66,7 +66,7 @@ public class LatexJeditConfig extends GenericJeditConfig implements Config {
 		 * Returns the style object
 		 * @return The style associated with this configuration
 		 */
-		@Override
+		
     public Style getStyle() {
         return this.style;
     };
@@ -75,7 +75,7 @@ public class LatexJeditConfig extends GenericJeditConfig implements Config {
 		 * Returns the painter object
 		 * @return The painter associated with this configuration
 		 */ 
-		@Override
+		
 		public GenericPainter getPainter() {
         return this.painter;
     }

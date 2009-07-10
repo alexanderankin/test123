@@ -237,8 +237,8 @@ public class Code2HTMLOptionPane extends AbstractOptionPane {
         jEdit.setBooleanProperty("code2html.show-gutter",
             ckShowGutter.isSelected());
 
-        jEdit.setBooleanProperty("code2html.show-numbers",
-            ckShowNumbers.isSelected());
+        //jEdit.setBooleanProperty("code2html.show-numbers",
+        //    ckShowNumbers.isSelected());
 
         int wrap = tfWrap.getValue();
         jEdit.setProperty("code2html.wrap", "" + wrap);

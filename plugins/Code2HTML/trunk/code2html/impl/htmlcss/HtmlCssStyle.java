@@ -44,7 +44,7 @@ public class HtmlCssStyle extends Style {
 
     public String style(int styleId, SyntaxStyle style) {
         if (style == null) {
-            Log.log(Log.DEBUG, this, "format: null style");
+            //Log.log(Log.DEBUG, this, "format: null style");
             return "";
         }
         StringBuffer buf = new StringBuffer();

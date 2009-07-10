@@ -46,17 +46,17 @@ public class HtmlJeditConfig extends GenericJeditConfig {
         );
     }
 
-		@Override
+		
     public GenericGutter getGutter() {
         return this.gutter;
     }
 
-    @Override
+    
     public Style getStyle() {
         return this.style;
     };
 
-		@Override
+		
     public GenericPainter getPainter() {
         return this.painter;
     }
