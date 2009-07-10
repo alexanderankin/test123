@@ -1216,7 +1216,11 @@ private final int jjMoveNfa_0(int startState, int curPos)
                   if (curChar == 42)
                      jjCheckNAddTwoStates(72, 73);
                   else if (curChar == 47)
+                  {
+                     if (kind > 5)
+                        kind = 5;
                      jjCheckNAddStates(18, 20);
+                  }
                   if (curChar == 42)
                      jjstateSet[jjnewStateCnt++] = 64;
                   break;
@@ -1461,8 +1465,11 @@ private final int jjMoveNfa_0(int startState, int curPos)
                      jjAddStates(7, 9);
                   break;
                case 60:
-                  if ((0xffffffffffffdbffL & l) != 0L)
-                     jjCheckNAddStates(18, 20);
+                  if ((0xffffffffffffdbffL & l) == 0L)
+                     break;
+                  if (kind > 5)
+                     kind = 5;
+                  jjCheckNAddStates(18, 20);
                   break;
                case 61:
                   if ((0x2400L & l) != 0L && kind > 5)
@@ -1627,6 +1634,8 @@ private final int jjMoveNfa_0(int startState, int curPos)
                   jjCheckNAddTwoStates(56, 7);
                   break;
                case 60:
+                  if (kind > 5)
+                     kind = 5;
                   jjAddStates(18, 20);
                   break;
                case 65:
@@ -1675,8 +1684,11 @@ private final int jjMoveNfa_0(int startState, int curPos)
                      jjAddStates(10, 12);
                   break;
                case 60:
-                  if (jjCanMove_0(hiByte, i1, i2, l1, l2))
-                     jjAddStates(18, 20);
+                  if (!jjCanMove_0(hiByte, i1, i2, l1, l2))
+                     break;
+                  if (kind > 5)
+                     kind = 5;
+                  jjAddStates(18, 20);
                   break;
                case 65:
                   if (jjCanMove_0(hiByte, i1, i2, l1, l2))
@@ -1973,7 +1985,7 @@ void SkipLexicalActions(Token matchedToken)
          if (image == null)
             image = new StringBuffer();
          image.append(input_stream.GetSuffix(jjimageLen + (lengthOfMatch = jjmatchedPos + 1)));
-                                                                    writeComment(matchedToken.image);
+                                                                     writeComment(matchedToken.image);
          break;
       case 6 :
          if (image == null)

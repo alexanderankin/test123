@@ -114,6 +114,7 @@
         </condition>
         <fail unless="javacchome.set" message="Property 'javacchome' needs to be set."/>
         <javacc javacchome="${javacchome}" target="./src/beauty/parsers/java/Java1.5.jj"/>
+        <javacc javacchome="${javacchome}" target="./src/beauty/parsers/javacc/JavaCC.jj"/>
         <javacc javacchome="${javacchome}" target="./src/beauty/parsers/html/HtmlParser.jj"/>
     </target>
 

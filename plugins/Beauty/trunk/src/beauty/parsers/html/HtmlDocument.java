@@ -187,6 +187,10 @@ public class HtmlDocument {
         public void accept(HtmlVisitor v) {
             v.visit(this);
         }
+        
+        public String toString() {
+            return startTag.toString();   
+        }
     }
 
     /**

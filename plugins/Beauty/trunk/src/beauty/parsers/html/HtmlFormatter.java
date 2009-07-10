@@ -141,7 +141,7 @@ public class HtmlFormatter extends HtmlVisitor {
         }
 
         // Only will get here if we've failed the try-block test
-        indent = tagsIndentBlock.contains( block.startTag.tagName.toUpperCase() );
+        indent = tagsIndentBlock.contains( block.startTag.tagName.toUpperCase() ) || block.startTag.tagEnd.equals(">");
         if ( preformat ) {
             wasMargin = out.getLeftMargin();
             visit( block.startTag );
@@ -204,7 +204,6 @@ public class HtmlFormatter extends HtmlVisitor {
             out.print( " " );  // got a jsp tag
         }
         out.print( t.tagEnd );
-        System.out.println("+++++ might print new line after tag: " + t.toString());
         if (t.tagEnd.endsWith("%>")){
             out.println();   
         }
@@ -229,7 +228,6 @@ public class HtmlFormatter extends HtmlVisitor {
     }
 
     public void visit( HtmlDocument.Text t ) {
-        System.out.println("+++++ Text section: " + t.toString());
         if ( inPreBlock )
             out.print( t.text );
         else {

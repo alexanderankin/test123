@@ -23,9 +23,28 @@ public class HtmlParser implements HtmlParserConstants {
   }
 
   public static void main(String[] args) throws ParseException {
-    HtmlParser parser = new HtmlParser(System.in);
-    HtmlDocument doc = parser.HtmlDocument();
-    doc.accept(new HtmlDumper(System.out));
+      if (args.length == 0) {
+        return;
+      }
+      try {
+        String filename = args[0];
+        HtmlParser parser = new HtmlParser(new java.io.FileReader(filename));
+        HtmlDocument document = parser.HtmlDocument();
+        //doc.accept(new HtmlDumper(System.out));
+
+            document.setLineSeparator("\n");
+            document.accept(new HtmlCollector());
+            document.accept(new HtmlScrubber(HtmlScrubber.DEFAULT_OPTIONS | HtmlScrubber.TRIM_SPACES));
+            HtmlFormatter formatter = new HtmlFormatter();
+            formatter.setRightMargin(1024);
+            formatter.setLineSeparator("\n");
+            formatter.setIndent(3);
+            document.accept(formatter);
+            System.out.println(formatter.toString());
+      }
+      catch(Exception e) {
+          e.printStackTrace();
+      }
     System.exit(0);
   }
 
@@ -128,10 +147,10 @@ public class HtmlParser implements HtmlParserConstants {
       jj_la1[3] = jj_gen;
       ;
     }
-    if (t2 == null)
-      {if (true) return new HtmlDocument.Attribute(t1.image);}
-    else
-      {if (true) return new HtmlDocument.Attribute(t1.image, t2.image);}
+        if (t2 == null)
+          {if (true) return new HtmlDocument.Attribute(t1.image);}
+        else
+          {if (true) return new HtmlDocument.Attribute(t1.image, t2.image);}
     throw new Error("Missing return statement in function");
   }
 
@@ -161,7 +180,6 @@ public class HtmlParser implements HtmlParserConstants {
   Token firstToken = getToken(1);
   HtmlDocument.HtmlElement rtn_tag = null;
   Token st = null;
-  boolean isJspTag = false;
   String tag_name;
   String tag_start;
     try {
@@ -180,20 +198,14 @@ public class HtmlParser implements HtmlParserConstants {
         jj_consume_token(-1);
         throw new ParseException();
       }
-        if (st.image.startsWith("<") && st.image.endsWith(":")) {
-            isJspTag = true;
-            tag_start = "<";
-            tag_name = st.image.substring(1) + t.image;
+        HtmlDocument.Tag tag = new HtmlDocument.Tag(st.image, t.image, alist, et.image);
+        if (st.image.startsWith("<%") || t.image.indexOf(":") > 0) {
+            tag.setIsJspTag(true);
         }
-        if (st.image.startsWith("<%")) {
-            isJspTag = true;
-        }
-      HtmlDocument.Tag tag = new HtmlDocument.Tag(st.image, t.image, alist, et.image);
-      if (et.kind == TAG_SLASHEND) {
+        if (et.kind == TAG_SLASHEND) {
           tag.setEmpty(true);
-      }
-      tag.setIsJspTag(isJspTag);
-      rtn_tag = tag;
+        }
+        rtn_tag = tag;
     } catch (ParseException ex) {
     token_source.SwitchTo(DEFAULT);
     String s = getTokenText(firstToken, getNextToken());
@@ -246,7 +258,9 @@ public class HtmlParser implements HtmlParserConstants {
     }
     if (s.length() > 0)
       e.addElement(new HtmlDocument.Text(s.toString()));
-    e.addElement(new HtmlDocument.Newline());
+    // danson, removed next line, it causes an extra blank line to be inserted
+    // in script and style blocks
+    //e.addElement(new HtmlDocument.Newline());
     {if (true) return e;}
     throw new Error("Missing return statement in function");
   }
@@ -397,19 +411,9 @@ public class HtmlParser implements HtmlParserConstants {
     finally { jj_save(3, xla); }
   }
 
-  final private boolean jj_3_2() {
-    if (jj_3R_6()) return true;
-    return false;
-  }
-
   final private boolean jj_3R_6() {
     if (jj_scan_token(TAG_START)) return true;
     if (jj_scan_token(TAG_SCRIPT)) return true;
-    return false;
-  }
-
-  final private boolean jj_3_1() {
-    if (jj_3R_5()) return true;
     return false;
   }
 
@@ -419,9 +423,8 @@ public class HtmlParser implements HtmlParserConstants {
     return false;
   }
 
-  final private boolean jj_3R_7() {
-    if (jj_scan_token(TAG_START)) return true;
-    if (jj_scan_token(TAG_STYLE)) return true;
+  final private boolean jj_3_3() {
+    if (jj_3R_7()) return true;
     return false;
   }
 
@@ -431,8 +434,19 @@ public class HtmlParser implements HtmlParserConstants {
     return false;
   }
 
-  final private boolean jj_3_3() {
-    if (jj_3R_7()) return true;
+  final private boolean jj_3_2() {
+    if (jj_3R_6()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_7() {
+    if (jj_scan_token(TAG_START)) return true;
+    if (jj_scan_token(TAG_STYLE)) return true;
+    return false;
+  }
+
+  final private boolean jj_3_1() {
+    if (jj_3R_5()) return true;
     return false;
   }
 
