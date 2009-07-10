@@ -51,6 +51,8 @@
 			deprecation="on"
 			debug="yes"
 			includeJavaRuntime="yes"
+			target="1.5"
+			source="1.5"
 		>
 			<classpath refid="project.class.path"/>
 		</javac>
