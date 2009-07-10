@@ -14,7 +14,7 @@ jedit.version.04.02.install.dir=${sandbox.dir}/4.2
 jedit.version.04.02.settings.dir=${jedit.version.04.02.install.dir}/settings
 
 # Your 4.3 install.
-jedit.version.04.03.install.dir=${sandbox.dir}/4.3pre16
+jedit.version.04.03.install.dir=${sandbox.dir}/4.3pre17
 # Where you want plugins requiring 4.3 to "install" their jars.
 jedit.version.04.03.settings.dir=${jedit.version.04.03.install.dir}/settings
 
@@ -36,7 +36,6 @@ build.support=/Users/elberry/development/projects/jEdit/build-support
 # The junit jar file is used by lots of plugins to run test suites.
 junit.jar=/Users/elberry/development/dependencies/junit/junit-4.5.jar
 
-#::mode=properties::#
 # The Dockbook DTD - taken from the XML plugin.
 #docbookx.dtd=/usr/share/xml/docbook/schema/dtd/4.5/docbookx.dtd
 #docbook.catalog=/usr/share/xml/docbook/schema/dtd/4.5/docbook.cat
