@@ -33,7 +33,7 @@ public class HtmlStyle extends Style {
     @Override
     public String format( int styleId, SyntaxStyle style, String text ) {
         if ( style == null ) {
-            Log.log( Log.DEBUG, this, "format: null style" );
+            //Log.log( Log.DEBUG, this, "format: null style" );
             return text;
         }
         StringBuffer bufOpen = new StringBuffer();
