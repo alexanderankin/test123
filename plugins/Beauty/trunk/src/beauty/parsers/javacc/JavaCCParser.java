@@ -4629,19 +4629,6 @@ public class JavaCCParser implements JavaCCParserConstants {
     catch(LookaheadSuccess ls) { return true; }
   }
 
-  final private boolean jj_3R_142() {
-    if (jj_3R_183()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_214()) jj_scanpos = xsp;
-    return false;
-  }
-
-  final private boolean jj_3R_117() {
-    if (jj_scan_token(STATIC)) return true;
-    return false;
-  }
-
   final private boolean jj_3R_116() {
     if (jj_3R_75()) return true;
     return false;
@@ -5416,8 +5403,6 @@ public class JavaCCParser implements JavaCCParserConstants {
   }
 
   final private boolean jj_3R_100() {
-    Token xsp;
-    xsp = jj_scanpos;
     lookingAhead = true;
     jj_semLA = getToken(1).kind == GT &&
                 ((Token.GTToken)getToken(1)).realKind == RSIGNEDSHIFT;
@@ -5465,8 +5450,6 @@ public class JavaCCParser implements JavaCCParserConstants {
   }
 
   final private boolean jj_3R_101() {
-    Token xsp;
-    xsp = jj_scanpos;
     lookingAhead = true;
     jj_semLA = getToken(1).kind == GT &&
                 ((Token.GTToken)getToken(1)).realKind == RUNSIGNEDSHIFT;
@@ -6912,8 +6895,6 @@ public class JavaCCParser implements JavaCCParserConstants {
   }
 
   final private boolean jj_3_11() {
-    Token xsp;
-    xsp = jj_scanpos;
     lookingAhead = true;
     jj_semLA = getToken(1).kind == IDENTIFIER && getToken(1).image.equals("LOOKAHEAD");
     lookingAhead = false;
@@ -7142,8 +7123,6 @@ public class JavaCCParser implements JavaCCParserConstants {
   }
 
   final private boolean jj_3_9() {
-    Token xsp;
-    xsp = jj_scanpos;
     lookingAhead = true;
     jj_semLA = getToken(1).kind == IDENTIFIER && getToken(1).image.equals("LOOKAHEAD");
     lookingAhead = false;
@@ -7388,8 +7367,6 @@ public class JavaCCParser implements JavaCCParserConstants {
   }
 
   final private boolean jj_3R_64() {
-    Token xsp;
-    xsp = jj_scanpos;
     lookingAhead = true;
     jj_semLA = getToken(1).kind == IDENTIFIER && getToken(1).image.equals("TOKEN_MGR_DECLS");
     lookingAhead = false;
@@ -7686,8 +7663,6 @@ public class JavaCCParser implements JavaCCParserConstants {
   }
 
   final private boolean jj_3R_62() {
-    Token xsp;
-    xsp = jj_scanpos;
     lookingAhead = true;
     jj_semLA = getToken(1).kind == IDENTIFIER && getToken(1).image.equals("JAVACODE");
     lookingAhead = false;
@@ -7809,6 +7784,19 @@ public class JavaCCParser implements JavaCCParserConstants {
       xsp = jj_scanpos;
       if (jj_3R_227()) { jj_scanpos = xsp; break; }
     }
+    return false;
+  }
+
+  final private boolean jj_3R_142() {
+    if (jj_3R_183()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_214()) jj_scanpos = xsp;
+    return false;
+  }
+
+  final private boolean jj_3R_117() {
+    if (jj_scan_token(STATIC)) return true;
     return false;
   }
 

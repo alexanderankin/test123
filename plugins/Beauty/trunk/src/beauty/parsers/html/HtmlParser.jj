@@ -71,9 +71,28 @@ public class HtmlParser {
   }
 
   public static void main(String[] args) throws ParseException {
-    HtmlParser parser = new HtmlParser(System.in);
-    HtmlDocument doc = parser.HtmlDocument();
-    doc.accept(new HtmlDumper(System.out));
+      if (args.length == 0) {
+        return;   
+      }
+      try {
+        String filename = args[0];
+        HtmlParser parser = new HtmlParser(new java.io.FileReader(filename));
+        HtmlDocument document = parser.HtmlDocument();
+        //doc.accept(new HtmlDumper(System.out));
+        
+            document.setLineSeparator("\n");
+            document.accept(new HtmlCollector());
+            document.accept(new HtmlScrubber(HtmlScrubber.DEFAULT_OPTIONS | HtmlScrubber.TRIM_SPACES));
+            HtmlFormatter formatter = new HtmlFormatter();
+            formatter.setRightMargin(1024);
+            formatter.setLineSeparator("\n");
+            formatter.setIndent(3);
+            document.accept(formatter);
+            System.out.println(formatter.toString());
+      }
+      catch(Exception e) {
+          e.printStackTrace();
+      }
     System.exit(0);
   }
 
@@ -101,8 +120,7 @@ PARSER_END(HtmlParser)
 <DEFAULT> TOKEN : 
 {
   <EOL:            ( " " | "\t" )* <NEWLINE> >
-//| <TAG_START:      "<"       > : LexStartTag
-| <TAG_START:      "<%@" (<WHITESPACE>)* <IDENTIFIER> " " | "<" <IDENTIFIER> ":" | "<%" | "<" > : LexStartTag
+| <TAG_START:      "<"(<WHITESPACE>)* | "<%"(<WHITESPACE>)* | "<%@"(<WHITESPACE>)* > : LexStartTag
 | <ENDTAG_START:   "</"      > : LexStartTag
 | <COMMENT_START:     "<!--" | "<%--"    >   : LexComment
 | <DECL_START:     "<!"      > : LexDecl
@@ -125,7 +143,6 @@ PARSER_END(HtmlParser)
 <LexInTag> TOKEN :
 {
   <ATTR_NAME: <IDENTIFIER> >
-//| <TAG_END: ">" >                       : DEFAULT
 | <TAG_END: ">" | "%>" >                : DEFAULT
 | <TAG_SLASHEND: "/>" >                 : DEFAULT
 | <ATTR_EQ: "=" >                       : LexAttrVal
@@ -240,12 +257,12 @@ HtmlDocument.Attribute Attribute() :
   Token t1, t2=null;
 }
 {
-  t1=<ATTR_NAME> [ <ATTR_EQ> t2=<ATTR_VAL> ]
-  { if (t2 == null) 
-      return new HtmlDocument.Attribute(t1.image); 
-    else
-      return new HtmlDocument.Attribute(t1.image, t2.image);
-  }
+      t1=<ATTR_NAME> [ <ATTR_EQ> t2=<ATTR_VAL> ]
+      { if (t2 == null) 
+          return new HtmlDocument.Attribute(t1.image); 
+        else
+          return new HtmlDocument.Attribute(t1.image, t2.image);
+      }
 }
 
 HtmlDocument.AttributeList AttributeList() : 
@@ -265,7 +282,6 @@ HtmlDocument.HtmlElement Tag() :
   Token firstToken = getToken(1);
   HtmlDocument.HtmlElement rtn_tag = null;
   Token st = null;
-  boolean isJspTag = false;
   String tag_name;
   String tag_start;
 }
@@ -274,20 +290,14 @@ HtmlDocument.HtmlElement Tag() :
     st=<TAG_START>  t=<TAG_NAME> alist=AttributeList()
     ( et=<TAG_END> | et=<TAG_SLASHEND> )
     {
-        if (st.image.startsWith("<") && st.image.endsWith(":")) {
-            isJspTag = true;
-            tag_start = "<";
-            tag_name = st.image.substring(1) + t.image;
+        HtmlDocument.Tag tag = new HtmlDocument.Tag(st.image, t.image, alist, et.image);
+        if (st.image.startsWith("<%") || t.image.indexOf(":") > 0) {
+            tag.setIsJspTag(true);
         }
-        if (st.image.startsWith("<%")) {
-            isJspTag = true;
-        }
-      HtmlDocument.Tag tag = new HtmlDocument.Tag(st.image, t.image, alist, et.image);
-      if (et.kind == TAG_SLASHEND) {
+        if (et.kind == TAG_SLASHEND) {
           tag.setEmpty(true);
-      }
-      tag.setIsJspTag(isJspTag);
-      rtn_tag = tag;
+        }
+        rtn_tag = tag;
     }
   }
   catch (ParseException ex) {
@@ -320,7 +330,9 @@ HtmlDocument.ElementSequence BlockContents() : {
   { 
     if (s.length() > 0) 
       e.addElement(new HtmlDocument.Text(s.toString())); 
-    e.addElement(new HtmlDocument.Newline()); 
+    // danson, removed next line, it causes an extra blank line to be inserted
+    // in script and style blocks
+    //e.addElement(new HtmlDocument.Newline());
     return e;
   }
 }

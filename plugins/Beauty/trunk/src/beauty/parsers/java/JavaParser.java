@@ -5289,8 +5289,6 @@ public class JavaParser implements JavaParserConstants {
   }
 
   final private boolean jj_3R_72() {
-    Token xsp;
-    xsp = jj_scanpos;
     lookingAhead = true;
     jj_semLA = getToken(1).kind == GT &&
                 ((Token.GTToken)getToken(1)).realKind == RSIGNEDSHIFT;
@@ -5326,8 +5324,6 @@ public class JavaParser implements JavaParserConstants {
   }
 
   final private boolean jj_3R_73() {
-    Token xsp;
-    xsp = jj_scanpos;
     lookingAhead = true;
     jj_semLA = getToken(1).kind == GT &&
                 ((Token.GTToken)getToken(1)).realKind == RUNSIGNEDSHIFT;
