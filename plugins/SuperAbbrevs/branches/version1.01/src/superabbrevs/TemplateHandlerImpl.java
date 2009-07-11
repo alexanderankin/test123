@@ -8,31 +8,37 @@
  */
 package superabbrevs;
 
-import superabbrevs.utilities.TextUtil;
+import java.io.IOException;
+
+import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.bsh.EvalError;
 import org.gjt.sp.jedit.bsh.ParseException;
 import org.gjt.sp.jedit.bsh.TargetError;
-import java.io.IOException;
-import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.msg.BufferChanging;
+import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.jedit.textarea.Selection;
-
-import com.google.inject.Inject;
 
 import superabbrevs.model.Abbreviation;
 import superabbrevs.model.ReplacementTypes;
 import superabbrevs.model.SelectionReplacementTypes;
-import superabbrevs.template.fields.EndField;
-import superabbrevs.template.fields.SelectableField;
 import superabbrevs.template.Template;
 import superabbrevs.template.TemplateFactory;
 import superabbrevs.template.TemplateInterpreter;
+import superabbrevs.template.fields.EndField;
+import superabbrevs.template.fields.SelectableField;
+import superabbrevs.utilities.Log;
+import superabbrevs.utilities.TextUtil;
+import superabbrevs.utilities.Log.Level;
+
+import com.google.inject.Inject;
 
 /**
  *
  * @author Sune Simonsen
  */
-public class TemplateHandlerImpl implements TemplateHandler {
+public class TemplateHandlerImpl implements TemplateHandler, EBComponent {
 
     private final JEditInterface jedit;
 	private final TemplateBufferListener handler;
@@ -41,6 +47,7 @@ public class TemplateHandlerImpl implements TemplateHandler {
     public TemplateHandlerImpl(JEditInterface jedit, TemplateBufferListener handler) {
         this.jedit = jedit;
 		this.handler = handler;
+		EditBus.addToBus(this);
     }
 
     void expandAbbrev(Abbreviation abbrev, boolean invokedAsACommand)
@@ -206,5 +213,12 @@ public class TemplateHandlerImpl implements TemplateHandler {
 	 */
 	public void stopTemplateMode() {
 		handler.stopListening();
+	}
+
+	public void handleMessage(EBMessage message) {
+		Log.log(Level.MESSAGE, TemplateHandlerImpl.class, "Message received: " + message);
+		if (message instanceof ViewUpdate) {
+			handler.stopListening();
+		}
 	}
 }

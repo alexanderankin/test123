@@ -130,12 +130,14 @@ public class TemplateBufferListenerImpl extends BufferAdapter implements Templat
 		jedit.removeCaretListener(this);
 		jedit.removeBufferListener(this);
 		listening = false;
+		Log.log(Level.MESSAGE, TemplateBufferListenerImpl.class, "Stopped listening");
 	}
 
 	/* (non-Javadoc)
 	 * @see superabbrevs.TemplateBufferListener#startListening()
 	 */
 	public void startListening() {
+		Log.log(Level.MESSAGE, TemplateBufferListenerImpl.class, "Start listening");
 		jedit.addBufferListener(this);
 		jedit.addCaretListener(this);
 		listening = true;
