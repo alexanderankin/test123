@@ -13,48 +13,28 @@ import java.util.LinkedList;
 import java.util.Set;
 
 import superabbrevs.model.Abbreviation;
+import superabbrevs.model.AbbreviationTrie;
 import superabbrevs.model.Mode;
+import superabbrevs.repository.AbbreviationTrieRepository;
 import superabbrevs.repository.ModeRepository;
-import trie.BackwardsTrie;
-import trie.Trie;
 
 import com.google.inject.Inject;
 
-/**
- *
- * @author Sune Simonsen
- */
 public class AbbreviationHandlerImpl implements AbbreviationHandler {
 	
 	private final ModeRepository modeRepository;
+	private final AbbreviationTrieRepository abbreviationTrieRepository;
 
 	@Inject 
-	public AbbreviationHandlerImpl(ModeRepository modeRepository) {
+	public AbbreviationHandlerImpl(ModeRepository modeRepository, AbbreviationTrieRepository abbreviationTrieRepository) {
 		this.modeRepository = modeRepository;
+		this.abbreviationTrieRepository = abbreviationTrieRepository;
 	}
-    
-    private static Cache<String,Trie<Abbreviation>> cache = 
-            new Cache<String,Trie<Abbreviation>>(10);
 
     public LinkedList<Abbreviation> getAbbrevs(String modeName, String text) {
-        Trie<Abbreviation> trie = cache.get(modeName);
-        if (trie == null) {
-            // Load the abbreviation from disc
-            Mode mode = modeRepository.load(modeName);
-            trie = new BackwardsTrie<Abbreviation>();
-            for(Abbreviation abbrev : mode.getAbbreviations()) {
-                trie.put(abbrev.getAbbreviationText(), abbrev);
-            }
-            cache.put(modeName, trie);
-        }
-        
-        LinkedList<Abbreviation> expansions = trie.scan(text); 
-        
+    	AbbreviationTrie trie = abbreviationTrieRepository.load(modeName);        
+        LinkedList<Abbreviation> expansions = trie.scan(text);
         return expansions;
-    }
-    
-    public void invalidateMode(String mode) {
-        cache.invalidate(mode);
     }
 
     public Set<Abbreviation> getAbbrevs(String modeName) {

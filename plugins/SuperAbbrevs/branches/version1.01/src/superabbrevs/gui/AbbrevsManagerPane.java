@@ -13,6 +13,7 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -36,6 +37,8 @@ import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
+import org.gjt.sp.jedit.OperatingSystem;
+
 import superabbrevs.AbbrevsOptionPaneController;
 import superabbrevs.SuperAbbrevsPlugin;
 import superabbrevs.gui.controls.ModesComboBox;
@@ -47,12 +50,15 @@ import superabbrevs.model.Abbreviation;
  * plugin.
  */
 public class AbbrevsManagerPane extends JPanel {
+	private static final int defaultModifier = OperatingSystem.isMacOS() ? 
+			InputEvent.META_MASK : InputEvent.CTRL_MASK;
+	
     private static final KeyStroke controlNKeyStroke = 
-            KeyStroke.getKeyStroke("control N");
+            KeyStroke.getKeyStroke(KeyEvent.VK_N, defaultModifier);
     private static final KeyStroke controlRKeyStroke = 
-            KeyStroke.getKeyStroke("control R");
+            KeyStroke.getKeyStroke(KeyEvent.VK_R, defaultModifier);
     private static final KeyStroke deleteKeyStroke = 
-            KeyStroke.getKeyStroke("DELETE");
+            KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0);
     
     private AbbrevsOptionPaneController controller;
     private AbbrevsManagerPane mainPanel;
@@ -66,7 +72,7 @@ public class AbbrevsManagerPane extends JPanel {
     public AbbrevsManagerPane(AbbrevsOptionPaneController controller) {
         this.mainPanel = this;
         this.controller = controller;
-
+        
         initComponents();
         loadWindowState();
         setupKeyboardShortcuts();
