@@ -2,6 +2,8 @@ package superabbrevs.guice;
 
 import superabbrevs.AbbreviationHandler;
 import superabbrevs.AbbreviationHandlerImpl;
+import superabbrevs.Cache;
+import superabbrevs.HashMapCache;
 import superabbrevs.InputHandler;
 import superabbrevs.InputHandlerImpl;
 import superabbrevs.JEditInterface;
@@ -13,14 +15,20 @@ import superabbrevs.TextAreaHandler;
 import superabbrevs.TextAreaHandlerImpl;
 import superabbrevs.io.PluginDirectory;
 import superabbrevs.io.PluginDirectoryImpl;
+import superabbrevs.model.Abbreviation;
+import superabbrevs.model.AbbreviationTrie;
+import superabbrevs.repository.AbbreviationTrieRepository;
+import superabbrevs.repository.CachedAbbreviationTrieRepository;
 import superabbrevs.repository.FileBasedModeRepository;
 import superabbrevs.repository.ModeRepository;
 import superabbrevs.serialization.ModeSerializer;
 import superabbrevs.serialization.XmlModeSerializer;
+import trie.Trie;
 
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Scopes;
+import com.google.inject.name.Names;
 
 public class GuiceConfiguration implements Module {
 	
@@ -40,5 +48,6 @@ public class GuiceConfiguration implements Module {
 		binder.bind(PluginDirectory.class).to(PluginDirectoryImpl.class).in(Scopes.SINGLETON);	
 		binder.bind(TemplateBufferListener.class).to(TemplateBufferListenerImpl.class).in(Scopes.SINGLETON);
 		binder.bind(TemplateHandler.class).to(TemplateHandlerImpl.class).in(Scopes.SINGLETON);
+		binder.bind(AbbreviationTrieRepository.class).to(CachedAbbreviationTrieRepository.class);
 	}
 }
