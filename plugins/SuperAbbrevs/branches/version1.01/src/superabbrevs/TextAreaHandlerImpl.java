@@ -9,21 +9,15 @@
 
 package superabbrevs;
 
-import org.gjt.sp.jedit.bsh.EvalError;
-import org.gjt.sp.jedit.bsh.ParseException;
-import org.gjt.sp.jedit.bsh.TargetError;
-import superabbrevs.model.Abbreviation;
 import java.awt.Point;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
-import javax.swing.SwingUtilities;
-import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.jedit.textarea.Selection;
 
-import com.google.inject.Inject;
+import org.gjt.sp.jedit.bsh.EvalError;
+import org.gjt.sp.jedit.bsh.ParseException;
+import org.gjt.sp.jedit.bsh.TargetError;
+import org.gjt.sp.jedit.textarea.Selection;
 
 import superabbrevs.gui.scrollablepopupmenu.ScrollablePopupMenu;
 import superabbrevs.gui.scrollablepopupmenu.ScrollablePopupMenuEvent;
@@ -31,8 +25,11 @@ import superabbrevs.gui.scrollablepopupmenu.ScrollablePopupMenuListner;
 import superabbrevs.gui.searchdialog.SearchAcceptedListener;
 import superabbrevs.gui.searchdialog.SearchDialog;
 import superabbrevs.gui.searchdialog.SearchDialogModel;
+import superabbrevs.model.Abbreviation;
 import superabbrevs.utilities.Log;
 import superabbrevs.utilities.Log.Level;
+
+import com.google.inject.Inject;
 
 /**
  *

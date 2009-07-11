@@ -238,4 +238,42 @@ public class JEditInterfaceImpl implements JEditInterface {
 	public String getPluginHome() {
 		return EditPlugin.getPluginHome(SuperAbbrevsPlugin.class).getPath();
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((buffer == null) ? 0 : buffer.hashCode());
+		result = prime * result
+				+ ((textArea == null) ? 0 : textArea.hashCode());
+		result = prime * result + ((view == null) ? 0 : view.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		JEditInterfaceImpl other = (JEditInterfaceImpl) obj;
+		if (buffer == null) {
+			if (other.buffer != null)
+				return false;
+		} else if (!buffer.equals(other.buffer))
+			return false;
+		if (textArea == null) {
+			if (other.textArea != null)
+				return false;
+		} else if (!textArea.equals(other.textArea))
+			return false;
+		if (view == null) {
+			if (other.view != null)
+				return false;
+		} else if (!view.equals(other.view))
+			return false;
+		return true;
+	}
 }

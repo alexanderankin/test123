@@ -4,7 +4,7 @@
 <ACTIONS>
     <ACTION NAME="SuperAbbrevs.shiftTab">
         <CODE>
-            superabbrevs.SuperAbbrevsPlugin.handleAction(superabbrevs.Actions.ShirtTab, view, textArea, buffer);
+            superabbrevs.SuperAbbrevsPlugin.handleAction(superabbrevs.Actions.ShiftTab, view, textArea, buffer);
         </CODE>
     </ACTION>
     <ACTION NAME="SuperAbbrevs.tab">
