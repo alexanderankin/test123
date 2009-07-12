@@ -45,6 +45,8 @@ public class MetalColorPlugin extends EditPlugin
     public static final String CONTROLCOLOR_PROPERTY_NAME = "metalcolor.basecolor";
     public static final String TEXTCOLOR_PROPERTY_NAME = "metalcolor.textcolor";
     public static final String BGCOLOR_PROPERTY_NAME = "metalcolor.backgroundcolor";
+    public static final String SCROLLBARCOLOR_PROPERTY_NAME = "metalcolor.scrollbarcolor";
+    public static final String SCROLLBARWIDTH_PROPERTY_NAME = "metalcolor.scrollbarwidth";
 
     public void start()
     {                                               
@@ -59,7 +61,16 @@ public class MetalColorPlugin extends EditPlugin
             Color textColor = jEdit.getColorProperty( TEXTCOLOR_PROPERTY_NAME, MetalColorTheme.DEFAULT_TEXTCOLOR );
             Color bgColor = jEdit.getColorProperty( BGCOLOR_PROPERTY_NAME, MetalColorTheme.DEFAULT_BGCOLOR );
             
-            MetalLookAndFeel.setCurrentTheme( new MetalColorTheme(controlColor, textColor, bgColor) );
+            Color sbColor = jEdit.getColorProperty( SCROLLBARCOLOR_PROPERTY_NAME );
+            int sbWidth = jEdit.getIntegerProperty( SCROLLBARWIDTH_PROPERTY_NAME, 0 );
+            
+            MetalColorTheme theme = new MetalColorTheme(controlColor, textColor, bgColor);
+            if( sbColor != null )
+                theme.setScrollBarColor( sbColor );
+            if( sbWidth > 0 )
+                theme.setScrollBarWidth( sbWidth );
+            
+            MetalLookAndFeel.setCurrentTheme( theme );
 
             if( UIManager.getLookAndFeel() instanceof MetalLookAndFeel )
             {

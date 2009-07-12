@@ -23,6 +23,7 @@ package metalcolor;
 
 import java.awt.Color;
 import java.util.Arrays;
+import java.util.List;
 import javax.swing.plaf.ColorUIResource; 
 import javax.swing.plaf.metal.OceanTheme;
 import javax.swing.UIDefaults;
@@ -33,9 +34,7 @@ public class MetalColorTheme extends OceanTheme
     public static final Color DEFAULT_CONTROLCOLOR = new Color(0xA3B8CC);
     public static final Color DEFAULT_TEXTCOLOR = new Color(0x333333);
     public static final Color DEFAULT_BGCOLOR = new Color(0xEEEEEE);
-    
-    /** Keep default getBlack() here since we override it with text color */
-    private static final ColorUIResource REAL_BLACK = new ColorUIResource(0x333333);
+    public static final int DEFAULT_SCROLLBARWIDTH = 17;
     
     private final ColorUIResource primaryColor1;
     private final ColorUIResource primaryColor2;
@@ -60,6 +59,12 @@ public class MetalColorTheme extends OceanTheme
     private final ColorUIResource whiteColor;
     
     private final ColorUIResource textColor;
+    
+    private final List buttonGradient;
+    private final List sliderGradient;
+    private final List menuGradient;
+    private List scrollBarGradient;
+    private int scrollBarWidth;
 
     public MetalColorTheme( Color controlColor, Color textColor, Color bgColor )
     {
@@ -81,11 +86,42 @@ public class MetalColorTheme extends OceanTheme
         auxColor2 = getRelativeColor( controlColor, -0.08f, 0.14f );
         auxColor3 = getRelativeColor( controlColor, -0.02f, 0.20f );
         
-        this.textColor = new ColorUIResource(textColor);
+        buttonGradient = Arrays.asList( new Object[] {
+            new Float(.3f), new Float(0f),
+            buttonGradientColor1, buttonGradientColor2, secondaryColor2 } );
+
+        sliderGradient = Arrays.asList( new Object[] {
+            new Float(.3f), new Float(.2f),
+            sliderGradientColor1, sliderGradientColor2, secondaryColor2 } );
+        
+        menuGradient = Arrays.asList( new Object[] {
+            new Float(1f), new Float(0f),
+            menuGradientColor1, menuGradientColor2, menuGradientColor2 } );        
+
+        scrollBarGradient = buttonGradient;
+        scrollBarWidth = DEFAULT_SCROLLBARWIDTH;
+
+        this.textColor = new ColorUIResource( textColor );
         
         // Override black color since it is used directly in some places (like tooltips)
-        blackColor = new ColorUIResource(textColor);
+        blackColor = new ColorUIResource( textColor );
         whiteColor = getRelativeColor( bgColor, 0.0f, 0.25f );
+    }
+    
+    public void setScrollBarColor(Color controlColor)
+    {
+        ColorUIResource sbGradientColor1= getRelativeColor( controlColor, -0.11f, 0.15f );
+        ColorUIResource sbGradientColor2= getRelativeColor( controlColor, -0.80f, 0.20f );
+        ColorUIResource sbSecondaryColor2 = getRelativeColor( controlColor, 0.0f, 0.10f );
+
+        scrollBarGradient = Arrays.asList( new Object[] {
+            new Float(.3f), new Float(0f),
+            sbGradientColor1, sbGradientColor2, sbSecondaryColor2 } );
+    }
+    
+    public void setScrollBarWidth(int width)
+    {
+        scrollBarWidth = width;
     }
 
     public void addCustomEntriesToTable(UIDefaults table)
@@ -94,28 +130,17 @@ public class MetalColorTheme extends OceanTheme
         super.addCustomEntriesToTable( table );
         
         // The rest was filtered from OpenSDK's OceanTheme.java file.
-        java.util.List buttonGradient = Arrays.asList(
-                 new Object[] {new Float(.3f), new Float(0f),
-                 getButtonGradientColor1(), getButtonGradientColor2(), getSecondary2() });
-
-        java.util.List sliderGradient = Arrays.asList(new Object[] {
-            new Float(.3f), new Float(.2f),
-            getSliderGradientColor1(), getSliderGradientColor2(), getSecondary2() });
-
         Object[] defaults = new Object[] {
             "Button.gradient", buttonGradient,
             "Button.toolBarBorderBackground", getInactiveControlTextColor(),
-            "Button.disabledToolBarBorderBackground", getBorderColor(),
+            "Button.disabledToolBarBorderBackground", borderColor,
 
             "CheckBox.gradient", buttonGradient,
 
             "CheckBoxMenuItem.gradient", buttonGradient,
 
-            "MenuBar.gradient", Arrays.asList(new Object[] {
-                     new Float(1f), new Float(0f),
-                     getMenuGradientColor1(), getMenuGradientColor2(),
-                     getMenuGradientColor2() }),
-            "MenuBar.borderColor", getBorderColor(),
+            "MenuBar.gradient", menuGradient,
+            "MenuBar.borderColor", borderColor,
 
             "InternalFrame.activeTitleGradient", buttonGradient,
 
@@ -123,35 +148,36 @@ public class MetalColorTheme extends OceanTheme
 
             "RadioButtonMenuItem.gradient", buttonGradient,
 
-            "ScrollBar.gradient", buttonGradient,
+            "ScrollBar.gradient", scrollBarGradient,
+            "ScrollBar.width", scrollBarWidth,
 
-            "Slider.altTrackColor", getAuxColor2(),
+            "Slider.altTrackColor", auxColor2,
             "Slider.gradient", sliderGradient,
             "Slider.focusGradient", sliderGradient,
 
-            "SplitPane.dividerFocusColor", getSliderGradientColor1(),
+            "SplitPane.dividerFocusColor", sliderGradientColor1,
 
             "TabbedPane.borderHightlightColor", getPrimary1(),
-            "TabbedPane.contentAreaColor", getSliderGradientColor1(),
-            "TabbedPane.selected", getSliderGradientColor1(),
-            "TabbedPane.tabAreaBackground", getAuxColor1(),
+            "TabbedPane.contentAreaColor", sliderGradientColor1,
+            "TabbedPane.selected", sliderGradientColor1,
+            "TabbedPane.tabAreaBackground", auxColor1,
             "TabbedPane.unselectedBackground", getSecondary3(),
 
             "Table.gridColor", getSecondary1(),
-            "TableHeader.focusCellBackground", getSliderGradientColor1(),
+            "TableHeader.focusCellBackground", sliderGradientColor1,
 
             "ToggleButton.gradient", buttonGradient,
 
-            "ToolBar.borderColor", getBorderColor(),
+            "ToolBar.borderColor", borderColor,
 
             "Tree.selectionBorderColor", getPrimary1(),
             "Tree.dropLineColor", getPrimary1(),
             "Table.dropLineColor", getPrimary1(),
             "Table.dropLineShortColor", getBlack(),
 
-            "Table.dropCellBackground", getAuxColor3(),
-            "Tree.dropCellBackground", getAuxColor3(),
-            "List.dropCellBackground", getAuxColor3(),
+            "Table.dropCellBackground", auxColor3,
+            "Tree.dropCellBackground", auxColor3,
+            "List.dropCellBackground", auxColor3,
             "List.dropLineColor", getPrimary1()
         };
         table.putDefaults(defaults);
@@ -166,7 +192,7 @@ public class MetalColorTheme extends OceanTheme
     public ColorUIResource getSystemTextColor() { return getBlack(); }
     public ColorUIResource getUserTextColor() { return getBlack(); }
     public ColorUIResource getWindowTitleForeground() { return getBlack(); }
-    public ColorUIResource getWindowTitleInactiveForeground() { return REAL_BLACK; }
+    public ColorUIResource getWindowTitleInactiveForeground() { return super.getBlack(); }
     public ColorUIResource getMenuForeground() { return  getBlack(); }
     public ColorUIResource getMenuSelectedForeground() { return getBlack(); }
     public ColorUIResource getAcceleratorSelectedForeground() { return getBlack(); }
@@ -178,21 +204,6 @@ public class MetalColorTheme extends OceanTheme
     protected ColorUIResource getSecondary2() { return secondaryColor2; }
     protected ColorUIResource getSecondary3() { return secondaryColor3; }
     
-    private ColorUIResource getBorderColor() { return borderColor; }
-
-    private ColorUIResource getButtonGradientColor1() { return buttonGradientColor1; }
-    private ColorUIResource getButtonGradientColor2() { return buttonGradientColor2; }
-
-    private ColorUIResource getSliderGradientColor1() { return sliderGradientColor1; }
-    private ColorUIResource getSliderGradientColor2() { return sliderGradientColor2; }
-
-    private ColorUIResource getMenuGradientColor1() { return menuGradientColor1; }
-    private ColorUIResource getMenuGradientColor2() { return menuGradientColor2; }
-
-    private ColorUIResource getAuxColor1() { return auxColor1; }
-    private ColorUIResource getAuxColor2() { return auxColor2; }
-    private ColorUIResource getAuxColor3() { return auxColor3; }
-
     private ColorUIResource getRelativeColor( Color baseColor, float saturationDelta, float brightnessDelta )
     {
         float[] hsbVals = new float[3];
