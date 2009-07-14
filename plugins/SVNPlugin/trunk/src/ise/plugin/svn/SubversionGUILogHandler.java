@@ -30,6 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ise.plugin.svn;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.logging.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -70,6 +71,8 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
     private JPanel _content_pane;
 
     private StopPanel stopPanel = null;
+
+    private LinkedList<StyledMessage> messageQueue = new LinkedList<StyledMessage>();
 
     /**
      * Optional frame
@@ -138,6 +141,8 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
             GUIUtils.centerOnScreen( _frame );
         }
         setFormatter( new LogFormatter() );
+        
+        messageProcessor.start();
     }
 
     /**
@@ -267,62 +272,58 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
      * @param lr  the LogRecord to write.
      */
     public void publish( final LogRecord lr ) {
-        try {
-            // I removed the invokeLater for svn plugin since the callers _should_
-            // already be in an invokeLater.  Calling invokeLater from within an
-            // invokeLater causes the logging to be delayed to the UI.
-//            SwingUtilities.invokeLater(
-//                new Runnable() {
-//                    public void run() {
-                        String msg = lr.getMessage();
-                        if ( msg == null )
-                            return ;
-                        if ( getFormatter() != null )
-                            msg = getFormatter().format( lr );
-                        if ( _text == null ) {
-                            return ;
-                        }
-                        try {
-                            int index = _text.getDocument().getLength();
-                            int caret_position = _text.getCaretPosition();
-                            SimpleAttributeSet set = new SimpleAttributeSet();
-                            if ( _font == null ) {
-                                StyleConstants.setFontFamily( set, "Monospaced" );
-                            }
-                            else {
-                                StyleConstants.setFontFamily( set, _font.getFamily() );
-                                StyleConstants.setBold( set, _font.isBold() );
-                                StyleConstants.setItalic( set, _font.isItalic() );
-                                StyleConstants.setFontSize( set, _font.getSize() );
-                            }
-                            if ( lr.getLevel().equals( Level.WARNING ) ) {
-                                StyleConstants.setForeground( set, GREEN );
-                            }
-                            else if ( lr.getLevel().equals( Level.SEVERE ) ) {
-                                StyleConstants.setForeground( set, Color.RED );
-                            }
-                            else if ( lr.getLevel().equals( Level.INFO ) ) {
-                                StyleConstants.setForeground( set, foreground );
-                            }
-                            else {
-                                StyleConstants.setForeground( set, foreground );
-                            }
-                            _text.getDocument().insertString( index, msg, set );
-                            if ( _tail )
-                                _text.setCaretPosition( index + msg.length() );
-                            else
-                                _text.setCaretPosition( caret_position );
-                        }
-                        catch ( Exception e ) {     // NOPMD
-                            //Log.log( e );
-                        }
-//                    }
-//                }
-//            );
+        String msg = lr.getMessage();
+        if ( msg == null )
+            return ;
+        if ( getFormatter() != null )
+            msg = getFormatter().format( lr );
+        if ( _text == null ) {
+            return ;
         }
-        catch ( Exception ignored ) {   // NOPMD
-            // ignored
-            //Log.log( ignored );
+        SimpleAttributeSet set = new SimpleAttributeSet();
+        if ( _font == null ) {
+            StyleConstants.setFontFamily( set, "Monospaced" );
+        }
+        else {
+            StyleConstants.setFontFamily( set, _font.getFamily() );
+            StyleConstants.setBold( set, _font.isBold() );
+            StyleConstants.setItalic( set, _font.isItalic() );
+            StyleConstants.setFontSize( set, _font.getSize() );
+        }
+        if ( lr.getLevel().equals( Level.WARNING ) ) {
+            StyleConstants.setForeground( set, GREEN );
+        }
+        else if ( lr.getLevel().equals( Level.SEVERE ) ) {
+            StyleConstants.setForeground( set, Color.RED );
+        }
+        else if ( lr.getLevel().equals( Level.INFO ) ) {
+            StyleConstants.setForeground( set, foreground );
+        }
+        else {
+            StyleConstants.setForeground( set, foreground );
+        }
+        queueMessage( new StyledMessage( msg, set ) );
+    }
+
+    private void queueMessage( StyledMessage sm ) {
+        messageQueue.add( sm );
+    }
+
+
+
+    private void processMessage( StyledMessage sm ) {
+        try {
+            int index = _text.getDocument().getLength();
+            int caret_position = _text.getCaretPosition();
+            _text.getDocument().insertString( index, sm.message, sm.attributes );
+            if ( _tail )
+                _text.setCaretPosition( index + sm.message.length() );
+            else
+                _text.setCaretPosition( caret_position );
+
+        }
+        catch ( BadLocationException e ) {
+            e.printStackTrace();
         }
     }
 
@@ -357,4 +358,33 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
         panel.add( clear_btn );
         return panel;
     }
+
+    public class StyledMessage {
+        public String message;
+        public SimpleAttributeSet attributes;
+
+        public StyledMessage( String msg, SimpleAttributeSet set ) {
+            message = msg;
+            attributes = set;
+        }
+    }
+
+
+    Thread messageProcessor = new Thread() {
+                public void run() {
+                    setPriority( Thread.MIN_PRIORITY );
+                    while ( true ) {
+                        while(messageQueue.size() > 0) {
+                            processMessage(messageQueue.remove());   
+                            yield();
+                        }
+                        try {
+                            sleep(500);
+                        }
+                        catch ( InterruptedException e ) {
+                            // ignored
+                        }
+                    }
+                }
+            };
 }

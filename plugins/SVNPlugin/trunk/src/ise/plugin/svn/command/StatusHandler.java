@@ -373,21 +373,24 @@ public class StatusHandler implements ISVNStatusHandler, ISVNEventHandler {
          */
 
         if ( out != null ) {
-            out.println( pathChangeType
-                    + propertiesChangeType
-                    + ( isLocked ? "L" : " " )
-                    + ( isAddedWithHistory ? "+" : " " )
-                    + ( isSwitched ? "S" : " " )
-                    + lockLabel
-                    + "  "
-                    + remoteChangeType
-                    + "  "
-                    + workingRevision
-                    + offsets[ 0 ]
-                    + ( lastChangedRevision >= 0 ? String
-                        .valueOf( lastChangedRevision ) : "?" ) + offsets[ 1 ]
-                    + ( status.getAuthor() != null ? status.getAuthor() : "?" )
-                    + offsets[ 2 ] + status.getFile().getPath() );
+            StringBuilder sb = new StringBuilder();
+            sb.append( pathChangeType );
+            sb.append( propertiesChangeType );
+            sb.append( isLocked ? "L" : " " );
+            sb.append( isAddedWithHistory ? "+" : " " );
+            sb.append( isSwitched ? "S" : " " );
+            sb.append( lockLabel );
+            sb.append( "  " );
+            sb.append( remoteChangeType );
+            sb.append( "  " );
+            sb.append( workingRevision );
+            sb.append( offsets[ 0 ] );
+            sb.append( lastChangedRevision >= 0 ? String.valueOf( lastChangedRevision ) : "?" );
+            sb.append( offsets[ 1 ] );
+            sb.append( status.getAuthor() != null ? status.getAuthor() : "?" );
+            sb.append( offsets[ 2 ] );
+            sb.append( status.getFile().getPath() );
+            out.println( sb.toString() );
         }
     }
 
