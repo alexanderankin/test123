@@ -43,7 +43,7 @@ public class ConsolePrintStream extends PrintStream {
     }
 
     public ConsolePrintStream( View view ) {
-        super( new LogOutputStream( view ), true );
+        super( new BufferedOutputStream(new LogOutputStream( view )), true );
     }
 
     // print a message to the SVN Console in the OutputPanel
