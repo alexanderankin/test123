@@ -638,8 +638,9 @@ public class PreferencesManager {
     					wordListPath = extSpecificWordListPath;
     				}
     			}
-    			
-    			wordListUrl = new URL("file://" + wordListPath);
+    			File wordListFile = new File(wordListPath);
+    			if (wordListFile.canRead())
+    				wordListUrl = new URL("file://" + wordListPath);
     			
 			} catch (MalformedURLException e) {
 				Log.log(Log.ERROR, TextAutocompletePlugin.class, "getDefaultWordListForBuffer: Failed " +
