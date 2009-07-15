@@ -640,7 +640,7 @@ public class PreferencesManager {
     			}
     			File wordListFile = new File(wordListPath);
     			if (wordListFile.canRead())
-    				wordListUrl = new URL("file://" + wordListPath);
+    				wordListUrl = wordListFile.toURI().toURL();
     			
 			} catch (MalformedURLException e) {
 				Log.log(Log.ERROR, TextAutocompletePlugin.class, "getDefaultWordListForBuffer: Failed " +
