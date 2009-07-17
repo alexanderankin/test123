@@ -17,9 +17,6 @@ public class AbbrevsOptionPaneControllerImpl implements AbbrevsOptionPaneControl
 	private final ModeService modeService;
 	private final ModeRepository modeRepository;
 
-	/* (non-Javadoc)
-	 * @see superabbrevs.AbbrevsOptionPaneController#getModeService()
-	 */
 	public ModeService getModeService() {
 		return modeService;
 	}
@@ -30,29 +27,24 @@ public class AbbrevsOptionPaneControllerImpl implements AbbrevsOptionPaneControl
 		this.modeRepository = modeRepository;
     }
     
-    /* (non-Javadoc)
-	 * @see superabbrevs.AbbrevsOptionPaneController#loadsAbbrevs(java.lang.String)
-	 */
     public Set<Abbreviation> loadsAbbrevs(String modeName) {
         return loadMode(modeName).getAbbreviations();
     }
     
-    /* (non-Javadoc)
-	 * @see superabbrevs.AbbrevsOptionPaneController#loadMode(java.lang.String)
-	 */
     public Mode loadMode(String modeName) {
     	if (modes.containsKey(modeName)) {
             return modes.get(modeName);
         } else {
-            Mode mode = modeRepository.load(modeName);
-            modes.put(modeName, mode);
-            return mode;
+            return forceLoadMode(modeName);
         }
     }
+    
+    public Mode forceLoadMode(String modeName) {
+    	Mode mode = modeRepository.load(modeName);
+        modes.put(modeName, mode);
+        return mode;
+    }
 
-    /* (non-Javadoc)
-	 * @see superabbrevs.AbbrevsOptionPaneController#saveAbbrevs()
-	 */
     public void saveAbbrevs() throws IOException {
         for(Mode mode : modes.values()) {
             modeRepository.save(mode);  

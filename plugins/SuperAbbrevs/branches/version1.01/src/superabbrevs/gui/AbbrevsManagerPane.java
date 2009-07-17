@@ -152,11 +152,13 @@ public class AbbrevsManagerPane extends JPanel {
 		addJButton.setAction(addAction);
         addJButton.setText("Add...");
         addJButton.getAccessibleContext().setAccessibleName("addJButton");
+        addJButton.setFocusable(false);
         panel.add(addJButton);
 
         removeJButton.setAction(removeAction);
         removeJButton.setText("Remove");
         removeJButton.setEnabled(false);
+        removeJButton.setFocusable(false);
         panel.add(removeJButton);
         return panel;
 	}
@@ -245,20 +247,21 @@ public class AbbrevsManagerPane extends JPanel {
         }
     }
 
-    /* (non-Javadoc)
-	 * @see superabbrevs.gui.AbbrevsManagerPane#save()
-	 */
-    public void save() throws ValidationException {
-        try {
-        	abbrevEditorPane.saveActiveAbbrev();
+    public void save()  {
+    	abbrevEditorPane.saveActiveAbbrev();
+    	try {
             controller.saveAbbrevs();
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(this,
                     "Could not write the file abbreviation file",
                     "Write to file error", JOptionPane.ERROR_MESSAGE);
-        } 
-        
+        }
         saveWindowState();
+    }
+    
+    public void cancel() {
+    	
+    	loadSelectedMode();
     }
 
     /**
@@ -290,7 +293,7 @@ public class AbbrevsManagerPane extends JPanel {
                     getClass().getResource("/superabbrevs/gui/icons/Plus.png")));
             putValue(Action.MNEMONIC_KEY, KeyEvent.VK_D);
             putValue(Action.ACCELERATOR_KEY,controlNKeyStroke);
-            putValue(Action.SHORT_DESCRIPTION, "Add a new abbreviation (Ctrl+N)");
+            putValue(Action.SHORT_DESCRIPTION, "Add a new abbreviation");
             setEnabled(true);
         }
 
@@ -315,7 +318,7 @@ public class AbbrevsManagerPane extends JPanel {
                     getClass().getResource("/superabbrevs/gui/icons/Minus.png")));
             putValue(Action.MNEMONIC_KEY, KeyEvent.VK_R);
             putValue(Action.ACCELERATOR_KEY,deleteKeyStroke);
-            putValue(Action.SHORT_DESCRIPTION, "Remove the selected abbreviation (DELETE)");
+            putValue(Action.SHORT_DESCRIPTION, "Remove the selected abbreviation");
             setEnabled(false);
         }
 
@@ -340,7 +343,7 @@ public class AbbrevsManagerPane extends JPanel {
             putValue(Action.MNEMONIC_KEY, KeyEvent.VK_E);
             putValue(Action.ACCELERATOR_KEY,controlRKeyStroke);
             putValue(Action.SHORT_DESCRIPTION, 
-                    "Rename the selected abbreviation (CTRL R)");
+                    "Rename the selected abbreviation");
             setEnabled(true);
         }
 
