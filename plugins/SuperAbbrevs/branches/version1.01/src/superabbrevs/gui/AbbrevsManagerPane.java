@@ -39,6 +39,8 @@ import javax.swing.SwingUtilities;
 
 import org.gjt.sp.jedit.OperatingSystem;
 
+import com.google.inject.Inject;
+
 import superabbrevs.AbbrevsOptionPaneController;
 import superabbrevs.SuperAbbrevsPlugin;
 import superabbrevs.gui.controls.ModesComboBox;
@@ -66,9 +68,7 @@ public class AbbrevsManagerPane extends JPanel {
     private RemoveAbbrevAction removeAction = new RemoveAbbrevAction();
     private RenameAbbrevAction renameAction = new RenameAbbrevAction();
 
-    /** 
-     * Creates new dialog enabling the users to manage their abbreviations
-     */
+    @Inject
     public AbbrevsManagerPane(AbbrevsOptionPaneController controller) {
         this.mainPanel = this;
         this.controller = controller;
@@ -245,10 +245,9 @@ public class AbbrevsManagerPane extends JPanel {
         }
     }
 
-    /**
-     * Copy all the elements in the abbreviation model to an arraylist and 
-     * use the controller to save them.
-     */
+    /* (non-Javadoc)
+	 * @see superabbrevs.gui.AbbrevsManagerPane#save()
+	 */
     public void save() throws ValidationException {
         try {
         	abbrevEditorPane.saveActiveAbbrev();

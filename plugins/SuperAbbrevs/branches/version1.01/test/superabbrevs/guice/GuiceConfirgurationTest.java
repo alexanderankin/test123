@@ -1,8 +1,9 @@
 package superabbrevs.guice;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
-import org.gjt.sp.jedit.View;
+import javax.swing.JDialog;
+
 import org.jmock.Mockery;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,6 +11,7 @@ import org.junit.Test;
 import superabbrevs.AbbreviationHandler;
 import superabbrevs.InputHandler;
 import superabbrevs.JEditInterface;
+import superabbrevs.gui.AbbreviationDialog;
 import superabbrevs.io.PluginDirectory;
 
 import com.google.inject.Guice;
@@ -21,22 +23,24 @@ public class GuiceConfirgurationTest {
 	private Mockery context = new Mockery();
 	private JEditInterface jedit;
 	private PluginDirectory pluginDirectory;
+	private Injector injector;
 	
 	@Before
 	public void setup() {
 		pluginDirectory = context.mock(PluginDirectory.class);
 		jedit = context.mock(JEditInterface.class);
+		injector = Guice.createInjector(new GuiceConfiguration(jedit));
 	}
 	
 	@Test
 	public void inputHandlerCanBeResolved() throws Exception {
-		Injector injector = Guice.createInjector(new GuiceConfiguration(jedit));
     	InputHandler result = injector.getInstance(InputHandler.class);
+    	assertNotNull(result);
 	}
 	
 	@Test
 	public void abbreviationHandlerCanBeResolved() throws Exception {
-		Injector injector = Guice.createInjector(new GuiceConfiguration(jedit));
     	AbbreviationHandler result = injector.getInstance(AbbreviationHandler.class);
+    	assertNotNull(result);
 	}
 }

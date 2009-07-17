@@ -1,29 +1,30 @@
 package superabbrevs.guice;
 
+import javax.swing.JDialog;
+
 import superabbrevs.AbbreviationHandler;
 import superabbrevs.AbbreviationHandlerImpl;
-import superabbrevs.Cache;
-import superabbrevs.HashMapCache;
+import superabbrevs.AbbrevsOptionPaneController;
+import superabbrevs.AbbrevsOptionPaneControllerImpl;
 import superabbrevs.InputHandler;
 import superabbrevs.InputHandlerImpl;
 import superabbrevs.JEditInterface;
+import superabbrevs.ModeService;
 import superabbrevs.TemplateBufferListener;
 import superabbrevs.TemplateBufferListenerImpl;
 import superabbrevs.TemplateHandler;
 import superabbrevs.TemplateHandlerImpl;
 import superabbrevs.TextAreaHandler;
 import superabbrevs.TextAreaHandlerImpl;
+import superabbrevs.gui.AbbreviationDialog;
 import superabbrevs.io.PluginDirectory;
 import superabbrevs.io.PluginDirectoryImpl;
-import superabbrevs.model.Abbreviation;
-import superabbrevs.model.AbbreviationTrie;
 import superabbrevs.repository.AbbreviationTrieRepository;
 import superabbrevs.repository.CachedAbbreviationTrieRepository;
 import superabbrevs.repository.FileBasedModeRepository;
 import superabbrevs.repository.ModeRepository;
 import superabbrevs.serialization.ModeSerializer;
 import superabbrevs.serialization.XmlModeSerializer;
-import trie.Trie;
 
 import com.google.inject.Binder;
 import com.google.inject.Module;
@@ -40,6 +41,7 @@ public class GuiceConfiguration implements Module {
 
 	public void configure(Binder binder) {
 		binder.bind(JEditInterface.class).toInstance(jedit);
+		binder.bind(ModeService.class).toInstance(jedit);
 		binder.bind(InputHandler.class).to(InputHandlerImpl.class).in(Scopes.SINGLETON);
 		binder.bind(TextAreaHandler.class).to(TextAreaHandlerImpl.class).in(Scopes.SINGLETON);
 		binder.bind(AbbreviationHandler.class).to(AbbreviationHandlerImpl.class).in(Scopes.SINGLETON);
@@ -49,5 +51,9 @@ public class GuiceConfiguration implements Module {
 		binder.bind(TemplateBufferListener.class).to(TemplateBufferListenerImpl.class).in(Scopes.SINGLETON);
 		binder.bind(TemplateHandler.class).to(TemplateHandlerImpl.class).in(Scopes.SINGLETON);
 		binder.bind(AbbreviationTrieRepository.class).to(CachedAbbreviationTrieRepository.class);
+		binder.bind(JDialog.class)
+			.annotatedWith(Names.named("abbreviationDialog"))
+			.to(AbbreviationDialog.class);
+		binder.bind(AbbrevsOptionPaneController.class).to(AbbrevsOptionPaneControllerImpl.class);
 	}
 }
