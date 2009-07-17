@@ -7,7 +7,7 @@ import java.util.Set;
 
 import javax.swing.JDialog;
 
-import superabbrevs.gui.AbbrevsDialog;
+import superabbrevs.gui.AbbreviationDialog;
 import superabbrevs.model.Abbreviation;
 import superabbrevs.repository.ModeRepository;
 import superabbrevs.utilities.Log;
@@ -114,8 +114,8 @@ public class InputHandlerImpl implements InputHandler {
 	 */
 	public void showOptionsPane() {
 		AbbrevsOptionPaneController controller = 
-            new AbbrevsOptionPaneController(jedit, modeRepository);
-	    JDialog dialog = new AbbrevsDialog(jedit.getView(), false, controller);
+            new AbbrevsOptionPaneControllerImpl(jedit, modeRepository);
+	    JDialog dialog = new AbbreviationDialog(jedit, controller);
 	    dialog.setVisible(true);
 	}
 }

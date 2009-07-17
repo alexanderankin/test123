@@ -3,18 +3,25 @@ package superabbrevs.gui;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
+
 import javax.swing.JOptionPane;
-import org.gjt.sp.jedit.View;
+
 import org.gjt.sp.jedit.gui.EnhancedDialog;
+
+import com.google.inject.Inject;
+
 import superabbrevs.AbbrevsOptionPaneController;
+import superabbrevs.JEditInterface;
 import superabbrevs.SuperAbbrevsPlugin;
 
-public class AbbrevsDialog extends EnhancedDialog {
+public class AbbreviationDialog extends EnhancedDialog {
 
     private AbbrevsManagerPane abbrevsOptionPane;
-
-    public AbbrevsDialog(View view, boolean modal, AbbrevsOptionPaneController controller) {
-        super(view, "Abbreviations", modal);
+    private static final boolean modal = false;
+    
+    @Inject 
+    public AbbreviationDialog(JEditInterface jedit, AbbrevsOptionPaneController controller) {
+        super(jedit.getView(), "Abbreviations", modal);
 
         initComponents();
 
@@ -28,7 +35,7 @@ public class AbbrevsDialog extends EnhancedDialog {
             
             this.setBounds(x, y, width, height); 
         } else {
-            this.setLocationRelativeTo(view);
+            this.setLocationRelativeTo(jedit.getView());
         }
 
         setEnterEnabled(false);
