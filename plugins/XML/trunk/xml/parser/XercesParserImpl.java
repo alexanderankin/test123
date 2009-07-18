@@ -1,10 +1,6 @@
 package xml.parser;
 
-import org.gjt.sp.jedit.Buffer;
-
-import sidekick.SideKickParsedData;
-import errorlist.DefaultErrorSource;
-
+// {{{ imports
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
@@ -18,7 +14,29 @@ import java.util.StringTokenizer;
 import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.w3c.dom.DOMImplementationSource;
+import org.apache.xerces.impl.xs.XSParticleDecl;
+import org.apache.xerces.xs.ElementPSVI;
+import org.apache.xerces.xs.PSVIProvider;
+import org.apache.xerces.xs.StringList;
+import org.apache.xerces.xs.XSAttributeDeclaration;
+import org.apache.xerces.xs.XSAttributeUse;
+import org.apache.xerces.xs.XSComplexTypeDefinition;
+import org.apache.xerces.xs.XSConstants;
+import org.apache.xerces.xs.XSElementDeclaration;
+import org.apache.xerces.xs.XSModel;
+import org.apache.xerces.xs.XSModelGroup;
+import org.apache.xerces.xs.XSNamedMap;
+import org.apache.xerces.xs.XSObject;
+import org.apache.xerces.xs.XSObjectList;
+import org.apache.xerces.xs.XSParticle;
+import org.apache.xerces.xs.XSSimpleTypeDefinition;
+import org.apache.xerces.xs.XSTerm;
+import org.apache.xerces.xs.XSTypeDefinition;
+import org.apache.xerces.xs.XSWildcard;
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.util.Log;
 import org.xml.sax.Attributes;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
@@ -30,36 +48,7 @@ import org.xml.sax.ext.DeclHandler;
 import org.xml.sax.ext.DefaultHandler2;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import org.apache.xerces.impl.xs.XSParticleDecl;
-
-import org.apache.xerces.xs.ElementPSVI;
-import org.apache.xerces.xs.PSVIProvider;
-import org.apache.xerces.xs.XSAttributeDeclaration;
-import org.apache.xerces.xs.XSAttributeUse;
-import org.apache.xerces.xs.XSComplexTypeDefinition;
-import org.apache.xerces.xs.XSSimpleTypeDefinition;
-import org.apache.xerces.xs.StringList;
-import org.apache.xerces.xs.XSConstants;
-import org.apache.xerces.xs.XSElementDeclaration;
-import org.apache.xerces.xs.XSImplementation;
-import org.apache.xerces.xs.XSLoader;
-import org.apache.xerces.xs.XSModel;
-import org.apache.xerces.xs.XSModelGroup;
-import org.apache.xerces.xs.XSNamedMap;
-import org.apache.xerces.xs.XSObject;
-import org.apache.xerces.xs.XSObjectList;
-import org.apache.xerces.xs.XSParticle;
-import org.apache.xerces.xs.XSTerm;
-import org.apache.xerces.xs.XSTypeDefinition;
-import org.apache.xerces.xs.XSWildcard;
-
-import org.gjt.sp.jedit.MiscUtilities;
-import org.gjt.sp.util.Log;
-import org.gjt.sp.jedit.jEdit;
-
-
-import errorlist.ErrorSource;
-
+import sidekick.SideKickParsedData;
 import xml.Resolver;
 import xml.XmlParsedData;
 import xml.XmlPlugin;
@@ -67,8 +56,10 @@ import xml.completion.CompletionInfo;
 import xml.completion.ElementDecl;
 import xml.completion.EntityDecl;
 import xml.completion.IDDecl;
-//}}}
-
+import errorlist.DefaultErrorSource;
+import errorlist.ErrorSource;
+// }}}
+// {{{ class XercesParserImpl
 /**
  * A SideKick XML parser that uses this under the covers:
  * reader = XMLReaderFactory.createXMLReader("org.apache.xerces.parsers.SAXParser");
@@ -104,10 +95,10 @@ public class XercesParserImpl extends XmlParser
 			return new XmlParsedData(buffer.getName(),false);
 
 		XmlParsedData data = new XmlParsedData(buffer.getName(),false);
-	
+
 		/*    Schema mapping    */
 		String schemaURL = jEdit.getProperty(xml.XmlPlugin.SCHEMA_MAPPING_PROP);
-		
+
 		String specificSchema = MiscUtilities.constructPath(
 				MiscUtilities.getParentOfPath(
 				buffer.getPath()),SchemaMapping.SCHEMAS_FILE);
@@ -116,7 +107,7 @@ public class XercesParserImpl extends XmlParser
 		{
 			schemaURL=specificSchema;
 		}
-		
+
 		SchemaMapping mapping;
 		if(schemaURL != null)
 		{
@@ -129,7 +120,7 @@ public class XercesParserImpl extends XmlParser
 				"no settings => using empty schema mapping file");
 			mapping = new SchemaMapping();
 		}
-		
+
 
 
 		Handler handler = new Handler(buffer,text,errorSource,data);
@@ -156,11 +147,11 @@ public class XercesParserImpl extends XmlParser
 			//reader.setFeature("http://apache.org/xml/features/continue-after-fatal-error",true);
 			SchemaAutoLoader schemaLoader = new SchemaAutoLoader(reader,mapping);
 
-			
+
 			schemaLoader.setErrorHandler(handler);
 			schemaLoader.setContentHandler(handler);
 			schemaLoader.setEntityResolver(handler);
-			
+
 			//get access to the schema
 			handler.setPSVIProvider((PSVIProvider)reader);
 			//get access to the DTD
@@ -178,7 +169,7 @@ public class XercesParserImpl extends XmlParser
 			buffer);
 		if(info != null)
 			data.setCompletionInfo("",info);
-		
+
 
 		InputSource source = new InputSource();
 
@@ -360,6 +351,7 @@ public class XercesParserImpl extends XmlParser
 	//{{{ Handler class
 	class Handler extends DefaultHandler2 implements DeclHandler, ErrorHandler
 	{
+	    // {{{ members
 		Buffer buffer;
 
 		DefaultErrorSource errorSource;
@@ -372,8 +364,8 @@ public class XercesParserImpl extends XmlParser
 		boolean empty;
 		//used to retrieve the XSModel for a particular node
 		PSVIProvider psviProvider;
-
-		//{{{ Handler constructor
+		// }}}
+		// {{{ Handler constructor
 		Handler(Buffer buffer, String text, DefaultErrorSource errorSource,
 			XmlParsedData data)
 		{
@@ -386,46 +378,24 @@ public class XercesParserImpl extends XmlParser
 			this.empty = true;
 			this.psviProvider = null;
 
-		} //}}}
+		} // }}}
 
 		private void setPSVIProvider(PSVIProvider psviProvider){
 			this.psviProvider = psviProvider;
 		}
 
-		//{{{ addError() method
 		private boolean ignoreMessage(String message) {
 			if (message.startsWith("More pseudo attributes are expected")) return true;
 			if (message.startsWith("Content is not allowed in prolog")) return true;
 			return false;
 
 		}
+
 		private void addError(int type, String uri, int line, String message)
 		{
 //			if (ignoreMessage(message)) return;
 			errorSource.addError(type,XmlPlugin.uriToFile(uri),line,
 				0,0,message);
-		} //}}}
-
-		private XSLoader xsLoader = null;
-
-		//{{{ getGrammarForNamespace() method
-		// TODO: this is no more called, should remove it !
-		private XSModel getModelForNamespace(String uri)
-		{
-			Log.log(Log.DEBUG,XercesParserImpl.this,"getModelForNamespace("+uri+")");
-			// this method has one big inconvenient : it can't deal with
-			// "xsi:noNamespaceSchemaLocation"
-			// - (the namespace is null, so xsLoader.loadURI can't guess which schema to load)
-			if (xsLoader == null) try {
-						//switched to explicit class, to avoid System.setProperty()
-						//see http://xerces.apache.org/xerces2-j/faq-xs.html#faq-10
-			           DOMImplementationSource dir = new org.apache.xerces.dom.DOMXSImplementationSourceImpl();
-			           XSImplementation xsi = (XSImplementation) dir.getDOMImplementation("XS-Loader");
-			           xsLoader = xsi.createXSLoader(null);
-			}
-			catch (Exception e) {e.printStackTrace();}
-			XSModel model = xsLoader.loadURI(uri);
-			return model;
 		}
 
 		//{{{ grammarToCompletionInfo() method
@@ -500,8 +470,8 @@ public class XercesParserImpl extends XmlParser
 				Log.log(Log.DEBUG,this,"PUBLIC=" + publicId
 					+ ", SYSTEM=" + systemId
 					+ " cannot be resolved");
-				// TODO: not sure wether it's the best thing to do :
-				//it prints a cryptic "premature end of file"
+				// TODO: not sure whether it's the best thing to do :
+				// it prints a cryptic "premature end of file"
 				// error message
 				InputSource dummy = new InputSource(systemId);
 				dummy.setPublicId(publicId);
@@ -647,7 +617,7 @@ public class XercesParserImpl extends XmlParser
 						prefix = "";
 					else
 						prefix=qName.substring(0,qName.length()-sName.length()-1);
-					
+
 					//convert to Completion info
 					CompletionInfo info = modelToCompletionInfo(model);
 
@@ -829,6 +799,7 @@ public class XercesParserImpl extends XmlParser
 			return 0;
 		} //}}}
 
+		// {{{
 		/* (non-Javadoc)
 		 * @see org.xml.sax.ext.DefaultHandler2#resolveEntity(java.lang.String, java.lang.String)
 		 */
@@ -836,8 +807,8 @@ public class XercesParserImpl extends XmlParser
 		{
 			Log.log(Log.DEBUG,XercesParserImpl.class,"simple resolveEnt("+publicId+","+systemId+")");
 			return resolveEntity(null, publicId, null, systemId);
-		}
-	} //}}}
+		}// }}}
+	}// }}}
 
 	//{{{ StoppedException class
 	static class StoppedException extends SAXException
@@ -847,4 +818,4 @@ public class XercesParserImpl extends XmlParser
 			super("Parsing stopped");
 		}
 	} //}}}
-}
+} // }}}
