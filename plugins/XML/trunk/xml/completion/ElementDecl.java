@@ -54,7 +54,7 @@ public class ElementDecl
 	} //}}}
 
 	//{{{ ElementDecl constructor
-	public ElementDecl(CompletionInfo completionInfo, String name,
+	private ElementDecl(CompletionInfo completionInfo, String name,
 		boolean empty, boolean any, List<AttributeDecl> attributes, Map<String, AttributeDecl> attributeHash,
 		Set<String> content)
 	{

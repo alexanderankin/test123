@@ -5,6 +5,7 @@ import org.gjt.sp.jedit.Buffer;
 import sidekick.SideKickParsedData;
 import errorlist.DefaultErrorSource;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -54,6 +55,7 @@ import org.apache.xerces.xs.XSWildcard;
 
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.jedit.jEdit;
 
 
 import errorlist.ErrorSource;
@@ -102,6 +104,32 @@ public class XercesParserImpl extends XmlParser
 			return new XmlParsedData(buffer.getName(),false);
 
 		XmlParsedData data = new XmlParsedData(buffer.getName(),false);
+	
+		/*    Schema mapping    */
+		String schemaURL = jEdit.getProperty(xml.XmlPlugin.SCHEMA_MAPPING_PROP);
+		
+		String specificSchema = MiscUtilities.constructPath(
+				MiscUtilities.getParentOfPath(
+				buffer.getPath()),SchemaMapping.SCHEMAS_FILE);
+		// TODO: VFS
+		if(new File(specificSchema).exists())
+		{
+			schemaURL=specificSchema;
+		}
+		
+		SchemaMapping mapping;
+		if(schemaURL != null)
+		{
+			System.out.println("schemaURL="+schemaURL);
+			mapping = SchemaMapping.fromDocument(schemaURL);
+		}
+		else
+		{
+			Log.log(Log.DEBUG, XercesParserImpl.class,
+				"no settings => using empty schema mapping file");
+			mapping = new SchemaMapping();
+		}
+		
 
 
 		Handler handler = new Handler(buffer,text,errorSource,data);
@@ -126,14 +154,18 @@ public class XercesParserImpl extends XmlParser
 			reader.setFeature("http://apache.org/xml/features/xinclude/fixup-base-uris",
 				buffer.getBooleanProperty("xml.xinclude.xmlbase"));
 			//reader.setFeature("http://apache.org/xml/features/continue-after-fatal-error",true);
-			reader.setErrorHandler(handler);
-			reader.setContentHandler(handler);
-			reader.setEntityResolver(handler);
+			SchemaAutoLoader schemaLoader = new SchemaAutoLoader(reader,mapping);
 
+			
+			schemaLoader.setErrorHandler(handler);
+			schemaLoader.setContentHandler(handler);
+			schemaLoader.setEntityResolver(handler);
+			
 			//get access to the schema
 			handler.setPSVIProvider((PSVIProvider)reader);
 			//get access to the DTD
 			reader.setProperty("http://xml.org/sax/properties/declaration-handler",handler);
+			reader = schemaLoader;
 		}
 		catch(SAXException se)
 		{
@@ -146,6 +178,7 @@ public class XercesParserImpl extends XmlParser
 			buffer);
 		if(info != null)
 			data.setCompletionInfo("",info);
+		
 
 		InputSource source = new InputSource();
 
@@ -196,6 +229,7 @@ public class XercesParserImpl extends XmlParser
 		{
 			Log.log(Log.ERROR,this,e);
 		}
+
 		Collections.sort(data.ids,new IDDecl.Compare());
 		return data;
 	} //}}}
@@ -710,6 +744,7 @@ public class XercesParserImpl extends XmlParser
 		//{{{ elementDecl() method
 		public void elementDecl(String name, String model)
 		{
+			Log.log(Log.DEBUG,XercesParserImpl.class,"elementDecl("+name+","+model+")");
 			ElementDecl element = data.getElementDecl(name);
 			if(element == null)
 			{

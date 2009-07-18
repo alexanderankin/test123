@@ -1,3 +1,18 @@
+/*
+ * Resolver.java
+ * :folding=explicit:collapseFolds=1:
+ *
+ * Copyright (C) 2006 Alan Ezust
+ * Portions Copyright (C) 2007 hertzhaft
+ * Copyright (C) 2009 Eric Le Lay
+ *
+ * The XML plugin is licensed under the GNU General Public License, with
+ * the following exception:
+ *
+ * "Permission is granted to link this code with software released under
+ * the Apache license version 1.1, for example used by the Xerces XML
+ * parser package."
+ */
 package xml;
 
 import java.awt.Component;
@@ -6,6 +21,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.Reader;
 import java.net.URL;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -34,7 +50,10 @@ import org.gjt.sp.jedit.msg.VFSUpdate;
 import org.gjt.sp.util.Log;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.ext.DefaultHandler2;
+import org.xml.sax.ext.EntityResolver2;
+
+import org.w3c.dom.ls.LSResourceResolver;
+import org.w3c.dom.ls.LSInput;
 
 /**
  * Resolver grabs and caches DTDs and xml schemas.
@@ -45,7 +64,7 @@ import org.xml.sax.ext.DefaultHandler2;
  * @version $Id$
  *
  */
-public class Resolver extends DefaultHandler2
+public class Resolver implements EntityResolver2, LSResourceResolver
 {
 
 	/** Ask before downloading */
@@ -283,7 +302,144 @@ public class Resolver extends DefaultHandler2
 
 	} //}}}
 
+	//{{{ implements LSResourceResolver
+	public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseURI)
+	{
+		Log.log(Log.DEBUG,Resolver.class,"resolveResource("+type+","+namespaceURI+","+publicId+","+systemId+","+baseURI);
+		try{
+			InputSource is = resolveEntity(type,publicId,baseURI,systemId);
+			if(is == null)return null;
+			else return new InputSourceAsLSInput(is);
+		}catch(SAXException e){
+			throw new RuntimeException("Error loading resource "+systemId,e);
+			//maybe return null
+		}catch(IOException e){
+			throw new RuntimeException("Error loading resource "+systemId,e);
+			//maybe return null
+		}
+	}
+	
+	/**
+	 * wrapper arround an InputSource for DOM2 Load and Save,
+	 * needed to implement LSResourceResolver for javax.xml.validation.SchemaFactory.
+	 * No setter method is active.
+	 * Maybe this should be the other way round : implement natively LSResourceResolver
+	 * and wrap an LSInput as InputSource...
+	 */
+	private static class InputSourceAsLSInput implements LSInput{
+		private InputSource is;
+		
+		InputSourceAsLSInput(InputSource is)
+		{
+			this.is = is;
+		}
+		
+		public String getBaseURI()
+		{
+			return null;
+		}
+		
+		public InputStream getByteStream(){
+			return is.getByteStream();
+		}
+		
+		public boolean getCertifiedText(){
+			return false;
+		}
+		
+        public Reader getCharacterStream(){
+        	return is.getCharacterStream();
+        }
+        public String getEncoding(){
+        	return is.getEncoding();
+        }
+        public String getPublicId(){
+        	return is.getPublicId();
+        }
+        public String getStringData(){
+        	return null;
+        }
+        public String getSystemId(){
+        	return is.getSystemId();
+        }
+        
+        /**
+         * @throws UnsupportedOperationException no setter !
+         */
+        public void setBaseURI(String baseURI)
+        {
+        	throw new UnsupportedOperationException("setBaseURI()");
+        }
+
+        /**
+         * @throws UnsupportedOperationException no setter !
+         */
+        public void setByteStream(InputStream byteStream)
+        {
+        	throw new UnsupportedOperationException("setByteStream()");
+        }
+
+        /**
+         * @throws UnsupportedOperationException no setter !
+         */
+        public void setCertifiedText(boolean certifiedText)
+        {
+        	throw new UnsupportedOperationException("setCertifiedText()");
+        }
+
+        /**
+         * @throws UnsupportedOperationException no setter !
+         */
+        public void setCharacterStream(Reader characterStream)
+        {
+        	throw new UnsupportedOperationException("setCharacterStream()");
+        }
+
+        /**
+         * @throws UnsupportedOperationException no setter !
+         */
+        public void setEncoding(String encoding)
+        {
+        	throw new UnsupportedOperationException("setEncoding()");
+        }
+
+        /**
+         * @throws UnsupportedOperationException no setter !
+         */
+        public void setPublicId(String publicId)
+        {
+        	throw new UnsupportedOperationException("setPublicId()");
+        }
+
+        /**
+         * @throws UnsupportedOperationException no setter !
+         */
+        public void setStringData(String stringData)
+        {
+        	throw new UnsupportedOperationException("setStringData()");
+        }
+
+        /**
+         * @throws UnsupportedOperationException no setter !
+         */
+        public void setSystemId(String systemId)
+        {
+        	throw new UnsupportedOperationException("setSystemId()");
+        }
+	}
+	// }}}
+	
 	// {{{ resolveEntity
+
+	/** implements SAX1 EntityResolver
+	 * @see org.xml.sax.ext.DefaultHandler2#resolveEntity(java.lang.String, java.lang.String)
+	 */
+	public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException
+	{
+		Log.log(Log.DEBUG,Resolver.class,"resolveEntity("+publicId+","+systemId+")");
+		return resolveEntity(null, publicId, null, systemId);
+	}
+
 	/**
 	 * @param name
 	 * @param publicId

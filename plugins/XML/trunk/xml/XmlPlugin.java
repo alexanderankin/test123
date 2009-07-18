@@ -30,11 +30,13 @@ import org.gjt.sp.util.Log;
 import sidekick.SideKickPlugin;
 import xml.parser.*;
 import java.io.File;
+import xml.parser.SchemaMapping;
 import java.io.IOException;
 //}}}
 
 public class XmlPlugin extends EBPlugin
 {
+	public static final String SCHEMA_MAPPING_PROP = "xml.schema-mapping";
 	//{{{ start() method
 	public void start()
 	{
@@ -63,8 +65,59 @@ public class XmlPlugin extends EBPlugin
 			}
 			view = view.getNext();
 		}
+		
+		File f = getSchemaMappingFile(view);
+		if(f==null)jEdit.unsetProperty(SCHEMA_MAPPING_PROP);
+		else jEdit.setProperty(SCHEMA_MAPPING_PROP,f.getPath());
+
 	} //}}}
 
+	//{{{ getSchemaMappingFile() method
+	/**
+	 * Finds (and creates if needed) the global schema mapping (schemas.xml)
+	 * file in the settings directory, for reading or overwriting it.
+	 *
+	 * @return global schema mappings file (garanteed to exist) or null if no settings are available
+	 */
+	public static File getSchemaMappingFile(View view){
+		File home = EditPlugin.getPluginHome(XmlPlugin.class);
+		if(home == null)
+		{
+			return null;
+		}
+		else if(!home.exists())
+		{
+			Log.log(Log.DEBUG,XmlPlugin.class, "creating settings directory");
+			try
+			{
+				boolean created = home.mkdirs();
+				if(!created)
+				{
+					GUIUtilities.error( view, "unable to create settings directory: "+home,null);
+					return null;
+				}
+			}
+			catch(SecurityException se)
+			{
+				GUIUtilities.error( view, "unable to create settings directory (security exception): "+home,null);
+			}
+		}
+		File schemas = new File(home,SchemaMapping.SCHEMAS_FILE);
+		// create an empty mapping file in settings directory
+		if(!schemas.exists()){
+			SchemaMapping map = new SchemaMapping();
+			try{
+				map.toDocument(schemas.getPath());
+			}catch(IOException ioe){
+				Log.log(Log.ERROR,XmlPlugin.class,"Unable to save default RelaxNG mappings");
+				Log.log(Log.ERROR,XmlPlugin.class,ioe);
+				return null;
+			}
+		}
+		return schemas;
+	}
+	//}}}
+	
 	//{{{ stop() method
 	public void stop()
 	{
