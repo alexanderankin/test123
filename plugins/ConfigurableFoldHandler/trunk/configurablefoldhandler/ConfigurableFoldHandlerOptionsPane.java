@@ -39,6 +39,7 @@ import java.util.HashMap;
  * @author    C.J.Kent
  * @created   15 May 2002
  */
+@SuppressWarnings("serial")
 public class ConfigurableFoldHandlerOptionsPane extends AbstractOptionPane
 {
 	private JTextField defStartField;
@@ -51,7 +52,8 @@ public class ConfigurableFoldHandlerOptionsPane extends AbstractOptionPane
 	private JCheckBox modeUseRegex;
 	private ConfigurableFoldHandlerPlugin plugin;
 	private String[] modeNames;
-	private HashMap modeStrings = new HashMap();
+	private HashMap<String, FoldStrings> modeStrings =
+		new HashMap<String, FoldStrings>();
 	private String lastModeName;
 	private boolean initialising;
 	
@@ -196,13 +198,11 @@ public class ConfigurableFoldHandlerOptionsPane extends AbstractOptionPane
 		String startProp;
 		String endProp;
 		String regexProp;
-		String modeFoldStart;
-		String modeFoldEnd;
 		FoldStrings foldStrings;
 		
 		for(int i = 0; i < modeNames.length; i++)
 		{
-			foldStrings = (FoldStrings)modeStrings.get(modeNames[i]);
+			foldStrings = modeStrings.get(modeNames[i]);
 			
 			startProp = "configurablefoldhandler.mode." + modeNames[i] +
 				".startfold";
@@ -249,7 +249,7 @@ public class ConfigurableFoldHandlerOptionsPane extends AbstractOptionPane
 		{
 			FoldStrings newStr = new FoldStrings(modeStartField.getText(),
 				modeEndField.getText(),modeUseRegex.isSelected());
-			FoldStrings oldStr = (FoldStrings)modeStrings.get(lastModeName);
+			FoldStrings oldStr = modeStrings.get(lastModeName);
 			
 			if (oldStr == null || !newStr.equals(oldStr))
 			{
@@ -288,7 +288,7 @@ public class ConfigurableFoldHandlerOptionsPane extends AbstractOptionPane
 	private void checkMode()
 	{
 		String modeName = modeNames[modeBox.getSelectedIndex()];
-		FoldStrings foldStrings = (FoldStrings)modeStrings.get(modeName);
+		FoldStrings foldStrings = modeStrings.get(modeName);
 		
 		if(foldStrings != null)
 		{

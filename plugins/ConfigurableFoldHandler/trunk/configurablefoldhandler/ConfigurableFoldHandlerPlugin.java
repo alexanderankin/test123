@@ -23,34 +23,48 @@ package configurablefoldhandler;
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
+
+import javax.swing.JOptionPane;
+
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBPlugin;
+import org.gjt.sp.jedit.io.VFS;
+import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.textarea.Selection;
 
 /**
  * plugin to insert a configurable fold handler into jEdit
  */
 public class ConfigurableFoldHandlerPlugin extends EBPlugin
 {
+	private static final String MANUAL_FOLDS = "tempFolds";
+
 	public static final FoldStrings DEFAULT_FOLD_STRINGS =
 		new FoldStrings("{", "}");
 		
 	private String[] modeNames;
-	private HashMap defaultModeStringsMap = new HashMap();
+	private HashMap<String, FoldStrings> defaultModeStringsMap =
+		new HashMap<String, FoldStrings>();
 	
 	// default fold strings for modes / buffers that have none specified
 	private FoldStrings defFoldStrings;
 	
 	// store the fold strings for specific buffers and edit modes
-	private HashMap bufferStrings = new HashMap();
-	private HashMap modeStrings   = new HashMap();
+	private HashMap<JEditBuffer, FoldStrings> bufferStrings =
+		new HashMap<JEditBuffer, FoldStrings>();
+	private HashMap<String, FoldStrings> modeStrings =
+		new HashMap<String, FoldStrings>();
 	
 	private static ConfigurableFoldHandlerPlugin instance;
 	
@@ -65,16 +79,50 @@ public class ConfigurableFoldHandlerPlugin extends EBPlugin
 			readProperties();
 		else if(msg instanceof EditPaneUpdate)
 		{
-			Object what = ((EditPaneUpdate)msg).getWhat();
-			
+			EditPaneUpdate epu = (EditPaneUpdate)msg; 
 			// the only message I can see when a buffer is closed is this one
 			// so at this point check if the old buffer has closed
-			if(what.equals(EditPaneUpdate.BUFFER_CHANGED))
+			if (epu.getWhat().equals(EditPaneUpdate.BUFFER_CHANGED))
 				checkBuffers();
 		}
+		else if(msg instanceof BufferUpdate)
+			handleBufferUpdate((BufferUpdate)msg);
 	}
-	
-		/**
+
+	private String getFoldFileFor(Buffer buffer)
+	{
+		String path = buffer.getPath();
+		VFS vfs = VFSManager.getVFSForPath(path);
+		return vfs.getParentOfPath(path) + '.' + vfs.getFileName(path) +
+			".manualFolds";
+	}
+
+	// Loads persistent manual folds for a loaded buffer, and saves
+	// persistent manual folds for a closed / saved buffer.
+	private void handleBufferUpdate(BufferUpdate bu)
+	{
+		Object what = bu.getWhat();
+		Buffer buffer = bu.getBuffer();
+		String path = getFoldFileFor(bu.getBuffer());
+		if (what.equals(BufferUpdate.LOADED))
+		{
+			File f = new File(path);
+			if (! f.exists())
+				return;
+			ManualFolds mf = getManualFoldsFor(buffer, true);
+			if (mf.load(path))
+				buffer.invalidateCachedFoldLevels();
+		}
+		else if (what.equals(BufferUpdate.SAVED) ||
+				what.equals(BufferUpdate.CLOSED))
+		{
+			ManualFolds mf = getManualFoldsFor(buffer, false);
+			if (mf != null)
+				mf.save(path);
+		}
+	}
+
+	/**
 	 * checks if any of the buffers with their own fold strings have closed and
 	 * if so removes references to them from bufferStrings
 	 */
@@ -83,7 +131,8 @@ public class ConfigurableFoldHandlerPlugin extends EBPlugin
 		Buffer[] buffers = jEdit.getBuffers();
 		int i;
 		
-loop:	for(Iterator iter = bufferStrings.keySet().iterator(); iter.hasNext(); )
+loop:	for(Iterator<JEditBuffer> iter = bufferStrings.keySet().iterator();
+			iter.hasNext(); )
 		{
 			Buffer curBuffer = (Buffer)iter.next();
 			
@@ -202,13 +251,10 @@ loop:	for(Iterator iter = bufferStrings.keySet().iterator(); iter.hasNext(); )
 	 */
 	public FoldCounter getCounter(JEditBuffer buffer)
 	{
-		FoldStrings foldStrings = (FoldStrings)bufferStrings.get(buffer);
+		FoldStrings foldStrings = bufferStrings.get(buffer);
 		
 		if(foldStrings == null)
-		{
-			foldStrings = (FoldStrings)modeStrings.get(
-				buffer.getStringProperty("mode"));
-		}
+			foldStrings = modeStrings.get(buffer.getStringProperty("mode"));
 		
 		if(foldStrings == null)
 			foldStrings = defFoldStrings;
@@ -252,7 +298,7 @@ loop:	for(Iterator iter = bufferStrings.keySet().iterator(); iter.hasNext(); )
 	 */
 	public FoldStrings getBufferFoldStrings(Buffer buffer)
 	{
-		return (FoldStrings)bufferStrings.get(buffer);
+		return bufferStrings.get(buffer);
 	}
 	
 	/**
@@ -267,7 +313,7 @@ loop:	for(Iterator iter = bufferStrings.keySet().iterator(); iter.hasNext(); )
 	 */
 	public FoldStrings getModeFoldStrings(String modeName)
 	{
-		return (FoldStrings)modeStrings.get(modeName);
+		return modeStrings.get(modeName);
 	}
 	
 	/**
@@ -277,7 +323,7 @@ loop:	for(Iterator iter = bufferStrings.keySet().iterator(); iter.hasNext(); )
 	 */
 	public FoldStrings getDefaultModeFoldStrings(String modeName)
 	{
-		return (FoldStrings)defaultModeStringsMap.get(modeName);
+		return defaultModeStringsMap.get(modeName);
 	}
 	
 	/**
@@ -292,5 +338,64 @@ loop:	for(Iterator iter = bufferStrings.keySet().iterator(); iter.hasNext(); )
 	public FoldStrings getDefaultFoldStrings()
 	{
 		return defFoldStrings;
+	}
+
+	private static ManualFolds getManualFoldsFor(JEditBuffer buffer, boolean create)
+	{
+		ManualFolds mf = (ManualFolds) buffer.getProperty(MANUAL_FOLDS);
+		if (create && mf == null)
+		{
+			mf = new ManualFolds();
+			buffer.setProperty(MANUAL_FOLDS, mf);
+		}
+		return mf;
+	}
+
+	/*
+	 * Creates a manual fold for the selected line range.
+	 */
+	static public void createManualFold(JEditTextArea ta, boolean persistent)
+	{
+		JEditBuffer buffer = ta.getBuffer();
+		if (! (buffer.getFoldHandler() instanceof ConfigurableFoldHandler))
+		{
+			JOptionPane.showMessageDialog(ta.getView(), jEdit.getProperty(
+				"configurablefoldhandler.wrongfoldhandler"));
+			return;
+		}
+		Selection [] sel = ta.getSelection();
+		if (sel.length != 1)
+			return;
+		ManualFolds mf = getManualFoldsFor(buffer, true);
+		int start = sel[0].getStartLine();
+		int end = sel[0].getEndLine();
+		// If the selection ends in the first offset of a line,
+		// do not include this line in the fold.
+		if (sel[0].getEnd() == buffer.getLineStartOffset(end))
+			end--;
+		mf.add(start, end, persistent);
+		buffer.invalidateCachedFoldLevels();
+	}
+	/**
+	 * Removes the manual fold at the caret position. 
+	 */
+	static public void removeManualFold(JEditTextArea ta)
+	{
+		JEditBuffer buffer = ta.getBuffer();
+		if (! (buffer.getFoldHandler() instanceof ConfigurableFoldHandler))
+		{
+			JOptionPane.showMessageDialog(ta.getView(), jEdit.getProperty(
+				"configurablefoldhandler.wrongfoldhandler"));
+			return;
+		}
+		ManualFolds mf = getManualFoldsFor(buffer, false);
+		if (mf == null)
+			return;
+		if (mf.remove(ta.getCaretLine()))
+		{
+			buffer.invalidateCachedFoldLevels();
+			if (mf.isEmpty())
+				buffer.setProperty(MANUAL_FOLDS, null);
+		}
 	}
 }

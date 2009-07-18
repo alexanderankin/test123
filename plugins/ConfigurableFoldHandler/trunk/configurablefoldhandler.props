@@ -8,8 +8,15 @@ plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.depend.1=jdk 1.5
 plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.description=The ConfigurableFoldHandler plugin adds a new fold handler to jEdit that allows the user to specify the strings that define the start and end of a fold.
 
 # menu
-plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.menu=configurablefoldhandler.buffer-fold-strings
+plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.menu=\
+	configurablefoldhandler.buffer-fold-strings \
+	configurablefoldhandler.create-temp-fold \
+	configurablefoldhandler.create-persistent-fold \
+	configurablefoldhandler.remove-manual-fold
 configurablefoldhandler.buffer-fold-strings.label=Buffer fold strings
+configurablefoldhandler.create-temp-fold.label=Create temporary fold for selected lines
+configurablefoldhandler.create-persistent-fold.label=Create persistent fold for selected lines
+configurablefoldhandler.remove-manual-fold.label=Remove manual fold at caret position
 
 # options pane
 plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.option-pane=configurablefoldhandler
@@ -35,6 +42,7 @@ configurablefoldhandler.exception.emptystring=Neither fold string can be empty.
 configurablefoldhandler.badstrings=The fold strings are not valid. Error:
 configurablefoldhandler.errortitle=ConfigurableFoldHander error
 configurablefoldhandler.optionpaneerror=Unable to create fold strings. Error:\n{0}\nCustom folding disabled for {1} mode.
+configurablefoldhandler.wrongfoldhandler=The operation cannot be performed, because the folding mode is not "custom".
 
 # default fold settings
 configurablefoldhandler.mode.xml.default.startfold=<[^!/\?].*?[^/-]>

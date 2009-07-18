@@ -23,11 +23,13 @@ package configurablefoldhandler;
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-import java.io.InputStream;
+import java.util.Vector;
+import java.util.regex.MatchResult;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
 import javax.swing.text.Segment;
-import gnu.regexp.RE;
-import gnu.regexp.REMatch;
-import gnu.regexp.REException;
 
 /**
  * {@link RegexCounter} implementation that uses the <code>gnu.regexp</code>
@@ -35,8 +37,8 @@ import gnu.regexp.REException;
  */
 public class GNURegexCounter implements FoldCounter
 {
-	private RE startRE;
-	private RE endRE;
+	private Pattern startRE;
+	private Pattern endRE;
 	private int starts;
 	private int leadingCloses;
 	
@@ -45,10 +47,10 @@ public class GNURegexCounter implements FoldCounter
 	{
 		try
 		{
-			startRE = new RE(startRegex);
-			endRE   = new RE(endRegex);
+			startRE = Pattern.compile(startRegex);
+			endRE   = Pattern.compile(endRegex);
 		}
-		catch(REException ex)
+		catch(PatternSyntaxException ex)
 		{
 			throw new IllegalArgumentException(ex.getMessage());
 		}
@@ -59,29 +61,29 @@ public class GNURegexCounter implements FoldCounter
 	 */
 	public void count(Segment seg)
 	{
-		SegmentInputStream segmentStream = new SegmentInputStream(seg);
-		REMatch[] startMatches;
-		REMatch[] endMatches;
+		Matcher m = startRE.matcher(seg);
+		Vector<MatchResult> startMatches = new Vector<MatchResult>();
+		while (m.find())
+			startMatches.add(m.toMatchResult());
+		int foldStarts = startMatches.size();
 		
-		startMatches   = startRE.getAllMatches(segmentStream);
-		int foldStarts = startMatches.length;
-		
-		segmentStream.restartStream();
-		
-		endMatches   = endRE.getAllMatches(segmentStream);
-		int foldEnds = endMatches.length;
+		m = endRE.matcher(seg);
+		Vector<MatchResult> endMatches = new Vector<MatchResult>();
+		while (m.find())
+			endMatches.add(m.toMatchResult());
+		int foldEnds = endMatches.size();
 		
 		starts = foldStarts - foldEnds;
 		
-		if(startMatches.length == 0 || endMatches.length == 0)
+		if(foldStarts == 0 || foldEnds == 0)
 			leadingCloses = 0;
 		else
 		{
-			int startIndex = startMatches[0].getStartIndex();
+			int startIndex = startMatches.firstElement().start();
 			int i;
 			
-			for(i = 0; i < endMatches.length; i++)
-				if(endMatches[i].getStartIndex() > startIndex)
+			for(i = 0; i < foldEnds; i++)
+				if(endMatches.get(i).start() > startIndex)
 					break;
 			
 			leadingCloses = i;
@@ -100,79 +102,4 @@ public class GNURegexCounter implements FoldCounter
 	 */
 	public int getLeadingCloses() { return leadingCloses; }
 	
-	/**
-	 * <code>InputStream</code> that reads characters from a
-	 * <code>Segment</code>.
-	 */
-	private static class SegmentInputStream extends InputStream
-	{
-		private Segment seg;
-		private int index;
-		private int end;
-		
-		SegmentInputStream(Segment seg)
-		{
-			this.seg = seg;
-			index    = seg.offset;
-			end      = seg.offset + seg.count;
-		}
-		
-		public int read()
-		{
-			if(index == end) 
-				return -1;
-			else
-				return seg.array[index++];
-		}
-		
-		public int read(byte[] b)
-		{
-			if(index == end)
-				return -1;
-			
-			int numBytes = Math.min(b.length, available());
-			/* System.arraycopy(seg.array, index, b, 0, numBytes); */
-			for(int i = 0; i < numBytes; i++)
-			{
-				b[i] = (byte) seg.array[index + i];
-			}
-			index += numBytes;
-			return numBytes;
-		}
-		
-		public int read(byte[] b, int offset, int count)
-		{
-			if(index == end)
-				return -1;
-			
-			int numBytes = Math.min(count, available());
-			/* System.arraycopy(seg.array, index, b, offset, numBytes); */
-			for(int i = 0; i < numBytes; i++)
-			{
-				b[offset + i] = (byte) seg.array[index + i];
-			}
-			index += numBytes;
-			return numBytes;
-		}
-		
-		public int available()
-		{
-			return end - index;
-		}
-		
-		public void skip(int n)
-		{
-			index += Math.min(n, available());
-		}
-		
-		public void restartStream()
-		{
-			index = seg.offset;
-		}
-		
-		public boolean markSupported() { return false; }
-		
-		public void mark()  { throw new UnsupportedOperationException(); }
-		public void reset() { throw new UnsupportedOperationException(); }
-	}
 }
