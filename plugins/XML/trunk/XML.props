@@ -18,7 +18,7 @@ plugin.xml.XmlPlugin.description=The XML plugin provides features for editing XM
 
 # Menu bar stuff
 
-plugin.xml.XmlPlugin.menu=sidekick-tree \
+plugin.xml.XmlPlugin.menu=sidekick.parser.xml-switch \
     xml-match-tag \
     xml-select-element \
     xml-select-between-tags \
@@ -324,7 +324,7 @@ sidekick.parser.javascript.comment-icon=comment.gif
 
 # }}}
 
-
+sidekick.parser.xml-switch.label=XML SideKick
 options.xmlindenter.label=XML Indenter
 options.xmlindenter.code=new xml.indent.PreserveWhitespaceOptionsPane();
 options.xmlindenter.caption=Preserve whitespace for these elements:
