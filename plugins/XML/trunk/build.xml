@@ -42,6 +42,8 @@
                 <filename name="xml/**/*.mod" />
                 <filename name="xml/**/*.png" />
                 <filename name="xml/**/*.dtd" />
+                <filename name="xml/**/*.rng" />
+                <filename name="xml/**/*.rnc" />
             </or>
     </selector>
 
@@ -53,6 +55,7 @@
         <pathelement location="${install.dir}/SideKick.jar"/>
         <pathelement location="${install.dir}/xercesImpl.jar"/>
         <pathelement location="${install.dir}/resolver.jar"/>
+        <fileset dir="lib" includes="*.jar"/>
         <pathelement location="."/>
     </path>
 
