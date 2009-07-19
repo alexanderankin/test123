@@ -143,7 +143,7 @@ public final class ProjectPlugin extends EBPlugin {
 			File oldConfig = new File(jEdit.getSettingsDirectory(),
 									  "projectviewer");
 			if (oldConfig.isDirectory()) {
-				File configParentDir = configDir.getParentFile(); 
+				File configParentDir = configDir.getParentFile();
 				if ((!configParentDir.isDirectory()) && (!configParentDir.mkdirs())) {
 					Log.log(Log.WARNING, this, "Cannot create plugin home dir.");
 					configDir = oldConfig;
@@ -154,6 +154,18 @@ public final class ProjectPlugin extends EBPlugin {
 			} else if (!configDir.mkdirs()) {
 				Log.log(Log.ERROR, this, "Cannot create config directory; ProjectViewer will not function properly.");
 			}
+
+			/*
+			 * When moving the settings settings, it most probably means that
+			 * PV is being upgraded from 2.x to 3.0. Take the opportunity to
+			 * clean up the file dialog geometry info in jEdit's config file
+			 * so that the new dialog starts fresh and doesn't have any hidden
+			 * controls because of being shown too small.
+			 */
+			jEdit.unsetProperty(projectviewer.gui.ImportDialog.class.getName() + ".height");
+			jEdit.unsetProperty(projectviewer.gui.ImportDialog.class.getName() + ".width");
+			jEdit.unsetProperty(projectviewer.gui.ImportDialog.class.getName() + ".x");
+			jEdit.unsetProperty(projectviewer.gui.ImportDialog.class.getName() + ".y");
 		}
 
 		CONFIG_DIR = configDir;
