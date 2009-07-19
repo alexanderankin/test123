@@ -72,6 +72,15 @@ public class ReImporter extends RootImporter {
 			super.oldRoot = ((VPTProject)selected).getRootPath();
 			super.internalDoImport();
 
+			/*
+			 * Hack: if the filter is null, it means the user canceled
+			 * the action. There actually should be a cleaner way of
+			 * doing this.
+			 */
+			if (fnf == null) {
+				return;
+			}
+
 			// iterates through the children
 			for (int i = 0; i < project.getChildCount(); i++) {
 				VPTNode node = (VPTNode) project.getChildAt(i);
