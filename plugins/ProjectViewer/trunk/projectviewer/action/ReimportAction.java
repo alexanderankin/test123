@@ -23,6 +23,7 @@ import java.awt.event.ActionEvent;
 
 import org.gjt.sp.jedit.jEdit;
 
+import projectviewer.ProjectViewer;
 import projectviewer.vpt.VPTNode;
 import projectviewer.importer.ReImporter;
 //}}}
@@ -49,12 +50,21 @@ public class ReimportAction extends Action {
 	//{{{ actionPerformed(ActionEvent) method
 	/** Reimports files below the project root. */
 	public void actionPerformed(ActionEvent ae) {
-		VPTNode n = viewer.getSelectedNode();
-		if (n == null && viewer.getRoot().isProject()) {
-			n = viewer.getRoot();
+		VPTNode n;
+
+		if (viewer != null) {
+			n = viewer.getSelectedNode();
+			if (n == null && viewer.getRoot().isProject()) {
+				n = viewer.getRoot();
+			}
+		} else {
+			n = ProjectViewer.getActiveProject(jEdit.getActiveView());
 		}
 		if (n != null) {
 			new ReImporter(n, viewer).doImport();
+		} else {
+			jEdit.getActiveView().getStatus().setMessageAndClear(
+				jEdit.getProperty("projectviewer.no_active_project"));
 		}
 	} //}}}
 
