@@ -44,8 +44,9 @@
          several default properties used by the different
          targets.                                           -->
     <!-- ================================================== -->
+    <property file="${user.home}/.build.properties" />
+    <property file="${user.home}/build.properties" />
     <echo>${java.home}</echo>
-
     <!-- where to find jEdit and plugins    -->
     <property name="sourceforge.user.name"
     value="${user.name}" />
