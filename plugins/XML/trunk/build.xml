@@ -56,7 +56,6 @@
     </selector>
 
     <path  id="project.class.path">
-        <pathelement location="${install.dir}/xml-apis.jar"/>
         <pathelement location="${jedit.install.dir}/jedit.jar"/>
         <pathelement location="${jedit.plugins.dir}/ErrorList.jar"/>
         <pathelement location="${jedit.plugins.dir}/Beauty.jar"/>
