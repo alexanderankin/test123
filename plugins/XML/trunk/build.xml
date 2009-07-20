@@ -27,6 +27,8 @@
     <property name="javadoc.packagenames"	value="xml.*, sidekick.*" />
     <property name="build.dir" value="build"/>
     <property name="install.dir"  value="../"/>
+    <property name="jedit.plugins.dir" value="${install.dir}" />
+
 
     <import file="${build.support}/plugin-build.xml" />
 
@@ -56,11 +58,11 @@
     <path  id="project.class.path">
         <pathelement location="${install.dir}/xml-apis.jar"/>
         <pathelement location="${jedit.install.dir}/jedit.jar"/>
-        <pathelement location="${jedit.jars.dir}/ErrorList.jar"/>
-        <pathelement location="${jedit.jars.dir}/Beauty.jar"/>
-        <pathelement location="${jedit.jars.dir}/SideKick.jar"/>
-        <pathelement location="${jedit.jars.dir}/xercesImpl.jar"/>
-        <pathelement location="${jedit.jars.dir}/resolver.jar"/>
+        <pathelement location="${jedit.plugins.dir}/ErrorList.jar"/>
+        <pathelement location="${jedit.plugins.dir}/Beauty.jar"/>
+        <pathelement location="${jedit.plugins.dir}/SideKick.jar"/>
+        <pathelement location="${jedit.plugins.dir}/xercesImpl.jar"/>
+        <pathelement location="${jedit.plugins.dir}/resolver.jar"/>
         <pathelement location="${install.dir}/isorelax.jar"/>
         <pathelement location="${install.dir}/jing.jar"/>
         <pathelement location="${install.dir}/relaxngDatatype.jar"/>
