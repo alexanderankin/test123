@@ -14,7 +14,11 @@
 # location where your jars are installed
 #install.dir=${jedit.install.dir}/jars
 
-# Location where the plugins are (used by some older build files)
+# Location where the plugins are. This property used when defining dependencies on other plugins.
+# Eg. In your plugin's classpath.
+# <path id="project.class.path">
+#   <pathelement location="${jedit.plugins.dir}/ErrorList.jar" />
+# </path>
 #jedit.plugins.dir=${install.dir}
 
 # Location to find built jars (for dependencies)
