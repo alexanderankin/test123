@@ -46,4 +46,8 @@ junit.jar=/Users/elberry/development/dependencies/junit/junit-4.5.jar
 #scala.home=/home/elberry/development/applications/scala
 #jetty.home=/home/elberry/development/applications/jetty
 
+# Compiler settings.
+compiler.source=1.5
+compiler.target=1.5
+
 #::mode=properties::#
