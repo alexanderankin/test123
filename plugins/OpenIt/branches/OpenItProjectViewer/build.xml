@@ -17,11 +17,13 @@
     <property name="build.dir" value="build"/>
     <property name="install.dir" value=".."/>
     <property name="docs.dir" value="docs"/>
+    <property name="jedit.plugins.dir" value="${install.dir}" />
+
 	
 	<!-- define the class path -->
     <path id="project.class.path">
         <pathelement location="${jedit.install.dir}/jedit.jar"/>
-        <pathelement location="${install.dir}/ProjectViewer.jar"/>
+        <pathelement location="${jedit.plugins.dir}/ProjectViewer.jar"/>
         <pathelement location="${src.dir}"/>
     </path>
 
