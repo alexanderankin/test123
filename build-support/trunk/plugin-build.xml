@@ -44,11 +44,7 @@
          several default properties used by the different
          targets.                                           -->
     <!-- ================================================== -->
-    <property file="../build.properties" />
-    <property file="build.properties" />
     <echo>${java.home}</echo>
-    <property file="${user.home}/.build.properties" />
-    <property file="${user.home}/build.properties" />
 
     <!-- where to find jEdit and plugins    -->
     <property name="sourceforge.user.name"
@@ -338,7 +334,7 @@
          property "dist.target" to build the plugin and
          package it for distribution. Before proceeding,
          it cleans the build directory.                     -->
-    <target name="dist" depends="clean" description="Builds JAR file, with docs">
+    <target name="dist" depends="clean, build" description="Builds JAR file, with docs">
         <antcall target="${dist.target}" />
     </target>
     <!-- =============================================== }}} -->
