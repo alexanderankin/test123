@@ -120,7 +120,11 @@ public class ProjectWatcher implements EBComponent {
 			watched.add(name);
 		}
 		else if (su.getType() == StructureUpdate.Type.PROJECT_REMOVED) {
+			Vector<String> projects = CtagsInterfacePlugin.getDB().getOrigins(
+				TagDB.PROJECT_ORIGIN);
 			String name = su.getNode().getName();
+			if (! projects.contains(name))
+				return;
 			CtagsInterfacePlugin.deleteOrigin(TagDB.PROJECT_ORIGIN, name);
 			watched.remove(name);
 		}
@@ -140,8 +144,11 @@ public class ProjectWatcher implements EBComponent {
 			if (! ProjectsOptionPane.getTrackProjectList())
 				return;
 			StructureUpdate su = (StructureUpdate) message;
-			if (su.getType() == StructureUpdate.Type.PROJECT_ADDED)
+			if ((su.getType() == StructureUpdate.Type.PROJECT_ADDED) ||
+				(su.getType() == StructureUpdate.Type.PROJECT_REMOVED))
+			{
 				handleStructureUpdate(su);
+			}
 		}
 	}
 
