@@ -189,7 +189,7 @@ public class Navigator implements ActionListener {
         }
 
         Buffer buffer = editPane.getBuffer();
-        if ( buffer == null || ( buffer.getLength() == 0 && buffer.getName().startsWith( "Untitled" ) ) ) {
+        if ( buffer == null || ( buffer.getLength() == 0 && buffer.getName().startsWith( "Untitled" ) ) || !buffer.isLoaded() ) {
             // skip empty untitled buffers
             return null;
         }
