@@ -408,8 +408,11 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	// Jumps to the specified location
 	public static void jumpTo(final View view, String file, final int line) {
 		Buffer b = view.getBuffer();
-		if (b == null || (! b.getPath().equals(file)))
+		if (b == null || (! b.getPath().equals(file)) ||
+			(view.getTextArea().getCaretLine() != line - 1))
+		{
 			EditBus.send(new PositionChanging(view.getEditPane()));
+		}
 		Buffer buffer = jEdit.openFile(view, file);
 		if (buffer == null) {
 			System.err.println("Unable to open: " + file);
