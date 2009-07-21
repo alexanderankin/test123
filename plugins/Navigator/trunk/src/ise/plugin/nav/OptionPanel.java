@@ -43,6 +43,7 @@ public class OptionPanel extends AbstractOptionPane {
 
     private JCheckBox showOnToolbar = null;
     private JCheckBox groupByFile = null;
+    private JCheckBox groupByLine = null;
     private JCheckBox showLineText = null;
     private JCheckBox showLineTextSyntax = null;
     private JCheckBox showStripes = null;
@@ -100,6 +101,12 @@ public class OptionPanel extends AbstractOptionPane {
         groupByFile.setSelected( NavigatorPlugin.groupByFile() );
         addComponent( groupByFile );
 
+        // group by line
+        groupByLine = new JCheckBox( jEdit.getProperty( "navigator.options.groupByLine.label" ) );
+        groupByLine.setName( "groupByLine" );
+        groupByLine.setSelected( NavigatorPlugin.groupByLine() );
+        addComponent( groupByLine );
+
         // show line text in back and forward lists
         showLineText = new JCheckBox( jEdit.getProperty( "navigator.options.showLineText.label", "Show line text in history list" ) );
         showLineText.setName( "showLineText" );
@@ -150,6 +157,7 @@ public class OptionPanel extends AbstractOptionPane {
 
     public void _save() {
         jEdit.setBooleanProperty( name + ".groupByFile", groupByFile.isSelected() );
+        jEdit.setBooleanProperty( name + ".groupByLine", groupByLine.isSelected() );
         jEdit.setBooleanProperty( NavigatorPlugin.showOnToolBarKey, showOnToolbar.isSelected() );
         jEdit.setBooleanProperty( "navigator.showLineText", showLineText.isSelected() );
         jEdit.setBooleanProperty( "navigator.showLineTextSyntax", showLineTextSyntax.isSelected() );

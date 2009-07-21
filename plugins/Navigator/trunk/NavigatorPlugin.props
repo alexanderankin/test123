@@ -5,7 +5,7 @@
 
 plugin.ise.plugin.nav.NavigatorPlugin.name=Navigator
 plugin.ise.plugin.nav.NavigatorPlugin.author=Dale Anson, Alan Ezust, Shlomy Reinstein
-plugin.ise.plugin.nav.NavigatorPlugin.version=2.0
+plugin.ise.plugin.nav.NavigatorPlugin.version=2.1
 plugin.ise.plugin.nav.NavigatorPlugin.activate=startup
 plugin.ise.plugin.nav.NavigatorPlugin.description=The Navigator Plugin \
     provides a set of "Back" and "Forward" actions similar to a web browser. \
@@ -25,6 +25,7 @@ options.navigator.label=Navigator
 options.navigator.code=new ise.plugin.nav.OptionPanel();
 
 navigator.options.groupByFile.label=Group history items by file
+navigator.options.groupByLine.label=Group history items by line
 
 navigator.options.showLineText.label=Show line text in history list
 navigator.options.showLineTextSyntax.label=Show syntax highlighting in history list
@@ -53,7 +54,7 @@ navigator.menu.label=Navigator
 # menu separator to be inserted. This line also must start with the string
 # passed to the GUIUtilities.loadMenu method in createMenuItems. The items
 # are the action names as set in the actions.xml file.
-plugin.ise.plugin.nav.NavigatorPlugin.menu=navigator.back navigator.backList navigator.forward navigator.forwardList navigator.combinedList navigator.clearHistory navigator.toggleScope navigator.toggleGroupByFile navigator.showdockable
+plugin.ise.plugin.nav.NavigatorPlugin.menu=navigator.back navigator.backList navigator.forward navigator.forwardList navigator.combinedList navigator.clearHistory navigator.toggleScope navigator.toggleGroupByFile navigator.toggleGroupByLine navigator.showdockable
 #navigator.toolbar
 
 # the next three items are the labels to add to a submenu on
@@ -77,6 +78,7 @@ navigator.forwardList.icon=ArrowU.png
 navigator.clearHistory.label=Clear history
 navigator.toggleScope.label=Toggle scope
 navigator.toggleGroupByFile.label=Toggle group by file
+navigator.toggleGroupByLine.label=Toggle group by line
 
 navigator.combinedList.label=Show combined list
 

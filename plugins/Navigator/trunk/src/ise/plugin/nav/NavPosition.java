@@ -30,6 +30,7 @@ package ise.plugin.nav;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
+import org.gjt.sp.jedit.jEdit;
 
 /**
  * This object is used to track caret positions from PositionChanging events from the EditBus.
@@ -97,6 +98,10 @@ public class NavPosition {
         NavPosition other = ( NavPosition ) obj;
 
         // check fields
+        boolean groupByLine = jEdit.getBooleanProperty("navigator.groupByLine", false);
+        if (groupByLine) {
+            return ( path.equalsIgnoreCase( other.path ) && lineno == other.lineno );
+        }
         return ( path.equalsIgnoreCase( other.path ) && lineno == other.lineno && caret == other.caret );
     }
 

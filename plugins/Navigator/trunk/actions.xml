@@ -87,5 +87,12 @@
     </CODE>
     </ACTION>
     
+   <ACTION NAME="navigator.toggleGroupByLine" >
+    <CODE>
+    ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+    plugin.toggleGroupByLine();
+    </CODE>
+    </ACTION>
+    
 </ACTIONS>
 
