@@ -105,7 +105,7 @@ public class NavigatorPlugin extends EBPlugin {
      * should be grouped by filename.
      */
     public static boolean groupByFile() {
-        return jEdit.getBooleanProperty( "navigator.groupByFile" );
+        return jEdit.getBooleanProperty( "navigator.groupByFile", false );
     }
 
     /**
@@ -115,8 +115,23 @@ public class NavigatorPlugin extends EBPlugin {
         jEdit.setBooleanProperty( "navigator.groupByFile", !groupByFile() );
     }
 
+    /**
+     * @return true if the positions shown in the back and forward popup lists
+     * should be grouped by line
+     */
+    public static boolean groupByLine() {
+        return jEdit.getBooleanProperty( "navigator.groupByLine", false );
+    }
+
+    /**
+     * Toggle group by line to on or off.    
+     */
+    public static void toggleGroupByLine() {
+        jEdit.setBooleanProperty( "navigator.groupByLine", !groupByLine() );
+    }
+
     public static boolean combineLists() {
-        return jEdit.getBooleanProperty( "navigator.combineLists" );
+        return jEdit.getBooleanProperty( "navigator.combineLists", false );
     }
 
     /**
