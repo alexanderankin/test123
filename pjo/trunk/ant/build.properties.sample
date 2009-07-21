@@ -49,5 +49,6 @@ junit.jar=/Users/elberry/development/dependencies/junit/junit-4.5.jar
 # Compiler settings.
 compiler.source=1.5
 compiler.target=1.5
+compiler.debug=on
 
 #::mode=properties::#
