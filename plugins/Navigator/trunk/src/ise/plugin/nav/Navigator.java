@@ -495,8 +495,7 @@ public class Navigator implements ActionListener {
             setButtonState();
         }
         else {
-            backHistory.push(current);
-            current = now;
+            forwardHistory.push(now);
             setPosition(current);
             setButtonState();
         }
