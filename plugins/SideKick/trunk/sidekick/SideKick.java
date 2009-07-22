@@ -223,7 +223,7 @@ class SideKick implements EBComponent
 			handleEditPaneUpdate((EditPaneUpdate)msg);
 		else if(msg instanceof ViewUpdate)
 			handleViewUpdate((ViewUpdate)msg);
-		else if(msg instanceof PluginUpdate)
+		else if((msg instanceof PluginUpdate) && (! jEdit.isExiting()))
 		{
 			PluginUpdate pmsg = (PluginUpdate)msg;
 			if(pmsg.getWhat() == PluginUpdate.UNLOADED
