@@ -42,6 +42,7 @@ import org.gjt.sp.jedit.buffer.BufferAdapter;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
+import org.gjt.sp.jedit.msg.EditorExiting;
 import org.gjt.sp.jedit.msg.PluginUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.msg.ViewUpdate;
@@ -56,6 +57,7 @@ class SideKick implements EBComponent
 
 	//{{{ Instance variables
 	private View view;
+	static private boolean exiting = false;
 	private EditPane editPane;
 	private Buffer buffer;
 
@@ -217,13 +219,15 @@ class SideKick implements EBComponent
 	{
 		if(msg instanceof PropertiesChanged)
 			propertiesChanged();
+		else if(msg instanceof EditorExiting) 
+			exiting = true;
 		else if(msg instanceof BufferUpdate)
 			handleBufferUpdate((BufferUpdate)msg);
 		else if(msg instanceof EditPaneUpdate)
 			handleEditPaneUpdate((EditPaneUpdate)msg);
 		else if(msg instanceof ViewUpdate)
 			handleViewUpdate((ViewUpdate)msg);
-		else if((msg instanceof PluginUpdate) && (! jEdit.isExiting()))
+		else if((msg instanceof PluginUpdate) && (!exiting) )
 		{
 			PluginUpdate pmsg = (PluginUpdate)msg;
 			if(pmsg.getWhat() == PluginUpdate.UNLOADED
