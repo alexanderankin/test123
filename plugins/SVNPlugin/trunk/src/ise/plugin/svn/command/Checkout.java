@@ -38,19 +38,24 @@ import org.tmatesoft.svn.core.wc.ISVNOptions;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 import org.tmatesoft.svn.core.auth.BasicAuthenticationManager;
+import org.tmatesoft.svn.core.internal.wc.admin.SVNAdminAreaFactory;
 
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNURL;
 
 import ise.plugin.svn.data.CheckoutData;
 
+import org.tmatesoft.svn.core.wc.SVNStatus;
+import org.tmatesoft.svn.core.wc.SVNStatusClient;
+import org.tmatesoft.svn.core.wc.SVNWCClient;
 
+import org.gjt.sp.jedit.jEdit;
 
 public class Checkout {
 
     public long doCheckout( CheckoutData cd ) throws CommandInitializationException, SVNException {
         if ( cd == null ) {
-            throw new CommandInitializationException("CheckoutData is null.");
+            throw new CommandInitializationException( "CheckoutData is null." );
         }
 
 
@@ -58,7 +63,7 @@ public class Checkout {
         if ( cd.getPaths() == null || cd.getURL() == null ) {
             return -1;      // nothing to do
         }
-        File localPath = new File(cd.getPaths().get(0));
+        File localPath = new File( cd.getPaths().get( 0 ) );
         if ( localPath == null ) {
             return -1;      // nothing to do
         }
@@ -77,20 +82,39 @@ public class Checkout {
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
         // use the svnkit client manager
-        SVNClientManager clientManager = SVNClientManager.newInstance( options, new BasicAuthenticationManager(cd.getUsername(), cd.getDecryptedPassword()) );
+        SVNClientManager clientManager = SVNClientManager.newInstance( options, new BasicAuthenticationManager( cd.getUsername(), cd.getDecryptedPassword() ) );
 
         // get a commit client
         SVNUpdateClient client = clientManager.getUpdateClient();
 
-        // set an event handler so that messages go to the commit data streams for display
+        // set an event handler so that messages go to the data streams for display
         client.setEventHandler( new SVNCommandEventProcessor( out, cd.getErr(), false ) );
 
 
-        long revision = client.doCheckout(SVNURL.parseURIDecoded(cd.getURL()), localPath, SVNRevision.HEAD, SVNRevision.HEAD, SVNDepth.INFINITY, false);
+        long revision = client.doCheckout( SVNURL.parseURIDecoded( cd.getURL() ), localPath, SVNRevision.HEAD, SVNRevision.HEAD, SVNDepth.INFINITY, false );
 
         out.flush();
         out.close();
 
+        // possibly change working copy format
+        int current_wc_format = getWCVersion( localPath );
+        int default_wc_format = jEdit.getIntegerProperty( "ise.plugin.svn.defaultWCVersion", SVNAdminAreaFactory.WC_FORMAT_15 );
+        if ( current_wc_format != default_wc_format ) {
+            SVNWCClient wc_client = SVNClientManager.newInstance().getWCClient();
+            wc_client.doSetWCFormat( localPath, default_wc_format );
+        }
         return revision;
     }
+
+    private int getWCVersion( File path ) {
+        try {
+            SVNStatusClient st_client = SVNClientManager.newInstance().getStatusClient();
+            SVNStatus status = st_client.doStatus( path, false );
+            return status.getWorkingCopyFormat();
+        }
+        catch ( Exception e ) {
+            return SVNAdminAreaFactory.WC_FORMAT_15;
+        }
+    }
+
 }
