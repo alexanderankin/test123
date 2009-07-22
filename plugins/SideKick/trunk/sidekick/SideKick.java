@@ -3,7 +3,8 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2003, 2005 Slava Pestov
+ * Copyright (C) 2003, 2005 Slava Pestov 
+ * Copyright (c) 2006, 2009 by the jEdit developer team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,7 +27,6 @@ package sidekick;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-
 import javax.swing.Timer;
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -35,7 +35,6 @@ import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
-import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.buffer.BufferAdapter;
@@ -51,46 +50,45 @@ import org.gjt.sp.util.Log;
 import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
 //}}}
-
+/** This is an EBComponent that manages a SideKick parser.
+ * Each jEdit View needs its own parser.  
+ * 
+ * SideKick is not a visible component itself, but rather, serves as the underlying 
+ * data model for a tree in a dockable Component, as determined by dockables.xml.
+ * It happens to be  sidekick.enhanced.SourceTree. 
+ *  
+ */
 class SideKick implements EBComponent
 {
-
-	//{{{ Instance variables
-	private View view;
-	static private boolean exiting = false;
-	private EditPane editPane;
-	private Buffer buffer;
-
-	private SideKickParser parser;
-
-	private DefaultErrorSource errorSource;
-
-	private boolean showParsingMessage;
-
-
-	private int delay;
-	private Timer keystrokeTimer;
-
-//	private BufferChangeHandler bufferHandler;
-	private BufferChangeListener bufferListener;
-	private boolean addedBufferChangeHandler;
-	//}}}
-
-	//{{{ Static members
+	//{{{ static members
 	public static final String BUFFER_CHANGE = "sidekick.buffer-change-parse";
 	public static final String BUFFER_SAVE = "sidekick.buffer-save-parse";
 	public static final String FOLLOW_CARET = "sidekick-tree.follows-caret";
 	public static final String AUTO_EXPAND_DEPTH = "sidekick-tree.auto-expand-tree-depth";
 	public static final String SHOW_STATUS= "sidekick.showStatusWindow.label";
 	public static final String FILTER_VISIBLE = "sidekick.filter-visible-assets";
+	static private boolean exiting = false;
 	// }}}
+
+	//{{{ Instance variables
+	private View view;
+	private EditPane editPane;
+	private Buffer buffer;
+	private SideKickParser parser;
+	private DefaultErrorSource errorSource;
+	private boolean showParsingMessage;
+	private int delay;
+	private Timer keystrokeTimer;
+	private BufferChangeListener bufferListener;
+	private boolean addedBufferListener;
+	//}}}
+
 
 	//{{{ SideKick constructor
 	SideKick(View view)
 	{
 		this.view = view;
 
-//		bufferHandler = new BufferChangeHandler();
 		bufferListener = new BufferChangeListener();
 
 		propertiesChanged();
@@ -210,7 +208,6 @@ class SideKick implements EBComponent
 		if (newBuffer != null) buffer = newBuffer;
 		parser = SideKickPlugin.getParserForBuffer(buffer);
 		activateParser();
-
 //		autoParse();
 	} //}}}
 
@@ -279,23 +276,20 @@ class SideKick implements EBComponent
 	//{{{ addBufferChangeListener() method
 	private void addBufferChangeListener(Buffer buffer)
 	{
-		if(!addedBufferChangeHandler)
+		if(!addedBufferListener)
 		{
-
 			buffer.addBufferListener(bufferListener = new BufferChangeListener());
-//			buffer.addBufferChangeListener(bufferHandler);
-			addedBufferChangeHandler = true;
+			addedBufferListener = true;
 		}
 	} //}}}
 
 	//{{{ removeBufferChangeListener() method
 	private void removeBufferChangeListener(Buffer buffer)
 	{
-		if(addedBufferChangeHandler)
+		if(addedBufferListener)
 		{
 			buffer.removeBufferListener(bufferListener);
-//			buffer.removeBufferChangeListener(bufferHandler);
-			addedBufferChangeHandler = false;
+			addedBufferListener = false;
 		}
 	} //}}}
 

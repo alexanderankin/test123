@@ -39,7 +39,9 @@ import java.util.Set;
 //}}}
 
 /**
- * SideKick plugin core which tracks registered parsers.
+ * SideKick plugin core class
+ * Manages a mapping of View to SideKick instances, creating/destroying
+ * SideKick objects whenever Views are created/destroyed.  
  * 
  * @version $Id$
  */
