@@ -56,16 +56,17 @@
     </selector>
 
     <path  id="project.class.path">
-        <pathelement location="${jedit.install.dir}/jedit.jar"/>
-        <pathelement location="${jedit.plugins.dir}/ErrorList.jar"/>
-        <pathelement location="${jedit.plugins.dir}/Beauty.jar"/>
-        <pathelement location="${jedit.plugins.dir}/SideKick.jar"/>
-        <pathelement location="${jedit.plugins.dir}/xercesImpl.jar"/>
-        <pathelement location="${jedit.plugins.dir}/resolver.jar"/>
+        <pathelement location="${ant.home}/lib/ant.jar" />
+        <pathelement location="${install.dir}/isorelax-jaxp-bridge-1.0.jar"/>
         <pathelement location="${install.dir}/isorelax.jar"/>
         <pathelement location="${install.dir}/jing.jar"/>
         <pathelement location="${install.dir}/relaxngDatatype.jar"/>
-        <pathelement location="${install.dir}/isorelax-jaxp-bridge-1.0.jar"/>
+        <pathelement location="${jedit.install.dir}/jedit.jar"/>
+        <pathelement location="${jedit.plugins.dir}/Beauty.jar"/>
+        <pathelement location="${jedit.plugins.dir}/ErrorList.jar"/>
+        <pathelement location="${jedit.plugins.dir}/SideKick.jar"/>
+        <pathelement location="${jedit.plugins.dir}/resolver.jar"/>
+        <pathelement location="${jedit.plugins.dir}/xercesImpl.jar"/>
         <pathelement location="."/>
     </path>
 
