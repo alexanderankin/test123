@@ -220,7 +220,8 @@ public class PVSVNOptionPane extends AbstractOptionPane {
             return wcVersion;
         }
         catch ( Exception e ) {
-            return SVNAdminAreaFactory.WC_FORMAT_15;
+            return jEdit.getIntegerProperty( "ise.plugin.svn.defaultWCVersion", SVNAdminAreaFactory.WC_FORMAT_15 );
+
         }
     }
 

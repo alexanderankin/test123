@@ -36,6 +36,7 @@ import javax.swing.event.*;
 import org.gjt.sp.jedit.OptionPane;
 import org.gjt.sp.jedit.jEdit;
 import ise.java.awt.KappaLayout;
+import org.tmatesoft.svn.core.internal.wc.admin.SVNAdminAreaFactory;
 
 /**
  * Plugin option pane.
@@ -44,6 +45,8 @@ public class SubversionOptions implements OptionPane {
     private JPanel panel = null;
     private JCheckBox useTsvnTemplate = null;
     private JSpinner maxLogs = null;
+    private JLabel fileformat_label;
+    private JComboBox fileformat;
 
     public SubversionOptions( ) {}
 
@@ -51,27 +54,52 @@ public class SubversionOptions implements OptionPane {
         if ( panel != null )
             return ;
         panel = new JPanel( new KappaLayout() );
-        panel.setName("SubversionOptions");
+        panel.setName( "SubversionOptions" );
 
 
         useTsvnTemplate = new JCheckBox( "Use tsvn:logtemplate property for commit template" );
-        useTsvnTemplate.setName("useTsvnTemplate");
+        useTsvnTemplate.setName( "useTsvnTemplate" );
         useTsvnTemplate.setSelected( jEdit.getBooleanProperty( "ise.plugin.svn.useTsvnTemplate", false ) );
 
         maxLogs = new JSpinner();
-        maxLogs.setName("maxLogs");
+        maxLogs.setName( "maxLogs" );
         ( ( JSpinner.NumberEditor ) maxLogs.getEditor() ).getModel().setMinimum( Integer.valueOf( 1 ) );
-        int logRows = jEdit.getIntegerProperty("ise.plugin.svn.logRows", 1000); 
+        int logRows = jEdit.getIntegerProperty( "ise.plugin.svn.logRows", 1000 );
         ( ( JSpinner.NumberEditor ) maxLogs.getEditor() ).getModel().setValue( logRows );
-        ((JSpinner.NumberEditor)maxLogs.getEditor()).getTextField().setForeground( jEdit.getColorProperty( "view.fgColor", Color.BLACK ) );
-        ((JSpinner.NumberEditor)maxLogs.getEditor()).getTextField().setBackground( jEdit.getColorProperty( "view.bgColor", Color.WHITE ) );
+        ( ( JSpinner.NumberEditor ) maxLogs.getEditor() ).getTextField().setForeground( jEdit.getColorProperty( "view.fgColor", Color.BLACK ) );
+        ( ( JSpinner.NumberEditor ) maxLogs.getEditor() ).getTextField().setBackground( jEdit.getColorProperty( "view.bgColor", Color.WHITE ) );
 
         panel.add( useTsvnTemplate, "0, 0, 2, 1, 0, wh, 5" );
-        
+
         JPanel max_logs_panel = new JPanel( new FlowLayout() );
         max_logs_panel.add( new JLabel( jEdit.getProperty( "ips.Maximum_log_entries_to_show>", "Maximum log entries to show:" ) ) );
         max_logs_panel.add( maxLogs );
         panel.add( "0, 1, 2, 1, W,  , 5", max_logs_panel );
+
+        fileformat_label = new JLabel( jEdit.getProperty( "ips.Subversion_file_format>", "Subversion file format:" ) );
+        fileformat = new JComboBox( new String[] {"1.3", "1.4", "1.5", "1.6"} );
+        fileformat.setEditable( false );
+        String wc_item;
+        int default_wc_format = jEdit.getIntegerProperty( "ise.plugin.svn.defaultWCVersion", SVNAdminAreaFactory.WC_FORMAT_15 );
+        switch ( default_wc_format ) {
+            case SVNAdminAreaFactory.WC_FORMAT_13:
+                wc_item = "1.3";
+                break;
+            case SVNAdminAreaFactory.WC_FORMAT_14:
+                wc_item = "1.4";
+                break;
+            case SVNAdminAreaFactory.WC_FORMAT_15:
+                wc_item = "1.5";
+                break;
+            case SVNAdminAreaFactory.WC_FORMAT_16:
+            default:
+                wc_item = "1.6";
+                break;
+
+        }
+        fileformat.setSelectedItem( wc_item );
+        panel.add( "0, 3, 1, 1, E,  , 3", fileformat_label );
+        panel.add( "1, 3, 2, 1, 0, w, 3", fileformat );
 
     }
 
@@ -80,8 +108,24 @@ public class SubversionOptions implements OptionPane {
             jEdit.setBooleanProperty( "ise.plugin.svn.useTsvnTemplate", useTsvnTemplate.isSelected() );
         }
         if ( maxLogs != null ) {
-            jEdit.setIntegerProperty( "ise.plugin.svn.logRows", ( ( Integer ) maxLogs.getValue() ).intValue());
+            jEdit.setIntegerProperty( "ise.plugin.svn.logRows", ( ( Integer ) maxLogs.getValue() ).intValue() );
         }
+
+        String new_wc_format = ( String ) fileformat.getSelectedItem();
+        int wc_format;
+        if ( new_wc_format.equals( "1.3" ) ) {
+            wc_format = SVNAdminAreaFactory.WC_FORMAT_13;
+        }
+        else if ( new_wc_format.equals( "1.4" ) ) {
+            wc_format = SVNAdminAreaFactory.WC_FORMAT_14;
+        }
+        else if ( new_wc_format.equals( "1.6" ) ) {
+            wc_format = SVNAdminAreaFactory.WC_FORMAT_16;
+        }
+        else {
+            wc_format = SVNAdminAreaFactory.WC_FORMAT_15;
+        }
+        jEdit.setIntegerProperty( "ise.plugin.svn.defaultWCVersion", wc_format );
     }
 
     public Component getComponent() {
