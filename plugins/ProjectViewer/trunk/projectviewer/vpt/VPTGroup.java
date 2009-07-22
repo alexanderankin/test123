@@ -22,6 +22,7 @@ package projectviewer.vpt;
 import java.io.File;
 
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 
 import org.gjt.sp.jedit.GUIUtilities;
 //}}}
@@ -36,8 +37,8 @@ import org.gjt.sp.jedit.GUIUtilities;
 public class VPTGroup extends VPTNode {
 
 	//{{{ Constants
-	private final static Icon dirClosedIcon = GUIUtilities.loadIcon("Folder.png");
-	private final static Icon dirOpenedIcon = GUIUtilities.loadIcon("OpenFolder.png");
+	private final static Icon groupIcon =
+		new ImageIcon(VPTGroup.class.getResource("/projectviewer/images/vpt_group.png"));
 	//}}}
 
 	//{{{ +VPTGroup(String) : <init>
@@ -52,7 +53,7 @@ public class VPTGroup extends VPTNode {
 	 *	@param	expanded	If the node is currently expanded or not.
 	 */
 	public Icon getIcon(boolean expanded) {
-		return (expanded ? dirOpenedIcon : dirClosedIcon);
+		return groupIcon;
 	} //}}}
 
 	//{{{ +getNodePath() : String
