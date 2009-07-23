@@ -78,6 +78,7 @@ public class AddRepositoryDialog extends JDialog {
         JLabel name_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "name.label" ) );
         String name_value = data != null && data.getName() != null ? data.getName() : "";
         name = new HistoryTextField( REPOSITORY_NAME );
+        name.setName("repository name");
         name.setText(name_value);
         name.setColumns(30);
 
@@ -85,6 +86,7 @@ public class AddRepositoryDialog extends JDialog {
         JLabel url_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "url.label" ) );
         String url_value = data != null ? data.getURL() : "";
         url = new HistoryTextField(URL);
+        url.setName("repository url");
         url.setText(url_value);
         url.setColumns(30);
 
@@ -92,6 +94,7 @@ public class AddRepositoryDialog extends JDialog {
         JLabel username_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "username.label" ) );
         String username_value = data != null && data.getUsername() != null ? data.getUsername() : "";
         username = new HistoryTextField(USERNAME);
+        username.setName("repository username");
         username.setText(username_value);
         username.setColumns(30);
 
@@ -99,7 +102,8 @@ public class AddRepositoryDialog extends JDialog {
         JLabel password_label = new JLabel( jEdit.getProperty( SVNAction.PREFIX + "password.label" ) );
         String password_value = data != null ? data.getDecryptedPassword() : "";
         password = new JPasswordField( password_value, 30 );
-
+        password.setName("repository password");
+        
         // buttons
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
