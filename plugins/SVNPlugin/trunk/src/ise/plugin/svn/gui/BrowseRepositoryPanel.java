@@ -93,12 +93,15 @@ public class BrowseRepositoryPanel extends JPanel {
     }
 
     private void init( boolean full, String repositoryName ) {
+        
+        setName("browse repository panel");
 
         // for button panel, defined below.
         JPanel button_panel = null;
 
         // repository chooser
         chooser = new RepositoryComboBox();
+        chooser.setName("repository chooser");
 
         // the repository tree.  This is lazy loaded.
         tree = new JTree( new DefaultTreeModel( new DirTreeNode( jEdit.getProperty( "ips.SVN_Browser", "SVN Browser" ), false ) ) );
@@ -159,6 +162,7 @@ public class BrowseRepositoryPanel extends JPanel {
             // create the control buttons -- add repository
             Icon new_icon = GUIUtilities.loadIcon( "New.png" );
             new_btn = new JButton( new_icon );
+            new_btn.setName("new repository");
             Dimension dim = new Dimension( new_icon.getIconWidth() + ( new_btn.getInsets().top * 2 ), new_icon.getIconHeight() + ( new_btn.getInsets().top * 2 ) );
             new_btn.setSize( dim );
             new_btn.setPreferredSize( dim );
@@ -186,6 +190,7 @@ public class BrowseRepositoryPanel extends JPanel {
             // edit repository properties
             Icon edit_icon = GUIUtilities.loadIcon( "Preferences.png" );
             edit_btn = new JButton( edit_icon );
+            edit_btn.setName("edit repository");
             dim = new Dimension( edit_icon.getIconWidth() + ( edit_btn.getInsets().top * 2 ), edit_icon.getIconHeight() + ( edit_btn.getInsets().top * 2 ) );
             edit_btn.setSize( dim );
             edit_btn.setPreferredSize( dim );
@@ -214,6 +219,7 @@ public class BrowseRepositoryPanel extends JPanel {
             // remove repository from chooser
             Icon remove_icon = GUIUtilities.loadIcon( "Minus.png" );
             remove_btn = new JButton( remove_icon );
+            remove_btn.setName("remove repository");
             dim = new Dimension( remove_icon.getIconWidth() + ( remove_btn.getInsets().top * 2 ), remove_icon.getIconHeight() + ( remove_btn.getInsets().top * 2 ) );
             remove_btn.setSize( dim );
             remove_btn.setPreferredSize( dim );
@@ -236,6 +242,7 @@ public class BrowseRepositoryPanel extends JPanel {
             // reload tree with current selection
             Icon refresh_icon = GUIUtilities.loadIcon( "Reload.png" );
             refresh_btn = new JButton( refresh_icon );
+            refresh_btn.setName("refresh");
             dim = new Dimension( refresh_icon.getIconWidth() + ( refresh_btn.getInsets().top * 2 ), refresh_icon.getIconHeight() + ( refresh_btn.getInsets().top * 2 ) );
             refresh_btn.setSize( dim );
             refresh_btn.setPreferredSize( dim );
@@ -346,8 +353,8 @@ public class BrowseRepositoryPanel extends JPanel {
         String filepath;
         if ( node.isExternal() ) {
             String rep = node.getRepositoryLocation();
-            url = rep.substring( 0, rep.lastIndexOf( "/" ) );
-            filepath = rep.substring( rep.lastIndexOf( "/" ) + 1 );
+            url = rep.substring( 0, rep.lastIndexOf( '/' ) );
+            filepath = rep.substring( rep.lastIndexOf( '/' ) + 1 );
             return url + filepath;
         }
         else {
@@ -384,8 +391,8 @@ public class BrowseRepositoryPanel extends JPanel {
             filepath = sb.toString().substring( 1 );
             if ( node.isExternal() ) {
                 String rep = node.getRepositoryLocation();
-                url = rep.substring( 0, rep.lastIndexOf( "/" ) );
-                filepath = rep.substring( rep.lastIndexOf( "/" ) + 1 );
+                url = rep.substring( 0, rep.lastIndexOf( '/' ) );
+                filepath = rep.substring( rep.lastIndexOf( '/' ) + 1 );
             }
             else {
                 url = data.getURL();
