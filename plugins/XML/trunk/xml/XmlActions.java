@@ -39,6 +39,8 @@ import org.gjt.sp.jedit.BeanShell;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.gui.StatusBar;
+import org.gjt.sp.jedit.msg.PositionChanging;
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.Macros;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.View;
@@ -619,6 +621,7 @@ loop:			for(;;)
 	//{{{ matchTag() method
 	public static void matchTag(JEditTextArea textArea) {
 	    int caretPos = textArea.getCaretPosition();
+	    // Check if I am near one of the regular brackets
 	    for (int i=caretPos-1; i<caretPos+3; ++i) try
 	    {
 		String s = textArea.getText(i,1);
@@ -654,6 +657,7 @@ loop:			for(;;)
 			TagParser.Tag matchingTag = TagParser.getMatchingTag(text, tag);
 			if (matchingTag != null)
 			{
+				EditBus.send(new PositionChanging(textArea));
 				textArea.setSelection(new Selection.Range(
 					matchingTag.start, matchingTag.end
 				));
