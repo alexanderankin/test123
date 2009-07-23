@@ -14,44 +14,63 @@ public interface HtmlParserConstants {
   int WHITESPACE = 8;
   int NEWLINE = 9;
   int QUOTE = 10;
-  int EOL = 11;
-  int TAG_START = 12;
-  int ENDTAG_START = 13;
-  int COMMENT_START = 14;
-  int DECL_START = 15;
-  int PCDATA = 16;
-  int TAG_SCRIPT = 17;
-  int TAG_STYLE = 18;
-  int TAG_NAME = 19;
-  int LST_ERROR = 20;
-  int ATTR_NAME = 22;
-  int TAG_END = 23;
-  int TAG_SLASHEND = 24;
-  int ATTR_EQ = 25;
-  int IMPLICIT_TAG_END = 26;
-  int LIT_ERROR = 27;
-  int ATTR_VAL = 29;
-  int LAV_ERROR = 30;
-  int COMMENT_END = 31;
-  int DASH = 32;
-  int COMMENT_EOL = 33;
-  int COMMENT_WORD = 34;
-  int DECL_ANY = 35;
-  int DECL_END = 36;
-  int SCRIPT_END = 37;
-  int STYLE_END = 38;
-  int BLOCK_EOL = 39;
-  int BLOCK_LBR = 40;
-  int BLOCK_WORD = 41;
+  int EL_ESCAPE = 11;
+  int TEXT_IN_EL = 12;
+  int NO_JSP_TAG_END = 13;
+  int NO_TAG_END = 14;
+  int EOL = 15;
+  int TAG_START = 16;
+  int ENDTAG_START = 17;
+  int COMMENT_START = 18;
+  int DECL_START = 19;
+  int PCDATA = 20;
+  int TAG_SCRIPT = 21;
+  int TAG_STYLE = 22;
+  int TAG_NAME = 23;
+  int LST_ERROR = 24;
+  int ATTR_NAME = 26;
+  int TAG_END = 27;
+  int TAG_PERCENTEND = 28;
+  int TAG_SLASHEND = 29;
+  int ATTR_EQ = 30;
+  int IMPLICIT_TAG_END = 31;
+  int LIT_ERROR = 32;
+  int SINGLE_QUOTE = 33;
+  int DOUBLE_QUOTE = 34;
+  int ENDING_SINGLE_QUOTE = 36;
+  int UNPARSED_TEXT_NO_SINGLE_QUOTES = 37;
+  int DOLLAR_OR_HASH_SINGLE_QUOTE = 38;
+  int ENDING_DOUBLE_QUOTE = 39;
+  int UNPARSED_TEXT_NO_DOUBLE_QUOTES = 40;
+  int DOLLAR_OR_HASH_DOUBLE_QUOTE = 41;
+  int EL_EXPRESSION_IN_ATTRIBUTE = 42;
+  int VALUE_BINDING_IN_ATTRIBUTE = 43;
+  int JSP_EXPRESSION_IN_ATTRIBUTE = 44;
+  int JSP_TAG_IN_ATTRIBUTE = 45;
+  int ATTR_VAL = 46;
+  int COMMENT_END = 47;
+  int DASH = 48;
+  int COMMENT_EOL = 49;
+  int COMMENT_WORD = 50;
+  int DECL_ANY = 51;
+  int DECL_END = 52;
+  int SCRIPT_END = 53;
+  int STYLE_END = 54;
+  int BLOCK_EOL = 55;
+  int BLOCK_LBR = 56;
+  int BLOCK_WORD = 57;
 
   int LexStyle = 0;
   int LexScript = 1;
   int LexDecl = 2;
   int LexComment = 3;
-  int LexAttrVal = 4;
-  int LexInTag = 5;
-  int LexStartTag = 6;
-  int DEFAULT = 7;
+  int LexInAttrVal = 4;
+  int AttrValueBetweenDoubleQuotesState = 5;
+  int AttrValueBetweenSingleQuotesState = 6;
+  int LexAttrVal = 7;
+  int LexInTag = 8;
+  int LexStartTag = 9;
+  int DEFAULT = 10;
 
   String[] tokenImage = {
     "<EOF>",
@@ -65,6 +84,10 @@ public interface HtmlParserConstants {
     "<WHITESPACE>",
     "<NEWLINE>",
     "<QUOTE>",
+    "<EL_ESCAPE>",
+    "<TEXT_IN_EL>",
+    "<NO_JSP_TAG_END>",
+    "<NO_TAG_END>",
     "<EOL>",
     "<TAG_START>",
     "\"</\"",
@@ -75,16 +98,28 @@ public interface HtmlParserConstants {
     "<TAG_STYLE>",
     "<TAG_NAME>",
     "<LST_ERROR>",
-    "<token of kind 21>",
+    "<token of kind 25>",
     "<ATTR_NAME>",
-    "<TAG_END>",
+    "\">\"",
+    "\"%>\"",
     "\"/>\"",
     "\"=\"",
     "\"<\"",
     "<LIT_ERROR>",
-    "<token of kind 28>",
+    "\"\\\'\"",
+    "\"\\\"\"",
+    "<token of kind 35>",
+    "\"\\\'\"",
+    "<UNPARSED_TEXT_NO_SINGLE_QUOTES>",
+    "<DOLLAR_OR_HASH_SINGLE_QUOTE>",
+    "\"\\\"\"",
+    "<UNPARSED_TEXT_NO_DOUBLE_QUOTES>",
+    "<DOLLAR_OR_HASH_DOUBLE_QUOTE>",
+    "<EL_EXPRESSION_IN_ATTRIBUTE>",
+    "<VALUE_BINDING_IN_ATTRIBUTE>",
+    "<JSP_EXPRESSION_IN_ATTRIBUTE>",
+    "<JSP_TAG_IN_ATTRIBUTE>",
     "<ATTR_VAL>",
-    "<LAV_ERROR>",
     "<COMMENT_END>",
     "\"-\"",
     "<COMMENT_EOL>",

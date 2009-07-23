@@ -43,7 +43,7 @@
  * html-parser@quiotix.com.  If you like it/hate it/use it, please let us know!  
  */
 
-options { IGNORE_CASE = true; STATIC = false; } 
+options { IGNORE_CASE = true; STATIC = false; /*DEBUG_PARSER = true;*/ } 
 
 PARSER_BEGIN(HtmlParser)
 
@@ -115,12 +115,16 @@ PARSER_END(HtmlParser)
 | <#WHITESPACE: ( " " | "\t" | "\n" | "\r" ) >
 | <#NEWLINE:    ( "\r\n" | "\r" | "\n" ) >
 | <#QUOTE:      ( "'" | "\"" )>
+| <#EL_ESCAPE: ("\\${" | "\\#{") >
+| <#TEXT_IN_EL: (~["}", "'", "\""])+ >
+| <#NO_JSP_TAG_END: ( ~["%"] | ("%" ~[">"]) )+ >
+| <#NO_TAG_END: ( ~[">"] | ( "/" ~[">"]) )+ >
 }
 
 <DEFAULT> TOKEN : 
 {
   <EOL:            ( " " | "\t" )* <NEWLINE> >
-| <TAG_START:      "<"(<WHITESPACE>)* | "<%"(<WHITESPACE>)* | "<%@"(<WHITESPACE>)* > : LexStartTag
+| <TAG_START:      "<" (<WHITESPACE>)* | "<%" (<WHITESPACE>)* | "<%@" (<WHITESPACE>)* > : LexStartTag
 | <ENDTAG_START:   "</"      > : LexStartTag
 | <COMMENT_START:     "<!--" | "<%--"    >   : LexComment
 | <DECL_START:     "<!"      > : LexDecl
@@ -142,8 +146,9 @@ PARSER_END(HtmlParser)
 
 <LexInTag> TOKEN :
 {
-  <ATTR_NAME: <IDENTIFIER> >
-| <TAG_END: ">" | "%>" >                : DEFAULT
+  <ATTR_NAME:  <IDENTIFIER> >
+| <TAG_END: ">" >                       : DEFAULT
+| <TAG_PERCENTEND: "%>" >               : DEFAULT
 | <TAG_SLASHEND: "/>" >                 : DEFAULT
 | <ATTR_EQ: "=" >                       : LexAttrVal
 | <IMPLICIT_TAG_END: "<">               
@@ -163,17 +168,46 @@ PARSER_END(HtmlParser)
 | <LIT_ERROR: ~[]>
 }
   
-<LexAttrVal> SPECIAL_TOKEN :
-{
-  < <WHITESPACE> >
-}
-
 <LexAttrVal> TOKEN :
 {
-  <ATTR_VAL: <QUOTED_STRING> 
-| ( ~[">", "\"", "'", " ", "\t", "\n", "\r"] )+ > : LexInTag
-| <LAV_ERROR: ~[]>
+	<SINGLE_QUOTE: "'"> : AttrValueBetweenSingleQuotesState
+|	<DOUBLE_QUOTE: "\""> : AttrValueBetweenDoubleQuotesState
 }
+
+<LexAttrVal> SPECIAL_TOKEN :
+{
+  < (<WHITESPACE>)+ >
+}
+
+
+<AttrValueBetweenSingleQuotesState> TOKEN :
+{
+	<ENDING_SINGLE_QUOTE: "'"> : LexInTag
+|	<UNPARSED_TEXT_NO_SINGLE_QUOTES: 
+		( (~["$", "#", "'"]) | (["$", "#"] ~["{", "'"]) | <EL_ESCAPE> )+ >
+|	<DOLLAR_OR_HASH_SINGLE_QUOTE: ["$", "#"] "'" > : LexInTag
+}
+
+<AttrValueBetweenDoubleQuotesState> TOKEN :
+{
+	<ENDING_DOUBLE_QUOTE: "\""> : LexInTag
+|	<UNPARSED_TEXT_NO_DOUBLE_QUOTES: ( (~["<", "$", "#", "\""]) | (["$", "#"] ~["{", "\""]) | <EL_ESCAPE> )+ > : AttrValueBetweenDoubleQuotesState
+|	<DOLLAR_OR_HASH_DOUBLE_QUOTE: ["$", "#"] "\"" > : LexInTag
+}
+
+<AttrValueBetweenSingleQuotesState, AttrValueBetweenDoubleQuotesState> TOKEN:
+{
+	<EL_EXPRESSION_IN_ATTRIBUTE: "${" (<QUOTED_STRING> | <TEXT_IN_EL>)* "}" >
+|	<VALUE_BINDING_IN_ATTRIBUTE: "#{" (<QUOTED_STRING> | <TEXT_IN_EL>)* "}" >
+|	<JSP_EXPRESSION_IN_ATTRIBUTE: "<%=" <NO_JSP_TAG_END> "%>" >
+|   <JSP_TAG_IN_ATTRIBUTE: "<" <NO_TAG_END> "/>" > 
+}
+
+<LexInAttrVal> TOKEN :
+{
+  <ATTR_VAL: ( ~[">", "\"", "'", " ", "\t", "\n", "\r"] )+ > : LexAttrVal
+}
+
 
 <LexComment> TOKEN : 
 {
@@ -254,16 +288,92 @@ HtmlDocument.HtmlElement Element() :
 HtmlDocument.Attribute Attribute() : 
 {
   HtmlDocument.Attribute a; 
-  Token t1, t2=null;
+  Token t;
+  String value=null;
 }
 {
-      t1=<ATTR_NAME> [ <ATTR_EQ> t2=<ATTR_VAL> ]
-      { if (t2 == null) 
-          return new HtmlDocument.Attribute(t1.image); 
+      //t1=<ATTR_NAME> [ <ATTR_EQ> t2=<ATTR_VAL> ]
+      t=<ATTR_NAME> [ <ATTR_EQ> value=AttributeValue() ]
+      { if (value == null) 
+          return new HtmlDocument.Attribute(t.image); 
         else
-          return new HtmlDocument.Attribute(t1.image, t2.image);
+          return new HtmlDocument.Attribute(t.image, value);
       }
 }
+
+String AttributeValue() :
+{
+    StringBuffer content = new StringBuffer();  
+    Token t = null;
+    HtmlDocument.HtmlElement inner_tag = null;
+}
+{
+    try {
+        (
+            ( 	<DOUBLE_QUOTE>
+                ( 
+                    (	
+                     	t = QuoteIndependentAttributeValueContent()
+                    ) 
+                    { 
+                        if (t != null) {
+                            content.append(t.image);
+                        }
+                        else if (inner_tag != null) {
+                            content.append(inner_tag.toString());
+                        }
+                    } 
+                )*
+                ( 	<ENDING_DOUBLE_QUOTE> 
+                  |	t = <DOLLAR_OR_HASH_DOUBLE_QUOTE> { content.append(t.image.substring(0, 1)); }
+                ) 
+                [ t=<ATTR_VAL> { content.append( t.image ); } ]
+            )
+            |
+            ( 	<SINGLE_QUOTE>
+                ( 
+                    ( t = <UNPARSED_TEXT_NO_SINGLE_QUOTES>
+                    | t = QuoteIndependentAttributeValueContent()			
+                    ) { content.append(t.image); } 
+                )*
+                ( 	<ENDING_SINGLE_QUOTE> 
+                  | t = <DOLLAR_OR_HASH_SINGLE_QUOTE>  { content.append(t.image.substring(0, 1)); }
+                ) 
+            )
+        )
+        { 
+            return content.toString();
+        }
+    }
+    catch(Exception e) {
+        e.printStackTrace();
+    }
+}
+
+/**
+ * Partial content of an attribute value that can contain all quotes.
+ * This groups EL expressions, value bindings, and JSP expressions.
+ */
+Token QuoteIndependentAttributeValueContent() :
+{ 	Token t; }
+{
+    try {
+	(	
+	    LOOKAHEAD(2)
+	    t = <EL_EXPRESSION_IN_ATTRIBUTE> 
+	| 	LOOKAHEAD(2) t = <VALUE_BINDING_IN_ATTRIBUTE>
+  	| 	LOOKAHEAD(2) t = <JSP_EXPRESSION_IN_ATTRIBUTE>
+  	|   LOOKAHEAD(2) t = <JSP_TAG_IN_ATTRIBUTE>
+  	|   LOOKAHEAD(2) t = <UNPARSED_TEXT_NO_DOUBLE_QUOTES>
+	)
+	{ return t; }
+        
+    }
+    catch(Exception e) {
+        e.printStackTrace();
+    }
+}
+
 
 HtmlDocument.AttributeList AttributeList() : 
 {
@@ -271,14 +381,14 @@ HtmlDocument.AttributeList AttributeList() :
   HtmlDocument.Attribute a;
 }
 {
-  (a=Attribute() { alist.addAttribute(a); } )*
+    ( a=Attribute() { alist.addAttribute(a); } )*
   { return alist; }
 }
 
 HtmlDocument.HtmlElement Tag() :
 {
   Token t, et;
-  HtmlDocument.AttributeList alist;
+  HtmlDocument.AttributeList alist = null;
   Token firstToken = getToken(1);
   HtmlDocument.HtmlElement rtn_tag = null;
   Token st = null;
@@ -287,8 +397,7 @@ HtmlDocument.HtmlElement Tag() :
 }
 {
   try {
-    st=<TAG_START>  t=<TAG_NAME> alist=AttributeList()
-    ( et=<TAG_END> | et=<TAG_SLASHEND> )
+    st=<TAG_START>  t=<TAG_NAME> alist=AttributeList() ( et=<TAG_END> | et=<TAG_PERCENTEND> | et=<TAG_SLASHEND> )
     {
         HtmlDocument.Tag tag = new HtmlDocument.Tag(st.image, t.image, alist, et.image);
         if (st.image.startsWith("<%") || t.image.indexOf(":") > 0) {
@@ -301,6 +410,7 @@ HtmlDocument.HtmlElement Tag() :
     }
   }
   catch (ParseException ex) {
+      System.out.println(ex.getMessage());
     token_source.SwitchTo(DEFAULT);
     String s = getTokenText(firstToken, getNextToken());
     HtmlDocument.Text tag = new HtmlDocument.Text(s);

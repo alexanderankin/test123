@@ -136,39 +136,183 @@ public class HtmlParser implements HtmlParserConstants {
 
   final public HtmlDocument.Attribute Attribute() throws ParseException {
   HtmlDocument.Attribute a;
-  Token t1, t2=null;
-    t1 = jj_consume_token(ATTR_NAME);
+  Token t;
+  String value=null;
+    //t1=<ATTR_NAME> [ <ATTR_EQ> t2=<ATTR_VAL> ]
+          t = jj_consume_token(ATTR_NAME);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case ATTR_EQ:
       jj_consume_token(ATTR_EQ);
-      t2 = jj_consume_token(ATTR_VAL);
+      value = AttributeValue();
       break;
     default:
       jj_la1[3] = jj_gen;
       ;
     }
-        if (t2 == null)
-          {if (true) return new HtmlDocument.Attribute(t1.image);}
+        if (value == null)
+          {if (true) return new HtmlDocument.Attribute(t.image);}
         else
-          {if (true) return new HtmlDocument.Attribute(t1.image, t2.image);}
+          {if (true) return new HtmlDocument.Attribute(t.image, value);}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public String AttributeValue() throws ParseException {
+    StringBuffer content = new StringBuffer();
+    Token t = null;
+    HtmlDocument.HtmlElement inner_tag = null;
+    try {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case DOUBLE_QUOTE:
+        jj_consume_token(DOUBLE_QUOTE);
+        label_2:
+        while (true) {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case UNPARSED_TEXT_NO_DOUBLE_QUOTES:
+          case EL_EXPRESSION_IN_ATTRIBUTE:
+          case VALUE_BINDING_IN_ATTRIBUTE:
+          case JSP_EXPRESSION_IN_ATTRIBUTE:
+          case JSP_TAG_IN_ATTRIBUTE:
+            ;
+            break;
+          default:
+            jj_la1[4] = jj_gen;
+            break label_2;
+          }
+          t = QuoteIndependentAttributeValueContent();
+                        if (t != null) {
+                            content.append(t.image);
+                        }
+                        else if (inner_tag != null) {
+                            content.append(inner_tag.toString());
+                        }
+        }
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case ENDING_DOUBLE_QUOTE:
+          jj_consume_token(ENDING_DOUBLE_QUOTE);
+          break;
+        case DOLLAR_OR_HASH_DOUBLE_QUOTE:
+          t = jj_consume_token(DOLLAR_OR_HASH_DOUBLE_QUOTE);
+                                                            content.append(t.image.substring(0, 1));
+          break;
+        default:
+          jj_la1[5] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
+        }
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case ATTR_VAL:
+          t = jj_consume_token(ATTR_VAL);
+                                 content.append( t.image );
+          break;
+        default:
+          jj_la1[6] = jj_gen;
+          ;
+        }
+        break;
+      case SINGLE_QUOTE:
+        jj_consume_token(SINGLE_QUOTE);
+        label_3:
+        while (true) {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case UNPARSED_TEXT_NO_SINGLE_QUOTES:
+          case UNPARSED_TEXT_NO_DOUBLE_QUOTES:
+          case EL_EXPRESSION_IN_ATTRIBUTE:
+          case VALUE_BINDING_IN_ATTRIBUTE:
+          case JSP_EXPRESSION_IN_ATTRIBUTE:
+          case JSP_TAG_IN_ATTRIBUTE:
+            ;
+            break;
+          default:
+            jj_la1[7] = jj_gen;
+            break label_3;
+          }
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case UNPARSED_TEXT_NO_SINGLE_QUOTES:
+            t = jj_consume_token(UNPARSED_TEXT_NO_SINGLE_QUOTES);
+            break;
+          case UNPARSED_TEXT_NO_DOUBLE_QUOTES:
+          case EL_EXPRESSION_IN_ATTRIBUTE:
+          case VALUE_BINDING_IN_ATTRIBUTE:
+          case JSP_EXPRESSION_IN_ATTRIBUTE:
+          case JSP_TAG_IN_ATTRIBUTE:
+            t = QuoteIndependentAttributeValueContent();
+            break;
+          default:
+            jj_la1[8] = jj_gen;
+            jj_consume_token(-1);
+            throw new ParseException();
+          }
+                        content.append(t.image);
+        }
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case ENDING_SINGLE_QUOTE:
+          jj_consume_token(ENDING_SINGLE_QUOTE);
+          break;
+        case DOLLAR_OR_HASH_SINGLE_QUOTE:
+          t = jj_consume_token(DOLLAR_OR_HASH_SINGLE_QUOTE);
+                                                         content.append(t.image.substring(0, 1));
+          break;
+        default:
+          jj_la1[9] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
+        }
+        break;
+      default:
+        jj_la1[10] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+            {if (true) return content.toString();}
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    throw new Error("Missing return statement in function");
+  }
+
+/**
+ * Partial content of an attribute value that can contain all quotes.
+ * This groups EL expressions, value bindings, and JSP expressions.
+ */
+  final public Token QuoteIndependentAttributeValueContent() throws ParseException {
+        Token t;
+    try {
+      if (jj_2_5(2)) {
+        t = jj_consume_token(EL_EXPRESSION_IN_ATTRIBUTE);
+      } else if (jj_2_6(2)) {
+        t = jj_consume_token(VALUE_BINDING_IN_ATTRIBUTE);
+      } else if (jj_2_7(2)) {
+        t = jj_consume_token(JSP_EXPRESSION_IN_ATTRIBUTE);
+      } else if (jj_2_8(2)) {
+        t = jj_consume_token(JSP_TAG_IN_ATTRIBUTE);
+      } else if (jj_2_9(2)) {
+        t = jj_consume_token(UNPARSED_TEXT_NO_DOUBLE_QUOTES);
+      } else {
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+          {if (true) return t;}
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
     throw new Error("Missing return statement in function");
   }
 
   final public HtmlDocument.AttributeList AttributeList() throws ParseException {
   HtmlDocument.AttributeList alist = new HtmlDocument.AttributeList();
   HtmlDocument.Attribute a;
-    label_2:
+    label_4:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case ATTR_NAME:
         ;
         break;
       default:
-        jj_la1[4] = jj_gen;
-        break label_2;
+        jj_la1[11] = jj_gen;
+        break label_4;
       }
       a = Attribute();
-                   alist.addAttribute(a);
+                      alist.addAttribute(a);
     }
     {if (true) return alist;}
     throw new Error("Missing return statement in function");
@@ -176,7 +320,7 @@ public class HtmlParser implements HtmlParserConstants {
 
   final public HtmlDocument.HtmlElement Tag() throws ParseException {
   Token t, et;
-  HtmlDocument.AttributeList alist;
+  HtmlDocument.AttributeList alist = null;
   Token firstToken = getToken(1);
   HtmlDocument.HtmlElement rtn_tag = null;
   Token st = null;
@@ -190,11 +334,14 @@ public class HtmlParser implements HtmlParserConstants {
       case TAG_END:
         et = jj_consume_token(TAG_END);
         break;
+      case TAG_PERCENTEND:
+        et = jj_consume_token(TAG_PERCENTEND);
+        break;
       case TAG_SLASHEND:
         et = jj_consume_token(TAG_SLASHEND);
         break;
       default:
-        jj_la1[5] = jj_gen;
+        jj_la1[12] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -207,6 +354,7 @@ public class HtmlParser implements HtmlParserConstants {
         }
         rtn_tag = tag;
     } catch (ParseException ex) {
+      System.out.println(ex.getMessage());
     token_source.SwitchTo(DEFAULT);
     String s = getTokenText(firstToken, getNextToken());
     HtmlDocument.Text tag = new HtmlDocument.Text(s);
@@ -221,7 +369,7 @@ public class HtmlParser implements HtmlParserConstants {
   Token t;
   StringBuffer s = new StringBuffer();
   HtmlDocument.ElementSequence e = new HtmlDocument.ElementSequence();
-    label_3:
+    label_5:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case BLOCK_EOL:
@@ -230,8 +378,8 @@ public class HtmlParser implements HtmlParserConstants {
         ;
         break;
       default:
-        jj_la1[6] = jj_gen;
-        break label_3;
+        jj_la1[13] = jj_gen;
+        break label_5;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case BLOCK_EOL:
@@ -251,7 +399,7 @@ public class HtmlParser implements HtmlParserConstants {
                        s.append(t.image);
         break;
       default:
-        jj_la1[7] = jj_gen;
+        jj_la1[14] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -327,7 +475,7 @@ public class HtmlParser implements HtmlParserConstants {
   Token t, comment_start, comment_end = null;
   StringBuffer s = new StringBuffer();
     comment_start = jj_consume_token(COMMENT_START);
-    label_4:
+    label_6:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case DASH:
@@ -336,8 +484,8 @@ public class HtmlParser implements HtmlParserConstants {
         ;
         break;
       default:
-        jj_la1[8] = jj_gen;
-        break label_4;
+        jj_la1[15] = jj_gen;
+        break label_6;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case DASH:
@@ -353,7 +501,7 @@ public class HtmlParser implements HtmlParserConstants {
                          s.append(t.image);
         break;
       default:
-        jj_la1[9] = jj_gen;
+        jj_la1[16] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -366,7 +514,7 @@ public class HtmlParser implements HtmlParserConstants {
       comment_end = jj_consume_token(COMMENT_END);
       break;
     default:
-      jj_la1[10] = jj_gen;
+      jj_la1[17] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -411,9 +559,64 @@ public class HtmlParser implements HtmlParserConstants {
     finally { jj_save(3, xla); }
   }
 
-  final private boolean jj_3R_6() {
+  final private boolean jj_2_5(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_5(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(4, xla); }
+  }
+
+  final private boolean jj_2_6(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_6(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(5, xla); }
+  }
+
+  final private boolean jj_2_7(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_7(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(6, xla); }
+  }
+
+  final private boolean jj_2_8(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_8(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(7, xla); }
+  }
+
+  final private boolean jj_2_9(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_9(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(8, xla); }
+  }
+
+  final private boolean jj_3_7() {
+    if (jj_scan_token(JSP_EXPRESSION_IN_ATTRIBUTE)) return true;
+    return false;
+  }
+
+  final private boolean jj_3_6() {
+    if (jj_scan_token(VALUE_BINDING_IN_ATTRIBUTE)) return true;
+    return false;
+  }
+
+  final private boolean jj_3_9() {
+    if (jj_scan_token(UNPARSED_TEXT_NO_DOUBLE_QUOTES)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_7() {
     if (jj_scan_token(TAG_START)) return true;
-    if (jj_scan_token(TAG_SCRIPT)) return true;
+    if (jj_scan_token(TAG_NAME)) return true;
+    return false;
+  }
+
+  final private boolean jj_3_8() {
+    if (jj_scan_token(JSP_TAG_IN_ATTRIBUTE)) return true;
     return false;
   }
 
@@ -423,30 +626,35 @@ public class HtmlParser implements HtmlParserConstants {
     return false;
   }
 
-  final private boolean jj_3_3() {
-    if (jj_3R_7()) return true;
+  final private boolean jj_3_5() {
+    if (jj_scan_token(EL_EXPRESSION_IN_ATTRIBUTE)) return true;
     return false;
   }
 
-  final private boolean jj_3R_5() {
-    if (jj_scan_token(TAG_START)) return true;
-    if (jj_scan_token(TAG_NAME)) return true;
+  final private boolean jj_3_3() {
+    if (jj_3R_9()) return true;
     return false;
   }
 
   final private boolean jj_3_2() {
-    if (jj_3R_6()) return true;
+    if (jj_3R_8()) return true;
     return false;
   }
 
-  final private boolean jj_3R_7() {
+  final private boolean jj_3R_9() {
     if (jj_scan_token(TAG_START)) return true;
     if (jj_scan_token(TAG_STYLE)) return true;
     return false;
   }
 
+  final private boolean jj_3R_8() {
+    if (jj_scan_token(TAG_START)) return true;
+    if (jj_scan_token(TAG_SCRIPT)) return true;
+    return false;
+  }
+
   final private boolean jj_3_1() {
-    if (jj_3R_5()) return true;
+    if (jj_3R_7()) return true;
     return false;
   }
 
@@ -459,7 +667,7 @@ public class HtmlParser implements HtmlParserConstants {
   public boolean lookingAhead = false;
   private boolean jj_semLA;
   private int jj_gen;
-  final private int[] jj_la1 = new int[11];
+  final private int[] jj_la1 = new int[18];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static {
@@ -467,12 +675,12 @@ public class HtmlParser implements HtmlParserConstants {
       jj_la1_1();
    }
    private static void jj_la1_0() {
-      jj_la1_0 = new int[] {0x1f800,0xe000,0x10800,0x2000000,0x400000,0x1800000,0x0,0x0,0x0,0x0,0x80000001,};
+      jj_la1_0 = new int[] {0x1f8000,0xe0000,0x108000,0x40000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x4000000,0x38000000,0x0,0x0,0x0,0x0,0x1,};
    }
    private static void jj_la1_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x380,0x380,0x7,0x7,0x0,};
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x3d00,0x280,0x4000,0x3d20,0x3d20,0x50,0x6,0x0,0x0,0x3800000,0x3800000,0x70000,0x70000,0x8000,};
    }
-  final private JJCalls[] jj_2_rtns = new JJCalls[4];
+  final private JJCalls[] jj_2_rtns = new JJCalls[9];
   private boolean jj_rescan = false;
   private int jj_gc = 0;
 
@@ -485,7 +693,7 @@ public class HtmlParser implements HtmlParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 18; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -498,7 +706,7 @@ public class HtmlParser implements HtmlParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 18; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -508,7 +716,7 @@ public class HtmlParser implements HtmlParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 18; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -518,7 +726,7 @@ public class HtmlParser implements HtmlParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 18; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -527,7 +735,7 @@ public class HtmlParser implements HtmlParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 18; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -536,7 +744,7 @@ public class HtmlParser implements HtmlParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 18; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -647,15 +855,15 @@ public class HtmlParser implements HtmlParserConstants {
 
   public ParseException generateParseException() {
     jj_expentries.removeAllElements();
-    boolean[] la1tokens = new boolean[42];
-    for (int i = 0; i < 42; i++) {
+    boolean[] la1tokens = new boolean[58];
+    for (int i = 0; i < 58; i++) {
       la1tokens[i] = false;
     }
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 11; i++) {
+    for (int i = 0; i < 18; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -667,7 +875,7 @@ public class HtmlParser implements HtmlParserConstants {
         }
       }
     }
-    for (int i = 0; i < 42; i++) {
+    for (int i = 0; i < 58; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
@@ -692,7 +900,7 @@ public class HtmlParser implements HtmlParserConstants {
 
   final private void jj_rescan_token() {
     jj_rescan = true;
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 9; i++) {
     try {
       JJCalls p = jj_2_rtns[i];
       do {
@@ -703,6 +911,11 @@ public class HtmlParser implements HtmlParserConstants {
             case 1: jj_3_2(); break;
             case 2: jj_3_3(); break;
             case 3: jj_3_4(); break;
+            case 4: jj_3_5(); break;
+            case 5: jj_3_6(); break;
+            case 6: jj_3_7(); break;
+            case 7: jj_3_8(); break;
+            case 8: jj_3_9(); break;
           }
         }
         p = p.next;

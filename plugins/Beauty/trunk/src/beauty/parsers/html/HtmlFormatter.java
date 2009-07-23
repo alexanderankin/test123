@@ -19,8 +19,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.gjt.sp.jedit.jEdit;
-
 /**
  * HtmlFormatter is a Visitor which traverses an HtmlDocument, dumping the
  * contents of the document to a specified output stream.  It assumes that
@@ -69,7 +67,7 @@ public class HtmlFormatter extends HtmlVisitor {
 
     // always start these tags on a new line
     protected static final String[] tagsNewlineBeforeStrings
-    = {"P", "H1", "H2", "H3", "H4", "H5", "H6", "BR", "HR", "taglib", "OL", "UL", "LI"};
+    = {"P", "H1", "H2", "H3", "H4", "H5", "H6", "BR", "HR", "taglib", "OL", "UL", "LI", "LINK"};
 
     // don't format inside these tags
     protected static final String[] tagsPreformattedStrings
@@ -180,7 +178,8 @@ public class HtmlFormatter extends HtmlVisitor {
 
         out.print( t.tagStart + t.tagName );
         hanging = t.tagName.length() + 1;
-        boolean splitAttrs = jEdit.getBooleanProperty( "xmlindenter.splitAttributes", false );
+        ///boolean splitAttrs = jEdit.getBooleanProperty( "xmlindenter.splitAttributes", false );
+        boolean splitAttrs = false;
         if ( splitAttrs ) {
             out.setLeftMargin( out.getLeftMargin() + indentSize );
             out.print( lineSeparator );
@@ -233,8 +232,8 @@ public class HtmlFormatter extends HtmlVisitor {
         else {
             t.text = t.text.replaceAll( "[ ]+", " " );
             int start = 0;
-            int old_rm = out.getRightMargin();
-            out.setRightMargin( old_rm < 120 ? old_rm : 120 );
+            //int old_rm = out.getRightMargin();
+            //out.setRightMargin( old_rm < 120 ? old_rm : 120 );
             while ( start < t.text.length() ) {
                 int index = t.text.indexOf( ' ', start ) + 1;
                 if ( index == 0 )
@@ -242,7 +241,7 @@ public class HtmlFormatter extends HtmlVisitor {
                 out.printAutoWrap( t.text.substring( start, index ) );
                 start = index;
             }
-            out.setRightMargin( old_rm );
+            //out.setRightMargin( old_rm );
         }
         previousElement = t;
     }
@@ -306,15 +305,14 @@ class MarginWriter {
     }
 
     public void printAutoWrap( String s ) {
-        if ( curPosition > leftMargin
-                && curPosition + s.length() > rightMargin )
+        if ( curPosition > leftMargin && curPosition + s.length() > rightMargin ) {
             println();
+        }
         print( s );
     }
 
     public void printAutoWrap( String s, int hanging ) {
-        if ( curPosition > leftMargin
-                && curPosition + s.length() > rightMargin ) {
+        if ( curPosition > leftMargin && curPosition + s.length() > rightMargin ) {
             println();
             sb.append( spaces, 0, hanging + leftMargin );
             curPosition = leftMargin + hanging;
@@ -346,6 +344,7 @@ class MarginWriter {
     }
 
     public void setRightMargin( int rightMargin ) {
+        System.out.println("+++++ MarginWriter, setting rightMargin to " + rightMargin);
         this.rightMargin = rightMargin;
     }
 
