@@ -25,33 +25,35 @@ import beauty.parsers.ParserException;
  */
 public class HtmlFormat extends Beautifier {
 
-    public String beautify(String text) throws ParserException {
-        StringReader reader = new StringReader(text);
+    public String beautify( String text ) throws ParserException {
+        StringReader reader = new StringReader( text );
         HtmlFormatter formatter = null;
         try {
-            HtmlParser parser = new HtmlParser(reader);
+            HtmlParser parser = new HtmlParser( reader );
             ///parser.setLineSeparator(getLineSeparator());
             HtmlDocument document = parser.HtmlDocument();
-            document.setLineSeparator(getLineSeparator());
-            document.accept(new HtmlCollector());
-            document.accept(new HtmlScrubber(HtmlScrubber.DEFAULT_OPTIONS | HtmlScrubber.TRIM_SPACES));
+            document.setLineSeparator( getLineSeparator() );
+            document.accept( new HtmlCollector() );
+            document.accept( new HtmlScrubber( HtmlScrubber.DEFAULT_OPTIONS | HtmlScrubber.TRIM_SPACES ) );
             formatter = new HtmlFormatter();
-            if (! getWrapMode().equals("none")) {
-                formatter.setRightMargin(1024);
-            } else {
-                formatter.setRightMargin(getWrapMargin());
+            if ( getWrapMode().equals( "none" ) ) {
+                formatter.setRightMargin( Integer.MAX_VALUE );
+            }
+            else {
+                formatter.setRightMargin( getWrapMargin() );
             }
 
-            formatter.setLineSeparator(getLineSeparator());
-            formatter.setIndent(getIndentWidth());
-            document.accept(formatter);
-        } catch (Exception e) {
+            formatter.setLineSeparator( getLineSeparator() );
+            formatter.setIndent( getIndentWidth() );
+            document.accept( formatter );
+        }
+        catch ( Exception e ) {
             e.printStackTrace();
-        } finally {
+        }
+        finally {
             reader.close();
         }
 
         return formatter != null ? formatter.toString() : text;
     }
 }
-
