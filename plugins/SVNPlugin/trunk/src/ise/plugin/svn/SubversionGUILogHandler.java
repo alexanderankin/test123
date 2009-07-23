@@ -106,6 +106,7 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
         _content_pane.putClientProperty( "isCloseable", Boolean.FALSE );
 
         _text = new JTextPane();
+        _text.setName("svn console output");
         try {
             _text.setBackground( jEdit.getColorProperty( "view.bgColor" ) );
             foreground = jEdit.getColorProperty( "view.fgColor" );
@@ -153,7 +154,7 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
          * Description of the Method
          *
          * @param record
-         * @return        Description of the Returned Value
+         * @return Description of the Returned Value
          */
         public String format( LogRecord record ) {
             return record.getMessage() + System.getProperty( "line.separator" );
