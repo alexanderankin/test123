@@ -166,6 +166,7 @@ public class SVNInfoPanel extends JPanel {
         add( panel );
         panel.setBorder( new EtchedBorder() );
         BestRowTable info_table = new BestRowTable();
+        info_table.setName("info_table");
         panel.add( info_table, BorderLayout.CENTER );
         info_table.setModel( info_table_model );
         TableColumn column1 = info_table.getColumnModel().getColumn( 1 );
