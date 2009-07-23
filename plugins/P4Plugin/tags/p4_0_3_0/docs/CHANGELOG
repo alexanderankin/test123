@@ -1,0 +1,60 @@
+CHANGELOG
+
+Version 0.2.4:
+	[marcelo vanzin]
+		- change name of P4Config.getEnv() method so that its value is
+		  not saved to the project config file.
+		- correctly support configurations that use P4CONFIG instead
+		  of P4CLIENT.
+
+Version 0.2.3:
+	[marcelo vanzin]
+	- now requires Java 1.5.
+	- fix weird NPE when handling an EditBus message.
+	- add a "diff" action and related configuration to set what diff
+	  tool to use.
+	- make the file info actions asynchronous.
+	- properly set up the user environment when running the P4 binary;
+	  this allows wrapper scripts around p4 (that might rely on
+	  environment variables) to be used.
+	- add support for P4CONFIG instead of P4CLIENT.
+	- refactored the client information code into a new class (P4ClientInfo).
+	- somewhat better error detection and reporting. And fix a few bugs in
+	  the output parsing to boot.
+	- the visitor pattern was being used in a really innefficient manner
+	  by the file filter, kinda defeating the whole purpose of using
+	  the pattern. So fix that, which should make the filter a lot more
+	  efficient.
+	- speed up the file filter by not repeatedly invoking "p4 files" in
+	  nested unmanaged directories.
+	- some fixes to support p4.exe on Windows.
+
+Version 0.2.2:
+	[marcelo vanzin]
+	- fix NPE in P4FileMenu.java.
+	- use reflection to call Console.setShell(), since the method is
+	  binary-incompatible between Console versions 4.2 and 4.3.
+	- need to check the key interceptor registrating when getting
+	  and EditPaneUpdate message also.
+	- don't store the configuration as a serialized object; just use
+      regular properties to avoid problems with class loaders.
+
+Version 0.2.1:
+	[marcelo vanzin]
+	- set the serialVersionUID field for class P4Config to avoid
+	  serialization problems.
+	- fix possible deadlock in P4Change.java (same fix as was already
+	  there in AsynP4Action.java)
+	- fix NPE in P4Shell.java when console wasn't yet active.
+	- keep list of child actions in P4FileMenu.java so we can set
+	  their viewer instance.
+	- reworked a lot of the threading code; should be less prone to
+	  deadlocks. Also, make use of new code added to CommonControls.
+	- install perforce mode file.
+	- file filters now correctly ignores files with head action "delete"
+	- add "filelog" action (and make code in P4Stat.java more generic)
+
+Version 0.2.0:
+	[marcelo vanzin]
+	- initial release to plugin central.
+
