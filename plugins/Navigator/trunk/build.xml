@@ -48,7 +48,7 @@
          <pathelement location="${jedit.install.dir}/jedit.jar" />
          
          <!-- dependencies on other plugins -->
-         <pathelement location="${install.dir}/Code2HTML.jar"/>
+         <pathelement location="${jedit.plugins.dir}/Code2HTML.jar"/>
       </path>
    </target>
    
@@ -64,11 +64,7 @@
             description="Compile"
             depends="init,setClasspath">
         <echo>compiling</echo>
-        <javac deprecation="on" 
-               debug="${compiler.debug}" 
-               nowarn="on" 
-               destdir="${build.dir}"
-               srcdir="${src.dir}">
+        <javac debug="${compiler.debug}" deprecation="on" destdir="${build.dir}" nowarn="on" source="${compiler.source}" srcdir="${src.dir}" target="${compiler.target}">
             <classpath refid="classpathref" />
         </javac>
     </target>
