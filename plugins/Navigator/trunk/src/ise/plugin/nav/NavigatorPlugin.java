@@ -33,6 +33,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.util.HashMap;
 
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
@@ -306,6 +307,12 @@ public class NavigatorPlugin extends EBPlugin {
             toolbarMap.remove( view );
             revalidateViews();
         }
+    }
+
+    public static JComponent getToolBar( View view ) {
+        Navigator nav = getNavigator( view );
+        NavToolBar toolBar = new NavToolBar( nav );
+        return toolBar;
     }
 
     /**
