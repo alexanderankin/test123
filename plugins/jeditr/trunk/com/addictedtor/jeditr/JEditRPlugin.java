@@ -1,6 +1,8 @@
 package com.addictedtor.jeditr ;
 
 import org.gjt.sp.jedit.EBPlugin;
+import org.gjt.sp.jedit.EBMessage;
+
 
 /**
  * Main class of the jeditr plugin
@@ -10,6 +12,8 @@ import org.gjt.sp.jedit.EBPlugin;
  */
 public class JEditRPlugin extends EBPlugin {
 
+	public static final String NAME = "JEditRPlugin";
+	
 	/**
 	 * Prefix for the menu of the plugin
 	 */
@@ -34,5 +38,10 @@ public class JEditRPlugin extends EBPlugin {
 	public void stop() {
 	}
 
+	public void handleMessage( EBMessage message){
+		// placeholder
+	}
+		
+	
 }
 
