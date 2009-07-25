@@ -1,13 +1,13 @@
-plugin.com.addictedtor.jeditr.JeditRPlugin.name=jeditr
-plugin.com.addictedtor.jeditr.JeditRPlugin.author=Romain Francois
-plugin.com.addictedtor.jeditr.JeditRPlugin.version=0.0
-plugin.com.addictedtor.jeditr.JeditRPlugin.activate=startup
-plugin.com.addictedtor.jeditr.JeditRPlugin.usePluginHome=true
-plugin.com.addictedtor.jeditr.JeditRPlugin.description=jedit as an R IDE
+plugin.com.addictedtor.jeditr.JEditRPlugin.name=JeditRPlugin
+plugin.com.addictedtor.jeditr.JEditRPlugin.author=Romain Francois
+plugin.com.addictedtor.jeditr.JEditRPlugin.version=0.0
+plugin.com.addictedtor.jeditr.JEditRPlugin.activate=startup
+plugin.com.addictedtor.jeditr.JEditRPlugin.usePluginHome=true
+plugin.com.addictedtor.jeditr.JEditRPlugin.description=jedit as an R IDE
 
-plugin.com.addictedtor.jeditr.JeditRPlugin.depend.0=jdk 1.5
-plugin.com.addictedtor.jeditr.JeditRPlugin.depend.1=jedit 04.03.16.00
-plugin.com.addictedtor.jeditr.JeditRPlugin.depend.2=plugin console.ConsolePlugin 4.3
-plugin.com.addictedtor.jeditr.JeditRPlugin.depend.3=plugin errorlist.ErrorListPlugin 1.7
-plugin.com.addictedtor.jeditr.JeditRPlugin.depend.4=plugin sidekick.SideKickPlugin 0.7.5
+plugin.com.addictedtor.jeditr.JEditRPlugin.depend.0=jdk 1.5
+plugin.com.addictedtor.jeditr.JEditRPlugin.depend.1=jedit 04.03.17.00
+plugin.com.addictedtor.jeditr.JEditRPlugin.depend.2=plugin console.ConsolePlugin 4.3
+plugin.com.addictedtor.jeditr.JEditRPlugin.depend.3=plugin errorlist.ErrorListPlugin 1.7
+plugin.com.addictedtor.jeditr.JEditRPlugin.depend.4=plugin sidekick.SideKickPlugin 0.7.5
 
