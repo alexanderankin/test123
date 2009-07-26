@@ -21,21 +21,26 @@ package org.etheridge.openit;
 
 import javax.swing.SwingUtilities;
 
+import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.jEdit;
 
-import projectviewer.event.ProjectViewerAdapter;
-import projectviewer.event.ProjectViewerEvent;
+import projectviewer.event.StructureUpdate;
+import projectviewer.event.ViewerUpdate;
+import projectviewer.vpt.VPTNode;
 
-public class PVListener extends ProjectViewerAdapter {
-        public void projectLoaded(ProjectViewerEvent evt) {
-                refresh(evt.getProject().getRootPath());
+public class PVListener implements EBComponent {
+
+        public void projectLoaded(VPTNode node) {
+                refresh(node.getNodePath());
         }
         
-        public void projectRemoved(ProjectViewerEvent evt) {
+        public void projectRemoved(VPTNode node) {
                 refresh("");
         }
         
-        public void groupActivated(ProjectViewerEvent evt) {
+        public void groupActivated(VPTNode node) {
                 refresh("");
         }
         
@@ -49,4 +54,26 @@ public class PVListener extends ProjectViewerAdapter {
                         });
                 }
         }
+    	public void handleMessage(EBMessage message) {
+    		if (message instanceof StructureUpdate) {
+    			StructureUpdate su = (StructureUpdate) message;
+    			if (su.getType() == StructureUpdate.Type.PROJECT_ADDED)
+    				projectLoaded(su.getNode());
+    			else if (su.getType() == StructureUpdate.Type.PROJECT_REMOVED)
+    				projectRemoved(su.getNode());
+    		} else if (message instanceof ViewerUpdate) {
+    			ViewerUpdate vu = (ViewerUpdate) message;
+    			if (vu.getType() == ViewerUpdate.Type.GROUP_ACTIVATED)
+    				groupActivated(vu.getNode());
+    			else if (vu.getType() == ViewerUpdate.Type.PROJECT_LOADED)
+    				projectLoaded(vu.getNode());
+    		}
+    	}
+    	
+    	public void start() {
+    		EditBus.addToBus(this);
+    	}
+    	public void stop() {
+    		EditBus.removeFromBus(this);
+    	}
 } 
