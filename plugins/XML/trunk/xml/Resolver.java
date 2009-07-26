@@ -471,50 +471,54 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 		else
 			parent = null;
 
-		if(publicId == null && systemId != null && parent != null)
-		{
-			Log.log(Log.DEBUG,Resolver.class,"parent="+parent);
-			if(systemId.startsWith(parent))
-			{
-				Log.log(Log.DEBUG,Resolver.class,"systemId starts with parent");
-				// TODO: this code path is not taken when viewing
-				// test_data/dtd/actions.xml, so the comment bellow
-				// is misleading and all the block should be removed
-				// first, try resolving a relative name,
-				// to handle jEdit built-in DTDs
-				newSystemId = systemId.substring(parent.length());
-				if(newSystemId.startsWith("/"))
-					newSystemId = newSystemId.substring(1);
-				newSystemId = resolveSystem(newSystemId);
-			}
-		}
-
 		// next, try resolving full path name
 		if(newSystemId == null)
 		{
 			if(publicId == null)
 				newSystemId = resolveSystem(systemId);
 			else
+			{
 				newSystemId = resolvePublic(systemId,publicId);
+			}
 		}
 
 		// well, the catalog can't help us, so just assume the
-		// system id points to a file
+		// system id points to a file or URL
 		if(newSystemId == null)
 		{
+			// had a public Id, but catalog returned null
 			if(systemId == null)
 				return null;
+			// succeeds if it's a fully qualified url :
+			// "http://www.jedit.org" succeeds,  "../test.txt" fails
 			else if(MiscUtilities.isURL(systemId))
 				newSystemId = systemId;
-			// XXX: is this correct?
-			/* else if(systemId.startsWith("/"))
-				newSystemId = "file://" + systemId;*/
-			//need this to resolve xinclude.mod from user-guide.xml
-			//I don't understand this condition :  && !MiscUtilities.isURL(parent)
-			else if(parent != null)
+			else
 			{
-				Log.log(Log.DEBUG,Resolver.class,"using parent !");
-				newSystemId = parent + systemId;
+				
+				// systemId is absolute or no parent, use systemId
+				if(new File(systemId).isAbsolute() || parent == null)
+				{
+					newSystemId = systemId;
+				}
+				// systemId is relative, use parent
+				//need this to resolve xinclude.mod from user-guide.xml
+				else
+				{
+					Log.log(Log.DEBUG,Resolver.class,"using parent !");
+					newSystemId = parent + systemId;
+				}
+				
+				// when resolving "../simple/actions.xsd" from test_data/schema_loader/actions.xml
+				// insert file:// at the begining
+				if(!MiscUtilities.isURL(newSystemId))
+				{
+					try{
+						newSystemId = new File(newSystemId).toURL().toExternalForm();
+					}catch(java.net.MalformedURLException mue){
+						//too bad, try something else
+					}
+				}
 			}
 		}
 
