@@ -238,7 +238,7 @@ public class QuickAccessSourcePath
                                 
                                 while (iter.hasNext()) {
                                         VPTFile vptFile = (VPTFile)iter.next();
-                                        result.put(vptFile.getFile().getAbsolutePath(), true);
+                                        result.put(vptFile.getNodePath(), true);
                                 }
                         }
                 }

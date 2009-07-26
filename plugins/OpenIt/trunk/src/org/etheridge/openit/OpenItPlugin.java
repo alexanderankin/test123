@@ -50,6 +50,9 @@ public class OpenItPlugin extends EBPlugin {
         // view.
         private static Map msFindFileWindowMap = new HashMap();
         
+        // Project listener
+        private static PVListener projectListener = new PVListener();
+        
         //{{{ start method.
         /**
          * Called on jEdit startup
@@ -71,6 +74,8 @@ public class OpenItPlugin extends EBPlugin {
                 
                 // get the SourcePathManager singleton to force start of polling thread
                 SourcePathManager manager = SourcePathManager.getInstance();
+
+        		projectListener.start();
         } 
         //}}}
         
@@ -79,6 +84,7 @@ public class OpenItPlugin extends EBPlugin {
          * Called on jEdit shutdown
          */
         public void stop() {
+        		projectListener.stop();
                 SourcePathManager.getInstance().stopSourcePathPolling();
         } //}}}
         
