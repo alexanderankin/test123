@@ -10,6 +10,9 @@ import javax.swing.AbstractListModel;
 
 import org.gjt.sp.jedit.GUIUtilities;
 
+import superabbrevs.utilities.Log;
+import superabbrevs.utilities.Log.Level;
+
 public class ScrollablePopupMenu<T> extends javax.swing.JWindow {
     
     private ScrollAbleMenuModel model = new ScrollAbleMenuModel();

@@ -3,6 +3,7 @@ package superabbrevs;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import javax.swing.JDialog;
@@ -12,6 +13,7 @@ import superabbrevs.model.Abbreviation;
 import superabbrevs.repository.ModeRepository;
 import superabbrevs.utilities.Log;
 import superabbrevs.utilities.Log.Level;
+import trie.Match;
 
 import com.google.inject.Inject;
 
@@ -63,21 +65,20 @@ public class InputHandlerImpl implements InputHandler {
         } else {
             String getTextBeforeCaret = textAreaHandler.getTextBeforeCaret();
             String mode = textAreaHandler.getModeAtCursor();
-            LinkedList<Abbreviation> abbrevs = 
+            Match<Abbreviation> match = 
             	abbreviationHandler.getAbbrevs(mode, getTextBeforeCaret);
             
-            if (abbrevs.size() == 1) {
+            if (match.size() == 1) {
                 // There is only one expansion
-                Abbreviation a = abbrevs.getFirst();
+                Abbreviation a = match.getFirst();
                 
                 Log.log(Level.NOTICE, InputHandlerImpl.class, 
                 		String.format("Expanding abbreviation: %s", a));
                 
-                textAreaHandler.removeAbbrev(a);
+                textAreaHandler.removeMatch(match.getMatchingText());
                 textAreaHandler.expandAbbrev(a, false);
-            } else if (!abbrevs.isEmpty()) {
-                Collections.sort(abbrevs);
-                textAreaHandler.showAbbrevsPopup(abbrevs);
+            } else if (!match.isEmpty()) {
+                textAreaHandler.showAbbrevsPopup(match);
             } else {
                 // There was no abbreviation to expand before the caret
                 jedit.insertTabAndIndent();

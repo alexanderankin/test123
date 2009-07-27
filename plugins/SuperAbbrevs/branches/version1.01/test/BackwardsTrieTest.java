@@ -6,6 +6,8 @@
  */
 
 import junit.framework.*;
+
+import java.util.Collection;
 import java.util.LinkedList;
 import trie.*;
 
@@ -41,37 +43,36 @@ public class BackwardsTrieTest extends TestCase {
     public void testScan() {
         String key = "aba";
         
-        LinkedList<Integer> expResult = new LinkedList<Integer>();
+        Collection<Integer> expResult = new LinkedList<Integer>();
         expResult.add(4);
         expResult.add(6);
-        LinkedList<Integer> result = trie.scan(key);
-        assertEquals(expResult, result);
+        Match<Integer> result = trie.scan(key);
+        assertEquals(expResult, result.getElements());
+        assertEquals(key, result.getMatchingText());
     }
     
     public void testScan1() {
         String key = "aabaa";
         
-        LinkedList<Integer> expResult = new LinkedList<Integer>();
+        Collection<Integer> expResult = new LinkedList<Integer>();
         expResult.add(5);
-        LinkedList<Integer> result = trie.scan(key);
+        Collection<Integer> result = trie.scan(key).getElements();
         assertEquals(expResult, result);
     }
     
     public void testScan2() {
         String key = "ab";
         
-        LinkedList<Integer> expResult = new LinkedList<Integer>();
-        LinkedList<Integer> result = trie.scan(key);
+        Collection<Integer> expResult = new LinkedList<Integer>();
+        Collection<Integer> result = trie.scan(key).getElements();
         assertEquals(expResult, result);
     }
-
-    /**
-     * Test of remove method, of class trie.SimpleTrie.
-     */
-    public void testRemove() {
-        String key = "aba";
-        boolean result = trie.remove(key, 4);
-        assertTrue(result);
-    }
     
+    public void testPartialMatch() {
+       String key = "abb";
+        
+        Collection<Integer> expResult = new LinkedList<Integer>();
+        Collection<Integer> result = trie.scan(key).getElements();
+        assertEquals(expResult, result);
+    }
 }
