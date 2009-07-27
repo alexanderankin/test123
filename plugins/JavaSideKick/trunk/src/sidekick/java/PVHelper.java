@@ -55,8 +55,7 @@ public class PVHelper {
             return null;
         }
         ProjectManager pm = ProjectManager.getInstance();
-        for ( Iterator it = pm.getProjects(); it.hasNext(); ) {
-            VPTProject project = ( VPTProject ) it.next();
+        for ( VPTProject project : pm.getProjects()) {
             Collection nodes = project.getOpenableNodes();
             for ( Iterator iter = nodes.iterator(); iter.hasNext(); ) {
                 VPTNode node = ( VPTNode ) iter.next();
@@ -103,10 +102,22 @@ public class PVHelper {
         Path path = new Path( sourcepath );
         return path;
     }
-
+    
+    /**
+     * @return a string representing the path to the root of the current project
+     * in the given View.
+     */
     public static String getProjectRoot( View view ) {
         VPTProject project = ProjectViewer.getActiveProject( view );
         return project == null ? "" : project.getRootPath();
+    }
+    
+    /**
+     * @return the name of the current project in the given view.    
+     */
+    public static String getProjectName( View view ) {
+        VPTProject project = ProjectViewer.getActiveProject( view );
+        return project == null ? "" : project.getName();
     }
 
 

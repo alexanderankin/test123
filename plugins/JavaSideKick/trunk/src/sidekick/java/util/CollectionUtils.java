@@ -88,21 +88,6 @@ public class CollectionUtils {
     }
 
     /**
-     * Dictionary does not know the putAll method. Please use Map.putAll().
-     *
-     * @since Ant 1.6
-     * @deprecated
-     */
-    /*
-    public static void putAll(Dictionary m1, Dictionary m2) {
-        for (Enumeration it = m2.keys(); it.hasMoreElements();) {
-            Object key = it.nextElement();
-            m1.put(key, m2.get(key));
-        }
-    }
-    */
-
-    /**
      * @since Ant 1.6
      */
     public static final class EmptyEnumeration implements Enumeration {

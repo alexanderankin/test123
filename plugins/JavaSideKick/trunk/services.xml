@@ -11,4 +11,7 @@
 	<SERVICE CLASS="sidekick.SideKickParser" NAME="properties">
 		new sidekick.property.PropertyParser();
 	</SERVICE>
+    <SERVICE CLASS="projectviewer.config.OptionsService" NAME="Classpath Settings">
+        new sidekick.java.options.PVOptionsService();
+    </SERVICE>
 </SERVICES>
