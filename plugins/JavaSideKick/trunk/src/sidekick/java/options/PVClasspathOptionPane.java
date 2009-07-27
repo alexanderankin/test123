@@ -16,7 +16,6 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 
 import sidekick.java.PVHelper;
-import projectviewer.config.ProjectOptions;
 
 
 /**
@@ -29,17 +28,19 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
     private PathBuilder sourcepathBuilder;
     private JCheckBox useJavaClassPath;
     private JTextField buildPath;
-
+    private View view;
     public static String PREFIX = "sidekick.java.pv.";
 
 
     public PVClasspathOptionPane() {
-        super( "sidekick.java" );
+        super( "javasidekick.pv.options" );
     }
 
     /** Initialises the option pane. */
     protected void _init() {
-        String name = getProjectName();
+        view = jEdit.getActiveView();
+        
+        String name = PVHelper.getProjectName(view);
 
         // Include java.class.path in classpath
         useJavaClassPath = new JCheckBox(
@@ -57,7 +58,7 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
         classpathBuilder.setPath(
             jEdit.getProperty( PREFIX + name + ".optionalClasspath", "" )
         );
-        classpathBuilder.setStartDirectory( ProjectOptions.getProject().getRootPath() );
+        classpathBuilder.setStartDirectory( PVHelper.getProjectRoot( view ) );
         classpathBuilder.setEnabled( true );
         addComponent( classpathBuilder );
 
@@ -70,7 +71,7 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
         sourcepathBuilder.setPath(
             jEdit.getProperty( PREFIX + name + ".optionalSourcepath", "" )
         );
-        sourcepathBuilder.setStartDirectory( ProjectOptions.getProject().getRootPath() );
+        sourcepathBuilder.setStartDirectory( PVHelper.getProjectRoot( view ) );
         sourcepathBuilder.setEnabled( true );
         addComponent( sourcepathBuilder );
 
@@ -89,7 +90,7 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
                     }
                 }
                                     );
-        JPanel buildPathPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel buildPathPanel = new JPanel( new FlowLayout( FlowLayout.LEFT ) );
         buildPathPanel.add( buildPathLabel );
         buildPathPanel.add( buildPath );
         buildPathPanel.add( browse_btn );
@@ -99,7 +100,7 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
     // #_save() : void
     /** Saves properties from the option pane. */
     protected void _save() {
-        String name = getProjectName();
+        String name = PVHelper.getProjectName(view);
         jEdit.setBooleanProperty(
             PREFIX + name + ".useJavaClasspath",
             useJavaClassPath.isSelected()
@@ -116,14 +117,6 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
             PREFIX + name + ".optionalBuildpath",
             buildPath.getText()
         );
-    }
-
-    private String getProjectName() {
-        String project_name = "";
-        if ( ProjectOptions.getProject().getName() != null ) {
-            project_name = ProjectOptions.getProject().getName();
-        }
-        return project_name;
     }
 
     public void addComponent( JComponent comp ) {
