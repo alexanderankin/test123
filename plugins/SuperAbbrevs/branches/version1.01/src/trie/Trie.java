@@ -9,14 +9,7 @@
 
 package trie;
 
-import java.util.LinkedList;
-
-/**
- *
- * @author Sune Simonsen
- */
 public interface Trie<T> {
-    public LinkedList<T> scan(String text);
+    public Match<T> scan(String text);
     public void put(String key, T element);
-    public boolean remove(String key, T element);
 }

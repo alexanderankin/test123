@@ -17,6 +17,7 @@ import superabbrevs.model.AbbreviationTrie;
 import superabbrevs.model.Mode;
 import superabbrevs.repository.AbbreviationTrieRepository;
 import superabbrevs.repository.ModeRepository;
+import trie.Match;
 
 import com.google.inject.Inject;
 
@@ -31,10 +32,10 @@ public class AbbreviationHandlerImpl implements AbbreviationHandler {
 		this.abbreviationTrieRepository = abbreviationTrieRepository;
 	}
 
-    public LinkedList<Abbreviation> getAbbrevs(String modeName, String text) {
+    public Match<Abbreviation> getAbbrevs(String modeName, String text) {
     	AbbreviationTrie trie = abbreviationTrieRepository.load(modeName);        
-        LinkedList<Abbreviation> expansions = trie.scan(text);
-        return expansions;
+        Match<Abbreviation> match = trie.scan(text);
+        return match;
     }
 
     public Set<Abbreviation> getAbbrevs(String modeName) {

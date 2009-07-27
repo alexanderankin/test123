@@ -3,6 +3,7 @@ package trie;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collection;
 import java.util.LinkedList;
 
 import org.junit.Before;
@@ -26,31 +27,25 @@ public class BackwardsTrieTest {
 
 	@Test
 	public void testScan() throws Exception {
-		LinkedList<Integer> expResult = new LinkedList<Integer>();
+		Collection<Integer> expResult = new LinkedList<Integer>();
 		expResult.add(4);
 		expResult.add(6);
-		LinkedList<Integer> result = trie.scan("aba");
+		Collection<Integer> result = trie.scan("aba").getElements();
 		assertEquals(expResult, result);
 	}
 
 	@Test
 	public void testScan1() throws Exception {
-		LinkedList<Integer> expResult = new LinkedList<Integer>();
+		Collection<Integer> expResult = new LinkedList<Integer>();
 		expResult.add(5);
-		LinkedList<Integer> result = trie.scan("aabaa");
+		Collection<Integer> result = trie.scan("aabaa").getElements();
 		assertEquals(expResult, result);
 	}
 
 	@Test
 	public void testScan2() throws Exception {
-		LinkedList<Integer> expResult = new LinkedList<Integer>();
-		LinkedList<Integer> result = trie.scan("ab");
+		Collection<Integer> expResult = new LinkedList<Integer>();
+		Collection<Integer> result = trie.scan("ab").getElements();
 		assertEquals(expResult, result);
-	}
-
-	@Test
-	public void testRemoveKey() throws Exception {
-		boolean result = trie.remove("aba", 4);
-		assertTrue(result);
 	}
 }

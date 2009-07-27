@@ -2,8 +2,10 @@ package superabbrevs;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 import superabbrevs.model.Abbreviation;
+import trie.Match;
 
 public interface TextAreaHandler {
 
@@ -11,9 +13,9 @@ public interface TextAreaHandler {
 
 	public abstract String getModeAtCursor();
 
-	public abstract void showAbbrevsPopup(LinkedList<Abbreviation> abbrevs);
+	public abstract void showAbbrevsPopup(Match<Abbreviation> match);
 
-	public abstract void removeAbbrev(Abbreviation abbrev);
+	public abstract void removeMatch(String match);
 
 	public abstract void expandAbbrev(Abbreviation abbrev, boolean invokedAsACommand);
 

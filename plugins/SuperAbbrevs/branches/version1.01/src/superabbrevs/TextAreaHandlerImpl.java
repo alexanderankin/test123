@@ -12,7 +12,9 @@ package superabbrevs;
 import java.awt.Point;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.gjt.sp.jedit.bsh.EvalError;
 import org.gjt.sp.jedit.bsh.ParseException;
@@ -28,6 +30,7 @@ import superabbrevs.gui.searchdialog.SearchDialogModel;
 import superabbrevs.model.Abbreviation;
 import superabbrevs.utilities.Log;
 import superabbrevs.utilities.Log.Level;
+import trie.Match;
 
 import com.google.inject.Inject;
 
@@ -74,7 +77,11 @@ public class TextAreaHandlerImpl implements TextAreaHandler {
     /* (non-Javadoc)
 	 * @see superabbrevs.TextAreaHandler#showAbbrevsPopup(java.util.LinkedList)
 	 */
-    public void showAbbrevsPopup(LinkedList<Abbreviation> abbrevs) {
+    public void showAbbrevsPopup(final Match<Abbreviation> match) {
+    	List<Abbreviation> abbrevs = new ArrayList<Abbreviation>();
+    	abbrevs.addAll(match.getElements());
+        Collections.sort(abbrevs);
+    	
         Point location = jedit.getPopUpLocation();
         
         ScrollablePopupMenu<Abbreviation> menu = 
@@ -83,7 +90,7 @@ public class TextAreaHandlerImpl implements TextAreaHandler {
         menu.addActionListener(new ScrollablePopupMenuListner<Abbreviation>() {
             public void selectedMenuItem(ScrollablePopupMenuEvent<Abbreviation> event) {
                 Abbreviation a = event.getSelectedObject();
-                removeAbbrev(a);
+                removeMatch(match.getMatchingText());
                 expandAbbrev(a, false);
             }
         });
@@ -94,10 +101,10 @@ public class TextAreaHandlerImpl implements TextAreaHandler {
     /* (non-Javadoc)
 	 * @see superabbrevs.TextAreaHandler#removeAbbrev(superabbrevs.model.Abbrev)
 	 */
-    public void removeAbbrev(Abbreviation abbrev) {
+    public void removeMatch(String match) {
         // the offset of the caret in the full text 
         int end = jedit.getCaretPosition();
-        int start = end - abbrev.getAbbreviationText().length();
+        int start = end - match.length();
         jedit.setSelection(new Selection.Range(start, end));
         jedit.setSelectedText("");
     }
