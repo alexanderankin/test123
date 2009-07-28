@@ -65,6 +65,7 @@ import org.gjt.sp.jedit.syntax.DefaultTokenHandler;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StandardUtilities;
 
 
 
@@ -1395,7 +1396,7 @@ public class SearchAndReplace
 		// performance problem
 		boolean xFound = false; // matched extended options, too
 		if (findAll)
-			findAllSelections = new ArrayList();
+			findAllSelections = new ArrayList<Selection>();
 		// rwchg loop for xsearch-check
 		int secCnt = 1000000;
 		if (debug)
@@ -2052,11 +2053,11 @@ public class SearchAndReplace
 
 	private static org.gjt.sp.jedit.search.SearchFileSet fileset;
 
-	private static ArrayList findAllSelections;
+	private static ArrayList<Selection> findAllSelections;
 
 	private static Selection lastMatchedSelection;
 
-	private static Map modeToCommentsMap;
+	private static Map<Mode, CommentStruct> modeToCommentsMap;
 
 	/*
 	 * selectiv display private static boolean showSettings; // display the
@@ -2489,16 +2490,15 @@ public class SearchAndReplace
 				CommentStruct cs;
 				// get values from map
 				if (modeToCommentsMap == null)
-					modeToCommentsMap = new HashMap();
+					modeToCommentsMap = new HashMap<Mode, CommentStruct>();
 				if (modeToCommentsMap.containsKey(buffermode))
 					cs = (CommentStruct) modeToCommentsMap.get(buffermode);
 				else
 				{
 					buffermode.loadIfNecessary();
-					cs = new CommentStruct((String) buffermode
-						.getProperty("lineComment"), (String) buffermode
-						.getProperty("commentStart"), (String) buffermode
-						.getProperty("commentEnd"));
+					cs = new CommentStruct((String) buffermode.getProperty("lineComment"), 
+						(String) buffermode.getProperty("commentStart"),
+						(String) buffermode.getProperty("commentEnd"));
 					modeToCommentsMap.put(buffermode, cs);
 				}
 
@@ -2512,8 +2512,8 @@ public class SearchAndReplace
 					// if
 					// (currLine.lastIndexOf("//",currPos-buffer.getLineStartOffset(matchLine))
 					// != -1)
-					if (currLine.lastIndexOf(cs.lineComment, currPos
-						- buffer.getLineStartOffset(matchLine)) != -1)
+					if (currLine.lastIndexOf(cs.lineComment, currPos -
+						buffer.getLineStartOffset(matchLine))  != -1)
 						outsideCmt = false;
 				}
 				// check block comment
@@ -2522,12 +2522,7 @@ public class SearchAndReplace
 					// search for "start-comment" before
 					// match
 					SearchMatcher cmtMatcher = new BoyerMooreSearchMatcher(
-						cs.blockCommentStart, // search,
-						// "", //replace,
-						false // ignoreCase,
-					// false, //beanshell,
-					// null //replaceMethod);
-					);
+						cs.blockCommentStart, false );
 					Segment textBeforeMatch = new Segment();
 					buffer.getText(0, currPos, textBeforeMatch);
 
@@ -2538,21 +2533,15 @@ public class SearchAndReplace
 
 					if (openCmtMatch != null)
 					{
-						// we found an open comment
-						// before match
-						// ==> check if already closed
+						/* we found an open comment before match:
+						      check if already closed */
 						if (debug)
 							Log.log(Log.DEBUG, BeanShell.class,
 								"found open cmt at = "
 									+ openCmtMatch.start + "-"
 									+ openCmtMatch.end);
 						cmtMatcher = new BoyerMooreSearchMatcher(
-							cs.blockCommentEnd, // search,
-							// "", //replace,
-							false // ignoreCase,
-						// false, //beanshell,
-						// null //replaceMethod);
-						);
+							cs.blockCommentEnd, false );
 						SearchMatcher.Match closeCmtMatch = cmtMatcher
 							.nextMatch(new CharIndexedSegment(
 								textBeforeMatch, true), false,
@@ -2560,26 +2549,18 @@ public class SearchAndReplace
 							);
 						if (closeCmtMatch == null)
 						{
-							// no close found ==>
-							// inside
-							// comment
+							/* no close found ==>
+  							    inside comment */
 							outsideCmt = false;
 						}
 						else
 						{
 							if (debug)
-								Log
-									.log(
-										Log.DEBUG,
-										BeanShell.class,
-										"found close cmt at = "
-											+ closeCmtMatch.start
-											+ "-"
-											+ closeCmtMatch.end);
-							// we found a close
-							// comment ==>
-							// check which was
-							// earlier
+								Log.log(Log.DEBUG, BeanShell.class, 
+									"found close cmt at = " + closeCmtMatch.start +
+									"-" + closeCmtMatch.end);
+							/*  we found a close comment ==>
+							     check which was earlier */
 							if (openCmtMatch.start < closeCmtMatch.start)
 								outsideCmt = false;
 						}
@@ -2610,8 +2591,7 @@ public class SearchAndReplace
 				Log.log(Log.DEBUG, BeanShell.class, "tp1293: lineNr = " + line);
 			int position = currPos - buffer.getLineStartOffset(line);
 			if (debug)
-				Log.log(Log.DEBUG, BeanShell.class, "tp1296: position = "
-					+ position);
+				Log.log(Log.DEBUG, BeanShell.class, "tp1296: position = " + position);
 
 			DefaultTokenHandler tokens = new DefaultTokenHandler();
 			buffer.markTokens(line, tokens);
@@ -2644,27 +2624,24 @@ public class SearchAndReplace
 			recorder.record("xsearch.SearchSettings.resetSettings();");
 
 			recorder.record("xsearch.SearchAndReplace.setSearchString(\""
-				+ MiscUtilities.charsToEscapes(search) + "\");");
+				+ StandardUtilities.charsToEscapes(search) + "\");");
 
 			if (replaceAction)
 			{
 				recorder.record("xsearch.SearchAndReplace.setReplaceString(\""
-					+ MiscUtilities.charsToEscapes(replace) + "\");");
+					+ StandardUtilities.charsToEscapes(replace) + "\");");
 				if (beanshell)
-					recorder
-						.record("xsearch.SearchAndReplace.setBeanShellReplace("
+					recorder.record("xsearch.SearchAndReplace.setBeanShellReplace("
 							+ beanshell + ");");
 			}
 			else
 			{
 				// only record this if doing a find next
 				if (wrap)
-					recorder
-						.record("xsearch.SearchAndReplace.setAutoWrapAround("
+					recorder.record("xsearch.SearchAndReplace.setAutoWrapAround("
 							+ wrap + ");");
 				if (reverse)
-					recorder
-						.record("xsearch.SearchAndReplace.setReverseSearch("
+					recorder.record("xsearch.SearchAndReplace.setReverseSearch("
 							+ reverse + ");");
 			}
 
