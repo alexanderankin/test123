@@ -196,7 +196,7 @@ public class TaskType
 
 	private boolean displayIdentifier = true;
 
-	private static Hashtable icons;
+	private static Hashtable<String, Icon> icons;
 	//}}}
 
 	//{{{ loadIcon() method
@@ -239,7 +239,7 @@ public class TaskType
 	//{{{ static initializer
 	static
 	{
-		icons = new Hashtable();
+		icons = new Hashtable<String, Icon>();
 		StringTokenizer st = new StringTokenizer(jEdit.getProperty("tasklist.icons"));
 		while(st.hasMoreElements())
 		{

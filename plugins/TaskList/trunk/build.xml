@@ -49,8 +49,16 @@
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
 		<pathelement location="${src.dir}"/>
+		<pathelement location="${install.dir}/ProjectViewer.jar"/>
 	</path>
 
+    <condition property="can.reload.plugins">
+        <and>
+            <available classname="org.gjt.sp.jedit.jEdit"/>
+            <available classname="ReloadPluginTask"/>
+        </and>
+    </condition>
+    
 	<target name="init">
 		<mkdir dir="${build.dir}"/>
 		<delete file="docbook-wrapper.xsl" />
@@ -75,10 +83,11 @@
 			includeJavaRuntime="yes"
 		>
 			<classpath refid="project.class.path"/>
+			<compilerarg value="-Xlint:unchecked"/>
 		</javac>
 	</target>
 
-	<target name="dist" depends="compile,docs">
+	<target name="dist" depends="clean,compile,docs">
 		<mkdir dir="${install.dir}"/>
 		<jar jarfile="${install.dir}/${jar.name}">
 			<fileset dir="${build.dir}"/>
@@ -91,7 +100,14 @@
 				<include name="**/*.png"/>
 			</fileset>
 		</jar>
-	</target>
+        <antcall target="reload"/>
+    </target>
+
+    <target name="reload" if="can.reload.plugins">
+        <echo>Reloading ${install.dir}/${jar.name}</echo>
+        <taskdef name="reloadPlugin" classname="ReloadPluginTask"/>
+        <reloadPlugin jarfile="${install.dir}/${jar.name}"/>
+    </target>
 
 	<target name="docs" depends="init">
 		<antcall target="docs-${docs-proc.target}"/>

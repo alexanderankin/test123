@@ -93,7 +93,7 @@ distinctive icon:</para><informaltable frame="all">
 </tgroup>
 </informaltable>
 <para>You can change the icons associated with a task type by changing the
-plugin's settings in the <citetitle>Utilities</citetitle> -&gt; <citetitle>Global Options</citetitle> dialog. You can
+plugin's settings in the <citetitle>Plugins</citetitle> -&gt; <citetitle>Plugin Options</citetitle> -&gt; <citetitle>TaskList</citetitle> -&gt; <citetitle>Task Types</citetitle> dialog. You can
 also add your own comment types, using the icons supplied with the
 plugin or your own custom icons.</para></section>
 <section id="examples">
@@ -142,11 +142,19 @@ if you have made unsaved changes to a buffer, TaskList may not be able
 to find or change your comment text. You can reparse a buffer at any
 time using the <citetitle>Task List</citetitle> -&gt; <citetitle>Parse buffer</citetitle> menu item in the <citetitle>Plugins</citetitle>
 menu (which you can tie to a keyboard shortcut) or by double-clicking on
-the header row of the TaskList table.</para></section>
+the header row of the TaskList table.</para>
+<para>
+If the ProjectViewer plugin is installed, TaskList can find all tasks in
+the current project.  Use the Plugins menu: Plugins -&gt; TaskList -&gt;
+Parse project.  This will open a separate window showing all tasks for
+the project grouped by file.  For large projects, it may take some time
+for the window to appear.
+</para>
+</section>
 <section id="settings-and-options">
 <title>Settings and Options</title>
 <para>There are three option pane windows available for user settings from the
-<citetitle>Utilities</citetitle> -&gt; <citetitle>Global Options</citetitle> dialog.</para><section id="general">
+<citetitle>Plugins</citetitle> -&gt; <citetitle>Plugin Options</citetitle> -&gt; <citetitle>TaskList</citetitle> dialog.</para><section id="general">
 <title>General</title>
 <para>The <citetitle>General</citetitle> options pane allows you to change the appearance of the
 TaskList table display, including default sorting criteria, and

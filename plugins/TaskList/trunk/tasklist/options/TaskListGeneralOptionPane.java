@@ -27,6 +27,7 @@ import java.awt.Color;
 import javax.swing.event.*;
 import javax.swing.*;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.util.SyntaxUtilities;
 import tasklist.*;
 //}}}
 
@@ -40,6 +41,8 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane
 	//{{{ _init() method
 	protected void _init()
 	{
+		setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+		
 		addComponent(jEdit.getProperty("options.tasklist.general.buffer.display"),
 			bufferDisplay = new JComboBox(
 			new String[]
@@ -124,7 +127,7 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane
 			bufferDisplay.getSelectedItem().toString());
 
 		jEdit.setProperty("tasklist.highlight.color",
-			GUIUtilities.getColorHexString(highlightColor.getBackground()));
+			SyntaxUtilities.getColorHexString(highlightColor.getBackground()));
 
 		jEdit.setBooleanProperty("tasklist.table.horizontal-lines",
 			bHorizontalLines.isSelected());
@@ -150,7 +153,7 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane
 	{
 		JButton b = new JButton(" ");
 		b.setBackground(GUIUtilities.parseColor(jEdit.getProperty(property)));
-		b.addActionListener(new ColorButtonHandler(b));
+		b.addActionListener(new ColorButtonHandler());
 		b.setRequestFocusEnabled(false);
 		return b;
 	}//}}}
@@ -158,12 +161,6 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane
 	//{{{ ColorButtonHandler class
 	private class ColorButtonHandler implements ActionListener
 	{
-		private JButton button;
-		
-		public ColorButtonHandler(JButton button) {
-			this.button = button;
-		}
-
 		public void actionPerformed(ActionEvent evt)
 		{
 			JButton button = (JButton)evt.getSource();

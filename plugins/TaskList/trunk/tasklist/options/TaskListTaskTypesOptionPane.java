@@ -48,6 +48,8 @@ public class TaskListTaskTypesOptionPane extends AbstractOptionPane
 	//{{{ _init() method
 	protected void _init()
 	{
+		setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+		
 		addComponent(new JLabel(jEdit.getProperty(
 			"options.tasklist.tasktypes.patterns")));
 

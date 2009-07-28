@@ -39,6 +39,8 @@ public class TaskListModesOptionPane extends AbstractOptionPane
 	//{{{ _init()
 	protected void _init()
 	{
+		setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+		
 		addComponent(new JLabel(jEdit.getProperty(
 			"options.tasklist.modes.parse.label")));
 		addComponent(Box.createVerticalStrut(6));

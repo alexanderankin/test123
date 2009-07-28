@@ -30,9 +30,10 @@ package tasklist;
 
 //{{{ imports
 import java.awt.Color;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 import java.util.List;
 
@@ -65,7 +66,6 @@ public class TaskListPlugin extends EBPlugin
 	public static boolean DEBUG = false;
 
 	private static Color highlightColor = Color.blue;
-	private static boolean highlightTasks = false;
 	private static boolean allowSingleClickSelection = false;
 
 	//{{{ start() method
@@ -183,6 +183,7 @@ public class TaskListPlugin extends EBPlugin
 		return allowSingleClickSelection;
 	}//}}}
 
+	
 	//{{{ handleMessage() method
 	/**
 	 * Handles selected messages received by the TaskListPlugin object
@@ -430,7 +431,7 @@ public class TaskListPlugin extends EBPlugin
 				jEdit.getBooleanProperty(
 					"options.tasklist.parse." + modes[i].getName(), true));
 
-			parseModes.put(modes[i].getName(),parse);
+			parseModes.put(modes[i].getName(), parse);
 		}
 	}//}}}
 
@@ -448,7 +449,7 @@ public class TaskListPlugin extends EBPlugin
 	 * A collection of pending requests to parse buffers, maintained to
 	 * prevent unnecessary duplication.
 	 */
-	private static Hashtable parseRequests = new Hashtable();
+	private static Set<Buffer> parseRequests = new HashSet<Buffer>();
 
 	/**
 	 * A collection of TaskType objects representing the form of comments that
@@ -461,7 +462,7 @@ public class TaskListPlugin extends EBPlugin
 	 * Task objects associated with a particular buffer. The plugin uses this
 	 * object to keep track of Task objects.
 	 */
-	private static Map<Buffer, Hashtable> bufferMap = new Hashtable<Buffer, Hashtable>();
+	private static Map<Buffer, HashMap<Integer, Task>> bufferMap = new HashMap<Buffer, HashMap<Integer, Task>>();
 
 	/**
 	 * A collection of TaskListener objects that will be notified when
@@ -474,7 +475,7 @@ public class TaskListPlugin extends EBPlugin
 	 * A collection to track which buffer modes to parse
 	 * tasks from and which to skip.
 	 */
-	private static Hashtable parseModes = new Hashtable();
+	private static HashMap<String, Boolean> parseModes = new HashMap<String, Boolean>();
 	//}}}
 
 	//{{{ requestTasksForBuffer() method
@@ -484,12 +485,12 @@ public class TaskListPlugin extends EBPlugin
 	* <p>
 	* NOTE: This method will not cause a re-parse of a buffer.
 	*/
-	public synchronized static Hashtable requestTasksForBuffer(final Buffer buffer)
+	public synchronized static HashMap<Integer, Task> requestTasksForBuffer(final Buffer buffer)
 	{
 		if(buffer.isLoaded() == false)
 			return null;
 
-		Hashtable taskMap = bufferMap.get(buffer);
+		HashMap<Integer, Task> taskMap = bufferMap.get(buffer);
 
 		// taskMap should only be null if buffer has never been parsed
 		if(taskMap == null)
@@ -512,15 +513,18 @@ public class TaskListPlugin extends EBPlugin
 	 */
 	public synchronized static void extractTasks(final Buffer buffer)
 	{
-
 		// NOTE: remove this if this method becomes private
 		if(buffer.isLoaded() == false)
+		{
 			return;
+		}
 		// if buffer is already in the queue, return
-		if(parseRequests.get(buffer) != null)
+		if(parseRequests.contains(buffer)) 
+		{
 			return;
+		}
 
-		parseRequests.put(buffer, buffer);
+		parseRequests.add(buffer);
 		SwingUtilities.invokeLater(new Runnable(){
 			public void run()
 			{
@@ -549,8 +553,8 @@ public class TaskListPlugin extends EBPlugin
 			doParse = ((Boolean)parseModes.get(mode)).booleanValue();
 
 		if(!doParse){
-			// fill with empty Hashtable of tasks
-			bufferMap.put(buffer, new Hashtable());
+			// fill with empty HashMap of tasks
+			bufferMap.put(buffer, new HashMap<Integer, Task>());
 
 			// remove 'buffer' from parse queue
 			parseRequests.remove(buffer);
@@ -565,13 +569,11 @@ public class TaskListPlugin extends EBPlugin
 		for(int lineNum = firstLine; lineNum < lastLine; lineNum++)
 		{
 			int lineStart = buffer.getLineStartOffset(lineNum);
-			int lineLen = buffer.getLineLength(lineNum);
 
             DefaultTokenHandler tokenHandler = new DefaultTokenHandler();
 			buffer.markTokens(lineNum,tokenHandler);
 			Token token = tokenHandler.getTokens();
 			int tokenStart = lineStart;
-			int lastToken = token.id;
 			int chunkStart = -1;
 			int chunkLength = 0;
 			int type = -1;
@@ -623,7 +625,7 @@ public class TaskListPlugin extends EBPlugin
 		// and empty set of tasks, if there are not, not a null set
 		// (a null set is used to indicate the buffer has never been parsed)
 		if(bufferMap.get(buffer) == null)
-			bufferMap.put(buffer, new Hashtable());
+			bufferMap.put(buffer, new HashMap<Integer, Task>());
 
 		if(TaskListPlugin.DEBUG)
 			Log.log(Log.DEBUG, TaskListPlugin.class, 
@@ -647,7 +649,7 @@ public class TaskListPlugin extends EBPlugin
 				"TaskListPlugin.addTask(" + task.toString() + ")");//##
 
 		Buffer buffer = task.getBuffer();
-		Hashtable taskMap = bufferMap.get(buffer);
+		HashMap<Integer, Task> taskMap = bufferMap.get(buffer);
 
 		if(taskMap == null)
 		{
@@ -679,18 +681,16 @@ public class TaskListPlugin extends EBPlugin
 			Log.log(Log.DEBUG, TaskListPlugin.class,
 			"TaskListPlugin.clearTasks(" + buffer.toString() + ")");//##
 
-		Hashtable taskMap = bufferMap.get(buffer);
+		HashMap<Integer, Task> taskMap = bufferMap.get(buffer);
 
 		if(taskMap == null)
 		{
-			bufferMap.put(buffer, new Hashtable());
+			bufferMap.put(buffer, new HashMap<Integer, Task>());
 			return;
 		}
 
-		Enumeration _keys = taskMap.keys();
-		while(_keys.hasMoreElements())
+		for(Integer key : taskMap.keySet())
 		{
-			Object key = _keys.nextElement();
 			Task _task = (Task)taskMap.remove(key);
 
 			if(TaskListPlugin.DEBUG)
