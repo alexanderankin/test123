@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+
+<!-- FastOpen dockable windows -->
+
+<DOCKABLES>
+	<DOCKABLE NAME="fastopen">
+	com.patelsoft.fastopen.FastOpenPlugin.getFastOpenInstance(view).showPanel();
+	</DOCKABLE>
+</DOCKABLES>
