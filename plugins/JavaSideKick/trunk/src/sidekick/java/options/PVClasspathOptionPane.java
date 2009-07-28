@@ -38,6 +38,8 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
 
     /** Initialises the option pane. */
     protected void _init() {
+        setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+        
         view = jEdit.getActiveView();
         
         String name = PVHelper.getProjectName(view);
