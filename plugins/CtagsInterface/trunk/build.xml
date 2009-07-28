@@ -19,6 +19,7 @@
 	  <or>
 	    <filename name="icons/*.png" />
 		<filename name="*.txt" />
+		<filename name="mysql.map" />
 	  </or>
 	 </selector>
 
@@ -32,6 +33,7 @@
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
 		<pathelement location="${install.dir}/ProjectViewer.jar"/>
 		<pathelement location="${install.dir}/hsqldb.jar"/>		
+		<pathelement location="${install.dir}/SuperAbbrevs.jar"/>		
 	</path>
 
 	<target name="build.prepare" >
