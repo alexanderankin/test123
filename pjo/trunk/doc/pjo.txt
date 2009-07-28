@@ -58,7 +58,7 @@ releasing plugins. Consider it always under development.
 .. _Python: http://www.python.org/
 .. _jEdit Plugin Central: http://plugins.jedit.org/
 .. _jedit-plugins: http://sourceforge.net/projects/jedit-plugins/
-.. _File releases: http://sourceforge.net/project/admin/editpackages.php?group_id=64089
+.. _File releases: https://sourceforge.net/apps/trac/sourceforge/wiki/Release%20files%20for%20download
 .. contents::
 
 
@@ -320,38 +320,41 @@ If you have to modify a `build.xml` file, send a patch
 to the author of the plugin.  This way the next person
 to package the plugin may not have to do the same thing.
 
+Uploading Plugins
+=================
 
-Upload Step 1
-=============
+Documentation on uploading plugin releases can be found here:
+https://sourceforge.net/apps/trac/sourceforge/wiki/Release%20files%20for%20download
 
-Now the packaged files need to be uploaded to the "incoming"
-directory on sf.net. This is in preparation for releasing the
-files.
+The entire uploading process can be done through SFTP.
+The following summarizes the instructions on the above
+link.
 
-sftp username@frs.sourceforge.net
-cd uploads
+Upload Using SFTP
+=================
+
+Now the packaged files need to be uploaded to the Plugins
+version directory.
+
+sftp username,jedit-plugins@frs.sourceforge.net
+cd /home/pfs/project/j/je/jedit-plugins
+
+If this is a new plugin, create the plugin directory.
+mkdir PluginName
+cd PluginName
+
+Create the version directory.
+mkdir version
+cd version
+
+Upload the package files.
 mput *.tgz
 mput *.zip
 
-
-Once they're uploaded using the sf.net project site, you can
-create the releases, and assign the files for the releases.
-
-Upload Step 2 - Submitting files
-================================
-
-Now we are ready to submit the files to sf.net and all of its
-mirrors, which involves filling out a web form on the
-sf.net jedit-plugins `File Releases`_.
-
-https://sourceforge.net/projects/jedit-plugins/
-
-then "Admin", then "File Releases"
-
-As you create releases in the web form,
-you select checkboxes next to files listed in the
-uploads directory, and the sf.net file release system sucks
-them up and distributes them to all the mirrors.
+The link provided above gives detailed instructions on
+uploading files through other means, and you should look there
+if you prefer to upload the files via the File Manager UI,
+scp, or rsync.
 
 PLUGIN MANAGER DATABASE
 =======================
