@@ -4,6 +4,7 @@
 
     <property file="../build.properties"/>
     <property file="build.properties"/>
+    <property file="JavaSideKick.props"/>
 
     <!-- default location of jedit.jar -->
     <property name="jedit.install.dir"  value="../.."/>
@@ -13,7 +14,7 @@
     <property name="jar.name" value="${ant.project.name}.jar"/>
 
     <!-- version number -->
-    <property name="build.num" value="2.3.1"/>
+    <property name="build.num" value="${plugin.sidekick.java.JavaSideKickPlugin.version}"/>
 
     <!-- where to put the finished plugin -->
     <property name="install.dir" value=".." />
@@ -43,6 +44,13 @@
     <property name="icons" value="sidekick/java/icons"/>
 
 
+    <condition property="can.reload.plugins">
+        <and>
+            <available classname="org.gjt.sp.jedit.jEdit"/>
+            <available classname="ReloadPluginTask"/>
+        </and>
+    </condition>
+    
    <!-- ========================================================================
       Target: set classpath
    ========================================================================= -->
@@ -158,6 +166,14 @@
             </fileset>
         </jar>
 
+        <antcall target="reload"/>
+
+    </target>
+
+    <target name="reload" if="can.reload.plugins">
+        <echo>Reloading ${install.dir}/${ant.project.name}.jar</echo>
+        <taskdef name="reloadPlugin" classname="ReloadPluginTask"/>
+        <reloadPlugin jarfile="${install.dir}/${jar.name}"/>
     </target>
 
    <!-- ========================================================================
