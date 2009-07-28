@@ -1,3 +1,4 @@
+
 /*
  * HyperSearchResults.java - HyperSearch results
  * :tabSize=4:indentSize=4:noTabs=false:
@@ -23,19 +24,49 @@
 package xsearch;
 
 //{{{ Imports
-import javax.swing.*;
-import javax.swing.tree.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import javax.swing.AbstractAction;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreePath;
+
+import org.gjt.sp.jedit.BeanShell;
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.OperatingSystem;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.gui.RolloverButton;
-import org.gjt.sp.jedit.msg.*;
-import org.gjt.sp.jedit.textarea.*;
-import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
-//}}}
 
 /**
  * HyperSearch results window.
@@ -124,6 +155,13 @@ public class HyperSearchResults extends JPanel implements EBComponent,
 			"hypersearch-results.multi");
 		updateMultiStatus();
 	} //}}}
+
+	//{{{ setSearchStatus() method
+	public void setSearchStatus(String status)
+	{
+		caption.setText(status);
+	} //}}}
+
 
 	//{{{ removeNotify() method
 	public void removeNotify()
@@ -274,12 +312,12 @@ public class HyperSearchResults extends JPanel implements EBComponent,
 	{
 		neighbourResult(-1);
 	}
-	
+
 	public void nextResult()
 	{
 		neighbourResult(1);
 	}
-	
+
 	public void neighbourResult(int increment)
 	{
 		TreePath path = resultTree.getSelectionPath();
@@ -293,7 +331,7 @@ public class HyperSearchResults extends JPanel implements EBComponent,
 			goToSelectedNode();
 		}
 	}
-	
+
 
 	//{{{ Private members
 	private View view;
@@ -355,7 +393,7 @@ public class HyperSearchResults extends JPanel implements EBComponent,
 			((HyperSearchResult)value).goTo(view);
 		}
 	} //}}}
-		
+
 	//{{{ toggleAllNodes() method
 	private void toggleAllNodes(boolean expand)
 		{
@@ -401,7 +439,7 @@ public class HyperSearchResults extends JPanel implements EBComponent,
 							resultTree.expandPath(childPath);
 						else if (level > 0)
 							resultTree.collapsePath(childPath);
-						
+
 						int nextChildCount = childNode.getChildCount();
 						if(nextChildCount != 0) {
 							DefaultMutableTreeNode lineNode = (DefaultMutableTreeNode)childNode.getFirstChild();
@@ -421,7 +459,7 @@ public class HyperSearchResults extends JPanel implements EBComponent,
 		}
 
 	//}}}
-	
+
 	private void writeNodeToBuffer(TreePath path)
 	{
 		DefaultMutableTreeNode startNode;
@@ -724,13 +762,13 @@ public class HyperSearchResults extends JPanel implements EBComponent,
 			* root
 			* + searchNode
 			*   + fileNode
-			*     + results 
+			*     + results
 			*   + fileNode
-			*     + results 
+			*     + results
 			* + searchNode
 			*   + fileNode
-			*     + results 
-			*       (+ result range) 
+			*     + results
+			*       (+ result range)
 			*******************************************************************/
 			jEdit.newFile(view);
 			writeHeader();
@@ -777,7 +815,7 @@ public class HyperSearchResults extends JPanel implements EBComponent,
 			writeFooter();
 			}
 		}
-		
+
 		private void writeSearchHeader(DefaultMutableTreeNode node)
 		{
 			//node = (DefaultMutableTreeNode)node;
@@ -794,7 +832,7 @@ public class HyperSearchResults extends JPanel implements EBComponent,
 			sb.append("\n");
 			textArea.setSelectedText(sb.toString());
 		}
-		
+
 		private void writeResultsForFile(DefaultMutableTreeNode node)
 		{
 			//node = (DefaultMutableTreeNode)node;
@@ -839,10 +877,10 @@ public class HyperSearchResults extends JPanel implements EBComponent,
 			sb.append("\n\tNumber of occurrences: ");
 			sb.append(String.valueOf(childCount));
 			sb.append("\n");
-		
+
 			textArea.setSelectedText(sb.toString());
 		}
-		
+
 		void writeHeader()
 		{
 			sb.append("Hypersearch report written on ");
@@ -869,7 +907,7 @@ public class HyperSearchResults extends JPanel implements EBComponent,
 			sb.append('\n');
 			textArea.setSelectedText(sb.toString());
 		}
-		
+
 		void writeFileFooter()
 		{
 			sb.setLength(0);
@@ -878,7 +916,7 @@ public class HyperSearchResults extends JPanel implements EBComponent,
 			sb.append(" occurrences found in ");
 			sb.append(String.valueOf(fileCount));
 			sb.append(" files\n\n");
-		
+
 			textArea.setSelectedText(sb.toString());
 		}
 		void writeFooter()
@@ -889,7 +927,7 @@ public class HyperSearchResults extends JPanel implements EBComponent,
 			sb.append(" search results reported \n\nEnd of report\n");
 			textArea.setSelectedText(sb.toString());
 		}
-		
+
 		String writeSearchFileSetType()
 		{
 			StringBuffer result = new StringBuffer();
@@ -1019,7 +1057,7 @@ public class HyperSearchResults extends JPanel implements EBComponent,
 			result.bufferClosed();
 		}
 	} //}}}
-	
-	
-	
+
+
+
 }

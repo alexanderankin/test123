@@ -46,7 +46,7 @@ class HyperSearchRequest extends WorkRequest
 		HyperSearchResults results, Selection[] selection)
 	{
 		this( view, matcher, results, selection, 0, 0);
-	} 
+	}
 	public HyperSearchRequest(View view, SearchMatcher matcher,
 		HyperSearchResults results, Selection[] selection,
 		int lineRangeUp, int lineRangeDown)
@@ -92,6 +92,8 @@ class HyperSearchRequest extends WorkRequest
 
 		// initially zero, so that we always show the first message
 		long lastStatusTime = 0;
+		String searchingCaption = jEdit.getProperty("hypersearch-results.searching",
+				new String[] { SearchAndReplace.getSearchString() }) + ' ';
 
 		try
 		{
@@ -115,8 +117,7 @@ loop:
 					long currentTime = System.currentTimeMillis();
 					if(currentTime - lastStatusTime > 250)
 					{
-						//setStatus(jEdit.getProperty("hypersearch.status",
-						//	new String[] { file }));
+						results.setSearchStatus(searchingCaption + file);
 						setProgressValue(current);
 						lastStatusTime = currentTime;
 					}
@@ -152,7 +153,7 @@ loop:
 					results.searchDone(rootSearchNode);
 					if (lineRangeUp != 0 || lineRangeDown != 0) {
 						// expand hyperrange result
-						
+
 						SwingUtilities.invokeLater(new Runnable()
 						{
 							public void run()
@@ -161,19 +162,19 @@ loop:
 								JTree tree = results.getTree();
 								final int searchChildCount = rootSearchNode.getChildCount();
 								if (searchChildCount != 0) {
-									DefaultMutableTreeNode fileNode = 
+									DefaultMutableTreeNode fileNode =
 									(DefaultMutableTreeNode)rootSearchNode.getFirstChild();
 									for(int j = 0; j < searchChildCount; j++)
 									{
 										//TreePath filePath = new TreePath(fileNode.getPath());
 										//tree.expandPath(filePath);
-										
+
 										// check if the childs of a fileNode have children
 										// ==> expand hyper range
-				
+
 										int fileChildCount = fileNode.getChildCount();
 										if (fileChildCount != 0) {
-											DefaultMutableTreeNode lineNode = 
+											DefaultMutableTreeNode lineNode =
 											(DefaultMutableTreeNode)fileNode.getFirstChild();
 											for(int k = 0; k < fileChildCount; k++)
 											{
@@ -185,8 +186,8 @@ loop:
 										fileNode = fileNode.getNextSibling();
 									}
 								}
-								
-				
+
+
 							//	resultTree.scrollPathToVisible(
 							//		new TreePath(new Object[] {
 							//		resultTreeRoot,searchNode }));
@@ -210,7 +211,7 @@ loop:
 	private Selection[] selection;
 	private String searchString;
 	private int lineRangeUp, lineRangeDown;
-	
+
 	//}}}
 
 	//{{{ searchInSelection() method
@@ -324,7 +325,7 @@ loop:
 					offset += match.end;
 					continue loop;
 				}
-				
+
 				resultCount++;  // this line has been moved: count match, even if on same line
 
 				int newLine = buffer.getLineOfOffset(
@@ -348,13 +349,13 @@ loop:
 					DefaultMutableTreeNode subNode = new DefaultMutableTreeNode(
 							lastResult);
 					bufferNode.add(subNode);
-				
-					for (int i = newLine-lineRangeUp; 
+
+					for (int i = newLine-lineRangeUp;
 					i<=newLine+lineRangeDown && i < buffer.getLineCount(); i++) {
 						if (i < 0) i = 0; // cannot display before startOfBuffer
 						/* 						if (i > line) { // skip if already displayed !?
-						int startOfI = buffer.getLineStartOffset(i); 
-						int endOfI = buffer.getLineEndOffset(i); 
+						int startOfI = buffer.getLineStartOffset(i);
+						int endOfI = buffer.getLineEndOffset(i);
 						bufferNode.add(new DefaultMutableTreeNode(
 							new HyperSearchResult(
 								buffer,i,
@@ -363,13 +364,13 @@ loop:
 								)
 								,false));
 						}
-						*/						
-						int startOfI = buffer.getLineStartOffset(i); 
-						int endOfI = buffer.getLineEndOffset(i); 
+						*/
+						int startOfI = buffer.getLineStartOffset(i);
+						int endOfI = buffer.getLineEndOffset(i);
 						HyperSearchResult rangeResult = new HyperSearchResult(buffer,i);
 						subNode.add(new DefaultMutableTreeNode(rangeResult, false));
 						rangeResult.addOccur(
-								i == newLine ? offset + match.start : startOfI, 
+								i == newLine ? offset + match.start : startOfI,
 								i == newLine ? offset + match.end   : endOfI);
 					}
 				}
