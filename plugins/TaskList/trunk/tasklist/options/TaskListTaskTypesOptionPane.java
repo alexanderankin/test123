@@ -431,9 +431,9 @@ class TaskTypeDialog extends EnhancedDialog
 			return;
 		}
 
-		// TODO: test if the regular expression matches the sample text
+		// Test if the regular expression matches the sample text
 		Matcher match = re.matcher(_sample);
-		if(match.matches())
+		if(!match.matches())
 		{
 			GUIUtilities.error(JOptionPane.getFrameForComponent(this),
 				"task.sample-doesnt-match",null);
@@ -501,7 +501,7 @@ class TaskTypeDialog extends EnhancedDialog
 			else if(source == customIcon)
 			{
 				String directory;
-				if(iconPath == null || iconPath == "")
+				if(iconPath == null || iconPath.equals(""))
 					directory = null;
 				else
 					directory = MiscUtilities.getParentOfPath(iconPath);
