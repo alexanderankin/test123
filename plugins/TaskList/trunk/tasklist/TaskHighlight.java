@@ -24,8 +24,7 @@ package tasklist;
 //{{{ imports
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import javax.swing.text.Segment;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.syntax.*;
@@ -98,8 +97,7 @@ public class TaskHighlight extends TextAreaExtension
 		{
 			return;
 		}
-		Hashtable taskMap =
-			TaskListPlugin.requestTasksForBuffer(buffer);
+		HashMap<Integer, Task> taskMap = TaskListPlugin.requestTasksForBuffer(buffer);
 
 		if(taskMap != null)
 		{
@@ -111,10 +109,8 @@ public class TaskHighlight extends TextAreaExtension
 			}
 			else
 			{
-				Enumeration enumeration = taskMap.elements();
-				while(enumeration.hasMoreElements())
+				for (Task _task : taskMap.values())
 				{
-					Task _task = (Task)enumeration.nextElement();
 					if(_task.getLineNumber() == _line.intValue())
 					{
 						task = _task;
