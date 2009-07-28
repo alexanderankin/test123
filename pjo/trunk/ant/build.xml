@@ -49,6 +49,8 @@
 		<echo></echo>
 		<echo>Your Packaging targets file is set to:</echo>
 		<echo>   ${package.targets.file}</echo>
+		<echo></echo>
+		<echo>Java Version:${ant.java.version} | Compiler Source: ${compiler.source} | Compiler Target: ${compiler.target}</echo>
 	</target>
 	<target name="build">
 		<input addproperty="plugin.name" message="Plugin Name:" />
@@ -160,9 +162,11 @@ jedit.svn.url=https://jedit.svn.sourceforge.net/svnroot/jedit
 			<property name="jedit.settings.dir" value="${jedit.version.@{pluginJeditVersion}.settings.dir}" />
 			<property name="install.dir" value="${jedit.settings.dir}/jars" />
 			<property name="jedit.plugins.dir" value="${install.dir}" />
+			<echo>install.dir=@{pluginDownloadDir}/../dist</echo>
 			<echo>jedit.install.dir=${jedit.install.dir}</echo>
+			<echo>jedit.plugins.dir=${jedit.plugins.dir}</echo>
 			<echo>jedit.settings.dir=${jedit.settings.dir}</echo>
-			<echo>install.dir=${install.dir}</echo>
+			<echo>Java Version:${ant.java.version} | Compiler Source: ${compiler.source} | Compiler Target: ${compiler.target}</echo>
 			<ant antfile="build.xml" dir="@{pluginDownloadDir}" inheritall="true" target="clean"/>
 			<mkdir dir="@{pluginDownloadDir}/../dist"/>
 			<ant antfile="build.xml" dir="@{pluginDownloadDir}" inheritall="true" target="dist">
