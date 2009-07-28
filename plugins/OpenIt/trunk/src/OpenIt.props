@@ -11,6 +11,9 @@ plugin.org.etheridge.openit.OpenItPlugin.depend.0=jdk 1.5
 plugin.org.etheridge.openit.OpenItPlugin.depend.1=jedit 04.03.07.00
 plugin.org.etheridge.openit.OpenItPlugin.depend.2=optional plugin projectviewer.ProjectViewerPlugin 2.1.3.4
 plugin.org.etheridge.openit.OpenItPlugin.usePluginHome=true
+plugin.org.etheridge.openit.OpenItPlugin.description=\
+	The OpenIt plug-in provides a quick and easy way to open files in jEdit.
+plugin.org.etheridge.openit.OpenItPlugin.longdescription=../docs/OpenIt.html
 
 # action labels
 openit.find-file-in-source-path.label=Open File
