@@ -3,13 +3,14 @@ plugin.xsearch.XSearchPlugin.activate=startup
 
 plugin.xsearch.XSearchPlugin.name=XSearch
 plugin.xsearch.XSearchPlugin.author=Rudi Widmann, Alan Ezust
-plugin.xsearch.XSearchPlugin.version=1.5
+plugin.xsearch.XSearchPlugin.version=1.6
 plugin.xsearch.XSearchPlugin.docs=index.html
-plugin.xsearch.XSearchPlugin.depend.0=jedit 04.03.13.00
+plugin.xsearch.XSearchPlugin.depend.0=jedit 04.03.17.00
 plugin.xsearch.XSearchPlugin.depend.1=jdk 1.5
 plugin.xsearch.XSearchPlugin.depend.2=plugin GnuRegexpPlugin 1.0
-plugin.xsearch.XSearchPlugin.depend.3=plugin projectviewer.ProjectPlugin 2.1.1
-plugin.xsearch.XSearchPlugin.description=A replacement for the built-in search/replace dialog with enhancements.
+plugin.xsearch.XSearchPlugin.depend.3=plugin projectviewer.ProjectPlugin 2.9
+plugin.xsearch.XSearchPlugin.description=A replacement for the built-in search/replace dialog with some enhancements, using  gnu.regexp instead of java.util.regexp.
+
 # new in version 1.1:
 # adapted to plugin API 4.2
 # new RMB options in HyperSearch menu
@@ -31,7 +32,7 @@ plugin.xsearch.XSearchPlugin.menu=xsearch xfind-refind xfind xfind-selection  xf
 	quick-allbuffersearch-standard-options - \
 	quick-xfind-current-options quick-hypersearch-current-options \
 	quick-allbuffersearch-standard-options
-	
+
 # xsearch.label=XSearch
 # xsearch=xfind-replace-dialog xfind-refind xfind-first xfind-next xfind-prev - \
 #	xreplace-in-selection xreplace-and-find-next xreplace-all - \
@@ -53,7 +54,7 @@ xsearch.title=XSearch
 
 xsearch-directory-dialog.label=XSearch in directory...
 xsearch-in-directory.label=XSearch in directory
-quick-xfind-standard-options.label=Quick xfind (standard options) 
+quick-xfind-standard-options.label=Quick xfind (standard options)
 quick-hypersearch-standard-options.label=Quick hypersearch
 quick-allbuffersearch-standard-options.label=XSearch in open buffers
 quick-xfind-current-options.label=Quick xfind
@@ -222,16 +223,16 @@ search.ext.column.right=right col
 search.ext.row=row search
 search.ext.row.left=upper row
 search.ext.row.right=lower row
-search.ext.fold=fold search:  
+search.ext.fold=fold search:
 search.ext.fold-inside=inside folds
 search.ext.fold-outside=outside folds
-search.ext.comment=comment search:  
+search.ext.comment=comment search:
 search.ext.comment-inside=inside comment
 search.ext.comment-outside=outside comment
 
-search.ext.hyperRangeLabel=hyperrange: 
-search.ext.hyperRangeLabelUp=up 
-search.ext.hyperRangeLabelDown=down 
+search.ext.hyperRangeLabel=hyperrange:
+search.ext.hyperRangeLabelUp=up
+search.ext.hyperRangeLabelDown=down
 search.ext.tentativ=tentativ search
 search.ext.settings-history=search settings history
 xsearch.synchronize.tooltip=Right-click to enable auto-sync
