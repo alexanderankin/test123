@@ -93,7 +93,8 @@ public class Log {
         
 
         // use the svnkit client manager
-        SVNClientManager clientManager = SVNClientManager.newInstance( options, new BasicAuthenticationManager(data.getUsername(), data.getDecryptedPassword()) );
+        System.out.println("+++++ Log.java, username = " + data.getUsername() + ", password = " + data.getDecryptedPassword());
+        SVNClientManager clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager(data.getUsername(), data.getDecryptedPassword()) );
         
         
         // get a commit client
@@ -145,6 +146,7 @@ public class Log {
         results.setEntries(entries);
         out.flush();
         out.close();
+        System.out.println("+++++ Log.java, done");
     }
 
     public class LogHandler implements ISVNLogEntryHandler {
