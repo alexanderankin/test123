@@ -150,7 +150,7 @@ public abstract class SVNAction implements ActionListener {
         }
         String uname = getUsername();
         String pwd = getPassword();     // encrypted password
-        
+
         // no username, so assume no password.  Attempt to get username and
         // password from project the file belongs to
         if ( uname == null || uname.length() == 0 || pwd == null || pwd.length() == 0 ) {
