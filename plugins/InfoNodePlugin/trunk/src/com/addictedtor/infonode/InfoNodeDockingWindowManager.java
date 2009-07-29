@@ -21,6 +21,7 @@ package com.addictedtor.infonode;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Insets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,11 +69,24 @@ public class InfoNodeDockingWindowManager extends DockableWindowManager {
 		
 		this.view = view; 
 		dockables = new HashMap<String,JEditDockableView>() ;
-		VIEW = new JEditViewView( view, new JLabel( "" ) ) ;
 		
 		ViewMap viewMap = new ViewMap();
-		viewMap.addView(0, VIEW );
 		root = DockingUtil.createRootWindow(viewMap, true);
+
+		// Remove the border around the root window
+		root.getRootWindowProperties().getWindowAreaProperties()
+			.setInsets(new Insets(0, 0, 0, 0))
+			.setBorder(null);
+
+		// Hide window bars around if they contain no window
+		root.getRootWindowProperties().getWindowBarProperties().setMinimumWidth(0);
+		
+		// Create the wrapper view for the text area, remove its toolbar to prevent
+		// the user from closing it and set it as main window
+		VIEW = new JEditViewView( view, new JLabel( "" ) ) ;
+		VIEW.getViewProperties().setAlwaysShowTitle(false);
+		VIEW.getViewProperties().getViewTitleBarProperties().setVisible(false);
+		root.setWindow(VIEW);
 		
 		setLayout(new BorderLayout());
 		TOP     = new InfoNodeDockingArea( Direction.UP   , this ); 
@@ -201,7 +215,7 @@ public class InfoNodeDockingWindowManager extends DockableWindowManager {
 		if (!alreadyHasView) {
 			
 			JComponent window = makeDockable(name) ;
-			iview = new JEditDockableView( window, name ) ; 
+			iview = new JEditDockableView( window, name, getDockableTitle(name) ) ; 
 			LEFT.getBar().addTab(iview);
 			
 			String position = jEdit.getProperty( name + "dock-position" ) ;
