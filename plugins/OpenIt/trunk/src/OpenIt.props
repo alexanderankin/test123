@@ -8,12 +8,12 @@ plugin.org.etheridge.openit.OpenItPlugin.author=Denis Koryavov, Matt Etheridge
 plugin.org.etheridge.openit.OpenItPlugin.version=1.5.2
 plugin.org.etheridge.openit.OpenItPlugin.docs=OpenIt.html
 plugin.org.etheridge.openit.OpenItPlugin.depend.0=jdk 1.5
-plugin.org.etheridge.openit.OpenItPlugin.depend.1=jedit 04.03.07.00
-plugin.org.etheridge.openit.OpenItPlugin.depend.2=optional plugin projectviewer.ProjectViewerPlugin 2.1.3.4
+plugin.org.etheridge.openit.OpenItPlugin.depend.1=jedit 04.03.17.00
+plugin.org.etheridge.openit.OpenItPlugin.depend.2=optional plugin projectviewer.ProjectViewerPlugin 2.9
 plugin.org.etheridge.openit.OpenItPlugin.usePluginHome=true
 plugin.org.etheridge.openit.OpenItPlugin.description=\
 	The OpenIt plug-in provides a quick and easy way to open files in jEdit.
-plugin.org.etheridge.openit.OpenItPlugin.longdescription=../docs/OpenIt.html
+plugin.org.etheridge.openit.OpenItPlugin.longdescription=../docs/description.html
 
 # action labels
 openit.find-file-in-source-path.label=Open File
@@ -37,7 +37,7 @@ openit.FindFileWindow.ImagePropertyLookup.unknown=unknown
 openit.FindFileWindow.ImagePropertyLookup.other=other
 
 # NOTE: if you want to add some new file types and icons, add the file extension
-#       to the following property, and then add a matching 
+#       to the following property, and then add a matching
 #       openit.FindFileWindow.ImageFile.<extension name> line below, and specify
 #       the icon you wish to use.
 openit.FindFileWindow.ImageFileTypes=java xml txt c cpp props properties html unknown other
@@ -70,7 +70,7 @@ options.OpenIt.SourcePathOptionPane.SourcePath.SearchPathsFileFilter=Search Path
 options.OpenIt.SourcePathOptionPane.ExcludeRegularExpression.title=Exclude Files Regular Expression Filter
 options.OpenIt.SourcePathOptionPane.ExcludeRegularExpression.label=Any matching FILES will be ignored: (eg. *.class|*.#*)
 options.OpenIt.SourcePathOptionPane.RefreshRate.title=Search Path Refresh Rate
-options.OpenIt.SourcePathOptionPane.RefreshRate.CheckBox.label=How often should the search path be refreshed? (in seconds): 
+options.OpenIt.SourcePathOptionPane.RefreshRate.CheckBox.label=How often should the search path be refreshed? (in seconds):
 options.OpenIt.SourcePathOptionPane.ExcludeDirectoryRegularExpression.title=Exclude Directories Regular Expression Filter
 options.OpenIt.SourcePathOptionPane.ExcludeDirectoryRegularExpression.label=Any matching DIRECTORIES (and any sub-directories) will be ignored: (eg. *CVS|*org\\etheridge\\openit|C:\\source\\test)
 options.OpenIt.SourcePathOptionPane.IgnoreCase.label=Ignore Case
