@@ -1,0 +1,120 @@
+# OpenIt jEdit Plugin
+# Author: Matt Etheridge
+# Maintainer: Denis Koryavov
+
+# general plugin information
+plugin.org.etheridge.openit.OpenItPlugin.name=OpenIt
+plugin.org.etheridge.openit.OpenItPlugin.author=Denis Koryavov, Matt Etheridge
+plugin.org.etheridge.openit.OpenItPlugin.version=1.5.2
+plugin.org.etheridge.openit.OpenItPlugin.docs=OpenIt.html
+plugin.org.etheridge.openit.OpenItPlugin.depend.0=jdk 1.5
+plugin.org.etheridge.openit.OpenItPlugin.depend.1=jedit 04.03.17.00
+plugin.org.etheridge.openit.OpenItPlugin.depend.2=optional plugin projectviewer.ProjectViewerPlugin 2.9
+plugin.org.etheridge.openit.OpenItPlugin.usePluginHome=true
+plugin.org.etheridge.openit.OpenItPlugin.description=\
+	The OpenIt plug-in provides a quick and easy way to open files in jEdit.
+plugin.org.etheridge.openit.OpenItPlugin.longdescription=../docs/description.html
+
+# action labels
+openit.find-file-in-source-path.label=Open File
+openit.add-current-buffer-directory-to-source-path.label=Add Directory of Current Buffer to SearchPath
+
+# menu structure and labels
+openit.menu=openit.find-file-in-source-path
+openit.menu.label=OpenIt
+
+#
+# GUI Windows
+#
+
+# FindFileWindow
+openit.FindFileWindow.Instruction.label=Enter file name:
+openit.FindFileWindow.InitialLoadingMessage.label=Loading File Index... (this will disappear when loaded)
+
+# Icons
+openit.FindFileWindow.ImagePropertyPrefix=openit.FindFileWindow.ImageFile.
+openit.FindFileWindow.ImagePropertyLookup.unknown=unknown
+openit.FindFileWindow.ImagePropertyLookup.other=other
+
+# NOTE: if you want to add some new file types and icons, add the file extension
+#       to the following property, and then add a matching
+#       openit.FindFileWindow.ImageFile.<extension name> line below, and specify
+#       the icon you wish to use.
+openit.FindFileWindow.ImageFileTypes=java xml txt c cpp props properties html unknown other
+openit.FindFileWindow.ImageFile.java=/org/etheridge/openit/gui/images/java.gif
+openit.FindFileWindow.ImageFile.xml=/org/etheridge/openit/gui/images/xml.gif
+openit.FindFileWindow.ImageFile.txt=/org/etheridge/openit/gui/images/text.gif
+openit.FindFileWindow.ImageFile.props=/org/etheridge/openit/gui/images/props.gif
+openit.FindFileWindow.ImageFile.properties=/org/etheridge/openit/gui/images/props.gif
+openit.FindFileWindow.ImageFile.c=/org/etheridge/openit/gui/images/c.gif
+openit.FindFileWindow.ImageFile.cpp=/org/etheridge/openit/gui/images/c++.gif
+openit.FindFileWindow.ImageFile.html=/org/etheridge/openit/gui/images/html.gif
+openit.FindFileWindow.ImageFile.unknown=/org/etheridge/openit/gui/images/unknown.gif
+openit.FindFileWindow.ImageFile.other=/org/etheridge/openit/gui/images/other.gif
+
+# Filter Window
+openit.FilterWindow.FilterCheckbox.label=Filter (? = any character, * = any string)
+
+# openit options group name
+options.OpenIt.label=OpenIt
+
+# source path option pane
+options.OpenIt.SourcePathOptionPane.label=Search Path Options
+options.OpenIt.SourcePathOptionPane.SourcePath.title=Search Paths
+options.OpenIt.SourcePathOptionPane.SourcePath.instruction.label=Add/Remove Search Paths:
+options.OpenIt.SourcePathOptionPane.mGetRootFromProjectViewer.label=Import files from current project
+# options.OpenIt.SourcePathOptionPane.SourcePath.instruction2.label=(NOTE: these are usually the base directory(s) of your Java source files, but can be any directory!)
+options.OpenIt.SourcePathOptionPane.SourcePath.AddButton.label=Add Search Path(s)
+options.OpenIt.SourcePathOptionPane.SourcePath.RemoveButton.label=Remove Search Path(s)
+options.OpenIt.SourcePathOptionPane.SourcePath.SearchPathsFileFilter=Search Paths
+options.OpenIt.SourcePathOptionPane.ExcludeRegularExpression.title=Exclude Files Regular Expression Filter
+options.OpenIt.SourcePathOptionPane.ExcludeRegularExpression.label=Any matching FILES will be ignored: (eg. *.class|*.#*)
+options.OpenIt.SourcePathOptionPane.RefreshRate.title=Search Path Refresh Rate
+options.OpenIt.SourcePathOptionPane.RefreshRate.CheckBox.label=How often should the search path be refreshed? (in seconds):
+options.OpenIt.SourcePathOptionPane.ExcludeDirectoryRegularExpression.title=Exclude Directories Regular Expression Filter
+options.OpenIt.SourcePathOptionPane.ExcludeDirectoryRegularExpression.label=Any matching DIRECTORIES (and any sub-directories) will be ignored: (eg. *CVS|*org\\etheridge\\openit|C:\\source\\test)
+options.OpenIt.SourcePathOptionPane.IgnoreCase.label=Ignore Case
+
+# popups option pane
+options.OpenIt.PopupOptionsPane.SubstringMatching.title=Substring Matching
+options.OpenIt.PopupOptionsPane.SubstringMatching.instruction.label.1=With substring matching activated, any filename containing the entered substring will be displayed.
+options.OpenIt.PopupOptionsPane.SubstringMatching.instruction.label.2=(NOTE: substring matching may decrease performance slightly!)
+options.OpenIt.PopupOptionsPane.SubstringMatching.label=Allow substring matching (anywhere in filename)
+options.OpenIt.PopupOptionsPane.ClearPopup.title=Clear Popup
+options.OpenIt.PopupOptionsPane.label=Popup Window Options
+options.OpenIt.PopupOptionsPane.ClearPopup.ShouldClearPopup=Clear window on popup
+options.OpenIt.PopupOptionsPane.CaseSensitive.title=Case Sensitivity
+options.OpenIt.PopupOptionsPane.CaseSensitive.label=Case sensitive file name matching
+options.OpenIt.PopupOptionsPane.Display.title=List Display
+options.OpenIt.PopupOptionsPane.Display.DisplayExtensions=Display file extensions
+options.OpenIt.PopupOptionsPane.Display.DisplayDirectory=Display directory where file exists
+options.OpenIt.PopupOptionsPane.Display.DisplayIcons=Display file type icons
+options.OpenIt.PopupOptionsPane.Display.DisplaySize=Display file size
+options.OpenIt.PopupOptionsPane.JavaFileDisplay.DisplayPackages=Paths in Java style
+options.OpenIt.PopupOptionsPane.JavaFileDisplay.DisplayDirectory=Display directory where file exists
+
+#
+# General Messages
+#
+
+openit.InitialLoadingNotComplete.StatusBarMessage=Initial SearchPath not loaded yet, try again in a few seconds
+openit.AddedDirectoryToSourcePath.StatusBarMessage.1=Added
+openit.AddedDirectoryToSourcePath.StatusBarMessage.2=directory to the OpenIt search path successfully!
+
+#
+# jEdit 4.2 Properties
+#
+
+# whether the plugin should be activated at startup or defer till used
+plugin.org.etheridge.openit.OpenItPlugin.activate=defer
+
+# menu
+plugin.org.etheridge.openit.OpenItPlugin.menu=openit.find-file-in-source-path
+
+# option panels
+plugin.org.etheridge.openit.OpenItPlugin.option-group=sourcePathOptionsPane \ popupOptionsPane
+options.sourcePathOptionsPane.label=Search Path Options
+options.sourcePathOptionsPane.code=new org.etheridge.openit.options.SourcePathOptionsPane();
+
+options.popupOptionsPane.label=Popup Window Options
+options.popupOptionsPane.code=new org.etheridge.openit.options.PopupOptionsPane();
