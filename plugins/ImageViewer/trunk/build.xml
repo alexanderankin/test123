@@ -2,7 +2,8 @@
     <!-- $Id: build.xml 1216 2006-01-05 18:45:35Z daleanson $ -->
 
     <!-- read build.props to override properties set below -->
-    <property file="build.props"/>
+    <property file="build.properties"/>
+    <property file="../build.properties"/>
 
     <!-- default location of jedit.jar -->
     <property name="jedit.install.dir"  value="../.."/>
