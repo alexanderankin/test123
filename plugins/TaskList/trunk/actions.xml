@@ -67,6 +67,9 @@ $Id$
                                     // better than 99.9% of the nodes in ProjectViewer
                                     if ( node.isFile() ) {
                                         VPTFile file_node = ( VPTFile ) node;
+                                        if (file_node.getFile() == null) {
+                                            continue;   
+                                        }
                                         File file = new File( file_node.getFile().getPath() );
             
                                         // added this check for binary files just to speed things up.
@@ -99,7 +102,7 @@ $Id$
                                             // "extractTasks" since extractTasks just calls parseBuffer in a swing
                                             // thread, and I'm already in a swing thread.  Also, parseBuffer will
                                             // only parse buffers of the modes allowed by the TaskList mode configuration.
-                                            Hashtable tasks = TaskListPlugin.requestTasksForBuffer( buffer );
+                                            HashMap tasks = TaskListPlugin.requestTasksForBuffer( buffer );
                                             if (tasks == null || tasks.isEmpty()) {
                                                 TaskListPlugin.parseBuffer( buffer );
                                                 tasks = TaskListPlugin.requestTasksForBuffer( buffer );
@@ -214,15 +217,15 @@ $Id$
                 }
             
                 private void handleClick( MouseEvent e ) {
-                    if (e.getClickCount() == 2 || (e.getClickCount() == 1 && TaskListPlugin.getAllowSingleClickSelection())) {
-                        TreePath path = tree.getClosestPathForLocation( e.getX(), e.getY() );
-                        Task task = null;
+                    if (e.getClickCount() == 2 || (e.getClickCount() == 1 && tasklist.TaskListPlugin.getAllowSingleClickSelection())) {
+                        javax.swing.tree.TreePath path = tree.getClosestPathForLocation( e.getX(), e.getY() );
+                        tasklist.Task task = null;
                         if ( path.getPathCount() > 2 ) {
-                            task = ( Task ) ( ( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject();
+                            task = ( tasklist.Task ) ( ( javax.swing.tree.DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject();
                             Buffer buffer = task.getBuffer();
                             int line_number = task.getLineNumber();
                             int start_offset = task.getStartOffset();
-                            jEdit.openFile( view, buffer.getPath() );
+                            jEdit.openFile( jEdit.getActiveView(), buffer.getPath() );
                             EditPane edit_pane = jEdit.getActiveView().showBuffer( buffer );
                             edit_pane.getTextArea().scrollTo( line_number, start_offset, true );
                             edit_pane.getTextArea().setCaretPosition( task.getStartPosition().getOffset() );

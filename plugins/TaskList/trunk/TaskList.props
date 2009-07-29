@@ -10,6 +10,7 @@ plugin.tasklist.TaskListPlugin.docs=index.html
 plugin.tasklist.TaskListPlugin.depend.0=jdk 1.5
 plugin.tasklist.TaskListPlugin.depend.1=jedit 04.03.12.00
 plugin.tasklist.TaskListPlugin.usePluginHome=true
+plugin.tasklist.TaskListPlugin.description=Shows all "TODO" comments in a file.
 ### menu
 plugin.tasklist.TaskListPlugin.menu=tasklist \
 	tasklist.parse-buffer \
