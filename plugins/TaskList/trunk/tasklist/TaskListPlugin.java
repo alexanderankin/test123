@@ -691,7 +691,7 @@ public class TaskListPlugin extends EBPlugin
 
 		for(Integer key : taskMap.keySet())
 		{
-			Task _task = (Task)taskMap.remove(key);
+			Task _task = (Task)taskMap.get(key);
 
 			if(TaskListPlugin.DEBUG)
 				Log.log(Log.DEBUG, TaskListPlugin.class,
@@ -699,6 +699,7 @@ public class TaskListPlugin extends EBPlugin
 
 			fireTaskRemoved(_task);
 		}
+		taskMap.clear();
 	}//}}}
 
 	//{{{ TaskListener interface
