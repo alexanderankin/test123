@@ -449,7 +449,7 @@ public class Navigator implements ActionListener {
     }
 
     /**
-     * Show a popup containing the back history, current position, and forward history.    
+     * Show a popup containing the back history, current position, and forward history.
      */
     public void combinedList() {
         NavStack stack = new NavStack( backHistory.size() + forwardHistory.size() + ( current == null ? 0 : 1 ) );
