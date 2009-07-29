@@ -16,7 +16,7 @@ public class JEditDockableViewExporter extends DefaultExporter implements
 	 */
 	public JEditDockableViewExporter(JEditDockableView window) {
 		super(window);
-		setAttribute("title", window.getTitle());
+		setAttribute("title", window.getName());
 	}
 
 }

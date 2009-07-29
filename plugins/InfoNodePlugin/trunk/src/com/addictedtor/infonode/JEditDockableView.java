@@ -7,16 +7,23 @@ import net.infonode.docking.View;
 @SuppressWarnings("serial")
 public class JEditDockableView extends View {
 	
-	public JEditDockableView( JComponent dockable, String name ){
-		super( name, null, dockable ) ;
+    private String name;
+    
+	public JEditDockableView( JComponent dockable, String name, String title ){
+		super( title, null, dockable ) ;
+		this.name = name;
 	}
 	
 	public JEditDockableView( InfoNodeDockingWindowManager wm , String name ){
-		this( wm.makeDockable(name), name ) ;
+		this( wm.makeDockable(name), name, wm.getDockableTitle(name) ) ;
 		wm.put(name, this ) ;
 	}
 
 	public static void close(String name) {}
 	
+	public String getName()
+	{
+	    return name;
+	}
 	
 }
