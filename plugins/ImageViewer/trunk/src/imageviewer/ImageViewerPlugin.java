@@ -56,10 +56,10 @@ public class ImageViewerPlugin extends EBPlugin {
     private static HashMap<View, ImageViewer> viewMap = new HashMap<View, ImageViewer>();
 
     // VFSDirectoryEntryTable to MouseAdapter map
-    private static HashMap<VFSDirectoryEntryTable, MouseAdapter> vfsAdapterMap = new HashMap<VFSDirectoryEntryTable, MouseAdapter>();
+    private static HashMap<VFSDirectoryEntryTable, MMouseAdapter> vfsAdapterMap = new HashMap<VFSDirectoryEntryTable, MMouseAdapter>();
 
     // PV tree to MouseAdapter map
-    private static HashMap<JTree, MouseAdapter> pvAdapterMap = new HashMap<JTree, MouseAdapter>();
+    private static HashMap<JTree, MMouseAdapter> pvAdapterMap = new HashMap<JTree, MMouseAdapter>();
 
 
     /**
@@ -203,7 +203,7 @@ public class ImageViewerPlugin extends EBPlugin {
                 for ( String name : tree_field_names ) {
                     JTree tree = ( JTree ) PrivilegedAccessor.getValue( pv, name );
                     if ( tree != null && pvAdapterMap.get( tree ) == null ) {
-                        MouseAdapter adapter = createPVMouseAdapter( view, tree );
+                        MMouseAdapter adapter = createPVMouseAdapter( view, tree );
                         tree.addMouseMotionListener( adapter );
                         pvAdapterMap.put( tree, adapter );
                     }
@@ -229,7 +229,7 @@ public class ImageViewerPlugin extends EBPlugin {
                     for ( int i = 0; i < treeList.size(); i++ ) {
                         JTree tree = ( JTree ) treeList.get( i );
                         if ( tree != null && pvAdapterMap.get( tree ) == null ) {
-                            MouseAdapter adapter = createPVMouseAdapter( view, tree );
+                            MMouseAdapter adapter = createPVMouseAdapter( view, tree );
                             tree.addMouseMotionListener( adapter );
                             pvAdapterMap.put( tree, adapter );
                         }
@@ -242,8 +242,8 @@ public class ImageViewerPlugin extends EBPlugin {
         }
     }
 
-    private MouseAdapter createPVMouseAdapter( final View view, final JTree tree ) {
-        MouseAdapter adapter = new MouseAdapter() {
+    private MMouseAdapter createPVMouseAdapter( final View view, final JTree tree ) {
+        MMouseAdapter adapter = new MMouseAdapter(getImageViewer(view)) {
                     public void mouseMoved( MouseEvent me ) {
                         TreePath treepath = tree.getClosestPathForLocation( me.getX(), me.getY() );
                         VPTNode node = ( VPTNode ) treepath.getLastPathComponent();
@@ -277,7 +277,7 @@ public class ImageViewerPlugin extends EBPlugin {
                 try {
                     VFSDirectoryEntryTable table = ( VFSDirectoryEntryTable ) PrivilegedAccessor.invokeMethod( child, "getTable", null );
                     if ( table != null && vfsAdapterMap.get( table ) == null ) {
-                        MouseAdapter adapter = createVFSMouseAdapter( view, table );
+                        MMouseAdapter adapter = createVFSMouseAdapter( view, table );
                         table.addMouseMotionListener( adapter );
                         vfsAdapterMap.put( table, adapter );
                     }
@@ -289,8 +289,8 @@ public class ImageViewerPlugin extends EBPlugin {
         }
     }
 
-    private MouseAdapter createVFSMouseAdapter( final View view, final VFSDirectoryEntryTable table ) {
-        MouseAdapter adapter = new MouseAdapter() {
+    private MMouseAdapter createVFSMouseAdapter( final View view, final VFSDirectoryEntryTable table ) {
+        MMouseAdapter adapter = new MMouseAdapter(getImageViewer(view)) {
                     public void mouseMoved( MouseEvent me ) {
                         Point p = me.getPoint();
                         int row = table.rowAtPoint( p );
@@ -319,11 +319,11 @@ public class ImageViewerPlugin extends EBPlugin {
 
     public void stop() {
         for ( VFSDirectoryEntryTable table : vfsAdapterMap.keySet() ) {
-            MouseAdapter adapter = vfsAdapterMap.get( table );
+            MMouseAdapter adapter = vfsAdapterMap.get( table );
             table.removeMouseMotionListener( adapter );
         }
         for ( JTree tree : pvAdapterMap.keySet() ) {
-            MouseAdapter adapter = pvAdapterMap.get( tree );
+            MMouseAdapter adapter = pvAdapterMap.get( tree );
             tree.removeMouseMotionListener( adapter );
         }
         vfsAdapterMap = null;
