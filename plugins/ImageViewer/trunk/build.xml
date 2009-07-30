@@ -66,7 +66,10 @@
                debug="on"
                nowarn="on"
                destdir="${classes.dir}"
-               srcdir="${src.dir}">
+               srcdir="${src.dir}"
+               bootclasspath="${compiler.bootclasspath}"
+               extdirs="$(compiler.extdirs}"
+               >
             <classpath refid="classpathref" />
         </javac>
         <copy file="${src.dir}/docs/index.html" todir="${doc.dir}"/>

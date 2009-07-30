@@ -33,9 +33,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
 import java.text.*;
 import java.util.*;
@@ -172,55 +169,21 @@ public class ImageViewer extends JPanel {
             }
         );
     }
+    
+    protected JViewport getViewport() {
+        return viewport;   
+    }
+    
+    protected JLabel getImageLabel() {
+        return imageLabel;   
+    }
 
     /*
      * MouseWheel zooms in/out.
      * Mouse drag moves viewport.
      * Double click centers point clicked.
      */
-    MouseAdapter mouseAdapter = new MouseAdapter() {
-                Point previous = null;
-                Cursor oldCursor = null;
-                public void mouseDragged( MouseEvent me ) {
-                    if ( previous == null ) {
-                        previous = me.getPoint();
-                        return ;
-                    }
-                    Point now = me.getPoint();
-                    int dx = previous.x - now.x;
-                    int dy = previous.y - now.y;
-                    Point current = viewport.getViewPosition();
-                    Point to = new Point( current.x + dx, current.y + dy );
-                    viewport.setViewPosition( to );
-                    previous = now;
-                }
-
-                public void mousePressed( MouseEvent me ) {
-                    previous = me.getPoint();
-                    oldCursor = imageLabel.getCursor();
-                    imageLabel.setCursor( Cursor.getPredefinedCursor( Cursor.MOVE_CURSOR ) );
-                }
-
-                public void mouseReleased( MouseEvent me ) {
-                    previous = null;
-                    imageLabel.setCursor( oldCursor != null ? oldCursor : Cursor.getDefaultCursor() );
-                }
-
-                public void mouseClicked( MouseEvent me ) {
-                    if ( me.getClickCount() == 2 ) {
-                        center( me.getPoint() );
-                    }
-                }
-
-                public void mouseWheelMoved( MouseWheelEvent me ) {
-                    if ( me.getWheelRotation() > 0 ) {
-                        zoomIn();
-                    }
-                    else {
-                        zoomOut();
-                    }
-                }
-            };
+    MMouseAdapter mouseAdapter = new MMouseAdapter(this);
 
 
     /**
@@ -247,12 +210,12 @@ public class ImageViewer extends JPanel {
             imageLabel.setIcon( icon );
             imageLabel.setSize( ( int ) originalWidth, ( int ) originalHeight );
             filenameLabel.setText( compressFilename( filename ) );
-            imagesizeLabel.setText( (int)originalWidth + "x" + (int)originalHeight );
+            imagesizeLabel.setText( ( int ) originalWidth + "x" + ( int ) originalHeight );
             refresh();
         }
     }
 
-    private void refresh() {
+    protected void refresh() {
         invalidate();
         validate();
     }
@@ -268,7 +231,7 @@ public class ImageViewer extends JPanel {
         return name.endsWith( ".jpg" ) || name.endsWith( ".gif" ) || name.endsWith( ".png" );
     }
 
-    private void center( Point p ) {
+    protected void center( Point p ) {
         int cx = viewport.getWidth() / 2;
         int cy = viewport.getHeight() / 2;
 
@@ -280,14 +243,14 @@ public class ImageViewer extends JPanel {
     }
 
     // zoom in 10%
-    private void zoomIn() {
+    protected void zoomIn() {
         float width = zoomWidth * 1.1f;
         float height = zoomHeight * 1.1f;
         zoom( width, height );
     }
 
     // zoom out 10%
-    private void zoomOut() {
+    protected void zoomOut() {
         float width = zoomWidth * 0.9f;
         float height = zoomHeight * 0.9f;
         if ( width < 1.0 || height < 1.0 ) {
@@ -301,7 +264,7 @@ public class ImageViewer extends JPanel {
      * @param width the desired width
      * @param height the desired height
      */
-    private void zoom( float width, float height ) {
+    protected void zoom( float width, float height ) {
         zoomWidth = width;
         zoomHeight = height;
         if ( width > 0 && height > 0 ) {
@@ -320,7 +283,7 @@ public class ImageViewer extends JPanel {
      * @param height desired height
      * @return the resized image
      */
-    private Image getScaledImage( Image image, int width, int height ) {
+    protected Image getScaledImage( Image image, int width, int height ) {
         BufferedImage resizedImage = new BufferedImage( width, height, BufferedImage.TYPE_INT_RGB );
         Graphics2D g2 = resizedImage.createGraphics();
         Map<RenderingHints.Key, Object> renderingHints = new HashMap<RenderingHints.Key, Object>();

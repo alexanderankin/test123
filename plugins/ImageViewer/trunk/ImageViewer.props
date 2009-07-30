@@ -9,7 +9,7 @@ plugin.imageviewer.ImageViewerPlugin.activate=startup
 plugin.imageviewer.ImageViewerPlugin.description=Displays image files when selected from ProjectViewer or File Browser
 
 # dependencies
-plugin.imageviewer.ImageViewerPlugin.depend.0=jdk 1.6
+plugin.imageviewer.ImageViewerPlugin.depend.0=jdk 1.5
 plugin.imageviewer.ImageViewerPlugin.depend.1=jedit 04.03.16.00
 plugin.imageviewer.ImageViewerPlugin.depend.2=plugin projectviewer.ProjectPlugin 2.1.3.7
 
