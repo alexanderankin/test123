@@ -140,6 +140,8 @@ public class TagList extends JPanel implements DefaultFocusComponent {
 							if (value.equals(ext))
 								tagModel.addElement(t);
 						}
+						if (tagModel.getSize() == 1)
+							jumpTo(0);
 					}
 				});
 			}
