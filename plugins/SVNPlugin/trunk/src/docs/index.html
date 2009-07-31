@@ -272,7 +272,20 @@ all the .svn files will end up in your Project, which you probably don't want:<b
 Project Viewer will automatically switch to your new project so you can begin working immediately.
 </li>
 </ol>
-
+<br>
+The ProjectViewer trees show the SVN status of files using these icons:
+<br>
+<br>&nbsp;&nbsp;<img src="added.png">&nbsp;&nbsp;The file has been scheduled for "add" to the repository.<br>
+<br>&nbsp;&nbsp;<img src="conflict.png">&nbsp;&nbsp;The file has a conflict that needs to be resolved.<br>
+<br>&nbsp;&nbsp;<img src="deleted.png">&nbsp;&nbsp;The file has been deleted from the repository.<br>
+<br>&nbsp;&nbsp;<img src="ignored.png">&nbsp;&nbsp;The file is ignored by Subversion.<br>
+<br>&nbsp;&nbsp;<img src="locked.png">&nbsp;&nbsp;The file is locked by Subversion.<br>
+<br>&nbsp;&nbsp;<img src="modified.png">&nbsp;&nbsp;The file has local modifications.<br>
+<br>&nbsp;&nbsp;<img src="normal.png">&nbsp;&nbsp;The file is up to date.<br>
+<br>&nbsp;&nbsp;<img src="outofdate.png">&nbsp;&nbsp;The file is out of date.<br>
+<br>&nbsp;&nbsp;<img src="readonly.png">&nbsp;&nbsp;The file is read only.<br>
+<br>&nbsp;&nbsp;<img src="unversioned.png">&nbsp;&nbsp;The file is not under version control.<br>
+<br>
 </p>
 
 <hr>
@@ -315,10 +328,11 @@ Project Viewer will automatically switch to your new project so you can begin wo
 <br>
 </li>
 <li>
-Right click on the top node of your project and select "Properties".  Select
+Right click on the top node of your project and select "Properties".  Select "Subversion" from the version control dropdown if it is not selected already. Select
 "Subversion settings" from the left panel.  The URL should be filled in for you.
 If the repository requires a username and password, fill them in here, or leave the fields blank if the repository allows anonymous access.  The format of your working copies is also displayed.  You can change this value if you need to for compatibility with other SVN clients.<br>
 <br>
+
 <img src="subversion_settings.jpg"><br>
 <br>
 </li>
