@@ -149,7 +149,7 @@ public class ProjectWatcher implements EBComponent {
 	}
 	
 	public void handleMessage(EBMessage message) {
-		if (message instanceof ProjectUpdate) {
+		if (message.getClass().getName().endsWith("ProjectUpdate")) {
 			ProjectUpdate pu = (ProjectUpdate) message;
 			String name = ((ProjectUpdate) message).getProject().getName();
 			if (! watched.contains(name))
@@ -158,7 +158,7 @@ public class ProjectWatcher implements EBComponent {
 				handleFilesChanged(pu);
 			else if (pu.getType() == ProjectUpdate.Type.PROPERTIES_CHANGED)
 				handlePropertiesChanged(pu);
-		} else if (message instanceof StructureUpdate) {
+		} else if (message.getClass().getName().endsWith("StructureUpdate")) {
 			if (! ProjectsOptionPane.getTrackProjectList())
 				return;
 			StructureUpdate su = (StructureUpdate) message;
