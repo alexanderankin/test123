@@ -301,7 +301,8 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		ToolWindowAnchor anchor = position2anchor(position);
 		ToolWindow tw = wm.registerToolWindow(id, title, null, window, anchor);
 		initToolWindowsDescriptors(name, tw);
-		PropertyChangeListener listener = new VisibilityChangeListener(tw, name, window);
+		PropertyChangeListener listener = new VisibilityChangeListener(tw, name,
+			window, true);
 		tw.addPropertyChangeListener("visible", listener);
 		tw.getRepresentativeAnchorDescriptor().setPreviewEnabled(OptionPane.getEnablePreviewProp());
 		return tw;
@@ -312,21 +313,32 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		ToolWindow tw;
 		String name;
 		JComponent window;
-		public VisibilityChangeListener(ToolWindow tw, String name, JComponent window)
+		boolean fake;
+		public VisibilityChangeListener(ToolWindow tw, String name,
+			JComponent window, boolean fake)
 		{
 			this.tw = tw;
 			this.name = name;
 			this.window = window;
+			this.fake = fake;
 		}
-		public void propertyChange(PropertyChangeEvent evt) {
-			if (! tw.isVisible())
-				return;
-			tw.removePropertyChangeListener("visible", this);
-			JComponent comp = createDockable(name);
-			window.add(comp, BorderLayout.CENTER);
+		public void propertyChange(PropertyChangeEvent evt)
+		{
+			if (fake)
+			{
+				if (! tw.isVisible())
+					return;
+				JComponent comp = createDockable(name);
+				window.add(comp, BorderLayout.CENTER);
+				fake = false;
+			}
+			Object reason = tw.isVisible() ? DockableWindowUpdate.ACTIVATED :
+				DockableWindowUpdate.DEACTIVATED;
+			EditBus.send(new DockableWindowUpdate(MyDoggyWindowManager.this,
+				reason, name));
 		}
 	}
-	
+
 	private ToolWindow createToolWindow(String name)
 	{
 		JComponent window = getDockable(name);
@@ -340,6 +352,9 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		ToolWindowAnchor anchor = position2anchor(position);
 		ToolWindow tw = wm.registerToolWindow(id, title, null, window, anchor);
 		initToolWindowsDescriptors(name, tw);
+		PropertyChangeListener listener = new VisibilityChangeListener(tw,
+			name, window, false);
+		tw.addPropertyChangeListener("visible", listener);
 		return tw;
 	}
 
