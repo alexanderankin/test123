@@ -4,18 +4,20 @@ package ise.plugin.svn.pv;
 import projectviewer.config.VersionControlService;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
+import java.io.File;
+import java.util.*;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import java.util.*;
 
 import org.gjt.sp.jedit.OptionGroup;
 import org.gjt.sp.jedit.OptionPane;
 
-import ise.plugin.svn.data.SVNData;
-import ise.plugin.svn.data.StatusData;
 import ise.plugin.svn.command.Status;
 import ise.plugin.svn.io.*;
 import ise.plugin.svn.gui.PVSVNOptionPane;
+
+import org.tmatesoft.svn.core.wc.SVNStatus;
+import org.tmatesoft.svn.core.wc.SVNStatusType;
 
 /**
  * Provide version control icons for file status to ProjectViewer.
@@ -51,6 +53,8 @@ public class VersionControlState implements VersionControlService {
         return new ImageIcon( VersionControlState.class.getClassLoader().getResource( name ) );
     }
 
+    private static Status command = new Status();
+
     /**
      * This method should return an integer identifying the current
      * state of the given file.
@@ -66,65 +70,42 @@ public class VersionControlState implements VersionControlService {
      */
     public int getNodeState( VPTNode f ) {
         String path = f.getNodePath();
-        SVNData data = new SVNData();
-        List<String> paths = new ArrayList<String>();
-        paths.add( path );
-        data.setPaths( paths );
-        data.setRecursive( false );
-
-        // do NOT check if working copy is different than remote copy, that is
-        // way too expensive, time-wise.
-        data.setRemote( false );
-
-        data.setOut( new ConsolePrintStream( new NullOutputStream() ) );
-        Status command = new Status();
-        StatusData status = null;
-        try {
-            status = command.getStatus( data );
+        File file = new File( path );
+        SVNStatus status = command.getStatus( file );
+        if (status == null) {
+            return NONE;   
         }
-        catch ( Exception e ) {
-            status = null;
+        SVNStatusType type = status.getContentsStatus();
+        int rtn;
+        if ( SVNStatusType.STATUS_ADDED.equals( type ) ) {
+            rtn = LOCAL_ADD;
         }
-        if ( status == null ) {
-            return NONE;
+        else if ( SVNStatusType.STATUS_CONFLICTED.equals( type ) ) {
+            rtn = CONFLICT;
         }
-
-        // checking file at a time, so just checking the status.getXXX is enough
-        if ( status.getAdded() != null ) {
-            return LOCAL_ADD;
+        else if ( SVNStatusType.STATUS_DELETED.equals( type ) ) {
+            rtn = DELETED;
         }
-        else if ( status.getConflicted() != null ) {
-            return CONFLICT;
+        else if ( status.isLocked() ) {
+            rtn = LOCKED;
         }
-        else if ( status.getDeleted() != null ) {
-            return DELETED;
+        else if ( SVNStatusType.STATUS_MISSING.equals( type ) ) {
+            rtn = LOCAL_RM;
         }
-        else if ( status.getLocked() != null ) {
-            return LOCKED;
+        else if ( SVNStatusType.STATUS_MODIFIED.equals( type ) ) {
+            rtn = LOCAL_MOD;
         }
-        else if ( status.getMissing() != null ) {
-            return LOCAL_RM;
+        else if ( SVNStatusType.STATUS_UNVERSIONED.equals( type ) ) {
+            rtn = UNVERSIONED;
         }
-        else if ( status.getModified() != null ) {
-            return LOCAL_MOD;
-        }
-        else if ( status.getOutOfDate() != null ) {
-            return NEED_UPDATE;
-        }
-        else if ( status.getUnversioned() != null ) {
-            return UNVERSIONED;
-        }
-        else if ( status.getNormal() != null ) {
-            return NORMAL;
-        }
-        else if ( status.getErrorFiles() != null ) {
-            return UNVERSIONED;
+        else if ( SVNStatusType.STATUS_NORMAL.equals( type ) ) {
+            rtn = NORMAL;
         }
         else {
-            return NONE;
+            rtn = NONE;
         }
+        return rtn;
     }
-
 
     /**
      * This should return the status icon to be used to represent the
@@ -158,8 +139,6 @@ public class VersionControlState implements VersionControlService {
                 return null;
         }
     }
-
-
 
     /**
      * Returns the class identifying the plugin. This is used to check

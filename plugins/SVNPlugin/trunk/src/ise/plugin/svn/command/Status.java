@@ -39,11 +39,26 @@ import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNStatusClient;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
+import org.tmatesoft.svn.core.wc.SVNStatus;
 
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.data.StatusData;
 
 public class Status {
+    
+    public SVNStatus getStatus(File path) {
+        SVNKit.setupLibrary();
+        SVNClientManager clientManager = SVNClientManager.newInstance();
+        SVNStatusClient client = clientManager.getStatusClient();
+        SVNStatus status = null;
+        try {
+            status = client.doStatus(path, false);
+        }
+        catch(Exception e) {        // NOPMD
+            e.printStackTrace();
+        }
+        return status;
+    }
 
     public StatusData getStatus( SVNData cd ) throws CommandInitializationException, SVNException {
         SVNKit.setupLibrary();
@@ -52,6 +67,7 @@ public class Status {
         if ( cd.getPaths() == null ) {
             return null;     // nothing to do
         }
+        
         if ( cd.getOut() == null ) {
             throw new CommandInitializationException( "Invalid output stream." );
         }
