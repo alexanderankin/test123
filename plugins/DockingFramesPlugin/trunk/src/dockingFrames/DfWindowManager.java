@@ -267,6 +267,7 @@ public class DfWindowManager extends DockableWindowManager
 			applyDockingLayout(layout);
 			toggleViewIndex = -1;
 		}
+		view.getTextArea().requestFocus();
 	}
 
 	private class DfDockingArea implements DockingArea
@@ -432,6 +433,7 @@ public class DfWindowManager extends DockableWindowManager
 			return;
 		if (! minimizeDockable(d))
 			d.setExtendedMode(ExtendedMode.MINIMIZED);
+		view.getTextArea().requestFocus();
 	}
 
 	@Override
