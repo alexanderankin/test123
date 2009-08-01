@@ -56,6 +56,7 @@ import bibliothek.util.xml.XElement;
 @SuppressWarnings("serial")
 public class DfWindowManager extends DockableWindowManager
 {
+	private static final String RESTORE_LAYOUT = "RestoreViewAfterToggle";
 	private Map<String, JEditDockable> created = new HashMap<String, JEditDockable>();
 	private CControl control;
 	private static JEditDockableFactory factory;
@@ -68,6 +69,7 @@ public class DfWindowManager extends DockableWindowManager
 	private JEditDockHierarchyListener hierarchyListener;
 	private HashSet<DockStation> listenedStations;
 	private boolean loadingLayout;
+	private int toggleViewIndex;
 
 	public DfWindowManager(View view, DockableWindowFactory instance,
 			ViewConfig config)
@@ -102,6 +104,7 @@ public class DfWindowManager extends DockableWindowManager
 		listenedStations = new HashSet<DockStation>();
 		hierarchyListener = new JEditDockHierarchyListener();
 		loadingLayout = false;
+		toggleViewIndex = -1;
 	}
 
 	static public void showPreferenceDialog(View view)
@@ -241,10 +244,29 @@ public class DfWindowManager extends DockableWindowManager
 	@Override
 	public void toggleDockAreas()
 	{
-		((DfDockingArea)getBottomDockingArea()).toggle();
-		((DfDockingArea)getTopDockingArea()).toggle();
-		((DfDockingArea)getRightDockingArea()).toggle();
-		((DfDockingArea)getLeftDockingArea()).toggle();
+		if (toggleViewIndex == -1)
+		{
+			toggleViewIndex = 0;
+			for (View v: jEdit.getViews())
+			{
+				if (v == view)
+					break;
+				toggleViewIndex++;
+			}
+			getDockingLayout(view.getViewConfig()).saveLayout(
+				RESTORE_LAYOUT, toggleViewIndex);
+			((DfDockingArea)getBottomDockingArea()).minimize();
+			((DfDockingArea)getTopDockingArea()).minimize();
+			((DfDockingArea)getRightDockingArea()).minimize();
+			((DfDockingArea)getLeftDockingArea()).minimize();
+		}
+		else
+		{
+			DockingLayout layout = getDockingLayout(view.getViewConfig()); 
+			layout.loadLayout(RESTORE_LAYOUT, toggleViewIndex);
+			applyDockingLayout(layout);
+			toggleViewIndex = -1;
+		}
 	}
 
 	private class DfDockingArea implements DockingArea
@@ -331,22 +353,11 @@ public class DfWindowManager extends DockableWindowManager
 			}
 			return dockables;
 		}
-		private boolean toggleClose = true;
-		public void toggle()
+		public void minimize()
 		{
-			if (toggleClose)
-			{
-				Vector<JEditDockable> dockables = getAreaDockables(false);
-				for (JEditDockable dockable: dockables)
-					minimizeDockable(dockable);
-			}
-			else
-			{
-				Vector<JEditDockable> dockables = getAreaDockables(true);
-				for (JEditDockable dockable: dockables)
-					dockable.setExtendedMode(ExtendedMode.NORMALIZED);
-			}
-			toggleClose = !toggleClose;
+			Vector<JEditDockable> dockables = getAreaDockables(false);
+			for (JEditDockable dockable: dockables)
+				minimizeDockable(dockable);
 		}
 		public String [] getDockables()
 		{
@@ -548,13 +559,11 @@ public class DfWindowManager extends DockableWindowManager
 	{
 		public void controllerChanged(DockHierarchyEvent event)
 		{
-			System.err.println("controllerChanged: " +
-					((JEditDockable)(((CommonDockable) event.getDockable()).getDockable())).getName());
+			//System.err.println("controllerChanged: " + ((JEditDockable)(((CommonDockable) event.getDockable()).getDockable())).getName());
 		}
 		public void hierarchyChanged(DockHierarchyEvent event)
 		{
-			System.err.println("hierarchyChanged: " +
-					((JEditDockable)(((CommonDockable) event.getDockable()).getDockable())).getName());
+			//System.err.println("hierarchyChanged: " +	((JEditDockable)(((CommonDockable) event.getDockable()).getDockable())).getName());
 			DockStation station = event.getDockable().getDockParent();
 			if (station == null)
 				return;
@@ -579,28 +588,28 @@ public class DfWindowManager extends DockableWindowManager
 			JEditDockable d = getJEditDockable(dockable);
 			if (d == null)
 				return;
-			System.err.println("added: " + d.getName());
+			//System.err.println("added: " + d.getName());
 		}
 		public void dockableAdding(DockStation station, Dockable dockable)
 		{
 			JEditDockable d = getJEditDockable(dockable);
 			if (d == null)
 				return;
-			System.err.println("adding: " + d.getName());
+			//System.err.println("adding: " + d.getName());
 		}
 		public void dockableRemoved(DockStation station, Dockable dockable)
 		{
 			JEditDockable d = getJEditDockable(dockable);
 			if (d == null)
 				return;
-			System.err.println("removed: " + d.getName());
+			//System.err.println("removed: " + d.getName());
 		}
 		public void dockableRemoving(DockStation station, Dockable dockable)
 		{
 			JEditDockable d = getJEditDockable(dockable);
 			if (d == null)
 				return;
-			System.err.println("removing: " + d.getName());
+			//System.err.println("removing: " + d.getName());
 		}
 		public void dockableSelected(DockStation station,
 				Dockable oldSelection, Dockable newSelection)
@@ -608,7 +617,7 @@ public class DfWindowManager extends DockableWindowManager
 			JEditDockable d = getJEditDockable(newSelection);
 			if (d == null)
 				return;
-			System.err.println("selected: " + d.getName());
+			//System.err.println("selected: " + d.getName());
 		}
 		public void dockableVisibiltySet(DockStation station,
 				Dockable dockable, boolean visible)
@@ -616,7 +625,7 @@ public class DfWindowManager extends DockableWindowManager
 			JEditDockable d = getJEditDockable(dockable);
 			if (d == null)
 				return;
-			System.err.println("visibilitySet: " + d.getName() + " - " + visible);
+			//System.err.println("visibilitySet: " + d.getName() + " - " + visible);
 			if (visible)
 				d.madeVisible();
 		}
