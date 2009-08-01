@@ -389,9 +389,9 @@ public class DfWindowManager extends DockableWindowManager
 			else if (position.equals(DockableWindowManager.TOP))
 				loc = center.rectangle(0.0, 0.0, 1.0, 0.2);
 			else if (position.equals(DockableWindowManager.RIGHT))
-				loc = center.rectangle(0.8, 0.0, 0.2, 0.8);
+				loc = center.rectangle(0.8, 0.2, 0.2, 0.6);
 			else if (position.equals(DockableWindowManager.LEFT))
-				loc = center.rectangle(0.0, 0.0, 0.2, 0.8);
+				loc = center.rectangle(0.0, 0.2, 0.2, 0.6);
 			return loc.stack();
 		}
 	}
@@ -525,7 +525,11 @@ public class DfWindowManager extends DockableWindowManager
 		if (window == null)
 		{
 			if (fake)
-				window = new JPanel();
+			{
+				// Create a fake panel only if the dockable exists
+				if (super.factory.getDockableWindowFactory(name) != null)
+					window = new JPanel();
+			}
 			else
 				window = createDockable(name);
 		}
