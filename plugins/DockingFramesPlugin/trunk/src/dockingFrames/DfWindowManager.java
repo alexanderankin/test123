@@ -536,9 +536,8 @@ public class DfWindowManager extends DockableWindowManager
 		if (window == null)
 			return null;
 		String title = getDockableTitle(name);
-		final JEditDockable d = fake ?
-			new JEditDockable(factory, name, title) :
-			new JEditDockable(factory, name, title, window);
+		final JEditDockable d = new JEditDockable(factory, name, title,
+			window, fake);
 		created.put(name, d);
 		MinimizeAction minimizeAction = new MinimizeAction();
 		d.putAction(CDockable.ACTION_KEY_MINIMIZE, minimizeAction);
@@ -672,31 +671,22 @@ public class DfWindowManager extends DockableWindowManager
 	{
 		private String name;
 		private JComponent window;
+		private boolean fake;
 
-		// This constructor is for fake dockables - for lazy construction
-		// of dockables.
 		public JEditDockable(JEditDockableFactory factory, String name,
-				String title)
-		{
-			super(factory, title, new JPanel());
-			this.name = name;
-			window = null;
-			setCloseable(true);
-		}
-		// This constructor is for real dockables.
-		public JEditDockable(JEditDockableFactory factory, String name,
-			String title, JComponent window)
+			String title, JComponent window, boolean fake)
 		{
 			super(factory, title, window);
 			this.name = name;
 			this.window = window;
+			this.fake = fake;
 			setCloseable(true);
 		}
 		public String getName() { return name; }
 		public JComponent getWindow() { return window; }
 		public void registerListeners()
 		{
-			if (window != null)
+			if (! fake)
 				return;
 			if (intern() == null)
 				return;
@@ -718,8 +708,9 @@ public class DfWindowManager extends DockableWindowManager
 		public void madeVisible()
 		{
 			// Replace fake dockables with real ones when needed
-			if (window != null)
+			if (! fake)
 				return;
+			fake = false;
 			window = createDockable(getName());
 			getContentPane().removeAll();
 			getContentPane().add(window, BorderLayout.CENTER);
