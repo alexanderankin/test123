@@ -357,7 +357,7 @@ public class DfWindowManager extends DockableWindowManager
 		{
 			Vector<JEditDockable> dockables = getAreaDockables(false);
 			for (JEditDockable dockable: dockables)
-				minimizeDockable(dockable);
+				minimizeDockableInArea(dockable, this);
 		}
 		public String [] getDockables()
 		{
@@ -495,6 +495,11 @@ public class DfWindowManager extends DockableWindowManager
 		DfDockingArea area = getDockingAreaOf(d);
 		if (area == null)
 			return false;
+		return minimizeDockableInArea(d, area);
+	}
+
+	private boolean minimizeDockableInArea(JEditDockable d, DfDockingArea area)
+	{
 		CBaseLocation loc = CLocation.base();
 		CFlapIndexLocation mloc = null;
 		if (area.getPosition().equals(DockableWindowManager.BOTTOM))
