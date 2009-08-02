@@ -587,7 +587,12 @@ public class DfWindowManager extends DockableWindowManager
 		private JEditDockable getJEditDockable(Dockable d)
 		{
 			if (d instanceof CommonDockable)
-				return (JEditDockable) (((CommonDockable) d).getDockable());
+			{
+				CommonDockable commonDockable = (CommonDockable) d;
+				CDockable cDockable = commonDockable.getDockable();
+				if (cDockable instanceof JEditDockable)
+					return (JEditDockable) cDockable;
+			}
 			return null;
 		}
 		public void dockableAdded(DockStation station, Dockable dockable)
