@@ -1525,6 +1525,12 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
   <title>Change log</title>
   <itemizedlist>
 
+  <listitem id="ver4.4.1"><para>
+    <emphasis role="bold">Version 4.4.1</emphasis> Requires jEdit 4.3pre17, JDK 1.5, ErrorList 1.4, ProjectViewer 2.9 (optional). <itemizedlist>
+        <listitem><para> Report errors for processes with only one multiline error, fixing regression introduced by 2783642 in Console 4.4. </para></listitem>
+    </itemizedlist>
+    </para></listitem>
+
   <listitem id="ver4.4"><para>
     <emphasis role="bold">Version 4.4</emphasis> Requires jEdit 4.3pre17, JDK 1.5, ErrorList 1.4, ProjectViewer 2.9 (optional). <itemizedlist>
     	<listitem><para> Updated to listen to ProjectViewer 2.9 project switch events. </para></listitem>
