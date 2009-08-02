@@ -66,7 +66,7 @@ projectviewer_open_all_files.label=Open All Project Files
 projectviewer_close_all_files.label=Close All Project Files
 projectviewer_remove_all_files.label=Remove All Project Files
 projectviewer_launch_current_buffer.label=Launch browser on buffer
-projectviewer_jarmaker_dialog.label=JarMaker Dialog
+projectviewer_jarmaker_dialog.label=Archive Project
 projectviewer_focuswindow.label=Show Project Viewer
 projectviewer_paste_selected_files.label=Paste File Names
 
@@ -81,17 +81,20 @@ projectviewer.menu=\
     projectviewer_parent-group \
     projectviewer_set-active \
 	- \
-    projectviewer_new-file \
-	projectviewer_paste_selected_files \
-	- \
 	projectviewer_wrapper_edit \
 	projectviewer_wrapper_reimport \
+	projectviewer_jarmaker_dialog \
+    projectviewer_new-file \
+	- \
 	projectviewer_open_all_files \
 	projectviewer_close_all_files \
 	projectviewer_remove_all_files \
-	projectviewer_launch_current_buffer \
+	projectviewer_wrapper_collapse_all \
+	projectviewer_wrapper_expand_all \
+	- \
 	projectviewer_wrapper_search \
-	projectviewer_jarmaker_dialog
+	projectviewer_launch_current_buffer \
+	projectviewer_paste_selected_files
 projectviewer.menu.label=Project Viewer
 projectviewer_projects_menu.label=Projects
 #}}}
