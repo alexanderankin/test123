@@ -973,6 +973,8 @@ implements EBComponent, DefaultFocusComponent
 					commandRunning = false;
 //					updateAnimation();
 					stopAnimation();
+					if(errorSource.getErrorCount() != 0)
+						ErrorSource.registerErrorSource(errorSource);
 				}
 			});
 		} //}}}
