@@ -67,6 +67,8 @@
                nowarn="on"
                destdir="${classes.dir}"
                srcdir="${src.dir}"
+               source="${compiler.source}"
+               target="${compiler.target}"
                bootclasspath="${compiler.bootclasspath}"
                extdirs="$(compiler.extdirs}"
                >
