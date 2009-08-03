@@ -172,8 +172,13 @@ public class DfWindowManager extends DockableWindowManager
 			if (loc != null)
 				d.setLocation(loc);
 		}
-		d.setVisible(true);
-		focusDockable(d.getName());
+		if (! d.isVisible())
+		{
+			d.requestFocus();
+			d.setVisible(true);
+		}
+		else
+			focusDockable(d.getName());
 	}
 
 	private void setTheme(String name)
@@ -693,6 +698,7 @@ public class DfWindowManager extends DockableWindowManager
 		private String name;
 		private JComponent window;
 		private boolean fake;
+		private boolean requestFocus = false;
 
 		public JEditDockable(JEditDockableFactory factory, String name,
 			String title, JComponent window, boolean fake)
@@ -726,22 +732,31 @@ public class DfWindowManager extends DockableWindowManager
 				}
 			}
 		}
+		public void requestFocus() {
+			requestFocus = true;
+		}
 		public void madeVisible()
 		{
 			// Replace fake dockables with real ones when needed
-			if (! fake)
-				return;
-			fake = false;
-			window = createDockable(getName());
-			getContentPane().removeAll();
-			getContentPane().add(window, BorderLayout.CENTER);
-			DockStation station = intern().getDockParent();
-			if (station.getDockableCount() == 0)
+			if (fake)
 			{
-				station.removeDockStationListener(listener);
-				listenedStations.remove(station);
+				fake = false;
+				window = createDockable(getName());
+				getContentPane().removeAll();
+				getContentPane().add(window, BorderLayout.CENTER);
+				DockStation station = intern().getDockParent();
+				if (station.getDockableCount() == 0)
+				{
+					station.removeDockStationListener(listener);
+					listenedStations.remove(station);
+				}
+				intern().removeDockHierarchyListener(hierarchyListener);
 			}
-			intern().removeDockHierarchyListener(hierarchyListener);
+			if (requestFocus)
+			{
+				requestFocus = false;
+				DfWindowManager.this.focusDockable(getName());
+			}
 		}
 	}
 
