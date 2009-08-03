@@ -16,6 +16,7 @@ import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import org.gjt.sp.jedit.EditBus;
@@ -463,9 +464,16 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 				current.getId()));
 		
 		tw.setActive(true);
-		focusDockable(tw.getId());
-		EditBus.send(new DockableWindowUpdate(this, DockableWindowUpdate.ACTIVATED,
-			tw.getId()));
+		final ToolWindow twToFocus = tw;
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				focusDockable(twToFocus.getId());
+				EditBus.send(new DockableWindowUpdate(MyDoggyWindowManager.this,
+					DockableWindowUpdate.ACTIVATED, twToFocus.getId()));
+			}
+		});
 	}
 
 	private ToolWindowAnchor position2anchor(String position)
