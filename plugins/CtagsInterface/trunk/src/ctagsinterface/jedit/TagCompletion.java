@@ -54,6 +54,7 @@ public class TagCompletion {
 	class TagCandidates implements Candidates
 	{
 		private Vector<Tag> tags;
+		private Vector<Tag> shownTags;
 		private DefaultListCellRenderer renderer;
 		private TagCompletionPopup popup;
 		
@@ -61,7 +62,7 @@ public class TagCompletion {
 		public TagCandidates(final Vector<Tag> tags,
 			TagCompletionPopup popup)
 		{
-			this.tags = tags;
+			shownTags = this.tags = tags;
 			this.popup = popup;
 			renderer = new DefaultListCellRenderer() {
 				@Override
@@ -69,7 +70,7 @@ public class TagCompletion {
 						Object value, int index, boolean isSelected,
 						boolean cellHasFocus)
 				{
-					Tag tag = tags.get(index);
+					Tag tag = shownTags.get(index);
 					if (isSelected)
 						TagCandidates.this.popup.setSelectedTag(tag);
 					super.getListCellRendererComponent(list,
@@ -91,10 +92,23 @@ public class TagCompletion {
 				return ch - '0';
 			return (-1);
 		}
-		
+
+		public void narrow(char c)
+		{
+			if (c == '\b')
+				prefix = prefix.substring(0, prefix.length() - 1);
+			else
+				prefix = prefix + c;
+			shownTags = new Vector<Tag>();
+			for (Tag t: tags) {
+				if (t.getName().startsWith(prefix))
+					shownTags.add(t);
+			}
+			popup.reset(this, true);
+		}
 		public void complete(int index)
 		{
-			TagCompletion.this.complete(tags.get(index));
+			TagCompletion.this.complete(shownTags.get(index));
 		}
 		public Component getCellRenderer(JList list, int index,
 				boolean isSelected, boolean cellHasFocus)
@@ -108,7 +122,7 @@ public class TagCompletion {
 		}
 		public int getSize()
 		{
-			return tags.size();
+			return shownTags.size();
 		}
 		public boolean isValid()
 		{

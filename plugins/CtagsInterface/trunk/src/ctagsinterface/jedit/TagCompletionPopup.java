@@ -64,6 +64,8 @@ public class TagCompletionPopup extends CompletionPopup {
 			}
 			return;
 		}
+		else
+			((TagCandidates) getCandidates()).narrow(ch);
 		super.keyTyped(e);
 	}
 
