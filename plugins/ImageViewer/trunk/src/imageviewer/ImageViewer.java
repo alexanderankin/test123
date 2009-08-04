@@ -33,6 +33,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
 import java.text.*;
 import java.util.*;
@@ -183,7 +185,57 @@ public class ImageViewer extends JPanel {
      * Mouse drag moves viewport.
      * Double click centers point clicked.
      */
-    MMouseAdapter mouseAdapter = new MMouseAdapter( this );
+    MMouseAdapter mouseAdapter = new MMouseAdapter() {
+                Point previous = null;
+                Cursor oldCursor = null;
+
+                /**
+                 * Default implementation moves the view port in the parent ImageViewer.    
+                 */
+                public void mouseDragged( MouseEvent me ) {
+                    if ( previous == null ) {
+                        previous = me.getPoint();
+                        return ;
+                    }
+                    Point now = me.getPoint();
+                    int dx = previous.x - now.x;
+                    int dy = previous.y - now.y;
+                    Point current = ImageViewer.this.viewport.getViewPosition();
+                    Point to = new Point( current.x + dx, current.y + dy );
+                    ImageViewer.this.viewport.setViewPosition( to );
+                    previous = now;
+                }
+
+                /**
+                 * Default implementation centers the image in the parent ImageViewer.    
+                 */
+                public void mousePressed( MouseEvent me ) {
+                    previous = me.getPoint();
+                    oldCursor = ImageViewer.this.imageLabel.getCursor();
+                    ImageViewer.this.imageLabel.setCursor( Cursor.getPredefinedCursor( Cursor.MOVE_CURSOR ) );
+                }
+
+
+                public void mouseReleased( MouseEvent me ) {
+                    previous = null;
+                    ImageViewer.this.imageLabel.setCursor( oldCursor != null ? oldCursor : Cursor.getDefaultCursor() );
+                }
+
+                public void mouseClicked( MouseEvent me ) {
+                    if ( me.getClickCount() == 2 ) {
+                        ImageViewer.this.center( me.getPoint() );
+                    }
+                }
+
+                public void mouseWheelMoved( MouseWheelEvent me ) {
+                    if ( me.getWheelRotation() > 0 ) {
+                        ImageViewer.this.zoomIn();
+                    }
+                    else {
+                        ImageViewer.this.zoomOut();
+                    }
+                }
+            };
 
 
     /**
