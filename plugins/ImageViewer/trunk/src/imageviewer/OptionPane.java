@@ -40,10 +40,12 @@ import org.gjt.sp.jedit.jEdit;
 public class OptionPane extends AbstractOptionPane {
 
     private JCheckBox vfsMouseOver = null;
+    private JCheckBox ifVfsVisible = null;
     private JCheckBox pvMouseOver = null;
+    private JCheckBox ifPvVisible = null;
 
     public OptionPane() {
-        this("");
+        this( "" );
     }
 
     public OptionPane( String name ) {
@@ -51,18 +53,61 @@ public class OptionPane extends AbstractOptionPane {
     }
 
     public void _init() {
+        installComponents();
+        installListeners();
+    }
+
+    private void installComponents() {
         setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
         addComponent( new JLabel( "<html><h3>Image Viewer</h3>" ) );
         vfsMouseOver = new JCheckBox( jEdit.getProperty( "imageviewer.allowVFSMouseOver.label", "Show images on mouse over in File System Browser" ) );
         vfsMouseOver.setSelected( jEdit.getBooleanProperty( "imageviewer.allowVFSMouseOver", true ) );
+        addComponent( vfsMouseOver );
+
+        JPanel ifVfsVisiblePanel = new JPanel();
+        ifVfsVisiblePanel.add( Box.createHorizontalStrut( 16 ) );
+        ifVfsVisible = new JCheckBox( jEdit.getProperty( "imageviewer.ifVisible.label", "Only if ImageViewer is visible" ) );
+        ifVfsVisible.setSelected( jEdit.getBooleanProperty( "imageviewer.allowVFSMouseOver", true ) && jEdit.getBooleanProperty( "imageviewer.ifVfsVisible", false ) );
+        ifVfsVisible.setEnabled( jEdit.getBooleanProperty( "imageviewer.allowVFSMouseOver", true ) );
+        ifVfsVisiblePanel.add( ifVfsVisible );
+        addComponent( ifVfsVisiblePanel );
+
         pvMouseOver = new JCheckBox( jEdit.getProperty( "imageviewer.allowPVMouseOver.label", "Show images on mouse over in ProjectViewer" ) );
         pvMouseOver.setSelected( jEdit.getBooleanProperty( "imageviewer.allowPVMouseOver", true ) );
-        addComponent( vfsMouseOver );
         addComponent( pvMouseOver );
+
+        JPanel ifPvVisiblePanel = new JPanel();
+        ifPvVisiblePanel.add( Box.createHorizontalStrut( 16 ) );
+        ifPvVisible = new JCheckBox( jEdit.getProperty( "imageviewer.ifVisible.label", "Only if ImageViewer is visible" ) );
+        ifPvVisible.setSelected( jEdit.getBooleanProperty( "imageviewer.allowPVMouseOver", true ) && jEdit.getBooleanProperty( "imageviewer.ifPvVisible", false ) );
+        ifPvVisible.setEnabled( jEdit.getBooleanProperty( "imageviewer.allowPVMouseOver", true ) );
+        ifPvVisiblePanel.add( ifPvVisible );
+        addComponent( ifPvVisiblePanel );
+
+    }
+
+    private void installListeners() {
+        vfsMouseOver.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    ifVfsVisible.setEnabled( vfsMouseOver.isSelected() );
+                }
+            }
+        );
+
+        pvMouseOver.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    ifPvVisible.setEnabled( pvMouseOver.isSelected() );
+                }
+            }
+        );
     }
 
     public void _save() {
         jEdit.setBooleanProperty( "imageviewer.allowVFSMouseOver", vfsMouseOver.isSelected() );
+        jEdit.setBooleanProperty( "imageviewer.ifVfsVisible", ifVfsVisible.isSelected() );
         jEdit.setBooleanProperty( "imageviewer.allowPVMouseOver", pvMouseOver.isSelected() );
+        jEdit.setBooleanProperty( "imageviewer.ifPvVisible", ifPvVisible.isSelected() );
     }
 }

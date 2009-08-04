@@ -169,13 +169,13 @@ public class ImageViewer extends JPanel {
             }
         );
     }
-    
+
     protected JViewport getViewport() {
-        return viewport;   
+        return viewport;
     }
-    
+
     protected JLabel getImageLabel() {
-        return imageLabel;   
+        return imageLabel;
     }
 
     /*
@@ -183,7 +183,7 @@ public class ImageViewer extends JPanel {
      * Mouse drag moves viewport.
      * Double click centers point clicked.
      */
-    MMouseAdapter mouseAdapter = new MMouseAdapter(this);
+    MMouseAdapter mouseAdapter = new MMouseAdapter( this );
 
 
     /**
@@ -306,6 +306,9 @@ public class ImageViewer extends JPanel {
     private String compressFilename ( String filename ) {
         int width = toolbar.getWidth() - buttonPanel.getWidth() - 6;
         FontMetrics fm = getGraphics().getFontMetrics();
+        if ( fm == null ) {
+            return filename;
+        }
         int stringWidth = fm.stringWidth( filename );
         if ( stringWidth <= width ) {
             return filename;
