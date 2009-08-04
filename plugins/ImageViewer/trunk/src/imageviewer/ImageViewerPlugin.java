@@ -204,6 +204,7 @@ public class ImageViewerPlugin extends EBPlugin {
                     JTree tree = ( JTree ) PrivilegedAccessor.getValue( pv, name );
                     if ( tree != null && pvAdapterMap.get( tree ) == null ) {
                         MMouseAdapter adapter = createPVMouseAdapter( view, tree );
+                        tree.addMouseListener( adapter );
                         tree.addMouseMotionListener( adapter );
                         pvAdapterMap.put( tree, adapter );
                     }
@@ -230,6 +231,7 @@ public class ImageViewerPlugin extends EBPlugin {
                         JTree tree = ( JTree ) treeList.get( i );
                         if ( tree != null && pvAdapterMap.get( tree ) == null ) {
                             MMouseAdapter adapter = createPVMouseAdapter( view, tree );
+                            tree.addMouseListener( adapter );
                             tree.addMouseMotionListener( adapter );
                             pvAdapterMap.put( tree, adapter );
                         }
@@ -245,8 +247,19 @@ public class ImageViewerPlugin extends EBPlugin {
     private MMouseAdapter createPVMouseAdapter( final View view, final JTree tree ) {
         MMouseAdapter adapter = new MMouseAdapter() {
                     public void mouseMoved( MouseEvent me ) {
-                        Component iv = ( Component ) view.getDockableWindowManager().getDockable( "imageviewer" );
-                        if ( !jEdit.getBooleanProperty( "imageviewer.ifPvVisible", true ) || ( iv.isVisible() && jEdit.getBooleanProperty( "imageviewer.ifPvVisible", true ) ) ) {
+                        if ( jEdit.getBooleanProperty( "imageviewer.mouseover", true ) ) {
+                            showImage( me );
+                        }
+                    }
+
+                    public void mouseClicked( MouseEvent me ) {
+                        if ( !jEdit.getBooleanProperty( "imageviewer.mouseover", true ) ) {
+                            showImage( me );
+                        }
+                    }
+
+                    private void showImage( MouseEvent me ) {
+                        if ( requireIVVisible( view ) ) {
                             TreePath treepath = tree.getClosestPathForLocation( me.getX(), me.getY() );
                             VPTNode node = ( VPTNode ) treepath.getLastPathComponent();
                             String path = node.getNodePath();
@@ -257,6 +270,15 @@ public class ImageViewerPlugin extends EBPlugin {
                             }
                         }
                     }
+
+                    private boolean requireIVVisible( View view ) {
+                        Component iv = ( Component ) view.getDockableWindowManager().getDockable( "imageviewer" );
+                        if ( iv == null ) {
+                            return true;
+                        }
+                        return !jEdit.getBooleanProperty( "imageviewer.ifPvVisible", true ) || ( iv.isVisible() && jEdit.getBooleanProperty( "imageviewer.ifPvVisible", true ) );
+                    }
+
                 };
         return adapter;
     }
@@ -281,6 +303,7 @@ public class ImageViewerPlugin extends EBPlugin {
                     VFSDirectoryEntryTable table = ( VFSDirectoryEntryTable ) PrivilegedAccessor.invokeMethod( child, "getTable", null );
                     if ( table != null && vfsAdapterMap.get( table ) == null ) {
                         MMouseAdapter adapter = createVFSMouseAdapter( view, table );
+                        table.addMouseListener( adapter );
                         table.addMouseMotionListener( adapter );
                         vfsAdapterMap.put( table, adapter );
                     }
@@ -295,8 +318,19 @@ public class ImageViewerPlugin extends EBPlugin {
     private MMouseAdapter createVFSMouseAdapter( final View view, final VFSDirectoryEntryTable table ) {
         MMouseAdapter adapter = new MMouseAdapter() {
                     public void mouseMoved( MouseEvent me ) {
-                        Component iv = ( Component ) view.getDockableWindowManager().getDockable( "imageviewer" );
-                        if ( !jEdit.getBooleanProperty( "imageviewer.ifVfsVisible", true ) || ( iv.isVisible() && jEdit.getBooleanProperty( "imageviewer.ifVfsVisible", true ) ) ) {
+                        if ( jEdit.getBooleanProperty( "imageviewer.mouseover", true ) ) {
+                            showImage( me );
+                        }
+                    }
+
+                    public void mouseClicked( MouseEvent me ) {
+                        if ( !jEdit.getBooleanProperty( "imageviewer.mouseover", true ) ) {
+                            showImage( me );
+                        }
+                    }
+
+                    private void showImage( MouseEvent me ) {
+                        if ( requireIVVisible( view ) ) {
                             Point p = me.getPoint();
                             int row = table.rowAtPoint( p );
                             int column = table.columnAtPoint( p );
@@ -319,6 +353,15 @@ public class ImageViewerPlugin extends EBPlugin {
                             }
                         }
                     }
+
+                    private boolean requireIVVisible( View view ) {
+                        Component iv = ( Component ) view.getDockableWindowManager().getDockable( "imageviewer" );
+                        if ( iv == null ) {
+                            return true;
+                        }
+                        return !jEdit.getBooleanProperty( "imageviewer.ifVfsVisible", true ) || ( iv.isVisible() && jEdit.getBooleanProperty( "imageviewer.ifVfsVisible", true ) );
+                    }
+
                 };
         return adapter;
     }

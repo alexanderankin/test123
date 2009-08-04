@@ -33,11 +33,14 @@ plugin.imageviewer.ImageViewerPlugin.browser-menu=imageviewer.showimage
 plugin.imageviewer.ImageViewerPlugin.option-pane=imageviewer
 options.imageviewer.label=Image Viewer
 options.imageviewer.code=new imageviewer.OptionPane();
-imageviewer.allowVFSMouseOver.label=Show images on mouse over in File System Browser
-imageviewer.allowPVMouseOver.label=Show images on mouse over in ProjectViewer
+imageviewer.allowVFSMouseOver.label=Show images on mouse over/click in File System Browser
+imageviewer.allowPVMouseOver.label=Show images on mouse over/click in ProjectViewer
 imageviewer.ifVisible=Only if ImageViewer is visible
 imageviewer.allowVFSMouseOver=true
 imageviewer.allowPVMouseOver=true
+imageviewer.mouseoption.label=Display images on:
+imageviewer.mouseover.label=Mouse over
+imageviewer.mouseclick.label=Mouse click
 
 # for PV 2.1.3.7
 plugin.projectviewer.imageviewer.ImageViewerPlugin.context-menu-actions=imageviewer.ImageViewerPVAction
