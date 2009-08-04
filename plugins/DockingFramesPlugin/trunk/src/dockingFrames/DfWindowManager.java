@@ -15,6 +15,7 @@ import java.util.Vector;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
@@ -323,12 +324,8 @@ public class DfWindowManager extends DockableWindowManager
 		}
 		private Point getLocation(Container c)
 		{
-			Point p = c.getLocation();
-			for ( ; c != null; c = c.getParent())
-			{
-				p.x += c.getX();
-				p.y += c.getY();
-			}
+			Point p = new Point();
+			SwingUtilities.convertPointToScreen(p, c);
 			return p;
 		}
 		public boolean belongsToArea(JEditDockable d, boolean includeMinimized)
