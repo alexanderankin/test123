@@ -243,7 +243,7 @@ public class ImageViewerPlugin extends EBPlugin {
     }
 
     private MMouseAdapter createPVMouseAdapter( final View view, final JTree tree ) {
-        MMouseAdapter adapter = new MMouseAdapter( getImageViewer( view ) ) {
+        MMouseAdapter adapter = new MMouseAdapter() {
                     public void mouseMoved( MouseEvent me ) {
                         Component iv = ( Component ) view.getDockableWindowManager().getDockable( "imageviewer" );
                         if ( !jEdit.getBooleanProperty( "imageviewer.ifPvVisible", true ) || ( iv.isVisible() && jEdit.getBooleanProperty( "imageviewer.ifPvVisible", true ) ) ) {
@@ -293,7 +293,7 @@ public class ImageViewerPlugin extends EBPlugin {
     }
 
     private MMouseAdapter createVFSMouseAdapter( final View view, final VFSDirectoryEntryTable table ) {
-        MMouseAdapter adapter = new MMouseAdapter( getImageViewer( view ) ) {
+        MMouseAdapter adapter = new MMouseAdapter() {
                     public void mouseMoved( MouseEvent me ) {
                         Component iv = ( Component ) view.getDockableWindowManager().getDockable( "imageviewer" );
                         if ( !jEdit.getBooleanProperty( "imageviewer.ifVfsVisible", true ) || ( iv.isVisible() && jEdit.getBooleanProperty( "imageviewer.ifVfsVisible", true ) ) ) {
