@@ -72,18 +72,23 @@ public class OptionPane extends AbstractOptionPane {
         ifVfsVisiblePanel.add( ifVfsVisible );
         addComponent( ifVfsVisiblePanel );
 
-        pvMouseOver = new JCheckBox( jEdit.getProperty( "imageviewer.allowPVMouseOver.label", "Show images on mouse over in ProjectViewer" ) );
-        pvMouseOver.setSelected( jEdit.getBooleanProperty( "imageviewer.allowPVMouseOver", true ) );
-        addComponent( pvMouseOver );
 
-        JPanel ifPvVisiblePanel = new JPanel();
-        ifPvVisiblePanel.add( Box.createHorizontalStrut( 16 ) );
-        ifPvVisible = new JCheckBox( jEdit.getProperty( "imageviewer.ifVisible.label", "Only if ImageViewer is visible" ) );
-        ifPvVisible.setSelected( jEdit.getBooleanProperty( "imageviewer.allowPVMouseOver", true ) && jEdit.getBooleanProperty( "imageviewer.ifPvVisible", false ) );
-        ifPvVisible.setEnabled( jEdit.getBooleanProperty( "imageviewer.allowPVMouseOver", true ) );
-        ifPvVisiblePanel.add( ifPvVisible );
-        addComponent( ifPvVisiblePanel );
+        // only show PV options if PV is actually available
+        if ( jEdit.getPlugin( "projectviewer.ProjectPlugin", false ) != null ) {
+            addComponent( Box.createVerticalStrut( 11 ) );
 
+            pvMouseOver = new JCheckBox( jEdit.getProperty( "imageviewer.allowPVMouseOver.label", "Show images on mouse over in ProjectViewer" ) );
+            pvMouseOver.setSelected( jEdit.getBooleanProperty( "imageviewer.allowPVMouseOver", true ) );
+            addComponent( pvMouseOver );
+
+            JPanel ifPvVisiblePanel = new JPanel();
+            ifPvVisiblePanel.add( Box.createHorizontalStrut( 16 ) );
+            ifPvVisible = new JCheckBox( jEdit.getProperty( "imageviewer.ifVisible.label", "Only if ImageViewer is visible" ) );
+            ifPvVisible.setSelected( jEdit.getBooleanProperty( "imageviewer.allowPVMouseOver", true ) && jEdit.getBooleanProperty( "imageviewer.ifPvVisible", false ) );
+            ifPvVisible.setEnabled( jEdit.getBooleanProperty( "imageviewer.allowPVMouseOver", true ) );
+            ifPvVisiblePanel.add( ifPvVisible );
+            addComponent( ifPvVisiblePanel );
+        }
     }
 
     private void installListeners() {
