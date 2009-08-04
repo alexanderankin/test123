@@ -102,7 +102,7 @@ public class ImageViewerPlugin extends EBPlugin {
             }
             else if ( ViewUpdate.CLOSED.equals( message.getWhat() ) ) {
                 viewMap.remove( message.getView() );
-                
+
                 // remove and add mouse adapters.  This prevents any memory leaks
                 // from having references in the adapter maps for non-existent
                 // trees or file system browsers.
@@ -141,14 +141,14 @@ public class ImageViewerPlugin extends EBPlugin {
         removeVFSMouseAdapters();
         removePVMouseAdapters();
     }
-    
+
     private void removeVFSMouseAdapters() {
         for ( VFSDirectoryEntryTable table : vfsAdapterMap.keySet() ) {
             table.removeMouseMotionListener( vfsAdapterMap.get( table ) );
         }
         vfsAdapterMap.clear();
     }
-    
+
     private void removePVMouseAdapters() {
         for ( JTree tree : pvAdapterMap.keySet() ) {
             tree.removeMouseMotionListener( pvAdapterMap.get( tree ) );
@@ -243,15 +243,18 @@ public class ImageViewerPlugin extends EBPlugin {
     }
 
     private MMouseAdapter createPVMouseAdapter( final View view, final JTree tree ) {
-        MMouseAdapter adapter = new MMouseAdapter(getImageViewer(view)) {
+        MMouseAdapter adapter = new MMouseAdapter( getImageViewer( view ) ) {
                     public void mouseMoved( MouseEvent me ) {
-                        TreePath treepath = tree.getClosestPathForLocation( me.getX(), me.getY() );
-                        VPTNode node = ( VPTNode ) treepath.getLastPathComponent();
-                        String path = node.getNodePath();
-                        if ( ImageViewer.isValidFilename( path ) ) {
-                            view.getDockableWindowManager().showDockableWindow( NAME );
-                            ImageViewer imageViewer = getImageViewer( view );
-                            imageViewer.showImage( path );
+                        Component iv = ( Component ) view.getDockableWindowManager().getDockable( "imageviewer" );
+                        if ( !jEdit.getBooleanProperty( "imageviewer.ifPvVisible", true ) || ( iv.isVisible() && jEdit.getBooleanProperty( "imageviewer.ifPvVisible", true ) ) ) {
+                            TreePath treepath = tree.getClosestPathForLocation( me.getX(), me.getY() );
+                            VPTNode node = ( VPTNode ) treepath.getLastPathComponent();
+                            String path = node.getNodePath();
+                            if ( ImageViewer.isValidFilename( path ) ) {
+                                view.getDockableWindowManager().showDockableWindow( NAME );
+                                ImageViewer imageViewer = getImageViewer( view );
+                                imageViewer.showImage( path );
+                            }
                         }
                     }
                 };
@@ -290,26 +293,29 @@ public class ImageViewerPlugin extends EBPlugin {
     }
 
     private MMouseAdapter createVFSMouseAdapter( final View view, final VFSDirectoryEntryTable table ) {
-        MMouseAdapter adapter = new MMouseAdapter(getImageViewer(view)) {
+        MMouseAdapter adapter = new MMouseAdapter( getImageViewer( view ) ) {
                     public void mouseMoved( MouseEvent me ) {
-                        Point p = me.getPoint();
-                        int row = table.rowAtPoint( p );
-                        int column = table.columnAtPoint( p );
-                        if ( row == -1 ) {
-                            return ;
-                        }
-                        if ( column == 0 ) {
-                            try {
-                                VFSFile file = ( VFSFile ) PrivilegedAccessor.getValue( table.getModel().getValueAt( row, 0 ), "dirEntry" );
-                                String path = file.getPath();
-                                if ( ImageViewer.isValidFilename( path ) ) {
-                                    view.getDockableWindowManager().showDockableWindow( NAME );
-                                    ImageViewer imageViewer = getImageViewer( view );
-                                    imageViewer.showImage( path );
-                                }
+                        Component iv = ( Component ) view.getDockableWindowManager().getDockable( "imageviewer" );
+                        if ( !jEdit.getBooleanProperty( "imageviewer.ifVfsVisible", true ) || ( iv.isVisible() && jEdit.getBooleanProperty( "imageviewer.ifVfsVisible", true ) ) ) {
+                            Point p = me.getPoint();
+                            int row = table.rowAtPoint( p );
+                            int column = table.columnAtPoint( p );
+                            if ( row == -1 ) {
+                                return ;
                             }
-                            catch ( Exception e ) {
-                                e.printStackTrace();
+                            if ( column == 0 ) {
+                                try {
+                                    VFSFile file = ( VFSFile ) PrivilegedAccessor.getValue( table.getModel().getValueAt( row, 0 ), "dirEntry" );
+                                    String path = file.getPath();
+                                    if ( ImageViewer.isValidFilename( path ) ) {
+                                        view.getDockableWindowManager().showDockableWindow( NAME );
+                                        ImageViewer imageViewer = getImageViewer( view );
+                                        imageViewer.showImage( path );
+                                    }
+                                }
+                                catch ( Exception e ) {
+                                    e.printStackTrace();
+                                }
                             }
                         }
                     }

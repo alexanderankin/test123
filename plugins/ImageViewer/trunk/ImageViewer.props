@@ -35,8 +35,9 @@ options.imageviewer.label=Image Viewer
 options.imageviewer.code=new imageviewer.OptionPane();
 imageviewer.allowVFSMouseOver.label=Show images on mouse over in File System Browser
 imageviewer.allowPVMouseOver.label=Show images on mouse over in ProjectViewer
+imageviewer.ifVisible=Only if ImageViewer is visible
 imageviewer.allowVFSMouseOver=true
-imageviewer.allowPVMouseOver=true;
+imageviewer.allowPVMouseOver=true
 
 # for PV 2.1.3.7
 plugin.projectviewer.imageviewer.ImageViewerPlugin.context-menu-actions=imageviewer.ImageViewerPVAction
