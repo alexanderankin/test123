@@ -12,10 +12,13 @@
     <property name="jar.name" value="ImageViewer.jar"/>
 
     <!-- version number -->
-    <property name="build.num" value="1.0.0"/>
+    <property name="build.num" value="1.1"/>
 
     <!-- where to put the finished plugin -->
     <property name="install.dir" value=".." />
+    
+    <!-- where plugin dependencies are -->
+    <property name="jedit.plugins.dir" value="${install.dir}" />
 
     <!-- source code directory, this is where the .java files live -->
     <property name="src.dir" location="src" />
@@ -52,7 +55,7 @@
          <pathelement location="${jedit.install.dir}/jedit.jar" />
 
          <!-- dependencies -->
-            <pathelement location="${install.dir}/ProjectViewer.jar"/>
+            <pathelement location="${jedit.plugins.dir}/ProjectViewer.jar"/>
       </path>
    </target>
 
@@ -84,7 +87,7 @@
    ========================================================================= -->
     <target name="dist"
             description="Compiles, jars, puts the jar in the jEdit jars directory."
-            depends="init, clean, compile">
+            depends="clean, init, compile">
 
 
         <!-- make the plugin jar file -->
@@ -135,9 +138,7 @@
       deletes all files from the build directory
    ========================================================================= -->
    <target name="clean" description="Delete all files from the classes directory.">
-      <delete>
-         <fileset dir="${classes.dir}" includes="**/*" />
-      </delete>
+      <delete dir="${classes.dir}" />
    </target>
 
    <!-- ========================================================================
