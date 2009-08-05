@@ -525,6 +525,7 @@ MORE :
 {
   <CLASS    : "class">
 | <FUNCTION : "function">
+| <NAMESPACE: "namespace">
 | <VAR      : "var">
 | <IF       : "if">
 | <ELSEIF   : "elseif">
@@ -968,11 +969,67 @@ PHPEchoBlock phpEchoBlock() :
 void Php() :
 {}
 {
+	[ namespace() ]
 	(BlockStatement())*
 } //}}}
 
 
 //}}}
+
+//{{{ namespace() method
+Namespace namespace():
+{
+	Expression expression = null;
+	Token token;
+	Token semicolon;
+	int sourceEnd;
+	int endLine;
+	int endColumn;
+}
+{
+	token = <NAMESPACE>
+	{
+		sourceEnd = token.sourceEnd;
+		endLine = token.endLine;
+		endColumn = token.endColumn;
+	}
+	try
+	{
+		expression = Expression()
+		{
+			sourceEnd = expression.getSourceEnd();
+			endLine = expression.getEndLine();
+			endColumn = expression.getEndColumn();
+		}
+	}
+	catch (ParseException e)
+	{
+		fireParseError("Expression expected","expression",e.currentToken);
+	}
+	try
+	{
+		semicolon = <SEMICOLON>
+		{
+			sourceEnd = semicolon.sourceEnd;
+			endLine = semicolon.endLine;
+			endColumn = semicolon.endColumn;
+		}
+	}
+	catch (ParseException e)
+	{
+		fireParseError("; expected",";",e.currentToken.next);
+	}
+	{
+		return new Namespace(expression,
+				     token.sourceStart,
+				     sourceEnd,
+				     token.beginLine,
+				     endLine,
+				     token.beginColumn,
+				     endColumn);
+	}
+} //}}}
+
 
 //{{{ interfaceDeclaration()
 InterfaceDeclaration interfaceDeclaration() :

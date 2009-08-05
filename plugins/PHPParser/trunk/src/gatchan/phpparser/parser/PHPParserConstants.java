@@ -21,136 +21,137 @@ public interface PHPParserConstants {
   int THROW = 35;
   int CLASS = 36;
   int FUNCTION = 37;
-  int VAR = 38;
-  int IF = 39;
-  int ELSEIF = 40;
-  int ELSE = 41;
-  int ARRAY = 42;
-  int BREAK = 43;
-  int LIST = 44;
-  int PRINT = 45;
-  int ECHO = 46;
-  int INCLUDE = 47;
-  int REQUIRE = 48;
-  int INCLUDE_ONCE = 49;
-  int REQUIRE_ONCE = 50;
-  int GLOBAL = 51;
-  int STATIC = 52;
-  int CASE = 53;
-  int CONST = 54;
-  int CONTINUE = 55;
-  int _DEFAULT = 56;
-  int DO = 57;
-  int EXTENDS = 58;
-  int FOR = 59;
-  int NEW = 60;
-  int CLONE = 61;
-  int RETURN = 62;
-  int SWITCH = 63;
-  int WHILE = 64;
-  int ENDWHILE = 65;
-  int ENDSWITCH = 66;
-  int ENDIF = 67;
-  int ENDFOR = 68;
-  int ENDFOREACH = 69;
-  int FOREACH = 70;
-  int AS = 71;
-  int CLASSACCESS = 72;
-  int STATICCLASSACCESS = 73;
-  int ARRAYASSIGN = 74;
-  int DEFINE = 75;
-  int GOTO = 76;
-  int NULL = 77;
-  int SUPER = 78;
-  int THIS = 79;
-  int TRUE = 80;
-  int FALSE = 81;
-  int INSTANCEOF = 82;
-  int STRING = 83;
-  int OBJECT = 84;
-  int BOOL = 85;
-  int BOOLEAN = 86;
-  int REAL = 87;
-  int DOUBLE = 88;
-  int FLOAT = 89;
-  int INT = 90;
-  int INTEGER = 91;
-  int AT = 92;
-  int BANG = 93;
-  int TILDE = 94;
-  int HOOK = 95;
-  int COLON = 96;
-  int OR_OR = 97;
-  int AND_AND = 98;
-  int PLUS_PLUS = 99;
-  int MINUS_MINUS = 100;
-  int PLUS = 101;
-  int MINUS = 102;
-  int STAR = 103;
-  int SLASH = 104;
-  int BIT_AND = 105;
-  int BIT_OR = 106;
-  int BIT_XOR = 107;
-  int REMAINDER = 108;
-  int LSHIFT = 109;
-  int RSIGNEDSHIFT = 110;
-  int RUNSIGNEDSHIFT = 111;
-  int _ORL = 112;
-  int XOR = 113;
-  int _ANDL = 114;
-  int INTEGER_LITERAL = 115;
-  int DECIMAL_LITERAL = 116;
-  int HEX_LITERAL = 117;
-  int OCTAL_LITERAL = 118;
-  int FLOATING_POINT_LITERAL = 119;
-  int EXPONENT = 120;
-  int STRING_LITERAL = 121;
-  int STRING_2 = 122;
-  int STRING_3 = 123;
-  int ESCAPED = 124;
-  int DOUBLEQUOTE = 125;
-  int DOLLARS = 126;
-  int DOUBLEQUOTE2 = 127;
-  int LBRACE1 = 128;
-  int RBRACE1 = 132;
-  int ID = 133;
-  int HEREDOCSTARTTOKEN = 136;
-  int DOLLAR = 137;
-  int IDENTIFIER = 138;
-  int LETTER = 139;
-  int DIGIT = 140;
-  int SPECIAL = 141;
-  int LPAREN = 143;
-  int RPAREN = 144;
-  int LBRACE = 145;
-  int RBRACE = 146;
-  int LBRACKET = 147;
-  int RBRACKET = 148;
-  int SEMICOLON = 149;
-  int COMMA = 150;
-  int DOT = 151;
-  int GT = 152;
-  int LT = 153;
-  int EQUAL_EQUAL = 154;
-  int LE = 155;
-  int GE = 156;
-  int NOT_EQUAL = 157;
-  int DIF = 158;
-  int BANGDOUBLEEQUAL = 159;
-  int TRIPLEEQUAL = 160;
-  int ASSIGN = 161;
-  int PLUSASSIGN = 162;
-  int MINUSASSIGN = 163;
-  int STARASSIGN = 164;
-  int SLASHASSIGN = 165;
-  int ANDASSIGN = 166;
-  int ORASSIGN = 167;
-  int XORASSIGN = 168;
-  int DOTASSIGN = 169;
-  int REMASSIGN = 170;
-  int TILDEEQUAL = 171;
-  int LSHIFTASSIGN = 172;
-  int RSIGNEDSHIFTASSIGN = 173;
+  int NAMESPACE = 38;
+  int VAR = 39;
+  int IF = 40;
+  int ELSEIF = 41;
+  int ELSE = 42;
+  int ARRAY = 43;
+  int BREAK = 44;
+  int LIST = 45;
+  int PRINT = 46;
+  int ECHO = 47;
+  int INCLUDE = 48;
+  int REQUIRE = 49;
+  int INCLUDE_ONCE = 50;
+  int REQUIRE_ONCE = 51;
+  int GLOBAL = 52;
+  int STATIC = 53;
+  int CASE = 54;
+  int CONST = 55;
+  int CONTINUE = 56;
+  int _DEFAULT = 57;
+  int DO = 58;
+  int EXTENDS = 59;
+  int FOR = 60;
+  int NEW = 61;
+  int CLONE = 62;
+  int RETURN = 63;
+  int SWITCH = 64;
+  int WHILE = 65;
+  int ENDWHILE = 66;
+  int ENDSWITCH = 67;
+  int ENDIF = 68;
+  int ENDFOR = 69;
+  int ENDFOREACH = 70;
+  int FOREACH = 71;
+  int AS = 72;
+  int CLASSACCESS = 73;
+  int STATICCLASSACCESS = 74;
+  int ARRAYASSIGN = 75;
+  int DEFINE = 76;
+  int GOTO = 77;
+  int NULL = 78;
+  int SUPER = 79;
+  int THIS = 80;
+  int TRUE = 81;
+  int FALSE = 82;
+  int INSTANCEOF = 83;
+  int STRING = 84;
+  int OBJECT = 85;
+  int BOOL = 86;
+  int BOOLEAN = 87;
+  int REAL = 88;
+  int DOUBLE = 89;
+  int FLOAT = 90;
+  int INT = 91;
+  int INTEGER = 92;
+  int AT = 93;
+  int BANG = 94;
+  int TILDE = 95;
+  int HOOK = 96;
+  int COLON = 97;
+  int OR_OR = 98;
+  int AND_AND = 99;
+  int PLUS_PLUS = 100;
+  int MINUS_MINUS = 101;
+  int PLUS = 102;
+  int MINUS = 103;
+  int STAR = 104;
+  int SLASH = 105;
+  int BIT_AND = 106;
+  int BIT_OR = 107;
+  int BIT_XOR = 108;
+  int REMAINDER = 109;
+  int LSHIFT = 110;
+  int RSIGNEDSHIFT = 111;
+  int RUNSIGNEDSHIFT = 112;
+  int _ORL = 113;
+  int XOR = 114;
+  int _ANDL = 115;
+  int INTEGER_LITERAL = 116;
+  int DECIMAL_LITERAL = 117;
+  int HEX_LITERAL = 118;
+  int OCTAL_LITERAL = 119;
+  int FLOATING_POINT_LITERAL = 120;
+  int EXPONENT = 121;
+  int STRING_LITERAL = 122;
+  int STRING_2 = 123;
+  int STRING_3 = 124;
+  int ESCAPED = 125;
+  int DOUBLEQUOTE = 126;
+  int DOLLARS = 127;
+  int DOUBLEQUOTE2 = 128;
+  int LBRACE1 = 129;
+  int RBRACE1 = 133;
+  int ID = 134;
+  int HEREDOCSTARTTOKEN = 137;
+  int DOLLAR = 138;
+  int IDENTIFIER = 139;
+  int LETTER = 140;
+  int DIGIT = 141;
+  int SPECIAL = 142;
+  int LPAREN = 144;
+  int RPAREN = 145;
+  int LBRACE = 146;
+  int RBRACE = 147;
+  int LBRACKET = 148;
+  int RBRACKET = 149;
+  int SEMICOLON = 150;
+  int COMMA = 151;
+  int DOT = 152;
+  int GT = 153;
+  int LT = 154;
+  int EQUAL_EQUAL = 155;
+  int LE = 156;
+  int GE = 157;
+  int NOT_EQUAL = 158;
+  int DIF = 159;
+  int BANGDOUBLEEQUAL = 160;
+  int TRIPLEEQUAL = 161;
+  int ASSIGN = 162;
+  int PLUSASSIGN = 163;
+  int MINUSASSIGN = 164;
+  int STARASSIGN = 165;
+  int SLASHASSIGN = 166;
+  int ANDASSIGN = 167;
+  int ORASSIGN = 168;
+  int XORASSIGN = 169;
+  int DOTASSIGN = 170;
+  int REMASSIGN = 171;
+  int TILDEEQUAL = 172;
+  int LSHIFTASSIGN = 173;
+  int RSIGNEDSHIFTASSIGN = 174;
 
   int DEFAULT = 0;
   int PHPPARSING = 1;
@@ -202,6 +203,7 @@ public interface PHPParserConstants {
     "\"throw\"",
     "\"class\"",
     "\"function\"",
+    "\"namespace\"",
     "\"var\"",
     "\"if\"",
     "\"elseif\"",
@@ -295,18 +297,18 @@ public interface PHPParserConstants {
     "\"{\"",
     "\"{\"",
     "\"}\"",
-    "<token of kind 131>",
+    "<token of kind 132>",
     "\"}\"",
     "<ID>",
-    "<token of kind 134>",
     "<token of kind 135>",
+    "<token of kind 136>",
     "\"<<<\"",
     "\"$\"",
     "<IDENTIFIER>",
     "<LETTER>",
     "<DIGIT>",
     "<SPECIAL>",
-    "<token of kind 142>",
+    "<token of kind 143>",
     "\"(\"",
     "\")\"",
     "\"{\"",
