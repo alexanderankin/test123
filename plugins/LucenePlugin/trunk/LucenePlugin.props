@@ -36,3 +36,9 @@ lucene.options.IncludeGlobs=*
 lucene.options.IncludeGlobs.label=Include only files matching:
 lucene.options.ExcludeGlobs=*.*~ *.bak *.bmp *.ico *.gif *.gif *.png *.jpg *.class *.exe  *.obj *.jar *.zip *.7z *.rar *.tgz *.wav *.mp3 *.ogg
 lucene.options.ExcludeGlobs.label=... except files matching:
+
+lucene.index.locked.title=Index locked
+lucene.index.locked.message=The index at path {0} is locked.\n\
+                            It can happens if another processus is currently using it\n\
+                            or there was a problem with the Lucene plugin (a bug or a crash).\n\
+                            Do you want to unlock the index ?

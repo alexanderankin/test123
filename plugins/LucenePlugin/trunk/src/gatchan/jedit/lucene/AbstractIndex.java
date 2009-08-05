@@ -26,10 +26,14 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Searcher;
+import org.apache.lucene.store.FSDirectory;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.jEdit;
 
 import gatchan.jedit.lucene.Index.ActivityListener;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -89,6 +93,17 @@ public class AbstractIndex
 		try
 		{
 			path.mkdirs();
+			if (IndexWriter.isLocked(path.getAbsolutePath()))
+			{
+				Log.log(Log.WARNING, this, "The lucene index at " + path + " is locked");
+				int ret = GUIUtilities.confirm(jEdit.getActiveView(), "lucene.index.locked",
+				                               new Object[]{path}, JOptionPane.YES_NO_OPTION,
+				                               JOptionPane.ERROR_MESSAGE);
+				if (ret == JOptionPane.YES_OPTION)
+				{
+					IndexWriter.unlock(FSDirectory.getDirectory(path));
+				}
+			}
 			writer = new IndexWriter(path, getAnalyzer(), IndexWriter.MaxFieldLength.LIMITED);
 		}
 		catch (IOException e)
