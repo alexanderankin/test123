@@ -4,10 +4,26 @@ plugin.com.addictedtor.jeditr.JEditRPlugin.version=0.0
 plugin.com.addictedtor.jeditr.JEditRPlugin.activate=startup
 plugin.com.addictedtor.jeditr.JEditRPlugin.usePluginHome=true
 plugin.com.addictedtor.jeditr.JEditRPlugin.description=jedit as an R IDE
+plugin.com.addictedtor.jeditr.JEditRPlugin.jars=afcommons.jar jhlir.jar   
 
 plugin.com.addictedtor.jeditr.JEditRPlugin.depend.0=jdk 1.5
-plugin.com.addictedtor.jeditr.JEditRPlugin.depend.1=jedit 04.03.17.00
+plugin.com.addictedtor.jeditr.JEditRPlugin.depend.1=jedit 04.03.16.00
 plugin.com.addictedtor.jeditr.JEditRPlugin.depend.2=plugin console.ConsolePlugin 4.3
 plugin.com.addictedtor.jeditr.JEditRPlugin.depend.3=plugin errorlist.ErrorListPlugin 1.7
 plugin.com.addictedtor.jeditr.JEditRPlugin.depend.4=plugin sidekick.SideKickPlugin 0.7.5
 
+
+# plugin option pane
+plugin.com.addictedtor.jeditr.JEditRPlugin.option-pane=jeditr
+
+# Option pane activation BeanShell snippet
+options.jeditr.code=new com.addictedtor.jeditr.JEditROptionPane();
+
+# Option pane labels
+options.jeditr.label=JEditR
+
+options.jeditr.choose-dir=Choose
+options.jeditr.rhome.title=Set R Home directory
+options.jeditr.rhome.path=
+options.jeditr.shortcut.title=Set directory for JeditR shortcut
+options.jeditr.shortcut.path=
