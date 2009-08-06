@@ -83,7 +83,7 @@ public class TaskType
 						/* text to display in list: identifier, whitespace, and any comment */
 						textDisplay,
 						/* start position */
-						tokenOffset,
+						tokenOffset + match.start(0),
 						/* end position */
 						tokenOffset + tokenText.length());
 	}//}}}
