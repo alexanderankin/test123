@@ -2,7 +2,7 @@ package com.addictedtor.jeditr ;
 
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EBMessage;
-
+import org.gjt.sp.jedit.jEdit;
 
 /**
  * Main class of the jeditr plugin
@@ -29,6 +29,15 @@ public class JEditRPlugin extends EBPlugin {
 	 */
 	@Override
 	public void start() {
+		
+		String jeditr_home = System.getProperty( "jeditr.home", "" ) ;
+		if( jeditr_home.equals("") ){
+			// do the installer stuff
+		} else {
+			// load the jeditr plugin from the R package tree
+			jEdit.addPluginJAR( jeditr_home + "/java/R.jar" ) ; 
+		}
+		
 	}
 
 	/**
