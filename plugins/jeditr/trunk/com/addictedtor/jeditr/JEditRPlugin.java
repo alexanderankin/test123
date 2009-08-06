@@ -35,7 +35,12 @@ public class JEditRPlugin extends EBPlugin {
 			// do the installer stuff
 		} else {
 			// load the jeditr plugin from the R package tree
-			jEdit.addPluginJAR( jeditr_home + "/java/R.jar" ) ; 
+			String jar = jeditr_home + "/java/R.jar" ;
+			if( ( new File( jar ) ).exists() ){
+				jEdit.addPluginJAR( jar ) ;
+			} else {
+				// what now ?
+			}
 		}
 		
 	}
@@ -50,7 +55,9 @@ public class JEditRPlugin extends EBPlugin {
 	public void handleMessage( EBMessage message){
 		// placeholder
 	}
-		
+	
+	private class 
+	
 	
 }
 
