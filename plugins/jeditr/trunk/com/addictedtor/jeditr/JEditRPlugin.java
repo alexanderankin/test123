@@ -30,8 +30,8 @@ public class JEditRPlugin extends EBPlugin {
 	@Override
 	public void start() {
 		
-		String jeditr_home = System.getProperty( "jeditr.home", "" ) ;
-		if( jeditr_home.equals("") ){
+		String jeditr_home = System.getProperty( "jeditr.home" ) ;
+		if( jeditr_home == null ){
 			// do the installer stuff
 		} else {
 			// load the jeditr plugin from the R package tree
