@@ -1,52 +1,55 @@
 <?xml version="1.0"?>
 <project name="jeditr" default="build" basedir=".">
 
-	<property file="build.properties"/>
-	<property name="dist.target" value="build" />
-	<property name="compiler.source" value="1.5" />
-	<property name="compiler.target" value="1.5" />
-	<property name="compiler.debug" value="on" />
-	
-	<property name="jar_jedit" 			 value="${jedit.install.dir}/jedit.jar" /> 
-	<property name="jar_console"     value="${install.dir}/Console.jar" /> 
-	<property name="jar_sidekick"    value="${install.dir}/SideKick.jar" /> 
-	<property name="jar_errorlist"   value="${install.dir}/ErrorList.jar" /> 
-	
-	<import file="${build.support}/plugin-build.xml" />
+    <property file="build.properties"/>
+    <property name="dist.target" value="build"/>
+    <property name="compiler.source" value="1.5"/>
+    <property name="compiler.target" value="1.5"/>
+    <property name="compiler.debug" value="on"/>
 
-	<selector id="packageFiles">
-	  <or>
-	    <filename name="**/*.png" />
-	    <filename name="index.html" />
-	  </or>
-	 </selector>
-	 
-	 <path id="project.class.path">
-		<pathelement location="${jar_jedit}" />
-		<pathelement location="${jar_console}"/>
-		<pathelement location="${jar_sidekick}"/>
-		<pathelement location="${jar_errorlist}"/>
-	</path>
-	
-	<target name="build.prepare" depends="clean">
-	 	<mkdir dir="${build.dir}" />
-	</target>
-		
-	<!-- just to make eclipse happy, so that we can 
-	     create a java project from existing ant file -->
-			 
-	 <path id="_classpath">
-		<pathelement location="${jar_jedit}" />
-		<pathelement location="${install.dir}/ErrorList.jar" />
-		<pathelement location="${install.dir}/Console.jar" />
-		<pathelement location="${install.dir}/SideKick.jar" />
-	</path>
-	
-	<target name="unused">
-		<javac srcdir=".">
-			<classpath refid="_classpath" />
-		</javac>
-	</target>
-	
-	
+    <property name="jar_jedit" value="${lib.dir}/jedit.jar"/>
+    <property name="jar_afcommons" value="${lib.dir}/afcommons.jar"/>
+    <property name="jar_jhlir" value="${lib.dir}/jhlir.jar"/>
+    <property name="jar_log4j" value="${lib.dir}/log4j-1.2.15.jar"/>
+    <property name="jar_commons_logging" value="${lib.dir}/commons-logging-1.1.1.jar"/>
+
+    <import file="${build.support}/plugin-build.xml"/>
+
+    <selector id="packageFiles">
+        <or>
+            <filename name="jeditr_starter.r"/>
+            <filename name="jeditr_icon.ico"/>
+            <filename name="jeditr_icon.png"/>
+        </or>
+    </selector>
+
+    <path id="project.class.path">
+        <pathelement location="${jar_jedit}"/>
+        <pathelement location="${jar_afcommons}"/>
+        <pathelement location="${jar_jhlir}"/>
+        <pathelement location="${jar_log4j}"/>
+        <pathelement location="${jar_commons_logging}"/>
+    </path>
+
+    <target name="build.prepare" depends="clean">
+        <mkdir dir="${build.dir}"/>
+    </target>
+
+    <!-- just to make eclipse happy, so that we can
+          create a java project from existing ant file -->
+
+    <path id="_classpath">
+        <pathelement location="${jar_jedit}"/>
+        <pathelement location="${install.dir}/ErrorList.jar"/>
+        <pathelement location="${install.dir}/Console.jar"/>
+        <pathelement location="${install.dir}/SideKick.jar"/>
+    </path>
+
+    <target name="unused">
+        <javac srcdir=".">
+            <classpath refid="_classpath"/>
+        </javac>
+    </target>
+
+
 </project>
