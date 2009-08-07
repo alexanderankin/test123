@@ -6,8 +6,10 @@
     <property name="compiler.source" value="1.5"/>
     <property name="compiler.target" value="1.5"/>
     <property name="compiler.debug" value="on"/>
+    <property name="lib.dir" value="lib" />
 
-    <property name="jar_jedit" value="${lib.dir}/jedit.jar"/>
+    <property name="jar_jedit" value="${jedit.install.dir}/jedit.jar"/>
+    
     <property name="jar_afcommons" value="${lib.dir}/afcommons.jar"/>
     <property name="jar_jhlir" value="${lib.dir}/jhlir.jar"/>
     <property name="jar_log4j" value="${lib.dir}/log4j-1.2.15.jar"/>
@@ -33,6 +35,11 @@
 
     <target name="build.prepare" depends="clean">
         <mkdir dir="${build.dir}"/>
+        
+        <copy file="${jar_afcommons}"       todir="${install.dir}" />
+        <copy file="${jar_jhlir}"           todir="${install.dir}" />
+        <copy file="${jar_log4j}"           todir="${install.dir}" />
+        <copy file="${jar_commons_logging}" todir="${install.dir}" />
     </target>
 
     <!-- just to make eclipse happy, so that we can
@@ -43,6 +50,11 @@
         <pathelement location="${install.dir}/ErrorList.jar"/>
         <pathelement location="${install.dir}/Console.jar"/>
         <pathelement location="${install.dir}/SideKick.jar"/>
+        
+        <pathelement location="${jar_afcommons}"/>
+        <pathelement location="${jar_jhlir}"/>
+        <pathelement location="${jar_log4j}"/>
+        <pathelement location="${jar_commons_logging}"/>
     </path>
 
     <target name="unused">
