@@ -66,26 +66,20 @@ public class TaskType
 		{
 			return null;
 		}
-		String textDisplay;
-		if (displayIdentifier)
-			textDisplay = tokenText;
-		else
-			textDisplay = match.group(1);
 
+		String identifier = match.group(1);
+		String comment = match.group(2);
+		String text = tokenText.substring(match.start(0) + 1);
+		int start = tokenOffset + match.start(0) + 1;
+		int end = start + text.length() - 1;
 		return new Task(buffer,
 						icon,
-						/* line number */
 						line,
-						/* identifier/name */
-						match.group(0),
-						/* comment */
-						match.group(1),
-						/* text to display in list: identifier, whitespace, and any comment */
-						textDisplay,
-						/* start position */
-						tokenOffset + match.start(0),
-						/* end position */
-						tokenOffset + tokenText.length());
+						identifier,
+						comment,
+						text,	// text to display in list: identifier, whitespace, and any comment
+						start,
+						end);
 	}//}}}
 
 	//{{{ get/setName() methods
