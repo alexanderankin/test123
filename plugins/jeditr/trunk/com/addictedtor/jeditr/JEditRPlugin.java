@@ -4,6 +4,7 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditPlugin; 
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.jEdit;
 
@@ -22,18 +23,12 @@ public class JEditRPlugin extends EBPlugin {
 
     public static final String NAME = "JEditRPlugin";
 
-    // singelton instance
-    public static JEditRPlugin instance = null;
     // log4j
     public static final String LOG_FILENAME = "jeditr_installer.log";
 
 
     // must be public for jedit, but dont call this!
     public JEditRPlugin() {
-    }
-
-    public static JEditRPlugin getInstance() {
-        return instance;
     }
 
     /**
@@ -57,7 +52,6 @@ public class JEditRPlugin extends EBPlugin {
     }
 
     private void startInstallerPlugin() {
-        instance = this;
         // configure log4j
         File log = new File(getPluginHome(), LOG_FILENAME);
         Logger rootLogger = Logger.getRootLogger();
@@ -93,7 +87,13 @@ public class JEditRPlugin extends EBPlugin {
     public void handleMessage(EBMessage message) {
         // placeholder
     }
-
+    
+    /**
+     * Returns the home of this plugin
+     */ 
+    public static String getPluginHomePath(){
+    	return EditPlugin.getPluginHome( JEditRPlugin.class ).getAbsolutePath(); 
+    }
 
 }
 

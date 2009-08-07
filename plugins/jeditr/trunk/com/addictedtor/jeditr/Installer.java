@@ -68,14 +68,28 @@ public class Installer {
                 javaExeStr = "java";
             String jeditStr = forwardSlashes(jeditHomeDir);
 
+            String pluginHomeStr = forwardSlashes(pluginHomeDir.getAbsolutePath()) ;
+            
             logger.info("Replacing the following templates:");
             logger.info("@JAVA_HOME@ :" + javaStr);
             logger.info("@JAVA_EXE@ :" + javaExeStr);
             logger.info("@JEDIT_HOME@ :" + jeditStr);
+            logger.info("@PLUGIN_HOME@ :" + pluginHomeDir );
+            
 
             script = script.replace("@JAVA_HOME@", javaStr);
             script = script.replace("@JAVA_EXE@", javaExeStr);
             script = script.replace("@JEDIT_HOME@", jeditStr);
+            script = script.replace("@PLUGIN_HOME@", pluginHomeStr);
+            
+            File libDir = new File( pluginHomeDir + "/library" ) ;
+            if( !libDir.exists() ){
+            	logger.info( "creating R library in plugin home: '" + pluginHomeStr + "/library" ) ;
+            	libDir.mkdirs(); 
+            } else{
+            	// maybe check that the this actually is a library
+            }
+            
             writer.write(script);
             writer.close();
         } catch (IOException e) {

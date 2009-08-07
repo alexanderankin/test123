@@ -122,7 +122,7 @@ public class JEditROptionPane extends AbstractOptionPane implements ActionListen
 //                RPackage rp = rCmdBatch.getInstalledPackInfo("rJava");
                 Installer i = new Installer(
                         jEdit.getJEditHome(),
-                        JEditRPlugin.getInstance().getPluginHome().getAbsolutePath(),
+                        JEditRPlugin.getPluginHomePath(), 
                         rhome,
 //                        rp.getLibpath().getAbsolutePath(),
 //                        rCmdBatch.getLibPaths(),

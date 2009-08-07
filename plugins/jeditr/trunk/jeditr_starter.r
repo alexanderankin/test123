@@ -30,6 +30,18 @@ R_HOME <- R.home()
 Sys.setenv(R_HOME = R_HOME )
 # }}}
 
+# {{{ add the plugin home to R_LIBS
+R_LIBS <- Sys.getenv( "R_LIBS", unset = "" )
+JEDIT_RLIBS <- "@PLUGIN_HOME@/library"
+# set by java jeditr installer plugin
+R_LIBS <- if( R_LIBS == "" ){
+	JEDIT_RLIBS
+} else{
+	paste( R_LIBS, JEDIT_RLIBS, sep = ":" )
+}
+Sys.setenv( R_LIBS = R_LIBS )
+# }}}
+
 # {{{ JAVA_HOME and java
 # set by java jeditr installer plugin, so we always know java_home
 JAVA_HOME <- "@JAVA_HOME@"
@@ -40,7 +52,6 @@ if( !file.exists( java ) ){
 }
 # }}}
 
-
 # {{{ JEDIT_HOME and jeddit.jar
 # set by java jeditr installer plugin, so we always know jedit_home
 JEDIT_HOME <- "@JEDIT_HOME@"
@@ -49,8 +60,6 @@ if( !file.exists( jedit.jar ) ){
 	stop( "the jedit home directory does not contain a file called jedit.jar" )
 }
 # }}}
-
-
 
 # {{{ PATH
 Sys.setenv( PATH =
