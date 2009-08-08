@@ -55,7 +55,7 @@ public class Status {
             status = client.doStatus(path, false);
         }
         catch(Exception e) {        // NOPMD
-            e.printStackTrace();
+            return null;    // unknown status
         }
         return status;
     }
