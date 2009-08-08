@@ -1,0 +1,9 @@
+# where to find jedit.jar
+jedit.install.dir=/opt/jedit
+
+# where to find the support files to build the plugin
+build.support=/home/romain/svn/build-support
+
+# where to install the various jars
+install.dir=/home/romain/.jedit/jars
+
