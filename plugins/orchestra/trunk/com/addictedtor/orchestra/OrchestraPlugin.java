@@ -1,0 +1,84 @@
+package com.addictedtor.orchestra ;
+
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditPlugin; 
+import org.gjt.sp.jedit.EBPlugin;
+import org.gjt.sp.jedit.jEdit;
+
+import javax.swing.*;
+import java.io.File;
+
+/**
+ * Main class of the orchestra installer plugin
+ *
+ * @author Bernd Bischl <bernd_bischl@gmx.net>
+ * @author Romain Francois <francoisromain@free.fr>
+ */
+public class OrchestraPlugin extends EBPlugin {
+
+    public static final String NAME = "OrchestraPlugin";
+
+    // log4j
+    public static final String LOG_FILENAME = "orchestra_installer.log";
+
+    // must be public for jedit, but dont call this!
+    public OrchestraPlugin() {}
+
+    /**
+     * Start method of the plugin. This is where the magic takes place
+     */
+    @Override
+    public void start() {
+        String orchestra_rpackage_home = System.getProperty("orchestra.home", "") ;
+        if( orchestra_rpackage_home.equals("") ){
+            startInstallerPlugin();
+        } else {
+            // load the orchestra plugin from the R package tree
+            String jar = orchestra_rpackage_home + "/java/R.jar" ;
+            if((new File( jar ) ).exists() ){
+                jEdit.addPluginJAR( jar ) ;
+            } else {
+                //todo better handling?
+                JOptionPane.showMessageDialog(jEdit.getActiveView(), "Orchestra: Cannot find R.jar. Please install the orchestra R package and then run the installer plugin for jedit again!");
+            }
+        }
+    }
+
+    private void startInstallerPlugin() {
+        // configure log4j
+        File log = new File(getPluginHome(), LOG_FILENAME);
+        Logger rootLogger = Logger.getRootLogger();
+        FileAppender fa = new FileAppender();
+        fa.setFile(log.getAbsolutePath());
+        fa.setLayout(new PatternLayout("%-5p - %m%n       [%t] (%c:%M at %F:%L)%n"));
+        fa.setAppend(false);
+        rootLogger.addAppender(fa);
+        fa.activateOptions();
+        rootLogger.info("orchestra plugin started!");
+        rootLogger.info("log4j configured.");
+        rootLogger.info("log goes to: " + log.getAbsolutePath());
+    }
+
+    /**
+     * Stop method of the plugin. Placeholder at the moment.
+     */
+    @Override
+    public void stop() {
+    }
+
+    public void handleMessage(EBMessage message) {
+        // placeholder
+    }
+    
+    /**
+     * Returns the home of this plugin
+     */ 
+    public static String getPluginHomePath(){
+    	return EditPlugin.getPluginHome( OrchestraPlugin.class ).getAbsolutePath(); 
+    }
+
+}
+
