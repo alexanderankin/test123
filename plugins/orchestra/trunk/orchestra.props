@@ -1,0 +1,28 @@
+plugin.com.addictedtor.orchestra.OrchestraPlugin.name=Orchestra
+plugin.com.addictedtor.orchestra.OrchestraPlugin.author=Romain Francois
+plugin.com.addictedtor.orchestra.OrchestraPlugin.version=0.0
+plugin.com.addictedtor.orchestra.OrchestraPlugin.activate=startup
+plugin.com.addictedtor.orchestra.OrchestraPlugin.usePluginHome=true
+plugin.com.addictedtor.orchestra.OrchestraPlugin.description=jedit as an R IDE
+plugin.com.addictedtor.orchestra.OrchestraPlugin.jars=afcommons.jar jhlir.jar log4j-1.2.15.jar commons-logging-1.1.1.jar
+
+plugin.com.addictedtor.orchestra.OrchestraPlugin.depend.0=jdk 1.5
+plugin.com.addictedtor.orchestra.OrchestraPlugin.depend.1=jedit 04.03.17.00
+plugin.com.addictedtor.orchestra.OrchestraPlugin.depend.2=plugin console.ConsolePlugin 4.4
+plugin.com.addictedtor.orchestra.OrchestraPlugin.depend.3=plugin errorlist.ErrorListPlugin 1.7
+plugin.com.addictedtor.orchestra.OrchestraPlugin.depend.4=plugin sidekick.SideKickPlugin 0.8
+
+# plugin option pane
+plugin.com.addictedtor.orchestra.OrchestraPlugin.option-pane=orchestra
+
+# Option pane activation BeanShell snippet
+options.orchestra.code=new com.addictedtor.orchestra.OrchestraOptionPane();
+
+# Option pane labels
+options.orchestra.label=Orchestra
+
+options.orchestra.choose-dir=Choose
+options.orchestra.rhome.title=Set R Home directory
+options.orchestra.rhome.path=
+options.orchestra.shortcut.title=Set directory for Orchestra shortcut
+options.orchestra.shortcut.path=
