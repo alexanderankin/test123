@@ -6,14 +6,18 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Vector;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import marker.FileMarker;
+import marker.MarkerSetsPlugin;
 import marker.tree.SourceLinkTree;
 import marker.tree.SourceLinkTree.SourceLinkParentNode;
+import marker.tree.SourceLinkTree.SubtreePopupMenuProvider;
 
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
@@ -156,7 +160,8 @@ public class SearchResults extends JPanel implements EBComponent
 		index.search(text, max, processor);
 		if (lineResults.isSelected())
 		{
-			SourceLinkParentNode parent = tree.addSourceLinkParent(text);
+			SourceLinkParentNode parent = tree.addSourceLinkParent(
+				new SearchRootNode(text));
 			for (Object o: files)
 			{
 				FileMarker marker = (FileMarker) o;
@@ -268,6 +273,33 @@ public class SearchResults extends JPanel implements EBComponent
 		public Object getSelectedItem()
 		{
 			return selectedItem;
+		}
+	}
+
+	private class SearchRootNode implements SubtreePopupMenuProvider
+	{
+		private String text;
+		public SearchRootNode(String searchText)
+		{
+			text = searchText;
+		}
+		public String toString()
+		{
+			return text;
+		}
+		public void addPopupMenuItemsFor(JPopupMenu popup,
+				final SourceLinkParentNode parent,
+				final DefaultMutableTreeNode node)
+		{
+			if (popup == null)
+				return;
+			popup.add(new AbstractAction("Toggle marker(s)") {
+				public void actionPerformed(ActionEvent e) {
+					Vector<FileMarker> markers = parent.getFileMarkers(node);
+					for (FileMarker marker: markers)
+						MarkerSetsPlugin.toggleMarker(marker);
+				}
+			});
 		}
 	}
 }
