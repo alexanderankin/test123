@@ -75,13 +75,7 @@
 	</target>
 
 	<target name="compile" depends="init">
-		<javac
-			srcdir="${src.dir}"
-			destdir="${build.dir}"
-			deprecation="on"
-			debug="on"
-			includeJavaRuntime="yes"
-		>
+		<javac debug="on" deprecation="on" destdir="${build.dir}" source="${compiler.source}" srcdir="${src.dir}" target="${compiler.target}">
 			<classpath refid="project.class.path"/>
 			<compilerarg value="-Xlint:unchecked"/>
 		</javac>
