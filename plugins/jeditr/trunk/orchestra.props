@@ -1,0 +1,30 @@
+plugin.com.addictedtor.orchestra_installer.JEditRPlugin.name=JeditRPlugin
+plugin.com.addictedtor.orchestra_installer.JEditRPlugin.author=Romain Francois
+plugin.com.addictedtor.orchestra_installer.JEditRPlugin.version=0.0
+plugin.com.addictedtor.orchestra_installer.JEditRPlugin.activate=startup
+plugin.com.addictedtor.orchestra_installer.JEditRPlugin.usePluginHome=true
+plugin.com.addictedtor.orchestra_installer.JEditRPlugin.description=jedit as an R IDE
+plugin.com.addictedtor.orchestra_installer.JEditRPlugin.jars=afcommons.jar jhlir.jar
+
+plugin.com.addictedtor.orchestra_installer.JEditRPlugin.depend.0=jdk 1.5
+plugin.com.addictedtor.orchestra_installer.JEditRPlugin.depend.1=jedit 04.03.16.00
+plugin.com.addictedtor.orchestra_installer.JEditRPlugin.depend.2=plugin console.ConsolePlugin 4.3
+plugin.com.addictedtor.orchestra_installer.JEditRPlugin.depend.3=plugin errorlist.ErrorListPlugin 1.7
+plugin.com.addictedtor.orchestra_installer.JEditRPlugin.depend.4=plugin sidekick.SideKickPlugin 0.7.5
+
+plugin.com.addictedtor.orchestra_installer.JEditRPlugin.jars=afcommons.jar,jhlir.jar,log4j-1.2.15.jar,commons-logging-1.1.1.jar
+
+# plugin option pane
+plugin.com.addictedtor.orchestra_installer.JEditRPlugin.option-pane=jeditr
+
+# Option pane activation BeanShell snippet
+options.orchestra_installer.code=new com.addictedtor.orchestra_installer.JEditROptionPane();
+
+# Option pane labels
+options.orchestra_installer.label=Orchestra Installer
+
+options.orchestra_installer.choose-dir=Choose
+options.orchestra_installer.rhome.title=Set R Home directory
+options.orchestra_installer.rhome.path=
+options.orchestra_installer.shortcut.title=Set directory for Orchestra shortcut
+options.orchestra_installer.shortcut.path=

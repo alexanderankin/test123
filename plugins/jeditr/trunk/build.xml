@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="jeditr" default="build" basedir=".">
+<project name="Orchestra Installer Plugin" default="build" basedir=".">
 
     <property file="build.properties"/>
     <property name="dist.target" value="build"/>
@@ -19,9 +19,9 @@
 
     <selector id="packageFiles">
         <or>
-            <filename name="jeditr_starter.r"/>
-            <filename name="jeditr_icon.ico"/>
-            <filename name="jeditr_icon.png"/>
+            <filename name="orchestra_starter.r"/>
+            <filename name="orchestra_icon.ico"/>
+            <filename name="orchestra_icon.png"/>
         </or>
     </selector>
 
