@@ -14,12 +14,10 @@ plugin.tasklist.TaskListPlugin.description=Shows all "TODO" comments in a file.
 ### menu
 plugin.tasklist.TaskListPlugin.menu=tasklist \
 	tasklist.parse-buffer \
-	tasklist.parse-project \
 	tasklist.reset-patterns
 
 tasklist.label=Task List
 tasklist.parse-buffer.label=Parse buffer
-tasklist.parse-project.label=Parse project
 tasklist.reset-patterns.label=Reset task patterns
 
 ### option panes

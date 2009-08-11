@@ -22,18 +22,20 @@
 package tasklist;
 
 //{{{ imports
+import java.awt.Component;
 import javax.swing.*;
 import javax.swing.table.*;
-import java.awt.*;
 import java.awt.event.*;
-import java.util.Vector;
-import java.util.Comparator;
-import java.util.Collections;
+import java.util.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.msg.*;
-import org.gjt.sp.util.Log;
 //}}}
 
+/**
+ * A TaskListModel uses a Buffer as its underlying data model.  This list model
+ * will only show tasks for its buffer, that is, there is a one to one relationship
+ * between a TaskListModel and a Buffer.
+ */
 public class TaskListModel extends AbstractTableModel
 	implements TaskListPlugin.TaskListener, EBComponent
 {
@@ -42,15 +44,9 @@ public class TaskListModel extends AbstractTableModel
 	private static final String[] colNames = {
 		"",
 		"Line #",
-		"Description",
-		"Buffer",
+		"Description"
 	};
 
-	// buffer display format constants
-	private static final int NAME_DIR = 0;	// filename (dir)
-	private static final int FULL_PATH = 1;	// dir/name
-	private static final int NAME_ONLY = 2; // filename
-	//}}}
 
 	//{{{ setSortCol(int sortCol) method
 	public void setSortCol(int sortCol) {
@@ -78,14 +74,12 @@ public class TaskListModel extends AbstractTableModel
 	 *
 	 * @param view the View with which the model is associated
 	 */
-	public TaskListModel(View view)
+	public TaskListModel(Component parent, Buffer buffer)
 	{
-		this.view = view;
+		this.controller = parent;
+		this.buffer = buffer;
 
-		tasks = new Vector<Task>();
-		buffers = new Vector<Buffer>();
-
-		this.bufferDisplay = getBufferDisplay();
+		tasks = new ArrayList<Task>();
 
 		// NOTE:  default sort column is column 1 (line number)
 		try {
@@ -95,26 +89,21 @@ public class TaskListModel extends AbstractTableModel
 		}
 		this.sortAscending = jEdit.getBooleanProperty("tasklist.table.sort-ascending");
 
-		try
-		{
-			EditPane[] editPanes = view.getEditPanes();
-			for(int i = 0; i < editPanes.length; i++)
-			{
-				Buffer buffer = editPanes[i].getBuffer();
-				if(buffers.indexOf(buffer) == -1)
-					_addBuffer(buffer);
-			}
-
-			if(editPanes.length > 1)
-				fireTableStructureChanged();
-
-		}
-		catch(Exception e)
-		{
-			Log.log(Log.ERROR, this, e);
-		}
+		TaskListPlugin.extractTasks(buffer);
 
 	}//}}}
+	
+	public void setBuffer(Buffer buffer) {
+	    if (buffer != null && !buffer.equals(this.buffer)) {
+	         this.buffer = buffer;
+	         tasks.clear();
+	         TaskListPlugin.extractTasks(buffer);
+	    }
+	}
+	
+	public Buffer getBuffer() {
+	     return buffer;   
+	}
 
 	//{{{ elementAt(int row) method
 	/**
@@ -126,101 +115,11 @@ public class TaskListModel extends AbstractTableModel
 		return tasks.get(row);
 	}//}}}
 
-	//{{{ _addBuffer(Buffer buffer) method
-	/**
-	* Adds the buffer to the set of buffers whose tasks should be returned by
-	* the table model.  If the buffer is already in the set, return - otherwise
-	* request the tasks for this buffer from TaskListPlugin.  If the set of
-	* tasks returned is null, the buffer hasn't been parsed - it will be parsed
-	* and we will find out about the task when 'taskAdded' events are fired.
-	*/
-	private void _addBuffer(Buffer buffer)
-	{
-		// add the buffer to the buffers vector
-		if(buffers.indexOf(buffer) == -1)
-		{
-			buffers.add(buffer);
-			// requests an asynchronous parsing of tasks
-			TaskListPlugin.extractTasks(buffer);
-		}
-		else
-			Log.log(Log.ERROR, TaskListModel.class, "_addBuffer(" 
-				+ buffer.getPath() + "), buffer already in collection.");
-	}//}}}
-
-	//{{{ addTask(Task task) method
-	/**
-	* Adds a Task
-	* @param Task task to add
-	*/
-	private void addTask(Task task)
-	{
-		//Log.log(Log.DEBUG, TaskListModel.class,
-		//	"TaskListModel.addTask(" + task.toString() + ")");//##
-
-		tasks.add(task);
-
-		// check whether task is appended or inserted
-		int index = tasks.indexOf(task);
-		//Log.log(Log.DEBUG, TaskListModel.class,
-		//		"index=" + index + ",tasks.size()=" + tasks.size());//##
-
-		fireTableRowsInserted(tasks.size() - 1, tasks.size() -1);
-	}//}}}
-
-	//{{{ _removeBuffer(Buffer buffer) method
-	/**
-	* Remove the buffer from the current set, and remove all the 
-	* tasks that 'belong' to the buffer.
-	*/
-	private void _removeBuffer(Buffer buffer)
-	{
-		int index = buffers.indexOf(buffer);
-		if(index > -1)
-		{
-			//Log.log(Log.DEBUG, TaskListModel.class,
-			//	"buffer to be removed {" + buffer.getPath() + "} found");//##
-			
-			for(int i = tasks.size() - 1; i >= 0; i--)
-			{
-				if((tasks.get(i)).getBuffer() == buffer)
-					removeTask(i);
-			}
-
-			buffers.remove(index);
-		}
-	}//}}}
-
-	//{{{ removeTask(Task task) method
-	/**
-	* Internal method to remove a task
-	* @param Task task to remove
-	*/
-	private void removeTask(Task task)
-	{
-		int taskNum = tasks.indexOf(task);
-		if(taskNum != -1)
-		{
-			removeTask(taskNum);
-		}
-	}//}}}
-
-	//{{{ removeTask(int index) method
-	/**
-	* Revomves a task by row number
-	* @param index row number of task to remove
-	*/
-	private void removeTask(int index)
-	{
-		tasks.remove(index);
-		fireTableRowsDeleted(index, index);
-	}//}}}
 
 	//{{{ private members
-	private int bufferDisplay;
-	private final View view;
-	private final java.util.List<Task> tasks;
-	private final java.util.List<Buffer> buffers;
+	private Buffer buffer;
+	private Component controller;
+	private final List<Task> tasks;
 	private	int sortCol;
 	private boolean sortAscending;
 	//}}}
@@ -230,24 +129,34 @@ public class TaskListModel extends AbstractTableModel
 	//{{{ taskAdded(Task task) method
 	public void taskAdded(Task task)
 	{
-		if(buffers.indexOf(task.getBuffer()) > -1)
-		{
-			if(tasks.indexOf(task) == -1)
-			{
-				addTask(task);
-			}
-		}
+	    if (task == null) {
+	         return;   
+	    }
+	    if (buffer.equals(task.getBuffer())) {
+	         tasks.add(task);       
+	         fireTableRowsInserted(tasks.size() - 1, tasks.size() -1);
+	    }
 	}//}}}
 
 	//{{{ taskRemoved(Task task) method
 	public void taskRemoved(Task task)
 	{
-		removeTask(task);
+	    if (task == null) {
+	         return;   
+	    }
+	    if (buffer.equals(task.getBuffer())) {
+	         int index = tasks.indexOf(task);
+	         if (index >= 0) {
+                tasks.remove(index);
+                fireTableRowsDeleted(index, index);
+	         }
+	    }
 	}//}}}
 
 	//{{{ tasksUpdated() method
 	public void tasksUpdated()
 	{
+		controller.setVisible(tasks.size() > 0);
 		sort(sortCol, sortAscending);
 	}//}}}
 
@@ -256,78 +165,14 @@ public class TaskListModel extends AbstractTableModel
 	//{{{ handleMessage(EBMessage message) method
 	public void handleMessage(EBMessage message)
 	{
-		if(message instanceof EditPaneUpdate)
-		{
-			EditPaneUpdate epu = (EditPaneUpdate)message;
-			View view = epu.getEditPane().getView();
-			if(view != this.view)
-				return;
-
-			// used to determine whether to fireTableStructureChanged
-			int prevBuffCount = buffers.size();
-
-			if(epu.getWhat() == EditPaneUpdate.DESTROYED)
-			{
-				Buffer buffer = epu.getEditPane().getBuffer();
-
-				for(int i = 0; i < buffers.size(); i++)
-				{
-					if((buffers.get(i)) != buffer)
-						_removeBuffer(buffer);
-				}
-			}
-			else if(epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
-			{
-				EditPane[] editPanes = view.getEditPanes();
-
-				// if the buffer is alreay in the current set,
-				// no need to add it, just remove the one no longer
-				// displayed
-				Buffer buffer = epu.getEditPane().getBuffer();
-				if(buffers.indexOf(buffer) == -1)
-					_addBuffer(buffer);
-
-				// if there is a buffer displayed which is no longer
-				// in one of the currect set of EditPanes, remove it
-				for(int i = 0; i < buffers.size(); i++)
-				{
-					buffer = buffers.get(i);
-					boolean foundBuffer = false;
-
-					// look through the current set of editPanes for
-					// the current buffer
-					for(int j = 0; j < editPanes.length && foundBuffer == false; j++)
-					{
-						if(buffer == editPanes[j].getBuffer())
-							foundBuffer = true;
-					}
-
-					if(foundBuffer == false)
-						_removeBuffer(buffer);
-				}
-			}// end if what == BUFFER_CHANGED
-
-			// if going from one buffer to multiple buffers
-			// or vice-versa, display the buffer path
-			if((prevBuffCount <= 1 && buffers.size() > 1) ||
-				prevBuffCount > 1 && buffers.size() <= 1)
-			{
-				fireTableStructureChanged();
-			}
-
-		}
-		else if(message instanceof BufferUpdate)
-		{
-			BufferUpdate bu = (BufferUpdate)message;
-			if(bu.getWhat() == BufferUpdate.CLOSED)
-			{
-				_removeBuffer(bu.getBuffer());
-			}
-		}
-		else if(message instanceof PropertiesChanged)
-		{
-			propertiesChanged();
-		}
+	    if (message instanceof BufferUpdate) {
+	         BufferUpdate bu = (BufferUpdate)message;
+	         if (buffer.equals(bu.getBuffer()) && BufferUpdate.SAVED.equals(bu.getWhat())) {
+	             // on Buffer save, reparse and reload the tasks for the Buffer.
+	             tasks.clear();
+	             TaskListPlugin.extractTasks(buffer);	                 
+	         }
+	    }
 	}//}}}
 
 	//{{{ getColumnName(int c) method
@@ -345,8 +190,7 @@ public class TaskListModel extends AbstractTableModel
 	//{{{ getColumnCount() method
 	public int getColumnCount()
 	{
-		// only display buffer name if showing more than one buffer
-		return (buffers.size() <= 1 ? 3 : 4);
+		return 3;
 	}//}}}
 
 	//{{{ getValueAt(int r, int c) method
@@ -361,16 +205,6 @@ public class TaskListModel extends AbstractTableModel
 				return Integer.valueOf(task.getLineNumber() + 1);
 			case 2:
 				return task.getText();
-			case 3:
-				switch(bufferDisplay)
-				{
-					case NAME_DIR:
-						return task.getBuffer().toString();
-					case NAME_ONLY:
-						return task.getBuffer().getName();
-					default:
-						return task.getBuffer().getPath();
-				}
 			default:
 				return null;
 		}
@@ -399,50 +233,6 @@ public class TaskListModel extends AbstractTableModel
 	//{{{ setValueAt(Object value, int r, int col) method
 	public void setValueAt(Object value, int row, int col)
 	{
-	}//}}}
-
-	//{{{ getBufferDisplay() method
-	/**
-	* Returns the current buffer display style
-	* (default to 'name (dir)')
-	*/
-	private int getBufferDisplay()
-	{
-		String _bufferDisplay = jEdit.getProperty(
-			"tasklist.buffer.display");
-
-		//Log.log(Log.DEBUG, TaskListModel.class,
-		//	"_bufferDisplay=" + _bufferDisplay);//##
-
-		if(_bufferDisplay == "" || _bufferDisplay == null)
-		{
-			return NAME_DIR;
-		}
-		else if(_bufferDisplay.equals(jEdit.getProperty(
-				"options.tasklist.general.buffer.display.nameonly")))
-		{
-			return NAME_ONLY;
-		}
-		else if(_bufferDisplay.equals(jEdit.getProperty(
-				"options.tasklist.general.buffer.display.fullpath")))
-		{
-			return FULL_PATH;
-		}
-		else
-		{
-			return NAME_DIR;
-		}
-	}//}}}
-
-	//{{{ propertiesChanged() method
-	private void propertiesChanged()
-	{
-		int _bufferDisplay = getBufferDisplay();
-		if(bufferDisplay != _bufferDisplay)
-		{
-			// QUESTION: is fire table data changed needed?
-			bufferDisplay = _bufferDisplay;
-		}
 	}//}}}
 
 	//{{{ sort() method
