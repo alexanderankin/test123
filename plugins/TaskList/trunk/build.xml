@@ -130,7 +130,7 @@
 		<delete file="docbook-wrapper.xsl"/>
 		<delete>
 			<fileset dir="." includes="**/*~" defaultexcludes="no"/>
-			<fileset dir="." includes="**/*.html" defaultexcludes="no"/>
+			<fileset dir="." includes="**/*.html" excludes="description.html" defaultexcludes="no"/>
 		</delete>
 	</target>
 

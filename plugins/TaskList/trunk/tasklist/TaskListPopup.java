@@ -34,6 +34,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 import javax.swing.JPopupMenu;
+import javax.swing.JTable;
 
 import org.gjt.sp.jedit.*;
 //}}}
@@ -46,7 +47,7 @@ import org.gjt.sp.jedit.*;
 public class TaskListPopup extends JPopupMenu
 {
 	private View view;
-	private final TaskList list;
+	private final JTable list;
 	private final int taskNum;
 	private final ActionListener listener;
 
@@ -60,7 +61,7 @@ public class TaskListPopup extends JPopupMenu
 	 * @param int TaskNum the zero-based index of the selected table row
 	 * that will be the subject of the popup
 	 */
-	public TaskListPopup(View view, TaskList list, int taskNum)
+	public TaskListPopup(View view, JTable list, int taskNum)
 	{
 		super(jEdit.getProperty("tasklist.popup.heading"));
 		setLightWeightPopupEnabled(true);
@@ -70,7 +71,7 @@ public class TaskListPopup extends JPopupMenu
 		this.listener = new ActionHandler();
 
 		BoundedMenu changeMenu =
-			new BoundedMenu(list, jEdit.getProperty("tasklist.popup.change-menu"));
+			new BoundedMenu(jEdit.getProperty("tasklist.popup.change-menu"));
 
 		int item = 0;
 		String name = jEdit.getProperty("tasklist.tasktype." + item + ".name");
@@ -81,7 +82,7 @@ public class TaskListPopup extends JPopupMenu
 			name = jEdit.getProperty("tasklist.tasktype." + item + ".name");
 		}
 		add(changeMenu);
-		BoundedMenu deleteMenu = new BoundedMenu(list, "Delete task");
+		BoundedMenu deleteMenu = new BoundedMenu("Delete task");
 		deleteMenu.add(createMenuItem("Delete task tag", "%Dtag"));
 		deleteMenu.add(createMenuItem("Delete entire task", "%Dtask"));
 		add(deleteMenu);
@@ -102,20 +103,14 @@ public class TaskListPopup extends JPopupMenu
 	public class BoundedMenu extends JMenu
 	{
 		/**
-		 * The component that defines the bounds of the child popup menu.
-		 */
-		private Component bounds;
-
-		/**
 		 * Constructs a BoundedMenu object.
 		 *
 		 * @param bounds the Component forming the bounds for the object's
 		 * child popup menu.
 		 * @param title the text to be displayed on the parent menu item
 		 */
-		public BoundedMenu(Component bounds, String title) {
+		public BoundedMenu(String title) {
 			super(title);
-			this.bounds = bounds;
 		}
 
 		/**
@@ -207,9 +202,8 @@ public class TaskListPopup extends JPopupMenu
 
 		//{{{ actionPerformed
 		public void actionPerformed(ActionEvent evt) {
-			View v = view;
-			Task task = (Task)(list.taskListModel).elementAt(taskNum);
-			Buffer buffer = task.getBuffer();
+			TaskListModel model = (TaskListModel)list.getModel();
+			Task task = (Task)model.elementAt(taskNum);
 			String cmd = evt.getActionCommand();
 			if(cmd.equals("parse-buffer"))
 			{
