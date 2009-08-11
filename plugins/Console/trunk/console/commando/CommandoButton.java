@@ -79,11 +79,13 @@ public class CommandoButton extends JButton implements ActionListener
 		contextMenu = new JPopupMenu();
 		visible = jEdit.getBooleanProperty("commando.visible." + name);
 		setVisible(visible);
-		hide = new JMenuItem(jEdit.getProperty("commando.hide"));
-		hide.addActionListener(this);
+		if (!command.isUser()) {
+			hide = new JMenuItem(jEdit.getProperty("commando.hide"));
+			hide.addActionListener(this);
+			contextMenu.add(hide);
+		}
 		customize = new JMenuItem(jEdit.getProperty("commando.customize"));
 		customize.addActionListener(this);
-		contextMenu.add(hide);
 		contextMenu.add(customize);
 		if (command.isUser()) {
 			setBackground(Color.GREEN);
