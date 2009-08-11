@@ -1,4 +1,4 @@
-package com.addictedtor.jeditr;
+package com.addictedtor.orchestra_installer;
 
 import af.commons.OSTools;
 import af.commons.install.FreeDesktop;
@@ -29,9 +29,9 @@ public class Installer {
 //    private File rJavaDir = null;
 //    private String rLibPaths = null;
     private File shortcutDir = null;
-    public static final String RSCRIPT_NAME = "jeditr_starter.r";
-    public static final String ICON_NAME_WINDOWS = "jeditr_icon.ico";
-    public static final String ICON_NAME_LINUX = "jeditr_icon.png";
+    public static final String RSCRIPT_NAME = "orchestra_starter.r";
+    public static final String ICON_NAME_WINDOWS = "orchestra_icon.ico";
+    public static final String ICON_NAME_LINUX = "orchestra_icon.png";
 
     public Installer(String jeditHomeDir, String pluginHomeDir,
                      String rHomeDir, String shortcutDir) {

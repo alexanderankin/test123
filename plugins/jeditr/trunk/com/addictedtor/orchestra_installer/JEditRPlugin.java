@@ -1,11 +1,11 @@
-package com.addictedtor.jeditr;
+package com.addictedtor.orchestra_installer;
 
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EditPlugin; 
 import org.gjt.sp.jedit.EBPlugin;
+import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.jEdit;
 
 import javax.swing.*;
