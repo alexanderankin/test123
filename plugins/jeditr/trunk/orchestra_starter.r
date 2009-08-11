@@ -5,21 +5,21 @@
 # Copyright (c) 2009, Romain Francois <francoisromain@free.fr>
 # Copyright (c) 2009, Bernd Bischl <bernd_bischl@gmx.net>
 #
-# This file is part of the jeditr R package
+# This file is part of the orchestra R package
 #
-# The jeditr R package is free software:
+# The orchestra R package is free software:
 # you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #
-# The jeditr R package is distributed in the hope that it will be useful,
+# The orchestra R package is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with the jeditr R package. If not, see <http://www.gnu.org/licenses/>.
+# along with the orchestra R package. If not, see <http://www.gnu.org/licenses/>.
 # }}}
 
 # {{{ environment variables
@@ -33,7 +33,7 @@ Sys.setenv(R_HOME = R_HOME )
 # {{{ add the plugin home to R_LIBS
 R_LIBS <- Sys.getenv( "R_LIBS", unset = "" )
 JEDIT_RLIBS <- "@PLUGIN_HOME@/library"
-# set by java jeditr installer plugin
+# set by java orchestra installer plugin
 R_LIBS <- if( R_LIBS == "" ){
 	JEDIT_RLIBS
 } else{
@@ -43,7 +43,7 @@ Sys.setenv( R_LIBS = R_LIBS )
 # }}}
 
 # {{{ JAVA_HOME and java
-# set by java jeditr installer plugin, so we always know java_home
+# set by java orchestra installer plugin, so we always know java_home
 JAVA_HOME <- "@JAVA_HOME@"
 java_exe <- "@JAVA_EXE@"
 java <- file.path( JAVA_HOME, "bin", java_exe )
@@ -53,7 +53,7 @@ if( !file.exists( java ) ){
 # }}}
 
 # {{{ JEDIT_HOME and jeddit.jar
-# set by java jeditr installer plugin, so we always know jedit_home
+# set by java orchestra installer plugin, so we always know jedit_home
 JEDIT_HOME <- "@JEDIT_HOME@"
 jedit.jar <- file.path( JEDIT_HOME, "jedit.jar" )
 if( !file.exists( jedit.jar ) ){
@@ -88,14 +88,14 @@ LD_LIBRARY_PATH <- if( LD_LIBRARY_PATH == "" ){
 Sys.setenv( LD_LIBRARY_PATH = LD_LIBRARY_PATH )
 # }}}
 
-# {{{ JEDITR_HOME
-JEDITR_HOME = system.file( package = "jeditr" )
+# {{{ ORCHESTRA_HOME
+ORCHESTRA_HOME = system.file( package = "orchestra" )
 # }}}
 # }}}
 
 # {{{ the command
-cmd <- sprintf( '"%s" -Djava.library.path="%s" -Djeditr.home="%s" -Drhome="%s" -jar "%s" ',
-	java, LD_LIBRARY_PATH, JEDITR_HOME, R_HOME, jedit.jar )
+cmd <- sprintf( '"%s" -Djava.library.path="%s" -Dorchestra.home="%s" -Drhome="%s" -jar "%s" ',
+	java, LD_LIBRARY_PATH, ORCHESTRA_HOME, R_HOME, jedit.jar )
 
 # additional parameters
 params <- commandArgs( TRUE )

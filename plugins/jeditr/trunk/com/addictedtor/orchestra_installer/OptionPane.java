@@ -24,14 +24,14 @@ import java.util.Hashtable;
 public class OptionPane extends AbstractOptionPane implements ActionListener {
     protected static final Log logger = LogFactory.getLog(OptionPane.class);
 
-    public static final String OPTION_PREFIX = "options.jeditr.";
+    public static final String OPTION_PREFIX = "options.orchestra_installer.";
     private Hashtable<String, JTextField> pathNames = new Hashtable<String, JTextField>();
     private JTextField tfRHome = new JTextField();
     private JTextField tfShortcut = new JTextField();
 
 
     public OptionPane() {
-        super("jeditr-optionpane");
+        super("orchestra-optionpane");
     }
 
 
