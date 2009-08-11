@@ -1,4 +1,4 @@
-package com.addictedtor.jeditr;
+package com.addictedtor.orchestra_installer;
 
 import org.af.jhlir.tools.DirectoryGuesser;
 import org.apache.commons.logging.Log;
