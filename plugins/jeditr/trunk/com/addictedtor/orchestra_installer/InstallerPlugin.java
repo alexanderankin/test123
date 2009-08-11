@@ -19,16 +19,16 @@ import java.io.File;
  * @author Bernd Bischl <bernd_bischl@gmx.net>
  * @author Romain Francois <francoisromain@free.fr>
  */
-public class JEditRPlugin extends EBPlugin {
+public class InstallerPlugin extends EBPlugin {
 
-    public static final String NAME = "JEditRPlugin";
+    public static final String NAME = "InstallerPlugin";
 
     // log4j
-    public static final String LOG_FILENAME = "jeditr_installer.log";
+    public static final String LOG_FILENAME = "orchestra_installer.log";
 
 
     // must be public for jedit, but dont call this!
-    public JEditRPlugin() {
+    public InstallerPlugin() {
     }
 
     /**
@@ -46,7 +46,7 @@ public class JEditRPlugin extends EBPlugin {
                 jEdit.addPluginJAR( jar ) ;
             } else {
                 //todo better handling?
-                JOptionPane.showMessageDialog(jEdit.getActiveView(), "JEditR: Cannot find R.jar. Please install the jeditr R package and then run the installer plugin for jedit again!");
+                JOptionPane.showMessageDialog(jEdit.getActiveView(), "Orchestra: Cannot find R.jar. Please install the jeditr R package and then run the installer plugin for jedit again!");
             }
         }
     }
@@ -61,7 +61,7 @@ public class JEditRPlugin extends EBPlugin {
         fa.setAppend(false);
         rootLogger.addAppender(fa);
         fa.activateOptions();
-        rootLogger.info("jeditr plugin started!");
+        rootLogger.info("Orchestra installer plugin started!");
         rootLogger.info("log4j configured.");
         rootLogger.info("log goes to: " + log.getAbsolutePath());
     }
@@ -92,7 +92,7 @@ public class JEditRPlugin extends EBPlugin {
      * Returns the home of this plugin
      */ 
     public static String getPluginHomePath(){
-    	return EditPlugin.getPluginHome( JEditRPlugin.class ).getAbsolutePath(); 
+    	return EditPlugin.getPluginHome( InstallerPlugin.class ).getAbsolutePath();
     }
 
 }

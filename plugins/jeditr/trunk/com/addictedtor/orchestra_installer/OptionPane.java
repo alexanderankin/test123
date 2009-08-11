@@ -21,8 +21,8 @@ import java.util.Hashtable;
  * @author Romain Francois <francoisromain@free.fr>
  */
 
-public class JEditROptionPane extends AbstractOptionPane implements ActionListener {
-    protected static final Log logger = LogFactory.getLog(JEditROptionPane.class);
+public class OptionPane extends AbstractOptionPane implements ActionListener {
+    protected static final Log logger = LogFactory.getLog(OptionPane.class);
 
     public static final String OPTION_PREFIX = "options.jeditr.";
     private Hashtable<String, JTextField> pathNames = new Hashtable<String, JTextField>();
@@ -30,7 +30,7 @@ public class JEditROptionPane extends AbstractOptionPane implements ActionListen
     private JTextField tfShortcut = new JTextField();
 
 
-    public JEditROptionPane() {
+    public OptionPane() {
         super("jeditr-optionpane");
     }
 
@@ -122,7 +122,7 @@ public class JEditROptionPane extends AbstractOptionPane implements ActionListen
 //                RPackage rp = rCmdBatch.getInstalledPackInfo("rJava");
                 Installer i = new Installer(
                         jEdit.getJEditHome(),
-                        JEditRPlugin.getPluginHomePath(), 
+                        InstallerPlugin.getPluginHomePath(),
                         rhome,
 //                        rp.getLibpath().getAbsolutePath(),
 //                        rCmdBatch.getLibPaths(),
