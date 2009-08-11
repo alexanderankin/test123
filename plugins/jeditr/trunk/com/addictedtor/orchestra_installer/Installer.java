@@ -101,7 +101,7 @@ public class Installer {
         return scriptFile;
     }
 
-    private void extractJEditRIcons() throws IOException{
+    private void extractIcons() throws IOException{
         logger.info("Extracting icons to: " + pluginHomeDir);
         FileTransfer.copyResourceToLocalDir(this.getClass().getResource("/"+ICON_NAME_WINDOWS),
                 ICON_NAME_WINDOWS, pluginHomeDir);
@@ -116,7 +116,7 @@ public class Installer {
         d.setIconpath(iconFile.getAbsolutePath());
         logger.info("Shortcut icon is: " + iconFile);
         d.setWorkingDir(pluginHomeDir.getAbsolutePath());
-        d.createDesktopEntry(shortcutDir, "JEditR");
+        d.createDesktopEntry(shortcutDir, "Orchestra");
     }
 
     private void createShortcutFreeDesktop(String targetCmd, File iconFile) throws IOException{
@@ -124,12 +124,12 @@ public class Installer {
         d.setExec(targetCmd);
         d.setIconpath(iconFile.getAbsolutePath());
         logger.info("Shortcut icon is: " + iconFile);
-        d.createDesktopEntry(shortcutDir, "JEditR");
+        d.createDesktopEntry(shortcutDir, "Orchestra");
     }
 
     public void install() throws IOException{
         File scriptFile = extractRScript();
-        extractJEditRIcons();
+        extractIcons();
         File rExe = new File(new File(rHomeDir, "bin"), "R");
 
         boolean createDesktop = true;

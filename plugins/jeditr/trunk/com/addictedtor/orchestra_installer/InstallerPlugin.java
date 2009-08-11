@@ -36,17 +36,17 @@ public class InstallerPlugin extends EBPlugin {
      */
     @Override
     public void start() {
-        String jeditr_home = System.getProperty("jeditr.home", "") ;
-        if( jeditr_home.equals("") ){
+        String orchestra_home = System.getProperty("orchestra.home", "") ;
+        if( orchestra_home.equals("") ){
             startInstallerPlugin();
         } else {
             // load the jeditr plugin from the R package tree
-            String jar = jeditr_home + "/java/R.jar" ;
+            String jar = orchestra_home + "/java/R.jar" ;
             if((new File( jar ) ).exists() ){
                 jEdit.addPluginJAR( jar ) ;
             } else {
                 //todo better handling?
-                JOptionPane.showMessageDialog(jEdit.getActiveView(), "Orchestra: Cannot find R.jar. Please install the jeditr R package and then run the installer plugin for jedit again!");
+                JOptionPane.showMessageDialog(jEdit.getActiveView(), "Orchestra: Cannot find R.jar. Please install the Orchestra R package and then run the installer plugin for jedit again!");
             }
         }
     }
