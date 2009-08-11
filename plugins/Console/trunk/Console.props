@@ -385,11 +385,13 @@ commando.commands=Commands
 commando.copy=Copy
 commando.hide=Hide
 commando.customize=Customize
-
+commando.uncustomize=Un-Customize
 commando.xml-error.title=Parse Error
 commando.xml-error.message=An error occurred while parsing {0} at line {1}\n\
 	({2}).
-
+console.commando.button.tooltiptext=Right-click for menu
+console.commando.button.customized.tooltiptext=User-customized commando button
+commando.uncustomize.tooltiptext=Remove custom {0}.xml from settings directory
 commando.bad-shell.title=Unknown Shell
 commando.bad-shell.message=No such shell: {0}
 

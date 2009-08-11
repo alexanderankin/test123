@@ -1528,6 +1528,8 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
   <listitem id="ver4.4.1"><para>
     <emphasis role="bold">Version 4.4.1</emphasis> Requires jEdit 4.3pre17, JDK 1.5, ErrorList 1.4, ProjectViewer 2.9 (optional). <itemizedlist>
         <listitem><para> Report errors for processes with only one multiline error, fixing regression introduced by 2783642 in Console 4.4. </para></listitem>
+        <listitem><para> Added an "uncustomize" context menu item for Commando Buttons that have override commandos from the jar, to easily restore them to the previous state, as well as indicators via tooltip and color, that a button has been customized. </para></listitem>
+
     </itemizedlist>
     </para></listitem>
 
