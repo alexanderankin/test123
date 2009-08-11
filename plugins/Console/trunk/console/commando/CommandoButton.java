@@ -130,6 +130,7 @@ public class CommandoButton extends JButton implements ActionListener
 				}
 				writer.close();
 				reader.close();
+				ConsolePlugin.rescanCommands();
 			}
 			View v = jEdit.getActiveView();
 			jEdit.openFile(v, f.getAbsolutePath());
