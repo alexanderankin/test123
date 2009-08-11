@@ -36,6 +36,9 @@ import java.util.regex.Pattern;
 import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.util.StringList;
+
+import console.Console;
 
 // }}}
 
@@ -59,6 +62,19 @@ public class CommandoCommand extends EditAction
 		return (url == null);
 	}
 
+	/**
+	 * 
+	 * @return true for user commands that override a command 
+	 *     with the same name in the jar. 
+	 */
+	public boolean isOverriding() 
+	{
+		if (!isUser()) return false;
+		String defaultCommands = jEdit.getProperty("commando.default");
+		StringList sl = StringList.split(defaultCommands, " ");
+		String cmdName = name.replace("commando.", "");
+		return sl.contains(cmdName);
+	}
 	// }}}
 
 	// {{{ create()

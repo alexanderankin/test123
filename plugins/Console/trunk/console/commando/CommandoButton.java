@@ -22,6 +22,7 @@
 package console.commando;
 
 // {{{ imports
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -58,14 +59,23 @@ public class CommandoButton extends JButton implements ActionListener
 	private JMenuItem hide;
 
 	private JMenuItem customize;
+	
+	private JMenuItem unCustomize;
+	
 	// }}}
 
     // {{{ ctor 
 	public CommandoButton(CommandoCommand command)
 	{
+		this.command = command;
+		init();
+	}
+	
+	void init() {
+		
+		setToolTipText(jEdit.getProperty("console.commando.button.tooltiptext"));
 		String name = command.getLabel();
 		setText(name);
-		this.command = command;
 		contextMenu = new JPopupMenu();
 		visible = jEdit.getBooleanProperty("commando.visible." + name);
 		setVisible(visible);
@@ -75,11 +85,31 @@ public class CommandoButton extends JButton implements ActionListener
 		customize.addActionListener(this);
 		contextMenu.add(hide);
 		contextMenu.add(customize);
+		if (command.isUser()) {
+			setBackground(Color.GREEN);
+			setToolTipText(jEdit.getProperty("console.commando.button.customized.tooltiptext"));
+			if (command.isOverriding()) {
+				unCustomize = new JMenuItem(jEdit.getProperty("commando.uncustomize"));
+				unCustomize.setToolTipText(jEdit.getProperty("commando.uncustomize.tooltiptext", new Object[] {name}));
+				unCustomize.addActionListener(this);
+				contextMenu.add(unCustomize);
+			}
+		}
 		setComponentPopupMenu(contextMenu);
 		
 	}
     // }}}
     
+	// {{{ unCustomize
+	public void unCustomize() 
+	{
+		String userDir = ConsolePlugin.getUserCommandDirectory();
+		String name = command.getShortLabel() + ".xml";
+		File f = new File(userDir, name);
+		f.delete();
+		ConsolePlugin.rescanCommands();
+	}
+	
     // {{{ Customize 
 	public void customize()
 	{
@@ -123,6 +153,9 @@ public class CommandoButton extends JButton implements ActionListener
 		if (e.getSource() == customize)
 		{
 			customize();
+		}
+		if (e.getSource() == unCustomize) {
+			unCustomize();
 		}
 	}
     // }}}

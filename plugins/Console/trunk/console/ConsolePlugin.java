@@ -227,8 +227,12 @@ public class ConsolePlugin extends EBPlugin
 		StringList sl = StringList.split(defaultCommands, " ");
 		for (String name: sl) {
 			String key = "commando." + name;
-			if (allCommands.contains(key))
+			if (allCommands.contains(key)) {
+				// skip over those that have user overridden versions already loaded
+				
 				continue;
+			}
+
 
 			String resourceName = "/console/commands/" + name + ".xml";
 			// System.out.println ("GetResource: " + resourceName);
