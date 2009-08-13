@@ -5,6 +5,7 @@ import javax.swing.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.msg.*;
 
+// TODO: javadoc
 public class CurrentBufferTaskList extends JPanel implements EBComponent {
 
     private View view = null;

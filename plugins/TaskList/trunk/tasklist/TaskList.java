@@ -37,8 +37,12 @@ import org.gjt.sp.jedit.msg.*;
  *
  * @author Oliver Rutherfurd
  */
-public class TaskList extends JPanel {
+public class TaskList extends JPanel implements EBComponent {
+
+	private View view = null;
 	private JTabbedPane tabs = null;
+	private boolean showOpenFiles = true;
+	private boolean showProjectFiles = true;
 
 	//{{{ constructor
 	/**
@@ -47,18 +51,38 @@ public class TaskList extends JPanel {
 	 * @param view The view in which the TaskList component will appear
 	 */
 	public TaskList( View view ) {
-		super( new BorderLayout() );
+		this.view = view;
+		init();
+		EditBus.addToBus( this );
 
-		tabs = new JTabbedPane();
-
-		tabs.add( "Current File", new CurrentBufferTaskList( view ) );
-		tabs.add( "Open Files", new JScrollPane( new OpenBufferTaskList( view ) ) );
-		if ( PVHelper.isProjectViewerAvailable() ) {
-			tabs.add( "Project Files", new ProjectTaskList(view) );
-		}
-
-		add( BorderLayout.CENTER, tabs );
 	} //}}}
+
+	private void init() {
+		// this method can be called on property change, which can change the
+		// layout of this panel, so remove all child components re-install them.
+		removeAll();
+
+		setLayout( new BorderLayout() );
+
+		showOpenFiles = jEdit.getBooleanProperty( "tasklist.show-open-files", true );
+		showProjectFiles = jEdit.getBooleanProperty( "tasklist.show-project-files", true );
+		boolean projectViewerAvailable = PVHelper.isProjectViewerAvailable();
+
+		if ( showOpenFiles || ( showProjectFiles && projectViewerAvailable ) ) {
+			tabs = new JTabbedPane();
+			tabs.add( "Current File", new CurrentBufferTaskList( view ) );
+			if ( showOpenFiles ) {
+				tabs.add( "Open Files", new OpenBufferTaskList( view ) );
+			}
+			if ( showProjectFiles && PVHelper.isProjectViewerAvailable() ) {
+				tabs.add( "Project Files", new ProjectTaskList( view ) );
+			}
+			add( BorderLayout.CENTER, tabs );
+		}
+		else {
+			add( new CurrentBufferTaskList( view ) );
+		}
+	}
 
 	//{{{ getName() method
 	/**
@@ -78,6 +102,14 @@ public class TaskList extends JPanel {
 		return this;
 	} //}}}
 
+	// add or remove tabs based on property settings
+	public void handleMessage( EBMessage msg ) {
+		if ( msg instanceof PropertiesChanged ) {
+			boolean sof = jEdit.getBooleanProperty( "tasklist.show-open-files", true );
+			boolean spf = jEdit.getBooleanProperty( "tasklist.show-project-files", true );
+			if ( sof != showOpenFiles || spf != showProjectFiles ) {
+				init();
+			}
+		}
+	}
 }
-
-// :collapseFolds=1:folding=explicit:indentSize=4:lineSeparator=\n:noTabs=false:tabSize=4:

@@ -3,6 +3,7 @@ package tasklist;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.event.*;
 import javax.swing.table.*;
 import org.gjt.sp.jedit.*;
@@ -13,21 +14,20 @@ import org.gjt.sp.util.Log;
 public class TaskListTable extends JPanel implements EBComponent {
     private boolean init = false;
     private View view = null;
+    private JLabel bufferName = null;
     private JTable table = null;
 
     //{{{ constructor
     public TaskListTable( View view ) {
-        this( view, view.getBuffer() );
+        this( view, view.getBuffer(), true );
     }
 
-    public TaskListTable( View view, Buffer buffer ) {
+    public TaskListTable( View view, Buffer buffer, boolean showTableHeader ) {
         this.view = view;
 
-        setLayout( new BoxLayout(this, BoxLayout.Y_AXIS) );
-        JPanel labelPanel = new JPanel(new BorderLayout());
-        labelPanel.add( new JLabel( "<html><b>" + buffer.toString(), SwingConstants.LEFT ) );
-        add( labelPanel );
-        add( Box.createVerticalStrut(3));
+        setLayout( new BorderLayout() );
+        bufferName = new JLabel( buffer.toString(), SwingConstants.LEFT ); 
+        add( bufferName, BorderLayout.NORTH );
         table = new JTable();
         table.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
         table.setCellSelectionEnabled( false );
@@ -50,6 +50,7 @@ public class TaskListTable extends JPanel implements EBComponent {
                                 );
         table.setDefaultRenderer( Image.class, null );
         table.setDefaultRenderer( Number.class, null );
+        table.setDefaultRenderer( String.class, new PaddedCellRenderer() );
 
         table.setModel( new TaskListModel( TaskListTable.this, buffer ) );
         table.setShowVerticalLines( jEdit.getBooleanProperty( "tasklist.table.vertical-lines" ) );
@@ -65,17 +66,22 @@ public class TaskListTable extends JPanel implements EBComponent {
             Dimension dim = table.getTableHeader().getPreferredSize();
             dim.height = table.getRowHeight();
             table.getTableHeader().setPreferredSize( dim );
-            table.getTableHeader().setVisible(true);
+            table.getTableHeader().setVisible( true );
         }
         resizeTable();
         sort();
-        add( table.getTableHeader() );
-        add( table );
-        add( Box.createVerticalStrut( 11 ) );
+        JPanel tablePanel = new JPanel( new BorderLayout() );
+        if ( showTableHeader ) {
+            tablePanel.add( table.getTableHeader(), BorderLayout.NORTH );
+        }
+        tablePanel.add( table, BorderLayout.CENTER );
+        add( tablePanel, BorderLayout.CENTER );
+        add( Box.createVerticalStrut( 11 ), BorderLayout.SOUTH );
         init = true;
     } //}}}
 
     public void setBuffer( Buffer buffer ) {
+        bufferName.setText(buffer.toString());
         getTaskListModel().setBuffer( buffer );
     }
 
@@ -121,19 +127,19 @@ public class TaskListTable extends JPanel implements EBComponent {
      */
     void resizeTable() {
         TableColumnModel columnModel = table.getColumnModel();
-        
+
         // symbol
         columnModel.getColumn( 0 ).setMinWidth( 20 );
         columnModel.getColumn( 0 ).sizeWidthToFit();
         columnModel.getColumn( 0 ).setMaxWidth( 20 );
         columnModel.getColumn( 0 ).setResizable( false );
-        
-        // line number 
+
+        // line number
         columnModel.getColumn( 1 ).setMinWidth( 50 );
-        columnModel.getColumn( 1 ).sizeWidthToFit();
+        columnModel.getColumn( 1 ).setPreferredWidth(50);
         columnModel.getColumn( 1 ).setMaxWidth( 50 );
         columnModel.getColumn( 1 ).setResizable( false );
-        
+
         // text
         columnModel.getColumn( 2 ).setMinWidth( 200 );
         columnModel.getColumn( 2 ).setPreferredWidth( 800 );
@@ -244,7 +250,7 @@ public class TaskListTable extends JPanel implements EBComponent {
                                         textArea.setCaretPosition( textArea.getLineStartOffset( task.getLineNumber() ) + task.getStartOffset() );
                                         textArea.scrollToCaret( true );
                                         textArea.grabFocus();
-                                        return;
+                                        return ;
                                     }
                                 }
                             }
@@ -303,5 +309,19 @@ public class TaskListTable extends JPanel implements EBComponent {
         }
     } //}}}
 
-
+    // A cell renderer that puts 6 pixels of padding on the left side of the cell.
+    class PaddedCellRenderer extends DefaultTableCellRenderer {
+        Border paddedBorder = BorderFactory.createEmptyBorder( 0, 6, 0, 0 );
+        
+        public Component getTableCellRendererComponent( JTable table,
+                Object value,
+                boolean isSelected,
+                boolean hasFocus,
+                int row,
+                int column ) {
+            JLabel label = ( JLabel ) super.getTableCellRendererComponent( table, value, isSelected, hasFocus, row, column );
+            label.setBorder( paddedBorder );
+            return label;
+        }
+    }
 }
