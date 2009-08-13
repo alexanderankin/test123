@@ -629,7 +629,7 @@ public class TaskListPlugin extends EBPlugin
 
 		if(TaskListPlugin.DEBUG)
 			Log.log(Log.DEBUG, TaskListPlugin.class, 
-				"TaskListPlugin.parseBuffer(...) DONE");//##
+				"TaskListPlugin.parseBuffer(...) DONE");
 
 		// remove 'buffer' from parse queue
 		parseRequests.remove(buffer);

@@ -9,6 +9,8 @@ plugin.tasklist.TaskListPlugin.version=1.1.0
 plugin.tasklist.TaskListPlugin.docs=index.html
 plugin.tasklist.TaskListPlugin.depend.0=jdk 1.5
 plugin.tasklist.TaskListPlugin.depend.1=jedit 04.03.12.00
+plugin.tasklist.TaskListPlugin.depend.2=plugin CommonControlsPlugin 1.0
+plugin.tasklist.TaskListPlugin.depend.3=optional plugin projectviewer.ProjectPlugin 2.9
 plugin.tasklist.TaskListPlugin.usePluginHome=true
 plugin.tasklist.TaskListPlugin.description=Shows all "TODO" comments in a file.
 ### menu
@@ -33,7 +35,6 @@ options.tasklist.general.buffer.display=Buffer display format:
 options.tasklist.general.sort.choice=Sort tasks by:
 options.tasklist.general.sort.choice.0=Buffer line number
 options.tasklist.general.sort.choice.1=Task tag
-options.tasklist.general.sort.choice.2=Buffer name
 options.tasklist.general.sort.direction=Sort direction:
 options.tasklist.general.sort.direction.0=Ascending
 options.tasklist.general.sort.direction.1=Descending
@@ -45,6 +46,8 @@ options.tasklist.general.highlight.color=Highlight color:
 options.tasklist.general.buffer.display.fullpath=Complete Path
 options.tasklist.general.buffer.display.namedir=Filename (Directory)
 options.tasklist.general.buffer.display.nameonly=Filename Only
+options.tasklist.general.show-open-files=Show tasks for all open files
+options.tasklist.general.show-project-files=Show tasks for all project files
 
 options.tasklist.tasktypes.label=Task Types
 options.tasklist.tasktypes.code=new tasklist.options.TaskListTaskTypesOptionPane();
