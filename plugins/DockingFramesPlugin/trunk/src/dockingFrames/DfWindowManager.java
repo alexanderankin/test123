@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -16,6 +18,7 @@ import java.util.Vector;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
@@ -173,13 +176,14 @@ public class DfWindowManager extends DockableWindowManager
 			if (loc != null)
 				d.setLocation(loc);
 		}
-		if (! d.isVisible())
-		{
-			d.requestFocus();
-			d.setVisible(true);
-		}
-		else
-			focusDockable(d.getName());
+		d.toFront();
+		Timer t = new Timer(500, new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				focusDockable(d.getName());
+			}
+		});
+		t.setRepeats(false);
+		t.start();
 	}
 
 	private void setTheme(String name)
