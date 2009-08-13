@@ -176,9 +176,11 @@ public class DfWindowManager extends DockableWindowManager
 			if (loc != null)
 				d.setLocation(loc);
 		}
-		d.toFront();
+		if (! d.isVisible())
+			d.setVisible(true);
 		Timer t = new Timer(500, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				d.toFront();
 				focusDockable(d.getName());
 			}
 		});
