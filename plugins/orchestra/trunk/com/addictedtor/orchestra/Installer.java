@@ -162,7 +162,7 @@ public class Installer {
         boolean createDesktop = true;
         if (createDesktop) {
             logger.info("Creating shortcut entry in " + shortcutDir.getAbsolutePath());
-            String targetCmd = rExe.getAbsolutePath() + " CMD BATCH --vanilla --default-packages=\"base\"" + scriptFile.getAbsolutePath();
+            String targetCmd = rExe.getAbsolutePath() + " CMD BATCH --vanilla --default-packages=\"base\" " + scriptFile.getAbsolutePath();
             logger.info("Shortcut cmd is: " + targetCmd);
             if (OSTools.isWindows()) {
                 createShortcutWindows(targetCmd, new File(pluginHomeDir, ICON_NAME_WINDOWS));
