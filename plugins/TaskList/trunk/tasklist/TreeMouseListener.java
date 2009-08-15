@@ -52,7 +52,7 @@ public class TreeMouseListener extends MouseAdapter {
     }
 
     private void showPopup( Point p ) {
-        TreePopup popup = new TreePopup( view, tree, p );
+        TaskListPopup popup = new TaskListPopup( view, tree, p );
         // NOTE: keep within screen limits; use task list panel, not table
         SwingUtilities.convertPointToScreen( p, tree );
         SwingUtilities.convertPointFromScreen( p, tree );

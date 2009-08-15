@@ -82,6 +82,10 @@ tasklist.label=Task List
 # popup menu items
 tasklist.popup.heading=Change task name
 tasklist.popup.change-menu=Change task tag
+tasklist.popup.delete-task=Delete task
+tasklist.popup.delete-task-tag=Delete task tag
+tasklist.popup.delete-entire-tag=Delete entire task
+tasklist.popup.parse-buffer=Parse buffer
 
 # error message string
 tasklist.popup.parse-error=Buffer has changed since last parse. Try again.

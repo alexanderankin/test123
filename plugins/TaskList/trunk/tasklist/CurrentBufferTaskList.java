@@ -5,7 +5,7 @@ import javax.swing.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.msg.*;
 
-// TODO: javadoc
+// TODO: test
 public class CurrentBufferTaskList extends JPanel implements EBComponent {
 
     private View view = null;
@@ -24,6 +24,14 @@ public class CurrentBufferTaskList extends JPanel implements EBComponent {
             EditPaneUpdate epu = (EditPaneUpdate)msg;
             if (view.equals(epu.getEditPane().getView()) && EditPaneUpdate.BUFFER_CHANGED.equals(epu.getWhat())) {
                 table.setBuffer(epu.getEditPane().getBuffer());
+            }
+        }
+        else if (msg instanceof BufferUpdate) {
+            BufferUpdate pbm = (BufferUpdate)msg;
+            // check buffer saved
+            if (view.equals(pbm.getView()) && 
+                (ParseBufferMessage.DO_PARSE.equals(pbm.getWhat()) || BufferUpdate.SAVED.equals(pbm.getWhat()))) {
+                table.setBuffer(pbm.getBuffer());
             }
         }
     }

@@ -12,8 +12,6 @@ package tasklist;
 
 import java.awt.BorderLayout;
 import java.awt.Cursor;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.tree.*;
@@ -147,11 +145,8 @@ public class OpenBuffersTaskList extends JPanel implements EBComponent {
             // "extractTasks" since extractTasks just calls parseBuffer in a swing
             // thread, and I'm already in a swing thread.  Also, parseBuffer will
             // only parse buffers of the modes allowed by the TaskList mode configuration.
+            TaskListPlugin.parseBuffer( buffer );
             HashMap<Integer, Task> tasks = TaskListPlugin.requestTasksForBuffer( buffer );
-            if ( tasks == null || tasks.isEmpty() ) {
-                TaskListPlugin.parseBuffer( buffer );
-                tasks = TaskListPlugin.requestTasksForBuffer( buffer );
-            }
 
             if ( tasks != null && tasks.size() > 0 ) {
                 // tasks were found for this buffer, so create the tree node for the buffer itself,
@@ -192,34 +187,50 @@ public class OpenBuffersTaskList extends JPanel implements EBComponent {
                 return ;
             }
 
-            // add or remove buffers from tree as they are opened or closed
             final Buffer buffer = bu.getBuffer();
+
             if ( BufferUpdate.CLOSED.equals( bu.getWhat() ) ) {
-                SortableTreeModel model = ( SortableTreeModel ) tree.getModel();
-                for ( int i = 0; i < model.getChildCount( model.getRoot() ); i++ ) {
-                    DefaultMutableTreeNode node = ( DefaultMutableTreeNode ) model.getChild( model.getRoot(), i );
-                    String buffer_name = ( String ) node.getUserObject();
-                    if ( buffer_name.equals( buffer.toString() ) ) {
-                        model.removeNodeFromParent( node );
-                        model.nodeStructureChanged( ( DefaultMutableTreeNode ) model.getRoot() );
-                        for ( int j = tree.getRowCount(); j > 0; j-- ) {
-                            tree.expandRow( j );
-                        }
-                        break;
-                    }
-                }
+                removeBuffer( buffer );
+                repaint();
             }
             else if ( BufferUpdate.LOADED.equals( bu.getWhat() ) ) {
-                DefaultMutableTreeNode buffer_node = getNodeForBuffer( buffer );
-                if ( buffer_node == null ) {
-                    return ;
-                }
-                SortableTreeModel model = ( SortableTreeModel ) tree.getModel();
-                model.insertNodeInto( buffer_node, ( DefaultMutableTreeNode ) model.getRoot() );
+                addBuffer( buffer );
+                repaint();
+            }
+            else if ( BufferUpdate.SAVED.equals( bu.getWhat() ) || ParseBufferMessage.DO_PARSE.equals( bu.getWhat()) ) {
+                removeBuffer( buffer );
+                addBuffer( buffer );
+                repaint();
+            }
+        }
+    }
+
+    private void addBuffer( Buffer buffer ) {
+        DefaultMutableTreeNode buffer_node = getNodeForBuffer( buffer );
+        if ( buffer_node == null ) {
+            return ;
+        }
+        SortableTreeModel model = ( SortableTreeModel ) tree.getModel();
+        model.insertNodeInto( buffer_node, ( DefaultMutableTreeNode ) model.getRoot() );
+        model.nodeStructureChanged( ( DefaultMutableTreeNode ) model.getRoot() );
+        for ( int i = tree.getRowCount(); i > 0; i-- ) {
+            tree.expandRow( i );
+        }
+    }
+
+    //
+    private void removeBuffer( Buffer buffer ) {
+        SortableTreeModel model = ( SortableTreeModel ) tree.getModel();
+        for ( int i = 0; i < model.getChildCount( model.getRoot() ); i++ ) {
+            DefaultMutableTreeNode node = ( DefaultMutableTreeNode ) model.getChild( model.getRoot(), i );
+            String buffer_name = ( String ) node.getUserObject();
+            if ( buffer_name.equals( buffer.toString() ) ) {
+                model.removeNodeFromParent( node );
                 model.nodeStructureChanged( ( DefaultMutableTreeNode ) model.getRoot() );
-                for ( int i = tree.getRowCount(); i > 0; i-- ) {
-                    tree.expandRow( i );
+                for ( int j = tree.getRowCount(); j > 0; j-- ) {
+                    tree.expandRow( j );
                 }
+                break;
             }
         }
     }

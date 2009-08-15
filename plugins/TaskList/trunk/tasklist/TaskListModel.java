@@ -163,11 +163,8 @@ public class TaskListModel extends AbstractTableModel implements EBComponent {
 		int size = tasks.size() - 1;
 		tasks.clear();
 		fireTableRowsDeleted( 0, size );
+		TaskListPlugin.parseBuffer( buffer );
 		HashMap<Integer, Task> tasks = TaskListPlugin.requestTasksForBuffer( buffer );
-		if ( tasks == null || tasks.size() == 0 ) {
-			TaskListPlugin.parseBuffer( buffer );
-			tasks = TaskListPlugin.requestTasksForBuffer( buffer );
-		}
 		if ( tasks != null && tasks.size() > 0 ) {
 			for ( Iterator it = tasks.values().iterator(); it.hasNext(); ) {
 				Task task = ( Task ) it.next();

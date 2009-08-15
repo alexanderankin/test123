@@ -87,6 +87,8 @@ public class TaskListTable extends JPanel implements EBComponent {
         table.setModel( taskListModel );
         resizeTable();
         sort();
+        invalidate();
+        repaint();
     }
 
     public Buffer getBuffer() {
@@ -174,7 +176,7 @@ public class TaskListTable extends JPanel implements EBComponent {
                     ( e.getModifiers() & InputEvent.BUTTON3_MASK ) != 0 &&
                     e.getComponent() != table.getTableHeader() ) {
                 e.consume();
-                showPopup( view, rowNum, p );
+                showPopup( view, p );
             }
             /* multiple clicks, not with right mouse button */
             else if ( e.getClickCount() > 1 &&
@@ -214,12 +216,12 @@ public class TaskListTable extends JPanel implements EBComponent {
         //{{{ showPopup(View view, int row, Point p) method
         /**
          * Causes a popup context menu to be shown
-         * @param view he View in which the TaskList component appears
+         * @param view The View in which the TaskList component appears
          * @param row The table row clicked by the mouse
          * @param p The Point within the TaskList's table object clicked by the mouse
          */
-        private void showPopup( final View view, final int row, Point p ) {
-            TaskListPopup popup = new TaskListPopup( view, table, row );
+        private void showPopup( View view, Point p ) {
+            TaskListPopup popup = new TaskListPopup( view, table, p );
             // NOTE: keep within screen limits; use task list panel, not table
             SwingUtilities.convertPointToScreen( p, table );
             SwingUtilities.convertPointFromScreen( p, table );
