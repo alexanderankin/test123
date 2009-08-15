@@ -22,6 +22,20 @@
 # along with the orchestra jedit plugin. If not, see <http://www.gnu.org/licenses/>.
 # }}}
 
+# {{{ read the property file
+# the directory that contains that script
+args <- commandArgs( ) 
+thisfile <- sub( "--file=", "", grep( "^--file", args, value = TRUE )[1] )
+propfile <- file.path( dirname( thisfile ), "orchestra_properties.txt" )
+if( !file.exists( propfile ) ){
+	stop( "the roperty file does not exist" ) 
+}
+rl    <- readLines( propfile )
+if( any( grepl( "@", rl ) ) ){
+	stop( "the properties are not configured properly" )
+}
+# }}}
+
 # {{{ environment variables
 SEP <- .Platform$path.sep
 
@@ -32,7 +46,7 @@ Sys.setenv(R_HOME = R_HOME )
 
 # {{{ add the plugin home to R_LIBS
 R_LIBS <- Sys.getenv( "R_LIBS", unset = "" )
-JEDIT_RLIBS <- "@PLUGIN_HOME@/library"
+JEDIT_RLIBS <- file.path( PLUGIN_HOME, "library" )
 # set by java orchestra installer plugin
 R_LIBS <- if( R_LIBS == "" ){
 	JEDIT_RLIBS
@@ -42,10 +56,17 @@ R_LIBS <- if( R_LIBS == "" ){
 Sys.setenv( R_LIBS = R_LIBS )
 # }}}
 
+# {{{ make sure orchestra R package is installed somewhere 
+if( !require( orchestra ) ){
+	if( !require( orchestra, lib.loc = JEDIT_RLIBS ) ){
+		cat( "installing the orchestra R package, this is done only once\n" )
+		install.packages( "orchestra", dependencies = TRUE, lib = JEDIT_RLIBS )
+	}
+}
+# }}}
+
 # {{{ JAVA_HOME and java
 # set by java orchestra installer plugin, so we always know java_home
-JAVA_HOME <- "@JAVA_HOME@"
-java_exe <- "@JAVA_EXE@"
 java <- file.path( JAVA_HOME, "bin", java_exe )
 if( !file.exists( java ) ){
 	stop(paste("no", java_exe, "in bin dir of", JAVA_HOME))
@@ -54,7 +75,6 @@ if( !file.exists( java ) ){
 
 # {{{ JEDIT_HOME and jedit.jar
 # set by java orchestra installer plugin, so we always know jedit_home
-JEDIT_HOME <- "@JEDIT_HOME@"
 jedit.jar <- file.path( JEDIT_HOME, "jedit.jar" )
 if( !file.exists( jedit.jar ) ){
 	stop( "the jedit home directory does not contain a file called jedit.jar" )

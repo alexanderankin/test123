@@ -116,18 +116,28 @@ public class OrchestraOptionPane extends AbstractOptionPane implements ActionLis
             JOptionPane.showMessageDialog(this, err);
         } else {
             try {
-//                RCmdBatch rCmdBatch = new RCmdBatch(rhome);
-//                rCmdBatch.retrieveRInfo();
-//                RPackage rp = rCmdBatch.getInstalledPackInfo("rJava");
-                Installer i = new Installer(
+            	
+            	Installer i = new Installer(
                         jEdit.getJEditHome(),
                         OrchestraPlugin.getPluginHomePath(), 
                         rhome,
+                        shortcut
+                );
+            	
+            	
+//                RCmdBatch rCmdBatch = new RCmdBatch(rhome);
+//                rCmdBatch.retrieveRInfo();
+//                RPackage rp = rCmdBatch.getInstalledPackInfo("rJava");
+//                Installer i = new Installer(
+//                        jEdit.getJEditHome(),
+//                        OrchestraPlugin.getPluginHomePath(), 
+//                        rhome,
 //                        rp.getLibpath().getAbsolutePath(),
 //                        rCmdBatch.getLibPaths(),
 //                        javahome,
-                        shortcut
-                );
+//                        shortcut
+//                 );
+            	
                 i.install();
             } catch (Exception e) {
                 // todo handle
