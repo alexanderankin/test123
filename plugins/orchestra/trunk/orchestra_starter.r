@@ -57,9 +57,12 @@ R_LIBS <- if( R_LIBS == "" ){
 Sys.setenv( R_LIBS = R_LIBS )
 # }}}
 
-# {{{ make sure orchestra R package is installed somewhere 
-if( !require( orchestra ) ){
-	if( !require( orchestra, lib.loc = JEDIT_RLIBS ) ){
+# {{{ make sure orchestra R package is installed somewhere
+orchestra.installed <- function( libpath ){
+	file.exists( file.path( libpath, "orchestra" ) )
+}
+if( !any( sapply( .libPaths(), orchestra.installed ) ) ){
+	if( !orchestra.installed( JEDIT_RLIBS ) ){
 		cat( "installing the orchestra R package, this is done only once\n" )
 		install.packages( "orchestra", dependencies = TRUE, lib = JEDIT_RLIBS )
 	}
