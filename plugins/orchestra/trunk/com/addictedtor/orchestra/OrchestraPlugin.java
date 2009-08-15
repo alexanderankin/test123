@@ -1,15 +1,18 @@
 package com.addictedtor.orchestra ;
 
+import java.io.File;
+
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EditPlugin; 
 import org.gjt.sp.jedit.EBPlugin;
+import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.jEdit;
-
-import javax.swing.*;
-import java.io.File;
+import org.gjt.sp.jedit.options.PluginOptions;
 
 /**
  * Main class of the orchestra installer plugin
@@ -32,9 +35,15 @@ public class OrchestraPlugin extends EBPlugin {
      */
     @Override
     public void start() {
+    	boolean installed = jEdit.getBooleanProperty( "orchestra.installed", false ) ;
         String orchestra_rpackage_home = System.getProperty("orchestra.home", "") ;
         if( orchestra_rpackage_home.equals("") ){
-            startInstallerPlugin();
+        	if( installed ){
+        		/* the system is already installed but jedit started normally, don't mess it up */
+        	} else{
+        		startInstallerPlugin();
+            }
+        	
         } else {
             // load the orchestra plugin from the R package tree
             String jar = orchestra_rpackage_home + "/java/R.jar" ;
@@ -60,6 +69,13 @@ public class OrchestraPlugin extends EBPlugin {
         rootLogger.info("orchestra plugin started!");
         rootLogger.info("log4j configured.");
         rootLogger.info("log goes to: " + log.getAbsolutePath());
+        
+        // show the option dialog
+        SwingUtilities.invokeLater(new Runnable() {
+        	public void run() {
+        		new PluginOptions( jEdit.getActiveView() , "orchestra" ) ;
+        	}
+        } ); 
     }
 
     /**

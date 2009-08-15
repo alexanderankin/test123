@@ -34,6 +34,7 @@ rl    <- readLines( propfile )
 if( any( grepl( "@", rl ) ) ){
 	stop( "the properties are not configured properly" )
 }
+source( propfile )
 # }}}
 
 # {{{ environment variables
