@@ -35,10 +35,9 @@ public class OrchestraPlugin extends EBPlugin {
      */
     @Override
     public void start() {
-    	boolean installed = jEdit.getBooleanProperty( "orchestra.installed", false ) ;
-        String orchestra_rpackage_home = System.getProperty("orchestra.home", "") ;
+    	String orchestra_rpackage_home = System.getProperty("orchestra.home", "") ;
         if( orchestra_rpackage_home.equals("") ){
-        	if( installed ){
+        	if( isConfigured() ){
         		/* the system is already installed but jedit started normally, don't mess it up */
         	} else{
         		startInstallerPlugin();
@@ -96,5 +95,15 @@ public class OrchestraPlugin extends EBPlugin {
     	return EditPlugin.getPluginHome( OrchestraPlugin.class ).getAbsolutePath(); 
     }
 
+    /**
+     * Is the plugin configured, ie does the startup script exist
+     * @return true if the startup script exists
+     */
+    public static boolean isConfigured(){
+    	File startup = new File( getPluginHomePath() + "/orchestra_startup.r" ) ;
+    	return startup.exists() ;
+    }
+    
+    
 }
 

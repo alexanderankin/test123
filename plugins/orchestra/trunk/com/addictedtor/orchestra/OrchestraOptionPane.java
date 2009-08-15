@@ -34,9 +34,8 @@ public class OrchestraOptionPane extends AbstractOptionPane implements ActionLis
     }
 
     public void _init() {
-    	boolean installed = jEdit.getBooleanProperty( "orchestra.installed" ) ;
-    	if( !installed ){
-    		addComponent( new JLabel( "Please check the settings below, and click OK" ) ) ;
+    	if( !OrchestraPlugin.isConfigured() ){
+    		addComponent( new JLabel( "-- Please check the settings below, and click OK --" ) ) ;
     	}
         addPathPanel("rhome", tfRHome);
         addPathPanel("shortcut", tfShortcut);
@@ -131,7 +130,6 @@ public class OrchestraOptionPane extends AbstractOptionPane implements ActionLis
                 e.printStackTrace();
             }
         }
-        jEdit.setBooleanProperty("orchestra.installed", true) ;
         logger.info("Saving options done.");
         
     }
