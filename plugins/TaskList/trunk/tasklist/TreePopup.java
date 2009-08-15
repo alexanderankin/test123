@@ -1,0 +1,170 @@
+package tasklist;
+
+
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.tree.*;
+import javax.swing.*;
+
+import org.gjt.sp.jedit.*;
+
+public class TreePopup extends JPopupMenu {
+    private final ActionListener listener;
+    private View view;
+    private JTree tree;
+    private Point point;
+
+    public TreePopup( View view, JTree tree, Point point ) {
+        super( jEdit.getProperty( "tasklist.popup.heading" ) );
+        this.view = view;
+        this.tree = tree;
+        this.point = point;
+        setLightWeightPopupEnabled( true );
+        listener = new ActionHandler();
+
+        BoundedMenu changeMenu = new BoundedMenu( jEdit.getProperty( "tasklist.popup.change-menu" ) );
+
+        int item = 0;
+        String name = jEdit.getProperty( "tasklist.tasktype." + item + ".name" );
+        while ( name != null ) {
+            changeMenu.add( createMenuItem( name ) );
+            item++;
+            name = jEdit.getProperty( "tasklist.tasktype." + item + ".name" );
+        }
+        add( changeMenu );
+        BoundedMenu deleteMenu = new BoundedMenu( "Delete task" );
+        deleteMenu.add( createMenuItem( "Delete task tag", "%Dtag" ) );
+        deleteMenu.add( createMenuItem( "Delete entire task", "%Dtask" ) );
+        add( deleteMenu );
+    }
+
+    /**
+     * An extension of the JMenu class that relocates the object's child popup menu
+     * as necessary so that it does not appear to right or below the bounds of
+     * another component.
+     * <p>
+     * In the TaskList implementation, the bounding component is the TaskList panel
+     * containing the table display of taks items.
+     *
+     * @author John Gellene (jgellene@nyc.rr.com)
+     */
+    public class BoundedMenu extends JMenu {
+        /**
+         * Constructs a BoundedMenu object.
+         *
+         * @param bounds the Component forming the bounds for the object's
+         * child popup menu.
+         * @param title the text to be displayed on the parent menu item
+         */
+        public BoundedMenu( String title ) {
+            super( title );
+        }
+
+        /**
+         * Overrides the implementation in JMenu to relocate the child
+         * popup menu so it does not appear outside the right-hand
+         * or lower borders of the menu's bounding component.
+         *
+         * @param visible determines whether the child popup menu is to
+         * made visible.
+         */
+        public void setPopupMenuVisible( boolean visible ) {
+            boolean oldValue = isPopupMenuVisible();
+            if ( visible != oldValue ) {
+                if ( ( visible == true ) && isShowing() ) {
+                    Point p = setLocation();
+                    getPopupMenu().show( this, p.x, p.y );
+                }
+                else {
+                    getPopupMenu().setVisible( false );
+                }
+            }
+        }
+
+        /**
+         * Determines the location of the child popup menu.
+         *
+         * @return a Point representing the upper left-hand corner
+         * of the child popup menu, expressed relative to the parent
+         * menu of this BoundedMenu object.
+         */
+        private Point setLocation() {
+            Component parent = getParent();
+            Dimension dParent = parent.getPreferredSize();
+            /* NOTE: default location of child popup menu */
+            Point pPopup = new Point( dParent.width - 1 , -1 );
+            SwingUtilities.convertPointToScreen( pPopup, parent );
+            SwingUtilities.convertPointFromScreen( pPopup, tree );
+            Dimension dList = tree.getSize();
+            Dimension dPopup = getPopupMenu().getPreferredSize();
+            Point pThis = this.getLocation();
+            if ( pPopup.x + dPopup.width > dList.width )
+                pPopup.x -= ( dPopup.width + dParent.width );
+            if ( pPopup.y + pThis.y + dPopup.height > dList.height )
+                pPopup.y -= ( dPopup.height - dParent.height + pThis.y );
+            SwingUtilities.convertPointToScreen( pPopup, tree );
+            SwingUtilities.convertPointFromScreen( pPopup, parent );
+            return pPopup;
+        }
+    }
+
+    /**
+     * Creates a menu item for the popup menu
+     *
+     * @param name Represents the menu item entry's text
+     * @param cmd Represents the action command associated
+     * with the menu item
+     *
+     * @return a JMenuItem representing the new menu item
+     */
+    private JMenuItem createMenuItem( String name, String cmd ) {
+        JMenuItem mi = new JMenuItem( name );
+        mi.setActionCommand( cmd != null ? cmd : name );
+        mi.addActionListener( listener );
+        return mi;
+    }
+
+    /**
+     * Creates a menu item for the popup menu containing an
+     * action command with the same name as the menu item
+     *
+     * @param name Represents the menu item entry's text
+     *
+     * @return a JMenuItem representing the new menu item
+     */
+    private JMenuItem createMenuItem( String name ) {
+        return createMenuItem( name, null );
+    }
+
+    /**
+     * Causes substitution of the comment tag for the selected task item;
+     * displays a message if a parsing error occurs;
+     * reparses buffer regardless of success.
+     */
+    class ActionHandler implements ActionListener {
+
+        public void actionPerformed( ActionEvent evt ) {
+            TreePath path = tree.getPathForLocation( point.x, point.y );
+            DefaultMutableTreeNode node = ( DefaultMutableTreeNode ) path.getLastPathComponent();
+            Object userObject = node.getUserObject();
+            if ( userObject == null || !( userObject instanceof Task ) ) {
+                return ;
+            }
+            Task task = ( Task ) userObject;
+            String cmd = evt.getActionCommand();
+            if ( cmd.equals( "%Dtask" ) ) {
+                task.removeTask( view );
+            }
+            else {
+                if ( cmd.equals( "%Dtag" ) ) {
+                    task.removeTag( view );
+                }
+                else {
+                    task.replaceTag( view, cmd );
+                }
+            }
+            view = null;
+        }
+    }
+}

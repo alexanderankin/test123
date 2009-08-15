@@ -26,6 +26,10 @@ package tasklist;
 	TODO: ensure task highlights are repainted when buffer reloaded, etc...
 	DONE: are there portions of the code which are not thread safe?
 	FUTURE-TODO: allow for displaying all buffers or only current ones
+	
+	DONE: remove all references to TaskListener.  None exist anywhere in this 
+	plugin any more.  TaskListModel used to be the only classes that was also
+	a TaskListener, but I've removed that implementation.
 }}}*/
 
 //{{{ imports
@@ -41,16 +45,12 @@ import javax.swing.*;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
-import org.gjt.sp.jedit.EBPlugin;
-import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.jedit.msg.BufferUpdate;
-import org.gjt.sp.jedit.msg.EditPaneUpdate;
-import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.syntax.DefaultTokenHandler;
 import org.gjt.sp.jedit.syntax.Token;
 
@@ -61,7 +61,7 @@ import org.gjt.sp.util.Log;
  * The main plugin class for the TaskList plugin,
  * conforming to the jEdit Plugin API.
  */
-public class TaskListPlugin extends EBPlugin
+public class TaskListPlugin extends EditPlugin
 {
 	public static boolean DEBUG = false;
 
@@ -181,77 +181,6 @@ public class TaskListPlugin extends EBPlugin
 	public static boolean getAllowSingleClickSelection()
 	{
 		return allowSingleClickSelection;
-	}//}}}
-
-	
-	//{{{ handleMessage() method
-	/**
-	 * Handles selected messages received by the TaskListPlugin object
-	 * from jEdit's EditBus messaging facility.
-	 * <p>
-	 * The methods handles the following messages:
-	 * <ul><li>CreateDockableWindow (deprecated in jEdit 4.0)</li>
-	 * <li>BufferUpdate (to trigger reparsing and updating of the task display)</li>
-	 * <li>EditPaneUpdate (also to trigger task list updates)</li>
-	 * <li>PropertiesChanged (to update disaply following changes in user options)</li>
-	 * </ul>
-	 * @param message a EBMessage object received from jEdit's EditBus.
-	 */
-	public void handleMessage(EBMessage message)
-	{
-
-		//  NOTE: don't need to parse buffer when they are loaded, 
-		// just when they are displayed
-		if(message instanceof BufferUpdate)
-		{
-			BufferUpdate bu = (BufferUpdate)message;
-			if(bu.getWhat() == BufferUpdate.PROPERTIES_CHANGED ||
-				bu.getWhat() == BufferUpdate.LOADED ||
-				bu.getWhat() == BufferUpdate.SAVED)
-			{
-				final Buffer buffer = bu.getBuffer();
-				// only re-parse if buffer is loaded and buffer map contains
-				// as non-null ref (null indicates no parse has been done)
-				if(buffer.isLoaded() && (bufferMap.get(buffer) != null))
-				{
-					TaskListPlugin.extractTasks(buffer);
-				}
-			}
-			else if(bu.getWhat() == BufferUpdate.CLOSED)
-			{
-				bufferMap.remove(bu.getBuffer());
-			}
-		}
-		else if(message instanceof EditPaneUpdate)
-		{
-			EditPaneUpdate epu = (EditPaneUpdate)message;
-			if(epu.getWhat() == EditPaneUpdate.CREATED)
-			{
-				initTextArea(epu.getEditPane().getTextArea());
-			}
-			else if(epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
-			{
-				final Buffer buffer = epu.getEditPane().getBuffer();
-				TaskListPlugin.clearTasks(buffer);
-				TaskListPlugin.extractTasks(buffer);
-			}
-			else if(epu.getWhat() == EditPaneUpdate.DESTROYED)
-			{
-				uninitTextArea(epu.getEditPane().getTextArea());
-			}
-		}
-		else if(message instanceof PropertiesChanged)
-		{
-
-			propertiesChanged();
-
-			Buffer[] buffers = jEdit.getBuffers();
-			for(int i = 0; i < buffers.length; i++)
-			{
-				if(bufferMap.get(buffers[i]) != null)
-					extractTasks(buffers[i]);
-			}
-		}
 	}//}}}
 
 	//{{{ addTaskType() method
@@ -412,8 +341,6 @@ public class TaskListPlugin extends EBPlugin
 
 		boolean highlightEnabled = jEdit.getBooleanProperty("tasklist.highlight.tasks");
 		toggleHighlights(highlightEnabled);
-
-		fireTasksUpdated();
 	}//}}}
 
 	//{{{ loadParseModes() method
@@ -464,12 +391,6 @@ public class TaskListPlugin extends EBPlugin
 	 */
 	private static Map<Buffer, HashMap<Integer, Task>> bufferMap = new HashMap<Buffer, HashMap<Integer, Task>>();
 
-	/**
-	 * A collection of TaskListener objects that will be notified when
-	 * Task objects are added or removed from the collection maintained
-	 * by the plugin.
-	 */
-	private static Set<TaskListener> listeners = new HashSet<TaskListener>();
 
 	/**
 	 * A collection to track which buffer modes to parse
@@ -504,6 +425,7 @@ public class TaskListPlugin extends EBPlugin
 
 	//{{{ extractTasks() method
 	/**
+	 * TODO: check on this method, I'm not sure it's actually used anymore. 
 	 * Directs the parsing of a buffer for task data if no request for parsing
 	 * that buffer is currently pending.
 	 * <p>
@@ -558,8 +480,6 @@ public class TaskListPlugin extends EBPlugin
 
 			// remove 'buffer' from parse queue
 			parseRequests.remove(buffer);
-
-			fireTasksUpdated();
 			return;
 		}
 
@@ -622,7 +542,7 @@ public class TaskListPlugin extends EBPlugin
 		}
 
 		// after a buffer has been parsed, bufferMap should contain
-		// and empty set of tasks, if there are not, not a null set
+		// an empty set of tasks, if there are not, not a null set
 		// (a null set is used to indicate the buffer has never been parsed)
 		if(bufferMap.get(buffer) == null)
 			bufferMap.put(buffer, new HashMap<Integer, Task>());
@@ -633,8 +553,6 @@ public class TaskListPlugin extends EBPlugin
 
 		// remove 'buffer' from parse queue
 		parseRequests.remove(buffer);
-
-		fireTasksUpdated();
 	}//}}}
 
 	//{{{ addTask() method
@@ -665,7 +583,6 @@ public class TaskListPlugin extends EBPlugin
 		}
 
 		taskMap.put(_line, task);
-		fireTaskAdded(task);
 	}//}}}
 
 	//{{{ clearTasks() method
@@ -688,113 +605,7 @@ public class TaskListPlugin extends EBPlugin
 			bufferMap.put(buffer, new HashMap<Integer, Task>());
 			return;
 		}
-
-		for(Integer key : taskMap.keySet())
-		{
-			Task _task = (Task)taskMap.get(key);
-
-			if(TaskListPlugin.DEBUG)
-				Log.log(Log.DEBUG, TaskListPlugin.class,
-					"removing task (key=" + key + "): " + _task.toString());//##
-
-			fireTaskRemoved(_task);
-		}
 		taskMap.clear();
 	}//}}}
-
-	//{{{ TaskListener interface
-	/**
-	 * An interface defining actions to be taken upon the addition (or removal)
-	 * of a Task object to (or from) the collection maintained by the plugin.
-	 */
-	public interface TaskListener
-	{
-		// QUESTION: what about 'batch' operations (clearing all the tasks for
-		//	a specific buffer, finished parsing buffer, etc)
-		public void taskAdded(Task task);
-		public void taskRemoved(Task task);
-		public void tasksUpdated();
-	}//}}}
-
-	//{{{ addTaskListener() method
-	/**
-	 * Adds a TaskListener to the collection maintined by the plugin.
-	 * @param listener the TaskListener to be added
-	 */
-	public static void addTaskListener(TaskListener listener)
-	{
-		if (listener == null) {
-			return;	
-		}
-
-		if(TaskListPlugin.DEBUG) {
-			Log.log(Log.DEBUG, TaskListPlugin.class,
-				"adding TaskListener: " + listener.toString());//##
-		}
-		listeners.add(listener);
-	}//}}}
-
-	//{{{ removeTaskListener() method
-	/**
-	 * Removes a TaskListener from the collection maintined by the plugin.
-	 * @param listener the TaskListener to be removed
-	 */
-	public static boolean removeTaskListener(TaskListener listener)
-	{
-		if(TaskListPlugin.DEBUG) {
-			Log.log(Log.DEBUG, TaskListPlugin.class,
-				"TaskListPlugin.removeTaskListener()");//##
-		}
-		return listeners.remove(listener);
-	}//}}}
-
-	//{{{ fireTaskAdded() method
-	/**
-	 * Calls the taskAdded() method of each of the TaskListener objects
-	 * in the collection maintained by the plugin.
-	 * @param task the Task being added to the collection of Task objects
-	 * maintained by the plugin.
-	 */
-	private static void fireTaskAdded(Task task)
-	{
-		if(task == null) {
-			return;	
-		}
-		if(TaskListPlugin.DEBUG){
-			Log.log(Log.DEBUG, TaskListPlugin.class,
-				"TaskListPlugin.fireTaskAdded(" + task.toString() + ")");//##
-		}
-		for (TaskListener listener : listeners) {
-			listener.taskAdded(task);	
-		}
-	}//}}}
-
-	//{{{ fireTaskRemoved() method
-	/**
-	 * Calls the taskRemoved() method of each of the TaskListener objects
-	 * in the collection maintained by the plugin.
-	 * @param task the Task being removed from the collection of Task objects
-	 * maintained by the plugin.
-	 */
-	private static void fireTaskRemoved(Task task)
-	{
-		if(TaskListPlugin.DEBUG) {
-			Log.log(Log.DEBUG, TaskListPlugin.class,
-				"TaskListPlugin.fireTaskRemoved(" + task.toString() + ")");//##
-		}
-		for (TaskListener listener : listeners) {
-			listener.taskRemoved(task);	
-		}
-	}//}}}
-
-	//{{{ fireTasksUpdated() method
-	private static void fireTasksUpdated()
-	{
-		for (TaskListener listener : listeners) {
-			listener.tasksUpdated();	
-		}
-	}//}}}
-
 }
 
-// :collapseFolds=1:folding=explicit:indentSize=4:lineSeparator=\n:noTabs=false:tabSize=4:

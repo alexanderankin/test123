@@ -4,15 +4,16 @@
 plugin.tasklist.TaskListPlugin.activate=defer
 
 plugin.tasklist.TaskListPlugin.name=TaskList
-plugin.tasklist.TaskListPlugin.author=Ollie Rutherfurd, John Gellene
-plugin.tasklist.TaskListPlugin.version=1.1.0
+plugin.tasklist.TaskListPlugin.author=Ollie Rutherfurd, John Gellene, Dale Anson
+plugin.tasklist.TaskListPlugin.version=2.0
 plugin.tasklist.TaskListPlugin.docs=index.html
 plugin.tasklist.TaskListPlugin.depend.0=jdk 1.5
-plugin.tasklist.TaskListPlugin.depend.1=jedit 04.03.12.00
+plugin.tasklist.TaskListPlugin.depend.1=jedit 04.03.17.00
 plugin.tasklist.TaskListPlugin.depend.2=plugin CommonControlsPlugin 1.0
 plugin.tasklist.TaskListPlugin.depend.3=optional plugin projectviewer.ProjectPlugin 2.9
 plugin.tasklist.TaskListPlugin.usePluginHome=true
 plugin.tasklist.TaskListPlugin.description=Shows all "TODO" comments in a file.
+
 ### menu
 plugin.tasklist.TaskListPlugin.menu=tasklist \
 	tasklist.parse-buffer \
@@ -21,6 +22,9 @@ plugin.tasklist.TaskListPlugin.menu=tasklist \
 tasklist.label=Task List
 tasklist.parse-buffer.label=Parse buffer
 tasklist.reset-patterns.label=Reset task patterns
+
+tasklist.tableheader.lineno=Line #
+tasklist.tableheader.description=Description
 
 ### option panes
 
@@ -57,6 +61,7 @@ options.tasklist.tasktypes.edit=Edit
 options.tasklist.tasktypes.up=Up
 options.tasklist.tasktypes.down=Down
 options.tasklist.tasktypes.remove=Remove
+options.tasklist.tasktypes.reset=Reset
 options.tasklist.tasktype.title=Task Type Properties
 options.tasklist.tasktype.name=Name:
 options.tasklist.tasktype.sample=Sample:
@@ -144,6 +149,12 @@ tasklist.icons=stock_about-16.png \
 	Question.gif \
 	RedFlag.gif
 	
+# messages for tree displays
+tasklist.openfiles.open-files=Open Files:
+tasklist.openfiles.wait=Please wait, loading tasks from open files...
+tasklist.no-tasks-found=No tasks found.
+tasklist.projectfiles.wait=Please wait, loading project tasks...
+tasklist.projectfiles.project=Project:
 
 # Task List task types
 # ^(tasklist.tasktype.\d.\w+)=(.+)$ -> jEdit.setProperty("$1","$2");

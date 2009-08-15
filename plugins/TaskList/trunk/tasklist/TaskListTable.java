@@ -52,7 +52,8 @@ public class TaskListTable extends JPanel implements EBComponent {
         table.setDefaultRenderer( Number.class, null );
         table.setDefaultRenderer( String.class, new PaddedCellRenderer() );
 
-        table.setModel( new TaskListModel( TaskListTable.this, buffer ) );
+        TaskListModel taskListModel = new TaskListModel( buffer);
+        table.setModel( taskListModel );
         table.setShowVerticalLines( jEdit.getBooleanProperty( "tasklist.table.vertical-lines" ) );
         table.setShowHorizontalLines( jEdit.getBooleanProperty( "tasklist.table.horizontal-lines" ) );
         MouseHandler handler = new MouseHandler();
@@ -82,7 +83,10 @@ public class TaskListTable extends JPanel implements EBComponent {
 
     public void setBuffer( Buffer buffer ) {
         bufferName.setText(buffer.toString());
-        getTaskListModel().setBuffer( buffer );
+        TaskListModel taskListModel = new TaskListModel(buffer);
+        table.setModel( taskListModel );
+        resizeTable();
+        sort();
     }
 
     public Buffer getBuffer() {
@@ -125,7 +129,7 @@ public class TaskListTable extends JPanel implements EBComponent {
      * Re-sizes the columns in the table - called when cols are
      * added or removed.
      */
-    void resizeTable() {
+    public void resizeTable() {
         TableColumnModel columnModel = table.getColumnModel();
 
         // symbol
@@ -271,7 +275,6 @@ public class TaskListTable extends JPanel implements EBComponent {
         super.addNotify();
         EditBus.addToBus( this );
         EditBus.addToBus( getTaskListModel() );
-        TaskListPlugin.addTaskListener( getTaskListModel() );
     } //}}}
 
     //{{{ removeNotify() method
@@ -284,9 +287,6 @@ public class TaskListTable extends JPanel implements EBComponent {
         super.removeNotify();
         EditBus.removeFromBus( this );
         EditBus.removeFromBus( getTaskListModel() );
-
-        // table model doesn't need to be notified when task are added/removed
-        TaskListPlugin.removeTaskListener( getTaskListModel() );
     } //}}}
 
 

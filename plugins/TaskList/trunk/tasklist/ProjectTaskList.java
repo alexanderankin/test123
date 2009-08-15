@@ -11,13 +11,8 @@
 package tasklist;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.tree.*;
@@ -41,10 +36,10 @@ public class ProjectTaskList extends JPanel implements EBComponent {
         loadProjectFiles( ProjectViewer.getActiveProject( view ) );
         EditBus.addToBus( this );
     }
-    
+
     public void removeNotify() {
         super.removeNotify();
-        EditBus.removeFromBux(this);
+        EditBus.removeFromBus( this );
     }
 
     private void loadProjectFiles( final VPTProject project ) {
@@ -54,16 +49,16 @@ public class ProjectTaskList extends JPanel implements EBComponent {
             @Override
             public DefaultMutableTreeNode doInBackground() {
                 try {
-                    SwingUtilities.invokeLater( 
+                    SwingUtilities.invokeLater(
                         new Runnable() {
-                                public void run() {
-                                    setCursor( Cursor.getPredefinedCursor( Cursor.WAIT_CURSOR ) );
-                                    removeAll();
-                                    add( new JLabel( "Please wait, loading project tasks..." ) );
-                                    repaint();
-                                }
+                            public void run() {
+                                setCursor( Cursor.getPredefinedCursor( Cursor.WAIT_CURSOR ) );
+                                removeAll();
+                                add( new JLabel( jEdit.getProperty("tasklist.projectfiles.wait", "Please wait, loading project tasks..." ) ) );
+                                repaint();
                             }
-                                              );
+                        }
+                    );
                     return buildTree( project );
                 }
                 catch ( Exception e ) {
@@ -91,12 +86,12 @@ public class ProjectTaskList extends JPanel implements EBComponent {
                                 for ( int i = tree.getRowCount(); i > 0; i-- ) {
                                     tree.expandRow( i );
                                 }
-                                tree.addMouseListener( new TreeMouseListener( tree ) );
-                                tree.setCellRenderer( new TaskRenderer() );
+                                tree.addMouseListener( new TreeMouseListener( view, tree ) );
+                                tree.setCellRenderer( new TaskTreeCellRenderer() );
                                 add( new JScrollPane( tree ) );
                             }
                             else {
-                                add( new JLabel( "No tasks found." ) );
+                                add( new JLabel( jEdit.getProperty("tasklist.no-tasks-found", "No tasks found." ) ) );
                             }
                             repaint();
                             setCursor( Cursor.getPredefinedCursor( Cursor.DEFAULT_CURSOR ) );
@@ -106,8 +101,10 @@ public class ProjectTaskList extends JPanel implements EBComponent {
 
             }
         }
-        Runner runner = new Runner();
-        runner.execute();
+        if ( jEdit.getBooleanProperty( "tasklist.show-project-files" ) ) {
+            Runner runner = new Runner();
+            runner.execute();
+        }
     }
 
 
@@ -115,7 +112,7 @@ public class ProjectTaskList extends JPanel implements EBComponent {
         // get the openable nodes of the project
         Collection nodes = project.getOpenableNodes();
 
-        DefaultMutableTreeNode root = new DefaultMutableTreeNode( "Project: " + project.getName() );
+        DefaultMutableTreeNode root = new DefaultMutableTreeNode( jEdit.getProperty("tasklist.projectfiles.project", "Project:") + " " + project.getName() );
 
         // check each openable node for tasks
         for ( Iterator it = nodes.iterator(); it.hasNext(); ) {
@@ -174,7 +171,7 @@ public class ProjectTaskList extends JPanel implements EBComponent {
                         // tasks were found for this buffer, so create the tree node for the buffer itself,
                         // then add tree nodes for the individual tasks.
                         // TODO: TaskList has some display options that need to be supported here
-                        DefaultMutableTreeNode buffer_node = new DefaultMutableTreeNode( file.getName() + "(" + file.getParent() + ")" );
+                        DefaultMutableTreeNode buffer_node = new DefaultMutableTreeNode( buffer.toString() );
                         root.add( buffer_node );
 
                         // the "tasks" hashtable has the line number as the key, so putting
@@ -226,6 +223,9 @@ public class ProjectTaskList extends JPanel implements EBComponent {
     }
 
     // Helper method to find the mode for the given file.
+    // TODO: is mode really necessary?  TaskList needs mode set, but is just
+    // using "text" good enough? -- yes it is.  TaskListPlugin will only parse
+    // buffers with modes as selected by the user in the plugin options.
     Mode findMode( File file ) {
         return jEdit.getMode( "text" );
         /*
@@ -245,75 +245,6 @@ public class ProjectTaskList extends JPanel implements EBComponent {
         return null;
         */
     }
-    // mouse listener for the tree so clicking on a tree node shows the corresponding
-    // line in the edit pane
-    class TreeMouseListener extends MouseAdapter {
-        JTree tree = null;
-        public TreeMouseListener( JTree tree ) {
-            this.tree = tree;
-        }
-        public void mouseReleased( MouseEvent me ) {
-            handleClick( me );
-        }
-
-        public void mousePressed( MouseEvent me ) {
-            handleClick( me );
-        }
-
-        private void handleClick( MouseEvent e ) {
-            if ( e.getClickCount() == 2 || ( e.getClickCount() == 1 && TaskListPlugin.getAllowSingleClickSelection() ) ) {
-                javax.swing.tree.TreePath path = tree.getClosestPathForLocation( e.getX(), e.getY() );
-                Task task = null;
-                if ( path.getPathCount() > 2 ) {
-                    task = ( Task ) ( ( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject();
-                    Buffer buffer = task.getBuffer();
-                    int line_number = task.getLineNumber();
-                    int start_offset = task.getStartOffset();
-                    jEdit.openFile( jEdit.getActiveView(), buffer.getPath() );
-                    EditPane edit_pane = jEdit.getActiveView().showBuffer( buffer );
-                    edit_pane.getTextArea().scrollTo( line_number, start_offset, true );
-                    edit_pane.getTextArea().setCaretPosition( task.getStartPosition().getOffset() );
-                }
-            }
-        }
-    }
-
-    // Custom cell renderer to be able to use the icons from TaskList plugin.
-    class TaskRenderer extends DefaultTreeCellRenderer {
-
-        public Component getTreeCellRendererComponent(
-            JTree tree,
-            Object value,                     // this will be a DefaultMutableTreeNode
-            boolean selected,
-            boolean expanded,
-            boolean leaf,
-            int row,
-            boolean hasFocus ) {
-
-            // the user object is either a string containing the name of the
-            // file or a Task
-            Object obj = ( ( DefaultMutableTreeNode ) value ).getUserObject();
-            if ( obj instanceof String ) {
-                // file name node
-                super.getTreeCellRendererComponent( tree, value, selected, expanded, leaf, row, hasFocus );
-                setIcon( null );
-                return this;
-            }
-
-            // must be a task node
-            Task task = ( Task ) obj;
-            setIcon( task.getIcon() );
-            setIconTextGap( 0 );
-            StringBuilder html = new StringBuilder();
-            html.append( "<html><table><tr><td width=\"50\" align=\"right\">" );
-            html.append( task.getLineNumber() );
-            html.append( "</td><td>" );
-            html.append( task.getText() );
-            html.append( "</td></tr></table></html>" );
-            setText( html.toString() );
-            return this;
-        }
-    }
 
     public void handleMessage( EBMessage msg ) {
         if ( msg.getClass().getName().equals( "projectviewer.event.ViewerUpdate" ) ) {
@@ -327,5 +258,4 @@ public class ProjectTaskList extends JPanel implements EBComponent {
         }
 
     }
-
 }

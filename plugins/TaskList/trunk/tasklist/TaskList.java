@@ -72,7 +72,7 @@ public class TaskList extends JPanel implements EBComponent {
 			tabs = new JTabbedPane();
 			tabs.add( "Current File", new CurrentBufferTaskList( view ) );
 			if ( showOpenFiles ) {
-				tabs.add( "Open Files", new OpenBufferTaskList( view ) );
+				tabs.add( "Open Files", new OpenBuffersTaskList( view ) );
 			}
 			if ( showProjectFiles && PVHelper.isProjectViewerAvailable() ) {
 				tabs.add( "Project Files", new ProjectTaskList( view ) );
