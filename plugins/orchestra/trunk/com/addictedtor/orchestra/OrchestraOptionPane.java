@@ -34,6 +34,10 @@ public class OrchestraOptionPane extends AbstractOptionPane implements ActionLis
     }
 
     public void _init() {
+    	boolean installed = jEdit.getBooleanProperty( "orchestra.installed" ) ;
+    	if( !installed ){
+    		addComponent( new JLabel( "Please check the settings below, and click OK" ) ) ;
+    	}
         addPathPanel("rhome", tfRHome);
         addPathPanel("shortcut", tfShortcut);
         guessDirs();
@@ -46,8 +50,6 @@ public class OrchestraOptionPane extends AbstractOptionPane implements ActionLis
     }
 
     private void guessDirs() {
-//        if (tfJavaHome.getText().trim().equals(""))
-//            tfJavaHome.setText(DirectoryGuesser.guessJavaHome());
         if (tfRHome.getText().trim().equals("")) {
             String rHome = DirectoryGuesser.guessRHome();
             logger.info("Guessing R_HOME : " + rHome);
@@ -123,27 +125,14 @@ public class OrchestraOptionPane extends AbstractOptionPane implements ActionLis
                         rhome,
                         shortcut
                 );
-            	
-            	
-//                RCmdBatch rCmdBatch = new RCmdBatch(rhome);
-//                rCmdBatch.retrieveRInfo();
-//                RPackage rp = rCmdBatch.getInstalledPackInfo("rJava");
-//                Installer i = new Installer(
-//                        jEdit.getJEditHome(),
-//                        OrchestraPlugin.getPluginHomePath(), 
-//                        rhome,
-//                        rp.getLibpath().getAbsolutePath(),
-//                        rCmdBatch.getLibPaths(),
-//                        javahome,
-//                        shortcut
-//                 );
-            	
                 i.install();
             } catch (Exception e) {
                 // todo handle
                 e.printStackTrace();
             }
         }
+        jEdit.setBooleanProperty("orchestra.installed", true) ;
         logger.info("Saving options done.");
+        
     }
 }
