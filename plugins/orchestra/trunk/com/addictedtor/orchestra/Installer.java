@@ -157,12 +157,12 @@ public class Installer {
     	extractPropertyFile() ;
         File scriptFile = extractRScript();
         extractOrchestraIcons();
-        File rExe = new File(new File(rHomeDir, "bin"), "R");
+        File rScriptExe = new File(new File(rHomeDir, "bin"), "Rscript");
         
         boolean createDesktop = true;
         if (createDesktop) {
             logger.info("Creating shortcut entry in " + shortcutDir.getAbsolutePath());
-            String targetCmd = rExe.getAbsolutePath() + " CMD BATCH --vanilla --default-packages=\"base\" " + scriptFile.getAbsolutePath();
+            String targetCmd = rScriptExe.getAbsolutePath() + " --vanilla --default-packages=\"base\" " + scriptFile.getAbsolutePath();
             logger.info("Shortcut cmd is: " + targetCmd);
             if (OSTools.isWindows()) {
                 createShortcutWindows(targetCmd, new File(pluginHomeDir, ICON_NAME_WINDOWS));
