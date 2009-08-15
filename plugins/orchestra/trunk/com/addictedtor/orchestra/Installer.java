@@ -1,14 +1,20 @@
 package com.addictedtor.orchestra;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import af.commons.OSTools;
 import af.commons.install.FreeDesktop;
 import af.commons.install.WindowsDesktop;
 import af.commons.io.FileTransfer;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import java.io.*;
-
 
 /**
  * Installer.
@@ -29,6 +35,8 @@ public class Installer {
 		// private String rLibPaths = null;
     private File shortcutDir = null;
     public static final String RSCRIPT_NAME = "orchestra_starter.r";
+    public static final String PROPERTY_NAME = "orchestra_properties.txt";
+    
     public static final String ICON_NAME_WINDOWS = "orchestra_icon.ico";
     public static final String ICON_NAME_LINUX = "orchestra_icon.png";
 
@@ -46,37 +54,59 @@ public class Installer {
     }
 
     private File extractRScript() {
-        String script = "", s;
+        String s;
         File scriptFile = new File(pluginHomeDir, RSCRIPT_NAME);
         logger.info("Extracting R starter script to: " + scriptFile);
         try {
             InputStream is = this.getClass().getResourceAsStream("/" + RSCRIPT_NAME);
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-            BufferedWriter writer = new BufferedWriter(
-                    new FileWriter(scriptFile));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(scriptFile));
             while((s = reader.readLine()) != null) {
-                script += s + "\n";
+                writer.write(s + "\n" ) ;
             }
             is.close();
+            writer.close(); 
+            
+        } catch( IOException ioe){
+        	logger.info( "IOException : " + ioe.getMessage() ) ;
+        }
+        logger.info("R starter script done.");
+        return scriptFile ;
+    }
 
+    private File extractPropertyFile() {
+    	File propertyFile = new File(pluginHomeDir, PROPERTY_NAME);
+        try {
+        	/* read the template */
+    		InputStream is = this.getClass().getResourceAsStream("/" + PROPERTY_NAME);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(propertyFile));
+            String s ;
+            StringBuilder builder = new StringBuilder(); 
+            while((s = reader.readLine()) != null) {
+                builder.append( s + "\n") ;
+            }
+            String properties = builder.toString() ;
+            
+            /* grab the values of the variables of interest */
             String javaStr = forwardSlashes(System.getProperty("java.home"));
             String javaExeStr;
             javaExeStr = OSTools.isWindows() ? "javaw.exe" : "java";
             String jeditStr = forwardSlashes(jeditHomeDir);
-
             String pluginHomeStr = forwardSlashes(pluginHomeDir.getAbsolutePath()) ;
-            
+
+            /* log these values */
             logger.info("Replacing the following templates:");
             logger.info("@JAVA_HOME@ :" + javaStr);
             logger.info("@JAVA_EXE@ :" + javaExeStr);
             logger.info("@JEDIT_HOME@ :" + jeditStr);
             logger.info("@PLUGIN_HOME@ :" + pluginHomeDir );
             
-
-            script = script.replace("@JAVA_HOME@", javaStr);
-            script = script.replace("@JAVA_EXE@", javaExeStr);
-            script = script.replace("@JEDIT_HOME@", jeditStr);
-            script = script.replace("@PLUGIN_HOME@", pluginHomeStr);
+            /* replace the values in the property file */
+            properties = properties.replace("@JAVA_HOME@", javaStr);
+            properties = properties.replace("@JAVA_EXE@", javaExeStr);
+            properties = properties.replace("@JEDIT_HOME@", jeditStr);
+            properties = properties.replace("@PLUGIN_HOME@", pluginHomeStr);
             
             File libDir = new File( pluginHomeDir + "/library" ) ;
             if( !libDir.exists() ){
@@ -86,15 +116,15 @@ public class Installer {
             	// maybe check that the this actually is a library
             }
             
-            writer.write(script);
+            writer.write(properties);
             writer.close();
         } catch (IOException e) {
             //todo deal with it better
             // should not happen
             e.printStackTrace();
         }
-        logger.info("R starter script done.");
-        return scriptFile;
+        logger.info("property file done.");
+        return propertyFile;
     }
 
     private void extractOrchestraIcons() throws IOException{
@@ -124,14 +154,15 @@ public class Installer {
     }
 
     public void install() throws IOException{
+    	extractPropertyFile() ;
         File scriptFile = extractRScript();
         extractOrchestraIcons();
         File rExe = new File(new File(rHomeDir, "bin"), "R");
-
+        
         boolean createDesktop = true;
         if (createDesktop) {
             logger.info("Creating shortcut entry in " + shortcutDir.getAbsolutePath());
-            String targetCmd = rExe.getAbsolutePath() + " CMD BATCH " + scriptFile.getAbsolutePath();
+            String targetCmd = rExe.getAbsolutePath() + " CMD BATCH --vanilla --default-packages=\"base\"" + scriptFile.getAbsolutePath();
             logger.info("Shortcut cmd is: " + targetCmd);
             if (OSTools.isWindows()) {
                 createShortcutWindows(targetCmd, new File(pluginHomeDir, ICON_NAME_WINDOWS));
@@ -141,7 +172,7 @@ public class Installer {
             logger.info("Shortcut done.");
         }
     }
-
+    
     private String forwardSlashes(String s) {
         return s.replace("\\", "/");
     }
@@ -149,5 +180,6 @@ public class Installer {
     private String forwardSlashes(File f) {
         return forwardSlashes(f.getAbsolutePath());
     }
+
 
 }

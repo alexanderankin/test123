@@ -1,0 +1,16 @@
+# this file need to be source()able into R
+
+# the home of the orchestra installer plugin
+# this is where a custom R library will be created to host
+# the orchestra R package
+PLUGIN_HOME = "@PLUGIN_HOME@"
+
+# the home of java
+JAVA_HOME   = "@JAVA_HOME@"
+
+# the java executable
+java_exe    = "@JAVA_EXE@"
+
+# the home of jedit
+JEDIT_HOME  = "@JEDIT_HOME@"
+
