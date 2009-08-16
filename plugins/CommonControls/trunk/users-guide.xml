@@ -96,6 +96,12 @@
 
       <listitem>
         <para>
+          <ulink url="#CloseableTabbedPane">CloseableTabbedPane</ulink>
+        </para>
+      </listitem>
+
+      <listitem>
+        <para>
           <ulink url="#EasyOptionPane">EasyOptionPane</ulink>
         </para>
       </listitem>
@@ -347,6 +353,35 @@
       OK and Cancel).</para>
     </sect1>
 
+    <sect1 id="CloseableTabbedPane">
+      <title>CloseableTabbedPane</title>
+
+      <para>
+      A JTabbedPane that can have a "close" icon.  This is a Java 5 version of 
+      the feature added to JTabbedPane in Java 1.6. 
+      </para>
+      
+      <para>
+        Usage is simple, use it exactly like a JTabbedPane, but add icons to the
+        tabs:
+      </para>
+      <para>
+        <programlisting>
+        <![CDATA[
+                tabs = new CloseableTabbedPane();
+                Icon close_icon = GUIUtilities.loadIcon( "closebox.gif" );
+                Icon hover_icon = GUIUtilities.loadIcon( "closebox.gif" );
+                Icon pressed_icon = GUIUtilities.loadIcon( "closebox.gif" );
+                tabs.setCloseIcons(close_icon, hover_icon, pressed_icon);
+        ]]>
+        </programlisting>
+      </para>
+      <para>
+        The "setCloseIcons" method has the possibility of adding separate icons 
+        for 'normal', 'hover', and 'pressed' mouse events.
+      </para>
+    </sect1>
+
     <sect1 id="EasyOptionPane">
       <title>EasyOptionPane</title>
 
@@ -505,6 +540,16 @@ SwingWorker is designed for situations where you need to have a long running tas
 
     <itemizedlist>
 
+      <listitem>
+        <formalpara>
+            <title>Version 1.1</title>
+            <para />
+        </formalpara>
+
+        <para>Added CloseableTabbedPane, a Java 5 version of a Java 6 feature
+        added to JTabbedPane.</para>
+      </listitem>
+      
       <listitem>
         <formalpara>
             <title>Version 1.0</title>
