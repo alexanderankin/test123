@@ -6,7 +6,7 @@
  */
 
 //package org.jdesktop.swingworker;
-package ise.plugin.svn.library.swingworker;
+package common.swingworker;
 
 import java.util.*;
 import javax.swing.SwingUtilities;

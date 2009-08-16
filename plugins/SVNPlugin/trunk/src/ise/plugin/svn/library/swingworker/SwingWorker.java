@@ -6,7 +6,7 @@
  */
 
 //package org.jdesktop.swingworker;
-package ise.plugin.svn.library.swingworker;
+package common.swingworker;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -748,7 +748,7 @@ public abstract class SwingWorker<T, V> implements Future<T>, Runnable {
                         name.append("-thread-");
                         name.append(threadNumber.getAndIncrement());
 
-                        Thread t = new Thread(r, name.toString());;
+                        Thread t = new Thread(r, name.toString());
                         if (t.isDaemon())
                             t.setDaemon(false);
                         if (t.getPriority() != Thread.NORM_PRIORITY)
