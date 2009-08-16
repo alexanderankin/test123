@@ -1,5 +1,6 @@
 package updater;
 
+import java.awt.BorderLayout;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -14,7 +15,9 @@ import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.JOptionPane;
+import javax.swing.JDialog;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.jEdit;
@@ -29,6 +32,8 @@ public class UpdaterPlugin extends EditPlugin
 	private static final int BAD_VERSION_STRING = -100;
 	static private UpdaterPlugin instance;
 	private File home;
+	private JTextArea text;
+	int totalBytes;
 
 	@Override
 	public void start()
@@ -133,8 +138,26 @@ public class UpdaterPlugin extends EditPlugin
 			bout = new BufferedOutputStream(out);
 			byte[] buffer = new byte[BUFFER];
 			int bytesRead;
+			totalBytes = 0;
+			final int pos = text.getCaretPosition();
+			long time = System.currentTimeMillis();
 			while ((bytesRead = bin.read(buffer)) > 0)
+			{
+				totalBytes += bytesRead;
 				bout.write(buffer, 0, bytesRead);
+				long time1 = System.currentTimeMillis();
+				if (time1 - time >= 1000)
+				{
+					time = time1;
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run()
+						{
+							text.replaceRange(String.valueOf(totalBytes) +
+								" bytes read", pos, text.getText().length());
+						}
+					});
+				}
+			}
 		}
 		catch(IOException e)
 		{
@@ -194,51 +217,76 @@ public class UpdaterPlugin extends EditPlugin
 		return 0;
 	}
 
+	private void appendText(final String s)
+	{
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run()
+			{
+				text.append(s);
+				if (! s.endsWith("\n"))
+					text.append("\n");
+				
+			}
+		});
+	}
+
 	public void updateVersion()
 	{
-		String currentVersion = jEdit.getBuild();
-		String latestVersion = getLatestVersion();
-		if (latestVersion == null)
-		{
-			JOptionPane.showMessageDialog(null, jEdit.getProperty(
-				"updater.msg.cannotFindLatestVersion"));
-			return;
-		}
-		int comparison = compareVersions(latestVersion, currentVersion);
-		if (comparison == BAD_VERSION_STRING)
-		{
-			JOptionPane.showMessageDialog(null, jEdit.getProperty(
-				"updater.msg.unknownVersionString"));
-			return;
-		}
-		if (comparison <= 0)
-		{
-			JOptionPane.showMessageDialog(null, jEdit.getProperty(
-				"updater.msg.noNewerVersion"));
-			return;
-		}
-		String link = getDownloadLink();
-		if (link == null)
-		{
-			JOptionPane.showMessageDialog(null, jEdit.getProperty(
-				"updater.msg.downloadLinkNotFound"));
-			return;
-		}
-		File installerFile = downloadFile(link); 
-		if (installerFile == null)
-		{
-			JOptionPane.showMessageDialog(null, jEdit.getProperty(
-				"updater.msg.downloadFailed"));
-			return;
-		}
-		if (! runInstaller(installerFile))
-		{
-			JOptionPane.showMessageDialog(null, jEdit.getProperty(
-				"updater.msg.installerFailed"));
-			return;
-		}
-		JOptionPane.showMessageDialog(null, jEdit.getProperty(
-			"updater.msg.installed"));
+		JDialog dialog = new JDialog((JDialog)null, false);
+		dialog.setTitle(jEdit.getProperty("updater.msg.updateDialogTitle"));
+		dialog.setLayout(new BorderLayout());
+		text = new JTextArea(8, 80);
+		dialog.add(text, BorderLayout.CENTER);
+		appendText(jEdit.getProperty("updater.msg.findLatestVersion"));
+		dialog.pack();
+		dialog.setVisible(true);
+
+		Thread updateThread = new Thread() {
+			@Override
+			public void run() {
+				String currentVersion = jEdit.getBuild();
+				String latestVersion = getLatestVersion();
+				if (latestVersion == null)
+				{
+					appendText(jEdit.getProperty("updater.msg.cannotFindLatestVersion"));
+					return;
+				}
+				int comparison = compareVersions(latestVersion, currentVersion);
+				if (comparison == BAD_VERSION_STRING)
+				{
+					appendText(jEdit.getProperty("updater.msg.unknownVersionString"));
+					return;
+				}
+				if (comparison <= 0)
+				{
+					appendText(jEdit.getProperty("updater.msg.noNewerVersion"));
+					return;
+				}
+				appendText(jEdit.getProperty("updater.msg.fetchingDownloadPage"));
+				String link = getDownloadLink();
+				if (link == null)
+				{
+					appendText(jEdit.getProperty("updater.msg.downloadLinkNotFound"));
+					return;
+				}
+				appendText(jEdit.getProperty("updater.msg.downloadingNewVersion"));
+				File installerFile = downloadFile(link); 
+				appendText("");	// Newline after "bytes read" message
+				if (installerFile == null)
+				{
+					appendText(jEdit.getProperty("updater.msg.downloadFailed"));
+					return;
+				}
+				appendText(jEdit.getProperty("updater.msg.runningInstaller"));
+				if (! runInstaller(installerFile))
+				{
+					appendText(jEdit.getProperty("updater.msg.installerFailed"));
+					return;
+				}
+				appendText(jEdit.getProperty("updater.msg.installing"));
+			}
+		};
+		updateThread.start();
 	}
 
 	private void safelyClose(BufferedOutputStream bout, OutputStream out)
