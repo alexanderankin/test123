@@ -37,7 +37,7 @@ import ise.plugin.svn.data.DiffData;
 import ise.plugin.svn.gui.DiffDialog;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
-import ise.plugin.svn.library.swingworker.*;
+import common.swingworker.*;
 import java.awt.event.ActionEvent;
 import java.io.*;
 import java.util.*;

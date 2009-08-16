@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.pv;
 
-import ise.plugin.svn.library.swingworker.*;
+import common.swingworker.*;
 import java.awt.event.ActionEvent;
 import java.io.*;
 import java.util.*;

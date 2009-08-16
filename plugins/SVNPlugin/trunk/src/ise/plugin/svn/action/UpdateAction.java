@@ -37,7 +37,7 @@ import ise.plugin.svn.gui.UpdateDialog;
 import ise.plugin.svn.gui.UpdateResultsPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
-import ise.plugin.svn.library.swingworker.SwingWorker;
+import common.swingworker.SwingWorker;
 
 import java.awt.event.ActionEvent;
 import java.io.*;

@@ -35,7 +35,7 @@ import ise.plugin.svn.gui.ErrorPanel;
 import ise.plugin.svn.gui.OutputPanel;
 import ise.plugin.svn.gui.SVNInfoPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
-import ise.plugin.svn.library.swingworker.SwingWorker;
+import common.swingworker.SwingWorker;
 
 import java.awt.event.ActionEvent;
 import java.util.List;
