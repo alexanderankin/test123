@@ -18,3 +18,13 @@ plugin.updater.UpdaterPlugin.menu=updater-update
 # docs
 plugin.updater.UpdaterPlugin.docs=index.html
 
+# misc
+updater.downloadPage=http://jedit.org/index.php?page=download
+updater.downloadLinkPattern=.*<a href=\"([^\"]+)\">Java-based installer.*
+
+# messages
+updater.msg.downloadLinkNotFound=Cannot find download link on download page.
+updater.msg.downloadFailed=Failed to download the installer.
+updater.msg.installerFailed=Failed to install the updated version.
+updater.msg.installed=Installation completed successfully.
+

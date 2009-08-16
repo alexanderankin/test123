@@ -1,14 +1,9 @@
 package updater;
-import installer.ConsoleProgress;
-import installer.Install;
-import installer.InstallThread;
-import installer.OperatingSystem;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,20 +11,19 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.net.URL;
-import java.util.Vector;
-import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+
+import javax.swing.JOptionPane;
 
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.jEdit;
 
 public class UpdaterPlugin extends EditPlugin
 {
+	private static final String DOWNLOAD_PAGE_PROP = "updater.downloadPage";
+	private static final String DOWNLOAD_LINK_PATTERN_PROP = "updater.downloadLinkPattern";
 	private static final int BUFFER = 2048;
-	static public final String downloadPage = "http://jedit.org/index.php?page=download";
 	static private UpdaterPlugin instance;
 	private File home;
 
@@ -61,12 +55,12 @@ public class UpdaterPlugin extends EditPlugin
 		BufferedReader bin = null;
 		try
 		{
-			url = new URL(downloadPage);
+			url = new URL(jEdit.getProperty(DOWNLOAD_PAGE_PROP));
 			in = url.openStream();
 			bin = new BufferedReader(new InputStreamReader(in));
 			String line;
 			Pattern downloadLinkPattern = Pattern.compile(
-				".*<a href=\"([^\"]+)\">Java-based installer.*");
+				jEdit.getProperty(DOWNLOAD_LINK_PATTERN_PROP));
 			while((line = bin.readLine()) != null)
 			{
 				Matcher m = downloadLinkPattern.matcher(line);
@@ -121,20 +115,29 @@ public class UpdaterPlugin extends EditPlugin
 		return installerFile;
 	}
 
-	private boolean extractFiles(File installerFile)
+	private boolean runInstaller(File installerFile)
 	{
-		Install installer = new Install();
-		ConsoleProgress progress = new ConsoleProgress();
+		String settingsDirectory = System.getProperty("user.home");
+		File portFile;
+		File f = new File(settingsDirectory);
+		portFile = new File(f,".jedit/server");
+		if (portFile.exists())
+			portFile.delete();
 		String installDir = jEdit.getJEditHome();
-		// TODO: Add OS tasks
-		OperatingSystem.OSTask[] osTasks = new OperatingSystem.OSTask[0];
-		Vector<String> components = new Vector<String>();
-		components.add("jedit-program");
-		components.add("jedit-macros");
-		components.add("jedit-api");
-		InstallThread thread = new InstallThread(installer,
-			progress, installDir, osTasks, 0 /* XXX */,components);
-		thread.start();
+		String [] args = new String[] { "java", "-jar",
+			installerFile.getAbsolutePath(), "auto", installDir };
+		try {
+			Process p = Runtime.getRuntime().exec(args);
+			StreamConsumer osc = new StreamConsumer(p.getInputStream());
+			osc.start();
+			StreamConsumer esc = new StreamConsumer(p.getErrorStream());
+			esc.start();
+			p.waitFor();
+		} catch (IOException e) {
+			return false;
+		} catch (InterruptedException e) {
+			return false;
+		}
 		return true;
 	}
 
@@ -143,23 +146,25 @@ public class UpdaterPlugin extends EditPlugin
 		String link = getDownloadLink();
 		if (link == null)
 		{
-			System.err.println("Download link not found");
+			JOptionPane.showMessageDialog(null, jEdit.getProperty(
+				"updater.msg.downloadLinkNotFound"));
 			return;
 		}
-		System.err.println("Download link: " + link);
 		File installerFile = downloadFile(link); 
 		if (installerFile == null)
 		{
-			System.err.println("Download failed");
+			JOptionPane.showMessageDialog(null, jEdit.getProperty(
+				"updater.msg.downloadFailed"));
 			return;
 		}
-		System.err.println("Downloaded to: " + installerFile.getAbsolutePath());
-		if (! extractFiles(installerFile))
+		if (! runInstaller(installerFile))
 		{
-			System.err.println("Download failed");
+			JOptionPane.showMessageDialog(null, jEdit.getProperty(
+				"updater.msg.installerFailed"));
 			return;
 		}
-		System.err.println("Extracted");
+		JOptionPane.showMessageDialog(null, jEdit.getProperty(
+			"updater.msg.installed"));
 	}
 
 	private void safelyClose(BufferedOutputStream bout, OutputStream out)
@@ -215,4 +220,21 @@ public class UpdaterPlugin extends EditPlugin
 		}
 	}
 
+	private static class StreamConsumer extends Thread
+	{
+		private InputStream is;
+		public StreamConsumer(InputStream is) {
+			this.is = is;
+		}
+		public void run() {
+			try {
+				BufferedReader br = new BufferedReader(new InputStreamReader(is));
+				String line;
+				while ((line = br.readLine()) != null)
+					System.err.println(line);
+			} catch (IOException ioe) {
+				ioe.printStackTrace();  
+			}
+		}
+	}
 }
