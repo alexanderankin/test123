@@ -5,7 +5,7 @@
 
 	<ACTION NAME="updater-update" NO_REPEAT="TRUE">
 		<CODE>
-			UpdaterPlugin.getInstance().updateVersion();
+			updater.UpdaterPlugin.getInstance().updateVersion();
 		</CODE>
 	</ACTION>
 	
