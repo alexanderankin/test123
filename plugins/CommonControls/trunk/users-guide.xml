@@ -111,6 +111,12 @@
           <ulink url="#WorkerThreadPool">WorkerThreadPool</ulink>
         </para>
       </listitem>
+
+      <listitem>
+        <para>
+          <ulink url="#SwingWorker">SwingWorker (Java 5 version)</ulink>
+        </para>
+      </listitem>
     </itemizedlist>
 
     <para>
@@ -456,6 +462,42 @@
       returned by the pool to control when the requests are finished.</para>
 
     </sect1>
+
+    <sect1 id="SwingWorker">
+      <title>SwingWorker (Java 5 version)</title>
+      <para>
+        This is a Java 5 version of the SwingWorker included in Java 6.  This version is a backport of the 1.6 version.
+        The home page for this project is at https://swingworker.dev.java.net/.
+      </para>
+      <para>
+ When writing a multi-threaded application using Swing, there are two constraints to keep in mind: (refer to  How to Use Threads  for more details):
+      </para>
+      <para>
+    <itemizedlist>
+      <listitem>
+        <para>
+    Time-consuming tasks should not be run on the Event Dispatch Thread. Otherwise the application becomes unresponsive.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+    Swing components should be accessed on the Event Dispatch Thread only.
+        </para>
+      </listitem>
+    </itemizedlist>
+      </para>
+      <para>
+These constraints mean that a GUI application with time intensive computing needs at least two threads: 1) a thread to perform the lengthy task and 2) the Event Dispatch Thread (EDT) for all GUI-related activities. This involves inter-thread communication which can be tricky to implement.
+      </para>
+      <para>
+SwingWorker is designed for situations where you need to have a long running task run in a background thread and provide updates to the UI either when done, or while processing. Subclasses of SwingWorker must implement the doInBackground() method to perform the background computation.
+      </para>
+      <para>
+      See the 
+    <ulink url="javadoc/common/swingworker/SwingWorker.html">SwingWorker javadoc</ulink> for details and examples.
+      </para>
+    </sect1>
+    
   </chapter>
 
   <appendix id="changelog">
@@ -463,6 +505,15 @@
 
     <itemizedlist>
 
+      <listitem>
+        <formalpara>
+            <title>Version 1.0</title>
+            <para />
+        </formalpara>
+
+        <para>Added a Java 5 version of SwingWorker.</para>
+      </listitem>
+      
       <listitem>
         <formalpara>
             <title>Version 0.9.4</title>
