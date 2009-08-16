@@ -46,39 +46,65 @@ public class UpdaterPlugin extends EditPlugin
 	{
 		return instance;
 	}
-
-	public String getDownloadLink()
+	interface UrlLineHandler
 	{
-		String link = null;
+		// Return true to continue, false to abort.
+		boolean process(String line);
+	}
+	public boolean processUrl(String urlPath, UrlLineHandler handler)
+	{
+		boolean ret = true;
 		URL url;
 		InputStream in = null;
 		BufferedReader bin = null;
 		try
 		{
-			url = new URL(jEdit.getProperty(DOWNLOAD_PAGE_PROP));
+			url = new URL(urlPath);
 			in = url.openStream();
 			bin = new BufferedReader(new InputStreamReader(in));
 			String line;
-			Pattern downloadLinkPattern = Pattern.compile(
-				jEdit.getProperty(DOWNLOAD_LINK_PATTERN_PROP));
 			while((line = bin.readLine()) != null)
 			{
-				Matcher m = downloadLinkPattern.matcher(line);
-				if (m.find())
-				{
-					link = m.group(1);
+				if (! handler.process(line))
 					break;
-				}
 			}
 		}
 		catch(IOException e)
 		{
+			ret = false;
 		}
 		finally
 		{
 			safelyClose(bin, in);
 		}
-		return link;
+		return ret;
+	}
+
+	public String getDownloadLink()
+	{
+		class DownloadLinkExtractor implements UrlLineHandler
+		{
+			private Pattern pattern;
+			String link;
+			public DownloadLinkExtractor()
+			{
+				pattern = Pattern.compile(jEdit.getProperty(
+					DOWNLOAD_LINK_PATTERN_PROP));
+				link = null;
+			}
+			public boolean process(String line)
+			{
+				Matcher m = pattern.matcher(line);
+				if (! m.find())
+					return true;
+				link = m.group(1);
+				return false;
+			}
+		}
+		DownloadLinkExtractor extractor = new DownloadLinkExtractor();
+		if (processUrl(jEdit.getProperty(DOWNLOAD_PAGE_PROP), extractor))
+			return extractor.link;
+		return null;
 	}
 
 	public File downloadFile(String urlString)
@@ -117,25 +143,14 @@ public class UpdaterPlugin extends EditPlugin
 
 	private boolean runInstaller(File installerFile)
 	{
-		String settingsDirectory = System.getProperty("user.home");
-		File portFile;
-		File f = new File(settingsDirectory);
-		portFile = new File(f,".jedit/server");
-		if (portFile.exists())
-			portFile.delete();
 		String installDir = jEdit.getJEditHome();
-		String [] args = new String[] { "java", "-jar",
-			installerFile.getAbsolutePath(), "auto", installDir };
+		String [] args = new String[] { "java", "-cp",
+			getPluginJAR().getFile().getAbsolutePath(),
+			InstallLauncher.class.getCanonicalName(),
+			installerFile.getAbsolutePath(), installDir };
 		try {
-			Process p = Runtime.getRuntime().exec(args);
-			StreamConsumer osc = new StreamConsumer(p.getInputStream());
-			osc.start();
-			StreamConsumer esc = new StreamConsumer(p.getErrorStream());
-			esc.start();
-			p.waitFor();
+			Runtime.getRuntime().exec(args);
 		} catch (IOException e) {
-			return false;
-		} catch (InterruptedException e) {
 			return false;
 		}
 		return true;
@@ -216,24 +231,6 @@ public class UpdaterPlugin extends EditPlugin
 			}
 			catch (IOException e)
 			{
-			}
-		}
-	}
-
-	private static class StreamConsumer extends Thread
-	{
-		private InputStream is;
-		public StreamConsumer(InputStream is) {
-			this.is = is;
-		}
-		public void run() {
-			try {
-				BufferedReader br = new BufferedReader(new InputStreamReader(is));
-				String line;
-				while ((line = br.readLine()) != null)
-					System.err.println(line);
-			} catch (IOException ioe) {
-				ioe.printStackTrace();  
 			}
 		}
 	}
