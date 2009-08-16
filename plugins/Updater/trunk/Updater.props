@@ -1,20 +1,20 @@
 plugin.UpdaterPlugin.activate=defer
 
 # general plugin information
-plugin.UpdaterPlugin.name=Updater
-plugin.UpdaterPlugin.author=Shlomy Reinstein
-plugin.UpdaterPlugin.version=0.1
-plugin.UpdaterPlugin.description=Auto-update plugin
+plugin.updater.UpdaterPlugin.name=Updater
+plugin.updater.UpdaterPlugin.author=Shlomy Reinstein
+plugin.updater.UpdaterPlugin.version=0.1
+plugin.updater.UpdaterPlugin.description=Auto-update plugin
 
-plugin.UpdaterPlugin.depend.0=jdk 1.5
-plugin.UpdaterPlugin.depend.1=jedit 04.03.17.00
+plugin.updater.UpdaterPlugin.depend.0=jdk 1.5
+plugin.updater.UpdaterPlugin.depend.1=jedit 04.03.17.00
 
 # action labels
 updater-update.label=Update jEdit
 
 # menu items
-plugin.UpdaterPlugin.menu=updater-update
+plugin.updater.UpdaterPlugin.menu=updater-update
 
 # docs
-plugin.UpdaterPlugin.docs=index.html
+plugin.updater.UpdaterPlugin.docs=index.html
 
