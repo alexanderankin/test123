@@ -21,6 +21,7 @@
 	<property name="src.dir" value="."/>
 	<property name="install.dir"  value=".."/>
 	<property name="build.dir" value="build"/>
+	<property name="installer" value="${src.dir}/../jEdit/installer"/>
 
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
@@ -32,6 +33,15 @@
 	</target>
 	
 	<target name="compile" depends="prepare">
+		<javac
+			srcdir="${installer}"
+			destdir="${build.dir}"
+			deprecation="on"
+			debug="yes"
+			includeJavaRuntime="yes"
+		>
+			<classpath refid="project.class.path"/>
+		</javac>
 		<javac
 			srcdir="${src.dir}"
 			destdir="${build.dir}"
@@ -55,6 +65,11 @@
 				<include name="**/*.html"/>
 				<include name="**/*.txt"/>
 				<include name="**/*.png"/>
+			</fileset>
+			<fileset dir="${installer}/..">
+				<include name="installer/install.props"/>
+				<include name="installer/*.html"/>
+				<include name="installer/*.mf"/>
 			</fileset>
 		</jar>
 	</target>
