@@ -3,6 +3,7 @@ package dockingFrames;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -127,6 +128,7 @@ public class DfWindowManager extends DockableWindowManager
 	public void setMainPanel(JPanel panel)
 	{
 		mainDockable = new DefaultSingleCDockable("mainPanel", panel);
+		mainDockable.getContentPane().setMinimumSize(new Dimension(10, 10));
 		mainArea.add(mainDockable);
 		mainDockable.setTitleShown(false);
         mainDockable.setVisible(true);
@@ -701,12 +703,12 @@ public class DfWindowManager extends DockableWindowManager
 		private String name;
 		private JComponent window;
 		private boolean fake;
-		private boolean requestFocus = false;
 
 		public JEditDockable(JEditDockableFactory factory, String name,
 			String title, JComponent window, boolean fake)
 		{
 			super(factory, title, window);
+			getContentPane().setMinimumSize(new Dimension(10, 10));
 			this.name = name;
 			this.window = window;
 			this.fake = fake;
@@ -735,9 +737,6 @@ public class DfWindowManager extends DockableWindowManager
 				}
 			}
 		}
-		public void requestFocus() {
-			requestFocus = true;
-		}
 		public void madeVisible()
 		{
 			// Replace fake dockables with real ones when needed
@@ -754,11 +753,6 @@ public class DfWindowManager extends DockableWindowManager
 					listenedStations.remove(station);
 				}
 				intern().removeDockHierarchyListener(hierarchyListener);
-			}
-			if (requestFocus)
-			{
-				requestFocus = false;
-				DfWindowManager.this.focusDockable(getName());
 			}
 		}
 	}
