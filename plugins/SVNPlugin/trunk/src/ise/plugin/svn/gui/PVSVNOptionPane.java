@@ -40,7 +40,7 @@ import org.gjt.sp.jedit.gui.HistoryTextField;
 import ise.java.awt.KappaLayout;
 import ise.plugin.svn.PVHelper;
 import ise.plugin.svn.library.PasswordHandler;
-import ise.plugin.svn.library.swingworker.SwingWorker;
+import common.swingworker.SwingWorker;
 import ise.plugin.svn.data.*;
 import ise.plugin.svn.command.*;
 import ise.plugin.svn.io.*;

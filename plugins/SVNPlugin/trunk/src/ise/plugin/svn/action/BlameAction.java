@@ -34,7 +34,7 @@ import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Blame;
 import ise.plugin.svn.data.LogData;
 import ise.plugin.svn.io.ConsolePrintStream;
-import ise.plugin.svn.library.swingworker.*;
+import common.swingworker.*;
 import ise.plugin.svn.gui.component.*;
 import java.awt.event.ActionEvent;
 import java.io.*;

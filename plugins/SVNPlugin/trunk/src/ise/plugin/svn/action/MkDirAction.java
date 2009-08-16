@@ -37,7 +37,7 @@ import ise.plugin.svn.gui.MkDirDialog;
 import ise.plugin.svn.gui.CommitResultsPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
-import ise.plugin.svn.library.swingworker.*;
+import common.swingworker.*;
 
 import java.awt.event.ActionEvent;
 import java.io.*;

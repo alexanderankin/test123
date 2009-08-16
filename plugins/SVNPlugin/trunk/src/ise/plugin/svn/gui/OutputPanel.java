@@ -35,9 +35,10 @@ import javax.swing.*;
 import javax.swing.event.*;
 import ise.plugin.svn.*;
 import ise.plugin.svn.library.GUIUtils;
-import ise.plugin.svn.library.swingworker.SwingWorker;
+import common.swingworker.SwingWorker;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.GUIUtilities;
+import common.gui.CloseableTabbedPane;
 
 /**
  * Wraps a tabbed pane to show output.  There is always a 'console' tab that

@@ -35,7 +35,7 @@ import ise.plugin.svn.data.*;
 import ise.plugin.svn.*;
 import java.util.logging.*;
 import ise.plugin.svn.command.*;
-import ise.plugin.svn.library.swingworker.*;
+import common.swingworker.*;
 
 public class CheckoutActor extends NodeActor {
 

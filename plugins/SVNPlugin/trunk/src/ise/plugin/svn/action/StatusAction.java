@@ -43,7 +43,7 @@ import ise.plugin.svn.command.Status;
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.data.StatusData;
 import ise.plugin.svn.gui.StatusResultsPanel;
-import ise.plugin.svn.library.swingworker.*;
+import common.swingworker.*;
 import ise.plugin.svn.io.ConsolePrintStream;
 
 import org.gjt.sp.jedit.View;

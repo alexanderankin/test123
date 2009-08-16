@@ -46,7 +46,7 @@ import ise.plugin.svn.data.*;
 import ise.plugin.svn.*;
 import java.util.logging.*;
 import ise.plugin.svn.command.*;
-import ise.plugin.svn.library.swingworker.SwingWorker;
+import common.swingworker.SwingWorker;
 
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;

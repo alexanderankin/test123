@@ -34,7 +34,7 @@ import ise.plugin.svn.command.BrowseRepository;
 import ise.plugin.svn.data.CheckoutData;
 import ise.plugin.svn.gui.DirTreeNode;
 import ise.plugin.svn.io.ConsolePrintStream;
-import ise.plugin.svn.library.swingworker.*;
+import common.swingworker.*;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.io.*;

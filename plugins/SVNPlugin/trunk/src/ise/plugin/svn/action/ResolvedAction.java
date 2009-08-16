@@ -40,7 +40,7 @@ import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.Resolved;
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.data.AddResults;
-import ise.plugin.svn.library.swingworker.*;
+import common.swingworker.*;
 import ise.plugin.svn.gui.AddResultsPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 

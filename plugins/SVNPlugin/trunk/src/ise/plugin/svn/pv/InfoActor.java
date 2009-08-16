@@ -34,7 +34,7 @@ import java.util.*;
 import java.util.logging.*;
 import projectviewer.vpt.VPTNode;
 
-import ise.plugin.svn.library.swingworker.*;
+import common.swingworker.*;
 
 import ise.plugin.svn.action.InfoAction;
 
