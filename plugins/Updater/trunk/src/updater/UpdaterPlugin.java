@@ -23,7 +23,10 @@ public class UpdaterPlugin extends EditPlugin
 {
 	private static final String DOWNLOAD_PAGE_PROP = "updater.downloadPage";
 	private static final String DOWNLOAD_LINK_PATTERN_PROP = "updater.downloadLinkPattern";
+	private static final String VERSION_PAGE_PROP = "updater.versionPage";
+	private static final String VERSION_CHECK_PATTERN_PROP = "updater.versionCheckPattern";
 	private static final int BUFFER = 2048;
+	private static final int BAD_VERSION_STRING = -100;
 	static private UpdaterPlugin instance;
 	private File home;
 
@@ -79,32 +82,36 @@ public class UpdaterPlugin extends EditPlugin
 		}
 		return ret;
 	}
-
-	public String getDownloadLink()
+	private String extractPattern(String urlPathProp, final String patternProp)
 	{
-		class DownloadLinkExtractor implements UrlLineHandler
+		class PatternExtractor implements UrlLineHandler
 		{
-			private Pattern pattern;
-			String link;
-			public DownloadLinkExtractor()
-			{
-				pattern = Pattern.compile(jEdit.getProperty(
-					DOWNLOAD_LINK_PATTERN_PROP));
-				link = null;
-			}
+			private Pattern p = Pattern.compile(jEdit.getProperty(
+				patternProp));
+			String s = null;
 			public boolean process(String line)
 			{
-				Matcher m = pattern.matcher(line);
+				Matcher m = p.matcher(line);
 				if (! m.find())
 					return true;
-				link = m.group(1);
+				s = m.group(1);
 				return false;
 			}
 		}
-		DownloadLinkExtractor extractor = new DownloadLinkExtractor();
-		if (processUrl(jEdit.getProperty(DOWNLOAD_PAGE_PROP), extractor))
-			return extractor.link;
+		PatternExtractor extractor = new PatternExtractor();
+		if (processUrl(jEdit.getProperty(urlPathProp), extractor))
+			return extractor.s;
 		return null;
+	}
+
+	public String getDownloadLink()
+	{
+		return extractPattern(DOWNLOAD_PAGE_PROP, DOWNLOAD_LINK_PATTERN_PROP);
+	}
+
+	public String getLatestVersion()
+	{
+		return extractPattern(VERSION_PAGE_PROP, VERSION_CHECK_PATTERN_PROP);
 	}
 
 	public File downloadFile(String urlString)
@@ -156,8 +163,60 @@ public class UpdaterPlugin extends EditPlugin
 		return true;
 	}
 
+	private int compareVersions(String latest, String current)
+	{
+		String [] latestVer = latest.split("\\.");
+		String [] currentVer = current.split("\\.");
+		int numCommon = (latestVer.length < currentVer.length ?
+			latestVer.length : currentVer.length);
+		for (int i = 0; i < numCommon; i++)
+		{
+			int lat = 0, cur = 0;
+			// Make sure that the version string has the expected format
+			try
+			{
+				lat = Integer.parseInt(latestVer[i]);
+				cur = Integer.parseInt(currentVer[i]);
+			}
+			catch (Exception e)
+			{
+				return BAD_VERSION_STRING;
+			}
+			if (lat < cur)
+				return (-1);
+			if (lat > cur)
+				return 1;
+		}
+		if (latestVer.length < currentVer.length)
+			return (-1);
+		if (latestVer.length > currentVer.length)
+			return 1;
+		return 0;
+	}
+
 	public void updateVersion()
 	{
+		String currentVersion = jEdit.getBuild();
+		String latestVersion = getLatestVersion();
+		if (latestVersion == null)
+		{
+			JOptionPane.showMessageDialog(null, jEdit.getProperty(
+				"updater.msg.cannotFindLatestVersion"));
+			return;
+		}
+		int comparison = compareVersions(latestVersion, currentVersion);
+		if (comparison == BAD_VERSION_STRING)
+		{
+			JOptionPane.showMessageDialog(null, jEdit.getProperty(
+				"updater.msg.unknownVersionString"));
+			return;
+		}
+		if (comparison <= 0)
+		{
+			JOptionPane.showMessageDialog(null, jEdit.getProperty(
+				"updater.msg.noNewerVersion"));
+			return;
+		}
 		String link = getDownloadLink();
 		if (link == null)
 		{
