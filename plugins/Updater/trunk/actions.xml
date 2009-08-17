@@ -3,9 +3,14 @@
 
 <ACTIONS>
 
-	<ACTION NAME="updater-update" NO_REPEAT="TRUE">
+	<ACTION NAME="updater-update-release" NO_REPEAT="TRUE">
 		<CODE>
-			updater.UpdaterPlugin.getInstance().updateVersion();
+			updater.UpdaterPlugin.getInstance().updateReleaseVersion();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="updater-update-daily" NO_REPEAT="TRUE">
+		<CODE>
+			updater.UpdaterPlugin.getInstance().updateDailyVersion();
 		</CODE>
 	</ACTION>
 	
