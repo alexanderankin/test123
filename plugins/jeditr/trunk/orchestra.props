@@ -11,10 +11,10 @@ plugin.com.addictedtor.orchestra_installer.InstallerPlugin.depend.2=plugin conso
 plugin.com.addictedtor.orchestra_installer.InstallerPlugin.depend.3=plugin errorlist.ErrorListPlugin 1.7
 plugin.com.addictedtor.orchestra_installer.InstallerPlugin.depend.4=plugin sidekick.SideKickPlugin 0.7.5
 
-plugin.com.addictedtor.orchestra_installer.InstallerPlugin.jars=afcommons.jar,jhlir.jar,log4j-1.2.15.jar,commons-logging-1.1.1.jar
+plugin.com.addictedtor.orchestra_installer.InstallerPlugin.jars=afcommons.jar jhlir.jar log4j-1.2.15.jar commons-logging-1.1.1.jar
 
 # plugin option pane
-plugin.com.addictedtor.orchestra_installer.InstallerPlugin.option-pane=Orchestra Installer
+plugin.com.addictedtor.orchestra_installer.InstallerPlugin.option-pane=orchestra_installer
 
 # Option pane activation BeanShell snippet
 options.orchestra_installer.code=new com.addictedtor.orchestra_installer.OptionPane();
