@@ -29,6 +29,7 @@ import common.swingworker.*;
 public class ProjectTaskList extends JPanel implements EBComponent {
 
     private View view = null;
+    private JTree tree = null;
 
     public ProjectTaskList( View view ) {
         this.view = view;
@@ -42,35 +43,41 @@ public class ProjectTaskList extends JPanel implements EBComponent {
         EditBus.removeFromBus( this );
     }
 
+    // finds the tasks in all project files using a SwingWorker so as not to impact
+    // performance of the UI.
     private void loadProjectFiles( final VPTProject project ) {
 
-        class Runner extends SwingWorker<DefaultMutableTreeNode, Object> {
+        class Runner extends SwingWorker<TreeModel, Object> {
 
             @Override
-            public DefaultMutableTreeNode doInBackground() {
+            public TreeModel doInBackground() {
                 try {
                     SwingUtilities.invokeLater(
                         new Runnable() {
                             public void run() {
                                 setCursor( Cursor.getPredefinedCursor( Cursor.WAIT_CURSOR ) );
                                 removeAll();
-                                add( new JLabel( jEdit.getProperty("tasklist.projectfiles.wait", "Please wait, loading project tasks..." ) ) );
+                                add( new JLabel( jEdit.getProperty( "tasklist.projectfiles.wait", "Please wait, loading project tasks..." ) ) );
                                 repaint();
                             }
                         }
                     );
-                    return buildTree( project );
+                    return buildTreeModel( project );
                 }
                 catch ( Exception e ) {
+                    e.printStackTrace();
                     return null;
                 }
             }
 
             @Override
             protected void done() {
-                final DefaultMutableTreeNode root;
+                final TreeModel model;
                 try {
-                    root = ( DefaultMutableTreeNode ) get();
+                    model = ( TreeModel ) get();
+                    if ( model == null ) {
+                        return ;
+                    }
                 }
                 catch ( Exception e ) {
                     setCursor( Cursor.getPredefinedCursor( Cursor.DEFAULT_CURSOR ) );
@@ -81,8 +88,8 @@ public class ProjectTaskList extends JPanel implements EBComponent {
                         public void run() {
                             // build the display
                             removeAll();
-                            if ( root.getChildCount() > 0 ) {
-                                JTree tree = new JTree( root );
+                            if ( model.getChildCount( model.getRoot() ) > 0 ) {
+                                tree = new JTree( model );
                                 for ( int i = tree.getRowCount(); i > 0; i-- ) {
                                     tree.expandRow( i );
                                 }
@@ -91,7 +98,7 @@ public class ProjectTaskList extends JPanel implements EBComponent {
                                 add( new JScrollPane( tree ) );
                             }
                             else {
-                                add( new JLabel( jEdit.getProperty("tasklist.no-tasks-found", "No tasks found." ) ) );
+                                add( new JLabel( jEdit.getProperty( "tasklist.no-tasks-found", "No tasks found." ) ) );
                             }
                             repaint();
                             setCursor( Cursor.getPredefinedCursor( Cursor.DEFAULT_CURSOR ) );
@@ -107,14 +114,9 @@ public class ProjectTaskList extends JPanel implements EBComponent {
         }
     }
 
-
-    private DefaultMutableTreeNode buildTree( VPTProject project ) {
-        // get the openable nodes of the project
+    protected List<String> getBuffersToScan( VPTProject project ) {
+        List<String> toScan = new ArrayList<String>();
         Collection nodes = project.getOpenableNodes();
-
-        DefaultMutableTreeNode root = new DefaultMutableTreeNode( jEdit.getProperty("tasklist.projectfiles.project", "Project:") + " " + project.getName() );
-
-        // check each openable node for tasks
         for ( Iterator it = nodes.iterator(); it.hasNext(); ) {
             VPTNode node = ( VPTNode ) it.next();
 
@@ -125,95 +127,27 @@ public class ProjectTaskList extends JPanel implements EBComponent {
                 if ( file_node.getFile() == null ) {
                     continue;
                 }
-                File file = new File( file_node.getFile().getPath() );
+
+                String path = file_node.getFile().getPath();
 
                 // added this check for binary files just to speed things up.
                 // Initially, I'm just checking filename extension for standard
                 // image filename extensions, plus .class and .jar files.  There
                 // could be others.
-                if ( isBinary( file ) ) {
+                if ( isBinary( path ) ) {
                     continue;
                 }
-
-                // the buffer could already be open in jEdit.  If so, don't
-                // close it below.
-                Buffer buffer = jEdit.getBuffer( file.getAbsolutePath() );
-                boolean can_close = false;
-                if ( buffer == null ) {
-                    // file is not open, so open it.  Note that the mode must be
-                    // set explicitly since openTemporary won't actually set the mode
-                    // and TaskList will fail if the mode is missing.  openTemporary
-                    // is preferred over openFile since openTemporary won't send EditBus
-                    // messages nor is the buffer added to the buffer list.
-                    buffer = jEdit.openTemporary( jEdit.getActiveView(), file.getParent(), file.getName(), false );
-                    Mode mode = findMode( file );
-                    if ( mode == null ) {
-                        continue;
-                    }
-                    buffer.setMode( mode );
-
-                    // files open this way can be closed when TaskList parsing is complete.
-                    can_close = true;
-                }
-                try {
-                    // pass the buffer to TaskList for parsing, add tree nodes for each buffer
-                    // and child nodes for each task found.  Use "parseBuffer" rather than
-                    // "extractTasks" since extractTasks just calls parseBuffer in a swing
-                    // thread, and I'm already in a swing thread.  Also, parseBuffer will
-                    // only parse buffers of the modes allowed by the TaskList mode configuration.
-                    HashMap<Integer, Task> tasks = TaskListPlugin.requestTasksForBuffer( buffer );
-                    if ( tasks == null || tasks.isEmpty() ) {
-                        TaskListPlugin.parseBuffer( buffer );
-                        tasks = TaskListPlugin.requestTasksForBuffer( buffer );
-                    }
-
-                    if ( tasks != null && tasks.size() > 0 ) {
-                        // tasks were found for this buffer, so create the tree node for the buffer itself,
-                        // then add tree nodes for the individual tasks.
-                        // TODO: TaskList has some display options that need to be supported here
-                        DefaultMutableTreeNode buffer_node = new DefaultMutableTreeNode( buffer.toString() );
-                        root.add( buffer_node );
-
-                        // the "tasks" hashtable has the line number as the key, so putting
-                        // "tasks" into a TreeMap sorts by line number
-                        // TODO: TaskList has other sort options than line number, those need to be
-                        // supported here.
-                        TreeMap<Integer, Task> sorted_tasks = new TreeMap<Integer, Task>( tasks );
-
-
-                        for ( Iterator tli = sorted_tasks.values().iterator(); tli.hasNext(); ) {
-                            Task task = ( Task ) tli.next();
-                            DefaultMutableTreeNode task_node = new DefaultMutableTreeNode( task );
-                            buffer_node.add( task_node );
-                        }
-                    }
-                }
-                catch ( Exception e ) {     // NOPMD
-                    // ignore any exception, there really isn't anything to do about
-                    // it.  The most likely cause is the buffer didn't get loaded by
-                    // jEdit before TaskList tried to parse it.
-                }
-
-                // TODO: I sent email to the dev list asking about the proper way to
-                // close a temporary buffer. For now all I'm doing to close the buffer
-                // if it wasn't already open is set it to null.  If can_close is true,
-                // then the buffer was opened with openTemporary, so just set it to null
-                // and let the garbage collector handle it.  Calling any of the jEdit
-                // 'close buffer' methods with a temporary buffer confuses the internal
-                // jEdit buffer lists, which causes lots of problems, plus the 'close
-                // buffer' methods all send EditBus messages, which I want to avoid.
-                if ( can_close ) {
-                    buffer = null;
-                }
+                System.out.println("+++++ will scan: " + path);
+                toScan.add( path );
             }
         }
-        return root;
+        return toScan;
     }
 
     // Helper method to determine binary files.
     String[] exts = new String[] {".jpg", ".gif", ".png", ".ico", ".bmp", ".class", ".jar", ".war"};
-    boolean isBinary( File file ) {
-        String filename = file.getName().toLowerCase();
+    boolean isBinary( String file ) {
+        String filename = file.toLowerCase();
         for ( String ext : exts ) {
             if ( filename.endsWith( ext ) ) {
                 return true;
@@ -222,11 +156,107 @@ public class ProjectTaskList extends JPanel implements EBComponent {
         return false;
     }
 
+    protected TreeModel buildTreeModel( VPTProject project ) {
+
+        DefaultMutableTreeNode root = new DefaultMutableTreeNode( jEdit.getProperty("tasklist.projectfiles.project", "Project:") + " " + project.getName() );
+        SortableTreeModel model = new SortableTreeModel( root, new TreeNodeStringComparator() );
+
+        List<String> toScan = getBuffersToScan( project );
+        for ( String path : toScan ) {
+            File file = new File( path );
+
+            // the buffer could already be open in jEdit.  If so, don't
+            // close it below.
+            Buffer buffer = jEdit.getBuffer( file.getAbsolutePath() );
+            boolean can_close = false;
+            if ( buffer == null ) {
+                // file is not open, so open it.  Note that the mode must be
+                // set explicitly since openTemporary won't actually set the mode
+                // and TaskList will fail if the mode is missing.  openTemporary
+                // is preferred over openFile since openTemporary won't send EditBus
+                // messages nor is the buffer added to the buffer list.
+                buffer = jEdit.openTemporary( jEdit.getActiveView(), file.getParent(), file.getName(), false );
+                Mode mode = findMode( file );
+                if ( mode == null ) {
+                    continue;
+                }
+                buffer.setMode( mode );
+
+                // files open this way can be closed when TaskList parsing is complete.
+                can_close = true;
+            }
+            try {
+                while(buffer.isLoading()) {
+                    Thread.currentThread().sleep(5);                    
+                }
+            }
+            catch(Exception e) {
+                e.printStackTrace();
+            }
+            DefaultMutableTreeNode buffer_node = getNodeForBuffer( buffer );
+            if ( buffer_node == null ) {
+                continue;
+            }
+            model.insertNodeInto( buffer_node, root );
+            // TODO: I sent email to the dev list asking about the proper way to
+            // close a temporary buffer. For now all I'm doing to close the buffer
+            // if it wasn't already open is set it to null.  If can_close is true,
+            // then the buffer was opened with openTemporary, so just set it to null
+            // and let the garbage collector handle it.  Calling any of the jEdit
+            // 'close buffer' methods with a temporary buffer confuses the internal
+            // jEdit buffer lists, which causes lots of problems, plus the 'close
+            // buffer' methods all send EditBus messages, which I want to avoid.
+            if ( can_close ) {
+                buffer = null;
+            }
+        }
+
+        return model;
+    }
+
+    private DefaultMutableTreeNode getNodeForBuffer( Buffer buffer ) {
+        DefaultMutableTreeNode buffer_node = null;
+        try {
+            // pass the buffer to TaskList for parsing, add tree nodes for each buffer
+            // and child nodes for each task found.  Use "parseBuffer" rather than
+            // "extractTasks" since extractTasks just calls parseBuffer in a swing
+            // thread, and I'm already in a swing thread.  Also, parseBuffer will
+            // only parse buffers of the modes allowed by the TaskList mode configuration.
+            TaskListPlugin.parseBuffer( buffer );
+            HashMap<Integer, Task> tasks = TaskListPlugin.requestTasksForBuffer( buffer );
+
+            if ( tasks != null && tasks.size() > 0 ) {
+                // tasks were found for this buffer, so create the tree node for the buffer itself,
+                // then add tree nodes for the individual tasks.
+                // TODO: TaskList has some display options that need to be supported here
+                buffer_node = new DefaultMutableTreeNode( buffer.toString() );
+
+                // the "tasks" hashtable has the line number as the key, so putting
+                // "tasks" into a TreeMap sorts by line number
+                // TODO: TaskList has other sort options than line number, those need to be
+                // supported here.
+                TreeMap<Integer, Task> sorted_tasks = new TreeMap<Integer, Task>( tasks );
+                for ( Iterator tli = sorted_tasks.values().iterator(); tli.hasNext(); ) {
+                    Task task = ( Task ) tli.next();
+                    DefaultMutableTreeNode task_node = new DefaultMutableTreeNode( task );
+                    buffer_node.add( task_node );
+                }
+            }
+        }
+        catch ( Exception e ) {     // NOPMD
+            // ignore any exception, there really isn't anything to do about
+            // it.  The most likely cause is the buffer didn't get loaded by
+            // jEdit before TaskList tried to parse it.
+            e.printStackTrace();
+        }
+        return buffer_node;
+    }
+
     // Helper method to find the mode for the given file.
     // TODO: is mode really necessary?  TaskList needs mode set, but is just
     // using "text" good enough? -- yes it is.  TaskListPlugin will only parse
     // buffers with modes as selected by the user in the plugin options.
-    Mode findMode( File file ) {
+    private Mode findMode( File file ) {
         return jEdit.getMode( "text" );
         /*
         try {
@@ -256,6 +286,53 @@ public class ProjectTaskList extends JPanel implements EBComponent {
                 }
             }
         }
+        else if ( msg instanceof BufferUpdate ) {
+            BufferUpdate bu = ( BufferUpdate ) msg;
 
+            // only handle messages for our view
+            if ( !view.equals( bu.getView() ) ) {
+                return ;
+            }
+            
+            if ( BufferUpdate.SAVED.equals( bu.getWhat() ) || ParseBufferMessage.DO_PARSE.equals( bu.getWhat() ) ) {
+                Buffer buffer = bu.getBuffer();
+                removeBuffer( buffer );
+                addBuffer( buffer );
+                repaint();
+            }
+            else if ( ParseBufferMessage.DO_PARSE_ALL.equals( bu.getWhat() ) ) {
+                loadProjectFiles( ProjectViewer.getActiveProject( view ) );
+            }
+        }
+    }
+
+    private void addBuffer( Buffer buffer ) {
+        DefaultMutableTreeNode buffer_node = getNodeForBuffer( buffer );
+        if ( buffer_node == null ) {
+            return ;
+        }
+        SortableTreeModel model = ( SortableTreeModel ) tree.getModel();
+        model.insertNodeInto( buffer_node, ( DefaultMutableTreeNode ) model.getRoot() );
+        model.nodeStructureChanged( ( DefaultMutableTreeNode ) model.getRoot() );
+        for ( int i = tree.getRowCount(); i > 0; i-- ) {
+            tree.expandRow( i );
+        }
+    }
+
+    //
+    private void removeBuffer( Buffer buffer ) {
+        SortableTreeModel model = ( SortableTreeModel ) tree.getModel();
+        for ( int i = 0; i < model.getChildCount( model.getRoot() ); i++ ) {
+            DefaultMutableTreeNode node = ( DefaultMutableTreeNode ) model.getChild( model.getRoot(), i );
+            String buffer_name = ( String ) node.getUserObject();
+            if ( buffer_name.equals( buffer.toString() ) ) {
+                model.removeNodeFromParent( node );
+                model.nodeStructureChanged( ( DefaultMutableTreeNode ) model.getRoot() );
+                for ( int j = tree.getRowCount(); j > 0; j-- ) {
+                    tree.expandRow( j );
+                }
+                break;
+            }
+        }
     }
 }
