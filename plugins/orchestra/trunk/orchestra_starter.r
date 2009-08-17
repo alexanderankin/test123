@@ -22,6 +22,8 @@
 # along with the orchestra jedit plugin. If not, see <http://www.gnu.org/licenses/>.
 # }}}
 
+
+
 # {{{ read the property file
 # the directory that contains that script
 args <- commandArgs( ) 
@@ -36,6 +38,12 @@ if( any( grepl( "@", rl ) ) ){
 }
 source( propfile )
 # }}}
+
+
+# {{{ write log to plugin home
+sink(file=file.path(PLUGIN_HOME, "orchestra_starter.log"), split=TRUE)
+# }}}
+
 
 # {{{ environment variables
 SEP <- .Platform$path.sep
@@ -63,8 +71,7 @@ orchestra.installed <- function( libpath ){
 }
 if( !any( sapply( .libPaths(), orchestra.installed ) ) ){
 	if( !orchestra.installed( JEDIT_RLIBS ) ){
-		cat( sprintf( 'the orchestra package is not installed, try installing it like this :  )
-R> install.packages( "orchestra", dependencies = TRUE, lib = "%s" )\n', JEDIT_RLIBS )
+		cat( sprintf( 'the orchestra package is not installed, try installing it like this :\nR> install.packages("orchestra", dependencies = TRUE, lib = "%s")\n', JEDIT_RLIBS))
 		stop()
 	}
 }
