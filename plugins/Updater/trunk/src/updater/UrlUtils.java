@@ -15,8 +15,6 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.gjt.sp.jedit.jEdit;
-
 public class UrlUtils
 {
 	interface UrlLineHandler
@@ -55,15 +53,14 @@ public class UrlUtils
 		return ret;
 	}
 
-	// Searches a text file fetched from property urlPathProp for the
-	// single occurrence of the pattern specified by property patternProp.
-	public static String extractSingleOccurrencePattern(String urlPathProp,
-		final String patternProp)
+	// Searches a text file fetched from urlPath for the single occurrence
+	// of pattern.
+	public static String extractSingleOccurrencePattern(String urlPath,
+		final String pattern)
 	{
 		class PatternExtractor implements UrlLineHandler
 		{
-			private Pattern p = Pattern.compile(jEdit.getProperty(
-				patternProp));
+			private Pattern p = Pattern.compile(pattern);
 			String s = null;
 			public boolean process(String line)
 			{
@@ -75,20 +72,19 @@ public class UrlUtils
 			}
 		}
 		PatternExtractor extractor = new PatternExtractor();
-		if (processUrl(jEdit.getProperty(urlPathProp), extractor))
+		if (processUrl(urlPath, extractor))
 			return extractor.s;
 		return null;
 	}
 
-	// Searches a text file fetched from property urlPathProp for the
-	// multiple occurrence pattern specified by property patternProp.
-	public static Vector<String> extractMultiOccurrencePattern(String urlPathProp,
-		final String patternProp)
+	// Searches a text file fetched from urlPath for the multiple occurrence
+	// pattern specified by pattern.
+	public static Vector<String> extractMultiOccurrencePattern(String urlPath,
+		final String pattern)
 	{
 		class PatternExtractor implements UrlLineHandler
 		{
-			private Pattern p = Pattern.compile(jEdit.getProperty(
-				patternProp));
+			private Pattern p = Pattern.compile(pattern);
 			Vector<String> lines = new Vector<String>();
 			public boolean process(String line)
 			{
@@ -99,7 +95,7 @@ public class UrlUtils
 			}
 		}
 		PatternExtractor extractor = new PatternExtractor();
-		if (processUrl(jEdit.getProperty(urlPathProp), extractor))
+		if (processUrl(urlPath, extractor))
 			return extractor.lines;
 		return null;
 	}
