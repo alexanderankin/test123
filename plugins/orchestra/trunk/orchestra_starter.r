@@ -63,8 +63,9 @@ orchestra.installed <- function( libpath ){
 }
 if( !any( sapply( .libPaths(), orchestra.installed ) ) ){
 	if( !orchestra.installed( JEDIT_RLIBS ) ){
-		cat( "installing the orchestra R package, this is done only once\n" )
-		install.packages( "orchestra", dependencies = TRUE, lib = JEDIT_RLIBS )
+		cat( sprintf( 'the orchestra package is not installed, try installing it like this :  )
+R> install.packages( "orchestra", dependencies = TRUE, lib = "%s" )\n', JEDIT_RLIBS )
+		stop()
 	}
 }
 # }}}
