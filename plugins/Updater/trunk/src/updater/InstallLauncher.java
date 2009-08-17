@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Properties;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -15,22 +16,40 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
-public class InstallLauncher {
-
+public class InstallLauncher
+{
+	// Commands provided via standard input
 	public static final String LAUNCH_INSTALLER_NOW = "Launch Installer Now";
+	public static final String END_EXECUTION = "Exit Now";
 	public static final String PROGRESS_INDICATOR = "*** Progress: ";
 	private static JTextArea text;
+	private static JButton ok;
 	private static int pos;
+	private static Properties props;
 
 	public static void main(String [] args)
 	{
+		props = new Properties();
+		try
+		{
+			InputStream in = InstallLauncher.class.getResourceAsStream(
+				"/Updater.props");
+			props.load(in);
+			in.close();
+		}
+		catch(IOException io)
+		{
+			System.err.println("Error reading 'Updater.props':");
+			io.printStackTrace();
+		}
+		
 		final JDialog dialog = new JDialog((JDialog)null, false);
-		dialog.setTitle("Updating jEdit");
+		dialog.setTitle(props.getProperty("updater.msg.updateDialogTitle"));
 		dialog.setLayout(new BorderLayout());
 		text = new JTextArea(8, 80);
 		dialog.add(new JScrollPane(text), BorderLayout.CENTER);
 		JPanel buttonPanel = new JPanel();
-		JButton ok = new JButton("Ok");
+		ok = new JButton(props.getProperty("updater.msg.updateDialogCloseButton"));
 		buttonPanel.add(ok);
 		dialog.add(buttonPanel, BorderLayout.SOUTH);
 		ok.addActionListener(new ActionListener() {
@@ -51,6 +70,11 @@ public class InstallLauncher {
 		{
 			while ((line = readLine(in)) != null)
 			{
+				if (line.equals(END_EXECUTION))
+				{
+					ok.setEnabled(true);
+					return;
+				}
 				if (line.startsWith(PROGRESS_INDICATOR))
 					appendProgress(line.substring(PROGRESS_INDICATOR.length()));
 				else if (line.equals(LAUNCH_INSTALLER_NOW))
@@ -72,7 +96,7 @@ public class InstallLauncher {
 		catch (IOException e1)
 		{
 		}
-		appendText("Please wait while the update is being installed...\n");
+		appendText(props.getProperty("updater.msg.waitForInstall"));
 		String [] installerArgs = new String[] { "java", "-jar",
 			installerFile, "auto", installDir };
 		try {
@@ -82,7 +106,7 @@ public class InstallLauncher {
 			StreamConsumer esc = new StreamConsumer(p.getErrorStream());
 			esc.start();
 			p.waitFor();
-			text.append("Installation completed. You can now start jEdit.");
+			text.append(props.getProperty("updater.msg.installationComplete"));
 			ok.setEnabled(true);
 		}
 		catch (Exception e)
@@ -108,14 +132,15 @@ public class InstallLauncher {
 		{
 			return null;
 		}
-		return sb.toString();
+		return (i == -1) ? null : sb.toString();
 	}
 
 	private static boolean checkNullInput(String line)
 	{
 		if (line != null)
 			return false;
-		appendText("Encountered an unknown problem - aborting update.\n");
+		appendText("\n" + props.getProperty("updater.msg.updateErrorAbort"));
+		ok.setEnabled(true);
 		return true;
 	}
 
@@ -155,7 +180,7 @@ public class InstallLauncher {
 					new InputStreamReader(is));
 				String line;
 				while ((line = br.readLine()) != null)
-					text.append(line + "\n");
+					appendText(line + "\n");
 			} catch (IOException ioe) {
 				ioe.printStackTrace();  
 			}

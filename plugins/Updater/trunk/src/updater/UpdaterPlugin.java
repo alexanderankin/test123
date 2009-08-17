@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.jEdit;
@@ -41,8 +40,9 @@ public class UpdaterPlugin extends EditPlugin
 
 	private boolean startBackgroundProcess()
 	{
-		String [] args = new String[] { "java", "-cp",
-			getPluginJAR().getFile().getAbsolutePath(),
+		String [] args = new String[] { "java",
+			//"-Xdebug", "-Xnoagent", "-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=y",
+			"-cp", getPluginJAR().getFile().getAbsolutePath(),
 			InstallLauncher.class.getCanonicalName() };
 		try {
 			backgroundProcess = Runtime.getRuntime().exec(args);
@@ -51,6 +51,12 @@ public class UpdaterPlugin extends EditPlugin
 			return false;
 		}
 		return true;
+	}
+
+	private void endExecution(String s)
+	{
+		appendText(s);
+		appendText(InstallLauncher.END_EXECUTION);
 	}
 
 	private boolean appendText(String s)
@@ -115,26 +121,26 @@ public class UpdaterPlugin extends EditPlugin
 				String latestVersion = source.getLatestVersion();
 				if (latestVersion == null)
 				{
-					appendText(jEdit.getProperty("updater.msg.cannotFindLatestVersion"));
+					endExecution(jEdit.getProperty("updater.msg.cannotFindLatestVersion"));
 					return;
 				}
 				int comparison = source.compareVersions(latestVersion,
 					installedVersion);
 				if (comparison == BAD_VERSION_STRING)
 				{
-					appendText(jEdit.getProperty("updater.msg.unknownVersionString"));
+					endExecution(jEdit.getProperty("updater.msg.unknownVersionString"));
 					return;
 				}
 				if (comparison <= 0)
 				{
-					appendText(jEdit.getProperty("updater.msg.noNewerVersion"));
+					endExecution(jEdit.getProperty("updater.msg.noNewerVersion"));
 					return;
 				}
 				appendText(jEdit.getProperty("updater.msg.fetchingDownloadPage"));
 				String link = source.getDownloadLink();
 				if (link == null)
 				{
-					appendText(jEdit.getProperty("updater.msg.downloadLinkNotFound"));
+					endExecution(jEdit.getProperty("updater.msg.downloadLinkNotFound"));
 					return;
 				}
 				appendText(jEdit.getProperty("updater.msg.downloadingNewVersion"));
@@ -165,13 +171,13 @@ public class UpdaterPlugin extends EditPlugin
 				appendText("");	// Newline after "bytes read" message
 				if (installerFile == null)
 				{
-					appendText(jEdit.getProperty("updater.msg.downloadFailed"));
+					endExecution(jEdit.getProperty("updater.msg.downloadFailed"));
 					return;
 				}
 				appendText(jEdit.getProperty("updater.msg.runningInstaller"));
 				if (! runInstaller(installerFile))
 				{
-					appendText(jEdit.getProperty("updater.msg.installerFailed"));
+					endExecution(jEdit.getProperty("updater.msg.installerFailed"));
 					return;
 				}
 				appendText(jEdit.getProperty("updater.msg.installing"));
