@@ -11,28 +11,23 @@ import java.io.InputStreamReader;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 
 public class InstallLauncher {
 
+	public static final String LAUNCH_INSTALLER_NOW = "Launch Installer Now";
+	public static final String PROGRESS_INDICATOR = "*** Progress: ";
 	private static JTextArea text;
+	private static int pos;
 
 	public static void main(String [] args)
 	{
-		if (args.length < 2)
-		{
-			JOptionPane.showMessageDialog(null,
-				"Incorrect command-line for InstallLauncher. Usage:\n" +
-				"\tjava -jar InstallLauncher.jar <installer-file> <jEdit installation directory>");
-			return;
-		}
 		final JDialog dialog = new JDialog((JDialog)null, false);
 		dialog.setTitle("Updating jEdit");
 		dialog.setLayout(new BorderLayout());
 		text = new JTextArea(8, 80);
 		dialog.add(text, BorderLayout.CENTER);
-		text.append("Please wait while an update is being installed...\n");
 		JButton ok = new JButton("Ok");
 		dialog.add(ok, BorderLayout.SOUTH);
 		ok.addActionListener(new ActionListener() {
@@ -45,8 +40,37 @@ public class InstallLauncher {
 		dialog.pack();
 		dialog.setVisible(true);
 
-		String installerFile = args[0];
-		String installDir = args[1];
+		// Show messages from jEdit until told to launch installer
+		String line;
+		InputStreamReader in = new InputStreamReader(System.in);
+		String installerFile = null;
+		String installDir = null;
+		try
+		{
+			while ((line = readLine(in)) != null)
+			{
+				if (line.startsWith(PROGRESS_INDICATOR))
+					appendProgress(line.substring(PROGRESS_INDICATOR.length()));
+				else if (line.equals(LAUNCH_INSTALLER_NOW))
+					break;
+				else
+					appendText(line);
+			}
+			if (checkNullInput(line))
+				return;
+			// Now get the installer file and the install directory
+			installerFile = readLine(in);
+			if (checkNullInput(installerFile))
+				return;
+			installDir = readLine(in);
+			if (checkNullInput(installDir))
+				return;
+			in.close();
+		}
+		catch (IOException e1)
+		{
+		}
+		appendText("Please wait while the update is being installed...\n");
 		String [] installerArgs = new String[] { "java", "-jar",
 			installerFile, "auto", installDir };
 		try {
@@ -64,6 +88,58 @@ public class InstallLauncher {
 			e.printStackTrace();
 		}
 	}
+
+	private static String readLine(InputStreamReader in)
+	{
+		StringBuilder sb = new StringBuilder();
+		int i;
+		try
+		{
+			while ((i = in.read()) != -1)
+			{
+				if (i == '\n')
+					break;
+				sb.append((char) i);
+			}
+		}
+		catch (IOException e)
+		{
+			return null;
+		}
+		return sb.toString();
+	}
+
+	private static boolean checkNullInput(String line)
+	{
+		if (line != null)
+			return false;
+		appendText("Encountered an unknown problem - aborting update.\n");
+		return true;
+	}
+
+	private static void appendProgress(final String s)
+	{
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run()
+			{
+				text.replaceRange(s, pos, text.getText().length());
+			}
+		});
+	}
+
+	private static void appendText(final String s)
+	{
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run()
+			{
+				text.append(s);
+				if (! s.endsWith("\n"))
+					text.append("\n");
+				pos = text.getCaretPosition();
+			}
+		});
+	}
+
 	private static class StreamConsumer extends Thread
 	{
 		private InputStream is;
