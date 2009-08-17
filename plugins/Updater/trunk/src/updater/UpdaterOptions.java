@@ -19,12 +19,11 @@
  */
 package updater;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
+import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
@@ -35,11 +34,12 @@ import org.gjt.sp.jedit.jEdit;
 @SuppressWarnings("serial")
 public class UpdaterOptions extends AbstractOptionPane
 {
+	private static final String UPDATE_SOURCE_CLASS_PROP = "updater.values.updateSourceClassName";
 	private static final String UPDATE_ON_STARTUP_PROP = "updater.values.updateOnStartup";
-	private static final String UPDATE_EVERY_PROP = "updater.values.updateEvery";
 	private static final String UPDATE_PERIOD_PROP = "updater.values.updatePeriod";
+	private JRadioButton releaseUpdateSource;
+	private JRadioButton dailyBuildUpdateSource;
 	private JCheckBox updateOnStartup;
-	private JCheckBox updateEvery;
 	private JSpinner updatePeriod;
 
 	public UpdaterOptions()
@@ -50,49 +50,62 @@ public class UpdaterOptions extends AbstractOptionPane
 	@Override
 	protected void _init()
 	{
+		JPanel updateSourcePanel = new JPanel();
+		ButtonGroup updateSourceGroup = new ButtonGroup();
+		releaseUpdateSource = new JRadioButton(jEdit.getProperty(
+			"updater.options.releaseUpdateSource"));
+		updateSourcePanel.add(releaseUpdateSource);
+		updateSourceGroup.add(releaseUpdateSource);
+		dailyBuildUpdateSource = new JRadioButton(jEdit.getProperty(
+			"updater.options.dailyBuildUpdateSource"));
+		updateSourcePanel.add(dailyBuildUpdateSource);
+		updateSourceGroup.add(dailyBuildUpdateSource);
+		addComponent(updateSourcePanel);
+		String updateSourceClass = getUpdateSourceClassName();
+		if (DailyBuildUpdateSource.class.getCanonicalName().equals(updateSourceClass))
+			dailyBuildUpdateSource.setSelected(true);
+		else
+			releaseUpdateSource.setSelected(true);
+
 		updateOnStartup = new JCheckBox(jEdit.getProperty(
 			"updater.options.updateOnStartup"), isUpdateOnStartup());
 		addComponent(updateOnStartup);
 		JPanel updateEveryPanel = new JPanel();
-		updateEvery = new JCheckBox(jEdit.getProperty(
-			"updater.options.updateEvery"), (getUpdateEvery() != 0));
-		updateEveryPanel.add(updateEvery);
-		SpinnerModel model = new SpinnerNumberModel(getUpdatePeriod(), 1, 30, 1);
+		updateEveryPanel.add(new JLabel(jEdit.getProperty(
+			"updater.options.updateEvery")));
+		SpinnerModel model = new SpinnerNumberModel(getUpdatePeriod(), 0, 30, 1);
 		updatePeriod = new JSpinner(model);
 		updateEveryPanel.add(updatePeriod);
 		updateEveryPanel.add(new JLabel(jEdit.getProperty("updater.options.updatePeriod")));
 		addComponent(updateEveryPanel);
-		updateEvery.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e)
-			{
-				updatePeriod.setEnabled(updateEvery.isSelected());
-			}
-		});
 	}
 
 	@Override
 	protected void _save()
 	{
+		jEdit.setProperty(UPDATE_SOURCE_CLASS_PROP,
+			(dailyBuildUpdateSource.isSelected() ?
+				DailyBuildUpdateSource.class.getCanonicalName() :
+				ReleasedUpdateSource.class.getCanonicalName()));
 		jEdit.setBooleanProperty(UPDATE_ON_STARTUP_PROP,
 			updateOnStartup.isSelected());
-		jEdit.setBooleanProperty(UPDATE_EVERY_PROP,
-			updateEvery.isSelected());
 		jEdit.setIntegerProperty(UPDATE_PERIOD_PROP,
 			Integer.valueOf(updatePeriod.getValue().toString()));
 	}
 
-	public boolean isUpdateOnStartup()
+	public static boolean isUpdateOnStartup()
 	{
 		return jEdit.getBooleanProperty(UPDATE_ON_STARTUP_PROP, false);
 	}
 
-	public int getUpdateEvery()
-	{
-		return jEdit.getIntegerProperty(UPDATE_EVERY_PROP, 0);
-	}
-
-	public int getUpdatePeriod()
+	public static int getUpdatePeriod()
 	{
 		return jEdit.getIntegerProperty(UPDATE_PERIOD_PROP, 0);
+	}
+
+	public static String getUpdateSourceClassName()
+	{
+		return jEdit.getProperty(UPDATE_SOURCE_CLASS_PROP,
+			ReleasedUpdateSource.class.getCanonicalName());
 	}
 }

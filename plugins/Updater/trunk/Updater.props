@@ -1,4 +1,4 @@
-plugin.updater.UpdaterPlugin.activate=defer
+plugin.updater.UpdaterPlugin.activate=startup
 
 # general plugin information
 plugin.updater.UpdaterPlugin.name=Updater
@@ -20,6 +20,9 @@ plugin.updater.UpdaterPlugin.menu=updater-update-release updater-update-daily
 plugin.updater.UpdaterPlugin.option-pane=updater
 options.updater.label=Updater
 options.updater.code=new updater.UpdaterOptions();
+updater.options.defaultUpdateSource=Default version to update to:
+updater.options.releaseUpdateSource=Latest (released) development version
+updater.options.dailyBuildUpdateSource=Latest daily build version
 updater.options.updateOnStartup=Check for updates on startup
 updater.options.updateEvery=Check for updates every:
 updater.options.updatePeriod=days
