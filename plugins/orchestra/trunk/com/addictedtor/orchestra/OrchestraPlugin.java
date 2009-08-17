@@ -1,10 +1,5 @@
 package com.addictedtor.orchestra ;
 
-import java.io.File;
-
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
@@ -12,7 +7,9 @@ import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.options.PluginOptions;
+
+import javax.swing.*;
+import java.io.File;
 
 /**
  * Main class of the orchestra installer plugin
@@ -70,11 +67,11 @@ public class OrchestraPlugin extends EBPlugin {
         rootLogger.info("log goes to: " + log.getAbsolutePath());
         
         // show the option dialog
-        SwingUtilities.invokeLater(new Runnable() {
-        	public void run() {
-        		new PluginOptions( jEdit.getActiveView() , "orchestra" ) ;
-        	}
-        } ); 
+//        SwingUtilities.invokeLater(new Runnable() {
+//        	public void run() {
+//        		new PluginOptions( jEdit.getActiveView() , "orchestra" ) ;
+//        	}
+//        } );
     }
 
     /**

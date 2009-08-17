@@ -14,6 +14,8 @@
     <property name="jar_jhlir" value="${lib.dir}/jhlir.jar"/>
     <property name="jar_log4j" value="${lib.dir}/log4j-1.2.15.jar"/>
     <property name="jar_commons_logging" value="${lib.dir}/commons-logging-1.1.1.jar"/>
+    <property name="jar_swing_worker" value="${lib.dir}/swing-worker-1.1.jar"/>
+    <property name="jar_jgoodies_form_layout" value="${lib.dir}/forms-1.2.0.jar"/>
 
     <import file="${build.support}/plugin-build.xml"/>
 
@@ -32,15 +34,19 @@
         <pathelement location="${jar_jhlir}"/>
         <pathelement location="${jar_log4j}"/>
         <pathelement location="${jar_commons_logging}"/>
+        <pathelement location="${jar_swing_worker}"/>
+        <pathelement location="${jar_jgoodies_form_layout}"/>
     </path>
 
     <target name="build.prepare" depends="clean">
         <mkdir dir="${build.dir}"/>
         
-        <copy file="${jar_afcommons}"       todir="${install.dir}" />
-        <copy file="${jar_jhlir}"           todir="${install.dir}" />
-        <copy file="${jar_log4j}"           todir="${install.dir}" />
-        <copy file="${jar_commons_logging}" todir="${install.dir}" />
+        <copy file="${jar_afcommons}"               todir="${install.dir}" />
+        <copy file="${jar_jhlir}"                   todir="${install.dir}" />
+        <copy file="${jar_log4j}"                   todir="${install.dir}" />
+        <copy file="${jar_commons_logging}"         todir="${install.dir}" />
+        <copy file="${jar_swing_worker}"            todir="${install.dir}" />
+        <copy file="${jar_jgoodies_form_layout}"    todir="${install.dir}" />
     </target>
 
     <!-- just to make eclipse happy, so that we can
@@ -56,6 +62,8 @@
         <pathelement location="${jar_jhlir}"/>
         <pathelement location="${jar_log4j}"/>
         <pathelement location="${jar_commons_logging}"/>
+        <pathelement location="${jar_swing_worker}"/>
+        <pathelement location="${jar_jgoodies_form_layout}"/>
     </path>
 
     <target name="unused">

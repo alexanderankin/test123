@@ -1,5 +1,6 @@
 package com.addictedtor.orchestra ;
 
+import org.af.commons.threading.ProgressDialog;
 import org.af.jhlir.tools.DirectoryGuesser;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -116,19 +117,15 @@ public class OrchestraOptionPane extends AbstractOptionPane implements ActionLis
         if (err != null) {
             JOptionPane.showMessageDialog(this, err);
         } else {
-            try {
-            	
-            	Installer i = new Installer(
-                        jEdit.getJEditHome(),
-                        OrchestraPlugin.getPluginHomePath(), 
-                        rhome,
-                        shortcut
-                );
-                i.install();
-            } catch (Exception e) {
-                // todo handle
-                e.printStackTrace();
-            }
+            Installer i = new Installer(
+                    jEdit.getJEditHome(),
+                    OrchestraPlugin.getPluginHomePath(),
+                    rhome,
+                    shortcut
+            );
+            ProgressDialog<Void, String> pd = new ProgressDialog<Void, String>(jEdit.getActiveView(), "Orchestra Installation", i, true, null);
+            pd.setSize(600,500);
+            pd.execute();
         }
         logger.info("Saving options done.");
         
