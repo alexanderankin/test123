@@ -18,7 +18,9 @@ public class ReleasedUpdateSource implements UpdateSource
 
 	public String getDownloadLink()
 	{
-		return UrlUtils.extractSingleOccurrencePattern(DOWNLOAD_PAGE_PROP, DOWNLOAD_LINK_PATTERN_PROP);
+		return UrlUtils.extractSingleOccurrencePattern(
+			jEdit.getProperty(DOWNLOAD_PAGE_PROP),
+			jEdit.getProperty(DOWNLOAD_LINK_PATTERN_PROP));
 	}
 
 	public String getInstalledVersion()
@@ -28,7 +30,9 @@ public class ReleasedUpdateSource implements UpdateSource
 
 	public String getLatestVersion()
 	{
-		return UrlUtils.extractSingleOccurrencePattern(VERSION_PAGE_PROP, VERSION_CHECK_PATTERN_PROP);
+		return UrlUtils.extractSingleOccurrencePattern(
+			jEdit.getProperty(VERSION_PAGE_PROP),
+			jEdit.getProperty(VERSION_CHECK_PATTERN_PROP));
 	}
 
 }
