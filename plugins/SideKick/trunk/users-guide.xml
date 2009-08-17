@@ -357,7 +357,20 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
 
  <itemizedlist>
 
-<listitem> <para>
+<listitem> 
+ <para>
+ <emphasis role="bold">Version 0.8</emphasis> requires JDK 1.5, jEdit 4.3pre17 and ErrorListPlugin 1.4.
+ </para>
+ <itemizedlist>
+    <listitem>
+      <para>
+        Fixed issue where 'Select asset at caret' was not select the last character of the asset.
+      </para>
+    </listitem>
+ </itemizedlist>
+</listitem>
+
+<listitem><para>
  <emphasis role="bold">Version 0.7.7</emphasis> requires JDK 1.5, jEdit 4.3pre14 and ErrorListPlugin 1.4.</para>
  <itemizedlist>
     <listitem>
