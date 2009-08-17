@@ -37,6 +37,7 @@ public class UpdaterPlugin extends EditPlugin
 	private File home;
 	private Process backgroundProcess;
 	private OutputStreamWriter writer;
+	private boolean startupExecution;
 
 	@Override
 	public void start()
@@ -45,6 +46,9 @@ public class UpdaterPlugin extends EditPlugin
 		home = getPluginHome();
 		if ((home != null) && (! home.exists()))
 			home.mkdir();
+		startupExecution = true;
+		if (UpdaterOptions.isUpdateOnStartup())
+			updateFromDefaultSource();
 	}
 
 	@Override
@@ -56,6 +60,20 @@ public class UpdaterPlugin extends EditPlugin
 	static public UpdaterPlugin getInstance()
 	{
 		return instance;
+	}
+
+	private void updateFromDefaultSource()
+	{
+		try
+		{
+			UpdateSource source = (UpdateSource) Class.forName(
+				UpdaterOptions.getUpdateSourceClassName()).newInstance();
+			updateVersion(source);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	private boolean startBackgroundProcess()
@@ -157,9 +175,13 @@ public class UpdaterPlugin extends EditPlugin
 				}
 				if (comparison <= 0)
 				{
-					endExecution(jEdit.getProperty("updater.msg.noNewerVersion"));
+					if (startupExecution)
+						appendText(InstallLauncher.SILENT_SHUTDOWN);
+					else
+						endExecution(jEdit.getProperty("updater.msg.noNewerVersion"));
 					return;
 				}
+				startupExecution = false;
 				appendText(jEdit.getProperty("updater.msg.fetchingDownloadPage"));
 				String link = source.getDownloadLink();
 				if (link == null)

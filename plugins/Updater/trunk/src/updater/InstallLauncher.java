@@ -41,6 +41,7 @@ public class InstallLauncher
 	// Commands provided via standard input
 	public static final String LAUNCH_INSTALLER_NOW = "Launch Installer Now";
 	public static final String END_EXECUTION = "Exit Now";
+	public static final String SILENT_SHUTDOWN = "Shutdown Silently";
 	public static final String PROGRESS_INDICATOR = "*** Progress: ";
 	private static JTextArea text;
 	private static JButton ok;
@@ -90,6 +91,12 @@ public class InstallLauncher
 		{
 			while ((line = readLine(in)) != null)
 			{
+				if (line.equals(SILENT_SHUTDOWN))
+				{
+					dialog.setVisible(false);
+					dialog.dispose();
+					return;
+				}
 				if (line.equals(END_EXECUTION))
 				{
 					ok.setEnabled(true);
