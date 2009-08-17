@@ -9,7 +9,7 @@ public class DailyBuildUpdateSource implements UpdateSource
 	private static final String INSTALLED_BUILD_PROP = "updater.dailyBuildInstalledVersion";
 	private static String VERSION_PAGE_PROP = "updater.dailyBuildVersionPage";
 	private static final String VERSION_CHECK_PATTERN_PROP = "updater.dailyBuildVersionCheckPattern";
-	private static final String DOWNLOAD_LINK_PATTERN_PROP = "updater.dailyBuildDownloadLink";
+	private static final String DOWNLOAD_LINK_PATTERN_PROP = "updater.dailyBuildDownloadLinkPattern";
 
 	public int compareVersions(String latest, String installed)
 	{
