@@ -157,6 +157,8 @@ public class UpdaterPlugin extends EditPlugin
 		Thread updateThread = new Thread() {
 			@Override
 			public void run() {
+				boolean calledOnStartup = startupExecution;
+				startupExecution = false;
 				String installedVersion = source.getInstalledVersion();
 				String latestVersion = source.getLatestVersion();
 				if (latestVersion == null)
@@ -175,13 +177,12 @@ public class UpdaterPlugin extends EditPlugin
 				}
 				if (comparison <= 0)
 				{
-					if (startupExecution)
+					if (calledOnStartup)
 						appendText(InstallLauncher.SILENT_SHUTDOWN);
 					else
 						endExecution(jEdit.getProperty("updater.msg.noNewerVersion"));
 					return;
 				}
-				startupExecution = false;
 				appendText(jEdit.getProperty("updater.msg.fetchingDownloadPage"));
 				String link = source.getDownloadLink();
 				if (link == null)
