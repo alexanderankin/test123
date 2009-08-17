@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
@@ -27,7 +28,7 @@ public class InstallLauncher {
 		dialog.setTitle("Updating jEdit");
 		dialog.setLayout(new BorderLayout());
 		text = new JTextArea(8, 80);
-		dialog.add(text, BorderLayout.CENTER);
+		dialog.add(new JScrollPane(text), BorderLayout.CENTER);
 		JButton ok = new JButton("Ok");
 		dialog.add(ok, BorderLayout.SOUTH);
 		ok.addActionListener(new ActionListener() {
