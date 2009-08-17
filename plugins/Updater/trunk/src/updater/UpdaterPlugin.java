@@ -1,12 +1,8 @@
 package updater;
 
-import java.awt.BorderLayout;
 import java.io.File;
 import java.io.IOException;
-
-import javax.swing.JDialog;
-import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
+import java.io.OutputStreamWriter;
 
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.jEdit;
@@ -18,7 +14,8 @@ public class UpdaterPlugin extends EditPlugin
 	private static final int BAD_VERSION_STRING = -100;
 	static private UpdaterPlugin instance;
 	private File home;
-	private JTextArea text;
+	private Process backgroundProcess;
+	private OutputStreamWriter writer;
 
 	@Override
 	public void start()
@@ -40,32 +37,41 @@ public class UpdaterPlugin extends EditPlugin
 		return instance;
 	}
 
-	private boolean runInstaller(File installerFile)
+	private boolean startBackgroundProcess()
 	{
-		String installDir = jEdit.getJEditHome();
 		String [] args = new String[] { "java", "-cp",
 			getPluginJAR().getFile().getAbsolutePath(),
-			InstallLauncher.class.getCanonicalName(),
-			installerFile.getAbsolutePath(), installDir };
+			InstallLauncher.class.getCanonicalName() };
 		try {
-			Runtime.getRuntime().exec(args);
+			backgroundProcess = Runtime.getRuntime().exec(args);
+			writer = new OutputStreamWriter(backgroundProcess.getOutputStream());
 		} catch (IOException e) {
 			return false;
 		}
 		return true;
 	}
 
-	private void appendText(final String s)
+	private boolean appendText(String s)
 	{
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run()
-			{
-				text.append(s);
-				if (! s.endsWith("\n"))
-					text.append("\n");
-				
-			}
-		});
+		try
+		{
+			writer.write(s + "\n");
+			writer.flush();
+		}
+		catch (IOException e)
+		{
+			return false;
+		}
+		return true;
+	}
+
+	private boolean runInstaller(File installerFile)
+	{
+		String installDir = jEdit.getJEditHome();
+		appendText(InstallLauncher.LAUNCH_INSTALLER_NOW);
+		appendText(installerFile.getAbsolutePath());
+		appendText(installDir);
+		return true;
 	}
 
 	public static int compareNumericVersionArray(String[] v1, String[] v2)
@@ -99,15 +105,7 @@ public class UpdaterPlugin extends EditPlugin
 
 	public void updateVersion(final UpdateSource source)
 	{
-		JDialog dialog = new JDialog((JDialog)null, false);
-		dialog.setTitle(jEdit.getProperty("updater.msg.updateDialogTitle"));
-		dialog.setLayout(new BorderLayout());
-		text = new JTextArea(8, 80);
-		dialog.add(text, BorderLayout.CENTER);
-		appendText(jEdit.getProperty("updater.msg.findLatestVersion"));
-		dialog.pack();
-		dialog.setVisible(true);
-
+		startBackgroundProcess();
 		Thread updateThread = new Thread() {
 			@Override
 			public void run() {
@@ -138,18 +136,12 @@ public class UpdaterPlugin extends EditPlugin
 					return;
 				}
 				appendText(jEdit.getProperty("updater.msg.downloadingNewVersion"));
-				final int pos = text.getCaretPosition();
 				ProgressHandler progress = new ProgressHandler()
 				{
 					public void bytesRead(final int numBytes)
 					{
-						SwingUtilities.invokeLater(new Runnable() {
-							public void run()
-							{
-								text.replaceRange(String.valueOf(numBytes) +
-									" bytes read", pos, text.getText().length());
-							}
-						});
+						appendText(InstallLauncher.PROGRESS_INDICATOR +
+							String.valueOf(numBytes) + " bytes read");
 					}
 				};
 				String savePath = home.getAbsoluteFile() + File.separator +
