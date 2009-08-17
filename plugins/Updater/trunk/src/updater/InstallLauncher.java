@@ -1,7 +1,6 @@
 package updater;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -11,6 +10,7 @@ import java.io.InputStreamReader;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
@@ -29,15 +29,16 @@ public class InstallLauncher {
 		dialog.setLayout(new BorderLayout());
 		text = new JTextArea(8, 80);
 		dialog.add(new JScrollPane(text), BorderLayout.CENTER);
+		JPanel buttonPanel = new JPanel();
 		JButton ok = new JButton("Ok");
-		dialog.add(ok, BorderLayout.SOUTH);
+		buttonPanel.add(ok);
+		dialog.add(buttonPanel, BorderLayout.SOUTH);
 		ok.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				dialog.dispose();
 			}
 		});
 		ok.setEnabled(false);
-		ok.setPreferredSize(new Dimension(80, 20));
 		dialog.pack();
 		dialog.setVisible(true);
 
@@ -136,6 +137,7 @@ public class InstallLauncher {
 				text.append(s);
 				if (! s.endsWith("\n"))
 					text.append("\n");
+				text.setCaretPosition(text.getText().length());
 				pos = text.getCaretPosition();
 			}
 		});

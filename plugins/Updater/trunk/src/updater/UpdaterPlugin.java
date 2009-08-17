@@ -3,6 +3,8 @@ package updater;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.jEdit;
@@ -138,10 +140,23 @@ public class UpdaterPlugin extends EditPlugin
 				appendText(jEdit.getProperty("updater.msg.downloadingNewVersion"));
 				ProgressHandler progress = new ProgressHandler()
 				{
+					private String suffix = " bytes read";
+					public void setSize(int size)
+					{
+						if (size > 0)
+						{
+							DecimalFormat format = new DecimalFormat();
+							format.setGroupingSize(3);
+							suffix = " (out of " + format.format(size) +
+								")" + suffix;
+						}
+					}
 					public void bytesRead(final int numBytes)
 					{
+						DecimalFormat format = new DecimalFormat();
+						format.setGroupingSize(3);
 						appendText(InstallLauncher.PROGRESS_INDICATOR +
-							String.valueOf(numBytes) + " bytes read");
+							format.format(numBytes) + suffix);
 					}
 				};
 				String savePath = home.getAbsoluteFile() + File.separator +

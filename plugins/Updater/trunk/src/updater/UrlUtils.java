@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -102,6 +103,7 @@ public class UrlUtils
 
 	public interface ProgressHandler
 	{
+		void setSize(int size);
 		void bytesRead(int numBytes);
 	}
 
@@ -120,7 +122,9 @@ public class UrlUtils
 		try
 		{
 			url = new URL(urlString);
-			in = url.openStream();
+			URLConnection conn = url.openConnection();
+			progress.setSize(conn.getContentLength());
+			in = conn.getInputStream();
 			bin = new BufferedInputStream(in);
 			targetFile = new File(downloadTo);
 			out = new FileOutputStream(targetFile);
