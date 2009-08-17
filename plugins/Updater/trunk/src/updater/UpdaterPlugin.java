@@ -22,6 +22,8 @@ package updater;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.text.DecimalFormat;
 
@@ -38,6 +40,7 @@ public class UpdaterPlugin extends EditPlugin
 	private Process backgroundProcess;
 	private OutputStreamWriter writer;
 	private boolean startupExecution;
+	private static boolean abort;
 
 	@Override
 	public void start()
@@ -85,6 +88,8 @@ public class UpdaterPlugin extends EditPlugin
 		try {
 			backgroundProcess = Runtime.getRuntime().exec(args);
 			writer = new OutputStreamWriter(backgroundProcess.getOutputStream());
+			StreamConsumer sc = new StreamConsumer(backgroundProcess.getInputStream());
+			sc.start();
 		} catch (IOException e) {
 			return false;
 		}
@@ -159,6 +164,8 @@ public class UpdaterPlugin extends EditPlugin
 			public void run() {
 				boolean calledOnStartup = startupExecution;
 				startupExecution = false;
+				if (executionAborted())
+					return;
 				String installedVersion = source.getInstalledVersion();
 				String latestVersion = source.getLatestVersion();
 				if (latestVersion == null)
@@ -166,6 +173,8 @@ public class UpdaterPlugin extends EditPlugin
 					endExecution(jEdit.getProperty("updater.msg.cannotFindLatestVersion"));
 					return;
 				}
+				if (executionAborted())
+					return;
 				appendText("Installed version: " + installedVersion);
 				appendText("Latest version: " + latestVersion);
 				int comparison = source.compareVersions(latestVersion,
@@ -190,6 +199,8 @@ public class UpdaterPlugin extends EditPlugin
 					endExecution(jEdit.getProperty("updater.msg.downloadLinkNotFound"));
 					return;
 				}
+				if (executionAborted())
+					return;
 				appendText(jEdit.getProperty("updater.msg.downloadingNewVersion") +
 					" " + link);
 				ProgressHandler progress = new ProgressHandler()
@@ -212,10 +223,16 @@ public class UpdaterPlugin extends EditPlugin
 						appendText(InstallLauncher.PROGRESS_INDICATOR +
 							format.format(numBytes) + suffix);
 					}
+					public boolean isAborted()
+					{
+						return executionAborted();
+					}
 				};
 				String savePath = home.getAbsoluteFile() + File.separator +
 					"jeditInstall.jar";
 				File installerFile = UrlUtils.downloadFile(link, savePath, progress); 
+				if (executionAborted())
+					return;
 				appendText("");	// Newline after "bytes read" message
 				if (installerFile == null)
 				{
@@ -224,6 +241,8 @@ public class UpdaterPlugin extends EditPlugin
 				}
 				source.setInstalledVersion(latestVersion);
 				appendText(jEdit.getProperty("updater.msg.runningInstaller"));
+				if (executionAborted())
+					return;
 				if (! runInstaller(installerFile))
 				{
 					source.setInstalledVersion(installedVersion);
@@ -236,6 +255,19 @@ public class UpdaterPlugin extends EditPlugin
 		updateThread.start();
 	}
 
+	public boolean executionAborted()
+	{
+		synchronized(this)
+		{
+			if (abort)
+			{
+				endExecution(jEdit.getProperty("updater.msg.executionAborted"));
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public void updateReleaseVersion()
 	{
 		updateVersion(new ReleasedUpdateSource());
@@ -244,5 +276,29 @@ public class UpdaterPlugin extends EditPlugin
 	public void updateDailyVersion()
 	{
 		updateVersion(new DailyBuildUpdateSource());
+	}
+
+	private static class StreamConsumer extends Thread
+	{
+		private InputStream is;
+		public StreamConsumer(InputStream is) {
+			this.is = is;
+		}
+		public void run() {
+			try {
+				InputStreamReader reader = new InputStreamReader(is);
+				while (reader.read() != -1)
+				{
+					synchronized(this)
+					{
+						abort = true;
+					}
+				}
+			}
+			catch (IOException ioe)
+			{
+				ioe.printStackTrace();  
+			}
+		}
 	}
 }

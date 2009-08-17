@@ -27,6 +27,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.Properties;
 
 import javax.swing.JButton;
@@ -45,6 +46,7 @@ public class InstallLauncher
 	public static final String PROGRESS_INDICATOR = "*** Progress: ";
 	private static JTextArea text;
 	private static JButton ok;
+	private static JButton cancel;
 	private static int pos;
 	private static Properties props;
 
@@ -72,6 +74,8 @@ public class InstallLauncher
 		JPanel buttonPanel = new JPanel();
 		ok = new JButton(props.getProperty("updater.msg.updateDialogCloseButton"));
 		buttonPanel.add(ok);
+		cancel = new JButton(props.getProperty("updater.msg.updateDialogCancelButton"));
+		buttonPanel.add(cancel);
 		dialog.add(buttonPanel, BorderLayout.SOUTH);
 		ok.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -79,6 +83,36 @@ public class InstallLauncher
 			}
 		});
 		ok.setEnabled(false);
+		cancel.addActionListener(new ActionListener() {
+			private OutputStreamWriter bout;
+			public void actionPerformed(ActionEvent e)
+			{
+				bout = null;
+				try
+				{
+					bout = new OutputStreamWriter(System.out);
+					bout.write("Aborted\n");
+					bout.flush();
+					appendText("\n" + props.getProperty("updater.msg.abortingUpdate"));
+				}
+				catch (IOException e1)
+				{
+					e1.printStackTrace();
+					bout = null;
+				}
+				finally
+				{
+					try
+					{
+						if (bout != null)
+							bout.close();
+						}
+						catch (IOException e1)
+						{
+						}
+				}
+			}
+		});
 		dialog.pack();
 		dialog.setVisible(true);
 
@@ -123,6 +157,7 @@ public class InstallLauncher
 		catch (IOException e1)
 		{
 		}
+		cancel.setEnabled(false);
 		appendText(props.getProperty("updater.msg.waitForInstall"));
 		String [] installerArgs = new String[] { "java", "-jar",
 			installerFile, "auto", installDir };

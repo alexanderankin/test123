@@ -125,6 +125,7 @@ public class UrlUtils
 	{
 		void setSize(int size);
 		void bytesRead(int numBytes);
+		boolean isAborted();
 	}
 
 	// Downloads the file in urlString to path downloadTo, updating the
@@ -160,6 +161,8 @@ public class UrlUtils
 				long time1 = System.currentTimeMillis();
 				if (time1 - time >= 1000)
 				{
+					if (progress.isAborted())
+						return null;
 					time = time1;
 					progress.bytesRead(totalBytes);
 				}
