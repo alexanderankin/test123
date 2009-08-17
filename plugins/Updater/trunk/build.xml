@@ -19,10 +19,8 @@
 	<property name="docs-proc.target"  value="xsltproc"/>
 
 	<property name="src.dir" value="."/>
-	<property name="jedit.src.dir" value="${src.dir}/../jEdit" />
 	<property name="install.dir"  value=".."/>
 	<property name="build.dir" value="build"/>
-	<property name="installer" value="${jedit.src.dir}/installer"/>
 
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
@@ -32,7 +30,7 @@
 	<target name="prepare" >
 	 	<mkdir dir="${build.dir}" />
 	</target>
-	
+
 	<target name="compile" depends="prepare">
 		<javac
 			srcdir="${src.dir}"
