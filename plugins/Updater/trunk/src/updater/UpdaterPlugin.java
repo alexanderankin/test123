@@ -96,6 +96,8 @@ public class UpdaterPlugin extends EditPlugin
 	private boolean runInstaller(File installerFile)
 	{
 		String installDir = jEdit.getJEditHome();
+		appendText("Installer: " + installerFile.getAbsolutePath());
+		appendText("Install location: " + installDir);
 		appendText(InstallLauncher.LAUNCH_INSTALLER_NOW);
 		appendText(installerFile.getAbsolutePath());
 		appendText(installDir);
@@ -144,6 +146,8 @@ public class UpdaterPlugin extends EditPlugin
 					endExecution(jEdit.getProperty("updater.msg.cannotFindLatestVersion"));
 					return;
 				}
+				appendText("Installed version: " + installedVersion);
+				appendText("Latest version: " + latestVersion);
 				int comparison = source.compareVersions(latestVersion,
 					installedVersion);
 				if (comparison == BAD_VERSION_STRING)
@@ -163,7 +167,8 @@ public class UpdaterPlugin extends EditPlugin
 					endExecution(jEdit.getProperty("updater.msg.downloadLinkNotFound"));
 					return;
 				}
-				appendText(jEdit.getProperty("updater.msg.downloadingNewVersion"));
+				appendText(jEdit.getProperty("updater.msg.downloadingNewVersion") +
+					" " + link);
 				ProgressHandler progress = new ProgressHandler()
 				{
 					private String suffix = " bytes read";
