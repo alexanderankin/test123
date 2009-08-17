@@ -39,8 +39,8 @@ public class DailyBuildUpdateSource implements UpdateSource
 			return 1;
 		if (latest.length() == 0)
 			return BAD_VERSION_STRING;
-		String [] latestVer = latest.split("[\\-_])");
-		String [] installedVer = latest.split("[\\-_])");
+		String [] latestVer = latest.split("\\D+");
+		String [] installedVer = latest.split("\\D+");
 		return UpdaterPlugin.compareNumericVersionArray(latestVer, installedVer);
 	}
 
@@ -61,6 +61,11 @@ public class DailyBuildUpdateSource implements UpdateSource
 	public String getInstalledVersion()
 	{
 		return jEdit.getProperty(INSTALLED_BUILD_PROP, "");
+	}
+
+	public void setInstalledVersion(String version)
+	{
+		jEdit.setProperty(INSTALLED_BUILD_PROP, version);
 	}
 
 	public String getLatestVersion()

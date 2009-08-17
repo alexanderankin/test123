@@ -194,9 +194,11 @@ public class UpdaterPlugin extends EditPlugin
 					endExecution(jEdit.getProperty("updater.msg.downloadFailed"));
 					return;
 				}
+				source.setInstalledVersion(latestVersion);
 				appendText(jEdit.getProperty("updater.msg.runningInstaller"));
 				if (! runInstaller(installerFile))
 				{
+					source.setInstalledVersion(installedVersion);
 					endExecution(jEdit.getProperty("updater.msg.installerFailed"));
 					return;
 				}
