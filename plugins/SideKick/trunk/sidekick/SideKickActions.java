@@ -186,7 +186,7 @@ public class SideKickActions
 			return;
 		}
 
-		int pos = asset.getEnd().getOffset();
+		int pos = asset.getEnd().getOffset() + 1;
 		if (pos > textArea.getBuffer().getLength())
 		{
 		    view.getToolkit().beep();
@@ -197,7 +197,7 @@ public class SideKickActions
 		textArea.addToSelection(
 			new Selection.Range(
 				asset.getStart().getOffset(),
-				asset.getEnd().getOffset()));
+				pos));
 	} //}}}
 
 	//{{{ narrowToAsset() method
