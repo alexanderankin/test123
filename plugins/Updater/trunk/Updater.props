@@ -1,4 +1,4 @@
-plugin.UpdaterPlugin.activate=defer
+plugin.updater.UpdaterPlugin.activate=defer
 
 # general plugin information
 plugin.updater.UpdaterPlugin.name=Updater
