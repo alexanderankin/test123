@@ -24,6 +24,9 @@ updater.downloadPage=http://jedit.org/index.php?page=download
 updater.downloadLinkPattern=.*<a href=\"([^\"]+)\">Java-based installer.*
 updater.versionPage=http://www.jedit.org/jEdit-version.txt
 updater.versionCheckPattern=^\\.build\\s+(.*)$
+updater.dailyBuildVersionPage=http://www.tellurianring.com/projects/jedit-daily/index.php?dir=jEdit%2F
+updater.dailyBuildVersionCheckPattern=<a href="/projects/jedit-daily/index.php\\?dir=jEdit%2F(\\d+\\d+\\d+\\d+-\\d\\d-\\d\\d_\\d+\\d+-\\d+\\d+-\\d+\\d+)%2F"
+updater.dailyBuildDownloadLinkPattern=<a href="/projects/jedit-daily/index.php\\?dir=jEdit%2F(\\d+\\d+\\d+\\d+-\\d\\d-\\d\\d_\\d+\\d+-\\d+\\d+-\\d+\\d+%2F)"
 
 # messages
 updater.msg.downloadLinkNotFound=Cannot find download link on download page.

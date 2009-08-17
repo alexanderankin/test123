@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.net.URL;
+import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -55,8 +56,8 @@ public class UrlUtils
 	}
 
 	// Searches a text file fetched from property urlPathProp for the
-	// pattern specified by property patternProp.
-	public static String extractPattern(String urlPathProp,
+	// single occurrence of the pattern specified by property patternProp.
+	public static String extractSingleOccurrencePattern(String urlPathProp,
 		final String patternProp)
 	{
 		class PatternExtractor implements UrlLineHandler
@@ -76,6 +77,30 @@ public class UrlUtils
 		PatternExtractor extractor = new PatternExtractor();
 		if (processUrl(jEdit.getProperty(urlPathProp), extractor))
 			return extractor.s;
+		return null;
+	}
+
+	// Searches a text file fetched from property urlPathProp for the
+	// multiple occurrence pattern specified by property patternProp.
+	public static Vector<String> extractMultiOccurrencePattern(String urlPathProp,
+		final String patternProp)
+	{
+		class PatternExtractor implements UrlLineHandler
+		{
+			private Pattern p = Pattern.compile(jEdit.getProperty(
+				patternProp));
+			Vector<String> lines = new Vector<String>();
+			public boolean process(String line)
+			{
+				Matcher m = p.matcher(line);
+				if (m.find())
+					lines.add(m.group(1));
+				return true;
+			}
+		}
+		PatternExtractor extractor = new PatternExtractor();
+		if (processUrl(jEdit.getProperty(urlPathProp), extractor))
+			return extractor.lines;
 		return null;
 	}
 

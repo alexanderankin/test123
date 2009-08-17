@@ -68,6 +68,35 @@ public class UpdaterPlugin extends EditPlugin
 		});
 	}
 
+	public static int compareNumericVersionArray(String[] v1, String[] v2)
+	{
+		int numCommon = (v1.length < v2.length ?
+				v1.length : v2.length);
+		for (int i = 0; i < numCommon; i++)
+		{
+			int lat = 0, cur = 0;
+			// Make sure that the version string has the expected format
+			try
+			{
+				lat = Integer.parseInt(v1[i]);
+				cur = Integer.parseInt(v2[i]);
+			}
+			catch (Exception e)
+			{
+				return BAD_VERSION_STRING;
+			}
+			if (lat < cur)
+				return (-1);
+			if (lat > cur)
+				return 1;
+		}
+		if (v1.length < v2.length)
+			return (-1);
+		if (v1.length > v2.length)
+			return 1;
+		return 0;
+	}
+
 	public void updateVersion(final UpdateSource source)
 	{
 		JDialog dialog = new JDialog((JDialog)null, false);
@@ -151,5 +180,6 @@ public class UpdaterPlugin extends EditPlugin
 
 	public void updateDailyVersion()
 	{
+		updateVersion(new DailyBuildUpdateSource());
 	}
 }

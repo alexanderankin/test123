@@ -11,41 +11,14 @@ public class ReleasedUpdateSource implements UpdateSource
 
 	public int compareVersions(String latest, String installed)
 	{
-		/*
 		String [] latestVer = latest.split("\\.");
 		String [] installedVer = installed.split("\\.");
-		int numCommon = (latestVer.length < installedVer.length ?
-			latestVer.length : installedVer.length);
-		for (int i = 0; i < numCommon; i++)
-		{
-			int lat = 0, cur = 0;
-			// Make sure that the version string has the expected format
-			try
-			{
-				lat = Integer.parseInt(latestVer[i]);
-				cur = Integer.parseInt(installedVer[i]);
-			}
-			catch (Exception e)
-			{
-				return BAD_VERSION_STRING;
-			}
-			if (lat < cur)
-				return (-1);
-			if (lat > cur)
-				return 1;
-		}
-		if (latestVer.length < installedVer.length)
-			return (-1);
-		if (latestVer.length > installedVer.length)
-			return 1;
-		return 0;
-		*/
-		return 1;
+		return UpdaterPlugin.compareNumericVersionArray(latestVer, installedVer);
 	}
 
 	public String getDownloadLink()
 	{
-		return UrlUtils.extractPattern(DOWNLOAD_PAGE_PROP, DOWNLOAD_LINK_PATTERN_PROP);
+		return UrlUtils.extractSingleOccurrencePattern(DOWNLOAD_PAGE_PROP, DOWNLOAD_LINK_PATTERN_PROP);
 	}
 
 	public String getInstalledVersion()
@@ -55,7 +28,7 @@ public class ReleasedUpdateSource implements UpdateSource
 
 	public String getLatestVersion()
 	{
-		return UrlUtils.extractPattern(VERSION_PAGE_PROP, VERSION_CHECK_PATTERN_PROP);
+		return UrlUtils.extractSingleOccurrencePattern(VERSION_PAGE_PROP, VERSION_CHECK_PATTERN_PROP);
 	}
 
 }
