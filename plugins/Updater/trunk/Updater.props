@@ -10,10 +10,11 @@ plugin.updater.UpdaterPlugin.depend.0=jdk 1.5
 plugin.updater.UpdaterPlugin.depend.1=jedit 04.03.17.00
 
 # action labels
-updater-update.label=Update jEdit
+updater-update-release.label=Update jEdit to latest released version
+updater-update-daily.label=Update jEdit to latest daily build
 
 # menu items
-plugin.updater.UpdaterPlugin.menu=updater-update
+plugin.updater.UpdaterPlugin.menu=updater-update-release updater-update-daily
 
 # docs
 plugin.updater.UpdaterPlugin.docs=index.html
