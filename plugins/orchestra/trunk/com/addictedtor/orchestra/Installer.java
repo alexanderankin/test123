@@ -5,6 +5,11 @@ import org.af.commons.install.Desktop;
 import org.af.commons.install.FreeDesktop;
 import org.af.commons.install.WindowsDesktop;
 import org.af.commons.io.FileTransfer;
+import org.af.commons.threading.SafeSwingWorker;
+import org.af.jhlir.packages.CantFindPackageException;
+import org.af.jhlir.packages.RPackage;
+import org.af.jhlir.tools.RCmdBatch;
+import org.af.jhlir.tools.RCmdBatchException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -19,26 +24,29 @@ import java.io.*;
  * @author Bernd Bischl <bernd_bischl@gmx.net>
  * @author Romain Francois <francoisromain@free.fr>
  */
-public class Installer {
+public class Installer extends SafeSwingWorker<Void, String> {
     protected static final Log logger = LogFactory.getLog(Installer.class);
 
     private File jeditHomeDir = null;
     private File pluginHomeDir = null;
+    private File rlibsDir = null;
     private File rHomeDir = null;
 		// private File rJavaDir = null;
 		// private String rLibPaths = null;
     private File shortcutDir = null;
+
     public static final String RSCRIPT_NAME = "orchestra_starter.r";
     public static final String PROPERTY_NAME = "orchestra_properties.txt";
-    
     public static final String ICON_NAME_WINDOWS = "orchestra_icon.ico";
     public static final String ICON_NAME_LINUX = "orchestra_icon.png";
+    public static final String R_LIBS_DIR_NAME = "library";
 
     public Installer(String jeditHomeDir, String pluginHomeDir,
                      String rHomeDir, String shortcutDir) {
         this.jeditHomeDir = new File(jeditHomeDir);
         this.pluginHomeDir = new File(pluginHomeDir);
         this.rHomeDir = new File(rHomeDir);
+        this.rlibsDir = new File(rHomeDir, R_LIBS_DIR_NAME);
         this.shortcutDir = new File(shortcutDir);
         logger.info("Installer was started with:");
         logger.info("JEDIT_HOME:" + this.jeditHomeDir.getAbsolutePath());
@@ -139,27 +147,64 @@ public class Installer {
         desktop.createDesktopEntry(shortcutDir, "Orchestra");
     }
 
-
-    public void install() throws IOException {
-
-        extractPropertyFile();
-        File scriptFile = extractRScript();
-        extractOrchestraIcons();
-
-        boolean createShortcut = true;
-        if (createShortcut) {
-            logger.info("Creating shortcut entry in " + shortcutDir.getAbsolutePath());
-            createShortcut(scriptFile);
-            logger.info("Shortcut done.");
-        }
-    }
-
-
     private String forwardSlashes(String s) {
         return s.replace("\\", "/");
     }
 
     private String forwardSlashes(File f) {
         return forwardSlashes(f.getAbsolutePath());
+    }
+
+    protected void onSuccess(Void result) {
+    }
+
+    @Override
+    protected void onFailure(Throwable t) {
+        publish(t.toString());
+        logger.debug("Failure in Installer!", t);
+    }
+
+    protected void installRPackage() throws RCmdBatchException, CantFindPackageException {
+        RCmdBatch rCmdBatch = new RCmdBatch(rHomeDir);
+        RPackage rp = rCmdBatch.getInstalledPackInfo("orchestra");
+        if (rp == null) {
+            String s = "Orchestra R package was not found, trying to install from CRAN.";
+            publish(s);
+            logger.info(s);
+            try {
+                rCmdBatch.installCranPackage("orchestra", rlibsDir);
+            } catch (CantFindPackageException e) {
+                s = "CRAN: Orchestra R package was not found, trying to install from R-Forge.";
+                publish(s);
+                logger.info(s);
+                rCmdBatch.installRForgePackage("orchestra", rlibsDir);
+            }
+        }
+    }
+
+    protected Void doInBackground() throws Exception {
+        publish("Checking orchestra R package...");
+        installRPackage();
+        setProgress(20);
+
+        extractPropertyFile();
+        publish("Start property file extracted.");
+        setProgress(40);
+        File scriptFile = extractRScript();
+        publish("Start script extracted.");
+        setProgress(60);
+        extractOrchestraIcons();
+        publish("Desktop icons extracted.");
+        setProgress(80);
+        boolean createShortcut = true;
+        if (createShortcut) {
+            logger.info("Creating shortcut entry in " + shortcutDir.getAbsolutePath());
+            createShortcut(scriptFile);
+            logger.info("Shortcut done.");
+            publish("Desktop link created.");
+        }
+        setProgress(100);
+        publish("Done.");
+        return null;
     }
 }
