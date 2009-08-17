@@ -110,9 +110,7 @@ public class OpenBuffersTaskList extends JPanel implements EBComponent {
         }
     }
 
-
-    private TreeModel buildTreeModel() {
-
+    protected List<Buffer> getBuffersToScan() {
         // fetch all open buffers
         List<Buffer> openBuffers = new ArrayList<Buffer>();
         EditPane[] editPanes = view.getEditPanes();
@@ -122,7 +120,13 @@ public class OpenBuffersTaskList extends JPanel implements EBComponent {
                 openBuffers.add( buffer );
             }
         }
-
+        return openBuffers;
+    }
+    
+    protected TreeModel buildTreeModel() {
+        
+        List<Buffer> openBuffers = getBuffersToScan();
+        
         DefaultMutableTreeNode root = new DefaultMutableTreeNode( jEdit.getProperty( "tasklist.openfiles.open-files", "Open Files:" ) );
         SortableTreeModel model = new SortableTreeModel( root, new TreeNodeStringComparator() );
 
@@ -201,6 +205,9 @@ public class OpenBuffersTaskList extends JPanel implements EBComponent {
                 removeBuffer( buffer );
                 addBuffer( buffer );
                 repaint();
+            }
+            else if ( ParseBufferMessage.DO_PARSE_ALL.equals( bu.getWhat() ) ) {
+                loadOpenFiles();
             }
         }
     }
