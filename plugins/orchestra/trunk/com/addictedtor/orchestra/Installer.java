@@ -1,20 +1,14 @@
 package com.addictedtor.orchestra;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
+import org.af.commons.OSTools;
+import org.af.commons.install.Desktop;
+import org.af.commons.install.FreeDesktop;
+import org.af.commons.install.WindowsDesktop;
+import org.af.commons.io.FileTransfer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import af.commons.OSTools;
-import af.commons.install.FreeDesktop;
-import af.commons.install.WindowsDesktop;
-import af.commons.io.FileTransfer;
+import java.io.*;
 
 /**
  * Installer.
@@ -53,25 +47,12 @@ public class Installer {
         logger.info("Shortcut dir:" + this.shortcutDir.getAbsolutePath());
     }
 
-    private File extractRScript() {
-        String s;
-        File scriptFile = new File(pluginHomeDir, RSCRIPT_NAME);
-        logger.info("Extracting R starter script to: " + scriptFile);
-        try {
-            InputStream is = this.getClass().getResourceAsStream("/" + RSCRIPT_NAME);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-            BufferedWriter writer = new BufferedWriter(new FileWriter(scriptFile));
-            while((s = reader.readLine()) != null) {
-                writer.write(s + "\n" ) ;
-            }
-            is.close();
-            writer.close(); 
-            
-        } catch( IOException ioe){
-        	logger.info( "IOException : " + ioe.getMessage() ) ;
-        }
-        logger.info("R starter script done.");
-        return scriptFile ;
+    private File extractRScript() throws IOException {
+        logger.info("Extracting R starter script to: " + pluginHomeDir);
+        File f = FileTransfer.copyResourceToLocalDir(this.getClass().getResource("/"+RSCRIPT_NAME),
+                RSCRIPT_NAME, pluginHomeDir);
+        logger.info("Extracting script done.");
+        return f;
     }
 
     private File extractPropertyFile() {
@@ -136,43 +117,44 @@ public class Installer {
         logger.info("Extracting icons done.");
     }
 
-    private void createShortcutWindows(String targetCmd, File iconFile) throws IOException{
-        WindowsDesktop d = new WindowsDesktop();
-        d.setExec(targetCmd);
-        d.setIconpath(iconFile.getAbsolutePath());
+    private void createShortcut(File script) throws IOException{
+        File rExe = new File(new File(rHomeDir, "bin"), "Rscript");
+        Desktop desktop;
+        File iconFile;
+        if (OSTools.isWindows()) {
+            desktop = new WindowsDesktop();
+            ((WindowsDesktop)desktop).setWorkingDir(pluginHomeDir.getAbsolutePath());
+            iconFile = new File(pluginHomeDir, ICON_NAME_WINDOWS);
+        } else {
+            desktop = new FreeDesktop();
+            iconFile = new File(pluginHomeDir, ICON_NAME_LINUX);
+        }
+        logger.info("Shortcut target is: " + rExe.getAbsolutePath());
+        desktop.setExec(rExe.getAbsolutePath());
+        desktop.addParameter("--vanilla");
+        desktop.addParameter("--default-packages=\"base\"");
+        desktop.addParameter("\"" + script.getAbsolutePath() + "\"");
         logger.info("Shortcut icon is: " + iconFile);
-        d.setWorkingDir(pluginHomeDir.getAbsolutePath());
-        d.createDesktopEntry(shortcutDir, "Orchestra");
+        desktop.setIconpath(iconFile.getAbsolutePath());
+        desktop.createDesktopEntry(shortcutDir, "Orchestra");
     }
 
-    private void createShortcutFreeDesktop(String targetCmd, File iconFile) throws IOException{
-        FreeDesktop d = new FreeDesktop();
-        d.setExec(targetCmd);
-        d.setIconpath(iconFile.getAbsolutePath());
-        logger.info("Shortcut icon is: " + iconFile);
-        d.createDesktopEntry(shortcutDir, "Orchestra");
-    }
 
-    public void install() throws IOException{
-    	extractPropertyFile() ;
+    public void install() throws IOException {
+
+        extractPropertyFile();
         File scriptFile = extractRScript();
         extractOrchestraIcons();
-        File rScriptExe = new File(new File(rHomeDir, "bin"), "Rscript");
-        
-        boolean createDesktop = true;
-        if (createDesktop) {
+
+        boolean createShortcut = true;
+        if (createShortcut) {
             logger.info("Creating shortcut entry in " + shortcutDir.getAbsolutePath());
-            String targetCmd = rScriptExe.getAbsolutePath() + " --vanilla --default-packages=\"base\" " + scriptFile.getAbsolutePath();
-            logger.info("Shortcut cmd is: " + targetCmd);
-            if (OSTools.isWindows()) {
-                createShortcutWindows(targetCmd, new File(pluginHomeDir, ICON_NAME_WINDOWS));
-            } else {
-                createShortcutFreeDesktop(targetCmd, new File(pluginHomeDir, ICON_NAME_LINUX));
-            }
+            createShortcut(scriptFile);
             logger.info("Shortcut done.");
         }
     }
-    
+
+
     private String forwardSlashes(String s) {
         return s.replace("\\", "/");
     }
@@ -180,6 +162,4 @@ public class Installer {
     private String forwardSlashes(File f) {
         return forwardSlashes(f.getAbsolutePath());
     }
-
-
 }
