@@ -48,6 +48,10 @@ public class ReleasedUpdateSource implements UpdateSource
 		return jEdit.getBuild();
 	}
 
+	public void setInstalledVersion(String version)
+	{
+	}
+
 	public String getLatestVersion()
 	{
 		return UrlUtils.extractSingleOccurrencePattern(

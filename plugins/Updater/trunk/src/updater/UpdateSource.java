@@ -27,6 +27,8 @@ public interface UpdateSource {
 	static final int BAD_VERSION_STRING = -100;
 	// Returns the installed version.
 	String getInstalledVersion();
+	// Sets the installed version (called during installation).
+	void setInstalledVersion(String version);
 	// Returns the latest version available for download.
 	String getLatestVersion();
 	/* Compares the latest available version with the installed version.
