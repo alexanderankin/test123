@@ -19,6 +19,8 @@
  */
 package updater;
 
+import java.io.File;
+
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -31,12 +33,17 @@ import javax.swing.SpinnerNumberModel;
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
 
+import common.gui.FileTextField;
+
 @SuppressWarnings("serial")
 public class UpdaterOptions extends AbstractOptionPane
 {
+	private static final String DEFAULT_LOG_FILE = "updaterPlugin.log";
+	private static final String UPDATE_LOG_FILE_PROP = "updater.values.updateLogFile";
 	private static final String UPDATE_SOURCE_CLASS_PROP = "updater.values.updateSourceClassName";
 	private static final String UPDATE_ON_STARTUP_PROP = "updater.values.updateOnStartup";
 	private static final String UPDATE_PERIOD_PROP = "updater.values.updatePeriod";
+	private FileTextField logFile;
 	private JRadioButton releaseUpdateSource;
 	private JRadioButton dailyBuildUpdateSource;
 	private JCheckBox updateOnStartup;
@@ -50,6 +57,9 @@ public class UpdaterOptions extends AbstractOptionPane
 	@Override
 	protected void _init()
 	{
+		logFile = new FileTextField(getUpdateLogFile(), false);
+		addComponent(jEdit.getProperty("updater.options.updateLogFile"),
+			logFile);
 		JPanel updateSourcePanel = new JPanel();
 		ButtonGroup updateSourceGroup = new ButtonGroup();
 		releaseUpdateSource = new JRadioButton(jEdit.getProperty(
@@ -83,6 +93,8 @@ public class UpdaterOptions extends AbstractOptionPane
 	@Override
 	protected void _save()
 	{
+		jEdit.setProperty(UPDATE_LOG_FILE_PROP,
+			logFile.getTextField().getText());
 		jEdit.setProperty(UPDATE_SOURCE_CLASS_PROP,
 			(dailyBuildUpdateSource.isSelected() ?
 				DailyBuildUpdateSource.class.getCanonicalName() :
@@ -107,5 +119,11 @@ public class UpdaterOptions extends AbstractOptionPane
 	{
 		return jEdit.getProperty(UPDATE_SOURCE_CLASS_PROP,
 			ReleasedUpdateSource.class.getCanonicalName());
+	}
+
+	public static String getUpdateLogFile()
+	{
+		return jEdit.getProperty(UPDATE_LOG_FILE_PROP,
+			jEdit.getSettingsDirectory() + File.separator + DEFAULT_LOG_FILE);
 	}
 }

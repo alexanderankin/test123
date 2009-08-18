@@ -24,10 +24,13 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Properties;
 
 import javax.swing.JButton;
@@ -44,14 +47,21 @@ public class InstallLauncher
 	public static final String END_EXECUTION = "Exit Now";
 	public static final String SILENT_SHUTDOWN = "Shutdown Silently";
 	public static final String PROGRESS_INDICATOR = "*** Progress: ";
+
+	public static final String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
+
 	private static JTextArea text;
 	private static JButton ok;
 	private static JButton cancel;
 	private static int pos;
 	private static Properties props;
+	private static FileWriter logWriter;
 
 	public static void main(String [] args)
 	{
+		String logFile = (args.length > 0) ? args[0] : null;
+		if (logFile != null)
+			startLogging(logFile);
 		props = new Properties();
 		try
 		{
@@ -83,36 +93,7 @@ public class InstallLauncher
 			}
 		});
 		ok.setEnabled(false);
-		cancel.addActionListener(new ActionListener() {
-			private OutputStreamWriter bout;
-			public void actionPerformed(ActionEvent e)
-			{
-				bout = null;
-				try
-				{
-					bout = new OutputStreamWriter(System.out);
-					bout.write("Aborted\n");
-					bout.flush();
-					appendText("\n" + props.getProperty("updater.msg.abortingUpdate"));
-				}
-				catch (IOException e1)
-				{
-					e1.printStackTrace();
-					bout = null;
-				}
-				finally
-				{
-					try
-					{
-						if (bout != null)
-							bout.close();
-						}
-						catch (IOException e1)
-						{
-						}
-				}
-			}
-		});
+		cancel.addActionListener(new CancelActionListener());
 		dialog.pack();
 		dialog.setVisible(true);
 
@@ -129,11 +110,13 @@ public class InstallLauncher
 				{
 					dialog.setVisible(false);
 					dialog.dispose();
+					endLogging();
 					return;
 				}
 				if (line.equals(END_EXECUTION))
 				{
 					ok.setEnabled(true);
+					endLogging();
 					return;
 				}
 				if (line.startsWith(PROGRESS_INDICATOR))
@@ -159,6 +142,14 @@ public class InstallLauncher
 		}
 		cancel.setEnabled(false);
 		appendText(props.getProperty("updater.msg.waitForInstall"));
+		runInstaller(installerFile, installDir);
+		text.append(props.getProperty("updater.msg.installationComplete"));
+		ok.setEnabled(true);
+		endLogging();
+	}
+
+	private static void runInstaller(String installerFile, String installDir)
+	{
 		String [] installerArgs = new String[] { "java", "-jar",
 			installerFile, "auto", installDir };
 		try {
@@ -168,13 +159,60 @@ public class InstallLauncher
 			StreamConsumer esc = new StreamConsumer(p.getErrorStream());
 			esc.start();
 			p.waitFor();
-			text.append(props.getProperty("updater.msg.installationComplete"));
-			ok.setEnabled(true);
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
+	}
+
+	private static void startLogging(String logFile)
+	{
+		try
+		{
+			logWriter = new FileWriter(logFile, true);
+			logWriter.write(">>> Started: " + now() + "\n");
+		}
+		catch (IOException e2)
+		{
+			logWriter = null;
+		}
+	}
+
+	private static void endLogging()
+	{
+		if (logWriter == null)
+			return;
+		try
+		{
+			logWriter.write("<<< Ended: " + now() + "\n");
+			logWriter.close();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private static void log(String s)
+	{
+		if (logWriter == null)
+			return;
+		try
+		{
+			logWriter.write("[" + now() + "] " + s);
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private static String now()
+	{
+		Calendar cal = Calendar.getInstance();
+		SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
+		return sdf.format(cal.getTime());
 	}
 
 	private static String readLine(InputStreamReader in)
@@ -218,16 +256,49 @@ public class InstallLauncher
 
 	private static void appendText(final String s)
 	{
+		final String sOut = s.endsWith("\n") ? s : s + "\n";
+		log(sOut);
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run()
 			{
-				text.append(s);
-				if (! s.endsWith("\n"))
-					text.append("\n");
+				text.append(sOut);
 				text.setCaretPosition(text.getText().length());
 				pos = text.getCaretPosition();
 			}
 		});
+	}
+
+	private static final class CancelActionListener implements ActionListener
+	{
+		private OutputStreamWriter bout;
+
+		public void actionPerformed(ActionEvent e)
+		{
+			bout = null;
+			try
+			{
+				bout = new OutputStreamWriter(System.out);
+				bout.write("Aborted\n");
+				bout.flush();
+				appendText("\n" + props.getProperty("updater.msg.abortingUpdate"));
+			}
+			catch (IOException e1)
+			{
+				e1.printStackTrace();
+				bout = null;
+			}
+			finally
+			{
+				try
+				{
+					if (bout != null)
+						bout.close();
+					}
+					catch (IOException e1)
+					{
+					}
+			}
+		}
 	}
 
 	private static class StreamConsumer extends Thread

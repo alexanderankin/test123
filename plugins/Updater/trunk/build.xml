@@ -21,10 +21,12 @@
 	<property name="src.dir" value="."/>
 	<property name="install.dir"  value=".."/>
 	<property name="build.dir" value="build"/>
+	<property name="plugin.dependencies" value="CommonControls"/>
 
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
 		<pathelement location="${src.dir}"/>
+		<pathelement location="${install.dir}/CommonControls.jar"/>
 	</path>
 
 	<target name="prepare" >
