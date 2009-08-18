@@ -27,12 +27,9 @@
 # User settings directory
 #jedit.user.home=${user.home}/.jedit
 
-
 # Top-level of the plugins source tree
 #plugins.srcdir=..
 
-# Where to place the built jar files
-#install.dir=..
 
 # Generic plugin build options
 
