@@ -21,6 +21,7 @@ package updater;
 
 import java.io.File;
 
+import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -63,6 +64,8 @@ public class UpdaterOptions extends AbstractOptionPane
 		addComponent(jEdit.getProperty("updater.options.updateLogFile"),
 			logFile);
 		JPanel updateSourcePanel = new JPanel();
+		updateSourcePanel.setBorder(BorderFactory.createTitledBorder(
+			jEdit.getProperty("updater.options.defaultUpdateSource")));
 		ButtonGroup updateSourceGroup = new ButtonGroup();
 		releaseUpdateSource = new JRadioButton(jEdit.getProperty(
 			"updater.options.releaseUpdateSource"));
