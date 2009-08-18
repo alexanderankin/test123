@@ -757,8 +757,11 @@ public final class ProjectViewer extends JPanel
 			if (treeRoot.isProject()) {
 				VPTProject p = (VPTProject) treeRoot;
 				if (p.tryLock()) {
-					closeProject(p, false);
-					p.unlock();
+					try {
+						closeProject(p, false);
+					} finally {
+						p.unlock();
+					}
 				} else {
 					setStatus(jEdit.getProperty("projectviewer.error.project_locked"));
 				}
