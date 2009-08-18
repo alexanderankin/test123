@@ -29,6 +29,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.text.DecimalFormat;
 
+import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
 import org.gjt.sp.jedit.EditPlugin;
@@ -48,6 +49,7 @@ public class UpdaterPlugin extends EditPlugin
 	private OutputStreamWriter writer;
 	private boolean startupExecution;
 	private static boolean abort;
+	private boolean updating;
 
 	@Override
 	public void start()
@@ -97,7 +99,7 @@ public class UpdaterPlugin extends EditPlugin
 		{
 			UpdateSource source = (UpdateSource) Class.forName(
 				UpdaterOptions.getUpdateSourceClassName()).newInstance();
-			updateVersion(source);
+			updateVersion(source, true);
 		}
 		catch (Exception e)
 		{
@@ -189,8 +191,24 @@ public class UpdaterPlugin extends EditPlugin
 		return 0;
 	}
 
-	public void updateVersion(final UpdateSource source)
+	// automatic: whether the update was invoked automatically (on startup or
+	// a periodic update).
+	public void updateVersion(final UpdateSource source, boolean automatic)
 	{
+		synchronized(this)
+		{
+			if (updating)
+			{
+				// If called by user action, show "update in progress" message
+				if (! automatic)
+				{
+					JOptionPane.showMessageDialog(jEdit.getActiveView(),
+						jEdit.getProperty("updater.msg.updateInProgress"));
+				}
+				return;
+			}
+			updating = true;
+		}
 		startBackgroundProcess();
 		Thread updateThread = new Thread() {
 			@Override
@@ -282,6 +300,10 @@ public class UpdaterPlugin extends EditPlugin
 					endExecution(jEdit.getProperty("updater.msg.installerFailed"));
 					return;
 				}
+				synchronized(this)
+				{
+					updating = false;
+				}
 				// No more output should be shown by this process. The rest
 				// will be shown by the install launcher.
 			}
@@ -305,12 +327,12 @@ public class UpdaterPlugin extends EditPlugin
 
 	public void updateReleaseVersion()
 	{
-		updateVersion(new ReleasedUpdateSource());
+		updateVersion(new ReleasedUpdateSource(), false);
 	}
 
 	public void updateDailyVersion()
 	{
-		updateVersion(new DailyBuildUpdateSource());
+		updateVersion(new DailyBuildUpdateSource(), false);
 	}
 
 	private static class StreamConsumer extends Thread

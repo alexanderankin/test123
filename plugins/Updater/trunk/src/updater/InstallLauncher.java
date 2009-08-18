@@ -36,7 +36,6 @@ import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -118,8 +117,16 @@ public class InstallLauncher
 		cancel.setEnabled(false);
 		appendText(props.getProperty("updater.msg.waitForInstall"));
 		runInstaller(params);
-		text.append(props.getProperty("updater.msg.installationComplete"));
+		text.append(props.getProperty("updater.msg.installerDone"));
 		ok.setEnabled(true);
+		OutputStreamWriter bout = new OutputStreamWriter(System.out);
+		try
+		{
+			bout.close();
+		}
+		catch (IOException e1)
+		{
+		}
 		endLogging();
 	}
 
