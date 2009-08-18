@@ -36,6 +36,7 @@ import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -45,6 +46,7 @@ public class InstallLauncher
 {
 	// Commands provided via standard input
 	public static final String LAUNCH_INSTALLER_NOW = "Launch Installer Now";
+	public static final String END_INSTALLER_PARAMS = "End Of sInstaller Parameters";
 	public static final String END_EXECUTION = "Exit Now";
 	public static final String SILENT_SHUTDOWN = "Shutdown Silently";
 	public static final String PROGRESS_INDICATOR = "*** Progress: ";
@@ -153,7 +155,11 @@ public class InstallLauncher
 			// Now get the installer parameters (installer file, install type,
 			// install dir).
 			while ((line = readLine(in)) != null)
+			{
+				if (line.equals(END_INSTALLER_PARAMS))
+					break;
 				params.add(line);
+			}
 			in.close();
 		}
 		catch (IOException e1)
