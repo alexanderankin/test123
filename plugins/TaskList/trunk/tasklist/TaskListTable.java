@@ -246,7 +246,10 @@ public class TaskListTable extends JPanel implements EBComponent {
                         public void run() {
                             Task task = ( Task ) getTaskListModel().elementAt( row );
                             EditPane[] editPanes = view.getEditPanes();
-                            Buffer buffer = task.getBuffer();
+                            Buffer buffer = jEdit.getBuffer(task.getBufferPath());
+                            if (buffer == null) {
+                                return;     // buffer not open   
+                            }
                             for ( EditPane editPane : editPanes ) {
                                 Buffer[] buffers = editPane.getBufferSet().getAllBuffers();
                                 for ( Buffer ep_buffer : buffers ) {

@@ -159,6 +159,7 @@ tasklist.openfiles.wait=Please wait, loading tasks from open files...
 tasklist.no-tasks-found=No tasks found.
 tasklist.projectfiles.wait=Please wait, loading project tasks...
 tasklist.projectfiles.project=Project:
+tasllist.projectfiles.noproject=No project is open.
 
 # Task List task types
 # ^(tasklist.tasktype.\d.\w+)=(.+)$ -> jEdit.setProperty("$1","$2");

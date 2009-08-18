@@ -128,7 +128,7 @@ public class TaskListModel extends AbstractTableModel implements EBComponent {
 		if ( task == null ) {
 			return ;
 		}
-		if ( buffer.equals( task.getBuffer() ) ) {
+		if ( buffer.getPath().equals( task.getBufferPath() ) ) {
 			tasks.add( task );
 			fireTableRowsInserted( tasks.size() - 1, tasks.size() - 1 );
 		}
@@ -139,7 +139,7 @@ public class TaskListModel extends AbstractTableModel implements EBComponent {
 		if ( task == null ) {
 			return ;
 		}
-		if ( buffer.equals( task.getBuffer() ) ) {
+		if ( buffer.getPath().equals( task.getBufferPath() ) ) {
 			int index = tasks.indexOf( task );
 			if ( index >= 0 ) {
 				tasks.remove( index );
@@ -276,8 +276,8 @@ public class TaskListModel extends AbstractTableModel implements EBComponent {
 				result = id1.compareTo( id2 );
 			}
 			else if ( sortType == BUFFER ) {
-				String b1 = task1.getBuffer().toString();
-				String b2 = task2.getBuffer().toString();
+				String b1 = task1.getBufferPath();
+				String b2 = task2.getBufferPath();
 				result = b1.compareTo( b2 );
 			}
 
