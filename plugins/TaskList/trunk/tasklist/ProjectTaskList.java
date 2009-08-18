@@ -46,6 +46,11 @@ public class ProjectTaskList extends JPanel implements EBComponent {
     // finds the tasks in all project files using a SwingWorker so as not to impact
     // performance of the UI.
     private void loadProjectFiles( final VPTProject project ) {
+        if ( project == null ) {
+            // it is possible there is no active project even if ProjectViewer is installed.
+            add(new JLabel(jEdit.getProperty("tasklist.projectfiles.noproject", "No project is open.")));
+            return ;
+        }
 
         class Runner extends SwingWorker<TreeModel, Object> {
 
@@ -137,7 +142,6 @@ public class ProjectTaskList extends JPanel implements EBComponent {
                 if ( isBinary( path ) ) {
                     continue;
                 }
-                System.out.println("+++++ will scan: " + path);
                 toScan.add( path );
             }
         }
@@ -158,7 +162,7 @@ public class ProjectTaskList extends JPanel implements EBComponent {
 
     protected TreeModel buildTreeModel( VPTProject project ) {
 
-        DefaultMutableTreeNode root = new DefaultMutableTreeNode( jEdit.getProperty("tasklist.projectfiles.project", "Project:") + " " + project.getName() );
+        DefaultMutableTreeNode root = new DefaultMutableTreeNode( jEdit.getProperty( "tasklist.projectfiles.project", "Project:" ) + " " + project.getName() );
         SortableTreeModel model = new SortableTreeModel( root, new TreeNodeStringComparator() );
 
         List<String> toScan = getBuffersToScan( project );
@@ -176,7 +180,7 @@ public class ProjectTaskList extends JPanel implements EBComponent {
                 // is preferred over openFile since openTemporary won't send EditBus
                 // messages nor is the buffer added to the buffer list.
                 buffer = jEdit.openTemporary( jEdit.getActiveView(), file.getParent(), file.getName(), false );
-                Mode mode = findMode( file );
+                Mode mode = TaskListPlugin.getMode( file.getAbsolutePath() );
                 if ( mode == null ) {
                     continue;
                 }
@@ -186,11 +190,11 @@ public class ProjectTaskList extends JPanel implements EBComponent {
                 can_close = true;
             }
             try {
-                while(buffer.isLoading()) {
-                    Thread.currentThread().sleep(5);                    
+                while ( buffer.isLoading() ) {
+                    Thread.currentThread().sleep( 5 );
                 }
             }
-            catch(Exception e) {
+            catch ( Exception e ) {
                 e.printStackTrace();
             }
             DefaultMutableTreeNode buffer_node = getNodeForBuffer( buffer );
@@ -252,30 +256,6 @@ public class ProjectTaskList extends JPanel implements EBComponent {
         return buffer_node;
     }
 
-    // Helper method to find the mode for the given file.
-    // TODO: is mode really necessary?  TaskList needs mode set, but is just
-    // using "text" good enough? -- yes it is.  TaskListPlugin will only parse
-    // buffers with modes as selected by the user in the plugin options.
-    private Mode findMode( File file ) {
-        return jEdit.getMode( "text" );
-        /*
-        try {
-            BufferedReader reader = new BufferedReader( new FileReader( file ) );
-            String firstLine = reader.readLine();
-            reader.close();
-            Mode[] modes = jEdit.getModes();
-            for ( Mode mode : modes ) {
-                if ( mode.accept( file.getAbsolutePath(), firstLine ) ) {
-                    return mode;
-                }
-            }
-    }
-        catch ( Exception e ) {}        // NOPMD
-
-        return null;
-        */
-    }
-
     public void handleMessage( EBMessage msg ) {
         if ( msg.getClass().getName().equals( "projectviewer.event.ViewerUpdate" ) ) {
             ViewerUpdate vu = ( ViewerUpdate ) msg;
@@ -293,14 +273,18 @@ public class ProjectTaskList extends JPanel implements EBComponent {
             if ( !view.equals( bu.getView() ) ) {
                 return ;
             }
-            
+
             if ( BufferUpdate.SAVED.equals( bu.getWhat() ) || ParseBufferMessage.DO_PARSE.equals( bu.getWhat() ) ) {
+                if ( tree == null ) {
+                    return ;     // can happen if tree model is still loading when message is recieved
+                }
                 Buffer buffer = bu.getBuffer();
                 removeBuffer( buffer );
                 addBuffer( buffer );
                 repaint();
             }
             else if ( ParseBufferMessage.DO_PARSE_ALL.equals( bu.getWhat() ) ) {
+                System.out.println( "+++++ do parse all" );
                 loadProjectFiles( ProjectViewer.getActiveProject( view ) );
             }
         }

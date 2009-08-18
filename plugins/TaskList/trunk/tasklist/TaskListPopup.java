@@ -27,6 +27,7 @@ package tasklist;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import javax.swing.table.*;
 import javax.swing.tree.*;
 import javax.swing.*;
@@ -208,23 +209,29 @@ public class TaskListPopup extends JPopupMenu {
                 return ;
             }
             String cmd = evt.getActionCommand();
+            Buffer buffer = jEdit.getBuffer(task.getBufferPath());
+            if (buffer == null) {
+                File f = new File(task.getBufferPath());
+                buffer = jEdit.openTemporary(view, f.getParent(), f.getName(), false);
+            }
+            
             if ( cmd.equals( "parse-buffer" ) ) {
-                EditBus.send( new ParseBufferMessage( view, task.getBuffer(), ParseBufferMessage.DO_PARSE ) );
+                EditBus.send( new ParseBufferMessage( view, buffer, ParseBufferMessage.DO_PARSE ) );
                 return ;
             }
             else if ( cmd.equals( "parse-all" ) ) {
-                EditBus.send( new ParseBufferMessage( view, task.getBuffer(), ParseBufferMessage.DO_PARSE_ALL ) );
+                EditBus.send( new ParseBufferMessage( view, buffer, ParseBufferMessage.DO_PARSE_ALL ) );
                 return ;
             }
             else if ( cmd.equals( "%Dtask" ) ) {
-                task.removeTask( view );
+                TaskListPlugin.removeTask( view, buffer, task );
             }
             else {
                 if ( cmd.equals( "%Dtag" ) ) {
-                    task.removeTag( view );
+                    TaskListPlugin.removeTag( view, buffer, task );
                 }
                 else {
-                    task.replaceTag( view, cmd );
+                    TaskListPlugin.replaceTag( view, buffer, task, cmd );
                 }
             }
             view = null;

@@ -42,7 +42,6 @@ public class OpenBuffersTaskList extends JPanel implements EBComponent {
     // finds the tasks in all open files using a SwingWorker so as not to impact
     // performance of the UI.
     private void loadOpenFiles() {
-
         class Runner extends SwingWorker<TreeModel, Object> {
 
             @Override
@@ -124,7 +123,6 @@ public class OpenBuffersTaskList extends JPanel implements EBComponent {
     }
     
     protected TreeModel buildTreeModel() {
-        
         List<Buffer> openBuffers = getBuffersToScan();
         
         DefaultMutableTreeNode root = new DefaultMutableTreeNode( jEdit.getProperty( "tasklist.openfiles.open-files", "Open Files:" ) );
@@ -225,7 +223,6 @@ public class OpenBuffersTaskList extends JPanel implements EBComponent {
         }
     }
 
-    //
     private void removeBuffer( Buffer buffer ) {
         SortableTreeModel model = ( SortableTreeModel ) tree.getModel();
         for ( int i = 0; i < model.getChildCount( model.getRoot() ); i++ ) {

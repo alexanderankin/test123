@@ -210,7 +210,7 @@ public class TaskHighlight extends TextAreaExtension
 		{
 			Log.log(Log.ERROR, this, 
 				"NullPointerException in TaskHighlight.underlineTask():"
-				+ task.getBuffer().getPath() + ":" + task.getLineIndex());
+				+ task.getBufferPath() + ":" + task.getLineIndex());
 		}
 
 		gfx.setColor(TaskListPlugin.getHighlightColor());

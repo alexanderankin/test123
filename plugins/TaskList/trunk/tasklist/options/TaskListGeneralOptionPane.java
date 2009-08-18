@@ -58,7 +58,9 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane {
 		                        jEdit.getProperty( "options.tasklist.general.sort.choice.0" ),
 		                        jEdit.getProperty( "options.tasklist.general.sort.choice.1" ),
 		                    } ) );
-		sortCriteria.setSelectedIndex( jEdit.getIntegerProperty( "tasklist.table.sort-column", 1 ) - 1 );
+		// need the Math.min here because I removed one of the choices and it's possible for a user
+		// to have a previous value of 2, which would now give an out of bounds exception.
+		sortCriteria.setSelectedIndex( Math.min(jEdit.getIntegerProperty( "tasklist.table.sort-column", 1 ) - 1, 1) );
 
 		addComponent( Box.createVerticalStrut( 3 ) );
 

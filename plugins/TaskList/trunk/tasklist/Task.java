@@ -25,14 +25,11 @@ package tasklist;
 import javax.swing.Icon;
 import javax.swing.text.Position;
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.View;
-import org.gjt.sp.util.Log;
 //}}}
 
 /**
  * A data object containing the attributes of a formatted comment
- * contained in a source file, along with an Icon represeting the
+ * contained in a source file, along with an Icon representing the
  * type of task.
  * @author Oliver Rutherfurd
  */
@@ -42,7 +39,7 @@ public class Task {
 	public Task( Buffer buffer, Icon icon, int line,
 	        String identifier, String comment, String text,
 	        int startOffset, int endOffset ) {
-		this.buffer = buffer;
+		this.buffer = buffer.getPath();
 		this.icon = icon;
 		this.lineIndex = line;
 		this.identifier = identifier;
@@ -50,11 +47,15 @@ public class Task {
 		this.text = text.replace( '\t', ( char ) 187 );
 		int posOffset = buffer.getLineStartOffset( line );
 		this.startPosition = buffer.createPosition( posOffset + startOffset );
+		startOffset = startPosition.getOffset()
+		        - buffer.getLineStartOffset( getLineNumber() );
 		this.endPosition = buffer.createPosition( posOffset + endOffset );
+		endOffset = endPosition.getOffset()
+		        - buffer.getLineStartOffset( getLineNumber() );
 	} //}}}
 
-	public Buffer getBuffer() {
-		return this.buffer;
+	public String getBufferPath() {
+		return buffer;
 	}
 	public Icon getIcon() {
 		return this.icon;
@@ -72,69 +73,14 @@ public class Task {
 		return this.lineIndex;
 	}
 
-	//{{{ removeTask method
-	public void removeTask( View view ) {
-		if ( buffer.isReadOnly() ) {
-			view.getToolkit().beep();
-			return ;
-		}
-
-		// TODO: if whole comment is task, remove comment too
-		String text = buffer.getText( startPosition.getOffset(), getText().length() );
-		if ( !getText().equals( text ) ) {
-			GUIUtilities.error( view, "tasklist.buffer-changed", null );
-			return ;
-		}
-		buffer.remove( startPosition.getOffset(), getText().length() );
-		TaskListPlugin.parseBuffer( buffer );
-	} //}}}
-
-	//{{{ removeTaskTag method
-	public void removeTag( View view ) {
-		if ( buffer.isReadOnly() ) {
-			view.getToolkit().beep();
-			return ;
-		}
-
-		String text = buffer.getText( startPosition.getOffset(),
-		        getIdentifier().length() );
-		if ( !getIdentifier().equals( text ) ) {
-			GUIUtilities.error( view, "tasklist.buffer-changed", null );
-			return ;
-		}
-		buffer.remove( startPosition.getOffset(), getIdentifier().length() );
-		TaskListPlugin.parseBuffer( buffer );
-	} //}}}
-
-	//{{{ replaceTaskTag() method
-	public void replaceTag( View view, String newTag ) {
-		if ( buffer.isReadOnly() ) {
-			view.getToolkit().beep();
-			return ;
-		}
-
-		String text = buffer.getText( startPosition.getOffset(), getIdentifier().length() );
-		if ( !getIdentifier().equals( text ) ) {
-			GUIUtilities.error( view, "tasklist.buffer-changed", null );
-			return ;
-		}
-		buffer.beginCompoundEdit();
-		buffer.remove( startPosition.getOffset(), getIdentifier().length() );
-		buffer.insert( startPosition.getOffset(), newTag );
-		buffer.endCompoundEdit();
-		TaskListPlugin.parseBuffer( buffer );
-	} //}}}
-
 	//{{{ getStartOffset() method
 	public int getStartOffset() {
-		return startPosition.getOffset()
-		       - buffer.getLineStartOffset( getLineNumber() );
+		return startOffset;
 	} //}}}
 
 	//{{{ getEndOffset() method
 	public int getEndOffset() {
-		return endPosition.getOffset()
-		       - buffer.getLineStartOffset( getLineNumber() );
+		return endOffset;
 	} //}}}
 
 	//{{{ getStartPosition() method
@@ -149,17 +95,11 @@ public class Task {
 
 	//{{{ getLineNumber() method
 	/**
-	 * Returns the line number of the task, which takes into
-	 * account the changes in the associated buffer
+	 * Returns the line number of the task.
 	 * @return The line number of the task as found in the associated buffer
 	 */
 	public int getLineNumber() {
-		if ( startPosition != null ) {
-			return buffer.getLineOfOffset( startPosition.getOffset() );
-		}
-		else {
-			return lineIndex;
-		}
+		return lineIndex;
 	} //}}}
 
 	//{{{ toString() method
@@ -173,7 +113,7 @@ public class Task {
 	} //}}}
 
 	//{{{ private members
-	private Buffer buffer;		// buffer task came from
+	private String buffer;		// path for the buffer that this task came from
 	private Icon icon;			// icon associated with TaskType
 
 	private String identifier;	// XXX, NOTE, etc...
@@ -183,7 +123,9 @@ public class Task {
 	private int lineIndex;		// line task is on
 
 	private Position startPosition;
+	private int startOffset;
 	private Position endPosition;
+	private int endOffset;
 	//}}}
 }
 

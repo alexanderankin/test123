@@ -4,6 +4,7 @@ package tasklist;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.*;
 import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.tree.*;
@@ -14,10 +15,10 @@ import org.gjt.sp.jedit.*;
 // mouse listener for the tree so clicking on a tree node shows the corresponding
 // line in the edit pane
 public class TreeMouseListener extends MouseAdapter {
-    
+
     private View view = null;
     private JTree tree = null;
-    
+
     public TreeMouseListener( View view, JTree tree ) {
         this.view = view;
         this.tree = tree;
@@ -40,7 +41,12 @@ public class TreeMouseListener extends MouseAdapter {
             Task task = null;
             if ( path.getPathCount() > 2 ) {
                 task = ( Task ) ( ( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject();
-                Buffer buffer = task.getBuffer();
+                Buffer buffer = jEdit.getBuffer( task.getBufferPath() );
+                if ( buffer == null ) {
+                    File f = new File( task.getBufferPath() );
+                    buffer = jEdit.openTemporary( view, f.getParent(), f.getName(), false );
+                }
+
                 int line_number = task.getLineNumber();
                 int start_offset = task.getStartOffset();
                 jEdit.openFile( jEdit.getActiveView(), buffer.getPath() );
