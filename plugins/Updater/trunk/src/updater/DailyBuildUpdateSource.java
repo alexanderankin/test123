@@ -40,7 +40,7 @@ public class DailyBuildUpdateSource implements UpdateSource
 		if (latest.length() == 0)
 			return BAD_VERSION_STRING;
 		String [] latestVer = latest.split("\\D+");
-		String [] installedVer = latest.split("\\D+");
+		String [] installedVer = installed.split("\\D+");
 		return UpdaterPlugin.compareNumericVersionArray(latestVer, installedVer);
 	}
 
