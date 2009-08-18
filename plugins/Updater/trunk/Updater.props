@@ -53,6 +53,7 @@ updater.msg.cannotFindLatestVersion=Cannot find the latest version on the jEdit 
 updater.msg.noNewerVersion=The latest version is already installed; no need to update.
 updater.msg.unknownVersionString=Version string has an unknown format.
 updater.msg.updateDialogTitle=UpdaterPlugin
+updater.msg.checkingLatestVersion=Checking for the latest version...
 updater.msg.findLatestVersion=Looking for the latest version...
 updater.msg.fetchingDownloadPage=Fetching jEdit download page...
 updater.msg.downloadingNewVersion=Downloading the new version...
@@ -61,6 +62,11 @@ updater.msg.installing=Installation in progress...
 updater.msg.executionAborted=Update aborted.
 updater.msg.abortingUpdate=Aborting update...
 updater.msg.updateInProgress=An update is currently in progress.
+updater.msg.warnBeforeUpdateTitle=Update Confirmation
+updater.msg.warnBeforeUpdateMessage=This will exit jEdit and install a new version. Are you sure?
+updater.msg.warnBeforeUpdateConfirm=Yes, go on and update
+updater.msg.warnBeforeUpdateReject=No, do not update
+updater.msg.doNotShowNextTime=Do not show this confirmation next time
 
 # Install launcher
 updater.msg.updateDialogTitle=Updating jEdit
