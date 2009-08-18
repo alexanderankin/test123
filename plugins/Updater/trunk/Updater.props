@@ -8,6 +8,7 @@ plugin.updater.UpdaterPlugin.description=Auto-update plugin
 
 plugin.updater.UpdaterPlugin.depend.0=jdk 1.5
 plugin.updater.UpdaterPlugin.depend.1=jedit 04.03.17.00
+plugin.updater.UpdaterPlugin.depend.2=plugin CommonControlsPlugin 0.9.5
 
 # action labels
 updater-update-release.label=Update jEdit to latest released version
@@ -20,6 +21,7 @@ plugin.updater.UpdaterPlugin.menu=updater-update-release updater-update-daily
 plugin.updater.UpdaterPlugin.option-pane=updater
 options.updater.label=Updater
 options.updater.code=new updater.UpdaterOptions();
+updater.options.updateLogFile=Write update log to file:
 updater.options.defaultUpdateSource=Default version to update to:
 updater.options.releaseUpdateSource=Latest (released) development version
 updater.options.dailyBuildUpdateSource=Latest daily build version

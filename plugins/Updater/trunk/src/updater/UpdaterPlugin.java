@@ -20,12 +20,16 @@
 
 package updater;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.text.DecimalFormat;
+
+import javax.swing.Timer;
 
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.jEdit;
@@ -35,6 +39,9 @@ import updater.UrlUtils.ProgressHandler;
 public class UpdaterPlugin extends EditPlugin
 {
 	private static final int BAD_VERSION_STRING = -100;
+	private static final int MILLIS_PER_UPDATE_PERIOD_UNIT = 10000;
+	private static final String LAST_UPDATE_TIME_PROP =
+		"updater.values.lastUpdateTime";
 	static private UpdaterPlugin instance;
 	private File home;
 	private Process backgroundProcess;
@@ -52,6 +59,11 @@ public class UpdaterPlugin extends EditPlugin
 		startupExecution = true;
 		if (UpdaterOptions.isUpdateOnStartup())
 			updateFromDefaultSource();
+		int updatePeriod = UpdaterOptions.getUpdatePeriod();
+		if (updatePeriod != 0)
+		{
+			setPeriodicVersionUpdate(updatePeriod);
+		}
 	}
 
 	@Override
@@ -63,6 +75,20 @@ public class UpdaterPlugin extends EditPlugin
 	static public UpdaterPlugin getInstance()
 	{
 		return instance;
+	}
+
+	private void setPeriodicVersionUpdate(int updatePeriod)
+	{
+		ActionListener al = new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				jEdit.setIntegerProperty(LAST_UPDATE_TIME_PROP, 10);
+				updateFromDefaultSource();
+			}
+		};
+		Timer t = new Timer(updatePeriod * MILLIS_PER_UPDATE_PERIOD_UNIT, al);
+		t.setRepeats(true);
 	}
 
 	private void updateFromDefaultSource()
@@ -84,7 +110,8 @@ public class UpdaterPlugin extends EditPlugin
 		String [] args = new String[] { "java",
 			//"-Xdebug", "-Xnoagent", "-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=y",
 			"-cp", getPluginJAR().getFile().getAbsolutePath(),
-			InstallLauncher.class.getCanonicalName() };
+			InstallLauncher.class.getCanonicalName(),
+			UpdaterOptions.getUpdateLogFile() };
 		try {
 			backgroundProcess = Runtime.getRuntime().exec(args);
 			writer = new OutputStreamWriter(backgroundProcess.getOutputStream());
