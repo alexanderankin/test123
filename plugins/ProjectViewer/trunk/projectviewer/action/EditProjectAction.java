@@ -137,57 +137,59 @@ public class EditProjectAction extends Action {
 		}
 		lockedProj = proj;
 
-		proj = ProjectOptions.run(proj, proj == null, parent);
+		try {
+			proj = ProjectOptions.run(proj, proj == null, parent);
 
-		if (proj != null) {
-			if (add) {
-				ProjectManager.getInstance().addProject(proj, parent);
-				ProjectViewer.setActiveNode(jEdit.getActiveView(), proj);
-				RootImporter ipi = new RootImporter(proj, null, viewer, jEdit.getActiveView());
-				ipi.setLockProject(false);
-				ipi.doImport();
-			} else {
-				if (!proj.getName().equals(oldName)) {
-					ProjectManager.getInstance().renameProject(oldName, proj.getName());
-				}
-				if (!proj.getRootPath().equals(oldRoot)) {
-					RootImporter ipi;
-					if (JOptionPane.showConfirmDialog(jEdit.getActiveView(),
-							jEdit.getProperty("projectviewer.action.clean_old_root"),
-							jEdit.getProperty("projectviewer.action.clean_old_root.title"),
-							JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-						ipi = new RootImporter(proj, oldRoot, viewer, jEdit.getActiveView());
-					} else {
-						ipi = new RootImporter(proj, null, viewer, jEdit.getActiveView());
-					}
+			if (proj != null) {
+				if (add) {
+					ProjectManager.getInstance().addProject(proj, parent);
+					ProjectViewer.setActiveNode(jEdit.getActiveView(), proj);
+					RootImporter ipi = new RootImporter(proj, null, viewer, jEdit.getActiveView());
 					ipi.setLockProject(false);
 					ipi.doImport();
-				}
-				ProjectManager.getInstance().saveProject(proj);
-				proj.firePropertiesChanged();
+				} else {
+					if (!proj.getName().equals(oldName)) {
+						ProjectManager.getInstance().renameProject(oldName, proj.getName());
+					}
+					if (!proj.getRootPath().equals(oldRoot)) {
+						RootImporter ipi;
+						if (JOptionPane.showConfirmDialog(jEdit.getActiveView(),
+								jEdit.getProperty("projectviewer.action.clean_old_root"),
+								jEdit.getProperty("projectviewer.action.clean_old_root.title"),
+								JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+							ipi = new RootImporter(proj, oldRoot, viewer, jEdit.getActiveView());
+						} else {
+							ipi = new RootImporter(proj, null, viewer, jEdit.getActiveView());
+						}
+						ipi.setLockProject(false);
+						ipi.doImport();
+					}
+					ProjectManager.getInstance().saveProject(proj);
+					proj.firePropertiesChanged();
 
-				boolean notify = true;
-				if (viewer == null) {
-					viewer = ProjectViewer.getViewer(jEdit.getActiveView());
-					notify = viewer.getRoot().isNodeDescendant(proj);
-				}
+					boolean notify = true;
+					if (viewer == null) {
+						viewer = ProjectViewer.getViewer(jEdit.getActiveView());
+						notify = viewer.getRoot().isNodeDescendant(proj);
+					}
 
-				if (proj.getParent() != oldParent) {
-					VPTGroup newParent = (VPTGroup) proj.getParent();
-					proj.setParent(oldParent);
-					ProjectViewer.removeNodeFromParent(proj);
-					ProjectViewer.insertNodeInto(proj, newParent);
-					ProjectManager.getInstance().saveProjectList();
-					StructureUpdate.send(proj, oldParent);
-				} else if (notify) {
-					ProjectViewer.nodeChanged(proj);
+					if (proj.getParent() != oldParent) {
+						VPTGroup newParent = (VPTGroup) proj.getParent();
+						proj.setParent(oldParent);
+						ProjectViewer.removeNodeFromParent(proj);
+						ProjectViewer.insertNodeInto(proj, newParent);
+						ProjectManager.getInstance().saveProjectList();
+						StructureUpdate.send(proj, oldParent);
+					} else if (notify) {
+						ProjectViewer.nodeChanged(proj);
+					}
+					ProjectManager.getInstance().fireDynamicMenuChange();
 				}
-				ProjectManager.getInstance().fireDynamicMenuChange();
 			}
-		}
-
-		if (lockedProj != null) {
-			lockedProj.unlock();
+		} finally {
+			if (lockedProj != null) {
+				lockedProj.unlock();
+			}
 		}
 	} //}}}
 
