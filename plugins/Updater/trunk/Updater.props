@@ -28,6 +28,7 @@ updater.options.dailyBuildUpdateSource=Latest daily build version
 updater.options.updateOnStartup=Check for updates on startup
 updater.options.updateEvery=Check for updates every:
 updater.options.updatePeriod=days
+updater.options.interactiveInstall=Interactive update (select components, install path)
 
 # docs
 plugin.updater.UpdaterPlugin.docs=index.html
