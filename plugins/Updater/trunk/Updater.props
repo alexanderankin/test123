@@ -60,11 +60,12 @@ updater.msg.runningInstaller=Launching the installer...
 updater.msg.installing=Installation in progress...
 updater.msg.executionAborted=Update aborted.
 updater.msg.abortingUpdate=Aborting update...
+updater.msg.updateInProgress=An update is currently in progress.
 
 # Install launcher
 updater.msg.updateDialogTitle=Updating jEdit
 updater.msg.updateDialogCloseButton=Ok
 updater.msg.updateDialogCancelButton=Cancel
 updater.msg.waitForInstall=Please wait while the update is being installed...
-updater.msg.installationComplete=Installation completed. You can now start jEdit.
+updater.msg.installerDone=Installer done. You can now start jEdit if an update was installed.
 updater.msg.updateErrorAbort=Encountered an unknown problem - aborting update.
