@@ -156,6 +156,7 @@ public class UpdaterPlugin extends EditPlugin
 			appendText("auto");
 			appendText(installDir);
 		}
+		appendText(InstallLauncher.END_INSTALLER_PARAMS);
 		return true;
 	}
 
