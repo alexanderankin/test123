@@ -107,6 +107,7 @@ public class UpdaterPlugin extends EditPlugin
 
 	private boolean startBackgroundProcess()
 	{
+		abort = false;
 		String [] args = new String[] { "java",
 			//"-Xdebug", "-Xnoagent", "-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=y",
 			"-cp", getPluginJAR().getFile().getAbsolutePath(),
@@ -150,7 +151,11 @@ public class UpdaterPlugin extends EditPlugin
 		appendText("Install location: " + installDir);
 		appendText(InstallLauncher.LAUNCH_INSTALLER_NOW);
 		appendText(installerFile.getAbsolutePath());
-		appendText(installDir);
+		if (! UpdaterOptions.isInteractiveInstall())
+		{
+			appendText("auto");
+			appendText(installDir);
+		}
 		return true;
 	}
 
@@ -276,7 +281,8 @@ public class UpdaterPlugin extends EditPlugin
 					endExecution(jEdit.getProperty("updater.msg.installerFailed"));
 					return;
 				}
-				appendText(jEdit.getProperty("updater.msg.installing"));
+				// No more output should be shown by this process. The rest
+				// will be shown by the install launcher.
 			}
 		};
 		updateThread.start();
@@ -288,6 +294,7 @@ public class UpdaterPlugin extends EditPlugin
 		{
 			if (abort)
 			{
+				abort = false;
 				endExecution(jEdit.getProperty("updater.msg.executionAborted"));
 				return true;
 			}
@@ -319,6 +326,7 @@ public class UpdaterPlugin extends EditPlugin
 					synchronized(this)
 					{
 						abort = true;
+						return;
 					}
 				}
 			}

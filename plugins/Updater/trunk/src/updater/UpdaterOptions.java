@@ -43,11 +43,13 @@ public class UpdaterOptions extends AbstractOptionPane
 	private static final String UPDATE_SOURCE_CLASS_PROP = "updater.values.updateSourceClassName";
 	private static final String UPDATE_ON_STARTUP_PROP = "updater.values.updateOnStartup";
 	private static final String UPDATE_PERIOD_PROP = "updater.values.updatePeriod";
+	private static final String INTERACTIVE_INSTALL_PROP = "updater.values.interactiveInstall";
 	private FileTextField logFile;
 	private JRadioButton releaseUpdateSource;
 	private JRadioButton dailyBuildUpdateSource;
 	private JCheckBox updateOnStartup;
 	private JSpinner updatePeriod;
+	private JCheckBox interactiveInstall;
 
 	public UpdaterOptions()
 	{
@@ -86,8 +88,12 @@ public class UpdaterOptions extends AbstractOptionPane
 		SpinnerModel model = new SpinnerNumberModel(getUpdatePeriod(), 0, 30, 1);
 		updatePeriod = new JSpinner(model);
 		updateEveryPanel.add(updatePeriod);
-		updateEveryPanel.add(new JLabel(jEdit.getProperty("updater.options.updatePeriod")));
+		updateEveryPanel.add(new JLabel(jEdit.getProperty(
+			"updater.options.updatePeriod")));
 		addComponent(updateEveryPanel);
+		interactiveInstall = new JCheckBox(jEdit.getProperty(
+			"updater.options.interactiveInstall"), isInteractiveInstall());
+		addComponent(interactiveInstall);
 	}
 
 	@Override
@@ -103,6 +109,8 @@ public class UpdaterOptions extends AbstractOptionPane
 			updateOnStartup.isSelected());
 		jEdit.setIntegerProperty(UPDATE_PERIOD_PROP,
 			Integer.valueOf(updatePeriod.getValue().toString()));
+		jEdit.setBooleanProperty(INTERACTIVE_INSTALL_PROP,
+			interactiveInstall.isSelected());
 	}
 
 	public static boolean isUpdateOnStartup()
@@ -125,5 +133,10 @@ public class UpdaterOptions extends AbstractOptionPane
 	{
 		return jEdit.getProperty(UPDATE_LOG_FILE_PROP,
 			jEdit.getSettingsDirectory() + File.separator + DEFAULT_LOG_FILE);
+	}
+
+	public static boolean isInteractiveInstall()
+	{
+		return jEdit.getBooleanProperty(INTERACTIVE_INSTALL_PROP, false);
 	}
 }

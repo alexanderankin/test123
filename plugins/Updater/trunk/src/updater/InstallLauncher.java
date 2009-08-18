@@ -32,6 +32,7 @@ import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Properties;
+import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -50,6 +51,7 @@ public class InstallLauncher
 
 	public static final String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
 
+	private static JDialog dialog;
 	private static JTextArea text;
 	private static JButton ok;
 	private static JButton cancel;
@@ -76,7 +78,7 @@ public class InstallLauncher
 			io.printStackTrace();
 		}
 		
-		final JDialog dialog = new JDialog((JDialog)null, false);
+		dialog = new JDialog((JDialog)null, false);
 		dialog.setTitle(props.getProperty("updater.msg.updateDialogTitle"));
 		dialog.setLayout(new BorderLayout());
 		text = new JTextArea(8, 80);
@@ -98,10 +100,32 @@ public class InstallLauncher
 		dialog.setVisible(true);
 
 		// Show messages from jEdit until told to launch installer
+		Vector<String> params = processInputStream();
+		if (params == null)
+		{
+			endLogging();
+			return;
+		}
+		// Must have at least installer file. In case of interactive install,
+		// no more parameters are specified.
+		if (params.size() == 0)
+		{
+			checkNullInput(null);	// ... abort with "unknown problem" message
+			return;
+		}
+		cancel.setEnabled(false);
+		appendText(props.getProperty("updater.msg.waitForInstall"));
+		runInstaller(params);
+		text.append(props.getProperty("updater.msg.installationComplete"));
+		ok.setEnabled(true);
+		endLogging();
+	}
+
+	private static Vector<String> processInputStream()
+	{
+		Vector<String> params = new Vector<String>();
 		String line;
 		InputStreamReader in = new InputStreamReader(System.in);
-		String installerFile = null;
-		String installDir = null;
 		try
 		{
 			while ((line = readLine(in)) != null)
@@ -110,14 +134,12 @@ public class InstallLauncher
 				{
 					dialog.setVisible(false);
 					dialog.dispose();
-					endLogging();
-					return;
+					return null;
 				}
 				if (line.equals(END_EXECUTION))
 				{
 					ok.setEnabled(true);
-					endLogging();
-					return;
+					return null;
 				}
 				if (line.startsWith(PROGRESS_INDICATOR))
 					appendProgress(line.substring(PROGRESS_INDICATOR.length()));
@@ -127,31 +149,37 @@ public class InstallLauncher
 					appendText(line);
 			}
 			if (checkNullInput(line))
-				return;
-			// Now get the installer file and the install directory
-			installerFile = readLine(in);
-			if (checkNullInput(installerFile))
-				return;
-			installDir = readLine(in);
-			if (checkNullInput(installDir))
-				return;
+				return null;
+			// Now get the installer parameters (installer file, install type,
+			// install dir).
+			while ((line = readLine(in)) != null)
+				params.add(line);
 			in.close();
 		}
 		catch (IOException e1)
 		{
 		}
-		cancel.setEnabled(false);
-		appendText(props.getProperty("updater.msg.waitForInstall"));
-		runInstaller(installerFile, installDir);
-		text.append(props.getProperty("updater.msg.installationComplete"));
-		ok.setEnabled(true);
-		endLogging();
+		return params;
 	}
 
-	private static void runInstaller(String installerFile, String installDir)
+	private static void runInstaller(Vector<String> params)
 	{
-		String [] installerArgs = new String[] { "java", "-jar",
-			installerFile, "auto", installDir };
+		String [] installerArgs = new String[2 + params.size()];
+		installerArgs[0] = "java";
+		installerArgs[1] = "-jar";
+		for (int i = 0; i < params.size(); i++)
+			installerArgs[i + 2] = params.get(i);
+		StringBuilder sb = new StringBuilder();
+		for (String s: installerArgs)
+		{
+			if (sb.length() > 0)
+				sb.append(" ");
+			if (s.matches(".*\\S\\s+\\S.*"))
+				sb.append("\"" + s + "\"");
+			else
+				sb.append(s);
+		}
+		log("Running: " + sb.toString() + "\n");
 		try {
 			Process p = Runtime.getRuntime().exec(installerArgs);
 			StreamConsumer osc = new StreamConsumer(p.getInputStream());
@@ -172,6 +200,7 @@ public class InstallLauncher
 		{
 			logWriter = new FileWriter(logFile, true);
 			logWriter.write(">>> Started: " + now() + "\n");
+			logWriter.flush();
 		}
 		catch (IOException e2)
 		{
@@ -186,6 +215,7 @@ public class InstallLauncher
 		try
 		{
 			logWriter.write("<<< Ended: " + now() + "\n");
+			logWriter.flush();
 			logWriter.close();
 		}
 		catch (IOException e)
@@ -201,6 +231,7 @@ public class InstallLauncher
 		try
 		{
 			logWriter.write("[" + now() + "] " + s);
+			logWriter.flush();
 		}
 		catch (IOException e)
 		{
