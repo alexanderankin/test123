@@ -13,7 +13,7 @@ plugin.ctagsinterface.main.CtagsInterfacePlugin.depend.2=optional plugin project
 plugin.ctagsinterface.main.CtagsInterfacePlugin.depend.3=plugin SuperAbbrevsPlugin 0.32
 
 plugin.ctagsinterface.main.CtagsInterfacePlugin.jars=hsqldb.jar
-plugin.ctagsinterface.main.CtagsInterfacePlugin.docs=index.html
+plugin.ctagsinterface.main.CtagsInterfacePlugin.docs=description.html
 
 # action labels
 ctags-interface-add-file.label=Add tag file...
