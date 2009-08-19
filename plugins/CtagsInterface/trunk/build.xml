@@ -20,6 +20,7 @@
 	    <filename name="icons/*.png" />
 		<filename name="*.txt" />
 		<filename name="mysql.map" />
+		<filename name="description.html" />
 	  </or>
 	 </selector>
 
