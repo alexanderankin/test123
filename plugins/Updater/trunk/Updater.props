@@ -33,7 +33,7 @@ updater.options.unixScriptDir=Unix script directory:
 updater.options.unixManDir=Unix man page directory:
 
 # docs
-plugin.updater.UpdaterPlugin.docs=index.html
+plugin.updater.UpdaterPlugin.docs=description.html
 
 # misc
 updater.downloadPage=http://jedit.org/index.php?page=download

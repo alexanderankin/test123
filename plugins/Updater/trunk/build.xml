@@ -10,6 +10,10 @@
 	<property name="plugin.dependencies" value="CommonControls"/>
 	<import file="${build.support}/plugin-build.xml" />
 
+    <selector id="packageFiles">
+    	<filename name="description.html" />
+    </selector>
+
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
 		<pathelement location="${src.dir}"/>
