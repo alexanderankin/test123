@@ -148,6 +148,7 @@ public class InstallLauncher
 				if (line.equals(END_EXECUTION))
 				{
 					ok.setEnabled(true);
+					cancel.setEnabled(false);
 					return null;
 				}
 				if (line.startsWith(PROGRESS_INDICATOR))
