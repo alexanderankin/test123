@@ -1,119 +1,0 @@
-9
-
-dir
-15923
-https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/PluginDeveloper/trunk
-https://jedit.svn.sourceforge.net/svnroot/jedit
-
-
-
-2009-08-16T07:09:14.918844Z
-15917
-elberry
-has-props
-has-prop-mods
-svn:special svn:externals svn:needs-lock
-
-
-
-
-
-
-
-
-
-
-
-6b1eeb88-9816-0410-afa2-b43733a0f04e
-
-.bzrignore
-file
-0
-
-
-add
-
-build
-dir
-
-
-
-add
-
-license.txt
-file
-0
-
-
-add
-
-backup.bzr
-dir
-
-
-
-add
-
-dist
-dir
-
-
-
-add
-
-example.build.properties
-file
-0
-
-
-add
-
-nbproject
-dir
-
-
-
-add
-
-manifest.mf
-file
-0
-
-
-add
-
-src
-dir
-
-
-
-add
-
-.bzr
-dir
-
-
-
-add
-
-jalopy.xml
-file
-0
-
-
-add
-
-build.xml
-file
-0
-
-
-add
-
-nbbuild.xml
-file
-0
-
-
-add
-
