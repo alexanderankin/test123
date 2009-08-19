@@ -48,6 +48,7 @@ public class InstallLauncher
 	public static final String ASK_FOR_CONFIRMATION = "Ask For Confirmation";
 	public static final String END_INSTALLER_PARAMS = "End Of sInstaller Parameters";
 	public static final String END_EXECUTION = "Exit Now";
+	public static final String EXECUTION_ABORTED = "Execution Aborted";
 	public static final String SILENT_SHUTDOWN = "Shutdown Silently";
 	public static final String PROGRESS_INDICATOR = "*** Progress: ";
 
@@ -155,7 +156,8 @@ public class InstallLauncher
 		{
 			while ((line = in.readLine()) != null)
 			{
-				if (line.equals(SILENT_SHUTDOWN))
+				if (line.equals(SILENT_SHUTDOWN) ||
+					line.equals(EXECUTION_ABORTED))
 				{
 					dialog.setVisible(false);
 					dialog.dispose();
