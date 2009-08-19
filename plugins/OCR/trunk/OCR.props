@@ -24,7 +24,7 @@ ocr-read-picture.label=Read text from picture file...
 plugin.ocr.OCRPlugin.menu=ocr-read-screen-rect ocr-read-picture
 
 # docs
-plugin.ocr.OCRPlugin.docs=index.html
+plugin.ocr.OCRPlugin.docs=description.html
 plugin.ocr.OCRPlugin.description=OCR provides an interface to the GOCR tool.
 
 # strings
