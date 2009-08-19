@@ -137,6 +137,13 @@ public class UpdaterPlugin extends EditPlugin
 		updateOver();
 	}
 
+	private void sendExecutionAborted()
+	{
+		appendText(jEdit.getProperty("updater.msg.executionAborted"));
+		appendText(InstallLauncher.EXECUTION_ABORTED);
+		updateOver();
+	}
+
 	private boolean appendText(String s)
 	{
 		try
@@ -263,7 +270,7 @@ public class UpdaterPlugin extends EditPlugin
 				boolean confirmed = getConfirmation();
 				if (! confirmed)
 				{
-					endExecution(jEdit.getProperty("updater.msg.executionAborted"));
+					sendExecutionAborted();
 					return;
 				}
 				appendText(jEdit.getProperty("updater.msg.fetchingDownloadPage"));
@@ -368,7 +375,7 @@ public class UpdaterPlugin extends EditPlugin
 			if (abort)
 			{
 				abort = false;
-				endExecution(jEdit.getProperty("updater.msg.executionAborted"));
+				sendExecutionAborted();
 				return true;
 			}
 		}
