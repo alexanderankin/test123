@@ -55,7 +55,6 @@ public class UpdaterPlugin extends EditPlugin
 	private File home;
 	private Process backgroundProcess;
 	private OutputStreamWriter writer;
-	private boolean startupExecution;
 	private static boolean abort;
 	private boolean updating;
 
@@ -67,7 +66,6 @@ public class UpdaterPlugin extends EditPlugin
 		if ((home != null) && (! home.exists()))
 			home.mkdir();
 		updating = false;
-		startupExecution = true;
 		if (UpdaterOptions.isUpdateOnStartup())
 			updateFromDefaultSource();
 		int updatePeriod = UpdaterOptions.getUpdatePeriod();
@@ -204,8 +202,11 @@ public class UpdaterPlugin extends EditPlugin
 
 	// Prevent multiple concurrent updates.
 	// - automatic: whether the update was invoked automatically (on startup
-	//   or a periodic update).
-	public void updateVersion(final UpdateSource source, boolean automatic)
+	//   or a periodic update). When invoked automatically, the message box
+	//   for concurrent updates is not shown, and the progress dialog is
+	//   automatically closed if there is no version to update to.
+	public void updateVersion(final UpdateSource source,
+		final boolean automatic)
 	{
 		synchronized(this)
 		{
@@ -225,8 +226,6 @@ public class UpdaterPlugin extends EditPlugin
 		Thread updateThread = new Thread() {
 			@Override
 			public void run() {
-				boolean calledOnStartup = startupExecution;
-				startupExecution = false;
 				if (executionAborted())
 					return;
 				appendText(jEdit.getProperty("updater.msg.checkingLatestVersion"));
@@ -250,7 +249,7 @@ public class UpdaterPlugin extends EditPlugin
 				}
 				if (comparison <= 0)
 				{
-					if (calledOnStartup)
+					if (automatic)
 					{
 						appendText(InstallLauncher.SILENT_SHUTDOWN);
 						updateOver();
