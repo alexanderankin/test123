@@ -55,18 +55,22 @@ public class InstallLauncher
 	public static final String ABORT = "Abort";
 	public static final String REJECTED = "Rejected";
 	public static final String CONFIRMED = "Confirmed";
+	public static final String AUTO_CONFIRM = "Auto Confirm";
 
-	public static final String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
+	private static final String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
 
 	private static JDialog dialog;
 	private static JTextArea text;
+	private static JPanel buttonPanel;
 	private static JButton ok;
 	private static JButton cancel;
+	private static JButton alwaysYes;
 	private static int pos;
 	private static Properties props;
 	private static FileWriter logWriter;
 	private static boolean awaitingConfirmation; 
 	private static OutputStreamWriter out;
+	private static ActionListener buttonActionListener;
 
 	public static void main(String [] args)
 	{
@@ -92,16 +96,20 @@ public class InstallLauncher
 		dialog.setLayout(new BorderLayout());
 		text = new JTextArea(8, 80);
 		dialog.add(new JScrollPane(text), BorderLayout.CENTER);
-		JPanel buttonPanel = new JPanel();
+		buttonPanel = new JPanel();
 		ok = new JButton(props.getProperty("updater.msg.updateDialogCloseButton"));
 		buttonPanel.add(ok);
 		cancel = new JButton(props.getProperty("updater.msg.updateDialogCancelButton"));
 		buttonPanel.add(cancel);
+		// This button is only added when a confirmation is requested
+		alwaysYes = new JButton(props.getProperty("updater.msg.autoConfirmUpdate"));
+
 		dialog.add(buttonPanel, BorderLayout.SOUTH);
-		ActionListener al = new UpdateActionListener();
-		ok.addActionListener(al);
+		buttonActionListener = new UpdateActionListener();
+		ok.addActionListener(buttonActionListener);
 		ok.setEnabled(false);
-		cancel.addActionListener(al);
+		cancel.addActionListener(buttonActionListener);
+		alwaysYes.addActionListener(buttonActionListener);
 		dialog.pack();
 		dialog.setVisible(true);
 
@@ -161,9 +169,7 @@ public class InstallLauncher
 				}
 				if (line.equals(ASK_FOR_CONFIRMATION))
 				{
-					awaitingConfirmation = true;
-					ok.setEnabled(true);
-					cancel.setEnabled(true);
+					requestConfirmation();
 					continue;
 				}
 				if (line.startsWith(PROGRESS_INDICATOR))
@@ -189,6 +195,31 @@ public class InstallLauncher
 		{
 		}
 		return params;
+	}
+
+	private static void requestConfirmation()
+	{
+		ok.setText(props.getProperty("updater.msg.confirmUpdate"));
+		cancel.setText(props.getProperty("updater.msg.rejectUpdate"));
+		buttonPanel.add(alwaysYes);
+		buttonPanel.revalidate();
+		buttonPanel.repaint();
+		ok.setEnabled(true);
+		cancel.setEnabled(true);
+		awaitingConfirmation = true;
+	}
+
+	private static void endConfirmation(boolean confirmed, String reply)
+	{
+		ok.setText(props.getProperty("updater.msg.updateDialogCloseButton"));
+		cancel.setText(props.getProperty("updater.msg.updateDialogCancelButton"));
+		buttonPanel.remove(alwaysYes);
+		buttonPanel.revalidate();
+		buttonPanel.repaint();
+		writeOutput(reply);
+		if (confirmed)
+			ok.setEnabled(false);
+		awaitingConfirmation = false;
 	}
 
 	private static void runInstaller(Vector<String> params)
@@ -330,22 +361,21 @@ public class InstallLauncher
 		private void okAction()
 		{
 			if (awaitingConfirmation)
-			{
-				writeOutput(CONFIRMED);
-				ok.setEnabled(false);
-				awaitingConfirmation = false;
-			}
+				endConfirmation(true, CONFIRMED);
 			else
 				dialog.dispose();
+		}
+
+		// Only for confirmations
+		private void alwaysYesAction()
+		{
+			endConfirmation(true, AUTO_CONFIRM);
 		}
 
 		private void cancelAction()
 		{
 			if (awaitingConfirmation)
-			{
-				writeOutput(REJECTED);
-				awaitingConfirmation = false;
-			}
+				endConfirmation(false, REJECTED);
 			else
 			{
 				writeOutput(ABORT);
@@ -357,6 +387,8 @@ public class InstallLauncher
 		{
 			if (e.getSource() == ok)
 				okAction();
+			else if (e.getSource() == alwaysYes)
+				alwaysYesAction();
 			else
 				cancelAction();
 		}

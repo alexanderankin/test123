@@ -63,6 +63,9 @@ updater.msg.executionAborted=Update aborted.
 updater.msg.abortingUpdate=Aborting update...
 updater.msg.updateInProgress=An update is currently in progress.
 updater.msg.warnBeforeUpdateMessage=This will exit jEdit and install a new version. Are you sure?
+updater.msg.confirmUpdate=Yes
+updater.msg.rejectUpdate=No
+updater.msg.autoConfirmUpdate=Always yes (don't ask)
 
 # Install launcher
 updater.msg.updateDialogTitle=Updating jEdit

@@ -42,6 +42,8 @@ public class UpdaterPlugin extends EditPlugin
 	private static final int MILLIS_PER_UPDATE_PERIOD_UNIT = 1000 * 3600 * 24;
 	private static final String LAST_UPDATE_TIME_PROP =
 		"updater.values.lastUpdateTime";
+	private static final String AUTO_CONFIRM_PROP = "updater.values.doNotShowNextTime";
+
 	static private UpdaterPlugin instance;
 	private File home;
 	private Process backgroundProcess;
@@ -252,21 +254,7 @@ public class UpdaterPlugin extends EditPlugin
 						endExecution(jEdit.getProperty("updater.msg.noNewerVersion"));
 					return;
 				}
-				appendText(jEdit.getProperty("updater.msg.warnBeforeUpdateMessage"));
-				appendText(InstallLauncher.ASK_FOR_CONFIRMATION);
-				confirmed = false;
-				confirmLock = new Boolean(true);
-				try
-				{
-					synchronized(confirmLock)
-					{
-						confirmLock.wait();
-					}
-				}
-				catch (InterruptedException e)
-				{
-					e.printStackTrace();
-				}
+				boolean confirmed = getConfirmation();
 				if (! confirmed)
 				{
 					endExecution(jEdit.getProperty("updater.msg.executionAborted"));
@@ -337,6 +325,28 @@ public class UpdaterPlugin extends EditPlugin
 		updateThread.start();
 	}
 
+	private boolean getConfirmation()
+	{
+		if (jEdit.getBooleanProperty(AUTO_CONFIRM_PROP, false))
+			return true;
+		appendText(jEdit.getProperty("updater.msg.warnBeforeUpdateMessage"));
+		appendText(InstallLauncher.ASK_FOR_CONFIRMATION);
+		confirmed = false;
+		confirmLock = new Boolean(true);
+		try
+		{
+			synchronized(confirmLock)
+			{
+				confirmLock.wait();
+			}
+		}
+		catch (InterruptedException e)
+		{
+			e.printStackTrace();
+		}
+		return confirmed;
+	}
+
 	private void updateOver()
 	{
 		synchronized(this)
@@ -393,9 +403,18 @@ public class UpdaterPlugin extends EditPlugin
 					}
 				}
 				if (line.equals(InstallLauncher.REJECTED) ||
-					line.equals(InstallLauncher.CONFIRMED))
+					line.equals(InstallLauncher.CONFIRMED) ||
+					line.equals(InstallLauncher.AUTO_CONFIRM))
 				{
-					confirmed = line.equals(InstallLauncher.CONFIRMED);
+					if (line.equals(InstallLauncher.CONFIRMED))
+						confirmed = true;
+					else if (line.equals(InstallLauncher.AUTO_CONFIRM))
+					{
+						confirmed = true;
+						jEdit.setBooleanProperty(AUTO_CONFIRM_PROP, true);
+					}
+					else
+						confirmed = false;
 					synchronized(confirmLock)
 					{
 						confirmLock.notifyAll();
