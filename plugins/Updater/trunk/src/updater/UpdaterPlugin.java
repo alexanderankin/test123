@@ -20,22 +20,15 @@
 
 package updater;
 
-import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.text.DecimalFormat;
 
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.Timer;
 
 import org.gjt.sp.jedit.EditPlugin;
@@ -49,13 +42,13 @@ public class UpdaterPlugin extends EditPlugin
 	private static final int MILLIS_PER_UPDATE_PERIOD_UNIT = 1000 * 3600 * 24;
 	private static final String LAST_UPDATE_TIME_PROP =
 		"updater.values.lastUpdateTime";
-	private static final String DISMISSIBLE_DIALOG_PROP =
-		"updater.values.doNotShowNextTime";
 	static private UpdaterPlugin instance;
 	private File home;
 	private Process backgroundProcess;
 	private OutputStreamWriter writer;
 	private static boolean abort;
+	private static boolean confirmed;
+	private static Boolean confirmLock;
 	private boolean updating;
 
 	@Override
@@ -126,7 +119,8 @@ public class UpdaterPlugin extends EditPlugin
 		try {
 			backgroundProcess = Runtime.getRuntime().exec(args);
 			writer = new OutputStreamWriter(backgroundProcess.getOutputStream());
-			StreamConsumer sc = new StreamConsumer(backgroundProcess.getInputStream());
+			LauncherOutputHandler sc = new LauncherOutputHandler(
+				backgroundProcess.getInputStream());
 			sc.start();
 		} catch (IOException e) {
 			return false;
@@ -258,12 +252,21 @@ public class UpdaterPlugin extends EditPlugin
 						endExecution(jEdit.getProperty("updater.msg.noNewerVersion"));
 					return;
 				}
-				boolean confirmed =
-					DismissibleConfirmationDialog.showConfirmationDialog(
-						jEdit.getProperty("updater.msg.warnBeforeUpdateTitle"),
-						jEdit.getProperty("updater.msg.warnBeforeUpdateMessage"),
-						jEdit.getProperty("updater.msg.warnBeforeUpdateConfirm"),
-						jEdit.getProperty("updater.msg.warnBeforeUpdateReject"));
+				appendText(jEdit.getProperty("updater.msg.warnBeforeUpdateMessage"));
+				appendText(InstallLauncher.ASK_FOR_CONFIRMATION);
+				confirmed = false;
+				confirmLock = new Boolean(true);
+				try
+				{
+					synchronized(confirmLock)
+					{
+						confirmLock.wait();
+					}
+				}
+				catch (InterruptedException e)
+				{
+					e.printStackTrace();
+				}
 				if (! confirmed)
 				{
 					endExecution(jEdit.getProperty("updater.msg.executionAborted"));
@@ -366,71 +369,22 @@ public class UpdaterPlugin extends EditPlugin
 		updateVersion(new DailyBuildUpdateSource(), false);
 	}
 
-	@SuppressWarnings("serial")
-	private static class DismissibleConfirmationDialog extends JDialog
-	{
-		private JCheckBox doNotShowNextTime;
-		private boolean confirmed;
-
-		public DismissibleConfirmationDialog(String title, String message,
-			String yesLabel, String noLabel)
-		{
-			super(jEdit.getActiveView(), true);
-			setTitle(title);
-			setLayout(new BorderLayout(10, 10));
-			JPanel center = new JPanel(new BorderLayout(10, 10));
-			add(center, BorderLayout.CENTER);
-
-			// Add some gaps from the boundaries
-			center.add(new JPanel(), BorderLayout.NORTH);
-			center.add(new JPanel(), BorderLayout.EAST);
-			center.add(new JPanel(), BorderLayout.WEST);
-
-			center.add(new JLabel(message), BorderLayout.CENTER);
-			doNotShowNextTime = new JCheckBox(jEdit.getProperty(
-				"updater.msg.doNotShowNextTime"), false);
-			center.add(doNotShowNextTime, BorderLayout.SOUTH);
-			JPanel buttons = new JPanel();
-			add(buttons, BorderLayout.SOUTH);
-			final JButton yes = new JButton(yesLabel);
-			buttons.add(yes);
-			JButton no = new JButton(noLabel);
-			buttons.add(no);
-			ActionListener al = new ActionListener() {
-				public void actionPerformed(ActionEvent e)
-				{
-					jEdit.setBooleanProperty(DISMISSIBLE_DIALOG_PROP,
-						doNotShowNextTime.isSelected());
-					confirmed = (e.getSource() == yes);
-					setVisible(false);
-				}
-			};
-			yes.addActionListener(al);
-			no.addActionListener(al);
-			pack();
-			setVisible(true);
-		}
-		public static boolean showConfirmationDialog(String title,
-			String message, String yesLabel, String noLabel)
-		{
-			if (jEdit.getBooleanProperty(DISMISSIBLE_DIALOG_PROP, false))
-				return true;
-			DismissibleConfirmationDialog dialog = new DismissibleConfirmationDialog(
-				title, message, yesLabel, noLabel);
-			return dialog.confirmed;
-		}
-	}
-
-	private static class StreamConsumer extends Thread
+	private static class LauncherOutputHandler extends Thread
 	{
 		private InputStream is;
-		public StreamConsumer(InputStream is) {
+
+		public LauncherOutputHandler(InputStream is)
+		{
 			this.is = is;
 		}
-		public void run() {
-			try {
-				InputStreamReader reader = new InputStreamReader(is);
-				while (reader.read() != -1)
+	
+		public void run()
+		{
+			InputLineReader reader = new InputLineReader(is);
+			String line;
+			while ((line = reader.readLine()) != null)
+			{
+				if (line.equals(InstallLauncher.ABORT))
 				{
 					synchronized(this)
 					{
@@ -438,10 +392,17 @@ public class UpdaterPlugin extends EditPlugin
 						return;
 					}
 				}
-			}
-			catch (IOException ioe)
-			{
-				ioe.printStackTrace();  
+				if (line.equals(InstallLauncher.REJECTED) ||
+					line.equals(InstallLauncher.CONFIRMED))
+				{
+					confirmed = line.equals(InstallLauncher.CONFIRMED);
+					synchronized(confirmLock)
+					{
+						confirmLock.notifyAll();
+					}
+					if (! confirmed)
+						return;		// Update rejected, no need to continue
+				}
 			}
 		}
 	}

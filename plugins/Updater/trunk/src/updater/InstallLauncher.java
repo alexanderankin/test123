@@ -43,12 +43,18 @@ import javax.swing.SwingUtilities;
 
 public class InstallLauncher
 {
-	// Commands provided via standard input
+	// Control commands provided via standard input
 	public static final String LAUNCH_INSTALLER_NOW = "Launch Installer Now";
+	public static final String ASK_FOR_CONFIRMATION = "Ask For Confirmation";
 	public static final String END_INSTALLER_PARAMS = "End Of sInstaller Parameters";
 	public static final String END_EXECUTION = "Exit Now";
 	public static final String SILENT_SHUTDOWN = "Shutdown Silently";
 	public static final String PROGRESS_INDICATOR = "*** Progress: ";
+
+	// Control commands sent via standard output
+	public static final String ABORT = "Abort";
+	public static final String REJECTED = "Rejected";
+	public static final String CONFIRMED = "Confirmed";
 
 	public static final String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
 
@@ -59,6 +65,8 @@ public class InstallLauncher
 	private static int pos;
 	private static Properties props;
 	private static FileWriter logWriter;
+	private static boolean awaitingConfirmation; 
+	private static OutputStreamWriter out;
 
 	public static void main(String [] args)
 	{
@@ -90,15 +98,15 @@ public class InstallLauncher
 		cancel = new JButton(props.getProperty("updater.msg.updateDialogCancelButton"));
 		buttonPanel.add(cancel);
 		dialog.add(buttonPanel, BorderLayout.SOUTH);
-		ok.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				dialog.dispose();
-			}
-		});
+		ActionListener al = new UpdateActionListener();
+		ok.addActionListener(al);
 		ok.setEnabled(false);
-		cancel.addActionListener(new CancelActionListener());
+		cancel.addActionListener(al);
 		dialog.pack();
 		dialog.setVisible(true);
+
+		// Create a writer for stdout (for cancellation and confirmation)
+		out = new OutputStreamWriter(System.out);
 
 		// Show messages from jEdit until told to launch installer
 		Vector<String> params = processInputStream();
@@ -134,10 +142,10 @@ public class InstallLauncher
 	{
 		Vector<String> params = new Vector<String>();
 		String line;
-		InputStreamReader in = new InputStreamReader(System.in);
+		InputLineReader in = new InputLineReader(System.in);
 		try
 		{
-			while ((line = readLine(in)) != null)
+			while ((line = in.readLine()) != null)
 			{
 				if (line.equals(SILENT_SHUTDOWN))
 				{
@@ -151,6 +159,13 @@ public class InstallLauncher
 					cancel.setEnabled(false);
 					return null;
 				}
+				if (line.equals(ASK_FOR_CONFIRMATION))
+				{
+					awaitingConfirmation = true;
+					ok.setEnabled(true);
+					cancel.setEnabled(true);
+					continue;
+				}
 				if (line.startsWith(PROGRESS_INDICATOR))
 					appendProgress(line.substring(PROGRESS_INDICATOR.length()));
 				else if (line.equals(LAUNCH_INSTALLER_NOW))
@@ -162,7 +177,7 @@ public class InstallLauncher
 				return null;
 			// Now get the installer parameters (installer file, install type,
 			// install dir).
-			while ((line = readLine(in)) != null)
+			while ((line = in.readLine()) != null)
 			{
 				if (line.equals(END_INSTALLER_PARAMS))
 					break;
@@ -260,26 +275,6 @@ public class InstallLauncher
 		return sdf.format(cal.getTime());
 	}
 
-	private static String readLine(InputStreamReader in)
-	{
-		StringBuilder sb = new StringBuilder();
-		int i;
-		try
-		{
-			while ((i = in.read()) != -1)
-			{
-				if (i == '\n')
-					break;
-				sb.append((char) i);
-			}
-		}
-		catch (IOException e)
-		{
-			return null;
-		}
-		return (i == -1) ? null : sb.toString();
-	}
-
 	private static boolean checkNullInput(String line)
 	{
 		if (line != null)
@@ -313,36 +308,57 @@ public class InstallLauncher
 		});
 	}
 
-	private static final class CancelActionListener implements ActionListener
+	private static boolean writeOutput(String s)
 	{
-		private OutputStreamWriter bout;
+		try
+		{
+			out.write(s);
+			if (! s.endsWith("\n"))
+				out.write("\n");
+			out.flush();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	private static final class UpdateActionListener implements ActionListener
+	{
+		private void okAction()
+		{
+			if (awaitingConfirmation)
+			{
+				writeOutput(CONFIRMED);
+				ok.setEnabled(false);
+				awaitingConfirmation = false;
+			}
+			else
+				dialog.dispose();
+		}
+
+		private void cancelAction()
+		{
+			if (awaitingConfirmation)
+			{
+				writeOutput(REJECTED);
+				awaitingConfirmation = false;
+			}
+			else
+			{
+				writeOutput(ABORT);
+				appendText("\n" + props.getProperty("updater.msg.abortingUpdate"));
+			}
+		}
 
 		public void actionPerformed(ActionEvent e)
 		{
-			bout = null;
-			try
-			{
-				bout = new OutputStreamWriter(System.out);
-				bout.write("Aborted\n");
-				bout.flush();
-				appendText("\n" + props.getProperty("updater.msg.abortingUpdate"));
-			}
-			catch (IOException e1)
-			{
-				e1.printStackTrace();
-				bout = null;
-			}
-			finally
-			{
-				try
-				{
-					if (bout != null)
-						bout.close();
-					}
-					catch (IOException e1)
-					{
-					}
-			}
+			if (e.getSource() == ok)
+				okAction();
+			else
+				cancelAction();
 		}
 	}
 
