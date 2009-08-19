@@ -205,7 +205,8 @@ public class ProjectTaskList extends JPanel implements EBComponent {
                 continue;
             }
             model.insertNodeInto( buffer_node, root );
-            // TODO: I sent email to the dev list asking about the proper way to
+            
+            // I sent email to the dev list asking about the proper way to
             // close a temporary buffer. For now all I'm doing to close the buffer
             // if it wasn't already open is set it to null.  If can_close is true,
             // then the buffer was opened with openTemporary, so just set it to null

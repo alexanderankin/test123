@@ -67,7 +67,7 @@ public class TaskListModel extends AbstractTableModel implements EBComponent {
 
 		tasks = new ArrayList<Task>();
 
-		// NOTE:  default sort column is column 1 (line number)
+		// Default sort column is column 1 (line number)
 		try {
 			this.sortCol = Integer.parseInt( jEdit.getProperty( "tasklist.table.sort-column", "1" ) );
 		}
@@ -230,10 +230,6 @@ public class TaskListModel extends AbstractTableModel implements EBComponent {
 
 	//{{{ sort(int col, boolean sortAscending) method
 	public void sort( int sortCol, boolean sortAscending ) {
-		// DEBUG: get sort parameters
-		//Log.log(Log.DEBUG, TaskListModel.class, "sorting TaskList items: "
-		//	+ "sortCol = " + String.valueOf(sortCol)
-		//	+ ", SortAscending = " + String.valueOf(sortAscending));
 		Collections.sort( tasks, new ColumnSorter( sortCol, sortAscending ) );
 		fireTableDataChanged();
 	} //}}}

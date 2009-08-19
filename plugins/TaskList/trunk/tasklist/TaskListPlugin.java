@@ -22,10 +22,11 @@
 package tasklist;
 
 /*{{{ TODOS...
- TODO: need a text area change listener for re-parsing
+ WON'T DO: need a text area change listener for re-parsing.  Buffer gets reparsed
+    on save.  On text area change is too much and hurts performance.
  TODO: ensure task highlights are repainted when buffer reloaded, etc...
  DONE: are there portions of the code which are not thread safe?
- FUTURE-TODO: allow for displaying all buffers or only current ones
+ DONE: allow for displaying all buffers or only current ones
  
  DONE: remove all references to TaskListener.  None exist anywhere in this 
  plugin any more.  TaskListModel used to be the only classes that was also
@@ -400,7 +401,6 @@ public class TaskListPlugin extends EditPlugin {
 
     //{{{ extractTasks() method
     /**
-     * TODO: check on this method, I'm not sure it's actually used anymore. 
      * Directs the parsing of a buffer for task data if no request for parsing
      * that buffer is currently pending.
      * <p>
