@@ -1,0 +1,16 @@
+# ::folding=explicit:indentSize=3:mode=properties:noTabs=false:tabSize=3:: #
+# Basic Plugin Information {{{
+plugin.plugindeveloper.PluginDeveloperPlugin.activate=defer
+plugin.plugindeveloper.PluginDeveloperPlugin.author=Eric Berry
+plugin.plugindeveloper.PluginDeveloperPlugin.description=
+plugin.plugindeveloper.PluginDeveloperPlugin.docs=docs/index.html
+plugin.plugindeveloper.PluginDeveloperPlugin.longdescription=
+plugin.plugindeveloper.PluginDeveloperPlugin.name=Plugin Developer
+plugin.plugindeveloper.PluginDeveloperPlugin.usePluginHome=yes
+plugin.plugindeveloper.PluginDeveloperPlugin.version=0.1
+# }}} Basic Plugin Information
+
+# Dependencies {{{
+plugin.plugindeveloper.PluginDeveloperPlugin.depend.0=jedit 04.03.17.00
+plugin.plugindeveloper.PluginDeveloperPlugin.depend.1=jdk 1.5
+# }}} Dependencies
