@@ -24,7 +24,7 @@ class-browser-class-hierarchy.title=ClassBrowser
 class-browser-class-hierarchy.longtitle=Class Hierarchy Browser
 class-browser-class-hierarchy.label=Class Hierarchy Browser
 # docs
-plugin.browser.ClassBrowserPlugin.docs=index.html
+plugin.browser.ClassBrowserPlugin.docs=description.html
 
 # icons
 options.ClassBrowser.icons.class=class.png
