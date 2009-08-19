@@ -162,6 +162,12 @@ public class UpdaterPlugin extends EditPlugin
 		{
 			appendText("auto");
 			appendText(installDir);
+			String unixScriptDir = UpdaterOptions.getUnixScriptDir();
+			if ((unixScriptDir != null) && (unixScriptDir.length() > 0))
+				appendText("unix-script=" + unixScriptDir);
+			String unixManDir = UpdaterOptions.getUnixManDir();
+			if ((unixManDir != null) && (unixManDir.length() > 0))
+				appendText("unix-man=" + unixManDir);
 		}
 		appendText(InstallLauncher.END_INSTALLER_PARAMS);
 		return true;
