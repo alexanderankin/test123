@@ -30,6 +30,9 @@ public class ProjectTaskList extends JPanel implements EBComponent {
 
     private View view = null;
     private JTree tree = null;
+    private TaskComparator taskComparator = new TaskComparator();
+    private int sortColumn = jEdit.getIntegerProperty( "tasklist.table.sort-column", 1 );
+    private boolean sortAscending = jEdit.getBooleanProperty( "tasklist.table.sort-ascending", true );
 
     public ProjectTaskList( View view ) {
         this.view = view;
@@ -232,16 +235,11 @@ public class ProjectTaskList extends JPanel implements EBComponent {
             if ( tasks != null && tasks.size() > 0 ) {
                 // tasks were found for this buffer, so create the tree node for the buffer itself,
                 // then add tree nodes for the individual tasks.
-                // TODO: TaskList has some display options that need to be supported here
-                buffer_node = new DefaultMutableTreeNode( buffer.toString() );
+                buffer_node = new DefaultMutableTreeNode( buffer.getPath() );
 
-                // the "tasks" hashtable has the line number as the key, so putting
-                // "tasks" into a TreeMap sorts by line number
-                // TODO: TaskList has other sort options than line number, those need to be
-                // supported here.
-                TreeMap<Integer, Task> sorted_tasks = new TreeMap<Integer, Task>( tasks );
-                for ( Iterator tli = sorted_tasks.values().iterator(); tli.hasNext(); ) {
-                    Task task = ( Task ) tli.next();
+                ArrayList<Task> sorted_tasks = new ArrayList<Task>(tasks.values());
+                Collections.sort(sorted_tasks, taskComparator);
+                for ( Task task : sorted_tasks ) {
                     DefaultMutableTreeNode task_node = new DefaultMutableTreeNode( task );
                     buffer_node.add( task_node );
                 }
@@ -284,8 +282,33 @@ public class ProjectTaskList extends JPanel implements EBComponent {
                 repaint();
             }
             else if ( ParseBufferMessage.DO_PARSE_ALL.equals( bu.getWhat() ) ) {
-                System.out.println( "+++++ do parse all" );
                 loadProjectFiles( ProjectViewer.getActiveProject( view ) );
+            }
+        }
+        if ( msg instanceof PropertiesChanged ) {
+            int _sortColumn = jEdit.getIntegerProperty( "tasklist.table.sort-column", 1 );
+            boolean _sortAscending = jEdit.getBooleanProperty( "tasklist.table.sort-ascending", true );
+            if ( sortColumn != _sortColumn || sortAscending != _sortAscending ) {
+                DefaultMutableTreeNode root = ( DefaultMutableTreeNode ) tree.getModel().getRoot();
+                Enumeration bufferNodes = root.children();
+                while ( bufferNodes.hasMoreElements() ) {
+                    DefaultMutableTreeNode bufferNode = ( DefaultMutableTreeNode ) bufferNodes.nextElement();
+                    ArrayList<Task> tasks = new ArrayList<Task>();
+                    Enumeration taskNodes = bufferNode.children();
+                    while ( taskNodes.hasMoreElements() ) {
+                        DefaultMutableTreeNode taskNode = ( DefaultMutableTreeNode ) taskNodes.nextElement();
+                        tasks.add( ( Task ) taskNode.getUserObject() );
+                    }
+                    bufferNode.removeAllChildren();
+                    Collections.sort( tasks, taskComparator );
+                    for ( Task task : tasks ) {
+                        bufferNode.add( new DefaultMutableTreeNode( task ) );
+                    }
+                }
+                ( ( DefaultTreeModel ) tree.getModel() ).nodeStructureChanged( root );
+                for ( int i = tree.getRowCount(); i > 0; i-- ) {
+                    tree.expandRow( i );
+                }
             }
         }
     }

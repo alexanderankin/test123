@@ -14,6 +14,7 @@ import org.gjt.sp.util.Log;
 public class TaskListTable extends JPanel implements EBComponent {
     private boolean init = false;
     private View view = null;
+    private Buffer buffer = null;
     private JLabel bufferName = null;
     private JTable table = null;
 
@@ -24,9 +25,10 @@ public class TaskListTable extends JPanel implements EBComponent {
 
     public TaskListTable( View view, Buffer buffer, boolean showTableHeader ) {
         this.view = view;
-
+        this.buffer = buffer;
+        
         setLayout( new BorderLayout() );
-        bufferName = new JLabel( buffer.toString(), SwingConstants.LEFT ); 
+        bufferName = new JLabel( buffer.toString(), SwingConstants.LEFT );
         add( bufferName, BorderLayout.NORTH );
         table = new JTable();
         table.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
@@ -52,7 +54,7 @@ public class TaskListTable extends JPanel implements EBComponent {
         table.setDefaultRenderer( Number.class, null );
         table.setDefaultRenderer( String.class, new PaddedCellRenderer() );
 
-        TaskListModel taskListModel = new TaskListModel( buffer);
+        TaskListModel taskListModel = new TaskListModel( buffer );
         table.setModel( taskListModel );
         table.setShowVerticalLines( jEdit.getBooleanProperty( "tasklist.table.vertical-lines" ) );
         table.setShowHorizontalLines( jEdit.getBooleanProperty( "tasklist.table.horizontal-lines" ) );
@@ -82,8 +84,8 @@ public class TaskListTable extends JPanel implements EBComponent {
     } //}}}
 
     public void setBuffer( Buffer buffer ) {
-        bufferName.setText(buffer.toString());
-        TaskListModel taskListModel = new TaskListModel(buffer);
+        bufferName.setText( buffer.toString() );
+        TaskListModel taskListModel = new TaskListModel( buffer );
         table.setModel( taskListModel );
         resizeTable();
         sort();
@@ -142,7 +144,7 @@ public class TaskListTable extends JPanel implements EBComponent {
 
         // line number
         columnModel.getColumn( 1 ).setMinWidth( 50 );
-        columnModel.getColumn( 1 ).setPreferredWidth(50);
+        columnModel.getColumn( 1 ).setPreferredWidth( 50 );
         columnModel.getColumn( 1 ).setMaxWidth( 50 );
         columnModel.getColumn( 1 ).setResizable( false );
 
@@ -246,9 +248,9 @@ public class TaskListTable extends JPanel implements EBComponent {
                         public void run() {
                             Task task = ( Task ) getTaskListModel().elementAt( row );
                             EditPane[] editPanes = view.getEditPanes();
-                            Buffer buffer = jEdit.getBuffer(task.getBufferPath());
-                            if (buffer == null) {
-                                return;     // buffer not open   
+                            Buffer buffer = jEdit.getBuffer( task.getBufferPath() );
+                            if ( buffer == null ) {
+                                return ;     // buffer not open
                             }
                             for ( EditPane editPane : editPanes ) {
                                 Buffer[] buffers = editPane.getBufferSet().getAllBuffers();
@@ -311,13 +313,28 @@ public class TaskListTable extends JPanel implements EBComponent {
             boolean ascending = jEdit.getBooleanProperty( "tasklist.table.sort-ascending", true );
             getTaskListModel().setSortCol( col );
             getTaskListModel().setSortAscending( ascending );
+            getTaskListModel().sort();
+
+            String displayType = jEdit.getProperty( "tasklist.buffer.display" );
+            String bufferDisplay;
+            if ( displayType.equals( jEdit.getProperty( "options.tasklist.general.buffer.display.fullpath" ) ) ) {
+                bufferDisplay = buffer.getPath();
+            }
+            else if ( displayType.equals( jEdit.getProperty( "options.tasklist.general.buffer.display.nameonly" ) ) ) {
+                bufferDisplay = buffer.getName();
+            }
+            else {
+                // filename (directory)
+                bufferDisplay = buffer.toString();
+            }
+            bufferName.setText( bufferDisplay );
         }
     } //}}}
 
     // A cell renderer that puts 6 pixels of padding on the left side of the cell.
     class PaddedCellRenderer extends DefaultTableCellRenderer {
         Border paddedBorder = BorderFactory.createEmptyBorder( 0, 6, 0, 0 );
-        
+
         public Component getTableCellRendererComponent( JTable table,
                 Object value,
                 boolean isSelected,

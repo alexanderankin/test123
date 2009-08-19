@@ -78,7 +78,10 @@
         </javac>
     </target>
 	
+    <!--
     <target name="dist" depends="clean,compile,docs">
+    -->
+    <target name="dist" depends="clean,compile">
         <mkdir dir="${install.dir}"/>
         <jar jarfile="${install.dir}/${jar.name}">
             <fileset dir="${build.dir}"/>
@@ -104,14 +107,16 @@
         <antcall target="docs-${docs-proc.target}"/>
     </target>
 
-	<!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
-    <target name="docs-xsltproc">
-        <exec executable="xsltproc">
-            <arg value="--output"/>
-            <arg value="index.html"/>
-            <arg value="--catalogs"/>
-            <arg value="users-guide.xsl"/>
-            <arg value="users-guide.xml"/>
+	<!-- Generate docs with xsltproc tool -->
+    <target name="docs-xsltproc" description="Generate user documentation in html format with xsltproc">
+        <exec executable="${xsltproc.executable}">
+            <arg value="--output" />
+            <arg value="index.html" />
+            <arg value="--catalogs" />
+            <arg value="users-guide.xsl" />
+            <arg value="users-guide.xml" />
+            <env key="SGML_CATALOG_FILES"
+                 file="${docbook.catalog}" />
         </exec>
     </target>
 
