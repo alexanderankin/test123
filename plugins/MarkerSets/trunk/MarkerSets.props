@@ -40,7 +40,7 @@ marker-set-manager.longtitle=View and Manage Marker Sets
 marker-set-manager.label=Marker Sets
 
 # docs
-plugin.marker.MarkerSetsPlugin.docs=index.html
+plugin.marker.MarkerSetsPlugin.docs=description.html
 
 # messages
 marker-set-manager.msg.groupBy=Group markers by:
