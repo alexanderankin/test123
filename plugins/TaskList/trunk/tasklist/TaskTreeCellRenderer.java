@@ -1,15 +1,18 @@
 package tasklist;
 
 import java.awt.Component;
+import java.io.File;
 import javax.swing.JTree;
 import javax.swing.tree.*;
+import org.gjt.sp.jedit.jEdit;
+
 
 // Custom cell renderer to be able to use the icons from TaskList plugin.
 public class TaskTreeCellRenderer extends DefaultTreeCellRenderer {
 
     public Component getTreeCellRendererComponent(
         JTree tree,
-        Object value,                       // this will be a DefaultMutableTreeNode
+        Object value,                        // this will be a DefaultMutableTreeNode
         boolean selected,
         boolean expanded,
         boolean leaf,
@@ -18,14 +21,29 @@ public class TaskTreeCellRenderer extends DefaultTreeCellRenderer {
 
         // the user object is either a string containing the name of the
         // file or a Task
-        
+
         Object obj = ( ( DefaultMutableTreeNode ) value ).getUserObject();
-        if (obj == null ) {
-            return null;   
+        if ( obj == null ) {
+            return null;
         }
         if ( obj instanceof String ) {
             // file name node
             super.getTreeCellRendererComponent( tree, value, selected, expanded, leaf, row, hasFocus );
+            String bufferDisplay;
+            String displayType = jEdit.getProperty( "tasklist.buffer.display" );
+            if ( displayType.equals( jEdit.getProperty( "options.tasklist.general.buffer.display.fullpath" ) ) ) {
+                bufferDisplay = (String)obj;
+            }
+            else if ( displayType.equals( jEdit.getProperty( "options.tasklist.general.buffer.display.nameonly" ) ) ) {
+                File file = new File((String)obj);
+                bufferDisplay = file.getName();
+            }
+            else {
+                // filename (directory)
+                File file = new File((String)obj);
+                bufferDisplay = file.getName() + " (" + file.getParent() + ")";
+            }
+            setText(bufferDisplay);
             setIcon( null );
             return this;
         }
