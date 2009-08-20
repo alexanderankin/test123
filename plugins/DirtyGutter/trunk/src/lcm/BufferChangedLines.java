@@ -120,18 +120,29 @@ public class BufferChangedLines extends BufferAdapter
 			undoManager.undo();
 		else
 		{
-			CompoundChange compound = undoManager.new CompoundChange();
 			if (numLines != 0)
 			{
+				CompoundChange compound = undoManager.new CompoundChange();
 				RangeUpdate ru = undoManager.new RangeUpdate(changed, numLines);
 				ru.redo();
 				compound.add(ru);
+				mergeRanges(compound, changed);
+				RangeAdd ra = undoManager.new RangeAdd(changed);
+				ra.redo();
+				compound.add(ra);
+				undoManager.add(compound);
 			}
-			mergeRanges(compound, changed);
-			RangeAdd ra = undoManager.new RangeAdd(changed);
-			ra.redo();
-			compound.add(ra);
-			undoManager.add(compound);
+			else	// Short path for single-line changes
+			{
+				// If changed line already marked dirty - do nothing
+				// Otherwise - add changed line as a new range
+				if (! ranges.contains(changed))
+				{
+					RangeAdd ra = undoManager.new RangeAdd(changed);
+					ra.redo();
+					undoManager.add(ra);
+				}
+			}
 		}
 		printRanges();
 		LCMPlugin.getInstance().repaintAllTextAreas();
