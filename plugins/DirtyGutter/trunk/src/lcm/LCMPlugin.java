@@ -103,7 +103,8 @@ public class LCMPlugin extends EBPlugin
 		{
 			BufferUpdate bu = (BufferUpdate) message;
 			Buffer b = bu.getBuffer();
-			if (bu.getWhat() == BufferUpdate.SAVED)
+			if ((bu.getWhat() == BufferUpdate.SAVED) ||
+				(bu.getWhat() == BufferUpdate.LOADED))
 			{
 				BufferChangedLines bcl = getBufferChangedLines(b);
 				if (bcl != null)
