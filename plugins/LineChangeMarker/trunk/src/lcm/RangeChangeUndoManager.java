@@ -127,7 +127,7 @@ public class RangeChangeUndoManager
 		private Range precedingRange;
 		public RangeUpdate(Range r, int diff)
 		{
-			precedingRange = r;
+			precedingRange = new Range(r);	// Make a copy, 'r' can change...
 			lineDiff = diff;
 		}
 		@Override

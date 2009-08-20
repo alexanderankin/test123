@@ -28,6 +28,11 @@ package lcm;
 		this.first = first;
 		last = first + num - 1;
 	}
+	public Range(Range other)
+	{
+		first = other.first;
+		last = other.last;
+	}
 	public int compareTo(Object arg0)
 	{
 		Range other = (Range) arg0;
