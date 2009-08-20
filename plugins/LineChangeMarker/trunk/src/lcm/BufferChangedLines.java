@@ -52,7 +52,7 @@ public class BufferChangedLines extends BufferAdapter
 		if (lineDiff == 0)
 			return;
 		for (Range r: ranges.tailSet(precedingRange))
-			r.update(lineDiff);
+			r.update(precedingRange.first, lineDiff);
 	}
 
 	public BufferChangedLines(Buffer buffer)
@@ -110,21 +110,21 @@ public class BufferChangedLines extends BufferAdapter
 	private void handleContentChange(int numLines, Range changed)
 	{
 		if (buffer.isUndoInProgress())
-		{
 			undoManager.undo();
-			printRanges();
-			return;
+		else
+		{
+			CompoundChange compound = undoManager.new CompoundChange();
+			RangeUpdate ru = undoManager.new RangeUpdate(changed, numLines);
+			ru.redo();
+			compound.add(ru);
+			mergeRanges(compound, changed);
+			RangeAdd ra = undoManager.new RangeAdd(changed);
+			ra.redo();
+			compound.add(ra);
+			undoManager.add(compound);
 		}
-		CompoundChange compound = undoManager.new CompoundChange();
-		RangeUpdate ru = undoManager.new RangeUpdate(changed, numLines);
-		ru.redo();
-		compound.add(ru);
-		mergeRanges(compound, changed);
-		RangeAdd ra = undoManager.new RangeAdd(changed);
-		ra.redo();
-		compound.add(ra);
-		undoManager.add(compound);
 		printRanges();
+		LCMPlugin.getInstance().repaintAllTextAreas();
 	}
 
 	/*
