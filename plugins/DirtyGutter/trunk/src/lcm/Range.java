@@ -36,9 +36,11 @@ package lcm;
 	public int compareTo(Object arg0)
 	{
 		Range other = (Range) arg0;
-		// This check enables to use TreeSet<Range>.contains() on a 1-line
-		// range to see if it's in the set.
-		if (overlaps(other)) 
+		/* This check enables using TreeSet<Range>.contains() to find if:
+		 * - a 1-line range is in the set (any overlapping range contains it).
+		 * - a multi-line range overlaps with a range in the set.
+		 */
+		if (overlaps(other))
 			return 0;
 		if (first < other.first)
 			return (-1);
@@ -47,7 +49,7 @@ package lcm;
 		return 0;
 	}
 	// Returns true if this range overlaps with 'other'.
-	private boolean overlaps(Range other)
+	public boolean overlaps(Range other)
 	{
 		/* There are three overlap cases:
 		 * 1. First line of this range is inside 'other'.
@@ -62,9 +64,14 @@ package lcm;
 			 ((other.first < first) && (other.last >= first)));
 	}
 	// Returns true if this range and 'other' are consecutive.
-	private boolean consecutive(Range other)
+	public boolean consecutive(Range other)
 	{
 		return ((other.first == last + 1) || (other.last + 1 == first));
+	}
+	// Returns true if this range fully contains 'other'.
+	public boolean contains(Range other)
+	{
+		return ((first <= other.first) && (last >= other.last));
 	}
 	// Returns true if this range and 'other' overlap or are consecutive.
 	public boolean canMerge(Range other)
