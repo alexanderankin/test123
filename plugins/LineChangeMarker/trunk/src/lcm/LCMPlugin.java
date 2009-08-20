@@ -36,7 +36,8 @@ import org.gjt.sp.jedit.visitors.JEditVisitorAdapter;
 
 public class LCMPlugin extends EBPlugin
 {
-	static private final String DEBUGGING_PROP = "options.LCMPlugin.debug";
+	static public final String PROP_PREFIX = LCMOptions.PROP_PREFIX;
+	static private final String DEBUGGING_PROP = PROP_PREFIX + "debug";
 	static private LCMPlugin instance;
 	private HashMap<Buffer, BufferChangedLines> changes;
 	private HashMap<EditPane, ChangeMarker> markers;
