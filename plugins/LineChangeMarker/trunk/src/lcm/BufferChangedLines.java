@@ -84,20 +84,7 @@ public class BufferChangedLines extends BufferAdapter
 		// Check if the inserted range needs to be merged with an existing one
 		// Note: numLines==0 for single-line change
 		Range changed = new Range(startLine, numLines + 1);
-		// Content insertion can trigger many range changes, so a compound
-		// is created. Some of the changes are calculated now (mergeRanges),
-		// so it's important to perform each change before performing the
-		// calculations - cannot just 
-		CompoundChange compound = undoManager.new CompoundChange();
-		RangeUpdate ru = undoManager.new RangeUpdate(changed, numLines);
-		ru.redo();
-		compound.add(ru);
-		mergeRanges(compound, changed);
-		RangeAdd ra = undoManager.new RangeAdd(changed);
-		ra.redo();
-		compound.add(ra);
-		undoManager.add(compound);
-		printRanges();
+		handleContentChange(numLines, changed);
 	}
 
 	@Override
@@ -109,8 +96,27 @@ public class BufferChangedLines extends BufferAdapter
 			startLine--;
 		// Note: numLines==0 for single-line change
 		Range changed = new Range(startLine, 1);
+		handleContentChange(0 - numLines, changed);
+	}
+
+	/*
+	 * Content insertion or removal can trigger many range changes, e.g.
+	 * ranges can be removed and a new range is added, so a compound
+	 * is created. Some of the changes are calculated now (mergeRanges),
+	 * so it's important to perform each change on time, before performing
+	 * the calculations. Performing the compound as a whole would result
+	 * in incorrect computation.
+	 */
+	private void handleContentChange(int numLines, Range changed)
+	{
+		if (buffer.isUndoInProgress())
+		{
+			undoManager.undo();
+			printRanges();
+			return;
+		}
 		CompoundChange compound = undoManager.new CompoundChange();
-		RangeUpdate ru = undoManager.new RangeUpdate(changed, 0 - numLines);
+		RangeUpdate ru = undoManager.new RangeUpdate(changed, numLines);
 		ru.redo();
 		compound.add(ru);
 		mergeRanges(compound, changed);
