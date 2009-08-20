@@ -1,6 +1,7 @@
 package com.addictedtor.orchestra ;
 
 import org.af.commons.threading.ProgressDialog;
+import org.af.commons.widgets.WidgetFactory;
 import org.af.jhlir.tools.DirectoryGuesser;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -12,7 +13,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.Hashtable;
 
 /**
  * Options panel
@@ -26,9 +26,11 @@ public class OrchestraOptionPane extends AbstractOptionPane implements ActionLis
     protected static final Log logger = LogFactory.getLog(OrchestraOptionPane.class);
 
     public static final String OPTION_PREFIX = "options.orchestra.";
-    private Hashtable<String, JTextField> pathNames = new Hashtable<String, JTextField>();
     private JTextField tfRHome = new JTextField();
+    private JButton bSelectRHome = new JButton();
+    private JCheckBox chbShortcutEnabler = new JCheckBox("Create shortcut?");
     private JTextField tfShortcut = new JTextField();
+    private JButton bSelectShortcut = new JButton();
 
     public OrchestraOptionPane() {
         super("orchestra-optionpane");
@@ -38,15 +40,27 @@ public class OrchestraOptionPane extends AbstractOptionPane implements ActionLis
     	if( !OrchestraPlugin.isConfigured() ){
     		addComponent( new JLabel( "-- Please check the settings below, and click OK --" ) ) ;
     	}
-        addPathPanel("rhome", tfRHome);
-        addPathPanel("shortcut", tfShortcut);
+        addSeparator(OPTION_PREFIX + "rhome" + ".title");
+        addPathPanel("rhome", tfRHome, bSelectRHome);
+
+        addSeparator(OPTION_PREFIX + "shortcut" + ".title");
+        addComponent("", chbShortcutEnabler);
+        addPathPanel("shortcut", tfShortcut, bSelectShortcut);
+        WidgetFactory.registerEnabler(chbShortcutEnabler, tfShortcut);
+        WidgetFactory.registerEnabler(chbShortcutEnabler, bSelectShortcut);
+
         guessDirs();
     }
 
-    private void addPathPanel(String name, JTextField tf) {
-        pathNames.put(name, tf);
-        addSeparator(OPTION_PREFIX + name + ".title");
-        addComponent("", makePathPanel(name, tf));
+    private void addPathPanel(String name, JTextField tf, JButton b) {
+        tf.setText(jEdit.getProperty(OPTION_PREFIX + name + ".path"));
+        b.setText(jEdit.getProperty(OPTION_PREFIX + "choose-dir"));
+        b.setActionCommand("choose-" + name);
+        JPanel pathPanel = new JPanel(new BorderLayout(0, 0));
+        pathPanel.add(tf, BorderLayout.CENTER);
+        pathPanel.add(b, BorderLayout.EAST);
+        b.addActionListener(this);
+        addComponent("", pathPanel);
     }
 
     private void guessDirs() {
@@ -62,33 +76,23 @@ public class OrchestraOptionPane extends AbstractOptionPane implements ActionLis
         }
     }
 
-    private JPanel makePathPanel(String name, JTextField tf) {
-        tf.setText(jEdit.getProperty(OPTION_PREFIX + name + ".path"));
-        JButton pickPath = new JButton(jEdit.getProperty(OPTION_PREFIX + "choose-dir"));
-        pickPath.setActionCommand("choose-" + name);
-        JPanel pathPanel = new JPanel(new BorderLayout(0, 0));
-        pathPanel.add(tf, BorderLayout.CENTER);
-        pathPanel.add(pickPath, BorderLayout.EAST);
-        pickPath.addActionListener(this);
-        return pathPanel;
-    }
-
-
-
-    private void selectDir(String name) {
+    private void selectDir(JTextField tf) {
         JFileChooser fc = new JFileChooser();
         fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         int res = fc.showOpenDialog(this);
         if (res == JFileChooser.APPROVE_OPTION) {
             String dir = fc.getSelectedFile().getAbsolutePath();
-            pathNames.get(name).setText(dir);
+            tf.setText(dir);
         }
     }
 
     public void actionPerformed(ActionEvent e) {
         String ac = e.getActionCommand();
-        if (ac.startsWith("choose-")) {
-            selectDir(ac.substring(7));
+        if (ac.startsWith("choose-shortcut")) {
+            selectDir(tfShortcut);
+        }
+        if (ac.startsWith("choose-rhome")) {
+            selectDir(tfRHome);
         }
     }
 
@@ -103,15 +107,21 @@ public class OrchestraOptionPane extends AbstractOptionPane implements ActionLis
 		String javahome = System.getProperty("java.home");
         String shortcut = tfShortcut.getText();
 
+
         File rhomeFile = new File(rhome);
-        File shortcutFile = new File(shortcut);
 
         String err = null;
         if (!rhomeFile.exists() || !rhomeFile.isDirectory()) {
             err = "R home directory does not exist or is not a proper directory!";
         }
-        if (!shortcutFile.exists() || !shortcutFile.isDirectory()) {
-            err = "Directory for shortcut does not exist or is not a proper directory!";
+
+        if (!chbShortcutEnabler.isSelected())
+            shortcut = null;
+        else {
+            File shortcutFile = new File(shortcut);
+            if (!shortcutFile.exists() || !shortcutFile.isDirectory()) {
+                err = "Directory for shortcut does not exist or is not a proper directory!";
+            }
         }
 
         if (err != null) {
@@ -123,9 +133,10 @@ public class OrchestraOptionPane extends AbstractOptionPane implements ActionLis
                     rhome,
                     shortcut
             );
-            ProgressDialog<Void, String> pd = new ProgressDialog<Void, String>(jEdit.getActiveView(), "Orchestra Installation", i, true, null);
+            ProgressDialog<Void, String> pd = new ProgressDialog<Void, String>(
+                    this, "Orchestra Installation", i, true, true);
             pd.setSize(600,500);
-            pd.execute();
+            pd.setVisible(true);
         }
         logger.info("Saving options done.");
         

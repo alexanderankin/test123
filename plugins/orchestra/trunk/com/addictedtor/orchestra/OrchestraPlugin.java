@@ -7,6 +7,7 @@ import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.options.PluginOptions;
 
 import javax.swing.*;
 import java.io.File;
@@ -65,13 +66,21 @@ public class OrchestraPlugin extends EBPlugin {
         rootLogger.info("orchestra plugin started!");
         rootLogger.info("log4j configured.");
         rootLogger.info("log goes to: " + log.getAbsolutePath());
-        
-        // show the option dialog
-//        SwingUtilities.invokeLater(new Runnable() {
-//        	public void run() {
-//        		new PluginOptions( jEdit.getActiveView() , "orchestra" ) ;
-//        	}
-//        } );
+
+//        // show the option dialog
+        Thread t = new Thread() {
+            @Override
+            public void run() {
+                while(!jEdit.isStartupDone()) {}
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        new PluginOptions(jEdit.getActiveView(), "orchestra");
+                    }
+                });
+
+            }
+        };
+        t.start();
     }
 
     /**

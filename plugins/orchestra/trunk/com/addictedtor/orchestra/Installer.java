@@ -1,11 +1,11 @@
 package com.addictedtor.orchestra;
 
-import org.af.commons.OSTools;
-import org.af.commons.install.Desktop;
-import org.af.commons.install.FreeDesktop;
-import org.af.commons.install.WindowsDesktop;
+import org.af.commons.install.DesktopShortcut;
+import org.af.commons.install.FreeDesktopShortcut;
+import org.af.commons.install.WindowsDesktopShortcut;
 import org.af.commons.io.FileTransfer;
 import org.af.commons.threading.SafeSwingWorker;
+import org.af.commons.tools.OSTools;
 import org.af.jhlir.packages.CantFindPackageException;
 import org.af.jhlir.packages.RPackage;
 import org.af.jhlir.tools.RCmdBatch;
@@ -47,12 +47,16 @@ public class Installer extends SafeSwingWorker<Void, String> {
         this.pluginHomeDir = new File(pluginHomeDir);
         this.rHomeDir = new File(rHomeDir);
         this.rlibsDir = new File(rHomeDir, R_LIBS_DIR_NAME);
-        this.shortcutDir = new File(shortcutDir);
+        // null means no shortcut
+        if (shortcutDir != null)
+            this.shortcutDir = new File(shortcutDir);
+        else
+            this.shortcutDir = null;
         logger.info("Installer was started with:");
         logger.info("JEDIT_HOME:" + this.jeditHomeDir.getAbsolutePath());
         logger.info("PLUGIN_HOME:" + this.pluginHomeDir.getAbsolutePath());
         logger.info("R_HOME:" + this.rHomeDir.getAbsolutePath());
-        logger.info("Shortcut dir:" + this.shortcutDir.getAbsolutePath());
+        logger.info("Shortcut dir:" + this.shortcutDir);
     }
 
     private File extractRScript() throws IOException {
@@ -127,24 +131,23 @@ public class Installer extends SafeSwingWorker<Void, String> {
 
     private void createShortcut(File script) throws IOException{
         File rExe = new File(new File(rHomeDir, "bin"), "Rscript");
-        Desktop desktop;
+        DesktopShortcut dsc;
         File iconFile;
         if (OSTools.isWindows()) {
-            desktop = new WindowsDesktop();
-            ((WindowsDesktop)desktop).setWorkingDir(pluginHomeDir.getAbsolutePath());
+            dsc = new WindowsDesktopShortcut(shortcutDir, "Orchestra", rExe);
             iconFile = new File(pluginHomeDir, ICON_NAME_WINDOWS);
         } else {
-            desktop = new FreeDesktop();
+            dsc = new FreeDesktopShortcut(shortcutDir, "Orchestra", rExe);
             iconFile = new File(pluginHomeDir, ICON_NAME_LINUX);
         }
         logger.info("Shortcut target is: " + rExe.getAbsolutePath());
-        desktop.setExec(rExe.getAbsolutePath());
-        desktop.addParameter("--vanilla");
-        desktop.addParameter("--default-packages=\"base\"");
-        desktop.addParameter("\"" + script.getAbsolutePath() + "\"");
+        dsc.addParameter("--vanilla");
+        dsc.addParameter("--default-packages=\"base\"");
+        dsc.addParameter(script);
         logger.info("Shortcut icon is: " + iconFile);
-        desktop.setIconpath(iconFile.getAbsolutePath());
-        desktop.createDesktopEntry(shortcutDir, "Orchestra");
+        dsc.setIconpath(iconFile);
+        dsc.setWorkingDir(pluginHomeDir);
+        dsc.create();
     }
 
     private String forwardSlashes(String s) {
@@ -177,7 +180,7 @@ public class Installer extends SafeSwingWorker<Void, String> {
                 s = "CRAN: Orchestra R package was not found, trying to install from R-Forge.";
                 publish(s);
                 logger.info(s);
-                rCmdBatch.installRForgePackage("orchestra", rlibsDir);
+                    rCmdBatch.installRForgePackage("orchestra", rlibsDir);
             }
         }
     }
@@ -193,11 +196,10 @@ public class Installer extends SafeSwingWorker<Void, String> {
         File scriptFile = extractRScript();
         publish("Start script extracted.");
         setProgress(60);
-        extractOrchestraIcons();
-        publish("Desktop icons extracted.");
-        setProgress(80);
-        boolean createShortcut = true;
-        if (createShortcut) {
+        if (shortcutDir != null) {
+            extractOrchestraIcons();
+            publish("Desktop icons extracted.");
+            setProgress(80);
             logger.info("Creating shortcut entry in " + shortcutDir.getAbsolutePath());
             createShortcut(scriptFile);
             logger.info("Shortcut done.");
