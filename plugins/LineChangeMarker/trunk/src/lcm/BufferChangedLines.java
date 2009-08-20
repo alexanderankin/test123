@@ -63,6 +63,12 @@ public class BufferChangedLines extends BufferAdapter
 		buffer.addBufferListener(this);
 	}
 
+	public void remove()
+	{
+		buffer.removeBufferListener(this);
+		undoManager = null;
+	}
+
 	private void printRanges()
 	{
 		if (! LCMPlugin.getInstance().isDebugging())
