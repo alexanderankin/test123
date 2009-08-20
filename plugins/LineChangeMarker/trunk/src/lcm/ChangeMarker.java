@@ -31,6 +31,7 @@ import org.gjt.sp.jedit.textarea.TextAreaExtension;
 
 public class ChangeMarker extends TextAreaExtension
 {
+	static final int WIDTH = 12;
 	private EditPane editPane;
 
 	public ChangeMarker(EditPane editPane)
@@ -51,8 +52,8 @@ public class ChangeMarker extends TextAreaExtension
 		int width = ta.getGutter().getWidth();
 		int lineHeight = ta.getPainter().getFontMetrics().getHeight();
 		Color c = gfx.getColor();
-		gfx.setColor(Color.yellow);
-		gfx.fillRect(x + width / 2, y, width / 2 - 1, lineHeight);
+		gfx.setColor(LCMOptions.getBgColor());
+		gfx.fillRect(x + width - WIDTH, y, WIDTH, lineHeight);
 		gfx.setColor(c);
 	}
 
