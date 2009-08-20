@@ -75,6 +75,7 @@ public class BufferChangedLines extends BufferAdapter
 			sb.append("[" + current.first + "-" + current.last + "] ");
 		}
 		System.err.println(sb.toString());
+		System.err.println(undoManager.toString());
 	}
 
 	@Override
@@ -114,9 +115,12 @@ public class BufferChangedLines extends BufferAdapter
 		else
 		{
 			CompoundChange compound = undoManager.new CompoundChange();
-			RangeUpdate ru = undoManager.new RangeUpdate(changed, numLines);
-			ru.redo();
-			compound.add(ru);
+			if (numLines != 0)
+			{
+				RangeUpdate ru = undoManager.new RangeUpdate(changed, numLines);
+				ru.redo();
+				compound.add(ru);
+			}
 			mergeRanges(compound, changed);
 			RangeAdd ra = undoManager.new RangeAdd(changed);
 			ra.redo();

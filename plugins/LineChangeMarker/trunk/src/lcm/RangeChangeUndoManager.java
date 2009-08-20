@@ -40,6 +40,22 @@ public class RangeChangeUndoManager
 		head.redo();
 	}
 
+	public String toString()
+	{
+		StringBuilder sb = new StringBuilder("Undo: ");
+		RangeChange rc = listStart.next;
+		while (rc != null)
+		{
+			if (rc == head)
+				sb.append("-->");
+			sb.append(rc.toString());
+			rc = rc.next;
+			if (rc != null)
+				sb.append(",");
+		}
+		return sb.toString();
+	}
+
 	public abstract class RangeChange
 	{
 		public RangeChange prev = null, next = null;
@@ -76,6 +92,10 @@ public class RangeChangeUndoManager
 		{
 			bcl.add(r);
 		}
+		public String toString()
+		{
+			return "RangeAdd(" + r.first + "-" + r.last + ")";
+		}
 	}
 
 	public class RangeRemove extends RangeChange
@@ -94,6 +114,10 @@ public class RangeChangeUndoManager
 		public void redo()
 		{
 			bcl.remove(r);
+		}
+		public String toString()
+		{
+			return "RangeRemove(" + r.first + "-" + r.last + ")";
 		}
 	}
 
@@ -116,6 +140,11 @@ public class RangeChangeUndoManager
 		{
 			bcl.updateRanges(precedingRange, lineDiff);
 		}
+		public String toString()
+		{
+			return "RangeUpdate(" + precedingRange.first + "-" + precedingRange.last +
+				"," + lineDiff + ")";
+		}
 	}
 
 	public class CompoundChange extends RangeChange
@@ -136,6 +165,18 @@ public class RangeChangeUndoManager
 		{
 			for (int i = operations.size() - 1; i >= 0; i--)
 				operations.get(i).undo();
+		}
+		public String toString()
+		{
+			StringBuilder sb = new StringBuilder("CompoundChange:[");
+			for (int i = 0; i < operations.size(); i++)
+			{
+				if (i > 0)
+					sb.append(",");
+				sb.append(operations.get(i).toString());
+			}
+			sb.append("]");
+			return sb.toString();
 		}
 	}
 }
