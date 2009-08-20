@@ -36,6 +36,7 @@ public class BufferChangedLines extends BufferAdapter
 {
 	Buffer buffer;
 	TreeSet<Range> ranges;
+	RangeChangeUndoManager undoManager;
 
 	// Methods for supporting undo
 	public void add(Range r)
@@ -58,6 +59,7 @@ public class BufferChangedLines extends BufferAdapter
 	{
 		this.buffer = buffer;
 		ranges = new TreeSet<Range>();
+		undoManager = new RangeChangeUndoManager(this);
 		buffer.addBufferListener(this);
 	}
 
@@ -86,15 +88,15 @@ public class BufferChangedLines extends BufferAdapter
 		// is created. Some of the changes are calculated now (mergeRanges),
 		// so it's important to perform each change before performing the
 		// calculations - cannot just 
-		CompoundChange compound = new CompoundChange();
-		RangeUpdate ru = new RangeUpdate(this, changed, numLines);
+		CompoundChange compound = undoManager.new CompoundChange();
+		RangeUpdate ru = undoManager.new RangeUpdate(changed, numLines);
 		ru.redo();
 		compound.add(ru);
 		mergeRanges(compound, changed);
-		RangeAdd ra = new RangeAdd(this, changed);
+		RangeAdd ra = undoManager.new RangeAdd(changed);
 		ra.redo();
 		compound.add(ra);
-		RangeChangeUndoManager.add(compound);
+		undoManager.add(compound);
 		printRanges();
 	}
 
@@ -107,19 +109,26 @@ public class BufferChangedLines extends BufferAdapter
 			startLine--;
 		// Note: numLines==0 for single-line change
 		Range changed = new Range(startLine, 1);
-		CompoundChange compound = new CompoundChange();
-		RangeUpdate ru = new RangeUpdate(this, changed, 0 - numLines);
+		CompoundChange compound = undoManager.new CompoundChange();
+		RangeUpdate ru = undoManager.new RangeUpdate(changed, 0 - numLines);
 		ru.redo();
 		compound.add(ru);
 		mergeRanges(compound, changed);
-		RangeAdd ra = new RangeAdd(this, changed);
+		RangeAdd ra = undoManager.new RangeAdd(changed);
 		ra.redo();
 		compound.add(ra);
-		RangeChangeUndoManager.add(compound);
+		undoManager.add(compound);
 		printRanges();
 	}
 
-	// Merge all mergable ranges with 'changed', removing them from the set.
+	/*
+	 * Merge all mergable ranges with 'changed', removing them from the set.
+	 * Update 'changed' to the merged range. Ranges merged into 'changed' are
+	 * removed from the set, which will eventually be added to replace them.
+	 * The range removals should be recorded; the merge operation does not,
+	 * since eventually the addition of updated 'changed' range will be
+	 * recorded with the correct value.
+	 */
 	private void mergeRanges(CompoundChange compound, Range changed)
 	{
 		Iterator<Range> it = ranges.iterator();
@@ -135,7 +144,7 @@ public class BufferChangedLines extends BufferAdapter
 				found = true;
 				changed.merge(current);
 				// Current item will be replaced by merged range
-				RangeRemove rr = new RangeRemove(this, current);
+				RangeRemove rr = undoManager.new RangeRemove(current);
 				compound.add(rr);
 				removals.add(rr);
 			}
