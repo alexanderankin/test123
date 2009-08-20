@@ -4,12 +4,19 @@ import java.util.Vector;
 
 public class RangeChangeUndoManager
 {
-	// Keep two dummy nodes at the beginning and end of the list
-	static RangeChange listStart = new DummyNode();
+	// Keep a dummy node at the beginning of the list
+	RangeChange listStart = new DummyNode();
 	// Head points at the node for next Undo
-	static RangeChange head = listStart;
+	RangeChange head = listStart;
+	// The range set
+	private BufferChangedLines bcl;
 
-	public static void add(RangeChange op)
+	public RangeChangeUndoManager(BufferChangedLines bcl)
+	{
+		this.bcl = bcl;
+	}
+
+	public void add(RangeChange op)
 	{
 		op.prev = head;
 		op.next = null;
@@ -17,7 +24,7 @@ public class RangeChangeUndoManager
 		head = op;
 	}
 
-	public static void undo()
+	public void undo()
 	{
 		if (head == listStart)	// Nothing to undo
 			return;
@@ -25,7 +32,7 @@ public class RangeChangeUndoManager
 		head = head.prev;
 	}
 	
-	public static void redo()
+	public void redo()
 	{
 		if (head.next == null)	// Nothing to redo
 			return;
@@ -33,23 +40,14 @@ public class RangeChangeUndoManager
 		head.redo();
 	}
 
-	public static abstract class RangeChange
+	public abstract class RangeChange
 	{
 		public RangeChange prev = null, next = null;
-		protected BufferChangedLines bcl;
-		public RangeChange()
-		{
-			this(null);
-		}
-		public RangeChange(BufferChangedLines bcl)
-		{
-			this.bcl = bcl;
-		}
 		abstract void undo();
 		abstract void redo();
 	}
 
-	private static class DummyNode extends RangeChange
+	private class DummyNode extends RangeChange
 	{
 		@Override
 		public void redo()
@@ -61,12 +59,11 @@ public class RangeChangeUndoManager
 		}
 	}
 
-	public static class RangeAdd extends RangeChange
+	public class RangeAdd extends RangeChange
 	{
 		private Range r;
-		public RangeAdd(BufferChangedLines bcl, Range r)
+		public RangeAdd(Range r)
 		{
-			super(bcl);
 			this.r = r;
 		}
 		@Override
@@ -81,12 +78,11 @@ public class RangeChangeUndoManager
 		}
 	}
 
-	public static class RangeRemove extends RangeChange
+	public class RangeRemove extends RangeChange
 	{
 		private Range r;
-		public RangeRemove(BufferChangedLines bcl, Range r)
+		public RangeRemove(Range r)
 		{
-			super(bcl);
 			this.r = r;
 		}
 		@Override
@@ -101,13 +97,12 @@ public class RangeChangeUndoManager
 		}
 	}
 
-	public static class RangeUpdate extends RangeChange
+	public class RangeUpdate extends RangeChange
 	{
 		private int lineDiff;
 		private Range precedingRange;
-		public RangeUpdate(BufferChangedLines bcl, Range r, int diff)
+		public RangeUpdate(Range r, int diff)
 		{
-			super(bcl);
 			precedingRange = r;
 			lineDiff = diff;
 		}
@@ -123,7 +118,7 @@ public class RangeChangeUndoManager
 		}
 	}
 
-	public static class CompoundChange extends RangeChange
+	public class CompoundChange extends RangeChange
 	{
 		Vector<RangeChange> operations = new Vector<RangeChange>();
 		public void add(RangeChange op)
