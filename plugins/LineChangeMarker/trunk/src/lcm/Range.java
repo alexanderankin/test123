@@ -76,9 +76,11 @@ package lcm;
 			last = other.last;
 	}
 	// Update the line numbers in this range
-	public void update(int lineDiff)
+	public void update(int afterLine, int lineDiff)
 	{
-		first += lineDiff;
-		last += lineDiff;
+		if (first > afterLine)
+			first += lineDiff;
+		if (last > afterLine)
+			last += lineDiff;
 	}
 }
