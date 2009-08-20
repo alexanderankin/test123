@@ -21,6 +21,7 @@
 package lcm;
 
 import java.util.HashMap;
+import java.util.Vector;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBMessage;
@@ -68,7 +69,9 @@ public class LCMPlugin extends EBPlugin
 	{
 		synchronized(changes)
 		{
-			changes.remove(b);
+			BufferChangedLines bcl = changes.remove(b);
+			if (bcl != null)
+				bcl.remove();
 		}
 	}
 	
@@ -93,14 +96,7 @@ public class LCMPlugin extends EBPlugin
 				}
 			}
 			else if (epu.getWhat() == EditPaneUpdate.DESTROYED)
-			{
-				ChangeMarker cm = markers.get(ep);
-				if (cm != null)
-				{
-					cm.remove();
-					markers.remove(ep);
-				}
-			}
+				removeMarker(ep);
 		}
 		else if (message instanceof BufferUpdate)
 		{
@@ -117,6 +113,16 @@ public class LCMPlugin extends EBPlugin
 		}
 		else if (message instanceof PropertiesChanged)
 			isDebugging = jEdit.getBooleanProperty(DEBUGGING_PROP, false);
+	}
+
+	private void removeMarker(EditPane ep)
+	{
+		ChangeMarker cm = markers.get(ep);
+		if (cm != null)
+		{
+			cm.remove();
+			markers.remove(ep);
+		}
 	}
 
 	public void repaintAllTextAreas()
@@ -146,8 +152,14 @@ public class LCMPlugin extends EBPlugin
 	@Override
 	public void stop()
 	{
+		Vector<EditPane> editPanes = new Vector<EditPane>(markers.keySet());
+		for (EditPane ep: editPanes)
+			removeMarker(ep);
 		markers.clear();
 		markers = null;
+		Vector<Buffer> buffers = new Vector<Buffer>(changes.keySet());
+		for (Buffer b: buffers)
+			removeBufferChangedLines(b);
 		changes.clear();
 		changes = null;
 		instance = null;
