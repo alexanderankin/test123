@@ -21,7 +21,12 @@
 package lcm;
 import java.util.Iterator;
 import java.util.TreeSet;
+import java.util.Vector;
 
+import lcm.RangeChangeUndoManager.CompoundChange;
+import lcm.RangeChangeUndoManager.RangeAdd;
+import lcm.RangeChangeUndoManager.RangeRemove;
+import lcm.RangeChangeUndoManager.RangeUpdate;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.buffer.BufferAdapter;
@@ -29,72 +34,25 @@ import org.gjt.sp.jedit.buffer.JEditBuffer;
 
 public class BufferChangedLines extends BufferAdapter
 {
-	@SuppressWarnings("unchecked")
-	private static class Range implements Comparable
-	{
-		public int first, last;
-		public Range(int first, int num)
-		{
-			this.first = first;
-			last = first + num - 1;
-		}
-		public int compareTo(Object arg0)
-		{
-			Range other = (Range) arg0;
-			// This check enables to use TreeSet<Range>.contains() on a 1-line
-			// range to see if it's in the set.
-			if (overlaps(other)) 
-				return 0;
-			if (first < other.first)
-				return (-1);
-			if (first > other.first)
-				return 1;
-			return 0;
-		}
-		// Returns true if this range overlaps with 'other'.
-		private boolean overlaps(Range other)
-		{
-			/* There are three overlap cases:
-			 * 1. First line of this range is inside 'other'.
-			 * 2. Last line of this range is inside 'other'.
-			 * 3. 'other' is an absolute sub-range of this range.
-			 * Case (1) is covered by the first line below.
-			 * Cases (2) & (3) are identified by the first line of this range
-			 * preceding 'other', and the last line inside 'other' or
-			 * following it. 
-			 */
-			return  (((other.first >= first) && (other.first <= last)) ||
-				 ((other.first < first) && (other.last >= first)));
-		}
-		// Returns true if this range and 'other' are consecutive.
-		private boolean consecutive(Range other)
-		{
-			return ((other.first == last + 1) || (other.last + 1 == first));
-		}
-		// Returns true if this range and 'other' overlap or are consecutive.
-		public boolean canMerge(Range other)
-		{
-			return overlaps(other) || consecutive(other);
-		}
-		// Merge 'other' into this range.
-		// Note: this.canMerge(other) must be true to call this function.
-		public void merge(Range other)
-		{
-			if (other.first < first)
-				first = other.first;
-			if (other.last > last)
-				last = other.last;
-		}
-		// Update the line numbers in this range
-		public void update(int lineDiff)
-		{
-			first += lineDiff;
-			last += lineDiff;
-		}
-	}
-
 	Buffer buffer;
 	TreeSet<Range> ranges;
+
+	// Methods for supporting undo
+	public void add(Range r)
+	{
+		ranges.add(r);
+	}
+	public void remove(Range r)
+	{
+		ranges.remove(r);
+	}
+	public void updateRanges(Range precedingRange, int lineDiff)
+	{
+		if (lineDiff == 0)
+			return;
+		for (Range r: ranges.tailSet(precedingRange))
+			r.update(lineDiff);
+	}
 
 	public BufferChangedLines(Buffer buffer)
 	{
@@ -124,9 +82,19 @@ public class BufferChangedLines extends BufferAdapter
 		// Check if the inserted range needs to be merged with an existing one
 		// Note: numLines==0 for single-line change
 		Range changed = new Range(startLine, numLines + 1);
-		updateRanges(changed, numLines);
-		mergeRanges(changed);
-		ranges.add(changed);
+		// Content insertion can trigger many range changes, so a compound
+		// is created. Some of the changes are calculated now (mergeRanges),
+		// so it's important to perform each change before performing the
+		// calculations - cannot just 
+		CompoundChange compound = new CompoundChange();
+		RangeUpdate ru = new RangeUpdate(this, changed, numLines);
+		ru.redo();
+		compound.add(ru);
+		mergeRanges(compound, changed);
+		RangeAdd ra = new RangeAdd(this, changed);
+		ra.redo();
+		compound.add(ra);
+		RangeChangeUndoManager.add(compound);
 		printRanges();
 	}
 
@@ -139,26 +107,26 @@ public class BufferChangedLines extends BufferAdapter
 			startLine--;
 		// Note: numLines==0 for single-line change
 		Range changed = new Range(startLine, 1);
-		updateRanges(changed, 0 - numLines);
-		mergeRanges(changed);
-		ranges.add(changed);
-		LCMPlugin.getInstance().repaintAllTextAreas();
+		CompoundChange compound = new CompoundChange();
+		RangeUpdate ru = new RangeUpdate(this, changed, 0 - numLines);
+		ru.redo();
+		compound.add(ru);
+		mergeRanges(compound, changed);
+		RangeAdd ra = new RangeAdd(this, changed);
+		ra.redo();
+		compound.add(ra);
+		RangeChangeUndoManager.add(compound);
 		printRanges();
 	}
 
-	private void updateRanges(Range changed, int lineDiff)
-	{
-		if (lineDiff == 0)
-			return;
-		for (Range r: ranges.tailSet(changed))
-			r.update(lineDiff);
-	}
-
 	// Merge all mergable ranges with 'changed', removing them from the set.
-	private void mergeRanges(Range changed)
+	private void mergeRanges(CompoundChange compound, Range changed)
 	{
 		Iterator<Range> it = ranges.iterator();
 		boolean found = false;
+		// Defer removals until the iteration is over, to prevent
+		// ConcurrentModificationException.
+		Vector<RangeRemove> removals = new Vector<RangeRemove>();
 		while (it.hasNext())
 		{
 			Range current = it.next();
@@ -166,11 +134,17 @@ public class BufferChangedLines extends BufferAdapter
 			{
 				found = true;
 				changed.merge(current);
-				it.remove(); // Current item will be replaced by merged range
+				// Current item will be replaced by merged range
+				RangeRemove rr = new RangeRemove(this, current);
+				compound.add(rr);
+				removals.add(rr);
 			}
 			else if (found)	// Merge all relevant ranges
-				return;
+				break;
 		}
+		// Perform the deferred removals.
+		for (RangeRemove rr: removals)
+			rr.redo();
 	}
 
 	public boolean isChanged(int line)
