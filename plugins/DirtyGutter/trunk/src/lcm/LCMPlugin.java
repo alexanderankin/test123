@@ -86,18 +86,10 @@ public class LCMPlugin extends EBPlugin
 			if ((epu.getWhat() == EditPaneUpdate.CREATED) ||
 				(epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED))
 			{
-				Buffer b = ep.getBuffer();
-				if (getBufferChangedLines(b) == null)
-					createBufferChangedLines(b);
-				ChangeMarker cm = markers.get(ep);
-				if (cm == null)
-				{
-					cm = new ChangeMarker(ep);
-					markers.put(ep, cm);
-				}
+				initEditPane(ep);
 			}
 			else if (epu.getWhat() == EditPaneUpdate.DESTROYED)
-				removeMarker(ep);
+				uninitEditPane(ep);
 		}
 		else if (message instanceof BufferUpdate)
 		{
@@ -117,16 +109,6 @@ public class LCMPlugin extends EBPlugin
 			isDebugging = jEdit.getBooleanProperty(DEBUGGING_PROP, false);
 	}
 
-	private void removeMarker(EditPane ep)
-	{
-		ChangeMarker cm = markers.get(ep);
-		if (cm != null)
-		{
-			cm.remove();
-			markers.remove(ep);
-		}
-	}
-
 	public void repaintAllTextAreas()
 	{
 		jEdit.visit(new JEditVisitorAdapter() {
@@ -142,6 +124,46 @@ public class LCMPlugin extends EBPlugin
 		return isDebugging;
 	}
 
+	private class EditPaneVisitor extends JEditVisitorAdapter
+	{
+		boolean start;
+		
+		public EditPaneVisitor(boolean start)
+		{
+			this.start = start;
+		}
+		
+		public void visit(EditPane editPane) {
+			if (start)
+				initEditPane(editPane);
+			else
+				uninitEditPane(editPane);
+		}
+	}
+	
+	private void initEditPane(EditPane ep)
+	{
+		Buffer b = ep.getBuffer();
+		if (getBufferChangedLines(b) == null)
+			createBufferChangedLines(b);
+		ChangeMarker cm = markers.get(ep);
+		if (cm == null)
+		{
+			cm = new ChangeMarker(ep);
+			markers.put(ep, cm);
+		}
+	}
+
+	private void uninitEditPane(EditPane ep)
+	{
+		ChangeMarker cm = markers.get(ep);
+		if (cm != null)
+		{
+			cm.remove();
+			markers.remove(ep);
+		}
+	}
+
 	@Override
 	public void start()
 	{
@@ -149,6 +171,7 @@ public class LCMPlugin extends EBPlugin
 		changes = new HashMap<Buffer, BufferChangedLines>();
 		markers = new HashMap<EditPane, ChangeMarker>();
 		isDebugging = jEdit.getBooleanProperty(DEBUGGING_PROP, false);
+		jEdit.visit(new EditPaneVisitor(true));
 	}
 
 	@Override
@@ -156,7 +179,7 @@ public class LCMPlugin extends EBPlugin
 	{
 		Vector<EditPane> editPanes = new Vector<EditPane>(markers.keySet());
 		for (EditPane ep: editPanes)
-			removeMarker(ep);
+			uninitEditPane(ep);
 		markers.clear();
 		markers = null;
 		Vector<Buffer> buffers = new Vector<Buffer>(changes.keySet());
@@ -166,5 +189,16 @@ public class LCMPlugin extends EBPlugin
 		changes = null;
 		instance = null;
 	}
-	
+
+	public void toggle(EditPane ep)
+	{
+		if (markers.containsKey(ep))
+			uninitEditPane(ep);
+		else
+			initEditPane(ep);
+	}
+	public boolean isEnabled(EditPane ep)
+	{
+		return markers.containsKey(ep);
+	}
 }
