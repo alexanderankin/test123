@@ -86,6 +86,12 @@ tasklist.popup.delete-task=Delete task
 tasklist.popup.delete-task-tag=Delete task tag
 tasklist.popup.delete-entire-tag=Delete entire task
 tasklist.popup.parse-buffer=Parse buffer
+tasklist.popup.sortby=Sort by
+tasklist.popup.linenumber=Line number
+tasklist.popup.tasktype=Task type
+tasklist.popup.sortdirection=Sort direction
+tasklist.popup.ascending=Ascending
+tasklist.popup.descending=Descending
 
 # error message string
 tasklist.popup.parse-error=Buffer has changed since last parse. Try again.
@@ -157,9 +163,11 @@ tasklist.icons=stock_about-16.png \
 tasklist.openfiles.open-files=Open Files:
 tasklist.openfiles.wait=Please wait, loading tasks from open files...
 tasklist.no-tasks-found=No tasks found.
-tasklist.projectfiles.wait=Please wait, loading project tasks...
+tasklist.projectfiles.wait=Please wait, loading tasks for project
 tasklist.projectfiles.project=Project:
-tasllist.projectfiles.noproject=No project is open.
+tasklist.projectfiles.noproject=No project is open.
+tasklist.projectfiles.stop=Stop
+tasklist.projectfiles.start=Start
 
 # Task List task types
 # ^(tasklist.tasktype.\d.\w+)=(.+)$ -> jEdit.setProperty("$1","$2");

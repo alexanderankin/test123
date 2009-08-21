@@ -128,5 +128,3 @@ public class Task {
 	private int endOffset;
 	//}}}
 }
-
-// :collapseFolds=1:folding=explicit:indentSize=4:lineSeparator=\n:noTabs=false:tabSize=4:

@@ -33,7 +33,7 @@ import javax.swing.tree.*;
 import javax.swing.*;
 
 import org.gjt.sp.jedit.*;
-
+import org.gjt.sp.jedit.msg.PropertiesChanged;
 
 /**
  * A popup menu for the TaskList plugin
@@ -90,11 +90,17 @@ public class TaskListPopup extends JPopupMenu {
         if ( getTask() == null ) {
             changeMenu.setEnabled( false );
             deleteMenu.setEnabled( false );
-            parseBuffer.setEnabled( false );
-            if ( parseAll != null ) {
-                parseAll.setEnabled( false );
-            }
         }
+
+        BoundedMenu sortMenu = new BoundedMenu( jEdit.getProperty( "tasklist.popup.sortby", "Sort by" ) );
+        sortMenu.add( createMenuItem( jEdit.getProperty( "tasklist.popup.linenumber", "Line number" ), "sort-by-line-number" ) );
+        sortMenu.add( createMenuItem( jEdit.getProperty( "tasklist.popup.tasktype", "Task type" ), "sort-by-task-type" ) );
+        add( sortMenu );
+
+        BoundedMenu sortDirectionMenu = new BoundedMenu( jEdit.getProperty( "tasklist.popup.sortdirection", "Sort direction" ) );
+        sortDirectionMenu.add( createMenuItem( jEdit.getProperty( "tasklist.popup.ascending", "Ascending" ), "sort-ascending" ) );
+        sortDirectionMenu.add( createMenuItem( jEdit.getProperty( "tasklist.popup.descending", "Descending" ), "sort-descending" ) );
+        add( sortDirectionMenu );
 
     }
 
@@ -158,10 +164,12 @@ public class TaskListPopup extends JPopupMenu {
             Dimension dList = comp.getSize();
             Dimension dPopup = getPopupMenu().getPreferredSize();
             Point pThis = this.getLocation();
-            if ( pPopup.x + dPopup.width > dList.width )
+            if ( pPopup.x + dPopup.width > dList.width ) {
                 pPopup.x -= ( dPopup.width + dParent.width );
-            if ( pPopup.y + pThis.y + dPopup.height > dList.height )
+            }
+            if ( pPopup.y + pThis.y + dPopup.height > dList.height ) {
                 pPopup.y -= ( dPopup.height - dParent.height + pThis.y );
+            }
             SwingUtilities.convertPointToScreen( pPopup, comp );
             SwingUtilities.convertPointFromScreen( pPopup, parent );
             return pPopup;
@@ -205,36 +213,50 @@ public class TaskListPopup extends JPopupMenu {
 
         public void actionPerformed( ActionEvent evt ) {
             Task task = getTask();
-            if ( task == null ) {
-                return ;
-            }
+            String bufferPath = task == null ? getBufferPath() : task.getBufferPath();
             String cmd = evt.getActionCommand();
-            Buffer buffer = jEdit.getBuffer(task.getBufferPath());
-            if (buffer == null) {
-                File f = new File(task.getBufferPath());
-                buffer = jEdit.openTemporary(view, f.getParent(), f.getName(), false);
+            Buffer buffer = jEdit.getBuffer( bufferPath );
+            if ( buffer == null ) {
+                File f = new File( bufferPath );
+                buffer = jEdit.openTemporary( view, f.getParent(), f.getName(), false );
+                buffer.setMode( TaskListPlugin.getMode( f ) );
             }
-            
-            if ( cmd.equals( "parse-buffer" ) ) {
+
+            if ( "parse-buffer".equals( cmd ) ) {
                 EditBus.send( new ParseBufferMessage( view, buffer, ParseBufferMessage.DO_PARSE ) );
                 return ;
             }
-            else if ( cmd.equals( "parse-all" ) ) {
+            else if ( "parse-all".equals( cmd ) ) {
                 EditBus.send( new ParseBufferMessage( view, buffer, ParseBufferMessage.DO_PARSE_ALL ) );
                 return ;
             }
-            else if ( cmd.equals( "%Dtask" ) ) {
-                TaskListPlugin.removeTask( view, buffer, task );
+            else if ( "sort-by-line-number".equals( cmd ) ) {
+                jEdit.setIntegerProperty( "tasklist.table.sort-column", 1 );
+                EditBus.send(new PropertiesChanged(null));
             }
-            else {
-                if ( cmd.equals( "%Dtag" ) ) {
+            else if ( "sort-by-task-type".equals( cmd ) ) {
+                jEdit.setIntegerProperty( "tasklist.table.sort-column", 2 );
+                EditBus.send(new PropertiesChanged(null));
+            }
+            else if ( "sort-ascending".equals( cmd ) ) {
+                jEdit.setBooleanProperty( "tasklist.table.sort-ascending", true);
+                EditBus.send(new PropertiesChanged(null));
+            }
+            else if ( "sort-descending".equals( cmd ) ) {
+                jEdit.setBooleanProperty( "tasklist.table.sort-ascending", false);
+                EditBus.send(new PropertiesChanged(null));
+            }
+            else if ( task != null ) {
+                if ( "%Dtask".equals( cmd ) ) {
+                    TaskListPlugin.removeTask( view, buffer, task );
+                }
+                else if ( "%Dtag".equals( cmd ) ) {
                     TaskListPlugin.removeTag( view, buffer, task );
                 }
                 else {
                     TaskListPlugin.replaceTag( view, buffer, task, cmd );
                 }
             }
-            view = null;
         }
     }
 
@@ -257,5 +279,17 @@ public class TaskListPopup extends JPopupMenu {
             Task task = ( Task ) userObject;
             return task;
         }
+    }
+
+    private String getBufferPath() {
+        if ( comp instanceof JTree ) {
+            JTree tree = ( JTree ) comp;
+            TreePath path = tree.getPathForLocation( point.x, point.y );
+            DefaultMutableTreeNode node = ( DefaultMutableTreeNode ) path.getLastPathComponent();
+            if ( node.getParent().equals( tree.getModel().getRoot() ) ) {
+                return node.getUserObject().toString();
+            }
+        }
+        return null;
     }
 }

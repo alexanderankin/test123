@@ -36,6 +36,7 @@ package tasklist;
 //{{{ imports
 import java.awt.Color;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.util.HashSet;
 import java.util.HashMap;
@@ -327,14 +328,9 @@ public class TaskListPlugin extends EditPlugin {
     */
     public static void loadParseModes() {
         parseModes.clear();
-
         Mode[] modes = jEdit.getModes();
-        for ( int i = 0; i < modes.length; i++ ) {
-            Boolean parse = Boolean.valueOf(
-                        jEdit.getBooleanProperty(
-                            "options.tasklist.parse." + modes[ i ].getName(), true ) );
-
-            parseModes.put( modes[ i ].getName(), parse );
+        for ( Mode mode : modes ) {
+            parseModes.add( mode );
         }
     } //}}}
 
@@ -371,10 +367,10 @@ public class TaskListPlugin extends EditPlugin {
 
 
     /**
-     * A collection to track which buffer modes to parse
-     * tasks from and which to skip.
+     * A collection to track which buffer modes to parse for tasks.  Modes not
+     * in this list won't be parsed.
      */
-    private static HashMap<String, Boolean> parseModes = new HashMap<String, Boolean>();
+    private static Set<Mode> parseModes = new HashSet<Mode>();
     //}}}
 
     //{{{ requestTasksForBuffer() method
@@ -384,9 +380,11 @@ public class TaskListPlugin extends EditPlugin {
     * <p>
     * NOTE: This method will not cause a re-parse of a buffer.
     */
-    public synchronized static HashMap<Integer, Task> requestTasksForBuffer( final Buffer buffer ) {
-        if ( buffer == null || buffer.isLoaded() == false )
+    public synchronized static HashMap<Integer, Task>
+    requestTasksForBuffer( final Buffer buffer ) {
+        if ( buffer == null || buffer.isLoaded() == false ) {
             return null;
+        }
 
         HashMap<Integer, Task> taskMap = bufferMap.get( buffer.getPath() );
 
@@ -409,8 +407,8 @@ public class TaskListPlugin extends EditPlugin {
      * @param buffer the Buffer to be parsed for task data.
      */
     public synchronized static void extractTasks( final Buffer buffer ) {
-        if (buffer == null) {
-            return;   
+        if ( buffer == null ) {
+            return ;
         }
         // NOTE: remove this if this method becomes private
         if ( buffer.isLoaded() == false ) {
@@ -437,20 +435,15 @@ public class TaskListPlugin extends EditPlugin {
      * @param buffer the Buffer to be parsed
      */
     public synchronized static void parseBuffer( Buffer buffer ) {
-        if (buffer == null) {
-            return;   
+        if ( buffer == null ) {
+            return ;
         }
-        
+
         TaskListPlugin.clearTasks( buffer );
         boolean doParse = true;
 
         // if this file's mode is not to be parsed, skip it
-        String mode = buffer.getMode().getName();
-
-        // if mode has been added to jEdit but is not listed
-        // in parseModes, then use default (true)
-        if ( parseModes.containsKey( mode ) )
-            doParse = ( ( Boolean ) parseModes.get( mode ) ).booleanValue();
+        doParse = parseModes.contains( buffer.getMode() );
 
         if ( !doParse ) {
             // fill with empty HashMap of tasks
@@ -496,9 +489,7 @@ public class TaskListPlugin extends EditPlugin {
                     }
                     String text = buffer.getText( chunkStart, chunkLength );
 
-                    // NOTE might want to have task types in an array
-                    for ( int i = 0; i < taskTypes.size(); i++ ) {
-                        TaskType taskType = taskTypes.get( i );
+                    for ( TaskType taskType : taskTypes ) {
                         Task task = taskType.extractTask( buffer, text, lineNum, chunkStart - lineStart );
                         if ( task != null ) {
                             TaskListPlugin.addTask( task );
@@ -516,12 +507,14 @@ public class TaskListPlugin extends EditPlugin {
         // after a buffer has been parsed, bufferMap should contain
         // an empty set of tasks, if there are not, not a null set
         // (a null set is used to indicate the buffer has never been parsed)
-        if ( bufferMap.get( buffer.getPath() ) == null )
+        if ( bufferMap.get( buffer.getPath() ) == null ) {
             bufferMap.put( buffer.getPath(), new HashMap<Integer, Task>() );
+        }
 
-        if ( TaskListPlugin.DEBUG )
+        if ( TaskListPlugin.DEBUG ) {
             Log.log( Log.DEBUG, TaskListPlugin.class,
                     "TaskListPlugin.parseBuffer(...) DONE" );
+        }
 
         // remove 'buffer' from parse queue
         parseRequests.remove( buffer );
@@ -533,9 +526,10 @@ public class TaskListPlugin extends EditPlugin {
     * @param task the Task to be added.
     */
     private static void addTask( Task task ) {
-        if ( TaskListPlugin.DEBUG )
+        if ( TaskListPlugin.DEBUG ) {
             Log.log( Log.DEBUG, TaskListPlugin.class,
                     "TaskListPlugin.addTask(" + task.toString() + ")" ); //##
+        }
 
         HashMap<Integer, Task> taskMap = bufferMap.get( task.getBufferPath() );
 
@@ -561,9 +555,10 @@ public class TaskListPlugin extends EditPlugin {
     * @param buffer the Buffer whose tasks are to be removed.
     */
     private static void clearTasks( Buffer buffer ) {
-        if ( TaskListPlugin.DEBUG )
+        if ( TaskListPlugin.DEBUG ) {
             Log.log( Log.DEBUG, TaskListPlugin.class,
                     "TaskListPlugin.clearTasks(" + buffer.toString() + ")" ); //##
+        }
 
         HashMap<Integer, Task> taskMap = bufferMap.get( buffer.getPath() );
 
@@ -595,7 +590,7 @@ public class TaskListPlugin extends EditPlugin {
 
     //{{{ removeTaskTag method
     public static void removeTag( View view, Buffer buffer, Task task ) {
-        if ( buffer == null || buffer.isReadOnly() || task == null) {
+        if ( buffer == null || buffer.isReadOnly() || task == null ) {
             view.getToolkit().beep();
             return ;
         }
@@ -632,27 +627,39 @@ public class TaskListPlugin extends EditPlugin {
         // TODO: is this necessary now?
         TaskListPlugin.parseBuffer( buffer );
     } //}}}
-    
+
     /**
      * Helper method to find the mode for the given file.  This is intended for
      * finding the mode of a temporary buffer.  Actual opened buffers already
      * have a mode.
-     * @param bufferPath Full path for a buffer as returned by Buffer.getPath().
+     * @param file The file for a buffer.
+     * @return the mode of the buffer or null if not found in our list of 
+     * nodes we are allowed to parse.
      */
-    public static Mode getMode( String bufferPath ) {
+    public static Mode getMode( File file ) {
+        if (file == null) {
+            return null;   
+        }
         try {
-            BufferedReader reader = new BufferedReader( new FileReader( bufferPath ) );
-            String firstLine = reader.readLine();
-            reader.close();
-            Mode[] modes = jEdit.getModes();
-            for ( Mode mode : modes ) {
-                if ( mode.accept( bufferPath, firstLine ) ) {
+            if ( parseModes.size() == 0 ) {
+                loadParseModes();
+            }
+            String firstLine = null;
+            for ( Mode mode : parseModes ) {
+                if ( mode.acceptFilename( file.getName() ) ) {
+                    return mode;
+                }
+                if ( firstLine == null ) {
+                    BufferedReader reader = new BufferedReader( new FileReader( file ) );
+                    firstLine = reader.readLine();
+                    reader.close();
+                }
+                if ( mode.acceptFirstLine( firstLine ) ) {
                     return mode;
                 }
             }
         }
         catch ( Exception e ) {}        // NOPMD
-
         return null;
     }
 
