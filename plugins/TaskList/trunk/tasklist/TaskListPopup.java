@@ -157,8 +157,10 @@ public class TaskListPopup extends JPopupMenu {
         private Point setLocation() {
             Component parent = getParent();
             Dimension dParent = parent.getPreferredSize();
-            /* NOTE: default location of child popup menu */
+            
+            // default location of child popup menu 
             Point pPopup = new Point( dParent.width - 1 , -1 );
+            
             SwingUtilities.convertPointToScreen( pPopup, parent );
             SwingUtilities.convertPointFromScreen( pPopup, comp );
             Dimension dList = comp.getSize();

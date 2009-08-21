@@ -153,7 +153,8 @@ public class TaskListTaskTypesOptionPane extends AbstractOptionPane {
             Object source = evt.getSource();
 
             if ( source == editBtn ) {
-                // QUESTION: update?
+                // QUESTION: update? If the user changes the icon, the already existing tasks
+                // won't change their display until the plugin itself is reloaded.
                 TaskType taskType = ( TaskType ) typesList.getSelectedValue();
                 new TaskTypeDialog( TaskListTaskTypesOptionPane.this, taskType,
                         TaskListTaskTypesOptionPane.this.iconList );
@@ -209,7 +210,8 @@ public class TaskListTaskTypesOptionPane extends AbstractOptionPane {
     class MouseHandler extends MouseAdapter {
         public void mouseClicked( MouseEvent evt ) {
             if ( evt.getClickCount() == 2 ) {
-                // QUESTION: update?
+                // QUESTION: update? If the user changes the icon, the already existing tasks
+                // won't change their display until the plugin itself is reloaded.
                 TaskType taskType = ( TaskType ) typesList.getSelectedValue();
                 new TaskTypeDialog( TaskListTaskTypesOptionPane.this, taskType, TaskListTaskTypesOptionPane.this.iconList );
                 typesList.repaint();
