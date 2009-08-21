@@ -32,6 +32,8 @@ package tasklist;
 
 import java.awt.BorderLayout;
 import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.*;
 import javax.swing.*;
@@ -108,7 +110,10 @@ public class ProjectTaskList extends JPanel implements EBComponent {
     }
 
     class Runner extends SwingWorker<TreeModel, Object> {
-        VPTProject project;
+
+        private VPTProject project;
+        private JProgressBar progressBar = new JProgressBar(0, 100);
+
         public Runner( VPTProject project ) {
             this.project = project;
         }
@@ -120,12 +125,27 @@ public class ProjectTaskList extends JPanel implements EBComponent {
                     new Runnable() {
                         public void run() {
                             ProjectTaskList.this.removeAll();
-                            add( new JLabel( jEdit.getProperty( "tasklist.projectfiles.wait", "Please wait, loading tasks for project" ) + " " + project.getName() ), BorderLayout.CENTER );
+
+                            JPanel progressPanel = new JPanel();
+                            progressBar.setStringPainted(true);
+                            progressPanel.add( progressBar, BorderLayout.CENTER);
                             JPanel btnPanel = new JPanel();
                             btnPanel.add( stopButton );
-                            ProjectTaskList.this.add( btnPanel, BorderLayout.SOUTH );
+
+                            ProjectTaskList.this.add( new JLabel( jEdit.getProperty( "tasklist.projectfiles.wait", "Please wait, loading tasks for project" ) + " " + project.getName() ), BorderLayout.NORTH );
+                            ProjectTaskList.this.add( progressPanel, BorderLayout.CENTER );
+                            ProjectTaskList.this.add(btnPanel, BorderLayout.SOUTH);
                             ProjectTaskList.this.invalidate();
                             ProjectTaskList.this.validate();
+                        }
+                    }
+                );
+                addPropertyChangeListener(
+                    new PropertyChangeListener() {
+                        public void propertyChange(PropertyChangeEvent evt) {
+                            if ("progress".equals(evt.getPropertyName())) {
+                                progressBar.setValue((Integer)evt.getNewValue());
+                            }
                         }
                     }
                 );
@@ -146,6 +166,7 @@ public class ProjectTaskList extends JPanel implements EBComponent {
                         public void run() {
                             ProjectTaskList.this.removeAll();
                             JPanel btnPanel = new JPanel();
+                            btnPanel.add(startButton);
                             ProjectTaskList.this.add( btnPanel, BorderLayout.SOUTH );
                             ProjectTaskList.this.invalidate();
                             ProjectTaskList.this.validate();
@@ -192,6 +213,72 @@ public class ProjectTaskList extends JPanel implements EBComponent {
             );
             runner = null;
         }
+
+        protected TreeModel buildTreeModel( VPTProject project ) {
+
+            DefaultMutableTreeNode root = new DefaultMutableTreeNode( jEdit.getProperty( "tasklist.projectfiles.project", "Project:" ) + " " + project.getName() );
+            SortableTreeModel model = new SortableTreeModel( root, new TreeNodeStringComparator() );
+
+            List<String> toScan = getBuffersToScan( project );
+            for ( int i = 0; i < toScan.size(); i++ ) {
+                if (isCancelled()) {
+                    return model;
+                }
+                String path = toScan.get(i);
+
+                setProgress(100 * i / toScan.size());
+
+                File file = new File( path );
+
+                // the buffer could already be open in jEdit.  If so, don't
+                // close it below.
+                Buffer buffer = jEdit.getBuffer( file.getAbsolutePath() );
+                boolean can_close = false;
+                if ( buffer == null ) {
+                    // file is not open, so open it.  Note that the mode must be
+                    // set explicitly since openTemporary won't actually set the mode
+                    // and TaskList will fail if the mode is missing.  openTemporary
+                    // is preferred over openFile since openTemporary won't send EditBus
+                    // messages nor is the buffer added to the buffer list.
+                    buffer = jEdit.openTemporary( jEdit.getActiveView(), file.getParent(), file.getName(), false );
+                    Mode mode = TaskListPlugin.getMode( file );
+                    if ( mode == null ) {
+                        continue;
+                    }
+                    buffer.setMode( mode );
+
+                    // files open this way can be closed when TaskList parsing is complete.
+                    can_close = true;
+                }
+                try {
+                    while ( buffer.isLoading() ) {
+                        Thread.currentThread().sleep( 5 );
+                    }
+                }
+                catch ( Exception e ) {
+                    e.printStackTrace();
+                }
+                DefaultMutableTreeNode buffer_node = getNodeForBuffer( buffer );
+                if ( buffer_node == null ) {
+                    continue;
+                }
+                model.insertNodeInto( buffer_node, root );
+
+                // I sent email to the dev list asking about the proper way to
+                // close a temporary buffer. For now all I'm doing to close the buffer
+                // if it wasn't already open is set it to null.  If can_close is true,
+                // then the buffer was opened with openTemporary, so just set it to null
+                // and let the garbage collector handle it.  Calling any of the jEdit
+                // 'close buffer' methods with a temporary buffer confuses the internal
+                // jEdit buffer lists, which causes lots of problems, plus the 'close
+                // buffer' methods all send EditBus messages, which I want to avoid.
+                if ( can_close ) {
+                    buffer = null;
+                }
+            }
+
+            return model;
+        }
     }
 
     protected List<String> getBuffersToScan( VPTProject project ) {
@@ -233,65 +320,6 @@ public class ProjectTaskList extends JPanel implements EBComponent {
             }
         }
         return false;
-    }
-
-    protected TreeModel buildTreeModel( VPTProject project ) {
-
-        DefaultMutableTreeNode root = new DefaultMutableTreeNode( jEdit.getProperty( "tasklist.projectfiles.project", "Project:" ) + " " + project.getName() );
-        SortableTreeModel model = new SortableTreeModel( root, new TreeNodeStringComparator() );
-
-        List<String> toScan = getBuffersToScan( project );
-        for ( String path : toScan ) {
-            File file = new File( path );
-
-            // the buffer could already be open in jEdit.  If so, don't
-            // close it below.
-            Buffer buffer = jEdit.getBuffer( file.getAbsolutePath() );
-            boolean can_close = false;
-            if ( buffer == null ) {
-                // file is not open, so open it.  Note that the mode must be
-                // set explicitly since openTemporary won't actually set the mode
-                // and TaskList will fail if the mode is missing.  openTemporary
-                // is preferred over openFile since openTemporary won't send EditBus
-                // messages nor is the buffer added to the buffer list.
-                buffer = jEdit.openTemporary( jEdit.getActiveView(), file.getParent(), file.getName(), false );
-                Mode mode = TaskListPlugin.getMode( file );
-                if ( mode == null ) {
-                    continue;
-                }
-                buffer.setMode( mode );
-
-                // files open this way can be closed when TaskList parsing is complete.
-                can_close = true;
-            }
-            try {
-                while ( buffer.isLoading() ) {
-                    Thread.currentThread().sleep( 5 );
-                }
-            }
-            catch ( Exception e ) {
-                e.printStackTrace();
-            }
-            DefaultMutableTreeNode buffer_node = getNodeForBuffer( buffer );
-            if ( buffer_node == null ) {
-                continue;
-            }
-            model.insertNodeInto( buffer_node, root );
-
-            // I sent email to the dev list asking about the proper way to
-            // close a temporary buffer. For now all I'm doing to close the buffer
-            // if it wasn't already open is set it to null.  If can_close is true,
-            // then the buffer was opened with openTemporary, so just set it to null
-            // and let the garbage collector handle it.  Calling any of the jEdit
-            // 'close buffer' methods with a temporary buffer confuses the internal
-            // jEdit buffer lists, which causes lots of problems, plus the 'close
-            // buffer' methods all send EditBus messages, which I want to avoid.
-            if ( can_close ) {
-                buffer = null;
-            }
-        }
-
-        return model;
     }
 
     private DefaultMutableTreeNode getNodeForBuffer( Buffer buffer ) {
