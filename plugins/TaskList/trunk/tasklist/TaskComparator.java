@@ -30,14 +30,17 @@ public class TaskComparator implements Comparator<Task> {
 
         switch ( sortColumn ) {
             case 2:       // task type
+                System.out.println("+++++ sorting by task type");
                 int value = a.getIdentifier().compareTo( b.getIdentifier() );
                 if (value == 0) {
                     // sort by line number if task type is the same
-                    return a.getLineNumber() < b.getLineNumber() ? -1 : 1;
+                    return a.getLineIndex() - b.getLineIndex();
                 }
                 return sortAscending ? value : value * -1;
             default:       // line number
-                return a.getLineNumber() < b.getLineNumber() ? -1 : 1;
+                System.out.println("+++++ sorting by line number");
+                value = a.getLineIndex() - b.getLineIndex();
+                return sortAscending ? value : value * -1;
         }
     }
 }

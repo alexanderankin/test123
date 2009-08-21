@@ -1,4 +1,24 @@
+/*
+* Copyright (C) 2009, Dale Anson
+*
+* This program is free software; you can redistribute it and/or
+* modify it under the terms of the GNU General Public License
+* as published by the Free Software Foundation; either version 2
+* of the License, or any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+* 
+*/
+
 /**
+* This code is based on:
 * A macro to show all of the tasks that the TaskList plugin would show
 * if the TaskList plugin had any concept of ProjectViewer.  This macro
 * gets the list of files from ProjectViewer for the current project,
@@ -11,7 +31,7 @@
 package tasklist;
 
 import java.awt.BorderLayout;
-import java.awt.Cursor;
+import java.awt.event.*;
 import java.io.File;
 import java.util.*;
 import javax.swing.*;
@@ -33,10 +53,33 @@ public class ProjectTaskList extends JPanel implements EBComponent {
     private TaskComparator taskComparator = new TaskComparator();
     private int sortColumn = jEdit.getIntegerProperty( "tasklist.table.sort-column", 1 );
     private boolean sortAscending = jEdit.getBooleanProperty( "tasklist.table.sort-ascending", true );
+    private JButton stopButton;
+    private JButton startButton;
+    private Runner runner = null;
 
     public ProjectTaskList( View view ) {
         this.view = view;
         setLayout( new BorderLayout() );
+        stopButton = new JButton( jEdit.getProperty( "tasklist.projectfiles.stop", "Stop" ) );
+        stopButton.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    if ( runner != null ) {
+                        runner.cancel( true );
+                    }
+                }
+            }
+        );
+        startButton = new JButton( jEdit.getProperty( "tasklist.projectfiles.start", "Start" ) );
+        startButton.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    if ( runner != null ) {
+                        loadProjectFiles( ProjectViewer.getActiveProject( ProjectTaskList.this.view ) );
+                    }
+                }
+            }
+        );
         loadProjectFiles( ProjectViewer.getActiveProject( view ) );
         EditBus.addToBus( this );
     }
@@ -51,74 +94,103 @@ public class ProjectTaskList extends JPanel implements EBComponent {
     private void loadProjectFiles( final VPTProject project ) {
         if ( project == null ) {
             // it is possible there is no active project even if ProjectViewer is installed.
-            add(new JLabel(jEdit.getProperty("tasklist.projectfiles.noproject", "No project is open.")));
+            add( new JLabel( jEdit.getProperty( "tasklist.projectfiles.noproject", "No project is open." ) ) );
             return ;
         }
 
-        class Runner extends SwingWorker<TreeModel, Object> {
-
-            @Override
-            public TreeModel doInBackground() {
-                try {
-                    SwingUtilities.invokeLater(
-                        new Runnable() {
-                            public void run() {
-                                setCursor( Cursor.getPredefinedCursor( Cursor.WAIT_CURSOR ) );
-                                removeAll();
-                                add( new JLabel( jEdit.getProperty( "tasklist.projectfiles.wait", "Please wait, loading project tasks..." ) ) );
-                                repaint();
-                            }
-                        }
-                    );
-                    return buildTreeModel( project );
-                }
-                catch ( Exception e ) {
-                    e.printStackTrace();
-                    return null;
-                }
+        if ( jEdit.getBooleanProperty( "tasklist.show-project-files" ) ) {
+            if ( runner != null ) {
+                runner.cancel( true );
             }
+            runner = new Runner( project );
+            runner.execute();
+        }
+    }
 
-            @Override
-            protected void done() {
-                final TreeModel model;
-                try {
-                    model = ( TreeModel ) get();
-                    if ( model == null ) {
-                        return ;
-                    }
-                }
-                catch ( Exception e ) {
-                    setCursor( Cursor.getPredefinedCursor( Cursor.DEFAULT_CURSOR ) );
-                    return ;
-                }
+    class Runner extends SwingWorker<TreeModel, Object> {
+        VPTProject project;
+        public Runner( VPTProject project ) {
+            this.project = project;
+        }
+
+        @Override
+        public TreeModel doInBackground() {
+            try {
                 SwingUtilities.invokeLater(
                     new Runnable() {
                         public void run() {
-                            // build the display
-                            removeAll();
-                            if ( model.getChildCount( model.getRoot() ) > 0 ) {
-                                tree = new JTree( model );
-                                for ( int i = tree.getRowCount(); i > 0; i-- ) {
-                                    tree.expandRow( i );
-                                }
-                                tree.addMouseListener( new TreeMouseListener( view, tree ) );
-                                tree.setCellRenderer( new TaskTreeCellRenderer() );
-                                add( new JScrollPane( tree ) );
-                            }
-                            else {
-                                add( new JLabel( jEdit.getProperty( "tasklist.no-tasks-found", "No tasks found." ) ) );
-                            }
-                            repaint();
-                            setCursor( Cursor.getPredefinedCursor( Cursor.DEFAULT_CURSOR ) );
+                            ProjectTaskList.this.removeAll();
+                            add( new JLabel( jEdit.getProperty( "tasklist.projectfiles.wait", "Please wait, loading tasks for project" ) + " " + project.getName() ), BorderLayout.CENTER );
+                            JPanel btnPanel = new JPanel();
+                            btnPanel.add( stopButton );
+                            ProjectTaskList.this.add( btnPanel, BorderLayout.SOUTH );
+                            ProjectTaskList.this.invalidate();
+                            ProjectTaskList.this.validate();
                         }
                     }
                 );
-
+                return buildTreeModel( project );
+            }
+            catch ( Exception e ) {
+                e.printStackTrace();
+                return null;
             }
         }
-        if ( jEdit.getBooleanProperty( "tasklist.show-project-files" ) ) {
-            Runner runner = new Runner();
-            runner.execute();
+
+        @Override
+        public boolean cancel( boolean mayInterruptIfRunning ) {
+            boolean cancelled = super.cancel( mayInterruptIfRunning );
+            if ( cancelled ) {
+                SwingUtilities.invokeLater(
+                    new Runnable() {
+                        public void run() {
+                            ProjectTaskList.this.removeAll();
+                            JPanel btnPanel = new JPanel();
+                            ProjectTaskList.this.add( btnPanel, BorderLayout.SOUTH );
+                            ProjectTaskList.this.invalidate();
+                            ProjectTaskList.this.validate();
+                        }
+                    }
+                );
+            }
+            return cancelled;
+        }
+
+        @Override
+        protected void done() {
+            final TreeModel model;
+            try {
+                model = ( TreeModel ) get();
+                if ( model == null ) {
+                    return ;
+                }
+            }
+            catch ( Exception e ) {
+                return ;
+            }
+            SwingUtilities.invokeLater(
+                new Runnable() {
+                    public void run() {
+                        // build the display
+                        ProjectTaskList.this.removeAll();
+                        if ( model.getChildCount( model.getRoot() ) > 0 ) {
+                            tree = new JTree( model );
+                            for ( int i = tree.getRowCount(); i > 0; i-- ) {
+                                tree.expandRow( i );
+                            }
+                            tree.addMouseListener( new TreeMouseListener( view, tree ) );
+                            tree.setCellRenderer( new TaskTreeCellRenderer() );
+                            ProjectTaskList.this.add( new JScrollPane( tree ) );
+                        }
+                        else {
+                            ProjectTaskList.this.add( new JLabel( jEdit.getProperty( "tasklist.no-tasks-found", "No tasks found." ) ) );
+                        }
+                        ProjectTaskList.this.invalidate();
+                        ProjectTaskList.this.validate();
+                    }
+                }
+            );
+            runner = null;
         }
     }
 
@@ -183,7 +255,7 @@ public class ProjectTaskList extends JPanel implements EBComponent {
                 // is preferred over openFile since openTemporary won't send EditBus
                 // messages nor is the buffer added to the buffer list.
                 buffer = jEdit.openTemporary( jEdit.getActiveView(), file.getParent(), file.getName(), false );
-                Mode mode = TaskListPlugin.getMode( file.getAbsolutePath() );
+                Mode mode = TaskListPlugin.getMode( file );
                 if ( mode == null ) {
                     continue;
                 }
@@ -205,7 +277,7 @@ public class ProjectTaskList extends JPanel implements EBComponent {
                 continue;
             }
             model.insertNodeInto( buffer_node, root );
-            
+
             // I sent email to the dev list asking about the proper way to
             // close a temporary buffer. For now all I'm doing to close the buffer
             // if it wasn't already open is set it to null.  If can_close is true,
@@ -238,8 +310,8 @@ public class ProjectTaskList extends JPanel implements EBComponent {
                 // then add tree nodes for the individual tasks.
                 buffer_node = new DefaultMutableTreeNode( buffer.getPath() );
 
-                ArrayList<Task> sorted_tasks = new ArrayList<Task>(tasks.values());
-                Collections.sort(sorted_tasks, taskComparator);
+                ArrayList<Task> sorted_tasks = new ArrayList<Task>( tasks.values() );
+                Collections.sort( sorted_tasks, taskComparator );
                 for ( Task task : sorted_tasks ) {
                     DefaultMutableTreeNode task_node = new DefaultMutableTreeNode( task );
                     buffer_node.add( task_node );
@@ -275,7 +347,7 @@ public class ProjectTaskList extends JPanel implements EBComponent {
 
             if ( BufferUpdate.SAVED.equals( bu.getWhat() ) || ParseBufferMessage.DO_PARSE.equals( bu.getWhat() ) ) {
                 if ( tree == null ) {
-                    return ;     // can happen if tree model is still loading when message is recieved
+                    return ;     // can happen if tree model is still loading when message is received
                 }
                 Buffer buffer = bu.getBuffer();
                 removeBuffer( buffer );
@@ -333,7 +405,7 @@ public class ProjectTaskList extends JPanel implements EBComponent {
         for ( int i = 0; i < model.getChildCount( model.getRoot() ); i++ ) {
             DefaultMutableTreeNode node = ( DefaultMutableTreeNode ) model.getChild( model.getRoot(), i );
             String buffer_name = ( String ) node.getUserObject();
-            if ( buffer_name.equals( buffer.toString() ) ) {
+            if ( buffer_name.equals( buffer.getPath() ) ) {
                 model.removeNodeFromParent( node );
                 model.nodeStructureChanged( ( DefaultMutableTreeNode ) model.getRoot() );
                 for ( int j = tree.getRowCount(); j > 0; j-- ) {

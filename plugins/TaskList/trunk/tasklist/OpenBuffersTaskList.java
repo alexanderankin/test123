@@ -144,7 +144,15 @@ public class OpenBuffersTaskList extends JPanel implements EBComponent {
         }
         return openBuffers;
     }
-
+    
+    /**
+     * This tree model is only 3 levels deep:
+     * 1. Root node user object is a string that says "Open Files:" Root node is 
+     * parent for buffer nodes.  
+     * 2. Buffer node user object is a string containing the results of 
+     * Buffer.getPath().  Buffer nodes are parent for task nodes.
+     * 3. Task node user objects are Tasks.
+     */
     protected TreeModel buildTreeModel() {
         List<Buffer> openBuffers = getBuffersToScan();
 
@@ -270,7 +278,7 @@ public class OpenBuffersTaskList extends JPanel implements EBComponent {
         for ( int i = 0; i < model.getChildCount( model.getRoot() ); i++ ) {
             DefaultMutableTreeNode node = ( DefaultMutableTreeNode ) model.getChild( model.getRoot(), i );
             String buffer_name = ( String ) node.getUserObject();
-            if ( buffer_name.equals( buffer.toString() ) ) {
+            if ( buffer_name.equals( buffer.getPath() ) ) {
                 model.removeNodeFromParent( node );
                 model.nodeStructureChanged( ( DefaultMutableTreeNode ) model.getRoot() );
                 for ( int j = tree.getRowCount(); j > 0; j-- ) {
