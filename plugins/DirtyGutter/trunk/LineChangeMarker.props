@@ -10,10 +10,10 @@ plugin.lcm.LCMPlugin.depend.0=jdk 1.5
 plugin.lcm.LCMPlugin.depend.1=jedit 04.03.17.00
 
 # action labels
-#updater-update-daily.label=Update jEdit to latest daily build
+dirty-gutter-toggle.label=Enable
 
 # menu items
-#plugin.updater.UpdaterPlugin.menu=updater-update-release updater-update-daily
+plugin.lcm.LCMPlugin.menu=dirty-gutter-toggle
 
 # option pane
 plugin.lcm.LCMPlugin.option-pane=DirtyGutter
