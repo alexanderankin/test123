@@ -35,25 +35,12 @@ package tasklist;
 
 //{{{ imports
 import java.awt.Color;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.util.HashSet;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 
 import javax.swing.*;
 
-import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EditPane;
-import org.gjt.sp.jedit.EditPlugin;
-import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.Mode;
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.syntax.DefaultTokenHandler;
 import org.gjt.sp.jedit.syntax.Token;
@@ -199,8 +186,7 @@ public class TaskListPlugin extends EditPlugin {
             boolean ignoreCase = jEdit.getBooleanProperty(
                         "tasklist.tasktype." + i + ".ignorecase" );
 
-            taskTypes.add(
-                new TaskType( name, pattern, sample, ignoreCase, iconPath ) );
+            taskTypes.add( new TaskType( name, pattern, sample, ignoreCase, iconPath ) );       // NOPMD
 
             i++;
         }
@@ -353,7 +339,7 @@ public class TaskListPlugin extends EditPlugin {
      * A collection of TaskType objects representing the form of comments that
      * will be parsed from a buffer and store as Task objects
      */
-    private static List<TaskType> taskTypes = new Vector<TaskType>();
+    private static List<TaskType> taskTypes = new ArrayList<TaskType>();
 
     /**
      * A collection of collections: each member represents a collection of
@@ -378,10 +364,9 @@ public class TaskListPlugin extends EditPlugin {
     * Returns the current set of tasks for the buffer requested, if there is a
     * set.  If there is no set, the buffer is parsed.
     * <p>
-    * NOTE: This method will not cause a re-parse of a buffer.
+    * This method will not cause a re-parse of a buffer.
     */
-    public synchronized static HashMap<Integer, Task>
-    requestTasksForBuffer( final Buffer buffer ) {
+    public synchronized static HashMap<Integer, Task> requestTasksForBuffer( final Buffer buffer ) {
         if ( buffer == null || buffer.isLoaded() == false ) {
             return null;
         }
@@ -457,10 +442,11 @@ public class TaskListPlugin extends EditPlugin {
         int firstLine = 0;
         int lastLine = buffer.getLineCount();
 
+        DefaultTokenHandler tokenHandler = new DefaultTokenHandler();
         for ( int lineNum = firstLine; lineNum < lastLine; lineNum++ ) {
+            tokenHandler.init();
+            
             int lineStart = buffer.getLineStartOffset( lineNum );
-
-            DefaultTokenHandler tokenHandler = new DefaultTokenHandler();
             buffer.markTokens( lineNum, tokenHandler );
             Token token = tokenHandler.getTokens();
             int tokenStart = lineStart;
@@ -584,8 +570,7 @@ public class TaskListPlugin extends EditPlugin {
         }
         buffer.remove( task.getStartPosition().getOffset(), task.getText().length() );
 
-        // TODO: is this necessary now?
-        TaskListPlugin.parseBuffer( buffer );
+        EditBus.send( new ParseBufferMessage( view, buffer, ParseBufferMessage.DO_PARSE ) );
     } //}}}
 
     //{{{ removeTaskTag method
@@ -603,8 +588,7 @@ public class TaskListPlugin extends EditPlugin {
         }
         buffer.remove( task.getStartPosition().getOffset(), task.getIdentifier().length() );
 
-        // TODO: is this necessary now?
-        TaskListPlugin.parseBuffer( buffer );
+        EditBus.send( new ParseBufferMessage( view, buffer, ParseBufferMessage.DO_PARSE ) );
     } //}}}
 
     //{{{ replaceTaskTag() method
@@ -624,8 +608,7 @@ public class TaskListPlugin extends EditPlugin {
         buffer.insert( task.getStartPosition().getOffset(), newTag );
         buffer.endCompoundEdit();
 
-        // TODO: is this necessary now?
-        TaskListPlugin.parseBuffer( buffer );
+        EditBus.send( new ParseBufferMessage( view, buffer, ParseBufferMessage.DO_PARSE ) );
     } //}}}
 
     /**
@@ -638,7 +621,7 @@ public class TaskListPlugin extends EditPlugin {
      */
     public static Mode getMode( File file ) {
         if (file == null) {
-            return null;   
+            return null;
         }
         try {
             if ( parseModes.size() == 0 ) {
@@ -650,7 +633,7 @@ public class TaskListPlugin extends EditPlugin {
                     return mode;
                 }
                 if ( firstLine == null ) {
-                    BufferedReader reader = new BufferedReader( new FileReader( file ) );
+                    BufferedReader reader = new BufferedReader( new FileReader( file ) );       // NOPMD
                     firstLine = reader.readLine();
                     reader.close();
                 }

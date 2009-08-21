@@ -46,7 +46,7 @@ public class TaskListTable extends JPanel implements EBComponent {
     public TaskListTable( View view, Buffer buffer, boolean showTableHeader ) {
         this.view = view;
         this.buffer = buffer;
-        
+
         setLayout( new BorderLayout() );
         bufferName = new JLabel( buffer.toString(), SwingConstants.LEFT );
         add( bufferName, BorderLayout.NORTH );
@@ -54,7 +54,8 @@ public class TaskListTable extends JPanel implements EBComponent {
         table.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
         table.setCellSelectionEnabled( false );
         table.setRowSelectionAllowed( true );
-        // NOTE:  a single cell renderer that does not indicate cell focus
+
+        // a cell renderer that does not indicate cell focus
         table.setDefaultRenderer( Object.class, new DefaultTableCellRenderer() {
                     public Component getTableCellRendererComponent( JTable table, Object value,
                             boolean isSelected, boolean hasFocus, int row, int column ) {
@@ -70,6 +71,7 @@ public class TaskListTable extends JPanel implements EBComponent {
                     }
                 }
                                 );
+
         table.setDefaultRenderer( Image.class, null );
         table.setDefaultRenderer( Number.class, null );
         table.setDefaultRenderer( String.class, new PaddedCellRenderer() );
@@ -244,9 +246,11 @@ public class TaskListTable extends JPanel implements EBComponent {
          */
         private void showPopup( View view, Point p ) {
             TaskListPopup popup = new TaskListPopup( view, table, p );
-            // NOTE: keep within screen limits; use task list panel, not table
+
+            // keep within screen limits; use task list panel, not table
             SwingUtilities.convertPointToScreen( p, table );
             SwingUtilities.convertPointFromScreen( p, table );
+
             Dimension dt = table.getSize();
             Dimension dp = popup.getPreferredSize();
             if ( p.x + dp.width > dt.width )
@@ -263,31 +267,32 @@ public class TaskListTable extends JPanel implements EBComponent {
          * @param row The selected row of the TaskList table
          */
         private void showTaskText( final int row ) {
-            // NOTE: get EditPane of buffer clicked, goto selection
-            SwingUtilities.invokeLater( new Runnable() {
-                        public void run() {
-                            Task task = ( Task ) getTaskListModel().elementAt( row );
-                            EditPane[] editPanes = view.getEditPanes();
-                            Buffer buffer = jEdit.getBuffer( task.getBufferPath() );
-                            if ( buffer == null ) {
-                                return ;     // buffer not open
-                            }
-                            for ( EditPane editPane : editPanes ) {
-                                Buffer[] buffers = editPane.getBufferSet().getAllBuffers();
-                                for ( Buffer ep_buffer : buffers ) {
-                                    if ( ep_buffer.equals( buffer ) ) {
-                                        editPane.setBuffer( ep_buffer );
-                                        JEditTextArea textArea = editPane.getTextArea();
-                                        textArea.setCaretPosition( textArea.getLineStartOffset( task.getLineNumber() ) + task.getStartOffset() );
-                                        textArea.scrollToCaret( true );
-                                        textArea.grabFocus();
-                                        return ;
-                                    }
+            // get EditPane of buffer clicked, goto selection
+            SwingUtilities.invokeLater(
+                new Runnable() {
+                    public void run() {
+                        Task task = ( Task ) getTaskListModel().elementAt( row );
+                        EditPane[] editPanes = view.getEditPanes();
+                        Buffer buffer = jEdit.getBuffer( task.getBufferPath() );
+                        if ( buffer == null ) {
+                            return ;     // buffer not open
+                        }
+                        for ( EditPane editPane : editPanes ) {
+                            Buffer[] buffers = editPane.getBufferSet().getAllBuffers();
+                            for ( Buffer ep_buffer : buffers ) {
+                                if ( ep_buffer.equals( buffer ) ) {
+                                    editPane.setBuffer( ep_buffer );
+                                    JEditTextArea textArea = editPane.getTextArea();
+                                    textArea.setCaretPosition( textArea.getLineStartOffset( task.getLineNumber() ) + task.getStartOffset() );
+                                    textArea.scrollToCaret( true );
+                                    textArea.grabFocus();
+                                    return ;
                                 }
                             }
                         }
                     }
-                                      );
+                }
+            );
         } //}}}
 
     } //}}}
