@@ -30,16 +30,21 @@ import lcm.RangeChangeUndoManager.RangeRemove;
 import lcm.RangeChangeUndoManager.RangeUpdate;
 
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.buffer.BufferAdapter;
 import org.gjt.sp.jedit.buffer.BufferUndoListener;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 public class BufferChangedLines extends BufferAdapter
 	implements BufferUndoListener
 {
-	Buffer buffer;
-	TreeSet<Range> ranges;
-	RangeChangeUndoManager undoManager;
+	private Buffer buffer;
+	private TreeSet<Range> ranges;
+	private RangeChangeUndoManager undoManager;
+	private boolean undoExists;
+	private boolean initUndo = false;
+	private boolean initRedo = false;
 
 	// Methods for supporting undo
 	public void add(Range r)
@@ -63,10 +68,10 @@ public class BufferChangedLines extends BufferAdapter
 		this.buffer = buffer;
 		ranges = new TreeSet<Range>();
 		undoManager = new RangeChangeUndoManager(this);
-		if (buffer.isDirty() && (! buffer.isUntitled()))
-			initDirtyRanges();	// Use Diff to find the initiale dirty ranges
 		buffer.addBufferListener(this);
 		buffer.addBufferUndoListener(this);
+		if (buffer.isDirty() && (! buffer.isUntitled()))
+			initDirtyRanges();	// Get the initial dirty ranges using Diff
 	}
 
 	public void remove()
@@ -76,12 +81,60 @@ public class BufferChangedLines extends BufferAdapter
 		undoManager = null;
 	}
 
+	public Buffer getBuffer()
+	{
+		return buffer;
+	}
+
+	/*
+	 * This method is called when the plugin starts handling a buffer
+	 * that is already dirty. This can happen, for example, if the
+	 * plugin is activated via the plugin manager at some point after
+	 * buffers have been edited (and marked dirty). In this state,
+	 * the plugin does not know which content changes were performed
+	 * on the buffer since last save, so it must use 'diff' against
+	 * the saved file to find the initial dirty ranges. But this is
+	 * not enough: Since the plugin did not handle the buffer before,
+	 * it does not know what undo operations are available on it. So
+	 * the first "undo" in the current state will not change anything
+	 * in the dirty ranges (as the plugin has no "undo list"). To
+	 * work around this, the plugin uses a crazy scheme:
+	 * 1. Undo all changes in the core's undo list, ignoring any
+	 *    content changes made by this undo.
+	 * 2. If the resulting buffer is dirty (i.e. undo limit reached
+	 *    before saving), run 'diff' to get the initial dirty state.
+	 * 3. Finally, redo all changes in the undo list, to get back to
+	 *    the current state, this time recording all changes so they
+	 *    will be available in the plugin's undo list.
+	 */
 	private void initDirtyRanges()
 	{
-		BufferFileDiff diff = new BufferFileDiff(buffer);
-		Vector<Range> dirty = diff.getDiff();
-		if (dirty != null)
-			ranges.addAll(dirty);
+		JEditTextArea ta = jEdit.getActiveView().getTextArea();
+		// 1. Undo all changes, ignoring content changes
+		int undoCount = 0;
+		initUndo = true;	// Mark forced full-undo state
+		do
+		{
+			undoExists = false;
+			buffer.undo(ta);
+			if (undoExists)
+				undoCount++;
+		}
+		while (undoExists);
+		initUndo = false;	// Forced full-undo done
+		// 2. Run 'diff' against the saved file
+		if (buffer.isDirty())
+		{
+			BufferFileDiff diff = new BufferFileDiff(buffer);
+			Vector<Range> dirty = diff.getDiff();
+			if (dirty != null)
+				ranges.addAll(dirty);
+		}
+		// 3. Redo all changes, recording undo operations
+		initRedo = true;	// Mark forced full-redo state
+		for (int i = 0; i < undoCount; i++)
+			buffer.redo(ta);
+		initRedo = false;	// Forced full-redo done
 	}
 
 	private void printRanges()
@@ -102,7 +155,13 @@ public class BufferChangedLines extends BufferAdapter
 	public void contentInserted(JEditBuffer buffer, int startLine, int offset,
 		int numLines, int length)
 	{
-		if (buffer.isUndoInProgress())
+		if (initUndo)	// forced full-undo: ignore change, mark undo existence
+		{
+			undoExists = true;
+			return;
+		}
+		// ignore undo/redo except forced full-redo
+		if ((! initRedo) && buffer.isUndoInProgress())
 			return;
 		// Check if the inserted range needs to be merged with an existing one
 		// Note: numLines==0 for single-line change
@@ -113,7 +172,13 @@ public class BufferChangedLines extends BufferAdapter
 	public void contentRemoved(JEditBuffer buffer, int startLine, int offset,
 		int numLines, int length)
 	{
-		if (buffer.isUndoInProgress())
+		if (initUndo)	// forced full-undo: ignore change, mark undo existence
+		{
+			undoExists = true;
+			return;
+		}
+		// ignore undo/redo except forced full-redo
+		if ((! initRedo) && buffer.isUndoInProgress())
 			return;
 		// Check if the removed range needs to be merged with an existing one
 		if (buffer.getLineStartOffset(startLine) == offset)
@@ -125,6 +190,8 @@ public class BufferChangedLines extends BufferAdapter
 
 	public void redo(JEditBuffer buffer)
 	{
+		if (initRedo)
+			return;
 		undoManager.redo();
 		printRanges();
 		LCMPlugin.getInstance().repaintAllTextAreas();
@@ -132,6 +199,8 @@ public class BufferChangedLines extends BufferAdapter
 
 	public void undo(JEditBuffer buffer)
 	{
+		if (initUndo)
+			return;
 		undoManager.undo();
 		printRanges();
 		LCMPlugin.getInstance().repaintAllTextAreas();
