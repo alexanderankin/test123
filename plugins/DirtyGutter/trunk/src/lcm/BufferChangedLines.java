@@ -80,7 +80,8 @@ public class BufferChangedLines extends BufferAdapter
 	{
 		BufferFileDiff diff = new BufferFileDiff(buffer);
 		Vector<Range> dirty = diff.getDiff();
-		ranges.addAll(dirty);
+		if (dirty != null)
+			ranges.addAll(dirty);
 	}
 
 	private void printRanges()
