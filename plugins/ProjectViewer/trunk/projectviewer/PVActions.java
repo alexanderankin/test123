@@ -115,14 +115,9 @@ public final class PVActions {
 	 *	@since	PV 2.1.0
 	 */
 	public static void focusProjectViewer(final View view) {
-		jEdit.getAction("projectviewer").invoke(view);
 		ProjectViewer pv = ProjectViewer.getViewer(view);
-		while (pv == null) {
-			try {
-				Thread.sleep(50);
-			} catch (InterruptedException ie) {
-				// ignore
-			}
+		if (pv == null) {
+			jEdit.getAction("projectviewer").invoke(view);
 			pv = ProjectViewer.getViewer(view);
 		}
 

@@ -37,7 +37,6 @@ import java.awt.Component;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.awt.event.HierarchyEvent;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
