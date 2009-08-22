@@ -425,12 +425,9 @@ public class TaskListPlugin extends EditPlugin {
         }
 
         TaskListPlugin.clearTasks( buffer );
-        boolean doParse = true;
 
         // if this file's mode is not to be parsed, skip it
-        doParse = parseModes.contains( buffer.getMode() );
-
-        if ( !doParse ) {
+        if ( !parseModes.contains( buffer.getMode()) ) {
             // fill with empty HashMap of tasks
             bufferMap.put( buffer.getPath(), new HashMap<Integer, Task>() );
 
