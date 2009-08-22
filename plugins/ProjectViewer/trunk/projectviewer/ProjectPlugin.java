@@ -170,16 +170,6 @@ public final class ProjectPlugin extends EBPlugin {
 
 		CONFIG_DIR = configDir;
 		config = ProjectViewerConfig.getInstance();
-
-		/*
-		 * set up a task to check any available extensions after
-		 * jEdit is done loading.
-		 */
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				ExtensionManager.getInstance().reloadExtensions();
-			}
-		});
  	} //}}}
 
 	//{{{ +stop() : void
@@ -205,6 +195,17 @@ public final class ProjectPlugin extends EBPlugin {
 	//{{{ +handleMessage(EBMessage) : void
 	/** Handles plugin load/unload messages in the EditBus. */
 	public void handleMessage(EBMessage msg) {
+		if (!viewActivated) {
+			if (msg instanceof ViewUpdate) {
+				ViewUpdate vu = (ViewUpdate) msg;
+				viewActivated = (vu.getWhat() == ViewUpdate.ACTIVATED);
+			}
+			if (viewActivated) {
+				ExtensionManager.getInstance().reloadExtensions();
+			} else {
+				return;
+			}
+		}
 		if (msg instanceof PluginUpdate) {
 			ExtensionManager.getInstance().reloadExtensions();
 		} else if (msg instanceof ViewUpdate) {
@@ -217,6 +218,8 @@ public final class ProjectPlugin extends EBPlugin {
 			}
 		}
 	} //}}}
+
+	private boolean viewActivated = false;
 
 }
 
