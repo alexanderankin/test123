@@ -20,8 +20,6 @@
 
 package lcm;
 
-import java.util.Vector;
-
 public class RangeChangeUndoManager
 {
 	// Keep a dummy node at the beginning of the list
@@ -30,6 +28,8 @@ public class RangeChangeUndoManager
 	RangeChange head = listStart;
 	// The range set
 	private BufferChangedLines bcl;
+	// Last undo id - for merging RangeChange objects of the same undo
+	private Object lastUndoId = null;
 
 	public RangeChangeUndoManager(BufferChangedLines bcl)
 	{
@@ -38,10 +38,42 @@ public class RangeChangeUndoManager
 
 	public void add(RangeChange op)
 	{
-		op.prev = head;
-		op.next = null;
-		head.next = op;
-		head = op;
+		Object undoId = bcl.buffer.getUndoId();
+		// If 'op' is added to the same undoId as the previous, merge them
+		if (undoId == lastUndoId)
+		{
+			if (op instanceof DummyNode)	// This undo already has an op
+				return;
+			if (head instanceof DummyNode)	// Dummy node can be replaced
+			{
+				if (! (op instanceof DummyNode))
+				{
+					if (head != listStart)
+						head = head.prev;
+					head.append(op);
+					head = op;
+				}
+				return;
+			}
+			// Put both under a compound change
+			CompoundChange cc;
+			if (! (head instanceof CompoundChange))
+			{
+				cc = new CompoundChange();
+				head.prev.append(cc);
+				cc.add(head);
+				head = cc;
+			}
+			else
+				cc = (CompoundChange) head;
+			cc.add(op);
+		}
+		else
+		{
+			lastUndoId = undoId;
+			head.append(op);
+			head = op;
+		}
 	}
 
 	public void undo()
@@ -81,9 +113,15 @@ public class RangeChangeUndoManager
 		public RangeChange prev = null, next = null;
 		abstract void undo();
 		abstract void redo();
+		public void append(RangeChange op)
+		{
+			op.prev = this;
+			op.next = null;
+			next = op;
+		}
 	}
 
-	private class DummyNode extends RangeChange
+	public class DummyNode extends RangeChange
 	{
 		@Override
 		public void redo()
@@ -92,6 +130,10 @@ public class RangeChangeUndoManager
 		@Override
 		public void undo()
 		{
+		}
+		public String toString()
+		{
+			return "Dummy";
 		}
 	}
 
@@ -114,7 +156,7 @@ public class RangeChangeUndoManager
 		}
 		public String toString()
 		{
-			return "RangeAdd(" + r.first + "-" + r.last + ")";
+			return "Add(" + r.first + "-" + r.last + ")";
 		}
 	}
 
@@ -137,7 +179,7 @@ public class RangeChangeUndoManager
 		}
 		public String toString()
 		{
-			return "RangeRemove(" + r.first + "-" + r.last + ")";
+			return "Remove(" + r.first + "-" + r.last + ")";
 		}
 	}
 
@@ -162,38 +204,42 @@ public class RangeChangeUndoManager
 		}
 		public String toString()
 		{
-			return "RangeUpdate(" + precedingRange.first + "-" + precedingRange.last +
+			return "Update(" + precedingRange.first + "-" + precedingRange.last +
 				"," + lineDiff + ")";
 		}
 	}
 
 	public class CompoundChange extends RangeChange
 	{
-		Vector<RangeChange> operations = new Vector<RangeChange>();
+		RangeChange first = null, last = null;
 		public void add(RangeChange op)
 		{
-			operations.add(op);
+			if (first == null)
+				first = op;
+			else
+				last.append(op);
+			last = op;
 		}
 		@Override
 		void redo()
 		{
-			for (RangeChange op: operations)
+			for (RangeChange op = first; op != null; op = op.next)
 				op.redo();
 		}
 		@Override
 		void undo()
 		{
-			for (int i = operations.size() - 1; i >= 0; i--)
-				operations.get(i).undo();
+			for (RangeChange op = last; op != null; op = op.prev)
+				op.undo();
 		}
 		public String toString()
 		{
-			StringBuilder sb = new StringBuilder("CompoundChange:[");
-			for (int i = 0; i < operations.size(); i++)
+			StringBuilder sb = new StringBuilder("Compound:[");
+			for (RangeChange op = first; op != null; op = op.next)
 			{
-				if (i > 0)
+				if (op != first)
 					sb.append(",");
-				sb.append(operations.get(i).toString());
+				sb.append(op.toString());
 			}
 			sb.append("]");
 			return sb.toString();

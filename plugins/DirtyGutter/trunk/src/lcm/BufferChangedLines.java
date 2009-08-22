@@ -24,15 +24,18 @@ import java.util.TreeSet;
 import java.util.Vector;
 
 import lcm.RangeChangeUndoManager.CompoundChange;
+import lcm.RangeChangeUndoManager.DummyNode;
 import lcm.RangeChangeUndoManager.RangeAdd;
 import lcm.RangeChangeUndoManager.RangeRemove;
 import lcm.RangeChangeUndoManager.RangeUpdate;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.buffer.BufferAdapter;
+import org.gjt.sp.jedit.buffer.BufferUndoListener;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 
 public class BufferChangedLines extends BufferAdapter
+	implements BufferUndoListener
 {
 	Buffer buffer;
 	TreeSet<Range> ranges;
@@ -60,13 +63,24 @@ public class BufferChangedLines extends BufferAdapter
 		this.buffer = buffer;
 		ranges = new TreeSet<Range>();
 		undoManager = new RangeChangeUndoManager(this);
+		if (buffer.isDirty() && (! buffer.isUntitled()))
+			initDirtyRanges();	// Use Diff to find the initiale dirty ranges
 		buffer.addBufferListener(this);
+		buffer.addBufferUndoListener(this);
 	}
 
 	public void remove()
 	{
+		buffer.removeBufferUndoListener(this);
 		buffer.removeBufferListener(this);
 		undoManager = null;
+	}
+
+	private void initDirtyRanges()
+	{
+		BufferFileDiff diff = new BufferFileDiff(buffer);
+		Vector<Range> dirty = diff.getDiff();
+		ranges.addAll(dirty);
 	}
 
 	private void printRanges()
@@ -84,26 +98,42 @@ public class BufferChangedLines extends BufferAdapter
 		System.err.println(undoManager.toString());
 	}
 
-	@Override
 	public void contentInserted(JEditBuffer buffer, int startLine, int offset,
-			int numLines, int length)
+		int numLines, int length)
 	{
+		if (buffer.isUndoInProgress())
+			return;
 		// Check if the inserted range needs to be merged with an existing one
 		// Note: numLines==0 for single-line change
 		Range changed = new Range(startLine, numLines + 1);
 		handleContentChange(numLines, changed);
 	}
 
-	@Override
 	public void contentRemoved(JEditBuffer buffer, int startLine, int offset,
-			int numLines, int length)
+		int numLines, int length)
 	{
+		if (buffer.isUndoInProgress())
+			return;
 		// Check if the removed range needs to be merged with an existing one
 		if (buffer.getLineStartOffset(startLine) == offset)
 			startLine--;
 		// Note: numLines==0 for single-line change
 		Range changed = new Range(startLine, 1);
 		handleContentChange(0 - numLines, changed);
+	}
+
+	public void redo(JEditBuffer buffer)
+	{
+		undoManager.redo();
+		printRanges();
+		LCMPlugin.getInstance().repaintAllTextAreas();
+	}
+
+	public void undo(JEditBuffer buffer)
+	{
+		undoManager.undo();
+		printRanges();
+		LCMPlugin.getInstance().repaintAllTextAreas();
 	}
 
 	/*
@@ -116,71 +146,72 @@ public class BufferChangedLines extends BufferAdapter
 	 */
 	private void handleContentChange(int numLines, Range changed)
 	{
-		if (buffer.isUndoInProgress())
-			undoManager.undo();
-		else
+		// Use short-paths when possible - see below for cases.
+		// In particular, if the changed range is fully contained inside an
+		// existing range in the set, there is nothing to do.
+		// "ranges.ceiling(changed)" will return:
+		// - Last set range overlapping with 'changed', if exists.
+		// - Next set range after 'changed', if no overlap.
+		// - null, if no overlap and no next range.
+		// If the result is an overlapping range, it is the only
+		// candidate for full containing 'changed'.
+		boolean multiLine = (numLines != 0);
+		Range ceiling = ranges.ceiling(changed);
+		if ((ceiling == null) || (! ceiling.contains(changed)))
 		{
-			// Use short-paths when possible - see below for cases.
-			// In particular, if the changed range is fully contained inside an
-			// existing range in the set, there is nothing to do.
-			// "ranges.ceiling(changed)" will return:
-			// - Last set range overlapping with 'changed', if exists.
-			// - Next set range after 'changed', if no overlap.
-			// - null, if no overlap and no next range.
-			// If the result is an overlapping range, it is the only
-			// candidate for full containing 'changed'.
-			boolean multiLine = (numLines != 0);
-			Range ceiling = ranges.ceiling(changed);
-			if ((ceiling == null) || (! ceiling.contains(changed)))
+			// 'changed' is not fully contained in any range in the set.
+			//
+			// A compound change is needed for range updates and range
+			// merges. Range updates are needed only for multiple-line
+			// changes followed by existing dirty ranges. Range merges
+			// are needed for overlaps and also for consecutive ranges.
+			boolean updateNeeded = (multiLine && (ceiling != null));
+			boolean mergeNeeded = ((ceiling != null) &&
+				ceiling.canMerge(changed)); 
+			if (! mergeNeeded)
 			{
-				// 'changed' is not fully contained in any range in the set.
-				//
-				// A compound change is needed for range updates and range
-				// merges. Range updates are needed only for multiple-line
-				// changes followed by existing dirty ranges. Range merges
-				// are needed for overlaps and also for consecutive ranges.
-				boolean updateNeeded = (multiLine && (ceiling != null));
-				boolean mergeNeeded = ((ceiling != null) &&
-					ceiling.canMerge(changed)); 
-				if (! mergeNeeded)
-				{
-					// No overlap in the set, check consecutive floor.
-					Range floor = ranges.floor(changed);
-					mergeNeeded = ((floor != null) &&
-						floor.consecutive(changed));
-				}
-				boolean useCompound = (updateNeeded || mergeNeeded);
-				CompoundChange compound = null;
-				if (useCompound)
-				{
-					compound = undoManager.new CompoundChange();
-					undoManager.add(compound);
-					if (updateNeeded)
-					{
-						RangeUpdate ru = undoManager.new RangeUpdate(changed, numLines);
-						ru.redo();
-						compound.add(ru);
-					}
-					if (mergeNeeded)
-						mergeRanges(compound, changed);
-				}
-				RangeAdd ra = undoManager.new RangeAdd(changed);
-				ra.redo();
-				if (useCompound)
-					compound.add(ra);
-				else
-					undoManager.add(ra);
+				// No overlap in the set, check consecutive floor.
+				Range floor = ranges.floor(changed);
+				mergeNeeded = ((floor != null) &&
+					floor.consecutive(changed));
 			}
-			else
+			boolean useCompound = (updateNeeded || mergeNeeded);
+			CompoundChange compound = null;
+			if (useCompound)
 			{
-				// 'changed' is fully contained in a range of the set. Only
-				// range updates are needed if this is a multi-line change.
-				if (multiLine)
+				compound = undoManager.new CompoundChange();
+				undoManager.add(compound);
+				if (updateNeeded)
 				{
 					RangeUpdate ru = undoManager.new RangeUpdate(changed, numLines);
 					ru.redo();
-					undoManager.add(ru);
+					compound.add(ru);
 				}
+				if (mergeNeeded)
+					mergeRanges(compound, changed);
+			}
+			RangeAdd ra = undoManager.new RangeAdd(changed);
+			ra.redo();
+			if (useCompound)
+				compound.add(ra);
+			else
+				undoManager.add(ra);
+		}
+		else
+		{
+			// 'changed' is fully contained in a range of the set. Only
+			// range updates are needed if this is a multi-line change.
+			if (multiLine)
+			{
+				RangeUpdate ru = undoManager.new RangeUpdate(changed, numLines);
+				ru.redo();
+				undoManager.add(ru);
+			}
+			else
+			{
+				// Add a dummy change, to account for this undoId
+				DummyNode dc = undoManager.new DummyNode();
+				undoManager.add(dc);
 			}
 		}
 		printRanges();
