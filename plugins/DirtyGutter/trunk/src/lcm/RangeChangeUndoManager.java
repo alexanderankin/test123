@@ -38,7 +38,7 @@ public class RangeChangeUndoManager
 
 	public void add(RangeChange op)
 	{
-		Object undoId = bcl.buffer.getUndoId();
+		Object undoId = bcl.getBuffer().getUndoId();
 		// If 'op' is added to the same undoId as the previous, merge them
 		if (undoId == lastUndoId)
 		{
