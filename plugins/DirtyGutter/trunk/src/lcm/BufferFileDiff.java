@@ -1,15 +1,20 @@
 package lcm;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Vector;
 
 import jdiff.util.Diff;
 import jdiff.util.Diff.Change;
 
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.io.VFS;
+import org.gjt.sp.jedit.io.VFSFile;
+import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.util.IOUtilities;
+import org.gjt.sp.util.Log;
 
 public class BufferFileDiff
 {
@@ -27,6 +32,8 @@ public class BufferFileDiff
 		for (int i = 0; i < nBuffer; i++)
 			bufferLines[i] = b.getLineText(i);
 		String [] fileLines = readFile(b.getPath());
+		if (fileLines == null)
+			return null;
 		Diff diff = new Diff(fileLines, bufferLines);
 		Change edit = diff.diff_2();
 		Vector<Range> ranges = new Vector<Range>();
@@ -37,39 +44,39 @@ public class BufferFileDiff
 
 	private String[] readFile(String path)
 	{
-		BufferedReader in;
-		try
-		{
-			in = new BufferedReader(new FileReader(path));
-		}
-		catch (FileNotFoundException e)
-		{
-			e.printStackTrace();
-			return null;
-		}
+		VFS vfs = VFSManager.getVFSForPath(path);
+		Object session = null;
+		VFSFile file = null;
+		BufferedReader reader = null;
 		String [] ret = null;
-		Vector<String> lines = new Vector<String>();
 		try
 		{
+			session = vfs.createVFSSession(path, jEdit.getActiveView());
+			file = vfs._getFile(session, path, jEdit.getActiveView());
+			reader = new BufferedReader(new InputStreamReader(
+				file.getVFS()._createInputStream(session, file.getPath(),
+				false,jEdit.getActiveView())));
+			Vector<String> lines = new Vector<String>();
 			String line;
-			while ((line = in.readLine()) != null)
+			while ((line = reader.readLine()) != null)
 				lines.add(line);
 			ret = new String[lines.size()];
 			lines.toArray(ret);
+			return ret;
 		}
 		catch (IOException e)
 		{
-			e.printStackTrace();
+			Log.log(Log.ERROR, this, "Unable to read file " + path, e);
 		}
 		finally
 		{
 			try
 			{
-				in.close();
+				IOUtilities.closeQuietly(reader);
+				vfs._endVFSSession(session, jEdit.getActiveView());
 			}
 			catch (IOException e)
 			{
-				e.printStackTrace();
 			}
 		}
 		return ret;
