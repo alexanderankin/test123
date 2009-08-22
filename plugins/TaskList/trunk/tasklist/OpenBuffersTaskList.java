@@ -262,7 +262,7 @@ public class OpenBuffersTaskList extends JPanel implements EBComponent {
 
     private void addBuffer( Buffer buffer ) {
         DefaultMutableTreeNode buffer_node = getNodeForBuffer( buffer );
-        if ( buffer_node == null ) {
+        if ( buffer_node == null || tree == null ) {
             return ;
         }
         SortableTreeModel model = ( SortableTreeModel ) tree.getModel();
@@ -274,6 +274,9 @@ public class OpenBuffersTaskList extends JPanel implements EBComponent {
     }
 
     private void removeBuffer( Buffer buffer ) {
+        if ( tree == null ) {
+            return;  
+        }
         SortableTreeModel model = ( SortableTreeModel ) tree.getModel();
         for ( int i = 0; i < model.getChildCount( model.getRoot() ); i++ ) {
             DefaultMutableTreeNode node = ( DefaultMutableTreeNode ) model.getChild( model.getRoot(), i );
