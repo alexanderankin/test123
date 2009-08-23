@@ -71,6 +71,7 @@ import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.jedit.msg.DockableWindowUpdate;
 import org.gjt.sp.jedit.msg.DynamicMenuChanged;
 import org.gjt.sp.jedit.msg.EditorExitRequested;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
@@ -871,6 +872,8 @@ public final class ProjectViewer extends JPanel
 			handleEditPaneUpdate((EditPaneUpdate)msg);
 		} else if (msg instanceof ProjectUpdate) {
 			handleProjectUpdate((ProjectUpdate)msg);
+		} else if (msg instanceof DockableWindowUpdate) {
+			handleDockableWindowUpdate((DockableWindowUpdate)msg);
 		} else if (treeRoot != null && msg instanceof EditorExitRequested) {
 			if (jEdit.getActiveView() != view) {
 				config.setLastNode(treeRoot);
@@ -888,6 +891,19 @@ public final class ProjectViewer extends JPanel
 			}
 		}
 	} //}}}
+
+	private void handleDockableWindowUpdate(DockableWindowUpdate msg)
+	{
+		if (msg.getWhat() == DockableWindowUpdate.DEACTIVATED ||
+			msg.getWhat() == DockableWindowUpdate.PROPERTIES_CHANGED) {
+			if (!view.getDockableWindowManager()
+					.isDockableWindowDocked("projectviewer")) {
+				config.setLastNode(treeRoot);
+				unload();
+				viewers.remove(view);
+			}
+		}
+	}
 
 	//{{{ -handleDynamicMenuChanged(DynamicMenuChanged) : void
 	/** Handles a handleDynamicMenuChanged EditBus message. */
