@@ -42,6 +42,7 @@ import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
 
 import java.io.*;
+import java.util.List;
 
 /**
  * @author Matthieu Casanova
@@ -188,6 +189,14 @@ public class IndexImpl extends AbstractIndex implements Index
 	public void reindex()
 	{
 		Log.log(Log.DEBUG,this, "reindex()");
+		openWriter();
+		if (writer == null)
+			return;
+		List<String> allDocuments = LucenePlugin.CENTRAL.getAllDocuments(name);
+		for (String allDocument : allDocuments)
+		{
+			addFile(allDocument);
+		}
 	}
 
 	public void search(String query, int max, ResultProcessor processor)
