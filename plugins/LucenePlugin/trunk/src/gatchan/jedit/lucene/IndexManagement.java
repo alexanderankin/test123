@@ -67,6 +67,10 @@ public class IndexManagement extends AbstractOptionPane
 
 		add(split);
 		updateListModel();
+		if (model.size() > 0)
+		{
+			indexList.setSelectedIndex(0);
+		}
 	}
 
 	private void updateListModel()
