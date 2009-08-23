@@ -249,12 +249,12 @@ loop:	for(Iterator<JEditBuffer> iter = bufferStrings.keySet().iterator();
 	/**
 	 * Returns the {@link FoldCounter} for <code>buffer</code>.
 	 */
-	public FoldCounter getCounter(JEditBuffer buffer)
+	public FoldCounter getCounter(JEditBuffer buffer, String mode)
 	{
 		FoldStrings foldStrings = bufferStrings.get(buffer);
 		
 		if(foldStrings == null)
-			foldStrings = modeStrings.get(buffer.getStringProperty("mode"));
+			foldStrings = modeStrings.get(mode);
 		
 		if(foldStrings == null)
 			foldStrings = defFoldStrings;
