@@ -203,7 +203,6 @@ public class LucenePlugin extends EditPlugin
 	 */
 	public void removeIndex(String name)
 	{
-		CENTRAL.removeIndex(name);
 		Index index = indexMap.remove(name);
 		saveIndexes();
 		if (index != null)
@@ -233,6 +232,7 @@ public class LucenePlugin extends EditPlugin
 				Log.log(Log.ERROR, this, e);
 			}
 		}
+		CENTRAL.removeIndex(name);		
 	}
 
 	public String chooseIndex()
