@@ -176,6 +176,7 @@ public class IndexManagement extends AbstractOptionPane
 					Index index = LucenePlugin.instance.getIndex(indexName);
 					index.optimize();
 					index.commit();
+					optimize.setEnabled(false);
 					Log.log(Log.NOTICE, this, "Optimize " + indexName + " DONE");
 				}
 				else if (e.getSource() == delete)

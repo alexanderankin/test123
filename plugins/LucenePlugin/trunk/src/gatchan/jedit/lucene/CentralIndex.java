@@ -35,6 +35,8 @@ import org.gjt.sp.util.Log;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
@@ -42,6 +44,7 @@ import javax.swing.JOptionPane;
  * This index will contains documents to link files to indexes.
  * Each document has the following fields :
  * "indexName" and "path"
+ *
  * @author Matthieu Casanova
  */
 public class CentralIndex extends AbstractIndex implements EBComponent
@@ -82,7 +85,7 @@ public class CentralIndex extends AbstractIndex implements EBComponent
 			if (writer == null)
 			{
 				JOptionPane.showMessageDialog(jEdit.getActiveView(),
-					"Error: Can't complete removal of index " + name + ": Could not open meta-index.");
+											  "Error: Can't complete removal of index " + name + ": Could not open meta-index.");
 			}
 			else
 			{
@@ -100,7 +103,7 @@ public class CentralIndex extends AbstractIndex implements EBComponent
 	/**
 	 * Add a file to the index.
 	 *
-	 * @param path      the path to add
+	 * @param path	  the path to add
 	 * @param indexName the index that contains this path
 	 */
 	void addFile(String path, String indexName)
@@ -129,6 +132,41 @@ public class CentralIndex extends AbstractIndex implements EBComponent
 			closeSearcher(searcher);
 		}
 	}
+
+	List<String> getAllDocuments(String indexName)
+	{
+		final Searcher searcher = getSearcher();
+		final List<String> documents = new ArrayList<String>();
+		try
+		{
+			searcher.search(new TermQuery(new Term("indexName", indexName)), new HitCollector()
+			{
+				@Override
+				public void collect(int doc, float v)
+				{
+					try
+					{
+						Document document = searcher.doc(doc);
+						documents.add(document.getField("path").stringValue());
+					}
+					catch (IOException e)
+					{
+						Log.log(Log.ERROR, this, e);
+					}
+				}
+			});
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			closeSearcher(searcher);
+		}
+		return documents;
+	}
+
 
 	private BooleanQuery getPathIndexQuery(String path, String indexName)
 	{
