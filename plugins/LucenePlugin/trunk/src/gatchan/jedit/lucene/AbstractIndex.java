@@ -161,6 +161,26 @@ public class AbstractIndex
 		}
 	}
 
+	/**
+	 * Optimize the index.
+	 * It is necessary to commit after that
+	 */
+	public void optimize()
+	{
+		openWriter();
+		if (writer != null)
+		{
+			try
+			{
+				writer.optimize();
+			}
+			catch (IOException e)
+			{
+				Log.log(Log.ERROR, this, "Error while optimizing index", e);
+			}
+		}
+	}
+
 	public void commit()
 	{
 		if (writer != null)
@@ -171,7 +191,7 @@ public class AbstractIndex
 			}
 			catch (IOException e)
 			{
-				Log.log(Log.ERROR, this, "Error while optimizing index", e);
+				Log.log(Log.ERROR, this, "Error while commiting index", e);
 			}
 		}
 	}

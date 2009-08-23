@@ -33,6 +33,7 @@ public interface Index
 	 */
 	void close();
 
+	void optimize();
 	void commit();
 
 	String getName();
