@@ -114,6 +114,12 @@ public class AbstractIndex
 
 	protected IndexSearcher getSearcher()
 	{
+		initReader();
+		return new MyIndexSearcher(reader);
+	}
+
+	private void initReader()
+	{
 		if (reader == null)
 		{
 			try
@@ -142,7 +148,6 @@ public class AbstractIndex
 				Log.log(Log.ERROR, this, "Unable to open reopen IndexReader", e);
 			}
 		}
-		return new MyIndexSearcher(reader);
 	}
 
 	protected void closeWriter()
@@ -159,6 +164,12 @@ public class AbstractIndex
 			}
 			writer = null;
 		}
+	}
+
+	public boolean isOptimized()
+	{
+		initReader();
+		return reader.isOptimized();
 	}
 
 	/**

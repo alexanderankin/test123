@@ -36,6 +36,7 @@ import java.awt.event.ActionEvent;
 public class IndexManagement extends AbstractOptionPane
 {
 	private IndexOptionPanel indexOptionPanel;
+	private DefaultListModel model;
 
 	public IndexManagement()
 	{
@@ -46,8 +47,8 @@ public class IndexManagement extends AbstractOptionPane
 	@Override
 	protected void _init()
 	{
-		String[] items = LucenePlugin.instance.getIndexes();
-		final JList indexList = new JList(items);
+		model = new DefaultListModel();
+		final JList indexList = new JList(model);
 		JScrollPane leftScroll = new JScrollPane(indexList);
 		indexOptionPanel = new IndexOptionPanel();
 		JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftScroll, indexOptionPanel);
@@ -65,7 +66,17 @@ public class IndexManagement extends AbstractOptionPane
 		});
 
 		add(split);
+		updateListModel();
+	}
 
+	private void updateListModel()
+	{
+		model.clear();
+		String[] items = LucenePlugin.instance.getIndexes();
+		for (String name : items)
+		{
+			model.addElement(name);
+		}
 	}
 
 	@Override
@@ -73,7 +84,7 @@ public class IndexManagement extends AbstractOptionPane
 	{
 	}
 
-	private static class IndexOptionPanel extends JPanel
+	private class IndexOptionPanel extends JPanel
 	{
 		private final JTextField indexNameField;
 		private String indexName;
@@ -118,6 +129,9 @@ public class IndexManagement extends AbstractOptionPane
 			layout.putConstraint(SpringLayout.WEST, reindex, 5, SpringLayout.EAST, delete);
 			layout.putConstraint(SpringLayout.NORTH, reindex, 10, SpringLayout.SOUTH, indexNameLabel);
 
+			optimize.setEnabled(false);
+			delete.setEnabled(false);
+			reindex.setEnabled(false);
 
 			add(indexNameLabel);
 			add(indexNameField);
@@ -126,7 +140,10 @@ public class IndexManagement extends AbstractOptionPane
 			add(reindex);
 
 
-			optimize.addActionListener(new MyActionListener());
+			MyActionListener actionListener = new MyActionListener();
+			optimize.addActionListener(actionListener);
+			delete.addActionListener(actionListener);
+			reindex.addActionListener(actionListener);
 
 		}
 
@@ -134,6 +151,19 @@ public class IndexManagement extends AbstractOptionPane
 		{
 			this.indexName = name;
 			indexNameField.setText(name);
+			if (name == null)
+			{
+				optimize.setEnabled(false);
+				delete.setEnabled(false);
+				reindex.setEnabled(false);
+			}
+			else
+			{
+				Index index = LucenePlugin.instance.getIndex(name);
+				optimize.setEnabled(!index.isOptimized());
+				delete.setEnabled(true);
+				reindex.setEnabled(true);
+			}
 		}
 
 		private class MyActionListener implements ActionListener
@@ -150,25 +180,19 @@ public class IndexManagement extends AbstractOptionPane
 				}
 				else if (e.getSource() == delete)
 				{
-					Log.log(Log.NOTICE, this, "Delete " + indexName + " asked not implemented");
-
+					Log.log(Log.NOTICE, this, "Delete " + indexName + " asked");
+					LucenePlugin.instance.removeIndex(indexName);
+					updateListModel();
+					Log.log(Log.NOTICE, this, "Delete " + indexName + " DONE");
 				}
 				else if (e.getSource() == reindex)
 				{
-					Log.log(Log.NOTICE, this, "Reindex " + indexName + " asked not implemented");
-
+					Log.log(Log.NOTICE, this, "Reindex " + indexName + " asked");
+					Index index = LucenePlugin.instance.getIndex(indexName);
+					index.reindex();
+					Log.log(Log.NOTICE, this, "Reindex " + indexName + " DONE");
 				}
 			}
 		}
-	}
-
-	public static void main(String[] args)
-	{
-		JFrame f = new JFrame();
-		IndexOptionPanel p = new IndexOptionPanel();
-		p.setIndex("jEdit");
-		f.getContentPane().add(p);
-		f.pack();
-		f.setVisible(true);
 	}
 }
