@@ -66,7 +66,7 @@
 #compiler.debug=off
 #compiler.debuglevel=lines,vars,source
 
-# Gererate optimized code
+# Generate optimized code
 #compiler.optimize=off
 
 # Deprecation warnings.
@@ -89,6 +89,13 @@
 
 # Fork the javac compiler
 #compiler.fork=no
+
+# Location for rt.jar and ext dir. By default, these are set to the
+# appropriate value for the running jvm.  These are necessary, for example,
+# when compiling a Java 1.5 compatible plugin while running Java 1.6.
+#compiler.bootclasspath=${java.home}/lib/rt.jar
+#compiler.extdirs=${java.ext.dirs}
+
 
 # Documentation build options
 
