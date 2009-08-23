@@ -32,6 +32,7 @@ import javax.swing.JOptionPane;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.buffer.FoldHandler;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBPlugin;
@@ -103,6 +104,16 @@ public class ConfigurableFoldHandlerPlugin extends EBPlugin
 	{
 		Object what = bu.getWhat();
 		Buffer buffer = bu.getBuffer();
+		FoldHandler foldHandler = buffer.getFoldHandler();
+		/* Clear the configurable fold handler's cached properties
+		 * if the mode might have changed. BufferUpdate.PROPERTIES_CHANGED
+		 * is always sent when eiter global or buffer options are changed.
+		 */
+		if ((foldHandler instanceof ConfigurableFoldHandler) &&
+			bu.getWhat().equals(BufferUpdate.PROPERTIES_CHANGED))
+		{
+			((ConfigurableFoldHandler)foldHandler).propertiesChanged();
+		}
 		String path = getFoldFileFor(bu.getBuffer());
 		if (what.equals(BufferUpdate.LOADED))
 		{

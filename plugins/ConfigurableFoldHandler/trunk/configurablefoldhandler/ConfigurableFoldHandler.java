@@ -15,17 +15,13 @@ package configurablefoldhandler;
 
 import javax.swing.text.Segment;
 
-import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.buffer.FoldHandler;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
-import org.gjt.sp.jedit.msg.BufferUpdate;
 /**
  * fold handler that allows the user to specify a pair of strings that define
  * the start and end of a fold
  */
-public class ConfigurableFoldHandler extends FoldHandler implements EBComponent
+public class ConfigurableFoldHandler extends FoldHandler
 {
 	private JEditBuffer buffer = null;
 	private ManualFolds tf = null;
@@ -34,7 +30,6 @@ public class ConfigurableFoldHandler extends FoldHandler implements EBComponent
 	public ConfigurableFoldHandler()
 	{
 		super("custom");
-		EditBus.addToBus(this);
 	}
 	
 	/**
@@ -98,21 +93,8 @@ public class ConfigurableFoldHandler extends FoldHandler implements EBComponent
 		return Math.max(0, foldLevel);
 	}
 
-	public void handleMessage(EBMessage message)
+	public void propertiesChanged()
 	{
-		/* Refresh cached properties if they might have changed.
-		 * BufferUpdate.PROPERTIES_CHANGED is the only message that should
-		 * be checked, since it is always sent when either buffer or global
-		 * options are sent (by the GUI).
-		 */
-		if ((buffer != null) && (message instanceof BufferUpdate))
-		{
-			BufferUpdate bu = (BufferUpdate) message;
-			if ((bu.getBuffer() == buffer) &&
-				(bu.getWhat() == BufferUpdate.PROPERTIES_CHANGED))
-			{
-				buffer = null;	// update cache on next fold level request
-			}
-		}
+		buffer = null;
 	}
 }
