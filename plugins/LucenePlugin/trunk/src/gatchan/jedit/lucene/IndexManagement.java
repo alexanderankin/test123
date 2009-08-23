@@ -21,15 +21,22 @@
 package gatchan.jedit.lucene;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
+import org.gjt.sp.util.Log;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 /**
  * @author Matthieu Casanova
  */
 public class IndexManagement extends AbstractOptionPane
 {
+	private IndexOptionPanel indexOptionPanel;
+
 	public IndexManagement()
 	{
 		super("LuceneIndexManagement");
@@ -40,10 +47,22 @@ public class IndexManagement extends AbstractOptionPane
 	protected void _init()
 	{
 		String[] items = LucenePlugin.instance.getIndexes();
-		JList indexList = new JList(items);
+		final JList indexList = new JList(items);
 		JScrollPane leftScroll = new JScrollPane(indexList);
-		JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, leftScroll, new IndexOptionPanel0());
-
+		indexOptionPanel = new IndexOptionPanel();
+		JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftScroll, indexOptionPanel);
+		indexList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		indexList.getSelectionModel().addListSelectionListener(new ListSelectionListener()
+		{
+			public void valueChanged(ListSelectionEvent e)
+			{
+				int row = e.getFirstIndex();
+				if (row > -1)
+				{
+					indexOptionPanel.setIndex((String) indexList.getSelectedValue());
+				}
+			}
+		});
 
 		add(split);
 
@@ -54,21 +73,102 @@ public class IndexManagement extends AbstractOptionPane
 	{
 	}
 
-	private static class IndexOptionPanel0 extends JPanel
+	private static class IndexOptionPanel extends JPanel
 	{
-		private final JTextField indexName;
+		private final JTextField indexNameField;
+		private String indexName;
 
-		private IndexOptionPanel0()
+		private JButton optimize;
+		private JButton delete;
+		private JButton reindex;
+
+		private IndexOptionPanel()
 		{
-			super();
-			indexName = new JTextField();
-			add(indexName);
+			super(new SpringLayout());
+			SpringLayout layout = (SpringLayout) getLayout();
+			indexNameField = new JTextField();
+			indexNameField.setEditable(false);
+
+			optimize = new JButton("Optimize");
+			delete = new JButton("Delete");
+			reindex = new JButton("Re-index");
+
+
+			JLabel indexNameLabel = new JLabel("Index name:");
+
+			// label at 5 pixel of the left and top border
+			layout.putConstraint(SpringLayout.WEST, indexNameLabel, 5, SpringLayout.WEST, this);
+			layout.putConstraint(SpringLayout.NORTH, indexNameLabel, 5, SpringLayout.NORTH, this);
+
+
+			// indexNameField at 5 pixels from label and 5 pixels from east border
+			layout.putConstraint(SpringLayout.WEST, indexNameField, 5, SpringLayout.EAST, indexNameLabel);
+			layout.putConstraint(SpringLayout.NORTH, indexNameField, 5, SpringLayout.NORTH, this);
+			layout.putConstraint(SpringLayout.EAST, this, 5, SpringLayout.EAST, indexNameField);
+
+			// optimize
+			layout.putConstraint(SpringLayout.WEST, optimize, 5, SpringLayout.WEST, this);
+			layout.putConstraint(SpringLayout.NORTH, optimize, 10, SpringLayout.SOUTH, indexNameLabel);
+
+			// delete
+			layout.putConstraint(SpringLayout.WEST, delete, 5, SpringLayout.EAST, optimize);
+			layout.putConstraint(SpringLayout.NORTH, delete, 10, SpringLayout.SOUTH, indexNameLabel);
+
+			// reindex
+			layout.putConstraint(SpringLayout.WEST, reindex, 5, SpringLayout.EAST, delete);
+			layout.putConstraint(SpringLayout.NORTH, reindex, 10, SpringLayout.SOUTH, indexNameLabel);
+
+
+			add(indexNameLabel);
+			add(indexNameField);
+			add(optimize);
+			add(delete);
+			add(reindex);
+
+
+			optimize.addActionListener(new MyActionListener());
 
 		}
 
 		public void setIndex(String name)
 		{
-			indexName.setText(name);
+			this.indexName = name;
+			indexNameField.setText(name);
 		}
+
+		private class MyActionListener implements ActionListener
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				if (e.getSource() == optimize)
+				{
+					Log.log(Log.NOTICE, this, "Optimize " + indexName + " asked");
+					Index index = LucenePlugin.instance.getIndex(indexName);
+					index.optimize();
+					index.commit();
+					Log.log(Log.NOTICE, this, "Optimize " + indexName + " DONE");
+				}
+				else if (e.getSource() == delete)
+				{
+					Log.log(Log.NOTICE, this, "Delete " + indexName + " asked not implemented");
+
+				}
+				else if (e.getSource() == reindex)
+				{
+					Log.log(Log.NOTICE, this, "Reindex " + indexName + " asked not implemented");
+
+				}
+			}
+		}
+	}
+
+	public static void main(String[] args)
+	{
+		JFrame f = new JFrame();
+		IndexOptionPanel p = new IndexOptionPanel();
+		p.setIndex("jEdit");
+		f.getContentPane().add(p);
+		f.pack();
+		f.setVisible(true);
 	}
 }
