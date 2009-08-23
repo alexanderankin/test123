@@ -57,7 +57,7 @@ public class LucenePlugin extends EditPlugin
 		EditBus.addToBus(CENTRAL);
 		loadIndexes();
 		EditPlugin p = jEdit.getPlugin("projectviewer.ProjectPlugin", false);
-		if (p != null)
+		if (p != null && !(p instanceof Deferred))
 			projectWatcher = new ProjectWatcher();
 	}
 
