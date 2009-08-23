@@ -185,6 +185,11 @@ public class IndexImpl extends AbstractIndex implements Index
 		}
 	}
 
+	public void reindex()
+	{
+		Log.log(Log.DEBUG,this, "reindex()");
+	}
+
 	public void search(String query, int max, ResultProcessor processor)
 	{
 		if (max < 1)

@@ -33,8 +33,10 @@ public interface Index
 	 */
 	void close();
 
+	boolean isOptimized();
 	void optimize();
 	void commit();
+	void reindex();
 
 	String getName();
 	Analyzer getAnalyzer();
