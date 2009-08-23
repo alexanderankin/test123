@@ -31,6 +31,7 @@ import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.util.Log;
 
 import java.io.File;
 import java.io.IOException;
@@ -90,7 +91,7 @@ public class CentralIndex extends AbstractIndex implements EBComponent
 		}
 		catch (IOException e)
 		{
-			e.printStackTrace();
+			Log.log(Log.ERROR, this, e);
 		}
 		commit();
 		EditBus.send(new LuceneIndexUpdate(name, LuceneIndexUpdate.What.DESTROYED));
@@ -121,7 +122,7 @@ public class CentralIndex extends AbstractIndex implements EBComponent
 		}
 		catch (IOException e)
 		{
-			e.printStackTrace();
+			Log.log(Log.ERROR, this, e);
 		}
 		finally
 		{
@@ -147,7 +148,7 @@ public class CentralIndex extends AbstractIndex implements EBComponent
 		}
 		catch (IOException e)
 		{
-			e.printStackTrace();
+			Log.log(Log.ERROR, this, e);
 		}
 	}
 
@@ -173,7 +174,7 @@ public class CentralIndex extends AbstractIndex implements EBComponent
 		}
 		catch (IOException e)
 		{
-			e.printStackTrace();
+			Log.log(Log.ERROR, this, e);
 		}
 		finally
 		{
