@@ -15,6 +15,7 @@ package configurablefoldhandler;
 
 import javax.swing.text.Segment;
 
+import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.buffer.FoldHandler;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 /**
@@ -61,7 +62,8 @@ public class ConfigurableFoldHandler extends FoldHandler
 		if (buffer != this.buffer)
 		{
 			tf = (ManualFolds) buffer.getProperty("tempFolds");
-			mode = buffer.getStringProperty("mode");
+			Mode bufferMode = buffer.getMode();
+			mode = (bufferMode != null) ? bufferMode.getName() : null;
 			this.buffer = buffer;
 		}
 		FoldCounter counter = ConfigurableFoldHandlerPlugin.getInstance()
