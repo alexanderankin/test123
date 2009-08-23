@@ -80,7 +80,8 @@ public class CtagsInterfacePlugin extends EditPlugin {
 
 	public void stop()
 	{
-		pvi.stop();
+		if (pvi != null)
+			pvi.stop();
 		if (watcher != null)
 			watcher.shutdown();
 		if ((db != null) && (! db.isFailed()))
