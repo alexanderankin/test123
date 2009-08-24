@@ -1,5 +1,7 @@
 package com.addictedtor.orchestra ;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
@@ -24,6 +26,7 @@ public class OrchestraPlugin extends EBPlugin {
 
     // log4j
     public static final String LOG_FILENAME = "orchestra_installer.log";
+    protected static final Log logger = LogFactory.getLog(OrchestraPlugin.class);
 
     // must be public for jedit, but dont call this!
     public OrchestraPlugin() {}
@@ -71,7 +74,13 @@ public class OrchestraPlugin extends EBPlugin {
         Thread t = new Thread() {
             @Override
             public void run() {
-                while(!jEdit.isStartupDone()) {}
+                while(!jEdit.isStartupDone()) {
+                    try {
+                        sleep(100);
+                    } catch (InterruptedException e) {
+                        logger.error("Interrupted waiter thread for Orchestra plugin!", e);
+                    }
+                }
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         new PluginOptions(jEdit.getActiveView(), "orchestra");

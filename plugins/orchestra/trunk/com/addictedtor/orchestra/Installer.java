@@ -34,6 +34,7 @@ public class Installer extends SafeSwingWorker<Void, String> {
 		// private File rJavaDir = null;
 		// private String rLibPaths = null;
     private File shortcutDir = null;
+    private File startScript;
 
     public static final String RSCRIPT_NAME = "orchestra_starter.r";
     public static final String PROPERTY_NAME = "orchestra_properties.txt";
@@ -192,7 +193,7 @@ public class Installer extends SafeSwingWorker<Void, String> {
         extractPropertyFile();
         publish("Start property file extracted.");
         setProgress(40);
-        File scriptFile = extractRScript();
+        startScript = extractRScript();
         publish("Start script extracted.");
         setProgress(60);
         if (shortcutDir != null) {
@@ -200,12 +201,20 @@ public class Installer extends SafeSwingWorker<Void, String> {
             publish("Desktop icons extracted.");
             setProgress(80);
             logger.info("Creating shortcut entry in " + shortcutDir.getAbsolutePath());
-            createShortcut(scriptFile);
+            createShortcut(startScript);
             logger.info("Shortcut done.");
             publish("Desktop link created.");
         }
         setProgress(100);
         publish("Done.");
         return null;
+    }
+
+    public File getShortcutDir() {
+        return shortcutDir;
+    }
+
+    public File getStartScript() {
+        return startScript;
     }
 }
