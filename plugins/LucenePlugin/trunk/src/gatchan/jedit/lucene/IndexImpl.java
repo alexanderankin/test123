@@ -125,6 +125,11 @@ public class IndexImpl extends AbstractIndex implements Index
 			session = vfs.createVFSSession(path, jEdit.getActiveView());
 
 			VFSFile vfsFile = vfs._getFile(session, path, jEdit.getActiveView());
+			if (vfsFile == null)
+			{
+				Log.log(Log.ERROR, this, "Unable to add document " + path + " the file doesn't exists");
+				return;
+			}
 			addFile(vfsFile, session);
 		}
 		catch (IOException e)
@@ -140,9 +145,9 @@ public class IndexImpl extends AbstractIndex implements Index
 			catch (IOException e)
 			{
 			}
+			LucenePlugin.CENTRAL.commit();
+			endActivity();
 		}
-		LucenePlugin.CENTRAL.commit();
-		endActivity();
 	}
 
 	private void addFile(VFSFile file, Object session)
@@ -251,7 +256,7 @@ public class IndexImpl extends AbstractIndex implements Index
 
 	protected void addDocument(VFSFile file, Object session)
 	{
-		Log.log(Log.DEBUG, this, "Index:" + name + " add " + file);
+		Log.log(Log.DEBUG, this, "Index:" + name + " add " + file.getPath());
 		Document doc = getEmptyDocument(file);
 		Reader reader = null;
 		try
@@ -265,7 +270,7 @@ public class IndexImpl extends AbstractIndex implements Index
 		}
 		catch (IOException e)
 		{
-			Log.log(Log.ERROR, this, "Unable to read file " + path, e);
+			Log.log(Log.ERROR, this, "Unable to read file " + file.getPath(), e);
 		}
 		finally
 		{
