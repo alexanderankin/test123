@@ -198,9 +198,10 @@ public class IndexImpl extends AbstractIndex implements Index
 		if (writer == null)
 			return;
 		List<String> allDocuments = LucenePlugin.CENTRAL.getAllDocuments(name);
-		for (String allDocument : allDocuments)
+		for (String path : allDocuments)
 		{
-			addFile(allDocument);
+			removeFile(path);
+			addFile(path);
 		}
 	}
 
