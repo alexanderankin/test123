@@ -31,6 +31,8 @@ public class OrchestraOptionPane extends AbstractOptionPane implements ActionLis
     private JCheckBox chbShortcutEnabler = new JCheckBox("Create shortcut?");
     private JTextField tfShortcut = new JTextField();
     private JButton bSelectShortcut = new JButton();
+    // has the user clicked the checkbox at least once
+    private boolean shortcutToggled = false;
 
     public OrchestraOptionPane() {
         super("orchestra-optionpane");
@@ -94,6 +96,9 @@ public class OrchestraOptionPane extends AbstractOptionPane implements ActionLis
         if (ac.startsWith("choose-rhome")) {
             selectDir(tfRHome);
         }
+        if (e.getSource() == chbShortcutEnabler) {
+            shortcutToggled = true;
+        }
     }
 
 
@@ -127,18 +132,31 @@ public class OrchestraOptionPane extends AbstractOptionPane implements ActionLis
         if (err != null) {
             JOptionPane.showMessageDialog(this, err);
         } else {
-            Installer i = new Installer(
-                    jEdit.getJEditHome(),
-                    OrchestraPlugin.getPluginHomePath(),
-                    rhome,
-                    shortcut
-            );
-            ProgressDialog<Void, String> pd = new ProgressDialog<Void, String>(
-                    this, "Orchestra Installation", i, true, true);
-            pd.setSize(600,500);
-            pd.setVisible(true);
+            // only install when user has changed something
+            if (propertiesChanged()) {
+                Installer i = new Installer(
+                        jEdit.getJEditHome(),
+                        OrchestraPlugin.getPluginHomePath(),
+                        rhome,
+                        shortcut
+                );
+                ProgressDialog<Void, String> pd = ProgressDialogInstaller.make(this, i);
+                pd.setSize(600,500);
+                pd.setVisible(true);
+            }
         }
         logger.info("Saving options done.");
         
     }
+
+    private boolean propertiesChanged() {
+        return
+                jEdit.getProperty("options.orchestra.rhome.path") == null ||
+                !jEdit.getProperty("options.orchestra.rhome.path").equals(tfRHome.getText()) ||
+                jEdit.getProperty("options.orchestra.shortcut.path") == null ||
+                !jEdit.getProperty("options.orchestra.shortcut.path").equals(tfShortcut.getText()) ||
+                shortcutToggled;
+    }
+
+
 }
