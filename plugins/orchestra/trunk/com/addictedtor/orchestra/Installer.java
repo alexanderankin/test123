@@ -46,7 +46,7 @@ public class Installer extends SafeSwingWorker<Void, String> {
         this.jeditHomeDir = new File(jeditHomeDir);
         this.pluginHomeDir = new File(pluginHomeDir);
         this.rHomeDir = new File(rHomeDir);
-        this.rlibsDir = new File(rHomeDir, R_LIBS_DIR_NAME);
+        this.rlibsDir = new File(pluginHomeDir, R_LIBS_DIR_NAME);
         // null means no shortcut
         if (shortcutDir != null)
             this.shortcutDir = new File(shortcutDir);
@@ -101,10 +101,9 @@ public class Installer extends SafeSwingWorker<Void, String> {
             properties = properties.replace("@JEDIT_HOME@", jeditStr);
             properties = properties.replace("@PLUGIN_HOME@", pluginHomeStr);
             
-            File libDir = new File( pluginHomeDir + "/library" ) ;
-            if( !libDir.exists() ){
+            if( !rlibsDir.exists() ){
             	logger.info( "creating R library in plugin home: '" + pluginHomeStr + "/library" ) ;
-            	libDir.mkdirs(); 
+            	rlibsDir.mkdirs();
             } else{
             	// maybe check that the this actually is a library
             }
