@@ -59,11 +59,16 @@ public class TreeMouseListener extends MouseAdapter {
                 Buffer buffer = jEdit.getBuffer( task.getBufferPath() );
                 if ( buffer == null ) {
                     buffer = jEdit.openFile( view, task.getBufferPath() );
+                    try {
+                        while ( buffer.isLoading() ) {
+                            Thread.currentThread().sleep( 5 );
+                        }
+                    }
+                    catch ( Exception ex ) {}    // NOPMD
                 }
 
                 int line_number = task.getLineNumber();
                 int start_offset = task.getStartOffset();
-                jEdit.openFile( jEdit.getActiveView(), buffer.getPath() );
                 EditPane edit_pane = jEdit.getActiveView().showBuffer( buffer );
                 edit_pane.getTextArea().scrollTo( line_number, start_offset, true );
                 edit_pane.getTextArea().setCaretPosition( task.getStartPosition().getOffset() );
@@ -73,17 +78,19 @@ public class TreeMouseListener extends MouseAdapter {
 
     private void showPopup( Point p ) {
         TaskListPopup popup = new TaskListPopup( view, tree, p );
-        
+
         // keep within screen limits; use task list panel, not table
         SwingUtilities.convertPointToScreen( p, tree );
         SwingUtilities.convertPointFromScreen( p, tree );
-        
+
         Dimension dt = tree.getSize();
         Dimension dp = popup.getPreferredSize();
-        if ( p.x + dp.width > dt.width )
+        if ( p.x + dp.width > dt.width ) {
             p.x = dt.width - dp.width;
-        if ( p.y + dp.height > dt.height )
+        }
+        if ( p.y + dp.height > dt.height ) {
             p.y = dt.height - dp.height;
+        }
         popup.show( tree, p.x + 1, p.y + 1 );
 
     }
