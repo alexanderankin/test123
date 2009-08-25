@@ -18,16 +18,22 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package lcm;
+package lcm.providers.simple;
 import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.Vector;
 
-import lcm.RangeChangeUndoManager.CompoundChange;
-import lcm.RangeChangeUndoManager.DummyNode;
-import lcm.RangeChangeUndoManager.RangeAdd;
-import lcm.RangeChangeUndoManager.RangeRemove;
-import lcm.RangeChangeUndoManager.RangeUpdate;
+import lcm.BufferHandler;
+import lcm.LCMOptions;
+import lcm.LCMPlugin;
+import lcm.painters.ColoredRectDirtyMarkPainter;
+import lcm.painters.DirtyMarkPainter;
+import lcm.providers.simple.RangeChangeUndoManager.CompoundChange;
+import lcm.providers.simple.RangeChangeUndoManager.DummyNode;
+import lcm.providers.simple.RangeChangeUndoManager.RangeAdd;
+import lcm.providers.simple.RangeChangeUndoManager.RangeRemove;
+import lcm.providers.simple.RangeChangeUndoManager.RangeUpdate;
+
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.jEdit;
@@ -36,8 +42,9 @@ import org.gjt.sp.jedit.buffer.BufferUndoListener;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
+
 public class BufferChangedLines extends BufferAdapter
-	implements BufferUndoListener
+	implements BufferUndoListener, BufferHandler
 {
 	private Buffer buffer;
 	private TreeSet<Range> ranges;
@@ -45,6 +52,7 @@ public class BufferChangedLines extends BufferAdapter
 	private boolean undoExists;
 	private boolean initUndo = false;
 	private boolean initRedo = false;
+	private ColoredRectDirtyMarkPainter painter = null;
 
 	// Methods for supporting undo
 	public void add(Range r)
@@ -72,6 +80,7 @@ public class BufferChangedLines extends BufferAdapter
 		buffer.addBufferUndoListener(this);
 		if (buffer.isDirty() && (! buffer.isUntitled()))
 			initDirtyRanges();	// Get the initial dirty ranges using Diff
+		painter = new ColoredRectDirtyMarkPainter();
 	}
 
 	public void remove()
@@ -329,8 +338,16 @@ public class BufferChangedLines extends BufferAdapter
 		return ranges.contains(r);
 	}
 
-	public void clear()
+	public void bufferSaved(Buffer buffer)
 	{
 		ranges.clear();
+	}
+
+	public DirtyMarkPainter getDirtyMarkPainter(Buffer buffer, int physicalLine)
+	{
+		if (! isChanged(physicalLine))
+			return null;
+		painter.setColor(LCMOptions.getBgColor());
+		return painter;
 	}
 }

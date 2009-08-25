@@ -18,9 +18,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package lcm;
+package lcm.providers.simple;
 
-@SuppressWarnings("unchecked") class Range implements Comparable
+@SuppressWarnings("unchecked")
+public class Range implements Comparable
 {
 	public int first, last;
 	public Range(int first, int num)

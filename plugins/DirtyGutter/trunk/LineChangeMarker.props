@@ -20,6 +20,7 @@ plugin.lcm.LCMPlugin.option-pane=DirtyGutter
 options.DirtyGutter.label=DirtyGutter
 options.DirtyGutter.code=new lcm.LCMOptions();
 messages.LCMPlugin.bgColor=Dirty line marker color:
+messages.LCMPlugin.providers=Dirty line provider:
 
 # docs
 plugin.lcm.LCMPlugin.docs=description.html
