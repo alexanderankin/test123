@@ -1,4 +1,4 @@
-package lcm;
+package lcm.providers.simple;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,6 +15,7 @@ import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
+
 
 public class BufferFileDiff
 {

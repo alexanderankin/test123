@@ -23,10 +23,13 @@ package lcm;
 import java.util.HashMap;
 import java.util.Vector;
 
+import lcm.providers.simple.SimpleDirtyLineProvider;
+
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EditPane;
+import org.gjt.sp.jedit.ServiceManager;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
@@ -34,45 +37,48 @@ import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.visitors.JEditVisitorAdapter;
 
+
+
 public class LCMPlugin extends EBPlugin
 {
 	static public final String PROP_PREFIX = LCMOptions.PROP_PREFIX;
 	static private final String DEBUGGING_PROP = PROP_PREFIX + "debug";
 	static private LCMPlugin instance;
-	private HashMap<Buffer, BufferChangedLines> changes;
+	private HashMap<Buffer, BufferHandler> handlers;
 	private HashMap<EditPane, ChangeMarker> markers;
 	private boolean isDebugging;
+	private DirtyLineProvider provider;
 
 	public static LCMPlugin getInstance()
 	{
 		return instance;
 	}
 
-	public BufferChangedLines getBufferChangedLines(Buffer b)
+	public BufferHandler getBufferHandler(Buffer b)
 	{
-		synchronized(changes)
+		synchronized(handlers)
 		{
-			return changes.get(b);
+			return handlers.get(b);
 		}
 	}
 
-	private BufferChangedLines createBufferChangedLines(Buffer b)
+	private BufferHandler attachToBuffer(Buffer b)
 	{
-		BufferChangedLines bcl = new BufferChangedLines(b);
-		synchronized(changes)
+		BufferHandler bh = provider.attach(b);
+		synchronized(handlers)
 		{
-			changes.put(b, bcl);
+			handlers.put(b, bh);
 		}
-		return bcl;
+		return bh;
 	}
 
-	private void removeBufferChangedLines(Buffer b)
+	private void detachFromBuffer(Buffer b)
 	{
-		synchronized(changes)
+		synchronized(handlers)
 		{
-			BufferChangedLines bcl = changes.remove(b);
-			if (bcl != null)
-				bcl.remove();
+			BufferHandler bh = handlers.remove(b);
+			if (bh != null)
+				provider.detach(b, bh);
 		}
 	}
 	
@@ -98,12 +104,12 @@ public class LCMPlugin extends EBPlugin
 			if ((bu.getWhat() == BufferUpdate.SAVED) ||
 				(bu.getWhat() == BufferUpdate.LOADED))
 			{
-				BufferChangedLines bcl = getBufferChangedLines(b);
-				if (bcl != null)
-					bcl.clear();
+				BufferHandler bh = getBufferHandler(b);
+				if (bh != null)
+					bh.bufferSaved(b);
 			}
 			else if (bu.getWhat() == BufferUpdate.CLOSED)
-				removeBufferChangedLines(b);
+				detachFromBuffer(b);
 		}
 		else if (message instanceof PropertiesChanged)
 			isDebugging = jEdit.getBooleanProperty(DEBUGGING_PROP, false);
@@ -144,8 +150,8 @@ public class LCMPlugin extends EBPlugin
 	private void initEditPane(EditPane ep)
 	{
 		Buffer b = ep.getBuffer();
-		if (getBufferChangedLines(b) == null)
-			createBufferChangedLines(b);
+		if (getBufferHandler(b) == null)
+			attachToBuffer(b);
 		ChangeMarker cm = markers.get(ep);
 		if (cm == null)
 		{
@@ -164,11 +170,26 @@ public class LCMPlugin extends EBPlugin
 		}
 	}
 
+	public DirtyLineProvider getDirtyLineProvider()
+	{
+		provider = null;
+		String providerName = LCMOptions.getProviderServiceName();
+		if (providerName != null)
+		{
+			provider = (DirtyLineProvider) ServiceManager.getService(
+				DirtyLineProvider.class.getCanonicalName(), providerName);
+		}
+		if (provider == null)
+			provider = new SimpleDirtyLineProvider();
+		return provider;
+	}
+
 	@Override
 	public void start()
 	{
 		instance = this;
-		changes = new HashMap<Buffer, BufferChangedLines>();
+		provider = getDirtyLineProvider();
+		handlers = new HashMap<Buffer, BufferHandler>();
 		markers = new HashMap<EditPane, ChangeMarker>();
 		isDebugging = jEdit.getBooleanProperty(DEBUGGING_PROP, false);
 		jEdit.visit(new EditPaneVisitor(true));
@@ -182,11 +203,11 @@ public class LCMPlugin extends EBPlugin
 			uninitEditPane(ep);
 		markers.clear();
 		markers = null;
-		Vector<Buffer> buffers = new Vector<Buffer>(changes.keySet());
+		Vector<Buffer> buffers = new Vector<Buffer>(handlers.keySet());
 		for (Buffer b: buffers)
-			removeBufferChangedLines(b);
-		changes.clear();
-		changes = null;
+			detachFromBuffer(b);
+		handlers.clear();
+		handlers = null;
 		instance = null;
 	}
 

@@ -20,9 +20,9 @@
 
 package lcm;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 
+import lcm.painters.DirtyMarkPainter;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
@@ -30,35 +30,32 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.TextAreaExtension;
 
 
+
 public class ChangeMarker extends TextAreaExtension
 {
 	static final int WIDTH = 12;
 	private EditPane editPane;
-
 	public ChangeMarker(EditPane editPane)
 	{
 		this.editPane = editPane;
 		editPane.getTextArea().getGutter().addExtension(this);
 	}
-
 	public void paintValidLine(Graphics2D gfx, int screenLine,
 			int physicalLine, int start, int end, int y)
 	{
 		Buffer buffer = editPane.getBuffer();
 		if (buffer.isUntitled())
 			return;
-		BufferChangedLines changes =
-			LCMPlugin.getInstance().getBufferChangedLines(buffer);
-		if ((changes == null) || (! changes.isChanged(physicalLine)))
+		BufferHandler handler = LCMPlugin.getInstance().getBufferHandler(buffer);
+		if (handler == null)
+			return;
+		DirtyMarkPainter painter = handler.getDirtyMarkPainter(buffer,
+			physicalLine);
+		if (painter == null)
 			return;
 		JEditTextArea ta = editPane.getTextArea();
-		int x = 0;
-		int width = ta.getGutter().getWidth();
 		int lineHeight = ta.getPainter().getFontMetrics().getHeight();
-		Color c = gfx.getColor();
-		gfx.setColor(LCMOptions.getBgColor());
-		gfx.fillRect(x + width - WIDTH, y, WIDTH, lineHeight);
-		gfx.setColor(c);
+		painter.paint(gfx, ta.getGutter(), y, lineHeight, buffer, physicalLine);
 	}
 
 	public void remove()
