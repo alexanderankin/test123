@@ -160,10 +160,10 @@ tasklist.icons=stock_about-16.png \
 	RedFlag.gif
 	
 # messages for tree displays
+tasklist.loadingtasksfromfiles=Please wait, loading tasks from files...
+tasklist.currentbuffer=Current File:
 tasklist.openfiles.open-files=Open Files:
-tasklist.openfiles.wait=Please wait, loading tasks from open files...
 tasklist.no-tasks-found=No tasks found.
-tasklist.projectfiles.wait=Please wait, loading tasks for project
 tasklist.projectfiles.project=Project:
 tasklist.projectfiles.noproject=No project is open.
 tasklist.projectfiles.stop=Stop

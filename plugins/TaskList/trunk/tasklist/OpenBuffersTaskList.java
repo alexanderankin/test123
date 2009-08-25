@@ -30,8 +30,6 @@
 */
 package tasklist;
 
-import java.awt.BorderLayout;
-import java.awt.Cursor;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.tree.*;
@@ -42,254 +40,28 @@ import org.gjt.sp.jedit.msg.*;
 
 import common.swingworker.*;
 
-public class OpenBuffersTaskList extends JPanel implements EBComponent {
-
-    private View view = null;
-    private JTree tree = null;
-    private TaskComparator taskComparator = new TaskComparator();
-    private int sortColumn = jEdit.getIntegerProperty( "tasklist.table.sort-column", 1 );
-    private boolean sortAscending = jEdit.getBooleanProperty( "tasklist.table.sort-ascending", true );
-
-    public OpenBuffersTaskList( View view ) {
-        this.view = view;
-        setLayout( new BorderLayout() );
-        loadOpenFiles();
-        EditBus.addToBus( this );
+public class OpenBuffersTaskList extends AbstractTreeTaskList {
+    
+    public OpenBuffersTaskList(View view) {
+        super(view, jEdit.getProperty("tasklist.openfiles.open-files", "Open Files:"));   
     }
 
-    public void removeNotify() {
-        super.removeNotify();
-        EditBus.removeFromBus( this );
+    @Override
+    protected boolean canRun() {
+        return jEdit.getBooleanProperty( "tasklist.show-open-files" );
     }
 
-    // finds the tasks in all open files using a SwingWorker so as not to impact
-    // performance of the UI.
-    private void loadOpenFiles() {
-        class Runner extends SwingWorker<TreeModel, Object> {
-
-            @Override
-            public TreeModel doInBackground() {
-                try {
-                    SwingUtilities.invokeLater(
-                        new Runnable() {
-                            public void run() {
-                                setCursor( Cursor.getPredefinedCursor( Cursor.WAIT_CURSOR ) );
-                                removeAll();
-                                add( new JLabel( jEdit.getProperty( "tasklist.openfiles.wait", "Please wait, loading tasks from open files..." ) ) );
-                                repaint();
-                            }
-                        }
-                    );
-                    return buildTreeModel();
-                }
-                catch ( Exception e ) {
-                    e.printStackTrace();
-                    return null;
-                }
-            }
-
-            @Override
-            protected void done() {
-                final TreeModel model;
-                try {
-                    model = ( TreeModel ) get();
-                    if ( model == null ) {
-                        return ;
-                    }
-                }
-                catch ( Exception e ) {
-                    setCursor( Cursor.getPredefinedCursor( Cursor.DEFAULT_CURSOR ) );
-                    return ;
-                }
-                SwingUtilities.invokeLater(
-                    new Runnable() {
-                        public void run() {
-                            // build the display
-                            removeAll();
-                            if ( model.getChildCount( model.getRoot() ) > 0 ) {
-                                tree = new JTree( model );
-                                for ( int i = tree.getRowCount(); i > 0; i-- ) {
-                                    tree.expandRow( i );
-                                }
-                                tree.addMouseListener( new TreeMouseListener( view, tree ) );
-                                tree.setCellRenderer( new TaskTreeCellRenderer() );
-                                add( new JScrollPane( tree ) );
-                            }
-                            else {
-                                add( new JLabel( jEdit.getProperty( "tasklist.no-tasks-found", "No tasks found." ) ) );
-                            }
-                            repaint();
-                            setCursor( Cursor.getPredefinedCursor( Cursor.DEFAULT_CURSOR ) );
-                        }
-                    }
-                );
-
-            }
-        }
-        if ( jEdit.getBooleanProperty( "tasklist.show-open-files" ) ) {
-            Runner runner = new Runner();
-            runner.execute();
-        }
-    }
-
-    protected List<Buffer> getBuffersToScan() {
+    @Override
+    protected List<String> getBuffersToScan() {
         // fetch all open buffers
-        List<Buffer> openBuffers = new ArrayList<Buffer>();
+        List<String> openBuffers = new ArrayList<String>();
         EditPane[] editPanes = view.getEditPanes();
         for ( EditPane editPane : editPanes ) {
             Buffer[] buffers = editPane.getBufferSet().getAllBuffers();
             for ( Buffer buffer : buffers ) {
-                openBuffers.add( buffer );
+                openBuffers.add( buffer.getPath() );
             }
         }
         return openBuffers;
     }
-    
-    /**
-     * This tree model is only 3 levels deep:
-     * 1. Root node user object is a string that says "Open Files:" Root node is 
-     * parent for buffer nodes.  
-     * 2. Buffer node user object is a string containing the results of 
-     * Buffer.getPath().  Buffer nodes are parent for task nodes.
-     * 3. Task node user objects are Tasks.
-     */
-    protected TreeModel buildTreeModel() {
-        List<Buffer> openBuffers = getBuffersToScan();
-
-        DefaultMutableTreeNode root = new DefaultMutableTreeNode( jEdit.getProperty( "tasklist.openfiles.open-files", "Open Files:" ) );
-        SortableTreeModel model = new SortableTreeModel( root, new TreeNodeStringComparator() );
-
-        // check each open buffer for tasks
-        for ( Buffer buffer : openBuffers ) {
-            DefaultMutableTreeNode buffer_node = getNodeForBuffer( buffer );
-            if ( buffer_node == null ) {
-                continue;
-            }
-            model.insertNodeInto( buffer_node, root );
-        }
-        return model;
-    }
-
-    private DefaultMutableTreeNode getNodeForBuffer( Buffer buffer ) {
-        DefaultMutableTreeNode buffer_node = null;
-        try {
-            // pass the buffer to TaskList for parsing, add tree nodes for each buffer
-            // and child nodes for each task found.  Use "parseBuffer" rather than
-            // "extractTasks" since extractTasks just calls parseBuffer in a swing
-            // thread, and I'm already in a swing thread.  Also, parseBuffer will
-            // only parse buffers of the modes allowed by the TaskList mode configuration.
-            TaskListPlugin.parseBuffer( buffer );
-            HashMap<Integer, Task> tasks = TaskListPlugin.requestTasksForBuffer( buffer );
-
-            if ( tasks != null && tasks.size() > 0 ) {
-                // tasks were found for this buffer, so create the tree node for the buffer itself,
-                // then add tree nodes for the individual tasks.
-                buffer_node = new DefaultMutableTreeNode( buffer.getPath() );
-
-                ArrayList<Task> sorted_tasks = new ArrayList<Task>( tasks.values() );
-                Collections.sort( sorted_tasks, taskComparator );
-                for ( Task task : sorted_tasks ) {
-                    DefaultMutableTreeNode task_node = new DefaultMutableTreeNode( task );
-                    buffer_node.add( task_node );
-                }
-            }
-        }
-        catch ( Exception e ) {     // NOPMD
-            // ignore any exception, there really isn't anything to do about
-            // it.  The most likely cause is the buffer didn't get loaded by
-            // jEdit before TaskList tried to parse it.
-            e.printStackTrace();
-        }
-        return buffer_node;
-    }
-
-
-    public void handleMessage( EBMessage msg ) {
-        if ( msg instanceof BufferUpdate ) {
-            BufferUpdate bu = ( BufferUpdate ) msg;
-
-            // only handle messages for our view
-            if ( !view.equals( bu.getView() ) ) {
-                return ;
-            }
-
-            final Buffer buffer = bu.getBuffer();
-
-            if ( BufferUpdate.CLOSED.equals( bu.getWhat() ) ) {
-                removeBuffer( buffer );
-                repaint();
-            }
-            else if ( BufferUpdate.LOADED.equals( bu.getWhat() ) ) {
-                addBuffer( buffer );
-                repaint();
-            }
-            else if ( BufferUpdate.SAVED.equals( bu.getWhat() ) || ParseBufferMessage.DO_PARSE.equals( bu.getWhat() ) ) {
-                removeBuffer( buffer );
-                addBuffer( buffer );
-                repaint();
-            }
-            else if ( ParseBufferMessage.DO_PARSE_ALL.equals( bu.getWhat() ) ) {
-                loadOpenFiles();
-            }
-        }
-        if ( msg instanceof PropertiesChanged ) {
-            int _sortColumn = jEdit.getIntegerProperty( "tasklist.table.sort-column", 1 );
-            boolean _sortAscending = jEdit.getBooleanProperty( "tasklist.table.sort-ascending", true );
-            if ( sortColumn != _sortColumn || sortAscending != _sortAscending ) {
-                DefaultMutableTreeNode root = ( DefaultMutableTreeNode ) tree.getModel().getRoot();
-                Enumeration bufferNodes = root.children();
-                while ( bufferNodes.hasMoreElements() ) {
-                    DefaultMutableTreeNode bufferNode = ( DefaultMutableTreeNode ) bufferNodes.nextElement();
-                    ArrayList<Task> tasks = new ArrayList<Task>();
-                    Enumeration taskNodes = bufferNode.children();
-                    while ( taskNodes.hasMoreElements() ) {
-                        DefaultMutableTreeNode taskNode = ( DefaultMutableTreeNode ) taskNodes.nextElement();
-                        tasks.add( ( Task ) taskNode.getUserObject() );
-                    }
-                    bufferNode.removeAllChildren();
-                    Collections.sort( tasks, taskComparator );
-                    for ( Task task : tasks ) {
-                        bufferNode.add( new DefaultMutableTreeNode( task ) );
-                    }
-                }
-                ( ( DefaultTreeModel ) tree.getModel() ).nodeStructureChanged( root );
-                for ( int i = tree.getRowCount(); i > 0; i-- ) {
-                    tree.expandRow( i );
-                }
-            }
-        }
-    }
-
-    private void addBuffer( Buffer buffer ) {
-        DefaultMutableTreeNode buffer_node = getNodeForBuffer( buffer );
-        if ( buffer_node == null || tree == null ) {
-            return ;
-        }
-        SortableTreeModel model = ( SortableTreeModel ) tree.getModel();
-        model.insertNodeInto( buffer_node, ( DefaultMutableTreeNode ) model.getRoot() );
-        model.nodeStructureChanged( ( DefaultMutableTreeNode ) model.getRoot() );
-        for ( int i = tree.getRowCount(); i > 0; i-- ) {
-            tree.expandRow( i );
-        }
-    }
-
-    private void removeBuffer( Buffer buffer ) {
-        if ( tree == null ) {
-            return;  
-        }
-        SortableTreeModel model = ( SortableTreeModel ) tree.getModel();
-        for ( int i = 0; i < model.getChildCount( model.getRoot() ); i++ ) {
-            DefaultMutableTreeNode node = ( DefaultMutableTreeNode ) model.getChild( model.getRoot(), i );
-            String buffer_name = ( String ) node.getUserObject();
-            if ( buffer_name.equals( buffer.getPath() ) ) {
-                model.removeNodeFromParent( node );
-                model.nodeStructureChanged( ( DefaultMutableTreeNode ) model.getRoot() );
-                for ( int j = tree.getRowCount(); j > 0; j-- ) {
-                    tree.expandRow( j );
-                }
-                break;
-            }
-        }
-    }
-
 }
