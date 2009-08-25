@@ -47,6 +47,7 @@ import projectviewer.event.ViewerUpdate;
 import projectviewer.vpt.*;
 
 import common.swingworker.*;
+import ise.java.awt.KappaLayout;
 
 public class ProjectTaskList extends JPanel implements EBComponent {
 
@@ -126,15 +127,15 @@ public class ProjectTaskList extends JPanel implements EBComponent {
                         public void run() {
                             ProjectTaskList.this.removeAll();
 
-                            JPanel progressPanel = new JPanel();
                             progressBar.setStringPainted(true);
-                            progressPanel.add( progressBar, BorderLayout.CENTER);
+                            JPanel progressPanel = new JPanel(new KappaLayout());
+                            progressPanel.add("0, 0, 1, 1, 0, w, 3", new JLabel( jEdit.getProperty( "tasklist.projectfiles.wait", "Please wait, loading tasks for project" ) + " " + project.getName() ));
+                            progressPanel.add("0, 1, 1, 1, 0, w, 3", progressBar);
                             JPanel btnPanel = new JPanel();
                             btnPanel.add( stopButton );
+                            progressPanel.add("0, 2, 1, 1, 0, 0, 3", btnPanel);
 
-                            ProjectTaskList.this.add( new JLabel( jEdit.getProperty( "tasklist.projectfiles.wait", "Please wait, loading tasks for project" ) + " " + project.getName() ), BorderLayout.NORTH );
                             ProjectTaskList.this.add( progressPanel, BorderLayout.CENTER );
-                            ProjectTaskList.this.add(btnPanel, BorderLayout.SOUTH);
                             ProjectTaskList.this.invalidate();
                             ProjectTaskList.this.validate();
                         }
