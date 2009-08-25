@@ -28,7 +28,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import javax.swing.table.*;
 import javax.swing.tree.*;
 import javax.swing.*;
 
@@ -263,14 +262,6 @@ public class TaskListPopup extends JPopupMenu {
     }
 
     private Task getTask() {
-        if ( comp instanceof JTable ) {
-            JTable table = ( JTable ) comp;
-            int row = table.rowAtPoint( point );
-            //TaskListModel model = ( TaskListModel ) table.getModel();
-            //Task task = ( Task ) model.elementAt( row );
-            return null;
-        }
-        else {
             JTree tree = ( JTree ) comp;
             TreePath path = tree.getPathForLocation( point.x, point.y );
             DefaultMutableTreeNode node = ( DefaultMutableTreeNode ) path.getLastPathComponent();
@@ -280,7 +271,6 @@ public class TaskListPopup extends JPopupMenu {
             }
             Task task = ( Task ) userObject;
             return task;
-        }
     }
 
     private String getBufferPath() {
