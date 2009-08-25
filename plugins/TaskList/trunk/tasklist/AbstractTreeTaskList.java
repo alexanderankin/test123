@@ -2,8 +2,7 @@ package tasklist;
 
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.beans.*;
 import java.io.File;
 import java.util.*;
@@ -16,6 +15,9 @@ import org.gjt.sp.jedit.msg.*;
 import common.swingworker.*;
 import ise.java.awt.KappaLayout;
 
+/**
+ * Base class of all task list trees.
+ */
 public abstract class AbstractTreeTaskList extends JPanel implements EBComponent {
     protected View view = null;
     protected JTree tree = null;
@@ -23,10 +25,13 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
     protected int sortColumn = jEdit.getIntegerProperty( "tasklist.table.sort-column", 1 );
     protected boolean sortAscending = jEdit.getBooleanProperty( "tasklist.table.sort-ascending", true );
     protected JButton stopButton;
-    protected JButton startButton;
     protected Runner runner = null;
     protected String rootDisplayName = "Tasks:";
-
+    
+    /**
+     * @param view the View this task list is being displayed in.
+     * @param rootDisplayName the name to be displayed in the root node of the task list tree.
+     */
     public AbstractTreeTaskList( View view, String rootDisplayName ) {
         this.view = view;
         if ( rootDisplayName != null ) {
@@ -36,8 +41,12 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
         EditBus.addToBus( this );
     }
 
-    protected void init() {
+    private void init() {
         setLayout( new BorderLayout() );
+        
+        // the stop button is used to stop parsing files, like for a project
+        // that has a lot of files and the user doesn't want to wait until
+        // they are all done.
         stopButton = new JButton( jEdit.getProperty( "tasklist.projectfiles.stop", "Stop" ) );
         stopButton.addActionListener(
             new ActionListener() {
@@ -48,26 +57,46 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
                 }
             }
         );
-        startButton = new JButton( jEdit.getProperty( "tasklist.projectfiles.start", "Start" ) );
-        startButton.addActionListener(
-            new ActionListener() {
-                public void actionPerformed( ActionEvent ae ) {
-                    if ( runner != null ) {
-                        loadFiles();
-                    }
+
+        // add a "Refresh" menu item to a popup so the user can reload the
+        // current tree.
+        addMouseListener(new MouseAdapter(){
+                public void mouseClicked(MouseEvent me) {
+                    GUIUtilities.showPopupMenu( createPopupMenu(), AbstractTreeTaskList.this, me.getX(), me.getY() );   
                 }
-            }
-        );
+        });
+
         loadFiles();
     }
 
+    private JPopupMenu createPopupMenu() {
+        JPopupMenu menu = new JPopupMenu();
+        JMenuItem refreshItem = new JMenuItem( "Refresh" );
+        refreshItem.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    EditBus.send( new ParseBufferMessage( view, null, ParseBufferMessage.DO_PARSE_ALL ) );
+                }
+            }
+        );
+        menu.add(refreshItem);
+        return menu;
+    }
+    
+    /**
+     * Remove this task list tree from the EditBus.
+     */
     public void removeNotify() {
         super.removeNotify();
         EditBus.removeFromBus( this );
     }
 
-    // finds the tasks in all files using a SwingWorker so as not to impact
-    // performance of the UI.
+    
+    /**
+     * Finds the tasks in all files using a SwingWorker so as not to impact
+     * performance of the UI.  Subclasses may need to override this method, but
+     * should call super.loadFiles to get the Runner to go.
+     */
     protected void loadFiles() {
         if ( canRun() ) {
             if ( runner != null ) {
@@ -80,7 +109,7 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
 
     /**
      * Default implementation returns <code>true</code>.  Subclasses may override
-     * this based on their particular needs, for example, the user may set particular
+     * this based on their particular needs, for example, the user may set 
      * plugin option settings to prevent a particular subclass from displaying or
      * running.
      * @return true if this class is allowed to load and display tasks for files.
@@ -89,21 +118,23 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
         return true;
     }
 
-    protected class Runner extends SwingWorker<TreeModel, Object> {
+    // this worker parses files for tasks and creates the tree for display
+    private class Runner extends SwingWorker<TreeModel, Object> {
 
         private JProgressBar progressBar = new JProgressBar( 0, 100 );
 
         @Override
         public TreeModel doInBackground() {
             try {
+                // build the tree model
                 SwingUtilities.invokeLater(
                     new Runnable() {
                         public void run() {
+                            // show a progress bar while the model is loading
                             removeAll();
 
                             progressBar.setStringPainted( true );
                             JPanel progressPanel = new JPanel( new KappaLayout() );
-                            // TODO: fix the property name for subclasses
                             progressPanel.add( "0, 0, 1, 1, 0, w, 3", new JLabel( jEdit.getProperty( "tasklist.loadingtasksfromfiles.", "Please wait, loading tasks from files..." ) ) );
                             progressPanel.add( "0, 1, 1, 1, 0, w, 3", progressBar );
                             JPanel btnPanel = new JPanel();
@@ -141,9 +172,6 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
                     new Runnable() {
                         public void run() {
                             removeAll();
-                            JPanel btnPanel = new JPanel();
-                            btnPanel.add( startButton );
-                            add( btnPanel, BorderLayout.SOUTH );
                             invalidate();
                             validate();
                         }
@@ -172,9 +200,7 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
                         removeAll();
                         if ( model.getChildCount( model.getRoot() ) > 0 ) {
                             tree = new JTree( model );
-                            for ( int i = tree.getRowCount(); i > 0; i-- ) {
-                                tree.expandRow( i );
-                            }
+                            expandTree();
                             tree.addMouseListener( new TreeMouseListener( view, tree ) );
                             tree.setCellRenderer( new TaskTreeCellRenderer() );
                             add( new JScrollPane( tree ) );
@@ -191,10 +217,10 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
         }
 
         // This tree model is only 3 levels deep:
-        // 1. Root node user object is a string that says "Open Files:" Root node is
-        // parent for buffer nodes.
+        // 1. Root node user object is a string that contains the title of the tree.
+        // Root node is the parent for the buffer nodes.
         // 2. Buffer node user object is a string containing the results of
-        // Buffer.getPath().  Buffer nodes are parent for task nodes.
+        // Buffer.getPath().  Buffer nodes are the parents for task nodes.
         // 3. Task node user objects are Tasks.
         private TreeModel buildTreeModel() {
 
@@ -202,8 +228,8 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
             SortableTreeModel model = new SortableTreeModel( root, new TreeNodeStringComparator() );
 
             List<String> toScan = getBuffersToScan();
-            if (toScan == null) {
-                return model;   
+            if ( toScan == null ) {
+                return model;
             }
             for ( int i = 0; i < toScan.size(); i++ ) {
                 if ( isCancelled() ) {
@@ -266,16 +292,16 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
     }
 
     /**
-     * Subclasses must return a list of the names of buffers to scan.
+     * Subclasses must override this method to return a list of the names of buffers to scan.
      * It is assumed that these are absolute file paths.
      * @return a list of buffers to scan for tasks, or null if no buffers match
-     * the criteria for display.
+     * the criteria for this tree to display.
      */
     protected abstract List<String> getBuffersToScan();
 
-    // create a tree node for the given buffer.  The node will display the 
+    // create a tree node for the given buffer.  The node will display the
     // name of the buffer, the buffer will be scanned for tasks, and one child
-    // node will be added for each task.
+    // node will be added for each task found in the buffer.
     private DefaultMutableTreeNode getNodeForBuffer( Buffer buffer ) {
         DefaultMutableTreeNode buffer_node = null;
         try {
@@ -304,11 +330,14 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
             // ignore any exception, there really isn't anything to do about
             // it.  The most likely cause is the buffer didn't get loaded by
             // jEdit before TaskList tried to parse it.
-            e.printStackTrace();
         }
         return buffer_node;
     }
-
+    
+    /**
+     * Subclasses may override this to handle specific messages, and should call
+     * super.handleMessage() for any message the subclass can't handle.
+     */
     public void handleMessage( EBMessage msg ) {
         if ( msg instanceof BufferUpdate ) {
             BufferUpdate bu = ( BufferUpdate ) msg;
@@ -358,9 +387,7 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
                     }
                 }
                 ( ( DefaultTreeModel ) tree.getModel() ).nodeStructureChanged( root );
-                for ( int i = tree.getRowCount(); i > 0; i-- ) {
-                    tree.expandRow( i );
-                }
+                expandTree();
             }
         }
     }
@@ -373,9 +400,7 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
         SortableTreeModel model = ( SortableTreeModel ) tree.getModel();
         model.insertNodeInto( buffer_node, ( DefaultMutableTreeNode ) model.getRoot() );
         model.nodeStructureChanged( ( DefaultMutableTreeNode ) model.getRoot() );
-        for ( int i = tree.getRowCount(); i > 0; i-- ) {
-            tree.expandRow( i );
-        }
+        expandTree();
     }
 
     private void removeBuffer( Buffer buffer ) {
@@ -389,11 +414,15 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
             if ( buffer_name.equals( buffer.getPath() ) ) {
                 model.removeNodeFromParent( node );
                 model.nodeStructureChanged( ( DefaultMutableTreeNode ) model.getRoot() );
-                for ( int j = tree.getRowCount(); j > 0; j-- ) {
-                    tree.expandRow( j );
-                }
+                expandTree();
                 break;
             }
+        }
+    }
+    
+    private void expandTree() {
+        for ( int i = tree.getRowCount(); i > 0; i-- ) {
+            tree.expandRow( i );
         }
     }
 
