@@ -266,9 +266,9 @@ public class TaskListPopup extends JPopupMenu {
         if ( comp instanceof JTable ) {
             JTable table = ( JTable ) comp;
             int row = table.rowAtPoint( point );
-            TaskListModel model = ( TaskListModel ) table.getModel();
-            Task task = ( Task ) model.elementAt( row );
-            return task;
+            //TaskListModel model = ( TaskListModel ) table.getModel();
+            //Task task = ( Task ) model.elementAt( row );
+            return null;
         }
         else {
             JTree tree = ( JTree ) comp;

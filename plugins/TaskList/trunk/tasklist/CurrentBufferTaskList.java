@@ -17,40 +17,47 @@
 * 
 */
 
+/**
+* This code is based on:
+* A macro to show all of the tasks that the TaskList plugin would show
+* if the TaskList plugin had any concept of ProjectViewer.  This macro
+* gets the list of files from ProjectViewer for the current project,
+* passes each of them to TaskList to find the tasks for each file, and
+* combines them all into a single tree display.  This puts all the tasks
+* for the entire project in a single display.
+*
+* @author Dale Anson, 3 Nov 2008
+*/
 package tasklist;
 
-import java.awt.BorderLayout;
+import java.util.*;
 import javax.swing.*;
+import javax.swing.tree.*;
+
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.msg.*;
 
-public class CurrentBufferTaskList extends JPanel implements EBComponent {
 
-    private View view = null;
-    private TaskListTable table = null;
+import common.swingworker.*;
 
-    public CurrentBufferTaskList( View view ) {
-        this.view = view;
-        setLayout(new BorderLayout());
-        table = new TaskListTable(view);
-        add( BorderLayout.CENTER, new JScrollPane( table ) );
-        EditBus.addToBus(this);
+public class CurrentBufferTaskList extends AbstractTreeTaskList {
+    
+    public CurrentBufferTaskList(View view) {
+        super(view, jEdit.getProperty("tasklist.currentbuffer", "Current File:"));   
+    }
+
+    @Override
+    protected List<String> getBuffersToScan() {
+        List<String> buffers = new ArrayList<String>();
+        buffers.add(view.getBuffer().getPath());
+        return buffers;
     }
     
-    public void handleMessage(EBMessage msg) {
-        if (msg instanceof EditPaneUpdate) {
-            EditPaneUpdate epu = (EditPaneUpdate)msg;
-            if (view.equals(epu.getEditPane().getView()) && EditPaneUpdate.BUFFER_CHANGED.equals(epu.getWhat())) {
-                table.setBuffer(epu.getEditPane().getBuffer());
-            }
-        }
-        else if (msg instanceof BufferUpdate) {
-            BufferUpdate pbm = (BufferUpdate)msg;
-            // check buffer saved
-            if (view.equals(pbm.getView()) && 
-                (ParseBufferMessage.DO_PARSE.equals(pbm.getWhat()) || BufferUpdate.SAVED.equals(pbm.getWhat()))) {
-                table.setBuffer(pbm.getBuffer());
-            }
-        }
-    }
+	public void handleMessage( EBMessage message ) {
+		if ( message instanceof BufferUpdate || message instanceof EditPaneUpdate ) {
+		    loadFiles();
+		}
+		super.handleMessage( message );
+	} 
+    
 }
