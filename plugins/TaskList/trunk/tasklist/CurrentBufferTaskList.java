@@ -41,23 +41,33 @@ import org.gjt.sp.jedit.msg.*;
 import common.swingworker.*;
 
 public class CurrentBufferTaskList extends AbstractTreeTaskList {
-    
-    public CurrentBufferTaskList(View view) {
-        super(view, jEdit.getProperty("tasklist.currentbuffer", "Current File:"));   
+
+    private Buffer buffer = null;
+
+    public CurrentBufferTaskList( View view ) {
+        super( view, jEdit.getProperty( "tasklist.currentbuffer", "Current File:" ) );
     }
 
     @Override
     protected List<String> getBuffersToScan() {
         List<String> buffers = new ArrayList<String>();
-        buffers.add(view.getBuffer().getPath());
+        buffers.add( view.getBuffer().getPath() );
         return buffers;
     }
-    
-	public void handleMessage( EBMessage message ) {
-		if ( message instanceof BufferUpdate || message instanceof EditPaneUpdate ) {
-		    loadFiles();
-		}
-		super.handleMessage( message );
-	} 
-    
+
+    public void handleMessage( EBMessage message ) {
+        Buffer b = null;
+        if ( message instanceof BufferUpdate ) {
+            b = ( ( BufferUpdate ) message ).getBuffer();
+        }
+        else if ( message instanceof EditPaneUpdate ) {
+            b = ( ( EditPaneUpdate ) message ).getEditPane().getBuffer();
+        }
+        if ( buffer == null || !buffer.equals( b ) ) {
+            buffer = b;
+            loadFiles();
+        }
+        super.handleMessage( message );
+    }
+
 }
