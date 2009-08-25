@@ -157,10 +157,10 @@ public class TaskListPopup extends JPopupMenu {
         private Point setLocation() {
             Component parent = getParent();
             Dimension dParent = parent.getPreferredSize();
-            
-            // default location of child popup menu 
+
+            // default location of child popup menu
             Point pPopup = new Point( dParent.width - 1 , -1 );
-            
+
             SwingUtilities.convertPointToScreen( pPopup, parent );
             SwingUtilities.convertPointFromScreen( pPopup, comp );
             Dimension dList = comp.getSize();
@@ -234,19 +234,19 @@ public class TaskListPopup extends JPopupMenu {
             }
             else if ( "sort-by-line-number".equals( cmd ) ) {
                 jEdit.setIntegerProperty( "tasklist.table.sort-column", 1 );
-                EditBus.send(new PropertiesChanged(null));
+                EditBus.send( new PropertiesChanged( null ) );
             }
             else if ( "sort-by-task-type".equals( cmd ) ) {
                 jEdit.setIntegerProperty( "tasklist.table.sort-column", 2 );
-                EditBus.send(new PropertiesChanged(null));
+                EditBus.send( new PropertiesChanged( null ) );
             }
             else if ( "sort-ascending".equals( cmd ) ) {
-                jEdit.setBooleanProperty( "tasklist.table.sort-ascending", true);
-                EditBus.send(new PropertiesChanged(null));
+                jEdit.setBooleanProperty( "tasklist.table.sort-ascending", true );
+                EditBus.send( new PropertiesChanged( null ) );
             }
             else if ( "sort-descending".equals( cmd ) ) {
-                jEdit.setBooleanProperty( "tasklist.table.sort-ascending", false);
-                EditBus.send(new PropertiesChanged(null));
+                jEdit.setBooleanProperty( "tasklist.table.sort-ascending", false );
+                EditBus.send( new PropertiesChanged( null ) );
             }
             else if ( task != null ) {
                 if ( "%Dtask".equals( cmd ) ) {
@@ -288,7 +288,14 @@ public class TaskListPopup extends JPopupMenu {
             JTree tree = ( JTree ) comp;
             TreePath path = tree.getPathForLocation( point.x, point.y );
             DefaultMutableTreeNode node = ( DefaultMutableTreeNode ) path.getLastPathComponent();
-            if ( node.getParent().equals( tree.getModel().getRoot() ) ) {
+            if ( node == null ) {
+                return null;
+            }
+            Object root = tree.getModel().getRoot();
+            if (node.equals(root)) {
+                return null;   
+            }
+            if ( node.getParent().equals( root ) ) {
                 return node.getUserObject().toString();
             }
         }
