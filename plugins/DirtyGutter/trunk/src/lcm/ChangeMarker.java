@@ -24,6 +24,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.TextAreaExtension;
@@ -43,8 +44,11 @@ public class ChangeMarker extends TextAreaExtension
 	public void paintValidLine(Graphics2D gfx, int screenLine,
 			int physicalLine, int start, int end, int y)
 	{
+		Buffer buffer = editPane.getBuffer();
+		if (buffer.isUntitled())
+			return;
 		BufferChangedLines changes =
-			LCMPlugin.getInstance().getBufferChangedLines(editPane.getBuffer());
+			LCMPlugin.getInstance().getBufferChangedLines(buffer);
 		if ((changes == null) || (! changes.isChanged(physicalLine)))
 			return;
 		JEditTextArea ta = editPane.getTextArea();
