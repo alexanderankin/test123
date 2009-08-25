@@ -42,8 +42,6 @@ import common.swingworker.*;
 
 public class CurrentBufferTaskList extends AbstractTreeTaskList {
 
-    private Buffer buffer = null;
-
     public CurrentBufferTaskList( View view ) {
         super( view, jEdit.getProperty( "tasklist.currentbuffer", "Current File:" ) );
     }
@@ -56,6 +54,7 @@ public class CurrentBufferTaskList extends AbstractTreeTaskList {
     }
 
     public void handleMessage( EBMessage message ) {
+        Buffer buffer = view.getBuffer();
         Buffer b = null;
         if ( message instanceof BufferUpdate ) {
             b = ( ( BufferUpdate ) message ).getBuffer();
@@ -63,8 +62,10 @@ public class CurrentBufferTaskList extends AbstractTreeTaskList {
         else if ( message instanceof EditPaneUpdate ) {
             b = ( ( EditPaneUpdate ) message ).getEditPane().getBuffer();
         }
-        if ( buffer == null || !buffer.equals( b ) ) {
-            buffer = b;
+        if (b == null) {
+            return;   
+        }
+        if (buffer.getPath().equals(b.getPath())) {
             loadFiles();
         }
         super.handleMessage( message );
