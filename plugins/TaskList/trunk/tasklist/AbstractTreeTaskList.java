@@ -27,7 +27,7 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
     protected JButton stopButton;
     protected Runner runner = null;
     protected String rootDisplayName = "Tasks:";
-    
+
     /**
      * @param view the View this task list is being displayed in.
      * @param rootDisplayName the name to be displayed in the root node of the task list tree.
@@ -43,7 +43,7 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
 
     private void init() {
         setLayout( new BorderLayout() );
-        
+
         // the stop button is used to stop parsing files, like for a project
         // that has a lot of files and the user doesn't want to wait until
         // they are all done.
@@ -60,11 +60,16 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
 
         // add a "Refresh" menu item to a popup so the user can reload the
         // current tree.
-        addMouseListener(new MouseAdapter(){
-                public void mouseClicked(MouseEvent me) {
-                    GUIUtilities.showPopupMenu( createPopupMenu(), AbstractTreeTaskList.this, me.getX(), me.getY() );   
+        addMouseListener(
+            new MouseAdapter() {
+                public void mouseClicked( MouseEvent me ) {
+                    if ( me.isPopupTrigger() ) {
+                        me.consume();
+                        GUIUtilities.showPopupMenu( createPopupMenu(), AbstractTreeTaskList.this, me.getX(), me.getY() );
+                    }
                 }
-        });
+            }
+        );
 
         loadFiles();
     }
@@ -79,10 +84,10 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
                 }
             }
         );
-        menu.add(refreshItem);
+        menu.add( refreshItem );
         return menu;
     }
-    
+
     /**
      * Remove this task list tree from the EditBus.
      */
@@ -91,7 +96,7 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
         EditBus.removeFromBus( this );
     }
 
-    
+
     /**
      * Finds the tasks in all files using a SwingWorker so as not to impact
      * performance of the UI.  Subclasses may need to override this method, but
@@ -266,9 +271,8 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
                         Thread.currentThread().sleep( 5 );
                     }
                 }
-                catch ( Exception e ) {
-                    e.printStackTrace();
-                }
+                catch ( Exception e ) {}    // NOPMD
+                
                 DefaultMutableTreeNode buffer_node = getNodeForBuffer( buffer );
                 if ( buffer_node == null ) {
                     continue;
@@ -333,7 +337,7 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
         }
         return buffer_node;
     }
-    
+
     /**
      * Subclasses may override this to handle specific messages, and should call
      * super.handleMessage() for any message the subclass can't handle.
@@ -419,7 +423,7 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
             }
         }
     }
-    
+
     private void expandTree() {
         for ( int i = tree.getRowCount(); i > 0; i-- ) {
             tree.expandRow( i );
