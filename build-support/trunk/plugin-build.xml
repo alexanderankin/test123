@@ -44,6 +44,7 @@
          several default properties used by the different
          targets.                                           -->
     <!-- ================================================== -->
+
     <property file="${user.home}/.build.properties" />
     <property file="${user.home}/build.properties" />
     <echo>${java.home}</echo>
@@ -95,12 +96,8 @@
                  dirsep="/">
         <path location="${docbook.xsl}/${docbook.xsl.sheet}" />
     </pathconvert>
-    <property name="xsltproc.executable"    value="xsltproc" />
 
-    <!-- default cvs options -->
-    <property name="jedit.cvs.user" value="${user.name}" />
-    <property name="cvs.rsh"        value="ssh" />
-    <property name="cvs.root"       value=":ext:${jedit.cvs.user}@jedit.cvs.sourceforge.net:/cvsroot/jedit" />
+    <property name="xsltproc.executable"    value="xsltproc" />
 
     <!-- default junit options -->
     <property name="junit.jar"              value="junit.jar" />
@@ -534,38 +531,6 @@
 
     <!--{{{  Dependencies ================================= -->
 
-    <!-- {{{ Target: cvs.update =========================== -->
-    <!-- Updates a plugin's source code from CVS. This
-         target expects one parameter, "plugin.name",
-         containing the name of the plugin's directory in
-         CVS (don't include the leading "plugins"; for
-         example, use "XML" for the XML Plugin.             -->
-    <target name="cvs.update">
-        <mkdir dir="${plugins.srcdir}" />
-        <cvs command="update -dP"
-                compression="true"
-                cvsRsh="${cvs.rsh}"
-                cvsRoot="${cvs.root}"
-                dest="${plugins.srcdir}"
-                package="${plugin.name}" />
-    </target>
-    <!-- ===============================================}}} -->
-
-    <!-- {{{ Target: update.dependencies ================== -->
-    <!-- This task iterates through the dependency list
-         defined in the property "plugin.dependencies"
-         as a comma-separated list of plugin names, calling
-         the "cvs.update" target for each dependency.       -->
-    <target name="update.dependencies"
-            description="Download the most recent source of the needed plugins from CVS"
-            if="plugin.dependencies,ant-contrib.jar">
-        <foreach list="${plugin.dependencies}"
-                    target="cvs.update"
-                    param="plugin.name"
-                    delimiter=","
-                    trim="true" />
-    </target>
-    <!-- ===============================================}}} -->
 
     <!-- {{{ Target: build.dependencies =================== -->
     <target name="build.dependencies"
