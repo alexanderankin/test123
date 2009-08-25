@@ -120,7 +120,7 @@ public class BufferChangedLines extends BufferAdapter
 			if (undoExists)
 				undoCount++;
 		}
-		while (undoExists);
+		while (undoExists && buffer.isDirty());
 		initUndo = false;	// Forced full-undo done
 		// 2. Run 'diff' against the saved file
 		if (buffer.isDirty())
