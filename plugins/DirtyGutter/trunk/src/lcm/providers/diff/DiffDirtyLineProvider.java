@@ -1,5 +1,5 @@
 /*
- * BufferHandler - Interface for buffer change handlers.
+ * DiffDirtyLineProvider - A diff-based dirty line provider.
  *
  * Copyright (C) 2009 Shlomy Reinstein
  *
@@ -17,23 +17,23 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package lcm;
-
-import lcm.painters.DirtyMarkPainter;
-
+package lcm.providers.diff;
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.buffer.BufferListener;
+
+import lcm.BufferHandler;
+import lcm.DirtyLineProvider;
 
 
-public interface BufferHandler extends BufferListener
+public class DiffDirtyLineProvider implements DirtyLineProvider
 {
-	/*
-	 * Returns an object to paint the dirty state of the specified buffer line.
-	 */
-	DirtyMarkPainter getDirtyMarkPainter(Buffer buffer, int physicalLine);
-	/*
-	 * Clear the buffer's dirty state when the buffer is saved.
-	 */
-	void bufferSaved(Buffer buffer);
+
+	public BufferHandler attach(Buffer buffer)
+	{
+		return new DiffBufferHandler(buffer);
+	}
+
+	public void detach(Buffer buffer, BufferHandler handler)
+	{
+	}
 
 }
