@@ -6,4 +6,7 @@
 	<SERVICE CLASS="lcm.DirtyLineProvider" NAME="Simple">
 		new lcm.providers.simple.SimpleDirtyLineProvider();
 	</SERVICE>
+	<SERVICE CLASS="lcm.DirtyLineProvider" NAME="Diff">
+		new lcm.providers.diff.DiffDirtyLineProvider();
+	</SERVICE>
 </SERVICES>

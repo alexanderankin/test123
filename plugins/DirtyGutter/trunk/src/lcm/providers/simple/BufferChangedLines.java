@@ -76,7 +76,6 @@ public class BufferChangedLines extends BufferAdapter
 		this.buffer = buffer;
 		ranges = new TreeSet<Range>();
 		undoManager = new RangeChangeUndoManager(this);
-		buffer.addBufferListener(this);
 		buffer.addBufferUndoListener(this);
 		if (buffer.isDirty() && (! buffer.isUntitled()))
 			initDirtyRanges();	// Get the initial dirty ranges using Diff
@@ -86,7 +85,6 @@ public class BufferChangedLines extends BufferAdapter
 	public void remove()
 	{
 		buffer.removeBufferUndoListener(this);
-		buffer.removeBufferListener(this);
 		undoManager = null;
 	}
 

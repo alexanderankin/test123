@@ -20,6 +20,9 @@
 
 package lcm;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -31,11 +34,16 @@ import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.ServiceManager;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.io.VFS;
+import org.gjt.sp.jedit.io.VFSFile;
+import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.visitors.JEditVisitorAdapter;
+import org.gjt.sp.util.IOUtilities;
+import org.gjt.sp.util.Log;
 
 
 
@@ -67,6 +75,7 @@ public class LCMPlugin extends EBPlugin
 		BufferHandler bh = provider.attach(b);
 		synchronized(handlers)
 		{
+			b.addBufferListener(bh);
 			handlers.put(b, bh);
 		}
 		return bh;
@@ -77,6 +86,7 @@ public class LCMPlugin extends EBPlugin
 		synchronized(handlers)
 		{
 			BufferHandler bh = handlers.remove(b);
+			b.removeBufferListener(bh);
 			if (bh != null)
 				provider.detach(b, bh);
 		}
@@ -221,5 +231,45 @@ public class LCMPlugin extends EBPlugin
 	public boolean isEnabled(EditPane ep)
 	{
 		return markers.containsKey(ep);
+	}
+
+	public String[] readFile(String path)
+	{
+		VFS vfs = VFSManager.getVFSForPath(path);
+		Object session = null;
+		VFSFile file = null;
+		BufferedReader reader = null;
+		String [] ret = null;
+		try
+		{
+			session = vfs.createVFSSession(path, jEdit.getActiveView());
+			file = vfs._getFile(session, path, jEdit.getActiveView());
+			reader = new BufferedReader(new InputStreamReader(
+				file.getVFS()._createInputStream(session, file.getPath(),
+				false,jEdit.getActiveView())));
+			Vector<String> lines = new Vector<String>();
+			String line;
+			while ((line = reader.readLine()) != null)
+				lines.add(line);
+			ret = new String[lines.size()];
+			lines.toArray(ret);
+			return ret;
+		}
+		catch (IOException e)
+		{
+			Log.log(Log.ERROR, this, "Unable to read file " + path, e);
+		}
+		finally
+		{
+			try
+			{
+				IOUtilities.closeQuietly(reader);
+				vfs._endVFSSession(session, jEdit.getActiveView());
+			}
+			catch (IOException e)
+			{
+			}
+		}
+		return ret;
 	}
 }
