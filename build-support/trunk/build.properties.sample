@@ -114,15 +114,29 @@
 # Title for javadoc documentation
 #javadoc.title=${ant.project.name} API
 
-# Where to find the DocBook XML catalog file 
-# REQUIRED: xsltproc is skipped unless this is set.
-#docbook.catalog=C:\\Programme\\DocBook\\XML\\4.2\\docbook.cat
+# If xsltproc is in your path, uncomment this:
+#xsltproc.executable=xsltproc
 
-# Where to find the DocBook XML DTD
-#docbookx.dtd=C:\\Programme\\DocBook\\XML\\4.2\\docbookx.dtd
+# You can specify the absolute path of the win32 or cygwin binary
+# (from the "libxslt" package) of xsltproc here:
+#xsltproc.executable=C:/ppApps/xsltproc/xsltproc.exe
 
-# Where to find the DocBook stylesheet
-#docbook.xsl=C:\\Programme\\DocBook\\XSL\\1.70.1\\
+### For generating the docs, adjust the following to your local paths
+### For xsltproc to work, the path to the DocBook stuff MUST NOT contain spaces!
+
+# cygwin "docbook-xml44" and "docbook-xsl" packages
+# can be used to install docbook-xml and docbook-dtd
+# (example windows locations):
+#docbook.catalog=c:/cygwin/usr/share/xml/docbook/4.4/docbook.cat
+#docbook.xsl=c:/cygwin/usr/share/docbook-xsl
+
+# Debian location
+#docbook.xsl=/usr/share/xml/docbook/stylesheet/nwalsh
+#docbook.catalog=/usr/share/xml/docbook/schema/dtd/4.4/docbook.cat
+
+# Fink (Mac OS/X) location
+#docbook.catalog=/sw/share/xml/dtd/docbookx/4.4.0/docbook.cat
+#docbook.xsl=/sw/share/xml/xsl/docbook-xsl
 
 # The name of the xsl stylesheet (without the path info)
 #docbook.xsl.sheet=html/chunk.xsl
@@ -132,17 +146,6 @@
 
 # The path to the xsltproc executable
 #xsltproc.executable=C:\\Programme\\xsltproc\\xsltproc.exe
-
-# CVS options
-
-# CVS user name
-#jedit.cvs.user=${user.name}
-
-# CVS_RSH value
-#cvs.rsh=ssh
-
-# CVSROOT
-#cvs.root=:ext:${jedit.cvs.user}@jedit.cvs.sourceforge.net:/cvsroot/jedit
 
 # JUnit options
 
