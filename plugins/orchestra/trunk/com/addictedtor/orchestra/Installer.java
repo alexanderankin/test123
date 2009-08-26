@@ -35,6 +35,7 @@ public class Installer extends SafeSwingWorker<Void, String> {
 		// private String rLibPaths = null;
     private File shortcutDir = null;
     private File startScript;
+    private boolean forcePackInstall;
 
     public static final String RSCRIPT_NAME = "orchestra_starter.r";
     public static final String PROPERTY_NAME = "orchestra_properties.txt";
@@ -43,7 +44,7 @@ public class Installer extends SafeSwingWorker<Void, String> {
     public static final String R_LIBS_DIR_NAME = "library";
 
     public Installer(String jeditHomeDir, String pluginHomeDir,
-                     String rHomeDir, String shortcutDir) {
+                     String rHomeDir, String shortcutDir, boolean forcePackInstall) {
         this.jeditHomeDir = new File(jeditHomeDir);
         this.pluginHomeDir = new File(pluginHomeDir);
         this.rHomeDir = new File(rHomeDir);
@@ -53,6 +54,7 @@ public class Installer extends SafeSwingWorker<Void, String> {
             this.shortcutDir = new File(shortcutDir);
         else
             this.shortcutDir = null;
+        this.forcePackInstall = forcePackInstall;
         logger.info("Installer was started with:");
         logger.info("JEDIT_HOME:" + this.jeditHomeDir.getAbsolutePath());
         logger.info("PLUGIN_HOME:" + this.pluginHomeDir.getAbsolutePath());
@@ -167,39 +169,53 @@ public class Installer extends SafeSwingWorker<Void, String> {
         logger.debug("Failure in Installer!", t);
     }
 
+    private void logAndPublish(String s) {
+        logger.info(s);
+        publish(s);
+    }
+
     protected void installRPackage() throws RCmdBatchException, CantFindPackageException {
         RCmdBatch rCmdBatch = new RCmdBatch(rHomeDir);
-        RPackage rp = rCmdBatch.getInstalledPackInfo("orchestra");
-        if (rp == null) {
-            String s = "Orchestra R package was not found, trying to install from CRAN.";
-            publish(s);
-            logger.info(s);
+        RPackage rp = null;
+        if (forcePackInstall) {
+            logAndPublish("Forcing installation of Orchestra R package.");
+        } else {
+            logAndPublish("Checking Orchestra R package.");
+            rp = rCmdBatch.getInstalledPackInfo("orchestra");
+            if (rp == null)
+                logAndPublish("Orchestra R package not found in current R installation.");
+            else
+                logAndPublish("Orchestra R package already installed.");
+        }
+        setProgress(20);
+        if (forcePackInstall || rp == null) {
+            logAndPublish("Trying to install from CRAN.");
             try {
                 rCmdBatch.installCranPackage("orchestra", rlibsDir);
+                setProgress(40);
             } catch (CantFindPackageException e) {
-                s = "CRAN: Orchestra R package was not found, trying to install from R-Forge.";
-                publish(s);
-                logger.info(s);
-                    rCmdBatch.installRForgePackage("orchestra", rlibsDir);
+                logAndPublish("CRAN: Orchestra R package was not found, trying to install from R-Forge.");
+                rCmdBatch.installRForgePackage("orchestra", rlibsDir);
             }
         }
+        setProgress(50);
     }
 
     protected Void doInBackground() throws Exception {
         publish("Checking orchestra R package...");
+        setProgress(10);
         installRPackage();
-        setProgress(20);
-
+        setProgress(60);
         extractPropertyFile();
         publish("Start property file extracted.");
-        setProgress(40);
+        setProgress(70);
         startScript = extractRScript();
         publish("Start script extracted.");
-        setProgress(60);
+        setProgress(80);
         if (shortcutDir != null) {
             extractOrchestraIcons();
             publish("Desktop icons extracted.");
-            setProgress(80);
+            setProgress(90);
             logger.info("Creating shortcut entry in " + shortcutDir.getAbsolutePath());
             createShortcut(startScript);
             logger.info("Shortcut done.");

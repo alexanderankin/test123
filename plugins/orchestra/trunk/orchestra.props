@@ -26,3 +26,4 @@ options.orchestra.rhome.title=Set R Home directory
 options.orchestra.rhome.path=
 options.orchestra.shortcut.title=Set directory for Orchestra shortcut
 options.orchestra.shortcut.path=
+options.orchestra.advanced.title=Advanced settings
