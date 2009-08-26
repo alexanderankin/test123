@@ -9,4 +9,7 @@
 	<SERVICE CLASS="lcm.DirtyLineProvider" NAME="Diff">
 		new lcm.providers.diff.DiffDirtyLineProvider();
 	</SERVICE>
+	<SERVICE CLASS="lcm.DirtyLineProvider" NAME="MD5">
+		new lcm.providers.md5.ChecksumDirtyLineProvider();
+	</SERVICE>
 </SERVICES>

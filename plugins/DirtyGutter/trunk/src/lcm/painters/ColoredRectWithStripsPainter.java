@@ -29,7 +29,7 @@ import org.gjt.sp.jedit.textarea.Gutter;
 
 public class ColoredRectWithStripsPainter extends ColoredRectDirtyMarkPainter
 {
-	static final int STRIP_HEIGHT = 1;
+	static final int STRIP_HEIGHT = 2;
 	private int stripHeight = STRIP_HEIGHT;
 	private Color stripColor = Color.RED;
 	private boolean topStrip = false, middleRect = false, bottomStrip = false;
