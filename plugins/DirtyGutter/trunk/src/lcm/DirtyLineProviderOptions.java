@@ -1,5 +1,5 @@
 /*
- * DiffDirtyLineProvider - A diff-based dirty line provider.
+ * DirtyLineProviderOptions - Interface for provider-specific options.
  *
  * Copyright (C) 2009 Shlomy Reinstein
  *
@@ -17,29 +17,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package lcm.providers.diff;
-import org.gjt.sp.jedit.Buffer;
+package lcm;
 
-import lcm.BufferHandler;
-import lcm.DirtyLineProvider;
-import lcm.DirtyLineProviderOptions;
+import javax.swing.JPanel;
 
-
-public class DiffDirtyLineProvider implements DirtyLineProvider
+public interface DirtyLineProviderOptions
 {
-
-	public BufferHandler attach(Buffer buffer)
-	{
-		return new DiffBufferHandler(buffer);
-	}
-
-	public void detach(Buffer buffer, BufferHandler handler)
-	{
-	}
-
-	public DirtyLineProviderOptions getOptions()
-	{
-		return new DiffOptions();
-	}
-
+	/*
+	 * Add provider-specific options to the plugin's option pane.
+	 */
+	void initOptions(JPanel optionPane);
+	/*
+	 * Save provider-specific options when the plugin's option pane is accepted.
+	 */
+	void saveOptions();
 }

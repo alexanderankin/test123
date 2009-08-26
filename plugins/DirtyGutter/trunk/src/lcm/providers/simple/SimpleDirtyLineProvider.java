@@ -21,6 +21,7 @@ package lcm.providers.simple;
 
 import lcm.BufferHandler;
 import lcm.DirtyLineProvider;
+import lcm.DirtyLineProviderOptions;
 
 import org.gjt.sp.jedit.Buffer;
 
@@ -34,5 +35,10 @@ public class SimpleDirtyLineProvider implements DirtyLineProvider
 	public void detach(Buffer buffer, BufferHandler listener)
 	{
 		((BufferChangedLines) listener).remove();
+	}
+
+	public DirtyLineProviderOptions getOptions()
+	{
+		return new SimpleOptions();
 	}
 }

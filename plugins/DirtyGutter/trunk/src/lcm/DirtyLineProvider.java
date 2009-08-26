@@ -34,4 +34,8 @@ public interface DirtyLineProvider
 	 * from the given buffer.
 	 */
 	void detach(Buffer buffer, BufferHandler handler);
+	/*
+	 * Returns the provider-specific options, to be added to the option pane.
+	 */
+	DirtyLineProviderOptions getOptions();
 }
