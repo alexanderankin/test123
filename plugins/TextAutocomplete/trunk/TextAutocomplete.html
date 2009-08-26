@@ -6,7 +6,7 @@
   <title>Plugin: TextAutocomplete - Docs</title>
   <meta name="generator" content="amaya 9.51, see http://www.w3.org/Amaya/">
 </head>
-getAutoCompleteOfBuffer
+
 <body lang="en">
 <h1>TextAutocomplete Plugin</h1>
 
@@ -17,7 +17,11 @@ getAutoCompleteOfBuffer
 
 <div class="toc">
 <ul>
-  <li><a href="#About">About</a></li>
+  <li><a href="#Introduction">Introduction</a>
+  	<ul>
+  		<li><a href="#SpecialFeatures">Special features</a></li>
+  	</ul>
+  </li>
   <li><a href="#Words">Words, completions</a> and how does it work</li>
   <li><a href="#Control">Control keys</a> of the completions pop-up
   window</li>
@@ -38,7 +42,7 @@ getAutoCompleteOfBuffer
 </ul>
 </div>
 
-<h2><a name="About">About</a></h2>
+<h2><a name="Introduction">Introduction</a></h2>
 
 <p>TextAutocomplete collects "words" in the current buffer and those that you
 type and offers you automatically a list of possible completions. It's pretty
@@ -61,6 +65,47 @@ can enable the autocompletion for all buffers (Plugins - TextAutocomplete -
 Start for all buffers) or set the plugin to start automatically for every new
 buffer that you open (Plugins - Plugin Options... - TextAutocomplete - check
 "Start autom. for new buffers").</p>
+
+<h3><a name="SpecialFeatures">Special features</a></h3>
+
+<h4><a name="DefaultWordList" id="DefaultWordList">Loading default words for a buffer</a></h4>
+
+<p>Since: 0.9.8</p>
+
+<p>You can create a list of words that will be loaded by default for any buffer or for any buffer with a particular extension
+provided that TextAutocomplete is enabled for that buffer. Every line of the file
+is taken as a 'word' - but see notes on the import word list function above. Currently this isn't
+yet configurable but it's planned for the future.</p>
+
+<p>If you want some words to be readily available in any buffer using the TextAutocomplete plugin then store them into the file named <code>autocompleteDefaultWordList</code>
+under the jEdit settings directory (see Utilities - Settings Directory; for me it's /home/jholy/.jedit).
+</p>
+
+<p>If you want some words to be loaded only for a buffer (file) with a particular extension then
+store them into a file with the name <code>autocompleteDefaultWordList</code> and
+the appropriate extension under the settings directory. So to load some words by default only
+for PHP files, create the file  <code>autocompleteDefaultWordList.php</code>. The word list
+file's extension must be in lower-case (i.e. not Php). If there is an extension-specific
+word list file then the common word list described above is not loaded.</p>
+
+<h4><a name="ModeKeywords" id="ModeKeywords">Keywords from buffer's syntax highlighting mode as completions</a></h4>
+
+<p>Since: 0.9.9</p>
+
+<p>In jEdit each buffer has a particular edit mode, which may define special keywords that should
+be highlighted in a special way such as programming language's reserved words or function names.
+To help people using Text Autocomplete when writing code, it does load the list of keywords from
+the buffer's edit mode and adds it to the list of completions. In addition to that it also
+takes into account what characters are considered to be part of words by the edit mode (such
+as '@' in PHP).
+</p>
+
+<p>Beware that some edit modes may define a large number of keywords (e.g. over 25.000 for PHP) and
+thus you may need to adjust the max. words to remember. With multiple buffers open this can also
+consume considerable memory.</p>
+
+<p>By default this functionality is off and must be enabled in Options.</p>
+
 
 <h2><a name="Words" id="Words">Words, completions and how does it
 work</a></h2>
@@ -195,6 +240,22 @@ show up.</p>
   <dt>Remember words long at least</dt>
     <dd>Don't remember words shorter than the given value.</dd>
     <dd>Default: 5.</dd>
+  <dt>Load mode's keywords</dt>
+    <dd>Add keywords and characters that aren't considered as word separators
+    from the buffer's edit mode to the completions list upon start.
+    Warning: this can easily lead to reaching the limit of remembered words per buffer.
+    If new word's aren't remembered, check the Utilities | Troubleshooting | Activity log
+    for a line like <samp>TextAutocompletePlugin: AutoComplete.rememberWord: the max. number of remembered words(1000) has just been reached</samp>.
+    </dd>
+    <dd>Default: false.</dd>
+  <dt>Main mode only</dt>
+    <dd>When "Load mode's keywords" is enabled, check this to load keywords and no word separators
+    only from the main edit mode. For example the edit mode for PHP has a number of "sub-modes"
+    with additional keywords, over 25.450 in total. With this option you can save memory and the
+    max. words limit while still getting completion of the most important keywords.
+    Unfortunately e.g. for PHP this doesn't help since its main mode contains no keywords.
+    </dd>
+
 </dl>
 
 <p>Value of the following properties is a beanshell expression that evaluates
@@ -218,15 +279,17 @@ expression, so it should end with a semicolon.</p>
     <dd>Return true when the insertion (the typed character) doesn't end the
       word being typed, in other words, it must return false for word
       separators. The available variables are <var>prefix</var> (String; the
-      word that has been typed so far) and <var>insertion</var> (char; the
-      newly typed character). This determines what is considered as a word
+      word that has been typed so far), <var>insertion</var> (char; the
+      newly typed character), and <var>noWordSeparators</var> (String;
+      characters that should not end a word, extracted e.g. from the buffer's
+      edit mode; example: "@-_" in PHP). This determines what is considered as a word
       while the previous option determines whether something, that is already
       considered to be a word, should be remembered or not.</dd>
     <dd>Example: <code>Character.isLetterOrDigit(insertion) || insertion ==
       '_' || (prefix.startsWith("&lt;") &amp;&amp; prefix.indexOf("&gt;") ==
       -1);</code> // alphanumeric string or anything between &lt; and
     &gt;</dd>
-    <dd>Default: <code>Character.isLetter(insertion);</code></dd>
+    <dd>Default: <code>Character.isLetterOrDigit( insertion ) || noWordSeparators.indexOf( insertion ) &gt;= 0;</code></dd>
 </dl>
 
 <p>Use the following properties to change the <a href="#Control">default
@@ -264,26 +327,6 @@ VK_BACK_SPACE, VK_DELETE, VK_F1 etc., VK_TAB, VK_UP, VK_DOWN and others.</p>
 </dl>
 
 <p>The button <var>Reset options</var> resets them to the default values.</p>
-
-<h2><a name="DefaultWordList" id="DefaultWordList">Loading default words for a buffer</a></h2>
-
-<p>Since: 0.9.8</p>
-
-<p>You can create a list of words that will be loaded by default for any buffer or for any buffer with a particular extension
-provided that TextAutocomplete is enabled for that buffer. Every line of the file 
-is taken as a 'word' - but see notes on the import word list function above. Currently this isn't
-yet configurable but it's planned for the future.</p>
-
-<p>If you want some words to be readily available in any buffer using the TextAutocomplete plugin then store them into the file named <code>autocompleteDefaultWordList</code>
-under the jEdit settings directory (see Utilities - Settings Directory; for me it's /home/jholy/.jedit).
-</p>
-
-<p>If you want some words to be loaded only for a buffer (file) with a particular extension then 
-store them into a file with the name <code>autocompleteDefaultWordList</code> and 
-the appropriate extension under the settings directory. So to load some words by default only 
-for PHP files, create the file  <code>autocompleteDefaultWordList.php</code>. The word list
-file's extension must be in lower-case (i.e. not Php). If there is an extension-specific 
-word list file then the common word list described above is not loaded.</p>
 
 <h2><a name="Accessing" id="Accessing">Accessing the plugin from
 BeanShell</a></h2>
@@ -350,7 +393,6 @@ Troubleshooting &gt; Activity Log. To disable the logging again, execute:</p>
 
 <h3><a name="Wish">Wish list</a></h3>
 <ul>
-  <li>Make it possible to start with a default word list (read from a file, same for all buffers)</li>
   <li>Options - check that the beanshell expressions are ok before the
     preferences are saved</li>
   <li>Allow for the insertion of longer texts after a prefix (so far only 1
@@ -363,6 +405,16 @@ Troubleshooting &gt; Activity Log. To disable the logging again, execute:</p>
 </ul>
 
 <h3><a name="Change">Change Log</a></h3>
+
+<h4>Version 0.9.9, August 2009</h4>
+
+<p>This is a minor enhancement release.</p>
+
+<p>New features:</p>
+<ul>
+  <li>Add the edit mode's keywords to the buffer's list of completions and take into account
+  its list of no word separators. By default this functionality is off and must be enabled in Options.</li>
+</ul>
 
 <h4>Version 0.9.8, September 2008</h4>
 
