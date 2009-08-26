@@ -36,6 +36,7 @@ public class OrchestraPlugin extends EBPlugin {
      */
     @Override
     public void start() {
+        configureLog4J();
     	String orchestra_rpackage_home = System.getProperty("orchestra.home", "") ;
         if( orchestra_rpackage_home.equals("") ){
         	if( isConfigured() ){
@@ -56,7 +57,7 @@ public class OrchestraPlugin extends EBPlugin {
         }
     }
 
-    private void startInstallerPlugin() {
+    private void configureLog4J(){
         // configure log4j
         File log = new File(getPluginHome(), LOG_FILENAME);
         Logger rootLogger = Logger.getRootLogger();
@@ -69,7 +70,9 @@ public class OrchestraPlugin extends EBPlugin {
         rootLogger.info("orchestra plugin started!");
         rootLogger.info("log4j configured.");
         rootLogger.info("log goes to: " + log.getAbsolutePath());
+    }
 
+    private void startInstallerPlugin() {
 //        // show the option dialog
         Thread t = new Thread() {
             @Override
@@ -115,7 +118,7 @@ public class OrchestraPlugin extends EBPlugin {
      * @return true if the startup script exists
      */
     public static boolean isConfigured(){
-    	File startup = new File( getPluginHomePath() + "/orchestra_startup.r" ) ;
+    	File startup = new File( getPluginHomePath(), Installer.RSCRIPT_NAME) ;
     	return startup.exists() ;
     }
     
