@@ -51,11 +51,13 @@ public class LCMPlugin extends EBPlugin
 {
 	static public final String PROP_PREFIX = LCMOptions.PROP_PREFIX;
 	static private final String DEBUGGING_PROP = PROP_PREFIX + "debug";
+	static public final String DEFAULT_PROVIDER = "Simple";
 	static private LCMPlugin instance;
 	private HashMap<Buffer, BufferHandler> handlers;
 	private HashMap<EditPane, ChangeMarker> markers;
 	private boolean isDebugging;
 	private DirtyLineProvider provider;
+	private String providerName;
 
 	public static LCMPlugin getInstance()
 	{
@@ -122,7 +124,13 @@ public class LCMPlugin extends EBPlugin
 				detachFromBuffer(b);
 		}
 		else if (message instanceof PropertiesChanged)
-			isDebugging = jEdit.getBooleanProperty(DEBUGGING_PROP, false);
+			propertiesChanged();
+	}
+
+	private void propertiesChanged()
+	{
+		isDebugging = jEdit.getBooleanProperty(DEBUGGING_PROP, false);
+		setDirtyLineProvider();
 	}
 
 	public void repaintAllTextAreas()
@@ -180,28 +188,40 @@ public class LCMPlugin extends EBPlugin
 		}
 	}
 
-	public DirtyLineProvider getDirtyLineProvider()
+	public void setDirtyLineProvider()
 	{
-		provider = null;
-		String providerName = LCMOptions.getProviderServiceName();
+		String newProviderName = LCMOptions.getProviderServiceName();
 		if (providerName != null)
 		{
+			if (providerName.equals(newProviderName))
+				return;
+			providerName = null;
+			stop();
+			start();
+			return;
+		}
+		provider = null;
+		if (newProviderName != null)
+		{
+			providerName = newProviderName;
 			provider = (DirtyLineProvider) ServiceManager.getService(
 				DirtyLineProvider.class.getCanonicalName(), providerName);
 		}
 		if (provider == null)
+		{
+			providerName = DEFAULT_PROVIDER;
 			provider = new SimpleDirtyLineProvider();
-		return provider;
+		}
 	}
 
 	@Override
 	public void start()
 	{
 		instance = this;
-		provider = getDirtyLineProvider();
+		setDirtyLineProvider();
 		handlers = new HashMap<Buffer, BufferHandler>();
 		markers = new HashMap<EditPane, ChangeMarker>();
-		isDebugging = jEdit.getBooleanProperty(DEBUGGING_PROP, false);
+		propertiesChanged();
 		jEdit.visit(new EditPaneVisitor(true));
 	}
 

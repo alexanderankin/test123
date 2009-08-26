@@ -28,7 +28,7 @@ import jdiff.util.Diff.Change;
 
 import lcm.BufferHandler;
 import lcm.LCMPlugin;
-import lcm.painters.ColoredRectDirtyMarkPainter;
+import lcm.painters.ColoredRectWithStripsPainter;
 import lcm.painters.DirtyMarkPainter;
 import lcm.providers.diff.Range.ChangeType;
 
@@ -40,13 +40,15 @@ public class DiffBufferHandler extends BufferAdapter implements BufferHandler
 {
 	private Buffer buffer;
 	private TreeMap<Range, Range> ranges;
-	private ColoredRectDirtyMarkPainter painter;
+	private Vector<Integer> removedRanges;
+	private ColoredRectWithStripsPainter painter;
 
 	public DiffBufferHandler(Buffer buffer)
 	{
 		this.buffer = buffer;
 		ranges = new TreeMap<Range, Range>();
-		painter = new ColoredRectDirtyMarkPainter();
+		removedRanges = new Vector<Integer>();
+		painter = new ColoredRectWithStripsPainter();
 	}
 
 	@Override
@@ -75,7 +77,8 @@ public class DiffBufferHandler extends BufferAdapter implements BufferHandler
 
 	private void doDiff()
 	{
-		ranges = new TreeMap<Range, Range>();
+		ranges.clear();
+		removedRanges.clear();
 		int nBuffer = buffer.getLineCount();
 		String [] bufferLines = new String[nBuffer];
 		for (int i = 0; i < nBuffer; i++)
@@ -88,8 +91,18 @@ public class DiffBufferHandler extends BufferAdapter implements BufferHandler
 		Change edit = diff.diff_2();
 		for (; edit != null; edit = edit.next)
 		{
-			Range range = new Range(edit.first1, edit.lines1, ChangeType.CHANGED);
-			ranges.put(range, range);
+			if ((edit.lines0 > 0) && (edit.lines1 == 0))
+				removedRanges.add(Integer.valueOf(edit.first1 - 1));
+			else
+			{
+				ChangeType type;
+				if ((edit.lines1 > 0) && (edit.lines0 == 0))
+					type = ChangeType.ADDED;
+				else
+					type = ChangeType.CHANGED;
+				Range range = new Range(edit.first1, edit.lines1, type);
+				ranges.put(range, range);
+			}
 		}
 	}
 
@@ -114,18 +127,24 @@ public class DiffBufferHandler extends BufferAdapter implements BufferHandler
 	public DirtyMarkPainter getDirtyMarkPainter(Buffer buffer, int physicalLine)
 	{
 		Range r = ranges.get(new Range(physicalLine, 1));
-		if (r == null)
+		boolean removedAbove = removedRanges.contains(Integer.valueOf(physicalLine - 1));
+		boolean removedBelow = removedRanges.contains(Integer.valueOf(physicalLine));
+		if ((r == null) && (! removedAbove) && (! removedBelow))
 			return null;
-		Color c;
-		if (r.type == ChangeType.ADDED)
-			c = Color.GREEN;
-		else if (r.type == ChangeType.REMOVED)
-			c = Color.RED;
-		else if (r.type == ChangeType.CHANGED)
-			c = Color.ORANGE;
-		else
-			return null;
-		painter.setColor(c);
+		painter.setParts(removedAbove, (r != null), removedBelow);
+		if (r != null)
+		{
+			Color c;
+			if (r.type == ChangeType.ADDED)
+				c = Color.GREEN;
+			else if (r.type == ChangeType.REMOVED)
+				c = Color.RED;
+			else if (r.type == ChangeType.CHANGED)
+				c = Color.ORANGE;
+			else
+				return null;
+			painter.setColor(c);
+		}
 		return painter;
 	}
 
