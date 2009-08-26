@@ -33,6 +33,8 @@ public class OrchestraOptionPane extends AbstractOptionPane implements ActionLis
     private JButton bSelectShortcut = new JButton();
     // has the user clicked the checkbox at least once
     private boolean shortcutToggled = false;
+    // should orchestra r pack be installed regardless ?
+    private JCheckBox chbForceRPackInstall = new JCheckBox("Force R package installation?");
 
     public OrchestraOptionPane() {
         super("orchestra-optionpane");
@@ -48,6 +50,9 @@ public class OrchestraOptionPane extends AbstractOptionPane implements ActionLis
         addSeparator(OPTION_PREFIX + "shortcut" + ".title");
         addComponent("", chbShortcutEnabler);
         addPathPanel("shortcut", tfShortcut, bSelectShortcut);
+        addSeparator(OPTION_PREFIX + "advanced.title");
+        chbForceRPackInstall.setSelected(true);
+        addComponent("", chbForceRPackInstall);
         WidgetFactory.registerEnabler(chbShortcutEnabler, tfShortcut);
         WidgetFactory.registerEnabler(chbShortcutEnabler, bSelectShortcut);
 
@@ -138,7 +143,8 @@ public class OrchestraOptionPane extends AbstractOptionPane implements ActionLis
                         jEdit.getJEditHome(),
                         OrchestraPlugin.getPluginHomePath(),
                         rhome,
-                        shortcut
+                        shortcut,
+                        chbForceRPackInstall.isSelected()
                 );
                 ProgressDialog<Void, String> pd = ProgressDialogInstaller.make(this, i);
                 pd.setSize(600,500);

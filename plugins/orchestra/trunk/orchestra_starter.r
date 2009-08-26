@@ -121,10 +121,8 @@ Sys.setenv( LD_LIBRARY_PATH = LD_LIBRARY_PATH )
 # }}}
 
 # {{{ ORCHESTRA_HOME
-
 # add our lib dir to r lib paths so we find the (possible) local installation of orchestra package
 .libPaths(JEDIT_RLIBS)
-
 ORCHESTRA_HOME = system.file( package = "orchestra" )
 # }}}
 # }}}
