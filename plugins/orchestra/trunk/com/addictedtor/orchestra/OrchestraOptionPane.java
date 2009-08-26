@@ -31,8 +31,8 @@ public class OrchestraOptionPane extends AbstractOptionPane implements ActionLis
     private JCheckBox chbShortcutEnabler = new JCheckBox("Create shortcut?");
     private JTextField tfShortcut = new JTextField();
     private JButton bSelectShortcut = new JButton();
-    // has the user clicked the checkbox at least once
-    private boolean shortcutToggled = false;
+    // has the user clicked some checkbox at least once
+    private boolean buttonToggled = false;
     // should orchestra r pack be installed regardless ?
     private JCheckBox chbForceRPackInstall = new JCheckBox("Force R package installation?");
 
@@ -101,8 +101,8 @@ public class OrchestraOptionPane extends AbstractOptionPane implements ActionLis
         if (ac.startsWith("choose-rhome")) {
             selectDir(tfRHome);
         }
-        if (e.getSource() == chbShortcutEnabler) {
-            shortcutToggled = true;
+        if (e.getSource() == chbShortcutEnabler || e.getSource() == chbShortcutEnabler) {
+            buttonToggled = true;
         }
     }
 
@@ -156,12 +156,18 @@ public class OrchestraOptionPane extends AbstractOptionPane implements ActionLis
     }
 
     private boolean propertiesChanged() {
+        logger.info("Current Properties:");
+        logger.info("rhome:" + jEdit.getProperty(OPTION_PREFIX + "rhome.path"));
+        logger.info("shortcut:" + jEdit.getProperty(OPTION_PREFIX + "shortcut.path"));
+        logger.info("toggled:" + buttonToggled);
         return
-                jEdit.getProperty("options.orchestra.rhome.path") == null ||
-                !jEdit.getProperty("options.orchestra.rhome.path").equals(tfRHome.getText()) ||
-                jEdit.getProperty("options.orchestra.shortcut.path") == null ||
-                !jEdit.getProperty("options.orchestra.shortcut.path").equals(tfShortcut.getText()) ||
-                shortcutToggled;
+                jEdit.getProperty(OPTION_PREFIX + "rhome.path") == null ||
+                !jEdit.getProperty(OPTION_PREFIX + "rhome.path").equals(tfRHome.getText()) ||
+                jEdit.getProperty(OPTION_PREFIX + "shortcut.path") == null ||
+                !jEdit.getProperty(OPTION_PREFIX + "shortcut.path").equals(tfShortcut.getText()) ||
+                buttonToggled
+                ;
+
     }
 
 
