@@ -24,7 +24,6 @@ import java.util.TreeSet;
 import java.util.Vector;
 
 import lcm.BufferHandler;
-import lcm.LCMOptions;
 import lcm.LCMPlugin;
 import lcm.painters.ColoredRectDirtyMarkPainter;
 import lcm.painters.DirtyMarkPainter;
@@ -33,7 +32,6 @@ import lcm.providers.simple.RangeChangeUndoManager.DummyNode;
 import lcm.providers.simple.RangeChangeUndoManager.RangeAdd;
 import lcm.providers.simple.RangeChangeUndoManager.RangeRemove;
 import lcm.providers.simple.RangeChangeUndoManager.RangeUpdate;
-
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.jEdit;
@@ -345,7 +343,7 @@ public class BufferChangedLines extends BufferAdapter
 	{
 		if (! isChanged(physicalLine))
 			return null;
-		painter.setColor(LCMOptions.getBgColor());
+		painter.setColor(SimpleOptions.getBgColor());
 		return painter;
 	}
 }

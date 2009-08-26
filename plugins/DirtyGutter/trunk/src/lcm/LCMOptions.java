@@ -20,24 +20,26 @@
 
 package lcm;
 
-import java.awt.Color;
-import java.awt.GridBagConstraints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.ServiceManager;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.gui.ColorWellButton;
 
 @SuppressWarnings("serial")
 public class LCMOptions extends AbstractOptionPane
 {
 	static public final String PROP_PREFIX = "options.LCMPlugin.";
-	public static final String BG_COLOR_PROP = PROP_PREFIX + "bgColor";
 	public static final String PROVIDER_SERVICE_PROP = PROP_PREFIX + "provider";
 	private JComboBox provider; 
-	private ColorWellButton bgColor;
+	private DirtyLineProviderOptions [] providerOptions;
+	private JPanel [] providerPanels;
+	private JPanel currentPanel;
 
 	public LCMOptions()
 	{
@@ -61,9 +63,39 @@ public class LCMOptions extends AbstractOptionPane
 		}
 		addComponent(jEdit.getProperty("messages.LCMPlugin.providers"),
 			provider);
-		bgColor = new ColorWellButton(getBgColor());
-		addComponent(jEdit.getProperty("messages.LCMPlugin.bgColor"), bgColor,
-			GridBagConstraints.VERTICAL);
+		addComponent(new JLabel(jEdit.getProperty(
+			"messages.LCMPlugin.providerSpecificOptions")));
+		providerOptions = new DirtyLineProviderOptions[services.length];
+		providerPanels = new JPanel[services.length];
+		providerChanged();
+		provider.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				providerChanged();
+			}
+		});
+	}
+
+	private void providerChanged()
+	{
+		if (currentPanel != null)
+			currentPanel.setVisible(false);
+		int providerIndex = provider.getSelectedIndex();
+		DirtyLineProviderOptions opts = providerOptions[providerIndex];
+		if (opts == null)
+		{
+			DirtyLineProvider selProvider= (DirtyLineProvider)
+				ServiceManager.getService(
+					DirtyLineProvider.class.getCanonicalName(),
+					provider.getSelectedItem().toString());
+			opts = providerOptions[providerIndex] = selProvider.getOptions();
+			providerPanels[providerIndex] = new JPanel();
+			opts.initOptions(providerPanels[providerIndex]);
+			addComponent(providerPanels[providerIndex]);
+		}
+		currentPanel = providerPanels[providerIndex];
+		currentPanel.setVisible(true);
 	}
 
 	@Override
@@ -71,12 +103,12 @@ public class LCMOptions extends AbstractOptionPane
 	{
 		jEdit.setProperty(PROVIDER_SERVICE_PROP,
 			provider.getSelectedItem().toString());
-		jEdit.setColorProperty(BG_COLOR_PROP, bgColor.getSelectedColor());
-	}
-
-	public static Color getBgColor()
-	{
-		return jEdit.getColorProperty(BG_COLOR_PROP, Color.YELLOW);
+		for (int i = 0; i < providerOptions.length; i++)
+		{
+			DirtyLineProviderOptions opts = providerOptions[i];
+			if (opts != null)
+				opts.saveOptions();
+		}
 	}
 
 	public static String getProviderServiceName()
