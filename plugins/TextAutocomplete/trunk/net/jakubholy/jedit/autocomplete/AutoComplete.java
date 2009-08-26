@@ -43,12 +43,14 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -61,6 +63,8 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.browser.VFSFileChooserDialog;
+import org.gjt.sp.jedit.syntax.KeywordMap;
+import org.gjt.sp.jedit.syntax.ParserRuleSet;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
 
@@ -86,7 +90,7 @@ import org.gjt.sp.util.Log;
  *
  * Based on jEdit's CompleteWord feature.
 */
-public class AutoComplete //{{{ // TODO: Rename to AutoCompleteController
+public final class AutoComplete //{{{ // TODO: Rename to AutoCompleteController
 implements java.util.Observer
 {
 
@@ -102,9 +106,9 @@ implements java.util.Observer
 	 * Create a new AutoComplete that starts working for the given buffer if the buffer has none.
 	 * If the buffer already has an AutoComplete, it's only returned.
 	 */
-	public static AutoComplete CreateAutoCompleteAction( Buffer buffer )
+	public static AutoComplete CreateAutoCompleteAction( final Buffer buffer )
 	{
-		Pattern filter = PreferencesManager.getPreferencesManager().getFilenameFilterPattern(); 
+		Pattern filter = PreferencesManager.getPreferencesManager().getFilenameFilterPattern();
 		if (filter != null) {
 			String path = buffer.getPath();
 			boolean match = filter.matcher(path).matches();
@@ -285,7 +289,7 @@ implements java.util.Observer
 	 * by the user and add them to those
 	 * remembered for this buffer.
 	 * <p>
-	 * See {@link #importWordList(Reader)} for details 
+	 * See {@link #importWordList(Reader)} for details
 	 * on the file format.
 	 *
 	 * @return Count of the imported words.
@@ -308,7 +312,7 @@ implements java.util.Observer
 
 		if(files != null && files.length == 1)
 		{
-			 
+
 			final Reader wordListReader = new FileReader(files[0]);
 			lineCount = importWordList(wordListReader);
 		}
@@ -357,7 +361,7 @@ implements java.util.Observer
 			}
 		}
 		in.close();
-		
+
 		Log.log(Log.DEBUG, TextAutocompletePlugin.class, "importWordList: Number of lines ('words') read: " + lineCount);
 		return lineCount;
 	}
@@ -397,6 +401,7 @@ implements java.util.Observer
         m_wordTypedListener.addObserver( this );
         m_wordTypedListener.setCheckIsWord( prefManager.getIsWordFilter() );	// pass reference to Pref.Mngr's word filter, don't copy!
         //this.buffer.addBufferChangeListener( m_wordTypedListener );
+
         this.attach(buffer);
     } // constructor }}}
 
@@ -429,44 +434,46 @@ implements java.util.Observer
         Log.log(Log.DEBUG, TextAutocompletePlugin.class, "Attaching to the buffer: " + buffer);
     	this.buffer = buffer;
     	buffer.addBufferListener( m_wordTypedListener );
-        // Collect words in the buffer
+
+    	// Initialize the word list
         parseBuffer();
-        // Load default words if any
         importBufferDefaultWordList(buffer);
+        loadBufferModeKeywords(buffer);
+
     } // attach }}}
 
 	/**
-	 * Import words from a default word list appropriate for the give buffer if 
-	 * there is any such list. 
+	 * Import words from a default word list appropriate for the give buffer if
+	 * there is any such list.
 	 * <p>
 	 * It's error-safe: Exceptions are catched and just logged not to make this plugin unusable
 	 * because of problems with default word lists.
-	 * 
+	 *
 	 * @param buffer The buffer to try to read default words for.
 	 * @return Number of imported words.
 	 */
 	int importBufferDefaultWordList(Buffer buffer) {
 		final URL defaultWordListUrl = prefManager.getDefaultWordListForBuffer(buffer.getName());
 		int countImportedWords = 0;
-		
-        if (defaultWordListUrl != null) 
+
+        if (defaultWordListUrl != null)
         {
         	try {
 				countImportedWords = importWordList(new InputStreamReader( defaultWordListUrl.openStream() ));
 				Log.log(Log.NOTICE, TextAutocompletePlugin.class
-						, countImportedWords + " words imported from the default word list '" + 
+						, countImportedWords + " words imported from the default word list '" +
 						defaultWordListUrl + "' for the buffer '" + buffer + "'");
         	} catch (FileNotFoundException e) {
-				Log.log(Log.DEBUG, TextAutocompletePlugin.class, "importBufferDefaultWordList('" + buffer + 
+				Log.log(Log.DEBUG, TextAutocompletePlugin.class, "importBufferDefaultWordList('" + buffer +
 						"'): The default word list '" + defaultWordListUrl +
 						"' doesn't exist, not loading anything.");
         	} catch (Exception e) {
-				Log.log(Log.ERROR, TextAutocompletePlugin.class, "importBufferDefaultWordList('" + buffer + 
+				Log.log(Log.ERROR, TextAutocompletePlugin.class, "importBufferDefaultWordList('" + buffer +
 						"'): Failed to import the default word list '" + defaultWordListUrl +
 						"' because of: " + e);
 			}
         }
-        
+
         return countImportedWords;
 	} /* importBufferDefaultWordList */
 
@@ -476,6 +483,7 @@ implements java.util.Observer
 	 * @param o = sender of the message (arg). The observer may observe more objects. */
     /**
      * @inheritDoc
+     * @see WordTypedListener
      */
 	public void update(java.util.Observable observable, Object arg )
 	{
@@ -522,12 +530,12 @@ implements java.util.Observer
 			// unknown type == an error           break;
 		}//switch
 	}//update }}}
-	
+
 	/**
 	 * Hide/destroy the popup if it is visible.
 	 */
 	private void disposePopupIfVisible() {
-		if ( thePopup != null ) { 
+		if ( thePopup != null ) {
 	    	thePopup.dispose();
 	    	thePopup = null;
 	    }
@@ -542,7 +550,7 @@ implements java.util.Observer
 	{
 		// TODO: (?) assert jEdit.getActiveView().getBuffer() == myBuffer
         final JEditTextArea textArea = jEdit.getActiveView().getTextArea();
-        
+
         Log.log(Log.DEBUG, TextAutocompletePlugin.class, "displayCompletionPopup: entry");
 
 		/* If the buffer isn't editable the user doesn't enter
@@ -571,10 +579,10 @@ implements java.util.Observer
 						textArea.getCaretPosition() - thePrefix.length());
 				location.y += textArea.getPainter().getFontMetrics()
 					.getHeight();
-		
+
 				SwingUtilities.convertPointToScreen(location,
 					textArea.getPainter());
-			    
+
 				this.thePopup 	= new CompletionPopup( jEdit.getActiveView() , location );
 				//  Display the popup
 
@@ -752,5 +760,83 @@ implements java.util.Observer
 	public Buffer getBuffer() {
 		return buffer;
 	}
+
+	/**
+	 * Load keywords from the buffer's syntax highlighting mode into
+	 * the buffer's word list. Does nothing unless {@link PreferencesManager#isLoadModeKeywords()}
+	 * true.
+	 * This is useful when using TextAutocomplete for writing source code.
+	 * The mode are stored in files like $JEDIT_HOME/modes/php.xml.
+	 * @param buffer (required) the target buffer
+	 * @since 0.9.9
+	 */
+	private void loadBufferModeKeywords(Buffer buffer)
+	{
+		if (this.prefManager.isLoadModeKeywords()) {
+			final Collection<String> collectedKeywords = new LinkedList<String>();
+			final StringBuilder noWordSeparators = new StringBuilder();
+
+			// Extract keyword sources
+			final ParserRuleSet mainRuleSet = buffer.getTokenMarker().getMainRuleSet();
+			final ParserRuleSet[] modeRuleSets =
+				this.prefManager.isLoadMainModeOnly()?
+					((mainRuleSet != null)? new ParserRuleSet[]{ mainRuleSet } : new ParserRuleSet[0])
+					: buffer.getTokenMarker().getRuleSets();
+			final int editModesCount = modeRuleSets.length;
+			final int mainModeKeywordsCount =
+				(mainRuleSet != null && mainRuleSet.getKeywords() != null)?
+					mainRuleSet.getKeywords().getKeywords().length : 0;
+
+			// Extract keywords, non-word separators
+			for(ParserRuleSet ruleSet: modeRuleSets)
+			{
+				final KeywordMap keywordMap = ruleSet.getKeywords();
+				if (keywordMap != null)
+				{
+					Collections.addAll(collectedKeywords, keywordMap.getKeywords());
+					if (ruleSet.getNoWordSep() != null)
+					{
+						noWordSeparators.append( ruleSet.getNoWordSep() );
+					}
+				}
+			}
+
+			// Sanitize noWordSeparators
+			{
+				final String originalNoWordSeparators = noWordSeparators.toString();
+				noWordSeparators.setLength(0);
+				for (int i = 0; i < originalNoWordSeparators.length(); i++) {
+					final String noSeparator = originalNoWordSeparators.substring(i, i+1);
+					if (noWordSeparators.indexOf(noSeparator) == -1) {
+						noWordSeparators.append( noSeparator );
+					}
+				}
+			}
+
+			// Store them
+			{
+				this.prefManager.setNoWordSeparators( noWordSeparators.toString() );
+
+				// Log
+				StringBuilder keywordList = new StringBuilder();
+				for (String keyword : collectedKeywords)
+				{
+					rememberWordSilent(keyword);
+					keywordList.append(keyword).append(" ");
+				}
+
+				Log.log(Log.DEBUG, TextAutocompletePlugin.class, "loadBufferModeKeywords: " + collectedKeywords.size() +
+						" keywords extracted from " + editModesCount + " edit sub-modes with " +
+						mainModeKeywordsCount + " from the main mode for " +
+						"the buffer '" + buffer.getName() + "': " + keywordList);
+				Log.log(Log.DEBUG, TextAutocompletePlugin.class, "loadBufferModeKeywords: no word separators extracted from the " +
+						"mode of the buffer '" + buffer.getName() + "': " + noWordSeparators);
+			}
+		} else {
+			Log.log(Log.DEBUG, TextAutocompletePlugin.class, "loadBufferModeKeywords: doing nothing, loading mode's keywords " +
+					"disabled in preferences.");
+		}
+
+	} /* loadBufferModeKeywords */
 
 } // AutoComplete }}} **********************************************************

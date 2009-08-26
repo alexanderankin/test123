@@ -44,6 +44,16 @@ import org.gjt.sp.jedit.jEdit;
 
 /**
  * OptionPane for the TextAutocomplete plugin.
+ * <h4>Adding new option</h4>
+ * <ol>
+ * 	<li>{@link #_init()} - create the form control here, set tool-tip and label
+ * 	<li>{@link #_save()} - save the form control's value into jEdit's preferences
+ * 	<li>{@link #redisplayValues()} - load the stored value from the {@link PreferencesManager} here
+ * </ol>
+ *
+ * TODO Refactor: simplify adding new options (UI, save, load value) using reflection and
+ * perhaps a custom annotation like @Option(label=XX,tooltip=YY,defaultValue=true).
+ *
  * @author Jakub Holý
  *
  */
@@ -82,6 +92,8 @@ public class TextAutocompletePane extends AbstractOptionPane
 	private JTextField	filenameFilter;
 	private JRadioButton isInclusionFilter;
 	private JRadioButton isExclusionFilter;
+	private JCheckBox  	isLoadModeKeywords;
+	private JCheckBox  	isLoadMainModeOnly;
 
 	public TextAutocompletePane() {
 		super("TextAutocomplete");
@@ -108,7 +120,8 @@ public class TextAutocompletePane extends AbstractOptionPane
 		filenameFilter = new JTextField();
 		filterPane.add(filenameFilter);
 		addComponent(filterPane, GridBagConstraints.HORIZONTAL);
-		
+
+		//----------------------------------------------------------------
 		addSeparator(TextAutocompletePlugin.PROPS_PREFIX + "options.words-and-completions.label"); // -------------------------------------------------
 
 		maxCountOfWords = new JTextField();
@@ -129,13 +142,21 @@ public class TextAutocompletePane extends AbstractOptionPane
 
 		isWordCode = new JTextField();
 		isWordCode.setToolTipText("<html>Does the insertion mark the end of the word being typed? " +
-				"<br>Use the variables 'insertion' (char) and 'prefix' (String). [only letters]</html>");
+				"<br>Use the variables 'insertion' (char), 'prefix' (String), 'noWordSeparators' (String). [only letters]</html>");
 		/*JPanel panel = new JPanel();
 		panel.add( new JLabel("Is word element? [beanshell code]") );
 		panel.add( isWordElementCode );*/
 		addComponent("Belongs to word? [code]     ", isWordCode);
 
-		addSeparator(TextAutocompletePlugin.PROPS_PREFIX + "options.control-keys.label"); // -------------------------------------------------
+		isLoadModeKeywords = new JCheckBox();
+		isLoadModeKeywords.setToolTipText("Add keywords from the buffer's edit mode to the completions list upon start [false]");
+		addComponent("Load mode's keywords", isLoadModeKeywords);
+
+		isLoadMainModeOnly = new JCheckBox();
+		isLoadMainModeOnly.setToolTipText("Only add keywords from the main edit mode (saves memory) [false]");
+		addComponent(" Main mode only", isLoadMainModeOnly);
+		//----------------------------------------------------------------
+		addSeparator(TextAutocompletePlugin.PROPS_PREFIX + "options.control-keys.label");
 
 		//JEditorPane pane = new  JEditorPane();
 		JTextArea pane = new JTextArea();
@@ -190,16 +211,18 @@ public class TextAutocompletePane extends AbstractOptionPane
 		selectionByNumberModifierMask.setToolTipText("Additional key that must be pressed together with the number N to select the Nth completion. Some may not work! [none]");
 		addComponent("Select by number modifier   ", selectionByNumberModifierMask);
 
-		addSeparator(); // -------------------------------------------------
-		
+		//----------------------------------------------------------------
+		addSeparator();
+
 		URL defWordList = PreferencesManager.getPreferencesManager().getDefaultWordListForBuffer("");
 		addComponent(new JLabel("<html><p>Default word list for buffer (not yet configurable)</p>" +
-				"<ul><li>General word list: " + defWordList + 
+				"<ul><li>General word list: " + defWordList +
 				"</li><li>Buffer extension-specific word list: Same as above + the extension in lowercase<br>" +
-				"Ex: <code>" + defWordList + ".php</code>" + 
+				"Ex: <code>" + defWordList + ".php</code>" +
 				"</li></html>"));
-		
-		addSeparator(); // -------------------------------------------------
+
+		//----------------------------------------------------------------
+		addSeparator();
 
 		resetButton = new javax.swing.JButton();
 		resetButton.setText("Reset options");
@@ -216,71 +239,79 @@ public class TextAutocompletePane extends AbstractOptionPane
 
 	/* Save & aspply the changes to the properties. */
 	protected void _save() {
-		String propertyValue = null;
 
-		setJEditProperty("isStartForBuffers", isStartForBuffers.isSelected());
+		// Set properties
+		{
+			String propertyValue = null;
 
-		setJEditProperty("isInclusionFilter", isInclusionFilter.isSelected());
-		setJEditProperty("filenameFilter", filenameFilter.getText());
-		
-		propertyValue = maxCountOfWords.getText();
-		if( isInteger("maxCountOfWords", propertyValue) )
-		{ setJEditProperty("maxCountOfWords", propertyValue); }
+			setJEditProperty("isStartForBuffers", isStartForBuffers.isSelected());
 
-		propertyValue = isWordCode.getText();
-		if(isValueSet(propertyValue))
-		{ propertyValue = PreferencesManager.sanitizeCode(propertyValue); }
-		setJEditProperty("isWord-code", propertyValue);
+			setJEditProperty("isInclusionFilter", isInclusionFilter.isSelected());
+			setJEditProperty("filenameFilter", filenameFilter.getText());
 
-		propertyValue = minPrefixLength.getText();
-		if( isInteger("minPrefixLength", propertyValue) )
-		{ setJEditProperty("minPrefixLength", propertyValue); }
+			propertyValue = maxCountOfWords.getText();
+			if( isInteger("maxCountOfWords", propertyValue) )
+			{ setJEditProperty("maxCountOfWords", propertyValue); }
 
-		propertyValue = acceptKeys.getText();
-		setJEditProperty("acceptKey", propertyValue);
+			propertyValue = isWordCode.getText();
+			if(isValueSet(propertyValue))
+			{ propertyValue = PreferencesManager.sanitizeCode(propertyValue); }
+			setJEditProperty("isWord-code", propertyValue);
 
-		propertyValue = disposeKeys.getText();
-		setJEditProperty("disposeKey", propertyValue);
+			propertyValue = minPrefixLength.getText();
+			if( isInteger("minPrefixLength", propertyValue) )
+			{ setJEditProperty("minPrefixLength", propertyValue); }
 
-		propertyValue = selectionUpKeys.getText();
-		setJEditProperty("selectionUpKey", propertyValue);
+			propertyValue = acceptKeys.getText();
+			setJEditProperty("acceptKey", propertyValue);
 
-		propertyValue = selectionDownKeys.getText();
-		setJEditProperty("selectionDownKey", propertyValue);
+			propertyValue = disposeKeys.getText();
+			setJEditProperty("disposeKey", propertyValue);
 
-		propertyValue = isWordToRememberCode.getText();
-		if(isValueSet(propertyValue))
-		{ propertyValue = PreferencesManager.sanitizeCode(propertyValue); }
-		setJEditProperty("isWordToRemember-code", propertyValue);
+			propertyValue = selectionUpKeys.getText();
+			setJEditProperty("selectionUpKey", propertyValue);
 
-		propertyValue = minWordToRememberLength.getText();
-		if(isInteger("minWordToRememberLength", propertyValue))
-		{ setJEditProperty("minWordToRememberLength", propertyValue); }
+			propertyValue = selectionDownKeys.getText();
+			setJEditProperty("selectionDownKey", propertyValue);
 
+			propertyValue = isWordToRememberCode.getText();
+			if(isValueSet(propertyValue))
+			{ propertyValue = PreferencesManager.sanitizeCode(propertyValue); }
+			setJEditProperty("isWordToRemember-code", propertyValue);
+
+			propertyValue = minWordToRememberLength.getText();
+			if(isInteger("minWordToRememberLength", propertyValue))
+			{ setJEditProperty("minWordToRememberLength", propertyValue); }
+
+			setJEditProperty("isLoadModeKeywords", isLoadModeKeywords.isSelected());
+			setJEditProperty("isLoadMainModeOnly", isLoadMainModeOnly.isSelected());
+
+			setJEditProperty("isSelectionByNumberEnabled", isSelectionByNumberEnabled.isSelected());
+
+			// selectionByNumberModifierMask
+			propertyValue = minPrefixLength.getText();
+			int modifier = 0;
+			int selectedInd = selectionByNumberModifierMask.getSelectedIndex(); // selectionByNumberModifierMask
+			switch (selectedInd) {
+				case 0:
+					modifier = 0;
+					break;
+				case 1:
+					modifier = InputEvent.ALT_MASK;
+					break;
+				case 2:
+					modifier = InputEvent.ALT_GRAPH_MASK;
+					break;
+				case 3:
+					modifier = InputEvent.CTRL_MASK;
+					break;
+			}
+			setJEditProperty("selectionByNumberModifierMask", String.valueOf(modifier));
+		}
+
+		// #######################################################################
 		// Notify the PreferencesManager that options have changed
 		PreferencesManager.getPreferencesManager().optionsChanged();
-
-		setJEditProperty("isSelectionByNumberEnabled", isSelectionByNumberEnabled.isSelected());
-
-		// selectionByNumberModifierMask
-		propertyValue = minPrefixLength.getText();
-		int modifier = 0;
-		int selectedInd = selectionByNumberModifierMask.getSelectedIndex(); // selectionByNumberModifierMask
-		switch (selectedInd) {
-			case 0:
-				modifier = 0;
-				break;
-			case 1:
-				modifier = InputEvent.ALT_MASK;
-				break;
-			case 2:
-				modifier = InputEvent.ALT_GRAPH_MASK;
-				break;
-			case 3:
-				modifier = InputEvent.CTRL_MASK;
-				break;
-		}
-		setJEditProperty("selectionByNumberModifierMask", String.valueOf(modifier));
 	}
 
 	/**
@@ -314,12 +345,13 @@ public class TextAutocompletePane extends AbstractOptionPane
 				PreferencesManager.getPreferencesManager().isExclusionFilter() );
 		filenameFilter.setText(
 				PreferencesManager.getPreferencesManager().getFilenameFilter() );
-		
+
 		maxCountOfWords.setText(
 				getJEditProperty(TextAutocompletePlugin.PROPS_PREFIX + "maxCountOfWords") );
 
 		isWordCode.setText(
 				getJEditProperty(TextAutocompletePlugin.PROPS_PREFIX + "isWord-code") );
+
 		minPrefixLength.setText(
 				getJEditProperty(TextAutocompletePlugin.PROPS_PREFIX + "minPrefixLength")
 				);
@@ -341,6 +373,11 @@ public class TextAutocompletePane extends AbstractOptionPane
 		minWordToRememberLength.setText(
 				getJEditProperty(TextAutocompletePlugin.PROPS_PREFIX + "minWordToRememberLength")
 				);
+
+		isLoadModeKeywords.setSelected(
+				PreferencesManager.getPreferencesManager().isLoadModeKeywords());
+		isLoadMainModeOnly.setSelected(
+				PreferencesManager.getPreferencesManager().isLoadMainModeOnly());
 
 		isSelectionByNumberEnabled.setSelected(
 				PreferencesManager.getPreferencesManager().isSelectionByNumberEnabled());
@@ -383,7 +420,9 @@ public class TextAutocompletePane extends AbstractOptionPane
 				"isSelectionByNumberEnabled",
 				"selectionByNumberModifierMask",
 				"isInclusionFilter",
-				"filenameFilter"
+				"filenameFilter",
+				"isLoadModeKeywords",
+				"isLoadMainModeOnly"
 		};
 
 		for (int i = 0; i < properties.length; i++) {
@@ -435,7 +474,7 @@ public class TextAutocompletePane extends AbstractOptionPane
 
 	/** True if the display value != the "property unset" value. */
 	final private boolean isValueSet(String value)
-	{ return (value != null) && (! value.equals(UNSET_PROP)); }
+	{ return (value != null) && (value.trim().length() > 0) && (! value.equals(UNSET_PROP)); }
 
 	/*
 	public static void main(String[] args) {

@@ -74,16 +74,19 @@ public class PreferencesManager {
     List<Integer> acceptKeys 			= null;
     List<Integer> disposeKeys 			= null;
     List<Integer> selectionUpKeys 		= null;
-    List<Integer> selectionDownKeys 		= null;
+    List<Integer> selectionDownKeys 	= null;
 
 	/**
 	 * Holds the filename filter pattern.
 	 */
 	Pattern filenameFilter = null;
-	
+
 	/** Path to the directory holding default word lists for new buffers. */
 	private String defaultWordListsDir = null;
-	
+
+	/** Characters that do not end word such as '@' or '_' in PHP. */
+	private String noWordSeparators = "";
+
     /////////////////////////////////////////////////////////////////////////////////////
     // getPreferencesManager {{{
     /** Create a new Pref.Manager or return the existing one if exists. */
@@ -128,14 +131,14 @@ public class PreferencesManager {
         disposeKeys 		= propertyToKeyCodes(TextAutocompletePlugin.PROPS_PREFIX + "disposeKey");
         selectionUpKeys 	= propertyToKeyCodes(TextAutocompletePlugin.PROPS_PREFIX + "selectionUpKey");
         selectionDownKeys	= propertyToKeyCodes(TextAutocompletePlugin.PROPS_PREFIX + "selectionDownKey");
-        
+
         // Update the filename filter pattern
         String filter = getFilenameFilter();
         if (filter.length() > 0)
         	filenameFilter = Pattern.compile(StandardUtilities.globToRE(filter));
         else
         	filenameFilter = null;
-        
+
     } // }}} getPreferencesManager
 
 
@@ -143,7 +146,7 @@ public class PreferencesManager {
     //							isWordFilter
     /////////////////////////////////////////////////////////////////////////////////////
     /** Used to check whether an insertion appended to a word is still a word. */
-    protected Filter isWordFilter = new Filter() {
+    protected final Filter isWordFilter = new Filter() {
 		/** Return true if the insertion appended to the word is still a word (to remember/to complete...). */
     	public boolean
     	accept(StringBuffer word, char insertion)
@@ -158,6 +161,7 @@ public class PreferencesManager {
 	    		{
 	    			bsNameSpace.setTypedVariable("prefix", String.class, word.toString(), null);
 	    			bsNameSpace.setTypedVariable("insertion", Character.class, new Character(insertion), null);
+	    			bsNameSpace.setTypedVariable("noWordSeparators", String.class, noWordSeparators, null);
 	    		}
 				catch (UtilEvalError e) { throw new RuntimeException(e); }
 
@@ -167,9 +171,25 @@ public class PreferencesManager {
 	    		return isWord;
 	    	}
 	    	else
-	    	{ return Character.isLetter( insertion ); }
+	    	{ return defaultIsWordCheck(insertion); }
 		}
 	};
+
+	/**
+	 * The default test to determine whether a character is a word separator
+	 * or not used when no code snippet for that defined by the user in preferences.
+	 * It takes into account the current value of {@link #noWordSeparators} property.
+	 * @param insertion (required) a new character typed
+	 * @return true if the character is not a word separator
+	 *
+	 * @see #isWordFilter
+	 */
+	private boolean
+	defaultIsWordCheck(final char insertion)
+	{
+		return Character.isLetterOrDigit( insertion )
+			|| this.noWordSeparators.indexOf( insertion ) >= 0;
+	}
 
     /////////////////////////////////////////////////////////////////////////////////////
     //							METHODS
@@ -323,6 +343,30 @@ public class PreferencesManager {
     // isStartForBuffers }}}
 
     /////////////////////////////////////////////////////////////////////////////////////
+    //	{{{ isLoadModeKeywords
+    /**
+     * When loading keywords associated with the buffer's edit mode, shall
+     * we load only those from the default mode? E.g. for PHP there is
+     * over 10 edit modes (or perhaps more exactly sub-modes).
+     * This may save memory while still providing the most important keywords for completion.
+     * @see #isLoadModeKeywords()
+     */
+    public boolean
+    isLoadMainModeOnly()
+    { return jEdit.getBooleanProperty(TextAutocompletePlugin.PROPS_PREFIX + "isLoadMainModeOnly", false); }
+    // isLoadModeKeywords }}}
+
+    /////////////////////////////////////////////////////////////////////////////////////
+    //	{{{ isLoadModeKeywords
+    /**
+     * True if keywords from the buffer's edit mode shall be loaded upon start.
+     */
+    public boolean
+    isLoadModeKeywords()
+    { return jEdit.getBooleanProperty(TextAutocompletePlugin.PROPS_PREFIX + "isLoadModeKeywords", false); }
+    // isLoadModeKeywords }}}
+
+    /////////////////////////////////////////////////////////////////////////////////////
     //	{{{ getFilenameFilterPattern
     /**
      * Returns the filename filter pattern.
@@ -335,7 +379,7 @@ public class PreferencesManager {
     	return filenameFilter;
     }
     // getFilenameFilterPattern }}}
-   
+
     /////////////////////////////////////////////////////////////////////////////////////
     //	{{{ getFilenameFilter
     /**
@@ -594,22 +638,22 @@ public class PreferencesManager {
 
     /////////////////////////////////////////////////////////////////////////////////////
     /**
-     * Return a list of default words for a newly opened buffer 
-     * of the given name if there is any. The format of the file 
-     * pointed to by the URL is the same as used by 
+     * Return a list of default words for a newly opened buffer
+     * of the given name if there is any. The format of the file
+     * pointed to by the URL is the same as used by
      * {@link AutoComplete#importWordList()}.
      * <p>
-     * This method shall be called when AutoCompletion is started for a 
-     * new buffer and perhaps also when the buffer name changes (e.g. 
-     * after the change from 'Untitled-1' to 'SourceCode.java' we will 
+     * This method shall be called when AutoCompletion is started for a
+     * new buffer and perhaps also when the buffer name changes (e.g.
+     * after the change from 'Untitled-1' to 'SourceCode.java' we will
      * want to load default words for Java files).
      * <p>
-     * 
-     * @param bufferName a name of the buffer that AutoComplete has 
+     *
+     * @param bufferName a name of the buffer that AutoComplete has
      * just been started for; examples: 'SourceCode.java', 'Untitled-1'.
      * It's used to find a suitable word list, usually based on the file
      * name extension.
-     * @return either URL of a list of default words as in  
+     * @return either URL of a list of default words as in
      * {@link AutoComplete#importWordList()} or null if there're no defaults.
      * Beware that the URL may point to a non-existing file.
      */
@@ -617,19 +661,19 @@ public class PreferencesManager {
 		if (bufferName == null) {
 			throw new IllegalArgumentException("The param 'bufferName' may not be null.");
 		}
-		
+
 		URL wordListUrl = null;
 		final String settingsDir = getDefaultWordListsDir();
-    	if (settingsDir != null) 
+    	if (settingsDir != null)
     	{
     		String wordListPath = MiscUtilities.constructPath(
     				settingsDir, "autocompleteDefaultWordList");
-    		
+
     		try {
-    			
+
     			// Buffer file name extension
     			final String bufferExtension = MiscUtilities.getFileExtension(bufferName).toLowerCase();
-    			if (bufferExtension.length() > 0) 
+    			if (bufferExtension.length() > 0)
     			{
     				final String extSpecificWordListPath = wordListPath + bufferExtension;
     				final File extSpecificWordListFile = new File(extSpecificWordListPath);
@@ -641,24 +685,24 @@ public class PreferencesManager {
     			File wordListFile = new File(wordListPath);
     			if (wordListFile.canRead())
     				wordListUrl = wordListFile.toURI().toURL();
-    			
+
 			} catch (MalformedURLException e) {
 				Log.log(Log.ERROR, TextAutocompletePlugin.class, "getDefaultWordListForBuffer: Failed " +
 						"to construct a URL from the default word list path '" +
 						wordListPath + "'. Reason: " + e);
 			}
-    		
-    	} 
+
+    	}
     	else
     	{
     		Log.log(Log.DEBUG, TextAutocompletePlugin.class
     				, "getDefaultWordListForBuffer: No word list read because jEdit settings dir is unset." +
     				"(Perhaps running with -nosetting or as a -server.)");
     	} // if-else settings dir set
-    	
+
     	Log.log(Log.DEBUG, TextAutocompletePlugin.class, "getDefaultWordListForBuffer('" +
     			bufferName + "'): returning " + wordListUrl);
-    	
+
     	return wordListUrl;
     } /* getDefaultWordListForBuffer */
 
@@ -666,21 +710,37 @@ public class PreferencesManager {
 	 * The directory where default word lists are stored.
 	 */
 	private String getDefaultWordListsDir() {
-		if (defaultWordListsDir == null) 
+		if (defaultWordListsDir == null)
 		{
 			defaultWordListsDir = jEdit.getSettingsDirectory();
 		}
 		return defaultWordListsDir;
 	}
-	
+
 	/**
 	 * Set path to the directory where default word lists are stored.
-	 * This method is intended to override the default location for 
+	 * This method is intended to override the default location for
 	 * JUnit testing purposes.
 	 * @param defaultWordListsDir E.g. /tmp/myTestDir
 	 */
 	void setDefaultWordListsDir(String defaultWordListsDir) {
 		this.defaultWordListsDir = defaultWordListsDir;
+	}
+
+	/** Characters that do not end word such as '@' or '_' in PHP. */
+	public String getNoWordSeparators() {
+		return noWordSeparators;
+	}
+
+	/**
+	 * Characters that do not end word such as '@' or '_' in PHP.
+	 * @param noWordSeparators (required) ex.: "_@-"
+	 */
+	public void setNoWordSeparators(String noWordSeparators) {
+		if (noWordSeparators == null) {
+			throw new IllegalArgumentException("The argument noWordSeparators may not be null.");
+		}
+		this.noWordSeparators = noWordSeparators;
 	}
 
     /////////////////////////////////////////////////////////////////////////////////////
