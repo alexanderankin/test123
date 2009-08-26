@@ -28,7 +28,12 @@ import org.gjt.sp.jedit.textarea.Gutter;
 public class ColoredRectDirtyMarkPainter implements DirtyMarkPainter
 {
 	static final int WIDTH = 12;
-	private Color color = null;
+	protected int width = WIDTH;
+	protected Color color = null;
+	public void setWidth(int width)
+	{
+		this.width = width;
+	}
 	public void setColor(Color c)
 	{
 		color = c;
@@ -38,7 +43,7 @@ public class ColoredRectDirtyMarkPainter implements DirtyMarkPainter
 	{
 		Color c = gfx.getColor();
 		gfx.setColor(color);
-		gfx.fillRect(gutter.getWidth() - WIDTH, y, WIDTH, height);
+		gfx.fillRect(gutter.getWidth() - width, y, width, height);
 		gfx.setColor(c);
 	}
 
