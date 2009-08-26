@@ -60,7 +60,7 @@ JEDIT_RLIBS <- file.path( PLUGIN_HOME, "library" )
 R_LIBS <- if( R_LIBS == "" ){
 	JEDIT_RLIBS
 } else{
-	paste( R_LIBS, JEDIT_RLIBS, sep = ":" )
+	paste( R_LIBS, JEDIT_RLIBS, sep = SEP )
 }
 Sys.setenv( R_LIBS = R_LIBS )
 # }}}
