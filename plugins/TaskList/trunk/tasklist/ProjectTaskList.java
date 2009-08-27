@@ -14,7 +14,7 @@
 * You should have received a copy of the GNU General Public License
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-* 
+*
 */
 
 /**
@@ -47,9 +47,10 @@ import common.swingworker.*;
 public class ProjectTaskList extends AbstractTreeTaskList {
 
     private VPTProject project = null;
-    
-    public ProjectTaskList(View view) {
-        super(view, ProjectViewer.getActiveProject(view) != null ? ProjectViewer.getActiveProject(view).getName() : null);
+
+    public ProjectTaskList( View view ) {
+        super( view, ProjectViewer.getActiveProject( view ) != null ? ProjectViewer.getActiveProject( view ).getName() : null );
+        putClientProperty( "isCloseable", Boolean.FALSE );
     }
 
     // finds the tasks in all files using a SwingWorker so as not to impact
@@ -57,12 +58,12 @@ public class ProjectTaskList extends AbstractTreeTaskList {
     @Override
     protected void loadFiles() {
         project = ProjectViewer.getActiveProject( view );
-        if (project != null) {
-            rootDisplayName = jEdit.getProperty("tasklist.projectfiles.project", "Project:") + " " + project.getName();   
+        if ( project != null ) {
+            rootDisplayName = jEdit.getProperty( "tasklist.projectfiles.project", "Project:" ) + " " + project.getName();
         }
         super.loadFiles();
     }
-    
+
     @Override
     protected boolean canRun() {
         if ( project == null ) {
@@ -70,13 +71,13 @@ public class ProjectTaskList extends AbstractTreeTaskList {
             add( new JLabel( jEdit.getProperty( "tasklist.projectfiles.noproject", "No project is open." ) ) );
             return false;
         }
-        return  jEdit.getBooleanProperty( "tasklist.show-project-files" );  
+        return jEdit.getBooleanProperty( "tasklist.show-project-files" );
     }
 
     @Override
     protected List<String> getBuffersToScan() {
-        if (project == null) {
-            return null;   
+        if ( project == null ) {
+            return null;
         }
         List<String> toScan = new ArrayList<String>();
         Collection nodes = project.getOpenableNodes();
@@ -118,10 +119,10 @@ public class ProjectTaskList extends AbstractTreeTaskList {
             }
         }
         else {
-            super.handleMessage(msg);   
+            super.handleMessage( msg );
         }
     }
-    
+
     // Helper method to determine binary files.
     String[] exts = new String[] {".jpg", ".gif", ".png", ".ico", ".bmp", ".class", ".jar", ".war"};
     boolean isBinary( String file ) {

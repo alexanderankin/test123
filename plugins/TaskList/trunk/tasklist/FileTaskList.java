@@ -35,21 +35,16 @@ import javax.swing.*;
 import javax.swing.tree.*;
 
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.msg.*;
 
 
 import common.swingworker.*;
 
-public class OpenBuffersTaskList extends AbstractTreeTaskList {
+public class FileTaskList extends AbstractTreeTaskList {
 
-    public OpenBuffersTaskList(View view) {
+    public FileTaskList(View view, VFSFile[] files) {
         super(view, jEdit.getProperty("tasklist.openfiles.open-files", "Open Files:"));
-        putClientProperty("isCloseable", Boolean.FALSE);
-    }
-
-    @Override
-    protected boolean canRun() {
-        return jEdit.getBooleanProperty( "tasklist.show-open-files" );
     }
 
     @Override

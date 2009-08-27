@@ -25,6 +25,11 @@ tasklist.parse-buffer.label=Parse Buffer
 tasklist.parse-all.label=Parse All
 tasklist.reset-patterns.label=Reset task patterns
 
+# File system browser
+tasklist.parse-browser.label=Find Tasks
+plugin.tasklist.TaskListPlugin.browser-menu-item=tasklist.parse-browser
+
+# TODO: I think these are unused and can be removed
 tasklist.tableheader.lineno=Line #
 tasklist.tableheader.description=Description
 
