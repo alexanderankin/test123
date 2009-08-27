@@ -83,8 +83,7 @@ public class DiffBufferHandler extends BufferAdapter implements BufferHandler
 		String [] bufferLines = new String[nBuffer];
 		for (int i = 0; i < nBuffer; i++)
 			bufferLines[i] = buffer.getLineText(i);
-		String [] fileLines = LCMPlugin.getInstance().readFile(
-			buffer.getPath());
+		String [] fileLines = LCMPlugin.getInstance().readFile(buffer.getPath());
 		if (fileLines == null)
 			return;
 		Diff diff = new Diff(fileLines, bufferLines);
