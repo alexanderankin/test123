@@ -100,7 +100,9 @@ public class IndexImpl extends AbstractIndex implements Index
 		View view = jEdit.getActiveView();
 		Object session = vfs.createVFSSession(path, view);
 		for (VFSFile file: files)
+		{
 			addDocument(file, session);
+		}
 		try
 		{
 			vfs._endVFSSession(session, view);
@@ -271,7 +273,7 @@ public class IndexImpl extends AbstractIndex implements Index
 		}
 		catch (IOException e)
 		{
-			Log.log(Log.ERROR, this, "Unable to read file " + file.getPath(), e);
+			Log.log(Log.WARNING, this, "Unable to read file " + file.getPath(), e);
 		}
 		finally
 		{
