@@ -515,6 +515,8 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 				{
 					try{
 						newSystemId = new File(newSystemId).toURL().toExternalForm();
+						//set it, otherwise it will never get a sound system id
+						systemId = newSystemId;
 					}catch(java.net.MalformedURLException mue){
 						//too bad, try something else
 					}

@@ -21,6 +21,7 @@ import org.xml.sax.XMLFilter;
 import org.xml.sax.SAXException;
 import org.xml.sax.InputSource;
 import org.xml.sax.helpers.XMLFilterImpl;
+import org.xml.sax.helpers.NamespaceSupport;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.ContentHandler;
@@ -32,15 +33,18 @@ import org.xml.sax.Locator;
 import org.xml.sax.Attributes;
 
 import javax.xml.validation.ValidatorHandler;
+import javax.xml.validation.TypeInfoProvider;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Enumeration;
 
 import java.io.IOException;
 
 import org.gjt.sp.util.Log;
 
 import xml.Resolver;
+import xml.completion.CompletionInfo;
 //}}}
 
 /**
@@ -76,6 +80,17 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 	/** saved locator from setLocator() */
 	private Locator locator;
 	
+	/** saved namespaces before root element */
+	private NamespaceSupport docElementNamespaces = new NamespaceSupport();
+;
+	
+	
+	/** URL of the installed schema, if any */
+	private String schemaURL;
+	
+	/** CompletionInfo constructed from the installed schema, if any */
+	private Map<String,CompletionInfo> completions;
+
 	//{{{ Constructors
 	
 	/**
@@ -87,6 +102,7 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 		super();
 		if(mapping == null)throw new IllegalArgumentException("schema mapping may not be null");
 		this.mapping=mapping;
+		schemaURL = null;
 	}
 	
 	
@@ -102,27 +118,85 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 		this.mapping=mapping;
 	}
 	//}}}
+
+
+	/**
+	 * this doesn't return the schema bound using xsi:schemalocation nor the 
+	 * DTD file : only a schema discovered via the SchemaMapping instance.
+	 * @return	URL of the schema used for validation or null if no schema was installed
+	 */
+	public String getSchemaURL(){
+		return schemaURL;
+	}
+
+	/**
+	 * only Relax NG schemas are supported for the moment
+	 * @return	CompletionInfo constructed from the schema or null if no Relax NG schema was used
+	 */
+	public Map<String,CompletionInfo> getCompletionInfo(){
+		return completions;
+	}
 	
 	/**
 	 * load a Validator from the url schema and install it after this SchemaAutoLoader
 	 * in the parsing chain.
 	 * @param	schema	URL or path to the schema
 	 */
-	private void installJaxpGrammar(String schema) throws SAXException,IOException
+	private void installJaxpGrammar(final String schema) throws SAXException,IOException
 	{
-			final ValidatorHandler verifierFilter =
-				SchemaLoader.instance().loadJaxpGrammar(systemId,schema,getErrorHandler());
-			XMLReader parent = getParent();
+		// schemas URLs are resolved against the schema mapping file
+		final ValidatorHandler verifierFilter =
+		SchemaLoader.instance().loadJaxpGrammar(mapping.getBaseURI(),schema,getErrorHandler());
+		schemaURL = schema;
 		
-			verifierFilter.setContentHandler(new org.xml.sax.helpers.DefaultHandler());
-			if(locator == null)throw new IllegalStateException("LOCATOR");
-			verifierFilter.setDocumentLocator(locator);
-			verifierFilter.startDocument();
-			verifierFilter.setContentHandler(getContentHandler());
-			verifierFilter.setErrorHandler(getErrorHandler());
-			verifierFilter.setResourceResolver(Resolver.instance());
-			
-			setContentHandler(verifierFilter);
+		XMLReader parent = getParent();
+		
+		// replay setDocumentLocator() and startDocument(), but only for the new
+		// filter since other components have already received it
+		verifierFilter.setContentHandler(new org.xml.sax.helpers.DefaultHandler());
+		if(locator == null)throw new IllegalStateException("LOCATOR");
+		verifierFilter.setDocumentLocator(locator);
+		verifierFilter.startDocument();
+		
+		// experimental : try to get the PSVI informations from the
+		// verifierFilter is for XSD (Xerces's verifier).
+		// the goal is to let SchemaAutoLoader play the TypeInfoProvider
+		// and use it instead of the built-in TypeInfoProvider in Xerces's parser
+		// configuration (=> get completion from an XSD schema selected vi schemas.xml).
+		ContentHandler debugHandler = new org.xml.sax.helpers.DefaultHandler(){
+			private TypeInfoProvider tip = verifierFilter.getTypeInfoProvider();
+			public void startElement(String uri, String localName, String qName, Attributes atts){
+				/*if it's an XSD schema, can be cast to 
+				org.apache.xerces.impl.xs.XSComplexTypeDecl 
+				org.apache.xerces.impl.xs.SchemaGrammar$XSAnyType 
+				org.apache.xerces.impl.dv.xs.XSSimpleTypeDecl
+				
+				don't know how to get the XSModel, to handle abstract elements
+				maybe use XSLoader to load the schema and
+				handle the construction of completion info outside of XercesParserImpl
+				*/
+				if(tip!=null)
+					System.out.println(qName+":"+tip.getElementTypeInfo().getClass() + " = " + tip.getElementTypeInfo());
+			}
+			@Override
+			public void endElement(String p,String q, String r){}
+		};
+		// send events to debugHandler AND further down the chain.
+		ContentHandler handler = new com.thaiopensource.xml.sax.ForkContentHandler(debugHandler,getContentHandler());
+		verifierFilter.setContentHandler(handler);
+		verifierFilter.setErrorHandler(getErrorHandler());
+		verifierFilter.setResourceResolver(Resolver.instance());
+		
+		setContentHandler(verifierFilter);
+		
+		// FIXME: very add-hoc, but who uses other extensions for one's RNG schema ?
+		//        OK : must do something for compact syntax (rnc)
+		if(schemaURL.toString().endsWith("rng")){
+			Map<String,CompletionInfo> info = SchemaToCompletion.rngSchemaToCompletionInfo(mapping.getBaseURI(),schema,getErrorHandler());
+			Log.log(Log.DEBUG,SchemaAutoLoader.class,"constructed CompletionInfos : "+info);
+			completions = info;
+		}
+
 	}
 	
 	/**
@@ -136,6 +210,8 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 		documentElement=true;
 		publicId = input.getPublicId();
 		systemId = input.getSystemId();
+		docElementNamespaces.pushContext();
+
 		super.parse(input);
 	}
 	
@@ -150,9 +226,27 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 		documentElement=true;
 		publicId = null;
 		systemId = systemId;
+		docElementNamespaces.pushContext();
+
 		super.parse(systemId);
 	}
 	
+	@Override
+	public void startPrefixMapping(String prefix, String ns)throws SAXException {
+		/* delay startPrefixMapping, to be able to retrieve the schema in XercesParser.startPrefixMapping
+		   and this is not until startElement("root element")*/ 
+		if(documentElement)
+		{
+			Log.log(Log.DEBUG,SchemaAutoLoader.this,"Prefix Mapping  ("+prefix+","+ns+")");
+			docElementNamespaces.declarePrefix(prefix,ns);
+
+		}
+		else
+		{
+		   super.startPrefixMapping(prefix,ns);
+		}
+	}
+
 	/**
 	 * if this is the root element, try to find a matching schema,
 	 * instantiate it and insert it in the parsing chain.
@@ -182,6 +276,16 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 					throw new SAXException("unable to install schema "+schema,ioe);
 				}
 			}
+
+			//replay the namespace declarations
+			for(Enumeration e = docElementNamespaces.getDeclaredPrefixes(); e.hasMoreElements();){
+				String pre = (String)e.nextElement();
+				super.startPrefixMapping(pre,
+					docElementNamespaces.getURI(pre));
+			}
+			docElementNamespaces.reset();
+			
+			//root element has been seen
 			documentElement=false;
 		}
 		super.startElement(uri,localName,qName,atts);
@@ -221,16 +325,6 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
     	}
     }
 
-    /**
-     * debug : test if document is valid 
-     */
-    @Override
-    public void endDocument()
-    {
-    	// TODO: isValid()
-    }
-    
-    
     /**
      * capture the locator, in case we need to pass it to a schema
      * @see installJaxpGrammar(String)

@@ -105,7 +105,9 @@ public class XmlPlugin extends EBPlugin
 		File schemas = new File(home,SchemaMapping.SCHEMAS_FILE);
 		// create an empty mapping file in settings directory
 		if(!schemas.exists()){
-			SchemaMapping map = new SchemaMapping();
+			SchemaMapping map = SchemaMapping.fromDocument(
+				XmlPlugin.class.getClassLoader().getResource("xml/dtds/schemas.xml").toString());
+			
 			try{
 				map.toDocument(schemas.getPath());
 			}catch(IOException ioe){

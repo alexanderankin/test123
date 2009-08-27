@@ -18,12 +18,12 @@ package xml.completion;
 //{{{ Imports
 import java.util.*;
 import org.gjt.sp.jedit.jEdit;
-import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.ext.DefaultHandler2;
 import org.xml.sax.*;
 import xml.*;
 //}}}
 
-public class CompletionInfoHandler extends DefaultHandler
+public class CompletionInfoHandler extends DefaultHandler2
 {
 	//{{{ CompletionInfoHandler constructor
 	public CompletionInfoHandler()
@@ -50,15 +50,15 @@ public class CompletionInfoHandler extends DefaultHandler
 	} //}}}
 
 	//{{{ resolveEntity() method
-	public InputSource resolveEntity(String publicId, String systemId)
+	public InputSource resolveEntity(String name, String publicId, String baseURI, String systemId)
 		throws SAXException
 	{
 		try
 		{
 			return Resolver.instance().resolveEntity(
-				null,//name
+				name,//name
 				publicId,
-				loc.getSystemId(), //current
+				/*loc.getSystemId()*/baseURI, //current
 				systemId);
 		}
 		catch(Exception e)

@@ -1089,6 +1089,18 @@ loop:			for(;;)
 	}
 	//}}}
 
+	//{{{ openSchema() method
+	public static void openSchema(View view)
+	{
+		JEditTextArea textArea = view.getTextArea();
+		Buffer buffer = view.getBuffer();
+		String schemaURL = buffer.getStringProperty("xml.validation.schema");
+		if(schemaURL != null){
+			Buffer newbuffer = jEdit.openFile(view,schemaURL);
+		}
+	}
+	//}}}
+
 	// {{{ non-public methods
 
 	//{{{ propertiesChanged() method
