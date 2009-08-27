@@ -79,6 +79,7 @@ public class LCMPlugin extends EBPlugin
 		{
 			b.addBufferListener(bh);
 			handlers.put(b, bh);
+			bh.start();
 		}
 		return bh;
 	}

@@ -148,4 +148,8 @@ public class DiffBufferHandler extends BufferAdapter implements BufferHandler
 		return painter;
 	}
 
+	public void start()
+	{
+	}
+
 }

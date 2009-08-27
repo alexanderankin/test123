@@ -74,10 +74,7 @@ public class BufferChangedLines extends BufferAdapter
 		ranges = new TreeSet<Range>();
 		undoManager = new RangeChangeUndoManager(this);
 		buffer.addBufferUndoListener(this);
-		initHistory();
 		painter = new ColoredRectDirtyMarkPainter();
-		printRanges();
-		LCMPlugin.getInstance().repaintAllTextAreas();
 	}
 
 	public void remove()
@@ -380,5 +377,12 @@ public class BufferChangedLines extends BufferAdapter
 			return null;
 		painter.setColor(SimpleOptions.getBgColor());
 		return painter;
+	}
+
+	public void start()
+	{
+		initHistory();
+		printRanges();
+		LCMPlugin.getInstance().repaintAllTextAreas();
 	}
 }
