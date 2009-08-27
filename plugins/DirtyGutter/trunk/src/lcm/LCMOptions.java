@@ -20,12 +20,14 @@
 
 package lcm;
 
+import java.awt.Component;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.TitledBorder;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.ServiceManager;
@@ -63,8 +65,6 @@ public class LCMOptions extends AbstractOptionPane
 		}
 		addComponent(jEdit.getProperty("messages.LCMPlugin.providers"),
 			provider);
-		addComponent(new JLabel(jEdit.getProperty(
-			"messages.LCMPlugin.providerSpecificOptions")));
 		providerOptions = new DirtyLineProviderOptions[services.length];
 		providerPanels = new JPanel[services.length];
 		providerChanged();
@@ -85,14 +85,26 @@ public class LCMOptions extends AbstractOptionPane
 		DirtyLineProviderOptions opts = providerOptions[providerIndex];
 		if (opts == null)
 		{
+			String selectedName = provider.getSelectedItem().toString();
 			DirtyLineProvider selProvider= (DirtyLineProvider)
 				ServiceManager.getService(
-					DirtyLineProvider.class.getCanonicalName(),
-					provider.getSelectedItem().toString());
+					DirtyLineProvider.class.getCanonicalName(), selectedName);
 			opts = providerOptions[providerIndex] = selProvider.getOptions();
-			providerPanels[providerIndex] = new JPanel();
-			opts.initOptions(providerPanels[providerIndex]);
-			addComponent(providerPanels[providerIndex]);
+			final Insets insets = new Insets(20,10,10,10);
+			JPanel p = providerPanels[providerIndex] = new JPanel();
+			TitledBorder border = new TitledBorder(jEdit.getProperty(
+				"messages.LCMPlugin.providerSpecificOptions",
+				new Object[] { selectedName }))
+			{
+				@Override
+				public Insets getBorderInsets(Component c)
+				{
+					return insets;
+				}
+			};
+			p.setBorder(border);
+			opts.initOptions(p);
+			addComponent(p);
 		}
 		currentPanel = providerPanels[providerIndex];
 		currentPanel.setVisible(true);

@@ -19,6 +19,7 @@
  */
 package lcm.providers.diff;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
 
@@ -42,9 +43,9 @@ public class DiffOptions implements DirtyLineProviderOptions
 
 	private void addComponent(JPanel pane, String label, JComponent comp)
 	{
-		JPanel optionPanel = new JPanel();
-		optionPanel.add(new JLabel(label));
-		optionPanel.add(comp);
+		JPanel optionPanel = new JPanel(new BorderLayout());
+		optionPanel.add(new JLabel(label), BorderLayout.CENTER);
+		optionPanel.add(comp, BorderLayout.EAST);
 		pane.add(optionPanel);
 	}
 	public void initOptions(JPanel pane)
