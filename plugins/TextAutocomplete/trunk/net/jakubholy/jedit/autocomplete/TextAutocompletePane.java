@@ -102,7 +102,12 @@ public class TextAutocompletePane extends AbstractOptionPane
 	/* Build the GUI */
 	protected void _init() {
 
-		addComponent(new JLabel("<html><h2>TextAutocomplete Global Options</h2></html>"));
+		addComponent(new JLabel("<html>" +
+				"<h2>TextAutocomplete Global Options</h2>" +
+				"Leave the mouse pointer above any option to display detailed description including the [default value]." +
+				"</html>"));
+
+		addSeparator();
 
 		isStartForBuffers = new JCheckBox();
 		isStartForBuffers.setToolTipText("Start the autocompletion automatically for every new buffer [false]");
@@ -148,13 +153,25 @@ public class TextAutocompletePane extends AbstractOptionPane
 		panel.add( isWordElementCode );*/
 		addComponent("Belongs to word? [code]     ", isWordCode);
 
-		isLoadModeKeywords = new JCheckBox();
-		isLoadModeKeywords.setToolTipText("Add keywords from the buffer's edit mode to the completions list upon start [false]");
-		addComponent("Load mode's keywords", isLoadModeKeywords);
+		// EDIT MODE KEYWORDS
+		{
+			isLoadModeKeywords = new JCheckBox();
+			isLoadModeKeywords.setToolTipText("Add keywords from the buffer's edit mode to the completions list upon start [false]");
+			addComponent("Complete keywords defined by syntax highlighting rules", isLoadModeKeywords);
 
-		isLoadMainModeOnly = new JCheckBox();
-		isLoadMainModeOnly.setToolTipText("Only add keywords from the main edit mode (saves memory) [false]");
-		addComponent(" Main mode only", isLoadMainModeOnly);
+			isLoadMainModeOnly = new JCheckBox();
+			isLoadMainModeOnly.setToolTipText("Only add keywords from the main edit mode (saves memory) [false]");
+			addComponent(" Consider only keywords from the main edit mode", isLoadMainModeOnly);
+
+			isLoadModeKeywords.addChangeListener(new ChangeListener(){
+				public void stateChanged(ChangeEvent e)
+				{
+					isLoadMainModeOnly.setEnabled(
+							isLoadModeKeywords.isSelected());
+				}
+			});
+		}
+
 		//----------------------------------------------------------------
 		addSeparator(TextAutocompletePlugin.PROPS_PREFIX + "options.control-keys.label");
 
@@ -214,7 +231,7 @@ public class TextAutocompletePane extends AbstractOptionPane
 		//----------------------------------------------------------------
 		addSeparator();
 
-		URL defWordList = PreferencesManager.getPreferencesManager().getDefaultWordListForBuffer("");
+		URL defWordList = PreferencesManager.getPreferencesManager().getDefaultWordListForBuffer("", false);
 		addComponent(new JLabel("<html><p>Default word list for buffer (not yet configurable)</p>" +
 				"<ul><li>General word list: " + defWordList +
 				"</li><li>Buffer extension-specific word list: Same as above + the extension in lowercase<br>" +
@@ -378,6 +395,8 @@ public class TextAutocompletePane extends AbstractOptionPane
 				PreferencesManager.getPreferencesManager().isLoadModeKeywords());
 		isLoadMainModeOnly.setSelected(
 				PreferencesManager.getPreferencesManager().isLoadMainModeOnly());
+		isLoadMainModeOnly.setEnabled(
+				isLoadModeKeywords.isSelected());
 
 		isSelectionByNumberEnabled.setSelected(
 				PreferencesManager.getPreferencesManager().isSelectionByNumberEnabled());

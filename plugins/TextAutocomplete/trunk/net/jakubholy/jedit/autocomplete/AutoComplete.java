@@ -106,7 +106,7 @@ implements java.util.Observer
 	 * Create a new AutoComplete that starts working for the given buffer if the buffer has none.
 	 * If the buffer already has an AutoComplete, it's only returned.
 	 */
-	public static AutoComplete CreateAutoCompleteAction( final Buffer buffer )
+	public static AutoComplete createAutoCompleteAction( final Buffer buffer )
 	{
 		Pattern filter = PreferencesManager.getPreferencesManager().getFilenameFilterPattern();
 		if (filter != null) {
@@ -136,7 +136,7 @@ implements java.util.Observer
 	 * @return The [new] buffer's AutoComplete
 	 */
 	public static AutoComplete attachAction( Buffer buffer )
-	{ return CreateAutoCompleteAction(buffer); }
+	{ return createAutoCompleteAction(buffer); }
 
 	/**
 	 * Detach the AutoCompletion from the given buffer if it has one.
@@ -165,12 +165,24 @@ implements java.util.Observer
 		AutoComplete autoComplete = getAutoCompleteOfBuffer(buffer);
 		if(autoComplete == null || autoComplete.getBuffer() == null)
 		{
-			String title = jEdit.getProperty("textautocomplete-show_words.label", "Show remembered words");
+			String title = jEdit.getProperty("textautocomplete-buffer-parse.label", "Parse buffer");
 			if( askToAttach(buffer, title) )
 			{ parseAction( buffer ); }
 		}
 		else
 		{ autoComplete.parseBuffer(); }
+	}
+
+	/**
+	 * Forget all words in the completions list including those from the buffer
+	 * and those from other sources such as the default word list.
+	 * @throws ActionException When the action cannot be performed for some reason
+	 */
+	public static void forgetAllWordsAction( Buffer buffer ) throws ActionException
+	{
+		AutoComplete autoComplete = getAutoCompleteOfBuffer(buffer);
+		if(autoComplete != null && autoComplete.getBuffer() != null)
+		{ autoComplete.wordList.clear(); }
 	}
 
 	/**
@@ -453,7 +465,7 @@ implements java.util.Observer
 	 * @return Number of imported words.
 	 */
 	int importBufferDefaultWordList(Buffer buffer) {
-		final URL defaultWordListUrl = prefManager.getDefaultWordListForBuffer(buffer.getName());
+		final URL defaultWordListUrl = prefManager.getDefaultWordListForBuffer(buffer.getName(), true);
 		int countImportedWords = 0;
 
         if (defaultWordListUrl != null)
@@ -825,12 +837,13 @@ implements java.util.Observer
 					keywordList.append(keyword).append(" ");
 				}
 
+				final String modeName = (buffer.getMode() != null)? buffer.getMode().getName() : "<undefined>";
 				Log.log(Log.DEBUG, TextAutocompletePlugin.class, "loadBufferModeKeywords: " + collectedKeywords.size() +
 						" keywords extracted from " + editModesCount + " edit sub-modes with " +
 						mainModeKeywordsCount + " from the main mode for " +
 						"the buffer '" + buffer.getName() + "': " + keywordList);
 				Log.log(Log.DEBUG, TextAutocompletePlugin.class, "loadBufferModeKeywords: no word separators extracted from the " +
-						"mode of the buffer '" + buffer.getName() + "': " + noWordSeparators);
+						"mode " + modeName + " of the buffer '" + buffer.getName() + "': " + noWordSeparators);
 			}
 		} else {
 			Log.log(Log.DEBUG, TextAutocompletePlugin.class, "loadBufferModeKeywords: doing nothing, loading mode's keywords " +
