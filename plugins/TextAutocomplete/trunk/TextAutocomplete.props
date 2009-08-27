@@ -22,13 +22,15 @@ plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.menu = \
   textautocomplete-buffer-attach \
   textautocomplete-buffer-detach \
   textautocomplete-buffer-parse         \
+  textautocomplete-buffer-forget_all_words \
   textautocomplete-show_words -        \
   textautocomplete-attach2all        \
   textautocomplete-detach_from_all
 # Actions - labels
 textautocomplete-buffer-attach.label=Start for buffer
 textautocomplete-buffer-detach.label=Stop for buffer
-textautocomplete-buffer-parse.label=Parse buffer
+textautocomplete-buffer-parse.label=Parse buffer (collect words)
+textautocomplete-buffer-forget_all_words.label=Forget all remembered words
 textautocomplete-show_words.label=Show remembered words
 textautocomplete-attach2all.label=Start for all buffers
 textautocomplete-detach_from_all.label=Stop for all buffers

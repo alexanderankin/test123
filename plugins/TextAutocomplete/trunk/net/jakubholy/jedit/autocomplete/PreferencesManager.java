@@ -649,15 +649,19 @@ public class PreferencesManager {
      * want to load default words for Java files).
      * <p>
      *
-     * @param bufferName a name of the buffer that AutoComplete has
+     * @param bufferName (required) a name of the buffer that AutoComplete has
      * just been started for; examples: 'SourceCode.java', 'Untitled-1'.
      * It's used to find a suitable word list, usually based on the file
-     * name extension.
+     * name extension. To get the default, not buffer-specific word list you can pass
+     * an empty string ("") as the buffer name.
+     * @param onlyIfExists (required) If false then the word list file path is
+     * returned even if the file doesn't currently exist othewrise null is
+     * returned if the file doesn't exist
      * @return either URL of a list of default words as in
      * {@link AutoComplete#importWordList()} or null if there're no defaults.
      * Beware that the URL may point to a non-existing file.
      */
-	public URL getDefaultWordListForBuffer(String bufferName) {
+	public URL getDefaultWordListForBuffer(String bufferName, boolean onlyIfExists) {
 		if (bufferName == null) {
 			throw new IllegalArgumentException("The param 'bufferName' may not be null.");
 		}
@@ -683,7 +687,7 @@ public class PreferencesManager {
     				}
     			}
     			File wordListFile = new File(wordListPath);
-    			if (wordListFile.canRead())
+    			if (!onlyIfExists || wordListFile.canRead())
     				wordListUrl = wordListFile.toURI().toURL();
 
 			} catch (MalformedURLException e) {
