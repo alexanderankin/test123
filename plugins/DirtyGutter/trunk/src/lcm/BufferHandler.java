@@ -35,5 +35,8 @@ public interface BufferHandler extends BufferListener
 	 * Clear the buffer's dirty state when the buffer is saved.
 	 */
 	void bufferSaved(Buffer buffer);
-
+	/*
+	 * Start processing (handler already attached to buffer).
+	 */
+	void start();
 }
