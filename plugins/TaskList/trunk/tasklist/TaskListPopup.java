@@ -215,6 +215,9 @@ public class TaskListPopup extends JPopupMenu {
         public void actionPerformed( ActionEvent evt ) {
             Task task = getTask();
             String bufferPath = task == null ? getBufferPath() : task.getBufferPath();
+            if (bufferPath == null) {
+                return;   
+            }
             String cmd = evt.getActionCommand();
             Buffer buffer = jEdit.getBuffer( bufferPath );
             if ( buffer == null ) {
@@ -264,6 +267,9 @@ public class TaskListPopup extends JPopupMenu {
     private Task getTask() {
             JTree tree = ( JTree ) comp;
             TreePath path = tree.getPathForLocation( point.x, point.y );
+            if (path == null) {
+                return null;   
+            }
             DefaultMutableTreeNode node = ( DefaultMutableTreeNode ) path.getLastPathComponent();
             Object userObject = node.getUserObject();
             if ( userObject == null || !( userObject instanceof Task ) ) {

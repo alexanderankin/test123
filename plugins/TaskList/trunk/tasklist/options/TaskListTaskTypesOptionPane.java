@@ -110,6 +110,7 @@ public class TaskListTaskTypesOptionPane extends AbstractOptionPane {
             i++;
         }
         TaskListPlugin.pruneTaskListProperties( i );
+        TaskListPlugin.reloadTaskTypes();
     } //}}}
 
     //{{{ createListModel() method
@@ -153,8 +154,6 @@ public class TaskListTaskTypesOptionPane extends AbstractOptionPane {
             Object source = evt.getSource();
 
             if ( source == editBtn ) {
-                // QUESTION: update? If the user changes the icon, the already existing tasks
-                // won't change their display until the plugin itself is reloaded.
                 TaskType taskType = ( TaskType ) typesList.getSelectedValue();
                 new TaskTypeDialog( TaskListTaskTypesOptionPane.this, taskType,
                         TaskListTaskTypesOptionPane.this.iconList );
@@ -164,10 +163,12 @@ public class TaskListTaskTypesOptionPane extends AbstractOptionPane {
                 TaskType taskType = new TaskType();
                 if ( new TaskTypeDialog( TaskListTaskTypesOptionPane.this, taskType, TaskListTaskTypesOptionPane.this.iconList ).isOK() ) {
                     int index = typesList.getSelectedIndex();
-                    if ( index == -1 )
+                    if ( index == -1 ) {
                         index = typesListModel.getSize();
-                    else
+                    }
+                    else {
                         index++;
+                    }
 
                     typesListModel.insertElementAt( taskType, index );
                     typesList.setSelectedIndex( index );
@@ -210,8 +211,6 @@ public class TaskListTaskTypesOptionPane extends AbstractOptionPane {
     class MouseHandler extends MouseAdapter {
         public void mouseClicked( MouseEvent evt ) {
             if ( evt.getClickCount() == 2 ) {
-                // QUESTION: update? If the user changes the icon, the already existing tasks
-                // won't change their display until the plugin itself is reloaded.
                 TaskType taskType = ( TaskType ) typesList.getSelectedValue();
                 new TaskTypeDialog( TaskListTaskTypesOptionPane.this, taskType, TaskListTaskTypesOptionPane.this.iconList );
                 typesList.repaint();
@@ -460,24 +459,31 @@ class TaskTypeDialog extends EnhancedDialog {
         public void actionPerformed( ActionEvent evt ) {
             Object source = evt.getSource();
 
-            if ( source instanceof JRadioButton )
+            if ( source instanceof JRadioButton ) {
                 updateEnabled();
-            else if ( source == okBtn )
+            }
+            else if ( source == okBtn ) {
                 ok();
-            else if ( source == cancelBtn )
+            }
+            else if ( source == cancelBtn ) {
                 cancel();
-            else if ( source == useBuiltin || source == useCustom )
+            }
+            else if ( source == useBuiltin || source == useCustom ) {
                 updateEnabled();
+            }
             else if ( source == customIcon ) {
                 String directory;
-                if ( iconPath == null || iconPath.equals( "" ) )
+                if ( iconPath == null || iconPath.equals( "" ) ) {
                     directory = null;
-                else
+                }
+                else {
                     directory = MiscUtilities.getParentOfPath( iconPath );
+                }
                 String paths[] = GUIUtilities.showVFSFileDialog( null, directory,
                         VFSBrowser.OPEN_DIALOG, false );
-                if ( paths == null )
+                if ( paths == null ) {
                     return ;
+                }
 
                 iconPath = "file:" + paths[ 0 ];
                 //Log.log(Log.DEBUG, TaskTypeDialog.class,
