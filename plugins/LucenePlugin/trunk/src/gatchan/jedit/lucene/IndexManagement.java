@@ -37,6 +37,7 @@ public class IndexManagement extends AbstractOptionPane
 {
 	private IndexOptionPanel indexOptionPanel;
 	private DefaultListModel model;
+	private JList indexList;
 
 	public IndexManagement()
 	{
@@ -48,7 +49,7 @@ public class IndexManagement extends AbstractOptionPane
 	protected void _init()
 	{
 		model = new DefaultListModel();
-		final JList indexList = new JList(model);
+		indexList = new JList(model);
 		JScrollPane leftScroll = new JScrollPane(indexList);
 		indexOptionPanel = new IndexOptionPanel();
 		JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftScroll, indexOptionPanel);
@@ -76,10 +77,18 @@ public class IndexManagement extends AbstractOptionPane
 	private void updateListModel()
 	{
 		model.clear();
+		Object selectedValue = indexList.getSelectedValue();
 		String[] items = LucenePlugin.instance.getIndexes();
+		boolean selectionStillExists = false;
 		for (String name : items)
 		{
+			if (selectedValue != null && selectedValue.equals(name))
+				selectionStillExists = true;
 			model.addElement(name);
+		}
+		if (!selectionStillExists && model.size() != 0)
+		{
+			indexList.setSelectedIndex(0);
 		}
 	}
 
