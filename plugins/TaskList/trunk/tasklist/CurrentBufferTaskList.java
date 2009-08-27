@@ -14,7 +14,7 @@
 * You should have received a copy of the GNU General Public License
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-* 
+*
 */
 
 /**
@@ -47,6 +47,11 @@ public class CurrentBufferTaskList extends AbstractTreeTaskList {
     }
 
     @Override
+    protected boolean showProgress() {
+        return false;
+    }
+
+    @Override
     protected List<String> getBuffersToScan() {
         List<String> buffers = new ArrayList<String>();
         buffers.add( view.getBuffer().getPath() );
@@ -63,7 +68,7 @@ public class CurrentBufferTaskList extends AbstractTreeTaskList {
             b = ( ( EditPaneUpdate ) message ).getEditPane().getBuffer();
         }
         if (b == null) {
-            return;   
+            return;
         }
         if (buffer.getPath().equals(b.getPath())) {
             loadFiles();
