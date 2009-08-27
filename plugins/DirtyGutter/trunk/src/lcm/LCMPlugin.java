@@ -265,6 +265,8 @@ public class LCMPlugin extends EBPlugin
 		{
 			session = vfs.createVFSSession(path, jEdit.getActiveView());
 			file = vfs._getFile(session, path, jEdit.getActiveView());
+			if (file == null)
+				return null;
 			reader = new BufferedReader(new InputStreamReader(
 				file.getVFS()._createInputStream(session, file.getPath(),
 				false,jEdit.getActiveView())));
