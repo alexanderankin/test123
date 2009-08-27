@@ -41,6 +41,8 @@ import java.util.*;
 import javax.swing.*;
 
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.browser.VFSBrowser;
+import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.syntax.DefaultTokenHandler;
 import org.gjt.sp.jedit.syntax.Token;
@@ -96,6 +98,15 @@ public class TaskListPlugin extends EditPlugin {
             view = view.getNext();
         }
     } //}}}
+
+    public static void registerTaskList(TaskList taskList) {
+        if (taskList != null) {
+            View view = taskList.getView();
+            if (view != null) {
+                taskLists.put(view, taskList);
+            }
+        }
+    }
 
     //{{{ initTextArea() method
     /**
@@ -375,6 +386,9 @@ public class TaskListPlugin extends EditPlugin {
      */
     private static Set<Mode> parseModes = new HashSet<Mode>();
     //}}}
+
+    // view <=> task list map
+    private static HashMap<View, TaskList> taskLists = new HashMap<View, TaskList>();
 
     //{{{ requestTasksForBuffer() method
     /**
@@ -661,5 +675,23 @@ public class TaskListPlugin extends EditPlugin {
         return null;
     }
 
+    /**
+     * Called from beanshell code in browser.actions.xml, parses file(s) as
+     * selected in VFSBrowser.  If the selected file is a directory, it will be
+     * recursed.
+     */
+    public static void parse( View view, VFSBrowser browser ) {
+        if ( view == null || browser == null) {
+            return ;
+        }
+        TaskList taskList = taskLists.get(view);
+        if(taskList == null) {
+            return;   
+        }
+        VFSFile[] files = browser.getSelectedFiles();
+        // TODO: figure out a better name for "Files". Generate dynamically from
+        // files?
+        taskList.addTab("Files", new FileTaskList(view, files));
+    }
 
 }

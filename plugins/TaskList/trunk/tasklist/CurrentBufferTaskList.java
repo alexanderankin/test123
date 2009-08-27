@@ -44,6 +44,7 @@ public class CurrentBufferTaskList extends AbstractTreeTaskList {
 
     public CurrentBufferTaskList( View view ) {
         super( view, jEdit.getProperty( "tasklist.currentbuffer", "Current File:" ) );
+        putClientProperty("isCloseable", Boolean.FALSE);
     }
 
     @Override
