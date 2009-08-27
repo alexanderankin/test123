@@ -115,4 +115,8 @@ public class LCMOptions extends AbstractOptionPane
 	{
 		return jEdit.getProperty(PROVIDER_SERVICE_PROP);
 	}
+	public static void setProviderServiceName(String providerName)
+	{
+		jEdit.setProperty(PROVIDER_SERVICE_PROP, providerName);
+	}
 }

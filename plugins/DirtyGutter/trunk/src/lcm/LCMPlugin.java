@@ -207,9 +207,10 @@ public class LCMPlugin extends EBPlugin
 			provider = (DirtyLineProvider) ServiceManager.getService(
 				DirtyLineProvider.class.getCanonicalName(), providerName);
 		}
-		if (provider == null)
+		if (provider == null)	// Provider name property missing or is incorrect
 		{
 			providerName = DEFAULT_PROVIDER;
+			LCMOptions.setProviderServiceName(providerName);
 			provider = new SimpleDirtyLineProvider();
 		}
 	}
