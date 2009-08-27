@@ -17,10 +17,12 @@ plugin.tasklist.TaskListPlugin.description=Shows all "TODO" comments in a file.
 ### menu
 plugin.tasklist.TaskListPlugin.menu=tasklist \
 	tasklist.parse-buffer \
+	tasklist.parse-all \
 	tasklist.reset-patterns
 
 tasklist.label=Task List
-tasklist.parse-buffer.label=Parse buffer
+tasklist.parse-buffer.label=Parse Buffer
+tasklist.parse-all.label=Parse All
 tasklist.reset-patterns.label=Reset task patterns
 
 tasklist.tableheader.lineno=Line #
@@ -158,7 +160,7 @@ tasklist.icons=stock_about-16.png \
 	New.gif \
 	Question.gif \
 	RedFlag.gif
-	
+
 # messages for tree displays
 tasklist.loadingtasksfromfiles=Please wait, loading tasks from files...
 tasklist.currentbuffer=Current File:
