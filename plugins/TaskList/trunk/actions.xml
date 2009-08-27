@@ -6,7 +6,12 @@ $Id$
 <ACTIONS>
 	<ACTION NAME="tasklist.parse-buffer">
 		<CODE>
-			tasklist.TaskListPlugin.parseBuffer(buffer);
+			EditBus.send(new tasklist.ParseBufferMessage(view, buffer, tasklist.ParseBufferMessage.DO_PARSE));
+		</CODE>
+	</ACTION>
+	<ACTION NAME="tasklist.parse-all">
+		<CODE>
+			EditBus.send(new tasklist.ParseBufferMessage(view, buffer, tasklist.ParseBufferMessage.DO_PARSE_ALL));
 		</CODE>
 	</ACTION>
 	<ACTION NAME="tasklist.reset-patterns">
