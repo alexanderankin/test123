@@ -136,11 +136,11 @@ public class DiffBufferHandler extends BufferAdapter implements BufferHandler
 		{
 			Color c;
 			if (r.type == ChangeType.ADDED)
-				c = Color.GREEN;
+				c = DiffOptions.getAddColor();
 			else if (r.type == ChangeType.REMOVED)
-				c = Color.RED;
+				c = DiffOptions.getRemoveColor();
 			else if (r.type == ChangeType.CHANGED)
-				c = Color.ORANGE;
+				c = DiffOptions.getChangeColor();
 			else
 				return null;
 			painter.setColor(c);
