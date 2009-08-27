@@ -28,7 +28,8 @@ public class IndexProjectAction extends Action
 
 	public void actionPerformed(ActionEvent e)
 	{
-		if (viewer != null) {
+		if (viewer != null)
+		{
 			VPTNode node = viewer.getSelectedNode();
 			if (node == null)
 				node = viewer.getRoot();
@@ -53,9 +54,9 @@ public class IndexProjectAction extends Action
 			Index index = LucenePlugin.instance.getIndexForProject(indexName);
 			if (index == null)
 			{
-				JOptionPane.showMessageDialog(null, jEdit.getProperty(INDEX_ERROR),
+				/*JOptionPane.showMessageDialog(null, jEdit.getProperty(INDEX_ERROR),
 					jEdit.getProperty(INDEX_ERROR_TITLE), JOptionPane.ERROR_MESSAGE,
-					null);
+					null);*/
 				return;
 			}
 			LucenePlugin.instance.addToIndex(indexName, fileArray, true);
