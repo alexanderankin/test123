@@ -27,8 +27,8 @@ package tasklist;
  TODO: ensure task highlights are repainted when buffer reloaded, etc...
  DONE: are there portions of the code which are not thread safe?
  DONE: allow for displaying all buffers or only current ones
- 
- DONE: remove all references to TaskListener.  None exist anywhere in this 
+
+ DONE: remove all references to TaskListener.  None exist anywhere in this
  plugin any more.  TaskListModel used to be the only classes that was also
  a TaskListener, but I've removed that implementation.
 }}}*/
@@ -191,6 +191,23 @@ public class TaskListPlugin extends EditPlugin {
             i++;
         }
     } //}}}
+
+    public static void reloadTaskTypes() {
+        clearTaskTypes();
+        loadTaskTypes();
+    }
+
+    public static Icon getIconForType(String typeName) {
+        if (typeName == null) {
+            return null;
+        }
+        for (TaskType type : taskTypes) {
+            if ( typeName.equals(type.getName())) {
+                return type.getIcon();
+            }
+        }
+        return null;
+    }
 
     //{{{ resetPatterns() method
     /**
@@ -366,7 +383,8 @@ public class TaskListPlugin extends EditPlugin {
     * <p>
     * This method will not cause a re-parse of a buffer.
     */
-    public synchronized static HashMap<Integer, Task> requestTasksForBuffer( final Buffer buffer ) {
+    public synchronized static HashMap<Integer, Task>
+    requestTasksForBuffer( final Buffer buffer ) {
         if ( buffer == null || buffer.isLoaded() == false ) {
             return null;
         }
@@ -442,7 +460,7 @@ public class TaskListPlugin extends EditPlugin {
         DefaultTokenHandler tokenHandler = new DefaultTokenHandler();
         for ( int lineNum = firstLine; lineNum < lastLine; lineNum++ ) {
             tokenHandler.init();
-            
+
             int lineStart = buffer.getLineStartOffset( lineNum );
             buffer.markTokens( lineNum, tokenHandler );
             Token token = tokenHandler.getTokens();
@@ -613,7 +631,7 @@ public class TaskListPlugin extends EditPlugin {
      * finding the mode of a temporary buffer.  Actual opened buffers already
      * have a mode.
      * @param file The file for a buffer.
-     * @return the mode of the buffer or null if not found in our list of 
+     * @return the mode of the buffer or null if not found in our list of
      * nodes we are allowed to parse.
      */
     public static Mode getMode( File file ) {
