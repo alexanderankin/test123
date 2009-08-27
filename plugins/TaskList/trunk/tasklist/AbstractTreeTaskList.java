@@ -27,6 +27,7 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
     protected JButton stopButton;
     protected Runner runner = null;
     protected String rootDisplayName = "Tasks:";
+    protected MouseListener mouseListener = null;
 
     /**
      * @param view the View this task list is being displayed in.
@@ -60,18 +61,22 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
 
         // add a "Refresh" menu item to a popup so the user can reload the
         // current tree.
-        addMouseListener(
-            new MouseAdapter() {
-                public void mouseClicked( MouseEvent me ) {
-                    if ( me.isPopupTrigger() ) {
+        addMouseListener(getMouseListener());
+
+        loadFiles();
+    }
+
+    private MouseListener getMouseListener() {
+        if (mouseListener == null) {
+            mouseListener =
+                new MouseAdapter() {
+                    public void mouseClicked( MouseEvent me ) {
                         me.consume();
                         GUIUtilities.showPopupMenu( createPopupMenu(), AbstractTreeTaskList.this, me.getX(), me.getY() );
                     }
-                }
-            }
-        );
-
-        loadFiles();
+                };
+        }
+        return mouseListener;
     }
 
     private JPopupMenu createPopupMenu() {
@@ -114,12 +119,21 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
 
     /**
      * Default implementation returns <code>true</code>.  Subclasses may override
-     * this based on their particular needs, for example, the user may set 
+     * this based on their particular needs, for example, the user may set
      * plugin option settings to prevent a particular subclass from displaying or
      * running.
      * @return true if this class is allowed to load and display tasks for files.
      */
     protected boolean canRun() {
+        return true;
+    }
+
+    /**
+     * Subclasses can override this to return false if they don't want the
+     * progress bar shown during parsing.  This default implementation
+     * returns true.
+     */
+    protected boolean showProgress() {
         return true;
     }
 
@@ -132,35 +146,37 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
         public TreeModel doInBackground() {
             try {
                 // build the tree model
-                SwingUtilities.invokeLater(
-                    new Runnable() {
-                        public void run() {
-                            // show a progress bar while the model is loading
-                            removeAll();
+                if (showProgress()) {
+                    SwingUtilities.invokeLater(
+                        new Runnable() {
+                            public void run() {
+                                // show a progress bar while the model is loading
+                                removeAll();
 
-                            progressBar.setStringPainted( true );
-                            JPanel progressPanel = new JPanel( new KappaLayout() );
-                            progressPanel.add( "0, 0, 1, 1, 0, w, 3", new JLabel( jEdit.getProperty( "tasklist.loadingtasksfromfiles.", "Please wait, loading tasks from files..." ) ) );
-                            progressPanel.add( "0, 1, 1, 1, 0, w, 3", progressBar );
-                            JPanel btnPanel = new JPanel();
-                            btnPanel.add( stopButton );
-                            progressPanel.add( "0, 2, 1, 1, 0, 0, 3", btnPanel );
+                                progressBar.setStringPainted( true );
+                                JPanel progressPanel = new JPanel( new KappaLayout() );
+                                progressPanel.add( "0, 0, 1, 1, 0, w, 3", new JLabel( jEdit.getProperty( "tasklist.loadingtasksfromfiles.", "Please wait, loading tasks from files..." ) ) );
+                                progressPanel.add( "0, 1, 1, 1, 0, w, 3", progressBar );
+                                JPanel btnPanel = new JPanel();
+                                btnPanel.add( stopButton );
+                                progressPanel.add( "0, 2, 1, 1, 0, 0, 3", btnPanel );
 
-                            add( progressPanel, BorderLayout.CENTER );
-                            invalidate();
-                            validate();
-                        }
-                    }
-                );
-                addPropertyChangeListener(
-                    new PropertyChangeListener() {
-                        public void propertyChange( PropertyChangeEvent evt ) {
-                            if ( "progress".equals( evt.getPropertyName() ) ) {
-                                progressBar.setValue( ( Integer ) evt.getNewValue() );
+                                add( progressPanel, BorderLayout.CENTER );
+                                invalidate();
+                                validate();
                             }
                         }
-                    }
-                );
+                    );
+                    addPropertyChangeListener(
+                        new PropertyChangeListener() {
+                            public void propertyChange( PropertyChangeEvent evt ) {
+                                if ( "progress".equals( evt.getPropertyName() ) ) {
+                                    progressBar.setValue( ( Integer ) evt.getNewValue() );
+                                }
+                            }
+                        }
+                    );
+                }
                 return buildTreeModel();
             }
             catch ( Exception e ) {
@@ -211,7 +227,9 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
                             add( new JScrollPane( tree ) );
                         }
                         else {
-                            add( new JLabel( jEdit.getProperty( "tasklist.no-tasks-found", "No tasks found." ) ) );
+                            JLabel label = new JLabel( jEdit.getProperty( "tasklist.no-tasks-found", "No tasks found." ) );
+                            label.addMouseListener(getMouseListener());
+                            add( label );
                         }
                         invalidate();
                         validate();
@@ -272,7 +290,7 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
                     }
                 }
                 catch ( Exception e ) {}    // NOPMD
-                
+
                 DefaultMutableTreeNode buffer_node = getNodeForBuffer( buffer );
                 if ( buffer_node == null ) {
                     continue;
