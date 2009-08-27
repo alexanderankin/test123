@@ -169,7 +169,7 @@ public class BufferChangedLines extends BufferAdapter
 			buffer.redo(ta);
 			listSize++;
 		}
-		recordUndo = true;
+		recordUndo = false;
 		// Finally, go back to initial buffer state
 		int stepsBack = listSize - position;
 		for (int i = 0; i < stepsBack; i++)
