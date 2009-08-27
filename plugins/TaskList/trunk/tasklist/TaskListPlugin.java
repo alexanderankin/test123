@@ -107,6 +107,10 @@ public class TaskListPlugin extends EditPlugin {
             }
         }
     }
+    
+    public static TaskList getTaskList(View view) {
+        return taskLists.get(view);   
+    }
 
     //{{{ initTextArea() method
     /**
@@ -689,9 +693,11 @@ public class TaskListPlugin extends EditPlugin {
             return;   
         }
         VFSFile[] files = browser.getSelectedFiles();
-        // TODO: figure out a better name for "Files". Generate dynamically from
-        // files?
-        taskList.addTab("Files", new FileTaskList(view, files));
+        if (files == null) {
+            return;   
+        }
+        taskList.addTab(files[0].getName(), new FileTaskList(view, files));
+        view.getDockableWindowManager().showDockableWindow( "tasklist" );
     }
 
 }
