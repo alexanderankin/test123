@@ -368,17 +368,40 @@
       <para>
         <programlisting>
         <![CDATA[
+                import common.gui.CloseableTabbedPane;
+                
+                ...
+                
                 tabs = new CloseableTabbedPane();
                 Icon close_icon = GUIUtilities.loadIcon( "closebox.gif" );
                 Icon hover_icon = GUIUtilities.loadIcon( "closebox.gif" );
                 Icon pressed_icon = GUIUtilities.loadIcon( "closebox.gif" );
                 tabs.setCloseIcons(close_icon, hover_icon, pressed_icon);
+                JPanel panel = new JPanel();
+                tabs.add(panel);
         ]]>
         </programlisting>
       </para>
       <para>
         The "setCloseIcons" method has the possibility of adding separate icons 
         for 'normal', 'hover', and 'pressed' mouse events.
+      </para>
+      <para>
+        It is also possible to specify that a tab be not closeable:
+      </para>
+      <para>
+        <programlisting>
+        <![CDATA[
+                tabs = new CloseableTabbedPane();
+                Icon close_icon = GUIUtilities.loadIcon( "closebox.gif" );
+                tabs.setCloseIcons(close_icon, close_icon, close_icon);
+                JPanel panel = new JPanel();
+                panel.putClientProperty("isCloseable", Boolean.FALSE);
+                tabs.add(panel);
+        ]]>
+        </programlisting>
+        The "isCloseable" client property must be set before the component is 
+        added to the tabbed pane.
       </para>
     </sect1>
 
