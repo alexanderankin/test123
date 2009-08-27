@@ -47,9 +47,8 @@ public class BufferChangedLines extends BufferAdapter
 	private Buffer buffer;
 	private TreeSet<Range> ranges;
 	private RangeChangeUndoManager undoManager;
-	private boolean undoExists;
-	private boolean initUndo = false;
-	private boolean initRedo = false;
+	private boolean recordUndo = false;
+	private boolean disableUndo = false;
 	private ColoredRectDirtyMarkPainter painter = null;
 
 	// Methods for supporting undo
@@ -75,9 +74,10 @@ public class BufferChangedLines extends BufferAdapter
 		ranges = new TreeSet<Range>();
 		undoManager = new RangeChangeUndoManager(this);
 		buffer.addBufferUndoListener(this);
-		if (buffer.isDirty() && (! buffer.isUntitled()))
-			initDirtyRanges();	// Get the initial dirty ranges using Diff
+		initHistory();
 		painter = new ColoredRectDirtyMarkPainter();
+		printRanges();
+		LCMPlugin.getInstance().repaintAllTextAreas();
 	}
 
 	public void remove()
@@ -92,54 +92,93 @@ public class BufferChangedLines extends BufferAdapter
 	}
 
 	/*
-	 * This method is called when the plugin starts handling a buffer
-	 * that is already dirty. This can happen, for example, if the
-	 * plugin is activated via the plugin manager at some point after
-	 * buffers have been edited (and marked dirty). In this state,
-	 * the plugin does not know which content changes were performed
-	 * on the buffer since last save, so it must use 'diff' against
-	 * the saved file to find the initial dirty ranges. But this is
-	 * not enough: Since the plugin did not handle the buffer before,
-	 * it does not know what undo operations are available on it. So
-	 * the first "undo" in the current state will not change anything
-	 * in the dirty ranges (as the plugin has no "undo list"). To
-	 * work around this, the plugin uses a crazy scheme:
-	 * 1. Undo all changes in the core's undo list, ignoring any
-	 *    content changes made by this undo.
-	 * 2. If the resulting buffer is dirty (i.e. undo limit reached
-	 *    before saving), run 'diff' to get the initial dirty state.
-	 * 3. Finally, redo all changes in the undo list, to get back to
-	 *    the current state, this time recording all changes so they
-	 *    will be available in the plugin's undo list.
+	 * This method is used to initialize the undo history for the buffer.
+	 * This is needed if the plugin is activated via the plugin manager
+	 * at some point after buffers have been edited (so they have an
+	 * undo list). To fully support undo/redo, the plugin must follow the
+	 * existing undo list to build the required undo data. If the buffer's
+	 * non-dirty state is somewhere along the undo list, then the undo
+	 * data has to be built in both directions from that position in the
+	 * undo list. Otherwise, the plugin must use 'diff' against the saved
+	 * file at the beginning of the undo list to find the initial dirty
+	 * ranges.
+	 * This is how to build the required undo information:
+	 * - Disable auto-save.
+	 * - Find the position of the buffer's non-dirty state in the core's
+	 *   undo list. This is done by going backward all way (undo) and then
+	 *   forward all way (redo) until the non-dirty state is reached or
+	 *   the undo list is exhausted.
+	 * - If the non-dirty state was not reached:
+	 *   - Undo all changes.
+	 *   - Diff the buffer vs. the saved file to initialize the dirty ranges.
+	 *   Else: (the buffer's non-dirty state was reached)
+	 *   - Undo all changes, building undo information.
+	 *   - Reverse the list of undo information built.
+	 *   - Redo all changes until the buffer's non-dirty state is reached.
+	 * - Redo all changes, building undo information.
+	 * - Undo some operations again to get back where we started.
+	 * - Restore auto-save.
 	 */
-	private void initDirtyRanges()
+	private void initHistory()
 	{
+		if (jEdit.getActiveView() == null)
+			return;
 		JEditTextArea ta = jEdit.getActiveView().getTextArea();
-		// 1. Undo all changes, ignoring content changes
-		int undoCount = 0;
-		initUndo = true;	// Mark forced full-undo state
-		do
+		// Look for the non-dirty state of the buffer in the undo list.
+		// While at it, find the current position in the undo list.
+		disableUndo = true;		// Disable undo listeners
+		int position = 0;
+		while (buffer.isDirty() && buffer.canUndo())
 		{
-			undoExists = false;
 			buffer.undo(ta);
-			if (undoExists)
-				undoCount++;
+			position++;
 		}
-		while (undoExists);
-		initUndo = false;	// Forced full-undo done
-		// 2. Run 'diff' against the saved file
+		boolean positionFound = buffer.isDirty();
+		while (buffer.isDirty() && buffer.canRedo())
+			buffer.redo(ta);
+		// If the non-dirty state was not found, rewind and diff.
+		int listSize = 0;
 		if (buffer.isDirty())
 		{
+			while (buffer.canUndo())
+				buffer.undo(ta);
 			BufferFileDiff diff = new BufferFileDiff(buffer);
 			Vector<Range> dirty = diff.getDiff();
 			if (dirty != null)
 				ranges.addAll(dirty);
 		}
-		// 3. Redo all changes, recording undo operations
-		initRedo = true;	// Mark forced full-redo state
-		for (int i = 0; i < undoCount; i++)
+		else	// Build backward undo information, count steps 
+		{
+			recordUndo = true;
+			while (buffer.canUndo())
+			{
+				buffer.undo(ta);
+				if (! positionFound)	// Still on way back in undo 
+					position++;
+			}
+			recordUndo = false;
+			undoManager.reverse();
+			// Get back to the non-dirty state
+			while (buffer.isDirty() && buffer.canRedo())
+			{
+				buffer.redo(ta);
+				listSize++;
+			}
+		}
+		// Build forward undo information, count steps
+		recordUndo = true;
+		while (buffer.canRedo())
+		{
 			buffer.redo(ta);
-		initRedo = false;	// Forced full-redo done
+			listSize++;
+		}
+		recordUndo = true;
+		// Finally, go back to initial buffer state
+		int stepsBack = listSize - position;
+		for (int i = 0; i < stepsBack; i++)
+			buffer.undo(ta);
+		undoManager.rewind(stepsBack);
+		disableUndo = false;	// Enable undo listeners
 	}
 
 	private void printRanges()
@@ -160,13 +199,7 @@ public class BufferChangedLines extends BufferAdapter
 	public void contentInserted(JEditBuffer buffer, int startLine, int offset,
 		int numLines, int length)
 	{
-		if (initUndo)	// forced full-undo: ignore change, mark undo existence
-		{
-			undoExists = true;
-			return;
-		}
-		// ignore undo/redo except forced full-redo
-		if ((! initRedo) && buffer.isUndoInProgress())
+		if ((! recordUndo) && buffer.isUndoInProgress())
 			return;
 		// Check if the inserted range needs to be merged with an existing one
 		// Note: numLines==0 for single-line change
@@ -177,13 +210,7 @@ public class BufferChangedLines extends BufferAdapter
 	public void contentRemoved(JEditBuffer buffer, int startLine, int offset,
 		int numLines, int length)
 	{
-		if (initUndo)	// forced full-undo: ignore change, mark undo existence
-		{
-			undoExists = true;
-			return;
-		}
-		// ignore undo/redo except forced full-redo
-		if ((! initRedo) && buffer.isUndoInProgress())
+		if ((! recordUndo) && buffer.isUndoInProgress())
 			return;
 		// Check if the removed range needs to be merged with an existing one
 		if (buffer.getLineStartOffset(startLine) == offset)
@@ -193,18 +220,26 @@ public class BufferChangedLines extends BufferAdapter
 		handleContentChange(0 - numLines, changed);
 	}
 
-	public void redo(JEditBuffer buffer)
+	public void beginRedo(JEditBuffer buffer)
 	{
-		if (initRedo)
+	}
+
+	public void endRedo(JEditBuffer buffer)
+	{
+		if (disableUndo)
 			return;
 		undoManager.redo();
 		printRanges();
 		LCMPlugin.getInstance().repaintAllTextAreas();
 	}
 
-	public void undo(JEditBuffer buffer)
+	public void beginUndo(JEditBuffer buffer)
 	{
-		if (initUndo)
+	}
+
+	public void endUndo(JEditBuffer buffer)
+	{
+		if (disableUndo)
 			return;
 		undoManager.undo();
 		printRanges();

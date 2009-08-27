@@ -93,6 +93,33 @@ public class RangeChangeUndoManager
 		head.redo();
 	}
 
+	// Reverse the undo list
+	public void reverse()
+	{
+		RangeChange prev = null;
+		RangeChange cur = listStart.next;
+		RangeChange next;
+		while (cur != null)
+		{
+			next = cur.next;
+			cur.next = prev;
+			cur.prev = next;
+			prev = cur;
+			cur = next;
+		}
+		if (prev != null)
+		{
+			prev.prev = listStart;
+			listStart.next = prev;
+		}
+	}
+
+	public void rewind(int steps)
+	{
+		for (int i = 0; i < steps; i++)
+			head = head.prev;
+	}
+
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder("Undo: ");
