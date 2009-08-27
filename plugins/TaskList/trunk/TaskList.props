@@ -86,6 +86,15 @@ options.tasklist.modes.parse.label=Parse Tasks for these Modes:
 tasklist.title=Task List
 tasklist.label=Task List
 
+# non-closeable tab names
+tasklist.current-file=Current File
+tasklist.open-files=Open Files
+tasklist.project-files=Project Files
+
+# tab popup labels
+tasklist.close=Close
+tasklist.close-all=Close All
+
 # popup menu items
 tasklist.popup.heading=Change task name
 tasklist.popup.change-menu=Change task tag
@@ -170,6 +179,7 @@ tasklist.icons=stock_about-16.png \
 tasklist.loadingtasksfromfiles=Please wait, loading tasks from files...
 tasklist.currentbuffer=Current File:
 tasklist.openfiles.open-files=Open Files:
+tasklist.files.files=Files:
 tasklist.no-tasks-found=No tasks found.
 tasklist.projectfiles.project=Project:
 tasklist.projectfiles.noproject=No project is open.

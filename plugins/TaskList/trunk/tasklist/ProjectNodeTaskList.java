@@ -24,54 +24,54 @@ import javax.swing.*;
 import javax.swing.tree.*;
 
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.msg.*;
 
+import projectviewer.vpt.VPTNode;
 
 import common.swingworker.*;
 
 /**
- * A task list to display the tasks found in a directory or some files.
+ * A task list to display the tasks found in a tree that represents files.
  */
-public class FileTaskList extends AbstractTreeTaskList {
+public class ProjectNodeTaskList extends AbstractTreeTaskList {
 
-    private VFSFile[] files = null;
-    public FileTaskList(View view, VFSFile[] files) {
+    private VPTNode node = null;
+    
+    public ProjectNodeTaskList(View view, VPTNode node) {
         super(view, jEdit.getProperty("tasklist.files.files", "Files:"));
-        this.files = files;
+        this.node = node;
         loadFiles();
     }
 
     @Override
     protected List<String> getBuffersToScan() {
-        if (files == null) {
+        if (node == null) {
             return null;   
         }
-
+        
         List<String> paths = new ArrayList<String>();
-        for (VFSFile file : files) {
-            if (file != null) {
-                findPaths(file, paths);
+        
+        if (node.isFile()) {
+            paths.add(node.getNodePath());
+        }
+        else {
+            Enumeration children = node.children();
+            while(children.hasMoreElements()) {
+                findPaths((VPTNode)children.nextElement(), paths);
             }
         }
 
         return paths;
     }
     
-    private void findPaths(VFSFile file, List<String> paths) {
-        if (file.getType() == VFSFile.FILE) {
-            paths.add(file.getPath());   
+    private void findPaths(VPTNode node, List<String> paths) {
+        if (node.isFile()) {
+            paths.add(node.getNodePath());
         }
-        else if (file.getType() == VFSFile.DIRECTORY) {
-            String dir = file.getPath();
-            try {
-                VFSFile[] children = file.getVFS()._listFiles(null, dir, view);
-                for (VFSFile child : children) {
-                    findPaths(child, paths);   
-                }
-            }
-            catch(Exception e) {
-                e.printStackTrace();
+        else {
+            Enumeration children = node.children();
+            while(children.hasMoreElements()) {
+                findPaths((VPTNode)children.nextElement(), paths);
             }
         }
     }

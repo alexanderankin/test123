@@ -81,14 +81,16 @@
     <!--
     <target name="dist" depends="clean,compile,docs">
     -->
-    <target name="dist" depends="clean,compile">
+    <target name="dist" depends="clean, compile, docs">
         <mkdir dir="${install.dir}"/>
         <jar jarfile="${install.dir}/${jar.name}">
             <fileset dir="${build.dir}"/>
             <fileset dir="${src.dir}">
                 <include name="actions.xml"/>
+                <include name="browser.actions.xml"/>
                 <include name="dockables.xml"/>
                 <include name="**/*.props"/>
+                <include name="services.xml"/>
                 <include name="**/*.html"/>
                 <include name="**/*.gif"/>
                 <include name="**/*.png"/>

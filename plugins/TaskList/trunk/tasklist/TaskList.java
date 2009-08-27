@@ -55,7 +55,7 @@ public class TaskList extends JPanel implements EBComponent {
         this.view = view;
         init();
         EditBus.addToBus( this );
-        TaskListPlugin.registerTaskList(this);
+        TaskListPlugin.registerTaskList( this );
     } //}}}
 
     private void init() {
@@ -73,77 +73,82 @@ public class TaskList extends JPanel implements EBComponent {
         Icon close_icon = GUIUtilities.loadIcon( "closebox.gif" );
         Icon hover_icon = GUIUtilities.loadIcon( "closebox.gif" );
         Icon pressed_icon = GUIUtilities.loadIcon( "closebox.gif" );
-        tabs.setCloseIcons(close_icon, hover_icon, pressed_icon);
+        tabs.setCloseIcons( close_icon, hover_icon, pressed_icon );
 
         // add a mouse listener to be able to close tabs
         tabs.addMouseListener(
             new MouseAdapter() {
-                    public void mousePressed( MouseEvent me ) {
-                        if ( me.isPopupTrigger() ) {
-                            handleIsPopup( me );
-                        }
-                    }
-
-                    public void mouseReleased( MouseEvent me ) {
-                        if ( me.isPopupTrigger() ) {
-                            handleIsPopup( me );
-                        }
-                    }
-
-                    private void handleIsPopup( MouseEvent me ) {
-                        final int x = me.getX();
-                        final int y = me.getY();
-                        int index = tabs.indexAtLocation(x, y);
-                        if (index < 1) {
-                            // index 0 is the current buffer, don't close it ever,
-                            // less than 0 is an invalid tab
-                            return ;
-                        }
-                        final Component c = tabs.getComponentAt(index);
-                        final JPopupMenu pm = new JPopupMenu();
-                        // TODO: change property name
-                        JMenuItem close_mi = new JMenuItem( jEdit.getProperty("ips.Close", "Close") );
-                        pm.add( close_mi );
-                        close_mi.addActionListener(
-                            new ActionListener() {
-                                    public void actionPerformed( ActionEvent ae ) {
-                                        tabs.remove( c );
-                                    }
-                                }
-                                                  );
-                        // TODO: change property name
-                        JMenuItem close_all_mi = new JMenuItem( jEdit.getProperty("ips.Close_All", "Close All") );
-                        pm.add( close_all_mi );
-                        close_all_mi.addActionListener(
-                            new ActionListener() {
-                                    public void actionPerformed( ActionEvent ae ) {
-                                        for (int i = 1; i < tabs.getTabCount(); ) {
-                                            Component comp = tabs.getComponentAt(i);
-                                            tabs.remove( comp );
-                                            comp = null;
-                                        }
-                                    }
-                                }
-                                                      );
-                        GUIUtilities.showPopupMenu( pm, tabs, x, y );
+                public void mousePressed( MouseEvent me ) {
+                    if ( me.isPopupTrigger() ) {
+                        handleIsPopup( me );
                     }
                 }
-                             );
 
-        // TODO: put the tab names in the property file
-        addTab( "Current File", new CurrentBufferTaskList( view ) );
+                public void mouseReleased( MouseEvent me ) {
+                    if ( me.isPopupTrigger() ) {
+                        handleIsPopup( me );
+                    }
+                }
+
+                private void handleIsPopup( MouseEvent me ) {
+                    final int x = me.getX();
+                    final int y = me.getY();
+                    int index = tabs.indexAtLocation( x, y );
+                    if ( index < 1 || (index < 2 && (showOpenFiles || showProjectFiles)) || (index < 3 && showOpenFiles && showProjectFiles )) {
+                        // index 0 is the current buffer, don't close it ever,
+                        // less than 0 is an invalid tab
+                        return ;
+                    }
+                    final Component c = tabs.getComponentAt( index );
+                    final JPopupMenu pm = new JPopupMenu();
+                    JMenuItem close_mi = new JMenuItem( jEdit.getProperty( "tasklist.close", "Close" ) );
+                    pm.add( close_mi );
+                    close_mi.addActionListener(
+                        new ActionListener() {
+                            public void actionPerformed( ActionEvent ae ) {
+                                tabs.remove( c );
+                            }
+                        }
+                    );
+                    JMenuItem close_all_mi = new JMenuItem( jEdit.getProperty( "tasklist.close-all", "Close All" ) );
+                    pm.add( close_all_mi );
+                    close_all_mi.addActionListener(
+                        new ActionListener() {
+                            public void actionPerformed( ActionEvent ae ) {
+                                int start_index = 1;
+                                if (showOpenFiles) {
+                                    ++start_index;
+                                }
+                                if (showProjectFiles) {
+                                    ++start_index;
+                                }
+                                for ( int i = start_index; i < tabs.getTabCount(); ) {
+                                    Component comp = tabs.getComponentAt( i );
+                                    tabs.remove( comp );
+                                    comp = null;
+                                }
+                            }
+                        }
+                    );
+                    GUIUtilities.showPopupMenu( pm, tabs, x, y );
+                }
+            }
+        );
+
+        addTab( jEdit.getProperty( "tasklist.current-file", "Current File" ), new CurrentBufferTaskList( view ) );
         if ( showOpenFiles ) {
-            addTab( "Open Files", new OpenBuffersTaskList( view ) );
+            addTab( jEdit.getProperty( "tasklist.open-files", "Open Files" ), new OpenBuffersTaskList( view ) );
         }
         if ( showProjectFiles && projectViewerAvailable ) {
-            addTab( "Project Files", new ProjectTaskList( view ) );
+            addTab( jEdit.getProperty( "tasklist.project-files", "Project Files" ), new ProjectTaskList( view ) );
         }
         add( BorderLayout.CENTER, tabs );
+        tabs.setSelectedIndex( 0 );
     }
 
-    public void addTab(String name, AbstractTreeTaskList tasklist) {
-        System.out.println("+++++ adding tab: " + name);
-        tabs.add(name, tasklist);
+    public void addTab( String name, AbstractTreeTaskList tasklist ) {
+        tabs.add( name, tasklist );
+        tabs.setSelectedIndex( tabs.getTabCount() - 1 );
     }
 
     //{{{ getName() method
