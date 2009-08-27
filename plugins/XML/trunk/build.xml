@@ -60,6 +60,7 @@
         <pathelement location="${install.dir}/isorelax-jaxp-bridge-1.0.jar"/>
         <pathelement location="${install.dir}/isorelax.jar"/>
         <pathelement location="${install.dir}/jing.jar"/>
+        <pathelement location="${install.dir}/trang.jar"/>
         <pathelement location="${install.dir}/relaxngDatatype.jar"/>
         <pathelement location="${jedit.install.dir}/jedit.jar"/>
         <pathelement location="${jedit.plugins.dir}/Beauty.jar"/>

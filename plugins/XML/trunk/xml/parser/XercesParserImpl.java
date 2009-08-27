@@ -34,6 +34,7 @@ import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.apache.xerces.xs.XSWildcard;
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
@@ -127,6 +128,7 @@ public class XercesParserImpl extends XmlParser
 
 
 		XMLReader reader = null;
+		SchemaAutoLoader schemaLoader = null;
 		try
 		{
 			// One has to explicitely require the parser from XercesPlugin, otherwise
@@ -145,7 +147,7 @@ public class XercesParserImpl extends XmlParser
 			reader.setFeature("http://apache.org/xml/features/xinclude/fixup-base-uris",
 				buffer.getBooleanProperty("xml.xinclude.xmlbase"));
 			//reader.setFeature("http://apache.org/xml/features/continue-after-fatal-error",true);
-			SchemaAutoLoader schemaLoader = new SchemaAutoLoader(reader,mapping);
+			schemaLoader = new SchemaAutoLoader(reader,mapping);
 
 
 			schemaLoader.setErrorHandler(handler);
@@ -154,6 +156,8 @@ public class XercesParserImpl extends XmlParser
 
 			//get access to the schema
 			handler.setPSVIProvider((PSVIProvider)reader);
+			//get access to the RNG schema
+			handler.setSchemaAutoLoader(schemaLoader);
 			//get access to the DTD
 			reader.setProperty("http://xml.org/sax/properties/declaration-handler",handler);
 			reader = schemaLoader;
@@ -209,9 +213,9 @@ public class XercesParserImpl extends XmlParser
 		catch(SAXException se)
 		{
 			Log.log(Log.ERROR, this, se.getException());
+			se.printStackTrace();
 			if(se.getMessage() != null)
 			{
-				se.printStackTrace();
 				errorSource.addError(ErrorSource.ERROR,buffer.getPath(),
 					0,0,0,se.getMessage());
 			}
@@ -219,6 +223,15 @@ public class XercesParserImpl extends XmlParser
 		catch(Exception e)
 		{
 			Log.log(Log.ERROR,this,e);
+			e.printStackTrace();
+		}
+		finally
+		{
+			//set this property for the xml-open-schema action to work
+			if(schemaLoader.getSchemaURL()!=null)
+			{
+				buffer.setStringProperty("xml.validation.schema",schemaLoader.getSchemaURL());
+			}
 		}
 
 		Collections.sort(data.ids,new IDDecl.Compare());
@@ -227,6 +240,80 @@ public class XercesParserImpl extends XmlParser
 
 	//{{{ Private members
 
+	//{{{ ...
+	public XmlTag findParent(EditPane editPane, int caret){
+
+		if (caret == 0)
+			return null;
+		SideKickParsedData _data = SideKickParsedData
+			.getParsedData(editPane.getView());
+		if(!(_data instanceof XmlParsedData))
+			return null;
+		if(XmlPlugin.isDelegated(editPane.getTextArea()))
+			return null;
+		XMLReader reader = null;
+		try
+		{
+			// One has to explicitely require the parser from XercesPlugin, otherwise
+			// one gets the crimson version bundled in the JRE and the rest fails
+			// miserably (at least on Mac OS X, JDK 5)
+			reader = XMLReaderFactory.createXMLReader("org.apache.xerces.parsers.SAXParser");
+			reader.setFeature("http://xml.org/sax/features/validation",false);
+			reader.setFeature("http://xml.org/sax/features/namespaces",true);
+			reader.setFeature("http://xml.org/sax/features/use-entity-resolver2", true);
+			reader.setFeature("http://apache.org/xml/features/xinclude",false);
+			//reader.setFeature("http://apache.org/xml/features/continue-after-fatal-error",true);
+		}
+		catch(SAXException se)
+		{
+			se.printStackTrace();
+			Log.log(Log.ERROR,this,se);
+		}
+
+
+		XmlParsedData data = (XmlParsedData)_data;
+
+		Buffer buffer = editPane.getBuffer();
+		
+		String text = buffer.getText(0,caret);
+
+		FastHandler handler = new FastHandler(buffer,data);
+
+		InputSource source = new InputSource();
+
+		source.setCharacterStream(new StringReader(text));
+		source.setSystemId(buffer.getPath());
+
+		reader.setContentHandler(handler);
+		reader.setErrorHandler(handler);
+		reader.setEntityResolver(handler);
+		try
+		{
+			reader.parse(source);
+		}
+		catch(StoppedException e)
+		{
+		}
+		catch(IOException ioe)
+		{
+			ioe.printStackTrace();
+		}
+		catch(SAXParseException spe)
+		{
+			// already handled
+		}
+		catch(SAXException se)
+		{
+			se.printStackTrace();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return null;
+	} //}}}
+	
+	
 	//{{{ xsElementToElementDecl() method
 	private void xsElementToElementDecl(XSNamedMap elements, CompletionInfo info,
 		XSElementDeclaration element, ElementDecl parent)
@@ -235,6 +322,9 @@ public class XercesParserImpl extends XmlParser
 			parent.content = new HashSet<String>();
 
 		String name = element.getName();
+		
+		System.out.println("xsElementToElementDecl("+element.getNamespace()+":"+name+")");
+		
 		if(info.elementHash.get(name) != null)
 		{
 			// one must add the element to its parent's content, even if
@@ -304,8 +394,12 @@ public class XercesParserImpl extends XmlParser
 			{
 				XSAttributeUse attr = (XSAttributeUse)
 					attributes.item(i);
-				boolean required = attr.getRequired();
-				XSAttributeDeclaration decl = attr.getAttrDeclaration();
+					xsAttributeToElementDecl(elementDecl,attr.getAttrDeclaration(),attr.getRequired());
+			}
+		}
+	} //}}}
+
+	private void xsAttributeToElementDecl(ElementDecl elementDecl,XSAttributeDeclaration decl, boolean required){
 				String attrName = decl.getName();
 				String value = decl.getConstraintValue();
 				XSSimpleTypeDefinition typeDef = decl.getTypeDefinition();
@@ -320,10 +414,8 @@ public class XercesParserImpl extends XmlParser
 					type = "CDATA";
 				elementDecl.addAttribute(new ElementDecl.AttributeDecl(
 					attrName,value,values,type,required));
-			}
-		}
-	} //}}}
-
+	}
+	
 	//{{{ xsTermToElementDecl() method
 	private void xsTermToElementDecl(XSNamedMap elements, CompletionInfo info, XSTerm term,
 		ElementDecl parent)
@@ -358,12 +450,20 @@ public class XercesParserImpl extends XmlParser
 		String text;
 		XmlParsedData data;
 
-		HashMap<String, String> activePrefixes;
+		//not used anymore : everything is done in startPrefixMapping
+		//HashMap<String, String> activePrefixes;
 		Stack<DefaultMutableTreeNode> currentNodeStack;
 		Locator loc;
 		boolean empty;
+		/** at root of document (no startElement() seen yet)*/
+		boolean root = true;
+		
 		//used to retrieve the XSModel for a particular node
 		PSVIProvider psviProvider;
+		
+		/** used to retrieve CompletionInfos for different namespaces (RNG) */
+		SchemaAutoLoader schemaAutoLoader;
+		
 		// }}}
 		// {{{ Handler constructor
 		Handler(Buffer buffer, String text, DefaultErrorSource errorSource,
@@ -373,10 +473,11 @@ public class XercesParserImpl extends XmlParser
 			this.text = text;
 			this.errorSource = errorSource;
 			this.data = data;
-			this.activePrefixes = new HashMap<String, String>();
+			//this.activePrefixes = new HashMap<String, String>();
 			this.currentNodeStack = new Stack<DefaultMutableTreeNode>();
 			this.empty = true;
 			this.psviProvider = null;
+			this.schemaAutoLoader = null;
 
 		} // }}}
 
@@ -384,6 +485,10 @@ public class XercesParserImpl extends XmlParser
 			this.psviProvider = psviProvider;
 		}
 
+		private void setSchemaAutoLoader(SchemaAutoLoader sal){
+			this.schemaAutoLoader = sal;
+		}
+		
 		private boolean ignoreMessage(String message) {
 			if (message.startsWith("More pseudo attributes are expected")) return true;
 			if (message.startsWith("Content is not allowed in prolog")) return true;
@@ -417,11 +522,16 @@ public class XercesParserImpl extends XmlParser
 			XSNamedMap attributes = model.getComponents(XSConstants.ATTRIBUTE_DECLARATION);
 			for(int i = 0; i < attributes.getLength(); i++)
 			{
-				XSObject attribute = attributes.item(i);
+				XSAttributeDeclaration attribute = (XSAttributeDeclaration)attributes.item(i);
 				//indeed, it's possible (like for XMLSchema-instance),
 				//when one uses getModelForNamespace("http://www.w3.org/2001/XMLSchema-instance")
 				//or http://www.w3.org/XML/1998/namespace : see network.xml : base, lang, space
+				// FIXME: now the attributes appear in the edit tag dialog, but in the same namespace
+				// as the other attributes (no mixed namespace support for elements either)
 				System.err.println("look! " + attribute.getName());
+				for(ElementDecl e:info.elements){
+					xsAttributeToElementDecl(e,attribute,false);
+				}
 			}
 
 			return info;
@@ -490,13 +600,8 @@ public class XercesParserImpl extends XmlParser
 		//{{{ startPrefixMapping() method
 		public void startPrefixMapping(String prefix, String uri)
 		{
-			activePrefixes.put(prefix,uri);
-		} //}}}
-
-		//{{{ endPrefixMapping() method
-		public void endPrefixMapping(String prefix)
-		{
-			String uri = (String)activePrefixes.get(prefix);
+			System.out.println("startPrefix("+prefix+","+uri+")");
+			//not used anymore activePrefixes.put(prefix,uri);
 			// check for built-in completion info for this URI
 			// (eg, XSL, XSD, XHTML has this).
 			if(uri != null)
@@ -505,12 +610,34 @@ public class XercesParserImpl extends XmlParser
 					.getCompletionInfoForNamespace(uri);
 				if(info != null)
 				{
+					Log.log(Log.DEBUG,XercesParserImpl.class,"using built-in completion info for "+uri);
 					data.setCompletionInfo(prefix,info);
 					return;
 				}
+				if(schemaAutoLoader != null 
+					&& schemaAutoLoader.getCompletionInfo() != null
+						&& schemaAutoLoader.getCompletionInfo().containsKey(uri))
+				{
+					info = schemaAutoLoader.getCompletionInfo().get(uri);
+					System.out.println("setting completionInfo for "+prefix+" : "+info.namespace+")");
+					data.setCompletionInfo(prefix,info);
+				}
 			}
-			// don't retrieve schema based on prefix mapping anymore.
-			// see endElement()
+			
+			
+			// don't retrieve schema based on prefix mapping anymore (for XSD).
+			// see endElement(), where we use the PSVI
+			// that's wrong because CompletionInfos are no more associated with
+			// prefixes
+			// TODO: test this assertion
+		} //}}}
+
+		//{{{ endPrefixMapping() method
+		public void endPrefixMapping(String prefix)
+		{
+			// moved everything to startPrefixMapping()
+			// then we get completion even if there is an error afterward
+			
 		} //}}}
 
 		//{{{ startElement() method
@@ -522,6 +649,22 @@ public class XercesParserImpl extends XmlParser
 			if(stopped)
 				throw new StoppedException();
 
+			if(root){
+				// root element : 
+				// retrieve no-namespace CompletionInfo
+				if(schemaAutoLoader != null 
+					&& schemaAutoLoader.getCompletionInfo() != null
+						&& schemaAutoLoader.getCompletionInfo().containsKey(""))
+				{
+					data.setCompletionInfo("",
+						schemaAutoLoader.getCompletionInfo().get(""));
+					// TODO: what about no-namespace ?
+				}
+				
+				// unset root flag
+				root = false;
+			}
+			
 			empty = true;
 
 			String currentURI = XmlPlugin.uriToFile(loc.getSystemId());
@@ -564,7 +707,7 @@ public class XercesParserImpl extends XmlParser
 				Position pos = buffer.createPosition(offset);
 
 				DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(
-					new XmlTag(qName,pos,attrs));
+					new XmlTag(qName,namespaceURI,pos,attrs));
 
 				if(!currentNodeStack.isEmpty())
 				{
@@ -796,6 +939,246 @@ public class XercesParserImpl extends XmlParser
 					return i;
 			}
 
+			return 0;
+		} //}}}
+
+		// {{{
+		/* (non-Javadoc)
+		 * @see org.xml.sax.ext.DefaultHandler2#resolveEntity(java.lang.String, java.lang.String)
+		 */
+		public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException
+		{
+			Log.log(Log.DEBUG,XercesParserImpl.class,"simple resolveEnt("+publicId+","+systemId+")");
+			return resolveEntity(null, publicId, null, systemId);
+		}// }}}
+	}// }}}
+
+	//{{{ FastHandler class
+	class FastHandler extends DefaultHandler2 implements DeclHandler, ErrorHandler
+	{
+	    // {{{ members
+		Buffer buffer;
+
+		XmlParsedData data;
+
+		HashMap<String, String> activePrefixes;
+		Stack<DefaultMutableTreeNode> currentNodeStack;
+		Locator loc;
+		boolean empty;
+		//used to retrieve the XSModel for a particular node
+		PSVIProvider psviProvider;
+		// }}}
+		// {{{ FastHandler constructor
+		FastHandler(Buffer buffer,XmlParsedData data)
+		{
+			this.buffer = buffer;
+			this.data = data;
+			this.activePrefixes = new HashMap<String, String>();
+			this.currentNodeStack = new Stack<DefaultMutableTreeNode>();
+		} // }}}
+
+		//{{{ setDocumentLocator() method
+		public void setDocumentLocator(Locator locator)
+		{
+			loc = locator;
+		} //}}}
+
+		//{{{ resolveEntity() method
+		/**
+		 * If you do this:
+		 * reader.setProperty("use-entity-resolver2", true)
+		 * Then this method should be called.
+		 */
+		public InputSource resolveEntity (String name, String publicId, String baseURI, String systemId)
+			throws SAXException, java.io.IOException {
+
+			Log.log(Log.DEBUG,this,"resolveEntity("+name+","+publicId+","+baseURI+","+systemId+")");
+
+			InputSource source = null;
+
+			try {
+				source = Resolver.instance().resolveEntity(name, publicId, baseURI, systemId);
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+
+			if(source == null)
+			{
+				Log.log(Log.DEBUG,this,"PUBLIC=" + publicId
+					+ ", SYSTEM=" + systemId
+					+ " cannot be resolved");
+				// TODO: not sure whether it's the best thing to do :
+				// it prints a cryptic "premature end of file"
+				// error message
+			}
+			else
+			{
+				Log.log(Log.DEBUG,this,"PUBLIC=" + publicId
+					+ ", SYSTEM=" + systemId
+					+ " resolved to " + source.getSystemId());
+			}
+			return source;
+		} //}}}
+
+		//{{{ startPrefixMapping() method
+		public void startPrefixMapping(String prefix, String uri)
+		{
+			activePrefixes.put(prefix,uri);
+		} //}}}
+
+		//{{{ endPrefixMapping() method
+		public void endPrefixMapping(String prefix)
+		{
+			String uri = (String)activePrefixes.get(prefix);
+		} //}}}
+
+		//{{{ startElement() method
+		public void startElement(String namespaceURI,
+			String lName, // local name
+			String qName, // qualified name
+			Attributes attrs) throws SAXException
+		{
+			if(stopped)
+				throw new StoppedException();
+			/*
+			empty = true;
+
+			String currentURI = XmlPlugin.uriToFile(loc.getSystemId());
+
+			// what do we do in this case?
+			if(loc.getLineNumber() == -1){
+				Log.log(Log.WARNING,XercesParserImpl.class,"no location for "+qName);
+				return;
+			}
+
+			if(!buffer.getPath().equals(currentURI))
+				return;
+
+			buffer.readLock();
+
+			try
+			{
+				int line = Math.min(buffer.getLineCount() - 1,
+					loc.getLineNumber() - 1);
+				int column = loc.getColumnNumber() - 1;
+				int offset = Math.min(text.length() - 1,
+					buffer.getLineStartOffset(line)
+					+ column - 1);
+
+				offset = findTagStart(offset);
+				Position pos = buffer.createPosition(offset);
+
+				DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(
+					new XmlTag(qName,namespaceURI,pos,attrs));
+
+				if(!currentNodeStack.isEmpty())
+				{
+					DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+						currentNodeStack.peek();
+
+					node.insert(newNode,node.getChildCount());
+				}
+				else
+					data.root.insert(newNode,0);
+
+				currentNodeStack.push(newNode);
+			}
+			finally
+			{
+				buffer.readUnlock();
+			}*/
+		} //}}}
+
+		//{{{ endElement() method
+		public void endElement(String namespaceURI,
+			String sName, // simple name
+			String qName  // qualified name
+			) throws SAXException
+		{
+			if(stopped)
+				throw new StoppedException();
+
+			/*
+			if(!buffer.getPath().equals(XmlPlugin.uriToFile(loc.getSystemId())))
+				return;
+
+			// what do we do in this case?
+			if(loc.getLineNumber() == -1)
+				return;
+
+			buffer.readLock();
+
+			try
+			{
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+					currentNodeStack.peek();
+				XmlTag tag = (XmlTag)node.getUserObject();
+				if(tag.getName().equals(qName))
+				{
+					int line = Math.min(buffer.getLineCount() - 1,
+						loc.getLineNumber() - 1);
+					int column = loc.getColumnNumber() - 1;
+					int offset = Math.min(buffer.getLength(),
+						buffer.getLineStartOffset(line)
+						+ column);
+
+					tag.setEnd(buffer.createPosition(offset));
+					tag.empty = empty;
+					currentNodeStack.pop();
+				}
+			}
+			finally
+			{
+				buffer.readUnlock();
+			}
+
+			empty = false;*/
+		} //}}}
+
+		//{{{ characters() method
+		public void characters (char ch[], int start, int length)
+			throws SAXException
+		{
+			if(stopped)
+				throw new StoppedException();
+
+			empty = false;
+		} //}}}
+
+		//{{{ error() method
+		public void error(SAXParseException spe)
+		{
+		} //}}}
+
+		//{{{ warning() method
+		public void warning(SAXParseException spe)
+		{
+		} //}}}
+
+		//{{{ fatalError() method
+		public void fatalError(SAXParseException spe)
+			throws SAXParseException
+		{
+/*			String systemId = spe.getSystemId();
+			if(systemId == null)
+				systemId = buffer.getPath();
+			addError(ErrorSource.ERROR,systemId,
+				Math.max(0,spe.getLineNumber()-1),
+				spe.getMessage());
+*/		} //}}}
+
+
+		//{{{ findTagStart() method
+		private int findTagStart(int offset)
+		{
+			/*for(int i = offset; i >= 0; i--)
+			{
+				if(text.charAt(i) == '<')
+					return i;
+			}
+			*/
 			return 0;
 		} //}}}
 

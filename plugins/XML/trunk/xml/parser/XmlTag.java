@@ -32,12 +32,14 @@ public class XmlTag extends Asset
 	public String attributeString;
 	public String idAttributeString;
 	public boolean empty;
+	public String namespace;
 	//}}}
 
 	//{{{ XmlTag constructor
-	public XmlTag(String name, Position start, Attributes attributes)
+	public XmlTag(String name,String namespace, Position start, Attributes attributes)
 	{
 		super(name);
+		this.namespace = name;
 		this.start = this.end = start;
 		this.attributes = new AttributesImpl(attributes);
 

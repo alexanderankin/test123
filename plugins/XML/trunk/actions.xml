@@ -96,5 +96,11 @@
             xml.XmlActions.generateDTD(view);
         </CODE>
     </ACTION>
+    <ACTION NAME="xml-open-schema">
+        <CODE>
+            xml.XmlActions.openSchema(view);
+        </CODE>
+    </ACTION>
+    
 </ACTIONS>
 

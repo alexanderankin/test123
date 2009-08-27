@@ -54,6 +54,9 @@ public final class SchemaMapping
 	/** mapping rules */
 	private List<Rule> rules;
 	
+	/** this schema mapping file's URI */
+	private String baseURI;
+	
 	/**
 	 * empty mapping
 	 */
@@ -61,6 +64,14 @@ public final class SchemaMapping
 	{
 		typeIds = new HashMap<String,String>();
 		rules = new ArrayList<Rule>();
+		baseURI = null;
+	}
+	
+	/**
+	 * @return this schema mapping's URL or null if it's totally in memory
+	 */
+	public String getBaseURI(){
+		return baseURI;
 	}
 	
 	/**
@@ -533,6 +544,8 @@ public final class SchemaMapping
 			verifierFilter.setErrorHandler(handler);
 			
 			reader.parse(input);
+			mapping.baseURI = url;
+
 		}
 		catch (SAXException e)
 		{
