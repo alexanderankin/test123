@@ -18,16 +18,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 package minimap;
 
-import java.awt.GraphicsEnvironment;
+import java.awt.*;
 
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JSlider;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.gui.ColorWellButton;
 
 @SuppressWarnings("serial")
 public class Options extends AbstractOptionPane {
@@ -39,6 +37,9 @@ public class Options extends AbstractOptionPane {
 	private static final String SCROLL_LABEL = "labels.minimap.scroll";
 	private static final String FOLD_LABEL = "labels.minimap.fold";
 	private static final String TIME_LABEL = "labels.minimap.time";
+	private static final String SQUARECOLOR_LABEL = "labels.minimap.squarecolor";
+	private static final String FILLSQUARE_LABEL = "labels.minimap.fillsquare";
+	private static final String ALPHASQUARE_LABEL = "labels.minimap.alpha";
 	private static final String AUTO_PROP = "options.minimap.auto";
 	private static final String FONT_PROP = "options.minimap.font";
 	private static final String SIZE_PROP = "options.minimap.size";
@@ -46,6 +47,9 @@ public class Options extends AbstractOptionPane {
 	private static final String SCROLL_PROP = "options.minimap.scroll";
 	private static final String FOLD_PROP = "options.minimap.fold";
 	private static final String TIME_PROP = "options.minimap.time";
+	private static final String SQUARECOLOR_PROP = "options.minimap.squarecolor";
+	private static final String FILLSQUARE_PROP = "options.minimap.fillsquare";
+	private static final String ALPHASQUARE_PROP = "options.minimap.alpha";
 	private JComboBox font;
 	private JTextField size;
 	private JCheckBox auto;
@@ -53,12 +57,18 @@ public class Options extends AbstractOptionPane {
 	private JCheckBox scroll;
 	private JCheckBox fold;
 	private JSlider time;
+	private ColorWellButton squareColor;
+	private JCheckBox squareFilled;
+	private JSlider alpha;
 	public static final String LEFT = "Left";
 	public static final String RIGHT = "Right";
 	private static final String[] SIDES = { LEFT, RIGHT };
 	
 	public Options() {
 		super("minimap");
+	}
+	
+	public void _init() {
 		setBorder(new EmptyBorder(5, 5, 5, 5));
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		String [] fonts = ge.getAvailableFontFamilyNames();
@@ -80,9 +90,15 @@ public class Options extends AbstractOptionPane {
 		time.setPaintLabels(true);
 		time.setPaintTicks(true);
 		addComponent(jEdit.getProperty(TIME_LABEL), time);
-	}
-	
-	public void _init() {
+		squareColor = new ColorWellButton(jEdit.getColorProperty(Options.SQUARECOLOR_PROP, Color.RED));
+		addComponent(new JLabel(jEdit.getProperty(SQUARECOLOR_LABEL)),squareColor);
+		squareFilled = new JCheckBox(jEdit.getProperty(FILLSQUARE_LABEL), jEdit.getBooleanProperty(FILLSQUARE_PROP));
+		addComponent(squareFilled);
+		addComponent(new JLabel(jEdit.getProperty(ALPHASQUARE_LABEL)),
+                 alpha = new JSlider(0,
+                               100,
+                               jEdit.getIntegerProperty(ALPHASQUARE_PROP, 50)));
+
 		font.setSelectedItem(getFontProp());
 		size.setText(String.valueOf(getSizeProp()));
 		auto.setSelected(getAutoProp());
@@ -90,6 +106,7 @@ public class Options extends AbstractOptionPane {
 		scroll.setSelected(getScrollProp());
 		fold.setSelected(getFoldProp());
 		time.setValue(getTimeProp());
+
 	}
 	public void _save() {
 		jEdit.setProperty(FONT_PROP, font.getSelectedItem().toString());
@@ -105,6 +122,9 @@ public class Options extends AbstractOptionPane {
 		jEdit.setBooleanProperty(SCROLL_PROP, scroll.isSelected());
 		jEdit.setBooleanProperty(FOLD_PROP, fold.isSelected());
 		jEdit.setIntegerProperty(TIME_PROP, time.getValue());
+		jEdit.setColorProperty(SQUARECOLOR_PROP, squareColor.getSelectedColor());
+		jEdit.setBooleanProperty(FILLSQUARE_PROP, squareFilled.isSelected());
+		jEdit.setIntegerProperty(ALPHASQUARE_PROP, alpha.getValue());
 	}
 	
 	public static String getFontProp() {
@@ -131,5 +151,17 @@ public class Options extends AbstractOptionPane {
 	}
 	public static int getTimeProp() {
 		return jEdit.getIntegerProperty(TIME_PROP, 500);
+	}
+
+	public static Color getSquareColor() {
+		return jEdit.getColorProperty(SQUARECOLOR_PROP, Color.RED);
+	}
+
+	public static boolean isSquareFilled() {
+		return jEdit.getBooleanProperty(FILLSQUARE_PROP);
+	}
+
+	public static float getAlpha() {
+		return ((float)jEdit.getIntegerProperty(Options.ALPHASQUARE_PROP, 50)) / 100f;
 	}
 }
