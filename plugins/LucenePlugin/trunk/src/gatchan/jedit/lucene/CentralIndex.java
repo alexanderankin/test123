@@ -23,6 +23,7 @@ package gatchan.jedit.lucene;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.*;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBComponent;
@@ -58,16 +59,21 @@ public class CentralIndex extends AbstractIndex implements EBComponent
 	{
 		if (message instanceof BufferUpdate)
 		{
-			final BufferUpdate bufferUpdate = (BufferUpdate) message;
-			if (bufferUpdate.getWhat() == BufferUpdate.SAVED)
+			// test if the central index exists. If it doesnt exists, no need to start working
+			// it is possible that it doesn't exists if the plugin is just installed an no index has been created yet
+			if (IndexReader.indexExists(path))
 			{
-				VFSManager.runInWorkThread(new Runnable()
+				final BufferUpdate bufferUpdate = (BufferUpdate) message;
+				if (bufferUpdate.getWhat() == BufferUpdate.SAVED)
 				{
-					public void run()
+					VFSManager.runInWorkThread(new Runnable()
 					{
-						fileUpdated(bufferUpdate.getBuffer());
-					}
-				});
+						public void run()
+						{
+							fileUpdated(bufferUpdate.getBuffer());
+						}
+					});
+				}
 			}
 		}
 	}
@@ -158,7 +164,7 @@ public class CentralIndex extends AbstractIndex implements EBComponent
 		}
 		catch (IOException e)
 		{
-			e.printStackTrace();
+			Log.log(Log.ERROR, this, e);
 		}
 		finally
 		{
