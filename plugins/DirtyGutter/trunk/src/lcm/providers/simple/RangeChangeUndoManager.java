@@ -31,6 +31,9 @@ public class RangeChangeUndoManager
 	private BufferChangedLines bcl;
 	// Last undo id - for merging RangeChange objects of the same undo
 	private Object lastUndoId = null;
+	// First node where recording was done backwards - need to negate
+	private RangeChange reverseNode = null;
+	private boolean reverseMode = false;
 
 	public RangeChangeUndoManager(BufferChangedLines bcl)
 	{
@@ -81,7 +84,12 @@ public class RangeChangeUndoManager
 	{
 		if (head == listStart)	// Nothing to undo
 			return;
-		head.undo();
+		if (head == reverseNode)
+			reverseMode = (! reverseMode);
+		if (! reverseMode)
+			head.undo();
+		else
+			head.redo();
 		head = head.prev;
 	}
 	
@@ -89,8 +97,13 @@ public class RangeChangeUndoManager
 	{
 		if (head.next == null)	// Nothing to redo
 			return;
+		if (head == reverseNode)
+			reverseMode = (! reverseMode);
 		head = head.next;
-		head.redo();
+		if (! reverseMode)
+			head.redo();
+		else
+			head.undo();
 	}
 
 	// Reverse the undo list
@@ -98,6 +111,7 @@ public class RangeChangeUndoManager
 	{
 		RangeChange prev = null;
 		RangeChange cur = listStart.next;
+		reverseNode = cur;
 		RangeChange next;
 		while (cur != null)
 		{

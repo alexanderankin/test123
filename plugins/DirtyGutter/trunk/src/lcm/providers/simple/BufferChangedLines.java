@@ -161,6 +161,8 @@ public class BufferChangedLines extends BufferAdapter
 				buffer.redo(ta);
 				listSize++;
 			}
+			// Clear the dirty line state, we're now in non-dirty state.
+			bufferSaved(buffer);
 		}
 		// Build forward undo information, count steps
 		recordUndo = true;
