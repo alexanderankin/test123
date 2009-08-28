@@ -33,10 +33,7 @@ import java.util.Map;
 import javax.swing.JScrollBar;
 import javax.swing.event.MouseInputAdapter;
 
-import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EditBus;
-import org.gjt.sp.jedit.EditPane;
+import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
@@ -65,6 +62,10 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 	private Point dragStart;
 	private int firstPhysicalLineDragStart;
 	private int _firstPhysicalLineDragStart;
+	private Color squarecolor;
+	private boolean fillsquare;
+	private float alpha;
+	private AlphaComposite blend;
 
 	//{{{ MinimapTextArea constructor
 	public MinimapTextArea(JEditTextArea textArea) {
@@ -80,6 +81,10 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		getPainter().setCursor(
 			Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		lastFoldProp = Options.getFoldProp();
+		squarecolor = Options.getSquareColor();
+		fillsquare = Options.isSquareFilled();
+		alpha = Options.getAlpha();
+		blend = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
 	} //}}}
 
 	//{{{ setFirstPhysicalLine() method
@@ -204,8 +209,19 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		int height = textArea.getVisibleLines() * h - 1;
 
 		Color c = g.getColor();
-		g.setColor(Color.RED);
-		g.drawRect(0, y, width, height);
+		g.setColor(squarecolor);
+		if (fillsquare)
+		{
+			Graphics2D gfx = (Graphics2D) g;
+			Composite oldComposite = gfx.getComposite();
+			gfx.setComposite(blend);
+			g.fillRect(0, y, width, height);
+			gfx.setComposite(oldComposite);
+		}
+		else
+		{
+			g.drawRect(0, y, width, height);
+		}
 		g.setColor(c);
 	} //}}}
 
@@ -224,6 +240,10 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 			 ((message instanceof BufferUpdate) &&
 			  (((BufferUpdate) message).getWhat() == BufferUpdate.PROPERTIES_CHANGED))) {
 			EditPane.initPainter(getPainter());
+			squarecolor = Options.getSquareColor();
+			fillsquare = Options.isSquareFilled();
+			alpha = Options.getAlpha();
+			blend = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
 			setMapFont();
 			boolean foldProp = Options.getFoldProp();
 			if (foldProp != lastFoldProp) {
