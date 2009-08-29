@@ -19,13 +19,13 @@ plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.description=It's 
 
 # TextAutocomplete's MENU (ACTIONS)
 plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.menu = \
-  textautocomplete-buffer-attach \
-  textautocomplete-buffer-detach - \
+  textautocomplete-buffer-attach 	 	\
+  textautocomplete-buffer-detach - 		\
+  textautocomplete-attach2all        	\
+  textautocomplete-detach_from_all -	\
+  textautocomplete-show_words			\
   textautocomplete-buffer-parse         \
-  textautocomplete-buffer-forget_all_words \
-  textautocomplete-show_words -        \
-  textautocomplete-attach2all        \
-  textautocomplete-detach_from_all
+  textautocomplete-buffer-forget_all_words
 # Actions - labels
 textautocomplete-buffer-attach.label=Start for buffer
 textautocomplete-buffer-detach.label=Stop for buffer
