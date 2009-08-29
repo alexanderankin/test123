@@ -208,7 +208,7 @@ public class CompletionInfo
 			{
 				XMLReader parser = new org.apache.xerces.parsers.SAXParser();
 				parser.setFeature("http://apache.org/xml/features/validation/dynamic",true);
-				//parser.setFeature("http://xml.org/sax/features/use-entity-resolver2", true);
+				parser.setFeature("http://xml.org/sax/features/use-entity-resolver2", true);
 				parser.setErrorHandler(handler);
 				parser.setEntityResolver(handler);
 				parser.setContentHandler(handler);
