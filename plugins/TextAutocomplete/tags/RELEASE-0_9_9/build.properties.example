@@ -1,0 +1,12 @@
+# ADDED BY JAKUB HOLY
+compiler.debug=true
+
+# jEdit installation information
+jedit.user.home=${user.home}/.jedit
+jedit.jars.dir=${jedit.user.home}/jars
+
+#jedit.install.dir=/usr/share/jedit/recent
+jedit.install.dir=${user.home}/programy/jedit/4.3pre2
+
+# Where to put the resulting jar (target 'build')
+install.dir=..
