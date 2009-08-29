@@ -27,7 +27,7 @@ messages.LCMPlugin.diff.removeColor=Removed content marker color:
 messages.LCMPlugin.diff.changeColor=Changed content marker color:
 
 # docs
-plugin.lcm.LCMPlugin.docs=description.html
+plugin.lcm.LCMPlugin.docs=index.html
 
 # misc
 #updater.downloadPage=http://jedit.org/index.php?page=download
