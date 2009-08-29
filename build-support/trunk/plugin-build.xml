@@ -336,7 +336,7 @@
          property "dist.target" to build the plugin and
          package it for distribution. Before proceeding,
          it cleans the build directory.                     -->
-    <target name="dist" depends="clean" description="Builds JAR file, with docs">
+    <target name="dist" depends="clean, build" description="Builds JAR file, with docs">
         <antcall target="${dist.target}" />
     </target>
     <!-- =============================================== }}} -->
