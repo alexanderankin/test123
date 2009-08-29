@@ -20,7 +20,7 @@ plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.description=It's 
 # TextAutocomplete's MENU (ACTIONS)
 plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.menu = \
   textautocomplete-buffer-attach \
-  textautocomplete-buffer-detach \
+  textautocomplete-buffer-detach - \
   textautocomplete-buffer-parse         \
   textautocomplete-buffer-forget_all_words \
   textautocomplete-show_words -        \
