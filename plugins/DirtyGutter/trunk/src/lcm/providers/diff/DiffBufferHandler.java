@@ -20,8 +20,10 @@
 package lcm.providers.diff;
 
 import java.awt.Color;
+import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.Vector;
+import java.util.Map.Entry;
 
 import jdiff.util.Diff;
 import jdiff.util.Diff.Change;
@@ -41,6 +43,8 @@ public class DiffBufferHandler extends BufferAdapter implements BufferHandler
 	private Buffer buffer;
 	private TreeMap<Range, Range> ranges;
 	private Vector<Integer> removedRanges;
+	private HashMap<Integer, String> changedLines;
+	private TreeMap<Integer, Integer> movedLines;
 	private ColoredRectWithStripsPainter painter;
 
 	public DiffBufferHandler(Buffer buffer)
@@ -48,6 +52,8 @@ public class DiffBufferHandler extends BufferAdapter implements BufferHandler
 		this.buffer = buffer;
 		ranges = new TreeMap<Range, Range>();
 		removedRanges = new Vector<Integer>();
+		changedLines = new HashMap<Integer, String>();
+		movedLines = new TreeMap<Integer, Integer>();
 		painter = new ColoredRectWithStripsPainter();
 	}
 
@@ -79,8 +85,7 @@ public class DiffBufferHandler extends BufferAdapter implements BufferHandler
 
 	private void doDiff()
 	{
-		ranges.clear();
-		removedRanges.clear();
+		clearAllMarks();
 		int nBuffer = buffer.getLineCount();
 		String [] bufferLines = new String[nBuffer];
 		for (int i = 0; i < nBuffer; i++)
@@ -104,26 +109,46 @@ public class DiffBufferHandler extends BufferAdapter implements BufferHandler
 				Range range = new Range(edit.first1, edit.lines1, type);
 				ranges.put(range, range);
 			}
+			movedLines.put(Integer.valueOf(edit.first1),
+					Integer.valueOf(edit.first0));
 		}
 	}
 
 	public void addLine(int startLine, ChangeType change)
 	{
-		Range r = new Range(startLine, 1, change);
-		Range current = ranges.get(r);
-		if (current == null)
+		Integer line = Integer.valueOf(startLine);
+		String prev = changedLines.get(line);
+		String current = buffer.getLineText(startLine);
+		if (prev == null)
 		{
-			ranges.put(r, r);
-			return;
+			String [] fileLines = LCMPlugin.getInstance().readFile(buffer.getPath());
+			if (fileLines == null)
+				return;
+			Entry<Integer, Integer> movedLine = movedLines.ceilingEntry(line);
+			int origLine = startLine;
+			if (movedLine != null)
+				origLine = movedLine.getValue().intValue() +
+					(startLine - movedLine.getKey().intValue());
+			prev = fileLines[origLine];
+			changedLines.put(line, prev);
 		}
-		if (current.type != change)
-			current.type = ChangeType.CHANGED;
+		ChangeType c = (! prev.equals(current)) ? ChangeType.CHANGED :
+			ChangeType.NONE; 
+		Range range = new Range(startLine, 1, c);
+		ranges.put(range, range);
+	}
+
+	private void clearAllMarks()
+	{
+		ranges.clear();
+		removedRanges.clear();
+		changedLines.clear();
+		movedLines.clear();
 	}
 
 	public void bufferSaved(Buffer buffer)
 	{
-		ranges.clear();
-		removedRanges.clear();
+		clearAllMarks();
 	}
 
 	public DirtyMarkPainter getDirtyMarkPainter(Buffer buffer, int physicalLine)
