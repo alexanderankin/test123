@@ -1,0 +1,15 @@
+plugin.treebufferswitcher.TreeBufferSwitcherPlugin.activate=startup
+
+plugin.treebufferswitcher.TreeBufferSwitcherPlugin.name=TreeBufferSwitcher
+plugin.treebufferswitcher.TreeBufferSwitcherPlugin.author=Denis Dzenskevich
+plugin.treebufferswitcher.TreeBufferSwitcherPlugin.version=0.1
+plugin.treebufferswitcher.TreeBufferSwitcherPlugin.docs=index.html
+plugin.treebufferswitcher.TreeBufferSwitcherPlugin.depend.0=jdk 1.6
+plugin.treebufferswitcher.TreeBufferSwitcherPlugin.depend.1=jedit 04.03.18.00
+plugin.treebufferswitcher.TreeBufferSwitcherPlugin.description=Hierarchical buffer switcher with some additional options
+
+### options
+#treebufferswitcher.xxx=yyyy
+
+### actions
+treebufferswitcher.focusbufferswitcher.label=Focus Tree Buffer Switcher
