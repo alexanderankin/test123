@@ -39,12 +39,13 @@ always considered as "changed". Hence, after running a 'diff', any other type
 of marker in modified lines will be replaced with a "changed" marker.
 </ul>
 <br>
-<br>
-In addition, the plugin provides a service through which other plugins such as
-SCM plugins can contribute dirty line providers, e.g.:
-	<SERVICE CLASS="lcm.DirtyLineProvider" NAME="Simple">
-		new lcm.providers.simple.SimpleDirtyLineProvider();
-	</SERVICE>
+In addition, the plugin provides a service for other plugins (e.g. SCM plugins)
+to contribute dirty line providers, e.g.:<br>
+<code>
+	&nbsp;&nbsp;&lt;SERVICE CLASS="lcm.DirtyLineProvider" NAME="Simple"&gt;<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;new lcm.providers.simple.SimpleDirtyLineProvider();<br>
+	&nbsp;&nbsp;&lt;/SERVICE&gt;<br>
+</code>
 
 <a name="feedback">
 <h2>Feedback</h2>
