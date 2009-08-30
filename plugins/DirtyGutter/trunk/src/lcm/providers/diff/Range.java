@@ -24,7 +24,7 @@ package lcm.providers.diff;
 public class Range implements Comparable
 {
 	public int first, last;
-	enum ChangeType { ADDED, REMOVED, CHANGED };
+	enum ChangeType { ADDED, REMOVED, CHANGED, NONE };
 	ChangeType type;
 
 	public Range(int first, int num)
