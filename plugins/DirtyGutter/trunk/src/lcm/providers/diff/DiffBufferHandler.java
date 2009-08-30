@@ -68,6 +68,8 @@ public class DiffBufferHandler extends BufferAdapter implements BufferHandler
 	private void handleContentChange(int startLine, int numLines,
 		ChangeType change)
 	{
+		if (buffer.isUntitled())
+			return;
 		if (numLines == 0)
 			addLine(startLine, change);
 		else
