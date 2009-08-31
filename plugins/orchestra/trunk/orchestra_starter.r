@@ -30,7 +30,7 @@ args <- commandArgs( )
 thisfile <- sub( "--file=", "", grep( "^--file", args, value = TRUE )[1] )
 propfile <- file.path( dirname( thisfile ), "orchestra_properties.txt" )
 if( !file.exists( propfile ) ){
-	stop( "the roperty file does not exist" ) 
+	stop( "the property file does not exist" ) 
 }
 rl    <- readLines( propfile )
 if( any( grepl( "@", rl ) ) ){
@@ -60,7 +60,7 @@ JEDIT_RLIBS <- file.path( PLUGIN_HOME, "library" )
 R_LIBS <- if( R_LIBS == "" ){
 	JEDIT_RLIBS
 } else{
-	paste( R_LIBS, JEDIT_RLIBS, sep = SEP )
+	paste( JEDIT_RLIBS, R_LIBS, sep = SEP )
 }
 Sys.setenv( R_LIBS = R_LIBS )
 # }}}
