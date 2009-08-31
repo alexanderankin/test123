@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
+@SuppressWarnings("serial")
 public class FinishedDialog extends JDialog implements ActionListener {
     public FinishedDialog(File shortCutDir, File startScript) {
         super(jEdit.getActiveView());
