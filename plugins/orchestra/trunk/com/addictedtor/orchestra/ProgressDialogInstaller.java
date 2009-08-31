@@ -5,6 +5,7 @@ import org.af.commons.threading.ProgressDialog;
 import javax.swing.*;
 import java.awt.*;
 
+@SuppressWarnings("serial")
 public class ProgressDialogInstaller extends ProgressDialog<Void, String> {
 
     private ProgressDialogInstaller(Dialog parent, Installer i) {

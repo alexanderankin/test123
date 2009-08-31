@@ -191,6 +191,9 @@ public class Installer extends SafeSwingWorker<Void, String> {
         if (forcePackInstall || rp == null) {
             logAndPublish("Trying to install from CRAN.");
             try {
+            	if( ! rlibsDir.exists() ){
+            		rlibsDir.mkdirs() ;
+            	}
                 rCmdBatch.installCranPackage("orchestra", rlibsDir);
                 setProgress(40);
             } catch (CantFindPackageException e) {
