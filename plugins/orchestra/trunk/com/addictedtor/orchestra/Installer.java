@@ -103,14 +103,7 @@ public class Installer extends SafeSwingWorker<Void, String> {
             properties = properties.replace("@JAVA_EXE@", javaExeStr);
             properties = properties.replace("@JEDIT_HOME@", jeditStr);
             properties = properties.replace("@PLUGIN_HOME@", pluginHomeStr);
-            
-            if( !rlibsDir.exists() ){
-            	logger.info( "creating R library in plugin home: '" + pluginHomeStr + "/library" ) ;
-            	rlibsDir.mkdirs();
-            } else{
-            	// maybe check that the this actually is a library
-            }
-            
+
             writer.write(properties);
             writer.close();
         } catch (IOException e) {
@@ -191,7 +184,8 @@ public class Installer extends SafeSwingWorker<Void, String> {
         if (forcePackInstall || rp == null) {
             logAndPublish("Trying to install from CRAN.");
             try {
-            	if( ! rlibsDir.exists() ){
+            	if(!rlibsDir.exists()){
+                    logAndPublish("Creating dir for orchestra R packages: " + rlibsDir);
             		rlibsDir.mkdirs() ;
             	}
                 rCmdBatch.installCranPackage("orchestra", rlibsDir);
