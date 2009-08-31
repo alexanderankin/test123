@@ -45,12 +45,15 @@
     <property name="src.dir" value="."/>
     <property name="install.dir" value=".."/>
     <property name="build.dir" value="build"/>
+    <property name="jedit.plugins.dir" value="${install.dir}" />
+    <property name="compiler.source" value="1.5" />
+    <property name="compiler.target" value="1.5" />
 	
     <path id="project.class.path">
         <pathelement location="${jedit.install.dir}/jedit.jar"/>
         <pathelement location="${src.dir}"/>
-        <pathelement location="${install.dir}/ProjectViewer.jar"/>
-        <pathelement location="${install.dir}/CommonControls.jar"/>
+        <pathelement location="${jedit.plugins.dir}/ProjectViewer.jar"/>
+        <pathelement location="${jedit.plugins.dir}/CommonControls.jar"/>
     </path>
 
     <condition property="can.reload.plugins">
