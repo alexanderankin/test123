@@ -4,9 +4,6 @@ import java.awt.event.ActionEvent;
 import java.util.Collection;
 import java.util.Vector;
 
-import javax.swing.JOptionPane;
-
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSFile;
 
 import projectviewer.action.Action;

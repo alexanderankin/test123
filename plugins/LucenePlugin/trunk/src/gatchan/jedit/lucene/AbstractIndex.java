@@ -20,7 +20,6 @@
  */
 package gatchan.jedit.lucene;
 
-import lucene.SourceCodeAnalyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
