@@ -258,6 +258,10 @@ public class IndexManagement extends AbstractOptionPane
 					Index index = LucenePlugin.instance.getIndex(indexName);
 					index.reindex();
 					Log.log(Log.NOTICE, this, "Reindex " + indexName + " DONE");
+					Log.log(Log.NOTICE, this, "Optimize Central Index");
+					LucenePlugin.instance.CENTRAL.optimize();
+					LucenePlugin.instance.CENTRAL.commit();
+					Log.log(Log.NOTICE, this, "Optimize Central Index DONE");
 				}
 				finally
 				{
