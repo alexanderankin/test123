@@ -28,6 +28,7 @@
     <property name="build.dir" value="build"/>
     <property name="install.dir"  value="../"/>
     <property name="jedit.plugins.dir" value="${install.dir}" />
+    <property name="lib.dir" value="lib" />
 
 
     <import file="${build.support}/plugin-build.xml" />
@@ -57,11 +58,11 @@
 
     <path  id="project.class.path">
         <pathelement location="${ant.home}/lib/ant.jar" />
-        <pathelement location="${install.dir}/isorelax-jaxp-bridge-1.0.jar"/>
-        <pathelement location="${install.dir}/isorelax.jar"/>
-        <pathelement location="${install.dir}/jing.jar"/>
-        <pathelement location="${install.dir}/trang.jar"/>
-        <pathelement location="${install.dir}/relaxngDatatype.jar"/>
+        <pathelement location="${lib.dir}/isorelax-jaxp-bridge-1.0.jar"/>
+        <pathelement location="${lib.dir}/isorelax.jar"/>
+        <pathelement location="${lib.dir}/jing.jar"/>
+        <pathelement location="${lib.dir}/trang.jar"/>
+        <pathelement location="${lib.dir}/relaxngDatatype.jar"/>
         <pathelement location="${jedit.install.dir}/jedit.jar"/>
         <pathelement location="${jedit.plugins.dir}/Beauty.jar"/>
         <pathelement location="${jedit.plugins.dir}/ErrorList.jar"/>
