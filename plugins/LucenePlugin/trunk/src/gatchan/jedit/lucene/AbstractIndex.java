@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -60,17 +61,21 @@ public class AbstractIndex
 
 	public void close()
 	{
+		Log.log(Log.DEBUG, this, "close()");
 		closeWriter();
 		Set<IndexReader> readerSet = readerMap.keySet();
-		for (IndexReader indexReader : readerSet)
+		Iterator<IndexReader> it = readerSet.iterator();
+		while (it.hasNext())
 		{
+			IndexReader indexReader = it.next();
 			try
 			{
 				indexReader.close();
+				it.remove();
 			}
 			catch (IOException e)
 			{
-				e.printStackTrace();
+				Log.log(Log.ERROR, this, "Unable to close reader", e);
 			}
 		}
 		if (reader != null)
@@ -78,11 +83,16 @@ public class AbstractIndex
 			try
 			{
 				reader.close();
+				reader = null;
 			}
 			catch (IOException e)
 			{
 				Log.log(Log.ERROR, this, "Unable to close reader", e);
 			}
+		}
+		if (!readerMap.isEmpty() || reader != null)
+		{
+			Log.log(Log.DEBUG, this, "The index was not closed");
 		}
 	}
 
