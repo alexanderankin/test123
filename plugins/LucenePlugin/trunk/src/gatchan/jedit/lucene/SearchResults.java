@@ -25,6 +25,7 @@ import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.StandardUtilities;
+import org.gjt.sp.util.Log;
 
 @SuppressWarnings("serial")
 public class SearchResults extends JPanel implements EBComponent
@@ -32,6 +33,7 @@ public class SearchResults extends JPanel implements EBComponent
 	private static final String MESSAGE_IDLE = "";
 	private static final String MESSAGE_INDEXING = "Indexing";
 	private JTextField searchField;
+	private JTextField type;
 	private JPanel mainPanel;
 	private JList list;
 	private JCheckBox lineResults;
@@ -48,7 +50,7 @@ public class SearchResults extends JPanel implements EBComponent
 		super(new BorderLayout());
 		
 		lineResults = new JCheckBox("Line-based results");
-		
+		type = new JTextField(6);
 		maxResults = new JSpinner(new SpinnerNumberModel(100, 1, 10000, 1));
 		JPanel maxPanel = new JPanel(new BorderLayout());
 		maxPanel.add(BorderLayout.WEST, new JLabel("Max results:"));
@@ -89,15 +91,13 @@ public class SearchResults extends JPanel implements EBComponent
 		add(panel, BorderLayout.NORTH);
 		panel.add(new JLabel("Search for:"), BorderLayout.WEST);
 		searchField = new JTextField(40);
-		searchField.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
-			{
-				search(searchField.getText());
-			}
-		});
+		MyActionListener actionListener = new MyActionListener();
+		searchField.addActionListener(actionListener);
+		type.addActionListener(actionListener);
 
 		JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
+		optionsPanel.add(new JLabel("file type:"));
+		optionsPanel.add(type);
 		optionsPanel.add(lineResults);
 		optionsPanel.add(maxPanel);
 		optionsPanel.add(indexes);
@@ -146,6 +146,7 @@ public class SearchResults extends JPanel implements EBComponent
 
 	public void search(String text)
 	{
+		Log.log(Log.NOTICE, this, "Search for " + text);
 		Index index = getSelectedIndex();
 		if (index == null)
 			return;
@@ -300,6 +301,20 @@ public class SearchResults extends JPanel implements EBComponent
 						MarkerSetsPlugin.toggleMarker(marker);
 				}
 			});
+		}
+	}
+
+	private class MyActionListener implements ActionListener
+	{
+		public void actionPerformed(ActionEvent e)
+		{
+			String search = searchField.getText().trim();
+			String fileType = type.getText().trim();
+			if (fileType.length() != 0)
+			{
+				search += " +filetype:" + fileType;
+			}
+			search(search);
 		}
 	}
 }
