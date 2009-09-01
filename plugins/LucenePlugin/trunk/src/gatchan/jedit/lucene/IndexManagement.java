@@ -21,7 +21,9 @@
 package gatchan.jedit.lucene;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
+import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.WorkRequest;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -185,12 +187,8 @@ public class IndexManagement extends AbstractOptionPane
 			{
 				if (e.getSource() == optimize)
 				{
-					Log.log(Log.NOTICE, this, "Optimize " + indexName + " asked");
-					Index index = LucenePlugin.instance.getIndex(indexName);
-					index.optimize();
-					index.commit();
-					optimize.setEnabled(false);
-					Log.log(Log.NOTICE, this, "Optimize " + indexName + " DONE");
+					OptimizeWorkRequest wr = new OptimizeWorkRequest(indexName);
+					VFSManager.runInWorkThread(wr);
 				}
 				else if (e.getSource() == delete)
 				{
@@ -201,10 +199,70 @@ public class IndexManagement extends AbstractOptionPane
 				}
 				else if (e.getSource() == reindex)
 				{
+					ReindexWorkRequest wr = new ReindexWorkRequest(indexName);
+					VFSManager.runInWorkThread(wr);
+				}
+			}
+		}
+
+		private class OptimizeWorkRequest extends WorkRequest
+		{
+			private final String indexName;
+
+			private OptimizeWorkRequest(String indexName)
+			{
+				this.indexName = indexName;
+			}
+
+			public void run()
+			{
+				indexList.setEnabled(false);
+				optimize.setEnabled(false);
+				reindex.setEnabled(false);
+				delete.setEnabled(false);
+				try
+				{
+
+					Log.log(Log.NOTICE, this, "Optimize " + indexName + " asked");
+					Index index = LucenePlugin.instance.getIndex(indexName);
+					index.optimize();
+					index.commit();
+					Log.log(Log.NOTICE, this, "Optimize " + indexName + " DONE");
+				}
+				finally
+				{
+					setIndex(indexName);
+					indexList.setEnabled(true);
+				}
+			}
+		}
+
+		private class ReindexWorkRequest extends WorkRequest
+		{
+			private final String indexName;
+
+			private ReindexWorkRequest(String indexName)
+			{
+				this.indexName = indexName;
+			}
+
+			public void run()
+			{
+				indexList.setEnabled(false);
+				optimize.setEnabled(false);
+				reindex.setEnabled(false);
+				delete.setEnabled(false);
+				try
+				{
 					Log.log(Log.NOTICE, this, "Reindex " + indexName + " asked");
 					Index index = LucenePlugin.instance.getIndex(indexName);
 					index.reindex();
 					Log.log(Log.NOTICE, this, "Reindex " + indexName + " DONE");
+				}
+				finally
+				{
+					setIndex(indexName);
+					indexList.setEnabled(true);
 				}
 			}
 		}
