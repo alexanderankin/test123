@@ -136,6 +136,17 @@ public class LucenePlugin extends EditPlugin
 		CENTRAL.close();
 		CENTRAL = null;
 		instance = null;
+		closeAllIndexes();
+		indexMap.clear();
+	}
+
+	/**
+	 * Close all opened indexes.
+	 * This release memory
+	 */
+	public void closeAllIndexes()
+	{
+		Log.log(Log.DEBUG, this, "closeAllIndexes");
 		Collection<Index> indexCollection = indexMap.values();
 		for (Index index : indexCollection)
 		{
