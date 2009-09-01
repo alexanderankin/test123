@@ -149,8 +149,22 @@ public class AbstractIndex
 				IndexReader reader = this.reader.reopen();
 				if (reader != this.reader)
 				{
+					IndexReader oldReader = this.reader;
 					readerMap.put(reader, 0);
 					this.reader = reader;
+					int count = readerMap.get(oldReader);
+					if (count == 0)
+					{
+						try
+						{
+							readerMap.remove(oldReader);
+							oldReader.close();
+						}
+						catch (IOException e)
+						{
+							Log.log(Log.ERROR, "Error while closing the previous reader", e);
+						}
+					}
 				}
 			}
 			catch (IOException e)
