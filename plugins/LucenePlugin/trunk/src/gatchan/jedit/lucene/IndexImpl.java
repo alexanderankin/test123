@@ -198,7 +198,10 @@ public class IndexImpl extends AbstractIndex implements Index
 		Log.log(Log.DEBUG,this, "reindex()");
 		openWriter();
 		if (writer == null)
+		{
+			Log.log(Log.ERROR, this, "Unable to open writer to reindex");
 			return;
+		}
 		List<String> allDocuments = LucenePlugin.CENTRAL.getAllDocuments(name);
 		for (String path : allDocuments)
 		{
@@ -233,11 +236,11 @@ public class IndexImpl extends AbstractIndex implements Index
 		}
 		catch (ParseException e)
 		{
-			e.printStackTrace();
+			Log.log(Log.ERROR, this, e, e);
 		}
 		catch (IOException e)
 		{
-			e.printStackTrace();
+			Log.log(Log.ERROR, this, e, e);
 		}
 		finally
 		{
@@ -247,7 +250,7 @@ public class IndexImpl extends AbstractIndex implements Index
 			}
 			catch (IOException e)
 			{
-				e.printStackTrace();
+				Log.log(Log.ERROR, this, "Error while closing searcher", e);
 			}
 		}
 	}
