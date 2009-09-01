@@ -3,7 +3,6 @@ package gatchan.jedit.lucene;
 import java.util.HashMap;
 import java.util.Map;
 
-import lucene.SourceCodeAnalyzer;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.KeywordAnalyzer;

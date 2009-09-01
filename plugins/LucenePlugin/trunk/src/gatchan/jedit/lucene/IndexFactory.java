@@ -7,7 +7,8 @@ import java.lang.reflect.Constructor;
 
 public class IndexFactory
 {
-	private static HashMap<String, Class> indexes = new HashMap<String, Class>();
+	private static HashMap<String, Class<? extends Index>> indexes =
+		new HashMap<String, Class<? extends Index>>();
 
 	static
 	{
@@ -18,7 +19,7 @@ public class IndexFactory
 	// Returns the type name of the given index
 	public static String getType(Index index)
 	{
-		Class c = index.getClass();
+		Class<? extends Index> c = index.getClass();
 		for (String type : indexes.keySet())
 		{
 			if (indexes.get(type) == c)
@@ -27,7 +28,7 @@ public class IndexFactory
 		return null;
 	}
 
-	public static void register(String name, Class cls)
+	public static void register(String name, Class<? extends Index> cls)
 	{
 		indexes.put(name, cls);
 	}
@@ -41,13 +42,13 @@ public class IndexFactory
 
 	public static Index createIndex(String type, String name, File path)
 	{
-		Class c = indexes.get(type);
+		Class<? extends Index> c = indexes.get(type);
 		if (c == null)
 			return null;
 		Index index = null;
 		try
 		{
-			Constructor constructor = c.getConstructor(String.class, File.class);
+			Constructor<? extends Index> constructor = c.getConstructor(String.class, File.class);
 			index = (Index) constructor.newInstance(name, path);
 		}
 		catch (Exception e)
