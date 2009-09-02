@@ -163,10 +163,15 @@ public class SearchResults extends JPanel implements EBComponent
 		{
 			SourceLinkParentNode parent = tree.addSourceLinkParent(
 				new SearchRootNode(text));
+			FileMarker prev = null;
 			for (Object o: files)
 			{
 				FileMarker marker = (FileMarker) o;
-				parent.addSourceLink(marker);
+				if (! marker.equals(prev))
+				{
+					parent.addSourceLink(marker);
+					prev = marker;
+				}
 			}
 			((CardLayout) mainPanel.getLayout()).show(mainPanel, "tree");
 		}
