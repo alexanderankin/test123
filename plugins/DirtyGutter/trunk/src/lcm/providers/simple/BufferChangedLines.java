@@ -371,6 +371,7 @@ public class BufferChangedLines extends BufferAdapter
 	public void bufferSaved(Buffer buffer)
 	{
 		ranges.clear();
+		undoManager.setCleanState();
 	}
 
 	public DirtyMarkPainter getDirtyMarkPainter(Buffer buffer, int physicalLine)

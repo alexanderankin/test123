@@ -85,7 +85,7 @@ public class RangeChangeUndoManager
 		if (head == listStart)	// Nothing to undo
 			return;
 		if (head == reverseNode)
-			reverseMode = (! reverseMode);
+			reverseMode = true;
 		if (! reverseMode)
 			head.undo();
 		else
@@ -97,13 +97,19 @@ public class RangeChangeUndoManager
 	{
 		if (head.next == null)	// Nothing to redo
 			return;
-		if (head == reverseNode)
-			reverseMode = (! reverseMode);
 		head = head.next;
 		if (! reverseMode)
 			head.redo();
 		else
 			head.undo();
+		if (head == reverseNode)
+			reverseMode = false;
+	}
+
+	// Specify that the current position in the undo list is the clean state
+	public void setCleanState()
+	{
+		reverseNode = head;
 	}
 
 	// Reverse the undo list
@@ -111,7 +117,6 @@ public class RangeChangeUndoManager
 	{
 		RangeChange prev = null;
 		RangeChange cur = listStart.next;
-		reverseNode = cur;
 		RangeChange next;
 		while (cur != null)
 		{
@@ -125,6 +130,7 @@ public class RangeChangeUndoManager
 		if (prev != null)
 		{
 			prev.prev = listStart;
+			head = listStart.next;
 			listStart.next = prev;
 		}
 	}
