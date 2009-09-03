@@ -49,7 +49,7 @@ public class FileTreeBuilder implements MarkerTreeBuilder
 			parent.add(pathNode);
 			for (DefaultMutableTreeNode markerNode: fileNodes.get(path))
 				pathNode.add(markerNode);
-			pathNode.setUserObject(path + "(" + pathNode.getChildCount() + ")");
+			pathNode.setUserObject(path + " (" + pathNode.getChildCount() + ")");
 		}
 	}
 }
