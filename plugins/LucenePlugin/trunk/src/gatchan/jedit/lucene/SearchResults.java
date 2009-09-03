@@ -12,6 +12,8 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeModel;
 
 import marker.FileMarker;
 import marker.MarkerSetsPlugin;
@@ -161,9 +163,10 @@ public class SearchResults extends JPanel implements EBComponent
 		index.search(text, max, processor);
 		if (lineResults.isSelected())
 		{
-			SourceLinkParentNode parent = tree.addSourceLinkParent(
-				new SearchRootNode(text));
+			SearchRootNode rootNode = new SearchRootNode(text);
+			SourceLinkParentNode parent = tree.addSourceLinkParent(rootNode);
 			FileMarker prev = null;
+			int count = 0;
 			for (Object o: files)
 			{
 				FileMarker marker = (FileMarker) o;
@@ -171,8 +174,13 @@ public class SearchResults extends JPanel implements EBComponent
 				{
 					parent.addSourceLink(marker);
 					prev = marker;
+					count++;
 				}
 			}
+			rootNode.addChildCount(count);
+			TreeModel model = tree.getModel();
+			if (model instanceof DefaultTreeModel)
+				((DefaultTreeModel)model).nodeChanged(parent);
 			((CardLayout) mainPanel.getLayout()).show(mainPanel, "tree");
 		}
 		else
@@ -306,6 +314,10 @@ public class SearchResults extends JPanel implements EBComponent
 						MarkerSetsPlugin.toggleMarker(marker);
 				}
 			});
+		}
+		public void addChildCount(int count)
+		{
+			text = text + " (" + count + ")";
 		}
 	}
 
