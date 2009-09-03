@@ -48,7 +48,8 @@ options.projectviewer.contextmenu.userfirst=User Actions First
 projectviewer_new-file.label=New file
 projectviewer_parent-group.label=Open parent group
 projectviewer_set-active.label=Open group or project
-projectviewer_wrapper_search.label=Search in Project/Directory
+projectviewer_wrapper_search_project.label=Search in Project Root
+projectviewer_wrapper_search.label=Search in Selected Node
 projectviewer_wrapper_launch.label=Preview Node in Browser
 projectviewer_wrapper_edit.label=Edit Project Options
 projectviewer_wrapper_create.label=Create Project
@@ -92,6 +93,7 @@ projectviewer.menu=\
 	projectviewer_wrapper_collapse_all \
 	projectviewer_wrapper_expand_all \
 	- \
+	projectviewer_wrapper_search_project \
 	projectviewer_wrapper_search \
 	projectviewer_launch_current_buffer \
 	projectviewer_paste_selected_files

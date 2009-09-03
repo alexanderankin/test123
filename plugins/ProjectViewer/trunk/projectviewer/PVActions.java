@@ -54,6 +54,7 @@ import projectviewer.vpt.VPTProject;
 
 import projectviewer.action.Action;
 import projectviewer.action.LaunchBrowserAction;
+import projectviewer.action.SearchAction;
 //}}}
 
 /**
@@ -412,6 +413,19 @@ public final class PVActions {
 		}
 		return base;
 	} //}}}
+
+
+	public static void searchInProject(View view)
+	{
+		VPTNode node = projectviewer.ProjectViewer.getActiveProject(view);
+		if (node != null) {
+			projectviewer.PVActions.pvActionWrapper(
+				new projectviewer.action.SearchAction(node), view, true);
+		} else {
+			String message = jEdit.getProperty("projectviewer.no_active_project");
+			view.getStatus().setMessageAndClear(message);
+		}
+	}
 
 }
 

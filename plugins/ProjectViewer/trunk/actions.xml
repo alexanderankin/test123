@@ -106,6 +106,12 @@
 		</CODE>
 	</ACTION>
 
+	<ACTION NAME="projectviewer_wrapper_search_project">
+		<CODE>
+		projectviewer.PVActions.searchInProject(view);
+		</CODE>
+	</ACTION>
+
 	<ACTION NAME="projectviewer_wrapper_goup">
 	<CODE>
 		projectviewer.PVActions.pvActionWrapper(
