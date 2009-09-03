@@ -329,6 +329,8 @@ public class SearchResults extends JPanel implements EBComponent
 			String fileType = type.getText().trim();
 			if (fileType.length() != 0)
 			{
+				if (search.length() != 0)
+					search = "(" + search + ") AND ";
 				search += " +filetype:" + fileType;
 			}
 			search(search);
