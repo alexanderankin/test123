@@ -112,12 +112,16 @@ public class ProjectWatcher implements EBComponent {
 	public void handleFilesChanged(ProjectUpdate pu) {
 		Vector<String> removed = new Vector<String>();
 		Collection<VPTFile> nodes = pu.getRemovedFiles();
-		for (VPTFile node: nodes)
-			removed.add(node.getNodePath());
+		if (nodes != null) {
+			for (VPTFile node: nodes)
+				removed.add(node.getNodePath());
+		}
 		Vector<String> added = new Vector<String>();
 		nodes = pu.getAddedFiles();
-		for (VPTFile node: nodes)
-			added.add(node.getNodePath());
+		if (nodes != null) {
+			for (VPTFile node: nodes)
+				added.add(node.getNodePath());
+		}
 		CtagsInterfacePlugin.updateProject(pu.getProject().getName(),
 			added, removed);
 	}
