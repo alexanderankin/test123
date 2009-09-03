@@ -64,10 +64,19 @@ import projectviewer.vpt.VPTNode;
  */
 public class SearchAction extends Action {
 
+	private VPTNode node = null;
+
 	//{{{ +SearchAction() : <init>
 	public SearchAction() {
 		super("projectviewer_wrapper_search");
 	} //}}}
+
+
+	public SearchAction(VPTNode node)
+	{
+		super("projectviewer_wrapper_search");
+		this.node = node;
+	}
 
 	//{{{ +getText() : String
 	/** Returns the text to be shown on the button and/or menu item. */
@@ -78,8 +87,7 @@ public class SearchAction extends Action {
 	//{{{ +actionPerformed(ActionEvent) : void
 	/** Creates a new project. */
 	public void actionPerformed(ActionEvent e) {
-		VPTNode node = null;
-		if (viewer != null) {
+		if (node == null && viewer != null) {
 			node = viewer.getSelectedNode();
 		}
 		if (node == null) {
