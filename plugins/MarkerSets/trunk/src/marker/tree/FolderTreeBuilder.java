@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
 
 import marker.FileMarker;
 import marker.tree.SourceLinkTree.SourceLinkParentNode;
@@ -59,6 +60,7 @@ public class FolderTreeBuilder implements MarkerTreeBuilder
 		}
 		// Now, consolidate matching parts
 		consolidateTree("", parent, paths);
+		addChildCounts(parent);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -97,5 +99,22 @@ public class FolderTreeBuilder implements MarkerTreeBuilder
 					fileNode.add(marker);
 			}
 		}
+	}
+
+	private int addChildCounts(TreeNode treeNode)
+	{
+		if (treeNode.getChildCount() == 0)
+			return 1;
+		int count = 0;
+		for (int i = 0; i < treeNode.getChildCount(); i++)
+			count += addChildCounts(treeNode.getChildAt(i));
+		if (treeNode instanceof DefaultMutableTreeNode)
+		{
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) treeNode;
+			Object obj = node.getUserObject();
+			if (obj instanceof String)
+				node.setUserObject(((String) obj) + " (" + count + ")");
+		}
+		return count;
 	}
 }

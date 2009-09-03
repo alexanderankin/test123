@@ -55,7 +55,7 @@ public class MarkerSetSelectionDialog extends JDialog {
 		JPanel namePanel = new JPanel(new BorderLayout());
 		add(namePanel, BorderLayout.NORTH);
 		namePanel.add(new JLabel("Marker set:"), BorderLayout.WEST);
-		name = new JTextField(30);
+		name = new JTextField(20);
 		namePanel.add(name, BorderLayout.CENTER);
 		color = new ColorWellButton(DEFAULT_COLOR);
 		namePanel.add(color, BorderLayout.EAST);
