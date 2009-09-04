@@ -6,6 +6,7 @@
 	<property file="../build.properties"/>
 	<property file="${user.home}/.build.properties"/>
 	<property file="${user.home}/build.properties"/>
+	<property name="jedit.plugins.dir" value="${install.dir}" />
 	<property name="dist.target" value="build" />
 	<property name="plugin.dependencies" value="CommonControls"/>
 	<import file="${build.support}/plugin-build.xml" />
@@ -17,7 +18,7 @@
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
 		<pathelement location="${src.dir}"/>
-		<pathelement location="${install.dir}/CommonControls.jar"/>
+		<pathelement location="${jedit.plugins.dir}/CommonControls.jar"/>
 	</path>
 
 </project>
