@@ -36,6 +36,7 @@ import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -61,6 +62,7 @@ public class InstallLauncher
 	private static final String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
 
 	private static JDialog dialog;
+	private static JFrame frame;
 	private static JTextArea text;
 	private static JPanel buttonPanel;
 	private static JButton ok;
@@ -88,14 +90,16 @@ public class InstallLauncher
 		}
 		catch(IOException io)
 		{
+			log("Error reading 'Updater.props': " + io.getMessage());
 			System.err.println("Error reading 'Updater.props':");
 			io.printStackTrace();
 		}
-		
-		dialog = new JDialog((JDialog)null, false);
+		frame = new JFrame("");
+		dialog = new JDialog(frame, false);
 		dialog.setTitle(props.getProperty("updater.msg.updateDialogTitle"));
 		dialog.setLayout(new BorderLayout());
 		text = new JTextArea(8, 80);
+		text.setEditable(false);
 		dialog.add(new JScrollPane(text), BorderLayout.CENTER);
 		buttonPanel = new JPanel();
 		ok = new JButton(props.getProperty("updater.msg.updateDialogCloseButton"));
@@ -112,6 +116,7 @@ public class InstallLauncher
 		cancel.addActionListener(buttonActionListener);
 		alwaysYes.addActionListener(buttonActionListener);
 		dialog.pack();
+		dialog.setLocationRelativeTo(null);
 		dialog.setVisible(true);
 
 		// Create a writer for stdout (for cancellation and confirmation)
@@ -144,7 +149,10 @@ public class InstallLauncher
 		catch (IOException e1)
 		{
 		}
+		dialog.dispose();
+		frame.dispose();
 		endLogging();
+		System.exit(0);
 	}
 
 	private static Vector<String> processInputStream()
