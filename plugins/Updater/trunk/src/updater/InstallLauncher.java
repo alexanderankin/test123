@@ -35,7 +35,6 @@ import java.util.Properties;
 import java.util.Vector;
 
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -61,8 +60,7 @@ public class InstallLauncher
 
 	private static final String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
 
-	private static JDialog dialog;
-	private static JFrame frame;
+	private static JFrame window;
 	private static JTextArea text;
 	private static JPanel buttonPanel;
 	private static JButton ok;
@@ -94,13 +92,11 @@ public class InstallLauncher
 			System.err.println("Error reading 'Updater.props':");
 			io.printStackTrace();
 		}
-		frame = new JFrame("");
-		dialog = new JDialog(frame, false);
-		dialog.setTitle(props.getProperty("updater.msg.updateDialogTitle"));
-		dialog.setLayout(new BorderLayout());
+		window = new JFrame(props.getProperty("updater.msg.updateDialogTitle"));
+		window.setLayout(new BorderLayout());
 		text = new JTextArea(8, 80);
 		text.setEditable(false);
-		dialog.add(new JScrollPane(text), BorderLayout.CENTER);
+		window.add(new JScrollPane(text), BorderLayout.CENTER);
 		buttonPanel = new JPanel();
 		ok = new JButton(props.getProperty("updater.msg.updateDialogCloseButton"));
 		buttonPanel.add(ok);
@@ -109,15 +105,15 @@ public class InstallLauncher
 		// This button is only added when a confirmation is requested
 		alwaysYes = new JButton(props.getProperty("updater.msg.autoConfirmUpdate"));
 
-		dialog.add(buttonPanel, BorderLayout.SOUTH);
+		window.add(buttonPanel, BorderLayout.SOUTH);
 		buttonActionListener = new UpdateActionListener();
 		ok.addActionListener(buttonActionListener);
 		ok.setEnabled(false);
 		cancel.addActionListener(buttonActionListener);
 		alwaysYes.addActionListener(buttonActionListener);
-		dialog.pack();
-		dialog.setLocationRelativeTo(null);
-		dialog.setVisible(true);
+		window.pack();
+		window.setLocationRelativeTo(null);
+		window.setVisible(true);
 
 		// Create a writer for stdout (for cancellation and confirmation)
 		out = new OutputStreamWriter(System.out);
@@ -149,10 +145,7 @@ public class InstallLauncher
 		catch (IOException e1)
 		{
 		}
-		dialog.dispose();
-		frame.dispose();
 		endLogging();
-		System.exit(0);
 	}
 
 	private static Vector<String> processInputStream()
@@ -167,8 +160,8 @@ public class InstallLauncher
 				if (line.equals(SILENT_SHUTDOWN) ||
 					line.equals(EXECUTION_ABORTED))
 				{
-					dialog.setVisible(false);
-					dialog.dispose();
+					window.setVisible(false);
+					window.dispose();
 					return null;
 				}
 				if (line.equals(END_EXECUTION))
@@ -373,7 +366,7 @@ public class InstallLauncher
 			if (awaitingConfirmation)
 				endConfirmation(true, CONFIRMED);
 			else
-				dialog.dispose();
+				window.dispose();
 		}
 
 		// Only for confirmations

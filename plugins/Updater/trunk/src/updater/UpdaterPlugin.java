@@ -330,6 +330,11 @@ public class UpdaterPlugin extends EditPlugin
 					endExecution(jEdit.getProperty("updater.msg.installerFailed"));
 					return;
 				}
+				// If a jEdit server is running, the installer will shut it
+				// down. If not, need to exit before the jars are replaced
+				// by the installer.
+				if (jEdit.getEditServer() == null)
+					jEdit.exit(null, true);
 				// No more output should be shown by this process. The rest
 				// will be shown by the install launcher.
 				updateOver();
