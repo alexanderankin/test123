@@ -13,9 +13,11 @@ plugin.updater.UpdaterPlugin.depend.2=plugin CommonControlsPlugin 0.9.5
 # action labels
 updater-update-release.label=Update jEdit to latest released version
 updater-update-daily.label=Update jEdit to latest daily build
+updater-reset-props.label=Reset plugin properties (e.g. daily build version)
 
 # menu items
-plugin.updater.UpdaterPlugin.menu=updater-update-release updater-update-daily
+plugin.updater.UpdaterPlugin.menu=updater-update-release updater-update-daily \
+	updater-reset-props
 
 # option pane
 plugin.updater.UpdaterPlugin.option-pane=updater

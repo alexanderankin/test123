@@ -397,6 +397,11 @@ public class UpdaterPlugin extends EditPlugin
 		updateVersion(new DailyBuildUpdateSource(), false);
 	}
 
+	public void resetProps()
+	{
+		new DailyBuildUpdateSource().setInstalledVersion("");
+	}
+
 	private static class LauncherOutputHandler extends Thread
 	{
 		private InputStream is;
