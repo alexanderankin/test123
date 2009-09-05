@@ -258,7 +258,14 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 		{
 			Log.log(Log.DEBUG,SchemaAutoLoader.this,"DOC element  ("+uri+","+localName+","+qName+")");
 			
-			String prefix = qName.equals(localName)? "" : qName.substring(0,qName.indexOf(":"));
+			String prefix;
+			
+			if("".equals(localName)){
+				//namespaces are off
+				prefix = "";
+			}else{
+				prefix = qName.equals(localName)? "" : qName.substring(0,qName.indexOf(":"));
+			}
 			
 			String schema = mapping.getSchemaForDocument(
 				publicId, systemId,

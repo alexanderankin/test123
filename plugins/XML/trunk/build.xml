@@ -40,6 +40,11 @@
         </copy>
     </target>
 
+    <!-- exclude the test directory -->
+    <selector id="compileFiles">
+        <filename name="xml/**/*.java" />
+    </selector>
+
     <selector id="packageFiles">
             <or>
                 <filename name="docs/*.html" />
