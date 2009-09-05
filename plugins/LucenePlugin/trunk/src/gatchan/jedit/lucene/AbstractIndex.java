@@ -113,7 +113,7 @@ public class AbstractIndex
 					IndexWriter.unlock(FSDirectory.getDirectory(path));
 				}
 			}
-			writer = new IndexWriter(path, getAnalyzer(), IndexWriter.MaxFieldLength.LIMITED);
+			writer = new IndexWriter(path, getAnalyzer(), IndexWriter.MaxFieldLength.UNLIMITED);
 		}
 		catch (IOException e)
 		{
