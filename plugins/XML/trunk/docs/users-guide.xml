@@ -96,6 +96,18 @@
   Validation can be disabled on a global basis in the <guibutton>XML</guibutton>&gt;<guibutton>XML</guibutton> pane of the <guimenu>Plugins</guimenu>&gt;<guimenuitem>Plugin Options</guimenuitem> dialog box. It can also be disabled on a per-buffer basis by inserting the following in the first of last 10 lines of the buffer:
  </para>
  <programlisting>:xml.validate=false:</programlisting>
+
+ <para>
+  Namespaces processing can be disabled on a per-buffer basis by inserting 
+  the following in the first of last 10 lines of the buffer:
+ </para>
+ <programlisting>:xml.namespaces.disable=true:</programlisting>
+ <para>Why would you do that ? If you use the XHTML plus Math 1.1 DTD, you will 
+  get an error because the DTD uses a prefixed name <code>IS10744:arch</code>
+  somewhere, which is incompatible with namespaces. The typical error message is :
+  </para>
+  <programlisting>A colon is not allowed in the name XXX when namespaces are enabled.</programlisting>
+  
 </sect1>
 <sect1 id="child-documents">
 <title> Child Documents </title>

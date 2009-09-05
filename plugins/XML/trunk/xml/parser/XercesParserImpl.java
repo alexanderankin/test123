@@ -140,7 +140,8 @@ public class XercesParserImpl extends XmlParser
 			reader.setFeature("http://apache.org/xml/features/validation/dynamic",true);
 			reader.setFeature("http://apache.org/xml/features/validation/schema",
 				buffer.getBooleanProperty("xml.validate"));
-			reader.setFeature("http://xml.org/sax/features/namespaces",true);
+			reader.setFeature("http://xml.org/sax/features/namespaces",
+				!buffer.getBooleanProperty("xml.namespaces.disable"));
 			reader.setFeature("http://xml.org/sax/features/use-entity-resolver2", true);
 			reader.setFeature("http://apache.org/xml/features/xinclude",
 				buffer.getBooleanProperty("xml.xinclude"));
