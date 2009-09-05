@@ -42,7 +42,7 @@
    <attribute name='otherAttribute' type='string' value=''/>
 </element>
 
-<element name='appinfo' >
+<element name='appinfo' content="ANY">
    <attribute name='source' type='anyURI'/>
 </element>
 
@@ -93,7 +93,7 @@
    <attribute name='otherAttribute' type='string' value=''/>
 </element>
 
-<element name='documentation' >
+<element name='documentation' content="ANY">
    <attribute name='source' type='anyURI'/>
    <attribute name='xml:lang' type='language'/>
 </element>
