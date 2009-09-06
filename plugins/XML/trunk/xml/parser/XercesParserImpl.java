@@ -146,7 +146,7 @@ public class XercesParserImpl extends XmlParser
 			reader.setFeature("http://apache.org/xml/features/xinclude",
 				buffer.getBooleanProperty("xml.xinclude"));
 			reader.setFeature("http://apache.org/xml/features/xinclude/fixup-base-uris",
-				buffer.getBooleanProperty("xml.xinclude.xmlbase"));
+				buffer.getBooleanProperty("xml.xinclude.fixup-base-uris"));
 			//reader.setFeature("http://apache.org/xml/features/continue-after-fatal-error",true);
 			schemaLoader = new SchemaAutoLoader(reader,mapping);
 
