@@ -1,6 +1,10 @@
 <?xml version="1.0"?>
-<book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN" "docbookx.dtd">
+
+<book>
+<!--<book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >-->
   <title>XML plugin user's guide</title>
 
   <bookinfo>
@@ -12,6 +16,7 @@
   <author><firstname>Robert</firstname><surname>McKinnon</surname></author>
   <author><firstname>Martin</firstname><surname>Raspe</surname></author>
   <author><firstname>Jakub</firstname><surname>Roztocil</surname></author>
+  <author><firstname>Eric</firstname><surname>Le Lay</surname></author>
  </authorgroup>
 
  <legalnotice><title>Legal Notice</title>
@@ -265,6 +270,107 @@
    The XML plugin bundles the above DTD so you can use the completion features to construct an OASIS XML catalog.
   </para>
  </sect1>
+
+</chapter>
+
+<chapter id="include">
+<title>XML Inclusion</title>
+
+<para>It is sometimes necessary to split a long XML document into smaller parts,
+or to assemble parts in different ways. This can be achieved via external entities (a DTD feature)
+or via <ulink url="http://www.w3.org/TR/xinclude/">XInclude</ulink>.
+</para>
+
+<sect1 id="include-entities">
+<title>External entities</title>
+
+<para>External entities are used in the user guide for jEdit (see <xref linkend="include-entities-1"/>).
+The <code>DOCTYPE</code> declaration lists some entities,
+which are referenced via <code>&amp;your_entity;</code>.
+This is similar to <code>#include</code> directives in C or C++.
+</para>
+
+<programlisting id="include-entities-1" xreflabel="excerpt of users-guide.xml">
+<![CDATA[
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [
+
+<!ENTITY conventions SYSTEM "conventions.xml">
+
+]>
+
+<book>
+<title>your title</title>
+
+&conventions;
+</book>
+]]>
+</programlisting>
+
+<para>The inclusion is performed before DTD validation which allows the ID/IDREF
+validation to succeed : ie. a section declared with <code>id="ID1"</code> in one
+file can be referenced from another included file via <code>&lt;xref linkend="ID1"/&gt;</code>.
+For validation in jEdit, you will also need <xref linkend="child-documents"/>.
+</para>
+
+</sect1>
+
+<sect1 id="include-xinclude">
+<title>XInclude</title>
+
+<blockquote>
+<attribution>XML Inclusions (XInclude) Version 1.0 (Second Edition)
+W3C Recommendation 15 November 2006</attribution>
+
+<para>XInclude defines a namespace associated with the URI 
+<code>http://www.w3.org/2001/XInclude</code>.
+The XInclude namespace contains two elements with the local names <code>include</code> and <code>fallback</code>.
+</para>
+</blockquote>
+
+<para>The following example shows an inclusion similar to <xref linkend="include-entities-1"/>.</para>
+
+
+<programlisting id="include-xinclude-1">
+<![CDATA[
+<book>
+<title>your title</title>
+<xi:include  href="conventions.xml"  
+             xmlns:xi="http://www.w3.org/2001/XInclude" />
+</book>
+]]>
+</programlisting>
+
+<para>XInclude can be activated on a global basis in the <guibutton>XML</guibutton>&gt;<guibutton>XML</guibutton>
+pane of the <guimenu>Plugins</guimenu>&gt;<guimenuitem>Plugin Options</guimenuitem> dialog box.
+It can also be activated on a per-buffer basis by inserting the following in the first of last 10 lines of the buffer:
+</para>
+<programlisting>:xml.xinclude=true:</programlisting>
+
+
+<para>You can fine-tune the way relative URIs will be interpreted in the included fragment :
+either resolve the URIs based on the URI of the fragment, or based on the URI of the parent
+(see <uri>http://www.w3.org/TR/xinclude/#base</uri>). This is controlled globally
+ in the option pane or via the property <code>xml.xinclude.fixup-base-uris</code> on a per-buffer
+ basis.</para>
+ <para>See the following example: </para>
+<programlisting>:xml.xinclude=true:xml.xinclude.fixup-base-uris=true:</programlisting>
+
+
+<para>Note that DTD validation would fail on ID/IDREF attributes (<code>id</code>s
+and <code>linkend</code>s). This is because the document seen by the DTD validator
+is prior to XInclude resolution. You are then forced to use either XML Schemas or
+RelaxNG validation.
+For validation in jEdit, you will also need <xref linkend="child-documents"/>.
+</para>
+
+<para>For more informations regarding XInclude and docbook, you should reed
+Chapter 22 of <emphasis>DocBook XSL: The Complete Guide</emphasis> by Bob Stayton :
+<uri>http://docs.huihoo.com/docbook/docbook-xsl-complete-guide-3rd/ModularDoc.html</uri>
+</para>
+
+<para>Xinclude is activated in xsltproc via the <code>--xinclude</code> command-line switch.</para>
+</sect1>
 
 </chapter>
 
@@ -727,6 +833,7 @@
   <listitem><para> Improved XML Completion (Greg Knittl - #2801814, 2809253) </para></listitem>
   <listitem><para> New XercesParerImpl to replaces old XmlParserImpl, uses updated Xerces API (kerik-sf) </para></listitem>
   <listitem><para> New Resolver uses updated Catalog API and replaces old CatalogManager (kerik-sf) </para></listitem>
+  <listitem><para> XInclude support (kerik-sf) </para></listitem>
   </itemizedlist>
 
 

@@ -16,6 +16,9 @@
 package xml.options;
 
 //{{{ Imports
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 
@@ -23,6 +26,7 @@ import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
 
 import xml.Resolver;
+//}}}
 
 public class GeneralOptionPane extends AbstractOptionPane
 {
@@ -38,6 +42,9 @@ public class GeneralOptionPane extends AbstractOptionPane
 	private JCheckBox closeCompleteOpen;
 	private JCheckBox closeComplete;
 	private JCheckBox standaloneExtraSpace;
+	
+	private JCheckBox xinclude;
+	private JCheckBox xincludeBaseURI;
 	
 	static String[] comboLabels;
 	
@@ -88,6 +95,9 @@ public class GeneralOptionPane extends AbstractOptionPane
 		showAttributes.setSelectedIndex(jEdit.getIntegerProperty(
 			"xml.show-attributes",0));
 
+		addSeparator(jEdit.getProperty(
+			"options.xml.general.tags-separator"));
+
 		closeComplete = new JCheckBox(jEdit.getProperty(
 			"options.xml.general.close-complete"));
 		closeComplete.setSelected(jEdit.getBooleanProperty(
@@ -106,6 +116,29 @@ public class GeneralOptionPane extends AbstractOptionPane
 			"options.xml.general.standalone-extra-space")));
 		standaloneExtraSpace.setSelected(jEdit.getBooleanProperty(
 			"xml.standalone-extra-space"));
+
+		addSeparator(jEdit.getProperty(
+			"options.xml.general.xinclude-separator"));
+		
+		addComponent(xinclude = new JCheckBox(jEdit.getProperty(
+			"options.xml.general.xinclude")));
+		xinclude.setSelected(jEdit.getBooleanProperty(
+			"buffer.xml.xinclude"));
+		
+		//force sensible default
+		xinclude.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent ae)
+			{
+				if(xinclude.isSelected())xincludeBaseURI.setSelected(true);
+			}
+		});
+		addComponent(xincludeBaseURI = new JCheckBox(jEdit.getProperty(
+			"options.xml.general.xinclude-xmlbase")));
+		xincludeBaseURI.setSelected(jEdit.getBooleanProperty(
+			"buffer.xml.xinclude.fixup-base-uris"));
+		xincludeBaseURI.setToolTipText(jEdit.getProperty(
+			"options.xml.general.xinclude-xmlbase.tooltip"));
 	} //}}}
 
 	//{{{ _save() method
@@ -130,6 +163,8 @@ public class GeneralOptionPane extends AbstractOptionPane
 		}
 		jEdit.setBooleanProperty("xml.standalone-extra-space",
 			standaloneExtraSpace.isSelected());
+		jEdit.setBooleanProperty("buffer.xml.xinclude",xinclude.isSelected());
+		jEdit.setBooleanProperty("buffer.xml.xinclude.fixup-base-uris",xincludeBaseURI.isSelected());
 	} //}}}
 
 

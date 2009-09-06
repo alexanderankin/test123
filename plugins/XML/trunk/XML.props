@@ -100,10 +100,16 @@ options.xml.general.show-attributes=Show tag attributes in tree:
 options.xml.general.show-attributes.none=None
 options.xml.general.show-attributes.id-only=ID only
 options.xml.general.show-attributes.all=All
+options.xml.general.tags-separator=Tags
 options.xml.general.close-complete=Insert closing tag when "</" is typed
 options.xml.general.close-complete.tooltip=Also enables SideKick "complete immediately when possible" option
 options.xml.general.close-complete-open=Insert closing tag when opening tag is typed
 options.xml.general.standalone-extra-space=Space before "/>" in stand-alone tags
+options.xml.general.xinclude-separator=XInclude
+options.xml.general.xinclude=Activate XInclude
+options.xml.general.xinclude-xmlbase=Activate Base URI Fixup (recommended)
+options.xml.general.xinclude-xmlbase.tooltip=relative URIs in the included fragment\
+ are resolved based on the URI of the fragment, not of the parent.
 
 # SideKick parsers
 sidekick.parser.xml.label=XML
