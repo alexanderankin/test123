@@ -44,6 +44,7 @@ plugin.xml.XmlPlugin.menu=sidekick.parser.xml-switch \
 
 # Indent action
 xmlindenter.indent.message.failure=Indenting failed to complete.
+xmlindenter.message.error={0}\nError : {1}
 xmlindenter.indent.label=Indent XML
 xmlindenter.toggleSplitAttributes.label=Split/Unsplit Attributes
 
