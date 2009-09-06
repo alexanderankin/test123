@@ -42,7 +42,10 @@
 
     <!-- exclude the test directory -->
     <selector id="compileFiles">
-        <filename name="xml/**/*.java" />
+    	<or>
+        	<filename name="sidekick/**/*.java" />
+        	<filename name="xml/**/*.java" />
+        </or>
     </selector>
 
     <selector id="packageFiles">
