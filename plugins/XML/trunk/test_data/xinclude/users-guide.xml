@@ -7,15 +7,17 @@
 
     <chapter id="c1">
         <title>Referencing</title>
-        
+
         <!-- reference to chapter with id='conventions' -->
         <para>There are some conventions somewhere in an included document:
         see <xref linkend="conventions"/>.</para>
-        
+
     </chapter>
-    
-    <!-- if you comment this one out, you'll get an error -->
-    <xi:include  href="conventions.xml"  
+
+    <!-- If you see an error here, that means that XInclude is not enabled.
+         Plugin Options - XML - Activate XInclude, also for any other parser
+         (e.g. xsltproc) you use on files with this element. -->
+    <xi:include  href="conventions.xml"
              xmlns:xi="http://www.w3.org/2001/XInclude" />
- 
+
 </book>
