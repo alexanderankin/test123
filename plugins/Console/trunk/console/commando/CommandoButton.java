@@ -23,6 +23,7 @@ package console.commando;
 
 // {{{ imports
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -33,10 +34,16 @@ import java.io.Reader;
 
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.browser.VFSBrowser;
+import org.gjt.sp.jedit.gui.DockableWindowManager;
+import org.gjt.sp.jedit.io.VFSFile;
 
 import console.ConsolePlugin;
 // }}}
@@ -108,8 +115,17 @@ public class CommandoButton extends JButton implements ActionListener
 		String userDir = ConsolePlugin.getUserCommandDirectory();
 		String name = command.getShortLabel() + ".xml";
 		File f = new File(userDir, name);
-		f.delete();
-		ConsolePlugin.rescanCommands();
+		String path = f.getPath();
+		VFSFile vf = new VFSFile(path, path, path, VFSFile.FILE, 0, false);
+		VFSFile[] vfl = new VFSFile[1];
+		vfl[0]=vf;
+		DockableWindowManager dwm = jEdit.getActiveView().getDockableWindowManager();
+		Component comp = dwm.getDockable("vfs.browser");
+		VFSBrowser browser = (VFSBrowser) comp;
+		if (browser == null) return;
+		browser.delete(vfl);
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {	ConsolePlugin.rescanCommands();	}});
 	}
 	
     // {{{ Customize 
