@@ -6,12 +6,12 @@
   - DONE: asks no more for permission to download actions.rng
   -->
 <ACTIONS>
-   
+
     <ACTION NAME="xmlindenter.indent">
         <CODDE>xml.indent.XmlIndenterPlugin.indentXml(view);</CODDE>
     </ACTION>
     <ACTION NAME="xmlindenter.toggleSplitAttributes">
         <CODE>xml.indent.XmlIndenterPlugin.toggleSplitAttributes(view);</CODE>
     </ACTION>
-	
+
 </ACTIONS>
