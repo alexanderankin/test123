@@ -726,9 +726,10 @@ Chapter 22 of <emphasis>DocBook XSL: The Complete Guide</emphasis> by Bob Stayto
  </para>
  <itemizedlist>
   <listitem><para> Improved XML Completion (Greg Knittl - #2801814, 2809253) </para></listitem>
-  <listitem><para> New XercesParerImpl to replaces old XmlParserImpl, uses updated Xerces API (kerik-sf) </para></listitem>
-  <listitem><para> New Resolver uses updated Catalog API and replaces old CatalogManager (kerik-sf) </para></listitem>
-  <listitem><para> XInclude support (kerik-sf) </para></listitem>
+  <listitem><para> New XercesParerImpl to replaces old XmlParserImpl, uses updated Xerces API (Eric Le Lay) </para></listitem>
+  <listitem><para> New Resolver uses updated Catalog API and replaces old CatalogManager (Eric Le Lay) </para></listitem>
+  <listitem><para> XInclude support (Eric Le Lay) </para></listitem>
+  <listitem><para> Validation support with Relax-NG (RNG) schemas. (Eric Le Lay) </para></listitem>
   </itemizedlist>
 
 
