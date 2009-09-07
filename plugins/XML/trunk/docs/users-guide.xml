@@ -1,13 +1,11 @@
 <?xml version="1.0"?>
-
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN" "docbookx.dtd">
-
-<book>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN" "docbookx.dtd">
+<article>
 <!--<book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >-->
   <title>XML plugin user's guide</title>
 
-  <bookinfo>
+ <articleinfo>
 
  <authorgroup>
   <author><firstname>Slava</firstname><surname>Pestov</surname></author>
@@ -29,19 +27,18 @@
    the license can be found in the file <filename>COPYING.DOC.txt</filename>
    included with jEdit.
   </para>
-
   <para>
    The XML plugin itself is released under the GNU General Public License.
    A copy of the GPL can be found in the jEdit online help.
   </para>
  <para>
-  This version of the XML plugin for jEdit combines the <ulink url="docs/htmlsidekick.html">HtmlSideKick</ulink> plugin and EcmaScript parser by Dale Anson, the <ulink url="docs/javascript.html">JavaScriptSideKick</ulink> by Martin Raspe, the CSS SideKick by Jakub Roztocil, and the XmlIndenter plugin by Robert McKinnon, providing five distinct Sidekick parsers and four different completion services, as well as an indenting service for the Beauty plugin.
+  This version of the XML plugin for jEdit combines the <ulink url="docs/htmlsidekick.html">HtmlSideKick</ulink> plugin and EcmaScript parser by Dale Anson, the <ulink url="docs/javascript.html">JavaScriptSideKick</ulink> by Martin Raspe, the CSS SideKick by Jakub Roztocil, and the XmlIndenter plugin by Robert McKinnon, providing five distinct Sidekick parsers and four different completion services, as well as an indenting service for the Beauty plugin, <ulink url="http://iso-relax.sourceforge.net/">ISO-RELAX</ulink> and <ulink url="http://code.google.com/p/jing-trang/">jing-trang</ulink>, for validation and translation of documents that use Relax-NG schemas.
  </para>
 
  </legalnotice>
-</bookinfo>
+</articleinfo>
 
-<chapter id="intro"><title>Introduction</title>
+<section id="intro"><title>Introduction</title>
 
  <para>
   This documentation assumes at least basic knowlege of HTML and XML.
@@ -51,7 +48,7 @@
  It combines parsers for XML, HTML, JSP, Sidekick,  and CSS files. Here are its features: </para>
 
  <itemizedlist>
-  <listitem><para>On-the-fly validation of XML files</para></listitem>
+  <listitem><para>On-the-fly validation of XML files with DTD, XSD, or RNG schemas. </para></listitem>
   <listitem><para>Tag, attribute, and entity completion popups for XML, HTML and CSS</para></listitem>
   <listitem><para>Display of the element tree in a dockable window, for XML, HTML, JavaScript, JSP, and CSS</para></listitem>
   <listitem><para>Matching tag highlighting</para></listitem>
@@ -69,312 +66,13 @@
  docked (preferably to your right or left) and parsing your current buffer
  in order for certain operations to succeed.  Select Plugins - SideKick -
  SideKick, and click on the little arrow, which is the docking menu in the
- upper left corner, to set its docked position.  See the SideKick plugin
- documentation for more details.  </para>
+ upper left corner, to set its docked position. </para>
 
-</chapter>
+ <para> Note: Since the XML plugin provides a separate Sidekick parser for HTML versus XML, and it may be possible to parse some documents with both, you may get different results depending on how 'strict' the HTML/XML syntax is used in the document. </para>
 
-<chapter id="validation"><title>Validation</title>
+</section>
 
- <para>
-  XML files are validated against their DTD or XSD schema. If no schema can be loaded, only minimal error checking will be performed. No validation of any kind is performed for HTML files, but XHTML files can be validated using their regular schema.
- </para>
-
- <para>
-  Any errors found while parsing XML are handled by the
-  <application>ErrorList</application> plugin; in other words, they are highlighted
-  in the text area, and shown in the
-  <guimenu>Plugins</guimenu>&gt;<guisubmenu>Error
-  List</guisubmenu>&gt;<guimenuitem>Error List</guimenuitem> window. See the
-  documentation for the <application>ErrorList</application> plugin for details.
- </para>
-
- <para>
-  DTDs (document type definitions) and XSDs (w3c XML Schemas) are two different standards
-  for defining XML Schemas, to describe which elements and entities are allowed within a specific context.
-  In order to implement completion or validation, the XML plugin needs to be able to load a schema. A few file types for which no schema is available are supported using built-in completion information included with the plugin.
- </para>
-
- <sect1 id="customizing-validation"><title>Customizing validation</title>
-
- <para>
-  Validation can be disabled on a global basis in the <guibutton>XML</guibutton>&gt;<guibutton>XML</guibutton> pane of the <guimenu>Plugins</guimenu>&gt;<guimenuitem>Plugin Options</guimenuitem> dialog box. It can also be disabled on a per-buffer basis by inserting the following in the first of last 10 lines of the buffer:
- </para>
- <programlisting>:xml.validate=false:</programlisting>
-
- <para>
-  Namespaces processing can be disabled on a per-buffer basis by inserting 
-  the following in the first of last 10 lines of the buffer:
- </para>
- <programlisting>:xml.namespaces.disable=true:</programlisting>
- <para>Why would you do that ? If you use the XHTML plus Math 1.1 DTD, you will 
-  get an error because the DTD uses a prefixed name <code>IS10744:arch</code>
-  somewhere, which is incompatible with namespaces. The typical error message is :
-  </para>
-  <programlisting>A colon is not allowed in the name XXX when namespaces are enabled.</programlisting>
-  
-</sect1>
-<sect1 id="child-documents">
-<title> Child Documents </title>
- <para>
-  When editing an XML file which is included in another file, it can be desirable for validation to always start at the root file, and not at each included file. For example, you might be writing a user manual using DocBook, with each chapter split into its own XML file. This can be achieved by inserting the following in the first or last 10 lines of each child file:
- </para>
- <programlisting>:xml.root=<replaceable>relative or absolute path of root document</replaceable></programlisting>
-
- <para>
-  Note that even if this property is specified, the <guimenuitem>Structure Browser</guimenuitem> window only shows elements defined in the current buffer. However, when validating an included file, validation errors will be reported for all files included from the root file.
- </para>
- </sect1>
-
- <sect1 id="builtin-completion-info"><title>Built-in completion information</title>
-
-  <para>
-   The XML plugin supports element and entity completion for the following file types using completion information built in to the plugin:
-  </para>
-
-  <itemizedlist>
-
-   <listitem><para>HTML files </para></listitem>
-
-   <listitem><para>XSL stylesheets (xsl) </para></listitem>
-   <listitem><para>XSD XML schema definitions </para></listitem>
-   <listitem><para><filename>build.xml</filename> - Ant build files </para></listitem>
-  </itemizedlist>
- </sect1>
-
- <sect1 id="dtds-schemas"><title>DTDs and schemas</title>
- <para>
-  DTDs, or document type definitions, are an older standard but are still widely
-  used. Buffers which have an associated DTD are validated for errors, and
-  completion popups are shown for elements, attributes, and entities.
-  DTDs are specified by including markup like the following near the start
-  of an XML file:
- </para>
- <programlisting><![CDATA[<?xml version="1.0"?>
- <!DOCTYPE PUBLIC "]]><replaceable>public ID</replaceable>" "<replaceable>system ID</replaceable>"
- </programlisting>
- <para>
-  Or alternatively:
- </para>
- <programlisting><![CDATA[<?xml version="1.0"?>
- <!DOCTYPE SYSTEM "]]><replaceable>system ID</replaceable>"
- </programlisting>
-
- <para>
-  XML schemas perform a similar function to DTDs, however they are a newer
-  standard and support some features that DTDs do not, like namespaces.
-  Buffers which have an associated schema are validated for errors, and
-  completion popups are shown for elements and entities.
- </para>
- <para>
-  Schemas are specified with a
-  <markup>http://www.w3.org/2001/XMLSchema-instance</markup> namespace in the document's root element:
- </para>
- <programlisting><![CDATA[<personnel
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:noNamespaceSchemaLocation='personal.xsd'>]]></programlisting>
- <para>
-  Or if the target schema has an associated namespace:
- </para>
- <programlisting><![CDATA[<dictionary           xmlns="http://www.xml-cml.org/schema/stmml"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://www.xml-cml.org/schema/stmml ../schema/stmml.xsd
-          http://www.xml-cml.org/schema/cml2/core ../schema/cmlCore.xsd">]]></programlisting>
- <para>
-  In all cases, the XML parser will first look for the specified system or
-  public ID in the plugin's built-in catalog, along with any
-  catalog files specified in the
-  <guibutton>XML</guibutton>&gt;<guibutton>Catalogs</guibutton> pane
-  of the <guimenu>Plugins</guimenu>&gt;<guimenuitem>Plugin Options</guimenuitem> dialog box. </para>
- <para>
-  Catalog files must either be in OASIS OPEN or XML catalog format. These two formats
-  are documented below.
- </para>
-
- <para>
-  If the DTD or XSD cannot be located in the catalogs, the plugin will ask if it should be downloaded and cached for future use in the <filename>dtds</filename>
-  subdirectory of the jEdit settings directory.
- </para>
- <para>
-  The download cache can be cleared using the
-  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Clear
-  DTD Cache</guimenuitem> command.
- </para>
- </sect1>
- <sect1 id="built-in-dtds"><title>Built-in DTDs</title>
-
-  <para>
-   The XML plugin catalogs the following DTDs which are included with jEdit itself, or the XML plugin.
-  </para>
-
-  <itemizedlist>
-  <listitem><para>DTDs declared by jEdit: <filename>actions.dtd</filename>,
-  <filename>catalog.dtd</filename>,
-  <filename>dockables.dtd</filename>,
-  <filename>perspective.dtd</filename>,
-  <filename>plugins.dtd</filename>,
-  <filename>recent.dtd</filename>,
-  <filename>registers.dtd</filename>,
-  <filename>services.dt</filename>,
-  <filename>xmode.dtd</filename>.</para></listitem>
-  <listitem><para>A few plugin DTDs: <filename>commando.dtd</filename> (Console
-  plugin), <filename>sqlServerType.dtd</filename> (SQL plugin).</para></listitem>
-  <listitem><para>XHTML 1.0 and XHTML 1.1 DTDs, referenced using one of the
-  following public IDs:</para>
-  <itemizedlist>
-  <listitem><para><literal>-//W3C//DTD XHTML 1.0 Frameset//EN</literal></para></listitem>
-  <listitem><para><literal>-//W3C//DTD XHTML 1.0 Strict//EN</literal></para></listitem>
-  <listitem><para><literal>-//W3C//DTD XHTML 1.0 Transitional//EN</literal></para></listitem>
-  <listitem><para><literal>-//W3C//DTD XHTML 1.1//EN</literal></para></listitem>
-  </itemizedlist>
-  </listitem>
-    <listitem><para>DocBook 4.2 DTDs, referenced with the
-  <literal>-//OASIS//DTD DocBook XML V4.2//EN</literal> public ID.
-  </para></listitem>
-
- </itemizedlist>
- <para> For example, these doctypes are recognized by the XML plugin, and when they are used, tell the XML plugin to load a built-in DTD, and provide you with completion popups for elements and attributes.
- </para>
-
- <programlisting>
-&lt;!DOCTYPE book PUBLIC &quot;-//OASIS//DTD DocBook XML V4.2//EN&quot;   &quot;docbookx.dtd&quot;&gt;
-&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.1//EN&quot; &quot;xhtml11-flat.dtd&quot;&gt;
- </programlisting>
-
- </sect1>
-
- <sect1 id="oasis-catalog-format"><title>OASIS OPEN catalog format</title>
-  <para>
-   Each line in an OASIS OPEN catalog file must look like one of the following:
-  </para>
-  <itemizedlist>
-   <listitem><para><literal>-- <replaceable>comment</replaceable></literal>
-   - comments are ignored.</para></listitem>
-   <listitem><para><literal>SYSTEM "<replaceable>system ID</replaceable>"
-   "<replaceable>new system ID</replaceable>"</literal> - maps the first system ID
-   to the second.</para></listitem>
-   <listitem><para><literal>PUBLIC "<replaceable>public ID</replaceable>"
-   "<replaceable>new system ID</replaceable>"</literal> - maps the public ID
-   to the system ID.</para></listitem>
-   <!-- <listitem><para><literal>OVERRIDE <replaceable>YES or NO</replaceable></literal>
-   - if <literal><replaceable>YES</replaceable></literal>, then </para></listitem> -->
-  </itemizedlist>
- </sect1>
-
- <sect1 id="oasis-xml-catalog-format"><title>OASIS XML catalog format</title>
-  <para>
-   Catalog files in the OASIS XML catalog format are themselves XML files, and must have the following <markup>DOCTYPE</markup> declaration:
-  </para>
-  <programlisting><![CDATA[<!DOCTYPE catalog PUBLIC "-//OASIS//DTD Entity Resolution XML Catalog V1.0//EN" "oasis-catalog.dtd">]]></programlisting>
-  <para>
-   The XML plugin bundles the above DTD so you can use the completion features to construct an OASIS XML catalog.
-  </para>
- </sect1>
-
-</chapter>
-
-<chapter id="include">
-<title>XML Inclusion</title>
-
-<para>It is sometimes necessary to split a long XML document into smaller parts,
-or to assemble parts in different ways. This can be achieved via external entities (a DTD feature)
-or via <ulink url="http://www.w3.org/TR/xinclude/">XInclude</ulink>.
-</para>
-
-<sect1 id="include-entities">
-<title>External entities</title>
-
-<para>External entities are used in the user guide for jEdit (see <xref linkend="include-entities-1"/>).
-The <code>DOCTYPE</code> declaration lists some entities,
-which are referenced via <code>&amp;your_entity;</code>.
-This is similar to <code>#include</code> directives in C or C++.
-</para>
-
-<programlisting id="include-entities-1" xreflabel="excerpt of users-guide.xml">
-<![CDATA[
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
-"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [
-
-<!ENTITY conventions SYSTEM "conventions.xml">
-
-]>
-
-<book>
-<title>your title</title>
-
-&conventions;
-</book>
-]]>
-</programlisting>
-
-<para>The inclusion is performed before DTD validation which allows the ID/IDREF
-validation to succeed : ie. a section declared with <code>id="ID1"</code> in one
-file can be referenced from another included file via <code>&lt;xref linkend="ID1"/&gt;</code>.
-For validation in jEdit, you will also need <xref linkend="child-documents"/>.
-</para>
-
-</sect1>
-
-<sect1 id="include-xinclude">
-<title>XInclude</title>
-
-<blockquote>
-<attribution>XML Inclusions (XInclude) Version 1.0 (Second Edition)
-W3C Recommendation 15 November 2006</attribution>
-
-<para>XInclude defines a namespace associated with the URI 
-<code>http://www.w3.org/2001/XInclude</code>.
-The XInclude namespace contains two elements with the local names <code>include</code> and <code>fallback</code>.
-</para>
-</blockquote>
-
-<para>The following example shows an inclusion similar to <xref linkend="include-entities-1"/>.</para>
-
-
-<programlisting id="include-xinclude-1">
-<![CDATA[
-<book>
-<title>your title</title>
-<xi:include  href="conventions.xml"  
-             xmlns:xi="http://www.w3.org/2001/XInclude" />
-</book>
-]]>
-</programlisting>
-
-<para>XInclude can be activated on a global basis in the <guibutton>XML</guibutton>&gt;<guibutton>XML</guibutton>
-pane of the <guimenu>Plugins</guimenu>&gt;<guimenuitem>Plugin Options</guimenuitem> dialog box.
-It can also be activated on a per-buffer basis by inserting the following in the first of last 10 lines of the buffer:
-</para>
-<programlisting>:xml.xinclude=true:</programlisting>
-
-
-<para>You can fine-tune the way relative URIs will be interpreted in the included fragment :
-either resolve the URIs based on the URI of the fragment, or based on the URI of the parent
-(see <uri>http://www.w3.org/TR/xinclude/#base</uri>). This is controlled globally
- in the option pane or via the property <code>xml.xinclude.fixup-base-uris</code> on a per-buffer
- basis.</para>
- <para>See the following example: </para>
-<programlisting>:xml.xinclude=true:xml.xinclude.fixup-base-uris=true:</programlisting>
-
-
-<para>Note that DTD validation would fail on ID/IDREF attributes (<code>id</code>s
-and <code>linkend</code>s). This is because the document seen by the DTD validator
-is prior to XInclude resolution. You are then forced to use either XML Schemas or
-RelaxNG validation.
-For validation in jEdit, you will also need <xref linkend="child-documents"/>.
-</para>
-
-<para>For more informations regarding XInclude and docbook, you should reed
-Chapter 22 of <emphasis>DocBook XSL: The Complete Guide</emphasis> by Bob Stayton :
-<uri>http://docs.huihoo.com/docbook/docbook-xsl-complete-guide-3rd/ModularDoc.html</uri>
-</para>
-
-<para>Xinclude is activated in xsltproc via the <code>--xinclude</code> command-line switch.</para>
-</sect1>
-
-</chapter>
-
-<chapter id="insert">
+<section id="insert">
 <title>The XML insert window</title>
 
  <para>
@@ -416,57 +114,10 @@ Chapter 22 of <emphasis>DocBook XSL: The Complete Guide</emphasis> by Bob Stayto
   attributes.
  </para>
 
-</chapter>
+</section>
 
-<chapter id="completion">
-<title>Tag and entity completion</title>
 
- <para>
-  If the less-than symbol (<quote>&lt;</quote>) is typed and no other key
-  is pressed within a
-  specified delay (half a second by default), a tag list popup will be
-  shown. Note that only tags which are the parent element is
-  allowed to contain are listed. The arrow keys can be used to select a tag;
-  if you start
-  typing a tag name, only tags whose names begin with the already-entered
-  text will be shown.
- </para>
-
- <para>
-  Pressing <keycap>Space</keycap> or <keycap>&gt;</keycap> will insert
-  the currently selected
-  tag into the buffer. Pressing <keycap>Enter</keycap> will insert
-  the tag and show the <guimenuitem>Edit Tag</guimenuitem> dialog box;
-  see <xref linkend="edit-tag" />.
- </para>
-
- <para>
-  Entity completion works in a similar manner; typing
-  <keycap>&amp;</keycap> will show an entity list popup. Pressing
-  <keycap>Space</keycap>, <keycap>Enter</keycap> or <keycap>;</keycap>
-  will insert the currently selected entity into the buffer.
- </para>
-
- <para>
-  Typing <quote>&lt;/</quote> will automatically close
-  the last open tag.
- </para>
-
- <para>
-  Another convenience feature that is disabled by default inserts a
-  closing tag when you finish typing an opening tag.
- </para>
-
- <para>
-  These features can be enabled, disabled and configured in the
-  <guibutton>SideKick</guibutton> and
-  <guibutton>XML</guibutton>&gt;<guibutton>XML</guibutton> pane of the <guimenu>Plugins</guimenu>&gt;<guimenuitem>Plugin Options</guimenuitem>
-  dialog box.
- </para>
-
-</chapter>
-
-<chapter id="edit-tag"><title>The edit tag dialog box</title>
+<section id="edit-tag"><title>The edit tag dialog box</title>
 
  <para>
   The <guimenuitem>Edit Tag</guimenuitem> dialog box can be opened in any of these ways:
@@ -518,9 +169,9 @@ Chapter 22 of <emphasis>DocBook XSL: The Complete Guide</emphasis> by Bob Stayto
   <guibutton>OK</guibutton> will insert the tag into the buffer.
  </para>
 
-</chapter>
+</section>
 
-<chapter id="misc-commands"><title>Miscellaneous features</title>
+<section id="misc-commands"><title>Miscellaneous features</title>
 
  <para>
   If the caret is positioned on a tag, the corresponding opening or closing
@@ -573,71 +224,368 @@ Chapter 22 of <emphasis>DocBook XSL: The Complete Guide</emphasis> by Bob Stayto
   DTD</guimenuitem> generates a DTD from the XML instance document in the
   current buffer. Generation of XSD and RelaxNG schemata is planned for the future.
  </para>
-</chapter>
+</section>
 
-<chapter id="other-plugins"><title>Using the XML parser in other plugins</title>
+ <section id="schemas"><title>Schemas</title>
+ <para>
+  DTDs or Document Type Definitions, are a common way to specify schemas.
+  While an older standard, are still widely used.
+  Buffers which have an associated DTD are validated for errors, and
+  completion popups are shown for elements, attributes, and entities.
+  DTDs are specified by including markup like the following near the start
+  of an XML file:
+ </para>
+ <programlisting><![CDATA[<?xml version="1.0"?>
+ <!DOCTYPE PUBLIC "]]><replaceable>public ID</replaceable>" "<replaceable>system ID</replaceable>"
+ </programlisting>
+ <para>
+  Or alternatively:
+ </para>
+ <programlisting><![CDATA[<?xml version="1.0"?>
+ <!DOCTYPE SYSTEM "]]><replaceable>system ID</replaceable>"
+ </programlisting>
 
  <para>
-  The XML plugin uses the Xerces XML parser, included in the
-   <ulink url="jeditresource:/XercesPlugin.jar!/docs/index.html">Xerces Plugin</ulink>. If you are developing your own plugin that needs to handle XML, you might prefer to use the XercesPlugin, which is more recent than the version of Xerces included in the JDK.
+  XSDs, or XML schemas, perform a similar function to DTDs, however they are a newer
+  standard and support some features that DTDs do not, like namespaces.
+  Buffers which have an associated schema are validated for errors, and
+  completion popups are shown for elements and entities.
+ </para>
+ <para>
+  Schemas are specified with a
+  <markup>http://www.w3.org/2001/XMLSchema-instance</markup> namespace in the document's root element:
+ </para>
+ <programlisting><![CDATA[<personnel
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation='personal.xsd'>]]></programlisting>
+ <para>
+  Or if the target schema has an associated namespace:
+ </para>
+ <programlisting><![CDATA[<dictionary           xmlns="http://www.xml-cml.org/schema/stmml"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.xml-cml.org/schema/stmml ../schema/stmml.xsd
+          http://www.xml-cml.org/schema/cml2/core ../schema/cmlCore.xsd">]]></programlisting>
+ <para>
+  In all cases, the XML parser will first look for the specified system or
+  public ID in the plugin's built-in catalog, along with any
+  catalog files specified in the
+  <guibutton>XML</guibutton>&gt;<guibutton>Catalogs</guibutton> pane
+  of the <guimenu>Plugins</guimenu>&gt;<guimenuitem>Plugin Options</guimenuitem> dialog box. </para>
+ <para>
+  Catalog files must either be in OASIS OPEN or XML catalog format. These two formats
+  are documented below.
  </para>
 
  <para>
-  If you would like to use the Xerces parser from your own plugin, you will first need to change your plugin's license if it is licensed under the GPL.
-  The GPL is not compatible with the Xerces license.
+  If the DTD or XSD cannot be located in the catalogs, the plugin will ask if it should be downloaded and cached for future use in the <filename>dtds</filename>
+  subdirectory of the jEdit settings directory.
  </para>
-
  <para>
-  The XML plugin itself is licensed under a modified GPL; this will
-  probably be sufficient for your plugin. Here is the text of the license,
-  embedded in each source file of the XML plugin:
+  The download cache can be cleared using the
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Clear
+  DTD Cache</guimenuitem> command.
  </para>
 
-  <blockquote><para>
-   The XML plugin is licensed under the GNU General Public License, with
-   the following exception:
-  </para>
+ <section id="built-in-dtds"><title>Built-in DTDs</title>
 
   <para>
-   Permission is granted to link this code with software released under
-   the Apache license version 1.1, for example used by the Xerces XML
-   parser package.
-  </para></blockquote>
+   The XML plugin catalogs the following DTDs which are included with jEdit itself, or the XML plugin.
+  </para>
 
- <para>
-  You will also need to add a dependency for the XercesPlugin in your plugin's
-  property file:
+  <itemizedlist>
+  <listitem><para>DTDs declared by jEdit: <filename>actions.dtd</filename>,
+  <filename>catalog.dtd</filename>,
+  <filename>dockables.dtd</filename>,
+  <filename>perspective.dtd</filename>,
+  <filename>plugins.dtd</filename>,
+  <filename>recent.dtd</filename>,
+  <filename>registers.dtd</filename>,
+  <filename>services.dt</filename>,
+  <filename>xmode.dtd</filename>.</para></listitem>
+  <listitem><para>A few plugin DTDs: <filename>commando.dtd</filename> (Console
+  plugin), <filename>sqlServerType.dtd</filename> (SQL plugin).</para></listitem>
+  <listitem><para>XHTML 1.0 and XHTML 1.1 DTDs, referenced using one of the
+  following public IDs:</para>
+  <itemizedlist>
+  <listitem><para><literal>-//W3C//DTD XHTML 1.0 Frameset//EN</literal></para></listitem>
+  <listitem><para><literal>-//W3C//DTD XHTML 1.0 Strict//EN</literal></para></listitem>
+  <listitem><para><literal>-//W3C//DTD XHTML 1.0 Transitional//EN</literal></para></listitem>
+  <listitem><para><literal>-//W3C//DTD XHTML 1.1//EN</literal></para></listitem>
+  </itemizedlist>
+  </listitem>
+    <listitem><para>DocBook 4.2 DTDs, referenced with the
+  <literal>-//OASIS//DTD DocBook XML V4.2//EN</literal> public ID.
+  </para></listitem>
+
+ </itemizedlist>
+ <para> For example, these doctypes are recognized by the XML plugin, and when they are used, tell the XML plugin to load a built-in DTD, and provide you with completion popups for elements and attributes.
  </para>
 
- <programlisting>plugin.MyPlugin.depend.<replaceable>n</replaceable>=plugin xerces.XercesPlugin 2.8.0</programlisting>
+ <programlisting>
+&lt;!DOCTYPE book PUBLIC &quot;-//OASIS//DTD DocBook XML V4.2//EN&quot;   &quot;docbookx.dtd&quot;&gt;
+&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.1//EN&quot; &quot;xhtml11-flat.dtd&quot;&gt;
+ </programlisting>
+
+ </section>
+
+</section>
+
+
+<section id="completion">
+  <title>Tag and entity completion</title>
 
  <para>
-  Note that you must replace <replaceable>n</replaceable> with the
-  appropriate number, as dependency properties must have consecutive numbers.
+  If the less-than symbol (<quote>&lt;</quote>) is typed and no other key
+  is pressed within a
+  specified delay (half a second by default), a tag list popup will be
+  shown. Note that only tags which are the parent element is
+  allowed to contain are listed. The arrow keys can be used to select a tag;
+  if you start
+  typing a tag name, only tags whose names begin with the already-entered
+  text will be shown.
  </para>
 
  <para>
-  That's all there is to it; you can now use the Xerces parser in your plugin.
-  Xerces includes its own implementations of the JAXP, SAX2 and DOM3 APIs, so
-  integrating existing code should be relatively easy.
+  Pressing <keycap>Space</keycap> or <keycap>&gt;</keycap> will insert
+  the currently selected
+  tag into the buffer. Pressing <keycap>Enter</keycap> will insert
+  the tag and show the <guimenuitem>Edit Tag</guimenuitem> dialog box;
+  see <xref linkend="edit-tag" />.
+ </para>
+
+ <para> Attribute Completion works in a similar manner - when the XML plugin
+ detects that you are inside a tag and about to enter an attribute name, it will
+ provide you with a list of possible attributes or completions of attributes
+ if it can obtain this information from the schema. </para>
+
+ <para>
+  Entity completion works in a similar manner; typing
+  <keycap>&amp;</keycap> will show an entity list popup. Pressing
+  <keycap>Space</keycap>, <keycap>Enter</keycap> or <keycap>;</keycap>
+  will insert the currently selected entity into the buffer.
  </para>
 
  <para>
-  It is also possible to call the XML plugin's entity resolver method to resolve public and system IDs. This method is in the <classname>xml.CatalogManager</classname>
-  class:
+  Typing <quote>&lt;/</quote> will automatically close
+  the last open tag.
  </para>
 
- <funcsynopsis>
-  <funcprototype>
-   <funcdef>public void <function>resolve</function></funcdef>
-   <paramdef>String <parameter>current</parameter></paramdef>
-   <paramdef>String <parameter>publicId</parameter></paramdef>
-   <paramdef>String <parameter>systemId</parameter></paramdef>
-  </funcprototype>
- </funcsynopsis>
-</chapter>
+ <para>
+  Another convenience feature that is disabled by default inserts a
+  closing tag when you finish typing an opening tag.
+ </para>
 
-  <chapter id="xmlindenter">
+ <para>
+  These features can be enabled, disabled and configured in the
+  <guibutton>SideKick</guibutton> and
+  <guibutton>XML</guibutton>&gt;<guibutton>XML</guibutton> pane of the <guimenu>Plugins</guimenu>&gt;<guimenuitem>Plugin Options</guimenuitem>
+  dialog box.
+ </para>
+
+ <section id="builtin-completion-info"><title>Built-in completion information</title>
+
+  <para>
+   The XML plugin supports element and entity completion for the following file types using completion information built in to the plugin:
+  </para>
+
+  <itemizedlist>
+
+   <listitem><para>HTML files </para></listitem>
+   <listitem><para>XSL stylesheets (xsl) </para></listitem>
+   <listitem><para>XSD XML schema definitions </para></listitem>
+   <listitem><para><filename>build.xml</filename> - Ant build files </para></listitem>
+  </itemizedlist>
+ </section>
+</section>
+
+<section id="validation">
+<title>Validation</title>
+
+<para>
+  XML files are validated against their DTD, XSD or RNG schema. If no schema can be loaded, only minimal error checking will be performed. No validation of any kind is performed for HTML files, but XHTML files can be validated using their regular schema.
+ </para>
+
+ <para>
+  Any errors found while parsing XML are handled by the
+  <application>ErrorList</application> plugin; in other words, they are highlighted
+  in the text area, and shown in the
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>Error
+  List</guisubmenu>&gt;<guimenuitem>Error List</guimenuitem> window. See the
+  documentation for the <application>ErrorList</application> plugin for details.
+ </para>
+
+ <para>
+  DTDs (document type definitions), XSDs (w3c XML Schemas), and Relax-NGs are three different
+  standards for defining XML Schemas, to describe which elements and entities are allowed within a
+  specific context.
+  In order to implement completion or validation, the XML plugin needs to be able to load a schema. A few file types for which no schema is available are supported using built-in completion information included with the plugin.
+ </para>
+
+ <section id="customizing-validation"><title>Customizing validation</title>
+
+ <para>
+  Validation can be disabled on a global basis in the <guibutton>XML</guibutton>&gt;<guibutton>XML</guibutton> pane of the <guimenu>Plugins</guimenu>&gt;<guimenuitem>Plugin Options</guimenuitem> dialog box. It can also be disabled on a per-buffer basis by inserting the following in the first of last 10 lines of the buffer:
+ </para>
+ <programlisting>:xml.validate=false:</programlisting>
+
+ <para>
+  Namespaces processing can be disabled on a per-buffer basis by inserting
+  the following in the first of last 10 lines of the buffer:
+ </para>
+ <programlisting>:xml.namespaces.disable=true:</programlisting>
+ <para>Why would you do that ? If you use the XHTML plus Math 1.1 DTD, you will
+  get an error because the DTD uses a prefixed name <code>IS10744:arch</code>
+  somewhere, which is incompatible with namespaces. The typical error message is :
+  </para>
+  <programlisting>A colon is not allowed in the name XXX when namespaces are enabled.</programlisting>
+
+</section>
+</section>
+
+<section id="include">
+<title>XML Inclusion</title>
+
+<para>It is sometimes necessary to split a long XML document into smaller parts,
+or to assemble parts in different ways. This can be achieved via external entities (a DTD feature)
+or via <ulink url="http://www.w3.org/TR/xinclude/">XInclude</ulink>.
+</para>
+
+<section id="child-documents">
+<title> Child Documents </title>
+ <para>
+  When editing an XML file which is included from another file, it can be desirable for validation to always start at the root file, rather than the one that is currently being edited.
+  For example, you might be writing a user manual using DocBook, with each chapter split into its own XML file. This can be achieved by inserting the following in the first or last 10 lines of each child file:
+ </para>
+ <programlisting>:xml.root=<replaceable>relative or absolute path of root document</replaceable></programlisting>
+
+ <para>
+  Note that even if this property is specified, the <guimenuitem>Structure Browser</guimenuitem> window only shows elements defined in the current buffer. However, when validating an included file, validation errors will be reported for all files included from the root file.
+ </para>
+</section>
+
+<section id="include-entities">
+<title>External entities</title>
+
+<para>External entities are used in the user guide for jEdit (see <xref linkend="include-entities-1"/>).
+The <code>DOCTYPE</code> declaration lists some entities,
+which are referenced via <code>&amp;your_entity;</code>.
+This is similar to <code>#include</code> directives in C or C++.
+</para>
+
+<programlisting id="include-entities-1" xreflabel="excerpt of users-guide.xml">
+<![CDATA[
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [
+
+<!ENTITY conventions SYSTEM "conventions.xml">
+
+]>
+
+<book>
+<title>your title</title>
+
+&conventions;
+</book>
+]]>
+</programlisting>
+
+<para>The inclusion is performed before DTD validation which allows the ID/IDREF
+validation to succeed : ie. a section declared with <code>id="ID1"</code> in one
+file can be referenced from another included file via <code>&lt;xref linkend="ID1"/&gt;</code>.
+For validation in jEdit, you will also need <xref linkend="child-documents"/>.
+</para>
+
+</section>
+
+<section id="include-xinclude">
+<title>XInclude</title>
+
+<blockquote>
+<attribution>XML Inclusions (XInclude) Version 1.0 (Second Edition)
+W3C Recommendation 15 November 2006</attribution>
+
+<para>XInclude defines a namespace associated with the URI
+<code>http://www.w3.org/2001/XInclude</code>.
+The XInclude namespace contains two elements with the local names <code>include</code> and <code>fallback</code>.
+</para>
+</blockquote>
+
+<para>The following example shows an inclusion similar to <xref linkend="include-entities-1"/>.</para>
+
+
+<programlisting id="include-xinclude-1">
+<![CDATA[
+<book>
+<title>your title</title>
+<xi:include  href="conventions.xml"
+             xmlns:xi="http://www.w3.org/2001/XInclude" />
+</book>
+]]>
+</programlisting>
+
+<para>XInclude can be activated on a global basis in the <guibutton>XML</guibutton>&gt;<guibutton>XML</guibutton>
+pane of the <guimenu>Plugins</guimenu>&gt;<guimenuitem>Plugin Options</guimenuitem> dialog box.
+It can also be activated on a per-buffer basis by inserting the following in the first of last 10 lines of the buffer:
+</para>
+<programlisting>:xml.xinclude=true:</programlisting>
+
+
+<para>You can fine-tune the way relative URIs will be interpreted in the included fragment :
+either resolve the URIs based on the URI of the fragment, or based on the URI of the parent
+(see <uri>http://www.w3.org/TR/xinclude/#base</uri>). This is controlled globally
+ in the option pane or via the property <code>xml.xinclude.fixup-base-uris</code> on a per-buffer
+ basis.</para>
+ <para>See the following example: </para>
+<programlisting>:xml.xinclude=true:xml.xinclude.fixup-base-uris=true:</programlisting>
+
+
+<para>Note that DTD validation would fail on ID/IDREF attributes (<code>id</code>s
+and <code>linkend</code>s). This is because the document seen by the DTD validator
+is prior to XInclude resolution. You are then forced to use either XML Schemas or
+RelaxNG validation.
+For validation in jEdit, you will also need <xref linkend="child-documents"/>.
+</para>
+
+<para>For more informations regarding XInclude and docbook, you should reed
+Chapter 22 of <emphasis>DocBook XSL: The Complete Guide</emphasis> by Bob Stayton :
+<uri>http://docs.huihoo.com/docbook/docbook-xsl-complete-guide-3rd/ModularDoc.html</uri>
+</para>
+
+<para>Xinclude is activated in xsltproc via the <code>--xinclude</code> command-line switch.</para>
+</section>
+</section>
+
+
+
+ <section id="oasis-catalog-format"><title>OASIS OPEN catalog format</title>
+  <para>
+   Each line in an OASIS OPEN catalog file must look like one of the following:
+  </para>
+  <itemizedlist>
+   <listitem><para><literal>-- <replaceable>comment</replaceable></literal>
+   - comments are ignored.</para></listitem>
+   <listitem><para><literal>SYSTEM "<replaceable>system ID</replaceable>"
+   "<replaceable>new system ID</replaceable>"</literal> - maps the first system ID
+   to the second.</para></listitem>
+   <listitem><para><literal>PUBLIC "<replaceable>public ID</replaceable>"
+   "<replaceable>new system ID</replaceable>"</literal> - maps the public ID
+   to the system ID.</para></listitem>
+   <!-- <listitem><para><literal>OVERRIDE <replaceable>YES or NO</replaceable></literal>
+   - if <literal><replaceable>YES</replaceable></literal>, then </para></listitem> -->
+  </itemizedlist>
+ </section>
+
+ <section id="oasis-xml-catalog-format"><title>OASIS XML catalog format</title>
+  <para>
+   Catalog files in the OASIS XML catalog format are themselves XML files, and must have the following <markup>DOCTYPE</markup> declaration:
+  </para>
+  <programlisting><![CDATA[<!DOCTYPE catalog PUBLIC "-//OASIS//DTD Entity Resolution XML Catalog V1.0//EN" "oasis-catalog.dtd">]]></programlisting>
+  <para>
+   The XML plugin bundles the above DTD so you can use the completion features to construct an OASIS XML catalog.
+  </para>
+ </section>
+
+ <section id="xmlindenter">
     <title>XML Indenter</title>
     <para>
       The Xml Indenter plugin allows you to indent the XML contents of the current open buffer.
@@ -695,24 +643,7 @@ Chapter 22 of <emphasis>DocBook XSL: The Complete Guide</emphasis> by Bob Stayto
   </section>
 
 
-  <section id="xmlindenter-feedback">
-    <title>Feedback</title>
-
-    <para>The preferred way to send bug reports is to use the
-      <ulink url="http://sourceforge.net/tracker/?atid=100588&amp;group_id=588&amp;func=browse">Sourceforge Bug Tracker</ulink>.
-    </para>
-
-    <para>Feature requests should be posted to the jEdit users mailing-list
-      <email>jedit-users@lists.sourceforge.net</email>.
-    </para>
-
-    <para>Development questions should be posted to the jEdit development mailing-list
-      <email>jedit-devel@lists.sourceforge.net</email>.
-    </para>
-  </section>
-  </chapter>
-
-  <appendix id="xmlindenter-changelog">
+  <section id="xmlindenter-changelog">
     <title>XMLIndenter: Change log</title>
     <para>
       <emphasis role="bold">From 0.3 to 0.3.2</emphasis>
@@ -782,44 +713,8 @@ Chapter 22 of <emphasis>DocBook XSL: The Complete Guide</emphasis> by Bob Stayto
         <listitem><para>Requires >=jEdit 4.1 and >=XML plugin 0.11.1</para></listitem>
       </itemizedlist>
     </para>
-  </appendix>
-
-
-
-
-<appendix id="problems"><title>Resolving Dependency Problems </title>
-
-<para> The Xml plugin depends on <ulink url="jeditresource:/SideKick.jar!/index.html">SideKick</ulink> and the <ulink url="jeditresource:/XercesPlugin.jar!/docs/index.html">XercesPlugin</ulink>. </para>
-
- <note><title> Installing Xerces Parsers </title>
- <para>
-  Xerces is one of those libraries that you will find in many different places. You probably have at least 3 other versions already installed on your hard drive: one is included in every full install of  <literal>ant</literal> (which is included in every Java IDE these days), another comes with JDK 1.4 and later. Further, older versions of the XML plugin included Xerces directly. It is recommended you double-check that older versions are removed. If you are having additional problems, some people have recommended that you install the newer Xerces in an endorsed directory, such as <literal>jre/lib/ext</literal>, so it <emphasis>overrides</emphasis> the older version in the JDK. See <ulink url="http://marc.theaimsgroup.com/?l=xerces-j-dev&amp;m=108309409502115&amp;w=2">
-  this message</ulink> on the xerces-j mailing list for more details. </para>
-  </note>
-  <note>
-  <title> Which version of xerces do I have? </title>
-  <para>
-  It's easy to figure out because the filenames changed.
-  </para>
-
-  <formalpara><title>Jars for Xerces 2.6-7</title>
-  <para> <literal>resolver, xml-apis,  xercesImpl</literal>.
-  </para>
-  </formalpara>
-
-  <formalpara><title> Jars for Xerces 2.3-5</title>
-  <para>
-  (unsupported) <literal>xml-commons-resolver, xmlParserApis, xercesImpl</literal>.
-  </para>
-  </formalpara>
-  </note>
- <note> <title> Can't load SideKickParser </title>
- <para>
- If you ever encounter the error when loading the
- <literal>SideKickParser</literal>, be sure that the java property <literal>jedit.home</literal> is set. The <literal>ServiceManager</literal> uses this property to find other jar files. You can pass a <literal>-Djedit.home=/path/to/jedit</literal> as a parameter to the <literal>java</literal> command in the <literal>jedit</literal> startup script. </para>
- </note>
-
-</appendix>
+  </section>
+</section>
 
 <appendix id="changes">
 
@@ -1077,5 +972,21 @@ Chapter 22 of <emphasis>DocBook XSL: The Complete Guide</emphasis> by Bob Stayto
 
 </appendix>
 
-</book>
+<appendix id="xmlindenter-feedback">
+    <title>Feedback</title>
+
+    <para>The preferred way to send bug reports is to use the
+      <ulink url="http://sourceforge.net/tracker/?atid=100588&amp;group_id=588&amp;func=browse">Sourceforge Bug Tracker</ulink>.
+    </para>
+
+    <para>Feature requests should be posted to the jEdit users mailing-list
+      <email>jedit-users@lists.sourceforge.net</email>.
+    </para>
+
+    <para>Development questions should be posted to the jEdit development mailing-list
+      <email>jedit-devel@lists.sourceforge.net</email>.
+    </para>
+</appendix>
+
+</article>
 

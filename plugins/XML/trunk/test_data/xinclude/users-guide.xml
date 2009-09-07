@@ -13,10 +13,8 @@
         see <xref linkend="conventions"/>.</para>
 
     </chapter>
-
-    <!-- If you see an error here, that means that XInclude is not enabled.
-         Plugin Options - XML - Activate XInclude, also for any other parser
-         (e.g. xsltproc) you use on files with this element. -->
+    <!-- If you comment out the xi:include, the xref above should give you an error.
+         If you see an error on the xi:include, that means that XInclude is not enabled. -->
     <xi:include  href="conventions.xml"
              xmlns:xi="http://www.w3.org/2001/XInclude" />
 
