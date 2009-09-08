@@ -33,6 +33,15 @@ public class IndexProjectAction extends Action
 			VPTProject project = VPTNode.findProjectFor(node);
 			if (project == null)
 				return;
+			String indexName = project.getName();
+			Index index = LucenePlugin.instance.getIndexForProject(indexName);
+			if (index == null)
+			{
+				/*JOptionPane.showMessageDialog(null, jEdit.getProperty(INDEX_ERROR),
+					jEdit.getProperty(INDEX_ERROR_TITLE), JOptionPane.ERROR_MESSAGE,
+					null);*/
+				return;
+			}
 			Collection<VPTNode> nodes = project.getOpenableNodes();
 			Vector<VFSFile> files = new Vector<VFSFile>();
 			for (VPTNode n: nodes)
@@ -47,15 +56,6 @@ public class IndexProjectAction extends Action
 			}
 			VFSFile [] fileArray = new VFSFile[files.size()];
 			files.toArray(fileArray);
-			String indexName = project.getName();
-			Index index = LucenePlugin.instance.getIndexForProject(indexName);
-			if (index == null)
-			{
-				/*JOptionPane.showMessageDialog(null, jEdit.getProperty(INDEX_ERROR),
-					jEdit.getProperty(INDEX_ERROR_TITLE), JOptionPane.ERROR_MESSAGE,
-					null);*/
-				return;
-			}
 			LucenePlugin.instance.addToIndex(indexName, fileArray, true);
 		}
 	}
