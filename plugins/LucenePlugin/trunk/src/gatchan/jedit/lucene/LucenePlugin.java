@@ -282,28 +282,22 @@ public class LucenePlugin extends EditPlugin
 	public void addToIndex(final String indexName, final VFSFile[] files,
 		final boolean sharedSession)
 	{
-		VFSManager.runInWorkThread(new Runnable()
+		Index index = getIndex(indexName);
+		if (index == null)
 		{
-			public void run()
+			Log.log(Log.ERROR, this, "Unable to get index " + indexName);
+			return;
+		}
+		if (sharedSession)
+			index.addFiles(files);
+		else
+		{
+			for (VFSFile file : files)
 			{
-				Index index = getIndex(indexName);
-				if (index == null)
-				{
-					Log.log(Log.ERROR, this, "Unable to get index " + indexName);
-					return;
-				}
-				if (sharedSession)
-					index.addFiles(files);
-				else
-				{
-					for (VFSFile file : files)
-					{
-						index.addFile(file.getPath());
-					}
-				}
-				index.commit();
+				index.addFile(file.getPath());
 			}
-		});
+		}
+		index.commit();
 	}
 
 	/**
