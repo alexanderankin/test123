@@ -267,9 +267,9 @@ public class IndexImpl extends AbstractIndex implements Index
 		Reader reader = null;
 		try
 		{
-			reader = new BufferedReader(new InputStreamReader(file.getVFS()._createInputStream(session, file.getPath(),
-			                                                                                   false,
-			                                                                                   jEdit.getActiveView())));
+			reader = new BufferedReader(new InputStreamReader(
+				file.getVFS()._createInputStream(session, file.getPath(),
+					false, jEdit.getActiveView())));
 			doc.add(new Field("content", reader));
 			LucenePlugin.CENTRAL.addFile(file.getPath(), name);
 			writer.updateDocument(new Term("_path", file.getPath()), doc);
