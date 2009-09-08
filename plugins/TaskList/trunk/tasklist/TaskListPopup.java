@@ -28,6 +28,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.Enumeration;
 import javax.swing.tree.*;
 import javax.swing.*;
 
@@ -48,11 +49,10 @@ public class TaskListPopup extends JPopupMenu {
     /**
      * Constructor
      *
-     * @param View view the view in which the popup menu will appear
-     * @param TaskList list the TaskList object represented in the
-     * window in which the popup menu will appear
-     * @param int TaskNum the zero-based index of the selected table row
-     * that will be the subject of the popup
+     * @param view the view in which the popup menu will appear
+     * @param comp the TaskList tree represented in the
+     * window in which the popup menu will appear.
+     * @param point the location of the mouse click that activated this popup
      */
     public TaskListPopup( View view, JComponent comp, Point point ) {
         super( jEdit.getProperty( "tasklist.popup.heading" ) );
@@ -62,8 +62,8 @@ public class TaskListPopup extends JPopupMenu {
         this.point = point;
         listener = new ActionHandler();
 
+        // change tag menu item and submenu
         BoundedMenu changeMenu = new BoundedMenu( jEdit.getProperty( "tasklist.popup.change-menu" ) );
-
         int item = 0;
         String name = jEdit.getProperty( "tasklist.tasktype." + item + ".name" );
         while ( name != null ) {
@@ -73,13 +73,17 @@ public class TaskListPopup extends JPopupMenu {
         }
         add( changeMenu );
 
+        // delete task menu item and submenu
         BoundedMenu deleteMenu = new BoundedMenu( jEdit.getProperty( "tasklist.popup.delete-task", "Delete task" ) );
         deleteMenu.add( createMenuItem( jEdit.getProperty( "tasklist.popup.delete-task-tag", "Delete task tag" ), "%Dtag" ) );
         deleteMenu.add( createMenuItem( jEdit.getProperty( "tasklist.popup.delete-entire-tag", "Delete entire task" ), "%Dtask" ) );
         add( deleteMenu );
 
+        // parse buffer menu item
         JMenuItem parseBuffer = createMenuItem( jEdit.getProperty( "tasklist.popup.parse-buffer", "Parse buffer" ), "parse-buffer" );
         add( parseBuffer );
+        
+        // parse all menu item
         JMenuItem parseAll = null;
         if ( comp instanceof JTree ) {
             parseAll = createMenuItem( jEdit.getProperty( "tasklist.popup.parse-all", "Parse all" ), "parse-all" );
@@ -101,6 +105,12 @@ public class TaskListPopup extends JPopupMenu {
         sortDirectionMenu.add( createMenuItem( jEdit.getProperty( "tasklist.popup.descending", "Descending" ), "sort-descending" ) );
         add( sortDirectionMenu );
 
+        JMenuItem toBuffer = null;
+        if ( comp instanceof JTree ) {
+            addSeparator();
+            toBuffer = createMenuItem( jEdit.getProperty( "tasklist.popup.to-buffer", "TaskList results to buffer" ), "to-buffer" );
+            add( toBuffer );
+        }
     }
 
     /**
@@ -206,19 +216,41 @@ public class TaskListPopup extends JPopupMenu {
     }
 
     /**
-     * Causes substitution of the comment tag for the selected task item;
-     * displays a message if a parsing error occurs;
-     * reparses buffer regardless of success.
+     * Handle the various actions for the menu items in this popup menu.
      */
     class ActionHandler implements ActionListener {
-
+        // TODO: something
         public void actionPerformed( ActionEvent evt ) {
+            String cmd = evt.getActionCommand();
+            
+            if ( "to-buffer".equals( cmd ) && comp instanceof JTree ) {
+                // create a new untitled buffer and write the contents of the
+                // tree to the buffer as text
+                StringBuilder sb = new StringBuilder();
+                TreeModel model = ( ( JTree ) comp ).getModel();
+                DefaultMutableTreeNode root = ( DefaultMutableTreeNode ) model.getRoot();
+                sb.append( root ).append( '\n' );
+                Enumeration en = root.children();
+                while ( en.hasMoreElements() ) {
+                    DefaultMutableTreeNode fileNode = ( DefaultMutableTreeNode ) en.nextElement();
+                    sb.append( fileNode ).append( '\n' );
+                    Enumeration en2 = fileNode.children();
+                    while ( en2.hasMoreElements() ) {
+                        DefaultMutableTreeNode taskNode = ( DefaultMutableTreeNode ) en2.nextElement();
+                        Task task = ( Task ) taskNode.getUserObject();
+                        sb.append( "\t" ).append( task.getLineNumber() + 1 ).append( '\t' ).append( task.getText() ).append( '\n' );
+                    }
+                }
+                Buffer buffer = jEdit.newFile( view );
+                buffer.insert( 0, sb.toString() );
+                return;
+            }
+
             Task task = getTask();
             String bufferPath = task == null ? getBufferPath() : task.getBufferPath();
-            if (bufferPath == null) {
-                return;   
+            if ( bufferPath == null ) {
+                return ;
             }
-            String cmd = evt.getActionCommand();
             Buffer buffer = jEdit.getBuffer( bufferPath );
             if ( buffer == null ) {
                 File f = new File( bufferPath );
@@ -265,18 +297,18 @@ public class TaskListPopup extends JPopupMenu {
     }
 
     private Task getTask() {
-            JTree tree = ( JTree ) comp;
-            TreePath path = tree.getPathForLocation( point.x, point.y );
-            if (path == null) {
-                return null;   
-            }
-            DefaultMutableTreeNode node = ( DefaultMutableTreeNode ) path.getLastPathComponent();
-            Object userObject = node.getUserObject();
-            if ( userObject == null || !( userObject instanceof Task ) ) {
-                return null;
-            }
-            Task task = ( Task ) userObject;
-            return task;
+        JTree tree = ( JTree ) comp;
+        TreePath path = tree.getPathForLocation( point.x, point.y );
+        if ( path == null ) {
+            return null;
+        }
+        DefaultMutableTreeNode node = ( DefaultMutableTreeNode ) path.getLastPathComponent();
+        Object userObject = node.getUserObject();
+        if ( userObject == null || !( userObject instanceof Task ) ) {
+            return null;
+        }
+        Task task = ( Task ) userObject;
+        return task;
     }
 
     private String getBufferPath() {
@@ -288,8 +320,8 @@ public class TaskListPopup extends JPopupMenu {
                 return null;
             }
             Object root = tree.getModel().getRoot();
-            if (node.equals(root)) {
-                return null;   
+            if ( node.equals( root ) ) {
+                return null;
             }
             if ( node.getParent().equals( root ) ) {
                 return node.getUserObject().toString();

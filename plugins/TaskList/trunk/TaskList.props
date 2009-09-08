@@ -108,6 +108,7 @@ tasklist.popup.tasktype=Task type
 tasklist.popup.sortdirection=Sort direction
 tasklist.popup.ascending=Ascending
 tasklist.popup.descending=Descending
+tasklist.popup.to-buffer=TaskList results to buffer
 
 # error message string
 tasklist.popup.parse-error=Buffer has changed since last parse. Try again.
