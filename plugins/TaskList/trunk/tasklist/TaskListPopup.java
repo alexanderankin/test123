@@ -54,7 +54,7 @@ public class TaskListPopup extends JPopupMenu {
      * window in which the popup menu will appear.
      * @param point the location of the mouse click that activated this popup
      */
-    public TaskListPopup( View view, JComponent comp, Point point ) {
+    public TaskListPopup( View view, JTree comp, Point point ) {
         super( jEdit.getProperty( "tasklist.popup.heading" ) );
         setLightWeightPopupEnabled( true );
         this.view = view;
@@ -82,13 +82,11 @@ public class TaskListPopup extends JPopupMenu {
         // parse buffer menu item
         JMenuItem parseBuffer = createMenuItem( jEdit.getProperty( "tasklist.popup.parse-buffer", "Parse buffer" ), "parse-buffer" );
         add( parseBuffer );
-        
+
         // parse all menu item
         JMenuItem parseAll = null;
-        if ( comp instanceof JTree ) {
-            parseAll = createMenuItem( jEdit.getProperty( "tasklist.popup.parse-all", "Parse all" ), "parse-all" );
-            add( parseAll );
-        }
+        parseAll = createMenuItem( jEdit.getProperty( "tasklist.popup.parse-all", "Parse all" ), "parse-all" );
+        add( parseAll );
 
         if ( getTask() == null ) {
             changeMenu.setEnabled( false );
@@ -106,11 +104,9 @@ public class TaskListPopup extends JPopupMenu {
         add( sortDirectionMenu );
 
         JMenuItem toBuffer = null;
-        if ( comp instanceof JTree ) {
-            addSeparator();
-            toBuffer = createMenuItem( jEdit.getProperty( "tasklist.popup.to-buffer", "TaskList results to buffer" ), "to-buffer" );
-            add( toBuffer );
-        }
+        addSeparator();
+        toBuffer = createMenuItem( jEdit.getProperty( "tasklist.popup.to-buffer", "TaskList results to buffer" ), "to-buffer" );
+        add( toBuffer );
     }
 
     /**
@@ -222,8 +218,8 @@ public class TaskListPopup extends JPopupMenu {
         // TODO: something
         public void actionPerformed( ActionEvent evt ) {
             String cmd = evt.getActionCommand();
-            
-            if ( "to-buffer".equals( cmd ) && comp instanceof JTree ) {
+
+            if ( "to-buffer".equals( cmd ) ) {
                 // create a new untitled buffer and write the contents of the
                 // tree to the buffer as text
                 StringBuilder sb = new StringBuilder();
@@ -243,7 +239,7 @@ public class TaskListPopup extends JPopupMenu {
                 }
                 Buffer buffer = jEdit.newFile( view );
                 buffer.insert( 0, sb.toString() );
-                return;
+                return ;
             }
 
             Task task = getTask();
@@ -312,20 +308,18 @@ public class TaskListPopup extends JPopupMenu {
     }
 
     private String getBufferPath() {
-        if ( comp instanceof JTree ) {
-            JTree tree = ( JTree ) comp;
-            TreePath path = tree.getPathForLocation( point.x, point.y );
-            DefaultMutableTreeNode node = ( DefaultMutableTreeNode ) path.getLastPathComponent();
-            if ( node == null ) {
-                return null;
-            }
-            Object root = tree.getModel().getRoot();
-            if ( node.equals( root ) ) {
-                return null;
-            }
-            if ( node.getParent().equals( root ) ) {
-                return node.getUserObject().toString();
-            }
+        JTree tree = ( JTree ) comp;
+        TreePath path = tree.getPathForLocation( point.x, point.y );
+        DefaultMutableTreeNode node = ( DefaultMutableTreeNode ) path.getLastPathComponent();
+        if ( node == null ) {
+            return null;
+        }
+        Object root = tree.getModel().getRoot();
+        if ( node.equals( root ) ) {
+            return null;
+        }
+        if ( node.getParent().equals( root ) ) {
+            return node.getUserObject().toString();
         }
         return null;
     }
