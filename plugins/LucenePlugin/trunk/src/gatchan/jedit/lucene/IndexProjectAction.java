@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Vector;
 
 import org.gjt.sp.jedit.io.VFSFile;
+import org.gjt.sp.jedit.io.VFSManager;
 
 import projectviewer.action.Action;
 import projectviewer.vpt.VPTFile;
@@ -42,6 +43,22 @@ public class IndexProjectAction extends Action
 					null);*/
 				return;
 			}
+			ProjectIndexer indexer = new ProjectIndexer(project, indexName);
+			VFSManager.runInWorkThread(indexer);
+		}
+	}
+
+	private class ProjectIndexer implements Runnable
+	{
+		private VPTProject project;
+		private String indexName;
+		public ProjectIndexer(VPTProject project, String indexName)
+		{
+			this.project = project;
+			this.indexName = indexName;
+		}
+		public void run()
+		{
 			Collection<VPTNode> nodes = project.getOpenableNodes();
 			Vector<VFSFile> files = new Vector<VFSFile>();
 			for (VPTNode n: nodes)
@@ -59,5 +76,4 @@ public class IndexProjectAction extends Action
 			LucenePlugin.instance.addToIndex(indexName, fileArray, true);
 		}
 	}
-
 }
