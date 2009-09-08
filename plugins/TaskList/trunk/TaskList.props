@@ -29,10 +29,6 @@ tasklist.reset-patterns.label=Reset task patterns
 tasklist.parse-browser.label=Find Tasks
 plugin.tasklist.TaskListPlugin.browser-menu-item=tasklist.parse-browser
 
-# TODO: I think these are unused and can be removed
-tasklist.tableheader.lineno=Line #
-tasklist.tableheader.description=Description
-
 ### option panes
 
 plugin.tasklist.TaskListPlugin.option-group=tasklist.general \

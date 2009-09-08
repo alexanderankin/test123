@@ -215,7 +215,6 @@ public class TaskListPopup extends JPopupMenu {
      * Handle the various actions for the menu items in this popup menu.
      */
     class ActionHandler implements ActionListener {
-        // TODO: something
         public void actionPerformed( ActionEvent evt ) {
             String cmd = evt.getActionCommand();
 
