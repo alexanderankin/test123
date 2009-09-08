@@ -49,7 +49,7 @@ import ise.plugin.svn.data.CopyData;
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.data.LogResults;
 import ise.plugin.svn.library.GUIUtils;
-import ise.plugin.svn.library.Logger;
+//import ise.plugin.svn.library.Logger;
 import ise.plugin.svn.library.TableCellViewer;
 import ise.plugin.svn.data.PropertyData;
 import ise.plugin.svn.io.ConsolePrintStream;
@@ -381,11 +381,13 @@ public class LogResultsPanel extends JPanel {
                     }
                                 );
         }
+        // TODO: add menu item to diff against working copy
 
         // Open browser
         if ( col == 3 ) {
             final List<String> urls = fetchUrl( ( String ) table.getValueAt( row, col ) );
             if ( urls != null ) {
+                // TODO: move hard-coded strings to property file
                 JMenuItem mi = new JMenuItem( urls.size() > 1 ? "Open links in browser" : "Open link in browser" );
                 popup.add( mi );
                 mi.addActionListener(
@@ -412,6 +414,8 @@ public class LogResultsPanel extends JPanel {
                 }
                             );
         popup.add( mi );
+        
+        // TODO: add menu item to open file 
 
         return popup;
     }
