@@ -15,6 +15,7 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -93,6 +94,16 @@ public class SourceLinkTree extends JTree
 						((SourceLinkParentNode) pathNode).addSubtreePopupMenuItems(p, node);
 				}
 				// Common items for all nodes
+				p.add(new AbstractAction("Expand all children") {
+					public void actionPerformed(ActionEvent e) {
+						expandAllChildren(node);
+					}
+				});
+				p.add(new AbstractAction("Collapse all children") {
+					public void actionPerformed(ActionEvent e) {
+						collapseAllChildren(node);
+					}
+				});
 				p.add(new AbstractAction("Remove") {
 					public void actionPerformed(ActionEvent e) {
 						removeNode(node);
@@ -460,6 +471,20 @@ public class SourceLinkTree extends JTree
 			return c;
 		}
 
+	}
+
+	private void expandAllChildren(DefaultMutableTreeNode node)
+	{
+		expandPath(new TreePath(node.getPath()));
+		for (int i = 0; i < node.getChildCount(); i++)
+			expandAllChildren((DefaultMutableTreeNode)node.getChildAt(i));
+	}
+
+	private void collapseAllChildren(DefaultMutableTreeNode node)
+	{
+		for (int i = 0; i < node.getChildCount(); i++)
+			collapseAllChildren((DefaultMutableTreeNode)node.getChildAt(i));
+		collapsePath(new TreePath(node.getPath()));
 	}
 
 	@SuppressWarnings("unchecked")
