@@ -23,7 +23,6 @@ import java.io.IOException;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.Buffer;
 
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSFile;
@@ -112,6 +111,8 @@ public class VFSHelper
 		View view = jEdit.getActiveView();
 		VFS vfs = VFSManager.getVFSForPath(url);
 		Object session = createVFSSession(vfs, url, view);
+		if (session == null)
+			return null;
 		VFSFile file = vfs._getFile(session, url, view);
 		endVFSSession(vfs, session, view);
 		return file;
