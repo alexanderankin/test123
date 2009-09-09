@@ -17,6 +17,7 @@ import javax.swing.tree.TreeModel;
 
 import marker.FileMarker;
 import marker.MarkerSetsPlugin;
+import marker.tree.FileTreeBuilder;
 import marker.tree.SourceLinkTree;
 import marker.tree.SourceLinkTree.SourceLinkParentNode;
 import marker.tree.SourceLinkTree.SubtreePopupMenuProvider;
@@ -134,6 +135,7 @@ public class SearchResults extends JPanel implements EBComponent
 		mainPanel = new JPanel(new CardLayout());
 		mainPanel.add(new JScrollPane(list), "list");
 		mainPanel.add(new JScrollPane(tree), "tree");
+		tree.setBuilder(new FileTreeBuilder());
 		//add(mainPanel, new JScrollPane(tree));
 		add(mainPanel, BorderLayout.CENTER);
 //		add(new JSplitPane(JSplitPane.VERTICAL_SPLIT, new JScrollPane(list), preview), BorderLayout.CENTER);
