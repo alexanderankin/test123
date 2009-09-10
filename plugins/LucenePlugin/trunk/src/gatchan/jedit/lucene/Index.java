@@ -42,6 +42,12 @@ public interface Index
 	Analyzer getAnalyzer();
 	void addFile(String path);
 	void addFiles(VFSFile[] files);
+
+	interface FileProvider
+	{
+		VFSFile next();
+	}
+	void addFiles(FileProvider files);
 	void removeFile(String path);
 
 	void setAnalyzer(Analyzer analyzer);

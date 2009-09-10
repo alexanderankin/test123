@@ -87,19 +87,20 @@ public class IndexImpl extends AbstractIndex implements Index
 		return (writerCount > 0);
 	}
 
-	public void addFiles(VFSFile[] files)
+	public void addFiles(FileProvider files)
 	{
-		if (files.length == 0)
+		startActivity();
+		VFSFile file = files.next();
+		if (file == null)
 			return;
 		openWriter();
 		if (writer == null)
 			return;
-		startActivity();
-		String path = files[0].getPath();
+		String path = file.getPath();
 		VFS vfs = VFSManager.getVFSForPath(path);
 		View view = jEdit.getActiveView();
 		Object session = vfs.createVFSSession(path, view);
-		for (VFSFile file: files)
+		for (; file != null; file = files.next())
 		{
 			addDocument(file, session);
 		}
@@ -112,6 +113,11 @@ public class IndexImpl extends AbstractIndex implements Index
 		}
 		LucenePlugin.CENTRAL.commit();
 		endActivity();
+	}
+
+	public void addFiles(final VFSFile[] files)
+	{
+		addFiles(new FileArrayProvider(files));
 	}
 
 	public void addFile(String path)
