@@ -148,7 +148,13 @@ public class LipstikTableHeaderUI extends BasicTableHeaderUI
                 {
                     int col = header.getColumnModel().getColumnIndexAtX(me.getX());
                     if (col >= 0 && col < header.getColumnModel().getColumnCount())
-                        header.setToolTipText(header.getColumnModel().getColumn(col).getHeaderValue().toString());
+                    {
+                        Object headerValue = header.getColumnModel().getColumn(col).getHeaderValue();
+                        if (headerValue != null) 
+                        {
+                            header.setToolTipText(headerValue.toString());
+                        }
+                    }
                 }
             }
         });
