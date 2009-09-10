@@ -145,7 +145,10 @@ public class SearchResults extends JPanel implements EBComponent
 
 	private Index getSelectedIndex()
 	{
-		return LucenePlugin.instance.getIndex((String) indexes.getSelectedItem());
+		String indexName = (String) indexes.getSelectedItem();
+		if (indexName == null)
+			return null;
+		return LucenePlugin.instance.getIndex(indexName);
 	}
 
 	public void search(String text)

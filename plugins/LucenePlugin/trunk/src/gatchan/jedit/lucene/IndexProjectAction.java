@@ -1,5 +1,7 @@
 package gatchan.jedit.lucene;
 
+import gatchan.jedit.lucene.Index.FileProvider;
+
 import java.awt.event.ActionEvent;
 import java.util.Collection;
 import java.util.Vector;
@@ -43,7 +45,7 @@ public class IndexProjectAction extends Action
 					null);*/
 				return;
 			}
-			ProjectIndexer indexer = new ProjectIndexer(project, indexName);
+			ProjectIndexer indexer = new ProjectIndexer(project, index);
 			VFSManager.runInWorkThread(indexer);
 		}
 	}
@@ -51,29 +53,49 @@ public class IndexProjectAction extends Action
 	private class ProjectIndexer implements Runnable
 	{
 		private VPTProject project;
-		private String indexName;
-		public ProjectIndexer(VPTProject project, String indexName)
+		private Index index;
+		public ProjectIndexer(VPTProject project, Index index)
 		{
 			this.project = project;
-			this.indexName = indexName;
+			this.index = index;
 		}
 		public void run()
 		{
-			Collection<VPTNode> nodes = project.getOpenableNodes();
-			Vector<VFSFile> files = new Vector<VFSFile>();
-			for (VPTNode n: nodes)
+			LucenePlugin.instance.addToIndex(index.getName(),
+				new ProjectFileList(project), true);
+		}
+		
+		private class ProjectFileList implements FileProvider
+		{
+			private VPTProject project;
+			private Vector<VFSFile> files = null;
+			private int index = 0;
+			public ProjectFileList(VPTProject project)
 			{
-				if (n.isFile())
-				{
-					VPTFile vptFile = (VPTFile) n;
-					VFSFile file = vptFile.getFile();
-					if (file != null)
-						files.add(file);
-				}
+				this.project = project;
 			}
-			VFSFile [] fileArray = new VFSFile[files.size()];
-			files.toArray(fileArray);
-			LucenePlugin.instance.addToIndex(indexName, fileArray, true);
+			public VFSFile next()
+			{
+				if (files != null)
+				{
+					if (index >= files.size())
+						return null;
+					return files.get(index++);
+				}
+				Collection<VPTNode> nodes = project.getOpenableNodes();
+				files = new Vector<VFSFile>();
+				for (VPTNode n: nodes)
+				{
+					if (n.isFile())
+					{
+						VPTFile vptFile = (VPTFile) n;
+						VFSFile file = vptFile.getFile();
+						if (file != null)
+							files.add(file);
+					}
+				}
+				return next();
+			}
 		}
 	}
 }

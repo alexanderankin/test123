@@ -31,6 +31,8 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
 
+import gatchan.jedit.lucene.Index.FileProvider;
+
 import javax.swing.*;
 import java.io.*;
 import java.util.*;
@@ -279,7 +281,7 @@ public class LucenePlugin extends EditPlugin
 	 * @param files     the file array to add
 	 * @param sharedSession whether the VFS session can be shared by all files
 	 */
-	public void addToIndex(final String indexName, final VFSFile[] files,
+	public void addToIndex(final String indexName, FileProvider files,
 		final boolean sharedSession)
 	{
 		Index index = getIndex(indexName);
@@ -292,12 +294,25 @@ public class LucenePlugin extends EditPlugin
 			index.addFiles(files);
 		else
 		{
-			for (VFSFile file : files)
+			for (VFSFile file = files.next(); file != null; file = files.next())
 			{
 				index.addFile(file.getPath());
 			}
 		}
 		index.commit();
+	}
+
+	/**
+	 * Add some files to the given index.
+	 *
+	 * @param indexName the index name
+	 * @param files     the file array to add
+	 * @param sharedSession whether the VFS session can be shared by all files
+	 */
+	public void addToIndex(final String indexName, final VFSFile[] files,
+		final boolean sharedSession)
+	{
+		addToIndex(indexName, new FileArrayProvider(files), sharedSession);
 	}
 
 	/**
