@@ -53,6 +53,7 @@ public class SearchResults extends JPanel implements EBComponent
 		super(new BorderLayout());
 		
 		lineResults = new JCheckBox("Line-based results");
+		lineResults.setSelected(true);
 		type = new JTextField(6);
 		maxResults = new JSpinner(new SpinnerNumberModel(100, 1, 10000, 1));
 		JPanel maxPanel = new JPanel(new BorderLayout());
