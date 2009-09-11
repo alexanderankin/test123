@@ -115,7 +115,7 @@
         <fileset dir="${test.framework.home}/lib">
             <include name="**/*.jar"/>
         </fileset>
-        <!-- TODO: why is this necessary?  I don't see anything in 'lib' that is not a jar. -->
+        <!-- enable emma.properties to be found -->
         <pathelement path="${test.framework.home}/lib"/>
     </path>
 
@@ -208,7 +208,6 @@
     
         <echo>project.test.src.dir = ${project.test.src.dir}</echo>
         <echo>project.test.classes.dir = ${project.test.classes.dir}</echo>
-        <!-- TODO: source and target need to be properties -->
         <javac srcdir="${project.test.src.dir}" destdir="${project.test.classes.dir}" debug="true" source="1.5" target="1.5">
             <selector refid="projectFiles"/>
             <classpath refid="framework.class.path"/>
@@ -243,7 +242,6 @@
                 <pathelement location="${junit.jar}" />
                 <pathelement location="${hamcrest.jar}" />
                 <path refid="framework.class.path"/>
-                <path refid="project.class.path"/>
                 <!-- use the instrumented jar file, not the original one !! -->
                 <path>
                     <fileset dir="${test.jedit.settings.dir}/jars" includes="*.jar"/>

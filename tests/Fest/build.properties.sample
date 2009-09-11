@@ -5,3 +5,8 @@
 
 # Base directory for jEdit source code, default is ${test.framework.home}/../../jEdit
 #test.jedit.src=../../jEdit
+
+# where to find junit.jar and hamcrest.jar
+#junit.jar=/opt/local/share/java/junit.jar
+#hamcrest.jar=/opt/local/share/java/hamcrest-core.jar
+
