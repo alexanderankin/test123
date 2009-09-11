@@ -29,7 +29,6 @@ import java.io.*;
 import java.awt.Dialog;
 import java.awt.Frame;
 import javax.swing.SwingUtilities;
-import javax.swing.JButton;
 
 import javax.swing.tree.*;
 import javax.swing.JTree;
@@ -51,6 +50,7 @@ import org.fest.swing.core.*;
 import org.fest.swing.finder.WindowFinder;
 import org.fest.swing.driver.BasicJTreeCellReader;
 import org.fest.swing.lock.ScreenLock;
+import org.fest.swing.timing.Timeout;
 //}}}
 
 ///}}}
@@ -78,10 +78,6 @@ public class TestUtils {
 
     // press Ctrl+Shift+A to abort running tests
     private static EmergencyAbortListener listener;
-
-    // TODO: why is this a Boolean rathe than a boolean?
-    private static Boolean injEdit = null;
-
 
     /**
      * Set up and start jEdit if necessary, or reuse an existing jEdit.    
@@ -196,7 +192,7 @@ public class TestUtils {
 
         // TODO: change hard coded strings to jEdit properties for localization?
         if ( buffer.isDirty() ) {
-            TestUtils.findDialogByTitle( "File Not Saved" ).button( AbstractButtonTextMatcher.withText( JButton.class, "No" ) ).click();
+            jEditFrame().optionPane(Timeout.timeout(2000)).noButton().click();
         }
     }
 
