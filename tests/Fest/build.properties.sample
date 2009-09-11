@@ -1,0 +1,7 @@
+# sample build.properties file for test framework
+
+# test framework home, defaults to ${basedir}
+#test.framework.home=.
+
+# Base directory for jEdit source code, default is ${test.framework.home}/../../jEdit
+#test.jedit.src=../../jEdit

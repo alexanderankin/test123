@@ -1,0 +1,13 @@
+# sample properties file for running tests
+
+# Base directory for jEdit source code, default is ${test.framework.home}/../../jEdit
+#test.jedit.src=../../../jEdit
+
+# Where to find jUnit. Usually, this is in ${ant.library.dir} and is included
+# automatically
+#junit.jar=/opt/local/share/java/junit.jar
+
+# Where to find hamcrest.jar.  This is a dependency for junit.jar on Mac, users
+# on other OS's won't need to set this.  If hamcrest.jar is added to 
+# ${ant.library.dir}, it will be included automatically.
+#hamcrest.jar=/opt/local/share/java/hamcrest-core.jar

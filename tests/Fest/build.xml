@@ -43,6 +43,8 @@
                 actually starts jEdit and provides a number of convenience
                 methods to find parts of jEdit.)
                 
+    See build.properties.examples for possible configuration options for your 
+    system.
     </description>
 
 
@@ -113,6 +115,8 @@
         <fileset dir="${test.framework.home}/lib">
             <include name="**/*.jar"/>
         </fileset>
+        <!-- TODO: why is this necessary?  I don't see anything in 'lib' that is not a jar. -->
+        <pathelement path="${test.framework.home}/lib"/>
     </path>
 
     <!-- framework class path, include FEST libraries, and jedit.jar -->
@@ -170,6 +174,7 @@
     Calls "clean-all" and "build" in the main jEdit build file.
     ======================================================================== -->
     <target name="-buildjEdit" description="Build jEdit, prerequisite for tests." unless="dont_-buildjEdit">
+    	<echo message="test.jedit.src=${test.jedit.src}"/>
         <ant antfile="${test.jedit.src}/build.xml" dir="${test.jedit.src}" target="clean-all" inheritall="false"/>
         <ant antfile="${test.jedit.src}/build.xml" dir="${test.jedit.src}" target="build" inheritall="false"/>
     </target>
@@ -201,7 +206,9 @@
             </condition>
         </fail>
     
+        <echo>project.test.src.dir = ${project.test.src.dir}</echo>
         <echo>project.test.classes.dir = ${project.test.classes.dir}</echo>
+        <!-- TODO: source and target need to be properties -->
         <javac srcdir="${project.test.src.dir}" destdir="${project.test.classes.dir}" debug="true" source="1.5" target="1.5">
             <selector refid="projectFiles"/>
             <classpath refid="framework.class.path"/>
@@ -214,12 +221,18 @@
     Target: test
     Runs all tests as specified in the junit.testcases selector.
     ======================================================================== -->
-    <target name="-test" description="Runs the jUnit tests." depends="-prepSettingsDir, -deletePluginJars, -copyPluginJars, -compileTests">
+    <target name="-test" description="Runs the jUnit tests." depends="-prepSettingsDir, -deletePluginJars, -instrument, -compileTests">
         <echo message="Running tests..."/>
 
         <mkdir dir="${test.output}"/>
+        
+        <!-- clean old test results -->
+        <delete failonerror="false" file="${basedir}/coverage.ec"/>
+        
         <junit printsummary="${junit.printsummary}" haltonfailure="${junit.haltonfailure}" showoutput="${junit.showoutput}" fork="yes">
-
+         	<!-- no matter what I try, this is ignored : always get coverage.ec in basedir
+         	     I gave up and merge it in the -report target
+         	<jvmarg value="-Demma.coverage.out.file=${test.output}/coverage.emma"/> -->
             <sysproperty key="test-jedit.settings" path="${test.jedit.settings.dir}"/>
             <sysproperty key="test-tests.dir" path="tests"/>
             <sysproperty key="jedit.home" path="${test.jedit.home}"/>
@@ -228,8 +241,13 @@
 
             <classpath>
                 <pathelement location="${junit.jar}" />
+                <pathelement location="${hamcrest.jar}" />
                 <path refid="framework.class.path"/>
                 <path refid="project.class.path"/>
+                <!-- use the instrumented jar file, not the original one !! -->
+                <path>
+                    <fileset dir="${test.jedit.settings.dir}/jars" includes="*.jar"/>
+                </path>
                 <pathelement path="${project.test.classes.dir}"/>
             </classpath>
 
@@ -241,6 +259,7 @@
             <formatter type="brief" usefile="${junit.usefile}"/>
         </junit>
         <echo>after junit</echo>
+        <antcall target="-report"/>
     </target>
 
     <!-- =======================================================================
@@ -354,5 +373,66 @@
             </fileset>
         </delete>
     </target>
+    
+    
+    <path id="emma.lib" >
+    	<pathelement location="${test.framework.home}/lib/emma.jar" />
+    	<pathelement location="${test.framework.home}/lib/emma_ant.jar" />
+    	<!-- for the emma.properties file -->
+    	<pathelement location="${test.framework.home}/lib" />
+    </path>
+
+    <taskdef resource="emma_ant.properties" classpathref="emma.lib" />
+    
+    <!-- directory where to find the project file to instrument.
+    	 Should only be overloaded for jedit tests.
+    	 Don't forget to set project.toinstrument.jar, however.
+      -->
+    <property name="project.toinstrument.dir" value="${test.jedit.jars}" />
+    
+    <!-- what classes to include in the code coverage. Accept all classes by default.
+    	 The filter is on class names (no .class suffix please).
+    	 You can use a specific filter, like value='xml.Resolver*', to go with
+    	 a single test case.
+      -->
+    <property name="emma.filter" value="*" />
+    
+    <!-- =======================================================================
+    Target: -instrument
+    Instruments project classes
+    ======================================================================== -->
+    <target name="-instrument" depends="-copyPluginJars">
+    	
+        <!-- clean old instrumentation metadata -->
+        <delete failonerror="false" file="${basedir}/metadata.em"/>
+		
+        <emma enabled="true">
+			<instr
+				metadatafile="${basedir}/metadata.em"  
+				mode="overwrite"
+			>
+				<instrpath path="${project.toinstrument.dir}/${project.toinstrument.jar}"/>
+				<filter includes="${emma.filter}"/>
+			</instr>
+		 </emma> 
+	</target>  
+       
+	
+    <!-- =======================================================================
+    Target: -report
+    Generate an HTML report from the test cases
+    ======================================================================== -->
+     <target name="-report" >  
+        <emma>  
+         <report sourcepath="${project.src.dir}" >  
+              <fileset dir="${basedir}" >  
+                 <include name="metadata.em" />  
+                 <include name="coverage.ec" />  
+              </fileset>  
+              <html outfile="${test.output}/coverage.html" />  
+           </report>  
+        </emma>  
+     </target>  
+    
 </project>
 

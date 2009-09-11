@@ -1,11 +1,39 @@
 <project name="jedit_tests" default="test" basedir=".">
 
+    <description>
+    This build file runs the unit tests for jEdit.  This will build jEdit from source,
+    create a clean settings directory, then run the tests.  Emma code coverage reports
+    are produced as well as standard junit reports.
+    
+    Source code for the tests are in the "test" directory.
+    
+    Reports are created in the test_reports directory.
+    
+    See build.properties.example for configuration details for your system.
+    </description>
+
+    <!-- override test.framework.home in build.properties if necessary -->
+    <property file="build.properties"/>
+    
+    <!-- default location for test.framework.home -->
     <property name="test.framework.home" location="../"/>
+    
+    <!-- default location of jEdit source code -->
+    <property name="test.jedit.src" location="${test.framework.home}/../../jEdit"/>
+    
+    <!-- TODO: what is this for?  Should it be 'file' instead of 'location'? -->
+    <property name="build.properties" location="${test.framework.home}/build.properties"/>
 
 
     <property name="project.test.src.dir" location="${basedir}"/>
     <property name="project.test.classes.dir" location="${basedir}/jedit_tests_classes"/>
     <mkdir dir="${project.test.classes.dir}"/>
+    
+    <!-- settings for emma code coverage -->
+    <property name="project.src.dir" location="${test.jedit.src}"/>
+    <property name="project.toinstrument.dir" value="${test.jedit.src}/build"/>
+    <property name="project.toinstrument.jar" value="jedit.jar"/>
+   
     
     <path id="project.class.path">
         <pathelement path="${project.test.classes.dir}"/>
