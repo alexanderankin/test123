@@ -190,7 +190,6 @@ public class TestUtils {
         }
         catch ( InterruptedException ie ) {}
 
-        // TODO: change hard coded strings to jEdit properties for localization?
         if ( buffer.isDirty() ) {
             jEditFrame().optionPane(Timeout.timeout(2000)).noButton().click();
         }
