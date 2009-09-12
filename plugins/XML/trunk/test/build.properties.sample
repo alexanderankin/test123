@@ -1,0 +1,11 @@
+# where is the test framework ?
+#test.framework.home=../../../Fest
+#test.jedit.src=${test.framework.home}/../jedittrunk
+
+# Where to find jUnit
+#junit.jar=/opt/local/share/java/junit.jar
+#hamcrest.jar=/opt/local/share/java/hamcrest-core.jar
+
+# to find all jar files
+#install.dir=${user.home}/Library/jEdit/jars
+
