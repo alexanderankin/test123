@@ -1,0 +1,15 @@
+
+* improve word movement to be more like Vim (can use TextObjects).
+
+* error reporting should be moved out of VimageMap and should throw instead. The
+parser should print the error and be passed the filename of what it's parsing.
+
+* '.' support is broken.
+
+* macro recording needs to be tested.
+
+* figure out a better way than the special handling for vimage.cut and
+vimage.copy in VimageInputHandler.java.
+
+* cleanup the recording code in VimageInputHandler.java.
+
