@@ -1,0 +1,81 @@
+// vimage
+
+vmap r { __("visual-overwrite-key"); }
+visual-overwrite-key * {
+    Selection selection = textArea.getSelectionAtOffset(textArea.getCaretPosition());
+    if (selection == null)
+        return;
+    StringBuffer sbuf = new StringBuffer();
+    for (int i = selection.getStart(); i < selection.getEnd(); ++i)
+        sbuf.append(key.input);
+    textArea.setSelectedText(sbuf.toString());
+}
+
+vmap LEFT { _("select-prev-char"); }
+vmap h { _("select-prev-char"); }
+vmap RIGHT { _("select-next-char"); }
+vmap l { _("select-next-char"); }
+vmap UP { _("select-prev-line"); }
+vmap k { _("select-prev-line"); }
+vmap DOWN { _("select-next-line"); }
+vmap j { _("select-next-line"); }
+
+vmap C+d { _("select-next-page"); }
+vmap PAGE_DOWN { _("select-next-page"); }
+vmap C+b { _("select-prev-page"); }
+vmap PAGE_UP { _("select-prev-page"); }
+
+vmap w { _("select-next-word-std"); }
+vmap b { _("select-prev-word-std"); }
+
+vmap % { _("match-bracket"); }
+vmap $ { _("select-line-end"); }
+vmap 0 { 
+    if (mode.getCount() == 0)
+        _("select-line-home"); 
+    mode.addDigit(0);
+}
+vmap ^ { _("vimage.select-begin-line-text"); }
+
+vmap G { _("vimage.select-goto-line"); }
+vmap g { __("visual-g-prefix"); }
+visual-g-prefix g { _("select-document-home"); }
+
+vmap t { __("visual-t-key"); }
+visual-t-key * { _("vimage.select-forward-till-char"); }
+vmap T { __("visual-T-key"); }
+visual-T-key * { _("vimage.select-backward-till-char"); }
+vmap f { __("visual-f-key"); }
+visual-f-key * { _("vimage.select-forward-char"); }
+vmap F { __("visual-F-key"); }
+visual-F-key * { _("vimage.select-backward-char"); }
+
+vmap > { _("shift-right"); __("nmap"); }
+vmap < { _("shift-left"); __("nmap"); }
+
+vmap a { __("to-a-prefix"); }
+vmap i { __("to-in-prefix"); }
+
+vmap d { if (textArea.getSelection().length != 0) { _("vimage.cut"); __("nmap"); } }
+vmap c { if (textArea.getSelection().length != 0) { _("vimage.delete-insert"); __("imap"); } }
+vmap x { if (textArea.getSelection().length != 0) { _("vimage.cut"); __("nmap"); } }
+vmap y { if (textArea.getSelection().length != 0) { _("vimage.copy"); __("nmap"); } }
+vmap p { _("vimage.paste"); __("nmap"); }
+vmap P { _("vimage.paste"); __("nmap"); }
+
+vmap ~ { _("vimage.swap-case"); __("nmap"); }
+
+vmap = { _("indent-lines"); __("nmap"); }
+
+nmap " { __("register-key"); }
+
+vmap 1 { mode.addDigit(1); }
+vmap 2 { mode.addDigit(2); }
+vmap 3 { mode.addDigit(3); }
+vmap 4 { mode.addDigit(4); }
+vmap 5 { mode.addDigit(5); }
+vmap 6 { mode.addDigit(6); }
+vmap 7 { mode.addDigit(7); }
+vmap 8 { mode.addDigit(8); }
+vmap 9 { mode.addDigit(9); }
+

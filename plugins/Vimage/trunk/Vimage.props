@@ -1,0 +1,10 @@
+plugin.vimage.VimagePlugin.activate=startup
+plugin.vimage.VimagePlugin.name=Vimage
+plugin.vimage.VimagePlugin.author=Matthew Gilbert
+plugin.vimage.VimagePlugin.docs=doc/index.html
+plugin.vimage.VimagePlugin.version=0.0.1
+plugin.vimage.VimagePlugin.depend.0=jedit 04.03.15.00
+plugin.vimage.VimagePlugin.depend.1=jdk 1.5
+plugin.vimage.VimagePlugin.description=None
+plugin.vimage.VimagePlugin.longdescription=
+

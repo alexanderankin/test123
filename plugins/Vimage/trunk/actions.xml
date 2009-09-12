@@ -1,0 +1,184 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<ACTIONS>
+    <ACTION NAME="vimage.start">
+        <CODE>
+            vimage.VimagePlugin.startVimage();
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="vimage.stop">
+        <CODE>
+            vimage.VimagePlugin.stopVimage();
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="vimage.ex-bar">
+        <CODE>
+            vimage.VimagePlugin.gotoExBar(view, "");
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="vimage.reload-maps">
+        <CODE>
+            vimage.VimagePlugin.reloadMaps();
+        </CODE>
+    </ACTION>
+    
+    <ACTION NAME="vimage.empty-command">
+        <CODE>
+        </CODE>
+    </ACTION>
+    
+    <ACTION NAME="vimage.begin-line-text">
+        <CODE>
+            vimage.VimageActions.goto_line_text_start(view, textArea, false);
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="vimage.select-begin-line-text">
+        <CODE>
+            vimage.VimageActions.goto_line_text_start(view, textArea, true);
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="vimage.forward-till-char">
+        <CODE>
+            vimage.VimageActions.find_char_on_line(view, true, false, -1, new String(new char[] {vimage_key.input})); 
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="vimage.select-forward-till-char">
+        <CODE>
+            vimage.VimageActions.find_char_on_line(view, true, true, -1, new String(new char[] {vimage_key.input})); 
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="vimage.backward-till-char">
+        <CODE>
+            vimage.VimageActions.find_char_on_line(view, false, false, 1, new String(new char[] {vimage_key.input})); 
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="vimage.select-backward-till-char">
+        <CODE>
+            vimage.VimageActions.find_char_on_line(view, false, true, 1, new String(new char[] {vimage_key.input})); 
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="vimage.forward-char">
+        <CODE>
+            vimage.VimageActions.find_char_on_line(view, true, false, 0, new String(new char[] {vimage_key.input})); 
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="vimage.select-forward-char">
+        <CODE>
+            vimage.VimageActions.find_char_on_line(view, true, true, 0, new String(new char[] {vimage_key.input})); 
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="vimage.backward-char">
+        <CODE>
+            vimage.VimageActions.find_char_on_line(view, false, false, 0, new String(new char[] {vimage_key.input})); 
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="vimage.select-backward-char">
+        <CODE>
+            vimage.VimageActions.find_char_on_line(view, false, true, 0, new String(new char[] {vimage_key.input})); 
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="vimage.select-line">
+        <CODE>
+            vimage.VimageActions.select_line(textArea);
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="vimage.select-prev-line">
+        <CODE>
+            vimage.VimageActions.select_line(textArea, -1);
+        </CODE>
+    </ACTION>
+    
+    <ACTION NAME="vimage.select-next-line">
+        <CODE>
+            vimage.VimageActions.select_line(textArea, 1);
+        </CODE>
+    </ACTION>
+    
+    <ACTION NAME="vimage.goto-line">
+        <CODE>
+            vimage.VimageActions.goto_line(view, textArea, vimage_count, false);
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="vimage.select-goto-line">
+        <CODE>
+            vimage.VimageActions.goto_line(view, textArea, vimage_count, true);
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="vimage.delete-insert">
+        <CODE>
+            vimage.VimageActions.cut(view, vimage_mode, textArea, vimage_mode.getRegister());
+            vimage_mode.setMode("imap");
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="vimage.cut">
+        <CODE>
+            vimage.VimageActions.cut(view, vimage_mode, textArea, vimage_mode.getRegister());
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="vimage.copy">
+        <CODE>
+            vimage.VimageActions.copy(view, vimage_mode, textArea, vimage_mode.getRegister());
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="vimage.paste">
+        <CODE>
+            vimage.VimageActions.paste(view, textArea, vimage_mode.getRegister(), true);
+        </CODE>
+    </ACTION>
+    
+    <ACTION NAME="vimage.paste-prev">
+        <CODE>
+            vimage.VimageActions.paste(view, textArea, vimage_mode.getRegister(), false);
+        </CODE>
+    </ACTION>
+    
+    <ACTION NAME="vimage.swap-case">
+        <CODE>
+            vimage.VimageActions.swap_case(textArea);
+        </CODE>
+    </ACTION>    
+    
+    <ACTION NAME="vimage.replay-default">
+        <CODE>
+            vimage_mode.playRecording('$');
+        </CODE>
+    </ACTION>    
+    
+    <ACTION NAME="vimage.replay-record">
+        <CODE>
+            vimage_mode.playRecording(vimage_key.input);
+        </CODE>
+    </ACTION>
+    
+    <ACTION NAME="vimage.paste-record">
+        <CODE>
+            vimage_mode.pasteRecording(vimage_key.input);
+        </CODE>
+    </ACTION>
+    
+    <ACTION NAME="vimage.show-keybindings">
+        <CODE>
+            vimage.VimagePlugin.printKeyBindings(view);
+        </CODE>
+    </ACTION>
+</ACTIONS>
