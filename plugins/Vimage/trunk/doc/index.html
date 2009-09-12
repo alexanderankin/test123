@@ -1,0 +1,182 @@
+<html>
+    <head>
+    <title>Vimage Plugin Documentation</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    </head>
+    <body>
+    
+        <h1>Vimage</h1>
+        
+        <h2>Introduction</h2>
+        
+            <p>Vimage is a jEdit plugin that adds Vim like key binding emulation to
+            jEdit. The plugin provides a flexible modal input layer and a set of
+            actions which emulate Vim.</p>
+            
+            <p>Familiarity with Vim is expected. Vimage is currently incomplete
+            and doesn't emulate the entirety of Vim's keybindings. In addition,
+            some Vimage operations don't mimic the Vim counterparts exactly (for
+            example, word based cursor movement).</p>
+        
+        <h2>Key Bindings</h2>
+        
+            <p>Vimage comes equipped with a default set of keybindings that
+            approximates most of Vim. The keybindings can be extended by
+            providing new key mapping files.</p>
+            
+            <h3>User Mappings</h3>
+            
+                <p>Vimage keybindings are defined in simple text files. They
+                have the following layout:
+                    <b><pre>MODE_NAME KEY_COMBINATION { BeanShell Action }</pre></b>
+                    <b>MODE_NAME</b>
+                    instructs the Vimage mapping parser which mode owns the
+                    following key/action pair. Vimage provides a flexible modal
+                    input system supporting an unlimited number of input modes.
+                    Each mode is a grouping of keyboard shortcuts and associated
+                    actions. The current mode can be changed through the
+                    BeanShell Action. Vimage actually supports 2 current modes,
+                    the current base mode and the current overlay mode. As the
+                    names imply, the overlay mode adds or overrides key/action
+                    pairs of the base mode. We'll give more specifics and
+                    examples of modes later.<br><br>
+                    <b>KEY_COMBINATION</b>
+                    defines the key combination that will trigger the
+                    following BeanShell action block. These are written in
+                    standard jEdit keyboard shortcut syntax. See below and
+                    Appendix A. in the jEdit Help for more examples.<br><br>
+                    <b>{ BeanShell Action }</b>
+                    is a standard BeanShell block that will be invoked when
+                    Vimage is in mode MODE_NAME and KEY_COMBINATION is pressed.
+                    Vimage adds some special variables to the BeanShell
+                    namespace which are outlined below. </p>
+                
+            <h3>User Mapping Directory</h3>
+            
+                <p>Vimage looks in the jEdit settings directory for a
+                sub-directory named mappings. It loads every file in the
+                mappings directory parsing the contained key mapping
+                declarations.</p>
+                
+        <h2>Quick Mapping Tutorial</h2>
+        
+            <p>We're going to add a mapping to Vimage which invokes the SideKick
+            tree (SideKick is a great jEdit plugin which shows the structure of
+            the current buffer).
+            <ol>
+                <li>Start by creating the mappings directory:
+                    <ol>
+                        <li>Open jEdit's open file dialog.
+                        <li>Change directories to the jEdit settings directory
+                        (typically ~/.jedit, but varies by platform, see <i>The
+                        jEdit Settings Directory</i> in the jEdit help for more
+                        info).
+                        <li>Open the Command menu and choose "New Directory".
+                        <li>Name the new directory mappings.
+                        <li>Change into the newly created mappings directory.
+                    </ol>
+                <li>Create a new file, let's name it nmap. The filename doesn't
+                matter, it is typically convenient to name the files after the
+                mode defined in the file (nmap is one of the 4 default modes
+                provided by Vimage and is the default mode).
+                <li>Add the following text to the file and save it:
+                    <pre>nmap C+MINUS { _("sidekick-tree"); }</pre>
+                <li>Tell Vimage to reload the mappings using the Vimage action
+                <i>vimage.reload-maps</i> (see <i>The Action Bar</i> in the
+                jEdit help for how to use actions with the action bar).
+                <li>Finally, use the new shortcut. Hit escape to make sure
+                Vimage is in the nmap mode, then press C+MINUS (control and
+                minus at the same time). If you have the SideKick plugin
+                installed you should now be looking the tree dockable.
+            </ol>
+            </p>
+            
+        <h2>Mappings in Depth</h2>
+        
+            <h3>BeanShell Namespace Additions</h3>
+            
+                <p>Vimage adds the following variables to the Vimage BeanShell
+                namespace (the namespace in which all mapping actions are
+                executed).
+                    <ul>
+                        <li><b>count</b> is the current count. Most Vimage
+                        operations can be repeated by first supplying an
+                        optional count.
+                        <li><b>key</b> is the key that triggered the action.
+                        This is explained more in the <i>Mappings That Take a
+                        Key</i> section. It is an instance of jEdit's
+                        KeyEventTranslator.Key class.
+                        <li><b>mode</b> is the Vimage mode object. Its public
+                        interface can be accessed through this variable.
+                    </ul>
+                
+                <p>Vimage adds the following functions to the Vimage BeanShell
+                namespace.
+                    <ul>
+                        <li><b>_(String a)</b> executes the jEdit action a.
+                        <li><b>__(String m)</b> causes Vimage to switch to
+                        mode m.
+                    </ul>
+                    
+            <h3>Mappings That Take a Key</h3>
+            
+                <p>For some shortcuts it's not enough to be triggered, they need
+                additional input in the form of a key press. For example, the
+                standard Vim command to move to the next letter on a line
+                requires the character as input. Vimage supports this through
+                special mode names.</p>
+                
+                <p>Modes that end in "-key" are special. They should only have a
+                single key mapping - "*". For example, here is the default
+                mapping to select a register:
+                    <pre>nmap " { __("register-key"); }</pre>
+                    <pre>register-key * { mode.setRegister(key.input); }</pre>
+                    
+                <p>"-key" modes are expected to take only a single character as
+                input. After the "-key" action is executed, the mode is
+                automatically put back to the last used base mode (see the next
+                section about base modes).</p>
+                    
+        <h2>The 5 Base Modes</h2>
+
+            <p>Vimage adds 5 modes by default. They are nmap, imap, vmap,
+            omap, and command. 
+                <ul> 
+                    <li><b>nmap</b> is the default mode. This corresponds to
+                    Vim's normal mode. Pressing escape causes Vimage to
+                    return to normal mode. This key binding can not be
+                    overridden.
+                    <li><b>imap</b> is the input mode. This mode corresponds
+                    to entering text. Any keys that don't match a key/action
+                    pair are passed as input to jEdit's textarea.
+                    <li><b>vmap</b> is the visual selection mode. In this
+                    mode cursor movement will extend the selection.
+                    <li><b>omap</b> is the operator pending mode. For
+                    example, with no select hitting "d" in nmap will cause
+                    Vimage to enter omap waiting for another keystroke
+                    indication what to delete.
+                    <li><b>command</b> is a special mode corresponding to
+                    the Vimage command line. The command line is accessed
+                    using the ':' key from the nmap mode. Currently this
+                    mode is limited in that arguments supplied on the
+                    command line are not forwarded to the action.
+                </ul>
+                
+        <h2>Overlay Modes</h2>
+        
+            <p>Occasionally it makes sense to add or override key/action pairs
+            while maintaining the base mode. Vimage supports this through the
+            mode.pushMode function. For example, to support line-wise commands
+            when a key is pressed twice (e.g. dd, yy, cc, etc.), the default key
+            bindings push an overlay mode that change the key binding for the
+            duplicate key.
+                
+        <h2>Viewing the Mappings</h2>
+            
+            <p>Vimage provides a <i>vimage.show-keybindings</i> action which
+            prints the current modes and their key/action pairs to a new jEdit
+            buffer.
+            
+            
+    </body>
+</html>

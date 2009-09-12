@@ -1,0 +1,17 @@
+
+command w { _("save"); }
+command x { _("save"); _("close-buffer"); }
+command ts { _("tags-tagstack"); }
+command ta { _("tags-enter-and-follow-tag"); }
+command sp { _("split-horizontal"); }
+command q { _("close-view"); }
+command new { _("new-file"); }
+command marks { _("view-markers"); }
+command e { _("open-file"); }
+command b { _(jEdit.getProperty("vimage.buffer-switcher")); }
+command bn { _("next-buffer"); }
+command bp { _("prev-buffer"); }
+command bw { _("close-buffer"); }
+command sd { _("search-in-directory"); }
+command sb { _("search-in-open-buffers"); }
+

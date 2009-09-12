@@ -1,0 +1,123 @@
+// vimage
+
+omap LEFT { _("select-prev-char"); }
+omap h { _("select-prev-char"); }
+omap RIGHT { _("select-next-char"); }
+omap l { _("select-next-char"); }
+omap UP { _("select-prev-line"); }
+omap k { _("select-prev-line"); }
+omap DOWN { _("select-next-line"); }
+omap j { _("select-next-line"); }
+
+omap C+d { _("select-next-page"); }
+omap C+b { _("select-prev-page"); }
+
+omap w { _("select-next-word-std"); }
+omap b { _("select-prev-word-std"); }
+
+omap % { _("match-bracket"); }
+omap $ { _("select-line-end"); }
+omap 0 { _("select-line-home"); }
+omap ^ { _("vimage.select-begin-line-text"); }
+
+omap G { _("vimage.select-goto-line"); }
+omap g { __("visual-g-prefix"); }
+
+omap t { __("visual-t-key"); }
+omap T { __("visual-T-key"); }
+omap f { __("visual-f-key"); }
+omap F { __("visual-F-key"); }
+
+omap i { __("to-in-prefix"); }
+to-in-prefix w { _("textobjects.select-in-word"); }
+to-in-prefix s { _("textobjects.select-in-sentence"); }
+to-in-prefix p { _("textobjects.select-in-paragraph"); }
+to-in-prefix { { _("textobjects.select-in-brace"); mode.pushMode("to-in-next-key"); }
+to-in-prefix } { _("textobjects.select-in-brace"); mode.pushMode("to-in-next-key"); }
+to-in-prefix [ { _("textobjects.select-in-bracket"); mode.pushMode("to-in-next-key"); }
+to-in-prefix ] { _("textobjects.select-in-bracket"); mode.pushMode("to-in-next-key"); }
+to-in-prefix ` { _("textobjects.select-in-back-tick"); }
+to-in-prefix " { _("textobjects.select-in-quote"); }
+to-in-prefix ' { _("textobjects.select-in-tick"); }
+to-in-prefix < { _("textobjects.select-in-angle"); mode.pushMode("to-in-next-key"); }
+to-in-prefix > { _("textobjects.select-in-angle"); mode.pushMode("to-in-next-key"); }
+to-in-prefix ( { _("textobjects.select-in-paren"); mode.pushMode("to-in-next-key"); }
+to-in-prefix ) { _("textobjects.select-in-paren"); mode.pushMode("to-in-next-key"); }
+to-in-prefix c { _("textobjects.select-in-comment"); }
+to-in-prefix i { _("textobjects.select-in-indent"); }
+to-in-next-key * {
+    Selection sel = textArea.getSelectionAtOffset(textArea.getCaretPosition());
+    if (sel == null) {
+        mode.runKeyInMode(mode.getMode(), key);
+        return;
+    }
+    int offset = sel.getEnd() + 2;
+    offset = java.lang.Math.min(offset, textArea.getBufferLength());
+
+    String blocks = "{[(<}])>";
+    int index = blocks.indexOf(key.input);
+    if (index != -1) {
+        int pair_index = (index + (blocks.length() / 2)) % blocks.length();
+        int open = Math.min(index, pair_index);
+        int close = Math.max(index, pair_index);
+        String pair = blocks.substring(open, open + 1) + blocks.substring(close, close + 1);
+        Selection res = textobjects.TextObjectsPlugin.block(textArea, offset, false, pair);
+        if (res != null) {
+            textArea.setSelection(res);
+        }
+        mode.pushMode("to-in-next-key");
+        return;
+    }
+    mode.runKeyInMode(mode.getMode(), key);
+}
+
+omap a { __("to-a-prefix"); }
+to-a-prefix w { _("textobjects.select-a-word"); }
+to-a-prefix s { _("textobjects.select-a-sentence"); }
+to-a-prefix p { _("textobjects.select-a-paragraph"); }
+to-a-prefix { { _("textobjects.select-a-brace"); mode.pushMode("to-a-next-key"); }
+to-a-prefix } { _("textobjects.select-a-brace"); mode.pushMode("to-a-next-key"); }
+to-a-prefix [ { _("textobjects.select-a-bracket"); mode.pushMode("to-a-next-key"); }
+to-a-prefix ] { _("textobjects.select-a-bracket"); mode.pushMode("to-a-next-key"); }
+to-a-prefix ` { _("textobjects.select-a-back-tick"); }
+to-a-prefix " { _("textobjects.select-a-quote"); }
+to-a-prefix ' { _("textobjects.select-a-tick"); }
+to-a-prefix < { _("textobjects.select-a-angle"); mode.pushMode("to-a-next-key"); }
+to-a-prefix > { _("textobjects.select-a-angle"); mode.pushMode("to-a-next-key"); }
+to-a-prefix ( { _("textobjects.select-a-paren"); mode.pushMode("to-a-next-key"); }
+to-a-prefix ) { _("textobjects.select-a-paren"); mode.pushMode("to-a-next-key"); }
+to-a-prefix c { _("textobjects.select-a-comment"); }
+to-a-prefix i { _("textobjects.select-a-indent"); }
+to-a-next-key * {
+    Selection sel = textArea.getSelectionAtOffset(textArea.getCaretPosition());
+    if (sel == null)
+        return;
+    int offset = sel.getEnd() + 1;
+    offset = java.lang.Math.min(offset, textArea.getBufferLength());
+
+    String blocks = "{[(<}])>";
+    int index = blocks.indexOf(key.input);
+    if (index != -1) {
+        int pair_index = (index + (blocks.length() / 2)) % blocks.length();
+        int open = Math.min(index, pair_index);
+        int close = Math.max(index, pair_index);
+        String pair = blocks.substring(open, open + 1) + blocks.substring(close, close + 1);
+        Selection res = textobjects.TextObjectsPlugin.block(textArea, offset, true, pair);
+        if (res != null) {
+            textArea.setSelection(res);
+        }
+        mode.pushMode("to-a-next-key");
+        return;
+    }
+    mode.runKeyInMode(mode.getMode(), key);
+}
+
+omap 1 { mode.addDigit(1); mode.pushMode("digits"); }
+omap 2 { mode.addDigit(2); mode.pushMode("digits"); }
+omap 3 { mode.addDigit(3); mode.pushMode("digits"); }
+omap 4 { mode.addDigit(4); mode.pushMode("digits"); }
+omap 5 { mode.addDigit(5); mode.pushMode("digits"); }
+omap 6 { mode.addDigit(6); mode.pushMode("digits"); }
+omap 7 { mode.addDigit(7); mode.pushMode("digits"); }
+omap 8 { mode.addDigit(8); mode.pushMode("digits"); }
+omap 9 { mode.addDigit(9); mode.pushMode("digits"); }

@@ -1,0 +1,3 @@
+// vimage
+
+imap C+n { _("complete-word"); }

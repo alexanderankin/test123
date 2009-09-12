@@ -1,0 +1,225 @@
+// vimage
+
+nmap i { __("imap"); }
+nmap a { 
+    int pos = textArea.getCaretPosition();
+    if (pos < (textArea.getLineEndOffset(textArea.getLineOfOffset(pos)) - 1))
+        _("next-char");
+    __("imap");
+}
+nmap v { __("vmap"); }
+nmap V { __("vmap"); _("line-home"); _("vimage.select-line"); mode.pushMode("ignore-left-right"); }
+ignore-left-right l { }
+ignore-left-right RIGHT { }
+ignore-left-right h { }
+ignore-left-right LEFT { }
+ignore-left-right k { 
+    _("vimage.select-prev-line"); 
+    mode.pushMode("ignore-left-right"); 
+}
+ignore-left-right UP { 
+    _("vimage.select-prev-line"); 
+    mode.pushMode("ignore-left-right"); 
+}
+ignore-left-right j { 
+    _("vimage.select-next-line"); 
+    mode.pushMode("ignore-left-right"); 
+}
+ignore-left-right DOWN { 
+    _("vimage.select-next-line"); 
+    mode.pushMode("ignore-left-right"); 
+}
+ignore-left-right G {
+    if (count == 0) {
+        count = textArea.getLineCount();
+    }
+    // Input count is 1 based, jEdit lines are 0 based.
+    offset = count - (textArea.getCaretLine() + 1);
+    vimage.VimageActions.select_line(textArea, offset);
+    mode.pushMode("ignore-left-right");
+    mode.setCount(0);
+}
+
+nmap o { _("line-end"); _("insert-newline-indent"); __("imap"); }
+nmap O { _("line-home"); _("insert-newline"); _("prev-line"); _("indent-lines"); __("imap"); }
+
+nmap r { __("overwrite-key"); }
+overwrite-key * { 
+    buffer.beginCompoundEdit(); 
+    _("delete"); 
+    textArea.userInput(key.input); 
+    buffer.endCompoundEdit(); 
+    _("prev-char");
+}
+nmap R { __("imap"); textArea.setOverwriteEnabled(true); }
+
+nmap / { _("quick-search"); }
+nmap * { _("quick-search-word"); }
+nmap n { _("find-next"); _("select-none"); }
+nmap N { _("find-prev"); _("select-none"); }
+
+nmap z { mode.setMode("z-prefix"); }
+z-prefix z { _("scroll-and-center"); }
+z-prefix t { vimage.VimageActions.scroll(textArea, false, -1); _("vimage.empty-command"); }
+z-prefix b { vimage.VimageActions.scroll(textArea, false, 1); _("vimage.empty-command"); }
+
+nmap J { _("join-lines"); }
+nmap d { 
+    Selection sel = textArea.getSelectionAtOffset(textArea.getCaretPosition());
+    if (sel != null) {
+        _("vimage.cut");
+        return;
+    }
+    mode.pushMode("d-select-line"); 
+    _("vimage.cut", "omap");
+    //__("omap");
+}
+d-select-line d { _("vimage.select-line"); }
+nmap c { mode.pushMode("c-select-line"); _("vimage.delete-insert", "omap"); }
+c-select-line c { _("select-line"); }
+nmap x {
+    if (textArea.getLineText(textArea.getCaretLine()).equals(""))
+        return;
+    int pos = textArea.getCaretPosition();
+    if (pos < (textArea.getLineEndOffset(textArea.getLineOfOffset(pos)) - 1)) {
+        _("select-next-char");
+        _("vimage.cut"); 
+        return;
+    }
+    _("prev-char");
+    _("select-next-char");
+    _("vimage.cut");
+}
+nmap y {
+    Selection sel = textArea.getSelectionAtOffset(textArea.getCaretPosition());
+    if (sel != null) {
+        _("vimage.copy");
+        return;
+    }
+    mode.pushMode("y-select-line"); 
+    _("vimage.copy", "omap");
+}
+y-select-line y { _("vimage.select-next-line"); }
+nmap p { _("vimage.paste"); }
+nmap P { _("vimage.paste-prev"); }
+
+nmap ~ { _("vimage.swap-case"); }
+
+nmap u { _("undo"); }
+nmap C+r { _("redo"); }
+
+nmap LEFT { _("prev-char"); }
+nmap h { _("prev-char"); }
+nmap RIGHT { _("next-char"); }
+nmap l { _("next-char"); }
+nmap UP { _("prev-line"); }
+nmap k { _("prev-line"); }
+nmap DOWN { _("next-line"); }
+nmap j { _("next-line"); }
+
+nmap C+d { _("next-page"); }
+nmap PAGE_DOWN { _("next-page"); }
+nmap C+b { _("prev-page"); }
+nmap PAGE_UP { _("prev-page"); }
+
+nmap w { _("next-word-std"); }
+nmap b { _("prev-word-std"); }
+
+nmap % { _("match-bracket"); }
+nmap $ { 
+    /*
+    line_start = textArea.getLineStartOffset(textArea.getCaretLine());
+    line_end = textArea.getLineEndOffset(textArea.getCaretLine());
+    textArea.moveCaretPosition(java.lang.Math.max(line_start, line_end - 2));
+    textArea.scrollToCaret(true);
+    */
+    _("line-end");
+}
+nmap 0 { 
+    if (mode.getCount() == 0)
+        _("line-home"); 
+    mode.addDigit(0);
+}
+nmap ^ { _("vimage.begin-line-text"); }
+nmap < { __("left-prefix"); }
+left-prefix < { _("shift-left"); }
+nmap > { __("right-prefix"); }
+right-prefix > { _("shift-right"); }
+
+nmap t { __("t-key"); }
+t-key * { _("vimage.forward-till-char"); }
+nmap T { __("T-key"); }
+T-key * { _("vimage.backward-till-char"); }
+nmap f { __("f-key"); }
+f-key * { _("vimage.forward-char"); }
+nmap F { __("F-key"); }
+F-key * { _("vimage.backward-char"); }
+
+nmap G { _("vimage.goto-line"); }
+nmap g { __("g-prefix"); }
+g-prefix g { if (vimage_count == 0) vimage_count = 1; _("vimage.goto-line"); }
+g-prefix v { 
+    sel = mode.getLastSelection();
+    if (sel != null) {
+        mode.clearState(); 
+        __("vmap"); 
+        textArea.setSelection(sel); 
+    }
+}
+
+nmap " { __("register-key"); }
+register-key * { mode.setRegister(key.input); }
+
+nmap : { _("vimage.ex-bar"); }
+
+nmap m { __("mark-key"); }
+mark-key * { 
+    char c = key.input;
+    Marker marker = buffer.getMarker(c);
+    if (marker != null)
+        buffer.removeMarker(textArea.getLineOfOffset(marker.getPosition()));
+    buffer.addMarker(c, textArea.getCaretPosition());
+}
+nmap ' { __("goto-line-marker-key"); }
+goto-line-marker-key * {
+    char c = key.input;
+    Marker marker = buffer.getMarker(c);
+    if (marker == null)
+        return;
+    textArea.setCaretPosition(textArea.getLineStartOffset(textArea.getLineOfOffset(marker.getPosition())));
+}
+nmap ` { __("goto-position-marker-key"); }
+goto-position-marker-key * {
+    char c = key.input;
+    Marker marker = buffer.getMarker(c);
+    if (marker == null)
+        return;
+    textArea.setCaretPosition(marker.getPosition());
+}
+
+nmap . { _("vimage.replay-default"); }
+nmap q {
+    if (mode.isRecording()) {
+        mode.stopRecording();
+        return;
+    }
+    __("record-key"); 
+}
+record-key * { mode.startRecording(key.input); }
+nmap @ { __("record-play-key"); }
+record-play-key * { _("vimage.replay-record"); }
+nmap # { __("record-paste-key"); }
+record-paste-key * { _("vimage.paste-record"); }
+
+nmap = { __("equal-prefix"); }
+equal-prefix = { _("indent-lines"); }
+
+nmap 1 { mode.addDigit(1); }
+nmap 2 { mode.addDigit(2); }
+nmap 3 { mode.addDigit(3); }
+nmap 4 { mode.addDigit(4); }
+nmap 5 { mode.addDigit(5); }
+nmap 6 { mode.addDigit(6); }
+nmap 7 { mode.addDigit(7); }
+nmap 8 { mode.addDigit(8); }
+nmap 9 { mode.addDigit(9); }
