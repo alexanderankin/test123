@@ -20,6 +20,7 @@
 
 package updater;
 
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -28,10 +29,16 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.text.DecimalFormat;
 
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.Timer;
+import javax.swing.text.BadLocationException;
 
 import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.PluginJAR;
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
 import updater.UrlUtils.ProgressHandler;
@@ -397,9 +404,141 @@ public class UpdaterPlugin extends EditPlugin
 		updateVersion(new DailyBuildUpdateSource(), false);
 	}
 
+	private String getPluginName(PluginJAR pluginJar)
+	{
+		EditPlugin ep = pluginJar.getPlugin();
+		if (ep == null || (ep instanceof Deferred))
+			return null;
+		return jEdit.getProperty("plugin."+ ep.getClassName() + ".name");
+		
+	}
 	public void resetProps()
 	{
-		new DailyBuildUpdateSource().setInstalledVersion("");
+		new DailyBuildUpdateSource().setInstalledVersion(null);
+		PluginJAR [] plugins = jEdit.getPluginJARs();
+		for (PluginJAR plugin: plugins)
+		{
+			String name = getPluginName(plugin);
+			if (name == null)
+				continue;
+			new DailyBuildPluginUpdateSource(name).setInstalledVersion(null);
+		}
+	}
+
+	private void addToTextArea(JTextArea ta, String s)
+	{
+		ta.append(s + "\n");
+		ta.setCaretPosition(ta.getText().length());
+	}
+
+	private void updatePlugin(String plugin, final JTextArea ta)
+	{
+		addToTextArea(ta, "Trying to update plugin: " + plugin);
+		UpdateSource source = new DailyBuildPluginUpdateSource(plugin);
+		String installedVersion = source.getInstalledVersion();
+		String latestVersion = source.getLatestVersion();
+		if (latestVersion == null)
+		{
+			addToTextArea(ta, "Latest version not found.");
+			return;
+		}
+		ta.append("Installed version: " + installedVersion + "\n");
+		ta.append("Latest version: " + latestVersion + "\n");
+		int comparison = source.compareVersions(latestVersion,
+			installedVersion);
+		if (comparison == BAD_VERSION_STRING)
+		{
+			addToTextArea(ta, jEdit.getProperty(
+				"updater.msg.unknownVersionString"));
+			return;
+		}
+		if (comparison <= 0)
+		{
+			addToTextArea(ta, jEdit.getProperty("updater.msg.noNewerVersion"));
+			return;
+		}
+		addToTextArea(ta, jEdit.getProperty("updater.msg.fetchingDownloadPage"));
+		String link = source.getDownloadLink();
+		if (link == null)
+		{
+			addToTextArea(ta, jEdit.getProperty(
+				"updater.msg.downloadLinkNotFound"));
+			return;
+		}
+		addToTextArea(ta, jEdit.getProperty(
+			"updater.msg.downloadingNewVersion") + " " + link);
+		final int caretPos = ta.getCaretPosition();
+		ProgressHandler progress = new ProgressHandler()
+		{
+			private String suffix = " bytes read";
+			public void setSize(int size)
+			{
+				if (size > 0)
+				{
+					DecimalFormat format = new DecimalFormat();
+					format.setGroupingSize(3);
+					suffix = " (out of " + format.format(size) +
+						")" + suffix;
+				}
+			}
+			public void bytesRead(final int numBytes)
+			{
+				DecimalFormat format = new DecimalFormat();
+				format.setGroupingSize(3);
+				try
+				{
+					ta.setText(ta.getText(0, caretPos));
+				} catch (BadLocationException e)
+				{
+					e.printStackTrace();
+				}
+				ta.setCaretPosition(caretPos);
+				addToTextArea(ta, "Progress: " + format.format(numBytes) + suffix);
+			}
+			public boolean isAborted()
+			{
+				return false;
+			}
+		};
+		String savePath = home.getAbsoluteFile() + File.separator +
+			plugin + ".zip";
+		File installerFile = UrlUtils.downloadFile(link, savePath, progress); 
+		if (installerFile == null)
+		{
+			addToTextArea(ta, jEdit.getProperty("updater.msg.downloadFailed"));
+			return;
+		}
+		source.setInstalledVersion(latestVersion);
+		addToTextArea(ta, "Done");
+	}
+	public void updatePluginsDailyVersion()
+	{
+		JFrame frame = new JFrame("Plugin Update");
+		final JTextArea text = new JTextArea(20, 80);
+		text.setEditable(false);
+		frame.setLayout(new BorderLayout());
+		frame.add(new JScrollPane(text), BorderLayout.CENTER);
+		frame.pack();
+		frame.setVisible(true);
+		Thread updateThread = new Thread() {
+			@Override
+			public void run() {
+				if (executionAborted())
+					return;
+				View view = jEdit.getActiveView();
+				view.getStatus().setMessage(jEdit.getProperty("updater.msg.checkingLatestVersion"));
+				PluginJAR [] plugins = jEdit.getPluginJARs();
+				for (PluginJAR plugin: plugins)
+				{
+					EditPlugin ep = plugin.getPlugin();
+					if (ep == null || (ep instanceof Deferred))
+						continue;
+					String name = getPluginName(plugin);
+					updatePlugin(name, text);
+				}
+			}
+		};
+		updateThread.start();
 	}
 
 	private static class LauncherOutputHandler extends Thread

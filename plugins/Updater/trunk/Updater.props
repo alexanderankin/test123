@@ -14,10 +14,11 @@ plugin.updater.UpdaterPlugin.depend.2=plugin CommonControlsPlugin 0.9.5
 updater-update-release.label=Update jEdit to latest released version
 updater-update-daily.label=Update jEdit to latest daily build
 updater-reset-props.label=Reset plugin properties (e.g. daily build version)
+updater-update-plugins-daily.label=Update plugins to latest daily build
 
 # menu items
 plugin.updater.UpdaterPlugin.menu=updater-update-release updater-update-daily \
-	updater-reset-props
+	updater-reset-props - updater-update-plugins-daily
 
 # option pane
 plugin.updater.UpdaterPlugin.option-pane=updater
@@ -47,6 +48,9 @@ updater.dailyBuildVersionCheckPattern=<a href="/projects/jedit-daily/index.php\\
 updater.dailyBuildVersionPageLinkPattern=<a href="/projects/jedit-daily/index.php\\?dir=jEdit%2F(\\d+\\d+\\d+\\d+-\\d\\d-\\d\\d_\\d+\\d+-\\d+\\d+-\\d+\\d+%2F)"
 updater.dailyBuildDownloadLinkPattern=<a href="(jEdit/\\d+\\d+\\d+\\d+-\\d\\d-\\d\\d_\\d+\\d+-\\d+\\d+-\\d+\\d+/[^"]*install\.jar)
 updater.dailyBuildDownloadLinkPrefix=http://www.tellurianring.com/projects/jedit-daily/
+updater.dailyBuildPluginPage=http://www.tellurianring.com/projects/jedit-daily/index.php?dir={0}%2F
+updater.dailyBuildPluginVersionCheckPattern=<a href="/projects/jedit-daily/index.php\\?dir={0}%2F(\\d+\\d+\\d+\\d+-\\d\\d-\\d\\d_\\d+\\d+-\\d+\\d+-\\d+\\d+)%2F"
+updater.dailyBuildPluginPageLinkPattern=<a href="({0}/\\d+\\d+\\d+\\d+-\\d\\d-\\d\\d_\\d+\\d+-\\d+\\d+-\\d+\\d+/[^"]*\\.(jar|zip))"
 
 # messages
 updater.msg.downloadLinkNotFound=Cannot find download link on download page.
@@ -59,7 +63,7 @@ updater.msg.unknownVersionString=Version string has an unknown format.
 updater.msg.updateDialogTitle=UpdaterPlugin
 updater.msg.checkingLatestVersion=Checking for the latest version...
 updater.msg.findLatestVersion=Looking for the latest version...
-updater.msg.fetchingDownloadPage=Fetching jEdit download page...
+updater.msg.fetchingDownloadPage=Fetching download page...
 updater.msg.downloadingNewVersion=Downloading the new version...
 updater.msg.runningInstaller=Launching the installer...
 updater.msg.installing=Installation in progress...
