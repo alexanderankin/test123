@@ -18,6 +18,10 @@
 			updater.UpdaterPlugin.getInstance().resetProps();
 		</CODE>
 	</ACTION>
-	
+	<ACTION NAME="updater-update-plugins-daily" NO_REPEAT="TRUE">
+		<CODE>
+			updater.UpdaterPlugin.getInstance().updatePluginsDailyVersion();
+		</CODE>
+	</ACTION>
 </ACTIONS>
 
