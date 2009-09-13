@@ -18,6 +18,7 @@ import treebufferswitcher.model.PathItem;
 import java.awt.event.*;
 import java.awt.*;
 
+// BUG: when holding "delete", some of keypressed are occasionally passed to textarea causing buffer modification
 public class BufferSwitcherEnhanced extends JComboBox implements EBComponent, BufferSetListener {
 
     private final TreeBufferSwitcherPlugin plugin;
@@ -46,7 +47,7 @@ public class BufferSwitcherEnhanced extends JComboBox implements EBComponent, Bu
     }
 
     public void propertiesChanged() {
-        setMaximumRowCount(plugin.visibleRowCount);
+        setMaximumRowCount(plugin.getVisibleRowCount());
         dataChanged();
     }
 
@@ -56,11 +57,9 @@ public class BufferSwitcherEnhanced extends JComboBox implements EBComponent, Bu
         if (editPane.getBufferSet().size() == 0) {
             return;
         }
-//        updating = true;
         model = plugin.modelBuilder.createModel(editPane.getBufferSet().getAllBuffers());
         setModel(model);
         setSelectedItem(model.itemByBuffer(editPane.getBuffer()));
-//        updating = false;
     }
 
     public void dispose() {
@@ -74,56 +73,57 @@ public class BufferSwitcherEnhanced extends JComboBox implements EBComponent, Bu
 
     @Override
     public void processKeyEvent(KeyEvent e) {
-        if (plugin.useShortcuts && isPopupVisible() && e.getKeyChar() != KeyEvent.CHAR_UNDEFINED) {
+        if (e.getID() == KeyEvent.KEY_PRESSED) {
             // if shortcut to buffer is pressed, switch to buffer
-            int keyIndex = plugin.shortcutsUppercased.indexOf(e.getKeyChar());
-            if (keyIndex == -1) {
-                keyIndex = plugin.shortcutsLowercased.indexOf(e.getKeyChar());
+            if (plugin.isUseShortcuts() && isPopupVisible() && e.getKeyChar() != KeyEvent.CHAR_UNDEFINED) {
+                int keyIndex = plugin.getShortcutsUppercased().indexOf(e.getKeyChar());
+                if (keyIndex == -1) {
+                    keyIndex = plugin.getShortcutsLowercased().indexOf(e.getKeyChar());
+                }
+                BufferSwitcherModel model = (BufferSwitcherModel)getModel();
+                if (keyIndex != -1 && keyIndex < model.buffersCount) {
+                    BufferItem item = model.itemByKeyIndex(keyIndex);
+                    if (item != null) {
+                        setSelectedItem(item);
+                        editPane.setBuffer(item.buffer);
+                        hidePopup();
+                        e.consume();
+                        return;
+                    }
+                }
             }
-            BufferSwitcherModel model = (BufferSwitcherModel)getModel();
-            if (keyIndex != -1 && keyIndex < model.buffersCount) {
-                BufferItem item = model.itemByKeyIndex(keyIndex);
-                if (item != null) {
-                    setSelectedItem(item);
-                    editPane.setBuffer(item.buffer);
+            switch (e.getKeyCode()) {
+                case KeyEvent.VK_UP:
+                case KeyEvent.VK_PAGE_UP:
+                    adjustingDirection = -1;
+                    break;
+                case KeyEvent.VK_DOWN:
+                case KeyEvent.VK_PAGE_DOWN:
+                    adjustingDirection = 1;
+                    break;
+                case KeyEvent.VK_DELETE:
+                    if (getSelectedItem() instanceof BufferItem) {
+                        BufferItem bufferItem = (BufferItem)getSelectedItem();
+                        Log.log(Log.DEBUG, this, "Closing buffer: " + bufferItem.buffer.getPath());
+                        e.consume();
+                        if (jEdit.closeBuffer(editPane.getView(), bufferItem.buffer)) {
+                            //final boolean oldEnabled = editPane.getTextArea().isEnabled();
+                            //editPane.getTextArea().setEnabled(false);
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    requestFocusInWindow();
+                                    showPopup();
+                                    //editPane.getTextArea().setEnabled(oldEnabled);
+                                }
+                            });
+                        }
+                    }
+                    return;
+                case KeyEvent.VK_ESCAPE:
                     hidePopup();
                     e.consume();
                     return;
-                }
             }
-        }
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_UP:
-            case KeyEvent.VK_PAGE_UP:
-                adjustingDirection = -1;
-                break;
-            case KeyEvent.VK_DOWN:
-            case KeyEvent.VK_PAGE_DOWN:
-                adjustingDirection = 1;
-                break;
-            case KeyEvent.VK_DELETE:
-                if (getSelectedItem() instanceof BufferItem) {
-                    BufferItem bufferItem = (BufferItem)getSelectedItem();
-                    Log.log(Log.DEBUG, this, "Closing buffer: " + bufferItem.buffer.getPath());
-                    e.consume();
-                    if (jEdit.closeBuffer(editPane.getView(), bufferItem.buffer)) {
-                        try {
-                            Thread.sleep(plugin.deleteDelay);
-                        } catch (InterruptedException ignore) {
-                        }
-                        SwingUtilities.invokeLater(new Runnable() {
-                            public void run() {
-                                requestFocusInWindow();
-                                showPopup();
-                            }
-                        });
-                    }
-                }
-                return;
-            case KeyEvent.VK_ESCAPE:
-                hidePopup();
-                e.consume();
-                return;
         }
         super.processKeyEvent(e);
     }
@@ -204,8 +204,8 @@ public class BufferSwitcherEnhanced extends JComboBox implements EBComponent, Bu
             this.index = index;
             if (value instanceof BufferItem) {
                 BufferItem bufferItem = (BufferItem)value;
-                if (plugin.useShortcuts && index != -1 && bufferItem.keyIndex < plugin.shortcuts.length()) {
-                    char key = plugin.shortcuts.charAt(bufferItem.keyIndex);
+                if (plugin.isUseShortcuts() && index != -1 && bufferItem.keyIndex < plugin.getShortcuts().length()) {
+                    char key = plugin.getShortcuts().charAt(bufferItem.keyIndex);
                     value = "<html><font color='red'>" + key + "</font> " + bufferItem.title;
                 } else {
                     value = bufferItem.title;
@@ -228,11 +228,11 @@ public class BufferSwitcherEnhanced extends JComboBox implements EBComponent, Bu
         protected void paintComponent(Graphics g) {
             boolean offset = index != -1 && isPopupVisible() && level != 0;
             if (offset) {
-                g.translate(level * plugin.treeLevelOffset, 0);
+                g.translate(level * plugin.getTreeLevelOffset(), 0);
             }
             super.paintComponent(g);
             if (offset) {
-                g.translate(- level * plugin.treeLevelOffset, 0);
+                g.translate(- level * plugin.getTreeLevelOffset(), 0);
             }
         }
 

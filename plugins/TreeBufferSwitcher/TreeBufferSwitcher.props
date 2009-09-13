@@ -9,7 +9,26 @@ plugin.treebufferswitcher.TreeBufferSwitcherPlugin.depend.1=jedit 04.03.18.00
 plugin.treebufferswitcher.TreeBufferSwitcherPlugin.description=Hierarchical buffer switcher with some additional options
 
 ### options
-#treebufferswitcher.xxx=yyyy
+treebufferswitcher.enabled=true
+treebufferswitcher.provider=COMPACT_MULTI_LEVEL_GROUPING
+treebufferswitcher.use-shortcuts=true
+treebufferswitcher.shortcuts=123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
+treebufferswitcher.visible-row-count=10
+treebufferswitcher.tree-level-offset=16
 
 ### actions
 treebufferswitcher.focusbufferswitcher.label=Focus Tree Buffer Switcher
+
+### option pane
+plugin.treebufferswitcher.TreeBufferSwitcherPlugin.option-pane=TreeBufferSwitcher
+options.TreeBufferSwitcher.label=TreeBufferSwitcher
+options.TreeBufferSwitcher.code=new treebufferswitcher.TreeBufferSwitcherOptionPane();
+messages.TreeBufferSwitcher.enabled=Enabled
+messages.TreeBufferSwitcher.provider=Model provider:
+messages.TreeBufferSwitcher.provider.NO_GROUPING=No grouping
+messages.TreeBufferSwitcher.provider.ONE_LEVEL_GROUPING=One level grouping
+messages.TreeBufferSwitcher.provider.MULTI_LEVEL_GROUPING=Multi-level grouping
+messages.TreeBufferSwitcher.provider.COMPACT_MULTI_LEVEL_GROUPING=Compact multi-level grouping
+messages.TreeBufferSwitcher.use-shortcuts=Use keyboard shortcuts
+messages.TreeBufferSwitcher.shortcuts=Shortcut keys:
+messages.TreeBufferSwitcher.visible-row-count=Visible row count:

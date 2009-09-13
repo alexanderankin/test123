@@ -2,7 +2,6 @@ package treebufferswitcher.model;
 
 import org.gjt.sp.jedit.Buffer;
 
-import javax.swing.*;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
@@ -14,7 +13,6 @@ import treebufferswitcher.util.PathUtils;
 public class MultiLevelGroupedModelBuilder implements ModelBuilder {
 
     private final boolean compact;
-    private List<String> topLevelGroups;
     private Map<String, List<String>> groups;
     private Map<String, List<Buffer>> elements;
     private int keyIndex;
@@ -25,7 +23,7 @@ public class MultiLevelGroupedModelBuilder implements ModelBuilder {
 
     public BufferSwitcherModel createModel(Buffer[] buffers) {
         // prepare groups
-        topLevelGroups = new ArrayList<String>();
+        final List<String> topLevelGroups = new ArrayList<String>();
         groups = new TreeMap<String, List<String>>();
         elements = new TreeMap<String, List<Buffer>>();
         for (Buffer buffer : buffers) {
@@ -92,7 +90,9 @@ public class MultiLevelGroupedModelBuilder implements ModelBuilder {
 
     private void appendTreeCompact(List<Object> items, String parent, String title, int level) {
         List<String> subgroups = groups.get(parent);
-        if (subgroups != null && subgroups.size() == 1) {
+        List<Buffer> subelements = elements.get(parent);
+        if (subgroups != null && subgroups.size() == 1
+                && (subelements == null || subelements.isEmpty())) {
             appendTreeCompact(items, subgroups.get(0), title + "/" + PathUtils.getLastPathComponent(subgroups.get(0)), level);
         } else {
             items.add(new PathItem(title, level));
@@ -102,7 +102,6 @@ public class MultiLevelGroupedModelBuilder implements ModelBuilder {
                 }
             }
         }
-        List<Buffer> subelements = elements.get(parent);
         if (subelements != null) {
             for (Buffer subelement : subelements) {
                 items.add(new BufferItem(subelement, subelement.getName(), level + 1, ++keyIndex));

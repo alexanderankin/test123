@@ -10,29 +10,23 @@ import treebufferswitcher.model.MultiLevelGroupedModelBuilder;
 import java.util.Map;
 import java.util.HashMap;
 
-// !!! add configuration dialog and load/save properties
+// TODO: lookup model providers through jEdit service framework
 public class TreeBufferSwitcherPlugin extends EBPlugin {
 
     // settings
-    // !!! encapsulate and read from props
-    public boolean enabled = true;
-    public GroupingMode groupingMode = GroupingMode.COMPACT_MULTI_LEVEL_GROUPING;
-    public boolean useShortcuts = true;
-    public String shortcuts = "123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    public int visibleRowCount = 24;
-    public int treeLevelOffset = 16;
-    public int deleteDelay = 60;
+    private boolean enabled = true;
+    private GroupingMode groupingMode = GroupingMode.COMPACT_MULTI_LEVEL_GROUPING;
+    private boolean useShortcuts = true;
+    private String shortcuts = "123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private int visibleRowCount = 24;
+    private int treeLevelOffset = 16;
+    private int deleteDelay = 60;
     // state
-    private static TreeBufferSwitcherPlugin instance;
-    public String shortcutsUppercased;
-    public String shortcutsLowercased;
+    private String shortcutsUppercased;
+    private String shortcutsLowercased;
     private Map<EditPane, BufferSwitcherEnhanced> bufferSwitcherMap = new HashMap<EditPane, BufferSwitcherEnhanced>();
 
     public ModelBuilder modelBuilder;
-
-    public TreeBufferSwitcherPlugin() {
-        instance = this;
-    }
 
     @Override
     public void start() {
@@ -44,8 +38,12 @@ public class TreeBufferSwitcherPlugin extends EBPlugin {
         ensureInstalled(false);
     }
 
+    public static TreeBufferSwitcherPlugin instance() {
+        return (TreeBufferSwitcherPlugin)jEdit.getPlugin("treebufferswitcher.TreeBufferSwitcherPlugin");
+    }
+
     public static void focusBufferSwitcher(EditPane editPane) {
-        BufferSwitcherEnhanced bufferSwitcher = instance.bufferSwitcherMap.get(editPane);
+        BufferSwitcherEnhanced bufferSwitcher = instance().bufferSwitcherMap.get(editPane);
         if (bufferSwitcher != null) {
             bufferSwitcher.requestFocus();
             bufferSwitcher.showPopup();
@@ -54,7 +52,7 @@ public class TreeBufferSwitcherPlugin extends EBPlugin {
 
     @Override
     public void handleMessage(EBMessage message) {
-        if (enabled && message instanceof EditPaneUpdate) {
+        if (isEnabled() && message instanceof EditPaneUpdate) {
             EditPaneUpdate editPaneUpdate = (EditPaneUpdate)message;
             if (editPaneUpdate.getWhat() == EditPaneUpdate.CREATED) {
                 editPaneCreated(editPaneUpdate.getEditPane());
@@ -102,19 +100,64 @@ public class TreeBufferSwitcherPlugin extends EBPlugin {
     }
 
     private void propertiesChanged() {
-        // !!! read properties
-        switch (groupingMode) {
+        enabled = jEdit.getBooleanProperty("treebufferswitcher.enabled");
+        /*try */{
+            groupingMode = GroupingMode.valueOf(jEdit.getProperty("treebufferswitcher.provider"));
+        }/* catch (IllegalArgumentException ignore) {
+            groupingMode = GroupingMode.NO_GROUPING;
+        }*/
+        useShortcuts = jEdit.getBooleanProperty("treebufferswitcher.use-shortcuts");
+        shortcuts = jEdit.getProperty("treebufferswitcher.shortcuts");
+        visibleRowCount = jEdit.getIntegerProperty("treebufferswitcher.visible-row-count");
+        treeLevelOffset = jEdit.getIntegerProperty("treebufferswitcher.tree-level-offset");
+        switch (getGroupingMode()) {
             case NO_GROUPING: modelBuilder = new FlatModelBuilder(); break;
             case ONE_LEVEL_GROUPING: modelBuilder = new OneLevelGroupedModelBuilder(); break;
             case MULTI_LEVEL_GROUPING: modelBuilder = new MultiLevelGroupedModelBuilder(false); break;
             case COMPACT_MULTI_LEVEL_GROUPING: modelBuilder = new MultiLevelGroupedModelBuilder(true); break;
         }
-        shortcutsUppercased = shortcuts.toUpperCase();
-        shortcutsLowercased = shortcuts.toLowerCase();
-        ensureInstalled(enabled);
+        shortcutsUppercased = getShortcuts().toUpperCase();
+        shortcutsLowercased = getShortcuts().toLowerCase();
+        ensureInstalled(isEnabled());
         for (BufferSwitcherEnhanced bufferSwitcher : bufferSwitcherMap.values()) {
             bufferSwitcher.propertiesChanged();
         }
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public GroupingMode getGroupingMode() {
+        return groupingMode;
+    }
+
+    public boolean isUseShortcuts() {
+        return useShortcuts;
+    }
+
+    public String getShortcuts() {
+        return shortcuts;
+    }
+
+    public int getVisibleRowCount() {
+        return visibleRowCount;
+    }
+
+    public int getTreeLevelOffset() {
+        return treeLevelOffset;
+    }
+
+    public int getDeleteDelay() {
+        return deleteDelay;
+    }
+
+    public String getShortcutsUppercased() {
+        return shortcutsUppercased;
+    }
+
+    public String getShortcutsLowercased() {
+        return shortcutsLowercased;
     }
 
     public enum GroupingMode {
