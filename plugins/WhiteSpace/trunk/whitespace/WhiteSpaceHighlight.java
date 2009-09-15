@@ -181,7 +181,7 @@ public class WhiteSpaceHighlight extends TextAreaExtension
             int i_l   = 0;
             int idx_l = s.offset;
 
-            for (painter = null; i_l < i_t; i_l++, idx_l++) {
+            for (painter = null; i_l < count; i_l++, idx_l++) {
                 char c = array[idx_l];
 
                 if (c == ' ') {
