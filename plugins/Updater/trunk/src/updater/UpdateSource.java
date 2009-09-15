@@ -28,7 +28,6 @@ public interface UpdateSource {
 	// Returns the installed version.
 	String getInstalledVersion();
 	// Sets the installed version (called during installation).
-	// Use null to reset the installed version.
 	void setInstalledVersion(String version);
 	// Returns the latest version available for download.
 	String getLatestVersion();

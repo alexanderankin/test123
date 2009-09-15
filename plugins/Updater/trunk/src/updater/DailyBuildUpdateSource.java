@@ -65,10 +65,7 @@ public class DailyBuildUpdateSource implements UpdateSource
 
 	public void setInstalledVersion(String version)
 	{
-		if (version == null)
-			jEdit.resetProperty(INSTALLED_BUILD_PROP);
-		else
-			jEdit.setProperty(INSTALLED_BUILD_PROP, version);
+		jEdit.setProperty(INSTALLED_BUILD_PROP, version);
 	}
 
 	public String getLatestVersion()
