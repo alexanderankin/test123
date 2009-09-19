@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<ACTIONS>
+	<ACTION NAME="javascriptshell.evaluate-selection">
+		<CODE>javascriptshell.JavaScriptShell.evaluateSelection();</CODE>
+	</ACTION>
+	<ACTION NAME="javascriptshell.evaluate-buffer">
+		<CODE>javascriptshell.JavaScriptShell.evaluateBuffer();</CODE>
+	</ACTION>
+</ACTIONS>
