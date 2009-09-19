@@ -1,0 +1,264 @@
+<html>
+	<head>
+		<title>The JavaScriptShell Plugin</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	</head>
+
+<body>
+
+<center><h1>The JavaScriptShell Plugin</h1>
+
+	<p><b>Authors:</b><br>
+	Jakub Roztočil &lt;<a href="mailto:jakub@webkitchen.cz">jakub@webkitchen.cz</a>&gt;<br>
+	Robert Ledger &lt;<a href="mailto:robert@pytrash.co.uk">robert@pytrash.co.uk</a>&gt;</p>
+<hr>
+<p>
+<b>Home</b> |
+<a href="ScriptingJava.html">Scripting Java</a> |
+<a href="startup.js.html">startup.js</a> | 
+<a href="SwingApplication.js.html">SwingApplication.js</a>
+</p><hr>
+</center>
+
+<h2>Summary</h2>
+
+<blockquote>
+
+	<p>The JavaScriptShell plugin adds to jEdit a new script handler
+	so you can write macros and startup scripts in JavaScript. It also adds a
+	JavaScript shell to the console interface provided by the Console Plugin.</p>
+
+	<p>A feature of JavaScriptShell is that it uses the built in Javascript engine
+	provided by Java 1.6. No external libraries are required.</p>
+
+	<p>A major addition to v0.3 is that the <code>print</code>
+	and <code>printnl</code> now work. In the interactive shell the output appears
+	in the console as one would expect. In script and macro mode the output is included
+	with the return value.</p>
+
+	<blockquote>
+
+		<h3>Example:</h3>
+
+		<blockquote>
+			<p>Type the following into an empty buffer and select the text<p>
+			
+			<blockquote>
+
+				<pre>for (var i=0; i&lt;10; i++) print(i + ', '); 10</pre>
+				
+			</blockquote>
+			
+			<p>Now select the "Plugins->JavaScriptShell->Evaluate selection in Javascript"
+			menu item. The text will be replaced with the following result.
+
+		</blockquote>
+
+		<h3>Result:</h3>
+
+		<blockquote>
+
+			<pre>1, 2, 3, 4, 5, 6, 7, 8, 9, 10.0</pre>
+
+		</blockquote>
+
+	</blockquote>
+
+</blockquote>
+
+<a id="globvar"><h2>Global Variables</h2></a>
+
+<blockquote>
+
+	<p>The following vairables and functions are made availiable to scripts
+	and shell commands.</p>
+
+	<ul>
+		<li><b>view</b> - the current jEdit view</li>
+		<li><b>editPane</b> - the current jEdit editPane</li>
+		<li><b>textArea</b> - the current jEdit textArea</li>
+		<li><b>buffer</b> - the current jEdit buffer</li>
+		<li><b>wm</b> - this views dockableWindowManager</li>
+	</ul>
+
+	<ul>
+		<li><b>engine</b> - the javascript engine</li>
+		<li><b>console</b> - the console from which the command was invoked</li>
+		<li><b>output</b> - the console.Output supplied to collect the scripts output</li>
+	</ul>
+
+	<ul>
+		<li><b>print(text)</b> - prints without newline</li>
+		<li><b>println(text)</b> - prints with newline</li>
+	</ul>
+
+</blockquote>
+
+
+<a id="scripts"><h2>Scripts</h2></a>
+
+<blockquote>
+
+	<h3>Startup Script</h3>
+
+	<blockquote>
+
+		<p>A sample script is <a href="startup.js.html">startup.js</a>
+		is provided which may be placed in <b><i>.jedit/startup</i></b>. This would add the following
+		functions to the gloabl namespace:</p>
+
+		<ul>
+			<li><b>help</b> - prints help messages for functions that have a __docstring__</li>
+			<li><b>echo</b>  - <code>echo(msg, nl)</code> send msg to the output followed by nl [default: '\n']</li>
+			<li><b>include</b> - <code>include(path)</code> evaluate the script at 'path' in the current scope</li>
+		</ul>
+
+		<ul>
+			<li><b>alert</b> - shows a message box to the user</li>
+			<li><b>prompt</b> - shows a prompt dialog</li>
+			<li><b>confirm</b> - show a confirmation dialog box</li>
+			<li><b>openFileDialog</b> - show an Open File dialog, returns a list of file paths</li>
+		</ul>
+
+		<ul>
+			<li><b>classForName</b> - get a class (even a plugin class) from its fully qualified name.</li>
+			<li><b>getPlugins</b> -returns a list of jedit.PluginJAR's one for each plugin</li>
+			<li><b>showPlugins</b> - Print the names of available plugins</li>
+		</ul>
+
+	</blockquote>
+
+	<h3>Demo Script</h3>
+
+	<blockquote>
+
+		<p>A sample macro is also provided which demonstrates how a Swing application
+		may be written in javascript.</p>
+
+		<p>The script is taken directly from the the Rhino	distribution and is
+		used unmodified. Run the macro by using the menu item
+		<b>Utilities->Run Other Macro</b> and selecting
+		<a href="SwingApplication.js">SwingApplication.js</a>
+		from the <code>jars/JavaScriptShell/js</code> folder.</p>
+
+	</blockquote>
+
+</blockquote>
+
+
+<a id="importplugs"><h2>Importing Plugin Packages</h2>
+
+<blockquote>
+
+	<h3>Plugin Import Mechanism</h3>
+
+	<blockquote>
+
+		<p>The native Rhino engine does not support loading jEdits plugin packages.
+		Therefore we have to organise this ourselves.  A simple system is included in the
+		sample <code>startup.js</code>. It consists of the <code>classForName</code>
+		function. eg:</p>
+
+		<blockquote>
+
+			<pre>Button = classForName('console.gui.Button');</pre>
+
+		</blockquote>
+
+		<p>returns the console.gui.Button class.</p>
+
+		<p>If a matching plugin class is not found the request is passed on to
+		<code>java.lang.Class.classForName(name)</code> so any class may be imported
+		using this method.</p>
+
+	</blockquote>
+
+</blockquote>
+
+<a id="todo"><h2>To Do . . .</h2></a>
+
+<blockquote>
+
+	<h3>Better Import Plugin Import Mechanism</h3>
+
+	<blockquote>
+
+		<p>A better system is needed; fitting in with the native Rhino
+		system, or running parallel with it.  Use BeanShell as a model?</p>
+
+	</blockquote>
+
+	<h3>Seperate scopes for each console.</h3>
+
+	<blockquote>
+
+		<p>At the moment, a single global namespace is used for all consoles and for
+		macros and scripts.</p>
+
+		<p>Any change is seen by everyone everywhere. This may or may not be desirable,
+		but it should be possible and easy to have console/macro local namespaces as well
+		as access to a global namespace.</p>
+
+	</blockquote>
+
+	<h3>Builtin commands</h3>
+
+	<blockquote>
+
+		<p>allow <code>%cmd parameters</code> type commands</p>
+
+	</blockquote>
+
+	<h3>More Docs and Tutorial</h3>
+
+	<blockquote>
+
+		<p>Collect together some basic documentation, tutorials and demos
+		concerning the underlying Rhino engine, especially where it relates
+		to scripting jEdit.</p>
+
+	</blockquote>
+
+</blockquote>
+
+<a id="changelog"><h2>Change Log</h2></a>
+	<ul>
+		<li>
+			<p>Version 0.1, Requires jEdit 4.3pre6, ConsolePlugin 4.3.3 and Java 1.6</p>
+			<ul>
+				<li>
+					<p>Initial release.</p>
+				</li>
+			</ul>
+		</li>
+		<li>
+			<p>Version 0.2, Requires jEdit 4.3pre6, ConsolePlugin 4.3.3 and Java 1.6</p>
+			<ul>
+				<li>
+					<p>Added menu with actions "JavaScript shell", "Evaluate buffer in JavaScript" and "Evaluate selection in JavaScript"</p>
+				</li>
+			</ul>
+		</li>
+		<li>
+			<p>Version 0.3</p>
+			<ul>
+				<li>
+					<p>Added support for <code>print</code> and <code>printnl</code></p>
+				</li>
+				<li>
+					<p>Added extra functions to the the demo startup script</p>
+				</li>
+				<li>
+					<p>Added some javadocs</p>
+				</li>
+				<li>
+					<p>Added general purpose evaluateCode method for macros which allows
+					output, return value and errors to be intercepted.</p>
+				</li>
+			</ul>
+		</li>
+	</ul>
+
+</body>
+</html>
+
