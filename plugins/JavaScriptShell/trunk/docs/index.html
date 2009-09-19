@@ -13,13 +13,10 @@
 	Robert Ledger &lt;<a href="mailto:robert@pytrash.co.uk">robert@pytrash.co.uk</a>&gt;</p>
 <hr>
 <p>
-<!-- <a href="index.html">Home</a> | -->
-<a href="index.html#globvar">Global Varialbles</a> |
-<a href="index.html#importplugs">Importing Plugins</a> |
+<b>Home</b> |
 <a href="ScriptingJava.html">Scripting Java</a> |
-<a href="index.html#scripts">Scripts</a> |
-<a href="index.html#todo">To Do</a> |
-<a href="index.html#changelog">Change Log</a><br>&nbsp;
+<a href="startup.js.html">startup.js</a> | 
+<a href="SwingApplication.js.html">SwingApplication.js</a>
 </p><hr>
 </center>
 
@@ -44,12 +41,20 @@
 		<h3>Example:</h3>
 
 		<blockquote>
+			<p>Type the following into an empty buffer and select the text<p>
+			
+			<blockquote>
 
-			<pre>for (var i=0; i&lt;10; i++) print(i + ', '); 10</pre>
+				<pre>for (var i=0; i&lt;10; i++) print(i + ', '); 10</pre>
+				
+			</blockquote>
+			
+			<p>Now select the "Plugins->JavaScriptShell->Evaluate selection in Javascript"
+			menu item. The text will be replaced with the following result.
 
 		</blockquote>
 
-		<h3>Produces:</h3>
+		<h3>Result:</h3>
 
 		<blockquote>
 
@@ -98,7 +103,7 @@
 
 	<blockquote>
 
-		<p>A sample script is <a href="../javascriptshell/js/startup.js">startup.js</a>
+		<p>A sample script is <a href="startup.js.html">startup.js</a>
 		is provided which may be placed in <b><i>.jedit/startup</i></b>. This would add the following
 		functions to the gloabl namespace:</p>
 
@@ -133,7 +138,7 @@
 		<p>The script is taken directly from the the Rhino	distribution and is
 		used unmodified. Run the macro by using the menu item
 		<b>Utilities->Run Other Macro</b> and selecting
-		<a href="../javascriptshell/js/SwingApplication.js">SwingApplication.js</a>
+		<a href="SwingApplication.js">SwingApplication.js</a>
 		from the <code>jars/JavaScriptShell/js</code> folder.</p>
 
 	</blockquote>
