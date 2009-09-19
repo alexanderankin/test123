@@ -32,7 +32,7 @@ javascript-error.message=A JavaScript error occurred.
 
 
 javascriptshell.evaluate-selection.label=Evaluate selection in JavaScript
-javascriptshell.evaluate-buffer.label=Evaluate buffer in JavaScrip
+javascriptshell.evaluate-buffer.label=Evaluate buffer in JavaScript
 
 plugin.javascriptshell.JavaScriptShellPlugin.menu=console.shell.JavaScript-show \
 	javascriptshell.evaluate-selection \
