@@ -20,16 +20,21 @@
 % }] */
 package candyfolds.config.gui;
 
+import candyfolds.config.FoldConfig;
+import candyfolds.config.ModeConfig;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.util.regex.PatternSyntaxException;
 import javax.swing.AbstractCellEditor;
+import javax.swing.CellEditor;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JComponent;
@@ -39,8 +44,6 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
-import candyfolds.config.FoldConfig;
-import candyfolds.config.ModeConfig;
 import org.gjt.sp.util.Log;
 
 class FoldConfigsTable
@@ -53,6 +56,12 @@ class FoldConfigsTable
 		table.getColumnModel().getColumn(0).setMaxWidth(20);
 		table.setDefaultRenderer(Color.class, new ColorCellRenderer());
 		table.setDefaultEditor(Color.class, new ColorCellEditor());
+	}
+	
+	void save(){
+		CellEditor cellEditor=table.getCellEditor();
+		if(cellEditor!=null)
+			cellEditor.stopCellEditing();
 	}
 
 	class ColorCellRenderer

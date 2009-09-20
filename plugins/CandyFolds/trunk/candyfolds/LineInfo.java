@@ -39,6 +39,10 @@ final class LineInfo {
 	LineInfo(TextAreaExt textAreaExt) {
 		this.textAreaExt=textAreaExt;
 	}
+	
+	int getLine(){
+		return line;
+	}
 
 	private void clear() {
 		indents.clear();
@@ -52,7 +56,7 @@ final class LineInfo {
 		eval(buffer, line, null);
 	}
 
-	private void copyFrom(LineInfo lineInfo) {
+	void copyFrom(LineInfo lineInfo) {
 		clear();
 		line=lineInfo.line;
 		indents.addAll(lineInfo.indents);
@@ -88,10 +92,10 @@ final class LineInfo {
 		clear();
 		this.line=line;
 		int indent;
-		int foldLevel, lastCatchedFoldLevel=Integer.MAX_VALUE, lastCatchedIndent=0;
+		int foldLevel, lastCaughtFoldLevel=Integer.MAX_VALUE, lastCaughtIndent=0;
 		for(int i=line; i>=stopLine; i--) {
 			foldLevel=buffer.getFoldLevel(i);
-			if(foldLevel< lastCatchedFoldLevel) {
+			if(foldLevel< lastCaughtFoldLevel) {
 				indent=foldLevel==0? 0: buffer.getCurrentIndentForLine(i, null);
 				//v check if this is an indented second (or third, or...) line of a fold... like a funcion with its parameters indented:
 				if(foldLevel!=0)
@@ -105,11 +109,11 @@ final class LineInfo {
 						}
 					}
 				//^
-				lastCatchedFoldLevel=foldLevel;
-				if(lastCatchedIndent>0 && indent>lastCatchedIndent) { // los indent siempre van disminuyendo si es que no se trataba de un indent en 0 que era una linea vacia
+				lastCaughtFoldLevel=foldLevel;
+				if(lastCaughtIndent>0 && indent>lastCaughtIndent) { // los indent siempre van disminuyendo si es que no se trataba de un indent en 0 que era una linea vacia
 					continue;
 				}
-				lastCatchedIndent=indent;
+				lastCaughtIndent=indent;
 				indents.add(indent);
 				lines.add(i);
 				foldLevels.add(foldLevel);
@@ -130,7 +134,7 @@ final class LineInfo {
 				indents.remove(i);
 				lines.remove(i+1); // remove the next line info
 				foldLevels.remove(i+1);
-				// foldConfigs.remove(i+1); has not been fulled!
+				// foldConfigs.remove(i+1); has not been loaded!
 				size--;
 			} else
 				i++;
