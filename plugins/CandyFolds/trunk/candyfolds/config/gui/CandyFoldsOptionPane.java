@@ -176,7 +176,7 @@ public class CandyFoldsOptionPane
 		CandyFoldsPlugin plugin=CandyFoldsPlugin.getInstance();
 		if(plugin==null)
 			return;
-		//Log.log(Log.NOTICE, this, "saving");
+		modeConfigP.save();
 		config.store();
 		plugin.setConfig(config);
 		reset();

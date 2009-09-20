@@ -81,4 +81,8 @@ class ModeConfigPanel {
 		foldConfigsTable.table.setEnabled(enabled);
 		foldConfigsOpPanel.setEnabled(enabled);
 	}
+	
+	void save(){
+		foldConfigsTable.save();
+	}
 }

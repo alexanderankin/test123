@@ -20,11 +20,14 @@
 % }] */
 package candyfolds;
 
+import candyfolds.config.ModeConfig;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.geom.Line2D;
 import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.Stroke;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,9 +38,9 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import javax.swing.text.Segment;
-import candyfolds.config.ModeConfig;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.jedit.textarea.TextAreaExtension;
 import org.gjt.sp.jedit.textarea.TextAreaPainter;
@@ -47,6 +50,15 @@ import org.gjt.sp.util.Log;
 final class TextAreaExt
 	extends TextAreaExtension {
 
+	final CandyFoldsPlugin foldsPlugin;
+	final EditPane editPane;
+	private final TextAreaPainter painter;
+
+	private final LineInfo firstInRangeLineInfo=new LineInfo(this);
+	private final LineInfo lineInfo=new LineInfo(this);
+	private final LineInfo toolTipLineInfo=new LineInfo(this);
+
+	private final FontMetricsInfo fontMetricsInfo=new FontMetricsInfo();
 	private static final class FontMetricsInfo {
 		private FontMetrics fontMetrics;
 		int spaceWidth;
@@ -63,19 +75,11 @@ final class TextAreaExt
 		}
 
 	}
-
-	final CandyFoldsPlugin foldsPlugin;
-	final EditPane editPane;
-	private final TextAreaPainter painter;
-
-	private final LineInfo lineInfo=new LineInfo(this);
-	private final LineInfo firstInRangeLineInfo=new LineInfo(this);
-
-	private final FontMetricsInfo fontMetricsInfo=new FontMetricsInfo();
 	private ModeConfig modeConfig;
 	private String modeConfigName; // use it separated from modeConfig because modeConfig can be null!
 	private final Line2D.Float line2D=new Line2D.Float();
 	final Segment segment=new Segment();
+	private final Rectangle rect=new Rectangle();
 
 	TextAreaExt(CandyFoldsPlugin foldsPlugin, EditPane editPane) {
 		this.foldsPlugin=foldsPlugin;
@@ -103,29 +107,6 @@ final class TextAreaExt
 
 	void remove() {
 		painter.removeExtension(this);
-	}
-
-	private void drawLine(LineInfo lineInfo, Graphics2D g, int y) {
-		if(lineInfo.indents.size()<=1)
-			return;
-		fontMetricsInfo.setFontMetrics(painter.getFontMetrics());
-		Stroke gStroke=g.getStroke();
-		g.setStroke(fontMetricsInfo.barStroke);
-		//float x;
-		int x;
-		int indent;
-		int horizontalOffset=editPane.getTextArea().getHorizontalOffset();
-		for (int i =lineInfo.indents.size();--i>=1;) { // ignore the first. Iteration from outer to inner fold. the first is right above the first char of the line.
-			indent =lineInfo.indents.get(i);
-			if(indent==0)
-				continue;
-			g.setColor(lineInfo.foldConfigs.get(i).getColor());
-			x= (int)((indent+0.4f )* fontMetricsInfo.spaceWidth+horizontalOffset);//(indent+0.4f) * fontMetricsInfo.spaceWidth;
-			//line2D.setLine(x, y, x, y+fontMetricsInfo.lineHeight);
-			//g.draw(line2D); this is slooow compared to drawLine (at least in my comp)!
-			g.drawLine(x, y,x, y+fontMetricsInfo.lineHeight);
-		}
-		g.setStroke(gStroke);
 	}
 
 	@Override
@@ -170,4 +151,63 @@ final class TextAreaExt
 		}
 		//Log.log(Log.NOTICE, this, "done painting range");
 	}
+
+	private void drawLine(LineInfo lineInfo, Graphics2D g, int y) {
+		if(lineInfo.indents.size()<=1)
+			return;
+		fontMetricsInfo.setFontMetrics(painter.getFontMetrics());
+		Stroke gStroke=g.getStroke();
+		g.setStroke(fontMetricsInfo.barStroke);
+		//float x;
+		int x;
+		int indent;
+		int horizontalOffset=editPane.getTextArea().getHorizontalOffset();
+		for (int i =lineInfo.indents.size();--i>=1;) { // ignore the first. Iteration from outer to inner fold. the first is right above the first char of the line.
+			indent =lineInfo.indents.get(i);
+			if(indent==0)
+				continue;
+			g.setColor(lineInfo.foldConfigs.get(i).getColor());
+			x= (int)((indent+0.4f )* fontMetricsInfo.spaceWidth+horizontalOffset);//(indent+0.4f) * fontMetricsInfo.spaceWidth;
+			//line2D.setLine(x, y, x, y+fontMetricsInfo.lineHeight);
+			//g.draw(line2D); this is slooow compared to drawLine (at least in my comp)!
+			g.drawLine(x, y,x, y+fontMetricsInfo.lineHeight);
+		}
+		g.setStroke(gStroke);
+	}
+
+	// DISABLED: does not worth the effort?
+	/*
+	@Override
+	public synchronized String getToolTipText(int x, int y) {
+		JEditTextArea ta=editPane.getTextArea();
+		Buffer buffer = editPane.getBuffer();
+
+		int offset = ta.xyToOffset(x, y, false);
+		if ((offset == -1) || (offset >= buffer.getLength())) {
+			return null;
+		}
+
+		int physicalLine = ta.getLineOfOffset(offset);
+			toolTipLineInfo.eval(buffer, physicalLine);
+
+		fontMetricsInfo.setFontMetrics(painter.getFontMetrics());
+		rect.y=ta.offsetToXY(physicalLine, 0).y;
+		rect.width=2*fontMetricsInfo.spaceWidth;
+		rect.height=fontMetricsInfo.lineHeight;
+		int indent;
+		int horizontalOffset=ta.getHorizontalOffset();
+		for (int i =toolTipLineInfo.indents.size();--i>=1;) { // ignore the first. Iteration from outer to inner fold. the first is right above the first char of the line.
+			indent =toolTipLineInfo.indents.get(i);
+			if(indent==0)
+				continue;
+			rect.x= (int)(indent* fontMetricsInfo.spaceWidth+horizontalOffset);
+			if(rect.contains(x, y)){
+				//int foldLevel=toolTipLineInfo.foldLevels.get(i);
+				String foldConfigName=toolTipLineInfo.foldConfigs.get(i).getName();
+				buffer.getLineText(toolTipLineInfo.lines.get(i), segment);
+				return segment.toString().trim()+"... : "+foldConfigName;
+			}
+		}
+		return null;
+	}*/
 }
