@@ -263,8 +263,8 @@ public class IndexManagement extends AbstractOptionPane
 					index.commit();
 					Log.log(Log.NOTICE, this, "Optimize index:"+indexName+ "DONE");
 					Log.log(Log.NOTICE, this, "Optimize Central Index");
-					LucenePlugin.instance.CENTRAL.optimize();
-					LucenePlugin.instance.CENTRAL.commit();
+					LucenePlugin.CENTRAL.optimize();
+					LucenePlugin.CENTRAL.commit();
 					Log.log(Log.NOTICE, this, "Optimize Central Index DONE");
 				}
 				finally
