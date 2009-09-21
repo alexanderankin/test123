@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Vector;
+import java.util.Collections;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -22,11 +23,8 @@ import marker.tree.SourceLinkTree;
 import marker.tree.SourceLinkTree.SourceLinkParentNode;
 import marker.tree.SourceLinkTree.SubtreePopupMenuProvider;
 
-import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EditBus;
-import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.gui.RolloverButton;
 import org.gjt.sp.util.StandardUtilities;
 import org.gjt.sp.util.Log;
 
@@ -46,6 +44,7 @@ public class SearchResults extends JPanel implements EBComponent
 	private SourceLinkTree tree;
 	private IndexComboBoxModel indexModel;
 	private JLabel indexStatus;
+	private RolloverButton clear;
 //	private JTextPane preview;
 
 	public SearchResults()
@@ -98,13 +97,23 @@ public class SearchResults extends JPanel implements EBComponent
 		MyActionListener actionListener = new MyActionListener();
 		searchField.addActionListener(actionListener);
 		type.addActionListener(actionListener);
-
+		clear = new RolloverButton(GUIUtilities.loadIcon(
+			jEdit.getProperty("hypersearch-results.clear.icon")));
+		clear.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				model.setFiles(Collections.EMPTY_LIST);
+				tree.clear();
+			}
+		});
 		JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
 		optionsPanel.add(new JLabel("file type:"));
 		optionsPanel.add(type);
 		optionsPanel.add(lineResults);
 		optionsPanel.add(maxPanel);
 		optionsPanel.add(indexes);
+		optionsPanel.add(clear);
 		optionsPanel.add(indexStatus);
 		panel.add(searchField, BorderLayout.CENTER);
 		panel.add(optionsPanel, BorderLayout.EAST);
