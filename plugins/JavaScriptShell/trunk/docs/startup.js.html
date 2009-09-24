@@ -15,7 +15,7 @@
 <p>
 <a href="index.html">Home</a> |
 <a href="ScriptingJava.html">Scripting Java</a> |
-<b>startup.js</b> | 
+<b>startup.js</b> |
 <a href="SwingApplication.js.html">SwingApplication.js</a>
 </p><hr>
 </center>
@@ -70,7 +70,7 @@ function openFileDialog(curDir) {
 	files = dialog.getBrowser().getSelectedFiles()
 
 	paths = []
-	for (var i = 0; i < files.length; i++) {
+	for (var i = 0; i &lt; files.length; i++) {
 			paths[i] = files[i].getPath();
 	}
 	dialog.setVisible(false)
@@ -86,7 +86,7 @@ function help() {//{{{
 	var i, o;
 	for (i in this) {
 		o = this[i];
-		if (typeof(o) === "function" && ("__docstring__" in o)) {
+		if (typeof(o) === "function" &amp;&amp; ("__docstring__" in o)) {
 			println(i + " - " + o["__docstring__"]);
 		}
 	}
@@ -100,7 +100,7 @@ function include(path) {//{{{
 
 	if (!path) {
 		paths = openFileDialog();
-		for (i = 0; i<paths.length; i++) {
+		for (i = 0; i&lt;paths.length; i++) {
 			include(paths[i]);
 		}
 		return;
@@ -174,7 +174,7 @@ show.__docstring__ = "enumerate the contents of an object"
  *
  * TODO: A more sophisticated class loader
  *
- *  >>> classForName('console.gui.Button')
+ *  &gt;&gt;&gt; classForName('console.gui.Button')
  *  class console.gui.Button
  */
 function classForName(name) {
