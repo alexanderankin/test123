@@ -4,4 +4,16 @@
 	<ACTION NAME="treebufferswitcher.focusbufferswitcher">
 		<CODE>treebufferswitcher.TreeBufferSwitcherPlugin.focusBufferSwitcher(editPane);</CODE>
 	</ACTION>
+    <ACTION NAME="treebufferswitcher.nextEditPane">
+        <CODE>treebufferswitcher.TreeBufferSwitcherPlugin.switchEditPane(view, editPane, 1);</CODE>
+    </ACTION>
+    <ACTION NAME="treebufferswitcher.prevEditPane">
+        <CODE>treebufferswitcher.TreeBufferSwitcherPlugin.switchEditPane(view, editPane, -1);</CODE>
+    </ACTION>
+    <ACTION NAME="treebufferswitcher.nextView">
+        <CODE>treebufferswitcher.TreeBufferSwitcherPlugin.switchView(view, 1);</CODE>
+    </ACTION>
+    <ACTION NAME="treebufferswitcher.prevView">
+        <CODE>treebufferswitcher.TreeBufferSwitcherPlugin.switchView(view, -1);</CODE>
+    </ACTION>
 </ACTIONS>
