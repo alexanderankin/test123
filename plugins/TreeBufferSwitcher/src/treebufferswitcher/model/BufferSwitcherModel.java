@@ -7,8 +7,7 @@ import javax.swing.*;
 public class BufferSwitcherModel extends DefaultComboBoxModel {
 
     public final int buffersCount;
-    public boolean adjusting;
-    public final Object[] items;
+    private final Object[] items;
 
     public BufferSwitcherModel(Object items[]) {
         super(items);

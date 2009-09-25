@@ -1,14 +1,12 @@
 package treebufferswitcher;
 
+import java.util.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.visitors.JEditVisitorAdapter;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import treebufferswitcher.model.*;
 import treebufferswitcher.model.MultiLevelGroupedModelBuilder;
-
-import java.util.Map;
-import java.util.HashMap;
 
 // TODO: lookup model providers through jEdit service framework
 public class TreeBufferSwitcherPlugin extends EBPlugin {
@@ -20,11 +18,10 @@ public class TreeBufferSwitcherPlugin extends EBPlugin {
     private String shortcuts = "123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private int visibleRowCount = 24;
     private int treeLevelOffset = 16;
-    private int deleteDelay = 60;
     // state
     private String shortcutsUppercased;
     private String shortcutsLowercased;
-    private Map<EditPane, BufferSwitcherEnhanced> bufferSwitcherMap = new HashMap<EditPane, BufferSwitcherEnhanced>();
+    private final Map<EditPane, BufferSwitcherEnhanced> bufferSwitcherMap = new HashMap<EditPane, BufferSwitcherEnhanced>();
 
     public ModelBuilder modelBuilder;
 
@@ -48,6 +45,26 @@ public class TreeBufferSwitcherPlugin extends EBPlugin {
             bufferSwitcher.requestFocus();
             bufferSwitcher.showPopup();
         }
+    }
+
+    public static void switchEditPane(View view, EditPane editPane, int delta) {
+        List<EditPane> editPanes = Arrays.asList(view.getEditPanes());
+        int index = editPanes.indexOf(editPane);
+        if (index == -1) {
+            return;
+        }
+        index = (index + delta + editPanes.size()) % editPanes.size();
+        editPanes.get(index).focusOnTextArea();
+    }
+
+    public static void switchView(View view, int delta) {
+        List<View> views = Arrays.asList(jEdit.getViews());
+        int index = views.indexOf(view);
+        if (index == -1) {
+            return;
+        }
+        index = (index + delta + views.size()) % views.size();
+        views.get(index).requestFocus();
     }
 
     @Override
@@ -101,11 +118,11 @@ public class TreeBufferSwitcherPlugin extends EBPlugin {
 
     private void propertiesChanged() {
         enabled = jEdit.getBooleanProperty("treebufferswitcher.enabled");
-        /*try */{
+        try {
             groupingMode = GroupingMode.valueOf(jEdit.getProperty("treebufferswitcher.provider"));
-        }/* catch (IllegalArgumentException ignore) {
+        } catch (IllegalArgumentException ignore) {
             groupingMode = GroupingMode.NO_GROUPING;
-        }*/
+        }
         useShortcuts = jEdit.getBooleanProperty("treebufferswitcher.use-shortcuts");
         shortcuts = jEdit.getProperty("treebufferswitcher.shortcuts");
         visibleRowCount = jEdit.getIntegerProperty("treebufferswitcher.visible-row-count");
@@ -146,10 +163,6 @@ public class TreeBufferSwitcherPlugin extends EBPlugin {
 
     public int getTreeLevelOffset() {
         return treeLevelOffset;
-    }
-
-    public int getDeleteDelay() {
-        return deleteDelay;
     }
 
     public String getShortcutsUppercased() {

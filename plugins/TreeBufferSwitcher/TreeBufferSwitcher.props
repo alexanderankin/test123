@@ -18,6 +18,10 @@ treebufferswitcher.tree-level-offset=16
 
 ### actions
 treebufferswitcher.focusbufferswitcher.label=Focus Tree Buffer Switcher
+treebufferswitcher.nextEditPane.label=Next Edit Pane
+treebufferswitcher.prevEditPane.label=Previous Edit Pane
+treebufferswitcher.nextView.label=Next View
+treebufferswitcher.prevView.label=Previous View
 
 ### option pane
 plugin.treebufferswitcher.TreeBufferSwitcherPlugin.option-pane=TreeBufferSwitcher
