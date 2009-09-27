@@ -72,6 +72,13 @@ public final class SchemaLoader
 		
 		f = new org.apache.xerces.jaxp.validation.XMLSchemaFactory();
 		jaxpFactories.put(XSD_FACTORY_URL,f);
+		
+		try{
+			Class.forName("org.apache.xerces.jaxp.SAXParserFactoryImpl").newInstance();
+		}catch(Exception e){
+			Log.log(Log.ERROR,SchemaLoader.class,e);
+		}
+		
 		// FIXME: this is a modified version of the constructor, import the sources in SVN
 		f = new org.iso_relax.verifier.jaxp.validation.RELAXNGSchemaFactoryImpl(new com.thaiopensource.relaxng.jarv.VerifierFactoryImpl());
 		jaxpFactories.put(RNG_FACTORY_URL,f);

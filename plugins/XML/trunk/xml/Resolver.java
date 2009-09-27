@@ -68,29 +68,22 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 {
 
 	/** Ask before downloading */
-	public static final int ASK = 0;
+	public static final String ASK = "ask";
 	/** Local files & catalogs only */
-	public static final int LOCAL = 1;
+	public static final String LOCAL = "local";
 	/** Download without asking */
-	public static final int ALWAYS = 2;
-	public static final String MODES[] = new String[] {"ask", "local", "always"};
-	private static boolean loadedCache = false;
-	static private boolean loadedCatalogs = false;
+	public static final String ALWAYS = "always";
+	public static final String MODES[] = new String[] {ASK, LOCAL, ALWAYS};
+	private boolean loadedCache = false;
+	private boolean loadedCatalogs = false;
 	public static final String NETWORK_PROPS = "xml.general.network";
 
-	public static void reloadCatalogs()
-	{
-		loadedCatalogs = false;
-	} //}}}
 
 	//{{{ Package-private members
 
 	//{{{ init() method
 	void init()
 	{
-		//do this here, as it will never change until restart of jEdit
-		setUsingCache(jEdit.getSettingsDirectory() != null);
-
 		// TODO: not sure about this handler : is it useful ?
 		EditBus.addToBus(vfsUpdateHandler = new VFSUpdateHandler());
 	} //}}}
@@ -99,6 +92,8 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 	void uninit()
 	{
 		EditBus.removeFromBus(vfsUpdateHandler);
+		// really forget current state
+		singleton = null;
 	} //}}}
 
 	//{{{ save() method
@@ -195,6 +190,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 	public static synchronized Resolver instance() {
 		if (singleton == null) {
 			singleton = new Resolver();
+			singleton.init();
 			singleton.load();
 		}
 
@@ -242,6 +238,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 				uri = jEdit.getProperty(prop + ".uri");
 				Entry se = new Entry(Entry.SYSTEM,id,uri);
 				resourceCache.put(se,uri);
+				Log.log(Log.DEBUG,Resolver.class, "loading cache "+id+" -> "+uri);
 			}
 			loadedCache = true;
 		}
@@ -448,8 +445,9 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 	 */
 	public InputSource resolveEntity(String name, String publicId, String current,
 		String systemId) throws SAXException, java.io.IOException {
-
-		load();
+		
+		//TODO: why is this load() here ? remove it !
+		// load();
 		if(publicId != null && publicId.length() == 0)
 			publicId = null;
 
@@ -471,14 +469,17 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 		else
 			parent = null;
 
-		// next, try resolving full path name
-		if(newSystemId == null)
+		// try the catalog 
+		if(publicId == null)
+			newSystemId = resolvePublicOrSystem(systemId,false);
+		else
 		{
-			if(publicId == null)
-				newSystemId = resolveSystem(systemId);
-			else
-			{
-				newSystemId = resolvePublic(systemId,publicId);
+			newSystemId = resolvePublicOrSystem(publicId,true);
+			if(newSystemId == null && systemId != null){
+				//try the systemId as a backup 
+				// calling again resolvePublicOrSystem in case
+				// the systemId is in cache
+				newSystemId = resolvePublicOrSystem(systemId,false);
 			}
 		}
 
@@ -563,7 +564,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 			source.setByteStream(is);
 			return source;
 		}
-		else if (getNetworkModeVal() == LOCAL)
+		else if (LOCAL.equals(getNetworkMode()))
 		{
 			Log.log(Log.DEBUG,Resolver.class,"refusing to fetch remote entity (configured for Local-only)");
 			// returning null would not be as informing
@@ -582,8 +583,8 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 				public void run()
 				{
 					View view = jEdit.getActiveView();
-					if (getNetworkModeVal() == ALWAYS
-                        || (getNetworkModeVal() == ASK
+					if (ALWAYS.equals(getNetworkMode())
+                        || (ASK.equals(getNetworkMode())
                             && showDownloadResourceDialog(view,_newSystemId))
                         )
 					{
@@ -681,12 +682,16 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 	} //}}}
 
 	// TODO: remove package access (for XMLPlugin)
-	String resolveSystem(String id) throws IOException
+	String resolvePublicOrSystem(String id,boolean isPublic) throws IOException
 	{
-		Entry e = new Entry(Entry.SYSTEM,id,null);
+		Entry e = new Entry(isPublic ? Entry.PUBLIC : Entry.SYSTEM,id,null);
 		String uri = resourceCache.get(e);
 		if(uri == null)
-			return catalog.resolveSystem(id);
+			if(isPublic){
+				return catalog.resolvePublic(id,null);
+			}else{
+				return catalog.resolveSystem(id);
+			}
 		else if(uri == IGNORE)
 			return null;
 		else
@@ -724,26 +729,6 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 		return localFile;
 	} //}}}
 
-	//{{{ resolvePublic() method
-	// TODO : remove systemId as it's not used and merge the 2 methods
-	private String resolvePublic(String systemId, String publicId) throws IOException
-
-	{
-		Entry e = new Entry(Entry.PUBLIC,publicId,null);
-		String uri = resourceCache.get(e);
-		if(uri == null)
-			try {
-				return catalog.resolvePublic(publicId,null);
-			}
-			catch (Exception e4) {
-				e4.printStackTrace();
-				return null;
-			}
-		else if(uri == IGNORE)
-			return null;
-		else
-			return uri;
-	} //}}}
 	private boolean showDownloadResourceDialog(Component comp, String systemId)
 	{
 		Entry e = new Entry(Entry.SYSTEM,systemId,null);
@@ -769,6 +754,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 	 */
 	private void addUserResource(String publicId, String systemId, String url)
 	{
+		Log.log(Log.DEBUG,Resolver.class,"addUserResource("+publicId+","+","+systemId+","+url+")");
 		if(publicId != null)
 		{
 			Entry pe = new Entry( Entry.PUBLIC, publicId, url );
@@ -840,7 +826,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 	} //}}}
 
 	//{{{ propertiesChanged() method
-	public static void propertiesChanged()
+	public void propertiesChanged()
 	{
 		// reload the list of catalogs, in case the user added some in the
 		// option pane
@@ -862,33 +848,16 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 	 * @return the network mode: LOCAL, ASK, or ALWAYS
 	 */
 	static public String getNetworkMode() {
-		return jEdit.getProperty(NETWORK_PROPS + ".mode");
+		return jEdit.getProperty(MODE);
 
-	}
-	/**
-	 *
-	 * @param newVal 0=ask, 1=local mode, 2=always download
-	 */
-	static public void setNetworkModeVal(int newVal) {
-		setNetworkMode(MODES[newVal]);
-	}
-
-	/**
-	 *
-	 * @return 0=ask, 1=local mode, 2=always download
-	 */
-	static public int getNetworkModeVal() {
-		String mode = getNetworkMode();
-		if (mode == null) return 0;
-		for (int i=0; i<MODES.length; ++i) {
-			if (mode.equals(MODES[i])) return i;
-		}
-		return 0;
 	}
 
 	static public void setNetworkMode(String newMode) {
-		jEdit.setProperty(NETWORK_PROPS + ".mode", newMode);
+		if(!LOCAL.equals(newMode) && !ASK.equals(newMode) && !ALWAYS.equals(newMode))
+			newMode = ASK;
+		jEdit.setProperty(MODE, newMode);
 	}
+	
 	public InputSource getExternalSubset(String name, String baseURI) throws SAXException, IOException
 	{
 		// TODO Auto-generated method stub

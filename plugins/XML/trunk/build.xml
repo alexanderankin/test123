@@ -47,6 +47,22 @@
         	<filename name="xml/**/*.java" />
         </or>
     </selector>
+    
+    <selector id="extraFiles">
+        <and>
+            <or>
+                <filename name="actions.xml" />
+                <filename name="dockables.xml" />
+                <filename name="services.xml" />
+                <filename name="XML.props" />
+                <filename name="LICENSE" />
+                <filename name="README" />
+            </or>
+            <not>
+                <filename name="build/**/*"/>
+             </not>
+        </and>
+    </selector>
 
     <selector id="packageFiles">
             <or>

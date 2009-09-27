@@ -16,6 +16,8 @@
 package xml.options;
 
 //{{{ Imports
+import java.util.Arrays;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
@@ -60,9 +62,7 @@ public class GeneralOptionPane extends AbstractOptionPane
 	protected void _init()
 	{
 		
-		addComponent(popupEditorComplete = new JCheckBox(jEdit.getProperty(
-			"options.xml.general.tageditor.popupOnCompletion")));
-		popupEditorComplete.setSelected(jEdit.getBooleanProperty("xml.tageditor.popupOnComplete", true));
+		addSeparator("options.xml.general.validate-separator");
 		
 		addComponent(validate = new JCheckBox(jEdit.getProperty(
 			"options.xml.general.validate")));
@@ -75,7 +75,7 @@ public class GeneralOptionPane extends AbstractOptionPane
 		}
 		
 		network = new JComboBox(comboLabels);
-		network.setSelectedIndex(Resolver.getNetworkModeVal());
+		network.setSelectedIndex(Arrays.asList(Resolver.MODES).indexOf(Resolver.getNetworkMode()));
 		
 		addComponent(jEdit.getProperty("options.xml.general.network-mode"), network);
 		
@@ -90,13 +90,14 @@ public class GeneralOptionPane extends AbstractOptionPane
 			jEdit.getProperty("options.xml.general.show-attributes.all")
 		};
 
+		addSeparator("options.xml.general.tree-separator");
+
 		addComponent(jEdit.getProperty("options.xml.general.show-attributes"),
 			showAttributes = new JComboBox(showAttributeValues));
 		showAttributes.setSelectedIndex(jEdit.getIntegerProperty(
 			"xml.show-attributes",0));
 
-		addSeparator(jEdit.getProperty(
-			"options.xml.general.tags-separator"));
+		addSeparator("options.xml.general.tags-separator");
 
 		closeComplete = new JCheckBox(jEdit.getProperty(
 			"options.xml.general.close-complete"));
@@ -117,8 +118,11 @@ public class GeneralOptionPane extends AbstractOptionPane
 		standaloneExtraSpace.setSelected(jEdit.getBooleanProperty(
 			"xml.standalone-extra-space"));
 
-		addSeparator(jEdit.getProperty(
-			"options.xml.general.xinclude-separator"));
+		addComponent(popupEditorComplete = new JCheckBox(jEdit.getProperty(
+			"options.xml.general.tageditor.popupOnCompletion")));
+		popupEditorComplete.setSelected(jEdit.getBooleanProperty("xml.tageditor.popupOnComplete", true));
+
+		addSeparator("options.xml.general.xinclude-separator");
 		
 		addComponent(xinclude = new JCheckBox(jEdit.getProperty(
 			"options.xml.general.xinclude")));
@@ -147,7 +151,7 @@ public class GeneralOptionPane extends AbstractOptionPane
 		jEdit.setBooleanProperty("xml.tageditor.popupOnComplete", popupEditorComplete.isSelected());
 		
 		jEdit.setBooleanProperty("buffer.xml.validate",validate.isSelected());
-		Resolver.setNetworkModeVal(network.getSelectedIndex());
+		Resolver.setNetworkMode(Resolver.MODES[network.getSelectedIndex()]);
 		Resolver.setUsingCache(cache.isSelected());
 
 		jEdit.setIntegerProperty("xml.show-attributes",
