@@ -41,12 +41,10 @@ public class XmlPlugin extends EBPlugin
 	public void start()
 	{
 
-		/* System.setProperty("javax.xml.parsers.SAXParserFactory",
+		System.setProperty("javax.xml.parsers.SAXParserFactory",
 			"org.apache.xerces.jaxp.SAXParserFactoryImpl");
 		System.setProperty("javax.xml.parsers.DocumentBuilderFactory",
 			"org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");
-		*/
-		Resolver.instance().init();
 		Resolver.instance().propertiesChanged();
 		
 		XmlActions.propertiesChanged();
@@ -208,7 +206,7 @@ public class XmlPlugin extends EBPlugin
 		if (uri.startsWith("http:/")) try {
 			// TODO: document the usage of uriToFile in Resolver
 			//       and gain confidence that it doesn't loop
-			String result = Resolver.instance().resolveSystem(uri);
+			String result = Resolver.instance().resolvePublicOrSystem(uri,false);
 			if (result != null) return result;
 		}
 		catch (Exception e) {

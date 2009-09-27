@@ -108,4 +108,11 @@
             <reference refid="project.test.sysproperties"/>
         </ant>
     </target>
+    
+        <!-- shortcut to only compile the tests (don't waste time instrumenting) -->
+    <target name="compile">
+        <ant antfile="${test.framework.home}/build.xml" target="-compileTests" inheritRefs="true">
+            <reference refid="project.test.sysproperties"/>
+        </ant>
+    </target>
 </project>
