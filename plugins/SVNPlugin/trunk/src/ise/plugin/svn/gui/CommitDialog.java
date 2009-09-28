@@ -54,6 +54,7 @@ import ise.plugin.svn.data.PropertyData;
 import ise.plugin.svn.library.PropertyComboBox;
 import ise.plugin.svn.PVHelper;
 import ise.plugin.svn.io.ConsolePrintStream;
+import ise.plugin.svn.io.NullOutputStream;
 import ise.plugin.svn.command.Property;
 
 import org.tmatesoft.svn.core.wc.SVNRevision;
@@ -403,7 +404,7 @@ public class CommitDialog extends JDialog {
     private void loadCommitProperties( String path ) {
         do {
             PropertyData data = new PropertyData();
-            data.setOut( new ConsolePrintStream( view ) );
+            data.setOut( new ConsolePrintStream(new NullOutputStream()) );
             data.addPath( path );
             data.setPathsAreURLs( false );
             data.setRecursive( false );
@@ -457,8 +458,9 @@ public class CommitDialog extends JDialog {
         public void insertString( FilterBypass fb,
                 int offset, String string, AttributeSet attr )
         throws BadLocationException {
-            if ( string == null )
+            if ( string == null ) {
                 return ;
+            }
             if ( isNumeric( string ) ) {
                 super.insertString( fb, offset, string, attr );
             }
@@ -474,8 +476,9 @@ public class CommitDialog extends JDialog {
         public void replace( FilterBypass fb, int offset,
                 int length, String text, AttributeSet attrs )
         throws BadLocationException {
-            if ( text == null )
+            if ( text == null ) {
                 return ;
+            }
             if ( isNumeric( text ) ) {
                 super.replace( fb, offset, length, text, attrs );
             }
