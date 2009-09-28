@@ -55,6 +55,8 @@ import org.tmatesoft.svn.core.wc.SVNInfo;
  * ActionListener to perform sort of an svn diff.  While subversion can do a diff,
  * I'm delegating to the JDiff plugin to create and display the diff.
  * This is not dependent on ProjectViewer.
+ * TODO: fix this class so the two constructors that don't take a DiffData create
+ * a DiffData out of the parameters.
  */
 public class DiffAction extends SVNAction {
 
