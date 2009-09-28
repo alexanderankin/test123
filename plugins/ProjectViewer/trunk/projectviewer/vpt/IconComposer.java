@@ -114,7 +114,7 @@ public final class IconComposer {
 		int file_state = FILE_STATE_NORMAL;
 		if (node.isFile()) {
 			VPTFile f = (VPTFile) node;
-			VFSFile vfsf = f.getFile();
+			VFSFile vfsf = f.getFile(true);
 			file_state = (vfsf != null) ? getFileState(vfsf, f.getURL())
 			                            : FILE_STATE_NOT_FOUND;
 			if (ProjectViewerConfig.getInstance().isErrorListAvailable()) {
