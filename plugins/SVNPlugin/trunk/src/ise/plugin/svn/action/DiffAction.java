@@ -60,13 +60,12 @@ public class DiffAction extends SVNAction {
 
     private DiffDialog dialog = null;
 
-    private List<String> paths = null;
     private String path1 = null;
     private String path2 = null;
     private String revision1 = null;
     private String revision2 = null;
 
-    private DiffData data;
+    private DiffData data = null;
     private Logger logger = null;
 
     /**
@@ -79,8 +78,9 @@ public class DiffAction extends SVNAction {
      */
     public DiffAction( View view, String path, String username, String password ) {
         super( view, jEdit.getProperty( "ips.Diff", "Diff" ) );
-        if ( path == null || path.length() == 0 )
+        if ( path == null || path.length() == 0 ) {
             throw new IllegalArgumentException( "path may not be null" );
+        }
         this.path1 = path;
         setUsername( username );
         setPassword( password );
@@ -98,8 +98,9 @@ public class DiffAction extends SVNAction {
      */
     public DiffAction( View view, String path, String revision1, String revision2, String username, String password ) {
         super( view, "Diff" );
-        if ( path == null || path.length() == 0 )
+        if ( path == null || path.length() == 0 ) {
             throw new IllegalArgumentException( "path may not be null" );
+        }
         if ( revision1 == null || revision2 == null ) {
             throw new IllegalArgumentException( "neither revision may be null, " + ( revision1 == null ? "revision1" : "revision2" ) + " is null." );
         }
@@ -110,18 +111,19 @@ public class DiffAction extends SVNAction {
         setPassword( password );
     }
 
+    /**
+     * Assumes that the DiffData contains everything needed to perform the diff.
+     * @param view The view in which to display the results.
+     * @param data the DiffData object containing everything necessary to perform the diff.
+     */
     public DiffAction( View view, DiffData data ) {
         super( view, jEdit.getProperty( "ips.Diff", "Diff" ) );
-        this.data = data;
-        this.paths = data.getPaths();
-        if ( paths == null || paths.size() == 0 ) {
-            throw new IllegalArgumentException( "paths may not be null" );
+        if ( data == null ) {
+            throw new IllegalArgumentException( "data may not be null" );
         }
-
-        // if data only has 1 path, set path1 to that path
-        if ( !data.getSvnDiff() && paths.size() == 1 ) {
-            path1 = paths.get( 0 );
-            this.paths = null;
+        this.data = data;
+        if ( data.getPaths() == null || data.getPaths().size() == 0 ) {
+            throw new IllegalArgumentException( "paths may not be null" );
         }
         setUsername( data.getUsername() );
         setPassword( data.getPassword() );
@@ -138,19 +140,7 @@ public class DiffAction extends SVNAction {
         if ( ( path1 != null && path1.length() > 0 ) || data != null ) {
 
             // pick or set the revisions
-            if ( paths != null ) {
-                // if here, then the 3rd constructor was called.  The user has
-                // selected to diff more than one file, which means all that can
-                // be done is an svn diff.
-                dialog = new DiffDialog( getView(), data );
-                GUIUtils.center( getView(), dialog );
-                dialog.setVisible( true );
-                data = dialog.getData();
-                if ( data == null ) {
-                    return ;     // null means user canceled
-                }
-            }
-            else if ( revision1 == null && path2 == null ) {
+            if ( data == null && revision1 == null && path2 == null ) {
                 // if here, then the first constructor was called, the user is
                 // wanting to diff a local file against a remote version of the
                 // file. Show a DiffDialog to get the revision of the remote file.
@@ -162,7 +152,7 @@ public class DiffAction extends SVNAction {
                     return ;     // null means user canceled
                 }
             }
-            else {
+            else if ( data == null ) {
                 // diffing two repository versions of the same file
                 data = new DiffData();
                 data.addPath( path1 );
@@ -241,13 +231,18 @@ public class DiffAction extends SVNAction {
                 SVNInfo svn_info = infos.get( 0 );
                 url = svn_info.getRepositoryRootURL().toString();
                 svn_path = svn_info.getURL().toString();
-                svn_path = svn_path.substring(url.length());
+                svn_path = svn_path.substring( url.length() );
                 BrowseRepository br = new BrowseRepository();
 
                 // there should always be one remote revision to fetch for diffing against a working copy
                 // or for diffing against another revision
                 log( jEdit.getProperty( "ips.Diff,_fetching_file_data...", "Diff, fetching file data..." ) );
-                remote1 = br.getFile( url, svn_path, data.getRevision1(), data.getUsername(), data.getPassword() );
+                if ( data.getRevision1().equals( SVNRevision.WORKING ) ) {
+                    remote1 = new File(data.getPaths().get( 0 ));
+                }
+                else {
+                    remote1 = br.getFile( url, svn_path, data.getRevision1(), data.getUsername(), data.getPassword() );
+                }
 
                 // there may be a second remote revision for diffing between 2 remote revisions
                 remote2 = null;
@@ -331,7 +326,8 @@ public class DiffAction extends SVNAction {
                                 // do an explicit repaint of the view to clean up the display
                                 getView().repaint();
                             }
-                        });
+                        }
+                                          );
                 SwingUtilities.invokeLater( new Runnable() {
                             public void run() {
                                 // set the edit panes in the view
@@ -343,7 +339,8 @@ public class DiffAction extends SVNAction {
                                 // do an explicit repaint of the view to clean up the display
                                 getView().repaint();
                             }
-                        });
+                        }
+                                          );
 
             }
             catch ( Exception e ) {
