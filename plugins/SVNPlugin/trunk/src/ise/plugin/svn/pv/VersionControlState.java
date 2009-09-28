@@ -32,9 +32,10 @@ public class VersionControlState implements VersionControlService {
     public final static int NEED_UPDATE = 4; // out of date
     public final static int CONFLICT = 5; // conflicted
     public final static int DELETED = 6; // deleted
-    public final static int LOCKED = 7; // locked
-    public final static int UNVERSIONED = 8;  // unversioned
-    public final static int NORMAL = 9; // normal
+    public final static int IGNORED = 7; // ignored
+    public final static int LOCKED = 8; // locked
+    public final static int UNVERSIONED = 9;  // unversioned
+    public final static int NORMAL = 10; // normal
 
 
     // icon definitions for the various states
@@ -86,6 +87,9 @@ public class VersionControlState implements VersionControlService {
         else if ( SVNStatusType.STATUS_DELETED.equals( type ) ) {
             rtn = DELETED;
         }
+        else if ( SVNStatusType.STATUS_IGNORED.equals( type ) ) {
+            rtn = DELETED;
+        }
         else if ( status.isLocked() ) {
             rtn = LOCKED;
         }
@@ -128,6 +132,8 @@ public class VersionControlState implements VersionControlService {
                 return DELETED_ICON;
             case LOCKED:
                 return LOCKED_ICON;
+            case IGNORED:
+                return IGNORED_ICON;
             case NORMAL:
                 return NORMAL_ICON;
             case LOCAL_ADD:

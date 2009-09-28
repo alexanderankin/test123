@@ -46,6 +46,12 @@ import ise.plugin.svn.data.StatusData;
 
 public class Status {
     
+    /**
+     * This is a very fast way of getting status. It only checks against the
+     * working copy, never remote.  There is no output to the SVN Console, 
+     * there is no validation of user credentials.
+     * @param path the file to check status of
+     */
     public SVNStatus getStatus(File path) {
         SVNKit.setupLibrary();
         SVNClientManager clientManager = SVNClientManager.newInstance();
