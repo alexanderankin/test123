@@ -24,7 +24,12 @@ import java.lang.ref.WeakReference;
 
 import java.awt.Color;
 import java.io.File;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.Icon;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileSystemView;
 
 import org.gjt.sp.jedit.jEdit;
@@ -37,6 +42,7 @@ import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSManager;
 
 import projectviewer.PVActions;
+import projectviewer.ProjectViewer;
 import projectviewer.VFSHelper;
 import projectviewer.config.AppLauncher;
 import projectviewer.config.ProjectViewerConfig;
@@ -69,6 +75,7 @@ public class VPTFile extends VPTNode
 
 	private Icon	fileIcon;
 	private boolean	loadedIcon;
+	private VFSFile vfsfile;
 
 	private String tsCache;
 	//}}}
@@ -80,18 +87,15 @@ public class VPTFile extends VPTNode
 		this.fileTypeColor = VFS.getDefaultColorFor(getName());
 		this.fileIcon = null;
 		this.loadedIcon = false;
+		this.vfsfile = null;
 	}
 
 
 	/** Returns is the underlying file is writable. */
 	public boolean canWrite()
 	{
-		try {
-			VFSFile f = VFSHelper.getFile(url);
-			return (f != null && f.isWriteable());
-		} catch (IOException ioe) {
-			return false;
-		}
+		VFSFile f = getFile();
+		return (f != null && f.isWriteable());
 	}
 
 
@@ -119,12 +123,41 @@ public class VPTFile extends VPTNode
 	 */
 	public VFSFile getFile()
 	{
-		try {
-			return VFSHelper.getFile(url);
-		} catch (IOException ioe) {
-			Log.log(Log.WARNING, this, ioe);
-			return null;
+		return getFile(false);
+	}
+
+
+	/**
+	 * Returns the VFS file associated with this node. Optionally,
+	 * does lazy initialization of the internal cached file node.
+	 *
+	 * The "lazy" flag is for use by code that cannot cope with the
+	 * possibility of instantiating the VFS file causing any interaction
+	 * with the UI (e.g., an FTP login dialog). If "lazy" is true,
+	 * and the internal cached file is not yet initialized, a task
+	 * will be scheduled to initialize the file, and this method will
+	 * most probably return null.
+	 *
+	 * @param	lazy	Whether to use lazy initialization of the
+	 *                  cached file.
+	 *
+	 * @return The VFSFile backing this node. May be null if doing
+	 *         lazy initialization, or an I/O error occurs.
+	 */
+	public VFSFile getFile(boolean lazy)
+	{
+		if (vfsfile == null) {
+			if (lazy) {
+				FileGetter.queue(this);
+			} else {
+				try {
+					vfsfile = VFSHelper.getFile(url);
+				} catch (IOException ioe) {
+					Log.log(Log.WARNING, this, ioe);
+				}
+			}
 		}
+		return vfsfile;
 	}
 
 
@@ -280,6 +313,48 @@ public class VPTFile extends VPTNode
 		} else {
 			return 1;
 		}
+	}
+
+
+	/**
+	 * A simple "task queue" for initializing VFSFile instances.
+	 * Initialization will be done in the AWT thread (since starting
+	 * VFS sessions may require UI interaction).
+	 */
+	private static class FileGetter implements Runnable
+	{
+		private static List<VPTFile> queue;
+
+
+		public static void queue(VPTFile f)
+		{
+			if (queue == null) {
+				queue = new ArrayList<VPTFile>();
+			}
+			synchronized (queue) {
+				queue.add(f);
+				if (queue.size() == 1) {
+					SwingUtilities.invokeLater(new FileGetter());
+				}
+			}
+		}
+
+
+		public void run()
+		{
+			synchronized (queue) {
+				for (VPTFile f : queue) {
+					try {
+						f.vfsfile = VFSHelper.getFile(f.url);
+						ProjectViewer.nodeChanged(f);
+					} catch (IOException ioe) {
+						Log.log(Log.WARNING, this, ioe);
+					}
+				}
+				queue.clear();
+			}
+		}
+
 	}
 
 }
