@@ -28,11 +28,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.pv;
 
+import ise.plugin.svn.action.DiffAction;
+import ise.plugin.svn.data.DiffData;
+import ise.plugin.svn.gui.DiffDialog;
+import ise.plugin.svn.library.GUIUtils;
+
 import java.awt.event.ActionEvent;
 import java.util.*;
 import javax.swing.JOptionPane;
-import ise.plugin.svn.action.DiffAction;
-import ise.plugin.svn.data.DiffData;
 
 
 /**
@@ -46,6 +49,13 @@ public class DiffActor extends NodeActor {
     public void actionPerformed( ActionEvent ae ) {
         if ( nodes != null && nodes.size() > 0 ) {
             DiffData data = new DiffData();
+            DiffDialog dialog = new DiffDialog( view, data );
+            GUIUtils.center( getView(), dialog );
+            dialog.setVisible( true );
+            data = dialog.getData();
+            if ( data == null ) {
+                return ;     // null means user canceled
+            }
             data.setPaths( getNodePaths() );
             data.setUsername( username );
             data.setPassword( password );

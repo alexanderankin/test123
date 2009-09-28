@@ -46,6 +46,7 @@ import ise.plugin.svn.PVHelper;
 import ise.plugin.svn.action.CopyAction;
 import ise.plugin.svn.action.DiffAction;
 import ise.plugin.svn.data.CopyData;
+import ise.plugin.svn.data.DiffData;
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.data.LogResults;
 import ise.plugin.svn.library.GUIUtils;
@@ -110,16 +111,16 @@ public class LogResultsPanel extends JPanel {
         con.s = "w";
         con.p = 0;
 
-        
+
         TreeMap < String, List < SVNLogEntry >> results = logResults.getEntries();
         Set < Map.Entry < String, List < SVNLogEntry >>> set = results.entrySet();
         for ( Map.Entry < String, List < SVNLogEntry >> me : set ) {
-            
+
             String path = ( String ) me.getKey();
             if ( bugtraqProperties == null ) {
                 loadCommitProperties( path );
             }
-            
+
             JLabel label = new JLabel( jEdit.getProperty( "ips.Path>", "Path:" ) + " " + path );
 
             // sort the entries
@@ -134,7 +135,7 @@ public class LogResultsPanel extends JPanel {
             String[][] data = new String[ entries.size() ][ showPaths ? 5 : 4 ];
             Iterator it = entries.iterator();
             for ( int i = 0; it.hasNext(); i++ ) {
-                
+
                 SVNLogEntry entry = ( SVNLogEntry ) it.next();
                 String revision = String.valueOf( entry.getRevision() );
                 String date = entry.getDate() != null ? new SimpleDateFormat( jEdit.getProperty( "ips.yyyy-MM-dd_HH>mm>ss_Z", "yyyy-MM-dd HH:mm:ss Z" ), Locale.getDefault() ).format( entry.getDate() ) : "---";
@@ -381,7 +382,31 @@ public class LogResultsPanel extends JPanel {
                     }
                                 );
         }
+
         // TODO: add menu item to diff against working copy
+        if ( rows.length == 1 ) {
+            final String path = table.getPath();
+            // TODO: move hard-coded string to property file
+            JMenuItem mi = new JMenuItem( "Diff against working copy" );
+            popup.add( mi );
+            mi.addActionListener( new ActionListener() {
+                        public void actionPerformed( ActionEvent ae ) {
+                            int[] rows = table.getSelectedRows();
+                            DiffData data = new DiffData();
+                            List<String> paths = new ArrayList<String>();
+                            paths.add(path);
+                            data.setPaths( paths );
+                            data.setUsername( username );
+                            data.setPassword( password );
+                            data.setRevision1( SVNRevision.WORKING );
+                            data.setRevision2( SVNRevision.parse( ( String ) table.getValueAt( rows[ 0 ], 0 ) ) );
+                            DiffAction action = new DiffAction( view, data );
+                            action.actionPerformed( ae );
+                        }
+                    }
+                                );
+        }
+
 
         // Open browser
         if ( col == 3 ) {
@@ -414,8 +439,8 @@ public class LogResultsPanel extends JPanel {
                 }
                             );
         popup.add( mi );
-        
-        // TODO: add menu item to open file 
+
+        // TODO: add menu item to open file
 
         return popup;
     }
@@ -517,17 +542,17 @@ public class LogResultsPanel extends JPanel {
     // path, then works up through parent paths until the project root is
     // reached.
     private void loadCommitProperties( String path ) {
-        if (path == null || path.length() == 0) {
-            return;   
+        if ( path == null || path.length() == 0 ) {
+            return ;
         }
-        
+
         String projectRoot = PVHelper.getProjectRoot( path );
-        if (projectRoot == null || projectRoot.length() == 0) {
-            return;   
+        if ( projectRoot == null || projectRoot.length() == 0 ) {
+            return ;
         }
         bugtraqProperties = new Properties();
         do {
-            
+
             PropertyData data = new PropertyData();
             data.setOut( new ConsolePrintStream( view ) );
             data.addPath( path );
@@ -544,7 +569,7 @@ public class LogResultsPanel extends JPanel {
                 cmd.doGetProperties( data );
             }
             catch ( Exception e ) {
-                
+
                 // ProjectViewer allows adding paths to a project that are not
                 // under the project root.  The typical use case is that all
                 // files are under the root, so the 'while' loop makes sense. In
