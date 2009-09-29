@@ -40,20 +40,18 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.ISVNOptions;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
-import org.tmatesoft.svn.core.wc.SVNWCClient;
-import org.tmatesoft.svn.core.wc.SVNInfo;
-import org.tmatesoft.svn.core.auth.BasicAuthenticationManager;
 
 import org.tmatesoft.svn.core.SVNException;
 
 import ise.plugin.svn.data.LogData;
 import ise.plugin.svn.data.LogResults;
-import ise.plugin.svn.library.Logger;
 
 
 public class Log {
 
     private LogResults results = new LogResults();
+
+    // <file path, list of log entries for the file>
     private TreeMap < String, List < SVNLogEntry >> entries = new TreeMap < String, List < SVNLogEntry >> ();
 
     private PrintStream out = null;
@@ -64,7 +62,7 @@ public class Log {
      */
     public void doLog( LogData data ) throws CommandInitializationException, SVNException {
         SVNKit.setupLibrary();
-        
+
 
         // validate data values
         if ( data.getPaths() == null ) {
@@ -87,100 +85,77 @@ public class Log {
                 // check for file existence?
             }
         }
+        
+        // pre-populate the 'entries' tree map
+        for (String path : data.getPaths()) {
+            entries.put(path, new ArrayList<SVNLogEntry>());   
+        }
 
         // use default svn config options
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
-        
+
 
         // use the svnkit client manager
-        System.out.println("+++++ Log.java, username = " + data.getUsername() + ", password = " + data.getDecryptedPassword());
-        SVNClientManager clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager(data.getUsername(), data.getDecryptedPassword()) );
-        
-        
-        // get a commit client
+        SVNClientManager clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager( data.getUsername(), data.getDecryptedPassword() ) );
+
+
+        // get log client
         SVNLogClient client = clientManager.getLogClient();
-        SVNWCClient wc_client = clientManager.getWCClient();
-        
-        
-        // set an event handler so that messages go to the commit data streams for display
+
+
+        // set an event handler so that messages go to the streams for display
         client.setEventHandler( new SVNCommandEventProcessor( data.getOut(), data.getErr(), false ) );
-        
-        
+
+
         out = data.getOut();
 
         if ( data.pathsAreURLs() ) {
             
-            for (String path : data.getPaths()) {
-                SVNURL svnurl = SVNURL.parseURIDecoded(path);
-                LogHandler handler = new LogHandler( path );
-                // files for logs, paths, peg revision, start revision,
-                // end revision, stop on copy, report paths, number of entries, handler
-                // TODO: check if there is a new method that will take multiple urls to avoid looping
-                
+            
+            
+            
+            for ( String path : data.getPaths() ) {
+                System.out.println("+++++ path: " + path);
+                SVNURL svnurl = SVNURL.parseURIDecoded( path );
+                System.out.println("+++++ svnurl: " + svnurl);
+                System.out.println("+++++ tail path removed: " + svnurl.removePathTail());
+                LogHandler handler = new LogHandler();
+                // TODO: check if there is a new method that will take multiple urls to avoid looping --
+                // there is, need to use it:
+                // doLog(SVNURL url, String[] paths, SVNRevision pegRevision, SVNRevision startRevision, 
+                //      SVNRevision endRevision, boolean stopOnCopy, boolean discoverChangedPaths, long limit, ISVNLogEntryHandler handler) 
                 client.doLog( svnurl, null, data.getPegRevision(), data.getStartRevision(),
-                    data.getEndRevision(), data.getStopOnCopy(), data.getShowPaths(), data.getMaxLogs(), handler );
-                
-                entries.put( handler.getPath(), handler.getEntries() );
-                
+                        data.getEndRevision(), data.getStopOnCopy(), data.getShowPaths(), data.getMaxLogs(), handler );
             }
         }
         else {
-            for ( File file : localPaths ) {
-                // this feels like a kludge, I shouldn't have to do a substring
-                // call to figure out the path of the file
-                LogHandler handler = new LogHandler( file );
-                SVNInfo info = wc_client.doInfo(file, SVNRevision.WORKING);
-                results.setInfo(info);
-                String rep_url_string = info.getRepositoryRootURL().toString();
-                String file_url_string = info.getURL().toString();
-                String path = file_url_string.substring(rep_url_string.length());
-                SVNURL rep_url = SVNURL.parseURIEncoded(rep_url_string);
-                String[] rep_paths = new String[]{path};
-                // I should also be able to set the peg revision, but it seems that
-                // using anything beside 0 or UNDEFINED fails.
-                client.doLog( rep_url, rep_paths, data.getPegRevision(), data.getStartRevision(),
+            // DONE: there is a new method that will take an array of Files,
+            // should use that one instead to avoid the loop.
+            LogHandler handler = new LogHandler();
+            // doLog(File[] paths, SVNRevision pegRevision, SVNRevision startRevision, 
+            //      SVNRevision endRevision, boolean stopOnCopy, boolean discoverChangedPaths, long limit, ISVNLogEntryHandler handler) 
+            client.doLog( localPaths, data.getPegRevision(), data.getStartRevision(),
                     data.getEndRevision(), data.getStopOnCopy(), data.getShowPaths(), data.getMaxLogs(), handler );
-                entries.put( handler.getPath(), handler.getEntries() );
-            }
         }
-        results.setEntries(entries);
+        results.setEntries( entries );
         out.flush();
         out.close();
-        System.out.println("+++++ Log.java, done");
     }
 
     public class LogHandler implements ISVNLogEntryHandler {
 
-        private String path = "";
-        private List<SVNLogEntry> logEntries = null;
-
-        public LogHandler( File f ) {
-            path = f.toString();
-        }
-
-        public LogHandler( String p ) {
-            path = p;
-        }
-
         public void handleLogEntry( SVNLogEntry logEntry ) {
-            if ( logEntries == null ) {
-                logEntries = new ArrayList<SVNLogEntry>();
+            Map changedPaths = logEntry.getChangedPaths();
+            Set entryPaths = changedPaths.keySet(); // entryPaths contains Strings of paths
+            for(String path : entries.keySet()) {
+                for (Object ep : entryPaths) {
+                    String entryPath = (String)ep;
+                    if (path.endsWith(entryPath)) {
+                        entries.get(path).add(logEntry);
+                        Log.this.printLogEntry(path, logEntry);
+                    }
+                }
             }
-            logEntries.add( logEntry );
-            Log.this.printLogEntry( path, logEntry );
-        }
-
-        public String getPath() {
-            return path;
-        }
-
-        public List<SVNLogEntry> getEntries() {
-            if ( logEntries == null ) {
-                logEntries = new ArrayList<SVNLogEntry>();
-                SVNLogEntry logEntry = new SVNLogEntry(null, 0, "---", null, "No entries found.");
-                logEntries.add(logEntry);
-            }
-            return logEntries;
         }
     }
 
@@ -192,8 +167,9 @@ public class Log {
     }
 
     public void printLogEntry( String path, SVNLogEntry logEntry ) {
-        if ( out == null )
+        if ( out == null ) {
             return ;
+        }
 
         out.println( "path: " + path );
         out.println( "revision: " + logEntry.getRevision() );
@@ -236,34 +212,34 @@ public class Log {
         }
     }
 
-    public static void main (String[] args) {
+    public static void main ( String[] args ) {
         // for testing
         LogData data = new LogData();
-        data.setUsername("daleanson");
-        data.setPassword("");
+        data.setUsername( "daleanson" );
+        data.setPassword( "" );
         List<String> paths = new ArrayList<String>();
-        paths.add("/home/danson/src/plugins/SVNPlugin/src/ise/plugin/svn/command/Log.java");
-        data.setPaths(paths);
-        data.setOut(new ise.plugin.svn.io.ConsolePrintStream(new ise.plugin.svn.io.LogOutputStream(null)));
+        paths.add( "/home/danson/src/plugins/SVNPlugin/src/ise/plugin/svn/command/Log.java" );
+        data.setPaths( paths );
+        data.setOut( new ise.plugin.svn.io.ConsolePrintStream( new ise.plugin.svn.io.LogOutputStream( null ) ) );
         //long start_rev = 9795L;
         //long end_rev = 9810L;
         java.util.Calendar cal = java.util.Calendar.getInstance();
-        cal.set(2007, 5, 1);
+        cal.set( 2007, 5, 1 );
         //SVNRevision start = SVNRevision.parse(String.valueOf(start_rev));
-        SVNRevision start = SVNRevision.create(cal.getTime());
-        cal.set(2007, 6, 1);
+        SVNRevision start = SVNRevision.create( cal.getTime() );
+        cal.set( 2007, 6, 1 );
         //SVNRevision end = SVNRevision.parse(String.valueOf(end_rev));
-        SVNRevision end = SVNRevision.create(cal.getTime());
-        data.setStartRevision(start);
-        data.setEndRevision(end);
+        SVNRevision end = SVNRevision.create( cal.getTime() );
+        data.setStartRevision( start );
+        data.setEndRevision( end );
         Log log = new Log();
         try {
             org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory.setup();
             org.tmatesoft.svn.core.internal.io.svn.SVNRepositoryFactoryImpl.setup();
             org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory.setup();
-            log.doLog(data);
+            log.doLog( data );
         }
-        catch(Exception e) {
+        catch ( Exception e ) {
             e.printStackTrace();
         }
     }
