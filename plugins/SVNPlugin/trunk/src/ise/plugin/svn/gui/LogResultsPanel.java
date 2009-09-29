@@ -314,55 +314,55 @@ public class LogResultsPanel extends JPanel {
             if ( !deleted_files.isEmpty() ) {
                 JMenuItem mi = new JMenuItem( jEdit.getProperty( "ips.Undelete", "Undelete" ) );
                 popup.add( mi );
-                mi.addActionListener( new ActionListener() {
-                            public void actionPerformed( ActionEvent ae ) {
-                                try {
-                                    // have the user select which files to undelete
-                                    UndeleteDialog dialog = new UndeleteDialog( view, deleted_files );
-                                    GUIUtils.center( view, dialog );
-                                    dialog.setVisible( true );
-                                    SVNData data = dialog.getData();
-                                    if ( data == null ) {
-                                        return ;     // null means user canceled
-                                    }
-
-                                    // get the repository url and filename of the file to recover
-                                    SVNInfo info = logResults.getInfo();
-                                    String rep_url_string = info.getRepositoryRootURL().toString();
-                                    String file_url_string = info.getURL().toString();
-
-                                    // get the revision to undelete
-                                    String revision = ( String ) table.getValueAt( rows[ 0 ], 0 );
-
-                                    // get project root to use as base directory for local destination
-                                    String project_root = PVHelper.getProjectRoot( view );
-
-                                    // do the undelete
-                                    for ( String remote_filename : data.getPaths() ) {
-                                        // remote file
-                                        SVNURL rep_url = SVNURL.parseURIDecoded( rep_url_string + remote_filename );
-
-                                        // local filename, extract from remote name
-                                        String local_filename = rep_url.toString().substring( file_url_string.length() );
-
-                                        // prep for copy
-                                        CopyData copy_data = new CopyData();
-                                        copy_data.setSourceURL( rep_url );      // what to copy
-                                        copy_data.setRevision( SVNRevision.create( Long.parseLong( revision ) - 1 ) );  // at what revision
-                                        copy_data.setDestinationFile( new File( project_root + local_filename ) );  // where to put it
-
-                                        // do the copy
-                                        CopyAction action = new CopyAction( view, copy_data );
-                                        action.actionPerformed( ae );
-                                    }
+                mi.addActionListener(
+                    new ActionListener() {
+                        public void actionPerformed( ActionEvent ae ) {
+                            try {
+                                // have the user select which files to undelete
+                                UndeleteDialog dialog = new UndeleteDialog( view, deleted_files );
+                                GUIUtils.center( view, dialog );
+                                dialog.setVisible( true );
+                                SVNData data = dialog.getData();
+                                if ( data == null ) {
+                                    return ;     // null means user canceled
                                 }
-                                catch ( Exception e ) {
-                                    e.printStackTrace();
+
+                                // get the repository url and filename of the file to recover
+                                SVNInfo info = logResults.getInfo();
+                                String rep_url_string = info.getRepositoryRootURL().toString();
+                                String file_url_string = info.getURL().toString();
+
+                                // get the revision to undelete
+                                String revision = ( String ) table.getValueAt( rows[ 0 ], 0 );
+
+                                // get project root to use as base directory for local destination
+                                String project_root = PVHelper.getProjectRoot( view );
+
+                                // do the undelete
+                                for ( String remote_filename : data.getPaths() ) {
+                                    // remote file
+                                    SVNURL rep_url = SVNURL.parseURIDecoded( rep_url_string + remote_filename );
+
+                                    // local filename, extract from remote name
+                                    String local_filename = rep_url.toString().substring( file_url_string.length() );
+
+                                    // prep for copy
+                                    CopyData copy_data = new CopyData();
+                                    copy_data.setSourceURL( rep_url );      // what to copy
+                                    copy_data.setRevision( SVNRevision.create( Long.parseLong( revision ) - 1 ) );  // at what revision
+                                    copy_data.setDestinationFile( new File( project_root + local_filename ) );  // where to put it
+
+                                    // do the copy
+                                    CopyAction action = new CopyAction( view, copy_data );
+                                    action.actionPerformed( ae );
                                 }
                             }
+                            catch ( Exception e ) {
+                                e.printStackTrace();
+                            }
                         }
-                                    );
-
+                    }
+                );
             }
         }
 
@@ -371,40 +371,42 @@ public class LogResultsPanel extends JPanel {
             final String path = table.getPath();
             JMenuItem mi = new JMenuItem( jEdit.getProperty( "ips.Diff", "Diff" ) );
             popup.add( mi );
-            mi.addActionListener( new ActionListener() {
-                        public void actionPerformed( ActionEvent ae ) {
-                            int[] rows = table.getSelectedRows();
-                            String revision1 = ( String ) table.getValueAt( rows[ 0 ], 0 );
-                            String revision2 = ( String ) table.getValueAt( rows[ 1 ], 0 );
-                            DiffAction action = new DiffAction( view, path, revision1, revision2, username, password );
-                            action.actionPerformed( ae );
-                        }
+            mi.addActionListener(
+                new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        int[] rows = table.getSelectedRows();
+                        String revision1 = ( String ) table.getValueAt( rows[ 0 ], 0 );
+                        String revision2 = ( String ) table.getValueAt( rows[ 1 ], 0 );
+                        DiffAction action = new DiffAction( view, path, revision1, revision2, username, password );
+                        action.actionPerformed( ae );
                     }
-                                );
+                }
+            );
         }
 
-        // TODO: add menu item to diff against working copy
+        // add menu item to diff against working copy
         if ( rows.length == 1 ) {
             final String path = table.getPath();
             // TODO: move hard-coded string to property file
             JMenuItem mi = new JMenuItem( "Diff against working copy" );
             popup.add( mi );
-            mi.addActionListener( new ActionListener() {
-                        public void actionPerformed( ActionEvent ae ) {
-                            int[] rows = table.getSelectedRows();
-                            DiffData data = new DiffData();
-                            List<String> paths = new ArrayList<String>();
-                            paths.add(path);
-                            data.setPaths( paths );
-                            data.setUsername( username );
-                            data.setPassword( password );
-                            data.setRevision1( SVNRevision.WORKING );
-                            data.setRevision2( SVNRevision.parse( ( String ) table.getValueAt( rows[ 0 ], 0 ) ) );
-                            DiffAction action = new DiffAction( view, data );
-                            action.actionPerformed( ae );
-                        }
+            mi.addActionListener(
+                new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        int[] rows = table.getSelectedRows();
+                        DiffData data = new DiffData();
+                        List<String> paths = new ArrayList<String>();
+                        paths.add( path );
+                        data.setPaths( paths );
+                        data.setUsername( username );
+                        data.setPassword( password );
+                        data.setRevision1( SVNRevision.WORKING );
+                        data.setRevision2( SVNRevision.parse( ( String ) table.getValueAt( rows[ 0 ], 0 ) ) );
+                        DiffAction action = new DiffAction( view, data );
+                        action.actionPerformed( ae );
                     }
-                                );
+                }
+            );
         }
 
 
@@ -431,13 +433,14 @@ public class LogResultsPanel extends JPanel {
 
         // Zoom
         JMenuItem mi = new JMenuItem( jEdit.getProperty( "ips.Zoom", "Zoom" ) );
-        mi.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        TableCellViewer viewer = new TableCellViewer( table );
-                        viewer.doPopup( col, row, x, y );
-                    }
+        mi.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    TableCellViewer viewer = new TableCellViewer( table );
+                    viewer.doPopup( col, row, x, y );
                 }
-                            );
+            }
+        );
         popup.add( mi );
 
         // TODO: add menu item to open file
