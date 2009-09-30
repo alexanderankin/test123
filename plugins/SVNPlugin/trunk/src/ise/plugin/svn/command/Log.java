@@ -35,6 +35,7 @@ import org.tmatesoft.svn.core.ISVNLogEntryHandler;
 import org.tmatesoft.svn.core.SVNLogEntry;
 import org.tmatesoft.svn.core.SVNLogEntryPath;
 import org.tmatesoft.svn.core.SVNURL;
+import org.tmatesoft.svn.core.wc.SVNInfo;
 import org.tmatesoft.svn.core.wc.SVNLogClient;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.ISVNOptions;
@@ -85,10 +86,10 @@ public class Log {
                 // check for file existence?
             }
         }
-        
+
         // pre-populate the 'entries' tree map
-        for (String path : data.getPaths()) {
-            entries.put(path, new ArrayList<SVNLogEntry>());   
+        for ( String path : data.getPaths() ) {
+            entries.put( path, new ArrayList<SVNLogEntry>() );
         }
 
         // use default svn config options
@@ -108,32 +109,34 @@ public class Log {
 
 
         out = data.getOut();
-
+        LogHandler handler = new LogHandler();
+        
         if ( data.pathsAreURLs() ) {
             
-            
-            
-            
-            for ( String path : data.getPaths() ) {
-                System.out.println("+++++ path: " + path);
-                SVNURL svnurl = SVNURL.parseURIDecoded( path );
-                System.out.println("+++++ svnurl: " + svnurl);
-                System.out.println("+++++ tail path removed: " + svnurl.removePathTail());
-                LogHandler handler = new LogHandler();
-                // TODO: check if there is a new method that will take multiple urls to avoid looping --
-                // there is, need to use it:
-                // doLog(SVNURL url, String[] paths, SVNRevision pegRevision, SVNRevision startRevision, 
-                //      SVNRevision endRevision, boolean stopOnCopy, boolean discoverChangedPaths, long limit, ISVNLogEntryHandler handler) 
-                client.doLog( svnurl, null, data.getPegRevision(), data.getStartRevision(),
-                        data.getEndRevision(), data.getStopOnCopy(), data.getShowPaths(), data.getMaxLogs(), handler );
+            SVNURL repositoryUrl = getRepositoryURL( data );
+            if (repositoryUrl == null) {
+                out.println("ERROR: repository URL is null");
+                out.flush();
+                out.close();
+                return;
             }
+            int length = repositoryUrl.toString().length();
+            Set<String> pathsToCheck = new HashSet<String>();
+            for ( String path : data.getPaths() ) {
+                String toCheck = path.substring(length);
+                pathsToCheck.add( toCheck );
+            }
+            
+            // svnkit method signature:
+            // doLog(SVNURL url, String[] paths, SVNRevision pegRevision, SVNRevision startRevision,
+            //      SVNRevision endRevision, boolean stopOnCopy, boolean discoverChangedPaths, long limit, ISVNLogEntryHandler handler)
+            client.doLog( repositoryUrl, pathsToCheck.toArray(new String[0]), data.getPegRevision(), data.getStartRevision(),
+                    data.getEndRevision(), data.getStopOnCopy(), data.getShowPaths(), data.getMaxLogs(), handler );
         }
         else {
-            // DONE: there is a new method that will take an array of Files,
-            // should use that one instead to avoid the loop.
-            LogHandler handler = new LogHandler();
-            // doLog(File[] paths, SVNRevision pegRevision, SVNRevision startRevision, 
-            //      SVNRevision endRevision, boolean stopOnCopy, boolean discoverChangedPaths, long limit, ISVNLogEntryHandler handler) 
+            // svnkit method signature:
+            // doLog(File[] paths, SVNRevision pegRevision, SVNRevision startRevision,
+            //      SVNRevision endRevision, boolean stopOnCopy, boolean discoverChangedPaths, long limit, ISVNLogEntryHandler handler)
             client.doLog( localPaths, data.getPegRevision(), data.getStartRevision(),
                     data.getEndRevision(), data.getStopOnCopy(), data.getShowPaths(), data.getMaxLogs(), handler );
         }
@@ -147,12 +150,12 @@ public class Log {
         public void handleLogEntry( SVNLogEntry logEntry ) {
             Map changedPaths = logEntry.getChangedPaths();
             Set entryPaths = changedPaths.keySet(); // entryPaths contains Strings of paths
-            for(String path : entries.keySet()) {
-                for (Object ep : entryPaths) {
-                    String entryPath = (String)ep;
-                    if (path.endsWith(entryPath)) {
-                        entries.get(path).add(logEntry);
-                        Log.this.printLogEntry(path, logEntry);
+            for ( String path : entries.keySet() ) {
+                for ( Object ep : entryPaths ) {
+                    String entryPath = ( String ) ep;
+                    if ( path.endsWith( entryPath ) ) {
+                        entries.get( path ).add( logEntry );
+                        Log.this.printLogEntry( path, logEntry );
                     }
                 }
             }
@@ -209,6 +212,21 @@ public class Log {
                             + entryPath.getCopyPath() + " revision "
                             + entryPath.getCopyRevision() + ")" : "" ) );
             }
+        }
+    }
+
+    private SVNURL getRepositoryURL( LogData data ) {
+        try {
+            Info info = new Info( );
+            List<SVNInfo> infos = info.getInfo( data );
+            if ( infos.size() == 0 ) {
+                return null;
+            }
+            SVNInfo svn_info = infos.get( 0 );
+            return svn_info.getRepositoryRootURL();
+        }
+        catch(Exception e) {
+            return null;
         }
     }
 
