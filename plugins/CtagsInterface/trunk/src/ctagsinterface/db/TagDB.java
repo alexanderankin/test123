@@ -359,6 +359,9 @@ public class TagDB {
 	
 	// Inserts a new origin to the DB
 	public void insertOrigin(String type, String name) throws SQLException {
+		// Ensure the origin is not inserted twice...
+		if (getOriginID(type, name) >= 0)
+			return;
 		update("INSERT INTO " + ORIGINS_TABLE + " (" +
 			ORIGINS_TYPE + "," + ORIGINS_NAME + ") VALUES (" +
 			quote(type) + "," + quote(name) + ")");
