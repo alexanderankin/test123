@@ -46,8 +46,6 @@ import javax.swing.border.TitledBorder;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
 
-import org.gjt.sp.util.Log;
-
 import sidekick.java.JavaParser;
 
 
@@ -205,6 +203,9 @@ public class JBrowseOptionPane extends AbstractOptionPane
      * JBrowseOptionPane.
     **/
     private void initGui() {
+        if (isInitGui()) {
+            return;   
+        }
         // -----
         // Title
         // -----
@@ -443,6 +444,9 @@ public class JBrowseOptionPane extends AbstractOptionPane
      * specified  by the current option object's state.
     **/
     public void initModel() {
+        if (isInitModel()) {
+            return;   
+        }
         //Log.log(Log.DEBUG, this, "initModel: " + this.getName());
         batchUpdate = true;
 
@@ -771,9 +775,7 @@ public class JBrowseOptionPane extends AbstractOptionPane
             cbxStaticUlined.getModel().setEnabled(true);
             cbxTypeIsSuffixed.getModel().setEnabled(true);
 
-        } else {
-            // error, unknown style index
-        }
+        } 
     }
 
 
