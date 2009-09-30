@@ -80,7 +80,6 @@ options.CtagsInterface.dbConnection.hsqldb=jdbc:hsqldb:file:<default>
 options.CtagsInterface.dbUser.hsqldb=sa
 options.CtagsInterface.dbPassword.hsqldb=
 options.CtagsInterface.dbOnExit.hsqldb=SHUTDOWN
-options.CtagsInterface.dbPreset.h2=h2
 options.CtagsInterface.dbClass.h2=org.h2.Driver
 options.CtagsInterface.dbConnection.h2=jdbc:h2:<default>
 options.CtagsInterface.dbUser.h2=sa
