@@ -113,9 +113,14 @@ public class VFSHelper
 		Object session = createVFSSession(vfs, url, view);
 		if (session == null)
 			return null;
-		VFSFile file = vfs._getFile(session, url, view);
-		endVFSSession(vfs, session, view);
-		return file;
+		try {
+			VFSFile file = vfs._getFile(session, url, view);
+			endVFSSession(vfs, session, view);
+			return file;
+		} catch (Exception e) {
+			Log.log(Log.ERROR, vfs, "VFS error getting file.", e);
+			return null;
+		}
 	}
 
 
