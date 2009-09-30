@@ -143,6 +143,8 @@ public class VPTFile extends VPTNode
 	 *
 	 * @return The VFSFile backing this node. May be null if doing
 	 *         lazy initialization, or an I/O error occurs.
+	 *
+	 * @since PV 3.0.0
 	 */
 	public VFSFile getFile(boolean lazy)
 	{
@@ -324,7 +326,7 @@ public class VPTFile extends VPTNode
 	private static class FileGetter implements Runnable
 	{
 		private static List<VPTFile> queue;
-
+		private static boolean locked;
 
 		public static void queue(VPTFile f)
 		{
@@ -332,26 +334,36 @@ public class VPTFile extends VPTNode
 				queue = new ArrayList<VPTFile>();
 			}
 			synchronized (queue) {
+				/* Protect against recursive calls. */
+				if (locked) {
+					return;
+				}
+				locked = true;
 				queue.add(f);
 				if (queue.size() == 1) {
 					SwingUtilities.invokeLater(new FileGetter());
 				}
 			}
+			locked = false;
 		}
 
 
 		public void run()
 		{
 			synchronized (queue) {
+				locked = true;
 				for (VPTFile f : queue) {
 					try {
 						f.vfsfile = VFSHelper.getFile(f.url);
-						ProjectViewer.nodeChanged(f);
+						if (f.vfsfile != null) {
+							ProjectViewer.nodeChanged(f);
+						}
 					} catch (IOException ioe) {
 						Log.log(Log.WARNING, this, ioe);
 					}
 				}
 				queue.clear();
+				locked = false;
 			}
 		}
 
