@@ -284,13 +284,6 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
                     // files open this way can be closed when TaskList parsing is complete.
                     can_close = true;
                 }
-                try {
-                    while ( buffer.isLoading() ) {
-                        Thread.currentThread().sleep( 5 );
-                    }
-                }
-                catch ( Exception e ) {}    // NOPMD
-
                 DefaultMutableTreeNode buffer_node = getNodeForBuffer( buffer );
                 if ( buffer_node == null ) {
                     continue;
