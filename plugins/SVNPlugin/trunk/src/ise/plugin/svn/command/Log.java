@@ -88,8 +88,8 @@ public class Log {
         }
 
         // pre-populate the 'entries' tree map
-        for ( String path : data.getPaths() ) {
-            entries.put( path, new ArrayList<SVNLogEntry>() );
+        for ( String url : getURLs(data)) {
+            entries.put( url, new ArrayList<SVNLogEntry>() );
         }
 
         // use default svn config options
@@ -110,30 +110,30 @@ public class Log {
 
         out = data.getOut();
         LogHandler handler = new LogHandler();
-        
+
         if ( data.pathsAreURLs() ) {
-            
+
             // get the repository url, then trim the paths to be relative to
             // the repository url so they can be passed all at once to the svn
             // server.
             SVNURL repositoryUrl = getRepositoryURL( data );
-            if (repositoryUrl == null) {
-                out.println("ERROR: repository URL is null");
+            if ( repositoryUrl == null ) {
+                out.println( "ERROR: repository URL is null" );
                 out.flush();
                 out.close();
-                return;
+                return ;
             }
             int length = repositoryUrl.toString().length();
             Set<String> pathsToCheck = new HashSet<String>();
             for ( String path : data.getPaths() ) {
-                String toCheck = path.substring(length);
+                String toCheck = path.substring( length );
                 pathsToCheck.add( toCheck );
             }
-            
+
             // svnkit method signature:
             // doLog(SVNURL url, String[] paths, SVNRevision pegRevision, SVNRevision startRevision,
             //      SVNRevision endRevision, boolean stopOnCopy, boolean discoverChangedPaths, long limit, ISVNLogEntryHandler handler)
-            client.doLog( repositoryUrl, pathsToCheck.toArray(new String[0]), data.getPegRevision(), data.getStartRevision(),
+            client.doLog( repositoryUrl, pathsToCheck.toArray( new String[ 0 ] ), data.getPegRevision(), data.getStartRevision(),
                     data.getEndRevision(), data.getStopOnCopy(), data.getShowPaths(), data.getMaxLogs(), handler );
         }
         else {
@@ -152,10 +152,10 @@ public class Log {
 
         public void handleLogEntry( SVNLogEntry logEntry ) {
             Map changedPaths = logEntry.getChangedPaths();
-            Set entryPaths = changedPaths.keySet(); // entryPaths contains Strings of paths
-            for ( String path : entries.keySet() ) {
+            Set entryPaths = changedPaths.keySet();    // entryPaths contains Strings of paths relative to repository url
+            for ( String path : entries.keySet() ) {               
                 for ( Object ep : entryPaths ) {
-                    String entryPath = ( String ) ep;
+                    String entryPath = ( String ) ep;              
                     if ( path.endsWith( entryPath ) ) {
                         entries.get( path ).add( logEntry );
                         Log.this.printLogEntry( path, logEntry );
@@ -228,11 +228,40 @@ public class Log {
             SVNInfo svn_info = infos.get( 0 );
             return svn_info.getRepositoryRootURL();
         }
-        catch(Exception e) {
+        catch ( Exception e ) {
             return null;
         }
     }
-
+    
+    private Set<String> getURLs( LogData data ) {
+        // might already have urls, so no need to check info on them
+        if ( data.pathsAreURLs() ) {
+            Set<String> urls = new HashSet<String>();
+            for (String path : data.getPaths()) {
+                urls.add(path);   
+            }
+            return urls;
+        }
+        
+        // for local files, need to get info to get repository url.  This is
+        // quick since info is available locally.
+        try {
+            Info info = new Info( );
+            List<SVNInfo> infos = info.getInfo( data );
+            if ( infos.size() == 0 ) {
+                return null;
+            }
+            Set<String> urls = new HashSet<String>();
+            for (SVNInfo svn_info : infos) {
+                urls.add(svn_info.getURL().toString());
+            }
+            return urls;
+        }
+        catch ( Exception e ) {
+            return null;
+        }
+    }
+    
     public static void main ( String[] args ) {
         // for testing
         LogData data = new LogData();
