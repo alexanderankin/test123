@@ -113,6 +113,9 @@ public class Log {
         
         if ( data.pathsAreURLs() ) {
             
+            // get the repository url, then trim the paths to be relative to
+            // the repository url so they can be passed all at once to the svn
+            // server.
             SVNURL repositoryUrl = getRepositoryURL( data );
             if (repositoryUrl == null) {
                 out.println("ERROR: repository URL is null");
