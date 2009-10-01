@@ -28,28 +28,35 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.svn.action;
 
-import ise.plugin.svn.gui.OutputPanel;
+import common.swingworker.*;
+
 import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.command.BrowseRepository;
 import ise.plugin.svn.command.Diff;
 import ise.plugin.svn.command.Info;
 import ise.plugin.svn.data.DiffData;
 import ise.plugin.svn.gui.DiffDialog;
+import ise.plugin.svn.gui.OutputPanel;
 import ise.plugin.svn.io.ConsolePrintStream;
 import ise.plugin.svn.library.GUIUtils;
-import common.swingworker.*;
+
 import java.awt.event.ActionEvent;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+
+import jdiff.DualDiffManager;
+
+import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.EditPane;
-import jdiff.DualDiffManager;
-import org.tmatesoft.svn.core.wc.SVNRevision;
+
+import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNInfo;
+import org.tmatesoft.svn.core.wc.SVNRevision;
+import org.tmatesoft.svn.core.wc.SVNWCClient;
 
 /**
  * ActionListener to perform sort of an svn diff.  While subversion can do a diff,
@@ -240,7 +247,37 @@ public class DiffAction extends SVNAction {
                 // or for diffing against another revision
                 log( jEdit.getProperty( "ips.Diff,_fetching_file_data...", "Diff, fetching file data..." ) );
                 if ( data.getRevision1().equals( SVNRevision.WORKING ) ) {
-                    remote1 = new File(data.getPaths().get( 0 ));
+                    remote1 = new File( data.getPaths().get( 0 ) );
+                }
+                else if ( data.getRevision1().equals( SVNRevision.BASE ) ) {
+                    // copy contents of BASE revision to tmp dir...
+                    // create the temp file name
+                    String filepath = data.getPaths().get(0);
+                    int index = filepath.lastIndexOf( '.' );
+                    index = index < 0 ? 0 : index;
+                    if ( index == 0 ) {
+                        int slash_index = filepath.lastIndexOf( '/' );
+                        if ( slash_index > 0 && slash_index < filepath.length() ) {
+                            index = slash_index + 1;
+                        }
+                    }
+                    String filename = System.getProperty( "java.io.tmpdir" ) + '/' + filepath.substring( 0, index ) + "-BASE" + filepath.substring( index );
+                    
+                    // create the temp file
+                    remote1 = new File(filename);
+                    if (remote1.exists()) {
+                        remote1.delete();   
+                    }
+                    remote1.deleteOnExit();     // automatic cleanup
+                    remote1.getParentFile().mkdirs();
+                    
+                    // copy the file contents to the temp file
+                    BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(remote1));
+                    SVNClientManager cm = SVNClientManager.newInstance();
+                    SVNWCClient client = cm.getWCClient();
+                    client.doGetFileContents(new File(filepath), SVNRevision.UNDEFINED, SVNRevision.BASE, false, os);
+                    os.flush();
+                    os.close();
                 }
                 else {
                     remote1 = br.getFile( url, svn_path, data.getRevision1(), data.getUsername(), data.getPassword() );
