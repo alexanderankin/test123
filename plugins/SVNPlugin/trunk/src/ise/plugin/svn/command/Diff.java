@@ -75,7 +75,7 @@ public class Diff {
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
         // use the svnkit client manager
-        SVNClientManager clientManager = SVNClientManager.newInstance( options, new BasicAuthenticationManager(data.getUsername(), data.getDecryptedPassword()) );
+        SVNClientManager clientManager = SVNClientManager.newInstance( options, new BasicAuthenticationManager( data.getUsername(), data.getDecryptedPassword() ) );
 
         // get a diff client
         SVNDiffClient client = clientManager.getDiffClient();
@@ -83,16 +83,17 @@ public class Diff {
         // set an event handler so that messages go to the diff data streams for display
         // and gather the paths actually diffted
         final List<String> result_paths = new ArrayList<String>();
-        client.setEventHandler( new SVNCommandEventProcessor( data.getOut(), data.getErr(), false ) {
-                    @Override
-                    public void handleEvent( SVNEvent event, double progress ) {
-                        super.handleEvent( event, progress );
-                        if ( event.getFile() != null ) {
-                            result_paths.add( event.getFile().toString() );
-                        }
+        client.setEventHandler(
+            new SVNCommandEventProcessor( data.getOut(), data.getErr(), false ) {
+                @Override
+                public void handleEvent( SVNEvent event, double progress ) {
+                    super.handleEvent( event, progress );
+                    if ( event.getFile() != null ) {
+                        result_paths.add( event.getFile().toString() );
                     }
                 }
-                              );
+            }
+        );
 
         // actually do the diff
         // File, rev, file, rev -- TODO
@@ -117,8 +118,8 @@ public class Diff {
         }
         else {
             // File, rev, rev -- from PV, working file against revision
-            for (File file : localPaths) {
-                client.doDiff( file, SVNRevision.UNDEFINED, data.getRevision1(), data.getRevision2(), SVNDepth.INFINITY, false, diff_output, (Collection)null );
+            for ( File file : localPaths ) {
+                client.doDiff( file, SVNRevision.UNDEFINED, data.getRevision1(), data.getRevision2(), SVNDepth.INFINITY, false, diff_output, ( Collection ) null );
             }
         }
         return diff_output.toString();
