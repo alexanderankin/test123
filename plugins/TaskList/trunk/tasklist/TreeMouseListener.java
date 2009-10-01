@@ -59,12 +59,6 @@ public class TreeMouseListener extends MouseAdapter {
                 Buffer buffer = jEdit.getBuffer( task.getBufferPath() );
                 if ( buffer == null ) {
                     buffer = jEdit.openFile( view, task.getBufferPath() );
-                    try {
-                        while ( buffer.isLoading() ) {
-                            Thread.currentThread().sleep( 5 );
-                        }
-                    }
-                    catch ( Exception ex ) {}    // NOPMD
                 }
 
                 int line_number = task.getLineNumber();
