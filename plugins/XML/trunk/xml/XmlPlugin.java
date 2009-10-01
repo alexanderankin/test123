@@ -41,12 +41,13 @@ public class XmlPlugin extends EBPlugin
 	public void start()
 	{
 
-		System.setProperty("javax.xml.parsers.SAXParserFactory",
+		/* System.setProperty("javax.xml.parsers.SAXParserFactory",
 			"org.apache.xerces.jaxp.SAXParserFactoryImpl");
 		System.setProperty("javax.xml.parsers.DocumentBuilderFactory",
-			"org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");
+			"org.apache.xerces.jaxp.DocumentBuilderFactoryImpl"); */
+		Resolver.instance().init();
 		Resolver.instance().propertiesChanged();
-		
+
 		XmlActions.propertiesChanged();
 
 		tagMouseHandler = new TagMouseHandler();
@@ -63,7 +64,7 @@ public class XmlPlugin extends EBPlugin
 			}
 			view = view.getNext();
 		}
-		
+
 		File f = getSchemaMappingFile(view);
 		if(f==null)jEdit.unsetProperty(SCHEMA_MAPPING_PROP);
 		else jEdit.setProperty(SCHEMA_MAPPING_PROP,f.getPath());
@@ -105,7 +106,7 @@ public class XmlPlugin extends EBPlugin
 		if(!schemas.exists()){
 			SchemaMapping map = SchemaMapping.fromDocument(
 				XmlPlugin.class.getClassLoader().getResource("xml/dtds/schemas.xml").toString());
-			
+
 			try{
 				map.toDocument(schemas.getPath());
 			}catch(IOException ioe){
@@ -117,7 +118,7 @@ public class XmlPlugin extends EBPlugin
 		return schemas;
 	}
 	//}}}
-	
+
 	//{{{ stop() method
 	public void stop()
 	{
