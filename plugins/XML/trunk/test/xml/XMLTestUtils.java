@@ -62,7 +62,7 @@ public class XMLTestUtils{
 	throws IOException
 	{
 		try{
-			for(int i=0,e=0,a=0;a!=-1 && e!=-1;){
+			for(int i=0,e=0,a=0;a!=-1 && e!=-1;i++){
 				a=actualIn.read();
 				e=expectedIn.read();
 				assertEquals("at byte "+i, a,e);
@@ -84,7 +84,7 @@ public class XMLTestUtils{
 	throws IOException
 	{
 		try{
-			for(int i=0,e=0,a=0;a!=-1 && e!=-1;){
+			for(int i=0,e=0,a=0;a!=-1 && e!=-1;i++){
 				a=actualIn.read();
 				e=expectedIn.read();
 				assertEquals("at char "+i, a,e);

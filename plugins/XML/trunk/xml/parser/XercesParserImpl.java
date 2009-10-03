@@ -106,7 +106,7 @@ public class XercesParserImpl extends XmlParser
 		// TODO: VFS
 		if(new File(specificSchema).exists())
 		{
-			schemaURL=specificSchema;
+			schemaURL="file://"+specificSchema;
 		}
 
 		SchemaMapping mapping;

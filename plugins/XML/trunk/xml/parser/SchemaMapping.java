@@ -28,6 +28,13 @@ import java.net.*;
 import java.io.IOException;
 
 import org.gjt.sp.util.Log;
+import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.jedit.io.VFS;
+import org.gjt.sp.jedit.io.VFSFile;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.View;
+import javax.swing.SwingUtilities;
+
 
 /**
  * keeps rules to map a schema to a given instance document.
@@ -49,13 +56,13 @@ public final class SchemaMapping
 	public static final String SCHEMAS_FILE = "schemas.xml"; 
 	
 	/** type IDs : typeId -> schema URL or typeId -> typeId */
-	private Map<String,String> typeIds;
+	private final Map<String,String> typeIds;
 	
 	/** mapping rules */
-	private List<Rule> rules;
+	private final List<Mapping> rules;
 	
 	/** this schema mapping file's URI */
-	private String baseURI;
+	private URL baseURI;
 	
 	/**
 	 * empty mapping
@@ -63,22 +70,38 @@ public final class SchemaMapping
 	public SchemaMapping()
 	{
 		typeIds = new HashMap<String,String>();
-		rules = new ArrayList<Rule>();
+		rules = new ArrayList<Mapping>();
 		baseURI = null;
 	}
 	
 	/**
 	 * @return this schema mapping's URL or null if it's totally in memory
 	 */
-	public String getBaseURI(){
+	public URL getBaseURI(){
 		return baseURI;
+	}
+	
+	
+	public void insertRuleAt(int pos, Mapping m){
+		rules.add(pos,m);
+	}
+	
+	public void removeRule(Mapping m){
+		rules.remove(m);
+	}
+	
+	public void removeRuleAt(int pos){
+		rules.remove(pos);
 	}
 	
 	/**
 	 * manually add a rule
 	 * @param	r	rule to add
 	 */
-	public void addRule(Rule r){
+	public void addRule(Mapping r){
+		if(r.getBaseURI()==null){
+			r.setBaseURI(getBaseURI());
+		}
 		rules.add(r);
 	}
 	
@@ -106,38 +129,34 @@ public final class SchemaMapping
 	 * @param	localName	localName of the root element of the parsed document
 	 * @return	schema URL for given document or null if not found
 	 */
-	public String getSchemaForDocument(String publicId, String systemId,
+	public Result getSchemaForDocument(String publicId, String systemId,
 		String namespace,String prefix,String localName)
 	{
 		Log.log(Log.DEBUG, SchemaMapping.class,"getSchemaForDocumentElement("+publicId+","+systemId
 			+","+namespace+","+prefix+","+localName+")");
 		
-		String url = null;
+		Result res = null;
 		
-		for(Rule r:rules)
+		for(Mapping r:rules)
 		{
-			if(r.matchURL(systemId) || r.matchNamespace(namespace)
-				|| r.matchDocumentElement(prefix,localName))
-			{
-				url = r.getTarget();
-				break;
-			}
+			res = r.getSchemaForDocument(publicId, systemId, namespace, prefix, localName);
+			if(res !=null)break;
 		}
 
 		// typeIds can be chained, so follow them in the map until no more
 		// can be found and return the last one
-		if(url!=null)
+		if(res!=null)
 		{
-			while(typeIds.containsKey(url))url = typeIds.get(url);
-			System.out.println("found URL:"+url);
+			while(typeIds.containsKey(res.target))res = new Result(res.baseURI,typeIds.get(res.target));
+			System.out.println("found: "+res);
 		}
-		return url;
+		return res;
 	}
 	
 	/**
 	 * prefix + localName -> typeId or URL
 	 */
-	private static class DocumentElementRule extends Rule
+	public static class DocumentElementRule extends Rule
 	{
 		/** matched prefix (can be null) */
 		private String prefix;
@@ -150,9 +169,13 @@ public final class SchemaMapping
 		 * @param	target	typeID or URL
 		 * @param	targetIsTypeId	typeID / URL ?
 		 */
-		DocumentElementRule(String prefix, String localName, String target, boolean targetIsTypeId)
+		DocumentElementRule(URL baseURI, String prefix, String localName, String target, boolean targetIsTypeId)
 		{
-			super(target,targetIsTypeId);
+			super(baseURI,target,targetIsTypeId);
+			if((prefix == null || "".equals(prefix))
+				&& (localName == null || "".equals(localName)))
+				throw new IllegalArgumentException("prefix and localName can't both be null");
+			if("".equals(localName))localName = null;
 			this.prefix = prefix;
 			this.localName = localName;
 		}
@@ -170,13 +193,14 @@ public final class SchemaMapping
 			return "<documentElement "
 			+(prefix!=null ? ("prefix=\""+prefix+"\" ") : "")
 			+(localName!=null ? ("localName=\""+localName+"\" ") : "")
+			+(base == null ? "" : "xml:base=\""+base+"\" ")
 			+(targetIsTypeId? "typeId" : "uri")
 				+"=\""+target+"\"/>";
 		}
 	}
 	
 	/** namespace -> typeId or URL */
-	private static class NamespaceRule extends Rule{
+	public static class NamespaceRule extends Rule{
 		/** matched namespace */
 		private String namespace;
 		
@@ -186,8 +210,8 @@ public final class SchemaMapping
 		 * @param	targetIsTypeId	typeID / URL ?
 		 * @throws	IllegalArgumentException	if ns is null
 		 */
-		NamespaceRule(String ns, String target, boolean targetIsTypeId){
-			super(target,targetIsTypeId);
+		NamespaceRule(URL baseURI,String ns, String target, boolean targetIsTypeId){
+			super(baseURI, target,targetIsTypeId);
 			if(ns == null)throw new IllegalArgumentException("namespace can't be null");
 			namespace=ns;
 		}
@@ -200,6 +224,7 @@ public final class SchemaMapping
 		/** @return xml serialization */
 		public String toString(){
 			return "<namespace ns=\""+namespace+"\" "+
+			(base == null ? "" : "xml:base=\""+base+"\" ")+
 			(targetIsTypeId? "typeId" : "uri")
 				+"=\""+target+"\"/>";
 		}
@@ -214,11 +239,14 @@ public final class SchemaMapping
 	 *  *.rng -> relax NG schema
 	 *  *.xsd -> Schema for Schemas
 	 */
-	private static class URIPatternRule extends Rule
+	public static class URIPatternRule extends Rule
 	{
 		
-		/** matched pattern : can't be compiled yet because it depends on the URL */
+		/** matched pattern for toString() */
 		private String pattern;
+		
+		/** compiled whole pattern */
+		private Pattern compPattern;
 		
 		/**
 		 * @param	pattern	matched pattern
@@ -226,33 +254,34 @@ public final class SchemaMapping
 		 * @param	targetIsTypeId	typeID / URL ?
 		 * @throws	IllegalArgumentException if pattern is null
 		 */
-		URIPatternRule(String pattern, String target, boolean targetIsTypeId)
+		URIPatternRule(URL baseURI, String pattern, String target, boolean targetIsTypeId)
 		{
-			super(target,targetIsTypeId);
+			super(baseURI, target,targetIsTypeId);
 			if(pattern == null)throw new IllegalArgumentException("pattern can't be null");
+			
 			this.pattern = pattern;
+			this.compPattern = Pattern.compile("^.*?"+pattern.replace(".","\\.").replace("*","[^/]*"));
 		}
 		
 		/**
-		 * FIXME: why is it so complicated ?
+		 * TODO: what if pattern is absolute and url is relative ?
+		 * TODO: patterns with .. won't be correctly resolved
 		 */
 		@Override
 		boolean matchURL(String url)
 		{
 			try
 			{
-				//TODO : what about files over ftp or archive:?
-				URL u = new URL("file:///"+url);
-				System.out.println("URL="+url);
-				URL patternU = new URL(u,pattern);
-				String finalPat = patternU.toExternalForm();
-				System.out.println("final pat="+finalPat);
-				String pat = finalPat.replace("*","[^/]*").replace(".","\\.");
-				System.out.println("final final pat="+pat);
-				return Pattern.matches(pat,u.toExternalForm());
-			}catch(MalformedURLException mue){
+				URI u = new URI(url).normalize();
+				if(u.isOpaque()){
+					return compPattern.matcher(url).matches();
+				}else{
+					//absolute or opaque pattern
+					return compPattern.matcher(url).matches();
+				}
+			}catch(URISyntaxException use){
 				System.err.println("Malformed:"+url);
-				return Pattern.matches(pattern.replace("*","[^/]*"),url);
+				return compPattern.matcher(url).matches();
 			}
 		}
 
@@ -260,37 +289,197 @@ public final class SchemaMapping
 		@Override
 		public String toString(){
 			return "<uri pattern=\""+pattern+"\" "+
+			(base == null ? "" : "xml:base=\""+base+"\" ")+
 			(targetIsTypeId? "typeId" : "uri")
 				+"=\""+target+"\"/>";
 		}
 	}
+
+	/** URI pattern -> related URL.
+	 * The pattern is in glob syntax :
+	 *  - star matches any sequence of character except slashes
+	 *  - dot really means a dot.
+	 * Any text matched by * is inserted in place of the corresponding *
+	 * in the destination pattern
+	 * e.g. :
+	 *  *.xml -> *.xsd
+	 *  *.xml -> *.rng
+	 */
+	public static class TransformURI extends Mapping
+	{
+		
+		/** matched pattern for toString() */
+		private String fromPattern;
+		
+		/** compiled whole pattern */
+		private Pattern compPattern;
+		
+		private String toPattern;
+
+		/** compiled toPattern */
+		private String[] splitToPattern;
+		
+		private int starCount;
+		
+		/**
+		 * @param	pattern	matched pattern
+		 * @param	target	typeID or URL
+		 * @param	targetIsTypeId	typeID / URL ?
+		 * @throws	IllegalArgumentException if pattern is null
+		 */
+		TransformURI(URL baseURI, String fromPattern, String toPattern)
+		{
+			super(baseURI);
+			if(fromPattern == null)throw new IllegalArgumentException("fromPattern can't be null");
+			if(toPattern == null)throw new IllegalArgumentException("toPattern can't be null");
+			
+			this.fromPattern = fromPattern;
+			this.toPattern = toPattern;
+			
+			for(int i=fromPattern.indexOf('*',0);i!=-1;i=fromPattern.indexOf('*',i+1)){
+				starCount++;
+			}
+			
+			compPattern = Pattern.compile(
+				// starts with something (group 1)
+				"(^.*?)" +
+				// dot is really a dot
+				fromPattern.replace(".","\\.")
+				// star is anything but a slash (group 2)
+				           .replace("*","([^/]*)"));
+			
+			// this could be accepted and the last stars
+			// wouldn't be substituted, but it is more
+			// likely that the user messed with the stars
+			splitToPattern = toPattern.split("\\*",-1);
+			if(splitToPattern.length > starCount+1){
+				throw new IllegalArgumentException(
+					"there may not be more stars in toPattern (='"+toPattern
+					+") than in fromPattern (="+fromPattern
+					+") "+(splitToPattern.length-1)+">"+starCount);
+			}
+			
+		}
+		
+		/**
+		 * TODO: what if pattern is absolute and url is relative ?
+		 * TODO: patterns with .. won't be correctly resolved
+		 */
+		@Override
+		public Result getSchemaForDocument(String ignoredPublicId, String url,
+			String ignoredNamespace,String ignoredPrefix,String ignoredLocalName)
+		{
+			try
+			{
+				URI u = new URI(url).normalize();
+				Matcher m = compPattern.matcher(url);
+				if(m.matches()){
+						// prefix of the URI goes before
+					String result = m.group(1);
+					if(splitToPattern.length>0)
+					{
+						// then the first part of toPattern
+						result+=splitToPattern[0];
+						
+						// then replace the stars (ie the boundaries between splitToPattern
+						// elements) by the matched groups in the url
+						for(int i=0;i<starCount;i++){
+							//start at group(2)
+							result += m.group(i+2);
+							
+							// should be OK, but better check
+							if(i+1 < splitToPattern.length)
+								result += splitToPattern[i+1];
+						}
+					}
+					try{
+					if(resourceExists(new URL(getBaseURI(),result))){
+						return new Result(getBaseURI(),result);
+					}else{
+						Log.log(Log.DEBUG,SchemaMapping.class,"resource '"+result+"' not found for '"+url+"'");
+					}
+					}catch(MalformedURLException mfue){
+						Log.log(Log.ERROR,SchemaMapping.class,"resource '"+result+"' malformed for '"+url+"'",mfue);
+					}
+				}
+			}catch(URISyntaxException use){
+				System.err.println("Malformed:"+url);
+			}
+			return null;
+		}
+
+		/**@return xml serialization */
+		@Override
+		public String toString(){
+			return "<transformURI "
+			+(base == null ? "" : "xml:base=\""+base+"\" ")
+			+"fromPattern=\""+fromPattern+"\" toPattern=\""+toPattern+"\"/>";
+		}
+	}
+
 	
 	/**
 	 * URI -> typeId or URL.
 	 * This form is useful to map one schema to one particular file.
 	 * e.g. : file:///tmp/myfile.xml  -> mycustomschema.xsd
 	 */
-	private	static class URIResourceRule extends Rule
+	public static class URIResourceRule extends Rule
 	{
 		/** matched URI */
-		private String resource;
+		private final String resource;
+		private final URL resURL;
 		
 		/**
-		 * FIXME: relative URI should be resolved to absolute URI based upon URI of the schemas.xml
+		 * @param	base	baseURI to use if resource is relative
 		 * @param	resource	matched resource
 		 * @param	target	typeID or URL
 		 * @param	targetIsTypeId	typeID / URL ?
 		 * @throws	IllegalArgumentException	if resource is null
 		 */
-		URIResourceRule(String resource,String target, boolean targetIsTypeId)
+		public URIResourceRule(URL base, String resource,String target, boolean targetIsTypeId)
 		{
-			super(target,targetIsTypeId);
+			super(base,target,targetIsTypeId);
 			if(resource == null)throw new IllegalArgumentException("resource can't be null");
+			try{
+				URI u = new URI(resource).normalize();
+				if(u.isAbsolute()){
+					resURL = new URL(resource);
+				}else{
+					if(base == null)throw new IllegalArgumentException("base can't be null when resource is relative :"+resource);
+					resURL = new URL(base,resource);
+				}
+			}catch(MalformedURLException mfe){
+				throw new IllegalArgumentException("resource '"+resource+"' must be a valid url",mfe);
+			}catch(URISyntaxException use){
+				throw new IllegalArgumentException("resource '"+resource+"' must be a valid url",use);
+			}
+			
 			this.resource = resource;
 		}
 		
+		/**
+		 * relative url is resolved against the current baseURI...
+		 */
 		@Override
 		boolean matchURL(String url){
+			if(resURL!=null){
+				try{
+					URI matchedURI = new URI(url).normalize();
+					URL matchedURL;
+					if(matchedURI.isAbsolute()){
+						matchedURL = matchedURI.toURL();
+					}else{
+						matchedURL = new URL(resURL,matchedURI.toString());
+					}
+					//System.err.println("resURL:"+resURL+", matchedURL="+matchedURL);
+					return resURL.sameFile(matchedURL);
+					
+				}catch(MalformedURLException mfue){
+					System.err.println("invalid matched URL : "+url);
+				}catch(URISyntaxException use){
+					System.err.println("invalid matched URL : "+use);
+				}
+			}
 			return resource.equals(url);
 		}
 
@@ -298,6 +487,7 @@ public final class SchemaMapping
 		@Override
 		public String toString(){
 			return "<uri resource=\""+resource+"\" "+
+			(base == null ? "" : "xml:base=\""+base+"\" ")+
 			(targetIsTypeId? "typeId" : "uri")
 				+"=\""+target+"\"/>";
 		}
@@ -306,10 +496,10 @@ public final class SchemaMapping
 	/**
 	 * always matches : not really useful for us, is it ?
 	 */
-	private static class DefaultRule extends Rule{
+	public static class DefaultRule extends Rule{
 		
-		DefaultRule(String target,boolean targetIsTypeId){
-			super(target,targetIsTypeId);
+		DefaultRule(URL baseURI, String target,boolean targetIsTypeId){
+			super(baseURI, target,targetIsTypeId);
 		}
 		
 		@Override
@@ -328,8 +518,15 @@ public final class SchemaMapping
 		}
 
 		@Override
+		boolean matchDoctype(String dt){
+			return true;
+		}
+
+		@Override
 		public String toString(){
-			return "<default "+(targetIsTypeId? "typeId" : "uri")
+			return "<default "
+				+(base == null ? "" : "xml:base=\""+base+"\" ")
+				+(targetIsTypeId? "typeId" : "uri")
 				+"=\""+target+"\"/>";
 		}
 	}
@@ -338,7 +535,7 @@ public final class SchemaMapping
 	 * doctype -> typeID or URL.
 	 * not used yet.
 	 */
-	private static class DoctypeRule extends Rule{
+	public static class DoctypeRule extends Rule{
 		/** matched doctype */
 		private String doctype;
 		
@@ -348,9 +545,10 @@ public final class SchemaMapping
 		 * @param	targetIsTypeId	typeID / URL ?
 		 * @throws	IllegalArgumentException	if doctype is null
 		 */
-		DoctypeRule(String doctype, String target,boolean targetIsTypeId){
-			super(target,targetIsTypeId);
+		DoctypeRule(URL baseURI, String doctype, String target,boolean targetIsTypeId){
+			super(baseURI, target,targetIsTypeId);
 			if(doctype==null)throw new IllegalArgumentException("doctype can't be null");
+			if(doctype=="")throw new IllegalArgumentException("doctype can't be \"\"");
 			this.doctype=doctype;
 		}
 		
@@ -363,8 +561,9 @@ public final class SchemaMapping
 		@Override
 		public String toString(){
 			return "<doctypePublicId publicId=\""+doctype+"\" "+
-				(targetIsTypeId? "typeId" : "uri")
-				+"=\""+target+"\"/>";
+				(base == null ? "" : "xml:base=\""+base+"\" ")+
+				(targetIsTypeId? "typeId" : "uri")+
+				"=\""+target+"\"/>";
 		}
 	}
 	
@@ -373,21 +572,23 @@ public final class SchemaMapping
 	 * this allows to keep a list of the rules and try each of them,
 	 * regardless of their type.
 	 */
-	static abstract class Rule{
+	static abstract class Rule extends Mapping{
 		
 		/** typeId or URL of the schema to use if this rule matches */
-		protected String target;
+		protected final String target;
 		
 		/** for serialisation : output typeId="..." or url="..." */
-		protected boolean targetIsTypeId;
+		protected final boolean targetIsTypeId;
 		
 		/**
 		 * @param	target	typeID or URL
 		 * @param	targetIsTypeId	typeID / URL ?
 		 * @throws	IllegalArgumentException	if target is null
 		 */
-		Rule(String target,boolean targetIsTypeId){
+		Rule(URL baseURI, String target,boolean targetIsTypeId){
+			super(baseURI);
 			if(target==null)throw new IllegalArgumentException("target can't be null");
+			if("".equals(target))throw new IllegalArgumentException("target can't be \"\"");
 			this.target=target;
 			this.targetIsTypeId = targetIsTypeId;
 		}
@@ -424,8 +625,17 @@ public final class SchemaMapping
 			return false;
 		}
 
-		/** @return target */
-		String getTarget(){return target;}
+		public final Result getSchemaForDocument(String publicId, String systemId,
+			String namespace,String prefix,String localName)
+		{
+			if(matchURL(systemId) || matchNamespace(namespace)
+				|| matchDocumentElement(prefix,localName))
+			{
+				return new Result(getBaseURI(), target);
+			}
+			return null;
+		}
+
 	}
 	
 	/** deserialize an xml document describing the mapping rules (schemas.xml)
@@ -439,92 +649,18 @@ public final class SchemaMapping
 		InputSource input = new InputSource(url);
 
 		final SchemaMapping mapping = new SchemaMapping();
+
+		try{
+			mapping.baseURI = new URL(url);
+		}catch(MalformedURLException mfue){
+			throw new IllegalArgumentException("malformed URL: "+url,mfue);
+		}
 		
 		try {
 			
 			XMLReader reader = XMLReaderFactory.createXMLReader();
-						
-			DefaultHandler handler = new DefaultHandler()
-			{
-				
-				public void startElement(String uri, String localName, String qName, Attributes attributes)
-				{
-					if(!LOCATING_RULES_NS.equals(uri))return;//ignore everything in a different namespace
-
-					String target = null;
-					boolean targetIsTypeId=false;
-					if(attributes.getIndex("","typeId")!=-1)
-					{
-						target = attributes.getValue("","typeId");
-						targetIsTypeId=true;
-					}
-					else if(attributes.getIndex("","uri")!=-1)
-					{
-						target = attributes.getValue("","uri");
-						targetIsTypeId=false;
-					}
-					
-					if("transformURI".equals(localName))
-					{
-						System.err.println("SchemaMapping : transformURI not handled !");
-						
-					}
-					else if("uri".equals(localName))
-					{
-						if(attributes.getIndex("","pattern")!=-1)
-						{
-							mapping.rules.add(new URIPatternRule(attributes.getValue("","pattern"),target,targetIsTypeId));
-						}
-						else if(attributes.getIndex("","resource")!=-1)
-						{
-							mapping.rules.add(new URIResourceRule(attributes.getValue("","resource"),target,targetIsTypeId));
-						}
-					}
-					else if("namespace".equals(localName))
-					{
-						if(attributes.getIndex("","ns")!=-1)
-						{
-							mapping.rules.add(new NamespaceRule(attributes.getValue("","ns"),target,targetIsTypeId));
-						}
-					}
-					else if("documentElement".equals(localName))
-					{
-						String prefix= attributes.getValue("","prefix");
-						String name= attributes.getValue("","localName");
-						
-						mapping.rules.add(new DocumentElementRule(prefix,name,target,targetIsTypeId));
-					}
-					else if("doctypePublicId".equals(localName))
-					{
-						mapping.rules.add(new DoctypeRule(attributes.getValue("","publicId"),target,targetIsTypeId));
-					}
-					else if("include".equals(localName))
-					{
-						// TODO: xml:base 
-						if(attributes.getIndex("","rules")!=-1)
-						{
-							SchemaMapping map = SchemaMapping.fromDocument(attributes.getValue("","rules"));
-							for(Rule r:map.rules)
-							{
-								mapping.rules.add(r);
-							}
-							for(String s:map.typeIds.keySet())
-							{
-								mapping.typeIds.put(s,map.typeIds.get(s));
-							}
-						}
-					}
-					else if("typeId".equals(localName))
-					{
-						if(attributes.getIndex("","id")!=-1)
-						{
-							// TODO: check unicity ?
-							String id = attributes.getValue("","id");
-							mapping.typeIds.put(id,target);
-						}
-					}
-				}
-			};
+			
+			DefaultHandler handler = new MyHandler(mapping);
 
 			javax.xml.parsers.SAXParserFactory factory = new org.apache.xerces.jaxp.SAXParserFactoryImpl();
 			factory.setNamespaceAware(true);
@@ -544,18 +680,17 @@ public final class SchemaMapping
 			verifierFilter.setErrorHandler(handler);
 			
 			reader.parse(input);
-			mapping.baseURI = url;
 
 		}
 		catch (SAXException e)
 		{
 			e.printStackTrace();
-			System.out.println(e);
+			System.err.println(e);
 		}
 		catch(IOException ioe)
 		{
 			ioe.printStackTrace();
-			System.out.println(ioe);
+			System.err.println(ioe);
 		}
 		return mapping;
 	}
@@ -571,7 +706,7 @@ public final class SchemaMapping
 		Writer out = new OutputStreamWriter(fos,"UTF-8");
 		out.write("<?xml version=\"1.0\" ?>\n");
 		out.write("<locatingRules xmlns=\"http://thaiopensource.com/ns/locating-rules/1.0\">\n");
-		for(Rule r:rules)
+		for(Mapping r:rules)
 		{
 			out.write(r.toString());
 		}
@@ -587,11 +722,334 @@ public final class SchemaMapping
 			else
 			{
 				/* points to an URL */
-				out.write("url");
+				out.write("uri");
 			}
 			out.write("=\""+v+"\"/>\n");
 		}
 		out.write("</locatingRules>");
 		out.close();
 	}
+	
+	private static class MyHandler extends DefaultHandler
+	{
+		private SchemaMapping mapping;
+		private Stack<URL> baseURIs;
+		
+		MyHandler(SchemaMapping mapping)
+		{
+			this.mapping = mapping;
+			baseURIs = new Stack<URL>();
+			baseURIs.push(mapping.baseURI);
+		}
+		public void startElement(String uri, String localName, String qName, Attributes attributes)
+		throws SAXException
+		{
+			if(!LOCATING_RULES_NS.equals(uri))return;//ignore everything in a different namespace
+
+			String base = null;
+
+			if(attributes.getIndex("xml:base")!=-1)
+			{
+				base = attributes.getValue("xml:base");
+				try{
+					URI buri = new URI(base);
+					URL burl;
+					if(buri.isAbsolute()){
+						burl = buri.toURL();
+					}else{
+						burl = new URL(baseURIs.peek(),base);
+					}
+					baseURIs.push(burl);
+				}catch(URISyntaxException use){
+					throw new SAXException("invalid xml:base "+base, use);
+				}catch(MalformedURLException mfue){
+					throw new SAXException("invalid xml:base "+base, mfue);
+				}
+			}
+			else
+			{
+				baseURIs.push(baseURIs.peek());
+			}
+
+			
+			String target = null;
+			boolean targetIsTypeId=false;
+			if(attributes.getIndex("","typeId")!=-1)
+			{
+				target = attributes.getValue("","typeId");
+				targetIsTypeId=true;
+			}
+			else if(attributes.getIndex("","uri")!=-1)
+			{
+				target = attributes.getValue("","uri");
+				targetIsTypeId=false;
+			}
+			
+			Mapping newRule = null;
+			
+			if("transformURI".equals(localName))
+			{
+				if(attributes.getIndex("","fromPattern")!=-1
+					&& attributes.getIndex("","toPattern")!=-1)
+				{
+					String from = attributes.getValue("","fromPattern");
+					String to = attributes.getValue("","toPattern");
+					newRule = new TransformURI(baseURIs.peek(),from,to);
+				}
+				
+				
+			}
+			else if("uri".equals(localName))
+			{
+				if(attributes.getIndex("","pattern")!=-1)
+				{
+					newRule = new URIPatternRule(baseURIs.peek(),
+						attributes.getValue("","pattern"),target,targetIsTypeId);
+				}
+				else if(attributes.getIndex("","resource")!=-1)
+				{
+					newRule = new URIResourceRule(baseURIs.peek(),
+						attributes.getValue("","resource"),target,targetIsTypeId);
+				}
+			}
+			else if("namespace".equals(localName))
+			{
+				if(attributes.getIndex("","ns")!=-1)
+				{
+					newRule = new NamespaceRule(baseURIs.peek(),
+						attributes.getValue("","ns"),target,targetIsTypeId);
+				}
+			}
+			else if("documentElement".equals(localName))
+			{
+				String prefix= attributes.getValue("","prefix");
+				String name= attributes.getValue("","localName");
+				
+				newRule = new DocumentElementRule(baseURIs.peek(),
+					prefix,name,target,targetIsTypeId);
+			}
+			else if("doctypePublicId".equals(localName))
+			{
+				newRule = new DoctypeRule(baseURIs.peek(),
+					attributes.getValue("","publicId"),target,targetIsTypeId);
+			}
+			else if("include".equals(localName))
+			{
+				if(attributes.getIndex("","rules")!=-1)
+				{
+					newRule = new IncludeMapping(
+						baseURIs.peek(),
+						attributes.getValue("","rules"));
+					
+				}
+			}
+			else if("default".equals(localName))
+			{
+				newRule = new DefaultRule(baseURIs.peek(),target,targetIsTypeId);
+			}
+			else if("typeId".equals(localName))
+			{
+				if(attributes.getIndex("","id")!=-1)
+				{
+					// TODO: check unicity ?
+					String id = attributes.getValue("","id");
+					mapping.typeIds.put(id,target);
+				}
+				
+			}
+			if(newRule != null){
+				if(base != null)newRule.setExplicitBase(base);
+				mapping.rules.add(newRule);
+			}
+		}
+		
+		public void endElement(String uri, String localName, String qName)
+		{
+			baseURIs.pop();
+		}
+	}
+	
+	public static abstract class Mapping
+	{
+		/** this schema mapping file's URI */
+		protected URL baseURI;
+	
+		/** explicit xml:base, if any */
+		protected String base;
+		
+		Mapping(URL baseURI){
+			this.baseURI = baseURI;
+		}
+		
+		/**
+		 * @return this schema mapping's URL or null if it's totally in memory
+		 */
+		public URL getBaseURI(){
+			return baseURI;
+		}
+		
+		/**
+		 * for containing SchemaMapping 
+		 */
+		void setBaseURI(URL baseURI){
+			this.baseURI = baseURI;
+		}
+		
+		void setExplicitBase(String base){
+			this.base = base;
+		}
+		
+		/**
+		 * iterate over the mappings and return the first hit.
+		 * all the parameters are given the same priority : it's really the ordering
+		 * of rules which defines a priority order.
+		 * Any of the paremeters can be null.
+		 * @param	publicId	public ID of the parsed document
+		 * @param	systemId	system ID of the parsed document
+		 * @param	namespace	namespace of the root element of the parsed document
+		 * @param	prefix		prefix of the root element of the parsed document
+		 * @param	localName	localName of the root element of the parsed document
+		 * @return	schema URL for given document (and baseURI) or null if not found
+		 */
+		public abstract Result getSchemaForDocument(String publicId, String systemId,
+			String namespace,String prefix,String localName);
+			
+	}
+	
+	public static class IncludeMapping extends Mapping{
+		private final String rules;
+		private final SchemaMapping mapping;
+		
+		/**
+		 * @param	baseURI	base URL to resolve rules (may be null if rules is absolute)
+		 * @param	rules	URL where to find the rules
+		 * @throws	IllegalArgumentException	if the url is malformed
+		 */
+		IncludeMapping(URL baseURI, String rules){
+			super(baseURI);
+			if(rules==null)throw new IllegalArgumentException("rules can't be null");
+			
+			try{
+				URI u = new URI(rules);
+				URL url;
+				if(u.isAbsolute()){
+					url = u.toURL();
+				}else{
+					url = new URL(baseURI,rules);
+				}
+				
+				mapping = SchemaMapping.fromDocument(url.toExternalForm());
+				
+			}catch(MalformedURLException mfue){
+				throw new IllegalArgumentException("rules '"+rules+"' must be an URL",mfue);
+			}catch(URISyntaxException use){
+				throw new IllegalArgumentException("rules '"+rules+"' must be an URL",use);
+			}
+
+			this.rules = rules;
+		}
+		
+		public Result getSchemaForDocument(String publicId, String systemId,
+			String namespace,String prefix,String localName)
+		{
+			return mapping.getSchemaForDocument(publicId,systemId,namespace,prefix,localName);
+		}
+
+		/**@return xml serialization */
+		@Override
+		public String toString(){
+			return "<include rules=\""+rules+"\" "
+				+(base == null ? "" : "xml:base=\""+base+"\"")
+				+"/>";
+		}
+	}
+	
+	
+	public static final class Result{
+		public final URL baseURI;
+		public final String target;
+		
+		public Result(URL baseURI, String target){
+			this.baseURI = baseURI;
+			this.target = target;
+		}
+		
+		public String toString(){
+			return "(base="+baseURI+") "+target;
+		}
+		
+		public int hashCode(){
+			return 1253+
+			(baseURI == null ? 0 : baseURI.hashCode())
+			+
+			(target == null ? 0 : target.hashCode())
+			;
+		}
+		
+		public boolean equals(Object other){
+			if(other == this)return true;
+			if(other instanceof Result){
+				Result o = (Result)other;
+				return 
+				(  (baseURI == null && o.baseURI == null) 
+				|| baseURI.equals(o.baseURI)
+				)
+				&&
+				(  (target == null && o.target == null) 
+				|| target.equals(o.target)
+				)
+				;
+			}else return false;
+		}
+	}
+	
+	/**
+	 * try to use the VFS to detect if a resource exists
+	 */
+	private static boolean resourceExists(final URL resource){
+		Log.log(Log.DEBUG,SchemaMapping.class,"resourceExists("+resource+")");
+		
+		VFSFile f = null;
+		final VFS vfs = VFSManager.getVFSForProtocol(resource.getProtocol());
+		final Object[]session = new Object[1];
+		final View view = jEdit.getActiveView();
+		
+		Runnable run = new Runnable()
+		{
+			public void run()
+			{
+				session[0] = vfs.createVFSSession(resource.toString(),view);
+			}
+		};
+		
+		if(SwingUtilities.isEventDispatchThread())
+			run.run();
+		else
+		{
+			try
+			{
+				SwingUtilities.invokeAndWait(run);
+			}
+			catch(Exception e)
+			{
+				throw new RuntimeException(e);
+			}
+		}
+		
+		if(session[0] != null)
+		{
+			try{
+				f = vfs._getFile(session[0],resource.getPath(),view);
+			}catch(IOException ioe){
+				Log.log(Log.ERROR,SchemaMapping.class,"error in resourceExists("+resource+")",ioe);
+			}
+			try{
+				vfs._endVFSSession(session[0],view);
+			}catch(IOException ioe){
+				Log.log(Log.ERROR,SchemaMapping.class,"ending VFS session in resourceExists("+resource+")",ioe);
+			}
+		}
+		return f!=null;
+	}
+	
 }

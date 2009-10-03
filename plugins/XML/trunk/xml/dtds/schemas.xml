@@ -8,6 +8,7 @@
 
 	<!-- use the built-in rule for schemas.xml -->
 	<documentElement localName="locatingRules" typeId="LOCATE"/>
+	<uri pattern="schemas.xml" typeId="LOCATE"/>
 
 	<typeId id="RNG" uri="relaxng.rng"/>
 	<typeId id="LOCATE" uri="locate.rng"/>

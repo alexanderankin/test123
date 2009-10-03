@@ -40,7 +40,7 @@ public class XmlPlugin extends EBPlugin
 	//{{{ start() method
 	public void start()
 	{
-
+	
 		/* System.setProperty("javax.xml.parsers.SAXParserFactory",
 			"org.apache.xerces.jaxp.SAXParserFactoryImpl");
 		System.setProperty("javax.xml.parsers.DocumentBuilderFactory",
@@ -67,7 +67,17 @@ public class XmlPlugin extends EBPlugin
 
 		File f = getSchemaMappingFile(view);
 		if(f==null)jEdit.unsetProperty(SCHEMA_MAPPING_PROP);
-		else jEdit.setProperty(SCHEMA_MAPPING_PROP,f.getPath());
+		else
+		{
+			try
+			{
+				jEdit.setProperty(SCHEMA_MAPPING_PROP,f.toURL().toString());
+			}
+			catch(java.net.MalformedURLException mfe)
+			{
+				Log.log(Log.ERROR,XmlPlugin.class,mfe);
+			}
+		}
 
 	} //}}}
 
