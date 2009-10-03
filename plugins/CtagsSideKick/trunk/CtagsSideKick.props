@@ -80,3 +80,6 @@ plugin.ctags.sidekick.Plugin.docs=index.html
 
 # Custom options to ctags for certain languages.
 mode.shellscript.options.CtagsSideKick.mode.ctags_options=--language-force\=Sh
+
+# Error messages
+messages.CtagsSideKick.badCtagsPath=Cannot run ctags; please check the ctags path in the plugin options.

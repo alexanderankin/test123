@@ -42,6 +42,8 @@ import sidekick.SideKickParser;
 import sidekick.SideKickPlugin;
 import ctags.sidekick.options.SideKickModeOptionsPane;
 import errorlist.DefaultErrorSource;
+import errorlist.ErrorSource;
+import errorlist.DefaultErrorSource.DefaultError;
 
 
 public class Parser extends SideKickParser {
@@ -221,7 +223,15 @@ public class Parser extends SideKickParser {
 			System.err.println(e);
 		} finally {
 			try {
-				in.close();
+				if (in == null)	// Probably could not run ctags
+				{
+					errorSource.addError(new DefaultError(errorSource, ErrorSource.ERROR,
+						ctagsExe, 0, 0, 0, jEdit.getProperty("messages.CtagsSideKick.badCtagsPath")));
+					return;
+
+				}
+				else
+					in.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
