@@ -189,6 +189,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 	 */
 	public static synchronized Resolver instance() {
 		if (singleton == null) {
+			jEdit.getPlugin(xml.XmlPlugin.class.getName()).getPluginJAR().activatePlugin();
 			singleton = new Resolver();
 			singleton.init();
 			singleton.load();

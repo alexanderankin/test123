@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.Enumeration;
 
 import java.io.IOException;
+import java.net.URL;
 
 import org.gjt.sp.util.Log;
 
@@ -142,12 +143,12 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 	 * in the parsing chain.
 	 * @param	schema	URL or path to the schema
 	 */
-	private void installJaxpGrammar(final String schema) throws SAXException,IOException
+	private void installJaxpGrammar(final SchemaMapping.Result schema) throws SAXException,IOException
 	{
 		// schemas URLs are resolved against the schema mapping file
 		final ValidatorHandler verifierFilter =
-		SchemaLoader.instance().loadJaxpGrammar(mapping.getBaseURI(),schema,getErrorHandler());
-		schemaURL = schema;
+		SchemaLoader.instance().loadJaxpGrammar(schema.baseURI.toString(),schema.target,getErrorHandler());
+		schemaURL = new URL(schema.baseURI,schema.target).toString();
 		
 		XMLReader parent = getParent();
 		
@@ -191,8 +192,8 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 		
 		// FIXME: very add-hoc, but who uses other extensions for one's RNG schema ?
 		//        OK : must do something for compact syntax (rnc)
-		if(schemaURL.toString().endsWith("rng")){
-			Map<String,CompletionInfo> info = SchemaToCompletion.rngSchemaToCompletionInfo(mapping.getBaseURI(),schema,getErrorHandler());
+		if(schema.target.endsWith("rng")){
+			Map<String,CompletionInfo> info = SchemaToCompletion.rngSchemaToCompletionInfo(schema.baseURI.toString(),schema.target,getErrorHandler());
 			Log.log(Log.DEBUG,SchemaAutoLoader.class,"constructed CompletionInfos : "+info);
 			completions = info;
 		}
@@ -267,7 +268,7 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 				prefix = qName.equals(localName)? "" : qName.substring(0,qName.indexOf(":"));
 			}
 			
-			String schema = mapping.getSchemaForDocument(
+			SchemaMapping.Result schema = mapping.getSchemaForDocument(
 				publicId, systemId,
 				uri,prefix,localName);
 
