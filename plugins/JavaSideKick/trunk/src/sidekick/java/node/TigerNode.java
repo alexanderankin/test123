@@ -36,6 +36,8 @@ import sidekick.Asset;
 import sidekick.util.SideKickElement;
 import sidekick.util.Location;
 
+import org.gjt.sp.util.Log;
+
 /**
  * Base class for all "node's" in a file.  A single file is represented by a
  * CompilationUnit, which may contain one or more interfaces or classes, which
@@ -268,7 +270,7 @@ public class TigerNode extends Asset implements SideKickElement {
             children.add( child );
         }
         else {
-            System.out.println("+++++ not allowed to add child: " + child.getClass().getName() + ", " + child.toString() + " to " + getClass().getName());
+            Log.log(Log.DEBUG, this, "Not allowed to add child: " + child.getClass().getName() + ", " + child.toString() + " to " + getClass().getName());
         }
     }
 
@@ -286,7 +288,7 @@ public class TigerNode extends Asset implements SideKickElement {
         for ( Iterator it = kids.iterator(); it.hasNext(); ) {
             Object o = it.next();
             if ( ! ( o instanceof TigerNode ) ) {
-                System.out.println("+++++ child not added, not a TigerNode: " + o.getClass().getName() + ", " + o.toString());
+                Log.log(Log.DEBUG, this, "Child not added, not a TigerNode: " + o.getClass().getName() + ", " + o.toString());
                 continue;
             }
             TigerNode child = ( TigerNode ) o;
