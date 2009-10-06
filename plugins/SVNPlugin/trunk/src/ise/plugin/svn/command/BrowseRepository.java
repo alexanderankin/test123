@@ -310,7 +310,7 @@ public class BrowseRepository {
             ByteArrayOutputStream baos = new ByteArrayOutputStream( );
             repository.getFile( filepath , revision , fileproperties , baos );
 
-            SVNPropertyValue mime_property = fileproperties.getSVNPropertyValue( SVNProperty.MIME_TYPE);
+            SVNPropertyValue mime_property = fileproperties.getSVNPropertyValue( SVNProperty.MIME_TYPE );
             String mimeType = mime_property == null ? null : mime_property.getString();
             boolean isTextType = SVNProperty.isTextMimeType( mimeType );
 
@@ -359,13 +359,13 @@ public class BrowseRepository {
     private Properties convertMap( SVNProperties map ) {
         Properties props = new Properties();
         Set names = map.nameSet();
-        for (Object name : names) {
-            if (name == null) {
+        for ( Object name : names ) {
+            if ( name == null ) {
                 continue;
             }
-            SVNPropertyValue value = map.getSVNPropertyValue(name.toString());
-            if (value != null) {
-                props.setProperty(name.toString(), value.getString());
+            SVNPropertyValue value = map.getSVNPropertyValue( name.toString() );
+            if ( value != null ) {
+                props.setProperty( name.toString(), SVNPropertyValue.getPropertyAsString() );
             }
         }
         return props;
