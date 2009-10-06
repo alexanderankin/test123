@@ -18,6 +18,9 @@
 
     <!-- where to put the finished plugin -->
     <property name="install.dir" value=".." />
+    
+    <!-- where plugin dependencies are -->
+    <property name="jedit.plugins.dir" value="${install.dir}" />
 
     <!-- source code directory, this is where the .java files live -->
     <property name="src.dir" location="src" />
@@ -64,9 +67,9 @@
          <pathelement location="${jedit.install.dir}/jedit.jar" />
 
          <!-- dependencies -->
-         <pathelement location="${install.dir}/ErrorList.jar"/>
-         <pathelement location="${install.dir}/SideKick.jar"/>
-         <pathelement location="${install.dir}/ProjectViewer.jar"/>
+         <pathelement location="${jedit.plugins.dir}/ErrorList.jar"/>
+         <pathelement location="${jedit.plugins.dir}/SideKick.jar"/>
+         <pathelement location="${jedit.plugins.dir}/ProjectViewer.jar"/>
 
       </path>
    </target>
@@ -253,6 +256,7 @@
         <mkdir dir="${classes.dir}" />
         <mkdir dir="${doc.dir}" />
         <mkdir dir="${config.dir}" />
+        <mkdir dir="${install.dir}" />
     </target>
 
 
