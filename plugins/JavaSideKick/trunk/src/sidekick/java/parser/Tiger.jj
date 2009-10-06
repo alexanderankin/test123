@@ -1167,7 +1167,7 @@ CUNode JavaCompilationUnit(int tab_size):
 
     {
         if (end_t != null) {
-            n.setEndLocation(getLocation(end_t));
+            n.setEndLocation(getEndLocation(end_t));
         }
         return n;
    }
@@ -1343,10 +1343,12 @@ TigerNode ClassOrInterfaceDeclaration(Modifier m):
 
     {
         ClassNode node = isInterface ? new InterfaceNode(t.image, m.modifiers) : new ClassNode(t.image, m.modifiers);
-        if (isInterface)
+        if (isInterface) {
             results.incInterfaceCount();
-        else
+        }
+        else {
             results.incClassCount();
+        }
 
         if (m.beginColumn > -1) {
             node.setStartLocation(getLocation(m) );
@@ -1601,7 +1603,7 @@ String TypeBound():
 TigerNode ClassOrInterfaceBody(boolean isInterface):
 {
     TigerNode parent = new TigerNode("", -1);
-    TigerNode child;
+    TigerNode child = null;
     Token start_t = null;
     Token end_t = null;
 }
@@ -1621,10 +1623,15 @@ TigerNode ClassOrInterfaceBody(boolean isInterface):
         error_skipto(SEMICOLON);
     }
     {
-        if (start_t != null)
+        if (start_t != null) {
           parent.setStartLocation(getLocation(start_t));
-        if (end_t != null)
-          parent.setEndLocation(getLocation(end_t));
+        }
+        if (end_t != null) {
+          parent.setEndLocation(getEndLocation(end_t));
+        }
+        else if (child != null) {
+            parent.setEndLocation(child.getEndLocation());   
+        }
         return parent.getChildren() != null ? parent : null;
     }
 }
@@ -1735,7 +1742,7 @@ FieldNode FieldDeclaration(Modifier m):
             fn.setStartLocation(type.getStartLocation());
         else
             fn.setStartLocation(getLocation(m)); //type.getStartLocation());
-        fn.setEndLocation(getLocation(et));
+        fn.setEndLocation(getEndLocation(et));
         return fn;
     }
 }
@@ -2019,7 +2026,7 @@ ConstructorNode ConstructorDeclaration(Modifier m):
         else {
             cn.setStartLocation(getLocation(m));
         }
-        cn.setEndLocation(getLocation(end_t));
+        cn.setEndLocation(getEndLocation(end_t));
         cn.setFormalParams(params);
         cn.setTypeParams(type_params);
         cn.setThrows(name_list);
@@ -3132,7 +3139,7 @@ BlockNode Block():
     {
         bn.setName("block_" + start_t.beginLine + ":" + start_t.beginColumn);
         bn.setStartLocation(getLocation(start_t));
-        bn.setEndLocation(getLocation(end_t));
+        bn.setEndLocation(getEndLocation(end_t));
         return bn;
     }
 }
@@ -3179,7 +3186,7 @@ BlockNode TokenMgrDeclBlock():
     {
         bn.setName("block_" + start_t.beginLine + ":" + start_t.beginColumn);
         bn.setStartLocation(getLocation(start_t));
-        bn.setEndLocation(getLocation(end_t));
+        bn.setEndLocation(getEndLocation(end_t));
         return bn;
     }
 }
@@ -3243,6 +3250,7 @@ LocalVariableNode LocalVariableDeclaration():
             lvn.setFinal(ModifierSet.isFinal(m.modifiers));
         lvn.addChild(a);
         lvn.setStartLocation(a.getStartLocation());
+        lvn.setEndLocation(a.getEndLocation());
         if (lvn.isPrimitive())
             results.incPrimitiveFieldCount();
         else
@@ -3329,7 +3337,7 @@ BlockNode SwitchStatement():
         if (start_t != null)
             bn.setStartLocation(getLocation(start_t));
         if (end_t != null)
-            bn.setEndLocation(getLocation(end_t));
+            bn.setEndLocation(getEndLocation(end_t));
         return bn;
     }
 }
@@ -3439,7 +3447,7 @@ BlockNode DoStatement():
         if (start_t != null)
             bn.setStartLocation(getLocation(start_t));
         if (end_t != null)
-            bn.setEndLocation(getLocation(end_t));
+            bn.setEndLocation(getEndLocation(end_t));
         if (list != null)
             bn.addChildren(list);
         if (kids != null)

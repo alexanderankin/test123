@@ -5,14 +5,14 @@ All rights reserved.
 Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice, 
-    this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, 
-    this list of conditions and the following disclaimer in the documentation 
-    and/or other materials provided with the distribution.
-    * Neither the name of the <ORGANIZATION> nor the names of its contributors 
-    may be used to endorse or promote products derived from this software without 
-    specific prior written permission.
+   * Redistributions of source code must retain the above copyright notice, 
+   this list of conditions and the following disclaimer.
+   * Redistributions in binary form must reproduce the above copyright notice, 
+   this list of conditions and the following disclaimer in the documentation 
+   and/or other materials provided with the distribution.
+   * Neither the name of the <ORGANIZATION> nor the names of its contributors 
+   may be used to endorse or promote products derived from this software without 
+   specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
@@ -27,6 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package sidekick.java.node;
 
+
 /**
  * Accumulates the count of specific node types, that is, this keeps a count
  * of the number of classed, interfaces, methods, and fields that the parser
@@ -39,7 +40,6 @@ public class Results {
     private int methodCount = 0;
     private int referenceFieldCount = 0;    // count of fields that are some sort of Object, not a primitive
     private int primitiveFieldCount = 0;    // count of fields that are some sort of primitive, i.e. int, char, etc.
-
 
     // Accessor Methods
     public int getClassCount() {
@@ -107,10 +107,10 @@ public class Results {
         primitiveFieldCount = 0;
     }
 
-    
+
     public String toString() {
-        return " Classes: " + classCount + ", Interfaces: " + interfaceCount + ", Methods: " + methodCount + ", Fields: " + (referenceFieldCount + primitiveFieldCount);   
+        return " Classes: " + classCount + ", Interfaces: " + interfaceCount + ", Methods: " + methodCount + ", Fields: " + ( referenceFieldCount + primitiveFieldCount );
     }
-    
+
 
 }

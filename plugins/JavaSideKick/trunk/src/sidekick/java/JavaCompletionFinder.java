@@ -9,6 +9,8 @@ import sidekick.java.options.*;
 import sidekick.java.util.*;
 
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.util.Log;
+
 import sidekick.SideKickParsedData;
 
 /**
@@ -38,14 +40,12 @@ public class JavaCompletionFinder {
         if ( skpd instanceof JavaSideKickParsedData ) {
             data = ( JavaSideKickParsedData ) skpd;
         }
-        else
+        else {
             return null;
-
+        }
 
         // get the word just before the caret.  It might be a partial word, that's okay.
         String word = getWordAtCursor( editPane.getBuffer() );
-
-
 
         if ( word == null || word.length() == 0 )
             return null;
@@ -86,16 +86,18 @@ public class JavaCompletionFinder {
         if ( text == null || text.length() == 0 )
             return null;
 
-        Mode mode = buffer.getMode();
+        Mode mode = buffer.getMode();       // TODO: check for java mode?
         String word_break_chars = ( String ) mode.getProperty( "wordBreakChars" );
         if ( word_break_chars == null ) {
             word_break_chars = "";
         }
-        word_break_chars += ";{}()";
+        word_break_chars += ";{}()";        // NOPMD
 
         // remove line enders and tabs
         text = text.replaceAll( "[\\n\\r\\t]", "" );
 
+        // read the text backwards until a word break character is found.  It is
+        // possible that there is no word break character.
         for ( int i = text.length() - 1; i >= 0; i-- ) {
             char c = text.charAt( i );
             if ( word_break_chars.indexOf( c ) > -1 ) {
@@ -149,7 +151,7 @@ public class JavaCompletionFinder {
     }
         */
 
-        // check if qualified
+        // check if "qualified", "qualified" means there is something.something
         boolean qualified = word.lastIndexOf( "." ) > 0;
         if ( qualified ) {
             return getPossibleQualifiedCompletions( word );
@@ -165,12 +167,12 @@ public class JavaCompletionFinder {
         String qualification = word.substring( 0, word.lastIndexOf( "." ) );
 
         // might have super.something
-        if ( qualification.equals( "super" ) ) {
+        if ( "super".equals(qualification) ) {
             return getSuperCompletion( word );
         }
 
         // might have this.something or Class.this.something
-        if ( qualification.equals( "this" ) )
+        if ( "this".equals(qualification) )
             return getThisCompletion( word );
         if ( qualification.endsWith( ".this" ) )
             return getQualifiedThisCompletion( word );
@@ -224,9 +226,7 @@ public class JavaCompletionFinder {
             return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, possibles );
         }
 
-        // didn't find anything
-        return null;
-
+        return getLocalVariableCompletion(word);
     }
 
 
@@ -234,29 +234,32 @@ public class JavaCompletionFinder {
         // partialword
         // find all fields/variables declarations, methods, and classes in scope
         TigerNode tn = ( TigerNode ) data.getAssetAtOffset( caret );
+        //Log.log(Log.DEBUG, this, "asset at caret is a " + tn.getClass().getName());
         Set<String> choices = new HashSet<String>();
         while ( true ) {
             List children = tn.getChildren();
             if ( children != null ) {
                 for ( Iterator it = children.iterator(); it.hasNext(); ) {
                     TigerNode child = ( TigerNode ) it.next();
-                    //Log.log(Log.DEBUG, this, "+++++> child = " + child.getName() + ", word = " + word);
+                    //Log.log(Log.DEBUG, this, "+++++> parent = " + tn.getName() + ", child = " + child.getName() + ", word = " + word);
                     switch ( child.getOrdinal() ) {
                         case TigerNode.CONSTRUCTOR:
                         case TigerNode.METHOD:
                             List params = ( ( Parameterizable ) child ).getFormalParams();
                             for ( Iterator jt = params.iterator(); jt.hasNext(); ) {
                                 Parameter param = ( Parameter ) jt.next();
-                                if ( param.getName().startsWith( word ) )
+                                if ( param.getName().startsWith( word ) ) {
                                     choices.add( param.getName() );
+                                }
                             }
                         case TigerNode.FIELD:
                         case TigerNode.VARIABLE:
                         case TigerNode.CLASS:
                         case TigerNode.ENUM:
                         case TigerNode.INTERFACE:
-                            if ( child.getName().startsWith( word ) )
+                            if ( child.getName().startsWith( word ) ) {
                                 choices.add( child.getName() );
+                            }
                             break;
                     }
                 }
@@ -390,6 +393,7 @@ public class JavaCompletionFinder {
     // returns a completion containing a list of fields and methods contained contained by the type defined by the word,
     // for example, if the word is "my_word" and it is a String, return the fields and methods
     // for String.
+    // TODO: why isn't this used?
     private JavaCompletion getLocalVariableCompletion( String word ) {
         String my_word = word.endsWith( "." ) ? word.substring( 0, word.length() - 1 ) : word;
         FieldNode lvn = getLocalVariable( my_word );
@@ -538,8 +542,8 @@ public class JavaCompletionFinder {
         if ( project_name != null ) {
                 String project_classpath = jEdit.getProperty( PVClasspathOptionPane.PREFIX + project_name + ".optionalClasspath", "" );
                 Path pc = new Path( project_classpath );
-                /// TODO: use setting from pv option pane on whether or not to include system classpath,
-                /// then can remove classpath check from getClassForType above.
+                // TODO: use setting from pv option pane on whether or not to include system classpath,
+                // then can remove classpath check from getClassForType above.
                 AntClassLoader loader = new AntClassLoader( pc );
             try {
                 c = loader.findClass( type );
@@ -573,7 +577,7 @@ public class JavaCompletionFinder {
         Set members = new HashSet();
         for ( Iterator it = cn.getChildren().iterator(); it.hasNext(); ) {
             TigerNode child = ( TigerNode ) it.next();
-            switch ( child.getOrdinal() ) {
+            switch ( child.getOrdinal() ) {     // NOPMD
                 case TigerNode.ENUM:
                 case TigerNode.FIELD:
                 case TigerNode.METHOD:
