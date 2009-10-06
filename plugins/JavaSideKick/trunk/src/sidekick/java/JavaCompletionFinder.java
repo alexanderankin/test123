@@ -27,7 +27,6 @@ public class JavaCompletionFinder {
     private EditPane editPane = null;
     private int caret = 0;
 
-
     public JavaCompletion complete( EditPane editPane, int caret ) {
         this.editPane = editPane;
         this.caret = caret;
@@ -76,7 +75,7 @@ public class JavaCompletionFinder {
             return "";
         if ( data == null )
             return null;
-
+        
         // get the text in the current asset just before the cursor
         TigerNode tn = ( TigerNode ) data.getAssetAtOffset( caret );
         if ( tn == null )
@@ -91,7 +90,7 @@ public class JavaCompletionFinder {
         if ( word_break_chars == null ) {
             word_break_chars = "";
         }
-        word_break_chars += ";{}()";        // NOPMD
+        word_break_chars += "!;{}()";        // NOPMD
 
         // remove line enders and tabs
         text = text.replaceAll( "[\\n\\r\\t]", "" );
@@ -393,7 +392,6 @@ public class JavaCompletionFinder {
     // returns a completion containing a list of fields and methods contained contained by the type defined by the word,
     // for example, if the word is "my_word" and it is a String, return the fields and methods
     // for String.
-    // TODO: why isn't this used?
     private JavaCompletion getLocalVariableCompletion( String word ) {
         String my_word = word.endsWith( "." ) ? word.substring( 0, word.length() - 1 ) : word;
         FieldNode lvn = getLocalVariable( my_word );
@@ -484,7 +482,6 @@ public class JavaCompletionFinder {
                 String className = packageName;
                 // might have a fully qualified import
                 if ( className.endsWith( type ) ) {
-                    ///System.out.println( "!!!!!!! classname ends with type, classname = " + className + ", type = " + type );
                     Class c = validateClassName( className, type, filename );
                     if ( c != null )
                         return c;
