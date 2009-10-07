@@ -71,16 +71,19 @@ public class JavaCompletionFinder {
     /// StringBuffer sb = new StringBuffer(); sb.append().app
     ///
     private String getWordAtCursor( Buffer buffer ) {
-        if ( caret < 0 )
+        if ( caret <= 0 )
             return "";
         if ( data == null )
             return null;
-        
+
         // get the text in the current asset just before the cursor
         TigerNode tn = ( TigerNode ) data.getAssetAtOffset( caret );
         if ( tn == null )
             return null;
         int start = tn.getStart().getOffset();
+        if ( caret - start < 0 ) {
+            return "";
+        }
         String text = buffer.getText( start, caret - start );
         if ( text == null || text.length() == 0 )
             return null;
@@ -166,12 +169,12 @@ public class JavaCompletionFinder {
         String qualification = word.substring( 0, word.lastIndexOf( '.' ) );
 
         // might have super.something
-        if ( "super".equals(qualification) ) {
+        if ( "super".equals( qualification ) ) {
             return getSuperCompletion( word );
         }
 
         // might have this.something or Class.this.something
-        if ( "this".equals(qualification) )
+        if ( "this".equals( qualification ) )
             return getThisCompletion( word );
         if ( qualification.endsWith( ".this" ) )
             return getQualifiedThisCompletion( word );
@@ -225,7 +228,7 @@ public class JavaCompletionFinder {
             return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, possibles );
         }
 
-        return getLocalVariableCompletion(word);
+        return getLocalVariableCompletion( word );
     }
 
 
@@ -264,14 +267,14 @@ public class JavaCompletionFinder {
                 }
             }
             tn = tn.getParent();
-            if ( tn == null )          //|| tn.getOrdinal() == TigerNode.COMPILATION_UNIT )
+            if ( tn == null )           //|| tn.getOrdinal() == TigerNode.COMPILATION_UNIT )
                 break;
         }
         //Log.log(Log.DEBUG, this, "+++++ getPossibleNonQualifiedCompletions, choices as set = " + choices);
         List<String> list = new ArrayList<String>( choices );
         //Log.log(Log.DEBUG, this, "+++++ getPossibleNonQualifiedCompletions, choices as list = " + list);
         JavaCompletion jc = getSuperCompletion( word );
-        if (jc != null) {
+        if ( jc != null ) {
             list.addAll( jc.getChoices() );
         }
         if ( list.size() > 0 ) {
@@ -495,7 +498,7 @@ public class JavaCompletionFinder {
                         if ( c != null )
                             return c;
                     }
-                    catch(Exception e) {
+                    catch ( Exception e ) {
                         //e.printStackTrace();
                         continue;
                     }
@@ -517,40 +520,40 @@ public class JavaCompletionFinder {
 
 
     private Class validateClassName( String classname ) {
-        return validateClassName(classname, null, null);
+        return validateClassName( classname, null, null );
     }
 
-    private Class validateClassName(String classname, String type, String filename) {
+    private Class validateClassName( String classname, String type, String filename ) {
         try {
             Class c = Class.forName( classname );
             return c;
         }
         catch ( Exception e ) {     // NOPMD
         }
-        return findClassInProject(classname, type, filename);
+        return findClassInProject( classname, type, filename );
     }
 
     private Class findClassInProject( String classname, String type, String filename ) {
-        if (filename == null) {
+        if ( filename == null ) {
             return null;
         }
         String project_name = PVHelper.getProjectNameForFile( filename );
         Class c = null;
         if ( project_name != null ) {
-                String project_classpath = jEdit.getProperty( PVClasspathOptionPane.PREFIX + project_name + ".optionalClasspath", "" );
-                Path pc = new Path( project_classpath );
-                // TODO: use setting from pv option pane on whether or not to include system classpath,
-                // then can remove classpath check from getClassForType above.
-                AntClassLoader loader = new AntClassLoader( pc );
+            String project_classpath = jEdit.getProperty( PVClasspathOptionPane.PREFIX + project_name + ".optionalClasspath", "" );
+            Path pc = new Path( project_classpath );
+            // TODO: use setting from pv option pane on whether or not to include system classpath,
+            // then can remove classpath check from getClassForType above.
+            AntClassLoader loader = new AntClassLoader( pc );
             try {
                 c = loader.findClass( type );
             }
             catch ( Exception e ) {
                 ///e.printStackTrace();     // too loud, shut up!
                 try {
-                    c = loader.findClass(classname);
+                    c = loader.findClass( classname );
                 }
-                catch(Exception ee) {   // NOPMD
+                catch ( Exception ee ) {   // NOPMD
                 }
             }
         }
