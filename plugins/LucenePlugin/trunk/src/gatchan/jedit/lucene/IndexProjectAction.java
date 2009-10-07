@@ -54,26 +54,30 @@ public class IndexProjectAction extends Action
 	{
 		private VPTProject project;
 		private Index index;
+
 		public ProjectIndexer(VPTProject project, Index index)
 		{
 			this.project = project;
 			this.index = index;
 		}
+
 		public void run()
 		{
 			LucenePlugin.instance.addToIndex(index.getName(),
-				new ProjectFileList(project), true);
+							 new ProjectFileList(project), true);
 		}
-		
+
 		private class ProjectFileList implements FileProvider
 		{
 			private VPTProject project;
-			private Vector<VFSFile> files = null;
+			private Vector<VFSFile> files;
 			private int index = 0;
+
 			public ProjectFileList(VPTProject project)
 			{
 				this.project = project;
 			}
+
 			public VFSFile next()
 			{
 				if (files != null)
@@ -84,7 +88,7 @@ public class IndexProjectAction extends Action
 				}
 				Collection<VPTNode> nodes = project.getOpenableNodes();
 				files = new Vector<VFSFile>();
-				for (VPTNode n: nodes)
+				for (VPTNode n : nodes)
 				{
 					if (n.isFile())
 					{
