@@ -365,7 +365,7 @@ public class BrowseRepository {
             }
             SVNPropertyValue value = map.getSVNPropertyValue( name.toString() );
             if ( value != null ) {
-                props.setProperty( name.toString(), SVNPropertyValue.getPropertyAsString() );
+                props.setProperty( name.toString(), SVNPropertyValue.getPropertyAsString( value ) );
             }
         }
         return props;
