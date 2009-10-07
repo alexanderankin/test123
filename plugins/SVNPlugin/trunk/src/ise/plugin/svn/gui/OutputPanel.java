@@ -77,52 +77,57 @@ public class OutputPanel extends JPanel {
         add( tabs );
 
         // add a mouse listener to be able to close results tabs
-        tabs.addMouseListener( new MouseAdapter() {
-                    public void mousePressed( MouseEvent me ) {
-                        if ( me.isPopupTrigger() )
-                            handleIsPopup( me );
-                    }
-
-                    public void mouseReleased( MouseEvent me ) {
-                        if ( me.isPopupTrigger() )
-                            handleIsPopup( me );
-                    }
-
-                    private void handleIsPopup( MouseEvent me ) {
-                        final int x = me.getX();
-                        final int y = me.getY();
-                        int index = tabs.indexAtLocation(x, y);
-                        if (index < 1) {
-                            // index 0 is the console, don't close it ever,
-                            // less than 0 is an invalid tab
-                            return;
-                        }
-                        final Component c = tabs.getComponentAt(index);
-                        final JPopupMenu pm = new JPopupMenu();
-                        JMenuItem close_mi = new JMenuItem( jEdit.getProperty("ips.Close", "Close") );
-                        pm.add( close_mi );
-                        close_mi.addActionListener( new ActionListener() {
-                                    public void actionPerformed( ActionEvent ae ) {
-                                        tabs.remove( c );
-                                    }
-                                }
-                                            );
-                        JMenuItem close_all_mi = new JMenuItem( jEdit.getProperty("ips.Close_All", "Close All") );
-                        pm.add( close_all_mi );
-                        close_all_mi.addActionListener( new ActionListener() {
-                                    public void actionPerformed( ActionEvent ae ) {
-                                        for (int i = 1; i < tabs.getTabCount(); ) {
-                                            Component comp = tabs.getComponentAt(i);
-                                            tabs.remove( comp );
-                                            comp = null;
-                                        }
-                                    }
-                                }
-                                            );
-                        GUIUtils.showPopupMenu( pm, tabs, x, y );
+        tabs.addMouseListener(
+            new MouseAdapter() {
+                public void mousePressed( MouseEvent me ) {
+                    if ( me.isPopupTrigger() ) {
+                        handleIsPopup( me );
                     }
                 }
-                             );
+
+                public void mouseReleased( MouseEvent me ) {
+                    if ( me.isPopupTrigger() ) {
+                        handleIsPopup( me );
+                    }
+                }
+
+                private void handleIsPopup( MouseEvent me ) {
+                    final int x = me.getX();
+                    final int y = me.getY();
+                    int index = tabs.indexAtLocation(x, y);
+                    if (index < 1) {
+                        // index 0 is the console, don't close it ever,
+                        // less than 0 is an invalid tab
+                        return ;
+                    }
+                    final Component c = tabs.getComponentAt(index);
+                    final JPopupMenu pm = new JPopupMenu();
+                    JMenuItem close_mi = new JMenuItem( jEdit.getProperty("ips.Close", "Close") );
+                    pm.add( close_mi );
+                    close_mi.addActionListener(
+                        new ActionListener() {
+                            public void actionPerformed( ActionEvent ae ) {
+                                tabs.remove( c );
+                            }
+                        }
+                    );
+                    JMenuItem close_all_mi = new JMenuItem( jEdit.getProperty("ips.Close_All", "Close All") );
+                    pm.add( close_all_mi );
+                    close_all_mi.addActionListener(
+                        new ActionListener() {
+                            public void actionPerformed( ActionEvent ae ) {
+                                for (int i = 1; i < tabs.getTabCount(); ) {
+                                    Component comp = tabs.getComponentAt(i);
+                                    tabs.remove( comp );
+                                    comp = null;
+                                }
+                            }
+                        }
+                    );
+                    GUIUtils.showPopupMenu( pm, tabs, x, y );
+                }
+            }
+        );
     }
 
     private JPanel getConsolePanel() {
@@ -153,7 +158,7 @@ public class OutputPanel extends JPanel {
 
     public void addWorker(String name, SwingWorker worker) {
         if (worker == null) {
-            return;
+            return ;
         }
         handler.getStopPanel().addWorker(name, worker);
     }
