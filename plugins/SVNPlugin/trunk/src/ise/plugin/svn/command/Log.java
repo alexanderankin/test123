@@ -151,11 +151,17 @@ public class Log {
     public class LogHandler implements ISVNLogEntryHandler {
 
         public void handleLogEntry( SVNLogEntry logEntry ) {
+            // match up log entries to the appropriate file.  The 'entries' map
+            // uses the urls of the requested files as the key, and a list of
+            // log entries pertaining to that file.  This handler method doesn't
+            // know which file is associated with this log entry, so I'm looping
+            // through the urls (keys) in 'entries' and checking if the changed
+            // paths in the logEntry matches with that url.
             Map changedPaths = logEntry.getChangedPaths();
             Set entryPaths = changedPaths.keySet();    // entryPaths contains Strings of paths relative to repository url
-            for ( String path : entries.keySet() ) {               
+            for ( String path : entries.keySet() ) {   // path is a full repository url
                 for ( Object ep : entryPaths ) {
-                    String entryPath = ( String ) ep;              
+                    String entryPath = ( String ) ep;
                     if ( path.endsWith( entryPath ) ) {
                         entries.get( path ).add( logEntry );
                         Log.this.printLogEntry( path, logEntry );
@@ -232,17 +238,17 @@ public class Log {
             return null;
         }
     }
-    
+
     private Set<String> getURLs( LogData data ) {
         // might already have urls, so no need to check info on them
         if ( data.pathsAreURLs() ) {
             Set<String> urls = new HashSet<String>();
             for (String path : data.getPaths()) {
-                urls.add(path);   
+                urls.add(path);
             }
             return urls;
         }
-        
+
         // for local files, need to get info to get repository url.  This is
         // quick since info is available locally.
         try {
@@ -261,7 +267,7 @@ public class Log {
             return null;
         }
     }
-    
+
     public static void main ( String[] args ) {
         // for testing
         LogData data = new LogData();
