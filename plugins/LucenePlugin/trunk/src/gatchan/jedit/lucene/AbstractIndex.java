@@ -192,7 +192,7 @@ public class AbstractIndex
 	public boolean isOptimized()
 	{
 		initReader();
-		return reader.isOptimized();
+		return reader == null || reader.isOptimized();
 	}
 
 	/**
