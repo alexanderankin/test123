@@ -9,7 +9,7 @@ import sidekick.java.options.*;
 import sidekick.java.util.*;
 
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.util.Log;
+//import org.gjt.sp.util.Log;
 
 import sidekick.SideKickParsedData;
 
@@ -151,7 +151,7 @@ public class JavaCompletionFinder {
         */
 
         // check if "qualified", "qualified" means there is something.something
-        boolean qualified = word.lastIndexOf( "." ) > 0;
+        boolean qualified = word.lastIndexOf( '.' ) > 0;
         if ( qualified ) {
             return getPossibleQualifiedCompletions( word );
         }
@@ -163,7 +163,7 @@ public class JavaCompletionFinder {
 
     private JavaCompletion getPossibleQualifiedCompletions( String word ) {
 
-        String qualification = word.substring( 0, word.lastIndexOf( "." ) );
+        String qualification = word.substring( 0, word.lastIndexOf( '.' ) );
 
         // might have super.something
         if ( "super".equals(qualification) ) {
@@ -200,7 +200,7 @@ public class JavaCompletionFinder {
             // filter the members of the class by the part of the word
             // following the last dot.  The completion will replace this
             // part of a word
-            String filter = word.substring( word.lastIndexOf( "." ) + 1 );
+            String filter = word.substring( word.lastIndexOf( '.' ) + 1 );
             if ( filter != null && filter.length() == 0 )
                 filter = null;
             List members = getMembersForClass( c, filter, static_only );
