@@ -495,12 +495,10 @@ they can be individually set if the current Display Style is set to
         <a name="actions">Actions</a></font></strong></td>
     </tr>
 </table>
-Currently, there is only one action: <strong>Check Imports</strong>.  This
-action will check the import statements in the current file and make sure
-that there are no duplicate imports and that all imports are actually used
-in the code.  Duplicate and unused imports are displayed in the ErrorList
-plugin and are underlined in the code.  Your code is not changed, you must
-remove any duplicate or unused imports yourself.
+There are no longer any actions.  There was some thought at one time to provide
+certain code checking actions, however, the PMD plugin handles this much better
+than this plugin.  If you write Java code, you really should install the PMD
+plugin too.
 
 <hr size="2" >
 
@@ -596,7 +594,7 @@ to work. </p>
 <p>
 "After last keystroke, wait (second)" should be set somewhat high for the
 parse on keystroke setting to not be too memory intensive.  I recommend at
-least 2 seconds, you'll want to adjust for your typing speed, machine speed,
+least 1 second, you'll want to adjust for your typing speed, machine speed,
 and coding style. </p>
 <p>
 <b>What doesn't work:</b> </p>
@@ -611,9 +609,9 @@ Example: </p>
    mn.
 </pre>
 <p>
-The popup will show only fields and methods in TigerNode, not additional
-fields and methods in MethodNode.  Continuing the same example, this won't
-work either: </p>
+<s>The popup will show only fields and methods in TigerNode, not additional
+fields and methods in MethodNode.</s> (Fixed)  Continuing the same example, this won't
+work: </p>
 
 <pre>
    List params = ((MethodNode)tn).get
@@ -654,44 +652,50 @@ This should be able to expand to 'append', but won't.
 <h4>Integration with ProjectViewer</h4>
 
 If ProjectViewer is available, JavaSideKick can use some settings from ProjectViewer
-to provide additional features:
+to provide class, source, and build path settings for code completion.
 
-<ul>
-   <li>Check imports: check the imports in the current java file for duplicate import statements
-   and unused imports.</li>
-</ul>
-
-Other features are to be added.
 <p>
 To set up JavaSideKick to work with ProjectViewer:
 <ol>
    <li>Open a project in ProjectViewer.</li>
    <li>Open the properties for the project</li>
    <li>In the left panel of the project properties, choose 'Classpath settings'.</li>
-   <li>Add paths as necessary for your project.  Source path settings are done the same way.</li>
+   <li>Add paths as necessary for your project.  Source path settings are done in the same way.</li>
 </ol>
 
-JavaSideKick will use these paths to find classes that may be needed for the additional features.
-
-These paths can be used by other plugins wanting to know per-project classpath and source path settings.  Once the paths are set as above, the settings are available with these property names:
+These paths can also be used by other plugins wanting to know per-project class and source path settings.  
+Once the paths are set as above, the settings are available with these property names:
 <p>
 <ul>
-<li>sidekick.java.pv.<i>projectName</i>.useJavaClasspath -- this is a boolean property and reflects the state of the "Include system classpath?" checkbox.  You can get this property by calling jEdit.getBooleanProperty(sidekick.java.pv.<i>projectName</i>.useJavaClasspath).</li>
-<li>sidekick.java.pv.<i>projectName</i>.optionalClasspath -- this is a string property that contains all paths set in the "Classpath" box separated by the platform path separator as returned by System.getProperty("path.separator").  You can get this property by calling jEdit.getProperty(sidekick.java.pv.<i>projectName</i>.optionalClasspath).</li>
-<li>sidekick.java.pv.<i>projectName</i>.optionalSourcepath -- this is a string property that contains all paths set in the "Source path" box separated by the platform path separator as returned by System.getProperty("path.separator").  You can get this property by calling jEdit.getProperty(sidekick.java.pv.<i>projectName</i>.optionalSourcepath).</li>
+<li>sidekick.java.pv.<i>projectName</i>.useJavaClasspath -- this is a boolean property 
+and reflects the state of the "Include system classpath?" checkbox.  You can get this 
+property by calling jEdit.getBooleanProperty(sidekick.java.pv.<i>projectName</i>.useJavaClasspath).</li>
+<li>sidekick.java.pv.<i>projectName</i>.optionalClasspath -- this is a string property 
+that contains all paths set in the "Classpath" box separated by the platform path separator 
+as returned by System.getProperty("path.separator").  You can get this property by calling 
+jEdit.getProperty(sidekick.java.pv.<i>projectName</i>.optionalClasspath).</li>
+<li>sidekick.java.pv.<i>projectName</i>.optionalSourcepath -- this is a string property 
+that contains all paths set in the "Source path" box separated by the platform path 
+separator as returned by System.getProperty("path.separator").  You can get this 
+property by calling jEdit.getProperty(sidekick.java.pv.<i>projectName</i>.optionalSourcepath).</li>
 </ul>
+<p>
+Users of the obsolete JavaCore plugin should take note that these are the same property names that JavaCore set.
+
 <p>
 There are a few utility methods in sidekick.java.PVHelper that may be useful:
 <p>
 <ul>
-<li><code>public static boolean isProjectViewerAvailable()</code> will return true if ProjectViewer is currently available.</li>
-<li><code>public static String getProjectNameForFile( String filename )</code> will return the name of a project for a given filename.</li>
-<li><code>public static Path getClassPathForProject(String projectName)</code> will return a sidekick.java.util.Path from the current ProjectViewer settings, including the system classpath if checked.  This may be more convenient than fetching the path string and parsing it yourself.</li>
-<li><code>public static Path getSourcePathForProject(String projectName)</code> will return a sidekick.java.util.Path from the current ProjectViewer settings.  This may be more convenient than fetching the path string and parsing it yourself.</li>
+<li><code>public static boolean isProjectViewerAvailable()</code> will return 
+true if ProjectViewer is currently available.</li>
+<li><code>public static String getProjectNameForFile( String filename )</code> 
+will return the name of a project for a given filename.</li>
+<li><code>public static Path getClassPathForProject(String projectName)</code> 
+will return a sidekick.java.util.Path from the current ProjectViewer settings, including the system classpath if checked.  This may be more convenient than fetching the path string and parsing it yourself.</li>
+<li><code>public static Path getSourcePathForProject(String projectName)</code>
+will return a sidekick.java.util.Path from the current ProjectViewer settings.  This may be more convenient than fetching the path string and parsing it yourself.</li>
 </ul>
 <p>
-Users of the JavaCore plugin should take note that these are the same property names that JavaCore set.
-
 
 <table
     summary="Building with javacc"
@@ -712,7 +716,7 @@ Users of the JavaCore plugin should take note that these are the same property n
 The source code for the JavaSideKick plugin is ready to build with javac and
 jar.  On occasion, it may be necessary to make changes to the parser.  The
 parser is actually created by javacc (home page https://javacc.dev.java.net/).
-Javacc is a parser generator, it reads a 'grammar specificaton' file, and
+Javacc is a parser generator, it reads a 'grammar specification' file, and
 from that file creates a number of java files that can recognize matches to
 that grammar.
 <p>
