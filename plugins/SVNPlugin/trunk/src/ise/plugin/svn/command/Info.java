@@ -121,7 +121,7 @@ public class Info {
     }
 
     public void handleInfo( SVNInfo info, PrintStream out ) {
-        StringBuffer sb = new StringBuffer();
+        StringBuffer sb = new StringBuffer(512);
         sb.append( "\n" );
         if ( !info.isRemote() ) {
             sb.append( "Path: " + SVNFormatUtil.formatPath( info.getFile() ) + "\n" );

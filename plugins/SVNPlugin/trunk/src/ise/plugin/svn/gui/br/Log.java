@@ -56,8 +56,12 @@ public class Log extends BRAction {
                 }
                 else {
                     Object[] parts = path.getPath();
+                    String part = parts[0].toString();
+                    while(part.endsWith("/")) {
+                        part = part.substring(0, part.length() - 1);   
+                    }
                     StringBuilder sb = new StringBuilder();
-                    sb.append( parts[ 0 ] );
+                    sb.append( part );
                     for ( int i = 1; i < parts.length; i++ ) {
                         sb.append( "/" ).append( parts[ i ].toString() );
                     }
