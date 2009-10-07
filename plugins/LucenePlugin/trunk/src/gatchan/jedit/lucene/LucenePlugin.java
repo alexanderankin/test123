@@ -22,12 +22,11 @@
 package gatchan.jedit.lucene;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.gjt.sp.jedit.EditBus;
-import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSManager;
-import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.msg.PluginUpdate;
 import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
 
@@ -40,7 +39,7 @@ import java.util.*;
 /**
  * @author Matthieu Casanova
  */
-public class LucenePlugin extends EditPlugin
+public class LucenePlugin extends EBPlugin
 {
 	static CentralIndex CENTRAL;
 	private static final String CENTRAL_INDEX_NAME = "__CENTRAL__";
@@ -61,6 +60,36 @@ public class LucenePlugin extends EditPlugin
 		EditPlugin p = jEdit.getPlugin("projectviewer.ProjectPlugin", false);
 		if (p != null && !(p instanceof Deferred))
 			projectWatcher = new ProjectWatcher();
+	}
+
+	@Override
+	public void handleMessage(EBMessage message)
+	{
+		if (message instanceof PluginUpdate)
+		{
+			PluginUpdate pluginUpdate = (PluginUpdate) message;
+			if (pluginUpdate.getWhat() == PluginUpdate.ACTIVATED)
+			{
+				if ("projectviewer.ProjectPlugin".equals(pluginUpdate.getPluginJAR().getPlugin().getClassName()))
+				{
+					if (projectWatcher == null)
+					{
+						projectWatcher = new ProjectWatcher();
+					}
+				}
+			}
+			else if (pluginUpdate.getWhat() == PluginUpdate.DEACTIVATED)
+			{
+				if ("projectviewer.ProjectPlugin".equals(pluginUpdate.getPluginJAR().getPlugin().getClassName()))
+				{
+					if (projectWatcher != null)
+					{
+						projectWatcher.stop();
+						projectWatcher = null;
+					}
+				}
+			}
+		}
 	}
 
 	private void loadIndexes()
