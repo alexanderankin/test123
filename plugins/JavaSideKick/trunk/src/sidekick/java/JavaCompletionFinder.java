@@ -20,6 +20,17 @@ import sidekick.SideKickParsedData;
  * would show a popup containing "valueOf".  Method/field completions are
  * activated when the last character in the word is a dot, for example, typing
  * "String." would list all methods and fields in the String class.
+ *
+ * TODO: completion inside anonymous inner classes doesn't work.  For example,
+ * button.addActionListener( 
+ *     new ActionListener() {
+ *         public void actionPerformed( ActionEvent ae ) {
+ *             ae.      // nothing happens here
+ *         }
+ *     }
+ * );
+ * 
+ * TODO: code completion is active inside of comments. Is this useful or annoying?
  */
 public class JavaCompletionFinder {
 
@@ -45,7 +56,6 @@ public class JavaCompletionFinder {
 
         // get the word just before the caret.  It might be a partial word, that's okay.
         String word = getWordAtCursor( editPane.getBuffer() );
-
         if ( word == null || word.length() == 0 )
             return null;
 
@@ -85,6 +95,7 @@ public class JavaCompletionFinder {
         if ( caret - start < 0 ) {
             return "";
         }
+
         String text = buffer.getText( start, caret - start );
         if ( text == null || text.length() == 0 )
             return null;
@@ -113,11 +124,9 @@ public class JavaCompletionFinder {
         return text;
     }
 
-
     private JavaCompletion getPossibleCompletions( String word ) {
         if ( word == null || word.length() == 0 )
             return null;
-
 
         // possibles:
         // cast
@@ -273,7 +282,7 @@ public class JavaCompletionFinder {
                 }
             }
             tn = tn.getParent();
-            if ( tn == null )            //|| tn.getOrdinal() == TigerNode.COMPILATION_UNIT )
+            if ( tn == null )             //|| tn.getOrdinal() == TigerNode.COMPILATION_UNIT )
                 break;
         }
         //Log.log(Log.DEBUG, this, "+++++ getPossibleNonQualifiedCompletions, choices as set = " + choices);
