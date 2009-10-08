@@ -57,7 +57,7 @@ public class JavaSideKickParsedData extends SideKickParsedData {
         if ( !( userObject instanceof TigerNode ) ) {
             return null;
         }
-
+        
         TigerNode tn = getTigerNodeAtOffset( ( TigerNode ) userObject, pos );
         return tn;
     }
@@ -78,6 +78,7 @@ public class JavaSideKickParsedData extends SideKickParsedData {
             // allows finding the node whose start position is closest to the
             // caret position.
             int end = child.getEnd().getOffset();
+            //System.out.println("+++++ " + child.getName() + ", start = " + start + ", end = " + end + ", pos = " + pos);
             if ( (pos >= start && pos <= end) || (start >= end) ) {
                 return getTigerNodeAtOffset( child, pos );
             }
