@@ -6,7 +6,8 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
+import java.io.*;
+import java.util.regex.*;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import org.gjt.sp.jedit.AbstractOptionPane;
@@ -16,6 +17,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 
 import sidekick.java.PVHelper;
+import sidekick.java.util.CopyUtils;
 
 
 /**
@@ -27,6 +29,7 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
     private PathBuilder classpathBuilder;
     private PathBuilder sourcepathBuilder;
     private JCheckBox useJavaClassPath;
+    private JCheckBox useDotClassPathFile;
     private JTextField buildPath;
     private View view;
     public static String PREFIX = "sidekick.java.pv.";
@@ -38,11 +41,11 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
 
     /** Initialises the option pane. */
     protected void _init() {
-        setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
-        
+        setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
+
         view = jEdit.getActiveView();
-        
-        String name = PVHelper.getProjectName(view);
+
+        String name = PVHelper.getProjectName( view );
 
         // Include java.class.path in classpath
         useJavaClassPath = new JCheckBox(
@@ -50,6 +53,21 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
                     jEdit.getBooleanProperty( PREFIX + name + ".useJavaClasspath" )
                 );
         addComponent( useJavaClassPath );
+
+        // TODO: move hard-coded string to properties file
+        String projectRoot = PVHelper.getProjectRoot( view );
+        File dotClassPathFile = new File( projectRoot, ".classpath" );
+        if ( dotClassPathFile.exists() ) {
+            useDotClassPathFile = new JCheckBox( "Use .classpath file", jEdit.getBooleanProperty( PREFIX + name + ".useDotClasspathFile") );
+            addComponent( useDotClassPathFile );
+            useDotClassPathFile.addActionListener(
+                new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        handleDotClassPathFile();
+                    }
+                }
+            );
+        }
 
         // Classpath components
         classpathBuilder = new PathBuilder(
@@ -60,6 +78,7 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
         classpathBuilder.setPath(
             jEdit.getProperty( PREFIX + name + ".optionalClasspath", "" )
         );
+        handleDotClassPathFile();
         classpathBuilder.setStartDirectory( PVHelper.getProjectRoot( view ) );
         classpathBuilder.setEnabled( true );
         addComponent( classpathBuilder );
@@ -102,10 +121,14 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
     // #_save() : void
     /** Saves properties from the option pane. */
     protected void _save() {
-        String name = PVHelper.getProjectName(view);
+        String name = PVHelper.getProjectName( view );
         jEdit.setBooleanProperty(
             PREFIX + name + ".useJavaClasspath",
             useJavaClassPath.isSelected()
+        );
+        jEdit.setBooleanProperty(
+            PREFIX + name + ".useDotClasspathFile",
+            useDotClassPathFile.isSelected()
         );
         jEdit.setProperty(
             PREFIX + name + ".optionalClasspath",
@@ -133,6 +156,56 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
         cons.insets = new Insets( 1, 0, 1, 0 );
         gridBag.setConstraints( comp, cons );
         add( comp );
+    }
+
+    private void handleDotClassPathFile() {
+        if (useDotClassPathFile == null) {
+            return;   
+        }
+        String dotClassPathPaths = getDotClassPathClassPaths();
+        classpathBuilder.removePath( dotClassPathPaths );
+        if ( useDotClassPathFile.isSelected() ) {
+            classpathBuilder.setPath( dotClassPathPaths );
+        }
+    }
+
+
+    private String getDotClassPathClassPaths() {
+        // the .classpath file is an xml file, but it's pretty simple, so I'm parsing
+        // it by hand rather than invoking an xml parser. I'm looking for lines like
+        // <classpathentry kind="lib" path="lib/ant-contrib-1.0b3.jar"/>, so the line
+        // must contain "classpathentry" and "kind="lib"".  If it does, then grab
+        // the "path" value.  This path should be relative to the project root
+        // directory.
+        try {
+            // load the .classpath file into a string array of lines
+            String projectRoot = PVHelper.getProjectRoot( view );
+            File dotClassPathFile = new File( projectRoot, ".classpath" );
+            BufferedReader reader = new BufferedReader( new FileReader( dotClassPathFile ) );
+            StringWriter writer = new StringWriter();
+            CopyUtils.copy( reader, writer );
+            String[] lines = writer.toString().split( "\\n" );
+
+            // parse the string into paths
+            StringBuffer sb = new StringBuffer();
+            String pathRegex = "path=[\"](.*?)[\"]";
+            Pattern pattern = Pattern.compile( pathRegex );
+            for ( String line : lines ) {
+                if ( line.indexOf( "classpathentry" ) < 0 || line.indexOf( "kind=\"lib\"" ) < 0 ) {
+                    continue;
+                }
+                Matcher matcher = pattern.matcher( line );
+                if ( matcher.find() ) {
+                    String path = matcher.group( 1 );
+                    File file = new File( projectRoot, path );
+                    sb.append( file.getAbsolutePath() ).append( File.pathSeparator );
+                }
+            }
+            return sb.toString();
+        }
+        catch ( Exception e ) {
+            return "";
+        }
     }
 
     private static class ClasspathFilter extends FileFilter {
