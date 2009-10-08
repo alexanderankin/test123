@@ -76,18 +76,32 @@ public class PVHelper {
         EditPlugin pv = jEdit.getPlugin( "projectviewer.ProjectPlugin", false );
         return pv != null;
     }
-
+    
     /**
+     * @param projectName Get the class path information for this project.
      * @return a Path containing the classpath as set in ProjectViewer for the given project
      */
     public static Path getClassPathForProject( String projectName ) {
-        boolean useJavaClasspath = jEdit.getBooleanProperty( "sidekick.java.pv." + projectName + ".useJavaClasspath" );
+        return getClassPathForProject( projectName, true );   
+    }
+
+    /**
+     * @param projectName Get the class path information for this project.
+     * @param withJavaClasspath If true, include the paths for System.getProperty("java.class.path").
+     * @return a Path containing the classpath as set in ProjectViewer for the given project
+     */
+    public static Path getClassPathForProject( String projectName, boolean withJavaClasspath ) {
+        boolean useJavaClasspath = useJavaClasspath(projectName);
         String classpath = jEdit.getProperty( "sidekick.java.pv." + projectName + ".optionalClasspath", "" );
         Path path = new Path( classpath );
-        if ( useJavaClasspath ) {
+        if ( useJavaClasspath && withJavaClasspath ) {
             path.concatSystemClassPath();
         }
         return path;
+    }
+    
+    public static boolean useJavaClasspath( String projectName ) {
+        return jEdit.getBooleanProperty( "sidekick.java.pv." + projectName + ".useJavaClasspath" );
     }
 
     public static String getBuildOutputPathForProject( String projectName ) {

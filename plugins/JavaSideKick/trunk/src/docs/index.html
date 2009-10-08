@@ -496,7 +496,7 @@ they can be individually set if the current Display Style is set to
     </tr>
 </table>
 There are no longer any actions.  There was some thought at one time to provide
-certain code checking actions, however, the PMD plugin handles this much better
+certain code checking actions, however, the PMD plugin does code checking much better
 than this plugin.  If you write Java code, you really should install the PMD
 plugin too.
 
@@ -662,13 +662,11 @@ To set up JavaSideKick to work with ProjectViewer:
    <li>Open a project in ProjectViewer.</li>
    <li>Open the properties for the project</li>
    <li>In the left panel of the project properties, choose 'Classpath settings'.</li>
-   <li>In the "Classpath" section, add directories and/or jars as necessary for your project.</li>
+   <li>In the "Classpath" section, add directories, jars, and/or .classpath files as 
+   necessary for your project.</li>
    <li>Fill in the build output path for your project.</li>
 </ol>
 
-If your project happens to have a .classpath file (common in projects where people use Eclipse),
-you can select the "Use .classpath file" check box, and all paths listed in the .classpath file
-will be automatically added to the classpath for code completion.
 <p>
 The "Source path" settings are not used for code completion.  The code completion algorithm
 depends on compiled classes to work.
