@@ -87,11 +87,6 @@ public class Log {
             }
         }
 
-        // pre-populate the 'entries' tree map
-        for ( String url : getURLs(data)) {
-            entries.put( url, new ArrayList<SVNLogEntry>() );
-        }
-
         // use default svn config options
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
@@ -130,18 +125,49 @@ public class Log {
                 pathsToCheck.add( toCheck );
             }
 
-            // svnkit method signature:
-            // doLog(SVNURL url, String[] paths, SVNRevision pegRevision, SVNRevision startRevision,
-            //      SVNRevision endRevision, boolean stopOnCopy, boolean discoverChangedPaths, long limit, ISVNLogEntryHandler handler)
-            client.doLog( repositoryUrl, pathsToCheck.toArray( new String[ 0 ] ), data.getPegRevision(), data.getStartRevision(),
-                    data.getEndRevision(), data.getStopOnCopy(), data.getShowPaths(), data.getMaxLogs(), handler );
+            for ( String path : pathsToCheck ) {
+                out.println( "Log:" );
+                out.println( "\trepository url: " + repositoryUrl );
+                out.println( "\t          path: " + path );
+                out.println( "\t  peg revision: " + data.getPegRevision() );
+                out.println( "\tstart revision: " + data.getStartRevision() );
+                out.println( "\t  end revision: " + data.getEndRevision() );
+                out.println( "\t  stop on copy: " + data.getStopOnCopy() );
+                out.println( "\t    show paths: " + data.getShowPaths() );
+                out.println( "\t      max logs: " + data.getMaxLogs() );
+
+                handler.setPath( path );
+                String[] pathToCheck = { path };
+
+                // Get log message for each path one at a time.  While it is possible
+                // to get the log messages for several paths at once, it is impossible
+                // to tell which message goes with which file.
+                // doLog(SVNURL url, String[] paths, SVNRevision pegRevision, SVNRevision startRevision,
+                //      SVNRevision endRevision, boolean stopOnCopy, boolean discoverChangedPaths, long limit, ISVNLogEntryHandler handler)
+                client.doLog( repositoryUrl, pathToCheck, data.getPegRevision(), data.getStartRevision(),
+                        data.getEndRevision(), data.getStopOnCopy(), data.getShowPaths(), data.getMaxLogs(), handler );
+            }
         }
         else {
-            // svnkit method signature:
-            // doLog(File[] paths, SVNRevision pegRevision, SVNRevision startRevision,
-            //      SVNRevision endRevision, boolean stopOnCopy, boolean discoverChangedPaths, long limit, ISVNLogEntryHandler handler)
-            client.doLog( localPaths, data.getPegRevision(), data.getStartRevision(),
-                    data.getEndRevision(), data.getStopOnCopy(), data.getShowPaths(), data.getMaxLogs(), handler );
+            for ( File path : localPaths ) {
+                out.println( "Log:" );
+                out.println( "\t          file: " + path.getAbsolutePath() );
+                out.println( "\t  peg revision: " + data.getPegRevision() );
+                out.println( "\tstart revision: " + data.getStartRevision() );
+                out.println( "\t  end revision: " + data.getEndRevision() );
+                out.println( "\t  stop on copy: " + data.getStopOnCopy() );
+                out.println( "\t    show paths: " + data.getShowPaths() );
+                out.println( "\t      max logs: " + data.getMaxLogs() );
+
+                handler.setPath( path.getAbsolutePath() );
+                File[] pathToCheck = new File[] { path };
+
+                // svnkit method signature:
+                // doLog(File[] paths, SVNRevision pegRevision, SVNRevision startRevision,
+                //      SVNRevision endRevision, boolean stopOnCopy, boolean discoverChangedPaths, long limit, ISVNLogEntryHandler handler)
+                client.doLog( pathToCheck, data.getPegRevision(), data.getStartRevision(),
+                        data.getEndRevision(), data.getStopOnCopy(), data.getShowPaths(), data.getMaxLogs(), handler );
+            }
         }
         results.setEntries( entries );
         out.flush();
@@ -150,24 +176,19 @@ public class Log {
 
     public class LogHandler implements ISVNLogEntryHandler {
 
+        private String path = null;
+
+        public void setPath( String path ) {
+            this.path = path;
+        }
+
         public void handleLogEntry( SVNLogEntry logEntry ) {
-            // match up log entries to the appropriate file.  The 'entries' map
-            // uses the urls of the requested files as the key, and a list of
-            // log entries pertaining to that file.  This handler method doesn't
-            // know which file is associated with this log entry, so I'm looping
-            // through the urls (keys) in 'entries' and checking if the changed
-            // paths in the logEntry matches with that url.
-            Map changedPaths = logEntry.getChangedPaths();
-            Set entryPaths = changedPaths.keySet();    // entryPaths contains Strings of paths relative to repository url
-            for ( String path : entries.keySet() ) {   // path is a full repository url
-                for ( Object ep : entryPaths ) {
-                    String entryPath = ( String ) ep;
-                    if ( path.endsWith( entryPath ) ) {
-                        entries.get( path ).add( logEntry );
-                        Log.this.printLogEntry( path, logEntry );
-                    }
-                }
+            List<SVNLogEntry> messages = entries.get(path);
+            if (messages == null) {
+                messages = new ArrayList<SVNLogEntry>();
+                entries.put(path, messages);
             }
+            messages.add( logEntry );
         }
     }
 
@@ -233,35 +254,6 @@ public class Log {
             }
             SVNInfo svn_info = infos.get( 0 );
             return svn_info.getRepositoryRootURL();
-        }
-        catch ( Exception e ) {
-            return null;
-        }
-    }
-
-    private Set<String> getURLs( LogData data ) {
-        // might already have urls, so no need to check info on them
-        if ( data.pathsAreURLs() ) {
-            Set<String> urls = new HashSet<String>();
-            for (String path : data.getPaths()) {
-                urls.add(path);
-            }
-            return urls;
-        }
-
-        // for local files, need to get info to get repository url.  This is
-        // quick since info is available locally.
-        try {
-            Info info = new Info( );
-            List<SVNInfo> infos = info.getInfo( data );
-            if ( infos.size() == 0 ) {
-                return null;
-            }
-            Set<String> urls = new HashSet<String>();
-            for (SVNInfo svn_info : infos) {
-                urls.add(svn_info.getURL().toString());
-            }
-            return urls;
         }
         catch ( Exception e ) {
             return null;
