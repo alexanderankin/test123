@@ -40,7 +40,7 @@
     <li><a href="#actions">Actions</a> </li>
     <li><a href="#navigate">Navigating the Tree</a></li>
     <li><a href="#code_completion">Code Completion</a> </li>
-    <li><a href="#project_viewer">Integration with ProjectViewer</li>
+    <li><a href="#project_viewer">Integration with ProjectViewer</a></li>
     <li><a href="#building">Building with javacc</a></li>
 </ul>
 
@@ -517,7 +517,8 @@ plugin too.
 <h4>Code Completion</h4>
 
 <p>
-JavaSideKick completes partial words in context/scope.
+JavaSideKick completes partial words in context/scope.  See the section <a href="#project_viewer">Integration with ProjectViewer</a>
+for information on how to specify the class path to use for code completion.
 </p>
 Examples:
 </p>
@@ -661,9 +662,17 @@ To set up JavaSideKick to work with ProjectViewer:
    <li>Open a project in ProjectViewer.</li>
    <li>Open the properties for the project</li>
    <li>In the left panel of the project properties, choose 'Classpath settings'.</li>
-   <li>Add paths as necessary for your project.  Source path settings are done in the same way.</li>
+   <li>In the "Classpath" section, add directories and/or jars as necessary for your project.</li>
+   <li>Fill in the build output path for your project.</li>
 </ol>
 
+If your project happens to have a .classpath file (common in projects where people use Eclipse),
+you can select the "Use .classpath file" check box, and all paths listed in the .classpath file
+will be automatically added to the classpath for code completion.
+<p>
+The "Source path" settings are not used for code completion.  The code completion algorithm
+depends on compiled classes to work.
+<p>
 These paths can also be used by other plugins wanting to know per-project class and source path settings.  
 Once the paths are set as above, the settings are available with these property names:
 <p>
