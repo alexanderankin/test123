@@ -48,13 +48,13 @@ public class JavaCompletionFinder {
 
         if ( word == null || word.length() == 0 )
             return null;
-        
+
         /*
             initial completion goals:
             1. partial word: get matching fields and methods in the class
             2. words ending with dot: get matching fields and methods in the
                 class for the type represented by the word.
-        */
+        */ 
         return getPossibleCompletions( word ) ;
     }
 
@@ -217,9 +217,9 @@ public class JavaCompletionFinder {
         }
 
         // could have package.partialClass, e.g. javax.swing.tree.DefaultMu
-        String projectName = PVHelper.getProjectName(editPane.getView());
+        String projectName = PVHelper.getProjectName( editPane.getView() );
         List<String> possibles = Locator.getInstance().getProjectClasses( projectName, word );
-        if ( possibles == null || possibles.size() == 0) {
+        if ( possibles == null || possibles.size() == 0 ) {
             possibles = Locator.getInstance().getClassPathClasses( word );
         }
         if ( possibles == null || possibles.size() == 0 ) {
@@ -273,7 +273,7 @@ public class JavaCompletionFinder {
                 }
             }
             tn = tn.getParent();
-            if ( tn == null )           //|| tn.getOrdinal() == TigerNode.COMPILATION_UNIT )
+            if ( tn == null )            //|| tn.getOrdinal() == TigerNode.COMPILATION_UNIT )
                 break;
         }
         //Log.log(Log.DEBUG, this, "+++++ getPossibleNonQualifiedCompletions, choices as set = " + choices);
@@ -498,31 +498,34 @@ public class JavaCompletionFinder {
                 else {
                     // wildcard import, need to add . and type
                     className = packageName + "." + type;
-                    /// this is probably very expensive...
                     try {
                         Class c = validateClassName( className, type, filename );
                         if ( c != null )
                             return c;
                     }
                     catch ( Exception e ) {
-                        //e.printStackTrace();
                         continue;
                     }
                 }
             }
         }
 
-        // check jars in project classpath
-        String projectName = PVHelper.getProjectName(editPane.getView());
-        String className = Locator.getInstance().getProjectClassName( projectName, type);
-        Class c = validateClassName(className, type, filename);
-        if (c == null) {
-            // check jars in classpath
+        // check jars in project classpath. These are the jars and/or directories
+        // specified in the ProjectViewer "Classpath settings" option pane.
+        String projectName = PVHelper.getProjectName( editPane.getView() );
+        String className = Locator.getInstance().getProjectClassName( projectName, type );
+        Class c = validateClassName( className, type, filename );
+
+        // check jars in classpath.  These are the jars and/or directories specified
+        // in System.getProperty("java.class.path").
+        if ( c == null && PVHelper.useJavaClasspath( projectName ) ) {
             className = Locator.getInstance().getClassPathClassName( type );
             c = validateClassName( className, type, filename );
         }
+
+        // check Java runtime jars.  These are the jars specified in $JAVA_HOME/lib,
+        // ext dirs, and endorsed dirs.
         if ( c == null ) {
-            // check runtime jars
             className = Locator.getInstance().getRuntimeClassName( type );
             c = validateClassName( className, type, filename );
         }
@@ -543,10 +546,11 @@ public class JavaCompletionFinder {
         }
         return findClassInProject( classname, type, filename );
     }
-    
+
     /**
      * Finds a class in the build output path for a project. Does not search
-     * system classpath.
+     * system classpath. These are loaded into a separate class loader since they
+     * probably aren't loaded in any class loader available to jEdit.
      */
     private Class findClassInProject( String classname, String type, String filename ) {
         if ( filename == null ) {
@@ -555,13 +559,12 @@ public class JavaCompletionFinder {
         String project_name = PVHelper.getProjectNameForFile( filename );
         Class c = null;
         if ( project_name != null ) {
-            String pc = PVHelper.getBuildOutputPathForProject(project_name);
-            AntClassLoader loader = new AntClassLoader( new Path(pc), false );
+            String pc = PVHelper.getBuildOutputPathForProject( project_name );
+            AntClassLoader loader = new AntClassLoader( new Path( pc ), false );
             try {
                 c = loader.findClass( type );
             }
             catch ( Exception e ) {
-                ///e.printStackTrace();     // too loud, shut up!
                 try {
                     c = loader.findClass( classname );
                 }

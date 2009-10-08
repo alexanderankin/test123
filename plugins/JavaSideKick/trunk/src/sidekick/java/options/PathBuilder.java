@@ -22,19 +22,10 @@ package sidekick.java.options;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.StringTokenizer;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
+import java.util.regex.*;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -43,7 +34,7 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.gui.RolloverButton;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
-
+import sidekick.java.util.CopyUtils;
 
 /**
  * danson: borrowed directly from JavaCore by Robert Fletcher.
@@ -192,10 +183,15 @@ public class PathBuilder extends JPanel {
                         try {
                             if ( multiSelectionEnabled ) {
                                 File[] files = chooser.getSelectedFiles();
-                                for ( int i = 0; i < files.length; i++ ) {
-                                    listModel.addElement(
-                                        files[ i ].getCanonicalPath()
-                                    );
+                                for ( File file : files ) {
+                                    if ( ".classpath".equals( file.getName() ) ) {
+                                        // this is a special case
+                                        String path = getDotClassPathClassPaths( file );
+                                        setPath( path );
+                                    }
+                                    else {
+                                        listModel.addElement( file.getCanonicalPath() );
+                                    }
                                 }
                             }
                             else {
@@ -274,6 +270,48 @@ public class PathBuilder extends JPanel {
         add( BorderLayout.SOUTH, buttons );
     }
 
+    private String getDotClassPathClassPaths( File dotClassPathFile ) {
+        // the .classpath file is an xml file, but it's pretty simple, so I'm parsing
+        // it by hand rather than invoking an xml parser. I'm looking for lines like
+        // <classpathentry kind="lib" path="lib/ant-contrib-1.0b3.jar"/>, so the line
+        // must contain "classpathentry" and "kind="lib"".  If it does, then grab
+        // the "path" value. Paths are assumed to be relative to the directory 
+        // containing the .classpath file. The existence of each path is checked,
+        // non-existent paths will not be included.
+        try {
+            // paths are assumed to be relative to this directory
+            File dotClassPathDir = dotClassPathFile.getParentFile();
+            
+            // load the .classpath file into a string array of lines
+            BufferedReader reader = new BufferedReader( new FileReader( dotClassPathFile ) );
+            StringWriter writer = new StringWriter();
+            CopyUtils.copy( reader, writer );
+            String[] lines = writer.toString().split( "\\n" );
+
+            // parse the string into paths
+            StringBuffer sb = new StringBuffer();
+            String pathRegex = "path=[\"](.*?)[\"]";
+            Pattern pattern = Pattern.compile( pathRegex );
+            for ( String line : lines ) {
+                if ( line.indexOf( "classpathentry" ) < 0 || line.indexOf( "kind=\"lib\"" ) < 0 ) {
+                    continue;
+                }
+                Matcher matcher = pattern.matcher( line );
+                if ( matcher.find() ) {
+                    String path = matcher.group( 1 );
+                    File file = new File( dotClassPathDir, path );
+                    if (file.exists()) {
+                        sb.append( file.getAbsolutePath() ).append( File.pathSeparator );
+                    }
+                }
+            }
+            return sb.toString();
+        }
+        catch ( Exception e ) {
+            return "";
+        }
+    }
+
     // +getPath() : String
     public String getPath() {
         StringBuffer buf = new StringBuffer();
@@ -322,7 +360,7 @@ public class PathBuilder extends JPanel {
     public void setMultiSelectionEnabled( boolean multiSelectionEnabled ) {
         this.multiSelectionEnabled = multiSelectionEnabled;
     }
-    
+
     /**
      * "setPath" is a bad name, this actually adds the given path.
      * @param path A single path or multiple paths separated by the system path separator.
@@ -333,12 +371,12 @@ public class PathBuilder extends JPanel {
             listModel.addElement( strtok.nextToken() );
         }
     }
-    
+
     /**
      * Removes the given path from the list.
      * @param path A single path or multiple paths separated by the system path separator.
      */
-    public void removePath(String path) {
+    public void removePath( String path ) {
         StringTokenizer strtok = new StringTokenizer( path, File.pathSeparator );
         while ( strtok.hasMoreTokens() ) {
             listModel.removeElement( strtok.nextToken() );
