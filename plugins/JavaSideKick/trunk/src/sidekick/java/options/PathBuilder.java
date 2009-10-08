@@ -322,11 +322,26 @@ public class PathBuilder extends JPanel {
     public void setMultiSelectionEnabled( boolean multiSelectionEnabled ) {
         this.multiSelectionEnabled = multiSelectionEnabled;
     }
-
+    
+    /**
+     * "setPath" is a bad name, this actually adds the given path.
+     * @param path A single path or multiple paths separated by the system path separator.
+     */
     public void setPath( String path ) {
         StringTokenizer strtok = new StringTokenizer( path, File.pathSeparator );
         while ( strtok.hasMoreTokens() ) {
             listModel.addElement( strtok.nextToken() );
+        }
+    }
+    
+    /**
+     * Removes the given path from the list.
+     * @param path A single path or multiple paths separated by the system path separator.
+     */
+    public void removePath(String path) {
+        StringTokenizer strtok = new StringTokenizer( path, File.pathSeparator );
+        while ( strtok.hasMoreTokens() ) {
+            listModel.removeElement( strtok.nextToken() );
         }
     }
 
