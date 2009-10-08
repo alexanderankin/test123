@@ -28,7 +28,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -247,9 +246,9 @@ public class AntClassLoader extends ClassLoader {
      *                May be <code>null</code>, in which case no path
      *                elements are set up to start with.
      */
-    public AntClassLoader( Path classpath ) {
+    public AntClassLoader( Path classpath, boolean includeSystemClassPath ) {
         setParent( null );
-        setClassPath( classpath );
+        setClassPath( classpath, includeSystemClassPath );
     }
 
     /**
@@ -268,7 +267,7 @@ public class AntClassLoader extends ClassLoader {
      */
     public AntClassLoader( ClassLoader parent, Path classpath,
             boolean parentFirst ) {
-        this( classpath );
+        this( classpath, true );
         if ( parent != null ) {
             setParent( parent );
         }
@@ -286,8 +285,7 @@ public class AntClassLoader extends ClassLoader {
      *                    classloader should be consulted before trying to
      *                    load the a class through this loader.
      */
-    public AntClassLoader( Path classpath,
-            boolean parentFirst ) {
+    public AntClassLoader( boolean parentFirst, Path classpath ) {
         this( null, classpath, parentFirst );
     }
 
@@ -316,17 +314,15 @@ public class AntClassLoader extends ClassLoader {
      * @param classpath the search classpath consisting of directories and
      *        jar/zip files.
      */
-    public void setClassPath( Path classpath ) {
+    public void setClassPath( Path classpath, boolean includeSystemClassPath ) {
         pathComponents.removeAllElements();
         if ( classpath != null ) {
-            Path actualClasspath = classpath.concatSystemClassPath( true );
-            for ( Iterator it = actualClasspath.iterator(); it.hasNext(); ) {
-                try {
-                    addPathElement( ( String ) it.next() );
-                }
-                catch ( Exception e ) {     // NOPMD
-                    // ignore path elements which are invalid
-                }
+            Path actualClasspath = classpath;
+            if (includeSystemClassPath) {
+                actualClasspath = classpath.concatSystemClassPath( true );
+            }
+            for ( String path : actualClasspath.getPaths() ) {
+                addPathElement( path );
             }
         }
     }
@@ -407,14 +403,9 @@ public class AntClassLoader extends ClassLoader {
      * @exception Exception if the given path element cannot be resolved
      *                           against the project.
      */
-    public void addPathElement( String pathElement ) throws Exception {
+    public void addPathElement( String pathElement ) {
         File pathComponent = new File( pathElement );
-        try {
-            addPathFile( pathComponent );
-        }
-        catch ( IOException e ) {
-            throw new Exception( e );
-        }
+        addPathFile( pathComponent );
     }
 
     /**
@@ -422,10 +413,8 @@ public class AntClassLoader extends ClassLoader {
      *
      * @param pathComponent the file which is to be added to the path for
      *                      this class loader
-     *
-     * @throws IOException if data needed from the file cannot be read.
      */
-    protected void addPathFile( File pathComponent ) throws IOException {
+    protected void addPathFile( File pathComponent ) {
         pathComponents.addElement( pathComponent );
     }
 

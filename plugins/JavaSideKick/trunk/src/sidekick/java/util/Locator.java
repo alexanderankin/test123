@@ -12,6 +12,7 @@ import java.net.MalformedURLException;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 
+import org.gjt.sp.jedit.jEdit;
 
 /**
  * The Locator is a utility class which is used to find classes loaded
@@ -24,6 +25,9 @@ public final class Locator {
     private List<String> classpathClassNames = null;
     private File[] runtimeJars = null;
     private List<String> runtimeClassNames = null;
+    private File[] projectJars = null;
+    private List<String> projectClassNames = null;
+    private String projectName = null;
 
     private static SoftReference<Locator> cachedSingleton;
 
@@ -40,8 +44,9 @@ public final class Locator {
     public static Locator getInstance() {
         if ( cachedSingleton != null ) {
             Locator cached = cachedSingleton.get();
-            if ( cached != null )
+            if ( cached != null ) {
                 return cached;
+            }
         }
         Locator newOne = new Locator();
         cachedSingleton = new SoftReference<Locator>( newOne );
@@ -51,13 +56,13 @@ public final class Locator {
 
     public File[] getClassPathJars() {
         if ( classpathJars != null ) {
-            return copyOf(classpathJars);
+            return copyOf( classpathJars );
         }
 
         String classpath = System.getProperty( "java.class.path" );
         if ( classpath == null || classpath.length() == 0 )
             return null;
-        String path_sep = System.getProperty( "path.separator" );
+        String path_sep = File.pathSeparator;
         String[] path_jars = classpath.split( path_sep );
         File[] jars = new File[ path_jars.length ];
         for ( int i = 0; i < path_jars.length; i++ ) {
@@ -114,7 +119,7 @@ public final class Locator {
      */
     public File[] getRuntimeJars() {
         if ( runtimeJars != null ) {
-            return copyOf(runtimeJars);
+            return copyOf( runtimeJars );
         }
 
         // get runtime jars based on java.home setting
@@ -175,7 +180,7 @@ public final class Locator {
         if ( exts != null && !exts.isEmpty() )
             list.addAll( exts );
         runtimeJars = ( File[] ) list.toArray( new File[] {} );
-        return copyOf(runtimeJars);
+        return copyOf( runtimeJars );
     }
 
     /**
@@ -218,16 +223,7 @@ public final class Locator {
      * @param name class name minus the package part, e.g. "String" in "java.lang.String".
      */
     public String getRuntimeClassName( String name ) {
-        for ( Iterator it = runtimeClassNames.iterator(); it.hasNext(); ) {
-            String fullClassName = ( String ) it.next();
-            int index = fullClassName.lastIndexOf( "/" ) + 1;
-            String className = fullClassName.substring( index );
-            if ( className.equals( name ) ) {
-                fullClassName = fullClassName.replaceAll( "/", "." );
-                return fullClassName;
-            }
-        }
-        return null;
+        return getClassName(runtimeClassNames, name);
     }
 
 
@@ -237,28 +233,97 @@ public final class Locator {
      * @return a list of all class names that match.  The list may be empty, but
      * won't be null.
      */
-
     public List<String> getRuntimeClasses( String packageName ) {
-        List<String> list = new ArrayList<String>();
-        if ( packageName == null || packageName.length() == 0 )
-            return list;
-        String name = packageName.replaceAll( "[.]", "/" );
-        for ( Iterator it = runtimeClassNames.iterator(); it.hasNext(); ) {
-            String fullClassName = ( String ) it.next();
-            if ( fullClassName.startsWith( name ) && fullClassName.indexOf( "$" ) < 0 ) {
-                list.add( fullClassName.substring( fullClassName.lastIndexOf( "/" ) + 1 ) );
+        return getClasses(runtimeClassNames, packageName);
+    }
+
+
+    public File[] getProjectJars( String projectName ) {
+        if ( projectName == null ) {
+            return null;
+        }
+        if ( projectJars != null && projectName.equals( this.projectName ) ) {
+            return copyOf( projectJars );
+        }
+        this.projectName = projectName;
+
+        String classpath = jEdit.getProperty( "sidekick.java.pv." + projectName + ".optionalClasspath", "" );
+        if ( classpath == null || classpath.length() == 0 )
+            return null;
+        String path_sep = File.pathSeparator;
+        String[] path_jars = classpath.split( path_sep );
+        File[] jars = new File[ path_jars.length ];
+        for ( int i = 0; i < path_jars.length; i++ ) {
+            jars[ i ] = new File( path_jars[ i ] );
+        }
+        return jars;
+    }
+
+    /**
+     * @return a list of class names of all classes in all jars in the classpath.
+     */
+    public List<String> getProjectClassNames(String projectName) {
+        if ( projectName == null ) {
+            return null;
+        }
+        if ( projectClassNames != null && projectName.equals( this.projectName )) {
+            return projectClassNames;
+        }
+        
+        File[] jars = getProjectJars(projectName);
+        List<String> allnames = new ArrayList<String>();
+        for ( int i = 0; i < jars.length; i++ ) {
+            File jar = jars[ i ];
+            List<String> names = getJarClassNames( jar );
+            if ( names != null ) {
+                allnames.addAll( names );
             }
         }
-        return list;
+        return allnames;
     }
+
+    /**
+     * @param packageName package name with possibly a part of a classname, e.g.
+     * "javax.swing.tree.DefaultMut"
+     * @return a list of all class names that match.  The list may be empty, but
+     * won't be null.
+     */
+    public List<String> getProjectClasses( String projectName, String packageName ) {
+        if (projectName == null) {
+            return null;   
+        }
+        if (projectClassNames == null || !projectName.equals( this.projectName )) {
+            // need to load jars and class names for the project
+            getProjectClassNames(projectName);   
+        }
+        return getClasses(projectClassNames, packageName);
+    }
+    
+    /**
+     * @param name class name minus the package part, e.g. "String" in "java.lang.String".
+     */
+    public String getProjectClassName( String projectName, String name ) {
+        if (projectName == null) {
+            return null;   
+        }
+        if (projectClassNames == null || !projectName.equals( this.projectName )) {
+            // need to load jars and class names for the project
+            getProjectClassNames(projectName);   
+        }
+        return getClassName(projectClassNames, name);
+    }
+    
 
 
     /**
      * @param name class name minus the package part, e.g. "String" in "java.lang.String".
      */
     public String getClassPathClassName( String name ) {
-        for ( Iterator it = runtimeClassNames.iterator(); it.hasNext(); ) {
-            String fullClassName = ( String ) it.next();
+        return getClassName(classpathClassNames, name);
+    }
+    
+    private String getClassName( List<String> classNames, String name ) {
+        for (String fullClassName : classNames ) {
             int index = fullClassName.lastIndexOf( "/" ) + 1;
             String className = fullClassName.substring( index );
             if ( className.equals( name ) ) {
@@ -277,12 +342,16 @@ public final class Locator {
      * won't be null.
      */
     public List<String> getClassPathClasses( String packageName ) {
+        return getClasses( classpathClassNames, packageName );
+    }
+
+    private List<String> getClasses( List<String> classNames, String packageName ) {
         List<String> list = new ArrayList<String>();
-        if ( packageName == null || packageName.length() == 0 )
+        if ( packageName == null || packageName.length() == 0 ) {
             return list;
+        }
         String name = packageName.replaceAll( "[.]", "/" );
-        for ( Iterator it = runtimeClassNames.iterator(); it.hasNext(); ) {
-            String fullClassName = ( String ) it.next();
+        for ( String fullClassName : classNames ) {
             if ( fullClassName.startsWith( name ) && fullClassName.indexOf( "$" ) < 0 ) {
                 list.add( fullClassName.substring( fullClassName.lastIndexOf( "/" ) + 1 ) );
             }

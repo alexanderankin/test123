@@ -286,6 +286,10 @@ public class JavaParser extends SideKickParser implements EBComponent {
             // removed exception handling, all ParseExceptions are now caught
             // and accumulated in the parser, then dealt with in handleErrors.
         }
+        catch ( TokenMgrError e) {      // NOPMD
+            // don't worry about this one, most likely it is due to attempting
+            // to parse during code completion.
+        }
         finally {
             try {
                 input.close();

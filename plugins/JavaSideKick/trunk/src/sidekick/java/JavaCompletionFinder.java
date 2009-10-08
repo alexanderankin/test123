@@ -48,7 +48,7 @@ public class JavaCompletionFinder {
 
         if ( word == null || word.length() == 0 )
             return null;
-
+        
         /*
             initial completion goals:
             1. partial word: get matching fields and methods in the class
@@ -78,8 +78,9 @@ public class JavaCompletionFinder {
 
         // get the text in the current asset just before the cursor
         TigerNode tn = ( TigerNode ) data.getAssetAtOffset( caret );
-        if ( tn == null )
+        if ( tn == null ) {
             return null;
+        }
         int start = tn.getStart().getOffset();
         if ( caret - start < 0 ) {
             return "";
@@ -216,9 +217,14 @@ public class JavaCompletionFinder {
         }
 
         // could have package.partialClass, e.g. javax.swing.tree.DefaultMu
-        List possibles = Locator.getInstance().getClassPathClasses( word );
-        if ( possibles == null || possibles.size() == 0 )
+        String projectName = PVHelper.getProjectName(editPane.getView());
+        List<String> possibles = Locator.getInstance().getProjectClasses( projectName, word );
+        if ( possibles == null || possibles.size() == 0) {
+            possibles = Locator.getInstance().getClassPathClasses( word );
+        }
+        if ( possibles == null || possibles.size() == 0 ) {
             possibles = Locator.getInstance().getRuntimeClasses( word );
+        }
         if ( possibles != null && possibles.size() > 0 ) {
             if ( possibles.size() == 1 && possibles.get( 0 ).equals( word ) ) {
                 return null;
@@ -506,12 +512,17 @@ public class JavaCompletionFinder {
             }
         }
 
-        // check classpath
-        /// TODO: use setting from pv option pane on whether or not to do this
-        String className = Locator.getInstance().getClassPathClassName( type );
-        Class c = validateClassName( className, type, filename );
+        // check jars in project classpath
+        String projectName = PVHelper.getProjectName(editPane.getView());
+        String className = Locator.getInstance().getProjectClassName( projectName, type);
+        Class c = validateClassName(className, type, filename);
+        if (c == null) {
+            // check jars in classpath
+            className = Locator.getInstance().getClassPathClassName( type );
+            c = validateClassName( className, type, filename );
+        }
         if ( c == null ) {
-            // check runtime
+            // check runtime jars
             className = Locator.getInstance().getRuntimeClassName( type );
             c = validateClassName( className, type, filename );
         }
@@ -532,7 +543,11 @@ public class JavaCompletionFinder {
         }
         return findClassInProject( classname, type, filename );
     }
-
+    
+    /**
+     * Finds a class in the build output path for a project. Does not search
+     * system classpath.
+     */
     private Class findClassInProject( String classname, String type, String filename ) {
         if ( filename == null ) {
             return null;
@@ -540,11 +555,8 @@ public class JavaCompletionFinder {
         String project_name = PVHelper.getProjectNameForFile( filename );
         Class c = null;
         if ( project_name != null ) {
-            String project_classpath = jEdit.getProperty( PVClasspathOptionPane.PREFIX + project_name + ".optionalClasspath", "" );
-            Path pc = new Path( project_classpath );
-            // TODO: use setting from pv option pane on whether or not to include system classpath,
-            // then can remove classpath check from getClassForType above.
-            AntClassLoader loader = new AntClassLoader( pc );
+            String pc = PVHelper.getBuildOutputPathForProject(project_name);
+            AntClassLoader loader = new AntClassLoader( new Path(pc), false );
             try {
                 c = loader.findClass( type );
             }
