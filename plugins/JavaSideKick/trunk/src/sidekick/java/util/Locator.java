@@ -223,7 +223,7 @@ public final class Locator {
      * @param name class name minus the package part, e.g. "String" in "java.lang.String".
      */
     public String getRuntimeClassName( String name ) {
-        return getClassName(runtimeClassNames, name);
+        return getClassName( runtimeClassNames, name );
     }
 
 
@@ -234,7 +234,7 @@ public final class Locator {
      * won't be null.
      */
     public List<String> getRuntimeClasses( String packageName ) {
-        return getClasses(runtimeClassNames, packageName);
+        return getClasses( runtimeClassNames, packageName );
     }
 
 
@@ -262,15 +262,15 @@ public final class Locator {
     /**
      * @return a list of class names of all classes in all jars in the classpath.
      */
-    public List<String> getProjectClassNames(String projectName) {
+    public List<String> getProjectClassNames( String projectName ) {
         if ( projectName == null ) {
             return null;
         }
-        if ( projectClassNames != null && projectName.equals( this.projectName )) {
+        if ( projectClassNames != null && projectName.equals( this.projectName ) ) {
             return projectClassNames;
         }
-        
-        File[] jars = getProjectJars(projectName);
+
+        File[] jars = getProjectJars( projectName );
         List<String> allnames = new ArrayList<String>();
         for ( int i = 0; i < jars.length; i++ ) {
             File jar = jars[ i ];
@@ -289,41 +289,44 @@ public final class Locator {
      * won't be null.
      */
     public List<String> getProjectClasses( String projectName, String packageName ) {
-        if (projectName == null) {
-            return null;   
+        if ( projectName == null ) {
+            return null;
         }
-        if (projectClassNames == null || !projectName.equals( this.projectName )) {
+        if ( projectClassNames == null || !projectName.equals( this.projectName ) ) {
             // need to load jars and class names for the project
-            getProjectClassNames(projectName);   
+            getProjectClassNames( projectName );
         }
-        return getClasses(projectClassNames, packageName);
+        return getClasses( projectClassNames, packageName );
     }
-    
+
     /**
      * @param name class name minus the package part, e.g. "String" in "java.lang.String".
      */
     public String getProjectClassName( String projectName, String name ) {
-        if (projectName == null) {
-            return null;   
+        if ( projectName == null ) {
+            return null;
         }
-        if (projectClassNames == null || !projectName.equals( this.projectName )) {
+        if ( projectClassNames == null || !projectName.equals( this.projectName ) ) {
             // need to load jars and class names for the project
-            getProjectClassNames(projectName);   
+            getProjectClassNames( projectName );
         }
-        return getClassName(projectClassNames, name);
+        return getClassName( projectClassNames, name );
     }
-    
+
 
 
     /**
      * @param name class name minus the package part, e.g. "String" in "java.lang.String".
      */
     public String getClassPathClassName( String name ) {
-        return getClassName(classpathClassNames, name);
+        return getClassName( classpathClassNames, name );
     }
-    
+
     private String getClassName( List<String> classNames, String name ) {
-        for (String fullClassName : classNames ) {
+        if ( classNames == null ) {
+            return null;
+        }
+        for ( String fullClassName : classNames ) {
             int index = fullClassName.lastIndexOf( "/" ) + 1;
             String className = fullClassName.substring( index );
             if ( className.equals( name ) ) {
