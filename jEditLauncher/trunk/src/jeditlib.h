@@ -22,9 +22,9 @@
 #include <windows.h>
 #include <winsock.h>
 
-#define J_LOG_FILE "jeditlauncher.log"
+#define J_LOG_FILE    "jeditlauncher.log"
 
-#define OPT_NAME_LEN 50
+#define OPT_NAME_LEN  50
 #define OPT_VALUE_LEN MAX_PATH
 
 const char FAILED_TO_GET_SETTINGS[] =
