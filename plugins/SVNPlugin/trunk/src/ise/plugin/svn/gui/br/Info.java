@@ -53,7 +53,11 @@ public class Info extends BRAction {
                 else {
                     Object[] parts = path.getPath();
                     StringBuilder sb = new StringBuilder();
-                    sb.append( parts[ 0 ] );
+                    String root = parts[ 0 ].toString();
+                    if ( root.endsWith( "/" ) ) {
+                        root = root.substring( 0, root.length() - 1 );
+                    }
+                    sb.append( root );
                     for ( int i = 1; i < parts.length; i++ ) {
                         sb.append( "/" ).append( parts[ i ].toString() );
                     }
