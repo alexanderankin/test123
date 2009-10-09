@@ -106,8 +106,14 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
         _content_pane.putClientProperty( "isCloseable", Boolean.FALSE );
 
         _text = new JTextPane();
-        _text.setName("svn console output");
+        _text.setName( "svn console output" );
         try {
+            LookAndFeel laf = UIManager.getLookAndFeel();
+            if ( laf.getID().equals( "Nimbus" ) ) {
+                // stupid hack for Nimbus look and feel where JTextPane and
+                // JEditorPane don't honor setBackground.
+                _text.setUI( new javax.swing.plaf.basic.BasicEditorPaneUI() );
+            }
             _text.setBackground( jEdit.getColorProperty( "view.bgColor" ) );
             foreground = jEdit.getColorProperty( "view.fgColor" );
             _text.setForeground( foreground );
@@ -142,7 +148,7 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
             GUIUtils.centerOnScreen( _frame );
         }
         setFormatter( new LogFormatter() );
-        
+
         messageProcessor.start();
     }
 
@@ -375,12 +381,12 @@ public class SubversionGUILogHandler extends Handler implements Serializable {
                 public void run() {
                     setPriority( Thread.MIN_PRIORITY );
                     while ( true ) {
-                        while(messageQueue.size() > 0) {
-                            processMessage(messageQueue.remove());   
+                        while ( messageQueue.size() > 0 ) {
+                            processMessage( messageQueue.remove() );
                             yield();
                         }
                         try {
-                            sleep(500);
+                            sleep( 500 );
                         }
                         catch ( InterruptedException e ) {
                             // ignored
