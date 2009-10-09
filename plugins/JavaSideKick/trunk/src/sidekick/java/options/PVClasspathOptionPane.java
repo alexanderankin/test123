@@ -64,6 +64,7 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
         );
         classpathBuilder.setStartDirectory( PVHelper.getProjectRoot( view ) );
         classpathBuilder.setEnabled( true );
+        classpathBuilder.setDotClassPathType(PathBuilder.LIB);
         addComponent( classpathBuilder );
         addComponent( Box.createVerticalStrut(11));
 
@@ -78,6 +79,7 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
         );
         sourcepathBuilder.setStartDirectory( PVHelper.getProjectRoot( view ) );
         sourcepathBuilder.setEnabled( true );
+        sourcepathBuilder.setDotClassPathType(PathBuilder.SRC);
         addComponent( sourcepathBuilder );
         addComponent( Box.createVerticalStrut(11));
 
@@ -173,6 +175,9 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
             }
 
             String filename = file.getName();
+            if ( ".classpath".equals( filename ) ) {
+                return true;
+            }
             int idx = filename.lastIndexOf( '.' );
             if ( idx >= 0 ) {
                 String ext = filename.substring( idx );
@@ -185,7 +190,7 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
 
         // +getDescription() : String
         public String getDescription() {
-            return "Sourcepath elements (directories, *.zip)";
+            return "Sourcepath elements (directories, *.zip, .classpath)";
         }
     }
 }
