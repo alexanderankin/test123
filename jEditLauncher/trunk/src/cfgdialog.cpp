@@ -11,6 +11,9 @@
 
 extern CAppModule _Module;
 
+static const char* DEFAULT_JAVA_OPTS  = "-mx128m -jar";
+static const char* DEFAULT_JEDIT_OPTS = "-reuseview";
+
 LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
     // center the dialog on the screen
@@ -26,14 +29,18 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
     // fetch settings
     get_java_path(m_szJavaPath);
-    get_java_opts(m_szJavaOpts);
+    if (get_java_opts(m_szJavaOpts))
+        strcpy_s(m_szJavaOpts,DEFAULT_JAVA_OPTS);
     get_jedit_jar(m_szJeditPath);
-    get_jedit_opts(m_szJeditOpts);
+    if (get_jedit_opts(m_szJeditOpts))
+        strcpy_s(m_szJeditOpts,DEFAULT_JEDIT_OPTS);
     get_working_dir(m_szWorkingDir);
+
     // strip quotes
     strip_quotes(m_szJavaPath);
     strip_quotes(m_szJeditPath);
     strip_quotes(m_szWorkingDir);
+
     // display settings
     SetDlgItemText(IDC_JAVA_PATH,m_szJavaPath);
     SetDlgItemText(IDC_JAVA_OPTS,m_szJavaOpts);
