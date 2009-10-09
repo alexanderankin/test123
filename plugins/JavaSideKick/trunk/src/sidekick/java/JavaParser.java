@@ -608,16 +608,18 @@ public class JavaParser extends SideKickParser implements EBComponent {
         public void actionPerformed( ActionEvent e ) {
             // whether or not to show line numbers, arguments, etc
             // just reparsing should do it
-            if ( currentView != null )
+            if ( currentView != null ) {
                 parse( currentView.getBuffer(), null );
+            }
         }
     }
 
     public ActionListener getPropertySaveListener() {
         return new ActionListener() {
                    public void actionPerformed( ActionEvent ae ) {
-                       if ( currentView != null )
+                       if ( currentView != null ) {
                            parse( currentView.getBuffer(), null );
+                       }
                    }
                };
     }

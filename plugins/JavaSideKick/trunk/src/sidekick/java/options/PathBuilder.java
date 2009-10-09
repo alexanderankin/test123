@@ -74,6 +74,17 @@ import sidekick.java.util.CopyUtils;
  * @version   $Revision$ $Date$
  */
 public class PathBuilder extends JPanel {
+    
+    /**
+     * Constant to identify "lib" type in .classpath files.    
+     */
+    public static final String LIB = "lib";
+    
+    /**
+     * Constant to identify "src" type in .classpath files.    
+     */
+    public static final String SRC = "src";
+    
     // instance fields
     private JLabel caption;
     private DefaultListModel listModel;
@@ -90,6 +101,8 @@ public class PathBuilder extends JPanel {
     private String fileDialogTitle;
 
     private boolean enabled;
+    
+    private String dotClassPathType = null;
 
 
     // +PathBuilder() : <init>
@@ -184,9 +197,9 @@ public class PathBuilder extends JPanel {
                             if ( multiSelectionEnabled ) {
                                 File[] files = chooser.getSelectedFiles();
                                 for ( File file : files ) {
-                                    if ( ".classpath".equals( file.getName() ) ) {
+                                    if ( dotClassPathType != null && ".classpath".equals( file.getName() ) ) {
                                         // this is a special case
-                                        String path = getDotClassPathClassPaths( file );
+                                        String path = getDotClassPathPaths( file );
                                         setPath( path );
                                     }
                                     else {
@@ -269,8 +282,16 @@ public class PathBuilder extends JPanel {
         updateButtons();
         add( BorderLayout.SOUTH, buttons );
     }
-
-    private String getDotClassPathClassPaths( File dotClassPathFile ) {
+    
+    /**
+     * Abstracts the "lib" or "src" lines from a .classpath file.    
+     * @param dotClassPathFile The .classpath file.    
+     */
+    private String getDotClassPathPaths( File dotClassPathFile ) {
+        if (dotClassPathType == null) {
+            return "";   
+        }
+        
         // the .classpath file is an xml file, but it's pretty simple, so I'm parsing
         // it by hand rather than invoking an xml parser. I'm looking for lines like
         // <classpathentry kind="lib" path="lib/ant-contrib-1.0b3.jar"/>, so the line
@@ -293,7 +314,7 @@ public class PathBuilder extends JPanel {
             String pathRegex = "path=[\"](.*?)[\"]";
             Pattern pattern = Pattern.compile( pathRegex );
             for ( String line : lines ) {
-                if ( line.indexOf( "classpathentry" ) < 0 || line.indexOf( "kind=\"lib\"" ) < 0 ) {
+                if ( line.indexOf( "classpathentry" ) < 0 || line.indexOf( "kind=\"" + dotClassPathType + "\"" ) < 0 ) {
                     continue;
                 }
                 Matcher matcher = pattern.matcher( line );
@@ -395,6 +416,16 @@ public class PathBuilder extends JPanel {
 
     public void setStartDirectory( String startDirectory ) {
         this.startDirectory = startDirectory;
+    }
+    
+    /**
+     * If set, attempts to find the "lib" or "src" lines in a .classpath file.    
+     * @param type One of "lib" or "src".    
+     */
+    public void setDotClassPathType(String type) {
+        if (LIB.equals(type) || SRC.equals(type)) {
+            dotClassPathType = type;        
+        }
     }
 
     private void updateButtons() {
