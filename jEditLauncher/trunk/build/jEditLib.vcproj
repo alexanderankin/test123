@@ -61,6 +61,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				OutputFile="$(OutDir)\jeditlib_d.lib"
 				ModuleDefinitionFile=""
 			/>
 			<Tool
@@ -129,6 +130,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				OutputFile="$(OutDir)\jeditlib.lib"
 				ModuleDefinitionFile=""
 			/>
 			<Tool
