@@ -41,14 +41,14 @@ create_server_script(const int wait,
                      unsigned int nfiles);
 
 // use same locations as jEditLauncher for easier transition
-static const char* REG_SETTINGS_PATH        = "Software\\www.jedit.org\\jEditLauncher\\4.0";
-static const char* SETTING_JAVA             = "Java Executable";
-static const char* SETTING_JAVA_OPTS        = "Java Options";
-static const char* SETTING_JEDIT_OPTS   = "jEdit Options";
-static const char* SETTING_JEDIT_JAR        = "jEdit Target";
-static const char* SETTING_WORKING_DIR  = "jEdit Working Directory";
+static const char* REG_SETTINGS_PATH   = "Software\\www.jedit.org\\jEditLauncher\\4.0";
+static const char* SETTING_JAVA        = "Java Executable";
+static const char* SETTING_JAVA_OPTS   = "Java Options";
+static const char* SETTING_JEDIT_OPTS  = "jEdit Options";
+static const char* SETTING_JEDIT_JAR   = "jEdit Target";
+static const char* SETTING_WORKING_DIR = "jEdit Working Directory";
 
-static const char* DIFF_SCRIPT = ""
+static const char* DIFF_SCRIPT =
 "// get current view, or open a new one\n"
 //"View v = jEdit.getActiveView();\n"
 "View v = jEdit.getLastView();\n"
@@ -84,7 +84,7 @@ static const char* DIFF_SCRIPT = ""
 "SwingUtilities.invokeLater(openDiffFiles(v));\n";
 
 
-static const char* FOCUS_SCRIPT = ""
+static const char* FOCUS_SCRIPT =
 "View v = jEdit.getActiveView();\n"
 "if(v == null) v = jEdit.getLastView();\n"
 "if(v == null) v = jEdit.newView(v);\n"
@@ -116,9 +116,9 @@ add_file_to_list(const char* filename,
  * Private constants for private
  * helper function "add_file_to_list".
  */
-#define ADDFILE_OK      1
-#define ADDFILE_OOM     0
-#define ADDFILE_OVERFLOW    -1
+#define ADDFILE_OK        1
+#define ADDFILE_OOM       0
+#define ADDFILE_OVERFLOW -1
 
 
 size_t
