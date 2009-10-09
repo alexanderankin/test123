@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="jEditExt"
 	ProjectGUID="{C60D4F97-396E-4E65-AA1D-56FC153DF2B1}"
 	RootNamespace="jEditExt"
@@ -18,7 +18,7 @@
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="..\bin"
-			IntermediateDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)\$(ProjectName)"
 			ConfigurationType="2"
 			CharacterSet="0"
 			>
@@ -97,7 +97,7 @@
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="..\bin"
-			IntermediateDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)\$(ProjectName)"
 			ConfigurationType="2"
 			CharacterSet="0"
 			WholeProgramOptimization="1"
