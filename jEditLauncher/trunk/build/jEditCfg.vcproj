@@ -373,6 +373,10 @@
 			>
 		</File>
 		<File
+			RelativePath="..\src\jedit.ico"
+			>
+		</File>
+		<File
 			RelativePath="..\src\resource.h"
 			>
 		</File>

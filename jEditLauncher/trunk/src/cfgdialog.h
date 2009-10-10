@@ -30,6 +30,7 @@ public:
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
         COMMAND_ID_HANDLER(IDOK, OnOK)
         COMMAND_ID_HANDLER(IDCANCEL, OnCancel)
+        COMMAND_ID_HANDLER(IDRESET, OnReset)
         COMMAND_HANDLER(IDC_BROWSE_JAVA, BN_CLICKED, OnBnClickedBrowseJava)
         COMMAND_HANDLER(IDC_BROWSE_JEDIT, BN_CLICKED, OnBnClickedBrowseJedit)
         COMMAND_HANDLER(IDC_BROWSE_WORKING_DIR, BN_CLICKED, OnBnClickedBrowseWorkingDir)
@@ -47,6 +48,7 @@ public:
     LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnReset(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedBrowseJava(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedBrowseJedit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedBrowseWorkingDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -56,6 +58,7 @@ public:
     LRESULT OnEnChangeJavaOpts(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnEnChangeJavaPath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
+    void InitSettings(void);
     void UpdateCommandLine(void);
 
     CMainDlg()
