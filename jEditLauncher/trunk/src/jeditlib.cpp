@@ -42,6 +42,8 @@ create_server_script(const int wait,
 
 // use same locations as jEditLauncher for easier transition
 static const char* REG_SETTINGS_PATH   = "Software\\www.jedit.org\\jEditLauncher\\4.0";
+static const char* REG_JEDIT_PATH      = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\jEdit_is1";
+
 static const char* SETTING_JAVA        = "Java Executable";
 static const char* SETTING_JAVA_OPTS   = "Java Options";
 static const char* SETTING_JEDIT_OPTS  = "jEdit Options";
@@ -985,16 +987,46 @@ set_java_opts(const char* java_opts)
 int
 get_jedit_jar(char* jedit_jar)
 {
-    const char* jar = getenv("JEDIT_JAR");
-    if(jar)
+    const char* jar = 0;
+    if(read_registry_string(SETTING_JEDIT_JAR,
+                            jedit_jar,
+                            MAX_PATH))
     {
-        strcpy(jedit_jar, jar);
-        return 0;
+        // use env JEDIT_JAR if not read
+        jar = getenv("JEDIT_JAR");
+        if(jar)
+        {
+            strcpy(jedit_jar, jar);
+            return 0;
+        }
+        else
+        {
+            HKEY hKey;
+            DWORD dwLen = MAX_PATH;
+            jedit_jar[0] = 0;
+
+            if(RegOpenKeyEx(HKEY_LOCAL_MACHINE, REG_JEDIT_PATH, 0,
+                            KEY_READ, &hKey) == ERROR_SUCCESS)
+            {
+                if(ERROR_SUCCESS != RegQueryValueEx(hKey, "Inno Setup: App Path", 0,
+                                                    NULL, (BYTE*)jedit_jar, &dwLen))
+                    jedit_jar[0] = 0;
+                else
+                    jedit_jar[dwLen] = 0;
+                RegCloseKey(hKey);
+
+                if(jedit_jar[strlen(jedit_jar)] != '\\')
+                    strcat(jedit_jar, "\\");
+                strcat(jedit_jar,"jedit.jar");
+            }
+
+            return (jedit_jar[0] == 0);
+        }
+
+        return 1;
     }
 
-    return read_registry_string(SETTING_JEDIT_JAR,
-                                jedit_jar,
-                                MAX_PATH);
+    return 0;
 }
 
 int
