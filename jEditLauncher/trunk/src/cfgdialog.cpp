@@ -143,24 +143,28 @@ void CMainDlg::UpdateCommandLine(void)
 
 LRESULT CMainDlg::OnEnChangeJeditOpts(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+    GetDlgItemText(IDC_JEDIT_OPTS,m_szJeditOpts,MAX_PATH);
     UpdateCommandLine();
     return 0;
 }
 
 LRESULT CMainDlg::OnEnChangeJeditPath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+    GetDlgItemText(IDC_JEDIT_PATH,m_szJeditPath,MAX_PATH);
     UpdateCommandLine();
     return 0;
 }
 
 LRESULT CMainDlg::OnEnChangeJavaOpts(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+    GetDlgItemText(IDC_JAVA_OPTS,m_szJavaOpts,MAX_PATH);
     UpdateCommandLine();
     return 0;
 }
 
 LRESULT CMainDlg::OnEnChangeJavaPath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+    GetDlgItemText(IDC_JAVA_PATH,m_szJavaPath,MAX_PATH);
     UpdateCommandLine();
     return 0;
 }
