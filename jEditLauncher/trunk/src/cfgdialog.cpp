@@ -27,26 +27,7 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
         IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);
     SetIcon(hIconSmall, FALSE);
 
-    // fetch settings
-    get_java_path(m_szJavaPath);
-    if (get_java_opts(m_szJavaOpts))
-        strcpy_s(m_szJavaOpts,DEFAULT_JAVA_OPTS);
-    get_jedit_jar(m_szJeditPath);
-    if (get_jedit_opts(m_szJeditOpts))
-        strcpy_s(m_szJeditOpts,DEFAULT_JEDIT_OPTS);
-    get_working_dir(m_szWorkingDir);
-
-    // strip quotes
-    strip_quotes(m_szJavaPath);
-    strip_quotes(m_szJeditPath);
-    strip_quotes(m_szWorkingDir);
-
-    // display settings
-    SetDlgItemText(IDC_JAVA_PATH,m_szJavaPath);
-    SetDlgItemText(IDC_JAVA_OPTS,m_szJavaOpts);
-    SetDlgItemText(IDC_JEDIT_PATH,m_szJeditPath);
-    SetDlgItemText(IDC_JEDIT_OPTS,m_szJeditOpts);
-    SetDlgItemText(IDC_WORKING_DIR,m_szWorkingDir);
+    InitSettings();
 
     return TRUE;
 }
@@ -90,6 +71,13 @@ LRESULT CMainDlg::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOO
     return 0;
 }
 
+LRESULT CMainDlg::OnReset(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+    LRESULT r=RegDeleteKeyEx(HKEY_CURRENT_USER,REG_SETTINGS_PATH,0,0);
+    InitSettings();
+    return r;
+}
+
 LRESULT CMainDlg::OnBnClickedBrowseJava(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     CFileDialog dlg(TRUE, _T("exe"), NULL, OFN_FILEMUSTEXIST | OFN_HIDEREADONLY,  _T("Executable Files (*.exe)\0*.exe\0"), m_hWnd);
@@ -125,6 +113,30 @@ LRESULT CMainDlg::OnBnClickedBrowseWorkingDir(WORD /*wNotifyCode*/, WORD /*wID*/
     }
 
     return 0;
+}
+
+void CMainDlg::InitSettings(void)
+{
+    // fetch settings
+    get_java_path(m_szJavaPath);
+    if (get_java_opts(m_szJavaOpts))
+        strcpy_s(m_szJavaOpts,DEFAULT_JAVA_OPTS);
+    get_jedit_jar(m_szJeditPath);
+    if (get_jedit_opts(m_szJeditOpts))
+        strcpy_s(m_szJeditOpts,DEFAULT_JEDIT_OPTS);
+    get_working_dir(m_szWorkingDir);
+
+    // strip quotes
+    strip_quotes(m_szJavaPath);
+    strip_quotes(m_szJeditPath);
+    strip_quotes(m_szWorkingDir);
+
+    // display settings
+    SetDlgItemText(IDC_JAVA_PATH,m_szJavaPath);
+    SetDlgItemText(IDC_JAVA_OPTS,m_szJavaOpts);
+    SetDlgItemText(IDC_JEDIT_PATH,m_szJeditPath);
+    SetDlgItemText(IDC_JEDIT_OPTS,m_szJeditOpts);
+    SetDlgItemText(IDC_WORKING_DIR,m_szWorkingDir);
 }
 
 void CMainDlg::UpdateCommandLine(void)
