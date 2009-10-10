@@ -59,7 +59,7 @@ main(int argc,
                      strcmp(argv[1], "--help") == 0))
     {
 #ifdef BUILD_WIN32_APP
-        MessageBox(NULL, USAGE, "jEdit Usage", MB_OK);
+        MessageBox(NULL, USAGE, "jEdit Launcher Usage", MB_OK);
 #else
         printf(USAGE);
 #endif
@@ -93,7 +93,11 @@ main(int argc,
 
     // get java path, jedit path, etc...
     if(get_launch_config(&config)) {
+#ifdef BUILD_WIN32_APP
+        MessageBox(NULL, FAILED_TO_GET_SETTINGS, "jEdit Launcher Error", MB_OK);
+#else
         printf(FAILED_TO_GET_SETTINGS);
+#endif
         return 1;
     }
 
