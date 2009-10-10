@@ -41,8 +41,8 @@ create_server_script(const int wait,
                      unsigned int nfiles);
 
 // use same locations as jEditLauncher for easier transition
-static const char* REG_SETTINGS_PATH   = "Software\\www.jedit.org\\jEditLauncher\\4.0";
-static const char* REG_JEDIT_PATH      = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\jEdit_is1";
+const char* REG_SETTINGS_PATH = "Software\\www.jedit.org\\jEditLauncher\\4.0";
+const char* REG_JEDIT_PATH    = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\jEdit_is1";
 
 static const char* SETTING_JAVA        = "Java Executable";
 static const char* SETTING_JAVA_OPTS   = "Java Options";

@@ -78,6 +78,16 @@ extern "C" {
 #endif
 
 /**
+ * Path the registry key were settings are stored.
+ */
+extern const char* REG_SETTINGS_PATH;
+
+/**
+ * Path to the Inno Setup uninstall key for jEdit.
+ */
+extern const char* REG_JEDIT_PATH;
+
+/**
  * Extracts command-line options.
  *
  * Options are formatted:
