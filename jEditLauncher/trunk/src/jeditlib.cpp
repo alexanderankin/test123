@@ -44,6 +44,9 @@ create_server_script(const int wait,
 const char* REG_SETTINGS_PATH = "Software\\www.jedit.org\\jEditLauncher\\4.0";
 const char* REG_JEDIT_PATH    = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\jEdit_is1";
 
+static const char* DEFAULT_JAVA_OPTS  = "-mx128m -jar";
+static const char* DEFAULT_JEDIT_OPTS = "-reuseview";
+
 static const char* SETTING_JAVA        = "Java Executable";
 static const char* SETTING_JAVA_OPTS   = "Java Options";
 static const char* SETTING_JEDIT_OPTS  = "jEdit Options";
@@ -935,21 +938,20 @@ send_script(unsigned int port,
 int
 get_java_path(char* java)
 {
-    const char* java_home = 0;
-    if(read_registry_string(SETTING_JAVA,java,MAX_PATH))
-    {
-        // use %JAVA_HOME% if not read from registry
-        java_home = getenv("JAVA_HOME");
-        if(!java_home)
-            return 1;
+    if(!read_registry_string(SETTING_JAVA,java,MAX_PATH))
+        return 0;
 
+    // use %JAVA_HOME% if not read from registry
+    const char* java_home = getenv("JAVA_HOME");
+    if(java_home) {
         strcpy(java, java_home);
         if(java[strlen(java)] != '\\')
             strcat(java, "\\");
         strcat(java,"bin\\javaw.exe");
+        return 0;
     }
 
-    return (java == 0);
+    return 1;
 }
 
 int
@@ -961,20 +963,19 @@ set_java_path(const char* java)
 int
 get_java_opts(char* java_opts)
 {
-    const char* opts = 0;
-    if(read_registry_string(SETTING_JAVA_OPTS,
-                            java_opts,
-                            MAX_PATH))
+    if(!read_registry_string(SETTING_JAVA_OPTS,java_opts,MAX_PATH))
+        return 0;
+
+    // use %JAVA_OPTS% if not read from registry
+    const char* opts = getenv("JAVA_OPTS");
+    if(opts)
     {
-        // use env JAVA_OPTS if not read
-        opts = getenv("JAVA_OPTS");
-        if(opts)
-        {
-            strcpy(java_opts, opts);
-            return 0;
-        }
-        return 1;
+        strcpy(java_opts, opts);
+        return 0;
     }
+
+    // return built-in defaults if everything else fails
+    strcpy(java_opts, DEFAULT_JAVA_OPTS);
     return 0;
 }
 
@@ -987,46 +988,39 @@ set_java_opts(const char* java_opts)
 int
 get_jedit_jar(char* jedit_jar)
 {
-    const char* jar = 0;
-    if(read_registry_string(SETTING_JEDIT_JAR,
-                            jedit_jar,
-                            MAX_PATH))
+    if(!read_registry_string(SETTING_JEDIT_JAR,jedit_jar,MAX_PATH))
+        return 0;
+
+    // use %JEDIT_JAR% if not read from registry
+    const char* jar = getenv("JEDIT_JAR");
+    if(jar)
     {
-        // use env JEDIT_JAR if not read
-        jar = getenv("JEDIT_JAR");
-        if(jar)
-        {
-            strcpy(jedit_jar, jar);
-            return 0;
-        }
-        else
-        {
-            HKEY hKey;
-            DWORD dwLen = MAX_PATH;
-            jedit_jar[0] = 0;
-
-            if(RegOpenKeyEx(HKEY_LOCAL_MACHINE, REG_JEDIT_PATH, 0,
-                            KEY_READ, &hKey) == ERROR_SUCCESS)
-            {
-                if(ERROR_SUCCESS != RegQueryValueEx(hKey, "Inno Setup: App Path", 0,
-                                                    NULL, (BYTE*)jedit_jar, &dwLen))
-                    jedit_jar[0] = 0;
-                else
-                    jedit_jar[dwLen] = 0;
-                RegCloseKey(hKey);
-
-                if(jedit_jar[strlen(jedit_jar)] != '\\')
-                    strcat(jedit_jar, "\\");
-                strcat(jedit_jar,"jedit.jar");
-            }
-
-            return (jedit_jar[0] == 0);
-        }
-
-        return 1;
+        strcpy(jedit_jar, jar);
+        return 0;
     }
 
-    return 0;
+    // as a fall-back, guess the path from the Inno Setup uninstall key
+    HKEY hKey;
+    DWORD dwLen = MAX_PATH;
+    jedit_jar[0] = 0;
+
+    if(RegOpenKeyEx(HKEY_LOCAL_MACHINE, REG_JEDIT_PATH, 0,
+                    KEY_READ, &hKey) == ERROR_SUCCESS)
+    {
+        if(RegQueryValueEx(hKey, "Inno Setup: App Path", 0,
+                           NULL, (BYTE*)jedit_jar, &dwLen) == ERROR_SUCCESS)
+        {
+            jedit_jar[dwLen] = 0;
+
+            if(jedit_jar[strlen(jedit_jar)] != '\\')
+                strcat(jedit_jar, "\\");
+            strcat(jedit_jar,"jedit.jar");
+        }
+
+        RegCloseKey(hKey);
+    }
+
+    return (jedit_jar[0] == 0);
 }
 
 int
@@ -1038,6 +1032,9 @@ set_jedit_jar(const char* jedit_jar)
 int
 get_jedit_opts(char* jedit_opts)
 {
+    if(!read_registry_string(SETTING_JEDIT_OPTS,jedit_opts,MAX_PATH))
+        return 0;
+
     const char* opts = getenv("JEDIT_OPTS");
     if(opts)
     {
@@ -1045,9 +1042,9 @@ get_jedit_opts(char* jedit_opts)
         return 0;
     }
 
-    return read_registry_string(SETTING_JEDIT_OPTS,
-                                jedit_opts,
-                                MAX_PATH);
+    // return built-in defaults if everything else fails
+    strcpy(jedit_opts, DEFAULT_JEDIT_OPTS);
+    return 0;
 }
 
 int
