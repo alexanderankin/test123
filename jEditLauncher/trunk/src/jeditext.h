@@ -81,23 +81,23 @@ public:
 
     //IShell members
     STDMETHODIMP QueryContextMenu(HMENU hMenu,
-        UINT indexMenu,
-        UINT idCmdFirst,
-        UINT idCmdLast,
-        UINT uFlags);
+                                  UINT indexMenu,
+                                  UINT idCmdFirst,
+                                  UINT idCmdLast,
+                                  UINT uFlags);
 
     STDMETHODIMP InvokeCommand(LPCMINVOKECOMMANDINFO lpcmi);
 
-    STDMETHODIMP GetCommandString(UINT idCmd,
-        UINT uFlags,
-        UINT FAR *reserved,
-        LPSTR pszName,
-        UINT cchMax);
+    STDMETHODIMP GetCommandString(UINT_PTR idCmd,
+                                  UINT uFlags,
+                                  UINT FAR *reserved,
+                                  LPSTR pszName,
+                                  UINT cchMax);
 
     //IShellExtInit methods
     STDMETHODIMP Initialize(LPCITEMIDLIST pIDFolder,
-        LPDATAOBJECT pDataObj,
-        HKEY hKeyID);
+                            LPDATAOBJECT pDataObj,
+                            HKEY hKeyID);
 
     STDMETHODIMP DiffWithJEdit(HWND hParent,
                                LPCSTR pszWorkingDir,

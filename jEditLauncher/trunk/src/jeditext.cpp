@@ -544,7 +544,7 @@ CShellExt::QueryContextMenu(HMENU hMenu,
 
 
 STDMETHODIMP
-CShellExt::GetCommandString(UINT idCmd,
+CShellExt::GetCommandString(UINT_PTR idCmd,
                             UINT uFlags,
                             UINT FAR *reserved,
                             LPSTR pszName,
