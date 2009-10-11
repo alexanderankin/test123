@@ -351,14 +351,13 @@ CShellExtClassFactory::LockServer(BOOL fLock)
 
 CShellExt::CShellExt()
 {
-    /*
-    hImage = LoadImage(g_hmodThisDll,
-                       MAKEINTRESOURCE(101),
-                       IMAGE_BITMAP,
-                       0,
-                       0,
-                       LR_LOADTRANSPARENT);
-    */
+    hImage = (HBITMAP)LoadImage(g_hmodThisDll,
+                                MAKEINTRESOURCE(102),
+                                IMAGE_BITMAP,
+                                0,
+                                0,
+                                LR_DEFAULTSIZE|LR_LOADTRANSPARENT);
+
     m_cRef = 0L;
     m_pDataObj = NULL;
 
@@ -370,10 +369,9 @@ CShellExt::~CShellExt()
     if (m_pDataObj)
         m_pDataObj->Release();
 
-    /*
-    if(hImage)
+    if (hImage)
         DeleteObject(hImage);
-    */
+
     dec_cRefThisDLL();
 }
 
@@ -427,7 +425,7 @@ CShellExt::Release()
 //
 //  PARAMETERS:
 //    pIDFolder - Specifies the parent folder
-//    pDataObj  - Spefifies the set of items selected in that folder.
+//    pDataObj  - Specifies the set of items selected in that folder.
 //    hRegKey   - Specifies the type of the focused item in the selection.
 //
 //  RETURN VALUE:
@@ -502,13 +500,12 @@ CShellExt::QueryContextMenu(HMENU hMenu,
             MF_STRING|MF_BYPOSITION,
             idCmd++,
             "Open with &jEdit");
-    /*
     SetMenuItemBitmaps(hMenu,
                        indexMenu-1,
                        MF_BYPOSITION,
-                       (HBITMAP)hImage,
-                       (HBITMAP)hImage);
-    */
+                       hImage,
+                       hImage);
+
     if(cbFiles == 2)
     {
         // Can edit up to 4 files in diff mode
@@ -517,6 +514,11 @@ CShellExt::QueryContextMenu(HMENU hMenu,
             MF_STRING|MF_BYPOSITION,
             idCmd++,
             "&Diff with jEdit");
+        SetMenuItemBitmaps(hMenu,
+                           indexMenu-1,
+                           MF_BYPOSITION,
+                           hImage,
+                           hImage);
     }
     else if(cbFiles == 1)
     {
@@ -533,6 +535,11 @@ CShellExt::QueryContextMenu(HMENU hMenu,
                        MF_STRING|MF_BYPOSITION,
                        idCmd++,
                        label);
+            SetMenuItemBitmaps(hMenu,
+                               indexMenu-1,
+                               MF_BYPOSITION,
+                               hImage,
+                               hImage);
         }
     }
 

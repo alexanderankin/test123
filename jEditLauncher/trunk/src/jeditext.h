@@ -66,7 +66,7 @@ class CShellExt : public IContextMenu,
 protected:
     ULONG m_cRef;
     LPDATAOBJECT m_pDataObj;
-    //HANDLE hImage;    // bitmap for menu
+    HBITMAP hImage;    // bitmap for menu
     STDMETHODIMP    OpenFiles(void);
     STDMETHODIMP    DiffFiles(void);
 
