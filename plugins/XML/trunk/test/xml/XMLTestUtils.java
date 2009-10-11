@@ -51,7 +51,7 @@ import static xml.EBFixture.*;
 /**
  * a handful of utility methods.
  * Some of them may be moved to the test-framework as they prove useful
- 
+ * $Id$
  */
 public class XMLTestUtils{
 	

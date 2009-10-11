@@ -47,6 +47,7 @@ import org.gjt.sp.jedit.msg.PluginUpdate;
 
 /**
  * Try to wrap nicely the EditBus for tests
+ * $Id$
  */
 public class EBFixture{
 	

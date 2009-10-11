@@ -1,3 +1,16 @@
+/*
+ * ResolverTest.java
+ * :folding=explicit:collapseFolds=1:
+ *
+ * Copyright (C) 2009 Eric Le Lay
+ *
+ * The XML plugin is licensed under the GNU General Public License, with
+ * the following exception:
+ *
+ * "Permission is granted to link this code with software released under
+ * the Apache license version 1.1, for example used by the Xerces XML
+ * parser package."
+ */
 package xml;
 
 // {{{ jUnit imports 
@@ -32,7 +45,9 @@ import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.msg.PluginUpdate;
 
-
+/**
+ * $Id$
+ */
 public class ResolverTest{
 	private static File testData;
 	private Resolver resolver;
