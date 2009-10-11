@@ -48,6 +48,7 @@ public class XmlInsert extends JPanel implements EBComponent
 			new JLabel(jEdit.getProperty("xml-insert.elements")));
 
 		elementList = new JList();
+		elementList.setName("elements");
 		elementList.setCellRenderer(new XmlListCellRenderer());
 		elementList.addMouseListener(new MouseHandler());
 		elementList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -61,6 +62,7 @@ public class XmlInsert extends JPanel implements EBComponent
 			new JLabel(jEdit.getProperty("xml-insert.entities")));
 
 		entityList = new JList();
+		entityList.setName("entities");
 		entityList.setCellRenderer(new XmlListCellRenderer());
 		entityList.addMouseListener(new MouseHandler());
 		entityList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -74,6 +76,7 @@ public class XmlInsert extends JPanel implements EBComponent
 			new JLabel(jEdit.getProperty("xml-insert.ids")));
 
 		idList = new JList();
+		idList.setName("ids");
 		idList.setCellRenderer(new XmlListCellRenderer());
 		idList.addMouseListener(new MouseHandler());
 		idList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

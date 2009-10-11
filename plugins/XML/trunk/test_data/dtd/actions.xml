@@ -3,8 +3,7 @@
 
 <!--
   - valid file
-  - the dtd is referenced via a relative URI,
-    validation succeeds
+  - the dtd is resolved by the built-in catalog
   -->
 <ACTIONS>
    

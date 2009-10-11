@@ -67,6 +67,7 @@ public class GeneralOptionPane extends AbstractOptionPane
 		addComponent(validate = new JCheckBox(jEdit.getProperty(
 			"options.xml.general.validate")));
 		validate.setSelected(jEdit.getBooleanProperty("buffer.xml.validate"));
+		validate.setName("validate");
 		
 		String prefix = "options." + Resolver.NETWORK_PROPS + ".";
 		String[] comboLabels = new String[Resolver.MODES.length];
@@ -76,11 +77,13 @@ public class GeneralOptionPane extends AbstractOptionPane
 		
 		network = new JComboBox(comboLabels);
 		network.setSelectedIndex(Arrays.asList(Resolver.MODES).indexOf(Resolver.getNetworkMode()));
+		network.setName("network");
 		
 		addComponent(jEdit.getProperty("options.xml.general.network-mode"), network);
 		
 		cache = new JCheckBox (jEdit.getProperty("options." + Resolver.CACHE));
 		cache.setSelected(Resolver.isUsingCache());
+		cache.setName("cache");
 		addComponent(cache);
 		
 		
@@ -96,6 +99,7 @@ public class GeneralOptionPane extends AbstractOptionPane
 			showAttributes = new JComboBox(showAttributeValues));
 		showAttributes.setSelectedIndex(jEdit.getIntegerProperty(
 			"xml.show-attributes",0));
+		showAttributes.setName("showAttributes");
 
 		addSeparator("options.xml.general.tags-separator");
 
@@ -105,30 +109,34 @@ public class GeneralOptionPane extends AbstractOptionPane
 			"xml.close-complete"));
 		closeComplete.setToolTipText(jEdit.getProperty(
 				"options.xml.general.close-complete.tooltip" ));
+		closeComplete.setName("closeComplete");
 		addComponent(closeComplete);
 
 		closeCompleteOpen = new JCheckBox(jEdit.getProperty(
 			"options.xml.general.close-complete-open"));
 		closeCompleteOpen.setSelected(jEdit.getBooleanProperty(
 			"xml.close-complete-open"));
+		closeCompleteOpen.setName("closeCompleteOpen");
 		addComponent(closeCompleteOpen);
 		
 		addComponent(standaloneExtraSpace = new JCheckBox(jEdit.getProperty(
 			"options.xml.general.standalone-extra-space")));
 		standaloneExtraSpace.setSelected(jEdit.getBooleanProperty(
 			"xml.standalone-extra-space"));
+		standaloneExtraSpace.setName("standaloneExtraSpace");
 
 		addComponent(popupEditorComplete = new JCheckBox(jEdit.getProperty(
 			"options.xml.general.tageditor.popupOnCompletion")));
 		popupEditorComplete.setSelected(jEdit.getBooleanProperty("xml.tageditor.popupOnComplete", true));
-
+		popupEditorComplete.setName("popupEditorComplete");
+		
 		addSeparator("options.xml.general.xinclude-separator");
 		
 		addComponent(xinclude = new JCheckBox(jEdit.getProperty(
 			"options.xml.general.xinclude")));
 		xinclude.setSelected(jEdit.getBooleanProperty(
 			"buffer.xml.xinclude"));
-		
+		xinclude.setName("xinclude");
 		//force sensible default
 		xinclude.addActionListener(new ActionListener()
 		{
@@ -143,6 +151,7 @@ public class GeneralOptionPane extends AbstractOptionPane
 			"buffer.xml.xinclude.fixup-base-uris"));
 		xincludeBaseURI.setToolTipText(jEdit.getProperty(
 			"options.xml.general.xinclude-xmlbase.tooltip"));
+		xincludeBaseURI.setName("xincludeBaseURI");
 	} //}}}
 
 	//{{{ _save() method

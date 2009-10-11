@@ -40,11 +40,12 @@ public class XmlPlugin extends EBPlugin
 	//{{{ start() method
 	public void start()
 	{
+		System.setProperty("jaxp.debug","1");
 	
-		/* System.setProperty("javax.xml.parsers.SAXParserFactory",
+		/*System.setProperty("javax.xml.parsers.SAXParserFactory",
 			"org.apache.xerces.jaxp.SAXParserFactoryImpl");
 		System.setProperty("javax.xml.parsers.DocumentBuilderFactory",
-			"org.apache.xerces.jaxp.DocumentBuilderFactoryImpl"); */
+			"org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");*/
 		Resolver.instance().init();
 		Resolver.instance().propertiesChanged();
 

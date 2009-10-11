@@ -35,6 +35,9 @@ import org.gjt.sp.jedit.testframework.TestUtils;
 // }}}
 
 import java.io.*;
+import java.awt.Dialog;
+import javax.swing.JWindow;
+import java.awt.Component;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.PluginJAR;
@@ -44,6 +47,7 @@ import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.msg.PluginUpdate;
 
+import static xml.EBFixture.*;
 /**
  * a handful of utility methods.
  * Some of them may be moved to the test-framework as they prove useful
@@ -146,6 +150,30 @@ public class XMLTestUtils{
 		listen.waitForMessage(10000);
 	}
 	
+	
+	/**
+     * Convenience method to select a path in a JTree.
+     * @param treeFixture the JTree
+     * @param path the path to select
+     */
+    public static void selectPath( JTreeFixture treeFixture, String path ) {
+    	String[] components = path.split("/",-1);
+    	TestUtils.selectPath(treeFixture, components);
+    }
+    
+    /**
+     * @param path path in the option panes tree (eg. XML/XML)
+     * @param name internal name of the option pane (eg. xml.general)
+     * @return an option pane, ensuring that it's visible
+     */
+    public static OptionsFixture pluginOptions(){
+    	TestUtils.jEditFrame().menuItemWithPath("Plugins","Plugin Options...").click();
+		
+		DialogFixture optionsDialog = WindowFinder.findDialog(org.gjt.sp.jedit.options.PluginOptions.class).withTimeout(5000).using(TestUtils.robot());
+		Dialog target = optionsDialog.targetCastedTo(Dialog.class);
+		return new OptionsFixture(TestUtils.robot(),target);
+    }
+    
 	/**
 	 * Click on an OptionPane asynchronously.
 	 * Typical usage pattern is :
@@ -160,19 +188,29 @@ public class XMLTestUtils{
 	 */
 	public static final class ClickT extends Thread{
 		private final boolean yes;
+		private final long timeout;
 		private transient WaitTimedOutError savedException;
 		
 		/**
 		 * @param	yes	if you want to click on the yes button
 		 */
 		public ClickT(boolean yes){
+			this(yes,2000);
+		}
+
+		/**
+		 * @param	yes	if you want to click on the yes button
+		 * @param	timeout	how long do you wait for the Dialog ?
+		 */
+		public ClickT(boolean yes, long timeout){
 			this.yes = yes;
+			this.timeout = timeout;
 		}
 		
 		
 		public void run(){
 			try{
-				final JOptionPaneFixture options = TestUtils.jEditFrame().optionPane(Timeout.timeout(2000));
+				final JOptionPaneFixture options = TestUtils.jEditFrame().optionPane(Timeout.timeout(timeout));
 				if(yes)
 					options.yesButton().click();
 				else
@@ -197,86 +235,7 @@ public class XMLTestUtils{
 			}
 		}
 		
-	}
-	
-	
-	
-	/**
-	 * Matcher for EBMessages
-	 */
-	public interface EBCondition {
-		
-		/**
-		 * @return true if the message is what you were waiting for
-		 */
-		public boolean matches(EBMessage message);
-		
-	}
-	
-	
-	
-	/**
-	 * listener for messages, with a timeout
-	 */
-	public static class MessageListener implements EBComponent{
-		private EBCondition condition;
-		private EBMessage msg;
-		
-		MessageListener(){}
-		
-		/**
-		 * register and pass messages to matcher.
-		 * You can reuse a MessageListener, but only after waitForMessage has been called
-		 * @param	matcher	what message interests us
-		 */
-		public synchronized void registerForMessage(EBCondition matcher) throws IllegalStateException{
-			if(condition!=null)throw new IllegalStateException("already listening");
-			EditBus.addToBus(this);
-			condition = matcher;
-			msg = null;
-		}
-		
-		/**
-		 * wait for a matching message for the given amount of time.
-		 * fails when we get an interrupt or a timeout
-		 *
-		 * @param	timeout	the amount of milliseconds to wait for a message
-		 * @return	found message
-		 */
-		public EBMessage waitForMessage(long timeout){
-			
-			try{
-				synchronized(this){
-					if(msg == null){
-						this.wait(timeout);
-					}
-					condition = null;
-					EditBus.removeFromBus(this);
-					if(msg == null){
-						fail("Timeout !");
-						return null;
-					}else{
-						return msg;
-					}
-				}
-			}catch(InterruptedException ie){
-				EditBus.removeFromBus(this);
-				condition = null;
-				fail("Interrupted !");
-				return null;
-			}
-		}
-		
-		public void handleMessage(EBMessage message){
-			if(condition.matches(message)){
-				synchronized(this){
-					msg=message;
-					this.notify();
-				}
-			}
-		}
-	}
-	
+	}	
 	
 	/**
 	 * execute an action, like via the ActionBar
@@ -293,4 +252,50 @@ public class XMLTestUtils{
 		});
 	}
 
+	public static class JWindowFixture extends ContainerFixture<JWindow>{
+		public JWindowFixture(Robot robot, JWindow target){
+			super(robot,target);
+		}
+		
+		public JWindowFixture requireNotVisible(){
+			assertFalse(target.isVisible());
+			return this;
+		}
+		
+		public JWindowFixture requireVisible(){
+			assertTrue(target.isVisible());
+			return this;
+		}
+	}
+	
+	public static JWindowFixture completionPopup(){
+		Component  completionC = TestUtils.robot().finder().find(
+			new ComponentMatcher(){
+				public boolean matches(Component c){
+					return c instanceof org.gjt.sp.jedit.gui.CompletionPopup;
+				}
+			});
+		
+		return new JWindowFixture(TestUtils.robot(),(JWindow)completionC);
+	}
+	
+	public static void gotoPosition(final int caretPosition){
+		GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					TestUtils.view().getTextArea().setCaretPosition(caretPosition);
+				}
+		});
+	}
+	
+	
+	public static void requireEmpty(JTreeFixture f){
+		
+		try{
+			f.toggleRow(0);
+			fail("should be empty !");
+		}catch(RuntimeException re){
+			//fine
+			System.err.println(re.getClass());
+		}
+	}
 }
