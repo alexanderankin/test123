@@ -1,5 +1,5 @@
 /*
- * XMLTestUtils.java
+ * OptionsFixture.java
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 2009 Eric Le Lay
@@ -51,9 +51,9 @@ import static xml.XMLTestUtils.*;
 import static xml.EBFixture.*;
 
 /**
- * a handful of utility methods.
- * Some of them may be moved to the test-framework as they prove useful
- 
+ * simple wrapper arround Plugin Options.
+ * OK() and Apply() wait until the properties have propagated.
+ * $Id$
  */
 public class OptionsFixture extends DialogFixture{
 	
