@@ -252,6 +252,7 @@ public class DiffAction extends SVNAction {
                 else if ( data.getRevision1().equals( SVNRevision.BASE ) ) {
                     // copy contents of BASE revision to tmp dir...
                     // create the temp file name
+                    // TODO: can't I do this with File methods rather than string manipulation?
                     String filepath = data.getPaths().get(0);
                     int index = filepath.lastIndexOf( '.' );
                     index = index < 0 ? 0 : index;
@@ -262,15 +263,15 @@ public class DiffAction extends SVNAction {
                         }
                     }
                     String filename = System.getProperty( "java.io.tmpdir" ) + '/' + filepath.substring( 0, index ) + "-BASE" + filepath.substring( index );
-                    
+
                     // create the temp file
                     remote1 = new File(filename);
                     if (remote1.exists()) {
-                        remote1.delete();   
+                        remote1.delete();
                     }
                     remote1.deleteOnExit();     // automatic cleanup
                     remote1.getParentFile().mkdirs();
-                    
+
                     // copy the file contents to the temp file
                     BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(remote1));
                     SVNClientManager cm = SVNClientManager.newInstance();
