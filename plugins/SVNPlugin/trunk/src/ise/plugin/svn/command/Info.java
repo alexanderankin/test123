@@ -100,6 +100,9 @@ public class Info {
         // set an event handler so that messages go to the commit data streams for display
         client.setEventHandler( new SVNCommandEventProcessor( data.getOut(), data.getErr(), false ) );
 
+        // printout the SVNData to the console
+        data.getOut().println(SVNData.toString(data));
+        
         // actually fetch the info
         List<SVNInfo> results = new ArrayList<SVNInfo>();
         if ( data.pathsAreURLs() ) {
