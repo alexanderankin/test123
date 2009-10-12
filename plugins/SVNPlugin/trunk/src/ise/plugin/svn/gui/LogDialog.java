@@ -50,7 +50,7 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
 /**
  * Dialog for getting revision date ranges to use when calling the Log command.
  * DONE: Recurse subdirectories setting does nothing.  Removed it.
- * TODO: Max logs setting causes log command to fetch start_revision + max_logs
+ * DONE: Max logs setting causes log command to fetch start_revision + max_logs
  * entries rather than end_revision - max_logs entries.
  */
 public class LogDialog extends JDialog {
@@ -118,6 +118,8 @@ public class LogDialog extends JDialog {
         ( ( JSpinner.NumberEditor ) max_logs.getEditor() ).getModel().setMinimum( Integer.valueOf( 1 ) );
         int logRows = jEdit.getIntegerProperty( "ise.plugin.svn.logRows", 1000 );
         ( ( JSpinner.NumberEditor ) max_logs.getEditor() ).getModel().setValue( logRows );
+        final JCheckBox all_logs = new JCheckBox(jEdit.getProperty("ips.Show_all", "Show all"));   // TODO: put string in property file
+        
 
         final JCheckBox stopOnCopy = new JCheckBox( jEdit.getProperty( "ips.Stop_on_copy", "Stop on copy" ) );
         final JCheckBox showPaths = new JCheckBox( jEdit.getProperty( "ips.Show_paths", "Show paths" ) );
@@ -159,7 +161,12 @@ public class LogDialog extends JDialog {
                     data.setEndRevision( end_revision_panel.getRevision() );
 
                     // set number of logs to show
-                    data.setMaxLogs( ( ( Integer ) max_logs.getValue() ).intValue() );
+                    if (all_logs.isSelected()) {
+                        data.setMaxLogs( 0 );
+                    }
+                    else {
+                        data.setMaxLogs( ( ( Integer ) max_logs.getValue() ).intValue() );
+                    }
 
                     // set whether or not to recurse past copy points in the
                     // revision history
@@ -206,6 +213,7 @@ public class LogDialog extends JDialog {
         JPanel max_logs_panel = new JPanel( new FlowLayout() );
         max_logs_panel.add( new JLabel( jEdit.getProperty( "ips.Maximum_log_entries_to_show>", "Maximum log entries to show:" ) ) );
         max_logs_panel.add( max_logs );
+        max_logs_panel.add( all_logs );
         panel.add( "0, 12, 2, 1, W,  , 3", max_logs_panel );
 
         panel.add( "0, 13, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 11, true ) );
