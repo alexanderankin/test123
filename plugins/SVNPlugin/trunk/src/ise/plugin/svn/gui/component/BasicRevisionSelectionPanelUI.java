@@ -77,7 +77,7 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
         renderPane = new RenderPane();
         controller.add( renderPane, BorderLayout.CENTER );
     }
-    
+
     /**
      * Install any action listeners, mouse listeners, etc.
      */
@@ -157,24 +157,14 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
         }
 
         private void initUI() {
-            setLayout(new KappaLayout());
+            setLayout( new KappaLayout() );
             bg = new ButtonGroup();
             bg.add( revision_number_rb );
             bg.add( date_rb );
             bg.add( head_rb );
             bg.add( base_rb );
             bg.add( working_rb );
-
-            if ( controller.getModel().getShowBase() && SVNRevision.BASE.equals( controller.getModel().getDefaultRevision() ) ) {
-                base_rb.setSelected( true );
-            }
-            else if ( controller.getModel().getShowWorking() && SVNRevision.WORKING.equals( controller.getModel().getDefaultRevision() ) ) {
-                working_rb.setSelected( true );
-            }
-            else {
-                head_rb.setSelected( true );
-            }
-
+            
             // set up the revision number entry field
             revision_number = new RevisionTextField();
             revision_number.setText( "0" );
@@ -257,6 +247,9 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
                     add( "2, 5, 1, 1,  , , 3", date_popup );
                 }
             }
+            
+            adjustRadioButtons();
+
             controller.repaint();
         }
 
@@ -277,46 +270,51 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
                 working_rb.addActionListener( al );
             }
 
-            revision_number_rb.addActionListener( new ActionListener() {
-                        public void actionPerformed( ActionEvent ae ) {
-                            RenderPane.this.revision_number.setEnabled( revision_number_rb.isSelected() );
-                            if ( revision_number.isEnabled() ) {
-                                Number number = Integer.parseInt( revision_number.getText() );
-                                controller.getModel().setRevision( SVNRevision.create( number.longValue() ) );
-                            }
+            revision_number_rb.addActionListener(
+                new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        RenderPane.this.revision_number.setEnabled( revision_number_rb.isSelected() );
+                        if ( revision_number.isEnabled() ) {
+                            Number number = Integer.parseInt( revision_number.getText() );
+                            controller.getModel().setRevision( SVNRevision.create( number.longValue() ) );
                         }
                     }
-                                                );
-            date_rb.addActionListener( new ActionListener() {
-                        public void actionPerformed( ActionEvent ae ) {
-                            date_spinner.setEnabled( date_rb.isSelected() );
-                            date_popup.setEnabled( date_rb.isSelected() );
-                            if ( date_spinner.isEnabled() ) {
-                                Date date = ( Date ) date_spinner.getValue();
-                                controller.getModel().setRevision( SVNRevision.create( date ) );
-                            }
+                }
+            );
+            date_rb.addActionListener(
+                new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        date_spinner.setEnabled( date_rb.isSelected() );
+                        date_popup.setEnabled( date_rb.isSelected() );
+                        if ( date_spinner.isEnabled() ) {
+                            Date date = ( Date ) date_spinner.getValue();
+                            controller.getModel().setRevision( SVNRevision.create( date ) );
                         }
                     }
-                                     );
-            head_rb.addActionListener( new ActionListener() {
-                        public void actionPerformed( ActionEvent ae ) {
-                            controller.getModel().setRevision( SVNRevision.HEAD );
-                        }
+                }
+            );
+            head_rb.addActionListener(
+                new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        controller.getModel().setRevision( SVNRevision.HEAD );
                     }
-                                     );
-            base_rb.addActionListener( new ActionListener() {
-                        public void actionPerformed( ActionEvent ae ) {
-                            controller.getModel().setRevision( SVNRevision.BASE );
-                        }
+                }
+            );
+            base_rb.addActionListener(
+                new ActionListener() {
+                    public void actionPerformed( ActionEvent ae ) {
+                        controller.getModel().setRevision( SVNRevision.BASE );
                     }
-                                     );
+                }
+            );
             if ( controller.getModel().getShowWorking() ) {
-                working_rb.addActionListener( new ActionListener() {
-                            public void actionPerformed( ActionEvent ae ) {
-                                controller.getModel().setRevision( SVNRevision.WORKING );
-                            }
+                working_rb.addActionListener(
+                    new ActionListener() {
+                        public void actionPerformed( ActionEvent ae ) {
+                            controller.getModel().setRevision( SVNRevision.WORKING );
                         }
-                                            );
+                    }
+                );
             }
 
             date_popup.addActionListener(
@@ -385,13 +383,37 @@ public class BasicRevisionSelectionPanelUI extends RevisionSelectionPanelUI impl
             date_spinner.setEnabled( false );
             return date_spinner;
         }
+        
+        private void adjustRadioButtons() {
+                SVNRevision newRevision = controller.getModel().getRevision();
+
+                if ( controller.getModel().getShowHead() && SVNRevision.HEAD.equals( newRevision ) ) {
+                    head_rb.setSelected( true );
+                }
+                else if ( controller.getModel().getShowBase() && SVNRevision.BASE.equals( newRevision ) ) {
+                    base_rb.setSelected( true );
+                }
+                else if ( controller.getModel().getShowWorking() && SVNRevision.WORKING.equals( newRevision ) ) {
+                    working_rb.setSelected( true );
+                }
+                else if ( newRevision.getDate() != null ) {
+                    date_rb.setSelected( true );
+                    date_spinner.setValue( newRevision.getDate() );
+                }
+                else {
+                    long number = newRevision.getNumber();
+                    if ( number == -1 ) {
+                        number = 0;
+                    }
+                    revision_number_rb.setSelected( true );
+                    revision_number.setText( String.valueOf( number ) );
+                }
+                repaint();
+        }
 
         public void propertyChange( PropertyChangeEvent pce ) {
-            if ( revision_number_rb.isEnabled() && "revision".equals( pce.getPropertyName() ) ) {
-                revision_number_rb.setSelected( true );
-                revision_number.setText( String.valueOf( ( ( SVNRevision ) pce.getNewValue() ).getNumber() ) );
-                revision_number.setEnabled( true );
-                repaint();
+            if ( "revision".equals( pce.getPropertyName() ) ) {
+                adjustRadioButtons();
             }
         }
 

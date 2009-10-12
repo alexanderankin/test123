@@ -49,12 +49,15 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
 
 /**
  * Dialog for getting revision date ranges to use when calling the Log command.
+ * DONE: Recurse subdirectories setting does nothing.  Removed it.
+ * TODO: Max logs setting causes log command to fetch start_revision + max_logs
+ * entries rather than end_revision - max_logs entries.
  */
 public class LogDialog extends JDialog {
     // instance fields
     private LogData data = null;
 
-    private boolean recursive = false;
+    //private boolean recursive = false;
     private SVNRevision endRevision = SVNRevision.HEAD;
 
     public LogDialog( View view, LogData data ) {
@@ -103,62 +106,17 @@ public class LogDialog extends JDialog {
         file_table.getColumnModel().getColumn( 1 ).setPreferredWidth( 575 );
         file_table.packRows();
 
-        // ask if directories should be recursed
-        final JCheckBox recursive_cb = new JCheckBox( jEdit.getProperty( "ips.Recurse_subdirectories?", "Recurse subdirectories?" ) );
-        recursive_cb.setSelected( recursive );
-        recursive_cb.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        data.setRecursive( recursive_cb.isSelected() );
-                    }
-                }
-                                      );
-
-        // radio buttons to choose revision range, all, by number, or by date
-        final JRadioButton show_all = new JRadioButton( jEdit.getProperty( "ips.All", "All" ) );
-        show_all.setSelected( true );
-        show_all.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        AbstractButton btn = ( AbstractButton ) ae.getSource();
-                        if ( btn.isSelected() ) {
-                            endRevision = SVNRevision.HEAD;
-                        }
-                    }
-                }
-                                  );
-
-        JRadioButton revision_range = new JRadioButton( jEdit.getProperty( "ips.By_range>", "By range:" ) );
-
-        ButtonGroup revision_group = new ButtonGroup();
-        revision_group.add( show_all );
-        revision_group.add( revision_range );
-
         // revision chooser panels
         final RevisionSelectionPanel start_revision_panel = new RevisionSelectionPanel( jEdit.getProperty( "ips.Start_Revision", "Start Revision" ) );
+        start_revision_panel.setRevision( SVNRevision.HEAD );
         final RevisionSelectionPanel end_revision_panel = new RevisionSelectionPanel( jEdit.getProperty( "ips.End_Revision", "End Revision" ) );
-        start_revision_panel.setEnabled( false );
-        end_revision_panel.setEnabled( false );
-
-        revision_range.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        AbstractButton btn = ( AbstractButton ) ae.getSource();
-                        start_revision_panel.setEnabled( btn.isSelected() );
-                        end_revision_panel.setEnabled( btn.isSelected() );
-                    }
-                }
-                                        );
-
-        show_all.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        AbstractButton btn = ( AbstractButton ) ae.getSource();
-                        start_revision_panel.setEnabled( !btn.isSelected() );
-                        end_revision_panel.setEnabled( !btn.isSelected() );
-                    }
-                }
-                                  );
+        end_revision_panel.setRevision( SVNRevision.create( 0L ) );
+        start_revision_panel.setEnabled( true );
+        end_revision_panel.setEnabled( true );
 
         final JSpinner max_logs = new JSpinner();
         ( ( JSpinner.NumberEditor ) max_logs.getEditor() ).getModel().setMinimum( Integer.valueOf( 1 ) );
-        int logRows = jEdit.getIntegerProperty("ise.plugin.svn.logRows", 1000);
+        int logRows = jEdit.getIntegerProperty( "ise.plugin.svn.logRows", 1000 );
         ( ( JSpinner.NumberEditor ) max_logs.getEditor() ).getModel().setValue( logRows );
 
         final JCheckBox stopOnCopy = new JCheckBox( jEdit.getProperty( "ips.Stop_on_copy", "Stop on copy" ) );
@@ -169,67 +127,63 @@ public class LogDialog extends JDialog {
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
         JButton ok_btn = new JButton( jEdit.getProperty( "ips.Ok", "Ok" ) );
-        ok_btn.setMnemonic(KeyEvent.VK_O);
+        ok_btn.setMnemonic( KeyEvent.VK_O );
         JButton cancel_btn = new JButton( jEdit.getProperty( "ips.Cancel", "Cancel" ) );
-        cancel_btn.setMnemonic(KeyEvent.VK_C);
+        cancel_btn.setMnemonic( KeyEvent.VK_C );
         btn_panel.add( "0, 0, 1, 1, 0, w, 3", ok_btn );
         btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancel_btn );
         kl.makeColumnsSameWidth( 0, 1 );
 
-        ok_btn.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
-                        // fill in the log data object -- get the paths
-                        List<String> paths = new ArrayList<String>();
-                        for ( int row = 0; row < file_table_model.getRowCount(); row++ ) {
-                            Boolean selected = ( Boolean ) file_table_model.getValueAt( row, 0 );
-                            if ( selected ) {
-                                paths.add( ( String ) file_table_model.getValueAt( row, 1 ) );
-                            }
+        ok_btn.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    // fill in the log data object -- get the paths
+                    List<String> paths = new ArrayList<String>();
+                    for ( int row = 0; row < file_table_model.getRowCount(); row++ ) {
+                        Boolean selected = ( Boolean ) file_table_model.getValueAt( row, 0 );
+                        if ( selected ) {
+                            paths.add( ( String ) file_table_model.getValueAt( row, 1 ) );
                         }
-
-                        if ( paths.size() == 0 ) {
-                            // nothing to commit, bail out
-                            data = null;
-                        }
-                        else {
-                            data.setPaths( paths );
-                        }
-
-                        // set revision range
-                        if ( show_all.isSelected() ) {
-                            data.setStartRevision( SVNRevision.create( 0L ) );
-                            data.setEndRevision( SVNRevision.HEAD );
-                        }
-                        else {
-                            data.setStartRevision( start_revision_panel.getRevision() );
-                            data.setEndRevision( end_revision_panel.getRevision() );
-                        }
-
-                        // set number of logs to show
-                        data.setMaxLogs( ( ( Integer ) max_logs.getValue() ).intValue() );
-
-                        // set whether or not to recurse past copy points in the
-                        // revision history
-                        data.setStopOnCopy( stopOnCopy.isSelected() );
-
-                        // set whether or not to show the other files that were part
-                        // of the revision history
-                        data.setShowPaths( showPaths.isSelected() );
-
-                        LogDialog.this.setVisible( false );
-                        LogDialog.this.dispose();
                     }
-                }
-                                );
 
-        cancel_btn.addActionListener( new ActionListener() {
-                    public void actionPerformed( ActionEvent ae ) {
+                    if ( paths.size() == 0 ) {
+                        // nothing to commit, bail out
                         data = null;
-                        LogDialog.this.setVisible( false );
-                        LogDialog.this.dispose();
                     }
+                    else {
+                        data.setPaths( paths );
+                    }
+
+                    // set revision range
+                    data.setStartRevision( start_revision_panel.getRevision() );
+                    data.setEndRevision( end_revision_panel.getRevision() );
+
+                    // set number of logs to show
+                    data.setMaxLogs( ( ( Integer ) max_logs.getValue() ).intValue() );
+
+                    // set whether or not to recurse past copy points in the
+                    // revision history
+                    data.setStopOnCopy( stopOnCopy.isSelected() );
+
+                    // set whether or not to show the other files that were part
+                    // of the revision history
+                    data.setShowPaths( showPaths.isSelected() );
+
+                    LogDialog.this.setVisible( false );
+                    LogDialog.this.dispose();
                 }
-                                    );
+            }
+        );
+
+        cancel_btn.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    data = null;
+                    LogDialog.this.setVisible( false );
+                    LogDialog.this.dispose();
+                }
+            }
+        );
 
         // add the components to the option panel
         JScrollPane file_scroller = new JScrollPane( file_table );
@@ -239,13 +193,9 @@ public class LogDialog extends JDialog {
 
         panel.add( "0, 2, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
 
-        panel.add( "0, 3, 2, 1, W,  , 3", recursive_cb );
-
         panel.add( "0, 4, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
 
         panel.add( "0, 5, 2, 1, W,  , 3", new JLabel( jEdit.getProperty( "ips.Revision_Range>", "Revision Range:" ) ) );
-        panel.add( "0, 6, 2, 1, W,  , 3", show_all );
-        panel.add( "0, 7, 2, 1, W,  , 3", revision_range );
         panel.add( "0, 8, 1, 1, W, w, 3", start_revision_panel );
         panel.add( "1, 8, 1, 1, E, w, 3", end_revision_panel );
         panel.add( "0, 9, 1, 1, 0,  , 0", KappaLayout.createVerticalStrut( 6, true ) );
@@ -265,7 +215,7 @@ public class LogDialog extends JDialog {
         setContentPane( panel );
         pack();
 
-        getRootPane().setDefaultButton(ok_btn);
+        getRootPane().setDefaultButton( ok_btn );
         ok_btn.requestFocus();
     }
 

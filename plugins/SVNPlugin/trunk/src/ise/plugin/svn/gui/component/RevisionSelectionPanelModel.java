@@ -17,7 +17,7 @@ public class RevisionSelectionPanelModel {
     private boolean showDate = true;
     private boolean showNumber = true;
     private SVNRevision defaultRevision = SVNRevision.HEAD;
-    private SVNRevision revision = SVNRevision.HEAD;
+    private SVNRevision revision = null;
     private boolean setEnabled = true;
 
 
@@ -169,7 +169,7 @@ public class RevisionSelectionPanelModel {
      * Returns the value of revision.
      */
     public SVNRevision getRevision() {
-        return revision;
+        return revision == null ? defaultRevision : revision;
     }
 
     /**
