@@ -152,7 +152,7 @@ public class SVNData implements Serializable {
     }
 
     public String getDecryptedPassword() {
-        return PasswordHandler.decryptPassword(password);
+        return PasswordHandler.decryptPassword( password );
     }
 
     /**
@@ -226,12 +226,45 @@ public class SVNData implements Serializable {
     public String toString() {
         StringBuffer sb = new StringBuffer();
         try {
-            sb.append(this.getClass().getName()).append('[');
+            sb.append( this.getClass().getName() ).append( '[' );
             Field[] fields = this.getClass().getDeclaredFields();
-            for (Field field : fields) {
-                sb.append(field.getName()).append('=').append(PrivilegedAccessor.getValue(this, field.getName())).append(',');
+            for ( Field field : fields ) {
+                sb.append( field.getName() ).append( '=' ).append( PrivilegedAccessor.getValue( this, field.getName() ) ).append( ',' );
             }
-            sb.append(']');
+            sb.append( ']' );
+        }
+        catch ( Exception e ) {
+            e.printStackTrace();
+        }
+        return sb.toString();
+    }
+
+    public static String toString( Object data ) {
+        if ( data == null ) {
+            return "null";
+        }
+        StringBuffer sb = new StringBuffer();
+        try {
+            sb.append( data.getClass().getName() ).append( '\n' );
+            Field[] fields = data.getClass().getDeclaredFields();
+            List<String> fieldNames = new ArrayList<String>();
+            for ( Field field : fields ) {
+                fieldNames.add( field.getName() );
+            }
+            Collections.sort( fieldNames );
+            int longest = 0;
+            for ( String name : fieldNames ) {
+                if ( name.length() > longest ) {
+                    longest = name.length();
+                }
+            }
+            String padding = "                            ";
+            for ( String name : fieldNames ) {
+                if ( "password".equals( name ) ) {
+                    continue;
+                }
+                sb.append( '\t' ).append( padding.substring( 0, longest - name.length() ) ).append( name ).append( ": " ).append( PrivilegedAccessor.getValue( data, name ) ).append( '\n' );
+            }
         }
         catch ( Exception e ) {
             e.printStackTrace();
