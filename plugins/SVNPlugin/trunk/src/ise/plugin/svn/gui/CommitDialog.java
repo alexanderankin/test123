@@ -222,9 +222,9 @@ public class CommitDialog extends JDialog {
         KappaLayout kl = new KappaLayout();
         JPanel btn_panel = new JPanel( kl );
         okButton = new JButton( jEdit.getProperty( "ips.Ok", "Ok" ) );
-        okButton.setMnemonic(KeyEvent.VK_O);
+        okButton.setMnemonic( KeyEvent.VK_O );
         cancelButton = new JButton( jEdit.getProperty( "ips.Cancel", "Cancel" ) );
-        cancelButton.setMnemonic(KeyEvent.VK_C);
+        cancelButton.setMnemonic( KeyEvent.VK_C );
         btn_panel.add( "0, 0, 1, 1, 0, w, 3", okButton );
         btn_panel.add( "1, 0, 1, 1, 0, w, 3", cancelButton );
         kl.makeColumnsSameWidth( 0, 1 );
@@ -275,8 +275,8 @@ public class CommitDialog extends JDialog {
 
         setContentPane( panel );
         pack();
-        
-        getRootPane().setDefaultButton(okButton);
+
+        getRootPane().setDefaultButton( okButton );
         okButton.requestFocus();
     }
 
@@ -402,52 +402,53 @@ public class CommitDialog extends JDialog {
     // path, then works up through parent paths until the project root is
     // reached.
     private void loadCommitProperties( String path ) {
-        do {
-            PropertyData data = new PropertyData();
-            data.setOut( new ConsolePrintStream(new NullOutputStream()) );
+        if ( projectRoot == null ) {
+            return ;
+        }
+        if ( path == null ) {
+            return ;
+        }
+        PropertyData data = new PropertyData();
+        data.setOut( new ConsolePrintStream( new NullOutputStream() ) );
+        data.setPathsAreURLs( false );
+        data.setRecursive( false );
+        data.setAskRecursive( false );
+        data.setRevision( SVNRevision.WORKING );
+        data.setPegRevision( SVNRevision.UNDEFINED );
+        String[] credentials = PVHelper.getSVNLogin( path );
+        data.setUsername( credentials[ 0 ] );
+        data.setPassword( credentials[ 1 ] );
+        Property cmd = new Property();
+
+        while ( path.startsWith( projectRoot ) ) {
             data.addPath( path );
-            data.setPathsAreURLs( false );
-            data.setRecursive( false );
-            data.setAskRecursive( false );
-            data.setRevision( SVNRevision.WORKING );
-            data.setPegRevision( SVNRevision.UNDEFINED );
-            String[] credentials = PVHelper.getSVNLogin( path );
-            data.setUsername( credentials[ 0 ] );
-            data.setPassword( credentials[ 1 ] );
-            Property cmd = new Property();
             try {
                 cmd.doGetProperties( data );
-            }
-            catch ( Exception e ) {
-                // ProjectViewer allows adding paths to a project that are not
-                // under the project root.  The typical use case is that all
-                // files are under the root, so the 'while' loop makes sense. In
-                // the case where a path is added to a project and that path is
-                // not under the project root, eventually a parent path will not
-                // be under version control and the Property command will throw
-                // an exception, which is probably why flow ended up in this
-                // catch block.  Do one more check for the properties at the
-                // project root.
-                path = projectRoot;
-                continue;
-            }
-            if ( cmd.getProperties() != null ) {
-                TreeMap map = cmd.getProperties();
-                for ( Object key : map.keySet() ) {
-                    Properties props = cmd.getProperties().get( key );
-                    for ( Object name : props.keySet() ) {
-                        if ( ( name.toString().startsWith( "tsvn:" ) || name.toString().startsWith( "bugtraq:" ) ) && !bugtraqProperties.containsKey( name ) ) {
-                            bugtraqProperties.setProperty( name.toString(), props.getProperty( name.toString() ) );
-                            //System.out.println( "+++++ " + name.toString() + " = " + props.getProperty( name.toString() ) );
+                if ( cmd.getProperties() != null ) {
+                    TreeMap map = cmd.getProperties();
+                    for ( Object key : map.keySet() ) {
+                        Properties props = cmd.getProperties().get( key );
+                        for ( Object name : props.keySet() ) {
+                            if ( ( name.toString().startsWith( "tsvn:" ) || name.toString().startsWith( "bugtraq:" ) ) && !bugtraqProperties.containsKey( name ) ) {
+                                bugtraqProperties.setProperty( name.toString(), props.getProperty( name.toString() ) );
+                                //System.out.println( "+++++ " + name.toString() + " = " + props.getProperty( name.toString() ) );
+                            }
                         }
                     }
                 }
             }
+            catch ( Exception e ) {
+                return ;
+            }
+
+            // up to parent directory
             File f = new File( path );
             path = f.getParent();
+            if ( path == null ) {
+                break;
+            }
+            data.setPaths( null );
         }
-        while ( path.startsWith( projectRoot ) );
-
     }
 
     private boolean isTrue( String value ) {
