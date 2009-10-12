@@ -309,6 +309,9 @@ public class TaskListPopup extends JPopupMenu {
     private String getBufferPath() {
         JTree tree = ( JTree ) comp;
         TreePath path = tree.getPathForLocation( point.x, point.y );
+        if ( path == null ) {
+            return null;
+        }
         DefaultMutableTreeNode node = ( DefaultMutableTreeNode ) path.getLastPathComponent();
         if ( node == null ) {
             return null;
