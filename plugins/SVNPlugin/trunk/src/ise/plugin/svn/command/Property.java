@@ -42,7 +42,7 @@ import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 import org.tmatesoft.svn.core.wc.SVNWCClient;
 import org.tmatesoft.svn.core.SVNException;
-import org.tmatesoft.svn.core.auth.BasicAuthenticationManager;
+
 
 import ise.plugin.svn.data.PropertyData;
 
@@ -85,7 +85,7 @@ public class Property {
             if ( data.getUsername() != null ) {
                 // use default svn config options
                 ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
-                clientManager = SVNClientManager.newInstance( options, new BasicAuthenticationManager( data.getUsername(), data.getDecryptedPassword() ) );
+                clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager( data.getUsername(), data.getDecryptedPassword() ) );
             }
             else {
                 clientManager = SVNClientManager.newInstance();
@@ -161,7 +161,7 @@ public class Property {
         if ( data.getUsername() != null ) {
             // use default svn config options
             ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
-            clientManager = SVNClientManager.newInstance( options, new BasicAuthenticationManager( data.getUsername(), data.getDecryptedPassword() ) );
+            clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager( data.getUsername(), data.getDecryptedPassword() ) );
         }
         else {
             clientManager = SVNClientManager.newInstance();
@@ -310,7 +310,7 @@ public class Property {
             org.tmatesoft.svn.core.internal.io.svn.SVNRepositoryFactoryImpl.setup();
             org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory.setup();
             ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
-            SVNClientManager clientManager = SVNClientManager.newInstance( options, new BasicAuthenticationManager( "daleanson", "" ) );
+            SVNClientManager clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager( "daleanson", "" ) );
             SVNWCClient wc_client = clientManager.getWCClient();
             Property prop = new Property();
             prop.out = System.out;

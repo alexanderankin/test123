@@ -38,7 +38,7 @@ import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 import org.tmatesoft.svn.core.wc.SVNUpdateClient;
 import org.tmatesoft.svn.core.wc.SVNRevision;
-import org.tmatesoft.svn.core.auth.BasicAuthenticationManager;
+
 
 import ise.plugin.svn.data.ExportData;
 import ise.plugin.svn.data.UpdateData;
@@ -77,7 +77,7 @@ public class Export {
 
         // get an svn update client using default svn config options
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
-        SVNClientManager clientManager = SVNClientManager.newInstance( options, new BasicAuthenticationManager(data.getUsername(), data.getDecryptedPassword()) );
+        SVNClientManager clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager(data.getUsername(), data.getDecryptedPassword()) );
         SVNUpdateClient client = clientManager.getUpdateClient();
 
         // set an event handler so that messages go to the streams for display
