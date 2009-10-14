@@ -40,7 +40,7 @@ import org.tmatesoft.svn.core.wc.SVNDiffClient;
 import org.tmatesoft.svn.core.wc.SVNEvent;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 import org.tmatesoft.svn.core.wc.SVNRevision;
-import org.tmatesoft.svn.core.auth.BasicAuthenticationManager;
+
 
 import ise.plugin.svn.data.DiffData;
 
@@ -75,7 +75,7 @@ public class Diff {
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
         // use the svnkit client manager
-        SVNClientManager clientManager = SVNClientManager.newInstance( options, new BasicAuthenticationManager( data.getUsername(), data.getDecryptedPassword() ) );
+        SVNClientManager clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager( data.getUsername(), data.getDecryptedPassword() ) );
 
         // get a diff client
         SVNDiffClient client = clientManager.getDiffClient();

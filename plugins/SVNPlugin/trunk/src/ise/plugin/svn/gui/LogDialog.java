@@ -118,7 +118,7 @@ public class LogDialog extends JDialog {
         ( ( JSpinner.NumberEditor ) max_logs.getEditor() ).getModel().setMinimum( Integer.valueOf( 1 ) );
         int logRows = jEdit.getIntegerProperty( "ise.plugin.svn.logRows", 1000 );
         ( ( JSpinner.NumberEditor ) max_logs.getEditor() ).getModel().setValue( logRows );
-        final JCheckBox all_logs = new JCheckBox(jEdit.getProperty("ips.Show_all", "Show all")); 
+        final JCheckBox all_logs = new JCheckBox(jEdit.getProperty("ips.Show_all", "Show all"));   
         
 
         final JCheckBox stopOnCopy = new JCheckBox( jEdit.getProperty( "ips.Stop_on_copy", "Stop on copy" ) );
