@@ -210,9 +210,10 @@ public class BrowseRepository {
         // if the directory entry has svn:externals property, load those external
         // entries also and add them to the list
         if ( dir_props.size() > 0 ) {
-            String value = ( String ) dir_props.asMap().get( SVNProperty.EXTERNALS );
+            Object externals = dir_props.asMap().get( SVNProperty.EXTERNALS );
             try {
-                if ( value != null ) {
+                if ( externals != null ) {
+                    String value = externals.toString();
                     BufferedReader br = new BufferedReader( new StringReader( value ) );
                     String line = br.readLine();
                     while ( line != null ) {
