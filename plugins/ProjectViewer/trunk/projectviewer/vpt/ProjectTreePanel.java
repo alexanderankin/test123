@@ -338,6 +338,7 @@ public class ProjectTreePanel extends JPanel
         for (JTree tree : trees) {
             ((ProjectTreeModel)tree.getModel()).nodeChanged(node);
         }
+        node.changed();
     }
 
 
