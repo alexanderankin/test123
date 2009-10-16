@@ -129,8 +129,10 @@ public class P4Plugin extends EBPlugin {
         View v = null;
         Buffer b = null;
         if (msg instanceof ViewUpdate) {
-            v = ((ViewUpdate)msg).getView();
-            b = v.getBuffer();
+            if (((ViewUpdate)msg).getWhat() != ViewUpdate.CLOSED) {
+                v = ((ViewUpdate)msg).getView();
+                b = v.getBuffer();
+            }
         } else if (msg instanceof BufferUpdate) {
             b = ((BufferUpdate)msg).getBuffer();
             v = ((BufferUpdate)msg).getView();
