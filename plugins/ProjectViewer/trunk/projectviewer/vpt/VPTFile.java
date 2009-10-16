@@ -75,6 +75,7 @@ public class VPTFile extends VPTNode
 
 	private Icon	fileIcon;
 	private boolean	loadedIcon;
+	private boolean retrieving;
 	private VFSFile vfsfile;
 
 	private String tsCache;
@@ -318,6 +319,16 @@ public class VPTFile extends VPTNode
 	}
 
 
+	/** Flush the internal VFSFile instance, and force retrieval of a new one. */
+	protected void changed()
+	{
+		if (!retrieving) {
+			this.vfsfile = null;
+			getFile(false);
+		}
+	}
+
+
 	/**
 	 * A simple "task queue" for initializing VFSFile instances.
 	 * Initialization will be done in the AWT thread (since starting
@@ -354,10 +365,12 @@ public class VPTFile extends VPTNode
 				locked = true;
 				for (VPTFile f : queue) {
 					try {
+						f.retrieving = true;
 						f.vfsfile = VFSHelper.getFile(f.url);
 						if (f.vfsfile != null) {
 							ProjectViewer.nodeChanged(f);
 						}
+						f.retrieving = false;
 					} catch (IOException ioe) {
 						Log.log(Log.WARNING, this, ioe);
 					}

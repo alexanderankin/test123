@@ -409,6 +409,19 @@ public abstract class VPTNode extends DefaultMutableTreeNode
 		return VPTCellRenderer.CLIP_NOCLIP;
 	} //}}}
 
+
+	/**
+	 * Called when the tree panel receives a request to notify that
+	 * information about the node has changed. This allows the node
+	 * to take any needed actions (such as flushing cached information).
+	 *
+	 * @since PV 3.0.0
+	 */
+	protected void changed()
+	{
+
+	}
+
 	//}}}
 
 	protected int compareName(VPTNode other) {
