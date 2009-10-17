@@ -14,6 +14,9 @@ import java.text.StringCharacterIterator;
 
 import org.gjt.sp.jedit.jEdit;
 
+import sidekick.java.PVHelper;
+import sidekick.java.classloader.AntClassLoader;
+
 /**
  * The Locator is a utility class which is used to find classes loaded
  * in the runtime environment.
@@ -21,13 +24,29 @@ import org.gjt.sp.jedit.jEdit;
  */
 public final class Locator {
 
+    // list jars and/or directories in the system classpath
     private File[] classpathJars = null;
+    
+    // list of class names in classpathJars
     private List<String> classpathClassNames = null;
+    
+    // list jars and/or directories in the java runtime
     private File[] runtimeJars = null;
+    
+    // list of class names in runtimeJars
     private List<String> runtimeClassNames = null;
+    
+    // list of jars and/or directories defined per project
     private File[] projectJars = null;
+    
+    // list of class names in projectJars
     private List<String> projectClassNames = null;
+    
+    // name of the current project
     private String projectName = null;
+    
+    // a classloader to load classes found in projectJars
+    private AntClassLoader classloader = null;
 
     private static SoftReference<Locator> cachedSingleton;
 
@@ -39,6 +58,9 @@ public final class Locator {
         classpathClassNames = getClassPathClassNames();
         runtimeJars = getRuntimeJars();
         runtimeClassNames = getRuntimeClassNames();
+        projectName = PVHelper.getProjectName( jEdit.getActiveView() );
+        projectJars = getProjectJars( projectName );
+        projectClassNames = getProjectClassNames( projectName );
     }
 
     public static Locator getInstance() {
@@ -102,7 +124,7 @@ public final class Locator {
                 JarEntry entry = ( JarEntry ) entries.nextElement();
                 String classname = entry.getName();
                 if ( classname.endsWith( ".class" ) )
-                    classname = classname.substring( 0, classname.lastIndexOf( "." ) );
+                    classname = classname.substring( 0, classname.lastIndexOf( '.' ) );
                 names.add( classname );
             }
         }
@@ -207,7 +229,7 @@ public final class Locator {
                             classname.startsWith( "org/w3c/" ) ||
                             classname.startsWith( "org/xml/" ) ) {
                         if ( classname.endsWith( ".class" ) )
-                            classname = classname.substring( 0, classname.lastIndexOf( "." ) );
+                            classname = classname.substring( 0, classname.lastIndexOf( '.' ) );
                         names.add( classname );
                     }
                 }
@@ -237,7 +259,10 @@ public final class Locator {
         return getClasses( runtimeClassNames, packageName );
     }
 
-
+    public AntClassLoader getProjectClassLoader() {
+        return classloader;   
+    }
+    
     public File[] getProjectJars( String projectName ) {
         if ( projectName == null ) {
             return null;
@@ -270,15 +295,25 @@ public final class Locator {
             return projectClassNames;
         }
 
+        return reloadProjectClassNames( projectName );
+    }
+    
+    public List<String> reloadProjectClassNames( String projectName ) {
+        // need both a list of names and a classloader for these classes
         File[] jars = getProjectJars( projectName );
+        if (jars == null) {
+            return null;   
+        }
+        classloader = new AntClassLoader();
         List<String> allnames = new ArrayList<String>();
-        for ( int i = 0; i < jars.length; i++ ) {
-            File jar = jars[ i ];
+        for ( File jar : jars ) {
+            classloader.addPathFile( jar );
             List<String> names = getJarClassNames( jar );
             if ( names != null ) {
                 allnames.addAll( names );
             }
         }
+        projectClassNames = allnames;
         return allnames;
     }
 
@@ -294,7 +329,7 @@ public final class Locator {
         }
         if ( projectClassNames == null || !projectName.equals( this.projectName ) ) {
             // need to load jars and class names for the project
-            getProjectClassNames( projectName );
+            projectClassNames = getProjectClassNames( projectName );
         }
         return getClasses( projectClassNames, packageName );
     }
@@ -308,7 +343,7 @@ public final class Locator {
         }
         if ( projectClassNames == null || !projectName.equals( this.projectName ) ) {
             // need to load jars and class names for the project
-            getProjectClassNames( projectName );
+            projectClassNames = getProjectClassNames( projectName );
         }
         return getClassName( projectClassNames, name );
     }
@@ -350,7 +385,7 @@ public final class Locator {
 
     private List<String> getClasses( List<String> classNames, String packageName ) {
         List<String> list = new ArrayList<String>();
-        if ( packageName == null || packageName.length() == 0 ) {
+        if ( packageName == null || packageName.length() == 0 || classNames == null ) {
             return list;
         }
         String name = packageName.replaceAll( "[.]", "/" );
@@ -407,7 +442,7 @@ public final class Locator {
         if ( classes != null ) {
             for ( int i = 0; i < classes.length; i++ ) {
                 String name = classes[ i ].getAbsolutePath();
-                name = name.substring( base.length(), name.lastIndexOf( "." ) );
+                name = name.substring( base.length(), name.lastIndexOf( '.' ) );
                 name = name.replaceAll( "/", "." );
                 allclasses.add( name );
             }
@@ -428,7 +463,7 @@ public final class Locator {
         List classes = getClassesForPath( path );
         for ( Iterator it = classes.iterator(); it.hasNext(); ) {
             String className = ( String ) it.next();
-            if ( className.substring( className.lastIndexOf( "." ) ).equals( name ) ) {
+            if ( className.substring( className.lastIndexOf( '.' ) ).equals( name ) ) {
                 return className;
             }
         }
@@ -480,7 +515,7 @@ public final class Locator {
         if ( url != null ) {
             String u = url.toString();
             if ( u.startsWith( "jar:file:" ) ) {
-                int pling = u.indexOf( "!" );
+                int pling = u.indexOf( '!' );
                 String jarName = u.substring( 4, pling );
                 return new File( fromURI( jarName ) );
             }
