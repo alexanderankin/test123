@@ -2,12 +2,10 @@ package com.addictedtor.orchestra ;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.StringTokenizer;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-import org.af.commons.io.FileTransfer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.FileAppender;
@@ -43,10 +41,12 @@ public class OrchestraPlugin extends EBPlugin {
     public void start() {
     	configureLog4J();
         
+    	OrchestraModes modes = new OrchestraModes() ;
     	try{
-    		deployModes() ;
+    		modes.deployModes() ;
     	} catch( IOException e){}
-    	
+    	modes.loadModes() ;
+
     	String orchestra_rpackage_home = System.getProperty("orchestra.home", "") ;
         if( orchestra_rpackage_home.equals("") ){
         	if( isConfigured() ){
@@ -132,24 +132,5 @@ public class OrchestraPlugin extends EBPlugin {
     	return startup.exists() ;
     }
     
-    private static void deployModes() throws IOException {
-    	String path = getPluginHomePath() ;
-    	File modes_dir = new File( path + "/modes" ) ;
-    	if( !modes_dir.exists() ){
-    		modes_dir.mkdirs() ;
-    	}
-    	StringTokenizer modes = new StringTokenizer( jEdit.getProperty("orchestra.rmodes") );
-    	String mode = null ;
-    	while( modes.hasMoreElements() ){
-    		mode = modes.nextToken() ;
-    		FileTransfer.copyResourceToLocalDir( 
-    				OrchestraPlugin.class.getResource("/modes/"+ mode + ".xml"),
-    				mode + ".xml", modes_dir );
-
-    	}
-    	FileTransfer.copyResourceToLocalDir( 
-				OrchestraPlugin.class.getResource("/modes/catalog"), "catalog", modes_dir );
-
-    }
 }
 
