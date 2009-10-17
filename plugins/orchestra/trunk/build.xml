@@ -25,6 +25,8 @@
             <filename name="orchestra_icon.ico"/>
             <filename name="orchestra_icon.png"/>
             <filename name="orchestra_properties.txt" />
+            <filename name="modes/*.xml" />
+            <filename name="modes/catalog" />
         </or>
     </selector>
 
