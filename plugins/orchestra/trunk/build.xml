@@ -39,6 +39,7 @@
     </path>
 
     <target name="build.prepare" depends="clean">
+    	
         <mkdir dir="${build.dir}"/>
         
         <copy file="${jar_afcommons}"               todir="${install.dir}" />
