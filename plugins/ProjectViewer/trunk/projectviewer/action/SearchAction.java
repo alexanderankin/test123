@@ -85,26 +85,27 @@ public class SearchAction extends Action {
 	} //}}}
 
 	//{{{ +actionPerformed(ActionEvent) : void
-	/** Creates a new project. */
+	/** Opens the search dialog according to the current context. */
 	public void actionPerformed(ActionEvent e) {
-		if (node == null && viewer != null) {
-			node = viewer.getSelectedNode();
+		VPTNode searchIn = this.node;
+		if (searchIn == null && viewer != null) {
+			searchIn = viewer.getSelectedNode();
 		}
-		if (node == null) {
-			node = ProjectViewer.getActiveProject(jEdit.getActiveView());
+		if (searchIn == null) {
+			searchIn = ProjectViewer.getActiveProject(jEdit.getActiveView());
 		}
-		if (node != null) {
-			if (node.isProject()) {
+		if (searchIn != null) {
+			if (searchIn.isProject()) {
 				ProjectManager mgr = ProjectManager.getInstance();
-				if (!mgr.isLoaded(node.getName())) {
-					node = mgr.getProject(node.getName());
+				if (!mgr.isLoaded(searchIn.getName())) {
+					searchIn = mgr.getProject(searchIn.getName());
 				}
-			} else if (node.isLeaf()) {
-				node = (VPTNode) node.getParent();
+			} else if (searchIn.isLeaf()) {
+				searchIn = (VPTNode) searchIn.getParent();
 			}
 
 			String selected = jEdit.getActiveView().getTextArea().getSelectedText();
-			SearchAndReplace.setSearchFileSet(new NodeFileSet(node));
+			SearchAndReplace.setSearchFileSet(new NodeFileSet(searchIn));
 			SearchDialog.showSearchDialog(jEdit.getActiveView(),
 										  selected,
 										  SearchDialog.DIRECTORY);
