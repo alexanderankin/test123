@@ -27,3 +27,6 @@ options.orchestra.rhome.path=
 options.orchestra.shortcut.title=Set directory for Orchestra shortcut
 options.orchestra.shortcut.path=
 options.orchestra.advanced.title=Advanced settings
+
+orchestra.rmodes=html.brew r r4x rd rnamespace sweave tex.brew xml.brew
+
