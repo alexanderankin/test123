@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE MODE SYSTEM "xmode.dtd">
+
+<MODE>
+	<PROPS>
+		<PROPERTY NAME="commentStart" VALUE="&lt;!--" />
+		<PROPERTY NAME="commentEnd" VALUE="--&gt;" />
+	</PROPS>
+	<RULES IGNORE_CASE="TRUE">
+
+    
+    <!-- brew template -->
+    <SPAN TYPE="MARKUP" >
+      <BEGIN>&lt;%%</BEGIN>
+      <END>%%&gt;</END>
+    </SPAN>
+    
+    <!-- brew value -->
+    <SPAN DELEGATE="R::MAIN" >
+      <BEGIN>&lt;%=</BEGIN>
+      <END>%&gt;</END>
+    </SPAN>
+    
+    <!-- brew  -->
+    <SPAN DELEGATE="R::MAIN" >
+      <BEGIN>&lt;%</BEGIN>
+      <END>%&gt;</END>
+    </SPAN>
+
+<IMPORT DELEGATE="html::TAGS" />
+  
+  </RULES>
+
+  
+</MODE>

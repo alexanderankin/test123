@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE MODE SYSTEM "xmode.dtd">
+
+<MODE>
+	<PROPS>
+		<PROPERTY NAME="commentStart" VALUE="&lt;!--" />
+		<PROPERTY NAME="commentEnd" VALUE="--&gt;" />
+	</PROPS>
+	<RULES>
+    <IMPORT DELEGATE="xml::MAIN" />
+    
+    <!-- brew template -->
+    <SPAN_REGEXP DELEGATE="R::MAIN" NO_LINE_BREAK="FALSE">
+      <BEGIN>&lt;%%(%*)</BEGIN>
+      <END>%%$1&gt;</END>
+    </SPAN>
+    
+    <!-- brew value -->
+    <SPAN DELEGATE="R::MAIN" >
+      <BEGIN>&lt;%=</BEGIN>
+      <END>%&gt;</END>
+    </SPAN>
+    
+    <!-- brew  -->
+    <SPAN DELEGATE="R::MAIN" >
+      <BEGIN>&lt;%</BEGIN>
+      <END>%&gt;</END>
+    </SPAN>
+    
+	</RULES>
+</MODE>

@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE MODE SYSTEM "xmode.dtd">
+
+<MODE>
+ 	<PROPS>
+  		<PROPERTY NAME="indentOpenBrackets" VALUE="{" />
+  		<PROPERTY NAME="indentCloseBrackets" VALUE="}" />
+  		<PROPERTY NAME="indentPrevLine" VALUE="\s*(((if|while)\s*\(|else\s*(\{|$)|else\s+if\s*\(|for\s*\(.*)|repeat\s*" />
+  		<PROPERTY NAME="wordBreakChars" VALUE=",+-=&lt;&gt;/?^&amp;*!" />
+  		<PROPERTY NAME="doubleBracketIndent" VALUE="false" />
+  		<PROPERTY NAME="lineComment" VALUE="#" />
+ 	</PROPS>
+
+ 	<RULES ESCAPE="\" IGNORE_CASE="FALSE" HIGHLIGHT_DIGITS="TRUE">
+  		<SPAN TYPE="LITERAL1" NO_LINE_BREAK="TRUE">
+   			<BEGIN>"</BEGIN>
+ 		  	<END>"</END>
+ 		</SPAN>
+
+ 	 <SPAN TYPE="LITERAL1" NO_LINE_BREAK="TRUE">
+  			<BEGIN>'</BEGIN>
+  			<END>'</END>
+ 		</SPAN>
+
+		<EOL_SPAN TYPE="COMMENT1">#</EOL_SPAN>
+    <EOL_SPAN TYPE="COMMENT2">##</EOL_SPAN>
+    <EOL_SPAN TYPE="COMMENT3">###</EOL_SPAN>
+
+    
+    
+    
+		<WHITESPACE> </WHITESPACE>
+		<WHITESPACE>	</WHITESPACE>
+
+		<!-- uncomment this if you want user defined functions to be highlighted, too -->
+		<!-- <MARK_PREVIOUS EXCLUDE_MATCH="TRUE" TYPE="FUNCTION">(</MARK_PREVIOUS> -->
+
+  <KEYWORDS IGNORE_CASE="FALSE">
+   	<LITERAL2>NULL</LITERAL2>
+    <KEYWORD1>exportPattern</KEYWORD1>
+    <KEYWORD1>export</KEYWORD1>
+    <KEYWORD1>import</KEYWORD1>
+    <KEYWORD1>importFrom</KEYWORD1>
+    <KEYWORD1>S3method</KEYWORD1>
+    <KEYWORD1>exportMethods</KEYWORD1>
+    <KEYWORD1>exportClasses</KEYWORD1>     
+    <KEYWORD1>importClassesFrom</KEYWORD1>
+    <KEYWORD1>importMethodsFrom</KEYWORD1>
+	 </KEYWORDS>
+
+ </RULES>
+</MODE>

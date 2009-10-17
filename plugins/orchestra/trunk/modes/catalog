@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!DOCTYPE MODES SYSTEM "catalog.dtd">
+<MODES>
+  <MODE NAME="R"	FILE="r.xml" FILE_NAME_GLOB="*.R" FIRST_LINE_GLOB="#!/*{R,Rscript}" />
+  <MODE NAME="r4x"	FILE="r4x.xml" />
+  <MODE NAME="Rd"	FILE="rd.xml" FILE_NAME_GLOB="*.Rd" />
+  <MODE NAME="Rnamespace"	FILE="rnamespace.xml" FILE_NAME_GLOB="NAMESPACE" />
+  <MODE NAME="texbrew"	FILE="tex.brew.xml" FILE_NAME_GLOB="*.tex.brew" />
+  <MODE NAME="htmlbrew"	FILE="html.brew.xml" FILE_NAME_GLOB="*.html.brew" />
+  <MODE NAME="xmlbrew"	FILE="xml.brew.xml" FILE_NAME_GLOB="*.xml.brew" />
+  <MODE NAME="sweave"	FILE="sweave.xml" FILE_NAME_GLOB="*.{R,S}nw" />
+</MODES>

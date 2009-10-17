@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE MODE SYSTEM "xmode.dtd">
+
+<MODE>
+	<PROPS>
+    <PROPERTY NAME="lineComment" VALUE="%" />
+    <PROPERTY NAME="deepIndent" VALUE="FALSE" />
+    <PROPERTY NAME="wordBreakChars" VALUE="" />
+    <PROPERTY NAME="noWordSep" VALUE="\@_-:*&lt;&gt;" />
+  </PROPS>
+  
+	<RULES IGNORE_CASE="FALSE">
+		
+    <!-- brew template -->
+    <SPAN DELEGATE="R::MAIN" >
+      <BEGIN>&lt;%%</BEGIN>
+      <END>%%&gt;</END>
+    </SPAN>
+    
+    <!-- brew value -->
+    <SPAN DELEGATE="R::MAIN" >
+      <BEGIN>&lt;%=</BEGIN>
+      <END>%&gt;</END>
+    </SPAN>
+        
+    <SPAN TYPE="COMMENT1" DELEGATE="VERBATIM">
+            <BEGIN>&lt;%#</BEGIN>
+            <END>%&gt;</END>
+    </SPAN>
+    
+    <!-- brew  -->
+    <SPAN DELEGATE="R::MAIN" >
+      <BEGIN>&lt;%</BEGIN>
+      <END>%&gt;</END>
+    </SPAN>
+		
+		<IMPORT DELEGATE="latex::MAIN" />
+  </RULES>  
+	<RULES SET="VERBATIM" DEFAULT="NULL" />
+
+</MODE>

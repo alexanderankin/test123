@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE MODE SYSTEM "xmode.dtd">
+
+<MODE>
+	<PROPS>
+		<PROPERTY NAME="commentStart" VALUE="&lt;!--" />
+		<PROPERTY NAME="commentEnd" VALUE="--&gt;" />
+	</PROPS>
+
+	<RULES>
+    <IMPORT DELEGATE="xml::MAIN" />
+	</RULES>
+
+	</MODE>

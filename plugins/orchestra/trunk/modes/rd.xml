@@ -1,0 +1,103 @@
+<?xml version="1.0" ?>
+<!DOCTYPE MODE SYSTEM "xmode.dtd"> 
+
+<!-- 	jedit edit mode file for documentation files of statistical programming 
+  language R,	written by Jarek Tuszynski.
+	
+	Installing instructions:
+	Copy this file in your jedit/modes directory, then edit file 'catalog' and 
+  add an entry for Rd. -->
+
+<MODE>
+	<PROPS>
+		<PROPERTY NAME="indentOpenBrackets" VALUE="{" />
+		<PROPERTY NAME="indentCloseBrackets" VALUE="}" />
+	</PROPS>
+	<RULES ESCAPE="\" IGNORE_CASE="FALSE" HIGHLIGHT_DIGITS="TRUE">
+		<SPAN TYPE="LITERAL1" NO_LINE_BREAK="TRUE">
+			<BEGIN>"</BEGIN>
+			<END>"</END>
+		</SPAN>
+		<EOL_SPAN TYPE="COMMENT1">#</EOL_SPAN>
+		<SEQ TYPE="OPERATOR">{</SEQ>
+		<SEQ TYPE="OPERATOR">}</SEQ>
+		<KEYWORDS IGNORE_CASE="FALSE">
+      <!-- Rd-section-names -->
+			<KEYWORD1>\alias</KEYWORD1>
+			<KEYWORD1>\author</KEYWORD1>
+			<KEYWORD1>\arguments</KEYWORD1>
+			<KEYWORD1>\description</KEYWORD1>
+			<KEYWORD1>\details</KEYWORD1>
+			<KEYWORD1>\examples</KEYWORD1>
+			<KEYWORD1>\keyword</KEYWORD1>
+ 			<KEYWORD1>\name</KEYWORD1>
+			<KEYWORD1>\note</KEYWORD1>
+			<KEYWORD1>\references</KEYWORD1>
+			<KEYWORD1>\seealso</KEYWORD1>
+			<KEYWORD1>\synopsis</KEYWORD1>
+			<KEYWORD1>\title</KEYWORD1>     
+			<KEYWORD1>\usage</KEYWORD1>
+			<KEYWORD1>\value</KEYWORD1>
+      <!--  -->
+			<KEYWORD2>\concept</KEYWORD2>
+			<KEYWORD2>\describe</KEYWORD2>
+			<KEYWORD2>\docType</KEYWORD2>
+			<KEYWORD2>\format</KEYWORD2>
+			<KEYWORD2>\itemize</KEYWORD2>
+			<KEYWORD2>\item</KEYWORD2>
+			<KEYWORD2>\preformatted</KEYWORD2>
+			<KEYWORD2>\section</KEYWORD2>
+			<KEYWORD2>\source</KEYWORD2>
+			<KEYWORD2>\tabular</KEYWORD2>
+      <!-- fonts -->
+			<KEYWORD3>\bold</KEYWORD3>
+			<KEYWORD3>\code</KEYWORD3>
+			<KEYWORD3>\emph</KEYWORD3>
+ 			<KEYWORD2>\link</KEYWORD2>
+			<KEYWORD2>\enumerate</KEYWORD2>
+ 			<KEYWORD3>\email</KEYWORD3>
+ 			<KEYWORD2>\eqn</KEYWORD2>
+ 			<KEYWORD3>\url</KEYWORD3>
+ 		  <KEYWORD3>\strong</KEYWORD3>
+      <!-- Greek alphabet -->
+			<KEYWORD3>\Alpha</KEYWORD3>
+			<KEYWORD3>\Gamma</KEYWORD3>
+			<KEYWORD3>\alpha</KEYWORD3>
+			<KEYWORD3>\beta</KEYWORD3>
+			<KEYWORD3>\epsilon</KEYWORD3>
+			<KEYWORD3>\lambda</KEYWORD3>
+			<KEYWORD3>\mu</KEYWORD3>
+			<KEYWORD3>\pi</KEYWORD3>
+			<KEYWORD3>\sigma</KEYWORD3>
+			<KEYWORD3>\ge</KEYWORD3>
+ 			<KEYWORD3>\le</KEYWORD3>
+      <!-- keywords -->
+			<KEYWORD3>\acronym</KEYWORD3>
+			<KEYWORD3>\cite</KEYWORD3>
+			<KEYWORD3>\command</KEYWORD3>
+			<KEYWORD3>\cr</KEYWORD3>
+			<KEYWORD3>\dQuote</KEYWORD3>
+			<KEYWORD2>\deqn</KEYWORD2>
+			<KEYWORD3>\dfn</KEYWORD3>
+			<KEYWORD3>\dontshow</KEYWORD3>
+			<KEYWORD3>\dots</KEYWORD3>
+			<KEYWORD3>\env</KEYWORD3>
+			<KEYWORD3>\file</KEYWORD3>
+			<KEYWORD3>\kbd</KEYWORD3>
+			<KEYWORD3>\ldots</KEYWORD3>
+			<KEYWORD3>\left</KEYWORD3>
+			<KEYWORD2>\method</KEYWORD2>
+			<KEYWORD3>\option</KEYWORD3>
+			<KEYWORD3>\pkg</KEYWORD3>
+			<KEYWORD3>\right</KEYWORD3>
+			<KEYWORD3>\sQuote</KEYWORD3>
+			<KEYWORD3>\samp</KEYWORD3>
+			<KEYWORD3>\R</KEYWORD3>
+			<KEYWORD3>\S3metchod</KEYWORD3>
+			<KEYWORD3>\S4method</KEYWORD3>
+			<KEYWORD3>\tab</KEYWORD3>
+			<KEYWORD3>\var</KEYWORD3>
+			<KEYWORD3>\dontrun</KEYWORD3>
+		</KEYWORDS>
+	</RULES>
+</MODE>

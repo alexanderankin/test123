@@ -1,0 +1,358 @@
+<?xml version="1.0"?>
+<!DOCTYPE MODE SYSTEM "xmode.dtd">
+
+<MODE>
+
+	<!-- {{{ Properties -->
+ 	<PROPS>
+  		<PROPERTY NAME="indentOpenBrackets" VALUE="{" />
+  		<PROPERTY NAME="indentCloseBrackets" VALUE="}" />
+  		<PROPERTY NAME="indentPrevLine" VALUE="\s*(((if|while)\s*\(|else\s*(\{|$)|else\s+if\s*\(|for\s*\(.*)|repeat\s*" />
+  		<PROPERTY NAME="wordBreakChars" VALUE=",+-=&lt;&gt;/?^&amp;*!" />
+  		<PROPERTY NAME="doubleBracketIndent" VALUE="false" />
+  		<PROPERTY NAME="lineComment" VALUE="#" />
+ 	</PROPS>
+	<!-- }}} -->
+
+	<!-- {{{ Main ruleset -->
+ 	<RULES ESCAPE="\" IGNORE_CASE="FALSE" HIGHLIGHT_DIGITS="TRUE">
+  	
+		<!-- {{{ strings (double quotes) -->
+    	<SPAN TYPE="LITERAL1">
+   			<BEGIN>"</BEGIN>
+ 		  	<END>"</END>
+ 		</SPAN>
+		<!-- }}} -->
+    	
+    	<!-- {{{ inline XML (R4X) -->
+		<SPAN DELEGATE="r4x::MAIN" >
+      		<BEGIN>'##((xml</BEGIN>
+      		<END>'##xml))</END>
+		</SPAN>
+		<!--}}}-->
+ 
+		<!-- {{{ Roxygen comment -->
+		<EOL_SPAN TYPE="COMMENT3" 
+			DELEGATE="ROXYGEN" 
+			AT_LINE_START="TRUE">#'</EOL_SPAN>
+		<!-- }}} -->
+		
+		<!-- {{{ strings (single quotes) -->
+		<SPAN TYPE="LITERAL1">
+  			<BEGIN>'</BEGIN>
+  			<END>'</END>
+ 		</SPAN>
+		<!-- }}} -->
+    
+		<!-- {{{ strings (`) -->
+		<SPAN TYPE="LITERAL1">
+  			<BEGIN>`</BEGIN>
+  			<END>`</END>
+ 		</SPAN>
+		<!-- }}} -->
+	
+		<!-- {{{ documentation comments -->
+		<EOL_SPAN TYPE="COMMENT2">###</EOL_SPAN>
+		<!-- }}} -->
+		
+		<!-- {{{ simple inline comments -->
+		<EOL_SPAN TYPE="COMMENT1">#</EOL_SPAN>
+		<!-- }}} -->
+
+    	<!-- {{{ operators (including user defined) -->
+    	<SPAN TYPE="OPERATOR" NO_LINE_BREAK="TRUE" NO_WORD_BREAK="FALSE" >
+    	  <BEGIN>%</BEGIN>
+    	  <END>%</END>
+    	</SPAN>  
+		<!--}}}-->
+        
+		<!-- {{{ function calls -->
+    	<MARK_PREVIOUS MATCH_TYPE="OPERATOR" TYPE="FUNCTION">(</MARK_PREVIOUS>
+		<!-- }}} -->
+		
+		<!-- {{{ subsetting
+    	<MARK_PREVIOUS MATCH_TYPE="OPERATOR" TYPE="LITERAL4">[[</MARK_PREVIOUS>
+    	<MARK_PREVIOUS MATCH_TYPE="OPERATOR" TYPE="LITERAL4">$</MARK_PREVIOUS>
+    	<MARK_PREVIOUS MATCH_TYPE="OPERATOR" TYPE="LITERAL3">[</MARK_PREVIOUS>
+    	<MARK_PREVIOUS MATCH_TYPE="OPERATOR" TYPE="LITERAL4">@</MARK_PREVIOUS>
+        }}} -->
+		    
+		<!-- {{{ language operators -->
+		<SEQ TYPE="OPERATOR">(</SEQ>           
+		<SEQ TYPE="OPERATOR">)</SEQ>
+		<SEQ TYPE="OPERATOR">&lt;-</SEQ>
+		<SEQ TYPE="OPERATOR">-&gt;</SEQ>
+		<SEQ TYPE="OPERATOR">&gt;=</SEQ>
+		<SEQ TYPE="OPERATOR">&lt;=</SEQ>
+		<SEQ TYPE="OPERATOR">==</SEQ>
+		<SEQ TYPE="OPERATOR">!=</SEQ>
+		<SEQ TYPE="OPERATOR">=</SEQ>
+		<SEQ TYPE="OPERATOR">!</SEQ>
+		<SEQ TYPE="OPERATOR">&amp;&amp;</SEQ>
+		<SEQ TYPE="OPERATOR">||</SEQ>
+		<SEQ TYPE="OPERATOR">|</SEQ>
+		<SEQ TYPE="OPERATOR">&amp;</SEQ>
+		<SEQ TYPE="OPERATOR">~</SEQ>
+		<SEQ TYPE="OPERATOR">$</SEQ>
+		<SEQ TYPE="OPERATOR">:</SEQ>
+		<SEQ TYPE="OPERATOR">&gt;</SEQ>
+		<SEQ TYPE="OPERATOR">&lt;</SEQ>
+		<SEQ TYPE="OPERATOR">+</SEQ>
+		<SEQ TYPE="OPERATOR">-</SEQ>
+		<SEQ TYPE="OPERATOR">*</SEQ>
+		<SEQ TYPE="OPERATOR">/</SEQ>
+		<SEQ TYPE="OPERATOR">^</SEQ>
+		<SEQ TYPE="OPERATOR">{</SEQ>
+		<SEQ TYPE="OPERATOR">}</SEQ>
+		<SEQ TYPE="OPERATOR">[</SEQ>
+		<SEQ TYPE="OPERATOR">]</SEQ>
+        <!-- }}} -->
+
+ 
+ <!-- {{{ keywords -->
+		<KEYWORDS>
+			
+		  <!--{{{ KEYWORD1 : core language constructs -->
+			
+		  <KEYWORD1>for</KEYWORD1>
+   		  <KEYWORD1>function</KEYWORD1>
+   		  <KEYWORD1>if</KEYWORD1>
+   		  <KEYWORD1>else</KEYWORD1>
+   		  <KEYWORD1>ifelse</KEYWORD1>
+   		  <KEYWORD1>in</KEYWORD1>
+   		  <KEYWORD1>repeat</KEYWORD1>
+    	  <KEYWORD1>return</KEYWORD1>
+    	  <KEYWORD1>switch</KEYWORD1>
+    	  <KEYWORD1>while</KEYWORD1>
+    	  <KEYWORD1>break</KEYWORD1>
+   		  <KEYWORD1>next</KEYWORD1>
+		  <KEYWORD1>c</KEYWORD1>
+		  
+		  
+		  <!-- maybe the following should be somewhere else -->
+		  <KEYWORD1>expression</KEYWORD1>
+		  <KEYWORD1>quote</KEYWORD1>
+		  <KEYWORD1>parse</KEYWORD1>
+		  <KEYWORD1>deparse</KEYWORD1>
+		  <KEYWORD1>substitute</KEYWORD1>
+		  <KEYWORD1>get</KEYWORD1>
+		  <KEYWORD1>getAnywhere</KEYWORD1>
+		  <KEYWORD1>assign</KEYWORD1>
+		  <KEYWORD1>exists</KEYWORD1>
+		  <KEYWORD1>expression</KEYWORD1>
+		  <KEYWORD1>bquote</KEYWORD1>
+		  <KEYWORD1>typeof</KEYWORD1>
+		  <KEYWORD1>mode</KEYWORD1>
+		  <KEYWORD1>eval</KEYWORD1>
+		  <KEYWORD1>evalq</KEYWORD1>
+		  <KEYWORD1>with</KEYWORD1>
+		  
+    	  <!-- }}} -->
+				
+		  <!--{{{ LITERAL2 : constants -->
+				
+			<LITERAL2>NULL</LITERAL2>
+    	  <LITERAL2>Inf</LITERAL2>
+   		  <LITERAL2>NULL</LITERAL2>
+    	  <LITERAL2>NA</LITERAL2>
+    	  <LITERAL2>NaN</LITERAL2>
+    	  <LITERAL2>T</LITERAL2>
+    	  <LITERAL2>TRUE</LITERAL2>
+    	  <LITERAL2>F</LITERAL2>
+   		  <LITERAL2>FALSE</LITERAL2>
+   		  <LITERAL2>pi</LITERAL2>
+				<LITERAL2>NA_character_</LITERAL2> 
+				<LITERAL2>NA_complex_</LITERAL2>
+				<LITERAL2>NA_integer_</LITERAL2>
+				<LITERAL2>NA_real_</LITERAL2>
+   		  <!-- }}} -->
+		  
+		  <!--{{{ KEYWORD2 : debugging -->
+				
+				<KEYWORD2>browser</KEYWORD2>
+				<KEYWORD2>debug</KEYWORD2>
+				<KEYWORD2>trace</KEYWORD2>
+				<KEYWORD2>traceback</KEYWORD2>
+				<KEYWORD2>recover</KEYWORD2>
+				<KEYWORD2>undebug</KEYWORD2>
+				<KEYWORD2>isdebugged</KEYWORD2>
+				<KEYWORD2>bp</KEYWORD2>
+				<KEYWORD2>mtrace</KEYWORD2>
+		<!-- }}} -->
+				
+		  <!--{{{ KEYWORD3 : error handling -->
+    	  <KEYWORD3>try</KEYWORD3>
+				<KEYWORD3>tryCatch</KEYWORD3>
+				<KEYWORD3>withRestarts</KEYWORD3>
+				<KEYWORD3>withCallingHandlers</KEYWORD3>
+				<KEYWORD3>stop</KEYWORD3>
+				<KEYWORD3>stopifnot</KEYWORD3>
+				<KEYWORD3>geterrmessage</KEYWORD3>
+				
+				<KEYWORD3>warning</KEYWORD3>
+				<KEYWORD3>signalCondition</KEYWORD3>
+				<KEYWORD3>simpleCondition</KEYWORD3>
+    	  <KEYWORD3>simpleError</KEYWORD3>
+    	  <KEYWORD3>simpleWarning</KEYWORD3>
+    	  <KEYWORD3>simpleMessage</KEYWORD3>
+				<KEYWORD3>conditionCall</KEYWORD3>
+    	  <KEYWORD3>conditionMessage</KEYWORD3>
+				<KEYWORD3>computeRestarts</KEYWORD3>
+    	  <KEYWORD3>findRestart</KEYWORD3>
+    	  <KEYWORD3>invokeRestart</KEYWORD3>
+    	  <KEYWORD3>invokeRestartInteractively</KEYWORD3>
+				<KEYWORD3>isRestart</KEYWORD3>
+    	  <KEYWORD3>restartDescription</KEYWORD3>
+    	  <KEYWORD3>restartFormals</KEYWORD3>
+				<KEYWORD3>.signalSimpleWarning</KEYWORD3>
+    	  <KEYWORD3>.handleSimpleError</KEYWORD3>
+    	<!-- }}} -->
+		
+		  <!--{{{ KEYWORD4 : Object Oriented (S3 and S4) -->
+				<KEYWORD4>class</KEYWORD4>
+   		  <KEYWORD4>inherits</KEYWORD4>
+    	  <KEYWORD4>setClass</KEYWORD4>
+    	  <KEYWORD4>representation</KEYWORD4>
+    	  <KEYWORD4>structure</KEYWORD4>
+    	  <KEYWORD4>methods</KEYWORD4>
+    	  <KEYWORD4>setIs</KEYWORD4>
+    	  <KEYWORD4>slot</KEYWORD4>
+    	  <KEYWORD4>new</KEYWORD4>
+    	  <KEYWORD4>setMethod</KEYWORD4>
+    	  <KEYWORD4>validObject</KEYWORD4>
+    	  <KEYWORD4>setValidity</KEYWORD4>
+    	  <KEYWORD4>getValidity</KEYWORD4>
+    	  <KEYWORD4>initialize</KEYWORD4>
+    	  <KEYWORD4>setOldClass</KEYWORD4>
+    	  <KEYWORD4>callNextMethod</KEYWORD4>
+    	  <KEYWORD4>NextMethod</KEYWORD4>
+    	  <KEYWORD4>UseMethod</KEYWORD4>
+		  <KEYWORD4>getS3method</KEYWORD4>
+		<!-- }}} -->		
+				
+		  <!--{{{ LITERAL4: apply functions-->
+		  <LITERAL4>lapply</LITERAL4>
+		  <LITERAL4>sapply</LITERAL4>
+		  <LITERAL4>by</LITERAL4>
+		  <LITERAL4>mapply</LITERAL4>
+		  <LITERAL4>tapply</LITERAL4>
+		  <LITERAL4>apply</LITERAL4>
+		  <LITERAL4>replicate</LITERAL4>
+		  <LITERAL4>aggregate</LITERAL4>      
+		  
+		  <!-- package reshape -->
+		  <LITERAL4>melt</LITERAL4>
+		  <LITERAL4>cast</LITERAL4>
+		  
+		  <!-- package plyr -->
+			<LITERAL4>aaply</LITERAL4>
+			<LITERAL4>adply</LITERAL4>
+			<LITERAL4>alply</LITERAL4>
+			<LITERAL4>a_ply</LITERAL4>
+			<LITERAL4>daply</LITERAL4>
+			<LITERAL4>ddply</LITERAL4>
+			<LITERAL4>dlply</LITERAL4>
+			<LITERAL4>d_ply</LITERAL4>
+			<LITERAL4>laply</LITERAL4>
+			<LITERAL4>ldply</LITERAL4>
+			<LITERAL4>llply</LITERAL4>
+			<LITERAL4>l_ply</LITERAL4>
+			<LITERAL4>maply</LITERAL4>
+			<LITERAL4>mdply</LITERAL4>
+			<LITERAL4>mlply</LITERAL4>
+			<LITERAL4>m_ply</LITERAL4>
+			<LITERAL4>raply</LITERAL4>
+			<LITERAL4>rdply</LITERAL4>
+			<LITERAL4>rlply</LITERAL4>
+			<LITERAL4>r_ply</LITERAL4>
+			<LITERAL4>tryapply</LITERAL4>
+		  <!--}}}-->
+		    
+		
+		 </KEYWORDS>
+		 <!--}}}-->
+ 
+		
+ </RULES>
+ <!-- }}} -->
+
+ 	<!-- {{{ Roxygen
+	rules, whatever after on line that starts with #' -->
+	<RULES SET="ROXYGEN" DEFAULT="COMMENT3">
+ 
+		 <EOL_SPAN_REGEXP 
+		 	TYPE="LABEL" 
+			DELEGATE="ROXYGEN_PARAM">@param\s</EOL_SPAN_REGEXP>
+		 
+		 <EOL_SPAN_REGEXP 
+		 	TYPE="LABEL" 
+			DELEGATE="ROXYGEN_METHOD">@method\s</EOL_SPAN_REGEXP>
+		 
+	 	<KEYWORDS>
+				<LABEL>@author</LABEL>
+       		<LABEL>@aliases</LABEL>
+       		<LABEL>@concept</LABEL>
+       		<LABEL>@example</LABEL>
+       		<LABEL>@examples</LABEL>
+       		<LABEL>@keywords</LABEL>
+       		<LABEL>@name</LABEL>
+       		<LABEL>@note</LABEL>
+       		<LABEL>@references</LABEL>
+       		<LABEL>@return</LABEL>
+       		<LABEL>@seealso</LABEL>
+       		<LABEL>@title</LABEL>
+       		<LABEL>@TODO</LABEL>
+       		<LABEL>@usage</LABEL>
+			
+			<LABEL>@export</LABEL>
+			<LABEL>@exportClass</LABEL>
+			<LABEL>@exportMethod</LABEL>
+			<LABEL>@exportPattern</LABEL>
+			<LABEL>@S3method</LABEL>
+			<LABEL>@import</LABEL>
+			<LABEL>@importFrom</LABEL>
+			<LABEL>@importClassesFrom</LABEL>
+			<LABEL>@importMethodsFrom</LABEL>
+		
+			<LABEL>@callGraph</LABEL>
+			<LABEL>@callGraphPrimitives</LABEL>
+			<LABEL>@callGraphDepth</LABEL>
+			
+		</KEYWORDS>
+	  
+	</RULES>
+	
+ 	<RULES SET="ROXYGEN_PARAM" 
+		IGNORE_CASE="TRUE">
+		<EOL_SPAN_REGEXP 
+		 	TYPE="FUNCTION" 
+			DELEGATE="ROXYGEN_PARAM_NAME"
+			>([^\s]*)\s</EOL_SPAN_REGEXP>
+	</RULES>	
+	
+	 <RULES SET="ROXYGEN_PARAM_NAME" 
+	 	DEFAULT="COMMENT3"/>
+	
+	<RULES SET="ROXYGEN_METHOD">
+		<EOL_SPAN_REGEXP 
+		 	TYPE="FUNCTION" 
+			DELEGATE="ROXYGEN_METHOD_METHODNAME"
+			>([^\s]*)\s</EOL_SPAN_REGEXP>
+	</RULES>	
+	
+	 <RULES SET="ROXYGEN_METHOD_METHODNAME">
+		
+		<EOL_SPAN_REGEXP 
+		 	TYPE="COMMENT4" 
+			DELEGATE="ROXYGEN_METHOD_METHODCLASS"
+			>([^\s]*)\s</EOL_SPAN_REGEXP>
+	 </RULES>	
+	
+	 <RULES SET="ROXYGEN_METHOD_METHODCLASS" 
+	 	DEFAULT="COMMENT3"/>
+	
+		<!-- }}} -->
+
+	<!-- # :tabSize=4:indentSize=4:noTabs=false:folding=explicit:collapseFolds=1: -->
+</MODE>
+
