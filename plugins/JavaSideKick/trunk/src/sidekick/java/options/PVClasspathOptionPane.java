@@ -17,6 +17,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 
 import sidekick.java.PVHelper;
+import sidekick.java.util.Locator;
 
 
 /**
@@ -125,6 +126,8 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
             PREFIX + name + ".optionalBuildpath",
             buildPath.getText()
         );
+        
+        Locator.getInstance().reloadProjectClassNames( name );
     }
 
     public void addComponent( JComponent comp ) {
