@@ -1,6 +1,7 @@
-// $Id$
 package ise.plugin.bmp;
 
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.*;
 import java.util.*;
 
@@ -51,72 +52,78 @@ import org.gjt.sp.jedit.msg.ViewUpdate;
  * but implementation now does not actually use line separator and encoding
  * settings.
  *
+ * This class implements WindowListener, then is attached to each view so that
+ * the auto-close timer only applies when the window is actually active.  If
+ * the window is deactivated or iconified, the timer is stopped.
+ *
  * @author    Dale Anson, danson@germane-software.com
  * @version   $Revision$
  * @since     Oct 1, 2003
  */
-public class BufferLocalPlugin extends EBPlugin {
+public class BufferLocalPlugin extends EBPlugin implements WindowListener {
 
     // runs once every 10 minutes at a low priority to clean up the map
     Thread janitor = createJanitorThread();
-    
+
     private Thread createJanitorThread() {
         return new Thread() {
-            public void run() {
-                setPriority( Thread.MIN_PRIORITY );
-                while ( canClean ) {
-                    if ( map.size() > 0 ) {
-                        synchronized ( map ) {
-                            try {
-                                // do 2 loops to avoid ConcurrentModificationExceptions
-                                List to_remove = new ArrayList();
-                                Iterator it = map.keySet().iterator();
-                                while ( it.hasNext() ) {
-                                    String filename = ( String ) it.next();
-                                    File f = new File( filename );
-                                    if ( !f.exists() ) {
-                                        to_remove.add( filename );
-                                    }
-                                }
-                                it = to_remove.iterator();
-                                while ( it.hasNext() ) {
-                                    map.remove( it.next() );
-                                }
-                            }
-                            catch ( Exception e ) {     // NOPMD
-                                // ignored
-                            }
-                        }
-                    }
-                    try {
-                        sleep( ( long ) TEN_MINUTES );
-                    }
-                    catch ( InterruptedException e ) {
-                        // ignored
-                    }
-                }
-            }
-        };
+                   public void run() {
+                       setPriority( Thread.MIN_PRIORITY );
+                       while ( true ) {
+                           if ( canClean && map.size() > 0 ) {
+                               synchronized ( map ) {
+                                   try {
+                                       // do 2 loops to avoid ConcurrentModificationExceptions
+                                       List to_remove = new ArrayList();
+                                       Iterator it = map.keySet().iterator();
+                                       while ( it.hasNext() ) {
+                                           String filename = ( String ) it.next();
+                                           File f = new File( filename );
+                                           if ( !f.exists() ) {
+                                               to_remove.add( filename );
+                                           }
+                                       }
+                                       it = to_remove.iterator();
+                                       while ( it.hasNext() ) {
+                                           map.remove( it.next() );
+                                       }
+                                   }
+                                   catch ( Exception e ) {     // NOPMD
+                                       // ignored
+                                   }
+                               }
+                           }
+                           try {
+                               sleep( ( long ) TEN_MINUTES );
+                           }
+                           catch ( InterruptedException e ) {
+                               // ignored
+                           }
+                       }
+                   }
+               };
     }
 
     // runs once every staleTime minutes at a low priority to auto-close stale buffers
     Thread bufferCleaner = createBufferCleanerThread();
-    
+
     private Thread createBufferCleanerThread() {
         return new Thread() {
-            public void run() {
-                setPriority( Thread.MIN_PRIORITY );
-                while ( removeStale ) {
-                    try {
-                        closeFiles();
-                        sleep( ( long ) staleTime );
-                    }
-                    catch ( InterruptedException e ) {
-                        // ignored
-                    }
-                }
-            }
-        };
+                   public void run() {
+                       setPriority( Thread.MIN_PRIORITY );
+                       while ( removeStale ) {
+                           try {
+                               if ( canClose ) {
+                                   closeFiles();
+                               }
+                               sleep( ( long ) staleTime );
+                           }
+                           catch ( InterruptedException e ) {
+                               // ignored
+                           }
+                       }
+                   }
+               };
     }
 
     private int ONE_MINUTE = 1000 * 60;
@@ -137,8 +144,13 @@ public class BufferLocalPlugin extends EBPlugin {
     // value is a BufferReference object
     private HashMap<String, BufferReference> openBuffers = new HashMap<String, BufferReference>();
 
-    // control for janitor thread
+    // control for janitor thread.
     private boolean canClean;
+
+    // control for buffer cleaner thread
+    private boolean canClose = true;
+
+    private Date pausedAt = null;
 
     public static String NAME = "bufferlocal";
 
@@ -150,8 +162,10 @@ public class BufferLocalPlugin extends EBPlugin {
      * (if writable) otherwise, in $user.home.
      */
     public void start() {
+        // load settings from jEdit properties
         loadProperties();
 
+        // load configuration setings
         String dir = jEdit.getSettingsDirectory();
         if ( dir == null ) {
             dir = System.getProperty( "user.home" );
@@ -167,11 +181,20 @@ public class BufferLocalPlugin extends EBPlugin {
                 // ignored, don't worry about what doesn't work
             }
         }
+
+        // TODO: attach to open Views
+        for ( View view : jEdit.getViews() ) {
+            view.addWindowListener( this );
+        }
+
+        // prep for currently open buffers
         initOpenBuffers();
+
+        // start janitor and cleaner threads
         canClean = true;
         restartThreads();
     }
-    
+
     private void restartThreads() {
         if ( janitor.isAlive() ) {
             janitor.interrupt();
@@ -212,6 +235,11 @@ public class BufferLocalPlugin extends EBPlugin {
         catch ( Exception e ) {     // NOPMD
             // ignored
         }
+
+        // detach from open views
+        for ( View view : jEdit.getViews() ) {
+            view.removeWindowListener( this );
+        }
     }
 
     /**
@@ -225,6 +253,9 @@ public class BufferLocalPlugin extends EBPlugin {
             BufferUpdate bu = ( BufferUpdate ) message;
             Object what = bu.getWhat();
             Buffer buffer = bu.getBuffer();
+            if ( buffer == null ) {
+                return ;
+            }
             String file = buffer.getPath();
             if ( BufferUpdate.LOADED.equals( what ) || BufferUpdate.SAVED.equals( what ) ) {
                 String props = map.getProperty( file );
@@ -260,7 +291,7 @@ public class BufferLocalPlugin extends EBPlugin {
                     ///
 
                     if ( gz != null && gz.length() > 0 )
-                        buffer.setBooleanProperty( Buffer.GZIPPED, gz.equals( "t" ) ? true : false );
+                        buffer.setBooleanProperty( Buffer.GZIPPED, "t".equals( gz ) ? true : false );
                     if ( fm != null && fm.length() > 0 && FoldHandler.getFoldHandler( fm ) != null )
                         buffer.setFoldHandler( FoldHandler.getFoldHandler( fm ) );
                     if ( wm != null && wm.length() > 0 )
@@ -272,7 +303,7 @@ public class BufferLocalPlugin extends EBPlugin {
                     if ( iw != null && iw.length() > 0 )
                         buffer.setIntegerProperty( "indentSize", Integer.parseInt( iw ) );
                     if ( tabs != null && tabs.length() > 0 )
-                        buffer.setBooleanProperty( "noTabs", tabs.equals( "t" ) ? true : false );
+                        buffer.setBooleanProperty( "noTabs", "t".equals( tabs ) ? true : false );
                     if ( em != null && em.length() > 0 )
                         buffer.setMode( em );
                 }
@@ -338,10 +369,14 @@ public class BufferLocalPlugin extends EBPlugin {
             ViewUpdate vu = ( ViewUpdate ) message;
             if ( ViewUpdate.CREATED.equals( vu.getWhat() ) ) {
                 initView( vu.getView() );
+                vu.getView().addWindowListener( this );
+            }
+            else if ( ViewUpdate.CLOSED.equals( vu.getWhat() ) ) {
+                vu.getView().removeWindowListener( this );
             }
         }
         else if ( message instanceof PropertiesChanged ) {
-            loadProperties();   
+            loadProperties();
         }
     }
 
@@ -421,10 +456,10 @@ public class BufferLocalPlugin extends EBPlugin {
 
         // build the string
         StringBuffer prop = new StringBuffer();
-        if ( ls.equals( "\n" ) ) {
+        if ( "\n".equals( ls ) ) {
             prop.append( "n|" );
         }
-        else if ( ls.equals( "\r" ) ) {
+        else if ( "\r".equals( ls ) ) {
             prop.append( "r|" );
         }
         else {
@@ -453,7 +488,7 @@ public class BufferLocalPlugin extends EBPlugin {
     private void loadProperties() {
         int newStaleTime = jEdit.getIntegerProperty( NAME + ".staleTime", staleTime ) * ONE_MINUTE;
         boolean newRemoveStale = jEdit.getBooleanProperty( NAME + ".removeStale", removeStale );
-        if (newStaleTime != staleTime || newRemoveStale != removeStale) {
+        if ( newStaleTime != staleTime || newRemoveStale != removeStale ) {
             staleTime = newStaleTime;
             removeStale = newRemoveStale;
             restartThreads();
@@ -543,4 +578,42 @@ public class BufferLocalPlugin extends EBPlugin {
             return sb.toString();
         }
     }
+
+    private void adjustForPause() {
+        if ( jEdit.getBooleanProperty( "bufferlocal.whileActive" ) && pausedAt != null ) {
+            Date now = new Date();
+            long pausedFor = now.getTime() - pausedAt.getTime();
+            pausedAt = null;
+            for ( BufferReference br : openBuffers.values() ) {
+                br.getViewed().add( Calendar.MILLISECOND, ( int ) pausedFor );
+            }
+        }
+    }
+
+    public void windowActivated( WindowEvent e ) {
+        adjustForPause();
+        canClose = true;
+    }
+    public void windowClosed( WindowEvent e ) {
+        canClose = false;
+        pausedAt = new Date();
+    }
+    public void windowDeactivated( WindowEvent e ) {
+        canClose = false;
+        pausedAt = new Date();
+    }
+    public void windowDeiconified( WindowEvent e ) {
+        adjustForPause();
+        canClose = true;
+    }
+    public void windowIconified( WindowEvent e ) {
+        canClose = false;
+        pausedAt = new Date();
+    }
+    public void windowGainedFocus( WindowEvent e ) {}
+    public void windowClosing( WindowEvent e ) {}
+    public void windowLostFocus( WindowEvent e ) {}
+    public void windowOpened( WindowEvent e ) {}
+    public void windowStateChanged( WindowEvent e ) {}
+
 }

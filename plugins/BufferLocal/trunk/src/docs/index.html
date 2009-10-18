@@ -56,7 +56,11 @@ not be closed, you'll need to save first.
 <p>
 To turn on automatic buffer closing, click 'Plugins' then 'Plugin Options'.
 Select 'BufferLocal' from the tree on the left side. Check the box that says
-'Close files not used'. Set the time limit with the spinner.
+'Close files not used'. Set the time limit with the spinner.  Check the box 
+'while window is active' to have the timer run only when the jEdit window is
+active.  This means you can open a file, minimize jEdit for a couple of hours
+and you files will still be there when you come back and the timer will pick
+up where it left off.
 <p>
 When the 'Close files not used' box is unchecked, BufferLocal will still
 keep track of stale buffers. You can close stale buffers at any time by 
