@@ -82,8 +82,6 @@
 
     <path  id="project.class.path">
         <pathelement location="${ant.home}/lib/ant.jar" />
-        <pathelement location="${lib.dir}/isorelax-jaxp-bridge-1.0.jar"/>
-        <pathelement location="${lib.dir}/isorelax.jar"/>
         <pathelement location="${lib.dir}/jing.jar"/>
         <pathelement location="${lib.dir}/trang.jar"/>
         <pathelement location="${lib.dir}/relaxngDatatype.jar"/>

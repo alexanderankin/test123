@@ -52,6 +52,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.EntityResolver2;
 
+// for jaxp
 import org.w3c.dom.ls.LSResourceResolver;
 import org.w3c.dom.ls.LSInput;
 
@@ -559,6 +560,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 			// eg. http://slackerdoc.tigris.org/xsd/slackerdoc.xsd when we
 			// are reading ~/.jedit/dtds/cache1345.xml
 			Log.log(Log.DEBUG,Resolver.class,"resolving to local file: "+newSystemId);
+			Log.log(Log.DEBUG,Resolver.class,"systemId=: "+systemId);
 			InputSource source = new InputSource(systemId);
 			source.setPublicId(publicId);
 			InputStream is = new URL(newSystemId).openStream();

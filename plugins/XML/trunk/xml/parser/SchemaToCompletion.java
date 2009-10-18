@@ -7,6 +7,8 @@ import org.xml.sax.InputSource;
 
 import com.thaiopensource.relaxng.edit.*;
 import com.thaiopensource.xml.util.Name;
+import com.thaiopensource.resolver.xml.sax.SAX;
+
 
 import org.gjt.sp.util.Log;
 
@@ -47,7 +49,8 @@ public class SchemaToCompletion
 				is.getSystemId(),
 				new String[]{},
 				"unused",
-				handler);
+				handler,
+				SAX.createResolver(xml.Resolver.instance(),false));
 			
 			SchemaDocument mainSchema = schemas.getSchemaDocumentMap().get(schemas.getMainUri());
 			
