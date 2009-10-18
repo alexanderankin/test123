@@ -448,8 +448,6 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 	public InputSource resolveEntity(String name, String publicId, String current,
 		String systemId) throws SAXException, java.io.IOException {
 		
-		//TODO: why is this load() here ? remove it !
-		// load();
 		if(publicId != null && publicId.length() == 0)
 			publicId = null;
 
@@ -510,6 +508,9 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 				{
 					Log.log(Log.DEBUG,Resolver.class,"using parent !");
 					newSystemId = parent + systemId;
+					// set the systemId, overwise jing has trouble opening the file
+					// FIXME: apply this fix for over kinds of resources
+					systemId = newSystemId;
 				}
 				
 				// when resolving "../simple/actions.xsd" from test_data/schema_loader/actions.xml
@@ -531,6 +532,14 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 		// meaningful message to display to the user
 		if(newSystemId == null)
 			return null;
+		
+		// prevent the dialog from always poping-up when viewing
+		// https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/XML/trunk/test_data/dir%20with%20space/actions.xsd
+		String lastChance = resolvePublicOrSystemFromCache(newSystemId,false);
+		if(lastChance != null && lastChance != IGNORE){
+			Log.log(Log.DEBUG,Resolver.class,"was going to fetch it again !");
+			newSystemId = lastChance;
+		}
 
 		Buffer buf = jEdit.getBuffer(XmlPlugin.uriToFile(newSystemId));
 		if(buf != null)
@@ -556,6 +565,10 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 		else if(newSystemId.startsWith("file:")
 			|| newSystemId.startsWith("jeditresource:"))
 		{
+			// don't keep a relative URL such as locate.rng
+			if(newSystemId.startsWith("jeditresource:")){
+				systemId=newSystemId;
+			}
 			// pretend to be reading the file from whatever the systemId was
 			// eg. http://slackerdoc.tigris.org/xsd/slackerdoc.xsd when we
 			// are reading ~/.jedit/dtds/cache1345.xml
@@ -633,6 +646,8 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 				else
 					source.setByteStream(vfs._createInputStream(session,newSystemId,false,null));
 
+				Log.log(Log.DEBUG,Resolver.class,"resolving to remote file: "+newSystemId);
+				Log.log(Log.DEBUG,Resolver.class,"systemId=: "+systemId);
 				return source;
 			}
 			else
@@ -684,11 +699,23 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 		resourceCache.clear();
 	} //}}}
 
+	private String resolvePublicOrSystemFromCache(String id, boolean isPublic){
+		Entry e = new Entry(isPublic ? Entry.PUBLIC : Entry.SYSTEM,id,null);
+		Log.log(Log.DEBUG,Resolver.class,"resolvePublicOrSystemFromCache("+id+")");
+		String uri = resourceCache.get(e);
+		
+		if(uri == IGNORE){
+			Log.log(Log.DEBUG,Resolver.class,"ignored!");
+		}else{
+			Log.log(Log.DEBUG,Resolver.class,"found "+id+" in cache: "+uri);
+		}
+		return uri;
+	}
+	
 	// TODO: remove package access (for XMLPlugin)
 	String resolvePublicOrSystem(String id,boolean isPublic) throws IOException
 	{
-		Entry e = new Entry(isPublic ? Entry.PUBLIC : Entry.SYSTEM,id,null);
-		String uri = resourceCache.get(e);
+		String uri = resolvePublicOrSystemFromCache(id, isPublic);
 		if(uri == null)
 			if(isPublic){
 				return catalog.resolvePublic(id,null);
@@ -697,8 +724,9 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 			}
 		else if(uri == IGNORE)
 			return null;
-		else
+		else{
 			return uri;
+		}
 	} //}}}
 
 	//{{{ copyToLocalFile() method
@@ -757,7 +785,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 	 */
 	private void addUserResource(String publicId, String systemId, String url)
 	{
-		Log.log(Log.DEBUG,Resolver.class,"addUserResource("+publicId+","+","+systemId+","+url+")");
+		Log.log(Log.DEBUG,Resolver.class,"addUserResource("+publicId+","+systemId+","+url+")");
 		if(publicId != null)
 		{
 			Entry pe = new Entry( Entry.PUBLIC, publicId, url );

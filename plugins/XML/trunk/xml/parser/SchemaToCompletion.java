@@ -20,6 +20,9 @@ public class SchemaToCompletion
 {
 	private static final String RNG_DTD_COMPATIBILITY_NS =
 		"http://relaxng.org/ns/compatibility/annotations/1.0";
+		
+	/** the empty namespace */
+	private static final String INHERIT = "#inherit";
 	
 	/**
 	* @param	current	systemId of the mapping document, to resolve the schema URL
@@ -60,6 +63,12 @@ public class SchemaToCompletion
 			
 			p.accept(new MyPatternVisitor(infos,schemas));
 			
+			// use a more intuitive '' key for the completion info
+			// of the no-namespace elements
+			if(infos.containsKey(INHERIT)){
+				infos.put("",infos.get(INHERIT));
+				infos.remove(INHERIT);
+			}
 		}catch(Exception e){
 			// FIXME: handle exceptions
 			Log.log(Log.ERROR, SchemaToCompletion.class, e);
