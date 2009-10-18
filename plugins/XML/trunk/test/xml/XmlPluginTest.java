@@ -352,9 +352,9 @@ public class XmlPluginTest{
 		
 	}
 	
-	/** schemas.xml pointing to a RNG schema */
+	/** schemas.xml pointing to a RNG schema and completion from an RNG schema */
 	@Test
-	public void testRelaxNGg(){
+	public void testRelaxNG(){
     	File xml = new File(testData,"relax_ng/actions.xml");
     	
     	TestUtils.openFile(xml.getPath());
@@ -372,6 +372,28 @@ public class XmlPluginTest{
 		String selected = TestUtils.view().getTextArea().getSelectedText();
 		assertTrue("got '"+selected+"'",selected.contains("<CODDE"));
 		
+		// inside ACTIONS
+		GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					TestUtils.view().getTextArea().setCaretPosition(219);
+				}
+		});
+
+    	action("xml-insert-float",1);
+    	FrameFixture insert = TestUtils.findFrameByTitle("XML Insert");
+		assertThat(insert.list("elements").contents()).containsOnly("ACTION");
+		insert.close();
+		
+		GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					TestUtils.view().getTextArea().setCaretPosition(286);
+				}
+		});
+		// inside CODE
+    	action("xml-insert-float",1);
+    	insert = TestUtils.findFrameByTitle("XML Insert");
+		assertThat(insert.list("elements").contents()).isEmpty();
+		insert.close();
 		
 		xml = new File(testData,"relax_ng/actions_valid.xml");
     	

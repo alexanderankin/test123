@@ -201,6 +201,13 @@ public class ResolverTest{
 		assertEquals("http://www.jedit.org/index.php",res.getSystemId());
 		
 		clickT.waitForClick();
+
+		// the file is in the cache : even if we set it to NEVER
+		// we can use the cached one
+		resolver.setNetworkMode(Resolver.LOCAL);
+		res = resolver.resolveEntity(null,"http://www.jedit.org/index.php");
+		assertEquals("http://www.jedit.org/index.php",res.getSystemId());
+
 		
 		/* }}} */
 	}
