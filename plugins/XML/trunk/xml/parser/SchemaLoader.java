@@ -28,7 +28,9 @@ import java.util.HashMap;
 import java.io.IOException;
 
 
+// jEdit
 import xml.Resolver;
+import org.gjt.sp.util.Log;
 
 
 //JAXP 1.4
@@ -36,8 +38,9 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Schema;
 import javax.xml.validation.ValidatorHandler;
 
-import org.gjt.sp.util.Log;
 //}}}
+
+
 
 /**
  * Utility class to load a schema
@@ -48,42 +51,25 @@ import org.gjt.sp.util.Log;
 public final class SchemaLoader
 {
 	
-	/** list of factories for XSD and Relax NG*/
-	private static Map<String,SchemaFactory> jaxpFactories;
-	
-	/** key to find the Relax NG factory */
-	private static final String RNG_FACTORY_URL = "http://relaxng.org/ns/structure/1.0";
+	/** factory for XML Schema */
+	private final SchemaFactory xsdFactory;
 
-	/** key to find the XSD factory */
-	private static final String XSD_FACTORY_URL = "http://www.w3.org/2001/XMLSchema";
+	/** factory for Relax NG (XML syntax) */
+	private final SchemaFactory rngFactory;
+
+	/** factory for Relax NG (Compact syntax) */
+	private final SchemaFactory rncFactory;
 	
 	/** singleton */
 	private static SchemaLoader instance;
 	
-	/** singleton constructor */
-	private SchemaLoader(){}
-	
-	
-	/** load the 2 implementations of SchemaFactory */
-	private void initFactories()
-	{
-		jaxpFactories = new HashMap<String, SchemaFactory>();
-		SchemaFactory f;
-		
-		f = new org.apache.xerces.jaxp.validation.XMLSchemaFactory();
-		jaxpFactories.put(XSD_FACTORY_URL,f);
-		
-		try{
-			Class.forName("org.apache.xerces.jaxp.SAXParserFactoryImpl").newInstance();
-		}catch(Exception e){
-			Log.log(Log.ERROR,SchemaLoader.class,e);
-		}
-		
-		// FIXME: this is a modified version of the constructor, import the sources in SVN
-		f = new org.iso_relax.verifier.jaxp.validation.RELAXNGSchemaFactoryImpl(new com.thaiopensource.relaxng.jarv.VerifierFactoryImpl());
-		jaxpFactories.put(RNG_FACTORY_URL,f);
-		
+	/** singleton constructor : init the factories */
+	private SchemaLoader(){
+		xsdFactory = new org.apache.xerces.jaxp.validation.XMLSchemaFactory();
+		rngFactory = new com.thaiopensource.relaxng.jaxp.XMLSyntaxSchemaFactory();
+		rncFactory = new com.thaiopensource.relaxng.jaxp.CompactSyntaxSchemaFactory();
 	}
+	
 	
 	/**
 	 * TODO: test it with Relax NG compact syntax 
@@ -97,15 +83,14 @@ public final class SchemaLoader
 	{
 		Log.log(Log.DEBUG,SchemaLoader.class,"loadJaxpGrammar("+current+","+schemaFileNameOrURL+")");
 
-		if(jaxpFactories == null)initFactories();
-
 		// get the factory
 		SchemaFactory factory;
 
-		/* TODO: should add the information in the mapping.xml file,
-		   but it's obvious from the extension... */
-		if(schemaFileNameOrURL.endsWith(".xsd"))factory = jaxpFactories.get(XSD_FACTORY_URL);
-		else factory = jaxpFactories.get(RNG_FACTORY_URL);
+		if(schemaFileNameOrURL.endsWith(".xsd"))factory = xsdFactory;
+		else if(schemaFileNameOrURL.endsWith(".rnc"))factory = rncFactory;
+		else if(schemaFileNameOrURL.endsWith(".rng")
+			|| schemaFileNameOrURL.endsWith(".xml"))factory = rngFactory;
+		else throw new IOException("can't guess schema type based on extension : "+schemaFileNameOrURL);
 		
 		
 		factory.setResourceResolver(Resolver.instance());
