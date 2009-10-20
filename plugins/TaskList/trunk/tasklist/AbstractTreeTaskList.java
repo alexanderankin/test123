@@ -248,7 +248,7 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
         private TreeModel buildTreeModel() {
 
             DefaultMutableTreeNode root = new DefaultMutableTreeNode( rootDisplayName );
-            SortableTreeModel model = new SortableTreeModel( root, new TreeNodeStringComparator() );
+            SortableTreeModel model = new SortableTreeModel( root, new TreeNodeComparator() );
 
             List<String> toScan = getBuffersToScan();
             if ( toScan == null ) {
