@@ -1034,9 +1034,9 @@ Namespace namespace():
 //{{{ interfaceDeclaration()
 InterfaceDeclaration interfaceDeclaration() :
 {
-	Token modifierToken = null;
+	Token modifierToken;
 	Token interfaceToken, rBraceToken;
-	Token nameToken = null;
+	Token nameToken;
 	InterfaceDeclaration interfaceDeclaration;
 	String interfaceNameImage = SYNTAX_ERROR_CHAR;
 	MethodDeclaration methodDeclaration;
@@ -1671,7 +1671,7 @@ Modifier commonModifiers() :
 //{{{ methodModifiers()
 Modifier methodModifiers() :
 {
-  Token token = null;
+  Token token;
 }
 {
   (
@@ -1837,77 +1837,77 @@ List FieldDeclaration() :
  * A class field declaration : it's var VariableDeclarator() (, VariableDeclarator())*;.
  * it is only used by ClassBodyDeclaration()
  */
-List fieldDeclarationPHP5(List modifiers) :
+List fieldDeclarationPHP5(List modifiers):
 {
-  VariableDeclaration variableDeclaration;
-  Token varToken = null;
-  Token modifierToken = null;
-  Modifier modifier;
-  List fields = new ArrayList();
-  Token comma;
+	VariableDeclaration variableDeclaration;
+	Token varToken = null;
+	Token modifierToken = null;
+	Modifier modifier;
+	List fields = new ArrayList();
+	Token comma;
 }
 {
-  //{{{ first field
-  try
-  {
-    variableDeclaration = field()
-    {
-      fields.add(new FieldDeclaration(modifiers,
-                                      path,
-                                      variableDeclaration,
-                                      currentSegment,
-                                      variableDeclaration.getSourceStart(),
-                                      variableDeclaration.getSourceEnd(),
-                                      variableDeclaration.getBeginLine(),
-                                      variableDeclaration.getEndLine(),
-                                      variableDeclaration.getBeginColumn(),
-                                      variableDeclaration.getEndColumn()));
+	//{{{ first field
+	try
+	{
+		variableDeclaration = field()
+		{
+			fields.add(new FieldDeclaration(modifiers,
+				path,
+				variableDeclaration,
+				currentSegment,
+				variableDeclaration.getSourceStart(),
+				variableDeclaration.getSourceEnd(),
+				variableDeclaration.getBeginLine(),
+				variableDeclaration.getEndLine(),
+				variableDeclaration.getBeginColumn(),
+				variableDeclaration.getEndColumn()));
 
-      //{{{ missing var token
-      if (!php5Enabled && varToken == null)
-      {
-        fireParseError(new PHPParseErrorEvent(ERROR,
-                                              path,
-                                              "var token expected",
-                                              "var",
-                                              variableDeclaration.toStringExpression(),
-                                              variableDeclaration.getSourceStart()-1,
-                                              variableDeclaration.getSourceStart(),
-                                              variableDeclaration.getBeginLine(),
-                                              variableDeclaration.getBeginLine(),
-                                              variableDeclaration.getBeginColumn()-1,
-                                              variableDeclaration.getBeginColumn()));
-      } //}}}
-    }
-  }
-  catch (ParseException e)
-  {
-    Token semicolon = error_skipto(SEMICOLON);
-    fireParseError("field declaration expected","field declaration",semicolon);
-    return fields;
-  } //}}}
-  (
-    comma = <COMMA>
-    //{{{ additional fields
-    try
-    {
-      variableDeclaration = field()
-      {
-        fields.add(new FieldDeclaration(modifiers,
-                                      path,
-                                      variableDeclaration,
-                                      currentSegment,
-                                      variableDeclaration.getSourceStart(),
-                                      variableDeclaration.getSourceEnd(),
-                                      variableDeclaration.getBeginLine(),
-                                      variableDeclaration.getEndLine(),
-                                      variableDeclaration.getBeginColumn(),
-                                      variableDeclaration.getEndColumn()));
+			//{{{ missing var token
+			if (!php5Enabled)
+			{
+				fireParseError(new PHPParseErrorEvent(ERROR,
+					path,
+					"var token expected",
+					"var",
+					variableDeclaration.toStringExpression(),
+					variableDeclaration.getSourceStart()-1,
+					variableDeclaration.getSourceStart(),
+					variableDeclaration.getBeginLine(),
+					variableDeclaration.getBeginLine(),
+					variableDeclaration.getBeginColumn()-1,
+					variableDeclaration.getBeginColumn()));
+			} //}}}
+		}
+	}
+	catch (ParseException e)
+	{
+		Token semicolon = error_skipto(SEMICOLON);
+		fireParseError("field declaration expected","field declaration",semicolon);
+		return fields;
+	} //}}}
+	(
+		comma = <COMMA>
+		//{{{ additional fields
+		try
+		{
+			variableDeclaration = field()
+			{
+				fields.add(new FieldDeclaration(modifiers,
+					path,
+					variableDeclaration,
+					currentSegment,
+					variableDeclaration.getSourceStart(),
+					variableDeclaration.getSourceEnd(),
+					variableDeclaration.getBeginLine(),
+					variableDeclaration.getEndLine(),
+					variableDeclaration.getBeginColumn(),
+					variableDeclaration.getEndColumn()));
 
-        //{{{ missing var token
-        if (!php5Enabled && varToken == null)
-        {
-          fireParseError(new PHPParseErrorEvent(ERROR,
+				//{{{ missing var token
+				if (!php5Enabled)
+				{
+					fireParseError(new PHPParseErrorEvent(ERROR,
                                                 path,
                                                 "var token expected",
                                                 "var",
@@ -1918,56 +1918,46 @@ List fieldDeclarationPHP5(List modifiers) :
                                                 variableDeclaration.getBeginLine(),
                                                 variableDeclaration.getBeginColumn()-1,
                                                 variableDeclaration.getBeginColumn()));
+                                } //}}}
+                        }
+                }
+                catch (ParseException e)
+                {
+                	fireParseError("field declaration expected","field declaration",comma);
+                	return fields;
+                } //}}}
+                )*
+
+        //{{{ semicolon
+        try
+        {
+        	<SEMICOLON>
+        }
+        catch (ParseException e)
+        {
+        	fireParseError("';' expected", ";", e.currentToken);
         } //}}}
-      }
-    }
-    catch (ParseException e)
-    {
-      fireParseError("field declaration expected","field declaration",comma);
-      return fields;
-    } //}}}
-  )*
+        {
+        	//{{{ if not php5 raise a warning
+        	if (!php5Enabled)
+        	{
+        		FieldDeclaration firstField = (FieldDeclaration) fields.get(0);
+        		FieldDeclaration lastField = (FieldDeclaration) fields.get(fields.size() - 1);
+        		fireParseError(new PHPParseErrorEvent(WARNING,
+        			path,
+        			"unexpected php 5 field declaration",
+        			"",
+        			"",
+        			firstField.getSourceStart(),
+        			lastField.getSourceEnd(),
+        			firstField.getBeginLine(),
+        			lastField.getEndLine(),
+        			firstField.getBeginColumn(),
+        			lastField.getEndColumn()));
+        	} //}}}
 
-  //{{{ semicolon
-  try
-  {
-    <SEMICOLON>
-  }
-  catch (ParseException e)
-  {
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "';' expected",
-                                          ";",
-                                          e.currentToken.image,
-                                          e.currentToken.sourceStart,
-                                          e.currentToken.sourceEnd,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1));
-  } //}}}
-  {
-    //{{{ if not php5 raise a warning
-    if (!php5Enabled)
-    {
-      FieldDeclaration firstField = (FieldDeclaration) fields.get(0);
-      FieldDeclaration lastField = (FieldDeclaration) fields.get(fields.size() - 1);
-      fireParseError(new PHPParseErrorEvent(WARNING,
-                                            path,
-                                            "unexpected php 5 field declaration",
-                                            "",
-                                            "",
-                                            firstField.getSourceStart(),
-                                            lastField.getSourceEnd(),
-                                            firstField.getBeginLine(),
-                                            lastField.getEndLine(),
-                                            firstField.getBeginColumn(),
-                                            lastField.getEndColumn()));
-    } //}}}
-
-    return fields;
-  }
+        	return fields;
+        }
 }//}}}
 
 //}}}
@@ -1980,102 +1970,110 @@ List fieldDeclarationPHP5(List modifiers) :
  */
 VariableDeclaration field() :
 {
-  final Token identifierToken, lbrace,rbrace;
-  final Expression expr;
-  Expression initializer = null;
-  Token assignToken = null;
-  final Token dollarToken;
-  Variable variable = null;
+	final Token identifierToken, lbrace,rbrace;
+	final Expression expr;
+	Expression initializer = null;
+	Token assignToken = null;
+	final Token dollarToken;
+	Variable variable;
 }
 {
-  dollarToken = <DOLLAR>
-  try {
-    (
-       identifierToken = methodIdentifier()
-       {
-         variable = new Variable(identifierToken.image,
-                                 dollarToken.sourceStart,
-                                 identifierToken.sourceEnd,
-                                 dollarToken.beginLine,
-                                 identifierToken.endLine,
-                                 dollarToken.beginColumn,
-                                 identifierToken.endColumn);
-       }
-       |
-       lbrace = <LBRACE> expr = Expression() rbrace = <RBRACE>
-       {
-         variable = new Variable(expr,
-                                 lbrace.sourceStart,
-                                 rbrace.sourceEnd,
-                                 lbrace.beginLine,
-                                 rbrace.endLine,
-                                 lbrace.beginColumn,
-                                 rbrace.endColumn);
-       }
-    )
-  } catch (ParseException e) {
-    fireParseError("identifier expected", "", e.currentToken);
-    variable = new Variable("",
-                            e.currentToken.sourceStart,
-                            e.currentToken.sourceEnd,
-                            e.currentToken.beginLine,
-                            e.currentToken.endLine,
-                            e.currentToken.beginColumn,
-                            e.currentToken.endColumn);
-  }
-  [
-    assignToken = <ASSIGN>
-    try {
-      initializer = VariableInitializer()
-    } catch (ParseException e) {
-      fireParseError(new PHPParseErrorEvent(ERROR,
-                                            path,
-                                            "Literal expression expected in variable initializer",
-                                            "literal",
-                                            e.currentToken.image,
-                                            assignToken.sourceEnd,
-                                            assignToken.sourceEnd +1,
-                                            e.currentToken.beginLine,
-                                            e.currentToken.endLine,
-                                            e.currentToken.endColumn,
-                                            e.currentToken.endColumn+1));
-    }
-  ]
-  {
-    setTypeFromScope(variable);
-    if (assignToken == null) {
-      return new VariableDeclaration(currentSegment,
-                                     variable,
-                                     variable.getSourceStart(),
-                                     variable.getSourceEnd(),
-                                     variable.getBeginLine(),
-                                     variable.getEndLine(),
-                                     variable.getBeginColumn(),
-                                     variable.getEndColumn());
-    }
-    if (initializer == null) {
-      return new VariableDeclaration(currentSegment,
-                                     variable,
-                                     null,
-                                     "=",
-                                     variable.getSourceStart(),
-                                     assignToken.sourceEnd,
-                                     variable.getBeginLine(),
-                                     assignToken.endLine,
-                                     variable.getBeginColumn(),
-                                     assignToken.endColumn);
-    }
-    return new VariableDeclaration(currentSegment,
-                                   variable,
-                                   initializer,
-                                   "=",
-                                   variable.getSourceStart(),
-                                   initializer.getSourceEnd(),
-                                   variable.getBeginLine(),
-                                   initializer.getEndLine(),
-                                   variable.getBeginColumn(),
-                                   initializer.getEndColumn());
-    }
+	dollarToken = <DOLLAR>
+	try
+	{
+		(
+			identifierToken = methodIdentifier()
+			{
+				variable = new Variable(identifierToken.image,
+					dollarToken.sourceStart,
+					identifierToken.sourceEnd,
+					dollarToken.beginLine,
+					identifierToken.endLine,
+					dollarToken.beginColumn,
+					identifierToken.endColumn);
+			}
+		|
+			lbrace = <LBRACE> expr = Expression() rbrace = <RBRACE>
+			{
+				variable = new Variable(expr,
+					lbrace.sourceStart,
+					rbrace.sourceEnd,
+					lbrace.beginLine,
+					rbrace.endLine,
+					lbrace.beginColumn,
+					rbrace.endColumn);
+			}
+		)
+	}
+	catch (ParseException e)
+	{
+		fireParseError("identifier expected", "", e.currentToken);
+		variable = new Variable("",
+			e.currentToken.sourceStart,
+			e.currentToken.sourceEnd,
+			e.currentToken.beginLine,
+			e.currentToken.endLine,
+			e.currentToken.beginColumn,
+			e.currentToken.endColumn);
+	}
+	[
+		assignToken = <ASSIGN>
+		try
+		{
+			initializer = VariableInitializer()
+		}
+		catch (ParseException e)
+		{
+			fireParseError(new PHPParseErrorEvent(ERROR,
+				path,
+				"Literal expression expected in variable initializer",
+				"literal",
+				e.currentToken.image,
+				assignToken.sourceEnd,
+				assignToken.sourceEnd +1,
+				e.currentToken.beginLine,
+				e.currentToken.endLine,
+				e.currentToken.endColumn,
+				e.currentToken.endColumn+1));
+		}
+	]
+	{
+		setTypeFromScope(variable);
+		if (assignToken == null)
+		{
+			return new VariableDeclaration(currentSegment,
+				variable,
+				variable.getSourceStart(),
+				variable.getSourceEnd(),
+				variable.getBeginLine(),
+				variable.getEndLine(),
+				variable.getBeginColumn(),
+				variable.getEndColumn());
+		}
+		if (initializer == null)
+		{
+			return new VariableDeclaration(currentSegment,
+				variable,
+				null,
+				"=",
+				variable.getSourceStart(),
+				assignToken.sourceEnd,
+				variable.getBeginLine(),
+				assignToken.endLine,
+				variable.getBeginColumn(),
+				assignToken.endColumn);
+		}
+		return new VariableDeclaration(currentSegment,
+			variable,
+			initializer,
+			"=",
+			variable.getSourceStart(),
+			initializer.getSourceEnd(),
+			variable.getBeginLine(),
+			initializer.getEndLine(),
+			variable.getBeginColumn(),
+			initializer.getEndColumn());
+	}
 } //}}}
 
 //{{{ VariableDeclaratorNoSuffix()
@@ -2085,102 +2083,110 @@ VariableDeclaration field() :
  */
 VariableDeclaration VariableDeclaratorNoSuffix() :
 {
-  final Token identifierToken, lbrace,rbrace;
-  final Expression expr;
-  Expression initializer = null;
-  Token assignToken = null;
-  final Token dollarToken;
-  Variable variable = null;
+	final Token identifierToken, lbrace,rbrace;
+	final Expression expr;
+	Expression initializer = null;
+	Token assignToken = null;
+	final Token dollarToken;
+	Variable variable;
 }
 {
-  dollarToken = <DOLLAR>
-  try {
-    (
-       identifierToken = <IDENTIFIER>
-       {
-         variable = new Variable(identifierToken.image,
-                                 dollarToken.sourceStart,
-                                 identifierToken.sourceEnd,
-                                 dollarToken.beginLine,
-                                 identifierToken.endLine,
-                                 dollarToken.beginColumn,
-                                 identifierToken.endColumn);
-       }
-       |
-       lbrace = <LBRACE> expr = Expression() rbrace = <RBRACE>
-       {
-         variable = new Variable(expr,
-                                 lbrace.sourceStart,
-                                 rbrace.sourceEnd,
-                                 lbrace.beginLine,
-                                 rbrace.endLine,
-                                 lbrace.beginColumn,
-                                 rbrace.endColumn);
-       }
-    )
-  } catch (ParseException e) {
-    fireParseError("identifier expected", "", e.currentToken);
-    variable = new Variable("",
-                            e.currentToken.sourceStart,
-                            e.currentToken.sourceEnd,
-                            e.currentToken.beginLine,
-                            e.currentToken.endLine,
-                            e.currentToken.beginColumn,
-                            e.currentToken.endColumn);
-  }
-  [
-    assignToken = <ASSIGN>
-    try {
-      initializer = VariableInitializer()
-    } catch (ParseException e) {
-      fireParseError(new PHPParseErrorEvent(ERROR,
-                                            path,
-                                            "Literal expression expected in variable initializer",
-                                            "literal",
-                                            e.currentToken.image,
-                                            assignToken.sourceEnd,
-                                            assignToken.sourceEnd +1,
-                                            e.currentToken.beginLine,
-                                            e.currentToken.endLine,
-                                            e.currentToken.endColumn,
-                                            e.currentToken.endColumn+1));
-    }
-  ]
-  {
-    setTypeFromScope(variable);
-    if (assignToken == null) {
-      return new VariableDeclaration(currentSegment,
-                                     variable,
-                                     variable.getSourceStart(),
-                                     variable.getSourceEnd(),
-                                     variable.getBeginLine(),
-                                     variable.getEndLine(),
-                                     variable.getBeginColumn(),
-                                     variable.getEndColumn());
-    }
-    if (initializer == null) {
-      return new VariableDeclaration(currentSegment,
-                                     variable,
-                                     null,
-                                     "=",
-                                     variable.getSourceStart(),
-                                     assignToken.sourceEnd,
-                                     variable.getBeginLine(),
-                                     assignToken.endLine,
-                                     variable.getBeginColumn(),
-                                     assignToken.endColumn);
-    }
-    return new VariableDeclaration(currentSegment,
-                                   variable,
-                                   initializer,
-                                   "=",
-                                   variable.getSourceStart(),
-                                   initializer.getSourceEnd(),
-                                   variable.getBeginLine(),
-                                   initializer.getEndLine(),
-                                   variable.getBeginColumn(),
-                                   initializer.getEndColumn());
-    }
+	dollarToken = <DOLLAR>
+	try
+	{
+		(
+			identifierToken = <IDENTIFIER>
+			{
+				variable = new Variable(identifierToken.image,
+					dollarToken.sourceStart,
+					identifierToken.sourceEnd,
+					dollarToken.beginLine,
+					identifierToken.endLine,
+					dollarToken.beginColumn,
+					identifierToken.endColumn);
+			}
+		|
+			lbrace = <LBRACE> expr = Expression() rbrace = <RBRACE>
+			{
+				variable = new Variable(expr,
+					lbrace.sourceStart,
+					rbrace.sourceEnd,
+					lbrace.beginLine,
+					rbrace.endLine,
+					lbrace.beginColumn,
+					rbrace.endColumn);
+			}
+		)
+	}
+	catch (ParseException e)
+	{
+		fireParseError("identifier expected", "", e.currentToken);
+		variable = new Variable("",
+			e.currentToken.sourceStart,
+			e.currentToken.sourceEnd,
+			e.currentToken.beginLine,
+			e.currentToken.endLine,
+			e.currentToken.beginColumn,
+			e.currentToken.endColumn);
+	}
+	[
+		assignToken = <ASSIGN>
+		try
+		{
+			initializer = VariableInitializer()
+		}
+		catch (ParseException e)
+		{
+			fireParseError(new PHPParseErrorEvent(ERROR,
+				path,
+				"Literal expression expected in variable initializer",
+				"literal",
+				e.currentToken.image,
+				assignToken.sourceEnd,
+				assignToken.sourceEnd +1,
+				e.currentToken.beginLine,
+				e.currentToken.endLine,
+				e.currentToken.endColumn,
+				e.currentToken.endColumn+1));
+		}
+	]
+	{
+		setTypeFromScope(variable);
+		if (assignToken == null)
+		{
+			return new VariableDeclaration(currentSegment,
+				variable,
+				variable.getSourceStart(),
+				variable.getSourceEnd(),
+				variable.getBeginLine(),
+				variable.getEndLine(),
+				variable.getBeginColumn(),
+				variable.getEndColumn());
+		}
+		if (initializer == null)
+		{
+			return new VariableDeclaration(currentSegment,
+				variable,
+				null,
+				"=",
+				variable.getSourceStart(),
+				assignToken.sourceEnd,
+				variable.getBeginLine(),
+				assignToken.endLine,
+				variable.getBeginColumn(),
+				assignToken.endColumn);
+		}
+		return new VariableDeclaration(currentSegment,
+			variable,
+			initializer,
+			"=",
+			variable.getSourceStart(),
+			initializer.getSourceEnd(),
+			variable.getBeginLine(),
+			initializer.getEndLine(),
+			variable.getBeginColumn(),
+			initializer.getEndColumn());
+	}
 } //}}}
 
 //{{{ VariableDeclarator()
@@ -2309,50 +2315,48 @@ Variable Variable() :
 }
 
 //}}}
-//{{{ Var()
 
+//{{{ Var()
 Variable Var() :
 {
-  Variable variable = null;
-  final Token token, token2;
-  final Expression expression;
+	Variable variable;
+	final Token token, token2;
+	final Expression expression;
 }
 {
-  (
-    token = <DOLLAR> variable = Var()
-    {
-      variable = new Variable(variable,
-                              variable.getSourceStart(),
-                              variable.getSourceEnd(),
-                              variable.getBeginLine(),
-                              variable.getEndLine(),
-                              variable.getBeginColumn(),
-                              variable.getBeginColumn());
-    }
-  |
-    token = <LBRACE> expression = Expression() token2 = <RBRACE>
-    {
-      variable = new Variable(expression,
-                              token.sourceStart,
-                              token2.sourceEnd,
-                              token.beginLine,
-                              token2.endLine,
-                              token.beginColumn,
-                              token2.endColumn);
-    }
-  |
-    token = <IDENTIFIER>
-    {
-      variable = new Variable(token);
-    }
-  )
-  {
-    setTypeFromScope(variable);
-    return variable;
-  }
-}
-
-//}}}
+	(
+		token = <DOLLAR> variable = Var()
+		{
+			variable = new Variable(variable,
+				variable.getSourceStart(),
+				variable.getSourceEnd(),
+				variable.getBeginLine(),
+				variable.getEndLine(),
+				variable.getBeginColumn(),
+				variable.getBeginColumn());
+		}
+	|
+		token = <LBRACE> expression = Expression() token2 = <RBRACE>
+		{
+			variable = new Variable(expression,
+				token.sourceStart,
+				token2.sourceEnd,
+				token.beginLine,
+				token2.endLine,
+				token.beginColumn,
+				token2.endColumn);
+		}
+		|
+		token = <IDENTIFIER>
+		{
+			variable = new Variable(token);
+		}
+	)
+	{
+		setTypeFromScope(variable);
+		return variable;
+	}
+} //}}}
 
 //{{{ VariableInitializer()
  Expression VariableInitializer() :
@@ -3358,25 +3362,25 @@ Expression ShiftExpression():
 {
 	Expression expr,expr2;
 	int sourceEnd,endLine,endColumn;
-	Token token;
+	Token shiftToken;
 }
 {
 	expr = AdditiveExpression()
 	(
 		(
-			token = <LSHIFT>
+			shiftToken = <LSHIFT>
 		|
-			token = <RSIGNEDSHIFT>
+			shiftToken = <RSIGNEDSHIFT>
 		|
-			token = <RUNSIGNEDSHIFT>
+			shiftToken = <RUNSIGNEDSHIFT>
 		)
 		expr2 = AdditiveExpression()
 		{
 			if (expr2 == null)
 			{
-				sourceEnd = token.sourceEnd;
-				endLine   = token.endLine;
-				endColumn = token.endColumn;
+				sourceEnd = shiftToken.sourceEnd;
+				endLine   = shiftToken.endLine;
+				endColumn = shiftToken.endColumn;
 			}
 			else
 			{
@@ -3384,7 +3388,7 @@ Expression ShiftExpression():
 				endLine   = expr2.getEndLine();
 				endColumn = expr2.getEndColumn();
 			}
-			expr = new BinaryExpression(expr,expr2,token.kind,
+			expr = new BinaryExpression(expr,expr2,shiftToken.kind,
 				expr.getSourceStart(),sourceEnd,
 				expr.getBeginLine(),endLine,
 				expr.getBeginColumn(),endColumn);
@@ -3734,14 +3738,14 @@ Expression PostfixExpression():
 } //}}}
 
 //{{{ PrimaryExpression()
-Expression PrimaryExpression() :
+Expression PrimaryExpression():
 {
 	Expression expr;
-	Token token = null;
+	Token bitAndToken = null;
 }
 {
 	(
-		[token = <BIT_AND>] expr = refPrimaryExpression(token)
+		[bitAndToken = <BIT_AND>] expr = refPrimaryExpression(bitAndToken)
 	|
 		expr = cloning()
 	|
@@ -3757,14 +3761,18 @@ Expression PrimaryExpression() :
 } //}}}
 
 //{{{ refPrimaryExpression(Token reference)
-Expression refPrimaryExpression(Token reference):
+/**
+ * @param bitAndToken it is the token with the &, it can be null if there is no
+ * such token
+ */
+Expression refPrimaryExpression(Token bitAndToken):
 {
 	Expression expr;
 	Token identifier;
 }
 {
 	(
-		expr = instantiation(reference)
+		expr = instantiation(bitAndToken)
 	|
 		(
 			identifier = constantIdentifier()
@@ -3772,7 +3780,7 @@ Expression refPrimaryExpression(Token reference):
 				expr = new ConstantIdentifier(identifier);
 			}
 		|
-			expr = Variable()  //todo use the reference parameter ...
+			expr = Variable()  //todo use the bitAndToken parameter ...
 		)
 		(
 			expr = Arguments(expr)
@@ -3869,58 +3877,57 @@ Expression instantiation(Token reference):
 } //}}}
 
 //{{{ cloning()
-Expression cloning() :
+Expression cloning():
 {
-    Token cloneToken;
-    AbstractVariable variable;
+	Token cloneToken;
+	AbstractVariable variable;
 }
 {
-  cloneToken = <CLONE>
-  variable = VariableDeclaratorId()
-  {
-    return variable;
-  }
+	cloneToken = <CLONE>
+	variable = VariableDeclaratorId()
+	{
+		return variable;
+	}
 } //}}}
-//{{{ ArrayDeclarator()
 
+//{{{ ArrayDeclarator()
 /**
  * An array declarator.
  * array(vars)
  * @return an array
  */
-ArrayInitializer ArrayDeclarator() :
+ArrayInitializer ArrayDeclarator():
 {
-  final ArrayVariableDeclaration[] vars;
-  final Token token;
+	ArrayVariableDeclaration[] vars;
+	Token arrayToken;
 }
 {
-  token = <ARRAY> vars = ArrayInitializer()
-  {return new ArrayInitializer(vars,
-                               token.sourceStart,
-                               this.token.sourceEnd,
-                               token.beginLine,
-                               this.token.endLine,
-                               token.beginColumn,
-                               this.token.endColumn);}
-}
+	arrayToken = <ARRAY> vars = ArrayInitializer()
+	{
+		return new ArrayInitializer(vars,
+			arrayToken.sourceStart,
+			this.token.sourceEnd,
+			arrayToken.beginLine,
+			this.token.endLine,
+			arrayToken.beginColumn,
+			this.token.endColumn);
+	}
+} //}}}
 
-//}}}
 //{{{ ClassIdentifier()
 /**
  * A ClassIdentifier is anything that could be a class name that can be use in <code>class ClassIdentifier {}</code>
  */
 Expression ClassIdentifier():
 {
-  Token identifierToken;
+	Token identifierToken;
 }
 {
-  identifierToken = methodIdentifier()
-  {
-    return new ConstantIdentifier(identifierToken);
-  }
-}
-
-//}}}
+	identifierToken = methodIdentifier()
+	{
+		return new ConstantIdentifier(identifierToken);
+	}
+} //}}}
 
 //{{{ SUFFIXES
 
@@ -3928,7 +3935,7 @@ Expression ClassIdentifier():
 /**
  * Used by VariableDeclaratorId
  */
-AbstractVariable VariableSuffix(Expression prefix) :
+AbstractVariable VariableSuffix(Expression prefix):
 {
 	AbstractVariable abstractVariable;
 }
@@ -3942,23 +3949,6 @@ AbstractVariable VariableSuffix(Expression prefix) :
 	)
 	{
 		return abstractVariable;
-	}
-} //}}}
-
-//{{{ variableSuffixMethodCall()
-Expression variableSuffixMethodCall(Expression prefix) :
-{
-	Expression expr = prefix;
-}
-{
-	expr = staticClassAccess(expr)
-|
-	expr = classAccess(expr)
-	[ expr = Arguments(expr) ]
-|
-	expr = arrayDeclarator(expr)
-	{
-		return expr;
 	}
 } //}}}
 
@@ -4047,55 +4037,6 @@ ClassAccess staticClassAccess(Expression expr):
 	{
 		return ca;
 	}
-} //}}}
-
-//{{{ staticClassAccess(Expression expr)
-/**
- * staticClassAccess
- * @param expr the expression in the left of the ::
- */
-ClassAccess staticMethodAccess(Expression expr):
-{
-  Expression expr2;
-  ClassAccess ca;
-  Token staticClassAccess;
-}
-{
-  staticClassAccess = <STATICCLASSACCESS>
-  //{{{ method access
-  {
-    Expression arguments;
-    Token methodIdentifier;
-  }
-  try
-  {
-    methodIdentifier = methodIdentifier()
-    {
-      expr2 =  new ConstantIdentifier(methodIdentifier);
-    }
-    arguments = methodCall(expr2)
-    {
-      expr2.setType(new Type(Type.OBJECT_INT,expr2.toString()));
-      ca = new ClassAccess(expr,
-                           arguments,
-                           PHPParserConstants.STATICCLASSACCESS,
-                           arguments.getSourceEnd(),
-                           arguments.getEndLine(),
-                           arguments.getEndColumn());
-    }
-  } catch (ParseException e)
-  {
-    ca = new ClassAccess(expr,
-                         null,
-                         PHPParserConstants.STATICCLASSACCESS,
-                         staticClassAccess.sourceEnd,
-                         staticClassAccess.endLine,
-                         staticClassAccess.endColumn);
-    fireParseError("identifier expected","identifier",e.currentToken);
-  } //}}}
-  {
-    return ca;
-  }
 } //}}}
 
 //{{{ classAccess()
@@ -4232,89 +4173,94 @@ Literal Literal() :
 } //}}}
 
 //{{{ heredoc()
-
-StringLiteral heredoc() :
+StringLiteral heredoc():
 {
 	final Token heredocStart;
-	Token startToken = null;
+	Token startToken;
 	Token endToken;
 	String endImage;
 }
 {
-  heredocStart = <HEREDOCSTARTTOKEN>
-  try {
-    startToken = <IDENTIFIER>
-    {
-      if(heredocStart.sourceEnd != startToken.sourceStart) {
-        //{{{ Parse error
-        fireParseError(new PHPParseErrorEvent(ERROR,
-                                              path,
-                                              "unexpected spaces",
-                                              "",
-                                              "",
-                                              heredocStart.sourceEnd+1,
-                                              startToken.sourceStart-1,
-                                              startToken.beginLine,
-                                              startToken.endLine,
-                                              heredocStart.endColumn+1,
-                                              startToken.beginColumn-1)); //}}}
-      }
-    }
-  } catch (ParseException e) {
-    //{{{ Parse error
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "identifier expected",
-                                          "identifier",
-                                          e.currentToken.image,
-                                          errorStart,
-                                          errorEnd,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1)); //}}}
-    return new StringLiteral("",
-                             jj_input_stream.getBeginOffset(),
-                             jj_input_stream.getBeginOffset()+1,
-                             jj_input_stream.getBeginLine(),
-                             jj_input_stream.getEndLine(),
-                             jj_input_stream.getBeginColumn(),
-                             jj_input_stream.getEndColumn());
-  }
-  {
-  while (true) {
-    endToken = getNextToken();
-    // Ensure that the parser will stay in php mode even if there is a ?> in the string
-    // todo : find another trick it's seems ugly
-    token_source.SwitchTo(PHPParserTokenManager.PHPPARSING);
-    if (endToken.kind == PHPParserConstants.EOF) {
-      fireParseError("unexpected EOF","",endToken);
-      break;
-    }
+	heredocStart = <HEREDOCSTARTTOKEN>
+	try
+	{
+		startToken = <IDENTIFIER>
+		{
+			if(heredocStart.sourceEnd != startToken.sourceStart)
+			{
+				//{{{ Parse error
+				fireParseError(new PHPParseErrorEvent(ERROR,
+					path,
+					"unexpected spaces",
+					"",
+					"",
+					heredocStart.sourceEnd+1,
+					startToken.sourceStart-1,
+					startToken.beginLine,
+					startToken.endLine,
+					heredocStart.endColumn+1,
+					startToken.beginColumn-1)); //}}}
+			}
+		}
+	}
+	catch (ParseException e)
+	{
+		//{{{ Parse error
+		fireParseError(new PHPParseErrorEvent(ERROR,
+			path,
+			"identifier expected",
+			"identifier",
+			e.currentToken.image,
+			errorStart,
+			errorEnd,
+			e.currentToken.beginLine,
+			e.currentToken.endLine,
+			e.currentToken.endColumn,
+			e.currentToken.endColumn+1)); //}}}
+		return new StringLiteral("",
+			jj_input_stream.getBeginOffset(),
+			jj_input_stream.getBeginOffset()+1,
+			jj_input_stream.getBeginLine(),
+			jj_input_stream.getEndLine(),
+			jj_input_stream.getBeginColumn(),
+			jj_input_stream.getEndColumn());
+	}
+	{
+		while (true)
+		{
+			endToken = getNextToken();
+			// Ensure that the parser will stay in php mode even if there is a ?> in the string
+			// todo : find another trick it's seems ugly
+			token_source.SwitchTo(PHPParserTokenManager.PHPPARSING);
+			if (endToken.kind == PHPParserConstants.EOF)
+			{
+				fireParseError("unexpected EOF","",endToken);
+				break;
+			}
 
-    if (endToken.beginLine == startToken.beginLine) {
-      fireParseError("unexpected token","identifier",endToken);
-      continue;
-    }
-    if (endToken.beginColumn != 1) continue;
-    endImage = (endToken.image.charAt(endToken.image.length()-1) == ';') ? endToken.image.substring(0,endToken.image.length()-2) : endToken.image;
-    if (endImage.equals(startToken.image)) {
-      break;
-    }
-  }
+			if (endToken.beginLine == startToken.beginLine)
+			{
+				fireParseError("unexpected token","identifier",endToken);
+				continue;
+			}
+			if (endToken.beginColumn != 1) continue;
+			endImage = (endToken.image.charAt(endToken.image.length()-1) == ';') ? endToken.image.substring(0,endToken.image.length()-2) : endToken.image;
+			if (endImage.equals(startToken.image))
+			{
+				break;
+			}
+		}
 
-//  return new StringLiteral(jj_input_stream.getCurrentBuffer().substring(startToken.sourceEnd+1,endToken.sourceStart-1),
-  return new StringLiteral("",
-                           startToken.sourceEnd+1,
-                           endToken.sourceStart-1,
-                           startToken.beginLine,
-                           endToken.endLine,
-                           startToken.beginColumn,
-                           endToken.endColumn);
-  }
-}
-
-//}}}
+		//  return new StringLiteral(jj_input_stream.getCurrentBuffer().substring(startToken.sourceEnd+1,endToken.sourceStart-1),
+		return new StringLiteral("",
+			startToken.sourceEnd+1,
+			endToken.sourceStart-1,
+			startToken.beginLine,
+			endToken.endLine,
+			startToken.beginColumn,
+			endToken.endColumn);
+	}
+} //}}}
 
 //{{{ evaluableString()
 StringLiteral evaluableString():
@@ -4334,12 +4280,10 @@ StringLiteral evaluableString():
 		<RBRACE1>
 	|
 		<DOLLARS>
-		[
-			expr = Expression()
-			{
-				list.add(expr);
-			}
-		]
+		expr = Expression()
+		{
+			list.add(expr);
+		}
 	)*
 	end = <DOUBLEQUOTE2>
 	{
@@ -4501,226 +4445,254 @@ Statement StatementNoBreak() :
 //{{{ throwStatement()
 ThrowStatement throwStatement() :
 {
-  Token throwToken;
-  Expression expr;
-  Token semicolonToken = null;
-  int sourceEnd,endLine,endColumn;
+	Token throwToken;
+	Expression expr;
+	Token semicolonToken;
+	int sourceEnd,endLine,endColumn;
 }
 {
-  throwToken = <THROW>
-  expr = Expression()
-  try {
-    semicolonToken = <SEMICOLON>
-    {
-      sourceEnd = semicolonToken.sourceEnd;
-      endLine   = semicolonToken.endLine;
-      endColumn = semicolonToken.endColumn;
-    }
-  } catch (ParseException e) {
-      sourceEnd = e.currentToken.sourceEnd;
-      endLine   = e.currentToken.endLine;
-      endColumn = e.currentToken.endColumn;
-      fireParseError("catch expected", "catch", e.currentToken);
-  }
-  {
-    return new ThrowStatement(expr,
-                              throwToken.sourceStart,
-                              sourceEnd,
-                              throwToken.beginLine,
-                              endLine,
-                              throwToken.beginColumn,
-                              endColumn);
-  }
+	throwToken = <THROW>
+	expr = Expression()
+	try
+	{
+		semicolonToken = <SEMICOLON>
+		{
+			sourceEnd = semicolonToken.sourceEnd;
+			endLine   = semicolonToken.endLine;
+			endColumn = semicolonToken.endColumn;
+		}
+	}
+	catch (ParseException e)
+	{
+		sourceEnd = e.currentToken.sourceEnd;
+		endLine   = e.currentToken.endLine;
+		endColumn = e.currentToken.endColumn;
+		fireParseError("catch expected", "catch", e.currentToken);
+	}
+	{
+		return new ThrowStatement(expr,
+			throwToken.sourceStart,
+			sourceEnd,
+			throwToken.beginLine,
+			endLine,
+			throwToken.beginColumn,
+			endColumn);
+	}
 } //}}}
 
 //{{{ tryStatement()
 TryStatement tryStatement() :
 {
-  Token tryToken;
-  Block block;
-  Catch catchClause;
-  List catches = new ArrayList(5);
+	Token tryToken;
+	Block block;
+	Catch catchClause;
+	List catches = new ArrayList(5);
 }
 {
-  tryToken = <TRY>
-  block = Block()
-  catchClause = catchClause()
-  {
-    catches.add(catchClause);
-  }
-  (
-     catchClause = catchClause()
-     {
-       catches.add(catchClause);
-     }
-   )*
-  {
-    return new TryStatement(block,
-                            catches,
-                            tryToken.sourceStart,
-                            catchClause.getSourceEnd(),
-                            tryToken.beginLine,
-                            catchClause.getEndLine(),
-                            tryToken.beginColumn,
-                            catchClause.getEndColumn());
-  }
+	tryToken = <TRY>
+	block = Block()
+	catchClause = catchClause()
+	{
+		catches.add(catchClause);
+	}
+	(
+		catchClause = catchClause()
+		{
+			catches.add(catchClause);
+		}
+	)*
+	{
+		return new TryStatement(block,
+			catches,
+			tryToken.sourceStart,
+			catchClause.getSourceEnd(),
+			tryToken.beginLine,
+			catchClause.getEndLine(),
+			tryToken.beginColumn,
+			catchClause.getEndColumn());
+	}
 }//}}}
+
 //{{{ catchClause()
 Catch catchClause() :
 {
-  Token catchToken = null;
-  Token catchedException;
-  Token dollarToken;
-  Token identifierToken;
-  Block block;
-  int start,beginLine,beginColumn;
-  int startVar,beginLineVar,beginColumnVar;
-  int endVar,endLineVar,endColumnVar;
-  String identifierString = null;
-  String catchedString = null;
+	Token catchToken;
+	Token catchedException;
+	Token dollarToken;
+	Token identifierToken;
+	Block block;
+	int start,beginLine,beginColumn;
+	int startVar,beginLineVar,beginColumnVar;
+	int endVar,endLineVar,endColumnVar;
+	String identifierString = null;
+	String catchedString = null;
 }
 {
-  try {
-    catchToken = <CATCH>
-    {
-      start       = catchToken.sourceStart;
-      beginLine   = catchToken.beginLine;
-      beginColumn = catchToken.beginColumn;
-    }
-  } catch (ParseException e) {
-      start       = e.currentToken.sourceStart;
-      beginLine   = e.currentToken.beginLine;
-      beginColumn = e.currentToken.beginColumn;
-      fireParseError("catch expected", "catch", e.currentToken);
-  }
-  try {
-    <LPAREN>
-  } catch (ParseException e) {
-      fireParseError("'(' expected", "(", e.currentToken);
-  }
-  try {
-    catchedException = <IDENTIFIER>
-    {
-      catchedString = catchedException.image;
-    }
-  } catch (ParseException e) {
-    fireParseError("identifier expected", "identifier", e.currentToken);
-  }
-  try {
-    dollarToken = <DOLLAR>
-    {
-      startVar       = dollarToken.sourceStart;
-      beginLineVar   = dollarToken.beginLine;
-      beginColumnVar = dollarToken.beginColumn;
-    }
-  } catch (ParseException e) {
-    startVar       = e.currentToken.sourceStart;
-    beginLineVar   = e.currentToken.beginLine;
-    beginColumnVar = e.currentToken.beginColumn;
-    fireParseError("$ expected", "$", e.currentToken);
-  }
-  try {
-    identifierToken = <IDENTIFIER>
-    {
-      identifierString = identifierToken.image;
-      endVar       = identifierToken.sourceStart;
-      endLineVar   = identifierToken.beginLine;
-      endColumnVar = identifierToken.beginColumn;
-    }
-  } catch (ParseException e) {
-    endVar       = e.currentToken.sourceEnd;
-    endLineVar   = e.currentToken.endLine;
-    endColumnVar = e.currentToken.endColumn;
-    fireParseError("identifier expected", "identifier", e.currentToken);
-  }
-  try {
-    <RPAREN>
-  } catch (ParseException e) {
-      fireParseError("')' expected", ")", e.currentToken);
-  }
-  block = Block()
-  {
-    return new Catch(catchedString,
-                     new Variable(identifierString,
-                                  startVar,
-                                  endVar,
-                                  beginLineVar,
-                                  endLineVar,
-                                  beginColumnVar,
-                                  endColumnVar),
-                     block,
-                     start,
-                     block.getSourceEnd(),
-                     beginLine,
-                     block.getEndLine(),
-                     beginColumn,
-                     block.getEndColumn());
-  }
+	try
+	{
+		catchToken = <CATCH>
+		{
+			start       = catchToken.sourceStart;
+			beginLine   = catchToken.beginLine;
+			beginColumn = catchToken.beginColumn;
+		}
+	}
+	catch (ParseException e)
+	{
+		start       = e.currentToken.sourceStart;
+		beginLine   = e.currentToken.beginLine;
+		beginColumn = e.currentToken.beginColumn;
+		fireParseError("catch expected", "catch", e.currentToken);
+	}
+	try
+	{
+		<LPAREN>
+	}
+	catch (ParseException e)
+	{
+		fireParseError("'(' expected", "(", e.currentToken);
+	}
+	try
+	{
+		catchedException = <IDENTIFIER>
+		{
+			catchedString = catchedException.image;
+		}
+	}
+	catch (ParseException e)
+	{
+		fireParseError("identifier expected", "identifier", e.currentToken);
+	}
+	try
+	{
+		dollarToken = <DOLLAR>
+		{
+			startVar       = dollarToken.sourceStart;
+			beginLineVar   = dollarToken.beginLine;
+			beginColumnVar = dollarToken.beginColumn;
+		}
+	}
+	catch (ParseException e)
+	{
+		startVar       = e.currentToken.sourceStart;
+		beginLineVar   = e.currentToken.beginLine;
+		beginColumnVar = e.currentToken.beginColumn;
+		fireParseError("$ expected", "$", e.currentToken);
+	}
+	try
+	{
+		identifierToken = <IDENTIFIER>
+		{
+			identifierString = identifierToken.image;
+			endVar       = identifierToken.sourceStart;
+			endLineVar   = identifierToken.beginLine;
+			endColumnVar = identifierToken.beginColumn;
+		}
+	}
+	catch (ParseException e)
+	{
+		endVar       = e.currentToken.sourceEnd;
+		endLineVar   = e.currentToken.endLine;
+		endColumnVar = e.currentToken.endColumn;
+		fireParseError("identifier expected", "identifier", e.currentToken);
+	}
+	try
+	{
+		<RPAREN>
+	}
+	catch (ParseException e)
+	{
+		fireParseError("')' expected", ")", e.currentToken);
+	}
+	block = Block()
+	{
+		return new Catch(catchedString,
+			new Variable(identifierString,
+				startVar,
+				endVar,
+				beginLineVar,
+				endLineVar,
+				beginColumnVar,
+				endColumnVar),
+			block,
+			start,
+			block.getSourceEnd(),
+			beginLine,
+			block.getEndLine(),
+			beginColumn,
+			block.getEndColumn());
+	}
 } //}}}
 
 //}}}
 
-
 //{{{ expressionStatement()
-
 /**
  * A statement expression.
  * expression ;
  * @return an expression
  */
-Statement expressionStatement() :
+Statement expressionStatement():
 {
-  Statement statement;
-  Token token;
+	Statement statement;
+	Token token;
 }
 {
-  try {
-    statement = Expression()
-  } catch (ParseException e) {
-    token = error_skipto(SEMICOLON);
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "expression expected",
-                                          "expression",
-                                          e.currentToken.image,
-                                          e.currentToken.sourceEnd,
-                                          token.sourceEnd,
-                                          e.currentToken.beginLine,
-                                          token.endLine,
-                                          e.currentToken.endColumn,
-                                          token.beginColumn));
-    return new EmptyStatement(e.currentToken.sourceStart,
-                              token.sourceEnd,
-                              e.currentToken.beginLine,
-                              token.endLine,
-                              e.currentToken.beginColumn,
-                              token.endColumn);
-  }
-  try {
-    token = <SEMICOLON>
-    {
-      statement.setSourceEnd(token.sourceEnd);
-    }
-  } catch (ParseException e) {
-    if (e.currentToken.next.kind != PHPParserConstants.PHPEND) {
-      //{{{ Parse Error
-      fireParseError(new PHPParseErrorEvent(ERROR,
-                                            path,
-                                            "';' expected",
-                                            ";",
-                                            e.currentToken.image,
-                                            statement.getSourceEnd(),
-                                            statement.getSourceEnd()+1,
-                                            e.currentToken.beginLine,
-                                            e.currentToken.endLine,
-                                            e.currentToken.endColumn,
-                                            e.currentToken.endColumn+1)); //}}}
-    }
-  }
-  {return statement;}
-}
+	try
+	{
+		statement = Expression()
+	}
+	catch (ParseException e)
+	{
+		token = error_skipto(SEMICOLON);
+		fireParseError(new PHPParseErrorEvent(ERROR,
+			path,
+			"expression expected",
+			"expression",
+			e.currentToken.image,
+			e.currentToken.sourceEnd,
+			token.sourceEnd,
+			e.currentToken.beginLine,
+			token.endLine,
+			e.currentToken.endColumn,
+			token.beginColumn));
+		return new EmptyStatement(e.currentToken.sourceStart,
+			token.sourceEnd,
+			e.currentToken.beginLine,
+			token.endLine,
+			e.currentToken.beginColumn,
+			token.endColumn);
+	}
+	try
+	{
+		token = <SEMICOLON>
+		{
+			statement.setSourceEnd(token.sourceEnd);
+		}
+	}
+	catch (ParseException e)
+	{
+		if (e.currentToken.next.kind != PHPParserConstants.PHPEND)
+		{
+			//{{{ Parse Error
+			fireParseError(new PHPParseErrorEvent(ERROR,
+				path,
+				"';' expected",
+				";",
+				e.currentToken.image,
+				statement.getSourceEnd(),
+				statement.getSourceEnd()+1,
+				e.currentToken.beginLine,
+				e.currentToken.endLine,
+				e.currentToken.endColumn,
+				e.currentToken.endColumn+1)); //}}}
+		}
+	}
+	{
+		return statement;
+	}
+} //}}}
 
-//}}}
 //{{{ defineStatement()
 Define defineStatement() :
 {
@@ -4993,86 +4965,123 @@ PrintExpression PrintExpression() :
 }
 
 //}}}
+
 //{{{ ListExpression()
-
-ListExpression ListExpression() :
+ListExpression ListExpression():
 {
-  Expression expr = null;
-  List list = new ArrayList();
-  int pos,line,column;
-  final Token listToken, rParen;
-  Token token;
+	Expression expr = null;
+	List list = new ArrayList();
+	int pos,line,column;
+	final Token listToken, rParen;
+	Token token;
 }
 {
-  listToken = <LIST> {pos = listToken.sourceEnd;line=listToken.beginLine;column=listToken.beginColumn;}
-  try {
-    token = <LPAREN> {pos = token.sourceEnd;line=token.beginLine;column=token.beginColumn;}
-  } catch (ParseException e) {
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "'(' expected",
-                                          "(",
-                                          e.currentToken.image,
-                                          listToken.sourceEnd,
-                                          listToken.sourceEnd+1,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1));
-  }
-  [
-    expr = VariableDeclaratorId()
-    {list.add(expr);pos = expr.getSourceEnd();line=expr.getBeginLine();column=expr.getBeginColumn();}
-  ]
-  {if (expr == null) list.add(null);}
-  (
-    try {
-      token = <COMMA>
-      {pos = token.sourceEnd;line=token.beginLine;column=token.beginColumn;}
-    } catch (ParseException e) {
-      fireParseError(new PHPParseErrorEvent(ERROR,
-                                            path,
-                                            "',' expected",
-                                            ",",
-                                            e.currentToken.image,
-                                            pos,
-                                            pos+1,
-                                            e.currentToken.beginLine,
-                                            e.currentToken.endLine,
-                                            e.currentToken.endColumn,
-                                            e.currentToken.endColumn+1));
-    }
-    [expr = VariableDeclaratorId() {list.add(expr);pos = expr.getSourceEnd();line=expr.getBeginLine();column=expr.getBeginColumn();}]
-  )*
-  try {
-    rParen = <RPAREN>
-    {pos = rParen.sourceEnd;line=rParen.beginLine;column=rParen.beginColumn;}
-  } catch (ParseException e) {
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "')' expected",
-                                          ")",
-                                          e.currentToken.image,
-                                          pos,
-                                          pos+1,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1));
-  }
-  {
-    final AbstractVariable[] vars = new AbstractVariable[list.size()];
-    list.toArray(vars);
-    return new ListExpression(vars,
-                              listToken.sourceStart,
-                              pos,
-                              listToken.beginLine,
-                              line,
-                              listToken.beginColumn,
-                              column);}
-}
-
-//}}}
+	listToken = <LIST> {pos = listToken.sourceEnd;line=listToken.beginLine;column=listToken.beginColumn;}
+	try
+	{
+		token = <LPAREN>
+		{
+			pos = token.sourceEnd;
+			line = token.beginLine;
+			column = token.beginColumn;
+		}
+	}
+	catch (ParseException e)
+	{
+		fireParseError(new PHPParseErrorEvent(ERROR,
+			path,
+			"'(' expected",
+			"(",
+			e.currentToken.image,
+			listToken.sourceEnd,
+			listToken.sourceEnd+1,
+			e.currentToken.beginLine,
+			e.currentToken.endLine,
+			e.currentToken.endColumn,
+			e.currentToken.endColumn+1));
+	}
+	[
+		expr = VariableDeclaratorId()
+		{
+			list.add(expr);
+			pos = expr.getSourceEnd();
+			line = expr.getBeginLine();
+			column = expr.getBeginColumn();
+		}
+	]
+	{
+		if (expr == null)
+			list.add(null);
+	}
+	(
+		try
+		{
+			token = <COMMA>
+			{
+				pos = token.sourceEnd;
+				line=token.beginLine;
+				column=token.beginColumn;
+			}
+		}
+		catch (ParseException e)
+		{
+			fireParseError(new PHPParseErrorEvent(ERROR,
+				path,
+				"',' expected",
+				",",
+				e.currentToken.image,
+				pos,
+				pos+1,
+				e.currentToken.beginLine,
+				e.currentToken.endLine,
+				e.currentToken.endColumn,
+				e.currentToken.endColumn+1));
+		}
+		[
+			expr = VariableDeclaratorId()
+			{
+				list.add(expr);
+				pos = expr.getSourceEnd();
+				line = expr.getBeginLine();
+				column = expr.getBeginColumn();
+			}
+		]
+	)*
+	try
+	{
+		rParen = <RPAREN>
+		{
+			pos = rParen.sourceEnd;
+			line = rParen.beginLine;
+			column = rParen.beginColumn;
+		}
+	}
+	catch (ParseException e)
+	{
+		fireParseError(new PHPParseErrorEvent(ERROR,
+			path,
+			"')' expected",
+			")",
+			e.currentToken.image,
+			pos,
+			pos+1,
+			e.currentToken.beginLine,
+			e.currentToken.endLine,
+			e.currentToken.endColumn,
+			e.currentToken.endColumn+1));
+	}
+	{
+		AbstractVariable[] vars = new AbstractVariable[list.size()];
+		list.toArray(vars);
+		return new ListExpression(vars,
+			listToken.sourceStart,
+			pos,
+			listToken.beginLine,
+			line,
+			listToken.beginColumn,
+			column);
+	}
+} //}}}
 
 //}}}
 
@@ -5157,60 +5166,67 @@ EchoStatement EchoStatement() :
 			semicolonToken.endColumn);
 	} //}}}
 
-}
-//}}}
+} //}}}
+
 //{{{ GlobalStatement()
-
-GlobalStatement GlobalStatement() :
+GlobalStatement GlobalStatement():
 {
-   Variable expr;
-   List vars = new ArrayList();
-   final GlobalStatement global;
-   final Token token, token2;
-   int pos,line,column;
+	Variable expr;
+	List vars = new ArrayList();
+	GlobalStatement global;
+	Token globalToken;
+	Token semicolonToken;
+	int pos,line,column;
 }
 {
-  token = <GLOBAL>
-    expr = Variable()
-    {vars.add(expr);pos = expr.getSourceEnd()+1;line=expr.getEndLine();column=expr.getEndColumn();}
-  (<COMMA>
-    expr = Variable()
-    {vars.add(expr);pos = expr.getSourceEnd()+1;line=expr.getEndLine();column=expr.getEndColumn();}
-  )*
-  try {
-    token2 = <SEMICOLON>
-    {pos = token2.sourceEnd+1;line=token2.endLine;column=token2.endColumn;}
-  } catch (ParseException e) {
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "';' expected",
-                                          ";",
-                                          e.currentToken.image,
-                                          pos,
-                                          pos+1,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1));
-  }
-    {
-      final Variable[] variables = new Variable[vars.size()];
-      vars.toArray(variables);
-      global = new GlobalStatement(currentSegment,
-                                   variables,
-                                   token.sourceStart,
-                                   pos,
-                                   token.beginLine,
-                                   line,
-                                   token.beginColumn,
-                                   column);
-      currentSegment.add(global);
-      //global.analyzeCode(this);
-      return global;
-    }
-}
+	globalToken = <GLOBAL>
+	expr = Variable()
+	{
+		vars.add(expr);
+		pos = expr.getSourceEnd()+1;
+		line = expr.getEndLine();
+		column = expr.getEndColumn();
+	}
+	(
+		<COMMA>
+		expr = Variable()
+		{
+			vars.add(expr);
+			pos = expr.getSourceEnd()+1;
+			line=expr.getEndLine();
+			column=expr.getEndColumn();
+		}
+	)*
+	try
+	{
+		semicolonToken = <SEMICOLON>
+		{
+			pos = semicolonToken.sourceEnd+1;
+			line = semicolonToken.endLine;
+			column = semicolonToken.endColumn;
+		}
+	}
+	catch (ParseException e)
+	{
+		fireParseError("';' expected", ";", e.currentToken);
+	}
+	{
+		Variable[] variables = new Variable[vars.size()];
+		vars.toArray(variables);
+		global = new GlobalStatement(currentSegment,
+			variables,
+			globalToken.sourceStart,
+			pos,
+			globalToken.beginLine,
+			line,
+			globalToken.beginColumn,
+			column);
+		currentSegment.add(global);
+		//global.analyzeCode(this);
+		return global;
+	}
+} //}}}
 
-//}}}
 //{{{ StaticStatement()
 
 StaticStatement StaticStatement() :
@@ -5459,33 +5475,31 @@ Statement BlockStatement() :
 } //}}}
 
 //{{{ BlockStatementNoBreak()
-
 /**
  * A Block statement that will not contain any 'break'
  */
 Statement BlockStatementNoBreak() :
 {
-  Statement statement = null;
+	Statement statement;
 }
 {
-  (
-      statement = StatementNoBreak()
-      |
-      LOOKAHEAD(1)
-      statement = ClassDeclaration()
-      |
-      statement = methodDeclaration(CONST_FUNCTION,null)
-      {
-          currentSegment.add((MethodDeclaration) statement);
-          //((MethodDeclaration) statement).analyzeCode(this);
-      }
-  )
-  {
-      return statement;
-  }
-}
+	(
+		statement = StatementNoBreak()
+	|
+		LOOKAHEAD(1)
+		statement = ClassDeclaration()
+	|
+		statement = methodDeclaration(CONST_FUNCTION,null)
+		{
+			currentSegment.add((MethodDeclaration) statement);
+			//((MethodDeclaration) statement).analyzeCode(this);
+		}
+	)
+	{
+		return statement;
+	}
+} //}}}
 
-//}}}
 //{{{ LocalVariableDeclaration()
 
 /**
@@ -5508,43 +5522,7 @@ Expression[] LocalVariableDeclaration() :
 }
 
 //}}}
-//{{{ LocalVariableDeclarator()
 
-/**
- * used only by LocalVariableDeclaration().
- */
-VariableDeclaration LocalVariableDeclarator() :
-{
-  final Variable varName;
-  Expression initializer = null;
-}
-{
-  varName = Variable() [ <ASSIGN> initializer = Expression() ]
-  {
-   if (initializer == null) {
-    return new VariableDeclaration(currentSegment,
-                                   varName,
-                                   varName.getSourceStart(),
-                                   varName.getSourceEnd(),
-                                   varName.getBeginLine(),
-                                   varName.getEndLine(),
-                                   varName.getBeginColumn(),
-                                   varName.getEndColumn());
-   }
-    return new VariableDeclaration(currentSegment,
-                                   varName,
-                                   initializer,
-                                   "=",
-                                   varName.getSourceStart(),
-                                   initializer.getSourceEnd(),
-                                   varName.getBeginLine(),
-                                   initializer.getEndLine(),
-                                   varName.getBeginColumn(),
-                                   initializer.getEndColumn());
-  }
-}
-
-//}}}
 //{{{ EmptyStatement()
 
 /**
@@ -5579,34 +5557,6 @@ EmptyStatement EmptyStatement() :
 }
 
 //}}}
-//{{{ StatementExpression()
-
-/**
- * used only by StatementExpressionList() which is used only by ForInit() and ForStatement()
- */
-Expression StatementExpression() :
-{
-  final Expression expr;
-  final Token operator;
-}
-{
-  expr = PreIncDecExpression() {return expr;}
-|
-  expr = PrimaryExpression()
-  [ operator = <PLUS_PLUS> {return new PostfixedUnaryExpression(expr,
-                                                                PHPParserConstants.PLUS_PLUS,
-                                                                operator.sourceEnd,
-                                                                operator.endLine,
-                                                                operator.endColumn);}
-  | operator = <MINUS_MINUS> {return new PostfixedUnaryExpression(expr,
-                                                                  PHPParserConstants.MINUS_MINUS,
-                                                                  operator.sourceEnd,
-                                                                  operator.endLine,
-                                                                  operator.endColumn);}
-  ]
-  {return expr;}
-}
-
 //}}}
 
 //{{{ SWITCH
@@ -6297,9 +6247,9 @@ Statement WhileStatementAction(Token whileToken) :
   Statement statement;
   List stmts;
   Token colonToken;
-  int end       = 0;
-  int endLine   = 0;
-  int endColumn = 0;
+  int end;
+  int endLine;
+  int endColumn;
   Token semicolonToken;
 }
 {
@@ -6407,271 +6357,255 @@ ForeachStatement ForeachStatement() :
   Expression expression = null;
   ArrayVariableDeclaration variable = null;
   Token foreachToken;
-  Token lparenToken = null;
-  Token asToken = null;
-  Token rparenToken = null;
+  Token lparenToken;
+  Token asToken;
+  Token rparenToken;
   int pos,endLine,endColumn;
   Token tokenEndForeach, tokenColon, tokenSemicolon;
-  Statement action;
-  List list = new ArrayList();
+  List list;
 }
 {
-  foreachToken = <FOREACH>
-  try {
-    lparenToken = <LPAREN>
-    {
-      pos       = lparenToken.sourceEnd+1;
-      endLine   = lparenToken.endLine;
-      endColumn = lparenToken.endColumn;
-    }
-  } catch (ParseException e) {
-    fireParseError("'(' expected", "(", e.currentToken);
-    {
-      pos       = foreachToken.sourceEnd+1;
-      endLine   = foreachToken.endLine;
-      endColumn = foreachToken.endColumn;
-    }
-  }
-  try {
-    expression = Expression()
-    {
-      pos       = expression.getSourceEnd()+1;
-      endLine   = expression.getEndLine();
-      endColumn = expression.getEndColumn();
-    }
-  } catch (ParseException e) {
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "variable expected",
-                                          "variable",
-                                          e.currentToken.image,
-                                          e.currentToken.sourceStart,
-                                          e.currentToken.sourceEnd,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1));
-  }
-  try {
-    asToken = <AS>
-    {
-      pos       = asToken.sourceEnd+1;
-      endLine   = asToken.endLine;
-      endColumn = asToken.endColumn;
-    }
-  } catch (ParseException e) {
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "'as' expected",
-                                          "as",
-                                          e.currentToken.image,
-                                          e.currentToken.sourceStart,
-                                          e.currentToken.sourceEnd,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1));
-  }
-  try {
-    variable = ArrayVariable()
-    {
-      pos       = variable.getSourceEnd()+1;
-      endLine   = variable.getEndLine();
-      endColumn = variable.getEndColumn();
-    }
-  } catch (ParseException e) {
-    if (errorMessage != null) throw e;
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "variable expected",
-                                          "variable",
-                                          e.currentToken.image,
-                                          e.currentToken.sourceStart,
-                                          e.currentToken.sourceEnd,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1));
-  }
-  try {
-    rparenToken = <RPAREN>
-    {
-      pos       = rparenToken.sourceEnd+1;
-      endLine   = rparenToken.endLine;
-      endColumn = rparenToken.endColumn;
-    }
-  } catch (ParseException e) {
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "')' expected",
-                                          ")",
-                                          e.currentToken.image,
-                                          e.currentToken.sourceStart,
-                                          e.currentToken.sourceEnd,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1));
-  }
-  (
-  try {
-    statement = Statement()
-    {
-      pos       = statement.getSourceEnd()+1;
-      endLine   = statement.getEndLine();
-      endColumn = statement.getEndColumn();
-    }
-  } catch (ParseException e) {
-    if (errorMessage != null) throw e;
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "statement expected",
-                                          "statement",
-                                          e.currentToken.image,
-                                          e.currentToken.sourceStart,
-                                          e.currentToken.sourceEnd,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1));
-  }
-  {
-   return new ForeachStatement(expression,
-                               variable,
-                               statement,
-                               foreachToken.sourceStart,
-                               pos,
-                               foreachToken.beginLine,
-                               endLine,
-                               foreachToken.beginColumn,
-                               endColumn);
- }
- |
- tokenColon = <COLON>
- {
-   pos = tokenColon.sourceEnd+1;
- }
- list = statementList()
-   {
-     fireParseMessage(new PHPParseMessageEvent(INFO,
-                                               PHPParseMessageEvent.MESSAGE_FOREACH_ENDFOREACH_TAG,
-                                               path,
-                                               "Ugly syntax detected, you should foreach () {...} instead of foreach (): ... endforeach;",
-                                               tokenColon));
-   }
-   try
-   {
-     tokenEndForeach = <ENDFOREACH>
-     {
-       pos = tokenEndForeach.sourceEnd+1;
-     }
-   } catch (ParseException e) {
-     fireParseError(new PHPParseErrorEvent(ERROR,
-                                           path,
-                                           "'endforeach' expected",
-                                           "endforeach",
-                                           e.currentToken.image,
-                                           pos,
-                                           pos+1,
-                                           e.currentToken.beginLine,
-                                           e.currentToken.endLine,
-                                           e.currentToken.endColumn,
-                                           e.currentToken.endColumn+1));
-   }
-   try {
-     tokenSemicolon = <SEMICOLON>
-     {pos = tokenSemicolon.sourceEnd+1;}
-   } catch (ParseException e) {
-     fireParseError(new PHPParseErrorEvent(ERROR,
-                                           path,
-                                           "';' expected",
-                                           ";",
-                                           e.currentToken.image,
-                                           pos,
-                                           pos+1,
-                                           e.currentToken.beginLine,
-                                           e.currentToken.endLine,
-                                           e.currentToken.endColumn,
-                                           e.currentToken.endColumn+1));
-   }
-   {
-     if (list.size() == 0) {
-       return new ForeachStatement(expression,
-                                    variable,
-                                    null,
-                                    foreachToken.sourceStart,
-                                    pos,
-                                    foreachToken.beginLine,
-                                    endLine,
-                                    foreachToken.beginColumn,
-                                    endColumn);
-     } else {
-       final Statement[] stmtsArray = new Statement[list.size()];
-       list.toArray(stmtsArray);
-       return new ForeachStatement(expression,
-                                    variable,
-                                    new Block(stmtsArray,
-                                             stmtsArray[0].getSourceStart(),
-                                             stmtsArray[stmtsArray.length-1].getSourceEnd(),
-                                             stmtsArray[0].getBeginLine(),
-                                             stmtsArray[stmtsArray.length-1].getEndLine(),
-                                             stmtsArray[0].getBeginColumn(),
-                                             stmtsArray[stmtsArray.length-1].getEndColumn()),
-                                    foreachToken.sourceStart,
-                                    pos,
-                                    foreachToken.beginLine,
-                                    endLine,
-                                    foreachToken.beginColumn,
-                                    endColumn);
-     }
-   }
-   )
+	foreachToken = <FOREACH>
+	//{{{ LPAREN
+	try
+	{
+		lparenToken = <LPAREN>
+		{
+			pos       = lparenToken.sourceEnd+1;
+			endLine   = lparenToken.endLine;
+			endColumn = lparenToken.endColumn;
+		}
+	}
+	catch (ParseException e)
+	{
+		fireParseError("'(' expected", "(", e.currentToken);
+		{
+			pos       = foreachToken.sourceEnd+1;
+			endLine   = foreachToken.endLine;
+			endColumn = foreachToken.endColumn;
+		}
+	} //}}}
+
+	//{{{ Expression
+	try
+	{
+		expression = Expression()
+		{
+			pos       = expression.getSourceEnd()+1;
+			endLine   = expression.getEndLine();
+			endColumn = expression.getEndColumn();
+		}
+	}
+	catch (ParseException e)
+	{
+		fireParseError("variable expected", "variable", e.currentToken);
+	} //}}}
+
+	//{{{ AS
+	try
+	{
+		asToken = <AS>
+		{
+			pos       = asToken.sourceEnd+1;
+			endLine   = asToken.endLine;
+			endColumn = asToken.endColumn;
+		}
+	}
+	catch (ParseException e)
+	{
+		fireParseError("'as' expected", "as", e.currentToken);
+	} //}}}
+
+	//{{{ ArrayVariable
+	try
+	{
+		variable = ArrayVariable()
+		{
+			pos       = variable.getSourceEnd()+1;
+			endLine   = variable.getEndLine();
+			endColumn = variable.getEndColumn();
+		}
+	}
+	catch (ParseException e)
+	{
+		if (errorMessage != null) throw e;
+		fireParseError("variable expected", "variable", e.currentToken);
+	} //}}}
+
+	//{{{ RPAREN
+	try
+	{
+		rparenToken = <RPAREN>
+		{
+			pos       = rparenToken.sourceEnd+1;
+			endLine   = rparenToken.endLine;
+			endColumn = rparenToken.endColumn;
+		}
+	}
+	catch (ParseException e)
+	{
+		fireParseError("')' expected", ")", e.currentToken);
+	} //}}}
+
+	(
+		//{{{ Statement
+		try
+		{
+			statement = Statement()
+			{
+				pos       = statement.getSourceEnd()+1;
+				endLine   = statement.getEndLine();
+				endColumn = statement.getEndColumn();
+			}
+		}
+		catch (ParseException e)
+		{
+			if (errorMessage != null) throw e;
+			fireParseError("statement expected", "statement", e.currentToken);
+		}
+		{
+			return new ForeachStatement(expression,
+				variable,
+				statement,
+				foreachToken.sourceStart,
+				pos,
+				foreachToken.beginLine,
+				endLine,
+				foreachToken.beginColumn,
+				endColumn);
+		} //}}}
+	|
+		//{{{ : statement endforeach;
+		tokenColon = <COLON>
+		{
+			pos = tokenColon.sourceEnd+1;
+		}
+		list = statementList()
+		{
+			fireParseMessage(new PHPParseMessageEvent(INFO,
+				PHPParseMessageEvent.MESSAGE_FOREACH_ENDFOREACH_TAG,
+				path,
+				"Ugly syntax detected, you should foreach () {...} instead of foreach (): ... endforeach;",
+				tokenColon));
+		}
+		//{{{ ENDFOREACH
+		try
+		{
+			tokenEndForeach = <ENDFOREACH>
+			{
+				pos = tokenEndForeach.sourceEnd+1;
+			}
+		}
+		catch (ParseException e)
+		{
+			fireParseError(new PHPParseErrorEvent(ERROR,
+				path,
+				"'endforeach' expected",
+				"endforeach",
+				e.currentToken.image,
+				pos,
+				pos+1,
+				e.currentToken.beginLine,
+				e.currentToken.endLine,
+				e.currentToken.endColumn,
+				e.currentToken.endColumn+1));
+		} //}}}
+		//}}}
+		//{{{ ;
+		try
+		{
+			tokenSemicolon = <SEMICOLON>
+			{
+				pos = tokenSemicolon.sourceEnd+1;
+			}
+		}
+		catch (ParseException e)
+		{
+			fireParseError("';' expected", ";", e.currentToken);
+		} //}}}
+		{
+			if (list.isEmpty())
+			{
+				return new ForeachStatement(expression,
+					variable,
+					null,
+					foreachToken.sourceStart,
+					pos,
+					foreachToken.beginLine,
+					endLine,
+					foreachToken.beginColumn,
+					endColumn);
+			}
+			else
+			{
+				final Statement[] stmtsArray = new Statement[list.size()];
+				list.toArray(stmtsArray);
+				return new ForeachStatement(expression,
+					variable,
+					new Block(stmtsArray,
+						stmtsArray[0].getSourceStart(),
+						stmtsArray[stmtsArray.length-1].getSourceEnd(),
+						stmtsArray[0].getBeginLine(),
+						stmtsArray[stmtsArray.length-1].getEndLine(),
+						stmtsArray[0].getBeginColumn(),
+						stmtsArray[stmtsArray.length-1].getEndColumn()),
+					foreachToken.sourceStart,
+					pos,
+					foreachToken.beginLine,
+					endLine,
+					foreachToken.beginColumn,
+					endColumn);
+			}
+		}
+	)
 } //}}}
 
 //{{{ FOR
 //{{{ ForStatement()
-
 /**
  * a for declaration.
  * @return a node representing the for statement
  */
-ForStatement ForStatement() :
+ForStatement ForStatement():
 {
-  Token forToken,tokenEndFor,token2,tokenColon;
-  int pos;
-  Expression[] initializations = null;
-  Expression condition = null;
-  Expression[] increments = null;
-  Statement action;
-  List list = new ArrayList();
-  int end       = 0;
-  int endLine   = 0;
-  int endColumn = 0;
+	Token forToken,tokenEndFor,token2,tokenColon;
+	int pos;
+	Expression[] initializations = null;
+	Expression condition = null;
+	Expression[] increments = null;
+	Statement action;
+	List list;
+	int end;
+	int endLine;
+	int endColumn;
 }
 {
-  forToken = <FOR>
-  try {
-    <LPAREN>
-  } catch (ParseException e) {
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "'(' expected",
-                                          "(",
-                                          e.currentToken.image,
-                                          forToken.sourceEnd,
-                                          forToken.sourceEnd,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.endColumn));
-  }
-     [ initializations = ForInit() ] <SEMICOLON>
-     [ condition = Expression() ] <SEMICOLON>
-     [ increments = StatementExpressionList() ] <RPAREN>
-    (
-      action = Statement()
-      {
-        return new ForStatement(initializations,
+	forToken = <FOR>
+	try
+	{
+		<LPAREN>
+	}
+	catch (ParseException e)
+	{
+		fireParseError(new PHPParseErrorEvent(ERROR,
+			path,
+			"'(' expected",
+			"(",
+			e.currentToken.image,
+			forToken.sourceEnd,
+			forToken.sourceEnd,
+			e.currentToken.beginLine,
+			e.currentToken.endLine,
+			e.currentToken.endColumn,
+			e.currentToken.endColumn));
+	}
+	[ initializations = ForInit() ] <SEMICOLON>
+	[ condition = Expression() ] <SEMICOLON>
+	[ increments = StatementExpressionList() ] <RPAREN>
+	(
+		action = Statement()
+		{
+			return new ForStatement(initializations,
                                 condition,
                                 increments,
                                 action,
@@ -6681,102 +6615,104 @@ ForStatement ForStatement() :
                                 action.getEndLine(),
                                 forToken.beginColumn,
                                 action.getEndColumn());
-      }
-    |
-      tokenColon = <COLON>
-      {
-        pos = tokenColon.sourceEnd+1;
-      }
-      list = statementList()
-      {
-        fireParseMessage(new PHPParseMessageEvent(INFO,
-                                                  PHPParseMessageEvent.MESSAGE_FOR_ENDFOR_TAG,
-                                                  path,
-                                                  "Ugly syntax detected, you should for () {...} instead of for (): ... endfor;",
-                                                  tokenColon));
-      }
-      try {
-        tokenEndFor = <ENDFOR>
-        {
-          pos = tokenEndFor.sourceEnd+1;
-        }
-      } catch (ParseException e) {
-        fireParseError(new PHPParseErrorEvent(ERROR,
-                                              path,
-                                              "'endfor' expected",
-                                              "endfor",
-                                              e.currentToken.image,
-                                              pos,
-                                              pos,
-                                              e.currentToken.beginLine,
-                                              e.currentToken.endLine,
-                                              e.currentToken.endColumn,
-                                              e.currentToken.endColumn));
-      }
-      try {
-        token2 = <SEMICOLON>
-        {
-          pos = token2.sourceEnd+1;
-          end       = token2.sourceEnd;
-          endLine   = token2.endLine;
-          endColumn = token2.endColumn;
-        }
-      } catch (ParseException e) {
-        end       = e.currentToken.sourceEnd;
-        endLine   = e.currentToken.endLine;
-        endColumn = e.currentToken.endColumn;
-        fireParseError(new PHPParseErrorEvent(ERROR,
-                                              path,
-                                              "';' expected",
-                                              ";",
-                                              e.currentToken.image,
-                                              pos,
-                                              pos+1,
-                                              e.currentToken.beginLine,
-                                              e.currentToken.endLine,
-                                              e.currentToken.endColumn,
-                                              e.currentToken.endColumn+1));
-      }
-      {
-        final Statement[] stmtsArray = new Statement[list.size()];
-        list.toArray(stmtsArray);
-        return new ForStatement(initializations,
+                }
+                |
+                tokenColon = <COLON>
+                {
+                	pos = tokenColon.sourceEnd+1;
+                }
+                list = statementList()
+                {
+                	fireParseMessage(new PHPParseMessageEvent(INFO,
+                		PHPParseMessageEvent.MESSAGE_FOR_ENDFOR_TAG,
+                		path,
+                		"Ugly syntax detected, you should for () {...} instead of for (): ... endfor;",
+                		tokenColon));
+                }
+                try
+                {
+                	tokenEndFor = <ENDFOR>
+                	{
+                		pos = tokenEndFor.sourceEnd+1;
+                	}
+                }
+                catch (ParseException e)
+                {
+                	fireParseError(new PHPParseErrorEvent(ERROR,
+                		path,
+                		"'endfor' expected",
+                		"endfor",
+                		e.currentToken.image,
+                		pos,
+                		pos,
+                		e.currentToken.beginLine,
+                		e.currentToken.endLine,
+                		e.currentToken.endColumn,
+                		e.currentToken.endColumn));
+                }
+                try
+                {
+                	token2 = <SEMICOLON>
+                	{
+                		pos = token2.sourceEnd+1;
+                		end       = token2.sourceEnd;
+                		endLine   = token2.endLine;
+                		endColumn = token2.endColumn;
+                	}
+                }
+                catch (ParseException e)
+                {
+                	end       = e.currentToken.sourceEnd;
+                	endLine   = e.currentToken.endLine;
+                	endColumn = e.currentToken.endColumn;
+                	fireParseError(new PHPParseErrorEvent(ERROR,
+                		path,
+                		"';' expected",
+                		";",
+                		e.currentToken.image,
+                		pos,
+                		pos+1,
+                		e.currentToken.beginLine,
+                		e.currentToken.endLine,
+                		e.currentToken.endColumn,
+                		e.currentToken.endColumn+1));
+                }
+                {
+                	final Statement[] stmtsArray = new Statement[list.size()];
+                	list.toArray(stmtsArray);
+                	return new ForStatement(initializations,
                                 condition,
                                 increments,
                                 new Block(stmtsArray,
-                                          stmtsArray[0].getSourceStart(),
-                                          stmtsArray[stmtsArray.length-1].getSourceEnd(),
-                                          stmtsArray[0].getBeginLine(),
-                                          stmtsArray[stmtsArray.length-1].getEndLine(),
-                                          stmtsArray[0].getBeginColumn(),
-                                          stmtsArray[stmtsArray.length-1].getEndColumn()),
+                                	stmtsArray[0].getSourceStart(),
+                                	stmtsArray[stmtsArray.length-1].getSourceEnd(),
+                                	stmtsArray[0].getBeginLine(),
+                                	stmtsArray[stmtsArray.length-1].getEndLine(),
+                                	stmtsArray[0].getBeginColumn(),
+                                	stmtsArray[stmtsArray.length-1].getEndColumn()),
                                 forToken.sourceStart,
                                 end,
                                 forToken.beginLine,
                                 endLine,
                                 forToken.beginColumn,
                                 endColumn);
-      }
-    )
-}
+                }
+                )
+} //}}}
 
-//}}}
 //{{{ ForInit()
-
-Expression[] ForInit() :
+Expression[] ForInit():
 {
-  final Expression[] exprs;
+	Expression[] exprs;
 }
 {
-  LOOKAHEAD(LocalVariableDeclaration())
-  exprs = LocalVariableDeclaration()
-  {return exprs;}
-|
-  exprs = StatementExpressionList()
-  {return exprs;}
-}
-
-//}}}
+	LOOKAHEAD(LocalVariableDeclaration())
+	exprs = LocalVariableDeclaration()
+	{return exprs;}
+	|
+	exprs = StatementExpressionList()
+	{return exprs;}
+} //}}}
 //}}}
 
 //{{{ StatementExpressionList()
@@ -6787,123 +6723,140 @@ Expression[] StatementExpressionList() :
 	Expression expr;
 }
 {
-	expr = Expression()   {list.add(expr);} (<COMMA> Expression() {list.add(expr);})*
+	expr = Expression()
 	{
-		final Expression[] exprsArray = new Expression[list.size()];
+		list.add(expr);
+	}
+	(
+		<COMMA> Expression()
+		{
+			list.add(expr);
+		}
+	)*
+	{
+		Expression[] exprsArray = new Expression[list.size()];
 		list.toArray(exprsArray);
 		return exprsArray;
 	}
-}
+} //}}}
 
-//}}}
 //{{{ ContinueStatement()
-
-Continue ContinueStatement() :
+Continue ContinueStatement():
 {
-  Expression expr = null;
-  final Token continueToken;
-  Token semicolonToken = null;
+	Expression expr = null;
+	final Token continueToken;
+	Token semicolonToken = null;
 }
 {
-  continueToken = <CONTINUE> [ expr = Expression() ]
-  try {
-    semicolonToken = <SEMICOLON>
-  } catch (ParseException e) {
-    final int errorStart, errorEnd;
-    if (expr == null) {
-      errorStart = continueToken.sourceEnd;
-      errorEnd   = errorStart+1;
-    } else {
-      errorStart = expr.getSourceEnd();
-      errorEnd   = errorStart+1;
-    }
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "';' expected",
-                                          ";",
-                                          e.currentToken.image,
-                                          errorStart,
-                                          errorEnd,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1));
-  }
-  {
-    if (semicolonToken == null) {
-      if (expr == null) {
-        return new Continue(expr,continueToken.sourceStart,continueToken.sourceEnd,continueToken.beginLine,continueToken.endLine,continueToken.beginColumn,continueToken.endColumn);
-      }
-      return new Continue(expr,continueToken.sourceStart,expr.getSourceEnd(),continueToken.beginLine,expr.getEndLine(),continueToken.beginColumn,expr.getEndColumn());
-    }
-    return new Continue(expr,continueToken.sourceStart,semicolonToken.sourceEnd,continueToken.beginLine,semicolonToken.endLine,continueToken.beginColumn,semicolonToken.endColumn);
-  }
-}
+	continueToken = <CONTINUE> [ expr = Expression() ]
+	try
+	{
+		semicolonToken = <SEMICOLON>
+	}
+	catch (ParseException e)
+	{
+		final int errorStart, errorEnd;
+		if (expr == null)
+		{
+			errorStart = continueToken.sourceEnd;
+			errorEnd   = errorStart+1;
+		}
+		else
+		{
+			errorStart = expr.getSourceEnd();
+			errorEnd   = errorStart+1;
+		}
+		fireParseError("';' expected", ";", e.currentToken);
+	}
+	{
+		if (semicolonToken == null)
+		{
+			if (expr == null)
+			{
+				return new Continue(expr,
+					continueToken.sourceStart,
+					continueToken.sourceEnd,
+					continueToken.beginLine,
+					continueToken.endLine,
+					continueToken.beginColumn,
+					continueToken.endColumn);
+			}
+			return new Continue(expr,continueToken.sourceStart,
+				expr.getSourceEnd(),continueToken.beginLine,
+				expr.getEndLine(),continueToken.beginColumn,
+				expr.getEndColumn());
+		}
+		return new Continue(expr,continueToken.sourceStart,
+			semicolonToken.sourceEnd,continueToken.beginLine,
+			semicolonToken.endLine,continueToken.beginColumn,
+			semicolonToken.endColumn);
+	}
+} //}}}
 
-//}}}
 //{{{ ReturnStatement()
-
 /**
  * A return statement.
  * It's return [expression];
  * @return a ReturnStatement
  */
-ReturnStatement ReturnStatement() :
+ReturnStatement ReturnStatement():
 {
-  Statement expr = null;
-  final Token returnToken;
-  Token semicolonToken = null;
-  int end       = 0;
-  int endLine   = 0;
-  int endColumn = 0;
+	Statement expr = null;
+	Token returnToken;
+	Token semicolonToken;
+	int end       = 0;
+	int endLine   = 0;
+	int endColumn = 0;
 }
 {
-  returnToken = <RETURN>
-  [
-    expr = Expression()
-    {
-      end       = expr.getSourceEnd();
-      endLine   = expr.getEndLine();
-      endColumn = expr.getEndColumn();
-    }
-  ]
-  try {
-    semicolonToken = <SEMICOLON>
-    {
-      end       = semicolonToken.sourceEnd;
-      endLine   = semicolonToken.endLine;
-      endColumn = semicolonToken.endColumn;
-    }
-  } catch (ParseException e) {
-    if (end == 0) {
-      end       = e.currentToken.sourceEnd;
-      endLine   = e.currentToken.endLine;
-      endColumn = e.currentToken.endColumn;
-    }
-    //{{{ fireParseError
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "';' expected",
-                                          ";",
-                                          e.currentToken.image,
-                                          end,
-                                          e.currentToken.sourceEnd,
-                                          endLine,
-                                          e.currentToken.endLine,
-                                          endColumn,
-                                          e.currentToken.endColumn)); //}}}
-  }
-  {
-    return new ReturnStatement(expr,
-                               returnToken.sourceStart,
-                               end,
-                               returnToken.beginLine,
-                               endLine,
-                               returnToken.beginColumn,
-                               endColumn);
-  }
-}
-
-//}}}
+	returnToken = <RETURN>
+	[
+		expr = Expression()
+		{
+			end       = expr.getSourceEnd();
+			endLine   = expr.getEndLine();
+			endColumn = expr.getEndColumn();
+		}
+	]
+	try
+	{
+		semicolonToken = <SEMICOLON>
+		{
+			end       = semicolonToken.sourceEnd;
+			endLine   = semicolonToken.endLine;
+			endColumn = semicolonToken.endColumn;
+		}
+	}
+	catch (ParseException e)
+	{
+		if (end == 0)
+		{
+			end       = e.currentToken.sourceEnd;
+			endLine   = e.currentToken.endLine;
+			endColumn = e.currentToken.endColumn;
+		}
+		//{{{ fireParseError
+		fireParseError(new PHPParseErrorEvent(ERROR,
+			path,
+			"';' expected",
+			";",
+			e.currentToken.image,
+			end,
+			e.currentToken.sourceEnd,
+			endLine,
+			e.currentToken.endLine,
+			endColumn,
+			e.currentToken.endColumn)); //}}}
+	}
+	{
+		return new ReturnStatement(expr,
+			returnToken.sourceStart,
+			end,
+			returnToken.beginLine,
+			endLine,
+			returnToken.beginColumn,
+			endColumn);
+	}
+} //}}}
 
 //}}}
