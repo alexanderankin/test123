@@ -1,5 +1,13 @@
 package com.addictedtor.orchestra;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import org.af.commons.install.DesktopShortcut;
 import org.af.commons.install.FreeDesktopShortcut;
 import org.af.commons.install.WindowsDesktopShortcut;
@@ -12,8 +20,6 @@ import org.af.jhlir.tools.RCmdBatch;
 import org.af.jhlir.tools.RCmdBatchException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import java.io.*;
 
 /**
  * Installer.

@@ -1,16 +1,21 @@
 package com.addictedtor.orchestra;
 
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
 import org.af.commons.widgets.MultiLineLabel;
 import org.af.commons.widgets.WidgetFactory;
 import org.af.commons.widgets.buttons.HorizontalButtonPane;
 import org.gjt.sp.jedit.jEdit;
 
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 @SuppressWarnings("serial")
 public class FinishedDialog extends JDialog implements ActionListener {

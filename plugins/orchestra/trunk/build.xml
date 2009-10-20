@@ -10,6 +10,10 @@
 
     <property name="jar_jedit" value="${jedit.install.dir}/jedit.jar"/>
     
+    <property name="jar_rengine" value="${lib.dir}/REngine.jar"/>
+    <property name="jar_jriengine" value="${lib.dir}/JRIEngine.jar"/>
+    <property name="jar_rjava" value="${lib.dir}/rjava.jar"/>
+    
     <property name="jar_afcommons" value="${lib.dir}/afcommons.jar"/>
     <property name="jar_jhlir" value="${lib.dir}/jhlir.jar"/>
     <property name="jar_log4j" value="${lib.dir}/log4j-1.2.15.jar"/>
@@ -38,7 +42,10 @@
         <pathelement location="${jar_commons_logging}"/>
         <pathelement location="${jar_swing_worker}"/>
         <pathelement location="${jar_jgoodies_form_layout}"/>
-    </path>
+        <pathelement location="${jar_rengine}" />
+        <pathelement location="${jar_jriengine}" />
+        <pathelement location="${jar_rjava}" />
+     </path>
 
     <target name="build.prepare" depends="clean">
     	
@@ -50,6 +57,11 @@
         <copy file="${jar_commons_logging}"         todir="${install.dir}" />
         <copy file="${jar_swing_worker}"            todir="${install.dir}" />
         <copy file="${jar_jgoodies_form_layout}"    todir="${install.dir}" />
+        
+        <copy file="${jar_rengine}"    todir="${install.dir}" />
+        <copy file="${jar_jriengine}"    todir="${install.dir}" />
+        <copy file="${jar_rjava}"    todir="${install.dir}" />
+        
     </target>
 
     <!-- just to make eclipse happy, so that we can
@@ -67,6 +79,10 @@
         <pathelement location="${jar_commons_logging}"/>
         <pathelement location="${jar_swing_worker}"/>
         <pathelement location="${jar_jgoodies_form_layout}"/>
+        
+        <pathelement location="${jar_rengine}" />
+        <pathelement location="${jar_jriengine}" />
+        <pathelement location="${jar_rjava}" />
     </path>
 
     <target name="unused">

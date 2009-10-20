@@ -47,6 +47,8 @@ public class OrchestraModes {
 	 */
 	public void deployModes() throws IOException {
 		
+		// maybe only write the modes if they are not there and 
+		// the version has changed
 		for( String mode: modes){
 			FileTransfer.copyResourceToLocalDir( 
 					OrchestraPlugin.class.getResource("/modes/"+ mode + ".xml"),
