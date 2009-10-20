@@ -9,7 +9,6 @@ import sidekick.java.options.*;
 import sidekick.java.util.*;
 
 import org.gjt.sp.jedit.*;
-//import org.gjt.sp.util.Log;
 
 import sidekick.SideKickParsedData;
 
@@ -56,7 +55,6 @@ public class JavaCompletionFinder {
 
         // get the word just before the caret.  It might be a partial word, that's okay.
         String word = getWordAtCursor( editPane.getBuffer() );
-        //Log.log( Log.DEBUG, this, "word at cursor is " + word );
         if ( word == null || word.length() == 0 ) {
             return null;
         }
@@ -67,7 +65,10 @@ public class JavaCompletionFinder {
             2. words ending with dot: get matching fields and methods in the
                 class for the type represented by the word.
         */ 
-        return getPossibleCompletions( word ) ;
+        //long start = System.currentTimeMillis();
+        JavaCompletion completion = getPossibleCompletions( word );
+        //Log.log(Log.DEBUG, this, "time: " + (System.currentTimeMillis() - start));
+        return completion ;
     }
 
 
@@ -179,9 +180,7 @@ public class JavaCompletionFinder {
 
 
     private JavaCompletion getPossibleQualifiedCompletions( String word ) {
-        //Log.log( Log.DEBUG, this, "getPossibleQualifiedCompletions, word is " + word );
         String qualification = word.substring( 0, word.lastIndexOf( '.' ) );
-        //Log.log( Log.DEBUG, this, "qualification = " + qualification );
 
         // might have super.something
         if ( "super".equals( qualification ) ) {
@@ -244,11 +243,8 @@ public class JavaCompletionFinder {
             if ( possibles.size() == 1 && possibles.get( 0 ).equals( word ) ) {
                 return null;
             }
-            ////Log.log(Log.DEBUG, this, "===== getPossibleQualifiedCompletions, list = " + possibles);
-
             return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, possibles );
         }
-
         return getLocalVariableCompletion( word );
     }
 
@@ -257,14 +253,12 @@ public class JavaCompletionFinder {
         // partialword
         // find all fields/variables declarations, methods, and classes in scope
         TigerNode tn = ( TigerNode ) data.getAssetAtOffset( caret );
-        ////Log.log(Log.DEBUG, this, "asset at caret is a " + tn.getClass().getName());
         Set<String> choices = new HashSet<String>();
         while ( true ) {
             List children = tn.getChildren();
             if ( children != null ) {
                 for ( Iterator it = children.iterator(); it.hasNext(); ) {
                     TigerNode child = ( TigerNode ) it.next();
-                    ////Log.log(Log.DEBUG, this, "+++++> parent = " + tn.getName() + ", child = " + child.getName() + ", word = " + word);
                     switch ( child.getOrdinal() ) {
                         case TigerNode.CONSTRUCTOR:
                         case TigerNode.METHOD:
@@ -288,12 +282,10 @@ public class JavaCompletionFinder {
                 }
             }
             tn = tn.getParent();
-            if ( tn == null )               //|| tn.getOrdinal() == TigerNode.COMPILATION_UNIT )
+            if ( tn == null )                 //|| tn.getOrdinal() == TigerNode.COMPILATION_UNIT )
                 break;
         }
-        ////Log.log(Log.DEBUG, this, "+++++ getPossibleNonQualifiedCompletions, choices as set = " + choices);
         List<String> list = new ArrayList<String>( choices );
-        ////Log.log(Log.DEBUG, this, "+++++ getPossibleNonQualifiedCompletions, choices as list = " + list);
         JavaCompletion jc = getSuperCompletion( word );
         if ( jc != null ) {
             list.addAll( jc.getChoices() );
@@ -305,7 +297,6 @@ public class JavaCompletionFinder {
                 return null;
             else {
                 Collections.sort( list );
-                ////Log.log(Log.DEBUG, this, "===== getPossibleNonQualifiedCompletions, list = " + list);
                 return new JavaCompletion( editPane.getView(), word, list );
             }
         }
@@ -376,7 +367,6 @@ public class JavaCompletionFinder {
         if ( m.size() == 1 && m.get( 0 ).equals( word ) ) {
             return null;
         }
-        ////Log.log(Log.DEBUG, this, "===== getThis Completion, list = " + m);
         return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, m );
     }
 
@@ -407,8 +397,6 @@ public class JavaCompletionFinder {
         if ( m.size() == 1 && m.get( 0 ).equals( word ) ) {
             return null;
         }
-        ////Log.log(Log.DEBUG, this, "===== getQualifiedThisCompletion, list = " + m);
-
         return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, m );
     }
 
@@ -417,23 +405,23 @@ public class JavaCompletionFinder {
     // for example, if the word is "my_word" and it is a String, return the fields and methods
     // for String.
     private JavaCompletion getLocalVariableCompletion( String word ) {
-        String my_word = word.endsWith( "." ) ? word.substring( 0, word.length() - 1 ) : word;
+        String my_word = word.indexOf('.') > -1 ? word.substring(0, word.lastIndexOf('.')) : word;
         FieldNode lvn = getLocalVariable( my_word );
-        if ( lvn == null )
+        if ( lvn == null ) {
             return null;
+        }
 
         String name = lvn.getName();
         if ( name.startsWith( my_word ) ) {
             int insertionType = JavaCompletion.PARTIAL;
-            if ( name.equals( my_word ) )
+            if ( name.equals( my_word ) ) {
                 insertionType = JavaCompletion.DOT;
+            }
             String type = lvn.getType();
             Class c = getClassForType( type, ( CUNode ) data.root.getUserObject() );
             if ( c != null ) {
                 List m = getMembersForClass( c );
                 if ( m != null ) {
-                    ////Log.log(Log.DEBUG, this, "===== getLocalVariableCompletion, list = " + m);
-
                     return new JavaCompletion( editPane.getView(), word, insertionType, m );
                 }
             }
@@ -445,30 +433,35 @@ public class JavaCompletionFinder {
     private FieldNode getLocalVariable( String name ) {
         TigerNode tn = ( TigerNode ) data.getAssetAtOffset( caret );
         while ( true ) {
-            List children = tn.getChildren();
+            // check children of the node first
+            List<TigerNode> children = tn.getChildren();
             if ( children != null ) {
-                for ( Iterator it = children.iterator(); it.hasNext(); ) {
-                    TigerNode child = ( TigerNode ) it.next();
+                for (TigerNode child : children) {
                     if ( child instanceof FieldNode ) {     // LocalVariableNode is a subclass of FieldNode
                         FieldNode lvn = ( FieldNode ) child;
-                        if ( lvn.isPrimitive() )
-                            continue;
-                        if ( lvn.getName().startsWith( name ) )
+                        if ( !lvn.isPrimitive() && lvn.getName().startsWith( name ) ) {
                             return lvn;
+                        }
                     }
                 }
             }
+            
+            // check parameters to constructors and methods
             if ( tn.getOrdinal() == TigerNode.CONSTRUCTOR || tn.getOrdinal() == TigerNode.METHOD ) {
                 List params = ( ( Parameterizable ) tn ).getFormalParams();
                 for ( Iterator jt = params.iterator(); jt.hasNext(); ) {
-                    Parameter param = ( Parameter ) jt.next();
-                    if ( param.getName().startsWith( name ) )
+                    Parameter param = ( Parameter ) jt.next();  // Parameter is a subclass of FieldNode
+                    if ( param.getName().startsWith( name ) ) {
                         return param;
+                    }
                 }
             }
+            
+            // up the tree
             tn = tn.getParent();
-            if ( tn == null )
+            if ( tn == null ) {
                 break;
+            }
         }
         return null;
     }
@@ -488,16 +481,15 @@ public class JavaCompletionFinder {
      * @param filename the filename of the buffer
      */
     public Class getClassForType( String type, CUNode cu, String filename ) {
-        //Log.log( Log.DEBUG, this, "getClassForType, type = " + type );
         // check in same package
         String packageName = cu.getPackageName();
         if ( packageName != null ) {
             // check same package
             String className = ( packageName.length() > 0 ? packageName + "." : "" ) + type;
-            //Log.log( Log.DEBUG, this, "1 looking for " + className );
             Class c = validateClassName( className );
-            if ( c != null )
+            if ( c != null ) {
                 return c;
+            }
         }
 
         // check imports
@@ -508,19 +500,19 @@ public class JavaCompletionFinder {
                 String className = packageName;
                 // might have a fully qualified import
                 if ( className.endsWith( type ) ) {
-                    //Log.log( Log.DEBUG, this, "2 looking for " + className );
                     Class c = validateClassName( className, type, filename );
-                    if ( c != null )
+                    if ( c != null ) {
                         return c;
+                    }
                 }
                 else {
                     // wildcard import, need to add . and type
                     className = packageName + "." + type;
-                    //Log.log( Log.DEBUG, this, "3 looking for " + className );
                     try {
                         Class c = validateClassName( className, type, filename );
-                        if ( c != null )
+                        if ( c != null ) {
                             return c;
+                        }
                     }
                     catch ( Exception e ) {
                         continue;
@@ -533,14 +525,12 @@ public class JavaCompletionFinder {
         // specified in the ProjectViewer "Classpath settings" option pane.
         String projectName = PVHelper.getProjectName( editPane.getView() );
         String className = Locator.getInstance().getProjectClassName( projectName, type );
-        //Log.log( Log.DEBUG, this, "4 looking for " + className );
         Class c = validateClassName( className, type, filename );
 
         // check jars in classpath.  These are the jars and/or directories specified
         // in System.getProperty("java.class.path").
         if ( c == null && PVHelper.useJavaClasspath( projectName ) ) {
             className = Locator.getInstance().getClassPathClassName( type );
-            //Log.log( Log.DEBUG, this, "5 looking for " + className );
             c = validateClassName( className, type, filename );
         }
 
@@ -548,7 +538,6 @@ public class JavaCompletionFinder {
         // ext dirs, and endorsed dirs.
         if ( c == null ) {
             className = Locator.getInstance().getRuntimeClassName( type );
-            //Log.log( Log.DEBUG, this, "6 looking for " + className );
             c = validateClassName( className, type, filename );
         }
         return c;
@@ -570,37 +559,25 @@ public class JavaCompletionFinder {
      * @return The class if found, null if not.
      */
     private Class validateClassName( String classname, String type, String filename ) {
-        //Log.log( Log.DEBUG, this, "validateClassName, classname = " + classname + ", type = " + type + ", filename = " + filename );
         if ( classname == null ) {
             return null;
         }
         try {
             // check current classloader
-            Class c = Class.forName( classname );
-            //Log.log( Log.DEBUG, this, "validateClassName, found class " + c.getName() + " in current classloader" );
-            return c;
+            return Class.forName( classname );
         }
         catch ( ClassNotFoundException cnfe ) {     // NOPMD
             try {
-                //Log.log( Log.DEBUG, this, "validateClassName, checking project classloader" );
                 // check the project classloader
                 AntClassLoader classloader = Locator.getInstance().getProjectClassLoader();
                 if ( classloader == null ) {
-                    //Log.log( Log.DEBUG, this, "validateClassName, AntClassLoader was null" );
                     throw new ClassNotFoundException();
                 }
-                Class c = classloader.findClass( classname );
-                //Log.log( Log.DEBUG, this, "validateClassName, found class " + c.getName() + " in project classloader" );
-                return c;
+                return classloader.forceLoadClass( classname );
             }
             catch ( Exception pcnfe ) {
-                //Log.log( Log.DEBUG, this, "validateClassName, checking project build output directory" );
                 // check the project build output directory
-                Class c = findClassInProject( classname, type, filename );
-                if ( c != null ) {
-                    //Log.log( Log.DEBUG, this, "validateClassName, found class " + c.getName() + " in build output directory" );
-                }
-                return c;
+                return findClassInProject( classname, type, filename );
             }
         }
     }
@@ -699,6 +676,11 @@ public class JavaCompletionFinder {
             }
         }
         catch ( Exception e ) {
+            return null;
+        }
+        catch ( NoClassDefFoundError ncdfe ) {
+            // TODO: logging to the activity log is useless for the end user.  Need to
+            // find a better way to let them know about this problem.
             return null;
         }
         List members = new ArrayList( list );

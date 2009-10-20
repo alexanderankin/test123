@@ -61,8 +61,10 @@ public class JavaParser extends SideKickParser implements EBComponent {
     public static final int JAVA_PARSER = 1;
     public static final int JAVACC_PARSER = 2;
 
+    // which type of parser, java or javacc
     private int parser_type = JAVA_PARSER;
 
+    public static final String COMPILATION_UNIT = "javasidekick.compilationUnit";
 
     /**
      * Defaults to parsing java files.
@@ -128,27 +130,11 @@ public class JavaParser extends SideKickParser implements EBComponent {
      */
     public void handleMessage( EBMessage msg ) {
         // reparse on properties changed
+        // TODO: fix this, should only parse if properties for this plugin
+        // have changed.
         if ( ( msg instanceof PropertiesChanged ) && loadOptions() ) {
             parse();
         }
-        // check imports on buffer loaded
-        /* CheckImports is deprecated, use PMD plugin instead
-        else if (msg instanceof BufferUpdate) {
-            BufferUpdate bu = (BufferUpdate)msg;
-            if (BufferUpdate.LOADED.equals(bu.getWhat())) {
-                Object o = bu.getBuffer().getProperty("javasidekick.compilationUnit");
-                if (o != null && (o instanceof CUNode) ) {
-                    CUNode compilationUnit = (CUNode)o;
-                    // maybe check imports -- should have an option setting for this
-                    // this is slow, so commented out until I can improve the performance
-                    if ("true".equals(jEdit.getProperty("javasidekick.checkImports"))) {
-                        CheckImports tool = new CheckImports();
-                        tool.checkImports( compilationUnit );
-                    }
-                }
-            }
-        }
-        */
     }
 
     /**
@@ -165,6 +151,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
      * TODO: can this be adapted to parse say java code from within a jsp file?
      * @param buffer the buffer to parse.
      * @return a CUNode representing a java compilation unit.
+     * @deprecated This was used by CheckImports, which is deprecated.
      */
     public CUNode parse( Buffer buffer ) {
         ByteArrayInputStream input = null;
@@ -191,7 +178,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
             compilationUnit.setResults( parser.getResults() );
             compilationUnit.setStart( ElementUtil.createStartPosition( buffer, compilationUnit ) );
             compilationUnit.setEnd( ElementUtil.createEndPosition( buffer, compilationUnit ) );
-            buffer.setProperty("javasidekick.compilationUnit", compilationUnit);
+            buffer.setProperty( COMPILATION_UNIT, compilationUnit );
         }
         catch ( Exception e ) {
             e.printStackTrace();
@@ -240,8 +227,8 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     compilationUnit = parser.getJavaRootNode( tab_size );
                     break;
             }
-            if ("true".equals(jEdit.getProperty("javasidekick.dump"))) {
-                System.out.println(compilationUnit.dump());
+            if ( "true".equals( jEdit.getProperty( "javasidekick.dump" ) ) ) {
+                System.out.println( compilationUnit.dump() );
             }
 
             // compilationUnit is root node
@@ -251,7 +238,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
             compilationUnit.setStart( ElementUtil.createStartPosition( buffer, compilationUnit ) );
             compilationUnit.setEnd( ElementUtil.createEndPosition( buffer, compilationUnit ) );
             root.setUserObject( compilationUnit );
-            buffer.setProperty("javasidekick.compilationUnit", compilationUnit);
+            buffer.setProperty( COMPILATION_UNIT, compilationUnit );
 
             // maybe show imports
             if ( filterOpt.getShowImports() == true ) {
@@ -286,7 +273,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
             // removed exception handling, all ParseExceptions are now caught
             // and accumulated in the parser, then dealt with in handleErrors.
         }
-        catch ( TokenMgrError e) {      // NOPMD
+        catch ( TokenMgrError e ) {      // NOPMD
             // don't worry about this one, most likely it is due to attempting
             // to parse during code completion.
         }
@@ -302,8 +289,8 @@ public class JavaParser extends SideKickParser implements EBComponent {
         /* only handle errors when buffer is saved or code completion is off. Otherwise,
         there will be a lot of spurious errors shown when code completion is on and the
         user is in the middle of typing something. */
-        boolean complete_instant = jEdit.getBooleanProperty("sidekick.complete-instant.toggle", true);
-        boolean complete_delay = jEdit.getBooleanProperty("sidekick.complete-delay.toggle", true);
+        boolean complete_instant = jEdit.getBooleanProperty( "sidekick.complete-instant.toggle", true );
+        boolean complete_delay = jEdit.getBooleanProperty( "sidekick.complete-delay.toggle", true );
         boolean complete_on = complete_instant || complete_delay;
         if ( !complete_on && errorSource != null ) {
             handleErrors( errorSource, parser, buffer );
@@ -315,7 +302,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
             if ("true".equals(jEdit.getProperty("javasidekick.checkImports"))) {
                 CheckImports tool = new CheckImports();
                 tool.checkImports( compilationUnit );
-            }
+        }
             */
         }
         return parsedData;
@@ -416,9 +403,9 @@ public class JavaParser extends SideKickParser implements EBComponent {
     // single place to check the filter settings, that is, check to see if it
     // is okay to show a particular node
     private boolean canShow( TigerNode node ) {
-        if ( !isVisible( node ) )      // visibility based on option settings
+        if ( !isVisible( node ) )       // visibility based on option settings
             return false;
-        if ( !node.isVisible() )        // visibility based on the node itself
+        if ( !node.isVisible() )         // visibility based on the node itself
             return false;
         if ( node.getOrdinal() == TigerNode.BLOCK )
             return false;
