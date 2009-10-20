@@ -8,7 +8,6 @@ import java.lang.reflect.Method;
 import java.util.Vector;
 
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.util.Log;
 import org.rosuda.JRI.Rengine;
 import org.rosuda.REngine.REngine;
 import org.rosuda.REngine.JRI.JRIEngine;
@@ -17,6 +16,8 @@ import com.addictedtor.orchestra.rengine.REngineService;
 
 public class JRIEngineService extends REngineService {
 
+	static String R_HOME = "/usr/local/lib/R/" ;
+	
 	@Override
 	public REngine getEngine() {
 		if( engine == null ){
@@ -41,10 +42,9 @@ public class JRIEngineService extends REngineService {
 		/* TODO: ask these to R using RCmdBatch */
 		try{
 			String[] libs = new String[]{
-				"/usr/local/lib/R/lib",
-				"/usr/local/lib/R/bin", 
-				"/usr/local/lib/R/library/rJava/libs", 
-				"/usr/local/lib/R/library/rJava/jri"
+				R_HOME + "lib",
+				R_HOME + "library/rJava/libs", 
+				R_HOME + "library/rJava/jri"
 			};
 			addLibPaths( libs ) ;
 			
@@ -66,8 +66,8 @@ public class JRIEngineService extends REngineService {
 			cons = 	RJCL.getConstructor( clazzes ) ; 
 			
 			rjcl = (ClassLoader) cons.newInstance( 
-					"/usr/local/lib/R/library/rJava" , 
-					"/usr/local/lib/R/library/rJava/libs" ) ;
+					R_HOME + "library/rJava" , 
+					R_HOME + "library/rJava/libs" ) ;
 			
 			/* use the rjcl to load the jri library without relying on java.library.path */
 			

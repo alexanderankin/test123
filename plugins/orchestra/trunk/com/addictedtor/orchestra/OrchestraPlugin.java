@@ -76,17 +76,14 @@ public class OrchestraPlugin extends EBPlugin {
 		//       }
 		//   }
 
-		// String jar = "/usr/local/lib/R/library/orchestra/java/R.jar" ;
-		// jEdit.addPluginJAR( jar ) ;
-
 		REngineService service = (REngineService)ServiceManager.getService("com.addictedtor.orchestra.rengine.REngineService", "jri") ;
 		r = service.getEngine() ;
 		
+		/* so that we can call the engine from the beanshell console */
 		try{
 			NameSpace ns = org.gjt.sp.jedit.BeanShell.getNameSpace(); 
 			ns.setVariable("r", r) ;
 		} catch(UtilEvalError e){}
-		
 		
 	}
 
