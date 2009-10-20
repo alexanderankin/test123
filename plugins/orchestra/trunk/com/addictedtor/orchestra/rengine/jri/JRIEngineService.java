@@ -8,6 +8,7 @@ import java.lang.reflect.Method;
 import java.util.Vector;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.util.Log;
 import org.rosuda.JRI.Rengine;
 import org.rosuda.REngine.REngine;
 import org.rosuda.REngine.JRI.JRIEngine;
@@ -47,7 +48,11 @@ public class JRIEngineService extends REngineService {
 			};
 			addLibPaths( libs ) ;
 			
-		} catch( Exception e){ }
+		} catch( Exception e){ 
+			e.printStackTrace() ;
+		}
+		
+		System.loadLibrary( "R" ) ;
 		
 		/* use reflection to load the RJavaClassLoader */
 		Class RJCL = null ; 
@@ -60,7 +65,9 @@ public class JRIEngineService extends REngineService {
 			Class<?>[] clazzes = new Class<?>[]{ String.class, String.class } ;
 			cons = 	RJCL.getConstructor( clazzes ) ; 
 			
-			rjcl = (ClassLoader) cons.newInstance( "/usr/local/lib/R/library/rJava" , "/usr/local/lib/R/library/rJava/libs" ) ;
+			rjcl = (ClassLoader) cons.newInstance( 
+					"/usr/local/lib/R/library/rJava" , 
+					"/usr/local/lib/R/library/rJava/libs" ) ;
 			
 			/* use the rjcl to load the jri library without relying on java.library.path */
 			
