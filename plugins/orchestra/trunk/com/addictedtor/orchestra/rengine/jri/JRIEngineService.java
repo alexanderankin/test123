@@ -105,7 +105,7 @@ public class JRIEngineService extends REngineService {
 			orchestra_rpackage = engine.parseAndEval( "system.file( package = 'orchestra' )" ).asString() ;
 		} catch( Exception e){}
 		
-		String SEP = File.pathSeparator ;
+		String SEP = File.separator ;
 		jEdit.addPluginJAR( orchestra_rpackage + SEP + "java" + SEP + "R.jar" ) ;
 		
 	}
