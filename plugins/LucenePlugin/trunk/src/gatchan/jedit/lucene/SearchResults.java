@@ -45,6 +45,8 @@ public class SearchResults extends JPanel implements EBComponent
 	private IndexComboBoxModel indexModel;
 	private JLabel indexStatus;
 	private RolloverButton clear;
+	private RolloverButton multi;
+	private boolean multiStatus;
 //	private JTextPane preview;
 
 	public SearchResults()
@@ -103,10 +105,23 @@ public class SearchResults extends JPanel implements EBComponent
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				model.setFiles(Collections.EMPTY_LIST);
+				model.setFiles(Collections.emptyList());
 				tree.clear();
 			}
 		});
+		multi = new RolloverButton();
+		multi.setToolTipText(jEdit.getProperty(
+			"hypersearch-results.multi.label"));
+		multi.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				toggleMultiStatus();
+			}
+		});
+		multiStatus = true;
+		updateMultiStatus();
+	
 		JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
 		optionsPanel.add(new JLabel("file type:"));
 		optionsPanel.add(type);
@@ -114,6 +129,7 @@ public class SearchResults extends JPanel implements EBComponent
 		optionsPanel.add(maxPanel);
 		optionsPanel.add(indexes);
 		optionsPanel.add(clear);
+		optionsPanel.add(multi);
 		optionsPanel.add(indexStatus);
 		panel.add(searchField, BorderLayout.CENTER);
 		panel.add(optionsPanel, BorderLayout.EAST);
@@ -151,6 +167,21 @@ public class SearchResults extends JPanel implements EBComponent
 //		add(new JSplitPane(JSplitPane.VERTICAL_SPLIT, new JScrollPane(list), preview), BorderLayout.CENTER);
 		if (indexes.getItemCount() > 0)
 			indexes.setSelectedIndex(0);
+	}
+
+	private void updateMultiStatus()
+	{
+		if (multiStatus)
+			multi.setIcon(GUIUtilities.loadIcon(jEdit.getProperty("hypersearch-results.multi.multiple.icon")));
+		else
+			multi.setIcon(GUIUtilities.loadIcon(jEdit.getProperty("hypersearch-results.multi.single.icon")));
+	}
+
+	private void toggleMultiStatus()
+	{
+		multiStatus = (! multiStatus);
+		updateMultiStatus();
+		tree.allowMultipleResults(multiStatus);
 	}
 
 	private Index getSelectedIndex()
