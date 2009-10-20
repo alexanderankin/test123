@@ -3185,241 +3185,310 @@ Expression AndExpression() :
 }
 
 //}}}
-//{{{ EqualityExpression()
 
+//{{{ EqualityExpression()
 Expression EqualityExpression() :
 {
-  Expression expr,expr2;
-  Token token;
-  int sourceEnd,endLine,endColumn;
+	Expression expr,expr2;
+	Token token;
+	int sourceEnd,endLine,endColumn;
 }
 {
-  expr = instanceofExpression()
-  (
-  (   token = <EQUAL_EQUAL>
-    | token = <DIF>
-    | token = <NOT_EQUAL>
-    | token = <BANGDOUBLEEQUAL>
-    | token = <TRIPLEEQUAL>
-  )
-  try {
-    expr2 = instanceofExpression()
-  } catch (ParseException e) {
-    if (errorMessage != null) {
-      throw e;
-    }
-    expr2 = new ConstantIdentifier(SYNTAX_ERROR_CHAR,
-                                   token.sourceEnd +1,
-                                   token.sourceEnd +1,
-                                   token.beginLine,
-                                   token.endLine,
-                                   token.beginColumn,
-                                   token.endColumn);
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "expression expected",
-                                          "expression",
-                                          e.currentToken.image,
-                                          token.sourceEnd,
-                                          token.sourceEnd+1,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1));
-  }
-  {
-    if (expr2 == null) {
-      sourceEnd = token.sourceEnd;
-      endLine   = token.endLine;
-      endColumn = token.endColumn;
-    } else {
-      sourceEnd = expr2.getSourceEnd();
-      endLine   = expr2.getEndLine();
-      endColumn = expr2.getEndColumn();
-    }
-    expr = new BinaryExpression(expr,expr2,token.kind,expr.getSourceStart(),sourceEnd,expr.getBeginLine(),endLine,expr.getBeginColumn(),endColumn);
-  }
-  )*
-  {return expr;}
+	expr = instanceofExpression()
+	(
+		(
+			token = <EQUAL_EQUAL>
+		|
+			token = <DIF>
+		|
+			token = <NOT_EQUAL>
+		|
+			token = <BANGDOUBLEEQUAL>
+		|
+			token = <TRIPLEEQUAL>
+		)
+		try
+		{
+			expr2 = instanceofExpression()
+		}
+		catch (ParseException e)
+		{
+			if (errorMessage != null)
+			{
+				throw e;
+			}
+			expr2 = new ConstantIdentifier(SYNTAX_ERROR_CHAR,
+				token.sourceEnd +1,
+				token.sourceEnd +1,
+				token.beginLine,
+				token.endLine,
+				token.beginColumn,
+				token.endColumn);
+			fireParseError(new PHPParseErrorEvent(ERROR,
+				path,
+				"expression expected",
+				"expression",
+				e.currentToken.image,
+				token.sourceEnd,
+				token.sourceEnd+1,
+				e.currentToken.beginLine,
+				e.currentToken.endLine,
+				e.currentToken.endColumn,
+				e.currentToken.endColumn+1));
+		}
+		{
+			if (expr2 == null)
+			{
+				sourceEnd = token.sourceEnd;
+				endLine   = token.endLine;
+				endColumn = token.endColumn;
+			}
+			else
+			{
+				sourceEnd = expr2.getSourceEnd();
+				endLine   = expr2.getEndLine();
+				endColumn = expr2.getEndColumn();
+			}
+			expr = new BinaryExpression(expr,expr2,
+				token.kind,expr.getSourceStart(),
+				sourceEnd,expr.getBeginLine(),endLine,
+				expr.getBeginColumn(),endColumn);
+		}
+		)*
+	{
+		return expr;
+	}
 } //}}}
 
 //{{{ instanceofExpression()
-Expression instanceofExpression() :
+Expression instanceofExpression():
 {
-  Expression expr;
-  Expression expr2 = null;
-  int sourceEnd,endLine,endColumn;
+	Expression expr;
+	Expression expr2 = null;
+	int sourceEnd,endLine,endColumn;
 }
 {
-  expr = RelationalExpression()
-  [
-    <INSTANCEOF>
-    try {
-      (
-        expr2 = ClassIdentifier()
-      |
-        expr2 = VariableDeclaratorId()
-      )
-    } catch (ParseException e) {
-      fireParseError("string or object expected","string or object",e.currentToken.next);
-    }
-    {
-      if (expr2 == null) {
-        sourceEnd = token.sourceEnd;
-        endLine   = token.endLine;
-        endColumn = token.endColumn;
-      } else {
-        sourceEnd = expr2.getSourceEnd();
-        endLine   = expr2.getEndLine();
-        endColumn = expr2.getEndColumn();
-      }
-      expr = new BinaryExpression(expr,expr2,PHPParserConstants.INSTANCEOF,expr.getSourceStart(),sourceEnd,expr.getBeginLine(),endLine,expr.getBeginColumn(),endColumn);
-    }
-  ]
-  {
-    return expr;
-  }
+	expr = RelationalExpression()
+	[
+		<INSTANCEOF>
+		try
+		{
+			(
+				expr2 = ClassIdentifier()
+				|
+				expr2 = VariableDeclaratorId()
+				)
+		}
+		catch (ParseException e)
+		{
+			fireParseError("string or object expected","string or object",e.currentToken.next);
+		}
+		{
+			if (expr2 == null)
+			{
+				sourceEnd = token.sourceEnd;
+				endLine   = token.endLine;
+				endColumn = token.endColumn;
+			}
+			else
+			{
+				sourceEnd = expr2.getSourceEnd();
+				endLine   = expr2.getEndLine();
+				endColumn = expr2.getEndColumn();
+			}
+			expr = new BinaryExpression(expr,expr2,
+				PHPParserConstants.INSTANCEOF,
+				expr.getSourceStart(),sourceEnd,
+				expr.getBeginLine(),endLine,
+				expr.getBeginColumn(),endColumn);
+		}
+	]
+	{
+		return expr;
+	}
 } //}}}
-//{{{ RelationalExpression()
 
+//{{{ RelationalExpression()
 Expression RelationalExpression() :
 {
-  Expression expr,expr2;
-  int sourceEnd,endLine,endColumn;
-  Token token;
+	Expression expr,expr2;
+	int sourceEnd,endLine,endColumn;
+	Token token;
 }
 {
-  expr = ShiftExpression()
-  (
-  ( token = <LT>
-  | token = <GT>
-  | token = <LE>
-  | token = <GE>)
-   expr2 = ShiftExpression()
-  {
-    if (expr2 == null) {
-      sourceEnd = token.sourceEnd;
-      endLine   = token.endLine;
-      endColumn = token.endColumn;
-    } else {
-      sourceEnd = expr2.getSourceEnd();
-      endLine   = expr2.getEndLine();
-      endColumn = expr2.getEndColumn();
-    }
-    expr = new BinaryExpression(expr,expr2,token.kind,expr.getSourceStart(),sourceEnd,expr.getBeginLine(),endLine,expr.getBeginColumn(),endColumn);
-  }
-  )*
-  {return expr;}
-}
+	expr = ShiftExpression()
+	(
+		(
+			token = <LT>
+		|
+			token = <GT>
+		|
+			token = <LE>
+		|
+			token = <GE>
+		)
+		expr2 = ShiftExpression()
+		{
+			if (expr2 == null)
+			{
+				sourceEnd = token.sourceEnd;
+				endLine   = token.endLine;
+				endColumn = token.endColumn;
+			}
+			else
+			{
+				sourceEnd = expr2.getSourceEnd();
+				endLine   = expr2.getEndLine();
+				endColumn = expr2.getEndColumn();
+			}
+			expr = new BinaryExpression(expr,expr2,token.kind,
+				expr.getSourceStart(),sourceEnd,
+				expr.getBeginLine(),endLine,
+				expr.getBeginColumn(),endColumn);
+		}
+	)*
+	{
+		return expr;
+	}
+} //}}}
 
-//}}}
 //{{{ ShiftExpression()
-
-Expression ShiftExpression() :
+Expression ShiftExpression():
 {
-  Expression expr,expr2;
-  int sourceEnd,endLine,endColumn;
-  Token token;
+	Expression expr,expr2;
+	int sourceEnd,endLine,endColumn;
+	Token token;
 }
 {
-  expr = AdditiveExpression()
-  (
-  ( token = <LSHIFT>
-  | token = <RSIGNEDSHIFT>
-  | token = <RUNSIGNEDSHIFT>)
-  expr2 = AdditiveExpression()
-  {
-    if (expr2 == null) {
-      sourceEnd = token.sourceEnd;
-      endLine   = token.endLine;
-      endColumn = token.endColumn;
-    } else {
-      sourceEnd = expr2.getSourceEnd();
-      endLine   = expr2.getEndLine();
-      endColumn = expr2.getEndColumn();
-    }
-    expr = new BinaryExpression(expr,expr2,token.kind,expr.getSourceStart(),sourceEnd,expr.getBeginLine(),endLine,expr.getBeginColumn(),endColumn);
-  }
-  )*
-  {return expr;}
-}
+	expr = AdditiveExpression()
+	(
+		(
+			token = <LSHIFT>
+		|
+			token = <RSIGNEDSHIFT>
+		|
+			token = <RUNSIGNEDSHIFT>
+		)
+		expr2 = AdditiveExpression()
+		{
+			if (expr2 == null)
+			{
+				sourceEnd = token.sourceEnd;
+				endLine   = token.endLine;
+				endColumn = token.endColumn;
+			}
+			else
+			{
+				sourceEnd = expr2.getSourceEnd();
+				endLine   = expr2.getEndLine();
+				endColumn = expr2.getEndColumn();
+			}
+			expr = new BinaryExpression(expr,expr2,token.kind,
+				expr.getSourceStart(),sourceEnd,
+				expr.getBeginLine(),endLine,
+				expr.getBeginColumn(),endColumn);
+		}
+	)*
+	{
+		return expr;
+	}
+} //}}}
 
-//}}}
 //{{{ AdditiveExpression()
-
-Expression AdditiveExpression() :
+Expression AdditiveExpression():
 {
-  Expression expr,expr2;
-  int sourceEnd,endLine,endColumn;
-  Token token;
+	Expression expr,expr2;
+	int sourceEnd,endLine,endColumn;
+	Token token;
 }
 {
-  expr = MultiplicativeExpression()
-  (
-    LOOKAHEAD(1)
-     ( token = <PLUS>
-     | token = <MINUS>
-     )
-   expr2 = MultiplicativeExpression()
-  {
-    if (expr2 == null) {
-      sourceEnd = token.sourceEnd;
-      endLine   = token.endLine;
-      endColumn = token.endColumn;
-    } else {
-      sourceEnd = expr2.getSourceEnd();
-      endLine   = expr2.getEndLine();
-      endColumn = expr2.getEndColumn();
-    }
-    expr = new BinaryExpression(expr,expr2,token.kind,expr.getSourceStart(),sourceEnd,expr.getBeginLine(),endLine,expr.getBeginColumn(),endColumn);
-  }
-   )*
-  {return expr;}
-}
+	expr = MultiplicativeExpression()
+	(
+		LOOKAHEAD(1)
+		(
+			token = <PLUS>
+		|
+			token = <MINUS>
+		)
+		expr2 = MultiplicativeExpression()
+		{
+			if (expr2 == null)
+			{
+				sourceEnd = token.sourceEnd;
+				endLine   = token.endLine;
+				endColumn = token.endColumn;
+			}
+			else
+			{
+				sourceEnd = expr2.getSourceEnd();
+				endLine   = expr2.getEndLine();
+				endColumn = expr2.getEndColumn();
+			}
+			expr = new BinaryExpression(expr,expr2,token.kind,
+				expr.getSourceStart(),sourceEnd,
+				expr.getBeginLine(),endLine,
+				expr.getBeginColumn(),endColumn);
+		}
+	)*
+	{
+		return expr;
+	}
+} //}}}
 
-//}}}
 //{{{ MultiplicativeExpression()
-
-Expression MultiplicativeExpression() :
+Expression MultiplicativeExpression():
 {
-  Expression expr,expr2;
-  int sourceEnd,endLine,endColumn;
-  Token token;
+	Expression expr,expr2;
+	int sourceEnd,endLine,endColumn;
+	Token token;
 }
 {
-  try {
-    expr = UnaryExpression()
-  } catch (ParseException e) {
-    if (errorMessage != null) throw e;
-    errorMessage = "unexpected token '"+e.currentToken.next.image+'\'';
-    errorStart = this.token.sourceStart;
-    errorEnd   = this.token.sourceEnd;
-    throw e;
-  }
-  (
-   (  token = <STAR>
-    | token = <SLASH>
-    | token = <REMAINDER>)
-    expr2 = UnaryExpression()
-    {
-      if (expr2 == null) {
-        sourceEnd = token.sourceEnd;
-        endLine   = token.endLine;
-        endColumn = token.endColumn;
-      } else {
-        sourceEnd = expr2.getSourceEnd();
-        endLine   = expr2.getEndLine();
-        endColumn = expr2.getEndColumn();
-      }
-      expr = new BinaryExpression(expr,expr2,token.kind,expr.getSourceStart(),sourceEnd,expr.getBeginLine(),endLine,expr.getBeginColumn(),endColumn);
-    }
-  )*
-  {return expr;}
-}
+	try
+	{
+		expr = UnaryExpression()
+	}
+	catch (ParseException e)
+	{
+		if (errorMessage != null) throw e;
+		errorMessage = "unexpected token '"+e.currentToken.next.image+'\'';
+		errorStart = this.token.sourceStart;
+		errorEnd   = this.token.sourceEnd;
+		throw e;
+	}
+	(
+		(
+			token = <STAR>
+		|
+			token = <SLASH>
+		|
+			token = <REMAINDER>
+		)
+		expr2 = UnaryExpression()
+		{
+			if (expr2 == null)
+			{
+				sourceEnd = token.sourceEnd;
+				endLine   = token.endLine;
+				endColumn = token.endColumn;
+			}
+			else
+			{
+				sourceEnd = expr2.getSourceEnd();
+				endLine   = expr2.getEndLine();
+				endColumn = expr2.getEndColumn();
+			}
+			expr = new BinaryExpression(expr,expr2,token.kind,
+				expr.getSourceStart(),sourceEnd,
+				expr.getBeginLine(),endLine,
+				expr.getBeginColumn(),endColumn);
+		}
+	)*
+	{
+		return expr;
+	}
+} //}}}
 
-//}}}
 //{{{ UnaryExpression()
-
 /**
  * An unary expression starting with @, & or nothing.
  *
@@ -3427,51 +3496,58 @@ Expression MultiplicativeExpression() :
  */
 Expression UnaryExpression() :
 {
-  final Expression expr;
+	Expression expr;
 }
 {
-  try {
-    expr = AtNotTildeUnaryExpression() {return expr;}
-  } catch (ParseException e) {
-    fireParseError("unexpected token : '"+e.currentToken.image+'\'', "", e.currentToken);
-      Token nextToken = getNextToken();
-      while (nextToken.kind != EOF && nextToken.kind != SEMICOLON) {
-        nextToken = getNextToken();
-      }
-      if (nextToken.kind == EOF) {
-        fireParseError(new PHPParseErrorEvent(ERROR,
-                                              path,
-                                              "unexpected end of file",
-                                              ")",
-                                              e.currentToken.next.image,
-                                              e.currentToken.sourceEnd,
-                                              nextToken.sourceStart,
-                                              e.currentToken.beginLine,
-                                              nextToken.endLine,
-                                              e.currentToken.endColumn,
-                                              nextToken.endColumn));
-      } else {
-        fireParseError(new PHPParseErrorEvent(ERROR,
-                                              path,
-                                              "expression expected",
-                                              ")",
-                                              e.currentToken.next.image,
-                                              e.currentToken.sourceEnd,
-                                              nextToken.sourceStart,
-                                              e.currentToken.beginLine,
-                                              nextToken.endLine,
-                                              e.currentToken.endColumn+1,
-                                              nextToken.endColumn-1));
-      }
-      return null;
-    /*
+	try
+	{
+		expr = AtNotTildeUnaryExpression() {return expr;}
+	}
+	catch (ParseException e)
+	{
+		fireParseError("unexpected token : '"+e.currentToken.image+'\'', "", e.currentToken);
+		Token nextToken = getNextToken();
+		while (nextToken.kind != EOF && nextToken.kind != SEMICOLON)
+		{
+			nextToken = getNextToken();
+		}
+		if (nextToken.kind == EOF)
+		{
+			fireParseError(new PHPParseErrorEvent(ERROR,
+				path,
+				"unexpected end of file",
+				")",
+				e.currentToken.next.image,
+				e.currentToken.sourceEnd,
+				nextToken.sourceStart,
+				e.currentToken.beginLine,
+				nextToken.endLine,
+				e.currentToken.endColumn,
+				nextToken.endColumn));
+		}
+		else
+		{
+			fireParseError(new PHPParseErrorEvent(ERROR,
+				path,
+				"expression expected",
+				")",
+				e.currentToken.next.image,
+				e.currentToken.sourceEnd,
+				nextToken.sourceStart,
+				e.currentToken.beginLine,
+				nextToken.endLine,
+				e.currentToken.endColumn+1,
+				nextToken.endColumn-1));
+		}
+		return null;
+		/*
 
 
 
-    getNextToken();
-    return UnaryExpression();
-    */
-  }
+		getNextToken();
+		return UnaryExpression();
+		*/
+	}
 } //}}}
 
 //{{{ AtNotTildeUnaryExpression()
@@ -3566,223 +3642,230 @@ Expression PreIncDecExpression() :
 } //}}}
 
 //{{{ UnaryExpressionNotPlusMinus()
-
-Expression UnaryExpressionNotPlusMinus() :
+Expression UnaryExpressionNotPlusMinus():
 {
-  final Expression expr;
+	Expression expr;
 }
 {
-  LOOKAHEAD( <LPAREN> (Type() | <ARRAY>) <RPAREN> )
-  expr = CastExpression()         {return expr;}
-| expr = PostfixExpression()      {return expr;}
-| expr = Literal()                {return expr;}
-| <LPAREN> expr = Expression()
-  try {
-    <RPAREN>
-  } catch (ParseException e) {
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "')'n expected",
-                                          ")",
-                                          e.currentToken.image,
-                                          expr.getSourceEnd(),
-                                          expr.getSourceEnd()+1,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1));
-  }
-  {return expr;}
-}
+	LOOKAHEAD( <LPAREN> (Type() | <ARRAY>) <RPAREN> )
+	expr = CastExpression()         {return expr;}
+	| expr = PostfixExpression()      {return expr;}
+	| expr = Literal()                {return expr;}
+	| <LPAREN> expr = Expression()
+	try
+	{
+		<RPAREN>
+	}
+	catch (ParseException e)
+	{
+		fireParseError(new PHPParseErrorEvent(ERROR,
+			path,
+			"')' expected",
+			")",
+			e.currentToken.image,
+			expr.getSourceEnd(),
+			expr.getSourceEnd()+1,
+			e.currentToken.beginLine,
+			e.currentToken.endLine,
+			e.currentToken.endColumn,
+			e.currentToken.endColumn+1));
+	}
+	{
+		return expr;
+	}
+} //}}}
 
-//}}}
 //{{{ CastExpression()
-
-CastExpression CastExpression() :
+CastExpression CastExpression():
 {
-final ConstantIdentifier type;
-final Expression expr;
-final Token token,token1;
+	ConstantIdentifier type;
+	Expression expr;
+	Token lParen;
+	Token arrayToken;
 }
 {
-  token1 = <LPAREN>
-  (
-      type = Type()
-    |
-      token = <ARRAY> {type = new ConstantIdentifier(token);}
-  )
-  <RPAREN> expr = UnaryExpression()
-  {return new CastExpression(type,
-                             expr,
-                             token1.sourceStart,
-                             expr.getSourceEnd(),
-                             token1.beginLine,
-                             expr.getEndLine(),
-                             token1.beginColumn,
-                             expr.getEndColumn());}
-}
+	lParen = <LPAREN>
+	(
+		type = Type()
+	|
+		arrayToken = <ARRAY>
+		{
+			type = new ConstantIdentifier(arrayToken);
+		}
+	)
+	<RPAREN> expr = UnaryExpression()
+	{
+		return new CastExpression(type,
+			expr,
+			lParen.sourceStart,
+			expr.getSourceEnd(),
+			lParen.beginLine,
+			expr.getEndLine(),
+			lParen.beginColumn,
+			expr.getEndColumn());
+	}
+} //}}}
 
-//}}}
 //{{{ PostfixExpression()
-
-Expression PostfixExpression() :
+Expression PostfixExpression():
 {
-  final Expression expr;
-  Token token = null;
+	Expression expr;
+	Token token = null;
 }
 {
-  expr = PrimaryExpression()
-  [
-      token = <PLUS_PLUS>
-    |
-      token = <MINUS_MINUS>
-  ]
-  {
-    if (token == null) {
-      return expr;
-    }
-    return new PostfixedUnaryExpression(expr,
-                                        token.kind,
-                                        token.sourceEnd,
-                                        token.endLine,
-                                        token.endColumn);
-  }
-}
+	expr = PrimaryExpression()
+	[
+		token = <PLUS_PLUS>
+	|
+		token = <MINUS_MINUS>
+	]
+	{
+		if (token == null)
+		{
+			return expr;
+		}
+		return new PostfixedUnaryExpression(expr,
+			token.kind,
+			token.sourceEnd,
+			token.endLine,
+			token.endColumn);
+	}
+} //}}}
 
-//}}}
 //{{{ PrimaryExpression()
-
 Expression PrimaryExpression() :
 {
-  final Expression expr;
-  Token token = null;
+	Expression expr;
+	Token token = null;
 }
 {
-  (
-     [token = <BIT_AND>] expr = refPrimaryExpression(token)
-     |
-      expr = cloning()
-     |
-     expr = ArrayDeclarator()
-     |
-     expr = ListExpression()
-     |
-     expr = IncludeExpression()
-  )
-  {
-    return expr;
-  }
-}
+	(
+		[token = <BIT_AND>] expr = refPrimaryExpression(token)
+	|
+		expr = cloning()
+	|
+		expr = ArrayDeclarator()
+	|
+		expr = ListExpression()
+	|
+		expr = IncludeExpression()
+	)
+	{
+		return expr;
+	}
+} //}}}
 
-//}}}
 //{{{ refPrimaryExpression(Token reference)
-
-Expression refPrimaryExpression(Token reference) :
+Expression refPrimaryExpression(Token reference):
 {
-  Expression expr;
-  Token identifier;
+	Expression expr;
+	Token identifier;
 }
 {
-  (
-      identifier = constantIdentifier()
-      {
-          expr = new ConstantIdentifier(identifier);
-      }
-      (
-        expr = Arguments(expr)
-       |
-        expr = variableSuffixMethodCall(expr)
-      )
-    |
-      expr = Variable()  //todo use the reference parameter ...
-      (
-        expr = classAccess(expr)
-      |
-        expr = Arguments(expr)
-      |
-        expr = arrayDeclarator(expr)
-      )*
-    |
-      expr = instantiation(reference)
-  )
-  {
-      return expr;
-  }
-}
-
-//}}}
+	(
+		identifier = constantIdentifier()
+		{
+			expr = new ConstantIdentifier(identifier);
+		}
+		(
+			expr = Arguments(expr)
+		|
+			expr = variableSuffixMethodCall(expr)
+		)
+	|
+		expr = Variable()  //todo use the reference parameter ...
+		(
+			expr = classAccess(expr)
+		|
+			expr = Arguments(expr)
+		|
+			expr = arrayDeclarator(expr)
+		)*
+		|
+		expr = instantiation(reference)
+		)
+	{
+		return expr;
+	}
+} //}}}
 
 //{{{ methodCall()
 Expression methodCall(Expression expr):
 {
 }
 {
-    expr = Arguments(expr)
-    {
-        return expr;
-    }
+	expr = Arguments(expr)
+	{
+		return expr;
+	}
 } //}}}
 
 //{{{ instantiation()
-Expression instantiation(Token reference) :
+Expression instantiation(Token reference):
 {
-    Token newToken;
-    Expression expr;
+	Token newToken;
+	Expression expr;
 }
 {
-    newToken = <NEW>
-  try {
-      (
-        expr = ClassIdentifier()
-        |
-        expr = VariableDeclaratorId()
-      )
+	newToken = <NEW>
+	try
+	{
+		(
+			expr = ClassIdentifier()
+		|
+			expr = VariableDeclaratorId()
+		)
 
-      {
-        expr.setType(new Type(Type.OBJECT_INT,expr.toString()));
-      }
-  } catch (ParseException e) {
-      Token token = error_skipto(SEMICOLON);
-      expr = new DummyExpression(newToken.sourceEnd,
-                                 token.sourceStart,
-                                 newToken.endLine,
-                                 token.beginLine,
-                                 newToken.endColumn,
-                                 token.beginColumn);
-      expr.setType(Type.OBJECT);
-      fireParseError(new PHPParseErrorEvent(ERROR,
-                                            path,
-                                            "class identifier expected",
-                                            "class identifier",
-                                            newToken.next.image,
-                                            newToken.sourceEnd,
-                                            newToken.next.sourceStart,
-                                            newToken.endLine,
-                                            newToken.next.beginLine,
-                                            newToken.endColumn,
-                                            newToken.next.beginColumn));
-  }
-  {
-    final int start, beginLine, beginColumn;
-    if (reference == null) {
-      start       = newToken.sourceStart;
-      beginLine   = newToken.beginLine;
-      beginColumn = newToken.beginColumn;
-    } else {
-      start       = reference.sourceStart;
-      beginLine   = reference.beginLine;
-      beginColumn = reference.beginColumn;
-    }
-    expr = new ClassInstantiation(expr,
-                                  reference != null,
-                                  start,
-                                  beginLine,
-                                  beginColumn);
-  }
-  [ expr = Arguments(expr) ]
-  {
-      return expr;
-  }
+		{
+			expr.setType(new Type(Type.OBJECT_INT,expr.toString()));
+		}
+	}
+	catch (ParseException e)
+	{
+		Token token = error_skipto(SEMICOLON);
+		expr = new DummyExpression(newToken.sourceEnd,
+			token.sourceStart,
+			newToken.endLine,
+			token.beginLine,
+			newToken.endColumn,
+			token.beginColumn);
+		expr.setType(Type.OBJECT);
+		fireParseError(new PHPParseErrorEvent(ERROR,
+			path,
+			"class identifier expected",
+			"class identifier",
+			newToken.next.image,
+			newToken.sourceEnd,
+			newToken.next.sourceStart,
+			newToken.endLine,
+			newToken.next.beginLine,
+			newToken.endColumn,
+			newToken.next.beginColumn));
+	}
+	{
+		final int start, beginLine, beginColumn;
+		if (reference == null)
+		{
+			start       = newToken.sourceStart;
+			beginLine   = newToken.beginLine;
+			beginColumn = newToken.beginColumn;
+		}
+		else
+		{
+			start       = reference.sourceStart;
+			beginLine   = reference.beginLine;
+			beginColumn = reference.beginColumn;
+		}
+		expr = new ClassInstantiation(expr,
+			reference != null,
+			start,
+			beginLine,
+			beginColumn);
+	}
+	[ expr = Arguments(expr) ]
+	{
+		return expr;
+	}
 } //}}}
 
 //{{{ cloning()
