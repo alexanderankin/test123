@@ -1,9 +1,11 @@
 package com.addictedtor.orchestra;
 
-import org.af.commons.threading.ProgressDialog;
+import java.awt.Dialog;
+import java.awt.Window;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.SwingUtilities;
+
+import org.af.commons.threading.ProgressDialog;
 
 @SuppressWarnings("serial")
 public class ProgressDialogInstaller extends ProgressDialog<Void, String> {
