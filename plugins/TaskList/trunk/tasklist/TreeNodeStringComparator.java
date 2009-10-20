@@ -30,7 +30,7 @@ import org.gjt.sp.jedit.jEdit;
  * representing buffer paths or Tasks.  In this comparator, only nodes
  * containing strings should be parameters to the compare method. Tasks
  * are not sorted here, they are sorted when the buffer itself is scanned
- * for tasks.
+ * for tasks. This comparator compares the full buffer paths.
  */
 public class TreeNodeStringComparator implements Comparator<DefaultMutableTreeNode> {
     public int compare( DefaultMutableTreeNode o1, DefaultMutableTreeNode o2 ) {
@@ -46,16 +46,6 @@ public class TreeNodeStringComparator implements Comparator<DefaultMutableTreeNo
 
         String objectA = ( ( DefaultMutableTreeNode ) o1 ).getUserObject().toString();
         String objectB = ( ( DefaultMutableTreeNode ) o2 ).getUserObject().toString();
-        String displayType = jEdit.getProperty( "tasklist.buffer.display" );
-        if ( displayType.equals( jEdit.getProperty( "options.tasklist.general.buffer.display.fullpath" ) ) ) {
-            // display full path means sort by full path
-            return objectA.compareTo(objectB);
-        }
-        else {
-            // display by file name only or filename (directory) means sort by file name
-            File fileA = new File( objectA );
-            File fileB = new File( objectB );
-            return fileA.getName().compareTo( fileB.getName() );
-        }
+        return objectA.compareTo(objectB);
     }
 }
