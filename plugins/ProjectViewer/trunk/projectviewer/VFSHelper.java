@@ -125,6 +125,17 @@ public class VFSHelper
 
 
 	/**
+	 * Returns whether the path references a local file.
+	 *
+	 * @param url VFS URL to check.
+	 */
+	public static boolean isLocal(String url)
+	{
+		return (VFSManager.getVFSForPath(url) == VFSManager.getFileVFS());
+	}
+
+
+	/**
 	 * Returns whether a VFS path exists.
 	 *
 	 * @param path Path to check.

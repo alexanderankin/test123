@@ -199,7 +199,7 @@ class GeneralNodeProperties implements NodePropertyProvider
 		/** Calculate the size of the directory being shown. */
 		public void actionPerformed(ActionEvent ae)
 		{
-			if (VFSManager.getVFSForPath(node.getNodePath()) == VFSManager.getFileVFS()) {
+			if (VFSHelper.isLocal(node.getNodePath())) {
 				File f = new File(node.getNodePath());
 				long len = IOUtilities.fileLength(f);
 				nodeSzLabel.setText(formatSize(fmt, len));
