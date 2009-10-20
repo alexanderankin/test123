@@ -1,4 +1,6 @@
 package ctagsinterface.main;
+import ise.plugin.nav.AutoJump;
+
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -409,6 +411,12 @@ public class CtagsInterfacePlugin extends EditPlugin {
 
 	// Jumps to the specified location
 	public static void jumpTo(final View view, String file, final int line) {
+		final EditPlugin p = jEdit.getPlugin("plugin.ise.plugin.nav.NavigatorPlugin",false);
+		if (p != null)
+		{
+			AutoJump aj = new AutoJump(view, AutoJump.STARTED);
+			EditBus.send(aj);
+		}
 		Buffer b = view.getBuffer();
 		if (b == null || (! b.getPath().equals(file)) ||
 			(view.getTextArea().getCaretLine() != line - 1))
@@ -425,6 +433,11 @@ public class CtagsInterfacePlugin extends EditPlugin {
 				try {
 					view.getTextArea().setCaretPosition(
 						view.getTextArea().getLineStartOffset(line - 1));
+					if (p != null)
+					{
+						AutoJump aj = new AutoJump(view, AutoJump.ENDED);
+						EditBus.send(aj);
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -444,6 +457,12 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	}
 	// Jumps to the specified location
 	public static void jumpToOffset(final View view, String file, final int offset) {
+		final EditPlugin p = jEdit.getPlugin("plugin.ise.plugin.nav.NavigatorPlugin",false);
+		if (p != null)
+		{
+			AutoJump aj = new AutoJump(view, AutoJump.STARTED);
+			EditBus.send(aj);
+		}
 		Buffer buffer = jEdit.openFile(view, file);
 		if (buffer == null) {
 			System.err.println("Unable to open: " + file);
@@ -452,6 +471,11 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		VFSManager.runInAWTThread(new Runnable() {
 			public void run() {
 				view.getTextArea().setCaretPosition(offset);
+				if (p != null)
+				{
+					AutoJump aj = new AutoJump(view, AutoJump.ENDED);
+					EditBus.send(aj);
+				}
 			}
 		});
 	}
