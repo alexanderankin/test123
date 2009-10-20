@@ -91,7 +91,11 @@ public class NavigatorPlugin extends EBPlugin {
      */
     private final static HashMap<View, JToolBar> toolbarMap = new HashMap<View, JToolBar>();
 
-
+    /**
+     * Whether auto-jump is taking place, during which BufferUpdate.LOADED
+     * should be ignored.
+     */
+    private boolean autoJump = false;
 
     /**
      * @return true if the Navigator buttons should be shown on the main toolbar 
@@ -514,7 +518,7 @@ public class NavigatorPlugin extends EBPlugin {
         // buffer to the history
         if ( message instanceof BufferUpdate ) {
             BufferUpdate bu = ( BufferUpdate ) message;
-            if ( bu.getWhat().equals( BufferUpdate.LOADED ) ) {
+            if ( bu.getWhat().equals( BufferUpdate.LOADED ) && (! autoJump ) ) {
                 if ( bu.getView() != null && bu.getView().getEditPane() != null ) {     // NOPMD
                     Navigator n = getNavigator( bu.getView() );
                     if ( n != null ) {
@@ -523,7 +527,6 @@ public class NavigatorPlugin extends EBPlugin {
                 }
             }
         }
-
         // Note: handle messages in this order: BufferChanging, then PositionChanging,
         // then EditPaneUpdate last because of inheritance.
 
@@ -605,6 +608,21 @@ public class NavigatorPlugin extends EBPlugin {
                 nav.setMaxHistorySize( jEdit.getIntegerProperty( "navigator.maxStackSize", 512 ) );
             }
             setScope( jEdit.getIntegerProperty( "navigator.scope", EDITPANE_SCOPE ) );
+        }
+
+        else if ( message instanceof AutoJump ) {
+        	AutoJump aj = ( AutoJump ) message;
+        	if ( aj.getWhat().equals( AutoJump.STARTED ) ) {
+        		autoJump = true;
+        	}
+        	else {
+        		autoJump = false;
+                Navigator n = getNavigator( aj.getView() );
+                if ( n != null ) {
+                    n.addToHistory();
+                }
+        	}
+        		
         }
     }
 }
