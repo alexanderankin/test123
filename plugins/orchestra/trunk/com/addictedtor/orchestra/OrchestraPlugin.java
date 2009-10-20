@@ -15,6 +15,8 @@ import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.ServiceManager;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.bsh.NameSpace;
+import org.gjt.sp.jedit.bsh.UtilEvalError;
 import org.gjt.sp.jedit.options.PluginOptions;
 import org.rosuda.REngine.REngine;
 
@@ -79,6 +81,13 @@ public class OrchestraPlugin extends EBPlugin {
 
 		REngineService service = (REngineService)ServiceManager.getService("com.addictedtor.orchestra.rengine.REngineService", "jri") ;
 		r = service.getEngine() ;
+		
+		try{
+			NameSpace ns = org.gjt.sp.jedit.BeanShell.getNameSpace(); 
+			ns.setVariable("r", r) ;
+		} catch(UtilEvalError e){}
+		
+		
 	}
 
 	private void configureLog4J(){
