@@ -19,22 +19,43 @@
 
 package tasklist;
 
+import java.io.File;
 import java.util.Comparator;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import org.gjt.sp.jedit.jEdit;
+
+/**
+ * For TaskList, the user objects in the tree nodes are either strings
+ * representing buffer paths or Tasks.  In this comparator, only nodes
+ * containing strings should be parameters to the compare method. Tasks
+ * are not sorted here, they are sorted when the buffer itself is scanned
+ * for tasks.
+ */
 public class TreeNodeStringComparator implements Comparator<DefaultMutableTreeNode> {
     public int compare( DefaultMutableTreeNode o1, DefaultMutableTreeNode o2 ) {
-        if (o1 == null && o2 == null) {
-            return 0;   
+        if ( o1 == null && o2 == null ) {
+            return 0;
         }
-        if (o1 == null && o2 != null) {
-            return -1;   
+        if ( o1 == null && o2 != null ) {
+            return -1;
         }
-        if (o1 != null && o2 == null) {
-            return 1;   
+        if ( o1 != null && o2 == null ) {
+            return 1;
         }
-        String a = ( ( DefaultMutableTreeNode ) o1 ).getUserObject().toString();
-        String b = ( ( DefaultMutableTreeNode ) o2 ).getUserObject().toString();
-        return a.compareTo( b );
+
+        String objectA = ( ( DefaultMutableTreeNode ) o1 ).getUserObject().toString();
+        String objectB = ( ( DefaultMutableTreeNode ) o2 ).getUserObject().toString();
+        String displayType = jEdit.getProperty( "tasklist.buffer.display" );
+        if ( displayType.equals( jEdit.getProperty( "options.tasklist.general.buffer.display.fullpath" ) ) ) {
+            // display full path means sort by full path
+            return objectA.compareTo(objectB);
+        }
+        else {
+            // display by file name only or filename (directory) means sort by file name
+            File fileA = new File( objectA );
+            File fileB = new File( objectB );
+            return fileA.getName().compareTo( fileB.getName() );
+        }
     }
 }
