@@ -92,7 +92,7 @@ public class JRIEngineService extends REngineService {
 		String[] args = { "--save" } ;
 		try{
 			eng = new JRIEngine( args ) ;
-			eng.parseAndEval( "{ require( rJava ); .jinit() }" ) ;
+			eng.parseAndEval( "{ require( rJava ); .jinit() ; require( orchestra ) }" ) ;
 		} catch( Exception e){
 			e.printStackTrace() ;
 		}
