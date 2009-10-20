@@ -75,6 +75,7 @@ public class VPTFile extends VPTNode
 
 	private Icon	fileIcon;
 	private boolean	loadedIcon;
+	private boolean openLater;
 	private boolean retrieving;
 	private VFSFile vfsfile;
 
@@ -281,12 +282,16 @@ public class VPTFile extends VPTNode
 	 *	buffer is loaded in the currently active view.
 	 */
 	public void open() {
-		if (ProjectViewerConfig.getInstance().getUseExternalApps()
-				&& appList.getAppName(url) != null) {
-			appList.launchApp(url, jEdit.getActiveView());
-		} else {
-			jEdit.openFile(jEdit.getActiveView(), getNodePath());
-			PVActions.requestFocus(jEdit.getActiveView().getTextArea());
+		openLater = true;
+		if (getFile(true) != null) {
+			openLater = false;
+			if (ProjectViewerConfig.getInstance().getUseExternalApps()
+					&& appList.getAppName(url) != null) {
+				appList.launchApp(url, jEdit.getActiveView());
+			} else {
+				jEdit.openFile(jEdit.getActiveView(), getNodePath());
+				PVActions.requestFocus(jEdit.getActiveView().getTextArea());
+			}
 		}
 	}
 
@@ -337,7 +342,6 @@ public class VPTFile extends VPTNode
 	private static class FileGetter implements Runnable
 	{
 		private static List<VPTFile> queue;
-		private static boolean locked;
 
 		public static void queue(VPTFile f)
 		{
@@ -345,38 +349,35 @@ public class VPTFile extends VPTNode
 				queue = new ArrayList<VPTFile>();
 			}
 			synchronized (queue) {
-				/* Protect against recursive calls. */
-				if (locked) {
-					return;
-				}
-				locked = true;
 				queue.add(f);
 				if (queue.size() == 1) {
 					SwingUtilities.invokeLater(new FileGetter());
 				}
 			}
-			locked = false;
 		}
 
 
 		public void run()
 		{
 			synchronized (queue) {
-				locked = true;
-				for (VPTFile f : queue) {
+				while (!queue.isEmpty()) {
+					VPTFile f = queue.remove(0);
 					try {
 						f.retrieving = true;
 						f.vfsfile = VFSHelper.getFile(f.url);
 						if (f.vfsfile != null) {
 							ProjectViewer.nodeChanged(f);
+							if (f.openLater) {
+								f.open();
+							}
 						}
 						f.retrieving = false;
+						f.openLater = false;
 					} catch (IOException ioe) {
 						Log.log(Log.WARNING, this, ioe);
 					}
 				}
 				queue.clear();
-				locked = false;
 			}
 		}
 
