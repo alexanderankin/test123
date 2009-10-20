@@ -70,6 +70,8 @@ import org.gjt.sp.jedit.EBComponent;
 
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
+import org.gjt.sp.jedit.io.VFS;
+import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.DockableWindowUpdate;
 import org.gjt.sp.jedit.msg.DynamicMenuChanged;
@@ -939,7 +941,6 @@ public final class ProjectViewer extends JPanel
 	private boolean handleBufferUpdateMessage(BufferUpdate bu, VPTNode where) {
 		if (bu.getView() != null && bu.getView() != view) return false;
 
-		boolean ask = false;
 		if (bu.getWhat() == BufferUpdate.SAVED) {
 			if (where == null || !where.isProject())
 				return false;
@@ -949,14 +950,17 @@ public final class ProjectViewer extends JPanel
 			if (f != null)
 				return false;
 
-			File file = new File(bu.getBuffer().getPath());
-			String fileParentPath = file.getParent() + File.separator;
-			String projectRootPath = p.getRootPath() + File.separator;
-			ask = (config.getAskImport() != ProjectViewerConfig.ASK_NEVER &&
-					(dontAsk == null ||
-						config.getAskImport() == ProjectViewerConfig.ASK_ALWAYS ||
-						!dontAsk.contains(bu.getBuffer().getPath())) &&
-					fileParentPath.startsWith(projectRootPath));
+			boolean ask = false;
+			if (config.getAskImport() != ProjectViewerConfig.ASK_NEVER &&
+				(config.getAskImport() == ProjectViewerConfig.ASK_ALWAYS ||
+				 dontAsk == null || !dontAsk.contains(bu.getBuffer().getPath()))) {
+				VFS vfs = VFSManager.getVFSForPath(bu.getBuffer().getPath());
+				String fileParentPath = vfs.getParentOfPath(bu.getBuffer().getPath());
+				String projectRootPath = p.getRootPath();
+				ask = fileParentPath.startsWith(p.getRootPath()) &&
+					  fileParentPath.length() > p.getRootPath().length() &&
+					  fileParentPath.charAt(p.getRootPath().length()) == vfs.getFileSeparator();
+			}
 
 			// Try to import newly created files to the project
 			if (ask) {

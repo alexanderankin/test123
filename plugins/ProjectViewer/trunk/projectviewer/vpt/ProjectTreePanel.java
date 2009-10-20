@@ -55,6 +55,7 @@ import org.gjt.sp.jedit.io.VFSManager;
 import projectviewer.ProjectManager;
 import projectviewer.ProjectPlugin;
 import projectviewer.ProjectViewer;
+import projectviewer.VFSHelper;
 
 import projectviewer.action.Action;
 import projectviewer.action.NodeRemoverAction;
@@ -615,7 +616,7 @@ public class ProjectTreePanel extends JPanel
 
             if (path != null) {
                 VPTNode n = (VPTNode) path.getLastPathComponent();
-                if (n.isFile()) {
+                if (n.isFile() && VFSHelper.isLocal(((VPTFile)n).getURL())) {
                     VFSFile file = ((VPTFile)n).getFile();
                     if (file != null && file.getVFS() == VFSManager.getFileVFS()) {
                         File f = new File(((VPTFile)n).getURL());

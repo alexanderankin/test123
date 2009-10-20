@@ -40,6 +40,7 @@ import javax.swing.JOptionPane;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.io.VFSFile;
+import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.search.DirectoryListSet;
 import org.gjt.sp.jedit.search.SearchAndReplace;
 import org.gjt.sp.jedit.search.SearchDialog;
@@ -50,6 +51,7 @@ import org.gjt.sp.util.StandardUtilities;
 
 import projectviewer.ProjectManager;
 import projectviewer.ProjectViewer;
+import projectviewer.VFSHelper;
 import projectviewer.config.ProjectViewerConfig;
 
 import projectviewer.vpt.VPTFile;
@@ -207,7 +209,7 @@ public class SearchAction extends Action {
 					}
 
 					url = ((VPTFile)n).getURL();
-					if (skipBinary) {
+					if (skipBinary && VFSHelper.isLocal(url)) {
 						InputStream is = null;
 						try {
 							is = new FileInputStream(url);
