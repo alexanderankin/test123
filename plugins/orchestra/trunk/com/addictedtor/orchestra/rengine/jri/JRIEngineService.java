@@ -64,7 +64,7 @@ public class JRIEngineService extends REngineService {
 			
 			/* use the rjcl to load the jri library without relying on java.library.path */
 			
-			Method findlib = RJCL.getDeclaredMethod( "findLibrary", new Class<?>[]{ String.class, String.class } ) ;
+			Method findlib = RJCL.getDeclaredMethod( "findLibrary", new Class<?>[]{ String.class } ) ;
 			boolean access = findlib.isAccessible() ;
 			findlib.setAccessible(true ) ;
 
