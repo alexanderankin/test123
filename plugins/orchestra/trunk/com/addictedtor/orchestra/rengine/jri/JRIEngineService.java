@@ -31,7 +31,6 @@ public class JRIEngineService extends REngineService {
 	/* cached */
 	private static JRIEngine engine = null ;
 	
-	
 	@SuppressWarnings("unchecked")
 	private static void initEngine(){
 		
