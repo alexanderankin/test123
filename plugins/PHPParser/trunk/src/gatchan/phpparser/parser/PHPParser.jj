@@ -2658,174 +2658,175 @@ Token methodIdentifier() :
  *
  * @return an identifier for a function
  */
- Token constantIdentifier() :
+Token constantIdentifier():
 {
-  Token constantIdentifier;
+	Token constantIdentifier;
 }
 {
-  (
-      constantIdentifier = <IDENTIFIER>
-    | constantIdentifier = <DEFINE>
-    | constantIdentifier = <GOTO>
-    | constantIdentifier = <SUPER>
-    | constantIdentifier = <THIS>
-    | constantIdentifier = <STRING>
-    | constantIdentifier = <OBJECT>
-    | constantIdentifier = <BOOL>
-    | constantIdentifier = <BOOLEAN>
-    | constantIdentifier = <REAL>
-    | constantIdentifier = <DOUBLE>
-    | constantIdentifier = <FLOAT>
-    | constantIdentifier = <INT>
-    | constantIdentifier = <INTEGER>
-  )
-  {
-    return constantIdentifier;
-  }
+	(
+		constantIdentifier = <IDENTIFIER>
+		| constantIdentifier = <DEFINE>
+		| constantIdentifier = <GOTO>
+		| constantIdentifier = <SUPER>
+		| constantIdentifier = <THIS>
+		| constantIdentifier = <STRING>
+		| constantIdentifier = <OBJECT>
+		| constantIdentifier = <BOOL>
+		| constantIdentifier = <BOOLEAN>
+		| constantIdentifier = <REAL>
+		| constantIdentifier = <DOUBLE>
+		| constantIdentifier = <FLOAT>
+		| constantIdentifier = <INT>
+		| constantIdentifier = <INTEGER>
+		)
+	{
+		return constantIdentifier;
+	}
 } //}}}
 
-//{{{ FormalParameters(ArrayList parameters)
-
+//{{{ FormalParameters(List parameters)
 /**
  * FormalParameters follows method identifier.
  * (FormalParameter())
  */
-void FormalParameters(List parameters) :
+void FormalParameters(List parameters):
 {
   FormalParameter var;
 }
 {
-  try {
-  <LPAREN>
-  } catch (ParseException e) {
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "'(' expected",
-                                          "(",
-                                          e.currentToken.image,
-                                          e.currentToken.sourceStart,
-                                          e.currentToken.sourceEnd,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1));
-  }
-  [
-    var = FormalParameter()
-    {parameters.add(var);}
-      (
-        <COMMA>
-        try {
-          var = FormalParameter()
-          {parameters.add(var);}
-        } catch (ParseException e) {
-          fireParseError(new PHPParseErrorEvent(ERROR,
-                                                path,
-                                                "parameter expected",
-                                                "parameter",
-                                                e.currentToken.image,
-                                                e.currentToken.sourceStart,
-                                                e.currentToken.sourceEnd,
-                                                e.currentToken.beginLine,
-                                                e.currentToken.endLine,
-                                                e.currentToken.endColumn,
-                                                e.currentToken.endColumn+1));
-        }
-      )*
-  ]
-  try {
-    <RPAREN>
-  } catch (ParseException e) { //recup rparen si avant lbrace
-      Token nextToken = getNextToken();
-      while (nextToken.kind != EOF && nextToken.kind != RPAREN && nextToken.kind != LBRACE) {
-        nextToken = getNextToken();
-      }
-      if (nextToken.kind == EOF) {
-        fireParseError(new PHPParseErrorEvent(ERROR,
-                                              path,
-                                              "unexpected end of file",
-                                              ")",
-                                              e.currentToken.next.image,
-                                              e.currentToken.sourceEnd,
-                                              nextToken.sourceStart,
-                                              e.currentToken.beginLine,
-                                              nextToken.endLine,
-                                              e.currentToken.endColumn,
-                                              nextToken.endColumn));
-      } else if (nextToken.kind == RPAREN) {
-        fireParseError(new PHPParseErrorEvent(ERROR,
-                                              path,
-                                              "unexpected tokens",
-                                              "",
-                                              e.currentToken.next.image,
-                                              e.currentToken.next.sourceEnd,
-                                              nextToken.sourceStart,
-                                              e.currentToken.next.beginLine,
-                                              nextToken.beginLine,
-                                              e.currentToken.next.endColumn+1,
-                                              nextToken.beginColumn-1));
-      } else {
-        fireParseError(new PHPParseErrorEvent(ERROR,
-                                        path,
-                                        "')' expected",
-                                        ")",
-                                        e.currentToken.next.image,
-                                        e.currentToken.sourceEnd,
-                                        nextToken.sourceStart,
-                                        e.currentToken.beginLine,
-                                        nextToken.endLine,
-                                        e.currentToken.endColumn+1,
-                                        nextToken.endColumn-1));
-      }
-  }
-}
+	try
+	{
+		<LPAREN>
+	}
+	catch (ParseException e)
+	{
+		fireParseError("'(' expected", "(",e.currentToken);
+	}
+	[
+		var = FormalParameter()
+		{
+			parameters.add(var);
+		}
+		(
+			<COMMA>
+			try
+			{
+				var = FormalParameter()
+				{
+					parameters.add(var);
+				}
+			}
+			catch (ParseException e)
+			{
+				fireParseError("parameter expected",
+					"parameter",e.currentToken);
+			}
+		)*
+	]
+	try
+	{
+		<RPAREN>
+	}
+	catch (ParseException e)
+	{ //recup rparen si avant lbrace
+		Token nextToken = getNextToken();
+		while (nextToken.kind != EOF && nextToken.kind != RPAREN && nextToken.kind != LBRACE)
+		{
+			nextToken = getNextToken();
+		}
+		if (nextToken.kind == EOF)
+		{
+			fireParseError(new PHPParseErrorEvent(ERROR,
+				path,
+				"unexpected end of file",
+				")",
+				e.currentToken.next.image,
+				e.currentToken.sourceEnd,
+				nextToken.sourceStart,
+				e.currentToken.beginLine,
+				nextToken.endLine,
+				e.currentToken.endColumn,
+				nextToken.endColumn));
+		}
+		else if (nextToken.kind == RPAREN)
+		{
+			fireParseError(new PHPParseErrorEvent(ERROR,
+				path,
+				"unexpected tokens",
+				"",
+				e.currentToken.next.image,
+				e.currentToken.next.sourceEnd,
+				nextToken.sourceStart,
+				e.currentToken.next.beginLine,
+				nextToken.beginLine,
+				e.currentToken.next.endColumn+1,
+				nextToken.beginColumn-1));
+		}
+		else
+		{
+			fireParseError(new PHPParseErrorEvent(ERROR,
+				path,
+				"')' expected",
+				")",
+				e.currentToken.next.image,
+				e.currentToken.sourceEnd,
+				nextToken.sourceStart,
+				e.currentToken.beginLine,
+				nextToken.endLine,
+				e.currentToken.endColumn+1,
+				nextToken.endColumn-1));
+		}
+	}
+} //}}}
 
-//}}}
 //{{{ FormalParameter()
-
 /**
  * A formal parameter.
  * $varname[=value] (,$varname[=value])
  */
-FormalParameter FormalParameter() :
+FormalParameter FormalParameter():
 {
-  final VariableDeclaration variableDeclaration;
-  final FormalParameter parameter;
-  Token bitAndToken = null;
+	final VariableDeclaration variableDeclaration;
+	final FormalParameter parameter;
+	Token bitAndToken = null;
 }
 {
-  [ methodIdentifier() | <ARRAY> ]
-  [bitAndToken = <BIT_AND>] variableDeclaration = VariableDeclaratorNoSuffix()
-  {
-    if (bitAndToken != null) {
-      variableDeclaration.setReference(true,bitAndToken.sourceStart,bitAndToken.beginLine,bitAndToken.beginColumn);
-    }
-    Expression initialization = variableDeclaration.getInitialization();
-    if (initialization == null) {
-      parameter = new FormalParameter(variableDeclaration.getName(),
-                                      bitAndToken != null,
-                                      variableDeclaration.getSourceStart(),
-                                      variableDeclaration.getSourceEnd(),
-                                      variableDeclaration.getBeginLine(),
-                                      variableDeclaration.getEndLine(),
-                                      variableDeclaration.getBeginColumn(),
-                                      variableDeclaration.getEndColumn());
-    } else {
-      parameter = new FormalParameter(variableDeclaration.getName(),
-                                      bitAndToken != null,
-                                      variableDeclaration.getInitialization().toStringExpression(),
-                                      variableDeclaration.getSourceStart(),
-                                      variableDeclaration.getSourceEnd(),
-                                      variableDeclaration.getBeginLine(),
-                                      variableDeclaration.getEndLine(),
-                                      variableDeclaration.getBeginColumn(),
-                                      variableDeclaration.getEndColumn());
-    }
-    return parameter;
-  }
-}
-
-//}}}
+	[ methodIdentifier() | <ARRAY> ]
+	[bitAndToken = <BIT_AND>] variableDeclaration = VariableDeclaratorNoSuffix()
+	{
+		if (bitAndToken != null)
+		{
+			variableDeclaration.setReference(true,
+				bitAndToken.sourceStart,bitAndToken.beginLine,
+				bitAndToken.beginColumn);
+		}
+		Expression initialization = variableDeclaration.getInitialization();
+		if (initialization == null)
+		{
+			parameter = new FormalParameter(variableDeclaration.getName(),
+				bitAndToken != null,
+				variableDeclaration.getSourceStart(),
+				variableDeclaration.getSourceEnd(),
+				variableDeclaration.getBeginLine(),
+				variableDeclaration.getEndLine(),
+				variableDeclaration.getBeginColumn(),
+				variableDeclaration.getEndColumn());
+		}
+		else
+		{
+			parameter = new FormalParameter(variableDeclaration.getName(),
+				bitAndToken != null,
+				variableDeclaration.getInitialization().toStringExpression(),
+				variableDeclaration.getSourceStart(),
+				variableDeclaration.getSourceEnd(),
+				variableDeclaration.getBeginLine(),
+				variableDeclaration.getEndLine(),
+				variableDeclaration.getBeginColumn(),
+				variableDeclaration.getEndColumn());
+		}
+		return parameter;
+	}
+} //}}}
 
 //}}}
 
@@ -3763,27 +3764,26 @@ Expression refPrimaryExpression(Token reference):
 }
 {
 	(
-		identifier = constantIdentifier()
-		{
-			expr = new ConstantIdentifier(identifier);
-		}
-		(
-			expr = Arguments(expr)
-		|
-			expr = variableSuffixMethodCall(expr)
-		)
+		expr = instantiation(reference)
 	|
-		expr = Variable()  //todo use the reference parameter ...
 		(
-			expr = classAccess(expr)
+			identifier = constantIdentifier()
+			{
+				expr = new ConstantIdentifier(identifier);
+			}
 		|
+			expr = Variable()  //todo use the reference parameter ...
+		)
+		(
 			expr = Arguments(expr)
+		|
+			expr = staticClassAccess(expr)
+		|
+			expr = classAccess(expr)
 		|
 			expr = arrayDeclarator(expr)
 		)*
-		|
-		expr = instantiation(reference)
-		)
+	)
 	{
 		return expr;
 	}
@@ -3951,13 +3951,12 @@ Expression variableSuffixMethodCall(Expression prefix) :
 	Expression expr = prefix;
 }
 {
-	[ expr = staticClassAccess(expr) ]
-	(
-		expr = classAccess(expr)
-	 	[ expr = Arguments(expr) ]
-	|
-		expr = arrayDeclarator(expr)
-	)*
+	expr = staticClassAccess(expr)
+|
+	expr = classAccess(expr)
+	[ expr = Arguments(expr) ]
+|
+	expr = arrayDeclarator(expr)
 	{
 		return expr;
 	}
@@ -4318,33 +4317,34 @@ StringLiteral heredoc() :
 //}}}
 
 //{{{ evaluableString()
-StringLiteral evaluableString() :
+StringLiteral evaluableString():
 {
 	List list = new ArrayList();
 	Token start,end;
+	Expression expr;
 }
 {
 	start = <DOUBLEQUOTE>
 	(
+		<LBRACE1>
+		expr = Expression()
+		{
+			list.add(expr);
+		}
+		<RBRACE1>
+	|
 		<DOLLARS>
 		[
-			token = <IDENTIFIER>
+			expr = Expression()
 			{
-				list.add(new Variable(token));
+				list.add(expr);
 			}
-		|
-			<LBRACE1>
-			token = <ID>
-			{
-				list.add(new Variable(token));
-			}
-			<RBRACE1>
 		]
 	)*
 	end = <DOUBLEQUOTE2>
 	{
-		AbstractVariable[] vars = new AbstractVariable[list.size()];
-		list.toArray(vars);
+		Expression[] expressions = new Expression[list.size()];
+		list.toArray(expressions);
 		return new StringLiteral("",
 					 start.sourceStart,
 					 end.sourceEnd,
@@ -4352,7 +4352,7 @@ StringLiteral evaluableString() :
 					 end.endLine,
 					 start.beginColumn,
 					 end.endColumn,
-					 vars);
+					 expressions);
 	}
 } //}}}
 
