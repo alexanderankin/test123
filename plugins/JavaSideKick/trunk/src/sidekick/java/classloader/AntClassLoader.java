@@ -37,7 +37,10 @@ import org.gjt.sp.util.Log;
 /**
  * danson:  I needed a classloader, so I borrowed this one from Ant since it
  * already does most of what I need.  I removed a bunch of Ant specific stuff
- * that I don't need.
+ * that I don't need.  I've updated it to Java 5 standards for the most part,
+ * there is still a little code that is for Java 1.1 vs 1.2 that I haven't
+ * removed yet.
+ * TODO: remove the Java 1.1 vs Java 1.2 code.
  * ---
  * Used to load classes within ant with a different classpath from
  * that used to start ant. Note that it is possible to force a class
@@ -144,6 +147,7 @@ public class AntClassLoader extends ClassLoader {
      * The size of buffers to be used in this classloader.
      */
     private static final int BUFFER_SIZE = 8192;
+    
     /**
      * Number of array elements in a test array of strings
      */
@@ -192,13 +196,14 @@ public class AntClassLoader extends ClassLoader {
     /**
      * A hashtable of zip files opened by the classloader (File to ZipFile).
      */
-    private Hashtable<File, ZipFile> zipFiles = new Hashtable<File, ZipFile>();
+    private HashMap<File, ZipFile> zipFiles = new HashMap<File, ZipFile>();
 
     /**
      * The context loader saved when setting the thread's current
      * context loader.
      */
     private ClassLoader savedContextLoader = null;
+    
     /**
      * Whether or not the context loader is currently saved.
      */
@@ -1174,8 +1179,7 @@ public class AntClassLoader extends ClassLoader {
      * files are closed.
      */
     public synchronized void cleanup() {
-        for ( Enumeration e = zipFiles.elements(); e.hasMoreElements(); ) {
-            ZipFile zipFile = ( ZipFile ) e.nextElement();
+        for ( ZipFile zipFile : zipFiles.values()) {
             try {
                 zipFile.close();
             }
@@ -1183,7 +1187,7 @@ public class AntClassLoader extends ClassLoader {
                 log( " Unable to close file: " + zipFile.getName() );
             }
         }
-        zipFiles = new Hashtable<File, ZipFile>();
+        zipFiles = new HashMap<File, ZipFile>();
     }
 
 }

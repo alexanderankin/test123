@@ -1,8 +1,4 @@
 /*
-* SideKickParsedData.java
-*
-* Copyright (C) 2003, 2004 Slava Pestov
-*
 * This program is free software; you can redistribute it and/or
 * modify it under the terms of the GNU General Public License
 * as published by the Free Software Foundation; either version 2
@@ -34,6 +30,7 @@ import sidekick.java.node.TigerNode;
  * Plugins can extend this class to persist plugin-specific information.
  * For example, the XML plugin stores code completion-related structures using
  * a subclass.
+ * @author Dale Anson
  */
 public class JavaSideKickParsedData extends SideKickParsedData {
 
@@ -45,7 +42,7 @@ public class JavaSideKickParsedData extends SideKickParsedData {
         super( fileName );
     }
 
-    
+
     /**
      * Overridden to search TigerNodes rather than TreeNodes.  Not all tree nodes
      * may be showing, need the deepest asset at the cursor position for code
@@ -57,33 +54,41 @@ public class JavaSideKickParsedData extends SideKickParsedData {
         if ( !( userObject instanceof TigerNode ) ) {
             return null;
         }
-        
+
         TigerNode tn = getTigerNodeAtOffset( ( TigerNode ) userObject, pos );
         return tn;
     }
 
-    
+
     /**
      * Drill down to the node containing the given position.  
      * @param tn The node to check the children of.
      * @param pos The caret position within the code.
      */
     private TigerNode getTigerNodeAtOffset( TigerNode tn, int pos ) {
+        int closestPosition = tn.getStart().getOffset();
+        TigerNode closestChild = tn;
         for ( int i = 0; i < tn.getChildCount(); i++ ) {
             TigerNode child = tn.getChildAt( i );
             int start = child.getStart().getOffset();
-            // 'end' may not be filled in.  If the user is typing and is using
-            // code completion, the parser will not be able to calculate end
-            // positions. The check for start >= end allows for this case and
-            // allows finding the node whose start position is closest to the
-            // caret position.
             int end = child.getEnd().getOffset();
-            //System.out.println("+++++ " + child.getName() + ", start = " + start + ", end = " + end + ", pos = " + pos);
-            if ( (pos >= start && pos <= end) || (start >= end) ) {
-                return getTigerNodeAtOffset( child, pos );
+            // do two different checks here since 
+            // during code completion, the parser may not be able to completely
+            // parse the buffer and won't be able to calculate the end position
+            // of nodes.
+            if ( end == 0 && start >= closestPosition && start <= pos ) {
+                closestPosition = start;
+                closestChild = child;
+            }
+            else if (start >= closestPosition && start <= pos && end >= pos) {
+                closestPosition = start;
+                closestChild = child;
             }
         }
-        return tn;
+        if ( closestChild == tn ) {
+            return tn;
+        }
+        return getTigerNodeAtOffset( closestChild, pos );
     }
 
 
@@ -97,5 +102,4 @@ public class JavaSideKickParsedData extends SideKickParsedData {
             return super.canAddToPath( node );
         }
     }
-
 }
