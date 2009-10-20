@@ -155,5 +155,10 @@ public class OrchestraPlugin extends EBPlugin {
 		return startup.exists() ;
 	}
 
+	public REngine getREngine(){
+		return r ;
+	}
+	
+	
 }
 
