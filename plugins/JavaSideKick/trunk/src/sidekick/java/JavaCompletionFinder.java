@@ -681,6 +681,7 @@ public class JavaCompletionFinder {
         catch ( NoClassDefFoundError ncdfe ) {
             // TODO: logging to the activity log is useless for the end user.  Need to
             // find a better way to let them know about this problem.
+            editPane.getView().getStatus().setMessage("Class not in classpath: " + ncdfe.getMessage());
             return null;
         }
         List members = new ArrayList( list );
