@@ -30,13 +30,9 @@ package sidekick.java.node;
 import java.util.*;
 
 /**
-
  * An extension of TigerNode for a compilation unit.  A compilation unit should
-
  * be the top-level unit for parsing, all other productions represented by TigerNodes
-
  * should be children of a CUNode.
-
  */
 
 public class CUNode extends TigerNode {
