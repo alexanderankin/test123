@@ -1,0 +1,9 @@
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<ACTIONS>
+    <ACTION NAME="vfs.checkstyle" NO_REPEAT="TRUE">
+        <CODE>
+		com.kpouer.jedit.checkstyle.CheckstylePlugin.checkFiles(files);
+        </CODE>
+    </ACTION>
+</ACTIONS>
+

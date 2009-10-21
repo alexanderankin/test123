@@ -26,9 +26,12 @@ import com.puppycrawl.tools.checkstyle.PropertiesExpander;
 import com.puppycrawl.tools.checkstyle.api.*;
 import errorlist.DefaultErrorSource;
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.io.FileVFS;
 import org.gjt.sp.jedit.io.VFS;
+import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.syntax.ModeProvider;
 import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
 
@@ -58,6 +61,42 @@ public class CheckstyleParse implements Runnable, AuditListener
 		file = new ArrayList<File>(1);
 		String path = buffer.getPath();
 		file.add(new File(path));
+	}
+
+	public CheckstyleParse(VFSFile[] files, DefaultErrorSource errorSource)
+	{
+		this.errorSource = errorSource;
+		file = new ArrayList<File>();
+		addFiles(files);
+	}
+
+	private void addFiles(VFSFile[] files)
+	{
+		for (VFSFile vfsFile : files)
+		{
+			VFS vfs = vfsFile.getVFS();
+			if (vfs instanceof FileVFS)
+			{
+				String path = vfsFile.getPath();
+				if (vfsFile.getType() == VFSFile.DIRECTORY)
+				{
+					try
+					{
+						VFSFile[] list = vfs._listFiles(null, path, jEdit.getActiveView());
+						addFiles(list);
+					}
+					catch (IOException e)
+					{
+						Log.log(Log.ERROR,this, e);
+					}
+				}
+				else
+				{
+					if (ModeProvider.instance.getModeForFile(path, "") == ModeProvider.instance.getMode("java"))
+						file.add(new File(path));
+				}
+			}
+		}
 	}
 
 	private Configuration getEmbeddedConfiguration(String path)
@@ -164,7 +203,7 @@ public class CheckstyleParse implements Runnable, AuditListener
 
 	public void fileStarted(AuditEvent auditEvent)
 	{
-		buffer = jEdit.getBuffer(auditEvent.getFileName());
+		buffer = jEdit.openTemporary(jEdit.getActiveView(), null, auditEvent.getFileName(), false);
 	}
 
 	public void fileFinished(AuditEvent auditEvent)
@@ -189,18 +228,21 @@ public class CheckstyleParse implements Runnable, AuditListener
 		}
 
 		int start = column == 0 ? 0 : column - 1;
-		int tabSize = buffer.getTabSize();
-		int lineIndex = line == 0 ? 0 : line - 1;
-		buffer.getLineText(lineIndex, segment);
 		int reduce = 0;
-		for (int i = 0;i<segment.length();i++)
+		int lineIndex = line == 0 ? 0 : line - 1;
+		if (buffer != null)
 		{
-			if (segment.charAt(i) == '\t')
+			int tabSize = buffer.getTabSize();
+			buffer.getLineText(lineIndex, segment);
+			for (int i = 0;i<segment.length();i++)
 			{
-				reduce = reduce + tabSize - 1;
+				if (segment.charAt(i) == '\t')
+				{
+					reduce = reduce + tabSize - 1;
+				}
+				else
+					break;
 			}
-			else
-				break;
 		}
 		start -= reduce;
 		errorSource.addError(level,
