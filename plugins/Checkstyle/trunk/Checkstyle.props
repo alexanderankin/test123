@@ -11,8 +11,8 @@ plugin.com.kpouer.jedit.checkstyle.CheckstylePlugin.description=Checkstyle
 plugin.com.kpouer.jedit.checkstyle.CheckstylePlugin.usePluginHome=true
 plugin.com.kpouer.jedit.checkstyle.CheckstylePlugin.jars=checkstyle-5.0.jar commons-beanutils-core-1.8.0.jar google-collect-snapshot-20090211.jar antlr.jar
 plugin.com.kpouer.jedit.checkstyle.CheckstylePlugin.docs=docs/Checkstyle.html
-
-
+plugin.com.kpouer.jedit.checkstyle.CheckstylePlugin.menu=checkstyle-checkBuffer
+plugin.com.kpouer.jedit.checkstyle.CheckstylePlugin.browser-menu=vfs.checkstyle
 # Option pane
 plugin.com.kpouer.jedit.checkstyle.CheckstylePlugin.option-pane=checkstyle
 
@@ -21,7 +21,7 @@ options.checkstyle.code=new com.kpouer.jedit.checkstyle.CheckstyleOptionPane();
 
 
 checkstyle-checkBuffer.label=Check current buffer
-
+vfs.checkstyle.label=Checkstyle selected files
 
 checkstyle.defaultstyle.embedded.label=Embedded style
 checkstyle.defaultstyle.embedded=true

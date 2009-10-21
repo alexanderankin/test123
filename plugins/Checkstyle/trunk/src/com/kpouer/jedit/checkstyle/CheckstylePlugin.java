@@ -24,6 +24,7 @@ import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.jEdit;
 
@@ -51,6 +52,13 @@ public class CheckstylePlugin extends EditPlugin
 	{
 		CheckstylePlugin plugin = (CheckstylePlugin) jEdit.getPlugin(CheckstylePlugin.class.getName());
 		CheckstyleParse parser = new CheckstyleParse(buffer, plugin.errorSource);
+		VFSManager.runInWorkThread(parser);
+	}
+
+	public static void checkFiles(VFSFile[] files)
+	{
+		CheckstylePlugin plugin = (CheckstylePlugin) jEdit.getPlugin(CheckstylePlugin.class.getName());
+		CheckstyleParse parser = new CheckstyleParse(files, plugin.errorSource);
 		VFSManager.runInWorkThread(parser);
 	}
 }
