@@ -204,8 +204,13 @@ public class TigerParser implements TigerParserConstants {
     List<TigerNode> children = null;
     children = javacc_input();
     if (children != null ) {
-        for (Iterator it = children.iterator(); it.hasNext(); ) {
-            n.addChild((TigerNode)it.next());
+        for (TigerNode child : children) {
+            if (child instanceof CUNode) {
+                for (ImportNode in : ((CUNode)child).getImportNodes()) {
+                    n.addImport(in);
+                }
+            }
+            n.addChild(child);
         }
     }
     {if (true) return n;}
@@ -220,8 +225,8 @@ public class TigerParser implements TigerParserConstants {
     Token cunode_start_t = null;
     Token cunode_end_t = null;
     TigerNode production_node = null;
-    TigerNode cunode = null;
-    TigerNode parser_node = new TigerNode(){public int getOrdinal(){return TigerNode.PARSER;}};
+    CUNode cunode = null;
+    CUNode parser_node = new CUNode(){public int getOrdinal(){return TigerNode.PARSER;}};
     options_node = javacc_options();
     if (getToken(1).kind == IDENTIFIER && getToken(1).image.equals("PARSER_BEGIN")) {
 
@@ -273,6 +278,9 @@ public class TigerParser implements TigerParserConstants {
             }
             else {
                 parser_node.addChild(cunode);
+            }
+            for (ImportNode in : cunode.getImportNodes()) {
+                parser_node.addImport(in);
             }
         }
     }
@@ -5977,21 +5985,6 @@ public class TigerParser implements TigerParserConstants {
     catch(LookaheadSuccess ls) { return true; }
   }
 
-  final private boolean jj_3R_220() {
-    if (jj_3R_242()) return true;
-    return false;
-  }
-
-  final private boolean jj_3_50() {
-    if (jj_3R_107()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_325() {
-    if (jj_3R_93()) return true;
-    return false;
-  }
-
   final private boolean jj_3R_124() {
     if (jj_scan_token(LT)) return true;
     if (jj_3R_173()) return true;
@@ -6855,15 +6848,15 @@ public class TigerParser implements TigerParserConstants {
     return false;
   }
 
-  final private boolean jj_3_1() {
-    if (jj_3R_60()) return true;
-    return false;
-  }
-
   final private boolean jj_3R_148() {
     if (jj_scan_token(LBRACKET)) return true;
     if (jj_3R_97()) return true;
     if (jj_scan_token(RBRACKET)) return true;
+    return false;
+  }
+
+  final private boolean jj_3_1() {
+    if (jj_3R_60()) return true;
     return false;
   }
 
@@ -9072,6 +9065,21 @@ public class TigerParser implements TigerParserConstants {
 
   final private boolean jj_3R_221() {
     if (jj_3R_126()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_220() {
+    if (jj_3R_242()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_50() {
+    if (jj_3R_107()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_325() {
+    if (jj_3R_93()) return true;
     return false;
   }
 

@@ -574,8 +574,13 @@ CUNode getJavaCCRootNode(int tab_size) :
 
   {
     if (children != null ) {
-        for (Iterator it = children.iterator(); it.hasNext(); ) {
-            n.addChild((TigerNode)it.next());
+        for (TigerNode child : children) {
+            if (child instanceof CUNode) {
+                for (ImportNode in : ((CUNode)child).getImportNodes()) {
+                    n.addImport(in);   
+                }
+            }
+            n.addChild(child);
         }
     }
     return n;
@@ -591,8 +596,8 @@ List<TigerNode> javacc_input() :
     Token cunode_start_t = null;
     Token cunode_end_t = null;
     TigerNode production_node = null;
-    TigerNode cunode = null;
-    TigerNode parser_node = new TigerNode(){public int getOrdinal(){return TigerNode.PARSER;}};
+    CUNode cunode = null;
+    CUNode parser_node = new CUNode(){public int getOrdinal(){return TigerNode.PARSER;}};
 }
 {
   options_node=javacc_options()
@@ -629,6 +634,9 @@ List<TigerNode> javacc_input() :
             }
             else {
                 parser_node.addChild(cunode);
+            }
+            for (ImportNode in : cunode.getImportNodes()) {
+                parser_node.addImport(in); 
             }
         }
     }
