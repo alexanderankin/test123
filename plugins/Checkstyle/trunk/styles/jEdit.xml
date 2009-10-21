@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+    "-//Puppy Crawl//DTD Check Configuration 1.2//EN"
+    "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
+<module name="Checker">
+    <module name="NewlineAtEndOfFile"/>
+    <module name="Translation"/>
+    <module name="RegexpSingleline">
+       <property name="format" value="\s+$"/>
+       <property name="minimum" value="0"/>
+       <property name="maximum" value="0"/>
+       <property name="message" value="Line has trailing spaces."/>
+    </module>
+
+    <module name="TreeWalker">
+        <module name="IllegalImport"/>
+        <module name="RedundantImport"/>
+        <module name="UnusedImports"/>
+        <module name="ParameterNumber"/>
+        <module name="EmptyForIteratorPad"/>
+        <module name="GenericWhitespace"/>
+        <module name="MethodParamPad"/>
+        <module name="NoWhitespaceAfter"/>
+        <module name="NoWhitespaceBefore"/>
+        <module name="ParenPad"/>
+        <module name="TypecastParenPad"/>
+        <module name="ModifierOrder"/>
+        <module name="RedundantModifier"/>
+        <module name="LeftCurly">
+        	<property name="option" value="nl"/>
+        </module>
+        <module name="RightCurly">
+        	<property name="option" value="alone"/>
+        	<property name="shouldStartLine" value="true"/>
+        </module>
+        <module name="DoubleCheckedLocking"/>
+        <module name="EmptyStatement"/>
+        <module name="EqualsHashCode"/>
+        <module name="IllegalInstantiation"/>
+        <module name="MissingSwitchDefault"/>
+        <module name="RedundantThrows"/>
+        <module name="SimplifyBooleanExpression"/>
+        <module name="SimplifyBooleanReturn"/>
+
+        <module name="HideUtilityClassConstructor"/>
+        <module name="InterfaceIsType"/>
+        <module name="VisibilityModifier"/>
+        <module name="ArrayTypeStyle"/>
+        <module name="TodoComment"/>
+        <module name="UpperEll"/>
+    </module>
+</module>
