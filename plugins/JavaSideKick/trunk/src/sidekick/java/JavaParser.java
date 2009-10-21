@@ -77,7 +77,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
      * @param type one of 'java' or 'javacc'
      */
     public JavaParser( int type ) {
-        super( type == JAVA_PARSER ? "java" : "javacc" );
+        super( type == JAVACC_PARSER ? "javacc" : "java" );
         loadOptions();
         switch ( type ) {
             case JAVACC_PARSER:
@@ -144,54 +144,6 @@ public class JavaParser extends SideKickParser implements EBComponent {
         if ( currentView != null ) {
             parse( currentView.getBuffer(), null );
         }
-    }
-
-    /**
-     * Parse the given buffer.
-     * TODO: can this be adapted to parse say java code from within a jsp file?
-     * @param buffer the buffer to parse.
-     * @return a CUNode representing a java compilation unit.
-     * @deprecated This was used by CheckImports, which is deprecated.
-     */
-    public CUNode parse( Buffer buffer ) {
-        ByteArrayInputStream input = null;
-        TigerParser parser = null;
-        CUNode compilationUnit = null;
-        try {
-            // read the buffer
-            input = new ByteArrayInputStream( buffer.getText( 0, buffer.getLength() ).getBytes() );
-            parser = new TigerParser( input );
-            int tab_size = buffer.getTabSize();
-
-            // do the parse
-            switch ( parser_type ) {
-                case JAVACC_PARSER:
-                    compilationUnit = parser.getJavaCCRootNode( tab_size );
-                    break;
-                default:
-                    compilationUnit = parser.getJavaRootNode( tab_size );
-                    break;
-            }
-
-            // set some properties
-            compilationUnit.setName( buffer.getName() );
-            compilationUnit.setResults( parser.getResults() );
-            compilationUnit.setStart( ElementUtil.createStartPosition( buffer, compilationUnit ) );
-            compilationUnit.setEnd( ElementUtil.createEndPosition( buffer, compilationUnit ) );
-            buffer.setProperty( COMPILATION_UNIT, compilationUnit );
-        }
-        catch ( Exception e ) {
-            e.printStackTrace();
-        }
-        finally {
-            try {
-                input.close();
-            }
-            catch ( Exception e ) {     // NOPMD
-                // not to worry
-            }
-        }
-        return compilationUnit;
     }
 
     /**
@@ -612,9 +564,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
     }
 
     /**
-     * Returns if the parser supports code completion.
-     *
-     * Returns false by default.
+     * @return true, this parser does support code completion
      */
     public boolean supportsCompletion() {
         return true;
