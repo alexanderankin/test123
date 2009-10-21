@@ -1,0 +1,32 @@
+# Author: Matthieu Casanova
+
+plugin.com.kpouer.jedit.checkstyle.CheckstylePlugin.activate=defer
+plugin.com.kpouer.jedit.checkstyle.CheckstylePlugin.name=Checkstyle
+plugin.com.kpouer.jedit.checkstyle.CheckstylePlugin.author=Matthieu Casanova
+plugin.com.kpouer.jedit.checkstyle.CheckstylePlugin.version=1.0.0
+plugin.com.kpouer.jedit.checkstyle.CheckstylePlugin.depend.0=jdk 1.5
+plugin.com.kpouer.jedit.checkstyle.CheckstylePlugin.depend.1=jedit 04.03.15.00
+plugin.com.kpouer.jedit.checkstyle.CheckstylePlugin.depend.2=plugin errorlist.ErrorListPlugin 1.7
+plugin.com.kpouer.jedit.checkstyle.CheckstylePlugin.description=Checkstyle
+plugin.com.kpouer.jedit.checkstyle.CheckstylePlugin.usePluginHome=true
+plugin.com.kpouer.jedit.checkstyle.CheckstylePlugin.jars=checkstyle-5.0.jar commons-beanutils-core-1.8.0.jar google-collect-snapshot-20090211.jar antlr.jar
+plugin.com.kpouer.jedit.checkstyle.CheckstylePlugin.docs=docs/Checkstyle.html
+
+
+# Option pane
+plugin.com.kpouer.jedit.checkstyle.CheckstylePlugin.option-pane=checkstyle
+
+options.checkstyle.label=Checkstyle
+options.checkstyle.code=new com.kpouer.jedit.checkstyle.CheckstyleOptionPane();
+
+
+checkstyle-checkBuffer.label=Check current buffer
+
+
+checkstyle.defaultstyle.embedded.label=Embedded style
+checkstyle.defaultstyle.embedded=true
+checkstyle.defaultstyle.embedded.value=jEdit
+checkstyle.styles.label=Styles:
+
+checkstyle.defaultstyle.file=
+checkstyle.defaultstyle.file.label=Xml style file:
