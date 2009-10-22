@@ -1,5 +1,6 @@
 package com.addictedtor.orchestra.rengine.jri;
 
+import java.io.*  ;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -13,6 +14,8 @@ import org.rosuda.REngine.REngine;
 import org.rosuda.REngine.JRI.JRIEngine;
 
 import com.addictedtor.orchestra.rengine.REngineService;
+
+import org.gjt.sp.util.Log ;
 
 public class JRIEngineService extends REngineService {
 
@@ -36,57 +39,11 @@ public class JRIEngineService extends REngineService {
 	@SuppressWarnings("unchecked")
 	private static void initEngine(){
 		
-		/* so that System.load("jri") failing does not cause System.exit(1), see Rengine */
-		System.setProperty("jri.ignore.ule", "yes" ) ; 		
-	
-		/* TODO: ask these to R using RCmdBatch */
 		try{
-			String[] libs = new String[]{
-				R_HOME + "lib",
-				R_HOME + "library/rJava/libs", 
-				R_HOME + "library/rJava/jri"
-			};
-			addLibPaths( libs ) ;
-			
-		} catch( Exception e){ 
+			NativeLibraryHack.addLibPaths( new String[]{ R_HOME + "library/rJava/jri" } ) ;
+		} catch( IOException e){
 			e.printStackTrace() ;
 		}
-		
-		System.loadLibrary( "R" ) ;
-		
-		/* use reflection to load the RJavaClassLoader */
-		Class RJCL = null ; 
-		Constructor<?> cons = null ; 
-		ClassLoader rjcl = null ;
-		try{
-			/* the RJavaClassLoader class */
-			RJCL =  Class.forName("RJavaClassLoader" ) ;
-			
-			Class<?>[] clazzes = new Class<?>[]{ String.class, String.class } ;
-			cons = 	RJCL.getConstructor( clazzes ) ; 
-			
-			rjcl = (ClassLoader) cons.newInstance( 
-					R_HOME + "library/rJava" , 
-					R_HOME + "library/rJava/libs" ) ;
-			
-			/* use the rjcl to load the jri library without relying on java.library.path */
-			
-			Method findlib = RJCL.getDeclaredMethod( "findLibrary", new Class<?>[]{ String.class } ) ;
-			boolean access = findlib.isAccessible() ;
-			findlib.setAccessible(true ) ;
-
-			String lib = (String) findlib.invoke( rjcl, new Object[]{ "rJava" } ) ;
-			System.load( lib ) ;
-			
-			/* restore accessibility */
-			findlib.setAccessible( access ) ;
-			
-		} catch( Exception e){
-			e.printStackTrace() ;
-		}
-		
-		/* otherwise JRIEngine won't load */
-		Rengine.jriLoaded = true ;
 		
 		JRIEngine eng = null ; 
 		String[] args = { "--save" } ;
@@ -107,6 +64,7 @@ public class JRIEngineService extends REngineService {
 		
 		engine = eng ; 
 		
+		/* now load the plugin that is on the R package side */
 		String orchestra_rpackage = null ;
 		try{
 			orchestra_rpackage = engine.parseAndEval( "system.file( package = 'orchestra' )" ).asString() ;
@@ -117,46 +75,5 @@ public class JRIEngineService extends REngineService {
 		
 	}
 	
-	public static void addLibPaths(String[] newlibs ) throws IOException {
-		try {
-			Field field = ClassLoader.class.getDeclaredField("usr_paths");
-			field.setAccessible(true);
-			String[] paths = (String[])field.get(null);
-			
-			Vector<String> vec = new Vector<String>() ;
-			StringBuffer buf = new StringBuffer() ;
-			int count = 0;
-			for( int i=0; i<paths.length; i++){
-				vec.add( paths[i] ) ;
-				if( count != 0) buf.append( ":" ) ; 
-				buf.append( paths[i ] ) ;
-				count++ ;
-			}
-			boolean changeNeeded = false ;
-			
-			for( String lib : newlibs ){
-				if( !vec.contains( lib ) ){
-					changeNeeded = true ;
-					vec.add( lib ) ;
-					if( count != 0 ) buf.append(":") ;
-					buf.append( lib ) ;
-				}
-			}
-			if( !changeNeeded ){
-				return ;
-			}
-			String[] tmp = new String[vec.size()] ;
-			vec.toArray( tmp ) ;
-			field.set(null,tmp);
-			
-			System.setProperty( "java.library.path" , buf.toString() ) ;
-			
-		} catch (IllegalAccessException e) {
-			throw new IOException("Failed to get permissions to set library path");
-		} catch (NoSuchFieldException e) {
-			throw new IOException("Failed to get field handle to set library path");
-		}
-	}
 
-	
 }

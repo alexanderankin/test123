@@ -5,5 +5,12 @@
 	<SERVICE CLASS="com.addictedtor.orchestra.rengine.REngineService" NAME="jri">
 		new com.addictedtor.orchestra.rengine.jri.JRIEngineService();
 	</SERVICE>
+
+	<!--
+	<SERVICE CLASS="org.gjt.sp.jedit.NativeLibraryLookupService" NAME="com.addictedtor.orchestra.OrchestraPlugin">
+		new com.addictedtor.orchestra.OrchestraLibraryLookup() ;
+	</SERVICE>
+	-->
 	
 </SERVICES>
+
