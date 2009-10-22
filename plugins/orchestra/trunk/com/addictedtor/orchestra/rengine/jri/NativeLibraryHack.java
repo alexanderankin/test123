@@ -34,12 +34,12 @@ public class NativeLibraryHack {
 	 * @param newlibs new library paths
 	 */
 	public static void addLibPaths(String[] newlibs ) throws IOException {
+		
 		try {
 			Field field = ClassLoader.class.getDeclaredField("usr_paths");
 			boolean access = field.isAccessible() ;
 			field.setAccessible(true);
 			String[] paths = (String[])field.get(null);
-			field.setAccessible(access);
 			
 			Vector<String> vec = new Vector<String>() ;
 			StringBuffer buf = new StringBuffer() ;
@@ -66,6 +66,7 @@ public class NativeLibraryHack {
 			String[] tmp = new String[vec.size()] ;
 			vec.toArray( tmp ) ;
 			field.set(null,tmp);
+			field.setAccessible(access);
 			
 			/* reflect the change in the java.library.path system property */
 			System.setProperty( "java.library.path" , buf.toString() ) ;

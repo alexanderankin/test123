@@ -1,5 +1,4 @@
 #!/bin/env Rscript
-
 # {{{ Copyright/licence notice
 # :tabSize=2:indentSize=2:noTabs=false:folding=explicit:collapseFolds=1:
 # Copyright (c) 2009, Romain Francois <francoisromain@free.fr>
@@ -22,8 +21,6 @@
 # along with the orchestra jedit plugin. If not, see <http://www.gnu.org/licenses/>.
 # }}}
 
-
-
 # {{{ read the property file
 # the directory that contains that script
 args <- commandArgs( ) 
@@ -39,11 +36,9 @@ if( any( grepl( "@", rl ) ) ){
 source( propfile )
 # }}}
 
-
 # {{{ write log to plugin home
 sink(file=file.path(PLUGIN_HOME, "orchestra_starter.log"), split=TRUE)
 # }}}
-
 
 # {{{ environment variables
 SEP <- .Platform$path.sep
