@@ -98,7 +98,13 @@ public class JRIEngineService extends REngineService {
 	}
 	
   private static String getR_HOME(){
-  	return "/usr/local/lib/R/" ;
+  	String R_HOME = System.getProperty( "rhome" ); 
+  	if( R_HOME == null ){
+  		R_HOME = System.getenv( "R_HOME" ) ;
+  	}
+  	
+  	/* TODO; try harder */
+  	return R_HOME ;
   }
   
   /**

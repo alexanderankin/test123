@@ -73,14 +73,6 @@ public class OrchestraPlugin extends EBPlugin {
 		  	startedFromScript = true ;
 		  	startR() ;
 		  	
-		      // // load the orchestra plugin from the R package tree
-		      // String jar = orchestra_rpackage_home + "/java/R.jar" ; 
-		      // if((new File( jar ) ).exists() ){
-		      //     jEdit.addPluginJAR( jar ) ;
-		      // } else {
-		      //     //todo better handling?
-		      //     JOptionPane.showMessageDialog(jEdit.getActiveView(), "Orchestra: Cannot find R.jar. Please install the orchestra R package and then run the installer plugin for jedit again!");
-		      // }
 		  }
 
 		
