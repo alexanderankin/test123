@@ -45,6 +45,7 @@ public class CheckstyleOptionPane extends AbstractOptionPane
 {
 	private JCheckBox embedded;
 	private JComboBox embeddedStyles;
+	private JCheckBox runOnSave;
 
 	private JTextField style;
 	private JButton browseButton;
@@ -105,6 +106,8 @@ public class CheckstyleOptionPane extends AbstractOptionPane
 				updateEmbedded();
 			}
 		});
+
+		addComponent(runOnSave = createCheckBox("checkstyle.runonsave"));
 	} //}}}
 
 	private void updateEmbedded()
@@ -120,6 +123,7 @@ public class CheckstyleOptionPane extends AbstractOptionPane
 		jEdit.setBooleanProperty("checkstyle.defaultstyle.embedded", embedded.isSelected());
 		jEdit.setProperty("checkstyle.defaultstyle.embedded.value",embeddedStyles.getSelectedItem().toString());
 		jEdit.setProperty("checkstyle.defaultstyle.file",style.getText());
+		jEdit.setBooleanProperty("checkstyle.runonsave", runOnSave.isSelected());
 	} //}}}
 
 	//{{{ createCheckBox() method

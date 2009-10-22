@@ -30,3 +30,6 @@ checkstyle.styles.label=Styles:
 
 checkstyle.defaultstyle.file=
 checkstyle.defaultstyle.file.label=Xml style file:
+
+checkstyle.runonsave=false
+checkstyle.runonsave.label=Run checkstyle on save

@@ -22,18 +22,20 @@ package com.kpouer.jedit.checkstyle;
 
 import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
-import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSManager;
-import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
 
 /**
  * @author Matthieu Casanova
  */
-public class CheckstylePlugin extends EditPlugin
+public class CheckstylePlugin extends EBPlugin
 {
 	private DefaultErrorSource errorSource;
+	private boolean runOnSave;
+
 	@Override
 	public void start()
 	{
@@ -48,7 +50,7 @@ public class CheckstylePlugin extends EditPlugin
 		errorSource = null;
 	}
 
-	public static void checkCurrentBuffer(Buffer buffer)
+	public static void checkBuffer(Buffer buffer)
 	{
 		CheckstylePlugin plugin = (CheckstylePlugin) jEdit.getPlugin(CheckstylePlugin.class.getName());
 		CheckstyleParse parser = new CheckstyleParse(buffer, plugin.errorSource);
@@ -67,5 +69,27 @@ public class CheckstylePlugin extends EditPlugin
 		CheckstylePlugin plugin = (CheckstylePlugin) jEdit.getPlugin(CheckstylePlugin.class.getName());
 		CheckstyleParse parser = new CheckstyleParse(files, plugin.errorSource);
 		VFSManager.runInWorkThread(parser);
+	}
+
+	@Override
+	public void handleMessage(EBMessage message)
+	{
+		if (message instanceof PropertiesChanged)
+		{
+			runOnSave = jEdit.getBooleanProperty("checkstyle.runonsave");
+		}
+		else if (message instanceof BufferUpdate)
+		{
+			if (runOnSave)
+			{
+				BufferUpdate bufferUpdate = (BufferUpdate) message;
+				if (bufferUpdate.getWhat() == BufferUpdate.SAVED)
+				{
+					Buffer buffer = bufferUpdate.getBuffer();
+					if ("java".equals(buffer.getMode().getName()))
+						checkBuffer(buffer);
+				}
+			}
+		}
 	}
 }
