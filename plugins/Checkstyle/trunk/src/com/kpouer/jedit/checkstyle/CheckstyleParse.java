@@ -276,21 +276,23 @@ public class CheckstyleParse implements Runnable, AuditListener
 		int start = column == 0 ? 0 : column - 1;
 		int reduce = 0;
 		int lineIndex = line == 0 ? 0 : line - 1;
-		if (buffer != null)
+		if (buffer != null && buffer.getBooleanProperty("noTabs"))
 		{
 			int tabSize = buffer.getTabSize();
+			int maxIndent = start % tabSize;
 			buffer.getLineText(lineIndex, segment);
-			for (int i = 0;i<segment.length();i++)
+			for (int i = 0; i < segment.length() && maxIndent > 0; i++)
 			{
 				if (segment.charAt(i) == '\t')
 				{
+					maxIndent--;
 					reduce = reduce + tabSize - 1;
 				}
 				else
 					break;
 			}
 		}
-		start -= reduce;
+		start = Math.max(0, start - reduce);
 		errorSource.addError(level,
 				     auditEvent.getFileName(),
 				     lineIndex,
