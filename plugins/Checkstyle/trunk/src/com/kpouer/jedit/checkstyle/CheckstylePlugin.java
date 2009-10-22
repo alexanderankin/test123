@@ -48,10 +48,17 @@ public class CheckstylePlugin extends EditPlugin
 		errorSource = null;
 	}
 
-	public static void checkBuffer(Buffer buffer)
+	public static void checkCurrentBuffer(Buffer buffer)
 	{
 		CheckstylePlugin plugin = (CheckstylePlugin) jEdit.getPlugin(CheckstylePlugin.class.getName());
 		CheckstyleParse parser = new CheckstyleParse(buffer, plugin.errorSource);
+		VFSManager.runInWorkThread(parser);
+	}
+
+	public static void checkAllOpenBuffers()
+	{
+		CheckstylePlugin plugin = (CheckstylePlugin) jEdit.getPlugin(CheckstylePlugin.class.getName());
+		CheckstyleParse parser = new CheckstyleParse(jEdit.getBuffers(), plugin.errorSource);
 		VFSManager.runInWorkThread(parser);
 	}
 

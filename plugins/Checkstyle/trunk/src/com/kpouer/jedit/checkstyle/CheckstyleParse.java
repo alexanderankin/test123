@@ -53,6 +53,11 @@ public class CheckstyleParse implements Runnable, AuditListener
 
 	private Buffer buffer;
 
+	/**
+	 * A buffer will be skipped if
+	 */
+	private boolean skip;
+
 	private Segment segment;
 
 	public CheckstyleParse(Buffer buffer, DefaultErrorSource errorSource)
@@ -60,7 +65,33 @@ public class CheckstyleParse implements Runnable, AuditListener
 		this.errorSource = errorSource;
 		file = new ArrayList<File>(1);
 		String path = buffer.getPath();
-		file.add(new File(path));
+		if (buffer.isDirty())
+		{
+			Log.log(Log.DEBUG, this, "Buffer " + path + " is dirty, it will not be checked");
+		}
+		else
+		{
+			file.add(new File(path));
+		}
+	}
+
+	public CheckstyleParse(Buffer[] buffers, DefaultErrorSource errorSource)
+	{
+		this.errorSource = errorSource;
+		file = new ArrayList<File>(buffers.length);
+		for (Buffer buffer : buffers)
+		{
+			if (buffer.isDirty())
+			{
+				Log.log(Log.DEBUG, this, "Buffer " + buffer.getPath() + " is dirty, it will not be checked");
+				break;
+			}
+			if ("java".equals(buffer.getMode().getName()) &&
+			    "file".equals(buffer.getVFS().getName()))
+			{
+				file.add(new File(buffer.getPath()));
+			}
+		}
 	}
 
 	public CheckstyleParse(VFSFile[] files, DefaultErrorSource errorSource)
@@ -92,8 +123,16 @@ public class CheckstyleParse implements Runnable, AuditListener
 				}
 				else
 				{
-					if (ModeProvider.instance.getModeForFile(path, "") == ModeProvider.instance.getMode("java"))
+					if ("java".equals(ModeProvider.instance.getModeForFile(path, "").getName()))
+					{
+						Buffer buffer = jEdit._getBuffer(path);
+						if (buffer != null && buffer.isDirty())
+						{
+							Log.log(Log.DEBUG, this, "Buffer " + path + " is dirty, it will not be checked");
+							break;
+						}
 						file.add(new File(path));
+					}
 				}
 			}
 		}
@@ -174,6 +213,8 @@ public class CheckstyleParse implements Runnable, AuditListener
 
 	public void run()
 	{
+		if (file.isEmpty())
+			return;
 		Configuration conf = getConfiguration();
 		try
 		{
@@ -204,6 +245,7 @@ public class CheckstyleParse implements Runnable, AuditListener
 	public void fileStarted(AuditEvent auditEvent)
 	{
 		buffer = jEdit.openTemporary(jEdit.getActiveView(), null, auditEvent.getFileName(), false);
+		skip = buffer.isDirty();
 	}
 
 	public void fileFinished(AuditEvent auditEvent)
@@ -213,6 +255,8 @@ public class CheckstyleParse implements Runnable, AuditListener
 
 	public void addError(AuditEvent auditEvent)
 	{
+		if (skip)
+			return;
 		int column = auditEvent.getColumn();
 		int line = auditEvent.getLine();
 		SeverityLevel severityLevel = auditEvent.getSeverityLevel();
