@@ -71,6 +71,7 @@ public class OrchestraPlugin extends EBPlugin {
 		  } else {     
 		  	
 		  	startedFromScript = true ;
+		  	startR() ;
 		  	
 		      // // load the orchestra plugin from the R package tree
 		      // String jar = orchestra_rpackage_home + "/java/R.jar" ; 
