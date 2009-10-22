@@ -33,7 +33,7 @@ public class NativeLibraryHack {
 	 *
 	 * @param newlibs new library paths
 	 */
-	public static void addLibPaths(String[] newlibs ) throws IOException {
+	public static void addLibPaths(String... newlibs ) throws IOException {
 		
 		try {
 			Field field = ClassLoader.class.getDeclaredField("usr_paths");

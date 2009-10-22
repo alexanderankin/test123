@@ -103,10 +103,10 @@ if( LD_LIBRARY_PATH == "" ){
 	LD_LIBRARY_PATH <- Sys.getenv( "JAVA_LIBRARY_PATH", unset = "" )
 }
 # add JRI
-JRI_LD_PATH <- paste(
-	system.file( "jri", package = "rJava" ),
-	file.path( R_HOME, "lib")
-, sep = SEP )
+JRI_PATH <- system.file( "jri", package = "rJava" )
+JRI_LD_PATH <- paste( JRI_PATH, file.path( R_HOME, "lib"), sep = SEP )
+Sys.setenv( JRI_PATH = JRI_PATH )
+
 LD_LIBRARY_PATH <- if( LD_LIBRARY_PATH == "" ){
 	JRI_LD_PATH
 } else {

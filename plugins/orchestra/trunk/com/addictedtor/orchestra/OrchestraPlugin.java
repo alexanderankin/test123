@@ -35,6 +35,8 @@ public class OrchestraPlugin extends EBPlugin {
 	
 	public static final String NAME = "OrchestraPlugin";
 
+	protected static boolean startedFromScript = false ;
+	
 	// log4j
 	public static final String LOG_FILENAME = "orchestra_installer.log";
 	protected static final Log logger = LogFactory.getLog(OrchestraPlugin.class);
@@ -48,42 +50,38 @@ public class OrchestraPlugin extends EBPlugin {
 	@Override
 	public void start() {
 		configureLog4J();
+		System.setProperty( "jri.ignore.ule", "yes" ); 
 
-		/* install R specific edit modes */
+		/* install R specific edit modes - maybe only do this when the version number changes */
 		OrchestraModes modes = new OrchestraModes() ;
 		try{
 			modes.deployModes() ;
 		} catch( IOException e){}
 		modes.loadModes() ;
 
-		// String orchestra_rpackage_home = System.getProperty("orchestra.home", "") ;
-		// 
-		// if( orchestra_rpackage_home.equals("") ){
-		//   	if( isConfigured() ){
-		//   		/* the system is already installed but jedit started normally, don't mess it up */
-		//   	} else{
-		//   		startInstallerPlugin();
-		//       }
-		//   	
-		//   } else {
-		//       // load the orchestra plugin from the R package tree
-		//       String jar = orchestra_rpackage_home + "/java/R.jar" ; 
-		//       if((new File( jar ) ).exists() ){
-		//           jEdit.addPluginJAR( jar ) ;
-		//       } else {
-		//           //todo better handling?
-		//           JOptionPane.showMessageDialog(jEdit.getActiveView(), "Orchestra: Cannot find R.jar. Please install the orchestra R package and then run the installer plugin for jedit again!");
-		//       }
-		//   }
-
-		REngineService service = (REngineService)ServiceManager.getService("com.addictedtor.orchestra.rengine.REngineService", "jri") ;
-		r = service.getEngine() ;
+		String orchestra_rpackage_home = System.getProperty("orchestra.home", "") ;
 		
-		/* so that we can call the engine from the beanshell console */
-		try{
-			NameSpace ns = org.gjt.sp.jedit.BeanShell.getNameSpace(); 
-			ns.setVariable("r", r) ;
-		} catch(UtilEvalError e){}
+		if( orchestra_rpackage_home.equals("") ){
+		  	if( isConfigured() ){
+		  		/* the system is already installed but jedit started normally, don't mess it up */
+		  	} else{
+		  		startInstallerPlugin();
+		    }
+		  	
+		  } else {     
+		  	
+		  	startedFromScript = true ;
+		  	
+		      // // load the orchestra plugin from the R package tree
+		      // String jar = orchestra_rpackage_home + "/java/R.jar" ; 
+		      // if((new File( jar ) ).exists() ){
+		      //     jEdit.addPluginJAR( jar ) ;
+		      // } else {
+		      //     //todo better handling?
+		      //     JOptionPane.showMessageDialog(jEdit.getActiveView(), "Orchestra: Cannot find R.jar. Please install the orchestra R package and then run the installer plugin for jedit again!");
+		      // }
+		  }
+
 		
 	}
 
@@ -156,6 +154,23 @@ public class OrchestraPlugin extends EBPlugin {
 		return r ;
 	}
 	
+	/**
+	 * Indicates if jedit was started from the orchestra startup script 
+	 */
+	public static boolean jeditStartedWithOrchestraScript(){
+		return startedFromScript ;
+	}
+	
+	public static void startR(){
+		REngineService service = (REngineService)ServiceManager.getService("com.addictedtor.orchestra.rengine.REngineService", "jri") ;
+		r = service.getEngine() ;
+		
+		/* so that we can call the engine from the beanshell console */
+		try{
+			org.gjt.sp.jedit.BeanShell.getNameSpace().setVariable("r", r); 
+		} catch(UtilEvalError e){ /* not happening */ }
+		 
+	}
 	
 }
 
