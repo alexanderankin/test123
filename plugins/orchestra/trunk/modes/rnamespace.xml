@@ -6,6 +6,8 @@
  	<PROPS>
   		<PROPERTY NAME="indentOpenBrackets" VALUE="{" />
   		<PROPERTY NAME="indentCloseBrackets" VALUE="}" />
+  		
+  		<!-- for and while are not allowed in NAMESPACES -->
   		<PROPERTY NAME="indentPrevLine" VALUE="\s*(((if|while)\s*\(|else\s*(\{|$)|else\s+if\s*\(|for\s*\(.*)|repeat\s*" />
   		<PROPERTY NAME="wordBreakChars" VALUE=",+-=&lt;&gt;/?^&amp;*!" />
   		<PROPERTY NAME="doubleBracketIndent" VALUE="false" />
@@ -27,26 +29,25 @@
     <EOL_SPAN TYPE="COMMENT2">##</EOL_SPAN>
     <EOL_SPAN TYPE="COMMENT3">###</EOL_SPAN>
 
-    
-    
-    
-		<WHITESPACE> </WHITESPACE>
-		<WHITESPACE>	</WHITESPACE>
-
 		<!-- uncomment this if you want user defined functions to be highlighted, too -->
 		<!-- <MARK_PREVIOUS EXCLUDE_MATCH="TRUE" TYPE="FUNCTION">(</MARK_PREVIOUS> -->
 
   <KEYWORDS IGNORE_CASE="FALSE">
-   	<LITERAL2>NULL</LITERAL2>
-    <KEYWORD1>exportPattern</KEYWORD1>
-    <KEYWORD1>export</KEYWORD1>
-    <KEYWORD1>import</KEYWORD1>
-    <KEYWORD1>importFrom</KEYWORD1>
-    <KEYWORD1>S3method</KEYWORD1>
-    <KEYWORD1>exportMethods</KEYWORD1>
-    <KEYWORD1>exportClasses</KEYWORD1>     
-    <KEYWORD1>importClassesFrom</KEYWORD1>
-    <KEYWORD1>importMethodsFrom</KEYWORD1>
+   	<KEYWORD1>if</KEYWORD1>
+   	<KEYWORD1>else</KEYWORD1>
+   	
+  	<LITERAL2>NULL</LITERAL2>
+  	
+    <KEYWORD2>exportPattern</KEYWORD2>
+    <KEYWORD2>export</KEYWORD2>
+    <KEYWORD2>import</KEYWORD2>
+    <KEYWORD2>importFrom</KEYWORD2>
+    <KEYWORD2>S3method</KEYWORD2>
+    <KEYWORD2>exportMethods</KEYWORD2>
+    <KEYWORD2>exportClasses</KEYWORD2>     
+    <KEYWORD2>importClassesFrom</KEYWORD2>
+    <KEYWORD2>importMethodsFrom</KEYWORD2>
+    
 	 </KEYWORDS>
 
  </RULES>
