@@ -26,6 +26,7 @@ import com.puppycrawl.tools.checkstyle.PropertiesExpander;
 import com.puppycrawl.tools.checkstyle.api.*;
 import errorlist.DefaultErrorSource;
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.io.FileVFS;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSFile;
@@ -123,7 +124,8 @@ public class CheckstyleParse implements Runnable, AuditListener
 				}
 				else
 				{
-					if ("java".equals(ModeProvider.instance.getModeForFile(path, "").getName()))
+					Mode mode = ModeProvider.instance.getModeForFile(path, "");
+					if (mode != null && "java".equals(mode.getName()))
 					{
 						Buffer buffer = jEdit._getBuffer(path);
 						if (buffer != null && buffer.isDirty())

@@ -2,7 +2,7 @@
 <ACTIONS>
 	<ACTION NAME="checkstyle-check-current-buffer">
 		<CODE>
-			com.kpouer.jedit.checkstyle.CheckstylePlugin.checkCurrentBuffer(buffer);
+			com.kpouer.jedit.checkstyle.CheckstylePlugin.checkBuffer(buffer);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="checkstyle-check-all-open-buffers">
