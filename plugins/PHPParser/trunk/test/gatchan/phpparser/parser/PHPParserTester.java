@@ -18,7 +18,10 @@ public class PHPParserTester extends TestCase implements PHPParserListener
 
 	public void testNew()
 	{
-		checkPHP("$foo = \"{$_POST[\"some name\"]}\";");
+		checkPHP("$foo = \"{$_POST}\";");
+		checkPHP("$foo = \"$_POST\";");
+		checkPHP("$foo = \"$_POST['some name']\";");
+		checkPHP("$foo = \"{$_POST['some name']}\";");
 		checkPHP("TR_TreeAction::getInstance('containers')->isRoot(5);");
 	}
 
