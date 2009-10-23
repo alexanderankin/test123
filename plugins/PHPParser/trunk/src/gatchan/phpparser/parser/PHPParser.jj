@@ -2862,72 +2862,74 @@ ConstantIdentifier Type() :
 //{{{ EXPRESSIONS
 
 //{{{ Expression()
-Expression Expression() :
+Expression Expression():
 {
-  final Expression expr;
+	Expression expr;
 }
 {
-  (
-    expr = PrintExpression()
-  | try {
-      expr = ConditionalExpression()
-    } catch (ParseException e) {
-        //{{{ Parse Exception
-        fireParseError(new PHPParseErrorEvent(ERROR,
-                       path,
-                       "expression expected",
-                       "expression",
-                       e.currentToken.image,
-                       token.sourceEnd,
-                       token.sourceEnd,
-                       e.currentToken.beginLine,
-                       e.currentToken.endLine,
-                       e.currentToken.endColumn,
-                       e.currentToken.endColumn)); //}}}
-        return new DummyExpression(e.currentToken);
-    }
-  )
-  {
-    return expr;
-  }
+	(
+		expr = PrintExpression()
+	|
+		try 
+		{
+			expr = ConditionalExpression()
+		}
+		catch (ParseException e) 
+		{
+			//{{{ Parse Exception
+			fireParseError(new PHPParseErrorEvent(ERROR,
+				path,
+				"expression expected",
+				"expression",
+				e.currentToken.image,
+				token.sourceEnd,
+				token.sourceEnd,
+				e.currentToken.beginLine,
+				e.currentToken.endLine,
+				e.currentToken.endColumn,
+				e.currentToken.endColumn)); //}}}
+			return new DummyExpression(e.currentToken);
+		}
+	)
+	{
+		return expr;
+	}
 } //}}}
-//{{{ assignment()
 
-Expression assignment() :
+//{{{ assignment()
+Expression assignment():
 {
-  Expression expr,initializer;
-  Token assignOperator;
+	Expression expr;
+	Expression initializer;
+	Token assignOperator;
 }
 {
-  (
-    LOOKAHEAD(prefixedPrimaryExpression() AssignmentOperator())
-    expr = prefixedPrimaryExpression()
-    assignOperator = AssignmentOperator()
-    (
-      initializer    = assignment()
-    )
-    {
-      if (initializer == null)
-      {
-        initializer = new DummyExpression(assignOperator.next);
-      }
-      expr = new Assignment(expr,
-                            initializer,
-                            assignOperator.kind,
-                            expr.getSourceStart(),
-                            initializer.getSourceEnd(),
-                            expr.getBeginLine(),
-                            initializer.getEndLine(),
-                            expr.getBeginColumn(),
-                            initializer.getEndColumn());
-    }
-
-    |
-    expr = InclusiveOrExpression()
-  )
-  {
-    return expr;
-  }
+	(
+		LOOKAHEAD(prefixedPrimaryExpression() AssignmentOperator())
+		expr = prefixedPrimaryExpression()
+		assignOperator = AssignmentOperator()
+		initializer = assignment()
+		{
+			if (initializer == null)
+			{
+				initializer = new DummyExpression(assignOperator.next);
+			}
+			expr = new Assignment(expr,
+				initializer,
+				assignOperator.kind,
+				expr.getSourceStart(),
+				initializer.getSourceEnd(),
+				expr.getBeginLine(),
+				initializer.getEndLine(),
+				expr.getBeginColumn(),
+				initializer.getEndColumn());
+		}
+	|
+		expr = InclusiveOrExpression()
+	)
+	{
+		return expr;
+	}
 } //}}}
 
 //{{{ prefixedPrimaryExpression()
@@ -2954,8 +2956,8 @@ Expression assignment() :
 } //}}}
 
 //}}}
-//{{{ AssignmentOperator()
 
+//{{{ AssignmentOperator()
 /**
  * Any assignement operator.
  *
@@ -2963,233 +2965,273 @@ Expression assignment() :
  */
 Token AssignmentOperator() :
 {
-  final Token assignOperator;
+  Token assignOperator;
 }
 {
-  (
-      assignOperator = <ASSIGN>
-    | assignOperator = <STARASSIGN>
-    | assignOperator = <SLASHASSIGN>
-    | assignOperator = <REMASSIGN>
-    | assignOperator = <PLUSASSIGN>
-    | assignOperator = <MINUSASSIGN>
-    | assignOperator = <LSHIFTASSIGN>
-    | assignOperator = <RSIGNEDSHIFTASSIGN>
-    | assignOperator = <ANDASSIGN>
-    | assignOperator = <XORASSIGN>
-    | assignOperator = <ORASSIGN>
-    | assignOperator = <DOTASSIGN>
-    | assignOperator = <TILDEEQUAL>
-  )
-  {
-    return assignOperator;
-  }
-}
+	(
+		assignOperator = <ASSIGN>
+		| assignOperator = <STARASSIGN>
+		| assignOperator = <SLASHASSIGN>
+		| assignOperator = <REMASSIGN>
+		| assignOperator = <PLUSASSIGN>
+		| assignOperator = <MINUSASSIGN>
+		| assignOperator = <LSHIFTASSIGN>
+		| assignOperator = <RSIGNEDSHIFTASSIGN>
+		| assignOperator = <ANDASSIGN>
+		| assignOperator = <XORASSIGN>
+		| assignOperator = <ORASSIGN>
+		| assignOperator = <DOTASSIGN>
+		| assignOperator = <TILDEEQUAL>
+		)
+	{
+		return assignOperator;
+	}
+} //}}}
 
-//}}}
 //{{{ ConditionalExpression()
+Expression ConditionalExpression():
+{
+	Expression expr;
+	Expression expr2 = null;
+	Expression expr3 = null;
+}
+{
+	expr = ConditionalOrExpression() [ <HOOK> expr2 = Expression() <COLON> expr3 = Expression() ]
+	{
+		if (expr3 == null)
+		{
+			return expr;
+		}
+		ConditionalExpression conditionalExpression = new ConditionalExpression(expr,expr2,expr3);
+		//conditionalExpression.analyzeCode(this);
+		return conditionalExpression;
+	}
+} //}}}
 
-Expression ConditionalExpression() :
-{
-  final Expression expr;
-  Expression expr2 = null;
-  Expression expr3 = null;
-}
-{
-  expr = ConditionalOrExpression() [ <HOOK> expr2 = Expression() <COLON> expr3 = Expression() ]
-{
-  if (expr3 == null) {
-    return expr;
-  }
-  ConditionalExpression conditionalExpression = new ConditionalExpression(expr,expr2,expr3);
-  //conditionalExpression.analyzeCode(this);
-  return conditionalExpression;
-}
-}
-
-//}}}
 //{{{ ConditionalOrExpression()
-
-Expression ConditionalOrExpression() :
+Expression ConditionalOrExpression():
 {
-  Expression expr,expr2;
-  int sourceEnd,endLine,endColumn;
-  Token orToken;
+	Expression expr,expr2;
+	int sourceEnd,endLine,endColumn;
+	Token orToken;
 }
 {
-  expr = ConditionalAndExpression()
-  (
-    (
-        orToken = <OR_OR>
-      | orToken = <_ORL>
-      | orToken = <XOR>
-    )
-    expr2 = ConditionalAndExpression()
-    {
-      if (expr2 == null) {
-        sourceEnd = orToken.sourceEnd;
-        endLine   = orToken.endLine;
-        endColumn = orToken.endColumn;
-      } else {
-        sourceEnd = expr2.getSourceEnd();
-        endLine   = expr2.getEndLine();
-        endColumn = expr2.getEndColumn();
-      }
-      expr = new BinaryExpression(expr,expr2,orToken.kind,expr.getSourceStart(),sourceEnd,expr.getBeginLine(),endLine,expr.getBeginColumn(),endColumn);
-    }
-  )*
-  {return expr;}
-}
+	expr = ConditionalAndExpression()
+	(
+		(
+			orToken = <OR_OR>
+		|
+			orToken = <_ORL>
+		|
+			orToken = <XOR>
+		)
+		expr2 = ConditionalAndExpression()
+		{
+			if (expr2 == null)
+			{
+				sourceEnd = orToken.sourceEnd;
+				endLine   = orToken.endLine;
+				endColumn = orToken.endColumn;
+			}
+			else 
+			{
+				sourceEnd = expr2.getSourceEnd();
+				endLine   = expr2.getEndLine();
+				endColumn = expr2.getEndColumn();
+			}
+			expr = new BinaryExpression(expr,expr2,orToken.kind,
+				expr.getSourceStart(),sourceEnd,
+				expr.getBeginLine(),endLine,
+				expr.getBeginColumn(),endColumn);
+		}
+	)*
+	{
+		return expr;
+	}
+} //}}}
 
-//}}}
 //{{{ ConditionalAndExpression()
-
-Expression ConditionalAndExpression() :
+Expression ConditionalAndExpression():
 {
-  Expression expr,expr2;
-  int sourceEnd,endLine,endColumn;
-  Token andToken;
+	Expression expr,expr2;
+	int sourceEnd,endLine,endColumn;
+	Token andToken;
 }
 {
-  expr = ConcatExpression()
-  (
-  (  andToken = <AND_AND>
-   | andToken = <_ANDL>)
-   expr2 = ConcatExpression()
-   {
-     if (expr2 == null) {
-       sourceEnd = andToken.sourceEnd;
-       endLine   = andToken.endLine;
-       endColumn = andToken.endColumn;
-     } else {
-       sourceEnd = expr2.getSourceEnd();
-       endLine   = expr2.getEndLine();
-       endColumn = expr2.getEndColumn();
-     }
-     expr = new BinaryExpression(expr,expr2,andToken.kind,expr.getSourceStart(),sourceEnd,expr.getBeginLine(),endLine,expr.getBeginColumn(),endColumn);
-   }
-  )*
-  {return expr;}
-}
+	expr = ConcatExpression()
+	(
+		( 
+			andToken = <AND_AND>
+		| 
+			andToken = <_ANDL>
+		)
+		expr2 = ConcatExpression()
+		{
+			if (expr2 == null)
+			{
+				sourceEnd = andToken.sourceEnd;
+				endLine   = andToken.endLine;
+				endColumn = andToken.endColumn;
+			} 
+			else 
+			{
+				sourceEnd = expr2.getSourceEnd();
+				endLine   = expr2.getEndLine();
+				endColumn = expr2.getEndColumn();
+			}
+			expr = new BinaryExpression(expr,expr2,andToken.kind,
+				expr.getSourceStart(),sourceEnd,
+				expr.getBeginLine(),endLine,
+				expr.getBeginColumn(),endColumn);
+		}
+	)*
+	{
+		return expr;
+	}
+} //}}}
 
-//}}}
 //{{{ ConcatExpression()
-
-Expression ConcatExpression() :
+Expression ConcatExpression():
 {
-  Expression expr,expr2;
-  Token dotToken;
-  int sourceEnd,endLine,endColumn;
+	Expression expr,expr2;
+	Token dotToken;
+	int sourceEnd,endLine,endColumn;
 }
 {
-  expr = assignment()
-  (
-    dotToken = <DOT> expr2 = assignment()
-    {
-      if (expr2 == null) {
-        sourceEnd = dotToken.sourceEnd;
-        endLine   = dotToken.endLine;
-        endColumn = dotToken.endColumn;
-      } else {
-        sourceEnd = expr2.getSourceEnd();
-        endLine   = expr2.getEndLine();
-        endColumn = expr2.getEndColumn();
-      }
-      expr = new BinaryExpression(expr,expr2,PHPParserConstants.DOT,expr.getSourceStart(),sourceEnd,expr.getBeginLine(),endLine,expr.getBeginColumn(),endColumn);
-    }
-  )*
-  {return expr;}
-}
+	expr = assignment()
+	(
+		dotToken = <DOT> expr2 = assignment()
+		{
+			if (expr2 == null) 
+			{
+				sourceEnd = dotToken.sourceEnd;
+				endLine   = dotToken.endLine;
+				endColumn = dotToken.endColumn;
+			} 
+			else 
+			{
+				sourceEnd = expr2.getSourceEnd();
+				endLine   = expr2.getEndLine();
+				endColumn = expr2.getEndColumn();
+			}
+			expr = new BinaryExpression(expr,expr2,
+				PHPParserConstants.DOT,expr.getSourceStart(),
+				sourceEnd,expr.getBeginLine(),endLine,
+				expr.getBeginColumn(),endColumn);
+		}
+	)*
+	{
+		return expr;
+	}
+} //}}}
 
-//}}}
 //{{{ InclusiveOrExpression()
-
-Expression InclusiveOrExpression() :
+Expression InclusiveOrExpression():
 {
-  Expression expr,expr2;
-  Token bitOrToken;
-  int sourceEnd,endLine,endColumn;
+	Expression expr,expr2;
+	Token bitOrToken;
+	int sourceEnd,endLine,endColumn;
 }
 {
-  expr = ExclusiveOrExpression()
-  (
-   bitOrToken = <BIT_OR> expr2 = ExclusiveOrExpression()
-   {
-     if (expr2 == null) {
-       sourceEnd = bitOrToken.sourceEnd;
-       endLine   = bitOrToken.endLine;
-       endColumn = bitOrToken.endColumn;
-     } else {
-       sourceEnd = expr2.getSourceEnd();
-       endLine   = expr2.getEndLine();
-       endColumn = expr2.getEndColumn();
-     }
-     expr = new BinaryExpression(expr,expr2,PHPParserConstants.BIT_OR,expr.getSourceStart(),sourceEnd,expr.getBeginLine(),endLine,expr.getBeginColumn(),endColumn);
-   }
-  )*
-  {return expr;}
-}
+	expr = ExclusiveOrExpression()
+	(
+		bitOrToken = <BIT_OR> expr2 = ExclusiveOrExpression()
+		{
+			if (expr2 == null)
+			{
+				sourceEnd = bitOrToken.sourceEnd;
+				endLine   = bitOrToken.endLine;
+				endColumn = bitOrToken.endColumn;
+			}
+			else 
+			{
+				sourceEnd = expr2.getSourceEnd();
+				endLine   = expr2.getEndLine();
+				endColumn = expr2.getEndColumn();
+			}
+			expr = new BinaryExpression(expr,expr2,
+				PHPParserConstants.BIT_OR,expr.getSourceStart(),
+				sourceEnd,expr.getBeginLine(),
+				endLine,expr.getBeginColumn(),endColumn);
+		}
+	)*
+	{
+		return expr;
+	}
+} //}}}
 
-//}}}
 //{{{ ExclusiveOrExpression()
-
-Expression ExclusiveOrExpression() :
+Expression ExclusiveOrExpression():
 {
-  Expression expr,expr2;
-  Token bitXorToken;
-  int sourceEnd,endLine,endColumn;
+	Expression expr,expr2;
+	Token bitXorToken;
+	int sourceEnd,endLine,endColumn;
 }
 {
-  expr = AndExpression()
-  (
-    bitXorToken = <BIT_XOR> expr2 = AndExpression()
-    {
-      if (expr2 == null) {
-        sourceEnd = bitXorToken.sourceEnd;
-        endLine   = bitXorToken.endLine;
-        endColumn = bitXorToken.endColumn;
-      } else {
-        sourceEnd = expr2.getSourceEnd();
-        endLine   = expr2.getEndLine();
-        endColumn = expr2.getEndColumn();
-      }
-      expr = new BinaryExpression(expr,expr2,PHPParserConstants.BIT_XOR,expr.getSourceStart(),sourceEnd,expr.getBeginLine(),endLine,expr.getBeginColumn(),endColumn);
-    }
-  )*
-  {return expr;}
-}
+	expr = AndExpression()
+	(
+		bitXorToken = <BIT_XOR> expr2 = AndExpression()
+		{
+			if (expr2 == null)
+			{
+				sourceEnd = bitXorToken.sourceEnd;
+				endLine   = bitXorToken.endLine;
+				endColumn = bitXorToken.endColumn;
+			} 
+			else
+			{
+				sourceEnd = expr2.getSourceEnd();
+				endLine   = expr2.getEndLine();
+				endColumn = expr2.getEndColumn();
+			}
+			expr = new BinaryExpression(expr,expr2,
+				PHPParserConstants.BIT_XOR,
+				expr.getSourceStart(),sourceEnd,
+				expr.getBeginLine(),endLine,
+				expr.getBeginColumn(),endColumn);
+		}
+	)*
+	{
+		return expr;
+	}
+} //}}}
 
-//}}}
 //{{{ AndExpression()
-
-Expression AndExpression() :
+Expression AndExpression():
 {
-  Expression expr,expr2;
-  Token bitAndToken;
-  int sourceEnd,endLine,endColumn;
+	Expression expr,expr2;
+	Token bitAndToken;
+	int sourceEnd,endLine,endColumn;
 }
 {
-  expr = EqualityExpression()
-  (
-    LOOKAHEAD(1)
-    bitAndToken = <BIT_AND> expr2 = EqualityExpression()
-    {
-      if (expr2 == null) {
-        sourceEnd = bitAndToken.sourceEnd;
-        endLine   = bitAndToken.endLine;
-        endColumn = bitAndToken.endColumn;
-      } else {
-        sourceEnd = expr2.getSourceEnd();
-        endLine   = expr2.getEndLine();
-        endColumn = expr2.getEndColumn();
-      }
-      expr = new BinaryExpression(expr,expr2,PHPParserConstants.BIT_AND,expr.getSourceStart(),sourceEnd,expr.getBeginLine(),endLine,expr.getBeginColumn(),endColumn);
-    }
-  )*
-  {return expr;}
-}
-
-//}}}
+	expr = EqualityExpression()
+	(
+		LOOKAHEAD(1)
+		bitAndToken = <BIT_AND> expr2 = EqualityExpression()
+		{
+			if (expr2 == null)
+			{
+				sourceEnd = bitAndToken.sourceEnd;
+				endLine   = bitAndToken.endLine;
+				endColumn = bitAndToken.endColumn;
+			}
+			else 
+			{
+				sourceEnd = expr2.getSourceEnd();
+				endLine   = expr2.getEndLine();
+				endColumn = expr2.getEndColumn();
+			}
+			expr = new BinaryExpression(expr,expr2,
+				PHPParserConstants.BIT_AND,
+				expr.getSourceStart(),sourceEnd,
+				expr.getBeginLine(),endLine,
+				expr.getBeginColumn(),endColumn);
+		}
+	)*
+	{
+		return expr;
+	}
+} //}}}
 
 //{{{ EqualityExpression()
 Expression EqualityExpression() :
