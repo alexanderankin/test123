@@ -106,7 +106,7 @@ class ChooseTagListPopup extends JWindow
 
 		// make sure it fits on screen
 		Dimension d = getSize();
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		Rectangle screenSize = GUIUtilities.getScreenBounds();
 		if(location.x + d.width > screenSize.width)
 		{
 			if(d.width >= screenSize.width)
