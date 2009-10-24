@@ -59,7 +59,7 @@ public class LinePosition implements Position
 			try
 			{
 				if (eob)
-					return buffer.getLineEndOffset(buffer.getLineCount() - 1) - 1;
+					return buffer.getLength() - 1;
 				if (mid)
 					return buffer.getLineStartOffset(line) + linePos;
 				if (begin)
