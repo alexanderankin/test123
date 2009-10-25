@@ -5,7 +5,7 @@
   - valid file
   - the dtd is resolved by the built-in catalog
   -->
-<ACTIONS>
+<_0:ACTIONS xmlns:_0="urn:0">
    
     <ACTION NAME="xmlindenter.indent">
         <CODE>xml.indent.XmlIndenterPlugin.indentXml(view);</CODE>
@@ -14,4 +14,4 @@
         <CODE>xml.indent.XmlIndenterPlugin.toggleSplitAttributes(view);</CODE>
     </ACTION>
 	
-</ACTIONS>
+</_0:ACTIONS>

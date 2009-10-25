@@ -224,6 +224,29 @@
   DTD</guimenuitem> generates a DTD from the XML instance document in the
   current buffer. Generation of XSD and RelaxNG schemata is planned for the future.
  </para>
+
+ <para>
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Copy XPath
+  </guimenuitem> inserts in the clipboard an XPath to current element. For instance,
+  if the caret is inside the style element of an HTML page, <guimenuitem>Copy XPath</guimenuitem>
+  will copy <code>/html/head[1]/style[1]</code> in the clipboard. This might be useful
+  when writing an XSL template over a complex document.
+  <guimenuitem>Copy XPath</guimenuitem> should handle namespaces and prefixes gracefully :
+ </para>
+ <itemizedlist>
+ 	<listitem><para>namespaces and local-names are used for comparison - not prefixes,
+ 	though prefixes found in the document are retained;
+ 	</para></listitem>
+ 	<listitem><para>only the first of 2 prefixes bound to the same namespace in the source
+ 	document will be used in the XPath;
+ 	</para></listitem>
+ 	<listitem><para>if the same prefix is bound to different namespaces, the second
+ 	instance of the prefix will get a numbered suffix to distinguish it in the XPath.
+ 	</para></listitem>
+ 	
+ </itemizedlist>
+
+
 </section>
 
  <section id="schemas"><title>Schemas</title>
@@ -730,6 +753,7 @@ Chapter 22 of <emphasis>DocBook XSL: The Complete Guide</emphasis> by Bob Stayto
   <listitem><para> New Resolver uses updated Catalog API and replaces old CatalogManager (Eric Le Lay) </para></listitem>
   <listitem><para> XInclude support (Eric Le Lay) </para></listitem>
   <listitem><para> Validation support with Relax-NG (RNG) schemas. (Eric Le Lay) </para></listitem>
+  <listitem><para> Copy XPath of element under caret. (Eric Le Lay) </para></listitem>
   </itemizedlist>
 
 
