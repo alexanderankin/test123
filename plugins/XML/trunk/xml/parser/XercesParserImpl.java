@@ -708,7 +708,7 @@ public class XercesParserImpl extends XmlParser
 				Position pos = buffer.createPosition(offset);
 
 				DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(
-					new XmlTag(qName,namespaceURI,pos,attrs));
+					new XmlTag(qName,namespaceURI==null ? "" : namespaceURI,pos,attrs));
 
 				if(!currentNodeStack.isEmpty())
 				{

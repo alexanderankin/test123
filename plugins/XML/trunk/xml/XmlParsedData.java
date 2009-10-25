@@ -23,6 +23,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeNode;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.util.StringList;
@@ -33,6 +37,9 @@ import xml.completion.ElementDecl;
 import xml.completion.EntityDecl;
 import xml.completion.IDDecl;
 import xml.parser.TagParser;
+import xml.parser.XmlTag;
+
+import com.thaiopensource.xml.util.Name;
 //}}}
 
 /**
@@ -108,7 +115,125 @@ public class XmlParsedData extends SideKickParsedData
 		}
 	} //}}}
 
+	//{{{ getXPathForPosition() method
+	public String getXPathForPosition(int pos)
+	{
+		TreePath path = getTreePathForPosition(pos);
+		DefaultMutableTreeNode tn = (DefaultMutableTreeNode)path.getLastPathComponent();
+		TreeNode[]steps = tn.getPath();
+		DefaultMutableTreeNode parent = (DefaultMutableTreeNode)steps[0];
+		String xpath = "";
+		if(steps.length == 1)
+		{
+			//there is only the node with the file name
+			xpath = null;
+		}
+		else
+		{
+			parent = (DefaultMutableTreeNode)steps[1];
+			if( ! (parent.getUserObject() instanceof XmlTag))
+			{
+				// TODO: maybe implement it also for HTML
+				return null;
+			}
+			Map<String,String> prefixToNS = new HashMap<String,String>();
+			Map<String,String> nsToPrefix = new HashMap<String,String>();
+			
+			Name[] preXPath = new Name[steps.length-2];
+			int[]  preXPathIndexes = new int[steps.length-2];
+			
+			Name rootName;
 
+			XmlTag curTag = (XmlTag)parent.getUserObject();
+			String lname = curTag.getLocalName();
+			String ns = curTag.namespace;
+			String prefix = curTag.getPrefix();
+			
+			assert(ns != null);
+			
+			rootName = new Name(ns,lname);
+			
+			prefixToNS.put(prefix,ns);
+			nsToPrefix.put(ns,prefix);
+			
+			for(int i=2;i<steps.length;i++)
+			{
+				DefaultMutableTreeNode cur=(DefaultMutableTreeNode)steps[i];
+
+				curTag = (XmlTag)cur.getUserObject();
+				ns = curTag.namespace;
+				lname = curTag.getLocalName();
+				prefix = curTag.getPrefix();
+				
+				int jCur = parent.getIndex(cur);
+				int cntChild = 0;
+				for(int j=0;j<=jCur;j++)
+				{
+					DefaultMutableTreeNode aChild = (DefaultMutableTreeNode)parent.getChildAt(j);
+					XmlTag aTag = (XmlTag)aChild.getUserObject();
+					if(lname.equals(aTag.getLocalName())
+						  && ns.equals(aTag.namespace))
+					{
+						cntChild++;
+					}
+				}
+				preXPath[i-2] = new Name(ns,lname);
+				preXPathIndexes[i-2] = cntChild;
+				
+				/* implementation choice here :
+				   I think the XPath will be more usable
+				   if the same prefix is re-used, even if it's 
+				   not the one in the document.
+				*/
+				if(!nsToPrefix.containsKey(ns))
+				{
+					// same prefix, other ns
+					if(    prefixToNS.containsKey(prefix)
+					   && !prefixToNS.get(prefix).equals(ns))
+					{
+						/* keep the prefix close
+						   to what was in the document
+						   (only a suffixed number)
+						 */
+						int uniq=0;
+						// special case for default
+						// prefix, since a prefix must
+						// begin with a letter
+						if("".equals(prefix))
+						{
+							prefix+= "_";
+						}
+						while(prefixToNS.containsKey(prefix+String.valueOf(uniq)))
+						{
+							uniq++;
+						}
+						prefix += String.valueOf(uniq);
+					}
+					prefixToNS.put(prefix,ns);
+					nsToPrefix.put(ns,prefix);
+				}
+				
+				parent = cur;
+			}
+			
+			prefix = nsToPrefix.get(rootName.getNamespaceUri());
+			xpath = "/" ;
+			if(!"".equals(prefix)) xpath += prefix + ":";
+			xpath += rootName.getLocalName();
+			
+			for(int i=0;i<preXPath.length;i++)
+			{
+				prefix = nsToPrefix.get(preXPath[i].getNamespaceUri());
+				xpath += "/";
+				if(!"".equals(prefix))xpath+= prefix + ":";
+				xpath += preXPath[i].getLocalName();
+				xpath += "[" + preXPathIndexes[i] + "]"; 
+			}
+		}
+		return xpath;
+	}
+	//}}}
+	
 	//{{{ getAllowedElements() method
 	/** @returns a list containing Elements or Attributes */
 	public List<ElementDecl> getAllowedElements(Buffer buffer, int pos)

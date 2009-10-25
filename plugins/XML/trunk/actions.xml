@@ -101,6 +101,11 @@
             xml.XmlActions.openSchema(view);
         </CODE>
     </ACTION>
+    <ACTION NAME="xml-copy-xpath">
+        <CODE>
+            xml.XmlActions.copyXPath(view);
+        </CODE>
+    </ACTION>
     
 </ACTIONS>
 

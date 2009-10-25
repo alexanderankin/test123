@@ -71,14 +71,22 @@ public class EBFixture{
 	 */
 	public static void simplyWaitForMessageOfClass(final Class clazz, long timeout){
 		MessageListener listen = new MessageListener();
-		listen.registerForMessage(new EBCondition(){
-				public boolean matches(EBMessage ebm){
-					return clazz.isInstance(ebm);
-				}
-			});
+		listen.registerForMessage(messageOfClassCondition(clazz));
 		listen.waitForMessage(timeout);
 	}
 	
+	/**
+	 * @param	clazz	class to wait for
+	 * @return	an EBCondition returning true when the message instanceof clazz
+	 */
+	public static EBCondition messageOfClassCondition(final Class clazz){
+		return new EBCondition(){
+				public boolean matches(EBMessage ebm){
+					return clazz.isInstance(ebm);
+				}
+			};
+	}
+
 	/**
 	 * Matcher for EBMessages
 	 */
@@ -128,8 +136,8 @@ public class EBFixture{
 					if(msg == null){
 						this.wait(timeout);
 					}
-					condition = null;
 					EditBus.removeFromBus(this);
+					condition = null;
 					if(msg == null){
 						fail("Timeout : "+timeout+"ms !");
 						return null;

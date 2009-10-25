@@ -29,6 +29,7 @@ plugin.xml.XmlPlugin.menu=sidekick.parser.xml-switch \
     xml-remove-tags \
     xml-split-tag \
 	xml-join-tag \
+    xml-copy-xpath \
     - \
     xml-chars-to-entities \
     xml-entities-to-chars \
@@ -55,6 +56,7 @@ xml-close-tag.label=Close Last Open Tag
 xml-remove-tags.label=Remove All Tags
 xml-split-tag.label=Split Tag
 xml-join-tag.label=Join Tag
+xml-copy-xpath.label=Copy XPath
 xml-chars-to-entities.label=Characters to Entities
 xml-entities-to-chars.label=Entities to Characters
 xml-clear-cache.label=Clear Resource Cache

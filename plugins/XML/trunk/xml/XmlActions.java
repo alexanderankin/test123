@@ -45,6 +45,7 @@ import org.gjt.sp.jedit.Macros;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.Registers;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
@@ -1098,6 +1099,33 @@ loop:			for(;;)
 		if(schemaURL != null){
 			Buffer newbuffer = jEdit.openFile(view,schemaURL);
 		}
+	}
+	//}}}
+
+	//{{{ copyXPath() method
+	public static void copyXPath(View view)
+	{
+		SideKickParsedData data = SideKickParsedData.getParsedData(view);
+		
+		if(data == null || !(data instanceof XmlParsedData))
+		{
+			view.getToolkit().beep();
+			return;
+		}
+		
+		XmlParsedData xmlData = (XmlParsedData)data;
+			
+		JEditTextArea textArea = view.getTextArea();
+	
+		int pos = textArea.getCaretPosition();
+		
+		String xpath = xmlData.getXPathForPosition(pos);
+		
+		if(xpath!=null)
+		{
+			Registers.getRegister('$').setValue(xpath);
+		}
+		
 	}
 	//}}}
 

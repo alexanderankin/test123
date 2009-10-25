@@ -39,7 +39,7 @@ public class XmlTag extends Asset
 	public XmlTag(String name,String namespace, Position start, Attributes attributes)
 	{
 		super(name);
-		this.namespace = name;
+		this.namespace = namespace;
 		this.start = this.end = start;
 		this.attributes = new AttributesImpl(attributes);
 
@@ -112,4 +112,16 @@ public class XmlTag extends Asset
 	{
 		return attributeString;
 	} //}}}
+	
+	//{{{ getLocalName() method
+	public String getLocalName(){
+		return name.contains(":") ? name.substring(name.indexOf(":")+1) : name;
+	}
+	//}}}
+	
+	//{{{ getPrefix() method
+	public String getPrefix(){
+		return name.contains(":") ? name.substring(0,name.indexOf(":")) : "";
+	}
+	//}}}
 }
