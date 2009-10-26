@@ -5918,11 +5918,11 @@ final Token arrayAssignToken;
                                 ";",
                                 e.currentToken.image,
                                 statement.getSourceEnd(),
-                                statement.getSourceEnd()+1,
+                                statement.getSourceEnd(),
                                 e.currentToken.beginLine,
                                 e.currentToken.endLine,
                                 e.currentToken.endColumn,
-                                e.currentToken.endColumn+1)); //}}}
+                                e.currentToken.endColumn)); //}}}
                 }
     }
                 {if (true) return statement;}
