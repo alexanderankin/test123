@@ -2567,13 +2567,6 @@ MethodDeclaration closureDeclaration():
 		functionDeclaration.setBodyLineEnd(block.getEndLine());
 		functionDeclaration.setBodyColumnEnd(block.getEndColumn());
 	}
-	semicolon = <SEMICOLON>
-	{
-		functionDeclaration.setBodyLineStart(semicolon.beginLine);
-		functionDeclaration.setBodyColumnStart(semicolon.beginColumn);
-		functionDeclaration.setBodyLineEnd(semicolon.endLine);
-		functionDeclaration.setBodyColumnEnd(semicolon.endColumn);
-	}
 	{
 		currentSegment = seg;
 		scope = new Scope();
