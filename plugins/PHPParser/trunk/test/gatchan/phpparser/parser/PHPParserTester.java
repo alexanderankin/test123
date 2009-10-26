@@ -18,16 +18,9 @@ public class PHPParserTester extends TestCase implements PHPParserListener
 
 	public void testNew()
 	{
-		checkPHP("$foo = \"{$_POST}\";");
-		checkPHP("$foo = \"$_POST\";");
-		checkPHP("$foo = \"$_POST['some name']\";");
-		checkPHP("$foo = \"{$_POST['some name']}\";");
-		checkPHP("TR_TreeAction::getInstance('containers')->isRoot(5);");
+		
 	}
 
-	public void testSingle()
-	{
-	}
 
 	public void testParserSuccess()
 	{
@@ -167,6 +160,12 @@ public class PHPParserTester extends TestCase implements PHPParserListener
 		checkHTML("<?php phpinfo(); ?> foo <?php phpinfo(); ?>");
 		checkHTML(" <?php //this is a line comment ?>");
 		checkHTML("<?php echo $module_name ?>");
+		checkHTML("<?php $x = function() { echo 'hello'; }; ?>");
+		checkPHP("$foo = \"{$_POST}\";");
+		checkPHP("$foo = \"$_POST\";");
+		checkPHP("$foo = \"$_POST['some name']\";");
+		checkPHP("$foo = \"{$_POST['some name']}\";");
+		checkPHP("TR_TreeAction::getInstance('containers')->isRoot(5);");
 	}
 
 	public void testParserSuccessPHP5()

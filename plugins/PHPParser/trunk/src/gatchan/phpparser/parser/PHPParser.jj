@@ -1262,7 +1262,7 @@ ClassConstant classConstant() :
  *
  * @return a MethodDeclaration
  */
-MethodDeclaration interfaceMethodDeclaration(List modifiers) :
+MethodDeclaration interfaceMethodDeclaration(List modifiers):
 {
 	final MethodDeclaration functionDeclaration;
 	final MethodHeader methodHeader;
@@ -2484,48 +2484,102 @@ ArrayVariableDeclaration[] ArrayInitializer() :
  *
  * @return a MethodDeclaration
  */
-MethodDeclaration methodDeclaration(int type, List modifiers) :
+MethodDeclaration methodDeclaration(int type, List modifiers):
 {
-  final MethodDeclaration functionDeclaration;
-  final MethodHeader methodHeader;
-  final Block block;
-  final OutlineableWithChildren seg = currentSegment;
-  final Token functionToken;
-  final Token semicolon;
+	MethodDeclaration functionDeclaration;
+	MethodHeader methodHeader;
+	Block block;
+	OutlineableWithChildren seg = currentSegment;
+	Token functionToken;
+	Token semicolon;
 }
 {
-  functionToken = <FUNCTION>
-  methodHeader = methodHeader(functionToken,type, modifiers)
-  {
-    functionDeclaration = new MethodDeclaration(currentSegment,methodHeader);
-    currentSegment = functionDeclaration;
-    scope = new Scope();
-    scopeStack.push(scope);
-  }
-  (
-    block = Block()
-    {
-      functionDeclaration.setStatements(block.getStatements());
-      functionDeclaration.setBodyLineStart(block.getBeginLine());
-      functionDeclaration.setBodyColumnStart(block.getBeginColumn());
-      functionDeclaration.setBodyLineEnd(block.getEndLine());
-      functionDeclaration.setBodyColumnEnd(block.getEndColumn());
-    }
-    |
-    semicolon = <SEMICOLON>
-    {
-      functionDeclaration.setBodyLineStart(semicolon.beginLine);
-      functionDeclaration.setBodyColumnStart(semicolon.beginColumn);
-      functionDeclaration.setBodyLineEnd(semicolon.endLine);
-      functionDeclaration.setBodyColumnEnd(semicolon.endColumn);
-    }
-  )
-  {
-    currentSegment = seg;
-    scope = new Scope();
-    scopeStack.push(scope);
-    return functionDeclaration;
-  }
+	functionToken = <FUNCTION>
+	methodHeader = methodHeader(functionToken,type, modifiers)
+	{
+		functionDeclaration = new MethodDeclaration(currentSegment,methodHeader);
+		currentSegment = functionDeclaration;
+		scope = new Scope();
+		scopeStack.push(scope);
+	}
+	(
+		block = Block()
+		{
+			functionDeclaration.setStatements(block.getStatements());
+			functionDeclaration.setBodyLineStart(block.getBeginLine());
+			functionDeclaration.setBodyColumnStart(block.getBeginColumn());
+			functionDeclaration.setBodyLineEnd(block.getEndLine());
+			functionDeclaration.setBodyColumnEnd(block.getEndColumn());
+		}
+		|
+		semicolon = <SEMICOLON>
+		{
+			functionDeclaration.setBodyLineStart(semicolon.beginLine);
+			functionDeclaration.setBodyColumnStart(semicolon.beginColumn);
+			functionDeclaration.setBodyLineEnd(semicolon.endLine);
+			functionDeclaration.setBodyColumnEnd(semicolon.endColumn);
+		}
+	)
+	{
+		currentSegment = seg;
+		scope = new Scope();
+		scopeStack.push(scope);
+		return functionDeclaration;
+	}
+}//}}}
+
+//{{{ closureDeclaration()
+MethodDeclaration closureDeclaration():
+{
+	MethodDeclaration functionDeclaration;
+	List formalParameters = new ArrayList();
+	MethodHeader methodHeader;
+	Block block;
+	OutlineableWithChildren seg = currentSegment;
+	Token functionToken;
+	Token semicolon;
+}
+{
+	functionToken = <FUNCTION>
+	FormalParameters(formalParameters)
+	{
+		methodHeader = new MethodHeader(path,
+			null,
+			"",
+			false,
+			formalParameters,
+			functionToken.sourceStart,
+			token.sourceEnd,
+			functionToken.beginLine,
+			token.endLine,
+			functionToken.beginColumn,
+			token.endColumn);
+		functionDeclaration = new MethodDeclaration(currentSegment,methodHeader);
+		currentSegment = functionDeclaration;
+		scope = new Scope();
+		scopeStack.push(scope);
+	}
+	block = Block()
+	{
+		functionDeclaration.setStatements(block.getStatements());
+		functionDeclaration.setBodyLineStart(block.getBeginLine());
+		functionDeclaration.setBodyColumnStart(block.getBeginColumn());
+		functionDeclaration.setBodyLineEnd(block.getEndLine());
+		functionDeclaration.setBodyColumnEnd(block.getEndColumn());
+	}
+	semicolon = <SEMICOLON>
+	{
+		functionDeclaration.setBodyLineStart(semicolon.beginLine);
+		functionDeclaration.setBodyColumnStart(semicolon.beginColumn);
+		functionDeclaration.setBodyLineEnd(semicolon.endLine);
+		functionDeclaration.setBodyColumnEnd(semicolon.endColumn);
+	}
+	{
+		currentSegment = seg;
+		scope = new Scope();
+		scopeStack.push(scope);
+		return functionDeclaration;
+	}
 }//}}}
 
 //{{{ methodHeader()
@@ -2535,11 +2589,11 @@ MethodDeclaration methodDeclaration(int type, List modifiers) :
  *
  * @return a function description for the outline
  */
-MethodHeader methodHeader(Token functionToken,int type, List modifiers) :
+MethodHeader methodHeader(Token functionToken,int type, List modifiers):
 {
 	Token reference = null;
-	final List formalParameters = new ArrayList();
-	final Token methodNameToken;
+	List formalParameters = new ArrayList();
+	Token methodNameToken;
 	String identifierChar = SYNTAX_ERROR_CHAR;
 }
 {
@@ -2603,12 +2657,19 @@ MethodHeader methodHeader(Token functionToken,int type, List modifiers) :
  *
  * @return an identifier for a function
  */
-Token functionIdentifier() :
+Token functionIdentifier():
 {
-  Token functionIdentifier;
+	Token functionIdentifier;
 }
 {
-  functionIdentifier = <IDENTIFIER> { return functionIdentifier; }
+	(
+		functionIdentifier = <IDENTIFIER>
+	|
+		functionIdentifier = <NULL>
+	)
+	{
+		return functionIdentifier; 
+	}
 } //}}}
 
 //{{{ methodIdentifier()
@@ -2618,7 +2679,7 @@ Token functionIdentifier() :
  *
  * @return an identifier for a function
  */
-Token methodIdentifier() :
+Token methodIdentifier():
 {
 	Token methodIdentifier;
 }
@@ -2649,6 +2710,7 @@ Token methodIdentifier() :
 	 | methodIdentifier = <ELSEIF>
 	 | methodIdentifier = <ELSE>
 	 | methodIdentifier = <BREAK>
+	 | methodIdentifier = <NULL>
 	 )
 	{
 		return methodIdentifier;
@@ -2669,20 +2731,33 @@ Token constantIdentifier():
 {
 	(
 		constantIdentifier = <IDENTIFIER>
-		| constantIdentifier = <DEFINE>
-		| constantIdentifier = <GOTO>
-		| constantIdentifier = <SUPER>
-		| constantIdentifier = <THIS>
-		| constantIdentifier = <STRING>
-		| constantIdentifier = <OBJECT>
-		| constantIdentifier = <BOOL>
-		| constantIdentifier = <BOOLEAN>
-		| constantIdentifier = <REAL>
-		| constantIdentifier = <DOUBLE>
-		| constantIdentifier = <FLOAT>
-		| constantIdentifier = <INT>
-		| constantIdentifier = <INTEGER>
-		)
+	| 
+		constantIdentifier = <DEFINE>
+	| 
+		constantIdentifier = <GOTO>
+	| 
+		constantIdentifier = <SUPER>
+	| 
+		constantIdentifier = <THIS>
+	| 
+		constantIdentifier = <STRING>
+	| 
+		constantIdentifier = <OBJECT>
+	| 
+		constantIdentifier = <BOOL>
+	|
+		constantIdentifier = <BOOLEAN>
+	| 
+		constantIdentifier = <REAL>
+	| 
+		constantIdentifier = <DOUBLE>
+	|
+		constantIdentifier = <FLOAT>
+	|
+		constantIdentifier = <INT>
+	| 
+		constantIdentifier = <INTEGER>
+	)
 	{
 		return constantIdentifier;
 	}
@@ -2698,6 +2773,7 @@ void FormalParameters(List parameters):
   FormalParameter var;
 }
 {
+	//{{{ LPAREN 
 	try
 	{
 		<LPAREN>
@@ -2705,12 +2781,23 @@ void FormalParameters(List parameters):
 	catch (ParseException e)
 	{
 		fireParseError("'(' expected", "(",e.currentToken);
-	}
+	} //}}}
+
+	//{{{ Parameters
 	[
-		var = FormalParameter()
+		//{{{ parameter 
+		try
 		{
-			parameters.add(var);
+			var = FormalParameter()
+			{
+				parameters.add(var);
+			}
 		}
+		catch (ParseException e)
+		{
+			fireParseError("parameter expected",
+					"parameter",e.currentToken);
+		} //}}}
 		(
 			<COMMA>
 			try
@@ -2726,7 +2813,9 @@ void FormalParameters(List parameters):
 					"parameter",e.currentToken);
 			}
 		)*
-	]
+	] //}}}
+	
+	//{{{ RPAREN
 	try
 	{
 		<RPAREN>
@@ -2780,7 +2869,7 @@ void FormalParameters(List parameters):
 				e.currentToken.endColumn+1,
 				nextToken.endColumn-1));
 		}
-	}
+	} //}}}
 } //}}}
 
 //{{{ FormalParameter()
@@ -2835,29 +2924,34 @@ FormalParameter FormalParameter():
 //}}}
 
 //{{{ Type()
-
-ConstantIdentifier Type() :
+ConstantIdentifier Type():
 {
-  final Token token;
+	Token token;
 }
 {
-  (
-    token = <STRING>
-  | token = <BOOL>
-  | token = <BOOLEAN>
-  | token = <REAL>
-  | token = <DOUBLE>
-  | token = <FLOAT>
-  | token = <INT>
-  | token = <INTEGER>
-  | token = <OBJECT>
-  )
-  {
-    return new ConstantIdentifier(token);
-  }
-}
-
-//}}}
+	(
+		token = <STRING>
+	| 
+		token = <BOOL>
+	| 
+		token = <BOOLEAN>
+	| 
+		token = <REAL>
+	|
+		token = <DOUBLE>
+	|
+		token = <FLOAT>
+	|
+		token = <INT>
+	|
+		token = <INTEGER>
+	|
+		token = <OBJECT>
+	)
+	{
+		return new ConstantIdentifier(token);
+	}
+} //}}}
 
 //{{{ EXPRESSIONS
 
@@ -2908,7 +3002,11 @@ Expression assignment():
 		LOOKAHEAD(prefixedPrimaryExpression() AssignmentOperator())
 		expr = prefixedPrimaryExpression()
 		assignOperator = AssignmentOperator()
-		initializer = assignment()
+		(
+			initializer = assignment()
+		|
+			initializer = closureDeclaration()
+		)
 		{
 			if (initializer == null)
 			{

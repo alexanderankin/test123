@@ -43,7 +43,7 @@ import java.util.Set;
 *
 * @author Matthieu Casanova
 */
-public class MethodDeclaration extends Statement implements OutlineableWithChildren, IAsset
+public class MethodDeclaration extends Expression implements OutlineableWithChildren, IAsset
 {
 	private MethodHeader methodHeader;
 
@@ -97,6 +97,12 @@ public class MethodDeclaration extends Statement implements OutlineableWithChild
 		buff.append(methodHeader.toString(tab));
 		buff.append(toStringStatements(tab + 1));
 		return buff.toString();
+	}
+
+	@Override
+	public String toStringExpression()
+	{
+		return toString(0);
 	}
 
 	public String toString()
