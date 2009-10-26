@@ -1,0 +1,29 @@
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+  <ACTION NAME="gatchan-phpparser-findClass">
+    <CODE>
+			gatchan.phpparser.PHPParserPlugin.findClass(view);
+    </CODE>
+  </ACTION>
+  <ACTION NAME="gatchan-phpparser-findInterface">
+    <CODE>
+			gatchan.phpparser.PHPParserPlugin.findInterface(view);
+    </CODE>
+  </ACTION>
+  <ACTION NAME="gatchan-phpparser-findClassOrInterface">
+    <CODE>
+			gatchan.phpparser.PHPParserPlugin.findClassOrInterface(view);
+    </CODE>
+  </ACTION>
+  <ACTION NAME="gatchan-phpparser-findMethod">
+    <CODE>
+			gatchan.phpparser.PHPParserPlugin.findMethod(view);
+    </CODE>
+  </ACTION>
+  <ACTION NAME="gatchan-phpparser-findInFile">
+    <CODE>
+			gatchan.phpparser.PHPParserPlugin.findInFile(view);
+    </CODE>
+  </ACTION>
+</ACTIONS>
