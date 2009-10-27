@@ -143,7 +143,7 @@ public class QuickSearchTagDialog extends JDialog {
 					"=" + TagDB.quote(project));
 				projectQuery.addCondition(TagDB.ORIGINS_TABLE + "." + TagDB.ORIGINS_TYPE +
 						"=" + TagDB.quote(TagDB.PROJECT_ORIGIN));
-				q.addCondition("EXISTS (" + projectQuery.toString() + ")");
+				q.addCondition("ID IN (" + projectQuery.toString() + ")");
 			}
 		}
 		switch (mode) {
