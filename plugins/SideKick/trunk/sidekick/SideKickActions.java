@@ -23,6 +23,7 @@
 package sidekick;
 
 //{{{ Import statements
+import java.lang.ref.WeakReference;
 import javax.swing.tree.*;
 import javax.swing.Timer;
 import java.awt.event.*;
@@ -40,6 +41,7 @@ public class SideKickActions
 	private static boolean completeInstant;
 	private static boolean autoCompletePopupGetFocus;
 	private static int delay;
+	private static WeakReference<JEditTextArea> delayedCompletionTarget;
 	private static int caretWhenCompleteKeyPressed;
 	private static Timer timer;
 	private static SideKickCompletionPopup popup;
@@ -57,7 +59,7 @@ public class SideKickActions
 	} //}}}
 
 	//{{{ keyCompleteWithDelay() method
-	public static void keyCompleteWithDelay(final View view)
+	public static void keyCompleteWithDelay(View view)
 	{
 		if(!completeDelay)
 			return;
@@ -65,8 +67,11 @@ public class SideKickActions
 		if(timer != null)
 			timer.stop();
 
-		final JEditTextArea textArea = view.getTextArea();
-
+		JEditTextArea textArea = view.getTextArea();
+		if (delayedCompletionTarget == null || delayedCompletionTarget.get() != textArea)
+		{
+			delayedCompletionTarget = new WeakReference<JEditTextArea>(textArea);
+		}
 		caretWhenCompleteKeyPressed = textArea.getCaretPosition();
 
 		if(timer == null)
@@ -75,8 +80,12 @@ public class SideKickActions
 			{
 				public void actionPerformed(ActionEvent evt)
 				{
-					if(caretWhenCompleteKeyPressed == textArea.getCaretPosition())
-						complete(view,COMPLETE_DELAY_KEY);
+					JEditTextArea textArea = delayedCompletionTarget.get();
+					if(textArea != null
+						&& caretWhenCompleteKeyPressed == textArea.getCaretPosition())
+					{
+						complete(textArea.getView(),COMPLETE_DELAY_KEY);
+					}
 				}
 			});
 
