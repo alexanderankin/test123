@@ -6,7 +6,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,8 +27,6 @@ import org.gjt.sp.jedit.msg.PositionChanging;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
 
-import ctagsinterface.context.CaretContext;
-import ctagsinterface.context.CtagsContextUtil;
 import ctagsinterface.db.Query;
 import ctagsinterface.db.TagDB;
 import ctagsinterface.dialogs.ChangeDbSettings;
@@ -303,43 +300,6 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		if (prefix == null)
 			return;
 		TagCompletion.complete(view, prefix);
-	}
-	
-	// Actions: Offer code completion options
-	public static void completeByContext(final View view)
-	{
-		Tag context = CaretContext.getContext(view);
-		if (context == null) {
-			JOptionPane.showMessageDialog(view, "No context found");
-			return;
-		}
-		// Retrieve possible completions from context
-		CtagsContextUtil util = CtagsContextUtil.instance();
-		Set<String> classes = util.getSuperClasses(context.getName());
-		Vector<Tag> members = util.getMembers(classes);
-		if (members.isEmpty())
-			return;
-		Vector<String> completions = new Vector<String>();
-		String prefix = getCompletionPrefix(view);
-		if (prefix == null)
-			return;
-		for (Tag member: members) {
-			if (member.getName().startsWith(prefix))
-				completions.add(member.getName());
-		}
-		if (completions.isEmpty()) {
-			JOptionPane.showMessageDialog(view, "Context: " + context.getName() + " - No completions");
-			return;
-		}
-		String [] options = new String[completions.size()];
-		int i = 0;
-		for (String completion: completions) {
-			options[i] = completion;
-			i++;
-		}
-		JOptionPane.showInputDialog(view, "Select completion from context " +
-			context.getName() + ":",
-			"Completion dialog", 0, null, options, options[0]);
 	}
 	
 	// Returns the prefix for code completion
