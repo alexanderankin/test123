@@ -103,7 +103,7 @@ public class RevertAction extends SVNAction {
                     return ;
                 }
             }
-
+            data.setRecursive( recursive );
             data.setPaths( paths );
 
             if ( getUsername() == null ) {
