@@ -2,6 +2,7 @@ package ise.plugin.svn.gui;
 
 import java.awt.*;
 import java.io.*;
+import java.text.BreakIterator;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.table.*;
@@ -53,25 +54,32 @@ public class WrapCellRenderer extends JTextPane implements TableCellRenderer {
         if ( table != null ) {
             d.width = table.getColumnModel().getColumn( column ).getWidth();
             FontMetrics fm = getFontMetrics( getFont() );
-            int stringWidth = fm.stringWidth( getText() );
-            int rows = ( stringWidth / d.width ) + countLines(getText());
-
+            int rows = countLines( getText(), fm, d.width );
             d.height = ( fm.getHeight() * rows ) + 5;   // 5 pixels for padding
         }
         return d;
     }
 
-    private int countLines( String text ) {
+    private int countLines( String text, FontMetrics fm, int width ) {
+        int count = 1;
         try {
-            BufferedReader reader = new BufferedReader( new StringReader( text ) );
-            int lines = 0;
-            while ( reader.readLine() != null ) {
-                ++lines;
+            BreakIterator bi = BreakIterator.getWordInstance();
+            bi.setText( text );
+            StringBuilder sb = new StringBuilder();
+            int start = bi.first();
+            for ( int end = bi.next(); end != BreakIterator.DONE; start = end, end = bi.next() ) {
+                String word = text.substring( start, end );
+                if ( fm.stringWidth( sb.toString() + word ) > width ) {
+                    ++count;
+                    sb = new StringBuilder();
+                }
+                sb.append( word ).append(' ');
             }
-            return lines;
+
         }
         catch ( Exception e ) {
-            return 1;
+            e.printStackTrace();
         }
+        return count;
     }
 }
