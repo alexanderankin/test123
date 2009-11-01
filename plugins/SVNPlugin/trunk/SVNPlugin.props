@@ -298,6 +298,8 @@ ips.Comment=Comment
 ips.Author=Author
 ips.Date=Date
 ips.Zoom=Zoom
+ips.Open_links_in_browser=Open links in browser
+ips.Open_link_in_browser=Open link in browser
 
 # for Merge
 ips.Merge=Merge
@@ -631,3 +633,4 @@ ips.Subversion_file_format>=Subversion file format:
 ips.Error=Error
 ips.Unable_to_convert_working_copy_file_format>=Unable to convert working copy file format:
 ips.Bug_ID>=Bug ID:
+ips.Diff_against_working_copy=Diff against working copy
