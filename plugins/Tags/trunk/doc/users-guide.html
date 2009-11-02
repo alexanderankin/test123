@@ -1,7 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.6: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.7: http://docutils.sourceforge.net/" />
 <title>Tags Plugin</title>
 <meta name="authors" content="Kenrick Drew  Ollie Rutherfurd  Shlomy Reinstein" />
 <style type="text/css">
@@ -317,7 +319,7 @@ ul.auto-toc {
 <td>3.0.1</td></tr>
 </tbody>
 </table>
-<!-- $Id: users-guide.txt 15389 2009-06-05 18:53:44Z voxmea $ -->
+<!-- $Id: users-guide.txt 15685 2009-07-10 18:33:45Z voxmea $ -->
 <div class="section" id="introduction">
 <h1>Introduction</h1>
 <p>The Tags plugin allows one to &quot;jump&quot; to the definition of a
@@ -613,6 +615,10 @@ to use the Sourceforge Bug Tracker at
 <div class="section" id="changelog">
 <h1>Changelog</h1>
 <ul class="simple">
+<li>Version 3.0.3 (November 2009)<ul>
+<li>Uses jEdit's getScreenBounds to ensure the popup is positioned correctly.</li>
+</ul>
+</li>
 <li>Version 3.0.2 (July 2009)<ul>
 <li>Adds target specification to build.xml to ensure it runs on all Java
 versions supported by jEdit.</li>
@@ -645,7 +651,7 @@ Bug report &amp; patch from Ian MacLarty.</li>
 </ul>
 </li>
 <li>Version 1.1.1, bug fix (Apr 2004)<ul>
-<li>escaping <tt class="docutils literal"><span class="pre">$</span></tt> when searching for tag definition.</li>
+<li>escaping <tt class="docutils literal">$</tt> when searching for tag definition.</li>
 </ul>
 </li>
 <li>Version 1.1, update (Dec 2003)<ul>
@@ -678,7 +684,7 @@ in parent directories of the current buffer.</li>
 </ul>
 </li>
 <li>Version 1.0.6, bug fixes (Feb 2002)<ul>
-<li>Fixed bug where the escape character <tt class="docutils literal"><span class="pre">'\'</span></tt> was showing
+<li>Fixed bug where the escape character <tt class="docutils literal">'\'</tt> was showing
 up in the user visible search string.</li>
 <li>Used JEditTextArea.offsetToXY() to position popup
 within folded, and wrapped text.</li>
