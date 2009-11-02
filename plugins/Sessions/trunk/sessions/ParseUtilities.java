@@ -222,9 +222,8 @@ class ParseUtilities
 				default:
 					if(c <= 0x1F || c >= 0x80) //*all* non-ascii
 					{
- 						out.append("\\u");
-						out.append(Integer.toHexString(c + 0x10000).substring(1));
-						// must be exactly 4 char long: add leading 0's, remove "1"
+						// Encode this character into something the SAX XMLReader can parse
+ 						out.append("&#x"+Integer.toHexString(c)+";");
 					}
 					else
  						out.append(c);
