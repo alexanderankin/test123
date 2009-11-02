@@ -325,6 +325,10 @@ Credits
 Changelog
 =========
 
+* Version 3.0.3 (November 2009)
+
+  - Uses jEdit's getScreenBounds to ensure the popup is positioned correctly.
+
 * Version 3.0.2 (July 2009)
 
   - Adds target specification to build.xml to ensure it runs on all Java
