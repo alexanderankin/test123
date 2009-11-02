@@ -20,159 +20,188 @@
 % }] */
 package candyfolds;
 
+import candyfolds.config.StripConfig;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import candyfolds.config.FoldConfig;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.text.Segment;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.util.Log;
 
 final class LineInfo {
+	static final Logger L=Logger.getLogger(LineInfo.class.getName());
+	static { L.setLevel(Level.ALL); }
+
 	private final TextAreaExt textAreaExt;
-
 	private int line;
-
-	final List<Integer> indents=new ArrayList<Integer>();
-	final List<Integer> lines=new ArrayList<Integer>(); // lines where the indents belong (1:1).
-	final List<Integer> foldLevels=new ArrayList<Integer>();
-	final List<FoldConfig> foldConfigs=new ArrayList<FoldConfig>();
-
+	private int lineIndent;
+	private final List<Integer> indents=new ArrayList<Integer>();
+	private final List<Integer> lines=new ArrayList<Integer>(); // lines where the indents belong (1:1).
+	private final List<StripConfig> stripConfigs=new ArrayList<StripConfig>();
+	
 	LineInfo(TextAreaExt textAreaExt) {
 		this.textAreaExt=textAreaExt;
 	}
-	
+
 	int getLine(){
 		return line;
 	}
 
+	int getIndentsSize(){
+		return indents.size();
+	}
+
+	int getIndent(int indentIndex){
+		return indents.get(indentIndex);
+	}
+
+	StripConfig getStripConfig(int indentIndex){
+		return stripConfigs.get(indentIndex);
+	}
+
 	private void clear() {
+		line=lineIndent=0;
 		indents.clear();
 		lines.clear();
-		foldLevels.clear();
-		foldConfigs.clear();
+		stripConfigs.clear();
 	}
-
-	void eval(Buffer buffer,
-	          int line) {
-		eval(buffer, line, null);
-	}
-
-	void copyFrom(LineInfo lineInfo) {
+	
+	void copyFrom(LineInfo lineInfo){
 		clear();
 		line=lineInfo.line;
 		indents.addAll(lineInfo.indents);
 		lines.addAll(lineInfo.lines);
-		foldLevels.addAll(lineInfo.foldLevels);
-		foldConfigs.addAll(lineInfo.foldConfigs);
+		stripConfigs.addAll(lineInfo.stripConfigs);
 	}
 
-	void eval(Buffer buffer,
-	          int line,
-	          LineInfo stopLineInfo) {
-		//long startTime=System.nanoTime();
-		if(stopLineInfo==null) {
-			eval(buffer, line, 0);
-			//Log.log(Log.NOTICE, this, "line evaluation time: "+(System.nanoTime()-startTime)+" NO "+line);
-			return ;
-		}
-		if(stopLineInfo.line==line) {
-			copyFrom(stopLineInfo);
-			//Log.log(Log.NOTICE, this, "No need to eval "+line);
-			return ;
-		}
-		if(stopLineInfo.line>line)
-			throw new AssertionError("stopLineInfo was "+stopLineInfo+", and requested for "+line);
-		eval(buffer, line, stopLineInfo.line+1);
-		append(stopLineInfo);
-		//Log.log(Log.NOTICE, this, "line evaluation time: "+(System.nanoTime()-startTime)+" O "+line);
+	void eval(Buffer buffer, int line){
+		eval(buffer, line, null);
 	}
 
-	private void eval(Buffer buffer,
-	    int line,
-	    int stopLine) {
+	void eval(Buffer buffer, int line, LineInfo upLineInfo){
 		clear();
 		this.line=line;
-		int indent;
-		int foldLevel, lastCaughtFoldLevel=Integer.MAX_VALUE, lastCaughtIndent=0;
-		for(int i=line; i>=stopLine; i--) {
-			foldLevel=buffer.getFoldLevel(i);
-			if(foldLevel< lastCaughtFoldLevel) {
-				indent=foldLevel==0? 0: buffer.getCurrentIndentForLine(i, null);
-				//v check if this is an indented second (or third, or...) line of a fold... like a funcion with its parameters indented:
-				if(foldLevel!=0)
-					for(int j=i-1, upperLineIndent; j>=stopLine && buffer.getFoldLevel(j)==foldLevel; j--) {
-						upperLineIndent=buffer.getCurrentIndentForLine(j, null); // optim? this is a second call
-						if(indent!=0 && upperLineIndent==0) // optim
-							break;
-						if( indent==0 || (upperLineIndent!=0 && upperLineIndent<indent) ) {//indent==0 fixes when fold are made on empty lines
-							indent=upperLineIndent;
-							i=j;
-						}
-					}
-				//^
-				lastCaughtFoldLevel=foldLevel;
-				if(lastCaughtIndent>0 && indent>lastCaughtIndent) { // los indent siempre van disminuyendo si es que no se trataba de un indent en 0 que era una linea vacia
+		int upLine= upLineInfo==null? 0: upLineInfo.line+1;
+
+		int calcLine;
+		if(isEmptySegment(buffer, line)){
+			int firstIndentUp=-1, firstIndentUpLine=line;
+			for(int i=line; i>=upLine; i--){
+				if(i!=0 && isEmptySegment(buffer, i))
 					continue;
-				}
-				lastCaughtIndent=indent;
-				indents.add(indent);
-				lines.add(i);
-				foldLevels.add(foldLevel);
+				firstIndentUp=buffer.getCurrentIndentForLine(i, null);
+				firstIndentUpLine=i;
+				break;
 			}
-			if(foldLevel<=1) // change this to zero if you want the top level too... put this as pref?
+			if(firstIndentUp==-1){
+				firstIndentUp=upLineInfo.lineIndent;
+				firstIndentUpLine=upLineInfo.line;
+			}
+			int firstIndentDown=-1, firstIndentDownLine=line;
+			for(int i=line, lineCount=buffer.getLineCount(); i<lineCount; i++){ // TODO: optimize for performance on large files with a lot of empty lines...
+				if(isEmptySegment(buffer, i))
+					continue;
+				firstIndentDown=buffer.getCurrentIndentForLine(i, null);
+				firstIndentDownLine=i;
+				break;
+			}
+			if(firstIndentDown>firstIndentUp){
+				calcLine=firstIndentDownLine;
+				lineIndent=firstIndentDown;
+			}else{
+				calcLine=firstIndentUpLine;
+				lineIndent=firstIndentUp;
+			}
+		}
+		else{
+			calcLine=line;
+			lineIndent=buffer.getCurrentIndentForLine(line, null);
+		}
+
+		int indent, lastCaughtIndent=Integer.MAX_VALUE;
+		for(; calcLine>=upLine; calcLine--) {
+			indent=buffer.getCurrentIndentForLine(calcLine, null);
+			if(indent>=lastCaughtIndent ||
+			        indent>lineIndent)
+				continue;
+			if(isEmptySegment(buffer, calcLine))
+				continue;
+			lastCaughtIndent=indent;
+			//L.fine("adding indent="+indent+" on line="+calcLine);
+			indents.add(indent);
+			lines.add(calcLine);
+			addStripConfig(buffer, calcLine, indent);
+			if(lastCaughtIndent==0) // optimization
 				break;
 		}
-		removeRepeated();
-		selectFoldConfigs(buffer);
-	}
 
-	private void removeRepeated() {
-		int indent;
-		for(int i=0, size=indents.size(); i<size;) {
-			indent=indents.get(i);
-			if(/*indent==0 ||*/ // se dejan pues puede ser el primero. el primero se ignora. (pensar en caso de lineas vacias dentro de fold)
-			  (i+1<size && indent==indents.get(i+1)) ) {
-				indents.remove(i);
-				lines.remove(i+1); // remove the next line info
-				foldLevels.remove(i+1);
-				// foldConfigs.remove(i+1); has not been loaded!
-				size--;
-			} else
-				i++;
+		if(upLineInfo!=null
+		        && lastCaughtIndent>0 // optimization
+		  ){
+			for(int i=0; i<upLineInfo.indents.size(); i++){
+				indent=upLineInfo.indents.get(i);
+				if(indent>=lastCaughtIndent ||
+				        indent>lineIndent)
+					continue;
+				lastCaughtIndent=indent;
+				//L.fine("line="+line+", adding upLineInfo indent="+indent);
+				indents.add(indent);
+				lines.add(upLineInfo.lines.get(i));
+				stripConfigs.add(upLineInfo.stripConfigs.get(i));
+			}
 		}
 	}
 
-	private void selectFoldConfigs(Buffer buffer) {
-		for(int i=0, size=indents.size(); i<size; i++ )
-			selectFoldConfig(buffer, lines.get(i), i);
+	private boolean isEmptySegment(Buffer buffer, int line){
+		buffer.getLineText(line, textAreaExt.segment);
+		return isEmptySegment(textAreaExt.segment);
 	}
 
-	private void selectFoldConfig(Buffer buffer, int line, int lineIndex) {
-		FoldConfig foldConfig;
-		if(indents.get(lineIndex)==0) {
-			foldConfig=null;
-		} else {
-			buffer.getLineText(line, textAreaExt.segment);
-			foldConfig=textAreaExt.getModeConfig().evalFoldConfig(textAreaExt.segment);
-		}
-		foldConfigs.add(lineIndex, foldConfig);
+	private static boolean isEmptySegment(Segment segment){
+		for(int i=segment.length(); --i>=0; )
+			if(!Character.isWhitespace(segment.charAt(i)))
+				return false;
+		return true;
 	}
 
+	private void addStripConfig(Buffer buffer, int line, int lineIndent) {
+		prepareSegmentForStripConfig(buffer, line, lineIndent);
+		StripConfig stripConfig=textAreaExt.getModeConfig().evalStripConfig(textAreaExt.segment);
+		stripConfigs.add(stripConfig);
+	}
 
-	private void append(LineInfo extLineInfo) {
-		int lastFoldLevel=foldLevels.get(foldLevels.size()-1); // I assume that I have always at least one element
-		int prevIndent=indents.get(indents.size()-1);
-		for(int i=0, size=extLineInfo.foldLevels.size(); i<size; i++) {
-			int extFoldLevel=extLineInfo.foldLevels.get(i);
-			if(extFoldLevel>=lastFoldLevel)
-				continue;
-			int extIndent=extLineInfo.indents.get(i);
-			if(extIndent==0 || extIndent==prevIndent) // extIndent==prevIndent may be true only in the first iteration
-				continue;
-			prevIndent=extIndent;
-			indents.add(extIndent);
-			lines.add(extLineInfo.lines.get(i));
-			foldLevels.add(extFoldLevel);
-			foldConfigs.add(extLineInfo.foldConfigs.get(i));
+	private void prepareSegmentForStripConfig(final Buffer buffer, final int line, final int lineIndent){
+		final Segment segment=textAreaExt.segment;
+		boolean usePrevLine=false;
+		if(textAreaExt.getModeConfig().getUseBigLinesForStripConfigs()){
+			for( int prevLine=line ; prevLine>=0; prevLine-- ){ // TODO: use a limit instead of 0?
+				buffer.getLineText(prevLine, segment);
+				int segmentContentLength=evalSegmentContentLength(segment);
+				if(segmentContentLength==0)
+					continue;
+				int prevLineIndent=buffer.getCurrentIndentForLine(prevLine, null);
+				if(prevLineIndent>lineIndent)
+					continue;
+				if(prevLineIndent<lineIndent)
+					break;
+				if(segmentContentLength==1)
+					continue;
+				usePrevLine=true;
+				// -> the segment is ready on prevLine
+				break;
+			}
 		}
+		if(!usePrevLine)
+			buffer.getLineText(line, segment);
+	}
+
+	private static int evalSegmentContentLength(Segment segment){
+		int contentLength=0;
+		for(int i=segment.length(); --i>=0; )
+			if(!Character.isWhitespace(segment.charAt(i)))
+				contentLength++;
+		return contentLength;
 	}
 }

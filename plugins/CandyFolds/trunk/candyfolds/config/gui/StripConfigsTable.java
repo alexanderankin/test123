@@ -20,7 +20,7 @@
 % }] */
 package candyfolds.config.gui;
 
-import candyfolds.config.FoldConfig;
+import candyfolds.config.StripConfig;
 import candyfolds.config.ModeConfig;
 import java.awt.Color;
 import java.awt.Component;
@@ -46,13 +46,13 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import org.gjt.sp.util.Log;
 
-class FoldConfigsTable
+class StripConfigsTable
 	extends AbstractTableModel {
 	private ModeConfig modeConfig;
 
 	JTable table=new JTable(this);
 
-	FoldConfigsTable() {
+	StripConfigsTable() {
 		table.getColumnModel().getColumn(0).setMaxWidth(20);
 		table.setDefaultRenderer(Color.class, new ColorCellRenderer());
 		table.setDefaultEditor(Color.class, new ColorCellEditor());
@@ -78,12 +78,12 @@ class FoldConfigsTable
 		    int column) {
 			super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 			setValue(null);
-			FoldConfig foldConfig=getFoldConfig(row);
-			//Log.log(Log.NOTICE, this, "foldConfig on Renderer: "+foldConfig.getName());
-			if(foldConfig==null) {
+			StripConfig stripConfig=getStripConfig(row);
+			//Log.log(Log.NOTICE, this, "stripConfig on Renderer: "+stripConfig.getName());
+			if(stripConfig==null) {
 				throw new AssertionError();
 			}
-			color=foldConfig.getColor();
+			color=stripConfig.getColor();
 			return this;
 		}
 		@Override
@@ -130,11 +130,11 @@ class FoldConfigsTable
 		    boolean isSelected,
 		    int row,
 		    int column) {
-			FoldConfig foldConfig=getFoldConfig(row);
-			//Log.log(Log.NOTICE, this, "foldConfig of cellEditor: "+foldConfig.getName());
-			if(foldConfig==null)
+			StripConfig stripConfig=getStripConfig(row);
+			//Log.log(Log.NOTICE, this, "stripConfig of cellEditor: "+stripConfig.getName());
+			if(stripConfig==null)
 				throw new AssertionError();
-			this.color=foldConfig.getColor();
+			this.color=stripConfig.getColor();
 			return button;
 		}
 
@@ -155,7 +155,7 @@ class FoldConfigsTable
 
 	@Override
 	public int getRowCount() {
-		return modeConfig==null? 0: modeConfig.foldConfigsA.size();
+		return modeConfig==null? 0: modeConfig.stripConfigsA.size();
 	}
 	@Override
 	public int getColumnCount() {
@@ -180,34 +180,34 @@ class FoldConfigsTable
 	}
 
 	void setSelectedRow(int row) {
-		if(row<0 || row>=modeConfig.foldConfigsA.size())
+		if(row<0 || row>=modeConfig.stripConfigsA.size())
 			return;
 		table.setRowSelectionInterval(row, row);
 	}
 
-	FoldConfig getSelected() {
+	StripConfig getSelected() {
 		int row=table.getSelectedRow();
 		if(row<0)
 			return null;
-		return modeConfig.foldConfigsA.get(row);
+		return modeConfig.stripConfigsA.get(row);
 	}
 
-	private FoldConfig getFoldConfig(int row) {
-		return modeConfig==null? null: modeConfig.foldConfigsA.get(row);
+	private StripConfig getStripConfig(int row) {
+		return modeConfig==null? null: modeConfig.stripConfigsA.get(row);
 	}
 
 	@Override
 	public Object getValueAt(int row, int col) {
-		FoldConfig foldConfig=getFoldConfig(row);
-		if(foldConfig==null)
+		StripConfig stripConfig=getStripConfig(row);
+		if(stripConfig==null)
 			return null;
 		switch(col) {
 		case 0:
-			return foldConfig.getColor();
+			return stripConfig.getColor();
 		case 1 :
-			return foldConfig.getName();
+			return stripConfig.getName();
 		case 2:
-			return foldConfig.getRegex();
+			return stripConfig.getRegex();
 		default:
 			return null;
 		}
@@ -233,22 +233,22 @@ class FoldConfigsTable
 
 	@Override
 	public void setValueAt(Object o, int row, int col) {
-		FoldConfig foldConfig=getFoldConfig(row);
-		if(foldConfig==null)
+		StripConfig stripConfig=getStripConfig(row);
+		if(stripConfig==null)
 			throw new AssertionError();
 		switch(col) {
 		case 0:
 			Color color=(Color)o;
-			foldConfig.setColor(color);
+			stripConfig.setColor(color);
 			break;
 		case 1:
 			String name=(String)o;
-			foldConfig.setName(name);
+			stripConfig.setName(name);
 			break;
 		case 2:
 			try {
 				String regex=(String)o;
-				foldConfig.setRegex(regex);
+				stripConfig.setRegex(regex);
 			} catch(PatternSyntaxException ex) {}
 			break;
 		}

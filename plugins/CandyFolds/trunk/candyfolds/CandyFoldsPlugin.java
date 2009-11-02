@@ -20,13 +20,15 @@
 % }] */
 package candyfolds;
 
+import candyfolds.config.Config;
 import java.awt.Color;
 import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.Map;
 import java.util.Set;
-import candyfolds.config.Config;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EditPane;
@@ -39,6 +41,9 @@ import org.gjt.sp.util.Log;
 
 public class CandyFoldsPlugin
 	extends EBPlugin {
+	static final Logger L=Logger.getLogger(CandyFoldsPlugin.class.getName());
+	static { L.setLevel(Level.ALL); }
+
 	private static CandyFoldsPlugin INSTANCE;
 
 	public static CandyFoldsPlugin getInstance() {
@@ -131,7 +136,4 @@ public class CandyFoldsPlugin
 			//Log.log(Log.NOTICE, this, logM+": "+editPaneUpdate.getEditPane());
 		}
 	}
-
-
-
 }

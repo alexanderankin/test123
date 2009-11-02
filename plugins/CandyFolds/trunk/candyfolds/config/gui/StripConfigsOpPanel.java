@@ -27,14 +27,14 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
-import candyfolds.config.FoldConfig;
+import candyfolds.config.StripConfig;
 import candyfolds.config.ModeConfig;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 
-class FoldConfigsOpPanel {
+class StripConfigsOpPanel {
 	final JToolBar panel=new JToolBar();
-	private final FoldConfigsTable foldConfigsTable;
+	private final StripConfigsTable stripConfigsTable;
 	final Action[] actions=new Action[]{
 	      new AbstractAction("Add", GUIUtilities.loadIcon("Plus.png")) {
 		      {
@@ -43,8 +43,8 @@ class FoldConfigsOpPanel {
 		      @Override
 		      public void actionPerformed(ActionEvent ev) {
 			      if(getModeConfig()!=null) {
-				      getModeConfig().addFoldConfig();
-				      foldConfigsTable.fireTableDataChanged();
+				      getModeConfig().addStripConfig();
+				      stripConfigsTable.fireTableDataChanged();
 			      }
 		      }
 	      },
@@ -54,12 +54,12 @@ class FoldConfigsOpPanel {
 		      }
 		      @Override
 		      public void actionPerformed(ActionEvent ev) {
-			      int row=foldConfigsTable.getSelectedIndex();
+			      int row=stripConfigsTable.getSelectedIndex();
 			      if(row<0)
 				      return;
 			      if(getModeConfig()!=null) {
-				      getModeConfig().removeFoldConfig(row);
-				      foldConfigsTable.fireTableDataChanged();
+				      getModeConfig().removeStripConfig(row);
+				      stripConfigsTable.fireTableDataChanged();
 			      }
 		      }
 	      },
@@ -69,13 +69,13 @@ class FoldConfigsOpPanel {
 		      }
 		      @Override
 		      public void actionPerformed(ActionEvent ev) {
-			      int row=foldConfigsTable.getSelectedIndex();
+			      int row=stripConfigsTable.getSelectedIndex();
 			      if(row<0)
 				      return;
 			      if(getModeConfig()!=null) {
 				      if(getModeConfig().moveUp(row)) {
-					      foldConfigsTable.fireTableDataChanged();
-					      foldConfigsTable.setSelectedRow(row-1);
+					      stripConfigsTable.fireTableDataChanged();
+					      stripConfigsTable.setSelectedRow(row-1);
 				      }
 			      }
 		      }
@@ -86,13 +86,13 @@ class FoldConfigsOpPanel {
 		      }
 		      @Override
 		      public void actionPerformed(ActionEvent ev) {
-			      int row=foldConfigsTable.getSelectedIndex();
+			      int row=stripConfigsTable.getSelectedIndex();
 			      if(row<0)
 				      return;
 			      if(getModeConfig()!=null) {
 				      if(getModeConfig().moveDown(row)) {
-					      foldConfigsTable.fireTableDataChanged();
-					      foldConfigsTable.setSelectedRow(row+1);
+					      stripConfigsTable.fireTableDataChanged();
+					      stripConfigsTable.setSelectedRow(row+1);
 				      }
 			      }
 		      }
@@ -112,12 +112,12 @@ class FoldConfigsOpPanel {
 		}
 	}
 
-	FoldConfigsOpPanel(FoldConfigsTable foldConfigsTable) {
-		this.foldConfigsTable=foldConfigsTable;
+	StripConfigsOpPanel(StripConfigsTable stripConfigsTable) {
+		this.stripConfigsTable=stripConfigsTable;
 	}
 
 	ModeConfig getModeConfig() {
-		return foldConfigsTable.getModeConfig();
+		return stripConfigsTable.getModeConfig();
 	}
 
 	void setEnabled(boolean enabled) {

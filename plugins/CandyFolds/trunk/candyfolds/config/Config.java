@@ -45,9 +45,9 @@ public final class Config {
 
 	public Config() {
 		load(defaultModeConfig);
-		if(defaultModeConfig.foldConfigsA.isEmpty()) {
-			FoldConfig defFoldConfig=defaultModeConfig.addFoldConfig();
-			defFoldConfig.setName("all");
+		if(defaultModeConfig.stripConfigsA.isEmpty()) {
+			StripConfig defStripConfig=defaultModeConfig.addStripConfig();
+			defStripConfig.setName("all");
 			store();
 		}
 	}

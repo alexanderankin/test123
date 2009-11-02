@@ -62,7 +62,7 @@ public class PluginHome {
 		         modeConfigName+MODE_CONFIG_FILE_SUFIX);
 	}
 
-	static final String[] distribModeConfigNames={"java"};
+	static final String[] distribModeConfigNames={"java", "xml"};
 
 	private static void initializeDistribModeConfigFiles() {
 		Log.log(Log.NOTICE, PluginHome.class, "Initializing distrib config files.");
