@@ -35,10 +35,15 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.Map;
 import java.util.Set;
 import javax.swing.text.Segment;
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
+import org.gjt.sp.jedit.buffer.BufferAdapter;
+import org.gjt.sp.jedit.buffer.BufferListener;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.TextArea;
@@ -49,17 +54,38 @@ import org.gjt.sp.util.Log;
 
 final class TextAreaExt
 	extends TextAreaExtension {
+	static final Logger L=Logger.getLogger(TextAreaExt.class.getName());
+	static { L.setLevel(Level.ALL); }
 
 	final CandyFoldsPlugin foldsPlugin;
 	final EditPane editPane;
 	private final TextAreaPainter painter;
 
-	private final LineInfo firstInRangeLineInfo=new LineInfo(this);
-	private final LineInfo lineInfo=new LineInfo(this);
-	private final LineInfo toolTipLineInfo=new LineInfo(this);
+	/*
+	private final LineInfo firstLineInfo=new LineInfo(this);
+	private Buffer firstLineInfoBuffer;
+	private final BufferListener firstLineInfoBufferL=new BufferAdapter(){
+		    @Override
+		    public void contentInserted(JEditBuffer buffer, int startLine, int offset, int numLines, int length){
+			    contentChanged();
+		    }
+		    @Override
+		    public void contentRemoved(JEditBuffer buffer, int startLine, int offset, int numLines, int length){
+			    contentChanged();
+		    }
+		    private void contentChanged(){
+			    unregisterFirstLineInfoBuffer();
+		    }
+	    };*/
+	private LineInfo previousLineInfo=new LineInfo(this);
+	private LineInfo currentLineInfo=new LineInfo(this);
+	//private final LineInfo toolTipLineInfo=new LineInfo(this);
+
+
 
 	private final FontMetricsInfo fontMetricsInfo=new FontMetricsInfo();
 	private static final class FontMetricsInfo {
+
 		private FontMetrics fontMetrics;
 		int spaceWidth;
 		int lineHeight;
@@ -75,6 +101,7 @@ final class TextAreaExt
 		}
 
 	}
+
 	private ModeConfig modeConfig;
 	private String modeConfigName; // use it separated from modeConfig because modeConfig can be null!
 	private final Line2D.Float line2D=new Line2D.Float();
@@ -130,46 +157,71 @@ final class TextAreaExt
 	    int y,
 	    int lineHeight) {
 		//Log.log(Log.NOTICE, this, "painting range: firstLine="+firstLine+", lastLine=" + lastLine + ", y=" + y+"lineHeight="+lineHeight);
+		//long nanoTime=System.nanoTime();
 		Buffer buffer = editPane.getBuffer();
 		setModeConfig(buffer);
 		if(!getModeConfig().getEnabled())
 			return;
 
 		for(int i = 0; i < physicalLines.length; i++) {
-			int screenLine = i + firstLine;
-			if(physicalLines[i]==-1)
+			int line=physicalLines[i];
+			if(line==-1)
 				continue;
-			//Log.log(Log.NOTICE, this, "physicalLine="+physicalLines[i]+", start="+start[i]+", end="+end[i]+", lineHeight="+lineHeight);
-			if(i==0) {
-				firstInRangeLineInfo.eval(buffer, physicalLines[i]);
-				drawLine(firstInRangeLineInfo, g, y);
-			} else {
-				lineInfo.eval(buffer, physicalLines[i], firstInRangeLineInfo);
-				drawLine(lineInfo, g, y);
+			if(i==0){
+				/* this optimization does not worth the effort! 
+				if(firstLineInfoBuffer!=buffer // firstLineInfoBuffer is set to null when buffer changes
+				        || firstLineInfo.getLine()!=line){
+					firstLineInfo.eval(buffer, line);
+					registerFirstLineInfoBuffer(buffer);
+				 }
+				currentLineInfo.copyFrom(firstLineInfo);*/
+				currentLineInfo.eval(buffer, line);
 			}
+			else
+				currentLineInfo.eval(buffer, line, previousLineInfo);
+			drawLineIndents(buffer, currentLineInfo, g, y);
+			LineInfo swap=previousLineInfo;
+			previousLineInfo=currentLineInfo;
+			currentLineInfo=swap;
 			y += lineHeight;
 		}
 		//Log.log(Log.NOTICE, this, "done painting range");
+		//L.fine("new painting time="+(System.nanoTime()-nanoTime));
 	}
 
-	private void drawLine(LineInfo lineInfo, Graphics2D g, int y) {
-		if(lineInfo.indents.size()<=1)
+	/*
+	private synchronized void registerFirstLineInfoBuffer(Buffer buffer){
+		if(buffer==firstLineInfoBuffer)
 			return;
+		unregisterFirstLineInfoBuffer();
+		firstLineInfoBuffer=buffer;
+		firstLineInfoBuffer.addBufferListener(firstLineInfoBufferL);
+	}
+	
+	private synchronized void unregisterFirstLineInfoBuffer(){
+		if(firstLineInfoBuffer!=null)
+			firstLineInfoBuffer.removeBufferListener(firstLineInfoBufferL);
+		firstLineInfoBuffer=null;
+	}*/
+
+	private void drawLineIndents(Buffer buffer, LineInfo lineInfo, Graphics2D g, int y) {
 		fontMetricsInfo.setFontMetrics(painter.getFontMetrics());
 		Stroke gStroke=g.getStroke();
 		g.setStroke(fontMetricsInfo.barStroke);
-		//float x;
 		int x;
 		int indent;
 		int horizontalOffset=editPane.getTextArea().getHorizontalOffset();
-		for (int i =lineInfo.indents.size();--i>=1;) { // ignore the first. Iteration from outer to inner fold. the first is right above the first char of the line.
-			indent =lineInfo.indents.get(i);
+
+		for (int i =lineInfo.getIndentsSize();--i>=1;) {// ATTENTION: omit the first
+			indent =lineInfo.getIndent(i);
 			if(indent==0)
 				continue;
-			g.setColor(lineInfo.foldConfigs.get(i).getColor());
-			x= (int)((indent+0.4f )* fontMetricsInfo.spaceWidth+horizontalOffset);//(indent+0.4f) * fontMetricsInfo.spaceWidth;
-			//line2D.setLine(x, y, x, y+fontMetricsInfo.lineHeight);
-			//g.draw(line2D); this is slooow compared to drawLine (at least in my comp)!
+			//Log.log(Log.NOTICE, this, "painting indent="+indent);
+			Color color=lineInfo.getStripConfig(i).getColor();
+			if(color.getAlpha()==0)
+				continue;
+			g.setColor(color);
+			x= (int)((indent+0.4f )* fontMetricsInfo.spaceWidth+horizontalOffset);
 			g.drawLine(x, y,x, y+fontMetricsInfo.lineHeight);
 		}
 		g.setStroke(gStroke);
@@ -203,11 +255,11 @@ final class TextAreaExt
 			rect.x= (int)(indent* fontMetricsInfo.spaceWidth+horizontalOffset);
 			if(rect.contains(x, y)){
 				//int foldLevel=toolTipLineInfo.foldLevels.get(i);
-				String foldConfigName=toolTipLineInfo.foldConfigs.get(i).getName();
+				String stripConfigName=toolTipLineInfo.stripConfigs.get(i).getName();
 				buffer.getLineText(toolTipLineInfo.lines.get(i), segment);
-				return segment.toString().trim()+"... : "+foldConfigName;
+				return segment.toString().trim()+"... : "+stripConfigName;
 			}
 		}
 		return null;
-	}*/
+}*/
 }

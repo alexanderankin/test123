@@ -21,6 +21,8 @@
 package candyfolds.config;
 
 import java.awt.Color;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,15 +30,18 @@ import java.util.regex.PatternSyntaxException;
 import javax.swing.text.Segment;
 import org.gjt.sp.util.Log;
 
-public final class FoldConfig {
-	public static final Color DEFAULT_COLOR=new Color(0, 0, 128, 86); // WARNING: using transparency slows drawing (noticeable on my computer 2ghz pentium + radeon 9700...)
+public final class StripConfig {
+	static final Logger L=Logger.getLogger(StripConfig.class.getName());
+	static { L.setLevel(Level.ALL); }
+	
+	public static final Color DEFAULT_COLOR=new Color(181, 181, 181, 255); // WARNING: using transparency slows drawing (noticeable on my computer 2ghz pentium + radeon 9700...)
 	private String name="";
 	private Color color=DEFAULT_COLOR;
 	private String regex;
 	private Pattern pattern;
 	private Matcher matcher;
 
-	FoldConfig() {
+	StripConfig() {
 	}
 
 	public String getName() {
@@ -59,7 +64,10 @@ public final class FoldConfig {
 			}
 		}	else
 			matcher.reset(segment);
-		return matcher.matches();
+		//long nanos=System.nanoTime();
+		boolean r=matcher.lookingAt();
+		//L.fine("regex time="+(System.nanoTime()-nanos)); // find() is slooow!
+		return r;
 	}
 
 	public void setRegex(String regex)

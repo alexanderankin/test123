@@ -2,8 +2,8 @@ plugin.candyfolds.CandyFoldsPlugin.activate=startup
 plugin.candyfolds.CandyFoldsPlugin.name=CandyFolds
 plugin.candyfolds.CandyFoldsPlugin.author=Nicolás Carranza 
 # inspired and based on work by André Kaplan & Nathan Jones (WhiteSpace plugin)
-plugin.candyfolds.CandyFoldsPlugin.version=1.0.0
-plugin.candyfolds.CandyFoldsPlugin.description=CandyFolds draws colored fold-guides on the text area to improve code readability. CandyFolds was based on the WhiteSpace plugin's fold-guides. 
+plugin.candyfolds.CandyFoldsPlugin.version=1.1.0
+plugin.candyfolds.CandyFoldsPlugin.description=CandyFolds draws colored indentation-guides on the text area to improve code readability.
 plugin.candyfolds.CandyFoldsPlugin.docs=index.html
 
 #v Dependencies

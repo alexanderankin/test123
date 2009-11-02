@@ -20,35 +20,37 @@
 % }] */
 package candyfolds.config.gui;
 
+import candyfolds.config.ModeConfig;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import candyfolds.config.ModeConfig;
 
 class ModeConfigPanel {
 	final JPanel panel=new JPanel(new BorderLayout());
 	private ModeConfig modeConfig;
 	final JCheckBox enabledCB=new JCheckBox("Enable CandyFolds for this mode");
-	private final FoldConfigsTable foldConfigsTable=new FoldConfigsTable();
+	final JCheckBox useBigLinesForStripConfigsCB=new JCheckBox("Prefer matching against lines with more than 1 non-space characters");
+	private final StripConfigsTable stripConfigsTable=new StripConfigsTable();
 	private final JPanel tablePanel=new JPanel(new BorderLayout());
-	private final FoldConfigsOpPanel foldConfigsOpPanel=new FoldConfigsOpPanel(foldConfigsTable);
+	private final StripConfigsOpPanel stripConfigsOpPanel=new StripConfigsOpPanel(stripConfigsTable);
 
 	{
-		JScrollPane sp=new JScrollPane(foldConfigsTable.table);
+		JScrollPane sp=new JScrollPane(stripConfigsTable.table);
 		sp.setPreferredSize(new Dimension(10, 10));
 		sp.setBorder(BorderFactory.createEmptyBorder(3, 0, 0, 0));
 		tablePanel.add(sp);
-		tablePanel.add(foldConfigsOpPanel.panel, BorderLayout.SOUTH);
+		tablePanel.add(stripConfigsOpPanel.panel, BorderLayout.SOUTH);
 		//tablePanel.setBorder(BorderFactory.createTitledBorder("Candies"));
-
 		panel.add(tablePanel);
-		panel.add(enabledCB, BorderLayout.NORTH);
-
+		
+		Box box=new Box(BoxLayout.Y_AXIS);
 		enabledCB.addActionListener(new ActionListener() {
 			    @Override
 			    public void actionPerformed(ActionEvent ev) {
@@ -58,31 +60,46 @@ class ModeConfigPanel {
 			    }
 		    }
 		                           );
+		box.add(enabledCB);
+		useBigLinesForStripConfigsCB.addActionListener(new ActionListener(){
+			    @Override
+			    public void actionPerformed(ActionEvent ev){
+			    	if(modeConfig!=null)
+			    		modeConfig.setUseBigLinesForStripConfigs(useBigLinesForStripConfigsCB.isSelected());
+			    	updateView();
+			    }
+		    });
+		box.add(useBigLinesForStripConfigsCB);
+		panel.add(box, BorderLayout.NORTH);
+		
 		updateView();
 	}
 
 	void setModeConfig(ModeConfig modeConfig) {
 		this.modeConfig=modeConfig;
-		foldConfigsTable.setModeConfig(modeConfig);
+		stripConfigsTable.setModeConfig(modeConfig);
 		updateView();
 	}
 
 	private void updateView() {
 		if(modeConfig!=null) {
 			enabledCB.setSelected(modeConfig.getEnabled());
-			enabledCB.setVisible(modeConfig!=modeConfig.config.defaultModeConfig);
-			foldConfigsOpPanel.panel.setVisible(
+			boolean isDefault=modeConfig!=modeConfig.config.defaultModeConfig;
+			enabledCB.setVisible(isDefault);
+			useBigLinesForStripConfigsCB.setSelected(modeConfig.getUseBigLinesForStripConfigs());
+			stripConfigsOpPanel.panel.setVisible(
 			  modeConfig!=modeConfig.config.defaultModeConfig);
 		}
-		setEnabledFoldConfigs(enabledCB.isSelected());
+		useBigLinesForStripConfigsCB.setEnabled(enabledCB.isSelected());
+		setEnabledStripConfigs(enabledCB.isSelected());
 	}
 
-	private void setEnabledFoldConfigs(boolean enabled) {
-		foldConfigsTable.table.setEnabled(enabled);
-		foldConfigsOpPanel.setEnabled(enabled);
+	private void setEnabledStripConfigs(boolean enabled) {
+		stripConfigsTable.table.setEnabled(enabled);
+		stripConfigsOpPanel.setEnabled(enabled);
 	}
-	
+
 	void save(){
-		foldConfigsTable.save();
+		stripConfigsTable.save();
 	}
 }

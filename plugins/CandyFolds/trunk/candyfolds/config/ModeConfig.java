@@ -31,9 +31,10 @@ public final class ModeConfig {
 	public static final int MAX_FOLD_CONFIGS=20;
 	public final Config config;
 	public final String name;
-	private final List<FoldConfig> foldConfigs=new ArrayList<FoldConfig>();
-	public final List<FoldConfig> foldConfigsA=Collections.unmodifiableList(foldConfigs);
+	private final List<StripConfig> stripConfigs=new ArrayList<StripConfig>();
+	public final List<StripConfig> stripConfigsA=Collections.unmodifiableList(stripConfigs);
 	private boolean enabled=true;
+	private boolean useBigLinesForStripConfigs=true;
 
 	ModeConfig(Config config, String name) {
 		this.config=config;
@@ -50,52 +51,61 @@ public final class ModeConfig {
 		this.enabled=enabled;
 	}
 
-	public FoldConfig addFoldConfig() {
-		if(config.defaultModeConfig==this && !foldConfigs.isEmpty())
+	public boolean getUseBigLinesForStripConfigs(){
+		return useBigLinesForStripConfigs;
+	}
+
+	public void setUseBigLinesForStripConfigs(boolean useBigLinesForStripConfigs){
+		this.useBigLinesForStripConfigs=useBigLinesForStripConfigs;
+	}
+
+	public StripConfig addStripConfig() {
+		if(config.defaultModeConfig==this && !stripConfigs.isEmpty())
 			return null;
-		FoldConfig foldConfig=new FoldConfig();
-		foldConfigs.add(foldConfig);
-		return foldConfig;
+		StripConfig stripConfig=new StripConfig();
+		stripConfigs.add(stripConfig);
+		return stripConfig;
 	}
 
-	public void removeFoldConfig(int index) {
-		if(config.defaultModeConfig==this && foldConfigs.size()==1)
+	public void removeStripConfig(int index) {
+		if(config.defaultModeConfig==this && stripConfigs.size()==1)
 			return;
-		foldConfigs.remove(index);
+		stripConfigs.remove(index);
 	}
 
-	public boolean moveUp(int foldConfigIndex) {
-		if(foldConfigIndex>0 && foldConfigIndex<foldConfigs.size()) {
-			FoldConfig toMove=foldConfigs.remove(foldConfigIndex);
-			foldConfigs.add(foldConfigIndex-1, toMove);
+	public boolean moveUp(int stripConfigIndex) {
+		if(stripConfigIndex>0 && stripConfigIndex<stripConfigs.size()) {
+			StripConfig toMove=stripConfigs.remove(stripConfigIndex);
+			stripConfigs.add(stripConfigIndex-1, toMove);
 			return true;
 		}
 		return false;
 	}
 
-	public boolean moveDown(int foldConfigIndex) {
-		if(foldConfigIndex>=0 && foldConfigIndex<foldConfigs.size()-1) {
-			FoldConfig toMove=foldConfigs.remove(foldConfigIndex);
-			foldConfigs.add(foldConfigIndex+1, toMove);
+	public boolean moveDown(int stripConfigIndex) {
+		if(stripConfigIndex>=0 && stripConfigIndex<stripConfigs.size()-1) {
+			StripConfig toMove=stripConfigs.remove(stripConfigIndex);
+			stripConfigs.add(stripConfigIndex+1, toMove);
 			return true;
 		}
 		return false;
 	}
 
-	public FoldConfig evalFoldConfig(Segment segment) {
-		for(FoldConfig foldConfig: foldConfigs) {
-			if(foldConfig.matches(segment))
-				return foldConfig;
+	public StripConfig evalStripConfig(Segment segment) {
+		for(StripConfig stripConfig: stripConfigs) {
+			if(stripConfig.matches(segment))
+				return stripConfig;
 		}
-		return config.defaultModeConfig.foldConfigs.get(0);
+		return config.defaultModeConfig.stripConfigs.get(0);
 	}
 
 	void store(Properties ps) {
 		StringBuilder sb=new StringBuilder();
 		ps.clear();
 		ps.setProperty(getPropertyName(sb, "enabled"), String.valueOf(enabled));
-		for(int i=0, size=foldConfigs.size(); i<size && i<MAX_FOLD_CONFIGS; i++) {
-			foldConfigs.get(i).store(ps, this, sb, i);
+		ps.setProperty(getPropertyName(sb, "bigLines"), String.valueOf(useBigLinesForStripConfigs));
+		for(int i=0, size=stripConfigs.size(); i<size && i<MAX_FOLD_CONFIGS; i++) {
+			stripConfigs.get(i).store(ps, this, sb, i);
 		}
 	}
 
@@ -120,11 +130,13 @@ public final class ModeConfig {
 			if(this!=config.defaultModeConfig)
 				setEnabled(Boolean.valueOf(
 				             ps.getProperty(getPropertyName(sb, "enabled"))));
-			foldConfigs.clear();
+			setUseBigLinesForStripConfigs(Boolean.valueOf(
+			      ps.getProperty(getPropertyName(sb, "bigLines"))));
+			stripConfigs.clear();
 			for(int i=0; i<MAX_FOLD_CONFIGS; i++) {
-				FoldConfig foldConfig=new FoldConfig();
-				if(foldConfig.load(ps, this, sb, i)) {
-					foldConfigs.add(foldConfig);
+				StripConfig stripConfig=new StripConfig();
+				if(stripConfig.load(ps, this, sb, i)) {
+					stripConfigs.add(stripConfig);
 				} else
 					break;
 			}
