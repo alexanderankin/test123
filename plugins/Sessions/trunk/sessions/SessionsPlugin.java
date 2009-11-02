@@ -250,7 +250,6 @@ public class SessionsPlugin extends EBPlugin
 
 	private synchronized void addSessionSwitcher(final View view)
 	{
-		Log.log(Log.DEBUG, this, "Adding session switcher component to view");
 		// remove old
 		removeSessionSwitcher(view);
 
@@ -260,8 +259,13 @@ public class SessionsPlugin extends EBPlugin
 
 		if(jEdit.getBooleanProperty("sessions.switcher.showJEditToolBar", false))
 		{
-			if(view.getToolBar() != null)
+			if(view.getToolBar() == null)
 			{
+				Log.log(Log.WARNING, this, "View toolbar is null!!!");
+			}
+			else
+			{
+				Log.log(Log.DEBUG, this, "Adding session switcher to main toolbar");
 				// Add to jEdit's default toolbar:
 				// We need to add it later. Cannot add it right now, because if the View
 				// receives the PropertiesChanged message, it removes and recreates
@@ -290,6 +294,7 @@ public class SessionsPlugin extends EBPlugin
 			}
 			else
 			{
+				Log.log(Log.DEBUG, this, "Adding session switcher to BufferList dockable");
 				// Add to BufferList:
 				SwingUtilities.invokeLater(new Runnable()
 				{
@@ -304,6 +309,7 @@ public class SessionsPlugin extends EBPlugin
 		else
 		{
 			// Add as a _new_ toolbar to the View, below the main toolbar:
+			Log.log(Log.DEBUG, this, "Adding session switcher below main toolbar");
 			view.addToolBar(switcher);
 		}
 	}
