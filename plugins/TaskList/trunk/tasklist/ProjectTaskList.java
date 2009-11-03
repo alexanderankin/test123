@@ -46,8 +46,12 @@ import common.swingworker.*;
 
 public class ProjectTaskList extends AbstractTreeTaskList {
 
+    // reference to the current project to list tasks for
     private VPTProject project = null;
-
+    
+    /**
+     * @param view The View containing the ProjectViewer to find tasks for    
+     */
     public ProjectTaskList( View view ) {
         super( view, ProjectViewer.getActiveProject( view ) != null ? ProjectViewer.getActiveProject( view ).getName() : null );
         putClientProperty( "isCloseable", Boolean.FALSE );
@@ -57,7 +61,9 @@ public class ProjectTaskList extends AbstractTreeTaskList {
     // performance of the UI.
     @Override
     protected void loadFiles() {
-        project = ProjectViewer.getActiveProject( view );
+        if ( project == null ) {
+            project = ProjectViewer.getActiveProject( view );
+        }
         if ( project != null ) {
             rootDisplayName = jEdit.getProperty( "tasklist.projectfiles.project", "Project:" ) + " " + project.getName();
         }
@@ -112,7 +118,7 @@ public class ProjectTaskList extends AbstractTreeTaskList {
         if ( msg.getClass().getName().equals( "projectviewer.event.ViewerUpdate" ) ) {
             ViewerUpdate vu = ( ViewerUpdate ) msg;
             if ( ViewerUpdate.Type.PROJECT_LOADED.equals( vu.getType() ) && vu.getView().equals( view ) ) {
-                VPTProject project = ( VPTProject ) vu.getNode();
+                project = ( VPTProject ) vu.getNode();
                 if ( project != null ) {
                     loadFiles();
                 }
@@ -123,7 +129,8 @@ public class ProjectTaskList extends AbstractTreeTaskList {
         }
     }
 
-    // Helper method to determine binary files.
+    // Helper method to determine binary files.  These are file name extensions
+    // for commonly known binary files.  There could be many others.
     String[] exts = new String[] {".jpg", ".gif", ".png", ".ico", ".bmp", ".class", ".jar", ".war"};
     boolean isBinary( String file ) {
         String filename = file.toLowerCase();
@@ -134,6 +141,4 @@ public class ProjectTaskList extends AbstractTreeTaskList {
         }
         return false;
     }
-
-
 }
