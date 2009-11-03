@@ -38,6 +38,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.HistoryTextField;
 
 import ise.java.awt.KappaLayout;
+import ise.plugin.svn.SVNPlugin;
 import ise.plugin.svn.PVHelper;
 import ise.plugin.svn.library.PasswordHandler;
 import common.swingworker.SwingWorker;
@@ -183,31 +184,57 @@ public class PVSVNOptionPane extends AbstractOptionPane {
         );
 
         // possibly change working copy format
-        try {
-            int current_wc_format = getWCVersion();
-            String new_wc_format = ( String ) fileformat.getSelectedItem();
-            int wc_format;
-            if ( "1.3".equals(new_wc_format) ) {
-                wc_format = SVNAdminAreaFactory.WC_FORMAT_13;
-            }
-            else if ( "1.4".equals(new_wc_format) ) {
-                wc_format = SVNAdminAreaFactory.WC_FORMAT_14;
-            }
-            else if ( "1.5".equals(new_wc_format) ) {
-                wc_format = SVNAdminAreaFactory.WC_FORMAT_15;
-            }
-            else {
-                wc_format = SVNAdminAreaFactory.WC_FORMAT_16;
-            }
-            if ( wc_format != current_wc_format ) {
-                // TODO: thread this, it takes a long time on large projects
-                // and causes the UI to hang until it is done.
-                SVNWCClient wc_client = SVNClientManager.newInstance().getWCClient();
-                wc_client.doSetWCFormat( projectRoot, wc_format );
-            }
+        int current_wc_format = getWCVersion();
+        final String new_wc_format = ( String ) fileformat.getSelectedItem();
+        int wc_format;
+        if ( "1.3".equals( new_wc_format ) ) {
+            wc_format = SVNAdminAreaFactory.WC_FORMAT_13;
         }
-        catch ( Exception e ) {
-            JOptionPane.showMessageDialog( jEdit.getActiveView(), jEdit.getProperty( "ips.Unable_to_convert_working_copy_file_format>", "Unable to convert working copy file format:" ) + "\n" + e.getMessage(), jEdit.getProperty( "ips.Error", "Error" ), JOptionPane.ERROR_MESSAGE );
+        else if ( "1.4".equals( new_wc_format ) ) {
+            wc_format = SVNAdminAreaFactory.WC_FORMAT_14;
+        }
+        else if ( "1.5".equals( new_wc_format ) ) {
+            wc_format = SVNAdminAreaFactory.WC_FORMAT_15;
+        }
+        else {
+            wc_format = SVNAdminAreaFactory.WC_FORMAT_16;
+        }
+        if ( wc_format != current_wc_format ) {
+            // put this in a SwingWorker, otherwise, it takes a long time on
+            // large projects and causes the UI to hang until it is done.
+            final int wcf = wc_format;
+            jEdit.getActiveView().getDockableWindowManager().showDockableWindow( "subversion" );
+            final OutputPanel panel = SVNPlugin.getOutputPanel( jEdit.getActiveView() );
+            panel.showConsole();
+            class Runner extends SwingWorker < Object , Object > {
+                ConsolePrintStream out = new ConsolePrintStream( jEdit.getActiveView() );
+                // TODO: move strings to property file
+                @Override
+                protected Object doInBackground() {
+                    try {
+                        out.println("Converting svn working copy format to " + new_wc_format + "...");
+                        SVNWCClient wc_client = SVNClientManager.newInstance().getWCClient();
+                        wc_client.doSetWCFormat( projectRoot, wcf );
+                    }
+                    catch ( Exception e ) {
+                        JOptionPane.showMessageDialog( jEdit.getActiveView(), jEdit.getProperty( "ips.Unable_to_convert_working_copy_file_format>", "Unable to convert working copy file format:" ) + "\n" + e.getMessage(), jEdit.getProperty( "ips.Error", "Error" ), JOptionPane.ERROR_MESSAGE );
+                    }
+                    return null;
+                }
+                @Override
+                public boolean cancel( boolean mayInterruptIfRunning ) {
+                    out.printError( "Unable to stop conversion of working file format." );
+                    return false;
+                }
+                @Override
+                protected void done() {
+                    out.println("Completed converting working copy format to " + new_wc_format + ".");
+                    out.close();
+                }
+            }
+            Runner runner = new Runner();
+            panel.addWorker( "Converting", runner );
+            runner.execute();
         }
     }
 
