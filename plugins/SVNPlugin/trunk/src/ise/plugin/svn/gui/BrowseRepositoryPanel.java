@@ -571,6 +571,9 @@ public class BrowseRepositoryPanel extends JPanel {
                 DirTreeNode node = ( DirTreeNode ) value;
                 String text = node.toString();
                 if ( node.isExternal() ) {
+                    // TODO: make the color configurable by the user? Blue is hard
+                    // to read in some LAFs.  Maybe use a jEdit color from either
+                    // the file system browser or syntax highlighting?
                     text = "<html><font color=blue>" + node.toString();
                     label.setToolTipText( "<html><b>External: </b> " + node.getRepositoryLocation() );
                 }
