@@ -229,12 +229,10 @@ public class LucenePlugin extends EBPlugin
 		if (analyzer != null)
 			index.setAnalyzer(analyzer);
 		indexMap.put(name, index);
+		CENTRAL.createIndex(index);
 		saveIndexes();
 		if (!path.exists())
-		{
 			path.mkdirs();
-			CENTRAL.createIndex(index);
-		}
 		return index;
 	}
 
