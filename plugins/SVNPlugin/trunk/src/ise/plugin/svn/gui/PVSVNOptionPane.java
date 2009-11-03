@@ -124,7 +124,7 @@ public class PVSVNOptionPane extends AbstractOptionPane {
             default:
                 wc_item = "1.6";
                 break;
-                
+
         }
         fileformat.setSelectedItem( wc_item );
 
@@ -187,19 +187,21 @@ public class PVSVNOptionPane extends AbstractOptionPane {
             int current_wc_format = getWCVersion();
             String new_wc_format = ( String ) fileformat.getSelectedItem();
             int wc_format;
-            if ( new_wc_format.equals( "1.3" ) ) {
+            if ( "1.3".equals(new_wc_format) ) {
                 wc_format = SVNAdminAreaFactory.WC_FORMAT_13;
             }
-            else if ( new_wc_format.equals( "1.4" ) ) {
+            else if ( "1.4".equals(new_wc_format) ) {
                 wc_format = SVNAdminAreaFactory.WC_FORMAT_14;
             }
-            else if ( new_wc_format.equals( "1.5" ) ) {
+            else if ( "1.5".equals(new_wc_format) ) {
                 wc_format = SVNAdminAreaFactory.WC_FORMAT_15;
             }
             else {
                 wc_format = SVNAdminAreaFactory.WC_FORMAT_16;
             }
             if ( wc_format != current_wc_format ) {
+                // TODO: thread this, it takes a long time on large projects
+                // and causes the UI to hang until it is done.
                 SVNWCClient wc_client = SVNClientManager.newInstance().getWCClient();
                 wc_client.doSetWCFormat( projectRoot, wc_format );
             }
