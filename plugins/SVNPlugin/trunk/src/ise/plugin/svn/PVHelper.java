@@ -121,9 +121,18 @@ public class PVHelper {
             return null;
         }
 
-        // check ProjectViewer
+        // check ProjectViewer. Check active project first, then other projects.
+        project = ProjectViewer.getActiveProject( jEdit.getActiveView() );
+        if (project.isInProject(filename) || ( project.getRootPath() != null && filename.startsWith( project.getRootPath()))) {
+            projectForFile.put(filename, project);
+            return project;
+        }
+        
         ProjectManager pm = ProjectManager.getInstance();
         for ( VPTProject proj : pm.getProjects() ) {
+            if (proj.equals(project)) {
+                continue;   // already checked in active project, no need to check again.   
+            }
             if ( proj.isInProject( filename ) || ( proj.getRootPath() != null && filename.startsWith( proj.getRootPath() ) )) {
                 projectForFile.put(filename, proj);
                 return proj;
