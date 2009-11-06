@@ -40,7 +40,7 @@ final class LineInfo {
 	private final List<Integer> indents=new ArrayList<Integer>();
 	private final List<Integer> lines=new ArrayList<Integer>(); // lines where the indents belong (1:1).
 	private final List<StripConfig> stripConfigs=new ArrayList<StripConfig>();
-	
+
 	LineInfo(TextAreaExt textAreaExt) {
 		this.textAreaExt=textAreaExt;
 	}
@@ -67,52 +67,32 @@ final class LineInfo {
 		lines.clear();
 		stripConfigs.clear();
 	}
-	
-	void copyFrom(LineInfo lineInfo){
-		clear();
-		line=lineInfo.line;
-		indents.addAll(lineInfo.indents);
-		lines.addAll(lineInfo.lines);
-		stripConfigs.addAll(lineInfo.stripConfigs);
-	}
 
-	void eval(Buffer buffer, int line){
+	void eval(Buffer buffer, final int line){
 		eval(buffer, line, null);
 	}
 
-	void eval(Buffer buffer, int line, LineInfo upLineInfo){
+	void eval(Buffer buffer, final int line, LineInfo upLineInfo){
 		clear();
 		this.line=line;
 		int upLine= upLineInfo==null? 0: upLineInfo.line+1;
-
+		
 		int calcLine;
 		if(isEmptySegment(buffer, line)){
-			int firstIndentUp=-1, firstIndentUpLine=line;
-			for(int i=line; i>=upLine; i--){
-				if(i!=0 && isEmptySegment(buffer, i))
-					continue;
-				firstIndentUp=buffer.getCurrentIndentForLine(i, null);
-				firstIndentUpLine=i;
-				break;
-			}
-			if(firstIndentUp==-1){
-				firstIndentUp=upLineInfo.lineIndent;
-				firstIndentUpLine=upLineInfo.line;
-			}
 			int firstIndentDown=-1, firstIndentDownLine=line;
-			for(int i=line, lineCount=buffer.getLineCount(); i<lineCount; i++){ // TODO: optimize for performance on large files with a lot of empty lines...
+			for(int i=line+1, lineCount=buffer.getLineCount(); i<lineCount; i++){ // TODO: optimize for performance on large files with a lot of empty lines...
 				if(isEmptySegment(buffer, i))
 					continue;
 				firstIndentDown=buffer.getCurrentIndentForLine(i, null);
 				firstIndentDownLine=i;
 				break;
 			}
-			if(firstIndentDown>firstIndentUp){
+			if(firstIndentDown!=-1){
 				calcLine=firstIndentDownLine;
 				lineIndent=firstIndentDown;
 			}else{
-				calcLine=firstIndentUpLine;
-				lineIndent=firstIndentUp;
+				calcLine=line;
+				lineIndent=0;
 			}
 		}
 		else{
@@ -124,7 +104,7 @@ final class LineInfo {
 		for(; calcLine>=upLine; calcLine--) {
 			indent=buffer.getCurrentIndentForLine(calcLine, null);
 			if(indent>=lastCaughtIndent ||
-			        indent>lineIndent)
+				 indent>lineIndent)
 				continue;
 			if(isEmptySegment(buffer, calcLine))
 				continue;
@@ -138,12 +118,12 @@ final class LineInfo {
 		}
 
 		if(upLineInfo!=null
-		        && lastCaughtIndent>0 // optimization
-		  ){
+			 && lastCaughtIndent>0 // optimization
+			){
 			for(int i=0; i<upLineInfo.indents.size(); i++){
 				indent=upLineInfo.indents.get(i);
 				if(indent>=lastCaughtIndent ||
-				        indent>lineIndent)
+					 indent>lineIndent)
 					continue;
 				lastCaughtIndent=indent;
 				//L.fine("line="+line+", adding upLineInfo indent="+indent);
@@ -180,14 +160,18 @@ final class LineInfo {
 				buffer.getLineText(prevLine, segment);
 				int segmentContentLength=evalSegmentContentLength(segment);
 				if(segmentContentLength==0)
-					continue;
+					break;
 				int prevLineIndent=buffer.getCurrentIndentForLine(prevLine, null);
 				if(prevLineIndent>lineIndent)
 					continue;
 				if(prevLineIndent<lineIndent)
 					break;
-				if(segmentContentLength==1)
+				if(segmentContentLength==1){
+					if(line!=prevLine &&
+						 lineIndent==prevLineIndent)
+						break;
 					continue;
+				}
 				usePrevLine=true;
 				// -> the segment is ready on prevLine
 				break;
