@@ -61,27 +61,9 @@ final class TextAreaExt
 	final EditPane editPane;
 	private final TextAreaPainter painter;
 
-	/*
-	private final LineInfo firstLineInfo=new LineInfo(this);
-	private Buffer firstLineInfoBuffer;
-	private final BufferListener firstLineInfoBufferL=new BufferAdapter(){
-		    @Override
-		    public void contentInserted(JEditBuffer buffer, int startLine, int offset, int numLines, int length){
-			    contentChanged();
-		    }
-		    @Override
-		    public void contentRemoved(JEditBuffer buffer, int startLine, int offset, int numLines, int length){
-			    contentChanged();
-		    }
-		    private void contentChanged(){
-			    unregisterFirstLineInfoBuffer();
-		    }
-	    };*/
 	private LineInfo previousLineInfo=new LineInfo(this);
 	private LineInfo currentLineInfo=new LineInfo(this);
 	//private final LineInfo toolTipLineInfo=new LineInfo(this);
-
-
 
 	private final FontMetricsInfo fontMetricsInfo=new FontMetricsInfo();
 	private static final class FontMetricsInfo {
@@ -99,7 +81,6 @@ final class TextAreaExt
 			lineHeight=fontMetrics.getHeight();
 			barStroke=new BasicStroke(spaceWidth/2.3f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND);
 		}
-
 	}
 
 	private ModeConfig modeConfig;
@@ -138,24 +119,22 @@ final class TextAreaExt
 
 	@Override
 	public void paintValidLine(Graphics2D g,
-	    int screenLine,
-	    int physicalLine,
-	    int start,
-	    int end,
-	    int y) {
-		//lineInfo.eval(editPane.getBuffer(), physicalLine);
-		//drawLine(lineInfo, g, y);
+			int screenLine,
+			int physicalLine,
+			int start,
+			int end,
+			int y) {
 	}
 
 	@Override
 	public synchronized void paintScreenLineRange(Graphics2D g,
-	    int firstLine,
-	    int lastLine,
-	    int[] physicalLines,
-	    int[] start,
-	    int[] end,
-	    int y,
-	    int lineHeight) {
+			int firstLine,
+			int lastLine,
+			int[] physicalLines,
+			int[] start,
+			int[] end,
+			int y,
+			int lineHeight){
 		//Log.log(Log.NOTICE, this, "painting range: firstLine="+firstLine+", lastLine=" + lastLine + ", y=" + y+"lineHeight="+lineHeight);
 		//long nanoTime=System.nanoTime();
 		Buffer buffer = editPane.getBuffer();
@@ -167,16 +146,8 @@ final class TextAreaExt
 			int line=physicalLines[i];
 			if(line==-1)
 				continue;
-			if(i==0){
-				/* this optimization does not worth the effort! 
-				if(firstLineInfoBuffer!=buffer // firstLineInfoBuffer is set to null when buffer changes
-				        || firstLineInfo.getLine()!=line){
-					firstLineInfo.eval(buffer, line);
-					registerFirstLineInfoBuffer(buffer);
-				 }
-				currentLineInfo.copyFrom(firstLineInfo);*/
+			if(i==0)
 				currentLineInfo.eval(buffer, line);
-			}
 			else
 				currentLineInfo.eval(buffer, line, previousLineInfo);
 			drawLineIndents(buffer, currentLineInfo, g, y);
@@ -188,21 +159,6 @@ final class TextAreaExt
 		//Log.log(Log.NOTICE, this, "done painting range");
 		//L.fine("new painting time="+(System.nanoTime()-nanoTime));
 	}
-
-	/*
-	private synchronized void registerFirstLineInfoBuffer(Buffer buffer){
-		if(buffer==firstLineInfoBuffer)
-			return;
-		unregisterFirstLineInfoBuffer();
-		firstLineInfoBuffer=buffer;
-		firstLineInfoBuffer.addBufferListener(firstLineInfoBufferL);
-	}
-	
-	private synchronized void unregisterFirstLineInfoBuffer(){
-		if(firstLineInfoBuffer!=null)
-			firstLineInfoBuffer.removeBufferListener(firstLineInfoBufferL);
-		firstLineInfoBuffer=null;
-	}*/
 
 	private void drawLineIndents(Buffer buffer, LineInfo lineInfo, Graphics2D g, int y) {
 		fontMetricsInfo.setFontMetrics(painter.getFontMetrics());
@@ -261,5 +217,5 @@ final class TextAreaExt
 			}
 		}
 		return null;
-}*/
+		}*/
 }
