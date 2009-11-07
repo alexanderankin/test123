@@ -404,6 +404,7 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
                 ( ( DefaultTreeModel ) tree.getModel() ).nodeStructureChanged( root );
                 expandTree();
             }
+            TaskListPlugin.propertiesChanged();
         }
     }
 
