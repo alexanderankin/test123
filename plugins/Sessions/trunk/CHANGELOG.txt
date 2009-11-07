@@ -1,3 +1,6 @@
+VERSION 1.5.1 (Steve Jakob)
+- fixed bug (#2872914) using patch (#2886196) submitted by Steve Gough, where Unicode characters in file names were interpreted incorrectly when restoring a session
+
 VERSION 1.5.0 (Steve Jakob)
 - added a property in the Sessions plugin options to specify the maximum number of entries for the session switcher combo
 - removed calls to deprecated methods
