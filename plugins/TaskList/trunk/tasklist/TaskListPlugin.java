@@ -24,7 +24,7 @@ package tasklist;
 /*{{{ TODOS...
  WON'T DO: need a text area change listener for re-parsing.  Buffer gets reparsed
     on save.  On text area change is too much and hurts performance.
- TODO: ensure task highlights are repainted when buffer reloaded, etc...
+ DONE: ensure task highlights are repainted when buffer reloaded, etc...
  DONE: are there portions of the code which are not thread safe?
  DONE: allow for displaying all buffers or only current ones
 
@@ -139,7 +139,7 @@ public class TaskListPlugin extends EditPlugin {
     /**
      * Enables/disables TaskHighlights
      */
-    private void toggleHighlights( boolean enabled ) {
+    private static void toggleHighlights( boolean enabled ) {
         View view = jEdit.getFirstView();
         while ( view != null ) {
             EditPane[] panes = view.getEditPanes();
@@ -325,7 +325,7 @@ public class TaskListPlugin extends EditPlugin {
      * Causes an update of application data, typically after a change
      * in the plugin's user settings.
      */
-    private void propertiesChanged() {
+    protected static void propertiesChanged() {
         TaskListPlugin.clearTaskTypes();
         TaskListPlugin.loadTaskTypes();
         TaskListPlugin.loadParseModes();
@@ -431,7 +431,6 @@ public class TaskListPlugin extends EditPlugin {
         if ( buffer == null ) {
             return ;
         }
-        // NOTE: remove this if this method becomes private
         if ( buffer.isLoaded() == false ) {
             return ;
         }
@@ -595,7 +594,6 @@ public class TaskListPlugin extends EditPlugin {
             return ;
         }
 
-        // TODO: if whole comment is task, remove comment too
         String text = buffer.getText( task.getStartPosition().getOffset(), task.getText().length() );
         if ( !task.getText().equals( text ) ) {
             GUIUtilities.error( view, "tasklist.buffer-changed", null );
