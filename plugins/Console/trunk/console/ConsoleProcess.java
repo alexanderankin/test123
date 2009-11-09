@@ -280,7 +280,7 @@ class ConsoleProcess
 	} // }}}
 
 	// {{{ getPipeOutput() method
-	public synchronized PipedOutputStream getPipeOutput()
+	public PipedOutputStream getPipeOutput()
 	{
 		return (process != null) ? pipeOut : null;
 	} // }}}
