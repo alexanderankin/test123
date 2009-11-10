@@ -3,7 +3,7 @@
 <project name="NetRexxScript" default="build" basedir=".">
 
 	<!-- Project properties -->
-	<property name="project.version" value="0.1.0" description="Project's build version"/>
+	<property name="project.version" value="0.1.1" description="Project's build version"/>
 	<property name="project.root.dir" value="." description="Project's root directory"/>
 	<property name="project.src.dir" value="${project.root.dir}/src" description="Project's source default package directory"/>
 	<property name="project.settings.dir" value="${project.root.dir}" description="Project's settings directory"/>
@@ -12,7 +12,8 @@
 	<property name="project.build.binjar.name" value="${ant.project.name}.jar" description="Binary jar file name"/>
 	<property name="project.build.srcjar.name" value="${ant.project.name}-${project.version}+src.jar" description="Binary+ src jar file name"/>
 	<!-- JEdit's local installation properties -->
-	<property name="jedit.install.dir" value="C:\Program Files\jEdit"/>
+<!-- 	<property name="jedit.install.dir" value="C:\Program Files\jEdit"/> -->
+	<property name="jedit.install.dir" value="C:\downloads\jEdit\4.2"/>
 	<property name="jedit.user.directory" value="${user.home}\.jEdit"/>
 	<property name="jedit.jars.directory" value="${jedit.user.directory}\jars"/>
 
