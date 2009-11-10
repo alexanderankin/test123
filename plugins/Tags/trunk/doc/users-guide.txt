@@ -5,7 +5,7 @@ Tags Plugin
 :Authors: Kenrick Drew,
 			Ollie Rutherfurd,
 			Shlomy Reinstein
-:Version: 3.0.1
+:Version: 3.0.3
 
 .. $Id$
 
