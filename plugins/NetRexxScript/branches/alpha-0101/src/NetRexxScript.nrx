@@ -16,6 +16,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+ 
+ Version 0.0.3 (Nov. 06, 2009)
+
+    *  Remove display of parse window in commandstarted method to prevent window flashing
+ 
  Version 0.0.2 (Oct. 22, 2009)
 
     *  Allow window to kill scripts started from menu runcurrent option
@@ -188,7 +193,7 @@ class NetRexxScript adapter extends JPanel implements ActionListener	--, Compone
 		cll.setText("   Cmd or parms:")
 		
 	method commandstarted public
-		(CardLayout mp.getLayout).show(mp,"parseout")
+--		(CardLayout mp.getLayout).show(mp,"parseout")
 		runbutton.setSelected(1)
 		runbutton.setIcon(ImageIcon(getClass().getResource("res/"||"Stop16.gif")))
 		runbutton.setToolTipText("Stop script now running")		
@@ -263,7 +268,7 @@ class NetRexxScript adapter extends JPanel implements ActionListener	--, Compone
 						end
 					  else do
 						System.out.println("execute NetRexxScript runcurrent action")
-					  	commandstarted
+--					  	commandstarted
 						pi.runcurrent(jEdit.getActiveView,jEdit.getActiveView.getBuffer,cl.getText)
 						return
 						end

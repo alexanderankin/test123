@@ -16,6 +16,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+ Version 0.1.1 (Nov 07, 2009) (prep for second beta version)
+
+    *  Add check for empty files (len<3) - issue error screen and exit
+    *  Add outwin.commandstarted call for runmacro entry
+ 
  Version 0.1.0 (Oct 25, 2009) (first beta version, I hope!)
 
     *  Mod classloader and runmacro entry to load macro classes without a classpath search
@@ -171,7 +176,7 @@ class NetRexxScriptPlugin public extends EBPlugin implements runnable
 --		Perform plugin initialization			---------------------------------------------------------------------------------------------------------------------
 
 	method start()								
-		System.out.println("NetRexxScript plugin version 0.1.0 (2009/10/30) starting")
+		System.out.println("NetRexxScript plugin version 0.1.1 (2009/11/07) starting")
 		
 		setdir=jEdit.getSettingsDirectory()	--	string with settings directory path (add \macros to get default script paths)		
 		
@@ -353,6 +358,13 @@ method setup		--	initial setup stuff: creates directories and loads files from o
 		
 --	 parse the file(s)
 		if \cache.exists(fname) then do		--	if the file is not already parsed, do it
+			fchk=File(fname)
+			if df then say "file len="fchk.length
+			if fchk.length<3 then do
+				Macros.error(jEdit.getActiveView,"Cannot execute empty file:\n" fname)
+				if outwin\=null then outwin.commandended
+				return
+				end
 			addtocache(spath,sname||stype)
 			if \parse(fname) then return 	-- parse the file(s), using the flags
 			end
@@ -505,7 +517,10 @@ method runmacro(script=String) -- called by macro menu selection
 	if df then trace results
 	commonentry
 	if outwin=null then parms=""
-		else parms=" "outwin.getcmdline.getText
+		else do
+			parms=" "outwin.getcmdline.getText
+			outwin.commandstarted
+			end
 	if Rexx(script).pos(".class")>0 then do
 		classmacro=myloader.loadThisClass(script)
 		justgo(classmacro,script,parms)

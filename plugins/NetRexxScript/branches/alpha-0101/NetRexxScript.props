@@ -5,7 +5,7 @@
 plugin.NetRexxScriptPlugin.activate=startup
 plugin.NetRexxScriptPlugin.name=NetRexxScript
 plugin.NetRexxScriptPlugin.author=Kermit Kiser
-plugin.NetRexxScriptPlugin.version=0.1.0
+plugin.NetRexxScriptPlugin.version=0.1.1
 plugin.NetRexxScriptPlugin.docs=NetRexxScript.html
 plugin.NetRexxScriptPlugin.description=NetRexx Scripting plugin
 
@@ -55,6 +55,7 @@ NetRexxScript.title = NetRexxScript
 # action labels
 NetRexxScript.toggle.label=NetRexxScript
 
-
+# missing a label somewhere - this one does not seem to be documented but need for shortcuts panel?
+NetRexxScript.label = NetRexxScript
 
 

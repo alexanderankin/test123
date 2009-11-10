@@ -17,6 +17,11 @@ import javax.swing.
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  
+  
+Version 0.0.5 (Nov. 07 2009)
+
+    * Disable gridbag and add JScrollPane to fix problem when option window is too small in jEdit 4.2 
+ 
 Version 0.0.4 (Oct. 31 2009)
 
     * fix prefix check - failing on Linux due to missing file sep char
@@ -62,8 +67,13 @@ class NetRexxScriptOptionPane extends AbstractOptionPane implements ActionListen
 		
     method _init						-----------------------------  initialize the option panel
 
+    	wrapper=JPanel()
+    	wrapper.setLayout(BoxLayout(wrapper, BoxLayout.PAGE_AXIS))
+		topspace=JPanel()
+		wrapper.add(topspace)    	
+    	
     	mp=JPanel()
-    	title = BorderFactory.createTitledBorder("Main NetRexx Options")
+    	title = BorderFactory.createTitledBorder("Main NetRexx Script Options")
     	mp.setBorder(title)
     	mp.setLayout(BoxLayout(mp, BoxLayout.PAGE_AXIS))
 
@@ -84,44 +94,60 @@ class NetRexxScriptOptionPane extends AbstractOptionPane implements ActionListen
     	mp.add(preparsebox)
     	mp.add(addjeditbox)
     	
-    	addComponent(mp)
+		wrapper.add(mp)
+		mp.setAlignmentX(Component.LEFT_ALIGNMENT) 
     	
 -------------------------------------------------------------------------	setup the verbosity selector    	
     	verbval=jEdit.getProperty(OPTION_PREFIX"verbosity","verbose3")
     	verbbox=JComboBox(verbset)
     	verbbox.setSelectedIndex(Rexx(verbset).wordpos(verbval)-1)
+    	verbbox.setMaximumSize(verbbox.getPreferredSize)
     	
     	jp=JPanel()
     	title = BorderFactory.createTitledBorder("Verbosity")
     	jp.setBorder(title)
+    	jp.setLayout(BoxLayout(jp, BoxLayout.LINE_AXIS))
 
     	tf=JLabel('Set parse verbosity:')
     	jp.add(tf)
     	jp.add(verbbox)
     	
-    	addComponent(jp)
+		wrapper.add(jp)
+		jp.setAlignmentX(Component.LEFT_ALIGNMENT) 
+		
 -------------------------------------------------------------------------	setup the classpath specification panel    	
     	cpp=JPanel()
+    	cpp.setLayout(BoxLayout(cpp, BoxLayout.PAGE_AXIS));
     	title = BorderFactory.createTitledBorder("Classpath")
-    	cpp.setBorder(title)    	
+    	cpp.setBorder(title) 
     	
     	classval=jEdit.getProperty(OPTION_PREFIX"classpath","")
-    	classpath=JTextField(classval,100)
+    	classpath=JTextField(classval,80)
+    	classpath.setMaximumSize(classpath.getPreferredSize)
     	cpp.add(classpath)
+    	cpp.setAlignmentX(Component.LEFT_ALIGNMENT) 
     	
-    	addComponent(cpp)
+		wrapper.add(cpp)
+		
 -------------------------------------------------------------------------	setup the scriptpath specification panel    	
     	spp=JPanel()
+    	spp.setLayout(BoxLayout(spp, BoxLayout.PAGE_AXIS));
     	title2 = BorderFactory.createTitledBorder("Scriptpath")
-    	spp.setBorder(title2)    	
+    	spp.setBorder(title2) 
     	
     	scriptval=jEdit.getProperty(OPTION_PREFIX"scriptpath","")
-    	scriptpath=JTextField(scriptval,100)
+    	scriptpath=JTextField(scriptval,80)
+    	scriptpath.setMaximumSize(scriptpath.getPreferredSize)
     	spp.add(scriptpath)
+    	spp.setAlignmentX(Component.LEFT_ALIGNMENT) 
     	
-    	addComponent(spp)
+		wrapper.add(spp)
+		
+		somespace=JPanel()
+		wrapper.add(somespace)
     	    	
-    	
+		this.setLayout(BoxLayout(this, BoxLayout.PAGE_AXIS))
+    	this.add(JScrollPane(wrapper))
     	
     method _save				-----------------------------------------------	this method saves any option data   
 			
