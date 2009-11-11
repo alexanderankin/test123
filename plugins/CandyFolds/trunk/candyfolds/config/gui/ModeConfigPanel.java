@@ -37,6 +37,7 @@ class ModeConfigPanel {
 	private ModeConfig modeConfig;
 	final JCheckBox enabledCB=new JCheckBox("Enable CandyFolds for this mode");
 	final JCheckBox useBigLinesForStripConfigsCB=new JCheckBox("Prefer matching against lines with more than 1 non-space characters");
+	final JCheckBox showStripOn0IndentCB=new JCheckBox("Show indentation-guide on left edge");
 	private final StripConfigsTable stripConfigsTable=new StripConfigsTable();
 	private final JPanel tablePanel=new JPanel(new BorderLayout());
 	private final StripConfigsOpPanel stripConfigsOpPanel=new StripConfigsOpPanel(stripConfigsTable);
@@ -70,6 +71,15 @@ class ModeConfigPanel {
 			    }
 		    });
 		box.add(useBigLinesForStripConfigsCB);
+		showStripOn0IndentCB.addActionListener(new ActionListener(){
+			    @Override
+			    public void actionPerformed(ActionEvent ev){
+			    	if(modeConfig!=null)
+			    		modeConfig.setShowStripOn0Indent(showStripOn0IndentCB.isSelected());
+			    	updateView();
+			    }
+		    });
+		box.add(showStripOn0IndentCB);
 		panel.add(box, BorderLayout.NORTH);
 		
 		updateView();
@@ -87,10 +97,12 @@ class ModeConfigPanel {
 			boolean isDefault=modeConfig!=modeConfig.config.defaultModeConfig;
 			enabledCB.setVisible(isDefault);
 			useBigLinesForStripConfigsCB.setSelected(modeConfig.getUseBigLinesForStripConfigs());
+			showStripOn0IndentCB.setSelected(modeConfig.getShowStripOn0Indent());
 			stripConfigsOpPanel.panel.setVisible(
 			  modeConfig!=modeConfig.config.defaultModeConfig);
 		}
 		useBigLinesForStripConfigsCB.setEnabled(enabledCB.isSelected());
+		showStripOn0IndentCB.setEnabled(enabledCB.isSelected());
 		setEnabledStripConfigs(enabledCB.isSelected());
 	}
 

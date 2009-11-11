@@ -170,7 +170,7 @@ final class TextAreaExt
 
 		for (int i =lineInfo.getIndentsSize();--i>=1;) {// ATTENTION: omit the first
 			indent =lineInfo.getIndent(i);
-			if(indent==0)
+			if(indent==0 && !modeConfig.getShowStripOn0Indent())
 				continue;
 			//Log.log(Log.NOTICE, this, "painting indent="+indent);
 			Color color=lineInfo.getStripConfig(i).getColor();
@@ -204,7 +204,7 @@ final class TextAreaExt
 		rect.height=fontMetricsInfo.lineHeight;
 		int indent;
 		int horizontalOffset=ta.getHorizontalOffset();
-		for (int i =toolTipLineInfo.indents.size();--i>=1;) { // ignore the first. Iteration from outer to inner fold. the first is right above the first char of the line.
+		for (int i =toolTipLineInfo.indents.size();--i>=1;) { // ignore the first. Iteration from outer to inner fold. the first (i=0) is right over the first char of the line.
 			indent =toolTipLineInfo.indents.get(i);
 			if(indent==0)
 				continue;
