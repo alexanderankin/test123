@@ -2,20 +2,29 @@
 
 <project name="NetRexxScript" default="build" basedir=".">
 
+	<!-- Allow properties to be overridden: -->
+    <property file="build.properties" />
+    <property file="../build.properties" />
+    <property file="${user.home}/.build.properties" />
+    <property file="${user.home}/build.properties" />
+    
+	<!-- JEdit's local installation properties -->
+
+	<property name="install.dir" value=".." description="Installation output directory for plugin jars"/>
+	<property name="jedit.plugins.dir" value="${install.dir}" description="Location of required plugin jars"/>
+	
 	<!-- Project properties -->
 	<property name="project.version" value="0.1.1" description="Project's build version"/>
 	<property name="project.root.dir" value="." description="Project's root directory"/>
-	<property name="project.src.dir" value="${project.root.dir}/src" description="Project's source default package directory"/>
 	<property name="project.settings.dir" value="${project.root.dir}" description="Project's settings directory"/>
-	<property name="project.build.dir" value="${project.root.dir}/build" description="Work directory for builds"/>
-	<property name="project.dist.dir" value="${project.root.dir}/dist" description="Output directory for distribution packages"/>
-	<property name="project.build.binjar.name" value="${ant.project.name}.jar" description="Binary jar file name"/>
-	<property name="project.build.srcjar.name" value="${ant.project.name}-${project.version}+src.jar" description="Binary+ src jar file name"/>
-	<!-- JEdit's local installation properties -->
-<!-- 	<property name="jedit.install.dir" value="C:\Program Files\jEdit"/> -->
-	<property name="jedit.install.dir" value="C:\downloads\jEdit\4.2"/>
-	<property name="jedit.user.directory" value="${user.home}\.jEdit"/>
-	<property name="jedit.jars.directory" value="${jedit.user.directory}\jars"/>
+	<property name="project.netrexx.libdir" value="lib" description="Location of NetRexxC.jar file"/>
+	
+	<import file="${user.home}/test-build.xml" optional="true" />
+	
+	<!-- This should have been set elsewhere already! -->
+	<!-- This must point to the location of the jEdit 4.2 main jar in order to support 4.2 users in addition to 4.3 users. -->
+	<!-- <property name="jedit.install.dir" value="C:\Program Files\jEdit"/> -->
+	<property name="jedit.install.dir" value="C:/downloads/jEdit/4.2" description="jEdit installation to build against"/>
 
     <target name="TeeCheck" description="Checks if Java version of TeeStream class is uptodate">
     	<uptodate property="TeeStream.isUpToDate"
@@ -24,9 +33,9 @@
     </target>   
 
     <target name="TeeBuild" depends="TeeCheck" unless="TeeStream.isUpToDate" description="Compiles NetRexx version of TeeStream class (Java output has an error)">
-        <netrexxc srcDir="src/javasrc/nrx" destDir="src/javasrc/java" classpath=".;${jedit.jars.directory}\NetRexxC.jar"
+        <netrexxc srcDir="src/javasrc/nrx" destDir="src/javasrc/java" classpath=".;${project.netrexx.libdir}\NetRexxC.jar"
             comments="true" savelog="false" time="true" compact="false" compile="false" java="true" format="true"
-            verbose='verbose3' crossref="false" replace="true" />
+            verbose='verbose0' crossref="false" replace="true" />
     </target>
     
     <target name="keepJava" depends="TeeBuild" unless="TeeStream.isUpToDate" description="Copies Java output from TeeStream compile">
@@ -38,31 +47,27 @@
     </target>
 
     <target name="compileJava" depends="fixJava" description="Compile Java temp file for TeeStream class">
-        <javac srcDir="src/javasrc/java" destDir="." verbose="true" classpath=".;${jedit.jars.directory}\NetRexxC.jar"/>        	
+        <javac srcDir="src/javasrc/java" destDir="." verbose="true" classpath=".;${project.netrexx.libdir}\NetRexxC.jar"/>        	
     </target>
     
     <target name="buildnrx" depends="compileJava" description="Compiles NetRexx source files">
         <netrexxc srcDir="src" destDir="." includes="*.nrx"
-        	classpath=".;${jedit.jars.directory}\NetRexxC.jar;${jedit.install.dir}\jedit.jar;${jedit.jars.directory}\ErrorList.jar"
+        	classpath=".;${project.netrexx.libdir}\NetRexxC.jar;${jedit.install.dir}\jedit.jar;${jedit.plugins.dir}\ErrorList.jar"
         	comments="false" savelog="false" time="true" compact="false"
-        	verbose='verbose3' crossref="false" replace="false" keep="false"/>
+        	verbose='verbose0' crossref="false" replace="false" keep="false"/>
     </target>
     
     <target name="compilemacros" description="Builds sample script classfiles">
         <netrexxc srcDir="NetRexx" destDir="macros/NetRexx" includes="class*.nrx"
-        	classpath=".;${jedit.jars.directory}\NetRexxC.jar;${jedit.install.dir}\jedit.jar"
+        	classpath=".;${project.netrexx.libdir}\NetRexxC.jar;${jedit.install.dir}\jedit.jar"
         	comments="false" savelog="false" time="true" compact="false"
         	verbose='verbose3' crossref="false" replace="false" keep="false"/>
     </target>
     
     <target name="build" depends="init,cleannrx" description="Builds NetRexxScript plugin jar">
-        <jar destfile="..\NetRexxScript.jar" basedir="." 
-        	excludes="*.java *.nrx **\*.log **\*.jar src\ lib\ build\ dist\"/>
-    </target>  
-    
-    <target name="deploy" depends="build" description="Copies project jars to jEdit (plugin should be inactive)">
- 	<copy file="..\NetRexxScript.jar" todir="${jedit.jars.directory}" preservelastmodified="true" />
- 	<copy file="..\NetRexxC.jar" todir="${jedit.jars.directory}" preservelastmodified="true" />
+        <jar destfile="${install.dir}\NetRexxScript.jar" basedir="." 
+        	excludes="*.java *.nrx **\*.log **\*.jar build.xml src\ lib\ build\ dist\"/>
+         <copy file="${project.netrexx.libdir}\NetRexxC.jar" todir="${install.dir}" preservelastmodified="true" />
     </target>  
     
     <target name="cleannrx" depends="buildnrx,compilemacros" description="Cleans up work files for normal build">
@@ -74,7 +79,7 @@
         	</delete>
     </target>
     
-    <target name="cleandist" description="Cleans up all work files for distribution build">
+    <target name="clean" description="Cleans out all build work files for fresh start">
        <delete verbose="true" >
         	<fileset dir="." includes="*.nrx" />
         	<fileset dir="." includes="*.class" />
@@ -82,18 +87,7 @@
         	<fileset dir="src/javasrc/java" includes="*.nrx" />
         	<fileset dir="src/javasrc/java" includes="*.keep" />
         	<fileset dir="macros/NetRexx" includes="class*.nrx" />        	
-        	</delete>
-    </target>
-    
-    <target name="clean" description="Cleans out all build work files for fresh start">
-       <delete verbose="true" >
-        	<fileset dir="." includes="*.nrx" />
-        	<fileset dir="." includes="*.class" />
-        	<fileset dir="build" includes="*" />
-        	<fileset dir="dist" includes="*" />
-        	<fileset dir="src/javasrc/java" includes="*.java" />
-        	<fileset dir="src/javasrc/java" includes="*.nrx" />
-        	<fileset dir="src/javasrc/java" includes="*.keep" />
+        	<fileset dir="macros/NetRexx" includes="*.class" />        	
         	</delete>
     </target>
 	
@@ -103,71 +97,10 @@
 		<property name="build.id.string"
 			value="${ant.project.name} ${project.version}, build ${build.number}-${DSTAMP}"/>
 		<echo level="info" message="Starting building for ${build.id.string}"/>
-		<mkdir dir="${project.build.dir}"/>				
 	</target>
 	
-	<target name="dist" depends="build,cleandist" description="Builds distribution packages">
-		<!-- copy the NetRexx compiler for inclusion -->
-		<copy 	flatten="true"
-			preservelastmodified="true"
-			file="../NetRexxC.jar"
-			todir="${project.build.dir}"/>
-		<!-- copy the NetRexxScript jar for inclusion -->
-		<copy 	flatten="true"
-			preservelastmodified="true"
-			file="../NetRexxScript.jar"
-			todir="${project.build.dir}"/>			
-		<!-- copy any TXT files for inclusion -->
-		<copy 	flatten="true"
-			preservelastmodified="true"
-			todir="${project.build.dir}">
-			<fileset dir="." includes="*.TXT"/>
-			</copy>
-		<!-- Create dist directory -->
-		<mkdir dir="${project.dist.dir}"/>
-		<!-- Build binary .tgz package -->
-		<tar destfile="${project.dist.dir}/${ant.project.name}-${project.version}-bin.tgz" compression="gzip">
-			<tarfileset dir="${project.build.dir}">
-				<include name="*.TXT"/>
-				<include name="*.jar"/>
-			</tarfileset>
-		</tar>
-		<!-- Build binary + source .tgz package -->
-		<tar destfile="${project.dist.dir}/${ant.project.name}-${project.version}.tgz" compression="gzip">
-			<tarfileset dir="${project.build.dir}">
-				<include name="*.TXT"/>
-				<include name="*.jar"/>
-			</tarfileset>
-			<tarfileset dir="..">
-				<include name="${ant.project.name}/"/>
-				<exclude name="${ant.project.name}/build/"/>
-				<exclude name="${ant.project.name}/dist/"/>
-			</tarfileset>
-		</tar>
-		<!-- Build binary .zip package -->
-		<zip destfile="${project.dist.dir}/${ant.project.name}-${project.version}-bin.zip">
-			<zipfileset dir="${project.build.dir}">
-				<include name="*.TXT"/>
-				<include name="*.jar"/>
-			</zipfileset>
-   		</zip>
-		<!-- Build binary + source .zip package -->
-		<zip destfile="${project.dist.dir}/${ant.project.name}-${project.version}.zip">
-			<zipfileset dir="${project.build.dir}">
-				<include name="*.TXT"/>
-				<include name="*.jar"/>
-			</zipfileset>
-			<zipfileset dir="..">
-				<include name="${ant.project.name}/"/>
-				<exclude name="${ant.project.name}/build/"/>
-				<exclude name="${ant.project.name}/dist/"/>
-			</zipfileset>
-   		</zip>
-	</target>
-    
-   <target name="showprops" description="Displays default property settings">
-      <echoproperties />
-    </target>    
+    <target name="dist" depends="clean,build" description="Builds JAR file from scratch">
+    </target>
 
 </project>
 
