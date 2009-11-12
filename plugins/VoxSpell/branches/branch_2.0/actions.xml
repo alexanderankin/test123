@@ -79,4 +79,13 @@
             ea.invoke(view);
         </CODE>
     </ACTION>
+    <ACTION NAME="voxspellcheck.setLanguage">
+        <CODE>
+            String lang = Macros.input(view, "Set buffer language: ");
+            Log.log(Log.DEBUG, view, "Got language "+lang);
+            if (lang.length() != 0) {
+                voxspellcheck.VoxSpellPlugin.setBufferLanguage(buffer, lang);
+            }
+        </CODE>
+    </ACTION>
 </ACTIONS>

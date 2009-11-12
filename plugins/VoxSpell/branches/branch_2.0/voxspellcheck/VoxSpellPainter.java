@@ -23,6 +23,7 @@ import java.lang.StringBuffer;
 
 import java.util.Vector;
 import java.util.Enumeration;
+import java.util.Map;
 
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.textarea.TextArea;
@@ -51,7 +52,6 @@ public class VoxSpellPainter extends TextAreaExtension
 {
     private enum MarkupMode {ALL_TEXT, NON_MARKUP, COMMENT_OR_LITERAL};
     
-    private SpellCheck checker;
     private SpellCheck user_checker;
     private SpellCheck ignore_checker;
     private TextArea textarea;
@@ -170,13 +170,11 @@ public class VoxSpellPainter extends TextAreaExtension
     }
     
     public VoxSpellPainter(TextArea textarea_, 
-                           SpellCheck checker_, 
                            SpellCheck user_checker_,
                            SpellCheck ignore_checker_)
     {
         super();
         this.textarea = textarea_;
-        this.checker = checker_;
         this.user_checker = user_checker_;
         this.ignore_checker = ignore_checker_;
         this.error_source = new DefaultErrorSource("voxspellcheck");
@@ -187,13 +185,19 @@ public class VoxSpellPainter extends TextAreaExtension
     {
     }
     
-    protected boolean check(String word, int line_offset, 
+    protected boolean check(SpellCheck checker, 
+                            String word, 
+                            int line_offset, 
                             DefaultTokenHandler tokenHandler,
                             boolean user_only)
     {
         // FIXME: Hack for Unicode apostrophe
         if (word.indexOf("\u2019") != -1) {
             word = word.replaceAll("\u2019", "'");
+        }
+        // FIXME: Hack
+        if (word.endsWith("s'")) {
+            word = word.substring(0, word.length() - 1);
         }
         
         String trim_word = word.trim();
@@ -249,13 +253,18 @@ public class VoxSpellPainter extends TextAreaExtension
                ignore_checker.find(trim_word);
     }
     
-    public boolean check(String word, int line_offset,
+    public boolean check(SpellCheck checker, 
+                         String word, 
+                         int line_offset,
                          DefaultTokenHandler tokenHandler)
     {
-        return check(word, line_offset, tokenHandler, false);
+        return check(checker, word, line_offset, tokenHandler, false);
     }
     
-    public boolean check(int pos, StringBuffer word_checked, boolean user_only)
+    public boolean check(SpellCheck checker, 
+                         int pos, 
+                         StringBuffer word_checked, 
+                         boolean user_only)
     {
         int line;
         int start;
@@ -286,12 +295,12 @@ public class VoxSpellPainter extends TextAreaExtension
         if (word == null)
             return true;
         word_checked.replace(0, word_checked.length(), word);
-        return check(word, char_count, tokenHandler, user_only);
+        return check(checker, word, char_count, tokenHandler, user_only);
     }
     
-    public boolean check(int pos, StringBuffer word_checked)
+    public boolean check(SpellCheck checker, int pos, StringBuffer word_checked)
     {
-        return check(pos, word_checked, false);
+        return check(checker, pos, word_checked, false);
     }
     
     public void paintValidLine(java.awt.Graphics2D gfx, int screenLine, 
@@ -301,7 +310,12 @@ public class VoxSpellPainter extends TextAreaExtension
         JEditBuffer buffer = textarea.getBuffer();
         DefaultTokenHandler tokenHandler = new DefaultTokenHandler();
         buffer.markTokens(textarea.getLineOfOffset(start), tokenHandler);
-        
+        SpellCheck checker = VoxSpellPlugin.getCheckerForBuffer(buffer);
+        if (checker == null) {
+            Log.log(Log.ERROR, this, "ERROR: could not find checker for language \""+VoxSpellPlugin.getBufferLanguage(buffer)+"\"");
+            return;
+        }
+
         gfx.setColor(getUnderlineColor());
         
         FontMetrics metrics = this.textarea.getPainter().getFontMetrics();
@@ -312,7 +326,7 @@ public class VoxSpellPainter extends TextAreaExtension
         int char_count = 0;
         for (String word : words) {
             skip: {
-                if (check(word, char_count, tokenHandler)) {
+                if (check(checker, word, char_count, tokenHandler)) {
                     break skip;
                 }
     
@@ -348,9 +362,10 @@ public class VoxSpellPainter extends TextAreaExtension
             DefaultTokenHandler tokenHandler = new DefaultTokenHandler();
             buffer.markTokens(i, tokenHandler);
             Vector<String> words = getWords(textarea.getLineStartOffset(i), textarea.getLineEndOffset(i));
+            SpellCheck checker = VoxSpellPlugin.getCheckerForBuffer(buffer);
             int char_count = 0;
             for (String word : words) {
-                if (!check(word, char_count, tokenHandler)) {
+                if (!check(checker, word, char_count, tokenHandler)) {
                     error_source.addError(new DefaultErrorSource.DefaultError(error_source,
                                                                               ErrorSource.ERROR,
                                                                               buffer.getPath(),
