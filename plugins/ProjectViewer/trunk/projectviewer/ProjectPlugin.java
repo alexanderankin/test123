@@ -31,13 +31,12 @@ import javax.swing.SwingUtilities;
 
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.EBPlugin;
-import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.OperatingSystem;
 import org.gjt.sp.jedit.msg.PluginUpdate;
 import org.gjt.sp.jedit.msg.ViewUpdate;
+import static org.gjt.sp.jedit.EditBus.EBHandler;
 
 import org.gjt.sp.util.Log;
 
@@ -59,7 +58,7 @@ import projectviewer.persist.ProjectPersistenceManager;
  *	@author		<A HREF="mailto:vanza@users.sourceforge.net">Marcelo Vanzin</A>
  *  @version	2.0.3
  */
-public final class ProjectPlugin extends EBPlugin {
+public final class ProjectPlugin extends EditPlugin {
 
 	//{{{ Static Members
 	private static File CONFIG_DIR;
@@ -170,6 +169,7 @@ public final class ProjectPlugin extends EBPlugin {
 
 		CONFIG_DIR = configDir;
 		config = ProjectViewerConfig.getInstance();
+		EditBus.addToBus(this);
  	} //}}}
 
 	//{{{ +stop() : void
@@ -187,37 +187,38 @@ public final class ProjectPlugin extends EBPlugin {
 		for (int i = 0; i < views.length; i++) {
 			ProjectViewer pv = ProjectViewer.getViewer(views[i]);
 			if (pv != null) {
-				EditBus.removeFromBus(pv);
+				pv.unload();
 			}
 		}
+		EditBus.removeFromBus(this);
 	} //}}}
 
-	//{{{ +handleMessage(EBMessage) : void
-	/** Handles plugin load/unload messages in the EditBus. */
-	public void handleMessage(EBMessage msg) {
+
+	@EBHandler
+	public void handleViewUpdate(ViewUpdate vu)
+	{
 		if (!viewActivated) {
-			if (msg instanceof ViewUpdate) {
-				ViewUpdate vu = (ViewUpdate) msg;
-				viewActivated = (vu.getWhat() == ViewUpdate.ACTIVATED);
-			}
+			viewActivated = (vu.getWhat() == ViewUpdate.ACTIVATED);
 			if (viewActivated) {
 				ExtensionManager.getInstance().reloadExtensions();
-			} else {
-				return;
 			}
 		}
-		if (msg instanceof PluginUpdate) {
-			ExtensionManager.getInstance().reloadExtensions();
-		} else if (msg instanceof ViewUpdate) {
-			ViewUpdate vu = (ViewUpdate) msg;
-			if (vu.getWhat() == ViewUpdate.CLOSED) {
-				ProjectViewer.cleanViewEntry(vu.getView());
-			} else if (vu.getWhat() == ViewUpdate.CREATED
-					&& ProjectViewer.getViewer(vu.getView()) == null) {
+		if (viewActivated) {
+			if (vu.getWhat() == ViewUpdate.CREATED &&
+				ProjectViewer.getViewer(vu.getView()) == null) {
 				ProjectViewer.setActiveNode(vu.getView(), config.getLastNode());
 			}
 		}
-	} //}}}
+	}
+
+
+	@EBHandler
+	public void handlePluginUpdate(PluginUpdate pu)
+	{
+		if (viewActivated) {
+			ExtensionManager.getInstance().reloadExtensions();
+		}
+	}
 
 	private boolean viewActivated = false;
 

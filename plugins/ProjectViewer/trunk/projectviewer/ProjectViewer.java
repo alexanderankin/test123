@@ -63,10 +63,9 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditBus;
-import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.jedit.EditPlugin;
-import org.gjt.sp.jedit.EBComponent;
+import static org.gjt.sp.jedit.EditBus.EBHandler;
 
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
@@ -118,7 +117,8 @@ import projectviewer.importer.NewFileImporter;
  *	@version	$Id$
  */
 public final class ProjectViewer extends JPanel
-	implements DefaultFocusComponent, EBComponent {
+	implements DefaultFocusComponent
+{
 
 	//{{{ Static members
 	private static final ProjectViewerConfig config;
@@ -405,6 +405,7 @@ public final class ProjectViewer extends JPanel
 	private VPTNode					treeRoot;
 	private ConfigChangeListener	ccl;
 	private Timer					reimporter;
+	private Helper					errorListHelper;
 
 	private boolean					isChangingBuffers;
 	private boolean					isClosingProject;
@@ -447,6 +448,10 @@ public final class ProjectViewer extends JPanel
 		}
 		ve.dockable = this;
 		EditBus.addToBus(this);
+		if (config.isErrorListAvailable()) {
+			errorListHelper = new Helper();
+			EditBus.addToBus(errorListHelper);
+		}
 		setRootNode(ve.node);
 		isClosingProject = false;
 		noTitleUpdate = false;
@@ -648,8 +653,11 @@ public final class ProjectViewer extends JPanel
 	 *	Cleans up the current open project, and also clean up the
 	 *	loaded project list when unloading PV from the current view.
 	 */
-	private void unload() {
+	protected void unload() {
 		EditBus.removeFromBus(this);
+		if (errorListHelper != null) {
+			EditBus.removeFromBus(errorListHelper);
+		}
 		if (treeRoot != null && treeRoot.isProject()) {
 			closeProject((VPTProject)treeRoot, false);
 		}
@@ -861,40 +869,8 @@ public final class ProjectViewer extends JPanel
 
 	//{{{ Message handling
 
-	//{{{ +handleMessage(EBMessage) : void
-	/** Handles an EditBus message. */
-	public void handleMessage(EBMessage msg) {
-		if (msg instanceof ViewUpdate) {
-			handleViewUpdateMessage((ViewUpdate) msg);
-		} else if (msg instanceof BufferUpdate) {
-			handleBufferUpdateMessage((BufferUpdate) msg, treeRoot);
-		} else if (msg instanceof DynamicMenuChanged) {
-			handleDynamicMenuChanged((DynamicMenuChanged)msg);
-		} else if (msg instanceof EditPaneUpdate) {
-			handleEditPaneUpdate((EditPaneUpdate)msg);
-		} else if (msg instanceof ProjectUpdate) {
-			handleProjectUpdate((ProjectUpdate)msg);
-		} else if (msg instanceof DockableWindowUpdate) {
-			handleDockableWindowUpdate((DockableWindowUpdate)msg);
-		} else if (treeRoot != null && msg instanceof EditorExitRequested) {
-			if (jEdit.getActiveView() != view) {
-				config.setLastNode(treeRoot);
-			}
-			if (treeRoot.isGroup()) {
-				closeGroup((VPTGroup)treeRoot, null, true);
-			} else {
-				closeProject((VPTProject)treeRoot, true);
-			}
-		} else if (treeRoot != null && treeRoot.isProject()
-				   && !(msg instanceof PluginUpdate))
-		{
-			if (config.isErrorListAvailable()) {
-				new Helper().handleErrorListMessage(msg);
-			}
-		}
-	} //}}}
-
-	private void handleDockableWindowUpdate(DockableWindowUpdate msg)
+	@EBHandler
+	public void handleDockableWindowUpdate(DockableWindowUpdate msg)
 	{
 		if (msg.getWhat() == DockableWindowUpdate.DEACTIVATED ||
 			msg.getWhat() == DockableWindowUpdate.PROPERTIES_CHANGED) {
@@ -907,19 +883,40 @@ public final class ProjectViewer extends JPanel
 		}
 	}
 
-	//{{{ -handleDynamicMenuChanged(DynamicMenuChanged) : void
-	/** Handles a handleDynamicMenuChanged EditBus message. */
-	private void handleDynamicMenuChanged(DynamicMenuChanged dmg) {
+
+	@EBHandler
+	public void handleDynamicMenuChanged(DynamicMenuChanged dmg)
+	{
 		if (dmg.getMenuName().equals("plugin.projectviewer.ProjectPlugin.menu")) {
 			pList.updateMenu();
 		}
-	}//}}}
+	}
 
-	//{{{ -handleViewUpdateMessage(ViewUpdate) : void
-	/** Handles a ViewUpdate EditBus message. Checks only whether
-		the EditPane was changed, and focus the file corresponding
-		to the buffer on the EditPane on the PV tree. */
-	private void handleViewUpdateMessage(ViewUpdate vu) {
+
+	@EBHandler
+	public void handleEditorExitRequested(EditorExitRequested msg)
+	{
+		if (treeRoot != null) {
+			if (jEdit.getActiveView() != view) {
+				config.setLastNode(treeRoot);
+			}
+			if (treeRoot.isGroup()) {
+				closeGroup((VPTGroup)treeRoot, null, true);
+			} else {
+				closeProject((VPTProject)treeRoot, true);
+			}
+		}
+	}
+
+
+	/**
+	 * Handles a ViewUpdate EditBus message. Checks only whether
+	 * the EditPane was changed, and focus the file corresponding
+	 * to the buffer on the EditPane on the PV tree.
+	 */
+	@EBHandler
+	public void handleViewUpdate(ViewUpdate vu)
+	{
 		if (vu.getView() == view &&
 			vu.getWhat() == ViewUpdate.EDIT_PANE_CHANGED &&
 			config.getFollowCurrentBuffer())
@@ -933,22 +930,62 @@ public final class ProjectViewer extends JPanel
 			}
 			viewers.remove(vu.getView());
 		}
-	}//}}}
+	}
+
+
+	@EBHandler
+	public void handleBufferUpdate(BufferUpdate msg)
+	{
+		handleBufferUpdateMessage(msg, treeRoot);
+	}
+
+
+	@EBHandler
+	public void handleEditPaneUpdate(EditPaneUpdate msg)
+	{
+		if (msg.getWhat() == EditPaneUpdate.BUFFER_CHANGED
+			&& config.getFollowCurrentBuffer()
+			&& msg.getEditPane().getView() == view
+			&& !isChangingBuffers)
+		{
+			PVActions.focusActiveBuffer(view, treeRoot);
+			modifyViewTitle(view, treeRoot);
+		}
+	}
+
+
+	/** Resets the auto-reimporter task. */
+	@EBHandler
+	public void handleProjectUpdate(ProjectUpdate msg)
+	{
+		if (msg.getProject() == treeRoot) {
+			switch (msg.getType()) {
+			case PROPERTIES_CHANGED:
+				if (reimporter != null) {
+					reimporter.stop();
+				}
+				reimporter = AutoReimporter.create(msg.getProject());
+				break;
+			}
+			treePanel.reloadIconComposer(msg.getProject());
+			repaint();
+		}
+	}
 
 	//{{{ -handleBufferUpdateMessage(BufferUpdate, VPTNode) : boolean
-	/** Handles a BufferUpdate EditBus message.
-	 */
-	private boolean handleBufferUpdateMessage(BufferUpdate bu, VPTNode where) {
-		if (bu.getView() != null && bu.getView() != view) return false;
+	private void handleBufferUpdateMessage(BufferUpdate bu,
+										   VPTNode where)
+	{
+		if (bu.getView() != null && bu.getView() != view) return;
 
 		if (bu.getWhat() == BufferUpdate.SAVED) {
 			if (where == null || !where.isProject())
-				return false;
+				return;
 
 			VPTProject p = (VPTProject) treeRoot;
 			VPTNode f = p.getChildNode(bu.getBuffer().getPath());
 			if (f != null)
-				return false;
+				return;
 
 			boolean ask = false;
 			if (config.getAskImport() != ProjectViewerConfig.ASK_NEVER &&
@@ -1031,49 +1068,14 @@ public final class ProjectViewer extends JPanel
 						}
 						ProjectViewer.nodeChanged(f);
 					}
-					return true;
 				}
 			} else if (where != null) {
 				for (int i = 0; i < where.getChildCount(); i++) {
-					if (handleBufferUpdateMessage(bu, (VPTNode)where.getChildAt(i))) {
-						return true;
-					}
+					handleBufferUpdateMessage(bu, (VPTNode)where.getChildAt(i));
 				}
 			}
-		}
-
-		return false;
-	}//}}}
-
-	//{{{ -handleEditPaneUpdate(EditPaneUpdate) : void
-	private void handleEditPaneUpdate(EditPaneUpdate msg) {
-		if (msg.getWhat() == EditPaneUpdate.BUFFER_CHANGED
-			&& config.getFollowCurrentBuffer()
-			&& msg.getEditPane().getView() == view
-			&& !isChangingBuffers)
-		{
-			PVActions.focusActiveBuffer(view, treeRoot);
-			modifyViewTitle(view, treeRoot);
 		}
 	} //}}}
-
-
-	/** Resets the auto-reimporter task. */
-	private void handleProjectUpdate(ProjectUpdate msg)
-	{
-		if (msg.getProject() == treeRoot) {
-			switch (msg.getType()) {
-			case PROPERTIES_CHANGED:
-				if (reimporter != null) {
-					reimporter.stop();
-				}
-				reimporter = AutoReimporter.create(msg.getProject());
-				break;
-			}
-			treePanel.reloadIconComposer(msg.getProject());
-			repaint();
-		}
-	}
 
 	//}}}
 
@@ -1223,18 +1225,11 @@ public final class ProjectViewer extends JPanel
 	 *	Class to hold methods that require classes that may not be available,
 	 *	so that PV behaves well when called from a BeanShell script.
 	 */
-	private class Helper {
+	public class Helper {
 
-		//{{{ +handleErrorListMessage(EBMessage) : void
-		public void handleErrorListMessage(EBMessage msg) {
-			if (msg instanceof ErrorSourceUpdate) {
-				handleErrorSourceUpdateMessage((ErrorSourceUpdate) msg);
-			}
-		} //}}}
-
-		//{{{ -handleErrorSourceUpdateMessage(ErrorSourceUpdate) : void
-		/** Handles a ErrorSourceUpdate EditBus message. */
-		private void handleErrorSourceUpdateMessage(ErrorSourceUpdate esu) {
+		@EBHandler
+		public void handleErrorSourceUpdate(ErrorSourceUpdate esu)
+		{
 			if (esu.getWhat() == ErrorSourceUpdate.ERROR_ADDED
 				|| esu.getWhat() == ErrorSourceUpdate.ERROR_REMOVED)
 			{
@@ -1251,7 +1246,7 @@ public final class ProjectViewer extends JPanel
 			{
 				treePanel.repaint();
 			}
-		}//}}}
+		}
 
 	} //}}}
 
