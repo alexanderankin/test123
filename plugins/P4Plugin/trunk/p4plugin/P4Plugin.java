@@ -28,11 +28,12 @@ import java.io.OutputStream;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EBPlugin;
+import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.Log;
+import static org.gjt.sp.jedit.EditBus.EBHandler;
 
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
@@ -54,7 +55,8 @@ import p4plugin.config.P4GlobalConfig;
  *  @version    $Id$
  *  @since      P4P 0.1
  */
-public class P4Plugin extends EBPlugin {
+public class P4Plugin extends EditPlugin
+{
 
     private static final int MODE_FILE_VERSION = 1;
 
@@ -115,35 +117,53 @@ public class P4Plugin extends EBPlugin {
 
             jEdit.setIntegerProperty("p4plugin.mode_file_version", MODE_FILE_VERSION);
         }
+        EditBus.addToBus(this);
     }
+
+
+    public void stop()
+    {
+        EditBus.removeFromBus(this);
+    }
+
+
+    @EBHandler
+    public void handleBufferUpdate(BufferUpdate msg)
+    {
+        handleUpdate(msg.getView(),
+                     msg.getBuffer());
+    }
+
+
+    @EBHandler
+    public void handleEditPaneUpdate(EditPaneUpdate msg)
+    {
+        handleUpdate(msg.getEditPane().getView(),
+                     msg.getEditPane().getBuffer());
+    }
+
+
+    @EBHandler
+    public void handleViewUpdate(ViewUpdate msg)
+    {
+        if (msg.getWhat() != ViewUpdate.CLOSED) {
+            handleUpdate(msg.getView(),msg.getView().getBuffer());
+        }
+    }
+
 
     /**
      *  Monitors when read-only buffers are loaded and set a key
      *  interceptor if the buffer path belongs to the current
      *  project and the project is using perforce.
      */
-    public void handleMessage(EBMessage msg) {
+    private void handleUpdate(View v,
+                              Buffer b)
+    {
         if (!P4GlobalConfig.getInstance().getMonitorFiles())
             return;
 
-        View v = null;
-        Buffer b = null;
-        if (msg instanceof ViewUpdate) {
-            if (((ViewUpdate)msg).getWhat() != ViewUpdate.CLOSED) {
-                v = ((ViewUpdate)msg).getView();
-                b = v.getBuffer();
-            }
-        } else if (msg instanceof BufferUpdate) {
-            b = ((BufferUpdate)msg).getBuffer();
-            v = ((BufferUpdate)msg).getView();
-            if (v == null)
-                return;
-        } else if (msg instanceof EditPaneUpdate) {
-            v = ((EditPaneUpdate)msg).getEditPane().getView();
-            b = ((EditPaneUpdate)msg).getEditPane().getBuffer();
-        }
-
-        if (b == null || v.isClosed()) {
+        if (b == null || v == null || v.isClosed()) {
             return;
         }
 
@@ -155,6 +175,7 @@ public class P4Plugin extends EBPlugin {
             }
             return;
         }
+
         VPTProject proj = ProjectViewer.getActiveProject(jEdit.getActiveView());
         if (proj != null
             && proj.getChildNode(b.getPath()) != null

@@ -10,7 +10,7 @@ plugin.p4plugin.P4Plugin.activate=defer
 plugin.p4plugin.P4Plugin.docs=index.html
 plugin.p4plugin.P4Plugin.description=Perforce integration for jEdit.
 
-plugin.p4plugin.P4Plugin.depend.0=jedit 04.03.17.00
+plugin.p4plugin.P4Plugin.depend.0=jedit 04.03.19.00
 plugin.p4plugin.P4Plugin.depend.1=jdk 1.5
 plugin.p4plugin.P4Plugin.depend.2=plugin projectviewer.ProjectPlugin 2.9.1
 plugin.p4plugin.P4Plugin.depend.3=plugin console.ConsolePlugin 4.2.5.1
