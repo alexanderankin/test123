@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeSet;
+import java.util.Enumeration;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -39,6 +40,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.DataInput;
 
 import java.util.zip.ZipFile;
 import java.util.zip.ZipEntry;
@@ -50,6 +52,7 @@ import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.jEdit;
@@ -66,16 +69,12 @@ public class VoxSpellPlugin extends EBPlugin
     public static final String NAME = "VoxSpell";
     public static final String OPTION_PREFIX = "options.voxspellcheck";
     
-    private static OffsetTrie checker = null;
+    private static TreeMap<String, SpellCheck> checkers;
+    //private static OffsetTrie checker = null;
     private static WordTrie user_checker = null;
     private static WordTrie ignore_checker = null;
     private static SuggestionTree suggestions = null;
     private static String prop_key = "VoxSpellExtension";
-    
-    public static OffsetTrie getChecker()
-    {
-        return checker;
-    }
     
     public static SuggestionTree getSuggestionTree()
     {
@@ -198,15 +197,27 @@ public class VoxSpellPlugin extends EBPlugin
     {
         ZipFile zip;
         zip = plugin_jar.getZipFile();
-        ZipEntry entry = zip.getEntry("dicts/en.spl");
-        long size = entry.getSize();
-        byte[] data = new byte[(int)size];
+        for (Enumeration e = zip.entries();
+             e.hasMoreElements();)
+        {
+            ZipEntry entry = (ZipEntry)e.nextElement();
+            if (entry.isDirectory() || !entry.getName().startsWith("dicts/"))
+                continue;
+            
+            String lang = entry.getName().substring(6, 8);
+            VimSpell vs = new VimSpell(lang,
+                                       new DataInputStream(zip.getInputStream(entry)));
+            checkers.put(lang, vs);
+        }
+        //ZipEntry entry = zip.getEntry("dicts/en.spl");
+        //long size = entry.getSize();
+        //byte[] data = new byte[(int)size];
         
-        int read = 0;
-        InputStream input_stream = zip.getInputStream(entry);
-        while (read < size)
-            read += input_stream.read(data, read, (int)(size - read));
-        checker.read(data);
+        //int read = 0;
+        //InputStream input_stream = zip.getInputStream(entry);
+        //while (read < size)
+        //    read += input_stream.read(data, read, (int)(size - read));
+        //checker.read(data);
     }
     
     private static File getUserDictFile()
@@ -246,13 +257,13 @@ public class VoxSpellPlugin extends EBPlugin
         /* Add all user_checker words to the suggestion tree. */
         Vector<String> user_words = user_checker.getWords();
         for (String w : user_words) {
-            suggestions.addWord(w);
+            //suggestions.addWord(w);
         }
     }
     
     public static void startSpelling(EditPane editpane)
     {
-        if (checker == null || ignore_checker == null || user_checker == null) {
+        if (checkers.size() == 0 || ignore_checker == null || user_checker == null) {
             Log.log(Log.ERROR, editpane, "Not checking spelling, plugin is not" +
                     "initialized");
             return;
@@ -263,7 +274,6 @@ public class VoxSpellPlugin extends EBPlugin
             TextAreaPainter cur_painter = editpane.getTextArea().getPainter();
             
             VoxSpellPainter p = new VoxSpellPainter(editpane.getTextArea(), 
-                                                    checker,
                                                     user_checker,
                                                     ignore_checker);
             cur_painter.addExtension(TextAreaPainter.BELOW_SELECTION_LAYER, p);
@@ -288,15 +298,16 @@ public class VoxSpellPlugin extends EBPlugin
             this.ignore_checker = new WordTrie();
         }
         
-        if (this.checker == null) {
-            this.checker = new OffsetTrie();
+        //if (this.checker == null) {
+        if (this.checkers == null) {
+            this.checkers = new TreeMap<String, SpellCheck>();
             try {
                 loadDict(getPluginJAR());
             } catch (java.io.IOException ex) {
                 Log.log(Log.ERROR, this, "Could not load dictionary: " + ex);
                 return;
             }
-            this.suggestions = new SuggestionTree(this.checker);
+            //this.suggestions = new SuggestionTree(this.checker);
         }
         
         /* user dictionary comes after the suggestion tree so that the words
@@ -323,7 +334,7 @@ public class VoxSpellPlugin extends EBPlugin
             EditPane ep = v.getEditPane();
             stopSpelling(ep);
         }
-        this.checker = null;
+        this.checkers = null;
     }
     
     public static void selectWordAtCaret(TextArea textarea)
@@ -491,6 +502,25 @@ public class VoxSpellPlugin extends EBPlugin
         if (p != null)
             p.setIgnoreChecker(ignore_checker);
         editpane.getTextArea().repaint();
+    }
+    
+    public static String getBufferLanguage(JEditBuffer b)
+    {
+        String l = b.getStringProperty(OPTION_PREFIX+".language");
+        if (l == null) {
+            l = jEdit.getProperty(OPTION_PREFIX+".default_language");
+        }
+        return l;
+    }
+    
+    public static void setBufferLanguage(JEditBuffer b, String l)
+    {
+        b.setStringProperty(OPTION_PREFIX+".language", l);
+    }
+    
+    public static SpellCheck getCheckerForBuffer(JEditBuffer b)
+    {
+        return checkers.get(getBufferLanguage(b));
     }
 }
 
