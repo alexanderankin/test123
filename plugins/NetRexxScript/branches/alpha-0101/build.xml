@@ -17,14 +17,15 @@
 	<property name="project.version" value="0.1.1" description="Project's build version"/>
 	<property name="project.root.dir" value="." description="Project's root directory"/>
 	<property name="project.settings.dir" value="${project.root.dir}" description="Project's settings directory"/>
-	<property name="project.netrexx.libdir" value="lib" description="Location of NetRexxC.jar file"/>
+	<property name="project.netrexx.libdir" value="${basedir}/lib" description="Location of NetRexxC.jar file"/>
 	
 	<import file="${user.home}/test-build.xml" optional="true" />
 	
 	<!-- This should have been set elsewhere already! -->
 	<!-- This must point to the location of the jEdit 4.2 main jar in order to support 4.2 users in addition to 4.3 users. -->
 	<!-- <property name="jedit.install.dir" value="C:\Program Files\jEdit"/> -->
-	<property name="jedit.install.dir" value="C:/downloads/jEdit/4.2" description="jEdit installation to build against"/>
+	<!-- <property name="jedit.install.dir" value="C:/downloads/jEdit/4.2" description="jEdit installation to build against"/> -->
+	<!-- <property name="jedit.install.dir" value="../../../jedit/4.2" description="jEdit installation to build against"/> -->
 
     <target name="TeeCheck" description="Checks if Java version of TeeStream class is uptodate">
     	<uptodate property="TeeStream.isUpToDate"
@@ -33,7 +34,7 @@
     </target>   
 
     <target name="TeeBuild" depends="TeeCheck" unless="TeeStream.isUpToDate" description="Compiles NetRexx version of TeeStream class (Java output has an error)">
-        <netrexxc srcDir="src/javasrc/nrx" destDir="src/javasrc/java" classpath=".;${project.netrexx.libdir}\NetRexxC.jar"
+        <netrexxc srcDir="src/javasrc/nrx" destDir="src/javasrc/java" classpath=".${path.separator}${project.netrexx.libdir}/NetRexxC.jar"
             comments="true" savelog="false" time="true" compact="false" compile="false" java="true" format="true"
             verbose='verbose0' crossref="false" replace="true" />
     </target>
@@ -47,27 +48,27 @@
     </target>
 
     <target name="compileJava" depends="fixJava" description="Compile Java temp file for TeeStream class">
-        <javac srcDir="src/javasrc/java" destDir="." verbose="true" classpath=".;${project.netrexx.libdir}\NetRexxC.jar"/>        	
+        <javac srcDir="src/javasrc/java" destDir="." verbose="true" classpath=".${path.separator}${project.netrexx.libdir}/NetRexxC.jar"/>        	
     </target>
     
     <target name="buildnrx" depends="compileJava" description="Compiles NetRexx source files">
         <netrexxc srcDir="src" destDir="." includes="*.nrx"
-        	classpath=".;${project.netrexx.libdir}\NetRexxC.jar;${jedit.install.dir}\jedit.jar;${jedit.plugins.dir}\ErrorList.jar"
+        	classpath=".${path.separator}${project.netrexx.libdir}/NetRexxC.jar${path.separator}${jedit.install.dir}/jedit.jar${path.separator}${jedit.plugins.dir}/ErrorList.jar"
         	comments="false" savelog="false" time="true" compact="false"
         	verbose='verbose0' crossref="false" replace="false" keep="false"/>
     </target>
     
     <target name="compilemacros" description="Builds sample script classfiles">
         <netrexxc srcDir="NetRexx" destDir="macros/NetRexx" includes="class*.nrx"
-        	classpath=".;${project.netrexx.libdir}\NetRexxC.jar;${jedit.install.dir}\jedit.jar"
+        	classpath=".${path.separator}${project.netrexx.libdir}/NetRexxC.jar${path.separator}${jedit.install.dir}/jedit.jar"
         	comments="false" savelog="false" time="true" compact="false"
         	verbose='verbose3' crossref="false" replace="false" keep="false"/>
     </target>
     
     <target name="build" depends="init,cleannrx" description="Builds NetRexxScript plugin jar">
-        <jar destfile="${install.dir}\NetRexxScript.jar" basedir="." 
+        <jar destfile="${install.dir}/NetRexxScript.jar" basedir="." 
         	excludes="*.java *.nrx **\*.log **\*.jar build.xml src\ lib\ build\ dist\"/>
-         <copy file="${project.netrexx.libdir}\NetRexxC.jar" todir="${install.dir}" preservelastmodified="true" />
+         <copy file="${project.netrexx.libdir}/NetRexxC.jar" todir="${install.dir}" preservelastmodified="true" />
     </target>  
     
     <target name="cleannrx" depends="buildnrx,compilemacros" description="Cleans up work files for normal build">
@@ -101,7 +102,7 @@
 	
     <target name="dist" depends="clean,build" description="Builds JAR file from scratch">
     </target>
-
+    
 </project>
 
 
