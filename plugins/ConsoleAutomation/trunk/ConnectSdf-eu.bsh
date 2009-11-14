@@ -1,0 +1,12 @@
+// This is a recorded macro. First, check over the
+// commands to make sure this is what you intended. Then,
+// save this buffer, and the macro should appear in the
+// Macros menu.
+import automation.*;
+ConsoleAutomationPlugin plugin = (ConsoleAutomationPlugin)
+jEdit.getPlugin("automation.ConsoleAutomationPlugin");
+c = plugin.connect("sdf-eu.org", 23);
+c.expectSubstr("login:", true);
+c.send("sreinst1");
+c.expectSubstr("Password", true);
+c.send("Shalosh3");
