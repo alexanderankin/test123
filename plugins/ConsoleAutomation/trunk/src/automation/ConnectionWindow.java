@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
@@ -31,7 +32,7 @@ public class ConnectionWindow extends JPanel implements CharHandler,
 		this.c = c;
 		setLayout(new BorderLayout());
 		console = new JTextPane();
-		add(console, BorderLayout.CENTER);
+		add(new JScrollPane(console), BorderLayout.CENTER);
 		JPanel top = new JPanel();
 		add(top, BorderLayout.NORTH);
 		input = new JTextField(40);
@@ -52,6 +53,7 @@ public class ConnectionWindow extends JPanel implements CharHandler,
 		{
 			System.out.print(c);
 			d.insertString(d.getLength(), String.valueOf(c), null);
+			console.setCaretPosition(d.getLength());
 		} catch (BadLocationException e)
 		{
 			// TODO Auto-generated catch block
@@ -65,7 +67,12 @@ public class ConnectionWindow extends JPanel implements CharHandler,
 		{
 			String s = input.getText();
 			if (e.getSource() == send)
+			{
 				c.send(s);
+				Document d = console.getDocument();
+				d.insertString(d.getLength(), s + "\n", null);
+				console.setCaretPosition(d.getLength());
+			}
 			else if (e.getSource() == expect)
 				c.expectSubstr(s, true);
 			input.setText("");

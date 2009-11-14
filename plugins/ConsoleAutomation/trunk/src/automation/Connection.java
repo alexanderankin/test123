@@ -1,25 +1,28 @@
 package automation;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.Socket;
+import java.io.PrintStream;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.commons.net.telnet.TelnetClient;
 
 public class Connection
 {
 	private String host;
 	private int port;
-	private Socket socket;
-	private BufferedWriter writer;
+	private TelnetClient telnet;
+	private PrintStream writer;
 	private InputStreamReader reader;
 	private CharHandler outputHandler;
 	private LineHandler expectPrefixHandler;
 	private LineHandler expectLineHandler;
 	private Object expectHandlerLock = new Object();
+	private ArrayList<StringBuilder> expectBuffer =
+		new ArrayList<StringBuilder>();
 
 	public interface CharHandler
 	{
@@ -37,23 +40,28 @@ public class Connection
 	}
 	public void connect() throws UnknownHostException, IOException
 	{
-		socket = new Socket(host, port);
-		reader = new InputStreamReader(socket.getInputStream());
-		writer = new BufferedWriter(new OutputStreamWriter(
-			socket.getOutputStream()));
+		telnet = new TelnetClient();
+		telnet.connect(host, port);
+		reader = new InputStreamReader(telnet.getInputStream());
+		writer = new PrintStream(telnet.getOutputStream());
 		start();
 	}
 	public void disconnect() throws IOException
 	{
 		reader.close();
 		writer.close();
-		socket.close();
+		telnet.disconnect();
 	}
 	public void send(String s) throws IOException
 	{
 		if (! s.endsWith("\n"))
 			s = s + "\n";
-		writer.write(s);
+		synchronized (expectHandlerLock)
+		{
+			expectBuffer.clear();
+		}
+		writer.print(s);
+		writer.flush();
 	}
 	public String expectSubstr(String s, boolean prefix)
 		throws IOException, InterruptedException
@@ -65,6 +73,13 @@ public class Connection
 				expectPrefixHandler = h;
 			else
 				expectLineHandler = h;
+			consumeBuffer();
+			// If the expected text has been found, no need to wait
+			if ((prefix && (expectPrefixHandler == null)) ||
+				((!prefix) && (expectLineHandler == null)))
+			{
+				return h.line;
+			}
 		}
 		synchronized(h)
 		{
@@ -82,6 +97,13 @@ public class Connection
 				expectPrefixHandler = h;
 			else
 				expectLineHandler = h;
+			consumeBuffer();
+			// If the expected text has been found, no need to wait
+			if ((prefix && (expectPrefixHandler == null)) ||
+				((!prefix) && (expectLineHandler == null)))
+			{
+				return h.m;
+			}
 		}
 		synchronized(h)
 		{
@@ -95,6 +117,29 @@ public class Connection
 		outputHandler = h;
 	}
 
+	private void consumeBuffer()
+	{
+		while (expectBuffer.size() > 0)
+		{
+			String s = expectBuffer.get(0).toString();
+			expectBuffer.remove(0);
+			if (expectLineHandler != null)
+			{
+				if (! expectLineHandler.handle(s))
+					expectLineHandler = null;
+			}
+			if (expectPrefixHandler != null)
+			{
+				if (! expectPrefixHandler.handle(s))
+					expectPrefixHandler = null;
+			}
+			if ((expectLineHandler == null) &&
+				(expectPrefixHandler == null))
+			{
+				return;
+			}
+		}
+	}
 	private void start()
 	{
 		Runnable r = new Runnable() {
@@ -112,6 +157,7 @@ public class Connection
 	}
 	private void processOutput() throws IOException
 	{
+		expectBuffer.add(new StringBuilder(""));
 		StringBuilder s = new StringBuilder();
 		int i;
 		while ((i = reader.read()) != -1)
@@ -128,6 +174,8 @@ public class Connection
 						if (! expectLineHandler.handle(s.toString()))
 							expectLineHandler = null;
 					}
+					else
+						expectBuffer.add(new StringBuilder());
 				}
 				s.setLength(0);
 				continue;
@@ -139,6 +187,12 @@ public class Connection
 				{
 					if (! expectPrefixHandler.handle(s.toString()))
 						expectPrefixHandler = null;
+				}
+				else
+				{
+					if (expectBuffer.size() == 0)
+						expectBuffer.add(new StringBuilder());
+					expectBuffer.get(expectBuffer.size()-1).append(c);
 				}
 			}
 		}
