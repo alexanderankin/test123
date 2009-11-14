@@ -29,7 +29,7 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 		String port = s.substring(sep + 1);
 		connect(host, Integer.valueOf(port));
 	}
-	public void connect(String host, int port)
+	public Connection connect(String host, int port)
 	{
 		Connection c = new Connection(host, port);
 		try
@@ -48,7 +48,9 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 		} catch (Exception e)
 		{
 			e.printStackTrace();
+			return null;
 		}
+		return c;
 	}
 	
 }
