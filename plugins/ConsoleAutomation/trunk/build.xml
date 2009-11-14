@@ -15,6 +15,7 @@
 
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
+		<pathelement location="${jedit.plugins.dir}/commons-net-1.4.1.jar"/>
 		<pathelement location="${src.dir}"/>
 	</path>
 

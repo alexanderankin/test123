@@ -2,11 +2,11 @@ package automation;
 
 import javax.swing.JOptionPane;
 
-import org.gjt.sp.jedit.EBPlugin;
+import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 
-public class ConsoleAutomationPlugin extends EBPlugin {
+public class ConsoleAutomationPlugin extends EditPlugin {
 
 	private static final String CONNECTION_DOCKABLE = "console-automation";
 	private ConnectionDockable dockable;
