@@ -1,0 +1,26 @@
+plugin.marker.MarkerSetsPlugin.activate=startup
+
+# general plugin information
+plugin.automation.ConsoleAutomationPlugin.name=ConsoleAutomation
+plugin.automation.ConsoleAutomationPlugin.author=Shlomy Reinstein
+plugin.automation.ConsoleAutomationPlugin.version=0.1
+plugin.automation.ConsoleAutomationPlugin.description=\
+This plugin enables automation of telnet sessions.
+plugin.marker.MarkerSetsPlugin.depend.0=jdk 1.5
+plugin.marker.MarkerSetsPlugin.depend.1=jedit 04.03.18.00
+
+# action labels
+console-automation-connect.label=Create a connection
+
+# menu items
+plugin.automation.ConsoleAutomationPlugin.menu=\
+	console-automation-connect
+
+# dockables
+console-automation.title=Console Automation
+console-automation.longtitle=Console Automation - Connections
+console-automation.label=Console Automation
+
+# docs
+plugin.automation.ConsoleAutomationPlugin.docs=description.html
+
