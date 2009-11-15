@@ -19,6 +19,6 @@ public class ConnectionDockable extends JPanel
 	public void add(Connection c)
 	{
 		ConnectionWindow cw = new ConnectionWindow(c);
-		tabs.addTab("Connection " + tabs.getTabCount(), cw);
+		tabs.addTab(c.getName(), cw);
 	}
 }
