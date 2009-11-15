@@ -19,6 +19,14 @@
 			plugin.reloadConnections();
 		</CODE>
 	</ACTION>
+	<ACTION NAME="console-automation-show-macros" NO_REPEAT="TRUE">
+		<CODE>
+			import automation.*;
+			ConsoleAutomationPlugin plugin = (ConsoleAutomationPlugin)
+				jEdit.getPlugin("automation.ConsoleAutomationPlugin");
+			plugin.showMacros();
+		</CODE>
+	</ACTION>
 
 </ACTIONS>
 

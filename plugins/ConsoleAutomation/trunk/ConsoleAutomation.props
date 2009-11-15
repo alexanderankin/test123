@@ -12,15 +12,25 @@ plugin.automation.ConsoleAutomationPlugin.depend.2=plugin jakartacommons.Jakarta
  
 # action labels
 console-automation-connect.label=Create a connection
+console-automation-reload-connections.label=Reload connections from properties
+console-automation-show-macros.label=Show macros
 
 # menu items
 plugin.automation.ConsoleAutomationPlugin.menu=\
-	console-automation-connect
+	console-automation-reload-connections \
+	console-automation-connect \
+	console-automation-show-macros \
+	- \
+	console-automation \
+	console-macros
 
 # dockables
 console-automation.title=Console Automation
 console-automation.longtitle=Console Automation - Connections
 console-automation.label=Console Automation
+console-macros.title=Console Macros
+console-macros.longtitle=Console Automation - Macros
+console-macros.label=Console Macros
 
 # docs
 plugin.automation.ConsoleAutomationPlugin.docs=description.html
