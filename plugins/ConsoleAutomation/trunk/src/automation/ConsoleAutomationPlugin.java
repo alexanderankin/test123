@@ -1,12 +1,20 @@
 package automation;
 
+import java.io.File;
 import java.util.HashMap;
+import java.util.Vector;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.Macros;
+import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.Macros.Handler;
+import org.gjt.sp.jedit.Macros.Macro;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
+import org.gjt.sp.util.Log;
 
 public class ConsoleAutomationPlugin extends EditPlugin {
 
@@ -35,6 +43,94 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 	public Connection getConnection(String name)
 	{
 		return connections.get(name);
+	}
+
+	private File getMacroFile(String key, String name)
+	{
+		return new File(getPluginHome().getAbsoluteFile() + File.separator +
+			key + File.separator + name);
+	}
+	public void editMacro(String key, String name)
+	{
+		File f = getMacroFile(key, name);
+		if (! f.exists())
+			return;
+		jEdit.openFile(jEdit.getActiveView(), f.getAbsolutePath());
+	}
+	public void runMacro(String key, String name)
+	{
+		File f = getMacroFile(key, name);
+		if (! f.exists())
+			return;
+		String path = f.getAbsolutePath();
+		Handler handler = Macros.getHandlerForPathName(path);
+		if (handler != null)
+		{
+			try
+			{
+				final Macro macro = handler.createMacro(
+					MiscUtilities.getFileName(path), path);
+				Thread t = new Thread(new Runnable() {
+					public void run()
+					{
+						macro.invoke(jEdit.getActiveView());
+					}
+				});
+				t.start();
+			}
+			catch (Exception e)
+			{
+				Log.log(Log.ERROR, Macros.class, e);
+				return;
+			}
+		}
+	}
+	public void showMessage(final String message)
+	{
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run()
+			{
+				JOptionPane.showMessageDialog(null, message);
+			}
+		});
+	}
+	public HashMap<String, Vector<String>> getMacros()
+	{
+		File home = getPluginHome();
+		if (! home.exists())
+			return null;
+		String [] items = home.list();
+		HashMap<String, Vector<String>> macros = new HashMap<String, Vector<String>>();
+		for (String item: items)
+		{
+			File file = new File(home.getAbsoluteFile() + File.separator + item);
+			if (file.isDirectory())
+			{
+				Vector<String> children = macros.get(item);
+				if (children == null)
+				{
+					children = new Vector<String>();
+					macros.put(item, children);
+				}
+				String [] grandChildren = file.list();
+				for (String grandChild: grandChildren)
+				{
+					if (grandChild.endsWith(".bsh"))
+						children.add(grandChild);
+				}
+			}
+			else if (file.getName().endsWith(".bsh"))
+			{
+				Vector<String> children = macros.get("Global");
+				if (children == null)
+				{
+					children = new Vector<String>();
+					macros.put("Global", children);
+				}
+				children.add(item);
+			}
+		}
+		return macros;
 	}
 
 	public void showConnectionDialog()
