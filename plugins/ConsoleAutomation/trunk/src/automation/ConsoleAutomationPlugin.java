@@ -1,5 +1,7 @@
 package automation;
 
+import java.util.HashMap;
+
 import javax.swing.JOptionPane;
 
 import org.gjt.sp.jedit.EditPlugin;
@@ -10,6 +12,7 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 
 	private static final String CONNECTION_DOCKABLE = "console-automation";
 	private ConnectionDockable dockable;
+	private HashMap<String, Connection> connections = new HashMap<String, Connection>();
 
 	public void start()
 	{
@@ -19,19 +22,30 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 	{
 	}
 
+	public Connection getConnection(String name)
+	{
+		return connections.get(name);
+	}
+
 	public void showConnectionDialog()
 	{
-		String s = JOptionPane.showInputDialog("Please enter host:port - ");
-		if (s == null)
-			return;
-		int sep = s.lastIndexOf(":");
-		String host = s.substring(0, sep);
-		String port = s.substring(sep + 1);
-		connect(host, Integer.valueOf(port));
+		String[] parts;
+		do
+		{
+			String s = JOptionPane.showInputDialog("Please enter name:host:port");
+			if (s == null)
+				return;
+			parts = s.split(":");
+		}
+		while (parts.length != 3);
+		String name = parts[0];
+		String host = parts[1];
+		String port = parts[2];
+		connect(name, host, Integer.valueOf(port));
 	}
-	public Connection connect(String host, int port)
+	public Connection connect(String name, String host, int port)
 	{
-		Connection c = new Connection(host, port);
+		Connection c = new Connection(name, host, port);
 		try
 		{
 			c.connect();
@@ -45,6 +59,7 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 					dwm.getDockable(CONNECTION_DOCKABLE); 
 			}
 			dockable.add(c);
+			connections.put(name, c);
 		} catch (Exception e)
 		{
 			e.printStackTrace();

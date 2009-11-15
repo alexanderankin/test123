@@ -12,6 +12,7 @@ import org.apache.commons.net.telnet.TelnetClient;
 
 public class Connection
 {
+	private String name;
 	private String host;
 	private int port;
 	private TelnetClient telnet;
@@ -33,10 +34,15 @@ public class Connection
 		// Returns true to continue reading, false to stop reading
 		boolean handle(String line);
 	}
-	public Connection(String host, int port)
+	public Connection(String name, String host, int port)
 	{
+		this.name = name;
 		this.host = host;
 		this.port = port;
+	}
+	public String getName()
+	{
+		return name;
 	}
 	public void connect() throws UnknownHostException, IOException
 	{
