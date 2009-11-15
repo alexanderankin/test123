@@ -67,12 +67,7 @@ public class ConnectionWindow extends JPanel implements CharHandler,
 		{
 			String s = input.getText();
 			if (e.getSource() == send)
-			{
 				c.send(s);
-				Document d = console.getDocument();
-				d.insertString(d.getLength(), s + "\n", null);
-				console.setCaretPosition(d.getLength());
-			}
 			else if (e.getSource() == expect)
 				c.expectSubstr(s, true);
 			input.setText("");

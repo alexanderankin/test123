@@ -60,6 +60,11 @@ public class Connection
 		{
 			expectBuffer.clear();
 		}
+		for (char c: s.toCharArray())
+		{
+			if (outputHandler != null)
+				outputHandler.handle(c);
+		}
 		writer.print(s);
 		writer.flush();
 	}
