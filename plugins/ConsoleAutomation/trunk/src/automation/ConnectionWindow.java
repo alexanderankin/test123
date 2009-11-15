@@ -90,6 +90,7 @@ public class ConnectionWindow extends JPanel implements CharHandler,
 				Document d = console.getDocument();
 				try
 				{
+					boolean atEnd = (console.getCaretPosition() == d.getLength());
 					synchronized(output)
 					{
 						for (StringBuilder sb: output)
@@ -97,7 +98,8 @@ public class ConnectionWindow extends JPanel implements CharHandler,
 						output.clear();
 						output.add(currentOutput = new StringBuilder());
 					}
-					console.setCaretPosition(d.getLength());
+					if (atEnd)
+						console.setCaretPosition(d.getLength());
 				} catch (BadLocationException e)
 				{
 					// TODO Auto-generated catch block
