@@ -8,12 +8,12 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.gui.HistoryTextField;
 
 import automation.Connection.CharHandler;
 
@@ -23,7 +23,7 @@ public class ConnectionWindow extends JPanel implements CharHandler,
 {
 	private Connection c;
 	private JTextPane console;
-	private JTextField input;
+	private HistoryTextField input;
 	private JButton send;
 	private JButton expect;
 
@@ -33,15 +33,17 @@ public class ConnectionWindow extends JPanel implements CharHandler,
 		setLayout(new BorderLayout());
 		console = new JTextPane();
 		add(new JScrollPane(console), BorderLayout.CENTER);
-		JPanel top = new JPanel();
+		JPanel top = new JPanel(new BorderLayout());
 		add(top, BorderLayout.NORTH);
-		input = new JTextField(40);
-		top.add(input);
+		input = new HistoryTextField("automation.send-history");
+		top.add(input, BorderLayout.CENTER);
+		JPanel buttonPanel = new JPanel();
+		top.add(buttonPanel, BorderLayout.EAST);
 		send = new JButton("Send");
-		top.add(send);
+		buttonPanel.add(send);
 		send.addActionListener(this);
 		expect = new JButton("Expect");
-		top.add(expect);
+		buttonPanel.add(expect);
 		expect.addActionListener(this);
 		c.setOutputHandler(this);
 	}

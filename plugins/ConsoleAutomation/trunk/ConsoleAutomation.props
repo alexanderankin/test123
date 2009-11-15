@@ -1,4 +1,4 @@
-plugin.marker.MarkerSetsPlugin.activate=startup
+plugin.automation.ConsoleAutomationPlugin.activate=defer
 
 # general plugin information
 plugin.automation.ConsoleAutomationPlugin.name=ConsoleAutomation
