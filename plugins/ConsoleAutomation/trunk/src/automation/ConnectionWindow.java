@@ -73,16 +73,8 @@ public class ConnectionWindow extends JPanel implements CharHandler,
 		synchronized(output)
 		{
 			currentOutput.append(c);
-			switch(c)
-			{
-			case '\b':
-				int len = currentOutput.length();
-				currentOutput.delete(len - 2, len);
-				break;
-			case '\n': 
+			if (c == '\n') 
 				output.add(currentOutput = new StringBuilder());
-				break;
-			}
 		}
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run()

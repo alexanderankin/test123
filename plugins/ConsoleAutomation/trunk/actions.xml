@@ -11,6 +11,14 @@
 			plugin.showConnectionDialog();
 		</CODE>
 	</ACTION>
+	<ACTION NAME="console-automation-reload-connections" NO_REPEAT="TRUE">
+		<CODE>
+			import automation.*;
+			ConsoleAutomationPlugin plugin = (ConsoleAutomationPlugin)
+				jEdit.getPlugin("automation.ConsoleAutomationPlugin");
+			plugin.reloadConnections();
+		</CODE>
+	</ACTION>
 
 </ACTIONS>
 

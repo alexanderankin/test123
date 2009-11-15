@@ -18,6 +18,16 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 	{
 	}
 
+	public void reloadConnections() {
+		String configured = jEdit.getProperty("console.automation.connections");
+		if (configured != null)
+		{
+			String [] connectionStrings = configured.split("\\s+");
+			for (String connectionString: connectionStrings)
+				addConnection(connectionString);
+		}
+	}
+
 	public void stop()
 	{
 	}
@@ -29,19 +39,25 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 
 	public void showConnectionDialog()
 	{
-		String[] parts;
+		String s;
 		do
 		{
-			String s = JOptionPane.showInputDialog("Please enter name:host:port");
+			s = JOptionPane.showInputDialog("Please enter name:host:port");
 			if (s == null)
 				return;
-			parts = s.split(":");
 		}
-		while (parts.length != 3);
+		while (addConnection(s) == false);
+	}
+	private boolean addConnection(String connectionString)
+	{
+		String [] parts = connectionString.split(":");
+		if (parts.length != 3)
+			return false;
 		String name = parts[0];
 		String host = parts[1];
 		String port = parts[2];
 		connect(name, host, Integer.valueOf(port));
+		return true;
 	}
 	public Connection connect(String name, String host, int port)
 	{
