@@ -24,6 +24,7 @@ public class Connection
 	private Object expectHandlerLock = new Object();
 	private ArrayList<StringBuilder> expectBuffer =
 		new ArrayList<StringBuilder>();
+	private boolean abortScript = false;
 
 	public interface CharHandler
 	{
@@ -34,6 +35,9 @@ public class Connection
 		// Returns true to continue reading, false to stop reading
 		boolean handle(String line);
 	}
+
+	// Public methods
+
 	public Connection(String name, String host, int port)
 	{
 		this.name = name;
@@ -66,16 +70,17 @@ public class Connection
 		{
 			expectBuffer.clear();
 		}
+		/*
 		for (char c: s.toCharArray())
 		{
 			if (outputHandler != null)
 				outputHandler.handle(c);
 		}
+		*/
 		writer.print(s);
 		writer.flush();
 	}
-	public String expectSubstr(String s, boolean prefix)
-		throws IOException, InterruptedException
+	public String expectSubstr(String s, boolean prefix) throws InterruptedException
 	{
 		SubstrHandler h = new SubstrHandler(s);
 		synchronized(expectHandlerLock)
@@ -96,6 +101,8 @@ public class Connection
 		{
 			h.wait();
 		}
+		if (abortScript)
+			throw new InterruptedException();
 		return h.line;
 	}
 	public Matcher expectPattern(Pattern p, boolean prefix)
@@ -120,6 +127,8 @@ public class Connection
 		{
 			h.wait();
 		}
+		if (abortScript)
+			scriptAborted();
 		return h.m;
 	}
 	// Attach an output listener
@@ -128,10 +137,55 @@ public class Connection
 		outputHandler = h;
 	}
 
+	// Macro support
+
+	public void abortScript()
+	{
+		synchronized(expectHandlerLock)
+		{
+			if ((expectLineHandler != null) || (expectPrefixHandler != null))
+				abortScript = true;
+		}
+	}
+
+	// Private methods
+
+	private void scriptAborted() throws InterruptedException
+	{
+		abortScript = false;
+		throw new InterruptedException();
+	}
+	private void notifyExpectHandler()
+	{
+		synchronized(expectHandlerLock)
+		{
+			if (expectLineHandler != null)
+			{
+				synchronized(expectLineHandler)
+				{
+					expectLineHandler.notifyAll();
+				}
+				expectLineHandler = null;
+			}
+			else if (expectPrefixHandler != null)
+			{
+				synchronized(expectPrefixHandler)
+				{
+					expectPrefixHandler.notifyAll();
+				}
+				expectPrefixHandler = null;
+			}
+		}
+	}
 	private void consumeBuffer()
 	{
 		while (expectBuffer.size() > 0)
 		{
+			if (abortScript)
+			{
+				notifyExpectHandler();
+				return;
+			}
 			String s = expectBuffer.get(0).toString();
 			expectBuffer.remove(0);
 			if (expectLineHandler != null)
@@ -173,6 +227,8 @@ public class Connection
 		int i;
 		while ((i = reader.read()) != -1)
 		{
+			if (abortScript)
+				notifyExpectHandler();
 			char c = (char) i;
 			if (outputHandler != null)
 				outputHandler.handle(c);

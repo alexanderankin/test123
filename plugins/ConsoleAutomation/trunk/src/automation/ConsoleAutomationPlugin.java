@@ -18,6 +18,7 @@ import org.gjt.sp.util.Log;
 
 public class ConsoleAutomationPlugin extends EditPlugin {
 
+	private static final String GLOBAL_MACROS = "Global";
 	private static final String CONNECTION_DOCKABLE = "console-automation";
 	private ConnectionDockable dockable;
 	private HashMap<String, Connection> connections = new HashMap<String, Connection>();
@@ -57,7 +58,7 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 			return;
 		jEdit.openFile(jEdit.getActiveView(), f.getAbsolutePath());
 	}
-	public void runMacro(String key, String name)
+	public void runMacro(final String key, String name)
 	{
 		File f = getMacroFile(key, name);
 		if (! f.exists())
@@ -73,7 +74,17 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 				Thread t = new Thread(new Runnable() {
 					public void run()
 					{
-						macro.invoke(jEdit.getActiveView());
+						Connection c = getConnection(key);
+						if (c != null)
+							c.abortScript();
+						try
+						{
+							macro.invoke(jEdit.getActiveView());
+						}
+						catch(Exception e)
+						{
+							System.err.println(e.toString());
+						}
 					}
 				});
 				t.start();
@@ -121,11 +132,11 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 			}
 			else if (file.getName().endsWith(".bsh"))
 			{
-				Vector<String> children = macros.get("Global");
+				Vector<String> children = macros.get(GLOBAL_MACROS);
 				if (children == null)
 				{
 					children = new Vector<String>();
-					macros.put("Global", children);
+					macros.put(GLOBAL_MACROS, children);
 				}
 				children.add(item);
 			}
