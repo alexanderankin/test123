@@ -102,7 +102,7 @@ public class Connection
 			h.wait();
 		}
 		if (abortScript)
-			throw new InterruptedException();
+			scriptAborted();
 		return h.line;
 	}
 	public Matcher expectPattern(Pattern p, boolean prefix)
