@@ -77,14 +77,7 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 						Connection c = getConnection(key);
 						if (c != null)
 							c.abortScript();
-						try
-						{
-							macro.invoke(jEdit.getActiveView());
-						}
-						catch(Exception e)
-						{
-							System.err.println(e.toString());
-						}
+						macro.invoke(jEdit.getActiveView());
 					}
 				});
 				t.start();
