@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -142,7 +143,8 @@ public class ConnectionWindow extends JPanel implements CharHandler,
 		{
 			e1.printStackTrace();
 			JOptionPane.showMessageDialog(jEdit.getActiveView(),
-				"Could not perform action, exception: " + e1.getStackTrace());
+				"Could not perform action, exception: " + Arrays.toString(
+				e1.getStackTrace()));
 		}
 	}
 }

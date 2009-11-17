@@ -8,6 +8,7 @@ import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.Vector;
+import java.util.Map.Entry;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -45,14 +46,19 @@ public class MacroPanel extends JPanel {
 				TreePath tp = tree.getPathForLocation(e.getX(), e.getY());
 				tree.setSelectionPath(tp);
 				Object [] path = tp.getPath();
-				String key =
-					((DefaultMutableTreeNode)(path[path.length - 2])).getUserObject().toString();
+				String key = null;
+				if (path.length > 1)
+					key = ((DefaultMutableTreeNode)
+						(path[path.length - 2])).getUserObject().toString();
 				String macro =
 					((DefaultMutableTreeNode)(path[path.length - 1])).getUserObject().toString();
-				if (e.isPopupTrigger())
-					plugin.runMacro(key, macro);
-				else if (e.getClickCount() == 1)
-					plugin.editMacro(key, macro);
+				if (key != null)
+				{
+					if (e.isPopupTrigger())
+						plugin.runMacro(key, macro);
+					else if (e.getClickCount() == 1)
+						plugin.editMacro(key, macro);
+				}
 			}
 		});
 		refresh = new JButton("Refresh");
@@ -70,12 +76,12 @@ public class MacroPanel extends JPanel {
 	{
 		root.removeAllChildren();
 		HashMap<String, Vector<String>> macros = plugin.getMacros();
-		Set<String> keys = macros.keySet();
-		for (String key: keys)
+		Set<Entry<String, Vector<String>>> entries = macros.entrySet();
+		for (Entry<String, Vector<String>> entry: entries)
 		{
-			DefaultMutableTreeNode child = new DefaultMutableTreeNode(key);
+			DefaultMutableTreeNode child = new DefaultMutableTreeNode(entry.getKey());
 			root.add(child);
-			Vector<String> keyMacros = macros.get(key);
+			Vector<String> keyMacros = entry.getValue();
 			if (keyMacros == null)
 				continue;
 			for (String macro: keyMacros)
