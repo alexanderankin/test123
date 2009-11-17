@@ -33,6 +33,7 @@ public class ConnectionWindow extends JPanel implements CharHandler,
 	private JButton clear;
 	private ArrayList<StringBuilder> output;
 	private StringBuilder currentOutput;
+	private int charsToRemove = 0;
 
 	public ConnectionWindow(Connection c)
 	{
@@ -72,9 +73,22 @@ public class ConnectionWindow extends JPanel implements CharHandler,
 	{
 		synchronized(output)
 		{
-			currentOutput.append(c);
-			if (c == '\n') 
-				output.add(currentOutput = new StringBuilder());
+			if (c == '\b')
+			{
+				int len = currentOutput.length();
+				if (len > 0)
+					currentOutput.setLength(len - 1);
+				else
+					charsToRemove++;
+			}
+			else
+			{
+				currentOutput.append(c);
+				if (charsToRemove > 0)
+					charsToRemove--;
+				if (c == '\n') 
+					output.add(currentOutput = new StringBuilder());
+			}
 		}
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run()
@@ -85,6 +99,12 @@ public class ConnectionWindow extends JPanel implements CharHandler,
 					boolean atEnd = (console.getCaretPosition() == d.getLength());
 					synchronized(output)
 					{
+						if (charsToRemove > 0)
+						{
+							int len = d.getLength();
+							d.remove(len - charsToRemove, charsToRemove);
+							charsToRemove = 0;
+						}
 						for (StringBuilder sb: output)
 							d.insertString(d.getLength(), sb.toString(), null);
 						output.clear();

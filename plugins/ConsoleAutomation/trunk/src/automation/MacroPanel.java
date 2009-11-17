@@ -11,6 +11,7 @@ import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -36,7 +37,7 @@ public class MacroPanel extends JPanel {
 		model = new DefaultTreeModel(root);
 		populateTree();
 		tree = new JTree(model);
-		add(tree, BorderLayout.CENTER);
+		add(new JScrollPane(tree), BorderLayout.CENTER);
 		tree.setRootVisible(false);
 		tree.addMouseListener(new MouseAdapter() {
 			@Override
