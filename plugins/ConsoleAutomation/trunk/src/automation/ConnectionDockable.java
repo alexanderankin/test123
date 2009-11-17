@@ -21,6 +21,10 @@ public class ConnectionDockable extends JPanel
 		ConnectionWindow cw = new ConnectionWindow(c);
 		tabs.addTab(c.getName(), cw);
 	}
+	public void remove(Connection c)
+	{
+		tabs.removeTabAt(tabs.indexOfTab(c.getName()));
+	}
 	public Connection getCurrent()
 	{
 		int sel = tabs.getSelectedIndex();
