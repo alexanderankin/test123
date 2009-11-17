@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<BugCollection version="1.3.9" sequence="0" timestamp="1258490654000" analysisTimestamp="1258490730553" release="">
+  <Project projectName="ConsoleAutomation">
+    <Jar>C:\Documents and Settings\SReinste.LSI\.jedit\jars\ConsoleAutomation.jar</Jar>
+    <AuxClasspathEntry>C:\Program Files\jEdit\jedit.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>C:\Documents and Settings\SReinste.LSI\.jedit\jars\commons-net-1.4.1.jar</AuxClasspathEntry>
+    <SrcDir>D:\jedit\ConsoleAutomation\src</SrcDir>
+    <SuppressionFilter>
+      <LastVersion value="-1" relOp="NEQ"/>
+    </SuppressionFilter>
+  </Project>
+  <BugInstance type="ML_SYNC_ON_FIELD_TO_GUARD_CHANGING_THAT_FIELD" priority="1" abbrev="ML" category="MT_CORRECTNESS">
+    <UserAnnotation designation="NOT_A_BUG" timestamp="1258491564699"/>
+    <Class classname="automation.Connection">
+      <SourceLine classname="automation.Connection" sourcefile="Connection.java" sourcepath="automation/Connection.java"/>
+    </Class>
+    <Method classname="automation.Connection" name="notifyExpectHandler" signature="()V" isStatic="false">
+      <SourceLine classname="automation.Connection" start="179" end="198" startBytecode="0" endBytecode="234" sourcefile="Connection.java" sourcepath="automation/Connection.java"/>
+    </Method>
+    <Field classname="automation.Connection" name="expectPrefixHandler" signature="Lautomation/Connection$LineHandler;" isStatic="false">
+      <SourceLine classname="automation.Connection" sourcefile="Connection.java" sourcepath="automation/Connection.java"/>
+    </Field>
+    <SourceLine classname="automation.Connection" start="195" end="195" startBytecode="81" endBytecode="81" sourcefile="Connection.java" sourcepath="automation/Connection.java"/>
+  </BugInstance>
+  <BugInstance type="WA_NOT_IN_LOOP" priority="2" abbrev="Wa" category="MT_CORRECTNESS">
+    <UserAnnotation designation="NOT_A_BUG" timestamp="1258490893004"/>
+    <Class classname="automation.Connection">
+      <SourceLine classname="automation.Connection" sourcefile="Connection.java" sourcepath="automation/Connection.java"/>
+    </Class>
+    <Method classname="automation.Connection" name="expectPattern" signature="(Ljava/util/regex/Pattern;Z)Ljava/util/regex/Matcher;" isStatic="false">
+      <SourceLine classname="automation.Connection" start="127" end="151" startBytecode="0" endBytecode="308" sourcefile="Connection.java" sourcepath="automation/Connection.java"/>
+    </Method>
+    <SourceLine classname="automation.Connection" start="147" end="147" startBytecode="96" endBytecode="96" sourcefile="Connection.java" sourcepath="automation/Connection.java"/>
+  </BugInstance>
+  <BugInstance type="WA_NOT_IN_LOOP" priority="2" abbrev="Wa" category="MT_CORRECTNESS">
+    <UserAnnotation designation="NOT_A_BUG" timestamp="1258490909738"/>
+    <Class classname="automation.Connection">
+      <SourceLine classname="automation.Connection" sourcefile="Connection.java" sourcepath="automation/Connection.java"/>
+    </Class>
+    <Method classname="automation.Connection" name="expectSubstr" signature="(Ljava/lang/String;Z)Ljava/lang/String;" isStatic="false">
+      <SourceLine classname="automation.Connection" start="87" end="114" startBytecode="0" endBytecode="322" sourcefile="Connection.java" sourcepath="automation/Connection.java"/>
+    </Method>
+    <SourceLine classname="automation.Connection" start="110" end="110" startBytecode="110" endBytecode="110" sourcefile="Connection.java" sourcepath="automation/Connection.java"/>
+  </BugInstance>
+  <BugInstance type="NN_NAKED_NOTIFY" priority="2" abbrev="NN" category="MT_CORRECTNESS">
+    <UserAnnotation designation="NOT_A_BUG" timestamp="1258490782693"/>
+    <Class classname="automation.Connection$PatternHandler">
+      <SourceLine classname="automation.Connection$PatternHandler" sourcefile="Connection.java" sourcepath="automation/Connection.java"/>
+    </Class>
+    <Method classname="automation.Connection$PatternHandler" name="handle" signature="(Ljava/lang/String;)Z" isStatic="false">
+      <SourceLine classname="automation.Connection$PatternHandler" start="319" end="328" startBytecode="0" endBytecode="135" sourcefile="Connection.java" sourcepath="automation/Connection.java"/>
+    </Method>
+    <SourceLine classname="automation.Connection$PatternHandler" start="324" end="324" startBytecode="27" endBytecode="27" sourcefile="Connection.java" sourcepath="automation/Connection.java"/>
+  </BugInstance>
+  <BugInstance type="NN_NAKED_NOTIFY" priority="2" abbrev="NN" category="MT_CORRECTNESS">
+    <UserAnnotation designation="NOT_A_BUG" timestamp="1258490786177"/>
+    <Class classname="automation.Connection$SubstrHandler">
+      <SourceLine classname="automation.Connection$SubstrHandler" sourcefile="Connection.java" sourcepath="automation/Connection.java"/>
+    </Class>
+    <Method classname="automation.Connection$SubstrHandler" name="handle" signature="(Ljava/lang/String;)Z" isStatic="false">
+      <SourceLine classname="automation.Connection$SubstrHandler" start="297" end="306" startBytecode="0" endBytecode="129" sourcefile="Connection.java" sourcepath="automation/Connection.java"/>
+    </Method>
+    <SourceLine classname="automation.Connection$SubstrHandler" start="302" end="302" startBytecode="21" endBytecode="21" sourcefile="Connection.java" sourcepath="automation/Connection.java"/>
+  </BugInstance>
+  <BugInstance type="WMI_WRONG_MAP_ITERATOR" priority="2" abbrev="WMI" category="PERFORMANCE">
+    <Class classname="automation.MacroPanel">
+      <SourceLine classname="automation.MacroPanel" sourcefile="MacroPanel.java" sourcepath="automation/MacroPanel.java"/>
+    </Class>
+    <Method classname="automation.MacroPanel" name="populateTree" signature="()V" isStatic="false">
+      <SourceLine classname="automation.MacroPanel" start="76" end="89" startBytecode="0" endBytecode="343" sourcefile="MacroPanel.java" sourcepath="automation/MacroPanel.java"/>
+    </Method>
+    <SourceLine classname="automation.MacroPanel" start="83" end="83" startBytecode="70" endBytecode="70" sourcefile="MacroPanel.java" sourcepath="automation/MacroPanel.java"/>
+  </BugInstance>
+  <Errors errors="0" missingClasses="0"></Errors>
+  <FindBugsSummary timestamp="Tue, 17 Nov 2009 22:44:14 +0200" total_classes="16" referenced_classes="306" total_bugs="6" total_size="549" num_packages="1" vm_version="14.2-b01" cpu_seconds="14.22" clock_seconds="1225.14" peak_mbytes="115.25" alloc_mbytes="762.12" gc_seconds="1.66" priority_2="5" priority_1="1">
+    <PackageStats package="automation" total_bugs="6" total_types="16" total_size="549" priority_2="5" priority_1="1">
+      <ClassStats class="automation.Connection" sourceFile="Connection.java" interface="false" size="167" bugs="3" priority_2="2" priority_1="1"/>
+      <ClassStats class="automation.Connection$1" sourceFile="Connection.java" interface="false" size="10" bugs="0"/>
+      <ClassStats class="automation.Connection$CharHandler" sourceFile="Connection.java" interface="true" size="2" bugs="0"/>
+      <ClassStats class="automation.Connection$LineHandler" sourceFile="Connection.java" interface="true" size="2" bugs="0"/>
+      <ClassStats class="automation.Connection$PatternHandler" sourceFile="Connection.java" interface="false" size="15" bugs="1" priority_2="1"/>
+      <ClassStats class="automation.Connection$SubstrHandler" sourceFile="Connection.java" interface="false" size="15" bugs="1" priority_2="1"/>
+      <ClassStats class="automation.ConnectionDockable" sourceFile="ConnectionDockable.java" interface="false" size="21" bugs="0"/>
+      <ClassStats class="automation.ConnectionWindow" sourceFile="ConnectionWindow.java" interface="false" size="76" bugs="0"/>
+      <ClassStats class="automation.ConnectionWindow$1" sourceFile="ConnectionWindow.java" interface="false" size="8" bugs="0"/>
+      <ClassStats class="automation.ConnectionWindow$2" sourceFile="ConnectionWindow.java" interface="false" size="23" bugs="0"/>
+      <ClassStats class="automation.ConsoleAutomationPlugin" sourceFile="ConsoleAutomationPlugin.java" interface="false" size="127" bugs="0"/>
+      <ClassStats class="automation.ConsoleAutomationPlugin$1" sourceFile="ConsoleAutomationPlugin.java" interface="false" size="8" bugs="0"/>
+      <ClassStats class="automation.ConsoleAutomationPlugin$2" sourceFile="ConsoleAutomationPlugin.java" interface="false" size="8" bugs="0"/>
+      <ClassStats class="automation.MacroPanel" sourceFile="MacroPanel.java" interface="false" size="41" bugs="1" priority_2="1"/>
+      <ClassStats class="automation.MacroPanel$1" sourceFile="MacroPanel.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="automation.MacroPanel$2" sourceFile="MacroPanel.java" interface="false" size="8" bugs="0"/>
+    </PackageStats>
+    <FindBugsProfile>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.URLProblems" totalMilliseconds="11" invocations="16" avgMicrosecondsPerInvocation="695" maxMicrosecondsPerInvocation="3197" standardDeviationMircosecondsPerInvocation="924"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.LiveLocalStoreDataflowFactory" totalMilliseconds="11" invocations="60" avgMicrosecondsPerInvocation="188" maxMicrosecondsPerInvocation="930" standardDeviationMircosecondsPerInvocation="201"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.Methods" totalMilliseconds="11" invocations="306" avgMicrosecondsPerInvocation="37" maxMicrosecondsPerInvocation="657" standardDeviationMircosecondsPerInvocation="61"/>
+      <ClassProfile name="edu.umd.cs.findbugs.ba.obl.ObligationAnalysis" totalMilliseconds="12" invocations="16" avgMicrosecondsPerInvocation="775" maxMicrosecondsPerInvocation="2544" standardDeviationMircosecondsPerInvocation="659"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteCheckReturnValue" totalMilliseconds="12" invocations="306" avgMicrosecondsPerInvocation="41" maxMicrosecondsPerInvocation="758" standardDeviationMircosecondsPerInvocation="71"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNullDeref$CheckCallSitesAndReturnInstructions" totalMilliseconds="12" invocations="72" avgMicrosecondsPerInvocation="179" maxMicrosecondsPerInvocation="1242" standardDeviationMircosecondsPerInvocation="229"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteCheckReturnValueAnnotations" totalMilliseconds="13" invocations="306" avgMicrosecondsPerInvocation="42" maxMicrosecondsPerInvocation="1030" standardDeviationMircosecondsPerInvocation="82"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass" totalMilliseconds="13" invocations="16" avgMicrosecondsPerInvocation="846" maxMicrosecondsPerInvocation="8923" standardDeviationMircosecondsPerInvocation="2124"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.MethodFactory" totalMilliseconds="13" invocations="272" avgMicrosecondsPerInvocation="50" maxMicrosecondsPerInvocation="511" standardDeviationMircosecondsPerInvocation="63"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.MethodReturnCheck" totalMilliseconds="13" invocations="16" avgMicrosecondsPerInvocation="871" maxMicrosecondsPerInvocation="8748" standardDeviationMircosecondsPerInvocation="2088"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteNonNullAnnotations" totalMilliseconds="14" invocations="306" avgMicrosecondsPerInvocation="46" maxMicrosecondsPerInvocation="974" standardDeviationMircosecondsPerInvocation="82"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.SwitchFallthrough" totalMilliseconds="14" invocations="16" avgMicrosecondsPerInvocation="895" maxMicrosecondsPerInvocation="8047" standardDeviationMircosecondsPerInvocation="1945"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteAnnotationRetention" totalMilliseconds="14" invocations="306" avgMicrosecondsPerInvocation="48" maxMicrosecondsPerInvocation="821" standardDeviationMircosecondsPerInvocation="80"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteJCIPAnnotation" totalMilliseconds="15" invocations="306" avgMicrosecondsPerInvocation="49" maxMicrosecondsPerInvocation="831" standardDeviationMircosecondsPerInvocation="79"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.LoadOfKnownNullValue" totalMilliseconds="15" invocations="16" avgMicrosecondsPerInvocation="981" maxMicrosecondsPerInvocation="6524" standardDeviationMircosecondsPerInvocation="1625"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindOpenStream" totalMilliseconds="15" invocations="16" avgMicrosecondsPerInvocation="994" maxMicrosecondsPerInvocation="6868" standardDeviationMircosecondsPerInvocation="1876"/>
+      <ClassProfile name="edu.umd.cs.findbugs.NonReportingDetectorToDetector2Adapter" totalMilliseconds="16" invocations="4010" avgMicrosecondsPerInvocation="4" maxMicrosecondsPerInvocation="170" standardDeviationMircosecondsPerInvocation="4"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings" totalMilliseconds="18" invocations="306" avgMicrosecondsPerInvocation="61" maxMicrosecondsPerInvocation="761" standardDeviationMircosecondsPerInvocation="76"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.MethodGenFactory" totalMilliseconds="22" invocations="74" avgMicrosecondsPerInvocation="298" maxMicrosecondsPerInvocation="1253" standardDeviationMircosecondsPerInvocation="260"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ConstantDataflowFactory" totalMilliseconds="24" invocations="72" avgMicrosecondsPerInvocation="344" maxMicrosecondsPerInvocation="2213" standardDeviationMircosecondsPerInvocation="417"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.CFGFactory" totalMilliseconds="35" invocations="72" avgMicrosecondsPerInvocation="490" maxMicrosecondsPerInvocation="2223" standardDeviationMircosecondsPerInvocation="508"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindRefComparison$SpecialTypeAnalysis" totalMilliseconds="55" invocations="54" avgMicrosecondsPerInvocation="1027" maxMicrosecondsPerInvocation="4220" standardDeviationMircosecondsPerInvocation="1122"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.impl.ZipCodeBaseFactory" totalMilliseconds="62" invocations="17" avgMicrosecondsPerInvocation="3702" maxMicrosecondsPerInvocation="55621" standardDeviationMircosecondsPerInvocation="12983"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.TypeDataflowFactory" totalMilliseconds="87" invocations="77" avgMicrosecondsPerInvocation="1142" maxMicrosecondsPerInvocation="10506" standardDeviationMircosecondsPerInvocation="1620"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.BuildObligationPolicyDatabase" totalMilliseconds="94" invocations="306" avgMicrosecondsPerInvocation="307" maxMicrosecondsPerInvocation="3263" standardDeviationMircosecondsPerInvocation="436"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.ReflectiveClasses" totalMilliseconds="98" invocations="306" avgMicrosecondsPerInvocation="320" maxMicrosecondsPerInvocation="5384" standardDeviationMircosecondsPerInvocation="616"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis" totalMilliseconds="110" invocations="306" avgMicrosecondsPerInvocation="361" maxMicrosecondsPerInvocation="8566" standardDeviationMircosecondsPerInvocation="727"/>
+      <ClassProfile name="edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder" totalMilliseconds="112" invocations="72" avgMicrosecondsPerInvocation="1556" maxMicrosecondsPerInvocation="16184" standardDeviationMircosecondsPerInvocation="2652"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.UnconditionalValueDerefDataflowFactory" totalMilliseconds="112" invocations="72" avgMicrosecondsPerInvocation="1562" maxMicrosecondsPerInvocation="10192" standardDeviationMircosecondsPerInvocation="2231"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassDataAnalysisEngine" totalMilliseconds="119" invocations="1691" avgMicrosecondsPerInvocation="70" maxMicrosecondsPerInvocation="7146" standardDeviationMircosecondsPerInvocation="294"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.JavaClassAnalysisEngine" totalMilliseconds="122" invocations="364" avgMicrosecondsPerInvocation="336" maxMicrosecondsPerInvocation="8221" standardDeviationMircosecondsPerInvocation="671"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ValueNumberDataflowFactory" totalMilliseconds="134" invocations="97" avgMicrosecondsPerInvocation="1383" maxMicrosecondsPerInvocation="11375" standardDeviationMircosecondsPerInvocation="2142"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.CalledMethods" totalMilliseconds="137" invocations="306" avgMicrosecondsPerInvocation="448" maxMicrosecondsPerInvocation="7771" standardDeviationMircosecondsPerInvocation="873"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.IsNullValueDataflowFactory" totalMilliseconds="143" invocations="72" avgMicrosecondsPerInvocation="1994" maxMicrosecondsPerInvocation="17607" standardDeviationMircosecondsPerInvocation="3244"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical" totalMilliseconds="149" invocations="306" avgMicrosecondsPerInvocation="489" maxMicrosecondsPerInvocation="6834" standardDeviationMircosecondsPerInvocation="763"/>
+      <ClassProfile name="edu.umd.cs.findbugs.FindBugs2" totalMilliseconds="251" invocations="2" avgMicrosecondsPerInvocation="125911" maxMicrosecondsPerInvocation="174757" standardDeviationMircosecondsPerInvocation="48845"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteDirectlyRelevantTypeQualifiers" totalMilliseconds="430" invocations="306" avgMicrosecondsPerInvocation="1407" maxMicrosecondsPerInvocation="27856" standardDeviationMircosecondsPerInvocation="2981"/>
+      <ClassProfile name="edu.umd.cs.findbugs.OpcodeStack$JumpInfoFactory" totalMilliseconds="573" invocations="6594" avgMicrosecondsPerInvocation="86" maxMicrosecondsPerInvocation="9774" standardDeviationMircosecondsPerInvocation="264"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FieldItemSummary" totalMilliseconds="602" invocations="306" avgMicrosecondsPerInvocation="1968" maxMicrosecondsPerInvocation="29587" standardDeviationMircosecondsPerInvocation="3907"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassInfoAnalysisEngine" totalMilliseconds="764" invocations="1689" avgMicrosecondsPerInvocation="452" maxMicrosecondsPerInvocation="297322" standardDeviationMircosecondsPerInvocation="7293"/>
+    </FindBugsProfile>
+  </FindBugsSummary>
+  <ClassFeatures></ClassFeatures>
+  <History></History>
+</BugCollection>

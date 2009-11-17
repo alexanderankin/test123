@@ -2,7 +2,7 @@ package automation;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -16,7 +16,7 @@ public class Connection
 	private String host;
 	private int port;
 	private TelnetClient telnet;
-	private PrintStream writer;
+	private PrintWriter writer;
 	private InputStreamReader reader;
 	private CharHandler outputHandler;
 	private LineHandler expectPrefixHandler;
@@ -53,7 +53,7 @@ public class Connection
 		telnet = new TelnetClient();
 		telnet.connect(host, port);
 		reader = new InputStreamReader(telnet.getInputStream());
-		writer = new PrintStream(telnet.getOutputStream());
+		writer = new PrintWriter(telnet.getOutputStream());
 		start();
 	}
 	public void disconnect() throws IOException
@@ -64,8 +64,10 @@ public class Connection
 	}
 	public void send(String s) throws IOException
 	{
-		if (! s.endsWith("\n"))
-			s = s + "\n";
+		if (s.endsWith("\n"))
+			s = s.substring(0, s.length() - 1);
+		if (! s.endsWith("\r"))
+			s = s + "\r";
 		synchronized (expectHandlerLock)
 		{
 			expectBuffer.clear();
@@ -99,11 +101,25 @@ public class Connection
 		}
 		synchronized(h)
 		{
-			h.wait();
+			if (! expectHandlerExists(prefix))
+			{
+				if (abortScript)
+					scriptAborted();
+			}
+			else
+				h.wait();
 		}
 		if (abortScript)
 			scriptAborted();
 		return h.line;
+	}
+	private boolean expectHandlerExists(boolean prefix)
+	{
+		synchronized(expectHandlerLock)
+		{
+			return ((prefix && (expectPrefixHandler != null)) ||
+				((! prefix) && (expectLineHandler != null)));
+		}
 	}
 	public Matcher expectPattern(Pattern p, boolean prefix)
 		throws IOException, InterruptedException
@@ -117,15 +133,18 @@ public class Connection
 				expectLineHandler = h;
 			consumeBuffer();
 			// If the expected text has been found, no need to wait
-			if ((prefix && (expectPrefixHandler == null)) ||
-				((!prefix) && (expectLineHandler == null)))
-			{
+			if (! expectHandlerExists(prefix))
 				return h.m;
-			}
 		}
 		synchronized(h)
 		{
-			h.wait();
+			if (! expectHandlerExists(prefix))
+			{
+				if (abortScript)
+					scriptAborted();
+			}
+			else
+				h.wait();
 		}
 		if (abortScript)
 			scriptAborted();
