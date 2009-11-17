@@ -20,7 +20,6 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 
 	private static final String GLOBAL_MACROS = "Global";
 	private static final String CONNECTION_DOCKABLE = "console-automation";
-	private ConnectionDockable dockable;
 	private HashMap<String, Connection> connections = new HashMap<String, Connection>();
 
 	public void start()
@@ -48,8 +47,12 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 
 	private File getMacroFile(String key, String name)
 	{
-		return new File(getPluginHome().getAbsoluteFile() + File.separator +
-			key + File.separator + name);
+		StringBuilder s = new StringBuilder(getPluginHome().getAbsolutePath() +
+			File.separator);
+		if (! key.equals(GLOBAL_MACROS))
+			s.append(key + File.separator);
+		s.append(name);
+		return new File(s.toString());
 	}
 	public void editMacro(String key, String name)
 	{
@@ -57,6 +60,13 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 		if (! f.exists())
 			return;
 		jEdit.openFile(jEdit.getActiveView(), f.getAbsolutePath());
+	}
+	public Connection getCurrentConnection()
+	{
+		ConnectionDockable dockable = getConnectionDockable();
+		if (dockable == null)
+			return null;
+		return dockable.getCurrent();
 	}
 	public void runMacro(final String key, String name)
 	{
@@ -74,9 +84,6 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 				Thread t = new Thread(new Runnable() {
 					public void run()
 					{
-						Connection c = getConnection(key);
-						if (c != null)
-							c.abortScript();
 						macro.invoke(jEdit.getActiveView());
 					}
 				});
@@ -165,15 +172,7 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 		try
 		{
 			c.connect();
-			DockableWindowManager dwm = jEdit.getActiveView().getDockableWindowManager();
-			dockable = (ConnectionDockable)
-				dwm.getDockable(CONNECTION_DOCKABLE); 
-			if (dockable == null)
-			{
-				dwm.addDockableWindow(CONNECTION_DOCKABLE);
-				dockable = (ConnectionDockable)
-					dwm.getDockable(CONNECTION_DOCKABLE); 
-			}
+			ConnectionDockable dockable = getConnectionDockable();
 			dockable.add(c);
 			connections.put(name, c);
 		} catch (Exception e)
@@ -182,6 +181,18 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 			return null;
 		}
 		return c;
+	}
+	private ConnectionDockable getConnectionDockable()
+	{
+		DockableWindowManager dwm = jEdit.getActiveView().getDockableWindowManager();
+		ConnectionDockable dockable;
+		dockable = (ConnectionDockable) dwm.getDockable(CONNECTION_DOCKABLE); 
+		if (dockable == null)
+		{
+			dwm.addDockableWindow(CONNECTION_DOCKABLE);
+			dockable = (ConnectionDockable) dwm.getDockable(CONNECTION_DOCKABLE); 
+		}
+		return dockable;
 	}
 	
 }

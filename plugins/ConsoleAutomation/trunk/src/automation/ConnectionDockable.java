@@ -21,4 +21,14 @@ public class ConnectionDockable extends JPanel
 		ConnectionWindow cw = new ConnectionWindow(c);
 		tabs.addTab(c.getName(), cw);
 	}
+	public Connection getCurrent()
+	{
+		int sel = tabs.getSelectedIndex();
+		if (sel >= 0)
+		{
+			ConnectionWindow cw = (ConnectionWindow) tabs.getComponentAt(sel);
+			return cw.getConnection();
+		}
+		return null;
+	}
 }

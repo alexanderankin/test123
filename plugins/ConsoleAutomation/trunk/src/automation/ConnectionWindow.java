@@ -69,6 +69,10 @@ public class ConnectionWindow extends JPanel implements CharHandler,
 		c.setOutputHandler(this);
 	}
 
+	public Connection getConnection()
+	{
+		return c;
+	}
 	public void handle(char c)
 	{
 		synchronized(output)
