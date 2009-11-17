@@ -166,6 +166,26 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 		connect(name, host, Integer.valueOf(port));
 		return true;
 	}
+	public Connection getConnection(String name, String host, int port)
+	{
+		Connection c = getConnection(name);
+		if (c == null)
+			c = connect(name, host, port);
+		return c;
+	}
+	public void closeConnection(Connection c)
+	{
+		try
+		{
+			c.connect();
+			ConnectionDockable dockable = getConnectionDockable();
+			dockable.remove(c);
+			connections.remove(c.getName());
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
 	public Connection connect(String name, String host, int port)
 	{
 		Connection c = new Connection(name, host, port);
