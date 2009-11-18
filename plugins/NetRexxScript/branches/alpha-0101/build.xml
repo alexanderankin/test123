@@ -2,6 +2,20 @@
 
 <project name="NetRexxScript" default="build" basedir=".">
 
+	<echo>
+	*** Note: This build.xml file uses the netrexxc task which is not inluded in AntPlugin
+	and is not included in Synaptic Ant installs. The ant-netrexx.jar file which contains this
+	task is included in the complete Ant download found at http://ant.apache.org/bindownload.cgi
+	This task depends on the NetRexxC.jar language file which can currently be found at
+	http://www.ibm.com/software/awdtools/netrexx/download.html
+	The language file is also included in the NetRexxScript Plugin lib directory. It must be copied to the
+	ANT_HOME/lib directory or added to the classpath Ant runs with or you will get error messages like:
+	NetRexxScript/build.xml:nn: java.lang.NoClassDefFoundError: netrexx/lang/Rexx
+	If you use the Antelope plugin to build, the language jar file should be copied to the jEdit plugin jars
+	directory rather than ANT_HOME\lib to prevent classloader conflicts when running the NetRexxScript plugin.
+	</echo>
+
+
 	<!-- Allow properties to be overridden: -->
     <property file="build.properties" />
     <property file="../build.properties" />
