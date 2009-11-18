@@ -3,6 +3,8 @@ package automation;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
@@ -32,6 +34,8 @@ public class ConnectionWindow extends JPanel implements CharHandler,
 	private JButton send;
 	private JButton expect;
 	private JButton clear;
+	private JButton toEnd;
+	private JButton ctrlC;
 	private ArrayList<StringBuilder> output;
 	private StringBuilder currentOutput;
 	private int charsToRemove = 0;
@@ -42,6 +46,7 @@ public class ConnectionWindow extends JPanel implements CharHandler,
 		setLayout(new BorderLayout());
 		console = new JTextPane();
 		add(new JScrollPane(console), BorderLayout.CENTER);
+		console.setEditable(false);
 		JPanel top = new JPanel(new BorderLayout());
 		add(top, BorderLayout.NORTH);
 		input = new HistoryTextField("automation.send-history");
@@ -65,9 +70,21 @@ public class ConnectionWindow extends JPanel implements CharHandler,
 		clear = new JButton("Clear");
 		buttonPanel.add(clear);
 		clear.addActionListener(this);
+		toEnd = new JButton("End");
+		buttonPanel.add(toEnd);
+		toEnd.addActionListener(this);
+		ctrlC = new JButton("Ctrl+C");
+		buttonPanel.add(ctrlC);
+		ctrlC.addActionListener(this);
 		output = new ArrayList<StringBuilder>();
 		output.add(currentOutput = new StringBuilder());
 		c.setOutputHandler(this);
+		addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				console.requestFocusInWindow();
+			}
+		});
 	}
 
 	public Connection getConnection()
@@ -137,6 +154,10 @@ public class ConnectionWindow extends JPanel implements CharHandler,
 				c.expectSubstr(s, true);
 			else if (e.getSource() == clear)
 				console.getDocument().remove(0, console.getDocument().getLength());
+			else if (e.getSource() == toEnd)
+				console.setCaretPosition(console.getDocument().getLength());
+			else if (e.getSource() == ctrlC)
+				c.send("^C");
 			input.setText("");
 		}
 		catch (Exception e1)

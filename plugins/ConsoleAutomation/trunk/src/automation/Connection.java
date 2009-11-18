@@ -25,6 +25,9 @@ public class Connection
 	private ArrayList<StringBuilder> expectBuffer =
 		new ArrayList<StringBuilder>();
 	private boolean abortScript = false;
+	private Thread scriptThread = new ScriptThread();
+	private ArrayList<Runnable> scripts =
+		new ArrayList<Runnable>();
 
 	public interface CharHandler
 	{
@@ -55,6 +58,7 @@ public class Connection
 		reader = new InputStreamReader(telnet.getInputStream());
 		writer = new PrintWriter(telnet.getOutputStream());
 		start();
+		scriptThread.start();
 	}
 	public void disconnect() throws IOException
 	{
@@ -158,6 +162,15 @@ public class Connection
 
 	// Macro support
 
+	public void addScript(Runnable script)
+	{
+		synchronized (scripts)
+		{
+			scripts.add(script);
+			if (scripts.size() == 1)	// Was empty before
+				scripts.notifyAll();
+		}
+	}
 	public void abortScript()
 	{
 		synchronized(expectHandlerLock)
@@ -326,6 +339,33 @@ public class Connection
 				return false;
 			}
 			return true;
+		}
+	}
+	private class ScriptThread extends Thread
+	{
+		@Override
+		public void run()
+		{
+			boolean abort = false;
+			while (! abort)
+			{
+				Runnable r = null;
+				synchronized (scripts)
+				{
+					if (scripts.size() == 0)
+					{
+						try {
+							scripts.wait();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+							abort = true;
+							continue;
+						}
+					}
+					r = scripts.remove(0);
+				}
+				r.run();
+			}
 		}
 	}
 }
