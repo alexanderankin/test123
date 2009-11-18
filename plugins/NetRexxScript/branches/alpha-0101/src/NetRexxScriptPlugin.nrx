@@ -175,9 +175,21 @@ class NetRexxScriptPlugin public extends EBPlugin implements runnable
 	    
 --		Perform plugin initialization			---------------------------------------------------------------------------------------------------------------------
 
-	method start()								
-		System.out.println("NetRexxScript plugin version 0.1.1 (2009/11/07) starting")
-		
+	method start()
+		version=jEdit.getProperty("plugin.NetRexxScriptPlugin.version","notfound")
+		System.out.println("NetRexxScript plugin version" version "starting")
+ 		do
+		jf=JarFile(getPluginJAR.getFile)
+		je=jf.getJarEntry("build.number")
+		if je\=null then do
+			ir=BufferedReader(InputStreamReader(jf.getInputStream(je)))
+			l1=ir.readline;l2=ir.readline;l3=ir.readline
+			System.out.println(l3" "Rexx(l2).substr(2))
+			end
+		catch ioe=IOException
+			System.out.println("build.number" ioe.toString)
+		end
+
 		setdir=jEdit.getSettingsDirectory()	--	string with settings directory path (add \macros to get default script paths)		
 		
 --	init some permanent properties we will need later	
