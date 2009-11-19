@@ -67,6 +67,8 @@ public class ErrorList extends JPanel implements EBComponent,
 		ErrorList.class.getResource("error.png"));
 	public static final ImageIcon WARNING_ICON = new ImageIcon(
 		ErrorList.class.getResource("warning.png"));
+	public static final Integer [] allTypes = new Integer[] {
+		ErrorSource.ERROR, ErrorSource.WARNING };
 
 	//{{{ data members
 	private View view;
@@ -88,7 +90,8 @@ public class ErrorList extends JPanel implements EBComponent,
 
 		errors = new Vector<Error>();
 		filteredTypes = new Vector<Integer>();
-		
+		initFilteredTypes();
+
 		Box toolBar = new Box(BoxLayout.X_AXIS);
 		status = new JLabel();
 		toolBar.add(status);
@@ -96,6 +99,8 @@ public class ErrorList extends JPanel implements EBComponent,
 		toggleButtons = new HashMap<Integer, JToggleButton>();
 		
 		JToggleButton toggleBtn = new JToggleButton(ERROR_ICON, true);
+		toggleBtn.setSelected(! filteredTypes.contains(Integer.valueOf(
+			ErrorSource.ERROR)));
 		toggleBtn.setToolTipText(jEdit.getProperty(
 			"error-list-toggle-errors.label"));
 		toggleBtn.addActionListener(new EditAction.Wrapper(
@@ -108,6 +113,8 @@ public class ErrorList extends JPanel implements EBComponent,
 		toolBar.add(Box.createHorizontalStrut(3));
 
 		toggleBtn = new JToggleButton(WARNING_ICON, true);
+		toggleBtn.setSelected(! filteredTypes.contains(Integer.valueOf(
+				ErrorSource.WARNING)));
 		toggleBtn.setToolTipText(jEdit.getProperty(
 			"error-list-toggle-warnings.label"));
 		toggleBtn.addActionListener(new EditAction.Wrapper(
@@ -253,6 +260,15 @@ public class ErrorList extends JPanel implements EBComponent,
 			handleErrorSourceMessage((ErrorSourceUpdate)message);
 		else if(message instanceof ViewUpdate)
 			handleViewUpdate((ViewUpdate)message);
+	} //}}}
+
+	//{{{ initFilteredTypes() method
+	private void initFilteredTypes() {
+		for (Integer type: allTypes)
+		{
+			if (jEdit.getBooleanProperty("error-list-filtered-types." + type, false))
+				filteredTypes.add(type);
+		}
 	} //}}}
 
 	//{{{ handleViewUpdate() method
@@ -564,6 +580,8 @@ public class ErrorList extends JPanel implements EBComponent,
 			filteredTypes.remove(type);
 		else
 			filteredTypes.add(type);
+		jEdit.setBooleanProperty("error-list-filtered-types." + type,
+			filteredTypes.contains(type));
 		updateList();
 	}
 	//}}}
