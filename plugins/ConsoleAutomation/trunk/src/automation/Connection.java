@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,22 +13,20 @@ import org.apache.commons.net.telnet.TelnetClient;
 
 public class Connection
 {
-	private String name;
-	private String host;
-	private int port;
+	private final String name;
+	private final String host;
+	private final int port;
 	private TelnetClient telnet;
 	private PrintWriter writer;
 	private InputStreamReader reader;
 	private CharHandler outputHandler;
 	private LineHandler expectPrefixHandler;
 	private LineHandler expectLineHandler;
-	private Object expectHandlerLock = new Object();
-	private ArrayList<StringBuilder> expectBuffer =
-		new ArrayList<StringBuilder>();
+	private final Object expectHandlerLock = new Object();
+	private final List<StringBuilder> expectBuffer = new ArrayList<StringBuilder>();
 	private boolean abortScript = false;
-	private Thread scriptThread = new ScriptThread();
-	private ArrayList<Runnable> scripts =
-		new ArrayList<Runnable>();
+	private final Thread scriptThread = new ScriptThread();
+	private final List<Runnable> scripts = new ArrayList<Runnable>();
 	static private ThreadLocal<Connection> tlsConnection =
 		new ThreadLocal<Connection>();
 
@@ -113,13 +112,10 @@ public class Connection
 		}
 		synchronized(h)
 		{
-			if (! expectHandlerExists(prefix))
-			{
-				if (abortScript)
-					return null;
-			}
-			else
+			if (expectHandlerExists(prefix))
 				h.wait();
+			else if (abortScript)
+				return null;
 		}
 		if (abortScript)
 			return null;
@@ -154,13 +150,10 @@ public class Connection
 		}
 		synchronized(h)
 		{
-			if (! expectHandlerExists(prefix))
-			{
-				if (abortScript)
-					return null;
-			}
-			else
+			if (expectHandlerExists(prefix))
 				h.wait();
+			else if (abortScript)
+				return null;
 		}
 		if (abortScript)
 			return null;
@@ -206,7 +199,7 @@ public class Connection
 				}
 				expectLineHandler = null;
 			}
-			else if (expectPrefixHandler != null)
+			if (expectPrefixHandler != null)
 			{
 				synchronized(expectPrefixHandler)
 				{
@@ -218,7 +211,7 @@ public class Connection
 	}
 	private void consumeBuffer()
 	{
-		while (expectBuffer.size() > 0)
+		while (! expectBuffer.isEmpty())
 		{
 			if (abortScript)
 				return;
@@ -272,13 +265,10 @@ public class Connection
 			{
 				synchronized(expectHandlerLock)
 				{
-					if (expectLineHandler != null)
-					{
-						if (! expectLineHandler.handle(s.toString()))
-							expectLineHandler = null;
-					}
-					else
+					if (expectLineHandler == null)
 						expectBuffer.add(new StringBuilder());
+					else if (! expectLineHandler.handle(s.toString()))
+						expectLineHandler = null;
 				}
 				s.setLength(0);
 				continue;
@@ -286,24 +276,21 @@ public class Connection
 			s.append(c);
 			synchronized(expectHandlerLock)
 			{
-				if (expectPrefixHandler != null)
+				if (expectPrefixHandler == null)
 				{
-					if (! expectPrefixHandler.handle(s.toString()))
-						expectPrefixHandler = null;
-				}
-				else
-				{
-					if (expectBuffer.size() == 0)
+					if (expectBuffer.isEmpty())
 						expectBuffer.add(new StringBuilder());
 					expectBuffer.get(expectBuffer.size()-1).append(c);
 				}
+				else if (! expectPrefixHandler.handle(s.toString()))
+					expectPrefixHandler = null;
 			}
 		}
 	}
 
 	private static class SubstrHandler implements LineHandler
 	{
-		private String s;	// the substring to look for
+		private final String s;	// the substring to look for
 		public String line;	// the line where the substring was found
 		public SubstrHandler(String s)
 		{
@@ -325,7 +312,7 @@ public class Connection
 	}
 	private static class PatternHandler implements LineHandler
 	{
-		private Pattern p;
+		private final Pattern p;
 		public Matcher m;
 		public PatternHandler(Pattern p)
 		{
@@ -357,7 +344,7 @@ public class Connection
 				Runnable r = null;
 				synchronized (scripts)
 				{
-					if (scripts.size() == 0)
+					if (scripts.isEmpty())
 					{
 						try {
 							scripts.wait();
