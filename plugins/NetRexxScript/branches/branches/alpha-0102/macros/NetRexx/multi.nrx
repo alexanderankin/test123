@@ -1,7 +1,0 @@
-
-say "this is the multi test script which demonstrates one script calling another in preparse mode"
-
-test.main(String[0])
-
-test.main([String 'bingo'])
-
