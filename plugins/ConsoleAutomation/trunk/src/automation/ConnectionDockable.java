@@ -8,7 +8,7 @@ import javax.swing.JTabbedPane;
 @SuppressWarnings("serial")
 public class ConnectionDockable extends JPanel
 {
-	private JTabbedPane tabs;
+	private final JTabbedPane tabs;
 
 	public ConnectionDockable()
 	{

@@ -9,6 +9,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -28,15 +29,15 @@ import automation.Connection.CharHandler;
 public class ConnectionWindow extends JPanel implements CharHandler,
 	ActionListener
 {
-	private Connection c;
-	private JTextPane console;
-	private HistoryTextField input;
-	private JButton send;
-	private JButton expect;
-	private JButton clear;
-	private JButton toEnd;
-	private JButton ctrlC;
-	private ArrayList<StringBuilder> output;
+	private final Connection c;
+	private final JTextPane console;
+	private final HistoryTextField input;
+	private final JButton send;
+	private final JButton expect;
+	private final JButton clear;
+	private final JButton toEnd;
+	private final JButton ctrlC;
+	private final List<StringBuilder> output;
 	private StringBuilder currentOutput;
 	private int charsToRemove = 0;
 

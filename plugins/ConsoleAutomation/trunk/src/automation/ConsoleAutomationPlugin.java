@@ -2,6 +2,7 @@ package automation;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
@@ -20,10 +21,12 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 
 	private static final String GLOBAL_MACROS = "Global";
 	private static final String CONNECTION_DOCKABLE = "console-automation";
-	private HashMap<String, Connection> connections = new HashMap<String, Connection>();
+	private final Map<String, Connection> connections =
+		new HashMap<String, Connection>();
 
 	public void start()
 	{
+		// Empty
 	}
 
 	public void reloadConnections() {
@@ -38,6 +41,7 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 
 	public void stop()
 	{
+		// Empty
 	}
 
 	public Connection getConnection(String name)
@@ -109,7 +113,7 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 			}
 		});
 	}
-	public HashMap<String, Vector<String>> getMacros()
+	public Map<String, Vector<String>> getMacros()
 	{
 		File home = getPluginHome();
 		if (! home.exists())
@@ -157,7 +161,7 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 			if (s == null)
 				return;
 		}
-		while (addConnection(s) == false);
+		while (! addConnection(s));
 	}
 	private boolean addConnection(String connectionString)
 	{

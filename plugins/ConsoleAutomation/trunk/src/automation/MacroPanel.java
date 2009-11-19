@@ -5,7 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 import java.util.Map.Entry;
@@ -23,11 +23,10 @@ import org.gjt.sp.jedit.jEdit;
 @SuppressWarnings("serial")
 public class MacroPanel extends JPanel {
 
-	private JTree tree;
-	private DefaultTreeModel model;
-	private DefaultMutableTreeNode root;
-	private JButton refresh;
-	private ConsoleAutomationPlugin plugin;
+	private final JTree tree;
+	private final DefaultTreeModel model;
+	private final DefaultMutableTreeNode root;
+	private final ConsoleAutomationPlugin plugin;
 
 	public MacroPanel()
 	{
@@ -61,7 +60,7 @@ public class MacroPanel extends JPanel {
 				}
 			}
 		});
-		refresh = new JButton("Refresh");
+		JButton refresh = new JButton("Refresh");
 		add(refresh, BorderLayout.SOUTH);
 		refresh.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e)
@@ -75,7 +74,7 @@ public class MacroPanel extends JPanel {
 	private void populateTree()
 	{
 		root.removeAllChildren();
-		HashMap<String, Vector<String>> macros = plugin.getMacros();
+		Map<String, Vector<String>> macros = plugin.getMacros();
 		Set<Entry<String, Vector<String>>> entries = macros.entrySet();
 		for (Entry<String, Vector<String>> entry: entries)
 		{
