@@ -195,6 +195,10 @@ public class VoxSpellPainter extends TextAreaExtension
         if (word.indexOf("\u2019") != -1) {
             word = word.replaceAll("\u2019", "'");
         }
+        // FIXME: Hack
+        if (word.endsWith("s'")) {
+            word = word.substring(0, word.length() - 1);
+        }
         
         String trim_word = word.trim();
         String low_word = trim_word.toLowerCase();
