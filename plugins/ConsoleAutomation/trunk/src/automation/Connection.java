@@ -77,7 +77,7 @@ public class Connection
 	{
 		if (abortScript)
 			return;
-		if (! s.endsWith("\n"))
+		if ((s.length() == 0) || (! s.endsWith("\n")))
 			s = s + "\n";
 		synchronized (expectHandlerLock)
 		{
