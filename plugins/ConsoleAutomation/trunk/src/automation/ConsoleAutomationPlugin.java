@@ -63,10 +63,7 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 	}
 	public Connection getCurrentConnection()
 	{
-		ConnectionDockable dockable = getConnectionDockable();
-		if (dockable == null)
-			return null;
-		return dockable.getCurrent();
+		return Connection.getCurrentConnection();
 	}
 	public void runMacro(final String key, String name)
 	{
@@ -79,15 +76,22 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 		{
 			try
 			{
+				ConnectionDockable dockable = getConnectionDockable();
+				if (dockable == null)
+					return;
+				Connection c = dockable.getCurrent();
+				if (c == null)
+					return;
+				c.abortScript();
 				final Macro macro = handler.createMacro(
 					MiscUtilities.getFileName(path), path);
-				Thread t = new Thread(new Runnable() {
+				Runnable script = new Runnable() {
 					public void run()
 					{
 						macro.invoke(jEdit.getActiveView());
 					}
-				});
-				t.start();
+				};
+				c.addScript(script);
 			}
 			catch (Exception e)
 			{
