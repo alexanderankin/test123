@@ -35,6 +35,7 @@ import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.GUIUtilities;
 
 class SuggestionDialog extends JDialog implements ActionListener, KeyListener, MouseListener
 {
@@ -63,7 +64,7 @@ class SuggestionDialog extends JDialog implements ActionListener, KeyListener, M
         
         TextArea ta = view.getTextArea();
         FontMetrics metrics = ta.getPainter().getFontMetrics();
-        Rectangle screen_rect = view.getGraphicsConfiguration().getBounds();
+        Rectangle screen_rect = GUIUtilities.getScreenBounds();
         Selection sel = ta.getSelectionAtOffset(ta.getCaretPosition());
         Point p = ta.offsetToXY(sel.getStart());
         Point loc = ta.getLocationOnScreen();
