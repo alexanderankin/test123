@@ -15,8 +15,13 @@
 
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
-		<pathelement location="${jedit.plugins.dir}/commons-net-1.4.1.jar"/>
+		<pathelement location="commons-net-2.0.jar"/>
 		<pathelement location="${src.dir}"/>
 	</path>
+
+	<target name="build.prepare" >
+	 	<mkdir dir="${build.dir}" />
+		<copy file="commons-net-2.0.jar" todir="${install.dir}" />
+	</target>
 
 </project>

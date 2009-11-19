@@ -28,6 +28,8 @@ public class Connection
 	private Thread scriptThread = new ScriptThread();
 	private ArrayList<Runnable> scripts =
 		new ArrayList<Runnable>();
+	static private ThreadLocal<Connection> tlsConnection =
+		new ThreadLocal<Connection>();
 
 	public interface CharHandler
 	{
@@ -40,6 +42,11 @@ public class Connection
 	}
 
 	// Public methods
+
+	static Connection getCurrentConnection()
+	{
+		return tlsConnection.get();
+	}
 
 	public Connection(String name, String host, int port)
 	{
@@ -68,10 +75,10 @@ public class Connection
 	}
 	public void send(String s) throws IOException
 	{
-		if (s.endsWith("\n"))
-			s = s.substring(0, s.length() - 1);
-		if (! s.endsWith("\r"))
-			s = s + "\r";
+		if (abortScript)
+			return;
+		if (! s.endsWith("\n"))
+			s = s + "\n";
 		synchronized (expectHandlerLock)
 		{
 			expectBuffer.clear();
@@ -88,6 +95,8 @@ public class Connection
 	}
 	public String expectSubstr(String s, boolean prefix) throws InterruptedException
 	{
+		if (abortScript)
+			return null;
 		SubstrHandler h = new SubstrHandler(s);
 		synchronized(expectHandlerLock)
 		{
@@ -96,25 +105,24 @@ public class Connection
 			else
 				expectLineHandler = h;
 			consumeBuffer();
+			if (abortScript)
+				return null;
 			// If the expected text has been found, no need to wait
-			if ((prefix && (expectPrefixHandler == null)) ||
-				((!prefix) && (expectLineHandler == null)))
-			{
+			if (! expectHandlerExists(prefix))
 				return h.line;
-			}
 		}
 		synchronized(h)
 		{
 			if (! expectHandlerExists(prefix))
 			{
 				if (abortScript)
-					scriptAborted();
+					return null;
 			}
 			else
 				h.wait();
 		}
 		if (abortScript)
-			scriptAborted();
+			return null;
 		return h.line;
 	}
 	private boolean expectHandlerExists(boolean prefix)
@@ -128,6 +136,8 @@ public class Connection
 	public Matcher expectPattern(Pattern p, boolean prefix)
 		throws IOException, InterruptedException
 	{
+		if (abortScript)
+			return null;
 		PatternHandler h = new PatternHandler(p);
 		synchronized(expectHandlerLock)
 		{
@@ -136,6 +146,8 @@ public class Connection
 			else
 				expectLineHandler = h;
 			consumeBuffer();
+			if (abortScript)
+				return null;
 			// If the expected text has been found, no need to wait
 			if (! expectHandlerExists(prefix))
 				return h.m;
@@ -145,13 +157,13 @@ public class Connection
 			if (! expectHandlerExists(prefix))
 			{
 				if (abortScript)
-					scriptAborted();
+					return null;
 			}
 			else
 				h.wait();
 		}
 		if (abortScript)
-			scriptAborted();
+			return null;
 		return h.m;
 	}
 	// Attach an output listener
@@ -182,11 +194,6 @@ public class Connection
 
 	// Private methods
 
-	private void scriptAborted() throws InterruptedException
-	{
-		abortScript = false;
-		throw new InterruptedException();
-	}
 	private void notifyExpectHandler()
 	{
 		synchronized(expectHandlerLock)
@@ -214,10 +221,7 @@ public class Connection
 		while (expectBuffer.size() > 0)
 		{
 			if (abortScript)
-			{
-				notifyExpectHandler();
 				return;
-			}
 			String s = expectBuffer.get(0).toString();
 			expectBuffer.remove(0);
 			if (expectLineHandler != null)
@@ -346,6 +350,7 @@ public class Connection
 		@Override
 		public void run()
 		{
+			tlsConnection.set(Connection.this);
 			boolean abort = false;
 			while (! abort)
 			{
@@ -365,6 +370,7 @@ public class Connection
 					r = scripts.remove(0);
 				}
 				r.run();
+				abortScript = false;
 			}
 		}
 	}
