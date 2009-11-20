@@ -5,7 +5,7 @@
 plugin.NetRexxScriptPlugin.activate=startup
 plugin.NetRexxScriptPlugin.name=NetRexxScript
 plugin.NetRexxScriptPlugin.author=Kermit Kiser
-plugin.NetRexxScriptPlugin.version=0.1.1
+plugin.NetRexxScriptPlugin.version=0.1.2
 plugin.NetRexxScriptPlugin.docs=NetRexxScript.html
 plugin.NetRexxScriptPlugin.description=NetRexx Scripting plugin
 
@@ -22,7 +22,7 @@ plugin.NetRexxScriptPlugin.jars=NetRexxC.jar
 #NetRexxScript.execute.label=NetRexxScript
 
 # 						-	this section creates a sub menu of items on the plugin menu and labels the selections
-# application menu items			-	the actual actions for these menu items are defined in the actions.xml file
+# application menu items			-	the actions for these menu items are defined in the actions.xml file
 NetRexxScript.menu.label=NetRexxScript
 #plugin.NetRexxScriptPlugin.menu=NetRexxScript.flush NetRexxScript.cache NetRexxScript.preparse NetRexxScript.execute
 plugin.NetRexxScriptPlugin.menu=NetRexxScript.runcurrent NetRexxScript.toggle NetRexxScript.flush NetRexxScript.trace NetRexxScript.cache NetRexxScript.preparse

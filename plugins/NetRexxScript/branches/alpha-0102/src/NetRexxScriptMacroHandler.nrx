@@ -16,10 +16,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  
+Version 0.1.2 (Nov. 19, 2009)
+
+    * display error and return if plugin inactive 
+
 Version 0.0.3 (Oct. 21, 2009)
 
     * change to call new "runmacro" entry point 
-  
+    
 Version 0.0.2 (Sept. 2009)
 
     * added instruction to remove ".nrx" from macro labels in menu 
@@ -45,6 +49,43 @@ class NetRexxScriptMacroHandler extends Macros.Handler
 	
 	method runMacro(view=View, macro=Macros.Macro)
 	
-		ns=NetRexxScriptPlugin jEdit.getPlugin("NetRexxScriptPlugin")
-		ns.runmacro(macro.getPath)
+		if jEdit.getPlugin("NetRexxScriptPlugin")=null then do
+			Macros.error(view,"The NetRexx Script Plugin is not active.")
+			return
+			end
+
+		--	find the 'runmacro' method; it takes a String as its argument
+		
+		ns=EditPlugin jEdit.getPlugin("NetRexxScriptPlugin")
+		
+		classes=Class[1]
+		classes[0]=macro.getPath.getClass
+		
+		do
+			runMethod=ns.getClass.getMethod('runmacro', classes)
+			if runMethod=null then do
+				say "NetRexx macro handler could not find run method"
+				Macros.error(view,"The runmacro method could not be located.")
+				return
+				end
+			catch e=Exception
+				say e
+				return
+			end
+
+			
+		values=Object[1]
+		values[0]=macro.getPath		
+			
+		do
+			runMethod.invoke(ns, values)
+			catch error=Exception
+				say "runmacro error="error
+				say "cause="error.getCause
+--				error.getCause.printStackTrace
+			end	
+
+			
+--		ns=NetRexxScriptPlugin jEdit.getPlugin("NetRexxScriptPlugin")
+--		ns.runmacro(macro.getPath)
 

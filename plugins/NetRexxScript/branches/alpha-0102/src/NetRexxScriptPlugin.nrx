@@ -16,6 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+ Version 0.1.2 (Nov 19, 2009) 
+
+    *  Add check for active macro handler before creating one (fix prob with plugin manager restarts)
+ 
  Version 0.1.1 (Nov 07, 2009) (prep for second beta version)
 
     *  Add check for empty files (len<3) - issue error screen and exit
@@ -239,8 +243,11 @@ class NetRexxScriptPlugin public extends EBPlugin implements runnable
 		newinterpreter										-- make a NetRexx interpreter with current classpath
 		setclasspath('off')									 
 			
-		mh=NetRexxScriptMacroHandler()						--	make a macro handler
-		Macros.registerHandler(mh)							--	pass to jEdit
+		
+		if Macros.getHandler("netrexx")=null then do
+			mh=NetRexxScriptMacroHandler()						--	make a macro handler
+			Macros.registerHandler(mh)							--	pass to jEdit
+			end
 		
 		if errpath\="" then do
 			errorsource=errorlist.DefaultErrorSource("NetRexxScript")

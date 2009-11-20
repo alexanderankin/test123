@@ -98,6 +98,7 @@
        <delete verbose="true" >
         	<fileset dir="." includes="*.nrx" />
         	<fileset dir="." includes="*.class" />
+        	<fileset dir="." includes="*.java" />
         	<fileset dir="src/javasrc/java" includes="*.java" />
         	<fileset dir="src/javasrc/java" includes="*.nrx" />
         	<fileset dir="src/javasrc/java" includes="*.keep" />
