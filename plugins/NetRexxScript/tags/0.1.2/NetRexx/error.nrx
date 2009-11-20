@@ -1,8 +1,0 @@
-
--- This script demonstrates the error list function by failing to parse correctly
---  It is not placed in the sample macro directory since it would cause the preparse option to fail
-
-	trace off
- say "hello"
- 
- bug off			--		this line is a parse error
