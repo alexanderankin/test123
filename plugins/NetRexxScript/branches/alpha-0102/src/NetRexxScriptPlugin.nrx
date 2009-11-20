@@ -244,7 +244,7 @@ class NetRexxScriptPlugin public extends EBPlugin implements runnable
 		setclasspath('off')									 
 			
 		
-		if Macros.getHandler("netrexx")=null then do
+		if Macros.getHandler("netrexx")=null then do	--	first start - load a macro handler
 			mh=NetRexxScriptMacroHandler()						--	make a macro handler
 			Macros.registerHandler(mh)							--	pass to jEdit
 			end
@@ -321,7 +321,6 @@ method setup		--	initial setup stuff: creates directories and loads files from o
 -- shutdown the plugin:										-------------------------------------------------------------------------------------------------------
 		
 	method stop()
-		say "NetRexxScript plugin stopped"
 		interpreter = null
 		System.setIn(sysin)						
 		-- clear any error messages before quitting
@@ -329,6 +328,12 @@ method setup		--	initial setup stuff: creates directories and loads files from o
 			errorsource.clear()
 			ErrorSource.unregisterErrorSource(errorsource)
 			end
+			
+--	unload NetRexxC.jar in case of restarting plugin
+	  nrc=jEdit.getPluginJAR(nrcpath)
+	  jEdit.removePluginJAR(nrc,0)
+			
+		say "NetRexxScript plugin stopped"
  
 	method commonentry -- make sure run time variables are current
 		
