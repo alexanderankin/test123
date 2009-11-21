@@ -14,7 +14,7 @@ plugin.xml.XmlPlugin.depend.5=plugin beauty.BeautyPlugin 0.2.1
 
 plugin.xml.XmlPlugin.jars=jing.jar relaxngDatatype.jar trang.jar
 
-plugin.xml.XmlPlugin.description=The XML plugin provides features for editing XML, HTML, JavaScript and CSS files. For XML files, it does validation against a DTD or XSD. For all languages, it displays element trees in the SideKick dockable. For XML, HTML and CSS, you get completion popups for elements, attribute, and entities.
+plugin.xml.XmlPlugin.description=The XML plugin provides features for editing XML, HTML, JavaScript and CSS files. For XML files, it does validation against a DTD, XSD, or RNG. For all languages, it displays element trees in the SideKick dockable. For XML, HTML and CSS, you get completion popups for elements, attribute, and entities.
 
 # Menu bar stuff
 
@@ -105,7 +105,7 @@ options.xml.general.show-attributes=Show tag attributes in tree:
 options.xml.general.show-attributes.none=None
 options.xml.general.show-attributes.id-only=ID only
 options.xml.general.show-attributes.all=All
-options.xml.general.tags-separator= Edit 
+options.xml.general.tags-separator= Edit
 options.xml.general.close-complete=Insert closing tag when "</" is typed
 options.xml.general.close-complete.tooltip=Also enables SideKick "complete immediately when possible" option
 options.xml.general.close-complete-open=Insert closing tag when opening tag is typed
