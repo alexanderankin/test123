@@ -14,7 +14,7 @@ plugin.ctagsinterface.main.CtagsInterfacePlugin.depend.3=plugin SuperAbbrevsPlug
 plugin.ctagsinterface.main.CtagsInterfacePlugin.depend.4=optional plugin plugin.ise.plugin.nav.NavigatorPlugin 2.2.0.0
 
 plugin.ctagsinterface.main.CtagsInterfacePlugin.jars=hsqldb.jar
-plugin.ctagsinterface.main.CtagsInterfacePlugin.docs=description.html
+plugin.ctagsinterface.main.CtagsInterfacePlugin.docs=index.html
 
 # action labels
 ctags-interface-add-file.label=Add tag file...
