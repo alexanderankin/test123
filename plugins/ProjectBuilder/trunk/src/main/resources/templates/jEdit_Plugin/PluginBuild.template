@@ -16,7 +16,7 @@
 	<selector id="packageFiles">
 		<and>
 			<or>
-				<filename name="**/${pluginClass}.html" />
+				<filename name="**/${project.name}.html" />
 			</or>
 		</and>
 	</selector>

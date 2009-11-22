@@ -3,7 +3,7 @@
 plugin.${pluginPackage}.${pluginClass}.activate=defer
 plugin.${pluginPackage}.${pluginClass}.author=${userName}
 plugin.${pluginPackage}.${pluginClass}.description=Fill this in
-plugin.${pluginPackage}.${pluginClass}.docs=docs/${pluginClass}.html
+plugin.${pluginPackage}.${pluginClass}.docs=docs/${project.name}.html
 plugin.${pluginPackage}.${pluginClass}.longdescription=Fill this in
 plugin.${pluginPackage}.${pluginClass}.name=${project.name}
 plugin.${pluginPackage}.${pluginClass}.usePluginHome=true
