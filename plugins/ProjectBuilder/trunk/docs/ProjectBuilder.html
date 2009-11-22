@@ -1,1 +1,156 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN""http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<title>ProjectBuilder - Help</title>
+	</head>
+	<body>
+		<h1>ProjectBuilder - v. 0.1</h1>
+		<h2>Description:</h2>
+		<p>The ProjectBuilder plugin provides project creation temlates to create
+		common project types from within jEdit.</p>
+		<h2>Usage:</h2>
+		<ul><h3>The ProjectBuilder Plugin's menu</h3>
+			<li>Create new Project
+				<div style="background-color: #EFEFEF; padding: 10px; border: 1px solid #999;">
+					<p>This will prompt you for basic Project information including name
+					and root directory for the project to be created.</p>
+					<p>The final resting place of your project will be:<br>
+					<pre>[root directory]/[name]</pre></p>
+				</div>
+			</li>
+		</ul>
+		<h2>Creating your own templates</h2>
+		<p>Project templates are written the Groovy programming language using the
+		ProjectBuilder DSL. Since Java is valid Groovy it is a good to have some
+		knowledge of both languages.</p>
+		<ol><h3>Steps to creating your own template.</h3>
+			<li>Create the Template directory
+				<div style="background-color: #EFEFEF; padding: 10px; border: 1px solid #999;">
+					<p>Create a new directory under the plugin home directory. This
+					is found under the [jEdit settings directory]/plugins/projectbuilder.ProjectBuilderPlugin/templates.</p>
+					<ol><h4>To find your jEdit settings directory</h4>
+						<li>Go to, "Utilities" -&gt; "BeanShell" menu and click "Evaluate BeanShell Expression ...".</li>
+						<li>Enter, "jEdit.getSettingsDirectory()" and click "Ok"</li>
+					</ol>
+					<p>The template name will be taken from the directory name, with
+					'_' being replaced by spaces.<br>
+					Eg. "jEdit_Plugin" will display as "jEdit Plugin", in the Project
+					Type field of the "Create new Project" dialog.</p>
+				</div>
+			</li>
+			<li>Create the main Template file
+				<div style="background-color: #EFEFEF; padding: 10px; border: 1px solid #999;">
+					<p>The main template file is named after your template directory
+					with the "groovy" extension.<br>
+					Eg. If your template directory is "jEdit_Plugin", the main template
+					should be named "jEdit_Plugin.groovy".</p>
+				</div>
+			</li>
+			<li>The ProjectBuilder DSL
+				<div style="background-color: #EFEFEF; padding: 10px; border: 1px solid #999;">
+					<p>The ProjectBuilder DSL provides a simple language for creating
+					directories and files on the file system. It's perfect for setting
+					up project skeletons.</p>
+					<h4>Available variables</h4>
+					<table width="100%" cellpadding="5" cellspacing="0" border="1px solid #999;">
+						<tr><th>Variable</th><th>Type</th><th width="100%">Description</th></tr>
+						<tr><td>project</td><td>Project</td><td>The project information</td></tr>
+						<tr><td>project.name</td><td>String</td><td>The project name</td></tr>
+						<tr><td>project.directory</td><td>String</td><td>The root directory of where this project will be created</td></tr>
+						<tr><td>templatesDir</td><td>File</td><td>[jEdit settings directory]/plugins/projectbuilder.ProjectBuilderPlugin/templates.</td></tr>
+						<tr><td>view</td><td>View</td><td>The active jEdit view</td></tr>
+						<tr><td>buffer</td><td>Buffer</td><td>The active jEdit buffer</td></tr>
+						<tr><td>editPane</td><td>EditPane</td><td>The active jEdit edit pane</td></tr>
+						<tr><td>textArea</td><td>TextArea</td><td>The active jEdit text area</td></tr>
+						<tr><td>wm</td><td>DockableWindowManager</td><td>The active DockableWindowManager</td></tr>
+						<tr><td>scriptPath</td><td>String</td><td>The path to the main template script. Eg. [templatesDir]/jEdit_Plugin/jEdit_Plugin.groovy</td></tr>
+					</table>
+					<h4>Example</h4>
+					<pre>
+import projectbuilder.builder.ProjectBuilder as PB
 
+def pluginPackage = project.name.toLowerCase()
+def pluginClass = "${project.name}Plugin"
+def templateDir = "${templatesDir}/jEdit_Plugin"
+
+def templateData = [:]
+templateData.pluginPackage = pluginPackage
+templateData.pluginClass = pluginClass
+templateData.project = project
+templateData.userName = System.getProperty("user.name")
+
+PB.build(project.name, project.directory.path) {
+   d("conf") {
+      f("${project.name}.props", template: "${templateDir}/PluginProps.template", templateData: templateData)
+      f("actions.xml")
+      f("dockables.xml")
+      f("services.xml")
+   }
+   d("docs") {
+      f("${project.name}.html")
+   }
+   d("src") {
+      d("main") {
+         d(pluginPackage) {
+            f("${pluginClass}.java", template: "${templateDir}/PluginClass.template", templateData: templateData)
+         }
+      }
+      d("test") {
+         d(pluginPackage) {
+            f("${pluginClass}Tests.java")
+         }
+      }
+   }
+   f("build.xml", template: "${templateDir}/PluginBuild.template", templateData: templateData)
+   f("sample.build.properties")
+}
+					</pre>
+					<p>As you can see you use to create a new project skeleton, you 
+					start with ProjectBuilder.build (aliased as PB in the import
+					statement). You provide the project name, and the directory path
+					you would like the project to be placed.</p>
+					<p>To create directories you use the directory function.
+					<pre>
+directory("docs") {
+   ...
+}
+					</pre>
+					The directory function is also aliased and shortened, so you can
+					use:
+					<pre>
+dir("docs") {
+   ...
+}
+					</pre>
+					or:
+					<pre>
+d("docs") {
+   ...
+}
+					</pre>
+					</p>
+					<p>To create files you use the file function.
+					<pre>
+file("${project.name}.html")
+					</pre>
+					or:
+					<pre>
+f("${project.name}.html")
+					</pre>
+					The file function has a number of parameters besides the name
+					which you can pass to it.
+					<table width="100%" cellpadding="5" cellspacing="0" border="1px solid #999;">
+						<tr><th>Parameter</th><th>Type</th><th width="100%">Description</th></tr>
+						<tr><td>content</td><td>String</td><td>The content of the file. This is taken
+						over any templates provided.</td></tr>
+						<tr><td>template</td><td>String</td><td>The path to a GString template file. 
+						For more information about creating GString templates look at the 
+						<a href="http://groovy.codehaus.org/Groovy+Templates#GroovyTemplates-GStringTemplateEngine">Groovy Templates</a>
+						documentation.</td></tr>
+						<tr><td>templateData</td><td>Map</td><td>Used with the template file.</td></tr>
+					</table>
+				</div>
+			</li>
+		</ol>
+	</body>
+</html>
