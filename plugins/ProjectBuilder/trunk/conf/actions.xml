@@ -2,15 +2,11 @@
 <ACTIONS>
 	<ACTION NAME="projectBuilder.actions.newProject">
 		<CODE>
-			import com.townsfolkdesigns.jedit.plugins.scripting.*;
-			import javax.script.ScriptContext;
+			import projectbuilder.ProjectBuilderPlugin;
 			
-			ScriptEnginePlugin plugin = jEdit.getPlugin("com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin");
-			ScriptExecutionDelegate delegate = plugin.getScriptExecutionDelegate();
+			ProjectBuilderPlugin plugin = jEdit.getPlugin("projectbuilder.ProjectBuilderPlugin");
 			
-			ScriptContext scriptContext = ScriptEngineUtilities.getDefaultScriptContext(view);
-
-			delegate.evaluateString(bufferText, "groovy", scriptContext);
+			plugin.createNewProject(view);
 		</CODE>
 	</ACTION>
 </ACTIONS>

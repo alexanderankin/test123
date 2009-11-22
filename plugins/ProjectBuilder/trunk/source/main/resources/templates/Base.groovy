@@ -6,6 +6,8 @@ import java.awt.GridBagConstraints as GBC
 import org.gjt.sp.jedit.EditPlugin
 import projectbuilder.ProjectBuilderPlugin
 import javax.swing.*
+import org.gjt.sp.jedit.browser.VFSBrowser
+import org.gjt.sp.jedit.browser.VFSFileChooserDialog
 
 // Get project types.
 File pluginHome = EditPlugin.getPluginHome(ProjectBuilderPlugin.class) ?: new File(System.getProperty("user.dir"), "build")
@@ -58,10 +60,13 @@ def form = swing.panel() {
    gbc.gridy = 2
    gbc.gridx = 2
    gbc.insets = [10, 5, 0, 10]
-   button(text: "...", constraints: gbc)
+   button(text: "...", constraints: gbc, actionPerformed: {
+      VFSFileChooserDialog chooser = new VFSFileChooserDialog(view, buffer.directory, VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false, true)
+      directory_field.text = chooser.selectedFiles?.getAt(0)
+   })
 }
 
-def answer = JOptionPane.showConfirmDialog(null, form, "Create a new Project", JOptionPane.OK_CANCEL_OPTION)
+def answer = JOptionPane.showConfirmDialog(view, form, "Create a new Project", JOptionPane.OK_CANCEL_OPTION)
 
 if(answer == JOptionPane.OK_OPTION) {
    def templateType = swing.type_field.selectedItem
@@ -79,6 +84,12 @@ if(answer == JOptionPane.OK_OPTION) {
    GroovyScriptEngine gse = new GroovyScriptEngine(roots)
    binding.setVariable("project", project)
    binding.setVariable("templatesDir", templatesDir)
+   binding.setVariable("view", view)
+   binding.setVariable("buffer", buffer)
+   binding.setVariable("editPane", editPane)
+   binding.setVariable("textArea", textArea)
+   binding.setVariable("wm", wm)
+   binding.setVariable("scriptPath", templateType.scriptPath);
    gse.run(templateType.scriptPath, binding)
 }
 
