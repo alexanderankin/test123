@@ -1,61 +1,71 @@
 <?xml version="1.0" ?>
 <project name="ProjectBuilder" default="build" basedir=".">
-	<property file="build.properties" />
-	<property file="../build.properties" />
-	<property name="compiler.source" value="1.5" />
-	<property name="compiler.target" value="1.5" />
-	<property name="src.dir" value="src/main" />
-	<property name="src.resources.dir" value="src/main/resources"/>
-	<property name="src.java.dir" value="${src.dir}/java" />
-	<property name="src.groovy.dir" value="${src.dir}/groovy" />
-	<property name="user-doc.out" value="src/main/docs/user-guide.html" />
-	<property name="jedit.plugins.dir" value="${install.dir}" />
-	<property name="groovy.jar.name" value="groovy-all-1.5.6.jar" />
-	<import file="${build.support}/plugin-build.xml" />
-
-	<!-- Project ClassPath -->
-	<path id="project.class.path">
-		<fileset dir="${build.classes}">
-			<filename name="**/*" />
-		</fileset>
-		<fileset dir="${jedit.plugins.dir}">
-			<filename name="groovy-all*.jar" />
-		</fileset>
-	</path>
+   <property file="build.properties" />
+   <property file="../build.properties" />
+   <property name="compiler.source" value="1.5" />
+   <property name="compiler.target" value="1.5" />
 	
-	<target name="build.prepare">
+	<!-- for groovyc -->
+   <property name="groovy.jar.name" value="groovy-all-1.5.6.jar" />
+	
+	<!-- project source properties -->
+   <property name="src.dir" value="src/main" />
+   <property name="src.groovy.dir" value="${src.dir}/groovy" />
+   <property name="src.java.dir" value="${src.dir}/java" />
+   <property name="src.resources.dir" value="src/main/resources"/>
+	
+	<!-- jedit properties -->
+   <property name="build.support" value="../build-support" />
+   <property name="docs-proc.target" value="src/main/docs/user-guide.html" />
+   <property name="install.dir" value=".." />
+   <property name="jedit.install.dir" value=".." />
+   <property name="jedit.plugins.dir" value="${install.dir}" />
+   <property name="junit.jar" value="../junit/junit.jar" />
+	
+	<!-- import jEdit common build file -->
+   <import file="${build.support}/plugin-build.xml" />
+	
+	<!-- Extra files to package into the jar -->
+   <selector id="extraFiles">
+      <and>
+         <or>
+            <filename name="**/actions.xml" />
+            <filename name="**/browser.actions.xml" />
+            <filename name="**/dockables.xml" />
+            <filename name="**/services.xml" />
+            <filename name="**/*.props" />
+            <filename name="**/*.html" />
+         </or>
+      </and>
+   </selector>
+	
+   <target name="build.prepare">
 		<!-- Copy over the Project Templates -->
-		<mkdir dir="${build.classes}" />
-		<copy todir="${build.classes}">
-			<fileset dir="${src.resources.dir}">
-				<filename name="**/*" />
-			</fileset>
-		</copy>
-	</target>
+      <mkdir dir="${build.classes}" />
+      <!-- Copy resources over to classes dir - ignore templates, those will be
+           zipped up -->
+      <copy todir="${build.classes}">
+         <fileset dir="${src.resources.dir}">
+            <filename name="**/*" />
+            <exclude name="templates/"/>
+         </fileset>
+      </copy>
+      
+      <!-- Zip up templates -->
+      <zip destfile="${build.classes}/templates.zip" basedir="${src.resources.dir}/templates" includes="**/*" />
+   </target>
 	
 	<!-- Overridden to use joint Groovy compilation -->
-	<target name="compile">
+   <target name="compile">
 		<!-- Compile the ProjectBuilder groovy classes -->
-		<echo>${build.classes}</echo>
-		<groovyc srcdir="${src.groovy.dir}" destdir="${build.classes}">
-			<javac srcdir="${src.java.dir}" 
-			      debug="${compiler.debug}"
-					debuglevel="${compiler.debuglevel}"
-					optimize="${compiler.optimize}"
-					deprecation="${compiler.deprecation}"
-					verbose="${compiler.verbose}"
-					nowarn="${compiler.nowarn}"
-					target="${compiler.target}"
-					source="${compiler.source}"
-					listfiles="${compiler.listfiles}"
-					fork="${compiler.fork}">
-				<classpath refid="default.class.path" />
-				<classpath refid="project.class.path" />
-			</javac>
-		</groovyc>
-	</target>
+      <echo>${build.classes}</echo>
+      <groovyc srcdir="${src.groovy.dir}" destdir="${build.classes}" verbose="${compiler.verbose}" listfiles="${compiler.listfiles}">
+         <classpath path="${jedit.install.dir}/jedit.jar" />
+         <javac srcdir="${src.java.dir}" debuglevel="${compiler.debuglevel}" deprecation="${compiler.deprecation}" fork="${compiler.fork}" listfiles="${compiler.listfiles}" nowarn="${compiler.nowarn}" optimize="${compiler.optimize}" source="${compiler.source}" target="${compiler.target}" verbose="${compiler.verbose}" debug="${compiler.debug}"></javac>
+      </groovyc>
+   </target>
 	
-	<taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc" classpath="${jedit.plugins.dir}/${groovy.jar.name}" />
+   <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc" classpath="${jedit.plugins.dir}/${groovy.jar.name}" />
 </project>
 <!-- 
    ::mode=xml:noTabs=true:tabSize=3:folding=indent:indentSize=3::

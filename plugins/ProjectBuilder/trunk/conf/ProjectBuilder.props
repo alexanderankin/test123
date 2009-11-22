@@ -1,0 +1,28 @@
+# Basic Plugin Information {{{
+plugin.projectbuilder.ProjectBuilderPlugin.activate=defer
+plugin.projectbuilder.ProjectBuilderPlugin.author=Eric Berry
+plugin.projectbuilder.ProjectBuilderPlugin.description=Provides templates to create new projects of different types.
+plugin.projectbuilder.ProjectBuilderPlugin.docs=docs/ProjectBuilder.html
+plugin.projectbuilder.ProjectBuilderPlugin.longdescription=Provides templates to create new projects of different types. Projects are automatically imported into the ProjectViewer plugin. Project templates can be easily written using the Groovy programming language, and the ProjectBuilder DSL.
+plugin.projectbuilder.ProjectBuilderPlugin.name=ProjectBuilder
+plugin.projectbuilder.ProjectBuilderPlugin.usePluginHome=true
+plugin.projectbuilder.ProjectBuilderPlugin.version=0.1
+# }}} Basic Plugin Information
+
+# Dependencies {{{
+plugin.projectbuilder.ProjectBuilderPlugin.depend.0=jedit 04.03.18.00
+plugin.projectbuilder.ProjectBuilderPlugin.depend.1=jdk 1.5
+plugin.projectbuilder.ProjectBuilderPlugin.depend.2=plugin com.townsfolkdesigns.jedit.plugins.scripting.GroovyScriptEnginePlugin 1.0.0
+# }}} Dependencies
+
+# Menu {{{
+plugin.projectbuilder.ProjectBuilderPlugin.menu= projectBuilder.actions.newProject - \
+	projectBuilder.actions.buildProject \
+	projectBuilder.actions.runProject
+
+projectBuilder.actions.newProject.label=Create new Project
+projectBuilder.actions.buildProject.label=Build current Project
+projectBuilder.actions.runProject.label=Run current Project
+# }}} Menu
+
+# ::mode=properties:folding=explicit::
