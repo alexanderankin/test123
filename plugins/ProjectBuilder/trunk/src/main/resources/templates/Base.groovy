@@ -66,8 +66,9 @@ def answer = JOptionPane.showConfirmDialog(null, form, "Create a new Project", J
 if(answer == JOptionPane.OK_OPTION) {
    def templateType = swing.type_field.selectedItem
    def projectName = swing.name_field.text
-   def projectDir = new File(swing.directory_field.text, projectName)
+   def projectDir = new File(swing.directory_field.text)
    def project = new Project(name: swing.name_field.text, directory: projectDir)
+   String[] roots = [templatesDir.path]
    
    println("       type: " + templateType)
    println("       name: " + projectName)
@@ -75,8 +76,9 @@ if(answer == JOptionPane.OK_OPTION) {
    println("     script: " + templateType.scriptPath)
 
    Binding binding = new Binding()
-   GroovyScriptEngine gse = new GroovyScriptEngine(templatesDir.path)
+   GroovyScriptEngine gse = new GroovyScriptEngine(roots)
    binding.setVariable("project", project)
+   binding.setVariable("templatesDir", templatesDir)
    gse.run(templateType.scriptPath, binding)
 }
 
@@ -87,7 +89,7 @@ class TemplateTypeOption {
 
    String getScriptPath() {
       File scriptFile = new File(dir, "${name}.groovy")
-      return scriptFile.path - templatesDir.path
+      return scriptFile.path - "${templatesDir.path}${File.separator}"
    }
 
    String toString() {
