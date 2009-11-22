@@ -3,13 +3,14 @@
 	<ACTION NAME="projectBuilder.actions.newProject">
 		<CODE>
 			import com.townsfolkdesigns.jedit.plugins.scripting.*;
+			import javax.script.ScriptContext;
 			
 			ScriptEnginePlugin plugin = jEdit.getPlugin("com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin");
 			ScriptExecutionDelegate delegate = plugin.getScriptExecutionDelegate();
 			
 			ScriptContext scriptContext = ScriptEngineUtilities.getDefaultScriptContext(view);
 
-			delegate.evaluateString(bufferText, bufferMode.getName(), scriptContext);
+			delegate.evaluateString(bufferText, "groovy", scriptContext);
 		</CODE>
 	</ACTION>
 </ACTIONS>

@@ -16,7 +16,7 @@ plugin.projectbuilder.ProjectBuilderPlugin.depend.2=plugin com.townsfolkdesigns.
 # }}} Dependencies
 
 # Menu {{{
-plugin.projectbuilder.ProjectBuilderPlugin.menu= projectBuilder.actions.newProject - \
+plugin.projectbuilder.ProjectBuilderPlugin.menu=projectBuilder.actions.newProject - \
 	projectBuilder.actions.buildProject \
 	projectBuilder.actions.runProject
 

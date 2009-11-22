@@ -27,11 +27,6 @@
    <selector id="extraFiles">
       <and>
          <or>
-            <filename name="**/actions.xml" />
-            <filename name="**/browser.actions.xml" />
-            <filename name="**/dockables.xml" />
-            <filename name="**/services.xml" />
-            <filename name="**/*.props" />
             <filename name="**/*.html" />
          </or>
       </and>
@@ -46,6 +41,9 @@
          <fileset dir="${src.resources.dir}">
             <filename name="**/*" />
             <exclude name="templates/"/>
+         </fileset>
+         <fileset dir="conf">
+            <filename name="**/*" />
          </fileset>
       </copy>
       
