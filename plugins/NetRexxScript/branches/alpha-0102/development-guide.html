@@ -5,7 +5,7 @@
 <tbody>
 <tr width="100%">
 <td valign="top"><b><font size="+2">NetRexxScript</font></b></td>
-<td align="right" valign="top"><font size="-1"><b> Version 0.1.1&nbsp; (November 07 2009)</b>
+<td align="right" valign="top"><font size="-1"><b> Version 0.1.2&nbsp; (November 20 2009)</b>
 <br>
 By Kermit Kiser (nrs@kermitkiser.com) <br>
 </font></td>
@@ -97,11 +97,11 @@ method.</li>
   <li>Can I instantiate multiple NetRexxA interpreters to get independent parse sets?</li><li>Looks
 like I will need one and possibly two custom classloaders to be able to
 start arbitrary class files from the dynamic classpath (to allow
-"promoting" script libs to jar files, etc.)</li><li>Note
+"promoting" script libs to jar files, etc.) - did it with one.</li><li>Note
 that the custom classloader does a recursive directory search for
 classes, therefore if a class file is listed in the macro menu,
 executing it may not find the one in the menu location (ie just don't
-duplicate class names!)</li>
+duplicate class names!)</li><li><a href="doc/NetRexxScript-test-procedure.html">Test procedure is here</a></li>
 
 </ul>
 <table summary="To Do" border="0" cellpadding="3" cellspacing="0" width="100%">
@@ -124,26 +124,17 @@ of classpath on execute script, added df checks<br>
 <li>reorganize preparse to allow separate projects of related
 scripts? *<br>
 </li>
-<li>add an option to compile a script?&nbsp; macro might be better here? *<br>
-</li>
-
-</ul>classify option to convert script lib to classes? to jar? - better to do with a sample macro? *
-<ul>
-
-  
-  
-  
-  
-  <li>make console window command line a history field? *</li>
+<li>add an option to compile a script?&nbsp; macro might be better here? *</li><li>classify option to convert script lib to classes? to jar? - better to do with a sample macro? *
+</li><li>make console window command line a history field? **</li>
   
   <li>cache the directory search for command line entry somehow? *</li>
   
   
   <li>Scan std out for run time errors and post to ErrorList? *</li>
   
-  <li>MY_ENGINE_VERSIONMY_ENGINE_VERSIONadd
+  <li>add
 startup macros to preparse list? - advantage unknown - real goal is to
-cache objects like beanshell does</li><li>Make ErrorList use optional? ***</li><li>Add package support to class loader?</li><li>allow scripts to run from jar files?&nbsp;</li><li>Should mac dir vs script path search order be an option?</li><li>make interpreter use my classloader as parent? *</li><li>Can I add a plugin option to the file browser window to execute scripts from there?</li><li><a href="doc/NetRexxScript-test-procedure.html">Test procedure is here</a></li></ul>Moving completed items here:<br><ul><li>Add caching for the executed scripts. This may require
+cache objects like beanshell does</li><li>Make ErrorList use optional? *</li><li>Add package support to class loader?</li><li>allow scripts to run from jar files?&nbsp;</li><li>Should mac dir vs script path search order be an option?</li><li>make interpreter use my classloader as parent? *</li><li>Can I add a plugin option to the file browser window to execute scripts from there?</li><li>Add run selection option to execute a selected portion of a buffer?<span style="text-decoration: underline;"></span></li><li>Add a flush button to the console window per George Hovey request **</li></ul>Moving completed items here:<br><ul><li>Add caching for the executed scripts. This may require
 reparsing them all each time a new script is called or an old one is
 edited since Mike's userguide says that old classes become unusable
 when parse is called again.&nbsp; - done</li><li>Add editbus detection of save for NetRexx script files to
@@ -178,7 +169,7 @@ script and multi script which calls test script (requires preparse
 option), asktest demos console IO</li><li>add a script to generate ant build files? &nbsp;- out of scope.</li><li>auto compile cache? &nbsp;- preparse handles it OK.</li><li>ask request is not moving cursor to input line if focus elsewhere - fixed by adding requestFocus in read method.</li><li>add clear output button to command bar &nbsp;- done.</li><li>add option to not erase output window before script execution? &nbsp;- done.</li><li>move macro directory search to after scriptpath search? - already done.</li><li>need more tests with no command window &nbsp;- done - ask returns null if no window.</li><li>zero length scripts may cause a problem - fixed&nbsp;(chk for len&lt;3 bytes = nl cr)</li><li>PO window is flashing before out window? fixed, I hope - skip PO display unless error</li><li>George Hovey #1 - Shortcuts menu shows "No Label" error. fixed by adding props NetRexxScript.label=NetRexxScript</li><li>George
 Hovey #2 - If options panel too small in jEdit 4.2, the path fields
 shrink to minimum size. fixed by killing gridbag and wrapping with
-JScrollPane</li><li>Document how to change prefix.txt? done.</li><li>Document startup macro requirements. done.</li><li>Reorg the prefix doc section. done.</li></ul>
+JScrollPane</li><li>Document how to change prefix.txt? done.</li><li>Document startup macro requirements. done.</li><li>Reorg the prefix doc section. done.</li><li>Document requirement to flush class files from memory after recompiling them and other class use items - done.</li></ul>
 <table summary="Change log" border="0" cellpadding="3" cellspacing="0" width="100%">
 <tbody>
 <tr width="100%" align="center">
@@ -187,7 +178,7 @@ log</a></font></b></td>
 </tr>
 </tbody>
 </table>
-<br><br>&nbsp;Version 0.1.1 (Nov 07, 2009)<br><ul><li>First bug fix&nbsp;version - if passes tests and no more error reports promote to second beta. Changes and bugs fixed:</li><li>zero length scripts may cause a problem .</li><li>PO window is flashing before out window.</li><li>George Hovey #1 - Shortcuts panel shows "No Label" errors.</li><li>George
+<br>&nbsp;Version 0.1.2 (Nov 20, 2009)<br><ul><li>fixes to support restart via Plugin Manager:</li><li>1) check if macro handler already registered before adding it (no way to unload handler at shutdown)<br>2) change macro handler to call runmacro via reflection (because classloader changes)<br>3) unload NetRexxC.jar in plugin stop method to allow reinit if restarted (may cause probs with NetRexxJe plugin)</li><li>document direct class execution feature and related flush requirements per George Hovey request</li></ul>&nbsp;Version 0.1.1a,b,c (Nov 18, 2009)<br><ul><li>changes for distribution via SourceForge and jEdit Plugin Central:</li><li>a) modify build file for jEdit developer type builds<br>b) fix build.xml for Unix system builds<br>c) document NetRexxC.jar requirements in build.xml file and add build tracking to activity log</li></ul>&nbsp;Version 0.1.1 (Nov 07, 2009)<br><ul><li>First bug fix&nbsp;version - if passes tests and no more error reports promote to second beta. Changes and bugs fixed:</li><li>zero length scripts may cause a problem .</li><li>PO window is flashing before out window.</li><li>George Hovey #1 - Shortcuts panel shows "No Label" errors.</li><li>George
 Hovey #2 - If options panel too small in jEdit 4.2, the path fields
 shrink to minimum size.&nbsp;</li><li>Add documentation for prefix changes and startup scripts.</li></ul>&nbsp;Version 0.1.0 (Oct 31, 2009)<br><ul><li>First beta version finally!</li><li>Added a modified copy of Leo's NetRexx at Once guide to help doc.</li><li>Added a pointer to Mike's V2 NetRexx language def PDF in help doc.</li><li>Mod classloader and runmacro entry to load macro classes without a classpath search</li><li>Rebuild classloader in flush entry to unload any classes from memory</li><li>Add copybin to copy sample classes to macro lib</li><li>Modify error scan to reflect original file name rather than prefixed file in error lines</li><li>Flag warnings separately from errors to errorlist plugin</li><li>Fixed loop in flush with preparse on and classpath change in options</li><li>Added button to clear output windows and option to auto clear output on script start</li><li>Added icons for all buttons to match sizes plus code to change start icon to stop icon when a script is running</li><li>Fixed prob where not able to set prefix option on Linux due to missing file sep char in check</li></ul>&nbsp;Version 0.0.15 (Oct 22, 2009)<br><ul><li>Change to allow window to kill scripts started from menu runcurrent option</li><li>Allow command.nrx syntax on window command line</li><li>Added custom classloader to allow starting class files from command line</li><li>Change output text areas to auto scroll to end of text</li><li>This should be the last alpha for version 1, next posted build will be 0.1.0 beta</li></ul>&nbsp;
 Version 0.0.14 (Oct 18, 2009)<br>
