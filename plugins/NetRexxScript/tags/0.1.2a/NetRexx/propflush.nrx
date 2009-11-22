@@ -1,0 +1,36 @@
+import org.gjt.sp.jedit
+
+-- This script clears all NetRexxScript variables from jEdit memory 
+-- It allows a fresh start of the plugin if the NetRexx and macros/NetRexx directories are also deleted from the jEdit settings directory
+-- This is for testing and debugging to see what happens for a new plugin user
+
+onrs="options.netrexxscript."
+trace results
+trace var x
+
+x=jEdit.getProperty(onrs"debug","notfound")
+say "debug="x
+
+x=jEdit.getProperty(onrs"cache")
+x=jEdit.getProperty(onrs"trace")
+x=jEdit.getProperty(onrs"preparse")
+x=jEdit.getProperty(onrs"verbosity")
+x=jEdit.getProperty(onrs"addjeditvars")
+x=jEdit.getProperty(onrs"classpath")  
+x=jEdit.getProperty(onrs"scriptpath")
+
+jEdit.unsetProperty(onrs"cache")
+jEdit.unsetProperty(onrs"trace")
+jEdit.unsetProperty(onrs"preparse")
+jEdit.unsetProperty(onrs"verbosity")
+jEdit.unsetProperty(onrs"addjeditvars")
+jEdit.unsetProperty(onrs"classpath")  
+jEdit.unsetProperty(onrs"scriptpath")
+
+x=jEdit.getProperty(onrs"cache")
+x=jEdit.getProperty(onrs"trace")
+x=jEdit.getProperty(onrs"preparse")
+x=jEdit.getProperty(onrs"verbosity")
+x=jEdit.getProperty(onrs"addjeditvars")
+x=jEdit.getProperty(onrs"classpath")  
+x=jEdit.getProperty(onrs"scriptpath")
