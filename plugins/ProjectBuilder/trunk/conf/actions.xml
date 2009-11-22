@@ -1,0 +1,15 @@
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<ACTIONS>
+	<ACTION NAME="projectBuilder.actions.newProject">
+		<CODE>
+			import com.townsfolkdesigns.jedit.plugins.scripting.*;
+			
+			ScriptEnginePlugin plugin = jEdit.getPlugin("com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin");
+			ScriptExecutionDelegate delegate = plugin.getScriptExecutionDelegate();
+			
+			ScriptContext scriptContext = ScriptEngineUtilities.getDefaultScriptContext(view);
+
+			delegate.evaluateString(bufferText, bufferMode.getName(), scriptContext);
+		</CODE>
+	</ACTION>
+</ACTIONS>
