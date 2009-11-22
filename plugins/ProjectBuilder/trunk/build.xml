@@ -31,6 +31,12 @@
          </or>
       </and>
    </selector>
+   
+   <path id="project.class.path">
+      <pathelement path="${jedit.install.dir}/jedit.jar" />
+      <pathelement path="${jedit.plugins.dir}/${groovy.jar.name}" />
+      <pathelement path="${jedit.plugins.dir}/ScriptEnginePlugin.jar" />
+   </path>
 
    <target name="build.prepare">
 		<!-- Copy over the Project Templates -->
@@ -56,10 +62,7 @@
 		<!-- Compile the ProjectBuilder groovy classes -->
       <echo>${build.classes}</echo>
       <groovyc srcdir="${src.dir}" destdir="${build.classes}" verbose="${compiler.verbose}" listfiles="${compiler.listfiles}">
-         <classpath>
-            <pathelement path="${jedit.install.dir}/jedit.jar" />
-            <pathelement path="${jedit.plugins.dir}/${groovy.jar.name}" />
-         </classpath>
+         <classpath refid="project.class.path" />
          <javac debuglevel="${compiler.debuglevel}" deprecation="${compiler.deprecation}" fork="${compiler.fork}" listfiles="${compiler.listfiles}" nowarn="${compiler.nowarn}" optimize="${compiler.optimize}" source="${compiler.source}" target="${compiler.target}" verbose="${compiler.verbose}" debug="${compiler.debug}"></javac>
       </groovyc>
    </target>
