@@ -12,13 +12,13 @@ templateData.userName = System.getProperty("user.name")
 
 PB.build(project.name, project.directory.path) {
    d("conf") {
-      f("${pluginClass}.props", template: "${templateDir}/PluginProps.template", templateData: templateData)
+      f("${project.name}.props", template: "${templateDir}/PluginProps.template", templateData: templateData)
       f("actions.xml")
       f("dockables.xml")
       f("services.xml")
    }
    d("docs") {
-      f("${pluginClass}.html")
+      f("${project.name}.html")
    }
    d("src") {
       d("main") {
