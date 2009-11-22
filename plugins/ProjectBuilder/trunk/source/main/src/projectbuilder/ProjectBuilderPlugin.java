@@ -7,7 +7,6 @@ package projectbuilder;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.net.URL;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import org.gjt.sp.jedit.EditPlugin;
