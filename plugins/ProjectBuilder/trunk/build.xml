@@ -14,7 +14,7 @@
 	
 	<!-- jedit properties -->
    <property name="build.support" value="../build-support" />
-   <property name="docs-proc.target" value="src/main/docs/user-guide.html" />
+   <property name="docs-proc.target" value="none" />
    <property name="install.dir" value=".." />
    <property name="jedit.install.dir" value=".." />
    <property name="jedit.plugins.dir" value="${install.dir}" />
