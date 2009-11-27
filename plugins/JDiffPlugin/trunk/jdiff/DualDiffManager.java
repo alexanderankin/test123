@@ -99,7 +99,7 @@ public class DualDiffManager {
         while ( m.find() ) {
             String match = m.group( 1 );
             if ( match != null ) {
-                if ( match.equals( "global" ) || match.equals( "view" ) || match.equals( "editpane" ) ) {
+                if ( "global".equals( match ) || "view".equals( match ) || "editpane".equals( match ) ) {
                     continue;
                 }
                 filenames.add( match );
@@ -413,6 +413,38 @@ public class DualDiffManager {
             return ;
         }
         dualDiff.moveLeft( editPane );
+    }
+
+    /**
+     * Move all non-conflicting diff hunks from the left text are to the right text area.    
+     */
+    public static void moveMultipleRight( EditPane editPane ) {
+        if ( editPane == null ) {
+            return ;
+        }
+        DualDiff dualDiff = DualDiffManager.getDualDiffFor( editPane.getView() );
+        if ( dualDiff == null ) {
+            if ( jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
+                editPane.getToolkit().beep();
+            }
+            return ;
+        }
+        dualDiff.moveMultipleRight( editPane );
+    }
+
+    /**
+     * Move all non-conflicting diff hunks from the right text area to the left text area.    
+     */
+    public static void moveMultipleLeft( EditPane editPane ) {
+        if ( editPane == null ) {
+            return ;
+        }
+        DualDiff dualDiff = DualDiffManager.getDualDiffFor( editPane.getView() );
+        if ( dualDiff == null ) {
+            editPane.getToolkit().beep();
+            return ;
+        }
+        dualDiff.moveMultipleLeft( editPane );
     }
 
     /**

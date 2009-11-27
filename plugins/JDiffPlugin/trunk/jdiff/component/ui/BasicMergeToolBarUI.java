@@ -46,6 +46,8 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
     private JButton prev;
     private JButton move_right;
     private JButton move_left;
+    private JButton move_multiple_right;
+    private JButton move_multiple_left;
     private JButton unsplit;
     private JButton swap;
     private JButton diff;
@@ -106,7 +108,9 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
         next = new SquareButton( GUIUtilities.loadIcon( "ArrowD.png" ) );
         prev = new SquareButton( GUIUtilities.loadIcon( "ArrowU.png" ) );
         move_right = new SquareButton( GUIUtilities.loadIcon( "ArrowR.png" ) );
+        move_multiple_right = new SquareButton( GUIUtilities.loadIcon( "22x22/actions/media-seek-forward.png" ) );
         move_left = new SquareButton( GUIUtilities.loadIcon( "ArrowL.png" ) );
+        move_multiple_left = new SquareButton( GUIUtilities.loadIcon( "22x22/actions/media-seek-backward.png" ) );
         unsplit = new SquareButton( GUIUtilities.loadIcon( "UnSplit.png" ) );
         swap = new SquareButton( GUIUtilities.loadIcon( "SplitVertical.png" ) );
         refresh = new SquareButton( GUIUtilities.loadIcon( "Reload.png" ) );
@@ -116,6 +120,8 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
         prev.setEnabled( false );
         move_right.setEnabled( false );
         move_left.setEnabled( false );
+        move_multiple_right.setEnabled(false);
+        move_multiple_left.setEnabled(false);
         unsplit.setEnabled( false );
         swap.setEnabled( false );
         refresh.setEnabled( false );
@@ -128,6 +134,8 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
         swap.setToolTipText( jEdit.getProperty( "jdiff.swap-textareas", "Swap text areas" ) );
         move_right.setToolTipText( jEdit.getProperty( "jdiff.move-right.label", "Move diff to right" ) );
         move_left.setToolTipText( jEdit.getProperty( "jdiff.move-left.label", "Move diff to left" ) );
+        move_multiple_right.setToolTipText( jEdit.getProperty( "jdiff.move-multiple-right.label", "Move all non-conflicting to right" ) );
+        move_multiple_left.setToolTipText( jEdit.getProperty( "jdiff.move-multiple-left.label", "Move all non-conflicting to left" ) );
         refresh.setToolTipText( jEdit.getProperty( "jdiff.refresh.label", "Refresh diff" ) );
 
         installButtons();
@@ -145,8 +153,10 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
                 toolbar.add( "0, 3", prev );
                 toolbar.add( "0, 4", move_right );
                 toolbar.add( "0, 5", move_left );
-                toolbar.add( "0, 6", swap );
-                toolbar.add( "0, 7", refresh );
+                toolbar.add( "0, 6", move_multiple_right );
+                toolbar.add( "0, 7", move_multiple_left );
+                toolbar.add( "0, 8", swap );
+                toolbar.add( "0, 9", refresh );
                 break;
             case MergeToolBar.COMPACT:
                 toolbar.add( "0, 0", diff );
@@ -155,8 +165,10 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
                 toolbar.add( "1, 1", prev );
                 toolbar.add( "0, 2", move_right );
                 toolbar.add( "1, 2", move_left );
-                toolbar.add( "0, 3", swap );
-                toolbar.add( "1, 3", refresh );
+                toolbar.add( "0, 3", move_multiple_right );
+                toolbar.add( "1, 3", move_multiple_left );
+                toolbar.add( "0, 4", swap );
+                toolbar.add( "1, 4", refresh );
                 break;
             default:
                 toolbar.add( "0, 0", diff );
@@ -164,9 +176,11 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
                 toolbar.add( "2, 0", next );
                 toolbar.add( "3, 0", move_right );
                 toolbar.add( "4, 0", move_left );
-                toolbar.add( "5, 0", prev );
-                toolbar.add( "6, 0", swap );
-                toolbar.add( "7, 0", refresh );
+                toolbar.add( "5, 0", move_multiple_right );
+                toolbar.add( "6, 0", move_multiple_left );
+                toolbar.add( "7, 0", prev );
+                toolbar.add( "8, 0", swap );
+                toolbar.add( "9, 0", refresh );
                 break;
         }
         toolbar.repaint();
@@ -193,6 +207,26 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
                 public void actionPerformed( ActionEvent ae ) {
                     if ( view != null ) {
                         DualDiffManager.moveRight( BasicMergeToolBarUI.this.view.getEditPane() );
+                    }
+                }
+            }
+        );
+
+        move_multiple_left.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    if ( view != null ) {
+                        DualDiffManager.moveMultipleLeft( BasicMergeToolBarUI.this.view.getEditPane() );
+                    }
+                }
+            }
+        );
+
+        move_multiple_right.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    if ( view != null ) {
+                        DualDiffManager.moveMultipleRight( BasicMergeToolBarUI.this.view.getEditPane() );
                     }
                 }
             }
@@ -314,6 +348,8 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
                     prev.setEnabled( enabled );
                     move_right.setEnabled( enabled );
                     move_left.setEnabled( enabled );
+                    move_multiple_right.setEnabled( enabled );
+                    move_multiple_left.setEnabled( enabled );
                     unsplit.setEnabled( enabled );
                     swap.setEnabled( enabled );
                     refresh.setEnabled( enabled );
