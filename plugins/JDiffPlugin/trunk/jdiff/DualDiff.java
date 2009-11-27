@@ -321,7 +321,7 @@ public class DualDiff implements EBComponent {
         removeOverviews();
         removeHighlighters();
         removeHandlers();
-        
+
         // turn off the dockable if it is visible
         view.getDockableWindowManager().hideDockableWindow( DualDiffManager.JDIFF_LINES );
 
@@ -553,8 +553,8 @@ public class DualDiff implements EBComponent {
                 // go to start of current hunk.  If caret line is after end of
                 // current hunk, but before the next hunk, go to start of current
                 // hunk.
-                if ( hunk.first0 + hunk.lines0 > caretLine ||                     // NOPMD caret is in current hunk
-                        hunk.next == null ||                                      // caret is after last hunk
+                if ( hunk.first0 + hunk.lines0 > caretLine ||                      // NOPMD caret is in current hunk
+                        hunk.next == null ||                                       // caret is after last hunk
                         hunk.next.first0 >= caretLine ) {         // caret is before next hunk
                     int line = hunk.first0;      // first line of diff hunk
 
@@ -614,8 +614,8 @@ public class DualDiff implements EBComponent {
                 // go to start of current hunk.  If caret line is after end of
                 // current hunk, but before current hunk, go to start of current
                 // hunk.
-                if ( hunk.first1 + hunk.lines1 > caretLine ||                    // NOPMD caret is in current hunk
-                        hunk.next == null ||                                      // caret is after last hunk
+                if ( hunk.first1 + hunk.lines1 > caretLine ||                     // NOPMD caret is in current hunk
+                        hunk.next == null ||                                       // caret is after last hunk
                         hunk.next.first1 >= caretLine ) {         // caret is before next hunk
                     int line = hunk.first1;      // first line of hunk
 
@@ -714,6 +714,40 @@ public class DualDiff implements EBComponent {
                     diffOverview0.moveLeft( hunk.first1 );
                     return ;
                 }
+            }
+        }
+    }
+
+    /**
+     * Move all non-conflicting diff hunks from the left text are to the right text area.    
+     */
+    protected void moveMultipleRight( EditPane editPane ) {
+        if ( editPane == null ) {
+            return ;
+        }
+        // want to move left but have left EditPane.  Need to find
+        // corresponding hunk from right EditPane and use first line of hunk.
+        Diff.Change hunk = edits;
+        for ( ; hunk != null; hunk = hunk.next ) {
+            if ( hunk.lines1 == 0 ) {
+                diffOverview0.moveRight( hunk.first0 );
+            }
+        }
+    }
+
+    /**
+     * Move all non-conflicting diff hunks from the right text area to the left text area.    
+     */
+    protected void moveMultipleLeft( EditPane editPane ) {
+        if ( editPane == null ) {
+            return ;
+        }
+        // want to move left but have left EditPane.  Need to find
+        // corresponding hunk from right EditPane and use first line of hunk.
+        Diff.Change hunk = edits;
+        for ( ; hunk != null; hunk = hunk.next ) {
+            if ( hunk.lines0 == 0 ) {
+                diffOverview0.moveLeft( hunk.first1 );
             }
         }
     }

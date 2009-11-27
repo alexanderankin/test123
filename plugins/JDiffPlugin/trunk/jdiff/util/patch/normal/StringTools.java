@@ -62,7 +62,7 @@ public class StringTools {
         for (int i = 0; i < arr.length; i++) {
             sb.append(arr[i].toString()).append(delim);
         }
-        //return sb.toString(); // TODO maybe this should by used instead
+        //return sb.toString(); // TODO maybe this should be used instead
         return sb.toString().substring(0, (sb.toString().length()-delim.length())); // remove the last delim
     }
 
