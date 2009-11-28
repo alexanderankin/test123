@@ -470,7 +470,7 @@ public class DualDiffManager {
         FileLine[] fileLines0 = DualDiffUtil.getFileLines( dualDiff, buf0 );
         FileLine[] fileLines1 = DualDiffUtil.getFileLines( dualDiff, buf1 );
 
-        Diff d = new Diff( fileLines0, fileLines1 );
+        Diff d = new JDiffDiff( fileLines0, fileLines1 );
         Diff.Change script = d.diff_2();
 
         // Files are identical: return
