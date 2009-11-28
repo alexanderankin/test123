@@ -25,6 +25,7 @@ import jdiff.*;
 import jdiff.text.FileLine;
 import jdiff.util.Diff;
 import jdiff.util.DualDiffUtil;
+import jdiff.util.JDiffDiff;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
@@ -92,7 +93,7 @@ public class DiffTextAreaModel {
             FileLine[] fileLines0 = this.getFileLines( buf0 );
             FileLine[] fileLines1 = this.getFileLines( buf1 );
 
-            Diff d = new Diff( fileLines0, fileLines1 );
+            Diff d = new JDiffDiff( fileLines0, fileLines1 );
             edits = d.diff_2();
             leftHunkMap = new HashMap<Integer, Diff.Change>();
             rightHunkMap = new HashMap<Integer, Diff.Change>();

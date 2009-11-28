@@ -36,6 +36,7 @@ import jdiff.component.DiffLineOverview;
 import jdiff.component.DiffTextAreaModel;
 import jdiff.text.FileLine;
 import jdiff.util.Diff;
+import jdiff.util.JDiffDiff;
 import jdiff.util.DualDiffUtil;
 import jdiff.util.ScrollHandler;
 
@@ -342,7 +343,7 @@ public class DualDiff implements EBComponent {
             FileLine[] fileLines0 = DualDiffUtil.getFileLines( this, buf0 );
             FileLine[] fileLines1 = DualDiffUtil.getFileLines( this, buf1 );
 
-            Diff d = new Diff( fileLines0, fileLines1 );
+            Diff d = new JDiffDiff( fileLines0, fileLines1 );
             edits = d.diff_2();
             diffOverview0 = new DiffLocalOverview( this );
             diffOverview1 = new DiffGlobalPhysicalOverview( this );

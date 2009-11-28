@@ -51,6 +51,8 @@ public class JDiffOptionPane implements OptionPane {
     private JCheckBox trimWhitespace;
     private JCheckBox ignoreAmountOfWhitespace;
     private JCheckBox ignoreAllWhitespace;
+    private JCheckBox heuristic;
+    private JCheckBox no_discards;
 
     // ui options
     private JCheckBox autoShowDockable;
@@ -95,6 +97,9 @@ public class JDiffOptionPane implements OptionPane {
         trimWhitespace.setSelected(jEdit.getBooleanProperty( "jdiff.trim-whitespace", false ));
         ignoreAmountOfWhitespace.setSelected(jEdit.getBooleanProperty( "jdiff.ignore-amount-whitespace", false ));
         ignoreAllWhitespace.setSelected(jEdit.getBooleanProperty( "jdiff.ignore-all-whitespace", false ));
+        heuristic.setSelected(jEdit.getBooleanProperty("jdiff.heuristic", false));
+        no_discards.setSelected(jEdit.getBooleanProperty("jdiff.no_discards", false));
+            
 
         autoShowDockable.setSelected(jEdit.getBooleanProperty( "jdiff.auto-show-dockable", false ));
         showLineDiff.setSelected(jEdit.getBooleanProperty( "jdiff.show-line-diff", true ));
@@ -134,7 +139,9 @@ public class JDiffOptionPane implements OptionPane {
         trimWhitespace = createCheckBox( "jdiff.trim-whitespace", false );
         ignoreAmountOfWhitespace = createCheckBox( "jdiff.ignore-amount-whitespace", false );
         ignoreAllWhitespace = createCheckBox( "jdiff.ignore-all-whitespace", false );
-
+        heuristic = createCheckBox("jdiff.heuristic", false);
+        no_discards = createCheckBox("jdiff.no_discards", false);
+        
         // UI options
         JLabel ui_options_label = new JLabel( jEdit.getProperty( "options.ui-options.label", "UI Options:" ) );
         autoShowDockable = createCheckBox( "jdiff.auto-show-dockable", false );
@@ -195,24 +202,26 @@ public class JDiffOptionPane implements OptionPane {
         panel.add( "0,  2, 2, 1, W, 0, 2", trimWhitespace );
         panel.add( "0,  3, 2, 1, W, 0, 2", ignoreAmountOfWhitespace );
         panel.add( "0,  4, 2, 1, W, 0, 2", ignoreAllWhitespace );
+        panel.add( "0,  5, 2, 1, W, 0, 2", heuristic );
+        panel.add( "0,  6, 2, 1, W, 0, 2", no_discards );
 
-        panel.add( "0,  5, 2, 1, W, 0, 2", KappaLayout.createVerticalStrut( 11 ) );
-        panel.add( "0,  6, 2, 1, W, 0, 2", ui_options_label );
-        panel.add( "0,  7, 2, 1, W, 0, 2", autoShowDockable );
-        panel.add( "0,  8, 2, 1, W, 0, 2", showLineDiff );
-        panel.add( "0,  9, 2, 1, W, 0, 2", synchroScroll );
-        panel.add( "0, 10, 2, 1, W, 0, 2", horizScroll );
-        panel.add( "0, 11, 1, 1, W, 0, 2", KappaLayout.createHorizontalStrut( 16, true ) );
-        panel.add( "1, 11, 1, 1, W, 0, 2", selectWord );
-        panel.add( "0, 12, 2, 1, W, 0, 2", beepOnError );
-        panel.add( "0, 13, 2, 1, W, 0, 2", restoreView );
-        panel.add( "0, 14, 2, 1, W, 0, 2", restoreCaret );
+        panel.add( "0,  7, 2, 1, W, 0, 2", KappaLayout.createVerticalStrut( 11 ) );
+        panel.add( "0,  8, 2, 1, W, 0, 2", ui_options_label );
+        panel.add( "0,  9, 2, 1, W, 0, 2", autoShowDockable );
+        panel.add( "0, 10, 2, 1, W, 0, 2", showLineDiff );
+        panel.add( "0, 11, 2, 1, W, 0, 2", synchroScroll );
+        panel.add( "0, 12, 2, 1, W, 0, 2", horizScroll );
+        panel.add( "0, 13, 1, 1, W, 0, 2", KappaLayout.createHorizontalStrut( 16, true ) );
+        panel.add( "1, 14, 1, 1, W, 0, 2", selectWord );
+        panel.add( "0, 15, 2, 1, W, 0, 2", beepOnError );
+        panel.add( "0, 16, 2, 1, W, 0, 2", restoreView );
+        panel.add( "0, 17, 2, 1, W, 0, 2", restoreCaret );
 
-        panel.add( "0, 15, 2, 1, W, 0, 2", KappaLayout.createVerticalStrut( 11 ) );
-        panel.add( "0, 16, 2, 1, W, 0, 2", orientation_label );
-        panel.add( "0, 17, 2, 1, W, 0, 2", horizontal );
-        panel.add( "0, 18, 2, 1, W, 0, 2", vertical );
-        panel.add( "0, 19, 2, 1, W, 0, 2", compact );
+        panel.add( "0, 18, 2, 1, W, 0, 2", KappaLayout.createVerticalStrut( 11 ) );
+        panel.add( "0, 19, 2, 1, W, 0, 2", orientation_label );
+        panel.add( "0, 20, 2, 1, W, 0, 2", horizontal );
+        panel.add( "0, 21, 2, 1, W, 0, 2", vertical );
+        panel.add( "0, 22, 2, 1, W, 0, 2", compact );
     }
 
     /**
@@ -234,6 +243,8 @@ public class JDiffOptionPane implements OptionPane {
         jEdit.setBooleanProperty( "jdiff.trim-whitespace", trimWhitespace.isSelected() );
         jEdit.setBooleanProperty( "jdiff.ignore-amount-whitespace", ignoreAmountOfWhitespace.isSelected() );
         jEdit.setBooleanProperty( "jdiff.ignore-all-whitespace", ignoreAllWhitespace.isSelected() );
+        jEdit.setBooleanProperty( "jdiff.heuristic", heuristic.isSelected() );
+        jEdit.setBooleanProperty( "jdiff.no_discards", no_discards.isSelected() );
         jEdit.setBooleanProperty( "jdiff.auto-show-dockable", autoShowDockable.isSelected() );
         jEdit.setBooleanProperty( "jdiff.show-line-diff", showLineDiff.isSelected() );
         jEdit.setBooleanProperty( "jdiff.synchroscroll-on", synchroScroll.isSelected() );

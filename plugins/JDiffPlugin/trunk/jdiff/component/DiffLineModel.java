@@ -25,6 +25,7 @@ import java.util.*;
 import jdiff.*;
 import jdiff.text.FileLine;
 import jdiff.util.Diff;
+import jdiff.util.JDiffDiff;
 
 import org.gjt.sp.jedit.jEdit;
 
@@ -102,7 +103,7 @@ public class DiffLineModel {
             String text = String.valueOf( c );
             rightLines[ i ] = new FileLine( text, text );
         }
-        Diff d = new Diff( leftLines, rightLines );
+        Diff d = new JDiffDiff( leftLines, rightLines );
         Diff.Change edits = d.diff_2();
 
         if ( edits == null ) {

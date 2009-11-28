@@ -105,15 +105,15 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
     public void installComponents() {
         // create buttons
         diff = new SquareButton( new ImageIcon( BasicMergeToolBarUI.class.getClassLoader().getResource( "jdiff/component/resources/delta.png" ) ) );
-        next = new SquareButton( GUIUtilities.loadIcon( "ArrowD.png" ) );
-        prev = new SquareButton( GUIUtilities.loadIcon( "ArrowU.png" ) );
-        move_right = new SquareButton( GUIUtilities.loadIcon( "ArrowR.png" ) );
-        move_multiple_right = new SquareButton( GUIUtilities.loadIcon( "22x22/actions/media-seek-forward.png" ) );
-        move_left = new SquareButton( GUIUtilities.loadIcon( "ArrowL.png" ) );
-        move_multiple_left = new SquareButton( GUIUtilities.loadIcon( "22x22/actions/media-seek-backward.png" ) );
-        unsplit = new SquareButton( GUIUtilities.loadIcon( "UnSplit.png" ) );
-        swap = new SquareButton( GUIUtilities.loadIcon( "SplitVertical.png" ) );
-        refresh = new SquareButton( GUIUtilities.loadIcon( "Reload.png" ) );
+        next = new SquareButton( GUIUtilities.loadIcon( "22x22/actions/go-down.png" ) );
+        prev = new SquareButton( GUIUtilities.loadIcon( "22x22/actions/go-up.png" ) );
+        move_right = new SquareButton( GUIUtilities.loadIcon( "22x22/actions/go-next.png" ) );
+        move_multiple_right = new SquareButton( GUIUtilities.loadIcon( "22x22/actions/go-last.png" ) );
+        move_left = new SquareButton( GUIUtilities.loadIcon( "22x22/actions/go-previous.png" ) );
+        move_multiple_left = new SquareButton( GUIUtilities.loadIcon( "22x22/actions/go-first.png" ) );
+        unsplit = new SquareButton( GUIUtilities.loadIcon( "22x22/actions/window-unsplit.png" ) );
+        swap = new SquareButton( GUIUtilities.loadIcon( "22x22/actions/window-split-vertical.png" ) );
+        refresh = new SquareButton( GUIUtilities.loadIcon( "22x22/actions/view-refresh.png" ) );
 
         diff.setEnabled( true );
         next.setEnabled( false );

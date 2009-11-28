@@ -66,7 +66,7 @@ public class Diff {
         set of changes.  This makes things slower, sometimes much slower. */
     public boolean no_discards = false;
 
-    private int[] xvec, yvec;        /* Vectors being compared. */
+    private int[] xvec, yvec;           /* Vectors being compared. */
     private int[] fdiag;                /* Vector, indexed by diagonal, containing
                                                the X coordinate of the point furthest
                                                along the given diagonal in the forward

@@ -345,6 +345,21 @@ if leading and trailing whitespaces were removed.</p>
 </li>
 </ul>
 
+<p>
+There are two performance settings:
+</p>
+<ul>
+<li>
+Faster diff heuristic: When set to true, the diff comparison uses a heuristic to speed it up.
+      With this heuristic, for files with a constant small density
+      of changes, the algorithm is linear in the file size.
+</li>
+<li>
+Find minimal set of changes: When set to true, the diff algorithm returns a guaranteed minimal
+        set of changes.  This can make the diff slower, sometimes much slower.
+</li>
+</ul>
+
 <h3>UI Options</h3>
 You can control these user interface options:
 
