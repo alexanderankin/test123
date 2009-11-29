@@ -106,6 +106,16 @@
             xml.XmlActions.copyXPath(view);
         </CODE>
     </ACTION>
+    <ACTION NAME="xml-prompt-typeid">
+        <CODE>
+            xml.SchemaMappingManager.promptTypeIdForBuffer(view,buffer);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="xml-prompt-schema">
+        <CODE>
+            xml.SchemaMappingManager.promptSchemaForBuffer(view,buffer);
+        </CODE>
+    </ACTION>
     
 </ACTIONS>
 

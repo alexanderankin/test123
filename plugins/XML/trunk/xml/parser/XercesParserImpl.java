@@ -53,6 +53,7 @@ import sidekick.SideKickParsedData;
 import xml.Resolver;
 import xml.XmlParsedData;
 import xml.XmlPlugin;
+import xml.SchemaMappingManager;
 import xml.completion.CompletionInfo;
 import xml.completion.ElementDecl;
 import xml.completion.EntityDecl;
@@ -97,31 +98,7 @@ public class XercesParserImpl extends XmlParser
 
 		XmlParsedData data = new XmlParsedData(buffer.getName(),false);
 
-		/*    Schema mapping    */
-		String schemaURL = jEdit.getProperty(xml.XmlPlugin.SCHEMA_MAPPING_PROP);
-
-		String specificSchema = MiscUtilities.constructPath(
-				MiscUtilities.getParentOfPath(
-				buffer.getPath()),SchemaMapping.SCHEMAS_FILE);
-		// TODO: VFS
-		if(new File(specificSchema).exists())
-		{
-			schemaURL="file://"+specificSchema;
-		}
-
-		SchemaMapping mapping;
-		if(schemaURL != null)
-		{
-			System.out.println("schemaURL="+schemaURL);
-			mapping = SchemaMapping.fromDocument(schemaURL);
-		}
-		else
-		{
-			Log.log(Log.DEBUG, XercesParserImpl.class,
-				"no settings => using empty schema mapping file");
-			mapping = new SchemaMapping();
-		}
-
+		SchemaMapping mapping = SchemaMappingManager.getSchemaMappingForBuffer(buffer);
 
 
 		Handler handler = new Handler(buffer,text,errorSource,data);

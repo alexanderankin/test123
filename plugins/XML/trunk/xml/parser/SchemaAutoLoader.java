@@ -270,7 +270,7 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 			
 			SchemaMapping.Result schema = mapping.getSchemaForDocument(
 				publicId, systemId,
-				uri,prefix,localName);
+				uri,prefix,localName, true);
 
 			if(schema!=null)
 			{

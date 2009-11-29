@@ -1,5 +1,5 @@
 /*
- * XMLActionsTest.java
+ * CopyXPathTest.java
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 2009 Eric Le Lay
@@ -51,7 +51,7 @@ import org.gjt.sp.jedit.gui.CompletionPopup;
  * Various tests for the XMLActions actions
  * $Id$
  */
-public class XmlActionsTest{
+public class CopyXPathTest{
 	private static File testData;
 	
     @BeforeClass

@@ -91,6 +91,8 @@
         <pathelement location="${jedit.plugins.dir}/SideKick.jar"/>
         <pathelement location="${jedit.plugins.dir}/resolver.jar"/>
         <pathelement location="${jedit.plugins.dir}/xercesImpl.jar"/>
+        <pathelement location="${jedit.plugins.dir}/CommonControls.jar"/>
+        <pathelement location="${jedit.plugins.dir}/kappalayout.jar"/>
         <pathelement location="."/>
     </path>
 

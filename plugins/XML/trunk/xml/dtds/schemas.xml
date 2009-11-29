@@ -10,6 +10,11 @@
 	<documentElement localName="locatingRules" typeId="LOCATE"/>
 	<uri pattern="schemas.xml" typeId="LOCATE"/>
 
+	<!-- use the *.xml -> *.rng & *.xml -> *.xsd rules -->
+	<transformURI fromPattern="*.xml" toPattern="*.rng"/>
+	<transformURI fromPattern="*.xml" toPattern="*.xsd"/>
+
+	
 	<typeId id="RNG" uri="relaxng.rng"/>
 	<typeId id="LOCATE" uri="locate.rng"/>
 </locatingRules>
