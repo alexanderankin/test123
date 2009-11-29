@@ -119,6 +119,8 @@ public class XmlParsedData extends SideKickParsedData
 	public String getXPathForPosition(int pos)
 	{
 		TreePath path = getTreePathForPosition(pos);
+		if(path == null)return null;
+		
 		DefaultMutableTreeNode tn = (DefaultMutableTreeNode)path.getLastPathComponent();
 		TreeNode[]steps = tn.getPath();
 		DefaultMutableTreeNode parent = (DefaultMutableTreeNode)steps[0];

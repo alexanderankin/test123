@@ -69,9 +69,18 @@ public final class SchemaMapping
 	 */
 	public SchemaMapping()
 	{
+		this(null);
+	}
+
+	/**
+	 * empty mapping
+	 * @param	baseURI		url to resolve relative URLs in this document
+	 */
+	public SchemaMapping(URL baseURI)
+	{
 		typeIds = new HashMap<String,String>();
 		rules = new ArrayList<Mapping>();
-		baseURI = null;
+		this.baseURI = baseURI;
 	}
 	
 	/**
@@ -84,15 +93,81 @@ public final class SchemaMapping
 	
 	public void insertRuleAt(int pos, Mapping m){
 		rules.add(pos,m);
+		m.parent = this;
 	}
 	
 	public void removeRule(Mapping m){
-		rules.remove(m);
+		if(rules.contains(m))
+		{
+			rules.remove(m);
+			m.parent = null;
+		}
 	}
 	
 	public void removeRuleAt(int pos){
-		rules.remove(pos);
+		if(pos >= 0 && pos < rules.size())
+		{
+			rules.get(pos).parent = null;
+			rules.remove(pos);
+		}
 	}
+	
+	public void updateMapping(URIResourceRule newRule){
+		if(newRule == null)throw new IllegalArgumentException("newRule==null");
+		
+		newRule.parent = this;
+		for(int i=0;i<rules.size();i++)
+		{
+			if((rules.get(i) instanceof URIResourceRule)
+				&& ((URIResourceRule)rules.get(i)).resource.equals(newRule.resource))
+			{
+				Log.log(Log.DEBUG,SchemaMapping.class,"replacing "+rules.get(i)+" by "+newRule);
+				rules.set(i,newRule);
+				return;
+			}
+		}
+		rules.add(0,newRule);
+	}
+	
+	/**
+	 * @return was there ?
+	 */
+	public boolean ensureIncluded(SchemaMapping mapping)
+	{
+		for(Mapping m : rules)
+		{
+			if(m instanceof IncludeMapping)
+			{
+				SchemaMapping candidate = ((IncludeMapping)m).mapping;
+				if(m.getBaseURI().equals(candidate.getBaseURI()))
+				{
+					return true;
+				}
+				else
+				{
+					if(candidate.ensureIncluded(mapping))return true;
+				}
+			}
+		}
+		addRule(
+			new IncludeMapping(
+				null,
+				mapping)
+		);
+		return false;
+	}
+	
+	
+	/**
+	 * @return typeId for resource or null
+	 */
+	public String getTypeIdForDocument(String resourceURL)
+	{
+		Result r =  getSchemaForDocument(null, resourceURL, null, null, null, false);
+		if(r == null) return null;
+		else return r.target;
+	}
+
 	
 	/**
 	 * manually add a rule
@@ -117,6 +192,14 @@ public final class SchemaMapping
 		typeIds.put(typeId,target);
 	}
 	
+	public Map<String,String> getTypeIds(){
+		return Collections.unmodifiableMap(typeIds);
+	}
+	
+	public List<Mapping> getRules(){
+		return Collections.unmodifiableList(rules);
+	}
+	
 	/**
 	 * iterate over the mappings and return the first hit.
 	 * all the parameters are given the same priority : it's really the ordering
@@ -127,10 +210,11 @@ public final class SchemaMapping
 	 * @param	namespace	namespace of the root element of the parsed document
 	 * @param	prefix		prefix of the root element of the parsed document
 	 * @param	localName	localName of the root element of the parsed document
+	 * @param	followTypeId	if the schema referenced from the typeId should be returned
 	 * @return	schema URL for given document or null if not found
 	 */
 	public Result getSchemaForDocument(String publicId, String systemId,
-		String namespace,String prefix,String localName)
+		String namespace,String prefix,String localName, boolean followTypeId)
 	{
 		Log.log(Log.DEBUG, SchemaMapping.class,"getSchemaForDocumentElement("+publicId+","+systemId
 			+","+namespace+","+prefix+","+localName+")");
@@ -139,13 +223,13 @@ public final class SchemaMapping
 		
 		for(Mapping r:rules)
 		{
-			res = r.getSchemaForDocument(publicId, systemId, namespace, prefix, localName);
+			res = r.getSchemaForDocument(publicId, systemId, namespace, prefix, localName, followTypeId);
 			if(res !=null)break;
 		}
 
 		// typeIds can be chained, so follow them in the map until no more
 		// can be found and return the last one
-		if(res!=null)
+		if(res!=null && followTypeId)
 		{
 			while(typeIds.containsKey(res.target))res = new Result(res.baseURI,typeIds.get(res.target));
 			System.out.println("found: "+res);
@@ -153,6 +237,36 @@ public final class SchemaMapping
 		return res;
 	}
 	
+	/**
+	 * iterate over the mappings and return the first hit.
+	 * all the parameters are given the same priority : it's really the ordering
+	 * of rules which defines a priority order.
+	 * Any of the paremeters can be null.
+	 * @param	publicId	public ID of the parsed document
+	 * @param	systemId	system ID of the parsed document
+	 * @param	namespace	namespace of the root element of the parsed document
+	 * @param	prefix		prefix of the root element of the parsed document
+	 * @param	localName	localName of the root element of the parsed document
+	 * @param	followTypeId	if the schema referenced from the typeId should be returned
+	 * @return	matching mapping
+	 */
+	public Mapping getMappingForDocument(String publicId, String systemId,
+		String namespace,String prefix,String localName)
+	{
+		Log.log(Log.DEBUG, SchemaMapping.class,"getSchemaForDocumentElement("+publicId+","+systemId
+			+","+namespace+","+prefix+","+localName+")");
+		
+		Mapping res = null;
+		
+		for(Mapping r:rules)
+		{
+			res = r.getMappingForDocument(publicId, systemId, namespace, prefix, localName);
+			if(res !=null)break;
+		}
+
+		return res;
+	}
+
 	/**
 	 * prefix + localName -> typeId or URL
 	 */
@@ -169,7 +283,7 @@ public final class SchemaMapping
 		 * @param	target	typeID or URL
 		 * @param	targetIsTypeId	typeID / URL ?
 		 */
-		DocumentElementRule(URL baseURI, String prefix, String localName, String target, boolean targetIsTypeId)
+		public DocumentElementRule(URL baseURI, String prefix, String localName, String target, boolean targetIsTypeId)
 		{
 			super(baseURI,target,targetIsTypeId);
 			if((prefix == null || "".equals(prefix))
@@ -210,7 +324,7 @@ public final class SchemaMapping
 		 * @param	targetIsTypeId	typeID / URL ?
 		 * @throws	IllegalArgumentException	if ns is null
 		 */
-		NamespaceRule(URL baseURI,String ns, String target, boolean targetIsTypeId){
+		public NamespaceRule(URL baseURI,String ns, String target, boolean targetIsTypeId){
 			super(baseURI, target,targetIsTypeId);
 			if(ns == null)throw new IllegalArgumentException("namespace can't be null");
 			namespace=ns;
@@ -254,7 +368,7 @@ public final class SchemaMapping
 		 * @param	targetIsTypeId	typeID / URL ?
 		 * @throws	IllegalArgumentException if pattern is null
 		 */
-		URIPatternRule(URL baseURI, String pattern, String target, boolean targetIsTypeId)
+		public URIPatternRule(URL baseURI, String pattern, String target, boolean targetIsTypeId)
 		{
 			super(baseURI, target,targetIsTypeId);
 			if(pattern == null)throw new IllegalArgumentException("pattern can't be null");
@@ -327,7 +441,7 @@ public final class SchemaMapping
 		 * @param	targetIsTypeId	typeID / URL ?
 		 * @throws	IllegalArgumentException if pattern is null
 		 */
-		TransformURI(URL baseURI, String fromPattern, String toPattern)
+		public TransformURI(URL baseURI, String fromPattern, String toPattern)
 		{
 			super(baseURI);
 			if(fromPattern == null)throw new IllegalArgumentException("fromPattern can't be null");
@@ -367,7 +481,7 @@ public final class SchemaMapping
 		 */
 		@Override
 		public Result getSchemaForDocument(String ignoredPublicId, String url,
-			String ignoredNamespace,String ignoredPrefix,String ignoredLocalName)
+			String ignoredNamespace,String ignoredPrefix,String ignoredLocalName, boolean ignored)
 		{
 			try
 			{
@@ -406,6 +520,21 @@ public final class SchemaMapping
 				System.err.println("Malformed:"+url);
 			}
 			return null;
+		}
+		
+		@Override
+		public Mapping getMappingForDocument(String ignoredPublicId, String url,
+			String ignoredNamespace,String ignoredPrefix,String ignoredLocalName)
+		{
+			if(getSchemaForDocument(ignoredPublicId,url,
+				ignoredNamespace,ignoredPrefix,ignoredLocalName,false) == null)
+			{
+				return null;
+			}
+			else
+			{
+				return this;
+			}
 		}
 
 		/**@return xml serialization */
@@ -498,7 +627,7 @@ public final class SchemaMapping
 	 */
 	public static class DefaultRule extends Rule{
 		
-		DefaultRule(URL baseURI, String target,boolean targetIsTypeId){
+		public DefaultRule(URL baseURI, String target,boolean targetIsTypeId){
 			super(baseURI, target,targetIsTypeId);
 		}
 		
@@ -545,7 +674,7 @@ public final class SchemaMapping
 		 * @param	targetIsTypeId	typeID / URL ?
 		 * @throws	IllegalArgumentException	if doctype is null
 		 */
-		DoctypeRule(URL baseURI, String doctype, String target,boolean targetIsTypeId){
+		public DoctypeRule(URL baseURI, String doctype, String target,boolean targetIsTypeId){
 			super(baseURI, target,targetIsTypeId);
 			if(doctype==null)throw new IllegalArgumentException("doctype can't be null");
 			if(doctype=="")throw new IllegalArgumentException("doctype can't be \"\"");
@@ -626,16 +755,32 @@ public final class SchemaMapping
 		}
 
 		public final Result getSchemaForDocument(String publicId, String systemId,
-			String namespace,String prefix,String localName)
+			String namespace,String prefix,String localName, boolean ignored)
 		{
 			if(matchURL(systemId) || matchNamespace(namespace)
 				|| matchDocumentElement(prefix,localName))
 			{
 				return new Result(getBaseURI(), target);
 			}
-			return null;
+			else
+			{
+				return null;
+			}
 		}
 
+		public final Mapping getMappingForDocument(String publicId, String systemId,
+			String namespace,String prefix,String localName)
+		{
+			if(matchURL(systemId) || matchNamespace(namespace)
+				|| matchDocumentElement(prefix,localName))
+			{
+				return this;
+			}
+			else
+			{
+				return null;
+			}
+		}
 	}
 	
 	/** deserialize an xml document describing the mapping rules (schemas.xml)
@@ -859,6 +1004,7 @@ public final class SchemaMapping
 			}
 			if(newRule != null){
 				if(base != null)newRule.setExplicitBase(base);
+				newRule.parent = mapping;
 				mapping.rules.add(newRule);
 			}
 		}
@@ -871,6 +1017,10 @@ public final class SchemaMapping
 	
 	public static abstract class Mapping
 	{
+		
+		/** parent of this Mapping */
+		protected SchemaMapping parent;
+		
 		/** this schema mapping file's URI */
 		protected URL baseURI;
 	
@@ -879,6 +1029,12 @@ public final class SchemaMapping
 		
 		Mapping(URL baseURI){
 			this.baseURI = baseURI;
+			this.parent = null;
+		}
+		
+		public SchemaMapping getParent()
+		{
+			return parent;
 		}
 		
 		/**
@@ -909,10 +1065,27 @@ public final class SchemaMapping
 		 * @param	namespace	namespace of the root element of the parsed document
 		 * @param	prefix		prefix of the root element of the parsed document
 		 * @param	localName	localName of the root element of the parsed document
+		 * @param	followTypeId	if the schema referenced from a typeId must be returned
 		 * @return	schema URL for given document (and baseURI) or null if not found
 		 */
 		public abstract Result getSchemaForDocument(String publicId, String systemId,
+			String namespace,String prefix,String localName, boolean followTypeId);
+
+		/**
+		 * iterate over the mappings and return the first hit.
+		 * all the parameters are given the same priority : it's really the ordering
+		 * of rules which defines a priority order.
+		 * Any of the paremeters can be null.
+		 * @param	publicId	public ID of the parsed document
+		 * @param	systemId	system ID of the parsed document
+		 * @param	namespace	namespace of the root element of the parsed document
+		 * @param	prefix		prefix of the root element of the parsed document
+		 * @param	localName	localName of the root element of the parsed document
+		 * @return	schema URL for given document (and baseURI) or null if not found
+		 */
+		public abstract Mapping getMappingForDocument(String publicId, String systemId,
 			String namespace,String prefix,String localName);
+			
 			
 	}
 	
@@ -925,7 +1098,7 @@ public final class SchemaMapping
 		 * @param	rules	URL where to find the rules
 		 * @throws	IllegalArgumentException	if the url is malformed
 		 */
-		IncludeMapping(URL baseURI, String rules){
+		public IncludeMapping(URL baseURI, String rules){
 			super(baseURI);
 			if(rules==null)throw new IllegalArgumentException("rules can't be null");
 			
@@ -949,10 +1122,31 @@ public final class SchemaMapping
 			this.rules = rules;
 		}
 		
+		/**
+		 * @param	baseURI	base URL to resolve rules (may be null if rules is absolute)
+		 * @param	mapping	mapping to link to
+		 * @throws	IllegalArgumentException	if mapping is null
+		 */
+		public IncludeMapping(URL baseURI, SchemaMapping mapping){
+			super(baseURI);
+			if(mapping==null)throw new IllegalArgumentException("mapping can't be null");
+			
+			this.mapping = mapping;
+			this.rules = mapping.getBaseURI().toString();
+		}
+
+		@Override
 		public Result getSchemaForDocument(String publicId, String systemId,
+			String namespace,String prefix,String localName, boolean followTypeId)
+		{
+			return mapping.getSchemaForDocument(publicId,systemId,namespace,prefix,localName, followTypeId);
+		}
+
+		@Override
+		public Mapping getMappingForDocument(String publicId, String systemId,
 			String namespace,String prefix,String localName)
 		{
-			return mapping.getSchemaForDocument(publicId,systemId,namespace,prefix,localName);
+			return mapping.getMappingForDocument(publicId,systemId,namespace,prefix,localName);
 		}
 
 		/**@return xml serialization */

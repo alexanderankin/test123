@@ -11,6 +11,7 @@ plugin.xml.XmlPlugin.depend.2=plugin xerces.XercesPlugin 2.9.0
 plugin.xml.XmlPlugin.depend.3=plugin errorlist.ErrorListPlugin 1.4.2
 plugin.xml.XmlPlugin.depend.4=plugin sidekick.SideKickPlugin 0.7.6
 plugin.xml.XmlPlugin.depend.5=plugin beauty.BeautyPlugin 0.2.1
+plugin.xml.XmlPlugin.depend.6=plugin CommonControlsPlugin 0.9.4
 
 plugin.xml.XmlPlugin.jars=jing.jar relaxngDatatype.jar trang.jar
 
@@ -39,6 +40,10 @@ plugin.xml.XmlPlugin.menu=sidekick.parser.xml-switch \
     - \
     csssidekick-insert-relative-path \
     - \
+    xml-prompt-typeid \
+    xml-prompt-schema \
+    xml-open-schema \
+    - \
     xml-clear-cache \
     csssidekick-reload-completion-config \
     xml-reload-catalogs
@@ -64,6 +69,9 @@ xml-reload-catalogs.label=Reload Catalogs
 xml-select-element.label=Select Element or Code Block
 xml-select-between-tags.label=Selection Between Tags
 xml-generate-dtd.label=Generate DTD
+xml-open-schema.label=Open Schema
+xml-prompt-typeid.label=Set Schema Type...
+xml-prompt-typeid.label=Set Schema...
 
 # Option panes
 plugin.xml.XmlPlugin.option-group=xml.general xmlindenter sidekick.html sidekick.ecmascript sidekick.css xml.catalogs
@@ -348,3 +356,18 @@ options.xmlindenter.dialog.message=Enter qualified element name:
 # register modes for Beauty
 mode.xml.beauty.beautifier=XmlIndenter
 
+# xml-prompt-typeid
+xml.choose-type-id.message=Please Choose a typeID for the current buffer:
+xml.choose-type-id.title=Choose a TypeID...
+xml-error-to-document.message=An error occurred while saving the schema-mapping ({0}):\n\t{1}
+xml-error-to-document.message=error saving schema-mapping
+xml.no-type-id.message=no list of type ids; you'll have to edit schemas.xml manually
+
+# xml-prompt-schema
+xml.choose-schema.buffer-path=The buffer is:
+xml.choose-schema.message=Please Choose a schema for the current buffer:
+xml.choose-schema.title=Choose a Schema...
+xml.choose-schema.browse=Browse...
+xml.choose-schema.relative=make this location relative (preview bellow)
+xml.choose-schema.error-uri.title=Strange path indeed !
+xml.choose-schema.error-uri.message=Encountered an Exception with URI {0} :\n\t{1}

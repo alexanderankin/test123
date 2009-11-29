@@ -62,7 +62,7 @@ public class SchemaMappingTest{
     	SchemaMapping m = new SchemaMapping();
     	assertNull(m.getBaseURI());
     	assertNull(m.getSchemaForDocument(null, "actions.xml",
-		null,null,"ACTIONS"));
+		null,null,"ACTIONS",true));
     }
     
     @Test
@@ -73,13 +73,13 @@ public class SchemaMappingTest{
     	
     	// 2 built-in rules
     	assertEquals(new Result(builtin,"locate.rng"),m.getSchemaForDocument(null, "schemas.xml",
-		null,null,"locatingRules"));
+		null,null,"locatingRules",true));
     	assertEquals(new Result(builtin,"locate.rng"),m.getSchemaForDocument(null, "schemas.xml",
-		null,null,"a"));
+		null,null,"a",true));
 		
 		// non-matching rule
     	assertNull(m.getSchemaForDocument(null, "actions.xml",
-		null,null,"ACTIONS"));
+		null,null,"ACTIONS",true));
 		
     }
     
@@ -91,17 +91,17 @@ public class SchemaMappingTest{
     	// test taken into account
     	m.addRule(new DocumentElementRule(null,null, "ACTIONS", "actions.rng", false));
     	assertEquals(new Result(null,"actions.rng"),m.getSchemaForDocument(null, "actions.xml",
-		null,null,"ACTIONS"));
+		null,null,"ACTIONS",true));
 		
     	m.addRule(new URIResourceRule(new URL("file:///"),"actions.xml", "else.rng", false));
 
     	// test taken into account
     	assertEquals(new Result(new URL("file:///"),"else.rng"),m.getSchemaForDocument(null, "actions.xml",
-		null,null,"TOTO"));
+		null,null,"TOTO",true));
 
 		// test precedence ( both match, but first one wins)
     	assertEquals(new Result(null,"actions.rng"),m.getSchemaForDocument(null, "actions.xml",
-		null,null,"ACTIONS"));
+		null,null,"ACTIONS",true));
 		
     }
 
@@ -113,19 +113,19 @@ public class SchemaMappingTest{
     	m.addRule(new DocumentElementRule(null,null, "ACTIONS", "actions", true));
 
     	assertEquals(new Result(null,"actions"),m.getSchemaForDocument(null, "actions.xml",
-		null,null,"ACTIONS"));
+		null,null,"ACTIONS",true));
     	
 		m.addTypeId("actions","actions.rng");
 
     	// test taken into account
     	assertEquals(new Result(null,"actions.rng"),m.getSchemaForDocument(null, "actions.xml",
-		null,null,"ACTIONS"));
+		null,null,"ACTIONS",true));
 		
     	m.addTypeId("actions", "else.rng");
 
 		// test precedence ( the snd replaced the first one )
     	assertEquals(new Result(null,"else.rng"),m.getSchemaForDocument(null, "actions.xml",
-		null,null,"ACTIONS"));
+		null,null,"ACTIONS",true));
 		
     }
     
@@ -360,13 +360,13 @@ public class SchemaMappingTest{
     	
     	// schemas.xml base
     	assertEquals(new Result(builtin,"relaxng.rng"),m.getSchemaForDocument(null, "actions.rng",
-		null,null,"ACTIONS"));
+		null,null,"ACTIONS",true));
 		
     	m.addRule(new URIResourceRule(new URL("file:///schemas.xml"),"actions.xml", "else.rng", false));
 
     	// rule base
     	assertEquals(new Result(new URL("file:///schemas.xml"),"else.rng"),
-    		m.getSchemaForDocument(null, "actions.xml",null,null,"TOTO"));
+    		m.getSchemaForDocument(null, "actions.xml",null,null,"TOTO",true));
 
 	}
 	
@@ -375,7 +375,14 @@ public class SchemaMappingTest{
 	public void testIncludeMapping() throws MalformedURLException{
      	
 		try{
-			new SchemaMapping.IncludeMapping(null, null);
+			new SchemaMapping.IncludeMapping(null, (String)null);
+			fail("should throw an exception");
+		}catch(IllegalArgumentException iae){
+			//fine
+		}
+     	
+		try{
+			new SchemaMapping.IncludeMapping(null, (SchemaMapping)null);
 			fail("should throw an exception");
 		}catch(IllegalArgumentException iae){
 			//fine
@@ -403,14 +410,14 @@ public class SchemaMappingTest{
     	    	
     	// used the include rule AND used the base uri of the included schema
     	assertEquals(new Result(builtin,"relaxng.rng"),m.getSchemaForDocument(null, "actions.rng",
-		null,null,"ACTIONS"));
+		null,null,"ACTIONS",true));
 		
 		// this rule will override the default included rule
     	m.insertRuleAt(0,new URIPatternRule(null,"actions.*", "else.rng", false));
 
     	// rule base
     	assertEquals(new Result(null,"else.rng"),
-    		m.getSchemaForDocument(null, "actions.xml",null,null,"TOTO"));
+    		m.getSchemaForDocument(null, "actions.xml",null,null,"TOTO",true));
 	}
 	
 	@Test
@@ -445,25 +452,25 @@ public class SchemaMappingTest{
 
     	// pattern matches and result exists
     	assertEquals(new Result(null,existsXSD.toURL().toString()),
-    		r.getSchemaForDocument(null, existsXML.toURL().toString(),null,null,null));
+    		r.getSchemaForDocument(null, existsXML.toURL().toString(),null,null,null,true));
     	
     	// test doesn't match
-    	assertNull(r.getSchemaForDocument(null, "test.txt",null,null,null));
+    	assertNull(r.getSchemaForDocument(null, "test.txt",null,null,null,true));
 
     	// test no result resource
     	File noXSD = new File(testData,"dtd/actions.xml");
-    	assertNull(r.getSchemaForDocument(null, noXSD.toURL().toString(),null,null,null));
+    	assertNull(r.getSchemaForDocument(null, noXSD.toURL().toString(),null,null,null,true));
 
     	// test result relative to base
     	r = new TransformURI(existsXML.toURL(),"*.xml","../simple/*.xsd");
     	
     	assertEquals(new Result(existsXML.toURL(),"../simple/actions.xsd"),
-    		r.getSchemaForDocument(null, "actions.xml",null,null,null));
+    		r.getSchemaForDocument(null, "actions.xml",null,null,null,true));
 
     	r = new TransformURI(null,"*.xml","../simple/*.xsd");
 
     	assertEquals(new Result(null,new File(noXSD.getParentFile(),"../simple/actions.xsd").toURL().toString()),
-    		r.getSchemaForDocument(null, noXSD.toURL().toString(),null,null,null));
+    		r.getSchemaForDocument(null, noXSD.toURL().toString(),null,null,null,true));
 	}
 	
 	@Test

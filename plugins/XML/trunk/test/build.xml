@@ -34,10 +34,8 @@
     <filelist id="plugin.jars" dir="${install.dir}">
     	<!-- XML libraries -->
 		<file name="XML.jar"/>
-		<file name="isorelax.jar"/>
 		<file name="jing.jar"/>
 		<file name="relaxngDatatype.jar"/>
-		<file name="isorelax-jaxp-bridge-1.0.jar"/>
 		<file name="trang.jar"/>
 		<!-- XercesPlugin -->
 		<file name="XercesPlugin.jar"/>
@@ -50,6 +48,9 @@
 		<file name="ErrorList.jar"/>
 		<!-- Sidekick -->
 		<file name="SideKick.jar"/>
+		<!-- Common Controls -->
+		<file name="CommonControls.jar"/>
+		<file name="kappalayout.jar"/>
     </filelist>
 
     <!-- include everything needed to let jEdit load the plugin and run the 
@@ -80,7 +81,7 @@
 
     <!-- this selector holds just one test.  This is optional. -->
     <selector id="testcases.current">
-        <filename name="xml/XmlActionsTest.java"/>
+        <filename name="xml/SchemaMappingManagerTest.java"/>
     </selector>
 
     <!-- this selector controls which tests to run, set the refid to either
