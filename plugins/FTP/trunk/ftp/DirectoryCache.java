@@ -22,15 +22,20 @@
 
 package ftp;
 
-//{{{ Imports
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import org.gjt.sp.jedit.io.*;
+
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.util.Log;
-//}}}
 
 public class DirectoryCache
 {
@@ -218,8 +223,7 @@ public class DirectoryCache
 		}
 		else
 		{
-			cacheDirectory = MiscUtilities.constructPath(settingsDirectory,
-				"cache");
+			cacheDirectory = MiscUtilities.constructPath(settingsDirectory,"cache");
 			new File(cacheDirectory).mkdirs();
 		}
 	} //}}}

@@ -13,6 +13,7 @@ public class ConnectionInfo
 	public String password;
 	public String privateKey;
 	// }}}
+	
 	public ConnectionInfo(boolean secure, String host, int port,
 		String user, String password, String privateKey)
 	{

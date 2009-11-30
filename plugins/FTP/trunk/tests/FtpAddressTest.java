@@ -31,7 +31,7 @@ public class FtpAddressTest extends TestCase {
 		assertEquals("ftp", addr.getScheme());
 		assertEquals("voituk.kiev.ua", addr.getHost());
 		assertEquals(21, addr.getPort());
-		assertEquals(null, addr.getPath());
+		assertEquals("", addr.getPath());
 		assertEquals(null, addr.getUser());
 		assertEquals(null, addr.getPassword());
 
@@ -46,5 +46,10 @@ public class FtpAddressTest extends TestCase {
 		assertEquals(null, addr.getUser());
 		assertEquals(null, addr.getPassword());
 	}
-	//sftp://user@hell:pwd@voituk.kiev.ua:22/~www/111.html
+	
+	public void testBugRequest_2768807() {
+		FtpAddress addr = new FtpAddress("ftp://user.name@emaildomain.com@example.com:21/~/");
+		assertEquals("user.name@emaildomain.com", addr.getUser());
+		assertEquals("example.com", addr.getHost());
+	}
 }

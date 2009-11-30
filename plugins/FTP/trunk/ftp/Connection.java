@@ -40,16 +40,27 @@ public abstract class Connection
 	}
 
 	abstract FtpVFS.FtpDirectoryEntry[] listDirectory(String path) throws IOException;
+	
 	abstract FtpVFS.FtpDirectoryEntry getDirectoryEntry(String path) throws IOException;
+	
 	abstract boolean removeFile(String path) throws IOException;
+	
 	abstract boolean removeDirectory(String path) throws IOException;
+	
 	abstract boolean rename(String from, String to) throws IOException;
+	
 	abstract boolean makeDirectory(String path) throws IOException;
+	
 	abstract InputStream retrieve(String path) throws IOException;
+	
 	abstract OutputStream store(String path) throws IOException;
+	
 	abstract void chmod(String path, int permissions) throws IOException;
+	
 	abstract boolean checkIfOpen() throws IOException;
+	
 	abstract String resolveSymlink(String path, String[] name) throws IOException;
+	
 	abstract void logout() throws IOException;
 
 	public boolean inUse() {

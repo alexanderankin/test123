@@ -22,17 +22,34 @@
 
 package ftp;
 
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
+import java.awt.Component;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
-import java.awt.*;
-import java.awt.event.*;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
-import org.gjt.sp.jedit.gui.*;
-import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.gui.EnhancedDialog;
+import org.gjt.sp.jedit.gui.HistoryTextField;
+import org.gjt.sp.jedit.gui.VariableGridLayout;
 
-@SuppressWarnings("serial")
 public class LoginDialog extends EnhancedDialog implements ActionListener
 {
 	//{{{ LoginDialog constructor
@@ -153,7 +170,6 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 					//	privateKey = file.toPrivateKey(null);
 					//}
 					privateKeyFilename = privateKeyField.getText();
-					privateKey = privateKeyField.getText();
 					
 				//} catch (InvalidSshKeyException iske) {
 				//	GUIUtilities.error(this,"vfs.sftp.invalid-privatekey",new Object[] {iske.getMessage()});
@@ -205,12 +221,6 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 		return password;
 	} //}}}
 	
-	//{{{ getPrivateKey() method
-	public String getPrivateKey()
-	{
-		return privateKey;
-	} //}}}
-	
 	//{{{ getPrivateKeyFilename() method
 	public String getPrivateKeyFilename()
 	{
@@ -248,7 +258,6 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 	private String user;
 	private String password;
 	private String privateKeyFilename;
-	private String privateKey;
 	private boolean isOK;
 	private boolean secure;
 	private JButton ok;

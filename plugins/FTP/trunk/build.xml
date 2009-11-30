@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="FTP" default="build" basedir=".">
+<project name="FTP" basedir="." default="build"> 
 <!--
      This is a build.xml file for building the FTP plugin.
 
