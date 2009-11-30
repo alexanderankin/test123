@@ -16,6 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+ Version 0.1.0 (Nov. 23, 2009)
+
+    *  Change command line to History TextField
+    *  add flush button
  
  Version 0.0.3 (Nov. 06, 2009)
 
@@ -60,13 +64,15 @@ class NetRexxScript adapter extends JPanel implements ActionListener	--, Compone
 		tracebutton=JToggleButton
 		clearoutbutton=JToggleButton
 		upbutton=JToggleButton
+		flushbutton=JToggleButton
 		downbutton=JToggleButton
 		cmdtoolbar=JToolBar
 		
 		ba=JToggleButton[5]
 		bs=Rexx				--	index the buttonarray (ba)
 		
-		cl=JTextField
+--		cl=JTextField
+		cl=HistoryTextField
 		cll=JLabel
 		clf=boolean
 		runflag=boolean 0
@@ -92,7 +98,9 @@ class NetRexxScript adapter extends JPanel implements ActionListener	--, Compone
 		upbutton.setToolTipText("Move command bar to top")
 		downbutton = CreateButton("down","go-down.png")
 		downbutton.setToolTipText("Move command bar to bottom")
-
+		flushbutton = CreateButton("Flush","Flush24.png")
+		flushbutton.setToolTipText("Flush scripts from memory")
+			
 		cmdtoolbar.add(runbutton)
 		cmdtoolbar.add(outbutton)
 		cmdtoolbar.add(tracebutton)
@@ -102,9 +110,13 @@ class NetRexxScript adapter extends JPanel implements ActionListener	--, Compone
 		cll=JLabel("   Cmd or parms:")
 		cmdtoolbar.add(cll)
 		clf=FALSE
-		cl=JTextField(55)
+--		cl=JTextField(55)
+		cl=HistoryTextField("NetRexxScript.commandline",0,1)
+		cl.setColumns(55)		
 		cl.addActionListener(this)		
 		cmdtoolbar.add(cl)
+		
+		cmdtoolbar.add(flushbutton)
 		
 		bar=jEdit.getProperty(OPTION_PREFIX"cmdbarloc","up")	--	get the user preferred cmd bar loc
 		if bar="up" then cmdtoolbar.add(downbutton)
@@ -301,6 +313,14 @@ class NetRexxScript adapter extends JPanel implements ActionListener	--, Compone
 					cleartraceout
 					clearscriptout
 					clearoutbutton.setSelected(0)
+					return
+				end
+
+			when ButtonClicked == "Flush" then
+				do
+					pi=NetRexxScriptPlugin jEdit.getPlugin("NetRexxScriptPlugin")
+					pi.flush					
+					flushbutton.setSelected(0)
 					return
 				end
 

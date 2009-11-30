@@ -16,6 +16,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+ Version 0.1.3 (Nov 30, 2009) 
+
+    * Fix codepage output problem reported by George Hovey (TeeStream module)
+    * Add flush button to console per George request (NetRexxScript module)
+    * Change command entry field to HistoryTextField to allow recording and reentering commands (NetRexxScript)
+    * fix bug - runbysearch was not correctly searching scriptpath in non preparse mode
+    
  Version 0.1.2 (Nov 19, 2009) 
 
     *  Add check for active macro handler before creating one (fix prob with plugin manager restarts)
@@ -806,7 +813,7 @@ method searchlibs(scriptname)			--	scans script library path for a script by cla
 		parse ulp nextpath (ps) ulp
 		if df then say "nextpath="nextpath
 		ne=File(nextpath)
-		if ne.isFile then if scriptname'.nrx'=ne.getName then return ne.getPath
+		if ne.isFile then if scriptname'.nrx'=ne.getName then return ne.getPath;else nop
 			else do
 				scriptpath=searchdir(nextpath,scriptname)
 				if scriptpath\="" then return scriptpath

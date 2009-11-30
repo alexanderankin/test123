@@ -5,7 +5,7 @@
 plugin.NetRexxScriptPlugin.activate=startup
 plugin.NetRexxScriptPlugin.name=NetRexxScript
 plugin.NetRexxScriptPlugin.author=Kermit Kiser
-plugin.NetRexxScriptPlugin.version=0.1.2
+plugin.NetRexxScriptPlugin.version=0.1.3
 plugin.NetRexxScriptPlugin.docs=NetRexxScript.html
 plugin.NetRexxScriptPlugin.description=NetRexx Scripting plugin
 
