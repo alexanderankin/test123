@@ -33,7 +33,6 @@ public class ConnectionWindow extends JPanel implements CharHandler,
 	private final JTextPane console;
 	private final HistoryTextField input;
 	private final JButton send;
-	private final JButton expect;
 	private final JButton clear;
 	private final JButton toEnd;
 	private final JButton ctrlC;
@@ -65,9 +64,6 @@ public class ConnectionWindow extends JPanel implements CharHandler,
 		send = new JButton("Send");
 		buttonPanel.add(send);
 		send.addActionListener(this);
-		expect = new JButton("Expect");
-		buttonPanel.add(expect);
-		expect.addActionListener(this);
 		clear = new JButton("Clear");
 		buttonPanel.add(clear);
 		clear.addActionListener(this);
@@ -137,7 +133,6 @@ public class ConnectionWindow extends JPanel implements CharHandler,
 						console.setCaretPosition(d.getLength());
 				} catch (BadLocationException e)
 				{
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -151,14 +146,12 @@ public class ConnectionWindow extends JPanel implements CharHandler,
 			String s = input.getText();
 			if (e.getSource() == send)
 				c.send(s);
-			else if (e.getSource() == expect)
-				c.expectSubstr(s, true);
 			else if (e.getSource() == clear)
 				console.getDocument().remove(0, console.getDocument().getLength());
 			else if (e.getSource() == toEnd)
 				console.setCaretPosition(console.getDocument().getLength());
 			else if (e.getSource() == ctrlC)
-				c.send("^C");
+				c.send(String.valueOf((char) 3));
 			input.setText("");
 		}
 		catch (Exception e1)
