@@ -1,6 +1,8 @@
     
 --        All writes to this print stream are copied to two print streams
 
+-- 2009/11/23 change outarea append to fix codepage problem
+
 	import javax.swing
 	
 	class TeeStream adapter extends PrintStream
@@ -14,13 +16,14 @@
     	    
     	method write(buf=byte[],off=int,len=int)
 			super.write(buf,off,len)
-			out.write(buf,off,len)
-			if outarea=null then return 
+			if out\=null then out.write(buf,off,len)
+			if outarea\=null then outarea.append(String(buf,off,len)) 			
+/* 			if outarea=null then return 
 				s=""
 				loop i=off to off+len-1
 					s=s||Rexx(buf[i]).d2c
 					end
-				outarea.append(s)
+				outarea.append(s) */
     	    	
     	method flush
     		super.flush
