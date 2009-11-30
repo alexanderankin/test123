@@ -78,9 +78,9 @@ public class VoxSpellMenuService extends DynamicContextMenuService
             
             items[num_suggestions] = new EnhancedMenuItem("More suggestions", "voxspellcheck.suggest",
                                                           jEdit.getActionContext());
-            items[num_suggestions + 1] = new EnhancedMenuItem("Add - \""+word+"\"", "voxspellcheck.ignoreWord",
+            items[num_suggestions + 1] = new EnhancedMenuItem("Add - \""+word+"\"", "voxspellcheck.addWord",
                                                               jEdit.getActionContext());
-            items[num_suggestions + 2] = new EnhancedMenuItem("Ignore - \""+word+"\"", "voxspellcheck.addWord",
+            items[num_suggestions + 2] = new EnhancedMenuItem("Ignore - \""+word+"\"", "voxspellcheck.ignoreWord",
                                                               jEdit.getActionContext());
         }
         return items;
