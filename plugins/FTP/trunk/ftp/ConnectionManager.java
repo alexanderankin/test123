@@ -49,7 +49,6 @@ public class ConnectionManager
 	static int connectionTimeout = 120000;
 	private static File passwordFile = null;
 	public static JSch client = null;
-
 	// }}}
 	
 	//{{{ forgetPasswords() method
@@ -235,9 +234,9 @@ public class ConnectionManager
 	} //}}}
 
 	//{{{ getConnectionInfo() method
-	public static ConnectionInfo getConnectionInfo(Component comp,
-		FtpAddress address, boolean secure)
+	public static ConnectionInfo getConnectionInfo(Component comp, FtpAddress address, boolean secure)
 	{
+		Log.log(Log.DEBUG, "ConnectionInfo.getConnectionInfo", comp);
 		String host, user;
 		String password;
 
@@ -266,10 +265,8 @@ public class ConnectionManager
 				
 		int port = FtpVFS.getDefaultPort(secure);
 		int index = host.indexOf(':');
-		if(index != -1)
-		{
-			try
-			{
+		if(index != -1) {
+			try {
 				port = Integer.parseInt(host.substring(index + 1));
 				host = host.substring(0,index);
 			}
@@ -277,9 +274,9 @@ public class ConnectionManager
 		}
 
 		ConnectionInfo info = new ConnectionInfo(secure,host,port,
-			dialog.getUser(),dialog.getPassword(),dialog.getPrivateKey());
+			dialog.getUser(), dialog.getPassword(), dialog.getPrivateKeyFilename() );
 
-		if (secure && dialog.getPrivateKey()!=null)
+		if (secure && dialog.getPrivateKeyFilename() != null)
 			jEdit.setProperty("ftp.keys."+host+":"+port+"."+dialog.getUser(),dialog.getPrivateKeyFilename());
 		
 		// Save password here

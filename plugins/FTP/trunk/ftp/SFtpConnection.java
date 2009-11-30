@@ -52,9 +52,8 @@ public class SFtpConnection extends Connection implements UserInfo
 			String settingsDirectory = jEdit.getSettingsDirectory();
 			if(settingsDirectory != null)
 			{
-				String cacheDir = MiscUtilities.constructPath(settingsDirectory,
-					"cache");
-				String known_hosts = MiscUtilities.constructPath(cacheDir,"known_hosts");
+				String cacheDir    = MiscUtilities.constructPath(settingsDirectory, "cache");
+				String known_hosts = MiscUtilities.constructPath(cacheDir, "known_hosts");
 				try {
 					(new File(known_hosts)).createNewFile();
 					ConnectionManager.client.setKnownHosts(known_hosts);
@@ -81,7 +80,7 @@ public class SFtpConnection extends Connection implements UserInfo
 			}
 			// }}}
 			
-			Session session=ConnectionManager.client.getSession(info.user, info.host, info.port);
+			Session session = ConnectionManager.client.getSession(info.user, info.host, info.port);
 			if (proxy != null)
 				session.setProxy(proxy);
 			
@@ -94,16 +93,17 @@ public class SFtpConnection extends Connection implements UserInfo
 			keyAttempts = 0;
 			session.setUserInfo(this);
 			
-			// Timeout hardcoded to 60seconds
+			//FIXME: Timeout hardcoded to 60seconds
 			session.connect(60000);
 			
-			Channel channel=session.openChannel("sftp");
+			Channel channel = session.openChannel("sftp");
 			channel.connect();
 			sftp=(ChannelSftp)channel;
 			home=sftp.getHome();
 			keyAttempts = 0;
 		} catch(Exception e) {
-			throw new IOException(e.toString());
+			//throw new IOException(e.toString());
+			throw new IOException(e);
 		}
 	}
 	

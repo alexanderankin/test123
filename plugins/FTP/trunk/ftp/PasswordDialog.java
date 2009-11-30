@@ -53,7 +53,7 @@ public class PasswordDialog extends EnhancedDialog implements ActionListener
 		password = new JPasswordField();
 		content.add(password);
 		
-				Box buttons = new Box(BoxLayout.X_AXIS);
+		Box buttons = new Box(BoxLayout.X_AXIS);
 		buttons.add(Box.createGlue());
 		ok = new JButton(jEdit.getProperty("common.ok"));
 		ok.addActionListener(this);

@@ -34,7 +34,7 @@ import org.gjt.sp.util.Log;
 
 class FtpConnection extends Connection
 {
-	FtpConnection(ConnectionInfo info) throws IOException
+	FtpConnection(final ConnectionInfo info) throws IOException
 	{
 		super(info);
 		

@@ -1,9 +1,9 @@
 /*
- * FtpAddress.java - FTP addressing encapsulator
+ * FtpAddress.java - FTP URI parser class
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Ñopyright (C) 2008 Vadim Voituk
+ * Copyright (C) 2008 Vadim Voituk
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -37,7 +37,7 @@ public class FtpAddress {
 	/**
 	 * FtpAddress constructor
 	 * @param url
-	 * @throws IllegalArgumentException - on invalid FTP address
+	 * @throws IllegalArgumentException - on invalid FTP address format
 	 */
 	public FtpAddress(String url) {
 		
@@ -95,7 +95,7 @@ public class FtpAddress {
 		}
 		
 		this.host = this.host.replace(" ", "");
-	} //}}}
+	} 
 
 	/**
 	 * FtpAddress constructor
@@ -106,9 +106,10 @@ public class FtpAddress {
 		this.setPath(path);
 	}
 
-	//{{{ toString() method
-	public String toString()
-	{
+	/**
+	 * toString() method
+	 */
+	public String toString() {
 		StringBuilder buf = new StringBuilder();
 		buf.append(this.scheme);
 		buf.append("://");
@@ -123,7 +124,7 @@ public class FtpAddress {
 		buf.append(this.path);
 
 		return buf.toString();
-	} //}}}
+	}
 
 	public String getScheme() {
 		return scheme;
@@ -141,6 +142,9 @@ public class FtpAddress {
 		return this.scheme == FtpVFS.SFTP_PROTOCOL ? 22 : 21;
 	}
 
+	/**
+	 * Never returns null. 
+	 */
 	public String getPath() {
 		return path;
 	}
@@ -156,4 +160,5 @@ public class FtpAddress {
 	public String getPassword() {
 		return password;
 	}
+	
 }

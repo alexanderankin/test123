@@ -57,7 +57,7 @@ public class FtpVFS extends VFS
 	//{{{ FtpVFS method
 	public FtpVFS(boolean secure)
 	{
-		super(getProtocol(secure),READ_CAP | WRITE_CAP | BROWSE_CAP
+		super(getProtocol(secure), READ_CAP | WRITE_CAP | BROWSE_CAP
 			| DELETE_CAP | RENAME_CAP | MKDIR_CAP,
 			getExtendedAttributes(secure));
 		
@@ -73,8 +73,9 @@ public class FtpVFS extends VFS
 	//{{{ getExtendedAttributes() method
 	public static String[] getExtendedAttributes(boolean secure)
 	{
-		return (secure ? new String[] { EA_TYPE, EA_SIZE }
-			: new String[] { EA_TYPE, EA_SIZE, EA_STATUS });
+		return secure 
+			? new String[] { EA_TYPE, EA_SIZE }
+			: new String[] { EA_TYPE, EA_SIZE, EA_STATUS };
 	} //}}}
 	
 	//{{{ getDefaultPort() method
