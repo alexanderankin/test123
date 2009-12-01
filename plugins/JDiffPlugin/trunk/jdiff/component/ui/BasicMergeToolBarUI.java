@@ -343,7 +343,7 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
             new Runnable() {
                 public void run() {
                     boolean enabled = BasicMergeToolBarUI.this.view.getEditPanes().length == 2;
-                    diff.setEnabled( enabled );
+                    diff.setEnabled( !enabled );
                     next.setEnabled( enabled );
                     prev.setEnabled( enabled );
                     move_right.setEnabled( enabled );
