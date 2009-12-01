@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<project name="GdbPlugin" default="build" basedir="."> 
+  <description>
+  	This is the build.xml file for building the GdbPlugin.
+  	It is based on the standard build.xml file for jEdit plugins.
+  </description>  
+
+	<property file="build.properties"/>
+	<property file="../build.properties"/>
+	<property file="${user.home}/.build.properties"/>
+	<property file="${user.home}/build.properties"/>
+    <property name="docbook.xsl.sheet" value="html/onechunk.xsl" />
+    <property name="user-doc.xml" location = "users-guide.xml"/>
+	
+	<property name="docs-proc.target"  value="xsltproc"/>
+
+    <property name="build.support" value="../../build-support" />
+    <property name="compiler.source" value="1.5" />
+    <property name="compiler.target" value="1.5" />
+    
+	<import file="${build.support}/plugin-build.xml" />
+	 
+	<property name="install.dir"  value=".."/>
+	<property name="build.dir" value="build"/>
+
+	<path id="project.class.path">
+		<pathelement location="${jedit.install.dir}/jedit.jar"/>
+		<pathelement location="${user.home}/.jedit/jars/CommonControls.jar"/>
+		<pathelement location="${user.home}/.jedit/jars/Console.jar"/>
+		<pathelement location="${src.dir}"/>
+	</path>
+
+	<target name="tags">
+		<exec executable="ctags">
+			<arg value="-f" />
+			<arg path="tags_" />
+			<arg value="-R" />
+			<arg path="." />
+		</exec>
+	</target>
+
+</project>
+
+<!-- :indentSize=4:lineSeparator=\n:noTabs=false:tabSize=4: -->

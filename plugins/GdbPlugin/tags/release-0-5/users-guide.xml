@@ -1,0 +1,187 @@
+<article xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
+<title>GdbPlugin</title>
+<articleinfo>
+<author><firstname>Shlomy</firstname>
+<surname>Reinstein</surname></author>
+</articleinfo>
+<para> April-June 2007 </para>
+
+<section id="introduction">
+<title> Introduction </title>
+<para>
+This plugin enables debugging programs with GDB (the GNU debugger) directly from
+jEdit. The plugin provides the following features: </para>
+<itemizedlist>
+<listitem><para>
+Set breakpoints directly in jEdit buffers (at the caret position).
+</para></listitem>
+<listitem><para>
+Control program execution (continue/step/next/...).
+</para></listitem>
+<listitem><para>
+Visual indication of breakpoints and the current instruction in the gutter area.
+</para></listitem>
+<listitem><para>
+Display expressions/variables and modify values of variables.
+</para></listitem>
+<listitem><para>
+Automatic display of local variables.
+</para></listitem>
+<listitem><para>
+Manipulate breakpoints and watchpoints using a dedicated GUI.
+</para></listitem>
+<listitem><para>
+Stack trace display that provides easy navigation of stack frames; clicking a frame jumps directly to the source code of the frame in jEdit.
+</para></listitem>
+<listitem><para>
+GUI editing of launch configurations. A launch configuration specifies the settings for a debugging session: program, arguments, directory and environment.
+</para></listitem>
+<listitem><para>
+Two Console plugin shell services: <literal>Program</literal> for communication with the debugged program, and <literal>GDB/MI</literal> for controlling the GDB/MI process.
+</para></listitem>
+</itemizedlist>
+<para>
+The plugin uses GDB/MI to interact with GDB. Entering GDB CLI commands (the common commands: <literal>next</literal>, <literal>step</literal>, <literal>cont</literal>, ...) in the GDB/MI shell is possible but highly discouraged, as it can easily put the plugin into an inconsistent state. </para>
+</section>
+
+<section id="configuration">
+<title> Configuration </title>
+
+<para> The GdbPlugin has three option panes, <emphasis role="bold">General</emphasis>, <emphasis role="bold">Programs</emphasis>, and <emphasis role="bold">Formatting</emphasis>. </para>
+
+<bridgehead> General options </bridgehead>
+
+<itemizedlist>
+<listitem><para> <guilabel>Gdb Executable: </guilabel> If <literal>gdb</literal> is not in your <literal>PATH</literal>, specify the path to it here.</para> </listitem>
+
+<listitem><para> <guilabel> Use external commands: </guilabel>
+To more directly control the execution of the debugged programs, the GdbPlugin uses external commands such as <literal>ps</literal> and <literal>kill</literal>, which only exist on *nix platforms. </para> </listitem>
+
+<listitem><para> <guilabel>Expression Discovery regexp for tooltips:</guilabel> If expression value tooltips are enabled, this is the regex used to decide if there is an expression to evaluate below the mouse pointer. </para></listitem>
+
+</itemizedlist>
+
+<bridgehead> Programs </bridgehead>
+
+<para> This is where you can specify which programs GdbPlugin knows to debug. Eclipse calls these <emphasis role="bold">launch configurations</emphasis>. You can also add and edit these settings by clicking on <guibutton>Edit Program List</guibutton> from the GdbPlugin panel dockable. </para>
+
+
+<bridgehead> Formatting </bridgehead>
+
+<para> Gdb only knows how to display simple and primitive types. For more complex classes, it is handy to use <ulink url="http://sourceware.org/gdb/current/onlinedocs/gdb_21.html#SEC220">Gdb macros</ulink> to display values of objects. For example, the Qt4 QString is actually a smart pointer to data located elsewhere. A macro for printing QStrings, found in the <ulink url="http://websvn.kde.org/~checkout~/trunk/KDE/kdesdk/scripts/kde-devel-gdb">KDE subversion repository</ulink> shows us how to print out its contents from Gdb: </para>
+
+<programlisting>
+define printqstring
+    printqstringdata $arg0.d
+end
+define printq4stringdata
+    set $i=0
+    set $d = $arg0
+    while $i &lt; $d-&gt;size
+        printf &quot;%c&quot;, (char)($d-&gt;data[$i++] &amp; 0xff)
+    end
+    printf &quot;\n&quot;
+end
+</programlisting>
+
+<para> To tell the GdbPlugin to use use this macro automatically whenever a QString needs to be displayed, we first make sure this macro is in our <literal>.gdbrc</literal> file, and then use the <emphasis role="bold">Formatting</emphasis> option pane to map the <literal>QString</literal> type to the <literal>printqstring</literal> macro. </para>
+
+<para> The regex type substitution for type names makes it possible to specify only one mapping, for example, from <literal>QString</literal> to <literal>printqstring</literal>, without also having to map slightly modified types, such as <literal>const QString &amp;</literal> and <literal>QString &amp;</literal>. </para>
+
+</section>
+
+<section id="gettingstarted">
+<title> Debugging </title>
+
+<para>
+To start debugging, you first need to define a launch configuration using the <guilabel>GdbPlugin options -&gt; Programs pane</guilabel>, or the <guibutton>Edit Program List</guibutton> button from the GdbPlugin panel. Click 'New' and fill in the debug settings in the dialog that pops up. The fields in the dialog have tooltips describing their meaning.
+</para>
+
+<para>
+When you close the dialog you will see the new launch configuration in the list. Select it, and click 'Make default' to make it the default configuration to use for debug sessions. Clicking 'Make default' will mark the configuration with an asterisk.</para>
+
+<para>
+You can now close the plugin options dialog. Now that you've set up a launch configuration, you can start debugging. But don't start yet!
+</para>
+
+<para>
+First, open the execution control dockable window by selecting <guilabel>GdbPlugin Panel</guilabel> from the <guilabel>GdbPlugin menu</guilabel>. If you like, you can resize the window or dock it like any other jEdit dockable window. 
+</para>
+
+<para>
+Let's set a breakpoint. Put the caret on the source line where you want the breakpoint to be, and click 'Toggle breakpoint' in the control execution window. You will see an indication of the breakpoint in the gutter area. 
+</para>
+
+<para>
+Now open several other dockable windows so you can actually see what's going on in the program. From the GdbPlugin menu, select the following items: Variables, Stack trace, and Program output. Dock them in separate docking areas so you can see them all at the same time. </para> 
+
+<para>
+Now click the 'Go' button in the execution control panel. This will start running the program in GDB. When the execution hits the breakpoint, you will see a pop-up message. When you dismiss the message, you will see an arrow icon on the line of the breakpoint (indicating the next instruction to execute), and the dockable windows that you opened will be updated with the stack trace and the local variables.
+</para>
+
+<para>
+Note how clicking on a frame in the stack trace takes you directly to the corresponding source location and updates the Variables window with the local variables of that frame.</para>
+
+<para>
+The 'Add' button on the bottom pane of the Variables window lets you add watches (variables or expressions whose values you want to see whenever GDB stops). To modify a variable's value (in either pane of the Variables window), either right click the variable or select it and click the 'Modify' button. </para>
+
+<para>
+You can now use the buttons in the execution control panel to control the execution. Go on and explore the features provided by the plugin. </para>
+
+<note>
+<title> The Pause Button </title>
+<para> Due to technical reasons, Java can not directly communicate with processes as easily as C/C++, which means the GdbPlugin must make use of some native programs, <guibutton>kill</guibutton> and <literal>ps</literal>, in order for the <guibutton>Pause</guibutton> button to work. If you click <guibutton>Go</guibutton> without setting a breakpoint or a watchpoint, and you do not have the <guilabel>Use External Commands</guilabel> option switched on, there is no way to stop GDB in the middle of execution (other than killing it, of course).</para>
+
+<para> To obtain the PID of the debugged process, the GdbPlugin currently assumes only one jEdit process is running. This means that the pause button may fail to work when there are multiple jEdit processes running.
+</para>
+
+</note>
+<para>Manipulation of breakpoints and watchpoints can be done using the Breakpoints dockable window, that you can also open from the GdbPlugin menu.
+</para>
+</section>
+
+<section id="dockables">
+  <title> Dockables </title>
+
+  <para> The GdbPlugin defines a number of dockables. This section attempts to describe them all. </para>
+  
+  <itemizedlist>
+  <listitem><para> Expressions - Allows you to add watch expressions </para></listitem>
+  <listitem><para> Local Variables - allows you to inspect variables in the local frame. </para></listitem>
+  <listitem><para> Variables - combines the Expressions and the LocalVariables dockables in a single dockable.  </para></listitem>
+  <listitem><para> BreakPoints - Allows you add/remove breakpoints through the plugin interface </para></listitem>
+  <listitem><para> Gdb Breakpoints - Allows you to view all breakpoints known by Gdb  (which may include those set through the .gdbinit file) </para></listitem>
+  <listitem><para> Stack Trace </para></listitem>
+  <listitem><para> Gdb Control Panel - allows you to select, start and stop programs executing in the debugger. </para></listitem>
+  
+  </itemizedlist>
+  
+  </section>
+  
+<section id="tips">
+<title> Tips </title>
+<itemizedlist>
+<listitem><para>
+It is recommended to define keyboard shortcuts for quick access to frequent debugging actions (step, next, go, return, etc). <literal>Global Options - Shortcuts - Plugin: GdbPlugin</literal>. </para></listitem>
+<listitem><para> Shortcuts to Show or toggle the Gdb/Mi or Program Console shells can be found under <literal>Global options - Shortcuts - Plugin: Console - Shell Switchers</literal>.
+</para></listitem>
+<listitem><para> Because the GdbPlugin uses many dockables, it may be desireable to have them docked only when you are actually using GdbPlugin, to avoid taking up extra space on the dock button bar. You can use the Docker plugin to save and restore "perspectives". A perspective is just a selection of dockables and their docked locations. With this, you can easily switch between your usual (development) perspective and the debugging perspective, to use different sets of dockables. </para></listitem>
+</itemizedlist>
+
+<para>Enjoy! </para>
+</section>
+
+<section id="feedback">
+<title> Feedback </title>
+<para>
+Feel free to ask for help, report bugs, request new features, or suggest
+improvements in the user interface by email: 
+<ulink url="mailto:sreinst1@gmail.com?subject=GdbPlugin%20feedback">sreinst1@gmail.com</ulink>
+</para>
+<para>
+You can also report bugs and request new features using the jEdit SourceForge tracker: <ulink url="http://sourceforge.net/tracker/?group_id=588">http://sourceforge.net/tracker/?group_id=588</ulink>
+</para>
+<para>Your feedback will be highly appreciated. </para>
+</section>
+</article>
