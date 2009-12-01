@@ -163,6 +163,7 @@ public class Copy {
             throw cie;   
         }
         catch(Exception e) {
+            // TODO: this is not enough, need to show a dialog here.
             out.println(e.getMessage());
             e.printStackTrace();   
         }
