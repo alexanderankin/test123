@@ -102,8 +102,8 @@ public class SFtpConnection extends Connection implements UserInfo
 			home=sftp.getHome();
 			keyAttempts = 0;
 		} catch(Exception e) {
-			//throw new IOException(e.toString());
-			throw new IOException(e);
+			throw new IOException(e.toString());
+			//throw new IOException(e); // This will work since java 1.6
 		}
 	}
 	
