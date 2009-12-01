@@ -434,6 +434,8 @@ public class Debugger implements DebuggerTool {
 	}
 	private class OutOfBandHandler implements ResultHandler {
 		public void handle(String msg, GdbResult res) {
+			if (msg.equals("running"))
+				return;
 			final String getCurrentPosition = "-file-list-exec-source-file";
 			String reason = res.getStringValue("reason");
 			if (reason.equals("breakpoint-hit")) {
