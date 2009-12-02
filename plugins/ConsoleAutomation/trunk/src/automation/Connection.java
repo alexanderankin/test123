@@ -97,6 +97,7 @@ public class Connection
 		if (abortScript)
 			return null;
 		SubstrHandler h = new SubstrHandler(s);
+		boolean cont;
 		synchronized(expectHandlerLock)
 		{
 			if (prefix)
@@ -104,18 +105,15 @@ public class Connection
 			else
 				expectLineHandler = h;
 			consumeBuffer();
-			if (abortScript)
-				return null;
 			// If the expected text has been found, no need to wait
-			if (! expectHandlerExists(prefix))
-				return h.line;
+			cont = expectHandlerExists(prefix);
 		}
-		synchronized(h)
+		if (cont)
 		{
-			if (expectHandlerExists(prefix))
+			synchronized(h)
+			{
 				h.wait();
-			else if (abortScript)
-				return null;
+			}
 		}
 		if (abortScript)
 			return null;
@@ -123,11 +121,8 @@ public class Connection
 	}
 	private boolean expectHandlerExists(boolean prefix)
 	{
-		synchronized(expectHandlerLock)
-		{
-			return ((prefix && (expectPrefixHandler != null)) ||
-				((! prefix) && (expectLineHandler != null)));
-		}
+		return ((prefix && (expectPrefixHandler != null)) ||
+			((! prefix) && (expectLineHandler != null)));
 	}
 	public Matcher expectPattern(Pattern p, boolean prefix)
 		throws IOException, InterruptedException
@@ -135,6 +130,7 @@ public class Connection
 		if (abortScript)
 			return null;
 		PatternHandler h = new PatternHandler(p);
+		boolean cont;
 		synchronized(expectHandlerLock)
 		{
 			if (prefix)
@@ -142,18 +138,15 @@ public class Connection
 			else
 				expectLineHandler = h;
 			consumeBuffer();
-			if (abortScript)
-				return null;
 			// If the expected text has been found, no need to wait
-			if (! expectHandlerExists(prefix))
-				return h.m;
+			cont = expectHandlerExists(prefix);
 		}
-		synchronized(h)
+		if (cont)
 		{
-			if (expectHandlerExists(prefix))
+			synchronized(h)
+			{
 				h.wait();
-			else if (abortScript)
-				return null;
+			}
 		}
 		if (abortScript)
 			return null;
