@@ -22,11 +22,12 @@
 	 
 	<property name="install.dir"  value=".."/>
 	<property name="build.dir" value="build"/>
+	<property name="jedit.plugins.dir" value="${install.dir}" />
 
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
-		<pathelement location="${user.home}/.jedit/jars/CommonControls.jar"/>
-		<pathelement location="${user.home}/.jedit/jars/Console.jar"/>
+		<pathelement location="${jedit.plugins.dir}/CommonControls.jar"/>
+		<pathelement location="${jedit.plugins.dir}/Console.jar"/>
 		<pathelement location="${src.dir}"/>
 	</path>
 
