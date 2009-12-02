@@ -46,7 +46,7 @@ public class MacroPanel extends JPanel {
 				tree.setSelectionPath(tp);
 				Object [] path = tp.getPath();
 				String key = null;
-				if (path.length > 1)
+				if (path.length > 2)
 					key = ((DefaultMutableTreeNode)
 						(path[path.length - 2])).getUserObject().toString();
 				String macro =
