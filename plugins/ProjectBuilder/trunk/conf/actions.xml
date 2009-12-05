@@ -3,10 +3,18 @@
 	<ACTION NAME="projectBuilder.actions.newProject">
 		<CODE>
 			import projectbuilder.ProjectBuilderPlugin;
-			
 			ProjectBuilderPlugin plugin = jEdit.getPlugin("projectbuilder.ProjectBuilderPlugin");
-			
 			plugin.createNewProject(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="projectBuilder.actions.buildProject">
+		<CODE>
+			jEdit.getPlugin("projectbuilder.ProjectBuilderPlugin").buildProject(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="projectBuilder.actions.runProject">
+		<CODE>
+			jEdit.getPlugin("projectbuilder.ProjectBuilderPlugin").runProject(view);
 		</CODE>
 	</ACTION>
 </ACTIONS>

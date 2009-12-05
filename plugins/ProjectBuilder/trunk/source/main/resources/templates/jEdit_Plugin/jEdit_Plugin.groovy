@@ -32,4 +32,5 @@ PB.build(project.name, project.directory.path) {
    f("build.xml", template: "${templateDir}/PluginBuild.template", templateData: templateData)
    f("sample.build.properties")
 }
+project.build = "ANT:build"
 /* ::mode=groovy:folding=indent:noTabs=true:: */

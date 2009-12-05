@@ -13,9 +13,9 @@
    <property name="src.resources.dir" value="source/main/resources"/>
 	
 	<!-- jedit properties -->
-   <property name="build.support" value="../build-support" />
+   <property name="build.support" value="/usr/share/jEdit/build-support" />
    <property name="docs-proc.target" value="none" />
-   <property name="install.dir" value=".." />
+   <property name="install.dir" value="/home/damien/.jedit/jars" />
    <property name="jedit.install.dir" value=".." />
    <property name="jedit.plugins.dir" value="${install.dir}" />
    <property name="junit.jar" value="../junit/junit.jar" />

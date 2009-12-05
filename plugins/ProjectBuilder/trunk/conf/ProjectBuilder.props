@@ -13,16 +13,27 @@ plugin.projectbuilder.ProjectBuilderPlugin.version=0.1
 plugin.projectbuilder.ProjectBuilderPlugin.depend.0=jedit 04.03.18.00
 plugin.projectbuilder.ProjectBuilderPlugin.depend.1=jdk 1.5
 plugin.projectbuilder.ProjectBuilderPlugin.depend.2=plugin com.townsfolkdesigns.jedit.plugins.scripting.GroovyScriptEnginePlugin 1.0.0
+plugin.projectbuilder.ProjectBuilderPlugin.depend.3=plugin projectviewer.ProjectPlugin 2.9.1
+plugin.projectbuilder.ProjectBuilderPlugin.depend.4=plugin antfarm.AntFarmPlugin 1.5.4
 # }}} Dependencies
 
 # Menu {{{
-plugin.projectbuilder.ProjectBuilderPlugin.menu=projectBuilder.actions.newProject - \
-	projectBuilder.actions.buildProject \
-	projectBuilder.actions.runProject
-
+plugin.projectbuilder.ProjectBuilderPlugin.menu=projectBuilder.actions.buildProject projectBuilder.actions.runProject -
+plugin.projectbuilder.ProjectBuilderPlugin.menu.code=new projectbuilder.NewProjectMenu()
 projectBuilder.actions.newProject.label=Create new Project
 projectBuilder.actions.buildProject.label=Build current Project
 projectBuilder.actions.runProject.label=Run current Project
 # }}} Menu
+
+# Messages {{{
+projectBuilder.msg.no-project.title=Error
+projectBuilder.msg.no-project.message=No Active Project
+projectBuilder.msg.no-build-command.title=Build Error
+projectBuilder.msg.no-build-command.message=No build command defined for this project
+projectBuilder.msg.no-run-command.title=Run Error
+projectBuilder.msg.no-run-command.message=No run command defined for this project
+projectBuilder.msg.no-tools-jar.title=Ant Error
+projectBuilder.msg.no-tools-jar.message=tools.jar not found
+# }}}
 
 # ::mode=properties:folding=explicit::
