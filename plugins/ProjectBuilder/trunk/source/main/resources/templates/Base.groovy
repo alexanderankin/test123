@@ -1,13 +1,36 @@
+/**
+NOTE!! Editing this file will do nothing unless the plugin dir is deleted,
+then this plugin is reloaded
+*/
+
 import groovy.swing.SwingBuilder
+import java.awt.GridBagConstraints as GBC
+import javax.swing.*
 import javax.swing.SwingConstants as SC
 import javax.swing.WindowConstants as WC
-import projectbuilder.builder.ProjectBuilder as PB
-import java.awt.GridBagConstraints as GBC
-import org.gjt.sp.jedit.EditPlugin
 import projectbuilder.ProjectBuilderPlugin
-import javax.swing.*
+import projectbuilder.builder.ProjectBuilder as PB
+import projectbuilder.utils.PVUtils
+
+import org.gjt.sp.jedit.EditPlugin
 import org.gjt.sp.jedit.browser.VFSBrowser
 import org.gjt.sp.jedit.browser.VFSFileChooserDialog
+import org.gjt.sp.jedit.jEdit as JEDIT
+import org.gjt.sp.jedit.View
+import org.gjt.sp.jedit.io.VFSManager
+import org.gjt.sp.jedit.Macros
+import org.gjt.sp.jedit.GUIUtilities
+import org.gjt.sp.util.Log
+
+import projectviewer.ProjectManager;
+import projectviewer.ProjectViewer;
+import projectviewer.vpt.VPTProject;
+import projectviewer.vpt.VPTGroup;
+import projectviewer.vpt.VPTNode;
+import projectviewer.vpt.VPTRoot;
+import projectviewer.importer.RootImporter
+
+View view = JEDIT.getActiveView()
 
 // Get project types.
 File pluginHome = EditPlugin.getPluginHome(ProjectBuilderPlugin.class) ?: new File(System.getProperty("user.dir"), "build")
@@ -20,8 +43,12 @@ if(!templatesDir.exists()) {
 }
 def templateTypes = []
 
+int i = 0
+int selected = 0
 templatesDir.eachDir { dir ->
    templateTypes << new TemplateTypeOption(name: dir.name, dir: dir, templatesDir: templatesDir)
+   if (dir.name == projectType) selected = i
+   i++
 }
 
 // Create the form
@@ -35,6 +62,8 @@ def form = swing.panel() {
    label(text: "Type:", horizontalAlignment: SC.RIGHT, constraints: gbc)
    gbc.insets = [5, 10, 0, 0]
    gbc.gridy++
+   label(text: "Group:", horizontalAlignment: SC.RIGHT, constraints: gbc)
+   gbc.gridy++;
    label(text: "Name:", horizontalAlignment: SC.RIGHT, constraints: gbc)
    gbc.gridy++
    label(text: "Directory:", horizontalAlignment: SC.RIGHT, constraints: gbc)
@@ -47,7 +76,10 @@ def form = swing.panel() {
    gbc.weightx = 1.0f
    gbc.weighty = 0.0f
    gbc.insets = [10, 5, 0, 0]
-   comboBox(id: "type_field", items: templateTypes, constraints: gbc)
+   comboBox(id: "type_field", items: templateTypes, constraints: gbc, selectedIndex: selected)
+   gbc.gridy++
+   groups = PVUtils.listGroups()
+   comboBox(id: "group_field", items: PVUtils.groupNames(), constraints: gbc)
    gbc.gridy++
    textField(id: "name_field", columns: 40, constraints: gbc)
    gbc.gridy++
@@ -57,7 +89,7 @@ def form = swing.panel() {
    label(text: "<html><small>Project will be created in [Directory]${File.separator}[Name]</small></html>", constraints: gbc)
 
    // add browse button
-   gbc.gridy = 2
+   gbc.gridy = 3
    gbc.gridx = 2
    gbc.insets = [10, 5, 0, 10]
    button(text: "...", constraints: gbc, actionPerformed: {
@@ -70,10 +102,24 @@ def answer = JOptionPane.showConfirmDialog(view, form, "Create a new Project", J
 
 if(answer == JOptionPane.OK_OPTION) {
    def templateType = swing.type_field.selectedItem
+   def projectGroup = groups[swing.group_field.selectedIndex]
    def projectName = swing.name_field.text
    def projectDir = new File(swing.directory_field.text)
-   def project = new Project(name: swing.name_field.text, directory: projectDir)
+   def project = new Project(name: swing.name_field.text, directory: projectDir, build: "", run: "")
    String[] roots = [templatesDir.path]
+
+   // Make sure a project with the chosen name doesn't already exist   
+   ProjectManager manager = ProjectManager.getInstance()
+   try {
+	   if (manager.getProject(projectName) != null) {
+		   JEDIT.setProperty("projectBuilder.create.title", "Can't Create Project")
+		   JEDIT.setProperty("projectBuilder.create.message", "A project with that name already exists")
+		   GUIUtilities.error(view, "projectBuilder.create", null)
+		   return
+	   }
+   } catch (Exception e) {
+       e.printStackTrace()
+   }
    
    println("       type: " + templateType)
    println("       name: " + projectName)
@@ -90,7 +136,30 @@ if(answer == JOptionPane.OK_OPTION) {
    binding.setVariable("textArea", textArea)
    binding.setVariable("wm", wm)
    binding.setVariable("scriptPath", templateType.scriptPath);
+   binding.setVariable("abort", false)
+   binding.setVariable("open", [])
    gse.run(templateType.scriptPath, binding)
+   
+   // If abort wasn't set to true, create the project in ProjectViewer
+   if (!binding.getVariable("abort")) {
+	   try {
+	   	   view.getDockableWindowManager().addDockableWindow("projectviewer")
+		   VPTProject proj = new VPTProject(project.name)
+		   proj.setRootPath(project.directory.getPath()+File.separator+project.name)
+		   ProjectViewer viewer = ProjectViewer.getViewer(view)
+		   manager.addProject(proj, projectGroup)
+		   proj.setProperty("projectBuilder.command.build", project.build)
+		   proj.setProperty("projectBuilder.command.run", project.run)
+		   viewer.setRootNode(proj)
+		   new RootImporter(proj, viewer, true).doImport()
+		   VFSManager.waitForRequests()
+		   for (String s : binding.getVariable("open")) {
+		   	   JEDIT.openFile(view, s)
+		   }
+	   } catch (Exception e) {
+	   	   Log.log(Log.ERROR, ProjectBuilderPlugin.class, e.toString()+": "+e.getMessage())
+	   }
+   }
 }
 
 class TemplateTypeOption {
@@ -111,4 +180,6 @@ class TemplateTypeOption {
 class Project {
    String name
    File directory
+   String build
+   String run
 }
