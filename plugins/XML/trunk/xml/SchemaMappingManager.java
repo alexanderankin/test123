@@ -38,6 +38,7 @@ import java.awt.event.ActionListener;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Arrays;
+import java.util.regex.Pattern;
 
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.Buffer;
@@ -134,36 +135,58 @@ public final class SchemaMappingManager
 	}
 	//}}}
 	
+	/**
+	 * a pattern for standard windows paths, e.g. : C:\temp\MyClass.java 
+	 */
+	public static final Pattern windowsDrivePattern = Pattern.compile("[A-Z]:\\\\.*");
+	
+	/**
+	 * a pattern for windows UNC e.g. :
+	 *  \\localhost\SHARED_C\temp\MyClass.java
+	 * and long UNC, e.g. :
+	 *  \\?\UNC\localhost\SHARED_C\temp\MyClass.java
+	 *  \\?\C:\temp\MyClass.java
+	 */
+	 public static final Pattern windowsUNCPattern = Pattern.compile("\\\\\\\\.*");
+	
+	/**
+	 * a pattern for UNIX paths e.g. :
+	 *  /tmp/MyClass.java
+	 */
+	 public static final Pattern unixPattern = Pattern.compile("/.*");
+	 
 	//{{{ pathToURL() method
 	/**
 	 * @param	path	UNIX/Windows path or VFS path
 	 * @return	path having a scheme
 	 */
-	private static String pathToURL(String path)
+	public static String pathToURL(String path)
 	{
-		try
+		if(windowsDrivePattern.matcher(path).matches()
+		  || windowsUNCPattern.matcher(path).matches()
+	  	  || unixPattern.matcher(path).matches())
 		{
-			URI uri = new URI(path);
-			if(uri.getScheme() == null)
+			try
 			{
 				//it's a file
-				return new File(path).toURL().toString();
+				return new File(path).toURL().toURI().toString();
 			}
-			else
+			catch(URISyntaxException ue)
 			{
+				Log.log(Log.ERROR,SchemaMappingManager.class,"strange URI (apos added) '"+path+"'");
+				Log.log(Log.ERROR,SchemaMappingManager.class,ue);
+				return path;
+			}
+			catch(MalformedURLException ue)
+			{
+				Log.log(Log.ERROR,SchemaMappingManager.class,"strange URI (apos added) '"+path+"'");
+				Log.log(Log.ERROR,SchemaMappingManager.class,ue);
 				return path;
 			}
 		}
-		catch(URISyntaxException ue)
+		else
 		{
-			Log.log(Log.ERROR,SchemaMappingManager.class,"strange URI (apos added) '"+path+"'");
-			Log.log(Log.ERROR,SchemaMappingManager.class,ue);
-			return path;
-		}
-		catch(MalformedURLException ue)
-		{
-			Log.log(Log.ERROR,SchemaMappingManager.class,"strange URI (apos added) '"+path+"'");
-			Log.log(Log.ERROR,SchemaMappingManager.class,ue);
+			//it's already an URL
 			return path;
 		}
 	}

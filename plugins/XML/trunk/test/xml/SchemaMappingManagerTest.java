@@ -159,10 +159,13 @@ public class SchemaMappingManagerTest {
 			browseDialog.table("file").cell("actions.rng"));
 		browseDialog.button("ok").click();
 		
+		MessageListener listen = new MessageListener();
+		listen.registerForMessage(messageOfClassCondition(sidekick.SideKickUpdate.class));
+
 		dialogF.button(JButtonMatcher.withText("OK")).click();
 
 		// wait for end of parsing
-		simplyWaitForMessageOfClass(sidekick.SideKickUpdate.class,10000);
+		listen.waitForMessage(10000);
 		
 		try{t.join();}catch(InterruptedException ie){}
 		

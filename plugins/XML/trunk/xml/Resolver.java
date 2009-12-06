@@ -706,6 +706,8 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 		
 		if(uri == IGNORE){
 			Log.log(Log.DEBUG,Resolver.class,"ignored!");
+		}else if(uri == null){
+			Log.log(Log.DEBUG,Resolver.class,"not found "+id+" in cache");
 		}else{
 			Log.log(Log.DEBUG,Resolver.class,"found "+id+" in cache: "+uri);
 		}
