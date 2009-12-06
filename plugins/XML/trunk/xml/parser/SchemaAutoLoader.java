@@ -268,8 +268,10 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 				prefix = qName.equals(localName)? "" : qName.substring(0,qName.indexOf(":"));
 			}
 			
+			String politeSystemId = xml.SchemaMappingManager.pathToURL(systemId);
+			
 			SchemaMapping.Result schema = mapping.getSchemaForDocument(
-				publicId, systemId,
+				publicId, politeSystemId,
 				uri,prefix,localName, true);
 
 			if(schema!=null)
