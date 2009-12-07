@@ -50,13 +50,29 @@ if (answer == JOptionPane.OK_OPTION) {
 		d("src") {
 			if (deep) {
 				// Add the main class file to an arbitrarily deep directory
+				// This code is essentially a workaround to be able to have the folder structure
+				// replicate the given package. There should hopefully be a better way to do this
+				def pkg = mainClass.substring(0, dot)
+				def dir = pkg.replace(".", File.separator)
+				def cls = mainClass.substring(dot+1, mainClass.length())
+				def file = cls+".java"
+				new File("${project.directory.path}/${project.name}/src/${dir}").mkdirs()
+				PrintWriter pw = new PrintWriter("${project.directory.path}/${project.name}/src/${dir}/${file}")
+				pw.println("package ${pkg};")
+				pw.println("public class ${cls} {")
+				pw.println("	public static void main(String[] args) {")
+				pw.println("		")
+				pw.println("	}")
+				pw.println("}")
+				pw.close()
+				open.add("${project.directory.path}/${project.name}/src/${dir}/${file}")
 			} else {
 				f("${mainClass}.java", template: "${templateDir}/JavaMainClass.template", templateData: templateData)
 				open.add("${project.directory.path}/${project.name}/src/${mainClass}.java")
 			}
 		}
 	}
-	project.build = "ANT:all"
+	project.build = "ant all"
 	project.run = "java -jar ${dist}/${project.name}.jar"
 } else {
 	abort = true

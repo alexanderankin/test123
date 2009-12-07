@@ -1,4 +1,4 @@
-package projectbuilder
+package projectbuilder.build
 import javax.swing.JComponent
 import org.gjt.sp.jedit.jEdit as JEDIT
 import antfarm.AntFarmPlugin
@@ -10,7 +10,7 @@ import antfarm.AntFarmPlugin
  */
 public class BuildWatcher extends Thread {
 	private JComponent console
-	public AntWatcher(JComponent console) {
+	public BuildWatcher(JComponent console) {
 		this.console = console
 	}
 	public void run() {

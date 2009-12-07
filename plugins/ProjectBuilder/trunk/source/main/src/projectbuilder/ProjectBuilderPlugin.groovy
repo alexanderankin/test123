@@ -4,6 +4,8 @@
  */
 package projectbuilder
 
+import projectbuilder.build.BuildCommand
+
 import java.util.zip.*
 import javax.script.ScriptContext
 import javax.swing.*
@@ -102,6 +104,8 @@ public class ProjectBuilderPlugin extends EditPlugin {
 	   if (proj == null) {
 	   	   GUIUtilities.error(view, "projectBuilder.msg.no-project", null)
 	    } else {
+	    	BuildCommand.run(view, proj)
+	    	/*
 	    	cmd = proj.getProperty("projectBuilder.command.build")
 	    	if (cmd == null || cmd.length() == 0) {
 	    		GUIUtilities.error(view, "projectBuilder.msg.no-build-command", null)
@@ -119,7 +123,7 @@ public class ProjectBuilderPlugin extends EditPlugin {
 							console.getShell().waitFor(console)
 							console.run(ant, "!"+target)
 							view.getDockableWindowManager().showDockableWindow("console")
-							new BuildWatcher(console).start()
+							new build.BuildWatcher(console).start()
 						} catch (Exception e) {
 							Log.log(Log.ERROR, ProjectBuilderPlugin.class, e.toString()+": "+e.getMessage())
 						} finally {
@@ -142,6 +146,7 @@ public class ProjectBuilderPlugin extends EditPlugin {
 	    			view.getDockableWindowManager().showDockableWindow("console")
 	    		}
 	    	}
+	    	*/
 	   }
    }
    
@@ -153,22 +158,31 @@ public class ProjectBuilderPlugin extends EditPlugin {
    	   String cmd = null
 	   if (proj == null) {
 	   	   GUIUtilities.error(view, "projectBuilder.msg.no-project", null)
-	    } else {
-	    	cmd = proj.getProperty("projectBuilder.command.run")
-	    	if (cmd == null || cmd.length() == 0) {
-	    		GUIUtilities.error(view, "projectBuilder.msg.no-run-command", null)
-	    	} else {
-	    		// Run the run command
-	    		view.getDockableWindowManager().addDockableWindow("console")
-				JComponent console = view.getDockableWindowManager().getDockable("console")
-				String cd = "cd \""+proj.getRootPath()+"\""
-				Shell system = Shell.getShell("System")
-				console.run(system, cd)
-				system.waitFor(console)
-				console.run(system, cmd)
-				console.clear()
-	    	}
+	   	   return
 	    }
+		cmd = proj.getProperty("projectBuilder.command.run")
+		if (cmd == null || cmd.length() == 0) {
+			GUIUtilities.error(view, "projectBuilder.msg.no-run-command", null)
+		} else {
+			// Run the run command
+			view.getDockableWindowManager().addDockableWindow("console")
+			JComponent console = view.getDockableWindowManager().getDockable("console")
+			String cd = "cd \""+proj.getRootPath()+"\""
+			Shell system = Shell.getShell("System")
+			console.run(system, cd)
+			system.waitFor(console)
+			console.run(system, cmd)
+			console.clear()
+		}
+   }
+   
+   public void editBuildSettings(View view) {
+   	   VPTProject proj = projectviewer.ProjectViewer.getActiveProject(view)
+   	   if (proj == null) {
+   	   	   GUIUtilities.error(view, "projectBuilder.msg.no-project", null)
+   	   	   return
+   	   }
+   	   BuildCommand.editCommands(view, proj)
    }
 }
 
