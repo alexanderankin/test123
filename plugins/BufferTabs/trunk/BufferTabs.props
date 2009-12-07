@@ -23,8 +23,6 @@ buffertabs.popup=\
     close-buffer \
     save \
     - \
-	buffertabs.toggle-docks \
-    - \
 	close-all \
     closeall-except-active \
 	- \
