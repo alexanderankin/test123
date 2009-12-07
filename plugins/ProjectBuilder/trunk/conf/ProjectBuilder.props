@@ -15,6 +15,7 @@ plugin.projectbuilder.ProjectBuilderPlugin.depend.1=jdk 1.5
 plugin.projectbuilder.ProjectBuilderPlugin.depend.2=plugin com.townsfolkdesigns.jedit.plugins.scripting.GroovyScriptEnginePlugin 1.0.0
 plugin.projectbuilder.ProjectBuilderPlugin.depend.3=plugin projectviewer.ProjectPlugin 2.9.1
 plugin.projectbuilder.ProjectBuilderPlugin.depend.4=plugin antfarm.AntFarmPlugin 1.5.4
+plugin.projectbuilder.ProjectBuilderPlugin.depend.4=plugin CommonControlsPlugin 1.1
 # }}} Dependencies
 
 # Menu {{{
@@ -29,11 +30,13 @@ projectBuilder.actions.runProject.label=Run current Project
 projectBuilder.msg.no-project.title=Error
 projectBuilder.msg.no-project.message=No Active Project
 projectBuilder.msg.no-build-command.title=Build Error
-projectBuilder.msg.no-build-command.message=No build command defined for this project
+projectBuilder.msg.no-build-command.message=No build commands are defined for this project
 projectBuilder.msg.no-run-command.title=Run Error
 projectBuilder.msg.no-run-command.message=No run command defined for this project
 projectBuilder.msg.no-tools-jar.title=Ant Error
 projectBuilder.msg.no-tools-jar.message=tools.jar not found
+projectBuilder.msg.add-build-command.title=New Build Command
+projectBuilder.msg.add-build-command.message=Add this to the list of build commands for this project...
 # }}}
 
 # ::mode=properties:folding=explicit::

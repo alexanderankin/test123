@@ -17,4 +17,9 @@
 			jEdit.getPlugin("projectbuilder.ProjectBuilderPlugin").runProject(view);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="projectBuilder.actions.editBuildSettings">
+		<CODE>
+			jEdit.getPlugin("projectbuilder.ProjectBuilderPlugin").editBuildSettings(view);
+		</CODE>
+	</ACTION>
 </ACTIONS>

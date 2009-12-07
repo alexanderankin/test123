@@ -18,15 +18,20 @@ public class PVMenu extends projectviewer.action.Action {
 	protected JMenu menu
 	protected JMenuItem build
 	protected JMenuItem run
+	protected JMenuItem buildSettings
 	protected VPTProject proj
 	public PVMenu() {
 		menu = new JMenu("Project")
 		build = new JMenuItem("Build")
 		run = new JMenuItem("Run")
+		buildSettings = new JMenuItem("Edit Build Settings...")
 		build.addActionListener(this)
 		run.addActionListener(this)
+		buildSettings.addActionListener(this)
 		menu.add(build)
 		menu.add(run)
+		menu.addSeparator()
+		menu.add(buildSettings)
 	}
 	public String getText() {
 		return "Project Builder"
@@ -57,8 +62,12 @@ public class PVMenu extends projectviewer.action.Action {
 		*/
 		if (e.getSource() == build) {
 			JEDIT.getPlugin("projectbuilder.ProjectBuilderPlugin").buildProject(JEDIT.getActiveView())
-		} else if (e.getSource() == run) {
+		}
+		else if (e.getSource() == run) {
 			JEDIT.getPlugin("projectbuilder.ProjectBuilderPlugin").runProject(JEDIT.getActiveView())
+		}
+		else if (e.getSource() == buildSettings) {
+			JEDIT.getPlugin("projectbuilder.ProjectBuilderPlugin").editBuildSettings(JEDIT.getActiveView())
 		}
 	}
 }
