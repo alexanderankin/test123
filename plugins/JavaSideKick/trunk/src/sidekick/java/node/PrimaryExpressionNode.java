@@ -27,9 +27,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package sidekick.java.node;
 
-import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.gui.RolloverButton;
-
 
 /** an extension of TigerNode for a primary expression.  This covers constructs
 like SwingUtilities.invokeLater.  The "SwingUtilities" part is the primary
@@ -50,9 +47,6 @@ public class PrimaryExpressionNode extends TigerNode {
      * Overridden to return true.
      */
     public boolean canAdd( TigerNode node ) {
-        String s = new String( "test" );
-
-    RolloverButton add = new RolloverButton( GUIUtilities.loadIcon( "Plus.png" ) );
         return true;
     }
 }
