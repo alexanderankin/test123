@@ -22,6 +22,9 @@ public class SubstanceLnfInstaller extends LnfInstaller {
                 "Dust",
                 "DustCoffee",
                 "EmeraldDusk",
+                "Gemini",           // api package
+                "GraphiteAqua",     // api package
+                "Magellan",         // api package
                 "Magma",
                 "MistAqua",
                 "MistSilver",
@@ -44,7 +47,13 @@ public class SubstanceLnfInstaller extends LnfInstaller {
         }
 
         try {
-            Class c = Class.forName( "org.jvnet.substance.skin.Substance" + theme + "LookAndFeel" );
+            Class c;
+            if (theme.equals("Gemini") || theme.equals("GraphiteAqua") || theme.equals("Magellan")) {
+                c = Class.forName( "org.jvnet.substance.api.skin.Substance" + theme + "LookAndFeel");
+            }
+            else {
+                c = Class.forName( "org.jvnet.substance.skin.Substance" + theme + "LookAndFeel" );
+            }
             UIManager.setLookAndFeel( (LookAndFeel)c.newInstance() );
             UIManager.put( "ClassLoader", c.getClassLoader() );
         }
