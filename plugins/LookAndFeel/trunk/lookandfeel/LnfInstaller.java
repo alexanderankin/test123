@@ -58,8 +58,7 @@ public abstract class LnfInstaller
 	 */
 	public static LnfInstaller createInstaller(String name) throws Exception
 	{
-		return (LnfInstaller)
-			Class.forName("lookandfeel." + name + "LnfInstaller").newInstance();
+		return (LnfInstaller)Class.forName("lookandfeel." + name + "LnfInstaller").newInstance();
 	}
 
 	/**
