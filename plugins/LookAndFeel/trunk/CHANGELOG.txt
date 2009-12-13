@@ -1,6 +1,12 @@
 CHANGELOG for LookAndFeel plugin
 ================================
 
+VERSION 1.4
+-----------
+* added Substance LAF, version 5.3.
+* now requires Java 1.6.
+
+
 VERSION 1.2
 -----------
 
