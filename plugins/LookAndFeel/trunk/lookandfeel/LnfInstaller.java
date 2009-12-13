@@ -38,17 +38,18 @@ public abstract class LnfInstaller
 	{
 		return new String[] {
 			"None",
-			"JgoodiesPlasticXP",
-			"JgoodiesPlastic3D",
 			"JgoodiesExtWindows",
+			"JgoodiesPlastic3D",
+			"JgoodiesPlasticXP",
 			"Kunststoff",
+			"Lipstik",
 			"Metouia",
+			"Napkin",
+			"NimROD",
 			"Oyoaha",
 			"Skin",
-			"Tonic",
-			"NimROD",
-			"Napkin",
-			"Lipstik"
+			"Substance",
+			"Tonic"
 		};
 	}
 
