@@ -15,6 +15,7 @@
  */
 package xml;
 
+//{{{ imports
 import java.awt.Component;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -55,6 +56,9 @@ import org.xml.sax.ext.EntityResolver2;
 // for jaxp
 import org.w3c.dom.ls.LSResourceResolver;
 import org.w3c.dom.ls.LSInput;
+
+import static xml.Debug.*;
+// }}}
 
 /**
  * Resolver grabs and caches DTDs and xml schemas.
@@ -255,10 +259,10 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 
 			try
 			{
-				Log.log(Log.MESSAGE,Resolver.class,
+				if(DEBUG_RESOLVER)Log.log(Log.MESSAGE,Resolver.class,
 						"Loading system catalogs");
 				catalog.loadSystemCatalogs();
-				Log.log(Log.MESSAGE,Resolver.class,
+				if(DEBUG_RESOLVER)Log.log(Log.MESSAGE,Resolver.class,
 						"Loading internal catalog: " + INTERNALCATALOG);
 				catalog.parseCatalog(INTERNALCATALOG);
 			}
@@ -275,7 +279,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 				uri = jEdit.getProperty(prop);
 				if (uri == null) break;
 
-				Log.log(Log.MESSAGE,Resolver.class,
+				if(DEBUG_RESOLVER)Log.log(Log.DEBUG,Resolver.class,
 						"Loading catalog: " + uri);
 
 				if(MiscUtilities.isURL(uri))
@@ -304,7 +308,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 	//{{{ implements LSResourceResolver
 	public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseURI)
 	{
-		Log.log(Log.DEBUG,Resolver.class,"resolveResource("+type+","+namespaceURI+","+publicId+","+systemId+","+baseURI);
+		if(DEBUG_RESOLVER)Log.log(Log.DEBUG,Resolver.class,"resolveResource("+type+","+namespaceURI+","+publicId+","+systemId+","+baseURI);
 		try{
 			InputSource is = resolveEntity(type,publicId,baseURI,systemId);
 			if(is == null)return null;
@@ -435,7 +439,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 	 */
 	public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException
 	{
-		Log.log(Log.DEBUG,Resolver.class,"resolveEntity("+publicId+","+systemId+")");
+		if(DEBUG_RESOLVER)Log.log(Log.DEBUG,Resolver.class,"simple resolveEntity("+publicId+","+systemId+")");
 		return resolveEntity(null, publicId, null, systemId);
 	}
 
@@ -456,7 +460,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 
 		String newSystemId = null;
 
-		Log.log(Log.DEBUG,Resolver.class,"Resolver.resolveEntity("+name+","+publicId+","+current+","+systemId+")");
+		if(DEBUG_RESOLVER)Log.log(Log.DEBUG,Resolver.class,"Resolver.resolveEntity("+name+","+publicId+","+current+","+systemId+")");
 
 		//catch an error message here
 		if(publicId == null && systemId == null)return null;
@@ -506,7 +510,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 				//need this to resolve xinclude.mod from user-guide.xml
 				else
 				{
-					Log.log(Log.DEBUG,Resolver.class,"using parent !");
+					if(DEBUG_RESOLVER)Log.log(Log.DEBUG,Resolver.class,"using parent !");
 					newSystemId = parent + systemId;
 					// set the systemId, overwise jing has trouble opening the file
 					// FIXME: apply this fix for over kinds of resources
@@ -537,7 +541,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 		// https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/XML/trunk/test_data/dir%20with%20space/actions.xsd
 		String lastChance = resolvePublicOrSystemFromCache(newSystemId,false);
 		if(lastChance != null && lastChance != IGNORE){
-			Log.log(Log.DEBUG,Resolver.class,"was going to fetch it again !");
+			if(DEBUG_RESOLVER)Log.log(Log.DEBUG,Resolver.class,"was going to fetch it again !");
 			newSystemId = lastChance;
 		}
 
@@ -546,7 +550,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 		{
 			if(buf.isPerformingIO())
 				VFSManager.waitForRequests();
-			Log.log(Log.DEBUG, getClass(), "Found open buffer for " + newSystemId);
+			if(DEBUG_RESOLVER)Log.log(Log.DEBUG, getClass(), "Found open buffer for " + newSystemId);
 			InputSource source = new InputSource(publicId);
 			//use the original systemId
 			source.setSystemId(systemId);
@@ -572,8 +576,11 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 			// pretend to be reading the file from whatever the systemId was
 			// eg. http://slackerdoc.tigris.org/xsd/slackerdoc.xsd when we
 			// are reading ~/.jedit/dtds/cache1345.xml
-			Log.log(Log.DEBUG,Resolver.class,"resolving to local file: "+newSystemId);
-			Log.log(Log.DEBUG,Resolver.class,"systemId=: "+systemId);
+			if(DEBUG_RESOLVER)
+			{
+				Log.log(Log.DEBUG,Resolver.class,"resolving to local file: "+newSystemId);
+				Log.log(Log.DEBUG,Resolver.class,"systemId=: "+systemId);
+			}
 			InputSource source = new InputSource(systemId);
 			source.setPublicId(publicId);
 			InputStream is = new URL(newSystemId).openStream();
@@ -582,7 +589,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 		}
 		else if (LOCAL.equals(getNetworkMode()))
 		{
-			Log.log(Log.DEBUG,Resolver.class,"refusing to fetch remote entity (configured for Local-only)");
+			if(DEBUG_RESOLVER)Log.log(Log.DEBUG,Resolver.class,"refusing to fetch remote entity (configured for Local-only)");
 			// returning null would not be as informing
 			// TODO: prevent the 'premature end of file' error from showing
 			throw new IOException(jEdit.getProperty("xml.network.error"));
@@ -646,8 +653,11 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 				else
 					source.setByteStream(vfs._createInputStream(session,newSystemId,false,null));
 
-				Log.log(Log.DEBUG,Resolver.class,"resolving to remote file: "+newSystemId);
-				Log.log(Log.DEBUG,Resolver.class,"systemId=: "+systemId);
+				if(DEBUG_RESOLVER)
+				{
+					Log.log(Log.DEBUG,Resolver.class,"resolving to remote file: "+newSystemId);
+					Log.log(Log.DEBUG,Resolver.class,"systemId=: "+systemId);
+				}
 				return source;
 			}
 			else
@@ -701,15 +711,18 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 
 	private String resolvePublicOrSystemFromCache(String id, boolean isPublic){
 		Entry e = new Entry(isPublic ? Entry.PUBLIC : Entry.SYSTEM,id,null);
-		Log.log(Log.DEBUG,Resolver.class,"resolvePublicOrSystemFromCache("+id+")");
+		if(DEBUG_RESOLVER)Log.log(Log.DEBUG,Resolver.class,"resolvePublicOrSystemFromCache("+id+")");
 		String uri = resourceCache.get(e);
 		
-		if(uri == IGNORE){
-			Log.log(Log.DEBUG,Resolver.class,"ignored!");
-		}else if(uri == null){
-			Log.log(Log.DEBUG,Resolver.class,"not found "+id+" in cache");
-		}else{
-			Log.log(Log.DEBUG,Resolver.class,"found "+id+" in cache: "+uri);
+		if(DEBUG_RESOLVER)
+		{
+			if(uri == IGNORE){
+				Log.log(Log.DEBUG,Resolver.class,"ignored!");
+			}else if(uri == null){
+				Log.log(Log.DEBUG,Resolver.class,"not found "+id+" in cache");
+			}else{
+				Log.log(Log.DEBUG,Resolver.class,"found "+id+" in cache: "+uri);
+			}
 		}
 		return uri;
 	}
@@ -787,7 +800,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 	 */
 	private void addUserResource(String publicId, String systemId, String url)
 	{
-		Log.log(Log.DEBUG,Resolver.class,"addUserResource("+publicId+","+systemId+","+url+")");
+		if(DEBUG_RESOLVER)Log.log(Log.DEBUG,Resolver.class,"addUserResource("+publicId+","+systemId+","+url+")");
 		if(publicId != null)
 		{
 			Entry pe = new Entry( Entry.PUBLIC, publicId, url );
