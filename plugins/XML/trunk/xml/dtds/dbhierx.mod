@@ -1,8 +1,8 @@
 <!-- ...................................................................... -->
-<!-- DocBook document hierarchy module V4.2 ............................... -->
+<!-- DocBook document hierarchy module V4.4 ............................... -->
 <!-- File dbhierx.mod ..................................................... -->
 
-<!-- Copyright 1992-2002 HaL Computer Systems, Inc.,
+<!-- Copyright 1992-2004 HaL Computer Systems, Inc.,
      O'Reilly & Associates, Inc., ArborText, Inc., Fujitsu Software
      Corporation, Norman Walsh, Sun Microsystems, Inc., and the
      Organization for the Advancement of Structured Information
@@ -44,7 +44,7 @@
      declaration that uses the public identifier shown below:
 
      <!ENTITY % dbhier PUBLIC
-     "-//OASIS//ELEMENTS DocBook Document Hierarchy V4.2//EN"
+     "-//OASIS//ELEMENTS DocBook Document Hierarchy V4.4//EN"
      "dbhierx.mod">
      %dbhier;
 
@@ -103,10 +103,6 @@
 <!-- ...................................................................... -->
 <!-- Entities for element mixtures ........................................ -->
 
-<!-- The DocBook TC may produce an official forms module for DocBook. -->
-<!-- This PE provides the hook by which it can be inserted into the DTD. -->
-<!ENTITY % forms.hook "">
-
 <!ENTITY % local.divcomponent.mix "">
 <!ENTITY % divcomponent.mix
 		"%list.class;		|%admon.class;
@@ -126,7 +122,8 @@
 		|%formal.class;		|%compound.class;
 		|%genobj.class;		|%descobj.class;
 		|%ndxterm.class;        |beginpage
-		%local.refcomponent.mix;">
+		%forms.hook;
+                %local.refcomponent.mix;">
 
 <!ENTITY % local.indexdivcomponent.mix "">
 <!ENTITY % indexdivcomponent.mix
@@ -209,7 +206,7 @@
 
 <!ENTITY % set.element "INCLUDE">
 <![%set.element;[
-<!ELEMENT set %ho; ((%div.title.content;)?, setinfo?, toc?, (%book.class;)+,
+<!ELEMENT set %ho; ((%div.title.content;)?, setinfo?, toc?, (set|%book.class;)+,
 		setindex?)
 		%ubiq.inclusion;>
 <!--end of set.element-->]]>
@@ -723,7 +720,7 @@
 <!ENTITY % part.module "INCLUDE">
 <![%part.module;[
 
-<!-- Note that Part was to have its content model reduced in V4.2.  This
+<!-- Note that Part was to have its content model reduced in V4.4.  This
 change will not be made after all. -->
 
 <!ENTITY % local.part.attrib "">
@@ -1605,6 +1602,7 @@ change will not be made after all. -->
 <!ENTITY % index.attlist "INCLUDE">
 <![%index.attlist;[
 <!ATTLIST index
+		type		CDATA		#IMPLIED
 		%common.attrib;
 		%indexes.role.attrib;
 		%local.indexes.attrib;
@@ -1795,7 +1793,7 @@ change will not be made after all. -->
 <!ELEMENT refentry %ho; (beginpage?,
                     (%ndxterm.class;)*,
                     refentryinfo?, refmeta?, (remark|%link.char.class;)*,
-                    refnamediv, refsynopsisdiv?, (refsect1+|refsection+))
+                    refnamediv+, refsynopsisdiv?, (refsect1+|refsection+))
 		%ubiq.inclusion;>
 <!--end of refentry.element-->]]>
 
@@ -2111,5 +2109,5 @@ change will not be made after all. -->
 <!--end of article.attlist-->]]>
 <!--end of article.module-->]]>
 
-<!-- End of DocBook document hierarchy module V4.2 ........................ -->
+<!-- End of DocBook document hierarchy module V4.4 ........................ -->
 <!-- ...................................................................... -->

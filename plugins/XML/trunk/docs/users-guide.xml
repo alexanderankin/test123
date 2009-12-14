@@ -259,13 +259,13 @@
   of an XML file:
  </para>
  <programlisting><![CDATA[<?xml version="1.0"?>
- <!DOCTYPE PUBLIC "]]><replaceable>public ID</replaceable>" "<replaceable>system ID</replaceable>"
+ <!DOCTYPE PUBLIC "]]><replaceable>public ID</replaceable>" "<replaceable>system ID</replaceable>"&gt;
  </programlisting>
  <para>
   Or alternatively:
  </para>
  <programlisting><![CDATA[<?xml version="1.0"?>
- <!DOCTYPE SYSTEM "]]><replaceable>system ID</replaceable>"
+ <!DOCTYPE SYSTEM "]]><replaceable>system ID</replaceable>">
  </programlisting>
 
  <para>
@@ -336,8 +336,8 @@
   <listitem><para><literal>-//W3C//DTD XHTML 1.1//EN</literal></para></listitem>
   </itemizedlist>
   </listitem>
-    <listitem><para>DocBook 4.2 DTDs, referenced with the
-  <literal>-//OASIS//DTD DocBook XML V4.2//EN</literal> public ID.
+    <listitem><para>DocBook 4.4 DTDs, referenced with the
+  <literal>-//OASIS//DTD DocBook XML V4.4//EN</literal> public ID.
   </para></listitem>
 
  </itemizedlist>
@@ -345,7 +345,7 @@
  </para>
 
  <programlisting>
-&lt;!DOCTYPE book PUBLIC &quot;-//OASIS//DTD DocBook XML V4.2//EN&quot;   &quot;docbookx.dtd&quot;&gt;
+&lt;!DOCTYPE book PUBLIC &quot;-//OASIS//DTD DocBook XML V4.4//EN&quot;   &quot;docbookx.dtd&quot;&gt;
 &lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.1//EN&quot; &quot;xhtml11-flat.dtd&quot;&gt;
  </programlisting>
 
@@ -754,6 +754,7 @@ Chapter 22 of <emphasis>DocBook XSL: The Complete Guide</emphasis> by Bob Stayto
   <listitem><para> XInclude support (Eric Le Lay) </para></listitem>
   <listitem><para> Validation support with Relax-NG (RNG) schemas. (Eric Le Lay) </para></listitem>
   <listitem><para> Copy XPath of element under caret. (Eric Le Lay) </para></listitem>
+  <listitem><para> bundled DTDs : update Docbook 4.2 to 4.4 </para></listitem>
   </itemizedlist>
 
 
