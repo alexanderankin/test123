@@ -1,8 +1,8 @@
 <!-- ...................................................................... -->
-<!-- DocBook XML information pool module V4.2 ............................. -->
+<!-- DocBook XML information pool module V4.4 ............................. -->
 <!-- File dbpoolx.mod ..................................................... -->
 
-<!-- Copyright 1992-2002 HaL Computer Systems, Inc.,
+<!-- Copyright 1992-2004 HaL Computer Systems, Inc.,
      O'Reilly & Associates, Inc., ArborText, Inc., Fujitsu Software
      Corporation, Norman Walsh, Sun Microsystems, Inc., and the
      Organization for the Advancement of Structured Information
@@ -50,7 +50,7 @@
      declaration that uses the public identifier shown below:
 
      <!ENTITY % dbpool PUBLIC
-     "-//OASIS//ELEMENTS DocBook XML Information Pool V4.2//EN"
+     "-//OASIS//ELEMENTS DocBook XML Information Pool V4.4//EN"
      "dbpoolx.mod">
      %dbpool;
 
@@ -59,6 +59,13 @@
      planning for interchange, and changes made since the last release
      of DocBook.
 -->
+
+<!-- ...................................................................... -->
+<!-- Forms entities ....................................................... -->
+<!-- These PEs provide the hook by which the forms module can be inserted   -->
+<!-- into the DTD. -->
+<!ENTITY % forminlines.hook "">
+<!ENTITY % forms.hook "">
 
 <!-- ...................................................................... -->
 <!-- General-purpose semantics entities ................................... -->
@@ -83,7 +90,7 @@
 
 <!ENTITY % local.list.class "">
 <!ENTITY % list.class
-		"calloutlist|glosslist|itemizedlist|orderedlist|segmentedlist
+		"calloutlist|glosslist|bibliolist|itemizedlist|orderedlist|segmentedlist
 		|simplelist|variablelist %local.list.class;">
 
 <!ENTITY % local.admon.class "">
@@ -130,7 +137,7 @@
 
 <!ENTITY % local.compound.class "">
 <!ENTITY % compound.class
-		"msgset|procedure|sidebar|qandaset
+		"msgset|procedure|sidebar|qandaset|task
                  %ebnf.block.hook;
                  %local.compound.class;">
 
@@ -148,12 +155,12 @@
 
 <!ENTITY % local.xref.char.class "">
 <!ENTITY % xref.char.class
-		"footnoteref|xref %local.xref.char.class;">
+		"footnoteref|xref|biblioref %local.xref.char.class;">
 
 <!ENTITY % local.gen.char.class "">
 <!ENTITY % gen.char.class
 		"abbrev|acronym|citation|citerefentry|citetitle|emphasis
-		|firstterm|foreignphrase|glossterm|footnote|phrase
+		|firstterm|foreignphrase|glossterm|footnote|phrase|orgname
 		|quote|trademark|wordasword|personname %local.gen.char.class;">
 
 <!ENTITY % local.link.char.class "">
@@ -169,14 +176,15 @@
 		"action|application
                 |classname|methodname|interfacename|exceptionname
                 |ooclass|oointerface|ooexception
+                |package
                 |command|computeroutput
 		|database|email|envar|errorcode|errorname|errortype|errortext|filename
 		|function|guibutton|guiicon|guilabel|guimenu|guimenuitem
 		|guisubmenu|hardware|interface|keycap
-		|keycode|keycombo|keysym|literal|constant|markup|medialabel
+		|keycode|keycombo|keysym|literal|code|constant|markup|medialabel
 		|menuchoice|mousebutton|option|optional|parameter
 		|prompt|property|replaceable|returnvalue|sgmltag|structfield
-		|structname|symbol|systemitem|token|type|userinput|varname
+		|structname|symbol|systemitem|uri|token|type|userinput|varname
                 %ebnf.inline.hook;
 		%local.tech.char.class;">
 
@@ -186,7 +194,7 @@
 
 <!ENTITY % local.docinfo.char.class "">
 <!ENTITY % docinfo.char.class
-		"author|authorinitials|corpauthor|modespec|othercredit
+		"author|authorinitials|corpauthor|corpcredit|modespec|othercredit
 		|productname|productnumber|revhistory
 		%local.docinfo.char.class;">
 
@@ -247,7 +255,8 @@ f. Just BlockQuote; no other informal objects.
 		|%formal.class;		|%compound.class;
 		|%genobj.class;		|%descobj.class;
 		|%ndxterm.class;        |beginpage
-		%local.component.mix;">
+		%forms.hook;
+                %local.component.mix;">
 
 <!ENTITY % local.sidebar.mix "">
 <!ENTITY % sidebar.mix
@@ -257,7 +266,8 @@ f. Just BlockQuote; no other informal objects.
 		|%formal.class;		|procedure
 		|%genobj.class;
 		|%ndxterm.class;        |beginpage
-		%local.sidebar.mix;">
+		%forms.hook;
+                %local.sidebar.mix;">
 
 <!ENTITY % local.qandaset.mix "">
 <!ENTITY % qandaset.mix
@@ -267,7 +277,8 @@ f. Just BlockQuote; no other informal objects.
 		|%formal.class;		|procedure
 		|%genobj.class;
 		|%ndxterm.class;
-		%local.qandaset.mix;">
+		%forms.hook;
+                %local.qandaset.mix;">
 
 <!ENTITY % local.revdescription.mix "">
 <!ENTITY % revdescription.mix
@@ -292,7 +303,8 @@ f. Just BlockQuote; no other informal objects.
 		|%linespecific.class;	|%synop.class;
 		|%para.class;		|%informal.class;
 		|%ndxterm.class;        |beginpage
-		%local.example.mix;">
+		%forms.hook;
+                %local.example.mix;">
 
 <!ENTITY % local.highlights.mix "">
 <!ENTITY % highlights.mix
@@ -319,20 +331,23 @@ f. Just BlockQuote; no other informal objects.
 		|%formal.class;		|procedure|sidebar
 		|anchor|bridgehead|remark
 		|%ndxterm.class;        |beginpage
-		%local.admon.mix;">
+		%forms.hook;
+                %local.admon.mix;">
 
 <!ENTITY % local.figure.mix "">
 <!ENTITY % figure.mix
 		"%linespecific.class;	|%synop.class;
 					|%informal.class;
 		|%ndxterm.class;        |beginpage
-		%local.figure.mix;">
+		%forms.hook;
+                %local.figure.mix;">
 
 <!ENTITY % local.tabentry.mix "">
 <!ENTITY % tabentry.mix
 		"%list.class;		|%admon.class;
 		|%linespecific.class;
 		|%para.class;		|graphic|mediaobject
+		%forms.hook;
 		%local.tabentry.mix;">
 
 <!ENTITY % local.glossdef.mix "">
@@ -362,7 +377,7 @@ f. Just BlockQuote; no other informal objects.
 
 <!ENTITY % local.mediaobject.mix "">
 <!ENTITY % mediaobject.mix
-		"videoobject|audioobject|imageobject|textobject %local.mediaobject.mix;">
+		"videoobject|audioobject|imageobject|imageobjectco|textobject %local.mediaobject.mix;">
 
 <!ENTITY % local.listpreamble.mix "">
 <!ENTITY % listpreamble.mix
@@ -371,7 +386,8 @@ f. Just BlockQuote; no other informal objects.
 		|%para.class;		|%informal.class;
 		|%genobj.class;		|%descobj.class;
 		|%ndxterm.class;        |beginpage
-		%local.listpreamble.mix;">
+		%forms.hook;
+                %local.listpreamble.mix;">
 
 <!-- Character-level mixtures ............................................. -->
 
@@ -392,7 +408,7 @@ f. Just BlockQuote; no other informal objects.
 <!ENTITY % blockquote.exclusion "-(epigraph)">
 <!ENTITY % remark.exclusion "-(remark|%ubiq.mix;)">
 <!ENTITY % glossterm.exclusion "-(glossterm)">
-<!ENTITY % links.exclusion "-(link|olink|ulink|xref)">
+<!ENTITY % links.exclusion "-(link|olink|ulink|xref|biblioref)">
 ]]><!-- sgml.features -->
 
 <!-- not [sgml.features[ -->
@@ -430,10 +446,6 @@ b. Just Replaceable; no other computer terms.
 c. Just Emphasis and Trademark; no other word elements.
 d. Just Acronym, Emphasis, and Trademark; no other word elements.
 -->
-
-<!-- The DocBook TC may produce an official forms module for DocBook. -->
-<!-- This PE provides the hook by which it can be inserted into the DTD. -->
-<!ENTITY % forminlines.hook "">
 
 <!ENTITY % local.para.char.mix "">
 <!ENTITY % para.char.mix
@@ -550,11 +562,15 @@ d. Just Acronym, Emphasis, and Trademark; no other word elements.
 <!ENTITY % userlevel.attrib
 	"userlevel	CDATA		#IMPLIED">
 
-
 <!-- Vendor: Computer vendor to which element applies; no default -->
 
 <!ENTITY % vendor.attrib
 	"vendor		CDATA		#IMPLIED">
+
+<!-- Wordsize: Computer word size (32 bit, 64 bit, etc.); no default -->
+
+<!ENTITY % wordsize.attrib
+	"wordsize	CDATA		#IMPLIED">
 
 <!ENTITY % local.effectivity.attrib "">
 <!ENTITY % effectivity.attrib
@@ -566,6 +582,7 @@ d. Just Acronym, Emphasis, and Trademark; no other word elements.
         %security.attrib;
 	%userlevel.attrib;
 	%vendor.attrib;
+	%wordsize.attrib;
 	%local.effectivity.attrib;"
 >
 
@@ -623,6 +640,22 @@ d. Just Acronym, Emphasis, and Trademark; no other word elements.
 
 <!ENTITY % local.common.attrib "">
 
+<!-- dir: Bidirectional override -->
+
+<!ENTITY % dir.attrib
+	"dir		(ltr
+			|rtl
+			|lro
+			|rlo)		#IMPLIED">
+
+<!-- xml:base: base URI -->
+
+<![%sgml.features;[
+<!ENTITY % xml-base.attrib "">
+]]>
+<!ENTITY % xml-base.attrib
+	"xml:base	CDATA		#IMPLIED">
+
 <!-- Role is included explicitly on each element -->
 
 <!ENTITY % common.attrib
@@ -632,9 +665,10 @@ d. Just Acronym, Emphasis, and Trademark; no other word elements.
 	%xreflabel.attrib;
 	%revisionflag.attrib;
 	%effectivity.attrib;
+	%dir.attrib;
+	%xml-base.attrib;
 	%local.common.attrib;"
 >
-
 
 <!-- Role is included explicitly on each element -->
 
@@ -645,6 +679,8 @@ d. Just Acronym, Emphasis, and Trademark; no other word elements.
 	%xreflabel.attrib;
 	%revisionflag.attrib;
 	%effectivity.attrib;
+	%dir.attrib;
+	%xml-base.attrib;
 	%local.common.attrib;"
 >
 
@@ -714,14 +750,25 @@ d. Just Acronym, Emphasis, and Trademark; no other word elements.
 	"label		CDATA		#IMPLIED">
 
 
+<!-- xml:space: whitespace treatment -->
+
+<![%sgml.features;[
+<!ENTITY % xml-space.attrib "">
+]]>
+<!ENTITY % xml-space.attrib
+	"xml:space	(preserve)		#IMPLIED">
+
 <!-- Format: whether element is assumed to contain significant white
 	space -->
 
 <!ENTITY % linespecific.attrib
 	"format		NOTATION
 			(linespecific)	'linespecific'
-         linenumbering	(numbered|unnumbered) 	#IMPLIED">
-
+         %xml-space.attrib;
+         linenumbering	(numbered|unnumbered) 	#IMPLIED
+         continuation	(continues|restarts)	#IMPLIED
+         startinglinenumber	CDATA		#IMPLIED
+         language	CDATA			#IMPLIED">
 
 <!-- Linkend: link to related information; no default -->
 
@@ -859,7 +906,7 @@ d. Just Acronym, Emphasis, and Trademark; no other word elements.
 		"abbrev|abstract|address|artpagenums|author
 		|authorgroup|authorinitials|bibliomisc|biblioset
 		|collab|confgroup|contractnum|contractsponsor
-		|copyright|corpauthor|corpname|date|edition
+		|copyright|corpauthor|corpname|corpcredit|date|edition
 		|editor|invpartnumber|isbn|issn|issuenum|orgname
 		|biblioid|citebiblioid|bibliosource|bibliorelation|bibliocoverage
 		|othercredit|pagenums|printhistory|productname
@@ -877,6 +924,30 @@ d. Just Acronym, Emphasis, and Trademark; no other word elements.
 		"graphic | mediaobject | legalnotice | modespec
 		 | subjectset | keywordset | itermset | %bibliocomponent.mix;
                  %local.info.class;">
+
+
+<!-- BiblioList ........................ -->
+
+<!ENTITY % bibliolist.module "INCLUDE">
+<![%bibliolist.module;[
+<!ENTITY % local.bibliolist.attrib "">
+<!ENTITY % bibliolist.role.attrib "%role.attrib;">
+
+<!ENTITY % bibliolist.element "INCLUDE">
+<![%bibliolist.element;[
+<!ELEMENT bibliolist %ho; (blockinfo?, (%formalobject.title.content;)?,
+                           (biblioentry|bibliomixed)+)>
+<!--end of bibliolist.element-->]]>
+
+<!ENTITY % bibliolist.attlist "INCLUDE">
+<![%bibliolist.attlist;[
+<!ATTLIST bibliolist
+		%common.attrib;
+		%bibliolist.role.attrib;
+		%local.bibliolist.attrib;
+>
+<!--end of bibliolist.attlist-->]]>
+<!--end of bibliolist.module-->]]>
 
 <!ENTITY % biblioentry.module "INCLUDE">
 <![%biblioentry.module;[
@@ -1426,6 +1497,101 @@ d. Just Acronym, Emphasis, and Trademark; no other word elements.
 <!--end of msgexplan.module-->]]>
 <!--end of msgset.content.module-->]]>
 
+<!ENTITY % task.content.module "INCLUDE">
+<![%task.content.module;[
+<!ENTITY % task.module "INCLUDE">
+<![%task.module;[
+<!ENTITY % local.task.attrib "">
+<!ENTITY % task.role.attrib "%role.attrib;">
+
+<!ENTITY % task.element "INCLUDE">
+<![%task.element;[
+<!ELEMENT task %ho; (blockinfo?,(%ndxterm.class;)*,
+                     (%formalobject.title.content;),
+                     tasksummary?,
+                     taskprerequisites?,
+                     procedure,
+                     example*,
+                     taskrelated?)>
+<!--end of task.element-->]]>
+
+<!ENTITY % task.attlist "INCLUDE">
+<![%task.attlist;[
+<!ATTLIST task
+		%common.attrib;
+		%task.role.attrib;
+		%local.task.attrib;
+>
+<!--end of task.attlist-->]]>
+<!--end of task.module-->]]>
+
+<!ENTITY % tasksummary.module "INCLUDE">
+<![%tasksummary.module;[
+<!ENTITY % local.tasksummary.attrib "">
+<!ENTITY % tasksummary.role.attrib "%role.attrib;">
+
+<!ENTITY % tasksummary.element "INCLUDE">
+<![%tasksummary.element;[
+<!ELEMENT tasksummary %ho; (blockinfo?,
+                            (%formalobject.title.content;)?,
+                            (%component.mix;)+)>
+<!--end of tasksummary.element-->]]>
+
+<!ENTITY % tasksummary.attlist "INCLUDE">
+<![%tasksummary.attlist;[
+<!ATTLIST tasksummary
+		%common.attrib;
+		%tasksummary.role.attrib;
+		%local.tasksummary.attrib;
+>
+<!--end of tasksummary.attlist-->]]>
+<!--end of tasksummary.module-->]]>
+
+<!ENTITY % taskprerequisites.module "INCLUDE">
+<![%taskprerequisites.module;[
+<!ENTITY % local.taskprerequisites.attrib "">
+<!ENTITY % taskprerequisites.role.attrib "%role.attrib;">
+
+<!ENTITY % taskprerequisites.element "INCLUDE">
+<![%taskprerequisites.element;[
+<!ELEMENT taskprerequisites %ho; (blockinfo?,
+                                  (%formalobject.title.content;)?,
+                                  (%component.mix;)+)>
+<!--end of taskprerequisites.element-->]]>
+
+<!ENTITY % taskprerequisites.attlist "INCLUDE">
+<![%taskprerequisites.attlist;[
+<!ATTLIST taskprerequisites
+		%common.attrib;
+		%taskprerequisites.role.attrib;
+		%local.taskprerequisites.attrib;
+>
+<!--end of taskprerequisites.attlist-->]]>
+<!--end of taskprerequisites.module-->]]>
+
+<!ENTITY % taskrelated.module "INCLUDE">
+<![%taskrelated.module;[
+<!ENTITY % local.taskrelated.attrib "">
+<!ENTITY % taskrelated.role.attrib "%role.attrib;">
+
+<!ENTITY % taskrelated.element "INCLUDE">
+<![%taskrelated.element;[
+<!ELEMENT taskrelated %ho; (blockinfo?,
+                            (%formalobject.title.content;)?,
+                            (%component.mix;)+)>
+<!--end of taskrelated.element-->]]>
+
+<!ENTITY % taskrelated.attlist "INCLUDE">
+<![%taskrelated.attlist;[
+<!ATTLIST taskrelated
+		%common.attrib;
+		%taskrelated.role.attrib;
+		%local.taskrelated.attrib;
+>
+<!--end of taskrelated.attlist-->]]>
+<!--end of taskrelated.module-->]]>
+<!--end of task.content.module-->]]>
+
 <!-- QandASet ........................ -->
 <!ENTITY % qandaset.content.module "INCLUDE">
 <![ %qandaset.content.module; [
@@ -1584,8 +1750,8 @@ d. Just Acronym, Emphasis, and Trademark; no other word elements.
 
 <!ENTITY % step.element "INCLUDE">
 <![%step.element;[
-<!ELEMENT step %ho; (title?, (((%component.mix;)+, (substeps,
-		(%component.mix;)*)?) | (substeps, (%component.mix;)*)))>
+<!ELEMENT step %ho; (title?, (((%component.mix;)+, ((substeps|stepalternatives), (%component.mix;)*)?)
+                    | ((substeps|stepalternatives), (%component.mix;)*)))>
 <!--end of step.element-->]]>
 
 <!-- Performance: Whether the Step must be performed -->
@@ -1617,7 +1783,6 @@ d. Just Acronym, Emphasis, and Trademark; no other word elements.
 <!-- Performance: whether entire set of substeps must be performed -->
 <!-- not #REQUIRED! -->
 
-
 <!ENTITY % substeps.attlist "INCLUDE">
 <![%substeps.attlist;[
 <!ATTLIST substeps
@@ -1629,6 +1794,31 @@ d. Just Acronym, Emphasis, and Trademark; no other word elements.
 >
 <!--end of substeps.attlist-->]]>
 <!--end of substeps.module-->]]>
+
+<!ENTITY % stepalternatives.module "INCLUDE">
+<![%stepalternatives.module;[
+<!ENTITY % local.stepalternatives.attrib "">
+<!ENTITY % stepalternatives.role.attrib "%role.attrib;">
+
+<!ENTITY % stepalternatives.element "INCLUDE">
+<![%stepalternatives.element;[
+<!ELEMENT stepalternatives %ho; (step+)>
+<!--end of stepalternatives.element-->]]>
+
+<!-- Performance: Whether (one of) the alternatives must be performed -->
+<!-- not #REQUIRED! -->
+
+<!ENTITY % stepalternatives.attlist "INCLUDE">
+<![%stepalternatives.attlist;[
+<!ATTLIST stepalternatives
+		performance	(optional
+				|required)	"required"
+		%common.attrib;
+		%stepalternatives.role.attrib;
+		%local.stepalternatives.attrib;
+>
+<!--end of stepalternatives.attlist-->]]>
+<!--end of stepalternatives.module-->]]>
 <!--end of procedure.content.module-->]]>
 
 <!-- Sidebar .......................... -->
@@ -1751,7 +1941,7 @@ d. Just Acronym, Emphasis, and Trademark; no other word elements.
 
 <!ENTITY % blockquote.element "INCLUDE">
 <![%blockquote.element;[
-<!ELEMENT blockquote %ho; (title?, attribution?, (%component.mix;)+)
+<!ELEMENT blockquote %ho; (blockinfo?, title?, attribution?, (%component.mix;)+)
                       %blockquote.exclusion;>
 <!--end of blockquote.element-->]]>
 
@@ -2058,7 +2248,7 @@ d. Just Acronym, Emphasis, and Trademark; no other word elements.
 
 <!ENTITY % glosslist.element "INCLUDE">
 <![%glosslist.element;[
-<!ELEMENT glosslist %ho; (glossentry+)>
+<!ELEMENT glosslist %ho; (blockinfo?, (%formalobject.title.content;)?, glossentry+)>
 <!--end of glosslist.element-->]]>
 
 <!ENTITY % glosslist.attlist "INCLUDE">
@@ -2198,7 +2388,8 @@ d. Just Acronym, Emphasis, and Trademark; no other word elements.
 
 <!ENTITY % itemizedlist.attlist "INCLUDE">
 <![%itemizedlist.attlist;[
-<!ATTLIST itemizedlist		spacing		(normal
+<!ATTLIST itemizedlist
+		spacing		(normal
 				|compact)	#IMPLIED
 		%mark.attrib;
 		%common.attrib;
@@ -2448,6 +2639,8 @@ d. Just Acronym, Emphasis, and Trademark; no other word elements.
 <![%variablelist.attlist;[
 <!ATTLIST variablelist
 		termlength	CDATA		#IMPLIED
+		spacing		(normal
+				|compact)	#IMPLIED
 		%common.attrib;
 		%variablelist.role.attrib;
 		%local.variablelist.attrib;
@@ -2567,6 +2760,7 @@ d. Just Acronym, Emphasis, and Trademark; no other word elements.
 <!ENTITY % example.attlist "INCLUDE">
 <![%example.attlist;[
 <!ATTLIST example
+		floatstyle	CDATA			#IMPLIED
 		%label.attrib;
 		%width.attrib;
 		%common.attrib;
@@ -2589,6 +2783,7 @@ d. Just Acronym, Emphasis, and Trademark; no other word elements.
 <!ENTITY % informalexample.attlist "INCLUDE">
 <![%informalexample.attlist;[
 <!ATTLIST informalexample
+		floatstyle	CDATA			#IMPLIED
 		%width.attrib;
 		%common.attrib;
 		%informalexample.role.attrib;
@@ -2902,6 +3097,7 @@ d. Just Acronym, Emphasis, and Trademark; no other word elements.
 <![%figure.attlist;[
 <!ATTLIST figure
 		float		%yesorno.attvals;	'0'
+		floatstyle	CDATA			#IMPLIED
 		pgwide      	%yesorno.attvals;       #IMPLIED
 		%label.attrib;
 		%common.attrib;
@@ -2930,6 +3126,7 @@ in the text (no (0) value, the default)
 -->
 <!ATTLIST informalfigure
 		float		%yesorno.attvals;	"0"
+		floatstyle	CDATA			#IMPLIED
 		pgwide      	%yesorno.attvals;       #IMPLIED
 		%label.attrib;
 		%common.attrib;
@@ -3296,26 +3493,6 @@ in the text (no (0) value, the default)
 <!--end of textdata.attlist-->]]>
 <!--end of textdata.module-->]]>
 
-<!ENTITY % caption.module "INCLUDE">
-<![ %caption.module; [
-<!ENTITY % local.caption.attrib "">
-<!ENTITY % caption.role.attrib "%role.attrib;">
-
-<!ENTITY % caption.element "INCLUDE">
-<![ %caption.element; [
-<!ELEMENT caption %ho; (%textobject.mix;)*>
-<!--end of caption.element-->]]>
-
-<!ENTITY % caption.attlist "INCLUDE">
-<![ %caption.attlist; [
-<!ATTLIST caption
-		%common.attrib;
-		%caption.role.attrib;
-		%local.caption.attrib;
->
-<!--end of caption.attlist-->]]>
-<!--end of caption.module-->]]>
-
 <!ENTITY % mediaobjectco.module "INCLUDE">
 <![ %mediaobjectco.module; [
 <!ENTITY % local.mediaobjectco.attrib "">
@@ -3379,6 +3556,7 @@ in the text (no (0) value, the default)
 <!ENTITY % equation.attlist "INCLUDE">
 <![%equation.attlist;[
 <!ATTLIST equation
+		floatstyle	CDATA			#IMPLIED
 		%label.attrib;
 	 	%common.attrib;
 		%equation.role.attrib;
@@ -3400,6 +3578,7 @@ in the text (no (0) value, the default)
 <!ENTITY % informalequation.attlist "INCLUDE">
 <![%informalequation.attlist;[
 <!ATTLIST informalequation
+		floatstyle	CDATA			#IMPLIED
 		%common.attrib;
 		%informalequation.role.attrib;
 		%local.informalequation.attrib;
@@ -3460,11 +3639,31 @@ in the text (no (0) value, the default)
 ]]>
 <!ENTITY % exchange.table.module "INCLUDE">
 
+<!-- Do we allow the HTML table model as well? -->
+<!ENTITY % allow.html.tables "INCLUDE">
+<![%allow.html.tables;[
+  <!-- ====================================================== -->
+  <!--  xhtmltbl.mod defines HTML tables and sets parameter
+        entities so that, when the CALS table module is read,
+        we end up allowing any table to be CALS or HTML.
+        i.e. This include must come first!                    -->
+  <!-- ====================================================== -->
+
+<!ENTITY % htmltbl
+  PUBLIC "-//OASIS//ELEMENTS DocBook XML HTML Tables V4.4//EN"
+  "htmltblx.mod">
+%htmltbl;
+<!--end of allow.html.tables-->]]>
+
 <!ENTITY % tables.role.attrib "%role.attrib;">
 
 <![%cals.table.module;[
 <!-- Add label and role attributes to table and informaltable -->
-<!ENTITY % bodyatt "%label.attrib;">
+<!ENTITY % bodyatt "
+		floatstyle	CDATA			#IMPLIED
+		rowheader	(firstcol|norowheader)	#IMPLIED
+                %label.attrib;"
+>
 
 <!-- Add common attributes to Table, TGroup, TBody, THead, TFoot, Row,
      EntryTbl, and Entry (and InformalTable element). -->
@@ -3487,7 +3686,7 @@ in the text (no (0) value, the default)
 
 <!-- Reference CALS Table Model -->
 <!ENTITY % tablemodel
-  PUBLIC "-//OASIS//DTD DocBook CALS Table Model V4.2//EN"
+  PUBLIC "-//OASIS//DTD DocBook CALS Table Model V4.4//EN"
   "calstblx.dtd">
 ]]>
 
@@ -3496,6 +3695,7 @@ in the text (no (0) value, the default)
 <!-- InformalTable.                                             -->
 <!ENTITY % bodyatt
 	"%common.attrib;
+	rowheader	(firstcol|norowheader)	#IMPLIED
 	%label.attrib;
 	%tables.role.attrib;">
 
@@ -3538,9 +3738,12 @@ in the text (no (0) value, the default)
 
 <!ENTITY % local.informaltable.attrib "">
 
+<!-- the following entity may have been declared by the XHTML table module -->
+<!ENTITY % informal.tbl.table.mdl "textobject*, (graphic+|mediaobject+|tgroup+)">
+
 <!ENTITY % informaltable.element "INCLUDE">
 <![%informaltable.element;[
-<!ELEMENT informaltable %ho; (blockinfo?, textobject*, (graphic+|mediaobject+|tgroup+))>
+<!ELEMENT informaltable %ho; (blockinfo?, (%informal.tbl.table.mdl;))>
 <!--end of informaltable.element-->]]>
 
 <!-- Frame, Colsep, and Rowsep must be repeated because
@@ -3550,16 +3753,10 @@ in the text (no (0) value, the default)
 <!-- includes Label -->
 <!-- includes common attributes -->
 
-
 <!ENTITY % informaltable.attlist "INCLUDE">
 <![%informaltable.attlist;[
 <!ATTLIST informaltable
-		frame		(top
-				|bottom
-				|topbot
-				|all
-				|sides
-				|none)			#IMPLIED
+		frame		(%tbl.frame.attval;)	#IMPLIED
 		colsep		%yesorno.attvals;	#IMPLIED
 		rowsep		%yesorno.attvals;	#IMPLIED
 		%common.table.attribs;
@@ -3568,6 +3765,48 @@ in the text (no (0) value, the default)
 >
 <!--end of informaltable.attlist-->]]>
 <!--end of informaltable.module-->]]>
+
+<!ENTITY % caption.module "INCLUDE">
+<![ %caption.module; [
+<!ENTITY % local.caption.attrib "">
+<!ENTITY % caption.role.attrib "%role.attrib;">
+
+<!ENTITY % caption.element "INCLUDE">
+<![ %caption.element; [
+<!ELEMENT caption %ho; (#PCDATA | %textobject.mix;)*>
+<!--end of caption.element-->]]>
+
+<!ENTITY % caption.attlist "INCLUDE">
+<![ %caption.attlist; [
+<!-- attrs comes from HTML tables ... -->
+
+<![ %allow.html.tables; [
+<!-- common.attrib, but without ID because ID is in attrs -->
+<!ENTITY % caption.attlist.content "
+	%lang.attrib;
+	%remap.attrib;
+	%xreflabel.attrib;
+	%revisionflag.attrib;
+	%effectivity.attrib;
+	%dir.attrib;
+	%xml-base.attrib;
+	%local.common.attrib;
+		%caption.role.attrib;
+		%attrs;
+		align	(top|bottom|left|right)	#IMPLIED
+		%local.caption.attrib;
+">
+]]>
+<!ENTITY % caption.attlist.content "
+		%common.attrib;
+		%caption.role.attrib;
+		%local.caption.attrib;
+">
+
+<!ATTLIST caption %caption.attlist.content;>
+
+<!--end of caption.attlist-->]]>
+<!--end of caption.module-->]]>
 
 <!-- ...................................................................... -->
 <!-- Synopses ............................................................. -->
@@ -3828,7 +4067,11 @@ in the text (no (0) value, the default)
 
 <!ENTITY % funcprototype.element "INCLUDE">
 <![%funcprototype.element;[
-<!ELEMENT funcprototype %ho; (funcdef, (void | varargs | paramdef+))>
+<!ELEMENT funcprototype %ho; (modifier*,
+                              funcdef,
+                              (void|varargs|(paramdef+, varargs?)),
+                              modifier*)>
+
 <!--end of funcprototype.element-->]]>
 
 <!ENTITY % funcprototype.attlist "INCLUDE">
@@ -3917,6 +4160,7 @@ in the text (no (0) value, the default)
 <!ENTITY % paramdef.element "INCLUDE">
 <![%paramdef.element;[
 <!ELEMENT paramdef %ho; (#PCDATA
+                | initializer
 		| type
 		| replaceable
 		| parameter
@@ -3926,6 +4170,8 @@ in the text (no (0) value, the default)
 <!ENTITY % paramdef.attlist "INCLUDE">
 <![%paramdef.attlist;[
 <!ATTLIST paramdef
+		choice		(opt
+				|req)	#IMPLIED
 		%common.attrib;
 		%paramdef.role.attrib;
 		%local.paramdef.attrib;
@@ -4016,7 +4262,7 @@ in the text (no (0) value, the default)
 
 <!ENTITY % ooclass.element "INCLUDE">
 <![%ooclass.element;[
-<!ELEMENT ooclass %ho; (modifier*, classname)>
+<!ELEMENT ooclass %ho; ((modifier|package)*, classname)>
 <!--end of ooclass.element-->]]>
 
 <!ENTITY % ooclass.attlist "INCLUDE">
@@ -4036,7 +4282,7 @@ in the text (no (0) value, the default)
 
 <!ENTITY % oointerface.element "INCLUDE">
 <![%oointerface.element;[
-<!ELEMENT oointerface %ho; (modifier*, interfacename)>
+<!ELEMENT oointerface %ho; ((modifier|package)*, interfacename)>
 <!--end of oointerface.element-->]]>
 
 <!ENTITY % oointerface.attlist "INCLUDE">
@@ -4056,7 +4302,7 @@ in the text (no (0) value, the default)
 
 <!ENTITY % ooexception.element "INCLUDE">
 <![%ooexception.element;[
-<!ELEMENT ooexception %ho; (modifier*, exceptionname)>
+<!ELEMENT ooexception %ho; ((modifier|package)*, exceptionname)>
 <!--end of ooexception.element-->]]>
 
 <!ENTITY % ooexception.attlist "INCLUDE">
@@ -4179,7 +4425,7 @@ in the text (no (0) value, the default)
 <![%constructorsynopsis.element;[
 <!ELEMENT constructorsynopsis %ho; (modifier*,
                                methodname?,
-                               (methodparam+|void),
+                               (methodparam+|void?),
                                exceptionname*)>
 <!--end of constructorsynopsis.element-->]]>
 
@@ -4203,7 +4449,7 @@ in the text (no (0) value, the default)
 <![%destructorsynopsis.element;[
 <!ELEMENT destructorsynopsis %ho; (modifier*,
                               methodname?,
-                              (methodparam+|void),
+                              (methodparam+|void?),
                               exceptionname*)>
 <!--end of destructorsynopsis.element-->]]>
 
@@ -4228,7 +4474,7 @@ in the text (no (0) value, the default)
 <!ELEMENT methodsynopsis %ho; (modifier*,
                           (type|void)?,
                           methodname,
-                          (methodparam+|void),
+                          (methodparam+|void?),
                           exceptionname*,
                           modifier*)>
 <!--end of methodsynopsis.element-->]]>
@@ -4706,7 +4952,7 @@ in the text (no (0) value, the default)
 
 <!ENTITY % authorgroup.element "INCLUDE">
 <![%authorgroup.element;[
-<!ELEMENT authorgroup %ho; ((author|editor|collab|corpauthor|othercredit)+)>
+<!ELEMENT authorgroup %ho; ((author|editor|collab|corpauthor|corpcredit|othercredit)+)>
 <!--end of authorgroup.element-->]]>
 
 <!ENTITY % authorgroup.attlist "INCLUDE">
@@ -5031,6 +5277,34 @@ in the text (no (0) value, the default)
 >
 <!--end of corpauthor.attlist-->]]>
 <!--end of corpauthor.module-->]]>
+
+<!-- CorpCredit ...................... -->
+
+<!ENTITY % corpcredit.module "INCLUDE">
+<![%corpcredit.module;[
+<!ENTITY % local.corpcredit.attrib "">
+<!ENTITY % corpcredit.role.attrib "%role.attrib;">
+
+<!ENTITY % corpcredit.element "INCLUDE">
+<![%corpcredit.element;[
+<!ELEMENT corpcredit %ho; (%docinfo.char.mix;)*>
+<!--end of corpcredit.element-->]]>
+
+<!ENTITY % corpcredit.attlist "INCLUDE">
+<![%corpcredit.attlist;[
+<!ATTLIST corpcredit
+		class	(graphicdesigner
+			|productioneditor
+			|copyeditor
+			|technicaleditor
+			|translator
+			|other)			#IMPLIED
+		%common.attrib;
+		%corpcredit.role.attrib;
+		%local.corpcredit.attrib;
+>
+<!--end of corpcredit.attlist-->]]>
+<!--end of corpcredit.module-->]]>
 
 <!-- CorpName ......................... -->
 
@@ -5451,6 +5725,12 @@ in the text (no (0) value, the default)
 <!ENTITY % othercredit.attlist "INCLUDE">
 <![%othercredit.attlist;[
 <!ATTLIST othercredit
+		class	(graphicdesigner
+			|productioneditor
+			|copyeditor
+			|technicaleditor
+			|translator
+			|other)			#IMPLIED
 		%common.attrib;
 		%othercredit.role.attrib;
 		%local.othercredit.attrib;
@@ -5826,7 +6106,7 @@ OtherCredit. -->
 
 <!ENTITY % revision.element "INCLUDE">
 <![%revision.element;[
-<!ELEMENT revision %ho; (revnumber, date, authorinitials*,
+<!ELEMENT revision %ho; (revnumber, date, (author|authorinitials)*,
                     (revremark|revdescription)?)>
 <!--end of revision.element-->]]>
 
@@ -6041,6 +6321,26 @@ OtherCredit. -->
 <!--end of classname.attlist-->]]>
 <!--end of classname.module-->]]>
 
+<!ENTITY % package.module "INCLUDE">
+<![%package.module;[
+<!ENTITY % local.package.attrib "">
+<!ENTITY % package.role.attrib "%role.attrib;">
+
+<!ENTITY % package.element "INCLUDE">
+<![%package.element;[
+<!ELEMENT package %ho; (%smallcptr.char.mix;)*>
+<!--end of package.element-->]]>
+
+<!ENTITY % package.attlist "INCLUDE">
+<![%package.attlist;[
+<!ATTLIST package
+		%common.attrib;
+		%package.role.attrib;
+		%local.package.attrib;
+>
+<!--end of package.attlist-->]]>
+<!--end of package.module-->]]>
+
 <!ENTITY % co.module "INCLUDE">
 <![%co.module;[
 <!ENTITY % local.co.attrib "">
@@ -6158,7 +6458,19 @@ OtherCredit. -->
 				|field
 				|key1
 				|key2
-				|record)	#IMPLIED
+				|record
+                                |index
+                                |view
+                                |primarykey
+                                |secondarykey
+                                |foreignkey
+                                |altkey
+                                |procedure
+                                |datatype
+                                |constraint
+                                |rule
+                                |user
+                                |group)	#IMPLIED
 		%moreinfo.attrib;
 		%common.attrib;
 		%database.role.attrib;
@@ -6351,7 +6663,7 @@ OtherCredit. -->
 
 <!ENTITY % guibutton.element "INCLUDE">
 <![%guibutton.element;[
-<!ELEMENT guibutton %ho; (%smallcptr.char.mix;|accel)*>
+<!ELEMENT guibutton %ho; (%smallcptr.char.mix;|accel|superscript|subscript)*>
 <!--end of guibutton.element-->]]>
 
 <!ENTITY % guibutton.attlist "INCLUDE">
@@ -6372,7 +6684,7 @@ OtherCredit. -->
 
 <!ENTITY % guiicon.element "INCLUDE">
 <![%guiicon.element;[
-<!ELEMENT guiicon %ho; (%smallcptr.char.mix;|accel)*>
+<!ELEMENT guiicon %ho; (%smallcptr.char.mix;|accel|superscript|subscript)*>
 <!--end of guiicon.element-->]]>
 
 <!ENTITY % guiicon.attlist "INCLUDE">
@@ -6393,7 +6705,7 @@ OtherCredit. -->
 
 <!ENTITY % guilabel.element "INCLUDE">
 <![%guilabel.element;[
-<!ELEMENT guilabel %ho; (%smallcptr.char.mix;|accel)*>
+<!ELEMENT guilabel %ho; (%smallcptr.char.mix;|accel|superscript|subscript)*>
 <!--end of guilabel.element-->]]>
 
 <!ENTITY % guilabel.attlist "INCLUDE">
@@ -6414,7 +6726,7 @@ OtherCredit. -->
 
 <!ENTITY % guimenu.element "INCLUDE">
 <![%guimenu.element;[
-<!ELEMENT guimenu %ho; (%smallcptr.char.mix;|accel)*>
+<!ELEMENT guimenu %ho; (%smallcptr.char.mix;|accel|superscript|subscript)*>
 <!--end of guimenu.element-->]]>
 
 <!ENTITY % guimenu.attlist "INCLUDE">
@@ -6435,7 +6747,7 @@ OtherCredit. -->
 
 <!ENTITY % guimenuitem.element "INCLUDE">
 <![%guimenuitem.element;[
-<!ELEMENT guimenuitem %ho; (%smallcptr.char.mix;|accel)*>
+<!ELEMENT guimenuitem %ho; (%smallcptr.char.mix;|accel|superscript|subscript)*>
 <!--end of guimenuitem.element-->]]>
 
 <!ENTITY % guimenuitem.attlist "INCLUDE">
@@ -6456,7 +6768,7 @@ OtherCredit. -->
 
 <!ENTITY % guisubmenu.element "INCLUDE">
 <![%guisubmenu.element;[
-<!ELEMENT guisubmenu %ho; (%smallcptr.char.mix;|accel)*>
+<!ELEMENT guisubmenu %ho; (%smallcptr.char.mix;|accel|superscript|subscript)*>
 <!--end of guisubmenu.element-->]]>
 
 <!ENTITY % guisubmenu.attlist "INCLUDE">
@@ -6528,6 +6840,29 @@ OtherCredit. -->
 <!ENTITY % keycap.attlist "INCLUDE">
 <![%keycap.attlist;[
 <!ATTLIST keycap
+		function	(alt
+				|control
+				|shift
+				|meta
+				|escape
+				|enter
+				|tab
+				|backspace
+				|command
+				|option
+				|space
+				|delete
+				|insert
+				|up
+				|down
+				|left
+				|right
+				|home
+				|end
+				|pageup
+				|pagedown
+				|other)		#IMPLIED
+		otherfunction	CDATA		#IMPLIED
 		%moreinfo.attrib;
 		%common.attrib;
 		%keycap.role.attrib;
@@ -6638,6 +6973,27 @@ OtherCredit. -->
 >
 <!--end of literal.attlist-->]]>
 <!--end of literal.module-->]]>
+
+<!ENTITY % code.module "INCLUDE">
+<![%code.module;[
+<!ENTITY % local.code.attrib "">
+<!ENTITY % code.role.attrib "%role.attrib;">
+
+<!ENTITY % code.element "INCLUDE">
+<![%code.element;[
+<!ELEMENT code %ho; (%cptr.char.mix;)*>
+<!--end of code.element-->]]>
+
+<!ENTITY % code.attlist "INCLUDE">
+<![%code.attlist;[
+<!ATTLIST code
+		language	CDATA	#IMPLIED
+		%common.attrib;
+		%code.role.attrib;
+		%local.code.attrib;
+>
+<!--end of code.attlist-->]]>
+<!--end of code.module-->]]>
 
 <!ENTITY % constant.module "INCLUDE">
 <![ %constant.module; [
@@ -7007,7 +7363,11 @@ OtherCredit. -->
 				|pi
                                 |xmlpi
 				|starttag
-				|sgmlcomment)	#IMPLIED
+				|sgmlcomment
+                                |prefix
+                                |namespace
+                                |localname)	#IMPLIED
+		namespace	CDATA		#IMPLIED
 		%common.attrib;
 		%sgmltag.role.attrib;
 		%local.sgmltag.attrib;
@@ -7095,22 +7455,27 @@ OtherCredit. -->
 <![%systemitem.attlist;[
 <!ATTLIST systemitem
 		class	(constant
+                        |daemon
+			|domainname
+			|etheraddress
 			|event
 			|eventhandler
-			|domainname
+			|filesystem
 			|fqdomainname
-			|ipaddress
-			|netmask
-			|etheraddress
 			|groupname
+			|ipaddress
 			|library
 			|macro
+			|netmask
+			|newsgroup
 			|osname
-			|filesystem
+                        |protocol
 			|resource
 			|systemname
 			|username
-			|newsgroup)	#IMPLIED
+                        |process
+                        |server
+                        |service)	#IMPLIED
 		%moreinfo.attrib;
 		%common.attrib;
 		%systemitem.role.attrib;
@@ -7119,6 +7484,28 @@ OtherCredit. -->
 <!--end of systemitem.attlist-->]]>
 <!--end of systemitem.module-->]]>
 
+<!ENTITY % uri.module "INCLUDE">
+<![%uri.module;[
+<!ENTITY % local.uri.attrib "">
+<!ENTITY % uri.role.attrib "%role.attrib;">
+
+<!ENTITY % uri.element "INCLUDE">
+<![%uri.element;[
+<!ELEMENT uri %ho; (%smallcptr.char.mix;)*>
+<!--end of uri.element-->]]>
+
+<!-- Type: Type of URI; no default -->
+
+<!ENTITY % uri.attlist "INCLUDE">
+<![%uri.attlist;[
+<!ATTLIST uri
+		type	CDATA	#IMPLIED
+		%common.attrib;
+		%uri.role.attrib;
+		%local.uri.attrib;
+>
+<!--end of uri.attlist-->]]>
+<!--end of uri.module-->]]>
 
 <!ENTITY % token.module "INCLUDE">
 <![%token.module;[
@@ -7329,7 +7716,15 @@ OtherCredit. -->
 				|journal
 				|series
 				|set
-				|manuscript)	#IMPLIED
+				|manuscript
+				|cdrom
+				|dvd
+				|wiki
+				|gopher
+				|bbs
+                                |emailmessage
+                                |webpage
+                                |newsposting)	#IMPLIED
 		%common.attrib;
 		%citetitle.role.attrib;
 		%local.citetitle.attrib;
@@ -7356,29 +7751,6 @@ OtherCredit. -->
 >
 <!--end of emphasis.attlist-->]]>
 <!--end of emphasis.module-->]]>
-
-<!ENTITY % firstterm.module "INCLUDE">
-<![%firstterm.module;[
-<!ENTITY % local.firstterm.attrib "">
-<!ENTITY % firstterm.role.attrib "%role.attrib;">
-
-<!ENTITY % firstterm.element "INCLUDE">
-<![%firstterm.element;[
-<!ELEMENT firstterm %ho; (%word.char.mix;)*>
-<!--end of firstterm.element-->]]>
-
-<!-- to GlossEntry or other explanation -->
-
-
-<!ENTITY % firstterm.attlist "INCLUDE">
-<![%firstterm.attlist;[
-<!ATTLIST firstterm
-		%linkend.attrib;		%common.attrib;
-		%firstterm.role.attrib;
-		%local.firstterm.attrib;
->
-<!--end of firstterm.attlist-->]]>
-<!--end of firstterm.module-->]]>
 
 <!ENTITY % foreignphrase.module "INCLUDE">
 <![%foreignphrase.module;[
@@ -7415,17 +7787,43 @@ OtherCredit. -->
 <!-- BaseForm: Provides the form of GlossTerm to be used
 		for indexing -->
 
-
 <!ENTITY % glossterm.attlist "INCLUDE">
 <![%glossterm.attlist;[
 <!ATTLIST glossterm
-		%linkend.attrib;		baseform	CDATA		#IMPLIED
+		baseform	CDATA		#IMPLIED
+		%linkend.attrib;
 		%common.attrib;
 		%glossterm.role.attrib;
 		%local.glossterm.attrib;
 >
 <!--end of glossterm.attlist-->]]>
 <!--end of glossterm.module-->]]>
+
+<!ENTITY % firstterm.module "INCLUDE">
+<![%firstterm.module;[
+<!ENTITY % local.firstterm.attrib "">
+<!ENTITY % firstterm.role.attrib "%role.attrib;">
+
+<!ENTITY % firstterm.element "INCLUDE">
+<![%firstterm.element;[
+<!ELEMENT firstterm %ho; (%para.char.mix;)*
+		%glossterm.exclusion;>
+<!--end of firstterm.element-->]]>
+
+<!-- to GlossEntry or other explanation -->
+
+
+<!ENTITY % firstterm.attlist "INCLUDE">
+<![%firstterm.attlist;[
+<!ATTLIST firstterm
+		baseform	CDATA		#IMPLIED
+		%linkend.attrib;
+		%common.attrib;
+		%firstterm.role.attrib;
+		%local.firstterm.attrib;
+>
+<!--end of firstterm.attlist-->]]>
+<!--end of firstterm.module-->]]>
 
 <!ENTITY % phrase.module "INCLUDE">
 <![%phrase.module;[
@@ -7597,7 +7995,9 @@ OtherCredit. -->
 <![%link.attlist;[
 <!ATTLIST link
 		endterm		IDREF		#IMPLIED
-		%linkendreq.attrib;		type		CDATA		#IMPLIED
+		xrefstyle	CDATA		#IMPLIED
+		type		CDATA		#IMPLIED
+		%linkendreq.attrib;
 		%common.attrib;
 		%link.role.attrib;
 		%local.link.attrib;
@@ -7632,6 +8032,7 @@ OtherCredit. -->
 		type		CDATA		#IMPLIED
 		targetdoc	CDATA		#IMPLIED
 		targetptr	CDATA		#IMPLIED
+		xrefstyle	CDATA		#IMPLIED
 		%common.attrib;
 		%olink.role.attrib;
 		%local.olink.attrib;
@@ -7659,6 +8060,7 @@ OtherCredit. -->
 <!ATTLIST ulink
 		url		CDATA		#REQUIRED
 		type		CDATA		#IMPLIED
+		xrefstyle	CDATA		#IMPLIED
 		%common.attrib;
 		%ulink.role.attrib;
 		%local.ulink.attrib;
@@ -7710,12 +8112,40 @@ OtherCredit. -->
 <![%xref.attlist;[
 <!ATTLIST xref
 		endterm		IDREF		#IMPLIED
-		%linkendreq.attrib;		%common.attrib;
+		xrefstyle	CDATA		#IMPLIED
+		%common.attrib;
+		%linkendreq.attrib;
 		%xref.role.attrib;
 		%local.xref.attrib;
 >
 <!--end of xref.attlist-->]]>
 <!--end of xref.module-->]]>
+
+<!ENTITY % biblioref.module "INCLUDE">
+<![%biblioref.module;[
+<!ENTITY % local.biblioref.attrib "">
+<!ENTITY % biblioref.role.attrib "%role.attrib;">
+
+<!ENTITY % biblioref.element "INCLUDE">
+<![%biblioref.element;[
+<!ELEMENT biblioref %ho; EMPTY>
+<!--end of biblioref.element-->]]>
+
+<!ENTITY % biblioref.attlist "INCLUDE">
+<![%biblioref.attlist;[
+<!ATTLIST biblioref
+		endterm		IDREF		#IMPLIED
+		xrefstyle	CDATA		#IMPLIED
+		units		CDATA		#IMPLIED
+		begin		CDATA		#IMPLIED
+		end		CDATA		#IMPLIED
+		%common.attrib;
+		%linkendreq.attrib;
+		%biblioref.role.attrib;
+		%local.biblioref.attrib;
+>
+<!--end of biblioref.attlist-->]]>
+<!--end of biblioref.module-->]]>
 
 <!-- Ubiquitous elements .................................................. -->
 
@@ -7815,8 +8245,9 @@ OtherCredit. -->
 		class		(singular
 				|startofrange
 				|endofrange)	#IMPLIED
-		startref		IDREF		#IMPLIED
-		zone			IDREFS		#IMPLIED
+		startref	IDREF		#IMPLIED
+		zone		IDREFS		#IMPLIED
+		type		CDATA		#IMPLIED
 		%common.attrib;
 		%indexterm.role.attrib;
 		%local.indexterm.attrib;
@@ -7920,5 +8351,5 @@ OtherCredit. -->
 <!--end of seeseealso.module-->]]>
 <!--end of indexterm.content.module-->]]>
 
-<!-- End of DocBook XML information pool module V4.2 ...................... -->
+<!-- End of DocBook XML information pool module V4.4 ...................... -->
 <!-- ...................................................................... -->
