@@ -361,7 +361,7 @@
   If the less-than symbol (<quote>&lt;</quote>) is typed and no other key
   is pressed within a
   specified delay (half a second by default), a tag list popup will be
-  shown. Note that only tags which are the parent element is
+  shown. Note that only tags which the parent element is
   allowed to contain are listed. The arrow keys can be used to select a tag;
   if you start
   typing a tag name, only tags whose names begin with the already-entered
@@ -394,8 +394,9 @@
  </para>
 
  <para>
-  Another convenience feature that is disabled by default inserts a
-  closing tag when you finish typing an opening tag.
+  Another convenient feature inserts a
+  closing tag when you finish typing an opening tag. It is disabled by default,
+  but can be activated from the plugin options.
  </para>
 
  <para>
@@ -453,7 +454,7 @@
 
  <para>
   Namespaces processing can be disabled on a per-buffer basis by inserting
-  the following in the first of last 10 lines of the buffer:
+  the following in the first or last 10 lines of the buffer:
  </para>
  <programlisting>:xml.namespaces.disable=true:</programlisting>
  <para>Why would you do that ? If you use the XHTML plus Math 1.1 DTD, you will
@@ -462,7 +463,107 @@
   </para>
   <programlisting>A colon is not allowed in the name XXX when namespaces are enabled.</programlisting>
 
-</section>
+ </section>
+ 
+ <section id="schema-mapping"><title>Finding Schemas</title>
+ 
+  <para>
+  Validation will be performed if it is enabled (see <xref linkend="customizing-validation"/>)
+  and if a schema or a DTD can be found.</para>
+  
+  <para>
+  While DTDs and schemas are declared in the
+  document (see <xref linkend="schemas"/>), Relax NG schemas are not declared in the document.
+  Therefore, there must be an external mean of specifying the RNG schema.
+  </para>
+  <para>
+    You can do this:
+  </para>
+  <itemizedlist>
+  <listitem>
+  <para>on a per-buffer basis by inserting the following in the first
+  or last 10 lines of the buffer:
+ </para>
+ <programlisting>:xml.validation.schema=<replaceable>URI to the schema</replaceable>:</programlisting>
+ <para>You can use an absolute or relative URI or even an URI that will be resolved as
+ a system Id by some catalog (e.g. <filename>locate.rng</filename>).
+ </para>
+ 
+ <warning><para>IT DOESN'T WORK YET</para></warning>
+ 
+  </listitem>
+  
+  <listitem>
+  <para>on a per directory and/or global basis, by using schema mapping rules
+  (the so called <filename>schemas.xml</filename>). This is consistent with
+  the <ulink url="http://www.thaiopensource.com/nxml-mode/">nXML</ulink> mode for
+  Emacs (it's even 100% compatible !). These powerful mapping rules
+  work on filenames, paths, root element, namespace, etc.
+  </para>
+  </listitem>
+  
+  </itemizedlist>
+  
+  <para>When the XML plugin parses an XML buffer, it will look for <filename>schemas.xml</filename>
+  in the same directory. Or, if it doesn't exist, for a global
+  file in the settings directory (under <filename><replaceable>JEDIT_SETTINGS</replaceable>/plugins/xml.XmlPlugin/schemas.xml</filename>),
+  and finally for the built-in file(<filename>XML.jar!/xml/dtds/schemas.xml</filename>).
+  The rules contained in this file are given the public Id, system Id, doctype,
+  prefix, local name, namespace of the parsed document. The first rule to match
+  returns the schema that will be used for validation.
+  </para>
+  
+  <para>You can edit manually these <filename>schemas.xml</filename> files.
+  There is a built-in rule to find their schema, so XML completion and
+  validation should work. The schema is under <filename>xml/dtds/locate.rng</filename>
+  in the XML.jar archive (simply open your mapping document and use 
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;
+  <guimenuitem>Open Schema</guimenuitem>).</para>
+  
+  <para>There are also three actions associated with schema mapping :</para>
+  
+  <para>You can set the type of current buffer to a known type via
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;
+  <guimenuitem>Set Schema Type...</guimenuitem>. You will be prompted for a type, like :
+  
+  <glosslist>
+  <glossentry>
+  <glossterm>RNG</glossterm>
+  <glossdef><para>for Relax NG Schemas</para></glossdef>
+  </glossentry>
+  <glossentry>
+  <glossterm>LOCATE</glossterm>
+  <glossdef><para>for schemas.xml</para></glossdef>
+  </glossentry>
+  <glossentry>
+  <glossterm>NONE</glossterm>
+  <glossdef><para>for any well formed XML</para></glossdef>
+  </glossentry>
+  </glosslist>
+  
+  </para>
+               
+  <para>You can also directly point to an XSD or RNG schema via
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;
+  <guimenuitem>Set Schema...</guimenuitem>. You will be able to choose
+  a schema file from the VFS browser.
+  </para>
+
+  <warning><para>It does not work from a remote filesystem yet !</para></warning>
+  
+  <para>Both of these actions will create a <filename>schemas.xml</filename> file
+  alongside the current buffer. If such a file exists already, it is updated.
+  </para>
+
+  <warning><para>The current implementation will retain any existing rule,
+  but will erase any comment and any formatting.</para></warning>
+  
+  <para>Finally, <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;
+  <guimenuitem>Open Schema</guimenuitem> will let you see the schema associated
+  to current buffer, if any was found.</para>
+  
+ </section>
+  
 </section>
 
 <section id="include">
