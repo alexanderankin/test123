@@ -58,6 +58,7 @@
 	<property file="../build.properties"/>
 	<property file="${user.home}/.build.properties"/>
 	<property file="${user.home}/build.properties"/>
+	<property name="src.dir" value="lookandfeel"/>
 
 	<import file="${build.support}/plugin-build.xml" />
 	
@@ -71,13 +72,9 @@
 		the source directory.
 	-->
 	<selector id="packageFiles">
-	  <or>
-		<filename name="dockables.xml"/>
-		<filename name="actions.xml"/>
+	  <and>
 		<filename name="CHANGELOG.txt"/>
-		<filename name="**/*.props"/>
-		<filename name="**/*.gif"/>
-		</or>
+		</and>
 	</selector>
 	
 	<fileset dir="${lib.dir}" id="libraries">
