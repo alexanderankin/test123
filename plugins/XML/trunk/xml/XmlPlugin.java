@@ -32,6 +32,8 @@ import xml.parser.*;
 import java.io.File;
 import xml.parser.SchemaMapping;
 import java.io.IOException;
+
+import static xml.Debug.*;
 //}}}
 
 public class XmlPlugin extends EBPlugin
@@ -40,12 +42,8 @@ public class XmlPlugin extends EBPlugin
 	//{{{ start() method
 	public void start()
 	{
-		System.setProperty("jaxp.debug","1");
+		if(DEBUG_RESOLVER)System.setProperty("jaxp.debug","1");
 	
-		/*System.setProperty("javax.xml.parsers.SAXParserFactory",
-			"org.apache.xerces.jaxp.SAXParserFactoryImpl");
-		System.setProperty("javax.xml.parsers.DocumentBuilderFactory",
-			"org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");*/
 		Resolver.instance().init();
 		Resolver.instance().propertiesChanged();
 

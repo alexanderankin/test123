@@ -14,7 +14,7 @@
 	<transformURI fromPattern="*.xml" toPattern="*.rng"/>
 	<transformURI fromPattern="*.xml" toPattern="*.xsd"/>
 
-	
+	<typeId id="NONE" uri="any.rng" />
 	<typeId id="RNG" uri="relaxng.rng"/>
 	<typeId id="LOCATE" uri="locate.rng"/>
 </locatingRules>
