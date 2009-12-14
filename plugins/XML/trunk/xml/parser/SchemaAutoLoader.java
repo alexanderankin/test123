@@ -46,6 +46,7 @@ import org.gjt.sp.util.Log;
 
 import xml.Resolver;
 import xml.completion.CompletionInfo;
+import static xml.Debug.*;
 //}}}
 
 /**
@@ -194,7 +195,7 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 		//        OK : must do something for compact syntax (rnc)
 		if(schema.target.endsWith("rng")){
 			Map<String,CompletionInfo> info = SchemaToCompletion.rngSchemaToCompletionInfo(schema.baseURI.toString(),schema.target,getErrorHandler());
-			Log.log(Log.DEBUG,SchemaAutoLoader.class,"constructed CompletionInfos : "+info);
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaAutoLoader.class,"constructed CompletionInfos : "+info);
 			completions = info;
 		}
 
@@ -207,7 +208,7 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 	@Override
 	public void parse(InputSource input)throws SAXException,IOException
 	{
-		Log.log(Log.DEBUG,SchemaAutoLoader.this,"PARSE input ("+input.getPublicId()+","+input.getSystemId()+")");
+		if(DEBUG_SCHEMA_MAPPING)Log.log(Log.DEBUG,SchemaAutoLoader.this,"PARSE input ("+input.getPublicId()+","+input.getSystemId()+")");
 		documentElement=true;
 		publicId = input.getPublicId();
 		systemId = input.getSystemId();
@@ -223,7 +224,7 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 	@Override
 	public void parse(String systemId)throws SAXException,IOException
 	{
-		Log.log(Log.DEBUG,SchemaAutoLoader.this,"PARSE systemId "+systemId);
+		if(DEBUG_SCHEMA_MAPPING)Log.log(Log.DEBUG,SchemaAutoLoader.this,"PARSE systemId "+systemId);
 		documentElement=true;
 		publicId = null;
 		systemId = systemId;
@@ -238,7 +239,7 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 		   and this is not until startElement("root element")*/ 
 		if(documentElement)
 		{
-			Log.log(Log.DEBUG,SchemaAutoLoader.this,"Prefix Mapping  ("+prefix+","+ns+")");
+			if(DEBUG_SCHEMA_MAPPING)Log.log(Log.DEBUG,SchemaAutoLoader.this,"Prefix Mapping  ("+prefix+","+ns+")");
 			docElementNamespaces.declarePrefix(prefix,ns);
 
 		}
@@ -257,7 +258,7 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 	{
 		if(documentElement)
 		{
-			Log.log(Log.DEBUG,SchemaAutoLoader.this,"DOC element  ("+uri+","+localName+","+qName+")");
+			if(DEBUG_SCHEMA_MAPPING)Log.log(Log.DEBUG,SchemaAutoLoader.this,"DOC element  ("+uri+","+localName+","+qName+")");
 			
 			String prefix;
 			
@@ -276,7 +277,7 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 
 			if(schema!=null)
 			{
-				Log.log(Log.DEBUG,SchemaAutoLoader.this,"FOUND SCHEMA: "+schema);
+				if(DEBUG_SCHEMA_MAPPING)Log.log(Log.DEBUG,SchemaAutoLoader.this,"FOUND SCHEMA: "+schema);
 				try
 				{
 					installJaxpGrammar(schema);

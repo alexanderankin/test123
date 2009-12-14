@@ -60,6 +60,7 @@ import xml.completion.EntityDecl;
 import xml.completion.IDDecl;
 import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
+import static xml.Debug.*;
 // }}}
 // {{{ class XercesParserImpl
 /**
@@ -301,7 +302,7 @@ public class XercesParserImpl extends XmlParser
 
 		String name = element.getName();
 		
-		System.out.println("xsElementToElementDecl("+element.getNamespace()+":"+name+")");
+		if(DEBUG_XSD_SCHEMA)Log.log(Log.DEBUG,XercesParserImpl.class,"xsElementToElementDecl("+element.getNamespace()+":"+name+")");
 		
 		if(info.elementHash.get(name) != null)
 		{
@@ -485,7 +486,7 @@ public class XercesParserImpl extends XmlParser
 		private CompletionInfo modelToCompletionInfo(XSModel model)
 		{
 
-			Log.log(Log.DEBUG,XercesParserImpl.this,"modelToCompletionInfo("+model+")");
+			if(DEBUG_XSD_SCHEMA)Log.log(Log.DEBUG,XercesParserImpl.this,"modelToCompletionInfo("+model+")");
 			CompletionInfo info = new CompletionInfo();
 
 			XSNamedMap elements = model.getComponents(XSConstants.ELEMENT_DECLARATION);
@@ -537,7 +538,7 @@ public class XercesParserImpl extends XmlParser
 		public InputSource resolveEntity (String name, String publicId, String baseURI, String systemId)
 			throws SAXException, java.io.IOException {
 
-			Log.log(Log.DEBUG,this,"resolveEntity("+name+","+publicId+","+baseURI+","+systemId+")");
+			if(DEBUG_RESOLVER)Log.log(Log.DEBUG,this,"resolveEntity("+name+","+publicId+","+baseURI+","+systemId+")");
 
 			InputSource source = null;
 
@@ -555,7 +556,7 @@ public class XercesParserImpl extends XmlParser
 
 			if(source == null)
 			{
-				Log.log(Log.DEBUG,this,"PUBLIC=" + publicId
+				Log.log(Log.ERROR,this,"PUBLIC=" + publicId
 					+ ", SYSTEM=" + systemId
 					+ " cannot be resolved");
 				// TODO: not sure whether it's the best thing to do :
@@ -568,7 +569,7 @@ public class XercesParserImpl extends XmlParser
 			}
 			else
 			{
-				Log.log(Log.DEBUG,this,"PUBLIC=" + publicId
+				if(DEBUG_RESOLVER)Log.log(Log.DEBUG,this,"PUBLIC=" + publicId
 					+ ", SYSTEM=" + systemId
 					+ " resolved to " + source.getSystemId());
 				return source;
@@ -578,7 +579,6 @@ public class XercesParserImpl extends XmlParser
 		//{{{ startPrefixMapping() method
 		public void startPrefixMapping(String prefix, String uri)
 		{
-			System.out.println("startPrefix("+prefix+","+uri+")");
 			//not used anymore activePrefixes.put(prefix,uri);
 			// check for built-in completion info for this URI
 			// (eg, XSL, XSD, XHTML has this).
@@ -835,7 +835,7 @@ public class XercesParserImpl extends XmlParser
 		//{{{ elementDecl() method
 		public void elementDecl(String name, String model)
 		{
-			Log.log(Log.DEBUG,XercesParserImpl.class,"elementDecl("+name+","+model+")");
+			if(DEBUG_DTD)Log.log(Log.DEBUG,XercesParserImpl.class,"elementDecl("+name+","+model+")");
 			ElementDecl element = data.getElementDecl(name);
 			if(element == null)
 			{
@@ -926,7 +926,7 @@ public class XercesParserImpl extends XmlParser
 		 */
 		public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException
 		{
-			Log.log(Log.DEBUG,XercesParserImpl.class,"simple resolveEnt("+publicId+","+systemId+")");
+			if(DEBUG_RESOLVER)Log.log(Log.DEBUG,XercesParserImpl.class,"simple resolveEnt("+publicId+","+systemId+")");
 			return resolveEntity(null, publicId, null, systemId);
 		}// }}}
 	}// }}}
@@ -970,7 +970,7 @@ public class XercesParserImpl extends XmlParser
 		public InputSource resolveEntity (String name, String publicId, String baseURI, String systemId)
 			throws SAXException, java.io.IOException {
 
-			Log.log(Log.DEBUG,this,"resolveEntity("+name+","+publicId+","+baseURI+","+systemId+")");
+			if(DEBUG_RESOLVER)Log.log(Log.DEBUG,this,"resolveEntity("+name+","+publicId+","+baseURI+","+systemId+")");
 
 			InputSource source = null;
 
@@ -984,7 +984,7 @@ public class XercesParserImpl extends XmlParser
 
 			if(source == null)
 			{
-				Log.log(Log.DEBUG,this,"PUBLIC=" + publicId
+				Log.log(Log.ERROR,this,"PUBLIC=" + publicId
 					+ ", SYSTEM=" + systemId
 					+ " cannot be resolved");
 				// TODO: not sure whether it's the best thing to do :
@@ -993,7 +993,7 @@ public class XercesParserImpl extends XmlParser
 			}
 			else
 			{
-				Log.log(Log.DEBUG,this,"PUBLIC=" + publicId
+				if(DEBUG_RESOLVER)Log.log(Log.DEBUG,this,"PUBLIC=" + publicId
 					+ ", SYSTEM=" + systemId
 					+ " resolved to " + source.getSystemId());
 			}
@@ -1166,6 +1166,7 @@ public class XercesParserImpl extends XmlParser
 		 */
 		public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException
 		{
+			// TODO: check wether it's actually called
 			Log.log(Log.DEBUG,XercesParserImpl.class,"simple resolveEnt("+publicId+","+systemId+")");
 			return resolveEntity(null, publicId, null, systemId);
 		}// }}}

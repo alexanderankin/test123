@@ -13,6 +13,7 @@
  */
 package xml.parser;
 
+// {{{ imports
 import org.xml.sax.*;
 import org.xml.sax.helpers.XMLReaderFactory;
 import org.xml.sax.helpers.DefaultHandler;
@@ -35,6 +36,8 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import javax.swing.SwingUtilities;
 
+import static xml.Debug.*;
+// }}}
 
 /**
  * keeps rules to map a schema to a given instance document.
@@ -121,7 +124,7 @@ public final class SchemaMapping
 			if((rules.get(i) instanceof URIResourceRule)
 				&& ((URIResourceRule)rules.get(i)).resource.equals(newRule.resource))
 			{
-				Log.log(Log.DEBUG,SchemaMapping.class,"replacing "+rules.get(i)+" by "+newRule);
+				if(DEBUG_SCHEMA_MAPPING)Log.log(Log.DEBUG,SchemaMapping.class,"replacing "+rules.get(i)+" by "+newRule);
 				rules.set(i,newRule);
 				return;
 			}
@@ -216,7 +219,7 @@ public final class SchemaMapping
 	public Result getSchemaForDocument(String publicId, String systemId,
 		String namespace,String prefix,String localName, boolean followTypeId)
 	{
-		Log.log(Log.DEBUG, SchemaMapping.class,"getSchemaForDocumentElement("+publicId+","+systemId
+		if(DEBUG_SCHEMA_MAPPING)Log.log(Log.DEBUG, SchemaMapping.class,"getSchemaForDocumentElement("+publicId+","+systemId
 			+","+namespace+","+prefix+","+localName+")");
 		
 		Result res = null;
@@ -253,7 +256,7 @@ public final class SchemaMapping
 	public Mapping getMappingForDocument(String publicId, String systemId,
 		String namespace,String prefix,String localName)
 	{
-		Log.log(Log.DEBUG, SchemaMapping.class,"getSchemaForDocumentElement("+publicId+","+systemId
+		if(DEBUG_SCHEMA_MAPPING)Log.log(Log.DEBUG, SchemaMapping.class,"getMappingForDocument("+publicId+","+systemId
 			+","+namespace+","+prefix+","+localName+")");
 		
 		Mapping res = null;
@@ -510,14 +513,14 @@ public final class SchemaMapping
 					if(resourceExists(new URL(getBaseURI(),result))){
 						return new Result(getBaseURI(),result);
 					}else{
-						Log.log(Log.DEBUG,SchemaMapping.class,"resource '"+result+"' not found for '"+url+"'");
+						if(DEBUG_SCHEMA_MAPPING)Log.log(Log.DEBUG,SchemaMapping.class,"resource '"+result+"' not found for '"+url+"'");
 					}
 					}catch(MalformedURLException mfue){
 						Log.log(Log.ERROR,SchemaMapping.class,"resource '"+result+"' malformed for '"+url+"'",mfue);
 					}
 				}
 			}catch(URISyntaxException use){
-				System.err.println("Malformed:"+url);
+				Log.log(Log.ERROR,SchemaMapping.class,"Malformed:"+url);
 			}
 			return null;
 		}
@@ -1201,7 +1204,7 @@ public final class SchemaMapping
 	 * try to use the VFS to detect if a resource exists
 	 */
 	private static boolean resourceExists(final URL resource){
-		Log.log(Log.DEBUG,SchemaMapping.class,"resourceExists("+resource+")");
+		if(DEBUG_SCHEMA_MAPPING)Log.log(Log.DEBUG,SchemaMapping.class,"resourceExists("+resource+")");
 		
 		VFSFile f = null;
 		final VFS vfs = VFSManager.getVFSForProtocol(resource.getProtocol());

@@ -1,3 +1,16 @@
+/*
+ * SchemaToCompletion.java
+ * :folding=explicit:collapseFolds=1:
+ *
+ * Copyright (C) 2009 Eric Le Lay
+ *
+ * The XML plugin is licensed under the GNU General Public License, with
+ * the following exception:
+ *
+ * "Permission is granted to link this code with software released under
+ * the Apache license version 1.1, for example used by the Xerces XML
+ * parser package."
+ */
 package xml.parser;
 
 import java.util.*;
@@ -15,7 +28,11 @@ import org.gjt.sp.util.Log;
 import xml.completion.CompletionInfo;
 import xml.completion.ElementDecl;
 import static xml.completion.ElementDecl.AttributeDecl;
+import static xml.Debug.*;
 
+/**
+ * converts the RNG object model to a list of CompletionInfo
+ */
 public class SchemaToCompletion
 {
 	private static final String RNG_DTD_COMPATIBILITY_NS =
@@ -87,18 +104,18 @@ public class SchemaToCompletion
 		}
 		
 		public Map<String,DefineComponent> visitDefine(DefineComponent c){
-			Log.log(Log.DEBUG,GrabDefinesVisitor.class,"visitDefine("+c.getName()+")");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,GrabDefinesVisitor.class,"visitDefine("+c.getName()+")");
 			comps.put(c.getName(),c);
 			return comps;
 		}
 		
 		public Map<String,DefineComponent> visitDiv(DivComponent c){
-			Log.log(Log.DEBUG,GrabDefinesVisitor.class,"visitDiv()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,GrabDefinesVisitor.class,"visitDiv()");
 			return comps;
 		}
 		
 		public Map<String,DefineComponent> visitInclude(IncludeComponent c){
-			Log.log(Log.DEBUG,GrabDefinesVisitor.class,"visitInclude("+c.getHref()+")");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,GrabDefinesVisitor.class,"visitInclude("+c.getHref()+")");
 			return comps;
 		}
 		
@@ -162,7 +179,7 @@ public class SchemaToCompletion
 		}
 				   
 		public List<AttributeDecl> visitChoice(ChoicePattern p){
-			Log.log(Log.DEBUG,MyAttributeVisitor.class,"voidVisitChoice()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyAttributeVisitor.class,"voidVisitChoice()");
 			p.childrenAccept(this);
 			return null;
 		}
@@ -172,7 +189,7 @@ public class SchemaToCompletion
 		}
 				   
 		public List<AttributeDecl> visitEmpty(EmptyPattern p){
-			Log.log(Log.DEBUG,MyAttributeVisitor.class,"voidVisitEmpty()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyAttributeVisitor.class,"voidVisitEmpty()");
 			return null;
 		}
 				   
@@ -185,19 +202,19 @@ public class SchemaToCompletion
 		}
 				   
 		public List<AttributeDecl> visitGroup(GroupPattern p){
-			Log.log(Log.DEBUG,MyAttributeVisitor.class,"voidVisitGroup()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyAttributeVisitor.class,"voidVisitGroup()");
 			p.childrenAccept(this);
 			return null;
 		}
 				   
 		public List<AttributeDecl> visitInterleave(InterleavePattern p){
-			Log.log(Log.DEBUG,MyAttributeVisitor.class,"voidVisitInterleave()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyAttributeVisitor.class,"voidVisitInterleave()");
 			p.childrenAccept(this);
 			return null;
 		}
 				   
 		public List<AttributeDecl> visitList(ListPattern p){
-			Log.log(Log.DEBUG,MyAttributeVisitor.class,"voidVisitList()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyAttributeVisitor.class,"voidVisitList()");
 			p.getChild().accept(this);
 			return null;
 		}
@@ -207,7 +224,7 @@ public class SchemaToCompletion
 		}
 				   
 		public List<AttributeDecl> visitNotAllowed(NotAllowedPattern p){
-			Log.log(Log.DEBUG,MyAttributeVisitor.class,"voidVisitNotAllowed()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyAttributeVisitor.class,"voidVisitNotAllowed()");
 			return null;
 		}
 				   
@@ -224,7 +241,7 @@ public class SchemaToCompletion
 		}
 				   
 		public List<AttributeDecl> visitRef(RefPattern p){
-			Log.log(Log.DEBUG,MyAttributeVisitor.class,"visitRef()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyAttributeVisitor.class,"visitRef()");
 			if(defined.containsKey(p.getName()))
 			{
 				defined.get(p.getName()).getBody().accept(this);
@@ -234,19 +251,19 @@ public class SchemaToCompletion
 		}
 				   
 		public List<AttributeDecl>	visitText(TextPattern p){
-			Log.log(Log.DEBUG,MyAttributeVisitor.class,"visitText()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyAttributeVisitor.class,"visitText()");
 			// TODO: not empty
 			return null;
 		}
 				   
 		public List<AttributeDecl> visitValue(ValuePattern p){
-			Log.log(Log.DEBUG,MyAttributeVisitor.class,"visitValue("+p.getPrefixMap()+")");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyAttributeVisitor.class,"visitValue("+p.getPrefixMap()+")");
 			values.put(p.getValue(),p.getType());
 			return null;
 		}
 
 		public List<AttributeDecl> visitData(DataPattern p){
-			Log.log(Log.DEBUG,MyAttributeVisitor.class,"visitData()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyAttributeVisitor.class,"visitData()");
 			data.add(p.getType());
 			return null;
 		}
@@ -269,14 +286,14 @@ public class SchemaToCompletion
 		
 		public List<Name> visitName(NameNameClass nc)
 		{
-			Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitName("+nc.getNamespaceUri()+","+nc.getPrefix()+":"+nc.getLocalName()+")");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitName("+nc.getNamespaceUri()+","+nc.getPrefix()+":"+nc.getLocalName()+")");
 			names.add(new Name(nc.getNamespaceUri(),nc.getLocalName()));
 			return names;
 		}
 		
 		public List<Name> visitNsName(NsNameNameClass nc)
 		{
-			Log.log(Log.DEBUG,MyNameClassVisitor.class,"voidVisitNsName("+nc.getNs()+")");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyNameClassVisitor.class,"voidVisitNsName("+nc.getNs()+")");
 			names.add(new Name(nc.getNs(),null));
 			if(nc.getExcept()!=null)
 			{
@@ -288,14 +305,14 @@ public class SchemaToCompletion
 		
 		public List<Name> visitAnyName(AnyNameNameClass nc)
 		{
-			Log.log(Log.DEBUG,MyNameClassVisitor.class,"visitAnyName()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyNameClassVisitor.class,"visitAnyName()");
 			any = true;
 			return names;
 		}
 		
 		public List<Name> visitChoice(ChoiceNameClass nc)
 		{
-			Log.log(Log.DEBUG,MyNameClassVisitor.class,"voidVisitChoiceNameClass()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyNameClassVisitor.class,"voidVisitChoiceNameClass()");
 			nc.childrenAccept(this);
 			return names;
 		}
@@ -319,12 +336,12 @@ public class SchemaToCompletion
 		
 		public void voidVisitAttribute(AttributeAnnotation a)
 		{
-			Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitAttributeAnnotation()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitAttributeAnnotation()");
 		}
 		
 		public void voidVisitAttribute(AttributePattern p)
 		{
-			Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitAttribute()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitAttribute()");
 
 			MyAttributeVisitor visitor = new MyAttributeVisitor(defines);
 			
@@ -338,29 +355,29 @@ public class SchemaToCompletion
 		
 		public void voidVisitChoice(ChoicePattern p)
 		{
-			Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitChoice()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitChoice()");
 			p.childrenAccept(this);
 		}
 		
 		public void voidVisitComment(Comment c)
 		{
-			Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitComment()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitComment()");
 		}
 		
 		public void voidVisitComponent(Component c)
 		{
-			Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitComponent()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitComponent()");
 		}
 		
 		public void voidVisitData(DataPattern p)
 		{
-			Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitData()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitData()");
 		}
 		
 		
 		public void voidVisitDefine(DefineComponent c)
 		{
-			Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitDefine("+c.getName()+","+c.getCombine()+")");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitDefine("+c.getName()+","+c.getCombine()+")");
 			if(DefineComponent.START.equals(c.getName())){
 				c.getBody().accept(this);
 			}
@@ -368,17 +385,17 @@ public class SchemaToCompletion
 		
 		public void voidVisitDiv(DivComponent c)
 		{
-			Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitDiv()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitDiv()");
 		}
 		
 		public void voidVisitElement(ElementAnnotation ea)
 		{
-			Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitElementAnnotation()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitElementAnnotation()");
 		}
 		
 		public void voidVisitElement(ElementPattern p)
 		{
-			Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitElement()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitElement()");
 			
 			ElementDecl myParent = parent;
 			empty = false;
@@ -400,7 +417,7 @@ public class SchemaToCompletion
 					myInfo = new CompletionInfo();
 					myInfo.namespace = name.getNamespaceUri();
 					info.put(name.getNamespaceUri(),myInfo);
-					Log.log(Log.DEBUG,SchemaToCompletion.class,"setting completionInfo for "+myInfo.namespace);
+					if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"setting completionInfo for "+myInfo.namespace);
 				}
 				
 				ElementDecl me = myInfo.elementHash.get(name.getLocalName());
@@ -436,85 +453,85 @@ public class SchemaToCompletion
 		
 		public void voidVisitEmpty(EmptyPattern p)
 		{
-			Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitEmpty()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitEmpty()");
 			empty=true;
 		}
 		
 		public void voidVisitExternalRef(ExternalRefPattern p)
 		{
-			Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitExternalRef()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitExternalRef()");
 		}
 		
 		public void voidVisitGrammar(GrammarPattern p)
 		{
-			Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitGrammar()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitGrammar()");
 			defines = p.accept(new GrabDefinesVisitor());
 			p.componentsAccept(this);
 		}
 		
 		public void voidVisitGroup(GroupPattern p)
 		{
-			Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitGroup()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitGroup()");
 			p.childrenAccept(this);
 		}
 		
 		public void voidVisitInclude(IncludeComponent c)
 		{
-			Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitInclude()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitInclude()");
 		}
 		
 		public void voidVisitInterleave(InterleavePattern p)
 		{
-			Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitInterleave()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitInterleave()");
 		}
 		
 		public void voidVisitList(ListPattern p)
 		{
-			Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitList()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitList()");
 		}
 		
 		public void voidVisitMixed(MixedPattern p)
 		{
-			Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitMixed()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitMixed()");
 		}
 		
 		
 		public void voidVisitNameClass(NameClass nc)
 		{
-			Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitNameClass()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitNameClass()");
 		}
 		
 		public void voidVisitNotAllowed(NotAllowedPattern p)
 		{
-			Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitNotAllowed()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitNotAllowed()");
 		}
 		
 		
 		public void voidVisitOneOrMore(OneOrMorePattern p)
 		{
-			Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitOneOrMore()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitOneOrMore()");
 			p.getChild().accept(this);
 		}
 		
 		public void voidVisitOptional(OptionalPattern p)
 		{
-			Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitOptional()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitOptional()");
 			p.getChild().accept(this);
 		}
 		
 		public void voidVisitParentRef(ParentRefPattern p)
 		{
-			Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitParentRef()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitParentRef()");
 		}
 		
 		public void voidVisitPattern(Pattern p)
 		{
-			Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitPattern()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitPattern()");
 		}
 		
 		public void voidVisitRef(RefPattern p)
 		{
-			Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitRef("+p.getName()+")");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitRef("+p.getName()+")");
 			// TODO: prevent loops when expanding
 			if(!defines.containsKey(p.getName()))
 				throw new IllegalArgumentException("Undefined reference :"+p.getName());
@@ -524,18 +541,18 @@ public class SchemaToCompletion
 		
 		public void voidVisitText(TextAnnotation ta)
 		{
-			Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitText()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitText()");
 		}
 		
 		public void voidVisitText(TextPattern p)
 		{
-			Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitText("+p+")");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitText("+p+")");
 			
 		}
 		
 		public void voidVisitValue(ValuePattern p)
 		{
-			Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitValue()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitValue()");
 		}
 		
 	}
