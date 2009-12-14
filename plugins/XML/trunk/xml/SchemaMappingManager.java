@@ -391,6 +391,18 @@ public final class SchemaMappingManager
 			MiscUtilities.getParentOfPath(
 				buffer.getPath()),SchemaMapping.SCHEMAS_FILE);
 		
+		URL specificSchemaURL = null;
+		
+		try
+		{
+			specificSchemaURL = new URL(pathToURL(specificSchema));
+		}
+		catch(MalformedURLException mfue)
+		{
+			// TODO: react to the error 
+			Log.log(Log.ERROR,SchemaMappingManager.class,mfue);
+		}
+		
 		SchemaMapping lMapping = getLocalSchemaMapping(buffer);
 		SchemaMapping gMapping = getGlobalSchemaMapping();
 		SchemaMapping bMapping = getBuiltInSchemaMapping();
@@ -440,7 +452,7 @@ public final class SchemaMappingManager
         	// no schemas.xml in the buffer's directory : will create one
         	if(lMapping == null)
         	{
-				lMapping = new SchemaMapping();
+				lMapping = new SchemaMapping(specificSchemaURL);
 				if(gMapping != null)lMapping.ensureIncluded(gMapping);
 			}
 			
@@ -449,7 +461,7 @@ public final class SchemaMappingManager
         		lMapping.ensureIncluded(tidMapping);
         	}
         	
-        	String bufferURL = "file://"+buffer.getPath();
+        	String bufferURL = pathToURL(buffer.getPath());
         	SchemaMapping.URIResourceRule newRule = new SchemaMapping.URIResourceRule(null,bufferURL,tid, true);
         	
         	lMapping.updateMapping(newRule);
