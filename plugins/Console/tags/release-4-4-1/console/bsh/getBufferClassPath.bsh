@@ -1,0 +1,11 @@
+
+/* Returns $CLASSPATH, plus the current buffer's package root. */
+getBufferClassPath(buffer)
+{
+	import console.ConsolePlugin;
+
+	return "$CLASSPATH" + File.pathSeparator
+		+ ConsolePlugin.getPackageRoot(buffer);
+}
+
+help.getBufferClassPath = "usage: getBufferClassPath ( buffer )";
