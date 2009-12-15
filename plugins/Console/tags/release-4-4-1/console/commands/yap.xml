@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+
+<!DOCTYPE COMMANDO SYSTEM "commando.dtd">
+
+<COMMANDO>
+	<UI>
+		<CAPTION LABEL="Source file">
+			<FILE_ENTRY LABEL="Source file" VARNAME="source"
+				EVAL='MiscUtilities.getFileNameNoExtension(buffer.getName()) + ".dvi"'/>
+		</CAPTION>
+
+		<CAPTION LABEL="View options">
+			<TOGGLE LABEL="1-window mode" VARNAME="onewindow" DEFAULT="TRUE"/>
+		</CAPTION>
+	</UI>
+	<COMMANDS>
+		<COMMAND SHELL="System" CONFIRM="FALSE">
+			buf = new StringBuffer();
+			buf.append("yap");
+
+			if(onewindow)
+				buf.append(" -1");
+
+			buf.append(" \"");
+			buf.append(source);
+			buf.append('"');
+
+			// return value
+			buf.toString();
+		</COMMAND>
+	</COMMANDS>
+</COMMANDO>
+
