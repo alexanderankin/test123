@@ -177,7 +177,28 @@ public class ErrorListPlugin extends EBPlugin
 	private static Color errorColor;
 	private static Pattern filter;
 	private static boolean isInclusionFilter;
-	
+
+	//{{{ isErrorFiltered()
+	private boolean isErrorFiltered(ErrorSource.Error error)
+	{
+		// Check if the type of error is filtered
+		if (jEdit.getBooleanProperty(
+			"error-list-filtered-types." + error.getErrorType(), false))
+		{
+			return true;
+		}
+		// Check if the filename pattern should be excluded
+		Pattern filter = ErrorListPlugin.getFilenameFilter(); 
+		if (filter != null)
+		{
+			String path = error.getFilePath();
+			boolean match = filter.matcher(path).matches();
+			if (match != ErrorListPlugin.isInclusionFilter())
+				return true;
+		}
+		return false;
+	}
+
 	//{{{ propertiesChanged() method
 	private void propertiesChanged()
 	{
@@ -254,7 +275,7 @@ public class ErrorListPlugin extends EBPlugin
 		DockableWindowManager dockableWindowManager = view.getDockableWindowManager();
 		dockableWindowManager.addDockableWindow("error-list");
 	} //}}}
-	
+
 	//{{{ handleErrorSourceMessage() method
 	private void handleErrorSourceMessage(ErrorSourceUpdate message)
 	{
@@ -266,10 +287,10 @@ public class ErrorListPlugin extends EBPlugin
 			if(buffer != null)
 				invalidateLineInAllViews(buffer,error.getLineNumber());
 
-			if(showOnError)
+			if (showOnError && (jEdit.getActiveView() != null) &&
+				(! isErrorFiltered(error)))
 			{
-				if(jEdit.getActiveView() != null)
-					showErrorList(jEdit.getActiveView());
+				showErrorList(jEdit.getActiveView());
 			}
 		}
 		else if(what == ErrorSourceUpdate.ERROR_REMOVED)
@@ -277,15 +298,7 @@ public class ErrorListPlugin extends EBPlugin
 			ErrorSource.Error error = message.getError();
 			Buffer buffer = error.getBuffer();
 			if(buffer != null)
-			{
 				invalidateLineInAllViews(buffer,error.getLineNumber());
-			}
-
-			if(showOnError)
-			{
-				if(jEdit.getActiveView() != null)
-					showErrorList(jEdit.getActiveView());
-			}
 		}
 		else if(what == ErrorSourceUpdate.ERRORS_CLEARED
 			|| what == ErrorSourceUpdate.ERROR_SOURCE_ADDED
@@ -304,13 +317,10 @@ public class ErrorListPlugin extends EBPlugin
 				view = view.getNext();
 			}
 
-			if(what == ErrorSourceUpdate.ERROR_SOURCE_ADDED)
+			if ((what == ErrorSourceUpdate.ERROR_SOURCE_ADDED) &&
+				showOnError && (jEdit.getActiveView() != null) && doErrorsExist())
 			{
-				if(showOnError)
-				{
-					if((jEdit.getActiveView() != null) && doErrorsExist())
-						showErrorList(jEdit.getActiveView());
-				}
+				showErrorList(jEdit.getActiveView());
 			}
 		}
 	} //}}}
@@ -385,10 +395,14 @@ public class ErrorListPlugin extends EBPlugin
 	//{{{ doErrorsExist() method
 	private boolean doErrorsExist()
 	{
-		ErrorSource[] errorSources = ErrorSource.getErrorSources();
-		for(int i = 0; i < errorSources.length; i++)
-			if (errorSources[i].getErrorCount() > 0)
-				return true;
+		for(ErrorSource errorSource: ErrorSource.getErrorSources())
+		{
+			for (ErrorSource.Error error: errorSource.getAllErrors())
+			{
+				if (! isErrorFiltered(error))
+					return true;
+			}
+		}
 		return false;
 	} //}}}
 
