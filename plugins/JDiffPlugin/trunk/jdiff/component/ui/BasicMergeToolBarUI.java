@@ -46,8 +46,6 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
     private JButton prev;
     private JButton move_right;
     private JButton move_left;
-    private JButton move_multiple_right;
-    private JButton move_multiple_left;
     private JButton unsplit;
     private JButton swap;
     private JButton diff;
@@ -108,9 +106,7 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
         next = new SquareButton( GUIUtilities.loadIcon( "22x22/actions/go-down.png" ) );
         prev = new SquareButton( GUIUtilities.loadIcon( "22x22/actions/go-up.png" ) );
         move_right = new SquareButton( GUIUtilities.loadIcon( "22x22/actions/go-next.png" ) );
-        move_multiple_right = new SquareButton( GUIUtilities.loadIcon( "22x22/actions/go-last.png" ) );
         move_left = new SquareButton( GUIUtilities.loadIcon( "22x22/actions/go-previous.png" ) );
-        move_multiple_left = new SquareButton( GUIUtilities.loadIcon( "22x22/actions/go-first.png" ) );
         unsplit = new SquareButton( GUIUtilities.loadIcon( "22x22/actions/window-unsplit.png" ) );
         swap = new SquareButton( GUIUtilities.loadIcon( "22x22/actions/window-split-vertical.png" ) );
         refresh = new SquareButton( GUIUtilities.loadIcon( "22x22/actions/view-refresh.png" ) );
@@ -120,8 +116,6 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
         prev.setEnabled( false );
         move_right.setEnabled( false );
         move_left.setEnabled( false );
-        move_multiple_right.setEnabled(false);
-        move_multiple_left.setEnabled(false);
         unsplit.setEnabled( false );
         swap.setEnabled( false );
         refresh.setEnabled( false );
@@ -134,8 +128,6 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
         swap.setToolTipText( jEdit.getProperty( "jdiff.swap-textareas", "Swap text areas" ) );
         move_right.setToolTipText( jEdit.getProperty( "jdiff.move-right.label", "Move diff to right" ) );
         move_left.setToolTipText( jEdit.getProperty( "jdiff.move-left.label", "Move diff to left" ) );
-        move_multiple_right.setToolTipText( jEdit.getProperty( "jdiff.move-multiple-right.label", "Move all non-conflicting to right" ) );
-        move_multiple_left.setToolTipText( jEdit.getProperty( "jdiff.move-multiple-left.label", "Move all non-conflicting to left" ) );
         refresh.setToolTipText( jEdit.getProperty( "jdiff.refresh.label", "Refresh diff" ) );
 
         installButtons();
@@ -153,8 +145,6 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
                 toolbar.add( "0, 3", prev );
                 toolbar.add( "0, 4", move_right );
                 toolbar.add( "0, 5", move_left );
-                toolbar.add( "0, 6", move_multiple_right );
-                toolbar.add( "0, 7", move_multiple_left );
                 toolbar.add( "0, 8", swap );
                 toolbar.add( "0, 9", refresh );
                 break;
@@ -165,8 +155,6 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
                 toolbar.add( "1, 1", prev );
                 toolbar.add( "0, 2", move_right );
                 toolbar.add( "1, 2", move_left );
-                toolbar.add( "0, 3", move_multiple_right );
-                toolbar.add( "1, 3", move_multiple_left );
                 toolbar.add( "0, 4", swap );
                 toolbar.add( "1, 4", refresh );
                 break;
@@ -176,8 +164,6 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
                 toolbar.add( "2, 0", next );
                 toolbar.add( "3, 0", move_right );
                 toolbar.add( "4, 0", move_left );
-                toolbar.add( "5, 0", move_multiple_right );
-                toolbar.add( "6, 0", move_multiple_left );
                 toolbar.add( "7, 0", prev );
                 toolbar.add( "8, 0", swap );
                 toolbar.add( "9, 0", refresh );
@@ -196,7 +182,12 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
                     if ( view != null ) {
-                        DualDiffManager.moveLeft( BasicMergeToolBarUI.this.view.getEditPane() );
+                        if ( (ae.getModifiers() & ActionEvent.SHIFT_MASK) != 0 ) {
+                            DualDiffManager.moveMultipleLeft( BasicMergeToolBarUI.this.view.getEditPane() );
+                        }
+                        else {
+                            DualDiffManager.moveLeft( BasicMergeToolBarUI.this.view.getEditPane() );
+                        }
                     }
                 }
             }
@@ -206,27 +197,12 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
                     if ( view != null ) {
-                        DualDiffManager.moveRight( BasicMergeToolBarUI.this.view.getEditPane() );
-                    }
-                }
-            }
-        );
-
-        move_multiple_left.addActionListener(
-            new ActionListener() {
-                public void actionPerformed( ActionEvent ae ) {
-                    if ( view != null ) {
-                        DualDiffManager.moveMultipleLeft( BasicMergeToolBarUI.this.view.getEditPane() );
-                    }
-                }
-            }
-        );
-
-        move_multiple_right.addActionListener(
-            new ActionListener() {
-                public void actionPerformed( ActionEvent ae ) {
-                    if ( view != null ) {
-                        DualDiffManager.moveMultipleRight( BasicMergeToolBarUI.this.view.getEditPane() );
+                        if ( (ae.getModifiers() & ActionEvent.SHIFT_MASK) != 0 ) {
+                            DualDiffManager.moveMultipleRight( BasicMergeToolBarUI.this.view.getEditPane() );
+                        }
+                        else {
+                            DualDiffManager.moveRight( BasicMergeToolBarUI.this.view.getEditPane() );
+                        }
                     }
                 }
             }
@@ -348,8 +324,6 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
                     prev.setEnabled( enabled );
                     move_right.setEnabled( enabled );
                     move_left.setEnabled( enabled );
-                    move_multiple_right.setEnabled( enabled );
-                    move_multiple_left.setEnabled( enabled );
                     unsplit.setEnabled( enabled );
                     swap.setEnabled( enabled );
                     refresh.setEnabled( enabled );
