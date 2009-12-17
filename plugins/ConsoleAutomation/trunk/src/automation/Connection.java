@@ -20,6 +20,7 @@ public class Connection
 	private PrintWriter writer;
 	private InputStreamReader reader;
 	private CharHandler outputHandler;
+	private EventHandler eventHandler;
 	private StringHandler expectHandler;
 	private final Object expectHandlerLock = new Object();
 	private final List<StringBuilder> expectBuffer = new ArrayList<StringBuilder>();
@@ -41,6 +42,14 @@ public class Connection
 		Object value();
 		// Whether this handler handles prefixes (or only whole lines)
 		boolean prefix();
+		// Returns a description for this handler
+		String desc();
+	}
+	public interface EventHandler
+	{
+		void expecting(StringHandler h);
+		void sending(String s);
+		void idle();
 	}
 
 	// Public methods
@@ -85,17 +94,18 @@ public class Connection
 		{
 			expectBuffer.clear();
 		}
-		/*
-		for (char c: s.toCharArray())
-		{
-			if (outputHandler != null)
-				outputHandler.handle(c);
-		}
-		*/
+		if (eventHandler != null)
+			eventHandler.sending(s);
 		writer.print(s);
 		writer.flush();
 	}
 
+	private void setExpectHandler(StringHandler h)
+	{
+		expectHandler = h;
+		if (eventHandler != null)
+			eventHandler.expecting(h);
+	}
 	private Object expect(StringHandler h) throws InterruptedException
 	{
 		if (scriptAborted)
@@ -103,7 +113,7 @@ public class Connection
 		boolean cont;
 		synchronized(expectHandlerLock)
 		{
-			expectHandler = h;
+			setExpectHandler(h);
 			consumeBuffer();
 			// If the expected text has been found, no need to wait
 			cont = (expectHandler != null);
@@ -134,6 +144,10 @@ public class Connection
 	{
 		outputHandler = h;
 	}
+	public void setEventHandler(EventHandler h)
+	{
+		eventHandler = h;
+	}
 
 	// Macro support
 
@@ -161,7 +175,7 @@ public class Connection
 			{
 				expectHandler.notifyAll();
 			}
-			expectHandler = null;
+			setExpectHandler(null);
 		}
 	}
 	private void consumeBuffer()
@@ -245,7 +259,7 @@ public class Connection
 	{
 		private boolean prefix;
 		private final String subStr;	// the substring to look for
-		public String line;	// the line where the substring was found
+		private String line;	// the line where the substring was found
 		public SubstrHandler(String s, boolean prefix)
 		{
 			subStr = s;
@@ -264,12 +278,16 @@ public class Connection
 		{
 			return prefix;
 		}
+		public String desc()
+		{
+			return "Substr: " + subStr;
+		}
 	}
 	private static class PatternHandler implements StringHandler
 	{
 		private boolean prefix;
 		private final Pattern p;
-		public Matcher m;
+		private Matcher m;
 		public PatternHandler(Pattern p, boolean prefix)
 		{
 			this.p = p;
@@ -287,6 +305,10 @@ public class Connection
 		public boolean prefix()
 		{
 			return prefix;
+		}
+		public String desc()
+		{
+			return "Pattern: " + p.toString();
 		}
 	}
 	private class ScriptThread extends Thread
@@ -315,6 +337,8 @@ public class Connection
 				}
 				scriptAborted = false;
 				r.run();
+				if (eventHandler != null)
+					eventHandler.idle();
 			}
 		}
 	}
