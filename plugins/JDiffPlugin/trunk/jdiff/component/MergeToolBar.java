@@ -27,6 +27,7 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import jdiff.DiffMessage;
 import jdiff.component.ui.*;
 
 import org.gjt.sp.jedit.jEdit;
@@ -50,7 +51,7 @@ public class MergeToolBar extends JComponent implements EBComponent {
     public static final int HORIZONTAL = 1;
     public static final int VERTICAL = 2;
     public static final int COMPACT = 3;
-    private int orientation = HORIZONTAL;
+    private int orientation = HORIZONTAL;   // TODO: this is set, but I don't think it's actually used anywhere.
 
     private Set<ChangeListener> changeListeners = new HashSet<ChangeListener>();
 
@@ -120,15 +121,30 @@ public class MergeToolBar extends JComponent implements EBComponent {
     public void handleMessage( EBMessage message ) {
         if ( message instanceof EditPaneUpdate ) {
             EditPaneUpdate epu = ( EditPaneUpdate ) message;
+            if (!view.equals(epu.getEditPane().getView())) {
+                return;     // not my view   
+            }
             if ( epu.getWhat() == EditPaneUpdate.DESTROYED ) {
+                // this happens on an unsplit
                 fireStateChanged();
             }
         }
-        else if ( message instanceof ViewUpdate ) {
+        else if ( message instanceof DiffMessage ) {
+            DiffMessage dm = ( DiffMessage ) message;
+            if ( !view.equals( dm.getView() ) ) {
+                return ;    // not my view
+            }
             fireStateChanged();
         }
-        else if (message instanceof PropertiesChanged ) {
-            int orient = jEdit.getIntegerProperty("jdiff.toolbar-orientation", orientation);
+        else if ( message instanceof ViewUpdate ) {
+            ViewUpdate vu = ( ViewUpdate ) message;
+            if ( !view.equals( vu.getView() ) ) {
+                return ;    // not my view
+            }
+            fireStateChanged();
+        }
+        else if ( message instanceof PropertiesChanged ) {
+            int orient = jEdit.getIntegerProperty( "jdiff.toolbar-orientation", orientation );
             if ( orient != orientation ) {
                 orientation = orient;
                 fireStateChanged();
