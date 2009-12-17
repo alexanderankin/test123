@@ -132,7 +132,10 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
 
         installButtons();
     }
-
+    
+    /**
+     * Layout the buttons based on the current orientation.    
+     */
     private void installButtons() {
         int orient = jEdit.getIntegerProperty( "jdiff.toolbar-orientation", MergeToolBar.HORIZONTAL );
         toolbar.removeAll();
@@ -231,7 +234,6 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
         unsplit.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
-                    View view = toolbar.getView();
                     DualDiffManager.toggleFor( view );
                     toolbar.repaint();
                 }
@@ -256,7 +258,6 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
         diff.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
-                    View view = toolbar.getView();
                     DualDiffManager.toggleFor( view );
                     toolbar.repaint();
                 }
@@ -266,7 +267,6 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
         refresh.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
-                    View view = toolbar.getView();
                     DualDiffManager.refreshFor( view );
                     toolbar.repaint();
                 }
@@ -313,12 +313,12 @@ public class BasicMergeToolBarUI extends MergeToolBarUI implements ChangeListene
         adjustButtons();
     }
 
-    private void adjustButtons( ) {
+    private void adjustButtons() {
         // adjust buttons
         SwingUtilities.invokeLater(
             new Runnable() {
                 public void run() {
-                    boolean enabled = BasicMergeToolBarUI.this.view.getEditPanes().length == 2;
+                    boolean enabled = DualDiffManager.isEnabledFor( view );
                     diff.setEnabled( !enabled );
                     next.setEnabled( enabled );
                     prev.setEnabled( enabled );
