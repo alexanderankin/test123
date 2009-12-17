@@ -4,7 +4,7 @@
     <property file="build.props"/>
 
     <!-- version number, override in build.props if necessary -->
-    <property name="build_num" value="1.1"/>
+    <property name="build_num" value="1.2"/>
 
 
     <!-- shouldn't need to override the following properties -->

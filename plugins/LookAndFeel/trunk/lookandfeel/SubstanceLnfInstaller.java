@@ -7,8 +7,6 @@ import org.gjt.sp.jedit.jEdit;
 
 public class SubstanceLnfInstaller extends LnfInstaller {
 
-    // TODO: org.gjt.sp.jedit.gui.RolloverButton.updateUI(RolloverButton.java:76)
-    
     public final static String SUBSTANCE_THEME_PROP = "substance.theme";
 
     private static final String[] themeNames = {
