@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -24,9 +25,11 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.HistoryTextField;
 
 import automation.Connection.CharHandler;
+import automation.Connection.EventHandler;
+import automation.Connection.StringHandler;
 
 @SuppressWarnings("serial")
-public class ConnectionWindow extends JPanel implements CharHandler,
+public class ConnectionWindow extends JPanel implements CharHandler, EventHandler,
 	ActionListener
 {
 	private final Connection c;
@@ -39,6 +42,7 @@ public class ConnectionWindow extends JPanel implements CharHandler,
 	private final List<StringBuilder> output;
 	private StringBuilder currentOutput;
 	private int charsToRemove = 0;
+	private final JLabel action;
 
 	public ConnectionWindow(Connection c)
 	{
@@ -75,7 +79,10 @@ public class ConnectionWindow extends JPanel implements CharHandler,
 		ctrlC.addActionListener(this);
 		output = new ArrayList<StringBuilder>();
 		output.add(currentOutput = new StringBuilder());
+		action = new JLabel("<idle>");
+		add(action, BorderLayout.SOUTH);
 		c.setOutputHandler(this);
+		c.setEventHandler(this);
 		addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent e) {
@@ -161,5 +168,28 @@ public class ConnectionWindow extends JPanel implements CharHandler,
 				"Could not perform action, exception: " + Arrays.toString(
 				e1.getStackTrace()));
 		}
+	}
+
+	private void setActionText(final String text)
+	{
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				action.setText(text);
+			}
+		});
+	}
+	public void expecting(StringHandler h)
+	{
+		setActionText((h == null) ? "<idle>" : "Expecting " + h.desc());
+	}
+
+	public void sending(String s)
+	{
+		setActionText("Sending: " + s);
+	}
+
+	public void idle()
+	{
+		setActionText("idle");
 	}
 }
