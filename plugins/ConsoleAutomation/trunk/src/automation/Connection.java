@@ -20,11 +20,10 @@ public class Connection
 	private PrintWriter writer;
 	private InputStreamReader reader;
 	private CharHandler outputHandler;
-	private LineHandler expectPrefixHandler;
-	private LineHandler expectLineHandler;
+	private StringHandler expectHandler;
 	private final Object expectHandlerLock = new Object();
 	private final List<StringBuilder> expectBuffer = new ArrayList<StringBuilder>();
-	private boolean abortScript = false;
+	private boolean scriptAborted = false;
 	private final Thread scriptThread = new ScriptThread();
 	private final List<Runnable> scripts = new ArrayList<Runnable>();
 	static private ThreadLocal<Connection> tlsConnection =
@@ -34,15 +33,19 @@ public class Connection
 	{
 		void handle(char c);
 	}
-	public interface LineHandler
+	public interface StringHandler
 	{
-		// Returns true to continue reading, false to stop reading
-		boolean handle(String line);
+		// Returns true to stop reading, false to continue reading
+		boolean handle(String s);
+		// Returns the matched value on success
+		Object value();
+		// Whether this handler handles prefixes (or only whole lines)
+		boolean prefix();
 	}
 
 	// Public methods
 
-	static Connection getCurrentConnection()
+	public static Connection getCurrentConnection()
 	{
 		return tlsConnection.get();
 	}
@@ -72,9 +75,9 @@ public class Connection
 		writer.close();
 		telnet.disconnect();
 	}
-	public void send(String s) throws IOException
+	public void send(String s) throws IOException 
 	{
-		if (abortScript)
+		if (scriptAborted)
 			return;
 		if ((s.length() == 0) || (! s.endsWith("\n")))
 			s = s + "\n";
@@ -92,65 +95,39 @@ public class Connection
 		writer.print(s);
 		writer.flush();
 	}
+
+	private Object expect(StringHandler h) throws InterruptedException
+	{
+		if (scriptAborted)
+			return null;
+		boolean cont;
+		synchronized(expectHandlerLock)
+		{
+			expectHandler = h;
+			consumeBuffer();
+			// If the expected text has been found, no need to wait
+			cont = (expectHandler != null);
+		}
+		if (cont)
+		{
+			synchronized(h)
+			{
+				h.wait();
+			}
+		}
+		if (scriptAborted)
+			return null;
+		return h.value();
+	}
 	public String expectSubstr(String s, boolean prefix) throws InterruptedException
 	{
-		if (abortScript)
-			return null;
-		SubstrHandler h = new SubstrHandler(s);
-		boolean cont;
-		synchronized(expectHandlerLock)
-		{
-			if (prefix)
-				expectPrefixHandler = h;
-			else
-				expectLineHandler = h;
-			consumeBuffer();
-			// If the expected text has been found, no need to wait
-			cont = expectHandlerExists(prefix);
-		}
-		if (cont)
-		{
-			synchronized(h)
-			{
-				h.wait();
-			}
-		}
-		if (abortScript)
-			return null;
-		return h.line;
+		Object value = expect(new SubstrHandler(s, prefix));
+		return (String) value;
 	}
-	private boolean expectHandlerExists(boolean prefix)
+	public Matcher expectPattern(Pattern p, boolean prefix) throws InterruptedException
 	{
-		return ((prefix && (expectPrefixHandler != null)) ||
-			((! prefix) && (expectLineHandler != null)));
-	}
-	public Matcher expectPattern(Pattern p, boolean prefix)
-		throws IOException, InterruptedException
-	{
-		if (abortScript)
-			return null;
-		PatternHandler h = new PatternHandler(p);
-		boolean cont;
-		synchronized(expectHandlerLock)
-		{
-			if (prefix)
-				expectPrefixHandler = h;
-			else
-				expectLineHandler = h;
-			consumeBuffer();
-			// If the expected text has been found, no need to wait
-			cont = expectHandlerExists(prefix);
-		}
-		if (cont)
-		{
-			synchronized(h)
-			{
-				h.wait();
-			}
-		}
-		if (abortScript)
-			return null;
-		return h.m;
+		Object value = expect(new PatternHandler(p, prefix));
+		return (Matcher) value;
 	}
 	// Attach an output listener
 	public void setOutputHandler(CharHandler h)
@@ -171,58 +148,33 @@ public class Connection
 	}
 	public void abortScript()
 	{
-		synchronized(expectHandlerLock)
-		{
-			if ((expectLineHandler != null) || (expectPrefixHandler != null))
-				abortScript = true;
-		}
+		scriptAborted = true;
 	}
 
 	// Private methods
 
 	private void notifyExpectHandler()
 	{
-		synchronized(expectHandlerLock)
+		if (expectHandler != null)
 		{
-			if (expectLineHandler != null)
+			synchronized(expectHandler)
 			{
-				synchronized(expectLineHandler)
-				{
-					expectLineHandler.notifyAll();
-				}
-				expectLineHandler = null;
+				expectHandler.notifyAll();
 			}
-			if (expectPrefixHandler != null)
-			{
-				synchronized(expectPrefixHandler)
-				{
-					expectPrefixHandler.notifyAll();
-				}
-				expectPrefixHandler = null;
-			}
+			expectHandler = null;
 		}
 	}
 	private void consumeBuffer()
 	{
 		while (! expectBuffer.isEmpty())
 		{
-			if (abortScript)
+			if (scriptAborted)
 				return;
 			String s = expectBuffer.get(0).toString();
 			expectBuffer.remove(0);
-			if (expectLineHandler != null)
+			if ((expectHandler != null) && expectHandler.handle(s))
 			{
-				if (! expectLineHandler.handle(s))
-					expectLineHandler = null;
-			}
-			if (expectPrefixHandler != null)
-			{
-				if (! expectPrefixHandler.handle(s))
-					expectPrefixHandler = null;
-			}
-			if ((expectLineHandler == null) &&
-				(expectPrefixHandler == null))
-			{
+				notifyExpectHandler();
 				return;
 			}
 		}
@@ -249,8 +201,13 @@ public class Connection
 		int i;
 		while ((i = reader.read()) != -1)
 		{
-			if (abortScript)
-				notifyExpectHandler();
+			if (scriptAborted)
+			{
+				synchronized(expectHandlerLock)
+				{
+					notifyExpectHandler();
+				}
+			}
 			char c = (char) i;
 			if (outputHandler != null)
 				outputHandler.handle(c);
@@ -258,10 +215,13 @@ public class Connection
 			{
 				synchronized(expectHandlerLock)
 				{
-					if (expectLineHandler == null)
+					if (expectHandler == null)
 						expectBuffer.add(new StringBuilder());
-					else if (! expectLineHandler.handle(s.toString()))
-						expectLineHandler = null;
+					else if ((! expectHandler.prefix()) &&
+							 expectHandler.handle(s.toString()))
+					{
+						notifyExpectHandler();
+					}
 				}
 				s.setLength(0);
 				continue;
@@ -269,60 +229,64 @@ public class Connection
 			s.append(c);
 			synchronized(expectHandlerLock)
 			{
-				if (expectPrefixHandler == null)
+				if ((expectHandler == null) || (! expectHandler.prefix()))
 				{
 					if (expectBuffer.isEmpty())
 						expectBuffer.add(new StringBuilder());
 					expectBuffer.get(expectBuffer.size()-1).append(c);
 				}
-				else if (! expectPrefixHandler.handle(s.toString()))
-					expectPrefixHandler = null;
+				else if (expectHandler.handle(s.toString()))
+					notifyExpectHandler();
 			}
 		}
 	}
 
-	private static class SubstrHandler implements LineHandler
+	private static class SubstrHandler implements StringHandler
 	{
-		private final String s;	// the substring to look for
+		private boolean prefix;
+		private final String subStr;	// the substring to look for
 		public String line;	// the line where the substring was found
-		public SubstrHandler(String s)
+		public SubstrHandler(String s, boolean prefix)
 		{
-			this.s = s;
+			subStr = s;
+			this.prefix = prefix;
 		}
-		public boolean handle(String line)
+		public boolean handle(String s)
 		{
-			if (line.contains(s))
-			{
-				this.line = line;
-				synchronized(this)
-				{
-					notifyAll();
-				}
-				return false;
-			}
-			return true;
+			line = s;
+			return s.contains(subStr);
+		}
+		public Object value()
+		{
+			return line;
+		}
+		public boolean prefix()
+		{
+			return prefix;
 		}
 	}
-	private static class PatternHandler implements LineHandler
+	private static class PatternHandler implements StringHandler
 	{
+		private boolean prefix;
 		private final Pattern p;
 		public Matcher m;
-		public PatternHandler(Pattern p)
+		public PatternHandler(Pattern p, boolean prefix)
 		{
 			this.p = p;
+			this.prefix = prefix;
 		}
-		public boolean handle(String line)
+		public boolean handle(String s)
 		{
-			m = p.matcher(line);
-			if (m.find())
-			{
-				synchronized(this)
-				{
-					notifyAll();
-				}
-				return false;
-			}
-			return true;
+			m = p.matcher(s);
+			return m.find();
+		}
+		public Object value()
+		{
+			return m;
+		}
+		public boolean prefix()
+		{
+			return prefix;
 		}
 	}
 	private class ScriptThread extends Thread
@@ -349,8 +313,8 @@ public class Connection
 					}
 					r = scripts.remove(0);
 				}
+				scriptAborted = false;
 				r.run();
-				abortScript = false;
 			}
 		}
 	}
