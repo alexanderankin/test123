@@ -196,7 +196,7 @@ public class DualDiff implements EBComponent {
                 return ;
             }
             if ( epu.getWhat() == EditPaneUpdate.CREATED || epu.getWhat() == EditPaneUpdate.DESTROYED ) {
-                remove();
+                remove( true );
             }
             else if ( epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED ) {
                 refresh();
@@ -209,7 +209,7 @@ public class DualDiff implements EBComponent {
                 return ;
             }
             if ( DiffMessage.OFF.equals( dm.getWhat() ) ) {
-                remove();
+                remove( false );
             }
         }
         else if ( message instanceof PropertiesChanged ) {
@@ -315,9 +315,12 @@ public class DualDiff implements EBComponent {
                 }
                                   );
     }
-
-    // removes this DualDiff from our View
-    private void remove() {
+    
+    /**
+     * Removes this DualDiff from our View
+     * @param propagate If true, tell DualDiffManager to do a remove also.  
+     */
+    private void remove(boolean propagate) {
         EditBus.removeFromBus( this );
         removeOverviews();
         removeHighlighters();
@@ -327,7 +330,9 @@ public class DualDiff implements EBComponent {
         view.getDockableWindowManager().hideDockableWindow( DualDiffManager.JDIFF_LINES );
 
         diffLineOverview.setModel( null );
-        DualDiffManager.removeFrom( view );
+        if ( propagate ) {
+            DualDiffManager.removeFrom( view );
+        }
     }
 
     private void installOverviews() {
