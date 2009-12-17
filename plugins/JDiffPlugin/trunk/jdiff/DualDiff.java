@@ -728,8 +728,11 @@ public class DualDiff implements EBComponent {
         }
         // want to move left but have left EditPane.  Need to find
         // corresponding hunk from right EditPane and use first line of hunk.
+        // Start with the last hunk and work backwards to the first, this ensures
+        // line numbers for inserts of previous hunks remain valid.
         Diff.Change hunk = edits;
-        for ( ; hunk != null; hunk = hunk.next ) {
+        for ( ; hunk.next != null; hunk = hunk.next );       // go to last hunk
+        for ( ; hunk != null; hunk = hunk.prev ) {
             if ( hunk.lines1 == 0 ) {
                 diffOverview0.moveRight( hunk.first0 );
             }
@@ -745,8 +748,11 @@ public class DualDiff implements EBComponent {
         }
         // want to move left but have left EditPane.  Need to find
         // corresponding hunk from right EditPane and use first line of hunk.
+        // Start with the last hunk and work backwards to the first, this ensures
+        // line numbers for inserts of previous hunks remain valid.
         Diff.Change hunk = edits;
-        for ( ; hunk != null; hunk = hunk.next ) {
+        for ( ; hunk.next != null; hunk = hunk.next );       // go to last hunk
+        for ( ; hunk != null; hunk = hunk.prev ) {
             if ( hunk.lines0 == 0 ) {
                 diffOverview0.moveLeft( hunk.first1 );
             }
