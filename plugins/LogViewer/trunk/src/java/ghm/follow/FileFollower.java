@@ -319,7 +319,7 @@ public class FileFollower {
         public void load() {
             long fileLength = file_.length();
             long charsRead = 0;
-            while (charsRead < fileLength - (2 * bufferSize_)) {
+            while (charsRead < fileLength) {
                 int cnt = refresh();
                 if (cnt == 0)
                     break;
@@ -349,20 +349,20 @@ public class FileFollower {
                 // this is the original implementation, it reads a buffer full
                 // of the file, then send the whole thing to the destination at
                 // once.
-                //int numCharsRead = bufferedReader.read( charArray, 0, charArray.length );
-                //if ( numCharsRead > 0 ) {
-                //    print( new String( charArray, 0, numCharsRead ) );
-                //}
-                //return numCharsRead;
-
+                /*
+                int numCharsRead = bufferedReader.read( charArray, 0, charArray.length );
+                if ( numCharsRead > 0 ) {
+                    print( new String( charArray, 0, numCharsRead ) );
+                }
+                return numCharsRead;
+                */
 
                 // danson, changed to reading by log entries, I'm assuming log files will
                 // be text and not binary, so reading by entries/lines is reasonable.
                 // The default entry separator is \n, so if none is explicitly set, this
                 // does the same as reading by lines.  Sending a batch of entries may be
-                // an optimization for the destination
-                String line = bufferedReader.readLine();
-                int numCharsRead = line.length();
+                // an optimization for the destination.
+                int numCharsRead = bufferedReader.read( charArray, 0, charArray.length );
                 if (numCharsRead > 0) {
                     String s = new String(charArray, 0, numCharsRead);
                     if (logEntryRegex == null) {
@@ -371,7 +371,7 @@ public class FileFollower {
                         String[] entries = logEntryPattern.split(s);
 
                         // send the entries to the destination(s).
-                        List toPrint = new ArrayList();
+                        List<String> toPrint = new ArrayList<String>();
                         boolean append_nl = logEntrySeparator.equals("\n");
                         for (int i = 0; i < entries.length; i++) {
                             toPrint.add(entries[i].trim() + (append_nl ? "\n" : ""));
@@ -381,7 +381,7 @@ public class FileFollower {
                     else {
                         // use regex to find individual entries
                         Matcher m = logEntryPattern.matcher(s);
-                        List toPrint = new ArrayList();
+                        List<String> toPrint = new ArrayList<String>();
                         while (m.find()) {
                             toPrint.add(m.group() + "\n");
                         }

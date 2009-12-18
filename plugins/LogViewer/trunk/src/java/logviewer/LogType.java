@@ -8,10 +8,18 @@ public class LogType {
     private ArrayList columns = new ArrayList();
     private String fileNameGlob = null;
     private String firstLineGlob = null;
+    
     private String rowRegex = null;
     private boolean rowRegexInclude = true;
     private int rowRegexFlags = 0;
+
+    private String rowColorRegex = null;
+    private boolean rowColorRegexInclude = true;
+    private int rowColorRegexFlags = 0;
+    private int rowColor = 1;
+
     private String rowSeparatorRegex = "\n";
+    
     private String columnRegex = null;
     private String columnRegexGroups = null;
     private int columnRegexFlags = 0;
@@ -74,6 +82,16 @@ public class LogType {
         rowRegexFlags = flags;
     }
     
+    public void setRowColor(String regex, boolean include, int flags, int color) {
+        if (color < 0) {
+            return;   
+        }
+        rowColorRegex = regex;
+        rowColorRegexInclude = include;
+        rowColorRegexFlags = flags;
+        rowColor = color;
+    }
+    
     public String getRowRegex() {
         return rowRegex;   
     }
@@ -84,6 +102,22 @@ public class LogType {
     
     public int getRowFlags() {
         return rowRegexFlags;   
+    }
+    
+    public String getRowColorRegex() {
+        return rowColorRegex;   
+    }
+    
+    public boolean getRowColorInclude() {
+        return rowColorRegexInclude;   
+    }
+    
+    public int getRowColorFlags() {
+        return rowRegexFlags;   
+    }
+    
+    public int getRowColor() {
+        return rowColor;   
     }
     
     public void setRowSeparatorRegex(String regex) {
