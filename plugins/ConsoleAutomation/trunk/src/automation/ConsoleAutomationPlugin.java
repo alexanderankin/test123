@@ -185,7 +185,7 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 	{
 		try
 		{
-			c.connect();
+			c.disconnect();
 			ConnectionDockable dockable = getConnectionDockable();
 			dockable.remove(c);
 			connections.remove(c.getName());
