@@ -162,7 +162,11 @@ public class Connection
 	}
 	public void abortScript()
 	{
-		scriptAborted = true;
+		synchronized (expectHandlerLock)
+		{
+			scriptAborted = true;
+			notifyExpectHandler();
+		}
 	}
 
 	// Private methods
@@ -215,13 +219,6 @@ public class Connection
 		int i;
 		while ((i = reader.read()) != -1)
 		{
-			if (scriptAborted)
-			{
-				synchronized(expectHandlerLock)
-				{
-					notifyExpectHandler();
-				}
-			}
 			char c = (char) i;
 			if (outputHandler != null)
 				outputHandler.handle(c);
