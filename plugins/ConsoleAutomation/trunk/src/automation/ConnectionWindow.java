@@ -110,8 +110,6 @@ public class ConnectionWindow extends JPanel implements CharHandler, EventHandle
 			else
 			{
 				currentOutput.append(c);
-				if (charsToRemove > 0)
-					charsToRemove--;
 				if (c == '\n') 
 					output.add(currentOutput = new StringBuilder());
 			}
