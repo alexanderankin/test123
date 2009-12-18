@@ -68,6 +68,26 @@
 <!ATTLIST entry_regex unix_lines (true|false) "false">
 
 <!--
+    An entry may be colored. "entry_regex_color" is a regular expression
+    to find some part of an entry that indicates what color it should be,
+    for example, "debug" or "error".
+    
+    The specific color for the entry is specified by the color attribute,
+    and must be a hex or int color string understook by Color(int).  The
+    color value may start with #, for example #FFFFFF, or a standard hex
+    value, 0xFFFFFF, or a string representation of an integer valid to
+    pass to the java.awt.Color(int) constructor.
+-->
+<!ELEMENT entry_regex_color (#CDATA)>
+<!ATTLIST entry_regex_color case_insensitive (true|false) "false">
+<!ATTLIST entry_regex_color dotall (true|false) "true">
+<!ATTLIST entry_regex_color multiline (true|false) "false">
+<!ATTLIST entry_regex_color unicode_case (true|false) "false">
+<!ATTLIST entry_regex_color canon_eq (true|false) "false">
+<!ATTLIST entry_regex_color unix_lines (true|false) "false">
+<!ATTLIST entry_regex_color color #IMPLIED>
+
+<!--
     This element describes how an individual entry is to be split into columns.
     The "group" attribute is used to determine which parts of the resulting
     regex matches should be used for display.  For example, given an entry like:
@@ -115,3 +135,4 @@
 <!ELEMENT column (#CDATA)>
 <!ELEMENT column offset #IMPLIED>
 <!ATTLIST column width #IMPLIED>
+
