@@ -41,6 +41,7 @@ public class ConnectionWindow extends JPanel implements CharHandler, EventHandle
 	private final JButton ctrlC;
 	private final List<StringBuilder> output;
 	private StringBuilder currentOutput;
+	private Object outputSync= new Object(); 
 	private int charsToRemove = 0;
 	private final JLabel action;
 
@@ -97,7 +98,7 @@ public class ConnectionWindow extends JPanel implements CharHandler, EventHandle
 	}
 	public void handle(char c)
 	{
-		synchronized(output)
+		synchronized(outputSync)
 		{
 			if (c == '\b')
 			{
@@ -121,7 +122,7 @@ public class ConnectionWindow extends JPanel implements CharHandler, EventHandle
 				try
 				{
 					boolean atEnd = (console.getCaretPosition() == d.getLength());
-					synchronized(output)
+					synchronized(outputSync)
 					{
 						if (charsToRemove > 0)
 						{
@@ -129,8 +130,12 @@ public class ConnectionWindow extends JPanel implements CharHandler, EventHandle
 							d.remove(len - charsToRemove, charsToRemove);
 							charsToRemove = 0;
 						}
-						for (StringBuilder sb: output)
-							d.insertString(d.getLength(), sb.toString(), null);
+					}
+					for (int i = 0; i < output.size() - 1; i++)
+						d.insertString(d.getLength(), output.get(i).toString(), null);
+					synchronized(outputSync)
+					{
+						d.insertString(d.getLength(), currentOutput.toString(), null);
 						output.clear();
 						output.add(currentOutput = new StringBuilder());
 					}
