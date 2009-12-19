@@ -397,7 +397,10 @@ public class ErrorListPlugin extends EBPlugin
 	{
 		for(ErrorSource errorSource: ErrorSource.getErrorSources())
 		{
-			for (ErrorSource.Error error: errorSource.getAllErrors())
+			ErrorSource.Error [] errors = errorSource.getAllErrors();
+			if (errors == null)
+				continue;
+			for (ErrorSource.Error error: errors)
 			{
 				if (! isErrorFiltered(error))
 					return true;
