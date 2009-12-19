@@ -162,7 +162,8 @@ public class BufferChangedLines extends BufferAdapter
 				listSize++;
 			}
 			// Clear the dirty line state, we're now in non-dirty state.
-			bufferSaved(buffer);
+			ranges.clear();
+			undoManager.setCleanState();
 		}
 		// Build forward undo information, count steps
 		recordUndo = true;
@@ -371,7 +372,10 @@ public class BufferChangedLines extends BufferAdapter
 	public void bufferSaved(Buffer buffer)
 	{
 		ranges.clear();
-		undoManager.setCleanState();
+		undoManager = new RangeChangeUndoManager(this);
+		initHistory();
+		printRanges();
+		LCMPlugin.getInstance().repaintAllTextAreas();
 	}
 
 	public DirtyMarkPainter getDirtyMarkPainter(Buffer buffer, int physicalLine)
