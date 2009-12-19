@@ -23,10 +23,8 @@ package common.gui.pathbuilder;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.net.URL;
 import javax.swing.*;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.gui.EnhancedDialog;
 
 /**
  * A generic dialog to hold a PathBuilder component.<p>
@@ -61,8 +59,6 @@ public class PathBuilderDialog extends JDialog implements ActionListener {
     private JButton jok;
     private JButton jcancel;
 
-    private String okString;
-    private String cancelString;
 
     /**
      * Create a new PathBuilderDialog.<p>
@@ -72,7 +68,12 @@ public class PathBuilderDialog extends JDialog implements ActionListener {
      */
     public PathBuilderDialog(Dialog parent, String title) {
         super(parent, title, true);
-        init();
+        init(null);
+    }
+    
+    public PathBuilderDialog(Dialog parent, String title, String pathBuilderTitle) {
+        super(parent, title, true);
+        init(pathBuilderTitle);
     }
 
     /**
@@ -83,15 +84,20 @@ public class PathBuilderDialog extends JDialog implements ActionListener {
      */
     public PathBuilderDialog(Frame parent, String title) {
         super(parent, title, true);
-        init();
+        init(null);
+    }
+    
+    public PathBuilderDialog(Frame parent, String title, String pathBuilderTitle) {
+        super(parent, title, true);
+        init(pathBuilderTitle);
     }
 
     /**
      * Create the dialog controls.<p>
      */
-    private void init() {
-        okString = jEdit.getProperty("common.ok");
-        cancelString = jEdit.getProperty("common.cancel");
+    private void init(String pathBuilderTitle) {
+        String okString = jEdit.getProperty("common.ok");
+        String cancelString = jEdit.getProperty("common.cancel");
 
         Panel panel = new Panel();
         jok = new JButton(okString);
@@ -102,12 +108,18 @@ public class PathBuilderDialog extends JDialog implements ActionListener {
         Container contentPane = getContentPane();
         contentPane.setLayout(new BorderLayout());
 
-        pathBuilder = new PathBuilder();
+        if (pathBuilderTitle == null) {
+            pathBuilder = new PathBuilder();
+        }
+        else {
+            pathBuilder = new PathBuilder(pathBuilderTitle);   
+        }
         contentPane.add(pathBuilder, BorderLayout.CENTER);
 
         contentPane.add(panel, BorderLayout.SOUTH);
         jok.addActionListener(this);
         jcancel.addActionListener(this);
+        pack();
     }
 
     /**
