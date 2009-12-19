@@ -123,7 +123,6 @@ public class RangeChangeUndoManager
 			next = cur.next;
 			cur.next = prev;
 			cur.prev = next;
-			cur.reverse();
 			prev = cur;
 			cur = next;
 		}
@@ -162,9 +161,6 @@ public class RangeChangeUndoManager
 		public RangeChange prev = null, next = null;
 		abstract void undo();
 		abstract void redo();
-		public void reverse()
-		{
-		}
 		public void append(RangeChange op)
 		{
 			op.prev = this;
@@ -283,17 +279,6 @@ public class RangeChangeUndoManager
 		{
 			for (RangeChange op = last; op != null; op = op.prev)
 				op.undo();
-		}
-		@Override
-		public void reverse()
-		{
-			RangeChange next = null;
-			for (RangeChange op = last; op != null; op = op.next)
-			{
-				op.next = op.prev;
-				op.prev = next;
-				next = op;
-			}
 		}
 		public String toString()
 		{
