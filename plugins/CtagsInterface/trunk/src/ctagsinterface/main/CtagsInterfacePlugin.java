@@ -43,6 +43,7 @@ import ctagsinterface.projects.ProjectWatcher;
 
 public class CtagsInterfacePlugin extends EditPlugin {
 	
+	public static final String TAGS_UPDATED_BUFFER_PROP = "TagsUpdated";
 	private static final String QUALIFIED_PLUGIN_NAME = "ctagsinterface.main.CtagsInterfacePlugin";
 	private static final String DOCKABLE = "ctags-interface-tag-list";
 	static public final String OPTION = "options.CtagsInterface.";
@@ -55,7 +56,8 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	private static ProjectWatcher pvi;
 	private static ActionSet actions;
 	private static KindIconProvider iconProvider;
-	
+	private static Object bufferUpdateLock = new Object();
+
 	public void start()
 	{
 		Log.log(Log.MESSAGE, this, "Setting up Tagdb...");
@@ -97,7 +99,11 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	static public ImageIcon getIcon(Tag tag) {
 		return iconProvider.getIcon(tag);
 	}
-	
+
+	static public Object getBufferUpdateLock() {
+		return bufferUpdateLock;
+	}
+
 	static public void updateActions() {
 		actions.removeAllActions();
 		QueryAction[] queries = ActionsOptionPane.loadActions();
@@ -405,15 +411,61 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		});
 	}
 	// Jumps to the specified tag
-	public static void jumpToTag(View view, Tag tag) {
+	public static void jumpToTag(final View view, final Tag tag) {
 		String file = tag.getFile();
 		if (file == null)
 			return;
 		int line = tag.getLine();
 		if (line < 1)
 			return;
-		jumpTo(view, tag.getFile(), tag.getLine());
-		
+		final String path = tag.getFile();
+		// If "update on load" is used, the file tags will be updated when
+		// the buffer is loaded, so delay the jump. Otherwise, jump now.
+		if ((! GeneralOptionPane.getUpdateOnLoad()) || (jEdit.getBuffer(path) != null))
+		{
+			jumpTo(view, path, tag.getLine());
+			return;
+		}
+		final long time = System.currentTimeMillis();
+		final Buffer buffer = jEdit.openFile(view, path);
+		if (buffer == null)
+		{
+			System.err.println("Unable to open: " + path);
+			return;
+		}
+		Runnable delayJump = new Runnable() {
+			public void run() {
+				synchronized(bufferUpdateLock) {
+					while (true) {
+						Long l = (Long) buffer.getProperty(TAGS_UPDATED_BUFFER_PROP);
+						if ((l != null) && (l.longValue() > time))
+							break;
+						try {
+							bufferUpdateLock.wait();
+						} catch (InterruptedException e) {}
+					}
+				}
+				Tag updatedTag = getUpdatedTag(tag);
+				jumpTo(view, path, updatedTag.getLine());
+			}
+		};
+		Thread bgTask = new Thread(delayJump);
+		bgTask.start();
+
+	}
+	private static Tag getUpdatedTag(Tag tag)
+	{
+		Query q = db.getIdenticalTagQuery(tag);
+		ResultSet rs;
+		try {
+			rs = db.query(q);
+			Vector<Tag> tags = db.getResultSetTags(rs);
+			if ((tags == null) || tags.isEmpty())
+				return tag;
+			return tags.get(0);
+		} catch (SQLException e) {
+			return tag;
+		}
 	}
 	// Jumps to the specified location
 	public static void jumpToOffset(final View view, String file, final int offset) {
