@@ -36,6 +36,11 @@
       <pathelement path="${jedit.install.dir}/jedit.jar" />
       <pathelement path="${jedit.plugins.dir}/${groovy.jar.name}" />
       <pathelement path="${jedit.plugins.dir}/ScriptEnginePlugin.jar" />
+      <pathelement path="${jedit.plugins.dir}/ProjectViewer.jar" />
+      <pathelement path="${jedit.plugins.dir}/CommonControls.jar" />
+      <pathelement path="${jedit.plugins.dir}/Console.jar" />
+      <pathelement path="${jedit.plugins.dir}/AntFarm.jar" />
+      <pathelement path="${jedit.plugins.dir}/ErrorList.jar" />
       <pathelement path="${jedit.plugins.dir}/AntFarm.jar" />
       <pathelement path="${jedit.plugins.dir}/CommonControls.jar" />
       <pathelement path="${jedit.plugins.dir}/Console.jar" />

@@ -19,11 +19,13 @@ plugin.projectbuilder.ProjectBuilderPlugin.depend.4=plugin CommonControlsPlugin 
 # }}} Dependencies
 
 # Menu {{{
-plugin.projectbuilder.ProjectBuilderPlugin.menu=projectBuilder.actions.buildProject projectBuilder.actions.runProject -
+plugin.projectbuilder.ProjectBuilderPlugin.menu=projectBuilder.actions.buildProject projectBuilder.actions.runProject - \
+												  projectBuilder.actions.editBuildSettings -
 plugin.projectbuilder.ProjectBuilderPlugin.menu.code=new projectbuilder.NewProjectMenu()
 projectBuilder.actions.newProject.label=Create new Project
 projectBuilder.actions.buildProject.label=Build current Project
 projectBuilder.actions.runProject.label=Run current Project
+projectBuilder.actions.editBuildSettings.label=Edit Project Build Settings
 # }}} Menu
 
 # Messages {{{
