@@ -108,7 +108,7 @@ public class CommandoButton extends JButton implements ActionListener
     // }}}
     
 	// {{{ unCustomize
-	public void unCustomize() 
+	public void unCustomizeButton() 
 	{
 		String userDir = ConsolePlugin.getUserCommandDirectory();
 		String name = command.getShortLabel() + ".xml";
@@ -120,7 +120,14 @@ public class CommandoButton extends JButton implements ActionListener
 		DockableWindowManager dwm = jEdit.getActiveView().getDockableWindowManager();
 		Component comp = dwm.getDockable("vfs.browser");
 		VFSBrowser browser = (VFSBrowser) comp;
-		if (browser == null) return;
+		if (browser == null) {
+			dwm.showDockableWindow("vfs.browser");
+			comp = dwm.getDockable("vfs.browser");
+			browser = (VFSBrowser) comp;
+		}
+		if (browser == null) {
+			return;
+		}
 		browser.delete(vfl);
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {	ConsolePlugin.rescanCommands();	}});
@@ -172,7 +179,7 @@ public class CommandoButton extends JButton implements ActionListener
 			customize();
 		}
 		if (e.getSource() == unCustomize) {
-			unCustomize();
+			unCustomizeButton();
 		}
 	}
     // }}}
