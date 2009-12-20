@@ -2,7 +2,7 @@
 NOTE!! Editing this file will do nothing unless the plugin dir is deleted,
 then this plugin is reloaded
 */
-
+// imports {{{
 import groovy.swing.SwingBuilder
 import java.awt.GridBagConstraints as GBC
 import javax.swing.*
@@ -29,6 +29,7 @@ import projectviewer.vpt.VPTGroup;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTRoot;
 import projectviewer.importer.RootImporter
+// }}}
 
 View view = JEDIT.getActiveView()
 
@@ -98,7 +99,10 @@ def form = swing.panel() {
    })
 }
 
-def answer = JOptionPane.showConfirmDialog(view, form, "Create a new Project", JOptionPane.OK_CANCEL_OPTION)
+// QUESTION: Should we find a custom icon for this? I like this better than the generic question mark
+def answer = JOptionPane.showConfirmDialog(view, form, "Create a new Project",
+	JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
+	GUIUtilities.loadIcon("22x22/actions/application-run.png"))
 
 if(answer == JOptionPane.OK_OPTION) {
    def templateType = swing.type_field.selectedItem
