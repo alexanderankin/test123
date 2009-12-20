@@ -160,9 +160,9 @@ public abstract class ProjectCustomTreeModel extends ProjectTreeModel
 		VPTNode n = (VPTNode) node;
 		if (!n.isGroup()) {
 			VPTProject p = VPTNode.findProjectFor(n);
-			List<VPTNode> lst = getChildren(p);
-			childCache.put(p, lst);
+			childCache.remove(p);
 
+			List<VPTNode> lst = getCachedChildren(p);
 			if (lastParent == p) {
 				lastList = lst;
 			}
