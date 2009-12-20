@@ -2,6 +2,7 @@ package ctagsinterface.jedit;
 
 import java.util.Vector;
 
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
@@ -33,9 +34,19 @@ public class BufferWatcher implements EBComponent {
 		if ((GeneralOptionPane.getUpdateOnSave() && bu.getWhat() == BufferUpdate.SAVED) ||
 			(GeneralOptionPane.getUpdateOnLoad() && bu.getWhat() == BufferUpdate.LOADED))
 		{
-			String file = bu.getBuffer().getPath();
+			Buffer buffer = bu.getBuffer();
+			String file = buffer.getPath();
 			if (monitored(file))
 				update(file);
+			// Update file timestamp in any case, since a "jump to tag" operation
+			// may be waiting without knowing if this file is monitored.
+			Object lock = CtagsInterfacePlugin.getBufferUpdateLock();
+			synchronized(lock)
+			{
+				buffer.setProperty(CtagsInterfacePlugin.TAGS_UPDATED_BUFFER_PROP,
+					Long.valueOf(System.currentTimeMillis()));
+				lock.notifyAll();
+			}
 		}
 	}
 

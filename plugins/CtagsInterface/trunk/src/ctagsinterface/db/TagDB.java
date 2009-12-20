@@ -437,19 +437,39 @@ public class TagDB {
 		try {
 			ResultSetMetaData meta;
 			meta = rs.getMetaData();
-			String [] cols = new String[meta.getColumnCount()];
-			int [] types = new int[meta.getColumnCount()];
+			int columnCount = meta.getColumnCount();
+			String [] cols = new String[columnCount];
+			int [] types = new int[columnCount];
+			boolean [] include = new boolean[columnCount];
+			int nameIndex = 0;
+			int patternIndex = 0;
+			int fileIndex = 0;
 			for (int i = 0; i < cols.length; i++) {
 				cols[i] = meta.getColumnName(i + 1);
 				types[i] = meta.getColumnType(i + 1);
+				include[i] = false;
+				String table = meta.getTableName(i + 1);
+				if (table.equals(TAGS_TABLE)) {
+					include[i] = true;
+					if (cols[i].equals(TAGS_NAME))
+						nameIndex = i + 1;
+					else if (cols[i].equals(TAGS_PATTERN))
+						patternIndex = i + 1;
+				}
+				else if (table.equals(FILES_TABLE)) {
+					if (cols[i].equals(FILES_NAME))
+						fileIndex = i + 1;
+				}
 			}
 			while (rs.next()) {
-				Tag t = new Tag(rs.getString(TAGS_NAME),
-					rs.getString(FILES_NAME), rs.getString(TAGS_PATTERN));
+				String name = ((nameIndex == 0) ? "" : rs.getString(nameIndex));
+				String file = ((fileIndex == 0) ? "" : rs.getString(fileIndex));
+				String pattern = ((patternIndex == 0) ? "" : rs.getString(patternIndex));
+				Tag t = new Tag(name, file, pattern);
 				Hashtable<String, String> extensions = new Hashtable<String, String>();
 				Hashtable<String, String> attachments = new Hashtable<String, String>();
 				for (int i = 0; i < cols.length; i++) {
-					if (types[i] != Types.VARCHAR)
+					if ((types[i] != Types.VARCHAR) || (! include[i]))
 						continue;
 					String value = rs.getString(i + 1); 
 					if (value != null) {
@@ -500,7 +520,28 @@ public class TagDB {
 			throw e;
 		}
     }
-	
+
+	public Query getIdenticalTagQuery(Tag tag) {
+		Query q = getBasicTagQuery();
+		q.addCondition(field(TAGS_TABLE, TAGS_NAME) + "=" + quote(tag.getName()));
+		q.addCondition(field(FILES_TABLE, FILES_NAME) + "=" + quote(tag.getFile()));
+		Set<String> extensions = tag.getExtensions();
+		if (extensions != null) {
+			for (String s: extensions) {
+				String col = extension2column(s);
+				if (col.equals(TAGS_LINE))
+					continue;
+				q.addCondition(field(TAGS_TABLE, col) + "=" + quote(tag.getExtension(s)));
+			}
+		}
+		Set<String> attachments = tag.getAttachments();
+		if (attachments != null) {
+			for (String s: attachments)
+				q.addCondition(field(TAGS_TABLE, s) + "=" + quote(tag.getAttachment(s)));
+		}
+		return q;
+	}
+
 	public Vector<String> queryStringList(String column, String query) {
 		Vector<String> values = new Vector<String>();
 		try {
