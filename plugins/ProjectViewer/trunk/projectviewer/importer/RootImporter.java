@@ -94,11 +94,7 @@ public class RootImporter extends FileImporter {
 			String dlgTitle = (project.getChildCount() == 0)
 							? "projectviewer.import.msg_proj_root.title"
 							: "projectviewer.import.msg_reimport.title";
-			ImportDialog id = getImportDialog();
-			id.setTitle(jEdit.getProperty(dlgTitle));
-			loadImportFilterStatus(project, id, FILTER_CONF_PROJECT);
-			id.setVisible(true);
-
+			ImportDialog id = showImportDialog(dlgTitle, FILTER_CONF_PROJECT);
 			if (!id.isApproved()) {
 				return;
 			}

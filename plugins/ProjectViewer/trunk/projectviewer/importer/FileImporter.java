@@ -82,11 +82,7 @@ public class FileImporter extends Importer {
 	 */
 	protected void internalDoImport() {
 		VPTNode where = selected;
-		ImportDialog id = getImportDialog();
-		if (loadImportFilterStatus(project, id, FILTER_CONF_FILES) == null) {
-			loadImportFilterStatus(project, id, FILTER_CONF_PROJECT);
-		}
-		id.setVisible(true);
+		ImportDialog id = showImportDialog(null, FILTER_CONF_PROJECT);
 
 		VFSFile[] chosen = id.getSelectedFiles();
 		if (chosen == null || chosen.length == 0) {
@@ -154,11 +150,51 @@ public class FileImporter extends Importer {
 	}
 
 
+	protected ImportDialog showImportDialog(String title,
+											String filtercfg)
+	{
+		DialogRunner runner = new DialogRunner(title, filtercfg);
+		PVActions.swingInvoke(runner);
+		return runner.dialog;
+	}
+
+
 	protected void cleanup()
 	{
 		if (fnf instanceof ImporterFileFilter) {
 			((ImporterFileFilter)fnf).done();
 		}
+	}
+
+
+	private class DialogRunner implements Runnable
+	{
+
+		public ImportDialog dialog;
+		private final String title;
+		private final String filtercfg;
+
+		public DialogRunner(String title,
+							String filtercfg)
+		{
+			this.title = title;
+			this.filtercfg = filtercfg;
+		}
+
+		public void run()
+		{
+			dialog = getImportDialog();
+			if (title != null) {
+				dialog.setTitle(title);
+			}
+			if (filtercfg != null &&
+				loadImportFilterStatus(project, dialog, filtercfg) == null) {
+				loadImportFilterStatus(project, dialog, FILTER_CONF_PROJECT);
+			}
+
+			dialog.setVisible(true);
+		}
+
 	}
 
 }
