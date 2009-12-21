@@ -22,28 +22,24 @@ package gatchan.jedit.lucene;
 
 import javax.swing.JOptionPane;
 
-import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.EditBus.EBHandler;
 
 import projectviewer.event.StructureUpdate;
 
-public class ProjectWatcher implements EBComponent
+public class ProjectWatcher
 {
 	public ProjectWatcher()
 	{
 		EditBus.addToBus(this);
 	}
 
-	public void handleMessage(EBMessage message)
+	@EBHandler
+	public void handleStructureUpdate(StructureUpdate su)
 	{
-		if (message instanceof StructureUpdate)
-		{
-			StructureUpdate su = (StructureUpdate) message;
-			if (su.getType() == StructureUpdate.Type.PROJECT_REMOVED)
-				checkRemoveProjectIndex(su.getNode().getName());
-		}
+		if (su.getType() == StructureUpdate.Type.PROJECT_REMOVED)
+			checkRemoveProjectIndex(su.getNode().getName());
 	}
 
 	private void checkRemoveProjectIndex(String project)
