@@ -15,10 +15,9 @@ import javax.swing.SwingWorker;
 import javax.swing.Timer;
 import javax.swing.ToolTipManager;
 
-import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
@@ -219,26 +218,24 @@ public class TagTooltip extends TextAreaExtension
 		}
 	}
 
-	private static class Attacher implements EBComponent
+	public static class Attacher
 	{
-		public void handleMessage(EBMessage message) {
-			if (message instanceof EditPaneUpdate)
-			{
-				if (! GeneralOptionPane.getShowTooltips())
-					return;
-				EditPaneUpdate epu = (EditPaneUpdate) message;
-				if (epu.getWhat().equals(EditPaneUpdate.CREATED))
-					attachToTextArea(epu.getEditPane().getTextArea());
-				else if (epu.getWhat().equals(EditPaneUpdate.DESTROYED))
-					detachFromTextArea(epu.getEditPane().getTextArea());
-			}
-			else if (message instanceof PropertiesChanged)
-			{
-				if (GeneralOptionPane.getShowTooltips())
-					attachToAll();
-				else
-					detachFromAll();
-			}
+		@EBHandler
+		public void handleEditPaneUpdate(EditPaneUpdate epu)
+		{
+			if (! GeneralOptionPane.getShowTooltips())
+				return;
+			if (epu.getWhat().equals(EditPaneUpdate.CREATED))
+				attachToTextArea(epu.getEditPane().getTextArea());
+			else if (epu.getWhat().equals(EditPaneUpdate.DESTROYED))
+				detachFromTextArea(epu.getEditPane().getTextArea());
+		}
+		@EBHandler
+		public void handlePropertiesChanged(PropertiesChanged msg) {
+			if (GeneralOptionPane.getShowTooltips())
+				attachToAll();
+			else
+				detachFromAll();
 		}
 	}
 }
