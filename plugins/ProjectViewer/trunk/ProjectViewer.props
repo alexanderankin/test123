@@ -156,6 +156,7 @@ projectviewer.options.show_folders=Show folders tree
 projectviewer.options.show_files=Show files tree
 projectviewer.options.show_files.tooltip=Disabling this tree will improve performance in projects with many files
 projectviewer.options.show_working_files=Show working files tree
+projectviewer.options.show_all_working_files=Show all open files
 projectviewer.options.show_compact_tree=Show compact tree
 projectviewer.options.show_filtered_tree=Show filtered tree
 projectviewer.options.use_system_icons=Use system icons for files

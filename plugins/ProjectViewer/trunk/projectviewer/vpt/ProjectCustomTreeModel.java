@@ -20,6 +20,7 @@ package projectviewer.vpt;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -190,9 +191,9 @@ public abstract class ProjectCustomTreeModel extends ProjectTreeModel
                             VPTNode child)
     {
         List<VPTNode> lst = getCachedChildren(proj);
-        if (!lst.contains(child)) {
-            lst.add(child);
-            Collections.sort(lst);
+        int idx = Collections.binarySearch(lst, child, new NodeComparator());
+        if (idx < 0) {
+            lst.add(-(idx + 1), child);
             super.nodeStructureChanged(proj);
         }
     }
@@ -273,10 +274,34 @@ public abstract class ProjectCustomTreeModel extends ProjectTreeModel
                                VPTNode child)
     {
         List<VPTNode> lst = getCachedChildren(proj);
-        if (lst.contains(child)) {
-            lst.remove(child);
+        int idx = Collections.binarySearch(lst, child, new NodeComparator());
+        if (idx >= 0) {
+            lst.remove(idx);
             super.nodeStructureChanged(proj);
+            System.err.println("removed " + child);
         }
+    }
+
+
+    /**
+     * Compares two VPTNode instances.
+     */
+    private static class NodeComparator implements Comparator<VPTNode>
+    {
+
+         public int compare(VPTNode n1,
+                            VPTNode n2)
+         {
+             return n1.compareTo(n2);
+         }
+
+
+         public boolean equals(VPTNode n1,
+                               VPTNode n2)
+         {
+             return compare(n1, n2) == 0;
+         }
+
     }
 
 }

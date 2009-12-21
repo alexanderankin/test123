@@ -97,6 +97,7 @@ public final class ProjectViewerConfig {
 	public static final String SHOW_FILTERED_OPT		  = "projectviewer.show_filtered_tree";
 	public static final String SHOW_FOLDERS_OPT			  = "projectviewer.show_folder_tree";
 	public static final String SHOW_WFILES_OPT			  = "projectviewer.show_working_files_tree";
+	public static final String SHOW_ALLWFILES_OPT		  = "projectviewer.show_all_working_files";
 
 	public static final String USER_MENU_FIRST			  = "projectviewer.contextmenu.userfirst";
 	public static final String USER_CONTEXT_MENU		  = "projectviewer.user_context_menu";
@@ -135,6 +136,7 @@ public final class ProjectViewerConfig {
 	private boolean showWorkingFilesTree	= true;
 	private boolean showCompactTree			= true;
 	private boolean showFilteredTree		= true;
+	private boolean showAllWorkingFiles		= false;
 	private boolean showProjectInTitle		= true;
 	private boolean useInfoViewer			= false;
 	private boolean useExternalApps			= false;
@@ -218,6 +220,11 @@ public final class ProjectViewerConfig {
 		tmp = props.getProperty(SHOW_WFILES_OPT);
 		if (tmp != null) {
 			setShowWorkingFilesTree("true".equalsIgnoreCase(tmp));
+		}
+
+		tmp = props.getProperty(SHOW_ALLWFILES_OPT);
+		if (tmp != null) {
+			setShowAllWorkingFiles("true".equalsIgnoreCase(tmp));
 		}
 
 		// show_compact_tree
@@ -446,6 +453,12 @@ public final class ProjectViewerConfig {
 		firePropertyChanged(SHOW_WFILES_OPT, old, newShowWorkingFilesTree);
 	}
 
+	public void setShowAllWorkingFiles(boolean newShowAllWorkingFiles) {
+		boolean old = this.showAllWorkingFiles;
+		this.showAllWorkingFiles = newShowAllWorkingFiles;
+		firePropertyChanged(SHOW_ALLWFILES_OPT, old, newShowAllWorkingFiles);
+	}
+
 	public void setShowCompactTree(boolean newValue) {
 		boolean old = this.showCompactTree;
 		this.showCompactTree = newValue;
@@ -492,6 +505,10 @@ public final class ProjectViewerConfig {
 
 	public boolean getShowWorkingFilesTree() {
 		return showWorkingFilesTree;
+	}
+
+	public boolean getShowAllWorkingFiles() {
+		return showAllWorkingFiles;
 	}
 
 	public boolean getShowCompactTree() {
@@ -717,6 +734,7 @@ public final class ProjectViewerConfig {
 		props.setProperty(SHOW_FOLDERS_OPT, String.valueOf(showFoldersTree));
 		props.setProperty(SHOW_FILES_OPT, String.valueOf(showFilesTree));
 		props.setProperty(SHOW_WFILES_OPT, String.valueOf(showWorkingFilesTree));
+		props.setProperty(SHOW_ALLWFILES_OPT, String.valueOf(showAllWorkingFiles));
 		props.setProperty(SHOW_COMPACT_OPT, String.valueOf(showCompactTree));
 		props.setProperty(SHOW_FILTERED_OPT, String.valueOf(showFilteredTree));
 

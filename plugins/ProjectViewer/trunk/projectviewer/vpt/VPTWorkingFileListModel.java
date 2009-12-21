@@ -31,6 +31,9 @@ import javax.swing.tree.TreeNode;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
+
+import projectviewer.config.ProjectViewerConfig;
+
 //}}}
 
 /**
@@ -59,11 +62,12 @@ public class VPTWorkingFileListModel extends ProjectCustomTreeModel
 	 */
 	public void fileOpened(VPTNode child)
 	{
+		boolean showAllWorkingFiles =
+			ProjectViewerConfig.getInstance().getShowAllWorkingFiles();
 		String path = child.getNodePath();
 
 		for (VPTProject p : getCache().keySet()) {
-			VPTNode n = p.getChildNode(path);
-			if (n != null) {
+			if (showAllWorkingFiles || p.getChildNode(path) != null) {
 				addChild(p, child);
 			}
 		}
@@ -78,11 +82,9 @@ public class VPTWorkingFileListModel extends ProjectCustomTreeModel
 	{
 		String path = child.getNodePath();
 
+		System.err.println("removing " + child);
 		for (VPTProject p : getCache().keySet()) {
-			VPTNode n = p.getChildNode(path);
-			if (n != null) {
-				removeChild(p, child);
-			}
+			removeChild(p, child);
 		}
 	}
 
@@ -93,14 +95,18 @@ public class VPTWorkingFileListModel extends ProjectCustomTreeModel
 	 */
 	protected List<VPTNode> getChildren(VPTProject proj)
 	{
+		boolean showAllWorkingFiles =
+			ProjectViewerConfig.getInstance().getShowAllWorkingFiles();
 		Buffer[] bufs = jEdit.getBuffers();
 		List<VPTNode> lst = new ArrayList<VPTNode>();
 
-		for (int i = 0; i < bufs.length; i++) {
-			String path = bufs[i].getPath();
+		for (Buffer b : bufs) {
+			String path = b.getPath();
 			VPTNode n = proj.getChildNode(path);
 			if (n != null) {
 				lst.add(n);
+			} else if (showAllWorkingFiles && !b.isUntitled()) {
+				lst.add(new VPTFile(path));
 			}
 		}
 		return lst;
