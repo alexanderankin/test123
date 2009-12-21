@@ -8,11 +8,10 @@ import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
-import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.EditBus.EBHandler;
 
 import projectviewer.ProjectManager;
 import projectviewer.ProjectViewer;
@@ -25,8 +24,8 @@ import ctagsinterface.db.TagDB;
 import ctagsinterface.main.CtagsInterfacePlugin;
 import ctagsinterface.options.ProjectsOptionPane;
 
-public class ProjectWatcher implements EBComponent {
-
+public class ProjectWatcher
+{
 	Set<String> watched;
 	
 	public ProjectWatcher() {
@@ -130,7 +129,11 @@ public class ProjectWatcher implements EBComponent {
 		// TODO Auto-generated method stub
 	}
 
-	public void handleStructureUpdate(StructureUpdate su) {
+	@EBHandler
+	public void handleStructureUpdate(StructureUpdate su)
+	{
+		if (! ProjectsOptionPane.getTrackProjectList())
+			return;
 		if (su.getType() == StructureUpdate.Type.PROJECT_ADDED) {
 			String name = su.getNode().getName();
 			CtagsInterfacePlugin.insertOrigin(TagDB.PROJECT_ORIGIN, name);
@@ -151,27 +154,16 @@ public class ProjectWatcher implements EBComponent {
 			watched.remove(name);
 		}
 	}
-	
-	public void handleMessage(EBMessage message) {
-		if (message.getClass().getName().endsWith("ProjectUpdate")) {
-			ProjectUpdate pu = (ProjectUpdate) message;
-			String name = ((ProjectUpdate) message).getProject().getName();
-			if (! watched.contains(name))
-				return;
-			if (pu.getType() == ProjectUpdate.Type.FILES_CHANGED)
-				handleFilesChanged(pu);
-			else if (pu.getType() == ProjectUpdate.Type.PROPERTIES_CHANGED)
-				handlePropertiesChanged(pu);
-		} else if (message.getClass().getName().endsWith("StructureUpdate")) {
-			if (! ProjectsOptionPane.getTrackProjectList())
-				return;
-			StructureUpdate su = (StructureUpdate) message;
-			if ((su.getType() == StructureUpdate.Type.PROJECT_ADDED) ||
-				(su.getType() == StructureUpdate.Type.PROJECT_REMOVED))
-			{
-				handleStructureUpdate(su);
-			}
-		}
-	}
 
+	@EBHandler
+	public void handleProjectUpdate(ProjectUpdate pu)
+	{
+		String name = pu.getProject().getName();
+		if (! watched.contains(name))
+			return;
+		if (pu.getType() == ProjectUpdate.Type.FILES_CHANGED)
+			handleFilesChanged(pu);
+		else if (pu.getType() == ProjectUpdate.Type.PROPERTIES_CHANGED)
+			handlePropertiesChanged(pu);
+	}
 }

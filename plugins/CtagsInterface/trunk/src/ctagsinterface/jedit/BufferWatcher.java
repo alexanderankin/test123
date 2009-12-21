@@ -3,10 +3,9 @@ package ctagsinterface.jedit;
 import java.util.Vector;
 
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 
 import ctagsinterface.db.TagDB;
@@ -14,7 +13,8 @@ import ctagsinterface.main.CtagsInterfacePlugin;
 import ctagsinterface.options.DirsOptionPane;
 import ctagsinterface.options.GeneralOptionPane;
 
-public class BufferWatcher implements EBComponent {
+public class BufferWatcher
+{
 
 	private TagDB db;
 	
@@ -26,11 +26,10 @@ public class BufferWatcher implements EBComponent {
 	public void shutdown() {
 		EditBus.removeFromBus(this);
 	}
-	
-	public void handleMessage(EBMessage message) {
-		if (! (message instanceof BufferUpdate))
-			return;
-		BufferUpdate bu = (BufferUpdate) message;
+
+	@EBHandler
+	public void handleBufferUpdate(BufferUpdate bu)
+	{
 		if ((GeneralOptionPane.getUpdateOnSave() && bu.getWhat() == BufferUpdate.SAVED) ||
 			(GeneralOptionPane.getUpdateOnLoad() && bu.getWhat() == BufferUpdate.LOADED))
 		{

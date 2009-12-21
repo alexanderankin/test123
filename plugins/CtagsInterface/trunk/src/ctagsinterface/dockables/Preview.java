@@ -41,8 +41,6 @@ import javax.swing.event.CaretListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.MiscUtilities;
@@ -50,6 +48,7 @@ import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.Registers;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.io.VFSManager;
@@ -67,7 +66,8 @@ import ctagsinterface.options.GeneralOptionPane;
 
 @SuppressWarnings("serial")
 public class Preview extends JPanel implements DefaultFocusComponent,
-	CaretListener, ListSelectionListener, EBComponent {
+	CaretListener, ListSelectionListener
+{
 
 	static public final String MESSAGE = CtagsInterfacePlugin.MESSAGE;
 	View view;
@@ -323,20 +323,27 @@ public class Preview extends JPanel implements DefaultFocusComponent,
 		return ret;
 	}
 
-	public void handleMessage(EBMessage message) {
-		if (message instanceof PropertiesChanged) {
-			propertiesChanged();
-		} else if (message instanceof ViewUpdate) {
-			ViewUpdate msg = (ViewUpdate) message;
-			if (msg.getView() == view && msg.getWhat() == ViewUpdate.EDIT_PANE_CHANGED)
-				updateCaretListenerState();
-		} else if (message instanceof EditPaneUpdate) {
-			EditPaneUpdate msg = (EditPaneUpdate) message;
-			if (msg.getWhat() == EditPaneUpdate.DESTROYED) {
-				JEditTextArea textArea = msg.getEditPane().getTextArea(); 
-				if (tracking.contains(textArea))
-					setCaretTracking(textArea, false);
-			}
+	@EBHandler
+	public void handlePropertiesChanged(PropertiesChanged msg)
+	{
+		propertiesChanged();
+	}
+	@EBHandler
+	public void handleViewUpdate(ViewUpdate msg)
+	{
+		if ((msg.getView() == view) &&
+			(msg.getWhat() == ViewUpdate.EDIT_PANE_CHANGED))
+		{
+			updateCaretListenerState();
+		}
+	}
+	@EBHandler
+	public void handleEditPaneUpdate(EditPaneUpdate msg)
+	{
+		if (msg.getWhat() == EditPaneUpdate.DESTROYED) {
+			JEditTextArea textArea = msg.getEditPane().getTextArea(); 
+			if (tracking.contains(textArea))
+				setCaretTracking(textArea, false);
 		}
 	}
 
