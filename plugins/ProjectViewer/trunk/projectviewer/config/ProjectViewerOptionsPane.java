@@ -68,6 +68,7 @@ public class ProjectViewerOptionsPane extends OptionPaneBase
 	private JCheckBox showFoldersTree;
 	private JCheckBox showFilesTree;
 	private JCheckBox showWorkingFilesTree;
+	private JCheckBox showAllWorkingFiles;
 	private JCheckBox showCompactTree;
 	private JCheckBox showFilteredTree;
 	private JCheckBox useSystemIcons;
@@ -157,8 +158,26 @@ public class ProjectViewerOptionsPane extends OptionPaneBase
 		showFilesTree = addCheckBox("show_files",
 									config.getShowFilesTree());
 
-		showWorkingFilesTree = addCheckBox("show_working_files",
-										   config.getShowWorkingFilesTree());
+		showWorkingFilesTree = new JCheckBox(jEdit.getProperty("projectviewer.options.show_working_files"));
+		String tooltip = jEdit.getProperty("show_working_files.tooltip");
+		if (tooltip != null) {
+			showWorkingFilesTree.setToolTipText(tooltip);
+		}
+
+		showWorkingFilesTree.setSelected(config.getShowWorkingFilesTree());
+		showWorkingFilesTree.addActionListener(this);
+		showAllWorkingFiles = new JCheckBox(jEdit.getProperty("projectviewer.options.show_all_working_files"));
+		tooltip = jEdit.getProperty("show_all_working_files.tooltip");
+		if (tooltip != null) {
+			showAllWorkingFiles.setToolTipText(tooltip);
+		}
+		showAllWorkingFiles.setEnabled(showWorkingFilesTree.isSelected());
+		showAllWorkingFiles.setSelected(config.getShowAllWorkingFiles());
+
+		JPanel workingFilesPanel = new JPanel();
+		workingFilesPanel.add(showWorkingFilesTree);
+		workingFilesPanel.add(showAllWorkingFiles);
+		addComponent(workingFilesPanel);
 
 		showCompactTree = addCheckBox("show_compact_tree",
 									  config.getShowCompactTree());
@@ -231,6 +250,7 @@ public class ProjectViewerOptionsPane extends OptionPaneBase
 		config.setShowFoldersTree(showFoldersTree.isSelected());
 		config.setShowFilesTree(showFilesTree.isSelected());
 		config.setShowWorkingFilesTree(showWorkingFilesTree.isSelected());
+		config.setShowAllWorkingFiles(showAllWorkingFiles.isSelected());
 		config.setShowCompactTree(showCompactTree.isSelected());
 		config.setShowFilteredTree(showFilteredTree.isSelected());
 		config.setUseSystemIcons(useSystemIcons.isSelected());
@@ -276,6 +296,11 @@ public class ProjectViewerOptionsPane extends OptionPaneBase
 
 		if (ae.getSource() == useInfoViewer) {
 			browserExecPath.setEnabled(!useInfoViewer.isSelected());
+		} else if (ae.getSource() == showWorkingFilesTree) {
+			showAllWorkingFiles.setEnabled(showWorkingFilesTree.isSelected());
+			if (!showWorkingFilesTree.isSelected()) {
+				showAllWorkingFiles.setSelected(false);
+			}
 		}
 
 	} //}}}

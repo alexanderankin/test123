@@ -158,7 +158,7 @@
 			"Folders" view, which shows the files as if in a file
 			manager, organised in directories. The "Files" view, which
 			shows all the project's files in a flat list. The "Working
-			Files", which shows the files currently opened in jEdit. And
+			Files", which shows the project files currently opened in jEdit. And
 			the "Compact View", which compresses subdirectories into
 			top-level nodes, showing a structure similar to the java
 			package naming.
@@ -562,6 +562,14 @@
 				<para>
 					Show working files tree: if the "Working Files" tree
 					view should be shown.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Show all open files: if the "Working Files" tree
+					is shown, checking this will also show all open files in
+					the current View, whether the files are in the project or
+					not.
 				</para>
 			</listitem>
 			<listitem>

@@ -1055,6 +1055,11 @@ public final class ProjectViewer extends JPanel
 				modifyViewTitle(view, treeRoot);
 			if (where != null && where.isProject()) {
 				VPTNode f = ((VPTProject)where).getChildNode(bu.getBuffer().getPath());
+				if (f == null &&
+					!bu.getBuffer().isUntitled() &&
+					config.getShowAllWorkingFiles()) {
+					f = new VPTFile(bu.getBuffer().getPath());
+				}
 				if (f != null) {
 					if (bu.getWhat() == BufferUpdate.CLOSED) {
 						getTreePanel().projectFileClosed(f);
@@ -1113,6 +1118,7 @@ public final class ProjectViewer extends JPanel
 
 			if (evt.getPropertyName().equals(ProjectViewerConfig.SHOW_FILES_OPT) ||
 					evt.getPropertyName().equals(ProjectViewerConfig.SHOW_WFILES_OPT) ||
+					evt.getPropertyName().equals(ProjectViewerConfig.SHOW_ALLWFILES_OPT) ||
 					evt.getPropertyName().equals(ProjectViewerConfig.SHOW_FOLDERS_OPT)||
 					evt.getPropertyName().equals(ProjectViewerConfig.SHOW_COMPACT_OPT) ||
 					evt.getPropertyName().equals(ProjectViewerConfig.SHOW_FILTERED_OPT))
