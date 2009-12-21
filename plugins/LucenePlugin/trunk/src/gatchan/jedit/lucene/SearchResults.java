@@ -24,12 +24,13 @@ import marker.tree.SourceLinkTree.SourceLinkParentNode;
 import marker.tree.SourceLinkTree.SubtreePopupMenuProvider;
 
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.gui.RolloverButton;
 import org.gjt.sp.util.StandardUtilities;
 import org.gjt.sp.util.Log;
 
 @SuppressWarnings("serial")
-public class SearchResults extends JPanel implements EBComponent
+public class SearchResults extends JPanel
 {
 	private static final String MESSAGE_IDLE = "";
 	private static final String MESSAGE_INDEXING = "Indexing";
@@ -250,13 +251,11 @@ public class SearchResults extends JPanel implements EBComponent
 		EditBus.removeFromBus(this);
 	} //}}}
 
-	public void handleMessage(EBMessage message)
+	@EBHandler
+	public void handleMessage(LuceneIndexUpdate msg)
 	{
-		if (message instanceof LuceneIndexUpdate)
-		{
-			String[] items = LucenePlugin.instance.getIndexes();
-			indexModel.setIndexes(items);
-		}
+		String[] items = LucenePlugin.instance.getIndexes();
+		indexModel.setIndexes(items);
 	}
 
 	private static class MyModel extends AbstractListModel

@@ -26,10 +26,9 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.*;
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.util.Log;
@@ -48,32 +47,30 @@ import javax.swing.JOptionPane;
  *
  * @author Matthieu Casanova
  */
-public class CentralIndex extends AbstractIndex implements EBComponent
+public class CentralIndex extends AbstractIndex
 {
 	CentralIndex(File indexFile)
 	{
 		super(indexFile);
 	}
 
-	public void handleMessage(EBMessage message)
+	@EBHandler
+	public void handleBufferUpdate(BufferUpdate message)
 	{
-		if (message instanceof BufferUpdate)
+		// test if the central index exists. If it doesnt exists, no need to start working
+		// it is possible that it doesn't exists if the plugin is just installed an no index has been created yet
+		if (IndexReader.indexExists(path))
 		{
-			// test if the central index exists. If it doesnt exists, no need to start working
-			// it is possible that it doesn't exists if the plugin is just installed an no index has been created yet
-			if (IndexReader.indexExists(path))
+			final BufferUpdate bufferUpdate = message;
+			if (bufferUpdate.getWhat() == BufferUpdate.SAVED)
 			{
-				final BufferUpdate bufferUpdate = (BufferUpdate) message;
-				if (bufferUpdate.getWhat() == BufferUpdate.SAVED)
+				VFSManager.runInWorkThread(new Runnable()
 				{
-					VFSManager.runInWorkThread(new Runnable()
+					public void run()
 					{
-						public void run()
-						{
-							fileUpdated(bufferUpdate.getBuffer());
-						}
-					});
-				}
+						fileUpdated(bufferUpdate.getBuffer());
+					}
+				});
 			}
 		}
 	}
