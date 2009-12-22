@@ -149,6 +149,7 @@ public class DiffBufferHandler extends BufferAdapter implements BufferHandler
 	public void bufferSaved(Buffer buffer)
 	{
 		clearAllMarks();
+		LCMPlugin.getInstance().repaintAllTextAreas();
 	}
 
 	public DirtyMarkPainter getDirtyMarkPainter(Buffer buffer, int physicalLine)
