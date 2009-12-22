@@ -121,6 +121,10 @@ public class BufferChangedLines extends BufferAdapter
 		if (jEdit.getActiveView() == null)
 			return;
 		JEditTextArea ta = jEdit.getActiveView().getTextArea();
+		// Save the scrolling and caret positions, as undo/redo may change it
+		int firstLine = ta.getFirstLine();
+		int horizontal = ta.getHorizontalOffset();
+		int caret = ta.getCaretPosition();
 		// Look for the non-dirty state of the buffer in the undo list.
 		// While at it, find the current position in the undo list.
 		disableUndo = true;		// Disable undo listeners
@@ -179,6 +183,13 @@ public class BufferChangedLines extends BufferAdapter
 			buffer.undo(ta);
 		undoManager.rewind(stepsBack);
 		disableUndo = false;	// Enable undo listeners
+		// Restore the scrolling and caret positions if needed
+		if (ta.getCaretPosition() != caret)
+			ta.setCaretPosition(caret);
+		if (ta.getFirstLine() != firstLine)
+			ta.setFirstLine(firstLine);
+		if (ta.getHorizontalOffset() != horizontal)
+			ta.setHorizontalOffset(horizontal);
 	}
 
 	private void printRanges()
