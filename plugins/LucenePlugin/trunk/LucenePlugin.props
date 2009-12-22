@@ -12,6 +12,7 @@ plugin.gatchan.jedit.lucene.LucenePlugin.browser-menu=\
 	lucene.add-to-index lucene.add-to-newindex
 plugin.gatchan.jedit.lucene.LucenePlugin.menu=lucene-search  - lucene.remove-index
 plugin.gatchan.jedit.lucene.LucenePlugin.usePluginHome=true
+plugin.gatchan.jedit.lucene.LucenePlugin.docs=docs/LucenePlugin.html
 
 
 lucene.add-to-index.label=<html>Add selected file(s) to an <b>existing index</b></html>
