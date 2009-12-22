@@ -25,6 +25,7 @@ package sidekick;
 //{{{ Imports
 
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
@@ -45,7 +46,7 @@ import java.util.Set;
  * 
  * @version $Id$
  */
-public class SideKickPlugin extends EBPlugin
+public class SideKickPlugin extends EditPlugin
 {
 	/** The name of the dockable */
 	public static final String NAME = "sidekick-tree";
@@ -83,11 +84,13 @@ public class SideKickPlugin extends EBPlugin
 		}
 		jEdit.addActionSet(SideKickMenuProvider.getParserSwitchers());
 		SideKickActions.propertiesChanged();
+		EditBus.addToBus(this);
 	} //}}}
 
 	//{{{ stop() method
 	public void stop()
 	{
+		EditBus.removeFromBus(this);
 		jEdit.removeActionSet(SideKickMenuProvider.getParserSwitchers());
 		View view = jEdit.getFirstView();
 		while(view != null)
@@ -112,38 +115,43 @@ public class SideKickPlugin extends EBPlugin
 		parsedBufferSet = null;
 	} //}}}
 
-	//{{{ handleMessage() method
-	public void handleMessage(EBMessage msg)
+	//{{{ handleViewUpdate() method
+	@EBHandler
+	public void handleViewUpdate(ViewUpdate vu)
 	{
-		if(msg instanceof ViewUpdate)
-		{
-			ViewUpdate vu = (ViewUpdate)msg;
-			View view = vu.getView();
+		View view = vu.getView();
 
-			if(vu.getWhat() == ViewUpdate.CREATED)
-				initView(view);
-			else if(vu.getWhat() == ViewUpdate.CLOSED)
-				uninitView(view);
-		}
-		else if(msg instanceof EditPaneUpdate)
-		{
-			EditPaneUpdate epu = (EditPaneUpdate)msg;
-			EditPane editPane = epu.getEditPane();
+		if(vu.getWhat() == ViewUpdate.CREATED)
+			initView(view);
+		else if(vu.getWhat() == ViewUpdate.CLOSED)
+			uninitView(view);
+	} //}}}
 
-			if(epu.getWhat() == EditPaneUpdate.CREATED)
-				initTextArea(editPane.getTextArea());
-			else if(epu.getWhat() == EditPaneUpdate.DESTROYED)
-				uninitTextArea(editPane.getTextArea());
-		}
-		else if(msg instanceof BufferUpdate)
-		{
-			BufferUpdate bu = (BufferUpdate)msg;
-			if(bu.getWhat() == BufferUpdate.CLOSED)
-				finishParsingBuffer(bu.getBuffer());
-		}
-		else if(msg instanceof PropertiesChanged)
-			SideKickActions.propertiesChanged();
-		
+	//{{{ handleEditPaneUpdate() method
+	@EBHandler
+	public void handleEditPaneUpdate(EditPaneUpdate epu)
+	{
+		EditPane editPane = epu.getEditPane();
+
+		if(epu.getWhat() == EditPaneUpdate.CREATED)
+			initTextArea(editPane.getTextArea());
+		else if(epu.getWhat() == EditPaneUpdate.DESTROYED)
+			uninitTextArea(editPane.getTextArea());
+	} //}}}
+
+	//{{{ handleBufferUpdate() method
+	@EBHandler
+	public void handleBufferUpdate(BufferUpdate bu)
+	{
+		if(bu.getWhat() == BufferUpdate.CLOSED)
+			finishParsingBuffer(bu.getBuffer());
+	} //}}}
+
+	//{{{ handlePropertiesChanged() method
+	@EBHandler
+	public void handlePropertiesChanged(PropertiesChanged msg)
+	{
+		SideKickActions.propertiesChanged();
 	} //}}}
 
 	/**
