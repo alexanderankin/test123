@@ -26,6 +26,8 @@ package errorlist;
 import javax.swing.text.Position;
 import javax.swing.SwingUtilities;
 import java.util.*;
+
+import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.*;
 //}}}
@@ -33,7 +35,7 @@ import org.gjt.sp.jedit.*;
 /**
  * @author Slava Pestov
  */
-public class DefaultErrorSource extends ErrorSource implements EBComponent
+public class DefaultErrorSource extends ErrorSource
 {
 	//{{{ DefaultErrorSource constructor
 	/**
@@ -246,45 +248,15 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 		addError(newError);
 	} //}}}
 
-	//{{{ handleMessage() method
-	public void handleMessage(EBMessage message)
-	{
-		if(message instanceof BufferUpdate)
-			handleBufferMessage((BufferUpdate)message);
-	} //}}}
-
 	//{{{ toString() method
 	public String toString()
 	{
 		return getClass().getName() + "[" + name + "]";
 	} //}}}
 
-	//{{{ Protected members
-	protected String name;
-	protected int errorCount;
-	protected Map<String, ErrorListForPath> errors;
-	//}}}
-
-	//{{{ Private members
-	private boolean addedToBus;
-
-	//{{{ removeOrAddToBus() method
-	protected void removeOrAddToBus()
-	{
-		if(addedToBus && errorCount == 0)
-		{
-			addedToBus = false;
-			EditBus.removeFromBus(this);
-		}
-		else if(!addedToBus && errorCount != 0)
-		{
-			addedToBus = true;
-			EditBus.addToBus(this);
-		}
-	} //}}}
-
 	//{{{ handleBufferMessage() method
-	private synchronized void handleBufferMessage(BufferUpdate message)
+	@EBHandler
+	public synchronized void handleBufferMessage(BufferUpdate message)
 	{
 		Buffer buffer = message.getBuffer();
 
@@ -311,6 +283,30 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 					((DefaultError)i.next()).closeNotify(buffer);
 				}
 			}
+		}
+	} //}}}
+
+	//{{{ Protected members
+	protected String name;
+	protected int errorCount;
+	protected Map<String, ErrorListForPath> errors;
+	//}}}
+
+	//{{{ Private members
+	private boolean addedToBus;
+
+	//{{{ removeOrAddToBus() method
+	protected void removeOrAddToBus()
+	{
+		if(addedToBus && errorCount == 0)
+		{
+			addedToBus = false;
+			EditBus.removeFromBus(this);
+		}
+		else if(!addedToBus && errorCount != 0)
+		{
+			addedToBus = true;
+			EditBus.addToBus(this);
 		}
 	} //}}}
 
