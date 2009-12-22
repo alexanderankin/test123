@@ -22,11 +22,12 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EBPlugin;
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
+import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.buffer.BufferAdapter;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.msg.BufferUpdate;
@@ -38,7 +39,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-public class MarkerSetsPlugin extends EBPlugin {
+public class MarkerSetsPlugin extends EditPlugin {
 
 	private static final String MARKER_SETS_ELEM = "MarkerSets";
 	private static final String MARKER_SET_ELEM = "MarkerSet";
@@ -78,10 +79,12 @@ public class MarkerSetsPlugin extends EBPlugin {
 		xmlFile = f.getAbsolutePath() + File.separator + "markerSets.xml";
 		loadState();
 		jEdit.visit(new MarkerSetVisitor(true));
+		EditBus.addToBus(this);
 	}
 
 	public void stop()
 	{
+		EditBus.removeFromBus(this);
 		saveState();
 		jEdit.visit(new MarkerSetVisitor(false));
 		markerSets.clear();
@@ -163,8 +166,9 @@ public class MarkerSetsPlugin extends EBPlugin {
 			g.putClientProperty(MARKER_SET_EXTENSION, null);
 		}
 	}
-	
-	private void handleEditPaneUpdate(EditPaneUpdate epu)
+
+	@EBHandler
+	public void handleEditPaneUpdate(EditPaneUpdate epu)
 	{
 		Object event = epu.getWhat();
 		EditPane ep = epu.getEditPane();
@@ -178,20 +182,11 @@ public class MarkerSetsPlugin extends EBPlugin {
 		if (dockable != null)
 			dockable.bufferChanged(ep.getBuffer());
 	}
-	
-	private void handleBufferUpdate(BufferUpdate bu)
+	@EBHandler
+	public void handleBufferUpdate(BufferUpdate bu)
 	{
 		for (MarkerSet ms: markerSets.values())
 			ms.handleBufferUpdate(bu);
-	}
-	
-	@Override
-	public void handleMessage(EBMessage message)
-	{
-		if (message instanceof EditPaneUpdate)
-			handleEditPaneUpdate((EditPaneUpdate) message);
-		else if (message instanceof BufferUpdate)
-			handleBufferUpdate((BufferUpdate) message);
 	}
 
 	static public Vector<String> getMarkerSetNames()
