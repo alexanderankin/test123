@@ -159,6 +159,7 @@ public class PathBuilder extends JPanel implements ActionListener, ListSelection
         moveDown.addActionListener(this);
 
         btnPanel = new JPanel();
+        btnPanel.setBorder(BorderFactory.createEmptyBorder(6, 0, 0, 0));
         btnPanel.add(addElement);
         btnPanel.add(removeElement);
         btnPanel.add(moveUp);
