@@ -36,7 +36,7 @@ import java.util.Vector;
  * @author Slava Pestov
  * @version $Id$
  */
-public abstract class ErrorSource implements EBComponent
+public abstract class ErrorSource
 {
 	//{{{ Static part
 

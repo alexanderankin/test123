@@ -42,14 +42,13 @@ import javax.swing.*;
 import javax.swing.tree.*;
 
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.OperatingSystem;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.RolloverButton;
@@ -60,8 +59,7 @@ import org.gjt.sp.jedit.textarea.Selection;
 import errorlist.ErrorSource.Error;
 //}}}
 
-public class ErrorList extends JPanel implements EBComponent,
-	DefaultFocusComponent
+public class ErrorList extends JPanel implements DefaultFocusComponent
 {
 	public static final ImageIcon ERROR_ICON = new ImageIcon(
 		ErrorList.class.getResource("error.png"));
@@ -253,15 +251,6 @@ public class ErrorList extends JPanel implements EBComponent,
 		errorTree.requestFocus();
 	} //}}}
 
-	//{{{ handleMessage() method
-	public void handleMessage(EBMessage message)
-	{
-		if(message instanceof ErrorSourceUpdate)
-			handleErrorSourceMessage((ErrorSourceUpdate)message);
-		else if(message instanceof ViewUpdate)
-			handleViewUpdate((ViewUpdate)message);
-	} //}}}
-
 	//{{{ initFilteredTypes() method
 	private void initFilteredTypes() {
 		for (Integer type: allTypes)
@@ -272,7 +261,8 @@ public class ErrorList extends JPanel implements EBComponent,
 	} //}}}
 
 	//{{{ handleViewUpdate() method
-	private void handleViewUpdate(ViewUpdate vu) {
+	@EBHandler
+	public void handleViewUpdate(ViewUpdate vu) {
 		if (vu.getWhat() == ViewUpdate.CLOSED && vu.getView() == view)
 			unload();
 	}
@@ -553,6 +543,57 @@ public class ErrorList extends JPanel implements EBComponent,
 		toggleType(ErrorSource.WARNING);
 	} //}}}
 
+	//{{{ handleErrorSourceMessage() method
+	@EBHandler
+	public void handleErrorSourceMessage(ErrorSourceUpdate message)
+	{
+		Object what = message.getWhat();
+
+		if(what == ErrorSourceUpdate.ERROR_SOURCE_ADDED)
+		{
+			addErrorSource(message.getErrorSource());
+			updateStatus();
+		}
+		if(what == ErrorSourceUpdate.ERROR_ADDED)
+		{
+			addError(message.getError(),false);
+			updateStatus();
+		}
+		else if(what == ErrorSourceUpdate.ERROR_REMOVED)
+		{
+			removeError(message.getError());
+			updateStatus();
+		}
+		else if(what == ErrorSourceUpdate.ERRORS_CLEARED
+			|| what == ErrorSourceUpdate.ERROR_SOURCE_REMOVED)
+		{
+			removeErrorSource(message.getErrorSource());
+			updateStatus();
+		}
+	} //}}}
+
+	//{{{ addErrorSource() method
+	private void addErrorSource(ErrorSource source)
+	{
+		ErrorSource.Error[] errors = source.getAllErrors();
+		if(errors == null || errors.length == 0)
+			return;
+
+		for(int j = 0; j < errors.length; j++)
+		{
+			addError(errors[j],true);
+		}
+
+		errorModel.reload(errorRoot);
+
+		TreeNode[] expandPath = new TreeNode[] { errorRoot, null };
+		for(int i = 0; i < errorRoot.getChildCount(); i++)
+		{
+			expandPath[1] = errorRoot.getChildAt(i);
+			errorTree.expandPath(new TreePath(expandPath));
+		}
+	} //}}}
+
 	//{{{ Private members
 	
 	//{{{ updateList() method
@@ -627,56 +668,6 @@ public class ErrorList extends JPanel implements EBComponent,
 		StringBuffer[] args = { errorStr, warningStr };
 		status.setText(jEdit.getProperty(
 			getStatusProperty(errorCount, warningCount),args));
-	} //}}}
-
-	//{{{ handleErrorSourceMessage() method
-	private void handleErrorSourceMessage(ErrorSourceUpdate message)
-	{
-		Object what = message.getWhat();
-
-		if(what == ErrorSourceUpdate.ERROR_SOURCE_ADDED)
-		{
-			addErrorSource(message.getErrorSource());
-			updateStatus();
-		}
-		if(what == ErrorSourceUpdate.ERROR_ADDED)
-		{
-			addError(message.getError(),false);
-			updateStatus();
-		}
-		else if(what == ErrorSourceUpdate.ERROR_REMOVED)
-		{
-			removeError(message.getError());
-			updateStatus();
-		}
-		else if(what == ErrorSourceUpdate.ERRORS_CLEARED
-			|| what == ErrorSourceUpdate.ERROR_SOURCE_REMOVED)
-		{
-			removeErrorSource(message.getErrorSource());
-			updateStatus();
-		}
-	} //}}}
-
-	//{{{ addErrorSource() method
-	private void addErrorSource(ErrorSource source)
-	{
-		ErrorSource.Error[] errors = source.getAllErrors();
-		if(errors == null || errors.length == 0)
-			return;
-
-		for(int j = 0; j < errors.length; j++)
-		{
-			addError(errors[j],true);
-		}
-
-		errorModel.reload(errorRoot);
-
-		TreeNode[] expandPath = new TreeNode[] { errorRoot, null };
-		for(int i = 0; i < errorRoot.getChildCount(); i++)
-		{
-			expandPath[1] = errorRoot.getChildAt(i);
-			errorTree.expandPath(new TreePath(expandPath));
-		}
 	} //}}}
 
 	//{{{ removeErrorSource() method
