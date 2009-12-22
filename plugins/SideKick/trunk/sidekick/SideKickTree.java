@@ -77,6 +77,7 @@ import org.gjt.sp.jedit.OperatingSystem;
 import org.gjt.sp.jedit.ServiceManager;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.gui.RolloverButton;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
@@ -92,8 +93,7 @@ import org.gjt.sp.util.StringList;
 /**
  * The Structure Browser dockable.  One instance is created for each View.
  */
-public class SideKickTree extends JPanel
-       implements EBComponent, DefaultFocusComponent
+public class SideKickTree extends JPanel implements DefaultFocusComponent
 {
 
 	//{{{ Instance variables
@@ -307,31 +307,28 @@ public class SideKickTree extends JPanel
 		}
 	} //}}}
 
-	//{{{ handleMessage() method
-	public void handleMessage(EBMessage msg)
+	//{{{ handleEditPaneUpdate() method
+	@EBHandler
+	public void handleEditPaneUpdate(EditPaneUpdate epu)
 	{
+		EditPane editPane = epu.getEditPane();
+		if(epu.getWhat() == EditPaneUpdate.CREATED)
+			editPane.getTextArea().addCaretListener(new CaretHandler());
+	} //}}}
 
+	//{{{ handlePropertiesChanged method
+	@EBHandler
+	public void handlePropertiesChanged(PropertiesChanged msg)
+	{
+		propertiesChanged();
+	} //}}}
 
-		if(msg instanceof EditPaneUpdate)
-		{
-			EditPaneUpdate epu = (EditPaneUpdate)msg;
-			EditPane editPane = epu.getEditPane();
-
-			if(epu.getWhat() == EditPaneUpdate.CREATED)
-				editPane.getTextArea().addCaretListener(new CaretHandler());
-		}
-		else if(msg instanceof PropertiesChanged)
-			propertiesChanged();
-		else if(msg instanceof SideKickUpdate)
-		{
-			if(((SideKickUpdate)msg).getView() == view) {
-				update();
-			}
-		}
-		//else if (msg instanceof PluginUpdate) {
-			// This causes a ClassCircularityError sometimes, with HTMLSideKick.
-			//	reloadParserCombo();
-		//}
+	//{{{ handleSideKickUpdate() method
+	@EBHandler
+	public void handleSideKickUpdate(SideKickUpdate msg)
+	{
+		if(msg.getView() == view)
+			update();
 	} //}}}
 
 	//{{{ setStatus() method

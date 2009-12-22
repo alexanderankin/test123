@@ -31,12 +31,11 @@ import javax.swing.Timer;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.buffer.BufferAdapter;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.msg.BufferUpdate;
@@ -58,7 +57,7 @@ import errorlist.ErrorSource;
  * It happens to be  sidekick.enhanced.SourceTree. 
  *  
  */
-class SideKick implements EBComponent
+class SideKick
 {
 	//{{{ static members
 	public static final String BUFFER_CHANGE = "sidekick.buffer-change-parse";
@@ -211,22 +210,119 @@ class SideKick implements EBComponent
 //		autoParse();
 	} //}}}
 
-	//{{{ handleMessage() method
-	public void handleMessage(EBMessage msg)
+	//{{{ handlePropertiesChanged() method
+	@EBHandler
+	public void handlePropertiesChanged(PropertiesChanged msg)
 	{
-		if(msg instanceof PropertiesChanged)
-			propertiesChanged();
-		else if(msg instanceof EditorExiting) 
-			exiting = true;
-		else if(msg instanceof BufferUpdate)
-			handleBufferUpdate((BufferUpdate)msg);
-		else if(msg instanceof EditPaneUpdate)
-			handleEditPaneUpdate((EditPaneUpdate)msg);
-		else if(msg instanceof ViewUpdate)
-			handleViewUpdate((ViewUpdate)msg);
-		else if((msg instanceof PluginUpdate) && (!exiting) )
+		propertiesChanged();
+	} //}}}
+
+	//{{{ handleEditorExiting() method
+	@EBHandler
+	public void handleEditorExiting(EditorExiting msg)
+	{
+		exiting = true;
+	} //}}}
+
+	//{{{ handleBufferUpdate() method
+	@EBHandler
+	public void handleBufferUpdate(BufferUpdate bmsg)
+	{
+		if (bmsg.getWhat() == BufferUpdate.PROPERTIES_CHANGED &&
+			view.getBuffer() == bmsg.getBuffer()) {
+			String prevMode =
+				buffer.getStringProperty(SideKickPlugin.PARSER_MODE_PROPERTY);
+			String currMode = (buffer.getMode() != null) ? buffer.getMode().getName() : "";
+			if (! currMode.equals(prevMode)) {
+				buffer.unsetProperty(SideKickPlugin.PARSER_PROPERTY);
+				setParser(view.getBuffer());
+			}
+		}
+
+		if (bmsg.getView() != view &&
+			(bmsg.getView() != null || bmsg.getBuffer() != view.getBuffer()))
+			return;
+
+		if (bmsg.getWhat() == BufferUpdate.SAVED && isParseOnSave())
+			parse(true);
+		else if (bmsg.getWhat() == BufferUpdate.LOADED && isParseOnChange())
+			parse(true);
+		else if(bmsg.getWhat() == BufferUpdate.CLOSED)
+			setErrorSource(null);
+
+	} //}}}
+
+	//{{{ handleEditPaneUpdate() method
+	@EBHandler
+	public void handleEditPaneUpdate(EditPaneUpdate epu)
+	{
+		editPane = epu.getEditPane();
+		View v = editPane.getView();
+		if (v == null) v=jEdit.getActiveView();
+		if (v == null || v != view )
+			return;
+
+		if(epu.getWhat() == EditPaneUpdate.DESTROYED)
 		{
-			PluginUpdate pmsg = (PluginUpdate)msg;
+			// check if this is the currently focused edit pane
+			if(editPane == v.getEditPane())
+			{
+				removeBufferChangeListener(this.buffer);
+				deactivateParser();
+			}
+		}
+		else if(epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
+		{
+			if (!isParseOnChange()) {
+				SideKickTree tree = (SideKickTree) view.getDockableWindowManager().getDockable("sidekick");
+				if (tree != null) tree.reloadParserCombo();
+				return;
+			}
+			// check if this is the currently focused edit pane
+
+			if(editPane == view.getEditPane())
+			{
+				removeBufferChangeListener(this.buffer);
+				deactivateParser();
+				buffer = editPane.getBuffer();
+				if (! buffer.isLoaded())
+					return;
+				parser = SideKickPlugin.getParserForBuffer(buffer);
+				activateParser();
+
+				parse(true);
+			}
+		}
+	} //}}}
+
+	//{{{ handleViewUpdate() method
+	@EBHandler
+	public void handleViewUpdate(ViewUpdate vu)
+	{
+		if(vu.getView() == view && buffer != view.getBuffer()
+			&& vu.getWhat() == ViewUpdate.EDIT_PANE_CHANGED)
+		{
+			if (!isParseOnChange()) return;
+
+			removeBufferChangeListener(this.buffer);
+			deactivateParser();
+
+			buffer = view.getBuffer();
+			this.editPane = view.getEditPane();
+
+			parser = SideKickPlugin.getParserForBuffer(buffer);
+			activateParser();
+
+			parse(true);
+		}
+	} //}}}
+
+	//{{{ handlePluginUpdate() method
+	@EBHandler
+	public void handlePluginUpdate(PluginUpdate pmsg)
+	{
+		if(!exiting)
+		{
 			if(pmsg.getWhat() == PluginUpdate.UNLOADED
 				|| pmsg.getWhat() == PluginUpdate.LOADED)
 			{
@@ -295,6 +391,7 @@ class SideKick implements EBComponent
 
 	//{{{ propertiesChanged() method
 	/** called when the sidekick's properties are changed */
+	@EBHandler
 	private void propertiesChanged()
 	{
 		if (!isParseOnChange()) return;
@@ -347,96 +444,6 @@ class SideKick implements EBComponent
 			return;
 
 		EditBus.send(new SideKickUpdate(view));
-	} //}}}
-
-	//{{{ handleBufferUpdate() method
-	private void handleBufferUpdate(BufferUpdate bmsg)
-	{
-		if (bmsg.getWhat() == BufferUpdate.PROPERTIES_CHANGED &&
-			view.getBuffer() == bmsg.getBuffer()) {
-			String prevMode =
-				buffer.getStringProperty(SideKickPlugin.PARSER_MODE_PROPERTY);
-			String currMode = (buffer.getMode() != null) ? buffer.getMode().getName() : "";
-			if (! currMode.equals(prevMode)) {
-				buffer.unsetProperty(SideKickPlugin.PARSER_PROPERTY);
-				setParser(view.getBuffer());
-			}
-		}
-
-		if (bmsg.getView() != view &&
-			(bmsg.getView() != null || bmsg.getBuffer() != view.getBuffer()))
-			return;
-
-		if (bmsg.getWhat() == BufferUpdate.SAVED && isParseOnSave())
-			parse(true);
-		else if (bmsg.getWhat() == BufferUpdate.LOADED && isParseOnChange())
-			parse(true);
-		else if(bmsg.getWhat() == BufferUpdate.CLOSED)
-			setErrorSource(null);
-
-	} //}}}
-
-	//{{{ handleEditPaneUpdate() method
-	private void handleEditPaneUpdate(EditPaneUpdate epu)
-	{
-		editPane = epu.getEditPane();
-		View v = editPane.getView();
-		if (v == null) v=jEdit.getActiveView();
-		if (v == null || v != view )
-			return;
-
-		if(epu.getWhat() == EditPaneUpdate.DESTROYED)
-		{
-			// check if this is the currently focused edit pane
-			if(editPane == v.getEditPane())
-			{
-				removeBufferChangeListener(this.buffer);
-				deactivateParser();
-			}
-		}
-		else if(epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
-		{
-			if (!isParseOnChange()) {
-				SideKickTree tree = (SideKickTree) view.getDockableWindowManager().getDockable("sidekick");
-				if (tree != null) tree.reloadParserCombo();
-				return;
-			}
-			// check if this is the currently focused edit pane
-
-			if(editPane == view.getEditPane())
-			{
-				removeBufferChangeListener(this.buffer);
-				deactivateParser();
-				buffer = editPane.getBuffer();
-				if (! buffer.isLoaded())
-					return;
-				parser = SideKickPlugin.getParserForBuffer(buffer);
-				activateParser();
-
-				parse(true);
-			}
-		}
-	} //}}}
-
-	//{{{ handleViewUpdate() method
-	private void handleViewUpdate(ViewUpdate vu)
-	{
-		if(vu.getView() == view && buffer != view.getBuffer()
-			&& vu.getWhat() == ViewUpdate.EDIT_PANE_CHANGED)
-		{
-			if (!isParseOnChange()) return;
-
-			removeBufferChangeListener(this.buffer);
-			deactivateParser();
-
-			buffer = view.getBuffer();
-			this.editPane = view.getEditPane();
-
-			parser = SideKickPlugin.getParserForBuffer(buffer);
-			activateParser();
-
-			parse(true);
-		}
 	} //}}}
 
 	//{{{ deactivateParser() method
