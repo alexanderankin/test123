@@ -66,14 +66,14 @@ public class PathBuilderDialog extends JDialog implements ActionListener {
      * @param parent the parent of the dialog.
      * @param title the title to give the dialog.
      */
-    public PathBuilderDialog(Dialog parent, String title) {
-        super(parent, title, true);
-        init(null);
+    public PathBuilderDialog( Dialog parent, String title ) {
+        super( parent, title, true );
+        init( null );
     }
-    
-    public PathBuilderDialog(Dialog parent, String title, String pathBuilderTitle) {
-        super(parent, title, true);
-        init(pathBuilderTitle);
+
+    public PathBuilderDialog( Dialog parent, String title, String pathBuilderTitle ) {
+        super( parent, title, true );
+        init( pathBuilderTitle );
     }
 
     /**
@@ -82,44 +82,64 @@ public class PathBuilderDialog extends JDialog implements ActionListener {
      * @param parent the parent of the dialog.
      * @param title the title to give the dialog.
      */
-    public PathBuilderDialog(Frame parent, String title) {
-        super(parent, title, true);
-        init(null);
+    public PathBuilderDialog( Frame parent, String title ) {
+        super( parent, title, true );
+        init( null );
     }
-    
-    public PathBuilderDialog(Frame parent, String title, String pathBuilderTitle) {
-        super(parent, title, true);
-        init(pathBuilderTitle);
+
+    public PathBuilderDialog( Frame parent, String title, String pathBuilderTitle ) {
+        super( parent, title, true );
+        init( pathBuilderTitle );
     }
 
     /**
      * Create the dialog controls.<p>
      */
-    private void init(String pathBuilderTitle) {
-        String okString = jEdit.getProperty("common.ok");
-        String cancelString = jEdit.getProperty("common.cancel");
+    private void init( String pathBuilderTitle ) {
+        String okString = jEdit.getProperty( "common.ok" );
+        String cancelString = jEdit.getProperty( "common.cancel" );
 
-        Panel panel = new Panel();
-        jok = new JButton(okString);
-        jcancel = new JButton(cancelString);
-        panel.add(jok);
-        panel.add(jcancel);
+        jok = new JButton( okString );
+        jcancel = new JButton( cancelString );
+        jok.addActionListener( this );
+        jcancel.addActionListener( this );
 
-        Container contentPane = getContentPane();
-        contentPane.setLayout(new BorderLayout());
+        JPanel panel = new JPanel();
+        panel.setBorder( BorderFactory.createEmptyBorder( 17, 0, 0, 0 ) );
+        panel.add( jok );
+        panel.add( jcancel );
 
-        if (pathBuilderTitle == null) {
+        JPanel contentPane = new JPanel();
+        contentPane.setLayout( new BorderLayout() );
+        contentPane.setBorder( BorderFactory.createEmptyBorder( 12, 12, 11, 11 ) );
+
+        if ( pathBuilderTitle == null ) {
             pathBuilder = new PathBuilder();
         }
         else {
-            pathBuilder = new PathBuilder(pathBuilderTitle);   
+            pathBuilder = new PathBuilder( pathBuilderTitle );
         }
-        contentPane.add(pathBuilder, BorderLayout.CENTER);
+        contentPane.add( pathBuilder, BorderLayout.CENTER );
 
-        contentPane.add(panel, BorderLayout.SOUTH);
-        jok.addActionListener(this);
-        jcancel.addActionListener(this);
+        contentPane.add( panel, BorderLayout.SOUTH );
+        setContentPane( contentPane );
+
         pack();
+        center();
+    }
+
+    // centers this dialog on its owner
+    private void center() {
+        if ( getOwner() == null ) {
+            return ;
+        }
+        Rectangle ownerBounds = getOwner().getBounds();
+        Dimension mySize = getSize();
+        int x = ownerBounds.x + ( ownerBounds.width - mySize.width ) / 2;
+        x = x < 0 ? 0 : x;
+        int y = ownerBounds.y + ( ownerBounds.height - mySize.height ) / 2;
+        y = y < 0 ? 0 : y;
+        setLocation( x, y );
     }
 
     /**
@@ -145,14 +165,14 @@ public class PathBuilderDialog extends JDialog implements ActionListener {
      *
      * @param event a GUI event.
      */
-    public void actionPerformed(ActionEvent event) {
+    public void actionPerformed( ActionEvent event ) {
         Object source = event.getSource();
-        if(source.equals(jok)) {
+        if ( source.equals( jok ) ) {
             result = true;
             dispose();
-        } else if(source.equals(jcancel)) {
+        }
+        else if ( source.equals( jcancel ) ) {
             dispose();
         }
     }
 }
-
