@@ -29,11 +29,12 @@ import java.util.Vector;
 import lcm.providers.simple.SimpleDirtyLineProvider;
 
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EBPlugin;
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
+import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.ServiceManager;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSManager;
@@ -47,7 +48,7 @@ import org.gjt.sp.util.Log;
 
 
 
-public class LCMPlugin extends EBPlugin
+public class LCMPlugin extends EditPlugin
 {
 	static public final String PROP_PREFIX = LCMOptions.PROP_PREFIX;
 	static private final String DEBUGGING_PROP = PROP_PREFIX + "debug";
@@ -94,38 +95,37 @@ public class LCMPlugin extends EBPlugin
 				provider.detach(b, bh);
 		}
 	}
-	
-	@Override
-	public void handleMessage(EBMessage message)
+
+	@EBHandler
+	public void handleEditPaneUpdate(EditPaneUpdate epu)
 	{
-		if (message instanceof EditPaneUpdate)
+		EditPane ep = epu.getEditPane();
+		if ((epu.getWhat() == EditPaneUpdate.CREATED) ||
+			(epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED))
 		{
-			EditPaneUpdate epu = (EditPaneUpdate) message;
-			EditPane ep = epu.getEditPane();
-			if ((epu.getWhat() == EditPaneUpdate.CREATED) ||
-				(epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED))
-			{
-				initEditPane(ep);
-			}
-			else if (epu.getWhat() == EditPaneUpdate.DESTROYED)
-				uninitEditPane(ep);
+			initEditPane(ep);
 		}
-		else if (message instanceof BufferUpdate)
+		else if (epu.getWhat() == EditPaneUpdate.DESTROYED)
+			uninitEditPane(ep);
+	}
+	@EBHandler
+	public void handleBufferUpdate(BufferUpdate bu)
+	{
+		Buffer b = bu.getBuffer();
+		if ((bu.getWhat() == BufferUpdate.SAVED) ||
+			(bu.getWhat() == BufferUpdate.LOADED))
 		{
-			BufferUpdate bu = (BufferUpdate) message;
-			Buffer b = bu.getBuffer();
-			if ((bu.getWhat() == BufferUpdate.SAVED) ||
-				(bu.getWhat() == BufferUpdate.LOADED))
-			{
-				BufferHandler bh = getBufferHandler(b);
-				if (bh != null)
-					bh.bufferSaved(b);
-			}
-			else if (bu.getWhat() == BufferUpdate.CLOSED)
-				detachFromBuffer(b);
+			BufferHandler bh = getBufferHandler(b);
+			if (bh != null)
+				bh.bufferSaved(b);
 		}
-		else if (message instanceof PropertiesChanged)
-			propertiesChanged();
+		else if (bu.getWhat() == BufferUpdate.CLOSED)
+			detachFromBuffer(b);
+	}
+	@EBHandler
+	public void handlePropertiesChanged(PropertiesChanged msg)
+	{
+		propertiesChanged();
 	}
 
 	private void propertiesChanged()
@@ -225,11 +225,13 @@ public class LCMPlugin extends EBPlugin
 		markers = new HashMap<EditPane, ChangeMarker>();
 		propertiesChanged();
 		jEdit.visit(new EditPaneVisitor(true));
+		EditBus.addToBus(this);
 	}
 
 	@Override
 	public void stop()
 	{
+		EditBus.removeFromBus(this);
 		Vector<EditPane> editPanes = new Vector<EditPane>(markers.keySet());
 		for (EditPane ep: editPanes)
 			uninitEditPane(ep);
