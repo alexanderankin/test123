@@ -43,11 +43,11 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
-import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.gui.DockableWindowFactory;
 import org.gjt.sp.jedit.gui.KeyEventTranslator;
 import org.gjt.sp.jedit.msg.BufferUpdate;
@@ -142,15 +142,12 @@ public class SourceTree extends SideKickTree {
         return _showMarkers;
     } //}}}
 
-    public void handleMessage( EBMessage msg ) {
-        //{{{ handleMessage() method
+    @EBHandler
+    public void handleBufferUpdate( BufferUpdate upd ) {
+        //{{{ handleBufferUpdate() method
         // react to marker changes immediately
-        super.handleMessage( msg );
-        if ( msg instanceof BufferUpdate ) {
-            BufferUpdate upd = ( BufferUpdate ) msg;
-            if ( upd.getWhat() == BufferUpdate.MARKERS_CHANGED )
-                update();
-        }
+        if ( upd.getWhat() == BufferUpdate.MARKERS_CHANGED )
+            update();
     } //}}}
 
     public void handleKey( KeyEvent evt ) {

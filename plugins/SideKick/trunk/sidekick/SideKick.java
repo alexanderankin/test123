@@ -57,7 +57,7 @@ import errorlist.ErrorSource;
  * It happens to be  sidekick.enhanced.SourceTree. 
  *  
  */
-class SideKick
+public class SideKick
 {
 	//{{{ static members
 	public static final String BUFFER_CHANGE = "sidekick.buffer-change-parse";
