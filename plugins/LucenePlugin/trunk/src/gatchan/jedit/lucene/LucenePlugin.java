@@ -23,6 +23,7 @@ package gatchan.jedit.lucene;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSManager;
@@ -39,7 +40,7 @@ import java.util.*;
 /**
  * @author Matthieu Casanova
  */
-public class LucenePlugin extends EBPlugin
+public class LucenePlugin extends EditPlugin
 {
 	static CentralIndex CENTRAL;
 	private static final String CENTRAL_INDEX_NAME = "__CENTRAL__";
@@ -60,33 +61,30 @@ public class LucenePlugin extends EBPlugin
 		EditPlugin p = jEdit.getPlugin("projectviewer.ProjectPlugin", false);
 		if (p != null && !(p instanceof Deferred))
 			projectWatcher = new ProjectWatcher();
+		EditBus.addToBus(this);
 	}
 
-	@Override
-	public void handleMessage(EBMessage message)
+	@EBHandler
+	public void handlePluginUpdate(PluginUpdate pluginUpdate)
 	{
-		if (message instanceof PluginUpdate)
+		if (pluginUpdate.getWhat() == PluginUpdate.ACTIVATED)
 		{
-			PluginUpdate pluginUpdate = (PluginUpdate) message;
-			if (pluginUpdate.getWhat() == PluginUpdate.ACTIVATED)
+			if ("projectviewer.ProjectPlugin".equals(pluginUpdate.getPluginJAR().getPlugin().getClassName()))
 			{
-				if ("projectviewer.ProjectPlugin".equals(pluginUpdate.getPluginJAR().getPlugin().getClassName()))
+				if (projectWatcher == null)
 				{
-					if (projectWatcher == null)
-					{
-						projectWatcher = new ProjectWatcher();
-					}
+					projectWatcher = new ProjectWatcher();
 				}
 			}
-			else if (pluginUpdate.getWhat() == PluginUpdate.DEACTIVATED)
+		}
+		else if (pluginUpdate.getWhat() == PluginUpdate.DEACTIVATED)
+		{
+			if ("projectviewer.ProjectPlugin".equals(pluginUpdate.getPluginJAR().getPlugin().getClassName()))
 			{
-				if ("projectviewer.ProjectPlugin".equals(pluginUpdate.getPluginJAR().getPlugin().getClassName()))
+				if (projectWatcher != null)
 				{
-					if (projectWatcher != null)
-					{
-						projectWatcher.stop();
-						projectWatcher = null;
-					}
+					projectWatcher.stop();
+					projectWatcher = null;
 				}
 			}
 		}
@@ -158,6 +156,7 @@ public class LucenePlugin extends EBPlugin
 	@Override
 	public void stop()
 	{
+		EditBus.removeFromBus(this);
 		if (projectWatcher != null)
 		{
 			projectWatcher.stop();
