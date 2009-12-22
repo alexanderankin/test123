@@ -27,6 +27,7 @@ import java.awt.*;
 import java.util.regex.Pattern;
 
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.Gutter;
@@ -35,7 +36,7 @@ import org.gjt.sp.jedit.textarea.TextAreaExtension;
 //}}}
 import org.gjt.sp.util.StandardUtilities;
 
-public class ErrorListPlugin extends EBPlugin
+public class ErrorListPlugin extends EditPlugin
 {
 	static final String FILENAME_FILTER = "error-list.filenameFilter";
 	static final String IS_INCLUSION_FILTER = "error-list.isInclusionFilter";
@@ -58,11 +59,13 @@ public class ErrorListPlugin extends EBPlugin
 		}
 
 		propertiesChanged();
+		EditBus.addToBus(this);
 	} //}}}
 
 	//{{{ stop() method
 	public void stop()
 	{
+		EditBus.removeFromBus(this);
 		View view = jEdit.getFirstView();
 		while(view != null)
 		{
@@ -80,15 +83,84 @@ public class ErrorListPlugin extends EBPlugin
 		}
 	} //}}}
 
-	//{{{ handleMessage() method
-	public void handleMessage(EBMessage message)
+	//{{{ handleErrorSourceMessage() method
+	@EBHandler
+	public void handleErrorSourceMessage(ErrorSourceUpdate message)
 	{
-		if(message instanceof ErrorSourceUpdate)
-			handleErrorSourceMessage((ErrorSourceUpdate)message);
-		else if(message instanceof EditPaneUpdate)
-			handleEditPaneMessage((EditPaneUpdate)message);
-		else if(message instanceof PropertiesChanged)
-			propertiesChanged();
+		Object what = message.getWhat();
+		if(what == ErrorSourceUpdate.ERROR_ADDED)
+		{
+			ErrorSource.Error error = message.getError();
+			Buffer buffer = error.getBuffer();
+			if(buffer != null)
+				invalidateLineInAllViews(buffer,error.getLineNumber());
+
+			if (showOnError && (jEdit.getActiveView() != null) &&
+				(! isErrorFiltered(error)))
+			{
+				showErrorList(jEdit.getActiveView());
+			}
+		}
+		else if(what == ErrorSourceUpdate.ERROR_REMOVED)
+		{
+			ErrorSource.Error error = message.getError();
+			Buffer buffer = error.getBuffer();
+			if(buffer != null)
+				invalidateLineInAllViews(buffer,error.getLineNumber());
+		}
+		else if(what == ErrorSourceUpdate.ERRORS_CLEARED
+			|| what == ErrorSourceUpdate.ERROR_SOURCE_ADDED
+			|| what == ErrorSourceUpdate.ERROR_SOURCE_REMOVED)
+		{
+			View view = jEdit.getFirstView();
+			while(view != null)
+			{
+				EditPane[] editPanes = view.getEditPanes();
+				for(int i = 0; i < editPanes.length; i++)
+				{
+					EditPane pane = editPanes[i];
+					pane.getTextArea().getPainter().repaint();
+					addErrorOverviewIfErrors(pane);
+				}
+				view = view.getNext();
+			}
+
+			if ((what == ErrorSourceUpdate.ERROR_SOURCE_ADDED) &&
+				showOnError && (jEdit.getActiveView() != null) && doErrorsExist())
+			{
+				showErrorList(jEdit.getActiveView());
+			}
+		}
+	} //}}}
+
+	//{{{ handleEditPaneMessage() method
+	@EBHandler
+	public void handleEditPaneMessage(EditPaneUpdate message)
+	{
+		EditPane editPane = message.getEditPane();
+		Object what = message.getWhat();
+
+		if(what == EditPaneUpdate.CREATED)
+		{
+			initEditPane(editPane);
+			addErrorOverviewIfErrors(editPane);
+		}
+		else if(what == EditPaneUpdate.DESTROYED)
+		{
+			uninitEditPane(editPane);
+			removeErrorOverview(editPane);
+		}
+		else if(what == EditPaneUpdate.BUFFER_CHANGED)
+		{
+			addErrorOverviewIfErrors(editPane);
+		}
+	} //}}}
+
+	//{{{ handlePropertiesChanged() method
+	@EBHandler
+	public void handlePropertiesChanged(EBMessage message)
+	{
+		propertiesChanged();
 	} //}}}
 
 	//{{{ showErrorOverviewIfNecessary() method
@@ -276,55 +348,6 @@ public class ErrorListPlugin extends EBPlugin
 		dockableWindowManager.addDockableWindow("error-list");
 	} //}}}
 
-	//{{{ handleErrorSourceMessage() method
-	private void handleErrorSourceMessage(ErrorSourceUpdate message)
-	{
-		Object what = message.getWhat();
-		if(what == ErrorSourceUpdate.ERROR_ADDED)
-		{
-			ErrorSource.Error error = message.getError();
-			Buffer buffer = error.getBuffer();
-			if(buffer != null)
-				invalidateLineInAllViews(buffer,error.getLineNumber());
-
-			if (showOnError && (jEdit.getActiveView() != null) &&
-				(! isErrorFiltered(error)))
-			{
-				showErrorList(jEdit.getActiveView());
-			}
-		}
-		else if(what == ErrorSourceUpdate.ERROR_REMOVED)
-		{
-			ErrorSource.Error error = message.getError();
-			Buffer buffer = error.getBuffer();
-			if(buffer != null)
-				invalidateLineInAllViews(buffer,error.getLineNumber());
-		}
-		else if(what == ErrorSourceUpdate.ERRORS_CLEARED
-			|| what == ErrorSourceUpdate.ERROR_SOURCE_ADDED
-			|| what == ErrorSourceUpdate.ERROR_SOURCE_REMOVED)
-		{
-			View view = jEdit.getFirstView();
-			while(view != null)
-			{
-				EditPane[] editPanes = view.getEditPanes();
-				for(int i = 0; i < editPanes.length; i++)
-				{
-					EditPane pane = editPanes[i];
-					pane.getTextArea().getPainter().repaint();
-					addErrorOverviewIfErrors(pane);
-				}
-				view = view.getNext();
-			}
-
-			if ((what == ErrorSourceUpdate.ERROR_SOURCE_ADDED) &&
-				showOnError && (jEdit.getActiveView() != null) && doErrorsExist())
-			{
-				showErrorList(jEdit.getActiveView());
-			}
-		}
-	} //}}}
-
 	//{{{ invalidateLineInAllViews() method
 	private void invalidateLineInAllViews(Buffer buffer, int line)
 	{
@@ -343,28 +366,6 @@ public class ErrorListPlugin extends EBPlugin
 			}
 
 			view = view.getNext();
-		}
-	} //}}}
-
-	//{{{ handleEditPaneMessage() method
-	private void handleEditPaneMessage(EditPaneUpdate message)
-	{
-		EditPane editPane = message.getEditPane();
-		Object what = message.getWhat();
-
-		if(what == EditPaneUpdate.CREATED)
-		{
-			initEditPane(editPane);
-			addErrorOverviewIfErrors(editPane);
-		}
-		else if(what == EditPaneUpdate.DESTROYED)
-		{
-			uninitEditPane(editPane);
-			removeErrorOverview(editPane);
-		}
-		else if(what == EditPaneUpdate.BUFFER_CHANGED)
-		{
-			addErrorOverviewIfErrors(editPane);
 		}
 	} //}}}
 
