@@ -356,6 +356,9 @@ public class ImageViewer extends JPanel {
      * @param filename The filename to compress, if necessary, with an ellipsis in the middle.
      */
     private String compressFilename ( String filename ) {
+        if ( filename == null ) {
+            return "";
+        }
         int width = toolbar.getWidth() - buttonPanel.getWidth() - 6;
         FontMetrics fm = getGraphics().getFontMetrics();
         if ( fm == null ) {

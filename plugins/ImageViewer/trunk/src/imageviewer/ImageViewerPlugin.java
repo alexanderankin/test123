@@ -261,12 +261,15 @@ public class ImageViewerPlugin extends EBPlugin {
                     private void showImage( MouseEvent me ) {
                         if ( requireIVVisible( view ) ) {
                             TreePath treepath = tree.getClosestPathForLocation( me.getX(), me.getY() );
-                            VPTNode node = ( VPTNode ) treepath.getLastPathComponent();
-                            String path = node.getNodePath();
-                            if ( ImageViewer.isValidFilename( path ) ) {
-                                view.getDockableWindowManager().showDockableWindow( NAME );
-                                ImageViewer imageViewer = getImageViewer( view );
-                                imageViewer.showImage( path );
+                            Object lastComponent = treepath.getLastPathComponent();
+                            if ( lastComponent instanceof VPTNode ) {
+                                VPTNode node = ( VPTNode ) lastComponent;
+                                String path = node.getNodePath();
+                                if ( ImageViewer.isValidFilename( path ) ) {
+                                    view.getDockableWindowManager().showDockableWindow( NAME );
+                                    ImageViewer imageViewer = getImageViewer( view );
+                                    imageViewer.showImage( path );
+                                }
                             }
                         }
                     }
