@@ -60,12 +60,11 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.bufferset.BufferSet;
 import org.gjt.sp.jedit.bufferset.BufferSetListener;
 import org.gjt.sp.jedit.msg.BufferUpdate;
@@ -89,7 +88,7 @@ import org.gjt.sp.util.Log;
  * @author Shlomy Reinstein
  */
 @SuppressWarnings("serial")
-public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetListener
+public class BufferTabs extends JTabbedPane implements BufferSetListener
 {
 	private static final String SORT_BUFFERS = "sortBuffers";
 	private final EditPane editPane;
@@ -183,79 +182,79 @@ public class BufferTabs extends JTabbedPane implements EBComponent, BufferSetLis
 		return editPane;
 	}
 
-	/**
-	 * EditBus message handling.
+	/*
+	 ** BufferUpdate message handling.
 	 */
-	public void handleMessage(EBMessage message)
+	@EBHandler
+	public void handleBufferUpdate(BufferUpdate bu)
 	{
-		if (message instanceof BufferUpdate)
+		Buffer buffer = bu.getBuffer();
+		if (bu.getWhat() == BufferUpdate.DIRTY_CHANGED ||
+			bu.getWhat() == BufferUpdate.CREATED)
 		{
-
-			BufferUpdate bu = (BufferUpdate) message;
-			Buffer buffer = bu.getBuffer();
-			if (bu.getWhat() == BufferUpdate.DIRTY_CHANGED ||
-				bu.getWhat() == BufferUpdate.CREATED)
+			int index = bufferSet.indexOf(buffer);
+			if (index >= 0  && index < getTabCount())
 			{
-				int index = bufferSet.indexOf(buffer);
-				if (index >= 0  && index < getTabCount())
-				{
-					updateTitleAt(index);
-				}
-			}
-			else if (bu.getWhat() == BufferUpdate.LOADED)
-			{
-				int index = bufferSet.indexOf(buffer);
-				if (index >= 0  && index < getTabCount())
-				{
-					updateTitleAt(index);
-					updateHighlightAt(index);
-				}
-			}
-			else if (bu.getWhat() == BufferUpdate.SAVED)
-			{
-				Buffer buff = bu.getBuffer();
-				int index = bufferSet.indexOf(buff);
-				if (index >= 0  && index < getTabCount())
-				{
-					setToolTipTextAt(index, buff.getPath());
-				}
+				updateTitleAt(index);
 			}
 		}
-		else if (message instanceof EditPaneUpdate)
+		else if (bu.getWhat() == BufferUpdate.LOADED)
 		{
-			EditPaneUpdate epu = (EditPaneUpdate) message;
-			EditPane editPane = epu.getEditPane();
-			if (editPane == this.editPane)
+			int index = bufferSet.indexOf(buffer);
+			if (index >= 0  && index < getTabCount())
 			{
-				if (epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
+				updateTitleAt(index);
+				updateHighlightAt(index);
+			}
+		}
+		else if (bu.getWhat() == BufferUpdate.SAVED)
+		{
+			Buffer buff = bu.getBuffer();
+			int index = bufferSet.indexOf(buff);
+			if (index >= 0  && index < getTabCount())
+			{
+				setToolTipTextAt(index, buff.getPath());
+			}
+		}
+	}
+
+	/**
+	 * EditPaneUpdate message handling.
+	 */
+	@EBHandler
+	public void handleEditPaneUpdate(EditPaneUpdate epu)
+	{
+		EditPane editPane = epu.getEditPane();
+		if (editPane == this.editPane)
+		{
+			if (epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
+			{
+				try
 				{
-					try
+					Buffer buffer = editPane.getBuffer();
+					int index = bufferSet.indexOf(buffer);
+					if (!knownBuffers.contains(buffer))
 					{
-						Buffer buffer = editPane.getBuffer();
-						int index = bufferSet.indexOf(buffer);
-						if (!knownBuffers.contains(buffer))
+						// we don't know this buffer yet, let's add it now by simulation
+						// of a bufferAdded event
+						if (index != -1)
 						{
-							// we don't know this buffer yet, let's add it now by simulation
-							// of a bufferAdded event
-							if (index != -1)
-							{
-								bufferAdded(buffer, index);
-							}
+							bufferAdded(buffer, index);
 						}
-						changeHandler.setEnabled(false);
-						updateColorAt(getSelectedIndex());
-						setSelectedIndex(index);
-						updateHighlightAt(index);
 					}
-					finally
-					{
-						changeHandler.setEnabled(true);
-					}
+					changeHandler.setEnabled(false);
+					updateColorAt(getSelectedIndex());
+					setSelectedIndex(index);
+					updateHighlightAt(index);
 				}
-				else if (epu.getWhat() == EditPaneUpdate.BUFFERSET_CHANGED)
+				finally
 				{
-					setBufferSet(editPane.getBufferSet());
+					changeHandler.setEnabled(true);
 				}
+			}
+			else if (epu.getWhat() == EditPaneUpdate.BUFFERSET_CHANGED)
+			{
+				setBufferSet(editPane.getBufferSet());
 			}
 		}
 	}

@@ -26,6 +26,7 @@ package buffertabs;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.visitors.JEditVisitorAdapter;
+import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 
@@ -39,38 +40,35 @@ import java.util.Map;
  * @author Andre Kaplan
  * @author Matthieu Casanova
  */
-public class BufferTabsPlugin extends EBPlugin
+public class BufferTabsPlugin extends EditPlugin
 {
 	private static Map<EditPane, BufferTabs> tabsMap = new Hashtable<EditPane, BufferTabs>();
 
 	private static JPopupMenu popupMenu;
 
-	@Override
-	public void handleMessage(EBMessage msg)
+	@EBHandler
+	public void handleEditPaneUpdate(EditPaneUpdate epu)
 	{
-		if (msg instanceof EditPaneUpdate)
+		if (epu.getWhat() == EditPaneUpdate.CREATED)
 		{
-			EditPaneUpdate epu = (EditPaneUpdate) msg;
-
-			if (epu.getWhat() == EditPaneUpdate.CREATED)
-			{
-				editPaneCreated(epu.getEditPane());
-			}
-			else if (epu.getWhat() == EditPaneUpdate.DESTROYED)
-			{
-				editPaneDestroyed(epu.getEditPane());
-			}
+			editPaneCreated(epu.getEditPane());
 		}
-		else if (msg instanceof PropertiesChanged)
+		else if (epu.getWhat() == EditPaneUpdate.DESTROYED)
 		{
-			propertiesChanged();
+			editPaneDestroyed(epu.getEditPane());
 		}
+	}
 
+	@EBHandler
+	public void handlePropertiesChanged(PropertiesChanged pc)
+	{
+		propertiesChanged();
 	}
 
 	@Override
 	public void stop()
 	{
+		EditBus.removeFromBus(this);
 		jEdit.visit(new JEditVisitorAdapter()
 		{
 			@Override
@@ -92,6 +90,7 @@ public class BufferTabsPlugin extends EBPlugin
 				editPaneCreated(editPane);
 			}
 		});
+		EditBus.addToBus(this);
 	}
 
 	private static void editPaneCreated(EditPane editPane)
