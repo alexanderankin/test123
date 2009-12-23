@@ -1,0 +1,68 @@
+# Properties file for NativeBrowser plugin
+# $Id$
+
+# jEdit only needs to load the plugin the first time the user accesses it
+# the presence of this property also tells jEdit the plugin is using the new API
+plugin.NativeBrowserPlugin.activate=startup
+
+# These two properties are required for all plugins
+plugin.NativeBrowserPlugin.name=NativeBrowser
+plugin.NativeBrowserPlugin.author=Francois Rey
+
+# version number == jEdit version number
+plugin.NativeBrowserPlugin.version=1.0
+
+# other needed files
+plugin.NativeBrowserPlugin.jars=DJNativeSwing.jar DJNativeSwing-SWT.jar jna-3.2.4.jar swt.jar
+
+# online help
+plugin.NativeBrowserPlugin.docs=index.html
+
+# we only have one dependency, jEdit 4.2, since we use the new plugin API
+plugin.NativeBrowserPlugin.depend.0=jedit 04.02.01.00
+plugin.NativeBrowserPlugin.depend.1=jdk 1.5
+
+plugin.NativeBrowserPlugin.description=This plugin provides a dockable browser provided by the native, SWT-based, Swing libraries from the DJ Project (http://djproject.sourceforge.net/).
+# plugin menu
+plugin.NativeBrowserPlugin.menu=nativebrowser \
+	- \
+	nativebrowser.menu-bar \
+	nativebrowser.home \
+	nativebrowser.render-buffer
+
+# action labels for actions supplied by dockables.xml
+nativebrowser.label=NativeBrowser
+
+# action labels for actions supplied by actions.xml
+nativebrowser.choose-file.label=Choose file
+nativebrowser.menu-bar.label=Menu bar
+nativebrowser.home.label=Home page
+nativebrowser.render-buffer.label=Render current buffer
+
+# plugin option pane
+plugin.NativeBrowserPlugin.option-pane=nativebrowser
+
+# Option pane activation BeanShell snippet
+options.nativebrowser.code=new NativeBrowserOptionPane();
+
+# Option pane labels
+options.nativebrowser.label=NativeBrowser
+options.nativebrowser.file=File:
+options.nativebrowser.choose-file=File...
+options.nativebrowser.menu-bar=Menu bar
+options.nativebrowser.homepage.label=Homepage
+options.nativebrowser.choose-file.title=Choose a file
+
+# window title
+nativebrowser.title=NativeBrowser
+
+# window toolbar buttons
+#nativebrowser.choose-file.icon=Open.png
+nativebrowser.render-buffer.icon=CopyToBuffer.png
+nativebrowser.home.icon=Home.png
+
+# default settings
+options.nativebrowser.homepage=http://www.google.com/
+
+# Setting not defined but supplied for completeness
+

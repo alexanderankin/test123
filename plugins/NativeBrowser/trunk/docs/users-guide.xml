@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- NativeBrowser 1.0 help documentation -->
+<!-- Copyright (C) 2010 François Rey	 -->
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+<article id="NativeBrowser">
+    <articleinfo>
+        <author>
+            <firstname>François</firstname>
+
+            <surname>Rey</surname>
+
+            <affiliation>
+                <address>jedit at francois . rey . name</address>
+            </affiliation>
+        </author>
+
+        <copyright>
+            <year>2010</year>
+
+            <holder>François Rey</holder>
+        </copyright>
+
+        <legalnotice>
+            <title>Legal Notice</title>
+
+            <para>Permission is granted to copy, distribute and/or modify this
+            document under the terms of the GNU Free Documentation License,
+            Version 1.1 or any later version published by the Free Software
+            Foundation; with no <quote>Invariant Sections</quote>,
+            <quote>Front-Cover Texts</quote> or <quote>Back-Cover Texts</quote>,
+            each as defined in the license. A copy of the license is included in
+            the file <filename>COPYING.DOC.txt</filename> included with the
+            jEdit distribution.</para>
+        </legalnotice>
+
+        <title>NativeBrowser 1.0</title>
+    </articleinfo>
+
+    <simplesect>
+        <title>Introduction</title>
+
+        <indexterm>
+            <primary>NativeBrowser</primary>
+        </indexterm>
+
+        <para>This plugin provides a dockable browser provided by the native,
+        SWT-based, Swing libraries from the
+        <ulink url="http://djproject.sourceforge.net/">DJ Project</ulink>.
+        It is not meant to replace a full browser but it does offer the advantage
+        of a richer browsing supporting javascript, flash, and easy rendering of
+        the current buffer in one-click. In fact, the main motivation for this
+        plugin is to easily test HTML/js/flash content without leaving jEdit.</para>
+        <para>Because this plugin uses native SWT libraries which perform
+        callback to the java application, some jars need to be installed as part of
+        jEdit's system classpath (the one used by the system class loader).
+        As a result this plugin requires some manual installation steps
+        as detailed below.</para>
+
+    </simplesect>
+
+    <simplesect>
+        <title>Manual Installation Steps!!!</title>
+
+        <indexterm>
+	        <primary>NativeBrowser</primary>
+	        <secondary>installation</secondary>
+        </indexterm>
+        
+        <para>NativeBrowser requires the following jars to be loaded by
+        the system class loader. In other words these jars need to be put
+        in jEdit's classpath:</para>
+        <itemizedlist>
+            <listitem>
+                <para><filename>DJNativeSwing.jar</filename> and <filename>DJNativeSwing-SWT.jar</filename>:
+                These are part of <ulink url="http://djproject.sourceforge.net/">DJ Native Swing</ulink></para>
+            </listitem>
+            <listitem>
+                <para><filename>jna.jar</filename> renamed to <filename>jna-3.2.4.jar</filename>:
+                This jar can be found on the
+                <ulink url="http://jna.dev.java.net/">Java Native Access website</ulink>.
+                Because the SVNPlugin currently uses an older version of this jar,
+                NativeBrowser plugin requires this jar to be renamed to
+                <filename>jna-3.2.4.jar</filename> (3.2.4 is the latest version of JNA
+                at the time of writing, but the jar can be of any version as long as the
+                name is <filename>jna-3.2.4.jar</filename>).</para>
+            </listitem>
+            <listitem>
+                <para><filename>swt.jar</filename>: This jar is specific to each platform and
+                can be downloaded on the <ulink url="http://www.eclipse.org/swt/">Eclipse SWT page</ulink></para>
+            </listitem>
+        </itemizedlist>
+        <para>All these jars except the last one are included in the distribution zip file.
+        Therefore upon installing the NativeBrowser plugin they are automatically placed
+        in the the <filename>/jars</filename> subdirectory of your user settings directory
+        (which you can find by evaluating the BeanShell expression
+        <userinput>jEdit.getSettingsDirectory()</userinput>).
+        The last jar <filename>swt.jar</filename> needs to be downloaded manually and
+        placed in that same directory because each platform needs its own version.</para>
+        <para>With these jars in place jEdit is able to load the NativeBrower plugin without
+        complaining about a missing jar. However jEdit won't be able to open the
+        NativeBrowser window until these jars are also placed jEdit's classpath.</para>
+        <para>The easiest was is to modify the <varname>CLASSPATH</varname> environment variable
+        to include each one of the 4 jars above. For example on Linux one can modify the
+        <filename>/usr/bin/jedit</filename> script to include:</para>
+<para><varname>&nbsp;&nbsp;JEJARS=~/.jedit/jars</varname></para>
+<para><varname>&nbsp;&nbsp;JECP=$JEJARS/swt.jar:$JEJARS/DJNativeSwing.jar:$JEJARS/DJNativeSwing-SWT.jar:$JEJARS/jna-3.2.4.jar</varname></para>
+<para><varname>&nbsp;&nbsp;if [ "$CLASSPATH" = "" ]; then</varname></para>
+<para><varname>&nbsp;&nbsp;&nbsp;&nbsp;CLASSPATH="/usr/share/java/jedit/jedit.jar":$JECP</varname></para>
+<para><varname>&nbsp;&nbsp;else</varname></para>
+<para><varname>&nbsp;&nbsp;&nbsp;&nbsp;CLASSPATH="/usr/share/java/jedit/jedit.jar":$JECP:$CLASSPATH</varname></para>
+<para><varname>&nbsp;&nbsp;fi</varname></para>
+        <para>Eventually the burden of adding jars to jEdit's classpath should
+        become a responsibility the plugin framework. Until then such manual steps
+        will be required for libraries needing native callback to java.</para>
+    </simplesect>
+
+    <simplesect>
+        <title>Controls</title>
+
+        <para>The toolbar above the browser component area provides the following controls:</para>
+
+        <itemizedlist>
+            <listitem>
+                <para><guilabel>Menu Bar</guilabel> - this checkbox
+                controls the display of the browser menu bar which contains
+                several additional commands such as opening a file, displaying
+                a status bar, etc.</para>
+            </listitem>
+
+            <listitem>
+                <para><guilabel>Home page</guilabel> - this button
+                causes NativeBrowser to load the home page as specified in
+                NativeBrowser options.</para>
+            </listitem>
+
+            <listitem>
+                <para><guilabel>Render current buffer</guilabel> - this button
+                causes NativeBrowser to load the contents from the current buffer
+				(which must be HTML).</para>
+            </listitem>
+
+        </itemizedlist>
+
+        <para>These operations are listed in the submenu which appears for
+        NativeBrowser under the <guimenu>Plugins</guimenu> menu. They can also
+        be made the subject of keyboard shortcuts in the <guilabel>Shortcuts</guilabel>
+        pane of the <guimenu>Utilities>Global Options...</guimenu> menu.</para>
+    </simplesect>
+
+    <simplesect id="options">
+        <title>Options</title>
+
+        <indexterm>
+            <primary>NativeBrowser</primary>
+
+            <secondary>options</secondary>
+        </indexterm>
+
+        <para>Only one option can be set using the pane for
+        NativeBrowser in the <guimenu>Plugin>Plugin Options...</guimenu> menu:</para>
+
+        <itemizedlist>
+            <listitem>
+                <para>A text field and adjacent button allow the user to respectively
+                enter the home page or select a file to display as home page.</para>
+            </listitem>
+        </itemizedlist>
+    </simplesect>
+
+    <simplesect>
+        <title>Supported Platforms</title>
+
+        <indexterm>
+	        <primary>NativeBrowser</primary>
+	        <secondary>platform</secondary>
+        </indexterm>
+        
+        
+        <para>NativeBrowser uses the
+        <ulink url="http://djproject.sourceforge.net/">DJ Project</ulink>
+        native Swing libraries based on <ulink url="http://www.eclipse.org/swt/">SWT</ulink>.
+        Therefore this plugin can only work on platforms where these libraries are supported.
+        At the time of writing this include Windows and Linux platforms while
+        MacOS X support is still in development, more info on the 
+        <ulink url="http://sourceforge.net/projects/djproject/forums/forum/671154/topic/3353840">
+        DJ Project forum</ulink>.</para>
+        <para>The author of this plugin does not have access to a Mac, so if you have
+        one and feel like experimenting, you probably will need to replace the
+        following libraries with their latest/development versions:
+        </para>
+        <itemizedlist>
+            <listitem>
+                <para><filename>DJNativeSwing.jar</filename></para>
+            </listitem>
+            <listitem>
+                <para><filename>DJNativeSwing-SWT.jar</filename></para>
+            </listitem>
+            <listitem>
+                <para><filename>swt.jar</filename></para>
+            </listitem>
+        </itemizedlist>
+
+    </simplesect>
+
+    <simplesect>
+        <title>Legal notices</title>
+
+        <para>The NativeBrowser plugin is released under the GNU General Public
+        License (either version 2 or any later version, at the user's option). A
+        copy of the GPL is available in the <filename>COPYING.txt</filename>
+        file in the jEdit distribution.</para>
+
+        <para>The NativeBrowser plugin comes with ABSOLUTELY NO WARRANTY OF ANY
+        KIND; see section 11 and 12 of the GPL for details.</para>
+
+        <para>Permission is granted to copy, distribute and/or modify this
+        document under the terms of the GNU Free Documentation License, Version
+        1.1 or any later version published by the Free Software Foundation; with
+        no <quote>Invariant Sections</quote>, <quote>Front-Cover Texts</quote>
+        or <quote>Back-Cover Texts</quote>, each as defined in the license. A
+        copy of the license is included in the file
+        <filename>COPYING.DOC.txt</filename> included with the jEdit
+        distribution.</para>
+    </simplesect>
+
+    <simplesect>
+        <title>Feedback</title>
+
+        <para>Comments, bug reports and other feedback may be sent to the author
+        (jedit at francois . rey . name) or the jEdit-users mailing list.</para>
+    </simplesect>
+</article>

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<!-- Dockable component definition file for NativeBrowser plugin -->
+<!-- $Id$
+-->
+
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+
+<!-- NativeBrowser dockable windows -->
+
+<DOCKABLES>
+	<DOCKABLE NAME="nativebrowser">
+		new NativeBrowser(view, position);
+	</DOCKABLE>
+</DOCKABLES>

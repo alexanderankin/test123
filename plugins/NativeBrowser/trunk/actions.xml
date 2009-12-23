@@ -1,0 +1,27 @@
+<!-- Action definition file for NativeBrowser plugin -->
+<!-- $Id$
+-->
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="nativebrowser.menu-bar">
+		<CODE>
+			wm.addDockableWindow(NativeBrowserPlugin.NAME);
+			wm.getDockableWindow(NativeBrowserPlugin.NAME).toggleMenuBar();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="nativebrowser.home">
+		<CODE>
+			wm.addDockableWindow(NativeBrowserPlugin.NAME);
+			wm.getDockableWindow(NativeBrowserPlugin.NAME).home();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="nativebrowser.render-buffer">
+		<CODE>
+			wm.addDockableWindow(NativeBrowserPlugin.NAME);
+			wm.getDockableWindow(NativeBrowserPlugin.NAME).renderBuffer();
+		</CODE>
+	</ACTION>
+</ACTIONS>
+
