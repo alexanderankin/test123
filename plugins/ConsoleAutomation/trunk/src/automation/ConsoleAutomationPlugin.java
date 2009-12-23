@@ -1,6 +1,7 @@
 package automation;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
@@ -52,7 +53,10 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 
 	public Connection getConnection(String name)
 	{
-		return connections.get(name);
+		synchronized(connections)
+		{
+			return connections.get(name);
+		}
 	}
 
 	private File getMacroFile(String key, String name)
@@ -75,6 +79,14 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 	{
 		return Connection.getCurrentConnection();
 	}
+	private Connection getCurrentConnectionInDockable()
+	{
+		ConnectionDockable dockable = getConnectionDockable();
+		if (dockable == null)
+			return null;
+		return dockable.getCurrent();
+		
+	}
 	public void runMacro(final String key, String name)
 	{
 		File f = getMacroFile(key, name);
@@ -86,10 +98,7 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 		{
 			try
 			{
-				ConnectionDockable dockable = getConnectionDockable();
-				if (dockable == null)
-					return;
-				Connection c = dockable.getCurrent();
+				Connection c = getCurrentConnectionInDockable();
 				if (c == null)
 					return;
 				c.abortScript();
@@ -158,6 +167,39 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 		return macros;
 	}
 
+	// Close the connection that is currently visible in the dockable
+	public void closeCurrentConnection()
+	{
+		Connection c = getCurrentConnectionInDockable();
+		if (c == null)
+		{
+			JOptionPane.showMessageDialog(null, "No current connection to close");
+			return;
+		}
+		closeConnection(c);
+	}
+	// Show a "close connection" dialog
+	public void closeConnection()
+	{
+		String [] names;
+		int i = 0;
+		synchronized(connections)
+		{
+			names = new String[connections.size()];
+			for (String name: connections.keySet())
+				names[i++] = name;
+		}
+		Arrays.sort(names);
+		String sel = (String) JOptionPane.showInputDialog(null,
+			"Select connection to close:", "Close Connection",
+			JOptionPane.PLAIN_MESSAGE, null, names, null);
+		if (sel == null)
+			return;
+		synchronized(connections)
+		{
+			closeConnection(connections.get(sel));
+		}
+	}
 	public void showConnectionDialog()
 	{
 		String s;
@@ -194,7 +236,10 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 			c.disconnect();
 			ConnectionDockable dockable = getConnectionDockable();
 			dockable.remove(c);
-			connections.remove(c.getName());
+			synchronized(connections)
+			{
+				connections.remove(c.getName());
+			}
 		} catch (Exception e)
 		{
 			e.printStackTrace();
@@ -208,7 +253,10 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 			c.connect();
 			ConnectionDockable dockable = getConnectionDockable();
 			dockable.add(c);
-			connections.put(name, c);
+			synchronized(connections)
+			{
+				connections.put(name, c);
+			}
 		} catch (Exception e)
 		{
 			e.printStackTrace();
