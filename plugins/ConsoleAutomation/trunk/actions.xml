@@ -11,6 +11,22 @@
 			plugin.showConnectionDialog();
 		</CODE>
 	</ACTION>
+	<ACTION NAME="console-automation-close-current" NO_REPEAT="TRUE">
+		<CODE>
+			import automation.*;
+			ConsoleAutomationPlugin plugin = (ConsoleAutomationPlugin)
+				jEdit.getPlugin("automation.ConsoleAutomationPlugin");
+			plugin.closeCurrentConnection();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="console-automation-close-connection" NO_REPEAT="TRUE">
+		<CODE>
+			import automation.*;
+			ConsoleAutomationPlugin plugin = (ConsoleAutomationPlugin)
+				jEdit.getPlugin("automation.ConsoleAutomationPlugin");
+			plugin.closeConnection();
+		</CODE>
+	</ACTION>
 	<ACTION NAME="console-automation-reload-connections" NO_REPEAT="TRUE">
 		<CODE>
 			import automation.*;
