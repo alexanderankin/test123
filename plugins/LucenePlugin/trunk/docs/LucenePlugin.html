@@ -2,18 +2,29 @@
 <head>
    <title>LucenePlugin</title>
 </head>
-
 <body>
+<h1> LucenePlugin </h1>
+<p>
+Written by: Matthieu Casanova, Shlomy Reinstein.
+</p>
+<a href="#CreateIndex"> Creating an index </a><br>
+<a href="#SearchIndex"> Searching an index </a><br>
+<a href="#DeleteIndex"> Deleting an index </a><br>
+<a href="#Support"> Support </a><br>
+<p>
 LucenePlugin provides an interface to the Lucene engine.
 Information about Lucene is available on the
 <a href="http://lucene.apache.org/java/docs">Lucene website</a>.
+</p>
 <p>
 The plugin allows you to create a Lucene index, using one of the built-in
 analyzers, and then search the index. Once created, the index remains updated
 when the files in it are changed.
 </p>
 <p>
+<a name="CreateIndex">
 <h3> Creating an index: </h3>
+</a>
 <ol>
 <li>
 Select the files to index.
@@ -54,7 +65,9 @@ Click Ok to start creating the index.
 </ol>
 </p>
 <p>
+<a name="SearchIndex">
 <h3> Searching an index: </h3>
+</a>
 <ol>
 <li>
 Open the "Search with Lucene" dockable window using Plugins -> LucenePlugin ->
@@ -86,8 +99,24 @@ While an index is being created or updated, the word "Indexing" will show on
 the right of the dockable when that index is selected for searching, so you
 know that the index is not yet complete.
 </p>
+<a name="DeleteIndex">
 <h3> Deleting an index: </h3>
+</a>
 Select Plugins -> Lucene -> Delete an index, then select the index you'd like to
 delete.
+<a name="Support">
+<h3> Support </h3>
+</a>
+<ul>
+<li>
+To report bugs, use the
+<a href="https://sourceforge.net/tracker/?group_id=588&atid=565475">
+Plugins Bugs tracker </a>. Specify the plugin name in the Summary field. 
+<li>
+To ask for new features, use the
+<a href="https://sourceforge.net/tracker/?group_id=588&atid=997936">
+Plugin Feature Requests tracker </a>. Specify the plugin name in the Summary
+field.
+</ul>
 </body>
 </html>
