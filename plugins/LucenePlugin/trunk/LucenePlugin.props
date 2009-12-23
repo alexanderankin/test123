@@ -13,7 +13,8 @@ plugin.gatchan.jedit.lucene.LucenePlugin.browser-menu=\
 plugin.gatchan.jedit.lucene.LucenePlugin.menu=lucene-search  - lucene.remove-index
 plugin.gatchan.jedit.lucene.LucenePlugin.usePluginHome=true
 plugin.gatchan.jedit.lucene.LucenePlugin.docs=docs/LucenePlugin.html
-
+plugin.gatchan.jedit.lucene.LucenePlugin.description=\
+	LucenePlugin plugin provides an interface to the Lucene search engine in jEdit.
 
 lucene.add-to-index.label=<html>Add selected file(s) to an <b>existing index</b></html>
 lucene.add-to-newindex.label=<html>Add selected file(s) to a <b>new index</b></html>
