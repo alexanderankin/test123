@@ -29,13 +29,14 @@ import java.util.Iterator;
 
 import javax.swing.JOptionPane;
 
+import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.buffer.FoldHandler;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.BufferUpdate;
@@ -47,7 +48,7 @@ import org.gjt.sp.jedit.textarea.Selection;
 /**
  * plugin to insert a configurable fold handler into jEdit
  */
-public class ConfigurableFoldHandlerPlugin extends EBPlugin
+public class ConfigurableFoldHandlerPlugin extends EditPlugin
 {
 	private static final String MANUAL_FOLDS = "tempFolds";
 
@@ -73,21 +74,20 @@ public class ConfigurableFoldHandlerPlugin extends EBPlugin
 	{
 		instance = this;
 	}
-	
-	public void handleMessage(EBMessage msg)
+
+	@EBHandler
+	public void handlePropertiesChanged(PropertiesChanged pc)
 	{
-		if(msg instanceof PropertiesChanged)
-			readProperties();
-		else if(msg instanceof EditPaneUpdate)
-		{
-			EditPaneUpdate epu = (EditPaneUpdate)msg; 
-			// the only message I can see when a buffer is closed is this one
-			// so at this point check if the old buffer has closed
-			if (epu.getWhat().equals(EditPaneUpdate.BUFFER_CHANGED))
-				checkBuffers();
-		}
-		else if(msg instanceof BufferUpdate)
-			handleBufferUpdate((BufferUpdate)msg);
+		readProperties();
+	}
+
+	@EBHandler
+	public void handleEditPaneUpdate(EditPaneUpdate epu)
+	{
+		// the only message I can see when a buffer is closed is this one
+		// so at this point check if the old buffer has closed
+		if (epu.getWhat().equals(EditPaneUpdate.BUFFER_CHANGED))
+			checkBuffers();
 	}
 
 	private String getFoldFileFor(Buffer buffer)
@@ -100,7 +100,8 @@ public class ConfigurableFoldHandlerPlugin extends EBPlugin
 
 	// Loads persistent manual folds for a loaded buffer, and saves
 	// persistent manual folds for a closed / saved buffer.
-	private void handleBufferUpdate(BufferUpdate bu)
+	@EBHandler
+	public void handleBufferUpdate(BufferUpdate bu)
 	{
 		Object what = bu.getWhat();
 		Buffer buffer = bu.getBuffer();
@@ -186,8 +187,14 @@ loop:	for(Iterator<JEditBuffer> iter = bufferStrings.keySet().iterator();
 			}
 		}
 		readProperties();
+		EditBus.addToBus(this);
 	}
-	
+
+	public void stop()
+	{
+		EditBus.removeFromBus(this);
+	}
+
 	/**
 	 * reads the fold strings from the properties file and sets them 
 	 */
