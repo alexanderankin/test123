@@ -277,7 +277,6 @@ public class JavaParser extends SideKickParser implements EBComponent {
                 Range range = new Range();
                 if ( e instanceof ParseException ) {
                     pe = ( ParseException ) e;
-                    pe.printStackTrace();
                     range = getExceptionLocation( pe );
                 }
                 errorSource.addError( ErrorSource.ERROR, buffer.getPath(), range.startLine, range.startColumn, range.endColumn, e.getMessage() );
