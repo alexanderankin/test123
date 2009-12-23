@@ -21,12 +21,13 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 
 	private static final String GLOBAL_MACROS = "Global";
 	private static final String CONNECTION_DOCKABLE = "console-automation";
+	private static ConsoleAutomationPlugin instance = null;
 	private final Map<String, Connection> connections =
 		new HashMap<String, Connection>();
 
 	public void start()
 	{
-		// Empty
+		instance = this;
 	}
 
 	public void reloadConnections() {
@@ -41,7 +42,12 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 
 	public void stop()
 	{
-		// Empty
+		instance = null;
+	}
+
+	static public ConsoleAutomationPlugin getInstance()
+	{
+		return instance;
 	}
 
 	public Connection getConnection(String name)
