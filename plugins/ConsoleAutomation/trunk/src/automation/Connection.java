@@ -13,6 +13,7 @@ import org.apache.commons.net.telnet.TelnetClient;
 
 public class Connection
 {
+	private static final int SLEEP_PERIOD = 200;
 	private final String name;
 	private final String host;
 	private final int port;
@@ -29,6 +30,7 @@ public class Connection
 	private final List<Runnable> scripts = new ArrayList<Runnable>();
 	static private ThreadLocal<Connection> tlsConnection =
 		new ThreadLocal<Connection>();
+	private boolean abort = false;
 
 	public interface CharHandler
 	{
@@ -80,6 +82,7 @@ public class Connection
 	}
 	public void disconnect() throws IOException
 	{
+		abort();
 		reader.close();
 		writer.close();
 		telnet.disconnect();
@@ -212,42 +215,69 @@ public class Connection
 		};
 		new Thread(r).start();
 	}
+	private void processChar(char c, StringBuilder s)
+	{
+		if (outputHandler != null)
+			outputHandler.handle(c);
+		if (c == '\n')
+		{
+			synchronized(expectHandlerLock)
+			{
+				if (expectHandler == null)
+					expectBuffer.add(new StringBuilder());
+				else if ((! expectHandler.prefix()) &&
+						 expectHandler.handle(s.toString()))
+				{
+					notifyExpectHandler();
+				}
+			}
+			s.setLength(0);
+			return;
+		}
+		s.append(c);
+		synchronized(expectHandlerLock)
+		{
+			if ((expectHandler == null) || (! expectHandler.prefix()))
+			{
+				if (expectBuffer.isEmpty())
+					expectBuffer.add(new StringBuilder());
+				expectBuffer.get(expectBuffer.size()-1).append(c);
+			}
+			else if (expectHandler.handle(s.toString()))
+				notifyExpectHandler();
+		}
+	}
+	private synchronized void abort()
+	{
+		abort = true;
+	}
+	private synchronized boolean isAborted()
+	{
+		return abort;
+	}
 	private void processOutput() throws IOException
 	{
 		expectBuffer.add(new StringBuilder(""));
 		StringBuilder s = new StringBuilder();
 		int i;
-		while ((i = reader.read()) != -1)
+		while (! isAborted())
 		{
-			char c = (char) i;
-			if (outputHandler != null)
-				outputHandler.handle(c);
-			if (c == '\n')
+			while (reader.ready())
 			{
-				synchronized(expectHandlerLock)
-				{
-					if (expectHandler == null)
-						expectBuffer.add(new StringBuilder());
-					else if ((! expectHandler.prefix()) &&
-							 expectHandler.handle(s.toString()))
-					{
-						notifyExpectHandler();
-					}
-				}
-				s.setLength(0);
-				continue;
+				if (isAborted())
+					return;
+				i = reader.read();
+				if (i == -1)
+					return;
+				processChar((char) i, s);
 			}
-			s.append(c);
-			synchronized(expectHandlerLock)
+			try
 			{
-				if ((expectHandler == null) || (! expectHandler.prefix()))
-				{
-					if (expectBuffer.isEmpty())
-						expectBuffer.add(new StringBuilder());
-					expectBuffer.get(expectBuffer.size()-1).append(c);
-				}
-				else if (expectHandler.handle(s.toString()))
-					notifyExpectHandler();
+				Thread.sleep(SLEEP_PERIOD);
+			}
+			catch (InterruptedException e)
+			{
+				e.printStackTrace();
 			}
 		}
 	}
@@ -314,21 +344,22 @@ public class Connection
 		public void run()
 		{
 			tlsConnection.set(Connection.this);
-			boolean abort = false;
-			while (! abort)
+			while (! isAborted())
 			{
 				Runnable r = null;
 				synchronized (scripts)
 				{
 					if (scripts.isEmpty())
 					{
-						try {
-							scripts.wait();
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-							abort = true;
-							continue;
+						try
+						{
+							Thread.sleep(SLEEP_PERIOD);
 						}
+						catch (InterruptedException e)
+						{
+							e.printStackTrace();
+						}
+						continue;
 					}
 					r = scripts.remove(0);
 				}
