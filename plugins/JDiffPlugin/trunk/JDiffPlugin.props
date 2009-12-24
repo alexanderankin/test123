@@ -26,6 +26,7 @@ plugin.jdiff.JDiffPlugin.menu=\
     jdiff.toggle-ignore-case \
     jdiff.toggle-trim-whitespace \
     jdiff.toggle-ignore-amount-whitespace \
+    jdiff.toggle-ignore-line-separators \
     jdiff.toggle-ignore-all-whitespace \
     - \
     jdiff.diff-normal-output \
@@ -54,6 +55,7 @@ jdiff.swap-textareas.label=Swap text areas
 jdiff.toggle-ignore-case.label=Ignore case
 jdiff.toggle-trim-whitespace.label=Ignore leading and trailing whitespace
 jdiff.toggle-ignore-amount-whitespace.label=Ignore amount of whitespace
+jdiff.toggle-ignore-line-separators.label=Ignore line separators
 jdiff.toggle-ignore-all-whitespace.label=Ignore all whitespace
 jdiff.auto-show-dockable.label=Automatically show dockable on diff
 jdiff.diff-normal-output.label=Normal Diff Output
@@ -62,6 +64,7 @@ jdiff.apply-patch.label=Apply Patch...
 jdiff.ignore-case=false
 jdiff.trim-whitespace=false
 jdiff.ignore-amount-whitespace=false
+jdiff.ignore-line-separators=true;
 jdiff.ignore-all-whitespace=false
 jdiff.heuristic=false
 jdiff.no_discards=false
@@ -85,6 +88,7 @@ options.jdiff.diff-options.label=Diff options:
 options.jdiff.ignore-case=Ignore case
 options.jdiff.trim-whitespace=Ignore leading and trailing whitespace
 options.jdiff.ignore-amount-whitespace=Ignore amount of whitespace
+options.jdiff.ignore-line-separators=Ignore line separators
 options.jdiff.ignore-all-whitespace=Ignore all whitespace
 options.jdiff.heuristic=Faster diff heuristic
 options.jdiff.no_discards=Find minimal set of changes

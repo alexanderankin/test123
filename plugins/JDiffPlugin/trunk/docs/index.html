@@ -214,6 +214,15 @@ between the left and right lines. This overview only shows one
 line at a time of the diff block, move the cursor within the
 block to see the individual line differences for each line.</p>
 
+<p>
+The left line is shown above the right line.  Above the left line is a
+bounding graphic to show the start and end of the line, which helps see
+whitespace at the start and end of the line.  If the option to ignore line
+separators is unchecked, the line separator characters will be shown beyond
+the end of the bounding graphic so that any differences in line separators
+between the two files can be easily seen.
+</p>
+
 <h3>Merge controls</h3>
 
 <p>The merge control has 8 buttons. From left to right in
@@ -289,6 +298,11 @@ of whitespace" option for the current diff</p>
 </li>
 
 <li>
+<p><b>Ignore line separators</b>: toggles the "Ignore line separators"
+option for the current diff</p>
+</li>
+
+<li>
 <p><b>Ignore all whitespace</b>: toggles the "Ignore all
 whitespace" option for the current diff</p>
 </li>
@@ -335,6 +349,12 @@ if leading and trailing whitespaces were removed.</p>
 </li>
 </ul>
 </li>
+
+<li>
+<p>Ignore line separators: lines are compared as if all line separators
+were removed.
+</li>
+
 
 <li>
 <p>Ignore all whitespace: lines are compared as if:</p>

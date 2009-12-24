@@ -50,6 +50,7 @@ public class JDiffOptionPane implements OptionPane {
     private JCheckBox ignoreCase;
     private JCheckBox trimWhitespace;
     private JCheckBox ignoreAmountOfWhitespace;
+    private JCheckBox ignoreLineSeparators;
     private JCheckBox ignoreAllWhitespace;
     private JCheckBox heuristic;
     private JCheckBox no_discards;
@@ -73,14 +74,14 @@ public class JDiffOptionPane implements OptionPane {
      * @return the name of this panel
      */
     public String getName() {
-        return jEdit.getProperty("jdiff.general");
+        return jEdit.getProperty( "jdiff.general" );
     }
 
     /**
      * @return the panel to display the general options for JDiff
      */
     public Component getComponent() {
-        if (panel == null) {
+        if ( panel == null ) {
             createPanel();
         }
         return panel;
@@ -90,26 +91,27 @@ public class JDiffOptionPane implements OptionPane {
      * Initialize the panel, create the components and apply current settings.
      */
     public void init() {
-        if (panel == null) {
+        if ( panel == null ) {
             createPanel();
         }
-        ignoreCase.setSelected(jEdit.getBooleanProperty( "jdiff.ignore-case", false ));
-        trimWhitespace.setSelected(jEdit.getBooleanProperty( "jdiff.trim-whitespace", false ));
-        ignoreAmountOfWhitespace.setSelected(jEdit.getBooleanProperty( "jdiff.ignore-amount-whitespace", false ));
-        ignoreAllWhitespace.setSelected(jEdit.getBooleanProperty( "jdiff.ignore-all-whitespace", false ));
-        heuristic.setSelected(jEdit.getBooleanProperty("jdiff.heuristic", false));
-        no_discards.setSelected(jEdit.getBooleanProperty("jdiff.no_discards", false));
-            
+        ignoreCase.setSelected( jEdit.getBooleanProperty( "jdiff.ignore-case", false ) );
+        trimWhitespace.setSelected( jEdit.getBooleanProperty( "jdiff.trim-whitespace", false ) );
+        ignoreAmountOfWhitespace.setSelected( jEdit.getBooleanProperty( "jdiff.ignore-amount-whitespace", false ) );
+        ignoreLineSeparators.setSelected( jEdit.getBooleanProperty( "jdiff.ignore-line-separators", true ) );
+        ignoreAllWhitespace.setSelected( jEdit.getBooleanProperty( "jdiff.ignore-all-whitespace", false ) );
+        heuristic.setSelected( jEdit.getBooleanProperty( "jdiff.heuristic", false ) );
+        no_discards.setSelected( jEdit.getBooleanProperty( "jdiff.no_discards", false ) );
 
-        autoShowDockable.setSelected(jEdit.getBooleanProperty( "jdiff.auto-show-dockable", false ));
-        showLineDiff.setSelected(jEdit.getBooleanProperty( "jdiff.show-line-diff", true ));
-        synchroScroll.setSelected(jEdit.getBooleanProperty( "jdiff.synchroscroll-on", true));
-        horizScroll.setSelected(jEdit.getBooleanProperty( "jdiff.horiz-scroll", false ));
-        selectWord.setSelected(jEdit.getBooleanProperty( "jdiff.select-word", false ));
+
+        autoShowDockable.setSelected( jEdit.getBooleanProperty( "jdiff.auto-show-dockable", false ) );
+        showLineDiff.setSelected( jEdit.getBooleanProperty( "jdiff.show-line-diff", true ) );
+        synchroScroll.setSelected( jEdit.getBooleanProperty( "jdiff.synchroscroll-on", true ) );
+        horizScroll.setSelected( jEdit.getBooleanProperty( "jdiff.horiz-scroll", false ) );
+        selectWord.setSelected( jEdit.getBooleanProperty( "jdiff.select-word", false ) );
         selectWord.setEnabled( horizScroll.isSelected() );
-        beepOnError.setSelected(jEdit.getBooleanProperty( "jdiff.beep-on-error", true ));
-        restoreView.setSelected(jEdit.getBooleanProperty( "jdiff.restore-view", true ));
-        restoreCaret.setSelected(jEdit.getBooleanProperty( "jdiff.restore-caret", true));
+        beepOnError.setSelected( jEdit.getBooleanProperty( "jdiff.beep-on-error", true ) );
+        restoreView.setSelected( jEdit.getBooleanProperty( "jdiff.restore-view", true ) );
+        restoreCaret.setSelected( jEdit.getBooleanProperty( "jdiff.restore-caret", true ) );
 
         int orientation = jEdit.getIntegerProperty( "jdiff.toolbar-orientation", MergeToolBar.HORIZONTAL );
         switch ( orientation ) {
@@ -138,21 +140,22 @@ public class JDiffOptionPane implements OptionPane {
         ignoreCase = createCheckBox( "jdiff.ignore-case", false );
         trimWhitespace = createCheckBox( "jdiff.trim-whitespace", false );
         ignoreAmountOfWhitespace = createCheckBox( "jdiff.ignore-amount-whitespace", false );
+        ignoreLineSeparators = createCheckBox( "jdiff.ignore-line-separators", false );
         ignoreAllWhitespace = createCheckBox( "jdiff.ignore-all-whitespace", false );
-        heuristic = createCheckBox("jdiff.heuristic", false);
-        no_discards = createCheckBox("jdiff.no_discards", false);
-        
+        heuristic = createCheckBox( "jdiff.heuristic", false );
+        no_discards = createCheckBox( "jdiff.no_discards", false );
+
         // UI options
         JLabel ui_options_label = new JLabel( jEdit.getProperty( "options.ui-options.label", "UI Options:" ) );
         autoShowDockable = createCheckBox( "jdiff.auto-show-dockable", false );
         showLineDiff = createCheckBox( "jdiff.show-line-diff", true );
-        synchroScroll = createCheckBox("jdiff.synchroscroll-on", true);
+        synchroScroll = createCheckBox( "jdiff.synchroscroll-on", true );
         horizScroll = createCheckBox( "jdiff.horiz-scroll", false );
         selectWord = createCheckBox( "jdiff.select-word", false );
         selectWord.setEnabled( horizScroll.isSelected() );
         beepOnError = createCheckBox( "jdiff.beep-on-error", true );
         restoreView = createCheckBox( "jdiff.restore-view", true );
-        restoreCaret = createCheckBox( "jdiff.restore-caret", true);
+        restoreCaret = createCheckBox( "jdiff.restore-caret", true );
 
         // only enable selectWord if horizScroll is selected
         horizScroll.addActionListener(
@@ -201,27 +204,28 @@ public class JDiffOptionPane implements OptionPane {
         panel.add( "0,  1, 2, 1, W, 0, 2", ignoreCase );
         panel.add( "0,  2, 2, 1, W, 0, 2", trimWhitespace );
         panel.add( "0,  3, 2, 1, W, 0, 2", ignoreAmountOfWhitespace );
-        panel.add( "0,  4, 2, 1, W, 0, 2", ignoreAllWhitespace );
-        panel.add( "0,  5, 2, 1, W, 0, 2", heuristic );
-        panel.add( "0,  6, 2, 1, W, 0, 2", no_discards );
+        panel.add( "0,  4, 2, 1, W, 0, 2", ignoreLineSeparators );
+        panel.add( "0,  5, 2, 1, W, 0, 2", ignoreAllWhitespace );
+        panel.add( "0,  6, 2, 1, W, 0, 2", heuristic );
+        panel.add( "0,  7, 2, 1, W, 0, 2", no_discards );
 
-        panel.add( "0,  7, 2, 1, W, 0, 2", KappaLayout.createVerticalStrut( 11 ) );
-        panel.add( "0,  8, 2, 1, W, 0, 2", ui_options_label );
-        panel.add( "0,  9, 2, 1, W, 0, 2", autoShowDockable );
-        panel.add( "0, 10, 2, 1, W, 0, 2", showLineDiff );
-        panel.add( "0, 11, 2, 1, W, 0, 2", synchroScroll );
-        panel.add( "0, 12, 2, 1, W, 0, 2", horizScroll );
-        panel.add( "0, 13, 1, 1, W, 0, 2", KappaLayout.createHorizontalStrut( 16, true ) );
-        panel.add( "1, 14, 1, 1, W, 0, 2", selectWord );
-        panel.add( "0, 15, 2, 1, W, 0, 2", beepOnError );
-        panel.add( "0, 16, 2, 1, W, 0, 2", restoreView );
-        panel.add( "0, 17, 2, 1, W, 0, 2", restoreCaret );
+        panel.add( "0,  8, 2, 1, W, 0, 2", KappaLayout.createVerticalStrut( 11 ) );
+        panel.add( "0,  9, 2, 1, W, 0, 2", ui_options_label );
+        panel.add( "0, 10, 2, 1, W, 0, 2", autoShowDockable );
+        panel.add( "0, 11, 2, 1, W, 0, 2", showLineDiff );
+        panel.add( "0, 12, 2, 1, W, 0, 2", synchroScroll );
+        panel.add( "0, 13, 2, 1, W, 0, 2", horizScroll );
+        panel.add( "0, 14, 1, 1, W, 0, 2", KappaLayout.createHorizontalStrut( 16, true ) );
+        panel.add( "1, 15, 1, 1, W, 0, 2", selectWord );
+        panel.add( "0, 16, 2, 1, W, 0, 2", beepOnError );
+        panel.add( "0, 17, 2, 1, W, 0, 2", restoreView );
+        panel.add( "0, 18, 2, 1, W, 0, 2", restoreCaret );
 
-        panel.add( "0, 18, 2, 1, W, 0, 2", KappaLayout.createVerticalStrut( 11 ) );
-        panel.add( "0, 19, 2, 1, W, 0, 2", orientation_label );
-        panel.add( "0, 20, 2, 1, W, 0, 2", horizontal );
-        panel.add( "0, 21, 2, 1, W, 0, 2", vertical );
-        panel.add( "0, 22, 2, 1, W, 0, 2", compact );
+        panel.add( "0, 19, 2, 1, W, 0, 2", KappaLayout.createVerticalStrut( 11 ) );
+        panel.add( "0, 20, 2, 1, W, 0, 2", orientation_label );
+        panel.add( "0, 21, 2, 1, W, 0, 2", horizontal );
+        panel.add( "0, 22, 2, 1, W, 0, 2", vertical );
+        panel.add( "0, 23, 2, 1, W, 0, 2", compact );
     }
 
     /**
@@ -242,6 +246,7 @@ public class JDiffOptionPane implements OptionPane {
         jEdit.setBooleanProperty( "jdiff.ignore-case", ignoreCase.isSelected() );
         jEdit.setBooleanProperty( "jdiff.trim-whitespace", trimWhitespace.isSelected() );
         jEdit.setBooleanProperty( "jdiff.ignore-amount-whitespace", ignoreAmountOfWhitespace.isSelected() );
+        jEdit.setBooleanProperty( "jdiff.ignore-line-separators", ignoreLineSeparators.isSelected() );
         jEdit.setBooleanProperty( "jdiff.ignore-all-whitespace", ignoreAllWhitespace.isSelected() );
         jEdit.setBooleanProperty( "jdiff.heuristic", heuristic.isSelected() );
         jEdit.setBooleanProperty( "jdiff.no_discards", no_discards.isSelected() );

@@ -56,6 +56,15 @@
         </IS_SELECTED>
     </ACTION>
 
+    <ACTION NAME="jdiff.toggle-ignore-line-separators">
+        <CODE>
+            jdiff.DualDiffManager.toggleIgnoreLineSeparatorsFor(view);
+        </CODE>
+        <IS_SELECTED>
+            return jdiff.DualDiffManager.getIgnoreLineSeparatorsFor(view);
+        </IS_SELECTED>
+    </ACTION>
+
     <ACTION NAME="jdiff.toggle-ignore-all-whitespace">
         <CODE>
             jdiff.DualDiffManager.toggleIgnoreAllWhitespaceFor(view);
