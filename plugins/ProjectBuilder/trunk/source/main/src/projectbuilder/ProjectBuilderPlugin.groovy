@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 package projectbuilder
-
+// imports {{{
 import projectbuilder.build.BuildCommand
 
 import java.util.zip.*
@@ -22,7 +22,8 @@ import projectbuilder.utils.ZipUtils
 import projectviewer.vpt.VPTProject
 import com.townsfolkdesigns.jedit.plugins.scripting.*
 import console.Shell
-
+import antfarm.AntFarmPlugin
+// }}} imports
 /**
  *
  * @author elberry
@@ -104,49 +105,8 @@ public class ProjectBuilderPlugin extends EditPlugin {
 	   if (proj == null) {
 	   	   GUIUtilities.error(view, "projectBuilder.msg.no-project", null)
 	    } else {
+	    	AntFarmPlugin.getErrorSource().clear();
 	    	BuildCommand.run(view, proj)
-	    	/*
-	    	cmd = proj.getProperty("projectBuilder.command.build")
-	    	if (cmd == null || cmd.length() == 0) {
-	    		GUIUtilities.error(view, "projectBuilder.msg.no-build-command", null)
-	    	} else {
-	    		// Run the build command
-	    		if (cmd.startsWith("ANT:")) {
-	    			if (MiscUtilities.isToolsJarAvailable()) {
-						try {
-							JComponent console = view.getDockableWindowManager().getDockable("console")
-							String target = cmd.substring("ANT:".length(), cmd.length())
-							String buildfile = proj.getRootPath()+"/build.xml"
-							Shell ant = Shell.getShell("Ant");
-							console.clear()
-							console.run(ant, "+"+buildfile)
-							console.getShell().waitFor(console)
-							console.run(ant, "!"+target)
-							view.getDockableWindowManager().showDockableWindow("console")
-							new build.BuildWatcher(console).start()
-						} catch (Exception e) {
-							Log.log(Log.ERROR, ProjectBuilderPlugin.class, e.toString()+": "+e.getMessage())
-						} finally {
-							building = null
-						}
-					} else {
-						GUIUtilities.error(view, "projectBuilder.msg.no-tools-jar", null)
-					}
-	    		}
-	    		else {
-	    			// Run in system shell
-	    			view.getDockableWindowManager().addDockableWindow("console")
-	    			JComponent console = view.getDockableWindowManager().getDockable("console")
-	    			console.setShell("System");
-	    			Shell system = Shell.getShell("System")
-	    			String cd = "cd \""+proj.getRootPath()+"\""
-	    			system.execute(console, null, console.getShellState(system), null, cd)
-	    			system.waitFor(console)
-	    			system.execute(console, null, console.getShellState(system), null, cmd)
-	    			view.getDockableWindowManager().showDockableWindow("console")
-	    		}
-	    	}
-	    	*/
 	   }
    }
    

@@ -1,7 +1,10 @@
 package projectbuilder.build;
 // imports {{{
+import projectbuilder.build.BuildCommand;
+
 import javax.swing.JPanel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.BoxLayout;
 import javax.swing.Box;
 
@@ -9,6 +12,10 @@ import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyListener;
+import java.awt.event.KeyEvent;
 
 import projectviewer.vpt.VPTProject;
 
@@ -22,12 +29,13 @@ import org.gjt.sp.jedit.jEdit;
 /**
  * A dialog for editing build settings of a project
  */
-public class BuildSettingsPanel extends JPanel implements ActionListener {
+public class BuildSettingsPanel extends JPanel implements ActionListener, ItemListener {
 	private VPTProject proj;
 	private ListPanel list;
 	private JButton addBtn;
 	private JButton removeBtn;
-	private JPanel buttonPanel;
+	private JPanel optionsPanel;
+	private JCheckBox antBox;
 	public BuildSettingsPanel(VPTProject proj) {
 		super(new BorderLayout());
 		setPreferredSize(new Dimension(400, 200));
@@ -42,16 +50,28 @@ public class BuildSettingsPanel extends JPanel implements ActionListener {
 		}
 		addBtn = new JButton(GUIUtilities.loadIcon("16x16/actions/list-add.png"));
 		removeBtn = new JButton(GUIUtilities.loadIcon("16x16/actions/list-remove.png"));
+		antBox = new JCheckBox("Run Ant commands in the current JVM");
+		antBox.setSelected(jEdit.getBooleanProperty("projectbuilder.run-ant-in-jvm"));
 		addBtn.addActionListener(this);
 		removeBtn.addActionListener(this);
-		buttonPanel = new JPanel();
+		optionsPanel = new JPanel();
+		optionsPanel.setLayout(new BoxLayout(optionsPanel, BoxLayout.PAGE_AXIS));
+		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.LINE_AXIS));
 		buttonPanel.add(Box.createHorizontalGlue());
 		buttonPanel.add(addBtn);
 		buttonPanel.add(removeBtn);
 		buttonPanel.add(Box.createHorizontalGlue());
+		optionsPanel.add(buttonPanel);
+		JPanel antBoxPanel = new JPanel();
+		antBoxPanel.setLayout(new BoxLayout(antBoxPanel, BoxLayout.LINE_AXIS));
+		antBoxPanel.add(Box.createHorizontalGlue());
+		antBoxPanel.add(antBox);
+		antBoxPanel.add(Box.createHorizontalGlue());
+		optionsPanel.add(antBoxPanel);
+		antBox.addItemListener(this);
 		add(BorderLayout.CENTER, list);
-		add(BorderLayout.SOUTH, buttonPanel);
+		add(BorderLayout.SOUTH, optionsPanel);
 	}
 	
 	/**
@@ -85,4 +105,12 @@ public class BuildSettingsPanel extends JPanel implements ActionListener {
 			updateProps();
 		}
 	}
+	
+	public void itemStateChanged(ItemEvent e) {
+		Object source = e.getItemSelectable();
+		if (source == antBox) {
+			jEdit.setBooleanProperty("projectbuilder.run-ant-in-jvm", antBox.isSelected());
+		}
+	}
+	
 }

@@ -13,10 +13,10 @@
    <property name="src.resources.dir" value="source/main/resources"/>
 	
 	<!-- jedit properties -->
-   <property name="build.support" value=".." />
    <property name="docs-proc.target" value="none" />
-   <property name="install.dir" value=".." />
-   <property name="jedit.install.dir" value=".." />
+   <property name="install.dir" value="/home/damien/.jedit/jars" />
+   <property name="jedit.install.dir" value="/usr/share/jEdit" />
+   <property name="build.support" value="${jedit.install.dir}/build-support" />
    <property name="jedit.plugins.dir" value="${install.dir}" />
    <property name="junit.jar" value="../junit/junit.jar" />
 	
@@ -35,6 +35,7 @@
    <path id="project.class.path">
       <pathelement path="${jedit.install.dir}/jedit.jar" />
       <pathelement path="${jedit.plugins.dir}/${groovy.jar.name}" />
+      <pathelement path="${jedit.plugins.dir}/ant.jar" />
       <pathelement path="${jedit.plugins.dir}/ScriptEnginePlugin.jar" />
       <pathelement path="${jedit.plugins.dir}/ProjectViewer.jar" />
       <pathelement path="${jedit.plugins.dir}/CommonControls.jar" />

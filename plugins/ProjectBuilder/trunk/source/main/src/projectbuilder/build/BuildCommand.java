@@ -4,6 +4,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import java.awt.Dimension;
+import java.awt.event.KeyListener;
+import java.awt.event.KeyEvent;
 
 import projectviewer.vpt.VPTProject;
 
@@ -25,6 +27,8 @@ import common.gui.ListPanel;
  * Currently, there is no option to run ant through the System shell
  */
 public class BuildCommand {
+	
+	public static JDialog settings;
 	
 	public static void run(View view, VPTProject proj) {
 		
@@ -48,7 +52,7 @@ public class BuildCommand {
 			cmd = commands[0];
 		}
 		
-		if (cmd.equals("ant") || cmd.startsWith("ant ")) {
+		if ((cmd.equals("ant") || cmd.startsWith("ant ")) && jEdit.getBooleanProperty("projectbuilder.run-ant-in-jvm")) {
 			// Build in AntFarm
 			String target = "";
 			if (cmd.indexOf(" ") != -1) {
@@ -85,12 +89,22 @@ public class BuildCommand {
 			return
 		}
 		*/
-		JDialog dialog = new JDialog(view, "Project Build Settings");
-		dialog.add(new BuildSettingsPanel(proj));
-		dialog.pack();
-		dialog.setLocationRelativeTo(view);
-		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-		dialog.setVisible(true);
+		settings = new JDialog(view, "Project Build Settings");
+		settings.add(new BuildSettingsPanel(proj));
+		settings.pack();
+		settings.setLocationRelativeTo(view);
+		settings.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		settings.setVisible(true);
+		// TODO: Get Escape to close the dialog
+		settings.addKeyListener(new KeyListener() {
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+					settings.dispose();
+				}
+			}
+			public void keyTyped(KeyEvent e) {}
+			public void keyReleased(KeyEvent e) {}
+		});
 	}
 	
 	public static String[] getCommandList(VPTProject proj) {
