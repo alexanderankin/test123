@@ -349,24 +349,27 @@ public class Connection
 				Runnable r = null;
 				synchronized (scripts)
 				{
-					if (scripts.isEmpty())
-					{
-						try
-						{
-							Thread.sleep(SLEEP_PERIOD);
-						}
-						catch (InterruptedException e)
-						{
-							e.printStackTrace();
-						}
-						continue;
-					}
-					r = scripts.remove(0);
+					if (! scripts.isEmpty())
+						r = scripts.remove(0);
 				}
-				scriptAborted = false;
-				r.run();
-				if (eventHandler != null)
-					eventHandler.idle();
+				if (r != null)
+				{
+					scriptAborted = false;
+					r.run();
+					if (eventHandler != null)
+						eventHandler.idle();
+				}
+				else
+				{
+					try
+					{
+						Thread.sleep(SLEEP_PERIOD);
+					}
+					catch (InterruptedException e)
+					{
+						e.printStackTrace();
+					}
+				}
 			}
 		}
 	}
