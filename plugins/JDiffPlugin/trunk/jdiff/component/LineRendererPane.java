@@ -34,19 +34,16 @@ import jdiff.DualDiffManager;
 import jdiff.component.ui.*;
 import jdiff.util.Diff;
 
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
-/**
- * Component to show the merge controls.
- * Implements EBComponent to know about when the View splits and unsplits so
- * the buttons can be enabled or disabled accordingly.
- */
 public class LineRendererPane extends JComponent implements EBComponent, CaretListener {
 
     private static final String uiClassID = "LineRendererPaneUI";
@@ -255,6 +252,12 @@ public class LineRendererPane extends JComponent implements EBComponent, CaretLi
                     }
                 }
             }
+            if (!jEdit.getBooleanProperty("jdiff.ignore-line-separators", true)) {
+                String leftSep = LineRendererPane.this.view.getEditPanes() [ 0 ].getBuffer().getStringProperty(Buffer.LINESEP);
+                String rightSep = LineRendererPane.this.view.getEditPanes() [ 1 ].getBuffer().getStringProperty(Buffer.LINESEP);
+                leftLine += leftSep;
+                rightLine += rightSep;
+            }
             if ((leftLine.equals("") && rightLine.equals("")) || leftLine.equals(rightLine)) {
                 LineRendererPane.this.setModel(null);
             }
@@ -263,5 +266,4 @@ public class LineRendererPane extends JComponent implements EBComponent, CaretLi
             }
         }
     }
-
 }

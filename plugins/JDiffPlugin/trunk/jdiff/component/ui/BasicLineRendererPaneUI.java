@@ -253,6 +253,12 @@ public class BasicLineRendererPaneUI extends DiffLineOverviewUI implements Chang
             java.util.List<Color> leftColors = model.getLeftColors();
             for ( int i = 0; i < leftChars.size(); i++ ) {
                 char c = leftChars.get( i );
+                if (c == '\n') {
+                    c = 'n';
+                }
+                if (c == '\r') {
+                    c = 'r';
+                }
                 color = leftColors.get( i );
                 gfx.setColor( color );
                 gfx.fillRect( x, y0 - fm.getHeight() + fm.getDescent(), fm.charWidth( c ), fm.getHeight() );
@@ -267,6 +273,12 @@ public class BasicLineRendererPaneUI extends DiffLineOverviewUI implements Chang
             java.util.List<Color> rightColors = model.getRightColors();
             for ( int i = 0; i < rightChars.size(); i++ ) {
                 char c = rightChars.get( i );
+                if (c == '\n') {
+                    c = 'n';
+                }
+                if (c == '\r') {
+                    c = 'r';
+                }
                 color = rightColors.get( i );
                 gfx.setColor( color );
                 gfx.fillRect( x, y1 - fm.getHeight() + fm.getDescent(), fm.charWidth( c ), fm.getHeight() );

@@ -65,6 +65,7 @@ public class DualDiff implements EBComponent {
     private boolean ignoreCase;
     private boolean trimWhitespace;
     private boolean ignoreAmountOfWhitespace;
+    private boolean ignoreLineSeparators;
     private boolean ignoreAllWhitespace;
 
     // the actual diffs
@@ -83,16 +84,18 @@ public class DualDiff implements EBComponent {
 
     protected DualDiff( View view ) {
         this( view, DualDiffUtil.ignoreCaseDefault, DualDiffUtil.trimWhitespaceDefault,
-              DualDiffUtil.ignoreAmountOfWhitespaceDefault, DualDiffUtil.ignoreAllWhitespaceDefault );
+              DualDiffUtil.ignoreAmountOfWhitespaceDefault, DualDiffUtil.ignoreLineSeparatorsDefault,
+              DualDiffUtil.ignoreAllWhitespaceDefault );
     }
 
     protected DualDiff( View view, boolean ignoreCase, boolean trimWhitespace,
-            boolean ignoreAmountOfWhiteSpace, boolean ignoreAllWhiteSpace ) {
+            boolean ignoreAmountOfWhiteSpace, boolean ignoreLineSeparators, boolean ignoreAllWhiteSpace ) {
 
         // diff options
         this.ignoreCase = ignoreCase;
         this.trimWhitespace = trimWhitespace;
         this.ignoreAmountOfWhitespace = ignoreAmountOfWhiteSpace;
+        this.ignoreLineSeparators = ignoreLineSeparators;
         this.ignoreAllWhitespace = ignoreAllWhiteSpace;
 
         // gui objects
@@ -217,6 +220,7 @@ public class DualDiff implements EBComponent {
             setIgnoreCase( jEdit.getBooleanProperty( "jdiff.ignore-case", false ) );
             setTrimWhitespace( jEdit.getBooleanProperty( "jdiff.trim-whitespace", false ) );
             setIgnoreAmountOfWhitespace( jEdit.getBooleanProperty( "jdiff.ignore-amount-whitespace", false ) );
+            setIgnoreLineSeparators( jEdit.getBooleanProperty( "jdiff.ignore-line-separators", true ) );
             setIgnoreAllWhitespace( jEdit.getBooleanProperty( "jdiff.ignore-all-whitespace", false ) );
             refresh();
         }
@@ -256,6 +260,18 @@ public class DualDiff implements EBComponent {
 
     public void toggleIgnoreAmountOfWhitespace() {
         ignoreAmountOfWhitespace = !ignoreAmountOfWhitespace;
+    }
+
+    public void toggleIgnoreLineSeparators() {
+        ignoreLineSeparators = !ignoreLineSeparators;
+    }
+
+    public boolean getIgnoreLineSeparators() {
+        return ignoreLineSeparators;
+    }
+
+    public void setIgnoreLineSeparators( boolean ignoreLineSeparators ) {
+        this.ignoreLineSeparators = ignoreLineSeparators;
     }
 
     public boolean getIgnoreAllWhitespace() {
@@ -315,12 +331,12 @@ public class DualDiff implements EBComponent {
                 }
                                   );
     }
-    
+
     /**
      * Removes this DualDiff from our View
-     * @param propagate If true, tell DualDiffManager to do a remove also.  
+     * @param propagate If true, tell DualDiffManager to do a remove also.
      */
-    private void remove(boolean propagate) {
+    private void remove( boolean propagate ) {
         EditBus.removeFromBus( this );
         removeOverviews();
         removeHighlighters();
@@ -559,8 +575,8 @@ public class DualDiff implements EBComponent {
                 // go to start of current hunk.  If caret line is after end of
                 // current hunk, but before the next hunk, go to start of current
                 // hunk.
-                if ( hunk.first0 + hunk.lines0 > caretLine ||                      // NOPMD caret is in current hunk
-                        hunk.next == null ||                                       // caret is after last hunk
+                if ( hunk.first0 + hunk.lines0 > caretLine ||                       // NOPMD caret is in current hunk
+                        hunk.next == null ||                                        // caret is after last hunk
                         hunk.next.first0 >= caretLine ) {         // caret is before next hunk
                     int line = hunk.first0;      // first line of diff hunk
 
@@ -620,8 +636,8 @@ public class DualDiff implements EBComponent {
                 // go to start of current hunk.  If caret line is after end of
                 // current hunk, but before current hunk, go to start of current
                 // hunk.
-                if ( hunk.first1 + hunk.lines1 > caretLine ||                     // NOPMD caret is in current hunk
-                        hunk.next == null ||                                       // caret is after last hunk
+                if ( hunk.first1 + hunk.lines1 > caretLine ||                      // NOPMD caret is in current hunk
+                        hunk.next == null ||                                        // caret is after last hunk
                         hunk.next.first1 >= caretLine ) {         // caret is before next hunk
                     int line = hunk.first1;      // first line of hunk
 
@@ -725,7 +741,7 @@ public class DualDiff implements EBComponent {
     }
 
     /**
-     * Move all non-conflicting diff hunks from the left text are to the right text area.    
+     * Move all non-conflicting diff hunks from the left text are to the right text area.
      */
     protected void moveMultipleRight( EditPane editPane ) {
         if ( editPane == null ) {
@@ -736,7 +752,8 @@ public class DualDiff implements EBComponent {
         // Start with the last hunk and work backwards to the first, this ensures
         // line numbers for inserts of previous hunks remain valid.
         Diff.Change hunk = edits;
-        for ( ; hunk.next != null; hunk = hunk.next );       // go to last hunk
+        for ( ; hunk.next != null; hunk = hunk.next )
+            ;       // go to last hunk
         for ( ; hunk != null; hunk = hunk.prev ) {
             if ( hunk.lines1 == 0 ) {
                 diffOverview0.moveRight( hunk.first0 );
@@ -745,7 +762,7 @@ public class DualDiff implements EBComponent {
     }
 
     /**
-     * Move all non-conflicting diff hunks from the right text area to the left text area.    
+     * Move all non-conflicting diff hunks from the right text area to the left text area.
      */
     protected void moveMultipleLeft( EditPane editPane ) {
         if ( editPane == null ) {
@@ -756,7 +773,8 @@ public class DualDiff implements EBComponent {
         // Start with the last hunk and work backwards to the first, this ensures
         // line numbers for inserts of previous hunks remain valid.
         Diff.Change hunk = edits;
-        for ( ; hunk.next != null; hunk = hunk.next );       // go to last hunk
+        for ( ; hunk.next != null; hunk = hunk.next )
+            ;       // go to last hunk
         for ( ; hunk != null; hunk = hunk.prev ) {
             if ( hunk.lines0 == 0 ) {
                 diffOverview0.moveLeft( hunk.first1 );

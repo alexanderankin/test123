@@ -301,6 +301,22 @@ public class DualDiffManager {
     }
 
     /**
+     * Toggle the diff ignoreLineSeparators for the given View.
+     */
+    public static void toggleIgnoreLineSeparatorsFor( View view ) {
+        DualDiff dualDiff = DualDiffManager.getDualDiffFor( view );
+        if ( dualDiff != null ) {
+            dualDiff.toggleIgnoreLineSeparators();
+            dualDiff.refresh();
+        }
+        else {
+            if ( jEdit.getBooleanProperty( BEEP_ON_ERROR ) ) {
+                view.getToolkit().beep();
+            }
+        }
+    }
+
+    /**
      * @return The diff ignoreAllWhitespace setting for the given View.
      */
     public static boolean getIgnoreAllWhitespaceFor( View view ) {

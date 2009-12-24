@@ -14,26 +14,19 @@ public class DualDiffUtil {
     public static boolean ignoreCaseDefault = jEdit.getBooleanProperty( "jdiff.ignore-case", false );
     public static boolean trimWhitespaceDefault = jEdit.getBooleanProperty( "jdiff.trim-whitespace", false );
     public static boolean ignoreAmountOfWhitespaceDefault = jEdit.getBooleanProperty( "jdiff.ignore-amount-whitespace", false );
+    public static boolean ignoreLineSeparatorsDefault = jEdit.getBooleanProperty( "jdiff.ignore-line-separators", true );
     public static boolean ignoreAllWhitespaceDefault = jEdit.getBooleanProperty( "jdiff.ignore-all-whitespace", false );
 
     public static void propertiesChanged() {
-        boolean newIgnoreCaseDefault = jEdit.getBooleanProperty( "jdiff.ignore-case", false );
-        boolean newTrimWhitespaceDefault = jEdit.getBooleanProperty(
+        ignoreCaseDefault = jEdit.getBooleanProperty( "jdiff.ignore-case", false );
+        trimWhitespaceDefault = jEdit.getBooleanProperty(
                     "jdiff.trim-whitespace", false );
-        boolean newIgnoreAmountOfWhitespaceDefault = jEdit.getBooleanProperty(
+        ignoreAmountOfWhitespaceDefault = jEdit.getBooleanProperty(
                     "jdiff.ignore-amount-whitespace", false );
-        boolean newIgnoreAllWhitespaceDefault = jEdit.getBooleanProperty(
+        ignoreLineSeparatorsDefault = jEdit.getBooleanProperty(
+                    "jdiff.ignore-line-separators", true );
+        ignoreAllWhitespaceDefault = jEdit.getBooleanProperty(
                     "jdiff.ignore-all-whitespace", false );
-
-        if ( ( newIgnoreCaseDefault != ignoreCaseDefault )
-                || ( newTrimWhitespaceDefault != trimWhitespaceDefault )
-                || ( newIgnoreAmountOfWhitespaceDefault != ignoreAmountOfWhitespaceDefault )
-                || ( newIgnoreAllWhitespaceDefault != ignoreAllWhitespaceDefault ) ) {
-            ignoreCaseDefault = newIgnoreCaseDefault;
-            trimWhitespaceDefault = newTrimWhitespaceDefault;
-            ignoreAmountOfWhitespaceDefault = newIgnoreAmountOfWhitespaceDefault;
-            ignoreAllWhitespaceDefault = newIgnoreAllWhitespaceDefault;
-        }
     }
 
     /**
@@ -150,32 +143,46 @@ public class DualDiffUtil {
     public static FileLine[] getFileLines( DualDiff dualDiff, Buffer buffer ) {
         buffer.readLock();
         FileLine[] lines = new FileLine[ buffer.getLineCount() ];
+        String lineSep = buffer.getStringProperty(Buffer.LINESEP);
 
         for ( int i = buffer.getLineCount() - 1; i >= 0; i-- ) {
-            int start = buffer.getLineStartOffset( i );
-            int end = buffer.getLineEndOffset( i );
-
+            //int start = buffer.getLineStartOffset( i );
+            //int end = buffer.getLineEndOffset( i );
+            //int len = end - start;
+            
             // We get the line i without the line separator (always
             // \n)
-            int len = ( end - 1 ) - start;
+            /* is this possible?
             if ( len == 0 ) {
                 lines[ i ] = new FileLine( "", "" );
                 continue;
             }
+            */
 
-            String text = "";
-            String canonical = "";
-
-            text = buffer.getText( start, len );
-            canonical = text;
+            String text = buffer.getLineText(i);
+            if (!text.endsWith(lineSep)) {
+                text += lineSep;   
+            }
+            String canonical = text;
             if ( dualDiff.getIgnoreCase() ) {
                 canonical = canonical.toUpperCase();
             }
             if ( dualDiff.getTrimWhitespace() && !dualDiff.getIgnoreAllWhitespace() ) {
                 canonical = trimWhitespaces( canonical );
+                if (!dualDiff.getIgnoreLineSeparators()) {
+                    canonical += lineSep;
+                }
             }
             if ( dualDiff.getIgnoreAmountOfWhitespace() & !dualDiff.getIgnoreAllWhitespace() ) {
                 canonical = squeezeRepeatedWhitespaces( canonical );
+                if (!dualDiff.getIgnoreLineSeparators()) {
+                    canonical += lineSep;
+                }
+            }
+            if ( dualDiff.getIgnoreLineSeparators()) {
+                if (canonical.endsWith(lineSep)) {
+                    canonical = canonical.substring(0, canonical.length() - lineSep.length());       
+                }
             }
             if ( dualDiff.getIgnoreAllWhitespace() ) {
                 canonical = removeWhitespaces( canonical );
@@ -236,29 +243,22 @@ public class DualDiffUtil {
     }
 
     public static String trimWhitespaces( String str ) {
-        int inLen = str.length();
-        char[] inStr = new char[ inLen ];
-        str.getChars( 0, inLen, inStr, 0 );
-
-        // Skip leading whitespaces
-        int startIdx = 0;
-        while ( ( startIdx < inLen ) && Character.isWhitespace( inStr[ startIdx ] ) ) {
-            startIdx++;
-        }
-
-        // Skip trailing whitespaces
-        int endIdx = inLen - 1;
-        while ( ( endIdx >= startIdx ) && Character.isWhitespace( inStr[ endIdx ] ) ) {
-            endIdx--;
-        }
-
-        if ( ( startIdx > 0 ) || ( endIdx < inLen - 1 ) ) {
-            return new String( inStr, startIdx, endIdx - startIdx + 1 );
-        }
-        else {
-            return str;
-        }
+        return trimLeadingWhitespace(trimTrailingWhitespace(str));
     }
 
+    private static String trimLeadingWhitespace( String str ) {
+        int index = 0;
+        while ( Character.isWhitespace( str.charAt( index ) ) ) {
+            ++index;
+        }
+        return str.substring( index );
+    }
 
+    private static String trimTrailingWhitespace( String str ) {
+        int index = str.length() - 1;
+        while ( Character.isWhitespace( str.charAt( index ) ) ) {
+            --index;
+        }
+        return str.substring( 0, index + 1 );
+    }
 }
