@@ -28,6 +28,10 @@ projectBuilder.actions.runProject.label=Run current Project
 projectBuilder.actions.editBuildSettings.label=Edit Project Build Settings
 # }}} Menu
 
+# Properties {{{
+projectbuilder.run-ant-in-jvm=true
+# }}} Properties
+
 # Messages {{{
 projectBuilder.msg.no-project.title=Error
 projectBuilder.msg.no-project.message=No Active Project
