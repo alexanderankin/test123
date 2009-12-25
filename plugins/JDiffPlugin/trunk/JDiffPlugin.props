@@ -33,6 +33,7 @@ plugin.jdiff.JDiffPlugin.menu=\
     jdiff.apply-patch
 
 plugin.jdiff.JDiffPlugin.option-group=jdiff.general \
+    jdiff.gui \
     jdiff.overview
 
 # titles for DockableWindowManager
@@ -80,7 +81,9 @@ jdiff.right-cursor-color=\#000000
 
 # Option panes titles
 options.jdiff.general.code=new jdiff.options.JDiffOptionPane();
-options.jdiff.general.label=General
+options.jdiff.general.label=Diff Settings
+options.jdiff.gui.code=new jdiff.options.JDiffGUIOptionPane();
+options.jdiff.gui.label=GUI Settings
 options.jdiff.overview.code=new jdiff.options.JDiffOverviewOptionPane();
 options.jdiff.overview.label=Colors
 
