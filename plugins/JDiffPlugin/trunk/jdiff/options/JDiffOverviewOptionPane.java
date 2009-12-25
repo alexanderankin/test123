@@ -95,7 +95,8 @@ public class JDiffOverviewOptionPane implements OptionPane {
         panel.setLayout( new KappaLayout() );
         panel.setBorder( BorderFactory.createEmptyBorder( 12, 11, 11, 12 ) );
 
-        panel.add( "0, 0, 2, 1, W, w, 3", createLabel( "options.jdiff.overview" ) );
+        JLabel title = new JLabel( "<html><b>" + jEdit.getProperty( "options.jdiff.overview" ) + "</b>" );
+        panel.add( "0, 0, 2, 1, W, w, 3", title );
 
         panel.add( "0, 1, 1, 1, W,  , 3", createLabel( "options.jdiff.overview-changed-color" ) );
         panel.add( "1, 1, 1, 1, 0, w, 3", overviewChangedLineColor );
