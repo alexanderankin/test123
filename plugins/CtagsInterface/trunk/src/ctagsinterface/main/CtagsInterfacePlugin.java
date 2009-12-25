@@ -192,6 +192,12 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		addTempTagFile(tagFile);
 	}
 
+	// Action: Add current file to the DB
+	static public void addCurrentFile(View view) {
+		String path = view.getBuffer().getPath();
+		TagFileHandler handler = new TagFileHandler(TagDB.TEMP_ORIGIN_INDEX);
+		tagSourceTree(path, handler);
+	}
 	// If query results contain a single tag, jump to it, otherwise
 	// present the list of tags in the Tag List dockable.
 	public static void jumpToQueryResults(final View view, ResultSet rs)
