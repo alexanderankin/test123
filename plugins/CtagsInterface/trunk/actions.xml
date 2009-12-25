@@ -1,6 +1,11 @@
 <?xml version="1.0"?>
 <!DOCTYPE ACTIONS SYSTEM "actions.dtd">
 <ACTIONS>
+	<ACTION NAME="ctags-interface-add-current-file" NO_REPEAT="TRUE">
+		<CODE>
+			ctagsinterface.main.CtagsInterfacePlugin.addCurrentFile(view);
+		</CODE>
+	</ACTION>
 	<ACTION NAME="ctags-interface-add-file" NO_REPEAT="TRUE">
 		<CODE>
 			ctagsinterface.main.CtagsInterfacePlugin.addTagFile(view);
