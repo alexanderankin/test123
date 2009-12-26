@@ -36,6 +36,7 @@ import java.util.HashMap;
 import javax.swing.JOptionPane;
 
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.msg.DynamicMenuChanged;
 import org.gjt.sp.jedit.msg.PluginUpdate;
@@ -55,7 +56,7 @@ import errorlist.DefaultErrorSource;
  * @version  $Id$
  */
 
-public class ConsolePlugin extends EBPlugin
+public class ConsolePlugin extends EditPlugin
 {
 	// {{{ Instance and static variables
 
@@ -128,6 +129,7 @@ public class ConsolePlugin extends EBPlugin
 		rescanCommands();
 
 		CommandoToolBar.init();
+		EditBus.addToBus(this);
 
 	} // }}}
 
@@ -153,6 +155,7 @@ public class ConsolePlugin extends EBPlugin
 	// {{{ stop() method
 	public void stop()
 	{
+		EditBus.removeFromBus(this);
 		// clean up edit bus
 		View[] views = jEdit.getViews();
 		for (int i = 0; i < views.length; i++) {
@@ -166,21 +169,23 @@ public class ConsolePlugin extends EBPlugin
 		jEdit.removeActionSet(shellSwitchActions);
 	} // }}}
 
-	// {{{ handleMessage() method
-	public void handleMessage(EBMessage msg)
+	// {{{ handleViewUpdate() method
+	@EBHandler
+	public void handleViewUpdate(ViewUpdate vmsg)
 	{
-		if (msg instanceof ViewUpdate)
+		if (vmsg.getWhat() == ViewUpdate.CREATED)
 		{
-			ViewUpdate vmsg = (ViewUpdate) msg;
-			if (vmsg.getWhat() == ViewUpdate.CREATED)
-			{
-				View v = vmsg.getView();
-				CommandoToolBar.create(v);
-			}
+			View v = vmsg.getView();
+			CommandoToolBar.create(v);
 		}
-		if (msg instanceof PluginUpdate) {
-			rescanShells();
-		}
+	}
+	// }}}
+
+	// {{{ handlePluginUpdate() method
+	@EBHandler
+	public void handlePluginUpdate(PluginUpdate msg)
+	{
+		rescanShells();
 	}
 	// }}}
 
