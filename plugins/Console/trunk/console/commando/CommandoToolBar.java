@@ -34,19 +34,18 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JToolBar;
 
-import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.msg.DynamicMenuChanged;
 
 import console.ConsolePlugin;
 
 // }}}
 // {{{ CommandoToolBar class
-public class CommandoToolBar extends JToolBar implements EBComponent
+public class CommandoToolBar extends JToolBar
 {
 
 	// {{{ init()
@@ -119,14 +118,11 @@ public class CommandoToolBar extends JToolBar implements EBComponent
 	// }}}
 
 	// {{{ handleMessage() method
-	public void handleMessage(EBMessage msg)
+	@EBHandler
+	public void handleMessage(DynamicMenuChanged msg)
 	{
-		if (msg instanceof DynamicMenuChanged
-				&& ConsolePlugin.MENU.equals(((DynamicMenuChanged) msg)
-						.getMenuName()))
-		{
+		if (ConsolePlugin.MENU.equals(msg.getMenuName()))
 			updateButtons();
-		}
 	} // }}}
 
 	// {{{ updateButtons() method
