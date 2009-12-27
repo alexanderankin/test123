@@ -56,6 +56,8 @@ options.tasklist.general.buffer.display.nameonly=Filename Only
 options.tasklist.general.show-open-files=Show tasks for all open files
 options.tasklist.general.show-project-files=Show tasks for all project files
 
+tasklist.buffer.display=Filename (Directory)
+
 options.tasklist.tasktypes.label=Task Types
 options.tasklist.tasktypes.code=new tasklist.options.TaskListTaskTypesOptionPane();
 options.tasklist.tasktypes.patterns=Patterns

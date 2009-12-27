@@ -133,6 +133,9 @@ public class ProjectTaskList extends AbstractTreeTaskList {
     // for commonly known binary files.  There could be many others.
     String[] exts = new String[] {".jpg", ".gif", ".png", ".ico", ".bmp", ".class", ".jar", ".war"};
     boolean isBinary( String file ) {
+        if ( file == null || file.length() == 0) {
+            return true;   
+        }
         String filename = file.toLowerCase();
         for ( String ext : exts ) {
             if ( filename.endsWith( ext ) ) {

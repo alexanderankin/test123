@@ -46,7 +46,7 @@ public class TreeNodeComparator implements Comparator<DefaultMutableTreeNode> {
 
         String objectA = ( ( DefaultMutableTreeNode ) o1 ).getUserObject().toString();
         String objectB = ( ( DefaultMutableTreeNode ) o2 ).getUserObject().toString();
-        String displayType = jEdit.getProperty( "tasklist.buffer.display" );
+        String displayType = jEdit.getProperty( "tasklist.buffer.display", "" );
         if ( displayType.equals( jEdit.getProperty( "options.tasklist.general.buffer.display.fullpath" ) ) ) {
             // display full path means sort by full path
             return objectA.compareTo(objectB);
