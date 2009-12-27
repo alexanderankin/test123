@@ -132,6 +132,7 @@ public class BasicLineRendererPaneUI extends DiffLineOverviewUI implements Chang
         // paint lines or clear, depends on the view and the model.
         lineRenderer.repaint();
         if ( lineRendererPane.getModel() != null ) {
+            // auto scroll so first diff is visible
             String leftLine = lineRendererPane.getModel().getLeftLine();
             String rightLine = lineRendererPane.getModel().getRightLine();
             String longLine = leftLine.length() > rightLine.length() ? leftLine : rightLine;
@@ -213,14 +214,15 @@ public class BasicLineRendererPaneUI extends DiffLineOverviewUI implements Chang
             gfx.setColor( lineRendererPane.getBackground() );
             gfx.fillRect( 0, 0, all.width, all.height );
 
-            if ( !isSplit() ) {
-                return ;
-            }
-
             model = lineRendererPane.getModel();
             if ( model == null ) {
                 return ;
             }
+            
+            if ( !isSplit() ) {
+                return ;
+            }
+
             String leftLine = model.getLeftLine();
             String rightLine = model.getRightLine();
 

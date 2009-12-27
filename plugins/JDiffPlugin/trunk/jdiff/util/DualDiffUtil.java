@@ -143,57 +143,64 @@ public class DualDiffUtil {
     public static FileLine[] getFileLines( DualDiff dualDiff, Buffer buffer ) {
         buffer.readLock();
         FileLine[] lines = new FileLine[ buffer.getLineCount() ];
-        String lineSep = buffer.getStringProperty(Buffer.LINESEP);
+        String lineSep = buffer.getStringProperty( Buffer.LINESEP );
 
         for ( int i = buffer.getLineCount() - 1; i >= 0; i-- ) {
-            //int start = buffer.getLineStartOffset( i );
-            //int end = buffer.getLineEndOffset( i );
-            //int len = end - start;
-            
-            // We get the line i without the line separator (always
-            // \n)
-            /* is this possible?
-            if ( len == 0 ) {
-                lines[ i ] = new FileLine( "", "" );
-                continue;
-            }
-            */
-
-            String text = buffer.getLineText(i);
-            if (!text.endsWith(lineSep)) {
-                text += lineSep;   
-            }
-            String canonical = text;
-            if ( dualDiff.getIgnoreCase() ) {
-                canonical = canonical.toUpperCase();
-            }
-            if ( dualDiff.getTrimWhitespace() && !dualDiff.getIgnoreAllWhitespace() ) {
-                canonical = trimWhitespaces( canonical );
-                if (!dualDiff.getIgnoreLineSeparators()) {
-                    canonical += lineSep;
-                }
-            }
-            if ( dualDiff.getIgnoreAmountOfWhitespace() & !dualDiff.getIgnoreAllWhitespace() ) {
-                canonical = squeezeRepeatedWhitespaces( canonical );
-                if (!dualDiff.getIgnoreLineSeparators()) {
-                    canonical += lineSep;
-                }
-            }
-            if ( dualDiff.getIgnoreLineSeparators()) {
-                if (canonical.endsWith(lineSep)) {
-                    canonical = canonical.substring(0, canonical.length() - lineSep.length());       
-                }
-            }
-            if ( dualDiff.getIgnoreAllWhitespace() ) {
-                canonical = removeWhitespaces( canonical );
-            }
-
-            lines[ i ] = new FileLine( text, canonical );
+            String text = buffer.getLineText( i );
+            lines[ i ] = getFileLine( dualDiff, text, lineSep );
         }
         buffer.readUnlock();
         return lines;
     }
 
+    public static FileLine getFileLine( DualDiff dualDiff, String text, String lineSep ) {
+        if ( !text.endsWith( lineSep ) ) {
+            text += lineSep;
+        }
+        String canonical = text;
+        if ( dualDiff.getIgnoreCase() ) {
+            canonical = canonical.toUpperCase();
+        }
+        
+        // trim leading and trailing whitespace
+        if ( dualDiff.getTrimWhitespace() && !dualDiff.getIgnoreAllWhitespace() ) {
+            canonical = trimWhitespaces( canonical );
+            if ( !dualDiff.getIgnoreLineSeparators() ) {
+                canonical += lineSep;
+            }
+        }
+        
+        // trim leading and trailing whitespace and compress internal whitespace
+        // to a single space
+        if ( dualDiff.getIgnoreAmountOfWhitespace() && !dualDiff.getIgnoreAllWhitespace() ) {
+            canonical = squeezeRepeatedWhitespaces( canonical );
+            if ( !dualDiff.getIgnoreLineSeparators() ) {
+                canonical += lineSep;
+            }
+        }
+        
+        // remove line separators
+        if ( dualDiff.getIgnoreLineSeparators() ) {
+            if ( canonical.endsWith( lineSep ) ) {
+                canonical = canonical.substring( 0, canonical.length() - lineSep.length() );
+            }
+        }
+        
+        // remove all whitespace
+        if ( dualDiff.getIgnoreAllWhitespace() ) {
+            canonical = removeWhitespaces( canonical );
+        }
+
+        return new FileLine( text, canonical );
+    }
+    
+    /**
+     * Replaces repeated whitespace within the given string with a single space.
+     * Leading and trailing whitespace are removed from the string.
+     * @param str The string within which to compress whitespace.
+     * @return The string with repeated whitespace compressed to a single space.
+     * Leading and trailing whitespace are removed from the string.
+     */
     public static String squeezeRepeatedWhitespaces( String str ) {
         int inLen = str.length();
         int outLen = 0;
@@ -202,12 +209,9 @@ public class DualDiffUtil {
         str.getChars( 0, inLen, inStr, 0 );
 
         boolean space = false;
-
+        
         int idx = 0;
-        // Skip leading whitespaces
-        while ( idx < inLen && Character.isWhitespace( inStr[ idx ] ) ) {
-            idx++;
-        }
+        str = trimWhitespaces( str );
 
         for ( ; idx < inLen; idx++ ) {
             if ( Character.isWhitespace( inStr[ idx ] ) ) {
@@ -224,7 +228,12 @@ public class DualDiffUtil {
 
         return new String( outStr, 0, outLen );
     }
-
+    
+    /**
+     * Removes all whitespace from the given string.
+     * @param str The string to act on.
+     * @return The string with all whitespace removed.
+     */
     public static String removeWhitespaces( String str ) {
         int inLen = str.length();
         int outLen = 0;
@@ -241,11 +250,21 @@ public class DualDiffUtil {
 
         return new String( outStr, 0, outLen );
     }
-
+    
+    /**
+     * Remove leading and trailing whitespace from the given string.
+     * @param str The string to act on.
+     * @return The string with all leading and trailing whitespace removed.
+     */
     public static String trimWhitespaces( String str ) {
-        return trimLeadingWhitespace(trimTrailingWhitespace(str));
+        return trimLeadingWhitespace( trimTrailingWhitespace( str ) );
     }
 
+    /**
+     * Remove leading whitespace from the given string.
+     * @param str The string to act on.
+     * @return The string with all leading whitespace removed.
+     */
     private static String trimLeadingWhitespace( String str ) {
         int index = 0;
         while ( Character.isWhitespace( str.charAt( index ) ) ) {
@@ -254,6 +273,11 @@ public class DualDiffUtil {
         return str.substring( index );
     }
 
+    /**
+     * Remove trailing whitespace from the given string.
+     * @param str The string to act on.
+     * @return The string with all trailing whitespace removed.
+     */
     private static String trimTrailingWhitespace( String str ) {
         int index = str.length() - 1;
         while ( Character.isWhitespace( str.charAt( index ) ) ) {

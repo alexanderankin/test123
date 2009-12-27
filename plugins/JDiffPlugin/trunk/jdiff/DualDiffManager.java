@@ -301,6 +301,17 @@ public class DualDiffManager {
     }
 
     /**
+     * @return The diff ignoreLineSeparators setting for the given View.
+     */
+    public static boolean getIgnoreLineSeparatorsFor( View view ) {
+        DualDiff dualDiff = DualDiffManager.getDualDiffFor( view );
+        if ( dualDiff == null ) {
+            return false;
+        }
+        return dualDiff.getIgnoreLineSeparators();
+    }
+
+    /**
      * Toggle the diff ignoreLineSeparators for the given View.
      */
     public static void toggleIgnoreLineSeparatorsFor( View view ) {
@@ -432,7 +443,7 @@ public class DualDiffManager {
     }
 
     /**
-     * Move all non-conflicting diff hunks from the left text are to the right text area.    
+     * Move all non-conflicting diff hunks from the left text are to the right text area.
      */
     public static void moveMultipleRight( EditPane editPane ) {
         if ( editPane == null ) {
@@ -449,7 +460,7 @@ public class DualDiffManager {
     }
 
     /**
-     * Move all non-conflicting diff hunks from the right text area to the left text area.    
+     * Move all non-conflicting diff hunks from the right text area to the left text area.
      */
     public static void moveMultipleLeft( EditPane editPane ) {
         if ( editPane == null ) {
