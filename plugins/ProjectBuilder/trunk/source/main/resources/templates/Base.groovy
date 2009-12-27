@@ -60,12 +60,12 @@ def form = swing.panel() {
 	
    // set up the labels.
    gbc.insets = [10, 10, 0, 0]
-   label(text: "Type:", horizontalAlignment: SC.RIGHT, constraints: gbc)
+   label(text: "Name:", horizontalAlignment: SC.RIGHT, constraints: gbc)
    gbc.insets = [5, 10, 0, 0]
    gbc.gridy++
-   label(text: "Group:", horizontalAlignment: SC.RIGHT, constraints: gbc)
+   label(text: "Type:", horizontalAlignment: SC.RIGHT, constraints: gbc)
    gbc.gridy++;
-   label(text: "Name:", horizontalAlignment: SC.RIGHT, constraints: gbc)
+   label(text: "Group:", horizontalAlignment: SC.RIGHT, constraints: gbc)
    gbc.gridy++
    label(text: "Directory:", horizontalAlignment: SC.RIGHT, constraints: gbc)
    gbc.gridy++
@@ -77,14 +77,15 @@ def form = swing.panel() {
    gbc.weightx = 1.0f
    gbc.weighty = 0.0f
    gbc.insets = [10, 5, 0, 0]
+   textField(id: "name_field", columns: 30, constraints: gbc)
+   gbc.gridy++
    comboBox(id: "type_field", items: templateTypes, constraints: gbc, selectedIndex: selected)
    gbc.gridy++
    groups = PVUtils.listGroups()
    comboBox(id: "group_field", items: PVUtils.groupNames(), constraints: gbc)
    gbc.gridy++
-   textField(id: "name_field", columns: 40, constraints: gbc)
-   gbc.gridy++
-   textField(id: "directory_field", columns: 40, constraints: gbc)
+   String workspace = JEDIT.getProperty("projectBuilder.workspace", System.getProperty("user.home")+File.separator+"workspace");
+   textField(id: "directory_field", columns: 30, text: workspace , constraints: gbc)
    gbc.gridy++
    gbc.insets = [10, 5, 10, 0]
    label(text: "<html><small>Project will be created in [Directory]${File.separator}[Name]</small></html>", constraints: gbc)
@@ -116,9 +117,7 @@ if(answer == JOptionPane.OK_OPTION) {
    ProjectManager manager = ProjectManager.getInstance()
    try {
 	   if (manager.getProject(projectName) != null) {
-		   JEDIT.setProperty("projectBuilder.create.title", "Can't Create Project")
-		   JEDIT.setProperty("projectBuilder.create.message", "A project with that name already exists")
-		   GUIUtilities.error(view, "projectBuilder.create", null)
+		   GUIUtilities.error(view, "projectBuilder.project-exists", null)
 		   return
 	   }
    } catch (Exception e) {
@@ -129,6 +128,8 @@ if(answer == JOptionPane.OK_OPTION) {
    println("       name: " + projectName)
    println("        dir: " + projectDir)
    println("     script: " + templateType.scriptPath)
+   
+   JEDIT.setProperty("projectBuilder.workspace", swing.directory_field.text);
 
    Binding binding = new Binding()
    GroovyScriptEngine gse = new GroovyScriptEngine(roots)

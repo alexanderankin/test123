@@ -43,6 +43,8 @@ projectBuilder.msg.no-tools-jar.title=Ant Error
 projectBuilder.msg.no-tools-jar.message=tools.jar not found
 projectBuilder.msg.add-build-command.title=New Build Command
 projectBuilder.msg.add-build-command.message=Add this to the list of build commands for this project...
+projectBuilder.project-exists.title=Can't Create Project
+projectBuilder.project-exists.message=A project with that name already exists.
 # }}}
 
 # ::mode=properties:folding=explicit::

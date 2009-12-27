@@ -105,8 +105,9 @@ public class ProjectBuilderPlugin extends EditPlugin {
 	   if (proj == null) {
 	   	   GUIUtilities.error(view, "projectBuilder.msg.no-project", null)
 	    } else {
-	    	AntFarmPlugin.getErrorSource().clear();
+	    	AntFarmPlugin.getErrorSource().clear()
 	    	BuildCommand.run(view, proj)
+	    	System.gc()
 	   }
    }
    

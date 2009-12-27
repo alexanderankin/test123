@@ -8,9 +8,6 @@
 			<include name="**/*.jar"/>
 		</fileset>
 	</path>
-	<path id="project.class.path">
-		<!-- TODO: Add support for adjusting the project class path -->
-	</path>
 	<target name="all" depends="jar"/>
 	<target name="clean" description="clean">
 		<delete dir="\${build.dir}"/>
