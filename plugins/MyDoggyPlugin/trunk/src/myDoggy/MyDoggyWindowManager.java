@@ -85,10 +85,10 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 					@Override
 					public void mouseClicked(MouseEvent e) {
 						if (twb != null)
-							twb.setVisible(! twb.isVisible());
+							twb.setToolsVisible(! twb.areToolsVisible());
 					}
             	});
-            	twb.addPropertyChangeListener("visible", new PropertyChangeListener() {
+            	twb.addPropertyChangeListener("toolsVisible", new PropertyChangeListener() {
 					public void propertyChange(PropertyChangeEvent evt) {
 						setIcon();
 					}
@@ -97,7 +97,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 			void setIcon()
 			{
 				Icon icon;
-				if (twb.isVisible())
+				if (twb.areToolsVisible())
 					icon = UIManager.getIcon(MyDoggyKeySpace.CONTENT_PAGE_CLOSE);
 				else
 					icon = UIManager.getIcon(MyDoggyKeySpace.CONTENT_PAGE_MAXIMIZE);
@@ -156,7 +156,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 			return;
 		ToolWindowAnchor anchor = tw.getAnchor();
 		if (anchor != null)
-			wm.getToolWindowBar(anchor).setVisible(false);
+			wm.getToolWindowBar(anchor).setToolsVisible(false);
 	}
 
 	@Override
@@ -453,8 +453,8 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		if (anchor != null)
 		{
 			ToolWindowBar bar = wm.getToolWindowBar(anchor);
-			if (! bar.isVisible())
-				bar.setVisible(true);
+			if (! bar.areToolsVisible())
+				bar.setToolsVisible(true);
 		}
 
 		// If another window is currently active, it is becoming deactivated
@@ -499,7 +499,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 			this.anchor = anchor;
 		}
 		public void showMostRecent() {
-			wm.getToolWindowBar(anchor).setVisible(true);
+			wm.getToolWindowBar(anchor).setToolsVisible(true);
 		}
 		private ToolWindow getCurrentToolWindow() {
 			return MyDoggyWindowManager.this.getCurrentToolWindow(anchor);
@@ -514,7 +514,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 			ToolWindow tw;
 			if (name == null)
 			{	// Hide the visible windows in this area
-				wm.getToolWindowBar(anchor).setVisible(false);
+				wm.getToolWindowBar(anchor).setToolsVisible(false);
 			}
 			else
 			{	// Show the window
