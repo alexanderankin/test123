@@ -1,21 +1,21 @@
 /*
- * JDiffPlugin.java
- * Copyright (c) 2000, 2001, 2002 Andre Kaplan
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+* JDiffPlugin.java
+* Copyright (c) 2000, 2001, 2002 Andre Kaplan
+*
+* This program is free software; you can redistribute it and/or
+* modify it under the terms of the GNU General Public License
+* as published by the Free Software Foundation; either version 2
+* of the License, or any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
 
 
 package jdiff;
@@ -30,8 +30,7 @@ import org.gjt.sp.jedit.msg.PropertiesChanged;
 
 import jdiff.util.DualDiffUtil;
 
-public class JDiffPlugin extends EBPlugin
-{
+public class JDiffPlugin extends EBPlugin {
 
     public static Color overviewChangedColor;
     public static Color overviewDeletedColor;
@@ -52,46 +51,30 @@ public class JDiffPlugin extends EBPlugin
 
     public void start() {}
 
-
     public void stop() {}
 
-
-/*    public void createOptionPanes(OptionsDialog dialog) {
-        OptionGroup jdiffGroup = new OptionGroup("jdiff");
-
-        jdiffGroup.addOptionPane(new JDiffOptionPane());
-        jdiffGroup.addOptionPane(new JDiffOverviewOptionPane());
-        jdiffGroup.addOptionPane(new JDiffHighlightOptionPane());
-
-        dialog.addOptionGroup(jdiffGroup);
-    }*/
-
-
-    public void handleMessage(EBMessage message) {
-        if (message instanceof PropertiesChanged) {
+    public void handleMessage( EBMessage message ) {
+        if ( message instanceof PropertiesChanged ) {
             DualDiffUtil.propertiesChanged();
             JDiffPlugin.propertiesChanged();
         }
     }
 
-
     public static void propertiesChanged() {
         // colors
         overviewChangedColor = GUIUtilities.parseColor(
-            jEdit.getProperty("jdiff.overview-changed-color", "#FFFF90")
-        );
+                    jEdit.getProperty( "jdiff.overview-changed-color", "#FFFF90" )
+                );
         overviewDeletedColor = GUIUtilities.parseColor(
-            jEdit.getProperty("jdiff.overview-deleted-color", "#FF9090")
-        );
+                    jEdit.getProperty( "jdiff.overview-deleted-color", "#FF9090" )
+                );
         overviewInsertedColor = GUIUtilities.parseColor(
-            jEdit.getProperty("jdiff.overview-inserted-color", "#D9FF90")
-        );
-
+                    jEdit.getProperty( "jdiff.overview-inserted-color", "#D9FF90" )
+                );
         overviewInvalidColor = GUIUtilities.parseColor(
-            jEdit.getProperty("jdiff.overview-invalid-color", "#909090")
-        );
-        leftCursorColor = jEdit.getColorProperty("jdiff.left-cursor-color", jEdit.getColorProperty("view.caretColor", Color.BLACK));
-        rightCursorColor = jEdit.getColorProperty("jdiff.right-cursor-color", jEdit.getColorProperty("view.caretColor", Color.BLACK));
+                    jEdit.getProperty( "jdiff.overview-invalid-color", "#909090" )
+                );
+        leftCursorColor = jEdit.getColorProperty( "jdiff.left-cursor-color", jEdit.getColorProperty( "view.caretColor", Color.BLACK ) );
+        rightCursorColor = jEdit.getColorProperty( "jdiff.right-cursor-color", jEdit.getColorProperty( "view.caretColor", Color.BLACK ) );
     }
 }
-

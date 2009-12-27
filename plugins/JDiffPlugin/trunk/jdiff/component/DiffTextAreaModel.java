@@ -90,8 +90,8 @@ public class DiffTextAreaModel {
             rightLineCount = ( ( buf1.isLoaded() ) ? buf1.getLineCount() : 1 );
         }
         else {
-            FileLine[] fileLines0 = this.getFileLines( buf0 );
-            FileLine[] fileLines1 = this.getFileLines( buf1 );
+            FileLine[] fileLines0 = DualDiffUtil.getFileLines( dualDiff, buf0 );
+            FileLine[] fileLines1 = DualDiffUtil.getFileLines( dualDiff, buf1 );
 
             Diff d = new JDiffDiff( fileLines0, fileLines1 );
             edits = d.diff_2();
@@ -123,45 +123,5 @@ public class DiffTextAreaModel {
             leftLineCount = fileLines0.length;
             rightLineCount = fileLines1.length;
         }
-
-    }
-
-    private FileLine[] getFileLines( Buffer buffer ) {
-        FileLine[] lines = new FileLine[ buffer.getLineCount() ];
-
-        for ( int i = buffer.getLineCount() - 1; i >= 0; i-- ) {
-            int start = buffer.getLineStartOffset( i );
-            int end = buffer.getLineEndOffset( i );
-
-            // We get the line i without the line separator (always
-            // \n)
-            int len = ( end - 1 ) - start;
-            if ( len == 0 ) {
-                lines[ i ] = new FileLine( "", "" );
-                continue;
-            }
-
-            String text = "";
-            String canonical = "";
-
-            text = buffer.getText( start, len );
-            canonical = text;
-            if ( DualDiffManager.getIgnoreCaseFor(dualDiff.getView()) ) {
-                canonical = canonical.toUpperCase();
-            }
-            if ( DualDiffManager.getTrimWhitespaceFor(dualDiff.getView()) && !DualDiffManager.getIgnoreAllWhitespaceFor(dualDiff.getView()) ) {
-                canonical = DualDiffUtil.trimWhitespaces( canonical );
-            }
-            if ( DualDiffManager.getIgnoreAmountOfWhitespaceFor(dualDiff.getView()) && !DualDiffManager.getIgnoreAllWhitespaceFor(dualDiff.getView()) ) {
-                canonical = DualDiffUtil.squeezeRepeatedWhitespaces( canonical );
-            }
-            if ( DualDiffManager.getIgnoreAllWhitespaceFor(dualDiff.getView()) ) {
-                canonical = DualDiffUtil.removeWhitespaces( canonical );
-            }
-
-            lines[ i ] = new FileLine( text, canonical );
-        }
-
-        return lines;
     }
 }

@@ -63,7 +63,7 @@ public class LineRendererPane extends JComponent implements EBComponent, CaretLi
         }
         this.view = view;
         this.updateUI();
-        EditBus.addToBus(this);
+        EditBus.addToBus( this );
     }
 
     public void setUI( LineRendererPaneUI ui ) {
@@ -107,6 +107,7 @@ public class LineRendererPane extends JComponent implements EBComponent, CaretLi
                 cl.stateChanged( event );
             }
         }
+        SwingUtilities.invokeLater( runner );
     }
 
     /**
@@ -190,17 +191,17 @@ public class LineRendererPane extends JComponent implements EBComponent, CaretLi
         }
         public void run() {
             if ( source == null ) {
-                LineRendererPane.this.setModel(null);
+                LineRendererPane.this.setModel( null );
                 return ;
             }
             DualDiff dualDiff = DualDiffManager.getDualDiffFor( LineRendererPane.this.view );
             if ( dualDiff == null ) {
-                LineRendererPane.this.setModel(null);
+                LineRendererPane.this.setModel( null );
                 return ;
             }
             Diff.Change hunk = dualDiff.getEdits();
             if ( hunk == null ) {
-                LineRendererPane.this.setModel(null);
+                LineRendererPane.this.setModel( null );
                 return ;
             }
 
@@ -252,14 +253,15 @@ public class LineRendererPane extends JComponent implements EBComponent, CaretLi
                     }
                 }
             }
-            if (!jEdit.getBooleanProperty("jdiff.ignore-line-separators", true)) {
-                String leftSep = LineRendererPane.this.view.getEditPanes() [ 0 ].getBuffer().getStringProperty(Buffer.LINESEP);
-                String rightSep = LineRendererPane.this.view.getEditPanes() [ 1 ].getBuffer().getStringProperty(Buffer.LINESEP);
+            if ( !dualDiff.getIgnoreLineSeparators() ) {
+                //if ( !jEdit.getBooleanProperty( "jdiff.ignore-line-separators", true ) ) {
+                String leftSep = LineRendererPane.this.view.getEditPanes() [ 0 ].getBuffer().getStringProperty( Buffer.LINESEP );
+                String rightSep = LineRendererPane.this.view.getEditPanes() [ 1 ].getBuffer().getStringProperty( Buffer.LINESEP );
                 leftLine += leftSep;
                 rightLine += rightSep;
             }
-            if ((leftLine.equals("") && rightLine.equals("")) || leftLine.equals(rightLine)) {
-                LineRendererPane.this.setModel(null);
+            if ( leftLine.equals( rightLine ) ) {
+                LineRendererPane.this.setModel( null );
             }
             else {
                 LineRendererPane.this.setModel( new DiffLineModel( leftLine, rightLine ) );
