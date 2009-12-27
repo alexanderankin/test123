@@ -55,7 +55,7 @@ public class TaskTreeCellRenderer extends DefaultTreeCellRenderer {
             // file name node
             super.getTreeCellRendererComponent( tree, value, selected, expanded, leaf, row, hasFocus );
             String bufferDisplay;
-            String displayType = jEdit.getProperty( "tasklist.buffer.display" );
+            String displayType = jEdit.getProperty( "tasklist.buffer.display", "" );
             if ( displayType.equals( jEdit.getProperty( "options.tasklist.general.buffer.display.fullpath" ) ) ) {
                 bufferDisplay = ( String ) obj;
             }
