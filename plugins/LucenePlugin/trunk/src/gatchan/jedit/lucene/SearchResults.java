@@ -32,6 +32,7 @@ import org.gjt.sp.util.Log;
 @SuppressWarnings("serial")
 public class SearchResults extends JPanel
 {
+	private static final String LUCENE_SEARCH_INDEX = "lucene.search.index";
 	private static final String MESSAGE_IDLE = "";
 	private static final String MESSAGE_INDEXING = "Indexing";
 	private JTextField searchField;
@@ -90,6 +91,7 @@ public class SearchResults extends JPanel
 				prevIndex = index;
 				indexStatus.setText(index.isChanging() ? MESSAGE_INDEXING : MESSAGE_IDLE);
 				index.addActivityListener(listener);
+				jEdit.setProperty(LUCENE_SEARCH_INDEX, index.getName());
 			}
 		});
 
@@ -167,7 +169,19 @@ public class SearchResults extends JPanel
 		add(mainPanel, BorderLayout.CENTER);
 //		add(new JSplitPane(JSplitPane.VERTICAL_SPLIT, new JScrollPane(list), preview), BorderLayout.CENTER);
 		if (indexes.getItemCount() > 0)
-			indexes.setSelectedIndex(0);
+		{
+			String lastIndex = jEdit.getProperty(LUCENE_SEARCH_INDEX);
+			int index = 0;
+			for (int i = 1; i < indexes.getItemCount(); i++)
+			{
+				if (indexes.getItemAt(i).equals(lastIndex))
+				{
+					index = i;
+					break;
+				}
+			}
+			indexes.setSelectedIndex(index);
+		}
 	}
 
 	private void updateMultiStatus()
@@ -376,7 +390,7 @@ public class SearchResults extends JPanel
 			{
 				if (search.length() != 0)
 					search = "(" + search + ") AND ";
-				search += " +filetype:" + fileType;
+				search += "filetype:" + fileType;
 			}
 			search(search);
 		}
