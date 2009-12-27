@@ -52,7 +52,7 @@ public class BuildCommand {
 			cmd = commands[0];
 		}
 		
-		if ((cmd.equals("ant") || cmd.startsWith("ant ")) && jEdit.getBooleanProperty("projectbuilder.run-ant-in-jvm")) {
+		if ((cmd.equals("ant") || cmd.startsWith("ant ")) && jEdit.getBooleanProperty("projectBuilder.run-ant-in-jvm")) {
 			// Build in AntFarm
 			String target = "";
 			if (cmd.indexOf(" ") != -1) {

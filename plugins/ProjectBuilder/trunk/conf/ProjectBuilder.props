@@ -1,6 +1,6 @@
 # Basic Plugin Information {{{
 plugin.projectbuilder.ProjectBuilderPlugin.activate=startup
-plugin.projectbuilder.ProjectBuilderPlugin.author=Eric Berry
+plugin.projectbuilder.ProjectBuilderPlugin.author=Eric Berry, Damien Radtke
 plugin.projectbuilder.ProjectBuilderPlugin.description=Provides templates to create new projects of different types.
 plugin.projectbuilder.ProjectBuilderPlugin.docs=docs/ProjectBuilder.html
 plugin.projectbuilder.ProjectBuilderPlugin.longdescription=Provides templates to create new projects of different types. Projects are automatically imported into the ProjectViewer plugin. Project templates can be easily written using the Groovy programming language, and the ProjectBuilder DSL.
@@ -29,7 +29,7 @@ projectBuilder.actions.editBuildSettings.label=Edit Project Build Settings
 # }}} Menu
 
 # Properties {{{
-projectbuilder.run-ant-in-jvm=true
+projectBuilder.run-ant-in-jvm=true
 # }}} Properties
 
 # Messages {{{
