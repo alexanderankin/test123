@@ -29,8 +29,8 @@ public class PVMenu extends projectviewer.action.Action {
 	protected VPTProject proj;
 	public PVMenu() {
 		menu = new JMenu("Project");
-		build = new JMenuItem("Build");
-		run = new JMenuItem("Run");
+		build = new JMenuItem("Build Project");
+		run = new JMenuItem("Run Project");
 		buildSettings = new JMenuItem("Edit Build Settings...");
 		build.addActionListener(this);
 		run.addActionListener(this);
