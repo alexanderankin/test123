@@ -12,14 +12,19 @@ Written by: Matthieu Casanova, Shlomy Reinstein.
 <a href="#DeleteIndex"> Deleting an index </a><br>
 <a href="#Support"> Support </a><br>
 <p>
-LucenePlugin provides an interface to the Lucene engine.
+LucenePlugin allows you to perform quick and complex text searches using the
+Lucene search engine. It can save you a lot of time when searching across
+projects, directory trees or large files. It builds up an index for the text
+in the files, and enables you to search this index efficiently.
 Information about Lucene is available on the
 <a href="http://lucene.apache.org/java/docs">Lucene website</a>.
 </p>
 <p>
 The plugin allows you to create a Lucene index, using one of the built-in
 analyzers, and then search the index. Once created, the index remains updated
-when the files in it are changed.
+when the files in it are changed inside jEdit (i.e. when their buffers are
+saved). If the files in the index are changed externally (e.g. by updating them
+from a version control system), you can ask the plugin to update the index.  
 </p>
 <p>
 <a name="CreateIndex">
