@@ -104,6 +104,8 @@ public class SearchResults extends JPanel
 		type.addActionListener(actionListener);
 		clear = new RolloverButton(GUIUtilities.loadIcon(
 			jEdit.getProperty("hypersearch-results.clear.icon")));
+		clear.setToolTipText(jEdit.getProperty(
+			"hypersearch-results.clear.label"));
 		clear.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
