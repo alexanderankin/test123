@@ -14,10 +14,6 @@
 	
 	<!-- jedit properties -->
    <property name="docs-proc.target" value="none" />
-   <property name="install.dir" value="/home/damien/.jedit/jars" />
-   <property name="jedit.install.dir" value="/usr/share/jEdit" />
-   <property name="build.support" value="${jedit.install.dir}/build-support" />
-   <property name="jedit.plugins.dir" value="${install.dir}" />
    <property name="junit.jar" value="../junit/junit.jar" />
 	
 	<!-- import jEdit common build file -->
