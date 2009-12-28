@@ -232,7 +232,7 @@ public class IndexImpl extends AbstractIndex implements Index
 		}
 	}
 
-	public void search(String query, int max, ResultProcessor processor)
+	public void search(String query, String fileType, int max, ResultProcessor processor)
 	{
 		if (max < 1)
 			max = 1;
@@ -242,15 +242,23 @@ public class IndexImpl extends AbstractIndex implements Index
 		QueryParser parser = new MultiFieldQueryParser(new String[]{"path", "content"}, getAnalyzer());
 		try
 		{
-			Query _query = parser.parse(query);
+			StringBuilder queryStr = new StringBuilder();
+			if (fileType.length() > 0)
+			{
+				if (query.length() > 0)
+					queryStr.append("(" + query + ") AND ");
+				queryStr.append("filetype:" + fileType);
+			}
+			Query _query = parser.parse(queryStr.toString());
 			TopDocs docs = searcher.search(_query, max);
 			ScoreDoc[] scoreDocs = docs.scoreDocs;
 			Result result = getResultInstance();
+			Query _textQuery = parser.parse(query);
 			for (ScoreDoc doc : scoreDocs)
 			{
 				Document document = searcher.doc(doc.doc);
 				result.setDocument(document);
-				if (!processor.process(_query, doc.score, result))
+				if (!processor.process(_textQuery, doc.score, result))
 				{
 					break;
 				}

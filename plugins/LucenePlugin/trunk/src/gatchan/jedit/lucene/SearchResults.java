@@ -209,9 +209,9 @@ public class SearchResults extends JPanel
 		return LucenePlugin.instance.getIndex(indexName);
 	}
 
-	public void search(String text)
+	public void search(String text, String fileType)
 	{
-		Log.log(Log.NOTICE, this, "Search for " + text);
+		Log.log(Log.NOTICE, this, "Search for " + text + " in file type: " + fileType);
 		Index index = getSelectedIndex();
 		if (index == null)
 			return;
@@ -223,7 +223,7 @@ public class SearchResults extends JPanel
 			processor = new MarkerListQueryProcessor(index, files, max);
 		else
 			processor = new FileListQueryProcessor(index, files, max);
-		index.search(text, max, processor);
+		index.search(text, fileType, max, processor);
 		if (lineResults.isSelected())
 		{
 			SearchRootNode rootNode = new SearchRootNode(text);
@@ -388,13 +388,7 @@ public class SearchResults extends JPanel
 		{
 			String search = searchField.getText().trim();
 			String fileType = type.getText().trim();
-			if (fileType.length() != 0)
-			{
-				if (search.length() != 0)
-					search = "(" + search + ") AND ";
-				search += "filetype:" + fileType;
-			}
-			search(search);
+			search(search, fileType);
 		}
 	}
 }
