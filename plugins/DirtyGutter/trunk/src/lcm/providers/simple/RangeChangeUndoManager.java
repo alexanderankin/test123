@@ -137,7 +137,10 @@ public class RangeChangeUndoManager
 	public void rewind(int steps)
 	{
 		for (int i = 0; i < steps; i++)
+		{
+			head.undo();
 			head = head.prev;
+		}
 	}
 
 	public String toString()
