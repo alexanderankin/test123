@@ -44,7 +44,7 @@ public class CurrentBufferTaskList extends AbstractTreeTaskList {
 
     public CurrentBufferTaskList( View view ) {
         super( view, jEdit.getProperty( "tasklist.currentbuffer", "Current File:" ) );
-        putClientProperty("isCloseable", Boolean.FALSE);
+        putClientProperty( "isCloseable", Boolean.FALSE );
     }
 
     @Override
@@ -62,17 +62,24 @@ public class CurrentBufferTaskList extends AbstractTreeTaskList {
     public void handleMessage( EBMessage message ) {
         Buffer buffer = view.getBuffer();
         Buffer b = null;
+        Object what = null;
         if ( message instanceof BufferUpdate ) {
             b = ( ( BufferUpdate ) message ).getBuffer();
+            what = ( ( BufferUpdate ) message ).getWhat();
+            if ( ParseBufferMessage.APPLY_FILTER.equals( what ) ) {
+                filterTree();
+                return ;
+            }
         }
         else if ( message instanceof EditPaneUpdate ) {
             b = ( ( EditPaneUpdate ) message ).getEditPane().getBuffer();
         }
-        if (b == null) {
-            return;
+        if ( b == null ) {
+            return ;
         }
-        if (buffer.getPath().equals(b.getPath())) {
+        if ( buffer.getPath().equals( b.getPath() ) ) {
             loadFiles();
+            return ;
         }
         super.handleMessage( message );
     }
