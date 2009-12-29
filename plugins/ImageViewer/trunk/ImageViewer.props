@@ -28,6 +28,7 @@ imageviewer.showimage.label=View Image
 
 # for File System Browser
 plugin.imageviewer.ImageViewerPlugin.browser-menu=imageviewer.showimage
+plugin.imageviewer.ImageViewerPlugin.menu-item=imageviewer
 
 # for option pane
 plugin.imageviewer.ImageViewerPlugin.option-pane=imageviewer
