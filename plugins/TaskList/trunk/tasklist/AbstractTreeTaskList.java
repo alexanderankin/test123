@@ -89,6 +89,8 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
         }
     }
 
+    // creates a new tree model from fullModel containing only those task types
+    // specified by the active task types for the parent TaskList.
     protected void filterTree() {
         Set<TaskType> activeTypes = TaskListPlugin.getTaskList( view ).getActiveTaskTypes();
         DefaultMutableTreeNode filteredRoot = new DefaultMutableTreeNode( rootDisplayName );
