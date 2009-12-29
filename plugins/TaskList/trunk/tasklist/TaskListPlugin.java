@@ -223,6 +223,19 @@ public class TaskListPlugin extends EditPlugin {
         }
         return null;
     }
+    
+    public static TaskType getTaskType(Task task) {
+        if (task == null) {
+            return null;   
+        }
+        String typeName = task.getIdentifier();
+        for (TaskType type : taskTypes) {
+            if (typeName.equals(type.getName())) {
+                return type;   
+            }
+        }
+        return null;
+    }
 
     //{{{ resetPatterns() method
     /**
