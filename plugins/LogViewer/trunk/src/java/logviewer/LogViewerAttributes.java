@@ -247,7 +247,8 @@ class LogViewerAttributes {
      * @param  file  The directory
      */
     void setLastFileChooserDirectory(File file) {
-        LogViewer.setProperty(lastFileChooserDirKey, file.getAbsolutePath());
+    	if (file != null)
+    		LogViewer.setProperty(lastFileChooserDirKey, file.getAbsolutePath());
     }
 
     /**
