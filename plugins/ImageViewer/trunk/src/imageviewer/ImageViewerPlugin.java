@@ -82,7 +82,7 @@ public class ImageViewerPlugin extends EBPlugin {
      * an image from the first selected file in the given VFSBrowser.    
      */
     public static void showImage( View view, VFSBrowser browser ) {
-        if ( view == null ) {
+        if ( view == null || view.getDockableWindowManager().getDockable(NAME) == null) {
             return ;
         }
         String filename = browser.getSelectedFiles() [ 0 ].getPath();
@@ -247,39 +247,32 @@ public class ImageViewerPlugin extends EBPlugin {
     private MMouseAdapter createPVMouseAdapter( final View view, final JTree tree ) {
         MMouseAdapter adapter = new MMouseAdapter() {
                     public void mouseMoved( MouseEvent me ) {
-                        if ( jEdit.getBooleanProperty( "imageviewer.mouseover", true ) ) {
+                        if ( jEdit.getBooleanProperty( "imageviewer.mouseover" ) ) {
                             showImage( me );
                         }
                     }
 
                     public void mouseClicked( MouseEvent me ) {
-                        if ( !jEdit.getBooleanProperty( "imageviewer.mouseover", true ) ) {
+                        if ( !jEdit.getBooleanProperty( "imageviewer.mouseover" ) ) {
                             showImage( me );
                         }
                     }
 
                     private void showImage( MouseEvent me ) {
-                        if ( requireIVVisible( view ) ) {
-                            TreePath treepath = tree.getClosestPathForLocation( me.getX(), me.getY() );
-                            Object lastComponent = treepath.getLastPathComponent();
-                            if ( lastComponent instanceof VPTNode ) {
-                                VPTNode node = ( VPTNode ) lastComponent;
-                                String path = node.getNodePath();
-                                if ( ImageViewer.isValidFilename( path ) ) {
-                                    view.getDockableWindowManager().showDockableWindow( NAME );
-                                    ImageViewer imageViewer = getImageViewer( view );
-                                    imageViewer.showImage( path );
-                                }
-                            }
-                        }
-                    }
-
-                    private boolean requireIVVisible( View view ) {
-                        Component iv = ( Component ) view.getDockableWindowManager().getDockable( "imageviewer" );
-                        if ( iv == null ) {
-                            return true;
-                        }
-                        return !jEdit.getBooleanProperty( "imageviewer.ifPvVisible", true ) || ( iv.isVisible() && jEdit.getBooleanProperty( "imageviewer.ifPvVisible", true ) );
+                	    // Do not show up unless plugin was activated.
+                	    if (view.getDockableWindowManager().getDockable(NAME) == null) return;
+	                    TreePath treepath = tree.getClosestPathForLocation( me.getX(), me.getY() );
+	                    Object lastComponent = treepath.getLastPathComponent();
+	                    if ( lastComponent instanceof VPTNode ) {
+	                        VPTNode node = ( VPTNode ) lastComponent;
+	                        String path = node.getNodePath();
+	                        if ( ImageViewer.isValidFilename( path ) ) {
+	                            view.getDockableWindowManager().showDockableWindow( NAME );
+	                            ImageViewer imageViewer = getImageViewer( view );
+	                            imageViewer.showImage( path );
+	                        }
+	                    }
+                
                     }
 
                 };
@@ -321,13 +314,13 @@ public class ImageViewerPlugin extends EBPlugin {
     private MMouseAdapter createVFSMouseAdapter( final View view, final VFSDirectoryEntryTable table ) {
         MMouseAdapter adapter = new MMouseAdapter() {
                     public void mouseMoved( MouseEvent me ) {
-                        if ( jEdit.getBooleanProperty( "imageviewer.mouseover", true ) ) {
+                        if ( jEdit.getBooleanProperty( "imageviewer.mouseover" ) ) {
                             showImage( me );
                         }
                     }
 
                     public void mouseClicked( MouseEvent me ) {
-                        if ( !jEdit.getBooleanProperty( "imageviewer.mouseover", true ) ) {
+                        if ( !jEdit.getBooleanProperty( "imageviewer.mouseover" ) ) {
                             showImage( me );
                         }
                     }
