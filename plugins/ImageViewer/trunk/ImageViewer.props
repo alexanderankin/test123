@@ -4,7 +4,7 @@
 
 plugin.imageviewer.ImageViewerPlugin.name=ImageViewer
 plugin.imageviewer.ImageViewerPlugin.author=Dale Anson
-plugin.imageviewer.ImageViewerPlugin.version=1.1
+plugin.imageviewer.ImageViewerPlugin.version=1.2
 plugin.imageviewer.ImageViewerPlugin.activate=startup
 plugin.imageviewer.ImageViewerPlugin.description=Displays image files when selected from ProjectViewer or File Browser
 
@@ -35,9 +35,6 @@ options.imageviewer.label=Image Viewer
 options.imageviewer.code=new imageviewer.OptionPane();
 imageviewer.allowVFSMouseOver.label=Show images on mouse over/click in File System Browser
 imageviewer.allowPVMouseOver.label=Show images on mouse over/click in ProjectViewer
-imageviewer.ifVisible=Only if ImageViewer is visible
-imageviewer.allowVFSMouseOver=true
-imageviewer.allowPVMouseOver=true
 imageviewer.mouseoption.label=Display images on:
 imageviewer.mouseover.label=Mouse over
 imageviewer.mouseclick.label=Mouse click
