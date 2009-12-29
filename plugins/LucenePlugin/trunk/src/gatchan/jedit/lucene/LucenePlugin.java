@@ -338,7 +338,13 @@ public class LucenePlugin extends EditPlugin
 	public void addToIndex(final String indexName, final VFSFile[] files,
 		final boolean sharedSession)
 	{
-		addToIndex(indexName, new FileArrayProvider(files), sharedSession);
+		VFSManager.runInWorkThread(new Runnable()
+		{
+			public void run()
+			{
+				addToIndex(indexName, new FileArrayProvider(files), sharedSession);		
+			}
+		});
 	}
 
 	/**
