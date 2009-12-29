@@ -111,6 +111,20 @@ public class TaskListPlugin extends EditPlugin {
     public static TaskList getTaskList(View view) {
         return taskLists.get(view);   
     }
+    
+    // Pass parse buffer messages on to task lists.  This is more specific than
+    // using the edit bus since the message is only forwarded to the appropriate
+    // task list rather than all of them.
+    public static void send(ParseBufferMessage message) {
+        if (message == null) {
+            return;   
+        }
+        TaskList taskList = getTaskList(message.getView());   
+        if (taskList == null) {
+            return;   
+        }
+        taskList.send(message);
+    }
 
     //{{{ initTextArea() method
     /**
@@ -614,7 +628,7 @@ public class TaskListPlugin extends EditPlugin {
         }
         buffer.remove( task.getStartPosition().getOffset(), task.getText().length() );
 
-        EditBus.send( new ParseBufferMessage( view, buffer, ParseBufferMessage.DO_PARSE ) );
+        send( new ParseBufferMessage( view, buffer, ParseBufferMessage.DO_PARSE ) );
     } //}}}
 
     //{{{ removeTaskTag method
@@ -632,7 +646,7 @@ public class TaskListPlugin extends EditPlugin {
         }
         buffer.remove( task.getStartPosition().getOffset(), task.getIdentifier().length() );
 
-        EditBus.send( new ParseBufferMessage( view, buffer, ParseBufferMessage.DO_PARSE ) );
+        send( new ParseBufferMessage( view, buffer, ParseBufferMessage.DO_PARSE ) );
     } //}}}
 
     //{{{ replaceTaskTag() method
@@ -652,7 +666,7 @@ public class TaskListPlugin extends EditPlugin {
         buffer.insert( task.getStartPosition().getOffset(), newTag );
         buffer.endCompoundEdit();
 
-        EditBus.send( new ParseBufferMessage( view, buffer, ParseBufferMessage.DO_PARSE ) );
+        send( new ParseBufferMessage( view, buffer, ParseBufferMessage.DO_PARSE ) );
     } //}}}
 
     /**

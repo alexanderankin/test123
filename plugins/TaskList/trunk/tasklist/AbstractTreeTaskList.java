@@ -374,19 +374,22 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
                 addBuffer( buffer );
                 repaint();
             }
-            else if ( BufferUpdate.SAVED.equals( bu.getWhat() ) || ParseBufferMessage.DO_PARSE.equals( bu.getWhat() ) ) {
-                removeBuffer( buffer );
-                addBuffer( buffer );
+        }
+        else if ( msg instanceof ParseBufferMessage ) {
+            ParseBufferMessage pbm = ( ParseBufferMessage)msg;
+            if ( ParseBufferMessage.DO_PARSE.equals( pbm.getWhat() ) ) {
+                removeBuffer( pbm.getBuffer() );
+                addBuffer( pbm.getBuffer() );
                 repaint();
             }
-            else if ( ParseBufferMessage.DO_PARSE_ALL.equals( bu.getWhat() ) ) {
+            else if ( ParseBufferMessage.DO_PARSE_ALL.equals( pbm.getWhat() ) ) {
                 loadFiles();
             }
-            else if ( ParseBufferMessage.APPLY_FILTER.equals( bu.getWhat() ) ) {
+            else if ( ParseBufferMessage.APPLY_FILTER.equals( pbm.getWhat() ) ) {
                 filterTree();
             }
         }
-        if ( msg instanceof PropertiesChanged ) {
+        else if ( msg instanceof PropertiesChanged ) {
             int _sortColumn = jEdit.getIntegerProperty( "tasklist.table.sort-column", 1 );
             boolean _sortAscending = jEdit.getBooleanProperty( "tasklist.table.sort-ascending", true );
             if ( sortColumn != _sortColumn || sortAscending != _sortAscending ) {

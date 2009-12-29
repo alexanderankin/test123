@@ -103,7 +103,7 @@ public class TaskList extends JPanel implements EBComponent {
         refreshButton.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
-                    EditBus.send( new ParseBufferMessage( view, null, ParseBufferMessage.DO_PARSE_ALL ) );
+                    TaskListPlugin.send( new ParseBufferMessage( view, null, ParseBufferMessage.DO_PARSE_ALL ) );
                 }
             }
         );
@@ -153,7 +153,7 @@ public class TaskList extends JPanel implements EBComponent {
                             type.setActive( mi.isSelected() );
                         }
                     }
-                    EditBus.send( new ParseBufferMessage( view, null, ParseBufferMessage.APPLY_FILTER ) );
+                    TaskListPlugin.send( new ParseBufferMessage( view, null, ParseBufferMessage.APPLY_FILTER ) );
                 }
             };
 
@@ -196,6 +196,14 @@ public class TaskList extends JPanel implements EBComponent {
             }
         }
         return activeTypes;
+    }
+    
+    // pass messages on to task trees
+    public void send(ParseBufferMessage msg) {
+        for (int i = 0; i < tabs.getTabCount(); i++) {
+            AbstractTreeTaskList treeList = (AbstractTreeTaskList)tabs.getComponentAt(i);
+            treeList.handleMessage(msg);
+        }
     }
 
     // add or remove tabs based on property settings
