@@ -35,7 +35,9 @@ plugin.sidekick.perl.PerlSideKickPlugin.depend.3=plugin sidekick.SideKickPlugin 
 # }}}
 
 #{{{ menu
-plugin.sidekick.perl.PerlSideKickPlugin.menu=sidekick-tree 
+plugin.sidekick.perl.PerlSideKickPlugin.menu-item=sidekick.parser.perl-switch
+sidekick.parser.perl-switch.label=Perl SideKick
+
 # }}}
 
 #{{{ registration with SideKick as a mode parser
