@@ -130,8 +130,9 @@ public class ProjectTaskList extends AbstractTreeTaskList {
     }
 
     // Helper method to determine binary files.  These are file name extensions
-    // for commonly known binary files.  There could be many others.
-    String[] exts = new String[] {".jpg", ".gif", ".png", ".ico", ".bmp", ".class", ".jar", ".war"};
+    // for commonly known binary files.  There could be many others. Those others
+    // will be scanned for tasks, which will hurt performance.
+    private static final String[] exts = new String[] {".jpg", ".gif", ".png", ".ico", ".bmp", ".class", ".jar", ".war"};
     boolean isBinary( String file ) {
         if ( file == null || file.length() == 0) {
             return true;   
