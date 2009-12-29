@@ -5,7 +5,7 @@ plugin.tasklist.TaskListPlugin.activate=defer
 
 plugin.tasklist.TaskListPlugin.name=TaskList
 plugin.tasklist.TaskListPlugin.author=Ollie Rutherfurd, John Gellene, Dale Anson
-plugin.tasklist.TaskListPlugin.version=2.0
+plugin.tasklist.TaskListPlugin.version=2.1
 plugin.tasklist.TaskListPlugin.docs=index.html
 plugin.tasklist.TaskListPlugin.depend.0=jdk 1.5
 plugin.tasklist.TaskListPlugin.depend.1=jedit 04.03.18.00
@@ -134,6 +134,10 @@ task.regex-error.message=Error compiling regular expression: \n\n{0}
 task.sample-doesnt-match.title=Pattern doesn't match sample
 task.sample-doesnt-match.message=Regular expression is valid, but doesn't \
 	match the sample text
+	
+# toolbar text and tooltips
+tasklist.toolbar.refresh=Refresh
+tasklist.toolbar.filter=Filter
 
 # by default modes are parsed, here are the default exclusions
 options.tasklist.parse.text=false

@@ -93,16 +93,18 @@ public class TaskListPopup extends JPopupMenu {
             deleteMenu.setEnabled( false );
         }
 
+        // sort by menu
         BoundedMenu sortMenu = new BoundedMenu( jEdit.getProperty( "tasklist.popup.sortby", "Sort by" ) );
         sortMenu.add( createMenuItem( jEdit.getProperty( "tasklist.popup.linenumber", "Line number" ), "sort-by-line-number" ) );
         sortMenu.add( createMenuItem( jEdit.getProperty( "tasklist.popup.tasktype", "Task type" ), "sort-by-task-type" ) );
         add( sortMenu );
 
+        // sort direction
         BoundedMenu sortDirectionMenu = new BoundedMenu( jEdit.getProperty( "tasklist.popup.sortdirection", "Sort direction" ) );
         sortDirectionMenu.add( createMenuItem( jEdit.getProperty( "tasklist.popup.ascending", "Ascending" ), "sort-ascending" ) );
         sortDirectionMenu.add( createMenuItem( jEdit.getProperty( "tasklist.popup.descending", "Descending" ), "sort-descending" ) );
         add( sortDirectionMenu );
-
+        
         JMenuItem toBuffer = null;
         addSeparator();
         toBuffer = createMenuItem( jEdit.getProperty( "tasklist.popup.to-buffer", "TaskList results to buffer" ), "to-buffer" );
@@ -115,7 +117,7 @@ public class TaskListPopup extends JPopupMenu {
     * another component.
     * <p>
     * In the TaskList implementation, the bounding component is the TaskList panel
-    * containing the table display of taks items.
+    * containing the table display of task items.
     *
     * @author John Gellene ( jgellene@nyc.rr.com )
     */

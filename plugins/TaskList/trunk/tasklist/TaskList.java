@@ -24,6 +24,7 @@ package tasklist;
 //{{{ imports
 import java.awt.*;
 import java.awt.event.*;
+import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
@@ -44,6 +45,7 @@ public class TaskList extends JPanel implements EBComponent {
     private CloseableTabbedPane tabs = null;
     private boolean showOpenFiles = true;
     private boolean showProjectFiles = true;
+    private Set<TaskType> taskTypes = null;
 
     //{{{ constructor
     /**
@@ -76,64 +78,7 @@ public class TaskList extends JPanel implements EBComponent {
         tabs.setCloseIcons( close_icon, hover_icon, pressed_icon );
 
         // add a mouse listener to be able to close tabs
-        tabs.addMouseListener(
-            new MouseAdapter() {
-                public void mousePressed( MouseEvent me ) {
-                    if ( me.isPopupTrigger() ) {
-                        handleIsPopup( me );
-                    }
-                }
-
-                public void mouseReleased( MouseEvent me ) {
-                    if ( me.isPopupTrigger() ) {
-                        handleIsPopup( me );
-                    }
-                }
-
-                private void handleIsPopup( MouseEvent me ) {
-                    final int x = me.getX();
-                    final int y = me.getY();
-                    int index = tabs.indexAtLocation( x, y );
-                    if ( index < 1 || (index < 2 && (showOpenFiles || showProjectFiles)) || (index < 3 && showOpenFiles && showProjectFiles )) {
-                        // index 0 is the current buffer, don't close it ever,
-                        // less than 0 is an invalid tab
-                        return ;
-                    }
-                    final Component c = tabs.getComponentAt( index );
-                    final JPopupMenu pm = new JPopupMenu();
-                    JMenuItem close_mi = new JMenuItem( jEdit.getProperty( "tasklist.close", "Close" ) );
-                    pm.add( close_mi );
-                    close_mi.addActionListener(
-                        new ActionListener() {
-                            public void actionPerformed( ActionEvent ae ) {
-                                tabs.remove( c );
-                            }
-                        }
-                    );
-                    JMenuItem close_all_mi = new JMenuItem( jEdit.getProperty( "tasklist.close-all", "Close All" ) );
-                    pm.add( close_all_mi );
-                    close_all_mi.addActionListener(
-                        new ActionListener() {
-                            public void actionPerformed( ActionEvent ae ) {
-                                int start_index = 1;
-                                if (showOpenFiles) {
-                                    ++start_index;
-                                }
-                                if (showProjectFiles) {
-                                    ++start_index;
-                                }
-                                for ( int i = start_index; i < tabs.getTabCount(); ) {
-                                    Component comp = tabs.getComponentAt( i );
-                                    tabs.remove( comp );
-                                    comp = null;
-                                }
-                            }
-                        }
-                    );
-                    GUIUtilities.showPopupMenu( pm, tabs, x, y );
-                }
-            }
-        );
+        tabs.addMouseListener( tabMouseListener );
 
         addTab( jEdit.getProperty( "tasklist.current-file", "Current File" ), new CurrentBufferTaskList( view ) );
         if ( showOpenFiles ) {
@@ -144,7 +89,73 @@ public class TaskList extends JPanel implements EBComponent {
         }
         add( BorderLayout.CENTER, tabs );
         tabs.setSelectedIndex( 0 );
+
+        // bottom panel holds refresh button and task filter
+        JPanel bottomPanel = new JPanel( new FlowLayout( FlowLayout.RIGHT ) );
+        JToolBar buttonPanel = new JToolBar();
+        bottomPanel.add( buttonPanel );
+
+        // create the refresh button
+        // TODO: add tooltip for refresh button
+        buttonPanel.setFloatable( false );
+        JButton refreshButton = new JButton( GUIUtilities.loadIcon( "22x22/actions/view-refresh.png" ) );
+        refreshButton.setToolTipText(jEdit.getProperty("tasklist.toolbar.refresh", "Refresh"));
+        refreshButton.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    EditBus.send( new ParseBufferMessage( view, null, ParseBufferMessage.DO_PARSE_ALL ) );
+                }
+            }
+        );
+        buttonPanel.add( refreshButton );
+
+        // create the task filter
+        // TODO: put "Filter" into property file
+        JMenu filterMenu = new JMenu( jEdit.getProperty("tasklist.toolbar.filter", "Filter") );
+        taskTypes = new HashSet<TaskType>();
+        int i = 0;
+        String pattern;
+        while ( ( pattern = jEdit.getProperty( "tasklist.tasktype." + i
+                + ".pattern" ) ) != null ) {
+            String name = jEdit.getProperty(
+                        "tasklist.tasktype." + i + ".name" );
+            String iconPath = jEdit.getProperty(
+                        "tasklist.tasktype." + i + ".iconpath" );
+            String sample = jEdit.getProperty(
+                        "tasklist.tasktype." + i + ".sample" );
+            boolean ignoreCase = jEdit.getBooleanProperty(
+                        "tasklist.tasktype." + i + ".ignorecase" );
+            TaskType taskType = new TaskType( name, pattern, sample, ignoreCase, iconPath );
+            taskTypes.add( taskType );
+            JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem( name, taskType.getIcon(), true );
+            menuItem.setActionCommand( name );
+            menuItem.addActionListener( filterActionListener );
+            filterMenu.add( menuItem );
+            i++;
+        }
+
+        JMenuBar menuBar = new JMenuBar();
+        menuBar.add( filterMenu );
+        bottomPanel.add( menuBar );
+
+        add( BorderLayout.SOUTH, bottomPanel );
     }
+
+    ActionListener filterActionListener = new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    JCheckBoxMenuItem mi = ( JCheckBoxMenuItem ) ae.getSource();
+                    if ( mi == null ) {
+                        return ;
+                    }
+                    String command = mi.getActionCommand();
+                    for ( TaskType type : taskTypes ) {
+                        if ( command.equals( type.getName() ) ) {
+                            type.setActive( mi.isSelected() );
+                        }
+                    }
+                    EditBus.send( new ParseBufferMessage( view, null, ParseBufferMessage.APPLY_FILTER ) );
+                }
+            };
 
     public void addTab( String name, AbstractTreeTaskList tasklist ) {
         tabs.add( name, tasklist );
@@ -173,6 +184,20 @@ public class TaskList extends JPanel implements EBComponent {
         return view;
     }
 
+    public Set<TaskType> getTaskTypes() {
+        return taskTypes;
+    }
+
+    public Set<TaskType> getActiveTaskTypes() {
+        Set<TaskType> activeTypes = new HashSet<TaskType>();
+        for ( TaskType type : taskTypes ) {
+            if ( type.isActive() ) {
+                activeTypes.add( type );
+            }
+        }
+        return activeTypes;
+    }
+
     // add or remove tabs based on property settings
     public void handleMessage( EBMessage msg ) {
         if ( msg instanceof PropertiesChanged ) {
@@ -183,4 +208,62 @@ public class TaskList extends JPanel implements EBComponent {
             }
         }
     }
+
+    MouseListener tabMouseListener =
+        new MouseAdapter() {
+            public void mousePressed( MouseEvent me ) {
+                if ( me.isPopupTrigger() ) {
+                    handleIsPopup( me );
+                }
+            }
+
+            public void mouseReleased( MouseEvent me ) {
+                if ( me.isPopupTrigger() ) {
+                    handleIsPopup( me );
+                }
+            }
+
+            private void handleIsPopup( MouseEvent me ) {
+                final int x = me.getX();
+                final int y = me.getY();
+                int index = tabs.indexAtLocation( x, y );
+                if ( index < 1 || ( index < 2 && ( showOpenFiles || showProjectFiles ) ) || ( index < 3 && showOpenFiles && showProjectFiles ) ) {
+                    // index 0 is the current buffer, don't close it ever,
+                    // less than 0 is an invalid tab
+                    return ;
+                }
+                final Component c = tabs.getComponentAt( index );
+                final JPopupMenu pm = new JPopupMenu();
+                JMenuItem close_mi = new JMenuItem( jEdit.getProperty( "tasklist.close", "Close" ) );
+                pm.add( close_mi );
+                close_mi.addActionListener(
+                    new ActionListener() {
+                        public void actionPerformed( ActionEvent ae ) {
+                            tabs.remove( c );
+                        }
+                    }
+                );
+                JMenuItem close_all_mi = new JMenuItem( jEdit.getProperty( "tasklist.close-all", "Close All" ) );
+                pm.add( close_all_mi );
+                close_all_mi.addActionListener(
+                    new ActionListener() {
+                        public void actionPerformed( ActionEvent ae ) {
+                            int start_index = 1;
+                            if ( showOpenFiles ) {
+                                ++start_index;
+                            }
+                            if ( showProjectFiles ) {
+                                ++start_index;
+                            }
+                            for ( int i = start_index; i < tabs.getTabCount(); ) {
+                                Component comp = tabs.getComponentAt( i );
+                                tabs.remove( comp );
+                                comp = null;
+                            }
+                        }
+                    }
+                );
+                GUIUtilities.showPopupMenu( pm, tabs, x, y );
+            }
+        };
 }

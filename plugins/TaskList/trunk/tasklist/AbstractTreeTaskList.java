@@ -16,11 +16,14 @@ import common.swingworker.*;
 import ise.java.awt.KappaLayout;
 
 /**
- * Base class of all task list trees.
+ * Base class of all task list trees. Subclasses need to supply 
+ * <code>getBuffersToScan</code>.  This class handles all scanning, tree building,
+ * tree filtering, and so on.
  */
 public abstract class AbstractTreeTaskList extends JPanel implements EBComponent {
     protected View view = null;
     protected JTree tree = null;
+    protected TreeModel fullModel = null;
     protected TaskComparator taskComparator = new TaskComparator();
     protected int sortColumn = jEdit.getIntegerProperty( "tasklist.table.sort-column", 1 );
     protected boolean sortAscending = jEdit.getBooleanProperty( "tasklist.table.sort-ascending", true );
@@ -59,38 +62,7 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
             }
         );
 
-        // add a "Refresh" menu item to a popup so the user can reload the
-        // current tree.
-        addMouseListener(getMouseListener());
-
         loadFiles();
-    }
-
-    private MouseListener getMouseListener() {
-        if (mouseListener == null) {
-            mouseListener =
-                new MouseAdapter() {
-                    public void mouseClicked( MouseEvent me ) {
-                        me.consume();
-                        GUIUtilities.showPopupMenu( createPopupMenu(), AbstractTreeTaskList.this, me.getX(), me.getY() );
-                    }
-                };
-        }
-        return mouseListener;
-    }
-
-    private JPopupMenu createPopupMenu() {
-        JPopupMenu menu = new JPopupMenu();
-        JMenuItem refreshItem = new JMenuItem( "Refresh" );
-        refreshItem.addActionListener(
-            new ActionListener() {
-                public void actionPerformed( ActionEvent ae ) {
-                    EditBus.send( new ParseBufferMessage( view, null, ParseBufferMessage.DO_PARSE_ALL ) );
-                }
-            }
-        );
-        menu.add( refreshItem );
-        return menu;
     }
 
     /**
@@ -115,6 +87,34 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
             runner = new Runner();
             runner.execute();
         }
+    }
+
+    protected void filterTree() {
+        Set<TaskType> activeTypes = TaskListPlugin.getTaskList( view ).getActiveTaskTypes();
+        DefaultMutableTreeNode filteredRoot = new DefaultMutableTreeNode( rootDisplayName );
+        SortableTreeModel filteredModel = new SortableTreeModel( filteredRoot, new TreeNodeComparator() );
+
+        DefaultMutableTreeNode root = ( DefaultMutableTreeNode ) fullModel.getRoot();
+        for ( int i = 0; i < root.getChildCount(); i++ ) {
+            DefaultMutableTreeNode bufferNode = ( DefaultMutableTreeNode ) root.getChildAt( i );
+            DefaultMutableTreeNode filteredBufferNode = new DefaultMutableTreeNode( bufferNode.getUserObject() );
+            for ( int j = 0; j < bufferNode.getChildCount(); j++ ) {
+                DefaultMutableTreeNode taskNode = ( DefaultMutableTreeNode ) bufferNode.getChildAt( j );
+                Task task = ( Task ) taskNode.getUserObject();
+                TaskType type = TaskListPlugin.getTaskType( task );
+                if ( activeTypes.contains( type ) ) {
+                    filteredBufferNode.add( new DefaultMutableTreeNode( task ) );
+                }
+            }
+            if ( filteredBufferNode.getChildCount() > 0 ) {
+                filteredRoot.add( filteredBufferNode );
+            }
+        }
+        tree.setModel( filteredModel );
+        expandTree();
+        invalidate();
+        validate();
+
     }
 
     /**
@@ -146,7 +146,7 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
         public TreeModel doInBackground() {
             try {
                 // build the tree model
-                if (showProgress()) {
+                if ( showProgress() ) {
                     SwingUtilities.invokeLater(
                         new Runnable() {
                             public void run() {
@@ -204,10 +204,9 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
 
         @Override
         protected void done() {
-            final TreeModel model;
             try {
-                model = ( TreeModel ) get();
-                if ( model == null ) {
+                fullModel = ( TreeModel ) get();
+                if ( fullModel == null ) {
                     return ;
                 }
             }
@@ -219,8 +218,8 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
                     public void run() {
                         // build the display
                         removeAll();
-                        if ( model.getChildCount( model.getRoot() ) > 0 ) {
-                            tree = new JTree( model );
+                        if ( fullModel.getChildCount( fullModel.getRoot() ) > 0 ) {
+                            tree = new JTree( fullModel );
                             expandTree();
                             tree.addMouseListener( new TreeMouseListener( view, tree ) );
                             tree.setCellRenderer( new TaskTreeCellRenderer() );
@@ -228,7 +227,6 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
                         }
                         else {
                             JLabel label = new JLabel( jEdit.getProperty( "tasklist.no-tasks-found", "No tasks found." ) );
-                            label.addMouseListener(getMouseListener());
                             add( label );
                         }
                         invalidate();
@@ -314,9 +312,13 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
      */
     protected abstract List<String> getBuffersToScan();
 
-    // create a tree node for the given buffer.  The node will display the
-    // name of the buffer, the buffer will be scanned for tasks, and one child
-    // node will be added for each task found in the buffer.
+    /**
+     * Create a tree node for the given buffer.  The node will display the
+     * name of the buffer, the buffer will be scanned for tasks, and one child
+     * node will be added for each task found in the buffer.
+     * @param buffer The buffer to search for tasks.
+     * @return A tree node with tasks as children or null if no tasks found.
+     */
     private DefaultMutableTreeNode getNodeForBuffer( Buffer buffer ) {
         DefaultMutableTreeNode buffer_node = null;
         try {
@@ -379,6 +381,9 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
             }
             else if ( ParseBufferMessage.DO_PARSE_ALL.equals( bu.getWhat() ) ) {
                 loadFiles();
+            }
+            else if ( ParseBufferMessage.APPLY_FILTER.equals( bu.getWhat() ) ) {
+                filterTree();
             }
         }
         if ( msg instanceof PropertiesChanged ) {

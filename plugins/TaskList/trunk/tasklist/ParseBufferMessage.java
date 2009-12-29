@@ -27,6 +27,7 @@ public class ParseBufferMessage extends BufferUpdate {
 
     public static Object DO_PARSE = "do-parse";
     public static Object DO_PARSE_ALL = "do-parse-all";
+    public static Object APPLY_FILTER = "apply-filter";
 
     public ParseBufferMessage( View view, Buffer buffer, Object what ) {
         super( buffer, view, what );
