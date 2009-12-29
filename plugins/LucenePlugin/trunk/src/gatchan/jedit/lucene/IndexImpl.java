@@ -249,6 +249,8 @@ public class IndexImpl extends AbstractIndex implements Index
 					queryStr.append("(" + query + ") AND ");
 				queryStr.append("filetype:" + fileType);
 			}
+			else
+				queryStr.append(query);
 			Query _query = parser.parse(queryStr.toString());
 			TopDocs docs = searcher.search(_query, max);
 			ScoreDoc[] scoreDocs = docs.scoreDocs;
