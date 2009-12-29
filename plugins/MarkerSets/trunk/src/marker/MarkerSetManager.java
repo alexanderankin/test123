@@ -54,6 +54,8 @@ public class MarkerSetManager extends JPanel {
 	private static final String MSG_BUFFER_SCOPE = MSG_BASE + "bufferScope";
 	private static final String MSG_SET_SHORTCUT = MSG_BASE + "setShortcut";
 	private static final String MSG_SHORTCUT_FOR_MARKER = MSG_BASE + "shortcutLabel";
+	private static final String BUFFER_SCOPE_PROP = MarkerSetsPlugin.OPTION +
+		"manager.bufferScope";
 	private View view;
 	private SourceLinkTree markers;
 	private JComboBox structure;
@@ -122,9 +124,11 @@ public class MarkerSetManager extends JPanel {
 		markers.addSourceLinkTreeModelListener(new MarkerTreeListener());
 		selfUpdate = false;
 		bufferScope = new JCheckBox(jEdit.getProperty(MSG_BUFFER_SCOPE));
+		bufferScope.setSelected(jEdit.getBooleanProperty(BUFFER_SCOPE_PROP));
 		northPanel.add(bufferScope);
 		bufferScope.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
+				jEdit.setBooleanProperty(BUFFER_SCOPE_PROP, bufferScope.isSelected());
 				updateTree();
 			}
 		});
