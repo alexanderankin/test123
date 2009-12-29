@@ -256,11 +256,11 @@ public class TaskListPopup extends JPopupMenu {
             }
 
             if ( "parse-buffer".equals( cmd ) ) {
-                EditBus.send( new ParseBufferMessage( view, buffer, ParseBufferMessage.DO_PARSE ) );
+                TaskListPlugin.send( new ParseBufferMessage( view, buffer, ParseBufferMessage.DO_PARSE ) );
                 return ;
             }
             else if ( "parse-all".equals( cmd ) ) {
-                EditBus.send( new ParseBufferMessage( view, buffer, ParseBufferMessage.DO_PARSE_ALL ) );
+                TaskListPlugin.send( new ParseBufferMessage( view, buffer, ParseBufferMessage.DO_PARSE_ALL ) );
                 return ;
             }
             else if ( "sort-by-line-number".equals( cmd ) ) {

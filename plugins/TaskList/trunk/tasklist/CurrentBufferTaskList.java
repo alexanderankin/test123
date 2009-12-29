@@ -63,9 +63,9 @@ public class CurrentBufferTaskList extends AbstractTreeTaskList {
         Buffer buffer = view.getBuffer();
         Buffer b = null;
         Object what = null;
-        if ( message instanceof BufferUpdate ) {
-            b = ( ( BufferUpdate ) message ).getBuffer();
-            what = ( ( BufferUpdate ) message ).getWhat();
+        if ( message instanceof ParseBufferMessage ) {
+            b = ( ( ParseBufferMessage ) message ).getBuffer();
+            what = ( ( ParseBufferMessage ) message ).getWhat();
             if ( ParseBufferMessage.APPLY_FILTER.equals( what ) ) {
                 filterTree();
                 return ;

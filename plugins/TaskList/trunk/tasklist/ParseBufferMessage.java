@@ -21,16 +21,43 @@ package tasklist;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.EBMessage;
 
-public class ParseBufferMessage extends BufferUpdate {
+public class ParseBufferMessage extends EBMessage {
 
     public static Object DO_PARSE = "do-parse";
     public static Object DO_PARSE_ALL = "do-parse-all";
     public static Object APPLY_FILTER = "apply-filter";
 
-    public ParseBufferMessage( View view, Buffer buffer, Object what ) {
-        super( buffer, view, what );
+    private View view;
+    private Buffer buffer;
+    private Object what;
+
+    public ParseBufferMessage( EBComponent source ) {
+        super( source );
     }
 
+    public ParseBufferMessage( Object source ) {
+        super( source );
+    }
+
+    public ParseBufferMessage( View view, Buffer buffer, Object what ) {
+        super( (Object) null );
+        this.view = view;
+        this.buffer = buffer;
+        this.what = what;
+    }
+
+    public View getView() {
+        return view;
+    }
+
+    public Buffer getBuffer() {
+        return buffer;
+    }
+
+    public Object getWhat() {
+        return what;
+    }
 }
