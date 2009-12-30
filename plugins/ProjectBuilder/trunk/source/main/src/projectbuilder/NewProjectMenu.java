@@ -32,7 +32,7 @@ public class NewProjectMenu implements DynamicMenuProvider {
 			String iconUrl = dirs[j].getPath()+"/menu-icon.png";
 			JMenuItem p = new JMenuItem(tNames[j], new ImageIcon(iconUrl));
 			String t = tNames[j].replace(" ", "_");
-			p.addActionListener(new ItemListener(t))
+			p.addActionListener(new ItemListener(t));
 			projects.add(p);
 		}
 		menu.add(projects);
@@ -44,9 +44,9 @@ class DirFilter implements FileFilter {
 	}
 }
 class ItemListener implements ActionListener {
-	private String t
+	private String t;
 	public ItemListener(String t) {
-		this.t = t
+		this.t = t;
 	}
 	public void actionPerformed(ActionEvent ae) {
 		try {
