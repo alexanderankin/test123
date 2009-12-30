@@ -145,7 +145,7 @@ public class MarkerSetManager extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				FileMarker m = MarkerSetsPlugin.getActiveMarkerSet().prevMarker(
 					MarkerSetManager.this.view);
-				if (m != null);
+				if (m != null)
 					markers.select(m);
 			}
 		});
