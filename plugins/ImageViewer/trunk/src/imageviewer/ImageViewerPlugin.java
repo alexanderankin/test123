@@ -82,9 +82,10 @@ public class ImageViewerPlugin extends EBPlugin {
      * an image from the first selected file in the given VFSBrowser.    
      */
     public static void showImage( View view, VFSBrowser browser ) {
-        if ( view == null || view.getDockableWindowManager().getDockable(NAME) == null) {
-            return ;
-        }
+        if ( view == null ) return;
+        Component c = view.getDockableWindowManager().getDockable(NAME);
+        if (c == null || !c.isVisible()) return;
+        
         String filename = browser.getSelectedFiles() [ 0 ].getPath();
         if ( ImageViewer.isValidFilename( filename ) ) {
             ImageViewer imageViewer = getImageViewer( view );
@@ -259,8 +260,10 @@ public class ImageViewerPlugin extends EBPlugin {
                     }
 
                     private void showImage( MouseEvent me ) {
-                	    // Do not show up unless plugin was activated.
-                	    if (view.getDockableWindowManager().getDockable(NAME) == null) return;
+                	    // Do nothing if dockable is not visible.
+                	    if (view == null) return;
+                	    Component c = view.getDockableWindowManager().getDockable(NAME);
+                	    if ( c == null || !c.isVisible()) return;
 	                    TreePath treepath = tree.getClosestPathForLocation( me.getX(), me.getY() );
 	                    Object lastComponent = treepath.getLastPathComponent();
 	                    if ( lastComponent instanceof VPTNode ) {
