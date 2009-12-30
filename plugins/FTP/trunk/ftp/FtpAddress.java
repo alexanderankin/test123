@@ -141,6 +141,10 @@ public class FtpAddress {
 	private int getDefaultPort() {
 		return this.scheme == FtpVFS.SFTP_PROTOCOL ? 22 : 21;
 	}
+	
+	public boolean isSecure() {
+		return this.scheme == FtpVFS.SFTP_PROTOCOL;
+	}
 
 	/**
 	 * Never returns null. 

@@ -58,8 +58,8 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 		super(JOptionPane.getFrameForComponent(comp),
 			jEdit.getProperty(_secure ? "login.title-sftp" : "login.title-ftp"), true);
 		this.secure = _secure;
-		JPanel content = new JPanel(new VariableGridLayout(
-			VariableGridLayout.FIXED_NUM_COLUMNS,1,6,6));
+		
+		JPanel content = new JPanel(new VariableGridLayout(VariableGridLayout.FIXED_NUM_COLUMNS,1,6,6));
 		content.setBorder(new EmptyBorder(12,12,12,12));
 		setContentPane(content);
 		
@@ -264,8 +264,7 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 	private JButton cancel;
 	
 	//{{{ createFieldPanel() method
-	private JPanel createFieldPanel(boolean secure, String host, String user,
-	String password)
+	private JPanel createFieldPanel(boolean secure, String host, String user, String password)
 	{
 		JPanel panel = new JPanel(new VariableGridLayout(
 		VariableGridLayout.FIXED_NUM_COLUMNS,2,6,6));
@@ -306,9 +305,9 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 		{
 			Box privateKeyBox = Box.createHorizontalBox();
 			privateKeyField = new HistoryTextField("sftp.privateKey");
+			//privateKeyField.setText("");
 			privateKeyField.addActionListener(this);
-			label = new JLabel(jEdit.getProperty("login.privateKey"),
-			SwingConstants.RIGHT);
+			label = new JLabel(jEdit.getProperty("login.privateKey"), SwingConstants.RIGHT);
 			panel.add(label);
 			privateKeyBox.add(privateKeyField);
 			privateKeySelect = new JButton("...");
@@ -329,7 +328,7 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 		String user = userField.getText();
 		if(host.indexOf(":") == -1)
 				host = host + ":" + FtpVFS.getDefaultPort(secure);
-		String key = jEdit.getProperty("ftp.keys."+host+"."+user);
+		String key = ConnectionManager.getStoredFtpKey(host, user);
 		String pass = ConnectionManager.getPassword(host+"."+user);
 		if (secure)
 		{
