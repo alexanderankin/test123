@@ -145,6 +145,19 @@ public class SqlPlugin extends EBPlugin
 			Log.log(Log.DEBUG, SqlPlugin.class, "properties changed!");
 			handlePropertiesChanged();
 		}
+		else if (message instanceof ViewerUpdate)
+		{
+			final ViewerUpdate vupdate = (ViewerUpdate)message;
+			if (vupdate.getType() == ViewerUpdate.Type.PROJECT_LOADED)
+			{
+				final VPTNode node = vupdate.getNode();
+				Log.log(Log.DEBUG, SqlPlugin.class,
+				        "Loading the project [" + node.getNodePath() + "]");
+				final ProjectViewer pv = vupdate.getViewer();
+				if (node instanceof VPTProject)
+					refreshToolBar(pv == null ? jEdit.getActiveView() : pv.getView(), (VPTProject)node);
+			}
+		}
 	}
 
 
