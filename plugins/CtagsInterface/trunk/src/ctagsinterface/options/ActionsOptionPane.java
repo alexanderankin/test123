@@ -100,7 +100,7 @@ public class ActionsOptionPane extends AbstractOptionPane {
 		CtagsInterfacePlugin.updateActions();
 	}
 
-	public class ActionEditor extends JDialog {
+	static public class ActionEditor extends JDialog {
 		
 		QueryAction action;
 		JTextField query;

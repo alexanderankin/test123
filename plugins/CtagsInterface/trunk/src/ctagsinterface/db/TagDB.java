@@ -15,9 +15,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
+import java.util.Map.Entry;
 
 import org.gjt.sp.jedit.jEdit;
 
@@ -105,8 +107,11 @@ public class TagDB {
 		if (mapFile == null || mapFile.length() == 0)
 			return;
 		Properties props = new Properties();
+		FileInputStream fis = null;
 		try {
-			props.load(new FileInputStream(mapFile));
+			fis = new FileInputStream(mapFile);
+			props.load(fis);
+			fis.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			return;
@@ -275,9 +280,10 @@ public class TagDB {
 		HashMap<String, Vector<String>> origins) 
 	{
 		StringBuffer sb = new StringBuffer();
-		Set<String> types = origins.keySet();
-		for (String type: types) {
-			Vector<String> names = origins.get(type);
+		for (Map.Entry<String, Vector<String>> origin: origins.entrySet())
+		{
+			String type = origin.getKey();
+			Vector<String> names = origin.getValue();
 			if (names == null || names.size() == 0)
 				continue;
 			if (sb.length() > 0)
