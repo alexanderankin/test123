@@ -22,7 +22,7 @@ public class Runner {
 	private static final String SPACES = "\\s+";
 	private static Set<String> tempFiles;
 	
-	{
+	static {
 		tempFiles = new HashSet<String>();
 	}
 	

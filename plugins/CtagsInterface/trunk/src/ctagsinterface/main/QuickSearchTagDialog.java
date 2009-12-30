@@ -274,7 +274,7 @@ public class QuickSearchTagDialog extends JDialog {
 		}
 	}
 
-	public class TagListCellRenderer extends DefaultListCellRenderer {
+	static public class TagListCellRenderer extends DefaultListCellRenderer {
 
 		@Override
 		public Component getListCellRendererComponent(JList list, Object value,
