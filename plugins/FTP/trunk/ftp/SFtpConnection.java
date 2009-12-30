@@ -107,6 +107,7 @@ public class SFtpConnection extends Connection implements UserInfo
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	FtpVFS.FtpDirectoryEntry[] listDirectory(String path) throws IOException
 	{
 		ArrayList<FtpDirectoryEntry> listing = new ArrayList<FtpDirectoryEntry>();

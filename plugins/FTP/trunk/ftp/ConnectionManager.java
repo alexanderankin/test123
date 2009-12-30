@@ -92,6 +92,11 @@ public class ConnectionManager
 		passphrases.put(keyFile,passphrase);
 	} //}}}
 	
+	
+	public static String getStoredFtpKey(String host, String user) {
+		return jEdit.getProperty("ftp.keys."+host+"."+user);
+	}
+	
 	//{{{ loadPasswords() method
 	@SuppressWarnings("unchecked")
 	protected static void loadPasswords()
@@ -236,20 +241,29 @@ public class ConnectionManager
 	//{{{ getConnectionInfo() method
 	public static ConnectionInfo getConnectionInfo(Component comp, FtpAddress address, boolean secure)
 	{
-		Log.log(Log.DEBUG, "ConnectionInfo.getConnectionInfo", comp);
+		Log.log(Log.DEBUG, ConnectionManager.class, comp);
 		String host, user;
 		String password;
+		
 
 		if(address != null)
 		{
-			host = address.getHost()+":"+address.getPort();
-			user = address.getUser();
+			host     = address.getHost()+":"+address.getPort();
+			user     = address.getUser();
 			password = address.getPassword();
-
+			
+			// Check for cached connection info
 			ConnectionInfo info = logins.get(host);
-
-			if(info != null && info.getPassword()!=null && (info.user.equals(user) || user == null))
+			if( (info != null) ) 
 				return info;
+			
+			// Try to create connection from pre-defined params
+			String key = ConnectionManager.getStoredFtpKey(host, user);
+			if ( host!=null && user!=null && (password!=null || key!=null) ) {
+				// TODO: try to use logins hash
+				return new ConnectionInfo(secure, address.getHost(), address.getPort(), user, password, key);
+			}
+			
 		}
 		else {
 			host = user = password = null;
@@ -281,10 +295,10 @@ public class ConnectionManager
 		
 		// Save password here
 		if (jEdit.getBooleanProperty("vfs.ftp.storePassword"))
-			setPassword(host+":"+port+"."+dialog.getUser(),dialog.getPassword());
+			setPassword(host+":"+port+"."+dialog.getUser(), dialog.getPassword() );
 		
 		// hash by host name
-		logins.put(host + ":" + port,info);
+		logins.put(host + ":" + port, info);
 
 		return info;
 	} //}}}
@@ -381,8 +395,8 @@ public class ConnectionManager
 		String settingsDirectory = jEdit.getSettingsDirectory();
 		if(settingsDirectory == null)
 		{
-			Log.log(Log.WARNING,ConnectionManager.class,"-nosettings command line switch specified;");
-			Log.log(Log.WARNING,ConnectionManager.class,"passwords will not be saved.");
+			Log.log(Log.WARNING, ConnectionManager.class, "-nosettings command line switch specified;");
+			Log.log(Log.WARNING, ConnectionManager.class, "passwords will not be saved.");
 		}
 		else
 		{
