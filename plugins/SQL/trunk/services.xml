@@ -6,4 +6,8 @@
   <SERVICE CLASS="org.gjt.sp.jedit.io.VFS" NAME="sql">
     new sql.SqlVFS();
   </SERVICE>
+  <SERVICE CLASS="projectviewer.config.OptionsService" NAME="PVDebug Dummy Options">
+    new sql.SqlPlugin.SqlOptions();
+  </SERVICE>
+
 </SERVICES>
