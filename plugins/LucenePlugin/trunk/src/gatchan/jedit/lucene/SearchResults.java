@@ -270,8 +270,17 @@ public class SearchResults extends JPanel
 	@EBHandler
 	public void handleMessage(LuceneIndexUpdate msg)
 	{
-		String[] items = LucenePlugin.instance.getIndexes();
-		indexModel.setIndexes(items);
+		Vector<String> items = new Vector<String>();
+		for (int i = 0; i < indexModel.getSize(); i++)
+			items.add((String) indexModel.getElementAt(i));
+		String indexName = (String) msg.getSource(); 
+		if (msg.getWhat() == LuceneIndexUpdate.What.CREATED)
+			items.add(indexName);
+		else
+			items.remove(indexName);
+		String [] names = new String[items.size()];
+		items.toArray(names);
+		indexModel.setIndexes(names);
 	}
 
 	private static class MyModel extends AbstractListModel
