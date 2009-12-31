@@ -55,6 +55,8 @@ public class QueryAction extends EditAction {
 		ResultSet rs;
 		try {
 			rs = CtagsInterfacePlugin.getDB().query(s);
+			if (rs == null)
+				return;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return;
