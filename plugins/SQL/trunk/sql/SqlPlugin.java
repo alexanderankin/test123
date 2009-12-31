@@ -105,20 +105,6 @@ public class SqlPlugin extends EBPlugin
 	/**
 	 *  Description of the Method
 	 *
-	 * @param  optionsDialog  Description of Parameter
-	 * @param  project        Description of Parameter
-	 */
-	public void createOptionPanes(OptionsDialog optionsDialog, VPTProject project)
-	{
-		final OptionGroup group = new OptionGroup("sql");
-		group.addOptionPane(new ServersOptionPane(project));
-		optionsDialog.addOptionGroup(group);
-	}
-
-
-	/**
-	 *  Description of the Method
-	 *
 	 * @param  message  Description of Parameter
 	 * @since
 	 */
@@ -602,5 +588,30 @@ public class SqlPlugin extends EBPlugin
 		return icon;
 	}
 
+	public static class SqlOptions implements OptionsService
+	{
+		/**
+		*  Description of the Method
+		*
+		* @param  project        Description of Parameter
+		*/
+		public OptionPane getOptionPane(VPTProject project)
+		{
+			return null;
+		}
+
+
+		/**
+		*  Description of the Method
+		*
+		* @param  project        Description of Parameter
+		*/
+		public OptionGroup getOptionGroup(VPTProject project)
+		{
+			final OptionGroup group = new OptionGroup("sql");
+			group.addOptionPane(new ServersOptionPane(project));
+			return group;
+		}
+	}	
 }
 

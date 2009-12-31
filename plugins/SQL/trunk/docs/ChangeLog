@@ -1,7 +1,7 @@
-2009-12-30        svu
+2009-12-31        svu
 
-	* sql/SqlPlugin.java, sql/SqlPluginPVListener.java: adapt to the
-	latest version of PV
+	* services.xml, sql/SqlPlugin.java, sql/SqlPluginPVListener.java:
+	adapt the code to the latest version of PV.
 	* SqlPlugin.props, docs/users-guide.xml, build.xml: fix the build
 	process, using latest jEdit build env
 
