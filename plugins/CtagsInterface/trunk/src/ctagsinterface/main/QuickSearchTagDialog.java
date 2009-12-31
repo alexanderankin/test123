@@ -151,6 +151,8 @@ public class QuickSearchTagDialog extends JDialog {
 			try {
 				tagNames = new Vector<QuickSearchTag>();
 				ResultSet rs = db.query(q);
+				if (rs == null)
+					return;
 				while (rs.next())
 					tagNames.add(new QuickSearchTag(rs));
 				rs.close();
@@ -198,6 +200,8 @@ public class QuickSearchTagDialog extends JDialog {
 				baseQuery.setConditions(conditions);
 				try {
 					ResultSet rs = db.query(baseQuery);
+					if (rs == null)
+						break;
 					while (rs.next())
 						model.addElement(new QuickSearchTag(rs));
 					rs.close();

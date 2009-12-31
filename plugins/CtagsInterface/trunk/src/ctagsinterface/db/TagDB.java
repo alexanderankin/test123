@@ -21,6 +21,8 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.Map.Entry;
 
+import javax.swing.JOptionPane;
+
 import org.gjt.sp.jedit.jEdit;
 
 import ctagsinterface.main.CtagsInterfacePlugin;
@@ -172,7 +174,7 @@ public class TagDB {
 			Query q = new Query("*", MAP_TABLE, MAP_FILE_ID + "=" + quote(fileId));
 			q.addCondition(MAP_ORIGIN_ID + "=" + quote(originId));
 			ResultSet rs = query(q);
-			if (rs.next())
+			if ((rs == null) || rs.next())
 				return;
 			update("INSERT INTO " + MAP_TABLE + " (" + MAP_FILE_ID + "," + MAP_ORIGIN_ID +
 				") VALUES (" + quote(fileId) + "," + quote(originId) + ")");
@@ -412,6 +414,8 @@ public class TagDB {
 			Query q = new Query(column, table, column + "=" + quote(value));
 			q.setLimit(1);
 			ResultSet rs = query(q);
+			if (rs == null)
+				return false;
 			return rs.next();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -426,7 +430,7 @@ public class TagDB {
 	public int queryInteger(String column, String query, int defaultValue) {
 		try {
 			ResultSet rs = query(query);
-			if (! rs.next())
+			if ((rs == null) || (! rs.next()))
 				return defaultValue;
 			return rs.getInt(column);
 		} catch (SQLException e) {
@@ -516,6 +520,13 @@ public class TagDB {
 		return query(query.toString());
 	}
 	public synchronized ResultSet query(String expression) throws SQLException {
+		if (conn == null) {
+			JOptionPane.showMessageDialog(null, "Tag database not started, " +
+				"probably due to an error in the database configuration.\n" +
+				"Use Plugin -> CtagsInterface -> Change database settings... " +
+				"to check and update the configuration.");
+			return null;
+		}
 		try {
 			Statement st = conn.createStatement();
 			ResultSet rs = st.executeQuery(expression);
@@ -552,6 +563,8 @@ public class TagDB {
 		Vector<String> values = new Vector<String>();
 		try {
 			ResultSet rs = query(query);
+			if (rs == null)
+				return values;
 			while (rs.next())
 				values.add(rs.getString(column));
 		} catch (SQLException e) {
@@ -607,6 +620,8 @@ public class TagDB {
 		try {
 			Query q = new Query("*", TAGS_TABLE, TAGS_NAME + "=''");
 			ResultSet rs = query(q);
+			if (rs == null)
+				return null;
 			ResultSetMetaData meta = rs.getMetaData();
 			int cols = meta.getColumnCount();
 			for (int i = 0; i < cols; i++)

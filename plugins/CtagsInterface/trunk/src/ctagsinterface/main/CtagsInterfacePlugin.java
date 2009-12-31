@@ -114,7 +114,10 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	
     static public void dumpQuery(String expression) {
     	try {
-			dump(db.query(expression)); 
+    		ResultSet rs = db.query(expression);
+    		if (rs == null)
+    			return;
+			dump(rs);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -270,19 +273,27 @@ public class CtagsInterfacePlugin extends EditPlugin {
 					}
 					projects.add(project);
 					ResultSet rs = db.queryTagInOrigins(tag, origins);
+					if (rs == null)
+						return null;
 					tags = db.getResultSetTags(rs);
 				} else {
 					ResultSet rs = db.queryTagInProject(tag, project);
+					if (rs == null)
+						return null;
 					tags = db.getResultSetTags(rs);
 					if (ProjectsOptionPane.getSearchActiveProjectFirst() &&
 							tags.isEmpty())
 					{
 						rs = db.queryTag(tag);
+						if (rs == null)
+							return null;
 						tags = db.getResultSetTags(rs);
 					}
 				}
 			} else {
 				ResultSet rs = db.queryTag(tag);
+				if (rs == null)
+					return null;
 				tags = db.getResultSetTags(rs);
 			}
 		} catch (SQLException e) {
@@ -302,6 +313,8 @@ public class CtagsInterfacePlugin extends EditPlugin {
 			return;
 		} 
 		Vector<Tag> tags = queryScopedTag(view, tag);
+		if (tags == null)
+			return;
 		jumpToTags(view, tags);
 	}
 
@@ -465,6 +478,8 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		ResultSet rs;
 		try {
 			rs = db.query(q);
+			if (rs == null)
+				return tag;
 			Vector<Tag> tags = db.getResultSetTags(rs);
 			if ((tags == null) || tags.isEmpty())
 				return tag;
@@ -768,7 +783,8 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		ResultSet rs;
 		try {
 			rs = db.queryTag(tag);
-			return db.getResultSetTags(rs);
+			if (rs != null)
+				return db.getResultSetTags(rs);
 		} catch (SQLException e) {
 			Log.log(Log.ERROR, CtagsInterfacePlugin.class, "queryTag failed: ", e);
 		}
@@ -783,7 +799,8 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		ResultSet rs;
 		try {
 			rs = db.query(query);
-			return db.getResultSetTags(rs);
+			if (rs != null)
+				return db.getResultSetTags(rs);
 		} catch (SQLException e) {
 			Log.log(Log.ERROR, CtagsInterfacePlugin.class, "query failed: ", e);
 		}
