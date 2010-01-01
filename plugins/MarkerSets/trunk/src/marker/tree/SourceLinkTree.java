@@ -13,7 +13,6 @@ import javax.swing.AbstractAction;
 import javax.swing.JLabel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
-import javax.swing.UIManager;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
@@ -179,7 +178,7 @@ public class SourceLinkTree extends JTree
 	
 	public SourceLinkParentNode addSourceLinkParent(Object parent)
 	{
-		SourceLinkParentNode node = new SourceLinkParentNode(this, parent, builder);
+		SourceLinkParentNode node = new SourceLinkParentNode(parent, builder);
 		if (! multiple)
 			clear();
 		root.add(node);
@@ -293,14 +292,11 @@ public class SourceLinkTree extends JTree
 		implements PopupMenuProvider
 	{
 		private MarkerTreeBuilder builder;
-		private SourceLinkTree tree;
 
-		public SourceLinkParentNode(SourceLinkTree tree, Object userObject,
-			MarkerTreeBuilder builder)
+		public SourceLinkParentNode(Object userObject, MarkerTreeBuilder builder)
 		{
 			super(userObject);
 			this.builder = builder;
-			this.tree = tree;
 		}
 		public void addSourceLink(FileMarker marker)
 		{
@@ -341,9 +337,9 @@ public class SourceLinkTree extends JTree
 		}
 		public void updateStructure()
 		{
-			if (tree.isBatch())
+			if (SourceLinkTree.this.isBatch())
 			{
-				tree.addBatchUpdate(this);
+				SourceLinkTree.this.addBatchUpdate(this);
 			}
 			else
 			{
@@ -481,9 +477,12 @@ public class SourceLinkTree extends JTree
 				}
 				int prefixLen = prefix.length();
 				Vector<Integer> ranges = new Vector<Integer>();
-				for (Selection s: marker.getSelections()) {
-					ranges.add(prefixLen + s.start);
-					ranges.add(prefixLen + s.end);
+				Vector<Selection> selections = marker.getSelections();
+				if (selections != null) {
+					for (Selection s: marker.getSelections()) {
+						ranges.add(prefixLen + s.start);
+						ranges.add(prefixLen + s.end);
+					}
 				}
 				String text = marker.getLineText();
 				String prop = jEdit.getProperty("hypersearch.results.highlight");
