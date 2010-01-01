@@ -27,10 +27,9 @@ import org.gjt.sp.jedit.msg.ViewUpdate;
  * setting when the file is next opened. The settings are stored as a pipe
  * separated string:
  * <ul>
- * <li>Line separator string, values n, r, rn
- * <li>getStringProperty("lineSeparator")        Character encoding string
- * <li>buffer.getStringProperty(Buffer.ENCODING) gzip on disk boolean, values t, f
- * <li>buffer.getBooleanProperty(Buffer.GZIPPED) edit mode string
+ * <li>getStringProperty("lineSeparator")        Line separator string, values n, r, rn
+ * <li>buffer.getStringProperty(Buffer.ENCODING) Character encoding string
+ * <li>buffer.getBooleanProperty(Buffer.GZIPPED) gzip on disk boolean, values t, f
  * <li>buffer.getMode().getName()                edit mode string
  * <li>buffer.getFoldHandler().getName()         fold mode string
  * <li>buffer.getStringProperty("wrap");         word wrap string
@@ -318,16 +317,12 @@ public class BufferLocalPlugin extends EBPlugin implements WindowListener {
                 }
                 openBuffers.put( buffer.getPath(), new BufferReference( view, buffer ) );
             }
-            else if ( BufferUpdate.CLOSED.equals( what ) ) {
-                // only save if changed, no need to save if not. Doing it this way
-                // rather than on PROPERTY_CHANGED as jEdit sends lots of
-                // PROPERTY_CHANGED messages even though the properties really
-                // haven't changed.  It seems like PROPERTY_CHANGED is more like
-                // "properties might have changed".
-                if ( !getBufferLocalString( buffer ).equals( tempMap.getProperty( file ) ) ) {
-                    map.setProperty( file, getBufferLocalString( buffer ) );
+            else if ( BufferUpdate.CLOSED.equals( what ) || BufferUpdate.PROPERTIES_CHANGED.equals( what ) ) {
+                String bufferLocalString = getBufferLocalString(buffer);
+                map.setProperty( file, bufferLocalString );
+                if ( BufferUpdate.CLOSED.equals( what ) ) {
+                    openBuffers.remove( buffer.getPath() );
                 }
-                openBuffers.remove( buffer.getPath() );
             }
         }
         else if ( message instanceof EditorExitRequested ) {
