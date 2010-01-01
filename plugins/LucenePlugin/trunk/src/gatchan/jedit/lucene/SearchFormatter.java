@@ -25,6 +25,7 @@ public class SearchFormatter implements Formatter
         	(tokenGroup.getTotalScore() > 0))
         {
         	positions.add(tokenGroup.getStartOffset());
+        	positions.add(tokenGroup.getEndOffset());
         }
 		return originalText;
 	}

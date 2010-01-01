@@ -50,7 +50,7 @@ public class IndexProjectAction extends Action
 		}
 	}
 
-	private class ProjectIndexer implements Runnable
+	private static class ProjectIndexer implements Runnable
 	{
 		private VPTProject project;
 		private Index index;
