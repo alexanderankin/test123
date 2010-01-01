@@ -1,5 +1,7 @@
 package marker;
 
+import java.util.Vector;
+
 import javax.swing.text.Position;
 
 import org.gjt.sp.jedit.Buffer;
@@ -20,7 +22,16 @@ public class FileMarker implements Comparable {
 	private Position pos;
 	private Buffer buffer;
 	private String text;
-	
+	private Vector<Selection> selection;
+
+	public class Selection {
+		public int start, end;
+		public Selection(int start, int end) {
+			this.start = start;
+			this.end = end;
+		}
+	}
+
 	public FileMarker(String file, int line) {
 		init(file, line);
 		Buffer b = jEdit.getBuffer(file);
@@ -51,6 +62,7 @@ public class FileMarker implements Comparable {
 		this.line = line;
 		text = null;
 		pos = null;
+		selection = null;
 		setShortcut(null);
 	}
 
@@ -61,6 +73,10 @@ public class FileMarker implements Comparable {
 		shortcutStr = (shortcut == null) ? "" : "[" + shortcut + "] ";
 	}
 	
+	public String getShortcut() {
+		return (shortcut == null) ? "" : shortcut;
+	}
+
 	public void jump(View view) {
 		MarkerSetsPlugin.jump(view, file, getLine());
 	}
@@ -90,8 +106,8 @@ public class FileMarker implements Comparable {
 	
 	public void importXml(Element node)
 	{
-		file = node.getAttribute(FILE_ATTR);
-		line = Integer.valueOf(node.getAttribute(LINE_ATTR));
+		init(node.getAttribute(FILE_ATTR), Integer.valueOf(
+			node.getAttribute(LINE_ATTR)));
 		setShortcut(node.getAttribute(SHORTCUT_ATTR));
 	}
 	
@@ -121,6 +137,36 @@ public class FileMarker implements Comparable {
 		buffer = null;
 	}
 	
+	public void addSelection(Selection s)
+	{
+		if (selection == null)
+			selection = new Vector<Selection>();
+		int i;
+		Selection cur = null;
+		for (i = 0; i < selection.size(); i++) {
+			cur = selection.get(i);
+			if (cur.start > s.start) {
+				if (s.end > cur.start) {
+					cur.start = s.start;
+					if (s.end > cur.end)
+						cur.end = s.end;
+					return;
+				}
+				break;
+			} else if (cur.end > s.start) {
+				if (cur.end > s.end)
+					cur.end = s.end;
+				return;
+			}
+		}
+		selection.insertElementAt(s, i);
+	}
+	
+	public Vector<Selection> getSelections()
+	{
+		return selection;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (! (obj instanceof FileMarker))

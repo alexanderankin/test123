@@ -1,6 +1,7 @@
 package marker.tree;
 
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -12,6 +13,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JLabel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
+import javax.swing.UIManager;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
@@ -19,9 +21,11 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import marker.FileMarker;
+import marker.FileMarker.Selection;
 
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.util.HtmlUtilities;
 
 
 @SuppressWarnings("serial")
@@ -459,13 +463,40 @@ public class SourceLinkTree extends JTree
 			Object obj = node.getUserObject();
 			if (obj instanceof FileMarker)
 			{
+				FileMarker marker = (FileMarker) obj;
+				String prefix;
+				// Highlight selections, if any
 				if (! (node.getParent() instanceof SourceLinkParentNode))
 				{
 					// No need to include path in marker
-					FileMarker marker = (FileMarker) obj;
-					JLabel l = (JLabel) c;
-					l.setText((marker.getLine() + 1) + ": " + marker.getLineText());
+					prefix = String.valueOf(marker.getLine() + 1) + ": ";
 				}
+				else
+				{
+					String shortcut = marker.getShortcut();
+					if (shortcut.length() > 0)
+						shortcut = "[" + shortcut + "] ";
+					prefix = shortcut + marker.file + "(" + (marker.getLine() + 1) +
+						"): ";
+				}
+				int prefixLen = prefix.length();
+				Vector<Integer> ranges = new Vector<Integer>();
+				for (Selection s: marker.getSelections()) {
+					ranges.add(prefixLen + s.start);
+					ranges.add(prefixLen + s.end);
+				}
+				String text = marker.getLineText();
+				String prop = jEdit.getProperty("hypersearch.results.highlight");
+				String styleTag = null;
+				if (prop != null && prop.length() > 0)
+				{
+					Font f = tree.getFont();
+					styleTag = HtmlUtilities.style2html(prop, f);
+				}
+				String highlighted = HtmlUtilities.highlightString(prefix + text,
+					styleTag, ranges);
+				JLabel l = (JLabel) c;
+				l.setText(highlighted);
 			}
 			return c;
 		}
