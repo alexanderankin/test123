@@ -233,7 +233,13 @@ public class SearchResults extends JPanel
 			for (Object o: files)
 			{
 				FileMarker marker = (FileMarker) o;
-				if (! marker.equals(prev))
+				if (marker.equals(prev))
+				{
+					Vector<FileMarker.Selection> selections = marker.getSelections();
+					for (FileMarker.Selection selection: selections)
+						prev.addSelection(selection);
+				}
+				else
 				{
 					parent.addSourceLink(marker);
 					prev = marker;
@@ -360,7 +366,7 @@ public class SearchResults extends JPanel
 		}
 	}
 
-	private class SearchRootNode implements SubtreePopupMenuProvider
+	private static class SearchRootNode implements SubtreePopupMenuProvider
 	{
 		private String text;
 		public SearchRootNode(String searchText)

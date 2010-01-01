@@ -94,9 +94,10 @@ public class MarkerListQueryProcessor implements ResultProcessor
 		}
 
 		FileMarker marker;
-		for (int i : positions)
+		for (int i = 0; i < positions.size(); i += 2)
 		{
-			int start = i, stop = i + 1;
+			int tokenStart = positions.get(i), tokenEnd = positions.get(i + 1); 
+			int start = tokenStart, stop = tokenEnd;
 			// Find beginning and end of line
 			while ((start >= 0) && (sb.charAt(start) != '\n'))
 				start--;
@@ -104,10 +105,16 @@ public class MarkerListQueryProcessor implements ResultProcessor
 			while ((stop < sb.length()) && (sb.charAt(stop) != '\n'))
 				stop++;
 			String lineText = sb.substring(start, stop);
-			int line = Collections.binarySearch(lineStart, i);
+			int line = Collections.binarySearch(lineStart, tokenStart);
 			if (line < 0)
 				line = -line - 2;
 			marker = new FileMarker(file, line, lineText);
+			int startOffset = tokenStart - start;
+			int endOffset = startOffset + tokenEnd - tokenStart;
+			if (endOffset > lineText.length())
+				endOffset = lineText.length();
+			marker.addSelection(marker.new Selection(startOffset,
+				startOffset + tokenEnd - tokenStart));
 			results.add(marker);
 		}
 	}
