@@ -16,6 +16,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.Macros;
+import org.gjt.sp.jedit.gui.DockableWindowManager;
 
 import groovy.swing.SwingBuilder;
 
@@ -30,14 +31,14 @@ public class BuildCommand {
 	
 	public static JDialog settings;
 	
-	public static void run(View view, VPTProject proj) {
+	public static void run(final View view, final VPTProject proj) {
 		
 		String[] commands = getCommandList(proj);
 		if (commands == null) {
 			GUIUtilities.error(view, "projectBuilder.msg.no-build-command", null);
 			return;
 		}
-		String cmd; // The final command to run
+		final String cmd; // The final command to run
 		if (commands.length>1) {
 			// Prompt for which command to use
 			cmd = (String) JOptionPane.showInputDialog(view,
@@ -52,33 +53,40 @@ public class BuildCommand {
 			cmd = commands[0];
 		}
 		
-		if ((cmd.equals("ant") || cmd.startsWith("ant ")) && jEdit.getBooleanProperty("projectBuilder.run-ant-in-jvm")) {
-			// Build in AntFarm
-			String target = "";
-			if (cmd.indexOf(" ") != -1) {
-				target = cmd.substring(cmd.indexOf(" ")+1, cmd.length());
+		final DockableWindowManager wm = view.getDockableWindowManager();
+		
+		new Thread(new Runnable() {
+			public void run() {
+				if ((cmd.equals("ant") || cmd.startsWith("ant ")) && jEdit.getBooleanProperty("projectBuilder.run-ant-in-jvm")) {
+					// Build in AntFarm
+					String target = "";
+					if (cmd.indexOf(" ") != -1) {
+						target = cmd.substring(cmd.indexOf(" ")+1, cmd.length());
+					}
+					String buildfile = proj.getRootPath()+"/build.xml";
+					wm.addDockableWindow("console");
+					Console console = (Console) wm.getDockable("console");
+					Shell ant = Shell.getShell("Ant");
+					console.clear();
+					console.run(ant, "+"+buildfile);
+					ant.waitFor(console);
+					console.run(ant, "!"+target);
+					view.getDockableWindowManager().showDockableWindow("console");
+					new BuildWatcher(console).start();
+				} else {
+					// Run in system shell
+					wm.addDockableWindow("console");
+					Console console = (Console) wm.getDockable("console");
+					console.setShell("System");
+					Shell system = Shell.getShell("System");
+					String cd = "cd \""+proj.getRootPath()+"\"";
+					system.execute(console, null, console.getShellState(system), null, cd);
+					system.waitFor(console);
+					system.execute(console, null, console.getShellState(system), null, cmd);
+					view.getDockableWindowManager().showDockableWindow("console");
+				}
 			}
-			String buildfile = proj.getRootPath()+"/build.xml";
-			Console console = (Console) view.getDockableWindowManager().getDockable("console");
-			Shell ant = Shell.getShell("Ant");
-			console.clear();
-			console.run(ant, "+"+buildfile);
-			ant.waitFor(console);
-			console.run(ant, "!"+target);
-			view.getDockableWindowManager().showDockableWindow("console");
-			new BuildWatcher(console).start();
-		} else {
-			// Run in system shell
-			view.getDockableWindowManager().addDockableWindow("console");
-			Console console = (Console) view.getDockableWindowManager().getDockable("console");
-			console.setShell("System");
-			Shell system = Shell.getShell("System");
-			String cd = "cd \""+proj.getRootPath()+"\"";
-			system.execute(console, null, console.getShellState(system), null, cd);
-			system.waitFor(console);
-			system.execute(console, null, console.getShellState(system), null, cmd);
-			view.getDockableWindowManager().showDockableWindow("console");
-		}
+		}).start();
 	}
 	
 	public static void editCommands(View view, VPTProject proj) {
