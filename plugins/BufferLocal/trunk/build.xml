@@ -1,6 +1,8 @@
 <project name="BufferLocal" default="dist" basedir=".">
     <!-- $Id$ -->
 
+    <property file="../build.properties"/>
+    
     <!-- read build.props to override properties set below -->
     <property file="build.props"/>
     <property file="config/BufferLocalPlugin.props"/>
@@ -64,7 +66,9 @@
                debug="on"
                nowarn="on"
                destdir="${classes.dir}"
-               srcdir="${src.dir}">
+               srcdir="${src.dir}"
+               source="1.5"
+               target="1.5">
             <classpath refid="classpathref" />
         </javac>
     </target>
