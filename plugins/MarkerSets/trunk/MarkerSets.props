@@ -4,6 +4,7 @@ plugin.marker.MarkerSetsPlugin.activate=startup
 plugin.marker.MarkerSetsPlugin.name=MarkerSets
 plugin.marker.MarkerSetsPlugin.author=Shlomy Reinstein
 plugin.marker.MarkerSetsPlugin.version=0.3
+plugin.marker.MarkerSetsPlugin.docs=docs/index.html
 plugin.marker.MarkerSetsPlugin.description=The MarkerSets plugin enables you \
   to create named sets of markers from various files.
 

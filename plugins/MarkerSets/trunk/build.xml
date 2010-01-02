@@ -10,7 +10,7 @@
 	<import file="${build.support}/plugin-build.xml" />
 
     <selector id="packageFiles">
-    	<filename name="description.html" />
+    	<filename name="docs/index.html" />
     </selector>
 
 	<path id="project.class.path">
