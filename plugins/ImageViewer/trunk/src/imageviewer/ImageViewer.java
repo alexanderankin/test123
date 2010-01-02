@@ -77,7 +77,7 @@ public class ImageViewer extends JPanel {
 
     // create and layout the components
     private void installComponents() {
-        setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
+        setBorder( BorderFactory.createEmptyBorder( 0, 6, 6, 6 ) );
         setLayout( new BorderLayout() );
 
         // use a JLabel to actually display the image
@@ -100,9 +100,12 @@ public class ImageViewer extends JPanel {
         zoomIn.setToolTipText( jEdit.getProperty( "imageviewer.zoomin", "Zoom In" ) );
         zoomOut = new JButton( GUIUtilities.loadIcon( "22x22/actions/zoom-out.png" ) );
         zoomOut.setToolTipText( jEdit.getProperty( "imageviewer.zoomout", "Zoom Out" ) );
-        reload = new JButton( GUIUtilities.loadIcon( "22x22/actions/document-reload.png" ) );
+        reload = new JButton( GUIUtilities.loadIcon( "22x22/actions/view-refresh.png" ) );
         reload.setToolTipText( jEdit.getProperty( "imageviewer.reload", "Reload" ) );
+        
+        // create toolbar
         buttonPanel = new JToolBar();
+        buttonPanel.setFloatable( false );
         buttonPanel.add( clear );
         buttonPanel.add( zoomIn );
         buttonPanel.add( zoomOut );
