@@ -39,6 +39,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl;
+
 public class MarkerSetsPlugin extends EditPlugin {
 
 	private static final String MARKER_SETS_ELEM = "MarkerSets";
@@ -241,7 +243,7 @@ public class MarkerSetsPlugin extends EditPlugin {
 			// when the file is readable and can be successfully parsed.
 			Document doc = null;
 			try {
-				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+				DocumentBuilderFactory dbf = new DocumentBuilderFactoryImpl();
 				DocumentBuilder db = dbf.newDocumentBuilder();
 				doc = db.parse(f);
 				doc.getDocumentElement().normalize();
@@ -267,7 +269,7 @@ public class MarkerSetsPlugin extends EditPlugin {
 	{
 		// Do not test 'file' using File.canWrite(), it can return false even
 		// when the file is writable and can be successfully built.
-		DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
+		DocumentBuilderFactory dbfac = new DocumentBuilderFactoryImpl();
 		try {
 			DocumentBuilder docBuilder = dbfac.newDocumentBuilder();
 			Document doc = docBuilder.newDocument();
