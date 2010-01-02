@@ -11,7 +11,7 @@ plugin.imageviewer.ImageViewerPlugin.description=Displays image files when selec
 # dependencies
 plugin.imageviewer.ImageViewerPlugin.depend.0=jdk 1.5
 plugin.imageviewer.ImageViewerPlugin.depend.1=jedit 04.03.16.00
-plugin.imageviewer.ImageViewerPlugin.depend.2=optional plugin projectviewer.ProjectPlugin 2.1.3.7
+plugin.imageviewer.ImageViewerPlugin.depend.2=optional plugin projectviewer.ProjectPlugin 2.9.1
 
 # docs
 plugin.imageviewer.ImageViewerPlugin.docs=index.html
