@@ -47,6 +47,7 @@ import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 
 import projectviewer.ProjectViewer;
+import projectviewer.vpt.ProjectTreePanel;
 import projectviewer.vpt.VPTNode;
 
 public class ImageViewerPlugin extends EBPlugin {
@@ -82,10 +83,12 @@ public class ImageViewerPlugin extends EBPlugin {
      * an image from the first selected file in the given VFSBrowser.    
      */
     public static void showImage( View view, VFSBrowser browser ) {
-        if ( view == null ) return;
-        Component c = view.getDockableWindowManager().getDockable(NAME);
-        if (c == null || !c.isVisible()) return;
-        
+        if ( view == null )
+            return ;
+        Component c = view.getDockableWindowManager().getDockable( NAME );
+        if ( c == null || !c.isVisible() )
+            return ;
+
         String filename = browser.getSelectedFiles() [ 0 ].getPath();
         if ( ImageViewer.isValidFilename( filename ) ) {
             ImageViewer imageViewer = getImageViewer( view );
@@ -174,74 +177,47 @@ public class ImageViewerPlugin extends EBPlugin {
     /*
      * I'm doing some gyrations here to be able to work with either PV 2.1.3.7,
      * which is the current release version or with the newer, soon to be PV 3.0.
-     * TODO: clean this up when PV 3.0 is out.
+     * DONE: clean this up when PV 3.0 is out.
      */
     private void addPVMouseAdapter( View view ) {
+        if ( view == null ) {
+            return ;
+        }
+        
         boolean allowPVMouseOver = jEdit.getBooleanProperty( "imageviewer.allowPVMouseOver", true );
         if ( !allowPVMouseOver ) {
             return ;
         }
-        if ( view == null ) {
-            return ;
-        }
+        
         EditPlugin pvPlugin = jEdit.getPlugin( "projectviewer.ProjectPlugin", true );
         if ( pvPlugin == null ) {
             return ;
         }
-        String version = jEdit.getProperty( "plugin.projectviewer.ProjectPlugin.version" );
-        if ( version == null ) {
+        
+        ProjectViewer pv = ProjectViewer.getViewer( view );
+        if ( pv == null ) {
             return ;
         }
 
-        if ( "2.1.3.7".equals( version ) ) {        // NOPMD
-            // have old/last release of PV
-            ProjectViewer pv = ProjectViewer.getViewer( view );
-            if ( pv == null ) {
-                return ;
-            }
-            try {
-                String[] tree_field_names = new String[] {"folderTree", "fileTree", "workingFileTree", "compactTree", "filteredTree"};
-                for ( String name : tree_field_names ) {
-                    JTree tree = ( JTree ) PrivilegedAccessor.getValue( pv, name );
-                    if ( tree != null && pvAdapterMap.get( tree ) == null ) {
-                        MMouseAdapter adapter = createPVMouseAdapter( view, tree );
-                        tree.addMouseListener( adapter );
-                        tree.addMouseMotionListener( adapter );
-                        pvAdapterMap.put( tree, adapter );
-                    }
+        try {
+            // TODO: PV 2.9.1 is out and the API has changed.  Check if the PrivilegedAccessor
+            // can be removed. -- Not quite.  The tree panel is now accessible, but the list of
+            // trees contained by the tree panel is not, so still need to cheat to be able to
+            // add the mouse motion listeners.
+            ProjectTreePanel treePanel = pv.getTreePanel();
+            java.util.List treeList = ( java.util.List ) PrivilegedAccessor.getValue( treePanel, "trees" );
+            for ( int i = 0; i < treeList.size(); i++ ) {
+                JTree tree = ( JTree ) treeList.get( i );
+                if ( tree != null && pvAdapterMap.get( tree ) == null ) {
+                    MMouseAdapter adapter = createPVMouseAdapter( view, tree );
+                    tree.addMouseListener( adapter );
+                    tree.addMouseMotionListener( adapter );
+                    pvAdapterMap.put( tree, adapter );
                 }
-            }
-            catch ( Exception e ) {
-                e.printStackTrace();
             }
         }
-        else {
-            String[] parts = version.split( "[.]" );
-            int major = Integer.parseInt( parts[ 0 ] );
-            int minor = Integer.parseInt( parts[ 1 ] );
-            if ( major >= 3 || ( major >= 2 && minor >= 9 ) ) {
-                // have current svn version of PV
-                ProjectViewer pv = ProjectViewer.getViewer( view );
-                if ( pv == null ) {
-                    return ;
-                }
-                try {
-                    Object treePanel = PrivilegedAccessor.invokeMethod( pv, "getTreePanel", null );
-                    java.util.List treeList = ( java.util.List ) PrivilegedAccessor.getValue( treePanel, "trees" );
-                    for ( int i = 0; i < treeList.size(); i++ ) {
-                        JTree tree = ( JTree ) treeList.get( i );
-                        if ( tree != null && pvAdapterMap.get( tree ) == null ) {
-                            MMouseAdapter adapter = createPVMouseAdapter( view, tree );
-                            tree.addMouseListener( adapter );
-                            tree.addMouseMotionListener( adapter );
-                            pvAdapterMap.put( tree, adapter );
-                        }
-                    }
-                }
-                catch ( Exception e ) {
-                    e.printStackTrace();
-                }
-            }
+        catch ( Exception e ) {
+            e.printStackTrace();
         }
     }
 
@@ -260,22 +236,24 @@ public class ImageViewerPlugin extends EBPlugin {
                     }
 
                     private void showImage( MouseEvent me ) {
-                	    // Do nothing if dockable is not visible.
-                	    if (view == null) return;
-                	    Component c = view.getDockableWindowManager().getDockable(NAME);
-                	    if ( c == null || !c.isVisible()) return;
-	                    TreePath treepath = tree.getClosestPathForLocation( me.getX(), me.getY() );
-	                    Object lastComponent = treepath.getLastPathComponent();
-	                    if ( lastComponent instanceof VPTNode ) {
-	                        VPTNode node = ( VPTNode ) lastComponent;
-	                        String path = node.getNodePath();
-	                        if ( ImageViewer.isValidFilename( path ) ) {
-	                            view.getDockableWindowManager().showDockableWindow( NAME );
-	                            ImageViewer imageViewer = getImageViewer( view );
-	                            imageViewer.showImage( path );
-	                        }
-	                    }
-                
+                        // Do nothing if dockable is not visible.
+                        if ( view == null )
+                            return ;
+                        Component c = view.getDockableWindowManager().getDockable( NAME );
+                        if ( c == null || !c.isVisible() )
+                            return ;
+                        TreePath treepath = tree.getClosestPathForLocation( me.getX(), me.getY() );
+                        Object lastComponent = treepath.getLastPathComponent();
+                        if ( lastComponent instanceof VPTNode ) {
+                            VPTNode node = ( VPTNode ) lastComponent;
+                            String path = node.getNodePath();
+                            if ( ImageViewer.isValidFilename( path ) ) {
+                                view.getDockableWindowManager().showDockableWindow( NAME );
+                                ImageViewer imageViewer = getImageViewer( view );
+                                imageViewer.showImage( path );
+                            }
+                        }
+
                     }
 
                 };
