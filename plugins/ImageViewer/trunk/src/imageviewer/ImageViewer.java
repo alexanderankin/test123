@@ -256,8 +256,8 @@ public class ImageViewer extends JPanel {
         }
         this.filename = filename;
         if ( isValidFilename( filename ) ) {
-            ImageIcon icon = new ImageIcon( filename );
-            image = icon.getImage();
+            image = Toolkit.getDefaultToolkit().createImage(filename);
+            ImageIcon icon = new ImageIcon( image );
             originalWidth = ( float ) icon.getIconWidth();
             originalHeight = ( float ) icon.getIconHeight();
             zoomWidth = originalWidth;
