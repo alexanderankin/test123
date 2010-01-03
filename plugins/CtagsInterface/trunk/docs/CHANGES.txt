@@ -1,0 +1,24 @@
+Changes:
+
+Version 1.1:
+- 2009-10-20: Better integration with Navigator - when jumping to a tag in
+  another buffer, prevent Navigator from recording the initial buffer position
+  (either the beginning of the buffer or the position when the buffer was last
+  closed), so it only records the positions before and after the jump.
+  Navigator is now an optional dependency of CtagsInterface.
+- 2009-09-30: Prevent adding the same origin record twice to the ORIGINS table.
+- 2009-09-03: Fixed NPEs when the project listener provides null lists for
+  added/removed files.
+- 2009-08-23: Fixed bug ##2843099 - NPE from the plugin's stop() method.
+- 2009-08-19: Fixes for including plugin documentation in jEdit help.
+- 2009-08-03: Tag completion: Allowing added characters to filter out the
+  completion tags, and backspace to extend the completion tags up to the
+  original prefix.
+- 2009-07-31: Do not cause ProjectViewer to be loaded due to checking the type
+  of edit bus messages. Loading PV while checking the edit bus message causes a
+  ClassCircularityError because JARClassLoader activates the plugin, and during
+  activation PV sends another edit bus message.
+- 2009-07-31: Fixed bug #2828947: NPE on clean setup.
+- 2009-07-30: Tag list dockable: After filtering the tag list, if a single tag
+  remains, jump to it directly.
+
