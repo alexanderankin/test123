@@ -201,6 +201,10 @@ projects and source-trees in your current database, select the
    </para>
    </formalpara>
 
+   <formalpara><title> Suggest completion options </title>
+   <para> Suggests code-completion options from the tag database. This includes completion of function calls, using SuperAbbrevs for conveniently filling-in the parameter values. </para>
+   </formalpara>
+
    <section id="dynamic-actions">
    <title> Dynamic Actions </title>
 
