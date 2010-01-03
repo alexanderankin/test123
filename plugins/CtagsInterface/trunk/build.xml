@@ -9,12 +9,12 @@
 	<property name="compiler.target" value="1.5" />
 	<property file="build.properties"/>
 	<property file="../build.properties"/>
-	<property file="${user.home}/.build.properties"/>
-	<property file="${user.home}/build.properties"/>
+<!--	<property file="${user.home}/.build.properties"/>
+	<property file="${user.home}/build.properties"/> -->
 
 	<property file="build.support" value="../build-support" />
 	<import file="${build.support}/plugin-build.xml" />
-	
+
 	<property name="jedit.plugins.dir" value="${install.dir}" />
 
 	<selector id="packageFiles">
@@ -23,6 +23,8 @@
 		<filename name="*.txt" />
 		<filename name="mysql.map" />
 		<filename name="description.html" />
+		<filename name="index.html" />
+		<filename name="docs/CHANGES.txt" />
 	  </or>
 	 </selector>
 
@@ -35,17 +37,17 @@
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
 		<pathelement location="${jedit.plugins.dir}/ProjectViewer.jar"/>
-		<pathelement location="${jedit.plugins.dir}/hsqldb.jar"/>		
-		<pathelement location="${jedit.plugins.dir}/SuperAbbrevs.jar"/>		
+		<pathelement location="${jedit.plugins.dir}/hsqldb.jar"/>
+		<pathelement location="${jedit.plugins.dir}/SuperAbbrevs.jar"/>
 		<pathelement location="${jedit.plugins.dir}/Navigator.jar"/>
 	</path>
 
 	<target name="build.prepare" >
 	 	<mkdir dir="${build.dir}" />
 		<copy file="hsqldb.jar" todir="${install.dir}" />
-		
+
 	</target>
-	
+
 	<target name="tags">
 		<exec executable="ctags">
 			<arg value="-f" />
@@ -55,7 +57,7 @@
 		</exec>
 	</target>
 
-	 
+
 </project>
 
 <!-- :indentSize=4:lineSeparator=\n:noTabs=false:tabSize=4: -->
