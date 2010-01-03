@@ -267,7 +267,8 @@ public class DualDiffUtil {
      */
     private static String trimLeadingWhitespace( String str ) {
         int index = 0;
-        while ( Character.isWhitespace( str.charAt( index ) ) ) {
+        int len = str.length();
+        while ( ( index < len ) && Character.isWhitespace( str.charAt( index ) ) ) {
             ++index;
         }
         return str.substring( index );
@@ -280,7 +281,7 @@ public class DualDiffUtil {
      */
     private static String trimTrailingWhitespace( String str ) {
         int index = str.length() - 1;
-        while ( Character.isWhitespace( str.charAt( index ) ) ) {
+        while ( ( index >= 0 ) && Character.isWhitespace( str.charAt( index ) ) ) {
             --index;
         }
         return str.substring( 0, index + 1 );
