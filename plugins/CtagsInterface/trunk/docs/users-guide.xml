@@ -22,13 +22,6 @@
  </legalnotice>
  </bookinfo>
 
- <chapter id="changes">
-  <title> Changes </title>
-  <para> For a list of changes in this plugin, see the
-  <ulink url="docs/CHANGES.txt">change log</ulink>.
-  </para>
- </chapter>
-
  <chapter id="intro">
   <title> Introduction </title>
 
@@ -265,18 +258,10 @@ projects and source-trees in your current database, select the
 
 <appendix id="changelog">
  <title> Changelog </title>
+  <para> For a list of changes in this plugin, see the
+  <ulink url="docs/CHANGES.txt">change log</ulink>.
+  </para>
 
-<itemizedlist>
- <listitem><para> <emphasis role="bold">Version 0.2</emphasis> - Requires jEdit 4.3pre13, Java 1.5, and ProjectViewer 2.9.</para>
-<itemizedlist>
- <listitem><para>Database profiles, and support for h2, mysql, and perhaps other databases. </para></listitem>
- <listitem><para>Support for latest ProjectViewer </para> </listitem>
-</itemizedlist>
-</listitem>
- <listitem><para> <emphasis role="bold">Version 0.1</emphasis> - Requires jedit 4.3pre12, Java 1.5, and ProjectViewer 2.1.3 (optional). </para>
-  <para> Initial release </para>
- </listitem>
-</itemizedlist>
 
 </appendix>
 
