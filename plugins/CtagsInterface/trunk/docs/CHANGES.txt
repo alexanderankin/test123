@@ -36,4 +36,11 @@ Version 1.1:
 - Tag list dockable: After filtering the tag list, if a single tag
   remains, jump to it directly.
 
-2009-29-07: Version 1.0: Initial release
+Version 1.0: First release.
+
+Version 0.2: Requires jEdit 4.3pre13, Java 1.5, and ProjectViewer 2.9.
+  Database profiles, and support for h2, mysql, and perhaps other databases.
+  Support for latest ProjectViewer
+
+Version 0.1: Requires jedit 4.3pre12, Java 1.5, and ProjectViewer 2.1.3
+  (optional).  Pre release
