@@ -39,8 +39,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl;
-
 public class MarkerSetsPlugin extends EditPlugin {
 
 	private static final String MARKER_SETS_ELEM = "MarkerSets";
@@ -243,7 +241,7 @@ public class MarkerSetsPlugin extends EditPlugin {
 			// when the file is readable and can be successfully parsed.
 			Document doc = null;
 			try {
-				DocumentBuilderFactory dbf = new DocumentBuilderFactoryImpl();
+				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 				DocumentBuilder db = dbf.newDocumentBuilder();
 				doc = db.parse(f);
 				doc.getDocumentElement().normalize();
@@ -269,7 +267,7 @@ public class MarkerSetsPlugin extends EditPlugin {
 	{
 		// Do not test 'file' using File.canWrite(), it can return false even
 		// when the file is writable and can be successfully built.
-		DocumentBuilderFactory dbfac = new DocumentBuilderFactoryImpl();
+		DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
 		try {
 			DocumentBuilder docBuilder = dbfac.newDocumentBuilder();
 			Document doc = docBuilder.newDocument();
@@ -280,7 +278,7 @@ public class MarkerSetsPlugin extends EditPlugin {
 				ms.exportXml(root);
 			Source source = new DOMSource(doc);
 	        File f = new File(file);
-	        Result result = new StreamResult(f.toURI().getPath());
+	        Result result = new StreamResult(f);
 	        Transformer trans = TransformerFactory.newInstance().newTransformer();
 	        trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
             trans.setOutputProperty(OutputKeys.INDENT, "yes");
