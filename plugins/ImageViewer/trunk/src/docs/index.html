@@ -17,10 +17,13 @@ At this time, only .gif, .jpg, and .png files are supported as these are
 the file types supported internally by Java. </p>
 
 <h2>Usage</h2>
-<p>To use, first make sure the ImageViewer dockable is visible. It can be selected from the Plugin - ImageViewer menu item. </p>
-<p> Next, right click on an image file in ProjectViewer and select the "View Image" item. </p>
+<p>To use, first make sure the ImageViewer dockable is visible. It can be 
+selected from the Plugin - ImageViewer menu item. </p>
+<p> Next, right click on an image file in ProjectViewer and select the 
+"View Image" item. </p>
 <p>
-Or, in the File System Browser, click on Plugins, Image Viewer, View Image. </p>
+Or, in the File System Browser, click on Plugins, Image Viewer, View Image. 
+</p>
 
 <p>
 In the ImageViewer itself, there are four controls: </p>
@@ -52,13 +55,13 @@ images, which can be slow and cumbersome.
 
 <ul>
 <li>Show images on mouse over/click in File System Browser </li>
-<li>Show images on mouse over/click in ProjectViewer (This option is only available
-if ProjectViewer is available.) </li>
+<li>Show images on mouse over/click in ProjectViewer (This option is only 
+available if ProjectViewer is available.) </li>
 <li>Display on mouse over or mouse click</li>
 </ul>
 <p>
-If the first two options are checked, then clicking on a node in either tree (ProjectViewer
-or File System Browser) will display the image in ImageViewer.
+If the first two options are checked, then clicking on a node in either tree 
+(ProjectViewer or File System Browser) will display the image in ImageViewer.
 </p>
 <p>
 You can also select whether to show the image on a mouse over or a mouse
@@ -67,12 +70,26 @@ image from a long list of images, but you may find that too distracting and
 might prefer to click on individual image files to display them.</p>
 
 <h2> Changes </h2>
-
+<p>
+<b>Version 1.2</b>
 <ul>
-<li> <b>Version 1.2</b> - No longer pops up dockable automatically in response to tree node hovers/clicks. Added MenuItem to select dockable manually. (Alan Ezust)
- <p> Fixed #2924797 - No longer caches image icons, so you can change images outside jEdit and see the latest version from ImageViewer. (Dale Anson) </p> </li>
-<li> <b>Version 1.1</b> - Initial Release </li>
+<li>Fix for tracker 2924797, the JVM caches images loaded with ImageIcon, so
+if the image is changed with an external program, ImageViewer was not aware 
+of the change.  I changed the way images are loaded so using the "Refresh" 
+button will now reload the image from disk rather than the JVM cache.  This
+should also improve memory usage, since the JVM would generally cache images
+for the life of the JVM session.
+<li>Removed support for old version of ProjectViewer since 2.9 is now available.</li>
+<li>No longer pops up dockable automatically in response to tree node 
+hovers/clicks. Added MenuItem to select dockable manually. (Alan Ezust) </li>
 </ul>
+</p>
+<p>
+<b>Version 1.1</b>
+<ul>
+<li> Initial Release </li>
+</ul>
+</p>
 
 </body>
 </html>
