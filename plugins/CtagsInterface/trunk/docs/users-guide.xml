@@ -22,6 +22,13 @@
  </legalnotice>
  </bookinfo>
  
+ <chapter id="changes">
+  <title> Changes </title>
+  <para> For a list of changes in this plugin, see the
+  <ulink url="CHANGES.txt">change log</ulink>.
+  </para>
+ </chapter>
+ 
  <chapter id="intro"> 
   <title> Introduction </title>
 
