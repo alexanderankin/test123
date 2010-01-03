@@ -107,7 +107,7 @@ public class LineRendererPane extends JComponent implements EBComponent, CaretLi
                 cl.stateChanged( event );
             }
         }
-        SwingUtilities.invokeLater( runner );
+        ///SwingUtilities.invokeLater( runner );    // TODO: this causes a loop...
     }
 
     /**
