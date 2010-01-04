@@ -10,6 +10,7 @@ import org.apache.lucene.analysis.SimpleAnalyzer;
 import org.apache.lucene.analysis.StopAnalyzer;
 import org.apache.lucene.analysis.WhitespaceAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.util.Version;
 
 public class AnalyzerFactory
 {
@@ -17,12 +18,12 @@ public class AnalyzerFactory
 
 	static
 	{
-		analyzers.put("Standard", new StandardAnalyzer());
+		analyzers.put("Standard", new StandardAnalyzer(Version.LUCENE_CURRENT));
 		analyzers.put("Simple", new SimpleAnalyzer());
 		analyzers.put("Java identifier", new SourceCodeAnalyzer());
 		analyzers.put("Whitespace", new WhitespaceAnalyzer());
 		analyzers.put("Keyword", new KeywordAnalyzer());
-		analyzers.put("Stop", new StopAnalyzer());
+		analyzers.put("Stop", new StopAnalyzer(Version.LUCENE_CURRENT));
 	}
 
 	static String[] getAnalyzerNames()

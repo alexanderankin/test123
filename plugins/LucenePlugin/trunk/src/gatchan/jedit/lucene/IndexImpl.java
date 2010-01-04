@@ -31,6 +31,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.util.Version;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSFileFilter;
@@ -239,15 +240,16 @@ public class IndexImpl extends AbstractIndex implements Index
 		Searcher searcher = getSearcher();
 		if (searcher == null)
 			return;
-		QueryParser parser = new MultiFieldQueryParser(new String[]{"path", "content"}, getAnalyzer());
+		QueryParser parser = new MultiFieldQueryParser(Version.LUCENE_CURRENT, new String[]{"path", "content"},
+			getAnalyzer());
 		try
 		{
 			StringBuilder queryStr = new StringBuilder();
 			if (fileType.length() > 0)
 			{
 				if (query.length() > 0)
-					queryStr.append("(" + query + ") AND ");
-				queryStr.append("filetype:" + fileType);
+					queryStr.append('(').append(query).append(") AND ");
+				queryStr.append("filetype:").append(fileType);
 			}
 			else
 				queryStr.append(query);
