@@ -47,7 +47,6 @@ import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 
 import projectviewer.ProjectViewer;
-import projectviewer.vpt.ProjectTreePanel;
 import projectviewer.vpt.VPTNode;
 
 public class ImageViewerPlugin extends EBPlugin {
@@ -183,17 +182,17 @@ public class ImageViewerPlugin extends EBPlugin {
         if ( view == null ) {
             return ;
         }
-        
+
         boolean allowPVMouseOver = jEdit.getBooleanProperty( "imageviewer.allowPVMouseOver", true );
         if ( !allowPVMouseOver ) {
             return ;
         }
-        
+
         EditPlugin pvPlugin = jEdit.getPlugin( "projectviewer.ProjectPlugin", true );
         if ( pvPlugin == null ) {
             return ;
         }
-        
+
         ProjectViewer pv = ProjectViewer.getViewer( view );
         if ( pv == null ) {
             return ;
@@ -204,7 +203,7 @@ public class ImageViewerPlugin extends EBPlugin {
             // can be removed. -- Not quite.  The tree panel is now accessible, but the list of
             // trees contained by the tree panel is not, so still need to cheat to be able to
             // add the mouse motion listeners.
-            ProjectTreePanel treePanel = pv.getTreePanel();
+            Object treePanel = PrivilegedAccessor.invokeMethod( pv, "getTreePanel", null );
             java.util.List treeList = ( java.util.List ) PrivilegedAccessor.getValue( treePanel, "trees" );
             for ( int i = 0; i < treeList.size(); i++ ) {
                 JTree tree = ( JTree ) treeList.get( i );
