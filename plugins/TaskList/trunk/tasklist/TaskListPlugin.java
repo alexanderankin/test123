@@ -27,7 +27,7 @@ package tasklist;
  DONE: ensure task highlights are repainted when buffer reloaded, etc...
  DONE: are there portions of the code which are not thread safe?
  DONE: allow for displaying all buffers or only current ones
-
+ 
  DONE: remove all references to TaskListener.  None exist anywhere in this
  plugin any more.  TaskListModel used to be the only classes that was also
  a TaskListener, but I've removed that implementation.
@@ -99,31 +99,31 @@ public class TaskListPlugin extends EditPlugin {
         }
     } //}}}
 
-    public static void registerTaskList(TaskList taskList) {
-        if (taskList != null) {
+    public static void registerTaskList( TaskList taskList ) {
+        if ( taskList != null ) {
             View view = taskList.getView();
-            if (view != null) {
-                taskLists.put(view, taskList);
+            if ( view != null ) {
+                taskLists.put( view, taskList );
             }
         }
     }
-    
-    public static TaskList getTaskList(View view) {
-        return taskLists.get(view);   
+
+    public static TaskList getTaskList( View view ) {
+        return taskLists.get( view );
     }
-    
+
     // Pass parse buffer messages on to task lists.  This is more specific than
     // using the edit bus since the message is only forwarded to the appropriate
     // task list rather than all of them.
-    public static void send(ParseBufferMessage message) {
-        if (message == null) {
-            return;   
+    public static void send( ParseBufferMessage message ) {
+        if ( message == null ) {
+            return ;
         }
-        TaskList taskList = getTaskList(message.getView());   
-        if (taskList == null) {
-            return;   
+        TaskList taskList = getTaskList( message.getView() );
+        if ( taskList == null ) {
+            return ;
         }
-        taskList.send(message);
+        taskList.send( message );
     }
 
     //{{{ initTextArea() method
@@ -226,26 +226,26 @@ public class TaskListPlugin extends EditPlugin {
         loadTaskTypes();
     }
 
-    public static Icon getIconForType(String typeName) {
-        if (typeName == null) {
+    public static Icon getIconForType( String typeName ) {
+        if ( typeName == null ) {
             return null;
         }
-        for (TaskType type : taskTypes) {
-            if ( typeName.equals(type.getName())) {
+        for ( TaskType type : taskTypes ) {
+            if ( typeName.equals( type.getName() ) ) {
                 return type.getIcon();
             }
         }
         return null;
     }
-    
-    public static TaskType getTaskType(Task task) {
-        if (task == null) {
-            return null;   
+
+    public static TaskType getTaskType( Task task ) {
+        if ( task == null ) {
+            return null;
         }
         String typeName = task.getIdentifier();
-        for (TaskType type : taskTypes) {
-            if (typeName.equals(type.getName())) {
-                return type;   
+        for ( TaskType type : taskTypes ) {
+            if ( typeName.equals( type.getName() ) ) {
+                return type;
             }
         }
         return null;
@@ -489,7 +489,7 @@ public class TaskListPlugin extends EditPlugin {
         TaskListPlugin.clearTasks( buffer );
 
         // if this file's mode is not to be parsed, skip it
-        if ( !parseModes.contains( buffer.getMode()) ) {
+        if ( !parseModes.contains( buffer.getMode() ) ) {
             // fill with empty HashMap of tasks
             bufferMap.put( buffer.getPath(), new HashMap<Integer, Task>() );
 
@@ -678,7 +678,7 @@ public class TaskListPlugin extends EditPlugin {
      * nodes we are allowed to parse.
      */
     public static Mode getMode( File file ) {
-        if (file == null) {
+        if ( file == null ) {
             return null;
         }
         try {
@@ -710,18 +710,18 @@ public class TaskListPlugin extends EditPlugin {
      * recursed.
      */
     public static void parse( View view, VFSBrowser browser ) {
-        if ( view == null || browser == null) {
+        if ( view == null || browser == null ) {
             return ;
         }
-        TaskList taskList = taskLists.get(view);
-        if(taskList == null) {
-            return;   
+        TaskList taskList = taskLists.get( view );
+        if ( taskList == null ) {
+            return ;
         }
         VFSFile[] files = browser.getSelectedFiles();
-        if (files == null) {
-            return;   
+        if ( files == null || files.length() == 0 ) {
+            return ;
         }
-        taskList.addTab(files[0].getName(), new FileTaskList(view, files));
+        taskList.addTab( files[ 0 ].getName(), new FileTaskList( view, files ) );
         view.getDockableWindowManager().showDockableWindow( "tasklist" );
     }
 
