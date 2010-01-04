@@ -40,9 +40,9 @@ import org.gjt.sp.jedit.jEdit;
 public class OptionPane extends AbstractOptionPane {
 
     private JCheckBox vfsMouseOver = null;
-//    private JCheckBox ifVfsVisible = null;
+    //    private JCheckBox ifVfsVisible = null;
     private JCheckBox pvMouseOver = null;
-//    private JCheckBox ifPvVisible = null;
+    //    private JCheckBox ifPvVisible = null;
     private JRadioButton mouseOver = null;
     private JRadioButton mouseClick = null;
 
@@ -92,7 +92,9 @@ public class OptionPane extends AbstractOptionPane {
 
     public void _save() {
         jEdit.setBooleanProperty( "imageviewer.allowVFSMouseOver", vfsMouseOver.isSelected() );
-        jEdit.setBooleanProperty( "imageviewer.allowPVMouseOver", pvMouseOver.isSelected() );
+        if ( pvMouseOver != null ) {
+            jEdit.setBooleanProperty( "imageviewer.allowPVMouseOver", pvMouseOver.isSelected() );
+        }
         jEdit.setBooleanProperty( "imageviewer.mouseover", mouseOver.isSelected() );
     }
 }
