@@ -28,14 +28,14 @@
 		<pathelement location="${jedit.install.dir}/jedit.jar" />
 		<pathelement location="${jedit.plugins.dir}/ProjectViewer.jar"/>
 		<pathelement location="${jedit.plugins.dir}/MarkerSets.jar"/>
-		<pathelement location="${install.dir}/lucene-core-2.4.1.jar"/>
-		<pathelement location="${install.dir}/lucene-highlighter-2.4.1.jar"/>
+		<pathelement location="${install.dir}/lucene-core-3.0.0.jar"/>
+		<pathelement location="${install.dir}/lucene-highlighter-3.0.0.jar"/>
 	</path>
 	
 	<target name="build.prepare">
 		<mkdir dir="${build.dir}" />
-		<copy file="lucene-core-2.4.1.jar" todir="${install.dir}" />
-		<copy file="lucene-highlighter-2.4.1.jar" todir="${install.dir}" />
+		<copy file="lucene-core-3.0.0.jar" todir="${install.dir}" />
+		<copy file="lucene-highlighter-3.0.0.jar" todir="${install.dir}" />
 	
 	</target>
 </project>
