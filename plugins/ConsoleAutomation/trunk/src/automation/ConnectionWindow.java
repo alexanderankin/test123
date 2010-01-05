@@ -87,7 +87,8 @@ public class ConnectionWindow extends JPanel implements CharHandler, EventHandle
 		addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent e) {
-				console.requestFocusInWindow();
+				System.err.println("FocusGained");
+				input.requestFocusInWindow();
 			}
 		});
 	}
@@ -127,6 +128,8 @@ public class ConnectionWindow extends JPanel implements CharHandler, EventHandle
 						if (charsToRemove > 0)
 						{
 							int len = d.getLength();
+							if (len < charsToRemove)
+								charsToRemove = len;
 							d.remove(len - charsToRemove, charsToRemove);
 							charsToRemove = 0;
 						}
