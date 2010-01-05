@@ -101,6 +101,8 @@ public class Connection
 			eventHandler.sending(s);
 		writer.print(s);
 		writer.flush();
+		if (eventHandler != null)
+			eventHandler.idle();
 	}
 
 	private void setExpectHandler(StringHandler h)
