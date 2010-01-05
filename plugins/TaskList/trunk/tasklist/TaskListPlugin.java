@@ -718,7 +718,7 @@ public class TaskListPlugin extends EditPlugin {
             return ;
         }
         VFSFile[] files = browser.getSelectedFiles();
-        if ( files == null || files.length() == 0 ) {
+        if ( files == null || files.length == 0 ) {
             return ;
         }
         taskList.addTab( files[ 0 ].getName(), new FileTaskList( view, files ) );
