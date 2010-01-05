@@ -2,6 +2,7 @@ package marker;
 
 import java.awt.Color;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -278,11 +279,13 @@ public class MarkerSetsPlugin extends EditPlugin {
 				ms.exportXml(root);
 			Source source = new DOMSource(doc);
 	        File f = new File(file);
-	        Result result = new StreamResult(f.toURI().getPath());
+	        FileOutputStream fos = new FileOutputStream(f);
+	        Result result = new StreamResult(fos);
 	        Transformer trans = TransformerFactory.newInstance().newTransformer();
 	        trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
             trans.setOutputProperty(OutputKeys.INDENT, "yes");
 	        trans.transform(source, result);
+	        fos.close();
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
 			JOptionPane.showMessageDialog(jEdit.getActiveView(),
