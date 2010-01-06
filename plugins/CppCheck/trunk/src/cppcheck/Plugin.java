@@ -41,6 +41,11 @@ public class Plugin extends EditPlugin
 		checkFile(view, view.getBuffer().getPath());
 	}
 
+	public static void checkDirectory(View view, String directory)
+	{
+		checkFile(view, directory);
+	}
+
 	public static void checkCurrentProject(View view)
 	{
 		VPTProject p = ProjectViewer.getActiveProject(view);

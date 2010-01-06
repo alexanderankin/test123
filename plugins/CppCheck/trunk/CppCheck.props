@@ -28,5 +28,9 @@ plugin.cppcheck.Plugin.option-pane=CppCheck
 options.CppCheck.label=CppCheck
 options.CppCheck.code=new cppcheck.OptionPane();
 
+# file system browser context menu item
+plugin.cppcheck.Plugin.browser-menu-item=cppcheck-dir
+cppcheck-dir.label=Check directory
+
 # messages
 messages.cppcheck.path=Path to CppCheck:
