@@ -88,11 +88,13 @@ public class ImageViewerPlugin extends EBPlugin {
         if ( c == null || !c.isVisible() )
             return ;
 
-        String filename = browser.getSelectedFiles() [ 0 ].getPath();
-        if ( ImageViewer.isValidFilename( filename ) ) {
-            ImageViewer imageViewer = getImageViewer( view );
-            imageViewer.showImage( filename );
-            view.getDockableWindowManager().showDockableWindow( NAME );
+        if ( browser.getSelectedFiles() != null && browser.getSelectedFiles().length > 0 ) {
+            String filename = browser.getSelectedFiles() [ 0 ].getPath();
+            if ( ImageViewer.isValidFilename( filename ) ) {
+                ImageViewer imageViewer = getImageViewer( view );
+                imageViewer.showImage( filename );
+                view.getDockableWindowManager().showDockableWindow( NAME );
+            }
         }
     }
 
@@ -354,5 +356,70 @@ public class ImageViewerPlugin extends EBPlugin {
         vfsAdapterMap = null;
         pvAdapterMap = null;
         viewMap = null;
+    }
+
+    public static void clear( final View view ) {
+        SwingUtilities.invokeLater(
+            new Runnable() {
+                public void run() {
+                    ImageViewer imageViewer = viewMap.get( view );
+                    if ( imageViewer != null ) {
+                        imageViewer.clear();
+                    }
+                }
+            }
+        );
+    }
+
+    public static void copy( final View view ) {
+        SwingUtilities.invokeLater(
+            new Runnable() {
+                public void run() {
+                    ImageViewer imageViewer = viewMap.get( view );
+                    if ( imageViewer != null ) {
+                        imageViewer.copy();
+                    }
+                }
+            }
+        );
+    }
+
+    public static void reload( final View view ) {
+        SwingUtilities.invokeLater(
+            new Runnable() {
+                public void run() {
+                    ImageViewer imageViewer = viewMap.get( view );
+                    if ( imageViewer != null ) {
+                        imageViewer.reload();
+                    }
+                }
+            }
+        );
+    }
+
+    public static void zoomIn( final View view ) {
+        SwingUtilities.invokeLater(
+            new Runnable() {
+                public void run() {
+                    ImageViewer imageViewer = viewMap.get( view );
+                    if ( imageViewer != null ) {
+                        imageViewer.zoomIn();
+                    }
+                }
+            }
+        );
+    }
+
+    public static void zoomOut( final View view ) {
+        SwingUtilities.invokeLater(
+            new Runnable() {
+                public void run() {
+                    ImageViewer imageViewer = viewMap.get( view );
+                    if ( imageViewer != null ) {
+                        imageViewer.zoomOut();
+                    }
+                }
+            }
+        );
     }
 }
