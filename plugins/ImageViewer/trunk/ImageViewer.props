@@ -27,9 +27,23 @@ imageviewer.zoomout=Zoom Out
 imageviewer.zoomin=Zoom In
 imageviewer.showimage.label=View Image
 
+# for plugin menu
+imageviewer.menu.label=Image Viewer
+plugin.imageviewer.ImageViewerPlugin.menu=\
+    imageviewer.clear-action \
+    imageviewer.copy-action \
+    imageviewer.reload-action \
+    imageviewer.zoomin-action \
+    imageviewer.zoomout-action
+    
+imageviewer.clear-action.label=Clear
+imageviewer.copy-action.label=Copy
+imageviewer.reload-action.label=Reload
+imageviewer.zoomin-action.label=Zoom In
+imageviewer.zoomout-action.label=Zoom Out
+
 # for File System Browser
 plugin.imageviewer.ImageViewerPlugin.browser-menu=imageviewer.showimage
-plugin.imageviewer.ImageViewerPlugin.menu-item=imageviewer
 
 # for option pane
 plugin.imageviewer.ImageViewerPlugin.option-pane=imageviewer

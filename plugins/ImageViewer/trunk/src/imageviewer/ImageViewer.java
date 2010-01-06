@@ -135,8 +135,7 @@ public class ImageViewer extends JPanel {
         clear.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
-                    imageLabel.setIcon( null );
-                    ImageViewer.this.refresh();
+                    clear();
                 }
             }
         );
@@ -144,7 +143,7 @@ public class ImageViewer extends JPanel {
         copy.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
-                    ImageSelection.copyImageToClipboard( image );
+                    copy();
                 }
             }
         );
@@ -168,7 +167,7 @@ public class ImageViewer extends JPanel {
         reload.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
-                    showImage( filename, true );
+                    reload();
                 }
             }
         );
@@ -309,16 +308,43 @@ public class ImageViewer extends JPanel {
         Point to = new Point( current.x + dx, current.y + dy );
         viewport.setViewPosition( to );
     }
+    
+    /**
+     * Action to clear the ImageViewer.    
+     */
+    public void clear() {
+        imageLabel.setIcon( null );
+        ImageViewer.this.refresh();
+    }
+    
+    /**
+     * Action to copy the image to the system clipboard.    
+     */
+    public void copy() {
+        ImageSelection.copyImageToClipboard( image );
+    }
+    
+    /**
+     * Action to reload the current image from disk.    
+     */
+    public void reload() {
+        showImage( filename, true );
 
-    // zoom in 10%
-    protected void zoomIn() {
+    }
+    
+    /**
+     * Action to zoom in 10%.
+     */
+    public void zoomIn() {
         float width = zoomWidth * 1.1f;
         float height = zoomHeight * 1.1f;
         zoom( width, height );
     }
-
-    // zoom out 10%
-    protected void zoomOut() {
+    
+    /**
+     * Action to zoom out 10%.
+     */
+    public void zoomOut() {
         float width = zoomWidth * 0.9f;
         float height = zoomHeight * 0.9f;
         if ( width < 1.0 || height < 1.0 ) {
