@@ -63,6 +63,7 @@ public class ImageViewer extends JPanel {
     private JButton zoomOut;
     private JButton reload;
     private JButton clear;
+    private JButton copy;
     private float originalWidth = 0.0f;
     private float originalHeight = 0.0f;
     private float zoomWidth = 0.0f;
@@ -96,17 +97,21 @@ public class ImageViewer extends JPanel {
         // set up the zoom buttons
         clear = new JButton( GUIUtilities.loadIcon( "22x22/actions/edit-clear.png" ) );
         clear.setToolTipText( jEdit.getProperty( "imageviewer.clear", "Clear" ) );
+        copy = new JButton( GUIUtilities.loadIcon( "22x22/actions/edit-copy.png" ) );
+        copy.setToolTipText( jEdit.getProperty( "imageviewer.copy", "Copy" ) );
         zoomIn = new JButton( GUIUtilities.loadIcon( "22x22/actions/zoom-in.png" ) );
         zoomIn.setToolTipText( jEdit.getProperty( "imageviewer.zoomin", "Zoom In" ) );
         zoomOut = new JButton( GUIUtilities.loadIcon( "22x22/actions/zoom-out.png" ) );
         zoomOut.setToolTipText( jEdit.getProperty( "imageviewer.zoomout", "Zoom Out" ) );
         reload = new JButton( GUIUtilities.loadIcon( "22x22/actions/view-refresh.png" ) );
         reload.setToolTipText( jEdit.getProperty( "imageviewer.reload", "Reload" ) );
-        
+
+
         // create toolbar
         buttonPanel = new JToolBar();
         buttonPanel.setFloatable( false );
         buttonPanel.add( clear );
+        buttonPanel.add( copy );
         buttonPanel.add( zoomIn );
         buttonPanel.add( zoomOut );
         buttonPanel.add( reload );
@@ -132,6 +137,14 @@ public class ImageViewer extends JPanel {
                 public void actionPerformed( ActionEvent ae ) {
                     imageLabel.setIcon( null );
                     ImageViewer.this.refresh();
+                }
+            }
+        );
+
+        copy.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    ImageSelection.copyImageToClipboard( image );
                 }
             }
         );
@@ -256,7 +269,7 @@ public class ImageViewer extends JPanel {
         }
         this.filename = filename;
         if ( isValidFilename( filename ) ) {
-            image = Toolkit.getDefaultToolkit().createImage(filename);
+            image = Toolkit.getDefaultToolkit().createImage( filename );
             ImageIcon icon = new ImageIcon( image );
             originalWidth = ( float ) icon.getIconWidth();
             originalHeight = ( float ) icon.getIconHeight();
