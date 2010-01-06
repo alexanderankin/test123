@@ -2,6 +2,7 @@ package configurablefoldhandler;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.Vector;
@@ -67,6 +68,11 @@ public class ManualFolds {
 	}
 	public boolean save(String file)
 	{
+		if (isEmpty())
+		{
+			File f = new File(file);
+			return f.delete();
+		}
 		BufferedWriter output;
 		try
 		{

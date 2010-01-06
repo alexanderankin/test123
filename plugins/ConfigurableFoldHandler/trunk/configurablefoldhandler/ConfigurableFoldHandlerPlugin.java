@@ -90,7 +90,7 @@ public class ConfigurableFoldHandlerPlugin extends EditPlugin
 			checkBuffers();
 	}
 
-	private String getFoldFileFor(Buffer buffer)
+	private static String getFoldFileFor(Buffer buffer)
 	{
 		String path = buffer.getPath();
 		VFS vfs = VFSManager.getVFSForPath(path);
@@ -413,7 +413,12 @@ loop:	for(Iterator<JEditBuffer> iter = bufferStrings.keySet().iterator();
 		{
 			buffer.invalidateCachedFoldLevels();
 			if (mf.isEmpty())
+			{
+				// Save before removing the manual folds object
+				if (buffer instanceof Buffer)
+					mf.save(getFoldFileFor((Buffer) buffer));
 				buffer.setProperty(MANUAL_FOLDS, null);
+			}
 		}
 	}
 }
