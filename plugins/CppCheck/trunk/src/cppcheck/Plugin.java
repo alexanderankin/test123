@@ -1,0 +1,69 @@
+package cppcheck;
+
+import java.util.Iterator;
+import java.util.Vector;
+
+import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.View;
+
+import projectviewer.ProjectViewer;
+import projectviewer.vpt.VPTNode;
+import projectviewer.vpt.VPTProject;
+
+import errorlist.DefaultErrorSource;
+import errorlist.ErrorSource;
+
+public class Plugin extends EditPlugin
+{
+	public static final String OPTION = "options.cppcheck.";
+	public static final String MESSAGE = "messages.cppcheck.";
+	private static DefaultErrorSource errorSource;
+
+	public void start()
+	{
+		errorSource = new DefaultErrorSource("CppCheck");
+		ErrorSource.registerErrorSource(errorSource);
+	}
+
+	public void stop()
+	{
+		ErrorSource.unregisterErrorSource(errorSource);
+		errorSource = null;
+	}
+
+	public static DefaultErrorSource getErrorSource()
+	{
+		return errorSource;
+	}
+
+	public static void checkCurrentBuffer(View view)
+	{
+		checkFile(view, view.getBuffer().getPath());
+	}
+
+	public static void checkCurrentProject(View view)
+	{
+		VPTProject p = ProjectViewer.getActiveProject(view);
+		if (p == null)
+			return;
+		Vector<String> files = new Vector<String>();
+		Iterator<VPTNode> nodes = p.getOpenableNodes().iterator();
+		while (nodes.hasNext()) {
+			VPTNode node = nodes.next();
+			files.add(node.getNodePath());
+		}
+		Runner r = new Runner();
+		r.run(files);
+	}
+
+	public static void clear(View view)
+	{
+		errorSource.clear();
+	}
+
+	private static void checkFile(View view, String path)
+	{
+		Runner r = new Runner();
+		r.run(path);
+	}
+}
