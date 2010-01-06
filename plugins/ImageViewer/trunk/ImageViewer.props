@@ -22,6 +22,7 @@ imageviewer.label=Image Viewer
 
 # labels
 imageviewer.clear=Clear
+imageviewer.copy=Copy
 imageviewer.zoomout=Zoom Out
 imageviewer.zoomin=Zoom In
 imageviewer.showimage.label=View Image
