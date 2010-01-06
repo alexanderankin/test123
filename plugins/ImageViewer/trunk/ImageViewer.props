@@ -29,7 +29,7 @@ imageviewer.showimage.label=View Image
 
 # for plugin menu
 imageviewer.menu.label=Image Viewer
-plugin.imageviewer.ImageViewerPlugin.menu=\
+plugin.imageviewer.ImageViewerPlugin.menu=imageviewer \
     imageviewer.clear-action \
     imageviewer.copy-action \
     imageviewer.reload-action \
