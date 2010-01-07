@@ -21,7 +21,9 @@ cppcheck-clear.label=Clear cppcheck errors
 # menu items
 plugin.cppcheck.Plugin.menu=cppcheck-current-buffer \
 	cppcheck-current-project \
-	cppcheck-clear
+	cppcheck-clear \
+	- \
+	cppcheck
 
 # option panes
 plugin.cppcheck.Plugin.option-pane=CppCheck
