@@ -29,7 +29,7 @@ public class ErrorHandler implements LineHandler
 			String file = where.substring(0, index);
 			String lineNum = where.substring(index + 1);
 			Plugin.getErrorSource().addError(ErrorSource.ERROR, file,
-				Integer.valueOf(lineNum).intValue(), 0, 0, m.group(2));
+				Integer.valueOf(lineNum).intValue() - 1, 0, 0, m.group(2));
 		}
 	}
 
