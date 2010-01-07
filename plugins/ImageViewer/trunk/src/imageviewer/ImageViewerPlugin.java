@@ -175,11 +175,6 @@ public class ImageViewerPlugin extends EBPlugin {
         }
     }
 
-    /*
-     * I'm doing some gyrations here to be able to work with either PV 2.1.3.7,
-     * which is the current release version or with the newer, soon to be PV 3.0.
-     * DONE: clean this up when PV 3.0 is out.
-     */
     private void addPVMouseAdapter( View view ) {
         if ( view == null ) {
             return ;
@@ -190,7 +185,7 @@ public class ImageViewerPlugin extends EBPlugin {
             return ;
         }
 
-        EditPlugin pvPlugin = jEdit.getPlugin( "projectviewer.ProjectPlugin", true );
+        EditPlugin pvPlugin = jEdit.getPlugin( "projectviewer.ProjectPlugin" );
         if ( pvPlugin == null ) {
             return ;
         }
