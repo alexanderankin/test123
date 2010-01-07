@@ -22,4 +22,14 @@ public class OutputHandler implements LineHandler
 		if (dockable != null)
 			dockable.addOutputLine(line);
 	}
+
+	public void start(String path)
+	{
+		handle("Started on: " + path);
+	}
+	
+	public void end(String path)
+	{
+		handle("Ended on: " + path);
+	}
 }

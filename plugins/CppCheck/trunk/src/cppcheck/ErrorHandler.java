@@ -32,4 +32,12 @@ public class ErrorHandler implements LineHandler
 				Integer.valueOf(lineNum).intValue(), 0, 0, m.group(2));
 		}
 	}
+
+	public void start(String path)
+	{
+	}
+
+	public void end(String path)
+	{
+	}
 }
