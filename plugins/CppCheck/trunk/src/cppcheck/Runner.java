@@ -28,7 +28,9 @@ public class Runner implements Runnable
 
 	interface LineHandler
 	{
+		void start(String path);
 		void handle(String line);
+		void end(String path);
 	}
 
 	public void run()
@@ -39,6 +41,8 @@ public class Runner implements Runnable
 		ErrorHandler errorHandler = new ErrorHandler(view);
 		for (String path: paths)
 		{
+			outputHandler.start(path);
+			errorHandler.start(path);
 			args[1] = path;
 			try
 			{
@@ -55,6 +59,8 @@ public class Runner implements Runnable
 			{
 				e.printStackTrace();
 			}
+			outputHandler.end(path);
+			errorHandler.end(path);
 		}
 	}
 
