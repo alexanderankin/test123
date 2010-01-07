@@ -75,7 +75,7 @@ public class Plugin extends EditPlugin
 	{
 		runInBackground(new Runner(view, path));
 	}
-	private static void checkPaths(View view, Vector<String> paths)
+	public static void checkPaths(View view, Vector<String> paths)
 	{
 		runInBackground(new Runner(view, paths));
 	}
