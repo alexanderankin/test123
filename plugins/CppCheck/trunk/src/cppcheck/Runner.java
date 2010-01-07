@@ -35,15 +35,21 @@ public class Runner implements Runnable
 
 	public void run()
 	{
-		String [] args = new String[2];
-		args[0] = OptionPane.getPath();
+		Vector<String> cmd = new Vector<String>();
+		cmd.add(OptionPane.getPath());
+		OptionPane.addArgs(cmd);
+		int numArgs = cmd.size();
+		String [] args = new String[numArgs + 1];
+		for (int i = 0; i < numArgs; i++)
+			args[i] = cmd.get(i);
 		OutputHandler outputHandler = new OutputHandler(view);
 		ErrorHandler errorHandler = new ErrorHandler(view);
 		for (String path: paths)
 		{
-			outputHandler.start(path);
-			errorHandler.start(path);
-			args[1] = path;
+			args[numArgs] = path;
+			String cmdLine = getCommandString(args);
+			outputHandler.start(cmdLine);
+			errorHandler.start(cmdLine);
 			try
 			{
 				Process p = Runtime.getRuntime().exec(args);
@@ -59,9 +65,21 @@ public class Runner implements Runnable
 			{
 				e.printStackTrace();
 			}
-			outputHandler.end(path);
-			errorHandler.end(path);
+			outputHandler.end(cmdLine);
+			errorHandler.end(cmdLine);
 		}
+	}
+
+	private String getCommandString(String [] args)
+	{
+		StringBuilder sb = new StringBuilder();
+		for (String arg: args)
+		{
+			if (sb.length() > 0)
+				sb.append(" ");
+			sb.append(arg);
+		}
+		return sb.toString();
 	}
 
 	private static class StreamConsumer extends Thread
