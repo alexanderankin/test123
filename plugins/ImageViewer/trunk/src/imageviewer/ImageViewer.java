@@ -295,7 +295,7 @@ public class ImageViewer extends JPanel {
             return false;
         }
         String name = filename.toLowerCase();
-        return name.endsWith( ".jpg" ) || name.endsWith( ".gif" ) || name.endsWith( ".png" );
+        return name.endsWith( ".jpg" ) || name.endsWith( ".jpeg" ) || name.endsWith( ".gif" ) || name.endsWith( ".png" );
     }
 
     protected void center( Point p ) {
@@ -308,7 +308,7 @@ public class ImageViewer extends JPanel {
         Point to = new Point( current.x + dx, current.y + dy );
         viewport.setViewPosition( to );
     }
-    
+
     /**
      * Action to clear the ImageViewer.    
      */
@@ -316,14 +316,14 @@ public class ImageViewer extends JPanel {
         imageLabel.setIcon( null );
         ImageViewer.this.refresh();
     }
-    
+
     /**
      * Action to copy the image to the system clipboard.    
      */
     public void copy() {
         ImageSelection.copyImageToClipboard( image );
     }
-    
+
     /**
      * Action to reload the current image from disk.    
      */
@@ -331,7 +331,7 @@ public class ImageViewer extends JPanel {
         showImage( filename, true );
 
     }
-    
+
     /**
      * Action to zoom in 10%.
      */
@@ -340,7 +340,7 @@ public class ImageViewer extends JPanel {
         float height = zoomHeight * 1.1f;
         zoom( width, height );
     }
-    
+
     /**
      * Action to zoom out 10%.
      */
