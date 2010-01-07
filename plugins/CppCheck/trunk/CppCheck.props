@@ -32,5 +32,10 @@ options.CppCheck.code=new cppcheck.OptionPane();
 plugin.cppcheck.Plugin.browser-menu-item=cppcheck-dir
 cppcheck-dir.label=Check directory
 
+# dockables
+cppcheck.title=CppCheck
+cppcheck.longtitle=CppCheck progress
+cppcheck.label=CppCheck
+
 # messages
 messages.cppcheck.path=Path to CppCheck:

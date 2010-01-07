@@ -3,6 +3,8 @@ package cppcheck;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.gjt.sp.jedit.View;
+
 import cppcheck.Runner.LineHandler;
 
 import errorlist.ErrorSource;
@@ -13,13 +15,12 @@ public class ErrorHandler implements LineHandler
 		"\\[([^\\]]+)\\]:\\s+\\(error\\)\\s+(.*)");
 	//[CodeLite\FlexLexer.h:77]: (error) Invalid number of character ({). Can't process file.
 
-	public ErrorHandler()
+	public ErrorHandler(View view)
 	{
 	}
 
 	public void handle(String line)
 	{
-		System.err.println(line);
 		Matcher m = error.matcher(line);
 		if (m.find())
 		{
@@ -31,5 +32,4 @@ public class ErrorHandler implements LineHandler
 				Integer.valueOf(lineNum).intValue(), 0, 0, m.group(2));
 		}
 	}
-
 }
