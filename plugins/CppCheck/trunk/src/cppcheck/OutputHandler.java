@@ -25,11 +25,11 @@ public class OutputHandler implements LineHandler
 
 	public void start(String path)
 	{
-		handle("Started on: " + path);
+		handle("Started: " + path);
 	}
 	
 	public void end(String path)
 	{
-		handle("Ended on: " + path);
+		handle("Ended: " + path);
 	}
 }

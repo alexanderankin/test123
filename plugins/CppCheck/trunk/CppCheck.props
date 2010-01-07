@@ -41,3 +41,5 @@ cppcheck.label=CppCheck
 
 # messages
 messages.cppcheck.path=Path to CppCheck:
+messages.cppcheck.force=Force checking on files that have "too many" configurations
+messages.cppcheck.include=Include paths (separated by colon or semicolon):
