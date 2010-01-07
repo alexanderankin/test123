@@ -2,7 +2,7 @@
 # Properties for ImageViewer Plugin
 #-----------------------------------
 
-plugin.imageviewer.ImageViewerPlugin.name=ImageViewer
+plugin.imageviewer.ImageViewerPlugin.name=Image Viewer
 plugin.imageviewer.ImageViewerPlugin.author=Dale Anson
 plugin.imageviewer.ImageViewerPlugin.version=1.2
 plugin.imageviewer.ImageViewerPlugin.activate=startup
@@ -18,7 +18,6 @@ plugin.imageviewer.ImageViewerPlugin.docs=index.html
 
 # titles for DockableWindowManager
 imageviewer.title=Image Viewer
-imageviewer.label=Image Viewer
 
 # labels
 imageviewer.clear=Clear
@@ -28,8 +27,9 @@ imageviewer.zoomin=Zoom In
 imageviewer.showimage.label=View Image
 
 # for plugin menu
-imageviewer.menu.label=Image Viewer
-plugin.imageviewer.ImageViewerPlugin.menu=imageviewer \
+imageviewer.label=Show Image Viewer
+plugin.imageviewer.ImageViewerPlugin.menu=\
+    imageviewer - \
     imageviewer.clear-action \
     imageviewer.copy-action \
     imageviewer.reload-action \
