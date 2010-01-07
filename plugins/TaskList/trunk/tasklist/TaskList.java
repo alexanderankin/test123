@@ -110,7 +110,6 @@ public class TaskList extends JPanel implements EBComponent {
         buttonPanel.add( refreshButton );
 
         // create the task filter
-        // TODO: put "Filter" into property file
         JMenu filterMenu = new JMenu( jEdit.getProperty("tasklist.toolbar.filter", "Filter") );
         taskTypes = new HashSet<TaskType>();
         int i = 0;
