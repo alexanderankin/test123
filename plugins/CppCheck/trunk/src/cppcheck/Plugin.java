@@ -38,12 +38,12 @@ public class Plugin extends EditPlugin
 
 	public static void checkCurrentBuffer(View view)
 	{
-		checkFile(view, view.getBuffer().getPath());
+		checkPath(view, view.getBuffer().getPath());
 	}
 
 	public static void checkDirectory(View view, String directory)
 	{
-		checkFile(view, directory);
+		checkPath(view, directory);
 	}
 
 	public static void checkCurrentProject(View view)
@@ -57,8 +57,7 @@ public class Plugin extends EditPlugin
 			VPTNode node = nodes.next();
 			files.add(node.getNodePath());
 		}
-		Runner r = new Runner();
-		r.run(files);
+		checkPaths(view, files);
 	}
 
 	public static void clear(View view)
@@ -66,9 +65,18 @@ public class Plugin extends EditPlugin
 		errorSource.clear();
 	}
 
-	private static void checkFile(View view, String path)
+	private static void runInBackground(Runnable r)
 	{
-		Runner r = new Runner();
-		r.run(path);
+		Thread t = new Thread(r);
+		t.start();
+	}
+
+	private static void checkPath(View view, String path)
+	{
+		runInBackground(new Runner(view, path));
+	}
+	private static void checkPaths(View view, Vector<String> paths)
+	{
+		runInBackground(new Runner(view, paths));
 	}
 }

@@ -6,37 +6,48 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Vector;
 
-public class Runner
+import org.gjt.sp.jedit.View;
+
+public class Runner implements Runnable
 {
-	// Runs CppCheck on a file / directory tree.
-	public void run(String path)
+	private View view;
+	private Vector<String> paths;
+
+	public Runner(View view, String path)
 	{
-		Vector<String> what = new Vector<String>();
-		what.add(path);
-		run(what);
+		this.view = view;
+		paths = new Vector<String>();
+		paths.add(path);
 	}
-	
+
+	public Runner(View view, Vector<String> paths)
+	{
+		this.view = view;
+		this.paths = new Vector<String>(paths);
+	}
+
 	interface LineHandler
 	{
 		void handle(String line);
 	}
 
-	public void run(Vector<String> what)
+	public void run()
 	{
-		String path = OptionPane.getPath();
 		String [] args = new String[2];
-		args[0] = path;
-		for (String file: what)
+		args[0] = OptionPane.getPath();
+		OutputHandler outputHandler = new OutputHandler(view);
+		ErrorHandler errorHandler = new ErrorHandler(view);
+		for (String path: paths)
 		{
-			args[1] = file;
+			args[1] = path;
 			try
 			{
 				Process p = Runtime.getRuntime().exec(args);
 				StreamConsumer osc = new StreamConsumer(p.getInputStream(),
-					new OutputHandler());
+					outputHandler);
 				osc.start();
 				StreamConsumer esc = new StreamConsumer(p.getErrorStream(),
-					new ErrorHandler());
+					errorHandler);
 				esc.start();
 				p.waitFor();
 			}
