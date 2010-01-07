@@ -32,7 +32,7 @@ options.CppCheck.code=new cppcheck.OptionPane();
 
 # file system browser context menu item
 plugin.cppcheck.Plugin.browser-menu-item=cppcheck-dir
-cppcheck-dir.label=Check directory
+cppcheck-dir.label=Run CppCheck on directory
 
 # dockables
 cppcheck.title=CppCheck
