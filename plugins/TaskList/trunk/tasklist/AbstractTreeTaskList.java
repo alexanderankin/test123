@@ -222,6 +222,7 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
                         removeAll();
                         if ( fullModel.getChildCount( fullModel.getRoot() ) > 0 ) {
                             tree = new JTree( fullModel );
+                            filterTree();
                             expandTree();
                             tree.addMouseListener( new TreeMouseListener( view, tree ) );
                             tree.setCellRenderer( new TaskTreeCellRenderer() );
@@ -426,6 +427,7 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
         SortableTreeModel model = ( SortableTreeModel ) tree.getModel();
         model.insertNodeInto( buffer_node, ( DefaultMutableTreeNode ) model.getRoot() );
         model.nodeStructureChanged( ( DefaultMutableTreeNode ) model.getRoot() );
+        filterTree();
         expandTree();
     }
 
