@@ -9,7 +9,7 @@ import cppcheck.Runner.LineHandler;
 
 import errorlist.ErrorSource;
 
-public class ErrorHandler implements LineHandler
+public class ErrorHandler extends LineHandler
 {
 	private static Pattern error = Pattern.compile(
 		"\\[([^\\]]+)\\]:\\s+\\(error\\)\\s+(.*)");
@@ -31,13 +31,5 @@ public class ErrorHandler implements LineHandler
 			Plugin.getErrorSource().addError(ErrorSource.ERROR, file,
 				Integer.valueOf(lineNum).intValue() - 1, 0, 0, m.group(2));
 		}
-	}
-
-	public void start(String path)
-	{
-	}
-
-	public void end(String path)
-	{
 	}
 }
