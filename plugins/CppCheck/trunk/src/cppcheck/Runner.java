@@ -26,11 +26,13 @@ public class Runner implements Runnable
 		this.paths = new Vector<String>(paths);
 	}
 
-	interface LineHandler
+	public abstract static class LineHandler
 	{
-		void start(String path);
-		void handle(String line);
-		void end(String path);
+		void start(int nFiles) {}
+		void startTask(String cmdLine) {}
+		abstract void handle(String line);
+		void endTask(String cmdLine) {}
+		void end() {}
 	}
 
 	public void run()
@@ -44,12 +46,14 @@ public class Runner implements Runnable
 			args[i] = cmd.get(i);
 		OutputHandler outputHandler = new OutputHandler(view);
 		ErrorHandler errorHandler = new ErrorHandler(view);
+		outputHandler.start(paths.size());
+		errorHandler.start(paths.size());
 		for (String path: paths)
 		{
 			args[numArgs] = path;
 			String cmdLine = getCommandString(args);
-			outputHandler.start(cmdLine);
-			errorHandler.start(cmdLine);
+			outputHandler.startTask(cmdLine);
+			errorHandler.startTask(cmdLine);
 			try
 			{
 				Process p = Runtime.getRuntime().exec(args);
@@ -65,9 +69,11 @@ public class Runner implements Runnable
 			{
 				e.printStackTrace();
 			}
-			outputHandler.end(cmdLine);
-			errorHandler.end(cmdLine);
+			outputHandler.endTask(cmdLine);
+			errorHandler.endTask(cmdLine);
 		}
+		outputHandler.end();
+		errorHandler.end();
 	}
 
 	private String getCommandString(String [] args)
