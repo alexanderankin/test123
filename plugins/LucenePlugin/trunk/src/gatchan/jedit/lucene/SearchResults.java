@@ -25,12 +25,13 @@ import marker.tree.SourceLinkTree.SubtreePopupMenuProvider;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.EditBus.EBHandler;
+import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.gui.RolloverButton;
 import org.gjt.sp.util.StandardUtilities;
 import org.gjt.sp.util.Log;
 
 @SuppressWarnings("serial")
-public class SearchResults extends JPanel
+public class SearchResults extends JPanel implements DefaultFocusComponent
 {
 	private static final String LUCENE_SEARCH_INDEX = "lucene.search.index";
 	private static final String MESSAGE_IDLE = "";
@@ -405,5 +406,10 @@ public class SearchResults extends JPanel
 			String fileType = type.getText().trim();
 			search(search, fileType);
 		}
+	}
+
+	public void focusOnDefaultComponent()
+	{
+		searchField.requestFocusInWindow();		
 	}
 }
