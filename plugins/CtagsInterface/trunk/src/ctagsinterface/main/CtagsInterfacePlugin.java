@@ -765,9 +765,9 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		if (projectId < 0)
 			return;
 		setStatusMessage("Updating project: " + project);
-		if (removed != null)
+		if ((removed != null) && (! removed.isEmpty()))
 			removeProjectFiles(projectId, removed);
-		if (added != null) {
+		if ((added != null) && (! added.isEmpty())) {
 			TagHandler handler = new TagFileHandler(projectId);
 			tagFiles(added, handler);
 		}
