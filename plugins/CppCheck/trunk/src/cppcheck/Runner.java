@@ -12,18 +12,20 @@ public class Runner implements Runnable
 {
 	private View view;
 	private Vector<String> paths;
-
-	public Runner(View view, String path)
-	{
-		this.view = view;
-		paths = new Vector<String>();
-		paths.add(path);
-	}
+	private Process process;
+	private StateListener stateListener;
+	private OutputHandler outputHandler;
 
 	public Runner(View view, Vector<String> paths)
 	{
 		this.view = view;
 		this.paths = new Vector<String>(paths);
+		outputHandler = new OutputHandler();
+	}
+
+	public OutputHandler getOutputHandler()
+	{
+		return outputHandler;
 	}
 
 	public abstract static class LineHandler
@@ -35,8 +37,27 @@ public class Runner implements Runnable
 		void end() {}
 	}
 
+	public interface StateListener
+	{
+		void start();
+		void end();
+	}
+
+	public void setStateListener(StateListener sl)
+	{
+		stateListener = sl;
+	}
+
+	public void abort()
+	{
+		if (process != null)
+			process.destroy();
+	}
+
 	public void run()
 	{
+		if (stateListener != null)
+			stateListener.start();
 		Vector<String> cmd = new Vector<String>();
 		cmd.add(OptionPane.getPath());
 		OptionPane.addArgs(cmd);
@@ -44,10 +65,11 @@ public class Runner implements Runnable
 		String [] args = new String[numArgs + 1];
 		for (int i = 0; i < numArgs; i++)
 			args[i] = cmd.get(i);
-		OutputHandler outputHandler = new OutputHandler(view);
 		ErrorHandler errorHandler = new ErrorHandler(view);
 		outputHandler.start(paths.size());
 		errorHandler.start(paths.size());
+		// Abort cppcheck if jEdit is closed during its execution
+		Runtime.getRuntime().addShutdownHook(new ShutdownThread());
 		for (String path: paths)
 		{
 			args[numArgs] = path;
@@ -56,14 +78,14 @@ public class Runner implements Runnable
 			errorHandler.startTask(cmdLine);
 			try
 			{
-				Process p = Runtime.getRuntime().exec(args);
-				StreamConsumer osc = new StreamConsumer(p.getInputStream(),
+				process = Runtime.getRuntime().exec(args);
+				StreamConsumer osc = new StreamConsumer(process.getInputStream(),
 					outputHandler);
 				osc.start();
-				StreamConsumer esc = new StreamConsumer(p.getErrorStream(),
+				StreamConsumer esc = new StreamConsumer(process.getErrorStream(),
 					errorHandler);
 				esc.start();
-				p.waitFor();
+				process.waitFor();
 			}
 			catch (Exception e)
 			{
@@ -74,6 +96,17 @@ public class Runner implements Runnable
 		}
 		outputHandler.end();
 		errorHandler.end();
+		if (stateListener != null)
+			stateListener.end();
+	}
+
+	private class ShutdownThread extends Thread
+	{
+		public void run()
+		{
+			if (process != null)
+				process.destroy();
+		}
 	}
 
 	private String getCommandString(String [] args)
