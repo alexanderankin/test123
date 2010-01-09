@@ -231,7 +231,7 @@ public class ErrorMatcher implements Cloneable
 	// }}}
 
 	// {{{ clone()
-	public Object clone() 
+	public Object clone()
 	{
 		ErrorMatcher retval = new ErrorMatcher();
 		retval.set(this);
@@ -366,7 +366,7 @@ public class ErrorMatcher implements Cloneable
 		String _filename = MiscUtilities.constructPath(directory, file);
 		try
 		{
-			return new DefaultError(errorSource, type, _filename, 
+			return new DefaultError(errorSource, type, _filename,
 				Math.max(0, Integer.parseInt(line) - 1), 0, 0, message);
 		}
 		catch (NumberFormatException nf)
@@ -395,8 +395,7 @@ public class ErrorMatcher implements Cloneable
 	/**
 	 * Brings the state back from the properties.
 	 *
-	 * @param name
-	 *                the name (which gets translated into an internal name)
+	 * @param iname the jedit action name (gets translated into an internal name)
 	 *
 	 */
 	public void load(String iname)
