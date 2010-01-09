@@ -1,25 +1,34 @@
 package cppcheck;
 
+import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.gjt.sp.jedit.View;
-
+import cppcheck.Plugin.Listener;
 import cppcheck.Runner.LineHandler;
 
 public class OutputHandler extends LineHandler
 {
-	private View view;
-	private CppCheckDockable dockable;
 	private int numFiles;
 	private int completedFiles = 0;
 	private Pattern progressPattern = Pattern.compile(
 		"(\\d+)/(\\d+) files checked (\\d+)% done");
 	//1/35 files checked 2% done
+	private Vector<Listener> listeners = new Vector<Listener>();
 
-	public OutputHandler(View view)
+	public interface Listener
 	{
-		this.view = view;
+		void addOutputLine(String line);
+		void setProgress(int percent);
+	}
+
+	public void addListener(Listener l)
+	{
+		listeners.add(l);
+	}
+	public void removeListener(Listener l)
+	{
+		listeners.remove(l);
 	}
 
 	public void start(int numFiles)
@@ -42,13 +51,11 @@ public class OutputHandler extends LineHandler
 			percent = Integer.valueOf(m.group(3)).intValue();
 			percent = (percent + completedFiles * 100) / numFiles; 
 		}
-		dockable = (CppCheckDockable)
-			view.getDockableWindowManager().getDockable("cppcheck");
-		if (dockable != null)
+		for (Listener ol: listeners)
 		{
-			dockable.addOutputLine(line);
+			ol.addOutputLine(line);
 			if (percent != -1)
-				dockable.setProgress(percent);
+				ol.setProgress(percent);
 		}
 	}
 	
@@ -62,15 +69,11 @@ public class OutputHandler extends LineHandler
 
 	private void updateProgress(int percent)
 	{
-		dockable = (CppCheckDockable)
-			view.getDockableWindowManager().getDockable("cppcheck");
-		if (dockable == null)
-			return;
-		dockable.setProgress(percent);
+		for (Listener ol: listeners)
+			ol.setProgress(percent);
 	}
 
 	public void end()
 	{
-		
 	}
 }

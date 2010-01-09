@@ -6,6 +6,8 @@ import java.util.Vector;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.View;
 
+import cppcheck.Runner.StateListener;
+
 import projectviewer.ProjectViewer;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
@@ -18,6 +20,9 @@ public class Plugin extends EditPlugin
 	public static final String OPTION = "options.cppcheck.";
 	public static final String MESSAGE = "messages.cppcheck.";
 	private static DefaultErrorSource errorSource;
+	private static Vector<Runner> runners = new Vector<Runner>();
+	private static Vector<Listener> listeners =
+		new Vector<Listener>();
 
 	public void start()
 	{
@@ -73,10 +78,53 @@ public class Plugin extends EditPlugin
 
 	private static void checkPath(View view, String path)
 	{
-		runInBackground(new Runner(view, path));
+		Vector<String> paths = new Vector<String>();
+		paths.add(path);
+		runInBackground(createRunner(view, paths));
 	}
 	public static void checkPaths(View view, Vector<String> paths)
 	{
-		runInBackground(new Runner(view, paths));
+		runInBackground(createRunner(view, paths));
+	}
+	
+	public interface Listener
+	{
+		void added(Runner r);
+		void removed(Runner r);
+	}
+
+	public static void addListener(Listener l)
+	{
+		listeners.add(l);
+	}
+	public static void removeListener(Listener l)
+	{
+		listeners.remove(l);
+	}
+
+	private static Runner createRunner(View view, Vector<String> paths)
+	{
+		view.getDockableWindowManager().showDockableWindow("cppcheck");
+		final Runner r = new Runner(view, paths);
+		synchronized(runners)
+		{
+			runners.add(r);
+		}
+		for (Listener l: listeners)
+			l.added(r);
+		r.setStateListener(new StateListener()
+		{
+			public void start() {}
+			public void end()
+			{
+				for (Listener l: listeners)
+					l.removed(r);
+				synchronized(runners)
+				{
+					runners.remove(r);
+				}
+			}
+		});
+		return r;
 	}
 }
