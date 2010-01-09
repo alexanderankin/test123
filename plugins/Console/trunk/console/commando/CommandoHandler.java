@@ -4,6 +4,7 @@
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 2001, 2005 Slava Pestov
+ * Copyright (C) 2010 Eric Le Lay
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -36,18 +37,22 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
 import org.gjt.sp.jedit.bsh.NameSpace;
+import org.gjt.sp.jedit.bsh.This;
 
-import com.microstar.xml.HandlerBase;
+import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.Attributes;
+
 //}}}
 
-public class CommandoHandler extends HandlerBase
+public class CommandoHandler extends DefaultHandler
 {
 	//{{{ CommandoHandler constructor
 	CommandoHandler(View view, CommandoCommand command,
 		CommandoDialog.SettingsPane settings,
 		NameSpace nameSpace,
-		List components,
-		List scripts)
+		List<This> components,
+		List<Script> scripts)
 	{
 		this.view = view;
 		this.command = command;
@@ -56,23 +61,27 @@ public class CommandoHandler extends HandlerBase
 		this.components = components;
 		this.scripts = scripts;
 
-		stateStack = new Stack();
-		options = new Vector();
+		stateStack = new Stack<String>();
+		options = new Vector<Option>();
 	} //}}}
 
 	//{{{ resolveEntity() method
-	public Object resolveEntity(String publicId, String systemId)
+	@Override
+	public InputSource resolveEntity(String publicId, String systemId) 
 	{
-		if("commando.dtd".equals(systemId))
+		// could have used EntityResolver2.resolveEntity(4),
+		// but it's not always available 
+		if(systemId.endsWith("commando.dtd"))
 		{
-			return new StringReader("<!-- -->");
+			return new InputSource(new StringReader("<!-- -->"));
 		}
 
 		return null;
-	} //}}}
+	}
+	//}}}
 
 	//{{{ attribute() method
-	public void attribute(String aname, String value, boolean isSpecified)
+	public void attribute(String aname, String value)
 	{
 		aname = (aname == null) ? null : aname.intern();
 		value = (value == null) ? null : value.intern();
@@ -97,31 +106,32 @@ public class CommandoHandler extends HandlerBase
 			shell = value;
 	} //}}}
 
-	//{{{ doctypeDecl() method
-	public void doctypeDecl(String name, String publicId,
-		String systemId) throws Exception
-	{
-		if("COMMANDO".equals(name))
-			return;
-
-		Log.log(Log.ERROR,this,command.getLabel()
-			+ ".xml: DOCTYPE must be COMMANDO");
-	} //}}}
-
 	//{{{ charData() method
-	public void charData(char[] c, int off, int len)
+	@Override
+	public void characters(char[] c, int off, int len)
 	{
 		String tag = peekElement();
 		String text = new String(c, off, len);
-
+		
+		//code might be passed line by line, so concatenate
 		if(tag == "COMMAND")
-			code = text;
+			code = code == null ? text : code+text;
 	} //}}}
 
 	//{{{ startElement() method
-	public void startElement(String name)
+	@Override
+	public void startElement(String ns, String localName, String qName, Attributes attributes)
 	{
-		pushElement(name);
+		// handle the attributes before pushing the element
+		// (this is what the old com.microstar.xml XmlParser implementation did)
+		for(int i=0;i<attributes.getLength();i++)
+		{
+			String aname = attributes.getLocalName(i);
+			String value = attributes.getValue(i);
+			attribute(aname, value);
+		}
+		
+		pushElement(localName);
 
 		String tag = peekElement();
 		if(tag == "CAPTION")
@@ -134,19 +144,20 @@ public class CommandoHandler extends HandlerBase
 		else if(tag == "CHOICE")
 		{
 			choiceLabel = label;
-			options = new Vector();
+			options = new Vector<Option>();
 		}
+		
 	} //}}}
 
-
-	public void endElement(String name)
+	@Override
+	public void endElement(String ns, String localName, String qName)
 	{
-		if(name == null)
+		if(localName == null)
 			return;
 
 		String tag = peekElement();
 
-		if(name.equals(tag))
+		if(localName.equals(tag))
 		{
 			if(tag == "OPTION")
 			{
@@ -209,7 +220,7 @@ public class CommandoHandler extends HandlerBase
 					
 					String script = "commando" + tag + "(view,pane,ns,label,var,options)";
 					Object value = BeanShell.eval(view, tmp, script);
-					components.add(value);
+					components.add((This)value);
 				}
 				catch(Exception e)
 				{
@@ -229,16 +240,10 @@ public class CommandoHandler extends HandlerBase
 	} //}}}
 
 	//{{{ startDocument() method
+	@Override
 	public void startDocument()
 	{
-//		try
-		{
-			pushElement(null);
-		}
-/*		catch (Exception e)
-		{
-			e.printStackTrace();
-		} */
+		pushElement(null);
 	} //}}}
 
 	//{{{ Private members
@@ -249,8 +254,8 @@ public class CommandoHandler extends HandlerBase
 	private CommandoDialog.SettingsPane settings;
 	private CommandoDialog.SettingsPane pane;
 	private NameSpace nameSpace;
-	private List components;
-	private List scripts;
+	private List<This> components;
+	private List<Script> scripts;
 
 	private String varName;
 	private String defaultValue;
@@ -264,9 +269,9 @@ public class CommandoHandler extends HandlerBase
 	private String shell;
 	private String code;
 
-	private Vector options;
+	private Vector<Option> options;
 
-	private Stack stateStack;
+	private Stack<String> stateStack;
 	//}}}
 
 	//{{{ pushElement() method
@@ -280,13 +285,13 @@ public class CommandoHandler extends HandlerBase
 	//{{{ peekElement() method
 	private String peekElement()
 	{
-		return (String) stateStack.peek();
+		return stateStack.peek();
 	} //}}}
 
 	//{{{ popElement() method
 	private String popElement()
 	{
-		return (String) stateStack.pop();
+		return stateStack.pop();
 	} //}}}
 
 	//}}}

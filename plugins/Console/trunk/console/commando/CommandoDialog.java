@@ -4,6 +4,7 @@
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 2001, 2003 Slava Pestov
+ * Copyright (C) 2010 Eric Le Lay
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -65,8 +66,11 @@ import org.gjt.sp.jedit.bsh.Primitive;
 import org.gjt.sp.jedit.bsh.This;
 import org.gjt.sp.jedit.bsh.UtilEvalError;
 
-import com.microstar.xml.XmlException;
-import com.microstar.xml.XmlParser;
+import org.xml.sax.helpers.XMLReaderFactory;
+import org.xml.sax.XMLReader;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 import console.Console;
 import console.ConsolePlugin;
@@ -174,7 +178,7 @@ public class CommandoDialog extends EnhancedDialog
 
 		save();
 
-		Vector commands = new Vector();
+		Vector<CommandoHandler.Command> commands = new Vector<CommandoHandler.Command>();
 
 		for(int i = 0; i < scripts.size(); i++)
 		{
@@ -225,21 +229,24 @@ public class CommandoDialog extends EnhancedDialog
 			"commando");
 		scripts = new ArrayList<CommandoHandler.Script>();
 
-		XmlParser parser = new XmlParser();
 		CommandoHandler handler = new CommandoHandler(view,command,
 			settings,nameSpace,components,scripts);
-		parser.setHandler(handler);
 		Reader in = null;
 		try
 		{
+			XMLReader parser = XMLReaderFactory.createXMLReader();
+			parser.setErrorHandler(handler);
+			parser.setContentHandler(handler);
+			parser.setEntityResolver(handler);
+		
 			in = command.openStream();
-			parser.parse(null, null, in);
+			parser.parse(new InputSource(in));
 		}
-		catch(XmlException xe)
+		catch(SAXParseException xe)
 		{
 			Log.log(Log.ERROR,this,xe);
 
-			int line = xe.getLine();
+			int line = xe.getLineNumber();
 			String message = xe.getMessage();
 
 			Object[] pp = { command.getLabel() + ".xml", Integer.valueOf(line),
@@ -307,7 +314,7 @@ public class CommandoDialog extends EnhancedDialog
 	{
 		for(int i = 0; i < components.size(); i++)
 		{
-			This t = (This)components.get(i);
+			This t = components.get(i);
 			try
 			{
 				t.invokeMethod("valueChanged",new Object[0]);
