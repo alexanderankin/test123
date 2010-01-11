@@ -3,6 +3,8 @@ package cppcheck;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -41,7 +43,7 @@ public class CppCheckDockable extends JPanel
 			{
 				public void actionPerformed(ActionEvent e)
 				{
-					CppCheckTab.this.r.abort();
+					abort();
 				}
 			});
 			top.add(abort, BorderLayout.EAST);
@@ -49,6 +51,11 @@ public class CppCheckDockable extends JPanel
 			add(new JScrollPane(textPane), BorderLayout.CENTER);
 			OutputHandler oh = r.getOutputHandler();
 			oh.addListener(this);
+		}
+
+		public void abort()
+		{
+			r.abort();
 		}
 
 		public void end(Runner r)
@@ -97,19 +104,47 @@ public class CppCheckDockable extends JPanel
 		{
 			public void added(Runner r)
 			{
-				CppCheckTab tab = createTab(r);
-				runners.addTab(r.toString(), tab);
+				final Runner fr = r;
+				SwingUtilities.invokeLater(new Runnable()
+				{
+					public void run()
+					{
+						CppCheckTab tab = createTab(fr);
+						runners.addTab(fr.toString(), tab);
+					}
+				});
 			}
 			public void removed(Runner r)
 			{
-				for (int i = 0; i < runners.getTabCount(); i++)
+				final Runner fr = r;
+				SwingUtilities.invokeLater(new Runnable()
 				{
-					if (runners.getTitleAt(i).equals(r.toString()))
+					public void run()
 					{
-						CppCheckTab tab = (CppCheckTab) runners.getTabComponentAt(i);
-						tab.end(r);
-						runners.remove(tab);
+						for (int i = runners.getTabCount() - 1; i >= 0; i--)
+						{
+							if (runners.getTitleAt(i).equals(fr.toString()))
+							{
+								CppCheckTab tab = (CppCheckTab)
+									runners.getComponent(i);
+								//if (tab != null)
+									tab.end(fr);
+								runners.remove(i);
+								break;
+							}
+						}
 					}
+				});
+			}
+		});
+		runners.addMouseListener(new MouseAdapter()
+		{
+			@Override
+			public void mouseClicked(MouseEvent e)
+			{
+				if (SwingUtilities.isMiddleMouseButton(e))
+				{
+					closeCurrentTab();
 				}
 			}
 		});
@@ -118,5 +153,22 @@ public class CppCheckDockable extends JPanel
 	public CppCheckTab createTab(Runner r)
 	{
 		return new CppCheckTab(r);
+	}
+
+	public void closeCurrentTab()
+	{
+		final int selected = runners.getSelectedIndex();
+		if (selected < 0)
+			return;
+		CppCheckTab tab = (CppCheckTab) runners.getTabComponentAt(selected);
+		if (tab != null)
+			tab.abort();
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				runners.remove(selected);
+			}
+		});
 	}
 }
