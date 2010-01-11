@@ -6,6 +6,9 @@ import java.awt.event.ActionEvent;
 import java.util.Collection;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
+
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSManager;
 
@@ -19,6 +22,7 @@ public class IndexProjectAction extends Action
 	static public final String MESSAGE = "lucene.message.";
 	static public final String INDEX_ERROR = MESSAGE + "CreateProjectIndexError";
 	static public final String INDEX_ERROR_TITLE = MESSAGE + "CreateProjectIndexError.title";
+	static public final String LOCK_PROJECT_ERROR = MESSAGE + "LockProjectError";
 
 	@Override
 	public String getText()
@@ -50,7 +54,7 @@ public class IndexProjectAction extends Action
 		}
 	}
 
-	private static class ProjectIndexer implements Runnable
+	private class ProjectIndexer implements Runnable
 	{
 		private VPTProject project;
 		private Index index;
@@ -87,7 +91,15 @@ public class IndexProjectAction extends Action
 					return files.get(index++);
 				}
 				if (! project.tryLock())
+				{
+					JOptionPane.showMessageDialog(
+						IndexProjectAction.this.viewer.getView(),
+						jEdit.getProperty(LOCK_PROJECT_ERROR),
+						jEdit.getProperty(INDEX_ERROR_TITLE),
+						JOptionPane.ERROR_MESSAGE,
+						null);
 					return null;
+				}
 				Collection<VPTNode> nodes = project.getOpenableNodes();
 				files = new Vector<VFSFile>();
 				for (VPTNode n : nodes)
