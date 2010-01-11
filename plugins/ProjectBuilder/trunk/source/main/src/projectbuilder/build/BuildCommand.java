@@ -57,7 +57,7 @@ public class BuildCommand {
 		
 		new Thread(new Runnable() {
 			public void run() {
-				if ((cmd.equals("ant") || cmd.startsWith("ant ")) && jEdit.getBooleanProperty("projectBuilder.run-ant-in-jvm")) {
+				if ((cmd.equals("ant") || cmd.startsWith("ant "))) {
 					// Build in AntFarm
 					String target = "";
 					if (cmd.indexOf(" ") != -1) {

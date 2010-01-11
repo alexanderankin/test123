@@ -29,13 +29,13 @@ import org.gjt.sp.jedit.jEdit;
 /**
  * A dialog for editing build settings of a project
  */
-public class BuildSettingsPanel extends JPanel implements ActionListener, ItemListener {
+public class BuildSettingsPanel extends JPanel implements ActionListener {
 	private VPTProject proj;
 	private ListPanel list;
 	private JButton addBtn;
 	private JButton removeBtn;
+	private JButton modifyBtn;
 	private JPanel optionsPanel;
-	private JCheckBox antBox;
 	public BuildSettingsPanel(VPTProject proj) {
 		super(new BorderLayout());
 		setPreferredSize(new Dimension(400, 200));
@@ -48,12 +48,12 @@ public class BuildSettingsPanel extends JPanel implements ActionListener, ItemLi
 				list.addElement(commands[i]);
 			}
 		}
-		addBtn = new JButton(GUIUtilities.loadIcon("16x16/actions/list-add.png"));
-		removeBtn = new JButton(GUIUtilities.loadIcon("16x16/actions/list-remove.png"));
-		antBox = new JCheckBox("Run Ant commands in the current JVM");
-		antBox.setSelected(jEdit.getBooleanProperty("projectbuilder.run-ant-in-jvm"));
+		addBtn = new JButton(GUIUtilities.loadIcon("Plus.png"));
+		removeBtn = new JButton(GUIUtilities.loadIcon("Minus.png"));
+		modifyBtn = new JButton(GUIUtilities.loadIcon("ButtonProperties.png"));
 		addBtn.addActionListener(this);
 		removeBtn.addActionListener(this);
+		modifyBtn.addActionListener(this);
 		optionsPanel = new JPanel();
 		optionsPanel.setLayout(new BoxLayout(optionsPanel, BoxLayout.PAGE_AXIS));
 		JPanel buttonPanel = new JPanel();
@@ -61,15 +61,9 @@ public class BuildSettingsPanel extends JPanel implements ActionListener, ItemLi
 		buttonPanel.add(Box.createHorizontalGlue());
 		buttonPanel.add(addBtn);
 		buttonPanel.add(removeBtn);
+		buttonPanel.add(modifyBtn);
 		buttonPanel.add(Box.createHorizontalGlue());
 		optionsPanel.add(buttonPanel);
-		JPanel antBoxPanel = new JPanel();
-		antBoxPanel.setLayout(new BoxLayout(antBoxPanel, BoxLayout.LINE_AXIS));
-		antBoxPanel.add(Box.createHorizontalGlue());
-		antBoxPanel.add(antBox);
-		antBoxPanel.add(Box.createHorizontalGlue());
-		optionsPanel.add(antBoxPanel);
-		antBox.addItemListener(this);
 		add(BorderLayout.CENTER, list);
 		add(BorderLayout.SOUTH, optionsPanel);
 	}
@@ -90,26 +84,27 @@ public class BuildSettingsPanel extends JPanel implements ActionListener, ItemLi
 	
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
-		if (source.equals(addBtn)) {
+		if (source == addBtn) {
 			// Add a build command
 			String cmd = GUIUtilities.input(jEdit.getActiveView(), "projectBuilder.msg.add-build-command", null);
-			if (cmd != null && cmd.length() > 0) {
-				list.addElement(cmd);
-				updateProps();
-			}
-		} else if (source.equals(removeBtn)) {
+			if (cmd == null || cmd.length() == 0) return;
+			list.addElement(cmd);
+			updateProps();
+		} else if (source == removeBtn) {
 			// Remove a build command
 			for (Object ob : list.getSelectedValues()) {
 				list.removeElement(ob);
 			}
 			updateProps();
 		}
-	}
-	
-	public void itemStateChanged(ItemEvent e) {
-		Object source = e.getItemSelectable();
-		if (source == antBox) {
-			jEdit.setBooleanProperty("projectbuilder.run-ant-in-jvm", antBox.isSelected());
+		else if (source == modifyBtn) {
+			// Modify a build command
+			String old = (String) list.getSelectedValues()[0];
+			String cmd = GUIUtilities.input(jEdit.getActiveView(), "projectBuilder.msg.modify-build-command", old);
+			if (cmd == null || cmd.length() == 0) return;
+			list.removeElement(old);
+			list.addElement(cmd);
+			updateProps();
 		}
 	}
 	
