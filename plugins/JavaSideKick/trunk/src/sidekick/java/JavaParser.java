@@ -192,16 +192,22 @@ public class JavaParser extends SideKickParser implements EBComponent {
             root.setUserObject( compilationUnit );
             buffer.setProperty( COMPILATION_UNIT, compilationUnit );
 
-            // maybe show imports
+            parsedData.expansionModel = new ArrayList<Integer>();
+            int expandRow = 0;
+            parsedData.expansionModel.add(expandRow);
+            
+            // maybe show imports, but don't expand them
             if ( filterOpt.getShowImports() == true ) {
                 List<ImportNode> imports = compilationUnit.getImportNodes();
                 if ( imports != null && !imports.isEmpty() ) {
                     DefaultMutableTreeNode importsNode = new DefaultMutableTreeNode( "Imports" );
                     root.add( importsNode );
+                    ++expandRow;
                     for ( TigerNode anImport : imports ) {
                         anImport.setStart( ElementUtil.createStartPosition( buffer, anImport ) );
                         anImport.setEnd( ElementUtil.createEndPosition( buffer, anImport ) );
                         importsNode.add( new DefaultMutableTreeNode( anImport ) );
+                        ++expandRow;
                     }
                 }
             }
@@ -216,10 +222,12 @@ public class JavaParser extends SideKickParser implements EBComponent {
                         child.setEnd( ElementUtil.createEndPosition( buffer, child ) );
                         DefaultMutableTreeNode cuChild = new DefaultMutableTreeNode( child );
                         root.add( cuChild );
+                        parsedData.expansionModel.add(++expandRow);        // TODO: adjust this to not expand method nodes by default
                         addChildren( buffer, cuChild, child );
                     }
                 }
             }
+            
         }
         catch ( ParseException e ) {    // NOPMD
             // removed exception handling, all ParseExceptions are now caught
@@ -238,24 +246,14 @@ public class JavaParser extends SideKickParser implements EBComponent {
             }
         }
 
-        /* only handle errors when buffer is saved or code completion is off. Otherwise,
-        there will be a lot of spurious errors shown when code completion is on and the
-        user is in the middle of typing something. */
+        // only handle errors when buffer is saved or code completion is off. Otherwise,
+        // there will be a lot of spurious errors shown when code completion is on and the
+        // user is in the middle of typing something. 
         boolean complete_instant = jEdit.getBooleanProperty( "sidekick.complete-instant.toggle", true );
         boolean complete_delay = jEdit.getBooleanProperty( "sidekick.complete-delay.toggle", true );
         boolean complete_on = complete_instant || complete_delay;
         if ( !complete_on && errorSource != null ) {
             handleErrors( errorSource, parser, buffer );
-
-            /*  remove this, CheckImports is deprecated
-            // maybe check imports -- should have an option setting for this
-            // this is slow, so it will cause a huge problem when code completion is
-            // on.
-            if ("true".equals(jEdit.getProperty("javasidekick.checkImports"))) {
-                CheckImports tool = new CheckImports();
-                tool.checkImports( compilationUnit );
-        }
-            */
         }
         return parsedData;
     }
