@@ -86,6 +86,8 @@ public class IndexProjectAction extends Action
 						return null;
 					return files.get(index++);
 				}
+				if (! project.tryLock())
+					return null;
 				Collection<VPTNode> nodes = project.getOpenableNodes();
 				files = new Vector<VFSFile>();
 				for (VPTNode n : nodes)
@@ -98,6 +100,7 @@ public class IndexProjectAction extends Action
 							files.add(file);
 					}
 				}
+				project.unlock();
 				return next();
 			}
 		}
