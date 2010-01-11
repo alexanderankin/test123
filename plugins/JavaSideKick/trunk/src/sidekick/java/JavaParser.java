@@ -161,8 +161,9 @@ public class JavaParser extends SideKickParser implements EBComponent {
             // re-init the labeler
             TigerLabeler.setDisplayOptions( displayOpt );
 
-            if ( buffer.getLength() <= 0 )
+            if ( buffer.getLength() <= 0 ) {
                 return parsedData;
+            }
             // read the source code directly from the Buffer rather than from the
             // file.  This means:
             // 1) a modifed buffer can be parsed without a save
@@ -194,8 +195,8 @@ public class JavaParser extends SideKickParser implements EBComponent {
 
             parsedData.expansionModel = new ArrayList<Integer>();
             int expandRow = 0;
-            parsedData.expansionModel.add(expandRow);
-            
+            parsedData.expansionModel.add( expandRow );
+
             // maybe show imports, but don't expand them
             if ( filterOpt.getShowImports() == true ) {
                 List<ImportNode> imports = compilationUnit.getImportNodes();
@@ -207,7 +208,6 @@ public class JavaParser extends SideKickParser implements EBComponent {
                         anImport.setStart( ElementUtil.createStartPosition( buffer, anImport ) );
                         anImport.setEnd( ElementUtil.createEndPosition( buffer, anImport ) );
                         importsNode.add( new DefaultMutableTreeNode( anImport ) );
-                        ++expandRow;
                     }
                 }
             }
@@ -217,17 +217,17 @@ public class JavaParser extends SideKickParser implements EBComponent {
                 Collections.sort( compilationUnit.getChildren(), nodeSorter );
                 for ( Iterator it = compilationUnit.getChildren().iterator(); it.hasNext(); ) {
                     TigerNode child = ( TigerNode ) it.next();
+
                     if ( canShow( child ) ) {
                         child.setStart( ElementUtil.createStartPosition( buffer, child ) );
                         child.setEnd( ElementUtil.createEndPosition( buffer, child ) );
                         DefaultMutableTreeNode cuChild = new DefaultMutableTreeNode( child );
                         root.add( cuChild );
-                        parsedData.expansionModel.add(++expandRow);        // TODO: adjust this to not expand method nodes by default
+                        parsedData.expansionModel.add( ++expandRow );        // TODO: adjust this to not expand method nodes by default
                         addChildren( buffer, cuChild, child );
                     }
                 }
             }
-            
         }
         catch ( ParseException e ) {    // NOPMD
             // removed exception handling, all ParseExceptions are now caught
@@ -248,7 +248,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
 
         // only handle errors when buffer is saved or code completion is off. Otherwise,
         // there will be a lot of spurious errors shown when code completion is on and the
-        // user is in the middle of typing something. 
+        // user is in the middle of typing something.
         boolean complete_instant = jEdit.getBooleanProperty( "sidekick.complete-instant.toggle", true );
         boolean complete_delay = jEdit.getBooleanProperty( "sidekick.complete-delay.toggle", true );
         boolean complete_on = complete_instant || complete_delay;
@@ -352,28 +352,36 @@ public class JavaParser extends SideKickParser implements EBComponent {
     // single place to check the filter settings, that is, check to see if it
     // is okay to show a particular node
     private boolean canShow( TigerNode node ) {
-        if ( !isVisible( node ) )       // visibility based on option settings
+        if ( !isVisible( node ) ) {      // visibility based on option settings
             return false;
-        if ( !node.isVisible() )         // visibility based on the node itself
+        }
+        if ( !node.isVisible() ) {        // visibility based on the node itself
             return false;
-        if ( node.getOrdinal() == TigerNode.BLOCK )
+        }
+        if ( node.getOrdinal() == TigerNode.BLOCK ) {
             return false;
-        if ( node.getOrdinal() == TigerNode.INITIALIZER )
+        }
+        if ( node.getOrdinal() == TigerNode.INITIALIZER ) {
             return filterOpt.getShowInitializers();
-        if ( node.getOrdinal() == TigerNode.EXTENDS )
+        }
+        if ( node.getOrdinal() == TigerNode.EXTENDS ) {
             return filterOpt.getShowGeneralizations();
-        if ( node.getOrdinal() == TigerNode.IMPLEMENTS )
+        }
+        if ( node.getOrdinal() == TigerNode.IMPLEMENTS ) {
             return filterOpt.getShowGeneralizations();
+        }
         if ( node.getOrdinal() == TigerNode.FIELD && filterOpt.getShowFields() ) {
-            if ( ( ( FieldNode ) node ).isPrimitive() )
+            if ( ( ( FieldNode ) node ).isPrimitive() ) {
                 return filterOpt.getShowPrimitives();
+            }
             return true;
         }
         if ( node.getOrdinal() == TigerNode.VARIABLE ) {
             return filterOpt.getShowVariables();
         }
-        if ( node.getOrdinal() == TigerNode.THROWS )
+        if ( node.getOrdinal() == TigerNode.THROWS ) {
             return filterOpt.getShowThrows();
+        }
         return true;
     }
 

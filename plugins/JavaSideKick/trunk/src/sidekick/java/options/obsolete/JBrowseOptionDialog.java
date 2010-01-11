@@ -32,7 +32,7 @@ import javax.swing.JPanel;
 
 import org.gjt.sp.jedit.jEdit;
 
-
+// NOTE: this class is no longer used.
 public class JBrowseOptionDialog extends JDialog implements ActionListener {
     
     private JavaParser parent;
