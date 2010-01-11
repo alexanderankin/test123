@@ -105,6 +105,7 @@ public class ProjectBuilderPlugin extends EditPlugin {
 	   if (proj == null) {
 	   	   GUIUtilities.error(view, "projectBuilder.msg.no-project", null)
 	    } else {
+	    	JEDIT.saveSettings()
 	    	JEDIT.getAction("error-list-clear").invoke(view)
 	    	BuildCommand.run(view, proj)
 	    	System.gc()
