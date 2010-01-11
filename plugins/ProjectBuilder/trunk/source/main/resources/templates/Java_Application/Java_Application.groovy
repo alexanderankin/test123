@@ -1,4 +1,5 @@
 import projectbuilder.builder.ProjectBuilder as PB
+import projectbuilder.ProjectBuilderPlugin
 import groovy.swing.SwingBuilder
 import javax.swing.*
 import org.gjt.sp.jedit.*
@@ -71,6 +72,7 @@ if (answer == JOptionPane.OK_OPTION) {
 				open.add("${project.directory.path}/${project.name}/src/${mainClass}.java")
 			}
 		}
+		ProjectBuilderPlugin.cmd("echo 'hello world'", project.directory.path)
 	}
 	project.build = "ant all"
 	project.run = "java -jar ${dist}/${project.name}.jar"
