@@ -15,12 +15,14 @@ public class Runner implements Runnable
 	private Process process;
 	private StateListener stateListener;
 	private OutputHandler outputHandler;
+	private boolean aborted;
 
 	public Runner(View view, Vector<String> paths)
 	{
 		this.view = view;
 		this.paths = new Vector<String>(paths);
 		outputHandler = new OutputHandler();
+		aborted = false;
 	}
 
 	public OutputHandler getOutputHandler()
@@ -52,6 +54,10 @@ public class Runner implements Runnable
 	{
 		if (process != null)
 			process.destroy();
+		synchronized(this)
+		{
+			aborted = true;
+		}
 	}
 
 	public void run()
@@ -72,6 +78,11 @@ public class Runner implements Runnable
 		Runtime.getRuntime().addShutdownHook(new ShutdownThread());
 		for (String path: paths)
 		{
+			synchronized(this)
+			{
+				if (aborted)
+					break;
+			}
 			args[numArgs] = path;
 			String cmdLine = getCommandString(args);
 			outputHandler.startTask(cmdLine);

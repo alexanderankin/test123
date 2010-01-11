@@ -4,7 +4,6 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import cppcheck.Plugin.Listener;
 import cppcheck.Runner.LineHandler;
 
 public class OutputHandler extends LineHandler
