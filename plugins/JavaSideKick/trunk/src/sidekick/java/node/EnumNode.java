@@ -45,13 +45,6 @@ public class EnumNode extends TigerNode {
     public int getOrdinal() {
         return ENUM;
     }
-    
-	/**
-	 * Overridden to return false.    
-	 */
-    public boolean canAdd(TigerNode node) {
-        return false;   
-    }
 }
 
 

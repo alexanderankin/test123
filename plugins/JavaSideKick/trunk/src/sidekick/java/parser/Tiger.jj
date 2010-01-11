@@ -1440,14 +1440,14 @@ TigerNode EnumDeclaration(Modifier m):
 {
     Token t = null;
     Token start_t = null;
-    Location end_loc = null;
+    TigerNode body = null;
 }
 {
     try {
 
         start_t="enum" t=<IDENTIFIER>
         [ ImplementsList(false) ]
-        end_loc=EnumBody()
+        body=EnumBody()
 
     }
     catch(ParseException pe) {
@@ -1475,43 +1475,62 @@ TigerNode EnumDeclaration(Modifier m):
             else
                 node.setStartLocation(getLocation(m));
         }
-        if (end_loc != null)
-            node.setEndLocation(end_loc);
+        node.setEndLocation(body.getEndLocation());
+        node.addChildren(body.getChildren());
         return node;
     }
 }
 
 // returns the end location of the enum body
-Location EnumBody():
+TigerNode EnumBody():
 {
-    Token t = null;
+    Token start_t = null;
+    Token end_t = null;
+    List<TigerNode> constants = new ArrayList<TigerNode>();
+    TigerNode constant;
 }
 {
     try {
-
-        "{"
-        EnumConstant() ( "," EnumConstant() )*
+        start_t="{"
+        constant = EnumConstant(){constants.add(constant);} ( "," constant=EnumConstant(){constants.add(constant);} )*
         [ ";" ( ClassOrInterfaceBodyDeclaration(false) )* ]
-        t="}"
-
+        end_t="}"
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);
     }
     {
-        return t == null ? null : getLocation(t);
+        TigerNode node = new TigerNode();
+        node.setStartLocation(getLocation(start_t));
+        node.setEndLocation(getEndLocation(end_t));
+        node.addChildren(constants);
+        return node;
     }
 }
 
-/// what is this?  Should I be handling it?
-void EnumConstant():
-{}
+/**
+ * @return an enum constant value
+ */
+TigerNode EnumConstant():
+{
+    Token t = null;
+    TigerNode node = null;
+}
 {
     try {
-        <IDENTIFIER> [ Arguments() ] [ ClassOrInterfaceBody(false) ]
+        t=<IDENTIFIER> [ Arguments() ] [ ClassOrInterfaceBody(false) ]
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);
+    }
+    {
+        if (t != null) {
+            node = new TigerNode();
+            node.setName(t.image);
+            node.setStartLocation(getLocation(t));
+            node.setEndLocation(getEndLocation(t));
+        }
+        return node;
     }
 }
 

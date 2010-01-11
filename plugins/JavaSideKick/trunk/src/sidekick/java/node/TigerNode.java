@@ -39,7 +39,7 @@ import sidekick.util.Location;
 import org.gjt.sp.util.Log;
 
 /**
- * Base class for all "node's" in a file.  A single file is represented by a
+ * Base class for all "nodes" in a file.  A single file is represented by a
  * CompilationUnit, which may contain one or more interfaces or classes, which
  * in turn may contain one or more fields and/or one or more methods and/or
  * one or more enum types, or any other kind of member element.  This base class
