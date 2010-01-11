@@ -82,6 +82,12 @@ public class SideKickParsedData
          * Plugin parsers should add nodes to the root node.
          */
         public DefaultMutableTreeNode root;
+        
+        /**
+         * Plugin parsers may set the tree expansion model based on options settings
+         * or other considerations.  This is a list of row numbers to be expanded.
+         */
+        public List<Integer> expansionModel = null;
 
 
         //{{{ SideKickParsedData constructor
