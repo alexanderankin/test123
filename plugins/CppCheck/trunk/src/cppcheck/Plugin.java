@@ -3,8 +3,11 @@ package cppcheck;
 import java.util.Iterator;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
+
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 
 import cppcheck.Runner.StateListener;
 
@@ -19,6 +22,8 @@ public class Plugin extends EditPlugin
 {
 	public static final String OPTION = "options.cppcheck.";
 	public static final String MESSAGE = "messages.cppcheck.";
+	public static final String CANNOT_LOCK_PROJECT_PROP = MESSAGE +
+		"cannotLockProject";
 	private static DefaultErrorSource errorSource;
 	private static Vector<Runner> runners = new Vector<Runner>();
 	private static Vector<Listener> listeners =
@@ -56,12 +61,19 @@ public class Plugin extends EditPlugin
 		VPTProject p = ProjectViewer.getActiveProject(view);
 		if (p == null)
 			return;
+		if (! p.tryLock())
+		{
+			JOptionPane.showMessageDialog(view,
+				jEdit.getProperty(CANNOT_LOCK_PROJECT_PROP));
+			return;
+		}
 		Vector<String> files = new Vector<String>();
 		Iterator<VPTNode> nodes = p.getOpenableNodes().iterator();
 		while (nodes.hasNext()) {
 			VPTNode node = nodes.next();
 			files.add(node.getNodePath());
 		}
+		p.unlock();
 		checkPaths(view, files);
 	}
 
