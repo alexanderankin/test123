@@ -411,15 +411,25 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 		}
 		updateSearchData();
 
-		if (autoExpandTree == -1)
-			expandAll(true);
-		else if (autoExpandTree == 0)
-			expandAll(false);
-		else if (autoExpandTree > 0) {
-			tree.expandRow( 0 );
-			for (int i = 1; i < autoExpandTree; i++) {
-				for ( int j = tree.getRowCount() - 1; j > 0; j-- )
-				    tree.expandRow( j );
+		if (data.expansionModel != null) 
+		{
+			for (Integer row : data.expansionModel) 
+			{
+				tree.expandRow(row);	
+			}
+		}
+		else 
+		{
+			if (autoExpandTree == -1)
+				expandAll(true);
+			else if (autoExpandTree == 0)
+				expandAll(false);
+			else if (autoExpandTree > 0) {
+				tree.expandRow( 0 );
+				for (int i = 1; i < autoExpandTree; i++) {
+					for ( int j = tree.getRowCount() - 1; j > 0; j-- )
+					    tree.expandRow( j );
+				}
 			}
 		}
 
