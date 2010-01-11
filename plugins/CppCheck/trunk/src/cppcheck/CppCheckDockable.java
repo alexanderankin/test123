@@ -160,7 +160,7 @@ public class CppCheckDockable extends JPanel
 		final int selected = runners.getSelectedIndex();
 		if (selected < 0)
 			return;
-		CppCheckTab tab = (CppCheckTab) runners.getTabComponentAt(selected);
+		CppCheckTab tab = (CppCheckTab) runners.getComponent(selected);
 		if (tab != null)
 			tab.abort();
 		SwingUtilities.invokeLater(new Runnable()

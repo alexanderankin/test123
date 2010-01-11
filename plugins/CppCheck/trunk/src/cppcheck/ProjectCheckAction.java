@@ -17,9 +17,6 @@ import projectviewer.vpt.VPTProject;
 
 public class ProjectCheckAction extends Action
 {
-	private static final String CANNOT_LOCK_PROJECT_PROP = Plugin.MESSAGE +
-		"cannotLockProject";
-
 	public ProjectCheckAction()
 	{
 		super("cppcheck-project");
@@ -42,7 +39,7 @@ public class ProjectCheckAction extends Action
 			if (! project.tryLock())
 			{
 				JOptionPane.showMessageDialog(viewer.getView(),
-					jEdit.getProperty(CANNOT_LOCK_PROJECT_PROP));
+					jEdit.getProperty(Plugin.CANNOT_LOCK_PROJECT_PROP));
 				return;
 			}
 			Collection<VPTNode> nodes = project.getOpenableNodes();
