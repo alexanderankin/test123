@@ -105,7 +105,7 @@ public class ProjectBuilderPlugin extends EditPlugin {
 	   if (proj == null) {
 	   	   GUIUtilities.error(view, "projectBuilder.msg.no-project", null)
 	    } else {
-	    	AntFarmPlugin.getErrorSource().clear()
+	    	JEDIT.getAction("error-list-clear").invoke(view)
 	    	BuildCommand.run(view, proj)
 	    	System.gc()
 	   }
@@ -132,8 +132,8 @@ public class ProjectBuilderPlugin extends EditPlugin {
 			Shell system = Shell.getShell("System")
 			console.run(system, cd)
 			system.waitFor(console)
-			console.run(system, cmd)
 			console.clear()
+			console.run(system, cmd)
 		}
    }
    
@@ -145,5 +145,16 @@ public class ProjectBuilderPlugin extends EditPlugin {
    	   }
    	   BuildCommand.editCommands(view, proj)
    }
+   
+   public static void cmd(String cmd, String dir) {
+   	   View view = JEDIT.getActiveView()
+   	   JComponent console = view.getDockableWindowManager().getDockable("console")
+	   Shell system = Shell.getShell("System")
+	   console.run(system, "cd \""+dir+"\"")
+	   system.waitFor(console)
+	   console.run(system, cmd)
+	   console.clear()
+   }
+   
 }
 
