@@ -25,7 +25,6 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.Macros;
 import org.gjt.sp.jedit.jEdit;
 // }}} imports
-// NOTE: This is more of a Java-style way of doing this, so it should probably be rewritten to be more "Groovy"-like
 /**
  * A dialog for editing build settings of a project
  */
