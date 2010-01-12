@@ -1,21 +1,21 @@
 /*
- * DisplayOptions.java - Immutable display options for JBrowse
- *
- * Copyright (c) 1999-2001 George Latkiewicz, Andre Kaplan
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+* DisplayOptions.java - Immutable display options for JBrowse
+*
+* Copyright (c) 1999-2001 George Latkiewicz, Andre Kaplan
+*
+* This program is free software; you can redistribute it and/or
+* modify it under the terms of the GNU General Public License
+* as published by the Free Software Foundation; either version 2
+* of the License, or any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 
@@ -23,81 +23,109 @@ package sidekick.java.options.obsolete;
 
 
 /**
- * Interface for accessing Display options for JBrowse
+ * Class for accessing Display options for JavaSideKick
  * @author George Latkiewicz
  * @author Andre Kaplan
  * @version $Id$
 **/
-public interface DisplayOptions
-{
+public class DisplayOptions {
     // Display Style options (HOW)
 
-    // constants - for styleIndex
-    int STYLE_FIRST  = 0;
-    int STYLE_UML    = 0;
-    int STYLE_JAVA   = 1;
-    int STYLE_CUSTOM = 2;
-    int STYLE_LAST   = 2;
+    public static final int STYLE_UML = 0;
+    public static final int STYLE_JAVA = 1;
+    public static final int STYLE_CUSTOM = 2;
 
+    public static final int SORT_BY_LINE = 0;
+    public static final int SORT_BY_NAME = 1;
+    public static final int SORT_BY_VISIBILITY = 2;
 
     // show arguments, pertains to constuctors and methods, if true, show the
     // argument type, e.g. int or String
-    boolean getShowArguments();
+    public boolean getShowArguments() {
+        jEdit.getBooleanProperty( "sidekick.java.showArgs", true ) ;
+    }
 
     // show argument name, pertains to constructors and methods, if true, show
     // the declared name of the argument, e.g. the x in "int x".
-    boolean getShowArgumentNames();
+    public boolean getShowArgumentNames() {
+        jEdit.getBooleanProperty( "sidekick.java.showArgNames", false ) ;
+    }
 
     // show qualified nested class or interface names
-    boolean getShowNestedName();
+    public boolean getShowNestedName() {
+        jEdit.getBooleanProperty( "sidekick.java.showNestedName", false );
+    }
 
     // not clear on this one -- appears to mean to show keywords like 'class' or
     // 'interface' beside the icon
-    boolean getShowIconKeywords();
+    public boolean getShowIconKeywords() {
+        jEdit.getBooleanProperty( "sidekick.java.showIconKeywords", false );
+    }
 
     // if true, show the other modifiers, the ones other than public, protected,
     // and private, e.g. synchronized, native, transient, etc.
-    boolean getShowMiscMod();
+    public boolean getShowMiscMod() {
+        jEdit.getBooleanProperty( "sidekick.java.showMiscMod", false );
+    }
 
     // show the uml icons
-    boolean getShowIcons();
-    boolean getShowIconsLikeEclipse();
+    public boolean getShowIcons() {
+        jEdit.getBooleanProperty( "sidekick.java.showIcons", true );
+    }
+    
+    public boolean getShowIconsLikeEclipse() {
+        jEdit.getBooleanProperty( "sidekick.java.showIconsLikeEclipse", false );
+    }
 
     // show the line number
-    boolean getShowLineNum();
+    public boolean getShowLineNum() {
+        jEdit.getBooleanProperty( "sidekick.java.showLineNums", false );
+    }
 
     // how to sort
-    String getSortBy();
+    public int getSortBy() {
+        jEdit.getIntegerProperty( "sidekick.java.sortBy", SORT_BY_NAME );
+    }
 
     // show generic type arguments
-    boolean getShowTypeArgs();
-
-    // show errors in ErrorList?
-    boolean getShowErrors();
-
+    public boolean getShowTypeArgs() {
+        jEdit.getBooleanProperty( "sidekick.java.showTypeArgs", false );
+    }
 
     // one of the style constance from above
-    int getStyleIndex();
+    int getStyleIndex() {
+        jEdit.getIntegerProperty( "sidekick.java.displayStyle", STYLE_UML );
+    }
 
 
     // if true, use +, #, and - for public, protected, and private respectively
-    boolean getVisSymbols();
+    public boolean getVisSymbols() {
+        jEdit.getBooleanProperty( "sidekick.java.custVisAsSymbol", true );
+    }
+    
     // if true, use "public", "protected", and "private"
-    boolean getVisWords();
+    public boolean getVisWords() {
+        jEdit.getBooleanProperty( "sidekick.java.custVisAsWord", false );
+    }
+    
     // if true, don't show any visibility markup
-    boolean getVisNone();
+    public boolean getVisNone() {
+        jEdit.getBooleanProperty( "sidekick.java.custVisAsNone", false );
+    }
 
     // if true, show abstract class names and methods in italics
-    boolean getAbstractItalic();
+    public boolean getAbstractItalic() {
+        jEdit.getBooleanProperty( "sidekick.java.custAbsAsItalic", true );
+    }
 
     // if true, underline all static items
-    boolean getStaticUlined();
+    public boolean getStaticUlined() {
+        jEdit.getBooleanProperty( "sidekick.java.custStaAsUlined", true );
+    }
 
     // if true is returned, then show the method return type after the rest of
     // the method string (UML style), if false, then show it up front (Java style)
-    boolean getTypeIsSuffixed();
-
-    // inverts the options, used for tool tips
-    DisplayOptions getInverseOptions();
+    public boolean getTypeIsSuffixed() {
+        jEdit.getBooleanProperty( "sidekick.java.custTypeIsSuffixed", true );
+    }
 }
-
