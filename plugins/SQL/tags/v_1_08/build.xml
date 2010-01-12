@@ -17,16 +17,17 @@
   <property name="src.dir" value="."/>
   <property name="build.dir" value="build"/>
   <property name="install.dir"  value=".."/>
+  <property name="jedit.plugins.dir"  value="${install.dir}"/>
 
   <path id="project.class.path">
     <pathelement location="${jedit.install.dir}/jedit.jar"/>
-    <pathelement location="${install.dir}/bsh.jar"/>
-    <pathelement location="${install.dir}/xerces.jar"/>
-    <pathelement location="${install.dir}/bsh.jar"/>
-    <pathelement location="${install.dir}/CommonControls.jar"/>
-    <pathelement location="${install.dir}/Sessions.jar"/>
-    <pathelement location="${install.dir}/ProjectViewer.jar"/>
-    <pathelement location="${install.dir}/ErrorList.jar"/>
+    <pathelement location="${jedit.plugins.dir}/bsh.jar"/>
+    <pathelement location="${jedit.plugins.dir}/xerces.jar"/>
+    <pathelement location="${jedit.plugins.dir}/bsh.jar"/>
+    <pathelement location="${jedit.plugins.dir}/CommonControls.jar"/>
+    <pathelement location="${jedit.plugins.dir}/Sessions.jar"/>
+    <pathelement location="${jedit.plugins.dir}/ProjectViewer.jar"/>
+    <pathelement location="${jedit.plugins.dir}/ErrorList.jar"/>
     <pathelement location="."/>
   </path>
 
