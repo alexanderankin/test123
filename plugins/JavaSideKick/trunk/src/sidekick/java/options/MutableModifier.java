@@ -19,7 +19,7 @@
 */
 
 
-package sidekick.java.options.obsolete;
+package sidekick.java.options;
 
 
 

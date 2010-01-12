@@ -1,11 +1,17 @@
-package sidekick.java;
+package sidekick.java.options;
 
+import java.awt.FlowLayout;
 import javax.swing.*;
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
 
-
+/**
+ * Option pane to let the user choose what to display in the sidekick tree.
+ */
 public class FilterOptionPane extends AbstractOptionPane {
+
+    // TODO: put label text in a property
+    private JLabel titleLabel = new JLabel( "<html><b>Filter Options:</b> What to include" );
 
     private JCheckBox attributesCheckBox;
     private JCheckBox includePrimitivesCheckBox;
@@ -22,14 +28,19 @@ public class FilterOptionPane extends AbstractOptionPane {
     private String[] memberVisibilityNames = { "private", "package", "protected", "public" };
 
     public FilterOptionPane() {
-        super("Filter");   
+        super( "Filter" );
     }
 
     protected void _init() {
+        installComponents();
+        installDefaults();
+    }
+    
+    /**
+     * Create and add all GUI components.    
+     */
+    private void installComponents() {
         setBorder( BorderFactory.createEmptyBorder( 11, 11, 12, 12 ) );
-
-        // TODO: put this in a property
-        JLabel titleLabel = new JLabel( "<html><b>Filter Options:</b> What to include" );
 
         attributesCheckBox = new JCheckBox( jEdit.getProperty( "options.sidekick.java.showAttr", "Attributes" ) );
         includePrimitivesCheckBox = new JCheckBox( jEdit.getProperty( "options.sidekick.java.showPrimAttr", "include primitives" ) );
@@ -45,8 +56,11 @@ public class FilterOptionPane extends AbstractOptionPane {
 
         addComponent( titleLabel );
         addComponent( Box.createVerticalStrut( 11 ) );
-        addComponent( attributesCheckBox );
-        addComponent( includePrimitivesCheckBox );
+        JPanel panel = new JPanel( new FlowLayout( FlowLayout.LEFT, 0, 0 ) );
+        panel.add( attributesCheckBox );
+        panel.add( Box.createHorizontalStrut( 6 ) );
+        panel.add( includePrimitivesCheckBox );
+        addComponent( panel );
         addComponent( showImportsCheckBox );
         addComponent( showLocalVariablesCheckBox );
         addComponent( showStaticInitializersCheckBox );
@@ -55,8 +69,24 @@ public class FilterOptionPane extends AbstractOptionPane {
 
         addComponent( Box.createVerticalStrut( 11 ) );
         addComponent( visibilityLevelLabel );
+        addComponent( Box.createVerticalStrut( 6 ) );
         addComponent( jEdit.getProperty( "options.sidekick.java.topLevelVis", "Top level:" ), topLevelVisibilityComboBox );
         addComponent( jEdit.getProperty( "options.sidekick.java.memberVis", "Member:" ), memberVisibilityComboBox );
+    }
+    
+    /**
+     * Set/restore values from jEdit properties.    
+     */
+    private void installDefaults() {
+        attributesCheckBox.setSelected( jEdit.getBooleanProperty( "options.sidekick.java.showAttr", true ) );
+        includePrimitivesCheckBox.setSelected( jEdit.getBooleanProperty( "options.sidekick.java.showPrimAttr", true ) );
+        showImportsCheckBox.setSelected( jEdit.getBooleanProperty( "options.sidekick.java.showImports", true ) );
+        showLocalVariablesCheckBox.setSelected( jEdit.getBooleanProperty( "options.sidekick.java.showVariables", false ) );
+        showStaticInitializersCheckBox.setSelected( jEdit.getBooleanProperty( "options.sidekick.java.showInitializers", false ) );
+        showExtendsImplementsCheckBox.setSelected( jEdit.getBooleanProperty( "options.sidekick.java.showGeneralizations", false ) );
+        showThrowsCheckBox.setSelected( jEdit.getBooleanProperty( "options.sidekick.java.showThrows", false ) );
+        topLevelVisibilityComboBox.setSelectedItem(jEdit.getProperty("sidekick.java.topLevelVisIndex", "public"));
+        memberVisibilityComboBox.setSelectedItem(jEdit.getProperty("sidekick.java.memberVisIndex", "private"));
     }
 
 

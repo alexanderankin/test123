@@ -34,7 +34,7 @@ import java.util.regex.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import sidekick.java.node.*;
-import sidekick.java.options.obsolete.*;
+import sidekick.java.options.*;
 import sidekick.java.parser.*;
 
 import sidekick.util.ElementUtil;
@@ -53,7 +53,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
     private View currentView = null;
     private GeneralOptions options;
     private MutableFilterOptions filterOpt;
-    private MutableDisplayOptions displayOpt;
+    private DisplayOptions displayOpt;
     private boolean sorted = true;      // are the tree nodes sorted by type?
 
     private JavaCompletionFinder completionFinder = null;
