@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<!-- This file defines actions. Each action is a short snippet of
+     BeanShell code that may be bound to a menu item or keystroke.
+
+     Menu item labels for actions should be defined in properties named
+     <action>.label. -->
+<ACTIONS>
+  <ACTION NAME="sql.fileBrowserActions.showDatabases">
+    <CODE>
+      browser.setDirectory( "sql:" );
+    </CODE>
+  </ACTION>
+</ACTIONS>
