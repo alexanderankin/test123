@@ -19,8 +19,9 @@
 */
 
 
-package sidekick.java.options.obsolete;
+package sidekick.java.options;
 
+import org.gjt.sp.jedit.jEdit;
 
 /**
  * Class for accessing Display options for JavaSideKick

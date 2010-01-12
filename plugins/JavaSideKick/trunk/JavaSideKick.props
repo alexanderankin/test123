@@ -26,8 +26,6 @@ Tiger2.label=JavaSideKick
 
 # menu
 # Menu bar properties
-plugin.sidekick.java.JavaSideKickPlugin.option-pane=sidekick.java
-#plugin.sidekick.java.JavaSideKickPlugin.label=JavaSideKick
 plugin.sidekick.java.JavaSideKickPlugin.menu-item=sidekick.parser.java-switch
 sidekick.parser.java-switch.label=Java SideKick
 

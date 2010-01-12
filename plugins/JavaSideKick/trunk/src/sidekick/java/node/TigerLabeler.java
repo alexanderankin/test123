@@ -31,7 +31,7 @@ import javax.swing.event.*;
 import javax.swing.tree.*;
 import org.gjt.sp.jedit.GUIUtilities;
 
-import sidekick.java.options.obsolete.*;
+import sidekick.java.options.*;
 
 /**
  * Most of the display settings (how to show) are handled here.
@@ -43,9 +43,6 @@ public class TigerLabeler {
 
     // current option settings
     private static DisplayOptions options = null;
-
-    // inverse options for tool tips
-    private static DisplayOptions inverseOptions = null;
 
     // various icons for display
     protected static ImageIcon CU_ICON = null;
@@ -101,214 +98,214 @@ public class TigerLabeler {
         try {
             CU_ICON = (ImageIcon) GUIUtilities.loadIcon("OpenFile.png");
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             IMPORT_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/Import.gif"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             ERROR_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/Error.gif"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             CLASS_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/Class.gif"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             INNER_CLASS_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/InnerClass.gif"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             EXTENDS_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/Extends.gif"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             IMPLEMENTS_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/Implements.gif"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             INTERFACE_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/Interface.gif"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             CONSTRUCTOR_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/Constructor.gif"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             METHOD_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/Method.gif"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             THROWS_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/Throws.gif"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             FIELD_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/Field.gif"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             ENUM_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/Constructor.gif"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             DEFAULT_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/Operation.gif"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             REGEX_PRODUCTION_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/RegexProduction.gif"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             BNF_PRODUCTION_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/BNFProduction.gif"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             JAVA_PRODUCTION_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/JavaProduction.gif"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             TOKEN_MGR_PRODUCTION_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/TokenMgrProduction.gif"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
 
         // Eclipse icons
         try {
             E_CU_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/jcu_obj.png"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             E_IMPORT_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/imp_obj.png"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             E_INNER_CLASS_PUBLIC_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/innerclass_public_obj.png"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             E_INNER_CLASS_PROTECTED_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/innerclass_protected_obj.png"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             E_INNER_CLASS_PRIVATE_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/innerclass_private_obj.png"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             E_INNER_CLASS_DEFAULT_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/innerclass_default_obj.png"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             E_CLASS_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/class_obj.png"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             E_INTERFACE_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/int_obj.png"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             E_METHOD_PUBLIC_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/methpub_obj.png"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             E_METHOD_PROTECTED_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/methpro_obj.png"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             E_METHOD_PRIVATE_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/methpri_obj.png"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             E_METHOD_DEFAULT_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/methdef_obj.png"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             E_CONSTRUCTOR_DEC_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/constr_ovr.png"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             E_FIELD_PUBLIC_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/field_public_obj.png"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             E_FIELD_PROTECTED_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/field_protected_obj.png"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             E_FIELD_PRIVATE_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/field_private_obj.png"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             E_FIELD_DEFAULT_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/field_default_obj.png"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             E_ENUM_PUBLIC_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/enum_obj.png"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             E_ENUM_PROTECTED_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/enum_protected_obj.png"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             E_ENUM_PRIVATE_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/enum_private_obj.png"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             E_ENUM_DEFAULT_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/enum_default_obj.png"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             E_ABSTRACT_DEC_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/abstract_co.png"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             E_STATIC_DEC_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/static_co.png"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
         try {
             E_FINAL_DEC_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/final_co.png"));
         }
-        catch (Exception e) {
+        catch (Exception e) {     // NOPMD
         }
 
     }
@@ -347,7 +344,6 @@ public class TigerLabeler {
                         break;
                     case TigerNode.IMPORT:
                         icon = E_IMPORT_ICON;
-                        ;
                         break;
                     case TigerNode.CLASS:
                         if (((ClassNode) tn).isInnerClass()) {
@@ -570,13 +566,13 @@ public class TigerLabeler {
             int modifiers = tn.getModifiers();
             if (options.getVisSymbols()) {
                 if (ModifierSet.isPublic(modifiers))
-                    sb.append("+");
+                    sb.append('+');
                 else if (ModifierSet.isProtected(modifiers))
-                    sb.append("#");
+                    sb.append('#');
                 else if (ModifierSet.isPrivate(modifiers))
-                    sb.append("-");
+                    sb.append('-');
                 else
-                    sb.append(" ");
+                    sb.append(' ');
             }
             else if (options.getVisWords()) {
                 if (ModifierSet.isPublic(modifiers))
@@ -586,7 +582,7 @@ public class TigerLabeler {
                 else if (ModifierSet.isPrivate(modifiers))
                     sb.append("private ");
                 else
-                    sb.append(" ");
+                    sb.append(' ');
             }
 
             // maybe show keywords, this is the "Keywords specified by icons" setting,
@@ -610,7 +606,7 @@ public class TigerLabeler {
             if (options.getShowMiscMod()) {
                 String mods = ModifierSet.modifiersAsString(modifiers);
                 if (mods != null && mods.length() > 0)
-                    sb.append(mods).append(" ");
+                    sb.append(mods).append(' ');
             }
 
             // for methods and fields, maybe add return type before node name
@@ -620,10 +616,10 @@ public class TigerLabeler {
                         sb.append("/*constructor*/");
                         break;
                     case TigerNode.METHOD:
-                        sb.append(((MethodNode) tn).getReturnType()).append(" ");
+                        sb.append(((MethodNode) tn).getReturnType()).append(' ');
                         break;
                     case TigerNode.FIELD:
-                        sb.append(((FieldNode) tn).getType()).append(" ");
+                        sb.append(((FieldNode) tn).getType()).append(' ');
                         break;
                     case TigerNode.ENUM:
                         sb.append("enum ");
@@ -635,7 +631,7 @@ public class TigerLabeler {
             if (options.getShowNestedName() && tn.getParent() != null &&
                     (tn.getOrdinal() == TigerNode.CLASS || tn.getOrdinal() == TigerNode.INTERFACE) &&
                     (tn.getParent().getOrdinal() == TigerNode.CLASS || tn.getParent().getOrdinal() == TigerNode.INTERFACE)) {
-                sb.append(tn.getParent().getName()).append(".");
+                sb.append(tn.getParent().getName()).append('.');
             }
 
             // add the node name
@@ -671,10 +667,10 @@ public class TigerLabeler {
             // for constructors and methods, maybe add the arguments
             if (options.getShowArguments()) {
                 if (tn.getOrdinal() == TigerNode.CONSTRUCTOR) {
-                    sb.append("(").append(((ConstructorNode) tn).getFormalParams(options.getShowArgumentNames(), options.getTypeIsSuffixed(), options.getShowMiscMod(), options.getShowTypeArgs())).append(")");
+                    sb.append('(').append(((ConstructorNode) tn).getFormalParams(options.getShowArgumentNames(), options.getTypeIsSuffixed(), options.getShowMiscMod(), options.getShowTypeArgs())).append(')');
                 }
                 else if (tn.getOrdinal() == TigerNode.METHOD) {
-                    sb.append("(").append(((MethodNode) tn).getFormalParams(options.getShowArgumentNames(), options.getTypeIsSuffixed(), options.getShowMiscMod(), options.getShowTypeArgs())).append(")");
+                    sb.append('(').append(((MethodNode) tn).getFormalParams(options.getShowArgumentNames(), options.getTypeIsSuffixed(), options.getShowMiscMod(), options.getShowTypeArgs())).append(')');
                 }
             }
 

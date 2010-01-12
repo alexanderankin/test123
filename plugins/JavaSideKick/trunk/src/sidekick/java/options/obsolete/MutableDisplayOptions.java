@@ -21,6 +21,7 @@
 
 package sidekick.java.options.obsolete;
 
+import sidekick.java.options.DisplayOptions;
 
 /**
  * JBrowse display options
