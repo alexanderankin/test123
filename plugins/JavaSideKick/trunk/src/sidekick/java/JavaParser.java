@@ -48,10 +48,11 @@ import errorlist.*;
 import sidekick.SideKickCompletion;
 import sidekick.SideKickParser;
 import sidekick.SideKickParsedData;
+import sidekick.SideKickUpdate;
 
 public class JavaParser extends SideKickParser implements EBComponent {
     private View currentView = null;
-    private OptionValues optionValues;
+    private OptionValues optionValues = new OptionValues();
 
     private JavaCompletionFinder completionFinder = null;
 
@@ -82,6 +83,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
             default:
                 parser_type = JAVA_PARSER;
         }
+        EditBus.addToBus( this );
     }
 
     /**
@@ -93,11 +95,9 @@ public class JavaParser extends SideKickParser implements EBComponent {
     public void activate( EditPane editPane ) {
         super.activate( editPane );
         currentView = editPane.getView();
-        EditBus.addToBus( this );
     }
 
     public void deactivate( EditPane editPane ) {
-        EditBus.removeFromBus( this );
         completionFinder = null;
         super.deactivate( editPane );
     }
@@ -110,7 +110,10 @@ public class JavaParser extends SideKickParser implements EBComponent {
         // TODO: fix this, should only parse if properties for this plugin
         // have changed.
         if ( ( msg instanceof PropertiesChanged ) ) {
-            parse();
+            if ( currentView != null ) {
+                currentView = jEdit.getActiveView();
+            }
+            EditBus.send( new SideKickUpdate( currentView ) );
         }
     }
 
@@ -119,8 +122,9 @@ public class JavaParser extends SideKickParser implements EBComponent {
      */
     public void parse() {
         if ( currentView != null ) {
-            parse( currentView.getBuffer(), null );
+            currentView = jEdit.getActiveView();
         }
+        parse( currentView.getBuffer(), null );
     }
 
     /**
