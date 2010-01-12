@@ -109,6 +109,9 @@ public class EditProjectAction extends Action {
 		if (!forceNew) {
 			if (viewer != null) {
 				selected = viewer.getSelectedNode();
+				if (selected == null) {
+					selected = viewer.getRoot();
+				}
 				if (selected.isGroup()) {
 					parent = (VPTGroup) selected;
 				}
