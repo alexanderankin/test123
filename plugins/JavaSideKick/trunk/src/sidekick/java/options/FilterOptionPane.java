@@ -86,7 +86,7 @@ public class FilterOptionPane extends AbstractOptionPane {
         showExtendsImplementsCheckBox.setSelected( jEdit.getBooleanProperty( "sidekick.java.showGeneralizations", false ) );
         showThrowsCheckBox.setSelected( jEdit.getBooleanProperty( "sidekick.java.showThrows", false ) );
         topLevelVisibilityComboBox.setSelectedIndex(jEdit.getIntegerProperty("sidekick.java.topLevelVisIndex", 1));
-        memberVisibilityComboBox.setSelectedIndex(jEdit.getIntegerProperty("sidekick.java.memberVisIndex", 0));
+        memberVisibilityComboBox.setSelectedIndex(jEdit.getIntegerProperty("sidekick.java.memberVisIndex", OptionValues.PRIVATE));
     }
 
 

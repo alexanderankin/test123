@@ -161,10 +161,25 @@ public class DisplayOptionPane extends AbstractOptionPane {
         likeEclipseCheckBox.setSelected( jEdit.getBooleanProperty( "sidekick.java.showIconsLikeEclipse", false ) );
         lineNumbersCheckBox.setSelected( jEdit.getBooleanProperty( "sidekick.java.showLineNums", false ) );
 
-        lineRB.setSelected( jEdit.getBooleanProperty( "sidekick.java.sortByLine", false ) );
-        nameRB.setSelected( jEdit.getBooleanProperty( "sidekick.java.sortByName", true ) );
-        visibilityRB.setSelected( jEdit.getBooleanProperty( "sidekick.java.sortByVisibility", false ) );
-
+        int sortBy = jEdit.getIntegerProperty( "sidekick.java.sortBy", OptionValues.SORT_BY_NAME );
+        switch ( sortBy ) {
+            case OptionValues.SORT_BY_LINE:
+                lineRB.setSelected( true );
+                nameRB.setSelected( false );
+                visibilityRB.setSelected( false );
+                break;
+            case OptionValues.SORT_BY_VISIBILITY:
+                lineRB.setSelected( false );
+                nameRB.setSelected( false );
+                visibilityRB.setSelected( true );
+                break;
+            case OptionValues.SORT_BY_NAME:
+            default:
+                lineRB.setSelected( false );
+                nameRB.setSelected( true );
+                visibilityRB.setSelected( false );
+                break;
+        }
         displayStyleComboBox.setSelectedIndex( jEdit.getIntegerProperty( "sidekick.java.displayStyle", OptionValues.STYLE_UML ) );
 
         symbolsRB.setSelected( jEdit.getBooleanProperty( "sidekick.java.custVisAsSymbol", true ) );
@@ -173,7 +188,7 @@ public class DisplayOptionPane extends AbstractOptionPane {
         abstractCheckBox.setSelected( jEdit.getBooleanProperty( "sidekick.java.custAbsAsItalic", true ) );
         staticCheckBox.setSelected( jEdit.getBooleanProperty( "sidekick.java.custStaAsUlined", true ) );
         typeIdentifierCheckBox.setSelected( jEdit.getBooleanProperty( "sidekick.java.custTypeIsSuffixed", true ) );
-        enableCustomOptions( displayStyleComboBox.getSelectedIndex() == OptionValues.STYLE_CUSTOM);
+        enableCustomOptions( displayStyleComboBox.getSelectedIndex() == OptionValues.STYLE_CUSTOM );
     }
 
     private void installListeners() {
@@ -219,9 +234,14 @@ public class DisplayOptionPane extends AbstractOptionPane {
         jEdit.setBooleanProperty( "sidekick.java.showIconsLikeEclipse", likeEclipseCheckBox.isSelected() ) ;
         jEdit.setBooleanProperty( "sidekick.java.showLineNums", lineNumbersCheckBox.isSelected() ) ;
 
-        jEdit.setBooleanProperty( "sidekick.java.sortByLine", lineRB.isSelected() );
-        jEdit.setBooleanProperty( "sidekick.java.sortByName", nameRB.isSelected() );
-        jEdit.setBooleanProperty( "sidekick.java.sortByVisibility", visibilityRB.isSelected() );
+        int sortBy = OptionValues.SORT_BY_NAME;
+        if ( lineRB.isSelected() ) {
+            sortBy = OptionValues.SORT_BY_LINE;
+        }
+        else if ( visibilityRB.isSelected() ) {
+            sortBy = OptionValues.SORT_BY_VISIBILITY;
+        }
+        jEdit.setIntegerProperty( "sidekick.java.sortBy", sortBy );
 
         jEdit.getIntegerProperty( "sidekick.java.displayStyle", displayStyleComboBox.getSelectedIndex() ) ;
 

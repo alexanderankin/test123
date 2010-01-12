@@ -31,6 +31,7 @@ import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
+import javax.swing.JPanel;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import sidekick.java.node.*;
@@ -266,7 +267,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
     private void addChildren( Buffer buffer, DefaultMutableTreeNode parent, TigerNode tn ) {
         if ( tn.getChildCount() > 0 ) {
             List<TigerNode> children = tn.getChildren();
-            Collections.sort( children, nodeSorter );
+            Collections.sort( children, nodeSorter );   // TODO: don't sort enum values
             for ( Iterator it = children.iterator(); it.hasNext(); ) {
                 TigerNode child = ( TigerNode ) it.next();
                 child.setStart( ElementUtil.createStartPosition( buffer, child ) );
@@ -392,45 +393,43 @@ public class JavaParser extends SideKickParser implements EBComponent {
         }
     }
 
-    private Comparator<TigerNode> nodeSorter = new Comparator<TigerNode>() {
-
-                /**
-                 * Compares a TigerNode to another TigerNode for sorting. Sorting may be by
-                 * line number or node type as determined by the value of "sorted".
-                 * @param o a TigerNode to compare to this node.
-                 * @return a negative integer, zero, or a positive integer as this TigerNode is
-                 * less than, equal to, or greater than the specified TigerNode.
-                 */
-                public int compare( TigerNode tna, TigerNode tnb ) {
-                    int sortBy = optionValues.getSortBy();
-                    switch ( sortBy ) {
-                        case OptionValues.SORT_BY_LINE:
-                            Integer my_line = new Integer( tna.getStartLocation().line );
-                            Integer other_line = new Integer( tnb.getStartLocation().line );
-                            return my_line.compareTo( other_line );
-                        case OptionValues.SORT_BY_VISIBILITY:
-                            Integer my_vis = new Integer( ModifierSet.visibilityRank( tna.getModifiers() ) );
-                            Integer other_vis = new Integer( ModifierSet.visibilityRank( tnb.getModifiers() ) );
-                            int comp = my_vis.compareTo( other_vis );
-                            return comp == 0 ? compareNames( tna, tnb ) : comp;
-                        case OptionValues.SORT_BY_NAME:
-                        default:
-                            return compareNames( tna, tnb );
-
-                    }
+    private Comparator<TigerNode> nodeSorter =
+        new Comparator<TigerNode>() {
+            /**
+             * Compares a TigerNode to another TigerNode for sorting. 
+             * @param tna A TigerNode to compare.
+             * @param tnb A TigerNode to compare.
+             * @return a negative integer, zero, or a positive integer as the first TigerNode is
+             * less than, equal to, or greater than the second TigerNode.
+             */
+            public int compare( TigerNode tna, TigerNode tnb ) {
+                int sortBy = optionValues.getSortBy();
+                switch ( sortBy ) {     // NOPMD, no breaks are necessary here
+                    case OptionValues.SORT_BY_LINE:
+                        Integer my_line = new Integer( tna.getStartLocation().line );
+                        Integer other_line = new Integer( tnb.getStartLocation().line );
+                        return my_line.compareTo( other_line );
+                    case OptionValues.SORT_BY_VISIBILITY:
+                        Integer my_vis = new Integer( ModifierSet.visibilityRank( tna.getModifiers() ) );
+                        Integer other_vis = new Integer( ModifierSet.visibilityRank( tnb.getModifiers() ) );
+                        int comp = my_vis.compareTo( other_vis );
+                        return comp == 0 ? compareNames( tna, tnb ) : comp;
+                    case OptionValues.SORT_BY_NAME:
+                    default:
+                        return compareNames( tna, tnb );
                 }
+            }
 
-                private int compareNames( TigerNode tna, TigerNode tnb ) {
-                    // sort by name
-                    Integer my_ordinal = new Integer( tna.getOrdinal() );
-                    Integer other_ordinal = new Integer( tnb.getOrdinal() );
-                    int comp = my_ordinal.compareTo( other_ordinal );
-                    return comp == 0 ? tna.getName().toLowerCase().compareTo( tnb.getName().toLowerCase() ) : comp;
-                }
-            };
+            private int compareNames( TigerNode tna, TigerNode tnb ) {
+                // sort by name
+                Integer my_ordinal = new Integer( tna.getOrdinal() );
+                Integer other_ordinal = new Integer( tnb.getOrdinal() );
+                int comp = my_ordinal.compareTo( other_ordinal );
+                return comp == 0 ? tna.getName().toLowerCase().compareTo( tnb.getName().toLowerCase() ) : comp;
+            }
+        };
 
-
-
+        
     /**
      * @return true, this parser does support code completion
      */
@@ -445,4 +444,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
         return completionFinder.complete( editPane, caret );
     }
 
+    public JPanel getPanel() {
+        return new JavaModeToolBar(this);   
+    }
 }
