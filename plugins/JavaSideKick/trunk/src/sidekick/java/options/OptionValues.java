@@ -39,6 +39,11 @@ public class OptionValues {
     public static final int SORT_BY_LINE = 0;
     public static final int SORT_BY_NAME = 1;
     public static final int SORT_BY_VISIBILITY = 2;
+    
+    public static final int PRIVATE = 0;
+    public static final int PACKAGE = 1;
+    public static final int PROTECTED = 2;
+    public static final int PUBLIC = 3;
 
     // show arguments, pertains to constuctors and methods, if true, show the
     // argument type, e.g. int or String
