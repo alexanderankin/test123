@@ -34,7 +34,7 @@ import java.util.regex.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import sidekick.java.node.*;
-import sidekick.java.options.*;
+import sidekick.java.options.obsolete.*;
 import sidekick.java.parser.*;
 
 import sidekick.util.ElementUtil;

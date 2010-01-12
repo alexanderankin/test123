@@ -19,7 +19,7 @@
 */
 
 
-package sidekick.java.options;
+package sidekick.java.options.obsolete;
 
 
 import java.awt.BorderLayout;

@@ -31,7 +31,7 @@ import javax.swing.event.*;
 import javax.swing.tree.*;
 import org.gjt.sp.jedit.GUIUtilities;
 
-import sidekick.java.options.*;
+import sidekick.java.options.obsolete.*;
 
 /**
  * Most of the display settings (how to show) are handled here.
