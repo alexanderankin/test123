@@ -18,7 +18,7 @@
 */
 
 
-package sidekick.java.options;
+package sidekick.java.options.obsolete;
 
 import sidekick.java.JavaParser;
 

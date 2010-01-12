@@ -19,7 +19,7 @@
 */
 
 
-package sidekick.java.options;
+package sidekick.java.options.obsolete;
 
 import org.gjt.sp.jedit.jEdit;
 

@@ -74,11 +74,24 @@ sidekick.java.msg.notAJavaBuffer.message=\
     The current buffer [{0}] is not a java buffer.
 
 # Option pane properties
+plugin.sidekick.java.JavaSideKickPlugin.option-group=sidekick.java.general \
+	sidekick.java.filter \
+	sidekick.java.display
 
-# Global Plugin Options
-options.sidekick.java.label=JavaSideKick
-options.sidekick.java.code=new sidekick.java.options.JBrowseOptionPane()
-options.sidekick.java.panel_label=Java SideKick Options
+options.sidekick.java.general.label=General
+options.sidekick.java.general.code=new sidekick.java.options.GeneralOptionPane();
+
+options.sidekick.java.filter.label=Filter
+options.sidekick.java.filter.code=new sidekick.java.options.FilterOptionPane();
+
+options.sidekick.java.display.label=Display
+options.sidekick.java.display.code=new sidekick.java.options.DisplayOptionPane();
+
+
+# Global Plugin Options - obsolete
+#options.sidekick.java.label=JavaSideKick
+#options.sidekick.java.code=new sidekick.java.options.JBrowseOptionPane()
+#options.sidekick.java.panel_label=Java SideKick Options
 
 # Session Plugin Options
 options.jbrowse_tree.label=Structure View
