@@ -29,6 +29,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.tree.*;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.GUIUtilities;
 
 import sidekick.java.options.*;
@@ -521,12 +522,6 @@ public class TigerLabeler {
         return icon;
     }
 
-
-    private static JFrame frame = new JFrame();
-    static {
-        frame.pack();
-    }
-
     /**
      * Description of the Method
      *
@@ -538,7 +533,7 @@ public class TigerLabeler {
      * @return                Description of the Returned Value
      */
     private static ImageIcon blend(ImageIcon bottom, int bottomLocation, ImageIcon top, int topLocation, Dimension minimumSize) {
-        return IconBlender.blend(frame, bottom, bottomLocation, top, topLocation, minimumSize);
+        return IconBlender.blend(jEdit.getActiveView(), bottom, bottomLocation, top, topLocation, minimumSize);
     }
 
     /**

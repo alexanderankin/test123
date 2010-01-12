@@ -78,26 +78,26 @@ public class FilterOptionPane extends AbstractOptionPane {
      * Set/restore values from jEdit properties.    
      */
     private void installDefaults() {
-        attributesCheckBox.setSelected( jEdit.getBooleanProperty( "options.sidekick.java.showAttr", true ) );
-        includePrimitivesCheckBox.setSelected( jEdit.getBooleanProperty( "options.sidekick.java.showPrimAttr", true ) );
-        showImportsCheckBox.setSelected( jEdit.getBooleanProperty( "options.sidekick.java.showImports", true ) );
-        showLocalVariablesCheckBox.setSelected( jEdit.getBooleanProperty( "options.sidekick.java.showVariables", false ) );
-        showStaticInitializersCheckBox.setSelected( jEdit.getBooleanProperty( "options.sidekick.java.showInitializers", false ) );
-        showExtendsImplementsCheckBox.setSelected( jEdit.getBooleanProperty( "options.sidekick.java.showGeneralizations", false ) );
-        showThrowsCheckBox.setSelected( jEdit.getBooleanProperty( "options.sidekick.java.showThrows", false ) );
+        attributesCheckBox.setSelected( jEdit.getBooleanProperty( "sidekick.java.showAttr", true ) );
+        includePrimitivesCheckBox.setSelected( jEdit.getBooleanProperty( "sidekick.java.showPrimAttr", true ) );
+        showImportsCheckBox.setSelected( jEdit.getBooleanProperty( "sidekick.java.showImports", true ) );
+        showLocalVariablesCheckBox.setSelected( jEdit.getBooleanProperty( "sidekick.java.showVariables", false ) );
+        showStaticInitializersCheckBox.setSelected( jEdit.getBooleanProperty( "sidekick.java.showInitializers", false ) );
+        showExtendsImplementsCheckBox.setSelected( jEdit.getBooleanProperty( "sidekick.java.showGeneralizations", false ) );
+        showThrowsCheckBox.setSelected( jEdit.getBooleanProperty( "sidekick.java.showThrows", false ) );
         topLevelVisibilityComboBox.setSelectedIndex(jEdit.getIntegerProperty("sidekick.java.topLevelVisIndex", 1));
         memberVisibilityComboBox.setSelectedIndex(jEdit.getIntegerProperty("sidekick.java.memberVisIndex", 0));
     }
 
 
     protected void _save() {
-        jEdit.setBooleanProperty( "options.sidekick.java.showAttr", attributesCheckBox.isSelected() );
-        jEdit.setBooleanProperty( "options.sidekick.java.showPrimAttr", includePrimitivesCheckBox.isSelected() );
-        jEdit.setBooleanProperty( "options.sidekick.java.showImports", showImportsCheckBox.isSelected() );
-        jEdit.setBooleanProperty( "options.sidekick.java.showVariables", showLocalVariablesCheckBox.isSelected() );
-        jEdit.setBooleanProperty( "options.sidekick.java.showInitializers", showStaticInitializersCheckBox.isSelected() );
-        jEdit.setBooleanProperty( "options.sidekick.java.showGeneralizations", showExtendsImplementsCheckBox.isSelected() );
-        jEdit.setBooleanProperty( "options.sidekick.java.showThrows", showThrowsCheckBox.isSelected() );
+        jEdit.setBooleanProperty( "sidekick.java.showAttr", attributesCheckBox.isSelected() );
+        jEdit.setBooleanProperty( "sidekick.java.showPrimAttr", includePrimitivesCheckBox.isSelected() );
+        jEdit.setBooleanProperty( "sidekick.java.showImports", showImportsCheckBox.isSelected() );
+        jEdit.setBooleanProperty( "sidekick.java.showVariables", showLocalVariablesCheckBox.isSelected() );
+        jEdit.setBooleanProperty( "sidekick.java.showInitializers", showStaticInitializersCheckBox.isSelected() );
+        jEdit.setBooleanProperty( "sidekick.java.showGeneralizations", showExtendsImplementsCheckBox.isSelected() );
+        jEdit.setBooleanProperty( "sidekick.java.showThrows", showThrowsCheckBox.isSelected() );
         jEdit.setIntegerProperty( "sidekick.java.topLevelVisIndex", topLevelVisibilityComboBox.getSelectedIndex() );
         jEdit.setIntegerProperty( "sidekick.java.memberVisIndex", memberVisibilityComboBox.getSelectedIndex() );
     }

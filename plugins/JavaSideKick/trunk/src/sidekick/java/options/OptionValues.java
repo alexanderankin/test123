@@ -131,32 +131,31 @@ public class OptionValues {
     }
 
     public boolean getShowImports() {
-        return jEdit.getBooleanProperty( "options.sidekick.java.showImports", true );
+        return jEdit.getBooleanProperty( "sidekick.java.showImports", true );
     }
 
     public boolean getShowFields() {
-        return false;
-        //return jEdit.getBooleanProperty(  );   // TODO: what property is this?
+        return jEdit.getBooleanProperty( "sidekick.java.showAttr", true );
     }
 
     public boolean getShowVariables() {
-        return jEdit.getBooleanProperty( "options.sidekick.java.showVariables", false );
+        return jEdit.getBooleanProperty( "sidekick.java.showVariables", false );
     }
 
     public boolean getShowPrimitives() {
-        return jEdit.getBooleanProperty( "options.sidekick.java.showPrimAttr", true );
+        return jEdit.getBooleanProperty( "sidekick.java.showPrimAttr", true );
     }
 
     public boolean getShowInitializers() {
-        return jEdit.getBooleanProperty( "options.sidekick.java.showInitializers", false );
+        return jEdit.getBooleanProperty( "sidekick.java.showInitializers", false );
     }
 
     public boolean getShowGeneralizations() {
-        return jEdit.getBooleanProperty( "options.sidekick.java.showGeneralizations", false );
+        return jEdit.getBooleanProperty( "sidekick.java.showGeneralizations", false );
     }
 
     public boolean getShowThrows() {
-        return jEdit.getBooleanProperty( "options.sidekick.java.showThrows", false );
+        return jEdit.getBooleanProperty( "sidekick.java.showThrows", false );
     }
 
     public int getTopLevelVisIndex() {
