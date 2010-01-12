@@ -278,7 +278,7 @@ public class MutableModifier extends Modifier
     }
 
 
-    public static String toString(int mod, DisplayOptions displayOpt)
+    public static String toString(int mod, OptionValues displayOpt)
     {
         String rVal = "";
 

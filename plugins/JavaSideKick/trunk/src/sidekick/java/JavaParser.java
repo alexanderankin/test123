@@ -51,10 +51,7 @@ import sidekick.SideKickParsedData;
 
 public class JavaParser extends SideKickParser implements EBComponent {
     private View currentView = null;
-    private GeneralOptions options;
-    private MutableFilterOptions filterOpt;
-    private DisplayOptions displayOpt;
-    private boolean sorted = true;      // are the tree nodes sorted by type?
+    private OptionValues optionValues;
 
     private JavaCompletionFinder completionFinder = null;
 
@@ -78,7 +75,6 @@ public class JavaParser extends SideKickParser implements EBComponent {
      */
     public JavaParser( int type ) {
         super( type == JAVACC_PARSER ? "javacc" : "java" );
-        loadOptions();
         switch ( type ) {
             case JAVACC_PARSER:
                 parser_type = JAVACC_PARSER;
@@ -87,25 +83,6 @@ public class JavaParser extends SideKickParser implements EBComponent {
                 parser_type = JAVA_PARSER;
         }
     }
-
-    /**
-     * @return true if the options have changed and were reloaded, false if there
-     * was no need to reload the options because they haven't changed.
-     */
-    private boolean loadOptions() {
-        GeneralOptions tmp_options = new GeneralOptions();
-        tmp_options.load( new JEditPropertyAccessor() );
-        if ( options == null || !options.equals( tmp_options ) ) {
-            options = tmp_options;
-            filterOpt = options.getFilterOptions();
-            displayOpt = options.getDisplayOptions();
-            // re-init the labeler
-            TigerLabeler.setDisplayOptions( displayOpt );
-            return true;
-        }
-        return false;
-    }
-
 
     /**
      * This method is called when a buffer using this parser is selected
@@ -132,7 +109,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
         // reparse on properties changed
         // TODO: fix this, should only parse if properties for this plugin
         // have changed.
-        if ( ( msg instanceof PropertiesChanged ) && loadOptions() ) {
+        if ( ( msg instanceof PropertiesChanged ) ) {
             parse();
         }
     }
@@ -159,7 +136,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
         CUNode compilationUnit = null;
         try {
             // re-init the labeler
-            TigerLabeler.setDisplayOptions( displayOpt );
+            TigerLabeler.setOptionValues( optionValues );
 
             if ( buffer.getLength() <= 0 ) {
                 return parsedData;
@@ -198,7 +175,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
             parsedData.expansionModel.add( expandRow );
 
             // maybe show imports, but don't expand them
-            if ( filterOpt.getShowImports() == true ) {
+            if ( optionValues.getShowImports() == true ) {
                 List<ImportNode> imports = compilationUnit.getImportNodes();
                 if ( imports != null && !imports.isEmpty() ) {
                     DefaultMutableTreeNode importsNode = new DefaultMutableTreeNode( "Imports" );
@@ -266,7 +243,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
         files that aren't actually java files.  Do parse buffers that have yet to be saved, they
         might be java or javacc files eventually.  Otherwise, require a ".java" extension on
         the file. */
-        if ( displayOpt.getShowErrors() && ( ( buffer.getPath() == null || buffer.getPath().endsWith( ".java" ) ) || buffer.getMode().getName().equals( "javacc" ) ) ) {
+        if ( optionValues.getShowErrors() && ( ( buffer.getPath() == null || buffer.getPath().endsWith( ".java" ) ) || buffer.getMode().getName().equals( "javacc" ) ) ) {
             errorSource.clear();
             for ( Iterator it = parser.getErrors().iterator(); it.hasNext(); ) {
                 ErrorNode en = ( ErrorNode ) it.next();
@@ -362,25 +339,25 @@ public class JavaParser extends SideKickParser implements EBComponent {
             return false;
         }
         if ( node.getOrdinal() == TigerNode.INITIALIZER ) {
-            return filterOpt.getShowInitializers();
+            return optionValues.getShowInitializers();
         }
         if ( node.getOrdinal() == TigerNode.EXTENDS ) {
-            return filterOpt.getShowGeneralizations();
+            return optionValues.getShowGeneralizations();
         }
         if ( node.getOrdinal() == TigerNode.IMPLEMENTS ) {
-            return filterOpt.getShowGeneralizations();
+            return optionValues.getShowGeneralizations();
         }
-        if ( node.getOrdinal() == TigerNode.FIELD && filterOpt.getShowFields() ) {
+        if ( node.getOrdinal() == TigerNode.FIELD && optionValues.getShowFields() ) {
             if ( ( ( FieldNode ) node ).isPrimitive() ) {
-                return filterOpt.getShowPrimitives();
+                return optionValues.getShowPrimitives();
             }
             return true;
         }
         if ( node.getOrdinal() == TigerNode.VARIABLE ) {
-            return filterOpt.getShowVariables();
+            return optionValues.getShowVariables();
         }
         if ( node.getOrdinal() == TigerNode.THROWS ) {
-            return filterOpt.getShowThrows();
+            return optionValues.getShowThrows();
         }
         return true;
     }
@@ -388,7 +365,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
     // check if a node should be visible based on the 'top level' or 'member visible' settings
     private boolean isVisible( TigerNode tn ) {
         if ( ( tn.getOrdinal() == TigerNode.CLASS || tn.getOrdinal() == TigerNode.INTERFACE ) && tn.getParent() != null && tn.getParent().getOrdinal() == TigerNode.COMPILATION_UNIT ) {
-            int visible_level = filterOpt.getTopLevelVisIndex();
+            int visible_level = optionValues.getTopLevelVisIndex();
             switch ( visible_level ) {
                 case MutableModifier.TOPLEVEL_VIS_PUBLIC:
                     return ModifierSet.isPublic( tn.getModifiers() );
@@ -398,7 +375,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
             }
         }
 
-        int visible_level = filterOpt.getMemberVisIndex();
+        int visible_level = optionValues.getMemberVisIndex();
         switch ( visible_level ) {
             case MutableModifier.MEMBER_VIS_PACKAGE:
                 return ModifierSet.isPackage( tn.getModifiers() ) || ModifierSet.isProtected( tn.getModifiers() ) || ModifierSet.isPublic( tn.getModifiers() );
@@ -412,9 +389,6 @@ public class JavaParser extends SideKickParser implements EBComponent {
     }
 
     private Comparator<TigerNode> nodeSorter = new Comparator<TigerNode>() {
-                String LINE = jEdit.getProperty( "options.sidekick.java.sortByLine", "Line" );
-                String NAME = jEdit.getProperty( "options.sidekick.java.sortByName", "Name" );
-                String VISIBILITY = jEdit.getProperty( "options.sidekick.java.sortByVisibility", "Visibility" );
 
                 /**
                  * Compares a TigerNode to another TigerNode for sorting. Sorting may be by
@@ -424,22 +398,21 @@ public class JavaParser extends SideKickParser implements EBComponent {
                  * less than, equal to, or greater than the specified TigerNode.
                  */
                 public int compare( TigerNode tna, TigerNode tnb ) {
-                    String sortBy = displayOpt.getSortBy();
-                    if ( LINE.equals( sortBy ) ) {
-                        // sort by line
-                        Integer my_line = new Integer( tna.getStartLocation().line );
-                        Integer other_line = new Integer( tnb.getStartLocation().line );
-                        return my_line.compareTo( other_line );
-                    }
-                    else if ( VISIBILITY.equals( sortBy ) ) {
-                        Integer my_vis = new Integer( ModifierSet.visibilityRank( tna.getModifiers() ) );
-                        Integer other_vis = new Integer( ModifierSet.visibilityRank( tnb.getModifiers() ) );
-                        int comp = my_vis.compareTo( other_vis );
-                        return comp == 0 ? compareNames( tna, tnb ) : comp;
-                    }
-                    else {
-                        // sort by name
-                        return compareNames( tna, tnb );
+                    int sortBy = optionValues.getSortBy();
+                    switch ( sortBy ) {
+                        case OptionValues.SORT_BY_LINE:
+                            Integer my_line = new Integer( tna.getStartLocation().line );
+                            Integer other_line = new Integer( tnb.getStartLocation().line );
+                            return my_line.compareTo( other_line );
+                        case OptionValues.SORT_BY_VISIBILITY:
+                            Integer my_vis = new Integer( ModifierSet.visibilityRank( tna.getModifiers() ) );
+                            Integer other_vis = new Integer( ModifierSet.visibilityRank( tnb.getModifiers() ) );
+                            int comp = my_vis.compareTo( other_vis );
+                            return comp == 0 ? compareNames( tna, tnb ) : comp;
+                        case OptionValues.SORT_BY_NAME:
+                        default:
+                            return compareNames( tna, tnb );
+
                     }
                 }
 
@@ -453,120 +426,6 @@ public class JavaParser extends SideKickParser implements EBComponent {
             };
 
 
-
-    /******************************************************************************/
-    // taken from jbrowse.JBrowse
-    /******************************************************************************/
-
-
-    private class StatusBarOptionAction implements ActionListener {
-        public void actionPerformed( ActionEvent e ) {
-            JavaParser.this.setStatusVisible(
-                JavaParser.this.options.getShowStatusBar()
-            );
-        }
-    }
-    public boolean isStatusVisible() {
-        return false;
-        ///return statusPanel.isVisible();
-    }
-
-
-    public void setStatusVisible( boolean visible ) {
-        ///statusPanel.setVisible( visible );
-    }
-
-    private ActionListener statusBarOptionAction = null;
-
-    public ActionListener getStatusBarOptionAction() {
-        if ( statusBarOptionAction == null ) {
-            statusBarOptionAction = new StatusBarOptionAction();
-        }
-
-        return statusBarOptionAction;
-    }
-
-
-
-    public ActionListener getResizeAction() {
-        return null;        /// might want to implement this
-    }
-
-
-
-    // sorting is by line or by node type, with node type being the initial default.
-    // The sort type is signalled by setting a System property.
-
-
-    private ActionListener sortOptionAction = null;
-    public ActionListener getSortOptionAction() {
-        if ( sortOptionAction == null ) {
-            sortOptionAction = new SortOptionAction();
-        }
-
-        return sortOptionAction;
-    }
-
-    /// dead code?
-    private class SortOptionAction implements ActionListener {
-        public void actionPerformed( ActionEvent e ) {
-            // on action, toggle between unsorted (sort by line number) or
-            // or sorted (sort by ordinal);
-            sorted = !sorted;
-            if ( currentView != null )
-                parse( currentView.getBuffer(), null );
-        }
-    }
-
-
-
-    // controls what is visible/displayed in the tree
-    private ActionListener filterOptionAction = null;
-    public ActionListener getFilterOptionAction() {
-        if ( filterOptionAction == null ) {
-            filterOptionAction = new FilterOptionAction();
-        }
-        return filterOptionAction;
-    }
-    private class FilterOptionAction implements ActionListener {
-        public void actionPerformed( ActionEvent e ) {
-            // whether or not to show fields, throws, and other visibility levels
-            // just reparsing should do it
-            if ( currentView != null )
-                parse( currentView.getBuffer(), null );
-        }
-    }
-
-
-
-    // controls how the visible items in the tree are displayed
-    private ActionListener displayOptionAction = null;
-    public ActionListener getDisplayOptionAction() {
-        if ( displayOptionAction == null ) {
-            displayOptionAction = new DisplayOptionAction();
-        }
-
-        return displayOptionAction;
-    }
-    private class DisplayOptionAction implements ActionListener {
-        public void actionPerformed( ActionEvent e ) {
-            // whether or not to show line numbers, arguments, etc
-            // just reparsing should do it
-            if ( currentView != null ) {
-                parse( currentView.getBuffer(), null );
-            }
-        }
-    }
-
-    public ActionListener getPropertySaveListener() {
-        return new ActionListener() {
-                   public void actionPerformed( ActionEvent ae ) {
-                       if ( currentView != null ) {
-                           parse( currentView.getBuffer(), null );
-                       }
-                   }
-               };
-    }
 
     /**
      * @return true, this parser does support code completion

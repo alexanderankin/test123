@@ -85,8 +85,8 @@ public class FilterOptionPane extends AbstractOptionPane {
         showStaticInitializersCheckBox.setSelected( jEdit.getBooleanProperty( "options.sidekick.java.showInitializers", false ) );
         showExtendsImplementsCheckBox.setSelected( jEdit.getBooleanProperty( "options.sidekick.java.showGeneralizations", false ) );
         showThrowsCheckBox.setSelected( jEdit.getBooleanProperty( "options.sidekick.java.showThrows", false ) );
-        topLevelVisibilityComboBox.setSelectedItem(jEdit.getProperty("sidekick.java.topLevelVisIndex", "public"));
-        memberVisibilityComboBox.setSelectedItem(jEdit.getProperty("sidekick.java.memberVisIndex", "private"));
+        topLevelVisibilityComboBox.setSelectedIndex(jEdit.getIntegerProperty("sidekick.java.topLevelVisIndex", 1));
+        memberVisibilityComboBox.setSelectedIndex(jEdit.getIntegerProperty("sidekick.java.memberVisIndex", 0));
     }
 
 
@@ -98,7 +98,7 @@ public class FilterOptionPane extends AbstractOptionPane {
         jEdit.setBooleanProperty( "options.sidekick.java.showInitializers", showStaticInitializersCheckBox.isSelected() );
         jEdit.setBooleanProperty( "options.sidekick.java.showGeneralizations", showExtendsImplementsCheckBox.isSelected() );
         jEdit.setBooleanProperty( "options.sidekick.java.showThrows", showThrowsCheckBox.isSelected() );
-        jEdit.setProperty( "sidekick.java.topLevelVisIndex", ( String ) topLevelVisibilityComboBox.getSelectedItem() );
-        jEdit.setProperty( "sidekick.java.memberVisIndex", ( String ) memberVisibilityComboBox.getSelectedItem() );
+        jEdit.setIntegerProperty( "sidekick.java.topLevelVisIndex", topLevelVisibilityComboBox.getSelectedIndex() );
+        jEdit.setIntegerProperty( "sidekick.java.memberVisIndex", memberVisibilityComboBox.getSelectedIndex() );
     }
 }

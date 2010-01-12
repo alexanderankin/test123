@@ -165,7 +165,7 @@ public class DisplayOptionPane extends AbstractOptionPane {
         nameRB.setSelected( jEdit.getBooleanProperty( "sidekick.java.sortByName", true ) );
         visibilityRB.setSelected( jEdit.getBooleanProperty( "sidekick.java.sortByVisibility", false ) );
 
-        displayStyleComboBox.setSelectedIndex( jEdit.getIntegerProperty( "sidekick.java.displayStyle", DisplayOptions.STYLE_UML ) );
+        displayStyleComboBox.setSelectedIndex( jEdit.getIntegerProperty( "sidekick.java.displayStyle", OptionValues.STYLE_UML ) );
 
         symbolsRB.setSelected( jEdit.getBooleanProperty( "sidekick.java.custVisAsSymbol", true ) );
         wordsRB.setSelected( jEdit.getBooleanProperty( "sidekick.java.custVisAsWord", false ) );
@@ -173,7 +173,7 @@ public class DisplayOptionPane extends AbstractOptionPane {
         abstractCheckBox.setSelected( jEdit.getBooleanProperty( "sidekick.java.custAbsAsItalic", true ) );
         staticCheckBox.setSelected( jEdit.getBooleanProperty( "sidekick.java.custStaAsUlined", true ) );
         typeIdentifierCheckBox.setSelected( jEdit.getBooleanProperty( "sidekick.java.custTypeIsSuffixed", true ) );
-        enableCustomOptions( displayStyleComboBox.getSelectedIndex() == DisplayOptions.STYLE_CUSTOM);
+        enableCustomOptions( displayStyleComboBox.getSelectedIndex() == OptionValues.STYLE_CUSTOM);
     }
 
     private void installListeners() {
@@ -183,11 +183,11 @@ public class DisplayOptionPane extends AbstractOptionPane {
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
                     switch ( displayStyleComboBox.getSelectedIndex() ) {
-                        case DisplayOptions.STYLE_CUSTOM:
+                        case OptionValues.STYLE_CUSTOM:
                             enableCustomOptions( true );
                             break;
-                        case DisplayOptions.STYLE_UML:
-                        case DisplayOptions.STYLE_JAVA:
+                        case OptionValues.STYLE_UML:
+                        case OptionValues.STYLE_JAVA:
                         default:
                             enableCustomOptions( false );
                             break;

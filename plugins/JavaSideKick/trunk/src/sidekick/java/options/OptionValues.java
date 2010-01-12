@@ -1,5 +1,5 @@
 /*
-* DisplayOptions.java - Immutable display options for JBrowse
+* OptionValues.java - Immutable display options for JBrowse
 *
 * Copyright (c) 1999-2001 George Latkiewicz, Andre Kaplan
 *
@@ -29,7 +29,7 @@ import org.gjt.sp.jedit.jEdit;
  * @author Andre Kaplan
  * @version $Id$
 **/
-public class DisplayOptions {
+public class OptionValues {
     // Display Style options (HOW)
 
     public static final int STYLE_UML = 0;
@@ -43,90 +43,131 @@ public class DisplayOptions {
     // show arguments, pertains to constuctors and methods, if true, show the
     // argument type, e.g. int or String
     public boolean getShowArguments() {
-        jEdit.getBooleanProperty( "sidekick.java.showArgs", true ) ;
+        return jEdit.getBooleanProperty( "sidekick.java.showArgs", true ) ;
     }
 
     // show argument name, pertains to constructors and methods, if true, show
     // the declared name of the argument, e.g. the x in "int x".
     public boolean getShowArgumentNames() {
-        jEdit.getBooleanProperty( "sidekick.java.showArgNames", false ) ;
+        return jEdit.getBooleanProperty( "sidekick.java.showArgNames", false ) ;
     }
 
     // show qualified nested class or interface names
     public boolean getShowNestedName() {
-        jEdit.getBooleanProperty( "sidekick.java.showNestedName", false );
+        return jEdit.getBooleanProperty( "sidekick.java.showNestedName", false );
     }
 
     // not clear on this one -- appears to mean to show keywords like 'class' or
     // 'interface' beside the icon
     public boolean getShowIconKeywords() {
-        jEdit.getBooleanProperty( "sidekick.java.showIconKeywords", false );
+        return jEdit.getBooleanProperty( "sidekick.java.showIconKeywords", false );
     }
 
     // if true, show the other modifiers, the ones other than public, protected,
     // and private, e.g. synchronized, native, transient, etc.
     public boolean getShowMiscMod() {
-        jEdit.getBooleanProperty( "sidekick.java.showMiscMod", false );
+        return jEdit.getBooleanProperty( "sidekick.java.showMiscMod", false );
     }
 
     // show the uml icons
     public boolean getShowIcons() {
-        jEdit.getBooleanProperty( "sidekick.java.showIcons", true );
+        return jEdit.getBooleanProperty( "sidekick.java.showIcons", true );
     }
-    
+
     public boolean getShowIconsLikeEclipse() {
-        jEdit.getBooleanProperty( "sidekick.java.showIconsLikeEclipse", false );
+        return jEdit.getBooleanProperty( "sidekick.java.showIconsLikeEclipse", false );
     }
 
     // show the line number
     public boolean getShowLineNum() {
-        jEdit.getBooleanProperty( "sidekick.java.showLineNums", false );
+        return jEdit.getBooleanProperty( "sidekick.java.showLineNums", false );
     }
 
     // how to sort
     public int getSortBy() {
-        jEdit.getIntegerProperty( "sidekick.java.sortBy", SORT_BY_NAME );
+        return jEdit.getIntegerProperty( "sidekick.java.sortBy", SORT_BY_NAME );
     }
 
     // show generic type arguments
     public boolean getShowTypeArgs() {
-        jEdit.getBooleanProperty( "sidekick.java.showTypeArgs", false );
+        return jEdit.getBooleanProperty( "sidekick.java.showTypeArgs", false );
     }
 
     // one of the style constance from above
     int getStyleIndex() {
-        jEdit.getIntegerProperty( "sidekick.java.displayStyle", STYLE_UML );
+        return jEdit.getIntegerProperty( "sidekick.java.displayStyle", STYLE_UML );
     }
 
 
     // if true, use +, #, and - for public, protected, and private respectively
     public boolean getVisSymbols() {
-        jEdit.getBooleanProperty( "sidekick.java.custVisAsSymbol", true );
+        return jEdit.getBooleanProperty( "sidekick.java.custVisAsSymbol", true );
     }
-    
+
     // if true, use "public", "protected", and "private"
     public boolean getVisWords() {
-        jEdit.getBooleanProperty( "sidekick.java.custVisAsWord", false );
+        return jEdit.getBooleanProperty( "sidekick.java.custVisAsWord", false );
     }
-    
+
     // if true, don't show any visibility markup
     public boolean getVisNone() {
-        jEdit.getBooleanProperty( "sidekick.java.custVisAsNone", false );
+        return jEdit.getBooleanProperty( "sidekick.java.custVisAsNone", false );
     }
 
     // if true, show abstract class names and methods in italics
     public boolean getAbstractItalic() {
-        jEdit.getBooleanProperty( "sidekick.java.custAbsAsItalic", true );
+        return jEdit.getBooleanProperty( "sidekick.java.custAbsAsItalic", true );
     }
 
     // if true, underline all static items
     public boolean getStaticUlined() {
-        jEdit.getBooleanProperty( "sidekick.java.custStaAsUlined", true );
+        return jEdit.getBooleanProperty( "sidekick.java.custStaAsUlined", true );
     }
 
     // if true is returned, then show the method return type after the rest of
     // the method string (UML style), if false, then show it up front (Java style)
     public boolean getTypeIsSuffixed() {
-        jEdit.getBooleanProperty( "sidekick.java.custTypeIsSuffixed", true );
+        return jEdit.getBooleanProperty( "sidekick.java.custTypeIsSuffixed", true );
+    }
+
+    public boolean getShowImports() {
+        return jEdit.getBooleanProperty( "options.sidekick.java.showImports", true );
+    }
+
+    public boolean getShowFields() {
+        return false;
+        //return jEdit.getBooleanProperty(  );   // TODO: what property is this?
+    }
+
+    public boolean getShowVariables() {
+        return jEdit.getBooleanProperty( "options.sidekick.java.showVariables", false );
+    }
+
+    public boolean getShowPrimitives() {
+        return jEdit.getBooleanProperty( "options.sidekick.java.showPrimAttr", true );
+    }
+
+    public boolean getShowInitializers() {
+        return jEdit.getBooleanProperty( "options.sidekick.java.showInitializers", false );
+    }
+
+    public boolean getShowGeneralizations() {
+        return jEdit.getBooleanProperty( "options.sidekick.java.showGeneralizations", false );
+    }
+
+    public boolean getShowThrows() {
+        return jEdit.getBooleanProperty( "options.sidekick.java.showThrows", false );
+    }
+
+    public int getTopLevelVisIndex() {
+        return jEdit.getIntegerProperty( "sidekick.java.topLevelVisIndex", 1 );
+    }
+
+    public int getMemberVisIndex() {
+        return jEdit.getIntegerProperty( "sidekick.java.memberVisIndex", 0 );
+    }
+
+    public boolean getShowErrors() {
+        return jEdit.getBooleanProperty( "sidekick.java.showErrors", true );
     }
 }
