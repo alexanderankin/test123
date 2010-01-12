@@ -42,7 +42,7 @@ import sidekick.java.options.*;
 public class TigerLabeler {
 
     // current option settings
-    private static DisplayOptions options = null;
+    private static OptionValues options = null;
 
     // various icons for display
     protected static ImageIcon CU_ICON = null;
@@ -315,7 +315,7 @@ public class TigerLabeler {
      *
      * @param opts  The new displayOptions value
      */
-    public static void setDisplayOptions(DisplayOptions opts) {
+    public static void setOptionValues(OptionValues opts) {
         options = opts;
     }
 

@@ -104,7 +104,7 @@ public class JBrowseOptionPane extends AbstractOptionPane
     private JCheckBox cbxShowLineNum;
 
     private JComboBox cmbStyle;
-    private int styleIndex = DisplayOptions.STYLE_UML;
+    private int styleIndex = OptionValues.STYLE_UML;
 
     private JRadioButton rbVisSymbols;
     private JRadioButton rbVisWords;
@@ -734,7 +734,7 @@ public class JBrowseOptionPane extends AbstractOptionPane
      * cmbStyle JComboBox.
     **/
     private void refreshDisplayOptions(int styleIndex) {
-        if (styleIndex == DisplayOptions.STYLE_UML) {
+        if (styleIndex == OptionValues.STYLE_UML) {
             // UML
             rbVisSymbols.getModel().setSelected(true);
             rbVisWords.getModel().setSelected(false);
@@ -750,7 +750,7 @@ public class JBrowseOptionPane extends AbstractOptionPane
             cbxStaticUlined.getModel().setEnabled(false);
             cbxTypeIsSuffixed.getModel().setEnabled(false);
 
-        } else if (styleIndex == DisplayOptions.STYLE_JAVA) {
+        } else if (styleIndex == OptionValues.STYLE_JAVA) {
             // Java
             rbVisSymbols.getModel().setSelected(false);
             rbVisWords.getModel().setSelected(true);
@@ -766,7 +766,7 @@ public class JBrowseOptionPane extends AbstractOptionPane
             cbxStaticUlined.getModel().setEnabled(false);
             cbxTypeIsSuffixed.getModel().setEnabled(false);
 
-        } else if (styleIndex == DisplayOptions.STYLE_CUSTOM) {
+        } else if (styleIndex == OptionValues.STYLE_CUSTOM) {
             // Custom
             rbVisSymbols.getModel().setEnabled(true);
             rbVisWords.getModel().setEnabled(true);

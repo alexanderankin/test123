@@ -141,12 +141,12 @@ public class GeneralOptions
             styleIndex = Integer.parseInt(
                     props.getProperty("sidekick.java.displayStyle"));
         } catch (NumberFormatException nf) {
-            styleIndex = DisplayOptions.STYLE_UML;
+            styleIndex = OptionValues.STYLE_UML;
         }
-        if (    (styleIndex < DisplayOptions.STYLE_FIRST)
-             || (styleIndex > DisplayOptions.STYLE_LAST)
+        if (    (styleIndex < OptionValues.STYLE_FIRST)
+             || (styleIndex > OptionValues.STYLE_LAST)
         ) {
-            styleIndex = DisplayOptions.STYLE_UML;
+            styleIndex = OptionValues.STYLE_UML;
         }
         displayOpt.setStyleIndex(styleIndex);
 

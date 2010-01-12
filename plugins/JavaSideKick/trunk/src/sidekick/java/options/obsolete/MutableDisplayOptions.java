@@ -21,7 +21,7 @@
 
 package sidekick.java.options.obsolete;
 
-import sidekick.java.options.DisplayOptions;
+import sidekick.java.options.OptionValues;
 
 /**
  * JBrowse display options
@@ -29,7 +29,7 @@ import sidekick.java.options.DisplayOptions;
  * @author Andre Kaplan
  * @version $Id$
 **/
-public class MutableDisplayOptions implements DisplayOptions {
+public class MutableDisplayOptions implements OptionValues {
     // Display Style options (HOW)
 
     private boolean showIcons = true;;
@@ -215,7 +215,7 @@ public class MutableDisplayOptions implements DisplayOptions {
     }
 
 
-    public final DisplayOptions getInverseOptions() {
+    public final OptionValues getInverseOptions() {
         MutableDisplayOptions inverseOpt = new MutableDisplayOptions();
 
         inverseOpt.showIcons = !showIcons;
