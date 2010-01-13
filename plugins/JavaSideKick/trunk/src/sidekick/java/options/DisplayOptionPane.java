@@ -22,6 +22,7 @@ public class DisplayOptionPane extends AbstractOptionPane {
     private JCheckBox showIconsCheckBox;
     private JCheckBox likeEclipseCheckBox;
     private JCheckBox lineNumbersCheckBox;
+    private JCheckBox expandClassesCheckBox;
 
     private JLabel sortByLabel = new JLabel( "Sort by:" );
     private JRadioButton lineRB;
@@ -74,6 +75,7 @@ public class DisplayOptionPane extends AbstractOptionPane {
         showIconsCheckBox = new JCheckBox( jEdit.getProperty( "options.sidekick.java.showIcons" ) + " " );
         likeEclipseCheckBox = new JCheckBox( jEdit.getProperty( "options.sidekick.java.showIconsLikeEclipse" ) );
         lineNumbersCheckBox = new JCheckBox( jEdit.getProperty( "options.sidekick.java.showLineNums" ) );
+        expandClassesCheckBox = new JCheckBox( jEdit.getProperty( "options.sideckick.java.expandClasses", "Expand inner classes"));
 
         // sort by
         lineRB = new JRadioButton( jEdit.getProperty( "options.sidekick.java.sortByLine" ) );
@@ -113,6 +115,7 @@ public class DisplayOptionPane extends AbstractOptionPane {
         addComponent( iconsPanel );
 
         addComponent( lineNumbersCheckBox );
+        addComponent( expandClassesCheckBox );
 
         addComponent( Box.createVerticalStrut( 11 ) );
 
@@ -160,6 +163,7 @@ public class DisplayOptionPane extends AbstractOptionPane {
         showIconsCheckBox.setSelected( jEdit.getBooleanProperty( "sidekick.java.showIcons", true ) );
         likeEclipseCheckBox.setSelected( jEdit.getBooleanProperty( "sidekick.java.showIconsLikeEclipse", false ) );
         lineNumbersCheckBox.setSelected( jEdit.getBooleanProperty( "sidekick.java.showLineNums", false ) );
+        expandClassesCheckBox.setSelected( jEdit.getBooleanProperty( "sideckick.java.expandClasses", true ) );
 
         int sortBy = jEdit.getIntegerProperty( "sidekick.java.sortBy", OptionValues.SORT_BY_NAME );
         switch ( sortBy ) {
@@ -233,6 +237,7 @@ public class DisplayOptionPane extends AbstractOptionPane {
         jEdit.setBooleanProperty( "sidekick.java.showIcons", showIconsCheckBox.isSelected() ) ;
         jEdit.setBooleanProperty( "sidekick.java.showIconsLikeEclipse", likeEclipseCheckBox.isSelected() ) ;
         jEdit.setBooleanProperty( "sidekick.java.showLineNums", lineNumbersCheckBox.isSelected() ) ;
+        jEdit.setBooleanProperty( "sidekick.java.expandClasses", expandClassesCheckBox.isSelected() );
 
         int sortBy = OptionValues.SORT_BY_NAME;
         if ( lineRB.isSelected() ) {

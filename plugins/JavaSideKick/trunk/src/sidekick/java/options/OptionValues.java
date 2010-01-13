@@ -87,6 +87,11 @@ public class OptionValues {
     public boolean getShowLineNum() {
         return jEdit.getBooleanProperty( "sidekick.java.showLineNums", false );
     }
+    
+    // auto-expand tree to show members of inner classes
+    public boolean getExpandClasses() {
+        return jEdit.getBooleanProperty( "sidekick.java.expandClasses", true );   
+    }
 
     // how to sort
     public int getSortBy() {
