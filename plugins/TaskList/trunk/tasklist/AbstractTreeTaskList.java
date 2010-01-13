@@ -5,6 +5,7 @@ import java.awt.BorderLayout;
 import java.awt.event.*;
 import java.beans.*;
 import java.io.File;
+import java.net.URL;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.tree.*;
@@ -263,11 +264,10 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
 
                 setProgress( 100 * i / toScan.size() );
 
-                File file = new File( path );
-
                 // the buffer could already be open in jEdit.  If so, don't
                 // close it below.
-                Buffer buffer = jEdit.getBuffer( file.getAbsolutePath() );
+                Buffer buffer = jEdit.getBuffer( path );
+                
                 boolean can_close = false;
                 if ( buffer == null ) {
                     // file is not open, so open it.  Note that the mode must be
@@ -275,8 +275,8 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
                     // and TaskList will fail if the mode is missing.  openTemporary
                     // is preferred over openFile since openTemporary won't send EditBus
                     // messages nor is the buffer added to the buffer list.
-                    buffer = jEdit.openTemporary( jEdit.getActiveView(), file.getParent(), file.getName(), false );
-                    Mode mode = TaskListPlugin.getMode( file );
+                    buffer = jEdit.openTemporary( jEdit.getActiveView(), null, path, false );
+                    Mode mode = TaskListPlugin.getMode( path );
                     if ( mode == null ) {
                         continue;
                     }
@@ -332,7 +332,6 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
             // only parse buffers of the modes allowed by the TaskList mode configuration.
             TaskListPlugin.parseBuffer( buffer );
             HashMap<Integer, Task> tasks = TaskListPlugin.requestTasksForBuffer( buffer );
-
             if ( tasks != null && tasks.size() > 0 ) {
                 // tasks were found for this buffer, so create the tree node for the buffer itself,
                 // then add tree nodes for the individual tasks.
@@ -350,6 +349,7 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
             // ignore any exception, there really isn't anything to do about
             // it.  The most likely cause is the buffer didn't get loaded by
             // jEdit before TaskList tried to parse it.
+            e.printStackTrace();
         }
         return buffer_node;
     }

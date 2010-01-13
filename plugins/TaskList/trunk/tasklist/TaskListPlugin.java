@@ -36,6 +36,7 @@ package tasklist;
 //{{{ imports
 import java.awt.Color;
 import java.io.*;
+import java.net.*;
 import java.util.*;
 
 import javax.swing.*;
@@ -487,7 +488,7 @@ public class TaskListPlugin extends EditPlugin {
         }
 
         TaskListPlugin.clearTasks( buffer );
-
+        
         // if this file's mode is not to be parsed, skip it
         if ( !parseModes.contains( buffer.getMode() ) ) {
             // fill with empty HashMap of tasks
@@ -500,7 +501,6 @@ public class TaskListPlugin extends EditPlugin {
 
         int firstLine = 0;
         int lastLine = buffer.getLineCount();
-
         DefaultTokenHandler tokenHandler = new DefaultTokenHandler();
         for ( int lineNum = firstLine; lineNum < lastLine; lineNum++ ) {
             tokenHandler.init();
@@ -533,7 +533,6 @@ public class TaskListPlugin extends EditPlugin {
                         chunkLength += token.length;
                     }
                     String text = buffer.getText( chunkStart, chunkLength );
-
                     for ( TaskType taskType : taskTypes ) {
                         Task task = taskType.extractTask( buffer, text, lineNum, chunkStart - lineStart );
                         if ( task != null ) {
@@ -677,7 +676,7 @@ public class TaskListPlugin extends EditPlugin {
      * @return the mode of the buffer or null if not found in our list of
      * nodes we are allowed to parse.
      */
-    public static Mode getMode( File file ) {
+     public static Mode getMode( String file ) { //File file ) {
         if ( file == null ) {
             return null;
         }
@@ -687,11 +686,16 @@ public class TaskListPlugin extends EditPlugin {
             }
             String firstLine = null;
             for ( Mode mode : parseModes ) {
-                if ( mode.acceptFilename( file.getName() ) ) {
+                if (mode.acceptFilename( file ) ) {
                     return mode;
                 }
                 if ( firstLine == null ) {
-                    BufferedReader reader = new BufferedReader( new FileReader( file ) );       // NOPMD
+                    URI uri = new URI(file);
+                    if (uri.getScheme() == null) {
+                        uri = new URI("file:" + file);   
+                    }
+                    URL url = uri.toURL();
+                    BufferedReader reader = new BufferedReader( new InputStreamReader(url.openStream()) );//new FileReader( file ) );       // NOPMD
                     firstLine = reader.readLine();
                     reader.close();
                 }
@@ -700,7 +704,9 @@ public class TaskListPlugin extends EditPlugin {
                 }
             }
         }
-        catch ( Exception e ) {}        // NOPMD
+        catch ( Exception e ) {         // NOPMD
+            //e.printStackTrace();
+        }       
         return null;
     }
 
