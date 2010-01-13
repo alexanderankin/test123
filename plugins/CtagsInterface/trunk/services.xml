@@ -9,7 +9,7 @@
 	<SERVICE CLASS="projectviewer.action.Action" NAME="Remove from database">
 		new ctagsinterface.projects.ProjectRemoveAction();
 	</SERVICE>
-	<SERVICE CLASS="projectviewer.config.OptionsService" NAME="PVDebug Dummy Options">
+	<SERVICE CLASS="projectviewer.config.OptionsService" NAME="CtagsInterface">
 		new ctagsinterface.projects.ProjectDependencies.ProjectDependencyOptionService();
 	</SERVICE>
 </SERVICES>
