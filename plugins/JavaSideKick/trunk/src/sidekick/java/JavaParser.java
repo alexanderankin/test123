@@ -120,6 +120,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
 
     /**
      * Parse the current buffer in the current view.
+     * TODO: is this used anymore?
      */
     public void parse() {
         if ( currentView != null ) {
@@ -175,9 +176,9 @@ public class JavaParser extends SideKickParser implements EBComponent {
             root.setUserObject( compilationUnit );
             buffer.setProperty( COMPILATION_UNIT, compilationUnit );
 
-            parsedData.expansionModel = new ArrayList<Integer>();
-            int expandRow = 0;
-            parsedData.expansionModel.add( expandRow );
+            ExpansionModel expansionModel = new ExpansionModel();
+            expansionModel.add();
+            parsedData.expansionModel = expansionModel.getModel();
 
             // maybe show imports, but don't expand them
             if ( optionValues.getShowImports() == true ) {
@@ -185,7 +186,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
                 if ( imports != null && !imports.isEmpty() ) {
                     DefaultMutableTreeNode importsNode = new DefaultMutableTreeNode( "Imports" );
                     root.add( importsNode );
-                    ++expandRow;
+                    expansionModel.inc();
                     for ( TigerNode anImport : imports ) {
                         anImport.setStart( ElementUtil.createStartPosition( buffer, anImport ) );
                         anImport.setEnd( ElementUtil.createEndPosition( buffer, anImport ) );
@@ -205,8 +206,15 @@ public class JavaParser extends SideKickParser implements EBComponent {
                         child.setEnd( ElementUtil.createEndPosition( buffer, child ) );
                         DefaultMutableTreeNode cuChild = new DefaultMutableTreeNode( child );
                         root.add( cuChild );
-                        parsedData.expansionModel.add( ++expandRow );        // TODO: adjust this to not expand method nodes by default
-                        addChildren( buffer, cuChild, child );
+                        System.out.println("+++++ ordinal: " + child.getOrdinal());
+                        if ( child.getOrdinal() == TigerNode.ENUM ) {
+                            System.out.println("+++++ got enum: " + child);
+                            expansionModel.inc();
+                        }
+                        else {
+                            expansionModel.add();
+                        }
+                        addChildren( buffer, cuChild, child, expansionModel );
                     }
                 }
             }
@@ -237,6 +245,11 @@ public class JavaParser extends SideKickParser implements EBComponent {
         if ( !complete_on && errorSource != null ) {
             handleErrors( errorSource, parser, buffer );
         }
+        
+        for (int i : parsedData.expansionModel) {
+            System.out.println("+++++ " + i);   
+        }
+        
         return parsedData;
     }
 
@@ -263,11 +276,17 @@ public class JavaParser extends SideKickParser implements EBComponent {
             }
         }
     }
-
-    private void addChildren( Buffer buffer, DefaultMutableTreeNode parent, TigerNode tn ) {
+    public enum Day {
+        SUNDAY, MONDAY, TUESDAY, WEDNESDAY,
+        THURSDAY, FRIDAY, SATURDAY
+    }
+    private void addChildren( Buffer buffer, DefaultMutableTreeNode parent, TigerNode tn, ExpansionModel expansionModel ) {
+        System.out.println("+++++ addChildren to " + tn);
         if ( tn.getChildCount() > 0 ) {
             List<TigerNode> children = tn.getChildren();
-            Collections.sort( children, nodeSorter );   // TODO: don't sort enum values
+            if ( tn.getOrdinal() != TigerNode.ENUM ) {  // don't sort enum values
+                Collections.sort( children, nodeSorter );
+            }
             for ( Iterator it = children.iterator(); it.hasNext(); ) {
                 TigerNode child = ( TigerNode ) it.next();
                 child.setStart( ElementUtil.createStartPosition( buffer, child ) );
@@ -275,8 +294,17 @@ public class JavaParser extends SideKickParser implements EBComponent {
                 if ( canShow( child ) ) {
                     DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode( child );
                     parent.add( treeNode );
+
+                    // maybe auto-expand inner classes so members are visible
+                    if ( tn.getOrdinal() == TigerNode.CLASS && optionValues.getExpandClasses() ) {
+                        expansionModel.add();
+                    }
+                    else if (tn.getOrdinal() == TigerNode.ENUM) {
+                        expansionModel.inc();   
+                    }
+
                     if ( child.getChildren() != null && child.getChildren().size() > 0 ) {
-                        addChildren( buffer, treeNode, child );
+                        addChildren( buffer, treeNode, child, expansionModel );
                     }
                 }
                 else {
@@ -429,7 +457,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
             }
         };
 
-        
+
     /**
      * @return true, this parser does support code completion
      */
@@ -445,6 +473,35 @@ public class JavaParser extends SideKickParser implements EBComponent {
     }
 
     public JPanel getPanel() {
-        return new JavaModeToolBar(this);   
+        return new JavaModeToolBar( this );
+    }
+
+    public class ExpansionModel {
+        private List<Integer> model = new ArrayList<Integer>();
+        private int row = 0;
+
+        /**
+         * @return The expansion model, set this in SideKickParsedData.        
+         */
+        public List<Integer> getModel() {
+            return model;
+        }
+
+        /**
+         * Call this for each visible row in the tree that should be expanded.
+         * This will add the current row number to the model and automatically
+         * inc.
+         */
+        public void add() {
+            model.add( row );
+            inc();
+        }
+
+        /**
+         * Call this for each visible row in the tree.        
+         */
+        public void inc() {
+            ++row;
+        }
     }
 }

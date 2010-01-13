@@ -133,6 +133,7 @@ options.sidekick.java.showMiscMod=Implementation detail modifiers
 options.sidekick.java.showIcons=Show icons
 options.sidekick.java.showIconsLikeEclipse=like Eclipse
 options.sidekick.java.showLineNums=Line Numbers
+options.sidekick.java.expandClasses=Expand inner classes
 options.sidekick.java.showErrors=Show parse errors in ErrorList
 
 options.sidekick.java.sortBy=Sort by
