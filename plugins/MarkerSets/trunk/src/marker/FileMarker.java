@@ -34,11 +34,7 @@ public class FileMarker implements Comparable {
 
 	public FileMarker(String file, int line) {
 		init(file, line);
-		Buffer b = jEdit.getBuffer(file);
-		if ((b == null) || (! b.isLoaded()))
-			pos = null;
-		else
-			createPosition(b);
+		attachToBuffer(file);
 	}
 	public FileMarker(Buffer b, int line) {
 		init(b.getPath(), line);
@@ -48,7 +44,7 @@ public class FileMarker implements Comparable {
 	// Fixed line text - do not extract the text from the file
 	public FileMarker(String file, int line, String text)
 	{
-		init(file, line);
+		this(file, line);
 		this.text = text;
 	}
 	public FileMarker(Element node) {
@@ -64,6 +60,13 @@ public class FileMarker implements Comparable {
 		pos = null;
 		selection = null;
 		setShortcut(null);
+	}
+	private void attachToBuffer(String file) {
+		Buffer b = jEdit.getBuffer(file);
+		if ((b == null) || (! b.isLoaded()))
+			pos = null;
+		else
+			createPosition(b);
 	}
 
 	public void setShortcut(String shortcut) {
