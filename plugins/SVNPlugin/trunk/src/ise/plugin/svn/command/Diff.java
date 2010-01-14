@@ -46,6 +46,8 @@ import ise.plugin.svn.data.DiffData;
 
 /**
  * Does an SVN diff, not a JDiff diff.
+ * TODO: Change the paths produced by this diff to be relative to the (project?)
+ * root rather than absolute.
  */
 public class Diff {
 
