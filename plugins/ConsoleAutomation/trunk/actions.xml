@@ -8,7 +8,15 @@
 			import automation.*;
 			ConsoleAutomationPlugin plugin = (ConsoleAutomationPlugin)
 				jEdit.getPlugin("automation.ConsoleAutomationPlugin");
-			plugin.showConnectionDialog();
+			plugin.showConnectionDialog(false);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="console-automation-connect-headless" NO_REPEAT="TRUE">
+		<CODE>
+			import automation.*;
+			ConsoleAutomationPlugin plugin = (ConsoleAutomationPlugin)
+				jEdit.getPlugin("automation.ConsoleAutomationPlugin");
+			plugin.showConnectionDialog(true);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="console-automation-close-current" NO_REPEAT="TRUE">
@@ -32,7 +40,15 @@
 			import automation.*;
 			ConsoleAutomationPlugin plugin = (ConsoleAutomationPlugin)
 				jEdit.getPlugin("automation.ConsoleAutomationPlugin");
-			plugin.reloadConnections();
+			plugin.reloadConnections(false);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="console-automation-reload-connections-headless" NO_REPEAT="TRUE">
+		<CODE>
+			import automation.*;
+			ConsoleAutomationPlugin plugin = (ConsoleAutomationPlugin)
+				jEdit.getPlugin("automation.ConsoleAutomationPlugin");
+			plugin.reloadConnections(true);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="console-automation-show-macros" NO_REPEAT="TRUE">

@@ -31,13 +31,14 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 		instance = this;
 	}
 
-	public void reloadConnections() {
+	public void reloadConnections(boolean headless)
+	{
 		String configured = jEdit.getProperty("console.automation.connections");
 		if (configured != null)
 		{
 			String [] connectionStrings = configured.split("\\s+");
 			for (String connectionString: connectionStrings)
-				addConnection(connectionString);
+				addConnection(connectionString, headless);
 		}
 	}
 
@@ -87,6 +88,26 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 		return dockable.getCurrent();
 		
 	}
+	private Object[] getConnectionNames()
+	{
+		return connections.keySet().toArray();
+	}
+	private Connection selectConnectionDialog()
+	{
+		synchronized(connections)
+		{
+			Object[] names = getConnectionNames();
+			if ((names == null) || (names.length == 0))
+				return null;
+			Object connectionName = JOptionPane.showInputDialog(null,
+				"Select connection to run this macro on:",
+				"Select Connection", JOptionPane.QUESTION_MESSAGE,
+				null, names, names[0]);
+			if (connectionName == null)
+				return null;
+			return connections.get(connectionName);
+		}
+	}
 	public void runMacro(final String key, String name)
 	{
 		File f = getMacroFile(key, name);
@@ -100,7 +121,7 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 			{
 				Connection c = getCurrentConnectionInDockable();
 				if (c == null)
-					return;
+					c = selectConnectionDialog();
 				c.abortScript();
 				final Macro macro = handler.createMacro(
 					MiscUtilities.getFileName(path), path);
@@ -181,14 +202,13 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 	// Show a "close connection" dialog
 	public void closeConnection()
 	{
-		String [] names;
-		int i = 0;
+		Object [] names;
 		synchronized(connections)
 		{
-			names = new String[connections.size()];
-			for (String name: connections.keySet())
-				names[i++] = name;
+			names = getConnectionNames();
 		}
+		if ((names == null) || (names.length == 0))
+			return;
 		Arrays.sort(names);
 		String sel = (String) JOptionPane.showInputDialog(null,
 			"Select connection to close:", "Close Connection",
@@ -200,7 +220,7 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 			closeConnection(connections.get(sel));
 		}
 	}
-	public void showConnectionDialog()
+	public void showConnectionDialog(boolean headless)
 	{
 		String s;
 		do
@@ -209,9 +229,9 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 			if (s == null)
 				return;
 		}
-		while (! addConnection(s));
+		while (! addConnection(s, headless));
 	}
-	private boolean addConnection(String connectionString)
+	private boolean addConnection(String connectionString, boolean headless)
 	{
 		String [] parts = connectionString.split(":");
 		if (parts.length != 3)
@@ -219,14 +239,15 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 		String name = parts[0];
 		String host = parts[1];
 		String port = parts[2];
-		connect(name, host, Integer.valueOf(port));
+		connect(name, host, Integer.valueOf(port), headless);
 		return true;
 	}
-	public Connection getConnection(String name, String host, int port)
+	public Connection getConnection(String name, String host, int port,
+		boolean headless)
 	{
 		Connection c = getConnection(name);
 		if (c == null)
-			c = connect(name, host, port);
+			c = connect(name, host, port, headless);
 		return c;
 	}
 	public void closeConnection(Connection c)
@@ -245,14 +266,17 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 			e.printStackTrace();
 		}
 	}
-	public Connection connect(String name, String host, int port)
+	public Connection connect(String name, String host, int port, boolean headless)
 	{
 		Connection c = new Connection(name, host, port);
 		try
 		{
 			c.connect();
-			ConnectionDockable dockable = getConnectionDockable();
-			dockable.add(c);
+			if (! headless)
+			{
+				ConnectionDockable dockable = getConnectionDockable();
+				dockable.add(c);
+			}
 			synchronized(connections)
 			{
 				connections.put(name, c);
