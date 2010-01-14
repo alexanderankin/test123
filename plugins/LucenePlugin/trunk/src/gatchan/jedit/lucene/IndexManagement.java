@@ -187,6 +187,10 @@ public class IndexManagement extends AbstractOptionPane
 			{
 				if (e.getSource() == optimize)
 				{
+					indexList.setEnabled(false);
+					optimize.setEnabled(false);
+					reindex.setEnabled(false);
+					delete.setEnabled(false);
 					OptimizeWorkRequest wr = new OptimizeWorkRequest(indexName);
 					VFSManager.runInWorkThread(wr);
 				}
@@ -199,6 +203,10 @@ public class IndexManagement extends AbstractOptionPane
 				}
 				else if (e.getSource() == reindex)
 				{
+					indexList.setEnabled(false);
+					optimize.setEnabled(false);
+					reindex.setEnabled(false);
+					delete.setEnabled(false);
 					ReindexWorkRequest wr = new ReindexWorkRequest(indexName);
 					VFSManager.runInWorkThread(wr);
 				}
@@ -216,10 +224,6 @@ public class IndexManagement extends AbstractOptionPane
 
 			public void run()
 			{
-				indexList.setEnabled(false);
-				optimize.setEnabled(false);
-				reindex.setEnabled(false);
-				delete.setEnabled(false);
 				try
 				{
 
@@ -231,8 +235,14 @@ public class IndexManagement extends AbstractOptionPane
 				}
 				finally
 				{
-					setIndex(indexName);
-					indexList.setEnabled(true);
+					EventQueue.invokeLater(new Runnable()
+					{
+						public void run()
+						{
+							setIndex(indexName);
+							indexList.setEnabled(true);
+						}
+					});
 				}
 			}
 		}
@@ -248,10 +258,6 @@ public class IndexManagement extends AbstractOptionPane
 
 			public void run()
 			{
-				indexList.setEnabled(false);
-				optimize.setEnabled(false);
-				reindex.setEnabled(false);
-				delete.setEnabled(false);
 				try
 				{
 					Log.log(Log.NOTICE, this, "Reindex " + indexName + " asked");
@@ -270,7 +276,14 @@ public class IndexManagement extends AbstractOptionPane
 				finally
 				{
 					setIndex(indexName);
-					indexList.setEnabled(true);
+					EventQueue.invokeLater(new Runnable()
+					{
+						public void run()
+						{
+							indexList.setEnabled(true);
+						}
+					});
+
 				}
 			}
 		}
