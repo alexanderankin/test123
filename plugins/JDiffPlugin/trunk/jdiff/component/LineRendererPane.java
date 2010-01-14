@@ -37,7 +37,6 @@ import jdiff.util.Diff;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
@@ -205,6 +204,10 @@ public class LineRendererPane extends JComponent implements EBComponent, CaretLi
                 return ;
             }
 
+            if ( LineRendererPane.this.view.getEditPanes().length != 2) {
+                return;    
+            }
+            
             JEditTextArea textArea0 = LineRendererPane.this.view.getEditPanes() [ 0 ].getTextArea();
             JEditTextArea textArea1 = LineRendererPane.this.view.getEditPanes() [ 1 ].getTextArea();
             String leftLine = "";
