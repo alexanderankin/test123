@@ -275,11 +275,11 @@ public class IndexManagement extends AbstractOptionPane
 				}
 				finally
 				{
-					setIndex(indexName);
 					EventQueue.invokeLater(new Runnable()
 					{
 						public void run()
 						{
+							setIndex(indexName);
 							indexList.setEnabled(true);
 						}
 					});
