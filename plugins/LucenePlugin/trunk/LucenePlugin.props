@@ -18,7 +18,7 @@ plugin.gatchan.jedit.lucene.LucenePlugin.description=\
 
 lucene.add-to-index.label=<html>Add selected file(s) to an <b>existing index</b></html>
 lucene.add-to-newindex.label=<html>Add selected file(s) to a <b>new index</b></html>
-lucene-search.label=Search
+lucene-search.label=Lucene Search
 lucene-search.title=Search with Lucene
 lucene.remove-index.label=Delete an index
 
