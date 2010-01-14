@@ -196,8 +196,10 @@ public class JavaParser extends SideKickParser implements EBComponent {
             }
 
             // show constructors, fields, methods, etc
+            addChildren( root, buffer, expansionModel );
+            /*
             if ( compilationUnit.getChildren() != null ) {
-                Collections.sort( compilationUnit.getChildren(), nodeSorter );
+            Collections.sort( compilationUnit.getChildren(), nodeSorter );
                 for ( Iterator it = compilationUnit.getChildren().iterator(); it.hasNext(); ) {
                     TigerNode child = ( TigerNode ) it.next();
 
@@ -210,7 +212,8 @@ public class JavaParser extends SideKickParser implements EBComponent {
                         addChildren( buffer, cuChild, child, expansionModel );
                     }
                 }
-            }
+                }
+                */
         }
         catch ( ParseException e ) {    // NOPMD
             // removed exception handling, all ParseExceptions are now caught
@@ -265,45 +268,43 @@ public class JavaParser extends SideKickParser implements EBComponent {
             }
         }
     }
-    
-    private void addChildren( Buffer buffer, DefaultMutableTreeNode parent, TigerNode tn, ExpansionModel expansionModel ) {
-        if ( tn.getChildCount() > 0 ) {
-            List<TigerNode> children = tn.getChildren();
-            
+
+    private void addChildren( DefaultMutableTreeNode node, Buffer buffer, ExpansionModel expansionModel ) {
+        TigerNode parent = ( TigerNode ) node.getUserObject();
+        List<TigerNode> children = parent.getChildren();
+        if ( children != null && children.size() > 0 ) {
+
             // don't sort enum values, but do sort everything else
-            if ( tn.getOrdinal() != TigerNode.ENUM ) { 
+            if ( parent.getOrdinal() != TigerNode.ENUM ) {
                 Collections.sort( children, nodeSorter );
             }
-            
-            // update expansion model
-            if ( tn.getOrdinal() == TigerNode.ENUM ) {
-                // don't expand enum nodes
-                expansionModel.inc();
-            }
-            else if ( tn.getOrdinal() == TigerNode.CLASS && optionValues.getExpandClasses() ) {
-                // maybe expand inner classes, depends on option setting
-                expansionModel.add();
-            }
-            else {
-                // everything else gets an 'add', methods will expand only if the 
-                // option to show local variables is set
-                expansionModel.add();
-            }
 
-            // actually add the children
-            for ( Iterator it = children.iterator(); it.hasNext(); ) {
-                TigerNode child = ( TigerNode ) it.next();
+            // add the children as tree nodes
+            for ( TigerNode child : children ) {
                 child.setStart( ElementUtil.createStartPosition( buffer, child ) );
                 child.setEnd( ElementUtil.createEndPosition( buffer, child ) );
                 if ( canShow( child ) ) {
-                    DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode( child );
-                    parent.add( treeNode );
-                    if ( child.getChildren() != null && child.getChildren().size() > 0 ) {
-                        // recursively add children as necessary.  Neither the java tree nor
-                        // the javacc tree are very deep.  The expansion model is updated in
-                        // the next iteration.
-                        addChildren( buffer, treeNode, child, expansionModel );
+                    // update expansion model
+                    int ordinal = child.getOrdinal();
+                    if ( ordinal == TigerNode.ENUM ) {
+                        // don't expand enum nodes
+                        expansionModel.inc();
                     }
+                    else if ( ordinal == TigerNode.CLASS && optionValues.getExpandClasses() ) {
+                        // maybe expand inner classes, depends on option setting
+                        System.out.println( "+++++ add() " + expansionModel.getRow() + " : " + child );
+                        expansionModel.add();
+                    }
+                    else if (ordinal == TigerNode.CONSTRUCTOR || ordinal == TigerNode.METHOD) {
+                        // methods get an 'inc'
+                        System.out.println( "+++++ inc() for: " + child );
+                        expansionModel.inc();
+                    }
+
+                    // create a tree node for the child and recursively add the childs children
+                    DefaultMutableTreeNode childNode = new DefaultMutableTreeNode( child );
+                    node.add( childNode );
+                    addChildren( childNode, buffer, expansionModel );
                 }
                 else {
                     // need to fill in start and end positions for code completion
@@ -500,6 +501,10 @@ public class JavaParser extends SideKickParser implements EBComponent {
          */
         public void inc() {
             ++row;
+        }
+
+        public int getRow() {
+            return row;
         }
     }
 }
