@@ -163,7 +163,7 @@ public class DisplayOptionPane extends AbstractOptionPane {
         showIconsCheckBox.setSelected( jEdit.getBooleanProperty( "sidekick.java.showIcons", true ) );
         likeEclipseCheckBox.setSelected( jEdit.getBooleanProperty( "sidekick.java.showIconsLikeEclipse", false ) );
         lineNumbersCheckBox.setSelected( jEdit.getBooleanProperty( "sidekick.java.showLineNums", false ) );
-        expandClassesCheckBox.setSelected( jEdit.getBooleanProperty( "sideckick.java.expandClasses", true ) );
+        expandClassesCheckBox.setSelected( jEdit.getBooleanProperty( "sidekick.java.expandClasses", true ) );
 
         int sortBy = jEdit.getIntegerProperty( "sidekick.java.sortBy", OptionValues.SORT_BY_NAME );
         switch ( sortBy ) {
