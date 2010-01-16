@@ -33,41 +33,45 @@ import java.util.*;
 import javax.swing.*;
 import projectviewer.vpt.VPTNode;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.View;
 
 /**
  * ProjectViewer Action to be added to the PV context menu.  This class serves
- * as menu item to launch the image viewer for the selected file in PV.
+ * as menu item to search for tasks for the selected file/directory in PV.
  */
 public class TaskListPVAction extends projectviewer.action.Action {
 
-    private JMenuItem menuItem = new JMenuItem( jEdit.getProperty( "tasklist.parse-browser.label", "Find Tasks" ) );
+    private VPTNode node = null;
 
-
+    // called by ProjectViewer to set the text on the PV context menu menuitem.    
     public String getText() {
         return jEdit.getProperty( "tasklist.parse-browser.label", "Find Tasks" );
     }
 
-    public JComponent getMenuItem() {
-        return menuItem;
-    }
-
     // called by ProjectViewer to let us know the currently selected node in
-    // the PV tree.
+    // the PV tree.  TaskList will find the tasks in this node and children of
+    // this node, if any.
     public void prepareForNode( final VPTNode node ) {
         if ( node == null ) {
             return ;
         }
-        menuItem.addActionListener(
-            new ActionListener() {
-                public void actionPerformed( ActionEvent ae ) {
-                    TaskList taskList = TaskListPlugin.getTaskList(viewer.getView());
-                    taskList.addTab(node.getName(), new ProjectNodeTaskList(viewer.getView(), node));
-                }
-            }
-        );
+        this.node = node;
     }
-
-    public void actionPerformed( ActionEvent ae ) {
-        // not used
+    
+    public void actionPerformed(ActionEvent ae) {
+        if (node == null) {
+            return;   
+        }
+        
+        View view = null;
+        if (viewer == null) {
+            view = jEdit.getActiveView();   
+        }
+        else {
+            view = viewer.getView();   
+        }
+        
+        TaskList taskList = TaskListPlugin.getTaskList(view);
+        taskList.addTab(node.getName(), new ProjectNodeTaskList(view, node));
     }
 }
