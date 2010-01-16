@@ -96,7 +96,6 @@ public class TaskList extends JPanel implements EBComponent {
         bottomPanel.add( buttonPanel );
 
         // create the refresh button
-        // TODO: add tooltip for refresh button
         buttonPanel.setFloatable( false );
         JButton refreshButton = new JButton( GUIUtilities.loadIcon( "22x22/actions/view-refresh.png" ) );
         refreshButton.setToolTipText(jEdit.getProperty("tasklist.toolbar.refresh", "Refresh"));
