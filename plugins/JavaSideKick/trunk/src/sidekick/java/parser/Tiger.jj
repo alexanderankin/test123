@@ -1271,6 +1271,9 @@ Modifier Modifiers():
   |
    t="strictfp" { modifiers |= ModifierSet.STRICTFP;  adjustModifier(m, t);}
   |
+   // TODO: Annotation doesn't work as a modifier, at least, not the way the 
+   // Modifer and ModifierSet classes are set up.  Need to figure out how to
+   // represent Annotation as a modifier.
    Annotation()
   )
  )*
@@ -1302,7 +1305,7 @@ TigerNode TypeDeclaration():
            |
              tn=EnumDeclaration(modifier)
            |
-             AnnotationTypeDeclaration(modifier) { tn = null; }
+             tn=AnnotationTypeDeclaration(modifier) { tn = null; }
           )
     }
     catch(ParseException pe) {
@@ -1704,7 +1707,7 @@ TigerNode ClassOrInterfaceBodyDeclaration(boolean isInterface):
             |
               a=MethodDeclaration(m)
             |
-              AnnotationTypeDeclaration(m)
+              a=AnnotationTypeDeclaration(m)
 
           )
         |
@@ -3706,104 +3709,273 @@ void RSIGNEDSHIFT():
 
 /* Annotation syntax follows. */
 
-void Annotation():
-{}
+List<TigerNode> Annotation():
+{
+    List<TigerNode> list = null;
+}
 {
    LOOKAHEAD( "@" Name() "(" ( <IDENTIFIER> "=" | ")" ))
    NormalAnnotation()
  |
    LOOKAHEAD( "@" Name() "(" )
-   SingleMemberAnnotation()
+   list=SingleMemberAnnotation()
  |
-   MarkerAnnotation()
+   list=MarkerAnnotation()
+   
+   {
+        return list;   
+   }
 }
 
-void NormalAnnotation():
-{}
+List<TigerNode> NormalAnnotation():
 {
-   "@" Name() "(" [ MemberValuePairs() ] ")"
+    List<TigerNode> list = new ArrayList<TigerNode>();
+    NameNode nn = null;
+    List<TigerNode> mvp = null;
+}
+{
+    try {
+        "@" nn=Name(){nn.setName("@" + nn.getName());} "(" [ mvp=MemberValuePairs() ] ")"
+    }
+    catch(ParseException pe) {
+        error_skipto(RPAREN);   
+    }
+   
+   {
+       if (nn != null) {
+           list.add(nn);
+       }
+       if (mvp != null) {
+           list.addAll(mvp);
+       }
+       return list;
+   }
 }
 
-void MarkerAnnotation():
-{}
+List<TigerNode> MarkerAnnotation():
 {
-  "@" Name()
+    List<TigerNode> list = null;
+    NameNode nn = null;
+}
+{
+    try {
+    "@" nn=Name(){nn.setName("@" + nn.getName());}
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);    // TODO is there a better token to skip to?   
+    }
+    
+    {
+        list = new ArrayList<TigerNode>();
+        list.add(nn);
+        return list;
+    }
 }
 
-void SingleMemberAnnotation():
-{}
+List<TigerNode> SingleMemberAnnotation():
 {
-  "@" Name() "(" MemberValue() ")"
+    List<TigerNode> list = new ArrayList<TigerNode>();
+    List<TigerNode> mv = null;
+    NameNode nn = null;
+}
+{
+    try {
+    "@" nn=Name(){nn.setName("@" + nn.getName());list.add(nn);} "(" mv=MemberValue(){list.addAll(mv);} ")"
+    }
+    catch(ParseException pe) {
+        error_skipto(RPAREN);   
+    }
+    
+    {
+        return list;   
+    }
 }
 
-void MemberValuePairs():
-{}
+List<TigerNode> MemberValuePairs():
 {
-   MemberValuePair() ( "," MemberValuePair() )*
+    List<TigerNode> list = new ArrayList<TigerNode>();
+    List<TigerNode> mvp = null;
+}
+{
+    try {
+    mvp=MemberValuePair(){list.addAll(mvp);} ( "," mvp=MemberValuePair(){list.addAll(mvp);} )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    
+    {
+        return list;   
+    }
 }
 
-void MemberValuePair():
-{}
+List<TigerNode> MemberValuePair():
 {
-    <IDENTIFIER> "=" MemberValue()
+    List<TigerNode> list = new ArrayList<TigerNode>();
+    List<TigerNode> mv = null;
+    Token t = null;
+}
+{
+    try {
+    t=<IDENTIFIER> "=" mv=MemberValue()
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    
+    {
+        NameNode nn = new NameNode(t.image, null);
+        list.add(nn);
+        list.addAll(mv);
+        return list;
+    }
 }
 
-void MemberValue():
-{}
+List<TigerNode> MemberValue():
 {
-   Annotation()
+    List<TigerNode> list = null;
+
+}
+{
+   list = Annotation()
  |
-   MemberValueArrayInitializer()
+   list = MemberValueArrayInitializer()
  |
-   ConditionalExpression()
+   list = ConditionalExpression()
+   
+   {
+        return list;   
+   }
 }
 
-void  MemberValueArrayInitializer():
-{}
+List<TigerNode>  MemberValueArrayInitializer():
 {
-  "{" (MemberValue() ( LOOKAHEAD(2) "," MemberValue() )* [ "," ])? "}"
+    List<TigerNode> list = new ArrayList<TigerNode>();
+    List<TigerNode> mv = null;
+}
+{
+    try {
+    "{" (mv=MemberValue(){list.addAll(mv);} ( LOOKAHEAD(2) "," mv=MemberValue(){list.addAll(mv);} )* [ "," ])? "}"
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+  
+  {
+    return list;   
+  }
 }
 
 
 /* Annotation Types. */
 
-void AnnotationTypeDeclaration(Modifier m):
-{}
+TigerNode AnnotationTypeDeclaration(Modifier m):
 {
-  "@" "interface" <IDENTIFIER> AnnotationTypeBody()
+    Token st = null;
+    Token t = null;
+    List<TigerNode> body = null;
+}
+{
+    try {
+        st="@" "interface" t=<IDENTIFIER> body=AnnotationTypeBody()
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    
+    {
+        AnnotationTypeNode tn = new AnnotationTypeNode(t.image, m.modifiers);
+        tn.setStartLocation(getLocation(t));
+        TigerNode last = body.get(body.size() - 1);
+        tn.addChildren(body);
+        tn.setEndLocation(last.getEndLocation());
+        return tn;
+    }
 }
 
-void AnnotationTypeBody():
-{}
+List<TigerNode> AnnotationTypeBody():
 {
-  "{" ( AnnotationTypeMemberDeclaration() )* "}"
+    List<TigerNode> list = new ArrayList<TigerNode>();
+    TigerNode tn = null;
+    Token st = null;
+    Token et = null;
+}
+{
+    try {
+    st="{" ( tn=AnnotationTypeMemberDeclaration(){list.add(tn);} )* et="}"
+    }
+    catch(ParseException pe) {
+        error_skipto(RBRACKET);   
+    }
+    
+    {
+        TigerNode first = list.get(0);
+        first.setStartLocation(getLocation(st));
+        TigerNode last = list.get(list.size() - 1);
+        last.setEndLocation(getEndLocation(et));
+        return list;   
+    }
 }
 
-void AnnotationTypeMemberDeclaration():
+TigerNode AnnotationTypeMemberDeclaration():
 {
-   Modifier m;
+   Modifier m = null;
+   TigerNode tn = new TigerNode();
+   Type type = null;
+   Token t = null;
+   Token st = null;
+   Token et = null;
+   List<TigerNode> dv = null;
 }
 {
  m = Modifiers()
- (
-   LOOKAHEAD(Type() <IDENTIFIER> "(")
-   Type() <IDENTIFIER> "(" ")" [ DefaultValue() ] ";"
-  |
-   ClassOrInterfaceDeclaration(m)
-  |
-   EnumDeclaration(m)
-  |
-   AnnotationTypeDeclaration(m)
-  |
-   FieldDeclaration(m)
- )
- |
-   ( ";" )
+ try {
+     (
+         LOOKAHEAD(Type() <IDENTIFIER> "(")
+         type=Type() {tn.setType(type);tn.setStartLocation(type.getStartLocation());} t=<IDENTIFIER> {tn.setName(t.image);} "(" ")" [ dv=DefaultValue(){tn.addChildren(dv);} ] et=";" {tn.setEndLocation(getEndLocation(et));}
+         |
+         tn=ClassOrInterfaceDeclaration(m)
+         |
+         tn=EnumDeclaration(m)
+         |
+         tn=AnnotationTypeDeclaration(m)
+         |
+         tn=FieldDeclaration(m)
+     )
+     |
+     ( ";" )
+ }
+ catch(ParseException pe) {
+    error_skipto(SEMICOLON);   
+ }
+   
+   {
+        return tn;   
+   }
 }
 
-void DefaultValue():
-{}
+List<TigerNode> DefaultValue():
 {
-  "default" MemberValue()
+    List<TigerNode> mv = null;
+    NameNode nn = null;
+    Token t = null;
+}
+{
+    try {
+  t="default" mv=MemberValue()
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+  
+  {
+      nn = new NameNode("default", null);
+      nn.setStartLocation(getLocation(t));
+      nn.setEndLocation(getEndLocation(t));
+      List<TigerNode> list = new ArrayList<TigerNode>();
+      list.add(nn);
+      list.addAll(mv);
+      return list;   
+  }
 }
 
