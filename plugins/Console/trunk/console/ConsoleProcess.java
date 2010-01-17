@@ -316,7 +316,7 @@ class ConsoleProcess
 		}
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				jEdit.checkBufferStatus(jEdit.getActiveView());				
+				jEdit.checkBufferStatus(console.getView());				
 			}
 		});
 	}
