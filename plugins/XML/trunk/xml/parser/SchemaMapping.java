@@ -43,7 +43,7 @@ import static xml.Debug.*;
  * keeps rules to map a schema to a given instance document.
  * The schema mapping can be serialized in a "schemas.xml" file,
  * compatible with the nXML emacs mode written by James Clark.
- * TODO: some features are still missing (include, apply following rule, transform uri)
+ * TODO: some features are still missing (apply following rule)
  * TODO: with XSD, one has to specify one schema per namespace,
  * it is not supported by this implementation.
  *
@@ -59,7 +59,7 @@ public final class SchemaMapping
 	public static final String SCHEMAS_FILE = "schemas.xml"; 
 	
 	/** type IDs : typeId -> schema URL or typeId -> typeId */
-	private final Map<String,String> typeIds;
+	private final List<TypeIdMapping> typeIds;
 	
 	/** mapping rules */
 	private final List<Mapping> rules;
@@ -81,7 +81,7 @@ public final class SchemaMapping
 	 */
 	public SchemaMapping(URL baseURI)
 	{
-		typeIds = new HashMap<String,String>();
+		typeIds = new ArrayList<TypeIdMapping>();
 		rules = new ArrayList<Mapping>();
 		this.baseURI = baseURI;
 	}
@@ -95,8 +95,11 @@ public final class SchemaMapping
 	
 	
 	public void insertRuleAt(int pos, Mapping m){
-		rules.add(pos,m);
 		m.parent = this;
+		if(m.getBaseURI()==null){
+			m.setBaseURI(getBaseURI());
+		}
+		rules.add(pos,m);
 	}
 	
 	public void removeRule(Mapping m){
@@ -171,16 +174,43 @@ public final class SchemaMapping
 		else return r.target;
 	}
 
-	
+	/**
+	 * @param	tid	the type identifier to look up (try "RNG")
+	 * @return	URL (eventually, in case of chaining of typeIds)
+	 *          associated to this typeId or null if it can't be found.
+	 */
+	public Result resolveTypeId(String tid)
+	{
+		if(DEBUG_SCHEMA_MAPPING)Log.log(Log.DEBUG,SchemaMapping.class,"resolveTypeId("+tid+")");
+		for(TypeIdMapping m : typeIds)
+		{
+			if(m.tid.equals(tid)){
+				if(m.targetIsTypeId){
+					return resolveTypeId(m.target);
+				}else{
+					Result r = new Result(m.getBaseURI(),m.target);
+					if(DEBUG_SCHEMA_MAPPING)Log.log(Log.DEBUG,SchemaMapping.class," resolvedTypeId : "+r);
+					return r;
+				}
+			}
+		}
+		for(Mapping m: rules)
+		{
+			if(m instanceof IncludeMapping){
+				Result r = ((IncludeMapping)m).mapping.resolveTypeId(tid);
+				if(r!=null)return r;
+			}
+		}
+		Log.log(Log.WARNING,SchemaMapping.class,"couldn't find typeId '"+tid+"'");
+		return null;
+	}
+
 	/**
 	 * manually add a rule
 	 * @param	r	rule to add
 	 */
 	public void addRule(Mapping r){
-		if(r.getBaseURI()==null){
-			r.setBaseURI(getBaseURI());
-		}
-		rules.add(r);
+		insertRuleAt(rules.size(),r);
 	}
 	
 	/**
@@ -189,14 +219,16 @@ public final class SchemaMapping
 	 *
 	 * @param	typeId	typeId
 	 * @param	target	target url or typeId
+	 * @param	targetIsTypeId	is the target itself a type id ?
 	 */
-	public void addTypeId(String typeId, String target)
+	public void addTypeId(String tid, String target, boolean targetIsTypeId)
 	{
-		typeIds.put(typeId,target);
+		TypeIdMapping tidm = new TypeIdMapping(getBaseURI(),tid,target,targetIsTypeId);
+		typeIds.add(tidm);
 	}
 	
-	public Map<String,String> getTypeIds(){
-		return Collections.unmodifiableMap(typeIds);
+	public List<TypeIdMapping> getTypeIds(){
+		return Collections.unmodifiableList(typeIds);
 	}
 	
 	public List<Mapping> getRules(){
@@ -230,11 +262,8 @@ public final class SchemaMapping
 			if(res !=null)break;
 		}
 
-		// typeIds can be chained, so follow them in the map until no more
-		// can be found and return the last one
-		if(res!=null && followTypeId)
+		if(res!=null)
 		{
-			while(typeIds.containsKey(res.target))res = new Result(res.baseURI,typeIds.get(res.target));
 			System.out.println("found: "+res);
 		}
 		return res;
@@ -758,12 +787,21 @@ public final class SchemaMapping
 		}
 
 		public final Result getSchemaForDocument(String publicId, String systemId,
-			String namespace,String prefix,String localName, boolean ignored)
+			String namespace,String prefix,String localName, boolean followTypeId)
 		{
 			if(matchURL(systemId) || matchNamespace(namespace)
 				|| matchDocumentElement(prefix,localName))
 			{
-				return new Result(getBaseURI(), target);
+				if(DEBUG_SCHEMA_MAPPING)Log.log(Log.DEBUG,SchemaMapping.class,"matching rule : "+this);
+
+				if(targetIsTypeId && followTypeId)
+				{
+					return parent.resolveTypeId(target);
+				}
+				else
+				{
+					return new Result(getBaseURI(), target);
+				}
 			}
 			else
 			{
@@ -858,21 +896,9 @@ public final class SchemaMapping
 		{
 			out.write(r.toString());
 		}
-		for(String s:typeIds.keySet())
+		for(TypeIdMapping tid:typeIds)
 		{
-			out.write("<typeId id=\""+s+"\" ");
-			String v=typeIds.get(s);
-			if(typeIds.containsKey(v))
-			{
-				/* points to a typeId */
-				out.write("typeId");
-			}
-			else
-			{
-				/* points to an URL */
-				out.write("uri");
-			}
-			out.write("=\""+v+"\"/>\n");
+			out.write(tid.toString());
 		}
 		out.write("</locatingRules>");
 		out.close();
@@ -1001,7 +1027,12 @@ public final class SchemaMapping
 				{
 					// TODO: check unicity ?
 					String id = attributes.getValue("","id");
-					mapping.typeIds.put(id,target);
+					TypeIdMapping tid = new TypeIdMapping(
+						baseURIs.peek(),
+						id,
+						target,
+						targetIsTypeId);
+					mapping.typeIds.add(tid);
 				}
 				
 			}
@@ -1197,6 +1228,46 @@ public final class SchemaMapping
 				)
 				;
 			}else return false;
+		}
+	}
+	
+	/**
+	 * models the typeId element in schemas.xml
+	 */
+	public static final class TypeIdMapping{
+		final String tid;
+		final String target;
+		final boolean targetIsTypeId;
+		final URL baseURI;
+		
+		TypeIdMapping(URL baseURI, String tid, String target, boolean targetIsTypeId){
+			this.baseURI = baseURI;
+			this.tid = tid;
+			this.target = target;
+			this.targetIsTypeId = targetIsTypeId;
+		}
+		
+		public URL getBaseURI(){
+			return baseURI;
+		}
+		
+		public String getId(){
+			return tid;
+		}
+		
+		public String toString(){
+			String s = "<typeId id=\""+tid+"\" ";
+			if(targetIsTypeId)
+			{
+				/* points to a typeId */
+				s+="typeId";
+			}
+			else
+			{
+				s+="uri";
+			}
+			s+="=\""+target+"\"/>\n";
+			return s;
 		}
 	}
 	
