@@ -597,7 +597,8 @@ public class XercesParserImpl extends XmlParser
 						&& schemaAutoLoader.getCompletionInfo().containsKey(uri))
 				{
 					info = schemaAutoLoader.getCompletionInfo().get(uri);
-					System.out.println("setting completionInfo for "+prefix+" : "+info.namespace+")");
+					Log.log(Log.DEBUG,XercesParserImpl.class,"setting completionInfo for '"+prefix+"' : "+info.namespace+")");
+					if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,XercesParserImpl.class,info);
 					data.setCompletionInfo(prefix,info);
 				}
 			}

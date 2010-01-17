@@ -79,10 +79,12 @@ public final class SchemaLoader
 	 * @param	handler	channel to report errors
 	 */
 	public ValidatorHandler loadJaxpGrammar(String current,String schemaFileNameOrURL, ErrorHandler handler )
-			throws SAXException, IOException
+			throws SAXException, IOException, IllegalArgumentException
 	{
 		Log.log(Log.DEBUG,SchemaLoader.class,"loadJaxpGrammar("+current+","+schemaFileNameOrURL+")");
 
+		if(schemaFileNameOrURL == null)throw new IllegalArgumentException("schemaFileNameOrURL may not be null");
+		
 		// get the factory
 		SchemaFactory factory;
 

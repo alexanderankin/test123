@@ -112,19 +112,19 @@ public class SchemaMappingTest{
     	// test undefined typeId
     	m.addRule(new DocumentElementRule(null,null, "ACTIONS", "actions", true));
 
-    	assertEquals(new Result(null,"actions"),m.getSchemaForDocument(null, "actions.xml",
+    	assertEquals(null,m.getSchemaForDocument(null, "actions.xml",
 		null,null,"ACTIONS",true));
     	
-		m.addTypeId("actions","actions.rng");
+		m.addTypeId("actions","actions.rng",false);
 
     	// test taken into account
     	assertEquals(new Result(null,"actions.rng"),m.getSchemaForDocument(null, "actions.xml",
 		null,null,"ACTIONS",true));
 		
-    	m.addTypeId("actions", "else.rng");
+    	m.addTypeId("actions", "else.rng",false);
 
-		// test precedence ( the snd replaced the first one )
-    	assertEquals(new Result(null,"else.rng"),m.getSchemaForDocument(null, "actions.xml",
+		// test precedence ( the first one wins)
+    	assertEquals(new Result(null,"actions.rng"),m.getSchemaForDocument(null, "actions.xml",
 		null,null,"ACTIONS",true));
 		
     }
@@ -527,8 +527,8 @@ public class SchemaMappingTest{
     	r.setExplicitBase("g.xml");
     	m.addRule(r);
 
-    	m.addTypeId("toto","titi");
-    	m.addTypeId("titi","relax.rng");
+    	m.addTypeId("toto","titi",true);
+    	m.addTypeId("titi","relax.rng",false);
     	
     	File f = File.createTempFile("schemamappingtest",".xml");
     	try{

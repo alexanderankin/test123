@@ -58,6 +58,7 @@ import xml.parser.SchemaMapping;
 
 public final class SchemaMappingManager
 {
+	public static final String SCHEMA_MAPPING_PROP = "xml.schema-mapping";
 	private static final String BUILT_IN_SCHEMA = "xml/dtds/schemas.xml";
 	
 	// {{{ singleton constructor
@@ -415,9 +416,9 @@ public final class SchemaMappingManager
 		{
 			if(m != null)
 			{
-				for(String tid : m.getTypeIds().keySet())
+				for(SchemaMapping.TypeIdMapping tid : m.getTypeIds())
 				{
-					allTypeIds.put(tid,m);
+					allTypeIds.put(tid.getId(),m);
 				}
 				
 				if(oldTypeId == null)
@@ -495,8 +496,9 @@ public final class SchemaMappingManager
 	//{{{ getGlobalSchemaMapping() method
 	public static SchemaMapping getGlobalSchemaMapping()
 	{
-		String schemaURL = jEdit.getProperty(xml.XmlPlugin.SCHEMA_MAPPING_PROP);
+		String schemaURL = jEdit.getProperty(SCHEMA_MAPPING_PROP);
 		SchemaMapping mapping = null;
+		// if schemaURL is null, it means that there is no settings directory
 		if(schemaURL != null)
 		{
 			Log.log(Log.DEBUG,SchemaMappingManager.class,"global mapping="+schemaURL);
@@ -576,4 +578,64 @@ public final class SchemaMappingManager
 		return mapping;
 	}
 	//}}}
+	
+	//{{{ initGlobalSchemaMapping() method
+	/**
+	 * Finds (and creates if needed) the global schema mapping (schemas.xml)
+	 * file in the settings directory, for reading or overwriting it.
+	 */
+	public static void initGlobalSchemaMapping(View view){
+		jEdit.unsetProperty(SCHEMA_MAPPING_PROP);
+		
+		File home = org.gjt.sp.jedit.EditPlugin.getPluginHome(xml.XmlPlugin.class);
+		if(home == null)
+		{
+			// -nosettings
+			return;
+		}
+		else if(!home.exists())
+		{
+			Log.log(Log.DEBUG,SchemaMappingManager.class, "creating settings directory");
+			try
+			{
+				boolean created = home.mkdirs();
+				if(!created)
+				{
+					GUIUtilities.error( view, "unable to create settings directory: "+home,null);
+					return;
+				}
+			}
+			catch(SecurityException se)
+			{
+				GUIUtilities.error( view, "unable to create settings directory (security exception): "+home,null);
+				return;
+			}
+		}
+		File schemas = new File(home,SchemaMapping.SCHEMAS_FILE);
+		// create an empty mapping file in settings directory
+		// it points to the global schemaMapping, to get all
+		// the builtin rules
+		if(!schemas.exists()){
+			SchemaMapping builtinMapping = getBuiltInSchemaMapping();
+			SchemaMapping tmp = new SchemaMapping();
+			tmp.ensureIncluded(builtinMapping);
+			try{
+				tmp.toDocument(schemas.getPath());
+			}catch(IOException ioe){
+				Log.log(Log.ERROR,SchemaMappingManager.class,"Unable to save default RelaxNG mappings");
+				Log.log(Log.ERROR,SchemaMappingManager.class,ioe);
+				return;
+			}
+		}
+		try
+		{
+			jEdit.setProperty(SCHEMA_MAPPING_PROP,schemas.toURL().toString());
+		}
+		catch(java.net.MalformedURLException mfe)
+		{
+			Log.log(Log.ERROR,SchemaMappingManager.class,mfe);
+		}
+	}
+	//}}}
+
 }

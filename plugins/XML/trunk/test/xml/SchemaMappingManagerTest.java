@@ -175,6 +175,57 @@ public class SchemaMappingManagerTest {
 			buffer.getStringProperty("xml.validation.schema"));
 	}
 
+	/**
+     * test setting the schema type for a file
+     */
+	@Test
+	public void testTypeIdOnFile() throws java.net.MalformedURLException, IOException
+	{
+		File import_schema = new File(jEdit.getSettingsDirectory(),"import_schema");
+		copyDirectory(
+				new File(testData.getPath(),"import_schema/relax_ng"),
+				import_schema);
+		
+		new File(import_schema,"schemas.xml").delete();
+		
+		File buf = new File(import_schema,"test_multi_ns.rng");
+		
+		Buffer buffer = openFile(buf.getPath());
+		
+		
+		Thread t = new Thread(){
+			public void run()
+			{
+				action("xml-prompt-typeid",1);
+			}
+		};
+		
+		t.start();
+		
+		Pause.pause(2000);
+		
+		DialogFixture dialogF = findDialogByTitle("Choose a TypeID...");
+		
+		dialogF.comboBox().selectItem("RNG");
+
+		MessageListener listen = new MessageListener();
+		listen.registerForMessage(messageOfClassCondition(sidekick.SideKickUpdate.class));
+
+		dialogF.button(JButtonMatcher.withText("OK")).click();
+
+		// wait for end of parsing
+		listen.waitForMessage(10000);
+		
+		try{t.join();}catch(InterruptedException ie){}
+		
+		assertThat(new File(import_schema,"schemas.xml")).exists();
+
+		String prop = buffer.getStringProperty("xml.validation.schema");
+		assertNotNull(prop);
+		assertThat(prop.endsWith("XML.jar!/xml/dtds/relaxng.rng"));
+	}
+
+	
     /**
      * setting the schema for a jar resource
      * It FAILS
