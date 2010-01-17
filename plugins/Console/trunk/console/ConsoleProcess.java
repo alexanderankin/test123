@@ -319,11 +319,6 @@ class ConsoleProcess
 				jEdit.checkBufferStatus(jEdit.getActiveView());				
 			}
 		});
-		
-		
-			
-			
-		;
 	}
 	// }}}
 	// }}}
