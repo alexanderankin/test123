@@ -29,6 +29,8 @@ import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
+import javax.swing.SwingUtilities;
+
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.StringList;
@@ -312,7 +314,16 @@ class ConsoleProcess
 			// jEdit
 			stop();
 		}
-		jEdit.checkBufferStatus(jEdit.getActiveView());
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				jEdit.checkBufferStatus(jEdit.getActiveView());				
+			}
+		});
+		
+		
+			
+			
+		;
 	}
 	// }}}
 	// }}}
