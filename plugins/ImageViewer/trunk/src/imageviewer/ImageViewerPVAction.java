@@ -40,15 +40,10 @@ import org.gjt.sp.jedit.jEdit;
  */
 public class ImageViewerPVAction extends projectviewer.action.Action {
 
-    private JMenuItem menuItem = new JMenuItem( jEdit.getProperty( "imageviewer.showimage", "View Image" ) );
-
+    private VPTNode node = null;
 
     public String getText() {
         return jEdit.getProperty( "imageviewer.showimage", "View Image" );
-    }
-
-    public JComponent getMenuItem() {
-        return menuItem;
     }
 
     // called by ProjectViewer to let us know the currently selected node in
@@ -58,25 +53,20 @@ public class ImageViewerPVAction extends projectviewer.action.Action {
         if ( node == null ) {
             return ;
         }
-        String name = node.getNodePath().toLowerCase();
-        if ( name != null ) {
-            menuItem.setEnabled( ImageViewer.isValidFilename( name ) );
-            for ( ActionListener al : menuItem.getActionListeners() ) {
-                menuItem.removeActionListener( al );
-            }
-            menuItem.addActionListener( new ActionListener() {
-                        public void actionPerformed( ActionEvent ae ) {
-                            ImageViewer imageViewer = ImageViewerPlugin.getImageViewer( viewer.getView() );
-                            imageViewer.showImage( node.getNodePath() );
-                            viewer.getView().getDockableWindowManager().showDockableWindow( "imageviewer" );
+        this.node = node;
 
-                        }
-                    }
-                                      );
+        String name = node.getNodePath();
+        if ( name != null ) {
+            getMenuItem().setEnabled( ImageViewer.isValidFilename( name ) );
         }
     }
 
     public void actionPerformed( ActionEvent ae ) {
-        // not used
+        if ( node == null ) {
+            return ;
+        }
+        ImageViewer imageViewer = ImageViewerPlugin.getImageViewer( viewer.getView() );
+        imageViewer.showImage( node.getNodePath() );
+        viewer.getView().getDockableWindowManager().showDockableWindow( "imageviewer" );
     }
 }
