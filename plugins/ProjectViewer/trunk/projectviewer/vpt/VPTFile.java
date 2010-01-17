@@ -160,6 +160,7 @@ public class VPTFile extends VPTNode
 					Log.log(Log.WARNING, this, ioe);
 				}
 			}
+			return new DummyVFSFile();
 		}
 		return vfsfile;
 	}
@@ -379,6 +380,28 @@ public class VPTFile extends VPTNode
 				}
 				queue.clear();
 			}
+		}
+
+	}
+
+
+	/**
+	 * Dummy VFSFile implementation to trick IconComposer into showing
+	 * a clean icon while we retrieve the actual VFSFile for the node.
+	 * This avoids some ugly flickering in the trees as the VFSFile
+	 * instances are collected.
+	 */
+	private static class DummyVFSFile extends VFSFile
+	{
+
+		public boolean isReadable()
+		{
+			return true;
+		}
+
+		public boolean isWriteable()
+		{
+			return true;
 		}
 
 	}
