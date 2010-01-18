@@ -82,7 +82,6 @@ public class VPTWorkingFileListModel extends ProjectCustomTreeModel
 	{
 		String path = child.getNodePath();
 
-		System.err.println("removing " + child);
 		for (VPTProject p : getCache().keySet()) {
 			removeChild(p, child);
 		}
