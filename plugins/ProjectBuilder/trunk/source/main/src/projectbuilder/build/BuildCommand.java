@@ -40,6 +40,7 @@ public class BuildCommand {
 		final String cmd; // The final command to run
 		if (commands.length>1) {
 			// Prompt for which command to use
+			// TODO: For ant commands, try and find a way to display a cleaner description, such as "ANT build"
 			cmd = (String) JOptionPane.showInputDialog(view,
 												"Build this project with:",
 												"Build",
@@ -56,22 +57,27 @@ public class BuildCommand {
 		
 		new Thread(new Runnable() {
 			public void run() {
-				if ((cmd.equals("ant") || cmd.startsWith("ant "))) {
+				if (cmd.startsWith("ANT[")) {
 					// Build in AntFarm
+					String[] props = cmd.substring(4, cmd.indexOf("]")).split(",");
+					String buildfile = "";
 					String target = "";
-					if (cmd.indexOf(" ") != -1) {
-						target = cmd.substring(cmd.indexOf(" ")+1, cmd.length());
+					for (int i = 0; i<props.length; i++) {
+						String p = props[i];
+						if (p.startsWith("target="))
+							target = p.substring(7);
+						else if (p.startsWith("buildfile="))
+							buildfile = p.substring(10);
 					}
-					String buildfile = proj.getRootPath()+"/build.xml";
 					wm.addDockableWindow("console");
 					Console console = (Console) wm.getDockable("console");
 					Shell ant = Shell.getShell("Ant");
-					console.clear();
 					console.run(ant, "+"+buildfile);
 					ant.waitFor(console);
 					console.run(ant, "!"+target);
 					view.getDockableWindowManager().showDockableWindow("console");
 					new BuildWatcher(console).start();
+					// QUESTION: Is there a way to run AntFarm commands without having the AntFarm window pop up? All we need is the shell.
 				} else {
 					// Run in system shell
 					wm.addDockableWindow("console");

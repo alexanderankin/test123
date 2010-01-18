@@ -117,7 +117,7 @@ if(answer == JOptionPane.OK_OPTION) {
    ProjectManager manager = ProjectManager.getInstance()
    try {
 	   if (manager.getProject(projectName) != null) {
-		   GUIUtilities.error(view, "projectBuilder.project-exists", null)
+		   GUIUtilities.error(view, "projectBuilder.msg.project-exists", null)
 		   return
 	   }
    } catch (Exception e) {
