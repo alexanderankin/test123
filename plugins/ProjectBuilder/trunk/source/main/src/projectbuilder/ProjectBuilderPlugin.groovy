@@ -32,6 +32,7 @@ import antfarm.AntFarmPlugin
 public class ProjectBuilderPlugin extends EditPlugin {
 
    private Project building = null; // The currently-building project
+   public static final String userTemplateDir = JEDIT.getSettingsDirectory()+"/project-templates"
    
    @Override
    public void start() {

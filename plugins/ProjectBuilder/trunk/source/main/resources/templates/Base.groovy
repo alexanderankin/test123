@@ -39,17 +39,39 @@ if(!pluginHome.exists()) {
    pluginHome.mkdirs()
 }
 File templatesDir = new File(pluginHome as File, "templates")
+File userTemplatesDir = new File(ProjectBuilderPlugin.userTemplateDir)
 if(!templatesDir.exists()) {
    templatesDir.mkdirs()
+}
+if (!userTemplatesDir.exists()) {
+	userTemplatesDir.mkdir()
 }
 def templateTypes = []
 
 int i = 0
 int selected = 0
+// TODO: Determine the best way to display the version number
 templatesDir.eachDir { dir ->
+   File version_file = new File(dir.path+"/version.txt")
+   String version = "Unknown version"
+   if (version_file.exists()) {
+   	   Scanner reader = new Scanner(version_file)
+   	   version = reader.nextLine()
+   }
    templateTypes << new TemplateTypeOption(name: dir.name, dir: dir, templatesDir: templatesDir)
    if (dir.name == projectType) selected = i
    i++
+}
+userTemplatesDir.eachDir { dir ->
+	File version_file = new File(dir.path+"/version.txt")
+	String version = "Unknown version"
+	if (version_file.exists()) {
+		Scanner reader = new Scanner(version_file)
+		version = reader.nextLine()
+	}
+	templateTypes << new TemplateTypeOption(name: dir.name, dir: dir, templatesDir: userTemplatesDir)
+	if (dir.name == projectType) selected = i
+	i++
 }
 
 // Create the form
@@ -112,6 +134,7 @@ if(answer == JOptionPane.OK_OPTION) {
    def projectDir = new File(swing.directory_field.text)
    def project = new Project(name: swing.name_field.text, directory: projectDir, build: "", run: "")
    String[] roots = [templatesDir.path]
+   
 
    // Make sure a project with the chosen name doesn't already exist   
    ProjectManager manager = ProjectManager.getInstance()

@@ -20,21 +20,28 @@ public class NewProjectMenu implements DynamicMenuProvider {
 		JMenu projects = new JMenu("New Project");
 		String templates = EditPlugin.getPluginHome(ProjectBuilderPlugin .class).getPath() + "/templates";
 		File templateDir = null;
+		File userTemplateDir = null;
 		try {
 			templateDir = new File(templates);
+			userTemplateDir = new File(ProjectBuilderPlugin.userTemplateDir);
 		} catch (Exception e) {
 			return;
 		}
 
 		File[] dirs = templateDir.listFiles(new DirFilter());
+		File[] userDirs = userTemplateDir.listFiles(new DirFilter());
+		int total = dirs.length + userDirs.length;
 
-		String[] tNames = new String [dirs.length];
-		for (int i = 0; i < dirs.length; i++) {
-			tNames[i] = dirs[i].getName().replace("_", " ");
+		String[] tNames = new String [total];
+		for (int i = 0; i < total; i++) {
+			File dir = (i<dirs.length) ? dirs[i] : userDirs[i-dirs.length];
+			String name = dir.getName();
+			tNames[i] = name.replace("_", " ");
 		}
 
 		for (int j = 0; j < tNames.length; j++) {
-			String iconUrl = dirs[j].getPath() + "/menu-icon.png";
+			File dir = (j<dirs.length) ? dirs[j] : userDirs[j-dirs.length];
+			String iconUrl = dir.getPath() + "/menu-icon.png";
 			JMenuItem p = new JMenuItem(tNames[j], new ImageIcon(iconUrl));
 			String t = tNames[j].replace(" ", "_");
 			p.addActionListener(new ItemListener(t));
