@@ -1,3 +1,24 @@
+/*
+ * ConditionalExpression.java 
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
+ * Copyright (C) 2003, 2010 Matthieu Casanova
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
 package net.sourceforge.phpdt.internal.compiler.ast;
 
 import gatchan.phpparser.parser.PHPParser;
@@ -10,95 +31,107 @@ import java.util.List;
  *
  * @author Matthieu Casanova
  */
-public final class ConditionalExpression extends OperatorExpression {
-  private final Expression condition;
-  private final Expression valueIfTrue;
-  private final Expression valueIfFalse;
+public final class ConditionalExpression extends OperatorExpression
+{
+	private final Expression condition;
+	private final Expression valueIfTrue;
+	private final Expression valueIfFalse;
 
-  public ConditionalExpression(Expression condition,
-                               Expression valueIfTrue,
-                               Expression valueIfFalse) {
-    super(valueIfTrue.getType(), // we use the valueIfTrue type
-          -1,
-          condition.getSourceStart(),
-          valueIfFalse.getSourceEnd(),
-          condition.getBeginLine(),
-          valueIfFalse.getEndLine(),
-          condition.getBeginColumn(),
-          valueIfFalse.getEndColumn());
-    this.condition = condition;
-    this.valueIfTrue = valueIfTrue;
-    this.valueIfFalse = valueIfFalse;
-  }
+	public ConditionalExpression(Expression condition,
+				     Expression valueIfTrue,
+				     Expression valueIfFalse)
+	{
+		super(valueIfFalse.getType(), // we use the valueIfTrue type
+			-1,
+			condition.getSourceStart(),
+			valueIfFalse.getSourceEnd(),
+			condition.getBeginLine(),
+			valueIfFalse.getEndLine(),
+			condition.getBeginColumn(),
+			valueIfFalse.getEndColumn());
+		this.condition = condition;
+		if (valueIfTrue == null)
+			this.valueIfTrue = condition;
+		else
+			this.valueIfTrue = valueIfTrue;
+		this.valueIfFalse = valueIfFalse;
+	}
 
-  public String toStringExpression() {
-    String conditionString = condition.toStringExpression();
-    String valueIfTrueString = valueIfTrue.toStringExpression();
-    String valueIfFalse = this.valueIfFalse.toStringExpression();
-    StringBuffer buff = new StringBuffer(8 +
-                                         conditionString.length() +
-                                         valueIfTrueString.length() +
-                                         valueIfFalse.length());
-    buff.append('(');
-    buff.append(conditionString);
-    buff.append(") ? ");
-    buff.append(valueIfTrueString);
-    buff.append(" : ");
-    buff.append(valueIfFalse);
-    return buff.toString();
-  }
+	public String toStringExpression()
+	{
+		String conditionString = condition.toStringExpression();
+		String valueIfTrueString = valueIfTrue.toStringExpression();
+		String valueIfFalse = this.valueIfFalse.toStringExpression();
+		StringBuffer buff = new StringBuffer(8 +
+			conditionString.length() +
+			valueIfTrueString.length() +
+			valueIfFalse.length());
+		buff.append('(');
+		buff.append(conditionString);
+		buff.append(") ? ");
+		buff.append(valueIfTrueString);
+		buff.append(" : ");
+		buff.append(valueIfFalse);
+		return buff.toString();
+	}
 
-  /**
-   * Get the variables from outside (parameters, globals ...)
-   *
-   * @param list the list where we will put variables
-   */
-  public void getOutsideVariable(List list) {
-  }
+	/**
+	 * Get the variables from outside (parameters, globals ...)
+	 *
+	 * @param list the list where we will put variables
+	 */
+	public void getOutsideVariable(List list)
+	{
+	}
 
-  /**
-   * get the modified variables.
-   *
-   * @param list the list where we will put variables
-   */
-  public void getModifiedVariable(List list) {
-    condition.getModifiedVariable(list);
-    valueIfTrue.getModifiedVariable(list);
-    valueIfFalse.getModifiedVariable(list);
-  }
+	/**
+	 * get the modified variables.
+	 *
+	 * @param list the list where we will put variables
+	 */
+	public void getModifiedVariable(List list)
+	{
+		condition.getModifiedVariable(list);
+		valueIfTrue.getModifiedVariable(list);
+		valueIfFalse.getModifiedVariable(list);
+	}
 
-  /**
-   * Get the variables used.
-   *
-   * @param list the list where we will put variables
-   */
-  public void getUsedVariable(List list) {
-    condition.getUsedVariable(list);
-    valueIfTrue.getUsedVariable(list);
-    valueIfFalse.getUsedVariable(list);
-  }
+	/**
+	 * Get the variables used.
+	 *
+	 * @param list the list where we will put variables
+	 */
+	public void getUsedVariable(List list)
+	{
+		condition.getUsedVariable(list);
+		valueIfTrue.getUsedVariable(list);
+		valueIfFalse.getUsedVariable(list);
+	}
 
-  public Expression expressionAt(int line, int column) {
-    if (condition.isAt(line, column)) return condition;
-    if (valueIfTrue.isAt(line, column)) return valueIfTrue;
-    if (valueIfFalse.isAt(line, column)) return valueIfFalse;
-    return null;
-  }
+	public Expression expressionAt(int line, int column)
+	{
+		if (condition.isAt(line, column)) return condition;
+		if (valueIfTrue.isAt(line, column)) return valueIfTrue;
+		if (valueIfFalse.isAt(line, column)) return valueIfFalse;
+		return null;
+	}
 
-  public void analyzeCode(PHPParser parser) {
-    Type typeFalse = valueIfFalse.getType();
-    Type typeTrue = valueIfTrue.getType();
-    if (typeFalse != typeTrue && !typeFalse.isEmpty() && !typeTrue.isEmpty()) {
-      parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
-                                                       PHPParseMessageEvent.MESSAGE_CONDITIONAL_EXPRESSION_CHECK,
-                                                       parser.getPath(),
-                                                       "Conditional expression : warning, the true value is type "+typeTrue+" and the false value is "+typeFalse,
-                                                       sourceStart,
-                                                       sourceEnd,
-                                                       beginLine,
-                                                       endLine,
-                                                       beginColumn,
-                                                       endColumn));
-    }
-  }
+	public void analyzeCode(PHPParser parser)
+	{
+		Type typeFalse = valueIfFalse.getType();
+		Type typeTrue = valueIfTrue.getType();
+		if (typeFalse != typeTrue && !typeFalse.isEmpty() && !typeTrue.isEmpty())
+		{
+			parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
+				PHPParseMessageEvent.MESSAGE_CONDITIONAL_EXPRESSION_CHECK,
+				parser.getPath(),
+				"Conditional expression : warning, the true value is type " + typeTrue + " and the false value is " + typeFalse,
+				sourceStart,
+				sourceEnd,
+				beginLine,
+				endLine,
+				beginColumn,
+				endColumn));
+		}
+	}
 }
