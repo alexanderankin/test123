@@ -148,7 +148,6 @@ public class EditProjectAction extends Action {
 					ProjectManager.getInstance().addProject(proj, parent);
 					ProjectViewer.setActiveNode(jEdit.getActiveView(), proj);
 					RootImporter ipi = new RootImporter(proj, null, viewer, jEdit.getActiveView());
-					ipi.setLockProject(false);
 					ipi.doImport();
 				} else {
 					if (!proj.getName().equals(oldName)) {
@@ -164,7 +163,6 @@ public class EditProjectAction extends Action {
 						} else {
 							ipi = new RootImporter(proj, null, viewer, jEdit.getActiveView());
 						}
-						ipi.setLockProject(false);
 						ipi.doImport();
 					}
 					ProjectManager.getInstance().saveProject(proj);
@@ -190,9 +188,7 @@ public class EditProjectAction extends Action {
 				}
 			}
 		} finally {
-			if (lockedProj != null) {
-				lockedProj.unlock();
-			}
+			lockedProj.unlock();
 		}
 	} //}}}
 
