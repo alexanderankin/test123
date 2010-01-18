@@ -4406,16 +4406,37 @@ StringLiteral evaluableString():
 	start = <DOUBLEQUOTE>
 	(
 		<LBRACE1>
-		expr = Expression()
+		try
 		{
-			list.add(expr);
+			expr = Expression()
+			{
+				list.add(expr);
+			}
 		}
-		<RBRACE1>
+		catch (ParseException e)
+		{
+			// ignore in a string
+		}
+		try
+		{
+			<RBRACE1>
+		}
+		catch (ParseException e)
+		{
+			// ignore in a string
+		}
 	|
 		<DOLLARS>
-		expr = Expression()
+		try
 		{
-			list.add(expr);
+			expr = Expression()
+			{
+				list.add(expr);
+			}
+		}
+		catch (ParseException e)
+		{
+			// ignore in a string
 		}
 	)*
 	end = <DOUBLEQUOTE2>
@@ -4493,85 +4514,98 @@ FunctionCall Arguments(Expression func) :
  */
 Expression[] ArgumentList() :
 {
-  Expression arg;
-  final ArrayList list = new ArrayList();
-  int pos;
-  Token token;
+	Expression arg;
+	List list = new ArrayList();
+	int pos;
+	Token token;
 }
 {
-  arg = Expression()
-  {
-    list.add(arg);
-    pos = arg.getSourceEnd();
-  }
-  ( token = <COMMA> {pos = token.sourceEnd;}
-      try {
-        arg = Expression()
-        {
-          list.add(arg);
-          pos = arg.getSourceEnd();
-        }
-      } catch (ParseException e) {
-        fireParseError(new PHPParseErrorEvent(ERROR,
-                                              path,
-                                              "expression expected",
-                                              "expression",
-                                              e.currentToken.image,
-                                              pos,
-                                              pos+1,
-                                              e.currentToken.beginLine,
-                                              e.currentToken.endLine,
-                                              e.currentToken.endColumn,
-                                              e.currentToken.endColumn+1));
-      }
-   )*
-   {
-     final Expression[] arguments = new Expression[list.size()];
-     list.toArray(arguments);
-     return arguments;
-   }
-}
+	arg = Expression()
+	{
+		list.add(arg);
+		pos = arg.getSourceEnd();
+	}
+	( 
+		token = <COMMA> 
+		{
+			pos = token.sourceEnd;
+		}
+		try 
+		{
+			arg = Expression()
+			{
+				list.add(arg);
+				pos = arg.getSourceEnd();
+			}
+		} 
+		catch (ParseException e) 
+		{
+			fireParseError("expression expected", "expression", e.currentToken);
+		}
+	)*
+	{
+		Expression[] arguments = new Expression[list.size()];
+		list.toArray(arguments);
+		return arguments;
+	}
+} //}}}
 
-//}}}
 //{{{ StatementNoBreak()
-
 /**
  * A Statement without break.
  * @return a statement
  */
 Statement StatementNoBreak() :
 {
-  final Statement statement;
+	Statement statement;
 }
 {
-  (
-      LOOKAHEAD(2)
-      statement = expressionStatement()
-    | LOOKAHEAD(2)
-      statement = LabeledStatement()
-    | statement = Block()
-    | statement = EmptyStatement()
-    | statement = SwitchStatement()
-    | statement = IfStatement()
-    | statement = WhileStatement()
-    | statement = DoStatement()
-    | statement = ForStatement()
-    | statement = ForeachStatement()
-    | statement = ContinueStatement()
-    | statement = ReturnStatement()
-    | statement = EchoStatement()
-    | statement = StaticStatement()
-    | statement = GlobalStatement()
-    | statement = tryStatement()
-    | statement = throwStatement()
-    | statement = defineStatement() {currentSegment.add((Outlineable)statement);}
-  )
-  {
-    return statement;
-  }
-}
-
-//}}}
+	(
+		LOOKAHEAD(2)
+		statement = expressionStatement()
+	| 
+		LOOKAHEAD(2)
+		statement = LabeledStatement()
+	| 
+		statement = Block()
+	| 
+		statement = EmptyStatement()
+	| 
+		statement = SwitchStatement()
+	| 
+		statement = IfStatement()
+	| 
+		statement = WhileStatement()
+	| 
+		statement = DoStatement()
+	| 
+		statement = ForStatement()
+	| 
+		statement = ForeachStatement()
+	| 
+		statement = ContinueStatement()
+	|
+		statement = ReturnStatement()
+	| 
+		statement = EchoStatement()
+	| 
+		statement = StaticStatement()
+	|
+		statement = GlobalStatement()
+	|
+		statement = tryStatement()
+	| 
+		statement = throwStatement()
+	| 
+		statement = defineStatement() 
+		{
+			currentSegment.add((Outlineable)statement);
+		}
+	)
+	{
+		return statement;
+	}
+} //}}}
 
 //{{{ TRY
 
