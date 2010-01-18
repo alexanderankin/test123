@@ -118,6 +118,20 @@ public final class ConditionalExpression extends OperatorExpression
 
 	public void analyzeCode(PHPParser parser)
 	{
+		if (valueIfFalse.equals(valueIfTrue))
+		{
+			parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
+				PHPParseMessageEvent.MESSAGE_CONDITIONAL_EXPRESSION_CHECK,
+				parser.getPath(),
+				"Conditional expression : silly expression, the result is always the same",
+				sourceStart,
+				sourceEnd,
+				beginLine,
+				endLine,
+				beginColumn,
+				endColumn));
+			return;
+		}
 		Type typeFalse = valueIfFalse.getType();
 		Type typeTrue = valueIfTrue.getType();
 		if (typeFalse != typeTrue && !typeFalse.isEmpty() && !typeTrue.isEmpty())

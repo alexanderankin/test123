@@ -2,7 +2,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2003, 2009 Matthieu Casanova
+ * Copyright (C) 2003, 2010 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -252,4 +252,29 @@ public final class Variable extends AbstractVariable
 			}
 		}
 	} //}}}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Variable variable1 = (Variable) o;
+
+		if (expression != null ? !expression.equals(variable1.expression) : variable1.expression != null)
+			return false;
+		if (name != null ? !name.equals(variable1.name) : variable1.name != null) return false;
+		if (variable != null ? !variable.equals(variable1.variable) : variable1.variable != null) return false;
+
+		return true;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		int result = name != null ? name.hashCode() : 0;
+		result = 31 * result + (variable != null ? variable.hashCode() : 0);
+		result = 31 * result + (expression != null ? expression.hashCode() : 0);
+		return result;
+	}
 }
