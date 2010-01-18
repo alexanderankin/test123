@@ -137,6 +137,7 @@ public class ProjectBuilderPlugin extends EditPlugin {
    	   }
    	   BuildCommand.editCommands(view, proj)
    }
+   
    public void editRunSettings(View view) {
    	   VPTProject proj = projectviewer.ProjectViewer.getActiveProject(view)
    	   if (proj == null) {
@@ -144,16 +145,6 @@ public class ProjectBuilderPlugin extends EditPlugin {
    	   	   return
    	   }
    	   RunCommand.editCommands(view, proj)
-   }
-   
-   public static void cmd(String cmd, String dir) {
-   	   View view = JEDIT.getActiveView()
-   	   JComponent console = view.getDockableWindowManager().getDockable("console")
-	   Shell system = Shell.getShell("System")
-	   console.run(system, "cd \""+dir+"\"")
-	   system.waitFor(console)
-	   console.run(system, cmd)
-	   console.clear()
    }
    
 }
