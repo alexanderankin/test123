@@ -28,6 +28,10 @@
 
 package projectbuilder.builder
 
+import javax.swing.JComponent;
+import console.Shell;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit as JEDIT
 import groovy.swing.SwingBuilder;
 
 /**
@@ -74,4 +78,13 @@ public class ProjectBuilder extends FactoryBuilderSupport {
         return projectDirectory;
     }
 
+    public static cmd(String cmd, String dir) {
+    	View view = JEDIT.getActiveView()
+    	JComponent console = view.getDockableWindowManager().getDockable("console")
+    	Shell system = Shell.getShell("System")
+    	console.run(system, "cd \""+dir+"\"")
+    	system.waitFor(console)
+    	console.run(system, cmd)
+    }
+    
 }
