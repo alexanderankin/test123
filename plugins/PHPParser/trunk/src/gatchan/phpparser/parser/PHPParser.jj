@@ -3087,7 +3087,17 @@ Expression ConditionalExpression():
 	Expression expr3 = null;
 }
 {
-	expr = ConditionalOrExpression() [ <HOOK> expr2 = Expression() <COLON> expr3 = Expression() ]
+	expr = ConditionalOrExpression()
+	[
+		<HOOK>
+		(
+			<COLON> expr3 = Expression()
+		|
+			expr2 = Expression() 
+			<COLON> expr3 = Expression()
+		)
+		 
+	]
 	{
 		if (expr3 == null)
 		{
