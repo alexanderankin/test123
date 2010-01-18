@@ -13,23 +13,28 @@ import java.io.File;
 import java.io.FileFilter;
 // }}} imports
 public class NewProjectMenu implements DynamicMenuProvider {
-	public boolean updateEveryTime() { return false; }
+	public boolean updateEveryTime() {
+		return false;
+	}
 	public void update(JMenu menu) {
 		JMenu projects = new JMenu("New Project");
-		String templates = EditPlugin.getPluginHome(ProjectBuilderPlugin.class).getPath()+"/templates";
+		String templates = EditPlugin.getPluginHome(ProjectBuilderPlugin .class).getPath() + "/templates";
 		File templateDir = null;
-		try { templateDir = new File(templates); }
-		catch (Exception e) { return; }
-		
+		try {
+			templateDir = new File(templates);
+		} catch (Exception e) {
+			return;
+		}
+
 		File[] dirs = templateDir.listFiles(new DirFilter());
-		
-		String[] tNames = new String[dirs.length];
-		for (int i = 0; i<dirs.length; i++) {
+
+		String[] tNames = new String [dirs.length];
+		for (int i = 0; i < dirs.length; i++) {
 			tNames[i] = dirs[i].getName().replace("_", " ");
 		}
-		
-		for (int j = 0; j<tNames.length; j++) {
-			String iconUrl = dirs[j].getPath()+"/menu-icon.png";
+
+		for (int j = 0; j < tNames.length; j++) {
+			String iconUrl = dirs[j].getPath() + "/menu-icon.png";
 			JMenuItem p = new JMenuItem(tNames[j], new ImageIcon(iconUrl));
 			String t = tNames[j].replace(" ", "_");
 			p.addActionListener(new ItemListener(t));

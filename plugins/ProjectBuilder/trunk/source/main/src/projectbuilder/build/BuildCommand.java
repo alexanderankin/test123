@@ -23,9 +23,8 @@ import groovy.swing.SwingBuilder;
 import common.gui.ListPanel;
 // }}}
 /**
- * This class handles running projects and editing build commands
- * By default, ant commands are run within the JVM using AntFarm, all others through System
- * Currently, there is no option to run ant through the System shell
+ * This class handles building projects and editing build commands
+ * Ant commands are routed through AntFarm, others are run in the system shell
  */
 public class BuildCommand {
 	

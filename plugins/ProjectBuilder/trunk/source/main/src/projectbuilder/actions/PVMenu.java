@@ -26,28 +26,32 @@ public class PVMenu extends projectviewer.action.Action {
 	protected JMenuItem build;
 	protected JMenuItem run;
 	protected JMenuItem buildSettings;
+	protected JMenuItem runSettings;
 	protected VPTProject proj;
 	public PVMenu() {
 		menu = new JMenu("Project");
 		build = new JMenuItem("Build Project");
 		run = new JMenuItem("Run Project");
 		buildSettings = new JMenuItem("Edit Build Settings...");
+		runSettings = new JMenuItem("Edit Run Settings...");
 		build.addActionListener(this);
 		run.addActionListener(this);
 		buildSettings.addActionListener(this);
+		runSettings.addActionListener(this);
 		menu.add(build);
 		menu.add(run);
 		menu.addSeparator();
 		menu.add(buildSettings);
+		menu.add(runSettings);
 	}
 	public String getText() {
 		return "Project Builder";
 	}
-	
+
 	public JComponent getMenuItem() {
 		return menu;
 	}
-	
+
 	public void prepareForNode(VPTNode node) {
 		// FIXME: saving the project here in an instance variable doesn't work for some reason
 		/*
@@ -55,34 +59,36 @@ public class PVMenu extends projectviewer.action.Action {
 		Macros.message(jEdit.getActiveView(), "Set: "+proj);
 		if (proj == null) {
 			proj = ProjectViewer.getActiveProject(jEdit.getActiveView());
-		}
+	}
 		*/
 	}
-	
+
 	public void actionPerformed(ActionEvent e) {
 		// Use this code if proj can ever be anything besides null
 		/*
 		if (e.getSource() == build) {
 			jEdit.getPlugin("projectbuilder.ProjectBuilderPlugin").buildProject(jEdit.getActiveView(), proj);
-		} else if (e.getSource() == run) {
+	} else if (e.getSource() == run) {
 			jEdit.getPlugin("projectbuilder.ProjectBuilderPlugin").runProject(jEdit.getActiveView(), proj);
-		} else if (e.getSource() == buildSettings) {
+	} else if (e.getSource() == buildSettings) {
 			jEdit.getPlugin("projectbuilder.ProjectBuilderPlugin").runProject(jEdit.getActiveView(), proj);
 		*/
 		if (e.getSource() == build) {
-			ProjectBuilderPlugin plugin = 
-				(ProjectBuilderPlugin) jEdit.getPlugin("projectbuilder.ProjectBuilderPlugin");
+			ProjectBuilderPlugin plugin =
+			    (ProjectBuilderPlugin) jEdit.getPlugin("projectbuilder.ProjectBuilderPlugin");
 			plugin.buildProject(jEdit.getActiveView());
-		}
-		else if (e.getSource() == run) {
-			ProjectBuilderPlugin plugin = 
-				(ProjectBuilderPlugin) jEdit.getPlugin("projectbuilder.ProjectBuilderPlugin");
+		} else if (e.getSource() == run) {
+			ProjectBuilderPlugin plugin =
+			    (ProjectBuilderPlugin) jEdit.getPlugin("projectbuilder.ProjectBuilderPlugin");
 			plugin.runProject(jEdit.getActiveView());
-		}
-		else if (e.getSource() == buildSettings) {
-			ProjectBuilderPlugin plugin = 
-				(ProjectBuilderPlugin) jEdit.getPlugin("projectbuilder.ProjectBuilderPlugin");
+		} else if (e.getSource() == buildSettings) {
+			ProjectBuilderPlugin plugin =
+			    (ProjectBuilderPlugin) jEdit.getPlugin("projectbuilder.ProjectBuilderPlugin");
 			plugin.editBuildSettings(jEdit.getActiveView());
+		} else if (e.getSource() == runSettings) {
+			ProjectBuilderPlugin plugin =
+			    (ProjectBuilderPlugin) jEdit.getPlugin("projectbuilder.ProjectBuilderPlugin");
+			plugin.editRunSettings(jEdit.getActiveView());
 		}
 	}
 }
