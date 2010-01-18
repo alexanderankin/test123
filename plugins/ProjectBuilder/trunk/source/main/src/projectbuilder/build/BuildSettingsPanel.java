@@ -5,6 +5,8 @@ import projectbuilder.build.BuildCommand;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.BoxLayout;
 import javax.swing.Box;
 
@@ -85,8 +87,9 @@ public class BuildSettingsPanel extends JPanel implements ActionListener {
 		Object source = e.getSource();
 		if (source == addBtn) {
 			// Add a build command
-			String cmd = GUIUtilities.input(jEdit.getActiveView(), "projectBuilder.msg.add-build-command", null);
-			if (cmd == null || cmd.length() == 0) return;
+			AddBuildCommandDialog dialog = new AddBuildCommandDialog(jEdit.getActiveView());
+			String cmd = dialog.getValue();
+			if (cmd == null) return;
 			list.addElement(cmd);
 			updateProps();
 		} else if (source == removeBtn) {
@@ -98,6 +101,7 @@ public class BuildSettingsPanel extends JPanel implements ActionListener {
 		}
 		else if (source == modifyBtn) {
 			// Modify a build command
+			// NOTE: This moves the modified build command to the end of the list. Try and find a better way.
 			String old = (String) list.getSelectedValues()[0];
 			String cmd = GUIUtilities.input(jEdit.getActiveView(), "projectBuilder.msg.modify-build-command", old);
 			if (cmd == null || cmd.length() == 0) return;
