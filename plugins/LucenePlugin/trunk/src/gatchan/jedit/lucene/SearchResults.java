@@ -33,6 +33,9 @@ import org.gjt.sp.util.Log;
 @SuppressWarnings("serial")
 public class SearchResults extends JPanel implements DefaultFocusComponent
 {
+	public static final String CURRENT_BUFFER = "__current buffer__";
+	public static final String ALL_BUFFERS = "__all buffers__";
+
 	private static final String LUCENE_SEARCH_INDEX = "lucene.search.index";
 	private static final String MESSAGE_IDLE = "";
 	private static final String MESSAGE_INDEXING = "Indexing";
@@ -207,6 +210,27 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		String indexName = (String) indexes.getSelectedItem();
 		if (indexName == null)
 			return null;
+		if (indexName == CURRENT_BUFFER)
+		{
+			Index index = new TemporaryIndex();
+			jEdit.getActiveView().getBuffer().getPath();
+			index.addFile(jEdit.getActiveView().getBuffer().getPath());
+			index.optimize();
+			index.commit();
+			return index;
+		}
+		if (indexName == ALL_BUFFERS)
+		{
+			TemporaryIndex index = new TemporaryIndex();
+			Buffer[] buffers = jEdit.getBuffers();
+			for (Buffer buffer : buffers)
+			{
+				index.addFile(buffer.getPath());
+			}
+			index.optimize();
+			index.commit();
+			return index;
+		}
 		return LucenePlugin.instance.getIndex(indexName);
 	}
 
@@ -334,7 +358,10 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 
 		public void setIndexes(String[] indexes)
 		{
-			this.indexes = indexes;
+			this.indexes = new String[indexes.length + 2];
+			System.arraycopy(indexes, 0, this.indexes, 2, indexes.length);
+			this.indexes[0] = CURRENT_BUFFER;
+			this.indexes[1] = ALL_BUFFERS;
 			if (indexes.length == 0)
 			{
 				selectedItem = null;
@@ -342,7 +369,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			else
 			{
 				boolean selectedStillExists = false;
-				for (String index : indexes)
+				for (String index : this.indexes)
 				{
 					if (StandardUtilities.objectsEqual(selectedItem, index))
 					{
@@ -351,9 +378,9 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 					}
 				}
 				if (!selectedStillExists)
-					selectedItem = indexes[0];
+					selectedItem = this.indexes[0];
 			}
-			fireContentsChanged(this, 0, indexes.length);
+			fireContentsChanged(this, 0, this.indexes.length);
 		}
 
 		public void setSelectedItem(Object selectedItem)
