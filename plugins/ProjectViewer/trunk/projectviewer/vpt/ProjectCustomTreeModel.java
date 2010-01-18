@@ -278,7 +278,6 @@ public abstract class ProjectCustomTreeModel extends ProjectTreeModel
         if (idx >= 0) {
             lst.remove(idx);
             super.nodeStructureChanged(proj);
-            System.err.println("removed " + child);
         }
     }
 
