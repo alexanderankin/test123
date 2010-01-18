@@ -23,8 +23,8 @@ plugin.projectbuilder.ProjectBuilderPlugin.menu=projectBuilder.actions.buildProj
 												  projectBuilder.actions.editBuildSettings projectBuilder.actions.editRunSettings -
 plugin.projectbuilder.ProjectBuilderPlugin.menu.code=new projectbuilder.NewProjectMenu()
 projectBuilder.actions.newProject.label=Create new Project
-projectBuilder.actions.buildProject.label=Build current Project
-projectBuilder.actions.runProject.label=Run current Project
+projectBuilder.actions.buildProject.label=Build Current Project
+projectBuilder.actions.runProject.label=Run Current Project
 projectBuilder.actions.editBuildSettings.label=Edit Project Build Settings
 projectBuilder.actions.editRunSettings.label=Edit Project Run Settings
 # }}} Menu

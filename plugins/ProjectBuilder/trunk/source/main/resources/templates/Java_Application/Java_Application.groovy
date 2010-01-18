@@ -72,9 +72,8 @@ if (answer == JOptionPane.OK_OPTION) {
 				open.add("${project.directory.path}/${project.name}/src/${mainClass}.java")
 			}
 		}
-		ProjectBuilderPlugin.cmd("echo 'hello world'", project.directory.path)
 	}
-	project.build = "ant all"
+	project.build = "ANT[target=all,buildfile=${project.directory.path}/${project.name}/build.xml]"
 	project.run = "java -jar ${dist}/${project.name}.jar"
 } else {
 	abort = true

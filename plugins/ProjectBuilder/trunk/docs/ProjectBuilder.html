@@ -7,10 +7,31 @@
 		<h1>ProjectBuilder - v. 0.1</h1>
 		<h2>Description:</h2>
 		<p>The ProjectBuilder plugin provides project creation templates to create
-		common project types from within jEdit.</p>
+		common project types from within jEdit and offers utilities for building and running them.</p>
 		<h2>Usage:</h2>
 		<ul><h3>The ProjectBuilder Plugin's menu</h3>
-			<li>Create new Project
+			<li>Build Current Project
+				<div style="background-color: #EFEFEF; padding: 10px; border: 1px solid #999;">
+					<p>Build the currently active project using previously-defined build settings.</p>
+				</div>
+			</li>
+			<li>Run Current Project
+				<div style="background-color: #EFEFEF; padding: 10px; border: 1px solid #999;">
+					<p>Run the currently active project using previously-defined build settings.</p>
+				</div>
+			</li>
+			<li>Edit Project Build Settings
+				<div style="background-color: #EFEFEF; padding: 10px; border: 1px solid #999;">
+					<p>Configure build settings for the active project. Build commands using Ant
+					can specify a target and buildfile.</p>
+				</div>
+			</li>
+			<li>Edit Project Run Settings
+				<div style="background-color: #EFEFEF; padding: 10px; border: 1px solid #999;">
+					<p>Configure run settings for the active project.</p>
+				</div>
+			</li>
+			<li>New Project -> <i>project type</i>
 				<div style="background-color: #EFEFEF; padding: 10px; border: 1px solid #999;">
 					<p>This will prompt you for basic Project information including name
 					and root directory for the project to be created.</p>
@@ -65,6 +86,11 @@
 						<tr><td>wm</td><td>DockableWindowManager</td><td>The active DockableWindowManager</td></tr>
 						<tr><td>scriptPath</td><td>String</td><td>The path to the main template script. Eg. [templatesDir]/jEdit_Plugin/jEdit_Plugin.groovy</td></tr>
 					</table>
+					<h4>Using external tools</h4>
+						<p>If you want to use a system or external command to help build your project, just call the
+						ProjectBuilder.cmd(command, directory) method. It cd's the console's System shell to
+						<i>directory</i>, then runs <i>command</i> in it. Unless a full pathname is specified for
+						<i>command</i>, you must ensure that the command is on your system's search path.</p>
 					<h4>Example</h4>
 					<pre>
 import projectbuilder.builder.ProjectBuilder as PB
