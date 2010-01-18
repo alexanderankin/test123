@@ -88,7 +88,6 @@ public abstract class Importer implements Runnable {
 	protected final VPTNode		selected;
 	protected final VPTProject	project;
 	private boolean noThread;
-	private boolean	lockProject;
 
 	private Map<VPTNode,VPTNode> addedNodes;
 
@@ -128,7 +127,6 @@ public abstract class Importer implements Runnable {
 		this.viewer = viewer;
 		this.noThread = noThread;
 		this.postAction = null;
-		this.lockProject = true;
 	} //}}}
 
 	//{{{ +Importer(VPTNode, ProjectViewer) : <init>
@@ -141,9 +139,16 @@ public abstract class Importer implements Runnable {
 	 *	Main import method. It starts a new thread to actually do the importing,
 	 *	so that the UI is not blocked during the process, which can take some
 	 *	time for large numbers of files.
+	 *
+	 *	<p>This method should be called from the AWT thread. It will
+	 *	lock the project, so if the calling code also locks the project
+	 *	for any reason, make sure it does so from the AWT thread or it
+	 *	will result in a deadlock.</p>
 	 */
 	public final void doImport() {
-		if (lockProject && !project.tryLock()) {
+		assert SwingUtilities.isEventDispatchThread() :
+				"doImport() not called from AWT thread.";
+		if (!project.tryLock()) {
 			setViewStatus("projectviewer.error.project_locked");
 			return;
 		}
@@ -171,22 +176,6 @@ public abstract class Importer implements Runnable {
 	 * @since PV 3.0.0
 	 */
 	protected abstract void internalDoImport();
-
-
-	/**
-	 * Tells the importer whether to lock the project while doing the
-	 * import. If not locking, the caller is responsible for locking
-	 * the project so other tasks are notified that the project is
-	 * being modified.
-	 *
-	 * @param	lock	Whether to lock the project before importing.
-	 *
-	 * @since	PV 3.0.0
-	 */
-	public void setLockProject(boolean lock)
-	{
-		this.lockProject = lock;
-	}
 
 
 	/**
@@ -557,9 +546,7 @@ public abstract class Importer implements Runnable {
 		} finally {
 			if (postAction == null || error)
 				setViewerEnabled(true);
-			if (lockProject) {
-				project.unlock();
-			}
+			project.unlock(true);
 		}
 		if (postAction != null)
 			SwingUtilities.invokeLater(new PostActionWrapper());

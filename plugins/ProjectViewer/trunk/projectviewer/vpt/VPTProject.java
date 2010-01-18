@@ -30,9 +30,11 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.swing.Icon;
+import javax.swing.SwingUtilities;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EditBus;
@@ -64,7 +66,7 @@ public class VPTProject extends VPTNode {
 	private String		rootPath;
 	private String		url;
 	private Properties	properties;
-	private AtomicBoolean lock;
+	private Lock		lock;
 
 	protected Map<String,VPTNode> openableNodes;
 
@@ -78,7 +80,7 @@ public class VPTProject extends VPTNode {
 		openFiles		= new ArrayList<String>();
 		properties		= new Properties();
 		filterList		= Collections.emptyList();
-		lock			= new AtomicBoolean(false);
+		lock			= new ReentrantLock();
 	}
 
 	//}}}
@@ -310,6 +312,30 @@ public class VPTProject extends VPTNode {
 
 
 	/**
+	 * Lock the project, blocking the calling thread until the lock
+	 * can be held.
+	 *
+	 * <p>Since it's dangerous to call this method from the AWT thread
+	 * (it's too easy to cause deadlocks and block the AWT thread
+	 * altogether), it asserts that it's being called from a different
+	 * thread.<p>
+	 *
+	 * @throw IllegalStateException	If called from the AWT thread.
+	 *
+	 * @since PV 3.0.0
+	 */
+	public void lock()
+	{
+		assert !SwingUtilities.isEventDispatchThread() :
+				"Don't call VPTProject.lock() from the AWT thread.";
+		if (SwingUtilities.isEventDispatchThread()) {
+			throw new IllegalStateException();
+		}
+		lock.lock();
+	}
+
+
+	/**
 	 * "Locks" the project. All tasks that need to perform destructive
 	 * operations on the project (like changing settings, importing
 	 * files, etc) should first try to lock the object. If the project
@@ -321,21 +347,43 @@ public class VPTProject extends VPTNode {
 	 * That's obviously not encouraged.
 	 *
 	 * @return Whether the project was successfully locked by the caller.
+	 * @since PV 3.0.0
 	 */
 	public boolean tryLock()
 	{
-		return lock.compareAndSet(false, true);
+		return lock.tryLock();
 	}
 
 
 	/**
-	 * Unlocks the project.
+	 * Unlocks the project from the current thread.
 	 *
-	 * @see #tryLock()
+	 * @since PV 3.0.0
 	 */
 	public void unlock()
 	{
-		lock.set(false);
+		unlock(false);
+	}
+
+
+	/**
+	 * Unlocks the project, optionally doing so from the AWT thread.
+	 *
+	 * @param	awt		If true, performs the unlock in the AWT thread.
+	 *
+	 * @since PV 3.0.0
+	 */
+	public void unlock(boolean awt)
+	{
+		if (awt) {
+			PVActions.swingInvoke(new Runnable() {
+				public void run() {
+					lock.unlock();
+				}
+			});
+		} else {
+			lock.unlock();
+		}
 	}
 
 
