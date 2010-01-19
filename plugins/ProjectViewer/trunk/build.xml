@@ -17,6 +17,7 @@
 	<property name="dist.target" 			value="dist.complete" />
     <property name="compiler.source"        value="1.5" />
     <property name="compiler.target"        value="1.5" />
+    <property name="jedit.plugins.dir" value="${install.dir}" />
 
 	<import file="${build.support}/plugin-build.xml" />
 
@@ -60,9 +61,9 @@
 			<include name="*.jar" />
 			<exclude name="ProjectViewer*" />
 		</fileset>
-		<pathelement location="${install.dir}/InfoViewer.jar" />
-		<pathelement location="${install.dir}/ErrorList.jar" />
-		<pathelement location="${install.dir}/CommonControls.jar" />
+		<pathelement location="${jedit.plugins.dir}/InfoViewer.jar" />
+		<pathelement location="${jedit.plugins.dir}/ErrorList.jar" />
+		<pathelement location="${jedit.plugins.dir}/CommonControls.jar" />
 	</path>
 	<!-- }}} -->
 	<!--{{{ Builds the debug plugin. -->
