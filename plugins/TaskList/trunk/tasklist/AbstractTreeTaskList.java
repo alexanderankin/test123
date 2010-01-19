@@ -256,6 +256,13 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
             if ( toScan == null ) {
                 return model;
             }
+            
+            Buffer[] buffers = jEdit.getBuffers();
+            HashMap<String, Buffer> openBuffers = new HashMap<String, Buffer>();
+            for (Buffer b : buffers) {
+                openBuffers.put(b.getPath(), b);   
+            }
+            
             for ( int i = 0; i < toScan.size(); i++ ) {
                 if ( isCancelled() ) {
                     return model;
@@ -266,7 +273,7 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
 
                 // the buffer could already be open in jEdit.  If so, don't
                 // close it below.
-                Buffer buffer = jEdit.getBuffer( path );
+                Buffer buffer = openBuffers.get( path );
                 
                 boolean can_close = false;
                 if ( buffer == null ) {
