@@ -1098,7 +1098,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 								textArea.addToSelection(
 									new Selection.Range(
 										asset.getStart().getOffset(),
-										asset.getEnd().getOffset()));
+										asset.getEnd().getOffset() + 1));
 							} else {
 								if (!jEdit.getBooleanProperty("sidekick.persistentFilter")) {
 									if (searchField.getText().length() > 0) {
