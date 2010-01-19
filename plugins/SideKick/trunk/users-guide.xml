@@ -370,6 +370,22 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
         collapsed.
       </para>
     </listitem>
+    <listitem>
+      <para>
+        Added ability to hide and disable the filter text area.  Some users don't use it and it tends to
+        grab focus away from the tree, so this new feature helps those users.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Added alternate keyboard handling to the tree.  Now using the arrow keys causes movement through
+        the tree to work as a normal tree and all nodes are accessible with the arrow keys.  Nodes are
+        not automatically expanded as they are highlighted.  The previous keyboard handling is accessible
+        by using the Ctrl key with the up and down arrows, this will move the tree selection to the
+        next/prev leaf nodes, which some people find useful when used in conjunction with the filter
+        text box.
+      </para>
+    </listitem>
  </itemizedlist>
 </listitem>
 
