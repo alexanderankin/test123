@@ -46,13 +46,13 @@ public class TreeMouseListener extends MouseAdapter {
         handleClick( me );
     }
 
-    private void handleClick( MouseEvent e ) {
-        if ( e.getClickCount() == 1 && e.isPopupTrigger() ) {
-            e.consume();
-            showPopup( e.getPoint() );
+    private void handleClick( MouseEvent me ) {
+        if ( me.getClickCount() == 1 && me.isPopupTrigger() ) {
+            me.consume();
+            showPopup( me.getPoint() );
         }
-        if ( e.getClickCount() == 2 || ( e.getClickCount() == 1 && TaskListPlugin.getAllowSingleClickSelection() ) ) {
-            TreePath path = tree.getClosestPathForLocation( e.getX(), e.getY() );
+        if (me.getClickCount() == 2 || ( me.getClickCount() == 1 && TaskListPlugin.getAllowSingleClickSelection() ) ) {
+            TreePath path = tree.getClosestPathForLocation( me.getX(), me.getY() );
             Task task = null;
             if ( path.getPathCount() > 2 ) {
                 task = ( Task ) ( ( DefaultMutableTreeNode ) path.getLastPathComponent() ).getUserObject();
@@ -63,9 +63,18 @@ public class TreeMouseListener extends MouseAdapter {
 
                 int line_number = task.getLineNumber();
                 int start_offset = task.getStartOffset();
-                EditPane edit_pane = jEdit.getActiveView().showBuffer( buffer );
-                edit_pane.getTextArea().scrollTo( line_number, start_offset, true );
-                edit_pane.getTextArea().setCaretPosition( task.getStartPosition().getOffset() );
+                try {
+                    EditPane edit_pane = jEdit.getActiveView().showBuffer( buffer );
+                    edit_pane.getTextArea().scrollTo( line_number, start_offset, true );
+                    edit_pane.getTextArea().setCaretPosition( task.getStartPosition().getOffset() );
+                }
+                catch(Exception e) {
+                    // occasionally, there is an ArrayIndexOutOfBounds exception thrown from
+                    // the 'scrollTo' line above, so this try/catch is to help track down the
+                    // problem.
+                    System.err.println("Error scrolling to line " + line_number + ", offset " + start_offset + " in file " + task.getBufferPath());
+                    e.printStackTrace();
+                }
             }
         }
     }
