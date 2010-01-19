@@ -292,12 +292,10 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     }
                     else if ( ordinal == TigerNode.CLASS && optionValues.getExpandClasses() ) {
                         // maybe expand inner classes, depends on option setting
-                        System.out.println( "+++++ add() " + expansionModel.getRow() + " : " + child );
                         expansionModel.add();
                     }
                     else if (ordinal == TigerNode.CONSTRUCTOR || ordinal == TigerNode.METHOD) {
-                        // methods get an 'inc'
-                        System.out.println( "+++++ inc() for: " + child );
+                        // constructors and methods get an 'inc'
                         expansionModel.inc();
                     }
 
@@ -475,6 +473,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
         return new JavaModeToolBar( this );
     }
 
+    // TODO: move this class to SideKick?
     public class ExpansionModel {
         private List<Integer> model = new ArrayList<Integer>();
         private int row = 0;
