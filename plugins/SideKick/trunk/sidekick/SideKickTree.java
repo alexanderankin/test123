@@ -642,6 +642,18 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 			}
 		}
 	} //}}}
+	
+	protected void expandCurrentNode() {
+		DefaultMutableTreeNode node =  (DefaultMutableTreeNode)tree.getLastSelectedPathComponent();	
+		TreePath path = new TreePath(node.getPath());
+		tree.expandPath(path);		
+	}
+	
+	protected void collapseCurrentNode() {
+		DefaultMutableTreeNode node =  (DefaultMutableTreeNode)tree.getLastSelectedPathComponent();	
+		TreePath path = new TreePath(node.getPath());
+		tree.collapsePath(path);		
+	}
 
 	//{{{ Inner classes
 
@@ -1137,6 +1149,12 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 						prevLeaf();
 					else
 						prev();
+					break;
+				case KeyEvent.VK_LEFT:
+					collapseCurrentNode();
+					break;
+				case KeyEvent.VK_RIGHT:
+					expandCurrentNode();
 					break;
 				case KeyEvent.VK_PAGE_UP:
 				{
