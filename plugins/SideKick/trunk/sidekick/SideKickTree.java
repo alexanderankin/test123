@@ -91,6 +91,8 @@ import org.gjt.sp.util.StringList;
 
 /**
  * The Structure Browser dockable.  One instance is created for each View.
+ * TODO: Fix focused component: if filter text area is visible, it gets the
+ * initial focus, otherwise, the tree gets the initial focus.
  */
 public class SideKickTree extends JPanel implements DefaultFocusComponent
 {
@@ -365,7 +367,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 
 			keys.pop();
 		} else {
-			Log.log(Log.DEBUG, this, "addData called on a node that isn't a treenode!!!!!!!!!");
+			Log.log(Log.DEBUG, this, "addData called on a node that isn't a treenode!!!!!!!!!"); // how exciting!
 		}
 	} //}}}
 
