@@ -188,6 +188,7 @@ tasklist.projectfiles.project=Project:
 tasklist.projectfiles.noproject=No project is open.
 tasklist.projectfiles.stop=Stop
 tasklist.projectfiles.start=Start
+tasklist.toggleAll=Toggle All
 
 # Task List task types
 # ^(tasklist.tasktype.\d.\w+)=(.+)$ -> jEdit.setProperty("$1","$2");

@@ -16,12 +16,19 @@
 </articleinfo>
 <section id="summary">
 <title>Summary</title>
-<para>This plugin provides a dockable tabular list of comments extracted from
-the text of a file being edited in jEdit. The display shows an icon
+<para>This plugin provides a dockable list of comments extracted from
+the comments in a file being edited in jEdit. The display shows an icon
 representing the type of comment, the line where the comment appears and
 the comment text. You can jump to a comment by double-clicking on the
 corresponding row of the table. The comment text in the buffer can be
-highlighted as a user option.</para></section>
+highlighted as a user option.</para>
+<para>
+TaskList uses the mode of the file to find comments.  Some modes do not designate comments, such as
+'text' mode and 'hex' mode.  These two modes are not parsed for comments.  As edit modes are regularly 
+added to jEdit, there may be other modes that do not contain comments, so no tasks will be shown for
+those modes.
+</para>
+</section>
 <section id="default-tags">
 <title>Default Tags</title>
 <para>A number of default comment tags are supplied, each with a 
@@ -142,7 +149,7 @@ task comment using the plugin context (right-click) menu. As a result,
 if you have made unsaved changes to a buffer, TaskList may not be able
 to find or change your comment text. You can reparse a buffer at any
 time using the <citetitle>Task List</citetitle> -&gt; <citetitle>Parse buffer</citetitle> menu item in the <citetitle>Plugins</citetitle>
-menu (which you can tie to a keyboard shortcut).</para>
+menu (which you can tie to a keyboard shortcut), or by using the "Refresh" button in the TaskList dockable.</para>
 
 <para>
 TaskList will also display a list of all tasks in all open files.  This tab can be turned off in the plugin options.
@@ -160,6 +167,10 @@ You can also find the tasks in just part of a project by right clicking on a fil
 
 <para>
 You can also find tasks using the File System Browser by right clicking on a file or directory and selecting "Find Tasks" from the plugins menu.   A new tab will be opened for each such action.  These tabs can be closed individually when they are no longer needed.
+</para>
+
+<para>
+The TaskList dockable provides a "Filter" menu that lets you show or hide certain types of tasks.  The Filter menu also contains a "Toggle All" item, which makes it easier to select specific types.
 </para>
 
 </section>
@@ -217,7 +228,7 @@ contents of the TaskList display. These features may be added in a
 future version.</para></section>
 <section id="legal-notices">
 <title>Legal notices</title>
-<para>The TaskList plugin and it's documentation are released under the GNU
+<para>The TaskList plugin and its documentation are released under the GNU
 General Public License (either version 2 or any later version, at the
 user's option). A copy of the GPL is available in the COPYING.txt file
 in the jEdit distribution.</para>

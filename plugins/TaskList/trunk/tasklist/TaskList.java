@@ -34,7 +34,7 @@ import common.gui.CloseableTabbedPane;
 //}}}
 
 /**
- * A dockable component contaning a scrollable table; the table contains
+ * A dockable component contaning a scrollable tree; the tree contains
  * data on task items found by parsing one or more buffers.
  *
  * @author Oliver Rutherfurd
@@ -46,6 +46,7 @@ public class TaskList extends JPanel implements EBComponent {
     private boolean showOpenFiles = true;
     private boolean showProjectFiles = true;
     private Set<TaskType> taskTypes = null;
+    private JMenu filterMenu = null;
 
     //{{{ constructor
     /**
@@ -98,7 +99,7 @@ public class TaskList extends JPanel implements EBComponent {
         // create the refresh button
         buttonPanel.setFloatable( false );
         JButton refreshButton = new JButton( GUIUtilities.loadIcon( "22x22/actions/view-refresh.png" ) );
-        refreshButton.setToolTipText(jEdit.getProperty("tasklist.toolbar.refresh", "Refresh"));
+        refreshButton.setToolTipText( jEdit.getProperty( "tasklist.toolbar.refresh", "Refresh" ) );
         refreshButton.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
@@ -109,7 +110,7 @@ public class TaskList extends JPanel implements EBComponent {
         buttonPanel.add( refreshButton );
 
         // create the task filter
-        JMenu filterMenu = new JMenu( jEdit.getProperty("tasklist.toolbar.filter", "Filter") );
+        filterMenu = new JMenu( jEdit.getProperty( "tasklist.toolbar.filter", "Filter" ) );
         taskTypes = new HashSet<TaskType>();
         int i = 0;
         String pattern;
@@ -131,6 +132,9 @@ public class TaskList extends JPanel implements EBComponent {
             filterMenu.add( menuItem );
             i++;
         }
+        JMenuItem toggleAll = new JMenuItem( jEdit.getProperty( "tasklist.toggleAll", "Toggle All" ) );
+        toggleAll.addActionListener( toggleAllActionListener );
+        filterMenu.add( toggleAll );
 
         JMenuBar menuBar = new JMenuBar();
         menuBar.add( filterMenu );
@@ -138,6 +142,25 @@ public class TaskList extends JPanel implements EBComponent {
 
         add( BorderLayout.SOUTH, bottomPanel );
     }
+
+    ActionListener toggleAllActionListener = new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    for ( int i = 0; i < filterMenu.getItemCount(); i++ ) {
+                        Component c = filterMenu.getMenuComponent( i );
+                        if ( c instanceof JCheckBoxMenuItem ) {
+                            JCheckBoxMenuItem mi = ( JCheckBoxMenuItem ) c;
+                            mi.setSelected( !mi.isSelected() );
+                            String command = mi.getActionCommand();
+                            for ( TaskType type : taskTypes ) {
+                                if ( command.equals( type.getName() ) ) {
+                                    type.setActive( mi.isSelected() );
+                                }
+                            }
+                        }
+                    }
+                    TaskListPlugin.send( new ParseBufferMessage( view, null, ParseBufferMessage.APPLY_FILTER ) );
+                }
+            };
 
     ActionListener filterActionListener = new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
@@ -195,12 +218,12 @@ public class TaskList extends JPanel implements EBComponent {
         }
         return activeTypes;
     }
-    
+
     // pass messages on to task trees
-    public void send(ParseBufferMessage msg) {
-        for (int i = 0; i < tabs.getTabCount(); i++) {
-            AbstractTreeTaskList treeList = (AbstractTreeTaskList)tabs.getComponentAt(i);
-            treeList.handleMessage(msg);
+    public void send( ParseBufferMessage msg ) {
+        for ( int i = 0; i < tabs.getTabCount(); i++ ) {
+            AbstractTreeTaskList treeList = ( AbstractTreeTaskList ) tabs.getComponentAt( i );
+            treeList.handleMessage( msg );
         }
     }
 
