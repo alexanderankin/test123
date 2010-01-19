@@ -35,7 +35,7 @@ import org.gjt.sp.jedit.*;
 
 public class SideKickOptionPane extends AbstractOptionPane
 {
-	//{{{ GeneralOptionPane constructor
+	//{{{ SideKickOptionPane constructor
 	public SideKickOptionPane()
 	{
 		super("sidekick");
@@ -44,8 +44,6 @@ public class SideKickOptionPane extends AbstractOptionPane
 	//{{{ _init() method
 	protected void _init()
 	{
-	//	addSeparator("options.sidekick.general.label");
-		
 		addComponent(showToolTips = new JCheckBox(jEdit.getProperty(
 			"options.sidekick.showToolTips.label")));
 		showToolTips.setSelected(jEdit.getBooleanProperty(
@@ -64,7 +62,7 @@ public class SideKickOptionPane extends AbstractOptionPane
 		scrollToVisible.setSelected(jEdit.getBooleanProperty(
 			"sidekick.scrollToVisible"));
 		
-		// TODO: add checkbox to show/hide filter here, indent next 2 checkboxes
+		// checkbox to show/hide filter, indent next 2 checkboxes
 		addComponent(showFilter = 
 			     new JCheckBox(jEdit.getProperty("options.sidekick.showFilter.label", "Show filter text box")));
 		showFilter.setSelected(jEdit.getBooleanProperty(SideKick.SHOW_FILTER, true));
@@ -86,9 +84,11 @@ public class SideKickOptionPane extends AbstractOptionPane
 		persistentFilter.setSelected(jEdit.getBooleanProperty("sidekick.filter-visible-assets"));
 		addComponent(filterOptionPanel);
 		
+		
 		addComponent(jEdit.getProperty("options.sidekick.auto-expand-tree-depth"),
 			autoExpandTreeDepth = new JComboBox());
 		autoExpandTreeDepth.addActionListener(new ActionHandler());
+		// TODO: put "All" in properties file
 		autoExpandTreeDepth.addItem("All");
 		for (int i = 0; i <= 10; i++)
 			autoExpandTreeDepth.addItem(String.valueOf(i));
@@ -133,8 +133,6 @@ public class SideKickOptionPane extends AbstractOptionPane
 
 		parsingSettings.add(new JLabel(jEdit.getProperty("options.sidekick.auto-parse-delay")), BorderLayout.CENTER);
 		parsingSettings.add(autoParseDelay = new JSlider(200,3000,autoParseDelayValue), BorderLayout.SOUTH);
-		/*addComponent(autoParseDelay = new JSlider(200,3000,autoParseDelayValue),
-			GridBagConstraints.BOTH); */
 		addComponent(parsingSettings);
 		Hashtable labelTable = new Hashtable();
 		for(int i = 500; i <= 3000; i += 500)
@@ -221,6 +219,7 @@ public class SideKickOptionPane extends AbstractOptionPane
 		jEdit.setBooleanProperty("sidekick.filter-visible-assets", filterVisibleAssets.isSelected());
 		int depth = 0;
 		String value = (String)autoExpandTreeDepth.getSelectedItem();
+		// TODO: see above, "All" should be in the properties file
 		depth = value.equals("All") ? -1 : Integer.parseInt(value);
 		jEdit.setIntegerProperty("sidekick-tree.auto-expand-tree-depth",
 			depth);
