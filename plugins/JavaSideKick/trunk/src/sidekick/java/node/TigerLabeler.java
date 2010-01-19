@@ -611,6 +611,7 @@ public class TigerLabeler {
                         sb.append("/*constructor*/");
                         break;
                     case TigerNode.METHOD:
+                    case TigerNode.BNF_PRODUCTION:
                         sb.append(((MethodNode) tn).getReturnType()).append(' ');
                         break;
                     case TigerNode.FIELD:
@@ -664,7 +665,7 @@ public class TigerLabeler {
                 if (tn.getOrdinal() == TigerNode.CONSTRUCTOR) {
                     sb.append('(').append(((ConstructorNode) tn).getFormalParams(options.getShowArgumentNames(), options.getTypeIsSuffixed(), options.getShowMiscMod(), options.getShowTypeArgs())).append(')');
                 }
-                else if (tn.getOrdinal() == TigerNode.METHOD) {
+                else if (tn.getOrdinal() == TigerNode.METHOD || tn.getOrdinal() == TigerNode.BNF_PRODUCTION) {
                     sb.append('(').append(((MethodNode) tn).getFormalParams(options.getShowArgumentNames(), options.getTypeIsSuffixed(), options.getShowMiscMod(), options.getShowTypeArgs())).append(')');
                 }
             }
@@ -676,6 +677,7 @@ public class TigerLabeler {
                         sb.append(": &lt;init&gt;");
                         break;
                     case TigerNode.METHOD:
+                    case TigerNode.BNF_PRODUCTION:
                         sb.append(" : ").append(((MethodNode) tn).getReturnType());
                         break;
                     case TigerNode.FIELD:
