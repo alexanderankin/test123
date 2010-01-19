@@ -64,12 +64,28 @@ public class SideKickOptionPane extends AbstractOptionPane
 		scrollToVisible.setSelected(jEdit.getBooleanProperty(
 			"sidekick.scrollToVisible"));
 		
-		addComponent(persistentFilter = 
+		// TODO: add checkbox to show/hide filter here, indent next 2 checkboxes
+		addComponent(showFilter = 
+			     new JCheckBox(jEdit.getProperty("options.sidekick.showFilter.label", "Show filter text box")));
+		showFilter.setSelected(jEdit.getBooleanProperty(SideKick.SHOW_FILTER, true));
+		showFilter.addActionListener( 
+			new ActionListener() {
+				public void actionPerformed( ActionEvent ae ) {
+					persistentFilter.setEnabled(showFilter.isSelected());
+					filterVisibleAssets.setEnabled(showFilter.isSelected());
+				}
+			}
+		);
+		JPanel filterOptionPanel = new JPanel(new GridLayout(2, 1));
+		filterOptionPanel.setBorder(BorderFactory.createEmptyBorder(0, 21, 0, 0));
+		filterOptionPanel.add(persistentFilter = 
 			     new JCheckBox(jEdit.getProperty("options.sidekick.persistentFilter.label")));
 		persistentFilter.setSelected(jEdit.getBooleanProperty("sidekick.persistentFilter"));
-		addComponent(filterVisible = 
+		filterOptionPanel.add(filterVisibleAssets = 
 			     new JCheckBox(jEdit.getProperty("options.sidekick.filter-visible-assets.label")));
 		persistentFilter.setSelected(jEdit.getBooleanProperty("sidekick.filter-visible-assets"));
+		addComponent(filterOptionPanel);
+		
 		addComponent(jEdit.getProperty("options.sidekick.auto-expand-tree-depth"),
 			autoExpandTreeDepth = new JComboBox());
 		autoExpandTreeDepth.addActionListener(new ActionHandler());
@@ -200,8 +216,9 @@ public class SideKickOptionPane extends AbstractOptionPane
 		jEdit.setBooleanProperty("sidekick.showToolTips", showToolTips.isSelected());
 		jEdit.setBooleanProperty("sidekick.showStatusWindow", showStatusWindow.isSelected());
 		jEdit.setBooleanProperty("sidekick.scrollToVisible", scrollToVisible.isSelected());
+		jEdit.setBooleanProperty(SideKick.SHOW_FILTER, showFilter.isSelected());
 		jEdit.setBooleanProperty("sidekick.persistentFilter", persistentFilter.isSelected());
-		jEdit.setBooleanProperty("sidekick.filter-visible-assets", filterVisible.isSelected());
+		jEdit.setBooleanProperty("sidekick.filter-visible-assets", filterVisibleAssets.isSelected());
 		int depth = 0;
 		String value = (String)autoExpandTreeDepth.getSelectedItem();
 		depth = value.equals("All") ? -1 : Integer.parseInt(value);
@@ -236,7 +253,8 @@ public class SideKickOptionPane extends AbstractOptionPane
 	private JTextField acceptChars;
 	private JTextField insertChars;
 	private JCheckBox persistentFilter;
-	private JCheckBox filterVisible;
+	private JCheckBox showFilter;
+	private JCheckBox filterVisibleAssets;
 	//}}}
 
 	//{{{ ActionHandler class

@@ -51,6 +51,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.SwingUtilities;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.Timer;
@@ -66,8 +67,6 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.GUIUtilities;
@@ -108,7 +107,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 	private JSplitPane splitter;
 	private boolean statusShowing = false;
 	private Buffer lastParsedBuffer = null;
-
+	private JToolBar filterBox;
 	protected JPopupMenu configMenu;
 	protected JCheckBoxMenuItem onChange;
 	protected JCheckBoxMenuItem followCaret;
@@ -140,7 +139,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 		// create toolbar with parse button
 		JToolBar buttonBox = new JToolBar();
 		buttonBox.setFloatable(false);
-		JToolBar filterBox = new JToolBar();
+		filterBox = new JToolBar();
 		filterBox.setLayout(new BorderLayout());
 		filterBox.setFloatable(false);
 
@@ -506,6 +505,19 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 			add(topPanel);
 			statusShowing = false;
 		}
+		
+		// show or hide the filter box
+		final boolean showFilter = jEdit.getBooleanProperty(SideKick.SHOW_FILTER, true);
+		if (showFilter != filterBox.isVisible()) {
+			SwingUtilities.invokeLater(new Runnable()
+				{
+					public void run()
+					{
+						filterBox.setVisible(showFilter);
+						searchField.setEnabled(showFilter);
+					}
+				});	
+		}
 	} //}}}
 
 	//{{{ parserList() method
@@ -845,6 +857,10 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 					    HashSet<TreePath> visible, 
 					    DefaultMutableTreeNode node)
 	{
+		if (!jEdit.getBooleanProperty(SideKick.SHOW_FILTER)) {
+			return;	
+		}
+		
 		TreePath path = new TreePath(node.getPath());
 		if (!visible.contains(path)) {
 			return;
@@ -859,6 +875,10 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 			
 	public void updateFilter(boolean with_delay)
 	{
+		if (!jEdit.getBooleanProperty(SideKick.SHOW_FILTER)) {
+			return;	
+		}
+		
 		FilteredTreeModel ftm = (FilteredTreeModel)tree.getModel();
 
 		if (searchField.getText().length() == 0) {
@@ -911,7 +931,48 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 	class KeyHandler extends KeyAdapter
 	{
 
-		protected void next()
+		protected void next() 
+		{
+			DefaultMutableTreeNode node =  (DefaultMutableTreeNode)tree.getLastSelectedPathComponent();
+			FilteredTreeModel model = (FilteredTreeModel)tree.getModel();
+			if (node == null) {
+				node = (DefaultMutableTreeNode)model.getRoot();
+			}
+			
+			// standard tree movement for next:
+			// If selected node has children and selected node is expanded,
+			// then next is the first child of the selected node, otherwise,
+			// next is the next sibling.
+			// If selected node is a leaf, then next is next sibling.
+			// If next sibling is null, that means selected node is the
+			// last child of the parent node, so next is parent.nextSibling
+			if (node.getChildCount() > 0) {
+				DefaultMutableTreeNode firstChild = (DefaultMutableTreeNode)node.getFirstChild();
+				TreePath path = new TreePath(firstChild.getPath());
+				if (tree.isVisible(path)) {
+					node = firstChild;
+				}
+				else {
+					node = (DefaultMutableTreeNode)node.getNextSibling();
+				}
+			}
+			else {	
+				// node is a leaf
+				DefaultMutableTreeNode next = (DefaultMutableTreeNode)node.getNextSibling();
+				if (next == null) {
+					// must be last child of parent
+					next = (DefaultMutableTreeNode)((DefaultMutableTreeNode)node.getParent()).getNextSibling();
+				}
+				node = next;
+			}
+			
+			if (node != null) {
+				TreePath p = new TreePath(node.getPath());
+				selectPath(p);
+			}
+		}
+		
+		protected void nextLeaf()
 		{
 			DefaultMutableTreeNode node =  (DefaultMutableTreeNode)tree.getLastSelectedPathComponent();
 			FilteredTreeModel model = (FilteredTreeModel)tree.getModel();
@@ -919,7 +980,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 				node = (DefaultMutableTreeNode)model.getRoot();
 			}
 			if (model.isLeaf(node)) {
-				node = node.getNextLeaf();
+				node = node.getNextLeaf();	// TODO: replace this, javadoc says this is inefficient and shouldn't be used 
 			} else {
 				Enumeration<DefaultMutableTreeNode> e = node.depthFirstEnumeration();
 				node = e.nextElement();
@@ -934,8 +995,47 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 				}
 			}
 		}
+		
+		protected void prev() 
+		{
+			DefaultMutableTreeNode node =  (DefaultMutableTreeNode)tree.getLastSelectedPathComponent();
+			FilteredTreeModel model = (FilteredTreeModel)tree.getModel();
+			if (node == null) {
+				node = (DefaultMutableTreeNode)model.getRoot();
+			}
+			
+			// standard movement for previous:
+			// Initially, previous is the previous sibling.
+			// If previous sibling is null, then that means the current node
+			// is the first child of the parent node, so previous is the
+			// parent node.
+			// If previous sibling has children and is expanded, then previous
+			// is the last child of the previous sibling.
+			DefaultMutableTreeNode prev = node.getPreviousSibling();
+			if (prev == null) {	// could be first child
+				node = (DefaultMutableTreeNode)node.getParent();
+			}
+			else if (prev.getChildCount() > 0) {
+				DefaultMutableTreeNode lastChild = (DefaultMutableTreeNode)prev.getLastChild();
+				TreePath path = new TreePath(lastChild.getPath());
+				if (tree.isVisible(path)) {
+					node = lastChild;
+				}
+				else {
+					node = prev;	
+				}
+			}
+			else {
+				node = prev;	
+			}
+			
+			if (node != null) {
+				TreePath p = new TreePath(node.getPath());
+				selectPath(p);
+			}
+		}
 
-		protected void prev()
+		protected void prevLeaf()
 		{
 			DefaultMutableTreeNode node =  (DefaultMutableTreeNode)tree.getLastSelectedPathComponent();
 			FilteredTreeModel model = (FilteredTreeModel)tree.getModel();
@@ -949,7 +1049,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 				Enumeration<DefaultMutableTreeNode> e = node.depthFirstEnumeration();
 				node = e.nextElement();
 			}
-			node = node.getPreviousLeaf();
+			node = node.getPreviousLeaf();	// TODO: replace this, javadoc says this is inefficient and shouldn't be used
 			if (node != null) {
 				while ((node != null) && (!model.isVisible(node))) {
 					node = node.getPreviousLeaf();
@@ -1026,19 +1126,29 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 					break;
 				case KeyEvent.VK_DOWN:
 					evt.consume();
-					next();
+					if (evt.isControlDown())
+						nextLeaf();
+					else
+						next();
 					break;
 				case KeyEvent.VK_UP:
 					evt.consume();
-					prev();
+					if (evt.isControlDown())
+						prevLeaf();
+					else
+						prev();
 					break;
 				case KeyEvent.VK_PAGE_UP:
 				{
 					evt.consume();
 
 					int offset = tree.getScrollableUnitIncrement(tree.getParent().getBounds(), javax.swing.SwingConstants.VERTICAL, 0);
-					for (int i = 0; i < offset; ++i)
-						prev();
+					for (int i = 0; i < offset; ++i) {
+						if (evt.isControlDown())
+							prevLeaf();
+						else
+							prev();
+					}
 				}
 				break;
 				case KeyEvent.VK_PAGE_DOWN:
@@ -1046,8 +1156,12 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 					evt.consume();
 
 					int offset = tree.getScrollableUnitIncrement(tree.getParent().getBounds(), javax.swing.SwingConstants.VERTICAL, 0);
-					for (int i = 0; i < offset; ++i)
-						next();
+					for (int i = 0; i < offset; ++i) {
+						if (evt.isControlDown())
+							nextLeaf();
+						else
+							next();
+					}
 				}
 				break;
 				default:
