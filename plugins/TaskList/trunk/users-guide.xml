@@ -9,7 +9,7 @@
 <author><othername>John Gellene</othername></author>
 <author><othername>Dale Anson</othername></author>
 </authorgroup>
-<edition>Version 2.0</edition>
+<edition>Version 2.1</edition>
 <legalnotice>
 <para>Copyright (C) 2002 John Gellene, 2003-2004 Ollie Rutherfurd, 2009 Dale Anson</para>
 </legalnotice>
@@ -249,6 +249,37 @@ Ollie Rutherfurd at <ulink url="mailto:oliver@jedit.org">oliver@jedit.org</ulink
 mailing list (for which membership is required).</para></section>
 <section id="version-history">
 <title>Version History</title>
+<section id="version-2-1-january-2010">
+<title>Version 2.1, January, 2010</title>
+<itemizedlist>
+<listitem>
+<para>
+Fix for tracker 2921940, some properties were not initialized, which caused a null pointer exception.
+</para>
+</listitem>
+<listitem>
+<para>
+Added ability to filter the tasks lists, per tracker 2922303.
+</para>
+</listitem>
+<listitem>
+<para>
+Moved ParseBufferMessages off of the EditBus since they are only used by TaskList and confused other plugins.
+</para>
+</listitem>
+<listitem>
+<para>
+Fix for tracker 2930625, TaskList couldn't find tasks in files opened with the FTP plugin.
+</para>
+</listitem>
+<listitem>
+<para>
+Added "Toggle All" button to Filter menu to make it easier to select task types.
+</para>
+</listitem>
+</itemizedlist>
+</section>
+
 <section id="version-2-0-august-2009">
 <title>Version 2.0, August, 2009</title>
 <itemizedlist>
