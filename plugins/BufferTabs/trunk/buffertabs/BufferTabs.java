@@ -93,7 +93,6 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 	private static final String SORT_BUFFERS = "sortBuffers";
 	private final EditPane editPane;
 	private final JComponent textArea;
-	BufferSet bufferSet;
 
 	private final ChangeHandler changeHandler;
 	private final MouseHandler mouseHandler;
@@ -126,7 +125,8 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 	{
 		propertiesChanged(); //CES
 		BufferSet bufferSet = editPane.getBufferSet();
-		setBufferSet(bufferSet);
+		bufferSet.getAllBuffers(this);
+		bufferSet.addBufferSetListener(this);
 
 		EditBus.addToBus(this);
 
@@ -189,6 +189,7 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 	public void handleBufferUpdate(BufferUpdate bu)
 	{
 		Buffer buffer = bu.getBuffer();
+		BufferSet bufferSet = editPane.getBufferSet();
 		if (bu.getWhat() == BufferUpdate.DIRTY_CHANGED ||
 			bu.getWhat() == BufferUpdate.CREATED)
 		{
@@ -232,7 +233,7 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 				try
 				{
 					Buffer buffer = editPane.getBuffer();
-					int index = bufferSet.indexOf(buffer);
+					int index = editPane.getBufferSet().indexOf(buffer);
 					if (!knownBuffers.contains(buffer))
 					{
 						// we don't know this buffer yet, let's add it now by simulation
@@ -251,10 +252,6 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 				{
 					changeHandler.setEnabled(true);
 				}
-			}
-			else if (epu.getWhat() == EditPaneUpdate.BUFFERSET_CHANGED)
-			{
-				setBufferSet(editPane.getBufferSet());
 			}
 		}
 	}
@@ -388,20 +385,12 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 		}
 	}
 
-	public void bufferCleared()
-	{
-		changeHandler.setEnabled(false);
-		knownBuffers.clear();
-		for (int i = getTabCount() - 1; i >= 0; i--)
-		{
-			removeTabAt(i);
-		}
-		changeHandler.setEnabled(true);
-	}
-
 	public void bufferSetSorted()
 	{
-		// do nothing
+		BufferSet bufferSet = editPane.getBufferSet();
+		removeAll();
+		knownBuffers.clear();
+		bufferSet.getAllBuffers(this);
 	}
 
 	public void propertiesChanged()
@@ -472,28 +461,28 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 		}
 	}
 
-	private void setBufferSet(BufferSet bufferSet)
-	{
-		if (bufferSet != this.bufferSet)
-		{
-			changeHandler.setEnabled(false);
-			BufferSet oldBufferSet = this.bufferSet;
-			if (oldBufferSet != null)
-			{
-				knownBuffers.clear();
-				for (int i = getTabCount();i>0;i--)
-				{
-					removeTabAt(0);
-				}
-			}
-			this.bufferSet = bufferSet;
-			changeHandler.setEnabled(true);
-			bufferSet.getAllBuffers(this);
-			if (oldBufferSet != null)
-				oldBufferSet.removeBufferSetListener(this);
-			bufferSet.addBufferSetListener(this);
-		}
-	}
+//	private void setBufferSet(BufferSet bufferSet)
+//	{
+//		if (bufferSet != this.bufferSet)
+//		{
+//			changeHandler.setEnabled(false);
+//			BufferSet oldBufferSet = this.bufferSet;
+//			if (oldBufferSet != null)
+//			{
+//				knownBuffers.clear();
+//				for (int i = getTabCount();i>0;i--)
+//				{
+//					removeTabAt(0);
+//				}
+//			}
+//			this.bufferSet = bufferSet;
+//			changeHandler.setEnabled(true);
+//			bufferSet.getAllBuffers(this);
+//			if (oldBufferSet != null)
+//				oldBufferSet.removeBufferSetListener(this);
+//			bufferSet.addBufferSetListener(this);
+//		}
+//	}
 
 
 	private class ChangeHandler implements ChangeListener
@@ -519,6 +508,7 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 		public synchronized void stateChanged(ChangeEvent e)
 		{
 			int index = getSelectedIndex();
+			BufferSet bufferSet = editPane.getBufferSet();
 			if (index >= 0 && isEnabled() && bufferSet.size() > index)
 			{
 				Buffer buffer = bufferSet.getBuffer(index);
@@ -550,7 +540,7 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 			return;
 		}
 
-		Buffer buffer = bufferSet.getBuffer(index);
+		Buffer buffer = editPane.getBufferSet().getBuffer(index);
 		String name = buffer.getName();
 
 		if (!ColorTabs.instance().isForegroundColorized())
@@ -585,7 +575,7 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 		{
 			if (index == getSelectedIndex())
 			{
-				Buffer buffer = bufferSet.getBuffer(index);
+				Buffer buffer = editPane.getBufferSet().getBuffer(index);
 				String name = buffer.getName();
 				Color color = ColorTabs.instance().getDefaultColorFor(name);
 				Color selected;
@@ -629,7 +619,7 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 		}
 		setTabComponent(index,
 			jEdit.getBooleanProperty("buffertabs.closeButton", true));
-		Buffer buffer = bufferSet.getBuffer(index);
+		Buffer buffer = editPane.getBufferSet().getBuffer(index);
 		String title = buffer.getName();
 		Icon icon = null;
 		if (jEdit.getBooleanProperty("buffertabs.icons", true))
@@ -869,7 +859,7 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 					int tabIndex = getTabAt(e.getX(), e.getY());
 
 					editPane.focusOnTextArea();
-					jEdit.closeBuffer(editPane, bufferSet.getBuffer(tabIndex));
+					jEdit.closeBuffer(editPane, editPane.getBufferSet().getBuffer(tabIndex));
 					//if ( tab != selection )
 					//BufferTabs.this.editPane.getBuffer() );
 				}
@@ -927,7 +917,7 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 					//set the focus on the selected buffer
 					int tabIndex = getTabAt(e.getX(), e.getY());
 					editPane.focusOnTextArea();
-					jEdit.closeBuffer(editPane, bufferSet.getBuffer(tabIndex));
+					jEdit.closeBuffer(editPane, editPane.getBufferSet().getBuffer(tabIndex));
 
 				}
 			}
