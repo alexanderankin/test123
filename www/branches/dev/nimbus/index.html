@@ -1,0 +1,370 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN""http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+   <head>
+      <title>jEdit - A Programmer's Text Editor (Nimbus Treatment)</title>
+      <link rel="stylesheet" href="http://www.google.com/cse/style/look/default.css" type="text/css" />
+      <style type="text/css">
+         body {
+            padding: 0px;
+            margin: 0px;
+            background-color: #D6D9DF;
+         	font-family: "Tahoma", "Arial", sans-serif;
+         }
+         #wrapper {
+            margin: 0px;
+            border-color: #9297A1;
+            border-style: solid;
+            border-width: 1px 0px;
+         }
+         #navbar {
+         	height: 30px;
+         	background-image: url('images/navbar_bg.png');
+         	background-repeat: repeat-x;
+         	background-position: 0px 0px;
+         	border-style: solid;
+         	border-width: 1px 0px 0px 0px;
+         	border-color: #333;
+         }
+         #navbar ul {
+         	float: left;
+         	list-style: none;
+         	margin: 0px;
+         	padding: 0px;
+         }
+         #navbar ul li {
+         	display: inline;
+         }
+         #navbar ul li a {
+         	display: block;
+         	height: 27px;
+         	border-style: solid;
+         	border-color: #999;
+         	border-width: 0px 1px 0px 0px;
+         	float: left;
+         	margin: 2px 0px 0px 0px;
+         	padding: 0px 10px;
+         	font-size: 12px;
+         	text-decoration: none;
+         	line-height: 27px;
+         	color: #FFF;
+         }
+         #navbar ul li a.first {
+         	border-width: 0px 1px;
+         }
+         #navbar ul li a.selected {
+         	text-decoration: underline;
+         	color: #FDF39E;
+         	background-image: url('images/navbar_bg.png');
+         	background-repeat: repeat-x;
+         	background-position: 0px -31px;
+         }
+         #search_container {
+         	float: right;
+         	width: 250px;
+         }
+         .clear {
+         	clear: both;
+         	font-size: 0px;
+         }
+         .center_960 {
+         	margin: 0px auto;
+         	width: 960px;
+         }
+         .gsc-control-cse {
+         	background-color: transparent;
+         	border: 0px solid transparent;
+         	margin: 0px;
+         	padding: 0px;
+         	line-height: 30px;
+         	height: 30px;
+         }
+         form.gsc-search-box {
+         	margin: 0px;
+         }
+         
+         #main {
+         	border-color: #333;
+         	border-style: solid;
+         	border-width: 1px 0px;
+         }
+         #preview {
+         	background-color: #BACFE2;
+         	height: 200px;
+         	border-color: #999;
+         	border-style: solid;
+         	border-width: 0px 0px 1px 0px;
+         }
+         
+         #logos {
+         	float: left;
+         	margin: 0px 10px;
+         	width: 460px;
+         }
+         #logos img {
+         	border: 0px solid transparent;
+         	margin-top: 50px;
+         	margin-left: 50px;
+         	vertical-align: bottom;
+         	float: left;
+         }
+         #logos p {
+         	font-weight: bold;
+         	margin: 0px;
+         	color: #0B264E;
+         }
+         #logos .logo {
+         	font-size: 30px;
+         	margin-top: 80px;
+         }
+         #logos .text {
+         	font-size: 16px;
+         }
+         
+         #screenshots {
+         	float: right;
+         	width: 460px;
+         	margin: 0px 10px;
+         }
+         
+         #screenshots img {
+         	margin: 10px 50px;
+         	vertical-align: middle;
+         	float: right;
+         }
+         
+         #content {
+         	background-color: #EEE;
+         	color: #000;
+         	padding: 20px 0px;
+         }
+         #footer_separator {
+         	height: 5px;
+         	background-color: #39698A;
+         	border-color: #333;
+         	border-style: solid;
+         	border-width: 0px 0px 1px 0px;
+         }
+         
+         #footer {
+         	margin-top: 20px;
+         }
+         
+         #footer ul {
+         	list-style: none;
+         	margin: 0px;
+         	padding: 0px;
+         }
+         #footer ul li {
+         	display: inline;
+         }
+         #footer ul li a {
+         	border: 0px solid transparent;
+         	margin: 0px 5px;
+         	vertical-align: top;
+         }
+         #footer ul li a img {
+         	border: 0px solid transparent;
+         	margin: 0px;
+         	vertical-align: top;
+         }
+         
+         #intro_text {
+         	float: left;
+         	width: 540px;
+         	margin: 10px;
+         	font-size: 14px;
+         }
+         
+         #intro_text fieldset {
+         	border: 0px solid transparent;
+         	padding: 0px;
+         }
+         
+         #sidebar {
+         	float: right;
+         	width: 390px;
+         	margin: 10px 5px;
+         	height: 100px;
+         	padding: 0px;
+         }
+         
+         #sidebar .action {
+         	border: 0px solid transparent;
+         	width: 120px;
+         	font-size: 14px;
+         	padding: 0px;
+         	float: left;
+         	margin: 0px 5px;
+         }
+         
+         #sidebar .action a {
+         	display: block;
+         	text-decoration: none;
+         	color: #FA5200;
+         	font-weight: bold;
+         }
+         
+         #sidebar .action a:hover {
+         	text-decoration: underline;
+         }
+         
+         #sidebar .action .text {
+         	height: 130px;
+         }
+         
+         .title {
+         	font-weight: bold;
+         	font-size: 16px;
+         	color: #0B264E;
+         	margin-bottom: 10px;
+         }
+         
+         #news {
+         	margin-top: 20px;
+         }
+         
+         #news .list {
+         	list-style-type: none;
+         	font-size: 16px;
+         	line-height: 20px;
+         	margin: 0px;
+         	padding: 0px;
+         }
+         
+         #news .list .date {
+         	color: #666;
+         }
+         
+         #news .list a {
+         	color: #39698A;
+         	text-decoration: none;
+         }
+         
+         #news .list a:hover {
+         	text-decoration: underline;
+         }
+      </style>
+   </head>
+   <body>
+      <div id="wrapper">
+      	<div id="navbar">
+      		<div class="center_960">
+					<ul>
+						<li><a href="/" class="first selected">Home</a></li>
+						<li><a href="/downloads">Download</a></li>
+						<li><a href="/documentation">Documentation</a></li>
+						<li><a href="http://community.jedit.org">Community</a></li>
+						<li><a href="/plugins">Plugins</a></li>
+						<li><a href="/contribute">Contribute</a></li>
+						<li><a href="/help" class="last">Help</a></li>
+					</ul>
+					<div id="search_container">
+						<div id="cse" style="width: 100%;">Loading</div>
+						<script src="http://www.google.com/jsapi" type="text/javascript"></script>
+						<script type="text/javascript">
+						  google.load('search', '1', {language : 'en'});
+						  google.setOnLoadCallback(function(){
+							 var customSearchControl = new google.search.CustomSearchControl('004992163122579198423:obqqzq7jni4');
+							 customSearchControl.setResultSetSize(google.search.Search.FILTERED_CSE_RESULTSET);
+							 customSearchControl.draw('cse');
+						  }, true);
+						</script>
+					</div>
+					<br class="clear" />
+				</div>
+      	</div>
+      	<div id="main">
+      		<div id="preview">
+      			<div class="center_960">
+						<div id="logos">
+							<img src="images/logo_100.png" width="100" height="100" alt="jEdit Logo by Kris Kopicki & Gerd Knops" />
+							<p class="logo">jEdit</p><p class="text">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- A Programmer's Text Editor</p>
+						</div>
+						<div id="screenshots">
+							<img src="images/screenshot_jedit4.3_nimbus_thumb.png" alt="jEdit 4.3 - Nimbus Lood and Feel and MyDoggy Docking Framework" height="180" width="231" />
+						</div>
+						<br class="clear" />
+					</div>
+      		</div>
+      		<div id="content">
+      			<div class="center_960">
+      				<div id="intro_text">
+							<div class="title">What is jEdit?</div>
+							<p>
+								jEdit is a mature programmer's text editor with hundreds (counting the time developing plugins) of person-years of development behind it. To download, install, and set up jEdit as quickly and painlessly as possible, go to the Quick Start page.
+			
+								While jEdit beats many expensive development tools for features and ease of use, it is released as free software with full source code, provided under the terms of the GPL 2.0.
+								
+								The jEdit core, together with a large collection of plugins is maintained by a world-wide developer team.
+								
+								Some of jEdit's features include:
+								<ul>
+									<li>Written in Java, so it runs on Mac OS X, OS/2, Unix, VMS and Windows.</li>
+									<li>Built-in macro language; extensible plugin architecture. Dozens of macros and plugins available.</li>
+									<li>Plugins can be downloaded and installed from within jEdit using the "plugin manager" feature.</li>
+									<li>Auto indent, and syntax highlighting for more than 130 languages.</li>
+									<li>Supports a large number of character encodings including UTF8 and Unicode.</li>
+									<li>Folding for selectively hiding regions of text.</li>
+									<li>Word wrap.</li>
+									<li>Highly configurable and customizable.</li>
+									<li>Every other feature, both basic and advanced, you would expect to find in a text editor. See the Features page for a full list.</li>
+								</ul>
+							</p>
+						</div>
+						<div id="sidebar">
+							<div id="actions">
+								<div id="get_action" class="action">
+									<div class="title">Get jEdit</div>
+									<div class="text">jEdit is written in Java, and runs where and when you need it to. jEdit runs on Mac OS X, Windows, Linux, and more.</div>
+									<a href="/download">Get jEdit</a>
+								</div>
+								<div id="started_action" class="action">
+									<div class="title">Get Coding</div>
+									<div class="text">jEdit supports over 130 different programming languages, and has over 150 plugins available for download.</div>
+									<a href="/quickstart">Get Coding</a>
+								</div>
+								<div id="help_action" class="action">
+									<div class="title">Get Help</div>
+									<div class="text">With active mailing lists, forums, and an IRC chat room, support for jEdit is always easy to find.</div>
+									<a href="/help">Get Help</a>
+								</div>
+								<br class="clear" />
+							</div>
+							<div id="news">
+								<div class="title">Latest News</div>
+								<ul class="list">
+									<li><span class="date">2009-12-23</span> - <a href="http://sourceforge.net/projects/jedit/files/jedit/4.3">jEdit 4.3 (final) released.</a></li>
+									<li><span class="date">2009-11-07</span> - <a href="http://sourceforge.net/projects/jedit/files/jedit-devel/4.3pre18">jEdit 4.3pre18 released.</a></li>
+									<li><span class="date">2009-07-05</span> - <a href="http://sourceforge.net/projects/jedit/files/jedit-devel/4.3pre17">jEdit 4.3pre17 released.</a></li>
+								</ul>
+							</div>
+						</div>
+						<br class="clear" />
+					</div>
+      		</div>
+      	</div>
+      	<div id="footer_separator">&nbsp;</div>
+      </div>
+		<div id="footer" class="center_960">
+			<center>
+				<ul>
+					<li>
+						<a href="http://sourceforge.net" class="sourceforge"><img width="88" height="31" border="0" alt="SourceForge Logo" title="online services provided by Sourceforge.net" src="http://sourceforge.net/sflogo.php?group_id=588"/></a>
+					</li>
+					<li>
+						<a href="http://www.ej-technologies.com/products/jprofiler/overview.html" class="jprofiler"><img width="100" height="26" border="0" alt="JProfiler Logo" title="JProfiler licenses provided free to jEdit developers for improving jEdit." src="http://www.jedit.org/images/jProfiler.png"/></a>
+					</li>
+					<li>
+						<a href="http://creativecommons.org/licenses/GPL/2.0/" class="gpl"><img border="0" src="http://creativecommons.org/images/public/cc-GPL-a.png" alt="GPL V2.0"/></a>
+					</li>
+					<li>
+						<a href="http://sourceforge.net/project/project_donations.php?group_id=588" class="donations"><img width="72" height="29" border="0" title="Make a donation with PayPal - it's fast, free and secure!" src="http://sourceforge.net/images/x-click-but7.gif"/></a>
+					</li>
+					<li>
+						<a href="http://www.jedit.org" class="jedit"><img border="0" width="120" height="40" src="http://www.jedit.org/made-with-jedit-9.png"/></a>
+					</li>
+				</ul>
+			</center>
+		</div>
+   </body>
+</html>

@@ -1,0 +1,45 @@
+<!-- begin windows.javainstall.text -->
+
+<!-- for jEdit: :mode=php:indentSize=2:tabSize=2:noTabs=true: -->
+
+<p>To find out which Java virtual machine is best for running jEdit on
+Windows,
+see the <a href="index.php?page=compatibility">compatibility</a> page.</p>
+
+<p>To install jEdit, simply double-click on the JAR file you downloaded;
+the installer should start automatically.</p>
+
+<p>If it doesn't start, then you will need to open an MS-DOS prompt
+(<b>Start</b>-&gt;<b>Programs</b>-&gt;<b>MS-DOS Prompt</b>) and
+enter the following commands:</p>
+
+<pre>cd <i>directory where you downloaded the JAR file</i>
+java -jar <i>filename</i>.jar</pre>
+
+<p>For example, if you downloaded <code>jedit40install.jar</code>
+into <code>C:\Downloads</code>,
+you would enter:</p>
+
+<pre>cd C:\Downloads
+java -jar jedit41install.jar</pre>
+
+<p>If for whatever reason
+you want to start the installer in text-only mode, specify
+<code>text</code> as the last parameter on the command line. In text only mode,
+the installer will not display it's GUI, and instead it will ask
+questions in the MS-DOS prompt.</p>
+
+<p>Note that some Java versions for Windows have a bug where a JAR file whose
+full path names contains a bang (!) will not run. If you get an error like
+the following, try moving the installer JAR to a directory whose name does
+not contain the bang:</p>
+
+<pre>Exception in thread &quot;main&quot; java.lang.NullPointerException
+        at java.io.Reader.&lt;init&gt;(Unknown Source)
+        at java.io.InputStreamReader.&lt;init&gt;(Unknown Source)
+        at java.util.Properties.load(Unknown Source)
+        at installer.Install.&lt;init&gt;(Unknown Source)
+        at installer.SwingInstall.&lt;init&gt;(Unknown Source)
+        at installer.Install.main(Unknown Source)</pre>
+
+<!-- end windows.javainstall.text -->
