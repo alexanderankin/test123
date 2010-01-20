@@ -1,0 +1,267 @@
+<!-- begin download.text -->
+
+<!-- for jEdit: :mode=html:indentSize=2:tabSize=2:noTabs=true: -->
+
+<!-- Java installer instructions are stored in $platform.javainstall.text,
+     Platform-specific installer instructions are stored in
+     $platform.platinstall.text -->
+<html>
+<?php
+  $platform = $_GET['platform'];
+  if(!$platform)
+    $platform = "menu";
+
+  echo "<!-- platform = ".$platform;
+
+  // Java installer instructions for Linux and FreeBSD are identical
+  // to those for generic Unix
+  //if($platform == "linux")
+  //  $java_platform = "unix";
+  //else
+    $java_platform = $platform;
+
+  // Make sure user doesn&#039;t request illegal platform
+  $ok_platforms = array("menu","windows","mac","unix","os2","vms");
+  if(!in_array($platform,$ok_platforms))
+    $platform = "menu";
+
+  echo " java_platform = ".$java_platform." -->";
+?>
+
+<p> Java 2 version 1.5 or later is recommended for all versions of jEdit.
+Before installing jEdit, make sure you have a compatible Java virtual machine; see the <a href="index.php?page=compatibility">compatibility</a> page for details. </p>
+
+<h2>Option 1 - manual download and install on any OS</h2>
+
+<table cellpadding="0" cellspacing="5" border="0">
+
+<tr class="hilite">
+<td></td>
+<td colspan=3><b>Latest version (development):</b> (JDK 1.5 and later)</td>
+</tr>
+
+<p> Even if you&#039;re &quot;just a user&quot;, you should still try the development version. There are many enhancements and bugfixes. Further, you will see more (and more recent versions of) plugins from 4.3preX's plugin manager.
+</p>
+
+<tr class="hilite">
+<td>Download: </td>
+<td><a href="http://sourceforge.net/projects/jedit/files/jedit-devel/4.3pre18/jedit4.3pre18install.jar/download">Java-based installer</a></td>
+<td>2.6 MiB</td>
+<td>(For any operating system)</td>
+</tr>
+
+<tr<?php
+  if($platform == "windows")
+    echo ' class="hilite"';
+?>>
+<td></td>
+<td><a href="http://sourceforge.net/projects/jedit/files/jedit-devel/4.3pre18/jedit4.3pre18install.exe/download">Windows Installer</a></td>
+<td>2.8 MiB</td>
+<td></td>
+</tr>
+
+<tr<?php
+  if($platform == "mac")
+    echo ' class="hilite"';
+?>>
+<td></td>
+<td><a href="http://sourceforge.net/projects/jedit/files/jedit-devel/4.3pre18/jedit4.3pre18install.dmg/download">Mac OS X package</a></td>
+<td>6.6 MiB</td>
+<td></td>
+</tr>
+
+<tr<?php
+  if($platform == "unix")
+    echo ' class="hilite"';
+?>>
+<td></td>
+<td><a href="http://sourceforge.net/projects/jedit/files/jedit-devel/4.3pre18/jedit_4.3pre18_all.deb/download">Debian package</a></td>
+<td>3.6 MiB</td>
+<td></td>
+</tr>
+
+<tr<?php
+  if($platform == "unix")
+    echo ' class="hilite"';
+?>>
+<td></td>
+<td><a href="http://sourceforge.net/projects/jedit/files/jedit-devel/4.3pre18/jedit-4.3pre18-noarch-1sao.tgz/download">Slackware package</a></td>
+<td>3.5 MiB</td>
+<td></td>
+</tr>
+
+<tr>
+<td></td>
+<td><a href="http://sourceforge.net/projects/jedit/files/jedit-devel/4.3pre18/jedit4.3pre18manual-a4.pdf/download">User's guide</a></td>
+<td>0.5 MiB</td>
+<td>(PDF with A4 paper, 143 pages)</td>
+<td></td>
+</tr>
+
+<tr>
+<td></td>
+<td><a href="http://sourceforge.net/projects/jedit/files/jedit-devel/4.3pre18/jedit4.3pre18manual-letter.pdf/download">User's guide</a></td>
+<td>0.5 MiB</td>
+<td>(PDF with US letter paper, 150 pages)</td>
+<td></td>
+</tr>
+
+<tr>
+<td></td>
+<td><a href="http://sourceforge.net/projects/jedit/files/jedit-devel/4.3pre18/jedit4.3pre18source.tar.bz2/download">Source code</a></td>
+<td>2.0 MiB</td>
+<td></td>
+</tr>
+
+
+<tr>
+<td colspan="4"><hr></td>
+</tr>
+
+<tr class="hilite">
+<td></td>
+<td colspan=3><b>Stable version:</b></td>
+</tr>
+
+<tr class="hilite">
+<td>Download:</td>
+<td><a href="http://sourceforge.net/projects/jedit/files/jedit/4.2/jedit42install.jar/download">
+Java-based installer</a></td><td>2.0 MiB</td><td>(For any operating system)</td>
+</tr>
+
+<tr<?php
+  if($platform == "windows")
+    echo ' class="hilite"';
+?>>
+<td></td>
+<td><a href="http://sourceforge.net/projects/jedit/files/jedit/4.2/jedit42install.exe/download">Windows installer</a></td>
+<td>1.9 MiB</td>
+<td></td>
+</tr>
+
+<tr<?php
+  if($platform == "mac")
+    echo ' class="hilite"';
+?>>
+<td></td>
+<td><a href="http://sourceforge.net/projects/jedit/files/jedit/4.2/jedit42.dmg/download">Mac OS X
+ package</a></td>
+<td>3.3 MiB</td>
+<td></td>
+</tr>
+
+<tr<?php
+  if($platform == "unix")
+    echo ' class="hilite"';
+?>>
+<td></td>
+<td><a href="http://sourceforge.net/projects/jedit/files/jedit/4.2/jedit-4.2-noarch-2burn.tgz/download">Slackware
+ package</a></td>
+<td>2.5 MiB</td>
+<td></td>
+</tr>
+
+<tr>
+<td></td>
+<td><a href="http://sourceforge.net/projects/jedit/files/jedit/4.2/jedit42manual-a4.pdf/download">
+User's guide</a></td><td>0.4 MiB</td><td>(PDF with A4 paper,
+132 pages)</td>
+</tr>
+
+<tr>
+<td></td>
+<td><a href="http://sourceforge.net/projects/jedit/files/jedit/4.2/jedit42manual-letter.pdf/download">
+User's guide</a></td><td>0.4 MiB</td><td>(PDF with US letter paper,
+138 pages)</td>
+</tr>
+
+
+<tr>
+<td></td>
+<td><a href="http://sourceforge.net/projects/jedit/files/jedit/4.2/jedit42source.tar.gz/download">
+Source code</a></td><td>1.8 MiB</td>
+</tr>
+
+</table>
+
+<p><b>Note:</b> the above links are not to the files themselves, but rather
+to pages where you can select a download mirror. Do <b>not</b> use your
+browser's "Download Link" command on the above links.</p>
+
+<p>Installation instructions are available for the following operating systems:</p>
+
+<ul>
+<li><a href="index.php?page=download&amp;platform=mac#instructions">Mac OS </a></li>
+<li><a href="index.php?page=download&amp;platform=os2#instructions">OS/2</a></li>
+<li><a href="index.php?page=download&amp;platform=unix#instructions">Unix</a></li>
+<li><a href="index.php?page=download&amp;platform=vms#instructions">VMS</a></li>
+<li><a href="index.php?page=download&amp;platform=windows#instructions">Windows</a></li>
+</ul>
+
+<?php
+  if(file_exists($platform.".platinstall.text"))
+  {
+    echo "<a name=\"instructions\"><h2>Installing the platform-specific package</h2></a>";
+    include($platform.".platinstall.text");
+  }
+
+  if(file_exists($java_platform.".javainstall.text"))
+  {
+    echo "<a name=\"instructions\"><h2>Using the Java-based installer</h2></a>";
+    include($java_platform.".javainstall.text");
+  }
+?>
+
+<h2>Option 2 - easy install on some flavors of *nix</h2>
+
+<ul>
+
+<li>
+<a href="http://www.freebsd.org">FreeBSD</a> users can find install jEdit from the ports collection by running:
+
+<pre>cd /usr/ports/editors/jedit
+make install</pre>
+</li>
+
+<li>
+<a href="http://www.gentoo.org">Gentoo Linux</a>
+users can install jEdit from the portage tree by running
+<code>emerge jedit</code>.
+</li>
+
+<li>To install jEdit via <a href="http://www.debian.org">Debian Linux</a>
+<code>apt-get</code>, add the following line to your
+<code>/etc/apt/sources.list</code>:</p>
+
+<pre>deb http://&lt;mirror&gt;.dl.sourceforge.net/project/jedit /
+<!--deb-src http://&lt;mirror&gt;.dl.sourceforge.net/project/jedit /--></pre>
+
+e. g.
+
+<pre>deb http://switch.dl.sourceforge.net/project/jedit /
+<!--deb-src http://switch.dl.sourceforge.net/project/jedit /--></pre>
+
+<p>Then, just run <code>apt-get update</code>, followed by
+<code>apt-get install jedit</code><!--
+or <code>apt-get source jedit</code-->. </p>
+</li>
+
+<li>
+If you use apt4rpm, urpmi, or a similar tool with an RPM-based Linux
+distribution,
+you can automatically stay up to date with the latest version of jEdit
+using the <a href="http://www.jpackage.org">JPackage</a> RPM repository.
+</li>
+
+</ul>
+
+<h2>Problems?</h2>
+
+If you encounter a problem while installing jEdit, take a look at
+the <a href="FAQ/index.html">Frequently Asked Questions</a>. If that
+doesn't help with your problem, post to the
+<a href="index.php?page=feedback">mailing lists</a>.
+
+<!-- end download.text -->
+
+</html>
