@@ -32,6 +32,7 @@ import automation.Connection.StringHandler;
 public class ConnectionWindow extends JPanel implements CharHandler, EventHandler,
 	ActionListener
 {
+	private static boolean DEBUG = true;
 	private final Connection c;
 	private final JTextPane console;
 	private final HistoryTextField input;
@@ -44,6 +45,7 @@ public class ConnectionWindow extends JPanel implements CharHandler, EventHandle
 	private Object outputSync= new Object(); 
 	private int charsToRemove = 0;
 	private final JLabel action;
+	private int awtTaskCount = 0;
 
 	public ConnectionWindow(Connection c)
 	{
@@ -115,6 +117,9 @@ public class ConnectionWindow extends JPanel implements CharHandler, EventHandle
 				if (c == '\n') 
 					output.add(currentOutput = new StringBuilder());
 			}
+			awtTaskCount++;
+			if (awtTaskCount > 1)
+				return;
 		}
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run()
@@ -125,6 +130,9 @@ public class ConnectionWindow extends JPanel implements CharHandler, EventHandle
 					boolean atEnd = (console.getCaretPosition() == d.getLength());
 					synchronized(outputSync)
 					{
+						if (DEBUG)
+							System.err.println("ConnectionWindow - awtTaskCount=" + awtTaskCount);
+						awtTaskCount = 0;
 						if (charsToRemove > 0)
 						{
 							int len = d.getLength();
