@@ -680,7 +680,7 @@ MORE :
   <DOLLARS : "$"> : DOLLAR_IN_STRING
 }
 
-<IN_STRING,DOLLAR_IN_STRING,SKIPSTRING> TOKEN :
+<DOLLAR_IN_STRING_EXPR,IN_STRING,DOLLAR_IN_STRING,SKIPSTRING> TOKEN :
 {
   <DOUBLEQUOTE2 : "\""> : PHPPARSING
 }
@@ -710,10 +710,10 @@ MORE :
   <RBRACE1 : "}"> : IN_STRING
 }
 
-<DOLLAR_IN_STRING_EXPR> TOKEN :
+/* <DOLLAR_IN_STRING_EXPR> TOKEN :
 {
   <ID : (~["}"])*>
-}
+} */
 
 <IN_STRING> SKIP :
 {
@@ -4415,39 +4415,63 @@ StringLiteral evaluableString():
 {
 	start = <DOUBLEQUOTE>
 	(
-		<LBRACE1>
-		try
-		{
-			expr = Expression()
-			{
-				list.add(expr);
-			}
-		}
-		catch (ParseException e)
-		{
-			// ignore in a string
-		}
-		try
-		{
-			<RBRACE1>
-		}
-		catch (ParseException e)
-		{
-			// ignore in a string
-		}
-	|
 		<DOLLARS>
-		try
-		{
-			expr = Expression()
+		(
+			<LBRACE1>
+			(
+				try
+				{
+					expr = Expression()
+					{
+						if (expr instanceof ConstantIdentifier)
+						{
+							expr = new Variable(expr.toString(),
+								expr.getSourceStart(),
+								expr.getSourceEnd(),
+								expr.getBeginLine(),
+								expr.getEndLine(),
+								expr.getBeginColumn(),
+								expr.getEndColumn());
+						}
+						list.add(expr);
+					}
+				}
+				catch (ParseException e)
+				{
+					// ignore in a string
+				}
+			)
+			try
 			{
-				list.add(expr);
+				<RBRACE1>
 			}
-		}
-		catch (ParseException e)
-		{
-			// ignore in a string
-		}
+			catch (ParseException e)
+			{
+				// ignore in a string
+			}
+		|
+			try
+			{
+				expr = Expression()
+				{
+					if (expr instanceof ConstantIdentifier)
+					{
+						expr = new Variable(expr.toString(),
+							expr.getSourceStart(),
+							expr.getSourceEnd(),
+							expr.getBeginLine(),
+							expr.getEndLine(),
+							expr.getBeginColumn(),
+							expr.getEndColumn());
+					}
+					list.add(expr);
+				}
+			}
+			catch (ParseException e)
+			{
+				// ignore in a string
+			}
+		)
 	)*
 	end = <DOUBLEQUOTE2>
 	{
