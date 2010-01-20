@@ -31,6 +31,7 @@ import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.jEdit;
 
 @SuppressWarnings("serial")
@@ -82,8 +83,9 @@ class BufferTabComponent extends JPanel
 				int index = pane.indexOfTabComponent(BufferTabComponent.this);
 				if (index < 0)
 					return;
-				jEdit.closeBuffer(pane.getEditPane(),
-					pane.bufferSet.getBuffer(index));
+				EditPane editPane = pane.getEditPane();
+				jEdit.closeBuffer(editPane,
+					editPane.getBufferSet().getBuffer(index));
 			}
 		});
 	}
