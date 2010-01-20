@@ -549,7 +549,7 @@ public final class ProjectViewerConfig {
 	}
 
 	public String getUserContextMenu() {
-		return userContextMenu;
+		return (userContextMenu != null) ? userContextMenu : "";
 	}
 	//}}}
 
