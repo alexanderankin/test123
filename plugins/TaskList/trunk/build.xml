@@ -87,9 +87,9 @@
     </target>
 	
     <!--
-    <target name="dist" depends="clean, compile, docs">
+    <target name="dist" depends="clean,compile">
     -->
-    <target name="dist" depends="clean,compile, docs">
+    <target name="dist" depends="clean, compile, docs">
         <mkdir dir="${install.dir}"/>
         <jar jarfile="${install.dir}/${jar.name}">
             <fileset dir="${build.dir}"/>
