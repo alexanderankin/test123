@@ -46,6 +46,9 @@ public class ConnectionWindow extends JPanel implements CharHandler, EventHandle
 	private int charsToRemove = 0;
 	private final JLabel action;
 	private int awtTaskCount = 0;
+	private boolean setActionTextScheduled = false;
+	private Object setActionTextSync = new Object();
+	private String actionText;
 
 	public ConnectionWindow(Connection c)
 	{
@@ -186,9 +189,20 @@ public class ConnectionWindow extends JPanel implements CharHandler, EventHandle
 
 	private void setActionText(final String text)
 	{
+		synchronized (setActionTextSync)
+		{
+			actionText = text;
+			if (setActionTextScheduled)
+				return;
+			setActionTextScheduled = true;
+		}
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				action.setText(text);
+				synchronized (setActionTextSync)
+				{
+					setActionTextScheduled = false;
+				}
+				action.setText(actionText);
 			}
 		});
 	}
