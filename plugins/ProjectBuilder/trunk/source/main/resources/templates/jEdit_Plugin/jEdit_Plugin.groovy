@@ -30,7 +30,8 @@ PB.build(project.name, project.directory.path) {
    f("services.xml")
    f("${project.name}.props", template: "${templateDir}/PluginProps.template", templateData: templateData)
    f("build.xml", template: "${templateDir}/PluginBuild.template", templateData: templateData)
+   f("description.html", template: "${templateDir}/PluginDescription.template", templateData: templateData)
    f("sample.build.properties")
 }
-project.build = "ant build"
+project.build = "ANT[target=build,buildfile=${project.directory.path}/${project.name}/build.xml]"
 /* ::mode=groovy:folding=indent:noTabs=true:: */
