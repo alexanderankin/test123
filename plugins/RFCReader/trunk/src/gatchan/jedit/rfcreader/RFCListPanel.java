@@ -1,9 +1,9 @@
 /*
- * RFCReaderPlugin.java
+ * RFCListPanel.java
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2007 Matthieu Casanova
+ * Copyright (C) 2010 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,40 +21,38 @@
  */
 package gatchan.jedit.rfcreader;
 
-import org.gjt.sp.jedit.EditPlugin;
-import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
-import java.text.MessageFormat;
-import java.util.List;
-import java.util.Vector;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * @author Matthieu Casanova
- * @version $Id: Server.java,v 1.33 2007/01/05 15:15:17 matthieu Exp $
  */
-public class RFCReaderPlugin extends EditPlugin
+public class RFCListPanel extends JPanel
 {
-	Vector<RFC> rfcList;
+	private JList list;
 
-	@Override
-	public void start()
+	public RFCListPanel()
 	{
-		RFCListParser parser = new RFCListParser();
-		rfcList = parser.parse();
-	}
-
-	@Override
-	public void stop()
-	{
-		rfcList = null;
-	}
-
-	public static void openRFC(View view, int rfcNum)
-	{
-		String mirrorId = jEdit.getProperty(RFCHyperlink.MIRROR_PROPERTY);
-		String pattern = jEdit.getProperty("options.rfcreader.rfcsources." + mirrorId + ".url");
-		String url = MessageFormat.format(pattern, String.valueOf(rfcNum));
-		jEdit.openFile(view, url);
+		super(new BorderLayout());
+		RFCReaderPlugin plugin = (RFCReaderPlugin) jEdit.getPlugin("gatchan.jedit.rfcreader.RFCReaderPlugin");
+		list = new JList(plugin.rfcList);
+		add(new JScrollPane(list));
+		list.addMouseListener(new MouseAdapter()
+		{
+			@Override
+			public void mouseClicked(MouseEvent e)
+			{
+				if (e.getClickCount() == 2)
+				{
+					RFC rfc = (RFC) list.getSelectedValue();
+					if (rfc != null)
+						RFCReaderPlugin.openRFC(jEdit.getActiveView(), rfc.getNumber());
+				}
+			}
+		});
 	}
 }
