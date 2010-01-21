@@ -32,7 +32,7 @@ import automation.Connection.StringHandler;
 public class ConnectionWindow extends JPanel implements CharHandler, EventHandler,
 	ActionListener
 {
-	private static boolean DEBUG = true;
+	private static boolean DEBUG = false;
 	private final Connection c;
 	private final JTextPane console;
 	private final HistoryTextField input;
