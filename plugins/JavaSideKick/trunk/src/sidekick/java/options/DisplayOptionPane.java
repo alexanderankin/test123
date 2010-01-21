@@ -10,9 +10,7 @@ import org.gjt.sp.jedit.jEdit;
 
 public class DisplayOptionPane extends AbstractOptionPane {
 
-
-    // TODO: put label text in a property
-    private JLabel titleLabel = new JLabel( "<html><b>Display Options:</b> How to display" );
+    private JLabel titleLabel = new JLabel( jEdit.getProperty("options.sidekick.java.displayOptions", "<html><b>Display Options:</b> How to display") );
     private JCheckBox argumentsCheckBox;
     private JCheckBox formalNamesCheckBox;
     private JCheckBox showGenericsCheckBox;
@@ -24,12 +22,12 @@ public class DisplayOptionPane extends AbstractOptionPane {
     private JCheckBox lineNumbersCheckBox;
     private JCheckBox expandClassesCheckBox;
 
-    private JLabel sortByLabel = new JLabel( "Sort by:" );
+    private JLabel sortByLabel = new JLabel( jEdit.getProperty("options.sidekick.java.sortBy", "Sort by:") );
     private JRadioButton lineRB;
     private JRadioButton nameRB;
     private JRadioButton visibilityRB;
 
-    private JLabel displayStyleLabel = new JLabel( "Display style:" );
+    private JLabel displayStyleLabel = new JLabel( jEdit.getProperty("options.sidekick.java.displayStyle", "Display style:") );
     private JComboBox displayStyleComboBox;
     private String[] displayStyleNames = {
                 jEdit.getProperty( "options.sidekick.java.umlStyle", "UML" ),
@@ -37,8 +35,8 @@ public class DisplayOptionPane extends AbstractOptionPane {
                 jEdit.getProperty( "options.sidekick.java.customStyle", "Custom" ) };
 
 
-    private JLabel customDisplayLabel = new JLabel( "Custom Display Options:" );
-    private JLabel useVisibilityLabel = new JLabel( "Use Visibility:" );
+    private JLabel customDisplayLabel = new JLabel( jEdit.getProperty("options.sidekick.java.customOptions", "Custom Display Options:") );
+    private JLabel useVisibilityLabel = new JLabel( jEdit.getProperty("options.sidekick.java.useVisibility", "Use Visibility:") );
     private JRadioButton symbolsRB;
     private JRadioButton wordsRB;
     private JRadioButton noneRB;
@@ -48,7 +46,7 @@ public class DisplayOptionPane extends AbstractOptionPane {
 
 
     public DisplayOptionPane() {
-        super( "Display" );
+        super( jEdit.getProperty("options.sidekick.java.display", "Display") );
     }
 
     protected void _init() {
