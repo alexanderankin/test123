@@ -26,19 +26,21 @@ import common.gui.ListPanel;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.Macros;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.View;
 // }}} imports
 /**
  * A dialog for editing build settings of a project
  */
-public class BuildSettingsPanel extends JPanel implements ActionListener {
+public class BuildSettingsPanel extends JDialog implements ActionListener {
 	private VPTProject proj;
 	private ListPanel list;
 	private JButton addBtn;
 	private JButton removeBtn;
 	private JButton modifyBtn;
 	private JPanel optionsPanel;
-	public BuildSettingsPanel(VPTProject proj) {
-		super(new BorderLayout());
+	public BuildSettingsPanel(View view, String title, VPTProject proj) {
+		super(view, title);
+		JPanel panel = new JPanel(new BorderLayout());
 		setPreferredSize(new Dimension(400, 200));
 		this.proj = proj;
 		list = new ListPanel("Build commands:");
@@ -65,8 +67,30 @@ public class BuildSettingsPanel extends JPanel implements ActionListener {
 		buttonPanel.add(modifyBtn);
 		buttonPanel.add(Box.createHorizontalGlue());
 		optionsPanel.add(buttonPanel);
-		add(BorderLayout.CENTER, list);
-		add(BorderLayout.SOUTH, optionsPanel);
+		panel.add(BorderLayout.CENTER, list);
+		panel.add(BorderLayout.SOUTH, optionsPanel);
+		add(panel);
+		
+		KeyListener escape_listener = new KeyListener() {
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+					dispose();
+				}
+			}
+			public void keyTyped(KeyEvent e) {}
+			public void keyReleased(KeyEvent e) {}
+		};
+		addKeyListener(escape_listener);
+		list.addKeyListener(escape_listener);
+		addBtn.addKeyListener(escape_listener);
+		removeBtn.addKeyListener(escape_listener);
+		modifyBtn.addKeyListener(escape_listener);
+		optionsPanel.addKeyListener(escape_listener);
+		
+		pack();
+		setLocationRelativeTo(view);
+		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		setVisible(true);
 	}
 	
 	/**
@@ -87,7 +111,7 @@ public class BuildSettingsPanel extends JPanel implements ActionListener {
 		Object source = e.getSource();
 		if (source == addBtn) {
 			// Add a build command
-			AddBuildCommandDialog dialog = new AddBuildCommandDialog(jEdit.getActiveView());
+			AddModifyBuildCommandDialog dialog = new AddModifyBuildCommandDialog(jEdit.getActiveView());
 			String cmd = dialog.getValue();
 			if (cmd == null) return;
 			list.addElement(cmd);
@@ -103,7 +127,8 @@ public class BuildSettingsPanel extends JPanel implements ActionListener {
 			// Modify a build command
 			// NOTE: This moves the modified build command to the end of the list. Try and find a better way.
 			String old = (String) list.getSelectedValues()[0];
-			String cmd = GUIUtilities.input(jEdit.getActiveView(), "projectBuilder.msg.modify-build-command", old);
+			AddModifyBuildCommandDialog dialog = new AddModifyBuildCommandDialog(jEdit.getActiveView(), old);
+			String cmd = dialog.getValue();
 			if (cmd == null || cmd.length() == 0) return;
 			list.removeElement(old);
 			list.addElement(cmd);
