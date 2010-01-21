@@ -1,0 +1,14 @@
+- select content of asset
+- parent/child asset actions
+- should not reparse on edit pane change
+- tree: custom actions on double-click, etc.
+- auxilliary parsers -- eg tasklist
+- position: don't obscure text area
+- parse keys toggle
+- when going to an element, instead of going to start, have a 'preferred caret pos' thing
+- save/switch separated parse
+- after loading a parser, have to re-parse buffer
+
+- have a standard parser if none is registered (using intentation or folding)
+- parser delegation for mixed content (like in mode rules)?
+
