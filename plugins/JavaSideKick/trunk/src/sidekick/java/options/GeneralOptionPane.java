@@ -6,8 +6,7 @@ import org.gjt.sp.jedit.jEdit;
 
 public class GeneralOptionPane extends AbstractOptionPane {
 
-    // TODO: put label text in a property
-    JLabel titleLabel = new JLabel( jEdit.getProperty(" -- these are obsolete", "<html><b>General Options</b>") );
+    JLabel titleLabel = new JLabel( jEdit.getProperty("options.sidekick.java.generalOptions", "<html><b>General Options</b>") );
     private JCheckBox showErrorsInErrorList;
 
     public GeneralOptionPane() {
