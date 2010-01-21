@@ -88,8 +88,7 @@ public class SideKickOptionPane extends AbstractOptionPane
 		addComponent(jEdit.getProperty("options.sidekick.auto-expand-tree-depth"),
 			autoExpandTreeDepth = new JComboBox());
 		autoExpandTreeDepth.addActionListener(new ActionHandler());
-		// TODO: put "All" in properties file
-		autoExpandTreeDepth.addItem("All");
+		autoExpandTreeDepth.addItem(jEdit.getProperty("options.sidekick.all", "All"));
 		for (int i = 0; i <= 10; i++)
 			autoExpandTreeDepth.addItem(String.valueOf(i));
 		String depth = String.valueOf(jEdit.getIntegerProperty(
@@ -219,8 +218,7 @@ public class SideKickOptionPane extends AbstractOptionPane
 		jEdit.setBooleanProperty("sidekick.filter-visible-assets", filterVisibleAssets.isSelected());
 		int depth = 0;
 		String value = (String)autoExpandTreeDepth.getSelectedItem();
-		// TODO: see above, "All" should be in the properties file
-		depth = value.equals("All") ? -1 : Integer.parseInt(value);
+		depth = value.equals(jEdit.getProperty("options.sidekick.all", "All")) ? -1 : Integer.parseInt(value);
 		jEdit.setIntegerProperty("sidekick-tree.auto-expand-tree-depth",
 			depth);
 		jEdit.setBooleanProperty("sidekick.complete-instant.toggle",
