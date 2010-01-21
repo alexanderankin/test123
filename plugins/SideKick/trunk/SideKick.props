@@ -74,6 +74,7 @@ options.sidekick.auto-complete-popup-get-focus=Automatic completion popups get f
 options.sidekick.complete-delay=After popup trigger keystroke, wait (seconds):
 options.sidekick.complete-popup.accept-characters=Accept characters for completion popup
 options.sidekick.complete-popup.insert-characters=Accept characters to insert after completion
+options.sidekick.all=All
 
 options.sidekick.showToolTips.label=Show tool tips
 options.sidekick.showToolTips=true
