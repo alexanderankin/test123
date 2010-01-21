@@ -43,18 +43,18 @@ public class JavaModeToolBar extends JPanel {
         JMenuBar menuBar = new JMenuBar();
 
         // TODO: put all these strings into the property file
-        JMenu sortMenu = new JMenu( "Sorting" );
-        byLine = new JMenuItem( "line" );
-        byName = new JMenuItem( "name" );
-        byVisibility = new JMenuItem( "visibility" );
+        JMenu sortMenu = new JMenu( jEdit.getProperty("options.sidekick.java.sortBy", "Sorting") );
+        byLine = new JMenuItem( jEdit.getProperty("options.sidekick.java.sortByLine", "Line") );
+        byName = new JMenuItem( jEdit.getProperty("options.sidekick.java.sortByName", "Name") );
+        byVisibility = new JMenuItem( jEdit.getProperty("options.sidekick.java.sortByVisibility", "Visibility") );
 
-        JMenu visibilityMenu = new JMenu( "Visibility" );
+        JMenu visibilityMenu = new JMenu( jEdit.getProperty("options.sidekick.java.sortByVisibility", "Visibility") );
         privateMI = new JMenuItem( "private" );
         packageMI = new JMenuItem( "package" );
         protectedMI = new JMenuItem( "protected" );
         publicMI = new JMenuItem( "public" );
 
-        toggleLineNumbers = new JCheckBoxMenuItem( "Line #s" );
+        toggleLineNumbers = new JCheckBoxMenuItem( jEdit.getProperty("options.sidekick.java.showLineNums", "Line Numbers") );
         toggleLineNumbers.setSelected( optionValues.getShowLineNum() );
 
         add( menuBar );
