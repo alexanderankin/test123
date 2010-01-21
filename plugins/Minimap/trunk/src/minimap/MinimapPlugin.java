@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.swing.AbstractAction;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import org.gjt.sp.jedit.EBMessage;
@@ -99,12 +100,16 @@ public class MinimapPlugin extends EBPlugin {
 		});
 	}
 
-	public static void show(EditPane editPane) {
+	public static void show(final EditPane editPane) {
 		if (maps.containsKey(editPane))
 			return;
-		Minimap map = new Minimap(editPane);
-		map.start();
-		maps.put(editPane, map);
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				Minimap map = new Minimap(editPane);
+				map.start();
+				maps.put(editPane, map);
+			}
+		});
 	}
 
 	public static void hideAll() {
