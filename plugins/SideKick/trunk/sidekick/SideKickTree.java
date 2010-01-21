@@ -91,8 +91,6 @@ import org.gjt.sp.util.StringList;
 
 /**
  * The Structure Browser dockable.  One instance is created for each View.
- * TODO: Fix focused component: if filter text area is visible, it gets the
- * initial focus, otherwise, the tree gets the initial focus.
  */
 public class SideKickTree extends JPanel implements DefaultFocusComponent
 {
@@ -349,7 +347,6 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 				if (a != null)
 					cur_key = a.getName();
 			} catch (ClassCastException ex) {
-				// FIXME: May fail with null
 				if (node.toString() != null)
 					cur_key = node.toString();
 			}
@@ -994,7 +991,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 				node = (DefaultMutableTreeNode)model.getRoot();
 			}
 			if (model.isLeaf(node)) {
-				node = node.getNextLeaf();	// TODO: replace this, javadoc says this is inefficient and shouldn't be used 
+				node = node.getNextLeaf();	
 			} else {
 				Enumeration<DefaultMutableTreeNode> e = node.depthFirstEnumeration();
 				node = e.nextElement();
@@ -1063,7 +1060,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 				Enumeration<DefaultMutableTreeNode> e = node.depthFirstEnumeration();
 				node = e.nextElement();
 			}
-			node = node.getPreviousLeaf();	// TODO: replace this, javadoc says this is inefficient and shouldn't be used
+			node = node.getPreviousLeaf();	
 			if (node != null) {
 				while ((node != null) && (!model.isVisible(node))) {
 					node = node.getPreviousLeaf();
