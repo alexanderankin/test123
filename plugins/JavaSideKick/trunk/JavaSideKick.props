@@ -104,7 +104,7 @@ options.sidekick.java.sort=Sort by name
 options.sidekick.java.useFrame=Use Frame
 
 #filter options
-options.sidekick.java.filterOptions=What to include
+options.sidekick.java.filterOptions=<html><b>Filter Options:</b> What to include
 
 #member filters by type
 options.sidekick.java.showImports=Show imports
