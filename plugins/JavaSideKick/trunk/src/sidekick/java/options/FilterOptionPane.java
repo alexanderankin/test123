@@ -10,8 +10,7 @@ import org.gjt.sp.jedit.jEdit;
  */
 public class FilterOptionPane extends AbstractOptionPane {
 
-    // TODO: put label text in a property
-    private JLabel titleLabel = new JLabel( "<html><b>Filter Options:</b> What to include" );
+    private JLabel titleLabel = new JLabel( jEdit.getProperty("options.sidekick.java.filterOptions", "<html><b>Filter Options:</b> What to include") );
 
     private JCheckBox attributesCheckBox;
     private JCheckBox includePrimitivesCheckBox;
@@ -28,7 +27,7 @@ public class FilterOptionPane extends AbstractOptionPane {
     private String[] memberVisibilityNames = { "private", "package", "protected", "public" };
 
     public FilterOptionPane() {
-        super( "Filter" );
+        super( jEdit.getProperty("options.sidekick.java.filter.label", "Filter") );
     }
 
     protected void _init() {
