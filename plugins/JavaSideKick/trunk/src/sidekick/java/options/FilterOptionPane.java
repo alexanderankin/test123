@@ -41,7 +41,7 @@ public class FilterOptionPane extends AbstractOptionPane {
     private void installComponents() {
         setBorder( BorderFactory.createEmptyBorder( 11, 11, 12, 12 ) );
 
-        attributesCheckBox = new JCheckBox( jEdit.getProperty( "options.sidekick.java.showAttr", "Attributes" ) );
+        attributesCheckBox = new JCheckBox( jEdit.getProperty( "options.sidekick.java.showAttr", "Fields" ) );
         includePrimitivesCheckBox = new JCheckBox( jEdit.getProperty( "options.sidekick.java.showPrimAttr", "include primitives" ) );
         showImportsCheckBox = new JCheckBox( jEdit.getProperty( "options.sidekick.java.showImports", "Show imports" ) );
         showLocalVariablesCheckBox = new JCheckBox( jEdit.getProperty( "options.sidekick.java.showVariables", "Show local variables" ) );
@@ -55,17 +55,17 @@ public class FilterOptionPane extends AbstractOptionPane {
 
         addComponent( titleLabel );
         addComponent( Box.createVerticalStrut( 11 ) );
+        addComponent( showExtendsImplementsCheckBox );
+        addComponent( showImportsCheckBox );
         JPanel panel = new JPanel( new FlowLayout( FlowLayout.LEFT, 0, 0 ) );
         panel.add( attributesCheckBox );
         panel.add( Box.createHorizontalStrut( 6 ) );
         panel.add( includePrimitivesCheckBox );
         addComponent( panel );
-        addComponent( showImportsCheckBox );
-        addComponent( showLocalVariablesCheckBox );
         addComponent( showStaticInitializersCheckBox );
-        addComponent( showExtendsImplementsCheckBox );
         addComponent( showThrowsCheckBox );
-
+        addComponent( showLocalVariablesCheckBox );
+        
         addComponent( Box.createVerticalStrut( 11 ) );
         addComponent( visibilityLevelLabel );
         addComponent( Box.createVerticalStrut( 6 ) );

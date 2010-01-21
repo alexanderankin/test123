@@ -50,6 +50,7 @@ import sidekick.SideKickCompletion;
 import sidekick.SideKickParser;
 import sidekick.SideKickParsedData;
 import sidekick.SideKickUpdate;
+import sidekick.ExpansionModel;
 
 public class JavaParser extends SideKickParser implements EBComponent {
     private View currentView = null;
@@ -471,39 +472,5 @@ public class JavaParser extends SideKickParser implements EBComponent {
 
     public JPanel getPanel() {
         return new JavaModeToolBar( this );
-    }
-
-    // TODO: move this class to SideKick?
-    public class ExpansionModel {
-        private List<Integer> model = new ArrayList<Integer>();
-        private int row = 0;
-
-        /**
-         * @return The expansion model, set this in SideKickParsedData.        
-         */
-        public List<Integer> getModel() {
-            return model;
-        }
-
-        /**
-         * Call this for each row in the tree that should be visible and expanded.
-         * This will add the current row number to the model and automatically
-         * inc().
-         */
-        public void add() {
-            model.add( row );
-            inc();
-        }
-
-        /**
-         * Call this for each row in the tree that should be visible.
-         */
-        public void inc() {
-            ++row;
-        }
-
-        public int getRow() {
-            return row;
-        }
     }
 }

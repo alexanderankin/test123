@@ -42,7 +42,6 @@ public class JavaModeToolBar extends JPanel {
     private void installComponents() {
         JMenuBar menuBar = new JMenuBar();
 
-        // TODO: put all these strings into the property file
         JMenu sortMenu = new JMenu( jEdit.getProperty("options.sidekick.java.sortBy", "Sorting") );
         byLine = new JMenuItem( jEdit.getProperty("options.sidekick.java.sortByLine", "Line") );
         byName = new JMenuItem( jEdit.getProperty("options.sidekick.java.sortByName", "Name") );

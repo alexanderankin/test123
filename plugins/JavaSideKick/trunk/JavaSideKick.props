@@ -109,7 +109,7 @@ options.sidekick.java.filterOptions=<html><b>Filter Options:</b> What to include
 
 #member filters by type
 options.sidekick.java.showImports=Show imports
-options.sidekick.java.showAttr=Attributes
+options.sidekick.java.showAttr=Fields
 options.sidekick.java.showPrimAttr=include primitives
 options.sidekick.java.showVariables=Show local variables
 options.sidekick.java.showInitializers=Show static initializers
