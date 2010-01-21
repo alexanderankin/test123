@@ -58,6 +58,10 @@ public class PropertyParser extends SideKickParser {
         super( NAME );
     }
 
+    /**
+     * Parse the current buffer in the current view.
+     * TODO: is this used anymore?
+     */
     public void parse() {
         if ( currentView != null ) {
             parse( currentView.getBuffer(), null );

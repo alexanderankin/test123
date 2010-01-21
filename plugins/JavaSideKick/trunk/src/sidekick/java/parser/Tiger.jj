@@ -2887,6 +2887,7 @@ List<TigerNode> PrimaryPrefix():
 }
 {
     try {
+        // TODO: this is incomplete, need to capture Literal and IDENTIFIER tokens
           Literal()
         |
           "this"
@@ -2923,6 +2924,7 @@ List<TigerNode> PrimarySuffix():
 }
 {
     try {
+        // TODO: this is incomplete, need to capture all tokens
           LOOKAHEAD(2)
           "." "this"
         |
