@@ -4,6 +4,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Macros;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.menu.DynamicMenuProvider;
+
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.ImageIcon;

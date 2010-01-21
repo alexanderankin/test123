@@ -6,6 +6,7 @@ import javax.swing.JDialog;
 import java.awt.Dimension;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
+import java.util.Properties;
 
 import projectviewer.vpt.VPTProject;
 
@@ -26,6 +27,7 @@ import common.gui.ListPanel;
  * This class handles building projects and editing build commands
  * Ant commands are routed through AntFarm, others are run in the system shell
  */
+
 public class BuildCommand {
 	
 	public static JDialog settings;
@@ -59,24 +61,18 @@ public class BuildCommand {
 			public void run() {
 				if (cmd.startsWith("ANT[")) {
 					// Build in AntFarm
-					String[] props = cmd.substring(4, cmd.indexOf("]")).split(",");
-					String buildfile = "";
-					String target = "";
-					for (int i = 0; i<props.length; i++) {
-						String p = props[i];
-						if (p.startsWith("target="))
-							target = p.substring(7);
-						else if (p.startsWith("buildfile="))
-							buildfile = p.substring(10);
-					}
+					Properties props = parseAntCommand(cmd);
+					String buildfile = props.getProperty("buildfile");
 					wm.addDockableWindow("console");
 					Console console = (Console) wm.getDockable("console");
 					Shell ant = Shell.getShell("Ant");
-					console.run(ant, "+"+buildfile);
-					ant.waitFor(console);
-					console.run(ant, "!"+target);
+					if (buildfile != null) {
+						console.run(ant, "+"+buildfile);
+						ant.waitFor(console);
+					}
+					console.run(ant, "!"+props.getProperty("target", ""));
 					view.getDockableWindowManager().showDockableWindow("console");
-					new BuildWatcher(console).start();
+					//new BuildWatcher(console).start();
 					// QUESTION: Is there a way to run AntFarm commands without having the AntFarm window pop up? All we need is the shell.
 				} else {
 					// Run in system shell
@@ -90,8 +86,20 @@ public class BuildCommand {
 					system.execute(console, null, console.getShellState(system), null, cmd);
 					view.getDockableWindowManager().showDockableWindow("console");
 				}
+				System.gc();
 			}
 		}).start();
+	}
+	
+	public static Properties parseAntCommand(String cmd) {
+		Properties props = new Properties();
+		String[] list = cmd.substring(4, cmd.indexOf("]")).split(",");
+		for (int i=0; i<list.length; i++) {
+			int equals = list[i].indexOf("=");
+			props.setProperty(list[i].substring(0, equals),
+				list[i].substring(equals+1, list[i].length()));
+		}
+		return props;
 	}
 	
 	public static void editCommands(View view, VPTProject proj) {
@@ -102,22 +110,7 @@ public class BuildCommand {
 			return
 		}
 		*/
-		settings = new JDialog(view, "Project Build Settings");
-		settings.add(new BuildSettingsPanel(proj));
-		settings.pack();
-		settings.setLocationRelativeTo(view);
-		settings.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-		settings.setVisible(true);
-		// TODO: Get Escape to close the dialog
-		settings.addKeyListener(new KeyListener() {
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-					settings.dispose();
-				}
-			}
-			public void keyTyped(KeyEvent e) {}
-			public void keyReleased(KeyEvent e) {}
-		});
+		settings = new BuildSettingsPanel(view, "Project Build Settings", proj);
 	}
 	
 	public static String[] getCommandList(VPTProject proj) {
