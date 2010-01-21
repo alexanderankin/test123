@@ -15,9 +15,9 @@ plugin.sidekick.java.JavaSideKickPlugin.docs=docs/index.html
 
 # dependencies
 plugin.sidekick.java.JavaSideKickPlugin.depend.0=jdk 1.5.0
-plugin.sidekick.java.JavaSideKickPlugin.depend.1=jedit 04.03.10.00
+plugin.sidekick.java.JavaSideKickPlugin.depend.1=jedit 04.03.17.00
 plugin.sidekick.java.JavaSideKickPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.4.2
-plugin.sidekick.java.JavaSideKickPlugin.depend.3=plugin sidekick.SideKickPlugin 0.7.3
+plugin.sidekick.java.JavaSideKickPlugin.depend.3=plugin sidekick.SideKickPlugin 0.9
 plugin.sidekick.java.JavaSideKickPlugin.depend.4=optional plugin projectviewer.ProjectPlugin 2.9.0.0
 
 
@@ -121,7 +121,7 @@ options.sidekick.java.topLevelVis=Top-Level:\
 options.sidekick.java.memberVis=Member:\ 
 
 #display options
-options.sidekick.java.displayOptions=How to display
+options.sidekick.java.displayOptions=<html><b>Display Options:</b> How to display
 
 #general options
 options.sidekick.java.showArgs=Arguments
@@ -143,13 +143,14 @@ options.sidekick.java.sortByVisibility=Visibility
 
 
 #display style
-options.sidekick.java.displayStyle=Display style:\ 
+options.sidekick.java.display=Display
+options.sidekick.java.displayStyle=Display style:
 options.sidekick.java.umlStyle=UML
 options.sidekick.java.javaStyle=Java
 options.sidekick.java.customStyle=Custom
 
 # custom display style options
-options.sidekick.java.customOptions=Custom Display Options:\ 
+options.sidekick.java.customOptions=Custom Display Options:
 options.sidekick.java.useVisibility=Use Visibility
 options.sidekick.java.custVisAsSymbol=Symbols
 options.sidekick.java.custVisAsWord=Words
