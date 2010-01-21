@@ -54,14 +54,12 @@ public class Minimap extends JPanel {
 	}
 
 	private void setSplitterComponents() {
-		splitter.remove(miniMap);
-		splitter.remove(child);
 		if (Options.getSideProp().equals(Options.LEFT)) {
-			splitter.add(miniMap);
-			splitter.add(child);
+			splitter.setLeftComponent(miniMap);
+			splitter.setRightComponent(child);
 		} else {
-			splitter.add(child);
-			splitter.add(miniMap);
+			splitter.setLeftComponent(child);
+			splitter.setRightComponent(miniMap);
 		}
 	}
 	
