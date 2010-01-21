@@ -96,8 +96,9 @@ options.jbrowse_tree.label=Structure View
 options.jbrowse_options.label=Options
 options.jbrowse_options.panel_label=Current Options
 
-#general options -- these are obsolete
-options.sidekick.java.generalOptions=General Options
+#general options
+options.sidekick.java.generalOptions=<html><b>General Options</b>
+# -- these are obsolete
 options.sidekick.java.showStatusBar=Display status bar
 options.sidekick.java.automaticParse=Automatic parse
 options.sidekick.java.sort=Sort by name
