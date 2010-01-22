@@ -77,7 +77,8 @@ public class RFCListParser
 			RFC rfc = new RFC();
 			int rfcNum = Integer.parseInt(line.substring(0,4));
 			rfc.setNumber(rfcNum);
-			String title = line.substring(5);
+			int i = line.indexOf(" (Format:");
+			String title = line.substring(5, i);
 			rfc.setTitle(title);
 			return rfc;
 		}
