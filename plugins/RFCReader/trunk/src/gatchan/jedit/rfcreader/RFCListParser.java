@@ -27,6 +27,8 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 /**
@@ -36,9 +38,9 @@ public class RFCListParser
 {
 	public static final String listFile = "rfclist.txt";
 
-	public Vector<RFC> parse()
+	public Map<Integer, RFC> parse()
 	{
-		Vector<RFC> list = new Vector<RFC>();
+		Map<Integer, RFC> list = new HashMap<Integer, RFC>();
 		BufferedReader reader = null;
 		try
 		{
@@ -48,7 +50,7 @@ public class RFCListParser
 			{
 				RFC rfc = parseLine(line);
 				if (rfc != null)
-					list.add(rfc);
+					list.put(rfc.getNumber(), rfc);
 				line = reader.readLine();
 			}
 		}
