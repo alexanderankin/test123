@@ -27,12 +27,24 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package sidekick.java;
 
+import errorlist.*;
+
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
+
 import javax.swing.JPanel;
 import javax.swing.tree.DefaultMutableTreeNode;
+
+import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.msg.*;
+
+import sidekick.ExpansionModel;
+import sidekick.SideKickCompletion;
+import sidekick.SideKickParsedData;
+import sidekick.SideKickParser;
+import sidekick.SideKickUpdate;
 
 import sidekick.java.node.*;
 import sidekick.java.options.*;
@@ -41,16 +53,6 @@ import sidekick.java.parser.*;
 import sidekick.util.ElementUtil;
 import sidekick.util.Location;
 import sidekick.util.Range;
-
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.msg.*;
-import errorlist.*;
-
-import sidekick.SideKickCompletion;
-import sidekick.SideKickParser;
-import sidekick.SideKickParsedData;
-import sidekick.SideKickUpdate;
-import sidekick.ExpansionModel;
 
 public class JavaParser extends SideKickParser implements EBComponent {
     private View currentView = null;
