@@ -164,8 +164,12 @@ if(answer == JOptionPane.OK_OPTION) {
 		   proj.setRootPath(project.directory.getPath()+File.separator+project.name)
 		   ProjectViewer viewer = ProjectViewer.getViewer(view)
 		   manager.addProject(proj, projectGroup)
-		   proj.setProperty("projectBuilder.command.build", project.build)
-		   proj.setProperty("projectBuilder.command.run", project.run)
+		   for (int i = 0; i<project.build.size(); i++) {
+		   	   proj.setProperty("projectBuilder.command.build."+i, project.build.get(i));
+		   }
+		   for (int i = 0; i<project.run.size(); i++) {
+		   	   proj.setProperty("projectBuilder.command.run."+i, project.run.get(i));
+		   }
 		   viewer.setRootNode(proj)
 		   new RootImporter(proj, viewer, true).doImport()
 		   VFSManager.waitForRequests()
