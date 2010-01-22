@@ -22,6 +22,7 @@
 package gatchan.jedit.rfcreader;
 
 import org.gjt.sp.util.IOUtilities;
+import org.gjt.sp.util.Log;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -78,13 +79,17 @@ public class RFCListParser
 			int rfcNum = Integer.parseInt(line.substring(0,4));
 			rfc.setNumber(rfcNum);
 			int i = line.indexOf(" (Format:");
-			String title = line.substring(5, i);
+			String title;
+			if (i == -1)
+				title = line.substring(5);
+			else
+				title = line.substring(5, i);
 			rfc.setTitle(title);
 			return rfc;
 		}
-		catch (NumberFormatException e)
+		catch (Exception e)
 		{
-			e.printStackTrace();
+			Log.log(Log.ERROR, this, "unable to parse " + line, e);
 		}
 		return null;
 	}
