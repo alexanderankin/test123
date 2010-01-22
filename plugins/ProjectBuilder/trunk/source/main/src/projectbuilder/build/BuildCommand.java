@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
 import java.util.Properties;
+import java.util.ArrayList;
 
 import projectviewer.vpt.VPTProject;
 
@@ -18,6 +19,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.Macros;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
+import org.gjt.sp.util.Log;
 
 import groovy.swing.SwingBuilder;
 
@@ -34,13 +36,13 @@ public class BuildCommand {
 	
 	public static void run(final View view, final VPTProject proj) {
 		
-		String[] commands = getCommandList(proj);
+		ArrayList<String> commands = getCommandList(proj);
 		if (commands == null) {
 			GUIUtilities.error(view, "projectBuilder.msg.no-build-command", null);
 			return;
 		}
 		final String cmd; // The final command to run
-		if (commands.length>1) {
+		if (commands.size()>1) {
 			// Prompt for which command to use
 			// TODO: For ant commands, try and find a way to display a cleaner description, such as "ANT build"
 			cmd = (String) JOptionPane.showInputDialog(view,
@@ -48,11 +50,11 @@ public class BuildCommand {
 												"Build",
 												JOptionPane.PLAIN_MESSAGE,
 												null,
-												commands,
+												commands.toArray(),
 												null);
 			if (cmd == null) return;
 		} else {
-			cmd = commands[0];
+			cmd = commands.get(0);
 		}
 		
 		final DockableWindowManager wm = view.getDockableWindowManager();
@@ -67,6 +69,7 @@ public class BuildCommand {
 					Console console = (Console) wm.getDockable("console");
 					Shell ant = Shell.getShell("Ant");
 					if (buildfile != null) {
+						Log.log(Log.DEBUG, BuildCommand.class, "Adding ant buildfile "+buildfile);
 						console.run(ant, "+"+buildfile);
 						ant.waitFor(console);
 					}
@@ -103,27 +106,16 @@ public class BuildCommand {
 	}
 	
 	public static void editCommands(View view, VPTProject proj) {
-		String _cmd = proj.getProperty("projectBuilder.command.build");
-		/*
-		if (_cmd == null || _cmd.length() == 0) {
-			GUIUtilities.error(view, "projectBuilder.msg.no-build-command", null)
-			return
-		}
-		*/
 		settings = new BuildSettingsPanel(view, "Project Build Settings", proj);
 	}
 	
-	public static String[] getCommandList(VPTProject proj) {
-		String cmd = proj.getProperty("projectBuilder.command.build");
-		if (cmd == null || cmd.length() == 0) {
-			return null;
-		}
-		String[] commands;
-		if (cmd.indexOf("|") != -1)
-			commands = cmd.split("\\|");
-		else {
-			commands = new String[1];
-			commands[0] = cmd;
+	public static ArrayList<String> getCommandList(VPTProject proj) {
+		if (proj.getProperty("projectBuilder.command.build.0") == null) return null;
+		ArrayList<String> commands = new ArrayList<String>();
+		for (int i = 0; true; i++) {
+			String cmd = proj.getProperty("projectBuilder.command.build."+i);
+			if (cmd == null) break;
+			commands.add(cmd);
 		}
 		return commands;
 	}
