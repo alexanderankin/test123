@@ -37,6 +37,7 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
 import java.io.File;
@@ -44,13 +45,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 /**
  * @author Matthieu Casanova
  */
 public class RFCIndex
 {
+	/** increment this */
+	public static final int INDEX_VERSION = 1;
 	private IndexSearcher searcher;
 
 	private Directory directory;
@@ -68,14 +70,18 @@ public class RFCIndex
 	public void load() throws IOException
 	{
 		Log.log(Log.DEBUG, this, "load()");
-		if (!IndexReader.indexExists(directory))
+		if (jEdit.getIntegerProperty("rfcreader.index.version",-1) != INDEX_VERSION ||
+			!IndexReader.indexExists(directory))
 		{
-			IndexWriter writer = new IndexWriter(directory, analyzer, true, IndexWriter.MaxFieldLength.UNLIMITED);
+			IndexWriter writer = new IndexWriter(directory, analyzer, true,
+				IndexWriter.MaxFieldLength.UNLIMITED);
 			for (RFC rfc : rfcs.values())
 			{
 				Document document = new Document();
-				document.add(new Field("number", Integer.toString(rfc.getNumber()), Field.Store.YES, Field.Index.ANALYZED, Field.TermVector.NO));
-				document.add(new Field("title", rfc.getTitle(), Field.Store.NO, Field.Index.ANALYZED, Field.TermVector.NO));
+				document.add(new Field("number", Integer.toString(rfc.getNumber()), Field.Store.YES,
+					Field.Index.ANALYZED, Field.TermVector.NO));
+				document.add(new Field("title", rfc.getTitle(), Field.Store.NO, Field.Index.ANALYZED,
+					Field.TermVector.NO));
 
 				writer.addDocument(document);
 			}
@@ -89,7 +95,8 @@ public class RFCIndex
 	public List<RFC> search(String query)
 	{
 		if (parser == null)
-			parser = new MultiFieldQueryParser(Version.LUCENE_CURRENT, new String[]{"number", "title"}, analyzer);
+			parser = new MultiFieldQueryParser(Version.LUCENE_CURRENT, new String[]{"number", "title"},
+				analyzer);
 
 		try
 		{
