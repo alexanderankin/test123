@@ -1,5 +1,4 @@
 import projectbuilder.builder.ProjectBuilder as PB
-import projectbuilder.ProjectBuilderPlugin
 import groovy.swing.SwingBuilder
 import javax.swing.*
 import org.gjt.sp.jedit.*
@@ -73,8 +72,8 @@ if (answer == JOptionPane.OK_OPTION) {
 			}
 		}
 	}
-	project.build = "ANT[target=all,buildfile=${project.directory.path}/${project.name}/build.xml]"
-	project.run = "java -jar ${dist}/${project.name}.jar"
+	project.build = ["ANT[target=all,buildfile=${project.directory.path}/${project.name}/build.xml]"]
+	project.run = ["java -jar ${dist}/${project.name}.jar"]
 } else {
 	abort = true
 }
