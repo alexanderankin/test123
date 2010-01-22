@@ -33,5 +33,5 @@ PB.build(project.name, project.directory.path) {
    f("description.html", template: "${templateDir}/PluginDescription.template", templateData: templateData)
    f("sample.build.properties")
 }
-project.build = ["ANT[target=build,buildfile=${project.directory.path}/${project.name}/build.xml]"]
+project.build.add("ANT[]")
 /* ::mode=groovy:folding=indent:noTabs=true:: */

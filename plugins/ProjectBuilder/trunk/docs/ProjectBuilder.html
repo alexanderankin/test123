@@ -48,13 +48,13 @@
 			<li>Create the Template directory
 				<div style="background-color: #EFEFEF; padding: 10px; border: 1px solid #999;">
 					<p>Create a new directory in [jEdit settings directory]/project-templates. If the project-templates
-					directory does not exist, then you can create it.</p>
+					directory does not exist, then you can create it. The template name will be taken from the
+					directory name, with '_' being replaced by spaces.<br>
+					Eg. "jEdit_Plugin" will display as "jEdit Plugin", in the New Project
+					plugin menu.</p>
 					<ol><h4>To find your jEdit settings directory</h4>Go to "Utilities" -&gt; "Settings Directory" and click on the first link.
 					</ol>
-					<p>The template name will be taken from the directory name, with
-					'_' being replaced by spaces.<br>
-					Eg. "jEdit_Plugin" will display as "jEdit Plugin", in the New Project
-					plugin menu.
+					<p>
 				</div>
 			</li>
 			<li>Create the main Template file
@@ -85,16 +85,16 @@
 						<tr><td>scriptPath</td><td>String</td><td>The path to the main template script. Eg. [templatesDir]/jEdit_Plugin/jEdit_Plugin.groovy</td></tr>
 					</table>
 					<h4>Defining build commands, run commands, and default open files.</h4>
-					<p>There are several special variables you can define in your .groovy file that add exra functionality.
-					ArrayLists in groovy are defined using square brackets, e.g. mylist = ["item 1", "item 2", "item 3"]</p>
+					<p>There are several special variables that you can modify in your script to add extra functionality.
+					All three are ArrayLists, and they can be modified by calling <i>name</i>.add("your value here").</p>
 					<table width="100%" cellpadding="10" cellspacing="5" border="1px solid #999;">
 						<tr><td>project.build</td><td>ArrayList</td><td>A list of commands that can be used to build your project.
 							A simple string will be run as an external command through the console's System shell. If you want to use
 							Ant to build your project, you can format it as: "ANT[target=<i>target</i>,buildfile=<i>buildfile</i>]".
-							<i>target</i> can be omitted, in which case the buildfile's default target will run, but <i>buildfile</i>
-							should always be defined. How Ant commands are run, whether inside the JVM or using an external script,
+							Both values can be omitted, however, in which case default ones will be used. 
+							How Ant commands are run, whether inside the JVM or using an external script,
 							can be configured through AntFarm by going to Plugins -&gt; Plugin Options and selecting AntFarm -&gt; Build Options
-							on the left-hand side.</td></tr>
+							on the left-hand side. Note that using this method requires the AntFarm plugin to be installed.</td></tr>
 						<tr><td>project.run</td><td>ArrayList</td><td>A list of commands that can be used to run your project.
 							These are always run through the System shell.</td></tr>
 						<tr><td>open</td><td>ArrayList</td><td>A list of files to open once the project is made. Very handy for
@@ -120,30 +120,29 @@ templateData.project = project
 templateData.userName = System.getProperty("user.name")
 
 PB.build(project.name, project.directory.path) {
-   d("conf") {
-      f("${project.name}.props", template: "${templateDir}/PluginProps.template", templateData: templateData)
-      f("actions.xml")
-      f("dockables.xml")
-      f("services.xml")
-   }
    d("docs") {
       f("${project.name}.html")
    }
+   d("lib")
    d("src") {
-      d("main") {
-         d(pluginPackage) {
-            f("${pluginClass}.java", template: "${templateDir}/PluginClass.template", templateData: templateData)
-         }
-      }
-      d("test") {
-         d(pluginPackage) {
-            f("${pluginClass}Tests.java")
-         }
+      d(pluginPackage) {
+         f("${pluginClass}.java", template: "${templateDir}/PluginClass.template", templateData: templateData)
       }
    }
+   d("test") {
+      d(pluginPackage) {
+         f("${pluginClass}Tests.java")
+      }
+   }
+   f("actions.xml")
+   f("dockables.xml")
+   f("services.xml")
+   f("${project.name}.props", template: "${templateDir}/PluginProps.template", templateData: templateData)
    f("build.xml", template: "${templateDir}/PluginBuild.template", templateData: templateData)
+   f("description.html", template: "${templateDir}/PluginDescription.template", templateData: templateData)
    f("sample.build.properties")
 }
+project.build.add("ANT[]")
 					</pre>
 					<p>As you can see you use to create a new project skeleton, you 
 					start with ProjectBuilder.build (aliased as PB in the import
@@ -171,11 +170,11 @@ d("docs") {
 					</p>
 					<p>To create files you use the file function.
 					<pre>
-file("${project.name}.html")
+file("${project.name}.props")
 					</pre>
 					or:
 					<pre>
-f("${project.name}.html")
+f("${project.name}.props")
 					</pre>
 					The file function has a number of parameters besides the name
 					which you can pass to it.

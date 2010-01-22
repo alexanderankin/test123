@@ -40,7 +40,6 @@ public class RunSettingsPanel extends JDialog implements ActionListener {
 	private JButton removeBtn;
 	private JButton modifyBtn;
 	private JPanel optionsPanel;
-	private int total;
 	public RunSettingsPanel(View view, String title, VPTProject proj) {
 		super(view, title);
 		JPanel panel = new JPanel(new BorderLayout());
@@ -104,10 +103,10 @@ public class RunSettingsPanel extends JDialog implements ActionListener {
 		for (int i = 0; i<l.length; i++) {
 			proj.setProperty("projectBuilder.command.run."+i, (String) l[i]);
 		}
-		for (int j=l.length; j<total; j++) {
-			proj.setProperty("projectBuilder.command.run."+j, null);
+		for (int j=l.length; true; j++) {
+			if (proj.getProperty("projectBuilder.command.run."+j) == null) break;
+			proj.removeProperty("projectBuilder.command.run."+j);
 		}
-		total = l.length;
 		jEdit.saveSettings();
 	}
 	
