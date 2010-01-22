@@ -4,7 +4,7 @@
 		<title>ProjectBuilder - Help</title>
 	</head>
 	<body>
-		<h1>ProjectBuilder - v. 0.1</h1>
+		<h1>ProjectBuilder - v. 1.0</h1>
 		<h2>Description:</h2>
 		<p>The ProjectBuilder plugin provides project creation templates to create
 		common project types from within jEdit and offers utilities for building and running them.</p>
@@ -41,22 +41,19 @@
 			</li>
 		</ul>
 		<h2>Creating your own templates</h2>
-		<p>Project templates are written the Groovy programming language using the
-		ProjectBuilder DSL. Since Java is valid Groovy it is a good to have some
-		knowledge of both languages.</p>
+		<p>Project templates are written in the Groovy programming language using the
+		ProjectBuilder DSL. Groovy is very similar to Java, implemented as a scripting
+		language on the JVM, and it's good to have a knowledge of both languages.</p>
 		<ol><h3>Steps to creating your own template.</h3>
 			<li>Create the Template directory
 				<div style="background-color: #EFEFEF; padding: 10px; border: 1px solid #999;">
-					<p>Create a new directory under the plugin home directory. This
-					is found under the [jEdit settings directory]/plugins/projectbuilder.ProjectBuilderPlugin/templates.</p>
-					<ol><h4>To find your jEdit settings directory</h4>
-						<li>Go to, "Utilities" -&gt; "BeanShell" menu and click "Evaluate BeanShell Expression ...".</li>
-						<li>Enter, "jEdit.getSettingsDirectory()" and click "Ok"</li>
+					<p>Create a new directory in [jEdit settings directory]/project-templates.</p>
+					<ol><h4>To find your jEdit settings directory</h4>Go to "Utilities" -&gt; "Settings Directory" and click on the first link.
 					</ol>
 					<p>The template name will be taken from the directory name, with
 					'_' being replaced by spaces.<br>
-					Eg. "jEdit_Plugin" will display as "jEdit Plugin", in the Project
-					Type field of the "Create new Project" dialog.</p>
+					Eg. "jEdit_Plugin" will display as "jEdit Plugin", in the New Project
+					plugin menu.
 				</div>
 			</li>
 			<li>Create the main Template file
@@ -85,6 +82,22 @@
 						<tr><td>textArea</td><td>TextArea</td><td>The active jEdit text area</td></tr>
 						<tr><td>wm</td><td>DockableWindowManager</td><td>The active DockableWindowManager</td></tr>
 						<tr><td>scriptPath</td><td>String</td><td>The path to the main template script. Eg. [templatesDir]/jEdit_Plugin/jEdit_Plugin.groovy</td></tr>
+					</table>
+					<h4>Defining build commands, run commands, and default open files.</h4>
+					<p>There are several special variables you can define in your .groovy file that add exra functionality.
+					ArrayLists in groovy are defined using square brackets, e.g. mylist = ["item 1", "item 2", "item 3"]</p>
+					<table width="100%" cellpadding="10" cellspacing="5" border="1px solid #999;">
+						<tr><td>project.build</td><td>ArrayList</td><td>A list of commands that can be used to build your project.
+							A simple string will be run as an external command through the console's System shell. If you want to use
+							Ant to build your project, you can format it as: "ANT[target=<i>target</i>,buildfile=<i>buildfile</i>]".
+							<i>target</i> can be omitted, in which case the buildfile's default target will run, but <i>buildfile</i>
+							should always be defined. How Ant commands are run, whether inside the JVM or using an external script,
+							can be configured through AntFarm by going to Plugins -&gt; Plugin Options and selecting AntFarm -&gt; Build Options
+							on the left-hand side.</td></tr>
+						<tr><td>project.run</td><td>ArrayList</td><td>A list of commands that can be used to run your project.
+							These are always run through the System shell.</td></tr>
+						<tr><td>open</td><td>ArrayList</td><td>A list of files to open once the project is made. Very handy for
+						specifying a starting point to build off of.</td></tr>
 					</table>
 					<h4>Using external tools</h4>
 						<p>If you want to use a system or external command to help build your project, just call the
