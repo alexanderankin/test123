@@ -72,8 +72,10 @@ if (answer == JOptionPane.OK_OPTION) {
 			}
 		}
 	}
-	project.build = ["ANT[target=all,buildfile=${project.directory.path}/${project.name}/build.xml]"]
-	project.run = ["java -jar ${dist}/${project.name}.jar"]
+	// Add an Ant build-command to the project's build settings
+	project.build.add("ANT[]")
+	// Add a system command to the project's run settings
+	project.run.add("java -jar ${dist}/${project.name}.jar")
 } else {
 	abort = true
 }

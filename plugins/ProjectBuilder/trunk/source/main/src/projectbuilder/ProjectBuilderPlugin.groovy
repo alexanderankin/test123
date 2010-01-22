@@ -103,7 +103,6 @@ public class ProjectBuilderPlugin extends EditPlugin {
    
    public void buildProject(View view, VPTProject proj) {
    	   if (building != null) return
-   	   String cmd = null
 	   if (proj == null) {
 	   	   GUIUtilities.error(view, "projectBuilder.msg.no-project", null)
 	    } else {
@@ -119,7 +118,6 @@ public class ProjectBuilderPlugin extends EditPlugin {
    
    public void runProject(View view, VPTProject proj) {
    	   if (building != null) return
-   	   String cmd = null
 	   if (proj == null) {
 	   	   GUIUtilities.error(view, "projectBuilder.msg.no-project", null)
 	    } else {

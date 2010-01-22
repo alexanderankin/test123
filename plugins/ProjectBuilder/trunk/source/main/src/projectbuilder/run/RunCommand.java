@@ -45,10 +45,11 @@ public class RunCommand {
 												"Run this project with:",
 												"Run",
 												JOptionPane.PLAIN_MESSAGE,
-												null,
+												GUIUtilities.loadIcon("22x22/actions/application-run.png"),
 												commands.toArray(),
-												null);
+												proj.getProperty("projectBuilder.command.run.last"));
 			if (cmd == null) return;
+			proj.setProperty("projectBuilder.command.run.last", cmd);
 		} else {
 			cmd = commands.get(0);
 		}

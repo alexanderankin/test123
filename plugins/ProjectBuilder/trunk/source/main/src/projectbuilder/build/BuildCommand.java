@@ -8,6 +8,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
 import java.util.Properties;
 import java.util.ArrayList;
+import java.io.File;
 
 import projectviewer.vpt.VPTProject;
 
@@ -49,10 +50,11 @@ public class BuildCommand {
 												"Build this project with:",
 												"Build",
 												JOptionPane.PLAIN_MESSAGE,
-												null,
+												GUIUtilities.loadIcon("22x22/actions/application-run.png"),
 												commands.toArray(),
-												null);
+												proj.getProperty("projectBuilder.command.build.last"));
 			if (cmd == null) return;
+			proj.setProperty("projectBuilder.command.build.last", cmd);
 		} else {
 			cmd = commands.get(0);
 		}
@@ -63,16 +65,20 @@ public class BuildCommand {
 			public void run() {
 				if (cmd.startsWith("ANT[")) {
 					// Build in AntFarm
+					if (jEdit.getPlugin("antfarm.AntFarmPlugin") == null) {
+						GUIUtilities.error(view, "projectBuilder.msg.no-ant-farm", null);
+						return;
+					}
 					Properties props = parseAntCommand(cmd);
 					String buildfile = props.getProperty("buildfile");
 					wm.addDockableWindow("console");
 					Console console = (Console) wm.getDockable("console");
 					Shell ant = Shell.getShell("Ant");
-					if (buildfile != null) {
-						Log.log(Log.DEBUG, BuildCommand.class, "Adding ant buildfile "+buildfile);
-						console.run(ant, "+"+buildfile);
-						ant.waitFor(console);
-					}
+					if (buildfile == null)
+						buildfile = proj.getRootPath()+File.separator+"build.xml";
+					Log.log(Log.DEBUG, BuildCommand.class, "Adding ant buildfile "+buildfile);
+					console.run(ant, "+"+buildfile);
+					ant.waitFor(console);
 					console.run(ant, "!"+props.getProperty("target", ""));
 					view.getDockableWindowManager().showDockableWindow("console");
 					//new BuildWatcher(console).start();
@@ -99,6 +105,7 @@ public class BuildCommand {
 		String[] list = cmd.substring(4, cmd.indexOf("]")).split(",");
 		for (int i=0; i<list.length; i++) {
 			int equals = list[i].indexOf("=");
+			if (equals == -1) continue;
 			props.setProperty(list[i].substring(0, equals),
 				list[i].substring(equals+1, list[i].length()));
 		}

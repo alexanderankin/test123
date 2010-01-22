@@ -120,10 +120,9 @@ if(answer == JOptionPane.OK_OPTION) {
    def projectGroup = groups[swing.group_field.selectedIndex]
    def projectName = swing.name_field.text
    def projectDir = new File(swing.directory_field.text)
-   def project = new Project(name: swing.name_field.text, directory: projectDir, build: "", run: "")
+   def project = new Project(name: swing.name_field.text, directory: projectDir, build: [], run: [])
    String[] roots = [templatesDir.path]
    
-
    // Make sure a project with the chosen name doesn't already exist   
    ProjectManager manager = ProjectManager.getInstance()
    try {
@@ -132,7 +131,7 @@ if(answer == JOptionPane.OK_OPTION) {
 		   return
 	   }
    } catch (Exception e) {
-       e.printStackTrace()
+       // Assume this means that it's null. Do nothing
    }
    
    println("       type: " + templateType)
@@ -164,20 +163,21 @@ if(answer == JOptionPane.OK_OPTION) {
 		   proj.setRootPath(project.directory.getPath()+File.separator+project.name)
 		   ProjectViewer viewer = ProjectViewer.getViewer(view)
 		   manager.addProject(proj, projectGroup)
-		   for (int i = 0; i<project.build.size(); i++) {
-		   	   proj.setProperty("projectBuilder.command.build."+i, project.build.get(i));
-		   }
-		   for (int i = 0; i<project.run.size(); i++) {
-		   	   proj.setProperty("projectBuilder.command.run."+i, project.run.get(i));
-		   }
 		   viewer.setRootNode(proj)
 		   new RootImporter(proj, viewer, true).doImport()
 		   VFSManager.waitForRequests()
 		   for (String s : binding.getVariable("open")) {
 		   	   JEDIT.openFile(view, s)
 		   }
+		   for (int j = 0; j<project.build.size(); j++) {
+		   	   proj.setProperty("projectBuilder.command.build."+j, project.build.get(j));
+		   }
+		   for (int k = 0; k<project.run.size(); k++) {
+		   	   proj.setProperty("projectBuilder.command.run."+k, project.run.get(k));
+		   }
 	   } catch (Exception e) {
 	   	   Log.log(Log.ERROR, ProjectBuilderPlugin.class, e.toString()+": "+e.getMessage())
+	   	   e.printStackTrace()
 	   }
    }
 }
@@ -186,7 +186,7 @@ class TemplateTypeOption {
    String name
    File dir
    File templatesDir
-
+   
    String getScriptPath() {
       File scriptFile = new File(dir, "${name}.groovy")
       return scriptFile.path - "${templatesDir.path}${File.separator}"
@@ -200,6 +200,6 @@ class TemplateTypeOption {
 class Project {
    String name
    File directory
-   String build
-   String run
+   ArrayList build
+   ArrayList run
 }
