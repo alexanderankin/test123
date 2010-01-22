@@ -132,4 +132,23 @@ public class RFC
 	{
 		return number + " " + title;
 	}
+
+	@Override
+	public int hashCode()
+	{
+		return number;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (obj == this)
+			return true;
+		if (obj instanceof RFC)
+		{
+			RFC rfc = (RFC) obj;
+			return rfc.number == number;
+		}
+		return false;
+	}
 }

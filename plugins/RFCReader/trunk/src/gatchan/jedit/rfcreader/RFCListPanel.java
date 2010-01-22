@@ -21,12 +21,19 @@
  */
 package gatchan.jedit.rfcreader;
 
+import org.gjt.sp.jedit.gui.HistoryTextField;
 import org.gjt.sp.jedit.jEdit;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * @author Matthieu Casanova
@@ -34,12 +41,39 @@ import java.awt.event.MouseEvent;
 public class RFCListPanel extends JPanel
 {
 	private JList list;
+	private HistoryTextField searchField;
+	private RFCIndex index;
+	private RFCListModel model;
 
 	public RFCListPanel()
 	{
 		super(new BorderLayout());
+		searchField = new HistoryTextField("rfc.searchfield");
+		searchField.getDocument().addDocumentListener(new DocumentListener()
+		{
+			public void insertUpdate(DocumentEvent e)
+			{
+				updateSearch();
+			}
+
+			public void removeUpdate(DocumentEvent e)
+			{
+				updateSearch();
+			}
+
+			public void changedUpdate(DocumentEvent e)
+			{
+				updateSearch();
+			}
+		});
+
+
 		RFCReaderPlugin plugin = (RFCReaderPlugin) jEdit.getPlugin("gatchan.jedit.rfcreader.RFCReaderPlugin");
-		list = new JList(plugin.rfcList);
+		index = plugin.index;
+		model = new RFCListModel(plugin.rfcList);
+		list = new JList(model);
+
+		add(searchField, BorderLayout.NORTH);
 		add(new JScrollPane(list));
 		list.addMouseListener(new MouseAdapter()
 		{
@@ -54,5 +88,57 @@ public class RFCListPanel extends JPanel
 				}
 			}
 		});
+	}
+
+	private void updateSearch()
+	{
+		String s = searchField.getText();
+		if (!s.contains(" "))
+		{
+			s = s + "* " + s + "~";
+		}
+		if (s.length() == 0)
+			model.reset();
+		else
+		{
+			List<RFC> rfcs = index.search(s);
+			model.setData(rfcs);
+		}
+	}
+
+	private static class RFCListModel extends AbstractListModel
+	{
+		private List<RFC> data;
+		private List<RFC> defaultList;
+
+		private RFCListModel(Map<Integer, RFC> data)
+		{
+			defaultList = new ArrayList<RFC>(data.values());
+			this.data = defaultList;
+		}
+
+		public void setData(List<RFC> data)
+		{
+			if (data != null)
+			{
+				this.data = data;
+				fireContentsChanged(this, 0, this.data.size());
+			}
+		}
+
+		void reset()
+		{
+			setData(defaultList);
+		}
+
+		public int getSize()
+		{
+			return data.size();
+		}
+
+		public Object getElementAt(int index)
+		{
+			return data.get(index);
+		}
 	}
 }

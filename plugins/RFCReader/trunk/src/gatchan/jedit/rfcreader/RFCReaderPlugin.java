@@ -25,9 +25,9 @@ import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
+import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.List;
-import java.util.Vector;
+import java.util.Map;
 
 /**
  * @author Matthieu Casanova
@@ -35,19 +35,31 @@ import java.util.Vector;
  */
 public class RFCReaderPlugin extends EditPlugin
 {
-	Vector<RFC> rfcList;
+	Map<Integer, RFC> rfcList;
+	RFCIndex index;
 
 	@Override
 	public void start()
 	{
 		RFCListParser parser = new RFCListParser();
 		rfcList = parser.parse();
+		try
+		{
+			index = new RFCIndex(getPluginHome(), rfcList);
+			index.load();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void stop()
 	{
 		rfcList = null;
+		index.close();
+		index = null;
 	}
 
 	public static void openRFC(View view, int rfcNum)
