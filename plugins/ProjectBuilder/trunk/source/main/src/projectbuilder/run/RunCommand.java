@@ -6,6 +6,7 @@ import javax.swing.JDialog;
 import java.awt.Dimension;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
 import projectviewer.vpt.VPTProject;
 
@@ -32,24 +33,24 @@ public class RunCommand {
 	
 	public static void run(final View view, final VPTProject proj) {
 		
-		String[] commands = getCommandList(proj);
+		ArrayList<String> commands = getCommandList(proj);
 		if (commands == null) {
 			GUIUtilities.error(view, "projectBuilder.msg.no-run-command", null);
 			return;
 		}
 		final String cmd; // The final command to run
-		if (commands.length>1) {
+		if (commands.size()>1) {
 			// Prompt for which command to use
 			cmd = (String) JOptionPane.showInputDialog(view,
 												"Run this project with:",
 												"Run",
 												JOptionPane.PLAIN_MESSAGE,
 												null,
-												commands,
+												commands.toArray(),
 												null);
 			if (cmd == null) return;
 		} else {
-			cmd = commands[0];
+			cmd = commands.get(0);
 		}
 		
 		final DockableWindowManager wm = view.getDockableWindowManager();
@@ -71,42 +72,16 @@ public class RunCommand {
 	}
 	
 	public static void editCommands(View view, VPTProject proj) {
-		String _cmd = proj.getProperty("projectBuilder.command.run");
-		/*
-		if (_cmd == null || _cmd.length() == 0) {
-			GUIUtilities.error(view, "projectBuilder.msg.no-build-command", null)
-			return
-		}
-		*/
-		settings = new JDialog(view, "Project Run Settings");
-		settings.add(new RunSettingsPanel(proj));
-		settings.pack();
-		settings.setLocationRelativeTo(view);
-		settings.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-		settings.setVisible(true);
-		// TODO: Get Escape to close the dialog
-		settings.addKeyListener(new KeyListener() {
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-					settings.dispose();
-				}
-			}
-			public void keyTyped(KeyEvent e) {}
-			public void keyReleased(KeyEvent e) {}
-		});
+		settings = new RunSettingsPanel(view, "Project Run Settings", proj);
 	}
 	
-	public static String[] getCommandList(VPTProject proj) {
-		String cmd = proj.getProperty("projectBuilder.command.run");
-		if (cmd == null || cmd.length() == 0) {
-			return null;
-		}
-		String[] commands;
-		if (cmd.indexOf("|") != -1)
-			commands = cmd.split("\\|");
-		else {
-			commands = new String[1];
-			commands[0] = cmd;
+	public static ArrayList<String> getCommandList(VPTProject proj) {
+		if (proj.getProperty("projectBuilder.command.run.0") == null) return null;
+		ArrayList<String> commands = new ArrayList<String>();
+		for (int i = 0; true; i++) {
+			String cmd = proj.getProperty("projectBuilder.command.run."+i);
+			if (cmd == null) break;
+			commands.add(cmd);
 		}
 		return commands;
 	}

@@ -9,6 +9,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.BoxLayout;
 import javax.swing.Box;
+import javax.swing.BorderFactory;
 
 import java.awt.Dimension;
 import java.awt.BorderLayout;
@@ -18,6 +19,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
 import projectviewer.vpt.VPTProject;
 
@@ -38,17 +40,20 @@ public class BuildSettingsPanel extends JDialog implements ActionListener {
 	private JButton removeBtn;
 	private JButton modifyBtn;
 	private JPanel optionsPanel;
+	private int total;
 	public BuildSettingsPanel(View view, String title, VPTProject proj) {
 		super(view, title);
 		JPanel panel = new JPanel(new BorderLayout());
+		panel.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
 		setPreferredSize(new Dimension(400, 200));
 		this.proj = proj;
 		list = new ListPanel("Build commands:");
 		list.setReorderable(true);
-		String[] commands = BuildCommand.getCommandList(proj);
+		ArrayList<String> commands = BuildCommand.getCommandList(proj);
 		if (commands != null) {
-			for (int i = 0; i<commands.length; i++) {
-				list.addElement(commands[i]);
+			total = commands.size();
+			for (int i = 0; i<total; i++) {
+				list.addElement(commands.get(i));
 			}
 		}
 		addBtn = new JButton(GUIUtilities.loadIcon("Plus.png"));
@@ -98,13 +103,14 @@ public class BuildSettingsPanel extends JDialog implements ActionListener {
 	 */
 	private void updateProps() {
 		Object[] l = list.toArray();
-		String p = "";
 		for (int i = 0; i<l.length; i++) {
-			p += l[i];
-			if (i<(l.length-1))
-				p += "|";
+			proj.setProperty("projectBuilder.command.build."+i, (String) l[i]);
 		}
-		proj.setProperty("projectBuilder.command.build", p);
+		for (int j=l.length; j<total; j++) {
+			proj.setProperty("projectBuilder.command.build."+j, null);
+		}
+		total = l.length;
+		jEdit.saveSettings();
 	}
 	
 	public void actionPerformed(ActionEvent e) {
