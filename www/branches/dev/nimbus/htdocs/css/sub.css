@@ -1,27 +1,29 @@
 #preview {
 	background-color: #BACFE2;
-	height: 68px;
+	height: 55px;
 	border-color: #999;
 	border-style: solid;
 	border-width: 0px 0px 1px 0px;
-	line-height: 68px;
 }
 
 #logos {
 	float: left;
 	margin: 0px;
+	overflow: hidden;
+}
+#logos p {
+	margin-top: 20px;
 }
 #logos img {
 	border: 0px solid transparent;
-	margin: 10px 10px 10px 30px;
+	margin: 5px 10px 0px 30px;
 	vertical-align: bottom;
 	float: left;
 }
-#logos p {
+#logos span {
 	font-weight: bold;
 	margin: 0px 0px 0px 10px;
 	color: #0B264E;
-	display: inline;
 }
 #logos .logo {
 	font-size: 24px;
@@ -32,26 +34,25 @@
 
 #preview #sidebar {
 	float: right;
-	margin: 10px 30px 0px 0px;
+	margin: 14px 30px 0px 0px;
 	padding: 0px;
-	line-height: 16px;
+	width: 200px;
+	overflow: hidden;
 }
 
 #preview #sidebar #actions {
 	list-style-type: none;
 	margin: 0px;
 	padding: 0px;
-	float: right;
-	width: 150px;
-	text-align: right;
 }
 
 #preview #sidebar .action {
 	border: 0px solid transparent;
 	font-size: 14px;
-	margin: 0px 5px;
+	margin: 0px;
 	padding: 0px;
-	width: none;
+	width: 200px;
+	text-align: right;
 }
 
 #preview #sidebar .action a {
