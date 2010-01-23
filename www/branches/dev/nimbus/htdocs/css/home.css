@@ -1,0 +1,47 @@
+#preview {
+	background-color: #BACFE2;
+	height: 200px;
+	border-color: #999;
+	border-style: solid;
+	border-width: 0px 0px 1px 0px;
+}
+
+#logos {
+	float: left;
+	margin: 0px 10px;
+	width: 460px;
+}
+#logos img {
+	border: 0px solid transparent;
+	margin-top: 50px;
+	margin-left: 50px;
+	vertical-align: bottom;
+	float: left;
+}
+#logos p {
+	font-weight: bold;
+	margin: 0px;
+	color: #0B264E;
+}
+#logos .logo {
+	font-size: 30px;
+	margin-top: 80px;
+}
+#logos .text {
+	font-size: 16px;
+}
+
+#screenshots {
+	float: right;
+	width: 460px;
+	margin: 0px 10px;
+}
+
+#screenshots img {
+	margin: 10px 50px;
+	vertical-align: middle;
+	float: right;
+}
+
+
+
