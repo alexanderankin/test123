@@ -25,6 +25,7 @@ import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
+import java.awt.*;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Map;
@@ -69,4 +70,14 @@ public class RFCReaderPlugin extends EditPlugin
 		String url = MessageFormat.format(pattern, String.valueOf(rfcNum));
 		jEdit.openFile(view, url);
 	}
+
+	public static void openRFC(View view)
+	{
+		ItemFinderWindow<RFC> window = new ItemFinderWindow<RFC>(new RFCItemFinder());
+		window.setLocationRelativeTo(jEdit.getActiveView());
+		window.setVisible(true);
+		EventQueue.invokeLater(window.requestFocusWorker);
+	}
+
+
 }

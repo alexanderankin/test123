@@ -3,16 +3,7 @@
 <ACTIONS>
     <ACTION NAME="openRFC">
         <CODE>
-            String rfcNumString = Macros.input(view, "RFC Number ?");
-            try
-            {
-                int rfcNumber = Integer.parseInt(rfcNumString);
-                gatchan.jedit.rfcreader.RFCReaderPlugin.openRFC(view, rfcNumber);
-            }
-            catch (NumberFormatException e)
-            {
-                Toolkit.getDefaultToolkit().beep();
-            }
+            gatchan.jedit.rfcreader.RFCReaderPlugin.openRFC(view);
         </CODE>
     </ACTION>
 </ACTIONS>

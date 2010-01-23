@@ -17,7 +17,6 @@ plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.menu=openRFC \
                                                     rfc-panel
 openRFC.label=Open RFC
 rfc-panel.label=RFC list
-rfc-panel.title=RFC list
 # Option pane
 plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.option-pane=rfcreader
 
@@ -46,3 +45,6 @@ mode.rfc.sidekick.parser=outline
 mode.rfc.hyperlink.source=rfc
 
 rfcreader.index.version=0
+
+
+rfcreader.searchLabel.label=Search RFC:
