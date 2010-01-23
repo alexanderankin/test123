@@ -160,9 +160,8 @@ public class VPTFile extends VPTNode
 					Log.log(Log.WARNING, this, ioe);
 				}
 			}
-			return new DummyVFSFile();
 		}
-		return vfsfile;
+		return (vfsfile != null) ? vfsfile : new DummyVFSFile();
 	}
 
 
