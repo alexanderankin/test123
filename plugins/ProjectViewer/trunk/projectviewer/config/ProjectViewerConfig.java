@@ -752,7 +752,9 @@ public final class ProjectViewerConfig {
 
 		// last path
 		int ncnt = 0;
-		for (Object node : lastNodes) {
+		int total = lastNodes.size();
+		while (!lastNodes.isEmpty()) {
+			Object node = lastNodes.pop();
 			int pcnt = 0;
 			if (node instanceof Stack) {
 				Stack nodePaths = (Stack) node;
@@ -772,7 +774,7 @@ public final class ProjectViewerConfig {
 			}
 			ncnt++;
 		}
-		props.setProperty(LAST_NODE_OPT + "count", String.valueOf(lastNodes.size()));
+		props.setProperty(LAST_NODE_OPT + "count", String.valueOf(total));
 
 		// disabled extensions
 		for (String ext : extensions.keySet()) {
