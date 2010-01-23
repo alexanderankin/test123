@@ -1,0 +1,129 @@
+#downloads {
+	float: left;
+	width: 720px;
+}
+
+#downloads h3 {
+	margin: 10px 0px;
+	margin-bottom: 5px;
+	padding: 0px;
+}
+
+#downloads h3 a {
+	margin: 0px;
+	padding: 0px;
+}
+
+#downloads p {
+	font-size: 12px;
+	margin-left: 10px;
+}
+
+#downloads p a {
+	color: #39698A;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+#downloads p a:hover {
+	text-decoration: underline;
+}
+
+#downloads pre {
+	margin-left: 20px;
+}
+
+.installers {
+	overflow: hidden;
+}
+
+.installers .installer {
+	border: 0px solid #FFF;
+	margin: 0px;
+	padding: 0px;
+	width: 350px;
+}
+
+.installers .installer table {
+	font-size: 12px;
+	line-height: 16px;
+	margin: 10px 0px;
+}
+
+.installers .installer table .first {
+	font-weight: bold;
+}
+
+.installers .installer table td {
+	padding: 0px 0px 0px 10px;
+}
+
+.installers .installer table td a {
+	color: #39698A;
+	text-decoration: none;
+}
+
+.installers .installer table td a:hover {
+	text-decoration: underline;
+}
+
+#stable {
+	float: left;
+}
+
+#devel {
+	float: right;
+}
+
+#instructions {
+	width: 720px;
+	font-size: 12px;
+}
+
+#instructions p {
+	margin-left: 10px;
+}
+
+#instructions ul {
+	list-style-type: none;
+	margin: 0px 0px 0px 15px;
+	padding: 5px;
+}
+
+#instructions ul a {
+	color: #39698A;
+	text-decoration: none;
+}
+
+#instructions ul a:hover {
+	text-decoration: underline;
+}
+
+#toc {
+	border: 1px solid #CCC;
+	float: right;
+	font-size: 12px;
+	margin: 0px;
+	padding: 0px;
+	width: 220px;
+}
+
+#toc .title {
+	margin-left: 10px;
+	font-size: 14px;
+}
+
+#toc ul {
+	list-style-type: none;
+	margin: 0px 0px 0px 15px;
+	padding: 5px;
+}
+
+#toc a {
+	color: #39698A;
+	text-decoration: none;
+}
+
+#toc a:hover {
+	text-decoration: underline;
+}

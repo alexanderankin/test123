@@ -69,6 +69,7 @@ body {
 .center_960 {
 	margin: 0px auto;
 	width: 960px;
+	overflow: hidden;
 }
 .gsc-control-cse {
 	background-color: transparent;
@@ -87,9 +88,10 @@ form.gsc-search-box {
 	border-style: solid;
 	border-width: 1px 0px;
 }
-#preview {
+
+#titlebar {
 	background-color: #BACFE2;
-	height: 200px;
+	height: 55px;
 	border-color: #999;
 	border-style: solid;
 	border-width: 0px 0px 1px 0px;
@@ -97,39 +99,58 @@ form.gsc-search-box {
 
 #logos {
 	float: left;
-	margin: 0px 10px;
+	margin: 0px;
+	overflow: hidden;
 	width: 460px;
+}
+#logos p {
+	margin-top: 20px;
 }
 #logos img {
 	border: 0px solid transparent;
-	margin-top: 50px;
-	margin-left: 50px;
+	margin: 5px 10px 0px 30px;
 	vertical-align: bottom;
 	float: left;
 }
-#logos p {
+#logos span {
 	font-weight: bold;
-	margin: 0px;
+	margin: 0px 0px 0px 10px;
 	color: #0B264E;
 }
 #logos .logo {
-	font-size: 30px;
-	margin-top: 80px;
+	font-size: 24px;
 }
 #logos .text {
 	font-size: 16px;
 }
 
-#screenshots {
+#titlebar #actions {
 	float: right;
-	width: 460px;
-	margin: 0px 10px;
+	margin: 14px 30px 0px 0px;
+	padding: 0px;
+	width: 200px;
+	overflow: hidden;
+	list-style-type: none;
 }
 
-#screenshots img {
-	margin: 10px 50px;
-	vertical-align: middle;
-	float: right;
+#titlebar #actions .action {
+	border: 0px solid transparent;
+	font-size: 14px;
+	margin: 0px;
+	padding: 0px;
+	width: 200px;
+	text-align: right;
+}
+
+#titlebar #actions .action a {
+	color: #39698A;
+	display: block;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+#titlebar #actions .action a:hover {
+	text-decoration: underline;
 }
 
 #content {
