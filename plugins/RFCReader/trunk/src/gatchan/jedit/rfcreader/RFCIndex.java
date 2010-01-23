@@ -58,6 +58,7 @@ public class RFCIndex
 	private Directory directory;
 	private StandardAnalyzer analyzer;
 	private QueryParser parser;
+	private QueryParser numberQueryParser;
 	private Map<Integer, RFC> rfcs;
 
 	public RFCIndex(File home, Map<Integer, RFC> rfcList) throws IOException
@@ -98,6 +99,20 @@ public class RFCIndex
 			parser = new MultiFieldQueryParser(Version.LUCENE_CURRENT, new String[]{"number", "title"},
 				analyzer);
 
+		return _search(query, parser);
+	}
+
+	public List<RFC> searchByNumber(String query)
+	{
+		if (numberQueryParser == null)
+			numberQueryParser = new MultiFieldQueryParser(Version.LUCENE_CURRENT, new String[]{"number"},
+				analyzer);
+
+		return _search(query, numberQueryParser);
+	}
+
+	private List<RFC> _search(String query, QueryParser parser)
+	{
 		try
 		{
 			Query q = parser.parse(query);
@@ -127,6 +142,7 @@ public class RFCIndex
 			return null;
 		}
 	}
+
 
 	public void close()
 	{

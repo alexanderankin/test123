@@ -105,40 +105,4 @@ public class RFCListPanel extends JPanel
 			model.setData(rfcs);
 		}
 	}
-
-	private static class RFCListModel extends AbstractListModel
-	{
-		private List<RFC> data;
-		private List<RFC> defaultList;
-
-		private RFCListModel(Map<Integer, RFC> data)
-		{
-			defaultList = new ArrayList<RFC>(data.values());
-			this.data = defaultList;
-		}
-
-		public void setData(List<RFC> data)
-		{
-			if (data != null)
-			{
-				this.data = data;
-				fireContentsChanged(this, 0, this.data.size());
-			}
-		}
-
-		void reset()
-		{
-			setData(defaultList);
-		}
-
-		public int getSize()
-		{
-			return data.size();
-		}
-
-		public Object getElementAt(int index)
-		{
-			return data.get(index);
-		}
-	}
 }
