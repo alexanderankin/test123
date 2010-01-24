@@ -7,20 +7,50 @@
 <ACTIONS>
 	<ACTION NAME="nativebrowser.menu-bar">
 		<CODE>
-			wm.addDockableWindow(NativeBrowserPlugin.NAME);
-			wm.getDockableWindow(NativeBrowserPlugin.NAME).toggleMenuBar();
+			wm.addDockableWindow(nativebrowser.NativeBrowserPlugin.NAME);
+			wm.getDockableWindow(nativebrowser.NativeBrowserPlugin.NAME).toggleMenuBar();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="nativebrowser.home">
 		<CODE>
-			wm.addDockableWindow(NativeBrowserPlugin.NAME);
-			wm.getDockableWindow(NativeBrowserPlugin.NAME).home();
+			wm.addDockableWindow(nativebrowser.NativeBrowserPlugin.NAME);
+			wm.getDockableWindow(nativebrowser.NativeBrowserPlugin.NAME).home();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="nativebrowser.back">
+		<CODE>
+			wm.addDockableWindow(nativebrowser.NativeBrowserPlugin.NAME);
+			wm.getDockableWindow(nativebrowser.NativeBrowserPlugin.NAME).back();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="nativebrowser.forward">
+		<CODE>
+			wm.addDockableWindow(nativebrowser.NativeBrowserPlugin.NAME);
+			wm.getDockableWindow(nativebrowser.NativeBrowserPlugin.NAME).forward();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="nativebrowser.reload">
+		<CODE>
+			wm.addDockableWindow(nativebrowser.NativeBrowserPlugin.NAME);
+			wm.getDockableWindow(nativebrowser.NativeBrowserPlugin.NAME).reload();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="nativebrowser.render-buffer">
 		<CODE>
-			wm.addDockableWindow(NativeBrowserPlugin.NAME);
-			wm.getDockableWindow(NativeBrowserPlugin.NAME).renderBuffer();
+			wm.addDockableWindow(nativebrowser.NativeBrowserPlugin.NAME);
+			wm.getDockableWindow(nativebrowser.NativeBrowserPlugin.NAME).renderBuffer(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="nativebrowser.set-homepage">
+		<CODE>
+			wm.addDockableWindow(nativebrowser.NativeBrowserPlugin.NAME);
+			wm.getDockableWindow(nativebrowser.NativeBrowserPlugin.NAME).setHomepage(view, view.getBuffer().getPath());
+		</CODE>
+	</ACTION>
+	<ACTION NAME="nativebrowser.browse">
+		<CODE>
+			wm.addDockableWindow(nativebrowser.NativeBrowserPlugin.NAME);
+			wm.getDockableWindow(nativebrowser.NativeBrowserPlugin.NAME).browse(view, view.getBuffer().getPath());
 		</CODE>
 	</ACTION>
 </ACTIONS>

@@ -1,3 +1,7 @@
+package nativebrowser;
+
+import org.gjt.sp.jedit.View;
+
 /*
  * NativeBrowserActions.java
  * part of the NativeBrowser plugin for the jEdit text editor
@@ -24,5 +28,10 @@
 interface NativeBrowserActions {
 	void toggleMenuBar();
 	void home();
-	void renderBuffer();
+	void renderBuffer(View view);
+	void setHomepage(View view, String sURL);
+	void browse(View view, String sURL);
+	void forward();
+	void back();
+	void reload();
 }

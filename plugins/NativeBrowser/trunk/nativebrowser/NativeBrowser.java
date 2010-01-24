@@ -1,3 +1,4 @@
+package nativebrowser;
 /*
  * NativeBrowser.java
  * part of the NativeBrowser plugin for the jEdit text editor
@@ -28,6 +29,7 @@ import java.awt.Dimension;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
@@ -53,7 +55,7 @@ public class NativeBrowser extends JPanel
     // {{{ Instance Variables
 	private static final long serialVersionUID = 4557772486347339631L;
 	
-	private String homePage;
+	private String homepage;
 
 	private View view;
 
@@ -86,13 +88,13 @@ public class NativeBrowser extends JPanel
 		this.floating = position.equals(DockableWindowManager.FLOATING);
 
 		if (jEdit.getSettingsDirectory() != null) {
-			this.homePage = jEdit.getProperty(NativeBrowserPlugin.OPTION_PREFIX
+			this.homepage = jEdit.getProperty(NativeBrowserPlugin.OPTION_PREFIX
 					+ "homepage");
-			if (this.homePage == null || this.homePage.length() == 0) {
-				this.homePage = "http://google.com/";
+			if (this.homepage == null || this.homepage.length() == 0) {
+				this.homepage = "http://google.com/";
 				jEdit.setProperty(
 						NativeBrowserPlugin.OPTION_PREFIX + "homepage",
-						this.homePage);
+						this.homepage);
 			}
 		}
 
@@ -104,7 +106,7 @@ public class NativeBrowser extends JPanel
 
         browser = new JWebBrowser();
         add(browser, BorderLayout.CENTER);
-	    browser.navigate(homePage);
+	    browser.navigate(homepage);
 		this.toolPanel = new NativeBrowserToolPanel(this);
 		add(toolPanel, BorderLayout.NORTH);
 	    SwingUtilities.invokeLater(new Runnable() {
@@ -135,13 +137,13 @@ public class NativeBrowser extends JPanel
     
     // {{{ propertiesChanged
 	private void propertiesChanged() {
-		this.homePage = jEdit
+		this.homepage = jEdit
 				.getProperty(NativeBrowserPlugin.OPTION_PREFIX + "homepage");
-		if (this.homePage == null || this.homePage.length() == 0) {
-			this.homePage = "http://google.com/";
+		if (this.homepage == null || this.homepage.length() == 0) {
+			this.homepage = "http://google.com/";
 			jEdit.setProperty(
 					NativeBrowserPlugin.OPTION_PREFIX + "homepage",
-					this.homePage);
+					this.homepage);
 		}
 	}
     // }}}
@@ -163,21 +165,6 @@ public class NativeBrowser extends JPanel
 	}
     // }}}
     
-	// NativeBrowserActions implementation
-
-    // {{{ copyToBuffer
-	public void renderBuffer() {
-		String html = view.getEditPane().getTextArea().getText();
-		browser.setHTMLContent(html);
-	}
-    // }}}
-	
-    // {{{ home
-	public void home() {
-		browser.navigate(homePage);
-	}
-    // }}}
-	
     // {{{ setMenuBarVisible
 	public void setMenuBarVisible(boolean b) {
 		browser.setMenuBarVisible(b);
@@ -190,7 +177,68 @@ public class NativeBrowser extends JPanel
 	}
     // }}}
 	
-    // {{{ setMenuBarVisible
+    // {{{ render
+	public void render(String html) {
+		browser.setHTMLContent(html);
+	}
+    // }}}
+	
+    // {{{ renderBuffer
+	public void renderBuffer(Buffer buffer) {
+		String html = buffer.getText(0, buffer.getLength());
+		browser.setHTMLContent(html);
+	}
+    // }}}
+	
+	// NativeBrowserActions implementation
+
+    // {{{ renderBuffer
+	public void renderBuffer(View view) {
+		String html = view.getEditPane().getTextArea().getText();
+		browser.setHTMLContent(html);
+	}
+    // }}}
+	
+    // {{{ browse
+	public void browse(View view, String sURL) {
+		browser.navigate(sURL);
+	}
+    // }}}
+	
+    // {{{ forward
+	public void forward() {
+		browser.navigateForward();
+	}
+    // }}}
+	
+    // {{{ back
+	public void back() {
+		browser.navigateBack();
+	}
+    // }}}
+	
+    // {{{ reload
+	public void reload() {
+		browser.reloadPage();
+	}
+    // }}}
+	
+    // {{{ setHomepage
+	public void setHomepage(View view, String sURL) {
+		homepage=sURL;
+		jEdit.setProperty(
+				NativeBrowserPlugin.OPTION_PREFIX + "homepage",
+				sURL);
+	}
+    // }}}
+	
+    // {{{ home
+	public void home() {
+		browser.navigate(homepage);
+	}
+    // }}}
+	
+    // {{{ toggleMenuBar
 	public void toggleMenuBar() {
 		browser.setMenuBarVisible(!browser.isMenuBarVisible());
 		toolPanel.propertiesChanged();

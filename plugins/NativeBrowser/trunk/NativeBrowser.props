@@ -3,47 +3,58 @@
 
 # jEdit only needs to load the plugin the first time the user accesses it
 # the presence of this property also tells jEdit the plugin is using the new API
-plugin.NativeBrowserPlugin.activate=startup
+plugin.nativebrowser.NativeBrowserPlugin.activate=startup
 
 # These two properties are required for all plugins
-plugin.NativeBrowserPlugin.name=NativeBrowser
-plugin.NativeBrowserPlugin.author=Francois Rey
+plugin.nativebrowser.NativeBrowserPlugin.name=NativeBrowser
+plugin.nativebrowser.NativeBrowserPlugin.author=Francois Rey
 
 # version number == jEdit version number
-plugin.NativeBrowserPlugin.version=1.0
+plugin.nativebrowser.NativeBrowserPlugin.version=0.1
 
 # other needed files
-plugin.NativeBrowserPlugin.jars=DJNativeSwing.jar DJNativeSwing-SWT.jar jna-3.2.4.jar swt.jar
+plugin.nativebrowser.NativeBrowserPlugin.jars=DJNativeSwing.jar DJNativeSwing-SWT.jar jna-3.2.4.jar swt.jar
 
 # online help
-plugin.NativeBrowserPlugin.docs=index.html
+plugin.nativebrowser.NativeBrowserPlugin.docs=index.html
 
 # we only have one dependency, jEdit 4.2, since we use the new plugin API
-plugin.NativeBrowserPlugin.depend.0=jedit 04.02.01.00
-plugin.NativeBrowserPlugin.depend.1=jdk 1.5
+plugin.nativebrowser.NativeBrowserPlugin.depend.0=jedit 04.02.01.00
+plugin.nativebrowser.NativeBrowserPlugin.depend.1=jdk 1.5
+plugin.nativebrowser.NativeBrowserPlugin.depend.2=optional plugin launcher.LauncherPlugin 0.1
 
-plugin.NativeBrowserPlugin.description=This plugin provides a dockable browser provided by the native, SWT-based, Swing libraries from the DJ Project (http://djproject.sourceforge.net/).
+plugin.nativebrowser.NativeBrowserPlugin.description=This plugin provides a dockable browser provided by the native, SWT-based, Swing libraries from the DJ Project (http://djproject.sourceforge.net/).
 # plugin menu
-plugin.NativeBrowserPlugin.menu=nativebrowser \
+plugin.nativebrowser.NativeBrowserPlugin.menu=nativebrowser \
 	- \
-	nativebrowser.menu-bar \
 	nativebrowser.home \
-	nativebrowser.render-buffer
+	nativebrowser.back \
+	nativebrowser.forward \
+	nativebrowser.reload \
+	nativebrowser.browse \
+	nativebrowser.render-buffer \
+	nativebrowser.menu-bar \
+	nativebrowser.set-homepage \
+	
 
 # action labels for actions supplied by dockables.xml
 nativebrowser.label=NativeBrowser
 
 # action labels for actions supplied by actions.xml
-nativebrowser.choose-file.label=Choose file
-nativebrowser.menu-bar.label=Menu bar
 nativebrowser.home.label=Home page
-nativebrowser.render-buffer.label=Render current buffer
+nativebrowser.back.label=Back
+nativebrowser.forward.label=Forward
+nativebrowser.reload.label=Reload
+nativebrowser.browse.label=Load current file in browser
+nativebrowser.render-buffer.label=Render current buffer content
+nativebrowser.menu-bar.label=Menu bar
+nativebrowser.set-homepage.label=Set current file as homepage
 
 # plugin option pane
-plugin.NativeBrowserPlugin.option-pane=nativebrowser
+plugin.nativebrowser.NativeBrowserPlugin.option-pane=nativebrowser
 
 # Option pane activation BeanShell snippet
-options.nativebrowser.code=new NativeBrowserOptionPane();
+options.nativebrowser.code=new nativebrowser.NativeBrowserOptionPane();
 
 # Option pane labels
 options.nativebrowser.label=NativeBrowser
@@ -64,5 +75,23 @@ nativebrowser.home.icon=Home.png
 # default settings
 options.nativebrowser.homepage=http://www.google.com/
 
+# Launcher plugin integration
+nativebrowser.launcher.OpenInNativeBrowserLauncher.label=Browse with NativeBrowser
+nativebrowser.launcher.OpenInNativeBrowserLauncher.label.short=NativeBrowser
+nativebrowser.launcher.OpenInNativeBrowserLauncher.first-level=true
+nativebrowser.launcher.SetNativeBrowserHomepageLauncher.label=Set as homepage of NativeBrowser
+nativebrowser.launcher.SetNativeBrowserHomepageLauncher.label.short=Set as homepage of NativeBrowser
+nativebrowser.launcher.RenderTextAreaInNativeBrowserLauncher.label=Render buffer in NativeBrowser
+nativebrowser.launcher.RenderTextAreaInNativeBrowserLauncher.label.short=Render in NativeBrowser
+nativebrowser.launcher.RenderTextAreaInNativeBrowserLauncher.first-level=true
+
+
 # Setting not defined but supplied for completeness
+
+
+# Other settings
+nativebrowser.contextmenu.label=NativeBrowser
+nativebrowser.contextmenu.menuitem.open.label=Open in NativeBrowser
+nativebrowser.contextmenu.menuitem.render-buffer.label=Render in NativeBrowser
+nativebrowser.contextmenu.menuitem.set-homepage.label=Set as home page
 
