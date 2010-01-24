@@ -1,3 +1,4 @@
+package nativebrowser;
 /*
  * NativeBrowserToolPanel.java
  * part of the NativeBrowser plugin for the jEdit text editor
@@ -62,7 +63,7 @@ public class NativeBrowserToolPanel extends JPanel {
 		add(makeCustomButton("nativebrowser.render-buffer",
 				new ActionListener() {
 					public void actionPerformed(ActionEvent evt) {
-						NativeBrowserToolPanel.this.browser.renderBuffer();
+						NativeBrowserToolPanel.this.browser.renderBuffer(jEdit.getActiveView());
 					}
 				}));
 	}

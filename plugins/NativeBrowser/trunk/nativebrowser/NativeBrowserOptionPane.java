@@ -1,3 +1,4 @@
+package nativebrowser;
 /*
  * NativeBrowserOptionPane.java
  * part of the NativeBrowser plugin for the jEdit text editor

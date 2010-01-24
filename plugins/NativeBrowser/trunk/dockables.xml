@@ -10,6 +10,6 @@
 
 <DOCKABLES>
 	<DOCKABLE NAME="nativebrowser">
-		new NativeBrowser(view, position);
+		new nativebrowser.NativeBrowser(view, position);
 	</DOCKABLE>
 </DOCKABLES>
