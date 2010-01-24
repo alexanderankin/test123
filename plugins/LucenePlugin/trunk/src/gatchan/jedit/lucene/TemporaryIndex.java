@@ -52,9 +52,11 @@ public class TemporaryIndex implements Index
 	protected Analyzer analyzer;
 
 	private Directory directory;
+	private final String name;
 
-	public TemporaryIndex()
+	public TemporaryIndex(String name)
 	{
+		this.name = name;
 		this.analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);
 		directory = new RAMDirectory();
 		try
@@ -116,7 +118,7 @@ public class TemporaryIndex implements Index
 
 	public String getName()
 	{
-		throw new UnsupportedOperationException();
+		return name;
 	}
 
 	public Analyzer getAnalyzer()
@@ -225,14 +227,12 @@ public class TemporaryIndex implements Index
 		}
 	}
 
-	public void addActivityListener(ActivityListener l)
+	public void addActivityListener(ActivityListener al)
 	{
-		throw new UnsupportedOperationException();
 	}
 
-	public void removeActivityListener(ActivityListener l)
+	public void removeActivityListener(ActivityListener al)
 	{
-		throw new UnsupportedOperationException();
 	}
 
 	public boolean isChanging()
