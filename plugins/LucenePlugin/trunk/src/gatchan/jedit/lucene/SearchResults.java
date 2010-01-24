@@ -212,7 +212,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			return null;
 		if (indexName == CURRENT_BUFFER)
 		{
-			Index index = new TemporaryIndex();
+			Index index = new TemporaryIndex(CURRENT_BUFFER);
 			jEdit.getActiveView().getBuffer().getPath();
 			index.addFile(jEdit.getActiveView().getBuffer().getPath());
 			index.optimize();
@@ -221,7 +221,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		}
 		if (indexName == ALL_BUFFERS)
 		{
-			TemporaryIndex index = new TemporaryIndex();
+			TemporaryIndex index = new TemporaryIndex(ALL_BUFFERS);
 			Buffer[] buffers = jEdit.getBuffers();
 			for (Buffer buffer : buffers)
 			{
