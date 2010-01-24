@@ -209,6 +209,9 @@ public final class ProjectPlugin extends EditPlugin {
 				ProjectViewer.setActiveNode(vu.getView(), config.getLastNode());
 			}
 		}
+		if (vu.getWhat() == ViewUpdate.CLOSED) {
+			ProjectViewer.cleanViewEntry(vu.getView());
+		}
 	}
 
 
