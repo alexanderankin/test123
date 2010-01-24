@@ -29,8 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.swing.Icon;
@@ -66,7 +64,7 @@ public class VPTProject extends VPTNode {
 	private String		rootPath;
 	private String		url;
 	private Properties	properties;
-	private Lock		lock;
+	private ReentrantLock lock;
 
 	protected Map<String,VPTNode> openableNodes;
 
@@ -93,7 +91,15 @@ public class VPTProject extends VPTNode {
 	 *	and which are correcty registered with their respective projects.
 	 */
 	public VPTNode getChildNode(String path) {
-		return openableNodes.get(path);
+		if (!tryLock()) {
+			assert false : "Can't get project lock, this shouldn't happen.";
+			return null;
+		}
+		try {
+			return openableNodes.get(path);
+		} finally {
+			checkLock();
+		}
 	} //}}}
 
 	//{{{ +getOpenableNodes() : Collection
@@ -102,6 +108,7 @@ public class VPTProject extends VPTNode {
 	 *	in this project.
 	 */
 	public Collection<VPTNode> getOpenableNodes() {
+		checkLock();
 		return Collections.unmodifiableCollection(openableNodes.values());
 	}
 	//}}}
@@ -191,7 +198,15 @@ public class VPTProject extends VPTNode {
 	 *	matches the given path.
 	 */
 	public boolean isInProject(String path) {
-		return openableNodes.containsKey(path);
+		if (!tryLock()) {
+			assert false : "Can't get project lock, this shouldn't happen.";
+			return false;
+		}
+		try {
+			return openableNodes.containsKey(path);
+		} finally {
+			unlock();
+		}
 	} //}}}
 
 	//{{{ +getIcon(boolean) : Icon
@@ -228,6 +243,7 @@ public class VPTProject extends VPTNode {
 	 *	paths to nodes kept internally. Only openable nodes are mapped.
 	 */
 	public void registerNodePath(VPTNode node) {
+		checkLock();
 		if (node.canOpen()) {
 			openableNodes.put(node.getNodePath(), node);
 		}
@@ -236,13 +252,16 @@ public class VPTProject extends VPTNode {
 	//{{{ +removeAllChildren() : void
 	/** Removes all children from the project, and unregisters all files. */
 	public void removeAllChildren() {
+		checkLock();
 		openableNodes.clear();
 		super.removeAllChildren();
 	} //}}}
 
+
 	//{{{ +unregisterNodePath(VPTNode) : void
 	/** Unegister a node from the project. */
 	public void unregisterNodePath(VPTNode node) {
+		checkLock();
 		openableNodes.remove(node.getNodePath());
 	} //}}}
 
@@ -252,6 +271,7 @@ public class VPTProject extends VPTNode {
 	 *	@since	PV 2.1.3.6
 	 */
 	public void unregisterNodePath(String path) {
+		checkLock();
 		openableNodes.remove(path);
 	}
 
@@ -309,6 +329,20 @@ public class VPTProject extends VPTNode {
 	public List<VPTFilterData> getFilterList() {
 		return filterList;
 	} //}}}
+
+
+	/**
+	 * Makes sure the current thread is holding the project lock.
+	 * Hopefully this will help identify any offenders.
+	 */
+	private void checkLock()
+	{
+		assert lock.isHeldByCurrentThread() :
+			"Modifying project without holding project lock!";
+		if (!lock.isHeldByCurrentThread()) {
+			throw new IllegalStateException();
+		}
+	}
 
 
 	/**
