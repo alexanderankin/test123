@@ -107,12 +107,12 @@ public class LauncherUtils {
 			if (resource == null)
 				return null;
 	    	File file = null;
-			if (resource instanceof URI) {
+	    	if (resource instanceof File) {
+				file = (File)resource;
+			} else if (resource instanceof URI) {
 				file = new File((URI)resource);
 			} else if (resource instanceof URL) {
 				file = new File(((URL)resource).toURI());
-			} else if (resource instanceof File) {
-				file = (File)resource;
 			} else if (resource instanceof Buffer) {
 				Buffer buffer = (Buffer)resource;
 				file = buffer.isUntitled() ? null : new File(buffer.getPath());
