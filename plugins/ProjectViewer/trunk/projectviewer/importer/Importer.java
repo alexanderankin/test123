@@ -148,11 +148,6 @@ public abstract class Importer implements Runnable {
 	public final void doImport() {
 		assert SwingUtilities.isEventDispatchThread() :
 				"doImport() not called from AWT thread.";
-		if (!project.tryLock()) {
-			setViewStatus("projectviewer.error.project_locked");
-			return;
-		}
-
 		if (noThread) {
 			setViewerEnabled(false);
 			run();
@@ -546,7 +541,6 @@ public abstract class Importer implements Runnable {
 		} finally {
 			if (postAction == null || error)
 				setViewerEnabled(true);
-			project.unlock(true);
 		}
 		if (postAction != null)
 			SwingUtilities.invokeLater(new PostActionWrapper());

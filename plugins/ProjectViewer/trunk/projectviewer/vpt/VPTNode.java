@@ -24,6 +24,9 @@ import java.util.Collections;
 import java.awt.Color;
 import java.awt.Component;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+
 import javax.swing.Icon;
 import javax.swing.UIManager;
 import javax.swing.tree.MutableTreeNode;
@@ -61,6 +64,9 @@ public abstract class VPTNode extends DefaultMutableTreeNode
 	/**
 	 *	Returns the project associated with the node, or null if the node
 	 *	is the root of the project tree.
+	 *
+	 *	This is not thread-safe since we don't know which project
+	 *	to lock while doing the search, but oh well...
 	 */
 	public static VPTProject findProjectFor(VPTNode node) {
 		if (node.isRoot()) {
@@ -91,6 +97,65 @@ public abstract class VPTNode extends DefaultMutableTreeNode
 
 	//{{{ Public methods
 
+	//{{{ Thread-safe versions of DefaultMutableTreeNode methods.
+
+	public void insert(MutableTreeNode newChild,
+					   int childIndex)
+	{
+		lock(true);
+		try {
+			super.insert(newChild, childIndex);
+		} finally {
+			unlock(true);
+		}
+	}
+
+
+	public void remove(int childIndex)
+	{
+		lock(true);
+		try {
+			super.remove(childIndex);
+		} finally {
+			unlock(true);
+		}
+	}
+
+	public void remove(MutableTreeNode aChild)
+	{
+		lock(true);
+		try {
+			super.remove(aChild);
+		} finally {
+			unlock(true);
+		}
+	}
+
+	public void removeAllChildren()
+	{
+		lock(true);
+		try {
+			super.removeAllChildren();
+		} finally {
+			unlock(true);
+		}
+	}
+
+	public void removeFromParent()
+	{
+		VPTProject parent = findProjectFor(this);
+		if (parent != null) {
+			parent.getLock().writeLock().lock();
+		}
+		try {
+			super.removeFromParent();
+		} finally {
+			parent.getLock().writeLock().unlock();
+		}
+	}
+
+	//}}}
+
 	//{{{ +sortChildren() : void
 	/**
 	 *	Sort the children list for this node using the default node comparator.
@@ -108,12 +173,17 @@ public abstract class VPTNode extends DefaultMutableTreeNode
 	 *	@since PV 2.1.3.4
 	 */
 	public void sortChildren(boolean recurse) {
-		if (children != null) {
-			if (children.size() > 1)
-				Collections.sort(children);
-			if (recurse)
-				for (int i = 0; i < children.size(); i++)
-					((VPTNode)children.get(i)).sortChildren(true);
+		lock(true);
+		try {
+			if (children != null) {
+				if (children.size() > 1)
+					Collections.sort(children);
+				if (recurse)
+					for (int i = 0; i < children.size(); i++)
+						((VPTNode)children.get(i)).sortChildren(true);
+			}
+		} finally {
+			unlock(true);
 		}
 	} //}}}
 
@@ -281,28 +351,33 @@ public abstract class VPTNode extends DefaultMutableTreeNode
 	 *			in ascendant order.
 	 */
 	public int findIndexForChild(VPTNode child) {
-		if (children == null || children.size() == 0) return 0;
+		lock(false);
+		try {
+			if (children == null || children.size() == 0) return 0;
 
-		int b = 0, e = children.size(), i = e/2;
-		VPTNode n;
+			int b = 0, e = children.size(), i = e/2;
+			VPTNode n;
 
-		while (e - b > 1) {
-			n = (VPTNode) children.get(i);
-			int comp = child.compareTo(n);
+			while (e - b > 1) {
+				n = (VPTNode) children.get(i);
+				int comp = child.compareTo(n);
 
-			if (comp < 0) {
-				e = i;
-			} else if (comp == 0) {
-				i++;
-				b = e = i;
-			} else {
-				b = i;
+				if (comp < 0) {
+					e = i;
+				} else if (comp == 0) {
+					i++;
+					b = e = i;
+				} else {
+					b = i;
+				}
+				i = (e+b)/2;
 			}
-			i = (e+b)/2;
+			if (b == children.size()) return b;
+			n = (VPTNode) children.get(b);
+			return (child.compareTo(n) < 0 ? b : b + 1);
+		} finally {
+			unlock(false);
 		}
-		if (b == children.size()) return b;
-		n = (VPTNode) children.get(b);
-		return (child.compareTo(n) < 0 ? b : b + 1);
 	} //}}}
 
 	//{{{ +setParent(MutableTreeNode) : void
@@ -312,20 +387,38 @@ public abstract class VPTNode extends DefaultMutableTreeNode
 	 *	itself from the project in case the parent is being set to null.
 	 */
 	public void setParent(MutableTreeNode newParent) {
-		if (canOpen()) {
-			if (newParent == null) {
-				VPTProject p = findProjectFor(this);
-				if (p != null) {
-					p.unregisterNodePath(this);
-				}
-			} else {
-				VPTProject p = findProjectFor((VPTNode)newParent);
-				if (p != null) {
-					p.registerNodePath(this);
+		VPTProject currp = findProjectFor(this);
+		VPTProject newp = (newParent != null)
+			? findProjectFor((VPTNode)newParent) : null;
+
+		if (currp != null) {
+			currp.getLock().writeLock().lock();
+		}
+		if (newp != null) {
+			newp.getLock().writeLock().lock();
+		}
+
+		try {
+			if (canOpen()) {
+				if (newParent == null) {
+					if (currp != null) {
+						currp.unregisterNodePath(this);
+					}
+				} else {
+					if (newp != null) {
+						newp.registerNodePath(this);
+					}
 				}
 			}
+			super.setParent(newParent);
+		} finally {
+			if (currp != null) {
+				currp.getLock().writeLock().unlock();
+			}
+			if (newp != null) {
+				newp.getLock().writeLock().unlock();
+			}
 		}
-		super.setParent(newParent);
 	} //}}}
 
 	//{{{ +persistChildren() : boolean
@@ -355,13 +448,18 @@ public abstract class VPTNode extends DefaultMutableTreeNode
 	 *	@since	PV 2.1.0
 	 */
 	public VPTNode getChildWithName(String name) {
-		if (getAllowsChildren()) {
-			for (int i = 0; i < getChildCount(); i++) {
-				if (((VPTNode)getChildAt(i)).getName().equals(name))
-					return (VPTNode) getChildAt(i);
+		lock(false);
+		try {
+			if (getAllowsChildren()) {
+				for (int i = 0; i < getChildCount(); i++) {
+					if (((VPTNode)getChildAt(i)).getName().equals(name))
+						return (VPTNode) getChildAt(i);
+				}
 			}
+			return null;
+		} finally {
+			unlock(false);
 		}
-		return null;
 	} //}}}
 
 	//}}}
@@ -423,6 +521,40 @@ public abstract class VPTNode extends DefaultMutableTreeNode
 	}
 
 	//}}}
+
+
+	/**
+	 * Returns the lock object for the parent project of this node,
+	 * or null if there is no parent project.
+	 */
+	protected ReadWriteLock getLock()
+	{
+		VPTProject p = findProjectFor(this);
+		return (p != null) ? p.getLock() : null;
+	}
+
+
+	/** Convenience method for locking. */
+	protected void lock(boolean write)
+	{
+		ReadWriteLock lock = getLock();
+		if (lock != null) {
+			Lock l = write ? lock.writeLock() : lock.readLock();
+			l.lock();
+		}
+	}
+
+
+	/** Convenience method for unlocking. */
+	protected void unlock(boolean write)
+	{
+		ReadWriteLock lock = getLock();
+		if (lock != null) {
+			Lock l = write ? lock.writeLock() : lock.readLock();
+			l.unlock();
+		}
+	}
+
 
 	protected int compareName(VPTNode other) {
 		if (ProjectViewerConfig.getInstance().getCaseInsensitiveSort()) {

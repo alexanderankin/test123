@@ -127,46 +127,29 @@ public class NodeRemoverAction extends Action {
 			}
 		}
 
-		try {
-			// First, make sure we have the locks for all project
-			// being modified.
-			for (idx = 0; idx < projects.size(); idx++) {
-				if (!projects.get(idx).tryLock()) {
-					throw new IllegalStateException();
+		// Remove the nodes.
+		for (VPTNode n : nodes) {
+			remove(n, nodes.size() == 1);
+		}
+
+		// Notify changes.
+		List<VPTProject> notified = new ArrayList<VPTProject>();
+		for (VPTNode n : changed) {
+			if (n.isGroup()) {
+				ProjectViewer.nodeStructureChangedFlat(n);
+			} else {
+				VPTProject p = VPTNode.findProjectFor(n);
+				if (!notified.contains(p)) {
+					ProjectViewer.nodeStructureChangedFlat(p);
+					notified.add(p);
 				}
 			}
+		}
 
-			// Remove the nodes.
-			for (VPTNode n : nodes) {
-				remove(n, nodes.size() == 1);
-			}
-
-			// Notify changes.
-			List<VPTProject> notified = new ArrayList<VPTProject>();
-			for (VPTNode n : changed) {
-				if (n.isGroup()) {
-					ProjectViewer.nodeStructureChangedFlat(n);
-				} else {
-					VPTProject p = VPTNode.findProjectFor(n);
-					if (!notified.contains(p)) {
-						ProjectViewer.nodeStructureChangedFlat(p);
-						notified.add(p);
-					}
-				}
-			}
-
-			if (removedFiles != null)
-			for (VPTProject p : removedFiles.keySet()) {
-				List<VPTFile> lst = removedFiles.get(p);
-				p.fireFilesChanged(null, lst);
-			}
-		} catch (IllegalStateException ise) {
-			viewer.setStatus(jEdit.getProperty("projectviewer.error.project_locked"));
-		} finally {
-			// Unlock the projects that were locked.
-			for (; idx > 0; idx--) {
-				projects.get(idx - 1).unlock();
-			}
+		if (removedFiles != null)
+		for (VPTProject p : removedFiles.keySet()) {
+			List<VPTFile> lst = removedFiles.get(p);
+			p.fireFilesChanged(null, lst);
 		}
 
 		// cleanup
