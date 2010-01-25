@@ -6,11 +6,7 @@ import java.awt.event.ActionEvent;
 import java.util.Collection;
 import java.util.Vector;
 
-import javax.swing.JOptionPane;
-
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSFile;
-import org.gjt.sp.jedit.io.VFSManager;
 
 import projectviewer.action.Action;
 import projectviewer.vpt.VPTFile;
@@ -19,11 +15,6 @@ import projectviewer.vpt.VPTProject;
 
 public class IndexProjectAction extends Action
 {
-	static public final String MESSAGE = "lucene.message.";
-	static public final String INDEX_ERROR = MESSAGE + "CreateProjectIndexError";
-	static public final String INDEX_ERROR_TITLE = MESSAGE + "CreateProjectIndexError.title";
-	static public final String LOCK_PROJECT_ERROR = MESSAGE + "LockProjectError";
-
 	@Override
 	public String getText()
 	{
@@ -50,7 +41,7 @@ public class IndexProjectAction extends Action
 				return;
 			}
 			ProjectIndexer indexer = new ProjectIndexer(project, index);
-			VFSManager.runInWorkThread(indexer);
+			LucenePlugin.runInWorkThread(indexer);
 		}
 	}
 
@@ -90,16 +81,6 @@ public class IndexProjectAction extends Action
 						return null;
 					return files.get(index++);
 				}
-				if (! project.tryLock())
-				{
-					JOptionPane.showMessageDialog(
-						IndexProjectAction.this.viewer.getView(),
-						jEdit.getProperty(LOCK_PROJECT_ERROR),
-						jEdit.getProperty(INDEX_ERROR_TITLE),
-						JOptionPane.ERROR_MESSAGE,
-						null);
-					return null;
-				}
 				Collection<VPTNode> nodes = project.getOpenableNodes();
 				files = new Vector<VFSFile>();
 				for (VPTNode n : nodes)
@@ -112,7 +93,6 @@ public class IndexProjectAction extends Action
 							files.add(file);
 					}
 				}
-				project.unlock();
 				return next();
 			}
 		}

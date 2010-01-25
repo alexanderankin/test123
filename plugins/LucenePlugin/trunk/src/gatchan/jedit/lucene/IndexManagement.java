@@ -21,7 +21,6 @@
 package gatchan.jedit.lucene;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
-import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.WorkRequest;
 
@@ -35,6 +34,7 @@ import java.awt.event.ActionEvent;
 /**
  * @author Matthieu Casanova
  */
+@SuppressWarnings("serial")
 public class IndexManagement extends AbstractOptionPane
 {
 	private IndexOptionPanel indexOptionPanel;
@@ -192,7 +192,7 @@ public class IndexManagement extends AbstractOptionPane
 					reindex.setEnabled(false);
 					delete.setEnabled(false);
 					OptimizeWorkRequest wr = new OptimizeWorkRequest(indexName);
-					VFSManager.runInWorkThread(wr);
+					LucenePlugin.runInWorkThread(wr);
 				}
 				else if (e.getSource() == delete)
 				{
@@ -208,7 +208,7 @@ public class IndexManagement extends AbstractOptionPane
 					reindex.setEnabled(false);
 					delete.setEnabled(false);
 					ReindexWorkRequest wr = new ReindexWorkRequest(indexName);
-					VFSManager.runInWorkThread(wr);
+					LucenePlugin.runInWorkThread(wr);
 				}
 			}
 		}

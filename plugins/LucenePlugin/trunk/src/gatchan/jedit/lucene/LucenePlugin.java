@@ -338,7 +338,7 @@ public class LucenePlugin extends EditPlugin
 	public void addToIndex(final String indexName, final VFSFile[] files,
 		final boolean sharedSession)
 	{
-		VFSManager.runInWorkThread(new Runnable()
+		runInWorkThread(new Runnable()
 		{
 			public void run()
 			{
@@ -380,5 +380,16 @@ public class LucenePlugin extends EditPlugin
 			return null;
 		File indexFolder = new File(home, "indexes");
 		return new File(indexFolder, name);
+	}
+
+	/**
+	 * Runs the given task in the background without going through
+	 * the VFSManager's thread pool, to avoid blocking AWT tasks (such
+	 * as opening a file) while the background task is running.
+	 */
+	public static void runInWorkThread(Runnable r)
+	{
+		Thread t = new Thread(r);
+		t.start();
 	}
 }

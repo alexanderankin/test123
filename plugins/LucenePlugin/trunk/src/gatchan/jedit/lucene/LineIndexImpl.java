@@ -46,6 +46,8 @@ public class LineIndexImpl extends IndexImpl
 
 	protected void addDocument(VFSFile file, Object session)
 	{
+		if (file.getPath() == null)
+			return;
 		Log.log(Log.DEBUG, this, "Index:"+getName() + " add " + file);
 		BufferedReader reader = null;
 		try
