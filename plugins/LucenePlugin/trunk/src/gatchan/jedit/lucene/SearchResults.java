@@ -303,8 +303,12 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 	{
 		Vector<String> items = new Vector<String>();
 		for (int i = 0; i < indexModel.getSize(); i++)
-			items.add((String) indexModel.getElementAt(i));
-		String indexName = (String) msg.getSource(); 
+		{
+			String indexName = (String) indexModel.getElementAt(i);
+			if (indexName != CURRENT_BUFFER && indexName != ALL_BUFFERS)
+				items.add(indexName);
+		}
+		String indexName = (String) msg.getSource();
 		if (msg.getWhat() == LuceneIndexUpdate.What.CREATED)
 			items.add(indexName);
 		else
