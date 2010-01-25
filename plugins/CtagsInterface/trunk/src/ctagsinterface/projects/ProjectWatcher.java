@@ -66,15 +66,12 @@ public class ProjectWatcher
 		VPTProject p = pm.getProject(project);
 		if (p == null)
 			return null;
-		if (! p.tryLock())
-			return null;
 		Vector<String> files = new Vector<String>();
 		Iterator<VPTNode> nodes = p.getOpenableNodes().iterator();
 		while (nodes.hasNext()) {
 			VPTNode node = nodes.next();
 			files.add(node.getNodePath());
 		}
-		p.unlock();
 		return files;
 	}
 
