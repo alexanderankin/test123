@@ -753,7 +753,11 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		addWorkRequest(new Runnable() {
 			public void run() {
 				Vector<String> files = pvi.getFiles(project);
-				tagFiles(files, handler);
+				if (files == null)
+					JOptionPane.showMessageDialog(jEdit.getActiveView(),
+						"Cannot find project named '" + project + "'.");
+				else
+					tagFiles(files, handler);
 			}
 		}, false);
 		removeStatusMessage();
