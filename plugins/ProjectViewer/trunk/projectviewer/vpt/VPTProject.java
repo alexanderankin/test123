@@ -29,7 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.swing.Icon;
 import javax.swing.SwingUtilities;
@@ -64,7 +65,7 @@ public class VPTProject extends VPTNode {
 	private String		rootPath;
 	private String		url;
 	private Properties	properties;
-	private ReentrantLock lock;
+	private ReadWriteLock lock;
 
 	protected Map<String,VPTNode> openableNodes;
 
@@ -78,7 +79,7 @@ public class VPTProject extends VPTNode {
 		openFiles		= new ArrayList<String>();
 		properties		= new Properties();
 		filterList		= Collections.emptyList();
-		lock			= new ReentrantLock();
+		lock			= new ReentrantReadWriteLock();
 	}
 
 	//}}}
@@ -91,22 +92,26 @@ public class VPTProject extends VPTNode {
 	 *	and which are correcty registered with their respective projects.
 	 */
 	public VPTNode getChildNode(String path) {
-		lock.lock();
+		lock(false);
 		try {
 			return openableNodes.get(path);
 		} finally {
-			lock.unlock();
+			unlock(false);
 		}
 	} //}}}
 
 	//{{{ +getOpenableNodes() : Collection
 	/**
-	 *	Returns a read-only collection of the nodes that can be opened contained
+	 *	Returns a collection of the nodes that can be opened contained
 	 *	in this project.
 	 */
 	public Collection<VPTNode> getOpenableNodes() {
-		checkLock();
-		return Collections.unmodifiableCollection(openableNodes.values());
+		lock(false);
+		try {
+			return new ArrayList<VPTNode>(openableNodes.values());
+		} finally {
+			unlock(false);
+		}
 	}
 	//}}}
 
@@ -195,11 +200,11 @@ public class VPTProject extends VPTNode {
 	 *	matches the given path.
 	 */
 	public boolean isInProject(String path) {
-		lock.lock();
+		lock(false);
 		try {
 			return openableNodes.containsKey(path);
 		} finally {
-			lock.unlock();
+			unlock(false);
 		}
 	} //}}}
 
@@ -237,26 +242,38 @@ public class VPTProject extends VPTNode {
 	 *	paths to nodes kept internally. Only openable nodes are mapped.
 	 */
 	public void registerNodePath(VPTNode node) {
-		checkLock();
-		if (node.canOpen()) {
-			openableNodes.put(node.getNodePath(), node);
+		lock(true);
+		try {
+			if (node.canOpen()) {
+				openableNodes.put(node.getNodePath(), node);
+			}
+		} finally {
+			unlock(true);
 		}
 	} //}}}
 
 	//{{{ +removeAllChildren() : void
 	/** Removes all children from the project, and unregisters all files. */
 	public void removeAllChildren() {
-		checkLock();
-		openableNodes.clear();
-		super.removeAllChildren();
+		lock(true);
+		try {
+			openableNodes.clear();
+			super.removeAllChildren();
+		} finally {
+			unlock(true);
+		}
 	} //}}}
 
 
 	//{{{ +unregisterNodePath(VPTNode) : void
 	/** Unegister a node from the project. */
 	public void unregisterNodePath(VPTNode node) {
-		checkLock();
-		openableNodes.remove(node.getNodePath());
+		lock(true);
+		try {
+			openableNodes.remove(node.getNodePath());
+		} finally {
+			unlock(true);
+		}
 	} //}}}
 
 	/**
@@ -265,8 +282,12 @@ public class VPTProject extends VPTNode {
 	 *	@since	PV 2.1.3.6
 	 */
 	public void unregisterNodePath(String path) {
-		checkLock();
-		openableNodes.remove(path);
+		lock(true);
+		try {
+			openableNodes.remove(path);
+		} finally {
+			unlock(true);
+		}
 	}
 
 	//{{{ +getNodePath() : String
@@ -326,92 +347,13 @@ public class VPTProject extends VPTNode {
 
 
 	/**
-	 * Makes sure the current thread is holding the project lock.
-	 * Hopefully this will help identify any offenders.
-	 */
-	protected void checkLock()
-	{
-		assert lock.isHeldByCurrentThread() :
-			"Modifying project without holding project lock!";
-		if (!lock.isHeldByCurrentThread()) {
-			throw new IllegalStateException();
-		}
-	}
-
-
-	/**
-	 * Lock the project, blocking the calling thread until the lock
-	 * can be held.
-	 *
-	 * <p>Since it's dangerous to call this method from the AWT thread
-	 * (it's too easy to cause deadlocks and block the AWT thread
-	 * altogether), it asserts that it's being called from a different
-	 * thread.<p>
-	 *
-	 * @throw IllegalStateException	If called from the AWT thread.
+	 * Returns the read-write lock used to project the project.
 	 *
 	 * @since PV 3.0.0
 	 */
-	public void lock()
+	protected ReadWriteLock getLock()
 	{
-		assert !SwingUtilities.isEventDispatchThread() :
-				"Don't call VPTProject.lock() from the AWT thread.";
-		if (SwingUtilities.isEventDispatchThread()) {
-			throw new IllegalStateException();
-		}
-		lock.lock();
-	}
-
-
-	/**
-	 * "Locks" the project. All tasks that need to perform destructive
-	 * operations on the project (like changing settings, importing
-	 * files, etc) should first try to lock the object. If the project
-	 * is already locked, the task should fail (either retry later, or
-	 * error out).
-	 *
-	 * The lock ownership is not enforced: anyone can call
-	 * {@link #unlock()} to unlock the project (or simply ignore locks).
-	 * That's obviously not encouraged.
-	 *
-	 * @return Whether the project was successfully locked by the caller.
-	 * @since PV 3.0.0
-	 */
-	public boolean tryLock()
-	{
-		return lock.tryLock();
-	}
-
-
-	/**
-	 * Unlocks the project from the current thread.
-	 *
-	 * @since PV 3.0.0
-	 */
-	public void unlock()
-	{
-		unlock(false);
-	}
-
-
-	/**
-	 * Unlocks the project, optionally doing so from the AWT thread.
-	 *
-	 * @param	awt		If true, performs the unlock in the AWT thread.
-	 *
-	 * @since PV 3.0.0
-	 */
-	public void unlock(boolean awt)
-	{
-		if (awt) {
-			PVActions.swingInvoke(new Runnable() {
-				public void run() {
-					lock.unlock();
-				}
-			});
-		} else {
-			lock.unlock();
-		}
+		return lock;
 	}
 
 

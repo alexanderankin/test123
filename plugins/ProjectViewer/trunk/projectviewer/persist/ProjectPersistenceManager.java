@@ -118,30 +118,16 @@ public final class ProjectPersistenceManager {
 			return null;
 		}
 
-		if (!p.tryLock()) {
-			assert false :
-				"Can't get project lock for loading, something's really wrong.";
-			jEdit.getActiveView().getStatus().setMessageAndClear(
-				jEdit.getProperty("projectviewer.error.project_locked"));
-			return null;
-		}
-
 		// OK, let's parse the config file
-		boolean success = false;
 		try {
 			XMLReader parser = PVActions.newXMLReader(new ProjectHandler(p));
 			parser.parse(new InputSource(new InputStreamReader(in, "UTF-8")));
-			success = true;
 		} catch (Exception e) {
 			Log.log(Log.ERROR,  ProjectPersistenceManager.class.getName(), e);
-		} finally {
-			p.unlock();
+			return null;
 		}
 
-		if (success) {
-			return p;
-		}
-		return null;
+		return p;
 	} //}}}
 
 	/**
