@@ -296,8 +296,12 @@ public class IndexImpl extends AbstractIndex implements Index
 
 	protected void addDocument(VFSFile file, Object session)
 	{
+		if (file.getPath() == null)
+			return;
 		Log.log(Log.DEBUG, this, "Index:" + name + " add " + file.getPath());
 		Document doc = getEmptyDocument(file);
+		if (doc == null)
+			return;
 		Reader reader = null;
 		try
 		{
@@ -321,6 +325,8 @@ public class IndexImpl extends AbstractIndex implements Index
 	protected Document getEmptyDocument(VFSFile file)
 	{
 		Document doc = new Document();
+		if (file.getPath() == null)
+			return null;
 		doc.add(new Field("path", file.getPath(), Field.Store.NO, Field.Index.ANALYZED));
 		doc.add(new Field("_path", file.getPath(), Field.Store.YES, Field.Index.NOT_ANALYZED));
 		String extension = MiscUtilities.getFileExtension(file.getPath());

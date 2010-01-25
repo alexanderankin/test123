@@ -30,7 +30,6 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EditBus.EBHandler;
-import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.util.Log;
 
@@ -67,7 +66,7 @@ public class CentralIndex extends AbstractIndex
 				final BufferUpdate bufferUpdate = message;
 				if (bufferUpdate.getWhat() == BufferUpdate.SAVED)
 				{
-					VFSManager.runInWorkThread(new Runnable()
+					LucenePlugin.runInWorkThread(new Runnable()
 					{
 						public void run()
 						{
