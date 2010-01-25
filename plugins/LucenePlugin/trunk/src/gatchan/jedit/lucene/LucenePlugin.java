@@ -285,12 +285,13 @@ public class LucenePlugin extends EditPlugin
 	/*
 	 * Open the new index dialog.
 	 * Returns the name of the new index, or null if cancelled.
+	 * @param suggestedName the suggested name
 	 */
-	public String createNewIndex()
+	public String createNewIndex(String suggestedName)
 	{
-		NewIndexDialog dlg = new NewIndexDialog(jEdit.getActiveView());
+		NewIndexDialog dlg = new NewIndexDialog(jEdit.getActiveView(), suggestedName);
 		dlg.setVisible(true);
-		if (! dlg.accepted())
+		if (!dlg.accepted())
 			return null;
 		Index index = createIndex(dlg.getIndexName(), dlg.getIndexType(),
 			dlg.getIndexAnalyzer());
