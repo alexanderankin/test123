@@ -91,14 +91,11 @@ public class VPTProject extends VPTNode {
 	 *	and which are correcty registered with their respective projects.
 	 */
 	public VPTNode getChildNode(String path) {
-		if (!tryLock()) {
-			assert false : "Can't get project lock, this shouldn't happen.";
-			return null;
-		}
+		lock.lock();
 		try {
 			return openableNodes.get(path);
 		} finally {
-			checkLock();
+			lock.unlock();
 		}
 	} //}}}
 
@@ -198,14 +195,11 @@ public class VPTProject extends VPTNode {
 	 *	matches the given path.
 	 */
 	public boolean isInProject(String path) {
-		if (!tryLock()) {
-			assert false : "Can't get project lock, this shouldn't happen.";
-			return false;
-		}
+		lock.lock();
 		try {
 			return openableNodes.containsKey(path);
 		} finally {
-			unlock();
+			lock.unlock();
 		}
 	} //}}}
 
@@ -335,7 +329,7 @@ public class VPTProject extends VPTNode {
 	 * Makes sure the current thread is holding the project lock.
 	 * Hopefully this will help identify any offenders.
 	 */
-	private void checkLock()
+	protected void checkLock()
 	{
 		assert lock.isHeldByCurrentThread() :
 			"Modifying project without holding project lock!";

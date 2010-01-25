@@ -127,20 +127,21 @@ public final class ProjectPersistenceManager {
 		}
 
 		// OK, let's parse the config file
+		boolean success = false;
 		try {
 			XMLReader parser = PVActions.newXMLReader(new ProjectHandler(p));
 			parser.parse(new InputSource(new InputStreamReader(in, "UTF-8")));
+			success = true;
 		} catch (Exception e) {
 			Log.log(Log.ERROR,  ProjectPersistenceManager.class.getName(), e);
-			p = null;
 		} finally {
-			if (p != null) {
-				p.sortChildren();
-				p.unlock();
-			}
+			p.unlock();
 		}
 
-		return p;
+		if (success) {
+			return p;
+		}
+		return null;
 	} //}}}
 
 	/**
