@@ -3,7 +3,7 @@
 <html>
 
 <head>
-   <meta name="Author" content="Carmine Lucarelli">
+   <meta name="Author" content="François Rey">
    <title>Launcher Plugin</title>
 </head>
 
@@ -13,13 +13,6 @@
   <tr>
     <td valign="center" bgcolor="#CCCCFF">
       <b><font size="+3">Launcher Plugin</font></b>
-    </td>
-
-    <td valign="center" bgcolor="#CCCCFF">
-      <div align="right">
-        <font size="-1">By Carmine Lucarelli<br>
-        <a href="mailto:carmine.lucarelli@lombard.ca">Email</a></i></font>
-      </div>
     </td>
   </tr>
 </table>
@@ -35,24 +28,25 @@ The Launcher plugin provides a way to add the same context specific menu
 to the File System Browser, ProjectViewer, Plugin Menu, and text area
 contextual menu. The contents of this menu is dynamic and depends on
 the current selection or buffer. This menu offers various ways of launching
-the selected resource.
+the selected resource(s).
 <br>
-For example: launch with associated application as defined by the desktop,
-launch in browser, execute file, launch with associated application as
-defined in the Launcher options, etc.
+For example:
+<ul>
+<li>launch with associated application as defined by the desktop,
+<li>launch in browser,
+<li>execute file,
+<li>launch with associated application as defined in the Launcher options,
+<li>etc.
+</ul>
 <br>
-<br>
-More precisely the Launcher plugin proposes a framework for defining Launchers
-and managing them via LauncherTypes. Both of these classes are services
-whereby other plugins can contribute new Launchers and LauncherTypes.
-<br>Launchers are an extension of the EditAction type. They are typically
-stateless therefore the same instance is reused in different places.
-LauncherTypes manage a set of Launchers that:
+Launchers are organized by LauncherTypes, which manage launchers that:
+<ul>
 <li>launch the same type of resource (files, url, etc.)
 <li>share the same configuration information and intented action
+</ul>
 <br>Note that the same Launcher can be used by many LauncherTypes.
 <br>
-<br>
+
 For example on most systems one can find a command line tool
 that is able to open a file with its associated application and
 also open a url with the default browser (desktop settings).
@@ -60,7 +54,16 @@ On x11 system this application is 'xdg-open', on Mac OS X 'open', and
 on Windows 'start'. At startup the Launcher plugin determines which
 OS is being used and defines the corresponding
 SystemApplicationOrBrowserLauncher. The latter will then be used by
-BrowserLauncherType and SystemApplicationLauncherType. 
+BrowserLauncherType and SystemApplicationLauncherType.
+<br>
+More precisely the Launcher plugin proposes a framework for defining Launchers
+and managing them via LauncherTypes. Both of these classes are services
+whereby other plugins can contribute new Launchers and LauncherTypes.
+<br>Launchers are an extension of the EditAction type. They are typically
+stateless therefore the same instance is reused in different places.
+
+<br>
+
 
 </body>
 </html>
