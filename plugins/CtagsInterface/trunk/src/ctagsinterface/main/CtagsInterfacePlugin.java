@@ -583,14 +583,18 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	}
 	
 	// Deletes an origin with all associated data from the DB
-	public static void deleteOrigin(String type, String name) {
-		try {
-			db.deleteOrigin(type, name);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		if (pvi != null && type.equals(TagDB.PROJECT_ORIGIN))
-			pvi.updateWatchers();
+	public static void deleteOrigin(final String type, final String name) {
+		addWorkRequest(new Runnable() {
+			public void run() {
+				try {
+					db.deleteOrigin(type, name);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				if (pvi != null && type.equals(TagDB.PROJECT_ORIGIN))
+					pvi.updateWatchers();	
+			}
+		}, false);
 	}
 	// Inserts a new origin to the DB, runs Ctags on it and adds the tags
 	// to the DB.
