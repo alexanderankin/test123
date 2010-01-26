@@ -164,11 +164,6 @@ public abstract class LauncherType {
 		}
 	}
 
-	public LaunchConfiguration buildLaunchConfigurationFor(Launcher launcher, Object resource) {
-		Object resolvedResource = resolve(resource);
-		return resolvedResource==null ? null : new LaunchConfiguration(this, launcher, resource, resolvedResource);
-	}
-
 	public abstract OptionPane getOptionPane();
 	
 	public String getPropertyPrefix() {
