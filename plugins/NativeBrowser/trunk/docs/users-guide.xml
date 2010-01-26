@@ -142,10 +142,15 @@
 
         </itemizedlist>
 
-        <para>These operations are listed in the submenu which appears for
-        NativeBrowser under the <guimenu>Plugins</guimenu> menu. They can also
+        <para>More operations are listed in the submenu which appears for
+        NativeBrowser under the <guimenu>Plugins</guimenu> menu. These can also
         be made the subject of keyboard shortcuts in the <guilabel>Shortcuts</guilabel>
         pane of the <guimenu>Utilities>Global Options...</guimenu> menu.</para>
+        
+        <para>If the Launcher plugin is installed some operations will also appear
+        in the contextual menu of File Browser, ProjectViewer, and text area. 
+        </para>
+                
     </simplesect>
 
     <simplesect id="options">
