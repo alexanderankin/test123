@@ -29,6 +29,8 @@ import org.gjt.sp.jedit.io.VFSFile;
 
 import projectviewer.config.VersionControlService;
 
+import projectviewer.importer.ImporterFileFilter;
+
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 
@@ -61,6 +63,11 @@ public class P4Service implements VersionControlService
 	public Class getPlugin()
 	{
 		return P4Plugin.class;
+	}
+
+	public ImporterFileFilter getFilter()
+	{
+	    return new P4FileFilter();
 	}
 
 	public void dissociate(VPTProject proj)
