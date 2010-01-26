@@ -11,8 +11,8 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
 /**
- * The base class for all launchers, extending jEdit's action base class
- * {@link EditAction}.
+ * The base class for all Launchers, extending jEdit's action base class
+ * {@link EditAction}. All Launchers must extend this abstract class.
  * <p>
  * A Launcher encapsulate the logic of launching one or more resources
  * within its {@link #launch(View, Object)} method. The object passed
@@ -51,8 +51,12 @@ import org.gjt.sp.util.Log;
  * Also the default implementation of {@link EditAction#getLabel()} and
  * {@link EditAction#getName()} are reused, therefore the name of a
  * Launcher is used as prefix to build the name of the property storing its
- * label (&lt;name&gt;.label). This also means the label is parameterized as
- * supported by {@link jEdit#getProperty(String, Object[])}.
+ * label (&lt;name&gt;.label). This also means the label property can be
+ * parameterized as supported by {@link jEdit#getProperty(String, Object[])}.
+ * The methods {@link #getLabel()} and {@link #getShortLabel()} are the only
+ * ones using the <code>Object[]</code> argument passed to the constructor.
+ * Sublasses are free to override these methods and specify their own
+ * convention for what the <code>Object[]</code> parameter should contain.
  * <p>
  * 
  * @author François Rey
@@ -73,10 +77,47 @@ public abstract class Launcher extends EditAction {
 	private Object resource = null;
 	private boolean resourceNeverSet = true;
 
+	/**
+	 * The most basic constructor that creates a stateless Launcher.
+	 * @param property The name of the Launcher which is used as prefix
+	 * for building the label property name (&lt;name&gt;.label).
+	 * This name must be unique across all defined Launchers.
+	 * @param args the arguments for the launcher. Default behavior is
+	 * to pass this array to {@link jEdit#getProperty(String, Object[])}
+	 * when retrieving the label (see {@link EditAction#getLabel()}).
+	 * Parameterization helps in making sure the label is unique
+	 * otherwise the list of Launchers in the GUI will contain duplicates.
+	 * Default behavior is also to use the first element in the array
+	 * as short label (using its <code>toString()</code> method, see
+	 * {@link #getShortLabel()}).
+	 */
 	public Launcher(String property, Object[] args) {
 		this(property, args, false, false);
 	}
 	
+	/**
+	 * Fully specified constructor that allows the creation of stateful
+	 * Launchers. Another flag is needed to indicate whether the
+	 * new Launcher corresponds to a user entry in the GUI.
+	 * It's important to distinguish these from other Launchers mainly
+	 * because they need to be persisted. 
+	 * @param property The name of the Launcher which is used as prefix
+	 * for building the label property name (&lt;name&gt;.label).
+	 * This name must be unique across all defined Launchers.
+	 * @param args the arguments for the launcher. Default behavior is
+	 * to pass this array to {@link jEdit#getProperty(String, Object[])}
+	 * when retrieving the label (see {@link EditAction#getLabel()}).
+	 * Parameterization helps in making sure the label is unique
+	 * otherwise the list of Launchers in the GUI will contain duplicates.
+	 * Default behavior is also to use the first element in the array
+	 * as short label (using its <code>toString()</code> method, see
+	 * {@link #getShortLabel()}).
+	 * @param stateful true if this Launcher is to be stateful, thus enabling the use
+	 * of state-related methods.
+	 * @param userDefined true if this Launcher is created by the user in the GUI.
+	 * This flag is intended to be used by the persistence logic for user-defined
+	 * Launchers.
+	 */
 	public Launcher(String property, Object[] args, boolean stateful, boolean userDefined) {
 		super(property, args);
 		this.stateful = stateful;
@@ -84,8 +125,14 @@ public abstract class Launcher extends EditAction {
 		firstLevel = jEdit.getBooleanProperty(name + FIRST_LEVEL_SUFFIX, false);
 	}
 	
+	/**
+	 * Returns the short label for this launcher.
+	 * Default implementation is to call <code>toString()</code> on the first
+	 * object from the <code>Object[]</code> array passed to the constructor.
+	 * @return the short label or null if not defined.
+	 */
 	public String getShortLabel() {
-		return args[0].toString();
+		return args == null || args.length == 0 ? null : args[0].toString();
 	}
 	
 	public boolean launch(View view) {
