@@ -15,7 +15,6 @@ public class LauncherActionContext extends ActionContext  implements Cloneable {
 	
 	protected transient WeakReference<LauncherType> weakLauncherType = null;
 	protected String launcherTypeName = null;
-	protected transient Object resource = null;
 	protected Object resolvedResource = null;
 	
 	public static LauncherActionContext INSTANCE =
@@ -32,7 +31,6 @@ public class LauncherActionContext extends ActionContext  implements Cloneable {
 		this.launcherTypeName = launcherType == null ?
 				null :
 				launcherType.getServiceName();
-		this.resource = resource;
 		this.resolvedResource = resource == null || launcherType==null ?
 				null : 
 				launcherType.resolve(resource);
@@ -48,9 +46,6 @@ public class LauncherActionContext extends ActionContext  implements Cloneable {
 		return launcherType;
 	}
 	
-	public Object getResource() {
-		return resource;
-	}
 	public Object getResolvedResource() {
 		return resolvedResource;
 	}
