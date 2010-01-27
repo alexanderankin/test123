@@ -76,14 +76,14 @@ nativebrowser.home.icon=Home.png
 options.nativebrowser.homepage=http://www.google.com/
 
 # Launcher plugin integration
-nativebrowser.launcher.OpenInNativeBrowserLauncher.label=Browse with NativeBrowser
+nativebrowser.launcher.OpenInNativeBrowserLauncher.label=Open in NativeBrowser
 nativebrowser.launcher.OpenInNativeBrowserLauncher.label.short=NativeBrowser
 nativebrowser.launcher.OpenInNativeBrowserLauncher.first-level=true
 nativebrowser.launcher.SetNativeBrowserHomepageLauncher.label=Set as homepage of NativeBrowser
 nativebrowser.launcher.SetNativeBrowserHomepageLauncher.label.short=Set as homepage of NativeBrowser
-nativebrowser.launcher.RenderTextAreaInNativeBrowserLauncher.label=Render buffer in NativeBrowser
-nativebrowser.launcher.RenderTextAreaInNativeBrowserLauncher.label.short=Render in NativeBrowser
-nativebrowser.launcher.RenderTextAreaInNativeBrowserLauncher.first-level=true
+nativebrowser.launcher.RenderInNativeBrowserLauncher.label=Render in NativeBrowser
+nativebrowser.launcher.RenderInNativeBrowserLauncher.label.short=Render in NativeBrowser
+nativebrowser.launcher.RenderInNativeBrowserLauncher.first-level=true
 
 
 # Setting not defined but supplied for completeness
