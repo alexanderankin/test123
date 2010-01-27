@@ -21,6 +21,7 @@ import org.xml.sax.InputSource;
 import com.thaiopensource.relaxng.edit.*;
 import com.thaiopensource.xml.util.Name;
 import com.thaiopensource.resolver.xml.sax.SAX;
+import com.thaiopensource.util.VoidValue;
 
 
 import org.gjt.sp.util.Log;
@@ -58,7 +59,6 @@ public class SchemaToCompletion
 		}
 		
 		try{
-			// TODO: Resolver
 			InputSource is = xml.Resolver.instance().resolveEntity(
 				/*name*/null,
 				/*publicId*/null,
@@ -76,8 +76,6 @@ public class SchemaToCompletion
 			
 			Pattern p = mainSchema.getPattern();
 			
-			System.out.println(mainSchema);
-			
 			p.accept(new MyPatternVisitor(infos,schemas));
 			
 			// use a more intuitive '' key for the completion info
@@ -94,42 +92,96 @@ public class SchemaToCompletion
 	}
 	
 	private static class GrabDefinesVisitor
-	extends AbstractPatternVisitor< Map<String,DefineComponent> >
-	implements ComponentVisitor < Map<String,DefineComponent> >
+	extends AbstractPatternVisitor< Map<String,List<DefineComponent>> >
+	implements ComponentVisitor < Map<String,List<DefineComponent>> >
 	{
-		private Map<String,DefineComponent> comps = new HashMap<String,DefineComponent>();
-		public Map<String,DefineComponent> visitGrammar(GrammarPattern p){
+		private Map<String,List<DefineComponent>> comps = new HashMap<String,List<DefineComponent>>();
+		public Map<String,List<DefineComponent>> visitGrammar(GrammarPattern p){
 			p.componentsAccept(this);
 			return comps;
 		}
 		
-		public Map<String,DefineComponent> visitDefine(DefineComponent c){
+		public Map<String,List<DefineComponent>> visitDefine(DefineComponent c){
 			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,GrabDefinesVisitor.class,"visitDefine("+c.getName()+")");
-			comps.put(c.getName(),c);
+			if(!comps.containsKey(c.getName())){
+				comps.put(c.getName(),new ArrayList<DefineComponent>());
+			}
+			comps.get(c.getName()).add(c);
 			return comps;
 		}
 		
-		public Map<String,DefineComponent> visitDiv(DivComponent c){
+		public Map<String,List<DefineComponent>> visitDiv(DivComponent c){
 			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,GrabDefinesVisitor.class,"visitDiv()");
+			c.componentsAccept(this);
 			return comps;
 		}
 		
-		public Map<String,DefineComponent> visitInclude(IncludeComponent c){
+		public Map<String,List<DefineComponent>> visitInclude(IncludeComponent c){
 			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,GrabDefinesVisitor.class,"visitInclude("+c.getHref()+")");
+			// do not grab definitions inside the include element
 			return comps;
 		}
 		
-		public Map<String,DefineComponent> visitPattern(Pattern p){
+		public Map<String,List<DefineComponent>> visitPattern(Pattern p){
 			throw new UnsupportedOperationException("visitPattern("+p+")");
+		}
+	}
+	/** add-hock collection to gather definitions in nested grammars.
+	 */
+	private static class StackableMap<K,V>
+	{
+		private List<Map<K,V>> contents;
+		
+		StackableMap(int initialSize)
+		{
+			contents = new ArrayList<Map<K,V>>(initialSize);
+		}
+		
+		public void push(Map<K,V> step)
+		{
+			contents.add(0,step);
+		}
+
+		public Map<K,V> pop()
+		{
+			return contents.remove(0);
+		}
+		
+		public V get(K key)
+		{
+			if(contents.isEmpty())return null;
+			return contents.get(0).get(key);
+		}
+		
+		public V getFromParent(K key)
+		{
+			if(contents.size()<2)return null;
+			return contents.get(1).get(key);
+		}
+
+		public boolean containsKey(K key)
+		{
+			if(contents.isEmpty())return false;
+			return contents.get(0).containsKey(key);
+		}
+		
+		public boolean parentContainsKey(K key)
+		{
+			if(contents.size()<2)return false;
+			return contents.get(1).containsKey(key);
+		}
+		
+		public String toString(){
+			return "StackableMap{"+contents+"}";
 		}
 	}
 	
 	private static class MyAttributeVisitor extends AbstractPatternVisitor< List<AttributeDecl> >{
 		private Map<String,String> values;
 		private List<String> data;
-		private Map<String,DefineComponent> defined;
+		private StackableMap<String,List<DefineComponent>> defined;
 		
-		MyAttributeVisitor(Map<String,DefineComponent> defined){
+		MyAttributeVisitor(StackableMap<String,List<DefineComponent>> defined){
 			this.defined=defined;
 		}
 		
@@ -239,12 +291,17 @@ public class SchemaToCompletion
 		public List<AttributeDecl> visitParentRef(ParentRefPattern p){
 			throw new IllegalArgumentException("attribute//parentRef isn't allowed");
 		}
-				   
+				 
+		/** 
+		 *  FIXME: endless loop here, since references are allowed to be recursive.
+		 */
 		public List<AttributeDecl> visitRef(RefPattern p){
 			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyAttributeVisitor.class,"visitRef()");
 			if(defined.containsKey(p.getName()))
 			{
-				defined.get(p.getName()).getBody().accept(this);
+				for(DefineComponent dc: defined.get(p.getName())){
+					dc.getBody().accept(this);
+				}
 				return null;
 			}
 			else throw new IllegalArgumentException("unknown define : "+p.getName());
@@ -318,30 +375,30 @@ public class SchemaToCompletion
 		}
 	}
 	
-	
 	private static class MyPatternVisitor extends VoidVisitor
 	{
 		private Map<String,CompletionInfo> info;
 		private SchemaCollection schemas;
 		private boolean empty = false;
-		private Map<String,DefineComponent> defines;
+		private StackableMap<String,List<DefineComponent>> defines;
 		private ElementDecl parent;
 		
 		MyPatternVisitor(Map<String,CompletionInfo> info,SchemaCollection schemas){
 			this.info = info;
 			this.schemas = schemas;
 			parent = null;
+			defines = new StackableMap<String,List<DefineComponent>>(2);
 		}
 		
 		
 		public void voidVisitAttribute(AttributeAnnotation a)
 		{
-			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitAttributeAnnotation()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"voidVisitAttributeAnnotation()");
 		}
 		
 		public void voidVisitAttribute(AttributePattern p)
 		{
-			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitAttribute()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"voidVisitAttribute()");
 
 			MyAttributeVisitor visitor = new MyAttributeVisitor(defines);
 			
@@ -355,47 +412,47 @@ public class SchemaToCompletion
 		
 		public void voidVisitChoice(ChoicePattern p)
 		{
-			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitChoice()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"voidVisitChoice()");
 			p.childrenAccept(this);
 		}
 		
 		public void voidVisitComment(Comment c)
 		{
-			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitComment()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"voidVisitComment()");
 		}
 		
 		public void voidVisitComponent(Component c)
 		{
-			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitComponent()");
+			throw new UnsupportedOperationException(" voidVisitComponent() should not be called");
 		}
 		
 		public void voidVisitData(DataPattern p)
 		{
-			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitData()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"voidVisitData()");
+			// TODO: display the data type of an element
 		}
 		
 		
 		public void voidVisitDefine(DefineComponent c)
 		{
-			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitDefine("+c.getName()+","+c.getCombine()+")");
-			if(DefineComponent.START.equals(c.getName())){
-				c.getBody().accept(this);
-			}
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"voidVisitDefine("+c.getName()+","+c.getCombine()+")");
 		}
 		
 		public void voidVisitDiv(DivComponent c)
 		{
-			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitDiv()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"voidVisitDiv()");
+			// may be used to add documentation to a group of elements.
+			c.componentsAccept(this);
 		}
 		
 		public void voidVisitElement(ElementAnnotation ea)
 		{
-			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitElementAnnotation()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"voidVisitElementAnnotation()");
 		}
 		
 		public void voidVisitElement(ElementPattern p)
 		{
-			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitElement()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"voidVisitElement()");
 			
 			ElementDecl myParent = parent;
 			empty = false;
@@ -417,7 +474,7 @@ public class SchemaToCompletion
 					myInfo = new CompletionInfo();
 					myInfo.namespace = name.getNamespaceUri();
 					info.put(name.getNamespaceUri(),myInfo);
-					if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"setting completionInfo for "+myInfo.namespace);
+					if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"setting completionInfo for "+myInfo.namespace);
 				}
 				
 				ElementDecl me = myInfo.elementHash.get(name.getLocalName());
@@ -453,106 +510,188 @@ public class SchemaToCompletion
 		
 		public void voidVisitEmpty(EmptyPattern p)
 		{
-			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitEmpty()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"voidVisitEmpty()");
 			empty=true;
 		}
-		
+
 		public void voidVisitExternalRef(ExternalRefPattern p)
 		{
-			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitExternalRef()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"voidVisitExternalRef("+p.getUri()+")");
+			// "The externalRef matches if the pattern contained in the specified URL matches" [RNG tutorial]
+			SchemaDocument sc = schemas.getSchemaDocumentMap().get(c.getUri());
+			// no risk of endless loop since externalRefs are not allowed to be recursive
+			sc.getPattern().accept(this);
 		}
 		
 		public void voidVisitGrammar(GrammarPattern p)
 		{
-			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitGrammar()");
-			defines = p.accept(new GrabDefinesVisitor());
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"voidVisitGrammar()");
+			defines.push(p.accept(new GrabDefinesVisitor()));
+			//for the include
 			p.componentsAccept(this);
+			
+			// explore the tree from <start>
+			if(defines.containsKey(DefineComponent.START)){
+				Log.log(Log.ERROR,MyPatternVisitor.class,"THERE IS A START");
+				for(DefineComponent dc: defines.get(DefineComponent.START)){
+					dc.getBody().accept(this);
+				}
+			}else{
+				throw new IllegalArgumentException("Grammar without a start element !");
+			}
+			defines.pop();
 		}
 		
 		public void voidVisitGroup(GroupPattern p)
 		{
-			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitGroup()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"voidVisitGroup()");
 			p.childrenAccept(this);
 		}
 		
 		public void voidVisitInclude(IncludeComponent c)
 		{
-			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitInclude()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"voidVisitInclude("+c.getUri()+")");
+			SchemaDocument sc = schemas.getSchemaDocumentMap().get(c.getUri());
+
+			// the included element MUST be a grammar per the spec
+			GrammarPattern g = (GrammarPattern)sc.getPattern();
+			
+			// a grammar contains only start, define, div, include elements 
+			Map<String,List<DefineComponent>> grammarDefinitions = g.accept(new GrabDefinesVisitor());
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"grammar definitions: "+grammarDefinitions.keySet());
+			// an include contains only start, define, div, elements 
+			GrabDefinesVisitor v = new GrabDefinesVisitor();
+			c.componentsAccept(v);
+			Map<String,List<DefineComponent>> includeDefinitions = v.comps;
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"include definitions: "+includeDefinitions.keySet());
+			// override each define and the start in the grammar with the include's contents 
+			grammarDefinitions.putAll(includeDefinitions);
+			
+			// the included grammar is then like a div : definitions should be merged
+			Map<String,List<DefineComponent>> parentDefinitions = defines.pop();
+			for(Map.Entry<String,List<DefineComponent>> e:grammarDefinitions.entrySet()){
+				if(!parentDefinitions.containsKey(e.getKey())){
+					parentDefinitions.put(e.getKey(),new ArrayList<DefineComponent>());
+				}
+				parentDefinitions.get(e.getKey()).addAll(e.getValue());
+			}
+			defines.push(parentDefinitions);
+
+			// proceed with the grammar's content
+			if(defines.containsKey(DefineComponent.START)){
+				for(DefineComponent dc: defines.get(DefineComponent.START)){
+					dc.getBody().accept(this);
+				}
+			}else{
+				throw new UnsupportedOperationException("included grammar without a start element !");
+			}
 		}
 		
 		public void voidVisitInterleave(InterleavePattern p)
 		{
-			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitInterleave()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"voidVisitInterleave()");
+			p.childrenAccept(this);
 		}
+		
+		public void voidVisitZeroOrMore(ZeroOrMorePattern p)
+		{
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"voidVisitZeroOrMore()");
+			// TODO: dont' need this until jing issue is fixed
+			// see http://code.google.com/p/jing-trang/issues/detail?id=102
+			//p.getChild().accept(this);
+		}
+
 		
 		public void voidVisitList(ListPattern p)
 		{
-			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitList()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"voidVisitList()");
+			//TODO: text completion inside this element
 		}
 		
 		public void voidVisitMixed(MixedPattern p)
 		{
-			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitMixed()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"voidVisitMixed()");
+			//indicates that the element may contain text
 		}
 		
 		
 		public void voidVisitNameClass(NameClass nc)
 		{
-			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitNameClass()");
+			throw new UnsupportedOperationException("voidVisitNameClass() shouldn't be called");
+			
 		}
 		
 		public void voidVisitNotAllowed(NotAllowedPattern p)
 		{
-			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitNotAllowed()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"voidVisitNotAllowed()");
+			// not interesting
 		}
 		
 		
 		public void voidVisitOneOrMore(OneOrMorePattern p)
 		{
-			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitOneOrMore()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"voidVisitOneOrMore()");
 			p.getChild().accept(this);
 		}
 		
 		public void voidVisitOptional(OptionalPattern p)
 		{
-			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitOptional()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"voidVisitOptional()");
 			p.getChild().accept(this);
 		}
 		
 		public void voidVisitParentRef(ParentRefPattern p)
 		{
-			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitParentRef()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"voidVisitParentRef("+p.getName()+")");
+			if(!defines.parentContainsKey(p.getName()))
+				throw new IllegalArgumentException("Undefined reference :"+p.getName());
+			// FIXME: loops ?
+			List<DefineComponent> parentRef = defines.getFromParent(p.getName());
+			for(DefineComponent dc : parentRef){
+				dc.getBody().accept(this);
+			}
 		}
 		
 		public void voidVisitPattern(Pattern p)
 		{
-			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitPattern()");
+			if(p instanceof ZeroOrMorePattern)
+			{
+				voidVisitZeroOrMore((ZeroOrMorePattern)p);
+			}
+			else
+			{
+				// we visit everything, so it shouldn't be called
+				throw new UnsupportedOperationException("visitPattern("+p+")");
+			}
 		}
 		
 		public void voidVisitRef(RefPattern p)
 		{
-			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitRef("+p.getName()+")");
-			// TODO: prevent loops when expanding
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"voidVisitRef("+p.getName()+")");
 			if(!defines.containsKey(p.getName()))
 				throw new IllegalArgumentException("Undefined reference :"+p.getName());
-			DefineComponent dc = defines.get(p.getName());
-			dc.getBody().accept(this);
+			// FIXME: prevent loops when expanding
+			for(DefineComponent dc : defines.get(p.getName())){
+				//we do not differentiate between choice and interleave
+				dc.getBody().accept(this);
+			}
 		}
 		
 		public void voidVisitText(TextAnnotation ta)
 		{
-			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitText()");
-		}
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"voidVisitText(Annotation)");
+		}	
 		
 		public void voidVisitText(TextPattern p)
 		{
-			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitText("+p+")");
-			
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"voidVisitText("+p+")");
+			//throwing away : there is no 'mixed' information in the ElementDecl
 		}
 		
 		public void voidVisitValue(ValuePattern p)
 		{
-			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"voidVisitValue()");
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"voidVisitValue()");
+			//TODO : text completion inside an element 
 		}
 		
 	}
