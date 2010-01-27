@@ -563,7 +563,7 @@ public abstract class Importer implements Runnable {
 	{
 		ImporterFileFilter filter =
 			ImportUtils.loadFilter(project.getProperties(),
-								   dlg.getFileFilters(),
+								   dlg.getFileFilters(project),
 								   name);
 		if (filter != null) {
 			if (filter instanceof GlobFilter &&

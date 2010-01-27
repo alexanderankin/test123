@@ -56,14 +56,14 @@ class AutoReimportPane extends OptionPaneBase
 		super("projectviewer.auto_reimport_props",
 			  "projectviewer.project.auto_reimport");
 		this.project = p;
-		this.options = new AutoReimporter.Options();
+		this.options = new AutoReimporter.Options(p);
 	}
 
 
 	/** Load the GUI components of the pane. */
 	protected void _init()
 	{
-		List<ImporterFileFilter> flist = ImportUtils.getFilters();
+		List<ImporterFileFilter> flist = ImportUtils.getFilters(project);
 
 		options.load(project.getProperties(), flist);
 

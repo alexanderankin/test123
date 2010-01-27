@@ -23,8 +23,10 @@ import java.util.List;
 import java.util.Properties;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.ServiceManager;
 
 import projectviewer.config.ExtensionManager;
+import projectviewer.config.VersionControlService;
 import projectviewer.vpt.VPTProject;
 
 /**
@@ -47,9 +49,10 @@ public final class ImportUtils
 	 *
 	 * @return A list with all the filters known to PV.
 	 */
-	public static List<ImporterFileFilter> getFilters()
+	public static List<ImporterFileFilter> getFilters(VPTProject p)
 	{
 		List<ImporterFileFilter> ffilters;
+
 		ffilters = new ArrayList<ImporterFileFilter>();
 		ffilters.add(GlobFilter.getImportSettingsFilter());
 		ffilters.add(new CVSEntriesFilter());
@@ -62,6 +65,25 @@ public final class ImportUtils
 				ffilters.add((ImporterFileFilter) o);
 			}
 		}
+
+		/*
+		 * Check if there's a version control-specific filter to
+		 * add to the list for the current project.
+		 */
+		VersionControlService vcservice = null;
+        String svcname = p.getProperty(VersionControlService.VC_SERVICE_KEY);
+        if (svcname != null) {
+            vcservice = (VersionControlService)
+                ServiceManager.getService(VersionControlService.class.getName(),
+                                          svcname);
+        }
+
+        if (vcservice != null) {
+        	ImporterFileFilter vcfilter = vcservice.getFilter();
+        	if (vcfilter != null) {
+        		ffilters.add(vcfilter);
+        	}
+        }
 
 		return ffilters;
 	}
