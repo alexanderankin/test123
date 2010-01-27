@@ -10,19 +10,21 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.StandardUtilities;
 
 @SuppressWarnings("serial")
-public class OptionPane extends AbstractOptionPane {
-	
+public class OptionPane extends AbstractOptionPane
+{
+
 	public static final String PREFIX = "lucene.options.";
-	private static final String INCLUDE_GLOBS_OPTION = PREFIX + "IncludeGlobs"; 
+	private static final String INCLUDE_GLOBS_OPTION = PREFIX + "IncludeGlobs";
 	private static final String INCLUDE_GLOBS_LABEL = INCLUDE_GLOBS_OPTION + ".label";
-	private static final String EXCLUDE_GLOBS_OPTION = PREFIX + "ExcludeGlobs"; 
+	private static final String EXCLUDE_GLOBS_OPTION = PREFIX + "ExcludeGlobs";
 	private static final String EXCLUDE_GLOBS_LABEL = EXCLUDE_GLOBS_OPTION + ".label";
 	private static Pattern include = null, exclude = null;
 
 	private JTextField includeFilesTF;
 	private JTextField excludeFilesTF;
 
-	public OptionPane() {
+	public OptionPane()
+	{
 		super("Lucene");
 		setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -31,6 +33,7 @@ public class OptionPane extends AbstractOptionPane {
 		excludeFilesTF = new JTextField(excludeGlobs());
 		addComponent(jEdit.getProperty(EXCLUDE_GLOBS_LABEL), excludeFilesTF);
 	}
+
 	public void save()
 	{
 		jEdit.setProperty(INCLUDE_GLOBS_OPTION, includeFilesTF.getText());
@@ -38,19 +41,21 @@ public class OptionPane extends AbstractOptionPane {
 		updateFilter();
 	}
 
-	static public String includeGlobs()
+	public static String includeGlobs()
 	{
 		return jEdit.getProperty(INCLUDE_GLOBS_OPTION);
 	}
-	static public String excludeGlobs()
+
+	public static String excludeGlobs()
 	{
 		return jEdit.getProperty(EXCLUDE_GLOBS_OPTION);
 	}
-	static private Pattern globToPattern(String filter)
+
+	private static Pattern globToPattern(String filter)
 	{
-		String [] parts = filter.split(" ");
+		String[] parts = filter.split(" ");
 		StringBuilder sb = new StringBuilder();
-		for (String part: parts)
+		for (String part : parts)
 		{
 			if (sb.length() > 0)
 				sb.append("|");
@@ -60,17 +65,17 @@ public class OptionPane extends AbstractOptionPane {
 		return Pattern.compile(sb.toString());
 	}
 
-	static private void updateFilter()
+	private static void updateFilter()
 	{
 		include = globToPattern(includeGlobs());
 		exclude = globToPattern(excludeGlobs());
 	}
 
-	static public boolean accept(String path)
+	public static boolean accept(String path)
 	{
 		if (include == null || exclude == null)
 			updateFilter();
 		return (include.matcher(path).matches() &&
-				!exclude.matcher(path).matches());
+			!exclude.matcher(path).matches());
 	}
 }
