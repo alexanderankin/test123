@@ -3,7 +3,14 @@ package launcher;
 import java.io.File;
 import java.net.URI;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
+import javax.swing.JMenuItem;
+
+import org.gjt.sp.jedit.ActionContext;
 import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.JEditAbstractEditAction;
 import org.gjt.sp.jedit.View;
@@ -150,8 +157,6 @@ public abstract class Launcher extends EditAction {
 		launch(view);
 	}
 	
-	public abstract boolean launch(View view, Object resource);
-	
 	public static void logFailedLaunch(Object source, Object resource, Throwable t) {
     	Log.log(Log.ERROR,
     			source,
@@ -166,6 +171,8 @@ public abstract class Launcher extends EditAction {
 	}
 	
 	public abstract boolean canLaunch(Object resolvedResource);
+	public abstract boolean launch(View view, Object resource);
+	public abstract String getCode(View view, Object resolvedResource);
 	
 	@Override
 	public String toString() {
@@ -201,8 +208,6 @@ public abstract class Launcher extends EditAction {
 	}
 
 
-	public abstract String getCode(View view, Object resolvedResource);
-	
 	public boolean isStateful() {
 		return stateful;
 	}
