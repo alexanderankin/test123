@@ -118,6 +118,8 @@ public final class LauncherOptionPane extends AbstractOptionPane
 			pane.save();
 		}
 		lastSelectedLauncherType = launcherTypeChoice.getSelectedItem().toString();
+		LauncherPlugin plugin = (LauncherPlugin)jEdit.getPlugin(LauncherPlugin.class.getName());
+		plugin.reload();
 	}
 
 	/**
