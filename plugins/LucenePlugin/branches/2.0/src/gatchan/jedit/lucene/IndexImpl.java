@@ -31,6 +31,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.util.Version;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSFileFilter;
@@ -232,25 +233,36 @@ public class IndexImpl extends AbstractIndex implements Index
 		}
 	}
 
-	public void search(String query, int max, ResultProcessor processor)
+	public void search(String query, String fileType, int max, ResultProcessor processor)
 	{
 		if (max < 1)
 			max = 1;
 		Searcher searcher = getSearcher();
 		if (searcher == null)
 			return;
-		QueryParser parser = new MultiFieldQueryParser(new String[]{"path", "content"}, getAnalyzer());
+		QueryParser parser = new MultiFieldQueryParser(Version.LUCENE_CURRENT, new String[]{"path", "content"},
+			getAnalyzer());
 		try
 		{
-			Query _query = parser.parse(query);
+			StringBuilder queryStr = new StringBuilder();
+			if (fileType.length() > 0)
+			{
+				if (query.length() > 0)
+					queryStr.append('(').append(query).append(") AND ");
+				queryStr.append("filetype:").append(fileType);
+			}
+			else
+				queryStr.append(query);
+			Query _query = parser.parse(queryStr.toString());
 			TopDocs docs = searcher.search(_query, max);
 			ScoreDoc[] scoreDocs = docs.scoreDocs;
 			Result result = getResultInstance();
+			Query _textQuery = parser.parse(query);
 			for (ScoreDoc doc : scoreDocs)
 			{
 				Document document = searcher.doc(doc.doc);
 				result.setDocument(document);
-				if (!processor.process(_query, doc.score, result))
+				if (!processor.process(_textQuery, doc.score, result))
 				{
 					break;
 				}
@@ -284,8 +296,12 @@ public class IndexImpl extends AbstractIndex implements Index
 
 	protected void addDocument(VFSFile file, Object session)
 	{
+		if (file.getPath() == null)
+			return;
 		Log.log(Log.DEBUG, this, "Index:" + name + " add " + file.getPath());
 		Document doc = getEmptyDocument(file);
+		if (doc == null)
+			return;
 		Reader reader = null;
 		try
 		{
@@ -309,6 +325,8 @@ public class IndexImpl extends AbstractIndex implements Index
 	protected Document getEmptyDocument(VFSFile file)
 	{
 		Document doc = new Document();
+		if (file.getPath() == null)
+			return null;
 		doc.add(new Field("path", file.getPath(), Field.Store.NO, Field.Index.ANALYZED));
 		doc.add(new Field("_path", file.getPath(), Field.Store.YES, Field.Index.NOT_ANALYZED));
 		String extension = MiscUtilities.getFileExtension(file.getPath());

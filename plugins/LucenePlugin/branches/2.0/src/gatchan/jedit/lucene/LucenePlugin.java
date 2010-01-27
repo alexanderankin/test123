@@ -285,12 +285,13 @@ public class LucenePlugin extends EditPlugin
 	/*
 	 * Open the new index dialog.
 	 * Returns the name of the new index, or null if cancelled.
+	 * @param suggestedName the suggested name
 	 */
-	public String createNewIndex()
+	public String createNewIndex(String suggestedName)
 	{
-		NewIndexDialog dlg = new NewIndexDialog(jEdit.getActiveView());
+		NewIndexDialog dlg = new NewIndexDialog(jEdit.getActiveView(), suggestedName);
 		dlg.setVisible(true);
-		if (! dlg.accepted())
+		if (!dlg.accepted())
 			return null;
 		Index index = createIndex(dlg.getIndexName(), dlg.getIndexType(),
 			dlg.getIndexAnalyzer());
@@ -338,7 +339,13 @@ public class LucenePlugin extends EditPlugin
 	public void addToIndex(final String indexName, final VFSFile[] files,
 		final boolean sharedSession)
 	{
-		addToIndex(indexName, new FileArrayProvider(files), sharedSession);
+		runInWorkThread(new Runnable()
+		{
+			public void run()
+			{
+				addToIndex(indexName, new FileArrayProvider(files), sharedSession);		
+			}
+		});
 	}
 
 	/**
@@ -374,5 +381,16 @@ public class LucenePlugin extends EditPlugin
 			return null;
 		File indexFolder = new File(home, "indexes");
 		return new File(indexFolder, name);
+	}
+
+	/**
+	 * Runs the given task in the background without going through
+	 * the VFSManager's thread pool, to avoid blocking AWT tasks (such
+	 * as opening a file) while the background task is running.
+	 */
+	public static void runInWorkThread(Runnable r)
+	{
+		Thread t = new Thread(r);
+		t.start();
 	}
 }

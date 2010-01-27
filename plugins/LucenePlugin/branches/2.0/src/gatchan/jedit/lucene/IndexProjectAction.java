@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.Vector;
 
 import org.gjt.sp.jedit.io.VFSFile;
-import org.gjt.sp.jedit.io.VFSManager;
 
 import projectviewer.action.Action;
 import projectviewer.vpt.VPTFile;
@@ -46,7 +45,7 @@ public class IndexProjectAction extends Action
 				return;
 			}
 			ProjectIndexer indexer = new ProjectIndexer(project, index);
-			VFSManager.runInWorkThread(indexer);
+			LucenePlugin.runInWorkThread(indexer);
 		}
 	}
 
