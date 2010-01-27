@@ -8,14 +8,17 @@ public class FileArrayProvider implements FileProvider
 {
 	private VFSFile[] fileArray;
 	private int index = 0;
+
 	public FileArrayProvider(VFSFile[] files)
 	{
 		fileArray = files;
 	}
-	public VFSFile next() {
+
+	public VFSFile next()
+	{
 		if (index >= fileArray.length)
 			return null;
-		return fileArray[index];
+		return fileArray[index++];
 	}
 
 }

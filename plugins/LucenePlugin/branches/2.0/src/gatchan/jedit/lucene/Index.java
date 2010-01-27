@@ -59,7 +59,7 @@ public interface Index
 	 * @param max the maximal number of results to search for
 	 * @param processor the processor that will get the results
 	 */
-	void search(String query, int max, ResultProcessor processor);
+	void search(String query, String fileType, int max, ResultProcessor processor);
 
 	public interface ActivityListener
 	{

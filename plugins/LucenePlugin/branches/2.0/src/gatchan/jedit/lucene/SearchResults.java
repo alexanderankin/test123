@@ -25,13 +25,14 @@ import marker.tree.SourceLinkTree.SubtreePopupMenuProvider;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.EditBus.EBHandler;
+import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.gui.RolloverButton;
 import org.gjt.sp.util.StandardUtilities;
 import org.gjt.sp.util.Log;
 
-@SuppressWarnings("serial")
-public class SearchResults extends JPanel
+public class SearchResults extends JPanel implements DefaultFocusComponent
 {
+	private static final String LUCENE_SEARCH_INDEX = "lucene.search.index";
 	private static final String MESSAGE_IDLE = "";
 	private static final String MESSAGE_INDEXING = "Indexing";
 	private JTextField searchField;
@@ -90,6 +91,7 @@ public class SearchResults extends JPanel
 				prevIndex = index;
 				indexStatus.setText(index.isChanging() ? MESSAGE_INDEXING : MESSAGE_IDLE);
 				index.addActivityListener(listener);
+				jEdit.setProperty(LUCENE_SEARCH_INDEX, index.getName());
 			}
 		});
 
@@ -102,6 +104,8 @@ public class SearchResults extends JPanel
 		type.addActionListener(actionListener);
 		clear = new RolloverButton(GUIUtilities.loadIcon(
 			jEdit.getProperty("hypersearch-results.clear.icon")));
+		clear.setToolTipText(jEdit.getProperty(
+			"hypersearch-results.clear.label"));
 		clear.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -167,7 +171,19 @@ public class SearchResults extends JPanel
 		add(mainPanel, BorderLayout.CENTER);
 //		add(new JSplitPane(JSplitPane.VERTICAL_SPLIT, new JScrollPane(list), preview), BorderLayout.CENTER);
 		if (indexes.getItemCount() > 0)
-			indexes.setSelectedIndex(0);
+		{
+			String lastIndex = jEdit.getProperty(LUCENE_SEARCH_INDEX);
+			int index = 0;
+			for (int i = 1; i < indexes.getItemCount(); i++)
+			{
+				if (indexes.getItemAt(i).equals(lastIndex))
+				{
+					index = i;
+					break;
+				}
+			}
+			indexes.setSelectedIndex(index);
+		}
 	}
 
 	private void updateMultiStatus()
@@ -182,7 +198,7 @@ public class SearchResults extends JPanel
 	{
 		multiStatus = (! multiStatus);
 		updateMultiStatus();
-		tree.allowMultipleResults(multiStatus);
+		//tree.allowMultipleResults(multiStatus);
 	}
 
 	private Index getSelectedIndex()
@@ -193,9 +209,9 @@ public class SearchResults extends JPanel
 		return LucenePlugin.instance.getIndex(indexName);
 	}
 
-	public void search(String text)
+	public void search(String text, String fileType)
 	{
-		Log.log(Log.NOTICE, this, "Search for " + text);
+		Log.log(Log.NOTICE, this, "Search for " + text + " in file type: " + fileType);
 		Index index = getSelectedIndex();
 		if (index == null)
 			return;
@@ -207,7 +223,7 @@ public class SearchResults extends JPanel
 			processor = new MarkerListQueryProcessor(index, files, max);
 		else
 			processor = new FileListQueryProcessor(index, files, max);
-		index.search(text, max, processor);
+		index.search(text, fileType, max, processor);
 		if (lineResults.isSelected())
 		{
 			SearchRootNode rootNode = new SearchRootNode(text);
@@ -335,7 +351,7 @@ public class SearchResults extends JPanel
 		}
 	}
 
-	private class SearchRootNode implements SubtreePopupMenuProvider
+	private static class SearchRootNode implements SubtreePopupMenuProvider
 	{
 		private String text;
 		public SearchRootNode(String searchText)
@@ -372,13 +388,12 @@ public class SearchResults extends JPanel
 		{
 			String search = searchField.getText().trim();
 			String fileType = type.getText().trim();
-			if (fileType.length() != 0)
-			{
-				if (search.length() != 0)
-					search = "(" + search + ") AND ";
-				search += " +filetype:" + fileType;
-			}
-			search(search);
+			search(search, fileType);
 		}
+	}
+
+	public void focusOnDefaultComponent()
+	{
+		searchField.requestFocusInWindow();		
 	}
 }

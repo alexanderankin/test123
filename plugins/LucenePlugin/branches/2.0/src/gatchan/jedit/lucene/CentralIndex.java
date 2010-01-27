@@ -25,11 +25,11 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.*;
+import org.apache.lucene.store.FSDirectory;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EditBus.EBHandler;
-import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.util.Log;
 
@@ -59,19 +59,26 @@ public class CentralIndex extends AbstractIndex
 	{
 		// test if the central index exists. If it doesnt exists, no need to start working
 		// it is possible that it doesn't exists if the plugin is just installed an no index has been created yet
-		if (IndexReader.indexExists(path))
+		try
 		{
-			final BufferUpdate bufferUpdate = message;
-			if (bufferUpdate.getWhat() == BufferUpdate.SAVED)
+			if (IndexReader.indexExists(FSDirectory.open(path)))
 			{
-				VFSManager.runInWorkThread(new Runnable()
+				final BufferUpdate bufferUpdate = message;
+				if (bufferUpdate.getWhat() == BufferUpdate.SAVED)
 				{
-					public void run()
+					LucenePlugin.runInWorkThread(new Runnable()
 					{
-						fileUpdated(bufferUpdate.getBuffer());
-					}
-				});
+						public void run()
+						{
+							fileUpdated(bufferUpdate.getBuffer());
+						}
+					});
+				}
 			}
+		}
+		catch (IOException e)
+		{
+			Log.log(Log.ERROR, this, e);
 		}
 	}
 
@@ -142,10 +149,15 @@ public class CentralIndex extends AbstractIndex
 		final List<String> documents = new ArrayList<String>();
 		try
 		{
-			searcher.search(new TermQuery(new Term("indexName", indexName)), new HitCollector()
+			searcher.search(new TermQuery(new Term("indexName", indexName)), new Collector()
 			{
 				@Override
-				public void collect(int doc, float v)
+				public void setScorer(Scorer scorer) throws IOException
+				{
+				}
+
+				@Override
+				public void collect(int doc) throws IOException
 				{
 					try
 					{
@@ -156,6 +168,17 @@ public class CentralIndex extends AbstractIndex
 					{
 						Log.log(Log.ERROR, this, e);
 					}
+				}
+
+				@Override
+				public void setNextReader(IndexReader reader, int docBase) throws IOException
+				{
+				}
+
+				@Override
+				public boolean acceptsDocsOutOfOrder()
+				{
+					return false;
 				}
 			});
 		}

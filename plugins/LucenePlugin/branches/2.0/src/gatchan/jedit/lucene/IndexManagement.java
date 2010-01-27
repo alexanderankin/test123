@@ -21,7 +21,6 @@
 package gatchan.jedit.lucene;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
-import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.WorkRequest;
 
@@ -187,8 +186,12 @@ public class IndexManagement extends AbstractOptionPane
 			{
 				if (e.getSource() == optimize)
 				{
+					indexList.setEnabled(false);
+					optimize.setEnabled(false);
+					reindex.setEnabled(false);
+					delete.setEnabled(false);
 					OptimizeWorkRequest wr = new OptimizeWorkRequest(indexName);
-					VFSManager.runInWorkThread(wr);
+					LucenePlugin.runInWorkThread(wr);
 				}
 				else if (e.getSource() == delete)
 				{
@@ -199,8 +202,12 @@ public class IndexManagement extends AbstractOptionPane
 				}
 				else if (e.getSource() == reindex)
 				{
+					indexList.setEnabled(false);
+					optimize.setEnabled(false);
+					reindex.setEnabled(false);
+					delete.setEnabled(false);
 					ReindexWorkRequest wr = new ReindexWorkRequest(indexName);
-					VFSManager.runInWorkThread(wr);
+					LucenePlugin.runInWorkThread(wr);
 				}
 			}
 		}
@@ -216,10 +223,6 @@ public class IndexManagement extends AbstractOptionPane
 
 			public void run()
 			{
-				indexList.setEnabled(false);
-				optimize.setEnabled(false);
-				reindex.setEnabled(false);
-				delete.setEnabled(false);
 				try
 				{
 
@@ -231,8 +234,14 @@ public class IndexManagement extends AbstractOptionPane
 				}
 				finally
 				{
-					setIndex(indexName);
-					indexList.setEnabled(true);
+					EventQueue.invokeLater(new Runnable()
+					{
+						public void run()
+						{
+							setIndex(indexName);
+							indexList.setEnabled(true);
+						}
+					});
 				}
 			}
 		}
@@ -248,10 +257,6 @@ public class IndexManagement extends AbstractOptionPane
 
 			public void run()
 			{
-				indexList.setEnabled(false);
-				optimize.setEnabled(false);
-				reindex.setEnabled(false);
-				delete.setEnabled(false);
 				try
 				{
 					Log.log(Log.NOTICE, this, "Reindex " + indexName + " asked");
@@ -269,8 +274,15 @@ public class IndexManagement extends AbstractOptionPane
 				}
 				finally
 				{
-					setIndex(indexName);
-					indexList.setEnabled(true);
+					EventQueue.invokeLater(new Runnable()
+					{
+						public void run()
+						{
+							setIndex(indexName);
+							indexList.setEnabled(true);
+						}
+					});
+
 				}
 			}
 		}
