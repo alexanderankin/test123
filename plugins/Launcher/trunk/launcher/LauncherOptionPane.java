@@ -118,7 +118,6 @@ public final class LauncherOptionPane extends AbstractOptionPane
 			pane.save();
 		}
 		lastSelectedLauncherType = launcherTypeChoice.getSelectedItem().toString();
-		LauncherPlugin.clearCache();
 	}
 
 	/**

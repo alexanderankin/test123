@@ -31,7 +31,7 @@ options.launcher.delete.label=Delete
 
 # BrowserLauncherType properties
 launcher.browser.label=Browser Launcher
-launcher.browser.action.label=Browse with {0}
+launcher.browser.action.label=Open in {0}
 options.launcher.browser.label=Browser Launcher Options
 options.launcher.browser.use-default.label=Use default browser
 options.launcher.browser.default.label=Default browser:
@@ -39,6 +39,14 @@ launcher.browser.JavaDesktopBrowserLauncher.label=Browse by system: Java Desktop
 launcher.browser.JavaDesktopBrowserLauncher.label.short=Browse by system (Desktop API)
 launcher.browser.cascadingSystemBrowserLauncher.label=Browse by system: Cascading Browser Launcher
 launcher.browser.cascadingSystemBrowserLauncher.label.short=Browse by system
+
+# KeywordSearchBrowserLauncherType and its options
+launcher.keyword.label=Keyword Search Launcher
+launcher.keyword.action.label=Search {0}
+options.launcher.keyword.label-format.label=Label
+options.launcher.keyword.url-format.label=URL (%s=keyword)
+options.launcher.keyword.default.label=Default browser: 
+options.launcher.keyword.usage=Enter launcher label (e.g. "Search Google") and the URL format (%s is substituted with the keyword).
 
 # ExecutableFileLauncherType and its options
 launcher.exec.label=Executable File Launcher
@@ -79,12 +87,14 @@ launcher.extapp.ChooseExternalApplicationLauncher.label=Launch with ...
 launcher.extapp.ChooseExternalApplicationLauncher.label.short=Launch with ...
 launcher.extapp.ChooseExternalApplicationLauncher.first-level=true
 
-# TextAreaLauncherType and its options
-launcher.textarea.label=Text Area Launcher
-launcher.textarea.action.label=Launch text
-options.launcher.textarea.default.label=Default text area launcher:
-options.launcher.textarea.usage=Select the launcher to be used for running a text area
-
+# TextLauncherType and SelectedTextLauncherType and their options
+launcher.text.label=Text Launcher
+launcher.text.action.label=Launch text
+launcher.text.selected.label=Selected Text Launcher
+launcher.text.selected.action.label=Launch selected text
+launcher.text.selected.URLBrowserLauncher.label=Browse selected URL
+launcher.text.selected.URLBrowserLauncher.label.short=Browse URL
+launcher.text.selected.URLBrowserLauncher.first-level=true
 
 # errors
 launcher.error.launch-failed=Failed to launch [{0}]: {1}

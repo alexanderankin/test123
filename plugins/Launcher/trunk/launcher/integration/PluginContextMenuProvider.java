@@ -22,7 +22,7 @@ public class PluginContextMenuProvider implements DynamicMenuProvider {
 		// Using TextArea because this makes it possible for a Launcher
 		// to support JEditTextArea as the resource to be launched
 		// (or most likely the selected text, see
-		// launcher.textarea.TextAreaLauncher).
+		// launcher.text.TextAreaLauncher).
 		// In any case a JEditTextArea can be resolved to a File or URI
 		// in LauncherUtils.
 		JMenuItem[] items = plugin.getMenuItemsFor(textArea);
