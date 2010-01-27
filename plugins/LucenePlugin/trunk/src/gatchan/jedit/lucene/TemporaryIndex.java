@@ -65,7 +65,7 @@ public class TemporaryIndex implements Index
 		}
 		catch (IOException e)
 		{
-			e.printStackTrace();
+			Log.log(Log.ERROR, this, e);
 		}
 	}
 
@@ -78,7 +78,7 @@ public class TemporaryIndex implements Index
 		}
 		catch (IOException e)
 		{
-			e.printStackTrace();
+			Log.log(Log.ERROR, this, e);
 		}
 	}
 
