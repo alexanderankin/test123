@@ -12,6 +12,23 @@
    -->
    <property name="docs-proc.target" value="none" />
    
+   <!-- jEdit installation properties. -->
+   <property name="build.support" value=".." />
+   <property name="install.dir" value=".." />
+   <property name="jedit.install.dir" value=".." />
+   <property name="jedit.plugins.dir" value="\${install.dir}" />
+   <import file="\${build.support}/plugin-build.xml" />
+   
+   <!-- If you want any extra files to be included with your plugin's jar,
+        such as custom images, you need to specify them here. -->
+   <selector id="packageFiles">
+      <and>
+         <or>
+            <filename name="**/${project.name}.html" />
+         </or>
+      </and>
+   </selector>
+   
    <!-- Add your plugin's specific dependencies here -->
    <path id="project.class.path">
       <!-- Dependencies that are bundled with your plugin.
@@ -23,19 +40,5 @@
       <!-- <pathelement path="\${jedit.plugins.dir}/dependency.jar" /> -->
    </path>
    
-   <!-- jEdit installation properties. -->
-   <property name="build.support" value=".." />
-   <property name="install.dir" value=".." />
-   <property name="jedit.install.dir" value=".." />
-   <property name="jedit.plugins.dir" value="\${install.dir}" />
-   <import file="\${build.support}/plugin-build.xml" />
-   
-   <selector id="packageFiles">
-      <and>
-         <or>
-            <filename name="**/${project.name}.html" />
-         </or>
-      </and>
-   </selector>
 </project>
 <!-- ::mode=xml:noTabs=true:: -->
