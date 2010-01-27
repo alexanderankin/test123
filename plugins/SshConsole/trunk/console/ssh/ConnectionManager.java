@@ -12,23 +12,23 @@ import console.Console;
 import ftp.ConnectionInfo;
 
 
-public class ConnectionManager extends ftp.ConnectionManager 
+public class ConnectionManager extends ftp.ConnectionManager
 {
-	// {{{ members 
+	// {{{ members
 	/**
 	 * group(1) - user (optional)
 	 * group(2) - host
 	 * group(3) - port (optional)
 	 * group(4) - path
 	 */
-	static Pattern sftpPath = Pattern.compile("sftp://(?:([^@]+)@)?([^/:]+)(?::(\\d+))?/(.*)$");	
+	static Pattern sftpPath = Pattern.compile("sftp://(?:([^@]+)@)?([^/:]+)(?::(\\d+))?/(.*)$");
 	static HashMap<ConnectionInfo, Connection> connectionInfos = null;
 	static HashMap<Console, ConsoleState> consoleStates = null;
 	/** Yes, I'm hiding the base class connections on purpose! */
-	static ArrayList<Connection> connections = new ArrayList<Connection>(); 
+	static ArrayList<Connection> connections = new ArrayList<Connection>();
 	// }}}
-	
-	
+
+
 	/**
 	 * @param vfsPath a path of the form sftp://(user@)?host(:port)?(/path)
 	 * @return path part from vfsPath (on a remote host).
@@ -44,7 +44,7 @@ public class ConnectionManager extends ftp.ConnectionManager
 	}
 
 	/**
-	 * 
+	 *
 	 * @param vfsPath
 	 * @return everything but the path part of the vfsPath
 	 */
@@ -59,7 +59,7 @@ public class ConnectionManager extends ftp.ConnectionManager
 		}
 		return path;
 	}
-	
+
 	static ConnectionInfo parseAddress(String vfsPath) {
 		Matcher m = sftpPath.matcher(vfsPath);
 		if (!m.matches()) return null;
@@ -67,9 +67,9 @@ public class ConnectionManager extends ftp.ConnectionManager
 		String host = m.group(2);
 		String portstr = m.group(3) != null? m.group(3) : "22";
 		int port = Integer.parseInt(portstr);
-		return new ConnectionInfo(true, host, port, user, null, null );	
+		return new ConnectionInfo(true, host, port, user, null, null );
 	}
-	
+
 	public static void closeUnusedConnections()
 	{
 		synchronized(lock)
@@ -109,15 +109,15 @@ public class ConnectionManager extends ftp.ConnectionManager
 			connections.remove(connect);
 		}
 	} //}}}
-	
-	
-	static void setup() 
+
+
+	static void setup()
 	{
 		lock = new Object();
 		connectionInfos = new HashMap<ConnectionInfo, Connection>();
 		consoleStates = new HashMap<Console, ConsoleState> ();
 	}
-	static void cleanup() {
+	public static void cleanup() {
 
 		for (ConsoleState cs: consoleStates.values()) {
 			cs.close();
@@ -134,7 +134,7 @@ public class ConnectionManager extends ftp.ConnectionManager
 		return ss;
 	}
 
-	public static synchronized Connection getShellConnection(Console console, ConnectionInfo info) 
+	public static synchronized Connection getShellConnection(Console console, ConnectionInfo info)
 	throws IOException
 	{
 		Connection connect = null;
@@ -182,14 +182,14 @@ public class ConnectionManager extends ftp.ConnectionManager
 			return connect;
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param vfsPath must be of the form sftp://user@host/home/user/path/to/resource
-	 * @return 
+	 * @return
 	 */
 	public static ConnectionInfo getConnectionInfo(String vfsPath) {
-		
+
 		Matcher m = sftpPath.matcher(vfsPath);
 		if (!m.matches()) return null;
 		String user = m.group(1);
