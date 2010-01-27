@@ -72,7 +72,7 @@ public class AutoReimporter implements ActionListener
 	{
 		assert (p != null) : "No project provided.";
 
-		Options o = new Options();
+		Options o = new Options(p);
 		o.load(p.getProperties());
 
 		if (o.getPeriod() > 0) {
@@ -118,9 +118,10 @@ public class AutoReimporter implements ActionListener
 	public static class Options extends PropertiesBean
 	{
 
-		public Options()
+		public Options(VPTProject p)
 		{
 			super(AR_ROOT);
+			this.project = p;
 		}
 
 
@@ -196,7 +197,7 @@ public class AutoReimporter implements ActionListener
 		 */
 		public void load(Properties p)
 		{
-			load(p, ImportUtils.getFilters());
+			load(p, ImportUtils.getFilters(project));
 		}
 
 
@@ -213,7 +214,7 @@ public class AutoReimporter implements ActionListener
 			assert (filters != null) : "no filters provided";
 
 			if (filters == null) {
-				filters = ImportUtils.getFilters();
+				filters = ImportUtils.getFilters(project);
 			}
 			filter = ImportUtils.loadFilter(p, filters, AR_ROOT);
 			super.load(p);
@@ -233,6 +234,7 @@ public class AutoReimporter implements ActionListener
 
 
 		/* Fields. */
+		private final VPTProject project;
 		private int period;
 		private boolean currentDirsOnly;
 		private ImporterFileFilter filter;

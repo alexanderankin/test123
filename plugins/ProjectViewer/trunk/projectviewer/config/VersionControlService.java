@@ -21,6 +21,7 @@ package projectviewer.config;
 import javax.swing.Icon;
 import org.gjt.sp.jedit.io.VFSFile;
 
+import projectviewer.importer.ImporterFileFilter;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 
@@ -83,6 +84,17 @@ public interface VersionControlService extends OptionsService
 	 * @return The main plugin class for this service.
 	 */
 	public Class getPlugin();
+
+
+	/**
+	 * Returns a file filter to be shown as an option when the user
+	 * imports files into a project backed by this version control
+	 * service.
+	 *
+	 * @return An ImporterFileFilter, or null if there's no specific
+	 *         filter for the service.
+	 */
+	public ImporterFileFilter getFilter();
 
 
 	/**

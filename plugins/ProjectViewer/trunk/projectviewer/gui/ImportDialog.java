@@ -204,7 +204,7 @@ public class ImportDialog extends EnhancedDialog
 		filters = new JComboBox();
 		filters.addItemListener(this);
 		filters.addItem(new AllFilesFilter());
-		for (Iterator i = getFileFilters().iterator(); i.hasNext(); )
+		for (Iterator i = getFileFilters(proj).iterator(); i.hasNext(); )
 			filters.addItem(i.next());
 		filters.addItem(jEdit.getProperty("projectviewer.import.filter.custom"));
 
@@ -449,10 +449,10 @@ public class ImportDialog extends EnhancedDialog
 	 *	Instantiate the default file filters from Project Viewer and checks
 	 *	all the other plugins looking for any custom filters they provide.
 	 **/
-	public List<ImporterFileFilter> getFileFilters()
+	public List<ImporterFileFilter> getFileFilters(VPTProject p)
 	{
 		if (ffilters == null) {
-			ffilters = ImportUtils.getFilters();
+			ffilters = ImportUtils.getFilters(p);
 		}
 		return this.ffilters;
 	}
