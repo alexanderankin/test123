@@ -45,6 +45,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.menu.EnhancedMenu;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.textarea.TextArea;
 
 public class LauncherUtils {
 
@@ -232,6 +233,46 @@ public class LauncherUtils {
 				resolvedResource = ((URL)resource).toURI();
 			} else {
 				resolvedResource = resolveToFile(resource);
+			}
+			return resolvedResource;
+		} catch (Exception exp) {
+			return null;
+		}
+	}
+    
+	public static CharSequence resolveToCharSequence(Object resource) {
+		try {
+			resource = getOnlyObjectFrom(resource);
+			if (resource == null)
+				return null;
+			CharSequence resolvedResource = null;
+			if (resource instanceof CharSequence) {
+				resolvedResource = (CharSequence)resource;
+			} else if (resource instanceof TextArea) {
+				TextArea textArea = (TextArea) resource;
+				resolvedResource = textArea.getSelectedText();
+				if (resolvedResource == null)
+					resolvedResource = textArea.getText();
+			} else {
+				resolvedResource = resource.toString();
+			}
+			return resolvedResource;
+		} catch (Exception exp) {
+			return null;
+		}
+	}
+    
+	public static CharSequence resolveToSelectedText(Object resource) {
+		try {
+			resource = getOnlyObjectFrom(resource);
+			if (resource == null)
+				return null;
+			CharSequence resolvedResource = null;
+			if (resource instanceof CharSequence) {
+				resolvedResource = (CharSequence)resource;
+			} else if (resource instanceof TextArea) {
+				TextArea textArea = (TextArea) resource;
+				resolvedResource = textArea.getSelectedText();
 			}
 			return resolvedResource;
 		} catch (Exception exp) {

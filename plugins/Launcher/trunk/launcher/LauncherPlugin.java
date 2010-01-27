@@ -30,21 +30,19 @@ import javax.swing.JMenuItem;
 import launcher.browser.BrowserLauncherType;
 import launcher.exec.ExecutableFileLauncherType;
 import launcher.extapp.ExternalApplicationLauncherType;
+import launcher.keyword.KeywordSearchLauncherType;
 import launcher.sysapp.SystemApplicationLauncherType;
-import launcher.textarea.TextAreaLauncherType;
+import launcher.text.TextLauncherType;
+import launcher.text.selected.SelectedTextLauncherType;
 
 import org.gjt.sp.jedit.ActionContext;
 import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.ServiceManager;
-import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EditBus.EBHandler;
-import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.PluginUpdate;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.util.Log;
 
 
 /**
@@ -65,12 +63,6 @@ public class LauncherPlugin extends EditPlugin
 		jEdit.getProperty(PROP_PREFIX + LABEL_SUFFIX);
 	public static final String SUBMENU_LABEL =
 		jEdit.getProperty(PROP_PREFIX + ".submenu" + LABEL_SUFFIX);
-	
-	private static final String CACHE_SIZE_PROP = PROP_PREFIX + ".cache-size";
-	private static final String DEFAULT_CACHE_SIZE = "50";
-	private static final LRUCache<Object,JMenuItem[]> menuItemsCache =
-		new LRUCache<Object,JMenuItem[]>(Integer.parseInt(
-				jEdit.getProperty(CACHE_SIZE_PROP, DEFAULT_CACHE_SIZE)));
 	
 	private static Comparator<EditAction> editActionLabelComparator =
 		new Comparator<EditAction>(){
@@ -100,6 +92,10 @@ public class LauncherPlugin extends EditPlugin
 				BrowserLauncherType.class.getName() + ".INSTANCE;",
 				getPluginJAR());
 		ServiceManager.registerService(LauncherType.LAUNCHER_TYPE_SERVICE_NAME,
+				KeywordSearchLauncherType.SERVICE_NAME,
+				KeywordSearchLauncherType.class.getName() + ".INSTANCE;",
+				getPluginJAR());
+		ServiceManager.registerService(LauncherType.LAUNCHER_TYPE_SERVICE_NAME,
 				SystemApplicationLauncherType.SERVICE_NAME,
 				SystemApplicationLauncherType.class.getName() + ".INSTANCE;",
 				getPluginJAR());
@@ -108,8 +104,12 @@ public class LauncherPlugin extends EditPlugin
 				ExecutableFileLauncherType.class.getName() + ".INSTANCE;",
 				getPluginJAR());
 		ServiceManager.registerService(LauncherType.LAUNCHER_TYPE_SERVICE_NAME,
-				TextAreaLauncherType.SERVICE_NAME,
-				TextAreaLauncherType.class.getName() + ".INSTANCE;",
+				TextLauncherType.SERVICE_NAME,
+				TextLauncherType.class.getName() + ".INSTANCE;",
+				getPluginJAR());
+		ServiceManager.registerService(LauncherType.LAUNCHER_TYPE_SERVICE_NAME,
+				SelectedTextLauncherType.SERVICE_NAME,
+				SelectedTextLauncherType.class.getName() + ".INSTANCE;",
 				getPluginJAR());
 
 		registerLaunchers();
@@ -189,12 +189,6 @@ public class LauncherPlugin extends EditPlugin
 	public JMenuItem[] getMenuItemsFor(Object resource) {
 		if (resource == null)
 			return null;
-		Object key = getCacheKeyFor(resource); 
-		JMenuItem[] items = menuItemsCache.get(key);
-		if (items != null) {
-			Log.log(Log.DEBUG, this, "Using cached menu items for " + key);
-			return items;
-		}
 		Set<EditAction> level1Actions =
 			new TreeSet<EditAction>(editActionLabelComparator);
 		Set<EditAction> level2Actions =
@@ -202,60 +196,26 @@ public class LauncherPlugin extends EditPlugin
 		Map<EditAction,ActionContext> actionContexts =
 				new HashMap<EditAction,ActionContext>();
 		getActionsFor(resource, level1Actions, level2Actions, actionContexts);
-		items = LauncherUtils.buildMenuItemsWith(
+		JMenuItem[] items = LauncherUtils.buildMenuItemsWith(
 				NAME,
 				SUBMENU_LABEL,
 				level1Actions,
 				level2Actions,
 				actionContexts);
-		menuItemsCache.put(key, items);
 		return items;
 	}
 
 	@Override
 	public void stop() {
 		EditBus.removeFromBus(this);
-		clearCache();
 		super.stop();
 	}
 
-	private static Object getCacheKeyFor(Object resource) {
-		if (resource == null)
-			return null;
-		Object key = LauncherUtils.getOnlyObjectFrom(resource);
-		if (key == null)
-			key = resource;
-		else
-			resource = key;
-		if (resource instanceof JEditTextArea) {
-			key = ((JEditTextArea)resource).getBuffer();
-		} else if (resource instanceof View) {
-			key = ((View)resource).getBuffer();
-		}
-		return key;
-	}
-	
-	public static void clearCache() {
-		menuItemsCache.clear();
-	}
-	
 	//{{{ handlePluginUpdate() method
 	@EBHandler
 	public void handlePluginUpdate(PluginUpdate msg)
 	{
-		clearCache();
 		reload();
-	}
-	//}}}
-
-	
-	//{{{ handlePluginUpdate() method
-	@EBHandler
-	public void handleBufferUpdate(BufferUpdate msg)
-	{
-		if (BufferUpdate.CLOSED.equals(msg)) {
-			menuItemsCache.remove(getCacheKeyFor(msg.getBuffer()));
-		}
 	}
 	//}}}
 
