@@ -150,6 +150,9 @@ public abstract class LauncherType {
 		Object resolvedResource = resolve(resource);
 		ActionContext context = buildActionContextFor(resolvedResource);
 		for (EditAction action: getActionSet().getActions()) {
+			if (action instanceof Launcher &&
+					!((Launcher)action).canLaunch(resolvedResource))
+				continue;
 			boolean already1stLevel = level1Actions.contains(action);
 			boolean already2ndLevel = level2Actions.contains(action);
 			if (isFirstLevel(action, resolvedResource)) {
