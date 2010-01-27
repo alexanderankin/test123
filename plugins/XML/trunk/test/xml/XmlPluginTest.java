@@ -408,6 +408,41 @@ public class XmlPluginTest{
 		errorlist.close();
 	}
 	
+	/** grammar including another one */
+	@Test
+	public void testRelaxNGInclude(){
+    	File xml = new File(testData,"parentRef/instance.xml");
+    	
+    	TestUtils.openFile(xml.getPath());
+    	
+		// wait for end of parsing
+    	action("sidekick-parse",1);
+		simplyWaitForMessageOfClass(sidekick.SideKickUpdate.class,10000);
+		
+		// inside doc
+		GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					TestUtils.view().getTextArea().setCaretPosition(115);
+				}
+		});
+
+    	action("xml-insert-float",1);
+    	FrameFixture insert = TestUtils.findFrameByTitle("XML Insert");
+		assertThat(insert.list("elements").contents()).containsOnly("p","table");
+		insert.close();
+		
+		// inside td
+		GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					TestUtils.view().getTextArea().setCaretPosition(217);
+				}
+		});
+    	action("xml-insert-float",1);
+    	insert = TestUtils.findFrameByTitle("XML Insert");
+		assertThat(insert.list("elements").contents()).containsOnly("em");
+		insert.close();
+	}
+
 	@Test
 	public void testSchemaLoader(){
     	File xml = new File(testData,"schema_loader/actions.xml");
