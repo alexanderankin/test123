@@ -27,8 +27,6 @@ lucene.message.IndexName=Name:
 lucene.message.IndexType=Type:
 lucene.message.Analyzer=Analyzer:
 
-lucene.message.CreateProjectIndexError=Could not create an index for this project.
-lucene.message.CreateProjectIndexError.title=Project index error
 # Options
 plugin.gatchan.jedit.lucene.LucenePlugin.option-group=Lucene IndexManagement
 options.Lucene.label=Lucene

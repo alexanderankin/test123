@@ -198,7 +198,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 	{
 		multiStatus = (! multiStatus);
 		updateMultiStatus();
-		//tree.allowMultipleResults(multiStatus);
+		tree.allowMultipleResults(multiStatus);
 	}
 
 	private Index getSelectedIndex()
@@ -233,7 +233,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			for (Object o: files)
 			{
 				FileMarker marker = (FileMarker) o;
-				if (! marker.equals(prev))
+				if (!marker.equals(prev))
 				{
 					parent.addSourceLink(marker);
 					prev = marker;

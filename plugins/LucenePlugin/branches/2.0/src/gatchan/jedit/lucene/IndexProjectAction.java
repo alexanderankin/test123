@@ -15,10 +15,6 @@ import projectviewer.vpt.VPTProject;
 
 public class IndexProjectAction extends Action
 {
-	static public final String MESSAGE = "lucene.message.";
-	static public final String INDEX_ERROR = MESSAGE + "CreateProjectIndexError";
-	static public final String INDEX_ERROR_TITLE = MESSAGE + "CreateProjectIndexError.title";
-
 	@Override
 	public String getText()
 	{

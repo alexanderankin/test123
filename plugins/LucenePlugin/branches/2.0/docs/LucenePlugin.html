@@ -12,14 +12,19 @@ Written by: Matthieu Casanova, Shlomy Reinstein.
 <a href="#DeleteIndex"> Deleting an index </a><br>
 <a href="#Support"> Support </a><br>
 <p>
-LucenePlugin provides an interface to the Lucene engine.
+LucenePlugin allows you to perform quick and complex text searches using the
+Lucene search engine. It can save you a lot of time when searching across
+projects, directory trees or large files. It builds up an index for the text
+in the files, and enables you to search this index efficiently.
 Information about Lucene is available on the
 <a href="http://lucene.apache.org/java/docs">Lucene website</a>.
 </p>
 <p>
 The plugin allows you to create a Lucene index, using one of the built-in
 analyzers, and then search the index. Once created, the index remains updated
-when the files in it are changed.
+when the files in it are changed inside jEdit (i.e. when their buffers are
+saved). If the files in the index are changed externally (e.g. by updating them
+from a version control system), you can ask the plugin to update the index.
 </p>
 <p>
 <a name="CreateIndex">
@@ -31,7 +36,7 @@ Select the files to index.
 <ul>
 <li>
 To create an index for a project, right-click the project in the ProjectViewer
-dockable window, and select "Create/update Lucene index for project".
+dockable window, and select "Index in Lucene".
 <li>
 To create an index for a directory tree, right-click the root of the directory
 tree in the File System Browser dockable window, and select Plugins ->
@@ -70,8 +75,8 @@ Click Ok to start creating the index.
 </a>
 <ol>
 <li>
-Open the "Search with Lucene" dockable window using Plugins -> LucenePlugin ->
-Search.
+Open the "Search with Lucene" dockable window using <tt>Plugins -&gt; LucenePlugin -&gt;
+Lucene Search </tt>.
 <li>
 Select the index to search in the combo-box on the right of the dockable.
 <li>
@@ -111,7 +116,7 @@ delete.
 <li>
 To report bugs, use the
 <a href="https://sourceforge.net/tracker/?group_id=588&atid=565475">
-Plugins Bugs tracker </a>. Specify the plugin name in the Summary field. 
+Plugins Bugs tracker </a>. Specify the plugin name in the Summary field.
 <li>
 To ask for new features, use the
 <a href="https://sourceforge.net/tracker/?group_id=588&atid=997936">
