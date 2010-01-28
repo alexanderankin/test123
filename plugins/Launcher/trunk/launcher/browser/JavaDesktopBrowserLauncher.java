@@ -59,12 +59,14 @@ public class JavaDesktopBrowserLauncher extends Launcher {
 	public String getCode(View view, Object resolvedResource) {
 		if (false)
 				launcher.browser.JavaDesktopBrowserLauncher.INSTANCE.launch(view,
-						resolvedResource);
+						 launcher.LauncherUtils.resolveToURI(
+								resolvedResource.toString()));
 		// The code above is just for compilation purposes and should correspond to
 		// the code returned below. Any compilation error here should help ensure
 		// the "as above so below" principle ;)
-		return "launcher.browser.JavaDesktopBrowserLauncher.INSTANCE.launch(view, \"" +
-						resolvedResource.toString() + "\");";
+		return "launcher.browser.JavaDesktopBrowserLauncher.INSTANCE.launch(view, " +
+						"launcher.LauncherUtils.resolveToURI(\"" +
+								resolvedResource.toString() + "\"));";
 	}
 
 }
