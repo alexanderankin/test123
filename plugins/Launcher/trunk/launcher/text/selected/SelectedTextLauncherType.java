@@ -28,7 +28,6 @@ public class SelectedTextLauncherType extends LauncherType {
 				URLBrowserLauncher.INSTANCE.getName(),
 				URLBrowserLauncher.class.getName() + ".INSTANCE;",
 				pluginJAR);
-		
 	}
 
 	@Override
