@@ -67,13 +67,6 @@ public class NativeBrowser extends JPanel
 
 	// }}}
 	
-	// Needed by DJ native swing, has to be done once as soon as possible
-    // in the program
-	static {
-        NativeInterface.open();
-        NativeInterface.runEventPump();
-	}
-	
     // {{{ Constructor
 	/**
 	 * 
