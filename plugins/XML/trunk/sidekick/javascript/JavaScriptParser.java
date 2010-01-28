@@ -72,7 +72,6 @@ public class JavaScriptParser extends SourceParser {
 
 /**	 * Constructs a new Parser object
 	 *
-	 * @param name See sidekick.SidekickParser, sidekick.SourceParser
 	 */
 	public JavaScriptParser() {
 		super("javascript");
