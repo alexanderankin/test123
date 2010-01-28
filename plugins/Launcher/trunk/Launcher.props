@@ -1,11 +1,15 @@
 plugin.launcher.LauncherPlugin.activate=defer
 plugin.launcher.LauncherPlugin.name=Launcher
-plugin.launcher.LauncherPlugin.author=François Rey
+plugin.launcher.LauncherPlugin.author=Francois Rey
 plugin.launcher.LauncherPlugin.version=0.1
 plugin.launcher.LauncherPlugin.docs=help.html
+plugin.launcher.LauncherPlugin.description= \
+Provides a consistent way to launch a resource \
+(file, buffer, text selection) by adding contextual \
+menu items to File Browser, ProjectViewer, text area, etc.  
 
 plugin.launcher.LauncherPlugin.depend.0=jedit 04.03.99.00
-plugin.launcher.LauncherPlugin.depend.1=jdk 1.6
+plugin.launcher.LauncherPlugin.depend.1=jdk 1.5
 plugin.launcher.LauncherPlugin.depend.2=plugin CommonControlsPlugin 1.1
 
 plugin.launcher.LauncherPlugin.usePluginHome=true
