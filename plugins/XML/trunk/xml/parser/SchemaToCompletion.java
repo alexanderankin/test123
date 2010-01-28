@@ -518,7 +518,7 @@ public class SchemaToCompletion
 		{
 			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"voidVisitExternalRef("+p.getUri()+")");
 			// "The externalRef matches if the pattern contained in the specified URL matches" [RNG tutorial]
-			SchemaDocument sc = schemas.getSchemaDocumentMap().get(c.getUri());
+			SchemaDocument sc = schemas.getSchemaDocumentMap().get(p.getUri());
 			// no risk of endless loop since externalRefs are not allowed to be recursive
 			sc.getPattern().accept(this);
 		}
