@@ -19,7 +19,12 @@ plugin.xml.XmlPlugin.description=The XML plugin provides features for editing XM
 
 # Menu bar stuff
 
-plugin.xml.XmlPlugin.menu=sidekick.parser.xml-switch sidekick.parser.html-switch \
+plugin.xml.XmlPlugin.menu= \
+    sidekick.parser.xml-switch \
+    sidekick.parser.html-switch \
+    sidekick.parser.javascript-switch \
+    sidekick.parser.ecmascript-switch \
+    - \
     xml-match-tag \
     xml-select-element \
     xml-select-between-tags \
@@ -346,6 +351,9 @@ sidekick.parser.javascript.comment-icon=comment.gif
 
 sidekick.parser.xml-switch.label=Parse as XML
 sidekick.parser.html-switch.label=Parse as HTML
+sidekick.parser.javascript-switch.label=Parse as JavaScript
+sidekick.parser.ecmascript-switch.label=Parse as EcmaScript
+
 options.xmlindenter.label=XML Indenter
 options.xmlindenter.code=new xml.indent.PreserveWhitespaceOptionsPane();
 options.xmlindenter.caption=Preserve whitespace for these elements:
