@@ -100,8 +100,7 @@ public class NativeBrowser extends JPanel
         browser = new JWebBrowser();
         add(browser, BorderLayout.CENTER);
 	    browser.navigate(homepage);
-		this.toolPanel = new NativeBrowserToolPanel(this);
-		add(toolPanel, BorderLayout.NORTH);
+
 	    SwingUtilities.invokeLater(new Runnable() {
 	        public void run() {
 	        	toolPanel.propertiesChanged();
