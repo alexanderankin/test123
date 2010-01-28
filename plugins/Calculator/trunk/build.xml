@@ -3,6 +3,7 @@
     
     <!-- read build.props to override properties set below -->
     <property file="build.props"/>
+    <property file="../build.properties"/>
 
     <!-- default location of jedit.jar -->
     <property name="jedit.install.dir"  value="../.."/> 
@@ -98,9 +99,9 @@
    ========================================================================= -->
     <target name="dist"
             description="Compiles, jars, puts the jar in the jEdit jars directory."
-            depends="init,compile,prep_files">
+            depends="init,compile,prep_files,jar"/>
         
-        
+    <target name="jar">
         <!-- make the plugin jar file -->
         <tstamp/>
         <jar jarfile="${install.dir}/${ant.project.name}.jar">

@@ -10,13 +10,13 @@ import javax.swing.text.*;
  *
  * @author Dale Anson, July 2003
  */
-public class RegisterDocument extends PlainDocument implements Base {
+public class RegisterDocument extends PlainDocument {
 
-   private int radix = BASE_10;     // base from Base
-   private int mode = FLOAT;        // mode from Base
+   private int radix = Base.BASE_10;     
+   private int mode = Base.FLOAT;        
 
    public RegisterDocument() {
-      this( BASE_10, FLOAT );
+      this( Base.BASE_10, Base.FLOAT );
    }
 
    public RegisterDocument( int base, int mode ) {
@@ -38,7 +38,7 @@ public class RegisterDocument extends PlainDocument implements Base {
       // chs (change sign) can only go in 2 places, at the front or just after
       // the E in float mode, base 10
       if ( text.equals( "chs" ) ) {
-         if ( mode == FLOAT && radix == BASE_10 ) {
+         if ( mode == Base.FLOAT && radix == Base.BASE_10 ) {
             // check for E, might want to change sign on the exponent
             String maybe_E = getText( pos - 1, 1 );
             if ( maybe_E.equals( "E" ) ) {
@@ -80,7 +80,7 @@ public class RegisterDocument extends PlainDocument implements Base {
          index = 1;
       for ( int i = index; i < s.length(); i++ ) {
          char c = s.charAt( i );
-         if ( mode == FLOAT || mode == BIGDECIMAL ) {
+         if ( mode == Base.FLOAT || mode == Base.BIGDECIMAL ) {
             if ( ( c >= '0' && c <= '9' ) || c == '.' || c == '-' ) {
                continue;
             }
@@ -102,19 +102,19 @@ public class RegisterDocument extends PlainDocument implements Base {
          }
          else {
             switch ( radix ) {
-               case BASE_2:
+               case Base.BASE_2:
                   if ( c == '0' || c == '1' )
                      break;
                   return false;
-               case BASE_8:
+               case Base.BASE_8:
                   if ( c >= '0' && c <= '7' )
                      break;
                   return false;
-               case BASE_16:
+               case Base.BASE_16:
                   if ( ( c >= '0' && c <= '9' ) || ( c >= 'A' && c <= 'F' ) )
                      break;
                   return false;
-               case BASE_10:
+               case Base.BASE_10:
                   if ( c >= '0' && c <= '9' )
                      break;
                   return false;

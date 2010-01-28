@@ -5,7 +5,7 @@ package ise.calculator;
  * the calculator does base 16, 10, 8, and 2. Also definitions for modes, the
  * calculator uses 4 modes, big decimal, float, big int, and int.
  */
-interface Base {
+public class Base {
    
    // bases
    public static final int BASE_2 = 2;
