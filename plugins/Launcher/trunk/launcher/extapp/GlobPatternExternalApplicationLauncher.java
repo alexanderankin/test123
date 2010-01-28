@@ -27,7 +27,7 @@ public class GlobPatternExternalApplicationLauncher extends PatternExternalAppli
 	
 	@Override
 	public Pattern compileToPattern(String glob) {
-		return glob == null || glob.isEmpty() ?
+		return glob == null || glob.length() == 0 ?
 				null :
 				Pattern.compile(StandardUtilities.globToRE(glob));
 	}

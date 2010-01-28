@@ -227,7 +227,7 @@ public abstract class LauncherType {
 		if (actionLabel == null)
 			actionLabel = jEdit.getProperty(
 					getActionPropertyName() + LABEL_SUFFIX, args);
-		if (actionLabel == null || actionLabel.trim().isEmpty())
+		if (actionLabel == null || actionLabel.trim().length() == 0)
 			actionLabel =
 					"Error: no label defined by " + getActionPropertyName() + LABEL_SUFFIX;
 		return actionLabel;
