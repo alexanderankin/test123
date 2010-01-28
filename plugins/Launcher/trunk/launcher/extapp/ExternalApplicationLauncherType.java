@@ -71,7 +71,7 @@ public class ExternalApplicationLauncherType extends LauncherType {
 			String chooseLauncherName = ChooseExternalApplicationLauncher.INSTANCE.getName();
 			String defaultLauncherName =  jEdit.getProperty(
 					getDefaultLauncherPropertyName());
-			if (defaultLauncherName == null || defaultLauncherName.isEmpty()) {
+			if (defaultLauncherName == null || defaultLauncherName.length() == 0) {
 				// keep defaultLauncher=null to make sure it's initialized later on 
 			} else if (defaultLauncherName.equals(chooseLauncherName))
 				defaultLauncher = ChooseExternalApplicationLauncher.INSTANCE;

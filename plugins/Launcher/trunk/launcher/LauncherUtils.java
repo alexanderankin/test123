@@ -311,10 +311,10 @@ public class LauncherUtils {
 		JMenuItem item = null;
 		String actionLabelProp = action.getName() + LABEL_SUFFIX;
 		String actionLabel = jEdit.getProperty(actionLabelProp);
-		boolean tempLabelNeeded = actionLabel == null || actionLabel.trim().isEmpty();
+		boolean tempLabelNeeded = actionLabel == null || actionLabel.trim().length() == 0;
 		if (tempLabelNeeded) {
 			String label = action.getLabel();
-			if (label==null || label.trim().isEmpty())
+			if (label==null || label.trim().length() == 0)
 				label = "NO LABEL FOR " + action.getName(); 
 			jEdit.setTemporaryProperty(actionLabelProp, label);
 		}

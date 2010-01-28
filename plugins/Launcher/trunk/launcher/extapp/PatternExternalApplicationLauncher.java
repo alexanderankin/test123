@@ -34,7 +34,7 @@ public class PatternExternalApplicationLauncher extends ExternalApplicationLaunc
 	}
 	
 	public Pattern compileToPattern(String pattern) {
-		return pattern == null || pattern.isEmpty() ?
+		return pattern == null || pattern.length() == 0 ?
 				null :
 				Pattern.compile(pattern);
 	}
