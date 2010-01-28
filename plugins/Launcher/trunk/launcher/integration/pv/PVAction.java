@@ -73,7 +73,7 @@ public class PVAction extends projectviewer.action.Action {
 		if (nodes.size() > 0) {
 	    	menu.removeAll();
 			LauncherPlugin plugin = (LauncherPlugin)jEdit.getPlugin(LauncherPlugin.class.getName());
-			File[] files = PVHelper.resolveToFileArray(nodes, false);
+			File[] files = PVHelper.resolveToFileArray(nodes, true);
 			JMenuItem[] items = plugin.getMenuItemsFor(files);
 			LauncherUtils.addItemsToMenu(menu, items);
 		}
