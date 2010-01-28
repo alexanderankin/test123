@@ -190,6 +190,8 @@
         MacOS X support is still in development, more info on the 
         <ulink url="http://sourceforge.net/projects/djproject/forums/forum/671154/topic/3353840">
         DJ Project forum</ulink>.</para>
+        <para>Although NativeBrowser and DJ Native Swing libraries require Java 1.5 minimum,
+        running them with java 1.6 may offer increased stability on some systems.</para>
         <para>The author of this plugin does not have access to a Mac, so if you have
         one and feel like experimenting, you probably will need to replace the
         following libraries with their latest/development versions:
