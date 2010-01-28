@@ -279,8 +279,6 @@ public class LauncherUtils {
 				resolvedResource = textArea.getSelectedText();
 				if (resolvedResource == null)
 					resolvedResource = textArea.getText();
-			} else {
-				resolvedResource = resource.toString();
 			}
 			return resolvedResource;
 		} catch (Exception exp) {
