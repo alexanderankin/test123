@@ -10,9 +10,9 @@
     <ACTION NAME="lucene.add-to-newindex" NO_REPEAT="TRUE">
         <CODE>
         	import gatchan.jedit.lucene.LucenePlugin;
-			String indexName = LucenePlugin.instance.createNewIndex();
-            if (indexName != null)
-                LucenePlugin.instance.addToIndex(indexName, files, false);
+		String indexName = LucenePlugin.instance.createNewIndex(files[0].getName());
+		if (indexName != null)
+                	LucenePlugin.instance.addToIndex(indexName, files, false);
         </CODE>
     </ACTION>
 </ACTIONS>
