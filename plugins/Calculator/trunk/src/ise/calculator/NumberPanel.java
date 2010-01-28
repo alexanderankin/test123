@@ -13,29 +13,29 @@ import javax.swing.text.*;
  * The number panel for the calculator.
  * @author Dale Anson, July 2003
  */
-public class NumberPanel extends JPanel implements Base {
+public class NumberPanel extends JPanel {
 
-   private int base = BASE_10;
-   private int mode = FLOAT;
+   private int base = Base.BASE_10;
+   private int mode = Base.FLOAT;
 
-   private JButton b0 = new JButton( "0" );
-   private JButton b1 = new JButton( "1" );
-   private JButton b2 = new JButton( "2" );
-   private JButton b3 = new JButton( "3" );
-   private JButton b4 = new JButton( "4" );
-   private JButton b5 = new JButton( "5" );
-   private JButton b6 = new JButton( "6" );
-   private JButton b7 = new JButton( "7" );
-   private JButton b8 = new JButton( "8" );
-   private JButton b9 = new JButton( "9" );
-   private JButton ba = new JButton( "A" );
-   private JButton bb = new JButton( "B" );
-   private JButton bc = new JButton( "C" );
-   private JButton bd = new JButton( "D" );
-   private JButton be = new JButton( "E" );
-   private JButton bf = new JButton( "F" );
-   private JButton dot = new JButton( "." );
-   private JButton pm = new JButton( "<html>&#177;" );   // +/-, plus minus
+   private RectangleButton b0 = new RectangleButton( "0" );
+   private RectangleButton b1 = new RectangleButton( "1" );
+   private RectangleButton b2 = new RectangleButton( "2" );
+   private RectangleButton b3 = new RectangleButton( "3" );
+   private RectangleButton b4 = new RectangleButton( "4" );
+   private RectangleButton b5 = new RectangleButton( "5" );
+   private RectangleButton b6 = new RectangleButton( "6" );
+   private RectangleButton b7 = new RectangleButton( "7" );
+   private RectangleButton b8 = new RectangleButton( "8" );
+   private RectangleButton b9 = new RectangleButton( "9" );
+   private RectangleButton ba = new RectangleButton( "A" );
+   private RectangleButton bb = new RectangleButton( "B" );
+   private RectangleButton bc = new RectangleButton( "C" );
+   private RectangleButton bd = new RectangleButton( "D" );
+   private RectangleButton be = new RectangleButton( "E" );
+   private RectangleButton bf = new RectangleButton( "F" );
+   private RectangleButton dot = new RectangleButton( "." );
+   private RectangleButton pm = new RectangleButton( "<html>&#177;" );   // +/-, plus minus
 
    // action command to button map
    private HashMap buttons = new HashMap();
@@ -70,9 +70,14 @@ public class NumberPanel extends JPanel implements Base {
          };
 
    public NumberPanel( JTextField field ) {
-      this( BASE_10, FLOAT, field );
+      this( Base.BASE_10, Base.FLOAT, field );
    }
-
+   
+   /**
+    * @param base Numeric base, one of 2, 8, 10, or 16, as defined in Base.
+    * @param mode As defined in Base.
+    * @param field The JTextField for the x-register.
+    */
    public NumberPanel( int base, int mode, JTextField field ) {
 
       super();
@@ -80,28 +85,27 @@ public class NumberPanel extends JPanel implements Base {
       current_mode = mode;
       x_register = field;
 
-      //LambdaLayout layout = new LambdaLayout();
-      //setLayout( layout );
-      setLayout(new GridLayout(6, 3, 2, 2));
+      LambdaLayout layout = new LambdaLayout();
+      setLayout( layout );
 
-      add( bd); //, "0, 0, 1, 1, 0, wh, 2" );
-      add( be); //, "1, 0, 1, 1, 0, wh, 2" );
-      add( bf); //, "2, 0, 1, 1, 0, wh, 2" );
-      add( ba); //, "0, 1, 1, 1, 0, wh, 2" );
-      add( bb); //, "1, 1, 1, 1, 0, wh, 2" );
-      add( bc); //, "2, 1, 1, 1, 0, wh, 2" );
-      add( b7); //, "0, 2, 1, 1, 0, wh, 2" );
-      add( b8); //, "1, 2, 1, 1, 0, wh, 2" );
-      add( b9); //, "2, 2, 1, 1, 0, wh, 2" );
-      add( b4); //, "0, 3, 1, 1, 0, wh, 2" );
-      add( b5); //, "1, 3, 1, 1, 0, wh, 2" );
-      add( b6); //, "2, 3, 1, 1, 0, wh, 2" );
-      add( b1); //, "0, 4, 1, 1, 0, wh, 2" );
-      add( b2); //, "1, 4, 1, 1, 0, wh, 2" );
-      add( b3); //, "2, 4, 1, 1, 0, wh, 2" );
-      add( pm); //, "0, 5, 1, 1, 0, wh, 2" );
-      add( b0); //, "1, 5, 1, 1, 0, wh, 2" );
-      add( dot );//, "2, 5, 1, 1, 0, wh, 2" );
+      add( bd,  "0, 0, 1, 1, 0, , 2" );
+      add( be,  "1, 0, 1, 1, 0, , 2" );
+      add( bf,  "2, 0, 1, 1, 0, , 2" );
+      add( ba,  "0, 1, 1, 1, 0, , 2" );
+      add( bb,  "1, 1, 1, 1, 0, , 2" );
+      add( bc,  "2, 1, 1, 1, 0, , 2" );
+      add( b7,  "0, 2, 1, 1, 0, , 2" );
+      add( b8,  "1, 2, 1, 1, 0, , 2" );
+      add( b9,  "2, 2, 1, 1, 0, , 2" );
+      add( b4,  "0, 3, 1, 1, 0, , 2" );
+      add( b5,  "1, 3, 1, 1, 0, , 2" );
+      add( b6,  "2, 3, 1, 1, 0, , 2" );
+      add( b1,  "0, 4, 1, 1, 0, , 2" );
+      add( b2,  "1, 4, 1, 1, 0, , 2" );
+      add( b3,  "2, 4, 1, 1, 0, , 2" );
+      add( pm,  "0, 5, 1, 1, 0, , 2" );
+      add( b0,  "1, 5, 1, 1, 0, , 2" );
+      add( dot, "2, 5, 1, 1, 0, , 2" );
 
       buttons.put( bd.getActionCommand(), bd );
       buttons.put( be.getActionCommand(), be );
@@ -177,9 +181,9 @@ public class NumberPanel extends JPanel implements Base {
 
       switch ( mode ) {
             // float and big decimal use dot and 0 - 9
-         case FLOAT:
+         case Base.FLOAT:
             be.setEnabled(true);
-         case BIGDECIMAL:
+         case Base.BIGDECIMAL:
             b0.setEnabled( true );
             b1.setEnabled( true );
             b2.setEnabled( true );
@@ -198,7 +202,7 @@ public class NumberPanel extends JPanel implements Base {
       // if not a float mode, adjust by base
       dot.setEnabled( false );
       switch ( base ) {
-         case BASE_16:
+         case Base.BASE_16:
             b0.setEnabled( true );
             b1.setEnabled( true );
             b2.setEnabled( true );
@@ -216,7 +220,7 @@ public class NumberPanel extends JPanel implements Base {
             be.setEnabled( true );
             bf.setEnabled( true );
             break;
-         case BASE_10:
+         case Base.BASE_10:
             b0.setEnabled( true );
             b1.setEnabled( true );
             b2.setEnabled( true );
@@ -228,7 +232,7 @@ public class NumberPanel extends JPanel implements Base {
             b8.setEnabled( true );
             b9.setEnabled( true );
             break;
-         case BASE_8:
+         case Base.BASE_8:
             b0.setEnabled( true );
             b1.setEnabled( true );
             b2.setEnabled( true );
@@ -238,7 +242,7 @@ public class NumberPanel extends JPanel implements Base {
             b6.setEnabled( true );
             b7.setEnabled( true );
             break;
-         case BASE_2:
+         case Base.BASE_2:
             b0.setEnabled( true );
             b1.setEnabled( true );
             break;
