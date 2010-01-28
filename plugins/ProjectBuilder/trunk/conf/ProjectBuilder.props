@@ -11,7 +11,7 @@ plugin.projectbuilder.ProjectBuilderPlugin.version=1.0
 
 # Dependencies {{{
 plugin.projectbuilder.ProjectBuilderPlugin.depend.0=jedit 04.03.18.00
-plugin.projectbuilder.ProjectBuilderPlugin.depend.1=jdk 1.5
+plugin.projectbuilder.ProjectBuilderPlugin.depend.1=jdk 1.6
 plugin.projectbuilder.ProjectBuilderPlugin.depend.2=plugin com.townsfolkdesigns.jedit.plugins.scripting.GroovyScriptEnginePlugin 1.0.0
 plugin.projectbuilder.ProjectBuilderPlugin.depend.3=plugin projectviewer.ProjectPlugin 2.9.1
 plugin.projectbuilder.ProjectBuilderPlugin.depend.4=plugin CommonControlsPlugin 1.1
