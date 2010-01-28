@@ -102,6 +102,32 @@ public class LauncherUtils {
 		return firstAndOnly;
 	}
 
+	public static Buffer resolveToBuffer(Object resource) {
+		try {
+			resource = getOnlyObjectFrom(resource);
+			if (resource == null)
+				return null;
+	    	Buffer buffer = null;
+	    	if (resource instanceof Buffer) {
+				buffer = (Buffer)resource;
+			} else if (resource instanceof File) {
+				File file = (File)resource;
+				buffer = jEdit._getBuffer(file.getCanonicalPath());
+			} else if (resource instanceof JEditTextArea) {
+				JEditTextArea textArea = (JEditTextArea) resource;
+				View view = textArea == null ? jEdit.getFirstView() : textArea.getView();
+				buffer = view.getBuffer();
+			} else {
+				File file = resolveToFile(resource);
+				if (file != null)
+					buffer = jEdit._getBuffer(file.getCanonicalPath());
+			}
+	    	return buffer;
+		} catch (Exception exp) {
+			return null;
+		}
+	}
+	
 	public static File resolveToFile(Object resource) {
 		try {
 			resource = getOnlyObjectFrom(resource);
