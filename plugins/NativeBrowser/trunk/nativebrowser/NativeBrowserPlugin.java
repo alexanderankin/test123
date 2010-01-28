@@ -24,6 +24,8 @@ package nativebrowser;
 
 import org.gjt.sp.jedit.EditPlugin;
 
+import chrriis.dj.nativeswing.swtimpl.NativeInterface;
+
 /**
  * The Native Browser plugin
  * 
@@ -32,4 +34,12 @@ import org.gjt.sp.jedit.EditPlugin;
 public class NativeBrowserPlugin extends EditPlugin {
 	public static final String NAME = "nativebrowser";
 	public static final String OPTION_PREFIX = "options.nativebrowser.";
+	
+	// Needed by DJ native swing, has to be done once as soon as possible
+    // in the program
+	static {
+        NativeInterface.open();
+        NativeInterface.runEventPump();
+	}
+	
 }
