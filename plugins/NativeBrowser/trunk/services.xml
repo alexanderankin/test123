@@ -4,6 +4,12 @@
 <SERVICES>
     <!-- adds a Launcher to the Launcher plugin -->
     <SERVICE CLASS="launcher.browser.BrowserLauncherType"
+    			NAME="nativebrowser.launcher.OpenInNativeFlashPlayerLauncher">
+        nativebrowser.launcher.OpenInNativeFlashPlayerLauncher.INSTANCE;
+    </SERVICE>
+
+    <!-- adds a Launcher to the Launcher plugin -->
+    <SERVICE CLASS="launcher.browser.BrowserLauncherType"
     			NAME="nativebrowser.launcher.OpenInNativeBrowserLauncher">
         nativebrowser.launcher.OpenInNativeBrowserLauncher.INSTANCE;
     </SERVICE>

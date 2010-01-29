@@ -26,8 +26,9 @@ public class RenderInNativeBrowserLauncher extends TextLauncher {
 			if (text == null)
 				return false;
 			DockableWindowManager wm = view.getDockableWindowManager();
-			wm.addDockableWindow(nativebrowser.NativeBrowserPlugin.NAME);
-			NativeBrowser nb = (NativeBrowser)wm.getDockableWindow(nativebrowser.NativeBrowserPlugin.NAME);
+			wm.addDockableWindow(NativeBrowser.NAME);
+			NativeBrowser nb =
+				(NativeBrowser)wm.getDockableWindow(NativeBrowser.NAME);
 			nb.render(text.toString());
 			return true;
 		} catch (Exception exp) {
