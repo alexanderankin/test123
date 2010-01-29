@@ -42,11 +42,11 @@
 	border: 0px solid #FFF;
 	margin: 0px;
 	padding: 0px;
-	width: 355px;
+	width: 360px;
 }
 
 .installers .installer table {
-	font-size: 12px;
+	font-size: 13px;
 	line-height: 16px;
 	margin: 10px 0px;
 }
@@ -78,7 +78,7 @@
 
 #instructions {
 	float: left;
-	font-size: 12px;
+	font-size: 14px;
 	width: 720px;
 }
 
