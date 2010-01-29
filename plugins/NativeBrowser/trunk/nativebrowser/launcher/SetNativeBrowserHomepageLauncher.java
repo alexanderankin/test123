@@ -1,5 +1,6 @@
 package nativebrowser.launcher;
 
+import java.io.File;
 import java.net.URI;
 
 import launcher.Launcher;
@@ -38,8 +39,9 @@ public class SetNativeBrowserHomepageLauncher extends Launcher {
 
 	@Override
 	public boolean canLaunch(Object resolvedResource) {
-		// We can launch any URI
-		return resolvedResource instanceof URI;
+		// We can launch any URI or File
+		return resolvedResource instanceof URI ||
+				resolvedResource instanceof File;
 	}
 
 	@Override
