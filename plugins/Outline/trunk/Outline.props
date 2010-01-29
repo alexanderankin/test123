@@ -10,6 +10,6 @@ plugin.outline.OutlinePlugin.activate=defer
 plugin.outline.OutlinePlugin.description=Provides a SideKick tree structure parser for folds.
 outline.label=Outline
 outline.title=Outline
-plugin.outline.OutlinePlugin.menu=sidekick.parser.outline-switch
+plugin.outline.OutlinePlugin.menu-item=sidekick.parser.outline-switch
 sidekick.parser.outline-switch.label=Outline
 
