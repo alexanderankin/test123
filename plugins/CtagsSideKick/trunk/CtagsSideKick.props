@@ -72,7 +72,7 @@ options.CtagsSideKick.icons.constant=macro.png
 options.CtagsSideKick.icons.label=variable.png
 
 # menu
-plugin.ctags.sidekick.Plugin.menu=sidekick.parser.ctags-switch
+plugin.ctags.sidekick.Plugin.menu-item=sidekick.parser.ctags-switch
 sidekick.parser.ctags-switch.label=Ctags SideKick
 
 # docs
