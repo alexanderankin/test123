@@ -1,23 +1,23 @@
 body {
-	padding: 0px;
-	margin: 0px;
 	background-color: #D6D9DF;
 	font-family: "Tahoma", "Arial", sans-serif;
+	margin: 0px;
+	padding: 0px;
 }
 #wrapper {
-	margin: 0px;
 	border-color: #9297A1;
 	border-style: solid;
 	border-width: 1px 0px;
+	margin: 0px;
 }
 #navbar {
-	height: 30px;
 	background-image: url('../images/navbar_bg.png');
-	background-repeat: repeat-x;
 	background-position: 0px 0px;
+	background-repeat: repeat-x;
+	border-color: #333;
 	border-style: solid;
 	border-width: 1px 0px 0px 0px;
-	border-color: #333;
+	height: 30px;
 }
 #navbar ul {
 	float: left;
@@ -29,18 +29,18 @@ body {
 	display: inline;
 }
 #navbar ul li a {
-	display: block;
-	height: 27px;
-	border-style: solid;
 	border-color: #999;
+	border-style: solid;
 	border-width: 0px 1px 0px 0px;
+	color: #FFF;
+	display: block;
 	float: left;
+	font-size: 12px;
+	height: 27px;
+	line-height: 27px;
 	margin: 2px 0px 0px 0px;
 	padding: 0px 10px;
-	font-size: 12px;
 	text-decoration: none;
-	line-height: 27px;
-	color: #FFF;
 }
 #navbar ul li a.first {
 	border-width: 0px 1px;
@@ -51,11 +51,11 @@ body {
 }
 
 #navbar ul li a.selected {
-	text-decoration: underline;
-	color: #FDF39E;
 	background-image: url('../images/navbar_bg.png');
-	background-repeat: repeat-x;
 	background-position: 0px -31px;
+	background-repeat: repeat-x;
+	color: #FDF39E;
+	text-decoration: underline;
 }
 #search_container {
 	float: right;
@@ -68,16 +68,16 @@ body {
 }
 .center_960 {
 	margin: 0px auto;
-	width: 960px;
 	overflow: hidden;
+	width: 960px;
 }
 .gsc-control-cse {
 	background-color: transparent;
 	border: 0px solid transparent;
+	height: 30px;
+	line-height: 30px;
 	margin: 0px;
 	padding: 0px;
-	line-height: 30px;
-	height: 30px;
 }
 form.gsc-search-box {
 	margin: 0px;
@@ -91,10 +91,10 @@ form.gsc-search-box {
 
 #titlebar {
 	background-color: #BACFE2;
-	height: 55px;
 	border-color: #999;
 	border-style: solid;
 	border-width: 0px 0px 1px 0px;
+	height: 55px;
 }
 
 #logos {
@@ -108,14 +108,14 @@ form.gsc-search-box {
 }
 #logos img {
 	border: 0px solid transparent;
+	float: left;
 	margin: 5px 10px 0px 30px;
 	vertical-align: bottom;
-	float: left;
 }
 #logos span {
+	color: #0B264E;
 	font-weight: bold;
 	margin: 0px 0px 0px 10px;
-	color: #0B264E;
 }
 #logos .logo {
 	font-size: 24px;
@@ -126,11 +126,11 @@ form.gsc-search-box {
 
 #titlebar #actions {
 	float: right;
+	list-style-type: none;
 	margin: 14px 30px 0px 0px;
+	overflow: hidden;
 	padding: 0px;
 	width: 200px;
-	overflow: hidden;
-	list-style-type: none;
 }
 
 #titlebar #actions .action {
@@ -138,8 +138,8 @@ form.gsc-search-box {
 	font-size: 14px;
 	margin: 0px;
 	padding: 0px;
-	width: 200px;
 	text-align: right;
+	width: 200px;
 }
 
 #titlebar #actions .action a {
@@ -159,15 +159,15 @@ form.gsc-search-box {
 	padding: 20px 0px;
 }
 #footer_separator {
-	height: 5px;
 	background-color: #39698A;
 	border-color: #333;
 	border-style: solid;
 	border-width: 0px 0px 1px 0px;
+	height: 5px;
 }
 
 #footer {
-	margin-top: 20px;
+	margin: 20px auto;
 }
 
 #footer ul {
@@ -191,9 +191,9 @@ form.gsc-search-box {
 
 #intro_text {
 	float: left;
-	width: 540px;
-	margin: 10px;
 	font-size: 14px;
+	margin: 10px;
+	width: 540px;
 }
 
 #intro_text fieldset {
@@ -203,25 +203,25 @@ form.gsc-search-box {
 
 #sidebar {
 	float: right;
-	width: 390px;
 	margin: 10px 5px;
 	padding: 0px;
+	width: 390px;
 }
 
 #sidebar .action {
 	border: 0px solid transparent;
-	width: 120px;
-	font-size: 14px;
-	padding: 0px;
 	float: left;
+	font-size: 14px;
 	margin: 0px 5px;
+	padding: 0px;
+	width: 120px;
 }
 
 #sidebar .action a {
-	display: block;
-	text-decoration: none;
 	color: #FA5200;
+	display: block;
 	font-weight: bold;
+	text-decoration: none;
 }
 
 #sidebar .action a:hover {
@@ -233,9 +233,9 @@ form.gsc-search-box {
 }
 
 .title {
-	font-weight: bold;
-	font-size: 16px;
 	color: #0B264E;
+	font-size: 16px;
+	font-weight: bold;
 	margin-bottom: 10px;
 }
 
@@ -244,9 +244,9 @@ form.gsc-search-box {
 }
 
 #news .list {
-	list-style-type: none;
 	font-size: 16px;
 	line-height: 20px;
+	list-style-type: none;
 	margin: 0px;
 	padding: 0px;
 }
