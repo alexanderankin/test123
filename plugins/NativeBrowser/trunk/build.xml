@@ -28,6 +28,7 @@
 		<pathelement location="${DJNativeSwing-SWT.jar}"/>
 		<pathelement location="${jna.jar}"/>
 		<pathelement location="."/>
+		<pathelement location="${jedit.plugins.dir}/CommonControls.jar" />
 		<pathelement location="${jedit.plugins.dir}/ProjectViewer.jar"/>
 		<pathelement location="${jedit.plugins.dir}/Launcher.jar"/>
 	</path>

@@ -52,8 +52,10 @@ import chrriis.dj.nativeswing.swtimpl.components.JWebBrowser;
 public class NativeBrowser extends JPanel
     implements EBComponent, NativeBrowserActions, DefaultFocusComponent {
 
-    // {{{ Instance Variables
 	private static final long serialVersionUID = 4557772486347339631L;
+	public static final String NAME = "nativebrowser";
+
+	// {{{ Instance Variables
 	
 	private String homepage;
 

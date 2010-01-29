@@ -7,50 +7,75 @@
 <ACTIONS>
 	<ACTION NAME="nativebrowser.menu-bar">
 		<CODE>
-			wm.addDockableWindow(nativebrowser.NativeBrowserPlugin.NAME);
-			wm.getDockableWindow(nativebrowser.NativeBrowserPlugin.NAME).toggleMenuBar();
+			wm.addDockableWindow(nativebrowser.NativeBrowser.NAME);
+			wm.getDockableWindow(nativebrowser.NativeBrowser.NAME).toggleMenuBar();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="nativebrowser.home">
 		<CODE>
-			wm.addDockableWindow(nativebrowser.NativeBrowserPlugin.NAME);
-			wm.getDockableWindow(nativebrowser.NativeBrowserPlugin.NAME).home();
+			wm.addDockableWindow(nativebrowser.NativeBrowser.NAME);
+			wm.getDockableWindow(nativebrowser.NativeBrowser.NAME).home();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="nativebrowser.back">
 		<CODE>
-			wm.addDockableWindow(nativebrowser.NativeBrowserPlugin.NAME);
-			wm.getDockableWindow(nativebrowser.NativeBrowserPlugin.NAME).back();
+			wm.addDockableWindow(nativebrowser.NativeBrowser.NAME);
+			wm.getDockableWindow(nativebrowser.NativeBrowser.NAME).back();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="nativebrowser.forward">
 		<CODE>
-			wm.addDockableWindow(nativebrowser.NativeBrowserPlugin.NAME);
-			wm.getDockableWindow(nativebrowser.NativeBrowserPlugin.NAME).forward();
+			wm.addDockableWindow(nativebrowser.NativeBrowser.NAME);
+			wm.getDockableWindow(nativebrowser.NativeBrowser.NAME).forward();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="nativebrowser.reload">
 		<CODE>
-			wm.addDockableWindow(nativebrowser.NativeBrowserPlugin.NAME);
-			wm.getDockableWindow(nativebrowser.NativeBrowserPlugin.NAME).reload();
+			wm.addDockableWindow(nativebrowser.NativeBrowser.NAME);
+			wm.getDockableWindow(nativebrowser.NativeBrowser.NAME).reload();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="nativebrowser.render-buffer">
 		<CODE>
-			wm.addDockableWindow(nativebrowser.NativeBrowserPlugin.NAME);
-			wm.getDockableWindow(nativebrowser.NativeBrowserPlugin.NAME).renderBuffer(view);
+			wm.addDockableWindow(nativebrowser.NativeBrowser.NAME);
+			wm.getDockableWindow(nativebrowser.NativeBrowser.NAME).renderBuffer(view);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="nativebrowser.set-homepage">
 		<CODE>
-			wm.addDockableWindow(nativebrowser.NativeBrowserPlugin.NAME);
-			wm.getDockableWindow(nativebrowser.NativeBrowserPlugin.NAME).setHomepage(view, view.getBuffer().getPath());
+			wm.addDockableWindow(nativebrowser.NativeBrowser.NAME);
+			wm.getDockableWindow(nativebrowser.NativeBrowser.NAME).setHomepage(view, view.getBuffer().getPath());
 		</CODE>
 	</ACTION>
 	<ACTION NAME="nativebrowser.browse">
 		<CODE>
-			wm.addDockableWindow(nativebrowser.NativeBrowserPlugin.NAME);
-			wm.getDockableWindow(nativebrowser.NativeBrowserPlugin.NAME).browse(view, view.getBuffer().getPath());
+			wm.addDockableWindow(nativebrowser.NativeBrowser.NAME);
+			wm.getDockableWindow(nativebrowser.NativeBrowser.NAME).browse(view, view.getBuffer().getPath());
+		</CODE>
+	</ACTION>
+	
+	<ACTION NAME="nativeflashplayer.open">
+		<CODE>
+			wm.addDockableWindow(nativebrowser.NativeFlashPlayer.NAME);
+			wm.getDockableWindow(nativebrowser.NativeFlashPlayer.NAME).open();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="nativeflashplayer.play">
+		<CODE>
+			wm.addDockableWindow(nativebrowser.NativeFlashPlayer.NAME);
+			wm.getDockableWindow(nativebrowser.NativeFlashPlayer.NAME).play();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="nativeflashplayer.pause">
+		<CODE>
+			wm.addDockableWindow(nativebrowser.NativeFlashPlayer.NAME);
+			wm.getDockableWindow(nativebrowser.NativeFlashPlayer.NAME).pause();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="nativeflashplayer.stop">
+		<CODE>
+			wm.addDockableWindow(nativebrowser.NativeFlashPlayer.NAME);
+			wm.getDockableWindow(nativebrowser.NativeFlashPlayer.NAME).stop();
 		</CODE>
 	</ACTION>
 </ACTIONS>

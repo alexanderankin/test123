@@ -12,4 +12,7 @@
 	<DOCKABLE NAME="nativebrowser">
 		new nativebrowser.NativeBrowser(view, position);
 	</DOCKABLE>
+	<DOCKABLE NAME="nativeflashplayer">
+		new nativebrowser.NativeFlashPlayer(view, position);
+	</DOCKABLE>
 </DOCKABLES>
