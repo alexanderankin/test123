@@ -39,10 +39,10 @@
 
 .installers .installer {
 	border: 0px solid #FFF;
+	font-family: "Tahoma", "Arial", sans-serif;
 	margin: 0px;
 	padding: 0px;
 	width: 355px;
-	font-family: "Tahoma", "Arial", sans-serif;
 }
 
 .installers .installer table {
@@ -78,8 +78,9 @@
 }
 
 #instructions {
-	width: 720px;
+	float: left;
 	font-size: 12px;
+	width: 720px;
 }
 
 #instructions p {
