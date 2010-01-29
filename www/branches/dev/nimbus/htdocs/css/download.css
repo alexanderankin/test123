@@ -15,8 +15,9 @@
 }
 
 #downloads p {
-	font-size: 12px;
+	font-size: 14px;
 	margin-left: 10px;
+	line-height: 18px;
 }
 
 #downloads p a {
@@ -39,7 +40,6 @@
 
 .installers .installer {
 	border: 0px solid #FFF;
-	font-family: "Tahoma", "Arial", sans-serif;
 	margin: 0px;
 	padding: 0px;
 	width: 355px;
@@ -57,7 +57,6 @@
 
 .installers .installer table td {
 	padding: 0px 0px 0px 5px;
-	font-family: "Tahoma", "Arial", sans-serif;
 }
 
 .installers .installer table td a {

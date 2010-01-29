@@ -1,6 +1,6 @@
 body {
 	background-color: #D6D9DF;
-	font-family: "Tahoma", "Arial", sans-serif;
+	font-family: "Arial", "Tahoma", sans-serif;
 	margin: 0px;
 	padding: 0px;
 }
@@ -35,7 +35,7 @@ body {
 	color: #FFF;
 	display: block;
 	float: left;
-	font-size: 12px;
+	font-size: 14px;
 	height: 27px;
 	line-height: 27px;
 	margin: 2px 0px 0px 0px;
@@ -267,7 +267,7 @@ form.gsc-search-box {
 #toc {
 	border: 1px solid #CCC;
 	float: right;
-	font-size: 12px;
+	font-size: 14px;
 	margin-top: 5px;
 	padding: 0px;
 	width: 220px;
