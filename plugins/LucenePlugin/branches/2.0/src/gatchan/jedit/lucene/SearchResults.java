@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Vector;
 import java.util.Collections;
 
@@ -318,6 +319,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 
 		public void setIndexes(String[] indexes)
 		{
+			Arrays.sort(indexes, new StandardUtilities.StringCompare<Object>(true));
 			this.indexes = indexes;
 			if (indexes.length == 0)
 			{
