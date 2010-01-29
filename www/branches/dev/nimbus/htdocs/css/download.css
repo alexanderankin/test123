@@ -41,7 +41,8 @@
 	border: 0px solid #FFF;
 	margin: 0px;
 	padding: 0px;
-	width: 350px;
+	width: 355px;
+	font-family: "Tahoma", "Arial", sans-serif;
 }
 
 .installers .installer table {
@@ -55,7 +56,8 @@
 }
 
 .installers .installer table td {
-	padding: 0px 0px 0px 10px;
+	padding: 0px 0px 0px 5px;
+	font-family: "Tahoma", "Arial", sans-serif;
 }
 
 .installers .installer table td a {
@@ -96,34 +98,5 @@
 }
 
 #instructions ul a:hover {
-	text-decoration: underline;
-}
-
-#toc {
-	border: 1px solid #CCC;
-	float: right;
-	font-size: 12px;
-	margin: 0px;
-	padding: 0px;
-	width: 220px;
-}
-
-#toc .title {
-	margin-left: 10px;
-	font-size: 14px;
-}
-
-#toc ul {
-	list-style-type: none;
-	margin: 0px 0px 0px 15px;
-	padding: 5px;
-}
-
-#toc a {
-	color: #39698A;
-	text-decoration: none;
-}
-
-#toc a:hover {
 	text-decoration: underline;
 }
