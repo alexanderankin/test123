@@ -15,7 +15,7 @@
     </SERVICE>
 
     <!-- adds a Launcher to the Launcher plugin -->
-    <SERVICE CLASS="launcher.browser.ExternalApplicationLauncherType"
+    <SERVICE CLASS="launcher.extapp.ExternalApplicationLauncherType"
 				NAME="nativebrowser.launcher.SetNativeBrowserHomepageLauncher">
         nativebrowser.launcher.SetNativeBrowserHomepageLauncher.INSTANCE;
     </SERVICE>
