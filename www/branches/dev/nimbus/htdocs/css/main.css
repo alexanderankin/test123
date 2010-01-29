@@ -263,3 +263,33 @@ form.gsc-search-box {
 #news .list a:hover {
 	text-decoration: underline;
 }
+
+#toc {
+	border: 1px solid #CCC;
+	float: right;
+	font-size: 12px;
+	margin-top: 5px;
+	padding: 0px;
+	width: 220px;
+}
+
+#toc .title {
+	font-size: 14px;
+	margin-left: 10px;
+	margin-top: inherit;
+}
+
+#toc ul {
+	list-style-type: none;
+	margin: 0px 0px 0px 15px;
+	padding: 5px;
+}
+
+#toc a {
+	color: #39698A;
+	text-decoration: none;
+}
+
+#toc a:hover {
+	text-decoration: underline;
+}
