@@ -30,16 +30,14 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 
-import chrriis.dj.nativeswing.swtimpl.NativeInterface;
 import chrriis.dj.nativeswing.swtimpl.components.JWebBrowser;
 
 // {{{ NativeBrowser class
@@ -50,7 +48,7 @@ import chrriis.dj.nativeswing.swtimpl.components.JWebBrowser;
  *
  */
 public class NativeBrowser extends JPanel
-    implements EBComponent, NativeBrowserActions, DefaultFocusComponent {
+    implements NativeBrowserActions, DefaultFocusComponent {
 
 	private static final long serialVersionUID = 4557772486347339631L;
 	public static final String NAME = "nativebrowser";
@@ -75,7 +73,7 @@ public class NativeBrowser extends JPanel
 	 * @param view the current jedit window
 	 * @param position a variable passed in from the script in actions.xml,
 	 * 	which can be DockableWindowManager.FLOATING, TOP, BOTTOM, LEFT, RIGHT, etc.
-	 * 	see @ref DockableWindowManager for possible values.
+	 * 	see {@link DockableWindowManager} for possible values.
 	 */
 	public NativeBrowser(View view, String position) {
 		super(new BorderLayout());
@@ -119,13 +117,10 @@ public class NativeBrowser extends JPanel
 	}
     // }}}
 
-	// EBComponent implementation
-	
-    // {{{ handleMessage
-	public void handleMessage(EBMessage message) {
-		if (message instanceof PropertiesChanged) {
-			propertiesChanged();
-		}
+    // {{{ handlePropertiesChanged
+	@EBHandler
+	public void handlePropertiesChanged(PropertiesChanged message) {
+		propertiesChanged();
 	}
     // }}}
     
