@@ -1,3 +1,9 @@
+/*
+This file, unless otherwise noted, is wholly the work of Dale Anson,
+danson@grafidog.com. The complete contents of this file is hereby 
+released into the public domain, with no rights reserved. For questions, 
+concerns, or comments, please email the author.
+*/
 
 package ise.calculator;
 
@@ -11,7 +17,7 @@ import java.util.*;
  * Provides navigation ability for a client object, has a "back" and "forward"
  * button to move through a list of objects.
  *
- * @author   Dale Anson, danson@germane-software.com, August 2002
+ * @author   Dale Anson, danson@grafidog.com, August 2002
  */
 public class Nav extends JToolBar implements ActionListener {
    /**

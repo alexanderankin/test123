@@ -1,5 +1,9 @@
-// $Id$
-
+/*
+This file, unless otherwise noted, is wholly the work of Dale Anson,
+danson@grafidog.com. The complete contents of this file is hereby 
+released into the public domain, with no rights reserved. For questions, 
+concerns, or comments, please email the author.
+*/
 package ise.calculator;
 
 import java.awt.LayoutManager2;
@@ -18,21 +22,6 @@ import java.util.Vector;
 
 /**
  * KappaLayout, a Java layout manager.<br>
- * Copyright (C) 2000, Dale Anson<br>
- *<br>
- * This library is free software; you can redistribute it and/or<br>
- * modify it under the terms of the GNU Lesser General Public<br>
- * License as published by the Free Software Foundation; either<br>
- * version 2.1 of the License, or (at your option) any later version.<br>
- *<br>
- * This library is distributed in the hope that it will be useful,<br>
- * but WITHOUT ANY WARRANTY; without even the implied warranty of<br>
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU<br>
- * Lesser General Public License for more details.<br>
- *<br>
- * You should have received a copy of the GNU Lesser General Public<br>
- * License along with this library; if not, write to the Free Software<br>
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA<br>
  * <p>
  * KappaLayout -- similar to others, but this one's simpler and easier to use.<br>
  * Example use:<br>

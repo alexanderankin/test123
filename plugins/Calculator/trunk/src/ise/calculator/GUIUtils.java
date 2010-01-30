@@ -1,50 +1,10 @@
-// $Id$
 /*
-* Based on the Apache Software License, Version 1.1
-*
-* Copyright (c) 2002 Dale Anson.  All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions
-* are met:
-*
-* 1. Redistributions of source code must retain the above copyright
-*    notice, this list of conditions and the following disclaimer.
-*
-* 2. Redistributions in binary form must reproduce the above copyright
-*    notice, this list of conditions and the following disclaimer in
-*    the documentation and/or other materials provided with the
-*    distribution.
-*
-* 3. The end-user documentation included with the redistribution, if
-*    any, must include the following acknowlegement:
-*       "This product includes software developed by Dale Anson,
-*        danson@users.sourceforge.net."
-*    Alternately, this acknowlegement may appear in the software itself,
-*    if and wherever such third-party acknowlegements normally appear.
-*
-* 4. The name "Antelope" must not be used to endorse or promote products derived
-*    from this software without prior written permission. For written
-*    permission, please contact danson@users.sourceforge.net.
-*
-* 5. Products derived from this software may not be called "Antelope"
-*    nor may "Antelope" appear in their names without prior written
-*    permission of Dale Anson.
-*
-* THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
-* WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
-* OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED.  IN NO EVENT SHALL DALE ANSON OR ANY PROJECT
-* CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-* SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-* LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
-* USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-* ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-* OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
-* OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-* SUCH DAMAGE.
-* ====================================================================
+This file, unless otherwise noted, is wholly the work of Dale Anson,
+danson@grafidog.com. The complete contents of this file is hereby 
+released into the public domain, with no rights reserved. For questions, 
+concerns, or comments, please email the author.
 */
+
 package ise.calculator;
 
 import java.util.*;
@@ -150,55 +110,6 @@ public class GUIUtils {
          parent = ( (Component)parent ).getParent();
       }
       return null;
-   }
-
-   /**
-    * Borrowed from jEdit's GUIUtilities.
-    * Shows the specified popup menu, ensuring it is displayed within
-    * the bounds of the screen.
-    *
-    * @param popup  The popup menu
-    * @param comp   The component to show it for
-    * @param x      The x co-ordinate
-    * @param y      The y co-ordinate
-    * @since        jEdit 4.0pre1
-    */
-   public static void showPopupMenu( javax.swing.JPopupMenu popup, Component comp,
-         int x, int y ) {
-      Point p = new Point( x, y );
-      javax.swing.SwingUtilities.convertPointToScreen( p, comp );
-
-      Dimension size = popup.getPreferredSize();
-      Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-
-      boolean horiz = false;
-      boolean vert = false;
-
-      // might need later
-      int origX = x;
-
-      if ( p.x + size.width > screen.width
-            && size.width < screen.width ) {
-         x += ( screen.width - p.x - size.width );
-         horiz = true;
-      }
-
-      if ( p.y + size.height > screen.height
-            && size.height < screen.height ) {
-         y += ( screen.height - p.y - size.height );
-         vert = true;
-      }
-
-      // If popup needed to be moved both horizontally and
-      // vertically, the mouse pointer might end up over a
-      // menu item, which will be invoked when the mouse is
-      // released. This is bad, so move popup to a different
-      // location.
-      if ( horiz && vert ) {
-         x = origX - size.width - 2;
-      }
-
-      popup.show( comp, x, y );
    }
 
 }
