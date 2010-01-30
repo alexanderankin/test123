@@ -1,17 +1,20 @@
-// $Id$
+/*
+This file, unless otherwise noted, is wholly the work of Dale Anson,
+danson@grafidog.com. The complete contents of this file is hereby 
+released into the public domain, with no rights reserved. For questions, 
+concerns, or comments, please email the author.
+*/
+
 package ise.plugin.calculator;
 
 import java.io.*;
 import java.util.*;
 
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.EditPlugin;
 
 /**
  * A plugin to turn the rpn calculator into a jEdit plugin. 
- * 
- * @author Dale Anson, danson@germane-software.com, Dec 2003
  */
 public class CalculatorPlugin extends EditPlugin {
    /** Name for plugin manager */
