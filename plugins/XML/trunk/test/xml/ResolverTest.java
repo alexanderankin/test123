@@ -156,7 +156,7 @@ public class ResolverTest{
 		assertEquals(Resolver.ASK,resolver.getNetworkMode());
 		
 		// accept downloading
-		ClickT clickT = new ClickT(true);
+		ClickT clickT = new ClickT(Option.YES);
 		clickT.start();
 		
 		res = resolver.resolveEntity(null,"http://www.jedit.org/index.php");
@@ -170,7 +170,7 @@ public class ResolverTest{
 		
 		// refuse downloading
 		resolver.clearCache();
-		clickT = new ClickT(false);
+		clickT = new ClickT(Option.NO);
 		clickT.start();
 		
 		try{
@@ -194,7 +194,7 @@ public class ResolverTest{
 		// try again, after clearing the cache
 		resolver.clearCache();
 
-		clickT = new ClickT(true);
+		clickT = new ClickT(Option.YES);
 		clickT.start();
 		
 		res = resolver.resolveEntity(null,"http://www.jedit.org/index.php");
@@ -251,14 +251,14 @@ public class ResolverTest{
 
 		// cache some URLs
 		
-		ClickT clickT = new ClickT(true);
+		ClickT clickT = new ClickT(Option.YES);
 		clickT.start();
 		
 		InputSource res = resolver.resolveEntity("-//testSaveOnExit.ACCEPT//","http://www.jedit.org/index.php");
 		
 		clickT.waitForClick();
 		
-		clickT = new ClickT(false);
+		clickT = new ClickT(Option.NO);
 		clickT.start();
 		
 		try{
@@ -289,7 +289,7 @@ public class ResolverTest{
 		
 		// the choice of the user to ignore a resource is not saved
 		// so we will be asked again about www.w3.org
-		clickT = new ClickT(false);
+		clickT = new ClickT(Option.NO);
 		clickT.start();
 		
 		try{
@@ -303,7 +303,7 @@ public class ResolverTest{
 		
 		// verify that it has been cleared
 		
-		clickT = new ClickT(true);
+		clickT = new ClickT(Option.YES);
 		clickT.start();
 		
 		res = resolver.resolveEntity(null,"http://www.jedit.org/index.php");

@@ -212,6 +212,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 	private Resolver() {
 	}
 
+	// {{{ - load()
 	private synchronized void load()
 	{
 		if(!loadedCache)
@@ -567,6 +568,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 			return source;
 		}
 		else if(newSystemId.startsWith("file:")
+			|| newSystemId.startsWith("jar:file:")
 			|| newSystemId.startsWith("jeditresource:"))
 		{
 			// don't keep a relative URL such as locate.rng
@@ -670,6 +672,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 
 	} //}}}
 
+	// {{{ clearCache
 	public void clearCache()
 	{
 

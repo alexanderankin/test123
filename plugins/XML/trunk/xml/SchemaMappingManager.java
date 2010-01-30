@@ -59,6 +59,11 @@ import xml.parser.SchemaMapping;
 public final class SchemaMappingManager
 {
 	public static final String SCHEMA_MAPPING_PROP = "xml.schema-mapping";
+	public static final String BUFFER_ENABLE_SCHEMA_MAPPING_PROP = "xml.enable-schema-mapping";
+	public static final String ENABLE_SCHEMA_MAPPING_PROP = "buffer."+BUFFER_ENABLE_SCHEMA_MAPPING_PROP;
+	public static final String BUFFER_SCHEMA_PROP = "xml.validation.schema";
+	public static final String BUFFER_AUTO_SCHEMA_PROP = "xml.validation.schema-auto";
+	
 	private static final String BUILT_IN_SCHEMA = "xml/dtds/schemas.xml";
 	
 	// {{{ singleton constructor
@@ -69,65 +74,83 @@ public final class SchemaMappingManager
 	/**
 	 * - let the user choose a schema file from the VFSBrowser
 	 * TODO: test with VFS
-	 * TODO: clarify usage of properties vs schemas.xml
-	 *       I want a "NO SCHEMAS.XML" version of this method
+	 * TODO: clarify property on the buffer vs schema-mapping
 	 */
 	public static void promptSchemaForBuffer(View view, Buffer buffer)
 	{
+		String oldSchema = buffer.getStringProperty(BUFFER_SCHEMA_PROP);
+
+		String specificSchema = null;
+		SchemaMapping lMapping = null;
+		SchemaMapping gMapping = null;
+		
+		boolean schemasEnabled = isSchemaMappingEnabled(buffer);
+		
 		// local schema-mapping
-		String specificSchema = MiscUtilities.constructPath(
-			MiscUtilities.getParentOfPath(
-				buffer.getPath()),SchemaMapping.SCHEMAS_FILE);
+		if(schemasEnabled){
+			specificSchema = MiscUtilities.constructPath(
+				MiscUtilities.getParentOfPath(
+					buffer.getPath()),SchemaMapping.SCHEMAS_FILE);
 		
-		SchemaMapping lMapping = getLocalSchemaMapping(buffer);
-		SchemaMapping gMapping = getGlobalSchemaMapping();
+			lMapping = getLocalSchemaMapping(buffer);
+			gMapping = getGlobalSchemaMapping();
 		
-		String oldSchema = buffer.getStringProperty("xml.validation.schema");
+			// always prefer the explicit schema
+			String oldSchemaAuto = buffer.getStringProperty(BUFFER_AUTO_SCHEMA_PROP);
+			if(oldSchema == null)oldSchema = oldSchemaAuto;
+		}
+		
 		
 		ChooseSchemaDialog choose = new ChooseSchemaDialog(view);
 		
-		// TODO: test if schemas.xml are enabled for relativeEnabled
         if(choose.choose(buffer.getPath(),oldSchema, true))
         {
-        	// no schemas.xml in the buffer's directory : will create one
-        	if(lMapping == null)
-        	{
-        		try
-        		{
-        			lMapping = new SchemaMapping(new URL(pathToURL(specificSchema)));
-        			if(gMapping != null)lMapping.ensureIncluded(gMapping);
-				}
-				catch(MalformedURLException ue)
-				{
-					Log.log(Log.ERROR,SchemaMappingManager.class,ue);
-				}
-			}
-			
 			String bufferURL = pathToURL(buffer.getPath());
 			URI schemaURL = choose.schemaURL;
-			
-			SchemaMapping.URIResourceRule newRule = new SchemaMapping.URIResourceRule(null,bufferURL,schemaURL.toString(), false);
-			
-			lMapping.updateMapping(newRule);
-			
-			try
-			{
-				lMapping.toDocument(specificSchema);
+
+        	if(schemasEnabled)
+        	{
+				// no schemas.xml in the buffer's directory : will create one
+				if(lMapping == null)
+				{
+					try
+					{
+						lMapping = new SchemaMapping(new URL(pathToURL(specificSchema)));
+						if(gMapping != null)lMapping.ensureIncluded(gMapping);
+					}
+					catch(MalformedURLException ue)
+					{
+						Log.log(Log.ERROR,SchemaMappingManager.class,ue);
+					}
+				}
+				
+				
+				SchemaMapping.URIResourceRule newRule = new SchemaMapping.URIResourceRule(null,bufferURL,schemaURL.toString(), false);
+				
+				lMapping.updateMapping(newRule);
+				
+				try
+				{
+					lMapping.toDocument(specificSchema);
+				}
+				catch(IOException ioe)
+				{
+					// if saving fails, try to output it in a buffer
+					JOptionPane.showMessageDialog(
+						view,
+						jEdit.getProperty("xml-error-to-document.message",new Object[]{ioe.getClass(),ioe.getMessage()}),
+						jEdit.getProperty("xml-error-to-document.title"),
+						JOptionPane.ERROR_MESSAGE
+						);
+					Buffer b = jEdit.newFile(view,lMapping.getBaseURI().toString());
+					b.insert(0,lMapping.toString());
+					view.getEditPane().setBuffer(buffer);
+				}
 			}
-			catch(IOException ioe)
+			else
 			{
-				// if saving fails, try to output it in a buffer
-				JOptionPane.showMessageDialog(
-					view,
-					jEdit.getProperty("xml-error-to-document.message",new Object[]{ioe.getClass(),ioe.getMessage()}),
-					jEdit.getProperty("xml-error-to-document.title"),
-					JOptionPane.ERROR_MESSAGE
-					);
-				Buffer b = jEdit.newFile(view,lMapping.getBaseURI().toString());
-				b.insert(0,lMapping.toString());
-				view.getEditPane().setBuffer(buffer);
+				buffer.setProperty(BUFFER_SCHEMA_PROP,schemaURL);
 			}
-			
 			
 			// finally, use the new schema mapping
 			view.getInputHandler().setRepeatCount(1);
@@ -170,13 +193,7 @@ public final class SchemaMappingManager
 			try
 			{
 				//it's a file
-				return new File(path).toURL().toURI().toString();
-			}
-			catch(URISyntaxException ue)
-			{
-				Log.log(Log.ERROR,SchemaMappingManager.class,"strange URI (apos added) '"+path+"'");
-				Log.log(Log.ERROR,SchemaMappingManager.class,ue);
-				return path;
+				return new File(path).toURI().toURL().toString();
 			}
 			catch(MalformedURLException ue)
 			{
@@ -450,43 +467,68 @@ public final class SchemaMappingManager
         {
         	SchemaMapping tidMapping = allTypeIds.get(tid);
 			
-        	// no schemas.xml in the buffer's directory : will create one
-        	if(lMapping == null)
+        	if(isSchemaMappingEnabled(buffer))
         	{
-				lMapping = new SchemaMapping(specificSchemaURL);
-				if(gMapping != null)lMapping.ensureIncluded(gMapping);
+				// no schemas.xml in the buffer's directory : will create one
+				if(lMapping == null)
+				{
+					lMapping = new SchemaMapping(specificSchemaURL);
+					if(gMapping != null)lMapping.ensureIncluded(gMapping);
+				}
+				
+				if(lMapping != tidMapping)
+				{
+					lMapping.ensureIncluded(tidMapping);
+				}
+				
+				String bufferURL = pathToURL(buffer.getPath());
+				SchemaMapping.URIResourceRule newRule = new SchemaMapping.URIResourceRule(null,bufferURL,tid, true);
+				
+				lMapping.updateMapping(newRule);
+				
+				try
+				{
+					lMapping.toDocument(specificSchema);
+				}
+				catch(IOException ioe)
+				{
+					// if saving fails, try to output it in a buffer
+					JOptionPane.showMessageDialog(
+						view,
+						jEdit.getProperty("xml-error-to-document.message",new Object[]{ioe.getClass(),ioe.getMessage()}),
+						jEdit.getProperty("xml-error-to-document.title"),
+						JOptionPane.ERROR_MESSAGE
+						);
+					Buffer b = jEdit.newFile(view,lMapping.getBaseURI().toString());
+					b.insert(0,lMapping.toString());
+					view.getEditPane().setBuffer(buffer);
+				}
+				
 			}
-			
-        	if(lMapping != tidMapping)
-        	{
-        		lMapping.ensureIncluded(tidMapping);
-        	}
-        	
-        	String bufferURL = pathToURL(buffer.getPath());
-        	SchemaMapping.URIResourceRule newRule = new SchemaMapping.URIResourceRule(null,bufferURL,tid, true);
-        	
-        	lMapping.updateMapping(newRule);
-        	
-        	try
-        	{
-        		lMapping.toDocument(specificSchema);
-        	}
-        	catch(IOException ioe)
-        	{
-        		// if saving fails, try to output it in a buffer
-        		JOptionPane.showMessageDialog(
-        			view,
-        			jEdit.getProperty("xml-error-to-document.message",new Object[]{ioe.getClass(),ioe.getMessage()}),
-        			jEdit.getProperty("xml-error-to-document.title"),
-        			JOptionPane.ERROR_MESSAGE
-        			);
-        		Buffer b = jEdit.newFile(view,lMapping.getBaseURI().toString());
-        		b.insert(0,lMapping.toString());
-        		view.getEditPane().setBuffer(buffer);
-        	}
-        	
-        	
-        	// finally, use the new schema mapping
+			else
+			{
+				SchemaMapping.Result res = tidMapping.resolveTypeId(tid);
+				if(res == null)
+				{
+				}
+				else{
+					try
+					{
+						String schemaURL = new URL(res.baseURI,res.target).toString();
+						buffer.setStringProperty(BUFFER_SCHEMA_PROP,schemaURL);
+					}
+					catch(MalformedURLException mfue)
+					{
+						// pretty rare !
+						Log.log(Log.ERROR,SchemaMappingManager.class,
+							"unable to resolve schema for typeId : "+res);
+						Log.log(Log.ERROR,SchemaMappingManager.class,
+							mfue);
+					}
+				}
+			}
+				
+			// finally, use the new schema mapping
 			view.getInputHandler().setRepeatCount(1);
 			view.getInputHandler().invokeAction("sidekick-parse");
         }
@@ -638,4 +680,9 @@ public final class SchemaMappingManager
 	}
 	//}}}
 
+	//{{{ isSchemaMappingEnabled() method
+	public static boolean isSchemaMappingEnabled(Buffer b){
+		return b.getBooleanProperty(BUFFER_ENABLE_SCHEMA_MAPPING_PROP);
+	}
+	//}}}
 }

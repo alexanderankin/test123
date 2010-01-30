@@ -177,7 +177,7 @@ public class XmlPluginTest{
     	File xml = new File(testData,"broken_online_schema/actions.xml");
     	
 		// accept downloading
-		ClickT clickT = new ClickT(true,10000);
+		ClickT clickT = new ClickT(Option.OK,10000);
 		clickT.start();
 
     	TestUtils.openFile(xml.getPath());

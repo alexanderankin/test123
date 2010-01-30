@@ -41,6 +41,7 @@ import java.util.Enumeration;
 
 import java.io.IOException;
 import java.net.URL;
+import java.net.MalformedURLException;
 
 import org.gjt.sp.util.Log;
 
@@ -84,9 +85,7 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 	
 	/** saved namespaces before root element */
 	private NamespaceSupport docElementNamespaces = new NamespaceSupport();
-;
-	
-	
+
 	/** URL of the installed schema, if any */
 	private String schemaURL;
 	
@@ -94,33 +93,32 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 	private Map<String,CompletionInfo> completions;
 
 	//{{{ Constructors
-	
-	/**
-	 * @param	mapping	schema-mapping rules
-	 * @throws	IllegalArgumentException	if mapping is null
-	 */
-	public SchemaAutoLoader(SchemaMapping mapping)
-	{
-		super();
-		if(mapping == null)throw new IllegalArgumentException("schema mapping may not be null");
-		this.mapping=mapping;
-		schemaURL = null;
-	}
-	
-	
 	/**
 	 * @param	parent	parent in the XML parsing chain
-	 * @param	mapping	schema-mapping rules
-	 * @throws	IllegalArgumentException	if mapping is null
+	 * @param	mapping	schema-mapping rules or null if you plan to force the schema
 	 */
 	public SchemaAutoLoader(XMLReader parent,SchemaMapping mapping)
 	{
 		super(parent);
-		if(mapping == null)throw new IllegalArgumentException("schema mapping may not be null");
 		this.mapping=mapping;
 	}
 	//}}}
 
+
+
+	/**
+	 * force the schema to use for validation and CompletionInfo. 
+	 * It disables autodiscovery and doesn't cancel any existing verifier,
+	 * so it should be called before parsing.
+	 * @param	baseURI	baseURI to resolve the schemaURI against (may be null if schemaURI is absolute)
+	 * @param	schemaURI	URI of the schema to install
+	 */
+	public void forceSchema(String baseURI, String schemaURI)
+	throws SAXException, IOException, MalformedURLException
+	{
+		this.mapping = null;
+		installJaxpGrammar(new URL(baseURI), schemaURI, false);
+	}
 
 	/**
 	 * this doesn't return the schema bound using xsi:schemalocation nor the 
@@ -142,23 +140,25 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 	/**
 	 * load a Validator from the url schema and install it after this SchemaAutoLoader
 	 * in the parsing chain.
-	 * @param	schema	URL or path to the schema
+	 * @param	baseURI	URL to resolve schemaURL against (may be null if schemaURL is absolute)
+	 * @param	schemaURL	URL to the schema	
+	 * @param	needReplay	is parsing started and we need to replay events to the verifier
 	 */
-	private void installJaxpGrammar(final SchemaMapping.Result schema) throws SAXException,IOException
+	private void installJaxpGrammar(final URL baseURI, final String schemaURL, boolean needReplay) throws SAXException,IOException
 	{
 		// schemas URLs are resolved against the schema mapping file
 		final ValidatorHandler verifierFilter =
-		SchemaLoader.instance().loadJaxpGrammar(schema.baseURI.toString(),schema.target,getErrorHandler());
-		schemaURL = new URL(schema.baseURI,schema.target).toString();
+		SchemaLoader.instance().loadJaxpGrammar(baseURI.toString(),schemaURL,getErrorHandler());
+		this.schemaURL = new URL(baseURI,schemaURL).toString();
 		
-		XMLReader parent = getParent();
-		
-		// replay setDocumentLocator() and startDocument(), but only for the new
-		// filter since other components have already received it
-		verifierFilter.setContentHandler(new org.xml.sax.helpers.DefaultHandler());
-		if(locator == null)throw new IllegalStateException("LOCATOR");
-		verifierFilter.setDocumentLocator(locator);
-		verifierFilter.startDocument();
+		if(needReplay){
+			// replay setDocumentLocator() and startDocument(), but only for the new
+			// filter since other components have already received it
+			verifierFilter.setContentHandler(new org.xml.sax.helpers.DefaultHandler());
+			if(locator == null)throw new IllegalStateException("LOCATOR");
+			verifierFilter.setDocumentLocator(locator);
+			verifierFilter.startDocument();
+		}
 		
 		// experimental : try to get the PSVI informations from the
 		// verifierFilter is for XSD (Xerces's verifier).
@@ -193,8 +193,8 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 		
 		// FIXME: very add-hoc, but who uses other extensions for one's RNG schema ?
 		//        OK : must do something for compact syntax (rnc)
-		if(schema.target.endsWith("rng")){
-			Map<String,CompletionInfo> info = SchemaToCompletion.rngSchemaToCompletionInfo(schema.baseURI.toString(),schema.target,getErrorHandler());
+		if(schemaURL.endsWith("rng")){
+			Map<String,CompletionInfo> info = SchemaToCompletion.rngSchemaToCompletionInfo(baseURI.toString(),schemaURL,getErrorHandler());
 			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaAutoLoader.class,"constructed CompletionInfos : "+info);
 			completions = info;
 		}
@@ -237,7 +237,7 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 	public void startPrefixMapping(String prefix, String ns)throws SAXException {
 		/* delay startPrefixMapping, to be able to retrieve the schema in XercesParser.startPrefixMapping
 		   and this is not until startElement("root element")*/ 
-		if(documentElement)
+		if(documentElement && mapping!=null)
 		{
 			if(DEBUG_SCHEMA_MAPPING)Log.log(Log.DEBUG,SchemaAutoLoader.this,"Prefix Mapping  ("+prefix+","+ns+")");
 			docElementNamespaces.declarePrefix(prefix,ns);
@@ -256,7 +256,7 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 	@Override
 	public void startElement(String uri, String localName, String qName, Attributes atts)throws SAXException
 	{
-		if(documentElement)
+		if(documentElement && mapping != null)
 		{
 			if(DEBUG_SCHEMA_MAPPING)Log.log(Log.DEBUG,SchemaAutoLoader.this,"DOC element  ("+uri+","+localName+","+qName+")");
 			
@@ -280,7 +280,7 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 				if(DEBUG_SCHEMA_MAPPING)Log.log(Log.DEBUG,SchemaAutoLoader.this,"FOUND SCHEMA: "+schema);
 				try
 				{
-					installJaxpGrammar(schema);
+					installJaxpGrammar(schema.baseURI, schema.target,true);
 				}
 				catch(IOException ioe)
 				{

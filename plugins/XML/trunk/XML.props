@@ -112,6 +112,9 @@ options.xml.general.network.local=Local files only
 options.xml.general.network.ask=Ask before downloading
 options.xml.general.network.always=Download without asking
 options.xml.general.network.cache=Cache remote files locally
+options.xml.general.enable-schema-mapping=Enable then schema mapping mechanism (schemas.xml files)
+options.xml.general.enable-schema-mapping.tooltip=Safe to uncheck if you only use XSD schemas.\
+ You can also set it on a per-buffer basis (see help topic). 
 
 options.xml.general.tree-separator=Tree
 options.xml.general.show-attributes=Show tag attributes in tree:
@@ -158,6 +161,9 @@ xml.close-complete-open=false
 # Insert space before /> when completing stand-alone tags
 xml.standalone-extra-space=false
 
+# use schemas.xml to associate RNG schemas to xml documents
+# it may be set on a per-buffer basis
+buffer.xml.enable-schema-mapping=true
 
 # Tag highlight
 xml.tag-highlight=true
@@ -369,7 +375,7 @@ mode.xml.beauty.beautifier=XmlIndenter
 xml.choose-type-id.message=Please Choose a typeID for the current buffer:
 xml.choose-type-id.title=Choose a TypeID...
 xml-error-to-document.message=An error occurred while saving the schema-mapping ({0}):\n\t{1}
-xml-error-to-document.message=error saving schema-mapping
+xml-error-to-document.title=error saving schema-mapping
 xml.no-type-id.message=no list of type ids; you'll have to edit schemas.xml manually
 
 # xml-prompt-schema

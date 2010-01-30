@@ -40,6 +40,7 @@ public class GeneralOptionPane extends AbstractOptionPane
 	
 	private JCheckBox popupEditorComplete;
 	private JCheckBox validate;
+	private JCheckBox enableSchemaMapping;
 	private JComboBox showAttributes;
 	private JCheckBox closeCompleteOpen;
 	private JCheckBox closeComplete;
@@ -86,6 +87,12 @@ public class GeneralOptionPane extends AbstractOptionPane
 		cache.setName("cache");
 		addComponent(cache);
 		
+		addComponent(enableSchemaMapping = new JCheckBox(jEdit.getProperty(
+			"options.xml.general.enable-schema-mapping")));
+		enableSchemaMapping.setSelected(jEdit.getBooleanProperty(xml.SchemaMappingManager.ENABLE_SCHEMA_MAPPING_PROP));
+		enableSchemaMapping.setName("enable-schema-mapping");
+		enableSchemaMapping.setToolTipText(jEdit.getProperty(
+				"options.xml.general.enable-schema-mapping.tooltip" ));
 		
 		String[] showAttributeValues = {
 			jEdit.getProperty("options.xml.general.show-attributes.none"),
@@ -162,7 +169,8 @@ public class GeneralOptionPane extends AbstractOptionPane
 		jEdit.setBooleanProperty("buffer.xml.validate",validate.isSelected());
 		Resolver.setNetworkMode(Resolver.MODES[network.getSelectedIndex()]);
 		Resolver.setUsingCache(cache.isSelected());
-
+		jEdit.setBooleanProperty(xml.SchemaMappingManager.ENABLE_SCHEMA_MAPPING_PROP,
+			enableSchemaMapping.isSelected());
 		jEdit.setIntegerProperty("xml.show-attributes",
 			showAttributes.getSelectedIndex());
 		jEdit.setBooleanProperty("xml.close-complete",
