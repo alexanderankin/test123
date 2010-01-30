@@ -68,7 +68,6 @@ public class PVAction extends projectviewer.action.Action {
     // called by ProjectViewer to let us know the currently selected node in
     // the PV tree.
     public void prepareForNode( VPTNode node ) {
-    	Log.log(Log.DEBUG, this, "preparing for " + node.getNodePath());
 		List<VPTNode> nodes = PVHelper.getSelectedNodes(viewer);
 		if (nodes.size() > 0) {
 	    	menu.removeAll();
