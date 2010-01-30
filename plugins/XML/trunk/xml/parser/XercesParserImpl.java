@@ -94,13 +94,20 @@ public class XercesParserImpl extends XmlParser
 			buffer.readUnlock();
 		}
 
-		if(text.length() == 0)
-			return new XmlParsedData(buffer.getName(),false);
-
+		
 		XmlParsedData data = new XmlParsedData(buffer.getName(),false);
-
-		SchemaMapping mapping = SchemaMappingManager.getSchemaMappingForBuffer(buffer);
-
+		
+		if(text.length() == 0)return data;
+		
+		SchemaMapping mapping;
+		if(SchemaMappingManager.isSchemaMappingEnabled(buffer))
+		{
+			mapping = SchemaMappingManager.getSchemaMappingForBuffer(buffer);
+		}
+		else
+		{
+			mapping = null;
+		}
 
 		Handler handler = new Handler(buffer,text,errorSource,data);
 
@@ -126,20 +133,41 @@ public class XercesParserImpl extends XmlParser
 			reader.setFeature("http://apache.org/xml/features/xinclude/fixup-base-uris",
 				buffer.getBooleanProperty("xml.xinclude.fixup-base-uris"));
 			//reader.setFeature("http://apache.org/xml/features/continue-after-fatal-error",true);
-			schemaLoader = new SchemaAutoLoader(reader,mapping);
+			
+			//get access to the DTD
+			reader.setProperty("http://xml.org/sax/properties/declaration-handler",handler);
+			//get access to the schema
+			handler.setPSVIProvider((PSVIProvider)reader);
 
+			schemaLoader = new SchemaAutoLoader(reader,mapping);
 
 			schemaLoader.setErrorHandler(handler);
 			schemaLoader.setContentHandler(handler);
 			schemaLoader.setEntityResolver(handler);
 
-			//get access to the schema
-			handler.setPSVIProvider((PSVIProvider)reader);
 			//get access to the RNG schema
 			handler.setSchemaAutoLoader(schemaLoader);
-			//get access to the DTD
-			reader.setProperty("http://xml.org/sax/properties/declaration-handler",handler);
 			reader = schemaLoader;
+			
+			//schemas.xml are disabled
+			if(!SchemaMappingManager.isSchemaMappingEnabled(buffer)){
+				String schemaFromProp = buffer.getStringProperty(SchemaMappingManager.BUFFER_SCHEMA_PROP);
+				if(schemaFromProp != null){
+					// the user has set the schema manually
+					String baseURI = SchemaMappingManager.pathToURL(buffer.getPath());
+					Log.log(Log.DEBUG, this,"forcing schema to {"+baseURI+","+schemaFromProp+"}");
+					// schemas URLs are resolved against the buffer
+					try
+					{
+						schemaLoader.forceSchema( baseURI,schemaFromProp);
+					}
+					catch(IOException ioe)
+					{
+						ioe.printStackTrace();
+						Log.log(Log.ERROR,this,ioe);
+					}
+				}
+			}
 		}
 		catch(SAXException se)
 		{
@@ -207,9 +235,10 @@ public class XercesParserImpl extends XmlParser
 		finally
 		{
 			//set this property for the xml-open-schema action to work
-			if(schemaLoader.getSchemaURL()!=null)
+			if(schemaLoader != null && schemaLoader.getSchemaURL()!=null)
 			{
-				buffer.setStringProperty("xml.validation.schema",schemaLoader.getSchemaURL());
+				buffer.setStringProperty(SchemaMappingManager.BUFFER_AUTO_SCHEMA_PROP,
+					schemaLoader.getSchemaURL());
 			}
 		}
 

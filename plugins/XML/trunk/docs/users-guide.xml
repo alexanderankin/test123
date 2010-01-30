@@ -472,7 +472,7 @@
   and if a schema or a DTD can be found.</para>
   
   <para>
-  While DTDs and schemas are declared in the
+  While DTDs and XSD schemas are declared in the
   document (see <xref linkend="schemas"/>), Relax NG schemas are not declared in the document.
   Therefore, there must be an external mean of specifying the RNG schema.
   </para>
@@ -488,9 +488,6 @@
  <para>You can use an absolute or relative URI or even an URI that will be resolved as
  a system Id by some catalog (e.g. <filename>locate.rng</filename>).
  </para>
- 
- <warning><para>IT DOESN'T WORK YET</para></warning>
- 
   </listitem>
   
   <listitem>
@@ -504,10 +501,11 @@
   
   </itemizedlist>
   
-  <para>When the XML plugin parses an XML buffer, it will look for <filename>schemas.xml</filename>
-  in the same directory. Or, if it doesn't exist, for a global
+  <para>When the XML plugin parses an XML buffer, it will look for a file named 
+  <filename>schemas.xml</filename> in the same directory. Or, if it doesn't exist,
+  for a global
   file in the settings directory (under <filename><replaceable>JEDIT_SETTINGS</replaceable>/plugins/xml.XmlPlugin/schemas.xml</filename>),
-  and finally for the built-in file(<filename>XML.jar!/xml/dtds/schemas.xml</filename>).
+  and finally for the built-in file (<filename>XML.jar!/xml/dtds/schemas.xml</filename>).
   The rules contained in this file are given the public Id, system Id, doctype,
   prefix, local name, namespace of the parsed document. The first rule to match
   returns the schema that will be used for validation.
@@ -556,12 +554,54 @@
   </para>
 
   <warning><para>The current implementation will retain any existing rule,
-  but will erase any comment and any formatting.</para></warning>
+  but will erase any comment and any formatting in the document, so
+  beware that all commented-out section of the schema-mapping will disappear
+  next time you use <guimenuitem>Set Schema...</guimenuitem>.
+  </para></warning>
   
+  <section id="disabling-schema-mapping">
+  <title>Disabling the schema-mapping</title>
+  
+  <para>If, for some reason, you want to disable this schema-mapping mechanism,
+  you can do it on a global basis by unchecking the
+  <guibutton>enable schema mapping</guibutton> checkbox,
+  in the <guibutton>XML</guibutton>&gt;<guibutton>Xml</guibutton> pane of the <guimenu>Plugins</guimenu>&gt;<guimenuitem>Plugin Options</guimenuitem>.
+  </para>
+  
+  <para>You can also disable schema-mapping on a per-buffer basis (let's say on a file in a read-only directory),
+  by inserting the following in the first or last 10 lines of the buffer:
+ </para>
+ <programlisting>:xml.enable-schema-mapping=false:</programlisting>
+
+ <para>The XML parser will no more try to find a schema using <filename>schemas.xml</filename>.
+ However, it will still pick a schema defined via a buffer-local property in a buffer,
+ or if you set a schema via <guimenuitem>Set Schema...</guimenuitem> or <guimenuitem>Set Schema Type...</guimenuitem>.
+  </para>
+  
+  <para>What will happen if you use <guimenuitem>Set Schema...</guimenuitem> 
+  and schema-mapping is disabled is that
+  the chosen schema won't be saved and any existing <filename>schemas.xml</filename>
+  in the same directory won't be updated. You will have to select the schema
+  again next time you edit the buffer.
+  </para>
+  <para> Conversely, <guimenuitem>Set Schema Type...</guimenuitem> will still work.
+  It will even propose you schema types defined in a <filename>schemas.xml</filename>
+  in the same directory as the buffer. However, the schema-type won't be saved
+  and the <filename>schemas.xml</filename> won't be updated.
+  Also, if you update the definition of the typeId (ie. you change its target to another
+  schema), the schema defined for the buffer won't be updated and you'll have to do
+  <guimenuitem>Set Schema Type...</guimenuitem> again.
+  </para>
+ 
+ </section>
+
+ <section id="see-schema">
+ <title>Seeing the schema which validated a buffer</title>
   <para>Finally, <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;
   <guimenuitem>Open Schema</guimenuitem> will let you see the schema associated
-  to current buffer, if any was found.</para>
-  
+  to current buffer, regardless of wether it is specified as a buffer-local property,
+  via the menu item, or via a schema-mapping rule.</para>
+  </section>
  </section>
   
 </section>

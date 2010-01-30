@@ -46,6 +46,7 @@ import org.gjt.sp.jedit.io.VFS;
 
 import java.io.*;
 import java.net.*;
+import javax.swing.text.JTextComponent;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.InputEvent;
@@ -172,7 +173,7 @@ public class SchemaMappingManagerTest {
 		assertThat(new File(relax_ng,"schemas.xml")).exists();
 
 		assertEquals(new File(relax_ng,"actions.rng").toURL().toString(),
-			buffer.getStringProperty("xml.validation.schema"));
+			buffer.getStringProperty(SchemaMappingManager.BUFFER_AUTO_SCHEMA_PROP));
 	}
 
 	/**
@@ -202,7 +203,7 @@ public class SchemaMappingManagerTest {
 		
 		t.start();
 		
-		Pause.pause(2000);
+		Pause.pause(1000);
 		
 		DialogFixture dialogF = findDialogByTitle("Choose a TypeID...");
 		
@@ -220,11 +221,64 @@ public class SchemaMappingManagerTest {
 		
 		assertThat(new File(import_schema,"schemas.xml")).exists();
 
-		String prop = buffer.getStringProperty("xml.validation.schema");
+		String prop = buffer.getStringProperty(SchemaMappingManager.BUFFER_AUTO_SCHEMA_PROP);
 		assertNotNull(prop);
 		assertThat(prop.endsWith("XML.jar!/xml/dtds/relaxng.rng"));
 	}
 
+	/**
+     * test setting the schema type for a file with schema-mapping disabled
+     */
+	@Test
+	public void testTypeIdOnFileSchemaMDisabled() throws java.net.MalformedURLException, IOException
+	{
+		File relax_ng = new File(testData,"schema_mapping_disabled/locate.rng");
+		
+		Buffer buffer = openFile(relax_ng.getPath());
+		
+		MessageListener listen = new MessageListener();
+		listen.registerForMessage(messageOfClassCondition(sidekick.SideKickUpdate.class));
+		action("sidekick-parse",1);
+		listen.waitForMessage(10000);
+
+		// by default, relax.rng would be used but, since schema-mapping is disabled, it is not.
+		String prop = buffer.getStringProperty(SchemaMappingManager.BUFFER_AUTO_SCHEMA_PROP);
+		// so the property is null
+		assertEquals(null,prop);
+
+		// will now assign a typeId of RNG
+		Thread t = new Thread(){
+			public void run()
+			{
+				action("xml-prompt-typeid",1);
+			}
+		};
+		
+		t.start();
+		
+		Pause.pause(1000);
+		
+		DialogFixture dialogF = findDialogByTitle("Choose a TypeID...");
+		
+		dialogF.comboBox().selectItem("RNG");
+
+		listen.registerForMessage(messageOfClassCondition(sidekick.SideKickUpdate.class));
+
+		dialogF.button(JButtonMatcher.withText("OK")).click();
+
+		// wait for end of parsing
+		listen.waitForMessage(10000);
+		
+		try{t.join();}catch(InterruptedException ie){}
+		
+		assertThat(new File(relax_ng.getParentFile(),"schemas.xml")).doesNotExist();
+
+		prop = buffer.getStringProperty(SchemaMappingManager.BUFFER_SCHEMA_PROP);
+		assertNotNull(prop);
+		assertThat(prop.endsWith("XML.jar!/xml/dtds/relaxng.rng"));
+		
+		close(view(),buffer);
+	}
 	
     /**
      * setting the schema for a jar resource
@@ -246,24 +300,35 @@ public class SchemaMappingManagerTest {
 		
 		t.start();
 		
-		DialogFixture dialogF = WindowFinder.findDialog(SchemaMappingManager.ChooseSchemaDialog.class).withTimeout(5000).using(robot());
+		final DialogFixture dialogF = WindowFinder.findDialog(SchemaMappingManager.ChooseSchemaDialog.class).withTimeout(5000).using(robot());
+		
+		final String schemaPath = getClass().getClassLoader().getResource("xml/dtds/relaxng.rng").toString();
 		
 		//choose in the VFS browser
-		replaceText(dialogF.textBox("path"),getClass().getClassLoader().getResource("xml/dtds/relaxng.rng").toString());
+		GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					dialogF.textBox("path").targetCastedTo(JTextComponent.class).setText(schemaPath);
+				}
+		});
 		
 		dialogF.checkBox("relative").click();
+		
 		dialogF.button(JButtonMatcher.withText("OK")).click();
 
-		// wait for end of parsing
-		simplyWaitForMessageOfClass(sidekick.SideKickUpdate.class,10000);
+		MessageListener listen = new MessageListener();
+		listen.registerForMessage(messageOfClassCondition(sidekick.SideKickUpdate.class));
+
+		Pause.pause(1000);
+		// can't save the schemas.xml inside the jar, so an error is reported
+		jEditFrame().optionPane().okButton().click();
+		listen.waitForMessage(20000);
 		
 		try{t.join();}catch(InterruptedException ie){}
 		
-		// assertThat(new File(relax_ng,"schemas.xml")).exists();
-
-		// assertEquals(new File(relax_ng,"actions.rng").toURL().toString(),
-		// 	buffer.getStringProperty("xml.validation.schema"));
-		fail("doesn't work !");
+		
+		assertEquals(schemaPath,
+			buffer.getStringProperty(SchemaMappingManager.BUFFER_AUTO_SCHEMA_PROP));
+		fail("should handle the error by saving to global schemas.xml !");
 	}
 
 	public static void copyFile(File source, File dest) throws IOException

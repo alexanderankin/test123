@@ -174,11 +174,12 @@ public class XMLTestUtils{
 		return new OptionsFixture(TestUtils.robot(),target);
     }
     
+    public static enum Option{YES,NO,OK,CANCEL}
 	/**
 	 * Click on an OptionPane asynchronously.
 	 * Typical usage pattern is :
 	 * <code>
-	 *  ClickT clickT = new ClickT(true);
+	 *  ClickT clickT = new ClickT(Option.YES);
 	 *  clickT.start();
 	 *
 	 *  // do something to prompt an option pane
@@ -187,23 +188,23 @@ public class XMLTestUtils{
 	 *  </code>
 	 */
 	public static final class ClickT extends Thread{
-		private final boolean yes;
+		private final Option opt;
 		private final long timeout;
 		private transient WaitTimedOutError savedException;
 		
 		/**
-		 * @param	yes	if you want to click on the yes button
+		 * @param	opt	the button you want to click on
 		 */
-		public ClickT(boolean yes){
-			this(yes,2000);
+		public ClickT(Option opt){
+			this(opt,2000);
 		}
 
 		/**
-		 * @param	yes	if you want to click on the yes button
+		 * @param	opt	the button you want to click on
 		 * @param	timeout	how long do you wait for the Dialog ?
 		 */
-		public ClickT(boolean yes, long timeout){
-			this.yes = yes;
+		public ClickT(Option opt, long timeout){
+			this.opt = opt;
 			this.timeout = timeout;
 		}
 		
@@ -211,10 +212,22 @@ public class XMLTestUtils{
 		public void run(){
 			try{
 				final JOptionPaneFixture options = TestUtils.jEditFrame().optionPane(Timeout.timeout(timeout));
-				if(yes)
+				switch(opt){
+				case YES:
 					options.yesButton().click();
-				else
+					break;
+				case NO:
 					options.noButton().click();
+					break;
+				case OK:
+					options.okButton().click();
+					break;
+				case CANCEL:
+					options.cancelButton().click();
+					break;
+				default:
+					fail("unspecified option to click on !");
+				}
 			}catch(WaitTimedOutError e){
 				System.err.println("TOO bad : timeout");
 				savedException = e;

@@ -162,26 +162,14 @@ public class XmlPluginFailingTest{
 		errorlist.close();
 		
 		// inside body
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(234);
-				}
-		});
+		gotoPosition(234);
 		assertThat(insert.list("elements").contents()).contains("h1");
 		
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(296);
-				}
-		});
-		// inside java code (fails)
-		assertThat(insert.list("elements").contents()).isEmpty();
-
-		// completion is not working !
-		gotoPosition(189);
-		action("sidekick-complete",1);
-		JWindowFixture completion = XMLTestUtils.completionPopup();
 		
+		// inside java code
+		// the test fails, because completion is not disabled in java snippets.
+		gotoPosition(296);
+		assertThat(insert.list("elements").contents()).isEmpty();
 		
 		insert.close();
 	}
@@ -207,19 +195,11 @@ public class XmlPluginFailingTest{
 		errorlist.close();
 		
 		// inside body
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(208);
-				}
-		});
+		gotoPosition(208);
 		assertThat(insert.list("elements").contents()).isEmpty();
 		
 		// inside second comment (fails)
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(276);
-				}
-		});
+		gotoPosition(276);
 		assertThat(insert.list("elements").contents()).contains("p");
 
 		insert.close();
