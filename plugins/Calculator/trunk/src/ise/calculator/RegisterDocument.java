@@ -1,3 +1,9 @@
+/*
+This file, unless otherwise noted, is wholly the work of Dale Anson,
+danson@grafidog.com. The complete contents of this file is hereby 
+released into the public domain, with no rights reserved. For questions, 
+concerns, or comments, please email the author.
+*/
 
 package ise.calculator;
 
@@ -25,7 +31,7 @@ public class RegisterDocument extends PlainDocument {
    }
 
    /**
-    * Beeps if invalid value entered..
+    * Beeps if invalid value entered.
     * @param pos the starting offset >= 0
     * @param text the string to insert; does nothing with null/empty strings
     * @param attr the attributes for the inserted content
@@ -90,7 +96,7 @@ public class RegisterDocument extends PlainDocument {
                   if ( getLength() == 0 && s.startsWith("E") )
                      return false;
                   String text = getText( 0, getLength() );
-                  if ( text.indexOf( "E" ) > 0 )
+                  if ( text.indexOf( 'E' ) > 0 )
                      return false;
                   continue;
                }

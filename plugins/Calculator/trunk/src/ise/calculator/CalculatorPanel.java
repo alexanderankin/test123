@@ -1,3 +1,10 @@
+/*
+This file, unless otherwise noted, is wholly the work of Dale Anson,
+danson@grafidog.com. The complete contents of this file is hereby 
+released into the public domain, with no rights reserved. For questions, 
+concerns, or comments, please email the author.
+*/
+
 package ise.calculator;
 
 import java.awt.*;
@@ -39,10 +46,46 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
     private int current_mode = Base.FLOAT;
 
     // the register stack
-    private JTextField x_register = new JTextField( 5 );
-    private JTextField y_register = new JTextField( 5 );
-    private JTextField z_register = new JTextField( 5 );
-    private JTextField t_register = new JTextField( 5 );
+    private JTextField x_register = new JTextField( 50 );
+    private JTextField y_register = new JTextField( 50 );
+    private JTextField z_register = new JTextField( 50 );
+    private JTextField t_register = new JTextField( 50 );
+
+    // all the buttons
+    private RectangleButton plus ;
+    private RectangleButton minus;
+    private RectangleButton modulus;
+    private RectangleButton multiply;
+    private RectangleButton divide;         // NOPMD
+    private RectangleButton enter;
+    private RectangleButton and;
+    private RectangleButton or;
+    private RectangleButton not;
+    private RectangleButton xor;
+    private RectangleButton x_label;
+    private RectangleButton y_label;
+    private RectangleButton z_label;
+    private RectangleButton t_label;
+    private RectangleToggleButton bigdecimal_mode;         // NOPMD
+    private RectangleToggleButton bigint_mode;         // NOPMD
+    private RectangleToggleButton float_mode;
+    private RectangleToggleButton integer_mode;         // NOPMD
+    private RectangleToggleButton base_16_btn;
+    private RectangleToggleButton base_10_btn;
+    private RectangleToggleButton base_8_btn;
+    private RectangleToggleButton base_2_btn;
+    private RectangleButton store;          // NOPMD
+    private RectangleButton recall;         // NOPMD
+    private RectangleButton clear;         // NOPMD
+    private RectangleButton all_clear;         // NOPMD
+    private RectangleButton roll_up;         // NOPMD
+    private RectangleButton roll_down;         // NOPMD
+    private RectangleButton xy;         // NOPMD
+    private RectangleButton last_x;         // NOPMD
+    private JButton euler;         // NOPMD
+    private JButton pi;         // NOPMD
+    private RectangleToggleButton strict;         // NOPMD
+
 
     // the number panel is a separate class
     private NumberPanel number_panel = null;
@@ -50,903 +93,78 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
     // storage for the last x value
     private String last_x_value = "";
 
+    // storage for the store value
+    private String store_value = "";
+
     // the close operation, added this for jEdit plugin so closing the calculator
     // doesn't close jEdit.
     private int close_operation = EXIT_ON_CLOSE;
 
     // action command to button map
-    private HashMap buttons = new HashMap();
+    private HashMap<String, AbstractButton> buttons = new HashMap<String, AbstractButton>();
 
     // variables for macro recording --
     // is recording happening?
     private boolean recording = false;
+
     // storage of the recorded steps
-    private ArrayList macro = null;
+    private ArrayList<String> macro = null;
 
-    // action listener for those functions that take no parameters --
-    // this might eventually need some work, right now, only one function
-    // (random) uses no parameters, although I should be able to generate large
-    // random numbers with big ints.
-    private ActionListener zero_op_listener =
-        new ActionListener() {
-            public void actionPerformed( ActionEvent ae ) {
-                String operation = ae.getActionCommand();
-                if ( recording )
-                    macro.add( operation );
-                String type = "double";
-                Op op = new Op( operation, type );
-                op.setStrict( _strict );
-
-                Number result = null;
-                String answer = "";
-                try {
-                    Num num = op.calculate();
-                    result = num.getValue();
-                }
-                catch ( ArithmeticException e ) {
-                    answer = "Error: " + e.getMessage();
-                }
-
-                if ( !answer.startsWith( "Error" ) ) {
-                    switch ( current_mode ) {
-                        case Base.FLOAT:
-                            double d = result.doubleValue();
-                            answer = Double.toString( d );
-                            break;
-                        default:
-                            int a = result.intValue();
-                            answer = convertToBase( Integer.toString( a ), Base.BASE_10, current_base );
-                    }
-                }
-                last_x_value = x_register.getText();
-                x_register.setText( answer );
-                x_register.requestFocus();
-            }
-        };
-
-    // action listener for those function that take one parameter
-    private ActionListener unary_op_listener =
-        new ActionListener() {
-            public void actionPerformed( ActionEvent ae ) {
-                String operation = ae.getActionCommand();
-                if ( recording )
-                    macro.add( operation );
-                String xs = x_register.getText();
-                if ( xs == null || xs.length() == 0 )
-                    return ;
-                String type = "int";
-                switch ( current_mode ) {
-                    case Base.FLOAT:
-                        type = "double";
-                        break;
-                    case Base.BIGINT:
-                        type = "bigint";
-                        break;
-                    case Base.BIGDECIMAL:
-                        type = "bigdecimal";
-                        break;
-                    case Base.INT:
-                    default:
-                        type = "int";
-                        break;
-                }
-
-                // convert to base 10 to do the math
-                xs = convertToBase( xs, current_base, Base.BASE_10 );
-                Op op = new Op( operation, type );
-                op.setStrict( _strict );
-                op.addNum( new Num( xs ) );
-
-                Number result = null;
-                String answer = "";
-                try {
-                    Num num = op.calculate();
-                    result = num.getValue();
-                }
-                catch ( Exception e ) {
-                    answer = "Error: " + e.getMessage();
-                }
-
-                if ( !answer.startsWith( "Error" ) ) {
-                    switch ( current_mode ) {
-                        case Base.BIGDECIMAL:
-                            answer = result.toString();
-                            break;
-                        case Base.FLOAT:
-                            double d = result.doubleValue();
-                            answer = Double.toString( d );
-                            break;
-                        case Base.BIGINT:
-                            if ( result instanceof BigInteger )
-                                answer = ( ( BigInteger ) result ).toString( current_base );
-                            else
-                                answer = "Error: operation not allowed in BI mode";
-                            break;
-                        case Base.INT:
-                        default:
-                            int a = result.intValue();
-                            answer = Integer.toString( a );
-                    }
-
-                    // convert the answer back from base 10 to the current base
-                    answer = convertToBase( answer, Base.BASE_10, current_base );
-                }
-                last_x_value = x_register.getText();
-                x_register.setText( answer );
-                x_register.requestFocus();
-            }
-        };
-
-    // action listener for those functions that take two parameters
-    private ActionListener binary_op_listener =
-        new ActionListener() {
-            public void actionPerformed( ActionEvent ae ) {
-                String operation = ae.getActionCommand();
-                if ( recording )
-                    macro.add( operation );
-                String xs = x_register.getText();
-                String ys = y_register.getText();
-                if ( xs == null || xs.length() == 0 )
-                    return ;
-                if ( ys == null || ys.length() == 0 )
-                    return ;
-                String type = "int";
-                switch ( current_mode ) {
-                    case Base.FLOAT:
-                        type = "double";
-                        break;
-                    case Base.BIGINT:
-                        type = "bigint";
-                        break;
-                    case Base.BIGDECIMAL:
-                        type = "bigdecimal";
-                        break;
-                    case Base.INT:
-                    default:
-                        type = "int";
-                        break;
-                }
-
-                // convert to base 10 to do the math
-                xs = convertToBase( xs, current_base, Base.BASE_10 );
-                ys = convertToBase( ys, current_base, Base.BASE_10 );
-
-                Op op = new Op( operation, type );
-                op.setStrict( _strict );
-                op.addNum( new Num( ys ) );
-                op.addNum( new Num( xs ) );
-
-                Number result = null;
-                String answer = "";
-                try {
-                    Num num = op.calculate();
-                    result = num.getValue();
-                }
-                catch ( ArithmeticException e ) {
-                    answer = "Error: " + e.getMessage();
-                }
-
-                if ( !answer.startsWith( "Error" ) ) {
-                    switch ( current_mode ) {
-                        case Base.BIGDECIMAL:
-                            answer = result.toString();
-                            break;
-                        case Base.BIGINT:
-                            answer = result.toString();
-                            if ( answer.indexOf( "." ) > 0 )
-                                answer = answer.substring( 0, answer.indexOf( "." ) );
-                            break;
-                        case Base.FLOAT:
-                            double d = result.doubleValue();
-                            answer = Double.toString( d );
-                            break;
-                        default:
-                            int a = result.intValue();
-                            answer = Integer.toString( a );
-                    }
-
-                    // convert the answer from base 10 back to the current base
-                    answer = convertToBase( answer, Base.BASE_10, current_base );
-                }
-                try {
-                    RegisterDocument rd = new RegisterDocument( current_base, current_mode );
-                    rd.insertString( 0, answer, null );
-                    last_x_value = x_register.getText();
-                    x_register.setText( answer );
-                    y_register.setText( z_register.getText() );
-                    z_register.setText( t_register.getText() );
-                    t_register.setText( "" );
-                    x_register.requestFocus();
-                }
-                catch ( BadLocationException e ) {
-                    e.printStackTrace();
-                }
-            }
-        };
 
     /** Constructor for CalculatorPanel  */
     public CalculatorPanel() {
-        // TODO: this constructor is too large, break it up.
         setLayout( new BorderLayout() );
 
-        // check if the 'built in' functions and constants need to be unpacked.
-        // Assume that if calc_dir exists, then all is well, otherwise, unpack
-        // all.txt into it.
-        File calc_dir = new File( System.getProperty( "calc.home" ), ".calc" );
-        if ( !calc_dir.exists() ) {
-            System.out.print( "Unpacking... " );
-            calc_dir.mkdirs();
-            InputStream is = getClass().getClassLoader().getResourceAsStream( "all.txt" );
-            FunctionPackager fp = new FunctionPackager();
-            fp.unpack( is );
-            try {
-                Calculator.PREFS.node( "constants_menu" ).clear();
-                Calculator.PREFS.node( "function_menu" ).clear();
-            }
-            catch ( Exception e ) {}    // NOPMD
-            //System.out.println( "Done." );
-        }
+        loadFunctions();
+
+        // register panel
+        JPanel register_panel = createRegisterPanel();
+
+        // control panel
+        JPanel control_panel = createControlPanel();
+
+        // function panel
+        JPanel function_panel = createFunctionPanel();
+
+        // operation panel
+        JPanel operation_panel = createOperationPanel();
 
         // number panel
         number_panel = new NumberPanel( x_register );
 
-        // operation panel
-        JPanel operation_panel = new JPanel( new LambdaLayout() );
+        // add action listeners to buttons
+        addActionListeners();
 
-        final RectangleButton plus = new RectangleButton( "<html><b>+" );
-        plus.setActionCommand( "+" );
-        buttons.put( "+", plus );
-        plus.setToolTipText( "Add X and Y" );
-        final RectangleButton minus = new RectangleButton( "<html><b>-" );
-        minus.setActionCommand( "-" );
-        buttons.put( "-", minus );
-        minus.setToolTipText( "Subtract X from Y" );
-        final RectangleButton modulus = new RectangleButton( "<html><b>\\" );
-        modulus.setActionCommand( "\\" );
-        buttons.put( "\\", modulus );
-        modulus.setToolTipText( "X mod Y" );
-        final RectangleButton multiply = new RectangleButton( "<html><b>x" );
-        multiply.setActionCommand( "*" );
-        buttons.put( "*", multiply );
-        multiply.setToolTipText( "Multiply X times Y" );
-        final RectangleButton divide = new RectangleButton( "<html><b>&#247;" );
-        divide.setActionCommand( "/" );
-        buttons.put( "/", divide );
-        divide.setToolTipText( "Divide Y by X" );
-        final RectangleButton enter = new RectangleButton( "<html><b>Enter</html>" );   // TODO: make this button wider?
-        enter.setActionCommand( "enter" );
-        buttons.put( "enter", enter );
-        enter.setToolTipText( "Enter" );
+        // menus
+        createMenus();
 
-        final RectangleButton and = new RectangleButton( "&" );
-        and.setActionCommand( "and" );
-        buttons.put( "and", and );
-        and.setToolTipText( "X and Y" );
-        and.setEnabled( false );
-        final RectangleButton or = new RectangleButton( "|" );
-        or.setActionCommand( "or" );
-        buttons.put( "or", or );
-        or.setToolTipText( "X or Y" );
-        or.setEnabled( false );
-        final RectangleButton not = new RectangleButton( "~" );
-        not.setActionCommand( "not" );
-        buttons.put( "not", not );
-        not.setToolTipText( "not X" );
-        not.setEnabled( false );
-        final RectangleButton xor = new RectangleButton( "^" );
-        xor.setActionCommand( "xor" );
-        buttons.put( "xor", xor );
-        xor.setToolTipText( "X xor Y" );
-        xor.setEnabled( false );
-
-        plus.addActionListener( binary_op_listener );
-        minus.addActionListener( binary_op_listener );
-        modulus.addActionListener( binary_op_listener );
-        multiply.addActionListener( binary_op_listener );
-        divide.addActionListener( binary_op_listener );
-        and.addActionListener( binary_op_listener );
-        or.addActionListener( binary_op_listener );
-        not.addActionListener( unary_op_listener );
-        xor.addActionListener( binary_op_listener );
-
-        operation_panel.add( divide, "1, 2, 1, 1, 0, wh, 2" );
-        operation_panel.add( multiply, "1, 3, 1, 1, 0, wh, 2" );
-        operation_panel.add( minus, "1, 4, 1, 1, 0, wh, 2" );
-        operation_panel.add( plus, "1, 5, 1, 1, 0, wh, 2" );
-        operation_panel.add( and, "0, 2, 1, 1, 0, wh, 2" );
-        operation_panel.add( or, "0, 3, 1, 1, 0, wh, 2" );
-        operation_panel.add( not, "0, 4, 1, 1, 0, wh, 2" );
-        operation_panel.add( xor, "0, 5, 1, 1, 0, wh, 2" );
-        operation_panel.add( modulus, "0, 6, 1, 1, 0, wh, 2" );
-        operation_panel.add( enter, "0, 7, 2, R, 0, wh, 2" );
-
-        // register panel
-        x_register.setDocument( new RegisterDocument( current_base, current_mode ) );
-        y_register.setDocument( new RegisterDocument( current_base, current_mode ) );
-        z_register.setDocument( new RegisterDocument( current_base, current_mode ) );
-        t_register.setDocument( new RegisterDocument( current_base, current_mode ) );
-
-        Font old_font = x_register.getFont();
-        Font register_font = new Font( "Monospaced", old_font.getStyle(), old_font.getSize() );
-        x_register.setFont( register_font );
-        y_register.setFont( register_font );
-        z_register.setFont( register_font );
-        t_register.setFont( register_font );
-
-        x_register.setHorizontalAlignment( JTextField.RIGHT );
-        y_register.setHorizontalAlignment( JTextField.RIGHT );
-        z_register.setHorizontalAlignment( JTextField.RIGHT );
-        t_register.setHorizontalAlignment( JTextField.RIGHT );
-
-        ActionListener label_listener =
-            new ActionListener() {
-                public void actionPerformed( ActionEvent ae ) {
-                    if ( recording ) {
-                        String cmd = ae.getActionCommand();
-                        if ( cmd.equals( "x" ) || cmd.equals( "y" ) || cmd.equals( "z" ) || cmd.equals( "t" ) ) {
-                            while ( true ) {
-                                if ( macro.size() == 0 )
-                                    break;
-                                String c = ( String ) macro.get( macro.size() - 1 );
-                                if ( Character.isDigit( c.charAt( 0 ) ) ) {
-                                    macro.remove( macro.size() - 1 );
-                                }
-                                else
-                                    break;
-                            }
-                            macro.add( cmd );
-                        }
-                        else
-                            macro.add( ae.getActionCommand() );
-                    }
-                }
-            };
-
-        final RectangleButton x_label = new RectangleButton( "X" );
-        x_label.setEnabled( false );
-        x_label.setActionCommand( "x" );
-        x_label.addActionListener( label_listener );
-        buttons.put( "x", x_label );
-        final RectangleButton y_label = new RectangleButton( "Y" );
-        y_label.setEnabled( false );
-        y_label.setActionCommand( "y" );
-        y_label.addActionListener( label_listener );
-        buttons.put( "y", y_label );
-        final RectangleButton z_label = new RectangleButton( "Z" );
-        z_label.setEnabled( false );
-        z_label.setActionCommand( "z" );
-        z_label.addActionListener( label_listener );
-        buttons.put( "z", x_label );
-        final RectangleButton t_label = new RectangleButton( "T" );
-        t_label.setEnabled( false );
-        t_label.setActionCommand( "t" );
-        t_label.addActionListener( label_listener );
-        buttons.put( "t", t_label );
-
-        JPanel register_panel = new JPanel( new LambdaLayout() );
-        register_panel.add( t_label, "0, 0, 1, 1, W, 0, 2" );
-        register_panel.add( z_label, "0, 1, 1, 1, W, 0, 2" );
-        register_panel.add( y_label, "0, 2, 1, 1, W, 0, 2" );
-        register_panel.add( x_label, "0, 3, 1, 1, W, 0, 2" );
-        register_panel.add( t_register, "1, 0, 10, 1, W, wh, 2" );
-        register_panel.add( z_register, "1, 1, 10, 1, W, wh, 2" );
-        register_panel.add( y_register, "1, 2, 10, 1, W, wh, 2" );
-        register_panel.add( x_register, "1, 3, 10, 1, W, wh, 2" );
-
-        // control panel
-        LambdaLayout control_layout = new LambdaLayout();
-        JPanel control_panel = new JPanel( control_layout );
-        RectangleToggleButton bigdecimal_mode = new RectangleToggleButton( "BD" );
-        bigdecimal_mode.setActionCommand( String.valueOf( Base.BIGDECIMAL ) );
-        bigdecimal_mode.setToolTipText( "BigDecimal mode" );
-        RectangleToggleButton bigint_mode = new RectangleToggleButton( "BI" );
-        bigint_mode.setActionCommand( String.valueOf( Base.BIGINT ) );
-        bigint_mode.setToolTipText( "BigInteger mode" );
-        RectangleToggleButton float_mode = new RectangleToggleButton( "F" );
-        float_mode.setActionCommand( String.valueOf( Base.FLOAT ) );
-        float_mode.setSelected( true );
-        float_mode.setToolTipText( "Floating point mode" );
-        RectangleToggleButton integer_mode = new RectangleToggleButton( "I" );
-        integer_mode.setActionCommand( String.valueOf( Base.INT ) );
-        integer_mode.setToolTipText( "Base 10 integer mode" );
-        final RectangleToggleButton base_16_btn = new RectangleToggleButton( "16" );
-        base_16_btn.setActionCommand( String.valueOf( Base.BASE_16 ) );
-        base_16_btn.setToolTipText( "Base 16 hexadecimal mode" );
-        final RectangleToggleButton base_10_btn = new RectangleToggleButton( "10" );
-        base_10_btn.setActionCommand( String.valueOf( Base.BASE_10 ) );
-        base_10_btn.setToolTipText( "Base 10 decimal mode" );
-        final RectangleToggleButton base_8_btn = new RectangleToggleButton( "8" );
-        base_8_btn.setActionCommand( String.valueOf( Base.BASE_8 ) );
-        base_8_btn.setToolTipText( "Base 8 octal mode" );
-        final RectangleToggleButton base_2_btn = new RectangleToggleButton( "2" );
-        base_2_btn.setActionCommand( String.valueOf( Base.BASE_2 ) );
-        base_2_btn.setToolTipText( "Base 2 binary mode" );
-        ButtonGroup mode_group = new ButtonGroup();
-        mode_group.add( bigdecimal_mode );
-        mode_group.add( bigint_mode );
-        mode_group.add( float_mode );
-        mode_group.add( integer_mode );
-        ButtonGroup base_group = new ButtonGroup();
-        base_group.add( base_16_btn );
-        base_group.add( base_10_btn );
-        base_group.add( base_8_btn );
-        base_group.add( base_2_btn );
-
-
-        ActionListener mode_listener =
-            new ActionListener() {
-                public void actionPerformed( ActionEvent ae ) {
-                    String ac = ae.getActionCommand();
-                    int cmd = Integer.parseInt( ac );
-                    setMode( cmd );
-                    switch ( cmd ) {
-                        case Base.BIGDECIMAL:
-                        case Base.FLOAT:
-                            base_16_btn.setEnabled( false );
-                            base_8_btn.setEnabled( false );
-                            base_2_btn.setEnabled( false );
-                            base_10_btn.setEnabled( true );
-                            base_10_btn.doClick();
-                            and.setEnabled( false );
-                            or.setEnabled( false );
-                            not.setEnabled( false );
-                            xor.setEnabled( false );
-                            modulus.setEnabled( false );
-                            break;
-                        case Base.BIGINT:
-                        case Base.INT:
-                            base_16_btn.setEnabled( true );
-                            base_8_btn.setEnabled( true );
-                            base_2_btn.setEnabled( true );
-                            and.setEnabled( true );
-                            or.setEnabled( true );
-                            not.setEnabled( true );
-                            xor.setEnabled( true );
-                            modulus.setEnabled( true );
-                            AbstractButton base_btn = null;
-                            if ( base_16_btn.isSelected() )
-                                base_btn = base_16_btn;
-                            else if ( base_8_btn.isSelected() )
-                                base_btn = base_8_btn;
-                            else if ( base_2_btn.isSelected() )
-                                base_btn = base_2_btn;
-                            else
-                                base_btn = base_10_btn;
-                            base_btn.setSelected( false );
-                            base_btn.doClick();
-                    }
-                }
-
-            };
-
-        ActionListener base_listener =
-            new ActionListener() {
-                public void actionPerformed( ActionEvent ae ) {
-                    RectangleToggleButton source = ( RectangleToggleButton ) ae.getSource();
-                    int base = Integer.parseInt( source.getActionCommand() );
-
-                    String x_value = x_register.getText();
-                    String y_value = y_register.getText();
-                    String z_value = z_register.getText();
-                    String t_value = t_register.getText();
-
-                    x_register.setDocument( new RegisterDocument( base, current_mode ) );
-                    y_register.setDocument( new RegisterDocument( base, current_mode ) );
-                    z_register.setDocument( new RegisterDocument( base, current_mode ) );
-                    t_register.setDocument( new RegisterDocument( base, current_mode ) );
-
-                    x_register.setText( convertToBase( x_value, current_base, base ) );
-                    y_register.setText( convertToBase( y_value, current_base, base ) );
-                    z_register.setText( convertToBase( z_value, current_base, base ) );
-                    t_register.setText( convertToBase( t_value, current_base, base ) );
-
-                    current_base = base;
-                    number_panel.setBase( current_base, current_mode );
-                }
-            };
-        bigdecimal_mode.addActionListener( mode_listener );
-        bigint_mode.addActionListener( mode_listener );
-        float_mode.addActionListener( mode_listener );
-        integer_mode.addActionListener( mode_listener );
-        base_16_btn.addActionListener( base_listener );
-        base_10_btn.addActionListener( base_listener );
-        base_8_btn.addActionListener( base_listener );
-        base_2_btn.addActionListener( base_listener );
-        float_mode.doClick();
-
-        RectangleButton clear = new RectangleButton( "C" );
-        clear.setActionCommand( "clr" );
-        buttons.put( "clr", clear );
-        clear.setToolTipText( "Clear X" );
-        RectangleButton all_clear = new RectangleButton( "AC" );
-        all_clear.setToolTipText( "Clear All" );
-        all_clear.setActionCommand( "ac" );
-        buttons.put( "ac", all_clear );
-        RectangleButton roll_up = new RectangleButton( "<html>R&#8593;" );
-        roll_up.setToolTipText( "Roll Up" );
-        roll_up.setActionCommand( "ru" );
-        buttons.put( "ru", roll_up );
-        RectangleButton roll_down = new RectangleButton( "<html>R&#8595;" );
-        roll_down.setToolTipText( "Roll Down" );
-        roll_down.setActionCommand( "rd" );
-        buttons.put( "rd", roll_down );
-        RectangleButton xy = new RectangleButton( "<html>X&#8596;Y" );
-        xy.setToolTipText( "Swap X and Y" );
-        xy.setActionCommand( "xy" );
-        buttons.put( "xy", xy );
-        RectangleButton last_x = new RectangleButton( "LstX" );
-        last_x.setToolTipText( "Put the previous X in the X register" );
-        last_x.setActionCommand( "lstx" );
-        buttons.put( "lstx", last_x );
-
-        control_panel.add( bigdecimal_mode, "0, 0, 1, 1, 0, , 2" );
-        control_panel.add( float_mode, "1, 0, 1, 1, 0, , 2" );
-        control_panel.add( bigint_mode, "2, 0, 1, 1, 0, , 2" );
-        control_panel.add( integer_mode, "3, 0, 1, 1, 0, , 2" );
-        control_panel.add( KappaLayout.createHorizontalStrut( 7 ), "4, 0" );
-        control_panel.add( base_16_btn, "5, 0, 1, 1, 0, , 2" );
-        control_panel.add( base_10_btn, "6, 0, 1, 1, 0, , 2" );
-        control_panel.add( base_8_btn, "7, 0, 1, 1, 0, , 2" );
-        control_panel.add( base_2_btn, "8, 0, 1, 1, 0, , 2" );
-        control_panel.add( KappaLayout.createHorizontalStrut( 7 ), "9, 0" );
-        control_panel.add( clear, "10, 0, 1, 1, 0, , 2" );
-        control_panel.add( all_clear, "11, 0, 1, 1, 0, , 2" );
-        control_panel.add( roll_up, "12, 0, 1, 1, 0, , 2" );
-        control_panel.add( roll_down, "13, 0, 1, 1, 0, , 2" );
-        control_panel.add( xy, "14, 0, 1, 1, 0, , 2" );
-        control_panel.add( last_x, "15, 0, 1, 1, 0, , 2" );
-        control_layout.makeColumnsSameWidth( new int[] {
-                    0, 1, 2, 3, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15
-                }
-                                           );
-
-        clear.addActionListener(
-            new ActionListener() {
-                public void actionPerformed( ActionEvent ae ) {
-                    x_register.setText( "" );
-                }
-            }
-        );
-        all_clear.addActionListener(
-            new ActionListener() {
-                public void actionPerformed( ActionEvent ae ) {
-                    x_register.setText( "" );
-                    y_register.setText( "" );
-                    z_register.setText( "" );
-                    t_register.setText( "" );
-                }
-            }
-        );
-        roll_up.addActionListener(
-            new ActionListener() {
-                public void actionPerformed( ActionEvent ae ) {
-                    String temp = t_register.getText();
-                    t_register.setText( z_register.getText() );
-                    z_register.setText( y_register.getText() );
-                    y_register.setText( x_register.getText() );
-                    x_register.setText( temp );
-                }
-            }
-        );
-        roll_down.addActionListener(
-            new ActionListener() {
-                public void actionPerformed( ActionEvent ae ) {
-                    String temp = x_register.getText();
-                    x_register.setText( y_register.getText() );
-                    y_register.setText( z_register.getText() );
-                    z_register.setText( t_register.getText() );
-                    t_register.setText( temp );
-                }
-            }
-        );
-        xy.addActionListener(
-            new ActionListener() {
-                public void actionPerformed( ActionEvent ae ) {
-                    String temp = x_register.getText();
-                    x_register.setText( y_register.getText() );
-                    y_register.setText( temp );
-                }
-            }
-        );
-
-        last_x.addActionListener(
-            new ActionListener() {
-                public void actionPerformed( ActionEvent ae ) {
-                    t_register.setText( z_register.getText() );
-                    z_register.setText( y_register.getText() );
-                    y_register.setText( x_register.getText() );
-                    x_register.setText( last_x_value );
-                    x_register.selectAll();
-                    x_register.requestFocus();
-                }
-            }
-        );
-
-        // function panel
-        JPanel function_panel = new JPanel( new GridLayout( 6, 4, 4, 4 ) );
-
-        // these are in pairs, the first is the function name, these correspond with
-        // method names in java.lang.Math or ise.calculator.Math. The second is some
-        // html markup for displaying the function name
-        String zero_param = "random,random";
-        String one_param = "exp,e<sup>x</sup>,acos,acos,asin,asin,atan,atan,log,ln,cos,cos,sin,sin,tan,tan,ceil,ceil,floor,floor,rint,rint,round,round,sqrt,&#8730;,toDegrees,deg,toRadians,rad,factorial,x!";
-        String two_param = "atan2,atan2,max,max,min,min,pow,y<sup>x</sup>";
-        makeOneParamButtons( one_param, function_panel );
-        makeTwoParamButtons( two_param, function_panel );
-        makeZeroParamButtons( zero_param, function_panel );
-        JButton euler = new RectangleButton( "<html><i>e" );
-        euler.setToolTipText( "Euler's e" );
-        euler.setActionCommand( "e" );
-        buttons.put( "euler", euler );
-        euler.addActionListener(
-            new ActionListener() {
-                public void actionPerformed( ActionEvent ae ) {
-                    x_register.setText( Double.toString( java.lang.Math.E ) );
-                }
-            }
-        );
-        euler.addActionListener( label_listener );
-        JButton pi = new RectangleButton( "<html>&#960;" );
-        pi.setToolTipText( "Pi" );
-        pi.setActionCommand( "pi" );
-        buttons.put( "pi", pi );
-        pi.addActionListener(
-            new ActionListener() {
-                public void actionPerformed( ActionEvent ae ) {
-                    x_register.setText( Double.toString( java.lang.Math.PI ) );
-                }
-            }
-        );
-        pi.addActionListener( label_listener );
-        RectangleToggleButton strict = new RectangleToggleButton( "<html>strict" );
-        strict.setToolTipText( "Use strict math mode" );
-        strict.addActionListener(
-            new ActionListener() {
-                public void actionPerformed( ActionEvent ae ) {
-                    RectangleToggleButton btn = ( RectangleToggleButton ) ae.getSource();
-                    _strict = btn.isSelected();
-                }
-            }
-        );
-        function_panel.add( euler );
-        function_panel.add( pi );
-        function_panel.add( strict );
-
-        // add action listeners for operation panel
-        enter.addActionListener(
-            new ActionListener() {
-                public void actionPerformed( ActionEvent ae ) {
-                    t_register.setText( z_register.getText() );
-                    z_register.setText( y_register.getText() );
-                    y_register.setText( x_register.getText() );
-                    x_register.selectAll();
-                    x_register.requestFocus();
-                }
-            }
-        );
-        enter.addActionListener( label_listener );
-
-        number_panel.addActionListener( label_listener );
-
-        x_register.addKeyListener(
-            new KeyAdapter() {
-                public void keyPressed( KeyEvent ke ) {
-                    switch ( ke.getKeyCode() ) {
-                        case KeyEvent.VK_ENTER:
-                            enter.doClick();
-                            break;
-                        case KeyEvent.VK_PLUS:
-                            plus.doClick();
-                            break;
-                        case KeyEvent.VK_MINUS:
-                            minus.doClick();
-                            break;
-                        case KeyEvent.VK_ASTERISK:
-                            multiply.doClick();
-                            break;
-                        case KeyEvent.VK_SLASH:
-                            plus.doClick();
-                            break;
-                        case KeyEvent.VK_BACK_SLASH:
-                            if ( ke.isShiftDown() )
-                                or.doClick();
-                            else
-                                modulus.doClick();
-                            break;
-                        case KeyEvent.VK_AMPERSAND:
-                            and.doClick();
-                            break;
-                        case KeyEvent.VK_CIRCUMFLEX:
-                            xor.doClick();
-                            break;
-                        case KeyEvent.VK_DEAD_TILDE:
-                            not.doClick();
-                            break;
-                    }
-                }
-            }
-        );
-
-        // main panel
+        // create the display
         JPanel main = new JPanel( new LambdaLayout() );
 
         // top panel
-        main.add( register_panel, "0, 0, 1, 1, W, , 3" );
+        main.add( register_panel, "0, 0, 1, 1, 0, w, 3" );
 
         // center panel is control panel
-        main.add( control_panel, "0, 1, 1, 1, W, , 3" );
+        main.add( control_panel, "0, 1, 1, 1, 0, , 3" );
 
         // bottom panel
         JPanel bottom_panel = new JPanel( new LambdaLayout() );
         bottom_panel.add( function_panel, "0, 2, 5, 1, N, , 3" );
         bottom_panel.add( operation_panel, "5, 2, 1, 1, N, , 3" );
         bottom_panel.add( number_panel, "6, 2, 3, 1, N, , 3" );
-        main.add( bottom_panel, "0, 2, 1, 1, W, , 3" );
+        main.add( bottom_panel, "0, 2, 1, 1, 0, , 3" );
 
         add( main, BorderLayout.CENTER );
-
+        
+        float_mode.doClick();
         x_register.requestFocus();
-
-        // menus
-        JMenuBar menubar = new JMenuBar();
-
-        final JMenu function_menu = new JMenu( "Function" );
-        menubar.add( function_menu );
-        JMenuItem show_functions_mi = new JMenuItem( "Functions..." );
-        JMenuItem record_mi = new JMenuItem( "Record" );
-        JMenuItem stop_mi = new JMenuItem( "Stop Recording" );
-        function_menu.add( show_functions_mi );
-        function_menu.add( record_mi );
-        function_menu.add( stop_mi );
-        function_menu.add( new JSeparator() );
-        loadMenu( function_menu, "function_menu" );
-        function_menu.add( new JSeparator() );
-        JMenuItem exit_mi = new JMenuItem( "Close" );
-        function_menu.add( exit_mi );
-
-        final JMenu constants_menu = new JMenu( "Constants" );
-        menubar.add( constants_menu );
-
-        JMenuItem show_constants_mi = new JMenuItem( "Constants..." );
-
-        constants_menu.add( show_constants_mi );
-        constants_menu.add( new JSeparator() );
-        loadMenu( constants_menu, "constants_menu" );
-        JMenu help_menu = new JMenu( "Help" );
-        menubar.add( help_menu );
-        JMenuItem help_mi = new JMenuItem( "Help" );
-        help_menu.add( help_mi );
-        JMenuItem about_mi = new JMenuItem( "About" );
-        help_menu.add( about_mi );
-
-        add( menubar, BorderLayout.NORTH );
-
-        // function menu actions
-        show_functions_mi.addActionListener(
-            new ActionListener() {
-                public void actionPerformed( ActionEvent ae ) {
-                    FunctionChooser.showChooser( CalculatorPanel.this, function_menu, functionPlayer );
-                }
-            }
-        );
-
-        record_mi.addActionListener(
-            new ActionListener() {
-                public void actionPerformed( ActionEvent ae ) {
-                    x_label.setEnabled( true );
-                    y_label.setEnabled( true );
-                    z_label.setEnabled( true );
-                    t_label.setEnabled( true );
-                    recording = true;
-                    macro = new ArrayList();
-                    number_panel.setRecording( recording, macro );
-                }
-            }
-        );
-        stop_mi.addActionListener(
-            new ActionListener() {
-                public void actionPerformed( ActionEvent ae ) {
-                    // save the macro to a file
-                    x_label.setEnabled( false );
-                    y_label.setEnabled( false );
-                    z_label.setEnabled( false );
-                    t_label.setEnabled( false );
-                    recording = false;
-
-                    String name = JOptionPane.showInputDialog( CalculatorPanel.this,
-                            "Enter a name for this function:", "Enter Name", JOptionPane.QUESTION_MESSAGE );
-                    if ( name == null )
-                        return ;
-                    String desc = JOptionPane.showInputDialog( CalculatorPanel.this,
-                            "Enter a description for this function:", "Enter Description", JOptionPane.QUESTION_MESSAGE );
-                    try {
-                        File calc_dir = new File( System.getProperty( "calc.home" ), ".calc" );
-                        calc_dir.mkdirs();
-                        File f = File.createTempFile( "calc", ".calc", new File( System.getProperty( "calc.home" ), ".calc" ) );
-                        StringBuffer macro_steps = new StringBuffer();
-                        for ( int i = 0; i < macro.size(); i++ )
-                            macro_steps.append( macro.get( i ).toString() + "\n" );
-                        FunctionWriter fw = new FunctionWriter( f );
-                        fw.write( name, desc, macro_steps.toString() );
-
-                        // insert the new function into the function menu -- the
-                        // new function is initially inserted just above the last
-                        // separator, but will be sorted on next start
-                        int offset = function_menu.getItemCount() - 2;
-                        JMenuItem mi = new JMenuItem( name );
-                        mi.setActionCommand( f.getName().substring( 0, f.getName().lastIndexOf( "." ) ) );
-                        mi.setToolTipText( desc );
-                        mi.addActionListener( functionPlayer );
-                        function_menu.insert( mi, offset );
-                    }
-                    catch ( Exception e ) {
-                        JOptionPane.showMessageDialog( CalculatorPanel.this, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE );
-                    }
-                    finally {
-                        number_panel.setRecording( false, null );
-                    }
-
-                }
-            }
-        );
-
-        exit_mi.addActionListener(
-            new ActionListener() {
-                public void actionPerformed( ActionEvent ae ) {
-                    switch ( close_operation ) {
-                        case DISPOSE_ON_CLOSE:
-                            Frame f = GUIUtils.getRootFrame( CalculatorPanel.this );
-                            f.dispose();
-                            break;
-                        case EXIT_ON_CLOSE:
-                            System.exit( 0 );
-                            break;
-                        case HIDE_ON_CLOSE:
-                            setVisible( false );
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-        );
-
-        // constants menu actions
-        show_constants_mi.addActionListener(
-            new ActionListener() {
-                public void actionPerformed( ActionEvent ae ) {
-                    ConstantsChooser.showChooser( CalculatorPanel.this, constants_menu, functionPlayer );
-                }
-            }
-        );
-
-        // help menu actions
-        help_mi.addActionListener(
-            new ActionListener() {
-                public void actionPerformed( ActionEvent ae ) {
-                    try {
-                        java.net.URL help_url = getClass().getClassLoader().getResource( "index.html" );
-                        System.out.println( help_url );
-                        new AboutDialog( GUIUtils.getRootJFrame( CalculatorPanel.this ), "Help", help_url, true ).setVisible( true );
-                    }
-                    catch ( Exception e ) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        );
-
-        about_mi.addActionListener(
-            new ActionListener() {
-                public void actionPerformed( ActionEvent ae ) {
-                    JOptionPane.showMessageDialog( CalculatorPanel.this, "<html><b>Calculator</b><p>by Dale Anson, July 2003<br>Version 1.1.5", "About Calculator", JOptionPane.INFORMATION_MESSAGE );
-                }
-            }
-        );
-
     }
 
-    private void makeZeroParamButtons( String btns, JPanel panel ) {
+    /**
+     * @param btns A comma separated list of button action command names
+     * and display text, e.g. "cmd, display, cmd, display,..."
+     */
+    private void makeZeroParamButtons( String btns ) {
         StringTokenizer st = new StringTokenizer( btns, "," );
         while ( st.hasMoreTokens() ) {
             String cmd = st.nextToken();
@@ -954,13 +172,15 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
             JButton btn = new RectangleButton( "<html>" + text );
             btn.setActionCommand( cmd );
             btn.addActionListener( zero_op_listener );
-            btn.setMargin( new Insets( 0, 0, 0, 0 ) );
-            panel.add( btn );
             buttons.put( cmd, btn );
         }
     }
 
-    private void makeOneParamButtons( String btns, JPanel panel ) {
+    /**
+     * @param btns A comma separated list of button action command names
+     * and display text, e.g. "cmd, display, cmd, display,..."
+     */
+    private void makeOneParamButtons( String btns ) {
         StringTokenizer st = new StringTokenizer( btns, "," );
         while ( st.hasMoreTokens() ) {
             String cmd = st.nextToken();
@@ -968,13 +188,15 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
             JButton btn = new RectangleButton( "<html>" + text );
             btn.setActionCommand( cmd );
             btn.addActionListener( unary_op_listener );
-            btn.setMargin( new Insets( 0, 0, 0, 0 ) );
-            panel.add( btn );
             buttons.put( cmd, btn );
         }
     }
 
-    private void makeTwoParamButtons( String btns, JPanel panel ) {
+    /**
+     * @param btns A comma separated list of button action command names
+     * and display text, e.g. "cmd, display, cmd, display,..."
+     */
+    private void makeTwoParamButtons( String btns ) {
         StringTokenizer st = new StringTokenizer( btns, "," );
         while ( st.hasMoreTokens() ) {
             String cmd = st.nextToken();
@@ -982,8 +204,6 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
             JButton btn = new RectangleButton( "<html>" + text );
             btn.setActionCommand( cmd );
             btn.addActionListener( binary_op_listener );
-            btn.setMargin( new Insets( 0, 0, 0, 0 ) );
-            panel.add( btn );
             buttons.put( cmd, btn );
         }
     }
@@ -1006,7 +226,7 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
             case Base.BIGDECIMAL:
                 if ( new_base != Base.BASE_10 )
                     throw new IllegalArgumentException( "illegal base, must be 10, was " + new_base );
-                if ( value.indexOf( "." ) >= 0 )
+                if ( value.indexOf( '.' ) >= 0 )
                     return new BigDecimal( value ).toString();
                 else if ( value.equals( "Infinity" ) || value.equals( "NaN" ) )
                     return "Error: cannot convert to BigDecimal";
@@ -1022,7 +242,7 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
                     value = new BigInteger( value, old_base ).toString( new_base );
                 return String.valueOf( new BigDecimal( value ).doubleValue() );
             case Base.BIGINT:
-                if ( value.indexOf( "." ) >= 0 )
+                if ( value.indexOf( '.' ) >= 0 )
                     value = new BigDecimal( value ).toBigInteger().toString();
                 else
                     value = new BigInteger( value, old_base ).toString( new_base );
@@ -1104,6 +324,1010 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
         x_register.requestFocusInWindow();
     }
 
+    // check if the 'built in' functions and constants need to be unpacked.
+    // Assume that if calc_dir exists, then all is well, otherwise, unpack
+    // all.txt into it.
+    private void loadFunctions() {
+        File calc_dir = new File( System.getProperty( "calc.home" ), ".calc" );
+        if ( !calc_dir.exists() ) {
+            System.out.print( "Unpacking... " );
+            calc_dir.mkdirs();
+            InputStream is = getClass().getClassLoader().getResourceAsStream( "all.txt" );
+            FunctionPackager fp = new FunctionPackager();
+            fp.unpack( is );
+            try {
+                Calculator.PREFS.node( "constants_menu" ).clear();
+                Calculator.PREFS.node( "function_menu" ).clear();
+            }
+            catch ( Exception e ) {}    // NOPMD
+            //System.out.println( "Done." );
+        }
+    }
+
+    private void createMenus() {
+        JMenuBar menubar = new JMenuBar();
+
+        final JMenu function_menu = new JMenu( "Function" );
+        menubar.add( function_menu );
+        JMenuItem show_functions_mi = new JMenuItem( "Functions..." );
+        JMenuItem record_mi = new JMenuItem( "Record" );
+        JMenuItem stop_mi = new JMenuItem( "Stop Recording" );
+        function_menu.add( show_functions_mi );
+        function_menu.add( record_mi );
+        function_menu.add( stop_mi );
+        function_menu.add( new JSeparator() );
+        loadMenu( function_menu, "function_menu" );
+        function_menu.add( new JSeparator() );
+        JMenuItem exit_mi = new JMenuItem( "Close" );
+        function_menu.add( exit_mi );
+
+        final JMenu constants_menu = new JMenu( "Constants" );
+        menubar.add( constants_menu );
+
+        JMenuItem show_constants_mi = new JMenuItem( "Constants..." );
+
+        constants_menu.add( show_constants_mi );
+        constants_menu.add( new JSeparator() );
+        loadMenu( constants_menu, "constants_menu" );
+        JMenu help_menu = new JMenu( "Help" );
+        menubar.add( help_menu );
+        JMenuItem help_mi = new JMenuItem( "Help" );
+        help_menu.add( help_mi );
+        JMenuItem about_mi = new JMenuItem( "About" );
+        help_menu.add( about_mi );
+
+        add( menubar, BorderLayout.NORTH );
+
+        // function menu actions
+        show_functions_mi.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    FunctionChooser.showChooser( CalculatorPanel.this, function_menu, functionPlayer );
+                }
+            }
+        );
+
+        record_mi.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    x_label.setEnabled( true );
+                    y_label.setEnabled( true );
+                    z_label.setEnabled( true );
+                    t_label.setEnabled( true );
+                    recording = true;
+                    macro = new ArrayList<String>();
+                    number_panel.setRecording( recording, macro );
+                }
+            }
+        );
+        stop_mi.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    // save the macro to a file
+                    x_label.setEnabled( false );
+                    y_label.setEnabled( false );
+                    z_label.setEnabled( false );
+                    t_label.setEnabled( false );
+                    recording = false;
+
+                    String name = JOptionPane.showInputDialog( CalculatorPanel.this,
+                            "Enter a name for this function:", "Enter Name", JOptionPane.QUESTION_MESSAGE );
+                    if ( name == null ) {
+                        return ;
+                    }
+                    String desc = JOptionPane.showInputDialog( CalculatorPanel.this,
+                            "Enter a description for this function:", "Enter Description", JOptionPane.QUESTION_MESSAGE );
+                    try {
+                        File calc_dir = new File( System.getProperty( "calc.home" ), ".calc" );
+                        calc_dir.mkdirs();
+                        File f = File.createTempFile( "calc", ".calc", new File( System.getProperty( "calc.home" ), ".calc" ) );
+                        StringBuffer macro_steps = new StringBuffer();
+                        for ( String step : macro ) {
+                            macro_steps.append( step ).append( '\n' );
+                        }
+                        FunctionWriter fw = new FunctionWriter( f );
+                        fw.write( name, desc, macro_steps.toString() );
+
+                        // insert the new function into the function menu -- the
+                        // new function is initially inserted just above the last
+                        // separator, but will be sorted on next start
+                        int offset = function_menu.getItemCount() - 2;
+                        JMenuItem mi = new JMenuItem( name );
+                        mi.setActionCommand( f.getName().substring( 0, f.getName().lastIndexOf( "." ) ) );
+                        mi.setToolTipText( desc );
+                        mi.addActionListener( functionPlayer );
+                        function_menu.insert( mi, offset );
+                    }
+                    catch ( Exception e ) {
+                        JOptionPane.showMessageDialog( CalculatorPanel.this, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE );
+                    }
+                    finally {
+                        number_panel.setRecording( false, null );
+                    }
+
+                }
+            }
+        );
+
+        exit_mi.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    switch ( close_operation ) {
+                        case DISPOSE_ON_CLOSE:
+                            Frame f = GUIUtils.getRootFrame( CalculatorPanel.this );
+                            f.dispose();
+                            break;
+                        case EXIT_ON_CLOSE:
+                            System.exit( 0 );
+                            break;
+                        case HIDE_ON_CLOSE:
+                            setVisible( false );
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        );
+
+        // constants menu actions
+        show_constants_mi.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    ConstantsChooser.showChooser( CalculatorPanel.this, constants_menu, functionPlayer );
+                }
+            }
+        );
+
+        // help menu actions
+        help_mi.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    try {
+                        java.net.URL help_url = getClass().getClassLoader().getResource( "index.html" );
+                        System.out.println( help_url );
+                        new AboutDialog( GUIUtils.getRootJFrame( CalculatorPanel.this ), "Help", help_url, true ).setVisible( true );
+                    }
+                    catch ( Exception e ) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        );
+
+        about_mi.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    JOptionPane.showMessageDialog( CalculatorPanel.this, "<html><b>Calculator</b><p>by Dale Anson, July 2003<br>Version 1.1.5", "About Calculator", JOptionPane.INFORMATION_MESSAGE );
+                }
+            }
+        );
+    }
+
+    /**
+     * @param type either "function_menu" or "constants_menu"   
+     */
+    private void loadMenu( JMenu menu, String type ) {
+        try {
+            File calc_dir = new File( System.getProperty( "calc.home" ), ".calc" );
+            if ( !calc_dir.exists() )
+                return ;
+            Preferences prefs = Calculator.PREFS.node( type );
+            String[] constants = prefs.keys();
+            Arrays.sort( constants );
+            for ( int i = 0; i < constants.length; i++ ) {
+                try {
+                    String constant = constants[ i ];
+                    FunctionReader fr = new FunctionReader( new File( calc_dir, constant ) );
+                    String name = fr.getName();
+                    String desc = fr.getDescription();
+                    String cmd = fr.getCommand();
+                    JMenuItem mi = new JMenuItem( name );
+                    mi.setToolTipText( desc );
+                    mi.setActionCommand( cmd );
+                    mi.addActionListener( functionPlayer );
+                    buttons.put( cmd, mi );
+                    menu.add( mi );
+                }
+                catch ( Exception e ) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        catch ( Exception e ) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * The operation panel contains the buttons for the math operations,
+     * e.g. plus, minus, divide, etc.
+     */
+    private JPanel createOperationPanel() {
+        JPanel operation_panel = new JPanel( new LambdaLayout() );
+
+        plus = new RectangleButton( "<html><b>+" );
+        plus.setActionCommand( "+" );
+        buttons.put( "+", plus );
+        plus.setToolTipText( "Add X and Y" );
+        minus = new RectangleButton( "<html><b>-" );
+        minus.setActionCommand( "-" );
+        buttons.put( "-", minus );
+        minus.setToolTipText( "Subtract X from Y" );
+        modulus = new RectangleButton( "<html><b>\\" );
+        modulus.setActionCommand( "\\" );
+        buttons.put( "\\", modulus );
+        modulus.setToolTipText( "X mod Y" );
+        multiply = new RectangleButton( "<html><b>x" );
+        multiply.setActionCommand( "*" );
+        buttons.put( "*", multiply );
+        multiply.setToolTipText( "Multiply X times Y" );
+        divide = new RectangleButton( "<html><b>&#247;" );
+        divide.setActionCommand( "/" );
+        buttons.put( "/", divide );
+        divide.setToolTipText( "Divide Y by X" );
+        enter = new RectangleButton( "<html><b>Enter &#8593;</html>" );
+        enter.setActionCommand( "enter" );
+        buttons.put( "enter", enter );
+        enter.setToolTipText( "Enter" );
+
+        and = new RectangleButton( "&" );
+        and.setActionCommand( "and" );
+        buttons.put( "and", and );
+        and.setToolTipText( "X and Y" );
+        and.setEnabled( false );
+        or = new RectangleButton( "|" );
+        or.setActionCommand( "or" );
+        buttons.put( "or", or );
+        or.setToolTipText( "X or Y" );
+        or.setEnabled( false );
+        not = new RectangleButton( "~" );
+        not.setActionCommand( "not" );
+        buttons.put( "not", not );
+        not.setToolTipText( "not X" );
+        not.setEnabled( false );
+        xor = new RectangleButton( "^" );
+        xor.setActionCommand( "xor" );
+        buttons.put( "xor", xor );
+        xor.setToolTipText( "X xor Y" );
+        xor.setEnabled( false );
+
+        plus.addActionListener( binary_op_listener );
+        minus.addActionListener( binary_op_listener );
+        modulus.addActionListener( binary_op_listener );
+        multiply.addActionListener( binary_op_listener );
+        divide.addActionListener( binary_op_listener );
+        and.addActionListener( binary_op_listener );
+        or.addActionListener( binary_op_listener );
+        not.addActionListener( unary_op_listener );
+        xor.addActionListener( binary_op_listener );
+
+        operation_panel.add( enter, "0, 0, 2, 1, 0, wh, 2" );
+
+        operation_panel.add( and, "0, 2, 1, 1, 0, wh, 2" );
+        operation_panel.add( or, "0, 3, 1, 1, 0, wh, 2" );
+        operation_panel.add( not, "0, 4, 1, 1, 0, wh, 2" );
+        operation_panel.add( xor, "0, 5, 1, 1, 0, wh, 2" );
+        operation_panel.add( modulus, "0, 6, 1, 1, 0, wh, 2" );
+
+        operation_panel.add( minus,    "1, 2, 1, 1, 0, wh, 2" );
+        operation_panel.add( plus,     "1, 3, 1, 1, 0, wh, 2" );
+        operation_panel.add( multiply, "1, 4, 1, 1, 0, wh, 2" );
+        operation_panel.add( divide,   "1, 5, 1, 1, 0, wh, 2" );
+        
+        return operation_panel;
+    }
+
+    /**
+     * The register panel contains the four text fields for numeric output.    
+     */
+    private JPanel createRegisterPanel() {
+        x_register.setDocument( new RegisterDocument( current_base, current_mode ) );
+        y_register.setDocument( new RegisterDocument( current_base, current_mode ) );
+        z_register.setDocument( new RegisterDocument( current_base, current_mode ) );
+        t_register.setDocument( new RegisterDocument( current_base, current_mode ) );
+
+        Font old_font = x_register.getFont();
+        Font register_font = new Font( "Monospaced", old_font.getStyle(), old_font.getSize() );
+        x_register.setFont( register_font );
+        y_register.setFont( register_font );
+        z_register.setFont( register_font );
+        t_register.setFont( register_font );
+
+        x_register.setHorizontalAlignment( JTextField.RIGHT );
+        y_register.setHorizontalAlignment( JTextField.RIGHT );
+        z_register.setHorizontalAlignment( JTextField.RIGHT );
+        t_register.setHorizontalAlignment( JTextField.RIGHT );
+
+        x_label = new RectangleButton( "X" );
+        x_label.setEnabled( false );
+        x_label.setActionCommand( "x" );
+        x_label.addActionListener( label_listener );
+        buttons.put( "x", x_label );
+        y_label = new RectangleButton( "Y" );
+        y_label.setEnabled( false );
+        y_label.setActionCommand( "y" );
+        y_label.addActionListener( label_listener );
+        buttons.put( "y", y_label );
+        z_label = new RectangleButton( "Z" );
+        z_label.setEnabled( false );
+        z_label.setActionCommand( "z" );
+        z_label.addActionListener( label_listener );
+        buttons.put( "z", x_label );
+        t_label = new RectangleButton( "T" );
+        t_label.setEnabled( false );
+        t_label.setActionCommand( "t" );
+        t_label.addActionListener( label_listener );
+        buttons.put( "t", t_label );
+
+        JPanel register_panel = new JPanel( new LambdaLayout() );
+        register_panel.add( t_label, "0, 0, 1, 1, W, 0, 2" );
+        register_panel.add( z_label, "0, 1, 1, 1, W, 0, 2" );
+        register_panel.add( y_label, "0, 2, 1, 1, W, 0, 2" );
+        register_panel.add( x_label, "0, 3, 1, 1, W, 0, 2" );
+        register_panel.add( t_register, "1, 0, 15, 1, W, wh, 2" );
+        register_panel.add( z_register, "1, 1, 15, 1, W, wh, 2" );
+        register_panel.add( y_register, "1, 2, 15, 1, W, wh, 2" );
+        register_panel.add( x_register, "1, 3, 15, 1, W, wh, 2" );
+
+        return register_panel;
+    }
+
+    /**
+     * The control panel contains the buttons to set the base, numeric type 
+     * (BigDecimal, float, etc) and the register controls (clear, roll up/down,
+     * etc.)
+     */
+    private JPanel createControlPanel() {
+        LambdaLayout control_layout = new LambdaLayout();
+        JPanel control_panel = new JPanel( control_layout );
+        bigdecimal_mode = new RectangleToggleButton( "BD" );
+        bigdecimal_mode.setActionCommand( String.valueOf( Base.BIGDECIMAL ) );
+        bigdecimal_mode.setToolTipText( "BigDecimal mode" );
+        bigint_mode = new RectangleToggleButton( "BI" );
+        bigint_mode.setActionCommand( String.valueOf( Base.BIGINT ) );
+        bigint_mode.setToolTipText( "BigInteger mode" );
+        float_mode = new RectangleToggleButton( "F" );
+        float_mode.setActionCommand( String.valueOf( Base.FLOAT ) );
+        float_mode.setSelected( true );
+        float_mode.setToolTipText( "Floating point mode" );
+        integer_mode = new RectangleToggleButton( "I" );
+        integer_mode.setActionCommand( String.valueOf( Base.INT ) );
+        integer_mode.setToolTipText( "Base 10 integer mode" );
+        base_16_btn = new RectangleToggleButton( "16" );
+        base_16_btn.setActionCommand( String.valueOf( Base.BASE_16 ) );
+        base_16_btn.setToolTipText( "Base 16 hexadecimal mode" );
+        base_10_btn = new RectangleToggleButton( "10" );
+        base_10_btn.setActionCommand( String.valueOf( Base.BASE_10 ) );
+        base_10_btn.setToolTipText( "Base 10 decimal mode" );
+        base_8_btn = new RectangleToggleButton( "8" );
+        base_8_btn.setActionCommand( String.valueOf( Base.BASE_8 ) );
+        base_8_btn.setToolTipText( "Base 8 octal mode" );
+        base_2_btn = new RectangleToggleButton( "2" );
+        base_2_btn.setActionCommand( String.valueOf( Base.BASE_2 ) );
+        base_2_btn.setToolTipText( "Base 2 binary mode" );
+        ButtonGroup mode_group = new ButtonGroup();
+        mode_group.add( bigdecimal_mode );
+        mode_group.add( bigint_mode );
+        mode_group.add( float_mode );
+        mode_group.add( integer_mode );
+        ButtonGroup base_group = new ButtonGroup();
+        base_group.add( base_16_btn );
+        base_group.add( base_10_btn );
+        base_group.add( base_8_btn );
+        base_group.add( base_2_btn );
+
+
+        ActionListener mode_listener =
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    String ac = ae.getActionCommand();
+                    int cmd = Integer.parseInt( ac );
+                    setMode( cmd );
+                    switch ( cmd ) {
+                        case Base.BIGDECIMAL:
+                        case Base.FLOAT:
+                            base_16_btn.setEnabled( false );
+                            base_8_btn.setEnabled( false );
+                            base_2_btn.setEnabled( false );
+                            base_10_btn.setEnabled( true );
+                            base_10_btn.doClick();
+                            and.setEnabled( false );
+                            or.setEnabled( false );
+                            not.setEnabled( false );
+                            xor.setEnabled( false );
+                            modulus.setEnabled( false );
+                            break;
+                        case Base.BIGINT:
+                        case Base.INT:
+                            base_16_btn.setEnabled( true );
+                            base_8_btn.setEnabled( true );
+                            base_2_btn.setEnabled( true );
+                            and.setEnabled( true );
+                            or.setEnabled( true );
+                            not.setEnabled( true );
+                            xor.setEnabled( true );
+                            modulus.setEnabled( true );
+                            AbstractButton base_btn = null;
+                            if ( base_16_btn.isSelected() )
+                                base_btn = base_16_btn;
+                            else if ( base_8_btn.isSelected() )
+                                base_btn = base_8_btn;
+                            else if ( base_2_btn.isSelected() )
+                                base_btn = base_2_btn;
+                            else
+                                base_btn = base_10_btn;
+                            base_btn.setSelected( false );
+                            base_btn.doClick();
+                    }
+                }
+
+            };
+
+        ActionListener base_listener =
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    RectangleToggleButton source = ( RectangleToggleButton ) ae.getSource();
+                    int base = Integer.parseInt( source.getActionCommand() );
+
+                    String x_value = x_register.getText();
+                    String y_value = y_register.getText();
+                    String z_value = z_register.getText();
+                    String t_value = t_register.getText();
+
+                    x_register.setDocument( new RegisterDocument( base, current_mode ) );
+                    y_register.setDocument( new RegisterDocument( base, current_mode ) );
+                    z_register.setDocument( new RegisterDocument( base, current_mode ) );
+                    t_register.setDocument( new RegisterDocument( base, current_mode ) );
+
+                    x_register.setText( convertToBase( x_value, current_base, base ) );
+                    y_register.setText( convertToBase( y_value, current_base, base ) );
+                    z_register.setText( convertToBase( z_value, current_base, base ) );
+                    t_register.setText( convertToBase( t_value, current_base, base ) );
+
+                    store_value = convertToBase( store_value, current_base, base );
+
+                    current_base = base;
+                    number_panel.setBase( current_base, current_mode );
+                }
+            };
+
+        bigdecimal_mode.addActionListener( mode_listener );
+        bigint_mode.addActionListener( mode_listener );
+        float_mode.addActionListener( mode_listener );
+        integer_mode.addActionListener( mode_listener );
+        base_16_btn.addActionListener( base_listener );
+        base_10_btn.addActionListener( base_listener );
+        base_8_btn.addActionListener( base_listener );
+        base_2_btn.addActionListener( base_listener );
+
+        store = new RectangleButton( "STO" );
+        store.setActionCommand( "sto" );
+        store.setToolTipText( "Store current X value" );
+        buttons.put( "sto", store );
+        recall = new RectangleButton( "RCL" );
+        recall.setActionCommand( "rcl" );
+        recall.setToolTipText( "Recall previously stored value to X register" );
+        buttons.put( "rcl", recall );
+        clear = new RectangleButton( "C" );
+        clear.setActionCommand( "clr" );
+        buttons.put( "clr", clear );
+        clear.setToolTipText( "Clear X" );
+        all_clear = new RectangleButton( "AC" );
+        all_clear.setToolTipText( "Clear All" );
+        all_clear.setActionCommand( "ac" );
+        buttons.put( "ac", all_clear );
+        roll_up = new RectangleButton( "<html>R&#8593;" );
+        roll_up.setToolTipText( "Roll Up" );
+        roll_up.setActionCommand( "ru" );
+        buttons.put( "ru", roll_up );
+        roll_down = new RectangleButton( "<html>R&#8595;" );
+        roll_down.setToolTipText( "Roll Down" );
+        roll_down.setActionCommand( "rd" );
+        buttons.put( "rd", roll_down );
+        xy = new RectangleButton( "<html>X&#8596;Y" );
+        xy.setToolTipText( "Swap X and Y" );
+        xy.setActionCommand( "xy" );
+        buttons.put( "xy", xy );
+        last_x = new RectangleButton( "LstX" );
+        last_x.setToolTipText( "Put the previous X in the X register" );
+        last_x.setActionCommand( "lstx" );
+        buttons.put( "lstx", last_x );
+
+        control_panel.add( bigdecimal_mode, "0, 0, 1, 1, 0, , 2" );
+        control_panel.add( float_mode, "1, 0, 1, 1, 0, , 2" );
+        control_panel.add( bigint_mode, "2, 0, 1, 1, 0, , 2" );
+        control_panel.add( integer_mode, "3, 0, 1, 1, 0, , 2" );
+
+        control_panel.add( KappaLayout.createHorizontalStrut( 60 ), "4, 0" );
+
+        control_panel.add( store, "5, 0, 1, 1, 0, , 2");
+        control_panel.add( clear, "6, 0, 1, 1, 0, , 2" );
+        control_panel.add( all_clear, "7, 0, 1, 1, 0, , 2" );
+        control_panel.add( last_x, "8, 0, 1, 1, 0, , 2" );
+
+        control_panel.add( base_16_btn, "0, 1, 1, 1, 0, , 2" );
+        control_panel.add( base_10_btn, "1, 1, 1, 1, 0, , 2" );
+        control_panel.add( base_8_btn, "2, 1, 1, 1, 0, , 2" );
+        control_panel.add( base_2_btn, "3, 1, 1, 1, 0, , 2" );
+
+        control_panel.add( KappaLayout.createHorizontalStrut( 60 ), "4, 1" );
+
+        control_panel.add( recall, "5, 1, 1, 1, 0, , 2");
+        control_panel.add( roll_up, "6, 1, 1, 1, 0, , 2" );
+        control_panel.add( roll_down, "7, 1, 1, 1, 0, , 2" );
+        control_panel.add( xy, "8, 1, 1, 1, 0, , 2" );
+
+        control_layout.makeColumnsSameWidth( new int[] {
+                    0, 1, 2, 3, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15
+                }
+                                           );
+
+        store.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    store_value = x_register.getText();
+                }
+            }
+        );
+
+        recall.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    x_register.setText( store_value );
+                }
+            }
+        );
+
+        clear.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    x_register.setText( "" );
+                }
+            }
+        );
+
+        all_clear.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    x_register.setText( "" );
+                    y_register.setText( "" );
+                    z_register.setText( "" );
+                    t_register.setText( "" );
+                }
+            }
+        );
+
+        roll_up.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    String temp = t_register.getText();
+                    t_register.setText( z_register.getText() );
+                    z_register.setText( y_register.getText() );
+                    y_register.setText( x_register.getText() );
+                    x_register.setText( temp );
+                }
+            }
+        );
+
+        roll_down.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    String temp = x_register.getText();
+                    x_register.setText( y_register.getText() );
+                    y_register.setText( z_register.getText() );
+                    z_register.setText( t_register.getText() );
+                    t_register.setText( temp );
+                }
+            }
+        );
+
+        xy.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    String temp = x_register.getText();
+                    x_register.setText( y_register.getText() );
+                    y_register.setText( temp );
+                }
+            }
+        );
+
+        last_x.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    t_register.setText( z_register.getText() );
+                    z_register.setText( y_register.getText() );
+                    y_register.setText( x_register.getText() );
+                    x_register.setText( last_x_value );
+                    x_register.selectAll();
+                    x_register.requestFocus();
+                }
+            }
+        );
+
+        return control_panel;
+    }
+
+    /**
+     * The function panel contains the buttons on the left side of the
+     * calculator for the built-in functions, e.g. sin, cos, etc.
+     */
+    private JPanel createFunctionPanel() {
+        JPanel function_panel = new JPanel( new LambdaLayout() );
+        KappaLayout.Constraints cons = KappaLayout.createConstraint();
+        cons.p = 2;
+
+        // these are in pairs, the first is the function name, these correspond with
+        // method names in java.lang.Math or ise.calculator.Math. The second is some
+        // html markup for displaying the function name
+        String one_param = "exp,e<sup>x</sup>,acos,acos,asin,asin,atan,atan,log,ln,cos,cos,sin,sin,tan,tan,ceil,ceil,floor,floor,rint,rint,round,round,sqrt,&#8730;,toDegrees,deg,toRadians,rad,factorial,x!";
+        makeOneParamButtons( one_param );
+        String[] fparams = one_param.split( "," );
+        for ( int i = 0; i < fparams.length; i = i + 2 ) {
+            function_panel.add( buttons.get( fparams[ i ] ), cons );
+            ++cons.x;
+            if ( cons.x == 4 ) {
+                cons.x %= 4;
+                ++cons.y;
+            }
+        }
+
+        String two_param = "atan2,atan2,max,max,min,min,pow,y<sup>x</sup>";
+        makeTwoParamButtons( two_param );
+        fparams = two_param.split( "," );
+        for ( int i = 0; i < fparams.length; i = i + 2 ) {
+            function_panel.add( buttons.get( fparams[ i ] ), cons );
+            ++cons.x;
+            if ( cons.x == 4 ) {
+                cons.x %= 4;
+                ++cons.y;
+            }
+        }
+
+        String zero_param = "random,random";
+        makeZeroParamButtons( zero_param );
+        cons.x = 0;
+        ++cons.y;
+        function_panel.add( buttons.get( "random" ), cons );
+
+        euler = new RectangleButton( "<html><i>e" );
+        euler.setToolTipText( "Euler's e" );
+        euler.setActionCommand( "e" );
+        buttons.put( "euler", euler );
+        euler.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    x_register.setText( Double.toString( java.lang.Math.E ) );
+                }
+            }
+        );
+        euler.addActionListener( label_listener );
+
+        pi = new RectangleButton( "<html>&#960;" );
+        pi.setToolTipText( "Pi" );
+        pi.setActionCommand( "pi" );
+        buttons.put( "pi", pi );
+        pi.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    x_register.setText( Double.toString( java.lang.Math.PI ) );
+                }
+            }
+        );
+        pi.addActionListener( label_listener );
+
+        strict = new RectangleToggleButton( "<html>strict" );
+        strict.setToolTipText( "Use strict math mode" );
+        strict.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    RectangleToggleButton btn = ( RectangleToggleButton ) ae.getSource();
+                    _strict = btn.isSelected();
+                }
+            }
+        );
+        ++cons.x;
+        function_panel.add( euler, cons );
+        ++cons.x;
+        function_panel.add( pi, cons );
+        ++cons.x;
+        function_panel.add( strict, cons );
+
+        return function_panel;
+    }
+
+    private void addActionListeners() {
+        // add action listeners for operation panel
+        enter.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    t_register.setText( z_register.getText() );
+                    z_register.setText( y_register.getText() );
+                    y_register.setText( x_register.getText() );
+                    x_register.selectAll();
+                    x_register.requestFocus();
+                }
+            }
+        );
+        enter.addActionListener( label_listener );
+
+        number_panel.addActionListener( label_listener );
+
+        x_register.addKeyListener(
+            new KeyAdapter() {
+                public void keyPressed( KeyEvent ke ) {
+                    switch ( ke.getKeyCode() ) {
+                        case KeyEvent.VK_ENTER:
+                            enter.doClick();
+                            break;
+                        case KeyEvent.VK_PLUS:
+                            plus.doClick();
+                            break;
+                        case KeyEvent.VK_MINUS:
+                            minus.doClick();
+                            break;
+                        case KeyEvent.VK_ASTERISK:
+                            multiply.doClick();
+                            break;
+                        case KeyEvent.VK_SLASH:
+                            plus.doClick();
+                            break;
+                        case KeyEvent.VK_BACK_SLASH:
+                            if ( ke.isShiftDown() )
+                                or.doClick();
+                            else
+                                modulus.doClick();
+                            break;
+                        case KeyEvent.VK_AMPERSAND:
+                            and.doClick();
+                            break;
+                        case KeyEvent.VK_CIRCUMFLEX:
+                            xor.doClick();
+                            break;
+                        case KeyEvent.VK_DEAD_TILDE:
+                            not.doClick();
+                            break;
+                    }
+                }
+            }
+        );
+
+    }
+
+    // action listener for those functions that take no parameters --
+    // this might eventually need some work, right now, only one function
+    // (random) uses no parameters, although I should be able to generate large
+    // random numbers with big ints.
+    private ActionListener zero_op_listener =
+        new ActionListener() {
+            public void actionPerformed( ActionEvent ae ) {
+                String operation = ae.getActionCommand();
+                if ( recording ) {
+                    macro.add( operation );
+                }
+                String type = "double";
+                Op op = new Op( operation, type );
+                op.setStrict( _strict );
+
+                Number result = null;
+                String answer = "";
+                try {
+                    Num num = op.calculate();
+                    result = num.getValue();
+                }
+                catch ( ArithmeticException e ) {
+                    answer = "Error: " + e.getMessage();
+                }
+
+                if ( !answer.startsWith( "Error" ) ) {
+                    switch ( current_mode ) {
+                        case Base.FLOAT:
+                            double d = result.doubleValue();
+                            answer = Double.toString( d );
+                            break;
+                        default:
+                            int a = result.intValue();
+                            answer = convertToBase( Integer.toString( a ), Base.BASE_10, current_base );
+                    }
+                }
+                last_x_value = x_register.getText();
+                x_register.setText( answer );
+                x_register.requestFocus();
+            }
+        };
+
+    // action listener for those function that take one parameter
+    private ActionListener unary_op_listener =
+        new ActionListener() {
+            public void actionPerformed( ActionEvent ae ) {
+                String operation = ae.getActionCommand();
+                if ( recording ) {
+                    macro.add( operation );
+                }
+                String xs = x_register.getText();
+                if ( xs == null || xs.length() == 0 ) {
+                    return ;
+                }
+                String type = "int";
+                switch ( current_mode ) {
+                    case Base.FLOAT:
+                        type = "double";
+                        break;
+                    case Base.BIGINT:
+                        type = "bigint";
+                        break;
+                    case Base.BIGDECIMAL:
+                        type = "bigdecimal";
+                        break;
+                    case Base.INT:
+                    default:
+                        type = "int";
+                        break;
+                }
+
+                // convert to base 10 to do the math
+                xs = convertToBase( xs, current_base, Base.BASE_10 );
+                Op op = new Op( operation, type );
+                op.setStrict( _strict );
+                op.addNum( new Num( xs ) );
+
+                Number result = null;
+                String answer = "";
+                try {
+                    Num num = op.calculate();
+                    result = num.getValue();
+                }
+                catch ( Exception e ) {
+                    answer = "Error: " + e.getMessage();
+                }
+
+                if ( !answer.startsWith( "Error" ) ) {
+                    switch ( current_mode ) {
+                        case Base.BIGDECIMAL:
+                            answer = result.toString();
+                            break;
+                        case Base.FLOAT:
+                            double d = result.doubleValue();
+                            answer = Double.toString( d );
+                            break;
+                        case Base.BIGINT:
+                            if ( result instanceof BigInteger )
+                                answer = ( ( BigInteger ) result ).toString( current_base );
+                            else
+                                answer = "Error: operation not allowed in BI mode";
+                            break;
+                        case Base.INT:
+                        default:
+                            int a = result.intValue();
+                            answer = Integer.toString( a );
+                    }
+
+                    // convert the answer back from base 10 to the current base
+                    answer = convertToBase( answer, Base.BASE_10, current_base );
+                }
+                last_x_value = x_register.getText();
+                x_register.setText( answer );
+                x_register.requestFocus();
+            }
+        };
+
+    // action listener for those functions that take two parameters
+    private ActionListener binary_op_listener =
+        new ActionListener() {
+            public void actionPerformed( ActionEvent ae ) {
+                String operation = ae.getActionCommand();
+                if ( recording ) {
+                    macro.add( operation );
+                }
+                String xs = x_register.getText();
+                String ys = y_register.getText();
+                if ( xs == null || xs.length() == 0 ) {
+                    return ;
+                }
+                if ( ys == null || ys.length() == 0 ) {
+                    return ;
+                }
+                String type = "int";
+                switch ( current_mode ) {
+                    case Base.FLOAT:
+                        type = "double";
+                        break;
+                    case Base.BIGINT:
+                        type = "bigint";
+                        break;
+                    case Base.BIGDECIMAL:
+                        type = "bigdecimal";
+                        break;
+                    case Base.INT:
+                    default:
+                        type = "int";
+                        break;
+                }
+
+                // convert to base 10 to do the math
+                xs = convertToBase( xs, current_base, Base.BASE_10 );
+                ys = convertToBase( ys, current_base, Base.BASE_10 );
+
+                Op op = new Op( operation, type );
+                op.setStrict( _strict );
+                op.addNum( new Num( ys ) );
+                op.addNum( new Num( xs ) );
+
+                Number result = null;
+                String answer = "";
+                try {
+                    Num num = op.calculate();
+                    result = num.getValue();
+                }
+                catch ( ArithmeticException e ) {
+                    answer = "Error: " + e.getMessage();
+                }
+
+                if ( !answer.startsWith( "Error" ) ) {
+                    switch ( current_mode ) {
+                        case Base.BIGDECIMAL:
+                            answer = result.toString();
+                            break;
+                        case Base.BIGINT:
+                            answer = result.toString();
+                            if ( answer.indexOf( '.' ) > 0 ) {
+                                answer = answer.substring( 0, answer.indexOf( '.' ) );
+                            }
+                            break;
+                        case Base.FLOAT:
+                            double d = result.doubleValue();
+                            answer = Double.toString( d );
+                            break;
+                        default:
+                            int a = result.intValue();
+                            answer = Integer.toString( a );
+                    }
+
+                    // convert the answer from base 10 back to the current base
+                    answer = convertToBase( answer, Base.BASE_10, current_base );
+                }
+                try {
+                    RegisterDocument rd = new RegisterDocument( current_base, current_mode );
+                    rd.insertString( 0, answer, null );
+                    last_x_value = x_register.getText();
+                    x_register.setText( answer );
+                    y_register.setText( z_register.getText() );
+                    z_register.setText( t_register.getText() );
+                    t_register.setText( "" );
+                    x_register.requestFocus();
+                }
+                catch ( BadLocationException e ) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+    private ActionListener label_listener =
+        new ActionListener() {
+            public void actionPerformed( ActionEvent ae ) {
+                if ( recording ) {
+                    String cmd = ae.getActionCommand();
+                    if ( cmd.equals( "x" ) || cmd.equals( "y" ) || cmd.equals( "z" ) || cmd.equals( "t" ) ) {
+                        while ( true ) {
+                            if ( macro.size() == 0 )
+                                break;
+                            String c = ( String ) macro.get( macro.size() - 1 );
+                            if ( Character.isDigit( c.charAt( 0 ) ) ) {
+                                macro.remove( macro.size() - 1 );
+                            }
+                            else {
+                                break;
+                            }
+                        }
+                        macro.add( cmd );
+                    }
+                    else {
+                        macro.add( ae.getActionCommand() );
+                    }
+                }
+            }
+        };
+
     /**
      * Executes stored functions, constants, and conversions.   
      */
@@ -1151,39 +1375,4 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
                 }
             }
         };
-
-    /**
-     * @param type either "function_menu" or "constants_menu"   
-     */
-    private void loadMenu( JMenu menu, String type ) {
-        try {
-            File calc_dir = new File( System.getProperty( "calc.home" ), ".calc" );
-            if ( !calc_dir.exists() )
-                return ;
-            Preferences prefs = Calculator.PREFS.node( type );
-            String[] constants = prefs.keys();
-            Arrays.sort( constants );
-            for ( int i = 0; i < constants.length; i++ ) {
-                try {
-                    String constant = constants[ i ];
-                    FunctionReader fr = new FunctionReader( new File( calc_dir, constant ) );
-                    String name = fr.getName();
-                    String desc = fr.getDescription();
-                    String cmd = fr.getCommand();
-                    JMenuItem mi = new JMenuItem( name );
-                    mi.setToolTipText( desc );
-                    mi.setActionCommand( cmd );
-                    mi.addActionListener( functionPlayer );
-                    buttons.put( cmd, mi );
-                    menu.add( mi );
-                }
-                catch ( Exception e ) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        catch ( Exception e ) {
-            e.printStackTrace();
-        }
-    }
 }
