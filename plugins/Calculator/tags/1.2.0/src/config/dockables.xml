@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+<!-- $Id$ -->
+<DOCKABLES>
+	<DOCKABLE NAME="calculator">
+		new ise.plugin.calculator.CalculatorPluginPanel();
+	</DOCKABLE>
+</DOCKABLES>
+
