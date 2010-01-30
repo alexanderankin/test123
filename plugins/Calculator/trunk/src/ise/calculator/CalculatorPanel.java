@@ -46,10 +46,10 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
     private int current_mode = Base.FLOAT;
 
     // the register stack
-    private JTextField x_register = new JTextField( 50 );
-    private JTextField y_register = new JTextField( 50 );
-    private JTextField z_register = new JTextField( 50 );
-    private JTextField t_register = new JTextField( 50 );
+    private JTextField x_register = new JTextField( 60 );
+    private JTextField y_register = new JTextField( 60 );
+    private JTextField z_register = new JTextField( 60 );
+    private JTextField t_register = new JTextField( 60 );
 
     // all the buttons
     private RectangleButton plus ;
@@ -85,6 +85,7 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
     private JButton euler;         // NOPMD
     private JButton pi;         // NOPMD
     private RectangleToggleButton strict;         // NOPMD
+    private RectangleButton chs;   // +/-, change sign
 
 
     // the number panel is a separate class
@@ -142,20 +143,24 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
         JPanel main = new JPanel( new LambdaLayout() );
 
         // top panel
-        main.add( register_panel, "0, 0, 1, 1, 0, w, 3" );
+        main.add( register_panel, "0, 0, 1, 1, 0, w" );
+        main.add( KappaLayout.createVerticalStrut( 11 ), "0, 1" );
 
         // center panel is control panel
-        main.add( control_panel, "0, 1, 1, 1, 0, , 3" );
+        main.add( control_panel, "0, 2, 1, 1, 0, w" );
+        main.add( KappaLayout.createVerticalStrut( 11 ), "0, 3" );
 
         // bottom panel
         JPanel bottom_panel = new JPanel( new LambdaLayout() );
-        bottom_panel.add( function_panel, "0, 2, 5, 1, N, , 3" );
-        bottom_panel.add( operation_panel, "5, 2, 1, 1, N, , 3" );
-        bottom_panel.add( number_panel, "6, 2, 3, 1, N, , 3" );
-        main.add( bottom_panel, "0, 2, 1, 1, 0, , 3" );
+        bottom_panel.add( function_panel, "0, 0, 1, 1, N, , " );
+        bottom_panel.add( KappaLayout.createHorizontalStrut( 11 ), "1, 0" );
+        bottom_panel.add( operation_panel, "2, 0, 1, 1, N, , " );
+        bottom_panel.add( KappaLayout.createHorizontalStrut( 11 ), "3, 0" );
+        bottom_panel.add( number_panel, "4, 0, 1, 1, N, , " );
+        main.add( bottom_panel, "0, 4, 1, 1, 0, w" );
 
         add( main, BorderLayout.CENTER );
-        
+
         float_mode.doClick();
         x_register.requestFocus();
     }
@@ -498,7 +503,7 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
         about_mi.addActionListener(
             new ActionListener() {
                 public void actionPerformed( ActionEvent ae ) {
-                    JOptionPane.showMessageDialog( CalculatorPanel.this, "<html><b>Calculator</b><p>by Dale Anson, July 2003<br>Version 1.1.5", "About Calculator", JOptionPane.INFORMATION_MESSAGE );
+                    JOptionPane.showMessageDialog( CalculatorPanel.this, "<html><b>RPN Calculator</b><p>by Dale Anson<br>Version 1.2.0", "About Calculator", JOptionPane.INFORMATION_MESSAGE );
                 }
             }
         );
@@ -592,6 +597,12 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
         xor.setToolTipText( "X xor Y" );
         xor.setEnabled( false );
 
+        chs = new RectangleButton( "<html>&#177;" );   // +/-, plus minus
+        chs.setActionCommand( "chs" );
+        buttons.put( "chs", chs );
+        chs.setToolTipText( "Change sign" );
+
+
         plus.addActionListener( binary_op_listener );
         minus.addActionListener( binary_op_listener );
         modulus.addActionListener( binary_op_listener );
@@ -601,6 +612,7 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
         or.addActionListener( binary_op_listener );
         not.addActionListener( unary_op_listener );
         xor.addActionListener( binary_op_listener );
+        chs.addActionListener( chs_listener );
 
         operation_panel.add( enter, "0, 0, 2, 1, 0, wh, 2" );
 
@@ -610,11 +622,12 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
         operation_panel.add( xor, "0, 5, 1, 1, 0, wh, 2" );
         operation_panel.add( modulus, "0, 6, 1, 1, 0, wh, 2" );
 
-        operation_panel.add( minus,    "1, 2, 1, 1, 0, wh, 2" );
-        operation_panel.add( plus,     "1, 3, 1, 1, 0, wh, 2" );
+        operation_panel.add( minus, "1, 2, 1, 1, 0, wh, 2" );
+        operation_panel.add( plus, "1, 3, 1, 1, 0, wh, 2" );
         operation_panel.add( multiply, "1, 4, 1, 1, 0, wh, 2" );
-        operation_panel.add( divide,   "1, 5, 1, 1, 0, wh, 2" );
-        
+        operation_panel.add( divide, "1, 5, 1, 1, 0, wh, 2" );
+        operation_panel.add( chs, "1, 6, 1, 1, 0, wh, 2");
+
         return operation_panel;
     }
 
@@ -665,10 +678,10 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
         register_panel.add( z_label, "0, 1, 1, 1, W, 0, 2" );
         register_panel.add( y_label, "0, 2, 1, 1, W, 0, 2" );
         register_panel.add( x_label, "0, 3, 1, 1, W, 0, 2" );
-        register_panel.add( t_register, "1, 0, 15, 1, W, wh, 2" );
-        register_panel.add( z_register, "1, 1, 15, 1, W, wh, 2" );
-        register_panel.add( y_register, "1, 2, 15, 1, W, wh, 2" );
-        register_panel.add( x_register, "1, 3, 15, 1, W, wh, 2" );
+        register_panel.add( t_register, "1, 0, R, 1, 0, wh, 2" );
+        register_panel.add( z_register, "1, 1, R, 1, 0, wh, 2" );
+        register_panel.add( y_register, "1, 2, R, 1, 0, wh, 2" );
+        register_panel.add( x_register, "1, 3, R, 1, 0, wh, 2" );
 
         return register_panel;
     }
@@ -681,36 +694,49 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
     private JPanel createControlPanel() {
         LambdaLayout control_layout = new LambdaLayout();
         JPanel control_panel = new JPanel( control_layout );
+
+        // left side panel, holds the mode and base buttons
+        JPanel left_panel = new JPanel( new LambdaLayout() );
+
         bigdecimal_mode = new RectangleToggleButton( "BD" );
         bigdecimal_mode.setActionCommand( String.valueOf( Base.BIGDECIMAL ) );
         bigdecimal_mode.setToolTipText( "BigDecimal mode" );
+
         bigint_mode = new RectangleToggleButton( "BI" );
         bigint_mode.setActionCommand( String.valueOf( Base.BIGINT ) );
         bigint_mode.setToolTipText( "BigInteger mode" );
+
         float_mode = new RectangleToggleButton( "F" );
         float_mode.setActionCommand( String.valueOf( Base.FLOAT ) );
         float_mode.setSelected( true );
         float_mode.setToolTipText( "Floating point mode" );
+
         integer_mode = new RectangleToggleButton( "I" );
         integer_mode.setActionCommand( String.valueOf( Base.INT ) );
-        integer_mode.setToolTipText( "Base 10 integer mode" );
+        integer_mode.setToolTipText( "Integer mode" );
+
         base_16_btn = new RectangleToggleButton( "16" );
         base_16_btn.setActionCommand( String.valueOf( Base.BASE_16 ) );
         base_16_btn.setToolTipText( "Base 16 hexadecimal mode" );
+
         base_10_btn = new RectangleToggleButton( "10" );
         base_10_btn.setActionCommand( String.valueOf( Base.BASE_10 ) );
         base_10_btn.setToolTipText( "Base 10 decimal mode" );
+
         base_8_btn = new RectangleToggleButton( "8" );
         base_8_btn.setActionCommand( String.valueOf( Base.BASE_8 ) );
         base_8_btn.setToolTipText( "Base 8 octal mode" );
+
         base_2_btn = new RectangleToggleButton( "2" );
         base_2_btn.setActionCommand( String.valueOf( Base.BASE_2 ) );
         base_2_btn.setToolTipText( "Base 2 binary mode" );
+
         ButtonGroup mode_group = new ButtonGroup();
         mode_group.add( bigdecimal_mode );
         mode_group.add( bigint_mode );
         mode_group.add( float_mode );
         mode_group.add( integer_mode );
+
         ButtonGroup base_group = new ButtonGroup();
         base_group.add( base_16_btn );
         base_group.add( base_10_btn );
@@ -801,6 +827,9 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
         base_8_btn.addActionListener( base_listener );
         base_2_btn.addActionListener( base_listener );
 
+        // right side panel, holds the register manipulation buttons
+        JPanel right_panel = new JPanel( new LambdaLayout() );
+
         store = new RectangleButton( "STO" );
         store.setActionCommand( "sto" );
         store.setToolTipText( "Store current X value" );
@@ -809,7 +838,7 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
         recall.setActionCommand( "rcl" );
         recall.setToolTipText( "Recall previously stored value to X register" );
         buttons.put( "rcl", recall );
-        clear = new RectangleButton( "C" );
+        clear = new RectangleButton( "CLR" );
         clear.setActionCommand( "clr" );
         buttons.put( "clr", clear );
         clear.setToolTipText( "Clear X" );
@@ -834,34 +863,29 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
         last_x.setActionCommand( "lstx" );
         buttons.put( "lstx", last_x );
 
-        control_panel.add( bigdecimal_mode, "0, 0, 1, 1, 0, , 2" );
-        control_panel.add( float_mode, "1, 0, 1, 1, 0, , 2" );
-        control_panel.add( bigint_mode, "2, 0, 1, 1, 0, , 2" );
-        control_panel.add( integer_mode, "3, 0, 1, 1, 0, , 2" );
+        // layout the panels
+        left_panel.add( bigdecimal_mode, "0, 0, 1, 1, 0, , 2" );
+        left_panel.add( float_mode, "1, 0, 1, 1, 0, , 2" );
+        left_panel.add( bigint_mode, "2, 0, 1, 1, 0, , 2" );
+        left_panel.add( integer_mode, "3, 0, 1, 1, 0, , 2" );
 
-        control_panel.add( KappaLayout.createHorizontalStrut( 60 ), "4, 0" );
+        left_panel.add( base_16_btn, "0, 1, 1, 1, 0, , 2" );
+        left_panel.add( base_10_btn, "1, 1, 1, 1, 0, , 2" );
+        left_panel.add( base_8_btn, "2, 1, 1, 1, 0, , 2" );
+        left_panel.add( base_2_btn, "3, 1, 1, 1, 0, , 2" );
 
-        control_panel.add( store, "5, 0, 1, 1, 0, , 2");
-        control_panel.add( clear, "6, 0, 1, 1, 0, , 2" );
-        control_panel.add( all_clear, "7, 0, 1, 1, 0, , 2" );
-        control_panel.add( last_x, "8, 0, 1, 1, 0, , 2" );
+        right_panel.add( store, "0, 0, 1, 1, 0, , 2" );
+        right_panel.add( clear, "1, 0, 1, 1, 0, , 2" );
+        right_panel.add( all_clear, "2, 0, 1, 1, 0, , 2" );
+        right_panel.add( last_x, "3, 0, 1, 1, 0, , 2" );
 
-        control_panel.add( base_16_btn, "0, 1, 1, 1, 0, , 2" );
-        control_panel.add( base_10_btn, "1, 1, 1, 1, 0, , 2" );
-        control_panel.add( base_8_btn, "2, 1, 1, 1, 0, , 2" );
-        control_panel.add( base_2_btn, "3, 1, 1, 1, 0, , 2" );
+        right_panel.add( recall, "0, 1, 1, 1, 0, , 2" );
+        right_panel.add( roll_up, "1, 1, 1, 1, 0, , 2" );
+        right_panel.add( roll_down, "2, 1, 1, 1, 0, , 2" );
+        right_panel.add( xy, "3, 1, 1, 1, 0, , 2" );
 
-        control_panel.add( KappaLayout.createHorizontalStrut( 60 ), "4, 1" );
-
-        control_panel.add( recall, "5, 1, 1, 1, 0, , 2");
-        control_panel.add( roll_up, "6, 1, 1, 1, 0, , 2" );
-        control_panel.add( roll_down, "7, 1, 1, 1, 0, , 2" );
-        control_panel.add( xy, "8, 1, 1, 1, 0, , 2" );
-
-        control_layout.makeColumnsSameWidth( new int[] {
-                    0, 1, 2, 3, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15
-                }
-                                           );
+        control_panel.add( left_panel, "0, 0, 1, 1, W" );
+        control_panel.add( right_panel, "1, 0, 1, 1, E" );
 
         store.addActionListener(
             new ActionListener() {
@@ -984,7 +1008,7 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
             }
         }
 
-        String zero_param = "random,random";
+        String zero_param = "random,rndm";
         makeZeroParamButtons( zero_param );
         cons.x = 0;
         ++cons.y;
@@ -1070,7 +1094,7 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
                             multiply.doClick();
                             break;
                         case KeyEvent.VK_SLASH:
-                            plus.doClick();
+                            divide.doClick();
                             break;
                         case KeyEvent.VK_BACK_SLASH:
                             if ( ke.isShiftDown() )
@@ -1106,33 +1130,54 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
                     macro.add( operation );
                 }
                 String type = "double";
-                Op op = new Op( operation, type );
+                final Op op = new Op( operation, type );
                 op.setStrict( _strict );
 
-                Number result = null;
-                String answer = "";
-                try {
-                    Num num = op.calculate();
-                    result = num.getValue();
-                }
-                catch ( ArithmeticException e ) {
-                    answer = "Error: " + e.getMessage();
-                }
+                class Calculation extends SwingWorker<String, Object> {
+                    @Override
+                    public String doInBackground() {
+                        CalculatorPanel.this.setCursor( Cursor.getPredefinedCursor( Cursor.WAIT_CURSOR ) );
+                        Number result = null;
+                        String answer = "";
+                        try {
+                            Num num = op.calculate();
+                            result = num.getValue();
+                        }
+                        catch ( ArithmeticException e ) {
+                            answer = "Error: " + e.getMessage();
+                        }
 
-                if ( !answer.startsWith( "Error" ) ) {
-                    switch ( current_mode ) {
-                        case Base.FLOAT:
-                            double d = result.doubleValue();
-                            answer = Double.toString( d );
-                            break;
-                        default:
-                            int a = result.intValue();
-                            answer = convertToBase( Integer.toString( a ), Base.BASE_10, current_base );
+                        if ( !answer.startsWith( "Error" ) ) {
+                            switch ( current_mode ) {
+                                case Base.FLOAT:
+                                    double d = result.doubleValue();
+                                    answer = Double.toString( d );
+                                    break;
+                                default:
+                                    int a = result.intValue();
+                                    answer = convertToBase( Integer.toString( a ), Base.BASE_10, current_base );
+                            }
+                        }
+                        return answer;
+                    }
+
+                    @Override
+                    protected void done() {
+                        try {
+                            String answer = get();
+                            last_x_value = x_register.getText();
+                            x_register.setText( answer );
+                            x_register.requestFocus();
+                        }
+                        catch ( Exception e ) {
+                            e.printStackTrace();
+                        }
+                        finally {
+                            CalculatorPanel.this.setCursor( Cursor.getDefaultCursor() );
+                        }
                     }
                 }
-                last_x_value = x_register.getText();
-                x_register.setText( answer );
-                x_register.requestFocus();
+                new Calculation().execute();
             }
         };
 
@@ -1167,47 +1212,68 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
 
                 // convert to base 10 to do the math
                 xs = convertToBase( xs, current_base, Base.BASE_10 );
-                Op op = new Op( operation, type );
+                final Op op = new Op( operation, type );
                 op.setStrict( _strict );
                 op.addNum( new Num( xs ) );
 
-                Number result = null;
-                String answer = "";
-                try {
-                    Num num = op.calculate();
-                    result = num.getValue();
-                }
-                catch ( Exception e ) {
-                    answer = "Error: " + e.getMessage();
-                }
+                class Calculation extends SwingWorker<String, Object> {
+                    @Override
+                    public String doInBackground() {
+                        CalculatorPanel.this.setCursor( Cursor.getPredefinedCursor( Cursor.WAIT_CURSOR ) );
+                        Number result = null;
+                        String answer = "";
+                        try {
+                            Num num = op.calculate();
+                            result = num.getValue();
+                        }
+                        catch ( Exception e ) {
+                            answer = "Error: " + e.getMessage();
+                        }
 
-                if ( !answer.startsWith( "Error" ) ) {
-                    switch ( current_mode ) {
-                        case Base.BIGDECIMAL:
-                            answer = result.toString();
-                            break;
-                        case Base.FLOAT:
-                            double d = result.doubleValue();
-                            answer = Double.toString( d );
-                            break;
-                        case Base.BIGINT:
-                            if ( result instanceof BigInteger )
-                                answer = ( ( BigInteger ) result ).toString( current_base );
-                            else
-                                answer = "Error: operation not allowed in BI mode";
-                            break;
-                        case Base.INT:
-                        default:
-                            int a = result.intValue();
-                            answer = Integer.toString( a );
+                        if ( !answer.startsWith( "Error" ) ) {
+                            switch ( current_mode ) {
+                                case Base.BIGDECIMAL:
+                                    answer = result.toString();
+                                    break;
+                                case Base.FLOAT:
+                                    double d = result.doubleValue();
+                                    answer = Double.toString( d );
+                                    break;
+                                case Base.BIGINT:
+                                    if ( result instanceof BigInteger )
+                                        answer = ( ( BigInteger ) result ).toString( current_base );
+                                    else
+                                        answer = "Error: operation not allowed in BI mode";
+                                    break;
+                                case Base.INT:
+                                default:
+                                    int a = result.intValue();
+                                    answer = Integer.toString( a );
+                            }
+
+                            // convert the answer back from base 10 to the current base
+                            answer = convertToBase( answer, Base.BASE_10, current_base );
+                        }
+                        return answer;
                     }
 
-                    // convert the answer back from base 10 to the current base
-                    answer = convertToBase( answer, Base.BASE_10, current_base );
+                    @Override
+                    protected void done() {
+                        try {
+                            String answer = get();
+                            last_x_value = x_register.getText();
+                            x_register.setText( answer );
+                            x_register.requestFocus();
+                        }
+                        catch ( Exception e ) {
+                            e.printStackTrace();
+                        }
+                        finally {
+                            CalculatorPanel.this.setCursor( Cursor.getDefaultCursor() );
+                        }
+                    }
                 }
-                last_x_value = x_register.getText();
-                x_register.setText( answer );
-                x_register.requestFocus();
+                new Calculation().execute();
             }
         };
 
@@ -1248,57 +1314,73 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
                 xs = convertToBase( xs, current_base, Base.BASE_10 );
                 ys = convertToBase( ys, current_base, Base.BASE_10 );
 
-                Op op = new Op( operation, type );
+                final Op op = new Op( operation, type );
                 op.setStrict( _strict );
                 op.addNum( new Num( ys ) );
                 op.addNum( new Num( xs ) );
 
-                Number result = null;
-                String answer = "";
-                try {
-                    Num num = op.calculate();
-                    result = num.getValue();
-                }
-                catch ( ArithmeticException e ) {
-                    answer = "Error: " + e.getMessage();
-                }
+                class Calculation extends SwingWorker<String, Object> {
+                    @Override
+                    public String doInBackground() {
+                        CalculatorPanel.this.setCursor( Cursor.getPredefinedCursor( Cursor.WAIT_CURSOR ) );
+                        Number result = null;
+                        String answer = "";
+                        try {
+                            Num num = op.calculate();
+                            result = num.getValue();
+                        }
+                        catch ( ArithmeticException e ) {
+                            answer = "Error: " + e.getMessage();
+                        }
 
-                if ( !answer.startsWith( "Error" ) ) {
-                    switch ( current_mode ) {
-                        case Base.BIGDECIMAL:
-                            answer = result.toString();
-                            break;
-                        case Base.BIGINT:
-                            answer = result.toString();
-                            if ( answer.indexOf( '.' ) > 0 ) {
-                                answer = answer.substring( 0, answer.indexOf( '.' ) );
+                        if ( !answer.startsWith( "Error" ) ) {
+                            switch ( current_mode ) {
+                                case Base.BIGDECIMAL:
+                                    answer = result.toString();
+                                    break;
+                                case Base.BIGINT:
+                                    answer = result.toString();
+                                    if ( answer.indexOf( '.' ) > 0 ) {
+                                        answer = answer.substring( 0, answer.indexOf( '.' ) );
+                                    }
+                                    break;
+                                case Base.FLOAT:
+                                    double d = result.doubleValue();
+                                    answer = Double.toString( d );
+                                    break;
+                                default:
+                                    int a = result.intValue();
+                                    answer = Integer.toString( a );
                             }
-                            break;
-                        case Base.FLOAT:
-                            double d = result.doubleValue();
-                            answer = Double.toString( d );
-                            break;
-                        default:
-                            int a = result.intValue();
-                            answer = Integer.toString( a );
+
+                            // convert the answer from base 10 back to the current base
+                            answer = convertToBase( answer, Base.BASE_10, current_base );
+                        }
+                        return answer;
                     }
 
-                    // convert the answer from base 10 back to the current base
-                    answer = convertToBase( answer, Base.BASE_10, current_base );
+                    @Override
+                    protected void done() {
+                        try {
+                            String answer = get();
+                            RegisterDocument rd = new RegisterDocument( current_base, current_mode );
+                            rd.insertString( 0, answer, null );
+                            last_x_value = x_register.getText();
+                            x_register.setText( answer );
+                            y_register.setText( z_register.getText() );
+                            z_register.setText( t_register.getText() );
+                            t_register.setText( "" );
+                            x_register.requestFocus();
+                        }
+                        catch ( Exception e ) {
+                            e.printStackTrace();
+                        }
+                        finally {
+                            CalculatorPanel.this.setCursor( Cursor.getDefaultCursor() );
+                        }
+                    }
                 }
-                try {
-                    RegisterDocument rd = new RegisterDocument( current_base, current_mode );
-                    rd.insertString( 0, answer, null );
-                    last_x_value = x_register.getText();
-                    x_register.setText( answer );
-                    y_register.setText( z_register.getText() );
-                    z_register.setText( t_register.getText() );
-                    t_register.setText( "" );
-                    x_register.requestFocus();
-                }
-                catch ( BadLocationException e ) {
-                    e.printStackTrace();
-                }
+                new Calculation().execute();
             }
         };
 
@@ -1375,4 +1457,22 @@ public class CalculatorPanel extends JPanel implements WindowConstants {
                 }
             }
         };
+
+    ActionListener chs_listener = new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    // can change sign for the whole number in X or for just the
+                    // exponent, attempt to insert the string at the current caret
+                    // position and let the document model sort it out.
+                    String previous = x_register.getText();
+                    try {
+                        JButton b = ( JButton ) ae.getSource();
+                        Document doc = x_register.getDocument();
+                        doc.insertString( x_register.getCaret().getDot(), b.getActionCommand(), null );
+                    }
+                    catch ( Exception e ) {
+                        x_register.setText( previous );
+                    }
+                    x_register.requestFocus();
+                }
+            };
 }

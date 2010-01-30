@@ -3,7 +3,7 @@
 <!-- $Id$ -->
 <DOCKABLES>
 	<DOCKABLE NAME="calculator">
-		new ise.plugin.calculator.CalculatorPluginPanel(view);
+		new ise.plugin.calculator.CalculatorPluginPanel();
 	</DOCKABLE>
 </DOCKABLES>
 
