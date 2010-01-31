@@ -57,7 +57,7 @@ public class OpenInNativeFlashPlayerLauncher extends Launcher {
 		// The code above is just for compilation purposes and should correspond to
 		// the code returned below. Any compilation error here should help ensure
 		// the "as above so below" principle ;)
-		return "nativebrowser.launcher.OpenInNativeFlashPlayerLauncher.INSTANCE.launch(view, \"" +
+		return "nativebrowser.launcher.OpenInNativeFlashPlayerLauncher.INSTANCE.launch(view, " +
 						"launcher.LauncherUtils.resolveToURI(\"" +
 									resolvedResource.toString() + "\"));";
 	}
