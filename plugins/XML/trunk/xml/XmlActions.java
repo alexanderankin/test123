@@ -1095,7 +1095,12 @@ loop:			for(;;)
 	{
 		JEditTextArea textArea = view.getTextArea();
 		Buffer buffer = view.getBuffer();
-		String schemaURL = buffer.getStringProperty("xml.validation.schema");
+		
+		String schemaURL = buffer.getStringProperty(SchemaMappingManager.BUFFER_SCHEMA_PROP);
+		if(schemaURL == null)
+		{
+			schemaURL = buffer.getStringProperty(SchemaMappingManager.BUFFER_AUTO_SCHEMA_PROP);
+		}
 		if(schemaURL != null){
 			Buffer newbuffer = jEdit.openFile(view,schemaURL);
 		}
