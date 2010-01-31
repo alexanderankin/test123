@@ -55,9 +55,9 @@ public abstract class ErrorSource
 			errorSources.addElement(errorSource);
 			errorSource.registered = true;
 			cachedErrorSources = null;
-			EditBus.send(new ErrorSourceUpdate(errorSource,
-				ErrorSourceUpdate.ERROR_SOURCE_ADDED,null));
 		}
+		EditBus.send(new ErrorSourceUpdate(errorSource,
+			ErrorSourceUpdate.ERROR_SOURCE_ADDED,null));
 	} //}}}
 
 	//{{{ unregisterErrorSource() method
@@ -77,9 +77,9 @@ public abstract class ErrorSource
 			errorSources.removeElement(errorSource);
 			errorSource.registered = false;
 			cachedErrorSources = null;
-			EditBus.send(new ErrorSourceUpdate(errorSource,
-				ErrorSourceUpdate.ERROR_SOURCE_REMOVED,null));
 		}
+		EditBus.send(new ErrorSourceUpdate(errorSource,
+			ErrorSourceUpdate.ERROR_SOURCE_REMOVED,null));
 	} //}}}
 
 	//{{{ getErrorSources() method
