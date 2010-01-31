@@ -59,6 +59,7 @@ public class TaskList extends JPanel implements EBComponent {
         init();
         EditBus.addToBus( this );
         TaskListPlugin.registerTaskList( this );
+        send( new ParseBufferMessage( view, null, ParseBufferMessage.DO_PARSE_ALL ) );
     } //}}}
 
     private void init() {
