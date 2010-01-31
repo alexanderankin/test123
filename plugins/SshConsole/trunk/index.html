@@ -38,7 +38,8 @@ if it is open to a file on a remote host via sftp). </p>
 
 <h2> Instructions for use: </h2>
 
-<p> Initially, the SshConsole does not know where to connect. You will see a
+<p> Initially, the SshConsole does not know where to connect. If you active the Console
+and select the "Ssh" shell from the combobox, you will initially see a
 prompt like this: </p>
 
 <pre>
@@ -61,16 +62,14 @@ your response from the server's shell. </p>
 <p> Here are instructions for first-time users: </p>
 
 <ol>
-<li> Checkbox: <tt>Plugin Options - Console - System Shell - "<b>On VFS Node Select, cd to
-working directory"</b></tt> </li>
 
-<li> <tt>Plugins - SshConsole - Show SshConsole</tt> <b>[1]</b> </li>
 
 <li> Dock an FSB: <tt>Utilities - File System Browser </tt>. I suggest docking
 it on your left. </li>
 
 <li> With FSB: navigate to a remote host by entering a path that begins with
 <tt>sftp://</tt>. </li>
+
 
 <li> If this is your first time connecting, Enter your
 user/password/key/passphrase there. </li>
@@ -80,11 +79,13 @@ user/password/key/passphrase there. </li>
 
 <li> With FSB: click on (or open) the remote file that you want to compile. </li>
 
+<li> <tt>Plugins - SshConsole - Show SshConsole</tt> </li>
+
 <li> Enter commands in the ssh console. Initially, it will connect and show you
 the message of the day. </li>
 
-<li> Click on folders or files in the FSB. Notice the remote directory changes.
-</li>
+<li> Click on folders or files in the FSB. Notice the "cd" commands that get sent
+over to the remote machine in response. </li>
 
 <li> Compile something with errors in it. </li>
 
@@ -95,10 +96,6 @@ the message of the day. </li>
 the next time you use the SshConsole, it should logout of the old ssh session,
 create a new shell connection to the same host you just logged into via sftp,
 and send your shell commands there. </p>
-
-<p> <b>[1]</b> Alternately, you can use <tt>Plugins - Console - Shells -
-Ssh</tt>, or open a Console and select <b>ssh</b> from the Shells combobox. </p>
-
 
 <h2> Job Control </h2>
 
@@ -120,6 +117,12 @@ the ssh shell: </p>
 </ul>
 
 <h2> Troubleshooting </h2>
+
+<p> If you are using "cd" directly to change directories from the shell,
+it is possible the SshConsole will not realize this and think the errors are
+from files in the incorrect path. Change directories using the FSB to ensure
+the SshConsole knows where you are.
+</p>
 
 <p> Sometimes an ssh connection will timeout while you are using the SshConsole.
 If this happens, you will see an <tt>IOException</tt> in your activity log when
@@ -173,10 +176,12 @@ or suggestions.
 <ul>
 
 <li> <b>Version 1.0.2</b> -
-Requires JDK 1.5, jEdit 4.3pre12,
+Requires JDK 1.5, jEdit 4.3,
 ErrorList 1.7, FTP plugin 0.9.2, Console plugin 4.3.5.
   <ul>
     <li> Fixed ConcurrentModificationException (# 2491847  - M. Casanova) </li>
+    <li> Fixed broken close connections action (broken due to changes in
+    accessibility by beanshell macros in core) </li>
   </ul>
 </li>
 
