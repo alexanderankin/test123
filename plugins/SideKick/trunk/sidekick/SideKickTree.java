@@ -409,7 +409,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 		}
 		updateSearchData();
 
-		if (data.expansionModel != null) 
+		if (data != null && data.expansionModel != null) 
 		{
 			for (Integer row : data.expansionModel) 
 			{
