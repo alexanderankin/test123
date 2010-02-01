@@ -56,6 +56,11 @@ public class XmlPluginTest{
     @BeforeClass
     public static void setUpjEdit() throws IOException{
         TestUtils.beforeClass();
+        jEdit.setBooleanProperty("firewall.enabled",true);
+        jEdit.setProperty("firewall.host","139.10.0.226");
+        jEdit.setProperty("firewall.port","8080");
+        System.setProperty("http.proxyHost","139.10.0.226");
+        System.setProperty("http.proxyPort","8080");
         testData = new File(System.getProperty("test_data")).getCanonicalFile();
         assertTrue(testData.exists());
     }
@@ -177,7 +182,7 @@ public class XmlPluginTest{
     	File xml = new File(testData,"broken_online_schema/actions.xml");
     	
 		// accept downloading
-		ClickT clickT = new ClickT(Option.OK,10000);
+		ClickT clickT = new ClickT(Option.YES,30000);
 		clickT.start();
 
     	TestUtils.openFile(xml.getPath());
@@ -236,9 +241,7 @@ public class XmlPluginTest{
 		// ids declared in other fragment appear heare
 		assertThat(insert.list("ids").contents()).contains("testing [element: <chapter>]");
 		
-		TestUtils.robot().pressModifiers(InputEvent.CTRL_MASK);
-		insert.list("ids").item("testing [element: <chapter>]").click();
-		TestUtils.robot().releaseModifiers(InputEvent.CTRL_MASK);
+		insert.list("ids").item("testing [element: <chapter>]").click(MouseButton.RIGHT_BUTTON);
 		
 		
 		Pause.pause(1000);
@@ -272,7 +275,8 @@ public class XmlPluginTest{
 		String selected = TestUtils.view().getTextArea().getSelectedText();
 		assertTrue("got '"+selected+"'",selected.startsWith("<xs:borkedschema"));
 		assertEquals("actions.xsd",TestUtils.view().getBuffer().getName());
-		assertTrue(TestUtils.view().getBuffer().getDirectory().endsWith("dir with space/"));
+		// on windows, it ends with antislash
+		assertTrue(TestUtils.view().getBuffer().getDirectory().matches(".*dir with space(/|\\\\)"));
 		
 		errorlist.close();
 	}

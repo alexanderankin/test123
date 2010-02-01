@@ -830,6 +830,8 @@ public final class SchemaMapping
 	 * @throws	IllegalArgumentException	if the url is null
 	 */
 	public static SchemaMapping fromDocument(String url){
+		if(Debug.DEBUG_SCHEMA_MAPPING)Log.log(Log.DEBUG,SchemaMapping.class,
+			"fromDocument("+url+")");
 		if(url==null)throw new IllegalArgumentException("url can't be null");
 
 		InputSource input = new InputSource(url);

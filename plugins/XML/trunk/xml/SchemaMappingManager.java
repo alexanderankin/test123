@@ -103,7 +103,7 @@ public final class SchemaMappingManager
 		
 		ChooseSchemaDialog choose = new ChooseSchemaDialog(view);
 		
-        if(choose.choose(buffer.getPath(),oldSchema, true))
+        if(choose.choose(buffer.getPath(),urlToPath(oldSchema), true))
         {
 			String bufferURL = pathToURL(buffer.getPath());
 			URI schemaURL = choose.schemaURL;
@@ -210,6 +210,36 @@ public final class SchemaMappingManager
 	}
 	// }}}
 	
+	//{{{ urlToPath() method
+	/**
+	 * @param	url	file:/ url
+	 * @return	path without Scheme
+	 */
+	public static String urlToPath(String url)
+	{
+		if(url == null)return null;
+		if(url.startsWith("file:/"))
+		{
+			try
+			{
+				//it's a file
+				return new File(new URI(url)).getPath();
+			}
+			catch(java.net.URISyntaxException ue)
+			{
+				Log.log(Log.ERROR,SchemaMappingManager.class,"strange URI (apos added) '"+url+"'");
+				Log.log(Log.ERROR,SchemaMappingManager.class,ue);
+				return url;
+			}
+		}
+		else
+		{
+			//can't convert it
+			return url;
+		}
+	}
+	// }}}
+
 	// {{{ ChooseSchemaDialog class
 	static class ChooseSchemaDialog extends EnhancedDialog
 	{
@@ -580,10 +610,21 @@ public final class SchemaMappingManager
 				buffer.getPath()),SchemaMapping.SCHEMAS_FILE);
 		
 		// TODO: VFS
-		if(new File(specificSchema).exists())
+		File fileSpecificSchema = new File(specificSchema);
+		if(fileSpecificSchema.exists())
 		{
-			String schemaURL="file://"+specificSchema;
-			mapping = SchemaMapping.fromDocument(schemaURL);
+			try{
+				String schemaURL = fileSpecificSchema.toURI().toURL().toString();
+				mapping = SchemaMapping.fromDocument(schemaURL);
+			}
+			catch(MalformedURLException mfue)
+			{
+				// may happen if specificSchema is relative, but it should not be the case with buffer.getPath()
+				Log.log(Log.ERROR,SchemaMappingManager.class,
+					"Error converting path for fromDocument : '"+specificSchema+"'");
+				Log.log(Log.ERROR,SchemaMappingManager.class,mfue);
+				mapping = null;
+			}
 		}
 		else
 		{

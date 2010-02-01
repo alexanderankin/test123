@@ -112,7 +112,7 @@ options.xml.general.network.local=Local files only
 options.xml.general.network.ask=Ask before downloading
 options.xml.general.network.always=Download without asking
 options.xml.general.network.cache=Cache remote files locally
-options.xml.general.enable-schema-mapping=Enable then schema mapping mechanism (schemas.xml files)
+options.xml.general.enable-schema-mapping=Enable the schema mapping mechanism (schemas.xml files)
 options.xml.general.enable-schema-mapping.tooltip=Safe to uncheck if you only use XSD schemas.\
  You can also set it on a per-buffer basis (see help topic). 
 
