@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE SERVICES SYSTEM "services.dtd">
+
+<SERVICES>
+    <!-- adds a context menu to the jEdit text area context menu -->
+    <SERVICE CLASS="org.gjt.sp.jedit.gui.DynamicContextMenuService"
+    			NAME="launcher.integration.TextAreaContextMenuService">
+        new launcher.integration.TextAreaContextMenuService();
+    </SERVICE>
+
+    <!-- adds a menu to Project Viewer context menu -->
+    <SERVICE CLASS="projectviewer.action.Action"
+    			NAME="launcher.integration.pv.PVAction">
+        new launcher.integration.pv.PVAction();
+    </SERVICE>
+
+</SERVICES>
+
