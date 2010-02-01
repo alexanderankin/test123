@@ -52,7 +52,17 @@ public abstract class LauncherType {
 		this.SERVICE_NAME = serviceName;
 	}
 	
-	public abstract void registerLaunchers();
+	
+	/**
+	 * Method mainly useful for Launchers defined within the Launcher
+	 * plugin itself (some can only be registered dynamically because
+	 * they depend on the OS). The preferred and recommended way to
+	 * register new services is via services.xml.
+	 * This method is called by {@link LauncherPlugin#start()} to
+	 * register (dynamic) plugins.
+	 */
+	public void registerLaunchers() {
+	}
 	
 	public void reload() {
 		if (actionSet != null) {
