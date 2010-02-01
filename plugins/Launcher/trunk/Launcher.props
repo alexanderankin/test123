@@ -8,7 +8,7 @@ Provides a consistent way to launch a resource \
 (file, buffer, text selection) by adding contextual \
 menu items to File Browser, ProjectViewer, text area, etc.  
 
-plugin.launcher.LauncherPlugin.depend.0=jedit 04.03.99.00
+plugin.launcher.LauncherPlugin.depend.0=jedit 04.04.01.00
 plugin.launcher.LauncherPlugin.depend.1=jdk 1.5
 plugin.launcher.LauncherPlugin.depend.2=plugin CommonControlsPlugin 1.1
 
