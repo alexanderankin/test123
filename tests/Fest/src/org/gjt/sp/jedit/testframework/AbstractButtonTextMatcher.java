@@ -40,8 +40,13 @@ import org.fest.swing.core.*;
 
 
 ///}}}
-
+/**
+ * @deprecated org.fest.swing.core.matcher.JButtonMatcher instead
+ */
 public class AbstractButtonTextMatcher {
+	/**
+	 * @deprecated org.fest.swing.core.matcher.JButtonMatcher.withText(String text) instead
+	 */
     static <T extends AbstractButton> GenericTypeMatcher<T> withText( Class<T> classe, final String text ) {
         return new GenericTypeMatcher(
                    AbstractButton.class ) {
