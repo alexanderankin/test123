@@ -58,6 +58,10 @@
     file loaded above. -->
     <property name="test.framework.home" location="/home/danson/src/jEditTestFramework"/>
     
+    
+    <!-- html tests report -->
+    <property name="junit-report.enabled" value="true"/> 
+
     <!-- test source and classes -->
     <property name="project.test.src.dir" location="${basedir}"/>
     <property name="project.test.classes.dir" location="${basedir}/classes"/>

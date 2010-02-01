@@ -11,3 +11,9 @@
 # on other OS's won't need to set this.  If hamcrest.jar is added to 
 # ${ant.library.dir}, it will be included automatically.
 #hamcrest.jar=/opt/local/share/java/hamcrest-core.jar
+
+# get a tests report
+# junit-report.enabled=true
+
+# get a code coverage report
+# emma.enabled=true

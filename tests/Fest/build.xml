@@ -117,6 +117,8 @@
         </fileset>
         <!-- enable emma.properties to be found -->
         <pathelement path="${test.framework.home}/lib"/>
+        <!-- need this for fluent assertions -->
+		<pathelement location="${hamcrest.jar}" />
     </path>
 
     <!-- framework class path, include FEST libraries, and jedit.jar -->
@@ -255,6 +257,7 @@
                 </fileset>
             </batchtest>
             <formatter type="brief" usefile="${junit.usefile}"/>
+            <formatter type="xml" usefile="yes"/>
         </junit>
         <echo>after junit</echo>
         <antcall target="-report"/>
@@ -300,6 +303,10 @@
                 <include name="**/*"/>
             </fileset>
         </delete>
+        <!-- I had an old settings file in plugins/XMLPlugin and got
+             unexpected behaviour until I found it...
+          -->
+        <delete quiet="true" dir="${test.jedit.settings.dir}/plugins"/>
     </target>
     
     
@@ -394,12 +401,22 @@
     	 a single test case.
       -->
     <property name="emma.filter" value="*" />
-    
-    <!-- =======================================================================
+
+
+
+    <!-- define this property in order to get code coverage :
+         <property name="emma.enabled" value="true"/>  
+     -->   
+
+    <!-- define this property in order to get a nice html report in the end :
+         <property name="junit-report.enabled" value="true"/>  
+     -->   
+
+   <!-- =======================================================================
     Target: -instrument
     Instruments project classes
     ======================================================================== -->
-    <target name="-instrument" depends="-copyPluginJars">
+    <target name="-instrument" depends="-copyPluginJars"  if="emma.enabled">
     	
         <!-- clean old instrumentation metadata -->
         <delete failonerror="false" file="${basedir}/metadata.em"/>
@@ -415,12 +432,11 @@
 		 </emma> 
 	</target>  
        
-	
     <!-- =======================================================================
-    Target: -report
+    Target: -report.emma
     Generate an HTML report from the test cases
     ======================================================================== -->
-     <target name="-report" >  
+     <target name="-report.emma"  if="emma.enabled">  
         <emma>  
          <report sourcepath="${project.src.dir}" >  
               <fileset dir="${basedir}" >  
@@ -432,5 +448,21 @@
         </emma>  
      </target>  
     
+    <!-- =======================================================================
+    Target: -report.junit
+    Generate an HTML report from the junit test case results
+    You'll have to open test_reports/index.html to see the results
+    ======================================================================== -->
+     <target name="-report.junit"  if="junit-report.enabled">  
+        <junitreport todir="${test.output}">
+	  <fileset dir="${test.output}">
+	    <include name="TEST-*.xml"/>
+	  </fileset>
+	  <report format="frames" todir="${test.output}"/>
+	</junitreport>
+     </target>  
+     
+     <target name="-report" depends="-report.junit,-report.emma">
+     </target>
 </project>
 
