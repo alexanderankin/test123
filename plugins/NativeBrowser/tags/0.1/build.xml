@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<project name="NativeBrowser"
+		 default="build">
+	<description>
+		This is an ant build.xml file for building the NativeBrowser plugin for jEdit.
+	</description>
+
+	<property name="build.support"
+			  value="../../build-support" />
+	<property file="build.properties"/>
+	<property file="../build.properties"/>
+
+	<property name="DJNativeSwing.jar" location="${basedir}/lib/DJNativeSwing.jar" />
+	<property name="DJNativeSwing-SWT.jar" location="${basedir}/lib/DJNativeSwing-SWT.jar" />
+	<property name="jna.jar" location="${basedir}/lib/jna-3.2.4.jar" />
+	<property name="swt.jar" location="${basedir}/lib/swt.jar" />
+
+	<import file="${build.support}/plugin-build.xml" />
+
+    <selector id="packageFiles">
+        <and>
+        	<filename name="README.txt" />
+        </and>
+    </selector>
+
+	<path id="project.class.path">
+		<pathelement location="${DJNativeSwing.jar}"/>
+		<pathelement location="${DJNativeSwing-SWT.jar}"/>
+		<pathelement location="${jna.jar}"/>
+		<pathelement location="."/>
+		<pathelement location="${jedit.plugins.dir}/CommonControls.jar" />
+		<pathelement location="${jedit.plugins.dir}/ProjectViewer.jar"/>
+		<pathelement location="${jedit.plugins.dir}/Launcher.jar"/>
+	</path>
+	
+    <target name="build.post" >
+        <copy todir="${install.dir}" >
+	        <fileset file="${DJNativeSwing.jar}" />
+	        <fileset file="${DJNativeSwing-SWT.jar}" />
+	        <fileset file="${jna.jar}" />
+    	</copy>
+    </target>
+	
+</project>
