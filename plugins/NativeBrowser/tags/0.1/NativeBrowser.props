@@ -1,0 +1,120 @@
+# Properties file for NativeBrowser plugin
+# $Id$
+
+# jEdit only needs to load the plugin the first time the user accesses it
+# the presence of this property also tells jEdit the plugin is using the new API
+plugin.nativebrowser.NativeBrowserPlugin.activate=startup
+
+# These two properties are required for all plugins
+plugin.nativebrowser.NativeBrowserPlugin.name=NativeBrowser
+plugin.nativebrowser.NativeBrowserPlugin.author=Francois Rey
+
+# version number == jEdit version number
+plugin.nativebrowser.NativeBrowserPlugin.version=0.1
+
+# other needed files
+plugin.nativebrowser.NativeBrowserPlugin.jars=DJNativeSwing.jar DJNativeSwing-SWT.jar jna-3.2.4.jar swt.jar
+
+# online help
+plugin.nativebrowser.NativeBrowserPlugin.docs=index.html
+
+# we only have one dependency, jEdit 4.2, since we use the new plugin API
+plugin.nativebrowser.NativeBrowserPlugin.depend.0=jedit 04.02.01.00
+plugin.nativebrowser.NativeBrowserPlugin.depend.1=jdk 1.5
+plugin.nativebrowser.NativeBrowserPlugin.depend.2=plugin CommonControlsPlugin 1.1
+plugin.nativebrowser.NativeBrowserPlugin.depend.3=optional plugin launcher.LauncherPlugin 0.1
+
+plugin.nativebrowser.NativeBrowserPlugin.description=This plugin provides a dockable browser provided by the native, SWT-based, Swing libraries from the DJ Project (http://djproject.sourceforge.net/).
+# plugin menu
+plugin.nativebrowser.NativeBrowserPlugin.menu= \
+	nativebrowser \
+	nativebrowser.home \
+	nativebrowser.back \
+	nativebrowser.forward \
+	nativebrowser.reload \
+	nativebrowser.browse \
+	nativebrowser.render-buffer \
+	nativebrowser.menu-bar \
+	nativebrowser.set-homepage \
+	- \
+	nativeflashplayer \
+	nativeflashplayer.open \
+	nativeflashplayer.play \
+	nativeflashplayer.pause \
+	nativeflashplayer.stop \
+	
+	
+
+# action labels for actions supplied by dockables.xml
+nativebrowser.label=NativeBrowser
+
+# browser action labels for actions supplied by actions.xml
+nativebrowser.home.label=Home page
+nativebrowser.back.label=Back
+nativebrowser.forward.label=Forward
+nativebrowser.reload.label=Reload
+nativebrowser.browse.label=Load current file in browser
+nativebrowser.render-buffer.label=Render current buffer content
+nativebrowser.menu-bar.label=Menu bar
+nativebrowser.set-homepage.label=Set current file as homepage
+
+# plugin option pane
+plugin.nativebrowser.NativeBrowserPlugin.option-pane=nativebrowser
+
+# Option pane activation BeanShell snippet
+options.nativebrowser.code=new nativebrowser.NativeBrowserOptionPane();
+
+# Option pane labels
+options.nativebrowser.label=NativeBrowser
+options.nativebrowser.file=File:
+options.nativebrowser.choose-file=File...
+options.nativebrowser.menu-bar=Menu bar
+options.nativebrowser.homepage.label=Homepage
+options.nativebrowser.choose-file.title=Choose a file
+
+# window title
+nativebrowser.title=NativeBrowser
+
+# browser toolbar buttons
+#nativebrowser.choose-file.icon=Open.png
+nativebrowser.render-buffer.icon=CopyToBuffer.png
+nativebrowser.home.icon=Home.png
+
+# default settings
+options.nativebrowser.homepage=http://www.google.com/
+
+# Launcher plugin integration
+nativebrowser.launcher.OpenInNativeBrowserLauncher.label=Open in NativeBrowser
+nativebrowser.launcher.OpenInNativeBrowserLauncher.label.short=NativeBrowser
+nativebrowser.launcher.OpenInNativeBrowserLauncher.first-level=true
+nativebrowser.launcher.SetNativeBrowserHomepageLauncher.label=Set as homepage of NativeBrowser
+nativebrowser.launcher.SetNativeBrowserHomepageLauncher.label.short=Set as homepage of NativeBrowser
+nativebrowser.launcher.RenderInNativeBrowserLauncher.label=Render in NativeBrowser
+nativebrowser.launcher.RenderInNativeBrowserLauncher.label.short=Render in NativeBrowser
+nativebrowser.launcher.RenderInNativeBrowserLauncher.first-level=true
+nativebrowser.launcher.OpenInNativeFlashPlayerLauncher.label=Open in NativeFlashPlayer
+nativebrowser.launcher.OpenInNativeFlashPlayerLauncher.label.short=NativeFlashPlayer
+nativebrowser.launcher.OpenInNativeFlashPlayerLauncher.first-level=true
+
+# action labels for actions supplied by dockables.xml
+nativeflashplayer.label=NativeFlashPlayer
+
+# Flash player window title
+nativeflashplayer.title=NativeFlashPlayer
+
+# Flash player action labels for actions supplied by actions.xml
+nativeflashplayer.open.label=Open...
+nativeflashplayer.play.label=Play
+nativeflashplayer.pause.label=Pause
+nativeflashplayer.stop.label=Stop
+
+# Flash player toolbar buttons
+nativeflashplayer.open.icon=Open.png
+nativeflashplayer.play.icon=Play.png
+nativeflashplayer.pause.icon=Pause.png
+nativeflashplayer.stop.icon=Stop.png
+
+# Other Flash player items
+nativebrowser.NativeFlashPlayer.dialog.choose-swt.approve-button-text=Open
+
+

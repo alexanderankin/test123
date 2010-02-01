@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE SERVICES SYSTEM "services.dtd">
+
+<SERVICES>
+    <!-- adds a Launcher to the Launcher plugin -->
+    <SERVICE CLASS="launcher.browser.BrowserLauncherType"
+    			NAME="nativebrowser.launcher.OpenInNativeFlashPlayerLauncher">
+        nativebrowser.launcher.OpenInNativeFlashPlayerLauncher.INSTANCE;
+    </SERVICE>
+
+    <!-- adds a Launcher to the Launcher plugin -->
+    <SERVICE CLASS="launcher.browser.BrowserLauncherType"
+    			NAME="nativebrowser.launcher.OpenInNativeBrowserLauncher">
+        nativebrowser.launcher.OpenInNativeBrowserLauncher.INSTANCE;
+    </SERVICE>
+
+    <!-- adds a Launcher to the Launcher plugin -->
+    <SERVICE CLASS="launcher.extapp.ExternalApplicationLauncherType"
+				NAME="nativebrowser.launcher.SetNativeBrowserHomepageLauncher">
+        nativebrowser.launcher.SetNativeBrowserHomepageLauncher.INSTANCE;
+    </SERVICE>
+
+    <!-- adds a Launcher to the Launcher plugin -->
+    <SERVICE CLASS="launcher.text.TextLauncherType"
+				NAME="nativebrowser.launcher.RenderInNativeBrowserLauncher">
+        nativebrowser.launcher.RenderInNativeBrowserLauncher.INSTANCE;
+    </SERVICE>
+    
+</SERVICES>
+
