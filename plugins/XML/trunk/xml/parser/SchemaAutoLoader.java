@@ -192,8 +192,7 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 		setContentHandler(verifierFilter);
 		
 		// FIXME: very add-hoc, but who uses other extensions for one's RNG schema ?
-		//        OK : must do something for compact syntax (rnc)
-		if(schemaURL.endsWith("rng")){
+		if(schemaURL.endsWith("rng") || schemaURL.endsWith("rnc")){
 			Map<String,CompletionInfo> info = SchemaToCompletion.rngSchemaToCompletionInfo(baseURI.toString(),schemaURL,getErrorHandler());
 			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaAutoLoader.class,"constructed CompletionInfos : "+info);
 			completions = info;
