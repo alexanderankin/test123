@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+	
+	<start>
+		<element name="purchaseReport" ns="http://www.example.com/Report">
+			<oneOrMore>
+				<element name="comment">
+					<element name="comment" ns="http://www.example.com/IPO">
+						<text/>
+					</element>
+				</element>
+			</oneOrMore>
+		</element>
+	</start>
+</grammar>
