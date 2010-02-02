@@ -13,6 +13,8 @@ plugin.automation.ConsoleAutomationPlugin.depend.2=plugin jakartacommons.Jakarta
 # action labels
 console-automation-connect.label=Create a connection
 console-automation-connect-headless.label=Create a headless connection
+console-automation-select-connection.label=Connect to a preset connection
+console-automation-select-connection-headless.label=Connect headlessly to a preset connection
 console-automation-close-current.label=Close the current connection
 console-automation-close-connection.label=Select a connection to close
 console-automation-reload-connections.label=Reload connections from properties
@@ -25,6 +27,8 @@ plugin.automation.ConsoleAutomationPlugin.menu=\
 	console-automation-reload-connections-headless \
 	console-automation-connect \
 	console-automation-connect-headless \
+	console-automation-select-connection \
+	console-automation-select-connection-headless \
 	console-automation-close-current \
 	console-automation-close-connection \
 	console-automation-show-macros \

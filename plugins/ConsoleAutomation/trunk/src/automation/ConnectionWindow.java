@@ -16,6 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
@@ -44,6 +45,7 @@ public class ConnectionWindow extends JPanel implements CharHandler, EventHandle
 	private StringBuilder currentOutput;
 	private Object outputSync= new Object(); 
 	private int charsToRemove = 0;
+	private final JTextField connectionString;
 	private final JLabel action;
 	private int awtTaskCount = 0;
 	private boolean setActionTextScheduled = false;
@@ -85,8 +87,13 @@ public class ConnectionWindow extends JPanel implements CharHandler, EventHandle
 		ctrlC.addActionListener(this);
 		output = new ArrayList<StringBuilder>();
 		output.add(currentOutput = new StringBuilder());
+		JPanel bottomPanel = new JPanel(new BorderLayout());
+		add(bottomPanel, BorderLayout.SOUTH);
+		connectionString = new JTextField(c.getHost() + ":" + c.getPort());
+		connectionString.setEditable(false);
+		bottomPanel.add(connectionString, BorderLayout.EAST);
 		action = new JLabel("<idle>");
-		add(action, BorderLayout.SOUTH);
+		bottomPanel.add(action, BorderLayout.CENTER);
 		c.setOutputHandler(this);
 		c.setEventHandler(this);
 		addFocusListener(new FocusAdapter() {

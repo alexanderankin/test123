@@ -71,6 +71,14 @@ public class Connection
 	{
 		return name;
 	}
+	public String getHost()
+	{
+		return host;
+	}
+	public int getPort()
+	{
+		return port;
+	}
 	public void connect() throws UnknownHostException, IOException
 	{
 		telnet = new TelnetClient();
