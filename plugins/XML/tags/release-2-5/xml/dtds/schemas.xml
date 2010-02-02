@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<locatingRules xmlns="http://thaiopensource.com/ns/locating-rules/1.0" xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">
+	<!-- here you can match the root element's local name
+		<documentElement localName="addressBook" typeId="AB"/>
+	 -->
+	<!-- use the built-in Relax-NG schema -->
+	<uri pattern="*.rng" typeId="RNG"></uri>
+
+	<!-- use the built-in rule for schemas.xml -->
+	<documentElement localName="locatingRules" typeId="LOCATE"/>
+	<uri pattern="schemas.xml" typeId="LOCATE"/>
+
+	<!-- use the *.xml -> *.rng & *.xml -> *.xsd rules -->
+	<transformURI fromPattern="*.xml" toPattern="*.rng"/>
+	<transformURI fromPattern="*.xml" toPattern="*.xsd"/>
+
+	<typeId id="NONE" uri="any.rng" />
+	<typeId id="RNG" uri="relaxng.rng"/>
+	<typeId id="LOCATE" uri="locate.rng"/>
+</locatingRules>
