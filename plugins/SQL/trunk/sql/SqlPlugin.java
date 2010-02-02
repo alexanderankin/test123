@@ -597,7 +597,7 @@ public class SqlPlugin extends EBPlugin
 		*/
 		public OptionPane getOptionPane(VPTProject project)
 		{
-			return null;
+			return new ServersOptionPane(project);
 		}
 
 
@@ -608,9 +608,7 @@ public class SqlPlugin extends EBPlugin
 		*/
 		public OptionGroup getOptionGroup(VPTProject project)
 		{
-			final OptionGroup group = new OptionGroup("sql");
-			group.addOptionPane(new ServersOptionPane(project));
-			return group;
+			return null;
 		}
 	}	
 }

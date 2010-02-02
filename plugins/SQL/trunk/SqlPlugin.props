@@ -51,7 +51,7 @@ options.sql.serverconfig.label=SQL Server Configuration
 options.sql.serverconfig.code=new sql.options.ServersOptionPane(projectviewer.config.ProjectOptions.getProject());
 sql.config.label=Connection configuration
 
-options.sql.servers.label=Servers
+options.sql.servers.label=SQL Servers
 sql.options.servers.label=Servers
 sql.options.servers.name=Servers
 sql.options.addServerBtn.label=Add
