@@ -19,6 +19,22 @@
 			plugin.showConnectionDialog(true);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="console-automation-select-connection" NO_REPEAT="TRUE">
+		<CODE>
+			import automation.*;
+			ConsoleAutomationPlugin plugin = (ConsoleAutomationPlugin)
+				jEdit.getPlugin("automation.ConsoleAutomationPlugin");
+			plugin.showSelectConnectionDialog(false);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="console-automation-select-connection-headless" NO_REPEAT="TRUE">
+		<CODE>
+			import automation.*;
+			ConsoleAutomationPlugin plugin = (ConsoleAutomationPlugin)
+				jEdit.getPlugin("automation.ConsoleAutomationPlugin");
+			plugin.showSelectConnectionDialog(true);
+		</CODE>
+	</ACTION>
 	<ACTION NAME="console-automation-close-current" NO_REPEAT="TRUE">
 		<CODE>
 			import automation.*;

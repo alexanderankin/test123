@@ -1,6 +1,8 @@
 package automation;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,13 +24,37 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 
 	private static final String GLOBAL_MACROS = "Global";
 	private static final String CONNECTION_DOCKABLE = "console-automation";
+	private static final String CONNECTION_FILE = "connections.txt";
 	private static ConsoleAutomationPlugin instance = null;
 	private final Map<String, Connection> connections =
 		new HashMap<String, Connection>();
+	private Vector<String> presetConnections = new Vector<String>();
 
 	public void start()
 	{
 		instance = this;
+		loadPresetConnections();
+	}
+
+	private void loadPresetConnections()
+	{
+		String connectionFile = System.getProperty("user.home") +
+			File.separator + CONNECTION_FILE;
+		File f = new File(connectionFile);
+		if (! f.exists())
+			return;
+		try
+		{
+			BufferedReader br = new BufferedReader(new FileReader(connectionFile));
+			String line;
+			while ((line = br.readLine()) != null)
+				presetConnections.add(line);
+			br.close();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	public void reloadConnections(boolean headless)
@@ -219,6 +245,20 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 		{
 			closeConnection(connections.get(sel));
 		}
+	}
+	public void showSelectConnectionDialog(boolean headless)
+	{
+		if (presetConnections.isEmpty())
+		{
+			JOptionPane.showMessageDialog(null, "No preset connections exist");
+			return;
+		}
+		Object sel = JOptionPane.showInputDialog(null, "Select connection",
+			"Connection Selection", JOptionPane.QUESTION_MESSAGE, null,
+			presetConnections.toArray(), presetConnections.get(0));
+		if (sel == null)
+			return;
+		addConnection((String)sel, headless);
 	}
 	public void showConnectionDialog(boolean headless)
 	{
