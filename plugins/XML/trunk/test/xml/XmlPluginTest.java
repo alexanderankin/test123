@@ -71,7 +71,7 @@ public class XmlPluginTest{
     }
     
     /** ensures that ipo:comment is not proposed in XML Insert */
-    //@Test
+    @Test
     public void testAbstractSubstitution() throws IOException{
     	File xml = new File(testData,"abstract_substitution/abstract_element_instance.xml");
     	
@@ -101,7 +101,7 @@ public class XmlPluginTest{
     /** Tests XML Plugin's completion
     * see test_data/attributes_completion 
     */
-    //@Test
+    @Test
     public void testAttributesCompletion() throws IOException{
     	File xml = new File(testData,"attributes_completion/attributes.xml");
     	
@@ -177,7 +177,7 @@ public class XmlPluginTest{
 	}
 	
 	/** an error in an online schema : navigate to it via Error List*/
-	//@Test
+	@Test
 	public void testBrokenOnlineSchema(){
     	File xml = new File(testData,"broken_online_schema/actions.xml");
     	
@@ -215,7 +215,7 @@ public class XmlPluginTest{
 	}
 	
 	/** test xml.root, test XML Insert offering ids from other documents */
-	//@Test
+	@Test
 	public void testCompoundDocuments(){
     	File xml = new File(testData,"compound_documents/fragment1.xml");
     	
@@ -253,7 +253,7 @@ public class XmlPluginTest{
 	}
 	
 	/** an error in a directory with spaces : navigate to it via Error List*/
-	//@Test
+	@Test
 	public void testDirWithSpace(){
     	File xml = new File(testData,"dir with space/actions.xml");
     	
@@ -282,7 +282,7 @@ public class XmlPluginTest{
 	}
 	
 	/** refering to actions.dtd */
-	//@Test
+	@Test
 	public void testBuiltInCatalog(){
     	File xml = new File(testData,"dtd/actions.xml");
     	
@@ -323,7 +323,7 @@ public class XmlPluginTest{
 	}
 	
 	
-	//@Test
+	@Test
 	public void testNamespacesOff(){
     	File xml = new File(testData,"namespaces_off/wallispage.xml");
     	
@@ -357,7 +357,7 @@ public class XmlPluginTest{
 	}
 	
 	/** schemas.xml pointing to a RNG schema and completion from an RNG schema */
-	//@Test
+	@Test
 	public void testRelaxNG(){
     	File xml = new File(testData,"relax_ng/actions.xml");
     	
@@ -446,7 +446,7 @@ public class XmlPluginTest{
 	}
 	
 	/** grammar including another one */
-	//@Test
+	@Test
 	public void testRelaxNGInclude(){
     	File xml = new File(testData,"parentRef/instance.xml");
     	
@@ -480,7 +480,7 @@ public class XmlPluginTest{
 		insert.close();
 	}
 
-	//@Test
+	@Test
 	public void testSchemaLoader(){
     	File xml = new File(testData,"schema_loader/actions.xml");
     	
@@ -504,7 +504,7 @@ public class XmlPluginTest{
 	}
 	
 	
-	//@Test
+	@Test
 	public void testXinclude(){
 		//already tested by XMLTagTest
 	}
