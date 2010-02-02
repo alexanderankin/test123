@@ -3716,14 +3716,18 @@ List<TigerNode> Annotation():
     List<TigerNode> list = null;
 }
 {
+    try {
    LOOKAHEAD( "@" Name() "(" ( <IDENTIFIER> "=" | ")" ))
-   NormalAnnotation()
+   list=NormalAnnotation()
  |
    LOOKAHEAD( "@" Name() "(" )
    list=SingleMemberAnnotation()
  |
    list=MarkerAnnotation()
-   
+    }
+    catch(ParseException pe) {
+        // TODO: what to do here?
+    }
    {
         return list;   
    }
