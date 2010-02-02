@@ -11,7 +11,7 @@ menu items to File Browser, ProjectViewer, text area, etc.
 plugin.launcher.LauncherPlugin.depend.0=jedit 04.04.01.00
 plugin.launcher.LauncherPlugin.depend.1=jdk 1.6
 plugin.launcher.LauncherPlugin.depend.2=plugin CommonControlsPlugin 1.1
-plugin.launcher.LauncherPlugin.depend.3=plugin projectviewer.ProjectPlugin 2.9.1
+plugin.launcher.LauncherPlugin.depend.3=optional plugin projectviewer.ProjectPlugin 2.9.1
 
 
 plugin.launcher.LauncherPlugin.usePluginHome=true
