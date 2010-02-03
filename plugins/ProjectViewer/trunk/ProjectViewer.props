@@ -68,7 +68,7 @@ projectviewer_close_all_files.label=Close All Project Files
 projectviewer_remove_all_files.label=Remove All Project Files
 projectviewer_launch_current_buffer.label=Launch browser on buffer
 projectviewer_jarmaker_dialog.label=Archive Project
-projectviewer_focuswindow.label=Show Project Viewer
+projectviewer_focuswindow.label=Focus on Project Viewer
 projectviewer_paste_selected_files.label=Paste File Names
 
 projectviewer.actions_set_name=Plugin: Project Viewer - Project Shortcuts
@@ -78,6 +78,7 @@ projectviewer.actions_set_name=Plugin: Project Viewer - Project Shortcuts
 plugin.projectviewer.ProjectPlugin.menu.label=Project Viewer
 plugin.projectviewer.ProjectPlugin.menu.code=new projectviewer.PVMenuProvider();
 projectviewer.menu=\
+    projectviewer \
 	projectviewer_focuswindow \
     projectviewer_parent-group \
     projectviewer_set-active \
@@ -196,7 +197,6 @@ projectviewer.error.save.message=Error saving {0}; check your user directory.\nO
 projectviewer.error.save.title=Error saving {0}
 projectviewer.error.project_str=project
 projectviewer.error.project_list_str=project list
-projectviewer.error.project_locked=Project is currently locked; try action later.
 
 projectviewer.node_properties_dlg.title=Node Properties: {0}
 projectviewer.node_properties_dlg.close=Close
