@@ -10,7 +10,11 @@ plugin.gatchan.jedit.lucene.LucenePlugin.depend.3=optional plugin projectviewer.
 plugin.gatchan.jedit.lucene.LucenePlugin.jars=lucene-core-3.0.0.jar lucene-highlighter-3.0.0.jar lucene-memory-3.0.0.jar
 plugin.gatchan.jedit.lucene.LucenePlugin.browser-menu=\
 	lucene.add-to-index lucene.add-to-newindex
-plugin.gatchan.jedit.lucene.LucenePlugin.menu=lucene-search  - lucene.remove-index
+plugin.gatchan.jedit.lucene.LucenePlugin.menu=\
+	lucene-search \
+	lucene.search-word-at-caret \
+	- \
+	lucene.remove-index
 plugin.gatchan.jedit.lucene.LucenePlugin.usePluginHome=true
 plugin.gatchan.jedit.lucene.LucenePlugin.docs=docs/LucenePlugin.html
 plugin.gatchan.jedit.lucene.LucenePlugin.description=\
@@ -18,6 +22,7 @@ plugin.gatchan.jedit.lucene.LucenePlugin.description=\
 
 lucene.add-to-index.label=Index selected file(s) in Lucene
 lucene.add-to-newindex.label=<html>Add selected file(s) to a <b>new Lucene index</b></html>
+lucene.search-word-at-caret.label=Search for the word at the caret location
 lucene-search.label=Lucene Search
 lucene-search.title=Search with Lucene
 lucene.remove-index.label=Delete an index

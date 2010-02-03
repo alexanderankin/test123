@@ -24,10 +24,12 @@ package gatchan.jedit.lucene;
 import org.apache.lucene.analysis.Analyzer;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.EditBus.EBHandler;
+import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.PluginUpdate;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
 
@@ -36,6 +38,8 @@ import gatchan.jedit.lucene.Index.FileProvider;
 import javax.swing.*;
 import java.io.*;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Matthieu Casanova
@@ -45,6 +49,7 @@ public class LucenePlugin extends EditPlugin
 	static CentralIndex CENTRAL;
 	private static final String CENTRAL_INDEX_NAME = "__CENTRAL__";
 	private static final String INDEXES_FILE_NAME = "indexes.cfg";
+	private static final String SEARCH_DOCKABLE_NAME = "lucene-search";
 	private Map<String, Index> indexMap = new HashMap<String, Index>();
 	private ProjectWatcher projectWatcher = null;
 	
@@ -392,5 +397,47 @@ public class LucenePlugin extends EditPlugin
 	{
 		Thread t = new Thread(r);
 		t.start();
+	}
+
+	/**
+	 * Searches for the word at the caret location.
+	 */
+	public static void searchWordAtCaret(View view)
+	{
+		DockableWindowManager dwm = view.getDockableWindowManager();
+		dwm.showDockableWindow(SEARCH_DOCKABLE_NAME);
+		SearchResults dockable = (SearchResults)
+			dwm.getDockable(SEARCH_DOCKABLE_NAME);
+		if (dockable == null)	// Should not happen
+			return;
+		String word = getWordAtCaret(view);
+		if (word == null)
+			return;
+		dockable.search(word, "");
+	}
+
+	private static String getWordAtCaret(View view)
+	{
+		JEditTextArea ta = view.getTextArea();
+		String selected = ta.getSelectedText();
+		if ((selected != null) && (! selected.isEmpty()))
+			return selected;
+		int line = ta.getCaretLine();
+		String text = ta.getLineText(line);
+		Pattern pat = Pattern.compile("\\w+");
+		Matcher m = pat.matcher(text);
+		int end = -1;
+		int start = -1;
+		int offset = ta.getCaretPosition() - ta.getLineStartOffset(line);
+		while (end <= offset) {
+			if (! m.find())
+				return null;
+			end = m.end();
+			start = m.start();
+			selected = m.group();
+		}
+		if ((start > offset) || (selected.length() == 0))
+			return null;
+		return selected;
 	}
 }
