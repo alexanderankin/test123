@@ -1,6 +1,7 @@
 package automation;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
@@ -33,6 +34,7 @@ import automation.Connection.StringHandler;
 public class ConnectionWindow extends JPanel implements CharHandler, EventHandler,
 	ActionListener
 {
+	private static final String SENDING = "Sending";
 	private static boolean DEBUG = false;
 	private final Connection c;
 	private final JTextPane console;
@@ -46,11 +48,17 @@ public class ConnectionWindow extends JPanel implements CharHandler, EventHandle
 	private Object outputSync= new Object(); 
 	private int charsToRemove = 0;
 	private final JTextField connectionString;
-	private final JLabel action;
+	private final JLabel actionTypeLbl;
+	private final JTextField actionTextLbl;
+	private final JLabel lastSentLbl;
+	private final JTextField lastSentTextLbl;
 	private int awtTaskCount = 0;
 	private boolean setActionTextScheduled = false;
 	private Object setActionTextSync = new Object();
+	private String actionType;
 	private String actionText;
+	private String lastSentText;
+	private JPanel actionPanel;
 
 	public ConnectionWindow(Connection c)
 	{
@@ -92,8 +100,26 @@ public class ConnectionWindow extends JPanel implements CharHandler, EventHandle
 		connectionString = new JTextField(c.getHost() + ":" + c.getPort());
 		connectionString.setEditable(false);
 		bottomPanel.add(connectionString, BorderLayout.EAST);
-		action = new JLabel("<idle>");
-		bottomPanel.add(action, BorderLayout.CENTER);
+
+		actionPanel = new JPanel();
+		bottomPanel.add(actionPanel, BorderLayout.WEST);
+		actionTypeLbl = new JLabel("<idle>");
+		actionTypeLbl.setOpaque(true);
+		actionTypeLbl.setBackground(Color.yellow);
+		actionPanel.add(actionTypeLbl);
+		actionTextLbl = new JTextField();
+		actionTextLbl.setEditable(false);
+		actionPanel.add(actionTextLbl);
+		lastSentLbl = new JLabel("Sent:");
+		lastSentLbl.setOpaque(true);
+		lastSentLbl.setBackground(Color.green);
+		lastSentLbl.setVisible(false);
+		actionPanel.add(lastSentLbl);
+		lastSentTextLbl = new JTextField();
+		lastSentTextLbl.setEditable(false);
+		lastSentTextLbl.setVisible(false);
+		actionPanel.add(lastSentTextLbl);
+
 		c.setOutputHandler(this);
 		c.setEventHandler(this);
 		addFocusListener(new FocusAdapter() {
@@ -194,10 +220,11 @@ public class ConnectionWindow extends JPanel implements CharHandler, EventHandle
 		}
 	}
 
-	private void setActionText(final String text)
+	private void setAction(final String type, final String text)
 	{
 		synchronized (setActionTextSync)
 		{
+			actionType = type;
 			actionText = text;
 			if (setActionTextScheduled)
 				return;
@@ -208,23 +235,40 @@ public class ConnectionWindow extends JPanel implements CharHandler, EventHandle
 				synchronized (setActionTextSync)
 				{
 					setActionTextScheduled = false;
+					actionTypeLbl.setText(actionType);
+					boolean showActionText = (actionText != null);
+					actionTextLbl.setVisible(showActionText);
+					if (showActionText)
+						actionTextLbl.setText(actionText);
+					boolean showLastSent = (lastSentText != null);
+					lastSentLbl.setVisible(showLastSent);
+					lastSentTextLbl.setVisible(showLastSent);
+					if (showLastSent)
+						lastSentTextLbl.setText(lastSentText);
+					actionPanel.revalidate();
 				}
-				action.setText(actionText);
 			}
 		});
 	}
 	public void expecting(StringHandler h)
 	{
-		setActionText((h == null) ? "<idle>" : "Expecting " + h.desc());
+		if (h == null)
+			idle();
+		else
+			setAction("Expecting", h.desc());
 	}
 
 	public void sending(String s)
 	{
-		setActionText("Sending: " + s);
+		setAction(SENDING, s);
+		synchronized (setActionTextSync)
+		{
+			lastSentText = s;
+		}
 	}
 
 	public void idle()
 	{
-		setActionText("idle");
+		setAction("idle", null);
 	}
 }
