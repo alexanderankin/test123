@@ -13,5 +13,10 @@
             		gatchan.jedit.lucene.LucenePlugin.instance.closeAllIndexes();
 		</CODE>
 	</ACTION>
+	<ACTION NAME="lucene.search-word-at-caret" NO_REPEAT="TRUE">
+		<CODE>
+            gatchan.jedit.lucene.LucenePlugin.instance.searchWordAtCaret(view);
+		</CODE>
+	</ACTION>
 </ACTIONS>
 

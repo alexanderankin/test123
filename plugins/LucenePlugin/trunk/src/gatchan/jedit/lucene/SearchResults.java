@@ -26,6 +26,7 @@ import marker.tree.SourceLinkTree.SubtreePopupMenuProvider;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
+import org.gjt.sp.jedit.gui.HistoryTextField;
 import org.gjt.sp.jedit.gui.RolloverButton;
 import org.gjt.sp.util.StandardUtilities;
 import org.gjt.sp.util.Log;
@@ -39,7 +40,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 	private static final String LUCENE_SEARCH_INDEX = "lucene.search.index";
 	private static final String MESSAGE_IDLE = "";
 	private static final String MESSAGE_INDEXING = "Indexing";
-	private JTextField searchField;
+	private HistoryTextField searchField;
 	private JTextField type;
 	private JPanel mainPanel;
 	private JList list;
@@ -102,7 +103,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		JPanel panel = new JPanel(new BorderLayout());
 		add(panel, BorderLayout.NORTH);
 		panel.add(new JLabel("Search for:"), BorderLayout.WEST);
-		searchField = new JTextField(40);
+		searchField = new HistoryTextField("lucene.search-history");
 		MyActionListener actionListener = new MyActionListener();
 		searchField.addActionListener(actionListener);
 		type.addActionListener(actionListener);
