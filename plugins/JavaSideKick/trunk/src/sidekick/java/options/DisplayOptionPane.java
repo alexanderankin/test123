@@ -73,7 +73,7 @@ public class DisplayOptionPane extends AbstractOptionPane {
         showIconsCheckBox = new JCheckBox( jEdit.getProperty( "options.sidekick.java.showIcons" ) + " " );
         likeEclipseCheckBox = new JCheckBox( jEdit.getProperty( "options.sidekick.java.showIconsLikeEclipse" ) );
         lineNumbersCheckBox = new JCheckBox( jEdit.getProperty( "options.sidekick.java.showLineNums" ) );
-        expandClassesCheckBox = new JCheckBox( jEdit.getProperty( "options.sideckick.java.expandClasses", "Expand inner classes"));
+        expandClassesCheckBox = new JCheckBox( jEdit.getProperty( "options.sidekick.java.expandClasses", "Expand inner classes"));
 
         // sort by
         lineRB = new JRadioButton( jEdit.getProperty( "options.sidekick.java.sortByLine" ) );
