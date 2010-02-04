@@ -1,8 +1,11 @@
 package automation;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,10 +39,13 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 		loadPresetConnections();
 	}
 
+	private static String getConnectionFile()
+	{
+		return System.getProperty("user.home") + File.separator + CONNECTION_FILE;
+	}
 	private void loadPresetConnections()
 	{
-		String connectionFile = System.getProperty("user.home") +
-			File.separator + CONNECTION_FILE;
+		String connectionFile = getConnectionFile();
 		File f = new File(connectionFile);
 		if (! f.exists())
 			return;
@@ -259,6 +265,30 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 		if (sel == null)
 			return;
 		addConnection((String)sel, headless);
+	}
+	public void presetCurrent()
+	{
+		Connection c = getCurrentConnectionInDockable();
+		if (c == null)
+		{
+			JOptionPane.showMessageDialog(null, "No current connection to preset");
+			return;
+		}
+		String connectionFile = getConnectionFile();
+		File f = new File(connectionFile);
+		try
+		{
+			BufferedWriter bw = new BufferedWriter(new FileWriter(f, true));
+			String line = c.getName() + ":" + c.getHost() + ":" + c.getPort();
+			bw.write(line + "\n");
+			bw.close();
+			presetConnections.add(line);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		
 	}
 	public void showConnectionDialog(boolean headless)
 	{
