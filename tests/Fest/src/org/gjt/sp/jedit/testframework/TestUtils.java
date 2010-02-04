@@ -28,6 +28,8 @@ package org.gjt.sp.jedit.testframework;
 import java.io.*;
 import java.awt.Dialog;
 import java.awt.Frame;
+
+import javax.swing.JButton;
 import javax.swing.SwingUtilities;
 
 import javax.swing.tree.*;
@@ -323,5 +325,20 @@ public class TestUtils {
 
         treeFixture.selectRow( tree.getRowForPath( finalPath ) );
 
+    }
+    
+	/**
+	 * Convenience method to click a button in a container by name.
+	 * @param containerFixture the container
+	 * @param name the name of the button to click
+	 */
+	public static void clickButton(ContainerFixture containerFixture,
+		final String name)
+	{
+		containerFixture.button(new GenericTypeMatcher<JButton>(JButton.class) {
+			public boolean isMatching(JButton button) {
+				return name.equals(button.getText());
+			}
+		}).click();
     }
 }
