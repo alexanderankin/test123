@@ -35,6 +35,14 @@
 			plugin.showSelectConnectionDialog(true);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="console-automation-preset-current" NO_REPEAT="TRUE">
+		<CODE>
+			import automation.*;
+			ConsoleAutomationPlugin plugin = (ConsoleAutomationPlugin)
+				jEdit.getPlugin("automation.ConsoleAutomationPlugin");
+			plugin.presetCurrent();
+		</CODE>
+	</ACTION>
 	<ACTION NAME="console-automation-close-current" NO_REPEAT="TRUE">
 		<CODE>
 			import automation.*;
