@@ -12,7 +12,6 @@
 
 	<property name="DJNativeSwing.jar" location="${basedir}/lib/DJNativeSwing.jar" />
 	<property name="DJNativeSwing-SWT.jar" location="${basedir}/lib/DJNativeSwing-SWT.jar" />
-	<property name="jna.jar" location="${basedir}/lib/jna-3.2.4.jar" />
 	<property name="swt.jar" location="${basedir}/lib/swt.jar" />
 
 	<import file="${build.support}/plugin-build.xml" />
@@ -24,13 +23,13 @@
     </selector>
 
 	<path id="project.class.path">
-		<pathelement location="${DJNativeSwing.jar}"/>
 		<pathelement location="${DJNativeSwing-SWT.jar}"/>
-		<pathelement location="${jna.jar}"/>
-		<pathelement location="."/>
+		<pathelement location="${DJNativeSwing.jar}"/>
 		<pathelement location="${jedit.plugins.dir}/CommonControls.jar" />
-		<pathelement location="${jedit.plugins.dir}/ProjectViewer.jar"/>
 		<pathelement location="${jedit.plugins.dir}/Launcher.jar"/>
+		<pathelement location="${jedit.plugins.dir}/ProjectViewer.jar"/>
+		<pathelement location="${jedit.plugins.dir}/jna.jar"/>
+		<pathelement location="."/>
 	</path>
 	
     <target name="build.post" >
