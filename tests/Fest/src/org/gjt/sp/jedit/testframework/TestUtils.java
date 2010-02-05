@@ -328,16 +328,16 @@ public class TestUtils {
     }
     
 	/**
-	 * Convenience method to click a button in a container by name.
+	 * Convenience method to click a button in a container by text.
 	 * @param containerFixture the container
-	 * @param name the name of the button to click
+	 * @param text the text of the button to click
 	 */
 	public static void clickButton(ContainerFixture containerFixture,
-		final String name)
+		final String text)
 	{
 		containerFixture.button(new GenericTypeMatcher<JButton>(JButton.class) {
 			public boolean isMatching(JButton button) {
-				return name.equals(button.getText());
+				return text.equals(button.getText());
 			}
 		}).click();
     }
