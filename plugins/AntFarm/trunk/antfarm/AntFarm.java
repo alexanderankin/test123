@@ -226,7 +226,7 @@ public class AntFarm extends JPanel implements EBComponent
         AntFarmPlugin.getErrorSource().clear();
         try
         {
-            _antProjects.put(path, parseBuildFile(path));
+            _antProjects.put(path, AntFarmPlugin.parseBuildFile(path));
         }
         catch (Exception e)
         {
@@ -273,7 +273,7 @@ public class AntFarm extends JPanel implements EBComponent
         Project project = (Project) _antProjects.get(buildFilePath);
         if (project != null)
             return project;
-        project = parseBuildFile(buildFilePath);
+        project = AntFarmPlugin.parseBuildFile(buildFilePath);
         _antProjects.put(buildFilePath, project);
         return project;
     }
@@ -322,12 +322,6 @@ public class AntFarm extends JPanel implements EBComponent
         browser.setDirectory(directory.getAbsolutePath());
     }
 
-    void addAntError(String exceptionString, String baseDir)
-    {
-        ConsolePlugin.parseLine(_view, exceptionString, baseDir, AntFarmPlugin
-            .getErrorSource());
-    }
-
     private boolean isAntFileKnown(String path)
     {
         Vector buildFiles = getAntBuildFiles();
@@ -337,47 +331,6 @@ public class AntFarm extends JPanel implements EBComponent
                 return true;
         }
         return false;
-    }
-
-    Project parseBuildFile(String buildFilePath) throws Exception
-    {
-        File buildFile = new File(buildFilePath);
-        Project project = new Project();
-        try
-        {
-            if (buildFile.exists())
-            {
-                project.init();
-
-                // black magic for xerces 1.4.4 loading
-                Thread.currentThread().setContextClassLoader(
-                    AntFarm.class.getClassLoader());
-
-                // first use the ProjectHelper to create the
-                // project object
-                // from the given build file.
-
-                ProjectHelper.configureProject(project, buildFile);
-            }
-            else
-            {
-                throw new Exception(jEdit.getProperty(AntFarmPlugin.NAME
-                    + ".project.missing")
-                    + buildFile.getAbsolutePath());
-            }
-        }
-        catch (BuildException be)
-        {
-            addAntError(be.toString(), project.getBaseDir().toString());
-            Log.log(Log.DEBUG, project, be);
-            throw be;
-        }
-        catch (Exception e)
-        {
-            Log.log(Log.ERROR, project, e);
-            throw e;
-        }
-        return project;
     }
 
     private void saveAntFilesProperty(Vector v)

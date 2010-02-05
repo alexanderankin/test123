@@ -32,6 +32,7 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Target;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
 
@@ -135,6 +136,11 @@ public class TargetRunner extends Thread
 
         if (useSameJvm)
         {
+        	// Check if AntFarm is installed
+        	if (jEdit.getPlugin("ant.AntPlugin") == null) {
+        		GUIUtilities.error(_view, "ant-plugin-not-installed", null);
+        		return;
+        	}
             setOutputStreams();
             loadProjectProperties();
             AntFarmPlugin.loadCustomClasspath();
@@ -209,11 +215,11 @@ public class TargetRunner extends Thread
         _output = output;
         _userProperties = userProperties;
 
-        _view.getDockableWindowManager().addDockableWindow("antfarm");
-        AntFarm antFarm = (AntFarm) _view.getDockableWindowManager().getDockable("antfarm");
+        //_view.getDockableWindowManager().addDockableWindow("antfarm");
+        //AntFarm antFarm = (AntFarm) _view.getDockableWindowManager().getDockable("antfarm");
         try
         {
-            _project = antFarm.parseBuildFile(buildFile.getAbsolutePath());
+            _project = AntFarmPlugin.parseBuildFile(buildFile.getAbsolutePath());
         }
         catch (Exception e)
         {

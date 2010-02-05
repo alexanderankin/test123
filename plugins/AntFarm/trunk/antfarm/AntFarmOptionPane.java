@@ -36,8 +36,6 @@ public class AntFarmOptionPane extends AbstractOptionPane implements ActionListe
 
 	private JRadioButton _useExternalScript;
 
-	private JCheckBox _useProjectViewerIntegration;
-
 	private JCheckBox _useEmacsOutput;
 
 	private JCheckBox _saveOnExecute;
@@ -100,10 +98,6 @@ public class AntFarmOptionPane extends AbstractOptionPane implements ActionListe
 			}
 		});
 
-		_useProjectViewerIntegration = new JCheckBox(jEdit
-			.getProperty(AntFarmPlugin.OPTION_PREFIX + "use-project-bridge-label"));
-		_useProjectViewerIntegration.setSelected(jEdit
-			.getBooleanProperty(AntFarmPlugin.OPTION_PREFIX + "use-project-bridge"));
 		_useEmacsOutput = new JCheckBox(jEdit.getProperty(AntFarmPlugin.OPTION_PREFIX
 			+ "output-emacs-label"));
 		_useEmacsOutput.setSelected(jEdit.getBooleanProperty(AntFarmPlugin.OPTION_PREFIX
@@ -173,7 +167,6 @@ public class AntFarmOptionPane extends AbstractOptionPane implements ActionListe
 		addComponent(pathPanel);
 
 		addSeparator(AntFarmPlugin.OPTION_PREFIX + "general-options");
-		addComponent(_useProjectViewerIntegration);
 		addComponent(_useEmacsOutput);
 		addComponent(_saveOnExecute);
 		addComponent(_supressSubTargets);
@@ -187,8 +180,6 @@ public class AntFarmOptionPane extends AbstractOptionPane implements ActionListe
 		jEdit.setProperty(AntFarmPlugin.OPTION_PREFIX + "command", _command.getText());
 		jEdit.setBooleanProperty(AntFarmPlugin.OPTION_PREFIX + "use-same-jvm", _useSameJvm
 			.isSelected());
-		jEdit.setBooleanProperty(AntFarmPlugin.OPTION_PREFIX + "use-project-bridge",
-			_useProjectViewerIntegration.isSelected());
 		jEdit.setBooleanProperty(AntFarmPlugin.OPTION_PREFIX + "output-emacs",
 			_useEmacsOutput.isSelected());
 		jEdit.setBooleanProperty(AntFarmPlugin.OPTION_PREFIX + "save-on-execute",
