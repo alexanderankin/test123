@@ -3,6 +3,7 @@ package test.gui;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
+import java.io.File;
 
 import javax.swing.SwingUtilities;
 
@@ -10,7 +11,9 @@ import org.fest.swing.finder.WindowFinder;
 import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.JCheckBoxFixture;
 import org.fest.swing.fixture.JPanelFixture;
+import org.fest.swing.image.ScreenshotTaker;
 import org.fest.swing.timing.Pause;
+import org.fest.util.Files;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
@@ -24,6 +27,26 @@ import org.junit.Test;
 
 public class SelectionForegroundColorTest
 {
+	private static final String IMAGE1 = "selFgColorImage1.png";
+	private static final String IMAGE2 = "selFgColorImage2.png";
+	private static final String IMAGE3 = "selFgColorImage3.png";
+	private static final String [] lines = new String[] {
+		"#include <stdio.h>",
+		"int main(int argc, char *argv[])",
+		"{",
+		"\tint i, a, b;",
+		"\tfor (i=0; i<10; i++)",
+		"\t{",
+		"\t\tprintf(\"%d: aaaaaaaabbbbbbbbbbb ccccccccdddddddddd eeeeeeeeeeefffffffffffffff ggggggggggggggggghhhhhhhhhhhhhhh\", i);",
+		"\t\ta = 5; b = 6; a++; b++; a += b; b += a; a *= b; b *= a; a = 5; b = 6; a++; b++; a += b; b += a; a *= b; b *= a;",
+		"\t}",
+		"\tprintf; for; next; continue; while; do; break; some_long_identifier, [even_longer_identifier]",
+		"\tprintf(\"%d: aaaaaaaabbbbbbbbbbb ccccccccdddddddddd eeeeeeeeeeefffffffffffffff ggggggggggggggggghhhhhhhhhhhhhhh\", i);",
+		"\ta = 5; b = 6; a++; b++; a += b; b += a; a *= b; b *= a; a = 5; b = 6; a++; b++; a += b; b += a; a *= b; b *= a;",
+		"\tDummyEnd;",
+		"}"
+    };
+	
     @BeforeClass
     public static void setUpjEdit() {
         TestUtils.beforeClass();
@@ -32,6 +55,31 @@ public class SelectionForegroundColorTest
     @AfterClass
     public static void tearDownjEdit() {
         TestUtils.afterClass();
+    }
+
+    private static void selectRanges(JEditTextArea ta)
+    {
+        // select some text segments
+        String [] subStrings = new String[] {
+        	"main", "int", "intf", "<1", "+)", "\"%", "aabb", "eeff", "long_id",
+        	"ier]"
+        };
+        JEditBuffer buf = ta.getBuffer();
+        for (String sub: subStrings)
+        {
+        	for (int i = 0; i < buf.getLineCount(); i++)
+        	{
+        		String line = buf.getLineText(i);
+        		int index = line.indexOf(sub);
+        		if (index == -1)
+        			continue;
+        		index += buf.getLineStartOffset(i);
+        		ta.addToSelection(new Selection.Range(index, index + sub.length()));
+        	}
+        }
+        ta.addToSelection(new Selection.Range(ta.getLineStartOffset(
+        	lines.length - 4) + 10, ta.getLineStartOffset(
+        	lines.length - 2) + 3));
     }
 
     @Test
@@ -67,49 +115,20 @@ public class SelectionForegroundColorTest
         boolean b = jEdit.getBooleanProperty("view.selectionFg", false);
         assertTrue("selectionFg is not checked", b);
         
+        final View view = TestUtils.view();
+        final JEditTextArea ta = view.getTextArea();
         try
 		{
 			SwingUtilities.invokeAndWait(new Runnable() {
 				public void run() {
-			        // test the selection foreground color on different ranges
-			        String [] lines = new String[] {
-			        		"#include <stdio.h>",
-			        		"int main(int argc, char *argv[])",
-			        		"{",
-			        		"\tint i, a, b;",
-			        		"\tfor (i=0; i<10; i++)",
-			        		"\t{",
-			        		"\t\tprintf(\"%d: aaaaaaaabbbbbbbbbbb ccccccccdddddddddd eeeeeeeeeeefffffffffffffff ggggggggggggggggghhhhhhhhhhhhhhh\", i);",
-			        		"\t\ta = 5; b = 6; a++; b++; a += b; b += a; a *= b; b *= a; a = 5; b = 6; a++; b++; a += b; b += a; a *= b; b *= a;",
-			        		"\t}",
-			        		"\tprintf; for; next; continue; while; do; break; some_long_identifier, [even_longer_identifier]",
-			        		"}"
-			        };
-			        View view = TestUtils.view();
-			        JEditTextArea ta = view.getTextArea();
 			        JEditBuffer buf = ta.getBuffer();
 			        for (String line: lines)
 			        	buf.insert(buf.getLength(), line + "\n");
 			        buf.setMode("c");
-			        ta.repaint();
 			        
 			        // select some text segments
-			        String [] subStrings = new String[] {
-			        	"main", "int", "intf", "<1", "+)", "\"%", "aabb", "eeff", "long_id",
-			        	"ier]"
-			        };
-			        for (String sub: subStrings)
-			        {
-			        	for (int i = 0; i < buf.getLineCount(); i++)
-			        	{
-			        		String line = buf.getLineText(i);
-			        		int index = line.indexOf(sub);
-			        		if (index == -1)
-			        			continue;
-			        		index += buf.getLineStartOffset(i);
-			        		ta.addToSelection(new Selection.Range(index, index + sub.length()));
-			        	}
-			        }
+			        selectRanges(ta);
+			        ta.repaint();
 				}
 			});
 		}
@@ -117,7 +136,36 @@ public class SelectionForegroundColorTest
 		{
 			e.printStackTrace();
 		}
-        Pause.pause(20000);
+        String refDir = Files.currentFolder().getPath() + File.separator +
+        	"resources" + File.separator;
+        String tempPath = Files.temporaryFolderPath() + File.separator;
+        ScreenshotTaker screenshotTaker = new ScreenshotTaker();
+        String image = tempPath + IMAGE1;
+        new File(image).delete();
+        screenshotTaker.saveComponentAsPng(ta, image);
+        String ref = refDir + IMAGE1;
+        assertTrue("Normal mode images differ", TestUtils.compareFiles(image, ref));
+        try
+		{
+			SwingUtilities.invokeAndWait(new Runnable() {
+				public void run() {
+					ta.setCaretPosition(ta.getLineEndOffset(6) - 5);
+					ta.setCaretBlinkEnabled(false);
+					selectRanges(ta);
+					ta.scrollToCaret(true);
+			        ta.repaint();
+				}
+			});
+		}
+        catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+        image = tempPath + IMAGE2;
+        new File(image).delete();
+        screenshotTaker.saveComponentAsPng(ta, image);
+        ref = refDir + IMAGE2;
+        assertTrue("Horz scroll images differ", TestUtils.compareFiles(image, ref));
     }
 
 }

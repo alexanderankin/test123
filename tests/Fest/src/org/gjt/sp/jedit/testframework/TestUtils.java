@@ -121,7 +121,8 @@ public class TestUtils {
         listener.unregister();
         if ( jEditFrame != null ) {
             robot.releaseMouseButtons();
-            ScreenLock.instance().release( robot );
+            if (ScreenLock.instance().acquiredBy( robot ))
+            	ScreenLock.instance().release( robot );
             Log.log( "tearDown done in jEdit" );
         }
         else if ( robot != null ) {
@@ -341,4 +342,57 @@ public class TestUtils {
 			}
 		}).click();
     }
+
+	private static void safelyClose(FileInputStream fis)
+	{
+		if (fis == null)
+			return;
+		try
+		{
+			fis.close();
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Compares two binary files for equality.
+	 * Returns true if the files are equals, false if they are not equal
+	 * or if one of the files cannot be read.
+	 */
+	public static boolean compareFiles(String file1, String file2)
+	{
+		File f1 = new File(file1);
+		File f2 = new File(file2);
+		FileInputStream fis1 = null, fis2 = null;
+		try {
+			fis1 = new FileInputStream(f1);
+			fis2 = new FileInputStream(f2);
+		}
+		catch (FileNotFoundException e) {
+			e.printStackTrace();
+			safelyClose(fis1);
+		}
+		int blockSize = 1024 * 1024;	// 1MB
+		byte [] bytes1 = new byte[blockSize];
+		byte [] bytes2 = new byte[blockSize];
+		int read1, read2;
+		boolean match = false;
+		do {
+			try	{
+				read1 = fis1.read(bytes1);
+				read2 = fis2.read(bytes2);
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+				break;
+			}
+			match = (read1 == read2) && (Arrays.equals(bytes1, bytes2));
+		}
+		while (match && (read1 > 0));
+		safelyClose(fis1);
+		safelyClose(fis2);
+		return match;
+	}
 }
