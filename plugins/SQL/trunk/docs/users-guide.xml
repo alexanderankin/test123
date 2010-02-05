@@ -254,13 +254,12 @@
     <sect1 id="config.serverrecords">
       <title>SQL server records</title>
 
-      <para>Each concrete database instance, login, password, it is necessary to
-      create and manage SQL server records. These records are managed on
+      <para>A record is an information about particular database instance, 
+      login, password. These records are managed on
       per-project basis (see the documentation on the ProjectViewer plugin). The
       UI is available in the project <guimenuitem>Properties</guimenuitem>
-      dialog, <guilabel>SQL</guilabel> tree. The pane
-      <guilabel>"Servers"</guilabel> shows the list of the existing server
-      records, allows to create/edit/delete them.
+      dialog, <guilabel>SQL</guilabel> pane. That pane shows the list of the 
+      existing server records, allows to create/edit/delete them.
       </para>
 
       <para>Each server record "implements" one of existing and registered SQL
@@ -269,6 +268,11 @@
       <para>For example, user can have 2 server types registered: Oracle and
       MySQL. With these types, he can create several server records for Oracle
       and some for MySQL</para>
+
+      <para>User can import and export server records into textual files using
+      Import/Export buttons. The typical usage of this functionality is copying
+      server record(s) from one project to another.</para>
+
     </sect1>
   
  </chapter>
