@@ -23,9 +23,16 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.Iterator;
 import java.util.Collection;
+
 import console.Console;
+import console.ConsolePlugin;
 import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
+
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.ProjectHelper;
+
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.GUIUtilities;
@@ -101,12 +108,56 @@ public class AntFarmPlugin extends EditPlugin
         }
         return properties;
     }
+    
+    static Project parseBuildFile(String buildFilePath) throws Exception
+    {
+        File buildFile = new File(buildFilePath);
+        Project project = new Project();
+        try
+        {
+            if (buildFile.exists())
+            {
+                project.init();
+
+                // black magic for xerces 1.4.4 loading
+                Thread.currentThread().setContextClassLoader(
+                    AntFarm.class.getClassLoader());
+
+                // first use the ProjectHelper to create the
+                // project object
+                // from the given build file.
+
+                ProjectHelper.configureProject(project, buildFile);
+            }
+            else
+            {
+                throw new Exception(jEdit.getProperty(AntFarmPlugin.NAME
+                    + ".project.missing")
+                    + buildFile.getAbsolutePath());
+            }
+        }
+        catch (BuildException be)
+        {
+            addAntError(be.toString(), project.getBaseDir().toString());
+            Log.log(Log.DEBUG, project, be);
+            throw be;
+        }
+        catch (Exception e)
+        {
+            Log.log(Log.ERROR, project, e);
+            throw e;
+        }
+        return project;
+    }
+    
+    static void addAntError(String exceptionString, String baseDir)
+    {
+        ConsolePlugin.parseLine(jEdit.getActiveView(), exceptionString, baseDir, AntFarmPlugin
+            .getErrorSource());
+    }
 
     public void start()
     {
-        //IntegrationManager integration = new IntegrationManager( this );
-        //integration.addBridge( "projectviewer.ProjectPlugin", "antfarm.ProjectBridge" );
-
         boolean useSameJvm
              = jEdit.getBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "use-same-jvm", true );
 
@@ -197,133 +248,5 @@ public class AntFarmPlugin extends EditPlugin
         return (AntFarm) view.getDockableWindowManager().getDockableWindow(AntFarmPlugin.NAME);
     }
 
-    /**
-     * Checks if the current file is in a project, and if so attempts
-     * to run the target identified by the given param against
-     * the build file associated with the project.
-     *
-     * @param view the current jEdit View object
-     * @param targetID A string that can be used to find the property
-     *          value that will contain the target name
-     *              should be either 'A', 'B', 'C', or 'D'
-     */
-    public static void runProjectTarget(View view, String targetID)
-    {
-        //check that the current file is in a project
-        VPTProject currentProj = getCurrentProject(view);
-        if (currentProj != null)
-        {
-            String buildFile = currentProj.getProperty(AntFarmPlugin.OPTION_PREFIX
-                    + "pv.projectAntScript");
-            String targetName = currentProj.getProperty(AntFarmPlugin.OPTION_PREFIX
-                    + "pv.target" + targetID);
-            if ((buildFile != null) && !buildFile.equals("") &&
-                (targetName != null) && !targetName.equals(""))
-            {
-                //use the ant console shell to load the build file, and run the specified target
-                Console console = getConsole(view);
-                console.run(console.getShell(), console.getOutput(), "+" + buildFile);
-                console.run(console.getShell(), console.getOutput(), "!" + targetName);
-
-            }
-            else
-            {
-                GUIUtilities.error(view, "antfarm.pv.settings-missing", new String[] {targetID});
-            }
-        }
-    }
-
-    /**
-     * Checks if the current file is in a project, and if so
-     * provides a list of the targets in this projects defined
-     * build file.  The selected target is then run.
-     *
-     * @param view the current jEdit View object
-     */
-    public static void selectAndRunProjectTarget(View view)
-    {
-        //check that the current file is in a project
-        VPTProject currentProj = getCurrentProject(view);
-        if (currentProj != null)
-        {
-            String buildFile = currentProj.getProperty(AntFarmPlugin.OPTION_PREFIX
-                    + "pv.projectAntScript");
-            if ((buildFile != null) && !buildFile.equals(""))
-            {
-                //check EBrowser installed
-                if(jEdit.getPlugin("ebrowse.EBrowsePlugin",false) != null)
-                {
-                    AntTaskSelector antTask = new AntTaskSelector();
-                    ebrowse.EBrowsePlugin.openBrowser(view, "Run Ant Task:", antTask, antTask, 1);
-                }
-                else
-                {
-                    GUIUtilities.error(view, "antfarm.pv.ebrowse-missing", null);
-                }
-            }
-            else
-            {
-                GUIUtilities.error(view, "antfarm.pv.buildfile-missing", null);
-            }
-        }
-    }
-
-    /**
-     * Returns the current ProjectViewer project for the given view.
-     * This works by finding the path of the current buffer in the given view,
-     * and then checking this path to see if it is in a project.
-     * If JavaSideKick is available, the PVHelper method this provides will
-     * be used, as this provides caching of lookups!
-     * If ProjectViewer is not available, or the file isnt in a project,
-     * error messages will be displayed to the user.
-     */
-    static VPTProject getCurrentProject(View view)
-    {
-        //check project viewer available
-        if(jEdit.getPlugin("projectviewer.ProjectPlugin",false) != null)
-        {
-            VPTProject proj = null;
-
-            //if javasidekick is available then use the project lookup functions
-            //from there as it has caching of results etc.
-            //QUESTION: Should we just make this a dependency???
-            if (jEdit.getPlugin("sidekick.java.JavaSideKickPlugin",false) != null)
-            {
-                String projName = PVHelper.getProjectNameForFile(view.getBuffer().getPath());
-                if (projName != null)
-                    proj = ProjectManager.getInstance().getProject(projName);
-            }
-            else
-            {
-                //based on code from JavaSideKick PVHelper class by Dale Anson
-                ProjectManager pm = ProjectManager.getInstance();
-                for ( Iterator it = pm.getProjects(); it.hasNext(); ) {
-                    VPTProject project = ( VPTProject ) it.next();
-                    Collection nodes = project.getOpenableNodes();
-                    for ( Iterator iter = nodes.iterator(); iter.hasNext(); ) {
-                        VPTNode node = ( VPTNode ) iter.next();
-                        if ( node != null && view.getBuffer().getPath().equals( node.getNodePath() ) ) {
-                            proj = project;
-                            break;
-                        }
-                    }
-                    if (proj != null)
-                        break;
-                }
-            }
-
-            if (proj == null)
-            {
-                GUIUtilities.error(view, "antfarm.pv.file-not-in-project", null);
-            }
-
-            return proj;
-        }
-        else
-        {
-           GUIUtilities.error(view, "antfarm.pv.required", null);
-           return null;
-        }
-    }
 }
 

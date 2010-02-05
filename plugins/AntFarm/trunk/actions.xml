@@ -32,29 +32,4 @@
             console.runLastCommand();
         </CODE>
     </ACTION>
-    <ACTION NAME="antfarm-run-project-targetA">
-        <CODE>
-            antfarm.AntFarmPlugin.runProjectTarget(view, "A");
-        </CODE>
-    </ACTION>
-    <ACTION NAME="antfarm-run-project-targetB">
-        <CODE>
-            antfarm.AntFarmPlugin.runProjectTarget(view, "B");
-        </CODE>
-    </ACTION>
-    <ACTION NAME="antfarm-run-project-targetC">
-        <CODE>
-            antfarm.AntFarmPlugin.runProjectTarget(view, "C");
-        </CODE>
-    </ACTION>
-    <ACTION NAME="antfarm-run-project-targetD">
-        <CODE>
-            antfarm.AntFarmPlugin.runProjectTarget(view, "D");
-        </CODE>
-    </ACTION>
-    <ACTION NAME="antfarm-select-run-project-target">
-        <CODE>
-            antfarm.AntFarmPlugin.selectAndRunProjectTarget(view);
-        </CODE>
-    </ACTION>
 </ACTIONS>
