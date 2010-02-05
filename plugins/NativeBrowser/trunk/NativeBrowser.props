@@ -3,7 +3,7 @@
 
 # jEdit only needs to load the plugin the first time the user accesses it
 # the presence of this property also tells jEdit the plugin is using the new API
-plugin.nativebrowser.NativeBrowserPlugin.activate=startup
+plugin.nativebrowser.NativeBrowserPlugin.activate=defer
 
 # These two properties are required for all plugins
 plugin.nativebrowser.NativeBrowserPlugin.name=NativeBrowser
@@ -13,16 +13,17 @@ plugin.nativebrowser.NativeBrowserPlugin.author=Francois Rey
 plugin.nativebrowser.NativeBrowserPlugin.version=0.1
 
 # other needed files
-plugin.nativebrowser.NativeBrowserPlugin.jars=DJNativeSwing.jar DJNativeSwing-SWT.jar jna-3.2.4.jar swt.jar
+plugin.nativebrowser.NativeBrowserPlugin.jars=DJNativeSwing.jar DJNativeSwing-SWT.jar jna.jar swt.jar
 
 # online help
 plugin.nativebrowser.NativeBrowserPlugin.docs=index.html
 
 # we only have one dependency, jEdit 4.2, since we use the new plugin API
-plugin.nativebrowser.NativeBrowserPlugin.depend.0=jedit 04.02.01.00
+plugin.nativebrowser.NativeBrowserPlugin.depend.0=jedit 04.04.01.00
 plugin.nativebrowser.NativeBrowserPlugin.depend.1=jdk 1.5
 plugin.nativebrowser.NativeBrowserPlugin.depend.2=plugin CommonControlsPlugin 1.1
-plugin.nativebrowser.NativeBrowserPlugin.depend.3=optional plugin launcher.LauncherPlugin 0.1
+plugin.nativebrowser.NativeBrowserPlugin.depend.3=plugin jnaplugin.JNAPlugin 3.2.4
+plugin.nativebrowser.NativeBrowserPlugin.depend.4=optional plugin launcher.LauncherPlugin 0.1
 
 plugin.nativebrowser.NativeBrowserPlugin.description=This plugin provides a dockable browser provided by the native, SWT-based, Swing libraries from the DJ Project (http://djproject.sourceforge.net/).
 # plugin menu
