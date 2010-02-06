@@ -24,6 +24,7 @@ plugin.updater.UpdaterPlugin.option-pane=updater
 options.updater.label=Updater
 options.updater.code=new updater.UpdaterOptions();
 updater.options.updateLogFile=Write update log to file:
+updater.options.installDir=Installation directory:
 updater.options.defaultUpdateSource=Default version to use in automatic updates:
 updater.options.releaseUpdateSource=Latest (released) development version
 updater.options.dailyBuildUpdateSource=Latest daily build version
