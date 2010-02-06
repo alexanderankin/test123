@@ -3,7 +3,7 @@
 * $Date: 2008-09-23 04:02:41 -0600 (Tue, 23 Sep 2008) $
 * $Author: kerik-sf $
 *
-* Copyright (C) 2008 Eric Le Lay
+* Copyright (C) 2008-2010 Eric Le Lay
 *
 * This program is free software; you can redistribute it and/or
 * modify it under the terms of the GNU General Public License
@@ -53,6 +53,9 @@ import org.fest.swing.finder.WindowFinder;
 import org.fest.swing.driver.BasicJTreeCellReader;
 import org.fest.swing.lock.ScreenLock;
 import org.fest.swing.timing.Timeout;
+import org.fest.swing.exception.WaitTimedOutError;
+import org.fest.swing.edt.GuiTask;
+import org.fest.swing.edt.GuiActionRunner;
 //}}}
 
 ///}}}
@@ -269,6 +272,7 @@ public class TestUtils {
         f.select( f.text() ).deleteText().enterText( text );
     }
 
+	// {{{ various Tree utilities
     /**
      * Convenience method to find the tree path for a JTree for the given string array.
      * This is handy for example for finding a tree path in the Global Options dialog.
@@ -304,6 +308,17 @@ public class TestUtils {
         return returnPath;
     }
 
+	public static void requireEmpty(JTreeFixture f){
+		
+		try{
+			f.toggleRow(0);
+			fail("should be empty !");
+		}catch(RuntimeException re){
+			//fine
+			System.err.println(re.getClass());
+		}
+	}
+
     /**
      * Convenience method to select a path in a JTree.
      * @param treeFixture the JTree
@@ -328,6 +343,17 @@ public class TestUtils {
 
     }
     
+	/**
+     * Convenience method to select a path in a JTree.
+     * @param treeFixture the JTree
+     * @param path the path to select
+     */
+    public static void selectPath( JTreeFixture treeFixture, String path ) {
+    	String[] components = path.split("/",-1);
+    	selectPath(treeFixture, components);
+    }
+	//}}}
+
 	/**
 	 * Convenience method to click a button in a container by text.
 	 * @param containerFixture the container
@@ -395,4 +421,126 @@ public class TestUtils {
 		safelyClose(fis2);
 		return match;
 	}
+	
+	/** buttons in an OptionPane */
+    public static enum Option{YES,NO,OK,CANCEL}
+	/**
+	 * Click on an OptionPane asynchronously.
+	 * Typical usage pattern is :
+	 * <code>
+	 *  ClickT clickT = new ClickT(Option.YES);
+	 *  clickT.start();
+	 *
+	 *  // do something to prompt an option pane
+	 *  
+	 *  clickT.waitForClick();
+	 *  </code>
+	 */
+	public static final class ClickT extends Thread{
+		private final Option opt;
+		private final long timeout;
+		private transient WaitTimedOutError savedException;
+		
+		/**
+		 * @param	opt	the button you want to click on
+		 */
+		public ClickT(Option opt){
+			this(opt,2000);
+		}
+
+		/**
+		 * @param	opt	the button you want to click on
+		 * @param	timeout	how long do you wait for the Dialog ?
+		 */
+		public ClickT(Option opt, long timeout){
+			this.opt = opt;
+			this.timeout = timeout;
+		}
+		
+		
+		public void run(){
+			try{
+				final JOptionPaneFixture options = jEditFrame().optionPane(Timeout.timeout(timeout));
+				switch(opt){
+				case YES:
+					options.yesButton().click();
+					break;
+				case NO:
+					options.noButton().click();
+					break;
+				case OK:
+					options.okButton().click();
+					break;
+				case CANCEL:
+					options.cancelButton().click();
+					break;
+				default:
+					fail("unspecified option to click on !");
+				}
+			}catch(WaitTimedOutError e){
+				savedException = e;
+			}
+		}
+		
+		/**
+		 * blocking method.
+		 * wait until the OptionPane shows up and we click on it,
+		 * or until the timeout expires (then you get an WaitTimedOutError)
+		 */
+		public void waitForClick() throws WaitTimedOutError{
+			try{
+				this.join();
+				if(savedException != null)throw savedException;
+			}catch(InterruptedException e){
+				fail("Interrupted");
+			}
+		}
+		
+	}	
+	
+	/**
+	 * execute an action once, like via the ActionBar
+	 * 
+	 * @param	action	the action to execute
+	 */
+	public static void action(final String action){
+		action(action);
+	}
+
+	/**
+	 * execute an action, like via the ActionBar
+	 * 
+	 * @param	action	the action to execute
+	 * @param	count	the number of time to execute it (should be at least 1)
+	 */
+	public static void action(final String action, final int count){
+		GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					view().getInputHandler().setRepeatCount(count);
+					view().getInputHandler().invokeAction(action);
+				}
+		});
+	}
+	
+		public static void gotoPosition(final int caretPosition){
+		GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					view().getTextArea().setCaretPosition(caretPosition);
+				}
+		});
+	}
+	
+
+    /**
+     * @param path path in the option panes tree (eg. XML/XML)
+     * @param name internal name of the option pane (eg. xml.general)
+     * @return an option pane, ensuring that it's visible
+     */
+    public static PluginOptionsFixture pluginOptions(){
+    	jEditFrame().menuItemWithPath("Plugins","Plugin Options...").click();
+		
+		DialogFixture optionsDialog = WindowFinder.findDialog(org.gjt.sp.jedit.options.PluginOptions.class).withTimeout(5000).using(robot());
+		Dialog target = optionsDialog.targetCastedTo(Dialog.class);
+		return new PluginOptionsFixture(robot(),target);
+    }
 }
