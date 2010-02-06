@@ -30,6 +30,7 @@ public class SelectionForegroundColorTest
 {
 	private static final String IMAGE1 = "selFgColorImage1.png";
 	private static final String IMAGE2 = "selFgColorImage2.png";
+	private static final String IMAGE3 = "selFgColorImage3.png";
 	private static final String [] lines = new String[] {
 		"#include <stdio.h>",
 		"int main(int argc, char *argv[])",
@@ -117,12 +118,12 @@ public class SelectionForegroundColorTest
         
         final View view = TestUtils.view();
         final JEditTextArea ta = view.getTextArea();
+        final JEditBuffer buf = ta.getBuffer();
         try
 		{
 			SwingUtilities.invokeAndWait(new Runnable() {
 				public void run() {
 					ta.setCaretBlinkEnabled(false);
-			        JEditBuffer buf = ta.getBuffer();
 			        for (String line: lines)
 			        	buf.insert(buf.getLength(), line + "\n");
 			        buf.setMode("c");
@@ -146,6 +147,7 @@ public class SelectionForegroundColorTest
         screenshotTaker.saveComponentAsPng(ta, image);
         String ref = refDir + IMAGE1;
         assertTrue("Normal mode images differ", TestUtils.compareFiles(image, ref));
+        // Test horizontal scrolling
         try
 		{
 			SwingUtilities.invokeAndWait(new Runnable() {
@@ -166,6 +168,26 @@ public class SelectionForegroundColorTest
         screenshotTaker.saveComponentAsPng(ta, image);
         ref = refDir + IMAGE2;
         assertTrue("Horz scroll images differ", TestUtils.compareFiles(image, ref));
+        // Test soft-wrap
+        try
+		{
+			SwingUtilities.invokeAndWait(new Runnable() {
+				public void run() {
+					buf.setProperty("wrap", "soft");
+					buf.propertiesChanged();
+			        ta.repaint();
+				}
+			});
+		}
+        catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+        image = tempPath + IMAGE3;
+        new File(image).delete();
+        screenshotTaker.saveComponentAsPng(ta, image);
+        ref = refDir + IMAGE3;
+        assertTrue("Soft-wrap images differ", TestUtils.compareFiles(image, ref));
     }
 
 }
