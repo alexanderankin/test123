@@ -1,11 +1,16 @@
 package ctagsinterface.options;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.InputVerifier;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
@@ -35,7 +40,11 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	static public final String PREVIEW_TOOLBAR = OPTION + "previewToolbar";
 	static public final String PREVIEW_WRAP = OPTION + "previewWrap";
 	static public final String PREVIEW_DELAY = OPTION + "previewDelay";
+	static private final String CHECK_CTAGS = MESSAGE + "checkCtags";
+	static private final String BAD_CTAGS_PATH = MESSAGE + "badCtagsPath";
+	static private final String GOOD_CTAGS_PATH= MESSAGE + "goodCtagsPath";
 	JTextField ctags;
+	JButton checkCtags;
 	JTextField cmd;
 	JTextField pattern;
 	JCheckBox updateOnLoad;
@@ -52,8 +61,18 @@ public class GeneralOptionPane extends AbstractOptionPane {
 		super("CtagsInterface-General");
 		setBorder(new EmptyBorder(5, 5, 5, 5));
 
+		JPanel ctagsPanel = new JPanel();
 		ctags = new JTextField(jEdit.getProperty(CTAGS), 40);
-		addComponent(jEdit.getProperty(MESSAGE + "ctags"), ctags);
+		ctagsPanel.add(ctags);
+		checkCtags = new JButton(jEdit.getProperty(CHECK_CTAGS));
+		ctagsPanel.add(checkCtags);
+		checkCtags.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e)
+			{
+				checkInstall();
+			}
+		});
+		addComponent(jEdit.getProperty(MESSAGE + "ctags"), ctagsPanel);
 
 		cmd = new JTextField(jEdit.getProperty(CMD), 40);
 		addComponent(jEdit.getProperty(MESSAGE + "cmd"), cmd);
@@ -128,6 +147,17 @@ public class GeneralOptionPane extends AbstractOptionPane {
 		jEdit.setBooleanProperty(PREVIEW_WRAP, previewWrap.isSelected());
 		jEdit.setIntegerProperty(PREVIEW_DELAY, Integer.valueOf(previewDelay.getText()));
 		EditBus.send(new PropertiesChanged(null));
+	}
+
+	private boolean checkInstall() {
+		String path = ctags.getText();
+		File f = new File(path);
+		if ((! f.exists()) || (! f.canExecute())) {
+			JOptionPane.showMessageDialog(this, jEdit.getProperty(BAD_CTAGS_PATH));
+			return false;
+		}
+		JOptionPane.showMessageDialog(this, jEdit.getProperty(GOOD_CTAGS_PATH));
+		return true;
 	}
 
 	public static String getCtags() {
