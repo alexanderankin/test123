@@ -160,7 +160,10 @@ public class UpdaterPlugin extends EditPlugin
 
 	private boolean runInstaller(File installerFile)
 	{
-		String installDir = jEdit.getJEditHome();
+		String installDir = UpdaterOptions.getInstallDir();
+		File f = new File(installDir);
+		if (! f.exists())
+			f.mkdir();
 		appendText("Installer: " + installerFile.getAbsolutePath());
 		appendText("Install location: " + installDir);
 		appendText(InstallLauncher.LAUNCH_INSTALLER_NOW);

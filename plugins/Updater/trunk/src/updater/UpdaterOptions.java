@@ -19,11 +19,16 @@
  */
 package updater;
 
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -42,6 +47,7 @@ public class UpdaterOptions extends AbstractOptionPane
 {
 	private static final String DEFAULT_LOG_FILE = "updaterPlugin.log";
 	private static final String UPDATE_LOG_FILE_PROP = "updater.values.updateLogFile";
+	private static final String INSTALL_DIR_PROP = "updater.values.installDir";
 	private static final String UPDATE_SOURCE_CLASS_PROP = "updater.values.updateSourceClassName";
 	private static final String UPDATE_ON_STARTUP_PROP = "updater.values.updateOnStartup";
 	private static final String UPDATE_PERIOD_PROP = "updater.values.updatePeriod";
@@ -49,6 +55,7 @@ public class UpdaterOptions extends AbstractOptionPane
 	private static final String UNIX_SCRIPT_DIR_PROP = "updater.values.unixScriptDir";
 	private static final String UNIX_MAN_DIR_PROP = "updater.values.unixManDir";
 	private FileTextField logFile;
+	private JTextField installDir;
 	private JRadioButton releaseUpdateSource;
 	private JRadioButton dailyBuildUpdateSource;
 	private JCheckBox updateOnStartup;
@@ -68,6 +75,23 @@ public class UpdaterOptions extends AbstractOptionPane
 		logFile = new FileTextField(getUpdateLogFile(), false);
 		addComponent(jEdit.getProperty("updater.options.updateLogFile"),
 			logFile);
+		JPanel installDirPanel = new JPanel(new BorderLayout());
+		installDir = new JTextField(getInstallDir(), 40);
+		installDirPanel.add(installDir, BorderLayout.CENTER);
+		JButton installDirBrowse = new JButton(jEdit.getProperty(
+			"common.gui.filetextfield.choose"));
+		installDirPanel.add(installDirBrowse, BorderLayout.EAST);
+		installDirBrowse.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e)
+			{
+				JFileChooser jfc = new JFileChooser(installDir.getText());
+				jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				if (jfc.showOpenDialog(installDir) == JFileChooser.APPROVE_OPTION)
+					installDir.setText(jfc.getSelectedFile().getAbsolutePath());
+			}
+		});
+		addComponent(jEdit.getProperty("updater.options.installDir"),
+			installDirPanel);
 		JPanel updateSourcePanel = new JPanel();
 		updateSourcePanel.setBorder(BorderFactory.createTitledBorder(
 			jEdit.getProperty("updater.options.defaultUpdateSource")));
@@ -117,6 +141,7 @@ public class UpdaterOptions extends AbstractOptionPane
 	{
 		jEdit.setProperty(UPDATE_LOG_FILE_PROP,
 			logFile.getTextField().getText());
+		jEdit.setProperty(INSTALL_DIR_PROP, installDir.getText());
 		jEdit.setProperty(UPDATE_SOURCE_CLASS_PROP,
 			(dailyBuildUpdateSource.isSelected() ?
 				DailyBuildUpdateSource.class.getCanonicalName() :
@@ -153,6 +178,10 @@ public class UpdaterOptions extends AbstractOptionPane
 			jEdit.getSettingsDirectory() + File.separator + DEFAULT_LOG_FILE);
 	}
 
+	public static String getInstallDir()
+	{
+		return jEdit.getProperty(INSTALL_DIR_PROP, jEdit.getJEditHome());
+	}
 	public static boolean isInteractiveInstall()
 	{
 		return jEdit.getBooleanProperty(INTERACTIVE_INSTALL_PROP, false);
