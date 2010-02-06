@@ -29,7 +29,6 @@ import java.io.*;
 import java.awt.Dialog;
 import java.awt.Frame;
 
-import javax.swing.JButton;
 import javax.swing.SwingUtilities;
 
 import javax.swing.tree.*;
@@ -353,21 +352,6 @@ public class TestUtils {
     	selectPath(treeFixture, components);
     }
 	//}}}
-
-	/**
-	 * Convenience method to click a button in a container by text.
-	 * @param containerFixture the container
-	 * @param text the text of the button to click
-	 */
-	public static void clickButton(ContainerFixture containerFixture,
-		final String text)
-	{
-		containerFixture.button(new GenericTypeMatcher<JButton>(JButton.class) {
-			public boolean isMatching(JButton button) {
-				return text.equals(button.getText());
-			}
-		}).click();
-    }
 
 	private static void safelyClose(FileInputStream fis)
 	{

@@ -7,6 +7,7 @@ import java.io.File;
 
 import javax.swing.SwingUtilities;
 
+import org.fest.swing.core.matcher.JButtonMatcher;
 import org.fest.swing.finder.WindowFinder;
 import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.JCheckBoxFixture;
@@ -29,7 +30,6 @@ public class SelectionForegroundColorTest
 {
 	private static final String IMAGE1 = "selFgColorImage1.png";
 	private static final String IMAGE2 = "selFgColorImage2.png";
-	private static final String IMAGE3 = "selFgColorImage3.png";
 	private static final String [] lines = new String[] {
 		"#include <stdio.h>",
 		"int main(int argc, char *argv[])",
@@ -106,7 +106,7 @@ public class SelectionForegroundColorTest
         checkbox.click();
 
         // click the OK button on the options dialog
-        TestUtils.clickButton(optionsDialog, "OK");
+        optionsDialog.button(JButtonMatcher.withText("OK")).click();
 
         // wait a second to make sure jEdit has time to save the properties
         Pause.pause( 1000 );
@@ -121,6 +121,7 @@ public class SelectionForegroundColorTest
 		{
 			SwingUtilities.invokeAndWait(new Runnable() {
 				public void run() {
+					ta.setCaretBlinkEnabled(false);
 			        JEditBuffer buf = ta.getBuffer();
 			        for (String line: lines)
 			        	buf.insert(buf.getLength(), line + "\n");
@@ -150,7 +151,6 @@ public class SelectionForegroundColorTest
 			SwingUtilities.invokeAndWait(new Runnable() {
 				public void run() {
 					ta.setCaretPosition(ta.getLineEndOffset(6) - 5);
-					ta.setCaretBlinkEnabled(false);
 					selectRanges(ta);
 					ta.scrollToCaret(true);
 			        ta.repaint();
