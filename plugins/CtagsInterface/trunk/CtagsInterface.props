@@ -130,6 +130,9 @@ messages.CtagsInterface.cannotSwitchDatabase=Cannot switch to the new database s
 messages.CtagsInterface.changeDbSettingsDialogTitle=Database settings
 messages.CtagsInterface.showTooltips=Show tag tooltips
 messages.CtagsInterface.completeDesc=Show tag description in code completion
+messages.CtagsInterface.checkCtags=Check path
+messages.CtagsInterface.badCtagsPath=Ctags path does not exist or is not an executable file 
+messages.CtagsInterface.goodCtagsPath=Ctags path is okay 
 
 # projectviewer option pane
 plugin.projectviewer.ctagsinterface.main.CtagsInterfacePlugin.option-pane=CtagsInterface-ProjectDependencies
