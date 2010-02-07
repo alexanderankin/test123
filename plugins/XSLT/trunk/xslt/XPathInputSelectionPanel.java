@@ -99,6 +99,8 @@ class XPathInputSelectionPanel extends JPanel implements ActionListener {
 		ButtonGroup radioGroup = new ButtonGroup();
 
 		bufferRadio = new JRadioButton(jEdit.getProperty("xpath.select.buffer"));
+		bufferRadio.setName("xpath.select.buffer");
+		
 		bufferRadio.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				setFileSelectionEnabled(false);
@@ -106,6 +108,7 @@ class XPathInputSelectionPanel extends JPanel implements ActionListener {
 		});
 
 		fileRadio = new JRadioButton(jEdit.getProperty("xpath.select.file"));
+		fileRadio.setName("xpath.select.file");
 		fileRadio.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				setFileSelectionEnabled(true);

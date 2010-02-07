@@ -2,8 +2,8 @@
 
 <!-- XSLT plugin user's guide -->
 <!-- (C) 2002 Greg Merrill, Robert McKinnon -->
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
-  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
 <book>
 
   <bookinfo>
@@ -26,6 +26,10 @@
       <author>
         <firstname>Pieter</firstname>
         <surname>Wellens</surname>
+      </author>
+      <author>
+        <firstname>Eric</firstname>
+        <surname>Le Lay</surname>
       </author>
     </authorgroup>
 
@@ -298,6 +302,8 @@
     <para>Pieter Wellens <email>pitje@users.sourceforge.net</email>
       has worked on version 0.6.0 </para>
 
+    <para>Eric Le Lay <email>kerik-sf@users.sourceforge.net</email>
+      has worked on version 0.7.0 </para>
   </chapter>
 
 
@@ -320,6 +326,15 @@
 
   <appendix id="changelog">
     <title>Change log</title>
+    <para>
+      <emphasis role="bold">Changes from 0.6.0 to 0.7.0</emphasis>
+      <itemizedlist>
+        <listitem><para>0.7 requires >=jEdit 4.3 and >=XML plugin 2.5</para></listitem>
+        <listitem><para>This is a maintainance release, for compatibility with the XML Plugin 2.5
+        (see plugin bug #2852413 :  "XSLT plugin : XPath depends xml.CatalogManager").</para></listitem>
+        <listitem><para>Updated to Xalan 2.7.1.</para></listitem>
+      </itemizedlist>
+    </para>
     <para>
       <emphasis role="bold">Changes from 0.5.1 to 0.6.0</emphasis>
       <itemizedlist>

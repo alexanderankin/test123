@@ -70,13 +70,14 @@ import javax.xml.transform.TransformerException;
 import org.apache.xpath.NodeSetDTM;
 import org.apache.xpath.XPathAPI;
 import org.apache.xpath.objects.XObject;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.buffer.BufferChangeAdapter;
+import org.gjt.sp.jedit.buffer.BufferAdapter;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.search.CurrentBufferSet;
@@ -99,9 +100,9 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 	private final XPathExpressionPanel expressionPanel;
 	private final EvaluatePanel evaluatePanel = new EvaluatePanel();
 	private final JTextField dateTypeField = new JTextField();
-	private final ResultsPanel resultValuePanel = new ResultsPanel(jEdit.getProperty("xpath.result.value.label"));
-	private final NodeSetResultsPanel nodeSetTablePanel = new NodeSetResultsPanel(jEdit.getProperty("xpath.result.node-set-summary.label"));
-	private final XmlFragmentsPanel xmlFragmentsPanel = new XmlFragmentsPanel(jEdit.getProperty("xpath.result.xml-fragments.label"));
+	private final ResultsPanel resultValuePanel = new ResultsPanel("xpath.result.value");
+	private final NodeSetResultsPanel nodeSetTablePanel = new NodeSetResultsPanel("xpath.result.node-set-summary");
+	private final XmlFragmentsPanel xmlFragmentsPanel = new XmlFragmentsPanel("xpath.result.xml-fragments");
 	private JPanel dataTypePanel;
 	private boolean autoCompleteEnabled;
 
@@ -114,6 +115,7 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 		inputSelectionPanel = new XPathInputSelectionPanel(view);
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(new JLabel(jEdit.getProperty("xpath.result.data-type.label")), BorderLayout.NORTH);
+		dateTypeField.setName("xpath.result.data-type");
 		panel.add(this.dateTypeField);
 		dataTypePanel = new JPanel(new BorderLayout());
 		dataTypePanel.add(panel, BorderLayout.NORTH);
@@ -152,12 +154,12 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 	/**
 	 * Creates parser, parses input source and returns resulting document.
 	 */
-	public static Document parse(InputSource source, String inputPath) throws ParserConfigurationException, IOException, SAXException {
+	public static Document parse(InputSource source) throws ParserConfigurationException, IOException, SAXException {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		factory.setValidating(false);
 
 		DocumentBuilder builder = factory.newDocumentBuilder();
-		builder.setEntityResolver(new EntityResolverImpl(inputPath));
+		builder.setEntityResolver(xml.Resolver.instance());
 		Document document = builder.parse(source);
 		return document;
 	}
@@ -386,7 +388,8 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 			button = new JButton(new ImageIcon(url));
 			button.setToolTipText(toolTipText);
 			button.addActionListener(XPathTool.this);
-
+			button.setName("xpath.evaluate");
+			
 			Dimension dimension = new Dimension(76, 30);
 			button.setMinimumSize(dimension);
 			button.setPreferredSize(dimension);
@@ -434,13 +437,14 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 		        }
 		    }
 		}
-		ResultsPanel(String labelString) {
+		ResultsPanel(String name) {
 			super(new BorderLayout());
-			setLabelText(labelString);
+			setLabelText(jEdit.getProperty(name+".label"));
 			int width = (int) textArea.getMinimumSize().getWidth();
 			int height = (int) textArea.getPreferredSize().getHeight();
 			this.textArea.setMinimumSize(new Dimension(width, height));
-
+			this.textArea.setName(name);
+			
 			add(label, BorderLayout.NORTH);
 			add(new JScrollPane(this.textArea));
 			
@@ -508,8 +512,8 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 		private int selected;
 
 
-		XmlFragmentsPanel(String labelString) {
-			super(labelString);
+		XmlFragmentsPanel(String name) {
+			super(name);
 		}
 
 
@@ -563,14 +567,14 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 		private final JTable table = new JTable();
 
 
-		NodeSetResultsPanel(String label) {
+		NodeSetResultsPanel(String name) {
 			super(new BorderLayout());
 
 			table.getSelectionModel().addListSelectionListener(XPathTool.this);
 			table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			table.setModel(tableModel);
-
-			add(new JLabel(label), BorderLayout.NORTH);
+			table.setName(name);
+			add(new JLabel(jEdit.getProperty(name+".label")), BorderLayout.NORTH);
 			JScrollPane tablePane = new JScrollPane(table);
 			add(tablePane);
 		}
@@ -634,13 +638,11 @@ class DocumentCache {
 		createCacheMap();
 	}
 
-	public static Document getFromCache(Buffer sourceBuffer) throws Exception {
+	public static Document getFromCache(JEditBuffer sourceBuffer) throws Exception {
 		DocumentCache cacheObj = getCacheObject(sourceBuffer);
 		if (cacheObj.getDocument() == null) {
-			String text = sourceBuffer.getText(0, sourceBuffer.getLength());
-			InputSource inputSource = new InputSource(new StringReader(text));				
-			cacheObj.doParse(inputSource, 
-					sourceBuffer.getPath());
+			InputSource inputSource = new InputSource(((Buffer)sourceBuffer).getPath());				
+			cacheObj.doParse(inputSource);
 		}
 		return cacheObj.getDocument();
 	}
@@ -651,9 +653,8 @@ class DocumentCache {
 		if (cacheObj.getDocument() == null
 				|| cacheObj.fileUpdateTime != sourceFile.lastModified()) {
 			
-			FileReader textReader = new FileReader(sourceFile);
-			InputSource inputSource = new InputSource(textReader);
-			cacheObj.doParse(inputSource, sourceFileName);
+			InputSource inputSource = new InputSource(sourceFileName);
+			cacheObj.doParse(inputSource);
 			cacheObj.fileUpdateTime = sourceFile.lastModified();
 		}
 		return cacheObj.getDocument();
@@ -691,9 +692,9 @@ class DocumentCache {
 	}
 	private DocumentCache(Buffer sourceBuffer) {
 		this((Object)sourceBuffer);
-		sourceBuffer.addBufferChangeListener(
-				new BufferChangeAdapter() {
-					public void contentInserted(Buffer buffer, 
+		sourceBuffer.addBufferListener(
+				new BufferAdapter() {
+					public void contentInserted(JEditBuffer buffer, 
 							int startLine, int offset, 
 							int numLines, int length) {
 						synchronized(this) {
@@ -701,7 +702,7 @@ class DocumentCache {
 								document = null;
 						}
 					}
-					public void contentRemoved(Buffer buffer, 
+					public void contentRemoved(JEditBuffer buffer, 
 							int startLine, int offset, 
 							int numLines, int length) {
 						synchronized(this) {
@@ -725,9 +726,8 @@ class DocumentCache {
 			document = null;
 	}
 
-	private synchronized void doParse(InputSource src, String path) throws ParserConfigurationException, IOException, SAXException {
-		src.setSystemId(path);
-		document = XPathTool.parse(src, path);
+	private synchronized void doParse(InputSource src) throws ParserConfigurationException, IOException, SAXException {
+		document = XPathTool.parse(src);
 	}
 	
 	public Document getDocument() {
