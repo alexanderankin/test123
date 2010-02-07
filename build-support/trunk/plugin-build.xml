@@ -82,6 +82,7 @@
     <property name="compiler.fork"          value="no" />
     <property name="compiler.bootclasspath" value="${java.home}/lib/rt.jar"/>
     <property name="compiler.extdirs"       value="${java.ext.dirs}"/>
+    <property name="compiler.userargs"      value="" />
 
     <!-- default documentation options  -->
     <property name="docs-proc.target"       value="xsltproc" />
@@ -157,6 +158,7 @@
                 extdirs="${compiler.extdirs}"
                 >
             <src location="${src.dir}" />
+	    <compilerarg line="${compiler.userargs}" />
             <classpath refid="default.class.path" />
             <classpath refid="project.class.path" />
         </javac>
