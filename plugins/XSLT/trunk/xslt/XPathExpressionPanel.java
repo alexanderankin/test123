@@ -81,6 +81,7 @@ public class XPathExpressionPanel extends JPanel implements KeyListener,
 		String text = jEdit.getProperty(LAST_EXPRESSION);
 
 		textArea.getDocument().addDocumentListener(this);
+		textArea.setName("xpath.expression");
 		textArea.addKeyListener(this);
 		textArea.setText((text == null) ? "" : text);
 
@@ -100,7 +101,7 @@ public class XPathExpressionPanel extends JPanel implements KeyListener,
             public void mouseReleased(MouseEvent e) {
                 String selection=(String)popupList.getModel().getElementAt(popupList.locationToIndex(e.getPoint()));
                 textArea.append(selection);
-                popup.hide();
+                popup.setVisible(false);
                 textArea.requestFocus();
             }
         });
@@ -110,7 +111,7 @@ public class XPathExpressionPanel extends JPanel implements KeyListener,
         		if (popup == null)
         			return;
 	            if (evt.getKeyChar() == '@' || evt.getKeyChar() == '/') {
-	            	popup.hide();
+	            	popup.setVisible(false);
 	            	textArea.append(Character.toString(evt.getKeyChar()));        		
 	        	}
         	}
@@ -121,13 +122,13 @@ public class XPathExpressionPanel extends JPanel implements KeyListener,
                 		(evt.getKeyCode() == KeyEvent.VK_BACK_SPACE
                 		|| evt.getKeyCode() == KeyEvent.VK_RIGHT
 						|| evt.getKeyCode() == KeyEvent.VK_LEFT)) {
-                    popup.hide();
+                    popup.setVisible(false);
                     textArea.requestFocus();
                 } else if (evt.getKeyCode() == KeyEvent.VK_ENTER || evt.getKeyCode() == KeyEvent.VK_TAB) {
                     int curSel = popupList.getSelectedIndex();
                     String selection=(String)popupList.getModel().getElementAt(curSel);
                     textArea.append(selection);
-                    popup.hide();
+                    popup.setVisible(false);
                     textArea.requestFocus();
                 }
             }
@@ -137,7 +138,7 @@ public class XPathExpressionPanel extends JPanel implements KeyListener,
 
 	private void textAreaCaretUpdate(CaretEvent evt) {
         XPathTool xpathTool = (XPathTool)view.getDockableWindowManager().getDockable("xpath-tool");
-        if (!xpathTool.isAutoCompleteEnabled())
+        if (xpathTool==null || !xpathTool.isAutoCompleteEnabled())
         	return;
         int dot = evt.getDot();
         String txt = textArea.getText().trim();
@@ -233,7 +234,7 @@ public class XPathExpressionPanel extends JPanel implements KeyListener,
 	        popup.pack();
 
 	        popup.setLocation(caretPos.x + 5, caretPos.y);
-            popup.show();
+            popup.setVisible(true);
         }
 	}
 

@@ -158,7 +158,8 @@ public class InputSelectionPanel extends JPanel {
 	}
 	
 	public boolean isSourceFileDefined() {
-		return !getSourceFile().equals(jEdit.getProperty("xslt.source.browse.prompt"));
+		return bufferRadio.isSelected()
+			|| !getSourceFile().equals(jEdit.getProperty("xslt.source.browse.prompt"));
 	}
 	
 	JPopupMenu initSelectionPanelMenu(XsltAction fileOpenAction) {

@@ -2,6 +2,7 @@
  * XsltOutputProperties.java - Holds logic to retrieve output properties for transformers
  *
  * Copyright (c) 2003 Robert McKinnon
+ * Copyright (c) 2010 Eric Le Lay
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,7 +21,7 @@
 package xslt;
 
 import org.gjt.sp.util.Log;
-import org.apache.xalan.templates.OutputProperties;
+import org.apache.xml.serializer.OutputPropertiesFactory;
 
 /**
  * Holds logic to retrieve output properties for transformers
@@ -46,7 +47,7 @@ public class XsltOutputProperties {
     String indentProperty = null;
 
     try {
-      indentProperty = OutputProperties.S_KEY_INDENT_AMOUNT;
+      indentProperty =  OutputPropertiesFactory.S_KEY_INDENT_AMOUNT;
     } catch(NoSuchFieldError e) {
       Log.log(Log.WARNING, this, "no such field error " + e.toString());
 //      if(!messageDisplayed) {

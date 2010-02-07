@@ -66,7 +66,7 @@ public abstract class XsltAction extends AbstractAction {
   public JButton getButton() {
     JButton button = new JButton(this);
     button.setText("");
-
+    button.setName(getActionName());
     Dimension dimension = getButtonDimension();
 
     button.setMinimumSize(dimension);
@@ -78,6 +78,7 @@ public abstract class XsltAction extends AbstractAction {
   
   public JRadioButton getRadioButton(String text) {
 	JRadioButton button = new JRadioButton(this);
+	button.setName(text);
 	button.setText(jEdit.getProperty(text));
 
 	return button;
