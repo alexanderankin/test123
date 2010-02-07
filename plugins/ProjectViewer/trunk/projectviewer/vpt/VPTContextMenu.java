@@ -19,6 +19,7 @@
 package projectviewer.vpt;
 
 //{{{ Imports
+import java.util.Collections;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -106,7 +107,7 @@ public class VPTContextMenu extends MouseAdapter
 		ActionSeparator sep = new ActionSeparator();
 		separators.add(sep);
 		sep.setLinkedActions(extActions);
-		popupMenu.add(sep.getMenuItem());
+		addAction(sep, false);
 
 		ExtensionManager.getInstance().register(this);
 	}
@@ -205,6 +206,9 @@ public class VPTContextMenu extends MouseAdapter
 				a = (Action) a.clone();
 				a.setViewer(viewer);
 				extActions.add(a);
+			}
+			Collections.sort(extActions);
+			for (Action a : extActions) {
 				popupMenu.add(a.getMenuItem());
 			}
 		}

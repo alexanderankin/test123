@@ -43,7 +43,6 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 
 import javax.swing.BorderFactory;
-import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -53,6 +52,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
@@ -63,6 +63,9 @@ import org.gjt.sp.util.Log;
 
 import common.gui.ModalJFileChooser;
 import common.gui.OkCancelButtons;
+import common.threads.WorkerThreadPool;
+
+import projectviewer.PVActions;
 //}}}
 
 /**
@@ -76,15 +79,17 @@ import common.gui.OkCancelButtons;
 public class ProjectZipper extends EnhancedDialog implements ActionListener {
 
 	//{{{ Private members
-	private JPanel jp;
-	private HistoryTextField jarName, jarLoc;
+	private HistoryTextField jarName;
+	private HistoryTextField jarLoc;
 	private JComboBox jarFilter;
 	private JTextArea manifest;
 	private JarOutputStream jos;
 	private File dir;
 	private String jarPath;
 	private boolean addManifest = true;
-	private JButton ok, cancel, browseName, browseLocation, loadManifest;
+	private JButton browseName;
+	private JButton browseLocation;
+	private JButton loadManifest;
 	private JCheckBox manifestCb;
 	//}}}
 
@@ -113,9 +118,8 @@ public class ProjectZipper extends EnhancedDialog implements ActionListener {
 		gbl.setConstraints(jarName, gbc);
 		getContentPane().add(jarName);
 
-		Icon openDirIcon = GUIUtilities.loadIcon("OpenFolder.png");
 		browseName = new JButton();
-		browseName.setIcon(openDirIcon);
+		browseName.setIcon(GUIUtilities.loadIcon("OpenFolder.png"));
 		browseName.addActionListener(this);
 		gbc.weightx = 0.0;
 		gbc.fill = GridBagConstraints.NONE;
@@ -141,9 +145,8 @@ public class ProjectZipper extends EnhancedDialog implements ActionListener {
 		gbl.setConstraints(jarLoc, gbc);
 		getContentPane().add(jarLoc);
 
-		openDirIcon = GUIUtilities.loadIcon("OpenFolder.png");
 		browseLocation = new JButton();
-		browseLocation.setIcon(openDirIcon);
+		browseLocation.setIcon(GUIUtilities.loadIcon("OpenFolder.png"));
 		browseLocation.addActionListener(this);
 		gbc.weightx = 0.0;
 		gbc.fill = GridBagConstraints.NONE;
@@ -262,26 +265,8 @@ public class ProjectZipper extends EnhancedDialog implements ActionListener {
 			return;
 		}
 
-		try {
-			// Add Manifest
-			if (addManifest) {
-				InputStream is = new ByteArrayInputStream(manifest.getText().getBytes("UTF-8"));
-				Manifest mf = new Manifest(is);
-				jos = new JarOutputStream(new FileOutputStream(jarPath), mf);
-			} else {
-				jos = new JarOutputStream(new FileOutputStream(jarPath));
-			}
-			// Start traversing the directory tree
-			fileTraverse(new File(jarLoc.getText()));
-			jos.close();
-
-			saveToHistory(jarName);
-			saveToHistory(jarLoc);
-			cancel();
-		} catch (IOException e) {
-			Log.log(Log.ERROR, this, e);
-		}
-
+		setEnabled(false);
+		WorkerThreadPool.getSharedInstance().addRequest(new Zipper());
 	} //}}}
 
 	//{{{ +cancel() : void
@@ -313,7 +298,9 @@ public class ProjectZipper extends EnhancedDialog implements ActionListener {
 	} //}}}
 
 	//{{{ -fileTraverse(File) : void
-	private void fileTraverse(File dir) {
+	private void fileTraverse(File dir)
+		throws IOException
+	{
 		File[] file_list = dir.listFiles((FileFilter)jarFilter.getSelectedItem());
 		for (int i = 0; i < file_list.length; i++) {
 			// Write this file to the jar
@@ -327,31 +314,29 @@ public class ProjectZipper extends EnhancedDialog implements ActionListener {
 	} //}}}
 
 	//{{{ -writeJarEntry(File) : void
-	private void writeJarEntry(File f) {
+	private void writeJarEntry(File f)
+		throws IOException
+	{
 		byte[] buf = new byte[1024];
 		int len;
 		String filePath = f.getAbsolutePath();
 		filePath = filePath.replace(File.separatorChar, '/');
-		try {
-			// Avoid adding created jar to itself
-			if ((!addManifest || !filePath.toLowerCase().endsWith(".mf"))
-					&& !filePath.equals(jarPath)) {
-				JarEntry je = new JarEntry(convertToJarName(f));
-				FileInputStream is = new FileInputStream(f);
-				je.setTime(f.lastModified());
-				// Add the jar entry
-				jos.putNextEntry(je);
 
-				while ((len = is.read(buf)) >= 0) {
-					jos.write(buf, 0, len);
-				}
+		// Avoid adding created jar to itself
+		if ((!addManifest || !filePath.toLowerCase().endsWith(".mf"))
+				&& !filePath.equals(jarPath)) {
+			JarEntry je = new JarEntry(convertToJarName(f));
+			FileInputStream is = new FileInputStream(f);
+			je.setTime(f.lastModified());
+			// Add the jar entry
+			jos.putNextEntry(je);
 
-				jos.closeEntry();
-				is.close();
+			while ((len = is.read(buf)) >= 0) {
+				jos.write(buf, 0, len);
 			}
-		}
-		catch (IOException e) {
-			e.printStackTrace();
+
+			jos.closeEntry();
+			is.close();
 		}
 	} //}}}
 
@@ -359,11 +344,7 @@ public class ProjectZipper extends EnhancedDialog implements ActionListener {
 	public void actionPerformed(ActionEvent evt) {
 		Object source = evt.getSource();
 
-		if (source == ok) {
-			ok();
-		} else if (source == cancel) {
-			cancel();
-		} else if (source == browseName) {
+		if (source == browseName) {
 			JFileChooser chooser = new ModalJFileChooser();
 			chooser.setDialogType(JFileChooser.SAVE_DIALOG);
 			chooser.setDialogTitle(jEdit.getProperty("projectviewer.action.jarmaker.choose_dir"));
@@ -458,6 +439,55 @@ public class ProjectZipper extends EnhancedDialog implements ActionListener {
 		} //}}}
 
 	} //}}}
+
+
+	private class Zipper implements Runnable
+	{
+
+		public void run()
+		{
+			boolean dispose = true;
+			try {
+				// Add Manifest
+				if (addManifest) {
+					InputStream is = new ByteArrayInputStream(manifest.getText().getBytes("UTF-8"));
+					Manifest mf = new Manifest(is);
+					jos = new JarOutputStream(new FileOutputStream(jarPath), mf);
+				} else {
+					jos = new JarOutputStream(new FileOutputStream(jarPath));
+				}
+				// Start traversing the directory tree
+				fileTraverse(new File(jarLoc.getText()));
+				jos.close();
+			} catch (final IOException e) {
+				dispose = false;
+				Log.log(Log.ERROR, this, e);
+				PVActions.swingInvoke(new Runnable() {
+					public void run()
+					{
+						JOptionPane.showMessageDialog(ProjectZipper.this,
+							jEdit.getProperty("projectviewer.action.jarmaker.error",
+											  new Object[] { e.getMessage() }),
+							jEdit.getProperty("projectviewer.action.jarmaker.error.title"),
+							JOptionPane.ERROR_MESSAGE);
+						setEnabled(true);
+					}
+				});
+			} finally {
+				if (dispose) {
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run()
+						{
+							saveToHistory(jarName);
+							saveToHistory(jarLoc);
+							cancel();
+						}
+					});
+				}
+			}
+		}
+
+	}
 
 }
 

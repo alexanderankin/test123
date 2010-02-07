@@ -23,15 +23,11 @@ versions of jEdit equal or newer to 4.2pre12.</p>
 
 <p>The new API detects when plugins are loaded/unloaded in jEdit and updates the
 extensions accordingly, so nothing has to be done by other plugin developers
-aside from setting the properties described below. When a plugin is unloaded,
-all extensions belonging to that plugin are removed, so there is no risk of
-having stray objects being held by ProjectViewer. (One exception to this is
-custom node handlers. See the explanation in the page about custom nodes
-linked above.)</p>
-
-<p>In all documents, references to <i>class name</i> mean the name of the
-main class of the plugin (e.g., <i>projectviewer.ProjectPlugin</i>
-for ProjectViewer).</p>
+aside from providing the service descriptions in the plugin's service.xml file.
+When a plugin is unloaded, all extensions belonging to that plugin are
+removed, so there is no risk of having stray objects being held by
+ProjectViewer. (One exception to this is custom node handlers. See the
+explanation in the page about custom nodes linked above.)</p>
 
 </body>
 

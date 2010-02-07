@@ -40,7 +40,9 @@ import projectviewer.vpt.VPTNode;
  *	@author		Marcelo Vanzin
  *	@version	$Id$
  */
-public abstract class Action  implements ActionListener, Cloneable {
+public abstract class Action
+	implements ActionListener, Cloneable, Comparable<Action>
+{
 
 	//{{{ Instance variables
 
@@ -136,6 +138,43 @@ public abstract class Action  implements ActionListener, Cloneable {
 	public void setViewer(ProjectViewer viewer) {
 		this.viewer = viewer;
 	} //}}}
+
+
+	/**
+	 * Compares this action with another. This is used to define the
+	 * position of the action in the context menu, so that it is
+	 * always shown in a consistent manner.
+	 *
+	 * By default, this first compares the class name of the action,
+	 * and if those match, the text returned by {@link #getText()}.
+	 *
+	 * @param	other	Action to compare to.
+	 *
+	 * @return Result of comparison (see {@link Comparable#compareTo(Object)}).
+	 *
+	 * @since PV 3.0.0
+	 */
+	public int compareTo(Action other)
+	{
+		int res = getClass().getName().compareTo(other.getClass().getName());
+		if (res == 0) {
+			res = getText().compareTo(other.getText());
+		}
+		return res;
+	}
+
+
+	/**
+	 * Implementation of equals() so that it's consistent with
+	 * {@link #compareTo(Action)}.
+	 */
+	public boolean equals(Object o)
+	{
+		if (o instanceof Action) {
+			return compareTo((Action)o) == 0;
+		}
+		return false;
+	}
 
 }
 

@@ -30,9 +30,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -46,7 +43,6 @@ import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
-import javax.swing.filechooser.FileFilter;
 
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
@@ -60,7 +56,6 @@ import org.gjt.sp.jedit.io.VFSFileFilter;
 import common.gui.ModalJFileChooser;
 import common.gui.OkCancelButtons;
 
-import projectviewer.importer.CVSEntriesFilter;
 import projectviewer.importer.GlobFilter;
 import projectviewer.importer.ImporterFileFilter;
 import projectviewer.importer.ImportUtils;
@@ -204,8 +199,8 @@ public class ImportDialog extends EnhancedDialog
 		filters = new JComboBox();
 		filters.addItemListener(this);
 		filters.addItem(new AllFilesFilter());
-		for (Iterator i = getFileFilters(proj).iterator(); i.hasNext(); )
-			filters.addItem(i.next());
+		for (ImporterFileFilter f : getFileFilters(proj))
+			filters.addItem(f);
 		filters.addItem(jEdit.getProperty("projectviewer.import.filter.custom"));
 
 		gbl.setConstraints(filters, gbc);

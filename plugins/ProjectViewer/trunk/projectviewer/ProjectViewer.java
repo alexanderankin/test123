@@ -22,21 +22,14 @@ package projectviewer;
 import java.io.File;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.WeakHashMap;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -48,26 +41,19 @@ import javax.swing.JTree;
 import javax.swing.JPanel;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-import javax.swing.ToolTipManager;
 
 import javax.swing.tree.TreePath;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditBus;
-import org.gjt.sp.jedit.PluginJAR;
-import org.gjt.sp.jedit.EditPlugin;
 import static org.gjt.sp.jedit.EditBus.EBHandler;
 
-import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSManager;
@@ -98,13 +84,6 @@ import projectviewer.vpt.VPTProject;
 import projectviewer.vpt.ProjectTreeModel;
 import projectviewer.vpt.ProjectTreePanel;
 
-import projectviewer.action.Action;
-import projectviewer.action.ExpandAllAction;
-import projectviewer.action.CollapseAllAction;
-import projectviewer.action.EditProjectAction;
-import projectviewer.action.FileImportAction;
-import projectviewer.action.NodeRemoverAction;
-import projectviewer.action.NodeRenamerAction;
 import projectviewer.config.ProjectViewerConfig;
 import projectviewer.importer.AutoReimporter;
 import projectviewer.importer.NewFileImporter;
@@ -135,7 +114,7 @@ public final class ProjectViewer extends JPanel
 	 *	exists.
 	 */
 	public static ProjectViewer getViewer(View view) {
-		ViewerEntry ve = (ViewerEntry) viewers.get(view);
+		ViewerEntry ve = viewers.get(view);
 		return (ve != null) ? ve.dockable : null;
 	} //}}}
 
@@ -278,7 +257,7 @@ public final class ProjectViewer extends JPanel
 			throw new IllegalArgumentException("PV can only use Projects and Groups as root.");
 		}
 
-		ViewerEntry ve = (ViewerEntry) viewers.get(aView);
+		ViewerEntry ve = viewers.get(aView);
 		if (ve == null) {
 			ve = new ViewerEntry();
 			ve.node = n;
@@ -329,10 +308,10 @@ public final class ProjectViewer extends JPanel
 			return null;
 		}
 
-		ViewerEntry ve = (ViewerEntry) viewers.get(aView);
+		ViewerEntry ve = viewers.get(aView);
 		if (ve == null) {
 			setActiveNode(aView, config.getLastNode());
-			ve = (ViewerEntry) viewers.get(aView);
+			ve = viewers.get(aView);
 		}
 		if (ve.dockable != null) {
 			ve.dockable.waitForLoadLock();
@@ -440,7 +419,7 @@ public final class ProjectViewer extends JPanel
 		config.addPropertyChangeListener(ccl);
 
 		// Register the dockable window in the viewer list
-		ViewerEntry ve = (ViewerEntry) viewers.get(aView);
+		ViewerEntry ve = viewers.get(aView);
 		if (ve == null) {
 			ve = new ViewerEntry();
 			ve.node = config.getLastNode();
@@ -498,8 +477,7 @@ public final class ProjectViewer extends JPanel
 		// check to see if project is active in some other viewer, so we
 		// don't mess up that guy.
 		if (config.getCloseFiles() && !ignoreClose) {
-			for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
-				ViewerEntry ve = (ViewerEntry) it.next();
+			for (ViewerEntry ve : viewers.values()) {
 				if (ve.dockable != this && ve.node.isNodeDescendant(p)) {
 					noTitleUpdate = false;
 					setChangingBuffers(false);
@@ -557,9 +535,8 @@ public final class ProjectViewer extends JPanel
 	private void openProject(final VPTProject p) {
 		setChangingBuffers(true);
 		if (config.getRememberOpen()) {
-			for (Iterator i = p.getOpenFiles().iterator(); i.hasNext(); ) {
-				String next = (String) i.next();
-				VPTNode f = p.getChildNode(next);
+			for (String path : p.getOpenFiles()) {
+				VPTNode f = p.getChildNode(path);
 				if (f != null) {
 					f.open();
 				}
@@ -588,8 +565,7 @@ public final class ProjectViewer extends JPanel
 	/** Checks if some of the projects that are loaded can be unloaded. */
 	private void unloadInactiveProjects(VPTNode newRoot) {
 		List<String> active = null;
-		for (Iterator i = viewers.values().iterator(); i.hasNext(); ) {
-			ViewerEntry ve = (ViewerEntry) i.next();
+		for (ViewerEntry ve : viewers.values()) {
 			if (ve.node != null && ve.dockable != this) {
 				if (active == null) {
 					active = new ArrayList<String>();
@@ -662,7 +638,7 @@ public final class ProjectViewer extends JPanel
 			closeProject((VPTProject)treeRoot, false);
 		}
 		unloadInactiveProjects(null);
-		ViewerEntry ve = (ViewerEntry) viewers.get(view);
+		ViewerEntry ve = viewers.get(view);
 		if (ve != null) {
 			ve.dockable = null;
 		}
@@ -778,7 +754,7 @@ public final class ProjectViewer extends JPanel
 		}
 
 		// set the new root
-		ViewerEntry ve = (ViewerEntry) viewers.get(view);
+		ViewerEntry ve = viewers.get(view);
 		if (n.isProject()) {
 			VPTProject p = (VPTProject) n;
 			if (!ProjectManager.getInstance().isLoaded(p.getName())) {

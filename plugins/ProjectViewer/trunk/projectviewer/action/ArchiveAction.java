@@ -53,7 +53,7 @@ public class ArchiveAction extends Action {
 	/** Creates a new project. */
 	public void actionPerformed(ActionEvent e) {
 		VPTNode node = viewer.getSelectedNode();
-		if (node == null || node.isRoot()) return;
+		if (node == null || node.isGroup()) return;
 
 		VPTProject project = VPTNode.findProjectFor(node);
 		ProjectZipper dlg = new ProjectZipper(viewer.getView(), project.getRootPath(), false);

@@ -25,10 +25,8 @@ import java.util.Map;
 
 import javax.swing.JOptionPane;
 
-import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.OptionGroup;
 import org.gjt.sp.jedit.OptionPane;
 import org.gjt.sp.jedit.ServiceManager;

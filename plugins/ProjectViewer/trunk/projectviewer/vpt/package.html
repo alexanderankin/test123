@@ -6,16 +6,14 @@ a new kind of node, the following steps need to be taken:</p>
 
 <ul>
 
-<li>Create a new class that extends {@link projectviewer.vpt.VPTNode VPTNode}.
-It's highly recommended that the NodeType for your node is not one of the four
-constants defined in this class.</li>
+<li>Create a new class that extends {@link projectviewer.vpt.VPTNode VPTNode}.</li>
 
 <li>Create a {@link projectviewer.persist.NodeHandler NodeHandler} to handle
 loading and saving of your node type. Don't forget to register the node handler
 in the <code>start()</code> method of your EditPlugin implementation.</li>
 
 <li>Create an {@link projectviewer.action.Action Action} that provides a way to
-import new nodes into a project. Optionally, you may use the code available in
+import new nodes into a project. Optionally, you may extend
 {@link projectviewer.importer.Importer Importer} to ease the importing of new
 nodes.</li>
 
@@ -52,7 +50,10 @@ is saved.</p>
 <p>If you develop custom nodes, you should keep this in mind to make sure
 that this does not affect the newly loaded instance of your plugin. Declaring
 ProjectViewer as an optional dependency for your plugin should fix this issue,
-since it will make jEdit reload ProjectViewer when your plugin is reloaded.</p>
+since it will make jEdit reload ProjectViewer when your plugin is reloaded,
+although that may cause data loss (e.g., if PV loads without your plugin
+being loaded, the data related to your plugin's nodes in a project config
+file will be lost).</p>
 
 </body>
 
