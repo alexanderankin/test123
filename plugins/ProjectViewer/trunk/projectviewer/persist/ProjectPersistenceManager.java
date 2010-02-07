@@ -49,8 +49,6 @@ import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.util.Log;
 
 import common.io.AtomicOutputStream;
-import common.threads.WorkerThreadPool;
-import common.threads.WorkRequest;
 
 import projectviewer.ProjectPlugin;
 import projectviewer.ProjectManager;

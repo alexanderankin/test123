@@ -39,7 +39,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.OperatingSystem;
 
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.StandardUtilities;

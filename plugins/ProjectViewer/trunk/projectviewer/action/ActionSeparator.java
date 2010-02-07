@@ -21,7 +21,6 @@ package projectviewer.action;
 //{{{ Imports
 import java.awt.event.ActionEvent;
 
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JComponent;
@@ -40,8 +39,8 @@ import projectviewer.vpt.VPTNode;
 public class ActionSeparator extends Action {
 
 	//{{{ Private Members
-	private Action 	linkedAction;
-	private List	actions;
+	private Action 			linkedAction;
+	private List<Action>	actions;
 	//}}}
 
 	//{{{ setLinkedAction(Action) method
@@ -60,7 +59,7 @@ public class ActionSeparator extends Action {
 	 *	shown; it will be show iff all the actions in the list are
 	 *	visible.
 	 */
-	public void setLinkedActions(List actions) {
+	public void setLinkedActions(List<Action> actions) {
 		this.actions = actions;
 	}
 
@@ -84,8 +83,8 @@ public class ActionSeparator extends Action {
 	public void prepareForNode(VPTNode node) {
 		if (actions != null) {
 			boolean visible = false;
-			for (Iterator i = actions.iterator(); i.hasNext(); ) {
-				if (((Action)i.next()).getMenuItem().isVisible()) {
+			for (Action a : actions) {
+				if (a.getMenuItem().isVisible()) {
 					visible = true;
 					break;
 				}

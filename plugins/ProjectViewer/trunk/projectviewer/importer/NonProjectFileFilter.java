@@ -20,7 +20,6 @@ package projectviewer.importer;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSFile;
-import org.gjt.sp.jedit.io.VFSFileFilter;
 
 import projectviewer.vpt.VPTProject;
 //}}}

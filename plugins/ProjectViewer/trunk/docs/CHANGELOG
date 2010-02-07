@@ -21,19 +21,16 @@ Version 3.0.0:
 		- Bump requirements: jEdit 4.3, Java 5
 		- Refactor the tree handling code into its own class, to try to
 		  simplify the ProjectViewer class.
-        - Get rid of the old listener-based event notification system,
-          reorganize the events into newer classes, and use the EditBus
-          to send events.
-        - Use jEdit's service framework to register extensions to PV.
-          This will be used for all extensions except option panes,
-          since those work differently inside jEdit and we'd like to
-          reuse as much code from the core as possible.
-        - Remove the toolbar from the PV GUI.
-        - Object properties in projects are not supported anymore. The
-          original idea was to save work when serializing / deserializing
-          config data from other plugins, but having PV do that causes
-          PV to hold references to other plugins' classes, and that
-          can cause ClassCastExceptions if a plugin is reloaded.
+		- Get rid of the old listener-based event notification system,
+		  reorganize the events into newer classes, and use the EditBus
+		  to send events.
+		- Use jEdit's service framework to register extensions to PV.
+		- Remove the toolbar from the PV GUI.
+		- Object properties in projects are not supported anymore. The
+		  original idea was to save work when serializing / deserializing
+		  config data from other plugins, but having PV do that causes
+		  PV to hold references to other plugins' classes, and that
+		  can cause ClassCastExceptions if a plugin is reloaded.
 		- PV is now fully VFS-aware. All files and directories are
 		  backed by VFS, and all importing is also done through VFS.
 		- SF Feat. Req. ##1936520: add an (extensible) node properties
@@ -47,6 +44,7 @@ Version 3.0.0:
 		  updates the project according to the underlying filesystem's
 		  data, following some user-configurable options (such as which
 		  filter to use.
+		- Too many other minor improvements to list here.
 
 ================================================================================
 

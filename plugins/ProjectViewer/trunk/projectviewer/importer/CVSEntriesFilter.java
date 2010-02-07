@@ -41,7 +41,6 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
 
-import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.io.VFS;

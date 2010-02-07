@@ -36,7 +36,6 @@ import javax.swing.ButtonGroup;
 import javax.swing.JRadioButton;
 
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.OperatingSystem;
 
 import projectviewer.ProjectViewer;
 import projectviewer.gui.OptionPaneBase;

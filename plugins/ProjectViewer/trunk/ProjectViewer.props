@@ -310,6 +310,8 @@ projectviewer.action.jarmaker.filter=File filter:
 projectviewer.action.jarmaker.manifest=Manifest
 projectviewer.action.jarmaker.load_manifest=Load Manifest from file...
 projectviewer.action.jarmaker.add_manifest=Add Manifest
+projectviewer.action.jarmaker.error=An I/O error occurred when creating the archive: {0}
+projectviewer.action.jarmaker.error.title=Error
 
 projectviewer.action.add_group=Add new group here
 projectviewer.action.edit_group=Edit group

@@ -19,7 +19,6 @@
 package projectviewer.gui;
 
 import java.awt.Component;
-import org.gjt.sp.jedit.gui.EnhancedDialog;
 import projectviewer.vpt.VPTNode;
 
 /**

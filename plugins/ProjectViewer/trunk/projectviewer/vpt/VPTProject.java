@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -33,13 +32,11 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.swing.Icon;
-import javax.swing.SwingUtilities;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.GUIUtilities;
 
-import projectviewer.PVActions;
 import projectviewer.ProjectViewer;
 import projectviewer.event.ProjectUpdate;
 //}}}

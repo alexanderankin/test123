@@ -36,11 +36,7 @@ to keep their own configuration file for the projects. The project gives
 access to its internal <tt>java.util.Properties</tt> instance, for
 compatibility with jEdit's properties so that as little work as possible
 is needed to convert an existing <tt>AbstractOptionPane</tt>
-implementation to work with ProjectViewer. As a bonus, it's also
-possible to set "object" properties, i.e., properties that are not
-necessarily an instance of String. These properties are serialized an
-encoded using base64 so that it's possible to save them in the XML
-config file.</p>
+implementation to work with ProjectViewer.</p>
 
 <p>To use project-specific options, it is easier if the plugin uses a
 "property" based configuration style, just like jEdit provides by

@@ -23,9 +23,6 @@ import java.io.File;
 import java.io.Writer;
 import java.io.IOException;
 
-import java.util.Map;
-import java.util.Iterator;
-
 import org.xml.sax.Attributes;
 
 import projectviewer.vpt.VPTFilterData;
@@ -105,10 +102,9 @@ public class ProjectNodeHandler extends NodeHandler {
 		// save the properties
 		VPTProject proj = (VPTProject) node;
 		PropertyNodeHandler nh = new PropertyNodeHandler();
-		Map props = proj.getProperties();
-		for (Iterator it = props.keySet().iterator(); it.hasNext(); ) {
-			String p = (String) it.next();
-			nh.saveNode(p, props.get(p), out);
+		for (Object k : proj.getProperties().keySet()) {
+			String p = (String) k;
+			nh.saveNode(p, proj.getProperties().get(p), out);
 		}
 
 		// save the open files

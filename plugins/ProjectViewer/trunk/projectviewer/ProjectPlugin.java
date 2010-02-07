@@ -33,7 +33,6 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPlugin;
-import org.gjt.sp.jedit.OperatingSystem;
 import org.gjt.sp.jedit.msg.PluginUpdate;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import static org.gjt.sp.jedit.EditBus.EBHandler;
