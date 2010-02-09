@@ -10,6 +10,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.Mode;
@@ -43,17 +44,25 @@ public class ToolBar extends JPanel {
 	}
 	
 	public void update() {
-		menubar.removeAll();
-		updateSelector(MapperManager.getInstance(),
-				GeneralOptionPane.SHOW_GROUP_SELECTOR, "Grouping");
-		updateSelector(SorterManager.getInstance(),
-				GeneralOptionPane.SHOW_SORT_SELECTOR, "Sorting");
-		updateSelector(FilterManager.getInstance(),
-				GeneralOptionPane.SHOW_FILTER_SELECTOR, "Filtering");
-		updateSelector(TextProviderManager.getInstance(),
-				GeneralOptionPane.SHOW_TEXT_PROVIDER_SELECTOR, "Text");
-		updateSelector(IconProviderManager.getInstance(),
-				GeneralOptionPane.SHOW_ICON_PROVIDER_SELECTOR, "Icon");
+		Runnable r = new Runnable() {
+			public void run() {
+				menubar.removeAll();
+				updateSelector(MapperManager.getInstance(),
+						GeneralOptionPane.SHOW_GROUP_SELECTOR, "Grouping");
+				updateSelector(SorterManager.getInstance(),
+						GeneralOptionPane.SHOW_SORT_SELECTOR, "Sorting");
+				updateSelector(FilterManager.getInstance(),
+						GeneralOptionPane.SHOW_FILTER_SELECTOR, "Filtering");
+				updateSelector(TextProviderManager.getInstance(),
+						GeneralOptionPane.SHOW_TEXT_PROVIDER_SELECTOR, "Text");
+				updateSelector(IconProviderManager.getInstance(),
+						GeneralOptionPane.SHOW_ICON_PROVIDER_SELECTOR, "Icon");
+			}
+		};
+		if (SwingUtilities.isEventDispatchThread())
+			r.run();
+		else
+			SwingUtilities.invokeLater(r);
 	}
 	
 	static class ObjectProcessorMenu extends JMenu {
