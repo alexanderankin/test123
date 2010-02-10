@@ -57,10 +57,8 @@ public class SVNAction extends projectviewer.action.Action {
     }
     
     public static void remove(View view) {
-        System.out.println("+++++ REMOVE!");
         if (view != null) {
             menus.remove(view);
-            System.out.println("+++++ removed view from view map, size = " + menus.size());
         }
     }
 
@@ -72,7 +70,6 @@ public class SVNAction extends projectviewer.action.Action {
         View view = viewer.getView();
         JMenu menu = menus.get( view );
         if ( menu != null ) {
-            System.out.println("+++++ reusing view, view map size = " + menus.size());
             return menu;
         }
 
@@ -116,7 +113,6 @@ public class SVNAction extends projectviewer.action.Action {
             }
         }
         menus.put( view, menu );
-        System.out.println("+++++ added item to view map, size = " + menus.size());
         return menu;
     }
 
