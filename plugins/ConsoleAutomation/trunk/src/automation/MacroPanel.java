@@ -43,6 +43,8 @@ public class MacroPanel extends JPanel {
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				TreePath tp = tree.getPathForLocation(e.getX(), e.getY());
+				if (tp == null)
+					return;
 				tree.setSelectionPath(tp);
 				Object [] path = tp.getPath();
 				String key = null;
