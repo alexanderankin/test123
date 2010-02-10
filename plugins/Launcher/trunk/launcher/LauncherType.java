@@ -22,7 +22,7 @@ public abstract class LauncherType {
 		LauncherType.class.getName();
 	
 	public static final String OPT_BASE_PREFIX = LauncherPlugin.OPT_BASE_PREFIX;
-	public static final String LABEL_SUFFIX = LauncherUtils.LABEL_SUFFIX;
+	public static final String LABEL_SUFFIX = LauncherPlugin.LABEL_SUFFIX;
 	public static final String ACTION_SUFFIX = ".action";
 	public static final String SHORT_LABEL_SUFFIX = LABEL_SUFFIX + ".short";
 	public static final String DEFAULT_SUFFIX = ".default";
