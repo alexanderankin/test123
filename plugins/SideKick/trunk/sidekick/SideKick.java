@@ -88,7 +88,7 @@ public class SideKick
 	SideKick(View view)
 	{
 		this.view = view;
-
+		editPane = view.getEditPane();
 		bufferListener = new BufferChangeListener();
 
 		propertiesChanged();
