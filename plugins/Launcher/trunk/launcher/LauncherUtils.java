@@ -49,10 +49,12 @@ import org.gjt.sp.jedit.textarea.TextArea;
 
 public class LauncherUtils {
 
-	public static final String LABEL_SUFFIX = ".label";
-
 	public static final JMenuItem SEPARATOR = new JMenuItem();
-
+	
+	public static final JMenuItem NO_LAUNCHER_AVAILABLE = new JMenuItem(
+			jEdit.getProperty(LauncherPlugin.PROP_PREFIX + ".no-menu-items" + LauncherPlugin.LABEL_SUFFIX));
+	public static final JMenuItem[] NO_LAUNCHERS_AVAILABLE =
+			new JMenuItem[]{NO_LAUNCHER_AVAILABLE};
 
 	//{{{ getFileExtension(String) : String
 	/**
@@ -307,7 +309,7 @@ public class LauncherUtils {
 	public static JMenuItem buildMenuItemFor(EditAction action,
 			ActionContext context) {
 		JMenuItem item = null;
-		String actionLabelProp = action.getName() + LABEL_SUFFIX;
+		String actionLabelProp = action.getName() + LauncherPlugin.LABEL_SUFFIX;
 		String actionLabel = jEdit.getProperty(actionLabelProp);
 		boolean tempLabelNeeded = actionLabel == null || actionLabel.trim().length() == 0;
 		if (tempLabelNeeded) {
@@ -328,9 +330,12 @@ public class LauncherUtils {
 					Set<EditAction> level2Actions,
 					Map<EditAction,ActionContext> actionContexts) {
 		// Build the list of 1st and 2nd level actions
-		JMenuItem[] items = new JMenuItem[level2Actions.size() == 0 ?
-		                                		level1Actions.size() :
-		                                		level1Actions.size() + 1];
+		int nbItems = level2Actions.size() == 0 ?
+        					level1Actions.size() :
+        					level1Actions.size() + 1;
+		if (nbItems==0)
+			return NO_LAUNCHERS_AVAILABLE;
+		JMenuItem[] items = new JMenuItem[nbItems];
 		// Build 1st level menu items
 		int i = 0;
 		for (EditAction action: level1Actions) {

@@ -54,11 +54,11 @@ public class LauncherPlugin extends EditPlugin
 {
 	public static final String NAME = "Launcher";
 	public static final String PROP_PREFIX = LauncherPlugin.class.getPackage().getName();
+	public static final String LABEL_SUFFIX = ".label";
 	public static final String OPT_BASE_PREFIX = "options.";
 	public static final String OPT_PREFIX = OPT_BASE_PREFIX + PROP_PREFIX;
 	public static final String ERR_PREFIX = PROP_PREFIX + ".error";
 	public static final String ERR_EXCEPTION = ERR_PREFIX + ".exception";
-	public static final String LABEL_SUFFIX = LauncherUtils.LABEL_SUFFIX;
 	public static final String LABEL =
 		jEdit.getProperty(PROP_PREFIX + LABEL_SUFFIX);
 	public static final String SUBMENU_LABEL =
