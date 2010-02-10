@@ -49,11 +49,19 @@ public class SVNAction extends projectviewer.action.Action {
     public final static String PREFIX = "ise.plugin.svn.pv.";
 
     // need to have a menu per View, this map stores the relationship
-    private HashMap<View, JMenu> menus = new HashMap<View, JMenu>();
+    private static HashMap<View, JMenu> menus = new HashMap<View, JMenu>();
 
     // this won't be displayed in the PV context menu
     public String getText() {
         return "Subversion";
+    }
+    
+    public static void remove(View view) {
+        System.out.println("+++++ REMOVE!");
+        if (view != null) {
+            menus.remove(view);
+            System.out.println("+++++ removed view from view map, size = " + menus.size());
+        }
     }
 
     // returns the menu 'Subversion' with a pull-out submenu containing the
@@ -64,6 +72,7 @@ public class SVNAction extends projectviewer.action.Action {
         View view = viewer.getView();
         JMenu menu = menus.get( view );
         if ( menu != null ) {
+            System.out.println("+++++ reusing view, view map size = " + menus.size());
             return menu;
         }
 
@@ -107,6 +116,7 @@ public class SVNAction extends projectviewer.action.Action {
             }
         }
         menus.put( view, menu );
+        System.out.println("+++++ added item to view map, size = " + menus.size());
         return menu;
     }
 
