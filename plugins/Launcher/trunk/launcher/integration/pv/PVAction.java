@@ -40,7 +40,6 @@ import launcher.LauncherPlugin;
 import launcher.LauncherUtils;
 
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.util.Log;
 
 import projectviewer.vpt.VPTNode;
 
@@ -50,7 +49,7 @@ import projectviewer.vpt.VPTNode;
  */
 public class PVAction extends projectviewer.action.Action {
 
-	private final JMenu menu = new JMenu(LauncherPlugin.NAME);
+	private JMenu menu = new JMenu(LauncherPlugin.NAME);
 
     public PVAction() {
     }
@@ -83,5 +82,10 @@ public class PVAction extends projectviewer.action.Action {
         // action other than to display the pull out.
     }
 
+	public Object clone() {
+		PVAction clone = (PVAction)super.clone();
+		clone.menu = new JMenu(LauncherPlugin.NAME);
+		return clone;
+	}
 
 }
