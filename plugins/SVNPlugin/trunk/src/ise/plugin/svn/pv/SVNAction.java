@@ -40,16 +40,36 @@ import org.gjt.sp.jedit.View;
 
 /**
  * ProjectViewer Action to be added to the PV context menu.  This class serves
- * as the menu for a pull-out menu containing the subversion commands.
+ * as the menu for a pull-out menu containing the subversion commands.  A JMenu
+ * is created per View.
  */
 public class SVNAction extends projectviewer.action.Action {
 
+    // for property lookup
     public final static String PREFIX = "ise.plugin.svn.pv.";
 
-    private JMenu menu = null;
+    // need to have a menu per View, this map stores the relationship
+    private HashMap<View, JMenu> menus = new HashMap<View, JMenu>();
 
-    public SVNAction() {
-        // set up the menu to be added to Project Viewer's context menu
+    // this won't be displayed in the PV context menu
+    public String getText() {
+        return "Subversion";
+    }
+
+    // returns the menu 'Subversion' with a pull-out submenu containing the
+    // subversion commands.
+    public JComponent getMenuItem() {
+
+        // possibly reuse the JMenu for the View
+        View view = viewer.getView();
+        JMenu menu = menus.get( view );
+        if ( menu != null ) {
+            return menu;
+        }
+
+        // set up the menu to be added to Project Viewer's context menu. This
+        // will be displayed in the PV context menu.
+        // QUESTION: move "Subversion" to properties file?
         menu = new JMenu( "Subversion" );
 
         // Each subversion command to be added to the context
@@ -64,7 +84,7 @@ public class SVNAction extends projectviewer.action.Action {
             if ( label == null ) {
                 continue;
             }
-            if ( label.equals("-")) {
+            if ( label.equals( "-" ) ) {
                 menu.addSeparator();
                 continue;
             }
@@ -86,16 +106,7 @@ public class SVNAction extends projectviewer.action.Action {
                 continue;
             }
         }
-    }
-
-    // this won't be displayed in the PV context menu
-    public String getText() {
-        return "Subversion";
-    }
-
-    // returns the menu 'Subversion' with a pull-out submenu containing the
-    // subversion commands.
-    public JComponent getMenuItem() {
+        menus.put( view, menu );
         return menu;
     }
 
@@ -105,6 +116,11 @@ public class SVNAction extends projectviewer.action.Action {
     // act accordingly.
     public void prepareForNode( VPTNode node ) {
         View view = viewer.getView();
+        JMenu menu = menus.get(view);
+        if (menu == null) {
+            menu = (JMenu)getMenuItem();   
+        }
+        
         //String project_name = PVHelper.getProjectName( view );
         String project_root = PVHelper.getProjectRoot( view );
 
@@ -114,7 +130,7 @@ public class SVNAction extends projectviewer.action.Action {
         for ( int i = 0; i < menu.getItemCount(); i++ ) {
             try {
                 JMenuItem actor = ( JMenuItem ) menu.getItem( i );
-                if (actor == null) {
+                if ( actor == null ) {
                     continue;
                 }
                 ActionListener[] listeners = actor.getActionListeners();
@@ -131,7 +147,7 @@ public class SVNAction extends projectviewer.action.Action {
     }
 
     public void actionPerformed( ActionEvent ae ) {
-        // does nothing, this is the top of a pull out menu so has no specific
+        // does nothing, this is the top of a pull out menu so there is no specific
         // action other than to display the pull out.
     }
 
@@ -177,8 +193,6 @@ public class SVNAction extends projectviewer.action.Action {
                 objs.add( ( VPTNode ) paths[ i ].getLastPathComponent() );
             }
         }
-
         return objs;
     }
-
 }
