@@ -34,6 +34,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import ise.plugin.svn.gui.OutputPanel;
+import ise.plugin.svn.pv.SVNAction;
 import java.awt.event.*;
 import javax.swing.*;
 
@@ -58,8 +59,11 @@ public class SVNPlugin extends EBPlugin {
     public void handleMessage( EBMessage message ) {
         if ( message instanceof ViewUpdate ) {
             ViewUpdate vu = ( ViewUpdate ) message;
-            if ( ViewUpdate.CLOSED == vu.getWhat() && panelMap != null ) {
-                panelMap.remove( vu.getView() );
+            if ( ViewUpdate.CLOSED == vu.getWhat() ) {
+                if (panelMap != null) {
+                    panelMap.remove( vu.getView() );
+                }
+                SVNAction.remove( vu.getView() );
             }
         }
     }
