@@ -6,6 +6,7 @@ import java.util.regex.*;
 import javax.swing.*;
 
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.util.Log;
 
 import jdiff.component.*;
@@ -151,10 +152,13 @@ public class DualDiffManager {
             for ( EditPane ep : view.getEditPanes() ) {
                 List<Integer> values = carets.get( ep.getBuffer().getPath( false ) );
                 if ( values != null ) {
-                    int caret_position = values.get( 0 );
-                    int first_physical_line = values.get( 1 );
-                    ep.getTextArea().setCaretPosition( caret_position );
-                    ep.getTextArea().setFirstPhysicalLine( first_physical_line );
+                    TextArea textArea = ep.getTextArea();
+                    int max_caret = textArea.getBufferLength() - 1;
+                    int caret_position = Math.min(values.get( 0 ), max_caret);
+                    int max_line = textArea.getLineCount() - 1;
+                    int first_physical_line = Math.min(values.get( 1 ), max_line);
+                    textArea.setCaretPosition( caret_position );
+                    textArea.setFirstPhysicalLine( first_physical_line );
                 }
             }
             carets = null;
