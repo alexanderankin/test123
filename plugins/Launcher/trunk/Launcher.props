@@ -24,6 +24,7 @@ plugin.launcher.LauncherPlugin.menu.code=launcher.integration.PluginContextMenuP
 plugin.launcher.LauncherPlugin.browser-menu.code=launcher.integration.BrowserContextMenuProvider.INSTANCE;
 launcher.label=Launcher
 launcher.submenu.label=More Launchers
+launcher.no-menu-items.label=No launcher available
 
 # Options
 options.launcher.label=Launcher
