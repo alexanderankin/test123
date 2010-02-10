@@ -74,7 +74,7 @@ public class RFCReaderPlugin extends EditPlugin
 	public static void openRFC(View view)
 	{
 		ItemFinderWindow<RFC> window = new ItemFinderWindow<RFC>(new RFCItemFinder());
-		window.setLocationRelativeTo(jEdit.getActiveView());
+		window.setLocationRelativeTo(view);
 		window.setVisible(true);
 		EventQueue.invokeLater(window.requestFocusWorker);
 	}

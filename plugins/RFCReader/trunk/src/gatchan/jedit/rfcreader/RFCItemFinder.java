@@ -31,8 +31,8 @@ import java.util.List;
  */
 public class RFCItemFinder implements ItemFinder<RFC>
 {
-	private RFCReaderPlugin plugin;
-	private RFCListModel model;
+	private final RFCReaderPlugin plugin;
+	private final RFCListModel model;
 
 	public RFCItemFinder()
 	{
@@ -56,7 +56,7 @@ public class RFCItemFinder implements ItemFinder<RFC>
 			model.reset();
 		else
 		{
-			List<RFC> rfcList = plugin.index.search(s+"*");
+			List<RFC> rfcList = plugin.index.search(s+ '*');
 			model.setData(rfcList);
 		}
 	}
