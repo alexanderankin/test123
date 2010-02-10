@@ -38,6 +38,8 @@ public class PropertyDialog extends JDialog
 
 		JScrollPane scrollPane = new JScrollPane( _propertiesTable );
 		scrollPane.setPreferredSize( new Dimension( 300, 300 ) );
+		
+		_propertiesTable.setRowHeight(22);
 
 		getContentPane().add( scrollPane, BorderLayout.CENTER );
 
