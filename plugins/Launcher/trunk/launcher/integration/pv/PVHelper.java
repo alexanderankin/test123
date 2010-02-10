@@ -172,7 +172,9 @@ public class PVHelper {
     	File[] files = new File[numberOfNodes];
     	int numberOfFiles = 0;
     	for (VPTNode node : nodes) {
-    		if (node.isFile() || (node.isDirectory() && keepDir)) {
+    		if (	node.isProject() ||
+    				node.isFile() ||
+    				(node.isDirectory() && keepDir)) {
     			String nodePath = node.getNodePath();
     			File file = LauncherUtils.resolveToFile(nodePath);
     			if (file == null)
