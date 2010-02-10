@@ -44,7 +44,7 @@ public class ItemFinderWindow<E> extends JFrame
 	private final JTextField searchField;
 	private final JList itemList;
 
-	protected RequestFocusWorker requestFocusWorker;
+	protected final RequestFocusWorker requestFocusWorker;
 	private final ItemFinder<E> itemFinder;
 
 	public ItemFinderWindow(ItemFinder<E> itemFinder)
@@ -107,6 +107,7 @@ public class ItemFinderWindow<E> extends JFrame
 		EventQueue.invokeLater(requestFocusWorker);
 	}
 
+	@Override
 	public void setVisible(boolean b)
 	{
 		Rectangle bounds = getBounds();
@@ -114,6 +115,13 @@ public class ItemFinderWindow<E> extends JFrame
 		GUIUtilities.requestFocus(this, searchField);
 		window.setVisible(false);
 		super.setVisible(b);
+	}
+
+	@Override
+	public void dispose()
+	{
+		window.dispose();
+		super.dispose(); 
 	}
 
 	private static boolean handledByList(KeyEvent e)
@@ -128,11 +136,15 @@ public class ItemFinderWindow<E> extends JFrame
 	{
 		E value = (E) itemList.getSelectedValue();
 		if (value != null)
+		{
 			itemFinder.selectionMade(value);
+			dispose();
+		}
 	}
 
-	private final class SearchFieldKeyAdapter extends KeyAdapter
+	private class SearchFieldKeyAdapter extends KeyAdapter
 	{
+		@Override
 		public void keyPressed(KeyEvent e)
 		{
 			if (handledByList(e))
@@ -150,20 +162,22 @@ public class ItemFinderWindow<E> extends JFrame
 		}
 	}
 
-	private static final class ItemListKeyAdapter extends KeyAdapter
+	private static class ItemListKeyAdapter extends KeyAdapter
 	{
 		private final JTextField searchField;
 
-		public ItemListKeyAdapter(JTextField searchField)
+		private ItemListKeyAdapter(JTextField searchField)
 		{
 			this.searchField = searchField;
 		}
 
+		@Override
 		public void keyTyped(KeyEvent e)
 		{
 			searchField.dispatchEvent(e);
 		}
 
+		@Override
 		public void keyPressed(KeyEvent e)
 		{
 			if (!handledByList(e))
@@ -173,8 +187,9 @@ public class ItemFinderWindow<E> extends JFrame
 		}
 	}
 
-	private final class MyMouseAdapter extends MouseAdapter
+	private class MyMouseAdapter extends MouseAdapter
 	{
+		@Override
 		public void mouseClicked(MouseEvent e)
 		{
 			if (e.getClickCount() == 2)
@@ -184,11 +199,11 @@ public class ItemFinderWindow<E> extends JFrame
 		}
 	}
 
-	private static class RequestFocusWorker implements Runnable
+	protected static class RequestFocusWorker implements Runnable
 	{
 		private final JTextField searchField;
 
-		public RequestFocusWorker(JTextField searchField)
+		private RequestFocusWorker(JTextField searchField)
 		{
 			this.searchField = searchField;
 		}
