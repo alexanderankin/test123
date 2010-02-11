@@ -450,6 +450,12 @@ errorSource.addError(new ErrorSource.DefaultError(
 
 <appendix id="changes"><title>Change log</title>
  <itemizedlist>
+ <listitem>
+ <formalpara><title>Version 1.9</title> <para>requires JDK 1.5, and jEdit 4.3.99.00. </para> </formalpara>
+ <itemizedlist>
+ <listitem><para> Fixed deadlock condition arising from new EditBus behavior in jEdit 4.4 </para></listitem>
+ </itemizedlist>
+  </listitem>
   <listitem>
  <formalpara><title>Version 1.8</title> <para>requires JDK 1.5, and jEdit 4.3pre7. </para> </formalpara>
  <itemizedlist>
