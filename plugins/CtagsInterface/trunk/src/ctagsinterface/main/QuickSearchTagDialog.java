@@ -168,7 +168,8 @@ public class QuickSearchTagDialog extends JDialog {
 
 	protected void jumpToSelected() {
 		QuickSearchTag t = (QuickSearchTag) tags.getSelectedValue();
-		CtagsInterfacePlugin.jumpTo(view, t.file, t.line);
+		if (t != null)
+			CtagsInterfacePlugin.jumpTo(view, t.file, t.line);
 		dispose();
 	}
 
