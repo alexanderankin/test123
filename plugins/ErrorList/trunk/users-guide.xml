@@ -453,7 +453,7 @@ errorSource.addError(new ErrorSource.DefaultError(
  <listitem>
  <formalpara><title>Version 1.9</title> <para>requires JDK 1.5, and jEdit 4.3.99.00. </para> </formalpara>
  <itemizedlist>
- <listitem><para> Fixed deadlock condition arising from new EditBus behavior in jEdit 4.4 </para></listitem>
+ <listitem><para> Fixed deadlock condition arising from new EditBus behavior in jEdit 4.4 (Kazutoshi Satoda) </para></listitem>
  </itemizedlist>
   </listitem>
   <listitem>
