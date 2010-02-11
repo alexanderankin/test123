@@ -395,7 +395,20 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	}
 
 	// Jumps to the specified location
-	public static void jumpTo(final View view, String file, final int line) {
+	public static void jumpTo(final View view, final String file, final int line) {
+		Runnable r = new Runnable() {
+			public void run() {
+				jumpToDirect(view, file, line);
+			}
+		};
+		if (SwingUtilities.isEventDispatchThread())
+			r.run();
+		else
+			SwingUtilities.invokeLater(r);
+	}
+
+	private static void jumpToDirect(final View view, String file,
+			final int line) {
 		final EditPlugin p = jEdit.getPlugin("plugin.ise.plugin.nav.NavigatorPlugin",false);
 		if (p != null)
 		{
