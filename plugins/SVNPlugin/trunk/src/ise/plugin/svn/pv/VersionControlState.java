@@ -4,6 +4,8 @@ package ise.plugin.svn.pv;
 import projectviewer.config.VersionControlService;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
+import projectviewer.importer.ImporterFileFilter;
+
 import java.io.File;
 import java.util.*;
 import javax.swing.Icon;
@@ -194,6 +196,10 @@ public class VersionControlState implements VersionControlService {
      */
     public OptionGroup getOptionGroup( VPTProject project ) {
         return null;
+    }
+    
+    public ImporterFileFilter getFilter() {
+        return null;   
     }
 
 
