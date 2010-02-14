@@ -14,6 +14,20 @@ javax.xml.transform.TransformerFactory=org.apache.xalan.processor.TransformerFac
 javax.xml.parsers.SAXParserFactory=org.apache.xerces.jaxp.SAXParserFactoryImpl
 org.xml.sax.driver=org.apache.xerces.parsers.SAXParser
 
+# XSLT engines :
+xslt.factory.org.apache.xalan.processor.TransformerFactoryImpl=XSLT 1.0 - Xalan 2.7.1 (org.apache.xalan.processor.TransformerFactoryImpl)
+xslt.factory.com.icl.saxon.TransformerFactoryImpl=XSLT 1.0 - Saxon 6.5.5 (com.icl.saxon.TransformerFactoryImpl)
+xslt.factory.net.sf.saxon.TransformerFactoryImpl=XSLT 2.0 - Saxon 9.2 (net.sf.saxon.TransformerFactoryImpl)
+
+# Option panes
+plugin.xslt.XSLTPlugin.option-pane=xslt.general
+
+# {{ option pane
+options.xslt.general.label=XSLT
+options.xslt.general.code=new xslt.XSLTOptionPane()
+options.xslt.factory.label=XSLT processor : 
+options.xslt.factory.tooltip=XSLT engine to use for the XSLT Tool ; you can use another one (see help)
+# }}}
 
 # Dockables
 xslt-processor.label=XSLT Processor

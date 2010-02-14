@@ -43,6 +43,7 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.URIResolver;
 
 import org.gjt.sp.util.Log;
+import org.gjt.sp.jedit.jEdit;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.SAXException;
@@ -55,10 +56,11 @@ import org.xml.sax.helpers.XMLReaderFactory;
  */
 public class XSLTUtilities {
 
-  static final String TRANSFORMER_FACTORY = "javax.xml.transform.TransformerFactory";
   static final String SAX_PARSER_FACTORY = "javax.xml.parsers.SAXParserFactory";
   static final String SAX_DRIVER = "org.xml.sax.driver";
-
+  
+  static final String XSLT_FACTORY_PROP = "xslt.factory";
+  
   private static String indentAmount = "2";
 
 
@@ -70,7 +72,6 @@ public class XSLTUtilities {
    * FIXME : shouldn't let this plugin override these global properties !
    */
   public static void setXmlSystemProperties(String transformerFactory, String saxParserFactory, String saxDriver) {
-    System.setProperty(TRANSFORMER_FACTORY, transformerFactory);
     System.setProperty(SAX_PARSER_FACTORY, saxParserFactory);
     System.setProperty(SAX_DRIVER, saxDriver);
     logXmlSystemProperties();
@@ -78,7 +79,6 @@ public class XSLTUtilities {
 
 
   public static void logXmlSystemProperties() {
-    Log.log(Log.DEBUG, XSLTPlugin.class, TRANSFORMER_FACTORY + "=" + System.getProperty(TRANSFORMER_FACTORY));
     Log.log(Log.DEBUG, XSLTPlugin.class, SAX_PARSER_FACTORY + "=" + System.getProperty(SAX_PARSER_FACTORY));
     Log.log(Log.DEBUG, XSLTPlugin.class, SAX_DRIVER + "=" + System.getProperty(SAX_DRIVER));
   }
@@ -123,14 +123,20 @@ public class XSLTUtilities {
   }
 
 
-  private static TransformerHandler[] getTransformerHandlers(Object[] stylesheets, Map stylesheetParameters, ErrorListenerToErrorList errorListener) throws IOException, TransformerConfigurationException,SAXException {
+  private static TransformerHandler[] getTransformerHandlers(Object[] stylesheets,
+  	  Map stylesheetParameters, ErrorListenerToErrorList errorListener)
+  		throws IOException, TransformerConfigurationException,SAXException, ClassNotFoundException, InstantiationException, IllegalAccessException
+  {
     SAXTransformerFactory saxFactory = null;
 
+    String factoryClass = jEdit.getProperty(XSLT_FACTORY_PROP);
     try {
-      saxFactory = (SAXTransformerFactory)TransformerFactory.newInstance();
+      saxFactory = (SAXTransformerFactory)Class.forName(factoryClass).newInstance();
     } catch(ClassCastException exception) {
       Log.log(Log.ERROR, XSLTUtilities.class, "class cast exception " + exception.toString());
       throw new TransformerConfigurationException(XSLTPlugin.getOldXalanJarMessage());
+    } catch(ClassNotFoundException cnfe){
+    	throw new TransformerConfigurationException("class not found:"+factoryClass);
     }
     
     saxFactory.setErrorListener(errorListener);

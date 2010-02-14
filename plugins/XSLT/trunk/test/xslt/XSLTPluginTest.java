@@ -66,7 +66,7 @@ public class XSLTPluginTest{
         TestUtils.afterClass();
     }
     
-    //@Test
+    @Test
     public void testXSLT() throws IOException{
     	File xml = new File(testData,"simple/source.xml");
     	File xsl = new File(testData,"simple/transform.xsl");
@@ -104,7 +104,7 @@ public class XSLTPluginTest{
 		xsltProcessor.close();
     }
     
-    //@Test
+    @Test
     public void testXSLTErrorList() throws IOException{
     	File xml = new File(testData,"simple/source.xml");
     	File xsl = new File(testData,"broken/transform.xsl");
@@ -161,7 +161,7 @@ public class XSLTPluginTest{
 		xsltProcessor.close();
     }
 
-    //@Test
+    @Test
     public void testXSLTBaseURIBug() throws IOException{
     	File xsl = new File(testData,"base_uri_bug/base-uri-bug.xsl");
     	
@@ -214,7 +214,7 @@ public class XSLTPluginTest{
 		errorlist.close();
     }
 
-    //@Test
+    @Test
     public void testXSLTRuntimeError() throws IOException{
     	File xml = new File(testData,"simple/source.xml");
     	File xsl = new File(testData,"broken/fails_at_runtime.xsl");
@@ -326,7 +326,7 @@ public class XSLTPluginTest{
 		errorlist.close();
     }
 
-    //@Test
+    @Test
     public void testXPath() throws IOException{
     	File xml = new File(testData,"simple/source.xml");
     	

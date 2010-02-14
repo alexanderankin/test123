@@ -308,7 +308,36 @@
     </para>
   </chapter>
 
-
+  <chapter id="options"><title>XSLT Plugin option pane</title>
+  
+  <para>You can choose which XSLT processor to use by selecting one option
+  in the combo-box in the <guimenuitem>Plugins</guimenuitem> / <guimenuitem>XSLT</guimenuitem>
+  section of the <guimenu>Plugins</guimenu> > <guimenuitem>Plugin Options</guimenuitem>
+  dialog.</para>
+  
+  <itemizedlist>
+  <listitem><para>only the Xalan XSLT processor is bundled for the moment. It's the default
+  choice and also the platform's default (maybe in an outdated version);
+  it is compatible with XSLT version 1.0 (<uri>http://www.w3.org/TR/xslt</uri>);</para></listitem>
+  
+  <listitem><para>you can also use the 6.5.5 version of the SAXON XSLT Processor from Michael Kay.
+  This version of Saxon is XSLT 1.0 compliant. It is released under the Mozilla Public License Version 1.0.</para></listitem>
+  
+  <listitem><para>Last but not least, you can use version 9.x of version of the SAXON XSLT Processor from Michael Kay,
+  which is an XSLT 2.0 processor. You may obtain both versions of Saxon from Sourceforge :
+  <uri>https://sourceforge.net/projects/saxon/files/</uri> or from Saxonica (<uri>http://www.saxonica.com</uri>).
+  It is released under the Mozilla Public License Version 1.0 or under a commercial license (again, see <uri>http://www.saxonica.com</uri>).</para></listitem>
+  </itemizedlist>
+  
+  <para>To use a processor which is not distributed with the plugin, simply drop
+  the jar files in the <filename>jars</filename> directory within the settings
+  directory (which you can browse via the <guimenu>Utilities</guimenu> > <guisubmenu>Settings Directory</guisubmenu>).
+  You will then have to enter the class name of its implementation of 
+  <code>javax.xml.transform.TransformerFactory</code>. After a restart of jEdit,
+  you will be using the selected XSLT processor.
+  </para>
+  </chapter>
+  
   <chapter id="contributors">
     <title>Contributors</title>
 
@@ -363,6 +392,7 @@
         <listitem><para>Updated to Xalan 2.7.1.</para></listitem>
         <listitem><para>Transformation errors go to ErrorList (Lari Hotari)
         - see plugin patch #1610606).</para></listitem>
+        <listitem><para>Configurable XSLT processor.</para></listitem>
       </itemizedlist>
     </para>
     <para>
