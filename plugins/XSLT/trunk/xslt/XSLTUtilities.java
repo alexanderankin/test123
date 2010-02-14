@@ -37,6 +37,7 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.ErrorListener;
 
 import org.gjt.sp.util.Log;
 import org.xml.sax.InputSource;
@@ -61,6 +62,9 @@ public class XSLTUtilities {
   }
 
 
+  /*
+   * FIXME : shouldn't let this plugin override these global properties !
+   */
   public static void setXmlSystemProperties(String transformerFactory, String saxParserFactory, String saxDriver) {
     System.setProperty(TRANSFORMER_FACTORY, transformerFactory);
     System.setProperty(SAX_PARSER_FACTORY, saxParserFactory);
@@ -88,11 +92,12 @@ public class XSLTUtilities {
    * @param stylesheets          ordered array of names of stylesheets to be applied
    * @param stylesheetParameters map of stylesheet parameters
    * @param resultFile           name of the file that final result is written to
+   * @param errorListener        where the errors will show up (may not be null)
    * @exception Exception        if a problem occurs during the transformation
    */
-  public static void transform(InputSource inputFile, Object[] stylesheets, Map stylesheetParameters, File resultFile) throws Exception {
+  public static void transform(InputSource inputFile, Object[] stylesheets, Map stylesheetParameters, File resultFile, ErrorListener errorListener) throws Exception {
     logXmlSystemProperties();
-    TransformerHandler[] handlers = getTransformerHandlers(stylesheets, stylesheetParameters);
+    TransformerHandler[] handlers = getTransformerHandlers(stylesheets, stylesheetParameters, errorListener);
 
     FileWriter writer = new FileWriter(resultFile);
     Result result = new StreamResult(writer);
@@ -104,6 +109,7 @@ public class XSLTUtilities {
     reader.setContentHandler(handlers[0]);
     reader.setProperty("http://xml.org/sax/properties/lexical-handler", handlers[0]);
 
+    // TODO: is an entity resolver useful here ? 
     //EntityResolver entityResolver = new EntityResolverImpl(inputFile);
     //reader.setEntityResolver(entityResolver);
 
@@ -112,7 +118,7 @@ public class XSLTUtilities {
   }
 
 
-  private static TransformerHandler[] getTransformerHandlers(Object[] stylesheets, Map stylesheetParameters) throws FileNotFoundException, TransformerConfigurationException {
+  private static TransformerHandler[] getTransformerHandlers(Object[] stylesheets, Map stylesheetParameters, ErrorListener errorListener) throws FileNotFoundException, TransformerConfigurationException {
     SAXTransformerFactory saxFactory = null;
 
     try {
@@ -121,7 +127,9 @@ public class XSLTUtilities {
       Log.log(Log.ERROR, XSLTUtilities.class, "class cast exception " + exception.toString());
       throw new TransformerConfigurationException(XSLTPlugin.getOldXalanJarMessage());
     }
-
+    
+    saxFactory.setErrorListener(errorListener);
+    
     TransformerHandler[] handlers = new TransformerHandler[stylesheets.length];
 
     for(int i = 0; i < stylesheets.length; i++) {
@@ -130,6 +138,8 @@ public class XSLTUtilities {
       
 
       Transformer transformer = handlers[i].getTransformer();
+
+	  transformer.setErrorListener(errorListener);
 
       if(i == 0) {
         setParameters(transformer, stylesheetParameters);

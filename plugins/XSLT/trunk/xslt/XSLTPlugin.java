@@ -35,6 +35,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
 
+import errorlist.ErrorSource;
+import errorlist.DefaultErrorSource;
+
 /**
  * EditPlugin implementation for the XSLT plugin.
  *
@@ -44,6 +47,7 @@ import java.text.MessageFormat;
 public class XSLTPlugin extends EBPlugin implements EBComponent{
 
 	private static XSLTProcessor processor;
+	private static DefaultErrorSource errorSource;
 	
 	int ii;
 	
@@ -61,17 +65,32 @@ public class XSLTPlugin extends EBPlugin implements EBComponent{
 		String indentAmount = jEdit.getProperty("xslt.transform.indent-amount");
 
 		XSLTUtilities.setXmlSystemProperties(transformerFactory, saxParserFactory, saxDriver);
-		XSLTUtilities.setIndentAmount(indentAmount);		
+		XSLTUtilities.setIndentAmount(indentAmount);
 	}
 
 	public void stop() {
 		if (jEdit.getFirstView() == null)
 			return;
         XPathTool xpathTool = (XPathTool)jEdit.getFirstView().getDockableWindowManager().getDockable("xpath-tool");
-        if (xpathTool == null)
-        	return;
-        xpathTool.stop();
+        if (xpathTool != null)
+        {
+        	xpathTool.stop();
+        }
+        if(errorSource != null)
+        {
+			ErrorSource.unregisterErrorSource(errorSource);
+			errorSource = null;
+		}
 	}
+	
+	static DefaultErrorSource getErrorSource() {
+		if(errorSource==null){
+			errorSource=new DefaultErrorSource("XSLTPlugin");
+			ErrorSource.registerErrorSource(errorSource);
+		}
+		return errorSource;	
+	}
+
 	/**
 	 * Displays a user-friendly error message to go with the supplied exception.
 	 */

@@ -32,11 +32,9 @@
     </selector>
 
   <path id="project.class.path">
+    <pathelement location="${jedit.plugins.dir}/ErrorList.jar"/>
     <pathelement location="${jedit.plugins.dir}/XML.jar"/>
     <pathelement location="${jedit.install.dir}/jedit.jar"/>
-    <pathelement location="${jedit.plugins.dir}/xml-apis.jar"/>
-    <pathelement location="${jedit.plugins.dir}/xerces.jar"/>
-    <pathelement location="${jedit.plugins.dir}/xalan.jar"/>
     <pathelement location="${jedit.plugins.dir}/serializer.jar"/>
   </path>
 
