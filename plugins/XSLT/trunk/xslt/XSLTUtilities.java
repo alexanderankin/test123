@@ -20,7 +20,7 @@
 package xslt;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.Iterator;
@@ -31,17 +31,21 @@ import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.SourceLocator;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.transform.ErrorListener;
+import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.URIResolver;
 
 import org.gjt.sp.util.Log;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
+import org.xml.sax.SAXException;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
@@ -95,12 +99,13 @@ public class XSLTUtilities {
    * @param errorListener        where the errors will show up (may not be null)
    * @exception Exception        if a problem occurs during the transformation
    */
-  public static void transform(InputSource inputFile, Object[] stylesheets, Map stylesheetParameters, File resultFile, ErrorListener errorListener) throws Exception {
+  public static void transform(InputSource inputFile, Object[] stylesheets, Map stylesheetParameters, File resultFile, ErrorListenerToErrorList errorListener) throws Exception {
     logXmlSystemProperties();
     TransformerHandler[] handlers = getTransformerHandlers(stylesheets, stylesheetParameters, errorListener);
 
     FileWriter writer = new FileWriter(resultFile);
     Result result = new StreamResult(writer);
+    //result.setSystemId(resultFile.toURI().toString());
         
     int lastIndex = handlers.length - 1;
     handlers[lastIndex].setResult(result);
@@ -118,7 +123,7 @@ public class XSLTUtilities {
   }
 
 
-  private static TransformerHandler[] getTransformerHandlers(Object[] stylesheets, Map stylesheetParameters, ErrorListener errorListener) throws FileNotFoundException, TransformerConfigurationException {
+  private static TransformerHandler[] getTransformerHandlers(Object[] stylesheets, Map stylesheetParameters, ErrorListenerToErrorList errorListener) throws IOException, TransformerConfigurationException,SAXException {
     SAXTransformerFactory saxFactory = null;
 
     try {
@@ -129,14 +134,25 @@ public class XSLTUtilities {
     }
     
     saxFactory.setErrorListener(errorListener);
+    saxFactory.setURIResolver(new URIResolverImpl());
     
     TransformerHandler[] handlers = new TransformerHandler[stylesheets.length];
 
     for(int i = 0; i < stylesheets.length; i++) {
-      Source stylesheetSource = getSource((String)stylesheets[i]);
+      final Source stylesheetSource = getSource((String)stylesheets[i]);
+      
+      errorListener.setCurrentStylesheet(stylesheetSource.getSystemId());
+      
       handlers[i] = saxFactory.newTransformerHandler(stylesheetSource);
       
-
+      if(handlers[i]==null){
+      	  throw new TransformerConfigurationException("error creating "+stylesheets[i],new SourceLocator(){
+      	  		  public int getColumnNumber(){ return -1;}
+      	  		  public int getLineNumber() { return -1; }
+      	  		  public String getPublicId(){ return null;}
+      	  		  public String getSystemId(){return stylesheetSource.getSystemId();} 
+      	  });
+      }
       Transformer transformer = handlers[i].getTransformer();
 
 	  transformer.setErrorListener(errorListener);
@@ -158,9 +174,9 @@ public class XSLTUtilities {
   }
 
 
-  private static Source getSource(String fileName) throws FileNotFoundException {
-    Source source = new StreamSource(new FileReader(fileName));
-    source.setSystemId(fileName);
+  private static Source getSource(String fileName) throws org.xml.sax.SAXException,IOException {
+    Source source = new SAXSource(xml.Resolver.instance().resolveEntity(/*publicId=*/null, fileName));
+    System.out.println("source="+source.getSystemId());
     return source;
   }
 
@@ -188,4 +204,19 @@ public class XSLTUtilities {
     return resultBuffer.toString();
   }
 
+  public static class URIResolverImpl implements URIResolver{
+  	   public Source resolve(String href, String base)
+  	   	throws TransformerException
+  	   {
+  	   	   try{
+			   return new SAXSource(xml.Resolver.instance().resolveEntity(
+			   	   /*name=*/null,
+			   	   /*publicId=*/null,
+			   	   base,
+			   	   href));
+  	   	   }catch(Exception e){
+  	   	   	   throw new TransformerException("error resolving {"+base+","+href+"}",e);
+  	   	   }
+  	   }
+  }
 }

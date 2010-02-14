@@ -38,6 +38,8 @@ import java.text.MessageFormat;
 import errorlist.ErrorSource;
 import errorlist.DefaultErrorSource;
 
+import javax.xml.transform.TransformerException;
+
 /**
  * EditPlugin implementation for the XSLT plugin.
  *
@@ -95,9 +97,12 @@ public class XSLTPlugin extends EBPlugin implements EBComponent{
 	 * Displays a user-friendly error message to go with the supplied exception.
 	 */
 	static void processException(Exception e, String message, Component component) {
-		StringWriter writer = new StringWriter();
-		e.printStackTrace(new PrintWriter(writer));
-		Log.log(Log.DEBUG, Thread.currentThread(), writer.toString());
+		Log.log(Log.ERROR, XSLTPlugin.class, "complete exception:"+e.toString());
+		while(e.getCause() != null && e.getCause() instanceof TransformerException){
+			System.out.println("exception : "+e);
+			e = (Exception) e.getCause();
+		}
+		Log.log(Log.ERROR, XSLTPlugin.class, e);
 		String msg = MessageFormat.format(jEdit.getProperty("xslt.message.error"),
 				new Object[]{message, e.getMessage()});
 		JOptionPane.showMessageDialog(component, msg.toString());

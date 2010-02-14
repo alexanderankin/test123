@@ -202,6 +202,31 @@
         </listitem>
       </itemizedlist>
     </para>
+    
+    <para>Errors are reported via the <emphasis>ErrorList</emphasis> plugin
+    and/or a popup message :</para>
+    <itemizedlist>
+    <listitem><para>
+    any error due to a broken stylesheet will result in an error in the ErrorList
+    dockable and a popup dialog telling you about the error;</para></listitem>
+    <listitem><para>
+    any error while reading the source document will result in an error in the ErrorList
+    dockable and a popup dialog telling you about the error;</para></listitem>
+    <listitem><para>
+    any warning reported by the XSLT processor will only be reported as a warning 
+    in the ErrorList dockable.
+    Be warned that some pretty strong errors (like an <code>xsl:element</code>
+    with an invalid name, thus not created) are not reported;
+    </para></listitem>
+    <listitem><para>
+    any error (<code>error</code> or <code>fatalError</code>) 
+    reported by the XSLT processor will be reported in the ErrorList dockable
+    and in a popup dialog.
+    </para></listitem>
+    </itemizedlist>
+    <para>Processing will be immediately terminated in case of error (even non-fatal),
+    but will continue in case of warnings.</para>
+    
     <para>
       The following improvements should eventually be made to XSLT Processor.
       <itemizedlist>
