@@ -68,8 +68,8 @@ public class XSLTPluginTest{
     
     @Test
     public void testXSLT() throws IOException{
-    	File xml = new File(testData,"basic_xsl10/source.xml");
-    	File xsl = new File(testData,"basic_xsl10/transform.xsl");
+    	File xml = new File(testData,"simple/source.xml");
+    	File xsl = new File(testData,"simple/transform.xsl");
     	
     	TestUtils.openFile(xml.getPath());
     	action("xslt-processor-float",1);
@@ -105,8 +105,61 @@ public class XSLTPluginTest{
     }
     
     @Test
+    public void testXSLTErrorList() throws IOException{
+    	File xml = new File(testData,"simple/source.xml");
+    	File xsl = new File(testData,"broken/transform.xsl");
+    	
+    	TestUtils.openFile(xml.getPath());
+    	action("xslt-processor-float",1);
+    	
+    	
+    	final FrameFixture xsltProcessor = TestUtils.findFrameByTitle("XSLT Processor");
+    	
+		xsltProcessor.radioButton("xslt.source.buffer").click();
+		
+		while(xsltProcessor.list("stylesheets").contents().length>0)
+		{
+			xsltProcessor.list("stylesheets").selectItem(0);
+			xsltProcessor.button("stylesheets.remove").click();
+		}
+		xsltProcessor.button("stylesheets.add").click();
+		
+		DialogFixture browseDialog = findDialogByTitle("File Browser");
+		//there is always a temporisation until all content gets loaded
+		Pause.pause(1000);
+		browseDialog.button("up").click();
+		browseDialog.table("file").cell(
+			browseDialog.table("file").cell(xsl.getParentFile().getName())).doubleClick();
+		browseDialog.table("file").selectCell(
+			browseDialog.table("file").cell(xsl.getName()));
+		browseDialog.button("ok").click();
+		
+		GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					xsltProcessor.textBox("xslt.result.prompt").targetCastedTo(JTextComponent.class).setText("");
+				}
+		});
+		
+		xsltProcessor.button("transform").click();
+		
+		Pause.pause(10000);
+		
+		Buffer b = view().getBuffer();
+		assertThat(b.getName().matches("Untitled-\\d+"));
+		
+		action("error-list-show",1);
+		
+    	FrameFixture errorlist = TestUtils.findFrameByTitle("Error List");
+		
+		errorlist.tree().selectRow(1);
+		assertTrue(errorlist.tree().valueAt(1).startsWith("6: xsl:ourrtput"));
+		errorlist.close();
+		xsltProcessor.close();
+    }
+
+    @Test
     public void testXPath() throws IOException{
-    	File xml = new File(testData,"basic_xsl10/source.xml");
+    	File xml = new File(testData,"simple/source.xml");
     	
     	TestUtils.openFile(xml.getPath());
     	action("xpath-tool-float",1);
