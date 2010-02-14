@@ -488,7 +488,7 @@ public class TestUtils {
 	 * @param	action	the action to execute
 	 */
 	public static void action(final String action){
-		action(action);
+		action(action,1);
 	}
 
 	/**
