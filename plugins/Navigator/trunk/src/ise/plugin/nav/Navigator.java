@@ -38,6 +38,7 @@ import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.PositionChanging;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
@@ -380,7 +381,7 @@ public class Navigator implements ActionListener {
         ignoreUpdates = true;
 
         // see if the buffer is already open in one of the current edit panes
-        EditPane editPaneForPosition = findEditPane( position );
+        final EditPane editPaneForPosition = findEditPane( position );
         Buffer[] buffers = editPaneForPosition.getBufferSet().getAllBuffers();
         Buffer buffer = null;
         String path = position.path;
@@ -415,8 +416,13 @@ public class Navigator implements ActionListener {
             caret = 0;
         }
         try {
-            editPaneForPosition.getTextArea().setCaretPosition( caret, true );
-            editPaneForPosition.getTextArea().requestFocus();
+        	final int caretFinal = caret;
+        	VFSManager.runInAWTThread( new Runnable() {
+        		public void run() {
+                    editPaneForPosition.getTextArea().setCaretPosition( caretFinal, true );
+                    editPaneForPosition.getTextArea().requestFocus();
+        		}
+        	} );
         }
         catch ( NullPointerException npe ) {    // NOPMD
             npe.printStackTrace();
