@@ -27,7 +27,6 @@ public class BufferParser {
 		final String regex = "^\\w+?(<.*?>)*?\\s+?\\w*?(\\s*?=.*?|\\s*?;)";
 		while (StandardUtilities.getLeadingWhiteSpace(line = textArea.getLineText(i)) == space) {
 			// Parse this line
-			Log.log(Log.DEBUG,BufferParser.class,"Starting line: "+line);
 			line = line.trim();
 			for (int j=0; j<ApiParser.MODIFIERS.length; j++) {
 				if (line.startsWith(ApiParser.MODIFIERS[j]+" ")) {
@@ -50,7 +49,6 @@ public class BufferParser {
 					map.put(var, cls);
 				} catch (Exception e) {}
 			}
-			Log.log(Log.DEBUG,BufferParser.class,"Ending line: "+line);
 			i--;
 		}
 		return map;

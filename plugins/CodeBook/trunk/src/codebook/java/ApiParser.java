@@ -1,6 +1,8 @@
 package codebook.java;
 // imports {{{
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.util.Log;
+
 import java.net.URL;
 import java.io.InputStream;
 import java.io.File;
@@ -314,6 +316,7 @@ public class ApiParser {
 			if ((lt = _name.indexOf("<")) != -1) _name = _name.substring(0, lt);
 			String s = File.separator;
 			String classDir = codebook.CodeBookPlugin.HOME+"java"+s+"api"+s+_name+s;
+			Log.log(Log.DEBUG,ApiParser.class,"classdir = "+classDir);
 			try {
 				File classDirFile = new File(classDir);
 				if (!classDirFile.exists()) classDirFile.mkdirs();
