@@ -3,7 +3,7 @@
 plugin.codebook.CodeBookPlugin.activate=defer
 plugin.codebook.CodeBookPlugin.author=Damien Radtke
 plugin.codebook.CodeBookPlugin.description=Code Book is a reference and code-completion plugin \
-	that parses language documentation to make it available within jEdit. Currently only Java
+	that parses language documentation to make it available within jEdit. Currently only Java \
 	is supported.
 plugin.codebook.CodeBookPlugin.docs=docs/CodeBook.html
 plugin.codebook.CodeBookPlugin.longdescription=description.html
