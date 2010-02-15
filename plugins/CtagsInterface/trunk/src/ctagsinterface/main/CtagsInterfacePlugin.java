@@ -678,7 +678,13 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	/* Source file support */
 	
 	public static void tagSourceFile(final String file) {
+		tagSourceFile(file, true);
+	}
+
+	public static void tagSourceFile(final String file, boolean sync) {
 		setStatusMessage("Tagging file: " + file);
+		final Object syncObject = sync ? new Object() : null;
+		final boolean [] done = { false };
 		addWorkRequest(new Runnable() {
 			public void run() {
 				final int fileId = db.getSourceFileID(file);
@@ -690,8 +696,22 @@ public class CtagsInterfacePlugin extends EditPlugin {
 					}
 				};
 				parseTagFile(tagFile, handler);
+				if (syncObject != null)
+					synchronized (syncObject) {
+						done[0] = true;
+						syncObject.notifyAll();
+					}
 			}
 		}, false);
+		synchronized (syncObject) {
+			if (! done[0]) {
+				try {
+					syncObject.wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 		removeStatusMessage();
 	}
 
