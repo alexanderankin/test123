@@ -13,10 +13,10 @@ plugin.antfarm.AntFarmPlugin.description=AntFarm provides an interface to the Ap
 
 plugin.antfarm.AntFarmPlugin.depend.0=jedit 04.03.12.00
 plugin.antfarm.AntFarmPlugin.depend.1=jdk 1.5
-# plugin.antfarm.AntFarmPlugin.depend.2=plugin ant.AntPlugin 1.6.5
-plugin.antfarm.AntFarmPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.4
-plugin.antfarm.AntFarmPlugin.depend.3=plugin CommonControlsPlugin 0.9.0
-plugin.antfarm.AntFarmPlugin.depend.4=plugin console.ConsolePlugin 4.2.6
+plugin.antfarm.AntFarmPlugin.depend.2=plugin ant.AntPlugin 1.6.5
+plugin.antfarm.AntFarmPlugin.depend.3=plugin errorlist.ErrorListPlugin 1.4
+plugin.antfarm.AntFarmPlugin.depend.4=plugin CommonControlsPlugin 0.9.0
+plugin.antfarm.AntFarmPlugin.depend.5=plugin console.ConsolePlugin 4.2.6
 
 antfarm-toggle.label=Ant Farm Toggle
 
