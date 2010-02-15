@@ -15,8 +15,8 @@ import java.io.File;
 import java.io.FilenameFilter;
 // }}} imports
 public class CodeBookPlugin extends EditPlugin {
-	//public static final String HOME = getPluginHome(jEdit.getPlugin("codebook.CodeBookPlugin")).getPath();
-	public static final String HOME = "/home/damien/.jedit/plugins/codebook.CodeBookPlugin/";
+	public static final String HOME = getPluginHome(jEdit.getPlugin("codebook.CodeBookPlugin")).getPath()+File.separator;
+	//public static final String HOME = "/home/damien/.jedit/plugins/codebook.CodeBookPlugin/";
 	
 	public void start() {}
 	public void stop() {}

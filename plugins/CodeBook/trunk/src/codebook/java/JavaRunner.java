@@ -1,5 +1,6 @@
 package codebook.java;
 // imports {{{
+import codebook.CodeBookPlugin;
 import codebook.gui.ChooserDialog;
 
 import java.io.File;
@@ -22,7 +23,8 @@ import org.gjt.sp.jedit.TextUtilities;
  */
 public class JavaRunner {
 	// TODO: Replace this
-	public static final String dir = "/home/damien/.jedit/plugins/codebook.CodeBookPlugin/java/";
+	//public static final String dir = "/home/damien/.jedit/plugins/codebook.CodeBookPlugin/java/";
+	public static final String dir = CodeBookPlugin.HOME+"java/";
 	public static enum Trigger { DOT, PARENTHESE, NONE };
 	// run() {{{
 	/**

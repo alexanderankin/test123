@@ -2,7 +2,9 @@
 # Basic Plugin Information {{{
 plugin.codebook.CodeBookPlugin.activate=defer
 plugin.codebook.CodeBookPlugin.author=Damien Radtke
-plugin.codebook.CodeBookPlugin.description=Fill this in
+plugin.codebook.CodeBookPlugin.description=Code Book is a reference and code-completion plugin \
+	that parses language documentation to make it available within jEdit. Currently only Java
+	is supported.
 plugin.codebook.CodeBookPlugin.docs=docs/CodeBook.html
 plugin.codebook.CodeBookPlugin.longdescription=description.html
 plugin.codebook.CodeBookPlugin.name=Code Book
@@ -13,8 +15,7 @@ plugin.codebook.CodeBookPlugin.version=0.1
 # Dependencies {{{
 plugin.codebook.CodeBookPlugin.depend.0=jedit 04.03.99.00
 plugin.codebook.CodeBookPlugin.depend.1=jdk 1.5
-#plugin.codebook.CodeBookPlugin.depend.2=plugin superabbrevs.SuperAbbrevsPlugin 0.32
-# FIXME: This dependency causes issues when jEdit boots up, but not when loaded manually
+plugin.codebook.CodeBookPlugin.depend.2=plugin SuperAbbrevsPlugin 0.32
 # }}} Dependencies
 
 # Messages {{{
