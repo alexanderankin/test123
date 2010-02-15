@@ -11,12 +11,12 @@ plugin.antfarm.AntFarmPlugin.description=AntFarm provides an interface to the Ap
 	script to run it, or you can download the AntPlugin and run Ant natively within jEdit's \
 	JVM.
 
-plugin.antfarm.AntFarmPlugin.depend.0=jedit 04.03.12.00
+plugin.antfarm.AntFarmPlugin.depend.0=jedit 04.03.99.00
 plugin.antfarm.AntFarmPlugin.depend.1=jdk 1.5
-plugin.antfarm.AntFarmPlugin.depend.2=plugin ant.AntPlugin 1.6.5
-plugin.antfarm.AntFarmPlugin.depend.3=plugin errorlist.ErrorListPlugin 1.4
-plugin.antfarm.AntFarmPlugin.depend.4=plugin CommonControlsPlugin 0.9.0
-plugin.antfarm.AntFarmPlugin.depend.5=plugin console.ConsolePlugin 4.2.6
+plugin.antfarm.AntFarmPlugin.depend.2=plugin ant.AntPlugin 1.7
+plugin.antfarm.AntFarmPlugin.depend.3=plugin errorlist.ErrorListPlugin 1.8
+plugin.antfarm.AntFarmPlugin.depend.4=plugin CommonControlsPlugin 1.0
+plugin.antfarm.AntFarmPlugin.depend.5=plugin console.ConsolePlugin 4.4
 
 antfarm-toggle.label=Ant Farm Toggle
 
