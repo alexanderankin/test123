@@ -10,8 +10,8 @@ This is based on the build-support plugin-build.xml file for building a jEdit pl
   <property file="../build.properties"/>
   <property file="build.properties"/>
   <property name="build.dir" value="${basedir}/build" />
-  <property name="ant.archive" value="ant_1.7.1.orig.tar.gz" />
-  <property name="ant.archive.unzipdir" value="ant-1.7.1" />
+  <property name="ant.archive" value="apache-ant-1.8.0-bin.zip" />
+  <property name="ant.archive.unzipdir" value="${basedir}/apache-ant-1.8.0" />
 
   <property name="jar.file" value="AntPlugin.jar"/>
 
@@ -20,7 +20,7 @@ This is based on the build-support plugin-build.xml file for building a jEdit pl
   </target>
 
   <target name="prepare" >
-    <untar compression="gzip" src="${ant.archive}" dest="${basedir}" />
+    <unzip src="${ant.archive}" dest="${basedir}" />
     <copy todir="${build.dir}">
        <fileset dir="${ant.archive.unzipdir}/docs">
          <include name="**/**" />
@@ -44,7 +44,7 @@ This is based on the build-support plugin-build.xml file for building a jEdit pl
 
   </target>
 
-  <target name="install" depends="jar">
+  <target name="install" depends="prepare, jar" >
     <copy todir="${install.dir}" overwrite="true">
       <fileset dir="${ant.archive.unzipdir}/lib">
         <include name="ant.jar"/>
