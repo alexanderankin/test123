@@ -460,20 +460,13 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		// If another window is currently active, it is becoming deactivated
 		ToolWindow current = getCurrentToolWindow(anchor);
 		if (current != null && current != tw)
-			EditBus.send(new DockableWindowUpdate(this, DockableWindowUpdate.DEACTIVATED,
-				current.getId()));
+			EditBus.send(new DockableWindowUpdate(this,
+				DockableWindowUpdate.DEACTIVATED, current.getId()));
 		
 		tw.setActive(true);
-		final ToolWindow twToFocus = tw;
-		SwingUtilities.invokeLater(new Runnable()
-		{
-			public void run()
-			{
-				focusDockable(twToFocus.getId());
-				EditBus.send(new DockableWindowUpdate(MyDoggyWindowManager.this,
-					DockableWindowUpdate.ACTIVATED, twToFocus.getId()));
-			}
-		});
+		focusDockable(tw.getId());
+		EditBus.send(new DockableWindowUpdate(MyDoggyWindowManager.this,
+			DockableWindowUpdate.ACTIVATED, tw.getId()));
 	}
 
 	private ToolWindowAnchor position2anchor(String position)
