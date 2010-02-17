@@ -387,7 +387,7 @@ public class LogResultsPanel extends JPanel {
         // add menu item to diff against working copy
         if ( rows.length == 1 ) {
             final String path = table.getPath();
-            JMenuItem mi = new JMenuItem( jEdit.getProperty("ips.Diff_against_working_copy", "Diff against working copy") );
+            JMenuItem mi = new JMenuItem( jEdit.getProperty( "ips.Diff_against_working_copy", "Diff against working copy" ) );
             popup.add( mi );
             mi.addActionListener(
                 new ActionListener() {
@@ -413,7 +413,7 @@ public class LogResultsPanel extends JPanel {
         if ( col == 3 ) {
             final List<String> urls = fetchUrl( ( String ) table.getValueAt( row, col ) );
             if ( urls != null ) {
-                JMenuItem mi = new JMenuItem( urls.size() > 1 ? jEdit.getProperty("ips.Open_links_in_browser", "Open links in browser") : jEdit.getProperty("ips.Open_link_in_browser", "Open link in browser") );
+                JMenuItem mi = new JMenuItem( urls.size() > 1 ? jEdit.getProperty( "ips.Open_links_in_browser", "Open links in browser" ) : jEdit.getProperty( "ips.Open_link_in_browser", "Open link in browser" ) );
                 popup.add( mi );
                 mi.addActionListener(
                     new ActionListener() {
@@ -447,6 +447,9 @@ public class LogResultsPanel extends JPanel {
     }
 
     private List<String> fetchUrl( String comment ) {
+        if ( bugtraqProperties == null ) {
+            return null;
+        }
         String url = bugtraqProperties.getProperty( "bugtraq:url" );
         if ( url == null ) {
             return null;
