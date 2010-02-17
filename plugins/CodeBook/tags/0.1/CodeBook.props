@@ -1,0 +1,43 @@
+# ::mode=properties:: #
+# Basic Plugin Information {{{
+plugin.codebook.CodeBookPlugin.activate=defer
+plugin.codebook.CodeBookPlugin.author=Damien Radtke
+plugin.codebook.CodeBookPlugin.description=Code Book is a reference and code-completion plugin \
+	that parses language documentation to make it available within jEdit. Currently only Java \
+	is supported.
+plugin.codebook.CodeBookPlugin.docs=docs/CodeBook.html
+plugin.codebook.CodeBookPlugin.longdescription=description.html
+plugin.codebook.CodeBookPlugin.name=Code Book
+plugin.codebook.CodeBookPlugin.usePluginHome=true
+plugin.codebook.CodeBookPlugin.version=0.1
+# }}} Basic Plugin Information
+
+# Dependencies {{{
+plugin.codebook.CodeBookPlugin.depend.0=jedit 04.03.99.00
+plugin.codebook.CodeBookPlugin.depend.1=jdk 1.5
+plugin.codebook.CodeBookPlugin.depend.2=plugin SuperAbbrevsPlugin 0.32
+# }}} Dependencies
+
+# Messages {{{
+codebook.msg.invalid-api-download-url.title=Invalid URL
+codebook.msg.invalid-api-download-url.message=Unable to find package list.\n\
+	Please verify that you spelled the URL correctly.
+codebook.msg.cannot-load-java-object.title=Can't load Java object
+codebook.msg.cannot-load-java-object.message=Unable to load the requested java object. \
+	See the activity log for details.
+codebook.msg.download-api.title=Download Java Api
+codebook.msg.download-api.message=Api Root URL:
+codebook.msg.parse-remote-api.title=Parse Remote Api
+codebook.msg.parse-remote-api.message=Api Root URL:
+# }}} Messages
+
+# Menu {{{
+plugin.codebook.CodeBookPlugin.menu=codebook-run - codebook-java-download-api \
+	codebook-java-parse-api-local codebook-java-parse-api-remote
+plugin.codebook.CodeBookPlugin.menu.label=Code Book
+codebook-run.label=Run Completion
+codebook-java-download-api.label=Download Java Api
+codebook-java-parse-api-local.label=Parse Local Java Api
+codebook-java-parse-api-remote.label=Parse Remote Java Api
+# }}} Menu
+
