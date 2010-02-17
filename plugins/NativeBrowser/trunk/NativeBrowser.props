@@ -24,6 +24,7 @@ plugin.nativebrowser.NativeBrowserPlugin.depend.1=jdk 1.5
 plugin.nativebrowser.NativeBrowserPlugin.depend.2=plugin CommonControlsPlugin 1.1
 plugin.nativebrowser.NativeBrowserPlugin.depend.3=plugin jnaplugin.JNAPlugin 3.2.4
 plugin.nativebrowser.NativeBrowserPlugin.depend.4=optional plugin launcher.LauncherPlugin 0.1
+plugin.nativebrowser.NativeBrowserPlugin.jars=DJNativeSwing.jar DJNativeSwing-SWT.jar swt.jar
 
 plugin.nativebrowser.NativeBrowserPlugin.description=This plugin provides a dockable browser provided by the native, SWT-based, Swing libraries from the DJ Project (http://djproject.sourceforge.net/).
 # plugin menu
