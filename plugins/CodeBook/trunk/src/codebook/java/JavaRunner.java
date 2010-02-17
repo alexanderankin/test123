@@ -32,6 +32,7 @@ public class JavaRunner {
 	 * @param textArea the text area instance
 	 */
 	public static void run(JEditTextArea textArea) {
+		Log.log(Log.DEBUG,JavaRunner.class,"Running Java completion");
 		int line = textArea.getCaretLine();
 		int pos = textArea.getCaretPosition()-textArea.getLineStartOffset(line);
 		String text = textArea.getLineText(line).substring(0, pos);
@@ -48,7 +49,9 @@ public class JavaRunner {
 			cls = cls.substring(0, cls.length()-1);
 			pos--;
 		}
+		Log.log(Log.DEBUG,JavaRunner.class,"Class: "+cls);
 		String[] pkgs = getPackages(cls);
+		Log.log(Log.DEBUG,JavaRunner.class,"Pkgs: "+pkgs);
 		if (pkgs == null) {
 			// Variable?
 			beg = TextUtilities.findWordStart(text, pos-1, "_");
@@ -158,15 +161,16 @@ public class JavaRunner {
 	 * @return an arraylist of valid packages, or null if the class was not found
 	 */
 	public static String[] getPackages(String cls) {
-		Log.log(Log.DEBUG,JavaRunner.class,"Fetching packages for class "+cls);
 		try {
 			ArrayList<String> pkgs = new ArrayList<String>();
 			String[] pkgArray = new File(getClassObjectDir(cls)).list();
 			for (String s : pkgArray) {
 				pkgs.add(s);
 			}
+			Log.log(Log.DEBUG,JavaRunner.class,"Packages for class "+cls+": "+pkgs);
 			return pkgs.toArray(pkgArray);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -184,16 +188,19 @@ public class JavaRunner {
 			String path = null;
 			if (jEdit.getPlugin("projectviewer.ProjectPlugin") != null) {
 				// If projectviewer is installed, look in the active project
-				String proj = projectviewer.ProjectViewer.getActiveProject(
-					jEdit.getActiveView()).getName();
-				path = dir+s+"project"+s+proj+s+cls;
-				fdir = new File(path);
+				try {
+					String proj = projectviewer.ProjectViewer.getActiveProject(
+						jEdit.getActiveView()).getName();
+					path = dir+s+"project"+s+proj+s+cls;
+					fdir = new File(path);
+				} catch (Exception e) {}
 			}
 			if (fdir == null || !fdir.exists()) {
 				path = dir+"api"+s+cls;
 				Log.log(Log.DEBUG,JavaRunner.class,"Class ob dir: "+path);
 				fdir = new File(path);
 			}
+			Log.log(Log.DEBUG,JavaRunner.class,"Path: "+path);
 			if (fdir == null || !fdir.exists()) return null;
 			return path;
 		} catch (Exception e) {
