@@ -3,7 +3,7 @@
 
 # jEdit only needs to load the plugin the first time the user accesses it
 # the presence of this property also tells jEdit the plugin is using the new API
-plugin.nativebrowser.NativeBrowserPlugin.activate=defer
+plugin.nativebrowser.NativeBrowserPlugin.activate=startup
 
 # These two properties are required for all plugins
 plugin.nativebrowser.NativeBrowserPlugin.name=NativeBrowser
