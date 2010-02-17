@@ -204,7 +204,7 @@ public class CheckoutAction extends SVNAction implements PropertyChangeListener 
         // importing the files.
         projectviewer.importer.ImportUtils.saveFilter( project.getProperties(), new projectviewer.importer.CVSEntriesFilter(), "projectviewer.import" );
         RootImporter ipi = new RootImporter( project, null, ProjectViewer.getViewer( jEdit.getActiveView() ), jEdit.getActiveView() );
-        ipi.setLockProject( false );
+        //ipi.setLockProject( false );      // TODO: this doesn't work any more, change in PV API?
         ipi.doImport();
 
         // now show ProjectViewer
