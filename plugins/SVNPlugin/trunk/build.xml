@@ -59,25 +59,28 @@
    ========================================================================= -->
     <target name="setClasspath">
         <path id="classpathref">
-         <!-- required locations/jars -->
+            <!-- required locations/jars -->
             <pathelement location="${classes.dir}" />
             <pathelement path="${java.class.path}"/>
 
-         <!-- SVNKit jars -->
+            <!-- SVNKit jars -->
             <pathelement location="${lib.dir}/trilead.jar"/>
             <pathelement location="${lib.dir}/svnkit-cli.jar"/>
             <pathelement location="${lib.dir}/svnkit.jar"/>
+            <!-- jna.jar is now provided by the JNAPlugin
             <pathelement location="${lib.dir}/jna.jar"/>
+            -->
 
-         <!-- required for jEdit plugin -->
+            <!-- required for jEdit plugin -->
             <pathelement location="${jedit.install.dir}/jedit.jar" />
 
-         <!-- dependencies -->
+            <!-- dependencies -->
             <pathelement location="${jedit.plugins.dir}/ProjectViewer.jar"/>
             <pathelement location="${jedit.plugins.dir}/kappalayout.jar"/>
             <pathelement location="${jedit.plugins.dir}/JDiffPlugin.jar"/>
             <pathelement location="${jedit.plugins.dir}/InfoViewer.jar"/>
             <pathelement location="${jedit.plugins.dir}/CommonControls.jar"/>
+            <pathelement location="${jedit.plugins.dir}/JNAPlugin.jar"/>
         </path>
     </target>
 
