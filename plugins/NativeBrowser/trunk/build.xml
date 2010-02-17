@@ -28,7 +28,6 @@
 		<pathelement location="${jedit.plugins.dir}/CommonControls.jar" />
 		<pathelement location="${jedit.plugins.dir}/Launcher.jar"/>
 		<pathelement location="${jedit.plugins.dir}/ProjectViewer.jar"/>
-		<pathelement location="${jedit.plugins.dir}/jna.jar"/>
 		<pathelement location="."/>
 	</path>
 	
@@ -36,7 +35,6 @@
         <copy todir="${install.dir}" >
 	        <fileset file="${DJNativeSwing.jar}" />
 	        <fileset file="${DJNativeSwing-SWT.jar}" />
-	        <fileset file="${jna.jar}" />
     	</copy>
     </target>
 	
