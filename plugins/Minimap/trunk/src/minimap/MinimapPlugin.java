@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 package minimap;
 
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,7 +26,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.swing.AbstractAction;
-import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import org.gjt.sp.jedit.EBMessage;
@@ -38,7 +38,7 @@ import org.gjt.sp.jedit.visitors.JEditVisitorAdapter;
 
 public class MinimapPlugin extends EBPlugin {
 
-	Timer foldCheckTimer;
+	private Timer foldCheckTimer;
 
 	@Override
 	public void handleMessage(EBMessage message) {
@@ -69,6 +69,7 @@ public class MinimapPlugin extends EBPlugin {
 		maps.remove(editPane);
 	}
 
+	@Override
 	public void stop() {
 		foldCheckTimer.stop();
 		foldCheckTimer = null;
@@ -77,6 +78,7 @@ public class MinimapPlugin extends EBPlugin {
 	}
 
 	@SuppressWarnings("serial")
+	@Override
 	public void start() {
 		maps = new HashMap<EditPane, Minimap>();
 		foldCheckTimer = new Timer(Options.getTimeProp(), new AbstractAction() {
@@ -103,7 +105,7 @@ public class MinimapPlugin extends EBPlugin {
 	public static void show(final EditPane editPane) {
 		if (maps.containsKey(editPane))
 			return;
-		SwingUtilities.invokeLater(new Runnable() {
+		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				Minimap map = new Minimap(editPane);
 				map.start();

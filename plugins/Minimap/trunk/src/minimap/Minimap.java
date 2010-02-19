@@ -31,10 +31,10 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 @SuppressWarnings("serial")
 public class Minimap extends JPanel {
 
-	private EditPane editPane;
-	private MinimapTextArea miniMap;
+	private final EditPane editPane;
+	private final MinimapTextArea miniMap;
 	private Component child;
-	private JSplitPane splitter;
+	private final JSplitPane splitter;
 	
 	public Minimap(EditPane editPane) {
 		setLayout(new GridLayout(1, 1));
