@@ -16,6 +16,8 @@ plugin.codebook.CodeBookPlugin.version=0.1
 plugin.codebook.CodeBookPlugin.depend.0=jedit 04.03.99.00
 plugin.codebook.CodeBookPlugin.depend.1=jdk 1.5
 plugin.codebook.CodeBookPlugin.depend.2=plugin SuperAbbrevsPlugin 0.32
+plugin.codebook.CodeBookPlugin.depend.3=optional plugin projectviewer.ProjectPlugin 2.9.3
+
 # }}} Dependencies
 
 # Messages {{{
