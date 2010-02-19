@@ -371,7 +371,7 @@
   <listitem id="ver1.7">
     <para>
      <emphasis role="bold">Version 1.7</emphasis>
-  Requires jEdit 4.3pre12, JDK 1.5, AntPlugin 1.6.5, Console 4.2.6.x, and optionally ProjectViewer 2.1.x and EBrowsePlugin 0.5.2 </para>
+  Requires jEdit 4.3, JDK 1.5, AntPlugin 1.7.0, Console 4.4.1, and optionally ProjectViewer 2.1.x and EBrowsePlugin 0.5.2 </para>
   <itemizedlist>
   <listitem><para>Added ProjectViewer integration to easily iinvoke targets for the current project. (Damien Radtke)
   </para></listitem>
