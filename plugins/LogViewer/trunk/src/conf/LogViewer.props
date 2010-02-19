@@ -7,7 +7,7 @@ plugin.logviewer.LogViewerPlugin.version=0.8
 plugin.logviewer.LogViewerPlugin.docs=LogViewer.html
 
 plugin.logviewer.LogViewerPlugin.depend.0=jdk 1.5
-plugin.logviewer.LogViewerPlugin.depend.1=jedit 04.03.16.00
+plugin.logviewer.LogViewerPlugin.depend.1=jedit 04.03.99.00
 plugin.logviewer.LogViewerPlugin.activate=defer
 
 options.logviewer.label=Log Viewer
