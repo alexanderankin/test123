@@ -50,12 +50,12 @@ import org.gjt.sp.util.Log;
 @SuppressWarnings("serial")
 public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponent {
 
-	private JEditTextArea textArea;
-	private ScrollListener textAreaScrollListener;
-	private MouseListener ml;
-	private MouseMotionListener mml;
+	private final JEditTextArea textArea;
+	private final ScrollListener textAreaScrollListener;
+	private final MouseListener ml;
+	private final MouseMotionListener mml;
 	private boolean lastFoldProp;
-	private JScrollBar scrollBar;
+	private final JScrollBar scrollBar;
 
 	private final Point point = new Point();
 
@@ -159,8 +159,8 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 	} //}}}
 
 	//{{{ setMouseHandler() method
-	public void setMouseHandler(MouseInputAdapter mouseInputAdapter)
-	{
+	@Override
+	public void setMouseHandler(MouseInputAdapter mouseInputAdapter) {
 	} //}}}
 
 	//{{{ updateStyles() method
