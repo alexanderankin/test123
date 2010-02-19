@@ -3,8 +3,8 @@
 <!-- jEdit buffer-local properties: -->
 <!-- :tabSize=1:indentSize=1:noTabs=true: -->
 
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
 
 <book>
 
@@ -17,29 +17,33 @@
   <firstname>Chris</firstname><surname>Scott</surname>
  </othercredit>
 
+ <othercredit><contrib>Contributors and Maintainers</contrib>
+  <firstname>Damien</firstname><surname>Radtke</surname>
+ </othercredit>
 
-<othercredit><contrib>Contributors and Maintainers</contrib>
+
+<othercredit><contrib>Contributors</contrib>
   <firstname>Fernando</firstname><surname>Aranguiz</surname>
  </othercredit>
- <othercredit><contrib>Contributors and Maintainers</contrib>
+ <othercredit><contrib>Contributors</contrib>
   <firstname>Brian</firstname><surname>Knowles</surname>
  </othercredit>
- <othercredit><contrib>Contributors and Maintainers</contrib>
+ <othercredit><contrib>Contributors</contrib>
   <firstname>Todd</firstname><surname>Papaioannou</surname>
  </othercredit>
- <othercredit><contrib>Contributors and Maintainers</contrib>
+ <othercredit><contrib>Contributors</contrib>
   <firstname>Chris</firstname><surname>Steinbeck</surname>
  </othercredit>
- <othercredit><contrib>Contributors and Maintainers</contrib>
+ <othercredit><contrib>Contributors</contrib>
   <firstname>Richard</firstname><surname>Wan</surname>
  </othercredit>
- <othercredit><contrib>Contributors and Maintainers</contrib>
+ <othercredit><contrib>Contributors</contrib>
   <firstname>James</firstname><surname>Wilson</surname>
  </othercredit>
- <othercredit><contrib>Contributors and Maintainers</contrib>
+ <othercredit><contrib>Contributors</contrib>
   <firstname>Calvin</firstname><surname>Yu</surname>
  </othercredit>
- <othercredit><contrib>Contributors and Maintainers</contrib>
+ <othercredit><contrib>Contributors</contrib>
   <firstname>Gerard</firstname><surname>Smyth</surname>
  </othercredit>
 
@@ -364,12 +368,12 @@
 <appendix id="changes">
   <title>Change log</title>
   <itemizedlist>
-  <listitem id="ver1.6">
+  <listitem id="ver1.7">
     <para>
-     <emphasis role="bold">Version 1.6</emphasis>
+     <emphasis role="bold">Version 1.7</emphasis>
   Requires jEdit 4.3pre12, JDK 1.5, AntPlugin 1.6.5, Console 4.2.6.x, and optionally ProjectViewer 2.1.x and EBrowsePlugin 0.5.2 </para>
   <itemizedlist>
-  <listitem><para>Added ProjectViewer integration to easily iinvoke targets for the current project.
+  <listitem><para>Added ProjectViewer integration to easily iinvoke targets for the current project. (Damien Radtke)
   </para></listitem>
   </itemizedlist></listitem>
 

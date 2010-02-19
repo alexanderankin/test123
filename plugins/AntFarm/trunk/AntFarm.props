@@ -14,7 +14,7 @@ plugin.antfarm.AntFarmPlugin.depend.1=jdk 1.5
 plugin.antfarm.AntFarmPlugin.depend.2=plugin ant.AntPlugin 1.7.0
 plugin.antfarm.AntFarmPlugin.depend.3=plugin errorlist.ErrorListPlugin 1.8
 plugin.antfarm.AntFarmPlugin.depend.4=plugin CommonControlsPlugin 1.1
-plugin.antfarm.AntFarmPlugin.depend.5=plugin projectviewer.ProjectPlugin 2.9.3
+plugin.antfarm.AntFarmPlugin.depend.5=optional plugin projectviewer.ProjectPlugin 2.9.3
 plugin.antfarm.AntFarmPlugin.depend.6=plugin console.ConsolePlugin 4.4.1
 
 
