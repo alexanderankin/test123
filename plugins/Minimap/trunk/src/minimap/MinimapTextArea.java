@@ -1,6 +1,6 @@
 /*
 Copyright (C) 2009  Shlomy Reinstein
-Copyright (C) 2009  Matthieu Casanova
+Copyright (C) 2009, 2010  Matthieu Casanova
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -146,7 +146,8 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		painter.addMouseListener(ml);
 		painter.addMouseMotionListener(mml);
 		EditBus.addToBus(this);
-		scrollToMakeTextAreaVisible();
+		if (!buffer.isLoading())
+			scrollToMakeTextAreaVisible();
 	} //}}}
 
 	//{{{ stop() method
