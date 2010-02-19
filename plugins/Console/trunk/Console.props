@@ -362,13 +362,17 @@ console.error.generic.message=$3
 ### Commando
 
 commando.default=ant \
+    execute \
+    gcc \
+    groovy \
 	java \
 	javac \
+	javacc \
+	latex \
+	make \
 	perl \
 	python \
 	diff \
-	latex \
-	make \
 	qmake \
 	yap \
 	jmk \
