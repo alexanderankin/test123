@@ -26,6 +26,7 @@ This is based on the build-support plugin-build.xml file for building a jEdit pl
     <property name="jedit.jars" value="${jedit.install.dir}/jars"/>
     <property name="jar.name" value="AntFarm.jar"/>
     <property name="build.dir" value="build"/>
+    <property name="jedit.plugins.dir" value="${install.dir}" />
 
     <target name="dist" depends="clean, docs, build"/>
 
@@ -49,16 +50,12 @@ This is based on the build-support plugin-build.xml file for building a jEdit pl
         <pathelement path="${jedit.jars}/ant.jar"/>
         <pathelement path="lib/junit.jar"/>
         <!-- Other plugin dependencies -->
-        <pathelement path="${jedit.jars}/Console.jar"/>
-        <pathelement path="${jedit.jars}/ErrorList.jar"/>
-        <pathelement path="${jedit.jars}/ProjectViewer.jar"/>
-        <pathelement path="${jedit.jars}/CommonControls.jar"/>
-        <pathelement path="${jedit.user.jars}/Console.jar"/>
-        <pathelement path="${jedit.user.jars}/ErrorList.jar"/>
-        <pathelement path="${jedit.user.jars}/ProjectViewer.jar"/>
-        <pathelement path="${jedit.user.jars}/CommonControls.jar"/>
-        <pathelement path="${jedit.user.jars}/JavaSideKick.jar"/>
-        <pathelement path="${jedit.user.jars}/EBrowse.jar"/>
+        <pathelement path="${jedit.plugins.dir}/CommonControls.jar"/>
+        <pathelement path="${jedit.plugins.dir}/Console.jar"/>
+        <pathelement path="${jedit.plugins.dir}/EBrowse.jar"/>
+        <pathelement path="${jedit.plugins.dir}/ErrorList.jar"/>
+        <pathelement path="${jedit.plugins.dir}/JavaSideKick.jar"/>
+        <pathelement path="${jedit.plugins.dir}/ProjectViewer.jar"/>
     </path>
 
 </project>
