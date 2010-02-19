@@ -68,6 +68,7 @@ public class Options extends AbstractOptionPane {
 		super("minimap");
 	}
 	
+	@Override
 	public void _init() {
 		setBorder(new EmptyBorder(5, 5, 5, 5));
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -106,8 +107,9 @@ public class Options extends AbstractOptionPane {
 		scroll.setSelected(getScrollProp());
 		fold.setSelected(getFoldProp());
 		time.setValue(getTimeProp());
-
 	}
+
+	@Override
 	public void _save() {
 		jEdit.setProperty(FONT_PROP, font.getSelectedItem().toString());
 		double d = 2.0;
