@@ -76,14 +76,9 @@
                 These are part of <ulink url="http://djproject.sourceforge.net/">DJ Native Swing</ulink></para>
             </listitem>
             <listitem>
-                <para><filename>jna.jar</filename> renamed to <filename>jna-3.2.4.jar</filename>:
-                This jar can be found on the
-                <ulink url="http://jna.dev.java.net/">Java Native Access website</ulink>.
-                Because the SVNPlugin currently uses an older version of this jar,
-                NativeBrowser plugin requires this jar to be renamed to
-                <filename>jna-3.2.4.jar</filename> (3.2.4 is the latest version of JNA
-                at the time of writing, but the jar can be of any version as long as the
-                name is <filename>jna-3.2.4.jar</filename>).</para>
+                <para><filename>jna.jar</filename>: This jar is part of the JNAPlugin.
+                More information can be found on the
+                <ulink url="http://jna.dev.java.net/">Java Native Access website</ulink>.</para>
             </listitem>
             <listitem>
                 <para><filename>swt.jar</filename>: This jar is specific to each platform and
@@ -113,6 +108,16 @@
         <para>Eventually the burden of adding jars to jEdit's classpath should
         become a responsibility the plugin framework. Until then such manual steps
         will be required for libraries needing native callback to java.</para>
+        <para>On the mac, the easiest way is to copy the DJNative, jna, and swt jars
+        into your /Applications/jEdit.app/Contents/Resources/Java. Then modify your
+        Info.plist file (/Applications/jEdit.app/Contents/Info.plist), adding the following
+        entries.</para>
+        <itemizedlist>
+        		<listitem><para>&lt;string&gt;$JAVAROOT/DJNativeSwing-SWT.jar&lt;/string&gt;</para></listitem>
+        		<listitem><para>&lt;string&gt;$JAVAROOT/DJNativeSwing.jar&lt;/string&gt;</para></listitem>
+        		<listitem><para>&lt;string&gt;$JAVAROOT/jna.jar&lt;/string&gt;</para></listitem>
+        		<listitem><para>&lt;string&gt;$JAVAROOT/swt.jar&lt;/string&gt;</para></listitem>
+        	</itemizedlist>
     </simplesect>
 
     <simplesect>
