@@ -88,7 +88,7 @@ public class ApiParser {
 		}
 		// Parse class data
 		String classData = pullSection(text, "<!-- ======== START OF CLASS DATA ======== -->", false);
-		if (!classData.isEmpty()) {
+		if (classData.length() > 0) {
 			int br = classData.indexOf("<BR>");
 			String pkg = clearTags(classData.substring(0, br)).trim();
 			int pre = classData.indexOf("</H2>", br);
@@ -102,7 +102,7 @@ public class ApiParser {
 		}
 		// Parse field data
 		String fieldData = pullSection(text, "<!-- =========== FIELD SUMMARY =========== -->", true);
-		if (!fieldData.isEmpty()) {
+		if (fieldData.length() > 0) {
 			Pattern p = Pattern.compile("<TR .*?>.*?</TR>");
 			Matcher m = p.matcher(fieldData);
 			while (m.find()) {
@@ -133,7 +133,7 @@ public class ApiParser {
 		}
 		// Parse constructor data
 		String constructorData = pullSection(text, "<!-- ======== CONSTRUCTOR SUMMARY ======== -->", true);
-		if (!constructorData.isEmpty()) {
+		if (constructorData.length() > 0) {
 			Pattern p = Pattern.compile("<TR .*?>.*?</TR>");
 			Matcher m = p.matcher(constructorData);
 			while (m.find()) {
@@ -148,7 +148,7 @@ public class ApiParser {
 		}
 		// Parse method data
 		String methodData = pullSection(text, "<!-- ========== METHOD SUMMARY =========== -->", true);
-		if (!methodData.isEmpty()) {
+		if (methodData.length() > 0) {
 			Pattern p = Pattern.compile("<TR .*?>.*?</TR>");
 			Matcher m = p.matcher(methodData);
 			while (m.find()) {
