@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.JComboBox;
+import javax.swing.JCheckBox;
 import javax.swing.DefaultComboBoxModel;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
@@ -31,6 +32,7 @@ public class XSLTOptionPane extends AbstractOptionPane
 {
 	//{{{ Private members
 
+	private JCheckBox compileOnSave;
 	private JComboBox xsltFactory;
 	private Map<String,String> factoryLabels;
 	
@@ -71,10 +73,17 @@ public class XSLTOptionPane extends AbstractOptionPane
 		xsltFactory = new JComboBox(new DefaultComboBoxModel(factories));
 		xsltFactory.setEditable(true);
 		xsltFactory.setName("factory");
+		xsltFactory.setToolTipText("options.xslt.factory.tooltip");
 		xsltFactory.setSelectedIndex(factories.indexOf(currentFactoryLabel));
 		
-		addComponent(jEdit.getProperty("options.xslt.factory"), xsltFactory);
+		addComponent(jEdit.getProperty("options.xslt.factory.label"), xsltFactory);
 		
+		compileOnSave = new JCheckBox(jEdit.getProperty("options.xslt.compile-on-save.label"));
+		compileOnSave.setName("compile-on-save");
+		compileOnSave.setToolTipText("options.xslt.compile-on-save.tooltip");
+		compileOnSave.setSelected(jEdit.getBooleanProperty(XSLTPlugin.COMPILE_ON_SAVE_PROP));
+		
+		addComponent(compileOnSave);
 	} //}}}
 
 	//{{{ _save() method
@@ -91,6 +100,7 @@ public class XSLTOptionPane extends AbstractOptionPane
 			Log.log(Log.DEBUG,this,"setting factory to : "+factory);
 			jEdit.setProperty(XSLTUtilities.XSLT_FACTORY_PROP,factory);
 		}
+		jEdit.setBooleanProperty(XSLTPlugin.COMPILE_ON_SAVE_PROP,compileOnSave.isSelected());
 	} //}}}
 
 

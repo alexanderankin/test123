@@ -31,6 +31,7 @@ import org.gjt.sp.jedit.testframework.Log;
 
 import static org.gjt.sp.jedit.testframework.TestUtils.*;
 import static org.gjt.sp.jedit.testframework.EBFixture.*;
+import org.gjt.sp.jedit.testframework.PluginOptionsFixture;
 import org.gjt.sp.jedit.testframework.TestUtils;
 
 // }}}
@@ -323,6 +324,32 @@ public class XSLTPluginTest{
 		
 		errorlist.tree().selectRow(1);
 		assertTrue(errorlist.tree().valueAt(1).startsWith("2: (SAX error) Content is not allowed in prolog"));
+		errorlist.close();
+    }
+
+    /**
+     * this test is failing, but it works when I do it manually...
+     */
+    @Test
+    public void testXSLTCompileOnSave() throws IOException{
+    	File xsl = new File(testData,"broken/transform.xsl");
+    	
+    	PluginOptionsFixture optionsF = TestUtils.pluginOptions();
+    	JPanelFixture options = optionsF.optionPane("XSLT","xslt");
+    	Pause.pause(1000);
+    	options.checkBox("compile-on-save").requireNotSelected().check();
+    	optionsF.OK();
+    	
+    	TestUtils.openFile(xsl.getPath());
+    	
+		action("error-list-show");
+    	FrameFixture errorlist = TestUtils.findFrameByTitle("Error List");
+
+    	action("save");
+		Pause.pause(2000);
+    	
+		errorlist.tree().selectRow(1);
+		assertTrue(errorlist.tree().valueAt(1).startsWith("6: (XSLT error)"));
 		errorlist.close();
     }
 

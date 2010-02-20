@@ -27,9 +27,14 @@ import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
 import java.awt.Component;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -50,24 +55,25 @@ public class XSLTPlugin extends EBPlugin implements EBComponent{
 
 	private static XSLTProcessor processor;
 	private static DefaultErrorSource errorSource;
+	public static String COMPILE_ON_SAVE_PROP="xslt.compile-on-save";
 	
-	int ii;
+	private boolean compileOnSave = false;
 	
 	public XSLTPlugin() {
-		ii = 10;
 	}
 
 	/**
 	 * Register xerces as the SAX Parser provider
 	 */
 	public void start() {
-		String transformerFactory = jEdit.getProperty(XSLTUtilities.TRANSFORMER_FACTORY);
 		String saxParserFactory = jEdit.getProperty(XSLTUtilities.SAX_PARSER_FACTORY);
 		String saxDriver = jEdit.getProperty(XSLTUtilities.SAX_DRIVER);
 		String indentAmount = jEdit.getProperty("xslt.transform.indent-amount");
 
-		XSLTUtilities.setXmlSystemProperties(transformerFactory, saxParserFactory, saxDriver);
+		XSLTUtilities.setXmlSystemProperties(saxParserFactory, saxDriver);
 		XSLTUtilities.setIndentAmount(indentAmount);
+		
+		compileOnSave = jEdit.getBooleanProperty(COMPILE_ON_SAVE_PROP);
 	}
 
 	public void stop() {
@@ -138,18 +144,32 @@ public class XSLTPlugin extends EBPlugin implements EBComponent{
 		return message;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.gjt.sp.jedit.EBComponent#handleMessage(org.gjt.sp.jedit.EBMessage)
-	 */
 	public void handleMessage(EBMessage message) {
-		// TODO Auto-generated method stub
 		if (jEdit.getFirstView() == null)
 			return;
         XPathTool xpathTool = (XPathTool)jEdit.getFirstView().getDockableWindowManager().getDockable("xpath-tool");
-        if (xpathTool == null)
-        	return;
-        xpathTool.handleMessage(message);
+        if (xpathTool != null){
+        	xpathTool.handleMessage(message);
+        }
+        if(message instanceof PropertiesChanged){
+        	compileOnSave = jEdit.getBooleanProperty(COMPILE_ON_SAVE_PROP);
+        }else if(compileOnSave && (message instanceof BufferUpdate)){
+        	final BufferUpdate buMessage = (BufferUpdate)message;
+        	if(BufferUpdate.SAVED == buMessage.getWhat()){
+        		final Buffer b = buMessage.getBuffer();
+        		if("xsl".equals(b.getMode().getName())){
+        			SwingUtilities.invokeLater(new Runnable()
+						{
+							public void run()
+							{
+								XsltActions.compileStylesheet(buMessage.getView(),b);
+							}
+						});
+					
+        		}
+        	}
+        }
 	}
-
-
+	
+	
 }

@@ -1,4 +1,4 @@
-plugin.xslt.XSLTPlugin.activate=defer
+plugin.xslt.XSLTPlugin.activate=xslt.compile-on-save
 plugin.xslt.XSLTPlugin.name=XSLT
 plugin.xslt.XSLTPlugin.author=Robert McKinnon, Greg Merrill, Wim Le Page, Pieter Wellens, Eric Le Lay
 plugin.xslt.XSLTPlugin.version=0.7.0
@@ -27,6 +27,8 @@ options.xslt.general.label=XSLT
 options.xslt.general.code=new xslt.XSLTOptionPane()
 options.xslt.factory.label=XSLT processor : 
 options.xslt.factory.tooltip=XSLT engine to use for the XSLT Tool ; you can use another one (see help)
+options.xslt.compile-on-save.label=compile stylesheets on save
+options.xslt.compile-on-save.tooltip=this will hopefuly help you catch errors earlier, depending on the XSLT processor
 # }}}
 
 # Dockables
@@ -37,12 +39,14 @@ xpath-tool.label=XPath 1.0 Tool
 # Action labels
 xslt.transform.label=Transform XML
 xslt.settings.load.label=Load XSLT settings
+xslt.compile.label=Compile this Stylesheet
 xslt.settings.save.label=Save XSLT settings
 xpath.evaluate.label=Evaluate XPath
 
 
 # Plugin menu
 plugin.xslt.XSLTPlugin.menu=\
+  xslt.compile \
   xslt.transform \
   xslt.settings.load \
   xslt.settings.save \
@@ -178,3 +182,4 @@ xpath.result.message.buffer-unparseable=Couldn't parse buffer.
 xpath.result.message.expression-unevaluateable=Couldn't evaluate expression.
 xpath.result.message.large-xml-fragment=The XML fragments string is longer than {0} characters, stopped printing the string to avoid OutOfMemoryException.
 
+xslt.compile.finished=Stylesheet compilation finished - {0} error(s) 

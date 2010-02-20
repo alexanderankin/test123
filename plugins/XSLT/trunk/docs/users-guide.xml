@@ -239,6 +239,23 @@
         </listitem>
       </itemizedlist>
     </para>
+    
+    <section id="compile-stylesheet">
+    <title>Compiling a stylesheet</title>
+    
+    <para>I find it useful to have the stylesheet compiled even if don't run the
+    stylesheet in jEdit. This allows for basic tests to be performed 
+    on the stylesheet and catches many stupid errors that I would only have seen
+    when running it. I found the Saxon 9.2 XSLT processor to report the most errors;
+    this may be related to the precisions in the XSLT 2.0 specification, but I heard that Michael Kay
+    put a good deal of effort in outputting explicit error messages.
+    </para>
+    
+    <para>Anyway, you can invoke the action <code>xslt.compile</code> to compile
+    the stylesheet in current buffer.You can also check an option in the XSLT
+    option pane (see <xref linkend="options"/>) to always compile XSLT stylesheets
+    on save.</para>
+    </section>
   </chapter>
 
   <chapter id="xpath-tool">
@@ -336,6 +353,11 @@
   <code>javax.xml.transform.TransformerFactory</code>. After a restart of jEdit,
   you will be using the selected XSLT processor.
   </para>
+  
+  <para>You can also choose to run a compilation of the stylesheets on save
+  (see <xref linkend="compile-stylesheet"/>). I find it helpful to perform some checks
+   on the stylesheet.
+  </para>
   </chapter>
   
   <chapter id="contributors">
@@ -393,6 +415,7 @@
         <listitem><para>Transformation errors go to ErrorList (Lari Hotari)
         - see plugin patch #1610606).</para></listitem>
         <listitem><para>Configurable XSLT processor.</para></listitem>
+        <listitem><para>New action to compile stylesheet (and compile on save).</para></listitem>
       </itemizedlist>
     </para>
     <para>

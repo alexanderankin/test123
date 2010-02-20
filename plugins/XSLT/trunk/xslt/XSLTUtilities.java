@@ -71,7 +71,7 @@ public class XSLTUtilities {
   /*
    * FIXME : shouldn't let this plugin override these global properties !
    */
-  public static void setXmlSystemProperties(String transformerFactory, String saxParserFactory, String saxDriver) {
+  public static void setXmlSystemProperties(String saxParserFactory, String saxDriver) {
     System.setProperty(SAX_PARSER_FACTORY, saxParserFactory);
     System.setProperty(SAX_DRIVER, saxDriver);
     logXmlSystemProperties();
@@ -179,6 +179,30 @@ public class XSLTUtilities {
     return handlers;
   }
 
+  public static void compileStylesheet(String stylesheet, ErrorListenerToErrorList errorListener)
+  		throws IOException, TransformerConfigurationException,SAXException, ClassNotFoundException, InstantiationException, IllegalAccessException
+  {
+    SAXTransformerFactory saxFactory = null;
+
+    String factoryClass = jEdit.getProperty(XSLT_FACTORY_PROP);
+    try {
+      saxFactory = (SAXTransformerFactory)Class.forName(factoryClass).newInstance();
+    } catch(ClassCastException exception) {
+      Log.log(Log.ERROR, XSLTUtilities.class, "class cast exception " + exception.toString());
+      throw new TransformerConfigurationException(XSLTPlugin.getOldXalanJarMessage());
+    } catch(ClassNotFoundException cnfe){
+    	throw new TransformerConfigurationException("class not found:"+factoryClass);
+    }
+    
+    saxFactory.setErrorListener(errorListener);
+    saxFactory.setURIResolver(new URIResolverImpl());
+    
+    final Source stylesheetSource = getSource((String)stylesheet);
+  
+    errorListener.setCurrentStylesheet(stylesheetSource.getSystemId());
+      
+    saxFactory.newTransformer(stylesheetSource);
+  }
 
   private static Source getSource(String fileName) throws org.xml.sax.SAXException,IOException {
     Source source = new SAXSource(xml.Resolver.instance().resolveEntity(/*publicId=*/null, fileName));

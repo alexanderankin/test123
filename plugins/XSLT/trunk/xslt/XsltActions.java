@@ -21,8 +21,13 @@ package xslt;
 
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EditPane;
+import org.gjt.sp.util.Log;
 
 import javax.swing.JOptionPane;
+
+import org.xml.sax.SAXParseException;
 
 /**
  * Contains static action methods for XSLT plugin
@@ -90,6 +95,25 @@ public class XsltActions {
     } else {
       xpathTool.clickEvaluateButton();
     }
+  }
+  
+  public static void compileStylesheet(View view, Buffer buffer){
+	  String path = buffer.getPath();
+  	  ErrorListenerToErrorList listener = new ErrorListenerToErrorList("");
+  	  try {
+  	  	  
+  	  	  // clear any existing error
+  	  	  XSLTPlugin.getErrorSource().removeFileErrors(path);
+  	  	  
+  	  	  XSLTUtilities.compileStylesheet(path, listener);
+  	  	  
+  	  } catch (Exception e) {
+  	  	  Log.log(Log.ERROR,XsltActions.class,e);
+  	  }
+  	  int nbErrors = XSLTPlugin.getErrorSource().getFileErrorCount(path);
+  	  //can be pretty annoying... if(nbErrors > 0)java.awt.Toolkit.getDefaultToolkit().beep();
+  	  String message = jEdit.getProperty("xslt.compile.finished",new Object[]{nbErrors});
+  	  view.getStatus().setMessage(message);
   }
 
 
