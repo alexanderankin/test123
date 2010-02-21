@@ -4,9 +4,11 @@
  */
 package projectbuilder
 // imports {{{
-import projectbuilder.build.BuildCommand
-import projectbuilder.run.RunCommand
+import projectbuilder.command.Entry
+import projectbuilder.command.ShellRunner
+import projectbuilder.utils.ZipUtils
 
+import java.util.*
 import java.util.zip.*
 import javax.script.ScriptContext
 import javax.swing.*
@@ -19,17 +21,17 @@ import org.gjt.sp.jedit.jEdit as JEDIT
 import org.apache.tools.ant.Project
 import org.apache.tools.ant.ProjectHelper
 
-import projectbuilder.utils.ZipUtils
 import projectviewer.vpt.VPTProject
 import com.townsfolkdesigns.jedit.plugins.scripting.*
 import console.Shell
+import console.Console
 import antfarm.AntFarmPlugin
 // }}} imports
 /**
  *
  * @author elberry
  */
-public class ProjectBuilderPlugin extends EditPlugin {
+public class ProjectBuilderPlugin extends EditPlugin implements EBComponent {
 
    private Project building = null; // The currently-building project
    public static final String userTemplateDir = JEDIT.getSettingsDirectory()+"/project-templates"
@@ -72,11 +74,16 @@ public class ProjectBuilderPlugin extends EditPlugin {
             }
          }
       }
+      updateToolbar()
+      EditBus.addToBus(this)
    }
 
    @Override
    public void stop() {
-   	  
+   	   for (view in JEDIT.getViews()) {
+   	  	  ProjectToolbar.remove(view)
+   	  }
+   	  EditBus.removeFromBus(this)
    }
 
    public void createNewProject(View view, String projectType) {
@@ -97,51 +104,135 @@ public class ProjectBuilderPlugin extends EditPlugin {
    	   createNewProject(view, "")
    }
    
+   public void executeCommand(View view, VPTProject proj, Entry.ParsedCommand command) {
+   	   String type = command.type()
+   	   JEDIT.getAction("error-list-clear").invoke(view)
+	   JEDIT.saveSettings()
+   	   if (type.equals("SYSTEM")) {
+   	   	   // Run in system shell
+   	   	   String cmd = command.getProperty("cmd")
+   	   	   String[] commands = new String[2]
+   	   	   commands[0] = "cd \""+proj.getRootPath()+"\""
+   	   	   commands[1] = cmd
+   	   	   Shell system = Shell.getShell("System")
+   	   	   ShellRunner runner = new ShellRunner(view.getDockableWindowManager(), system, commands)
+   	   	   runner.start()
+   	   }
+   	   else if (type.equals("ANT")) {
+   	   	   String[] commands = new String[2]
+   	   	   String buildfile = command.getProperty("buildfile")
+   	   	   if (buildfile == null || buildfile.length() == 0)
+				buildfile = proj.getRootPath()+File.separator+"build.xml"
+		   commands[0] = "+"+buildfile
+   	   	   commands[1] = "!"+command.getProperty("target")
+   	   	   Shell ant = Shell.getShell("Ant")
+   	   	   ShellRunner runner = new ShellRunner(view.getDockableWindowManager(), ant, commands)
+   	   	   runner.start()
+   	   }
+   }
+   
+   // TODO: See if there's a way to open the project properties pane with Build/Run Settings selected
+   public void editSettings(View view) {}
+   
+   // Build Project methods {{{
    public void buildProject(View view) {
    	   buildProject(view, projectviewer.ProjectViewer.getActiveProject(view))
    }
-   
+                                
    public void buildProject(View view, VPTProject proj) {
-   	   if (building != null) return
-	   if (proj == null) {
+   	   if (building != null)
+   	   	   return
+   	   if (proj == null) {
 	   	   GUIUtilities.error(view, "projectBuilder.msg.no-project", null)
-	    } else {
-	    	JEDIT.getAction("error-list-clear").invoke(view)
-	    	JEDIT.saveSettings()
-	    	BuildCommand.run(view, proj)
+	   	   return
 	   }
+	   String buildProp = proj.getProperty("projectBuilder.command.build")
+	   if (buildProp == null || buildProp.length() == 0) {
+	   	   GUIUtilities.error(view, "projectBuilder.msg.no-build-command", null)
+	   	   return
+	   }
+	   Entry entry = new Entry(buildProp)
+	   executeCommand(view, proj, entry.parse())
    }
    
+   public ArrayList<Entry> getBuildCommands(VPTProject proj) {
+   	   ArrayList<Entry> list = new ArrayList<Entry>()
+   	   for (int i = 0; true; i++) {
+   	   	   String prop = proj.getProperty("projectBuilder.command.build."+i)
+   	   	   if (prop == null)
+   	   	   	   break
+   	   	   list.add(new Entry(prop))
+   	   }
+   	   return list
+   }
+   // }}} Build Project methods
+   
+   // Run Project methods {{{
    public void runProject(View view) {
    	   runProject(view, projectviewer.ProjectViewer.getActiveProject(view))
    }
    
    public void runProject(View view, VPTProject proj) {
-   	   if (building != null) return
-	   if (proj == null) {
+   	   if (building != null)
+   	   	   return
+   	   if (proj == null) {
 	   	   GUIUtilities.error(view, "projectBuilder.msg.no-project", null)
-	    } else {
-	    	JEDIT.getAction("error-list-clear").invoke(view)
-	    	RunCommand.run(view, proj)
+	   	   return
+	   }
+	   String runProp = proj.getProperty("projectBuilder.command.run")
+	   if (runProp == null || runProp.length() == 0) {
+	   	   GUIUtilities.error(view, "projectBuilder.msg.no-run-command", null)
+	   	   return
+	   }
+	   Entry entry = new Entry(runProp)
+	   executeCommand(view, proj, entry.parse())
+   }
+   
+   public ArrayList<Entry> getRunCommands(VPTProject proj) {
+   	   ArrayList<Entry> list = new ArrayList<Entry>()
+   	   for (int i = 0; true; i++) {
+   	   	   String prop = proj.getProperty("projectBuilder.command.run."+i)
+   	   	   if (prop == null)
+   	   	   	   break
+   	   	   list.add(new Entry(prop))
+   	   }
+   	   return list
+   }
+   // }}} Run Project settings
+   
+   // Toolbar methods {{{
+   public void toggleToolbar() {
+   	   boolean toolbar = !JEDIT.getBooleanProperty("options.projectBuilder.toolbar.visible")
+   	   JEDIT.setBooleanProperty("options.projectBuilder.toolbar.visible", toolbar)
+   	   updateToolbar()
+   }
+   
+   private void updateToolbar() {
+   	   boolean toolbar = JEDIT.getBooleanProperty("options.projectBuilder.toolbar.visible")
+   	   if (toolbar) {
+   	   	   for (view in JEDIT.getViews()) {
+			   ProjectToolbar.create(view)
+		   }
+	   } else {
+	   	   for (view in JEDIT.getViews()) {
+	   	   	   ProjectToolbar.remove(view)
+	   	   }
 	   }
    }
+   // }}} Toolbar methods
    
-   public void editBuildSettings(View view) {
-   	   VPTProject proj = projectviewer.ProjectViewer.getActiveProject(view)
-   	   if (proj == null) {
-   	   	   GUIUtilities.error(view, "projectBuilder.msg.no-project", null)
-   	   	   return
+   // Edit Bus
+   public void handleMessage(EBMessage message) {
+   	   if (message instanceof ViewUpdate) {
+   	   	   ViewUpdate view_message = (ViewUpdate) message
+   	   	   boolean toolbar = JEDIT.getBooleanProperty("options.projectBuilder.toolbar.visible")
+   	   	   if (!toolbar) return
+   	   	   if (view_message.getWhat() == ViewUpdate.CREATED) {
+   	   	   	   ProjectToolbar.create(view_message.getView())
+   	   	   } else if (view_message.getWhat() == ViewUpdate.CLOSED) {
+   	   	   	   ProjectToolbar.remove(view_message.getView())
+   	   	   }
    	   }
-   	   BuildCommand.editCommands(view, proj)
-   }
-   
-   public void editRunSettings(View view) {
-   	   VPTProject proj = projectviewer.ProjectViewer.getActiveProject(view)
-   	   if (proj == null) {
-   	   	   GUIUtilities.error(view, "projectBuilder.msg.no-project", null)
-   	   	   return
-   	   }
-   	   RunCommand.editCommands(view, proj)
    }
    
 }
