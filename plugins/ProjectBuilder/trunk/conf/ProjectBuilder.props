@@ -31,7 +31,7 @@ projectBuilder.actions.toggleToolbar.label=Show Toolbar
 
 # ProjectViewer settings {{{
 options.projectBuilder.pv.options.label=Build/Run Settings
-options.projectBuilder.toolbar.visible=true
+options.projectBuilder.toolbar.visible=false
 # }}} ProjectViewer settings
 
 # Properties {{{
