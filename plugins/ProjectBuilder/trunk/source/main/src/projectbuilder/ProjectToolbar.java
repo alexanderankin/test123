@@ -25,8 +25,9 @@ public class ProjectToolbar extends JPanel {
 	private JComboBox run_box;
 	private View view;
 	private VPTProject proj;
-	public ProjectToolbar(View view) {
+	public ProjectToolbar(View view, VPTProject proj) {
 		this.view = view;
+		this.proj = proj;
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		add(Box.createHorizontalGlue());
 		add(build_box = new JComboBox());
@@ -41,12 +42,16 @@ public class ProjectToolbar extends JPanel {
 		add(Box.createRigidArea(new Dimension(10, 0)));
 		add(run_btn = new JButton("Run Project"));
 		add(Box.createHorizontalGlue());
-		updateBoxes();
+		updateBoxes(proj);
+		listen();
+	}
+	
+	private void listen() {
 		build_box.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (proj == null) return;
 				if (build_box.getSelectedItem() == null) {
-					proj.removeProperty("projectBuilder.command.build");
+					//proj.removeProperty("projectBuilder.command.build");
 					return;
 				}
 				proj.setProperty("projectBuilder.command.build",
@@ -57,7 +62,7 @@ public class ProjectToolbar extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				if (proj == null) return;
 				if (run_box.getSelectedItem() == null) {
-					proj.removeProperty("projectBuilder.command.run");
+					//proj.removeProperty("projectBuilder.command.run");
 					return;
 				}
 				proj.setProperty("projectBuilder.command.run",
@@ -69,9 +74,9 @@ public class ProjectToolbar extends JPanel {
 				ProjectBuilderPlugin plugin = (ProjectBuilderPlugin)
 					jEdit.getPlugin("projectbuilder.ProjectBuilderPlugin");
 				if (proj == null)
-					plugin.buildProject(jEdit.getActiveView());
+					plugin.buildProject(view);
 				else
-					plugin.buildProject(jEdit.getActiveView(), proj);
+					plugin.buildProject(view, proj);
 			}
 		});
 		run_btn.addActionListener(new ActionListener() {
@@ -79,26 +84,26 @@ public class ProjectToolbar extends JPanel {
 				ProjectBuilderPlugin plugin = (ProjectBuilderPlugin)
 					jEdit.getPlugin("projectbuilder.ProjectBuilderPlugin");
 				if (proj == null)
-					plugin.runProject(jEdit.getActiveView());
+					plugin.runProject(view);
 				else
-					plugin.runProject(jEdit.getActiveView(), proj);
+					plugin.runProject(view, proj);
 			}
 		});
 	}
 	
-	public void updateBoxes() {
+	public void updateBoxes(VPTProject p) {
 		build_box.removeAllItems();
 		run_box.removeAllItems();
-		proj = ProjectViewer.getActiveProject(view);
-		if (proj == null) {
+		//proj = ProjectViewer.getActiveProject(view);
+		if (p == null) {
 			build_box.setSelectedItem(null);
 			run_box.setSelectedItem(null);
 			return;
 		}
-		String saved = proj.getProperty("projectBuilder.command.build");
+		String saved = p.getProperty("projectBuilder.command.build");
 		boolean boxIsValid = false;
 		for (int i = 0; true; i++) {
-			String prop = proj.getProperty("projectBuilder.command.build."+i);
+			String prop = p.getProperty("projectBuilder.command.build."+i);
 			if (prop == null) break;
 			Entry entry = new Entry(prop);
 			build_box.addItem(entry);
@@ -109,10 +114,10 @@ public class ProjectToolbar extends JPanel {
 		}
 		if (!boxIsValid) build_box.setSelectedItem(null);
 		
-		saved = proj.getProperty("projectBuilder.command.run");
+		saved = p.getProperty("projectBuilder.command.run");
 		boxIsValid = false;
 		for (int i = 0; true; i++) {
-			String prop = proj.getProperty("projectBuilder.command.run."+i);
+			String prop = p.getProperty("projectBuilder.command.run."+i);
 			if (prop == null) break;
 			Entry entry = new Entry(prop);
 			run_box.addItem(entry);
@@ -126,8 +131,8 @@ public class ProjectToolbar extends JPanel {
 	}
 
 	// Static methods {{{
-	public static void create(View view) {
-		ProjectToolbar toolbar = new ProjectToolbar(view);
+	public static void create(View view, VPTProject proj) {
+		ProjectToolbar toolbar = new ProjectToolbar(view, proj);
 		viewMap.put(view, toolbar);
 		view.addToolBar(toolbar);
 	}

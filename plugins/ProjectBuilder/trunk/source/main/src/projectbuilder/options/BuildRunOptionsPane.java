@@ -28,19 +28,14 @@ public class BuildRunOptionsPane extends AbstractOptionPane {
 		addComponent(runList);
 	}
 	protected void _save() {
-		try {
-			buildList.save();
-			runList.save();
-			View[] views = jEdit.getViews();
-			for (int i = 0; i<views.length; i++) {
-				ProjectToolbar toolbar = ProjectToolbar.viewMap.get(views[i]);
-				if (toolbar != null) {
-					toolbar.updateBoxes();
-				}
+		buildList.save();
+		runList.save();
+		View[] views = jEdit.getViews();
+		for (int i = 0; i<views.length; i++) {
+			ProjectToolbar toolbar = ProjectToolbar.viewMap.get(views[i]);
+			if (toolbar != null) {
+				toolbar.updateBoxes(proj);
 			}
-		} catch (Exception e) {
-			org.gjt.sp.jedit.Macros.message(jEdit.getActiveView(), "Exception "+e+" ("+e.getMessage()+")");
-			e.printStackTrace();
 		}
 	}
 }
