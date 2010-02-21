@@ -73,6 +73,7 @@ public class PVMenu extends projectviewer.action.Action {
 	} else if (e.getSource() == buildSettings) {
 			jEdit.getPlugin("projectbuilder.ProjectBuilderPlugin").runProject(jEdit.getActiveView(), proj);
 		*/
+		/*
 		if (e.getSource() == build) {
 			ProjectBuilderPlugin plugin =
 			    (ProjectBuilderPlugin) jEdit.getPlugin("projectbuilder.ProjectBuilderPlugin");
@@ -90,5 +91,6 @@ public class PVMenu extends projectviewer.action.Action {
 			    (ProjectBuilderPlugin) jEdit.getPlugin("projectbuilder.ProjectBuilderPlugin");
 			plugin.editRunSettings(jEdit.getActiveView());
 		}
+		*/
 	}
 }

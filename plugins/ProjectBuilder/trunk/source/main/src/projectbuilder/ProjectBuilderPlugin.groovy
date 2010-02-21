@@ -22,6 +22,9 @@ import org.apache.tools.ant.Project
 import org.apache.tools.ant.ProjectHelper
 
 import projectviewer.vpt.VPTProject
+import projectviewer.vpt.VPTNode
+import projectviewer.event.ViewerUpdate
+import projectviewer.ProjectViewer
 import com.townsfolkdesigns.jedit.plugins.scripting.*
 import console.Shell
 import console.Console
@@ -204,14 +207,17 @@ public class ProjectBuilderPlugin extends EditPlugin implements EBComponent {
    public void toggleToolbar() {
    	   boolean toolbar = !JEDIT.getBooleanProperty("options.projectBuilder.toolbar.visible")
    	   JEDIT.setBooleanProperty("options.projectBuilder.toolbar.visible", toolbar)
-   	   updateToolbar()
+   	   updateToolbar(null)
    }
    
-   private void updateToolbar() {
+   private void updateToolbar(VPTProject proj) {
    	   boolean toolbar = JEDIT.getBooleanProperty("options.projectBuilder.toolbar.visible")
    	   if (toolbar) {
+   	   	   boolean useActive = (proj == null)
    	   	   for (view in JEDIT.getViews()) {
-			   ProjectToolbar.create(view)
+   	   	   	   if (useActive) proj = ProjectViewer.getActiveProject(view)
+   	   	   	   if (proj == null) continue
+			   ProjectToolbar.create(view, proj)
 		   }
 	   } else {
 	   	   for (view in JEDIT.getViews()) {
@@ -226,11 +232,18 @@ public class ProjectBuilderPlugin extends EditPlugin implements EBComponent {
    	   if (message instanceof ViewUpdate) {
    	   	   ViewUpdate view_message = (ViewUpdate) message
    	   	   boolean toolbar = JEDIT.getBooleanProperty("options.projectBuilder.toolbar.visible")
-   	   	   if (!toolbar) return
+   	   	   View view = view_message.getView()
    	   	   if (view_message.getWhat() == ViewUpdate.CREATED) {
-   	   	   	   ProjectToolbar.create(view_message.getView())
+   	   	   	   if (toolbar) ProjectToolbar.create(view)
    	   	   } else if (view_message.getWhat() == ViewUpdate.CLOSED) {
-   	   	   	   ProjectToolbar.remove(view_message.getView())
+   	   	   	   if (toolbar) ProjectToolbar.remove(view)
+   	   	   }
+   	   } else if (message instanceof ViewerUpdate) {
+   	   	   ViewerUpdate viewer_message = (ViewerUpdate) message;
+   	   	   VPTNode new_node = viewer_message.getNode()
+   	   	   ProjectToolbar.remove(viewer_message.getView())
+   	   	   if (new_node.isProject()) {
+   	   	   	   updateToolbar((VPTProject) new_node)
    	   	   }
    	   }
    }

@@ -2,6 +2,7 @@ package projectbuilder.options;
 // imports {{{
 import projectbuilder.command.Entry;
 import projectbuilder.command.AddBuildSettingDialog;
+import projectbuilder.command.AddRunSettingDialog;
 import javax.swing.JPanel;
 import javax.swing.JList;
 import javax.swing.JLabel;
@@ -66,19 +67,19 @@ public class CommandList extends JPanel {
         add(BorderLayout.SOUTH, boxPanel);
         add.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		AddBuildSettingDialog dialog = new AddBuildSettingDialog(jEdit.getActiveView(), proj);
-        		if (dialog.data != null) {
-        			/*
-        			for (int i = 0; true; i++) {
-        				if (proj.getProperty("projectBuilder.command."+type+"."+i) == null) {
-        					proj.setProperty("projectBuilder.command."+type+"."+i, dialog.data);
-        					break;
-        				}
-        			}
-        			*/
-        			listModel.addElement(new Entry(dialog.data));
-        			updateBox();
-        		}
+        		if (type.equals("build")) {
+					AddBuildSettingDialog dialog = new AddBuildSettingDialog(jEdit.getActiveView(), proj);
+					if (dialog.data != null) {
+						listModel.addElement(new Entry(dialog.data));
+						updateBox();
+					}
+				} else if (type.equals("run")) {
+					AddRunSettingDialog dialog = new AddRunSettingDialog(jEdit.getActiveView(), proj);
+					if (dialog.data != null) {
+						listModel.addElement(new Entry(dialog.data));
+						updateBox();
+					}
+				}
         	}
         });
         remove.addActionListener(new ActionListener() {
@@ -123,17 +124,22 @@ public class CommandList extends JPanel {
 		updateBox();
 	}
 	public void save() {
-		for (int i = 0; i<listModel.getSize(); i++) {
-			proj.setProperty("projectBuilder.command."+type+"."+i, ((Entry) listModel.get(i)).getProp());
+		try {
+			for (int i = 0; i<listModel.getSize(); i++) {
+				proj.setProperty("projectBuilder.command."+type+"."+i, ((Entry) listModel.get(i)).getProp());
+			}
+			for (int j=listModel.getSize(); true; j++) {
+				if (proj.getProperty("projectBuilder.command."+type+"."+j) == null) break;
+				proj.removeProperty("projectBuilder.command."+type+"."+j);
+			}
+			Entry entry = (Entry) box.getSelectedItem();
+			if (entry != null)
+				proj.setProperty("projectBuilder.command."+type, entry.getProp());
+			else
+				proj.removeProperty("projectBuilder.command."+type);
+			//jEdit.saveSettings();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		for (int j=listModel.getSize(); true; j++) {
-			if (proj.getProperty("projectBuilder.command."+type+"."+j) == null) break;
-			proj.removeProperty("projectBuilder.command."+type+"."+j);
-		}
-		if (box.getSelectedItem() != null)
-			proj.setProperty("projectBuilder.command."+type, ((Entry) box.getSelectedItem()).getProp());
-		else
-			proj.removeProperty("projectBuilder.command."+type);
-		jEdit.saveSettings();
 	}
 }
