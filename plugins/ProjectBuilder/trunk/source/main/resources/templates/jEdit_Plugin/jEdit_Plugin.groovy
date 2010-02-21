@@ -33,5 +33,5 @@ PB.build(project.name, project.directory.path) {
    f("description.html", template: "${templateDir}/PluginDescription.template", templateData: templateData)
    f("sample.build.properties")
 }
-project.build.add("ANT[]")
+project.build.add("Build jEdit Plugin:ANT[target=,buildfile=${project.directory.path}/${project.name}/build.xml]")
 /* ::mode=groovy:folding=indent:noTabs=true:: */

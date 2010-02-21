@@ -161,6 +161,14 @@ if(answer == JOptionPane.OK_OPTION) {
 	   	   view.getDockableWindowManager().addDockableWindow("projectviewer")
 		   VPTProject proj = new VPTProject(project.name)
 		   proj.setRootPath(project.directory.getPath()+File.separator+project.name)
+		   for (int j = 0; j<project.build.size(); j++) {
+		   	   if (j == 0) proj.setProperty("projectBuilder.command.build", project.build.get(j))
+		   	   proj.setProperty("projectBuilder.command.build."+j, project.build.get(j))
+		   }
+		   for (int k = 0; k<project.run.size(); k++) {
+		   	   if (k == 0) proj.setProperty("projectBuilder.command.run", project.run.get(k))
+		   	   proj.setProperty("projectBuilder.command.run."+k, project.run.get(k));
+		   }
 		   ProjectViewer viewer = ProjectViewer.getViewer(view)
 		   manager.addProject(proj, projectGroup)
 		   viewer.setRootNode(proj)
@@ -168,12 +176,6 @@ if(answer == JOptionPane.OK_OPTION) {
 		   VFSManager.waitForRequests()
 		   for (String s : binding.getVariable("open")) {
 		   	   JEDIT.openFile(view, s)
-		   }
-		   for (int j = 0; j<project.build.size(); j++) {
-		   	   proj.setProperty("projectBuilder.command.build."+j, project.build.get(j));
-		   }
-		   for (int k = 0; k<project.run.size(); k++) {
-		   	   proj.setProperty("projectBuilder.command.run."+k, project.run.get(k));
 		   }
 	   } catch (Exception e) {
 	   	   Log.log(Log.ERROR, ProjectBuilderPlugin.class, e.toString()+": "+e.getMessage())
