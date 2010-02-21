@@ -12,6 +12,15 @@
 			jEdit.getPlugin("projectbuilder.ProjectBuilderPlugin").buildProject(view);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="projectBuilder.actions.toggleToolbar">
+		<CODE>
+			jEdit.getPlugin("projectbuilder.ProjectBuilderPlugin").toggleToolbar();
+		</CODE>
+		<IS_SELECTED>
+			jEdit.getBooleanProperty("options.projectBuilder.toolbar.visible");
+		</IS_SELECTED>
+	</ACTION>
+	<!--
 	<ACTION NAME="projectBuilder.actions.runProject">
 		<CODE>
 			jEdit.getPlugin("projectbuilder.ProjectBuilderPlugin").runProject(view);
@@ -22,4 +31,5 @@
 			jEdit.getPlugin("projectbuilder.ProjectBuilderPlugin").editBuildSettings(view);
 		</CODE>
 	</ACTION>
+	-->
 </ACTIONS>

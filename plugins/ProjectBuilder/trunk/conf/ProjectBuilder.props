@@ -19,14 +19,20 @@ plugin.projectbuilder.ProjectBuilderPlugin.depend.4=plugin CommonControlsPlugin 
 
 # Menu {{{
 plugin.projectbuilder.ProjectBuilderPlugin.menu=projectBuilder.actions.buildProject projectBuilder.actions.runProject - \
-												  projectBuilder.actions.editBuildSettings projectBuilder.actions.editRunSettings -
+												  projectBuilder.actions.toggleToolbar -
 plugin.projectbuilder.ProjectBuilderPlugin.menu.code=new projectbuilder.NewProjectMenu()
 projectBuilder.actions.newProject.label=Create new Project
 projectBuilder.actions.buildProject.label=Build Current Project
 projectBuilder.actions.runProject.label=Run Current Project
-projectBuilder.actions.editBuildSettings.label=Edit Project Build Settings
-projectBuilder.actions.editRunSettings.label=Edit Project Run Settings
+projectBuilder.actions.toggleToolbar.label=Show Toolbar
+#projectBuilder.actions.editBuildSettings.label=Edit Project Build Settings
+#projectBuilder.actions.editRunSettings.label=Edit Project Run Settings
 # }}} Menu
+
+# ProjectViewer settings {{{
+options.projectBuilder.pv.options.label=Build/Run Settings
+options.projectBuilder.toolbar.visible=true
+# }}} ProjectViewer settings
 
 # Properties {{{
 projectBuilder.run-ant-in-jvm=true
@@ -36,9 +42,15 @@ projectBuilder.run-ant-in-jvm=true
 projectBuilder.msg.no-project.title=Error
 projectBuilder.msg.no-project.message=No Active Project
 projectBuilder.msg.no-build-command.title=Build Error
-projectBuilder.msg.no-build-command.message=No build commands are defined for this project
+projectBuilder.msg.no-build-command.message=No build setting chosen for this project.\n\
+	To edit build settings right-click on the root project node in ProjectViewer,\n\
+	select Properties, and click on the Build/Run Settings option in the left-hand pane.
 projectBuilder.msg.no-run-command.title=Run Error
-projectBuilder.msg.no-run-command.message=No run command defined for this project
+projectBuilder.msg.no-run-command.message=No run setting chosen for this project.\n\
+	To edit run settings right-click on the root project node in ProjectViewer,\n\
+	select Properties, and click on the Build/Run Settings option in the left-hand pane.
+projectBuilder.msg.remove-setting.title=Remove Setting
+projectBuilder.msg.remove-setting.message=Are you sure you want to remove this setting? ({0})
 projectBuilder.msg.no-tools-jar.title=Ant Error
 projectBuilder.msg.no-tools-jar.message=tools.jar not found
 projectBuilder.msg.add-build-command.title=New Build Command

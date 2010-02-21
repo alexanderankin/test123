@@ -3,4 +3,7 @@
 	<SERVICE CLASS="projectviewer.action.Action" NAME="PVMenu">
 		new projectbuilder.actions.PVMenu();
 	</SERVICE>
+	<SERVICE CLASS="projectviewer.config.OptionsService" NAME="ProjectBuilder Settings">
+		new projectbuilder.options.BuildRunOptionsService();
+	</SERVICE>
 </SERVICES>
