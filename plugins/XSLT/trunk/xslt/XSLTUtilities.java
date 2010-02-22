@@ -139,8 +139,7 @@ public class XSLTUtilities {
     try {
       saxFactory = (SAXTransformerFactory)Class.forName(factoryClass).newInstance();
     } catch(ClassCastException exception) {
-      Log.log(Log.ERROR, XSLTUtilities.class, "class cast exception " + exception.toString());
-      throw new TransformerConfigurationException(XSLTPlugin.getOldXalanJarMessage());
+    	throw new TransformerConfigurationException(exception);
     } catch(ClassNotFoundException cnfe){
     	throw new TransformerConfigurationException("class not found:"+factoryClass);
     }
@@ -194,8 +193,7 @@ public class XSLTUtilities {
     try {
       saxFactory = (SAXTransformerFactory)Class.forName(factoryClass).newInstance();
     } catch(ClassCastException exception) {
-      Log.log(Log.ERROR, XSLTUtilities.class, "class cast exception " + exception.toString());
-      throw new TransformerConfigurationException(XSLTPlugin.getOldXalanJarMessage());
+    	throw new TransformerConfigurationException(exception);
     } catch(ClassNotFoundException cnfe){
     	throw new TransformerConfigurationException("class not found:"+factoryClass);
     }

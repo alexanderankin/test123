@@ -44,21 +44,8 @@ public class XsltOutputProperties {
 
 
   String getKeyIndentAmount() {
-    String indentProperty = null;
-
-    try {
-      indentProperty =  OutputPropertiesFactory.S_KEY_INDENT_AMOUNT;
-    } catch(NoSuchFieldError e) {
-      Log.log(Log.WARNING, this, "no such field error " + e.toString());
-//      if(!messageDisplayed) {
-//        XSLTPlugin.displayOldXalanJarMessage();
-//        messageDisplayed = true;
-//      }
-
-      indentProperty = "{http://xml.apache.org/xslt}indent-amount";
-    }
-
-    return indentProperty;
+  	  // only works for Xalan
+      return "{http://xml.apache.org/xslt}indent-amount";
   }
 
 

@@ -125,25 +125,6 @@ public class XSLTPlugin extends EBPlugin implements EBComponent{
 		XSLTPlugin.processor = processor;
 	}
 
-
-	static void displayOldXalanJarMessage() {
-		String message = getOldXalanJarMessage();
-		JOptionPane.showMessageDialog(XSLTPlugin.processor, message);
-	}
-
-
-	static String getOldXalanJarMessage() {
-		String userPluginsDir = MiscUtilities.constructPath(jEdit.getSettingsDirectory(), "jars");
-		String userEndorsedDir = MiscUtilities.constructPath(userPluginsDir, "endorsed");
-
-		String systemPluginsDir = MiscUtilities.constructPath(jEdit.getJEditHome(), "jars");
-		String systemEndorsedDir = MiscUtilities.constructPath(systemPluginsDir, "endorsed");
-
-		String[] args = {userPluginsDir, systemPluginsDir, userEndorsedDir, systemEndorsedDir};
-		String message = jEdit.getProperty("xslt.old-jar.message", args);
-		return message;
-	}
-
 	public void handleMessage(EBMessage message) {
 		if (jEdit.getFirstView() == null)
 			return;
