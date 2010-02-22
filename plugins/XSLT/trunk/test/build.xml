@@ -55,6 +55,8 @@
 		<!-- Common Controls -->
 		<file name="CommonControls.jar"/>
 		<file name="kappalayout.jar"/>
+		<!-- SaxonPlugin -->
+		<file name="saxon9he.jar"/>
     </filelist>
 
     <!-- include everything needed to let jEdit load the plugin and run the 
