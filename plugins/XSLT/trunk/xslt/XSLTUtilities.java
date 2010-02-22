@@ -46,6 +46,7 @@ import javax.xml.transform.URIResolver;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
 import org.xml.sax.InputSource;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.XMLReader;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.XMLReaderFactory;
@@ -101,28 +102,30 @@ public class XSLTUtilities {
    * @exception Exception        if a problem occurs during the transformation
    */
   public static void transform(InputSource inputFile, Object[] stylesheets, Map stylesheetParameters, File resultFile, ErrorListenerToErrorList errorListener) throws Exception {
-  	/*Log.log(Log.DEBUG,XSLTUtilities.class,"transform("
+  	Log.log(Log.DEBUG,XSLTUtilities.class,"transform("
   		+"src="+inputFile.getSystemId()
   		+",stylesheets="+Arrays.asList(stylesheets)
   		+",params="+stylesheetParameters
-  		+",res="+resultFile+")");*/
+  		+",res="+resultFile+")");
     logXmlSystemProperties();
     TransformerHandler[] handlers = getTransformerHandlers(stylesheets, stylesheetParameters, errorListener);
 
     FileWriter writer = new FileWriter(resultFile);
     Result result = new StreamResult(writer);
-    //result.setSystemId(resultFile.toURI().toString());
+    result.setSystemId(resultFile.toURI().toString());
         
     int lastIndex = handlers.length - 1;
     handlers[lastIndex].setResult(result);
     
     XMLReader reader = XMLReaderFactory.createXMLReader();
+    // allow URLs relative to the input document to be resolved
+    handlers[0].setSystemId(inputFile.getSystemId());
     reader.setContentHandler(handlers[0]);
     reader.setProperty("http://xml.org/sax/properties/lexical-handler", handlers[0]);
 
-    // TODO: is an entity resolver useful here ? 
-    //EntityResolver entityResolver = new EntityResolverImpl(inputFile);
-    //reader.setEntityResolver(entityResolver);
+    // let built-in DTDs be resolved (see test_data/resolver for an example) 
+    EntityResolver entityResolver = xml.Resolver.instance();
+    reader.setEntityResolver(entityResolver);
 
     reader.parse(inputFile);
    
@@ -242,15 +245,22 @@ public class XSLTUtilities {
   	   public Source resolve(String href, String base)
   	   	throws TransformerException
   	   {
-  	   	   try{
-			   return new SAXSource(xml.Resolver.instance().resolveEntity(
-			   	   /*name=*/null,
-			   	   /*publicId=*/null,
-			   	   base,
-			   	   href));
-  	   	   }catch(Exception e){
-  	   	   	   throw new TransformerException("error resolving {"+base+","+href+"}",e);
-  	   	   }
+  	   	   Log.log(Log.DEBUG,this,"resolve(href="+href+",base="+base+")");
+  	   	   if("".equals(href)) {
+  	   	   	   // they are refering to the stylesheet,
+  	   	   	   // return null and let the processor return the stylesheet
+  	   	   	   return null;
+  	   	   } else {
+			   try{
+				   return new SAXSource(xml.Resolver.instance().resolveEntity(
+					   /*name=*/null,
+					   /*publicId=*/null,
+					   base,
+					   href));
+			   }catch(Exception e){
+				   throw new TransformerException("error resolving {"+base+","+href+"}",e);
+			   }
+		   }
   	   }
   }
 }

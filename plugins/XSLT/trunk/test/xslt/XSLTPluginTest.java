@@ -43,6 +43,7 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.Buffer;
 
 import java.io.*;
+import java.util.regex.Pattern;
 import javax.swing.text.*;
 import javax.swing.*;
 
@@ -69,13 +70,13 @@ public class XSLTPluginTest{
         TestUtils.afterClass();
     }
     
-    //@Test
+    @Test
     public void testXSLT() throws IOException{
     	File xml = new File(testData,"simple/source.xml");
     	File xsl = new File(testData,"simple/transform.xsl");
     	String dest = "";
     	
-    	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,dest);
+    	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,dest,1);
     	
 		xsltProcessor.button("transform").click();
 		
@@ -88,12 +89,12 @@ public class XSLTPluginTest{
 		xsltProcessor.close();
     }
     
-    //@Test
+    @Test
     public void testXSLTErrorList() throws IOException{
     	File xml = new File(testData,"simple/source.xml");
     	File xsl = new File(testData,"broken/transform.xsl");
     	
-    	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,"");
+    	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,"",1);
 		
 		// an error will be reported
 		ClickT click = new ClickT(Option.OK);
@@ -116,11 +117,11 @@ public class XSLTPluginTest{
 		xsltProcessor.close();
     }
 
-    //@Test
+    @Test
     public void testXSLTBaseURIBug() throws IOException{
     	File xsl = new File(testData,"base_uri_bug/base-uri-bug.xsl");
     	
-    	final FrameFixture xsltProcessor = setupProcessor(xsl,xsl,"");
+    	final FrameFixture xsltProcessor = setupProcessor(xsl,xsl,"",1);
 		
 		// an error will be reported
 		ClickT click = new ClickT(Option.OK);
@@ -144,12 +145,12 @@ public class XSLTPluginTest{
 		errorlist.close();
     }
 
-    //@Test
+    @Test
     public void testXSLTRuntimeError() throws IOException{
     	File xml = new File(testData,"simple/source.xml");
     	File xsl = new File(testData,"broken/fails_at_runtime.xsl");
     	
-    	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,"");
+    	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,"",1);
 		
 		xsltProcessor.button("transform").click();
 		
@@ -168,12 +169,12 @@ public class XSLTPluginTest{
 		xsltProcessor.close();
     }
 
-    //@Test
+    @Test
     public void testXSLTSAXError() throws IOException{
     	File xml = new File(testData,"broken/source.xml");
     	File xsl = new File(testData,"simple/transform.xsl");
     	
-    	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,"");
+    	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,"",1);
 		
 		// an error will be reported
 		ClickT click = new ClickT(Option.OK);
@@ -200,7 +201,7 @@ public class XSLTPluginTest{
     /**
      * this test is failing, but it works when I do it manually...
      */
-    //@Test
+    @Ignore @Test
     public void testXSLTCompileOnSave() throws IOException{
     	File xsl = new File(testData,"broken/transform.xsl");
     	
@@ -224,7 +225,7 @@ public class XSLTPluginTest{
     }
 
     @Test
-    public void testXSLTResult() throws IOException{
+    public void testXSLTResultFile() throws IOException{
     	File xml = new File(testData,"simple/source.xml");
     	File xsl = new File(testData,"simple/transform.xsl");
     	File result = new File(testData,"simple/output.txt");
@@ -232,7 +233,7 @@ public class XSLTPluginTest{
     	if(result.exists()){
     		assertTrue(result.delete());
     	}
-    	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,result.getAbsolutePath());
+    	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,result.getAbsolutePath(),1);
 				
 		
 		xsltProcessor.button("transform").click();
@@ -249,12 +250,82 @@ public class XSLTPluginTest{
     	assertTrue(result.delete());
     }
 
-	//@Test
+    @Test
+    public void testXSLTSourceURI() throws IOException{
+    	File xml = new File(testData,"simple/source.xml");
+    	File xsl = new File(testData,"xslt2/base_document_uri.xsl");
+
+    	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,"",2);
+				
+		
+		xsltProcessor.button("transform").click();
+		
+		Pause.pause(5000);
+		
+		xsltProcessor.close();
+
+		Buffer b = view().getBuffer();
+		
+		String res = b.getText(0,b.getLength());
+		assertThat(res).contains("document:"+xml.toURI().toString()+"\n");
+		assertThat(res).contains("base-uri:"+xml.toURI().toString()+"\n");
+		assertThat(res).contains("stylesheet:"+xsl.toURI().toString());
+
+    }
+
+    @Test
+    public void testXSLTOutputURI() throws IOException{
+    	File xml = new File(testData,"simple/source.xml");
+    	File xsl = new File(testData,"xslt2/result-document.xsl");
+    	File result = new File(testData,"xslt2/res.txt");
+    	File realOutput = new File(testData,"xslt2/output-document.txt");
+    	
+    	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,result.getPath(),2);
+				
+		
+		xsltProcessor.button("transform").click();
+		
+		Pause.pause(5000);
+		
+		xsltProcessor.close();
+
+		Buffer b = view().getBuffer();
+		
+		assertEquals(0,b.getLength());
+		
+		b = TestUtils.openFile(realOutput.getPath());
+		assertEquals("Hello world !",b.getText(0,b.getLength()));
+		
+		assertTrue(result.delete());
+		assertTrue(realOutput.delete());
+    }
+
+    @Test
+    public void testXSLTResolver() throws IOException{
+    	File xml = new File(testData,"resolver/actions.xml");
+    	File xsl = new File(testData,"resolver/transform.xsl");
+
+    	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,"",2);
+				
+		
+		xsltProcessor.button("transform").click();
+		
+		Pause.pause(5000);
+		
+		xsltProcessor.close();
+
+		Buffer b = view().getBuffer();
+		
+		String res = b.getText(0,b.getLength());
+		assertThat(res).contains("Transform XML (xslt.transform)");
+    }
+
+	@Test
     public void testXSLTParameters() throws IOException{
     	File xml = new File(testData,"simple/source.xml");
     	File xsl = new File(testData,"parameters/stylesheet-with-parameters.xsl");
     	
-    	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,"");
+    	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,"",1);
     	
 		// set the parameters
 		final JTableFixture parms = xsltProcessor.table("parameters"); 
@@ -289,33 +360,14 @@ public class XSLTPluginTest{
 		xsltProcessor.close();
     }
 
-    //@Test
-    public void testXPath() throws IOException{
-    	File xml = new File(testData,"simple/source.xml");
-    	
-    	TestUtils.openFile(xml.getPath());
-    	action("xpath-tool-float",1);
-    	
-    	
-    	final FrameFixture xpathTool = TestUtils.findFrameByTitle("XPath Tool");
-    	
-		xpathTool.radioButton("xpath.select.buffer").click();
-		
-		
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					xpathTool.textBox("xpath.expression").targetCastedTo(JTextComponent.class).setText("/hello/text()");
-				}
-		});
-		
-		xpathTool.button("xpath.evaluate").click();
-		
-		Pause.pause(1000);
-		xpathTool.textBox("xpath.result.data-type").requireText("node-set of size 1");
-		xpathTool.textBox("xpath.result.value").requireText("world");
-    }
-    
-    public FrameFixture setupProcessor(File xml, File xsl, final String dest){
+    public FrameFixture setupProcessor(File xml, File xsl, final String dest,int version){
+    	PluginOptionsFixture optionsF = TestUtils.pluginOptions();
+    	JPanelFixture options = optionsF.optionPane("XSLT","xslt");
+    	Pause.pause(1000);
+    	options.comboBox("factory").selectItem(Pattern.compile("XSLT "+version+"\\.0.*"));
+    	optionsF.OK();
+
+
     	TestUtils.openFile(xml.getPath());
     	action("xslt-processor-float",1);
     	
