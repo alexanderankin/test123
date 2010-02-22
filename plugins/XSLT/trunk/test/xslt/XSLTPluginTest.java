@@ -73,29 +73,10 @@ public class XSLTPluginTest{
     public void testXSLT() throws IOException{
     	File xml = new File(testData,"simple/source.xml");
     	File xsl = new File(testData,"simple/transform.xsl");
+    	String dest = "";
     	
-    	TestUtils.openFile(xml.getPath());
-    	action("xslt-processor-float",1);
+    	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,dest);
     	
-    	
-    	final FrameFixture xsltProcessor = TestUtils.findFrameByTitle("XSLT Processor");
-    	
-		xsltProcessor.radioButton("xslt.source.buffer").click();
-		xsltProcessor.button("stylesheets.add").click();
-		
-		DialogFixture browseDialog = findDialogByTitle("File Browser");
-		//there is always a temporisation until all content gets loaded
-		Pause.pause(1000);
-		browseDialog.table("file").selectCell(
-			browseDialog.table("file").cell(xsl.getName()));
-		browseDialog.button("ok").click();
-		
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					xsltProcessor.textBox("xslt.result.prompt").targetCastedTo(JTextComponent.class).setText("");
-				}
-		});
-		
 		xsltProcessor.button("transform").click();
 		
 		Pause.pause(10000);
@@ -112,36 +93,7 @@ public class XSLTPluginTest{
     	File xml = new File(testData,"simple/source.xml");
     	File xsl = new File(testData,"broken/transform.xsl");
     	
-    	TestUtils.openFile(xml.getPath());
-    	action("xslt-processor-float",1);
-    	
-    	
-    	final FrameFixture xsltProcessor = TestUtils.findFrameByTitle("XSLT Processor");
-    	
-		xsltProcessor.radioButton("xslt.source.buffer").click();
-		
-		while(xsltProcessor.list("stylesheets").contents().length>0)
-		{
-			xsltProcessor.list("stylesheets").selectItem(0);
-			xsltProcessor.button("stylesheets.remove").click();
-		}
-		xsltProcessor.button("stylesheets.add").click();
-		
-		DialogFixture browseDialog = findDialogByTitle("File Browser");
-		//there is always a temporisation until all content gets loaded
-		Pause.pause(1000);
-		browseDialog.button("up").click();
-		browseDialog.table("file").cell(
-			browseDialog.table("file").cell(xsl.getParentFile().getName())).doubleClick();
-		browseDialog.table("file").selectCell(
-			browseDialog.table("file").cell(xsl.getName()));
-		browseDialog.button("ok").click();
-		
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					xsltProcessor.textBox("xslt.result.prompt").targetCastedTo(JTextComponent.class).setText("");
-				}
-		});
+    	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,"");
 		
 		// an error will be reported
 		ClickT click = new ClickT(Option.OK);
@@ -168,32 +120,7 @@ public class XSLTPluginTest{
     public void testXSLTBaseURIBug() throws IOException{
     	File xsl = new File(testData,"base_uri_bug/base-uri-bug.xsl");
     	
-    	TestUtils.openFile(xsl.getPath());
-    	action("xslt-processor-float",1);
-    	
-    	
-    	final FrameFixture xsltProcessor = TestUtils.findFrameByTitle("XSLT Processor");
-    	
-		xsltProcessor.radioButton("xslt.source.buffer").click();
-
-		while(xsltProcessor.list("stylesheets").contents().length>0)
-		{
-			xsltProcessor.list("stylesheets").selectItem(0);
-			xsltProcessor.button("stylesheets.remove").click();
-		}
-		xsltProcessor.button("stylesheets.add").click();
-		
-		DialogFixture browseDialog = findDialogByTitle("File Browser");
-		Pause.pause(1000);
-		browseDialog.table("file").selectCell(
-			browseDialog.table("file").cell(xsl.getName()));
-		browseDialog.button("ok").click();
-		
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					xsltProcessor.textBox("xslt.result.prompt").targetCastedTo(JTextComponent.class).setText("");
-				}
-		});
+    	final FrameFixture xsltProcessor = setupProcessor(xsl,xsl,"");
 		
 		// an error will be reported
 		ClickT click = new ClickT(Option.OK);
@@ -222,38 +149,8 @@ public class XSLTPluginTest{
     	File xml = new File(testData,"simple/source.xml");
     	File xsl = new File(testData,"broken/fails_at_runtime.xsl");
     	
-    	TestUtils.openFile(xml.getPath());
-    	action("xslt-processor-float",1);
-    	
-    	
-    	final FrameFixture xsltProcessor = TestUtils.findFrameByTitle("XSLT Processor");
-    	
-		xsltProcessor.radioButton("xslt.source.buffer").click();
+    	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,"");
 		
-		while(xsltProcessor.list("stylesheets").contents().length>0)
-		{
-			xsltProcessor.list("stylesheets").selectItem(0);
-			xsltProcessor.button("stylesheets.remove").click();
-		}
-		xsltProcessor.button("stylesheets.add").click();
-		
-		DialogFixture browseDialog = findDialogByTitle("File Browser");
-		//there is always a temporisation until all content gets loaded
-		Pause.pause(1000);
-		browseDialog.button("up").click();
-		browseDialog.table("file").cell(
-			browseDialog.table("file").cell(xsl.getParentFile().getName())).doubleClick();
-		browseDialog.table("file").selectCell(
-			browseDialog.table("file").cell(xsl.getName()));
-		browseDialog.button("ok").click();
-		
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					xsltProcessor.textBox("xslt.result.prompt").targetCastedTo(JTextComponent.class).setText("");
-				}
-		});
-		
-
 		xsltProcessor.button("transform").click();
 		
 		Pause.pause(10000);
@@ -276,36 +173,7 @@ public class XSLTPluginTest{
     	File xml = new File(testData,"broken/source.xml");
     	File xsl = new File(testData,"simple/transform.xsl");
     	
-    	TestUtils.openFile(xml.getPath());
-    	action("xslt-processor-float",1);
-    	
-    	
-    	final FrameFixture xsltProcessor = TestUtils.findFrameByTitle("XSLT Processor");
-    	
-		xsltProcessor.radioButton("xslt.source.buffer").click();
-
-		while(xsltProcessor.list("stylesheets").contents().length>0)
-		{
-			xsltProcessor.list("stylesheets").selectItem(0);
-			xsltProcessor.button("stylesheets.remove").click();
-		}
-		xsltProcessor.button("stylesheets.add").click();
-		
-		DialogFixture browseDialog = findDialogByTitle("File Browser");
-		//there is always a temporisation until all content gets loaded
-		Pause.pause(1000);
-		browseDialog.button("up").click();
-		browseDialog.table("file").cell(
-			browseDialog.table("file").cell(xsl.getParentFile().getName())).doubleClick();
-		browseDialog.table("file").selectCell(
-			browseDialog.table("file").cell(xsl.getName()));
-		browseDialog.button("ok").click();
-		
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					xsltProcessor.textBox("xslt.result.prompt").targetCastedTo(JTextComponent.class).setText("");
-				}
-		});
+    	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,"");
 		
 		// an error will be reported
 		ClickT click = new ClickT(Option.OK);
@@ -356,36 +224,38 @@ public class XSLTPluginTest{
     }
 
     @Test
+    public void testXSLTResult() throws IOException{
+    	File xml = new File(testData,"simple/source.xml");
+    	File xsl = new File(testData,"simple/transform.xsl");
+    	File result = new File(testData,"simple/output.txt");
+    	
+    	if(result.exists()){
+    		assertTrue(result.delete());
+    	}
+    	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,result.getAbsolutePath());
+				
+		
+		xsltProcessor.button("transform").click();
+		
+		Pause.pause(5000);
+		
+		xsltProcessor.close();
+
+		Buffer b = view().getBuffer();
+		
+		assertEquals(result.getName(),b.getName());
+		assertEquals("hello world",b.getText(0,b.getLength()));
+    	assertTrue(result.exists());
+    	assertTrue(result.delete());
+    }
+
+	//@Test
     public void testXSLTParameters() throws IOException{
     	File xml = new File(testData,"simple/source.xml");
     	File xsl = new File(testData,"parameters/stylesheet-with-parameters.xsl");
     	
-    	TestUtils.openFile(xml.getPath());
-    	action("xslt-processor-float",1);
+    	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,"");
     	
-    	
-    	final FrameFixture xsltProcessor = TestUtils.findFrameByTitle("XSLT Processor");
-    	
-		xsltProcessor.radioButton("xslt.source.buffer").click();
-
-		while(xsltProcessor.list("stylesheets").contents().length>0)
-		{
-			xsltProcessor.list("stylesheets").selectItem(0);
-			xsltProcessor.button("stylesheets.remove").click();
-		}
-		xsltProcessor.button("stylesheets.add").click();
-		
-		DialogFixture browseDialog = findDialogByTitle("File Browser");
-		//there is always a temporisation until all content gets loaded
-		Pause.pause(1000);
-		browseDialog.button("up").click();
-		browseDialog.table("file").cell(
-			browseDialog.table("file").cell(xsl.getParentFile().getName())).doubleClick();
-		Pause.pause(1000);
-		browseDialog.table("file").selectCell(
-			browseDialog.table("file").cell(xsl.getName()));
-		browseDialog.button("ok").click();
-		
 		// set the parameters
 		final JTableFixture parms = xsltProcessor.table("parameters"); 
 		while(parms.rowCount()>0)
@@ -405,12 +275,6 @@ public class XSLTPluginTest{
 		GuiActionRunner.execute(new GuiTask(){
 				protected void executeInEDT(){
 					((JTextComponent)parms.cell(TableCell.row(0).column(0)).editor()).setText("world");
-				}
-		});
-		
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					xsltProcessor.textBox("xslt.result.prompt").targetCastedTo(JTextComponent.class).setText("");
 				}
 		});
 		
@@ -449,5 +313,44 @@ public class XSLTPluginTest{
 		Pause.pause(1000);
 		xpathTool.textBox("xpath.result.data-type").requireText("node-set of size 1");
 		xpathTool.textBox("xpath.result.value").requireText("world");
+    }
+    
+    public FrameFixture setupProcessor(File xml, File xsl, final String dest){
+    	TestUtils.openFile(xml.getPath());
+    	action("xslt-processor-float",1);
+    	
+    	
+    	final FrameFixture xsltProcessor = TestUtils.findFrameByTitle("XSLT Processor");
+    	
+		xsltProcessor.radioButton("xslt.source.buffer").click();
+
+		while(xsltProcessor.list("stylesheets").contents().length>0)
+		{
+			xsltProcessor.list("stylesheets").selectItem(0);
+			xsltProcessor.button("stylesheets.remove").click();
+		}
+		xsltProcessor.button("stylesheets.add").click();
+		
+		DialogFixture browseDialog = findDialogByTitle("File Browser");
+		//there is always a temporisation until all content gets loaded
+		Pause.pause(1000);
+		browseDialog.button("up").click();
+		browseDialog.table("file").cell(
+			browseDialog.table("file").cell(xsl.getParentFile().getName())).doubleClick();
+		Pause.pause(1000);
+		browseDialog.table("file").selectCell(
+			browseDialog.table("file").cell(xsl.getName()));
+		browseDialog.button("ok").click();
+
+		// set the result
+		GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					xsltProcessor.textBox("xslt.result.prompt").targetCastedTo(JTextComponent.class).setText(dest);
+				}
+		});
+
+		return xsltProcessor;
+
+
     }
 }

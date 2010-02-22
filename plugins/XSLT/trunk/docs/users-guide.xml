@@ -133,7 +133,7 @@
         </listitem>
         <listitem>
           <para>Select a source XML file, by using the "Select XML source"
-          button and subseqent dialog. The button is located
+          button and subsequent dialog. The button is located
           next to the source text field at the top of the tool.</para>
         </listitem>
         <listitem>
@@ -146,7 +146,7 @@
           you wish to populate, you can add parameters
           via the "Add stylesheet parameter" button.
           For example if the XSLT param element is
-          $lt;xsl:param name="uri"/&gt;, you can add
+          &lt;xsl:param name="uri"/&gt;, you can add
           a parameter with name "uri" to the parameter table.</para>
         </listitem>
         <listitem>
@@ -154,6 +154,8 @@
           result file" button next to the result text field at the bottom of the
           tool. In the dialog window select a directory, enter a file name and
           then press the "Open" button (a bit confusing but it will work).</para>
+          <note><para>The result will be written to a new untitled buffer if you leave 
+          this field empty.</para></note>
         </listitem>
         <listitem>
           <para>Files can be opened for editing from the XSLT Processor window,
@@ -416,6 +418,8 @@
         - see plugin patch #1610606).</para></listitem>
         <listitem><para>Configurable XSLT processor.</para></listitem>
         <listitem><para>New action to compile stylesheet (and compile on save).</para></listitem>
+        <listitem><para>Transformation result is written to a new Untitled buffer
+        only if the <guilabel>Result:</guilabel> field is empty (see bug #1392803).</para></listitem>
       </itemizedlist>
     </para>
     <para>
