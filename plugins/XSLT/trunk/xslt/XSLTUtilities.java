@@ -25,6 +25,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Arrays;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
@@ -100,6 +101,11 @@ public class XSLTUtilities {
    * @exception Exception        if a problem occurs during the transformation
    */
   public static void transform(InputSource inputFile, Object[] stylesheets, Map stylesheetParameters, File resultFile, ErrorListenerToErrorList errorListener) throws Exception {
+  	/*Log.log(Log.DEBUG,XSLTUtilities.class,"transform("
+  		+"src="+inputFile.getSystemId()
+  		+",stylesheets="+Arrays.asList(stylesheets)
+  		+",params="+stylesheetParameters
+  		+",res="+resultFile+")");*/
     logXmlSystemProperties();
     TransformerHandler[] handlers = getTransformerHandlers(stylesheets, stylesheetParameters, errorListener);
 
