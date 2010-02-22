@@ -64,55 +64,7 @@
       viewing the results of evaluating XPath expressions.
     </para>
     <para>NOTE: The XML indent functionality that formerly was included in
-    the XSLT plugin has been moved into the separate XML Indenter plugin.</para>
-  </chapter>
-
-  <chapter id="jdk-1-4-issues">
-    <title>Issues running on JDK 1.4</title>
-    <para>The XSLT Plugin makes use of the
-    <ulink url="http://xml.apache.org/xalan-j/">Xalan-Java</ulink> XSLT processor
-    developed by The Apache XML Project.</para>
-    <para>The Sun JDK 1.4 is packaged with an old version (2.2D11) of Xalan-Java.
-    The JDK 1.4 will attempt to use this version instead of any on the classpath.
-    Unfortunately, this may cause problems when attempting to use the XSLT plugin
-    with the Sun JDK 1.4.</para>
-    <para>If you experience any problems you can try moving to the more recent version
-    of Xalan-Java that comes with the XSLT plugin. To use the more recent Xalan-Java:
-      <itemizedlist>
-        <listitem>
-          <para>Go to the directory where the XML and XSLT plugin jars are stored, either
-              your user plugin directory (&lt;user-home&gt;\.jedit\jars), or
-              your system plugin directory (&lt;jedit-home&gt;\jars)
-          </para>
-        </listitem>
-        <listitem>
-          <para>In the plugin directory create a new directory named endorsed, i.e.
-              &lt;user-home&gt;\.jedit\jars\endorsed, or
-              &lt;jedit-home&gt;\jars\endorsed
-          </para>
-        </listitem>
-        <listitem>
-          <para>Move the following jars from the plugin directory into the endorsed directory:
-            xalan.jar, xercesImpl.jar, xmlParserAPIs.jar</para>
-        </listitem>
-        <listitem>
-          <para>In the plugin directory delete the jar named xml-apis.jar, if it is present.</para>
-        </listitem>
-        <listitem>
-          <para>When running jEdit, pass java the system property java.endorsed.dirs
-           set to the endorsed directory, for example:</para>
-        </listitem>
-        <listitem>
-          <para>java -Djava.endorsed.dirs="&lt;user-home&gt;\.jedit\jars\endorsed" -jar jedit or</para>
-        </listitem>
-        <listitem>
-          <para>java -Djava.endorsed.dirs="&lt;jedit-home&gt;\jars\endorsed" -jar jedit</para>
-        </listitem>
-      </itemizedlist>
-    </para>
-    <para>For more of a background on this problem, see Sun's explanation of their
-    <ulink url="http://java.sun.com/j2se/1.4.1/docs/guide/standards/">endorsed standards</ulink>
-    class deployment.</para>
+    the XSLT plugin has been moved into the XML plugin.</para>
   </chapter>
 
   <chapter id="xslt-processor">
@@ -443,8 +395,7 @@
         <listitem><para>0.5.1 requires >=jEdit 4.1 and >=XML plugin 0.11</para></listitem>
         <listitem>
           <para>Known issue: cannot perform transformations running under JDK 1.4.*
-          on Windows after normal plugin install. The solution is to make the environment
-          changes described in <ulink url="ch02.html">Issues running on JDK 1.4</ulink>.</para>
+          on Windows after normal plugin install.</para>
         </listitem>
         <listitem>
           <para>The XML indent functionality that formerly was included in
