@@ -17,9 +17,14 @@ plugin.codebook.CodeBookPlugin.depend.0=jedit 04.03.99.00
 plugin.codebook.CodeBookPlugin.depend.1=jdk 1.5
 plugin.codebook.CodeBookPlugin.depend.2=plugin SuperAbbrevsPlugin 0.32
 plugin.codebook.CodeBookPlugin.depend.3=optional plugin projectviewer.ProjectPlugin 2.9.3
+
 # }}} Dependencies
 
 # Messages {{{
+codebook.msg.no-java-home.title=No Java Data Found
+codebook.msg.no-java-home.message=Before you can use Java completion, you must parse some Api docs.\n\
+	Menu items for parsing them can be found in Plugins -> Code Book.\n\
+	For additional info, refer to this plugin's documentation.
 codebook.msg.invalid-api-download-url.title=Invalid URL
 codebook.msg.invalid-api-download-url.message=Unable to find package list.\n\
 	Please verify that you spelled the URL correctly.

@@ -30,6 +30,10 @@ public class JavaRunner {
 	 * @param textArea the text area instance
 	 */
 	public static void run(JEditTextArea textArea) {
+		if (!new File(dir).exists()) {
+			GUIUtilities.message(textArea.getView(), "codebook.msg.no-java-home", null);
+			return;
+		}
 		Log.log(Log.DEBUG,JavaRunner.class,"Running Java completion");
 		int line = textArea.getCaretLine();
 		int pos = textArea.getCaretPosition()-textArea.getLineStartOffset(line);
@@ -152,17 +156,14 @@ public class JavaRunner {
 	 * @return an arraylist of valid packages, or null if the class was not found
 	 */
 	public static String[] getPackages(String cls) {
-		try {
-			ArrayList<String> pkgs = new ArrayList<String>();
-			String[] pkgArray = new File(getClassObjectDir(cls)).list();
-			for (String s : pkgArray) {
-				pkgs.add(s);
-			}
-			return pkgs.toArray(pkgArray);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
+		ArrayList<String> pkgs = new ArrayList<String>();
+		File classObDir = new File(getClassObjectDir(cls));
+		if (classObDir == null) return null;
+		String[] pkgArray = classObDir.list();
+		for (String s : pkgArray) {
+			pkgs.add(s);
 		}
+		return pkgs.toArray(pkgArray);
 	}
 	// }}} getPackages()
 	// getClassObjectDir() {{{
