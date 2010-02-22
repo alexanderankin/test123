@@ -34,4 +34,5 @@ PB.build(project.name, project.directory.path) {
    f("sample.build.properties")
 }
 project.build.add("Build jEdit Plugin:ANT[target=,buildfile=${project.directory.path}/${project.name}/build.xml]")
+project.build.add("Clean:ANT[target=clean,buildfile=${project.directory.path}/${project.name}/build.xml]")
 /* ::mode=groovy:folding=indent:noTabs=true:: */
