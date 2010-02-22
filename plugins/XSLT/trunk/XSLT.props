@@ -19,6 +19,9 @@ xslt.factory.org.apache.xalan.processor.TransformerFactoryImpl=XSLT 1.0 - Xalan 
 xslt.factory.com.icl.saxon.TransformerFactoryImpl=XSLT 1.0 - Saxon 6.5.5 (com.icl.saxon.TransformerFactoryImpl)
 xslt.factory.net.sf.saxon.TransformerFactoryImpl=XSLT 2.0 - Saxon 9.2 (net.sf.saxon.TransformerFactoryImpl)
 
+# defaults to Xalan
+xslt.factory=org.apache.xalan.processor.TransformerFactoryImpl
+
 # Option panes
 plugin.xslt.XSLTPlugin.option-pane=xslt.general
 
