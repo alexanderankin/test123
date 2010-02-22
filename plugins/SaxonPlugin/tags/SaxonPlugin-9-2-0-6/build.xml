@@ -52,6 +52,8 @@
 			</fileset>
 		</copy>
 	</target>
+	
+	<target name="dist" depends="install" />
 
 	<target name="clean" description="delete build directory">
 		<delete dir="build"/>
