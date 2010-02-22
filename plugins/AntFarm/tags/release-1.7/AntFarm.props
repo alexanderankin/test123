@@ -16,6 +16,7 @@ plugin.antfarm.AntFarmPlugin.depend.3=plugin errorlist.ErrorListPlugin 1.8
 plugin.antfarm.AntFarmPlugin.depend.4=plugin CommonControlsPlugin 1.1
 plugin.antfarm.AntFarmPlugin.depend.5=optional plugin projectviewer.ProjectPlugin 2.9.3
 plugin.antfarm.AntFarmPlugin.depend.6=plugin console.ConsolePlugin 4.4.1
+plugin.antfarm.AntFarmPlugin.depend.7=optional plugin sidekick.java.JavaSideKickPlugin 2.8.1
 
 
 antfarm-toggle.label=Ant Farm Toggle
