@@ -41,6 +41,10 @@ public class ApiParser {
 	 	 		 	 LinkedList<String> clsList = new LinkedList<String>();
 	 	 		 	 try {
 	 	 		 	 	 String classlist = readPage(path+"allclasses-frame.html", remote);
+	 	 		 	 	 if (classlist == null) {
+	 	 		 	 	 	view.getStatus().setMessage("Invalid API target. Ensure that the URL or file path is correct.");
+	 	 		 	 	 	return; 
+	 	 		 	 	 }
 	 	 		 	 	 Pattern p = Pattern.compile("<A HREF=\".*?>.*?</A>");
 	 	 		 	 	 Matcher m = p.matcher(classlist);
 	 	 		 	 	 while (m.find()) {
@@ -58,7 +62,6 @@ public class ApiParser {
 	 	 		 	 	 // Unable to parse API
 	 	 		 	 	 view.getStatus().setMessage("Ran into an error parsing api.");
 	 	 		 	 	 e.printStackTrace();
-	 	 		 	 	 System.exit(0);
 	 	 		 	 }
 	 	 		 	 view.getStatus().setMessageAndClear("Api parsing complete");
 	 	 		 }
@@ -235,13 +238,17 @@ public class ApiParser {
 	 * @param path the location of the page to read
 	 * @param remote true if the page is online, false if local
 	 */
-	private static String readPage(String path, boolean remote) throws Exception {
+	private static String readPage(String path, boolean remote) {
 		StringBuffer text = new StringBuffer("");
 		InputStream in = null;
-		if (remote)
-			in = new URL(path).openConnection().getInputStream();
-		else
-			in = new FileInputStream(new File(path));
+		try {
+			if (remote)
+				in = new URL(path).openConnection().getInputStream();
+			else
+				in = new FileInputStream(new File(path));
+		} catch (Exception e) {
+			return null;
+		}
 		Scanner read = new Scanner(new InputStreamReader(in));
 		while (read.hasNext()) {
 			text.append(read.next()+" ");
