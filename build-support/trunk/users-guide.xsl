@@ -8,7 +8,7 @@
      specify the path to your "html/chunk.xsl".
 
 	 This stylesheet assumes the user's guide XML source is in a
-	 subdirectory of the plugin's main dir (e.g., "docs/userguide.xml").
+	 subdirectory of the plugin's main dir (e.g., "docs/users-guide.xml").
 -->
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -43,6 +43,10 @@
 
 <xsl:template match="guisubmenu">
   <xsl:call-template name="inline.boldseq"/>
+</xsl:template>
+
+<xsl:template match="image">
+  <p><center><img src="{src}" /></center></p>
 </xsl:template>
 
 <xsl:param name="toc.list.type">ul</xsl:param>
