@@ -86,6 +86,7 @@ public class XSLTPluginTest{
 		assertThat(b.getName().matches("Untitled-\\d+"));
 		
 		assertEquals("hello world", b.getText(0,b.getLength()));
+		TestUtils.close(TestUtils.view(),b);
 		xsltProcessor.close();
     }
     
@@ -115,6 +116,7 @@ public class XSLTPluginTest{
 		assertTrue(errorlist.tree().valueAt(1).startsWith("6: (XSLT error) xsl:ourrtput"));
 		errorlist.close();
 		xsltProcessor.close();
+		TestUtils.close(TestUtils.view(),b);
     }
 
     @Test
@@ -143,6 +145,7 @@ public class XSLTPluginTest{
 		errorlist.tree().selectRow(1);
 		assertTrue(errorlist.tree().valueAt(1).startsWith("15: (XSLT error)"));
 		errorlist.close();
+		TestUtils.close(TestUtils.view(),b);
     }
 
     @Test
@@ -167,6 +170,7 @@ public class XSLTPluginTest{
 		assertTrue(errorlist.tree().valueAt(1).startsWith("16: (XSLT error)"));
 		errorlist.close();
 		xsltProcessor.close();
+		TestUtils.close(TestUtils.view(),b);
     }
 
     @Test
@@ -196,6 +200,7 @@ public class XSLTPluginTest{
 		errorlist.tree().selectRow(1);
 		assertTrue(errorlist.tree().valueAt(1).startsWith("2: (SAX error) Content is not allowed in prolog"));
 		errorlist.close();
+		TestUtils.close(TestUtils.view(),b);
     }
 
     /**
@@ -247,6 +252,7 @@ public class XSLTPluginTest{
 		assertEquals(result.getName(),b.getName());
 		assertEquals("hello world",b.getText(0,b.getLength()));
     	assertTrue(result.exists());
+    	TestUtils.close(TestUtils.view(),b);
     	assertTrue(result.delete());
     }
 
@@ -270,6 +276,7 @@ public class XSLTPluginTest{
 		assertThat(res).contains("document:"+xml.toURI().toString()+"\n");
 		assertThat(res).contains("base-uri:"+xml.toURI().toString()+"\n");
 		assertThat(res).contains("stylesheet:"+xsl.toURI().toString());
+		TestUtils.close(TestUtils.view(),b);
 
     }
 
@@ -293,8 +300,12 @@ public class XSLTPluginTest{
 		
 		assertEquals(0,b.getLength());
 		
+		TestUtils.close(TestUtils.view(),b);
+		
 		b = TestUtils.openFile(realOutput.getPath());
-		assertEquals("Hello world !",b.getText(0,b.getLength()));
+		assertEquals("Hello world !",b.getText(0,b.getLength()));		
+		
+		TestUtils.close(TestUtils.view(),b);
 		
 		assertTrue(result.delete());
 		assertTrue(realOutput.delete());
@@ -318,6 +329,7 @@ public class XSLTPluginTest{
 		
 		String res = b.getText(0,b.getLength());
 		assertThat(res).contains("Transform XML (xslt.transform)");
+		TestUtils.close(TestUtils.view(),b);
     }
 
 	@Test
@@ -358,6 +370,7 @@ public class XSLTPluginTest{
 		assertEquals("Hello world !",b.getText(0,b.getLength()));
 
 		xsltProcessor.close();
+		TestUtils.close(TestUtils.view(),b);
     }
 
     public FrameFixture setupProcessor(File xml, File xsl, final String dest,int version){
