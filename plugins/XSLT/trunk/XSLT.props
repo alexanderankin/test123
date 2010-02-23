@@ -142,6 +142,11 @@ xslt.transform.indent-amount=2
 xslt.result.label=Result:
 xslt.result.prompt=Please name the result document
 
+# open the results by default
+xslt.open-result=true
+xslt.result.open-result.tooltip=Open the output document in jEdit 
+xslt.result.open-result.label=Open result
+
 xslt.result.name.name=Name result
 xslt.result.name.short-desc=Name result file
 xslt.result.name.small-icon=/xslt/icons/New.png
