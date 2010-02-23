@@ -97,22 +97,18 @@ public class XSLTUtilities {
    * @param inputFile            name of file to be transformed
    * @param stylesheets          ordered array of names of stylesheets to be applied
    * @param stylesheetParameters map of stylesheet parameters
-   * @param resultFile           name of the file that final result is written to
+   * @param result           	 where to output the result
    * @param errorListener        where the errors will show up (may not be null)
    * @exception Exception        if a problem occurs during the transformation
    */
-  public static void transform(InputSource inputFile, Object[] stylesheets, Map stylesheetParameters, File resultFile, ErrorListenerToErrorList errorListener) throws Exception {
+  public static void transform(InputSource inputFile, Object[] stylesheets, Map stylesheetParameters, Result result, ErrorListenerToErrorList errorListener) throws Exception {
   	Log.log(Log.DEBUG,XSLTUtilities.class,"transform("
   		+"src="+inputFile.getSystemId()
   		+",stylesheets="+Arrays.asList(stylesheets)
   		+",params="+stylesheetParameters
-  		+",res="+resultFile+")");
+  		+",res="+result.getSystemId()+")");
     logXmlSystemProperties();
     TransformerHandler[] handlers = getTransformerHandlers(stylesheets, stylesheetParameters, errorListener);
-
-    FileWriter writer = new FileWriter(resultFile);
-    Result result = new StreamResult(writer);
-    result.setSystemId(resultFile.toURI().toString());
         
     int lastIndex = handlers.length - 1;
     handlers[lastIndex].setResult(result);

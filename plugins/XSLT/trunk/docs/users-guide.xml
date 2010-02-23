@@ -106,8 +106,13 @@
           result file" button next to the result text field at the bottom of the
           tool. In the dialog window select a directory, enter a file name and
           then press the "Open" button (a bit confusing but it will work).</para>
-          <note><para>The result will be written to a new untitled buffer if you leave 
-          this field empty.</para></note>
+          
+          <para>The result will be written to a new untitled buffer if you leave 
+          this field empty. Note that it will be written in memory only,
+          so don't use this option with too big a document.
+          Also note that if any <code>&lt;xsl:result-document&gt;</code> instruction is used, 
+          it won't be written in memory but to a file relative to the new Untitled buffer.
+          </para>
         </listitem>
         <listitem>
           <para>Files can be opened for editing from the XSLT Processor window,
@@ -371,7 +376,9 @@
         <listitem><para>Configurable XSLT processor.</para></listitem>
         <listitem><para>New action to compile stylesheet (and compile on save).</para></listitem>
         <listitem><para>Transformation result is written to a new Untitled buffer
-        only if the <guilabel>Result:</guilabel> field is empty (see bug #1392803).</para></listitem>
+        only if the <guilabel>Result:</guilabel> field is empty (see bug #1392803).
+        This Untitled buffer is no more written to disk (no #Untitled-X# scattered in your source
+        directories).</para></listitem>
       </itemizedlist>
     </para>
     <para>
