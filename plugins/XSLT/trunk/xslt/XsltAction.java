@@ -21,6 +21,7 @@
 package xslt;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.GUIUtilities;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -53,13 +54,20 @@ public abstract class XsltAction extends AbstractAction {
 
     shortDescription = (shortcut != null) ? shortDescription + " - " + shortcut : shortDescription;
 
-    URL url = XSLTProcessor.class.getResource(iconName);
-    Icon icon = new ImageIcon(url);
 
     putValue(Action.ACTION_COMMAND_KEY, actionType);
     putValue(Action.NAME, actionName);
     putValue(Action.SHORT_DESCRIPTION, shortDescription);
-    putValue(Action.SMALL_ICON, icon);
+    if(iconName != null){
+    	Icon icon;
+    	if(iconName.startsWith("/xslt")){
+    		URL u = XSLTProcessor.class.getResource(iconName);
+    		icon = new ImageIcon(u);
+    	}else{
+    		icon = GUIUtilities.loadIcon(iconName);
+    	}
+    	putValue(Action.SMALL_ICON, icon);
+    }
   }
 
 

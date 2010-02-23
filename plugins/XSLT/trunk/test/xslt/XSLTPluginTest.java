@@ -358,6 +358,27 @@ public class XSLTPluginTest{
 		TestUtils.close(TestUtils.view(),b);
     }
 
+    @Test
+    public void testXSLTCurrentStylesheet() throws IOException{
+    	File xsl = new File(testData,"simple/transform.xsl");
+
+    	final FrameFixture xsltProcessor = setupProcessor(xsl,xsl,"",1);
+    	
+		xsltProcessor.radioButton("xslt.stylesheets.buffer").check();
+		xsltProcessor.button("transform").click();
+		
+		Pause.pause(5000);
+		
+		xsltProcessor.radioButton("xslt.stylesheets.file").check();
+		xsltProcessor.close();
+
+		Buffer b = view().getBuffer();
+		
+		String res = b.getText(0,b.getLength());
+		assertThat(res).contains("hello ");
+		TestUtils.close(TestUtils.view(),b);
+    }
+
 	@Test
     public void testXSLTParameters() throws IOException{
     	File xml = new File(testData,"simple/source.xml");
