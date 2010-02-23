@@ -134,9 +134,9 @@ class XPathInputSelectionPanel extends JPanel implements ActionListener {
 		if(shortcut != null) {
 			toolTipText += " (" + shortcut + ")";
 		}
-		URL url = XSLTProcessor.class.getResource(iconName);
 		
-		browseButton = new JButton(new ImageIcon(url));
+		
+		browseButton = new JButton(GUIUtilities.loadIcon(iconName));
 		browseButton.setToolTipText(toolTipText);
 		browseButton.addActionListener(this);
 		

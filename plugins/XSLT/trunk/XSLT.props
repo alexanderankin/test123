@@ -68,7 +68,7 @@ xslt.old-jar.message=The XSLT Plugin is running with an old version of Xalan-Jav
 
 xslt.file.open.name=Open file
 xslt.file.open.short-desc=Open file
-xslt.file.open.small-icon=/xslt/icons/Open.png
+xslt.file.open.small-icon=22x22/actions/document-open.png
 
 xslt.source.label=Source XML:
 xslt.source.buffer=Current buffer
@@ -76,52 +76,56 @@ xslt.source.file=File
 
 xslt.source.radioselect.name=radioButtons
 xslt.source.radioselect.short-desc=Select source XML
-xslt.source.radioselect.small-icon=/xslt/icons/Plus.png
 
 xslt.source.browse.prompt=Please select a source document
 
 xslt.source.select.name=Select source
 xslt.source.select.short-desc=Select source XML
-xslt.source.select.small-icon=/xslt/icons/Open.png
+xslt.source.select.small-icon=22x22/actions/document-open.png
 
 xslt.stylesheets.label=Stylesheets:
+xslt.stylesheets.buffer=Current buffer
+xslt.stylesheets.file=File
+
+xslt.stylesheets.radioselect.name=radioButtons
+xslt.stylesheets.radioselect.short-desc=Select XSLT
 
 xslt.stylesheets.add.name=Add
 xslt.stylesheets.add.short-desc=Add stylesheet
-xslt.stylesheets.add.small-icon=/xslt/icons/Plus.png
+xslt.stylesheets.add.small-icon=22x22/actions/list-add.png
 
 xslt.stylesheets.remove.name=Remove
 xslt.stylesheets.remove.short-desc=Remove stylesheet
-xslt.stylesheets.remove.small-icon=/xslt/icons/Minus.png
+xslt.stylesheets.remove.small-icon=22x22/actions/list-remove.png
 
 xslt.stylesheets.up.name=Move up
 xslt.stylesheets.up.short-desc=Move stylesheet up
-xslt.stylesheets.up.small-icon=/xslt/icons/ArrowUp.png
+xslt.stylesheets.up.small-icon=22x22/actions/go-up.png
 
 xslt.stylesheets.down.name=Move down
 xslt.stylesheets.down.short-desc=Move stylesheet down
-xslt.stylesheets.down.small-icon=/xslt/icons/ArrowDown.png
+xslt.stylesheets.down.small-icon=22x22/actions/go-down.png
 
 xslt.parameters.label=Stylesheet parameters:
 
 xslt.parameters.add.name=Add parameter
 xslt.parameters.add.short-desc=Add stylesheet parameter
-xslt.parameters.add.small-icon=/xslt/icons/Plus.png
+xslt.parameters.add.small-icon=22x22/actions/list-add.png
 
 xslt.parameters.remove.name=Remove parameter
 xslt.parameters.remove.short-desc=Remove stylesheet parameter
-xslt.parameters.remove.small-icon=/xslt/icons/Minus.png
+xslt.parameters.remove.small-icon=22x22/actions/list-remove.png
 
 xslt.parameters.table.name.header=Name
 xslt.parameters.table.value.header=Value
 
 xslt.settings.load.name=Load settings
 xslt.settings.load.short-desc=Load saved settings
-xslt.settings.load.small-icon=/xslt/icons/Open.png
+xslt.settings.load.small-icon=22x22/actions/document-open.png
 
 xslt.settings.save.name=Save settings
 xslt.settings.save.short-desc=Save settings (to Ant build file)
-xslt.settings.save.small-icon=/xslt/icons/Save.png
+xslt.settings.save.small-icon=22x22/actions/document-save.png
 
 xslt.settings.message.no-source=Cannot save settings because there is no source file defined.
 xslt.settings.message.no-stylesheets=Cannot save settings because there are no stylesheets defined.
@@ -149,7 +153,7 @@ xslt.result.open-result.label=Open result
 
 xslt.result.name.name=Name result
 xslt.result.name.short-desc=Name result file
-xslt.result.name.small-icon=/xslt/icons/New.png
+xslt.result.name.small-icon=22x22/actions/document-new.png
 
 
 
@@ -167,7 +171,7 @@ xpath.select.label=Select XML Input:
 xpath.select.buffer=Buffer
 xpath.select.file=File
 xpath.browse.label=Source:
-xpath.browse.button.icon=/xslt/icons/Open.png
+xpath.browse.button.icon=22x22/actions/document-open.png
 xpath.browse.button.tooltip=Select source from file
 xpath.browse.prompt=Please select a source document
 

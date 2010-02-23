@@ -382,6 +382,8 @@
         only if the <guilabel>Result:</guilabel> field is empty (see bug #1392803).
         This Untitled buffer is no more written to disk (no #Untitled-X# scattered in your source
         directories).</para></listitem>
+        <listitem><para>option to use current buffer as stylesheet</para></listitem>
+        <listitem><para>use the jEdit icon set when possible</para></listitem>
       </itemizedlist>
     </para>
     <para>
