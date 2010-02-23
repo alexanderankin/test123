@@ -516,9 +516,7 @@ public class TestUtils {
 	
 
     /**
-     * @param path path in the option panes tree (eg. XML/XML)
-     * @param name internal name of the option pane (eg. xml.general)
-     * @return an option pane, ensuring that it's visible
+     * @return the plugin options dialog
      */
     public static PluginOptionsFixture pluginOptions(){
     	jEditFrame().menuItemWithPath("Plugins","Plugin Options...").click();

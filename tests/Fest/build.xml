@@ -95,6 +95,10 @@
     <property name="test.framework.classes.dir" location="${test.framework.home}/build"/>
     <mkdir dir="${test.framework.classes.dir}"/>
     
+    <!-- where the framework's javadoc goes -->
+    <property name="test.framework.javadoc.dir" location="${test.framework.home}/doc"/>
+    <mkdir dir="${test.framework.javadoc.dir}"/>
+
     <!-- the test framework includes a simple file logger which is handy when 
     attempting to debug the framework and/or unit tests. This property specifies
     the output file for the logger. -->
@@ -191,6 +195,17 @@
         <javac srcdir="${test.framework.src.dir}" destdir="${test.framework.classes.dir}" debug="true" source="1.5" target="1.5">
             <classpath refid="framework.class.path"/>
         </javac>
+        <javadoc sourcepath="${test.framework.src.dir}" destdir="${test.framework.javadoc.dir}" source="1.5"
+        		use="true" windowtitle="jEdit Test Framework API">
+        	<link href="http://fest.easytesting.org/swing/apidocs/"/>
+        	<link href="http://fest.easytesting.org/assert/apidocs/"/>
+        	<link href="http://junit.sourceforge.net/javadoc/"/>
+            <classpath>
+                <pathelement location="${junit.jar}" />
+                <pathelement location="${hamcrest.jar}" />
+                <path refid="framework.class.path"/>
+            </classpath>
+        </javadoc>
     </target>
     
     
