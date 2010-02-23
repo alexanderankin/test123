@@ -206,7 +206,7 @@ public class XSLTPluginTest{
     /**
      * this test is failing, but it works when I do it manually...
      */
-    @Ignore @Test
+    @Ignore("always failing") @Test
     public void testXSLTCompileOnSave() throws IOException{
     	File xsl = new File(testData,"broken/transform.xsl");
     	
@@ -253,6 +253,32 @@ public class XSLTPluginTest{
 		assertEquals("hello world",b.getText(0,b.getLength()));
     	assertTrue(result.exists());
     	TestUtils.close(TestUtils.view(),b);
+    	assertTrue(result.delete());
+    }
+
+
+    @Test
+    public void testXSLTOpenResult() throws IOException{
+    	File xml = new File(testData,"simple/source.xml");
+    	File xsl = new File(testData,"simple/transform.xsl");
+    	File result = new File(testData,"simple/output.txt");
+    	
+    	if(result.exists()){
+    		assertTrue(result.delete());
+    	}
+    	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,result.getAbsolutePath(),1);
+				
+		xsltProcessor.checkBox("open-result").requireSelected().uncheck();
+		xsltProcessor.button("transform").click();
+		
+		Pause.pause(5000);
+		
+		xsltProcessor.checkBox("open-result").check();
+		xsltProcessor.close();
+
+		Buffer b = view().getBuffer();
+		
+		assertEquals(xml.getName(),b.getName());
     	assertTrue(result.delete());
     }
 

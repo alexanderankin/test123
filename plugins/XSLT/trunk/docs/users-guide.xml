@@ -118,6 +118,9 @@
           <para>Files can be opened for editing from the XSLT Processor window,
           using enter key, or double click, or right click menu select on the
           file name.</para>
+          <para>If you don't want to open the result of the transformation
+          (e.g. because the result is too big), uncheck the <guilabel>Open result</guilabel>
+          check-box.</para>
         </listitem>
         <listitem>
           <para>Run the transformation using the "Transform XML" button.
