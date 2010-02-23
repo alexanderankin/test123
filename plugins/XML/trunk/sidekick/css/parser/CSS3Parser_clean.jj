@@ -1,0 +1,1992 @@
+/* -*-java-extended-*-
+ *
+ * (c) COPYRIGHT MIT and INRIA, 1997.
+ * Please first read the full copyright statement in file COPYRIGHT.html
+ *
+ * $Id: CssParser.jj,v 1.71 2010-01-05 13:55:48 ylafon Exp $
+ *
+ * danson, adapting for jEdit Sidekick CSS parser.  I've removed a lot of things
+ * because they aren't necessary in the context of Sidekick.  I also replaced
+ * the old collections classes (Vector, Enumeration, etc) with the faster
+ * equivalents.  Essentially, I gutted this down to the basic grammar, then
+ * rebuilt it.
+ */
+
+
+
+options {
+    IGNORE_CASE = true;
+    STATIC = false;
+    UNICODE_INPUT = true;
+}
+
+PARSER_BEGIN (CSS3Parser)
+
+package sidekick.css.parser;
+
+import java.io.*;
+import java.net.*;
+import java.text.MessageFormat;
+import java.util.*;
+import java.util.regex.*;
+import sidekick.util.*;
+
+
+/**
+ * A CSS3 parser
+ *
+ * @author Philippe Le Hegaret and Sijtsche Smeman
+ * @author Dale Anson, major modifications for jEdit Sidekick
+ * @version Revision: 1.71 (W3C version)
+ */
+
+
+public class CSS3Parser {
+
+    private static char hexdigits[] = { '0' ,'1' ,'2' ,'3' ,'4' ,'5' ,'6' ,'7' ,'8' ,'9' ,'a' ,'b' ,'c' ,'d' ,'e' ,'f' } ;
+ 
+    /*
+     * Error control
+     */
+    private void addError( ParseException e) {
+        addError(e, "");
+    }
+    private void addError( ParseException e, String skippedText) {
+        // TODO: replace with Sidekick style error handling
+    }
+}
+
+PARSER_END (CSS3Parser)
+
+/*
+ * The tokenizer
+ */
+<DEFAULT>
+SPECIAL_TOKEN :
+{
+    <COMMENT: "/*" (
+    ~["*"] )* ( "*" )+ (
+    ~["/", "*"] (
+    ~["*"] )* ( "*" )+ )* "/" >
+} 
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :/* basic tokens */
+
+ 
+{ 
+    <#H :
+    ["0"-"9", "a"-"f"] >
+  | <#NONASCII :
+    ["\200"-"\377"] >
+  | <#UNICODE : "\\" <H> ( <H> )? ( <H> )? ( <H> )? ( <H> )? ( <H> )? ( "\r\n" |
+    [ " ", "\t" , "\n" , "\r", "\f" ] )? >
+  | <#ESCAPE : <UNICODE> | ( "\\"
+    ~[ "\r", "\n", "\f", "0"-"9", "a"-"f" ] ) >
+  | <#NMSTART :
+    [ "a"-"z", "_" ] | <NONASCII> | <ESCAPE> >
+  | <#NMCHAR :
+    ["a"-"z", "0"-"9", "-", "_"] | <NONASCII> | <ESCAPE> >
+  | <#STRING1 : "\"" (
+    ~[ "\n", "\r", "\f", "\\", "\"" ] | "\\" <NL> | <ESCAPE> )* "\"" >
+  | <#STRING2 : "\'" (
+    ~[ "\n", "\r", "\f", "\\", "\'" ] | "\\" <NL> | <ESCAPE> )* "\'" >
+  | <#INVALID1 : "\"" (
+    ~[ "\n", "\r", "\f", "\\", "\"" ] | "\\" <NL> | <ESCAPE> )* >
+  | <#INVALID2 : "\'" (
+    ~[ "\n", "\r", "\f", "\\", "\'" ] | "\\" <NL> | <ESCAPE> )* >
+  | <#_IDENT : ( <MINUS> )? <NMSTART> ( <NMCHAR> )* >
+  | <#NAME : ( <NMCHAR> )+ >
+  | <#NUM : (
+    ["0"-"9"] )+ | (
+    ["0"-"9"] )* "." (
+    ["0"-"9"] )+ >
+  | <#_STRING : <STRING1> | <STRING2> >
+  | <#_INVALID : <INVALID1> | <INVALID2> >
+  | <#_URL : (
+    [ "!", "#", "$", "%", "&", "*"-"[", "]"-"~" ] | <NONASCII> | <ESCAPE> )* >
+  | <#_S : (
+    [ " ", "\t" , "\n" , "\r", "\f" ] ) ( <COMMENT> |
+    [ " ", "\t" , "\n" , "\r", "\f" ] )* >
+  | <#_W : ( <_S> )? >
+  | <#NL : ( "\n" | "\r\n" | "\r" | "\f" ) >
+}
+
+/*
+ * The _S definition is not  ( [ " ", "\t" , "\n" , "\r", "\f" ] ) + as we need to add support
+ * for the unput(' ') (see http://www.w3.org/TR/CSS21/grammar.html#scanner )
+ */
+<DEFAULT>
+TOKEN :
+{
+    <S: ( <_S> ) >
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <CDO: "<!--" >
+  | <CDC: "-->" >
+  | <INCLUDES: <TILDE> "=" >
+  | <DASHMATCH: "|=" >
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <LBRACE: <_W> "{" >
+  | <PLUS: <_W> "+" >
+  | <GREATER: <_W> ">" >
+  | <COMMA: <_W> "," >
+  | <TILDE: <_W> "~" >
+}
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{
+    <AND: "and" >
+} 
+
+<DEFAULT>
+TOKEN :
+{
+    <STRING: <_STRING> >
+  | <INVALID: <_INVALID> >
+  | <IDENT: <_IDENT> >
+  | <HASHIDENT: "#" <_IDENT> >
+  | <HASH: "#" <NAME> >
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <RBRACE: "}">
+  | <PREFIXMATCH: "^=" >
+  | <SUFFIXMATCH: "$=" >
+  | <SUBSTRINGMATCH: "*=" >
+  | <EQ: "=" >
+  | <MINUS: "-" >
+  | <SEMICOLON: ";" >
+  | <DIV: "/" >
+  | <LBRACKET: "[" >
+  | <RBRACKET: "]" >
+  | <ANY: "*" >
+  | <DOT: "." >
+  | <LPARAN: ")" >
+  | <RPARAN: "(">
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <COLON: ":" >
+}
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{
+    <MEDIARESTRICTOR: "only" | "not" >
+}
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{
+    <URL: "url(" ( <S> )* ( <STRING> | <_URL> ) ( <S> )* ")" >
+}
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{
+    <LENGTH: <NUM> "pt" 
+ | <NUM> "mm" | <NUM> "cm" | <NUM> "pc" | <NUM> "in" | <NUM> "gd" | <NUM> "px" >
+  | <EMS: <NUM> "em" >
+  | <EXS: <NUM> "ex" >
+  | <ANGLE: <NUM> ( "deg" | "grad" | "rad" ) >
+  | <TIME: <NUM> ( "ms" | "s" ) >
+  | <FREQ: <NUM> "Hz" | <NUM> "kHz" >
+  | <RESOLUTION: <NUM> "dpi" | <NUM> "dpcm" >
+  | <DATE: <NUM> "/" <NUM> "/" <NUM> >
+  | <DIMEN: <NUM> <NMSTART> ( <NMCHAR> )* >
+  | <PERCENTAGE: <NUM> "%" >
+  | <NUMBER: <NUM> >
+}
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{ 
+    <IMPORTANT_SYM: "!" ( <_W> )* "important" >
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <PSEUDOELEMENT_SYM: "::" >
+}
+
+/* RESERVED ATRULE WORDS */
+<DEFAULT>
+TOKEN : 
+{
+    <CHARSET_SYM: "@charset" >
+}
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{ 
+    <IMPORT_SYM: "@import">
+  | <NAMESPACE_SYM: "@namespace">
+  | <MEDIA_SYM: "@media" >
+  | <PAGE_SYM: "@page" >
+  | <FONT_FACE_SYM: "@font-face" >
+  | <PREF_SYM: "@preference" >
+  | <COLOR_PROFILE: "@color-profile" >
+  | <ATTOP: "@top" >
+  | <ATRIGHT: "@right" >
+  | <ATBOTTOM: "@bottom" >
+  | <ATLEFT: "@left" >
+  | <ATCOUNTER: "@counter" >
+  | <PHONETIC_ALPHABET_SYM: "@phonetic-alphabet" >
+  | <ATKEYWORD: "@" <IDENT> >
+}
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{
+    <#RANGE0 : <H> <H> <H> <H> <H> <H> >
+  | <#RANGE1 : <H> <H> <H> <H> <H> ( "?" )? >
+  | <#RANGE2 : <H> <H> <H> <H> ( "?" )? ( "?" )? >
+  | <#RANGE3 : <H> <H> <H> ( "?" )? ( "?" )? ( "?" )? >
+  | <#RANGE4 : <H> <H> ( "?" )? ( "?" )? ( "?" )? ( "?" )? >
+  | <#RANGE5 : <H> ( "?" )? ( "?" )? ( "?" )? ( "?" )? ( "?" )? >
+  | <#RANGE6 : "?" ( "?" )? ( "?" )? ( "?" )? ( "?" )? ( "?" )? >
+  | <#RANGE : <RANGE0> | <RANGE1> | <RANGE2> | <RANGE3> | <RANGE4> | <RANGE5> | <RANGE6> >
+  | <#UNI : <H> ( <H> )? ( <H> )? ( <H> )? ( <H> )? ( <H> )? >
+  | <UNICODERANGE: "U+" <RANGE> | "U+" <UNI> "-" <UNI> >
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <CLASS: "." <IDENT> >
+}
+
+/* FIXED, added a special case for lang pseudoclass */
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{
+    <FUNCTIONLANG: "lang(" >
+}
+
+<DEFAULT>
+TOKEN [IGNORE_CASE] :
+{
+    <FUNCTIONNOT: ":not(" >
+}
+
+
+<DEFAULT>
+TOKEN :
+{
+    <FUNCTION: <IDENT> "(" >
+}
+
+/* Quick and dirty way to catch HTML tags starting CSS documents
+(common mistake) */
+<DEFAULT>
+TOKEN :
+{
+    <HTMLSTARTTAG: "<" ( <S> )* <IDENT> ( <S> )* ( <IDENT> "=" ( <IDENT> | <STRING> ) ( <S> )* )* ">" >
+  | <HTMLENDTAG: "</" ( <S> )* <IDENT> ( <S> )* ">" >
+}
+
+//<DEFAULT, IN_COMMENT>
+//TOKEN :
+//{ /* avoid token manager error */
+//   < UNKNOWN : ~[] >
+//}
+
+/*
+ * The grammar of CSS2
+ */
+
+
+
+/**
+ * The main entry for the parser.
+ *
+ * @exception ParseException exception during the parse
+ */
+void parserUnit() :
+{
+}
+{
+    try {
+            // used as an error recovery for HTML tags in CSS pages
+         
+         
+            (
+                (
+                    <HTMLSTARTTAG>
+                  | <HTMLENDTAG>
+                )
+        
+         {
+        
+        
+                    addError ( new ParseException ("Do not mix html with CSS.")); 
+                }
+            ) *
+            (
+                charset()
+            ) *
+        
+            // * instead of ? to capture the reinit part
+         
+            (
+                <S>
+              | <CDO>
+              | <CDC>
+            ) *
+         
+            (
+                importDeclaration()
+                (
+                    ignoreStatement()
+                )
+            ) *
+         
+            (
+                namespaceDeclaration()
+                (
+                    ignoreStatement()
+                )
+            ) *
+         
+            afterImportDeclaration()
+            <EOF> 
+            
+    } catch ( TokenMgrError err ) {
+        addError ( new ParseException ("Unrecognized token."), err.getMessage());
+    }
+}
+
+void charset() :
+{
+}
+{ 
+    try {
+        <CHARSET_SYM> 
+        (
+            <S> {
+            }
+        ) *
+    
+     
+        <STRING> 
+        (
+            <S>
+        ) *
+    
+        <SEMICOLON> {
+    }///
+    } catch ( Exception e ) {
+    }
+}
+
+void afterImportDeclaration() :
+{
+
+    String ret;
+}
+{
+    (
+        (
+            ruleSet()
+          | media()
+          | page()
+          | fontFace()
+          | preference()
+          | colorprofile()
+          | phoneticAlphabet()
+          | ret = skipStatement() {
+            }
+        )
+
+ 
+        ignoreStatement()
+    ) *
+
+
+}
+
+void ignoreStatement() :
+{
+}
+{
+ 
+ 
+    (
+        (
+            <CDO>
+          | <CDC>
+          | atRuleDeclaration()
+        )
+
+ 
+        (
+            <S>
+        ) *
+
+    ) *
+
+
+}
+
+void namespaceDeclaration() :
+{
+
+}
+{
+    (
+        <NAMESPACE_SYM> 
+        (
+            <S>
+        ) *
+
+ 
+ 
+        (
+            <IDENT> {
+            } 
+ 
+            (
+                <S>
+            ) *
+
+        ) ?
+
+
+ 
+        (
+            <STRING> {
+            } 
+          | <URL> {
+            }
+        )
+ 
+        (
+            <S>
+        ) *
+
+
+        <SEMICOLON> 
+        (
+            <S>
+        ) *
+    )
+
+ {
+
+    }
+}
+
+
+/**
+ * The import statement
+ *
+ * @exception ParseException exception during the parse
+ */
+void importDeclaration() :
+{
+}
+{
+    try {
+    <IMPORT_SYM> 
+    (
+        <S>
+    ) *
+
+
+ 
+    (
+        <STRING> {
+        } 
+      | <URL> {
+        } 
+    )
+ 
+    (
+        <S>
+    ) *
+
+    (
+        medium()
+        (
+            <COMMA> 
+            (
+                <S>
+            ) *
+            medium()
+        ) *
+
+    ) ?
+
+    <SEMICOLON> 
+    (
+        <S>
+    ) *
+
+
+ {
+    } 
+    } catch ( ParseException e ) {
+    }
+}
+
+
+void media() :
+{
+}
+{
+    try {
+    <MEDIA_SYM> 
+    (
+        <S>
+    ) *
+
+
+    // <CSS3>
+ 
+    (
+        <MEDIARESTRICTOR> {
+        }
+ 
+        (
+            <S>
+        ) +
+
+    ) ?
+ 
+    // </CSS3>
+    medium()
+    (
+        <COMMA> 
+        (
+            <S>
+        ) *
+
+ 
+        medium()
+    ) *
+
+ 
+    // <CSS3>
+ 
+    (
+        <AND> 
+        (
+            <S>
+        ) *
+
+        <RPARAN> 
+        (
+            <S>
+        ) *
+
+        mediadeclaration() {
+        } <LPARAN> 
+        (
+            <S>
+        ) *
+
+    ) *
+
+
+    // </CSS3>
+ 
+ {
+
+ 
+    }
+    <LBRACE> 
+    (
+        <S>
+    ) *
+
+ 
+ 
+    (
+        ruleSet()
+    ) *
+
+    <RBRACE> 
+    (
+        <S>
+    ) *
+
+
+ {
+    }
+    } catch ( ParseException e ) {
+    } 
+}
+
+
+void medium() :/* tv, projection, screen, ... */
+{
+
+}
+{
+    <IDENT> 
+    (
+        <S>
+    ) *
+
+
+ {
+    }
+}
+
+void unused_production_generic_syntax() :
+{
+}
+{
+ 
+ 
+    "("
+    (
+        <S>
+    ) *
+
+    term() ")" {
+    }
+}
+
+void definition() :
+{
+}
+{
+    "["
+    (
+        <S>
+    ) *
+
+    term() "]" {
+    }
+}
+
+void page() :
+{
+}
+{
+    try {
+    <PAGE_SYM> 
+    (
+        <S>
+    ) *
+
+
+    // FIXME <CSS3> ?
+ 
+    (
+        <IDENT> {
+        } 
+ 
+        (
+            <S>
+        ) *
+
+    ) ?
+
+
+    // </CSS3>
+    (
+        pseudo_page()
+    ) ?
+
+    <LBRACE> 
+    (
+        <S>
+    ) *
+
+ 
+ 
+    (
+        pageContent() {
+        }
+    )
+
+    <RBRACE> 
+    (
+        <S>
+    ) *
+
+
+ {
+
+    }
+    } catch ( ParseException e ) {
+    } 
+}
+
+void pageContent() :
+{
+}
+{
+    // <CSS3> ?? FIXME
+    prefAtRule() {
+    }
+    // </CSS3>
+  | declarations() {
+    }    /* FIXME moved here as it can match empty string */
+ 
+ 
+}
+
+void prefAtRule() :
+{
+}
+{
+    try {
+ 
+    (
+        <ATTOP>
+      | <ATBOTTOM>
+      | <ATLEFT>
+      | <ATRIGHT>
+    )
+
+ 
+    (
+        <S>
+    ) *
+
+
+    <LBRACE> 
+    (
+        <S>
+    ) *
+
+    declarations()<RBRACE> 
+    (
+        <S>
+    ) *
+
+ 
+ {
+    }
+    } catch ( ParseException e ) {
+    }
+}
+
+void pseudo_page() :
+{
+}
+{
+    ":"<IDENT> 
+    (
+        <S>
+    ) *
+
+
+ {
+
+ 
+    }
+}
+
+void fontFace() :
+{
+}
+{
+    try {
+    <FONT_FACE_SYM> 
+    (
+        <S>
+    ) *
+
+ 
+ {
+    }
+    <LBRACE> 
+    (
+        <S>
+    ) *
+
+    declarations()<RBRACE> 
+    (
+        <S>
+    ) *
+
+
+ {
+    }
+    } catch ( ParseException e ) {
+    }
+}
+
+void colorprofile() :
+{
+}
+{
+    try {
+    <COLOR_PROFILE> 
+    (
+        <S>
+    ) *
+
+
+ {
+
+    }
+    <LBRACE> 
+    (
+        <S>
+    ) *
+
+    declarations()<RBRACE> 
+    (
+        <S>
+    ) *
+
+
+ {
+
+    }
+    } catch ( ParseException e ) {
+    }
+}
+
+
+void preference() :
+{
+}
+{
+    try {
+    <PREF_SYM> 
+    (
+        <S>
+    ) *
+
+
+ {
+
+    }
+    <LBRACE> 
+    (
+        <S>
+    ) *
+
+    declarations()<RBRACE> 
+    (
+        <S>
+    ) *
+
+
+ {
+    }
+    } catch ( ParseException e ) {
+    }
+}
+
+void phoneticAlphabet() :
+{
+}
+{
+    try {
+    <PHONETIC_ALPHABET_SYM> 
+    (
+        <S>
+    ) *
+
+    <STRING> 
+    (
+        <S>
+    ) *
+
+ 
+    ";" {
+
+    }
+    } catch ( ParseException e ) {
+    }
+}
+
+void atRuleDeclaration() :
+{
+}
+{
+    <ATKEYWORD> {
+    }
+}
+
+void operator() :
+{
+}
+{
+ 
+ 
+    (
+        (
+            <DIV> {
+
+                //if (expr.getCount() > 0) expr.setOperator('/');
+            }
+          | <COMMA> {
+
+                //if (expr.getCount() > 0) expr.setOperator(',');
+            }
+        )
+
+ 
+        (
+            <S>
+        ) *
+
+    ) ?
+
+
+}
+
+
+char combinator() :
+{
+
+    char connector = ' ';
+}
+{
+ 
+ 
+    (
+        (
+            <PLUS> {
+
+                connector = '+' ;
+            }
+          | <GREATER> {
+
+                connector = '>' ;
+            }
+          | <TILDE> {
+
+                connector = '~' ;
+            }
+        )
+
+ 
+        (
+            <S>
+        ) *
+
+ 
+      | 
+        (
+            <S>
+        ) +
+
+ {
+
+            connector = ' ' ;
+        }
+    )
+
+
+ {
+
+
+        return connector;
+    }
+}
+
+char unaryOperator() :
+{
+}
+{
+    // FIXME <MINUS> | <PLUS> ? warning as <PLUS> is <_W>? "+"
+    "-" {
+
+        return '-';
+    }
+  | <PLUS> {
+
+        return '+';
+    }
+}
+
+void property() :
+{
+}
+{
+    <IDENT> 
+    (
+        <S>
+    ) *
+
+ {
+    }
+}
+
+
+void ruleSet() :
+{
+}
+{
+    try {
+    selector() {
+    }
+ 
+ 
+    (
+        <COMMA> 
+        (
+            <S>
+        ) *
+
+
+        selector() {
+        } 
+    ) *
+
+
+    <LBRACE> {
+    }
+ 
+    (
+        <S>
+    ) *
+
+
+    declarations()<RBRACE> 
+    (
+        <S>
+    ) *
+
+
+ {
+    }
+    } catch ( ParseException e ) {
+    }
+}
+
+void declarations() :
+{
+
+}
+{ 
+ 
+ 
+    (
+        declaration() {
+        }
+    ) ?
+ 
+    (
+        ";"
+        (
+            <S>
+        ) *
+ 
+        (
+            declaration() {
+            }
+        ) ?
+
+    ) *
+
+ 
+ {
+    }
+}
+
+void selector() :
+{
+}
+{
+    try {
+ 
+ 
+ 
+    simple_selector()
+    (
+        combinator() simple_selector()
+    ) *
+
+ 
+ {
+    }
+    } catch ( ParseException e ) {
+    }
+}
+
+/**
+ * I made this rule to parse a selector from a document. Combinator are avoid.
+ * @exception ParseException exception during the parse
+ */
+void externalSelector() :
+{
+}
+{
+    simple_selector() 
+ 
+    (
+        (
+            <S>
+        ) +
+
+
+        simple_selector()
+    ) *
+
+ {
+    }
+}
+
+
+void simple_selector() :
+{
+}
+{
+    element_name()
+    (
+        hash()
+      | _class()
+      | attrib()
+      | pseudo()
+      | negation()
+    ) *
+
+
+ {
+    }
+  | 
+    (
+        hash()
+      | _class()
+      | attrib()
+      | pseudo()
+      | negation()
+    ) +
+
+ 
+ {
+    }
+}
+
+
+void _class() :
+{
+}
+{
+    /*  "." n=<IDENT> { */
+ 
+ 
+    <CLASS> {
+
+    } 
+    /* FIXME <DOT> n=deprecated_class() ... ?? (DONE-> to be tested) */
+ 
+  | 
+ 
+    (
+        deprecated_class()
+    )
+ {
+
+    }
+}
+
+void deprecated_class() :
+{
+}
+{
+ 
+    (
+        <LENGTH>
+      | <EMS>
+      | <EXS>
+      | <ANGLE>
+      | <TIME>
+      | <FREQ>
+      | <RESOLUTION>
+      | <DIMEN>
+    )
+
+
+ {
+    }
+}
+
+
+void element_name() :
+{
+}
+{
+    (
+        LOOKAHEAD ( 2 )
+        (
+            <IDENT>
+          | <ANY>
+        ) ?
+
+        "|"
+    ) ?
+
+ {
+    }
+ 
+    (
+        <IDENT> {
+        }
+      | <ANY> {
+        }
+    )
+}
+
+void attrib() :
+{
+}
+{
+    <LBRACKET> 
+    (
+        <S>
+    ) *
+
+    <IDENT> 
+    (
+        <S>
+    ) *
+
+
+ 
+ 
+    (
+        (
+            <EQ> {
+            }
+          | <INCLUDES> {
+            }
+          | <DASHMATCH> {
+            }
+          | <PREFIXMATCH> {
+            }
+          | <SUFFIXMATCH> {
+            }
+          | <SUBSTRINGMATCH> {
+            }
+        )
+
+ 
+        (
+            <S>
+        ) *
+ 
+        (
+            <IDENT> {
+            }
+          | <STRING> {
+            } 
+        )
+ 
+        (
+            <S>
+        ) *
+
+    ) ?
+
+
+    <RBRACKET> {
+    }
+}
+
+void negation() :
+{
+}
+{    // S* negation_arg S* ')'
+    // type_selector | universal | HASH | class | attrib | pseudo
+ 
+    <FUNCTIONNOT> 
+    (
+        <S>
+    ) *
+    (
+        element_name()
+      | hash()
+      | _class()
+      | attrib()
+      | pseudo()
+    )
+    (
+        <S>
+    ) *
+
+    <LPARAN> {
+    }
+}
+
+
+void pseudo() :
+{
+}
+{
+    <PSEUDOELEMENT_SYM> 
+ 
+    (
+        (
+            <IDENT> {
+            }
+        )
+
+    )
+
+
+  | <COLON> 
+ 
+    (
+        (
+            <IDENT> {
+            }
+        )
+
+
+        // FXIXME rewrite to make :lang( use a special case
+      | 
+ 
+        (
+            (
+                <FUNCTIONLANG> 
+                (
+                    <S>
+                ) *
+
+ 
+                (
+                    <NUMBER>
+                  | <IDENT>
+                  | <STRING>
+                )
+
+ 
+                (
+                    <S>
+                ) *
+
+            )
+
+ {
+
+
+            }
+          | 
+            (
+                <FUNCTION> 
+                (
+                    <S>
+                ) *
+
+                expression()
+            )
+
+ {
+
+            }
+        )
+
+        <LPARAN>
+    )
+
+}
+
+
+void hash() :
+{
+}
+{
+    <HASHIDENT> {
+    }
+  | <HASH> {
+        throw new ParseException ("parser.invalid_id_selector"); 
+    }
+}
+
+
+void mediadeclaration() :
+{
+}
+{
+    try {
+    property() 
+ 
+ 
+    (
+        ":"
+        (
+            <S>
+        ) *
+
+ 
+        expr() 
+ 
+        (
+            prio()
+        ) ?
+
+    ) ?
+
+
+ {
+    }
+    } catch ( ParseException e ) {
+    }
+}
+
+
+void declaration() :
+{
+}
+{
+    try {
+    property() 
+    ":"
+    (
+        <S>
+    ) *
+
+    expr()
+    (
+        prio()
+    ) ?
+
+
+ {
+
+ 
+    }
+    } catch ( ParseException e ) {
+    }
+}
+
+
+void prio() :
+{
+}
+{
+    <IMPORTANT_SYM> 
+    (
+        <S>
+    ) *
+
+ {
+    }
+}
+
+void expression() :
+{
+    char operator = ' ';
+    Token n = null;
+}
+{
+ 
+ 
+    (
+        (
+            <PLUS> {
+
+                operator = '+' ;
+            } 
+          | <MINUS> {
+
+                operator = '-';
+            }
+          | n = <NUMBER> {
+            }
+            // FIXME dimen should be a CssDimension()
+          | n = <DIMEN> {
+            } 
+          | n = <STRING> {
+            } 
+          | n = <IDENT> {
+            } 
+        )
+
+ 
+        (
+            <S>
+        ) *
+
+    ) +
+
+
+ {
+
+ 
+    }
+} 
+
+
+void expr() :
+{
+}
+{
+ 
+ 
+    term()
+    (
+        operator() term()
+    ) *
+
+
+ {
+
+ 
+    }
+}
+
+
+void term() :
+{
+}
+{
+ 
+ 
+ 
+ 
+ 
+ 
+    (
+        (
+            unaryOperator()
+        ) ?
+        (
+            <NUMBER> {
+            }
+          | <PERCENTAGE> {
+            }
+          | <LENGTH> {
+            }
+          | <EMS> {
+            }
+          | <EXS> {
+            }
+          | <ANGLE> {
+            }
+          | <TIME> {
+            }
+          | <FREQ> {
+            }
+          | <RESOLUTION> {
+            }
+          | <DATE> {
+            }
+          | <DIMEN> {
+            } 
+          | function() {
+            }
+        )
+
+ 
+        (
+            <S>
+        ) *
+
+    )
+
+
+  | 
+ 
+    (
+        (
+            <STRING> {
+            }
+          | <IDENT> {
+
+
+                /*
+                 * Common error :
+                 * H1 {
+                 *   color : black
+                 *   background : white
+                 * }
+                 */
+ 
+                /*
+                Token t = getToken(1);
+                Token semicolon = new Token ();
+                semicolon.kind = SEMICOLON;
+                semicolon.image = ";";
+                if ( t.kind == COLON) {
+                
+                // @@SEEME. (generate a warning?)
+                
+                // @@SEEME if expression is a single ident,
+                //generate an error ?
+                
+                addError( new ParseException ("parser.semi-colon"), (CssExpression) null);
+                rejectToken(semicolon);
+                } else {
+                
+                setValue( new CssIdent (), exp, operator, n, IDENT);
+                }
+                 */
+ 
+            }
+          | hexcolor()
+          | <URL> {
+            }
+          | <UNICODERANGE> {
+            }
+        )
+
+ 
+        (
+            <S>
+        ) *
+
+    )
+
+
+}
+
+
+void function() :
+{
+}
+{
+    <FUNCTION> 
+    (
+        <S>
+    ) *
+
+    expr() 
+    ")" {
+
+    }
+}
+
+void hexcolor() :
+{
+}
+{
+ 
+    (
+        <HASHIDENT>
+      | <HASH>
+    )
+
+ {
+    }
+}
+
+
+JAVACODE String skipStatement() {
+
+
+    StringBuilder s = new StringBuilder ();
+    Token tok = getToken(0);
+    boolean first = true;
+
+    if ( tok.image != null) {
+
+
+        s.append(tok.image); 
+    }
+    /* FIXME here, two option, we skip during an error, or outside
+    an error, currently both can fail with a TokenMgrError, should
+    we catch all, or only when filling message for errors?
+    
+    -> taking the "always skip" approach.
+     */
+ 
+ 
+    while (true) {
+
+
+        try {
+
+
+            tok = getToken(1);
+            if ( tok.kind == EOF) {
+
+
+                if (first) {
+
+
+                    return null;
+                } else {
+
+
+                    break;
+                }
+            } 
+            s.append(tok.image);
+            if ( tok.kind == LBRACE) {
+
+
+                getNextToken();
+                s.append(skip_to_matching_brace());
+                getNextToken();
+                tok = getToken(1);
+                break;
+            } else if ( (tok.kind == RBRACE) || (tok.kind == SEMICOLON)) {
+
+
+                getNextToken();
+                tok = getToken(1);
+                break;
+            }
+            getNextToken();
+        } catch ( TokenMgrError tokenerror ) {
+
+
+            // read one char at a time, and loop
+            try {
+
+
+                s.append(jj_input_stream.readChar());
+                continue;
+            } catch ( java.io.IOException ioex ) {
+
+ 
+                return s.toString().trim();
+            }
+        }
+        first = false;
+    }
+ 
+    // skip white space
+    while ( tok.kind == S) {
+
+
+        getNextToken();
+        tok = getToken(1);
+    }
+    String statement = s.toString().trim();
+    return statement;
+}
+
+JAVACODE String skip_to_matching_brace() {
+
+
+    StringBuilder s = new StringBuilder ();
+    Token tok;
+    int nesting = 1;
+    /* FIXME
+    same as above */
+ 
+ 
+    while (true) {
+
+
+        tok = getToken(1);
+        if ( tok.kind == EOF) {
+
+
+            break;
+        }
+        s.append(tok.image);
+        if ( tok.kind == LBRACE) {
+
+
+            nesting++;
+        } else if ( tok.kind == RBRACE) {
+
+
+            nesting--;
+            if ( nesting == 0) {
+
+
+                break;
+            }
+        }
+        getNextToken();
+    }
+    return s.toString();
+}
+
+/*
+ * @@HACK
+ * I can't insert a token into the tokens flow.
+ * It's jj_consume_token implementation dependant! :-(
+ */
+JAVACODE void rejectToken( Token t) {
+
+    Token fakeToken = new Token ();
+    t.next = token;
+    fakeToken.next = t;
+    token = fakeToken;
+}
+
+JAVACODE String convertStringIndex( String s, int start, int len, boolean escapeFirst) {
+
+
+    int index = start;
+    int t;
+    int maxCount = 0;
+    if ( (start == 0) && (len == s.length()) && (s.indexOf('\\') == - 1)) {
+
+
+        return s;
+    }
+    StringBuilder buf = new StringBuilder (len);
+
+    while ( index < len) {
+
+
+        char c = s.charAt(index);
+        if ( c == '\\') {
+
+
+            if ( ++ index < len) {
+
+
+                c = s.charAt(index);
+                switch ( c ) {
+                    case '0': case '1': case '2': case '3': case '4':
+                    case '5': case '6': case '7': case '8': case '9':
+                    case 'a': case 'b': case 'c': case 'd': case 'e': case 'f':
+                    case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':
+                        int numValue = Character.digit(c, 16);
+                        int count = 1;
+                        if ( maxCount == 0) {
+
+
+                            maxCount = (getCssVersion().equals("css1") ? 4 : 6);
+                        }
+                        while ( index + 1 < len) {
+
+
+                            c = s.charAt( index + 1);
+                            t = Character.digit(c, 16);
+                            if ( t != - 1 && count++ < maxCount) {
+
+
+                                numValue = (numValue << 4) | t;
+                                index++;
+                            } else {
+
+
+                                if ( c == ' ' || c == '\t' || c == '\n' || c == '\f' ) {
+
+
+                                    // skip the latest white space
+                                    index++;
+                                } else if ( c == '\r' ) {
+
+
+                                    index++;
+                                    // special case for \r\n
+                                    if ( index + 1 < len) {
+
+
+                                        if (s.charAt ( index + 1) == '\n') {
+
+
+                                            index++;
+                                        }
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                        if ( ! escapeFirst && numValue < 255 && numValue > 31) {
+
+ 
+                            // [a-z]
+                            // [A-Z]
+                            // [0-9]
+                            // _
+                            // -
+                            if ( ! ( (numValue > 96 && numValue < 123) || (numValue > 64 && numValue < 91) || (numValue > 47 && numValue < 58) || (numValue == 95) || (numValue == 45) ) ) {
+
+
+                                buf.append('\\');
+                            }
+                            buf.append((char) numValue);
+                            break;
+                        }
+                        char b[] = new char [maxCount];
+                        t = maxCount;
+                        while ( t > 0) {
+
+
+                            b[ --t] = hexdigits[ numValue & 0xF];
+                            numValue >>>= 4;
+                        }
+                        buf.append('\\').append(b);
+                        break;
+                    case '\n':
+                    case '\f':
+                        break;
+                    case '\r':
+                        if ( index + 1 < len) {
+
+
+                            if (s.charAt ( index + 1) == '\n') {
+
+
+                                index++;
+                            }
+                        }
+                        break;
+                    case '-' : case '_' : case 'g' : case 'G' :
+                    case 'h' : case 'H' : case 'i' : case 'I' :
+                    case 'j' : case 'J' : case 'k' : case 'K' :
+                    case 'l' : case 'L' : case 'm' : case 'M' :
+                    case 'n' : case 'N' : case 'o' : case 'O' :
+                    case 'p' : case 'P' : case 'q' : case 'Q' :
+                    case 'r' : case 'R' : case 's' : case 'S' :
+                    case 't' : case 'T' : case 'u' : case 'U' :
+                    case 'v' : case 'V' : case 'w' : case 'W' :
+                    case 'x' : case 'X' : case 'y' : case 'Y' :
+                    case 'z' : case 'Z' : 
+                        buf.append(c);
+                        break;
+                    default:
+                        buf.append('\\').append(c);
+                }
+            } else {
+
+                throw new ParseException ("invalid string");
+            }
+        } else {
+
+            buf.append(c);
+        }
+        escapeFirst = false;
+        index++;
+    }
+    return buf.toString();
+}
+
+JAVACODE String convertIdent( String s) {
+
+    return convertStringIndex(s, 0, s.length(), false);
+}
+
+JAVACODE String convertClassIdent( String s) {
+
+    return convertStringIndex(s, 0, s.length(), true);
+}
+
+JAVACODE String convertString( String s) {
+
+    return convertStringIndex(s, 0, s.length(), false);
+}
+
+JAVACODE String hexEscapeFirst( String s) {
+
+    StringBuilder sb = new StringBuilder ();
+    sb.append('\\').append(Integer.toString(s.charAt(0), 16));
+    char c = s.charAt(1);
+    if ( ( (c >= '0') && (c <= '9')) || ( (c >= 'A') && (c <= 'F')) || ( (c >= 'a') && (c <= 'f'))) {
+
+        sb.append(' ');
+    }
+    sb.append(s.substring(1));
+    return sb.toString();
+}
+
+JAVACODE String getCssVersion() {
+    // TODO: need to be able to determine the css version somehow
+    return "css2"; 
+}
+
