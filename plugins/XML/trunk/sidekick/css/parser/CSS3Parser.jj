@@ -18,6 +18,7 @@ options {
     IGNORE_CASE = true;
     STATIC = false;
     UNICODE_INPUT = true;
+    DEBUG_PARSER = true;
 }
 
 PARSER_BEGIN (CSS3Parser)
@@ -54,6 +55,18 @@ public class CSS3Parser {
     private void addError( ParseException e, String skippedText) {
         // TODO: replace with Sidekick style error handling
     }
+    
+    // For testing.  Usage: java CSS3Parser < inputfile
+    public static void main(String[] args) {
+        try {
+            CSS3Parser parser = new CSS3Parser(System.in);
+            parser.parserUnit();
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
 }
 
 PARSER_END (CSS3Parser)
@@ -362,11 +375,13 @@ void parserUnit() :
                 )
             ) *
          
-            afterImportDeclaration()
-            <EOF> 
+            afterImportDeclaration()<EOF> 
             
     } catch ( TokenMgrError err ) {
         addError ( new ParseException ("Unrecognized token."), err.getMessage());
+    }
+    {
+        System.out.println("completed parse, no errors");   
     }
 }
 
@@ -395,8 +410,7 @@ void charset() :
 
 void afterImportDeclaration() :
 {
-
-    String ret;
+    String skip = null;
 }
 {
     (
@@ -408,11 +422,12 @@ void afterImportDeclaration() :
           | preference()
           | colorprofile()
           | phoneticAlphabet()
-          | ret = skipStatement() {
-            }
+          | skip=skipStatement() {
+              if (skip == null || skip.length() == 0) {
+                return;   
+              }
+          }
         )
-
- 
         ignoreStatement()
     ) *
 
@@ -439,6 +454,9 @@ void ignoreStatement() :
 
     ) *
 
+    {
+        
+    }
 
 }
 
@@ -1678,74 +1696,49 @@ void hexcolor() :
 
 
 JAVACODE String skipStatement() {
-
-
     StringBuilder s = new StringBuilder ();
     Token tok = getToken(0);
     boolean first = true;
 
     if ( tok.image != null) {
-
-
         s.append(tok.image); 
     }
+    
     /* FIXME here, two option, we skip during an error, or outside
     an error, currently both can fail with a TokenMgrError, should
     we catch all, or only when filling message for errors?
     
     -> taking the "always skip" approach.
      */
- 
- 
     while (true) {
-
-
         try {
-
-
             tok = getToken(1);
             if ( tok.kind == EOF) {
-
-
                 if (first) {
-
-
                     return null;
                 } else {
-
-
                     break;
                 }
             } 
             s.append(tok.image);
             if ( tok.kind == LBRACE) {
-
-
                 getNextToken();
                 s.append(skip_to_matching_brace());
                 getNextToken();
                 tok = getToken(1);
                 break;
             } else if ( (tok.kind == RBRACE) || (tok.kind == SEMICOLON)) {
-
-
                 getNextToken();
                 tok = getToken(1);
                 break;
             }
             getNextToken();
         } catch ( TokenMgrError tokenerror ) {
-
-
             // read one char at a time, and loop
             try {
-
-
                 s.append(jj_input_stream.readChar());
                 continue;
             } catch ( java.io.IOException ioex ) {
-
- 
                 return s.toString().trim();
             }
         }
@@ -1754,8 +1747,6 @@ JAVACODE String skipStatement() {
  
     // skip white space
     while ( tok.kind == S) {
-
-
         getNextToken();
         tok = getToken(1);
     }
