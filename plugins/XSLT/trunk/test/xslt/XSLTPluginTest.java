@@ -407,6 +407,20 @@ public class XSLTPluginTest{
 					((JTextComponent)parms.cell(TableCell.row(0).column(0)).editor()).setText("world");
 				}
 		});
+		xsltProcessor.button("parameters.add").click();
+		
+		parms.cell(TableCell.row(1).column(0)).click();
+		GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					((JTextComponent)parms.cell(TableCell.row(0).column(0)).editor()).setText("q");
+				}
+		});
+		parms.cell(TableCell.row(1).column(1)).click();
+		GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					((JTextComponent)parms.cell(TableCell.row(0).column(0)).editor()).setText("!");
+				}
+		});
 		
 		xsltProcessor.button("transform").click();
 		
@@ -418,6 +432,44 @@ public class XSLTPluginTest{
 
 		xsltProcessor.close();
 		TestUtils.close(TestUtils.view(),b);
+    }
+
+    @Test
+    public void testURIResolverCompound() throws IOException{
+    	File xml = new File(testData,"simple/source.xml");
+    	File xsl = new File(testData,"compound_stylesheet/full.xsl");
+    	String dest = "";
+    	
+    	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,dest,1);
+    	
+		xsltProcessor.button("transform").click();
+		
+		Pause.pause(10000);
+		
+		Buffer b = view().getBuffer();
+		
+		assertEquals("this is a greeting: hello world", b.getText(0,b.getLength()));
+		TestUtils.close(TestUtils.view(),b);
+		xsltProcessor.close();
+    }
+
+    @Test
+    public void testURIResolverIntrospection() throws IOException{
+    	File xml = new File(testData,"introspection/source.xml");
+    	File xsl = new File(testData,"introspection/transform.xsl");
+    	String dest = "";
+    	
+    	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,dest,1);
+    	
+		xsltProcessor.button("transform").click();
+		
+		Pause.pause(10000);
+		
+		Buffer b = view().getBuffer();
+		
+		assertThat(b.getText(0,b.getLength())).contains("- there are 2 templates");
+		TestUtils.close(TestUtils.view(),b);
+		xsltProcessor.close();
     }
 
     public FrameFixture setupProcessor(File xml, File xsl, final String dest,int version){
