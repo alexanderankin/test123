@@ -18,6 +18,7 @@ options {
     IGNORE_CASE = true;
     STATIC = false;
     UNICODE_INPUT = true;
+    DEBUG_PARSER = true;
 }
 
 PARSER_BEGIN (CSS3Parser)
@@ -54,13 +55,25 @@ public class CSS3Parser {
     private void addError( ParseException e, String skippedText) {
         // TODO: replace with Sidekick style error handling
     }
+    
+    // For testing.  Usage: java CSS3Parser < inputfile
+    public static void main(String[] args) {
+        try {
+            CSS3Parser parser = new CSS3Parser(System.in);
+            parser.styleSheet();
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
 }
 
 PARSER_END (CSS3Parser)
 
-/*
+/*******************************************************************************
  * The tokenizer
- */
+ ******************************************************************************/
 <DEFAULT>
 SPECIAL_TOKEN :
 {
@@ -305,34 +318,28 @@ TOKEN :
 //   < UNKNOWN : ~[] >
 //}
 
-/*
- * The grammar of CSS2
- */
 
-
+/*******************************************************************************
+ * The grammar of CSS2 and CSS3 follows.
+ ******************************************************************************/
 
 /**
  * The main entry for the parser.
  *
  * @exception ParseException exception during the parse
  */
-void parserUnit() :
+void styleSheet() :
 {
 }
 {
     try {
             // used as an error recovery for HTML tags in CSS pages
-         
-         
             (
                 (
                     <HTMLSTARTTAG>
                   | <HTMLENDTAG>
                 )
-        
-         {
-        
-        
+                {
                     addError ( new ParseException ("Do not mix html with CSS.")); 
                 }
             ) *
@@ -341,7 +348,6 @@ void parserUnit() :
             ) *
         
             // * instead of ? to capture the reinit part
-         
             (
                 <S>
               | <CDO>
@@ -368,34 +374,28 @@ void parserUnit() :
     } catch ( TokenMgrError err ) {
         addError ( new ParseException ("Unrecognized token."), err.getMessage());
     }
+    {
+        System.out.println("----- completed parsing -----");   
+    }
 }
 
 void charset() :
 {
 }
 { 
-    try {
         <CHARSET_SYM> 
         (
-            <S> {
-            }
+            <S>
         ) *
-    
-     
         <STRING> 
         (
             <S>
         ) *
-    
-        <SEMICOLON> {
-    }///
-    } catch ( Exception e ) {
-    }
+        <SEMICOLON>
 }
 
 void afterImportDeclaration() :
 {
-
     String ret;
 }
 {
@@ -409,37 +409,30 @@ void afterImportDeclaration() :
           | colorprofile()
           | phoneticAlphabet()
           | ret = skipStatement() {
+              // the parser steps into a tight loop if this block is removed
+              if (ret == null || ret.length() == 0) {
+                return;   
+              }
             }
         )
-
- 
         ignoreStatement()
     ) *
-
-
 }
 
 void ignoreStatement() :
 {
 }
 {
- 
- 
     (
         (
             <CDO>
           | <CDC>
           | atRuleDeclaration()
         )
-
- 
         (
             <S>
         ) *
-
     ) *
-
-
 }
 
 void namespaceDeclaration() :
@@ -452,42 +445,24 @@ void namespaceDeclaration() :
         (
             <S>
         ) *
-
- 
- 
         (
-            <IDENT> {
-            } 
- 
+            <IDENT>
             (
                 <S>
             ) *
-
         ) ?
-
-
- 
         (
-            <STRING> {
-            } 
-          | <URL> {
-            }
+            <STRING>
+          | <URL>
         )
- 
         (
             <S>
         ) *
-
-
         <SEMICOLON> 
         (
             <S>
         ) *
     )
-
- {
-
-    }
 }
 
 
@@ -500,25 +475,17 @@ void importDeclaration() :
 {
 }
 {
-    try {
     <IMPORT_SYM> 
     (
         <S>
     ) *
-
-
- 
     (
-        <STRING> {
-        } 
-      | <URL> {
-        } 
+        <STRING>
+      | <URL>
     )
- 
     (
         <S>
     ) *
-
     (
         medium()
         (
@@ -528,19 +495,11 @@ void importDeclaration() :
             ) *
             medium()
         ) *
-
     ) ?
-
     <SEMICOLON> 
     (
         <S>
     ) *
-
-
- {
-    } 
-    } catch ( ParseException e ) {
-    }
 }
 
 
@@ -548,87 +507,50 @@ void media() :
 {
 }
 {
-    try {
     <MEDIA_SYM> 
     (
         <S>
     ) *
-
-
-    // <CSS3>
- 
     (
-        <MEDIARESTRICTOR> {
-        }
- 
+        <MEDIARESTRICTOR>
         (
             <S>
         ) +
-
     ) ?
- 
-    // </CSS3>
     medium()
     (
         <COMMA> 
         (
             <S>
         ) *
-
- 
         medium()
     ) *
-
- 
-    // <CSS3>
- 
     (
         <AND> 
         (
             <S>
         ) *
-
         <RPARAN> 
         (
             <S>
         ) *
-
-        mediadeclaration() {
-        } <LPARAN> 
+        mediadeclaration()
+        <LPARAN> 
         (
             <S>
         ) *
-
     ) *
-
-
-    // </CSS3>
- 
- {
-
- 
-    }
     <LBRACE> 
     (
         <S>
     ) *
-
- 
- 
     (
         ruleSet()
     ) *
-
     <RBRACE> 
     (
         <S>
     ) *
-
-
- {
-    }
-    } catch ( ParseException e ) {
-    } 
 }
 
 
@@ -641,25 +563,18 @@ void medium() :/* tv, projection, screen, ... */
     (
         <S>
     ) *
-
-
- {
-    }
 }
 
 void unused_production_generic_syntax() :
 {
 }
 {
- 
- 
     "("
     (
         <S>
     ) *
-
-    term() ")" {
-    }
+    term() 
+    ")"
 }
 
 void definition() :
@@ -670,113 +585,69 @@ void definition() :
     (
         <S>
     ) *
-
-    term() "]" {
-    }
+    term() 
+    "]"
 }
 
 void page() :
 {
 }
 {
-    try {
     <PAGE_SYM> 
     (
         <S>
     ) *
-
-
-    // FIXME <CSS3> ?
- 
     (
-        <IDENT> {
-        } 
- 
+        <IDENT>
         (
             <S>
         ) *
-
     ) ?
-
-
-    // </CSS3>
     (
         pseudo_page()
     ) ?
-
     <LBRACE> 
     (
         <S>
     ) *
-
- 
- 
     (
-        pageContent() {
-        }
+        pageContent()
     )
-
     <RBRACE> 
     (
         <S>
     ) *
-
-
- {
-
-    }
-    } catch ( ParseException e ) {
-    } 
 }
 
 void pageContent() :
 {
 }
 {
-    // <CSS3> ?? FIXME
-    prefAtRule() {
-    }
-    // </CSS3>
-  | declarations() {
-    }    /* FIXME moved here as it can match empty string */
- 
- 
+    prefAtRule()
+  | declarations()
 }
 
 void prefAtRule() :
 {
 }
 {
-    try {
- 
     (
         <ATTOP>
       | <ATBOTTOM>
       | <ATLEFT>
       | <ATRIGHT>
     )
-
- 
     (
         <S>
     ) *
-
-
     <LBRACE> 
     (
         <S>
     ) *
-
     declarations()<RBRACE> 
     (
         <S>
     ) *
-
- 
- {
-    }
-    } catch ( ParseException e ) {
-    }
 }
 
 void pseudo_page() :
@@ -787,74 +658,42 @@ void pseudo_page() :
     (
         <S>
     ) *
-
-
- {
-
- 
-    }
 }
 
 void fontFace() :
 {
 }
 {
-    try {
     <FONT_FACE_SYM> 
     (
         <S>
     ) *
-
- 
- {
-    }
     <LBRACE> 
     (
         <S>
     ) *
-
     declarations()<RBRACE> 
     (
         <S>
     ) *
-
-
- {
-    }
-    } catch ( ParseException e ) {
-    }
 }
 
 void colorprofile() :
 {
 }
 {
-    try {
     <COLOR_PROFILE> 
     (
         <S>
     ) *
-
-
- {
-
-    }
     <LBRACE> 
     (
         <S>
     ) *
-
     declarations()<RBRACE> 
     (
         <S>
     ) *
-
-
- {
-
-    }
-    } catch ( ParseException e ) {
-    }
 }
 
 
@@ -862,38 +701,24 @@ void preference() :
 {
 }
 {
-    try {
     <PREF_SYM> 
     (
         <S>
     ) *
-
-
- {
-
-    }
     <LBRACE> 
     (
         <S>
     ) *
-
     declarations()<RBRACE> 
     (
         <S>
     ) *
-
-
- {
-    }
-    } catch ( ParseException e ) {
-    }
 }
 
 void phoneticAlphabet() :
 {
 }
 {
-    try {
     <PHONETIC_ALPHABET_SYM> 
     (
         <S>
@@ -904,48 +729,30 @@ void phoneticAlphabet() :
         <S>
     ) *
 
- 
-    ";" {
-
-    }
-    } catch ( ParseException e ) {
-    }
+    ";"
 }
 
 void atRuleDeclaration() :
 {
 }
 {
-    <ATKEYWORD> {
-    }
+    <ATKEYWORD>
 }
 
 void operator() :
 {
 }
 {
- 
- 
     (
         (
-            <DIV> {
-
-                //if (expr.getCount() > 0) expr.setOperator('/');
-            }
-          | <COMMA> {
-
-                //if (expr.getCount() > 0) expr.setOperator(',');
-            }
+            <DIV>
+          | <COMMA>
         )
-
- 
         (
             <S>
         ) *
 
     ) ?
-
-
 }
 
 
@@ -955,45 +762,30 @@ char combinator() :
     char connector = ' ';
 }
 {
- 
- 
     (
         (
             <PLUS> {
-
                 connector = '+' ;
             }
           | <GREATER> {
-
                 connector = '>' ;
             }
           | <TILDE> {
-
                 connector = '~' ;
             }
         )
-
- 
         (
             <S>
         ) *
-
- 
       | 
         (
             <S>
         ) +
-
- {
-
+        {
             connector = ' ' ;
         }
     )
-
-
- {
-
-
+    {
         return connector;
     }
 }
@@ -1002,13 +794,10 @@ char unaryOperator() :
 {
 }
 {
-    // FIXME <MINUS> | <PLUS> ? warning as <PLUS> is <_W>? "+"
     "-" {
-
         return '-';
     }
   | <PLUS> {
-
         return '+';
     }
 }
@@ -1021,9 +810,6 @@ void property() :
     (
         <S>
     ) *
-
- {
-    }
 }
 
 
@@ -1032,54 +818,34 @@ void ruleSet() :
 }
 {
     try {
-    selector() {
-    }
- 
- 
-    (
-        <COMMA> 
+        selector()
+        (
+            <COMMA> 
+            (
+                <S>
+            ) *
+            selector()
+        ) *
+        <LBRACE>
         (
             <S>
         ) *
-
-
-        selector() {
-        } 
-    ) *
-
-
-    <LBRACE> {
-    }
- 
-    (
-        <S>
-    ) *
-
-
-    declarations()<RBRACE> 
-    (
-        <S>
-    ) *
-
-
- {
-    }
+        declarations()<RBRACE> 
+        (
+            <S>
+        ) *
     } catch ( ParseException e ) {
+        // TODO: this captures an exception when parsing negations
     }
 }
 
 void declarations() :
 {
-
 }
 { 
- 
- 
     (
-        declaration() {
-        }
+        declaration()
     ) ?
- 
     (
         ";"
         (
@@ -1087,15 +853,9 @@ void declarations() :
         ) *
  
         (
-            declaration() {
-            }
+            declaration()
         ) ?
-
     ) *
-
- 
- {
-    }
 }
 
 void selector() :
@@ -1103,18 +863,12 @@ void selector() :
 }
 {
     try {
- 
- 
- 
-    simple_selector()
-    (
-        combinator() simple_selector()
-    ) *
-
- 
- {
-    }
+        simple_selector()
+        (
+            combinator() simple_selector()
+        ) *
     } catch ( ParseException e ) {
+        // TODO: this captures an exception when parsing negations
     }
 }
 
@@ -1127,18 +881,12 @@ void externalSelector() :
 }
 {
     simple_selector() 
- 
     (
         (
             <S>
         ) +
-
-
         simple_selector()
     ) *
-
- {
-    }
 }
 
 
@@ -1154,10 +902,6 @@ void simple_selector() :
       | pseudo()
       | negation()
     ) *
-
-
- {
-    }
   | 
     (
         hash()
@@ -1166,10 +910,6 @@ void simple_selector() :
       | pseudo()
       | negation()
     ) +
-
- 
- {
-    }
 }
 
 
@@ -1177,22 +917,11 @@ void _class() :
 {
 }
 {
-    /*  "." n=<IDENT> { */
- 
- 
-    <CLASS> {
-
-    } 
-    /* FIXME <DOT> n=deprecated_class() ... ?? (DONE-> to be tested) */
- 
+    <CLASS>
   | 
- 
     (
         deprecated_class()
     )
- {
-
-    }
 }
 
 void deprecated_class() :
@@ -1210,10 +939,6 @@ void deprecated_class() :
       | <RESOLUTION>
       | <DIMEN>
     )
-
-
- {
-    }
 }
 
 
@@ -1227,18 +952,11 @@ void element_name() :
             <IDENT>
           | <ANY>
         ) ?
-
         "|"
     ) ?
-
- {
-    }
- 
     (
-        <IDENT> {
-        }
-      | <ANY> {
-        }
+        <IDENT>
+      | <ANY>
     )
 }
 
@@ -1250,52 +968,31 @@ void attrib() :
     (
         <S>
     ) *
-
     <IDENT> 
     (
         <S>
     ) *
-
-
- 
- 
     (
         (
-            <EQ> {
-            }
-          | <INCLUDES> {
-            }
-          | <DASHMATCH> {
-            }
-          | <PREFIXMATCH> {
-            }
-          | <SUFFIXMATCH> {
-            }
-          | <SUBSTRINGMATCH> {
-            }
+            <EQ>
+          | <INCLUDES>
+          | <DASHMATCH>
+          | <PREFIXMATCH>
+          | <SUFFIXMATCH>
+          | <SUBSTRINGMATCH>
         )
-
- 
         (
             <S>
         ) *
- 
         (
-            <IDENT> {
-            }
-          | <STRING> {
-            } 
+            <IDENT>
+          | <STRING>
         )
- 
         (
             <S>
         ) *
-
     ) ?
-
-
-    <RBRACKET> {
-    }
+    <RBRACKET>
 }
 
 void negation() :
@@ -1318,9 +1015,7 @@ void negation() :
     (
         <S>
     ) *
-
-    <LPARAN> {
-    }
+    <LPARAN>
 }
 
 
@@ -1329,71 +1024,43 @@ void pseudo() :
 }
 {
     <PSEUDOELEMENT_SYM> 
- 
     (
         (
-            <IDENT> {
-            }
+            <IDENT>
         )
-
     )
-
-
   | <COLON> 
- 
     (
         (
-            <IDENT> {
-            }
+            <IDENT>
         )
-
-
-        // FXIXME rewrite to make :lang( use a special case
       | 
- 
         (
             (
                 <FUNCTIONLANG> 
                 (
                     <S>
                 ) *
-
- 
                 (
                     <NUMBER>
                   | <IDENT>
                   | <STRING>
                 )
-
- 
                 (
                     <S>
                 ) *
-
             )
-
- {
-
-
-            }
           | 
             (
                 <FUNCTION> 
                 (
                     <S>
                 ) *
-
                 expression()
             )
-
- {
-
-            }
         )
-
         <LPARAN>
     )
-
 }
 
 
@@ -1401,11 +1068,8 @@ void hash() :
 {
 }
 {
-    <HASHIDENT> {
-    }
-  | <HASH> {
-        throw new ParseException ("parser.invalid_id_selector"); 
-    }
+    <HASHIDENT>
+  | <HASH>
 }
 
 
@@ -1413,30 +1077,17 @@ void mediadeclaration() :
 {
 }
 {
-    try {
     property() 
- 
- 
     (
         ":"
         (
             <S>
         ) *
-
- 
         expr() 
- 
         (
             prio()
         ) ?
-
     ) ?
-
-
- {
-    }
-    } catch ( ParseException e ) {
-    }
 }
 
 
@@ -1444,7 +1095,6 @@ void declaration() :
 {
 }
 {
-    try {
     property() 
     ":"
     (
@@ -1455,14 +1105,6 @@ void declaration() :
     (
         prio()
     ) ?
-
-
- {
-
- 
-    }
-    } catch ( ParseException e ) {
-    }
 }
 
 
@@ -1474,52 +1116,30 @@ void prio() :
     (
         <S>
     ) *
-
- {
-    }
 }
 
 void expression() :
 {
     char operator = ' ';
-    Token n = null;
 }
 {
- 
- 
     (
         (
             <PLUS> {
-
                 operator = '+' ;
             } 
           | <MINUS> {
-
                 operator = '-';
             }
-          | n = <NUMBER> {
-            }
-            // FIXME dimen should be a CssDimension()
-          | n = <DIMEN> {
-            } 
-          | n = <STRING> {
-            } 
-          | n = <IDENT> {
-            } 
+          | <NUMBER>
+          | <DIMEN>
+          | <STRING>
+          | <IDENT>
         )
-
- 
         (
             <S>
         ) *
-
     ) +
-
-
- {
-
- 
-    }
 } 
 
 
@@ -1527,18 +1147,10 @@ void expr() :
 {
 }
 {
- 
- 
     term()
     (
         operator() term()
     ) *
-
-
- {
-
- 
-    }
 }
 
 
@@ -1546,104 +1158,41 @@ void term() :
 {
 }
 {
- 
- 
- 
- 
- 
- 
     (
         (
             unaryOperator()
         ) ?
         (
-            <NUMBER> {
-            }
-          | <PERCENTAGE> {
-            }
-          | <LENGTH> {
-            }
-          | <EMS> {
-            }
-          | <EXS> {
-            }
-          | <ANGLE> {
-            }
-          | <TIME> {
-            }
-          | <FREQ> {
-            }
-          | <RESOLUTION> {
-            }
-          | <DATE> {
-            }
-          | <DIMEN> {
-            } 
-          | function() {
-            }
+            <NUMBER>
+          | <PERCENTAGE>
+          | <LENGTH>
+          | <EMS>
+          | <EXS>
+          | <ANGLE>
+          | <TIME>
+          | <FREQ>
+          | <RESOLUTION>
+          | <DATE>
+          | <DIMEN>
+          | function()
         )
-
- 
         (
             <S>
         ) *
-
     )
-
-
   | 
- 
     (
         (
-            <STRING> {
-            }
-          | <IDENT> {
-
-
-                /*
-                 * Common error :
-                 * H1 {
-                 *   color : black
-                 *   background : white
-                 * }
-                 */
- 
-                /*
-                Token t = getToken(1);
-                Token semicolon = new Token ();
-                semicolon.kind = SEMICOLON;
-                semicolon.image = ";";
-                if ( t.kind == COLON) {
-                
-                // @@SEEME. (generate a warning?)
-                
-                // @@SEEME if expression is a single ident,
-                //generate an error ?
-                
-                addError( new ParseException ("parser.semi-colon"), (CssExpression) null);
-                rejectToken(semicolon);
-                } else {
-                
-                setValue( new CssIdent (), exp, operator, n, IDENT);
-                }
-                 */
- 
-            }
+            <STRING>
+          | <IDENT>
           | hexcolor()
-          | <URL> {
-            }
-          | <UNICODERANGE> {
-            }
+          | <URL>
+          | <UNICODERANGE>
         )
-
- 
         (
             <S>
         ) *
-
     )
-
-
 }
 
 
@@ -1657,23 +1206,17 @@ void function() :
     ) *
 
     expr() 
-    ")" {
-
-    }
+    ")"
 }
 
 void hexcolor() :
 {
 }
 {
- 
     (
         <HASHIDENT>
       | <HASH>
     )
-
- {
-    }
 }
 
 
