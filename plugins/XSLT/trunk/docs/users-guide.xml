@@ -300,12 +300,21 @@
   it is compatible with XSLT version 1.0 (<uri>http://www.w3.org/TR/xslt</uri>);</para></listitem>
   
   <listitem><para>you can also use the 6.5.5 version of the SAXON XSLT Processor from Michael Kay.
-  This version of Saxon is XSLT 1.0 compliant. It is released under the Mozilla Public License Version 1.0.</para></listitem>
+  This version of Saxon is XSLT 1.0 compliant.
+  </para>
+  <para>You may obtain Saxon 6.5.5 from Sourceforge
+  (<uri>https://sourceforge.net/projects/saxon/files/</uri>) or from Saxonica (<uri>http://www.saxonica.com</uri>).
+  It is released under the Mozilla Public License Version 1.0 or under a commercial license (again, see <uri>http://www.saxonica.com</uri>).
+  </para>
+  </listitem>
   
-  <listitem><para>Last but not least, you can use version 9.x of version of the SAXON XSLT Processor from Michael Kay,
-  which is an XSLT 2.0 processor. You may obtain both versions of Saxon from Sourceforge :
-  <uri>https://sourceforge.net/projects/saxon/files/</uri> or from Saxonica (<uri>http://www.saxonica.com</uri>).
-  It is released under the Mozilla Public License Version 1.0 or under a commercial license (again, see <uri>http://www.saxonica.com</uri>).</para></listitem>
+  <listitem>
+  <para>Last but not least, you can use version 9.x of version of the SAXON XSLT Processor from Michael Kay,
+  which is an XSLT 2.0 processor. </para>
+  <para>It is packaged for jEdit as the <emphasis>SaxonPlugin</emphasis>.
+  Once you have installed it via the <guimenuitem>Plugin Manager</guimenuitem>,
+  simply choose it in the <guilabel>XSLT processor</guilabel> combo box.</para>
+  </listitem>
   </itemizedlist>
   
   <para>To use a processor which is not distributed with the plugin, simply drop

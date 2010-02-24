@@ -30,6 +30,14 @@ options.xslt.general.label=XSLT
 options.xslt.general.code=new xslt.XSLTOptionPane()
 options.xslt.factory.label=XSLT processor : 
 options.xslt.factory.tooltip=XSLT engine to use for the XSLT Tool ; you can use another one (see help)
+options.xslt.factory.error-not-found=This class can''t be found by jEdit.\n\
+  You may obtain the Saxon XSLT processor for XSLT 2.0 via the SaxonPlugin,\n\
+available in the plugin manager.\n\
+  Other processors have to be installed manually. Drop the jar file in :\n\
+    {0}\n\
+  and restart jEdit (see also the XSLT Plugin manual).
+options.xslt.factory.error-class-cast=This class doesn't implement javax.xml.transform.sax.SAXTransformerFactory.\n\
+  You may have to double check the documentation of your XSLT processor.
 options.xslt.compile-on-save.label=compile stylesheets on save
 options.xslt.compile-on-save.tooltip=this will hopefuly help you catch errors earlier, depending on the XSLT processor
 # }}}
