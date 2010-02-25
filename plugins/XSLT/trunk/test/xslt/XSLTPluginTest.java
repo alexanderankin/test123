@@ -78,7 +78,7 @@ public class XSLTPluginTest{
     	
     	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,dest,1);
     	
-		xsltProcessor.button("transform").click();
+		xsltProcessor.button("xslt.transform").click();
 		
 		Pause.pause(10000);
 		
@@ -101,7 +101,7 @@ public class XSLTPluginTest{
 		ClickT click = new ClickT(Option.OK);
 		click.start();
 
-		xsltProcessor.button("transform").click();
+		xsltProcessor.button("xslt.transform").click();
 		
 		Pause.pause(10000);
 		
@@ -129,7 +129,7 @@ public class XSLTPluginTest{
 		ClickT click = new ClickT(Option.OK);
 		click.start();
 		
-		xsltProcessor.button("transform").click();
+		xsltProcessor.button("xslt.transform").click();
 		
 		Pause.pause(10000);
 		
@@ -155,7 +155,7 @@ public class XSLTPluginTest{
     	
     	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,"",1);
 		
-		xsltProcessor.button("transform").click();
+		xsltProcessor.button("xslt.transform").click();
 		
 		Pause.pause(10000);
 		
@@ -175,23 +175,31 @@ public class XSLTPluginTest{
 
     @Test
     public void testXSLTSAXError() throws IOException{
-    	File xml = new File(testData,"broken/source.xml");
+    	final File xml = new File(testData,"broken/source.xml");
     	File xsl = new File(testData,"simple/transform.xsl");
     	
     	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,"",1);
+
+    	TestUtils.close(view(),view().getBuffer());
 		
+    	xsltProcessor.radioButton("xslt.source.file").click();
+		GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					xsltProcessor.textBox("xslt.source.prompt").targetCastedTo(JTextComponent.class).setText(xml.getPath());
+				}
+		});
+
+    	
 		// an error will be reported
 		ClickT click = new ClickT(Option.OK);
 		click.start();
 		
-		xsltProcessor.button("transform").click();
+		xsltProcessor.button("xslt.transform").click();
 		
 		Pause.pause(10000);
 		
 		Buffer b = view().getBuffer();
 		
-		assertEquals(0,b.getLength());
-
 		xsltProcessor.close();
 
 		action("error-list-show");
@@ -241,7 +249,7 @@ public class XSLTPluginTest{
     	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,result.getAbsolutePath(),1);
 				
 		
-		xsltProcessor.button("transform").click();
+		xsltProcessor.button("xslt.transform").click();
 		
 		Pause.pause(5000);
 		
@@ -269,7 +277,7 @@ public class XSLTPluginTest{
     	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,result.getAbsolutePath(),1);
 				
 		xsltProcessor.checkBox("open-result").requireSelected().uncheck();
-		xsltProcessor.button("transform").click();
+		xsltProcessor.button("xslt.transform").click();
 		
 		Pause.pause(5000);
 		
@@ -290,7 +298,7 @@ public class XSLTPluginTest{
     	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,"",2);
 				
 		
-		xsltProcessor.button("transform").click();
+		xsltProcessor.button("xslt.transform").click();
 		
 		Pause.pause(5000);
 		
@@ -316,7 +324,7 @@ public class XSLTPluginTest{
     	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,result.getPath(),2);
 				
 		
-		xsltProcessor.button("transform").click();
+		xsltProcessor.button("xslt.transform").click();
 		
 		Pause.pause(5000);
 		
@@ -345,7 +353,7 @@ public class XSLTPluginTest{
     	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,"",2);
 				
 		
-		xsltProcessor.button("transform").click();
+		xsltProcessor.button("xslt.transform").click();
 		
 		Pause.pause(5000);
 		
@@ -365,7 +373,7 @@ public class XSLTPluginTest{
     	final FrameFixture xsltProcessor = setupProcessor(xsl,xsl,"",1);
     	
 		xsltProcessor.radioButton("xslt.stylesheets.buffer").check();
-		xsltProcessor.button("transform").click();
+		xsltProcessor.button("xslt.transform").click();
 		
 		Pause.pause(5000);
 		
@@ -391,9 +399,9 @@ public class XSLTPluginTest{
 		while(parms.rowCount()>0)
 		{
 			parms.selectRows(0);
-			xsltProcessor.button("parameters.remove").click();
+			xsltProcessor.button("xslt.parameters.remove").click();
 		}
-		xsltProcessor.button("parameters.add").click();
+		xsltProcessor.button("xslt.parameters.add").click();
 		
 		parms.cell(TableCell.row(0).column(0)).click();
 		GuiActionRunner.execute(new GuiTask(){
@@ -407,7 +415,7 @@ public class XSLTPluginTest{
 					((JTextComponent)parms.cell(TableCell.row(0).column(0)).editor()).setText("world");
 				}
 		});
-		xsltProcessor.button("parameters.add").click();
+		xsltProcessor.button("xslt.parameters.add").click();
 		
 		parms.cell(TableCell.row(1).column(0)).click();
 		GuiActionRunner.execute(new GuiTask(){
@@ -422,7 +430,7 @@ public class XSLTPluginTest{
 				}
 		});
 		
-		xsltProcessor.button("transform").click();
+		xsltProcessor.button("xslt.transform").click();
 		
 		Pause.pause(5000);
 		
@@ -442,7 +450,7 @@ public class XSLTPluginTest{
     	
     	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,dest,1);
     	
-		xsltProcessor.button("transform").click();
+		xsltProcessor.button("xslt.transform").click();
 		
 		Pause.pause(10000);
 		
@@ -461,7 +469,7 @@ public class XSLTPluginTest{
     	
     	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,dest,1);
     	
-		xsltProcessor.button("transform").click();
+		xsltProcessor.button("xslt.transform").click();
 		
 		Pause.pause(10000);
 		
@@ -491,9 +499,9 @@ public class XSLTPluginTest{
 		while(xsltProcessor.list("stylesheets").contents().length>0)
 		{
 			xsltProcessor.list("stylesheets").selectItem(0);
-			xsltProcessor.button("stylesheets.remove").click();
+			xsltProcessor.button("xslt.stylesheets.remove").click();
 		}
-		xsltProcessor.button("stylesheets.add").click();
+		xsltProcessor.button("xslt.stylesheets.add").click();
 		
 		DialogFixture browseDialog = findDialogByTitle("File Browser");
 		//there is always a temporisation until all content gets loaded
@@ -507,11 +515,19 @@ public class XSLTPluginTest{
 		browseDialog.button("ok").click();
 
 		// set the result
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					xsltProcessor.textBox("xslt.result.prompt").targetCastedTo(JTextComponent.class).setText(dest);
-				}
-		});
+		if("".equals(dest))
+		{
+			xsltProcessor.radioButton("xslt.result.buffer").click();
+		}
+		else
+		{
+			xsltProcessor.radioButton("xslt.result.file").click();
+			GuiActionRunner.execute(new GuiTask(){
+					protected void executeInEDT(){
+						xsltProcessor.textBox("xslt.result.prompt").targetCastedTo(JTextComponent.class).setText(dest);
+					}
+			});
+		}
 
 		return xsltProcessor;
 

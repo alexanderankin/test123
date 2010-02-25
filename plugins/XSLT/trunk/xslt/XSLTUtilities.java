@@ -19,10 +19,7 @@
  */
 package xslt;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Arrays;
@@ -34,12 +31,9 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.SourceLocator;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.URIResolver;
 

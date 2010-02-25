@@ -107,8 +107,9 @@
           tool. In the dialog window select a directory, enter a file name and
           then press the "Open" button (a bit confusing but it will work).</para>
           
-          <para>The result will be written to a new untitled buffer if you leave 
-          this field empty. Note that it will be written in memory only,
+          <para>The result will be written to a new untitled buffer if you click 
+          the <guibutton>New Untitled Buffer</guibutton> radio button.
+          Note that it will be written in memory only,
           so don't use this option with too big a document.
           Also note that if any <code>&lt;xsl:result-document&gt;</code> instruction is used, 
           it won't be written in memory but to a file relative to the new Untitled buffer.
@@ -116,7 +117,7 @@
         </listitem>
         <listitem>
           <para>Files can be opened for editing from the XSLT Processor window,
-          using enter key, or double click, or right click menu select on the
+          using enter key, or right click menu select on the
           file name.</para>
           <para>If you don't want to open the result of the transformation
           (e.g. because the result is too big), uncheck the <guilabel>Open result</guilabel>
@@ -164,6 +165,7 @@
         </listitem>
       </itemizedlist>
     </para>
+    <section id="error-list"><title>Error Reporting</title>
     
     <para>Errors are reported via the <emphasis>ErrorList</emphasis> plugin
     and/or a popup message :</para>
@@ -188,7 +190,9 @@
     </itemizedlist>
     <para>Processing will be immediately terminated in case of error (even non-fatal),
     but will continue in case of warnings.</para>
+    </section>
     
+    <section id="todo-xslt"><title>To Do...</title>
     <para>
       The following improvements should eventually be made to XSLT Processor.
       <itemizedlist>
@@ -201,7 +205,7 @@
         </listitem>
       </itemizedlist>
     </para>
-    
+    </section>
     <section id="compile-stylesheet">
     <title>Compiling a stylesheet</title>
     
@@ -309,7 +313,7 @@
   </listitem>
   
   <listitem>
-  <para>Last but not least, you can use version 9.x of version of the SAXON XSLT Processor from Michael Kay,
+  <para>Last but not least, you can use version 9.x of the SAXON XSLT Processor from Michael Kay,
   which is an XSLT 2.0 processor. </para>
   <para>It is packaged for jEdit as the <emphasis>SaxonPlugin</emphasis>.
   Once you have installed it via the <guimenuitem>Plugin Manager</guimenuitem>,
@@ -388,11 +392,13 @@
         <listitem><para>Configurable XSLT processor.</para></listitem>
         <listitem><para>New action to compile stylesheet (and compile on save).</para></listitem>
         <listitem><para>Transformation result is written to a new Untitled buffer
-        only if the <guilabel>Result:</guilabel> field is empty (see bug #1392803).
+        only if the <guilabel>New Untitled Buffer</guilabel> radio button is checked (see bug #1392803).
         This Untitled buffer is no more written to disk (no #Untitled-X# scattered in your source
         directories).</para></listitem>
         <listitem><para>option to use current buffer as stylesheet</para></listitem>
         <listitem><para>use the jEdit icon set when possible</para></listitem>
+        <listitem><para>Can't open files for editing from the XSLT Processor window,
+          using double click : I use triple click all the time to select the entire text.</para></listitem>
       </itemizedlist>
     </para>
     <para>
