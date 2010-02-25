@@ -25,8 +25,6 @@ import sidekick.*;
 import sidekick.util.*;
 import javax.swing.tree.*;
 import java.util.*;
-import org.gjt.sp.jedit.View;
-import org.gjt.sp.util.Log;
 
 import sidekick.css.parser.CSSNode;
 
@@ -66,7 +64,6 @@ public class CSSParsedData extends SideKickParsedData {
         if ( nodeContains(css_node, dot) ) {
             node = getLeafNode(root, dot);
         }
-
         List<TreeNode> nodeList = new ArrayList<TreeNode>();
         while (node != null)
         {
@@ -88,7 +85,7 @@ public class CSSParsedData extends SideKickParsedData {
                 return getLeafNode(child, dot);
             }
         }
-        return null;
+        return node;
     }
 
     private boolean nodeContains(CSSNode node, int dot) {

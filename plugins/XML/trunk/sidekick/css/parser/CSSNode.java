@@ -4,7 +4,7 @@ import java.util.*;
 import javax.swing.text.Position;
 import sidekick.util.*;
 
-public class CSSNode implements SideKickElement {
+public class CSSNode implements SideKickElement, Comparable<CSSNode> {
 
     private String name = "";
     private List<CSSNode> children = new ArrayList<CSSNode>();
@@ -13,15 +13,16 @@ public class CSSNode implements SideKickElement {
     private Position startPosition = null;
     private Position endPosition = null;
 
-    public CSSNode() {
-    }
+    public CSSNode() {}
 
     public CSSNode( String name ) {
         this.name = name;
     }
 
     public void setName( String name ) {
-        this.name = name;
+        if ( name != null ) {
+            this.name = name;
+        }
     }
 
     public String getName() {
@@ -37,8 +38,9 @@ public class CSSNode implements SideKickElement {
     }
 
     public Location getStartLocation() {
-        if ( start == null )
+        if ( start == null ) {
             start = new Location();
+        }
         return start;
     }
 
@@ -47,8 +49,9 @@ public class CSSNode implements SideKickElement {
     }
 
     public Location getEndLocation() {
-        if ( end == null )
+        if ( end == null ) {
             end = new Location();
+        }
         return end;
     }
 
@@ -77,6 +80,7 @@ public class CSSNode implements SideKickElement {
     }
 
     public List<CSSNode> getChildren() {
+        Collections.sort(children);
         return children;
     }
 
@@ -84,4 +88,23 @@ public class CSSNode implements SideKickElement {
         return children != null && children.size() > 0;
     }
 
+    public boolean equals( Object o ) {
+        return getName().equals( o ) && getChildren().equals(((CSSNode)o).getChildren());
+    }
+
+    public int hashCode() {
+        return getName().hashCode();
+    }
+
+    public int compareTo( CSSNode node ) {
+        String my_name = getName().toLowerCase();
+        if ( my_name.startsWith( "." ) || my_name.startsWith( "#" ) ) {
+            my_name = my_name.substring( 1 );
+        }
+        String your_name = node.getName().toLowerCase();
+        if ( your_name.startsWith( "." ) || your_name.startsWith( "#" ) ) {
+            your_name = your_name.substring( 1 );
+        }
+        return my_name.compareTo( your_name );
+    }
 }

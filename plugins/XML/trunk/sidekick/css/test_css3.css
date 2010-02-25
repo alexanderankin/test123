@@ -1,5 +1,15 @@
 /*******************************************************************************
-CSS 3 tests
+ CSS3 compatibility test file -- I (danson) made this up by copying and pasting a
+bunch of css example code from the w3c css test suite.  There is a lot of
+repetition, but I think I've got most (all?) use cases covered for the CSS3
+specification.  This should parse with some errors.
+http://www.w3.org/Style/CSS/Test/CSS3/Selectors/20091025/html/full/flat/index.html
+*******************************************************************************/
+
+/******************************************************************************* 
+
+       Selectors 
+
 *******************************************************************************/
 li,p { background-color : lime }
 address { background-color: lime }
@@ -495,7 +505,7 @@ address:empty { background: red; }
 .text { margin: -1em 0 0 0; }
 
 p { background: lime; }
-p, { background: red; }
+p { background: red; }
 
 p { background: lime; }
 .5cm { background: red; }
@@ -517,19 +527,27 @@ p { background: lime; }
 p { background: red; }
 
 p { background: lime; }
+
+/* next line is an error, '&' is not a valid token in CSS3 */
+/*
 foo & address, p { background: red; }
-
-foo & address, p { background: red; }
-p { background: lime; }
-
-foo & address, p { background: red ! important; }
-p { background: lime; }
+*/
 
 p { background: lime; }
+
+/* bad substring matching attribute selector, 
+next line is an error*/
 [*=test] { background: red; }
 
 p { background: lime; }
-[*|*=test] { background: red; }
+
+/* bad 'ends with' substring matching attribute selector,
+next line is an error */
+[$=test] { background: red; }
+
+/* bad 'starts with' substring matching attribute selector,
+next line is an error */
+[^=test] { background: red; }
 
 ::selection { background: lime; }
 :selection { background: red; }
@@ -638,8 +656,8 @@ p::first-letter { background: red; color: yellow; font-size: 4em; }
 
 p { color: green; }
 ..test { background: red; color: yellow; }
-.foo..quux { background: red; color: yellow; }
-.bar. { background: red; color: yellow; }
+.foo .quux { background: red; color: yellow; }
+.bar { background: red; color: yellow; }
 
 p { color: lime; }
 p[class$=""] { color: red; }
@@ -675,3 +693,90 @@ p:not([class*=""]) { color: lime; }
 
 
 
+/******************************************************************************* 
+
+       Namespaces
+
+*******************************************************************************/
+   @NAmespace x "http://www.w3.org/1999/xhtml";
+   x|p { background: lime }
+
+   @namespace "1";
+   @namespace dummy "yummy";
+   @namespace "2";
+   *|t { background:lime }
+   t { background:red }
+   
+   @namespace "1";
+   @namespace dummy "yummy";
+   @namespace "2";
+   *|t2 { background:red }
+   t2 { background:lime }
+   
+   @namespace x "1";
+   @namespace dummy "yummy";
+   @namespace x "2";
+   *|t3 { background:red }
+   x|t3 { background:lime }
+
+   x|p { background: lime }
+
+      @namespace url("http://example.com/");
+   *|t { background:lime }
+   t { background:red }
+
+   @namespace url("http://example.com/");
+   *|t2 { background:lime }
+   t2 { background:red }
+
+   @namespace url("HTTP://example.com/");
+   *|t3 { background:lime }
+   t3 { background:red }
+
+   @namespace url("http://example.COM/");
+   *|t4 { background:lime }
+   t4 { background:red }
+
+   @namespace url("%41");
+   *|t5 { background:lime }
+   t5 { background:red }
+   
+   @namespace url("A");
+   *|t6 { background:lime }
+   t6 { background:red }
+
+   *|test { background:red }
+
+   @namespace url(test-a);
+   test { background:lime }
+
+   @namespace url('test-b');
+   test { background:lime }
+
+   @namespace url("test-c");
+   test { background:lime }
+
+   @namespace 'test-d';
+   test { background:lime }
+
+   @namespace "test-e";
+   test { background:lime }
+
+   @namespace/* test */
+   a
+   url(
+test-a );
+
+   @namespace/**/b/**/url(	'test-b'
+);
+
+   @namespace	c	url("test-c"	
+);
+
+   a|test, b|test, c|test { background:lime }
+   
+   
+   @namespace u\00072l("test");
+   *|test { background:red }
+   test { background: lime }
+   
