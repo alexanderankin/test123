@@ -885,6 +885,14 @@ Chapter 22 of <emphasis>DocBook XSL: The Complete Guide</emphasis> by Bob Stayto
 
 <title>Change log</title> <itemizedlist>
 
+ <listitem><para><emphasis role="bold">Version 2.6</emphasis>
+ Requires jEdit 4.3 final, Java 1.5, ErrorList 1.8, SideKick 0.9, BeautyPlugin 0.3.0 and XercesPlugin 2.9.1.
+ </para>
+     <itemizedlist>
+      <listitem><para>Updated CSS Sidekick to support CSS3. (Dale Anson)</para></listitem>
+     </itemizedlist>
+ </listitem>
+
  <listitem><para><emphasis role="bold">Version 2.5</emphasis>
  Requires jEdit 4.3pre16, Java 1.5, ErrorList 1.4.2, SideKick 0.7.7, BeautyPlugin 0.2.1 and XercesPlugin 2.9.0.
  </para>
