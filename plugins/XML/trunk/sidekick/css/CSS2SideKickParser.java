@@ -27,17 +27,12 @@ package sidekick.css;
 import java.io.StringReader;
 import java.util.*;
 
-import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.msg.PropertiesChanged;
 
 import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
@@ -46,7 +41,7 @@ import sidekick.*;
 import sidekick.util.*;
 
 import sidekick.css.parser.CSSNode;
-import sidekick.css.parser.CSS2Parser;
+import sidekick.css.parser.CSS3Parser;
 
 /**
  * @author    Dale Anson
@@ -60,7 +55,7 @@ public class CSS2SideKickParser extends SideKickParser {
     private int lineOffset = 0;
 
     public CSS2SideKickParser() {
-        super("css");
+        super( "css" );
     }
 
     /**
@@ -69,14 +64,14 @@ public class CSS2SideKickParser extends SideKickParser {
      * style tag so that the node locations can be set correctly.
      */
     public void setLineOffset( int offset ) {
-        if (offset > 0) {
+        if ( offset > 0 ) {
             lineOffset = offset;
         }
     }
 
     public void parse() {
-        if (currentView != null) {
-            parse(currentView.getBuffer(), null);
+        if ( currentView != null ) {
+            parse( currentView.getBuffer(), null );
         }
     }
 
@@ -88,9 +83,9 @@ public class CSS2SideKickParser extends SideKickParser {
      * @param errorSource  where to send errors
      * @return             Description of the Returned Value
      */
-    public SideKickParsedData parse(Buffer buffer, DefaultErrorSource errorSource) {
-        setLineOffset(0);
-        return parse(buffer, buffer.getText(0, buffer.getLength()), errorSource);
+    public SideKickParsedData parse( Buffer buffer, DefaultErrorSource errorSource ) {
+        setLineOffset( 0 );
+        return parse( buffer, buffer.getText( 0, buffer.getLength() ), errorSource );
     }
 
     /**
@@ -103,60 +98,61 @@ public class CSS2SideKickParser extends SideKickParser {
      * @param errorSource  where to send errors
      * @return             Description of the Returned Value
      */
-    public SideKickParsedData parse(Buffer buffer, String text, DefaultErrorSource errorSource) {
+    public SideKickParsedData parse( Buffer buffer, String text, DefaultErrorSource errorSource ) {
 
         String filename = buffer.getPath();
-        SideKickParsedData parsedData = new CSSParsedData(buffer.getName());
+        SideKickParsedData parsedData = new CSSParsedData( buffer.getName() );
         DefaultMutableTreeNode root = parsedData.root;
 
-        StringReader reader = new StringReader(text);
+        StringReader reader = new StringReader( text );
         try {
             // create parser
-            CSS2Parser parser = new CSS2Parser(reader);
+            CSS3Parser parser = new CSS3Parser( reader );
 
             // set line offset, the parser uses this to adjust line numbers in the
             // case of a partial file, like when the stylesheet is embedded inside an
             // html document
-            parser.setLineOffset(lineOffset);
+            parser.setLineOffset( lineOffset );
 
             // set tab size so that the parser can accurately calculate line and
             // column positions
-            parser.setTabSize(buffer.getTabSize());
+            parser.setTabSize( buffer.getTabSize() );
 
             // should proprieatary properties be considered an error?  True or
             // false, the file will parse, if set to true and there are
             // proprietary property names, then an error will be passed to
             // ErrorList.
-            parser.setProprietaryAsError(jEdit.getBooleanProperty(CssSideKickPlugin.OPTION_PREFIX + "showProprietaryAsError"));
+            parser.setProprietaryAsError( jEdit.getBooleanProperty( CssSideKickPlugin.OPTION_PREFIX + "showProprietaryAsError" ) );
 
             // parse the text
             CSSNode ss = parser.styleSheet();
 
             // make a tree
-            addTreeNodes(root, ss);
+            root.setUserObject( ss );
+            addTreeNodes( root, ss );
 
             // need to convert the CSSNodes that are currently the user objects
             // in the tree nodes to SideKick Assets
-            ElementUtil.convert(buffer, root);
+            ElementUtil.convert( buffer, root );
 
             if ( !buffer.isDirty() && errorSource != null ) {
                 /* only handle errors when buffer is saved. Otherwise, there will be a lot
                 of spurious errors shown when code completion is on and the user is in the
                 middle of typing something. */
                 List<ParseError> parseErrors = parser.getParseErrors();
-                for (ParseError pe : parseErrors) {
+                for ( ParseError pe : parseErrors ) {
                     String message = pe.message;
                     Range range = pe.range;
                     // addError is lame -- what if the error spans more than one line?
                     // Need to just deal with it...
-                    if (range.endLine != range.startLine) {
+                    if ( range.endLine != range.startLine ) {
                         range.endColumn = range.startColumn;
                     }
-                    errorSource.addError( ErrorSource.ERROR, filename, range.startLine - 1, range.startColumn - 1, range.endColumn, message );
+                    errorSource.addError( ErrorSource.ERROR, filename, range.startLine, range.startColumn, range.endColumn, message );
                 }
             }
         }
-        catch (Exception e) {
+        catch ( Exception e ) {
             e.printStackTrace();
         }
         finally {
@@ -165,27 +161,27 @@ public class CSS2SideKickParser extends SideKickParser {
         return parsedData;
     }
 
-    private void addTreeNodes(DefaultMutableTreeNode root, CSSNode ss) {
-        if (ss.hasChildren()) {
-            for (Iterator it = ss.getChildren().iterator(); it.hasNext(); ) {
-                CSSNode cssChild = (CSSNode)it.next();
-                if (cssChild != null) {
-                    DefaultMutableTreeNode dmtNode = new DefaultMutableTreeNode(cssChild);
-                    root.add(dmtNode);
-                    addTreeNodeChildren(dmtNode, cssChild);
+    private void addTreeNodes( DefaultMutableTreeNode root, CSSNode ss ) {
+        if ( ss.hasChildren() ) {
+            for ( Iterator it = ss.getChildren().iterator(); it.hasNext(); ) {
+                CSSNode cssChild = ( CSSNode ) it.next();
+                if ( cssChild != null ) {
+                    DefaultMutableTreeNode dmtNode = new DefaultMutableTreeNode( cssChild );
+                    root.add( dmtNode );
+                    addTreeNodeChildren( dmtNode, cssChild );
                 }
             }
         }
     }
 
-    private void addTreeNodeChildren(DefaultMutableTreeNode dmtNode, CSSNode cssNode) {
-        if (cssNode.hasChildren()) {
-            for (Iterator it = cssNode.getChildren().iterator(); it.hasNext(); ) {
-                CSSNode cssChild = (CSSNode)it.next();
-                if (cssChild != null) {
-                    DefaultMutableTreeNode dmtChild = new DefaultMutableTreeNode(cssChild);
-                    dmtNode.add(dmtChild);
-                    addTreeNodeChildren(dmtChild, cssChild);
+    private void addTreeNodeChildren( DefaultMutableTreeNode dmtNode, CSSNode cssNode ) {
+        if ( cssNode.hasChildren() ) {
+            for ( Iterator it = cssNode.getChildren().iterator(); it.hasNext(); ) {
+                CSSNode cssChild = ( CSSNode ) it.next();
+                if ( cssChild != null ) {
+                    DefaultMutableTreeNode dmtChild = new DefaultMutableTreeNode( cssChild );
+                    dmtNode.add( dmtChild );
+                    addTreeNodeChildren( dmtChild, cssChild );
                 }
             }
         }
@@ -199,10 +195,9 @@ public class CSS2SideKickParser extends SideKickParser {
         return true;
     }
 
-    public SideKickCompletion complete(EditPane editPane, int caret) {
-        CompletionRequest cr = new CompletionRequest(editPane, caret);
+    public SideKickCompletion complete( EditPane editPane, int caret ) {
+        CompletionRequest cr = new CompletionRequest( editPane, caret );
         return cr.getSideKickCompletion();
     }
 
 }
-

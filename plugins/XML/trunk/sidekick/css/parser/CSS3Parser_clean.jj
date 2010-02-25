@@ -2,17 +2,115 @@
  *
  * (c) COPYRIGHT MIT and INRIA, 1997.
  * Please first read the full copyright statement in file COPYRIGHT.html
+ * (danson, see below, I pasted it directly into this file.)
  *
  * $Id: CssParser.jj,v 1.71 2010-01-05 13:55:48 ylafon Exp $
  *
- * danson, adapting for jEdit Sidekick CSS parser.  I've removed a lot of things
- * because they aren't necessary in the context of Sidekick.  I also replaced
- * the old collections classes (Vector, Enumeration, etc) with the faster
- * equivalents.  Essentially, I gutted this down to the basic grammar, then
- * rebuilt it.
+ * danson, adapting for jEdit Sidekick CSS parser.  I gutted this down to the 
+ * basic grammar, then made a copy to adapt to SideKick.  This file is meant to
+ * represent a minimal grammar to parse CSS2 and CSS3.  It doesn't actually do
+ * anything other than ensure the parsing works correctly.  Note that DEBUG_PARSER
+ * is set to true, which helps with troubleshooting.
  */
 
+/*
+This is the contents of COPYRIGHT.html, mentioned above.
 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang='en' lang='en'>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="stylesheet" type="text/css" href="http://www.w3.org/StyleSheets/base.css" />
+<title>W3C IPR SOFTWARE NOTICE</title>
+</head>
+<body>
+<h1>W3C<sup>&reg;</sup> SOFTWARE NOTICE AND LICENSE</h1>
+
+<h3>Copyright &copy; 1997-2002 <a href="http://www.w3.org/">World
+Wide Web Consortium</a>, (<a
+href="http://www.lcs.mit.edu/">Massachusetts Institute of
+Technology</a>, <a href="http://www.inria.fr/">Institut National de
+Recherche en Informatique et en Automatique</a>, <a
+href="http://www.keio.ac.jp/">Keio University</a>). All Rights
+Reserved. http://www.w3.org/Consortium/Legal/</h3>
+
+<p>This W3C work (including software, documents, or other related
+items) is being provided by the copyright holders under the
+following license. By obtaining, using and/or copying this work,
+you (the licensee) agree that you have read, understood, and will
+comply with the following terms and conditions:</p>
+
+<p>Permission to use, copy, modify, and distribute this software
+and its documentation, with or without modification,&nbsp; for any
+purpose and without fee or royalty is hereby granted, provided that
+you include the following on ALL copies of the software and
+documentation or portions thereof, including modifications, that
+you make:</p>
+
+<ol>
+<li>The full text of this NOTICE in a location viewable to users of
+the redistributed or derivative work.</li>
+
+<li>Any pre-existing intellectual property disclaimers, notices, or
+terms and conditions. If none exist, a short notice of the
+following form (hypertext is preferred, text is permitted) should
+be used within the body of any redistributed or derivative code:
+"Copyright &copy; [$date-of-software] <a
+href="http://www.w3.org/">World Wide Web Consortium</a>, (<a
+href="http://www.lcs.mit.edu/">Massachusetts Institute of
+Technology</a>, <a href="http://www.inria.fr/">Institut National de
+Recherche en Informatique et en Automatique</a>, <a
+href="http://www.keio.ac.jp/">Keio University</a>). All Rights
+Reserved. http://www.w3.org/Consortium/Legal/"</li>
+
+<li>Notice of any changes or modifications to the W3C files,
+including the date changes were made. (We recommend you provide
+URIs to the location from which the code is derived.)</li>
+</ol>
+
+<p>THIS SOFTWARE AND DOCUMENTATION IS PROVIDED "AS IS," AND
+COPYRIGHT HOLDERS MAKE NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO, WARRANTIES OF
+MERCHANTABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE
+USE OF THE SOFTWARE OR DOCUMENTATION WILL NOT INFRINGE ANY THIRD
+PARTY PATENTS, COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS.</p>
+
+<p>COPYRIGHT HOLDERS WILL NOT BE LIABLE FOR ANY DIRECT, INDIRECT,
+SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF ANY USE OF THE
+SOFTWARE OR DOCUMENTATION.</p>
+
+<p>The name and trademarks of copyright holders may NOT be used in
+advertising or publicity pertaining to the software without
+specific, written prior permission. Title to copyright in this
+software and any associated documentation will at all times remain
+with copyright holders.</p>
+
+<p>____________________________________</p>
+
+<p>This formulation of W3C's notice and license became active on
+August 14 1998 so as to improve compatibility with GPL. This
+version ensures that W3C software licensing terms are no more
+restrictive than GPL and consequently W3C software may be
+distributed in GPL packages. See the <a
+href="copyright-software-19980519.html">older formulation</a> for
+the policy prior to this date. Please see our <a
+href="IPR-FAQ.html">Copyright FAQ</a> for common questions about
+using materials from our site, including specific terms and
+conditions for packages like libwww, Amaya, and Jigsaw. Other
+questions about this notice can be directed to <a
+href="mailto:site-policy@w3.org">site-policy@w3.org</a>.<br />
+&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<address><a href="http://www.w3.org/Help/Webmaster.html">webmaster</a><br />
+ (last updated $Date: 2010-01-14 14:10:27 $)</address>
+
+</body>
+</html>
+
+*/
 
 options {
     IGNORE_CASE = true;
@@ -37,25 +135,12 @@ import sidekick.util.*;
  * A CSS3 parser
  *
  * @author Philippe Le Hegaret and Sijtsche Smeman
- * @author Dale Anson, major modifications for jEdit Sidekick
  * @version Revision: 1.71 (W3C version)
  */
 
 
 public class CSS3Parser {
 
-    private static char hexdigits[] = { '0' ,'1' ,'2' ,'3' ,'4' ,'5' ,'6' ,'7' ,'8' ,'9' ,'a' ,'b' ,'c' ,'d' ,'e' ,'f' } ;
- 
-    /*
-     * Error control
-     */
-    private void addError( ParseException e) {
-        addError(e, "");
-    }
-    private void addError( ParseException e, String skippedText) {
-        // TODO: replace with Sidekick style error handling
-    }
-    
     // For testing.  Usage: java CSS3Parser < inputfile
     public static void main(String[] args) {
         try {
@@ -339,9 +424,6 @@ void styleSheet() :
                     <HTMLSTARTTAG>
                   | <HTMLENDTAG>
                 )
-                {
-                    addError ( new ParseException ("Do not mix html with CSS.")); 
-                }
             ) *
             (
                 charset()
@@ -371,8 +453,12 @@ void styleSheet() :
             afterImportDeclaration()
             <EOF> 
             
-    } catch ( TokenMgrError err ) {
-        addError ( new ParseException ("Unrecognized token."), err.getMessage());
+    } 
+    catch(ParseException pe) {
+        pe.printStackTrace();   
+    }
+    catch ( TokenMgrError err ) {
+        err.printStackTrace();
     }
     {
         System.out.println("----- completed parsing -----");   
@@ -751,14 +837,12 @@ void operator() :
         (
             <S>
         ) *
-
     ) ?
 }
 
 
 char combinator() :
 {
-
     char connector = ' ';
 }
 {
@@ -817,26 +901,22 @@ void ruleSet() :
 {
 }
 {
-    try {
+    selector()
+    (
+        <COMMA> 
+        (
+            <S>
+        ) *
         selector()
-        (
-            <COMMA> 
-            (
-                <S>
-            ) *
-            selector()
-        ) *
-        <LBRACE>
-        (
-            <S>
-        ) *
-        declarations()<RBRACE> 
-        (
-            <S>
-        ) *
-    } catch ( ParseException e ) {
-        // TODO: this captures an exception when parsing negations
-    }
+    ) *
+    <LBRACE>
+    (
+        <S>
+    ) *
+    declarations()<RBRACE> 
+    (
+        <S>
+    ) *
 }
 
 void declarations() :
@@ -862,14 +942,10 @@ void selector() :
 {
 }
 {
-    try {
-        simple_selector()
-        (
-            combinator() simple_selector()
-        ) *
-    } catch ( ParseException e ) {
-        // TODO: this captures an exception when parsing negations
-    }
+    simple_selector()
+    (
+        combinator() simple_selector()
+    ) *
 }
 
 /**
@@ -1011,11 +1087,12 @@ void negation() :
       | _class()
       | attrib()
       | pseudo()
+      | negation()
     )
     (
         <S>
     ) *
-    <LPARAN>
+    <LPARAN> 
 }
 
 
@@ -1343,193 +1420,5 @@ JAVACODE String skip_to_matching_brace() {
         getNextToken();
     }
     return s.toString();
-}
-
-/*
- * @@HACK
- * I can't insert a token into the tokens flow.
- * It's jj_consume_token implementation dependant! :-(
- */
-JAVACODE void rejectToken( Token t) {
-
-    Token fakeToken = new Token ();
-    t.next = token;
-    fakeToken.next = t;
-    token = fakeToken;
-}
-
-JAVACODE String convertStringIndex( String s, int start, int len, boolean escapeFirst) {
-
-
-    int index = start;
-    int t;
-    int maxCount = 0;
-    if ( (start == 0) && (len == s.length()) && (s.indexOf('\\') == - 1)) {
-
-
-        return s;
-    }
-    StringBuilder buf = new StringBuilder (len);
-
-    while ( index < len) {
-
-
-        char c = s.charAt(index);
-        if ( c == '\\') {
-
-
-            if ( ++ index < len) {
-
-
-                c = s.charAt(index);
-                switch ( c ) {
-                    case '0': case '1': case '2': case '3': case '4':
-                    case '5': case '6': case '7': case '8': case '9':
-                    case 'a': case 'b': case 'c': case 'd': case 'e': case 'f':
-                    case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':
-                        int numValue = Character.digit(c, 16);
-                        int count = 1;
-                        if ( maxCount == 0) {
-
-
-                            maxCount = (getCssVersion().equals("css1") ? 4 : 6);
-                        }
-                        while ( index + 1 < len) {
-
-
-                            c = s.charAt( index + 1);
-                            t = Character.digit(c, 16);
-                            if ( t != - 1 && count++ < maxCount) {
-
-
-                                numValue = (numValue << 4) | t;
-                                index++;
-                            } else {
-
-
-                                if ( c == ' ' || c == '\t' || c == '\n' || c == '\f' ) {
-
-
-                                    // skip the latest white space
-                                    index++;
-                                } else if ( c == '\r' ) {
-
-
-                                    index++;
-                                    // special case for \r\n
-                                    if ( index + 1 < len) {
-
-
-                                        if (s.charAt ( index + 1) == '\n') {
-
-
-                                            index++;
-                                        }
-                                    }
-                                }
-                                break;
-                            }
-                        }
-                        if ( ! escapeFirst && numValue < 255 && numValue > 31) {
-
- 
-                            // [a-z]
-                            // [A-Z]
-                            // [0-9]
-                            // _
-                            // -
-                            if ( ! ( (numValue > 96 && numValue < 123) || (numValue > 64 && numValue < 91) || (numValue > 47 && numValue < 58) || (numValue == 95) || (numValue == 45) ) ) {
-
-
-                                buf.append('\\');
-                            }
-                            buf.append((char) numValue);
-                            break;
-                        }
-                        char b[] = new char [maxCount];
-                        t = maxCount;
-                        while ( t > 0) {
-
-
-                            b[ --t] = hexdigits[ numValue & 0xF];
-                            numValue >>>= 4;
-                        }
-                        buf.append('\\').append(b);
-                        break;
-                    case '\n':
-                    case '\f':
-                        break;
-                    case '\r':
-                        if ( index + 1 < len) {
-
-
-                            if (s.charAt ( index + 1) == '\n') {
-
-
-                                index++;
-                            }
-                        }
-                        break;
-                    case '-' : case '_' : case 'g' : case 'G' :
-                    case 'h' : case 'H' : case 'i' : case 'I' :
-                    case 'j' : case 'J' : case 'k' : case 'K' :
-                    case 'l' : case 'L' : case 'm' : case 'M' :
-                    case 'n' : case 'N' : case 'o' : case 'O' :
-                    case 'p' : case 'P' : case 'q' : case 'Q' :
-                    case 'r' : case 'R' : case 's' : case 'S' :
-                    case 't' : case 'T' : case 'u' : case 'U' :
-                    case 'v' : case 'V' : case 'w' : case 'W' :
-                    case 'x' : case 'X' : case 'y' : case 'Y' :
-                    case 'z' : case 'Z' : 
-                        buf.append(c);
-                        break;
-                    default:
-                        buf.append('\\').append(c);
-                }
-            } else {
-
-                throw new ParseException ("invalid string");
-            }
-        } else {
-
-            buf.append(c);
-        }
-        escapeFirst = false;
-        index++;
-    }
-    return buf.toString();
-}
-
-JAVACODE String convertIdent( String s) {
-
-    return convertStringIndex(s, 0, s.length(), false);
-}
-
-JAVACODE String convertClassIdent( String s) {
-
-    return convertStringIndex(s, 0, s.length(), true);
-}
-
-JAVACODE String convertString( String s) {
-
-    return convertStringIndex(s, 0, s.length(), false);
-}
-
-JAVACODE String hexEscapeFirst( String s) {
-
-    StringBuilder sb = new StringBuilder ();
-    sb.append('\\').append(Integer.toString(s.charAt(0), 16));
-    char c = s.charAt(1);
-    if ( ( (c >= '0') && (c <= '9')) || ( (c >= 'A') && (c <= 'F')) || ( (c >= 'a') && (c <= 'f'))) {
-
-        sb.append(' ');
-    }
-    sb.append(s.substring(1));
-    return sb.toString();
-}
-
-JAVACODE String getCssVersion() {
-    // TODO: need to be able to determine the css version somehow
-    return "css2"; 
 }
 

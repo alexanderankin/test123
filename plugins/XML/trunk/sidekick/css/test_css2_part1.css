@@ -1,7 +1,7 @@
 /* CSS2 compatibility test file -- I made this up by copying and pasting a
 bunch of css example code from the w3c css test suite.  There is a lot of
 repetition, but I think I've got most (all?) use cases covered for the CSS2
-specification. */
+specification.  This should parse without error. */
 
 @import url(imptest1.css);
 @import "imptest1a.css";
@@ -242,3 +242,4 @@ BODY {font-size: 12px;}
 .nine {font: oblique normal 700 18px/200% sans-serif;}
 .ten {font: normal 400 80%/2.5 sans-serif;}
 SPAN.color {background-color: silver;}
+
