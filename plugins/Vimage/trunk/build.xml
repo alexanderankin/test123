@@ -59,6 +59,7 @@
 				<include name="**/*.html"/>
 				<include name="**/*.bsh"/>
 				<include name="defaults/*"/>
+				<include name="thozi_daClick.wav"/>
 				<exclude name=".bzr/**"/>
 			</fileset>
 		</jar>

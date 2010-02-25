@@ -48,6 +48,17 @@ import org.gjt.sp.jedit.bsh.BshMethod;
 import org.gjt.sp.jedit.bsh.This;
 import org.gjt.sp.jedit.Registers;
 
+// Imports for clicking keys
+import java.util.Enumeration;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipEntry;
+import java.io.File;
+import java.io.InputStream;
+import javax.sound.sampled.*;
+import javax.swing.Timer;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
 class InvokeBufferListener extends BufferAdapter
 {
     public boolean buffer_changed;
@@ -109,6 +120,9 @@ public class VimageInputHandler extends DefaultInputHandler
     protected View view;
     protected InputHandler old_handler;
 
+    protected Clip clip;
+    protected boolean play_clip;
+    
     public VimageInputHandler(View view_, VimageMap map_)
     {
         super(view_);
@@ -129,6 +143,8 @@ public class VimageInputHandler extends DefaultInputHandler
         this.iterating = false;
         TextArea text_area = view.getTextArea();
         setBlockCaret(true);
+        load_clip();
+        play_clip = true;
         try {
             this.namespace.setVariable("mode", this);
         } catch (org.gjt.sp.jedit.bsh.UtilEvalError ex) {
@@ -237,6 +253,17 @@ public class VimageInputHandler extends DefaultInputHandler
                 Log.log(Log.DEBUG, this, ex);
             }
             return true;
+        }
+        if (base_mode.equals("imap") && play_clip) {
+            play_clip = false;
+            clip.setFramePosition(0);
+            clip.start();
+            new Timer(500, new ActionListener() {
+                public void actionPerformed(ActionEvent evt)
+                {
+                    play_clip = true;
+                }
+            }).start();
         }
         if (mode.equals("imap") || ((key.modifiers != null) && !key.modifiers.equals(""))) {
             return this.old_handler.handleKey(key, dry_run);
@@ -550,6 +577,42 @@ public class VimageInputHandler extends DefaultInputHandler
             buf.append(op.key.input);
         }
         b.insert(view.getTextArea().getCaretPosition(), buf.toString());
+    }
+    
+    protected void load_clip()
+    {
+        String jar_path = jEdit.getSettingsDirectory() + File.separator + "jars" + File.separator + "Vimage.jar";
+        org.gjt.sp.jedit.PluginJAR jar = jEdit.getPluginJAR(jar_path);
+        // Load default mappings from the plugin jar.
+        try {
+            ZipFile zip = jar.getZipFile();
+            Enumeration entries = zip.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = (ZipEntry)entries.nextElement();
+                if (!entry.isDirectory()) {
+                    String path = entry.getName();
+                    if (path.equals("thozi_daClick.wav")) {
+                        InputStream input = zip.getInputStream(entry);
+                        AudioInputStream stream = null;
+                        try {
+                            stream = AudioSystem.getAudioInputStream(input);
+                        } catch (Exception ex) {
+                            Log.log(Log.ERROR, ex, ex);
+                        }
+                        AudioFormat format = stream.getFormat();
+                        DataLine.Info info = new DataLine.Info(Clip.class, format);
+                        try {
+                            clip = (Clip)AudioSystem.getLine(info);
+                            clip.open(stream);
+                        } catch (Exception ex) {
+                            Log.log(Log.ERROR, ex, ex);
+                        }
+                    }
+                }
+            }
+        } catch (java.io.IOException ex) {
+            Log.log(Log.DEBUG, ex, ex);
+        }
     }
 }
 
