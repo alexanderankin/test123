@@ -93,7 +93,7 @@ xslt.source.select.small-icon=22x22/actions/document-open.png
 
 xslt.stylesheets.label=Stylesheets:
 xslt.stylesheets.buffer=Current buffer
-xslt.stylesheets.file=File
+xslt.stylesheets.file=File(s)
 
 xslt.stylesheets.radioselect.name=radioButtons
 xslt.stylesheets.radioselect.short-desc=Select XSLT
@@ -151,8 +151,19 @@ xslt.transform.message.failure=Transformation failed to complete.
 xslt.transform.message.success=Transform completed, time taken {0}sec
 xslt.transform.indent-amount=2
 
-xslt.result.label=Result:
-xslt.result.prompt=Please name the result document
+xslt.result.label=Result Document:
+xslt.result.browse.prompt=Please name the result document
+
+xslt.result.buffer=New Untitled Buffer
+xslt.result.file=File
+
+xslt.result.radioselect.name=radioButtons
+xslt.result.radioselect.short-desc=Select result Document
+
+xslt.result.select.name=Select result
+xslt.result.select.short-desc=Select Result Document
+xslt.result.select.small-icon=22x22/actions/document-open.png
+
 
 # open the results by default
 xslt.open-result=true
@@ -175,13 +186,19 @@ xpath.expression.history-length=10
 xpath.evaluate.button.tooltip=Evaluate XPath
 xpath.evaluate.button.icon=/xslt/icons/Evaluate.png
 
-xpath.select.label=Select XML Input:
-xpath.select.buffer=Buffer
-xpath.select.file=File
-xpath.browse.label=Source:
-xpath.browse.button.icon=22x22/actions/document-open.png
-xpath.browse.button.tooltip=Select source from file
-xpath.browse.prompt=Please select a source document
+xpath.source.label=Select XML Input:
+xpath.source.buffer=Buffer
+xpath.source.file=File
+        
+xpath.source.select.name=Select source
+xpath.source.select.short-desc=Select source XML
+xpath.source.select.small-icon=22x22/actions/document-open.png
+
+xpath.source.browse.prompt=Please select a source document
+
+xpath.source.radioselect.name=radioButtons
+xpath.source.radioselect.short-desc=Select source XML
+
 
 xpath.result.data-type.label=Data type of result:
 xpath.result.data-type.node-set=node-set of size {0}

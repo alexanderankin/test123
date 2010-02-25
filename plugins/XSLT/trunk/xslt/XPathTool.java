@@ -96,7 +96,7 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 		ActionListener, DefaultFocusComponent, ItemListener {
 
 	private View view;
-	private final XPathInputSelectionPanel inputSelectionPanel;
+	private final BufferOrFileVFSSelector inputSelectionPanel;
 	private final XPathExpressionPanel expressionPanel;
 	private final EvaluatePanel evaluatePanel = new EvaluatePanel();
 	private final JTextField dateTypeField = new JTextField();
@@ -112,7 +112,7 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 		this.view = view;
 
 		expressionPanel = new XPathExpressionPanel(view);
-		inputSelectionPanel = new XPathInputSelectionPanel(view);
+		inputSelectionPanel = new BufferOrFileVFSSelector(view,"xpath.source");
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(new JLabel(jEdit.getProperty("xpath.result.data-type.label")), BorderLayout.NORTH);
 		dateTypeField.setName("xpath.result.data-type");
@@ -215,7 +215,7 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 		DocumentCache docCache = null;
 
 		if (inputSelectionPanel.isFileSelected()) { //take input from file
-			path = inputSelectionPanel.getSourceFieldText();
+			path = inputSelectionPanel.getSourceFile();
 			return DocumentCache.getFromCache(path);
 		} else { // take input from active buffer
 			return DocumentCache.getFromCache(view.getBuffer());

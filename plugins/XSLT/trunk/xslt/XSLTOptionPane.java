@@ -25,7 +25,6 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JTextArea;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.BadLocationException;
-import javax.swing.JScrollPane;
 import javax.swing.BorderFactory;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;

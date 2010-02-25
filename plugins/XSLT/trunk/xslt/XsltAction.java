@@ -41,12 +41,11 @@ import java.net.URL;
  * @author Robert McKinnon - robmckinnon@users.sourceforge.net
  */
 public abstract class XsltAction extends AbstractAction {
+	private String actionType;
 
-
-  public XsltAction() {
-    String actionType = getActionName();
-    actionType = "xslt." + actionType;
-
+  public XsltAction(String actionType) {
+    this.actionType = actionType;
+    
     String actionName = jEdit.getProperty(actionType + ".name");
     String shortcut = jEdit.getProperty(actionType + ".shortcut");
     String shortDescription = jEdit.getProperty(actionType + ".short-desc");
@@ -74,7 +73,7 @@ public abstract class XsltAction extends AbstractAction {
   public JButton getButton() {
     JButton button = new JButton(this);
     button.setText("");
-    button.setName(getActionName());
+    button.setName(actionType);
     Dimension dimension = getButtonDimension();
 
     button.setMinimumSize(dimension);
@@ -120,8 +119,4 @@ public abstract class XsltAction extends AbstractAction {
 
     return menu;
   }
-
-
-  protected abstract String getActionName();
-
 }
