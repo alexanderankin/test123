@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+
+<!--
+  - valid file
+  - the schema is borked, to test the new behaviour of ErrorList.
+    In relation to plugin bug #1614723 where the escaped url
+    was used in the error source, thus preventing someone from
+    opening the schema file (looking for file:///C:/directory%20with%space/foo.dtd)
+    Now that the original URL is set as SystemID when resolving sources,
+    the bug is gone
+  -->
+<ACTIONS
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:noNamespaceSchemaLocation="actions.xsd"
+   >
+   
+    <ACTION NAME="xmlindenter.indent">
+        <CODE>xml.indent.XmlIndenterPlugin.indentXml(view);</CODE>
+    </ACTION>
+    <ACTION NAME="xmlindenter.toggleSplitAttributes">
+        <CODE>xml.indent.XmlIndenterPlugin.toggleSplitAttributes(view);</CODE>
+    </ACTION>
+	
+</ACTIONS>

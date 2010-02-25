@@ -1,0 +1,23 @@
+<!-- attached to bug #1083903 XML Insert element tree bug (imported DTD)
+	 https://sourceforge.net/tracker/index.php?func=detail&aid=1083903&group_id=588&atid=565475
+-->
+
+<!ELEMENT wallispage (introduction*)>
+<!ATTLIST wallispage id CDATA #IMPLIED>
+
+
+<!-- ============= XHTML+MathML =============== -->
+<!-- original system id was http://www.w3.org/TR/MathML2/dtd/xhtml-math11-f.dtd -->
+<!ENTITY % xhtml_mathml  PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN" "xhtml-math11-f.dtd">
+<!-- this later DTD doesn't exhibit the problem :
+    <!ENTITY % xhtml_mathml  PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN" "http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg.dtd">--> 
+%xhtml_mathml; 
+<!-- metadata -->
+
+<!-- Limited to one block to encourage use of other semantic elements -->
+<!ELEMENT introduction (block) >
+<!ATTLIST introduction for CDATA #IMPLIED
+               id CDATA #IMPLIED>
+
+<!ELEMENT block ((%Block.mix;)* ) > 
+

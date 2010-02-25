@@ -1,0 +1,22 @@
+JavaScriptSidekick change log
+
+0.1
+  initial release
+
+0.2
+  don't remember
+
+0.3
+  renamed "Class" to "(constructor)"
+  introduced the "Class.prototype.method = function()" paradigma
+  renamed some variables starting with "_" to be more descriptive
+
+0.4
+  changed parser regex patterns to make the plugin more compatible
+  with namespace/package emulation in JavaScript like so:
+
+  my.test.namespace.MyClass = function ...
+  my.test.namespace.MyClass.prototype.foobar = function ...
+  my.test.namespace.MyClass.myStaticMethod = function ...
+  
+  (Thanks to David Padgett <david.padgett@invsun.com>)
