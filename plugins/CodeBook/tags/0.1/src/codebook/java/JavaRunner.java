@@ -22,7 +22,7 @@ import org.gjt.sp.jedit.TextUtilities;
  * This class is called when the keystroke is activated on a java (or similar) file
  */
 public class JavaRunner {
-	public static final String dir = CodeBookPlugin.HOME+"java/";
+	public static final String dir = CodeBookPlugin.HOME+"java"+File.separator;
 	public static enum Trigger { DOT, PARENTHESE, NONE };
 	// run() {{{
 	/**
@@ -41,6 +41,9 @@ public class JavaRunner {
 		// See if it's a class or nested class first
 		int beg = TextUtilities.findWordStart(text, pos-1, "._(");
 		String cls = text.substring(beg, pos);
+		// Make sure that completion in scenario SOMETHING(CLASS.[complete] works
+		while (cls.startsWith("(")) cls = cls.substring(1);
+		// Determine if there's a "." or "(" trigger
 		Trigger trigger = Trigger.NONE;
 		if (cls.endsWith(".")) {
 			trigger = Trigger.DOT;
@@ -51,7 +54,30 @@ public class JavaRunner {
 			cls = cls.substring(0, cls.length()-1);
 			pos--;
 		}
-		String[] pkgs = getPackages(cls);
+		String[] info = getClassAndPackage(cls);
+		String[] pkgs = null;
+		if (info == null) pkgs = getPackages(cls);
+		else  {
+			pkgs = new String[] { info[0] };
+			cls = info[1];
+			if (cls.length() == 0) {
+				// The text at the cursor is simply a package name, so display available classes
+				try {
+					File dat = new File(dir+"api-pkg"+File.separator+pkgs[0]);
+					ObjectInputStream in = new ObjectInputStream(new FileInputStream(dat));
+					ArrayList<String> list = (ArrayList<String>) in.readObject();
+					ArrayList<String[]> complete = new ArrayList<String[]>();
+					for (int i = 0; i < list.size(); i++) {
+						complete.add(new String[] { list.get(i), "Classes in "+pkgs[0] });
+					}
+					new codebook.gui.Popup(textArea, complete);
+				} catch (Exception e) {
+					e.printStackTrace();
+				} finally {
+					return;
+				}
+			}
+		}
 		if (pkgs == null) {
 			// Variable?
 			beg = TextUtilities.findWordStart(text, pos-1, "_");
@@ -60,8 +86,15 @@ public class JavaRunner {
 			HashMap<String, String> scopeVars = BufferParser.getScopeVars(textArea);
 			if ((cls = scopeVars.get(var)) != null) {
 				// Found it within the scope
-				Log.log(Log.DEBUG,JavaRunner.class,"Found it as class "+cls);
-				pkgs = getPackages(cls);
+				Log.log(Log.DEBUG,JavaRunner.class,"Scope var class = "+cls);
+				info = getClassAndPackage(cls);
+				Log.log(Log.DEBUG,JavaRunner.class,"Info = "+info);
+				if (info == null) pkgs = getPackages(cls);
+				else {
+					pkgs = new String[] { info[0] };
+					cls = info[1];
+					Log.log(Log.DEBUG,JavaRunner.class,"Package = "+pkgs[0]+", Class = "+cls);
+				}
 				if (pkgs == null) return;
 				if (trigger == Trigger.DOT) {
 					ApiParser.JavaClass ob = getClassOb(textArea, cls, pkgs);
@@ -145,12 +178,33 @@ public class JavaRunner {
 			ApiParser.JavaClass ob = (ApiParser.JavaClass) in.readObject();
 			return ob;
 		} catch (Exception e) {
-			Log.log(Log.ERROR,JavaRunner.class,
-				"Error loading class object "+cls+": "+e+" ("+e.getMessage()+")");
+			e.printStackTrace();
 			return null;
 		}
 	}
 	// }}} getClassOb()
+	// getClassAndPackage() {{{
+	/**
+	 * If the string is a full class name, return [pkg, class]. Otherwise, return null
+	  @param cls the class name to test
+	 */
+	public static String[] getClassAndPackage(String cls) {
+		String[] tokens = cls.split("\\.");
+		if (tokens.length == 1) return null;
+		if (new File(dir+"api-pkg"+File.separator+cls).exists()) {
+			return new String[] { cls, "" };
+		}
+		String pkg = cls.substring(0, cls.lastIndexOf("."));
+		for (int i = tokens.length-1; i >= 0; i--) {
+			File pkgFile = new File(dir+"api-pkg"+File.separator+pkg);
+			if (pkgFile.exists()) {
+				return new String[] { pkg, cls.substring(pkg.length()+1) };
+			}
+			pkg = pkg.substring(0, pkg.length()-(tokens[i].length()+1));
+		}
+		return null;
+	}
+	// }}} getClassAndPackage()
 	// getPackages() {{{
 	/**
 	 * Returns an arraylist of valid package names for the given class, or null if not a valid class
@@ -193,7 +247,7 @@ public class JavaRunner {
 				} catch (Exception e) {}
 			}
 			if (fdir == null || !fdir.exists()) {
-				path = dir+"api"+s+cls;
+				path = dir+"api-cls"+s+cls;
 				fdir = new File(path);
 			}
 			if (fdir == null || !fdir.exists()) return null;
@@ -210,7 +264,9 @@ public class JavaRunner {
 	public static void complete(JEditTextArea textArea, String complete) {
 		// If complete has parameters, modify string for use with superabbrevs
 		int p1 = complete.indexOf("(");
+		int col = complete.lastIndexOf(":");
 		if (p1 != -1) {
+			boolean constructor = (col == -1);
 			int p2 = complete.indexOf(")", p1);
 			if (p2 != -1) {
 				String params = complete.substring(p1+1, p2);
@@ -240,11 +296,13 @@ public class JavaRunner {
 				} else {
 					if (params.length()>0) new_params = "${1:"+params+"}";
 				}
-				complete = complete.substring(0, p1+1)+new_params+")";
+				if (constructor) complete = new_params+")";
+				else complete = complete.substring(0, p1+1)+new_params+")";
 			}
-		} else {
-			complete = complete.substring(0, complete.lastIndexOf(":")).trim();
+		} else if (col != -1) {
+			complete = complete.substring(0, col).trim();
 		}
+		// If it's a constructor and has no return type, don't insert the class' name
 		superabbrevs.SuperAbbrevs.expandAbbrev(textArea.getView(), complete, null);
 	}
 	// }}} complete()

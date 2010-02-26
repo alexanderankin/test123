@@ -13,6 +13,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.io.InputStreamReader;
 import java.util.Scanner;
+import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.regex.Pattern;
@@ -27,6 +28,7 @@ public class ApiParser {
 	// NOTE: This modifier list may not be complete
 	public static final String[] MODIFIERS = new String[] { "final", "synchronized" };
 	public static final String[] VISIBILITY = new String[] { "public", "protected", "private" };
+	private static HashMap<String, ArrayList<String>> packageLists;
 	// parseAPI() {{{
 	/**
 	 * Parses an entire API by reading through the class list and calling parse() on each class
@@ -55,6 +57,7 @@ public class ApiParser {
 	 	 		 	 	 }
 	 	 		 	 	 int total = clsList.size();
 	 	 		 	 	 int i = 1;
+	 	 		 	 	 packageLists = new HashMap<String, ArrayList<String>>();
 	 	 		 	 	 for (final String cls : clsList) {
 	 	 		 	 	 	 view.getStatus().setMessage("("+i+" / "+total+") Parsing "+cls+"...");
 							 parse(cls, remote);
@@ -63,7 +66,22 @@ public class ApiParser {
 	 	 		 	 } catch (Exception e) {
 	 	 		 	 	 // Unable to parse API
 	 	 		 	 	 GUIUtilities.error(view, "codebook.msg.error-parsing-api", null);
+	 	 		 	 	 packageLists = null;
 	 	 		 	 	 e.printStackTrace();
+	 	 		 	 }
+	 	 		 	 try {
+	 	 		 	 	 File pkgsFolder = new File(JavaRunner.dir+"api-pkg");
+	 	 		 	 	 if (!pkgsFolder.exists()) pkgsFolder.mkdir();
+	 	 		 	 	 for (String key : packageLists.keySet()) {
+	 	 		 	 	 	 File dat = new File(JavaRunner.dir+"api-pkg"+File.separator+key);
+							 ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(dat));
+							 out.writeObject(packageLists.get(key));
+							 out.close();
+						 }
+	 	 		 	 } catch (Exception e) {
+	 	 		 	 	 e.printStackTrace();
+	 	 		 	 } finally {
+	 	 		 	 	 packageLists = null;
 	 	 		 	 }
 	 	 		 	 view.getStatus().setMessageAndClear("Api parsing complete");
 	 	 		 }
@@ -103,6 +121,10 @@ public class ApiParser {
 			//view.getStatus().setMessage("Name: "+name);
 			jcl.setPackage(pkg);
 			jcl.setName(name);
+			if (packageLists.get(pkg) == null) {
+				packageLists.put(pkg, new ArrayList<String>());
+			}
+			packageLists.get(pkg).add(name);
 			//view.getStatus().setMessage(name);
 		}
 		// Parse field data
@@ -324,7 +346,7 @@ public class ApiParser {
 			int lt = -1;
 			if ((lt = _name.indexOf("<")) != -1) _name = _name.substring(0, lt);
 			String s = File.separator;
-			String classDir = codebook.CodeBookPlugin.HOME+"java"+s+"api"+s+_name+s;
+			String classDir = JavaRunner.dir+"api-cls"+s+_name+s;
 			Log.log(Log.DEBUG,ApiParser.class,"classdir = "+classDir);
 			try {
 				File classDirFile = new File(classDir);
