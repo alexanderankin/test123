@@ -1,6 +1,7 @@
 package codebook.java;
 // imports {{{
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.util.Log;
 
 import java.net.URL;
@@ -42,8 +43,8 @@ public class ApiParser {
 	 	 		 	 try {
 	 	 		 	 	 String classlist = readPage(path+"allclasses-frame.html", remote);
 	 	 		 	 	 if (classlist == null) {
-	 	 		 	 	 	view.getStatus().setMessage("Invalid API target. Ensure that the URL or file path is correct.");
-	 	 		 	 	 	return; 
+	 	 		 	 	 	 GUIUtilities.error(view, "codebook.msg.invalid-api-target", null);
+	 	 		 	 	 	 return; 
 	 	 		 	 	 }
 	 	 		 	 	 Pattern p = Pattern.compile("<A HREF=\".*?>.*?</A>");
 	 	 		 	 	 Matcher m = p.matcher(classlist);
@@ -60,7 +61,7 @@ public class ApiParser {
 	 	 		 	 	 }
 	 	 		 	 } catch (Exception e) {
 	 	 		 	 	 // Unable to parse API
-	 	 		 	 	 view.getStatus().setMessage("Ran into an error parsing api.");
+	 	 		 	 	 GUIUtilities.error(view, "codebook.msg.error-parsing-api", null);
 	 	 		 	 	 e.printStackTrace();
 	 	 		 	 }
 	 	 		 	 view.getStatus().setMessageAndClear("Api parsing complete");

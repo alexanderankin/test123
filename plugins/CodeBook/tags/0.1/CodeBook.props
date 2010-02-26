@@ -35,6 +35,12 @@ codebook.msg.download-api.title=Download Java Api
 codebook.msg.download-api.message=Api Root URL:
 codebook.msg.parse-remote-api.title=Parse Remote Api
 codebook.msg.parse-remote-api.message=Api Root URL:
+codebook.msg.invalid-api-target.title=Api Not Found
+codebook.msg.invalid-api-target.message=Make sure you selected the correct folder or \
+	entered the correct URL.
+codebook.msg.error-parsing-api.title=Parse Error
+codebook.msg.error-parsing-api.message=An error was encountered while parsing. Check the \
+	Activity Log for details.
 # }}} Messages
 
 # Menu {{{
