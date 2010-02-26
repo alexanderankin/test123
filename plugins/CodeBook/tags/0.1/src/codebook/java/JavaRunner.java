@@ -56,9 +56,11 @@ public class JavaRunner {
 			// Variable?
 			beg = TextUtilities.findWordStart(text, pos-1, "_");
 			String var = text.substring(beg, pos);
+			Log.log(Log.DEBUG,JavaRunner.class,"Search for var: "+var);
 			HashMap<String, String> scopeVars = BufferParser.getScopeVars(textArea);
 			if ((cls = scopeVars.get(var)) != null) {
 				// Found it within the scope
+				Log.log(Log.DEBUG,JavaRunner.class,"Found it as class "+cls);
 				pkgs = getPackages(cls);
 				if (pkgs == null) return;
 				if (trigger == Trigger.DOT) {
@@ -156,14 +158,18 @@ public class JavaRunner {
 	 * @return an arraylist of valid packages, or null if the class was not found
 	 */
 	public static String[] getPackages(String cls) {
-		ArrayList<String> pkgs = new ArrayList<String>();
-		File classObDir = new File(getClassObjectDir(cls));
-		if (classObDir == null) return null;
-		String[] pkgArray = classObDir.list();
-		for (String s : pkgArray) {
-			pkgs.add(s);
+		try {
+			ArrayList<String> pkgs = new ArrayList<String>();
+			File classObDir = new File(getClassObjectDir(cls));
+			if (classObDir == null) return null;
+			String[] pkgArray = classObDir.list();
+			for (String s : pkgArray) {
+				pkgs.add(s);
+			}
+			return pkgs.toArray(pkgArray);
+		} catch (Exception e) {
+			return null;
 		}
-		return pkgs.toArray(pkgArray);
 	}
 	// }}} getPackages()
 	// getClassObjectDir() {{{
