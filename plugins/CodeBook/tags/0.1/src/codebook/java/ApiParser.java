@@ -43,6 +43,7 @@ public class ApiParser {
 	 	 		 	 try {
 	 	 		 	 	 String classlist = readPage(path+"allclasses-frame.html", remote);
 	 	 		 	 	 if (classlist == null) {
+	 	 		 	 	 	 view.getStatus().setMessage("");
 	 	 		 	 	 	 GUIUtilities.error(view, "codebook.msg.invalid-api-target", null);
 	 	 		 	 	 	 return; 
 	 	 		 	 	 }
