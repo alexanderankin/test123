@@ -1,6 +1,8 @@
 import codebook.java.ApiDownloader;
 public class CodeBookPluginTests {
 	public static void main(String[] args) {
-		codebook.java.ApiParser.parseAPI("/usr/share/java/api");
+		String[] info = codebook.java.JavaRunner.getClassAndPackage("java.lang.String");
+		if (info == null) System.out.println("Sorry.");
+		System.out.println(info[0]+", "+info[1]);
 	}
 }

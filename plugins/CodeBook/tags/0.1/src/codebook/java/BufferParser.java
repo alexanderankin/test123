@@ -24,7 +24,7 @@ public class BufferParser {
 		int i = textArea.getCaretLine();
 		String line = textArea.getLineText(i);
 		int space = StandardUtilities.getLeadingWhiteSpace(line);
-		final String regex = "^\\w+?(<.*?>)*?\\s+?\\w*?(\\s*?=.*?|\\s*?;)";
+		final String regex = "^[\\w\\.]+?(<.*?>)*?\\s+?\\w*?(\\s*?=.*?|\\s*?;)";
 		while (StandardUtilities.getLeadingWhiteSpace(line = textArea.getLineText(i)) == space) {
 			// Parse this line
 			line = line.trim();
