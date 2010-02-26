@@ -60,7 +60,7 @@ public class CodeBookPlugin extends EditPlugin {
 				codebook.java.JavaRunner.run(textArea);
 			}
 		} catch (Exception e) {
-			Log.log(Log.ERROR,CodeBookPlugin.class,"Error running. "+e+" ("+e.getMessage()+")");
+			e.printStackTrace();
 		}
 	}
 	public static void complete(JEditTextArea textArea, String complete) {
