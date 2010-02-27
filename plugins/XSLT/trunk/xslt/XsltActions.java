@@ -24,10 +24,19 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.IOUtilities;
+import org.gjt.sp.jedit.gui.DockableWindowManager;
+import org.gjt.sp.jedit.MiscUtilities;
 
 import javax.swing.JOptionPane;
+import java.util.Hashtable;
 
 import org.xml.sax.SAXParseException;
+
+import java.net.URL;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ByteArrayOutputStream;
 
 /**
  * Contains static action methods for XSLT plugin
@@ -116,5 +125,62 @@ public class XsltActions {
   	  view.getStatus().setMessage(message);
   }
 
-
+  public static void initThreeWayMode(View view){
+  	  if(view.getEditPanes().length != 3)
+  	  {
+  	  	  InputStream in = null;
+  	  	  String xmlTemplate = "<?xml version=\"1.0\" ?>";
+  	  	  String xslTemplate = null;
+  	  	  try{
+  	  	  	  URL xslTemplateURL;
+			  if(XSLTUtilities.getXSLTProcessorVersion()==1) {
+				  xslTemplateURL = XSLTPlugin.class.getResource("/templates/xslt-1.0.vm");
+			  } else {
+				  xslTemplateURL = XSLTPlugin.class.getResource("/templates/xslt-2.0.vm");
+			  }
+  	  	  	  
+			  in = xslTemplateURL.openStream();
+			  ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
+  	  	  	  
+			  if(IOUtilities.copyStream(1024,null,in,out,false)){
+			  	  xslTemplate = out.toString();
+			  }
+			  
+  	  	  }catch(IOException ioe){
+  	  	  	  Log.log(Log.ERROR,XsltActions.class,"error copying template");
+  	  	  	  Log.log(Log.ERROR,XsltActions.class,ioe);
+		  }finally{
+		  	  if(in != null){
+				  try{
+					  in.close();
+				  }catch(IOException ioe){
+					  Log.log(Log.ERROR,XsltActions.class,"error copying template");
+					  Log.log(Log.ERROR,XsltActions.class,ioe);
+				  }
+			  }
+		  }
+  	  	  String dir = MiscUtilities.getParentOfPath(view.getBuffer().getPath());
+  	  	  // set up 3 untitled buffers
+  	  	  view.unsplit();
+  	  	  view.splitHorizontally();
+  	  	  view.splitVertically();
+  	  	  EditPane[] editPanes = view.getEditPanes();
+  	  	  String[]modes = { "xml", "xsl", "text" };
+  	  	  //String[]names = { "1-input.xml", "1-transform.xsl", "1-result.txt"};
+  	  	  String[]templates = { xmlTemplate, xslTemplate, ""};
+  	  	  
+  	  	  for(int i=0;i<modes.length;i++){
+  	  	  	  Buffer b = jEdit.newFile(editPanes[i]);
+  	  	  	  b.setMode(modes[i]);
+  	  	  	  b.insert(0,templates[i]);
+  	  	  	  //b.setDirty(true);
+  	  	  }
+  	  	  
+  	  	  
+  	  }
+  	  DockableWindowManager dwm = view.getDockableWindowManager();
+  	  dwm.showDockableWindow("xslt-processor");
+  	  XSLTProcessor processor = (XSLTProcessor)dwm.getDockable("xslt-processor");
+  	  processor.setThreeWay(true);
+  }
 }

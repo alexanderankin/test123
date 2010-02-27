@@ -16,4 +16,7 @@
   <ACTION NAME="xslt.compile">
     <CODE>xslt.XsltActions.compileStylesheet(view,buffer);</CODE>
   </ACTION>
+  <ACTION NAME="xslt.three-way-mode">
+    <CODE>xslt.XsltActions.initThreeWayMode(view);</CODE>
+  </ACTION>
 </ACTIONS>

@@ -1,5 +1,5 @@
 /*
- * XSLTOptionPaneTest.java
+ * XSLTThreeWayModeTest.java
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 2010 Eric Le Lay
@@ -53,10 +53,10 @@ import java.awt.event.InputEvent;
 import org.gjt.sp.jedit.gui.CompletionPopup;
 
 /**
- * GUI tests of the XSLT option pane.
+ * integration tests of the XSLT 3-way mode.
  * $Id$
  */
-public class XSLTOptionPaneTest{
+public class XSLTThreeWayModeTest{
 	private static File testData;
 	
     @BeforeClass
@@ -72,30 +72,54 @@ public class XSLTOptionPaneTest{
     }
     
     @Test
-    public void testXSLTFactoryErrors(){
-    	PluginOptionsFixture optionsF = TestUtils.pluginOptions();
-    	final JPanelFixture options = optionsF.optionPane("XSLT","xslt");
-    	Pause.pause(1000);
-    	
-    	JTextComponentFixture factoryErrors = options.textBox(JTextComponentMatcher.withName("factory-errors"));
-    	factoryErrors.requireNotVisible().requireNotEditable();
-    	
-    	options.comboBox("factory").selectItem(Pattern.compile(".*6.5.5.*"));
-    	factoryErrors.requireVisible();
-    	factoryErrors.requireText(Pattern.compile(".*"+Pattern.quote(jEdit.getSettingsDirectory())+".*",Pattern.DOTALL));
-    	
-    	options.comboBox("factory").selectItem(Pattern.compile(".*2\\.0.*"));
-    	factoryErrors.requireNotVisible();
-    	
-		// set the result
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					options.comboBox("factory").targetCastedTo(JComboBox.class).setSelectedItem("java.lang.String");
-				}
-		});
-    	factoryErrors.requireVisible();
-    	factoryErrors.requireText(Pattern.compile(".*SAXTransformerFactory.*",Pattern.DOTALL));
+    public void testThreeWayModeAction(){
+    	File xml = new File(testData,"simple/source.xml");
+    	Buffer xmlB = openFile(xml.getPath());
+    	Pause.pause(500);
+    	final String xmlContents = xmlB.getText(0,xmlB.getLength());
+    	close(view(),xmlB);
 
-    	optionsF.Cancel();
+    	PluginOptionsFixture optionsF = TestUtils.pluginOptions();
+    	JPanelFixture options = optionsF.optionPane("XSLT","xslt");
+    	Pause.pause(1000);
+    	options.comboBox("factory").selectItem(Pattern.compile("XSLT 1\\.0.*"));
+    	optionsF.OK();
+
+    	action("xslt.three-way-mode");
+    	
+    	assertEquals(3,view().getEditPanes().length);
+    	
+    	final Buffer xmlBuffer = (view().getEditPanes()[0]).getBuffer();
+    	final Buffer xslBuffer = (view().getEditPanes()[1]).getBuffer();
+    	final Buffer resBuffer = (view().getEditPanes()[2]).getBuffer();
+
+    	assertEquals("xml",xmlBuffer.getMode().getName());
+    	assertEquals("xsl",xslBuffer.getMode().getName());
+    	assertEquals("text",resBuffer.getMode().getName());
+    	
+    	assertThat(xslBuffer.getText(0,xslBuffer.getLength())).contains("version=\"1.0\"");
+
+    	final FrameFixture xsltProcessor = TestUtils.findFrameByTitle("XSLT Processor");
+    	
+    	xsltProcessor.checkBox("three-way").requireSelected();
+    	
+    	GuiActionRunner.execute(new GuiTask(){
+    			protected void executeInEDT(){
+    				xmlBuffer.remove(0,xmlBuffer.getLength());
+    				xmlBuffer.insert(0,xmlContents);
+    			}
+    	});
+
+    	xsltProcessor.button("xslt.transform").click();
+    	
+    	Pause.pause(15000);
+    	
+    	
+    	assertThat(resBuffer.getText(0,resBuffer.getLength())).contains("<hello>world</hello>");
+    	
+    	close(view(),xmlBuffer);
+    	close(view(),xslBuffer);
+    	close(view(),resBuffer);
+    	
     }
 }

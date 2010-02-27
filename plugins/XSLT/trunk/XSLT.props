@@ -52,6 +52,7 @@ xslt.transform.label=Transform XML
 xslt.settings.load.label=Load XSLT settings
 xslt.compile.label=Compile this Stylesheet
 xslt.settings.save.label=Save XSLT settings
+xslt.three-way-mode.label=Activate 3-Way Mode
 xpath.evaluate.label=Evaluate XPath
 
 
@@ -62,6 +63,7 @@ plugin.xslt.XSLTPlugin.menu=\
   xslt.settings.load \
   xslt.settings.save \
   xslt-processor-toggle \
+  xslt.three-way-mode \
   - \
   xpath.evaluate \
   xpath-tool-toggle
@@ -144,6 +146,7 @@ xslt.transform.name=Transform
 xslt.transform.short-desc=Transform XML
 xslt.transform.small-icon=/xslt/icons/Transform.png
 
+xslt.transform.message.three-edit-panes=You must have the source XML, the stylesheet, and the result buffer open to use 3-way mode.
 xslt.transform.message.no-source=Specify a source XML file in the XSLT Processor panel.
 xslt.transform.message.no-stylesheets=Specify one or more stylesheet files in the XSLT Processor panel.
 xslt.transform.message.no-result=Specify a result file in the XSLT Processor panel.
@@ -174,6 +177,10 @@ xslt.result.name.name=Name result
 xslt.result.name.short-desc=Name result file
 xslt.result.name.small-icon=22x22/actions/document-new.png
 
+# three-way is false by default
+xslt.three-way=false
+xslt.three-way.tooltip=use the 3 edit-panes as input,stylesheet and result 
+xslt.three-way.label=Three-Way mode
 
 
 # XPath tool window
