@@ -117,6 +117,50 @@ public class SourceLinkTree extends JTree
 		});
 	}
 
+	public void goToNextLink()
+	{
+		TreePath tp = getSelectionPath();
+		if (tp == null)
+			tp = new TreePath(root);
+		DefaultMutableTreeNode current = (DefaultMutableTreeNode)
+			tp.getLastPathComponent();
+		DefaultMutableTreeNode next = null;
+		if (! current.isLeaf())
+		{
+			next = current;
+			while (next.getChildCount() > 0)
+				next = (DefaultMutableTreeNode) current.getChildAt(0);
+		}
+		if (next == null)
+			next = current.getNextLeaf();
+		if (next == null)
+			return;
+		TreePath newPath = new TreePath(next.getPath()); 
+		scrollPathToVisible(newPath);
+		setSelectionPath(newPath);
+		((SourceLinkLeafNode) next).goToNode(view);
+	}
+
+	public void goToPreviousLink()
+	{
+		TreePath tp = getSelectionPath();
+		if (tp == null)
+			tp = new TreePath(root);
+		DefaultMutableTreeNode current = (DefaultMutableTreeNode)
+			tp.getLastPathComponent();
+		DefaultMutableTreeNode prev = current.getPreviousLeaf();
+		if (prev == null)
+			prev = root.getPreviousLeaf();
+		while ((prev != null) && (! (prev instanceof SourceLinkLeafNode)))
+			prev = prev.getNextLeaf();
+		if (prev == null)
+			return;
+		TreePath newPath = new TreePath(prev.getPath());
+		scrollPathToVisible(newPath);
+		setSelectionPath(newPath);
+		((SourceLinkLeafNode) prev).goToNode(view);
+	}
+
 	public void startBatch()
 	{
 		batch = true;
@@ -267,7 +311,7 @@ public class SourceLinkTree extends JTree
 				}
 			});
 		}
-		private void goToNode(View v)
+		public void goToNode(View v)
 		{
 			getMarker().jump(v);
 		}

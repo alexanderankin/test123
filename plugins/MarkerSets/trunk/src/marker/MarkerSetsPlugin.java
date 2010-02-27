@@ -255,9 +255,18 @@ public class MarkerSetsPlugin extends EditPlugin {
 				activeName = doc.getDocumentElement().getAttribute(ACTIVE_ATTR);
 				if ((activeName == null) || (activeName.length() == 0))
 					activeName = GLOBAL_SET;
-			} catch (Exception e) {
-				JOptionPane.showMessageDialog(jEdit.getActiveView(),
-					"Failed to load marker sets from XML. Error: " + e.getMessage());
+			} catch (final Exception e) {
+				try
+				{
+					SwingUtilities.invokeAndWait(new Runnable() {
+						public void run() {
+							JOptionPane.showMessageDialog(jEdit.getActiveView(),
+								"Failed to load marker sets from XML. Error: " + e.getMessage());
+						}
+					});
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
 			}
 		}
 		active = markerSets.get(activeName);
