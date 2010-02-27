@@ -285,6 +285,18 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		}
 	}
 
+	public void goToNextResult()
+	{
+		if (tree != null)
+			tree.goToNextLink();
+	}
+
+	public void goToPreviousResult()
+	{
+		if (tree != null)
+			tree.goToPreviousLink();
+	}
+
 	//{{{ addNotify() method
 	public void addNotify()
 	{
