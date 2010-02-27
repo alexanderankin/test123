@@ -230,6 +230,15 @@ public class XSLTUtilities {
 
     return resultBuffer.toString();
   }
+  
+  public static int getXSLTProcessorVersion() {
+  	  
+  	  // TODO : could use <xsl:value-of select="system-property('xsl:version')"/>,
+  	  //        but it seems overkill just to select the template in three-way mode
+  	  String factoryClass = jEdit.getProperty(XSLT_FACTORY_PROP);
+  	  
+  	  return "net.sf.saxon.TransformerFactoryImpl".equals(factoryClass) ? 2 : 1;
+  }
 
   public static class URIResolverImpl implements URIResolver{
   	   public Source resolve(String href, String base)

@@ -222,6 +222,45 @@
     option pane (see <xref linkend="options"/>) to always compile XSLT stylesheets
     on save.</para>
     </section>
+
+    <section id="three-way-mode"><title>Three-way mode</title>
+    
+    <para>The three-way mode is intended to provide a comfortable workbench for
+    experimenting with XSLT.</para>
+    
+    <para>To activate this mode, you can use the menu
+    <guimenu>Plugins</guimenu> > <guisubmenu>XSLT</guisubmenu> > <guimenuitem>3-Way mode</guimenuitem>,
+    or the action <code>xslt.three-way-mode</code>.
+    This will split the current view in three, open three buffers and insert a template
+    stylesheet in the second one (version 1.0 or 2.0, depending upon the XSLT processor you selected
+    in the <guimenuitem>Plugin Options</guimenuitem>). It will also open the XSLT processor dockable,
+    (which I usually dock at left) and enable its 3-way mode.
+    </para>
+    
+    <para>In the 3-way mode the input,stylesheets and result settings
+    of the XSLT Processor dockable are disabled.
+    You may only add parameters and run the transformation.
+    To use this mode of the XSLT Processor, you need a view split into three with :
+    <itemizedlist>
+    <listitem><para>a source XML document, in <guilabel>xml</guilabel> mode;</para></listitem>
+    <listitem><para>a stylesheet, in <guilabel>xsl</guilabel> mode;</para></listitem>
+    <listitem><para>a result buffer, in any mode.</para></listitem>
+    </itemizedlist>
+    </para>
+    <para>As long as an xml buffer and an xslt buffer can be found, the buffers can be in any order.
+    However, if the edit modes don't match exactly, the buffers will used in the order listed above,
+    regardless of their mode.
+    If 2 buffers are in xml mode, the first one will be assumed to be the source.
+    If 2 buffers are in xsl mode, the canonical ordering will be used.</para>
+    
+    <para>The result of the transformation will be inserted in the result buffer
+    if the result buffer is not read-only, or in a new untitled buffer otherwise.
+    Any previous content of the result buffer will be available via the <guilabel>Undo</guilabel>
+    action.</para>
+    
+    <note><para>This feature is still experimental; feedback on its usability would
+    be appreciated.</para></note>
+    </section>
   </chapter>
 
   <chapter id="xpath-tool">
@@ -399,6 +438,8 @@
         <listitem><para>use the jEdit icon set when possible</para></listitem>
         <listitem><para>Can't open files for editing from the XSLT Processor window,
           using double click : I use triple click all the time to select the entire text.</para></listitem>
+        <listitem><para>New <emphasis>3-way mode</emphasis>, enabling an easy configuration
+        of input,stylesheet and output, as well as a 3 buffers layout.</para></listitem>
       </itemizedlist>
     </para>
     <para>
