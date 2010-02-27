@@ -130,6 +130,11 @@ public class ProjectDependencies extends AbstractOptionPane
 
 	private String showProjectSelectionDialog() {
 		ProjectWatcher pw = CtagsInterfacePlugin.getProjectWatcher();
+		if (pw == null) {
+			JOptionPane.showMessageDialog(this, jEdit.getProperty(
+				"messages.CtagsInterface.noPVSupport"));
+			return null;
+		}
 		String project = pw.getActiveProject(jEdit.getActiveView());
 		Vector<String> nameVec = pw.getProjects();
 		nameVec.remove(project);
