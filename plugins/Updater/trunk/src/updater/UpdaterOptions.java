@@ -24,20 +24,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
+import org.gjt.sp.jedit.ServiceManager;
 import org.gjt.sp.jedit.jEdit;
 
 import common.gui.FileTextField;
@@ -48,7 +47,7 @@ public class UpdaterOptions extends AbstractOptionPane
 	private static final String DEFAULT_LOG_FILE = "updaterPlugin.log";
 	private static final String UPDATE_LOG_FILE_PROP = "updater.values.updateLogFile";
 	private static final String INSTALL_DIR_PROP = "updater.values.installDir";
-	private static final String UPDATE_SOURCE_CLASS_PROP = "updater.values.updateSourceClassName";
+	private static final String UPDATE_SOURCE_NAME_PROP = "updater.values.updateSourceName";
 	private static final String UPDATE_ON_STARTUP_PROP = "updater.values.updateOnStartup";
 	private static final String UPDATE_PERIOD_PROP = "updater.values.updatePeriod";
 	private static final String INTERACTIVE_INSTALL_PROP = "updater.values.interactiveInstall";
@@ -56,13 +55,12 @@ public class UpdaterOptions extends AbstractOptionPane
 	private static final String UNIX_MAN_DIR_PROP = "updater.values.unixManDir";
 	private FileTextField logFile;
 	private JTextField installDir;
-	private JRadioButton releaseUpdateSource;
-	private JRadioButton dailyBuildUpdateSource;
 	private JCheckBox updateOnStartup;
 	private JSpinner updatePeriod;
 	private JCheckBox interactiveInstall;
 	private JTextField unixScriptDir;
-	private JTextField unixManDir; 
+	private JTextField unixManDir;
+	private JComboBox updateSources;
 
 	public UpdaterOptions()
 	{
@@ -92,25 +90,22 @@ public class UpdaterOptions extends AbstractOptionPane
 		});
 		addComponent(jEdit.getProperty("updater.options.installDir"),
 			installDirPanel);
-		JPanel updateSourcePanel = new JPanel();
-		updateSourcePanel.setBorder(BorderFactory.createTitledBorder(
-			jEdit.getProperty("updater.options.defaultUpdateSource")));
-		ButtonGroup updateSourceGroup = new ButtonGroup();
-		releaseUpdateSource = new JRadioButton(jEdit.getProperty(
-			"updater.options.releaseUpdateSource"));
-		updateSourcePanel.add(releaseUpdateSource);
-		updateSourceGroup.add(releaseUpdateSource);
-		dailyBuildUpdateSource = new JRadioButton(jEdit.getProperty(
-			"updater.options.dailyBuildUpdateSource"));
-		updateSourcePanel.add(dailyBuildUpdateSource);
-		updateSourceGroup.add(dailyBuildUpdateSource);
-		addComponent(updateSourcePanel);
-		String updateSourceClass = getUpdateSourceClassName();
-		if (DailyBuildUpdateSource.class.getCanonicalName().equals(updateSourceClass))
-			dailyBuildUpdateSource.setSelected(true);
-		else
-			releaseUpdateSource.setSelected(true);
-
+		String [] sources = ServiceManager.getServiceNames(
+			UpdaterPlugin.UPDATER_SOURCE_SERVICE);
+		updateSources = new JComboBox(sources);
+		addComponent(jEdit.getProperty("updater.options.defaultUpdateSource"),
+			updateSources);
+		String updateSourceName = getUpdateSourceName();
+		int index = 0;
+		for (int i = 0; i < sources.length; i++)
+		{
+			if (sources[i].equals(updateSourceName))
+			{
+				index = i;
+				break;
+			}
+		}
+		updateSources.setSelectedIndex(index);
 		updateOnStartup = new JCheckBox(jEdit.getProperty(
 			"updater.options.updateOnStartup"), isUpdateOnStartup());
 		addComponent(updateOnStartup);
@@ -142,10 +137,8 @@ public class UpdaterOptions extends AbstractOptionPane
 		jEdit.setProperty(UPDATE_LOG_FILE_PROP,
 			logFile.getTextField().getText());
 		jEdit.setProperty(INSTALL_DIR_PROP, installDir.getText());
-		jEdit.setProperty(UPDATE_SOURCE_CLASS_PROP,
-			(dailyBuildUpdateSource.isSelected() ?
-				DailyBuildUpdateSource.class.getCanonicalName() :
-				ReleasedUpdateSource.class.getCanonicalName()));
+		jEdit.setProperty(UPDATE_SOURCE_NAME_PROP, (String)
+			updateSources.getSelectedItem()); 
 		jEdit.setBooleanProperty(UPDATE_ON_STARTUP_PROP,
 			updateOnStartup.isSelected());
 		jEdit.setIntegerProperty(UPDATE_PERIOD_PROP,
@@ -166,10 +159,9 @@ public class UpdaterOptions extends AbstractOptionPane
 		return jEdit.getIntegerProperty(UPDATE_PERIOD_PROP, 0);
 	}
 
-	public static String getUpdateSourceClassName()
+	public static String getUpdateSourceName()
 	{
-		return jEdit.getProperty(UPDATE_SOURCE_CLASS_PROP,
-			ReleasedUpdateSource.class.getCanonicalName());
+		return jEdit.getProperty(UPDATE_SOURCE_NAME_PROP, "Official release");
 	}
 
 	public static String getUpdateLogFile()

@@ -32,12 +32,14 @@ import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
 import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.ServiceManager;
 import org.gjt.sp.jedit.jEdit;
 
 import updater.UrlUtils.ProgressHandler;
 
 public class UpdaterPlugin extends EditPlugin
 {
+	public static final String UPDATER_SOURCE_SERVICE = "updater.source";
 	private static final int BAD_VERSION_STRING = -100;
 	private static final int MILLIS_PER_UPDATE_PERIOD_UNIT = 1000 * 3600 * 24;
 	private static final String LAST_UPDATE_TIME_PROP =
@@ -100,9 +102,10 @@ public class UpdaterPlugin extends EditPlugin
 	{
 		try
 		{
-			UpdateSource source = (UpdateSource) Class.forName(
-				UpdaterOptions.getUpdateSourceClassName()).newInstance();
-			updateVersion(source, true);
+			UpdateSource source = (UpdateSource) ServiceManager.getService(
+				UPDATER_SOURCE_SERVICE, UpdaterOptions.getUpdateSourceName());
+			if (source != null)
+				updateVersion(source, true);
 		}
 		catch (Exception e)
 		{
@@ -390,19 +393,22 @@ public class UpdaterPlugin extends EditPlugin
 		return false;
 	}
 
-	public void updateReleaseVersion()
+	public void updateFromUserSelectedSource()
 	{
-		updateVersion(new ReleasedUpdateSource(), false);
-	}
-
-	public void updateDailyVersion()
-	{
-		updateVersion(new DailyBuildUpdateSource(), false);
+		String [] sources = ServiceManager.getServiceNames(UPDATER_SOURCE_SERVICE);
+		String selected = (String) JOptionPane.showInputDialog(
+			jEdit.getActiveView(), "Select update source:", "Update jEdit",
+			JOptionPane.QUESTION_MESSAGE, null, sources, sources[0]);
+		if (selected == null)
+			return;
+		UpdateSource source = (UpdateSource) ServiceManager.getService(
+			UPDATER_SOURCE_SERVICE, selected);
+		updateVersion(source, false);
 	}
 
 	public void resetProps()
 	{
-		new DailyBuildUpdateSource().setInstalledVersion("");
+		new DailyBuildUpdateSource("").setInstalledVersion("");
 	}
 
 	private static class LauncherOutputHandler extends Thread

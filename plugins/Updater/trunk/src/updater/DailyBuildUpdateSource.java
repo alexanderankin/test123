@@ -32,6 +32,12 @@ public class DailyBuildUpdateSource implements UpdateSource
 	private static final String VERSION_PAGE_LINK_PATTERN_PROP = "updater.dailyBuildVersionPageLinkPattern";
 	private static final String DOWNLOAD_LINK_PATTERN_PROP = "updater.dailyBuildDownloadLinkPattern";
 	private static final String DOWNLOAD_LINK_PREFIX_PROP = "updater.dailyBuildDownloadLinkPrefix";
+	private String dir;
+
+	public DailyBuildUpdateSource(String dir)
+	{
+		this.dir = dir;
+	}
 
 	public int compareVersions(String latest, String installed)
 	{
@@ -46,15 +52,16 @@ public class DailyBuildUpdateSource implements UpdateSource
 
 	public String getDownloadLink()
 	{
+		String page = jEdit.getProperty(VERSION_PAGE_PROP, new Object[] {dir});
 		Vector<String> versions = UrlUtils.extractMultiOccurrencePattern(
-			jEdit.getProperty(VERSION_PAGE_PROP),
-			jEdit.getProperty(VERSION_PAGE_LINK_PATTERN_PROP));
+			page, jEdit.getProperty(VERSION_PAGE_LINK_PATTERN_PROP, new Object[] {dir}));
 		if (versions.size() == 0)
 			return null;
-		String downloadPage = jEdit.getProperty(VERSION_PAGE_PROP) +
-			versions.lastElement();
+		String downloadPage = page + versions.lastElement();
 		String link = UrlUtils.extractSingleOccurrencePattern(downloadPage,
-			jEdit.getProperty(DOWNLOAD_LINK_PATTERN_PROP));
+			jEdit.getProperty(DOWNLOAD_LINK_PATTERN_PROP, new Object[] {dir}));
+		if (link == null)
+			return null;
 		return jEdit.getProperty(DOWNLOAD_LINK_PREFIX_PROP) + link;
 	}
 
@@ -71,8 +78,8 @@ public class DailyBuildUpdateSource implements UpdateSource
 	public String getLatestVersion()
 	{
 		Vector<String> versions = UrlUtils.extractMultiOccurrencePattern(
-			jEdit.getProperty(VERSION_PAGE_PROP),
-			jEdit.getProperty(VERSION_CHECK_PATTERN_PROP));
+			jEdit.getProperty(VERSION_PAGE_PROP, new Object[] {dir}),
+			jEdit.getProperty(VERSION_CHECK_PATTERN_PROP, new Object[] {dir}));
 		if (versions.size() == 0)
 			return null;
 		return versions.lastElement();
