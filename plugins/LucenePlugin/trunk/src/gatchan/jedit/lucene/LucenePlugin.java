@@ -388,6 +388,31 @@ public class LucenePlugin extends EditPlugin
 		return new File(indexFolder, name);
 	}
 
+	private SearchResults getSearchDockable(View view)
+	{
+		DockableWindowManager dwm = view.getDockableWindowManager();
+		dwm.showDockableWindow(SEARCH_DOCKABLE_NAME);
+		SearchResults dockable = (SearchResults)
+			dwm.getDockable(SEARCH_DOCKABLE_NAME);
+		return dockable;
+	}
+
+	public void goToNextResult(View view)
+	{
+		SearchResults dockable = getSearchDockable(view);
+		if (dockable == null)	// Should not happen
+			return;
+		dockable.goToNextResult();
+	}
+
+	public void goToPrevResult(View view)
+	{
+		SearchResults dockable = getSearchDockable(view);
+		if (dockable == null)	// Should not happen
+			return;
+		dockable.goToPreviousResult();
+	}
+
 	/**
 	 * Runs the given task in the background without going through
 	 * the VFSManager's thread pool, to avoid blocking AWT tasks (such

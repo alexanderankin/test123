@@ -18,5 +18,15 @@
             gatchan.jedit.lucene.LucenePlugin.instance.searchWordAtCaret(view);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="lucene.go-to-next-result" NO_REPEAT="TRUE">
+		<CODE>
+            gatchan.jedit.lucene.LucenePlugin.instance.goToNextResult(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="lucene.go-to-prev-result" NO_REPEAT="TRUE">
+		<CODE>
+            gatchan.jedit.lucene.LucenePlugin.instance.goToPrevResult(view);
+		</CODE>
+	</ACTION>
 </ACTIONS>
 
