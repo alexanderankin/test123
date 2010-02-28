@@ -125,6 +125,7 @@ public class UrlUtils
 	{
 		void setSize(int size);
 		void bytesRead(int numBytes);
+		void done();
 		boolean isAborted();
 	}
 
@@ -176,6 +177,7 @@ public class UrlUtils
 		{
 			safelyClose(bin, in);
 			safelyClose(bout, out);
+			progress.done();
 		}
 		return targetFile;
 	}

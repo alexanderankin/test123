@@ -21,6 +21,7 @@
 package updater;
 
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -37,8 +38,10 @@ import java.util.Vector;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 public class InstallLauncher
@@ -51,6 +54,8 @@ public class InstallLauncher
 	public static final String EXECUTION_ABORTED = "Execution Aborted";
 	public static final String SILENT_SHUTDOWN = "Shutdown Silently";
 	public static final String PROGRESS_INDICATOR = "*** Progress: ";
+	public static final String PROGRESS_BAR_INDICATOR = "*** ProgressBar: ";
+	public static final String PROGRESS_BAR_END = "END";
 
 	// Control commands sent via standard output
 	public static final String ABORT = "Abort";
@@ -62,6 +67,11 @@ public class InstallLauncher
 
 	private static JFrame window;
 	private static JTextArea text;
+	private static JScrollPane textScroll;
+	private static JTextField currentText;
+	private static JProgressBar progress;
+	private static JButton extend;
+	private static boolean isExtended;
 	private static JPanel buttonPanel;
 	private static JButton ok;
 	private static JButton cancel;
@@ -72,6 +82,7 @@ public class InstallLauncher
 	private static boolean awaitingConfirmation; 
 	private static OutputStreamWriter out;
 	private static ActionListener buttonActionListener;
+	private static JPanel currentStatusPanel;
 
 	// Program arguments (optional): logFile, startScript
 	public static void main(String [] args)
@@ -95,15 +106,31 @@ public class InstallLauncher
 			io.printStackTrace();
 		}
 		window = new JFrame(props.getProperty("updater.msg.updateDialogTitle"));
+		window.setSize(1200, 200);
 		window.setLayout(new BorderLayout());
+		currentStatusPanel = new JPanel(new GridLayout(0, 1));
+		window.add(currentStatusPanel, BorderLayout.NORTH);
+		currentText = new JTextField(80);
+		//currentText.setBackground(window.getBackground());
+		currentText.setEditable(false);
+		currentStatusPanel.add(currentText, BorderLayout.NORTH);
+		// The progress will be shown when needed
+		progress = new JProgressBar();
+		progress.setStringPainted(true);
+		// The text box is added when "Show more" is pressed
 		text = new JTextArea(8, 80);
 		text.setEditable(false);
-		window.add(new JScrollPane(text), BorderLayout.CENTER);
+		textScroll = new JScrollPane(text);
+		currentText.setFont(text.getFont());
+
 		buttonPanel = new JPanel();
 		ok = new JButton(props.getProperty("updater.msg.updateDialogCloseButton"));
 		buttonPanel.add(ok);
 		cancel = new JButton(props.getProperty("updater.msg.updateDialogCancelButton"));
 		buttonPanel.add(cancel);
+		extend = new JButton(props.getProperty("updater.msg.updateDialogShowMore"));
+		buttonPanel.add(extend);
+
 		// This button is only added when a confirmation is requested
 		alwaysYes = new JButton(props.getProperty("updater.msg.autoConfirmUpdate"));
 
@@ -113,6 +140,8 @@ public class InstallLauncher
 		ok.setEnabled(false);
 		cancel.addActionListener(buttonActionListener);
 		alwaysYes.addActionListener(buttonActionListener);
+		extend.addActionListener(buttonActionListener);
+		isExtended = false;
 		window.pack();
 		window.setLocationRelativeTo(null);
 		window.setVisible(true);
@@ -186,6 +215,10 @@ public class InstallLauncher
 				}
 				if (line.startsWith(PROGRESS_INDICATOR))
 					appendProgress(line.substring(PROGRESS_INDICATOR.length()));
+				else if (line.startsWith(PROGRESS_BAR_INDICATOR))
+					showProgress(line.substring(PROGRESS_BAR_INDICATOR.length()));
+				else if (line.startsWith(PROGRESS_BAR_END))
+					hideProgress();
 				else if (line.equals(LAUNCH_INSTALLER_NOW))
 					break;
 				else
@@ -346,6 +379,42 @@ public class InstallLauncher
 		return true;
 	}
 
+	private static void hideProgress()
+	{
+		currentStatusPanel.remove(progress);
+		window.pack();
+	}
+
+	private static void showProgress(final String s)
+	{
+		String [] parts = s.split(" ", 3);
+		if (parts.length < 2)
+			return;
+		final String str = (parts.length == 3) ? parts[2] : null;
+		final int [] values = new int[parts.length];
+		try {
+			values[0] = Integer.valueOf(parts[0]).intValue();
+			values[1] = Integer.valueOf(parts[1]).intValue();
+		}
+		catch (Exception e) {
+			return;
+		}
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run()
+			{
+				if (progress.getParent() == null)
+				{
+					currentStatusPanel.add(progress);
+					window.pack();
+				}
+				progress.setValue(values[0]);
+				progress.setMaximum(values[1]);
+				if (str != null)
+					progress.setString(str);
+			}
+		});
+	}
+
 	private static void appendProgress(final String s)
 	{
 		SwingUtilities.invokeLater(new Runnable() {
@@ -366,6 +435,8 @@ public class InstallLauncher
 				text.append(sOut);
 				text.setCaretPosition(text.getText().length());
 				pos = text.getCaretPosition();
+				currentText.setText(sOut);
+				window.pack();
 			}
 		});
 	}
@@ -414,14 +485,33 @@ public class InstallLauncher
 			}
 		}
 
+		private void extendAction()
+		{
+			if (isExtended)
+			{
+				window.remove(textScroll);
+				extend.setText(props.getProperty(
+					"updater.msg.updateDialogShowMore"));
+			}
+			else
+			{
+				window.add(textScroll, BorderLayout.CENTER);
+				extend.setText(props.getProperty(
+					"updater.msg.updateDialogShowLess"));
+			}
+			isExtended = ! isExtended;
+			window.pack();
+		}
 		public void actionPerformed(ActionEvent e)
 		{
 			if (e.getSource() == ok)
 				okAction();
 			else if (e.getSource() == alwaysYes)
 				alwaysYesAction();
-			else
+			else if (e.getSource() == cancel)
 				cancelAction();
+			else
+				extendAction();
 		}
 	}
 

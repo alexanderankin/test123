@@ -295,6 +295,7 @@ public class UpdaterPlugin extends EditPlugin
 				ProgressHandler progress = new ProgressHandler()
 				{
 					private String suffix = " bytes read";
+					private String sizeStr;
 					public void setSize(int size)
 					{
 						if (size > 0)
@@ -303,14 +304,21 @@ public class UpdaterPlugin extends EditPlugin
 							format.setGroupingSize(3);
 							suffix = " (out of " + format.format(size) +
 								")" + suffix;
+							sizeStr = " " + String.valueOf(size);
 						}
 					}
 					public void bytesRead(final int numBytes)
 					{
 						DecimalFormat format = new DecimalFormat();
 						format.setGroupingSize(3);
-						appendText(InstallLauncher.PROGRESS_INDICATOR +
-							format.format(numBytes) + suffix);
+						String s = format.format(numBytes) + suffix;
+						appendText(InstallLauncher.PROGRESS_INDICATOR + s);
+						appendText(InstallLauncher.PROGRESS_BAR_INDICATOR +
+							String.valueOf(numBytes) + sizeStr + " " + s); 
+					}
+					public void done()
+					{
+						appendText(InstallLauncher.PROGRESS_BAR_END);
 					}
 					public boolean isAborted()
 					{
@@ -319,7 +327,7 @@ public class UpdaterPlugin extends EditPlugin
 				};
 				String savePath = home.getAbsoluteFile() + File.separator +
 					"jeditInstall.jar";
-				File installerFile = UrlUtils.downloadFile(link, savePath, progress); 
+				File installerFile = UrlUtils.downloadFile(link, savePath, progress);
 				if (executionAborted())
 					return;
 				appendText("");	// Newline after "bytes read" message
