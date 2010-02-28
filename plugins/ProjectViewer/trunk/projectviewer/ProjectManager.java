@@ -240,7 +240,7 @@ public final class ProjectManager {
 		Properties p = new Properties();
 		List<VPTFilterData> filters = getGlobalFilterList();
 		for (int i = 0; i < filters.size(); i++) {
-			VPTFilterData fd = (VPTFilterData) filters.get(i);
+			VPTFilterData fd = filters.get(i);
 			p.setProperty("filter." + i + ".glob", fd.getGlob());
 			p.setProperty("filter." + i + ".name", fd.getName());
 		}
@@ -273,7 +273,7 @@ public final class ProjectManager {
 	 *	@since	PV 2.1.3.6
 	 */
 	public void saveProject(VPTProject p, boolean wait) {
-		Entry e = (Entry) projects.get(p.getName());
+		Entry e = projects.get(p.getName());
 		Runnable task;
 		synchronized (e) {
 			if (!e.isLoaded) {
@@ -301,7 +301,7 @@ public final class ProjectManager {
 	 *	the project does not exist anymore.
 	 */
 	public void removeProject(VPTProject p) {
-		Entry e = (Entry) projects.get(p.getName());
+		Entry e = projects.get(p.getName());
 		if (e == null) return;
 
 		projects.remove(p.getName());
@@ -626,11 +626,11 @@ public final class ProjectManager {
 				e.project.setRootPath(attrs.getValue(PRJ_ROOT));
 				projects.put(pName, e);
 
-				VPTGroup g = (VPTGroup) grpStack.peek();
+				VPTGroup g = grpStack.peek();
 				g.insert(e.project, g.findIndexForChild(e.project));
 			} else if (qName.equals(GRP_ELEMENT)) {
 				VPTGroup g = new VPTGroup(attrs.getValue(GRP_NAME));
-				VPTGroup parent = (VPTGroup) grpStack.peek();
+				VPTGroup parent = grpStack.peek();
 				parent.insert(g, parent.findIndexForChild(g));
 				grpStack.push(g);
 			} else if (!qName.equals(PROJECT_ROOT)) {

@@ -163,7 +163,16 @@ public class VPTProject extends VPTNode {
 	/** Returns the list of open files the project knows about. */
 	public List<String> getOpenFiles()
 	{
-		return openFiles;
+		List<String> oldOpenFiles;
+		List<String> newOpenFiles = new ArrayList<String>();
+		lock(true);
+		try {
+			oldOpenFiles = openFiles;
+			openFiles = newOpenFiles;
+		} finally {
+			unlock(true);
+		}
+		return oldOpenFiles;
 	}
 
 
@@ -172,9 +181,15 @@ public class VPTProject extends VPTNode {
 	 *	Adds a file to the list of the project's opened files.
 	 */
 	public void addOpenFile(String path) {
-		if (!openFiles.contains(path))
-			openFiles.add(path);
+		lock(true);
+		try {
+			if (!openFiles.contains(path))
+				openFiles.add(path);
+		} finally {
+			unlock(true);
+		}
 	} //}}}
+
 
 	/**
 	 * Remove an open file from the list.
@@ -182,13 +197,24 @@ public class VPTProject extends VPTNode {
 	 * @since PV 2.1.3.5
 	 */
 	public void removeOpenFile(String path) {
-		openFiles.remove(path);
+		lock(true);
+		try {
+			openFiles.remove(path);
+		} finally {
+			unlock(true);
+		}
 	}
+
 
 	//{{{ +clearOpenFiles() : void
 	/** Clears the list of open files. */
 	public void clearOpenFiles() {
-		openFiles.clear();
+		lock(true);
+		try {
+			openFiles.clear();
+		} finally {
+			unlock(true);
+		}
 	} //}}}
 
 	//{{{ +isInProject(String) : boolean

@@ -227,7 +227,7 @@ public class AppLauncher {
 		String name = VFSManager.getVFSForPath(path).getFileName(path);
 		for (ComparablePattern re : appCol.keySet()) {
 			if (re.matches(name)) {
-				return (String) appCol.get(re);
+				return appCol.get(re);
 			}
 		}
 

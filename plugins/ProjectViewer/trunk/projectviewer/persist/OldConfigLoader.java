@@ -200,7 +200,7 @@ public final class OldConfigLoader {
 			return p;
 		}
 		if (dirs.get(path) != null) {
-			return (VPTNode) dirs.get(path);
+			return dirs.get(path);
 		}
 
 		Stack<VPTNode> toAdd = new Stack<VPTNode>();
@@ -213,7 +213,7 @@ public final class OldConfigLoader {
 
 		while (where == null) {
 			if (dirs.get(parent) != null) {
-				where = (VPTNode) dirs.get(parent);
+				where = dirs.get(parent);
 			} else {
 				if (parent.equals(p.getRootPath())) {
 					where = p;
@@ -227,7 +227,7 @@ public final class OldConfigLoader {
 		}
 
 		while (!toAdd.isEmpty()) {
-			VPTNode o = (VPTNode) toAdd.pop();
+			VPTNode o = toAdd.pop();
 			where.add(o);
 			where = o;
 		}
