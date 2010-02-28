@@ -287,6 +287,16 @@
           using the page up and page down keys.</para>
         </listitem>
         <listitem>
+          <para>If your XPath expression uses namespace qualified names,
+          you may have to add namespace bindings in the <guilabel>Namespace Context</guilabel>
+          table. You may bind the same namespace to multiple prefixes, but one prefix
+          may only refer to one namespace.
+          </para>
+          <para>To grab the namespaces used in the source document, click on the
+          button next to <guibutton>Evaluate XPath</guibutton> in the middle of the 
+          XPath tool dockable.</para>
+        </listitem>
+        <listitem>
           <para>Use the "Evaluate XPath" button, to evalute the
           the expression against the current buffer. The result information
           displayed includes:
@@ -440,6 +450,8 @@
           using double click : I use triple click all the time to select the entire text.</para></listitem>
         <listitem><para>New <emphasis>3-way mode</emphasis>, enabling an easy configuration
         of input,stylesheet and output, as well as a 3 buffers layout.</para></listitem>
+        <listitem><para>XPath tool is namespace aware ; button to grab namespace declarations
+        from source document.</para></listitem>
       </itemizedlist>
     </para>
     <para>
