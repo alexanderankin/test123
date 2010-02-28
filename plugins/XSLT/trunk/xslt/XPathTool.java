@@ -43,6 +43,8 @@ import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -67,9 +69,15 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import javax.xml.xpath.XPathFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+
 import org.apache.xpath.NodeSetDTM;
 import org.apache.xpath.XPathAPI;
 import org.apache.xpath.objects.XObject;
+import org.apache.xml.utils.PrefixResolver;
+
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBComponent;
@@ -82,7 +90,16 @@ import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.search.CurrentBufferSet;
 import org.gjt.sp.jedit.search.SearchAndReplace;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.util.Log;
+
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.traversal.DocumentTraversal;
+import org.w3c.dom.traversal.NodeFilter;
+import org.w3c.dom.traversal.NodeIterator;
+
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -96,13 +113,16 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 		ActionListener, DefaultFocusComponent, ItemListener {
 
 	private View view;
+	private final XsltAction grabNSAction = new GrabNSAction();
 	private final BufferOrFileVFSSelector inputSelectionPanel;
 	private final XPathExpressionPanel expressionPanel;
+	private final KeyValuePanel nsPanel;
 	private final EvaluatePanel evaluatePanel = new EvaluatePanel();
 	private final JTextField dateTypeField = new JTextField();
 	private final ResultsPanel resultValuePanel = new ResultsPanel("xpath.result.value");
 	private final NodeSetResultsPanel nodeSetTablePanel = new NodeSetResultsPanel("xpath.result.node-set-summary");
 	private final XmlFragmentsPanel xmlFragmentsPanel = new XmlFragmentsPanel("xpath.result.xml-fragments");
+	
 	private JPanel dataTypePanel;
 	private boolean autoCompleteEnabled;
 
@@ -112,6 +132,8 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 		this.view = view;
 
 		expressionPanel = new XPathExpressionPanel(view);
+		nsPanel = new KeyValuePanel("xpath.ns");
+		
 		inputSelectionPanel = new BufferOrFileVFSSelector(view,"xpath.source");
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(new JLabel(jEdit.getProperty("xpath.result.data-type.label")), BorderLayout.NORTH);
@@ -123,14 +145,15 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.gridy = 1;
 		add(inputSelectionPanel, gbc);
 
 		gbc = new GridBagConstraints();
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.weightx = gbc.weighty = 1;
 		gbc.gridy = 2;
-		add(expressionPanel, gbc);
+		
+		JSplitPane exprNSSplit = getSplitPane(expressionPanel,nsPanel,70);
+		add(exprNSSplit, gbc);
 
 		gbc = new GridBagConstraints();
 		gbc.gridy = 3;
@@ -157,7 +180,8 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 	public static Document parse(InputSource source) throws ParserConfigurationException, IOException, SAXException {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		factory.setValidating(false);
-
+		factory.setNamespaceAware(true);
+		
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		builder.setEntityResolver(xml.Resolver.instance());
 		Document document = builder.parse(source);
@@ -191,19 +215,23 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 
 
 	public void actionPerformed(ActionEvent event) {
-		try {
-			evaluateExpression();
-
-		} catch (IllegalStateException e) {
-			XSLTPlugin.processException(e, e.getMessage(), XPathTool.this);
-		} catch (SAXException e) { // parse problem
-			XSLTPlugin.processException(e, jEdit.getProperty("xpath.result.message.buffer-unparseable"), XPathTool.this);
-		} catch (IOException e) { // parse problem
-			XSLTPlugin.processException(e, jEdit.getProperty("xpath.result.message.buffer-unparseable"), XPathTool.this);
-		} catch (TransformerException e) { // evaluation problem
-			XSLTPlugin.processException(e, jEdit.getProperty("xpath.result.message.expression-unevaluateable"), XPathTool.this);
-		} catch (Exception e) { // catch-all
-			XSLTPlugin.processException(e, jEdit.getProperty("xpath.result.message.unkown-problem"), XPathTool.this);
+		if(!inputSelectionPanel.isSourceFileDefined()) {
+			GUIUtilities.message(this,"xpath.error.no-source",new Object[]{});
+		} else {
+			try {
+				evaluateExpression();
+	
+			} catch (IllegalStateException e) {
+				XSLTPlugin.processException(e, e.getMessage(), XPathTool.this);
+			} catch (SAXException e) { // parse problem
+				XSLTPlugin.processException(e, jEdit.getProperty("xpath.result.message.buffer-unparseable"), XPathTool.this);
+			} catch (IOException e) { // parse problem
+				XSLTPlugin.processException(e, jEdit.getProperty("xpath.result.message.buffer-unparseable"), XPathTool.this);
+			} catch (TransformerException e) { // evaluation problem
+				XSLTPlugin.processException(e, jEdit.getProperty("xpath.result.message.expression-unevaluateable"), XPathTool.this);
+			} catch (Exception e) { // catch-all
+				XSLTPlugin.processException(e, jEdit.getProperty("xpath.result.message.unkown-problem"), XPathTool.this);
+			}
 		}
 	}
 
@@ -225,11 +253,18 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 	private void evaluateExpression() throws Exception, IOException, SAXException, TransformerException {
 		Document document = getCurrentDocument();
 
-		String expression = new String();
+		String expression = expressionPanel.getExpression();
 
-		expression = expressionPanel.getExpression();
-
-		XObject xObject = XPathAPI.eval(document, expression);
+		/* don't know how to get the result type using javax.xml.xpath.* API.
+		 * Plus here, using NODESET will throw an exception when evaluating 1+1
+		XPathFactory factory = XPathFactory.newInstance();
+		XPath xpath = factory.newXPath();
+  
+		Object result = xpath.evaluate(expression, document,XPathConstants.NODESET);
+		System.err.println(result);*/
+  
+		PrefixResolverImpl res = new PrefixResolverImpl(nsPanel.getMap());
+		XObject xObject = XPathAPI.eval(document, expression, res);
 		expressionPanel.addToHistory(expression);
 
 		dateTypeField.setText(getDataTypeMessage(xObject));
@@ -368,14 +403,112 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 	}
 
 
+	private void grabNamespaces(){
+		if(inputSelectionPanel.isSourceFileDefined()) {
+			
+			Document document = null;
+			try {
+				document = getCurrentDocument();
+			} catch (SAXException e) { // parse problem
+				XSLTPlugin.processException(e, jEdit.getProperty("xpath.result.message.buffer-unparseable"), XPathTool.this);
+			} catch (IOException e) { // parse problem
+				XSLTPlugin.processException(e, jEdit.getProperty("xpath.result.message.buffer-unparseable"), XPathTool.this);
+			} catch (Exception e) { // catch-all
+				XSLTPlugin.processException(e, jEdit.getProperty("xpath.result.message.unkown-problem"), XPathTool.this);
+			}
+			
+			if(document != null) {
+				Map<String,List<String>> bindings = new HashMap<String,List<String>>();
+				
+				if (document.getImplementation().hasFeature("traversal", "2.0")) {
+					DocumentTraversal traversable = (DocumentTraversal) document;
+					NodeIterator iterator = traversable.createNodeIterator(
+						document, NodeFilter.SHOW_ELEMENT,null, true);
+					
+					Node node;
+					while ((node = iterator.nextNode()) != null) {
+						//Element e = (Element)node;
+						NamedNodeMap attrs = node.getAttributes();
+						for(int i=0;i<attrs.getLength();i++) {
+							Node a  = attrs.item(i);
+							
+							System.out.println(a.getPrefix()+":"+a.getLocalName());
+							if("xmlns".equals(a.getPrefix())) {
+								String prefix = a.getLocalName();
+								String ns = a.getNodeValue();
+								List l;
+								if(bindings.containsKey(prefix)){
+									l = bindings.get(prefix);
+								} else {
+									l = new ArrayList<String>();
+									bindings.put(prefix,l);
+								}
+								if(!l.contains(ns)) {
+									l.add(ns);
+								}
+							}
+						}
+					}
+					
+					Map<String,String> finalMap = new HashMap<String,String>();
+					for(Map.Entry<String,List<String>> binding : bindings.entrySet()) {
+						String prefix;
+						if("".equals(binding.getKey())) {
+							prefix = "def";
+						} else {
+							prefix = binding.getKey();
+						}
+						int len = binding.getValue().size();
+						if(!finalMap.containsKey(prefix) && len == 1) {
+								finalMap.put(prefix,binding.getValue().get(0));
+						} else {
+							for(int i=0,j=0;i<len;j++){
+								String uniq = prefix+j;
+								if(!finalMap.containsKey(uniq)) {
+									finalMap.put(uniq,binding.getValue().get(i));
+									i++;
+								}
+							}
+						}
+					}
+					
+					Log.log(Log.DEBUG,this,"found:"+bindings);
+					Log.log(Log.DEBUG,this,"found:"+finalMap);
+					String[] keys = new String[finalMap.size()];
+					String[] values = new String[finalMap.size()];
+					int i=0;
+					for(Map.Entry<String,String> binding : finalMap.entrySet()) {
+						keys[i] = binding.getKey();
+						values[i] = binding.getValue();
+						i++;
+					}
+					
+					nsPanel.setKeyValues(keys, values);
+	
+				} else {
+					Log.log(Log.ERROR,this,"DomImplementation doesn't support DOM Traversal");
+				}
+			}
+			
+		} else {
+			Log.log(Log.ERROR,this,"Source isn't defined");
+			GUIUtilities.message(this,"xpath.ns.grab.error-no-source",new Object[]{});
+		}
+			
+	}
+	
 	/**
 	 * Panel housing the "Evaluate" button
 	 */
 	class EvaluatePanel extends JPanel {
+		private JButton grabNamespaces;
 		private JButton button;
 		private JCheckBox autoCompleteCheck;
 
 		EvaluatePanel() {
+			
+			grabNamespaces = grabNSAction.getButton();
+
 			String iconName = jEdit.getProperty("xpath.evaluate.button.icon");
 			String toolTipText = jEdit.getProperty("xpath.evaluate.button.tooltip");
 			String shortcut = jEdit.getProperty("xpath.evaluate.shortcut");
@@ -394,6 +527,7 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 			button.setMinimumSize(dimension);
 			button.setPreferredSize(dimension);
 
+			add(grabNamespaces);
 			add(button);
 			autoCompleteCheck = new JCheckBox("Use auto-complete");
 			autoCompleteCheck.addItemListener(XPathTool.this);
@@ -401,7 +535,43 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 		}
 	}
 
-	/**
+	private class GrabNSAction extends XsltAction {
+		
+		GrabNSAction(){
+			super("xpath.ns.grab");
+		}
+		
+		public void actionPerformed(ActionEvent e) {
+			grabNamespaces();
+		}
+		
+	}
+	
+	private static class PrefixResolverImpl implements PrefixResolver{
+		private Map<String,String> map;
+		
+		PrefixResolverImpl(Map<String,String> map) {
+			this.map = map;
+		}
+		
+		public String getBaseIdentifier(){
+			return null;
+		}
+		
+		public String getNamespaceForPrefix(String prefix, Node context) {
+			return map.get(prefix);
+		}
+		
+		public String getNamespaceForPrefix(java.lang.String prefix) {
+			return map.get(prefix);
+		}
+		
+		public boolean handlesNullPrefixes(){
+			return false;
+		}
+	}
+	
+  	/**
 	 * JTextArea that let's tab key change focus to the next component.
 	 */
 	public class JTextAreaWithoutTab extends JTextArea {
@@ -733,5 +903,7 @@ class DocumentCache {
 	public Document getDocument() {
 		return document;
 	}
+	
+	
 }
 

@@ -395,7 +395,7 @@ public class XSLTPluginTest{
     	final FrameFixture xsltProcessor = setupProcessor(xml,xsl,"",1);
     	
 		// set the parameters
-		final JTableFixture parms = xsltProcessor.table("parameters"); 
+		final JTableFixture parms = xsltProcessor.table("xslt.parameters"); 
 		while(parms.rowCount()>0)
 		{
 			parms.selectRows(0);

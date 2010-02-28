@@ -60,7 +60,7 @@ public class XSLTPluginXPathTest{
         TestUtils.afterClass();
     }
     
-    //@Test
+    @Test
     public void testXPath() throws IOException{
     	File xml = new File(testData,"simple/source.xml");
     	
@@ -70,7 +70,7 @@ public class XSLTPluginXPathTest{
     	
     	final FrameFixture xpathTool = TestUtils.findFrameByTitle("XPath Tool");
     	
-		xpathTool.radioButton("xpath.select.buffer").click();
+		xpathTool.radioButton("xpath.source.buffer").click();
 		
 		
 		GuiActionRunner.execute(new GuiTask(){
@@ -84,6 +84,41 @@ public class XSLTPluginXPathTest{
 		Pause.pause(1000);
 		xpathTool.textBox("xpath.result.data-type").requireText("node-set of size 1");
 		xpathTool.textBox("xpath.result.value").requireText("world");
+		
+		xpathTool.close();
     }
     
+    @Test
+    public void testNS() throws IOException{
+    	File xml = new File(testData,"simple/transform.xsl");
+    	
+    	TestUtils.openFile(xml.getPath());
+    	action("xpath-tool-float",1);
+    	
+    	
+    	final FrameFixture xpathTool = TestUtils.findFrameByTitle("XPath Tool");
+    	
+		xpathTool.radioButton("xpath.source.buffer").click();
+		
+		xpathTool.button("xpath.ns.grab").click();
+		Pause.pause(2000);
+		
+		JTableFixture table = xpathTool.table("xpath.ns");
+		table.cell(TableCell.row(0).column(0)).requireValue("xsl");
+		table.cell(TableCell.row(0).column(1)).requireValue("http://www.w3.org/1999/XSL/Transform");
+		
+		
+		GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					xpathTool.textBox("xpath.expression").targetCastedTo(JTextComponent.class).setText("//xsl:value-of");
+				}
+		});
+		
+		xpathTool.button("xpath.evaluate").click();
+		
+		Pause.pause(5000);
+		xpathTool.textBox("xpath.result.data-type").requireText("node-set of size 1");
+		xpathTool.textBox("xpath.result.xml-fragments").requireText("<xsl:value-of select=\".\"/>\n");
+		xpathTool.close();
+    }
 }

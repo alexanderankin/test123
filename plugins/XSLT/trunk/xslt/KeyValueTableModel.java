@@ -1,5 +1,5 @@
 /*
- * StylesheetParameterTableModel.java - Table model for XSL stylesheet parameters
+ * KeyValueTableModel.java - Table model for XSL stylesheet parameters and XPath namespaces
  *
  * Copyright (c) 2003 Robert McKinnon
  *
@@ -28,23 +28,28 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Table model for XSL stylesheet parameters.
+ * Table model for XSL stylesheet parameters and XPath namespaces
  *
  * @author Robert McKinnon
  */
-public class StylesheetParameterTableModel extends AbstractTableModel {
-  private static final String NAME = jEdit.getProperty("xslt.parameters.table.name.header");
-  private static final String VALUE = jEdit.getProperty("xslt.parameters.table.value.header");
-  private static final String[] COLUMN_NAMES = {NAME, VALUE};
+public class KeyValueTableModel extends AbstractTableModel {
+  private final String[] columnNames;
 
   private static final int NAME_COL = 0;
   private static final int VALUE_COL = 1;
 
 
-  /** List of instances of Parameter */
+  /** List of instances of KeyValue */
   private List parameterList = new LinkedList();
 
 
+  public KeyValueTableModel(String name) {
+  	   columnNames = new String[]{
+  	   		  jEdit.getProperty(name+".table.name.header")
+  	   		, jEdit.getProperty(name+".table.value.header")};
+  }
+  
+  
   /**
    * Removes all of the elements from this model. The model will
    * be empty after this call returns (unless it throws an exception).
@@ -63,7 +68,7 @@ public class StylesheetParameterTableModel extends AbstractTableModel {
    * Implements method from interface {@link javax.swing.table.TableModel}.
    */
   public int getColumnCount() {
-    return COLUMN_NAMES.length;
+    return columnNames.length;
   }
 
 
@@ -79,7 +84,7 @@ public class StylesheetParameterTableModel extends AbstractTableModel {
    * Implements method from interface {@link javax.swing.table.TableModel}.
    */
   public Object getValueAt(int row, int col) {
-    Parameter parameter = getParameter(row);
+    KeyValue parameter = getKeyValue(row);
 
     if(col == NAME_COL) {
       return parameter.getName();
@@ -99,18 +104,18 @@ public class StylesheetParameterTableModel extends AbstractTableModel {
   }
 
 
-  private Parameter getParameter(int row) {
-    return (Parameter)parameterList.get(row);
+  private KeyValue getKeyValue(int row) {
+    return (KeyValue)parameterList.get(row);
   }
 
 
-  public String getParameterName(int row) {
-    return getParameter(row).getName();
+  public String getKeyValueName(int row) {
+    return getKeyValue(row).getName();
   }
 
 
-  public String getParameterValue(int row) {
-    return getParameter(row).getValue();
+  public String getKeyValueValue(int row) {
+    return getKeyValue(row).getValue();
   }
 
 
@@ -118,7 +123,7 @@ public class StylesheetParameterTableModel extends AbstractTableModel {
    * Overrides method from class {@link AbstractTableModel}.
    */
   public String getColumnName(int col) {
-    return COLUMN_NAMES[col];
+    return columnNames[col];
   }
 
 
@@ -134,7 +139,7 @@ public class StylesheetParameterTableModel extends AbstractTableModel {
    * Overrides method from class {@link AbstractTableModel}.
    */
   public void setValueAt(Object value, int row, int col) {
-    Parameter parameter = getParameter(row);
+    KeyValue parameter = getKeyValue(row);
     String text = (String)value;
 
     if(col == NAME_COL) {
@@ -157,7 +162,7 @@ public class StylesheetParameterTableModel extends AbstractTableModel {
   }
 
 
-  public void removeParameter(int row) {
+  public void removeKeyValue(int row) {
     parameterList.remove(row);
     fireTableRowsDeleted(row, row);
   }
@@ -166,10 +171,10 @@ public class StylesheetParameterTableModel extends AbstractTableModel {
   /**
    * Adds a parameter to the table.
    */
-  public void addParameter(String name, String value) {
+  public void addKeyValue(String name, String value) {
     removeDuplicates("", -1);
 
-    Parameter parameter = new Parameter(name, value);
+    KeyValue parameter = new KeyValue(name, value);
     parameterList.add(parameter);
     int newRow = parameterList.size() - 1;
     fireTableRowsInserted(newRow, newRow);
@@ -181,7 +186,7 @@ public class StylesheetParameterTableModel extends AbstractTableModel {
     int i = 0;
 
     while(iterator.hasNext()) {
-      Parameter parameter = (Parameter)iterator.next();
+      KeyValue parameter = (KeyValue)iterator.next();
       if(parameter.getName().equals(newName) && i != row) {
         iterator.remove();
         row--;
@@ -195,14 +200,14 @@ public class StylesheetParameterTableModel extends AbstractTableModel {
 
 
   /**
-   * Class to hold parameter name and value information.
+   * Class to hold name and value information.
    */
-  private class Parameter {
+  private class KeyValue {
     private String name;
     private String value;
 
 
-    public Parameter(String name, String value) {
+    public KeyValue(String name, String value) {
       this.name = name;
       this.value = value;
     }
@@ -227,10 +232,6 @@ public class StylesheetParameterTableModel extends AbstractTableModel {
       this.value = value;
     }
 
-
-    public boolean hasNoName() {
-      return name.equals("");
-    }
   }
 
 

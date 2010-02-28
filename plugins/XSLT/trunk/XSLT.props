@@ -190,6 +190,25 @@ xpath.message.dock-first=You must dock the XPath Tool before you can perform thi
 xpath.expression.label=XPath expression:
 xpath.expression.history-length=10
 
+xpath.ns.label=Namespace Context:
+
+xpath.ns.add.name=Add namespace-prefix binding
+xpath.ns.add.short-desc=Add a namespace-prefix binding to use in the XPath expression
+xpath.ns.add.small-icon=22x22/actions/list-add.png
+
+xpath.ns.remove.name=Remove namespace-prefix binding
+xpath.ns.remove.short-desc=Remove a namespace-prefix binding
+xpath.ns.remove.small-icon=22x22/actions/list-remove.png
+
+xpath.ns.table.name.header=Prefix
+xpath.ns.table.value.header=Namespace
+
+xpath.ns.grab.name=Grab namespaces
+xpath.ns.grab.short-desc=Collect all namespace bindings in the source document
+xpath.ns.grab.small-icon=22x22/actions/document-reload2.png
+
+xpath.ns.grab.error-no-source=You must select a source document before grabbing namespace bindings
+
 xpath.evaluate.button.tooltip=Evaluate XPath
 xpath.evaluate.button.icon=/xslt/icons/Evaluate.png
 
@@ -205,6 +224,9 @@ xpath.source.browse.prompt=Please select a source document
 
 xpath.source.radioselect.name=radioButtons
 xpath.source.radioselect.short-desc=Select source XML
+
+xpath.error.no-source.message=You must select a source Document first !
+xpath.error.no-source.title=Missing input
 
 
 xpath.result.data-type.label=Data type of result:
