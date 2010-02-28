@@ -51,6 +51,8 @@ public class UpdaterOptions extends AbstractOptionPane
 	private static final String UPDATE_ON_STARTUP_PROP = "updater.values.updateOnStartup";
 	private static final String UPDATE_PERIOD_PROP = "updater.values.updatePeriod";
 	private static final String INTERACTIVE_INSTALL_PROP = "updater.values.interactiveInstall";
+	private static final String AUTO_RESTART_PROP = "updater.values.autoRestart";
+	private static final String START_SCRIPT_PROP = "updater.values.startScript";
 	private static final String UNIX_SCRIPT_DIR_PROP = "updater.values.unixScriptDir";
 	private static final String UNIX_MAN_DIR_PROP = "updater.values.unixManDir";
 	private FileTextField logFile;
@@ -61,7 +63,9 @@ public class UpdaterOptions extends AbstractOptionPane
 	private JTextField unixScriptDir;
 	private JTextField unixManDir;
 	private JComboBox updateSources;
-
+	private JCheckBox autoRestart;
+	private FileTextField startScript; 
+	
 	public UpdaterOptions()
 	{
 		super("updater");
@@ -121,6 +125,13 @@ public class UpdaterOptions extends AbstractOptionPane
 		interactiveInstall = new JCheckBox(jEdit.getProperty(
 			"updater.options.interactiveInstall"), isInteractiveInstall());
 		addComponent(interactiveInstall);
+
+		// auto-restart
+		autoRestart = new JCheckBox(jEdit.getProperty(
+			"updater.options.autoRestart"));
+		autoRestart.setSelected(isAutoRestart());
+		startScript = new FileTextField(getStartScript(), false);
+		addComponent(autoRestart, startScript);
 		
 		// Unix-specific
 		unixScriptDir = new JTextField(getUnixScriptDir());
@@ -145,6 +156,9 @@ public class UpdaterOptions extends AbstractOptionPane
 			Integer.valueOf(updatePeriod.getValue().toString()));
 		jEdit.setBooleanProperty(INTERACTIVE_INSTALL_PROP,
 			interactiveInstall.isSelected());
+		jEdit.setBooleanProperty(AUTO_RESTART_PROP, autoRestart.isSelected());
+		jEdit.setProperty(START_SCRIPT_PROP,
+			startScript.getTextField().getText());
 		jEdit.setProperty(UNIX_SCRIPT_DIR_PROP, unixScriptDir.getText());
 		jEdit.setProperty(UNIX_MAN_DIR_PROP, unixManDir.getText());
 	}
@@ -177,6 +191,16 @@ public class UpdaterOptions extends AbstractOptionPane
 	public static boolean isInteractiveInstall()
 	{
 		return jEdit.getBooleanProperty(INTERACTIVE_INSTALL_PROP, false);
+	}
+
+	public static boolean isAutoRestart()
+	{
+		return jEdit.getBooleanProperty(AUTO_RESTART_PROP);
+	}
+	public static String getStartScript()
+	{
+		return jEdit.getProperty(START_SCRIPT_PROP, getInstallDir() +
+			File.separator + "jedit");
 	}
 
 	public static String getUnixScriptDir()

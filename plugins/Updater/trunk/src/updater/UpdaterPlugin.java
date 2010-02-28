@@ -120,7 +120,9 @@ public class UpdaterPlugin extends EditPlugin
 			//"-Xdebug", "-Xnoagent", "-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=y",
 			"-cp", getPluginJAR().getFile().getAbsolutePath(),
 			InstallLauncher.class.getCanonicalName(),
-			UpdaterOptions.getUpdateLogFile() };
+			UpdaterOptions.getUpdateLogFile(),
+			UpdaterOptions.isAutoRestart() ? UpdaterOptions.getStartScript() : ""
+		};
 		try {
 			backgroundProcess = Runtime.getRuntime().exec(args);
 			writer = new OutputStreamWriter(backgroundProcess.getOutputStream());
