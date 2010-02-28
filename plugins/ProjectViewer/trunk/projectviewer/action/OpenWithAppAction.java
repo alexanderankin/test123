@@ -55,7 +55,7 @@ public class OpenWithAppAction extends Action {
 	//{{{ +actionPerformed(ActionEvent) : void
 	/** Creates a new project. */
 	public void actionPerformed(ActionEvent e) {
-		VPTNode node = (VPTNode) viewer.getSelectedNode();
+		VPTNode node = viewer.getSelectedNode();
 		appList.launchApp(node.getNodePath(), viewer);
 	} //}}}
 

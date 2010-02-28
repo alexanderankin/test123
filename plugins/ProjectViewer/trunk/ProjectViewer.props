@@ -78,15 +78,15 @@ projectviewer.actions_set_name=Plugin: Project Viewer - Project Shortcuts
 plugin.projectviewer.ProjectPlugin.menu.label=Project Viewer
 plugin.projectviewer.ProjectPlugin.menu.code=new projectviewer.PVMenuProvider();
 projectviewer.menu=\
-    projectviewer \
+	projectviewer \
 	projectviewer_focuswindow \
-    projectviewer_parent-group \
-    projectviewer_set-active \
+	projectviewer_parent-group \
+	projectviewer_set-active \
 	- \
 	projectviewer_wrapper_edit \
 	projectviewer_wrapper_reimport \
 	projectviewer_jarmaker_dialog \
-    projectviewer_new-file \
+	projectviewer_new-file \
 	- \
 	projectviewer_open_all_files \
 	projectviewer_close_all_files \

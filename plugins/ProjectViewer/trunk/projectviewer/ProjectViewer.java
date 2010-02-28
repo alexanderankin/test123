@@ -22,6 +22,7 @@ package projectviewer;
 import java.io.File;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -1207,11 +1208,13 @@ public final class ProjectViewer extends JPanel
 			if (esu.getWhat() == ErrorSourceUpdate.ERROR_ADDED
 				|| esu.getWhat() == ErrorSourceUpdate.ERROR_REMOVED)
 			{
-				VPTProject p = (VPTProject) treeRoot;
 				ErrorSource.Error error = esu.getError();
-				VPTNode f = p.getChildNode(error.getFilePath());
-				if (f != null) {
-					treePanel.nodeChanged(f);
+				if (treeRoot.isGroup()) {
+					checkGroup((VPTGroup) treeRoot,
+							   error.getFilePath());
+				} else if (treeRoot.isProject()) {
+					checkErrorPath((VPTProject) treeRoot,
+								   error.getFilePath());
 				}
 			}
 			if (esu.getWhat() == ErrorSourceUpdate.ERROR_SOURCE_ADDED
@@ -1219,6 +1222,35 @@ public final class ProjectViewer extends JPanel
 				|| esu.getWhat() == ErrorSourceUpdate.ERRORS_CLEARED)
 			{
 				treePanel.repaint();
+			}
+		}
+
+
+		private void checkGroup(VPTGroup grp,
+								String path)
+		{
+			Enumeration e = grp.children();
+			while (e.hasMoreElements()) {
+				VPTNode n = (VPTNode) e.nextElement();
+				if (n.isGroup()) {
+					checkGroup((VPTGroup) n, path);
+				} else {
+					VPTProject p = (VPTProject) n;
+					/* Don't bother if the project isn't loaded yet. */
+					if (ProjectManager.getInstance().isLoaded(p.getName())) {
+						checkErrorPath(p, path);
+					}
+				}
+			}
+		}
+
+
+		private void checkErrorPath(VPTProject p,
+									String path)
+		{
+			VPTNode f = p.getChildNode(path);
+			if (f != null) {
+				treePanel.nodeChanged(f);
 			}
 		}
 

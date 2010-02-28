@@ -298,7 +298,7 @@ public class ProjectTreePanel extends JPanel
     public void reloadIconComposer(VPTProject proj)
     {
         VersionControlService svc = null;
-        String svcname = ((VPTProject)proj).getProperty(VersionControlService.VC_SERVICE_KEY);
+        String svcname = proj.getProperty(VersionControlService.VC_SERVICE_KEY);
         if (svcname != null) {
             svc = (VersionControlService)
                 ServiceManager.getService(VersionControlService.class.getName(),
