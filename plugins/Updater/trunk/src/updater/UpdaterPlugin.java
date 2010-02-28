@@ -64,7 +64,7 @@ public class UpdaterPlugin extends EditPlugin
 			home.mkdir();
 		updating = false;
 		if (UpdaterOptions.isUpdateOnStartup())
-			updateFromDefaultSource();
+			updateFromDefaultSource(true);
 		int updatePeriod = UpdaterOptions.getUpdatePeriod();
 		if (updatePeriod != 0)
 		{
@@ -90,7 +90,7 @@ public class UpdaterPlugin extends EditPlugin
 			public void actionPerformed(ActionEvent e)
 			{
 				jEdit.setIntegerProperty(LAST_UPDATE_TIME_PROP, 10);
-				updateFromDefaultSource();
+				updateFromDefaultSource(true);
 			}
 		};
 		Timer t = new Timer(updatePeriod * MILLIS_PER_UPDATE_PERIOD_UNIT, al);
@@ -98,14 +98,14 @@ public class UpdaterPlugin extends EditPlugin
 		t.start();
 	}
 
-	private void updateFromDefaultSource()
+	public void updateFromDefaultSource(boolean automatic)
 	{
 		try
 		{
 			UpdateSource source = (UpdateSource) ServiceManager.getService(
 				UPDATER_SOURCE_SERVICE, UpdaterOptions.getUpdateSourceName());
 			if (source != null)
-				updateVersion(source, true);
+				updateVersion(source, automatic);
 		}
 		catch (Exception e)
 		{

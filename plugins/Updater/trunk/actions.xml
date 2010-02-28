@@ -8,6 +8,11 @@
 			updater.UpdaterPlugin.getInstance().updateFromUserSelectedSource();
 		</CODE>
 	</ACTION>
+	<ACTION NAME="updater-update-default" NO_REPEAT="TRUE">
+		<CODE>
+			updater.UpdaterPlugin.getInstance().updateFromDefaultSource(false);
+		</CODE>
+	</ACTION>
 	<ACTION NAME="updater-reset-props" NO_REPEAT="TRUE">
 		<CODE>
 			updater.UpdaterPlugin.getInstance().resetProps();
