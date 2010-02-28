@@ -34,6 +34,7 @@ updater.options.updateOnStartup=Check for updates on startup
 updater.options.updateEvery=Check for updates every:
 updater.options.updatePeriod=days
 updater.options.interactiveInstall=Interactive update (select components, install path)
+updater.options.autoRestart=When installation is over, start jEdit using:
 updater.options.unixScriptDir=Unix script directory:
 updater.options.unixManDir=Unix man page directory:
 
@@ -79,5 +80,7 @@ updater.msg.updateDialogTitle=Updating jEdit
 updater.msg.updateDialogCloseButton=Ok
 updater.msg.updateDialogCancelButton=Cancel
 updater.msg.waitForInstall=Please wait while the update is being installed...
-updater.msg.installerDone=Installer done. You can now start jEdit if an update was installed.
+updater.msg.installerDoneAutoStart=Installer done. jEdit will now be started using the start script.
+updater.msg.installerDoneManualStart=Installer done. You can now start jEdit if an update was installed.
 updater.msg.updateErrorAbort=Encountered an unknown problem - aborting update.
+updater.msg.startScriptDone=Start script done.

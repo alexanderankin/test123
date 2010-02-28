@@ -73,11 +73,13 @@ public class InstallLauncher
 	private static OutputStreamWriter out;
 	private static ActionListener buttonActionListener;
 
+	// Program arguments (optional): logFile, startScript
 	public static void main(String [] args)
 	{
 		String logFile = (args.length > 0) ? args[0] : null;
 		if (logFile != null)
 			startLogging(logFile);
+		String startScript = (args.length > 1) ? args[1] : null;
 		props = new Properties();
 		try
 		{
@@ -135,7 +137,14 @@ public class InstallLauncher
 		cancel.setEnabled(false);
 		appendText(props.getProperty("updater.msg.waitForInstall"));
 		runInstaller(params);
-		text.append(props.getProperty("updater.msg.installerDone"));
+		if (startScript != null)
+		{
+			appendText(props.getProperty("updater.msg.installerDoneAutoStart"));
+			runStartScript(startScript);
+			appendText(props.getProperty("updater.msg.startScriptDone"));
+		}
+		else
+			appendText(props.getProperty("updater.msg.installerDoneManualStart"));
 		ok.setEnabled(true);
 		OutputStreamWriter bout = new OutputStreamWriter(System.out);
 		try
@@ -223,6 +232,25 @@ public class InstallLauncher
 		if (confirmed)
 			ok.setEnabled(false);
 		awaitingConfirmation = false;
+	}
+
+	private static void runStartScript(String script)
+	{
+		if (script.contains(" ") && (! script.startsWith("\"")))
+			script = "\"" + script + "\"";
+		log("Running: " + script + "\n");
+		try {
+			Process p = Runtime.getRuntime().exec(script);
+			StreamConsumer osc = new StreamConsumer(p.getInputStream());
+			osc.start();
+			StreamConsumer esc = new StreamConsumer(p.getErrorStream());
+			esc.start();
+			p.waitFor();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	private static void runInstaller(Vector<String> params)
