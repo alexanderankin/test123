@@ -212,6 +212,28 @@ public class XSLTPluginTest{
     }
 
     /**
+     */
+    @Test
+    public void testXSLTCompile() throws IOException{
+    	File xsl = new File(testData,"broken/transform.xsl");
+    	
+    	TestUtils.openFile(xsl.getPath());
+
+		action("error-list-clear");
+    	
+    	action("xslt.compile");
+    	
+		action("error-list-show");
+    	FrameFixture errorlist = TestUtils.findFrameByTitle("Error List");
+
+		Pause.pause(2000);
+    	
+		errorlist.tree().selectRow(1);
+		assertTrue(errorlist.tree().valueAt(1).startsWith("6: (XSLT error)"));
+		errorlist.close();
+    }
+
+    /**
      * this test is failing, but it works when I do it manually...
      */
     @Ignore("always failing") @Test
