@@ -121,5 +121,57 @@ public class XSLTThreeWayModeTest{
     	close(view(),xslBuffer);
     	close(view(),resBuffer);
     	
+    	xsltProcessor.close();
+    }
+    
+    @Test
+    public void testToggleThreeWayMode(){
+    	File xml = new File(testData,"simple/source.xml");
+     	File xsl = new File(testData,"simple/transform.xsl");
+     	
+     	view().unsplit();
+     	view().splitVertically();
+     	view().splitVertically();
+     	
+    	assertEquals(3,view().getEditPanes().length);
+
+     	// out of order : XSL, source, result
+     	jEdit.openFile((view().getEditPanes()[0]),xsl.getPath());
+     	jEdit.openFile((view().getEditPanes()[1]),xml.getPath());
+     	jEdit.openFile((view().getEditPanes()[2]),xml.getPath());
+     	
+    	final Buffer xmlBuffer = (view().getEditPanes()[0]).getBuffer();
+    	final Buffer xslBuffer = (view().getEditPanes()[1]).getBuffer();
+    	final Buffer resBuffer = (view().getEditPanes()[2]).getBuffer();
+
+    	Pause.pause(500);
+
+    	PluginOptionsFixture optionsF = TestUtils.pluginOptions();
+    	JPanelFixture options = optionsF.optionPane("XSLT","xslt");
+    	Pause.pause(1000);
+    	options.comboBox("factory").selectItem(Pattern.compile("XSLT 1\\.0.*"));
+    	optionsF.OK();
+
+    	action("xslt-processor");
+    	final FrameFixture xsltProcessor = TestUtils.findFrameByTitle("XSLT Processor");
+
+    	xsltProcessor.checkBox("three-way").check();
+    	
+    	xsltProcessor.radioButton("xslt.source.buffer").requireDisabled();
+    	xsltProcessor.radioButton("xslt.source.file").requireDisabled();
+    	xsltProcessor.button("xslt.stylesheets.add").requireDisabled();
+
+    	xsltProcessor.button("xslt.transform").click();
+    	
+    	Pause.pause(10000);
+    	
+     	assertTrue(resBuffer.isDirty());
+    	
+    	
+    	close(view(),xmlBuffer);
+    	close(view(),xslBuffer);
+    	close(view(),resBuffer);
+    	
+    	xsltProcessor.close();
     }
 }

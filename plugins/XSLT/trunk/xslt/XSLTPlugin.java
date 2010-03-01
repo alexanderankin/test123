@@ -53,7 +53,6 @@ import javax.xml.transform.TransformerException;
  */
 public class XSLTPlugin extends EBPlugin implements EBComponent{
 
-	private static XSLTProcessor processor;
 	private static DefaultErrorSource errorSource;
 	public static String COMPILE_ON_SAVE_PROP="xslt.compile-on-save";
 	
@@ -70,7 +69,8 @@ public class XSLTPlugin extends EBPlugin implements EBComponent{
 		String saxDriver = jEdit.getProperty(XSLTUtilities.SAX_DRIVER);
 		String indentAmount = jEdit.getProperty("xslt.transform.indent-amount");
 
-		XSLTUtilities.setXmlSystemProperties(saxParserFactory, saxDriver);
+		// avoid setting system properties
+		//XSLTUtilities.setXmlSystemProperties(saxParserFactory, saxDriver);
 		XSLTUtilities.setIndentAmount(indentAmount);
 		
 		compileOnSave = jEdit.getBooleanProperty(COMPILE_ON_SAVE_PROP);
@@ -118,11 +118,6 @@ public class XSLTPlugin extends EBPlugin implements EBComponent{
 	static void showMessageDialog(String property, Component component) {
 		String message = jEdit.getProperty(property);
 		JOptionPane.showMessageDialog(component, message);
-	}
-
-
-	static void setProcessor(XSLTProcessor processor) {
-		XSLTPlugin.processor = processor;
 	}
 
 	public void handleMessage(EBMessage message) {
