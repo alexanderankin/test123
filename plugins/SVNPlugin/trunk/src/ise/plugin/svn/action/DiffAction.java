@@ -169,7 +169,8 @@ public class DiffAction extends SVNAction {
                 data.setRevision2( SVNRevision.parse( revision2 ) );
             }
 
-            if ( getUsername() == null && data.getUsername() == null ) {
+            // don't need username/password if diffing against base
+            if ( !data.getRevision1().equals(SVNRevision.BASE) && getUsername() == null && data.getUsername() == null ) {
                 verifyLogin( data.getPaths() == null ? null : data.getPaths().get( 0 ) );
                 if ( isCanceled() ) {
                     return ;
