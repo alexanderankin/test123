@@ -166,14 +166,12 @@ public class XsltActions {
   	  	  view.splitVertically();
   	  	  EditPane[] editPanes = view.getEditPanes();
   	  	  String[]modes = { "xml", "xsl", "text" };
-  	  	  //String[]names = { "1-input.xml", "1-transform.xsl", "1-result.txt"};
   	  	  String[]templates = { xmlTemplate, xslTemplate, ""};
   	  	  
   	  	  for(int i=0;i<modes.length;i++){
   	  	  	  Buffer b = jEdit.newFile(editPanes[i]);
   	  	  	  b.setMode(modes[i]);
   	  	  	  b.insert(0,templates[i]);
-  	  	  	  //b.setDirty(true);
   	  	  }
   	  	  
   	  	  
