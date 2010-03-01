@@ -811,7 +811,7 @@ class DocumentCache {
 	public static Document getFromCache(JEditBuffer sourceBuffer) throws Exception {
 		DocumentCache cacheObj = getCacheObject(sourceBuffer);
 		if (cacheObj.getDocument() == null) {
-			InputSource inputSource = new InputSource(((Buffer)sourceBuffer).getPath());				
+			InputSource inputSource = xml.Resolver.instance().resolveEntity("",((Buffer)sourceBuffer).getPath());				
 			cacheObj.doParse(inputSource);
 		}
 		return cacheObj.getDocument();
