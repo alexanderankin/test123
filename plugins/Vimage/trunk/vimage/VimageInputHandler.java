@@ -144,7 +144,7 @@ public class VimageInputHandler extends DefaultInputHandler
         TextArea text_area = view.getTextArea();
         setBlockCaret(true);
         load_clip();
-        play_clip = true;
+        play_clip = false;
         try {
             this.namespace.setVariable("mode", this);
         } catch (org.gjt.sp.jedit.bsh.UtilEvalError ex) {
@@ -239,6 +239,18 @@ public class VimageInputHandler extends DefaultInputHandler
             setMode(this.base_mode);
         }
         
+        if (base_mode.equals("imap") && play_clip) {
+            play_clip = false;
+            clip.setFramePosition(0);
+            clip.start();
+            new Timer(800, new ActionListener() {
+                public void actionPerformed(ActionEvent evt)
+                {
+                    play_clip = true;
+                }
+            }).start();
+        }
+        
         if (method != null) {
             try {
                 // TODO: explain why setting 2 namespaces?
@@ -253,17 +265,6 @@ public class VimageInputHandler extends DefaultInputHandler
                 Log.log(Log.DEBUG, this, ex);
             }
             return true;
-        }
-        if (base_mode.equals("imap") && play_clip) {
-            play_clip = false;
-            clip.setFramePosition(0);
-            clip.start();
-            new Timer(500, new ActionListener() {
-                public void actionPerformed(ActionEvent evt)
-                {
-                    play_clip = true;
-                }
-            }).start();
         }
         if (mode.equals("imap") || ((key.modifiers != null) && !key.modifiers.equals(""))) {
             return this.old_handler.handleKey(key, dry_run);
