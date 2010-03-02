@@ -911,14 +911,25 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 		{
 			if (SwingUtilities.isLeftMouseButton(e))
 			{
-				if (e.getClickCount() == 2 &&
-				    jEdit.getBooleanProperty("buffertabs.close-tab-on.double-left-click"))
+				boolean doubleClick = e.getClickCount() == 2;
+				boolean closeTab = jEdit.getBooleanProperty("buffertabs.close-tab-on.double-left-click");
+				boolean toggleDocks = jEdit.getBooleanProperty("buffertabs.toggle-docks-on.double-left-click");
+				if (doubleClick)
 				{
-					//set the focus on the selected buffer
-					int tabIndex = getTabAt(e.getX(), e.getY());
-					editPane.focusOnTextArea();
-					jEdit.closeBuffer(editPane, editPane.getBufferSet().getBuffer(tabIndex));
-
+					if (closeTab)
+					{
+						//set the focus on the selected buffer
+						int tabIndex = getTabAt(e.getX(), e.getY());
+						editPane.focusOnTextArea();
+						jEdit.closeBuffer(editPane, editPane.getBufferSet().getBuffer(tabIndex));
+					}
+					else if (toggleDocks)
+					{
+						//set the focus on the selected buffer
+						int tabIndex = getTabAt(e.getX(), e.getY());
+						editPane.focusOnTextArea();
+						jEdit.getActiveView().getDockableWindowManager().toggleDockAreas();
+					}
 				}
 			}
 		}

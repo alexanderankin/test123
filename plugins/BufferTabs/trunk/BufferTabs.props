@@ -74,6 +74,7 @@ options.buffertabs.close-tab-on.single-middle-click.label=single middle click
 options.buffertabs.close-tab-on.label=Close tab on:
 options.buffertabs.mouse-options.label=Mouse Options
 options.buffertabs.layout-and-style-options.label=Layout and Style Options
+options.buffertabs.toggle-docks-on.label=Toggle docking areas on:
 
 # Miscelaneous labels
 buffertabs.reorderBuffersDisabled.label=Buffer Tab Positioning

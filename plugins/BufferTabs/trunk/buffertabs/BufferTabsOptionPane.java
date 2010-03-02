@@ -28,6 +28,8 @@ import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
@@ -58,6 +60,7 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
     private JCheckBox highlightColorsCB;
 	private JCheckBox doubleClickCB;
     private JCheckBox middleClickCB;
+    private JCheckBox toggleDocksDoubleClickCB;
 
     public BufferTabsOptionPane() {
         super("buffertabs");
@@ -78,6 +81,10 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
 
        addComponent(new Box.Filler(ySpace, ySpace, ySpace));
        
+       
+       // Close tabs on option.
+       DoubleClickOptionSwitch dcSwitch = new DoubleClickOptionSwitch();
+       
        addComponent(new JLabel(jEdit.getProperty("options.buffertabs.close-tab-on.label")));
         
        JPanel checkBoxPanel = new JPanel(new GridBagLayout());
@@ -85,6 +92,7 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
        c.anchor = GridBagConstraints.LINE_START;
        
        doubleClickCB = new JCheckBox(jEdit.getProperty("options.buffertabs.close-tab-on.double-left-click.label"));
+       doubleClickCB.addMouseListener(dcSwitch);
        middleClickCB = new JCheckBox(jEdit.getProperty("options.buffertabs.close-tab-on.single-middle-click.label"));
         
         c.gridy = 0;
@@ -103,6 +111,30 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
         checkBoxPanel.add(middleClickCB, c);
         
         addComponent(checkBoxPanel);
+        addComponent(new Box.Filler(ySpace, ySpace, ySpace));
+        
+        // Toggle docking areas option.
+        addComponent(new JLabel(jEdit.getProperty("options.buffertabs.toggle-docks-on.label")));
+        
+       JPanel docksCheckBoxPanel = new JPanel(new GridBagLayout());
+       GridBagConstraints dC = new GridBagConstraints();
+       dC.anchor = GridBagConstraints.LINE_START;
+       
+       toggleDocksDoubleClickCB = new JCheckBox(jEdit.getProperty("options.buffertabs.close-tab-on.double-left-click.label"));
+       toggleDocksDoubleClickCB.addMouseListener(dcSwitch);
+
+        
+        dC.gridy = 0;
+        dC.gridx = 0;
+        dC.gridwidth = 1;
+        docksCheckBoxPanel.add(new Box.Filler(xSpace, xSpace, xSpace), dC);
+        
+        dC.gridy = 0;
+        dC.gridx = 1;
+        dC.gridwidth = GridBagConstraints.REMAINDER;
+        docksCheckBoxPanel.add(toggleDocksDoubleClickCB, dC);
+        
+        addComponent(docksCheckBoxPanel);
         
         addSeparator("options.buffertabs.layout-and-style-options.label");
         
@@ -223,6 +255,9 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
         middleClickCB.setSelected(
             jEdit.getBooleanProperty("buffertabs.close-tab-on.single-middle-click", true)
         );
+        toggleDocksDoubleClickCB.setSelected(
+            jEdit.getBooleanProperty("buffertabs.toggle-docks-on.double-left-click", false)
+        );
 
         //CES: Color tabs
         enableColorsCB.setSelected(
@@ -290,6 +325,7 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
         jEdit.setBooleanProperty( "buffertabs.color-foreground", colorTextRB.isSelected() );
      jEdit.setBooleanProperty("buffertabs.close-tab-on.single-middle-click", middleClickCB.isSelected());		jEdit.setBooleanProperty( "buffertabs.color-selected-foreground", colorSelTextRB.isSelected() );
 	    jEdit.setBooleanProperty("buffertabs.close-tab-on.double-left-click", doubleClickCB.isSelected());
+	    jEdit.setBooleanProperty("buffertabs.toggle-docks-on.double-left-click", toggleDocksDoubleClickCB.isSelected());
 
  
     }
@@ -324,6 +360,24 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
         colorTextRB.setEnabled( enableColorsCB.isSelected() );
    colorSelTabRB.setEnabled( enableColorsCB.isSelected() && highlightColorsCB.isSelected());
         colorSelTextRB.setEnabled( enableColorsCB.isSelected() && highlightColorsCB.isSelected());
+    }
+    
+    /**
+     * Toggles the two double click options. If "close on" double click is selected, and "toggle docking areas" is also
+     * selected, then "toggle docking areas" is deselected. Likewise if "toggle docking areas" is selected, and
+     * "close on" is already selected, "close on" is deselected.
+     */
+    private class DoubleClickOptionSwitch extends MouseAdapter {
+    	 
+    	 public void mouseClicked(MouseEvent e) {
+    	 	 JCheckBox cb = (JCheckBox)e.getSource();
+    	 	 if(cb.isSelected() && cb == doubleClickCB) {
+				 toggleDocksDoubleClickCB.setSelected(false);
+    	 	 } else if (cb.isSelected() && cb == toggleDocksDoubleClickCB) {
+    	 	 	 doubleClickCB.setSelected(false);
+    	 	 }
+    	 }
+    	 
     }
 }
 

@@ -46,48 +46,13 @@ class BufferTabComponent extends JPanel
 		super(new FlowLayout(FlowLayout.CENTER, 5, 0));
 		pane = bufferTabs;
 		setOpaque(false);
-		JLabel l = new JLabel() {
-			@Override
-			public Icon getIcon() {
-				int index = pane.indexOfTabComponent(BufferTabComponent.this);
-				if (index < 0)
-					return null;
-				return pane.getIconAt(index);
-			}
-			@Override
-			public String getText() {
-				int index = pane.indexOfTabComponent(BufferTabComponent.this);
-				if (index < 0)
-					return null;
-				return pane.getTitleAt(index);
-			}
-		};
+		JLabel l = new BufferTabLabel(this);
 		add(l);
-		final JLabel close = new JLabel(icon);
+		JLabel close = new JLabel(icon);
 		close.setPreferredSize(iconDimension);
 		close.setForeground(Color.BLACK);
 		add(close);
-		close.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				close.setForeground(Color.RED);
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-				close.setForeground(Color.BLACK);
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				int index = pane.indexOfTabComponent(BufferTabComponent.this);
-				if (index < 0)
-					return;
-				EditPane editPane = pane.getEditPane();
-				jEdit.closeBuffer(editPane,
-					editPane.getBufferSet().getBuffer(index));
-			}
-		});
+		close.addMouseListener(new BufferTabCloseButtonListener(this));
 	}
 	
 	private static class CloseIcon implements Icon {
@@ -105,6 +70,61 @@ class BufferTabComponent extends JPanel
 		}
 		public int getIconHeight() {
 			return height;
+		}
+	}
+	
+	private class BufferTabCloseButtonListener extends MouseAdapter {
+		
+		private BufferTabComponent component;
+		
+		BufferTabCloseButtonListener(BufferTabComponent component) {
+			this.component = component;
+		}
+		
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			JLabel close = (JLabel)e.getSource();
+			close.setForeground(Color.RED);
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+			JLabel close = (JLabel)e.getSource();
+			close.setForeground(Color.BLACK);
+		}
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			int index = pane.indexOfTabComponent(component);
+			if (index < 0)
+				return;
+			EditPane editPane = pane.getEditPane();
+			jEdit.closeBuffer(editPane,
+				editPane.getBufferSet().getBuffer(index));
+		}
+	}
+	
+	private class BufferTabLabel extends JLabel {
+		
+		private BufferTabComponent component;
+		
+		BufferTabLabel(BufferTabComponent component) {
+			this.component = component;
+		}
+		
+		@Override
+		public Icon getIcon() {
+			int index = pane.indexOfTabComponent(component);
+			if (index < 0)
+				return null;
+			return pane.getIconAt(index);
+		}
+		@Override
+		public String getText() {
+			int index = pane.indexOfTabComponent(component);
+			if (index < 0)
+				return null;
+			return pane.getTitleAt(index);
 		}
 	}
 
