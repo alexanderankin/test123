@@ -39,7 +39,7 @@ import org.gjt.sp.jedit.jEdit;
 import ise.plugin.svn.data.UpdateData;
 import ise.java.awt.KappaLayout;
 import ise.plugin.svn.gui.component.*;
-// TODO: set the cursor to a darker color
+
 public class UpdateDialog extends JDialog {
 
     private UpdateData data = null;
