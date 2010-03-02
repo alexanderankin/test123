@@ -156,16 +156,11 @@ public class Copy {
             if ( results != null && results.equals( SVNCommitInfo.NULL ) ) {
                 // the commit didn't work, let the user know
                 out.println(results.getErrorMessage());
-                //javax.swing.JOptionPane.showMessageDialog(null, "Commit Error", results.getErrorMessage(), JOptionPane.ERROR_MESSAGE);
             }
         }
-        catch(CommandInitializationException cie) {
-            throw cie;   
-        }
         catch(Exception e) {
-            // TODO: this is not enough, need to show a dialog here.
-            out.println(e.getMessage());
-            e.printStackTrace();   
+            // just throw the exception, the copy action will handle it.
+            throw new CommandInitializationException(e);
         }
         finally {
             out.flush();
