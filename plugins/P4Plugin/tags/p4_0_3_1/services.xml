@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE SERVICES SYSTEM "services.dtd">
+
+<SERVICES>
+	<SERVICE CLASS="console.Shell" NAME="Perforce">
+		new p4plugin.P4Shell();
+	</SERVICE>
+
+	<SERVICE CLASS="projectviewer.action.Action"
+	         NAME="Perforce Context Menu">
+		new p4plugin.action.P4FileMenu();
+	</SERVICE>
+
+	<SERVICE CLASS="projectviewer.gui.NodePropertyProvider"
+	         NAME="Perforce File Stats">
+		new p4plugin.P4FileInfo();
+	</SERVICE>
+
+	<SERVICE CLASS="projectviewer.config.VersionControlService" NAME="Perforce">
+		new p4plugin.P4Service();
+	</SERVICE>
+
+</SERVICES>
+

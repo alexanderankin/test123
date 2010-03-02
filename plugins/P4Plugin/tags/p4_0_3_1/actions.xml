@@ -1,0 +1,156 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<!-- :tabSize=4:indentSize=4:noTabs=true::folding=explicit:collapseFolds=1: -->
+
+<ACTIONS>
+
+    <!--{{{ PV-agnostic actions. -->
+
+    <ACTION NAME="p4plugin_client">
+        <CODE>
+            projectviewer.PVActions.pvActionWrapper(
+                new p4plugin.action.P4Client(), view, true);
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="p4plugin_describe">
+        <CODE>
+            projectviewer.PVActions.pvActionWrapper(
+                new p4plugin.action.P4Describe(), view, true);
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="p4plugin_user">
+        <CODE>
+            projectviewer.PVActions.pvActionWrapper(
+                new p4plugin.action.P4User(), view, true);
+        </CODE>
+    </ACTION>
+
+    <!--}}}-->
+
+    <!--{{{ Options that need PV opened. -->
+
+    <ACTION NAME="p4plugin_add">
+        <CODE>
+            projectviewer.PVActions.pvActionWrapper(
+                new p4plugin.action.P4FileAction("add", true), view, false);
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="p4plugin_delete">
+        <CODE>
+            projectviewer.PVActions.pvActionWrapper(
+                new p4plugin.action.P4FileAction("delete", true), view, false);
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="p4plugin_edit">
+        <CODE>
+            projectviewer.PVActions.pvActionWrapper(
+                new p4plugin.action.P4FileAction("edit", true), view, false);
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="p4plugin_add_cl">
+        <CODE>
+            projectviewer.PVActions.pvActionWrapper(
+                new p4plugin.action.P4FileAction("add", false), view, false);
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="p4plugin_delete_cl">
+        <CODE>
+            projectviewer.PVActions.pvActionWrapper(
+                new p4plugin.action.P4FileAction("delete", false), view, false);
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="p4plugin_edit_cl">
+        <CODE>
+            projectviewer.PVActions.pvActionWrapper(
+                new p4plugin.action.P4FileAction("edit", false), view, false);
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="p4plugin_open_files">
+        <CODE>
+            projectviewer.PVActions.pvActionWrapper(
+                new p4plugin.action.P4OpenFiles(false), view, false);
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="p4plugin_open_files_ex">
+        <CODE>
+            projectviewer.PVActions.pvActionWrapper(
+                new p4plugin.action.P4OpenFiles(true), view, false);
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="p4plugin_edit_cl">
+        <CODE>
+            projectviewer.PVActions.pvActionWrapper(
+                new p4plugin.action.P4FileAction("edit", false), view, false);
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="p4plugin_reopen_cl">
+        <CODE>
+            projectviewer.PVActions.pvActionWrapper(
+                new p4plugin.action.P4FileAction("reopen", false, false), view, false);
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="p4plugin_revert">
+        <CODE>
+            projectviewer.PVActions.pvActionWrapper(
+                new p4plugin.action.P4FileAction("revert", true), view, false);
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="p4plugin_sync">
+        <CODE>
+            projectviewer.PVActions.pvActionWrapper(
+                new p4plugin.action.P4SyncAction(), view, false);
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="p4plugin_diff">
+        <CODE>
+            projectviewer.PVActions.pvActionWrapper(
+                new p4plugin.action.P4FileInfoAction("diff"), view, false);
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="p4plugin_filelog">
+        <CODE>
+            projectviewer.PVActions.pvActionWrapper(
+                new p4plugin.action.P4FileInfoAction("filelog"), view, false);
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="p4plugin_change">
+        <CODE>
+            projectviewer.PVActions.pvActionWrapper(
+                new p4plugin.action.P4Change(), view, true);
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="p4plugin_submit">
+        <CODE>
+            projectviewer.PVActions.pvActionWrapper(
+                new p4plugin.action.P4Submit(true), view, false);
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="p4plugin_submit_cl">
+        <CODE>
+            projectviewer.PVActions.pvActionWrapper(
+                new p4plugin.action.P4Submit(false), view, true);
+        </CODE>
+    </ACTION>
+
+    <!--}}}-->
+
+</ACTIONS>
