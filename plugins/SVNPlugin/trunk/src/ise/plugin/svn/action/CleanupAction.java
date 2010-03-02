@@ -75,7 +75,7 @@ public class CleanupAction extends SVNAction {
             }
             data.setUsername( getUsername() );
             data.setPassword( getPassword() );
-            
+
             data.setOut( new ConsolePrintStream( getView() ) );
 
             getView().getDockableWindowManager().showDockableWindow( "subversion" );
@@ -119,6 +119,10 @@ public class CleanupAction extends SVNAction {
 
                 @Override
                 protected void done() {
+                    if ( isCancelled() ) {
+                        return ;
+                    }
+
                     try {
                         data.getOut().print( get() );
                     }

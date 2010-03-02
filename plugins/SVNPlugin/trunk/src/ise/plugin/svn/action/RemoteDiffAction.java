@@ -175,6 +175,10 @@ public class RemoteDiffAction extends SVNAction {
 
             @Override
             protected void done() {
+                if ( isCancelled() ) {
+                    return ;
+                }
+
                 try {
                     File[] files = get();
                     if ( files == null ) {

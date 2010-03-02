@@ -107,6 +107,10 @@ public class BrowseRepositoryAction extends SVNAction {
 
             @Override
             protected void done() {
+                if ( isCancelled() ) {
+                    return ;
+                }
+
                 try {
                     List<DirTreeNode> children = get();
                     for ( DirTreeNode child : children ) {

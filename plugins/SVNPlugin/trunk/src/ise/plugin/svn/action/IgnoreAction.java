@@ -197,6 +197,10 @@ public class IgnoreAction extends SVNAction {
 
                 @Override
                 protected void done() {
+                    if ( isCancelled() ) {
+                        return ;
+                    }
+
                     try {
                         TreeMap<String, Properties> results = get();
                         if ( results != null ) {

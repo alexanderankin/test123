@@ -139,6 +139,10 @@ public class LockAction extends SVNAction {
 
                 @Override
                 protected void done() {
+                    if ( isCancelled() ) {
+                        return ;
+                    }
+
                     try {
                         JPanel results_panel = new AddResultsPanel( get(), AddResultsPanel.LOCK, getView(), getUsername(), getPassword() );
                         panel.addTab( jEdit.getProperty( "ips.Locked", "Locked" ), results_panel );

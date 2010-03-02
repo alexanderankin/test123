@@ -117,6 +117,10 @@ public class MergeAction extends SVNAction {
 
             @Override
             protected void done() {
+                if ( isCancelled() ) {
+                    return ;
+                }
+
                 try {
                     MergeResults results = get();
                     if ( results == null ) {

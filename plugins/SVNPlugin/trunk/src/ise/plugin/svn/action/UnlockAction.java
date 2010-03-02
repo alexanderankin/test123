@@ -139,6 +139,10 @@ public class UnlockAction extends SVNAction {
 
                 @Override
                 protected void done() {
+                    if ( isCancelled() ) {
+                        return ;
+                    }
+
                     try {
                         JPanel results_panel = new AddResultsPanel( get(), AddResultsPanel.UNLOCK, getView(), getUsername(), getPassword() );
                         panel.addTab( jEdit.getProperty( "ips.Unlocked", "Unlocked" ), results_panel );

@@ -151,6 +151,10 @@ public class UpdateAction extends SVNAction {
 
                 @Override
                 protected void done() {
+                    if ( isCancelled() ) {
+                        return ;
+                    }
+
                     try {
                         UpdateData data = get();
                         if ( data == null ) {

@@ -86,22 +86,22 @@ public class LogAction extends SVNAction {
     }
 
     public void actionPerformed( ActionEvent ae ) {
-        
+
         if ( paths != null && paths.size() > 0 ) {
             data = new LogData();
             data.setPaths( paths );
             data.setPathsAreURLs( pathsAreUrls );
 
-            
+
             LogDialog dialog = new LogDialog( getView(), data );
             GUIUtils.center( getView(), dialog );
             dialog.setVisible( true );
             data = dialog.getData();
             if ( data == null ) {
-                
+
                 return ;     // null data signals user canceled
             }
-            
+
             if ( getUsername() == null ) {
                 verifyLogin( paths.get( 0 ) );
                 if ( isCanceled() ) {
@@ -127,11 +127,11 @@ public class LogAction extends SVNAction {
                 @Override
                 public LogResults doInBackground() {
                     try {
-                        
+
                         Log log = new Log( );
-                        
+
                         log.doLog( data );
-                        
+
                         return log.getLogEntries();
                     }
                     catch ( Exception e ) {
@@ -158,16 +158,19 @@ public class LogAction extends SVNAction {
 
                 @Override
                 protected void done() {
+                    if ( isCancelled() ) {
+                        return ;
+                    }
+
                     try {
-                        
                         final LogResults results = get();
-                        
+
                         if ( results == null ) {
                             return ;
                         }
-                        
+
                         JPanel results_panel = new LogResultsPanel( results, data.getShowPaths(), getView(), getUsername(), getPassword() );
-                        
+
                         panel.addTab( jEdit.getProperty( "ips.Log", "Log" ), results_panel );
                     }
                     catch ( Exception e ) {

@@ -167,6 +167,10 @@ public class ExportAction extends SVNAction {
 
             @Override
             protected void done() {
+                if ( isCancelled() ) {
+                    return ;
+                }
+
                 try {
                     UpdateData export_data = get();
                     if ( data == null ) {

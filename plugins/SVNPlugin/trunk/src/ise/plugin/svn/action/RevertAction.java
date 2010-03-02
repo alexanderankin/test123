@@ -162,6 +162,10 @@ public class RevertAction extends SVNAction {
 
                 @Override
                 protected void done() {
+                    if ( isCancelled() ) {
+                        return ;
+                    }
+
                     try {
                         AddResults results = get();
                         JPanel results_panel = new AddResultsPanel( results, AddResultsPanel.REVERT, getView(), getUsername(), getPassword() );

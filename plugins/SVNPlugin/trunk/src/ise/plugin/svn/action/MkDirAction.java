@@ -94,7 +94,7 @@ public class MkDirAction extends SVNAction {
             }
             data.setUsername( getUsername() );
             data.setPassword( getPassword() );
-            
+
             data.setOut( new ConsolePrintStream( getView() ) );
 
             getView().getDockableWindowManager().showDockableWindow( "subversion" );
@@ -138,6 +138,10 @@ public class MkDirAction extends SVNAction {
 
                 @Override
                 protected void done() {
+                    if ( isCancelled() ) {
+                        return ;
+                    }
+
                     try {
                         JPanel results_panel = new CommitResultsPanel( get() );
                         panel.addTab( jEdit.getProperty( "ips.mkdir", "mkdir" ), results_panel );

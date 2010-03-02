@@ -170,6 +170,10 @@ public class CommitAction extends SVNAction {
 
                 @Override
                 protected void done() {
+                    if ( isCancelled() ) {
+                        return ;
+                    }
+
                     try {
                         JPanel results_panel = new CommitResultsPanel( get() );
                         panel.addTab( jEdit.getProperty( "ips.Commit", "Commit" ), results_panel );
