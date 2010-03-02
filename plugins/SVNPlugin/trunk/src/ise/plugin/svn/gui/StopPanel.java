@@ -94,9 +94,11 @@ public class StopPanel extends JPanel {
     private void removeWorker( final SwingWorker worker ) {
         SwingUtilities.invokeLater( new Runnable() {
                     public void run() {
-                        JButton button = workers.get( worker );
                         workers.remove( worker );
-                        remove( button );
+                        JButton button = workers.get( worker );
+                        if (button != null) {
+                            remove( button ); 
+                        }
                         invalidate();
                         repaint();
                     }
