@@ -92,7 +92,7 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
        c.anchor = GridBagConstraints.LINE_START;
        
        doubleClickCB = new JCheckBox(jEdit.getProperty("options.buffertabs.close-tab-on.double-left-click.label"));
-       doubleClickCB.addMouseListener(dcSwitch);
+       doubleClickCB.addItemListener(dcSwitch);
        middleClickCB = new JCheckBox(jEdit.getProperty("options.buffertabs.close-tab-on.single-middle-click.label"));
         
         c.gridy = 0;
@@ -121,7 +121,7 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
        dC.anchor = GridBagConstraints.LINE_START;
        
        toggleDocksDoubleClickCB = new JCheckBox(jEdit.getProperty("options.buffertabs.close-tab-on.double-left-click.label"));
-       toggleDocksDoubleClickCB.addMouseListener(dcSwitch);
+       toggleDocksDoubleClickCB.addItemListener(dcSwitch);
 
         
         dC.gridy = 0;
@@ -367,14 +367,20 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
      * selected, then "toggle docking areas" is deselected. Likewise if "toggle docking areas" is selected, and
      * "close on" is already selected, "close on" is deselected.
      */
-    private class DoubleClickOptionSwitch extends MouseAdapter {
+    private class DoubleClickOptionSwitch implements ItemListener {
     	 
-    	 public void mouseClicked(MouseEvent e) {
+    	 public void itemStateChanged(ItemEvent e) {
+    	 	 
     	 	 JCheckBox cb = (JCheckBox)e.getSource();
+    	 	 
     	 	 if(cb.isSelected() && cb == doubleClickCB) {
+    	 	 	 
 				 toggleDocksDoubleClickCB.setSelected(false);
+				 
     	 	 } else if (cb.isSelected() && cb == toggleDocksDoubleClickCB) {
+    	 	 	 
     	 	 	 doubleClickCB.setSelected(false);
+    	 	 	 
     	 	 }
     	 }
     	 
