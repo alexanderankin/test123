@@ -51,9 +51,11 @@ public class WrapCellRenderer extends JTextPane implements TableCellRenderer {
     public Dimension getPreferredSize() {
         Dimension d = super.getPreferredSize();
         if ( table != null ) {
+            Insets insets = getInsets();
             d.width = table.getColumnModel().getColumn( column ).getWidth();
+            int width = d.width - insets.left - insets.right;
             FontMetrics fm = getFontMetrics( getFont() );
-            int lines = countLines( getText(), fm, d.width );
+            int lines = countLines( getText(), fm, width );
             d.height = ( fm.getHeight() * lines ) + 5;   // 5 pixels for padding
         }
         return d;
