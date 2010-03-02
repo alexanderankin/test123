@@ -133,6 +133,10 @@ public class AddAction extends SVNAction {
 
                 @Override
                 protected void done() {
+                    if ( isCancelled() ) {
+                        return ;
+                    }
+
                     try {
                         JPanel results_panel = new AddResultsPanel( get(), AddResultsPanel.ADD, getView(), getUsername(), getPassword() );
                         panel.addTab( jEdit.getProperty( "ips.Add", "Add" ), results_panel );

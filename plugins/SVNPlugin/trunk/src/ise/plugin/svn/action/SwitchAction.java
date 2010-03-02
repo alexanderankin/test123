@@ -142,6 +142,10 @@ public class SwitchAction extends SVNAction {
 
                 @Override
                 protected void done() {
+                    if ( isCancelled() ) {
+                        return ;
+                    }
+
                     try {
                         UpdateData data = get();
                         JPanel results_panel = new UpdateResultsPanel( getView(), data );

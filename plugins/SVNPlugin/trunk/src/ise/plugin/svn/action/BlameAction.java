@@ -98,7 +98,7 @@ public class BlameAction extends SVNAction {
             }
             data.setUsername( getUsername() );
             data.setPassword( getPassword() );
-            
+
             data.setOut( new ConsolePrintStream( getView() ) );
 
             getView().getDockableWindowManager().showDockableWindow( "subversion" );
@@ -142,6 +142,10 @@ public class BlameAction extends SVNAction {
 
                 @Override
                 protected void done() {
+                    if ( isCancelled() ) {
+                        return ;
+                    }
+
                     try {
                         logger.log( Level.INFO, jEdit.getProperty( "ips.Formatting_annotation_info_...", "Formatting annotation info ..." ) );
                         BlameModel model = get();
@@ -180,9 +184,9 @@ public class BlameAction extends SVNAction {
                         logger.log( Level.INFO, jEdit.getProperty( "ips.Done.", "Done." ) );
                         if ( model.outOfDate() ) {
                             JOptionPane.showMessageDialog( getView(),
-                                jEdit.getProperty("ips.File_has_local_modifications,_blame_may_not_be_correct.", "File has local modifications, blame may not be correct."),
-                                jEdit.getProperty("ips.Warning>_Local_Modifications", "Warning: Local Modifications"),
-                                JOptionPane.WARNING_MESSAGE );
+                                    jEdit.getProperty( "ips.File_has_local_modifications,_blame_may_not_be_correct.", "File has local modifications, blame may not be correct." ),
+                                    jEdit.getProperty( "ips.Warning>_Local_Modifications", "Warning: Local Modifications" ),
+                                    JOptionPane.WARNING_MESSAGE );
                         }
                     }
                     catch ( Exception e ) {

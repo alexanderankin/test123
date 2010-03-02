@@ -170,7 +170,7 @@ public class DiffAction extends SVNAction {
             }
 
             // don't need username/password if diffing against base
-            if ( !data.getRevision1().equals(SVNRevision.BASE) && getUsername() == null && data.getUsername() == null ) {
+            if ( !data.getRevision1().equals( SVNRevision.BASE ) && getUsername() == null && data.getUsername() == null ) {
                 verifyLogin( data.getPaths() == null ? null : data.getPaths().get( 0 ) );
                 if ( isCanceled() ) {
                     return ;
@@ -254,7 +254,7 @@ public class DiffAction extends SVNAction {
                     // copy contents of BASE revision to tmp dir...
                     // create the temp file name
                     // TODO: can't I do this with File methods rather than string manipulation?
-                    String filepath = data.getPaths().get(0);
+                    String filepath = data.getPaths().get( 0 );
                     int index = filepath.lastIndexOf( '.' );
                     index = index < 0 ? 0 : index;
                     if ( index == 0 ) {
@@ -266,18 +266,18 @@ public class DiffAction extends SVNAction {
                     String filename = System.getProperty( "java.io.tmpdir" ) + '/' + filepath.substring( 0, index ) + "-BASE" + filepath.substring( index );
 
                     // create the temp file
-                    remote1 = new File(filename);
-                    if (remote1.exists()) {
+                    remote1 = new File( filename );
+                    if ( remote1.exists() ) {
                         remote1.delete();
                     }
                     remote1.deleteOnExit();     // automatic cleanup
                     remote1.getParentFile().mkdirs();
 
                     // copy the file contents to the temp file
-                    BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(remote1));
+                    BufferedOutputStream os = new BufferedOutputStream( new FileOutputStream( remote1 ) );
                     SVNClientManager cm = SVNClientManager.newInstance();
                     SVNWCClient client = cm.getWCClient();
-                    client.doGetFileContents(new File(filepath), SVNRevision.UNDEFINED, SVNRevision.BASE, false, os);
+                    client.doGetFileContents( new File( filepath ), SVNRevision.UNDEFINED, SVNRevision.BASE, false, os );
                     os.flush();
                     os.close();
                 }
@@ -329,6 +329,10 @@ public class DiffAction extends SVNAction {
 
         @Override
         protected void done() {
+            if ( isCancelled() ) {
+                return ;
+            }
+
             try {
                 File[] files = get();
                 if ( files == null ) {
@@ -424,6 +428,10 @@ public class DiffAction extends SVNAction {
 
         @Override
         protected void done() {
+            if ( isCancelled() ) {
+                return ;
+            }
+
             try {
                 String filediff = get();
                 if ( filediff != null ) {

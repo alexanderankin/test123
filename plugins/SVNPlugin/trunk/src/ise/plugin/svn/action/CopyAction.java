@@ -81,8 +81,8 @@ public class CopyAction extends SVNAction {
             throw new IllegalArgumentException( "data may not be null" );
         this.data = data;
         this.title = data.getTitle();
-        setUsername(data.getUsername());
-        setPassword(data.getPassword());
+        setUsername( data.getUsername() );
+        setPassword( data.getPassword() );
     }
 
 
@@ -93,14 +93,14 @@ public class CopyAction extends SVNAction {
             // for the source.
             if ( getUsername() == null ) {
                 SVNCopySource[] sources = data.getSourceFiles();
-                verifyLogin(sources != null && sources.length > 0 && sources[0].getFile() != null ? sources[0].getFile().getAbsolutePath() : null );
+                verifyLogin( sources != null && sources.length > 0 && sources[ 0 ].getFile() != null ? sources[ 0 ].getFile().getAbsolutePath() : null );
                 if ( isCanceled() ) {
                     return ;
                 }
             }
             data.setUsername( getUsername() );
             data.setPassword( getPassword() );
-            
+
             data.setOut( new ConsolePrintStream( getView() ) );
 
             getView().getDockableWindowManager().showDockableWindow( "subversion" );
@@ -139,8 +139,8 @@ public class CopyAction extends SVNAction {
                                 }
                                 File file = source.getFile();
                                 CopyData cd = new CopyData();
-                                cd.setUsername(data.getUsername());
-                                cd.setPassword(data.getPassword());
+                                cd.setUsername( data.getUsername() );
+                                cd.setPassword( data.getPassword() );
                                 cd.setSourceFile( file );
                                 cd.setRevision( data.getRevision() );
                                 String destination = "";
@@ -192,8 +192,8 @@ public class CopyAction extends SVNAction {
                                 }
                                 SVNURL url = source.getURL();
                                 CopyData cd = new CopyData();
-                                cd.setUsername(data.getUsername());
-                                cd.setPassword(data.getPassword());
+                                cd.setUsername( data.getUsername() );
+                                cd.setPassword( data.getPassword() );
                                 String destination = "";
                                 cd.setSourceURL( url );
                                 cd.setRevision( data.getRevision() );
@@ -260,6 +260,10 @@ public class CopyAction extends SVNAction {
 
                 @Override
                 protected void done() {
+                    if ( isCancelled() ) {
+                        return ;
+                    }
+
                     try {
                         if ( errorMessage != null ) {
                             JPanel error_panel = new ErrorPanel( errorMessage );

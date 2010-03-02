@@ -73,8 +73,8 @@ public class StatusAction extends SVNAction {
     public StatusAction( View view, SVNData data ) {
         super( view, jEdit.getProperty( "ips.Status", "Status" ) );
         this.data = data;
-        setUsername(data.getUsername());
-        setPassword(data.getPassword());
+        setUsername( data.getUsername() );
+        setPassword( data.getPassword() );
     }
 
     /**
@@ -106,11 +106,11 @@ public class StatusAction extends SVNAction {
             data.setOut( new ConsolePrintStream( getView() ) );
         }
 
-        int response = JOptionPane.showConfirmDialog( getView(), jEdit.getProperty("ips.Check_status_against_repository?", "Check status against repository?"), jEdit.getProperty("ips.Status", "Status"), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE );
+        int response = JOptionPane.showConfirmDialog( getView(), jEdit.getProperty( "ips.Check_status_against_repository?", "Check status against repository?" ), jEdit.getProperty( "ips.Status", "Status" ), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE );
         if ( response == JOptionPane.CANCEL_OPTION ) {
             return ;
         }
-        data.setRemote(response == JOptionPane.YES_OPTION);
+        data.setRemote( response == JOptionPane.YES_OPTION );
 
         getView().getDockableWindowManager().showDockableWindow( "subversion" );
         final OutputPanel output_panel = SVNPlugin.getOutputPanel( getView() );
@@ -154,6 +154,10 @@ public class StatusAction extends SVNAction {
 
             @Override
             protected void done() {
+                if ( isCancelled() ) {
+                    return ;
+                }
+
                 try {
                     JPanel panel = new StatusResultsPanel( get(), getView(), getUsername(), getPassword() );
                     output_panel.addTab( title, panel );

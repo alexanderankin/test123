@@ -141,6 +141,10 @@ public class CheckoutAction extends SVNAction implements PropertyChangeListener 
 
             @Override
             protected void done() {
+                if ( isCancelled() ) {
+                    return ;
+                }
+
                 try {
                     Long revision = get();
                     if ( revision == null ) {
@@ -204,7 +208,9 @@ public class CheckoutAction extends SVNAction implements PropertyChangeListener 
         // importing the files.
         projectviewer.importer.ImportUtils.saveFilter( project.getProperties(), new projectviewer.importer.CVSEntriesFilter(), "projectviewer.import" );
         RootImporter ipi = new RootImporter( project, null, ProjectViewer.getViewer( jEdit.getActiveView() ), jEdit.getActiveView() );
-        //ipi.setLockProject( false );      // TODO: this doesn't work any more, change in PV API?
+        // DONE: this doesn't work any more, change in PV API? It appears the locking code
+        // has been removed from PV and this next line isn't needed any more.
+        //ipi.setLockProject( false );
         ipi.doImport();
 
         // now show ProjectViewer

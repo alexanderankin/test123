@@ -116,7 +116,7 @@ public class ResolvedAction extends SVNAction {
             }
             data.setUsername( getUsername() );
             data.setPassword( getPassword() );
-            
+
             data.setPaths( paths );
 
             data.setOut( new ConsolePrintStream( getView() ) );
@@ -162,6 +162,10 @@ public class ResolvedAction extends SVNAction {
 
                 @Override
                 protected void done() {
+                    if ( isCancelled() ) {
+                        return ;
+                    }
+
                     try {
                         JPanel results_panel = new AddResultsPanel( get(), AddResultsPanel.RESOLVED, getView(), getUsername(), getPassword() );
                         panel.addTab( jEdit.getProperty( "ips.Resolved", "Resolved" ), results_panel );

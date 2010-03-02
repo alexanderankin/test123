@@ -62,7 +62,7 @@ public class ImportAction extends SVNAction {
      * @param password the password for the username
      */
     public ImportAction( View view ) {
-        super(view, jEdit.getProperty("ips.Import", "Import"));
+        super( view, jEdit.getProperty( "ips.Import", "Import" ) );
     }
 
 
@@ -81,7 +81,7 @@ public class ImportAction extends SVNAction {
         final OutputPanel panel = SVNPlugin.getOutputPanel( getView() );
         panel.showConsole();
         final Logger logger = panel.getLogger();
-        logger.log( Level.INFO, jEdit.getProperty("ips.Importing_...", "Importing ...") );
+        logger.log( Level.INFO, jEdit.getProperty( "ips.Importing_...", "Importing ..." ) );
         for ( Handler handler : logger.getHandlers() ) {
             handler.flush();
         }
@@ -104,23 +104,27 @@ public class ImportAction extends SVNAction {
             }
 
             @Override
-            public boolean cancel(boolean mayInterruptIfRunning) {
-                boolean cancelled = super.cancel(mayInterruptIfRunning);
-                if (cancelled) {
-                    data.getOut().printError("Stopped 'Import' action.");
+            public boolean cancel( boolean mayInterruptIfRunning ) {
+                boolean cancelled = super.cancel( mayInterruptIfRunning );
+                if ( cancelled ) {
+                    data.getOut().printError( "Stopped 'Import' action." );
                     data.getOut().close();
                 }
                 else {
-                    data.getOut().printError("Unable to stop 'Import' action.");
+                    data.getOut().printError( "Unable to stop 'Import' action." );
                 }
                 return cancelled;
             }
 
             @Override
             protected void done() {
+                if ( isCancelled() ) {
+                    return ;
+                }
+
                 try {
                     JPanel results_panel = new CommitResultsPanel( get() );
-                    panel.addTab( jEdit.getProperty("ips.Import", "Import"), results_panel );
+                    panel.addTab( jEdit.getProperty( "ips.Import", "Import" ), results_panel );
                 }
                 catch ( Exception e ) {     // NOPMD
                     // ignored
@@ -128,7 +132,7 @@ public class ImportAction extends SVNAction {
             }
         }
         Runner runner = new Runner();
-        panel.addWorker("Import", runner);
+        panel.addWorker( "Import", runner );
         runner.execute();
     }
 }
