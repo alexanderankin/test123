@@ -176,7 +176,7 @@ public class P4Config extends PropertiesBean {
      *  @since  P4P 0.2.4
      */
     public String[] environment() {
-        Map<String,String> envp = new HashMap();
+        Map<String,String> envp = new HashMap<String,String>();
         envp.putAll(System.getenv());
         envp.remove("PWD");
 

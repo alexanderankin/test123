@@ -73,9 +73,9 @@ public class ChangeListDialog implements Runnable,
     private boolean allowOthers;
     private boolean showDefault;
 
-    private JComboBox   options;
-    private JTextField  other;
-    private List        clists;
+    private JComboBox       options;
+    private JTextField      other;
+    private List<Object>    clists;
 
     private String      change;
     private View        view;
@@ -92,13 +92,14 @@ public class ChangeListDialog implements Runnable,
         this(v, showDefault, false);
     }
 
-    public ChangeListDialog(View v, boolean showDefault,
-                                    boolean allowOthers)
+    public ChangeListDialog(View v,
+                            boolean showDefault,
+                            boolean allowOthers)
     {
         this.view = v;
         P4Config cfg = P4Config.getProjectConfig(v);
         if (cfg != null) {
-            List args = new LinkedList();
+            List<String> args = new LinkedList<String>();
             if (cfg.getUser() != null) {
                 args.add("-u");
                 args.add(cfg.getUser());
@@ -111,7 +112,7 @@ public class ChangeListDialog implements Runnable,
             args.add("pending");
 
             Perforce p4 = new Perforce("changes",
-                                       (String[]) args.toArray(new String[args.size()]));
+                                       args.toArray(new String[args.size()]));
 
             try {
                p4.exec(v).waitFor();
@@ -129,7 +130,7 @@ public class ChangeListDialog implements Runnable,
                 return;
             }
 
-            clists = new LinkedList();
+            clists = new LinkedList<Object>();
             if (showDefault)
                 clists.add(jEdit.getProperty("p4plugin.action.changelists.default"));
             p4.processOutput(this);

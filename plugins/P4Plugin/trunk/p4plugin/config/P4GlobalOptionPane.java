@@ -37,7 +37,7 @@ public class P4GlobalOptionPane extends EasyOptionPane {
     public P4GlobalOptionPane() {
         super("p4plugin.config.global_option_pane");
 
-        List spec = new LinkedList();
+        List<String> spec = new LinkedList<String>();
         spec.add("file,p4plugin.global_cfg.p4_path,"
                     + P4GlobalConfig.P4BINARY_OPT);
         spec.add("file,p4plugin.global_cfg.editor_cmd,"
