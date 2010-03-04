@@ -123,7 +123,7 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 	{
 		return connections.keySet().toArray();
 	}
-	private Connection selectConnectionDialog()
+	public Connection selectConnectionDialog()
 	{
 		synchronized(connections)
 		{
@@ -150,10 +150,6 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 		{
 			try
 			{
-				Connection c = getCurrentConnectionInDockable();
-				if (c == null)
-					c = selectConnectionDialog();
-				c.abortScript();
 				final Macro macro = handler.createMacro(
 					MiscUtilities.getFileName(path), path);
 				Runnable script = new Runnable() {
@@ -164,7 +160,20 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 						macro.invoke(null);
 					}
 				};
-				c.addScript(script);
+				// "Global" macros are not associated with the current connection,
+				// e.g. macros that create the connection to work on.
+				if (! key.equals("Global"))
+				{
+					Connection c = getCurrentConnectionInDockable();
+					if (c == null)
+						c = selectConnectionDialog();
+					if (c == null)
+						return;
+					c.abortScript();
+					c.addScript(script);
+				}
+				else
+					new Thread(script).start();
 			}
 			catch (Exception e)
 			{
