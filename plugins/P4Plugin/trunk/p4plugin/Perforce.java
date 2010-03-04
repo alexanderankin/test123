@@ -77,7 +77,7 @@ public class Perforce {
      *  Creates a new wrapper around the p4 command, that will
      *  execute the given command with the given arguments.
      */
-    public Perforce(String cmd, String[] args) {
+    public Perforce(String cmd, String... args) {
         if (cmd == null)
             throw new IllegalArgumentException("command is null");
         this.cmd    = cmd;
