@@ -65,9 +65,9 @@ import p4plugin.config.P4Config;
  */
 public class P4FileFilter extends ImporterFileFilter implements Perforce.Visitor {
 
-    private Map<String,List>    entries;
-    private Map<String,String>  views;
-    private P4ClientInfo        clientInfo;
+    private Map<String,List<String>>    entries;
+    private Map<String,String>          views;
+    private P4ClientInfo                clientInfo;
 
     private boolean inViews;
 
@@ -113,7 +113,7 @@ public class P4FileFilter extends ImporterFileFilter implements Perforce.Visitor
      */
     private void findEntries(String dirpath) {
         if (entries == null) {
-            entries = new HashMap<String,List>();
+            entries = new HashMap<String,List<String>>();
         }
 
         if (clientInfo == null && !findClientRoot()) {
@@ -211,9 +211,9 @@ public class P4FileFilter extends ImporterFileFilter implements Perforce.Visitor
         String fname = lpath.getName();
         String dirname = lpath.getParent();
 
-        List files = entries.get(dirname);
+        List<String> files = entries.get(dirname);
         if (files == null) {
-            files = new ArrayList();
+            files = new ArrayList<String>();
             entries.put(dirname, files);
         }
 

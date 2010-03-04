@@ -131,7 +131,7 @@ public class P4ClientInfo implements Perforce.Visitor {
         while (!views.containsKey(fpath.toString()) && st.hasMoreTokens())
             fpath.append("/").append(st.nextToken());
 
-        String dirName = (String) views.get(fpath.toString());
+        String dirName = views.get(fpath.toString());
         fpath.setLength(0);
         fpath.append(clientRoot);
         if (dirName.length() > 0) {
