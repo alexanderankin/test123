@@ -39,11 +39,19 @@ import p4plugin.config.P4GlobalConfig;
 public class P4FileInfoAction extends AsyncP4Action {
 
     private String path;
-    private String cmd;
+    private final String cmd;
+    private final VPTNode node;
 
     public P4FileInfoAction(String cmd) {
+        this(null, cmd);
+    }
+
+    public P4FileInfoAction(VPTNode node,
+                            String cmd)
+    {
         super(getActionName(cmd, false), false);
         this.cmd = cmd;
+        this.node = node;
     }
 
     protected String getCommand() {
@@ -55,7 +63,8 @@ public class P4FileInfoAction extends AsyncP4Action {
     }
 
     public void actionPerformed(ActionEvent ae) {
-        path = viewer.getSelectedNode().getNodePath();
+        VPTNode n = (node != null) ? node : viewer.getSelectedNode();
+        path = n.getNodePath();
         super.actionPerformed(ae);
     }
 
