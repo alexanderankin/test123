@@ -72,7 +72,7 @@ public class CtagsSideKickTreeNode
 		}
 		String key =
 			(obj instanceof Tag)
-				? ((Tag)obj).getShortString()
+				? ((Tag)obj).getName()
 				: obj.toString();
 		CtagsSideKickTreeNode node = children.get(key);
 		if ((node != null) && 
