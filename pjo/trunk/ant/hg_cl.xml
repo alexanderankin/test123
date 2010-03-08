@@ -2,10 +2,21 @@
 <project name="SVN Command Line Targets" basedir="." default="help">
 	<target name="checkout-plugin">
 		<property name="plugin.download.dir" value="${plugin.name}-${plugin.version}" />
-		<antcall target="clone-plugin-url" />
-	</target>
-	<target name="clone-plugin-url">
 		<input addproperty="clone.url" message="Clone URL:" />
+		<condition property="use.tag">
+			<not><equals arg1="trunk" arg2="${plugin.tag}" casesensitive="false" trim="true" /></not>
+		</condition>
+		<antcall target="clone-plugin-trunk" />
+		<antcall target="clone-plugin-tag" />
+	</target>
+	<target name="clone-plugin-trunk" unless="use.tag">
+		<exec executable="hg" failonerror="true">
+			<arg value="clone" />
+			<arg value="${clone.url}" />
+			<arg value="${plugin.download.dir}" />
+		</exec>
+	</target>
+	<target name="clone-plugin-tag" if="use.tag">
 		<exec executable="hg" failonerror="true">
 			<arg value="clone" />
 			<arg value="-r" />

@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<project name="Bazaar Command Line Targets" basedir="." default="help">
+	<target name="checkout-plugin">
+		<input addproperty="plugin.bzr.url" message="Bazaar Branch URL:" />
+		<property name="plugin.download.dir" value="${plugin.name}-${plugin.version}" />
+		<condition property="use.tag">
+			<not><equals arg1="trunk" arg2="${plugin.tag}" casesensitive="false" trim="true" /></not>
+		</condition>
+		<antcall target="branch-plugin-trunk" />
+		<antcall target="branch-plugin-tag" />
+	</target>
+	<target name="branch-plugin-trunk" unless="use.tag">
+		<exec executable="bzr" failonerror="true">
+			<arg value="branch" />
+			<arg value="${plugin.bzr.url}" />
+			<arg value="${plugin.download.dir}" />
+		</exec>
+	</target>
+	<target name="branch-plugin-tag" if="use.tag">
+		<exec executable="bzr" failonerror="true">
+			<arg value="branch" />
+			<arg value="-r tag:${plugin.tag}" />
+			<arg value="${plugin.bzr.url}" />
+			<arg value="${plugin.download.dir}" />
+		</exec>
+	</target>
+</project>
