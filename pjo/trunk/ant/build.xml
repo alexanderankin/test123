@@ -64,7 +64,7 @@
 	<target name="download">
 		<input addproperty="plugin.name" message="Plugin Name:" />
 		<input addproperty="plugin.version" message="Version:" />
-		<input addproperty="plugin.tag" message="Release Tag:" />
+		<input addproperty="plugin.tag" message="Release Tag:" defaultvalue="trunk" />
 		<plugin-download pluginName="${plugin.name}" pluginVersion="${plugin.version}" pluginTag="${plugin.tag}" />
 	</target>
 	<target name="package">

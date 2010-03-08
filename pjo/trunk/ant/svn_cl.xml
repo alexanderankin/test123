@@ -2,6 +2,21 @@
 <project name="SVN Command Line Targets" basedir="." default="help">
 	<target name="checkout-plugin">
 		<property name="plugin.download.dir" value="${plugin.name}-${plugin.version}" />
+		<condition property="use.tag">
+			<not><equals arg1="trunk" arg2="${plugin.tag}" casesensitive="false" trim="true" /></not>
+		</condition>
+		<antcall target="checkout-plugin-trunk" />
+		<antcall target="checkout-plugin-tag" />
+	</target>
+	<target name="checkout-plugin-trunk" unless="use.tag">
+		<property name="plugin.svn.url" value="${jedit.svn.url}/plugins/${plugin.name}/trunk" />
+		<exec executable="svn" failonerror="true">
+			<arg value="co" />
+			<arg value="${plugin.svn.url}" />
+			<arg value="${plugin.download.dir}" />
+		</exec>
+	</target>
+	<target name="checkout-plugin-tag" if="use.tag">
 		<property name="plugin.svn.url" value="${jedit.svn.url}/plugins/${plugin.name}/tags/${plugin.tag}" />
 		<exec executable="svn" failonerror="true">
 			<arg value="co" />
