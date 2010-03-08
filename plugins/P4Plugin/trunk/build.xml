@@ -11,6 +11,7 @@
     <property name="dist.target"            value="dist.complete" />
 	<property name="compiler.source"        value="1.5" />
 	<property name="compiler.target"        value="1.5" />
+	<property name="jedit.plugins.dir"      value="${install.dir}" />
 
     <import file="${build.support}/plugin-build.xml" />
 
@@ -27,9 +28,9 @@
             <include name="*.jar" />
             <exclude name="P4Plugin*" />
         </fileset>
-        <pathelement location="${install.dir}/ProjectViewer.jar" />
-        <pathelement location="${install.dir}/Console.jar" />
-        <pathelement location="${install.dir}/CommonControls.jar" />
+        <pathelement location="${jedit.plugins.dir}/ProjectViewer.jar" />
+        <pathelement location="${jedit.plugins.dir}/Console.jar" />
+        <pathelement location="${jedit.plugins.dir}/CommonControls.jar" />
     </path>
 
 </project>
