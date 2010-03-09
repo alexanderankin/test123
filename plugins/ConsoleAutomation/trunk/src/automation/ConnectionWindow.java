@@ -23,6 +23,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.HistoryTextField;
 
@@ -43,6 +44,7 @@ public class ConnectionWindow extends JPanel implements CharHandler, EventHandle
 	private final JButton clear;
 	private final JButton toEnd;
 	private final JButton ctrlC;
+	private final JButton toBuffer;
 	private final List<StringBuilder> output;
 	private StringBuilder currentOutput;
 	private Object outputSync= new Object(); 
@@ -93,6 +95,9 @@ public class ConnectionWindow extends JPanel implements CharHandler, EventHandle
 		ctrlC = new JButton("Ctrl+C");
 		buttonPanel.add(ctrlC);
 		ctrlC.addActionListener(this);
+		toBuffer = new JButton("->Buffer");
+		buttonPanel.add(toBuffer);
+		toBuffer.addActionListener(this);
 		output = new ArrayList<StringBuilder>();
 		output.add(currentOutput = new StringBuilder());
 		JPanel bottomPanel = new JPanel(new BorderLayout());
@@ -196,6 +201,27 @@ public class ConnectionWindow extends JPanel implements CharHandler, EventHandle
 		});
 	}
 
+	private void copyToBuffer()
+	{
+		Buffer b = jEdit.newFile(jEdit.getActiveView());
+		if (b == null)
+		{
+			JOptionPane.showMessageDialog(jEdit.getActiveView(),
+				"Could not create new buffer");
+			return;
+		}
+		Document document = console.getDocument();
+		String text;
+		try {
+			text = document.getText(0, document.getLength());
+		} catch (BadLocationException e) {
+			JOptionPane.showMessageDialog(jEdit.getActiveView(),
+				"Could not get text from console: " + e.getMessage());
+			return;
+		}
+		b.insert(0, text);
+	}
+
 	public void actionPerformed(ActionEvent e)
 	{
 		try
@@ -209,6 +235,8 @@ public class ConnectionWindow extends JPanel implements CharHandler, EventHandle
 				console.setCaretPosition(console.getDocument().getLength());
 			else if (e.getSource() == ctrlC)
 				c.send(String.valueOf((char) 3));
+			else if (e.getSource() == toBuffer)
+				copyToBuffer();
 			input.setText("");
 		}
 		catch (Exception e1)
