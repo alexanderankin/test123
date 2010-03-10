@@ -1,8 +1,8 @@
 package projectbuilder.options;
 // imports {{{
 import projectbuilder.command.Entry;
-import projectbuilder.command.AddBuildSettingDialog;
-import projectbuilder.command.AddRunSettingDialog;
+import projectbuilder.command.BuildSettingDialog;
+import projectbuilder.command.RunSettingDialog;
 import javax.swing.JPanel;
 import javax.swing.JList;
 import javax.swing.JLabel;
@@ -14,6 +14,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.BoxLayout;
+import javax.swing.Box;
 import javax.swing.JOptionPane;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -22,6 +23,7 @@ import java.awt.event.ActionEvent;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.gui.RolloverButton;
+import org.gjt.sp.util.Log;
 import projectviewer.vpt.VPTProject;
 // }}} imports
 public class CommandList extends JPanel {
@@ -30,6 +32,9 @@ public class CommandList extends JPanel {
 	private JList list;
 	private JButton add;
 	private JButton remove;
+	private JButton move_up;
+	private JButton move_down;
+	private JButton modify;
 	private JComboBox box;
 	private VPTProject proj;
 	public CommandList(final VPTProject proj, final String type) {
@@ -44,16 +49,26 @@ public class CommandList extends JPanel {
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
         add = new RolloverButton(GUIUtilities.loadIcon("Plus.png"));
         remove = new RolloverButton(GUIUtilities.loadIcon("Minus.png"));
+        move_up = new RolloverButton(GUIUtilities.loadIcon("ArrowU.png"));
+        move_down = new RolloverButton(GUIUtilities.loadIcon("ArrowD.png"));
+        modify = new RolloverButton(GUIUtilities.loadIcon("Properties.png"));
         remove.setToolTipText(jEdit.getProperty("common.remove"));
         add.setToolTipText(jEdit.getProperty("common.add"));
+        move_up.setToolTipText(jEdit.getProperty("common.moveUp"));
+        move_down.setToolTipText(jEdit.getProperty("common.moveDown"));
+        modify.setToolTipText("Modify");
         buttons.add(add);
         buttons.add(remove);
+        buttons.add(move_up);
+        buttons.add(move_down);
+        buttons.add(Box.createHorizontalGlue());
+        buttons.add(modify);
         JScrollPane pane = new JScrollPane(list);
         pane.setPreferredSize(new Dimension(250, 100));
         listPanel.add(BorderLayout.CENTER, pane);
         listPanel.add(BorderLayout.SOUTH, buttons);
         JPanel boxPanel = new JPanel(new BorderLayout());
-        // TODO: Should probably not hardcode these in; use jEdit properties instead
+        // NOTE: Probably shouldn't hardcode this in. Might  use jEdit properties
         if (type.equals("build")) {
         	boxPanel.add(BorderLayout.WEST, new JLabel("Build with:  "));
         	boxPanel.add(BorderLayout.CENTER, box = new JComboBox());
@@ -68,13 +83,13 @@ public class CommandList extends JPanel {
         add.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		if (type.equals("build")) {
-					AddBuildSettingDialog dialog = new AddBuildSettingDialog(jEdit.getActiveView(), proj);
+					BuildSettingDialog dialog = new BuildSettingDialog(jEdit.getActiveView(), proj, null);
 					if (dialog.data != null) {
 						listModel.addElement(new Entry(dialog.data));
 						updateBox();
 					}
 				} else if (type.equals("run")) {
-					AddRunSettingDialog dialog = new AddRunSettingDialog(jEdit.getActiveView(), proj);
+					RunSettingDialog dialog = new RunSettingDialog(jEdit.getActiveView(), proj, null);
 					if (dialog.data != null) {
 						listModel.addElement(new Entry(dialog.data));
 						updateBox();
@@ -95,6 +110,50 @@ public class CommandList extends JPanel {
         			listModel.remove(index);
         			updateBox();
         		}
+        	}
+        });
+        move_up.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		int index = list.getSelectedIndex();
+        		if (listModel.get(index) == null || index == 0) return;
+        		String text = proj.getProperty("projectBuilder.command."+type+"."+index);
+        		proj.setProperty("projectBuilder.command."+type+"."+index,
+        			proj.getProperty("projectBuilder.command."+type+"."+(index-1)));
+        		proj.setProperty("projectBuilder.command."+type+"."+(index-1), text);
+        		populate();
+        		list.setSelectedIndex(index-1);
+        	}
+        });
+        move_down.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		int index = list.getSelectedIndex();
+        		if (listModel.get(index) == null || index == (listModel.getSize()-1)) return;
+        		String text = proj.getProperty("projectBuilder.command."+type+"."+index);
+        		proj.setProperty("projectBuilder.command."+type+"."+index,
+        			proj.getProperty("projectBuilder.command."+type+"."+(index+1)));
+        		proj.setProperty("projectBuilder.command."+type+"."+(index+1), text);
+        		populate();
+        		list.setSelectedIndex(index+1);
+        	}
+        });
+        modify.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		int index = list.getSelectedIndex();
+        		Entry entry = (Entry) listModel.get(index);
+        		if (entry == null) return;
+        		if (type.equals("build")) {
+					BuildSettingDialog dialog = new BuildSettingDialog(jEdit.getActiveView(), proj, entry);
+					if (dialog.data != null) {
+						listModel.set(index, new Entry(dialog.data));
+						updateBox();
+					}
+				} else if (type.equals("run")) {
+					RunSettingDialog dialog = new RunSettingDialog(jEdit.getActiveView(), proj, entry);
+					if (dialog.data != null) {
+						listModel.set(index, new Entry(dialog.data));
+						updateBox();
+					}
+				}
         	}
         });
         populate();

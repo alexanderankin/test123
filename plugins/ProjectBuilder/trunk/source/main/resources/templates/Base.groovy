@@ -34,11 +34,12 @@ import projectviewer.importer.RootImporter
 View view = JEDIT.getActiveView()
 
 // Get project types.
-File pluginHome = EditPlugin.getPluginHome(ProjectBuilderPlugin.class) ?: new File(System.getProperty("user.dir"), "build")
+//File pluginHome = EditPlugin.getPluginHome(ProjectBuilderPlugin.class) ?: new File(System.getProperty("user.dir"), "build")
+File pluginHome = EditPlugin.getPluginHome(ProjectBuilderPlugin.class)
 if(!pluginHome.exists()) {
    pluginHome.mkdirs()
 }
-File templatesDir = new File(pluginHome as File, "templates")
+File templatesDir = new File(ProjectBuilderPlugin.templateDir)
 File userTemplatesDir = new File(ProjectBuilderPlugin.userTemplateDir)
 if(!templatesDir.exists()) {
    templatesDir.mkdirs()
@@ -167,8 +168,10 @@ if(answer == JOptionPane.OK_OPTION) {
 		   }
 		   for (int k = 0; k<project.run.size(); k++) {
 		   	   if (k == 0) proj.setProperty("projectBuilder.command.run", project.run.get(k))
-		   	   proj.setProperty("projectBuilder.command.run."+k, project.run.get(k));
+		   	   proj.setProperty("projectBuilder.command.run."+k, project.run.get(k))
 		   }
+		   proj.setProperty("projectBuilder.template-dir", templateType.templatesDir.getPath())
+		   proj.setProperty("projectBuilder.template-name", templateType.name)
 		   ProjectViewer viewer = ProjectViewer.getViewer(view)
 		   manager.addProject(proj, projectGroup)
 		   viewer.setRootNode(proj)

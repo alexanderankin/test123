@@ -12,6 +12,7 @@ public class Entry {
 	}
 	public String toString() { return name; }
 	public String getCommand() { return command; }
+	public String getName() { return name; }
 	public String getProp() { return name+":"+command; }
 	public ParsedCommand parse() { return new ParsedCommand(); }
 	public class ParsedCommand {

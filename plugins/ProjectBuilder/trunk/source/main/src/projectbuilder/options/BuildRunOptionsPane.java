@@ -14,7 +14,7 @@ public class BuildRunOptionsPane extends AbstractOptionPane {
 	private CommandList buildList;
 	private CommandList runList;
 	public BuildRunOptionsPane(VPTProject proj) {
-		super("projectBuilder.pv.options");
+		super("projectBuilder.pv.build-run-options");
 		this.proj = proj;
 	}
 	protected void _init() {
