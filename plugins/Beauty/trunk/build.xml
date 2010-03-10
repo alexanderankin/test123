@@ -64,7 +64,7 @@
             <pathelement location="${jedit.install.dir}/jedit.jar" />
 
          <!-- dependencies -->
-
+         <pathelement location="${jedit.plugins.dir}/kappalayout.jar"/>
         </path>
     </target>
 
@@ -79,8 +79,8 @@
                 nowarn="on"
                 destdir="${classes.dir}"
                 srcdir="${src.dir}"
-                target="1.4"
-                source="1.4">
+                target="1.5"
+                source="1.5">
             <classpath refid="classpathref" />
         </javac>
         <copy todir="${classes.dir}/docs" overwrite="no">

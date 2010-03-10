@@ -1,6 +1,6 @@
 #
 # Plugin properties
-# borrowed a lot of this from AStyle
+# borrowed some of this from AStyle
 #
 
 plugin.beauty.BeautyPlugin.activate=defer
@@ -10,6 +10,9 @@ plugin.beauty.BeautyPlugin.version=0.3.0
 plugin.beauty.BeautyPlugin.docs=docs/index.html
 plugin.beauty.BeautyPlugin.depend.0=jdk 1.4
 plugin.beauty.BeautyPlugin.depend.1=jedit 04.02.01.00
+plugin.beauty.BeautyPlugin.depend.2=plugin CommonControlsPlugin 1.2
+plugin.beauty.BeautyPlugin.usePluginHome=true
+
 plugin.beauty.BeautyPlugin.description=The Beauty plugin is a general framework for code beautifiers and provides several built-in beautifiers.
 
 beautyplugin.label=Beauty
@@ -24,13 +27,16 @@ beauty.toggleSplitAttributes.label=Split/Unsplit Attributes
 #
 # Option pane properties
 #
-plugin.beauty.BeautyPlugin.option-pane=beauty.beautifiers
-options.beauty.beautifiers.title=Beauty
-options.beauty.beautifiers.label=Beauty
+plugin.beauty.BeautyPlugin.option-group=beauty.beautifiers beauty.custom
+options.beauty.beautifiers.title=Modes
+options.beauty.beautifiers.label=Modes
 options.beauty.beautifiers.code=new beauty.BeautifierOptionPane();
 options.beauty.beautifiers.mode=Mode
 options.beauty.beautifiers.beautifier=Beautifier
 
+options.beauty.custom.title=Custom Beautifier
+options.beauty.custom.label=Custom Beautifier
+options.beauty.custom.code=new beauty.CustomBeautifierOptionPane();
 
 # mode handlers
 mode.html.beauty.beautifier=html
