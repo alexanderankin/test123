@@ -2,20 +2,14 @@
 
 package beauty;
 
-import java.io.ByteArrayInputStream;
 import java.util.Enumeration;
 import java.util.Vector;
-import javax.swing.SwingUtilities;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Element;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.Marker;
-import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
 
 import beauty.beautifiers.*;
@@ -37,10 +31,10 @@ public class BeautyThread implements Runnable {
 
 
     public void run() {
-        Log.log( Log.DEBUG, this, "beautifying the buffer..." );
+        //Log.log( Log.DEBUG, this, "beautifying the buffer..." );
 
         if ( beautifier == null ) {
-            Log.log( Log.DEBUG, this, "missing beautifier for beautifier" );
+            //Log.log( Log.DEBUG, this, "missing beautifier for beautifier" );
             return ;
         }
 
@@ -51,10 +45,10 @@ public class BeautyThread implements Runnable {
             if ( view != null ) {
                 view.showWaitCursor();
                 editPanes = view.getEditPanes();
-                if (editPanes != null) {
-                    caretPositions = new int[editPanes.length];
-                    for (int i = 0; i < editPanes.length; i++) {
-                        caretPositions[i] = editPanes[i].getTextArea().getCaretPosition();
+                if ( editPanes != null ) {
+                    caretPositions = new int[ editPanes.length ];
+                    for ( int i = 0; i < editPanes.length; i++ ) {
+                        caretPositions[ i ] = editPanes[ i ].getTextArea().getCaretPosition();
                     }
                 }
             }
@@ -73,8 +67,9 @@ public class BeautyThread implements Runnable {
             boolean softTabs = buffer.getBooleanProperty( "noTabs" );
             int wrapMargin = buffer.getIntegerProperty( "maxLineLength", 1024 );
             String wrapMode = buffer.getStringProperty( "wrap" );
-            beautifier.setEditMode(mode);
-            beautifier.setLineSeparator(ls);
+            beautifier.setBuffer( buffer );
+            beautifier.setEditMode( mode );
+            beautifier.setLineSeparator( ls );
             beautifier.setTabWidth( tabWidth );
             beautifier.setIndentWidth( indentWidth );
             beautifier.setUseSoftTabs( softTabs );
@@ -103,6 +98,11 @@ public class BeautyThread implements Runnable {
             buffer.insert( 0, contents );
             buffer.endCompoundEdit();
 
+            // if using the default beautifier, have jEdit indent the lines
+            if ( beautifier instanceof DefaultBeautifier ) {
+                BeautyPlugin.indentLines( view );
+            }
+
             // restore markers:
             Enumeration itr = markers.elements();
             while ( itr.hasMoreElements() ) {
@@ -111,13 +111,13 @@ public class BeautyThread implements Runnable {
             }
 
             // restore remembered caret positions:
-            if (editPanes != null) {
-                for (int i = 0; i < editPanes.length; i++) {
-                    restoreCaretPosition(editPanes[i], caretPositions[i]);   
+            if ( editPanes != null ) {
+                for ( int i = 0; i < editPanes.length; i++ ) {
+                    BeautyPlugin.restoreCaretPosition( editPanes[ i ], caretPositions[ i ] );
                 }
             }
 
-            Log.log( Log.DEBUG, this, "completed with success." );
+            //Log.log( Log.DEBUG, this, "completed with success." );
         }
         catch ( Exception ex ) {
             Log.log( Log.ERROR, this, ex );
@@ -128,18 +128,5 @@ public class BeautyThread implements Runnable {
             if ( view != null )
                 view.hideWaitCursor();
         }
-    }
-    
-    private void restoreCaretPosition(EditPane editPane, int caretPosition) {
-        final EditPane ep = editPane;
-        final int offset = Math.min( caretPosition, editPane.getTextArea().getBufferLength() );
-        SwingUtilities.invokeLater(
-            new Runnable() {
-                public void run() {
-                    ep.getTextArea().setCaretPosition( offset, true );
-                    ep.getTextArea().scrollToCaret( true );
-                }
-            }
-        );
     }
 }

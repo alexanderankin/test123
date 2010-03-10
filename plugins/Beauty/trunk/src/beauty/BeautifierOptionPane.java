@@ -35,7 +35,8 @@ import beauty.beautifiers.Beautifier;
 
 // BeautifierOptionPane class
 /**
- * An option pane to configure the mode - beautifiers associations.
+ * An option pane to configure the mode to beautifier associations.
+ * TODO: put strings in properties file
  *
  * @author Matthieu Casanova
  */
@@ -48,7 +49,28 @@ public class BeautifierOptionPane extends AbstractOptionPane {
     // _init() method
     public void _init() {
         setLayout( new BorderLayout() );
-        add( BorderLayout.CENTER, createTableScroller() );
+        setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
+        
+        JPanel topPanel = new JPanel( new BorderLayout() );
+        topPanel.setBorder( BorderFactory.createEmptyBorder( 0, 0, 16, 0 ) );
+        JLabel description = new JLabel( "<html><b>Assign beautifiers to modes" );
+        topPanel.add( BorderLayout.CENTER, description );
+        
+        JPanel centerPanel = new JPanel(new BorderLayout());
+        final JCheckBox defaultIndenter = new JCheckBox( "Use jEdit indenter for undefined modes" );
+        defaultIndenter.setSelected( jEdit.getBooleanProperty( "beauty.useBuiltInIndenter", true ) );
+        defaultIndenter.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    jEdit.setBooleanProperty( "beauty.useBuiltInIndenter", defaultIndenter.isSelected() );
+                }
+            }
+        );
+        centerPanel.add(BorderLayout.NORTH, defaultIndenter);
+        centerPanel.add(BorderLayout.CENTER, createTableScroller());
+        
+        add( BorderLayout.NORTH, topPanel );
+        add( BorderLayout.CENTER, centerPanel );
     }
 
     // _save() method
@@ -59,14 +81,13 @@ public class BeautifierOptionPane extends AbstractOptionPane {
     // Private members
 
     // Instance variables
-    private JTable table;
     private MyTableModel tableModel;
 
 
     // createTableScroller() method
     private JScrollPane createTableScroller() {
         tableModel = createModel();
-        table = new JTable( tableModel );
+        JTable table = new JTable( tableModel );
         table.getTableHeader().setReorderingAllowed( false );
         table.setColumnSelectionAllowed( false );
         table.setRowSelectionAllowed( false );
@@ -76,12 +97,14 @@ public class BeautifierOptionPane extends AbstractOptionPane {
         for ( int i = 0; i < serviceNames.length; i++ ) {
             beautifierList.add( serviceNames[ i ] );
         }
-        Collections.sort(beautifierList, new Comparator(){
-                public int compare(Object a, Object b) {
-                    return a.toString().compareToIgnoreCase(b.toString());
+        Collections.sort( beautifierList,
+                new Comparator() {
+                    public int compare( Object a, Object b ) {
+                        return a.toString().compareToIgnoreCase( b.toString() );
+                    }
                 }
-        } );
-        beautifierList.add( 0, MyTableModel.DEFAULT_BEAUTIFIER );
+                        );
+        beautifierList.add( 0, MyTableModel.BEAUTIFIER_NONE );
         beautifierList.add( 0, null );
         BeautifierCellRenderer comboBox = new BeautifierCellRenderer( beautifierList );
         table.setRowHeight( comboBox.getPreferredSize().height );
@@ -91,17 +114,7 @@ public class BeautifierOptionPane extends AbstractOptionPane {
 
         Dimension d = table.getPreferredSize();
         d.height = Math.min( d.height, 50 );
-        JPanel panel = new JPanel(new BorderLayout());
-        final JCheckBox defaultIndenter = new JCheckBox("Use jEdit indenter for undefined modes");
-        defaultIndenter.setSelected(jEdit.getBooleanProperty("beauty.useBuiltInIndenter", true));
-        defaultIndenter.addActionListener(new ActionListener(){
-                public void actionPerformed(ActionEvent ae) {
-                    jEdit.setBooleanProperty( "beauty.useBuiltInIndenter", defaultIndenter.isSelected() );
-                }
-        });
-        panel.add(defaultIndenter, BorderLayout.NORTH);
-        panel.add(table, BorderLayout.CENTER);
-        JScrollPane scroller = new JScrollPane( panel );
+        JScrollPane scroller = new JScrollPane( table );
         scroller.setPreferredSize( d );
         return scroller;
     }
@@ -131,7 +144,7 @@ public class BeautifierOptionPane extends AbstractOptionPane {
 class MyTableModel extends AbstractTableModel {
     private Vector modes;
 
-    public static final String DEFAULT_BEAUTIFIER = "none";
+    public static final String BEAUTIFIER_NONE = "none";
 
     // WindowTableModel constructor
     MyTableModel() {
@@ -232,7 +245,7 @@ class MyTableModel extends AbstractTableModel {
         }
 
         void save() {
-            if ( beautifier == DEFAULT_BEAUTIFIER ) {
+            if ( beautifier == BEAUTIFIER_NONE ) {
                 jEdit.resetProperty( "mode." + mode + ".beauty.beautifier" );
             }
             else {

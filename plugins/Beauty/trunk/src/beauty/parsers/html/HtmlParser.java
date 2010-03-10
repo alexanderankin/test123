@@ -16,9 +16,9 @@ public class HtmlParser implements HtmlParserConstants {
           tt = tt.specialToken;
         for (; tt != null; tt = tt.next)
           sb.append(tt.image);
-      };
+      }
       sb.append(t.image);
-    };
+    }
     return sb.toString();
   }
 

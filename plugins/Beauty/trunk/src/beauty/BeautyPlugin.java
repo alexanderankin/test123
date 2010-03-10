@@ -4,11 +4,10 @@ package beauty;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.io.VFSManager;
-import org.gjt.sp.jedit.msg.BufferUpdate;
-import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
 
+import java.io.*;
 import java.util.*;
 import java.util.zip.*;
 import javax.swing.*;
@@ -16,7 +15,85 @@ import javax.swing.*;
 import beauty.beautifiers.*;
 
 
-public class BeautyPlugin extends EBPlugin {
+public class BeautyPlugin extends EditPlugin {
+
+    private static Properties modeProperties;
+
+    public void start() {
+        loadProperties();
+        registerServices();        
+    }
+    
+    public static void registerServices() {
+        // read the custom mode beautifiers file and dynamically add services
+        // for any defined beautifiers
+        PluginJAR jar = jEdit.getPlugin( "beauty.BeautyPlugin" ).getPluginJAR();
+        for ( Object k : modeProperties.keySet() ) {
+            if ( k == null ) {
+                continue;
+            }
+            String modeName = ( String ) k;
+            modeName = modeName.substring(0, modeName.indexOf( '.' ));
+            ServiceManager.registerService( "beauty.beautifiers.Beautifier", modeName + ".custom", "new beauty.beautifiers.DefaultBeautifier(\"" + modeName + "\")", jar );
+        }
+    }
+    
+    public void stop() {
+        saveProperties();   
+    }
+
+    private static void loadProperties() {
+        modeProperties = new Properties();
+        try {
+            File homeDir = jEdit.getPlugin( "beauty.BeautyPlugin" ).getPluginHome();
+            File customFile = new File( homeDir, "custom_beautifiers.properties" );
+            Reader reader = new BufferedReader( new FileReader( customFile ) );
+            modeProperties.load( reader );
+            reader.close();
+        }
+        catch ( Exception ignored ) {      // NOPMD
+        }
+    }
+    
+    public static Properties getProperties() {
+        return modeProperties;   
+    }
+    
+    public static Properties getCustomModeProperties(String modeName) {
+        Properties props = new Properties();
+        for (Object k : modeProperties.keySet()) {
+            if (k == null) {
+                continue;   
+            }
+            String key = (String)k;
+            String value = modeProperties.getProperty(key);
+            String comp = key.substring( 0, key.indexOf( '.' ) );
+            key = key.substring(key.indexOf('.') + 1);
+            if (comp.equals(modeName)) {
+                props.setProperty(key, value);   
+            }
+        }
+        return props;
+    }
+
+    public static void saveProperties() {
+        if ( modeProperties == null ) {
+            return ;
+        }
+        try {
+            File homeDir = jEdit.getPlugin( "beauty.BeautyPlugin" ).getPluginHome();
+            if ( !homeDir.exists() ) {
+                homeDir.mkdir();
+            }
+            File customFile = new File( homeDir, "custom_beautifiers.properties" );
+            Writer writer = new BufferedWriter( new FileWriter( customFile ) );
+            modeProperties.store( writer, "Properties for custom mode beautifiers" );
+            writer.flush();
+            writer.close();
+        }
+        catch ( Exception ignored ) {      // NOPMD
+        }
+    }
 
     /**
      * Beautify the current buffer using Beauty.
@@ -42,14 +119,8 @@ public class BeautyPlugin extends EBPlugin {
         Beautifier beautifier = ( Beautifier ) ServiceManager.getService( Beautifier.SERVICE_NAME, mode );
         if ( beautifier == null ) {
             if ( jEdit.getBooleanProperty( "beauty.useBuiltInIndenter", false ) ) {
-                JEditTextArea ta = view.getEditPane().getTextArea();
-                int cp = ta.getCaretPosition();
-                ta.selectAll();
-                EditAction action = jEdit.getAction("indent-lines");
-                action.invoke(view);
-                ta.selectNone();
-                ta.setCaretPosition(cp);
-                return;
+                indentLines( view );
+                return ;
             }
             else {
                 if ( showErrorDialogs ) {
@@ -67,6 +138,30 @@ public class BeautyPlugin extends EBPlugin {
 
         // run the format routine synchronously on the AWT thread
         VFSManager.runInAWTThread( new BeautyThread( buffer, view, showErrorDialogs, beautifier ) );
+
+    }
+
+    static void indentLines( View view ) {
+        JEditTextArea ta = view.getEditPane().getTextArea();
+        int cp = ta.getCaretPosition();
+        ta.selectAll();
+        EditAction action = jEdit.getAction( "indent-lines" );
+        action.invoke( view );
+        ta.selectNone();
+        restoreCaretPosition( view.getEditPane(), cp );
+    }
+
+    static void restoreCaretPosition( EditPane editPane, int caretPosition ) {
+        final EditPane ep = editPane;
+        final int offset = Math.min( caretPosition, editPane.getTextArea().getBufferLength() );
+        SwingUtilities.invokeLater(
+            new Runnable() {
+                public void run() {
+                    ep.getTextArea().setCaretPosition( offset, true );
+                    ep.getTextArea().scrollToCaret( true );
+                }
+            }
+        );
     }
 
     public static void toggleSplitAttributes( View view ) {
