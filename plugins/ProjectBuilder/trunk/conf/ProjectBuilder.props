@@ -1,12 +1,15 @@
 # Basic Plugin Information {{{
 plugin.projectbuilder.ProjectBuilderPlugin.activate=startup
 plugin.projectbuilder.ProjectBuilderPlugin.author=Eric Berry, Damien Radtke
-plugin.projectbuilder.ProjectBuilderPlugin.description=Provides templates to create new projects of different types.
+plugin.projectbuilder.ProjectBuilderPlugin.description=ProjectBuilder expands on the ProjectViewer plugin by allowing you \
+	to create projects of specific types through the use of a Groovy-based template system, as well as creating separate \
+	actions for building and running projects. \
+	This version comes bundled with project templates for creating jEdit plugins and standalone Java applications.
 plugin.projectbuilder.ProjectBuilderPlugin.docs=index.html
 plugin.projectbuilder.ProjectBuilderPlugin.longdescription=description.html
 plugin.projectbuilder.ProjectBuilderPlugin.name=Project Builder
 plugin.projectbuilder.ProjectBuilderPlugin.usePluginHome=true
-plugin.projectbuilder.ProjectBuilderPlugin.version=1.0
+plugin.projectbuilder.ProjectBuilderPlugin.version=1.1
 # }}} Basic Plugin Information
 
 # Dependencies {{{
