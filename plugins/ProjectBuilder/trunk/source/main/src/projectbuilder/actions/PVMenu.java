@@ -53,7 +53,6 @@ public class PVMenu extends projectviewer.action.Action {
 	}
 
 	public void prepareForNode(VPTNode node) {
-		// FIXME: saving the project here in an instance variable doesn't work for some reason
 		/*
 		proj = VPTNode.findProjectFor(node);
 		Macros.message(jEdit.getActiveView(), "Set: "+proj);

@@ -2,9 +2,10 @@
 <project name="ProjectBuilder" default="build" basedir=".">
    <property file="build.properties" />
    <property file="../build.properties" />
+   <property file="/home/damien/.jedit/build.properties" />
    <property name="compiler.source" value="1.6" />
    <property name="compiler.target" value="1.6" />
-	
+   
 	<!-- for groovyc -->
    <property name="groovy.jar.name" value="groovy-all-1.5.6.jar" />
 	
@@ -13,7 +14,7 @@
    <property name="src.resources.dir" value="source/main/resources"/>
 	
 	<!-- jedit properties -->
-   <property name="docs-proc.target" value="none" />
+   <!-- <property name="docs-proc.target" value="none" /> -->
    <property name="junit.jar" value="../junit/junit.jar" />
 	
 	<!-- import jEdit common build file -->
@@ -24,6 +25,7 @@
       <and>
          <or>
             <filename name="**/*.html" />
+            <filename name="**/*.png" />
          </or>
       </and>
    </selector>

@@ -132,6 +132,7 @@ public class ProjectToolbar extends JPanel {
 
 	// Static methods {{{
 	public static void create(View view, VPTProject proj) {
+		if (viewMap.get(view) != null) return;
 		ProjectToolbar toolbar = new ProjectToolbar(view, proj);
 		viewMap.put(view, toolbar);
 		view.addToolBar(toolbar);

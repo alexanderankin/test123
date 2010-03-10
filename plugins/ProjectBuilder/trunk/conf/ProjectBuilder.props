@@ -2,7 +2,7 @@
 plugin.projectbuilder.ProjectBuilderPlugin.activate=startup
 plugin.projectbuilder.ProjectBuilderPlugin.author=Eric Berry, Damien Radtke
 plugin.projectbuilder.ProjectBuilderPlugin.description=Provides templates to create new projects of different types.
-plugin.projectbuilder.ProjectBuilderPlugin.docs=docs/ProjectBuilder.html
+plugin.projectbuilder.ProjectBuilderPlugin.docs=index.html
 plugin.projectbuilder.ProjectBuilderPlugin.longdescription=description.html
 plugin.projectbuilder.ProjectBuilderPlugin.name=Project Builder
 plugin.projectbuilder.ProjectBuilderPlugin.usePluginHome=true
@@ -30,15 +30,15 @@ projectBuilder.actions.toggleToolbar.label=Show Toolbar
 # }}} Menu
 
 # ProjectViewer settings {{{
-options.projectBuilder.pv.options.label=Build/Run Settings
+#options.projectBuilder.pv.options.jEdit_Plugin.label=jEdit Plugin Properties
+options.projectBuilder.pv.options.Java_Application.label=Java App Properties
+options.projectBuilder.pv.build-run-options.label=Build/Run settings
 options.projectBuilder.toolbar.visible=false
 # }}} ProjectViewer settings
 
-# Properties {{{
-projectBuilder.run-ant-in-jvm=true
-# }}} Properties
-
 # Messages {{{
+projectBuilder.msg.no-shell.title=Shell Error
+projectBuilder.msg.no-shell.message=This action requires the {0} shell. Please install it and try again.
 projectBuilder.msg.no-project.title=Error
 projectBuilder.msg.no-project.message=No Active Project
 projectBuilder.msg.no-build-command.title=Build Error

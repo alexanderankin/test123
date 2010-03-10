@@ -11,6 +11,7 @@ import projectbuilder.utils.ZipUtils
 import java.util.*
 import java.util.zip.*
 import javax.script.ScriptContext
+import java.io.File
 import javax.swing.*
 
 import org.gjt.sp.jedit.*
@@ -32,12 +33,13 @@ import antfarm.AntFarmPlugin
 // }}} imports
 /**
  *
- * @author elberry
+ * @author elberry, dradtke
  */
 public class ProjectBuilderPlugin extends EditPlugin implements EBComponent {
 
    private Project building = null; // The currently-building project
-   public static final String userTemplateDir = JEDIT.getSettingsDirectory()+"/project-templates"
+   public static final String templateDir = getPluginHome(this).getPath()+File.separator+"templates"
+   public static final String userTemplateDir = JEDIT.getSettingsDirectory()+File.separator+"project-templates"
    
    @Override
    public void start() {
@@ -77,7 +79,7 @@ public class ProjectBuilderPlugin extends EditPlugin implements EBComponent {
             }
          }
       }
-      updateToolbar()
+      updateToolbar(null)
       EditBus.addToBus(this)
    }
 
@@ -117,8 +119,7 @@ public class ProjectBuilderPlugin extends EditPlugin implements EBComponent {
    	   	   String[] commands = new String[2]
    	   	   commands[0] = "cd \""+proj.getRootPath()+"\""
    	   	   commands[1] = cmd
-   	   	   Shell system = Shell.getShell("System")
-   	   	   ShellRunner runner = new ShellRunner(view.getDockableWindowManager(), system, commands)
+   	   	   ShellRunner runner = new ShellRunner(view, "System", commands)
    	   	   runner.start()
    	   }
    	   else if (type.equals("ANT")) {
@@ -128,8 +129,7 @@ public class ProjectBuilderPlugin extends EditPlugin implements EBComponent {
 				buildfile = proj.getRootPath()+File.separator+"build.xml"
 		   commands[0] = "+"+buildfile
    	   	   commands[1] = "!"+command.getProperty("target")
-   	   	   Shell ant = Shell.getShell("Ant")
-   	   	   ShellRunner runner = new ShellRunner(view.getDockableWindowManager(), ant, commands)
+   	   	   ShellRunner runner = new ShellRunner(view, "Ant", commands)
    	   	   runner.start()
    	   }
    }
@@ -227,6 +227,19 @@ public class ProjectBuilderPlugin extends EditPlugin implements EBComponent {
    }
    // }}} Toolbar methods
    
+   // Find template dir
+   public static String findTemplateDir(String template) {
+   	   try {
+   	   	   // Try user template dir
+		   File dir = new File(userTemplateDir)+File.separator+template
+		   if (dir.exists() && dir.isDirectory()) return dir.getPath()+File.separator
+		   // Try plugin home
+		   dir = new File(templateDir)+File.separator+template
+		   if (dir.exists() && dir.isDirectory()) return dir.getPath()+File.separator
+		   return null
+	   } catch (Exception e) { return null }
+   }
+   
    // Edit Bus
    public void handleMessage(EBMessage message) {
    	   if (message instanceof ViewUpdate) {
@@ -234,7 +247,10 @@ public class ProjectBuilderPlugin extends EditPlugin implements EBComponent {
    	   	   boolean toolbar = JEDIT.getBooleanProperty("options.projectBuilder.toolbar.visible")
    	   	   View view = view_message.getView()
    	   	   if (view_message.getWhat() == ViewUpdate.CREATED) {
-   	   	   	   if (toolbar) ProjectToolbar.create(view)
+   	   	   	   if (toolbar) {
+   	   	   	   	   VPTProject proj = ProjectViewer.getActiveProject(view)
+   	   	   	   	   if (proj != null) ProjectToolbar.create(view, proj)
+   	   	   	   }
    	   	   } else if (view_message.getWhat() == ViewUpdate.CLOSED) {
    	   	   	   if (toolbar) ProjectToolbar.remove(view)
    	   	   }
