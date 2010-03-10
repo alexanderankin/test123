@@ -49,6 +49,10 @@
   <p><center><img src="{src}" /></center></p>
 </xsl:template>
 
+<xsl:template match="br">
+	<br />
+</xsl:template>
+
 <xsl:param name="toc.list.type">ul</xsl:param>
 <xsl:param name="use.id.as.filename">1</xsl:param>
 <xsl:param name="shade.verbatim">1</xsl:param>
