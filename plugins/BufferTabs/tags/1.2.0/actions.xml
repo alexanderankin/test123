@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<ACTIONS>
+	<ACTION NAME="buffertabs.toggle-vis">
+		<CODE>
+			buffertabs.BufferTabsPlugin.toggleBufferTabsForEditPane(editPane);
+		</CODE>
+		<IS_SELECTED>
+		return (
+		buffertabs.BufferTabsPlugin.getBufferTabsForEditPane(editPane) != null
+		);
+		</IS_SELECTED>
+	</ACTION>
+	<ACTION NAME="buffertabs.copy-name">
+		<CODE>
+             Registers.setRegister('$', editPane.getBuffer().getName());
+        </CODE>
+	</ACTION>
+	<ACTION NAME="buffertabs.copy-path">
+		<CODE>
+             Registers.setRegister('$', editPane.getBuffer().getPath());
+        </CODE>
+	</ACTION>
+	<ACTION NAME="buffertabs.insert-name">
+		<CODE>
+            textArea.setSelectedText(editPane.getBuffer().getName());
+        </CODE>
+	</ACTION>
+	<ACTION NAME="buffertabs.insert-path">
+		<CODE>
+            textArea.setSelectedText(editPane.getBuffer().getPath());
+        </CODE>
+	</ACTION>
+</ACTIONS>
