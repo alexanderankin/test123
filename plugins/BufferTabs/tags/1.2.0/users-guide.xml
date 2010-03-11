@@ -67,7 +67,8 @@
   <listitem><para>Buffer Tabs can be displayed on any of the four sides of the text area</para></listitem>
   <listitem><para>Buffer Tabs right-click popup menu can be enabled or disabled.</para></listitem>
   <listitem><para>Buffer Tabs can display colored backgrounds or colored titles</para></listitem>
-   <listitem><para>Closing a tab with a double left click or a single middle click can be enabled or disabled.</para></listitem>
+  <listitem><para>Closing a tab with a double left click or a single middle click can be enabled or disabled.</para></listitem>
+  <listitem><para>Toggling docking areas with a double left click can be enabled or disabled. This option cannot be used in conjunction with closing a tab on double left click. Selecting this option will deselect the "close on double click" option, if it was previously selected.</para></listitem>
  </itemizedlist>
   </chapter>
 <chapter id="license">
@@ -97,7 +98,7 @@
   <title>Change log</title>
   <formalpara>
      <title>Version 1.2.0</title>
-        <para> Requires JDK 1.6, jEdit 4.4.x
+        <para> Requires JDK 1.5, jEdit 4.3
           <itemizedlist>
             <listitem><para>Added option to toggle docking areas on double click. When selected, the close on double click option is deselected if it was previously selected. (Eric Berry)</para></listitem>
           </itemizedlist>
