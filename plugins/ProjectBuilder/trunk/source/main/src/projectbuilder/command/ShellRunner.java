@@ -26,9 +26,6 @@ public class ShellRunner extends Thread {
 		DockableWindowManager wm = view.getDockableWindowManager();
 		wm.addDockableWindow("console");
 		console = (Console) wm.getDockableWindow("console");
-		Log.log(Log.DEBUG,this,"Found console window: "+console);
-		// If the shell is Ant, clear it first
-		if (shell.getName().equals("Ant")) console.clear();
 		for (int i = 0; i<commands.length; i++) {
 			console.run(shell, commands[i]);
 			shell.waitFor(console);

@@ -29,7 +29,6 @@ import projectviewer.ProjectViewer
 import com.townsfolkdesigns.jedit.plugins.scripting.*
 import console.Shell
 import console.Console
-import antfarm.AntFarmPlugin
 // }}} imports
 /**
  *
