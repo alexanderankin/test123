@@ -101,6 +101,13 @@
  settings. For template users, this means that the templates will be much more robust in the future,
  allowing for new levels of functionality.
  </para>
+ <sect1 id="shells"><title>Shells</title>
+  <para>
+  ProjectBuilder executes build and run commands through the Console plugin, and certain settings may require
+  additional shells to be installed. System commands will not require additional plugins, but projects that need
+  Ant will need the Ant shell provided by the AntFarm plugin.
+  </para>
+ </sect1>
 </chapter>
 <chapter id="creating-templates"><title>Creating Project Templates</title>
  <para>
@@ -174,8 +181,8 @@
   The declarations are made using the def keyword, and as in other scripting languages like bash,
   variable substitution is done using the ${} syntax. The groovy script is passed several
   variables when it is called, providing information such as the project's creation directory and
-  name. Your script should define a similar templateDir variable (def templateDir = "${templatesDir}/
-  My_Template"), and a templateData object, which is used to store data that will be needed
+  name. Your script should define a similar templateDir variable (def templateDir = "${templatesDir}/My_Template"),
+  and a templateData object, which is used to store data that will be needed
   by template files. The dist declaration is used in setting the project's run command later on.
   </para> <para />
   <code>
