@@ -344,7 +344,6 @@ class MarginWriter {
     }
 
     public void setRightMargin( int rightMargin ) {
-        System.out.println("+++++ MarginWriter, setting rightMargin to " + rightMargin);
         this.rightMargin = rightMargin;
     }
 

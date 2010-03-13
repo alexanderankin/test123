@@ -14,70 +14,102 @@ import javax.swing.*;
 
 import beauty.beautifiers.*;
 
-
+/**
+ * Beauty uses either beautifiers defined in services.xml or by the user having
+ * created a properties file describing a custom beautifier.  The custom properties
+ * files are one per mode, with the name of each file being the mode name with a
+ * .properties extension.  These properties files are stored in the plugin home
+ * directory.
+ */
 public class BeautyPlugin extends EditPlugin {
 
-    private static Properties modeProperties;
+    // map of mode name <-> custom beautifier properties file
+    private static HashMap<String, File> modeFiles;
 
     public void start() {
+        copyBundledProperties();
         loadProperties();
-        registerServices();        
+        registerServices();
     }
     
+    // copies any custom beautifier properties files from the plugin jar to
+    // the plugin home directory, but does not overwrite files of the same
+    // name that already exist in the plugin home directory.
+    private void copyBundledProperties() {
+        
+    }
+
     public static void registerServices() {
         // read the custom mode beautifiers file and dynamically add services
         // for any defined beautifiers
         PluginJAR jar = jEdit.getPlugin( "beauty.BeautyPlugin" ).getPluginJAR();
-        for ( Object k : modeProperties.keySet() ) {
-            if ( k == null ) {
-                continue;
-            }
-            String modeName = ( String ) k;
-            modeName = modeName.substring(0, modeName.indexOf( '.' ));
+        for ( String modeName : modeFiles.keySet() ) {
             ServiceManager.registerService( "beauty.beautifiers.Beautifier", modeName + ".custom", "new beauty.beautifiers.DefaultBeautifier(\"" + modeName + "\")", jar );
         }
     }
-    
-    public void stop() {
-        saveProperties();   
-    }
 
+    /**
+     * Load the properties files containing the definitions any custom beautifiers.
+     * These files are stored in the plugin home directory.  They are named with
+     * the mode name followed by .properties and are stored in the modeFiles map.
+     */
     private static void loadProperties() {
-        modeProperties = new Properties();
         try {
             File homeDir = jEdit.getPlugin( "beauty.BeautyPlugin" ).getPluginHome();
-            File customFile = new File( homeDir, "custom_beautifiers.properties" );
-            Reader reader = new BufferedReader( new FileReader( customFile ) );
-            modeProperties.load( reader );
-            reader.close();
+            File[] files = homeDir.listFiles(
+                        new FileFilter() {
+                            public boolean accept( File pathname ) {
+                                return pathname.getName().endsWith( ".properties" );
+                            }
+                        }
+                    );
+            modeFiles = new HashMap<String, File>();
+            for ( File file : files ) {
+                String filename = file.getName();
+                String modeName = filename.substring( 0, filename.lastIndexOf( ".properties" ) );
+                modeFiles.put( modeName, file );
+            }
         }
         catch ( Exception ignored ) {      // NOPMD
         }
     }
-    
-    public static Properties getProperties() {
-        return modeProperties;   
-    }
-    
-    public static Properties getCustomModeProperties(String modeName) {
-        Properties props = new Properties();
-        for (Object k : modeProperties.keySet()) {
-            if (k == null) {
-                continue;   
-            }
-            String key = (String)k;
-            String value = modeProperties.getProperty(key);
-            String comp = key.substring( 0, key.indexOf( '.' ) );
-            key = key.substring(key.indexOf('.') + 1);
-            if (comp.equals(modeName)) {
-                props.setProperty(key, value);   
-            }
+
+    /**
+     * Get the properties describing a custom beautifier.
+     * @param modeName The name of the mode to look for a custom beautifier.
+     * @return A properties.  This may be empty, but won't be null.
+     */
+    public static Properties getCustomModeProperties( String modeName ) {
+        loadProperties();
+        File modeFile = modeFiles.get(modeName);
+        
+        if ( modeFile == null ) {
+            // no custom beautifier properties file found for this mode
+            return new Properties();
         }
-        return props;
+        
+        // read the properties file into a Properties
+        try {
+            Reader reader = new BufferedReader( new FileReader( modeFile ) );
+            Properties props = new Properties();
+            props.load( reader );
+            reader.close();
+            return props;
+        }
+        catch ( Exception e ) {
+            e.printStackTrace();
+            return new Properties();
+        }
     }
 
-    public static void saveProperties() {
-        if ( modeProperties == null ) {
+    /**
+     * Saves given properties with the mode name.
+     * @param modeName The name of the mode.  This will be used as the start of the
+     * file name, with .properties appended.
+     * @param modeProperties The properties to save.
+     */
+    public static void saveProperties( String modeName, Properties modeProperties ) {
+        if ( modeName == null || modeProperties == null ) {
             return ;
         }
         try {
@@ -85,14 +117,15 @@ public class BeautyPlugin extends EditPlugin {
             if ( !homeDir.exists() ) {
                 homeDir.mkdir();
             }
-            File customFile = new File( homeDir, "custom_beautifiers.properties" );
+            File customFile = new File( homeDir, modeName + ".properties" );
             Writer writer = new BufferedWriter( new FileWriter( customFile ) );
-            modeProperties.store( writer, "Properties for custom mode beautifiers" );
+            modeProperties.store( writer, "Properties for " + modeName + " custom beautifier." );
             writer.flush();
             writer.close();
         }
         catch ( Exception ignored ) {      // NOPMD
         }
+        loadProperties();
     }
 
     /**
@@ -169,5 +202,4 @@ public class BeautyPlugin extends EditPlugin {
         jEdit.setBooleanProperty( "xmlindenter.splitAttributes", !split );
         beautify( view.getBuffer(), view, true );
     }
-
 }
