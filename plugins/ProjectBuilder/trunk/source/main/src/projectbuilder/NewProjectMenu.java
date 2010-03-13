@@ -54,8 +54,6 @@ public class NewProjectMenu implements DynamicMenuProvider {
 			p.addActionListener(new ItemListener(t));
 			projects.add(p);
 		}
-		files = new JMenu("New File");
-		menu.add(files, 0);
 		menu.add(projects, 0);
 	}
 }
