@@ -31,7 +31,6 @@ import static org.fest.assertions.Assertions.*;
 import org.gjt.sp.jedit.testframework.Log;
 import org.gjt.sp.jedit.testframework.TestUtils;
 
-
 // }}}
 
 import java.io.*;
@@ -47,7 +46,8 @@ import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.msg.PluginUpdate;
 
-import static xml.EBFixture.*;
+import static org.gjt.sp.jedit.testframework.EBFixture.*;
+
 /**
  * a handful of utility methods.
  * Some of them may be moved to the test-framework as they prove useful
@@ -149,121 +149,6 @@ public class XMLTestUtils{
 
 		listen.waitForMessage(10000);
 	}
-	
-	
-	/**
-     * Convenience method to select a path in a JTree.
-     * @param treeFixture the JTree
-     * @param path the path to select
-     */
-    public static void selectPath( JTreeFixture treeFixture, String path ) {
-    	String[] components = path.split("/",-1);
-    	TestUtils.selectPath(treeFixture, components);
-    }
-    
-    /**
-     * @param path path in the option panes tree (eg. XML/XML)
-     * @param name internal name of the option pane (eg. xml.general)
-     * @return an option pane, ensuring that it's visible
-     */
-    public static OptionsFixture pluginOptions(){
-    	TestUtils.jEditFrame().menuItemWithPath("Plugins","Plugin Options...").click();
-		
-		DialogFixture optionsDialog = WindowFinder.findDialog(org.gjt.sp.jedit.options.PluginOptions.class).withTimeout(5000).using(TestUtils.robot());
-		Dialog target = optionsDialog.targetCastedTo(Dialog.class);
-		return new OptionsFixture(TestUtils.robot(),target);
-    }
-    
-    public static enum Option{YES,NO,OK,CANCEL}
-	/**
-	 * Click on an OptionPane asynchronously.
-	 * Typical usage pattern is :
-	 * <code>
-	 *  ClickT clickT = new ClickT(Option.YES);
-	 *  clickT.start();
-	 *
-	 *  // do something to prompt an option pane
-	 *  
-	 *  clickT.waitForClick();
-	 *  </code>
-	 */
-	public static final class ClickT extends Thread{
-		private final Option opt;
-		private final long timeout;
-		private transient WaitTimedOutError savedException;
-		
-		/**
-		 * @param	opt	the button you want to click on
-		 */
-		public ClickT(Option opt){
-			this(opt,2000);
-		}
-
-		/**
-		 * @param	opt	the button you want to click on
-		 * @param	timeout	how long do you wait for the Dialog ?
-		 */
-		public ClickT(Option opt, long timeout){
-			this.opt = opt;
-			this.timeout = timeout;
-		}
-		
-		
-		public void run(){
-			try{
-				final JOptionPaneFixture options = TestUtils.jEditFrame().optionPane(Timeout.timeout(timeout));
-				switch(opt){
-				case YES:
-					options.yesButton().click();
-					break;
-				case NO:
-					options.noButton().click();
-					break;
-				case OK:
-					options.okButton().click();
-					break;
-				case CANCEL:
-					options.cancelButton().click();
-					break;
-				default:
-					fail("unspecified option to click on !");
-				}
-			}catch(WaitTimedOutError e){
-				System.err.println("TOO bad : timeout");
-				savedException = e;
-			}
-		}
-		
-		/**
-		 * blocking method.
-		 * wait until the OptionPane shows up and we click on it,
-		 * or until the timeout expires (then you get an WaitTimedOutError)
-		 */
-		public void waitForClick() throws WaitTimedOutError{
-			try{
-				this.join();
-				if(savedException != null)throw savedException;
-			}catch(InterruptedException e){
-				fail("Interrupted");
-			}
-		}
-		
-	}	
-	
-	/**
-	 * execute an action, like via the ActionBar
-	 * 
-	 * @param	action	the action to execute
-	 * @param	count	the number of time to execute it (should be at least 1)
-	 */
-	public static void action(final String action, final int count){
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getInputHandler().setRepeatCount(count);
-					TestUtils.view().getInputHandler().invokeAction(action);
-				}
-		});
-	}
 
 	public static class JWindowFixture extends ContainerFixture<JWindow>{
 		public JWindowFixture(Robot robot, JWindow target){
@@ -292,23 +177,5 @@ public class XMLTestUtils{
 		return new JWindowFixture(TestUtils.robot(),(JWindow)completionC);
 	}
 	
-	public static void gotoPosition(final int caretPosition){
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(caretPosition);
-				}
-		});
-	}
-	
-	
-	public static void requireEmpty(JTreeFixture f){
-		
-		try{
-			f.toggleRow(0);
-			fail("should be empty !");
-		}catch(RuntimeException re){
-			//fine
-			System.err.println(re.getClass());
-		}
-	}
+
 }

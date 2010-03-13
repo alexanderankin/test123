@@ -31,6 +31,7 @@ import org.gjt.sp.jedit.testframework.Log;
 import org.gjt.sp.jedit.testframework.TestUtils;
 
 import static xml.XMLTestUtils.*;
+import static org.gjt.sp.jedit.testframework.TestUtils.*;
 // }}}
 
 import java.io.*;
