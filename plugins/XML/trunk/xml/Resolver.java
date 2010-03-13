@@ -523,7 +523,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 				if(!MiscUtilities.isURL(newSystemId))
 				{
 					try{
-						newSystemId = new File(newSystemId).toURL().toExternalForm();
+						newSystemId = new File(newSystemId).toURI().toURL().toString();;
 						//set it, otherwise it will never get a sound system id
 						systemId = newSystemId;
 					}catch(java.net.MalformedURLException mue){
