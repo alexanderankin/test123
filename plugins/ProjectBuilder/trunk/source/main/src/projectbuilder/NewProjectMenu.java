@@ -1,6 +1,7 @@
 package projectbuilder;
 // imports {{{
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.Macros;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.menu.DynamicMenuProvider;
@@ -12,12 +13,17 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileFilter;
+
+import projectviewer.ProjectViewer;
 // }}} imports
 public class NewProjectMenu implements DynamicMenuProvider {
+	private JMenu projects;
+	//private JMenu files;
 	public boolean updateEveryTime() {
 		return false;
 	}
 	public void update(JMenu menu) {
+		// New Projects menu
 		JMenu projects = new JMenu("New Project");
 		String templates = EditPlugin.getPluginHome(ProjectBuilderPlugin .class).getPath() + "/templates";
 		File templateDir = null;
@@ -28,18 +34,18 @@ public class NewProjectMenu implements DynamicMenuProvider {
 		} catch (Exception e) {
 			return;
 		}
-
+		
 		File[] dirs = templateDir.listFiles(new DirFilter());
 		File[] userDirs = userTemplateDir.listFiles(new DirFilter());
 		int total = dirs.length + userDirs.length;
-
+		
 		String[] tNames = new String [total];
 		for (int i = 0; i < total; i++) {
 			File dir = (i<dirs.length) ? dirs[i] : userDirs[i-dirs.length];
 			String name = dir.getName();
 			tNames[i] = name.replace("_", " ");
 		}
-
+		
 		for (int j = 0; j < tNames.length; j++) {
 			File dir = (j<dirs.length) ? dirs[j] : userDirs[j-dirs.length];
 			String iconUrl = dir.getPath() + "/menu-icon.png";
@@ -48,7 +54,9 @@ public class NewProjectMenu implements DynamicMenuProvider {
 			p.addActionListener(new ItemListener(t));
 			projects.add(p);
 		}
-		menu.add(projects);
+		files = new JMenu("New File");
+		menu.add(files, 0);
+		menu.add(projects, 0);
 	}
 }
 class DirFilter implements FileFilter {

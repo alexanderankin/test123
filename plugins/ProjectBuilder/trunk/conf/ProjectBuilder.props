@@ -22,8 +22,8 @@ plugin.projectbuilder.ProjectBuilderPlugin.depend.5=optional plugin AntFarm 1.7
 # }}} Dependencies
 
 # Menu {{{
-plugin.projectbuilder.ProjectBuilderPlugin.menu=projectBuilder.actions.buildProject projectBuilder.actions.runProject - \
-												  projectBuilder.actions.toggleToolbar -
+plugin.projectbuilder.ProjectBuilderPlugin.menu=- projectBuilder.actions.buildProject projectBuilder.actions.runProject - \
+												  projectBuilder.actions.toggleToolbar
 plugin.projectbuilder.ProjectBuilderPlugin.menu.code=new projectbuilder.NewProjectMenu()
 projectBuilder.actions.newProject.label=Create new Project
 projectBuilder.actions.buildProject.label=Build Current Project
