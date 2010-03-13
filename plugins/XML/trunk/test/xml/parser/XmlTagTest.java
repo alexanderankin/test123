@@ -30,8 +30,9 @@ import static org.fest.assertions.Assertions.*;
 import org.gjt.sp.jedit.testframework.Log;
 
 import static xml.XMLTestUtils.*;
-import static xml.EBFixture.*;
-import xml.OptionsFixture;
+import static org.gjt.sp.jedit.testframework.EBFixture.*;
+import static org.gjt.sp.jedit.testframework.TestUtils.*;
+import org.gjt.sp.jedit.testframework.PluginOptionsFixture;
 import org.gjt.sp.jedit.testframework.TestUtils;
 
 // }}}
@@ -93,7 +94,7 @@ public class XmlTagTest{
 
 		/*------      test Attributes = Id       ---------*/
 
-    	OptionsFixture options = pluginOptions();
+    	PluginOptionsFixture options = pluginOptions();
     	
     	options.optionPane("XML/XML","xml.general")
     	       .comboBox("showAttributes").selectItem(1);

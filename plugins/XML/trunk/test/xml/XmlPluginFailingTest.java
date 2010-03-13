@@ -30,7 +30,8 @@ import static org.fest.assertions.Assertions.*;
 import org.gjt.sp.jedit.testframework.Log;
 
 import static xml.XMLTestUtils.*;
-import static xml.EBFixture.*;
+import static org.gjt.sp.jedit.testframework.TestUtils.*;
+import static org.gjt.sp.jedit.testframework.EBFixture.*;
 import org.gjt.sp.jedit.testframework.TestUtils;
 
 // }}}
