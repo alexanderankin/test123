@@ -112,6 +112,8 @@ import org.xml.sax.SAXException;
 public class XPathTool extends JPanel implements ListSelectionListener,
 		ActionListener, DefaultFocusComponent, ItemListener {
 
+	public static final String XPATH_ADAPTER_PROP="xpath.adapter";
+	
 	private View view;
 	private final XsltAction grabNSAction = new GrabNSAction();
 	private final BufferOrFileVFSSelector inputSelectionPanel;
@@ -125,7 +127,7 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 	
 	private JPanel dataTypePanel;
 	private boolean autoCompleteEnabled;
-
+	private XPathAdapter adapter;
 
 	public XPathTool(View view) {
 		super(new GridBagLayout());
@@ -214,6 +216,22 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 	}
 
 
+	private XPathAdapter getXPath() {
+		String xpath = jEdit.getProperty(XPATH_ADAPTER_PROP);
+		if(adapter == null || !adapter.getClass().getName().equals(xpath)) {
+			try {
+				adapter = (XPathAdapter)Class.forName(xpath).newInstance();
+			} catch(ClassNotFoundException e) {
+				XSLTPlugin.processException(e,"error instantiating XPath engine",this);
+			} catch(InstantiationException e) {
+				XSLTPlugin.processException(e,"error instantiating XPath engine",this);
+			} catch(IllegalAccessException e) {
+				XSLTPlugin.processException(e,"error instantiating XPath engine",this);
+			}
+		}
+		return adapter;
+	}
+	
 	public void actionPerformed(ActionEvent event) {
 		if(!inputSelectionPanel.isSourceFileDefined()) {
 			GUIUtilities.message(this,"xpath.error.no-source",new Object[]{});
@@ -255,23 +273,18 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 
 		String expression = expressionPanel.getExpression();
 
-		/* don't know how to get the result type using javax.xml.xpath.* API.
-		 * Plus here, using NODESET will throw an exception when evaluating 1+1
-		XPathFactory factory = XPathFactory.newInstance();
-		XPath xpath = factory.newXPath();
-  
-		Object result = xpath.evaluate(expression, document,XPathConstants.NODESET);
-		System.err.println(result);*/
-  
-		PrefixResolverImpl res = new PrefixResolverImpl(nsPanel.getMap());
-		XObject xObject = XPathAPI.eval(document, expression, res);
-		expressionPanel.addToHistory(expression);
-
-		dateTypeField.setText(getDataTypeMessage(xObject));
-		xObject.xstr().toString();
-		setResultValue(xObject, document, expression);
-		setNodeSetResults(xObject);
-		setXmlFragments(xObject);
+		XPathAdapter xpath = getXPath();
+		if(xpath != null) {
+			XPathAdapter.Result result = xpath.evaluateExpression(document,nsPanel.getMap(),expression);
+			Log.log(Log.DEBUG,this,"evaluateExpression returns : "+result);
+			
+			expressionPanel.addToHistory(expression);
+	
+			dateTypeField.setText(result.getType());
+			setResultValue(result);
+			setNodeSetResults(result);
+			setXmlFragments(result);
+		}
 	}
 
 
@@ -290,60 +303,30 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 		return splitPane;
 	}
 
-
-	/**
-	 * Returns a message containing the data type selected by the XPath expression.
-	 * Note: there are four data types in the XPath 1.0 data model: node-set, string,
-	 * number, and boolean.
-	 *
-	 * @param xObject XObject to be converted
-	 * @return string describing the selected data type
-	 */
-	private String getDataTypeMessage(XObject xObject) throws TransformerException {
-		String typeMessage = null;
-
-		if (xObject.getType() == XObject.CLASS_NODESET) {
-			NodeSetDTM nodeSet = xObject.mutableNodeset();
-
-			Object[] messageArgs = new Object[]{new Integer(nodeSet.size())};
-			typeMessage = MessageFormat.format(jEdit.getProperty("xpath.result.data-type.node-set"), messageArgs);
-		} else {
-			Object[] messageArgs = new Object[]{xObject.getTypeString().substring(1).toLowerCase()};
-			typeMessage = MessageFormat.format(jEdit.getProperty("xpath.result.data-type.not-node-set"), messageArgs);
-		}
-
-		return typeMessage;
-	}
-
-
-	private void setResultValue(XObject xObject, final Document document, final String expression) {
-		final boolean isNodeSet = isNodeSet(xObject);
-		final String text = xObject.xstr().toString();
-
+	private void setResultValue(final XPathAdapter.Result result) {
+		final boolean isNodeSet = result.isNodeSet();
 		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				if(isNodeSet) {
-					resultValuePanel.setLabelText(jEdit.getProperty("xpath.result.string-value.label"));
+				public void run() {
 					try {
-						String stringValue = XPathAPI.eval(document, "string(" + expression + ")").toString();
-						resultValuePanel.setText(stringValue);
-					} catch (TransformerException e) {
+						if(isNodeSet) {
+							resultValuePanel.setLabelText(jEdit.getProperty("xpath.result.string-value.label"));
+						} else {
+							resultValuePanel.setLabelText(jEdit.getProperty("xpath.result.value.label"));
+						}
+						resultValuePanel.setText(result.getStringValue());
+					} catch (Exception e) {
 						resultValuePanel.setText("");
 					}
-				} else {
-					resultValuePanel.setLabelText(jEdit.getProperty("xpath.result.value.label"));
-					resultValuePanel.setText(text);
+					resultValuePanel.resetCaretPosition();
 				}
-				resultValuePanel.resetCaretPosition();
-			}
 		});
 	}
 
 
-	private void setXmlFragments(XObject xObject) throws Exception {
-		if (isNodeSet(xObject)) {
+	private void setXmlFragments(XPathAdapter.Result result) throws Exception {
+		if (result.isNodeSet()) {
 			try {
-				XMLFragmentsString xmlFragments = new XMLFragmentsString(xObject.nodelist());
+				XMLFragmentsString xmlFragments = result.toXMLFragmentsString();
 				xmlFragmentsPanel.setXmlFragments(xmlFragments);
 			} catch (Exception e) {
 				xmlFragmentsPanel.setXmlFragments(null);
@@ -363,17 +346,16 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 	 *
 	 * @param xObject XObject containing results
 	 */
-	private void setNodeSetResults(XObject xObject) throws TransformerException {
+	private void setNodeSetResults(XPathAdapter.Result result) throws Exception {
 		NodeSetTableModel tableModel = nodeSetTablePanel.getTableModel();
-		if (isNodeSet(xObject)) {
-			NodeSetDTM nodeSet = xObject.mutableNodeset();
-			tableModel.resetRows(nodeSet.size());
+		if (result.isNodeSet()) {
+			tableModel.resetRows(result.size());
 			boolean isNodeWithName = false;
 			boolean isNodeWithValue = false;
-			XPathNode node;
+			XPathAdapter.XPathNode node;
 
-			for (int i = 0; i < nodeSet.size(); i++) {
-				node = XPathNode.getXPathNode(nodeSet, i);
+			for (int i = 0; i < result.size(); i++) {
+				node = result.get(i);
 
 				if (node != null) {
 					isNodeWithName = isNodeWithName || node.hasExpandedName();
@@ -396,12 +378,6 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 			tableModel.resetRows(0);
 		}
 	}
-
-
-	private static boolean isNodeSet(XObject xObject) {
-		return xObject.getType() == XObject.CLASS_NODESET;
-	}
-
 
 	private void grabNamespaces(){
 		if(inputSelectionPanel.isSourceFileDefined()) {
@@ -432,7 +408,6 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 						for(int i=0;i<attrs.getLength();i++) {
 							Node a  = attrs.item(i);
 							
-							System.out.println(a.getPrefix()+":"+a.getLocalName());
 							if("xmlns".equals(a.getPrefix())) {
 								String prefix = a.getLocalName();
 								String ns = a.getNodeValue();
@@ -547,30 +522,6 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 		
 	}
 	
-	private static class PrefixResolverImpl implements PrefixResolver{
-		private Map<String,String> map;
-		
-		PrefixResolverImpl(Map<String,String> map) {
-			this.map = map;
-		}
-		
-		public String getBaseIdentifier(){
-			return null;
-		}
-		
-		public String getNamespaceForPrefix(String prefix, Node context) {
-			return map.get(prefix);
-		}
-		
-		public String getNamespaceForPrefix(java.lang.String prefix) {
-			return map.get(prefix);
-		}
-		
-		public boolean handlesNullPrefixes(){
-			return false;
-		}
-	}
-	
   	/**
 	 * JTextArea that let's tab key change focus to the next component.
 	 */
@@ -588,25 +539,8 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 		protected final JTextArea textArea = new JTextAreaWithoutTab();
 		private final JLabel label = new JLabel();
 
-		private JPopupMenu popup;
 		private JMenuItem searchMenuItem, clearSelectMenuItem;
 
-		class PopupListener extends MouseAdapter {
-		    public void mousePressed(MouseEvent e) {
-		        maybeShowPopup(e);
-		    }
-
-		    public void mouseReleased(MouseEvent e) {
-		        maybeShowPopup(e);
-		    }
-
-		    private void maybeShowPopup(MouseEvent e) {
-		        if (e.isPopupTrigger()) {
-		            popup.show(e.getComponent(),
-		                       e.getX(), e.getY());
-		        }
-		    }
-		}
 		ResultsPanel(String name) {
 			super(new BorderLayout());
 			setLabelText(jEdit.getProperty(name+".label"));
@@ -618,14 +552,14 @@ public class XPathTool extends JPanel implements ListSelectionListener,
 			add(label, BorderLayout.NORTH);
 			add(new JScrollPane(this.textArea));
 			
-			popup = new JPopupMenu();
+			JPopupMenu popup = new JPopupMenu();
 			searchMenuItem = new JMenuItem("Hypersearch");
 			searchMenuItem.addActionListener(this);
 			popup.add(searchMenuItem);
 			clearSelectMenuItem = new JMenuItem("Clear Selection");
 			popup.add(clearSelectMenuItem);
 			clearSelectMenuItem.addActionListener(this);
-			textArea.addMouseListener(new PopupListener());
+			textArea.setComponentPopupMenu(popup);
 		}
 
 

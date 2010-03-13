@@ -178,7 +178,7 @@ public class XsltActions {
   	  }
   	  DockableWindowManager dwm = view.getDockableWindowManager();
   	  dwm.showDockableWindow("xslt-processor");
-  	  XSLTProcessor processor = (XSLTProcessor)dwm.getDockable("xslt-processor");
+  	  XSLTProcessor processor = getXsltProcessor(view);
   	  processor.setThreeWay(true);
   }
 }

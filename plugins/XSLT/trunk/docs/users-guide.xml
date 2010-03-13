@@ -270,6 +270,8 @@
       the current buffer. <ulink url="http://www.w3.org/TR/xpath">XPath</ulink>
       is a W3C-specified expression language used to access or
       refer to parts of an XML document.
+      Depending on the XPath engine you choose, you can also use
+      <ulink url="http://www.w3.org/TR/xpath20/">XPath 2.0</ulink>.
     </para>
     <para>
       To use the XPath Tool:
@@ -338,6 +340,17 @@
         </listitem>
       </itemizedlist>
     </para>
+    <section id="extending-xpath"><title>Extending the XPath tool</title>
+	  <para>The XPath engine is not as configurable as the XSLT processor, since 
+	  the java XPath API (<code>javax.xml.xpath.*</code>) doesn't provide enough
+	  services for the XPath tool. So I had to tap into the native APIs of each engine.
+	  </para>
+	  
+	  <para>If you want to use another XPath engine, you have to implement <code>xslt.XPathAdapter</code>,
+	  package it as a jar, drop it in <filename>"JEDIT_SETTINGS"/jars</filename> 
+	  and set the <code>xpath.adapter</code> property to the name of your class.
+	  </para>
+    </section>
   </chapter>
 
   <chapter id="options"><title>XSLT Plugin option pane</title>
@@ -377,6 +390,17 @@
   <code>javax.xml.transform.TransformerFactory</code>. After a restart of jEdit,
   you will be using the selected XSLT processor.
   </para>
+  
+  <para>You can also choose an XPath engine to use by selecting one option
+  in the <guilabel>XPath engine</guilabel> combo-box in the <guimenuitem>Plugins</guimenuitem> / <guimenuitem>XSLT</guimenuitem>
+  section of the <guimenu>Plugins</guimenu> > <guimenuitem>Plugin Options</guimenuitem>
+  dialog.</para>
+  
+  <itemizedlist>
+  <listitem><para>for XPath 1.0, use the Xalan engine;</para></listitem>
+  <listitem><para>for XPath 2.0, use the Saxon 9 engine;</para></listitem>
+  <listitem><para>to use another engine, see <xref linkend="extending-xpath"/>;</para></listitem>
+  </itemizedlist>
   
   <para>You can also choose to run a compilation of the stylesheets on save
   (see <xref linkend="compile-stylesheet"/>). I find it helpful to perform some checks
@@ -452,6 +476,8 @@
         of input,stylesheet and output, as well as a 3 buffers layout.</para></listitem>
         <listitem><para>XPath tool is namespace aware ; button to grab namespace declarations
         from source document.</para></listitem>
+        <listitem><para>XPath tool is XPath 2.0 capable : install SaxonPlugin and
+        choose it in the Option pane.</para></listitem>
       </itemizedlist>
     </para>
     <para>

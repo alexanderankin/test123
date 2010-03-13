@@ -233,12 +233,20 @@ public class XSLTPluginTest{
 		errorlist.close();
     }
 
-    /**
-     * this test is failing, but it works when I do it manually...
-     */
-    @Ignore("always failing") @Test
+    @Test
     public void testXSLTCompileOnSave() throws IOException{
     	File xsl = new File(testData,"broken/transform.xsl");
+    	
+    	/*
+    	 * the plugin must be activated manually, because :
+    	 * - it's not activated at startup because it is only activated if "compile on save"
+    	 *   is checked, which is not the case by default
+    	 * - it's not activated when one of the classes of the plugin is loaded,
+    	 *   since delegateFirst=true and XSLT.jar is present in the parent ClassLoader
+    	 *
+    	 * when running normally, there is no problem.
+    	 */
+    	jEdit.getPlugin("xslt.XSLTPlugin",true).getPluginJAR().activatePlugin();
     	
     	PluginOptionsFixture optionsF = TestUtils.pluginOptions();
     	JPanelFixture options = optionsF.optionPane("XSLT","xslt");
@@ -252,7 +260,7 @@ public class XSLTPluginTest{
     	FrameFixture errorlist = TestUtils.findFrameByTitle("Error List");
 
     	action("save");
-		Pause.pause(2000);
+		Pause.pause(3000);
     	
 		errorlist.tree().selectRow(1);
 		assertTrue(errorlist.tree().valueAt(1).startsWith("6: (XSLT error)"));
