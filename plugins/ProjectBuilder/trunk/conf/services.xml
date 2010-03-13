@@ -8,7 +8,9 @@
 	<SERVICE CLASS="projectviewer.config.OptionsService" NAME="ProjectBuilder Build/Run Settings">
 		new projectbuilder.options.BuildRunOptionsService();
 	</SERVICE>
+	<!--
 	<SERVICE CLASS="projectviewer.config.OptionsService" NAME="ProjectBuilder Project Settings">
 		new projectbuilder.options.ProjectOptionsService();
 	</SERVICE>
+	-->
 </SERVICES>

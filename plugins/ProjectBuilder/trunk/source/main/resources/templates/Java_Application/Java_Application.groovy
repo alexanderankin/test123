@@ -72,7 +72,7 @@ if (answer == JOptionPane.OK_OPTION) {
 			}
 		}
 	}
-	// Add an Ant build-command to the project's build settings
+	// Add build and clean commands
 	project.build.add("Build Executable:ANT[target=,buildfile=${project.directory.path}/${project.name}/build.xml]")
 	project.build.add("Clean:ANT[target=clean,buildfile=${project.directory.path}/${project.name}/build.xml]")
 	// Add a system command to the project's run settings
