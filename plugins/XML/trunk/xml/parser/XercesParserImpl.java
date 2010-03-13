@@ -116,18 +116,10 @@ public class XercesParserImpl extends XmlParser
 		SchemaAutoLoader schemaLoader = null;
 		try
 		{
-			// debug message for bug #2950392
-			Log.log(Log.DEBUG,this,"currentThread's Class loader is :"+Thread.currentThread().getContextClassLoader());
-			try{
-				Log.log(Log.DEBUG,this,"using Class.forName : "+Class.forName("org.apache.xerces.parsers.SAXParser"));
-			}catch(ClassNotFoundException cnfe){
-				Log.log(Log.DEBUG,this,"ClassNotFoundException using Class.forName");
-			}
-			// end debug
 			// One has to explicitely require the parser from XercesPlugin, otherwise
 			// one gets the crimson version bundled in the JRE and the rest fails
-			// miserably (at least on Mac OS X, JDK 5)
-			reader = XMLReaderFactory.createXMLReader("org.apache.xerces.parsers.SAXParser");
+			// miserably (see Plugin Bug #2950392)
+			reader = new org.apache.xerces.parsers.SAXParser();
 			reader.setFeature("http://xml.org/sax/features/validation",
 				buffer.getBooleanProperty("xml.validate"));
 			reader.setFeature("http://apache.org/xml/features/validation/dynamic",true);
