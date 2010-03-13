@@ -42,8 +42,8 @@ public class PropertyUtil {
 	 *            "file.1=file1.txt", calling getEnumeratedProperty("file", properties)
 	 *            would return a list containing "file0.txt" and "file1.txt".
 	 */
-	public static List getEnumeratedProperty(String key) {
-		List values = new ArrayList();
+	public static List<String> getEnumeratedProperty(String key) {
+		List<String> values = new ArrayList<String>();
 		int i = 0;
 		String value;
 		while ((value = jEdit.getProperty(calculateKey(key, i++))) != null) {
@@ -61,13 +61,13 @@ public class PropertyUtil {
 	 * @param values values to be assigned to the enumerated property, in order.
 	 *               All members of this List must be Strings.
 	 */
-	public static void setEnumeratedProperty(String key, List values) {
+	public static void setEnumeratedProperty(String key, List<String> values) {
 		List currentValues = getEnumeratedProperty(key);
 		for (int i = 0; i < currentValues.size(); i++) {
 			jEdit.setProperty(calculateKey(key, i), null);
 		}
 		for (int i = 0; i < values.size(); i++) {
-			jEdit.setProperty(calculateKey(key, i), (String)values.get(i));
+			jEdit.setProperty(calculateKey(key, i), values.get(i));
 		}
 	}
 

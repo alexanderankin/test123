@@ -41,12 +41,16 @@ public class XMLFragmentsString {
   private static final Integer MAX_CHARS_IN_FRAGMENTS_STRING = new Integer(1000000);
 
 
-  private final StringBuffer buffer = new StringBuffer("");
+  private final StringBuffer buffer = new StringBuffer();
 
   /** Holds an array of the start position of each XML fragment in the fragments String */
   private int[] fragmentPositions;
 
 
+  public XMLFragmentsString(int nodeCount) {
+  	  this.fragmentPositions = new int[nodeCount];
+  }
+  
   /**
    * Constructs string of XML fragments representing the nodes in the node list.
    * @param nodelist containing nodes to be represented as XML fragments.
@@ -99,6 +103,29 @@ public class XMLFragmentsString {
     return this.fragmentPositions.length;
   }
 
+  public void setNode(int index, Node node){
+  	  if(index >= fragmentPositions.length) {
+  	  	  throw new IllegalArgumentException("index too big ("+index+">="+fragmentPositions.length);
+  	  } else if(fragmentPositions[index] != 0) {
+  	  	  throw new IllegalStateException("fragment "+index+" already initialized");
+  	  } else {
+  	  	  fragmentPositions[index] = buffer.length();
+  	  	  appendNode(node, 0, false);
+      }
+  }
+  
+  public void setText(int index, String value){
+  	  if(index >= fragmentPositions.length) {
+  	  	  throw new IllegalArgumentException("index too big ("+index+">="+fragmentPositions.length);
+  	  } else if(fragmentPositions[index] != 0) {
+  	  	  throw new IllegalStateException("fragment "+index+" already initialized");
+  	  } else {
+  	  	  fragmentPositions[index] = buffer.length();
+  	  	  String trimmedValue = value.trim();
+		  buffer.append(value);
+		  buffer.append(NL);
+      }
+  }
 
   private void appendNode(Node node, int indentLevel, boolean insideElement) {
     if(node != null) {

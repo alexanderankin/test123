@@ -77,7 +77,7 @@ public class XSLTOptionPaneTest{
     	final JPanelFixture options = optionsF.optionPane("XSLT","xslt");
     	Pause.pause(1000);
     	
-    	JTextComponentFixture factoryErrors = options.textBox(JTextComponentMatcher.withName("factory-errors"));
+    	JTextComponentFixture factoryErrors = options.textBox(JTextComponentMatcher.withName("xslt.factory-errors"));
     	factoryErrors.requireNotVisible().requireNotEditable();
     	
     	options.comboBox("factory").selectItem(Pattern.compile(".*6.5.5.*"));

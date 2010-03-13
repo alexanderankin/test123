@@ -35,7 +35,9 @@
     <pathelement location="${jedit.plugins.dir}/ErrorList.jar"/>
     <pathelement location="${jedit.plugins.dir}/XML.jar"/>
     <pathelement location="${jedit.install.dir}/jedit.jar"/>
-    <pathelement location="${jedit.plugins.dir}/serializer.jar"/>
+    <pathelement location="${serializer.jar}"/>
+    <pathelement location="${xalan.jar}"/>
+    <pathelement location="${jedit.plugins.dir}/saxon9he.jar"/>
   </path>
 
       <selector id="extraFiles">

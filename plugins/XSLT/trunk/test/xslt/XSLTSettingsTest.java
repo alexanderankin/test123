@@ -74,9 +74,9 @@ public class XSLTSettingsTest{
     @Test
     public void testSaveAndLoad(){
     	final File xml = new File(testData,"simple/source.xml");
-    	final File xsl = new File(testData,"simple/transform.xml");
+    	final File xsl = new File(testData,"simple/transform.xsl");
     	File settings = new File(EditPlugin.getPluginHome(XSLTPlugin.class)
-    		,"source-Untitled-1-settings.xml");
+    		,"source-transform-settings.xml");
     	
     	if(settings.exists()) {
     		assertTrue(settings.delete());

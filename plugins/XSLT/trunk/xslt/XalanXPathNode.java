@@ -28,7 +28,7 @@ import org.apache.xpath.NodeSetDTM;
  *
  * @author Robert McKinnon
  */
-public class XPathNode {
+public class XalanXPathNode implements XPathAdapter.XPathNode {
 
 	private final int nodeHandle;
 	private final DTM dtm;
@@ -43,13 +43,13 @@ public class XPathNode {
 	 *
 	 * @return an XPathNode or null.
 	 */
-	public static XPathNode getXPathNode(NodeSetDTM nodeSet, int index) {
+	public static XalanXPathNode getXPathNode(NodeSetDTM nodeSet, int index) {
 		int nodeHandle = nodeSet.item(index);
 		DTM dtm = nodeSet.getDTM(nodeHandle);
 		short nodeType = dtm.getNodeType(nodeHandle);
 
 		if (isXPathNodeType(nodeType)) {
-			return new XPathNode(nodeHandle, dtm, nodeType);
+			return new XalanXPathNode(nodeHandle, dtm, nodeType);
 		} else {
 			return null;
 		}
@@ -81,7 +81,7 @@ public class XPathNode {
 	 * @param nodeType from {@link org.apache.xml.dtm.DTM} interface
 	 * @throws IllegalArgumentException if nodeType is not valid.
 	 */
-	private XPathNode(int nodeHandle, DTM dtm, short nodeType) {
+	private XalanXPathNode(int nodeHandle, DTM dtm, short nodeType) {
 		this.nodeHandle = nodeHandle;
 		this.dtm = dtm;
 		this.nodeType = nodeType;
