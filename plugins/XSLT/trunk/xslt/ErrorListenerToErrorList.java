@@ -23,6 +23,8 @@ import java.net.URL;
 import java.io.File;
 import org.gjt.sp.util.Log;
 
+import xml.PathUtilities;
+
 import errorlist.ErrorSource;
 import errorlist.DefaultErrorSource;
 
@@ -86,19 +88,14 @@ public class ErrorListenerToErrorList implements ErrorListener{
 		if(col < 0) col=0;
 		// TODO: Handle VFS URLs
 		String systemId=exception.getSystemId();
-		String path=systemId;
-		if(path == null){
+		String path;
+		if(systemId == null){
 			Log.log(Log.DEBUG,this,"NULL systemId");
-			path = stylesheetPath;
+			path = PathUtilities.urlToPath(stylesheetPath);
 		}else{
-			try {
-				URL url=new URL(systemId);
-				File file=new File(url.getFile());
-				path=file.getAbsolutePath();
-			} catch (java.net.MalformedURLException e) {
-				Log.log(Log.ERROR,this,e);
-			}
+			path = PathUtilities.urlToPath(systemId);
 		}
+		path = PathUtilities.urlToPath(stylesheetPath);
 		XSLTPlugin.getErrorSource().addError(new DefaultErrorSource.DefaultError(XSLTPlugin.getErrorSource(),
 		ErrorSource.ERROR,path,line,0,col,
 		"(SAX error) "+exception.getMessage()));
@@ -106,6 +103,7 @@ public class ErrorListenerToErrorList implements ErrorListener{
 
 	private void sendError(TransformerException exception, int level) {
 		SourceLocator locator=exception.getLocator();
+		String path;
 		if(locator != null) {
 			int line=locator.getLineNumber()-1;
 			int col=locator.getColumnNumber()-1;
@@ -113,25 +111,19 @@ public class ErrorListenerToErrorList implements ErrorListener{
 			if(col < 0) col=0;
 			// TODO: Handle VFS URLs
 			String systemId=locator.getSystemId();
-			String path=systemId;
-			if(path == null){
+			if(systemId == null){
 				Log.log(Log.DEBUG,this,"NULL systemId");
-				path = stylesheetPath;
+				path = PathUtilities.urlToPath(stylesheetPath);
 			}else{
-				try {
-					URL url=new URL(systemId);
-					File file=new File(url.getFile());
-					path=file.getAbsolutePath();
-				} catch (java.net.MalformedURLException e) {
-					Log.log(Log.ERROR,this,e);
-				}
+				path = PathUtilities.urlToPath(systemId);
 			}
 			XSLTPlugin.getErrorSource().addError(new DefaultErrorSource.DefaultError(XSLTPlugin.getErrorSource(),
 			level,path,line,0,col,
 			"(XSLT error) "+exception.getMessage()));
 		} else {
+			path = PathUtilities.urlToPath(stylesheetPath);
 			XSLTPlugin.getErrorSource().addError(new DefaultErrorSource.DefaultError(XSLTPlugin.getErrorSource(),
-			level,stylesheetPath,1,0,0,
+			level,path,1,0,0,
 			"(XSLT error) "+exception.getMessage()));
 		}
 	}
