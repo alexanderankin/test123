@@ -154,7 +154,7 @@ public class XercesParserImpl extends XmlParser
 				String schemaFromProp = buffer.getStringProperty(SchemaMappingManager.BUFFER_SCHEMA_PROP);
 				if(schemaFromProp != null){
 					// the user has set the schema manually
-					String baseURI = SchemaMappingManager.pathToURL(buffer.getPath());
+					String baseURI = xml.PathUtilities.pathToURL(buffer.getPath());
 					Log.log(Log.DEBUG, this,"forcing schema to {"+baseURI+","+schemaFromProp+"}");
 					// schemas URLs are resolved against the buffer
 					try

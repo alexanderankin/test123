@@ -54,6 +54,7 @@ import common.gui.OkCancelButtons;
 import ise.java.awt.KappaLayout;
 
 import xml.parser.SchemaMapping;
+import static xml.PathUtilities.*;
 //}}}
 
 public final class SchemaMappingManager
@@ -158,87 +159,6 @@ public final class SchemaMappingManager
 		}
 	}
 	//}}}
-	
-	/**
-	 * a pattern for standard windows paths, e.g. : C:\temp\MyClass.java 
-	 */
-	public static final Pattern windowsDrivePattern = Pattern.compile("[A-Z]:\\\\.*");
-	
-	/**
-	 * a pattern for windows UNC e.g. :
-	 *  \\localhost\SHARED_C\temp\MyClass.java
-	 * and long UNC, e.g. :
-	 *  \\?\UNC\localhost\SHARED_C\temp\MyClass.java
-	 *  \\?\C:\temp\MyClass.java
-	 */
-	 public static final Pattern windowsUNCPattern = Pattern.compile("\\\\\\\\.*");
-	
-	/**
-	 * a pattern for UNIX paths e.g. :
-	 *  /tmp/MyClass.java
-	 */
-	 public static final Pattern unixPattern = Pattern.compile("/.*");
-	 
-	//{{{ pathToURL() method
-	/**
-	 * @param	path	UNIX/Windows path or VFS path
-	 * @return	path having a scheme
-	 */
-	public static String pathToURL(String path)
-	{
-		if(windowsDrivePattern.matcher(path).matches()
-		  || windowsUNCPattern.matcher(path).matches()
-	  	  || unixPattern.matcher(path).matches())
-		{
-			try
-			{
-				//it's a file
-				return new File(path).toURI().toURL().toString();
-			}
-			catch(MalformedURLException ue)
-			{
-				Log.log(Log.ERROR,SchemaMappingManager.class,"strange URI (apos added) '"+path+"'");
-				Log.log(Log.ERROR,SchemaMappingManager.class,ue);
-				return path;
-			}
-		}
-		else
-		{
-			//it's already an URL
-			return path;
-		}
-	}
-	// }}}
-	
-	//{{{ urlToPath() method
-	/**
-	 * @param	url	file:/ url
-	 * @return	path without Scheme
-	 */
-	public static String urlToPath(String url)
-	{
-		if(url == null)return null;
-		if(url.startsWith("file:/"))
-		{
-			try
-			{
-				//it's a file
-				return new File(new URI(url)).getPath();
-			}
-			catch(java.net.URISyntaxException ue)
-			{
-				Log.log(Log.ERROR,SchemaMappingManager.class,"strange URI (apos added) '"+url+"'");
-				Log.log(Log.ERROR,SchemaMappingManager.class,ue);
-				return url;
-			}
-		}
-		else
-		{
-			//can't convert it
-			return url;
-		}
-	}
-	// }}}
 
 	// {{{ ChooseSchemaDialog class
 	static class ChooseSchemaDialog extends EnhancedDialog

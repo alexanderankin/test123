@@ -890,6 +890,7 @@ Chapter 22 of <emphasis>DocBook XSL: The Complete Guide</emphasis> by Bob Stayto
  </para>
      <itemizedlist>
       <listitem><para>Fix troubles loading the XML parser. (Eric Le Lay - #2950392, #2969809)</para></listitem>
+      <listitem><para>Fix minor glitches in path to URL conversion (Eric Le Lay)</para></listitem>
      </itemizedlist>
  </listitem>
 
