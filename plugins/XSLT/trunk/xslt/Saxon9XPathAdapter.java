@@ -128,11 +128,11 @@ public class Saxon9XPathAdapter implements XPathAdapter {
 		private Configuration config;
 		
 		SaxonResult(SequenceIterator si,Configuration c) throws XPathException{
-			this.se = se;
-			this.config = c;
-
 			SequenceExtent se = new SequenceExtent(si);
 			ItemType it = se.getItemType(c.getTypeHierarchy());
+
+			this.se = se;
+			this.config = c;
 		}
 		
 		public String getType(){
