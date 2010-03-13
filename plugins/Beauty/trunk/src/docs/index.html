@@ -52,10 +52,12 @@
       All other modes can default to use the built-in jEdit indenter, which works pretty well for most modes.  To
       turn on this option, check the box in the Beauty options.
       <p>
+      Beauty also provides a way to <a href="#custom">configure a custom beautifier</a> per mode.
+      <p>
       <table summary="Configuration" border=0 cellspacing=0 cellpadding=3 width="100%">
          <tr align=CENTER width="100%">
             <td bgcolor="#7FB2FF" width="100%">
-               <strong><font color="#FFFFFF" size="+1"><a name=intro>Configuration</a></font></strong>
+               <strong><font color="#FFFFFF" size="+1"><a name="config">Configuration</a></font></strong>
             </td>
          </tr>
       </table>
@@ -73,6 +75,73 @@
       </ul>
       <p>
       To set which beautifier to use per mode, use the Beauty option settings under the Plugins - Plugin Options menu.
+      <p>
+      <table summary="Custom Beautifier" border=0 cellspacing=0 cellpadding=3 width="100%">
+         <tr align=CENTER width="100%">
+            <td bgcolor="#7FB2FF" width="100%">
+               <strong><font color="#FFFFFF" size="+1"><a name="custom">Custom Beautifier</a></font></strong>
+            </td>
+         </tr>
+      </table>
+      <p>
+      <i>Custom beautifiers can be shared.  If you create one for a mode, post it on the jEdit mailing lists or add it to
+      the jEdit plugin feature tracker, and I'll include it in the next release of Beauty.</i>
+      <p>
+      To set up a custom beautifier:
+      <ol>
+      <li>Go to Plugins - Plugin Options - Beauty - Custom Beautifier</li>
+      <li>Select the mode to configure</li>
+      <li>Configure the beautifier</li>
+      <li>Go to Plugins - Plugin Options - Beauty - Modes and assign your newly created beautifier.  You can assign the same
+      beautifier to more than one mode, so you could create a beautifier for pl-sql and assign the same beautifier to both
+      the sql-loader mode and the transact-sql mode.</li>
+      </ol>
+      <p>
+      The configuration should need only a little explanation.
+      <p>
+      This beautifier works by using jEdit syntax highlighting engine
+      to tokenize the buffer, so the same tokens that are identified by the syntax highlighting are used by the
+      custom beautifier.  For example, "+" may be defined in the mode file as an operator.  Checking the "before"
+      and "after" for "Pad operators" will cause the beautifier to make sure that there is a space before and
+      after all "+" characters.  Functions, digits, operators, and keywords are defined in the mode file, so the
+      quality of this tokenization really depends on the quality of the mode file.
+      <p>
+      Labels are also defined in the mode file, and you may want to put labels on a separate line.  This may or may not 
+      work well, again, it depends on the quality of 
+      the mode file.  For example, in the Ada language, a label is defined as <tt>&lt;&lt;</tt>sometext<tt>&gt;&gt;</tt>, 
+      but in the Ada mode file, both <tt>&lt;&lt;</tt> and <tt>&gt;&gt;</tt> are defined as labels.  This means that 
+      if you elect to put a label on a separate line, you'll end up with
+      <br>
+      <pre>
+      &lt;&lt;sometext
+      &gt;&gt;
+      </pre>
+      <br>
+      In this case, either the mode file needs to be fixed, or use the "Insert line separator before" and "Insert
+      line separators after" text fields, and enter <tt>&lt;&lt;</tt> in the before and <tt>&gt;&gt;</tt> in the after.
+      <p>
+      The "Insert line separators before" and "Insert line separators after" text fields can take a comma separated
+      list of strings.  Do not put spaces in this string unless you really mean it.  Regular expressions can be used,
+      but note that this is a comma separated list, so if your regex contains commas, things probably won't work as
+      you'd want.
+      <p>
+      You can also specify lists of characters that should have a space before or after.  For example, you may want
+      a space following each <tt>(</tt> and before each <tt>)</tt>.
+      <p>
+      Further, you can specify lists of characters that should not have a space before or after.  This is handy for
+      modes like javascript that define ".", ",", and ";" as operators.  Adding these characters to the don't pad
+      text fields will cause the beautifier to remove spaces before and after these characters even though they may
+      be padded as operators.
+      <p>
+      You can elect to have multiple blank lines collapsed into a single blank line.
+      <p>
+      Last, you can have the custom beautifier use the jEdit indenter to do the line indentation.  Again, the jEdit 
+      indenter works based on the mode definition file, so how well the indenting works depends on the quality of the
+      mode file.
+      <p>
+      The custom beautifier applies the configuration in order from top to bottom, so, for example, operators are 
+      padded before applying the 'don't pad before' configuration.  Padding is only applied if there is no whitespace
+      before or after the item to be padded, so additional whitespace is not added unnecessarily.
       <p>
       <table summary="For Developers" border=0 cellspacing=0 cellpadding=3 width="100%">
          <tr align=CENTER width="100%">

@@ -31,6 +31,17 @@ public class DefaultBeautifier extends Beautifier {
 
     private boolean labelOnSeparateLine = true;
 
+    private String prePadCharacters = "";
+    private String postPadCharacters = "";
+    private String dontPrePadCharacters = "";
+    private String dontPostPadCharacters = "";
+
+    // these are comma separated strings now, not a list of characters
+    private String preInsertLineCharacters = "";
+    private String postInsertLineCharacters = "";
+
+    private boolean collapseBlankLines = false;
+
     public DefaultBeautifier( String modeName ) {
         Properties props = BeautyPlugin.getCustomModeProperties( modeName );
         prePadOperator = "true".equals( props.getProperty( "prePadOperators" ) ) ? true : false;
@@ -48,7 +59,13 @@ public class DefaultBeautifier extends Beautifier {
         postPadKeyword3 = "true".equals( props.getProperty( "postPadKeywords3" ) ) ? true : false;
         postPadKeyword4 = "true".equals( props.getProperty( "postPadKeywords4" ) ) ? true : false;
         labelOnSeparateLine = "true".equals( props.getProperty( "labelOnSeparateLine" ) ) ? true : false;
-        System.out.println("+++++ prePadOperator = " + prePadOperator);
+        prePadCharacters = props.getProperty( "prePadCharacters" ) == null ? "" : props.getProperty( "prePadCharacters" );
+        postPadCharacters = props.getProperty( "postPadCharacters" ) == null ? "" : props.getProperty( "postPadCharacters" );
+        dontPrePadCharacters = props.getProperty( "dontPrePadCharacters" ) == null ? "" : props.getProperty( "dontPrePadCharacters" );
+        dontPostPadCharacters = props.getProperty( "dontPostPadCharacters" ) == null ? "" : props.getProperty( "dontPostPadCharacters" );
+        preInsertLineCharacters = props.getProperty( "preInsertLineCharacters" ) == null ? "" : props.getProperty( "preInsertLineCharacters" );
+        postInsertLineCharacters = props.getProperty( "postInsertLineCharacters" ) == null ? "" : props.getProperty( "postInsertLineCharacters" );
+        collapseBlankLines = "true".equals( props.getProperty( "collapseBlankLines" ) ) ? true : false;
     }
 
     public String beautify( String text ) {
@@ -65,6 +82,7 @@ public class DefaultBeautifier extends Beautifier {
             int tokenStart = lineStart;
 
             String previousTokenText = "";
+            byte previousTokenId = Token.NULL;
             String currentTokenText = buffer.getText( tokenStart, token.length );
             String nextTokenText = token.next != null ? buffer.getText( tokenStart + token.length, token.next.length ) : "";
 
@@ -72,7 +90,7 @@ public class DefaultBeautifier extends Beautifier {
 
                 // maybe pad start
                 if ( !previousTokenText.endsWith( " " ) ) {
-                    if ( ( token.id == Token.OPERATOR && prePadOperator ) ||          // NOPMD
+                    if ( ( token.id == Token.OPERATOR && prePadOperator && previousTokenId != Token.OPERATOR ) ||            // NOPMD
                             ( token.id == Token.FUNCTION && prePadFunction ) ||
                             ( token.id == Token.DIGIT && prePadDigit ) ||
                             ( token.id == Token.KEYWORD1 && prePadKeyword1 ) ||
@@ -94,7 +112,7 @@ public class DefaultBeautifier extends Beautifier {
 
                 // maybe pad after token
                 if ( !nextTokenText.startsWith( " " ) ) {
-                    if ( ( token.id == Token.OPERATOR && postPadOperator ) ||             // NOPMD
+                    if ( ( token.id == Token.OPERATOR && postPadOperator && token.next.id != Token.OPERATOR ) ||               // NOPMD
                             ( token.id == Token.FUNCTION && postPadFunction ) ||
                             ( token.id == Token.DIGIT && postPadDigit ) ||
                             ( token.id == Token.KEYWORD1 && postPadKeyword1 ) ||
@@ -107,6 +125,7 @@ public class DefaultBeautifier extends Beautifier {
                 }
 
                 previousTokenText = currentTokenText;
+                previousTokenId = token.id;
                 currentTokenText = nextTokenText;
                 tokenStart += token.length;
                 token = token.next;
@@ -118,6 +137,122 @@ public class DefaultBeautifier extends Beautifier {
                 sb.append( getLineSeparator() );
             }
         }
+
+        sb = prePadCharacters( sb );
+        sb = postPadCharacters( sb );
+        sb = preInsertLineSeparators( sb );
+        sb = postInsertLineSeparators( sb );
+        sb = dontPrePadCharacters( sb );
+        sb = dontPostPadCharacters( sb );
+        sb = collapseBlankLines( sb );
+
         return sb.toString();
+    }
+
+    /**
+     * The user may specify a list of characters to pad.
+     */
+    private StringBuilder prePadCharacters( StringBuilder sb ) {
+        if ( prePadCharacters.length() == 0 ) {
+            return sb;
+        }
+
+        String s = sb.toString();
+        if ( prePadCharacters.length() > 0 ) {
+            for ( int i = 0; i < prePadCharacters.length(); i++ ) {
+                char c = prePadCharacters.charAt( i );
+                s = s.replaceAll( "(\\S)[" + c + "]", "$1" + c );
+            }
+        }
+        return new StringBuilder( s );
+    }
+
+    private StringBuilder postPadCharacters( StringBuilder sb ) {
+        if ( postPadCharacters.length() == 0 ) {
+            return sb;
+        }
+
+        String s = sb.toString();
+        if ( postPadCharacters.length() > 0 ) {
+            for ( int i = 0; i < postPadCharacters.length(); i++ ) {
+                char c = postPadCharacters.charAt( i );
+                s = s.replaceAll( "[" + (c == '[' || c == ']' ? "\\" : "") + c + "](\\S)", c + "$1" );
+            }
+        }
+        return new StringBuilder( s );
+    }
+
+    /**
+     * The user may specify a list of characters after which a line separator
+     * will be inserted.
+     */
+    private StringBuilder preInsertLineSeparators( StringBuilder sb ) {
+        if ( preInsertLineCharacters.length() == 0 ) {
+            return sb;
+        }
+
+        String[] parts = preInsertLineCharacters.split( "," );
+        String s = sb.toString();
+
+        for ( int i = 0; i < parts.length; i++ ) {
+            String c = parts[ i ];
+            s = s.replaceAll( "(?m)(?<!(^)(\\s*))" + c, getLineSeparator() + c );
+        }
+        return new StringBuilder( s );
+    }
+
+    // only add a line separator if the string is not followed by a line separator
+    private StringBuilder postInsertLineSeparators( StringBuilder sb ) {
+        if ( postInsertLineCharacters.length() == 0 ) {
+            return sb;
+        }
+
+        String[] parts = postInsertLineCharacters.split( "," );
+        String s = sb.toString();
+
+        for ( int i = 0; i < parts.length; i++ ) {
+            String c = parts[ i ];
+            s = s.replaceAll( c + "(?!" + getLineSeparator() + ")", c + getLineSeparator() );
+        }
+        return new StringBuilder( s );
+    }
+
+    private StringBuilder dontPrePadCharacters( StringBuilder sb ) {
+        if ( dontPrePadCharacters.length() == 0 ) {
+            return sb;
+        }
+
+        String s = sb.toString();
+        if ( dontPrePadCharacters.length() > 0 ) {
+            for ( int i = 0; i < dontPrePadCharacters.length(); i++ ) {
+                char c = dontPrePadCharacters.charAt( i );
+                s = s.replaceAll( "\\s[" + c + "]", String.valueOf( c ) );
+            }
+        }
+        return new StringBuilder( s );
+    }
+
+    private StringBuilder dontPostPadCharacters( StringBuilder sb ) {
+        if ( dontPostPadCharacters.length() == 0 ) {
+            return sb;
+        }
+
+        String s = sb.toString();
+        if ( dontPostPadCharacters.length() > 0 ) {
+            for ( int i = 0; i < dontPostPadCharacters.length(); i++ ) {
+                char c = dontPostPadCharacters.charAt( i );
+                s = s.replaceAll( "[" + c + "]\\s", String.valueOf( c ) );
+            }
+        }
+        return new StringBuilder( s );
+    }
+
+    private StringBuilder collapseBlankLines( StringBuilder sb ) {
+        if ( !collapseBlankLines ) {
+            return sb;
+        }
+        String s = sb.toString();
+        s = s.replaceAll( "(\\s*" + getLineSeparator() + "){3}", getLineSeparator() + getLineSeparator() );
+        return new StringBuilder( s );
     }
 }
