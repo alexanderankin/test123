@@ -6,10 +6,10 @@
 plugin.beauty.BeautyPlugin.activate=defer
 plugin.beauty.BeautyPlugin.name=Beauty
 plugin.beauty.BeautyPlugin.author=Dale Anson
-plugin.beauty.BeautyPlugin.version=0.3.0
+plugin.beauty.BeautyPlugin.version=0.4.0
 plugin.beauty.BeautyPlugin.docs=docs/index.html
-plugin.beauty.BeautyPlugin.depend.0=jdk 1.4
-plugin.beauty.BeautyPlugin.depend.1=jedit 04.02.01.00
+plugin.beauty.BeautyPlugin.depend.0=jdk 1.5
+plugin.beauty.BeautyPlugin.depend.1=jedit 04.03.99
 plugin.beauty.BeautyPlugin.depend.2=plugin CommonControlsPlugin 1.2
 plugin.beauty.BeautyPlugin.usePluginHome=true
 
@@ -53,6 +53,9 @@ mode.javacc.beauty.beautifier=javacc
 
 # Menus
 plugin.beauty.BeautyPlugin.menu=make_it_pretty
+
+# Comma separated list of custom beautifier properties files
+plugin.beauty.beautifiers.custom=ada.properties,javascript.properties
 
 #
 # Error messages
