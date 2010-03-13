@@ -84,8 +84,13 @@
          </tr>
       </table>
       <p>
-      <i>Custom beautifiers can be shared.  If you create one for a mode, post it on the jEdit mailing lists or add it to
-      the jEdit plugin feature tracker, and I'll include it in the next release of Beauty.</i>
+      <b><i>Custom beautifiers can be shared.  If you create one for a mode, post it on the jEdit mailing lists or add it to
+      the jEdit plugin feature tracker, and I'll include it in the next release of Beauty.</i></b>  To post the custom
+      beautifier, just copy the appropriate properties file from $USER_HOME/.jedit/plugins/beauty.BeautyPlugin.  To locate your $USER_HOME,
+      from jEdit, go to Utilities - Beanshell - Evaluate Beanshell Expression..., then enter <br>
+      <tt>System.getProperty("user.home")</tt>
+      <p>
+      
       <p>
       To set up a custom beautifier:
       <ol>
@@ -150,6 +155,11 @@
             </td>
          </tr>
       </table>
+      <p>
+      While the ability to create a custom beautifier from within the Beauty plugin is fairly good, even better
+      are beautifiers designed specifically with a strong understanding of the language to be beautified.  This
+      is why Beauty can delegate to the AStyle plugin and the XML plugin for beautification of Java, C, C++,
+      XML, and HTML files.
       <p>
       Adding a new beautifier/formatter is quite simple:
       <ol>

@@ -154,6 +154,11 @@
             <fileset dir="${doc.dir}">
                 <include name="**/*" />
             </fileset>
+            
+            <!-- include custom beautifier properties files -->
+            <fileset dir="${src.dir}">
+                <include name="beauty/beautifiers/custom/*.properties"/>
+            </fileset>
         </jar>
 
         <antcall target="reload"/>

@@ -31,12 +31,28 @@ public class BeautyPlugin extends EditPlugin {
         loadProperties();
         registerServices();
     }
-    
+
     // copies any custom beautifier properties files from the plugin jar to
     // the plugin home directory, but does not overwrite files of the same
     // name that already exist in the plugin home directory.
     private void copyBundledProperties() {
-        
+        // this property has a comma separated list of the just the names of the properties
+        // files.  The files are located in the jar file at beauty/beautifiers/custom.
+        String propsFiles = jEdit.getProperty( "plugin.beauty.beautifiers.custom" );
+        if ( propsFiles == null || propsFiles.length() == 0 ) {
+            return ;
+        }
+        String[] filenames = propsFiles.split( "," );
+        File homeDir = jEdit.getPlugin( "beauty.BeautyPlugin" ).getPluginHome();
+        for ( String filename : filenames ) {
+            filename = filename.trim();
+            File outfile = new File( homeDir, filename );
+            if ( outfile.exists() ) {
+                continue;
+            }
+            String resource = "beauty/beautifiers/custom/" + filename;
+            copyToFile(getClass().getClassLoader().getResourceAsStream( resource ), outfile);
+        }
     }
 
     public static void registerServices() {
@@ -81,13 +97,13 @@ public class BeautyPlugin extends EditPlugin {
      */
     public static Properties getCustomModeProperties( String modeName ) {
         loadProperties();
-        File modeFile = modeFiles.get(modeName);
-        
+        File modeFile = modeFiles.get( modeName );
+
         if ( modeFile == null ) {
             // no custom beautifier properties file found for this mode
             return new Properties();
         }
-        
+
         // read the properties file into a Properties
         try {
             Reader reader = new BufferedReader( new FileReader( modeFile ) );
@@ -201,5 +217,34 @@ public class BeautyPlugin extends EditPlugin {
         boolean split = jEdit.getBooleanProperty( "xmlindenter.splitAttributes", false );
         jEdit.setBooleanProperty( "xmlindenter.splitAttributes", !split );
         beautify( view.getBuffer(), view, true );
+    }
+
+    /**
+     * Copies a stream to a file. If destination file exists, it will be
+     * overwritten. The input stream may be closed when this method returns.
+     *
+     * @param from           stream to copy from, will be closed after copy
+     * @param to             file to write
+     * @exception Exception  most likely an IOException
+     */
+    public static void copyToFile( InputStream from, File to ) {
+        try {
+            FileOutputStream out = new FileOutputStream( to );
+            byte[] buffer = new byte[ 1024 ];
+            int bytes_read;
+            while ( true ) {
+                bytes_read = from.read( buffer );
+                if ( bytes_read == -1 ) {
+                    break;
+                }
+                out.write( buffer, 0, bytes_read );
+            }
+            out.flush();
+            out.close();
+            from.close();
+        }
+        catch ( Exception e ) {
+            e.printStackTrace();
+        }
     }
 }
