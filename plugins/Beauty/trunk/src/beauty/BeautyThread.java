@@ -14,7 +14,7 @@ import org.gjt.sp.util.Log;
 
 import beauty.beautifiers.*;
 
-
+// TODO: the wait cursor is not being displayed, need to fix that.
 public class BeautyThread implements Runnable {
 
     private View view = null;
@@ -42,6 +42,9 @@ public class BeautyThread implements Runnable {
         int[] caretPositions = null;
 
         try {
+            if ( view == null ) {
+                view = jEdit.getActiveView();
+            }
             if ( view != null ) {
                 view.showWaitCursor();
                 editPanes = view.getEditPanes();
@@ -121,12 +124,14 @@ public class BeautyThread implements Runnable {
         }
         catch ( Exception ex ) {
             Log.log( Log.ERROR, this, ex );
-            if ( showErrorDialogs )
+            if ( showErrorDialogs ) {
                 GUIUtilities.error( view, "beauty.error.other", new Object[] { ex } );
+            }
         }
         finally {
-            if ( view != null )
+            if ( view != null ) {
                 view.hideWaitCursor();
+            }
         }
     }
 }
