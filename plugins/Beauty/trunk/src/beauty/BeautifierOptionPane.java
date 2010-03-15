@@ -36,9 +36,8 @@ import beauty.beautifiers.Beautifier;
 // BeautifierOptionPane class
 /**
  * An option pane to configure the mode to beautifier associations.
- * TODO: put strings in properties file
  *
- * @author Matthieu Casanova
+ * @author Matthieu Casanova, Dale Anson
  */
 public class BeautifierOptionPane extends AbstractOptionPane {
 
@@ -53,11 +52,11 @@ public class BeautifierOptionPane extends AbstractOptionPane {
         
         JPanel topPanel = new JPanel( new BorderLayout() );
         topPanel.setBorder( BorderFactory.createEmptyBorder( 0, 0, 16, 0 ) );
-        JLabel description = new JLabel( "<html><b>Assign beautifiers to modes" );
+        JLabel description = new JLabel( jEdit.getProperty("beauty.msg.<html><b>Assign_beautifiers_to_modes", "<html><b>Assign beautifiers to modes") );
         topPanel.add( BorderLayout.CENTER, description );
         
         JPanel centerPanel = new JPanel(new BorderLayout());
-        final JCheckBox defaultIndenter = new JCheckBox( "Use jEdit indenter for undefined modes" );
+        final JCheckBox defaultIndenter = new JCheckBox( jEdit.getProperty("beauty.msg.Use_jEdit_indenter_for_undefined_modes", "Use jEdit indenter for undefined modes") );
         defaultIndenter.setSelected( jEdit.getBooleanProperty( "beauty.useBuiltInIndenter", true ) );
         defaultIndenter.addActionListener(
             new ActionListener() {
@@ -259,5 +258,4 @@ class MyTableModel extends AbstractTableModel {
             return this.mode.compareToIgnoreCase( ( ( Entry ) a ).mode );
         }
     }
-
 }

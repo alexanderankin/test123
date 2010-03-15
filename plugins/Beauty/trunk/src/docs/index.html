@@ -11,7 +11,7 @@
                <strong><font size="+2">Beauty</font></strong>
             </td>
             <td valign=TOP align=RIGHT>
-               <font size="-1"><p><strong>Version @@build.num@@ (@@tstamp@@)</strong><p>Dale Anson                             <p>Sreenivasa Viswanadha (base Java 1.5 and javacc grammars for javacc)                             <p>Brian Goetz, Quiotix (base HTML grammar for javacc)  </font>
+               <font size="-1"><p><strong>Version 0.4.0 (@@tstamp@@)</strong><p>Dale Anson                             <p>Sreenivasa Viswanadha (base Java 1.5 and javacc grammars for javacc)                             <p>Brian Goetz, Quiotix (base HTML grammar for javacc)  </font>
             </td>
          </tr>
       </table>
@@ -28,7 +28,7 @@
       consolidate those formatters into a standard API so that beautifying can be performed in a general way, similar
       to how the SideKick plugin provides a general framework for code browsers.
       <p>
-      In this first release, there are 4 beautifiers/formatters included:
+      In the first release, there were 4 beautifiers/formatters included:
       <ul>
          <li>HTML: works very well.
          <li>
@@ -49,10 +49,13 @@
          well-formed.
       </ul>
       <p>
+      With the 0.4 release, Beauty has the ability to <a href="#custom">configure a custom beautifier</a> per mode,
+      which allows padding of various items, clean up of extra blank lines, and the ability to use the jEdit
+      indenter. I've included custom beautifiers for Ada, Javascript, and CSS files.  Making custom beautifiers
+      is very easy to do, and you are encouraged to create and share beautifiers for any language that jEdit supports.
+      <p>
       All other modes can default to use the built-in jEdit indenter, which works pretty well for most modes.  To
       turn on this option, check the box in the Beauty options.
-      <p>
-      Beauty also provides a way to <a href="#custom">configure a custom beautifier</a> per mode.
       <p>
       <table summary="Configuration" border=0 cellspacing=0 cellpadding=3 width="100%">
          <tr align=CENTER width="100%">
@@ -62,8 +65,10 @@
          </tr>
       </table>
       <p>
-      At the moment, the only configuration is by the settings for the buffer and/or mode. If you're editing an html
-      file in html mode, then the html beautifier will be used to format the file. The settings are controlled by the
+      Configuration depends on the specific beautifier.  Generally, beautifiers will honor the settings for the 
+      buffer and/or mode. So, if you're editing an html
+      file in html mode, then the html beautifier will be used to format the file, and the html beautifier
+      will use the right line enders and tab settings. These settings are controlled by the
       settings for the buffer and the mode:
       <p>
       <ul>
@@ -73,6 +78,9 @@
          <li>Soft tabs: in this initial release, all tabs are converted to soft tabs. This should be fixed in the next
          release to honor the soft tab setting for the buffer.
       </ul>
+      <p>
+      It is quite possible that new beautifiers are introduced as jEdit plugins for specific languages.  Please consult the
+      documentation for those beautifiers for any settings that might be possible.
       <p>
       To set which beautifier to use per mode, use the Beauty option settings under the Plugins - Plugin Options menu.
       <p>
@@ -85,7 +93,8 @@
       </table>
       <p>
       <b><i>Custom beautifiers can be shared.  If you create one for a mode, post it on the jEdit mailing lists or add it to
-      the jEdit plugin feature tracker, and I'll include it in the next release of Beauty.</i></b>  To post the custom
+      the jEdit plugin feature tracker or email it to me at danson@grafidog.com, and I'll include it in the next release of Beauty.</i></b>  
+      To post the custom
       beautifier, just copy the appropriate properties file from $USER_HOME/.jedit/plugins/beauty.BeautyPlugin.  To locate your $USER_HOME,
       from jEdit, go to Utilities - Beanshell - Evaluate Beanshell Expression..., then enter <br>
       <tt>System.getProperty("user.home")</tt>
@@ -125,10 +134,13 @@
       In this case, either the mode file needs to be fixed, or use the "Insert line separator before" and "Insert
       line separators after" text fields, and enter <tt>&lt;&lt;</tt> in the before and <tt>&gt;&gt;</tt> in the after.
       <p>
+      <b>Endless trouble can happen here, so be careful!</b>
       The "Insert line separators before" and "Insert line separators after" text fields can take a comma separated
-      list of strings.  Do not put spaces in this string unless you really mean it.  Regular expressions can be used,
-      but note that this is a comma separated list, so if your regex contains commas, things probably won't work as
-      you'd want.
+      list of strings.  Do not put spaces in this string unless you really mean it.  <b>These strings are used as regular 
+      expressions</b>, but note that this is a comma separated list, so if your regex contains commas, things probably won't 
+      work as you'd want.  <b>Warning: be sure to escape characters within your regular expressions.</b> For example,
+      if you want to insert a line separator before the start of a C-style comment, /*, enter "/\*" rather than "/*".
+      Round, curly, and square brackets also need to be escaped.
       <p>
       You can also specify lists of characters that should have a space before or after.  For example, you may want
       a space following each <tt>(</tt> and before each <tt>)</tt>.

@@ -15,7 +15,6 @@ import ise.java.awt.*;
 
 /**
  * An option pane to configure custom beautification rules for a mode.
- * TODO: put strings in properties file
  *
  */
 public class CustomBeautifierOptionPane extends AbstractOptionPane {
@@ -90,47 +89,31 @@ public class CustomBeautifierOptionPane extends AbstractOptionPane {
         setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
 
         // create the components
-        JLabel description = new JLabel( "<html><b>Create a custom beautifier for a mode" );
+        JLabel description = new JLabel( jEdit.getProperty("beauty.msg.<html><b>Create_a_custom_beautifier_for_a_mode", "<html><b>Create a custom beautifier for a mode") );
 
         Mode[] modes = jEdit.getModes();
         modeSelector = new JComboBox( modes );
         modeSelector.setSelectedItem( currentMode );
 
-        usejEditIndenter = new JCheckBox( "Use jEdit indenter for this mode" );
-        usejEditIndenter.setName( "usejEditIndenter" );
+        usejEditIndenter = new JCheckBox( jEdit.getProperty("beauty.msg.Use_jEdit_indenter_for_this_mode", "Use jEdit indenter for this mode") );
 
-        prePadFunctions = new JCheckBox( "before" );
-        prePadDigits = new JCheckBox( "before" );
-        prePadOperators = new JCheckBox( "before" );
-        prePadKeywords1 = new JCheckBox( "before" );
-        prePadKeywords2 = new JCheckBox( "before" );
-        prePadKeywords3 = new JCheckBox( "before" );
-        prePadKeywords4 = new JCheckBox( "before" );
-        postPadFunctions = new JCheckBox( "after" );
-        postPadDigits = new JCheckBox( "after" );
-        postPadOperators = new JCheckBox( "after" );
-        postPadKeywords1 = new JCheckBox( "after" );
-        postPadKeywords2 = new JCheckBox( "after" );
-        postPadKeywords3 = new JCheckBox( "after" );
-        postPadKeywords4 = new JCheckBox( "after" );
+        prePadFunctions = new JCheckBox( jEdit.getProperty("beauty.msg.before", "before") );
+        prePadDigits = new JCheckBox( jEdit.getProperty("beauty.msg.before", "before") );
+        prePadOperators = new JCheckBox( jEdit.getProperty("beauty.msg.before", "before") );
+        prePadKeywords1 = new JCheckBox( jEdit.getProperty("beauty.msg.before", "before") );
+        prePadKeywords2 = new JCheckBox( jEdit.getProperty("beauty.msg.before", "before") );
+        prePadKeywords3 = new JCheckBox( jEdit.getProperty("beauty.msg.before", "before") );
+        prePadKeywords4 = new JCheckBox( jEdit.getProperty("beauty.msg.before", "before") );
+        postPadFunctions = new JCheckBox( jEdit.getProperty("beauty.msg.after", "after") );
+        postPadDigits = new JCheckBox( jEdit.getProperty("beauty.msg.after", "after") );
+        postPadOperators = new JCheckBox( jEdit.getProperty("beauty.msg.after", "after") );
+        postPadKeywords1 = new JCheckBox( jEdit.getProperty("beauty.msg.after", "after") );
+        postPadKeywords2 = new JCheckBox( jEdit.getProperty("beauty.msg.after", "after") );
+        postPadKeywords3 = new JCheckBox( jEdit.getProperty("beauty.msg.after", "after") );
+        postPadKeywords4 = new JCheckBox( jEdit.getProperty("beauty.msg.after", "after") );
         
-        prePadFunctions.setSelected( getBoolean( "prePadFunctions" ) );
-        prePadDigits.setSelected( getBoolean( "prePadDigits" ) );
-        prePadOperators.setSelected( getBoolean( "prePadOperators" ) );
-        prePadKeywords1.setSelected( getBoolean( "prePadKeywords1" ) );
-        prePadKeywords2.setSelected( getBoolean( "prePadKeywords2" ) );
-        prePadKeywords3.setSelected( getBoolean( "prePadKeywords3" ) );
-        prePadKeywords4.setSelected( getBoolean( "prePadKeywords4" ) );
-        postPadFunctions.setSelected( getBoolean( "postPadFunctions" ) );
-        postPadDigits.setSelected( getBoolean( "postPadDigits" ) );
-        postPadOperators.setSelected( getBoolean( "postPadOperators" ) );
-        postPadKeywords1.setSelected( getBoolean( "postPadKeywords1" ) );
-        postPadKeywords2.setSelected( getBoolean( "postPadKeywords2" ) );
-        postPadKeywords3.setSelected( getBoolean( "postPadKeywords3" ) );
-        postPadKeywords4.setSelected( getBoolean( "postPadKeywords4" ) );
         
-        labelOnSeparateLine = new JCheckBox( "Label on separate line" );
-        labelOnSeparateLine.setSelected( getBoolean( "labelOnSeparateLine" ) );
+        labelOnSeparateLine = new JCheckBox( jEdit.getProperty("beauty.msg.Label_on_separate_line", "Label on separate line") );
 
         prePadCharacters = new JTextField();
         postPadCharacters = new JTextField();
@@ -139,49 +122,44 @@ public class CustomBeautifierOptionPane extends AbstractOptionPane {
         preInsertLineCharacters = new JTextField();
         postInsertLineCharacters = new JTextField();
 
-        prePadCharacters.setText( getText( "prePadCharacters" ) );
-        postPadCharacters.setText( getText( "postPadCharacters" ) );
-        dontPrePadCharacters.setText( getText( "dontPrePadCharacters" ) );
-        dontPostPadCharacters.setText( getText( "dontPostPadCharacters" ) );
-        preInsertLineCharacters.setText( getText( "preInsertLineCharacters" ) );
-        postInsertLineCharacters.setText( getText( "postInsertLineCharacters" ) );
-
-        collapseBlankLines = new JCheckBox( "Collapse multiple blank lines" );
-        collapseBlankLines.setSelected(getBoolean("collapseBlankLines"));
+        collapseBlankLines = new JCheckBox( jEdit.getProperty("beauty.msg.Collapse_multiple_blank_lines", "Collapse multiple blank lines") );
+        
+        // set the values for the components
+        setComponentValues();
 
         // layout the components
         add( description, "0, 0, R, 1, W, w, 2" );
 
         add( KappaLayout.createVerticalStrut( 6 ), "0, 1" );
 
-        add( new JLabel( "Mode: " ), "0, 2, 1, 1, W, w, 2" );
+        add( new JLabel( jEdit.getProperty("beauty.msg.Mode>_", "Mode: ") ), "0, 2, 1, 1, W, w, 2" );
         add( modeSelector, "1, 2, R, 1, W, w, 2" );
 
-        add( new JLabel( "Pad functions" ), "0, 4, 1, 1, W, w, 2" );
+        add( new JLabel( jEdit.getProperty("beauty.msg.Pad_functions", "Pad functions") ), "0, 4, 1, 1, W, w, 2" );
         add( prePadFunctions, "1, 4, 1, 1, W, 0, 2" );
         add( postPadFunctions, "2, 4, 1, 1, W, 0, 2" );
 
-        add( new JLabel( "Pad operators" ), "0, 5, 1, 1, W, w, 2" );
+        add( new JLabel( jEdit.getProperty("beauty.msg.Pad_operators", "Pad operators") ), "0, 5, 1, 1, W, w, 2" );
         add( prePadOperators, "1, 5, 1, 1, W, 0, 2" );
         add( postPadOperators, "2, 5, 1, 1, W, 0, 2" );
 
-        add( new JLabel( "Pad digits" ), "0, 6, 1, 1, W, w, 2" );
+        add( new JLabel( jEdit.getProperty("beauty.msg.Pad_digits", "Pad digits") ), "0, 6, 1, 1, W, w, 2" );
         add( prePadDigits, "1, 6, 1, 1, W, 0, 2" );
         add( postPadDigits, "2, 6, 1, 1, W, 0, 2" );
 
-        add( new JLabel( "Pad keywords1" ), "0, 7, 1, 1, W, w, 2" );
+        add( new JLabel( jEdit.getProperty("beauty.msg.Pad_keywords1", "Pad keywords1") ), "0, 7, 1, 1, W, w, 2" );
         add( prePadKeywords1, "1, 7, 1, 1, W, 0, 2" );
         add( postPadKeywords1, "2, 7, 1, 1, W, 0, 2" );
 
-        add( new JLabel( "Pad keywords2" ), "0, 8, 1, 1, W, w, 2" );
+        add( new JLabel( jEdit.getProperty("beauty.msg.Pad_keywords2", "Pad keywords2") ), "0, 8, 1, 1, W, w, 2" );
         add( prePadKeywords2, "1, 8, 1, 1, W, 0, 2" );
         add( postPadKeywords2, "2, 8, 1, 1, W, 0, 2" );
 
-        add( new JLabel( "Pad keywords2" ), "0, 9, 1, 1, W, w, 2" );
+        add( new JLabel( jEdit.getProperty("beauty.msg.Pad_keywords2", "Pad keywords2") ), "0, 9, 1, 1, W, w, 2" );
         add( prePadKeywords3, "1, 9, 1, 1, W, 0, 2" );
         add( postPadKeywords3, "2, 9, 1, 1, W, 0, 2" );
 
-        add( new JLabel( "Pad keywords4" ), "0, 10, 1, 1, W, w, 2" );
+        add( new JLabel( jEdit.getProperty("beauty.msg.Pad_keywords4", "Pad keywords4") ), "0, 10, 1, 1, W, w, 2" );
         add( prePadKeywords4, "1, 10, 1, 1, W, 0, 2" );
         add( postPadKeywords4, "2, 10, 1, 1, W, 0, 2" );
 
@@ -189,32 +167,32 @@ public class CustomBeautifierOptionPane extends AbstractOptionPane {
 
         add( KappaLayout.createVerticalStrut( 6 ), "0, 12" );
 
-        add( new JLabel( "Pad before these characters:" ), "0, 13, R, 1, W, w, 2" );
+        add( new JLabel( jEdit.getProperty("beauty.msg.Pad_before_these_characters>", "Pad before these characters:") ), "0, 13, R, 1, W, w, 2" );
         add( prePadCharacters, "0, 14, R, 1, W, w, 2" );
 
         add( KappaLayout.createVerticalStrut( 6 ), "0, 15" );
 
-        add( new JLabel( "Pad after these characters:" ), "0, 16, R, 1, W, w, 2" );
+        add( new JLabel( jEdit.getProperty("beauty.msg.Pad_after_these_characters>", "Pad after these characters:") ), "0, 16, R, 1, W, w, 2" );
         add( postPadCharacters, "0, 17, R, 1, W, w, 2" );
 
         add( KappaLayout.createVerticalStrut( 6 ), "0, 18" );
 
-        add( new JLabel( "Don't pad before these characters:" ), "0, 19, R, 1, W, w, 2" );
+        add( new JLabel( jEdit.getProperty("beauty.msg.Don't_pad_before_these_characters>", "Don't pad before these characters:") ), "0, 19, R, 1, W, w, 2" );
         add( dontPrePadCharacters, "0, 20, R, 1, W, w, 2" );
 
         add( KappaLayout.createVerticalStrut( 6 ), "0, 21" );
 
-        add( new JLabel( "Don't pad after these characters:" ), "0, 22, R, 1, W, w, 2" );
+        add( new JLabel( jEdit.getProperty("beauty.msg.Don't_pad_after_these_characters>", "Don't pad after these characters:") ), "0, 22, R, 1, W, w, 2" );
         add( dontPostPadCharacters, "0, 23, R, 1, W, w, 2" );
 
         add( KappaLayout.createVerticalStrut( 6 ), "0, 24" );
 
-        add( new JLabel( "Insert line separator before these strings (separate with comma):" ), "0, 25, R, 1, W, w, 2" );
+        add( new JLabel( jEdit.getProperty("beauty.msg.Insert_line_separator_before_these_strings_(separate_with_comma)>", "Insert line separator before these strings (separate with comma):") ), "0, 25, R, 1, W, w, 2" );
         add( preInsertLineCharacters, "0, 26, R, 1, W, w, 2" );
 
         add( KappaLayout.createVerticalStrut( 6 ), "0, 27" );
 
-        add( new JLabel( "Insert line separator after these strings (separate with comma):" ), "0, 28, R, 1, W, w, 2" );
+        add( new JLabel( jEdit.getProperty("beauty.msg.Insert_line_separator_after_these_strings_(separate_with_comma)>", "Insert line separator after these strings (separate with comma):") ), "0, 28, R, 1, W, w, 2" );
         add( postInsertLineCharacters, "0, 29, R, 1, W, w, 2" );
 
         add( KappaLayout.createVerticalStrut( 6 ), "0, 30" );
@@ -280,21 +258,20 @@ public class CustomBeautifierOptionPane extends AbstractOptionPane {
         SwingUtilities.invokeLater(
             new Runnable() {
                 public void run() {
-                    clearComponents();
+                    clearComponentValues();
 
                     Mode selectedMode = ( Mode ) ie.getItem();
                     currentMode = selectedMode;
                     loadProperties( currentMode.getName() );
 
-                    fillComponents();
-
+                    setComponentValues();
                 }
             }
         );
     }
 
     // uncheck all checkboxes and clear the text fields
-    private void clearComponents() {
+    private void clearComponentValues() {
         usejEditIndenter.setSelected( false );
         prePadFunctions.setSelected( false );
         prePadDigits.setSelected( false );
@@ -321,70 +298,32 @@ public class CustomBeautifierOptionPane extends AbstractOptionPane {
         postInsertLineCharacters.setText( "" );
     }
 
-    private void fillComponents() {
-        // check the checkboxes based on the stored properties
-        for ( Object k : modeProperties.keySet() ) {
-            String key = ( String ) k;
-            boolean value = "false".equals( modeProperties.getProperty( key ) ) ? false : true;
-            if ( "usejEditIndenter".equals( key ) ) {
-                usejEditIndenter.setSelected( value );
-            }
-            else if ( "prePadFunctions".equals( key ) ) {
-                prePadFunctions.setSelected( value );
-            }
-            else if ( "postPadFunctions".equals( key ) ) {
-                postPadFunctions.setSelected( value );
-            }
-            else if ( "prePadDigits".equals( key ) ) {
-                prePadDigits.setSelected( value );
-            }
-            else if ( "postPadDigits".equals( key ) ) {
-                postPadDigits.setSelected( value );
-            }
-            else if ( "prePadOperators".equals( key ) ) {
-                prePadOperators.setSelected( value );
-            }
-            else if ( "postPadOperators".equals( key ) ) {
-                postPadOperators.setSelected( value );
-            }
-            else if ( "prePadKeywords1".equals( key ) ) {
-                prePadKeywords1.setSelected( value );
-            }
-            else if ( "prePadKeywords2".equals( key ) ) {
-                prePadKeywords2.setSelected( value );
-            }
-            else if ( "prePadKeywords3".equals( key ) ) {
-                prePadKeywords3.setSelected( value );
-            }
-            else if ( "prePadKeywords4".equals( key ) ) {
-                prePadKeywords4.setSelected( value );
-            }
-            else if ( "postPadKeywords1".equals( key ) ) {
-                postPadKeywords1.setSelected( value );
-            }
-            else if ( "postPadKeywords2".equals( key ) ) {
-                postPadKeywords2.setSelected( value );
-            }
-            else if ( "postPadKeywords3".equals( key ) ) {
-                postPadKeywords3.setSelected( value );
-            }
-            else if ( "postPadKeywords4".equals( key ) ) {
-                postPadKeywords4.setSelected( value );
-            }
-            else if ( "labelOnSeparateLine".equals( key ) ) {
-                labelOnSeparateLine.setSelected( value );
-            }
-            else if ( "collapseBlankLines".equals( key ) ) {
-                collapseBlankLines.setSelected( value );
-            }
-        }
-
-        // fill the textfields
-        prePadCharacters.setText( modeProperties.getProperty( "prePadCharacters" ) );
-        postPadCharacters.setText( modeProperties.getProperty( "postPadCharacters" ) );
-        dontPrePadCharacters.setText( modeProperties.getProperty( "dontPrePadCharacters" ) );
-        dontPostPadCharacters.setText( modeProperties.getProperty( "dontPostPadCharacters" ) );
-        preInsertLineCharacters.setText( modeProperties.getProperty( "preInsertLineCharacters" ) );
-        postInsertLineCharacters.setText( modeProperties.getProperty( "postInsertLineCharacters" ) );
+    private void setComponentValues() {
+        // set the check box values
+        usejEditIndenter.setSelected( getBoolean( "usejEditIndenter" ) );
+        prePadFunctions.setSelected( getBoolean( "prePadFunctions" ) );
+        prePadDigits.setSelected( getBoolean( "prePadDigits" ) );
+        prePadOperators.setSelected( getBoolean( "prePadOperators" ) );
+        prePadKeywords1.setSelected( getBoolean( "prePadKeywords1" ) );
+        prePadKeywords2.setSelected( getBoolean( "prePadKeywords2" ) );
+        prePadKeywords3.setSelected( getBoolean( "prePadKeywords3" ) );
+        prePadKeywords4.setSelected( getBoolean( "prePadKeywords4" ) );
+        postPadFunctions.setSelected( getBoolean( "postPadFunctions" ) );
+        postPadDigits.setSelected( getBoolean( "postPadDigits" ) );
+        postPadOperators.setSelected( getBoolean( "postPadOperators" ) );
+        postPadKeywords1.setSelected( getBoolean( "postPadKeywords1" ) );
+        postPadKeywords2.setSelected( getBoolean( "postPadKeywords2" ) );
+        postPadKeywords3.setSelected( getBoolean( "postPadKeywords3" ) );
+        postPadKeywords4.setSelected( getBoolean( "postPadKeywords4" ) );
+        labelOnSeparateLine.setSelected( getBoolean( "labelOnSeparateLine" ) );
+        collapseBlankLines.setSelected(getBoolean("collapseBlankLines"));
+        
+        // set the text field values
+        prePadCharacters.setText( getText( "prePadCharacters" ) );
+        postPadCharacters.setText( getText( "postPadCharacters" ) );
+        dontPrePadCharacters.setText( getText( "dontPrePadCharacters" ) );
+        dontPostPadCharacters.setText( getText( "dontPostPadCharacters" ) );
+        preInsertLineCharacters.setText( getText( "preInsertLineCharacters" ) );
+        postInsertLineCharacters.setText( getText( "postInsertLineCharacters" ) );
     }
 }

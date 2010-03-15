@@ -59,8 +59,6 @@ public class HtmlFormatter extends HtmlVisitor {
     protected static Set tagsPreformatted = new HashSet();
     protected static Set tagsTryMatch = new HashSet();
 
-    /// TODO: should let the user specify these lists
-
     // these tags _should_ be block tags, so indent the block
     protected static final String[] tagsIndentStrings
     = {"TABLE", "TR", "TD", "TH", "FORM", "HTML", "HEAD", "BODY", "SELECT", "OL", "UL", "LI", "DIV"};
