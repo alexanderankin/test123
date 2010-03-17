@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+
+<!--
+  - valid file
+  - the schema is referenced via a relative URI, it's not present in any catalog
+    (test case for Resolver.resolveEntity())
+  - completion information should appear when using XercesParserImpl
+  -->
+<ACTIONS
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:noNamespaceSchemaLocation="actions.xsd"
+   >
+   
+    <ACTION NAME="xmlindenter.indent">
+        <CODE>xml.indent.XmlIndenterPlugin.indentXml(view);</CODE>
+    </ACTION>
+    <ACTION NAME="xmlindenter.toggleSplitAttributes">
+        <CODE>xml.indent.XmlIndenterPlugin.toggleSplitAttributes(view);</CODE>
+    </ACTION>
+	
+</ACTIONS>

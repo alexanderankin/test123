@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0     Transitional//EN" "xhtml1-transitional.dtd">
+<html>
+   <head>
+      <title>HtmlSideKick</title>
+      <style type="text/css">
+      .author {
+            font-weight: strong;
+            font-size: -1;
+       };
+       .smaller {
+            font-size: -1;
+       };
+      </style>      
+      
+   </head>
+       
+   <body bgcolor="#FFFFFF">
+    
+   
+      <table bgcolor="#CCCCFF" summary="Header"  cellspacing="0" border="0" width="100%" >
+         <tr>
+            <td valign="top"><strong><font size="+2">HtmlSideKick</font></strong></td>
+            <td valign="top" align="right">
+               <p class="author">Author: Dale Anson </p>                            
+               <p class="smaller">based on an HTML grammar for javacc by Brian Goetz, Quiotix </p>
+            </td>
+         </tr>
+      </table>
+      <table summary="Introduction" border="0" cellspacing="0" cellpadding="3" width="100%">
+         <tr align="center" >
+            <td bgcolor="#7FB2FF" width="100%">
+               <strong><font color="#FFFFFF" size="+1"><a name="intro">Introduction</a></font></strong>
+            </td>
+         </tr>
+      </table>
+      <p>
+      Suggestions welcome, please contact <tt>jedit-devel@lists.sourceforge.net</tt>. </p>
+
+      <p>
+      This plugin parses HTML and JSP files and presents a tree view of the file to aid in navigation. In addition, it provides completion popups for elements, entities and attributes, and automatic insertion or completion of close-tags.  </p>
+
+      <p>
+      While designed specifically for HTML and JSP files, this plugin does a pretty good job of displaying ASP, ColdFusion, VRML, PHP, SGML, and Velocity files. Needless to say, it works with XML files too. You can elect to use this plugin for those edit modes by going to Plugins -&gt; Plugin Options... -&gt; SideKick -&gt; Parsers, then selecting "<tt>html</tt>" for those edit modes. </p>
+      
+  <h3>Completion</h3>
+
+  <p>  The HtmlSideKick supports completion for elements and attributes. The completion info provided is not based on the DOCTYPE at the top, but rather based on an HTML "completion info" file which is included with the XML plugin. The DOCTYPE is ignored by the HtmlSideKick.</p>
+  <p> If you are editing non-XML-compliant HTML, keep in mind that XML plugin provides completion, and does not like attributes unless they are in quotes, so it may pop up completions in inappropriate places if your use of quotes is not XML-compliant. </p>
+
+  <h3> Validation </h3>
+
+  <p> HtmlSideKick provides no validation. If you switch to the XML parser, you can get full validation based on any DTD or XML Schema. The "loosest" HTML grammar recognized by the XML parser is this: </p>
+  
+  <pre>&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot; &quot;xhtml1-transitional.dtd&quot;&gt;
+  </pre>
+  
+
+      <table summary="Settings" border="0" cellspacing="0" cellpadding="3" width="100%">
+         <tr align="center">
+            <td bgcolor="#7FB2FF" width="100%">
+               <strong><font color="#FFFFFF" size="+1">
+               <a name="intro"> Settings</a></font></strong>
+            </td>
+         </tr>
+      </table>
+      <p> This plugin is an extension of both the <a href="jeditresource:/SideKick.jar!/index.html">SideKick</a> and the
+      <a href="jeditresource:/XML.jar!/index.html">XML</a> plugins. This means that common options for this plugin are specified in the SideKick plugin options. Additional completion options, such as finishing the close-tag when you type <tt>&lt;/</tt>, or providing element/attribute popups based on an XML DTD or schema, are specified in the XML plugin's general options. </p>
+      
+      <p>
+      The settings for HtmlSideKick are found at Plugins -&gt; Plugin Options... -&gt; HtmlSideKick. </p>
+      <h3>Showing Tag Attributes</h3>
+      There are 4 settings that affect the display of tag attributes:
+      <ol>
+         <li><b>Show Tag Attributes</b> When checked, all non-standard attributes (if any) for the tag will be displayed. </li>
+         <li><b>Show Core Attributes</b> When checked, the standard core html tag attributes (if any) will be displayed. 
+         The core attributes are: "id", "class", "style", and "title". </li>
+         <li><b>Show Language Attributes</b> When checked, the standard attributes (if any) for internationalization will be displayed.
+         The language attributes are: "lang" and "dir". </li>
+         <li><b>Show Script Attributes</b> When checked, the standard attributes (if any) for scripting will be displayed.
+         The scripting attributes are: "onclick", "ondblclick", "onmousedown", "onmouseup", "onmouseover", 
+         "onmousemove", "onmouseout", "onkeypress", "onkeydown", and "onkeyup". </li>
+      </ol>
+      <p>
+      Regardless of these settings, a full listing of the tag attributes, sorted alphabetically, can be seen by moving the 
+      mouse pointer over the tag display in the tree.
+      </p>
+      
+      <h3>Showing Brackets</h3>
+      <p> Display of &lt; and &gt; can be turned on or off by use of the <b>Show tags with &lt; and &gt;</b> checkbox.
+      </p>
+      
+      <h3>Showing Tags</h3>
+      <p>There are 3 settings that affect the display of tags themselves: </p>
+      <ol>
+         <li><b>Show All HTML Tags</b> When selected, all html tags will be displayed. </li>
+         <li><b>Show Block HTML Tags only</b> When selected, only those html tags that are a "block", that is,
+         there is both a start tag and an end tag, will be displayed. </li>
+         <li><b>Show JSP Tags</b> When checked, JSP tags will be displayed. </li>
+      </ol>
+
+      <table summary="Future plans" border="0" cellspacing="0" cellpadding="3" width="100%">
+         <tr align="center">
+            <td bgcolor="#7FB2FF" width="100%">
+               <strong><font color="#FFFFFF" size="+1"><a name="future"> Future Plans</a></font></strong>
+            </td>
+         </tr>
+      </table>
+
+      <ul>
+      <li> Full W3C validation based on DTD. </li>
+      </ul>
+      
+      <table summary="History" border="0" cellspacing="0" cellpadding="3" width="100%">
+         <tr align="center" >
+            <td bgcolor="#7FB2FF" width="100%">
+               <strong><font color="#FFFFFF" size="+1"><a name="history">History</a></font></strong>
+            </td>
+         </tr>
+      </table>
+
+      <ul>
+        <li> 
+          <b> Version 0.5</b> Merged into XML plugin version 1.1 </li>
+
+      <li> <b>Version 0.4</b> requires JDK 1.4, jEdit 4.3pre3, SideKick 0.6, XML 0.18, XercesPlugin 2.8 
+        <ul>
+        <li> Bugfix release </li>
+        <li> Extends from XmlParser (in the XML plugin) and now supports element tag, closing, and attribute completions, from HTML and JSP modes. (Alan Ezust). </li>
+        </ul>
+    </li>
+    </ul>
+   
+   
+      
+   </body>
+</html>
+
