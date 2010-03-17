@@ -429,11 +429,12 @@ public class NavigatorPlugin extends EBPlugin {
      * @param view
      *                The view for the Navigator
      */
-    public static void backList( View view ) {
+    public static NavHistoryPopup backList( View view ) {
         Navigator navigator = getNavigator( view );
         if ( navigator != null ) {
-            navigator.backList();
+            return navigator.backList();
         }
+        return null;
     }
 
     /**
@@ -456,11 +457,12 @@ public class NavigatorPlugin extends EBPlugin {
      * @param view
      *                The view for the Navigator
      */
-    public static void forwardList( View view ) {
+    public static NavHistoryPopup forwardList( View view ) {
         Navigator navigator = getNavigator( view );
         if ( navigator != null ) {
-            navigator.forwardList();
+            return navigator.forwardList();
         }
+        return null;
     }
 
     /**

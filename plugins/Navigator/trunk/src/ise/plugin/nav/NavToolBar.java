@@ -29,8 +29,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ise.plugin.nav;
 
 import java.awt.*;
+import java.awt.event.*;
 import javax.swing.*;
 import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.View;
 
 /**
  * A simple toolbar for a Navigator
@@ -40,26 +42,47 @@ import org.gjt.sp.jedit.GUIUtilities;
  */
 public class NavToolBar extends JToolBar {
 
-   private JButton back, forward;
+    private View view;
+    private JButton back;
+    private JButton forward;
 
-   /**
-    * @param client  the client object to provide navigation for
-    */
-   public NavToolBar( Navigator client ) {
-      if ( client == null ) {
-         throw new IllegalArgumentException( "client cannot be null" );
-      }
-      setFloatable( false );
+    /**
+     * @param client  the client object to provide navigation for
+     */
+    public NavToolBar( Navigator client ) {
+        if ( client == null ) {
+            throw new IllegalArgumentException( "client cannot be null" );
+        }
+        view = client.getView();
+        setFloatable( false );
 
-      // set up the buttons
-      back = new JButton( GUIUtilities.loadIcon( "ArrowL.png" ) );
-      back.setModel(client.getBackModel());
-      forward = new JButton( GUIUtilities.loadIcon( "ArrowR.png" ) );
-      forward.setModel(client.getForwardModel());
-      back.setMargin( new Insets( 0, 0, 0, 0 ) );
-      forward.setMargin( new Insets( 0, 0, 0, 0 ) );
-      add( back );
-      add( forward );
-   }
+        // set up the buttons
+        back = new JButton( GUIUtilities.loadIcon( "ArrowL.png" ) );
+        back.setModel( client.getBackModel() );
+        forward = new JButton( GUIUtilities.loadIcon( "ArrowR.png" ) );
+        forward.setModel( client.getForwardModel() );
+        back.setMargin( new Insets( 0, 0, 0, 0 ) );
+        forward.setMargin( new Insets( 0, 0, 0, 0 ) );
+        add( back );
+        add( forward );
+
+        back.addMouseListener( new MouseAdapter() {
+                    public void mouseClicked( MouseEvent me ) {
+                        if ( me.getButton() == MouseEvent.BUTTON3 ) {
+                            NavHistoryPopup popup = NavigatorPlugin.backList( view );
+                            GUIUtilities.showPopupMenu(popup, back, me.getX(), me.getY());
+                        }
+                    }
+                }
+                             );
+        forward.addMouseListener( new MouseAdapter() {
+                    public void mouseClicked( MouseEvent me ) {
+                        if ( me.getButton() == MouseEvent.BUTTON3 ) {
+                            NavHistoryPopup popup = NavigatorPlugin.forwardList( view );
+                            GUIUtilities.showPopupMenu(popup, forward, me.getX(), me.getY());
+                        }
+                    }
+                }
+                                );
+    }
 }
-
