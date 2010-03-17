@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE dtd SYSTEM "xml-completion-info.dtd">
+<dtd>
+      <element-list>
+            <element name="function" content="(result)">
+                  <attribute name="name" type="QName" required="true"/>
+            </element>
+            <element name="result" content="">
+                  <attribute name="select" type="CDATA"/>
+            </element>
+            <element name="script" content="EMPTY">
+                  <attribute name="implements-prefix" type="QName" required="true"/>
+                  <attribute name="language" type="NMTOKEN" required="true"/>
+                  <attribute name="src" type="CDATA" required="true"/>
+                  <attribute name="archive" type="CDATA" />
+            </element>
+      </element-list>
+</dtd>
