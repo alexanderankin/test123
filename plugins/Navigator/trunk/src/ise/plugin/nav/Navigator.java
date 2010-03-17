@@ -34,12 +34,10 @@ import java.util.*;
 import javax.swing.*;
 
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSManager;
-import org.gjt.sp.jedit.msg.PositionChanging;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 /**
@@ -137,6 +135,10 @@ public class Navigator implements ActionListener {
         forwardHistory = new NavStack<NavPosition>( maxStackSize );
         clearHistory();
         current = currentPosition();
+    }
+    
+    public View getView() {
+        return view;   
     }
 
 
@@ -435,23 +437,23 @@ public class Navigator implements ActionListener {
     /**
      * Show a popup containing the back history list.
      */
-    public void backList() {
+    public NavHistoryPopup backList() {
         if ( backHistory.size() == 0 ) {
             JOptionPane.showMessageDialog( view, "No backward items", "Info", JOptionPane.INFORMATION_MESSAGE );
-            return ;
+            return null;
         }
-        new NavHistoryPopup( view, this, ( Vector ) backHistory.clone() );
+        return new NavHistoryPopup( view, this, ( Vector ) backHistory.clone() );
     }
 
     /**
      * Show a popup containing the forward history list.
      */
-    public void forwardList() {
+    public NavHistoryPopup forwardList() {
         if ( forwardHistory.size() == 0 ) {
             JOptionPane.showMessageDialog( view, "No forward items", "Info", JOptionPane.INFORMATION_MESSAGE );
-            return ;
+            return null;
         }
-        new NavHistoryPopup( view, this, ( Vector ) forwardHistory.clone() );
+        return new NavHistoryPopup( view, this, ( Vector ) forwardHistory.clone() );
     }
 
     /**
