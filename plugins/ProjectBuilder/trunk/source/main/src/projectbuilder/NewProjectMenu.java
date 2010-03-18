@@ -37,7 +37,8 @@ public class NewProjectMenu implements DynamicMenuProvider {
 		
 		File[] dirs = templateDir.listFiles(new DirFilter());
 		File[] userDirs = userTemplateDir.listFiles(new DirFilter());
-		int total = dirs.length + userDirs.length;
+		
+		int total = dirs.length + ((userDirs == null) ? 0 : userDirs.length);
 		
 		String[] tNames = new String [total];
 		for (int i = 0; i < total; i++) {
