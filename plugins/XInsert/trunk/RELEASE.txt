@@ -7,6 +7,8 @@ Requirements:
 Announcement:
 	Release 2.5 - maintainance release
 	replaced the com.microstar parsing with SAX parsing
+	fixed #2941806 - XInsert Plugin 1st global var value lost after entry
+	implemented #2941806 - Xinsert plugin HTML tree to conform to spec
 
 Source:
 	https://svn.sourceforge.net/svnroot/jedit/plugins/XInsert/
