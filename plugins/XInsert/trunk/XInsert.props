@@ -52,13 +52,14 @@ XInsert.menu=XInsert.toggle
 #{{{ XInsert builtin categories
 xinsert.inserts.0=xinsert
 xinsert.inserts.1=htmltag
-xinsert.inserts.2=htmlchar
-xinsert.inserts.3=ssi
-xinsert.inserts.4=java
-xinsert.inserts.5=jscript
-xinsert.inserts.6=jsptag
-xinsert.inserts.7=c
-xinsert.inserts.8=TeX
+xinsert.inserts.2=xhtmltag
+xinsert.inserts.3=htmlchar
+xinsert.inserts.4=ssi
+xinsert.inserts.5=java
+xinsert.inserts.6=jscript
+xinsert.inserts.7=jsptag
+xinsert.inserts.8=c
+xinsert.inserts.9=TeX
 xinsert.inserts.macros=macros
 # }}}
 
