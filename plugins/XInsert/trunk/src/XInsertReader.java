@@ -23,35 +23,47 @@
 
 import java.io.*;
 import org.gjt.sp.util.Log;
-import com.microstar.xml.*;
+
+import org.xml.sax.helpers.XMLReaderFactory;
+import org.xml.sax.XMLReader;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 public class XInsertReader {
   public XInsertReader() { }
 
-  public static boolean read(XTree tree, InputStream fileName, String file) {
-    InputStreamReader reader = new InputStreamReader(fileName);
+  public static boolean read(XTree tree, InputStream inputStream, String file) {
+    InputStreamReader reader = new InputStreamReader(inputStream);
     XInsertHandler xmh = new XInsertHandler(tree);
-    XmlParser parser = new XmlParser();
-    parser.setHandler(xmh);
-    try {
-      parser.parse(XInsertReader.class.getResource("xinsert.dtd").toString(), null, reader);
-    } catch (XmlException e) {
-      Log.log(Log.ERROR,tree,"XInsert: Error parsing grammar " + fileName);
-      Log.log(Log.ERROR,tree,"XInsert: Error occured at line " + e.getLine() +
-                         ", column " + e.getColumn());
+	try
+	{
+		XMLReader parser = XMLReaderFactory.createXMLReader();
+		parser.setErrorHandler(xmh);
+		parser.setContentHandler(xmh);
+		parser.setEntityResolver(xmh);
+		parser.parse(new InputSource(reader));
+	} catch(SAXParseException e) {
+      Log.log(Log.ERROR,tree,"XInsert: Error parsing grammar " + file);
+      Log.log(Log.ERROR,tree,"XInsert: Error occured at line " + e.getLineNumber() +
+                         ", column " + e.getColumnNumber());
       Log.log(Log.ERROR,tree,"XInsert: " + e.getMessage());
       return false;
+    } catch(IOException ioe) {
+    	Log.log(Log.ERROR,tree,"XInsert: Error parsing grammar " + file);
+    	Log.log(Log.ERROR,tree,ioe);
+    	return false;
     } catch (Exception e) {
       // Should NEVER happend !
       e.printStackTrace();
       return false;
-    }
+    } finally {
 		try {
-      fileName.close();
-      reader.close();
-    } catch (IOException ioe) { 
-			ioe.printStackTrace(); 
+		  reader.close();
+		} catch (IOException ioe) { 
+				ioe.printStackTrace(); 
 		}
+	}
     return true;
   }
 }
