@@ -137,6 +137,12 @@ public class XInsertOptionPane extends AbstractOptionPane implements ActionListe
       insertCheckBoxes[i].saveState();
       Log.log(Log.DEBUG,this,"XInsert directory set to" + directoryText.getText());
       jEdit.setProperty("xinsert.inserts-directory", directoryText.getText());
+      
+      // if one cell is currently being edited, stop editing, so that we get its value
+      // see https://sourceforge.net/tracker/index.php?func=detail&aid=2941806&group_id=588&atid=565475
+      if(varsTable.getCellEditor()!=null){
+      	  varsTable.getCellEditor().stopCellEditing();
+      }
       XInsertPlugin.clearVariables();
       Iterator vis = vmodel.vars.iterator();
       while(vis.hasNext()) {
