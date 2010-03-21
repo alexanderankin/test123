@@ -14,7 +14,7 @@
 	<property file="build.properties"/>
 	<property file="../build.properties"/>
 
-	<property name="version" value="2.2" />
+	<property name="version" value="2.5" />
 
     <import file="${build.support}/plugin-build.xml" />
 

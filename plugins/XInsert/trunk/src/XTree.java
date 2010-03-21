@@ -257,7 +257,7 @@ public class XTree extends JPanel {
         if(!XInsertReader.read(
 	    this, 
 	    XTree.class.getResourceAsStream("xml/" + fileName + ".insert.xml"), 
-	    "xml/" + fileName + ".xinsert.xml"))
+	    "xml/" + fileName + ".insert.xml"))
           Log.log(Log.ERROR,this,("Resource not found: " + fileName));
         else
           Log.log(Log.NOTICE,this,("Resource loaded: " + fileName));

@@ -24,22 +24,26 @@
 
 import java.util.Stack;
 import java.util.Vector;
-import com.microstar.xml.*;
+
+import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.Attributes;
 
 import org.gjt.sp.util.Log;
 
-public class XInsertHandler extends HandlerBase {
+public class XInsertHandler extends DefaultHandler {
 
   // private members
 
   private XTree tree;
   private Stack stateStack;
   private int type = XTreeItem.TEXT_TYPE;
-  private String lastAttr, lastName, lastValue, lastAttrValue, propValue;
+  private String lastAttr, lastName, lastAttrValue, propValue;
+  private StringBuilder lastValue;
 
   public XInsertHandler(XTree tree) { this.tree = tree; }
 
-  public void attribute(String aname, String value, boolean isSpecified) {
+  public void attribute(String aname, String value) {
     // TYPE attribute
     if (aname.equalsIgnoreCase("TYPE")) {
       if(value.equalsIgnoreCase("MACRO"))
@@ -71,47 +75,56 @@ public class XInsertHandler extends HandlerBase {
       propValue = value;
     }
 
-  public void doctypeDecl(String name, String publicId, String systemId) throws Exception {
-    // check for correct DOCTYPE declaration
-    if (!"XINSERT".equalsIgnoreCase(name))
-      throw new Exception("Expected doctype 'XINSERT', found \'" + name + "\': File not valid!");
-    }
-
-  public void charData(char[] c, int off, int len) {
+  @Override
+  public void characters(char[] c, int off, int len) {
     // ITEM content
     if ("ITEM".equalsIgnoreCase(((String) stateStack.peek())))
-      lastValue = new String(c, off, len);
+      // calling append since we get value one bit at a time
+      lastValue.append(new String(c, off, len));
     }
 
-  public void startElement(String name) {
+  @Override
+  public void startElement(String ns, String localName, String qName, Attributes attributes) {
+	// handle the attributes before pushing the element
+	// (this is what the old com.microstar.xml XmlParser implementation did)
+	for(int i=0;i<attributes.getLength();i++)
+	{
+		String aname = attributes.getLocalName(i);
+		String value = attributes.getValue(i);
+		attribute(aname, value);
+	}
+	// reset String contents
+	lastValue = new StringBuilder();
+	
     if ("NAME".equalsIgnoreCase(lastAttr)) {
       // named MENU
-      if ("MENU".equalsIgnoreCase(name)) {
+      if ("MENU".equalsIgnoreCase(localName)) {
         //Log.log(Log.DEBUG, this, "adding Menu: " + lastAttrValue);  
         tree.addMenu(lastAttrValue);
         }
       // named VARIABLE
-      if ("VARIABLE".equalsIgnoreCase(name)) {
+      if ("VARIABLE".equalsIgnoreCase(localName)) {
         if(propValue == null || lastAttrValue == null)
           Log.log(Log.WARNING, this, "Can not set XInsert property");
         else
           tree.addVariable(lastAttrValue, propValue);
       }
     }
-    stateStack.push(name);
+    stateStack.push(localName);
   }
 
-  public void endElement(String name) {
+  @Override
+  public void endElement(String ns, String localName, String qName) {
 
-    if (name == null) return;
+    if (localName == null) return;
     String lastStartTag = (String) stateStack.peek();
-    if (name.equalsIgnoreCase(lastStartTag)) {
+    if (localName.equalsIgnoreCase(lastStartTag)) {
       // MENU end
       if (lastStartTag.equalsIgnoreCase("MENU"))
         tree.closeMenu();
       // ITEM end
       else if (lastStartTag.equalsIgnoreCase("ITEM")) {
-        tree.addInsert(lastAttrValue, lastValue, type);
+        tree.addInsert(lastAttrValue, lastValue.toString(), type);
         type = XTreeItem.TEXT_TYPE;
         }
       stateStack.pop();
@@ -121,11 +134,10 @@ public class XInsertHandler extends HandlerBase {
     lastAttrValue = null;
   }
 
+  @Override
   public void startDocument() {
-    try {
       stateStack = new Stack();
       stateStack.push(null);
-    } catch (Exception e) { e.printStackTrace(); }
   }
 
 }
