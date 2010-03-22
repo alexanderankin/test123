@@ -19,8 +19,8 @@ import org.gjt.sp.jedit.msg.*
 import org.gjt.sp.util.Log
 import org.gjt.sp.jedit.jEdit as JEDIT
 
-import org.apache.tools.ant.Project
-import org.apache.tools.ant.ProjectHelper
+// import org.apache.tools.ant.Project
+// import org.apache.tools.ant.ProjectHelper
 
 import projectviewer.vpt.VPTProject
 import projectviewer.vpt.VPTNode
@@ -36,7 +36,6 @@ import console.Console
  */
 public class ProjectBuilderPlugin extends EditPlugin implements EBComponent {
 
-   private Project building = null; // The currently-building project
    public static final String templateDir = getPluginHome(this).getPath()+File.separator+"templates"
    public static final String userTemplateDir = JEDIT.getSettingsDirectory()+File.separator+"project-templates"
    
@@ -142,8 +141,6 @@ public class ProjectBuilderPlugin extends EditPlugin implements EBComponent {
    }
                                 
    public void buildProject(View view, VPTProject proj) {
-   	   if (building != null)
-   	   	   return
    	   if (proj == null) {
 	   	   GUIUtilities.error(view, "projectBuilder.msg.no-project", null)
 	   	   return
@@ -175,8 +172,6 @@ public class ProjectBuilderPlugin extends EditPlugin implements EBComponent {
    }
    
    public void runProject(View view, VPTProject proj) {
-   	   if (building != null)
-   	   	   return
    	   if (proj == null) {
 	   	   GUIUtilities.error(view, "projectBuilder.msg.no-project", null)
 	   	   return

@@ -124,6 +124,14 @@ if(answer == JOptionPane.OK_OPTION) {
    def project = new Project(name: swing.name_field.text, directory: projectDir, build: [], run: [])
    String[] roots = [templatesDir.path]
    
+   if (projectName.trim().length() == 0) {
+   	   // ERROR: Enter project name
+   	   return
+   } else if (!projectDir.exists()) {
+   	   // ERROR: Choose a directory
+   	   return
+   }
+   
    // Make sure a project with the chosen name doesn't already exist   
    ProjectManager manager = ProjectManager.getInstance()
    try {
@@ -140,7 +148,7 @@ if(answer == JOptionPane.OK_OPTION) {
    println("        dir: " + projectDir)
    println("     script: " + templateType.scriptPath)
    
-   JEDIT.setProperty("projectBuilder.workspace", swing.directory_field.text);
+   JEDIT.setProperty("projectBuilder.workspace", projectDir.getPath())
 
    Binding binding = new Binding()
    GroovyScriptEngine gse = new GroovyScriptEngine(roots)
