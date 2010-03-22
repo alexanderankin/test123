@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+
+<!--
+     This is the build.xml file for building the XInsert plugin with 'ant'.
+
+	 It makes use of the standard import file 'plugin-build.xml',
+	 normally found in the jEdit/build-support directory in the jEdit code
+	 The property "build.support" should be defined in a "build.properties" file
+	 and point to the import file.
+-->
+
+<project name="XInsert" default="dist" basedir=".">
+
+	<property file="build.properties"/>
+	<property file="../build.properties"/>
+
+	<property name="version" value="2.5" />
+
+    <import file="${build.support}/plugin-build.xml" />
+
+    <selector id="packageFiles">
+      <or>
+        <filename name="xinsert.dtd"/>
+		<filename name="*.html"/>
+		<filename name="images/*.gif"/>
+		<filename name="xml/*.insert.xml"/>
+	  </or>
+	</selector>
+	
+	<!-- we have no doc/users-guide.xml -->
+	<target name="docs-xsltproc" />
+
+</project>
