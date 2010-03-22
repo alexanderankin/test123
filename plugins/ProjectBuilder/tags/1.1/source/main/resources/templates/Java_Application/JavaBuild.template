@@ -1,0 +1,40 @@
+<project name="${name}" default="all">
+	<property name="src.dir" value="src"/>
+	<property name="dist.dir" value="dist"/>
+	<property name="build.dir" value="build"/>
+	<property name="lib.dir" value="lib"/>
+	<path id="compile.classpath">
+		<fileset dir="\${lib.dir}">
+			<include name="**/*.jar"/>
+		</fileset>
+	</path>
+	<target name="all" depends="jar"/>
+	<target name="clean" description="clean">
+		<delete dir="\${build.dir}"/>
+		<delete dir="\${dist.dir}"/>
+	</target>
+	<target name="prepare" description="creates necessary directories">
+		<mkdir dir="\${build.dir}"/>
+		<mkdir dir="\${dist.dir}"/>
+		<copy todir="\${build.dir}">
+			<fileset dir="\${src.dir}">
+				<exclude name="**/*.java"/>
+			</fileset>
+		</copy>
+	</target>
+	<target name="compile" description="compile" depends="prepare">
+		<mkdir dir="\${build.dir}"/>
+		<javac srcdir="\${src.dir}" destdir="\${build.dir}">
+			<classpath refid="compile.classpath"/>
+		</javac>
+	</target>
+	<target name="jar" description="jar" depends="compile">
+		<jar jarfile="\${dist.dir}/${name}.jar">
+			<fileset dir="\${build.dir}"/>
+			<manifest>
+				<attribute name="Main-Class" value="${mainClass}" />
+				<attribute name="Created-By" value="${author}" />
+			</manifest>
+		</jar>
+	</target>
+</project>
