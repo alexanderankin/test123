@@ -1,74 +1,76 @@
 <?xml version="1.0"?>
-
 <project name="xslt" default="build" basedir=".">
 
-    <property file="build.properties"/>
-    <property file="../build.properties"/>
+	<property file="build.properties"/>
+	<property file="../build.properties"/>
 
-  <!-- You should set this property below in your ../build.properties to
+   <!-- You should set this property below in your ../build.properties to
 	     the location of the jedit's "build-support/trunk" project
 	     checked out from jEdit's SVN repository -->
-    <property name="build.support" value="../../build-support" />
-    <property name="docs-proc.target"       value="xsltproc" />
-    <property name="compiler.source" value="1.5" />
-    <property name="compiler.target" value="1.5" />
-    <property name="javadoc.packagenames"	value="xslt.*" />
-    <property name="install.dir"  value="../"/>
-    <property name="jedit.plugins.dir" value="${install.dir}" />
-    <property name="lib.dir" value="lib" />
+	<property name="build.support" value="../../build-support" />
+	<property name="docs-proc.target" value="xsltproc" />
+	<property name="compiler.source" value="1.5" />
+	<property name="compiler.target" value="1.5" />
+	<property name="javadoc.packagenames" value="xslt.*" />
+	<property name="install.dir" value="../"/>
+	<property name="jedit.plugins.dir" value="${install.dir}" />
+	<property name="lib.dir" value="lib" />
 
-    <description description="This is a build.xml file for building the XSLT jEdit plugin."/>
+	<description description="This is a build.xml file for building the XSLT jEdit plugin."/>
 
-    <import file="${build.support}/plugin-build.xml" />
+	<import file="${build.support}/plugin-build.xml" />
 
 
-  <property name="xalan.jar"  value="lib/xalan.jar"/>
-  <property name="serializer.jar"  value="lib/serializer.jar"/>
-  <property name="resources.dir" value="resources" description="contains plugin icons"/>
+	<property name="xalan.jar" value="lib/xalan.jar"/>
+	<property name="serializer.jar" value="lib/serializer.jar"/>
+	<property name="resources.dir" value="resources" description="contains plugin icons"/>
 
-    <!-- exclude the test directory -->
-    <selector id="compileFiles">
-        	<filename name="xslt/**/*.java" />
-    </selector>
+   <!-- exclude the test directory -->
+	<selector id="compileFiles">
+		<filename name="xslt/**/*.java" />
+	</selector>
 
-  <path id="project.class.path">
-    <pathelement location="${jedit.plugins.dir}/ErrorList.jar"/>
-    <pathelement location="${jedit.plugins.dir}/XML.jar"/>
-    <pathelement location="${jedit.install.dir}/jedit.jar"/>
-    <pathelement location="${serializer.jar}"/>
-    <pathelement location="${xalan.jar}"/>
-    <pathelement location="${jedit.plugins.dir}/saxon9he.jar"/>
-  </path>
+	<path id="project.class.path">
+		<pathelement location="${jedit.plugins.dir}/ErrorList.jar"/>
+		<pathelement location="${jedit.plugins.dir}/XML.jar"/>
+		<pathelement location="${jedit.install.dir}/jedit.jar"/>
+		<pathelement location="${serializer.jar}"/>
+		<pathelement location="${xalan.jar}"/>
+		<pathelement location="${jedit.plugins.dir}/saxon9he.jar"/>
+	</path>
 
-      <selector id="extraFiles">
-        <and>
-            <or>
-                <filename name="actions.xml" />
-                <filename name="dockables.xml" />
-                <filename name="services.xml" />
-                <filename name="XSLT.props" />
-                <filename name="Apache.LICENSE.txt" />
-            </or>
-            <not>
-                <filename name="build/**/*"/>
-             </not>
-        </and>
-    </selector>
-
+	<selector id="extraFiles">
+		<and>
+			<or>
+				<filename name="actions.xml" />
+				<filename name="dockables.xml" />
+				<filename name="services.xml" />
+				<filename name="XSLT.props" />
+				<filename name="Apache.LICENSE.txt" />
+			</or>
+			<not>
+				<filename name="build/**/*"/>
+			</not>
+		</and>
+	</selector>
   
-  <target name="deploy" description="copies jars to deploy.dir">
-    <copy file="${install.dir}/${jar.name}" todir="${deploy.dir}"/>
-    <copy file="${xalan.jar}" todir="${deploy.dir}/endorsed"/>
-  </target>
 
-  <target name="build.prepare" description="copy resources to build/extraFiles">
-  		<mkdir dir="${build.extras}"/>
-        <copy todir="${build.extras}" includeEmptyDirs="false">
-            <fileset dir="resources">
-                <include name="**/*.png"/>
-                <include name="**/*.vm"/>
-            </fileset>
-        </copy>
-  </target>
+	<target name="deploy" description="copies jars to deploy.dir">
+		<copy file="${install.dir}/${jar.name}" todir="${deploy.dir}"/>
+		<copy file="${xalan.jar}" todir="${deploy.dir}/endorsed"/>
+	</target>
+
+	<target name="build.prepare" description="copy resources to build/extraFiles">
+		<mkdir dir="${build.extras}"/>
+		<copy todir="${build.extras}" includeEmptyDirs="false">
+			<fileset dir="resources">
+				<include name="**/*.png"/>
+				<include name="**/*.vm"/>
+			</fileset>
+		</copy>
+		<copy todir="${install.dir}">
+			<fileset dir="lib" includes="*.jar" />
+		</copy>
+	</target>
 </project>
 
