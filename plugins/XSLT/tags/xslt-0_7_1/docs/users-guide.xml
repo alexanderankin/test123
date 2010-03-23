@@ -1,0 +1,618 @@
+<?xml version="1.0"?>
+
+<!-- XSLT plugin user's guide -->
+<!-- (C) 2002 Greg Merrill, Robert McKinnon -->
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+<book>
+
+  <bookinfo>
+
+    <title>XSLT plugin user's guide</title>
+
+    <authorgroup>
+      <author>
+        <firstname>Robert</firstname>
+        <surname>McKinnon</surname>
+      </author>
+      <author>
+        <firstname>Greg</firstname>
+        <surname>Merrill</surname>
+      </author>
+      <author>
+        <firstname>Wim</firstname>
+        <surname>Le Page</surname>
+      </author>
+      <author>
+        <firstname>Pieter</firstname>
+        <surname>Wellens</surname>
+      </author>
+      <author>
+        <firstname>Eric</firstname>
+        <surname>Le Lay</surname>
+      </author>
+    </authorgroup>
+
+    <legalnotice>
+      <title>Legal Notice</title>
+      <para>
+        Permission is granted to copy, distribute and/or modify this document
+        under the terms of the GNU Free Documentation License, Version 1.1 or
+        any later version published by the Free Software Foundation; with no
+        "Invariant Sections", "Front-Cover Texts" or
+        "Back-Cover Texts", each as defined in the license. A copy of
+        the license can be found in the file <filename>COPYING.DOC.txt</filename>
+        included with jEdit.
+      </para>
+      <para>
+        The XSLT plugin itself is released under the GNU General Public License.
+        A copy of the GPL can be found in the jEdit online help.
+      </para>
+      <para>
+        The XSLT plugin bundles the Xalan-Java XSLT processor from the Apache Software
+        Foundation. Xalan-Java is released under the <ulink url="Apache.LICENSE.txt">Apache
+        License</ulink>.
+      </para>
+    </legalnotice>
+  </bookinfo>
+
+  <chapter id="overview">
+    <title>Overview</title>
+    <para>
+      The XSLT plugin provides features for transforming XML documents using
+      XSLT stylesheets, saving transformation configuration settings and
+      viewing the results of evaluating XPath expressions.
+    </para>
+    <para>NOTE: The XML indent functionality that formerly was included in
+    the XSLT plugin has been moved into the XML plugin.</para>
+  </chapter>
+
+  <chapter id="xslt-processor">
+    <title>XSLT Processor Tool</title>
+    <para>
+      The XSLT Processor allows you to transform a source XML document using
+      a series of XSL stylesheets. <ulink url="http://www.w3.org/Style/XSL/">XSL
+      and XSLT</ulink> are W3C-specified standards for XML stylesheets and
+      stylesheet transformations, respectively.
+    </para>
+    <para>
+      To use the XSLT Processor:
+      <itemizedlist>
+        <listitem>
+          <para>To dock the tool, from the Plugins menu select
+          "XSLT->XSLT Processor". Note that you may select where a Plugin is
+          docked from "Utilies->Global Options->jEdit->Docking".</para>
+        </listitem>
+        <listitem>
+          <para>Select a source XML file, by using the "Select XML source"
+          button and subsequent dialog. The button is located
+          next to the source text field at the top of the tool.</para>
+        </listitem>
+        <listitem>
+          <para>Modify the list of stylesheets using the buttons with the "Add
+          stylesheet", "Remove stylesheet", "Move up" and "Move down" buttons
+          (the buttons with the plus, minus, up and down icons).</para>
+        </listitem>
+        <listitem>
+          <para>If the first stylesheet in the list has parameters that
+          you wish to populate, you can add parameters
+          via the "Add stylesheet parameter" button.
+          For example if the XSLT param element is
+          &lt;xsl:param name="uri"/&gt;, you can add
+          a parameter with name "uri" to the parameter table.</para>
+        </listitem>
+        <listitem>
+          <para>Name a file for the result to be saved to by pressing the "Name
+          result file" button next to the result text field at the bottom of the
+          tool. In the dialog window select a directory, enter a file name and
+          then press the "Open" button (a bit confusing but it will work).</para>
+          
+          <para>The result will be written to a new untitled buffer if you click 
+          the <guibutton>New Untitled Buffer</guibutton> radio button.
+          Note that it will be written in memory only,
+          so don't use this option with too big a document.
+          Also note that if any <code>&lt;xsl:result-document&gt;</code> instruction is used, 
+          it won't be written in memory but to a file relative to the new Untitled buffer.
+          </para>
+        </listitem>
+        <listitem>
+          <para>Files can be opened for editing from the XSLT Processor window,
+          using enter key, or right click menu select on the
+          file name.</para>
+          <para>If you don't want to open the result of the transformation
+          (e.g. because the result is too big), uncheck the <guilabel>Open result</guilabel>
+          check-box.</para>
+        </listitem>
+        <listitem>
+          <para>Run the transformation using the "Transform XML" button.
+          This will perform the selected XSL transformations on the source XML
+          and place the result in a new buffer. If more than one stylesheet
+          is selected then the result from a prior stylesheet
+          in the list becomes the input to the next stylesheet.
+          If you entered a result file name, then the new buffer will be saved
+          to a file with that name.</para>
+        </listitem>
+        <listitem>
+          <para>You can invoke the "Transform XML" action via a
+          keyboard shortcut or toolbar icon; this can be configured from
+          "Utilities->Global Options->jEdit->Shortcuts" or
+          "Utilities->Global Options->jEdit->Tool Bar" respectively.
+          The XSLT Processor will have to be docked in order for this binding
+          to work.</para>
+        </listitem>
+        <listitem>
+          <para>You can save the current settings by
+          clicking on the "Save settings" button, which is next to the
+          "Transform XML button". In the File System Browser dialog specify a name
+          for the settings file, then click "Save".
+          The saved settings are formatted as an
+          <ulink url="http://jakarta.apache.org/ant/">Ant</ulink>
+          build file. This build file can be run with Ant
+          independently of the plugin to perform the same transformation.
+          If you want to make manual changes to this file and still be able
+          to load the original settings, keep a copy of the original file.
+          To run Ant files from within jEdit, download the
+          "Ant Farm" plugin.</para>
+        </listitem>
+        <listitem>
+          <para>Saved settings can be loaded via the "Load saved settings"
+          button, which is next to the "Save settings" button.
+          In the File System Browser dialog select the settings
+          file that you wish to load, then click "Open". The settings
+          from file will be loaded into the GUI. Caution, if you have
+          manually changed the settings file, it may no longer be
+          loadable by the XSLT plugin.</para>
+        </listitem>
+      </itemizedlist>
+    </para>
+    <section id="error-list"><title>Error Reporting</title>
+    
+    <para>Errors are reported via the <emphasis>ErrorList</emphasis> plugin
+    and/or a popup message :</para>
+    <itemizedlist>
+    <listitem><para>
+    any error due to a broken stylesheet will result in an error in the ErrorList
+    dockable and a popup dialog telling you about the error;</para></listitem>
+    <listitem><para>
+    any error while reading the source document will result in an error in the ErrorList
+    dockable and a popup dialog telling you about the error;</para></listitem>
+    <listitem><para>
+    any warning reported by the XSLT processor will only be reported as a warning 
+    in the ErrorList dockable.
+    Be warned that some pretty strong errors (like an <code>xsl:element</code>
+    with an invalid name, thus not created) are not reported;
+    </para></listitem>
+    <listitem><para>
+    any error (<code>error</code> or <code>fatalError</code>) 
+    reported by the XSLT processor will be reported in the ErrorList dockable
+    and in a popup dialog.
+    </para></listitem>
+    </itemizedlist>
+    <para>Processing will be immediately terminated in case of error (even non-fatal),
+    but will continue in case of warnings.</para>
+    </section>
+    
+    <section id="todo-xslt"><title>To Do...</title>
+    <para>
+      The following improvements should eventually be made to XSLT Processor.
+      <itemizedlist>
+        <listitem>
+          <para>Users should be able to edit the XSLT Processor settings (e.g.
+          indent amount) via an XSLT plugin section in global options.
+          Note: The indent amount for the result XML is set to 2 spaces per indent
+          level. Currently this setting can only be changed in the XSLT.props file,
+          which is contained in the XSLT.jar file.</para>
+        </listitem>
+      </itemizedlist>
+    </para>
+    </section>
+    <section id="compile-stylesheet">
+    <title>Compiling a stylesheet</title>
+    
+    <para>I find it useful to have the stylesheet compiled even if don't run the
+    stylesheet in jEdit. This allows for basic tests to be performed 
+    on the stylesheet and catches many stupid errors that I would only have seen
+    when running it. I found the Saxon 9.2 XSLT processor to report the most errors;
+    this may be related to the precisions in the XSLT 2.0 specification, but I heard that Michael Kay
+    put a good deal of effort in outputting explicit error messages.
+    </para>
+    
+    <para>Anyway, you can invoke the action <code>xslt.compile</code> to compile
+    the stylesheet in current buffer.You can also check an option in the XSLT
+    option pane (see <xref linkend="options"/>) to always compile XSLT stylesheets
+    on save.</para>
+    </section>
+
+    <section id="three-way-mode"><title>Three-way mode</title>
+    
+    <para>The three-way mode is intended to provide a comfortable workbench for
+    experimenting with XSLT.</para>
+    
+    <para>To activate this mode, you can use the menu
+    <guimenu>Plugins</guimenu> > <guisubmenu>XSLT</guisubmenu> > <guimenuitem>3-Way mode</guimenuitem>,
+    or the action <code>xslt.three-way-mode</code>.
+    This will split the current view in three, open three buffers and insert a template
+    stylesheet in the second one (version 1.0 or 2.0, depending upon the XSLT processor you selected
+    in the <guimenuitem>Plugin Options</guimenuitem>). It will also open the XSLT processor dockable,
+    (which I usually dock at left) and enable its 3-way mode.
+    </para>
+    
+    <para>In the 3-way mode the input,stylesheets and result settings
+    of the XSLT Processor dockable are disabled.
+    You may only add parameters and run the transformation.
+    To use this mode of the XSLT Processor, you need a view split into three with :
+    <itemizedlist>
+    <listitem><para>a source XML document, in <guilabel>xml</guilabel> mode;</para></listitem>
+    <listitem><para>a stylesheet, in <guilabel>xsl</guilabel> mode;</para></listitem>
+    <listitem><para>a result buffer, in any mode.</para></listitem>
+    </itemizedlist>
+    </para>
+    <para>As long as an xml buffer and an xslt buffer can be found, the buffers can be in any order.
+    However, if the edit modes don't match exactly, the buffers will used in the order listed above,
+    regardless of their mode.
+    If 2 buffers are in xml mode, the first one will be assumed to be the source.
+    If 2 buffers are in xsl mode, the canonical ordering will be used.</para>
+    
+    <para>The result of the transformation will be inserted in the result buffer
+    if the result buffer is not read-only, or in a new untitled buffer otherwise.
+    Any previous content of the result buffer will be available via the <guilabel>Undo</guilabel>
+    action.</para>
+    
+    <note><para>This feature is still experimental; feedback on its usability would
+    be appreciated.</para></note>
+    </section>
+  </chapter>
+
+  <chapter id="xpath-tool">
+    <title>XPath Tool</title>
+    <para>
+      The XPath Tool allows you to evaluate XPath expressions on XML in
+      the current buffer. <ulink url="http://www.w3.org/TR/xpath">XPath</ulink>
+      is a W3C-specified expression language used to access or
+      refer to parts of an XML document.
+      Depending on the XPath engine you choose, you can also use
+      <ulink url="http://www.w3.org/TR/xpath20/">XPath 2.0</ulink>.
+    </para>
+    <para>
+      To use the XPath Tool:
+      <itemizedlist>
+        <listitem>
+          <para>Open a file containing well-formed XML.</para>
+        </listitem>
+        <listitem>
+          <para>From the Plugins menu, select "XSLT->XPath Tool" to dock the tool.</para>
+        </listitem>
+        <listitem>
+          <para>Enter your XPath expression into the upper text area
+          labeled "XPath Expression". You can navigate a history of
+          recently executed XPath expressions in the XPath expression text area
+          using the page up and page down keys.</para>
+        </listitem>
+        <listitem>
+          <para>If your XPath expression uses namespace qualified names,
+          you may have to add namespace bindings in the <guilabel>Namespace Context</guilabel>
+          table. You may bind the same namespace to multiple prefixes, but one prefix
+          may only refer to one namespace.
+          </para>
+          <para>To grab the namespaces used in the source document, click on the
+          button next to <guibutton>Evaluate XPath</guibutton> in the middle of the 
+          XPath tool dockable.</para>
+        </listitem>
+        <listitem>
+          <para>Use the "Evaluate XPath" button, to evalute the
+          the expression against the current buffer. The result information
+          displayed includes:
+            <itemizedlist>
+              <listitem>
+                <para>the result data type;</para>
+              </listitem>
+              <listitem>
+                <para>if the result type is not node-set, the result value;</para>
+              </listitem>
+              <listitem>
+                <para>if the result type is node-set, the node-set string value,
+                a table summary of the nodes in the set and the nodes
+                displayed as XML fragments.</para>
+              </listitem>
+            </itemizedlist>
+          </para>
+        </listitem>
+        <listitem>
+          <para>You can invoke the "Evalute XPath" action via a
+          keyboard shortcut or toolbar icon; this can be configured from
+          "Utilities->Global Options->jEdit->Shortcuts" or
+          "Utilities->Global Options->jEdit->Tool Bar" respectively.
+          The XPath Tool will have to be docked in order for this binding
+          to work.</para>
+        </listitem>
+      </itemizedlist>
+    </para>
+    <para>
+      The following improvements should eventually be made to XPath Tool.
+      <itemizedlist>
+        <listitem>
+          <para>
+          When the result of an evaluation is a Node set, it would be nice
+          to have a "Hyper Search" type of result.  In other words, each
+          node in the list could be clicked to highlight the relevant portion
+          of the XML doc in the current buffer.
+        </para>
+        </listitem>
+      </itemizedlist>
+    </para>
+    <section id="extending-xpath"><title>Extending the XPath tool</title>
+	  <para>The XPath engine is not as configurable as the XSLT processor, since 
+	  the java XPath API (<code>javax.xml.xpath.*</code>) doesn't provide enough
+	  services for the XPath tool. So I had to tap into the native APIs of each engine.
+	  </para>
+	  
+	  <para>If you want to use another XPath engine, you have to implement <code>xslt.XPathAdapter</code>,
+	  package it as a jar, drop it in <filename>"JEDIT_SETTINGS"/jars</filename> 
+	  and set the <code>xpath.adapter</code> property to the name of your class.
+	  </para>
+    </section>
+  </chapter>
+
+  <chapter id="options"><title>XSLT Plugin option pane</title>
+  
+  <para>You can choose which XSLT processor to use by selecting one option
+  in the combo-box in the <guimenuitem>Plugins</guimenuitem> / <guimenuitem>XSLT</guimenuitem>
+  section of the <guimenu>Plugins</guimenu> > <guimenuitem>Plugin Options</guimenuitem>
+  dialog.</para>
+  
+  <itemizedlist>
+  <listitem><para>only the Xalan XSLT processor is bundled for the moment. It's the default
+  choice and also the platform's default (maybe in an outdated version);
+  it is compatible with XSLT version 1.0 (<uri>http://www.w3.org/TR/xslt</uri>);</para></listitem>
+  
+  <listitem><para>you can also use the 6.5.5 version of the SAXON XSLT Processor from Michael Kay.
+  This version of Saxon is XSLT 1.0 compliant.
+  </para>
+  <para>You may obtain Saxon 6.5.5 from Sourceforge
+  (<uri>https://sourceforge.net/projects/saxon/files/</uri>) or from Saxonica (<uri>http://www.saxonica.com</uri>).
+  It is released under the Mozilla Public License Version 1.0 or under a commercial license (again, see <uri>http://www.saxonica.com</uri>).
+  </para>
+  </listitem>
+  
+  <listitem>
+  <para>Last but not least, you can use version 9.x of the SAXON XSLT Processor from Michael Kay,
+  which is an XSLT 2.0 processor. </para>
+  <para>It is packaged for jEdit as the <emphasis>SaxonPlugin</emphasis>.
+  Once you have installed it via the <guimenuitem>Plugin Manager</guimenuitem>,
+  simply choose it in the <guilabel>XSLT processor</guilabel> combo box.</para>
+  </listitem>
+  </itemizedlist>
+  
+  <para>To use a processor which is not distributed with the plugin, simply drop
+  the jar files in the <filename>jars</filename> directory within the settings
+  directory (which you can browse via the <guimenu>Utilities</guimenu> > <guisubmenu>Settings Directory</guisubmenu>).
+  You will then have to enter the class name of its implementation of 
+  <code>javax.xml.transform.TransformerFactory</code>. After a restart of jEdit,
+  you will be using the selected XSLT processor.
+  </para>
+  
+  <para>You can also choose an XPath engine to use by selecting one option
+  in the <guilabel>XPath engine</guilabel> combo-box in the <guimenuitem>Plugins</guimenuitem> / <guimenuitem>XSLT</guimenuitem>
+  section of the <guimenu>Plugins</guimenu> > <guimenuitem>Plugin Options</guimenuitem>
+  dialog.</para>
+  
+  <itemizedlist>
+  <listitem><para>for XPath 1.0, use the Xalan engine;</para></listitem>
+  <listitem><para>for XPath 2.0, use the Saxon 9 engine;</para></listitem>
+  <listitem><para>to use another engine, see <xref linkend="extending-xpath"/>;</para></listitem>
+  </itemizedlist>
+  
+  <para>You can also choose to run a compilation of the stylesheets on save
+  (see <xref linkend="compile-stylesheet"/>). I find it helpful to perform some checks
+   on the stylesheet.
+  </para>
+  </chapter>
+  
+  <chapter id="contributors">
+    <title>Contributors</title>
+
+    <para>Thanks to Carlos Quiroz <email>carlos.quiroz@welho.com</email>
+      for the original, unreleased version of the XSLT plugin.</para>
+
+    <para>Greg Merrill <email>greghmerrill@yahoo.com</email>
+      created the initial release of the plugin, version 0.1.</para>
+
+    <para>Robert McKinnon <email>robmckinnon@users.sourceforge.net</email>
+      has produced versions 0.2 - 0.6.</para>
+
+    <para>Wim Le Page <email>wimlepage@users.sourceforge.net</email>
+      has worked on version 0.6.0 </para>
+
+    <para>Pieter Wellens <email>pitje@users.sourceforge.net</email>
+      has worked on version 0.6.0 </para>
+
+    <para>Eric Le Lay <email>kerik-sf@users.sourceforge.net</email>
+      has worked on version 0.7.0 </para>
+
+    <para>Thanks to Lari Hotari <email>lhotari@sourceforge.net</email>
+      for the ErrorList related code.</para>
+  </chapter>
+
+
+  <chapter id="feedback">
+    <title>Feedback</title>
+
+    <para>The preferred way to send bug reports is to use the
+      <ulink url="http://sourceforge.net/tracker/?atid=100588&amp;group_id=588&amp;func=browse">Sourceforge Bug Tracker</ulink>.
+    </para>
+
+    <para>Feature requests should be posted to the jEdit users mailing-list
+      <email>jedit-users@lists.sourceforge.net</email>.
+    </para>
+
+    <para>Development questions should be posted to the jEdit development mailing-list
+      <email>jedit-devel@lists.sourceforge.net</email>.
+    </para>
+  </chapter>
+
+
+  <appendix id="changelog">
+    <title>Change log</title>
+    <para>
+      <emphasis role="bold">Changes from 0.7.0 to 0.7.1</emphasis>
+      <itemizedlist>
+        <listitem><para>fix #2975301 - XSLT 0.7 is broken (missing icons)</para></listitem>
+      </itemizedlist>
+    </para>
+    <para>
+      <emphasis role="bold">Changes from 0.6.0 to 0.7.0</emphasis>
+      <itemizedlist>
+        <listitem><para>0.7 requires >=jEdit 4.3, >=XML plugin 2.6.1, >=ErrorList 1.8</para></listitem>
+        <listitem><para>compatible with the XML Plugin version 2.5
+        (see plugin bug #2852413 :  "XSLT plugin : XPath depends xml.CatalogManager").</para></listitem>
+        <listitem><para>Updated to Xalan 2.7.1.</para></listitem>
+        <listitem><para>Transformation errors go to ErrorList (Lari Hotari)
+        - see plugin patch #1610606).</para></listitem>
+        <listitem><para>Configurable XSLT processor.</para></listitem>
+        <listitem><para>New action to compile stylesheet (and compile on save).</para></listitem>
+        <listitem><para>Transformation result is written to a new Untitled buffer
+        only if the <guilabel>New Untitled Buffer</guilabel> radio button is checked (see bug #1392803).
+        This Untitled buffer is no more written to disk (no #Untitled-X# scattered in your source
+        directories).</para></listitem>
+        <listitem><para>option to use current buffer as stylesheet</para></listitem>
+        <listitem><para>use the jEdit icon set when possible</para></listitem>
+        <listitem><para>Can't open files for editing from the XSLT Processor window,
+          using double click : I use triple click all the time to select the entire text.</para></listitem>
+        <listitem><para>New <emphasis>3-way mode</emphasis>, enabling an easy configuration
+        of input,stylesheet and output, as well as a 3 buffers layout.</para></listitem>
+        <listitem><para>XPath tool is namespace aware ; button to grab namespace declarations
+        from source document.</para></listitem>
+        <listitem><para>XPath tool is XPath 2.0 capable : install SaxonPlugin and
+        choose it in the Option pane.</para></listitem>
+      </itemizedlist>
+    </para>
+    <para>
+      <emphasis role="bold">Changes from 0.5.1 to 0.6.0</emphasis>
+      <itemizedlist>
+        <listitem><para>0.6 requires >=jEdit 4.2 and >=XML plugin 0.13</para></listitem>
+        <listitem><para>Ported plugin to jEdit 4.2 API.</para></listitem>
+        <listitem>
+          <para>Unified the XSLT and XPath input options.</para>
+        </listitem>
+        <listitem>
+          <para>When the result file input contains an invalid file (e.g. blank), the result will be
+          written to a nameless buffer that can be saved under a name of choice.</para>
+        </listitem>
+        <listitem><para>Changed XSLT panel horizontal layout for top and bottom docking.</para></listitem>
+      </itemizedlist>
+    </para>
+    <para>
+      <emphasis role="bold">Changes from 0.4.1 to 0.5.1</emphasis>
+      <itemizedlist>
+        <listitem><para>0.5.1 requires >=jEdit 4.1 and >=XML plugin 0.11</para></listitem>
+        <listitem>
+          <para>Known issue: cannot perform transformations running under JDK 1.4.*
+          on Windows after normal plugin install.</para>
+        </listitem>
+        <listitem>
+          <para>The XML indent functionality that formerly was included in
+            the XSLT plugin has been moved into the separate XML Indenter plugin.</para>
+        </listitem>
+        <listitem>
+          <para>A history of recent executed XPath expressions can be navigated in
+          the XPath expression text area using page up and page down keys.</para>
+        </listitem>
+        <listitem>
+          <para>Can open files for editing from the XSLT Processor window,
+          using enter key, or double click, or right click menu select on file name.</para>
+        </listitem>
+        <listitem>
+           <para>Transformation result is written directly to file. The file is opened
+           in a new buffer, or the file is reloaded if already open in a buffer. If
+           the file is already open then the result buffer will not gain focus after transformation is
+           completed, this is helpful for when using split panes while editing. Perhaps
+           whether the result buffer gets the focus should be made configurable in
+           a future release.</para>
+        </listitem>
+        <listitem>
+          <para>Cleaned up XSLT.props file and simplified property names.
+          A consequence of this change is that key shortcuts for the plugin
+          will have to be configured again for previous users.</para>
+        </listitem>
+      </itemizedlist>
+    </para>
+    <para>
+      <emphasis role="bold">Changes from 0.3.2 to 0.4.1</emphasis>
+      <itemizedlist>
+        <listitem>
+          <para>Enforce user definition of source, stylesheet and result settings.
+          If a setting is missing it is neither possible to
+          run transformation nor save settings to file.
+          A dialog will tell the user what setting is missing.</para>
+        </listitem>
+        <listitem>
+          <para>Fixed bug running XPath on files containing CDATA.</para>
+        </listitem>
+        <listitem>
+          <para>Fixed bug that happened when
+          running transformation with no stylesheet
+          parameters defined.</para>
+        </listitem>
+        <listitem>
+          <para>Stylesheet settings can now be saved and loaded. The settings are
+          saved to file in an Ant build format. These files can be run with Ant
+          independently of the XSLT plugin.</para>
+        </listitem>
+        <listitem>
+          <para>Stylesheet parameters now definable at the GUI.</para>
+        </listitem>
+        <listitem>
+          <para>Improved DTD handling, now uses same entity resolution mechanism as the
+          XML plugin.</para>
+        </listitem>
+        <listitem>
+          <para>Fixed bug running XPath on remote files.</para>
+        </listitem>
+      </itemizedlist>
+    </para>
+    <para>
+      <emphasis role="bold">Changes from 0.2 to 0.3.2</emphasis>
+      <itemizedlist>
+        <listitem>
+          <para>Fixed transformation bug due to missing property in the XSLT.props file.</para>
+        </listitem>
+        <listitem>
+          <para>Fixed some indent problems related to handling tab characters.</para>
+        </listitem>
+        <listitem>
+          <para>Indent XML feature now uses the buffer options to determine the
+            indent amount and whether to indent using tabs. Indent action is now
+            performed as a compound edit, therefore only requiring one undo command
+            to undo.</para>
+        </listitem>
+        <listitem>
+          <para>Improved display of XPath expression results, including
+          result data type, result value or node-set string value, and for
+          node-set results a table summary of nodes in the set
+          and the nodes displayed as XML fragments.</para>
+        </listitem>
+        <listitem>
+          <para>New implementation of Indent XML feature that does not
+          replace entity values in the XML.</para>
+        </listitem>
+        <listitem>
+          <para>Fix for problems displaying new lines characters under Windows.</para>
+        </listitem>
+        <listitem>
+          <para>New "4.1" theme icons on buttons.</para>
+        </listitem>
+      </itemizedlist>
+    </para>
+    <para>
+      <emphasis role="bold">Changes from 0.1 to 0.2</emphasis>
+      <itemizedlist>
+        <listitem>
+          <para>Improved XSLT functionality, including facility to auto-save
+          result buffer to a named file, and an Indent XML Buffer action.</para>
+        </listitem>
+      </itemizedlist>
+    </para>
+  </appendix>
+
+</book>
+

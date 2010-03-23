@@ -1,0 +1,278 @@
+plugin.xslt.XSLTPlugin.activate=xslt.compile-on-save
+plugin.xslt.XSLTPlugin.name=XSLT
+plugin.xslt.XSLTPlugin.author=Robert McKinnon, Greg Merrill, Wim Le Page, Pieter Wellens, Eric Le Lay
+plugin.xslt.XSLTPlugin.version=0.7.1
+plugin.xslt.XSLTPlugin.docs=index.html
+plugin.xslt.XSLTPlugin.jars=xalan.jar serializer.jar
+plugin.xslt.XSLTPlugin.depend.0=jdk 1.5
+plugin.xslt.XSLTPlugin.depend.1=jedit 04.03.99.01
+plugin.xslt.XSLTPlugin.depend.2=plugin xml.XmlPlugin 2.6.1
+plugin.xslt.XSLTPlugin.depend.3=plugin errorlist.ErrorListPlugin 1.9
+plugin.xslt.XSLTPlugin.depend.4=optional plugin saxon.SaxonPlugin 9.2.0.6
+plugin.xslt.XSLTPlugin.description=The XSLT plugin provides facilities to \
+ transform (XSLT Processor) and query (XPath Tool) XML documents from within jEdit.
+
+# XSLT system properties
+javax.xml.transform.TransformerFactory=org.apache.xalan.processor.TransformerFactoryImpl
+javax.xml.parsers.SAXParserFactory=org.apache.xerces.jaxp.SAXParserFactoryImpl
+org.xml.sax.driver=org.apache.xerces.parsers.SAXParser
+
+# XSLT engines :
+xslt.factory.class.0=org.apache.xalan.processor.TransformerFactoryImpl
+xslt.factory.label.0=XSLT 1.0 - Xalan 2.7.1 (org.apache.xalan.processor.TransformerFactoryImpl)
+xslt.factory.class.1=com.icl.saxon.TransformerFactoryImpl
+xslt.factory.label.1=XSLT 1.0 - Saxon 6.5.5 (com.icl.saxon.TransformerFactoryImpl)
+xslt.factory.class.2=net.sf.saxon.TransformerFactoryImpl
+xslt.factory.label.2=XSLT 2.0 - Saxon 9.2 (net.sf.saxon.TransformerFactoryImpl)
+
+# defaults to Xalan
+xslt.factory=org.apache.xalan.processor.TransformerFactoryImpl
+
+# XPath adapters :
+xpath.adapter.class.0=xslt.XalanXPathAdapter
+xpath.adapter.label.0=Xalan (XPath 1.0)
+xpath.adapter.class.1=xslt.Saxon9XPathAdapter
+xpath.adapter.label.1=Saxon 9.2 (XPath 2.0) - requires SaxonPlugin
+
+xpath.adapter=xslt.XalanXPathAdapter
+
+# Option panes
+plugin.xslt.XSLTPlugin.option-pane=xslt.general
+
+# {{ option pane
+options.xslt.general.label=XSLT
+options.xslt.general.code=new xslt.XSLTOptionPane()
+options.xslt.factory.label=XSLT processor : 
+options.xslt.factory.tooltip=XSLT engine to use for the XSLT Tool ; you can use another one (see help)
+options.xslt.factory.error-not-found=This class can''t be found by jEdit.\n\
+  You may obtain the Saxon XSLT processor for XSLT 2.0 via the SaxonPlugin,\n\
+available in the plugin manager.\n\
+  Other processors have to be installed manually. Drop the jar file in :\n\
+    {0}\n\
+  and restart jEdit (see also the XSLT Plugin manual).
+options.xslt.factory.error-class-cast=This class doesn't implement javax.xml.transform.sax.SAXTransformerFactory.\n\
+  You may have to double check the documentation of your XSLT processor.
+
+options.xpath.adapter.label=XPath engine : 
+options.xpath.adapter.tooltip=XPath engine for the XPath Tool. If you choose Saxon, ensure that SaxonPlugin is installed.
+
+options.xpath.adapter.error-not-found=This class can''t be found by jEdit.\n\
+  You may obtain the Saxon XSLT processor for XSLT 2.0 via the SaxonPlugin,\n\
+available in the plugin manager.\n\
+  Other processors have to be installed manually. Drop the jar file in :\n\
+    {0}\n\
+  and restart jEdit (see also the XSLT Plugin manual).
+options.xpath.adapter.error-class-cast=This class doesn't implement xslt.XPathAdapter.\n\
+ XPathAdapter is an interface in the XSLT plugin (see also the XSLT Plugin manual).
+
+options.xslt.compile-on-save.label=compile stylesheets on save
+options.xslt.compile-on-save.tooltip=this will hopefuly help you catch errors earlier, depending on the XSLT processor
+# }}}
+
+# Dockables
+xslt-processor.label=XSLT Processor
+xpath-tool.label=XPath 1.0 Tool
+
+
+# Action labels
+xslt.transform.label=Transform XML
+xslt.settings.load.label=Load XSLT settings
+xslt.compile.label=Compile this Stylesheet
+xslt.settings.save.label=Save XSLT settings
+xslt.three-way-mode.label=Activate 3-Way Mode
+xpath.evaluate.label=Evaluate XPath
+
+
+# Plugin menu
+plugin.xslt.XSLTPlugin.menu=\
+  xslt.compile \
+  xslt.transform \
+  xslt.settings.load \
+  xslt.settings.save \
+  xslt-processor-toggle \
+  xslt.three-way-mode \
+  - \
+  xpath.evaluate \
+  xpath-tool-toggle
+
+
+# XSLT processor window
+xslt-processor.title=XSLT Processor
+xslt.message.dock-first=You must dock the XSLT Processor before you can perform this action.
+xslt.message.error={0}\nReason: "{1}"\n\nA stacktrace has been written to the Activity Log.
+
+xslt.old-jar.message=The XSLT Plugin is running with an old version of Xalan-Java,\nprobably the 2.2D11 version that is packaged with Sun JDK 1.4.\n\nIf you experience any problems you can try moving to the more recent version\nof Xalan-Java that comes with the XSLT plugin. To use the more recent Xalan-Java:\n\n 1) Go to the directory where the XML and XSLT plugin jars are stored, either\n      your user plugin directory ({0}), or\n      your system plugin directory ({1})\n\n 2) In the plugin directory create a new directory named endorsed, i.e.\n      {2}, or\n      {3}\n\n 3) Move the following jars from the plugin directory into the endorsed directory:\n      xalan.jar, xercesImpl.jar, xmlParserAPIs.jar\n\n 4) In the plugin directory delete the jar named xml-apis.jar, if it is present.\n\n 5) When running jEdit, pass java the system property java.endorsed.dirs\n     set to the endorsed directory, for example:\n      java -Djava.endorsed.dirs="{2}" -jar jedit or\n      java -Djava.endorsed.dirs="{3}" -jar jedit\n\nThis information is also available in the XSLT plugin help documentation:\n     Help -> jEdit Help -> Plugins -> XSLT -> Issues running on JDK 1.4
+
+xslt.file.open.name=Open file
+xslt.file.open.short-desc=Open file
+xslt.file.open.small-icon=22x22/actions/document-open.png
+
+xslt.source.label=Source XML:
+xslt.source.buffer=Current buffer
+xslt.source.file=File
+
+xslt.source.radioselect.name=radioButtons
+xslt.source.radioselect.short-desc=Select source XML
+
+xslt.source.browse.prompt=Please select a source document
+
+xslt.source.select.name=Select source
+xslt.source.select.short-desc=Select source XML
+xslt.source.select.small-icon=22x22/actions/document-open.png
+
+xslt.stylesheets.label=Stylesheets:
+xslt.stylesheets.buffer=Current buffer
+xslt.stylesheets.file=File(s)
+
+xslt.stylesheets.radioselect.name=radioButtons
+xslt.stylesheets.radioselect.short-desc=Select XSLT
+
+xslt.stylesheets.add.name=Add
+xslt.stylesheets.add.short-desc=Add stylesheet
+xslt.stylesheets.add.small-icon=22x22/actions/list-add.png
+
+xslt.stylesheets.remove.name=Remove
+xslt.stylesheets.remove.short-desc=Remove stylesheet
+xslt.stylesheets.remove.small-icon=22x22/actions/list-remove.png
+
+xslt.stylesheets.up.name=Move up
+xslt.stylesheets.up.short-desc=Move stylesheet up
+xslt.stylesheets.up.small-icon=22x22/actions/go-up.png
+
+xslt.stylesheets.down.name=Move down
+xslt.stylesheets.down.short-desc=Move stylesheet down
+xslt.stylesheets.down.small-icon=22x22/actions/go-down.png
+
+xslt.parameters.label=Stylesheet parameters:
+
+xslt.parameters.add.name=Add parameter
+xslt.parameters.add.short-desc=Add stylesheet parameter
+xslt.parameters.add.small-icon=22x22/actions/list-add.png
+
+xslt.parameters.remove.name=Remove parameter
+xslt.parameters.remove.short-desc=Remove stylesheet parameter
+xslt.parameters.remove.small-icon=22x22/actions/list-remove.png
+
+xslt.parameters.table.name.header=Name
+xslt.parameters.table.value.header=Value
+
+xslt.settings.load.name=Load settings
+xslt.settings.load.short-desc=Load saved settings
+xslt.settings.load.small-icon=22x22/actions/document-open.png
+
+xslt.settings.save.name=Save settings
+xslt.settings.save.short-desc=Save settings (to Ant build file)
+xslt.settings.save.small-icon=22x22/actions/document-save.png
+
+xslt.settings.message.no-source=Cannot save settings because there is no source file defined.
+xslt.settings.message.no-stylesheets=Cannot save settings because there are no stylesheets defined.
+xslt.settings.message.no-result=Cannot save settings because there is no result file defined.
+xslt.settings.file.declaration=\nThis file was autogenerated by jEdit's XSLT plugin.\nDo not edit if you wish to reimport these settings.\nFor more information about jEdit see: http://jedit.org\n
+
+xslt.transform.name=Transform
+xslt.transform.short-desc=Transform XML
+xslt.transform.small-icon=/xslt/icons/Transform.png
+
+xslt.transform.message.three-edit-panes=You must have the source XML, the stylesheet, and the result buffer open to use 3-way mode.
+xslt.transform.message.no-source=Specify a source XML file in the XSLT Processor panel.
+xslt.transform.message.no-stylesheets=Specify one or more stylesheet files in the XSLT Processor panel.
+xslt.transform.message.no-result=Specify a result file in the XSLT Processor panel.
+xslt.transform.message.failure=Transformation failed to complete.
+xslt.transform.message.success=Transform completed, time taken {0}sec
+xslt.transform.indent-amount=2
+
+xslt.result.label=Result Document:
+xslt.result.browse.prompt=Please name the result document
+
+xslt.result.buffer=New Untitled Buffer
+xslt.result.file=File
+
+xslt.result.radioselect.name=radioButtons
+xslt.result.radioselect.short-desc=Select result Document
+
+xslt.result.select.name=Select result
+xslt.result.select.short-desc=Select Result Document
+xslt.result.select.small-icon=22x22/actions/document-open.png
+
+
+# open the results by default
+xslt.open-result=true
+xslt.result.open-result.tooltip=Open the output document in jEdit 
+xslt.result.open-result.label=Open result
+
+xslt.result.name.name=Name result
+xslt.result.name.short-desc=Name result file
+xslt.result.name.small-icon=22x22/actions/document-new.png
+
+# three-way is false by default
+xslt.three-way=false
+xslt.three-way.tooltip=use the 3 edit-panes as input,stylesheet and result 
+xslt.three-way.label=Three-Way mode
+
+
+# XPath tool window
+xpath-tool.title=XPath Tool
+xpath.message.dock-first=You must dock the XPath Tool before you can perform this action.
+
+xpath.expression.label=XPath expression:
+xpath.expression.history-length=10
+
+xpath.ns.label=Namespace Context:
+
+xpath.ns.add.name=Add namespace-prefix binding
+xpath.ns.add.short-desc=Add a namespace-prefix binding to use in the XPath expression
+xpath.ns.add.small-icon=22x22/actions/list-add.png
+
+xpath.ns.remove.name=Remove namespace-prefix binding
+xpath.ns.remove.short-desc=Remove a namespace-prefix binding
+xpath.ns.remove.small-icon=22x22/actions/list-remove.png
+
+xpath.ns.table.name.header=Prefix
+xpath.ns.table.value.header=Namespace
+
+xpath.ns.grab.name=Grab namespaces
+xpath.ns.grab.short-desc=Collect all namespace bindings in the source document
+xpath.ns.grab.small-icon=22x22/actions/document-reload2.png
+
+xpath.ns.grab.error-no-source=You must select a source document before grabbing namespace bindings
+
+xpath.evaluate.button.tooltip=Evaluate XPath
+xpath.evaluate.button.icon=/xslt/icons/Evaluate.png
+
+xpath.source.label=Select XML Input:
+xpath.source.buffer=Buffer
+xpath.source.file=File
+        
+xpath.source.select.name=Select source
+xpath.source.select.short-desc=Select source XML
+xpath.source.select.small-icon=22x22/actions/document-open.png
+
+xpath.source.browse.prompt=Please select a source document
+
+xpath.source.radioselect.name=radioButtons
+xpath.source.radioselect.short-desc=Select source XML
+
+xpath.error.no-source.message=You must select a source Document first !
+xpath.error.no-source.title=Missing input
+
+
+xpath.result.data-type.label=Data type of result:
+xpath.result.data-type.node-set=node-set of size {0}
+xpath.result.data-type.not-node-set={0}
+
+xpath.result.string-value.label=Node-set string value:
+xpath.result.value.label=Result value:
+
+xpath.result.node-set-summary.label=Node-set summary:
+xpath.result.node.type=Node type
+xpath.result.node.name=Node name
+xpath.result.node.dom-value=DOM value
+
+xpath.result.xml-fragments.label=Result as XML fragments:
+
+xpath.result.message.unkown-problem=An error occurred during parsing or evaluation.
+xpath.result.message.buffer-unparseable=Couldn't parse buffer.
+xpath.result.message.expression-unevaluateable=Couldn't evaluate expression.
+xpath.result.message.large-xml-fragment=The XML fragments string is longer than {0} characters, stopped printing the string to avoid OutOfMemoryException.
+
+xslt.compile.finished=Stylesheet compilation finished - {0} error(s) 

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<ACTIONS>
+  <ACTION NAME="xslt.transform">
+    <CODE>xslt.XsltActions.transformXml(view);</CODE>
+  </ACTION>
+  <ACTION NAME="xslt.settings.load">
+    <CODE>xslt.XsltActions.loadSettings(view);</CODE>
+  </ACTION>
+  <ACTION NAME="xslt.settings.save">
+    <CODE>xslt.XsltActions.saveSettings(view);</CODE>
+  </ACTION>
+  <ACTION NAME="xpath.evaluate">
+    <CODE>xslt.XsltActions.evaluateXpath(view);</CODE>
+  </ACTION>
+  <ACTION NAME="xslt.compile">
+    <CODE>xslt.XsltActions.compileStylesheet(view,buffer);</CODE>
+  </ACTION>
+  <ACTION NAME="xslt.three-way-mode">
+    <CODE>xslt.XsltActions.initThreeWayMode(view);</CODE>
+  </ACTION>
+</ACTIONS>
