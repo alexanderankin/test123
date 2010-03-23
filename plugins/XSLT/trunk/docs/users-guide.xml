@@ -454,6 +454,12 @@
   <appendix id="changelog">
     <title>Change log</title>
     <para>
+      <emphasis role="bold">Changes from 0.7.0 to 0.7.1</emphasis>
+      <itemizedlist>
+        <listitem><para>fix #2975301 - XSLT 0.7 is broken (missing icons)</para></listitem>
+      </itemizedlist>
+    </para>
+    <para>
       <emphasis role="bold">Changes from 0.6.0 to 0.7.0</emphasis>
       <itemizedlist>
         <listitem><para>0.7 requires >=jEdit 4.3, >=XML plugin 2.6.1, >=ErrorList 1.8</para></listitem>
