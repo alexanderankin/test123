@@ -72,5 +72,39 @@
 			<fileset dir="lib" includes="*.jar" />
 		</copy>
 	</target>
+	
+	<target name="build"
+          depends="build.prepare,compile"
+          description="Builds the plugin JAR file (no docs)">
+
+        <mkdir dir="${build.classes}" />
+        <mkdir dir="${build.docs}" />
+
+        <!-- don't delete build.extras ! -->
+        <mkdir dir="${build.extras}" />
+        <mkdir dir="${install.dir}" />
+
+        <copy todir="${build.extras}" includeEmptyDirs="false">
+            <fileset dir="${basedir}">
+                <selector refid="extraFiles" />
+            </fileset>
+        </copy>
+
+        <copy todir="${build.extras}" includeEmptyDirs="false">
+            <fileset dir="${basedir}">
+                <selector refid="packageFiles" />
+            </fileset>
+        </copy>
+
+        <jar jarfile="${install.dir}/${jar.file}">
+            <fileset dir="${build.classes}" />
+            <fileset dir="${build.docs}" />
+            <fileset dir="${build.extras}" />
+        </jar>
+
+        <antcall target="build.post" />
+
+    </target>
+
 </project>
 

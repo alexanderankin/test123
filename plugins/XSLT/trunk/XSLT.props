@@ -1,13 +1,13 @@
 plugin.xslt.XSLTPlugin.activate=xslt.compile-on-save
 plugin.xslt.XSLTPlugin.name=XSLT
 plugin.xslt.XSLTPlugin.author=Robert McKinnon, Greg Merrill, Wim Le Page, Pieter Wellens, Eric Le Lay
-plugin.xslt.XSLTPlugin.version=0.7.0
+plugin.xslt.XSLTPlugin.version=0.7.1
 plugin.xslt.XSLTPlugin.docs=index.html
 plugin.xslt.XSLTPlugin.jars=xalan.jar serializer.jar
 plugin.xslt.XSLTPlugin.depend.0=jdk 1.5
 plugin.xslt.XSLTPlugin.depend.1=jedit 04.03.99.01
 plugin.xslt.XSLTPlugin.depend.2=plugin xml.XmlPlugin 2.6.1
-plugin.xslt.XSLTPlugin.depend.3=plugin errorlist.ErrorListPlugin 1.8
+plugin.xslt.XSLTPlugin.depend.3=plugin errorlist.ErrorListPlugin 1.9
 plugin.xslt.XSLTPlugin.depend.4=optional plugin saxon.SaxonPlugin 9.2.0.6
 plugin.xslt.XSLTPlugin.description=The XSLT plugin provides facilities to \
  transform (XSLT Processor) and query (XPath Tool) XML documents from within jEdit.
