@@ -1,0 +1,16 @@
+# ::mode=properties:: #
+# Basic Plugin Information {{{
+plugin.scripting.engines.clojure.ClojureScriptEnginePlugin.activate=defer
+plugin.scripting.engines.clojure.ClojureScriptEnginePlugin.author=Eric Berry
+plugin.scripting.engines.clojure.ClojureScriptEnginePlugin.description=Provides jEdit with the ability to use the Clojure ScriptEngine provided on http://code.google.com/p/clojure-jsr223.
+plugin.scripting.engines.clojure.ClojureScriptEnginePlugin.docs=docs/ClojureScriptEnginePlugin.html
+plugin.scripting.engines.clojure.ClojureScriptEnginePlugin.longdescription=description.html
+plugin.scripting.engines.clojure.ClojureScriptEnginePlugin.name=ClojureScriptEnginePlugin
+plugin.scripting.engines.clojure.ClojureScriptEnginePlugin.usePluginHome=true
+plugin.scripting.engines.clojure.ClojureScriptEnginePlugin.version=0.1
+# }}} Basic Plugin Information
+
+# Dependencies {{{
+plugin.scripting.engines.clojure.ClojureScriptEnginePlugin.depend.0=jedit 04.03.99.00
+plugin.scripting.engines.clojure.ClojureScriptEnginePlugin.depend.1=jdk 1.5
+# }}} Dependencies
