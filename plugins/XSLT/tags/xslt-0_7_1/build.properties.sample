@@ -1,0 +1,23 @@
+###
+### Build property file for XSLT plugin
+###
+
+### Directory where the jEdit jar is located
+jedit.install.dir=/Applications/jEdit.app/Contents/Resources/Java
+
+### jars directory in jEdit settings
+install.dir=${user.home}/Library/jEdit/jars
+
+### Directory where plugin jars are located
+jedit.plugins.dir=${install.dir}
+
+dist.target=dist.complete
+
+### Directory to deploy the XSLT jar to
+deploy.dir=${jedit.plugins.dir}
+
+### Directory containing the DocBook-XSL stylesheets that are used to generate user guide docs
+docbook-xsl.dir=/opt/local/share/xsl/docbook-xsl
+
+### generate debug information in the class files
+compiler.debug=on
