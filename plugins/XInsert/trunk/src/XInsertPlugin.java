@@ -44,7 +44,7 @@ import java.text.DateFormat;
  * The <code>Plugin</code> implementation for the XInsert window
 **/
 
-public class XInsertPlugin extends EBPlugin {
+public class XInsertPlugin extends EditPlugin {
 
   private static Properties variables;
 
@@ -90,7 +90,6 @@ public class XInsertPlugin extends EBPlugin {
       Log.log(Log.ERROR, XInsertPlugin.class, "Error loading user defined global variables");
       Log.log(Log.ERROR, XInsertPlugin.class, e);
       }
-    addNotify();
     }
 
 /**
@@ -98,7 +97,6 @@ public class XInsertPlugin extends EBPlugin {
   */
   public void stop() {
     File glVars;
-    removeNotify();
     try {
       File gldir = new File(jEdit.getSettingsDirectory(), "xinsert");
       gldir.mkdirs();
@@ -186,29 +184,6 @@ public class XInsertPlugin extends EBPlugin {
     variables.clear();
     }
 
-  /**
-   * Register this object as a receiver for EditBus messages.
-   */
-  
-  public void addNotify() {
-    EditBus.addToBus(this);
-    }
-  
-  /**
-   * Remove this object as a receiver for EditBus messages.
-   */
-  
-  public void removeNotify() {
-    EditBus.removeFromBus(this);
-    }
-  
-  /**
-   * Handle messages received by the jEdit EditBus.
-   * @param msg An EBMessage object sent by the jEdit EditBus, to which 
-   * the Plugin object may wish to respond.
-   */
-  public void handleMessage(EBMessage msg) {
-    }
 
   }
 
