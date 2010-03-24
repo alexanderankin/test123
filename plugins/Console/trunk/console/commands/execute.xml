@@ -7,7 +7,7 @@
 		<CAPTION LABEL="Execute">
 
 		<FILE_ENTRY LABEL="Executable" VARNAME="source"
-			EVAL="n=buffer.getName();if (n.lastIndexOf('.') != -1) { n=n.substring(0, n.lastIndexOf('.')); };buffer.getDirectory()+n" />
+			EVAL="n=buffer.getName();mode=buffer.getMode().getName();if ((mode.equals(&quot;c++&quot;) || mode.equals(&quot;c&quot;)) &amp;&amp; n.lastIndexOf('.') != -1) { n=n.substring(0, n.lastIndexOf('.')); };buffer.getDirectory()+n" />
 		<ENTRY LABEL="Parameters" VARNAME="params" />
 
 		</CAPTION>
