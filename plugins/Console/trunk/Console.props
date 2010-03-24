@@ -431,6 +431,7 @@ commando.no-command.message=Unknown commando: {0}
 
 ### Default compilers and interpreters
 
+mode.batch.commando.run=execute
 mode.java.commando.compile=javac
 mode.java.commando.run=java
 mode.jmk.commando.compile=jmk
@@ -444,5 +445,6 @@ mode.c++.commando.compile=gcc
 mode.c++.commando.run=execute
 mode.python.commando.compile=python
 mode.perl.commando.compile=perl
+mode.shellscript.commando.run=execute
 mode.makefile.commando.compile=make
 
