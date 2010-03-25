@@ -15,8 +15,8 @@
 
 		<CAPTION LABEL="Paths">
 
-		<ENTRY LABEL="Class path" VARNAME="classpath"
-			EVAL="getBufferClassPath(buffer)" />
+		<ENTRY LABEL="Class path" VARNAME="classpath_env"
+			EVAL="jEdit.getProperty(&quot;CLASSPATH&quot;, &quot;&quot;);" />
 		<FILE_ENTRY LABEL="Output directory" VARNAME="outputpath" />
 
 		</CAPTION>
@@ -36,6 +36,10 @@
 	<COMMANDS>
 		<COMMAND SHELL="System" CONFIRM="FALSE">
 			buf = new StringBuffer("jikes +E");
+			
+			jEdit.setProperty("CLASSPATH", classpath_env);
+			setenv("CLASSPATH", classpath_env);
+			classpath = getBufferClassPath(buffer);
 
 			if(!classpath.equals(""))
 			{
