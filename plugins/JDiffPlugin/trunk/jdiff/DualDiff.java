@@ -183,7 +183,7 @@ public class DualDiff implements EBComponent {
             BufferUpdate bu = ( BufferUpdate ) message;
             Buffer b0 = ( Buffer ) textArea0.getBuffer();
             Buffer b1 = ( Buffer ) textArea1.getBuffer();
-            if ( !b0.equals( bu.getBuffer() ) && !b1.equals( bu.getBuffer() ) ) {
+            if ( !b0.equals( bu.getBuffer() ) || !b1.equals( bu.getBuffer() ) ) {
                 // not my buffers
                 return ;
             }
