@@ -3843,11 +3843,16 @@ List<TigerNode> MemberValue():
 
 }
 {
-   list = Annotation()
- |
-   list = MemberValueArrayInitializer()
- |
-   list = ConditionalExpression()
+    try {
+           list = Annotation()
+         |
+           list = MemberValueArrayInitializer()
+         |
+           list = ConditionalExpression()
+    }
+    catch(ParseException e) {
+        error_skipto(SEMICOLON);
+    }
    
    {
         return list;   
