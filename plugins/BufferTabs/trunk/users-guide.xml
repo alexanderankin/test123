@@ -100,6 +100,8 @@
         <para> Requires JDK 1.6, jEdit 4.4.x
           <itemizedlist>
             <listitem><para>Added option to toggle docking areas on double click. When selected, the close on double click option is deselected if it was previously selected. (Eric Berry)</para></listitem>
+            <listitem><para>Fixed tabs updated on Workthread instead of EventQueue. (Matthieu Casanova)</para></listitem>
+            <listitem><para>Updated compatibility for 4.4.x bufferSet api. (Matthieu Casanova)</para></listitem>
           </itemizedlist>
       </para>
    </formalpara>
