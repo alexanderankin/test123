@@ -35,11 +35,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashSet;
@@ -70,6 +67,7 @@ import org.gjt.sp.jedit.bufferset.BufferSetListener;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.ThreadUtilities;
 
 /**
  * A tabbed pane that contains a text area.  The text area's buffer is
@@ -167,13 +165,13 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 	{
 		return jEdit.getBooleanProperty(SORT_BUFFERS);
 	}
-	
+
 	private static void stopBufferSorting()
 	{
 		jEdit.setBooleanProperty(SORT_BUFFERS, false);
 		jEdit.propertiesChanged();
 	}
-	
+
 	/**
 	 * Gets the EditPane this tab set is attached to.
 	 */
@@ -369,19 +367,42 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 	}
 
 
-	private void setTabComponent(int index, boolean set) {
-		try {
-			Method m = getClass().getMethod("setTabComponentAt",
-				new Class[] {int.class, Component.class});
-			if (m != null) {
-				BufferTabComponent tab;
-				if (set)
-					tab = new BufferTabComponent(this);
-				else
-					tab = null;
-				m.invoke(this, index, tab);
+	private void setTabComponent(final int index, final boolean set) {
+		try
+		{
+			final Method m = getClass().getMethod("setTabComponentAt",
+					new Class[] {int.class, Component.class});
+			if (m != null)
+			{
+				Runnable runnable = new Runnable()
+				{
+					public void run()
+					{
+						BufferTabComponent tab;
+						if (set)
+							tab = new BufferTabComponent(BufferTabs.this);
+						else
+							tab = null;
+						try
+						{
+							m.invoke(BufferTabs.this, index, tab);
+						}
+						catch (IllegalAccessException e)
+						{
+							Log.log(Log.ERROR, this, e);
+						}
+						catch (InvocationTargetException e)
+						{
+							Log.log(Log.ERROR, this, e);
+						}
+					}
+				};
+				ThreadUtilities.runInDispatchThread(runnable);
 			}
-		} catch (Exception e) {
+		}
+		catch (NoSuchMethodException e)
+		{
+			Log.log(Log.ERROR, this, e);
 		}
 	}
 
@@ -460,30 +481,6 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 			}
 		}
 	}
-
-//	private void setBufferSet(BufferSet bufferSet)
-//	{
-//		if (bufferSet != this.bufferSet)
-//		{
-//			changeHandler.setEnabled(false);
-//			BufferSet oldBufferSet = this.bufferSet;
-//			if (oldBufferSet != null)
-//			{
-//				knownBuffers.clear();
-//				for (int i = getTabCount();i>0;i--)
-//				{
-//					removeTabAt(0);
-//				}
-//			}
-//			this.bufferSet = bufferSet;
-//			changeHandler.setEnabled(true);
-//			bufferSet.getAllBuffers(this);
-//			if (oldBufferSet != null)
-//				oldBufferSet.removeBufferSetListener(this);
-//			bufferSet.addBufferSetListener(this);
-//		}
-//	}
-
 
 	private class ChangeHandler implements ChangeListener
 	{
@@ -751,17 +748,17 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 			"buffertabs.reorderBuffersDisabledDialog.geometry";
 		private JRadioButton disableSorting;
 		private JRadioButton keepSorting;
-		
+
 		ReorderBuffersDisabledDialog(Frame frame) {
 			super(frame, jEdit.getProperty(
 				"buffertabs.reorderBuffersDisabled.label"), true);
 			addWindowListener(new java.awt.event.WindowAdapter() {
 				public void windowClosing(java.awt.event.WindowEvent evt) {
-					saveGeometry();	
+					saveGeometry();
 				}
 			});
 			setLayout(new GridBagLayout());
-			
+
 			GridBagConstraints c = new GridBagConstraints();
 			c.anchor = GridBagConstraints.WEST;
 			c.fill = GridBagConstraints.HORIZONTAL;
@@ -785,7 +782,7 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 			ButtonGroup options = new ButtonGroup();
 			options.add(disableSorting);
 			options.add(keepSorting);
-			
+
 			JButton close = new JButton("Close");
 			close.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
@@ -806,9 +803,9 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 		}
 		private void saveGeometry() {
 			GUIUtilities.saveGeometry(this, GEOMETRY);
-		} 
+		}
 	}
-	
+
 	/**
 	 * An inner class used to handle a popup menu when right-clicking on the
 	 * tab pane. The actions currently apply to the frontmost buffer, which is
@@ -936,9 +933,9 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 
 	}
 
-	class MouseMotionHandler implements MouseMotionListener
+	class MouseMotionHandler extends MouseMotionAdapter
 	{
-
+		@Override
 		public void mouseDragged(MouseEvent e)
 		{
 			if (moving != -1)
@@ -950,10 +947,6 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 			{
 				setCursor(Cursor.getDefaultCursor());
 			}
-		}
-
-		public void mouseMoved(MouseEvent e)
-		{
 		}
 	}
 }
