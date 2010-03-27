@@ -106,7 +106,7 @@ public class BeautyPlugin extends EditPlugin {
 
         // read the properties file into a Properties
         try {
-            Reader reader = new BufferedReader( new FileReader( modeFile ) );
+            InputStream reader = new BufferedInputStream( new FileInputStream( modeFile ) );
             Properties props = new Properties();
             props.load( reader );
             reader.close();
@@ -124,6 +124,7 @@ public class BeautyPlugin extends EditPlugin {
      * file name, with .properties appended.
      * @param modeProperties The properties to save.
      */
+    @SuppressWarnings("deprecation")
     public static void saveProperties( String modeName, Properties modeProperties ) {
         if ( modeName == null || modeProperties == null ) {
             return ;
@@ -134,8 +135,8 @@ public class BeautyPlugin extends EditPlugin {
                 homeDir.mkdir();
             }
             File customFile = new File( homeDir, modeName + ".properties" );
-            Writer writer = new BufferedWriter( new FileWriter( customFile ) );
-            modeProperties.store( writer, "Properties for " + modeName + " custom beautifier." );
+            OutputStream writer = new BufferedOutputStream( new FileOutputStream( customFile ) );
+            modeProperties.save( writer, "Properties for " + modeName + " custom beautifier." );
             writer.flush();
             writer.close();
         }
