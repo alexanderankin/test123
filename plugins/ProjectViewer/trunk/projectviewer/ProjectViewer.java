@@ -707,7 +707,7 @@ public final class ProjectViewer extends JPanel
 
 	//{{{ +setRootNode(VPTNode) : void
 	/**
-	 *	Sets the root node of the trees showm by this viewer. The current root
+	 *	Sets the root node of the trees shown by this viewer. The current root
 	 *	is cleaned up before setting the new root (e.g., project files are closed,
 	 *	etc.)
 	 *
