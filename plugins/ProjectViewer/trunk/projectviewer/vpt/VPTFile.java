@@ -74,6 +74,7 @@ public class VPTFile extends VPTNode
 	private Color	fileTypeColor;
 
 	private Icon	fileIcon;
+	private boolean exists;
 	private boolean	loadedIcon;
 	private boolean openLater;
 	private boolean retrieving;
@@ -90,6 +91,7 @@ public class VPTFile extends VPTNode
 		this.fileIcon = null;
 		this.loadedIcon = false;
 		this.vfsfile = null;
+		this.exists = true;
 	}
 
 
@@ -135,33 +137,39 @@ public class VPTFile extends VPTNode
 	 *
 	 * The "lazy" flag is for use by code that cannot cope with the
 	 * possibility of instantiating the VFS file causing any interaction
-	 * with the UI (e.g., an FTP login dialog). If "lazy" is true,
-	 * and the internal cached file is not yet initialized, a task
-	 * will be scheduled to initialize the file, and this method will
-	 * most probably return null.
+	 * with the UI (e.g., an FTP login dialog).
 	 *
-	 * @param	lazy	Whether to use lazy initialization of the
-	 *                  cached file.
+	 * For VFS instances that have the LOW_LATENCY_CAP capability, the
+	 * file is always retrieved from the VFS so that updates to the
+	 * filesystem are reflected in the project tree.
+	 *
+	 * @param	lazy	Whether to use lazy initialization of the file.
 	 *
 	 * @return The VFSFile backing this node. May be null if doing
-	 *         lazy initialization, or an I/O error occurs.
+	 *         lazy initialization, the file doesn't exist, or an I/O
+	 *         error occurs.
 	 *
 	 * @since PV 3.0.0
 	 */
-	public VFSFile getFile(boolean lazy)
+	protected VFSFile getFile(boolean lazy)
 	{
-		if (vfsfile == null) {
-			if (lazy) {
-				FileGetter.queue(this);
-			} else {
-				try {
-					vfsfile = VFSHelper.getFile(url);
-				} catch (IOException ioe) {
-					Log.log(Log.WARNING, this, ioe);
-				}
+		if (vfsfile != null) {
+			int caps = vfsfile.getVFS().getCapabilities();
+			if ((caps & VFS.LOW_LATENCY_CAP) != VFS.LOW_LATENCY_CAP) {
+				return vfsfile;
 			}
 		}
-		return (vfsfile != null) ? vfsfile : new DummyVFSFile();
+		if (lazy) {
+			FileGetter.queue(this);
+		} else {
+			try {
+				vfsfile = VFSHelper.getFile(url);
+				exists = vfsfile != null;
+			} catch (IOException ioe) {
+				Log.log(Log.WARNING, this, ioe);
+			}
+		}
+		return (vfsfile != null || !exists) ? vfsfile : new DummyVFSFile();
 	}
 
 
@@ -329,7 +337,7 @@ public class VPTFile extends VPTNode
 	{
 		if (!retrieving) {
 			this.vfsfile = null;
-			getFile(false);
+			getFile(true);
 		}
 	}
 
@@ -363,11 +371,13 @@ public class VPTFile extends VPTNode
 				while (!queue.isEmpty()) {
 					VPTFile f = queue.remove(0);
 					try {
+						VFSFile newfile = VFSHelper.getFile(f.url);
 						f.retrieving = true;
-						f.vfsfile = VFSHelper.getFile(f.url);
-						if (f.vfsfile != null) {
+						if (needRefresh(f.vfsfile, newfile)) {
+							f.vfsfile = newfile;
+							f.exists = newfile != null;
 							ProjectViewer.nodeChanged(f);
-							if (f.openLater) {
+							if (f.openLater && newfile != null) {
 								f.open();
 							}
 						}
@@ -379,6 +389,18 @@ public class VPTFile extends VPTNode
 				}
 				queue.clear();
 			}
+		}
+
+
+		private boolean needRefresh(VFSFile oldfile,
+									VFSFile newfile)
+		{
+			if (oldfile == null || newfile == null) {
+				return oldfile != newfile;
+			}
+
+			return (oldfile.isReadable() != newfile.isReadable() ||
+					oldfile.isWriteable() != newfile.isWriteable());
 		}
 
 	}
