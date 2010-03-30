@@ -184,27 +184,31 @@
   name. Your script should define a similar templateDir variable (def templateDir = "${templatesDir}/My_Template"),
   and a templateData object, which is used to store data that will be needed
   by template files. The dist declaration is used in setting the project's run command later on.
-  </para> <para />
-  <code>
-  def swing = new SwingBuilder()<br />
-  def form = swing.panel() {<br />
-     ...gridBagLayout()<br />
-     ...def gbc = swing.gbc(gridx: 0, gridy: 0, weightx: 0.0f, weighty: 0.0f, gridwidth: 1, gridheight: 1, fill: GBC.HORIZONTAL)<br />
-     ...gbc.insets = [10, 10, 0, 0]<br />
-     ...// Labels<br />
-     ...label(text: "Main class:", horizontalAlignment: SC.RIGHT, constraints: gbc)<br />
-     ...gbc.gridy++<br />
-     ...label(text: "Author:", horizontalAlignment: SC.RIGHT, constraints: gbc)<br />
-     ...<br />
-     ...// Text fields<br />
-     ...gbc.gridx++<br />
-     ...gbc.gridy = 0<br />
-     ...textField(id: "main_class", columns:20, constraints: gbc)<br />
-     ...gbc.gridy++<br />
-     ...textField(id: "author", columns:20, constraints: gbc)<br />
-  }<br />
-  def answer = JOptionPane.showConfirmDialog(view, form, "Java Project Details : ${project.name}", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, new ImageIcon("${templateDir}/icon.png"))<br />
-  </code>
+  </para>
+  <para>
+   <programlisting>
+      <![CDATA[
+      def swing = new SwingBuilder()
+      def form = swing.panel() {
+         gridBagLayout()
+         def gbc = swing.gbc(gridx: 0, gridy: 0, weightx: 0.0f, weighty: 0.0f, gridwidth: 1, gridheight: 1, fill: GBC.HORIZONTAL)
+         gbc.insets = [10, 10, 0, 0]
+         // Labels
+         label(text: "Main class:", horizontalAlignment: SC.RIGHT, constraints: gbc)
+         gbc.gridy++
+         label(text: "Author:", horizontalAlignment: SC.RIGHT, constraints: gbc)
+         
+         // Text fields
+         gbc.gridx++
+         gbc.gridy = 0
+         textField(id: "main_class", columns:20, constraints: gbc)
+         gbc.gridy++
+         textField(id: "author", columns:20, constraints: gbc)
+      }
+      def answer = JOptionPane.showConfirmDialog(view, form, "Java Project Details : ${project.name}", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, new ImageIcon("${templateDir}/icon.png"))
+      ]]>
+   </programlisting>
+  </para>
   <para>
   This section creates the additional project-specific popup. Groovy syntax for creating swing components
   is very different from Java, but also more compact and easy to work with. Feel free to play around
@@ -212,59 +216,63 @@
   to make testing easier. Just remember to add the groovy jar (which can be found in jars/ in your settings
   directory) to the classpath and import the groovy.swing.SwingBuilder class and any actual swing
   components used.
-  </para> <para />
-  <code>
-  if (answer == JOptionPane.OK_OPTION) {<br />
-    ...def mainClass = swing.main_class.text<br />
-    ...templateData.mainClass = "${mainClass}"<br />
-    ...templateData.author = swing.author.text<br />
-    ...int dot = mainClass.lastIndexOf(".")<br />
-    ...def deep = (dot != -1)<br />
-    ...def mainClassDir = ""<br />
-    ...if (deep) {<br />                           
-     ......templateData.pkg = "package "+mainClass.substring(0, dot)+";"<br />
-    ...} else {<br />
-     ......templateData.pkg = ""<br />
-    ...}<br />
-    ...PB.build(project.name, project.directory.path) {<br />
-     ......f("build.xml", template: "${templateDir}/JavaBuild.template", templateData: templateData)<br />
-     ......d("build") {}<br />
-     ......d("lib") {}<br />
-     ......d("dist") {}<br />
-     ......d("src") {<br />
-      .........if (deep) {<br />
-       ............// Add the main class file to an arbitrarily deep directory<br />
-       ............// This code is essentially a workaround to be able to have the folder structure<br />
-       ............// replicate the given package. There should hopefully be a better way to do this<br />
-       ............def pkg = mainClass.substring(0, dot)<br />
-       ............def dir = pkg.replace(".", File.separator)<br />
-       ............def cls = mainClass.substring(dot+1, mainClass.length())<br />
-       ............def file = cls+".java"<br />
-       ............new File("${project.directory.path}/${project.name}/src/${dir}").mkdirs()<br />
-       ............PrintWriter pw = new PrintWriter("${project.directory.path}/${project.name}/src/${dir}/${file}")<br />
-       ............pw.println("package ${pkg};")<br />
-       ............pw.println("public class ${cls} {")<br />
-       ............pw.println("	public static void main(String[] args) {")<br />
-       ............pw.println("		")<br />
-       ............pw.println("	}")<br />
-       ............pw.println("}")<br />
-       ............pw.close()<br />
-       ............open.add("${project.directory.path}/${project.name}/src/${dir}/${file}")<br />
-      .........} else {<br />
-       ............f("${mainClass}.java", template: "${templateDir}/JavaMainClass.template", templateData: templateData)<br />
-       ............open.add("${project.directory.path}/${project.name}/src/${mainClass}.java")<br />
-      .........}<br />
-     ......}<br />
-    ...}<br />
-    ...// Add an Ant build-command to the project's build settings<br />
-    ...project.build.add("Build Executable:ANT[target=,buildfile=${project.directory.path}/${project.name}/build.xml]")<br />
-    ...project.build.add("Clean:ANT[target=clean,buildfile=${project.directory.path}/${project.name}/build.xml]")<br />
-    ...// Add a system command to the project's run settings<br />
-    ...project.run.add("Run Executable:SYSTEM[cmd=java -jar ${dist}/${project.name}.jar]")<br />
-   } else {<br />
-    ...abort = true<br />
-   }<br />
-   </code>
+  </para>
+  <para>
+   <programlisting>
+      <![CDATA[
+      if (answer == JOptionPane.OK_OPTION) {
+         def mainClass = swing.main_class.text
+         templateData.mainClass = "${mainClass}"
+         templateData.author = swing.author.text
+         int dot = mainClass.lastIndexOf(".")
+         def deep = (dot != -1)
+         def mainClassDir = ""
+         if (deep) {
+            templateData.pkg = "package ${mainClass.substring(0, dot)};"
+         } else {
+            templateData.pkg = ""
+         }
+         PB.build(project.name, project.directory.path) {
+            f("build.xml", template: "${templateDir}/JavaBuild.template", templateData: templateData)
+            d("build") {}
+            d("lib") {}
+            d("dist") {}
+            d("src") {
+               if (deep) {
+                  // Add the main class file to an arbitrarily deep directory
+                  // This code is essentially a workaround to be able to have the folder structure
+                  // replicate the given package. There should hopefully be a better way to do this
+                  def pkg = mainClass.substring(0, dot)
+                  def dir = pkg.replace(".", File.separator)
+                  def cls = mainClass.substring(dot+1, mainClass.length())
+                  def file = "${cls}.java"
+                  new File("${project.directory.path}/${project.name}/src/${dir}").mkdirs()
+                  PrintWriter pw = new PrintWriter("${project.directory.path}/${project.name}/src/${dir}/${file}")
+                  pw.println("package ${pkg};")
+                  pw.println("public class ${cls} {")
+                  pw.println("   public static void main(String[] args) {")
+                  pw.println("      ")
+                  pw.println("   }")
+                  pw.println("}")
+                  pw.close()
+                  open.add("${project.directory.path}/${project.name}/src/${dir}/${file}")
+               } else {
+                  f("${mainClass}.java", template: "${templateDir}/JavaMainClass.template", templateData: templateData)
+                  open.add("${project.directory.path}/${project.name}/src/${mainClass}.java")
+               }
+            }
+         }
+         // Add an Ant build-command to the project's build settings
+         project.build.add("Build Executable:ANT[target=,buildfile=${project.directory.path}/${project.name}/build.xml]")
+         project.build.add("Clean:ANT[target=clean,buildfile=${project.directory.path}/${project.name}/build.xml]")
+         // Add a system command to the project's run settings
+         project.run.add("Run Executable:SYSTEM[cmd=java -jar ${dist}/${project.name}.jar]")
+      } else {
+         abort = true
+      }
+      ]]>
+   </programlisting>
+	  </para>
    <para>
    This section is where the actual project is built. First, you will need to check to see if the user
    clicked OK. If they didn't, you must set a variable called "abort" to true, otherwise Project Builder
