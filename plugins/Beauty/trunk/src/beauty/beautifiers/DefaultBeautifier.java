@@ -241,6 +241,9 @@ public class DefaultBeautifier extends Beautifier {
 
         String[] chars = preInsertLineCharacters.split( "," );
         for ( String c : chars ) {
+            if (c.equals("\\")) {
+                c = ",";   
+            }
             sb = preInsertLineSeparators( sb, c );
         }
         return sb;
@@ -294,6 +297,9 @@ public class DefaultBeautifier extends Beautifier {
 
         String[] chars = postInsertLineCharacters.split( "," );
         for ( String c : chars ) {
+            if (c.equals("\\")) {
+                c = ",";   
+            }
             sb = postInsertLineSeparators( sb, c );
         }
         return sb;
@@ -316,9 +322,9 @@ public class DefaultBeautifier extends Beautifier {
             while ( ( line = reader.readLine() ) != null ) {
                 // don't add extra blank lines
                 if (wroteLS && line.trim().equals("")) {
-                    wroteLS = false;
                     continue;   
                 }
+                wroteLS = false;
                 
                 String unc = c.startsWith( "\\" ) ? c.substring( 1 ) : c;
                 // there may be more than one 'c' on the line
@@ -331,7 +337,7 @@ public class DefaultBeautifier extends Beautifier {
                         writer.write( ls );
                         wroteLS = true;
                     }
-                    else if (j == lineParts.length - 1) {
+                    else if (j == lineParts.length - 1 && part.length() > 0) {
                         writer.write(ls);   
                         wroteLS = true;
                     }
