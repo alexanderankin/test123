@@ -206,7 +206,7 @@ public class DefaultBeautifier extends Beautifier {
         if ( prePadCharacters.length() > 0 ) {
             for ( int i = 0; i < prePadCharacters.length(); i++ ) {
                 char c = prePadCharacters.charAt( i );
-                s = s.replaceAll( "(\\S)[" + c + "]", "$1" + c );
+                s = s.replaceAll( "(\\S)[" + c + "]", "$1 " + c );
             }
         }
         return new StringBuilder( s );
@@ -224,7 +224,7 @@ public class DefaultBeautifier extends Beautifier {
         if ( postPadCharacters.length() > 0 ) {
             for ( int i = 0; i < postPadCharacters.length(); i++ ) {
                 char c = postPadCharacters.charAt( i );
-                s = s.replaceAll( "[" + ( c == '[' || c == ']' ? "\\" : "" ) + c + "](\\S)", c + "$1" );
+                s = s.replaceAll( "[" + ( c == '[' || c == ']' ? "\\" : "" ) + c + "](\\S)", c + " $1" );
             }
         }
         return new StringBuilder( s );
