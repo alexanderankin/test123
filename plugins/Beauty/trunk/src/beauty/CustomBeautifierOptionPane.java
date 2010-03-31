@@ -92,6 +92,11 @@ public class CustomBeautifierOptionPane extends AbstractOptionPane {
         JLabel description = new JLabel( jEdit.getProperty("beauty.msg.<html><b>Create_a_custom_beautifier_for_a_mode", "<html><b>Create a custom beautifier for a mode") );
 
         Mode[] modes = jEdit.getModes();
+        Arrays.sort(modes, new Comparator<Mode>(){
+                public int compare(Mode a, Mode b) {
+                    return a.getName().toLowerCase().compareTo(b.getName().toLowerCase());   
+                }
+        });
         modeSelector = new JComboBox( modes );
         modeSelector.setSelectedItem( currentMode );
 
