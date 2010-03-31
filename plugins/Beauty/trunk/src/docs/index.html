@@ -1,218 +1,229 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"
 <html>
-   <!-- a comment -->
    <head>
-      <title>Beauty Plugin</title>
-   </head>
+      <title>
+         Beauty Plugin
+      </title> 
+   </head> 
    <body bgcolor="#FFFFFF">
-      <table summary="Header" bgcolor="#CCCCFF" cellspacing=0 border=0 width="100%" cols=2>
+      <table summary="Header" bgcolor="#CCCCFF" cellspacing="0" border="0" width="100%" cols="2">
          <tr width="100%">
-            <td valign=TOP>
-               <strong><font size="+2">Beauty</font></strong>
-            </td>
-            <td valign=TOP align=RIGHT>
-               <font size="-1"><p><strong>Version 0.4.0 (@@tstamp@@)</strong><p>Dale Anson                             <p>Sreenivasa Viswanadha (base Java 1.5 and javacc grammars for javacc)                             <p>Brian Goetz, Quiotix (base HTML grammar for javacc)  </font>
-            </td>
-         </tr>
-      </table>
-      <table summary="Introduction" border=0 cellspacing=0 cellpadding=3 width="100%">
-         <tr align=CENTER width="100%">
+            <td valign="TOP">
+               <strong>
+                  <font size="+2">Beauty</font>
+               </strong> 
+            </td> 
+            <td valign="TOP" align="RIGHT">
+               <font size="-1"><p><strong>Version 0.4.0 (@@tstamp@@)</strong> <p>Dale Anson                              </font>
+            </td> 
+         </tr> 
+      </table> 
+      <table summary="Introduction" border="0" cellspacing="0" cellspacing="0" width="100%">
+         <tr align="CENTER" width="100%">
             <td bgcolor="#7FB2FF" width="100%">
-               <strong><font color="#FFFFFF" size="+1"><a name=intro>Introduction</a></font></strong>
-            </td>
-         </tr>
-      </table>
+               <strong>
+                  <font color="#FFFFFF" size="+1"><a name="intro">Introduction</a></font>
+               </strong> 
+            </td> 
+         </tr> 
+      </table> 
       <p>
-      The Beauty plugin is a general framework for code beautifiers and provides several built-in beautifiers. While
-      there are several existing plugins for beautifying/formatting various source file formats, this plugin aims to
-      consolidate those formatters into a standard API so that beautifying can be performed in a general way, similar
-      to how the SideKick plugin provides a general framework for code browsers.
+      The Beauty plugin is a general framework for code beautifiers and provides several built-in beautifiers. While there are several existing plugins for beautifying/formatting various source file formats, this plugin aims to consolidate those formatters into a standard API so that beautifying can be performed in a general way, similar to how the SideKick plugin provides a general framework for code browsers. 
       <p>
-      In the first release, there were 4 beautifiers/formatters included:
+      In the first release, there were 4 beautifiers/formatters included: 
       <ul>
-         <li>HTML: works very well.
+         <li>HTML: works very well. 
          <li>
-         JSP: works very well.
-         <li>Java: works well, formats strictly to Sun's formatting standard only. Needs work on doing line wrapping
-         per Sun's guidelines.
+         JSP: works very well. 
+         <li>Java: works well, formats strictly to Sun's formatting standard only. Needs work on doing line wrapping per Sun's guidelines. 
          <li>
-         JavaCC: works well, formats to a combination of Sun's Java formatting standard and my own style for javacc
-         files.
+         JavaCC: works well, formats to a combination of Sun's Java formatting standard and my own style for javacc files. 
       </ul>
       <p>
-      Two other plugins have been updated to support the Beauty framework:
+      Two other plugins have been updated to support the Beauty framework: 
       <ul>
-         <li>AStyle: a nice, configurable beautifier for Java, C, and C++ code.
-         <li>XmlIndenter: part of the XML plugin, this beautifier works on all xml-based
-         files.  Use this for well-formed xml dialects like docbook files, Ant files, and
-         so on, use the HTML beautifier for those xml-like files that are not necessarily
-         well-formed.
+         <li>AStyle: a nice, configurable beautifier for Java, C, and C++ code. 
+         <li>XmlIndenter: part of the XML plugin, this beautifier works on all xml-based files. Use this for well-formed xml dialects like docbook files, Ant files, and so on, use the HTML beautifier for those xml-like files that are not necessarily well-formed. 
       </ul>
       <p>
-      With the 0.4 release, Beauty has the ability to <a href="#custom">configure a custom beautifier</a> per mode,
-      which allows padding of various items, clean up of extra blank lines, and the ability to use the jEdit
-      indenter. I've included custom beautifiers for Ada, Javascript, and CSS files.  Making custom beautifiers
-      is very easy to do, and you are encouraged to create and share beautifiers for any language that jEdit supports.
+      With the 0.4 release, Beauty has the ability to <a href="#custom">configure a custom beautifier</a>per mode, which allows padding of various items, clean up of extra blank lines, and the ability to use the jEdit indenter. I've included custom beautifiers for Ada, Javascript, and CSS files. Making custom beautifiers is very easy to do, and you are encouraged to create and share beautifiers for any language that jEdit supports. 
       <p>
-      All other modes can default to use the built-in jEdit indenter, which works pretty well for most modes.  To
-      turn on this option, check the box in the Beauty options.
+      All other modes can default to use the built-in jEdit indenter, which works pretty well for most modes. To turn on this option, check the box in the Beauty options. 
       <p>
-      <table summary="Configuration" border=0 cellspacing=0 cellpadding=3 width="100%">
-         <tr align=CENTER width="100%">
+      <table summary="Configuration" border="0" cellspacing="0" cellspacing="0" width="100%">
+         <tr align="CENTER" width="100%">
             <td bgcolor="#7FB2FF" width="100%">
-               <strong><font color="#FFFFFF" size="+1"><a name="config">Configuration</a></font></strong>
-            </td>
-         </tr>
-      </table>
+               <strong>
+                  <font color="#FFFFFF" size="+1"><a name="config">Configuration</a></font>
+               </strong> 
+            </td> 
+         </tr> 
+      </table> 
       <p>
-      Configuration depends on the specific beautifier.  Generally, beautifiers will honor the settings for the 
-      buffer and/or mode. So, if you're editing an html
-      file in html mode, then the html beautifier will be used to format the file, and the html beautifier
-      will use the right line enders and tab settings. These settings are controlled by the
-      settings for the buffer and the mode:
+      Configuration depends on the specific beautifier. Generally, beautifiers will honor the settings for the  buffer and/or mode. So, if you're editing an html file in html mode, then the html beautifier will be used to format the file, and the html beautifier will use the right line enders and tab settings. These settings are controlled by the settings for the buffer and the mode: 
       <p>
       <ul>
-         <li>Line separators: as set for the current buffer.
-         <li>Tab width: as set for the current buffer.
-         <li>Indent width: as set for the current buffer.
-         <li>Soft tabs: in this initial release, all tabs are converted to soft tabs. This should be fixed in the next
-         release to honor the soft tab setting for the buffer.
+         <li>Line separators: as set for the current buffer. 
+         <li>Tab width: as set for the current buffer. 
+         <li>Indent width: as set for the current buffer. 
+         <li>Soft tabs: in this initial release, all tabs are converted to soft tabs. This should be fixed in the next release to honor the soft tab setting for the buffer. 
       </ul>
       <p>
-      It is quite possible that new beautifiers are introduced as jEdit plugins for specific languages.  Please consult the
-      documentation for those beautifiers for any settings that might be possible.
+      It is quite possible that new beautifiers are introduced as jEdit plugins for specific languages. Please consult the documentation for those beautifiers for any settings that might be possible. 
       <p>
-      To set which beautifier to use per mode, use the Beauty option settings under the Plugins - Plugin Options menu.
+      To set which beautifier to use per mode, use the Beauty option settings under the Plugins - Plugin Options menu. 
       <p>
-      <table summary="Custom Beautifier" border=0 cellspacing=0 cellpadding=3 width="100%">
-         <tr align=CENTER width="100%">
+      <table summary="Custom Beautifier" border="0" cellspacing="0" cellspacing="0" width="100%">
+         <tr align="CENTER" width="100%">
             <td bgcolor="#7FB2FF" width="100%">
-               <strong><font color="#FFFFFF" size="+1"><a name="custom">Custom Beautifier</a></font></strong>
-            </td>
-         </tr>
-      </table>
+               <strong>
+                  <font color="#FFFFFF" size="+1"><a name="custom">Custom Beautifier</a></font>
+               </strong> 
+            </td> 
+         </tr> 
+      </table> 
       <p>
-      <b><i>Custom beautifiers can be shared.  If you create one for a mode, post it on the jEdit mailing lists or add it to
-      the jEdit plugin feature tracker or email it to me at danson@grafidog.com, and I'll include it in the next release of Beauty.</i></b>  
-      To post the custom
-      beautifier, just copy the appropriate properties file from $USER_HOME/.jedit/plugins/beauty.BeautyPlugin.  To locate your $USER_HOME,
-      from jEdit, go to Utilities - Beanshell - Evaluate Beanshell Expression..., then enter <br>
+      <b><i>Custom beautifiers can be shared.  If you create one for a mode, post it on the jEdit mailing lists or add it to the jEdit plugin feature tracker or email it to me at danson@grafidog.com, and I'll include it in the next release of Beauty.</i></b>
+      To post the custom beautifier, just copy the appropriate properties file from $USER_HOME/.jedit/plugins/beauty.BeautyPlugin. To locate your $USER_HOME, from jEdit, go to Utilities - Beanshell - Evaluate Beanshell Expression..., then enter 
+      <br>
       <tt>System.getProperty("user.home")</tt>
       <p>
-      
       <p>
-      To set up a custom beautifier:
+      To set up a custom beautifier: 
       <ol>
-      <li>Go to Plugins - Plugin Options - Beauty - Custom Beautifier</li>
-      <li>Select the mode to configure</li>
-      <li>Configure the beautifier</li>
-      <li>Go to Plugins - Plugin Options - Beauty - Modes and assign your newly created beautifier.  You can assign the same
-      beautifier to more than one mode, so you could create a beautifier for pl-sql and assign the same beautifier to both
-      the sql-loader mode and the transact-sql mode.</li>
+         <li>
+            Go to Plugins - Plugin Options - Beauty - Custom Beautifier
+         </li>
+         <li>
+            Select the mode to configure
+         </li>
+         <li>
+            Configure the beautifier
+         </li>
+         <li>
+            Go to Plugins - Plugin Options - Beauty - Modes and assign your newly created beautifier. You can assign the same beautifier to more than one mode, so you could create a beautifier for pl-sql and assign the same beautifier to both the sql-loader mode and the transact-sql mode.
+         </li>
       </ol>
       <p>
-      The configuration should need only a little explanation.
+      The configuration should need only a little explanation. 
       <p>
-      This beautifier works by using jEdit syntax highlighting engine
-      to tokenize the buffer, so the same tokens that are identified by the syntax highlighting are used by the
-      custom beautifier.  For example, "+" may be defined in the mode file as an operator.  Checking the "before"
-      and "after" for "Pad operators" will cause the beautifier to make sure that there is a space before and
-      after all "+" characters.  Functions, digits, operators, and keywords are defined in the mode file, so the
-      quality of this tokenization really depends on the quality of the mode file.
+      This beautifier works by using jEdit syntax highlighting engine to tokenize the buffer, so the same tokens that are identified by the syntax highlighting are used by the custom beautifier. For example, "+" may be defined in the mode file as an operator. Checking the "before" and "after" for "Pad operators" will cause the beautifier to make sure that there is a space before and after all "+" characters. Functions, digits, operators, and keywords are defined in the mode file, so the quality of this tokenization really depends on the quality of the mode file. 
       <p>
-      Labels are also defined in the mode file, and you may want to put labels on a separate line.  This may or may not 
-      work well, again, it depends on the quality of 
-      the mode file.  For example, in the Ada language, a label is defined as <tt>&lt;&lt;</tt>sometext<tt>&gt;&gt;</tt>, 
-      but in the Ada mode file, both <tt>&lt;&lt;</tt> and <tt>&gt;&gt;</tt> are defined as labels.  This means that 
-      if you elect to put a label on a separate line, you'll end up with
+      Labels are also defined in the mode file, and you may want to put labels on a separate line. This may or may not  work well, again, it depends on the quality of  the mode file. For example, in the Ada language, a label is defined as <tt>&lt;&lt;</tt>sometext<tt>&gt;&gt;</tt>,  but in the Ada mode file, both <tt>&lt;&lt;</tt>and <tt>&gt;&gt;</tt>are defined as labels. This means that  if you elect to put a label on a separate line, you'll end up with 
       <br>
       <pre>
       &lt;&lt;sometext
       &gt;&gt;
-      </pre>
+      </pre> 
       <br>
-      In this case, either the mode file needs to be fixed, or use the "Insert line separator before" and "Insert
-      line separators after" text fields, and enter <tt>&lt;&lt;</tt> in the before and <tt>&gt;&gt;</tt> in the after.
+      In this case, either the mode file needs to be fixed, or use the "Insert line separator before" and "Insert line separators after" text fields, and enter <tt>&lt;&lt;</tt>in the before and <tt>&gt;&gt;</tt>in the after. 
       <p>
       <b>Endless trouble can happen here, so be careful!</b>
-      The "Insert line separators before" and "Insert line separators after" text fields can take a comma separated
-      list of strings.  Do not put spaces in this string unless you really mean it.  <b>These strings are used as regular 
-      expressions</b>, but note that this is a comma separated list, so if your regex contains commas, things probably won't 
-      work as you'd want.  <b>Warning: be sure to escape characters within your regular expressions.</b> For example,
-      if you want to insert a line separator before the start of a C-style comment, /*, enter "/\*" rather than "/*".
-      Round, curly, and square brackets also need to be escaped.
+      The "Insert line separators before" and "Insert line separators after" text fields can take a comma separated list of strings. Do not put spaces in this string unless you really mean it. <b>These strings are used as regular  expressions</b>, but note that this is a comma separated list, so if your regex contains commas, you must escape the commas or things probably won't  work as you'd want. <b>Warning: be sure to escape characters within your regular expressions.</b>For example, if you want to insert a line separator before the start of a C-style comment, /*, enter "/\*" rather than "/*". Round, curly, and square brackets also need to be escaped. Here's a good example: Suppose you are wanting to insert line separators in a json file after any of {, [, comma, ], and }. In the "Insert line separators after these strings" box, enter 
+      <code>
+         \{,\[,\,,\],\}
+      </code> 
       <p>
-      You can also specify lists of characters that should have a space before or after.  For example, you may want
-      a space following each <tt>(</tt> and before each <tt>)</tt>.
+      You can also specify lists of characters that should have a space before or after. For example, you may want a space following each <tt>(</tt>and before each <tt>)</tt>. 
       <p>
-      Further, you can specify lists of characters that should not have a space before or after.  This is handy for
-      modes like javascript that define ".", ",", and ";" as operators.  Adding these characters to the don't pad
-      text fields will cause the beautifier to remove spaces before and after these characters even though they may
-      be padded as operators.
+      Further, you can specify lists of characters that should not have a space before or after. This is handy for modes like javascript that define ".", ",", and ";" as operators. Adding these characters to the don't pad text fields will cause the beautifier to remove spaces before and after these characters even though they may be padded as operators. 
       <p>
-      You can elect to have multiple blank lines collapsed into a single blank line.
+      You can elect to have multiple blank lines collapsed into a single blank line. 
       <p>
-      Last, you can have the custom beautifier use the jEdit indenter to do the line indentation.  Again, the jEdit 
-      indenter works based on the mode definition file, so how well the indenting works depends on the quality of the
-      mode file.
+      Last, you can have the custom beautifier use the jEdit indenter to do the line indentation. Again, the jEdit  indenter works based on the mode definition file, so how well the indenting works depends on the quality of the mode file. 
       <p>
-      The custom beautifier applies the configuration in order from top to bottom, so, for example, operators are 
-      padded before applying the 'don't pad before' configuration.  Padding is only applied if there is no whitespace
-      before or after the item to be padded, so additional whitespace is not added unnecessarily.
+      The custom beautifier applies the configuration in order from top to bottom, so, for example, operators are  padded before applying the 'don't pad before' configuration. Padding is only applied if there is no whitespace before or after the item to be padded, so additional whitespace is not added unnecessarily. Similarly, if you want to insert a line break before or after an item and there already is a line separator, no additional blank lines will be added. 
       <p>
-      <table summary="For Developers" border=0 cellspacing=0 cellpadding=3 width="100%">
-         <tr align=CENTER width="100%">
+      <table summary="For Developers" border="0" cellspacing="0" cellspacing="0" width="100%">
+         <tr align="CENTER" width="100%">
             <td bgcolor="#7FB2FF" width="100%">
-               <strong><font color="#FFFFFF" size="+1"><a name=intro>For Developers</a></font></strong>
-            </td>
-         </tr>
-      </table>
+               <strong>
+                  <font color="#FFFFFF" size="+1"><a name="intro">For Developers</a></font>
+               </strong> 
+            </td> 
+         </tr> 
+      </table> 
       <p>
-      While the ability to create a custom beautifier from within the Beauty plugin is fairly good, even better
-      are beautifiers designed specifically with a strong understanding of the language to be beautified.  This
-      is why Beauty can delegate to the AStyle plugin and the XML plugin for beautification of Java, C, C++,
-      XML, and HTML files.
+      While the ability to create a custom beautifier from within the Beauty plugin is fairly good, even better are beautifiers designed specifically with a strong understanding of the language to be beautified. This is why Beauty can delegate to the AStyle plugin and the XML plugin for beautification of Java, C, C++, XML, and HTML files. 
       <p>
-      Adding a new beautifier/formatter is quite simple:
+      Adding a new beautifier/formatter is quite simple: 
       <ol>
-         <li>Write a formatter that implements beauty.beautifiers.Beautifier. You'll need to implement only the <code>
-         String beautify(String text)</code> method. Your formatter will be passed the complete contents of a buffer in
-         the <code>text</code> parameter, and should return formatted text. The buffer contents will be replaced with
-         this returned text.
-         <li>Create a simple plugin that contains this formatter.
-         <li>Add a <code>services.xml</code> file to your plugin like this:
+         <li>Write a formatter that implements beauty.beautifiers.Beautifier. You'll need to implement only the 
+         <code>
+            String beautify(String text)
+         </code> 
+         method. Your formatter will be passed the complete contents of a buffer in the 
+         <code>
+            text
+         </code> 
+         parameter, and should return formatted text. The buffer contents will be replaced with this returned text. 
+         <li>Create a simple plugin that contains this formatter. 
+         <li>Add a 
+         <code>
+            services.xml
+         </code> 
+         file to your plugin like this: 
          <p>
          <code>
-         &lt;?xml version="1.0"?&gt;
-         <br>
-         &lt;!DOCTYPE SERVICES SYSTEM "services.dtd"&gt;
-         <br>
-         <br>
-         &lt;SERVICES&gt;
-         <br>
-         &nbsp;&nbsp;&lt;SERVICE CLASS="beauty.beautifiers.Beautifier" NAME="lispy"&gt;
-         <br>
-         &nbsp;&nbsp;&nbsp;&nbsp;new lisp.lispy.Beautify();
-         <br>
-         &nbsp;&nbsp;&lt;/SERVICE&gt;
-         <br>
-         &lt;/SERVICES&gt; </code>
+            &lt;?xml version="1.0"?&gt; 
+            <br>
+            &lt;!DOCTYPE SERVICES SYSTEM "services.dtd"&gt; 
+            <br>
+            <br>
+            &lt;SERVICES&gt; 
+            <br>
+            &nbsp;&nbsp;&lt;SERVICE CLASS="beauty.beautifiers.Beautifier" NAME="lispy"&gt; 
+            <br>
+            &nbsp;&nbsp;&nbsp;&nbsp;new lisp.lispy.Beautify(); 
+            <br>
+            &nbsp;&nbsp;&lt;/SERVICE&gt; 
+            <br>
+            &lt;/SERVICES&gt; 
+         </code> 
          <p>
-         For <code>NAME</code> , either use the name of the editing mode that the beautifier supports, or a unique name
-         for your plugin. The beanshell code must return an object that can be cast to <code>
-         beauty.beautifiers.Beautifier</code> .
-         <li>For each editing mode that your beautifier supports, add a line to your plugin properties file like this:
+         For 
+         <code>
+            NAME
+         </code> 
+         , either use the name of the editing mode that the beautifier supports, or a unique name for your plugin. The beanshell code must return an object that can be cast to 
+         <code>
+            beauty.beautifiers.Beautifier
+         </code> 
+         . 
+         <li>For each editing mode that your beautifier supports, add a line to your plugin properties file like this: 
          <p>
-         mode.MODENAME.beauty.beautifier.NAME
+         mode.MODENAME.beauty.beautifier.NAME 
          <p>
-         where <code>MODENAME</code> is the name of an editing mode that your beautifier supports, and <code>NAME</code>
-         is the same name used in the services.xml file. So continuing the example, you might have:
+         where 
+         <code>
+            MODENAME
+         </code> 
+         is the name of an editing mode that your beautifier supports, and 
+         <code>
+            NAME
+         </code> 
+         is the same name used in the services.xml file. So continuing the example, you might have: 
          <p>
-         &nbsp;&nbsp;&nbsp;<code>mode.lisp.beauty.beautifiers.lispy</code>
+         &nbsp;&nbsp;&nbsp;
+         <code>
+            mode.lisp.beauty.beautifiers.lispy
+         </code> 
          <p>
-         for your beautifier that supports the Lisp language.
-         <li>Release your plugin.
+         for your beautifier that supports the Lisp language. 
+         <li>Release your plugin. 
       </ol>
-   </body>
-</html>
-
+      <table summary="Credits" border="0" cellspacing="0" cellspacing="0" width="100%">
+         <tr align="CENTER" width="100%">
+            <td bgcolor="#7FB2FF" width="100%">
+               <strong>
+                  <font color="#FFFFFF" size="+1"><a name="intro">Credits</a></font>
+               </strong> 
+            </td> 
+         </tr> 
+      </table> 
+      <p>
+      I'd like to give credit to these people whose work I built off of:
+      <p>Sreenivasa Viswanadha for the Java 1.5 and javacc grammars  
+      <p>Brian Goetz for the HTML grammar  
+   </body> 
+</html> 

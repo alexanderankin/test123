@@ -68,7 +68,11 @@ public class DefaultBeautifier extends Beautifier {
         postInsertLineCharacters = props.getProperty( "postInsertLineCharacters" ) == null ? "" : props.getProperty( "postInsertLineCharacters" );
         collapseBlankLines = "true".equals( props.getProperty( "collapseBlankLines" ) ) ? true : false;
     }
-
+    
+    /**
+     * @param text Not used in this beautifier. Instead the buffer is used directly
+     * so that tokenization by line can be done.
+     */
     public String beautify( String text ) {
         StringBuilder sb = new StringBuilder();
         //long startTime = System.currentTimeMillis();
@@ -239,11 +243,13 @@ public class DefaultBeautifier extends Beautifier {
             return sb;
         }
 
-        String[] chars = preInsertLineCharacters.split( "," );
+        // need to deal with commas that may be part of a regex in a comma-
+        // separated list of regex's.
+        String pilc = preInsertLineCharacters;
+        pilc = pilc.replaceAll("\\\\,", "\\\\c1f");
+        String[] chars = pilc.split( "," );
         for ( String c : chars ) {
-            if (c.equals("\\")) {
-                c = ",";   
-            }
+            c = c.replaceAll("\\\\c1f", ",");
             sb = preInsertLineSeparators( sb, c );
         }
         return sb;
@@ -295,11 +301,13 @@ public class DefaultBeautifier extends Beautifier {
             return sb;
         }
 
-        String[] chars = postInsertLineCharacters.split( "," );
+        // need to deal with commas that may be part of a regex in a comma-
+        // separated list of regex's.
+        String pilc = postInsertLineCharacters;
+        pilc = pilc.replaceAll("\\\\,", "\\\\c1f");
+        String[] chars = pilc.split( "," );
         for ( String c : chars ) {
-            if (c.equals("\\")) {
-                c = ",";   
-            }
+            c = c.replaceAll("\\\\c1f", ",");
             sb = postInsertLineSeparators( sb, c );
         }
         return sb;

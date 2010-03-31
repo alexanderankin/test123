@@ -44,6 +44,7 @@ public class BeautyPlugin extends EditPlugin {
         }
         String[] filenames = propsFiles.split( "," );
         File homeDir = jEdit.getPlugin( "beauty.BeautyPlugin" ).getPluginHome();
+        homeDir.mkdirs();
         for ( String filename : filenames ) {
             filename = filename.trim();
             File outfile = new File( homeDir, filename );
