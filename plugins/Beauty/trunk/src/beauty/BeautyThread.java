@@ -80,7 +80,9 @@ public class BeautyThread implements Runnable {
             beautifier.setWrapMode( wrapMode );
 
             // format the buffer
+            buffer.readLock();
             String contents = beautifier.beautify( buffer.getText( 0, buffer.getLength() ) );
+            buffer.readUnlock();
 
             // store the string back:
             if ( contents == null || contents.length() == 0 ) {
