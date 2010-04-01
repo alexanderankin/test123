@@ -25,8 +25,8 @@
 			<OPTION LABEL="Classic" VALUE="classic" />
 		</CHOICE> -->
 
-		<ENTRY LABEL="Class path" VARNAME="classpath"
-			EVAL="getBufferClassPath(buffer)" />
+		<ENTRY LABEL="Class path" VARNAME="classpath_env"
+			EVAL="jEdit.getProperty(&quot;CLASSPATH&quot;, &quot;&quot;);" />
 
 		<!-- <TOGGLE LABEL="Verbose class loading" VARNAME="verbose_class" />
 		<TOGGLE LABEL="Verbose garbage collection" VARNAME="verbose_gc" />
@@ -67,6 +67,10 @@
 		<COMMAND SHELL="System" CONFIRM="FALSE">
 			buf = new StringBuffer();
 			buf.append("java");
+			
+			jEdit.setProperty("CLASSPATH", classpath_env);
+			setenv("CLASSPATH", classpath_env);
+			classpath = getBufferClassPath(buffer);
 
 			/* if(vm.equals("client"))
 				; // default
