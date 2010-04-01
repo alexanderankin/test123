@@ -47,7 +47,7 @@ public class ModeOptionPaneController implements ModeOptionPane {
 		props = modeProps.get(mode);
 		if (props == null) {
 			props = delegate.createModeProps(mode);
-			if (! delegate.hasModeProps(mode))
+			if ((mode != null) && (! delegate.hasModeProps(mode)))
 				useDefaults.add(mode);
 			modeProps.put(mode, props);
 		}
