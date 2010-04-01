@@ -68,7 +68,7 @@ public class DefaultBeautifier extends Beautifier {
         postInsertLineCharacters = props.getProperty( "postInsertLineCharacters" ) == null ? "" : props.getProperty( "postInsertLineCharacters" );
         collapseBlankLines = "true".equals( props.getProperty( "collapseBlankLines" ) ) ? true : false;
     }
-    
+
     /**
      * @param text Not used in this beautifier. Instead the buffer is used directly
      * so that tokenization by line can be done.
@@ -103,13 +103,13 @@ public class DefaultBeautifier extends Beautifier {
         System.out.println( "+++++ dont post-pad characters = " + ( dontPostPadCharactersTime - dontPrePadCharactersTime ) );
         System.out.println( "+++++ collapse blank lines time = " + ( collapseBlankLinesTime - dontPostPadCharactersTime ) );
         */
-        
+
         return sb.toString();
     }
-    
+
     /**
      * Pad the tokens found by the jEdit syntax highlighting engine. In
-     * general, I found that this is pretty horrible since many of the 
+     * general, I found that this is pretty horrible since many of the
      * mode files do a poor job of identifying tokens.
      */
     private StringBuilder padTokens( StringBuilder sb ) {
@@ -235,8 +235,8 @@ public class DefaultBeautifier extends Beautifier {
     }
 
     /**
-     * The user may specify a comma separated list of strings before which a 
-     * line separator will be inserted.  
+     * The user may specify a comma separated list of strings before which a
+     * line separator will be inserted.
      */
     private StringBuilder preInsertLineSeparators( StringBuilder sb ) {
         if ( preInsertLineCharacters.length() == 0 ) {
@@ -293,8 +293,8 @@ public class DefaultBeautifier extends Beautifier {
     }
 
     /**
-     * The user may specify a comma separated list of strings after which a 
-     * line separator will be inserted.  
+     * The user may specify a comma separated list of strings after which a
+     * line separator will be inserted.
      */
     private StringBuilder postInsertLineSeparators( StringBuilder sb ) {
         if ( postInsertLineCharacters.length() == 0 ) {
@@ -326,14 +326,14 @@ public class DefaultBeautifier extends Beautifier {
             String line;
             String ls = getLineSeparator();
             boolean wroteLS = false;
-            
+
             while ( ( line = reader.readLine() ) != null ) {
                 // don't add extra blank lines
                 if (wroteLS && line.trim().equals("")) {
-                    continue;   
+                    continue;
                 }
                 wroteLS = false;
-                
+
                 String unc = c.startsWith( "\\" ) ? c.substring( 1 ) : c;
                 // there may be more than one 'c' on the line
                 String[] lineParts = line.split( c, Integer.MAX_VALUE );
@@ -346,7 +346,7 @@ public class DefaultBeautifier extends Beautifier {
                         wroteLS = true;
                     }
                     else if (j == lineParts.length - 1 && part.length() > 0) {
-                        writer.write(ls);   
+                        writer.write(ls);
                         wroteLS = true;
                     }
                 }
@@ -379,12 +379,12 @@ public class DefaultBeautifier extends Beautifier {
         if ( dontPrePadCharacters.length() > 0 ) {
             for ( int i = 0; i < dontPrePadCharacters.length(); i++ ) {
                 char c = dontPrePadCharacters.charAt( i );
-                s = s.replaceAll( "\\s[" + c + "]", String.valueOf( c ) );
+                s = s.replaceAll( "\\s+[" + (c == '[' || c == ']' || c == '\\' ? "\\" : "") + c + "]", String.valueOf(c) );
             }
         }
         return new StringBuilder( s );
     }
-    
+
     /**
      * Remove a single whitespace character from after a character.  Only
      * one whitespace character is removed.  The intent here is that a
@@ -402,14 +402,14 @@ public class DefaultBeautifier extends Beautifier {
         if ( dontPostPadCharacters.length() > 0 ) {
             for ( int i = 0; i < dontPostPadCharacters.length(); i++ ) {
                 char c = dontPostPadCharacters.charAt( i );
-                s = s.replaceAll( "[" + c + "]\\s", String.valueOf( c ) );
+                s = s.replaceAll( "[" + (c == '[' || c == ']' || c == '\\' ? "\\" : "") + c + "]\\s+", String.valueOf(c) );
             }
         }
         return new StringBuilder( s );
     }
-    
+
     /**
-     * Collapse two or more blank lines to a single blank line.    
+     * Collapse two or more blank lines to a single blank line.
      */
     private StringBuilder collapseBlankLines( StringBuilder sb ) {
         if ( !collapseBlankLines ) {
@@ -419,7 +419,7 @@ public class DefaultBeautifier extends Beautifier {
         s = s.replaceAll( "(\\s*" + getLSString() + "){3}", getLineSeparator() + getLineSeparator() );
         return new StringBuilder( s );
     }
-    
+
     /**
      * @return A string representing the line separator escaped for using it
      * in a regular expression.
