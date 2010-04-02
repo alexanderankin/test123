@@ -7,8 +7,6 @@
     <property file="build.properties"/>
 
 
-    <taskdef resource="/net/sf/antcontrib/antlib.xml"/>
-
     <!-- default location of jedit.jar -->
     <property name="jedit.install.dir" value="../.."/>
 

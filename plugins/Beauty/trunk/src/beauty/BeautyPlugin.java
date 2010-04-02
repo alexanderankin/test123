@@ -4,6 +4,7 @@ package beauty;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.jedit.syntax.ModeProvider;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
 
@@ -100,23 +101,63 @@ public class BeautyPlugin extends EditPlugin {
         loadProperties();
         File modeFile = modeFiles.get( modeName );
 
+        Properties props = getModeIndentProperties(modeName);
+
         if ( modeFile == null ) {
-            // no custom beautifier properties file found for this mode
-            return new Properties();
+            // no custom beautifier properties file found for this mode,
+            // nothing more to do.
+            StringWriter sw = new StringWriter();
+            props.list(new PrintWriter(sw));
+            System.out.println("+++++ props for " + modeName + ": " + sw.toString());
+            return props;
         }
 
-        // read the properties file into a Properties
+        // read the custom beautifier properties file into a Properties
         try {
             InputStream reader = new BufferedInputStream( new FileInputStream( modeFile ) );
-            Properties props = new Properties();
-            props.load( reader );
+            Properties p = new Properties();
+            p.load( reader );
             reader.close();
+            props.putAll(p);
+            StringWriter sw = new StringWriter();
+            props.list(new PrintWriter(sw));
+            System.out.println("+++++ props for " + modeName + ": " + sw.toString());
             return props;
         }
         catch ( Exception e ) {
             e.printStackTrace();
-            return new Properties();
+            return props;
         }
+    }
+
+    private static Properties getModeIndentProperties(String modeName) {
+        Mode mode = jEdit.getMode(modeName);
+        ModeProvider.instance.loadMode(mode);
+        mode.loadIfNecessary();
+        mode.init();
+        mode.getIndentRules();      // initializes the indent rules if they haven't been already
+        Properties p = new Properties();
+
+        String indentOpenBrackets = (String)mode.getProperty("indentOpenBrackets");
+        String indentCloseBrackets = (String)mode.getProperty("indentCloseBrackets");
+        String unalignedOpenBrackets = (String)mode.getProperty("unalignedOpenBrackets");
+        String unalignedCloseBrackets = (String)mode.getProperty("unalignedCloseBrackets");
+        String indentNextLine = (String)mode.getProperty("indentNextLine");
+        String unindentThisLine = (String)mode.getProperty("unindentThisLine");
+        String electricKeys = (String)mode.getProperty("electricKeys");
+        String lineUpClosingBracket = mode.getBooleanProperty("lineUpClosingBracket") ? "true" : "false";
+        String doubleBracketIndent = mode.getBooleanProperty("doubleBracketIndent") ? "true" : "false";
+
+        p.setProperty("indentOpenBrackets", indentOpenBrackets == null ? "" : indentOpenBrackets);
+        p.setProperty("indentCloseBrackets", indentCloseBrackets == null ? "" : indentCloseBrackets);
+        p.setProperty("unalignedOpenBrackets", unalignedOpenBrackets == null ? "" : unalignedOpenBrackets);
+        p.setProperty("unalignedCloseBrackets", unalignedCloseBrackets == null ? "" : unalignedCloseBrackets);
+        p.setProperty("indentNextLine", indentNextLine == null ? "" : indentNextLine);
+        p.setProperty("unindentThisLine", unindentThisLine == null ? "" : unindentThisLine);
+        p.setProperty("electricKeys", electricKeys == null ? "" : electricKeys);
+        p.setProperty("lineUpClosingBracket", lineUpClosingBracket);
+        p.setProperty("doubleBracketIndent", doubleBracketIndent);
+        return p;
     }
 
     /**
