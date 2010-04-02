@@ -43,6 +43,7 @@ public class DefaultBeautifier extends Beautifier {
 
     private boolean collapseBlankLines = false;
 
+
     public DefaultBeautifier( String modeName ) {
         Properties props = BeautyPlugin.getCustomModeProperties( modeName );
         prePadOperator = "true".equals( props.getProperty( "prePadOperators" ) ) ? true : false;
@@ -147,7 +148,7 @@ public class DefaultBeautifier extends Beautifier {
 
                     // maybe pad start
                     if ( !previousTokenText.endsWith( " " ) ) {
-                        if ( ( token.id == Token.OPERATOR && prePadOperator && previousTokenId != Token.OPERATOR ) ||                 // NOPMD
+                        if ( ( token.id == Token.OPERATOR && prePadOperator && previousTokenId != Token.OPERATOR ) ||                   // NOPMD
                                 ( token.id == Token.FUNCTION && prePadFunction ) ||
                                 ( token.id == Token.DIGIT && prePadDigit ) ||
                                 ( token.id == Token.KEYWORD1 && prePadKeyword1 ) ||
@@ -169,7 +170,7 @@ public class DefaultBeautifier extends Beautifier {
 
                     // maybe pad after token
                     if ( !nextTokenText.startsWith( " " ) ) {
-                        if ( ( token.id == Token.OPERATOR && postPadOperator && token.next.id != Token.OPERATOR ) ||                    // NOPMD
+                        if ( ( token.id == Token.OPERATOR && postPadOperator && token.next.id != Token.OPERATOR ) ||                      // NOPMD
                                 ( token.id == Token.FUNCTION && postPadFunction ) ||
                                 ( token.id == Token.DIGIT && postPadDigit ) ||
                                 ( token.id == Token.KEYWORD1 && postPadKeyword1 ) ||
@@ -246,10 +247,10 @@ public class DefaultBeautifier extends Beautifier {
         // need to deal with commas that may be part of a regex in a comma-
         // separated list of regex's.
         String pilc = preInsertLineCharacters;
-        pilc = pilc.replaceAll("\\\\,", "\\\\c1f");
+        pilc = pilc.replaceAll( "\\\\,", "\\\\c1f" );
         String[] chars = pilc.split( "," );
         for ( String c : chars ) {
-            c = c.replaceAll("\\\\c1f", ",");
+            c = c.replaceAll( "\\\\c1f", "," );
             sb = preInsertLineSeparators( sb, c );
         }
         return sb;
@@ -304,10 +305,10 @@ public class DefaultBeautifier extends Beautifier {
         // need to deal with commas that may be part of a regex in a comma-
         // separated list of regex's.
         String pilc = postInsertLineCharacters;
-        pilc = pilc.replaceAll("\\\\,", "\\\\c1f");
+        pilc = pilc.replaceAll( "\\\\,", "\\\\c1f" );
         String[] chars = pilc.split( "," );
         for ( String c : chars ) {
-            c = c.replaceAll("\\\\c1f", ",");
+            c = c.replaceAll( "\\\\c1f", "," );
             sb = postInsertLineSeparators( sb, c );
         }
         return sb;
@@ -329,7 +330,7 @@ public class DefaultBeautifier extends Beautifier {
 
             while ( ( line = reader.readLine() ) != null ) {
                 // don't add extra blank lines
-                if (wroteLS && line.trim().equals("")) {
+                if ( wroteLS && line.trim().equals( "" ) ) {
                     continue;
                 }
                 wroteLS = false;
@@ -345,8 +346,8 @@ public class DefaultBeautifier extends Beautifier {
                         writer.write( ls );
                         wroteLS = true;
                     }
-                    else if (j == lineParts.length - 1 && part.length() > 0) {
-                        writer.write(ls);
+                    else if ( j == lineParts.length - 1 && part.length() > 0 ) {
+                        writer.write( ls );
                         wroteLS = true;
                     }
                 }
@@ -379,7 +380,7 @@ public class DefaultBeautifier extends Beautifier {
         if ( dontPrePadCharacters.length() > 0 ) {
             for ( int i = 0; i < dontPrePadCharacters.length(); i++ ) {
                 char c = dontPrePadCharacters.charAt( i );
-                s = s.replaceAll( "\\s+[" + (c == '[' || c == ']' || c == '\\' ? "\\" : "") + c + "]", String.valueOf(c) );
+                s = s.replaceAll( "\\s+[" + ( c == '[' || c == ']' || c == '\\' ? "\\" : "" ) + c + "]", String.valueOf( c ) );
             }
         }
         return new StringBuilder( s );
@@ -402,7 +403,7 @@ public class DefaultBeautifier extends Beautifier {
         if ( dontPostPadCharacters.length() > 0 ) {
             for ( int i = 0; i < dontPostPadCharacters.length(); i++ ) {
                 char c = dontPostPadCharacters.charAt( i );
-                s = s.replaceAll( "[" + (c == '[' || c == ']' || c == '\\' ? "\\" : "") + c + "]\\s+", String.valueOf(c) );
+                s = s.replaceAll( "[" + ( c == '[' || c == ']' || c == '\\' ? "\\" : "" ) + c + "]\\s+", String.valueOf( c ) );
             }
         }
         return new StringBuilder( s );

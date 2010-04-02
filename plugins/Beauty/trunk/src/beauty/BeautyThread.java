@@ -3,12 +3,14 @@
 package beauty;
 
 import java.util.Enumeration;
+import java.util.Properties;
 import java.util.Vector;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.Marker;
+import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.Log;
 
@@ -63,7 +65,8 @@ public class BeautyThread implements Runnable {
             // indent width
             // soft tabs
             /// should soft wrap and line width be included here?
-            String mode = buffer.getMode().getName();
+            Mode mode = buffer.getMode();
+            String modeName = mode.getName();
             String ls = buffer.getStringProperty( "lineSeparator" );
             int tabWidth = buffer.getIntegerProperty( "tabSize", 4 );
             int indentWidth = buffer.getIntegerProperty( "indentSize", 4 );
@@ -71,7 +74,7 @@ public class BeautyThread implements Runnable {
             int wrapMargin = buffer.getIntegerProperty( "maxLineLength", 1024 );
             String wrapMode = buffer.getStringProperty( "wrap" );
             beautifier.setBuffer( buffer );
-            beautifier.setEditMode( mode );
+            beautifier.setEditMode( modeName );
             beautifier.setLineSeparator( ls );
             beautifier.setTabWidth( tabWidth );
             beautifier.setIndentWidth( indentWidth );
@@ -101,12 +104,36 @@ public class BeautyThread implements Runnable {
             buffer.beginCompoundEdit();
             buffer.remove( 0, buffer.getLength() );
             buffer.insert( 0, contents );
-            buffer.endCompoundEdit();
 
             // if using the default beautifier, have jEdit indent the lines
             if ( beautifier instanceof DefaultBeautifier ) {
-                BeautyPlugin.indentLines( view );
+                Properties props = BeautyPlugin.getCustomModeProperties( modeName );
+                if ( "true".equals( props.getProperty( "usejEditIndenter" ) ) ) {
+                    try {
+                        // unfortunate hack here -- the Mode class only loads the indenting rules once,
+                        // so need to set the rules to null so they get reloaded with the user defined
+                        // properties for this custom beautifier.
+                        PrivilegedAccessor.setValue(mode, "indentRules", null);
+                        
+                        // now the indenting rules can be set and will be used by jEdit
+                        mode.setProperty( "indentOpenBrackets ", props.getProperty( "indentOpenBrackets" ) == null ? "" : props.getProperty( "indentOpenBrackets" ) );
+                        mode.setProperty( "indentCloseBrackets ", props.getProperty( "indentCloseBrackets" ) == null ? "" : props.getProperty( "indentCloseBrackets" ) );
+                        mode.setProperty( "unalignedOpenBrackets ", props.getProperty( "unalignedOpenBrackets" ) == null ? "" : props.getProperty( "unalignedOpenBrackets" ) );
+                        mode.setProperty( "unalignedCloseBrackets ", props.getProperty( "unalignedCloseBrackets" ) == null ? "" : props.getProperty( "unalignedCloseBrackets" ) );
+                        mode.setProperty( "indentNextLine ", props.getProperty( "indentNextLine" ) == null ? "" : props.getProperty( "indentNextLine" ) );
+                        mode.setProperty( "unindentThisLine ", props.getProperty( "unindentThisLine" ) == null ? "" : props.getProperty( "unindentThisLine" ) );
+                        mode.setProperty( "electricKeys ", props.getProperty( "electricKeys" ) == null ? "" : props.getProperty( "electricKeys" ) );
+                    }
+                    catch(Exception e) {        // NOPMD
+                        // oh well
+                    }
+                    
+                    // regardless of any exception, have jEdit indent the lines
+                    BeautyPlugin.indentLines( view );
+                }
             }
+
+            buffer.endCompoundEdit();
 
             // restore markers:
             Enumeration itr = markers.elements();

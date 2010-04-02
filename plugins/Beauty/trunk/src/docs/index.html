@@ -14,7 +14,7 @@ DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/stri
                </strong> 
             </td> 
             <td valign="TOP" align="RIGHT">
-               <font size="-1"><p><strong>Version 0.4.0 (@@tstamp@@)</strong> <p>Dale Anson                              </font>
+               <font size="-1"><p><strong>Version 0.4.0 (@@tstamp@@)</strong> <p>Dale Anson</font>
             </td> 
          </tr> 
       </table> 
@@ -46,7 +46,7 @@ DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/stri
          <li>XmlIndenter: part of the XML plugin, this beautifier works on all xml-based files. Use this for well-formed xml dialects like docbook files, Ant files, and so on, use the HTML beautifier for those xml-like files that are not necessarily well-formed. 
       </ul>
       <p>
-      With the 0.4 release, Beauty has the ability to <a href="#custom">configure a custom beautifier</a>per mode, which allows padding of various items, clean up of extra blank lines, and the ability to use the jEdit indenter. I've included custom beautifiers for Ada, Javascript, and CSS files. Making custom beautifiers is very easy to do, and you are encouraged to create and share beautifiers for any language that jEdit supports. 
+      With the 0.4 release, Beauty has the ability to <a href="#custom">configure a custom beautifier</a>per mode, which allows padding of various items, clean up of extra blank lines, and the ability to use the jEdit indenter. I've included custom beautifiers for Ada, Javascript, CSS, and json files. Making custom beautifiers is very easy to do, and you are encouraged to create and share beautifiers for any language that jEdit supports. 
       <p>
       All other modes can default to use the built-in jEdit indenter, which works pretty well for most modes. To turn on this option, check the box in the Beauty options. 
       <p>
@@ -98,7 +98,7 @@ DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/stri
             Select the mode to configure
          </li>
          <li>
-            Configure the beautifier
+            Configure the beautifier, click "Apply".
          </li>
          <li>
             Go to Plugins - Plugin Options - Beauty - Modes and assign your newly created beautifier. You can assign the same beautifier to more than one mode, so you could create a beautifier for pl-sql and assign the same beautifier to both the sql-loader mode and the transact-sql mode.
@@ -107,6 +107,10 @@ DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/stri
       <p>
       The configuration should need only a little explanation. 
       <p>
+      There are 2 tabs, "Padding" and "Indenting".
+      
+      <p>
+      <b>Padding</b><br>
       This beautifier works by using jEdit syntax highlighting engine to tokenize the buffer, so the same tokens that are identified by the syntax highlighting are used by the custom beautifier. For example, "+" may be defined in the mode file as an operator. Checking the "before" and "after" for "Pad operators" will cause the beautifier to make sure that there is a space before and after all "+" characters. Functions, digits, operators, and keywords are defined in the mode file, so the quality of this tokenization really depends on the quality of the mode file. 
       <p>
       Labels are also defined in the mode file, and you may want to put labels on a separate line. This may or may not  work well, again, it depends on the quality of  the mode file. For example, in the Ada language, a label is defined as <tt>&lt;&lt;</tt>sometext<tt>&gt;&gt;</tt>,  but in the Ada mode file, both <tt>&lt;&lt;</tt>and <tt>&gt;&gt;</tt>are defined as labels. This means that  if you elect to put a label on a separate line, you'll end up with 
@@ -130,9 +134,10 @@ DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/stri
       <p>
       You can elect to have multiple blank lines collapsed into a single blank line. 
       <p>
-      Last, you can have the custom beautifier use the jEdit indenter to do the line indentation. Again, the jEdit  indenter works based on the mode definition file, so how well the indenting works depends on the quality of the mode file. 
-      <p>
       The custom beautifier applies the configuration in order from top to bottom, so, for example, operators are  padded before applying the 'don't pad before' configuration. Padding is only applied if there is no whitespace before or after the item to be padded, so additional whitespace is not added unnecessarily. Similarly, if you want to insert a line break before or after an item and there already is a line separator, no additional blank lines will be added. 
+      <p>
+      <b>Indenting</b><br>
+      On the "Indenting" tab, you can have the custom beautifier use the jEdit indenter to do the line indentation. Each of the text fields on this tab correspond exactly to the properties of the same names used by the jEdit mode files.  They are filled in initially with the values from the jEdit mode file for the mode you are working with.  Unfortunately, the documentation for these in the jEdit help file is not very good, so it may take some experiementation to make these work as you'd like.
       <p>
       <table summary="For Developers" border="0" cellspacing="0" cellspacing="0" width="100%">
          <tr align="CENTER" width="100%">
