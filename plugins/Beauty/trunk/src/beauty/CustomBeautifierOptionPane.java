@@ -68,6 +68,10 @@ public class CustomBeautifierOptionPane extends AbstractOptionPane {
     private JTextField unindentThisLine;
     private JTextField electricKeys;
 
+    // checkboxes for indenting properties
+    private JCheckBox lineUpClosingBracket;
+    private JCheckBox doubleBracketIndent;
+
     // a reference to the properties maintained by BeautyPlugin
     private Properties modeProperties;
 
@@ -141,6 +145,9 @@ public class CustomBeautifierOptionPane extends AbstractOptionPane {
         indentNextLine = new JTextField();
         unindentThisLine = new JTextField();
         electricKeys = new JTextField();
+        // TODO: put strings in properties file
+        lineUpClosingBracket = new JCheckBox("Line up closing bracket");
+        doubleBracketIndent = new JCheckBox("Double bracket indent");
 
         panel.add( usejEditIndenter, "0, 0, 1, 1, W, w, 2" );
         panel.add( new JLabel( "Indent open brackets:" ), "0, 1, 1, 1, W, w, 2" );
@@ -157,6 +164,8 @@ public class CustomBeautifierOptionPane extends AbstractOptionPane {
         panel.add( unindentThisLine, "0, 12, 1, 1, W, w, 2" );
         panel.add( new JLabel( "Electric keys:" ), "0, 13, 1, 1, W, w, 2" );
         panel.add( electricKeys, "0, 14, 1, 1, W, w, 2" );
+        panel.add( lineUpClosingBracket, "0, 15, 1, 1, W, w, 2");
+        panel.add( doubleBracketIndent, "0, 16, 1, 1, W, w, 2");
 
         return panel;
     }
@@ -279,6 +288,8 @@ public class CustomBeautifierOptionPane extends AbstractOptionPane {
                     indentNextLine.setEnabled( usejEditIndenter.isSelected() );
                     unindentThisLine.setEnabled( usejEditIndenter.isSelected() );
                     electricKeys.setEnabled( usejEditIndenter.isSelected() );
+                    lineUpClosingBracket.setEnabled( usejEditIndenter.isSelected());
+                    doubleBracketIndent.setEnabled( usejEditIndenter.isSelected());
                 }
             }
         );
@@ -328,7 +339,9 @@ public class CustomBeautifierOptionPane extends AbstractOptionPane {
             modeProperties.setProperty( "indentNextLine", indentNextLine.getText() );
             modeProperties.setProperty( "unindentThisLine", unindentThisLine.getText() );
             modeProperties.setProperty( "electricKeys", electricKeys.getText() );
-            
+            modeProperties.setProperty( "lineUpClosingBracket", lineUpClosingBracket.isSelected() ? "true" : "false");
+            modeProperties.setProperty( "doubleBracketIndent", doubleBracketIndent.isSelected() ? "true" : "false");
+
             currentMode.setProperty( "indentOpenBrackets", indentOpenBrackets.getText() );
             currentMode.setProperty( "indentCloseBrackets", indentCloseBrackets.getText() );
             currentMode.setProperty( "unalignedOpenBrackets", unalignedOpenBrackets.getText() );
@@ -336,6 +349,8 @@ public class CustomBeautifierOptionPane extends AbstractOptionPane {
             currentMode.setProperty( "indentNextLine", indentNextLine.getText() );
             currentMode.setProperty( "unindentThisLine", unindentThisLine.getText() );
             currentMode.setProperty( "electricKeys", electricKeys.getText() );
+            currentMode.setProperty( "lineUpClosingBracket", lineUpClosingBracket.isSelected());
+            currentMode.setProperty( "doubleBracketIndent", doubleBracketIndent.isSelected());
         }
 
         BeautyPlugin.saveProperties( name, modeProperties );
@@ -385,6 +400,16 @@ public class CustomBeautifierOptionPane extends AbstractOptionPane {
         dontPostPadCharacters.setText( "" );
         preInsertLineCharacters.setText( "" );
         postInsertLineCharacters.setText( "" );
+
+        indentOpenBrackets.setText("");
+        indentCloseBrackets.setText("");
+        unalignedOpenBrackets.setText("");
+        unalignedCloseBrackets.setText("");
+        indentNextLine.setText("");
+        unindentThisLine.setText("");
+        electricKeys.setText("");
+        lineUpClosingBracket.setSelected( false );
+        doubleBracketIndent.setSelected( false );
     }
 
     private void setComponentValues() {
@@ -423,12 +448,17 @@ public class CustomBeautifierOptionPane extends AbstractOptionPane {
         indentNextLine.setEnabled( usejEditIndenter.isSelected() );
         unindentThisLine.setEnabled( usejEditIndenter.isSelected() );
         electricKeys.setEnabled( usejEditIndenter.isSelected() );
-        indentOpenBrackets.setText( ( String ) currentMode.getProperty( "indentOpenBrackets" ) );
-        indentCloseBrackets.setText( ( String ) currentMode.getProperty( "indentCloseBrackets" ) );
-        unalignedOpenBrackets.setText( ( String ) currentMode.getProperty( "unalignedOpenBrackets" ) );
-        unalignedCloseBrackets.setText( ( String ) currentMode.getProperty( "unalignedCloseBrackets" ) );
-        indentNextLine.setText( ( String ) currentMode.getProperty( "indentNextLine" ) );
-        unindentThisLine.setText( ( String ) currentMode.getProperty( "unindentThisLine" ) );
-        electricKeys.setText( ( String ) currentMode.getProperty( "electricKeys" ) );
+        lineUpClosingBracket.setEnabled( usejEditIndenter.isSelected() );
+        doubleBracketIndent.setEnabled( usejEditIndenter.isSelected() );
+
+        indentOpenBrackets.setText( getText( "indentOpenBrackets" ) );
+        indentCloseBrackets.setText( getText( "indentCloseBrackets" ) );
+        unalignedOpenBrackets.setText( getText( "unalignedOpenBrackets" ) );
+        unalignedCloseBrackets.setText( getText( "unalignedCloseBrackets" ) );
+        indentNextLine.setText( getText( "indentNextLine" ) );
+        unindentThisLine.setText( getText( "unindentThisLine" ) );
+        electricKeys.setText( getText( "electricKeys" ) );
+        lineUpClosingBracket.setSelected( getBoolean("lineUpClosingBracket") );
+        doubleBracketIndent.setSelected( getBoolean("doubleBracketIndent") );
     }
 }
