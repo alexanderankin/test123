@@ -32,11 +32,13 @@ import java.awt.event.*;
 import java.beans.*;
 import java.util.*;
 import java.util.logging.*;
-import javax.swing.*;
 import javax.swing.event.*;
 import ise.plugin.svn.*;
 import common.swingworker.SwingWorker;
 import org.gjt.sp.jedit.GUIUtilities;
+import javax.swing.JPanel;
+import javax.swing.JButton;
+import javax.swing.SwingUtilities;
 
 /**
  * A panel for the SVN Console that shows a 'stop' button for each running
@@ -94,10 +96,10 @@ public class StopPanel extends JPanel {
     private void removeWorker( final SwingWorker worker ) {
         SwingUtilities.invokeLater( new Runnable() {
                     public void run() {
-                        workers.remove( worker );
                         JButton button = workers.get( worker );
+                        workers.remove( worker );
                         if (button != null) {
-                            remove( button ); 
+                            remove( button );
                         }
                         invalidate();
                         repaint();
