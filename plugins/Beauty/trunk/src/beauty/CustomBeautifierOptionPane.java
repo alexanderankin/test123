@@ -19,9 +19,6 @@ import ise.java.awt.*;
  */
 public class CustomBeautifierOptionPane extends AbstractOptionPane {
 
-    // the user can elect to use the jEdit indenter
-    private JCheckBox usejEditIndenter;
-
     // selector to spefify which mode this beautifier is associated with
     private JComboBox modeSelector;
 
@@ -59,6 +56,18 @@ public class CustomBeautifierOptionPane extends AbstractOptionPane {
     // multiple blank lines can be collapsed to a single blank line
     private JCheckBox collapseBlankLines;
 
+    // the user can elect to use the jEdit indenter
+    private JCheckBox usejEditIndenter;
+
+    // textfields for indenting properties
+    private JTextField indentOpenBrackets;
+    private JTextField indentCloseBrackets;
+    private JTextField unalignedOpenBrackets;
+    private JTextField unalignedCloseBrackets;
+    private JTextField indentNextLine;
+    private JTextField unindentThisLine;
+    private JTextField electricKeys;
+
     // a reference to the properties maintained by BeautyPlugin
     private Properties modeProperties;
 
@@ -89,36 +98,89 @@ public class CustomBeautifierOptionPane extends AbstractOptionPane {
         setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
 
         // create the components
-        JLabel description = new JLabel( jEdit.getProperty("beauty.msg.<html><b>Create_a_custom_beautifier_for_a_mode", "<html><b>Create a custom beautifier for a mode") );
+        JLabel description = new JLabel( jEdit.getProperty( "beauty.msg.<html><b>Create_a_custom_beautifier_for_a_mode", "<html><b>Create a custom beautifier for a mode" ) );
 
+        JLabel mode_label = new JLabel( jEdit.getProperty( "beauty.msg.Mode>_", "Mode: " ) );
         Mode[] modes = jEdit.getModes();
-        Arrays.sort(modes, new Comparator<Mode>(){
-                public int compare(Mode a, Mode b) {
-                    return a.getName().toLowerCase().compareTo(b.getName().toLowerCase());   
+        Arrays.sort( modes, new Comparator<Mode>() {
+                    public int compare( Mode a, Mode b ) {
+                        return a.getName().toLowerCase().compareTo( b.getName().toLowerCase() );
+                    }
                 }
-        });
+                   );
         modeSelector = new JComboBox( modes );
         modeSelector.setSelectedItem( currentMode );
+        JPanel modePanel = new JPanel( new KappaLayout() );
+        modePanel.add( mode_label, "0, 0, 1, 1, W, w, 0" );
+        modePanel.add( modeSelector, "1, 0, 1, 1, 0, w, 3" );
 
-        usejEditIndenter = new JCheckBox( jEdit.getProperty("beauty.msg.Use_jEdit_indenter_for_this_mode", "Use jEdit indenter for this mode") );
+        // tabs
+        JTabbedPane tabs = new JTabbedPane();
+        tabs.add( "Padding", createPaddingPanel() );
+        tabs.add( "Indenting", createIndentingPanel() );
 
-        prePadFunctions = new JCheckBox( jEdit.getProperty("beauty.msg.before", "before") );
-        prePadDigits = new JCheckBox( jEdit.getProperty("beauty.msg.before", "before") );
-        prePadOperators = new JCheckBox( jEdit.getProperty("beauty.msg.before", "before") );
-        prePadKeywords1 = new JCheckBox( jEdit.getProperty("beauty.msg.before", "before") );
-        prePadKeywords2 = new JCheckBox( jEdit.getProperty("beauty.msg.before", "before") );
-        prePadKeywords3 = new JCheckBox( jEdit.getProperty("beauty.msg.before", "before") );
-        prePadKeywords4 = new JCheckBox( jEdit.getProperty("beauty.msg.before", "before") );
-        postPadFunctions = new JCheckBox( jEdit.getProperty("beauty.msg.after", "after") );
-        postPadDigits = new JCheckBox( jEdit.getProperty("beauty.msg.after", "after") );
-        postPadOperators = new JCheckBox( jEdit.getProperty("beauty.msg.after", "after") );
-        postPadKeywords1 = new JCheckBox( jEdit.getProperty("beauty.msg.after", "after") );
-        postPadKeywords2 = new JCheckBox( jEdit.getProperty("beauty.msg.after", "after") );
-        postPadKeywords3 = new JCheckBox( jEdit.getProperty("beauty.msg.after", "after") );
-        postPadKeywords4 = new JCheckBox( jEdit.getProperty("beauty.msg.after", "after") );
-        
-        
-        labelOnSeparateLine = new JCheckBox( jEdit.getProperty("beauty.msg.Label_on_separate_line", "Label on separate line") );
+        add( description, "0, 0, 1, 1, W, w, 2" );
+        add( KappaLayout.createVerticalStrut( 6 ), "0, 1" );
+        add( modePanel, "0, 2, 1, 1, W, w, 2" );
+        add( KappaLayout.createVerticalStrut( 3 ), "0, 3" );
+        add( tabs, "0, 4, 1, 1, 0, wh, 2" );
+
+        // set the values for the components
+        setComponentValues();
+    }
+
+    private JPanel createIndentingPanel() {
+        JPanel panel = new JPanel( new KappaLayout() );
+        panel.setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
+
+        usejEditIndenter = new JCheckBox( jEdit.getProperty( "beauty.msg.Use_jEdit_indenter_for_this_mode", "Use jEdit indenter for this mode" ) );
+        indentOpenBrackets = new JTextField();
+        indentCloseBrackets = new JTextField();
+        unalignedOpenBrackets = new JTextField();
+        unalignedCloseBrackets = new JTextField();
+        indentNextLine = new JTextField();
+        unindentThisLine = new JTextField();
+        electricKeys = new JTextField();
+
+        panel.add( usejEditIndenter, "0, 0, 1, 1, W, w, 2" );
+        panel.add( new JLabel( "Indent open brackets:" ), "0, 1, 1, 1, W, w, 2" );
+        panel.add( indentOpenBrackets, "0, 2, 1, 1, W, w, 2" );
+        panel.add( new JLabel( "Indent close brackets:" ), "0, 3, 1, 1, W, w, 2" );
+        panel.add( indentCloseBrackets, "0, 4, 1, 1, W, w, 2" );
+        panel.add( new JLabel( "Unaligned open brackets:" ), "0, 5, 1, 1, W, w, 2" );
+        panel.add( unalignedOpenBrackets, "0, 6, 1, 1, W, w, 2" );
+        panel.add( new JLabel( "Unaligned close brackets:" ), "0, 7, 1, 1, W, w, 2" );
+        panel.add( unalignedCloseBrackets, "0, 8, 1, 1, W, w, 2" );
+        panel.add( new JLabel( "Indent next line:" ), "0, 9, 1, 1, W, w, 2" );
+        panel.add( indentNextLine, "0, 10, 1, 1, W, w, 2" );
+        panel.add( new JLabel( "Unindent this line:" ), "0, 11, 1, 1, W, w, 2" );
+        panel.add( unindentThisLine, "0, 12, 1, 1, W, w, 2" );
+        panel.add( new JLabel( "Electric keys:" ), "0, 13, 1, 1, W, w, 2" );
+        panel.add( electricKeys, "0, 14, 1, 1, W, w, 2" );
+
+        return panel;
+    }
+
+    private JPanel createPaddingPanel() {
+        JPanel panel = new JPanel( new KappaLayout() );
+        panel.setBorder( BorderFactory.createEmptyBorder( 6, 6, 6, 6 ) );
+
+        prePadFunctions = new JCheckBox( jEdit.getProperty( "beauty.msg.before", "before" ) );
+        prePadDigits = new JCheckBox( jEdit.getProperty( "beauty.msg.before", "before" ) );
+        prePadOperators = new JCheckBox( jEdit.getProperty( "beauty.msg.before", "before" ) );
+        prePadKeywords1 = new JCheckBox( jEdit.getProperty( "beauty.msg.before", "before" ) );
+        prePadKeywords2 = new JCheckBox( jEdit.getProperty( "beauty.msg.before", "before" ) );
+        prePadKeywords3 = new JCheckBox( jEdit.getProperty( "beauty.msg.before", "before" ) );
+        prePadKeywords4 = new JCheckBox( jEdit.getProperty( "beauty.msg.before", "before" ) );
+        postPadFunctions = new JCheckBox( jEdit.getProperty( "beauty.msg.after", "after" ) );
+        postPadDigits = new JCheckBox( jEdit.getProperty( "beauty.msg.after", "after" ) );
+        postPadOperators = new JCheckBox( jEdit.getProperty( "beauty.msg.after", "after" ) );
+        postPadKeywords1 = new JCheckBox( jEdit.getProperty( "beauty.msg.after", "after" ) );
+        postPadKeywords2 = new JCheckBox( jEdit.getProperty( "beauty.msg.after", "after" ) );
+        postPadKeywords3 = new JCheckBox( jEdit.getProperty( "beauty.msg.after", "after" ) );
+        postPadKeywords4 = new JCheckBox( jEdit.getProperty( "beauty.msg.after", "after" ) );
+
+        labelOnSeparateLine = new JCheckBox( jEdit.getProperty( "beauty.msg.Label_on_separate_line", "Label on separate line" ) );
 
         prePadCharacters = new JTextField();
         postPadCharacters = new JTextField();
@@ -127,84 +189,74 @@ public class CustomBeautifierOptionPane extends AbstractOptionPane {
         preInsertLineCharacters = new JTextField();
         postInsertLineCharacters = new JTextField();
 
-        collapseBlankLines = new JCheckBox( jEdit.getProperty("beauty.msg.Collapse_multiple_blank_lines", "Collapse multiple blank lines") );
-        
-        // set the values for the components
-        setComponentValues();
+        collapseBlankLines = new JCheckBox( jEdit.getProperty( "beauty.msg.Collapse_multiple_blank_lines", "Collapse multiple blank lines" ) );
 
         // layout the components
-        add( description, "0, 0, R, 1, W, w, 2" );
+        panel.add( new JLabel( jEdit.getProperty( "beauty.msg.Pad_functions", "Pad functions" ) ), "0, 4, 1, 1, W, w, 2" );
+        panel.add( prePadFunctions, "1, 4, 1, 1, W, 0, 2" );
+        panel.add( postPadFunctions, "2, 4, 1, 1, W, 0, 2" );
 
-        add( KappaLayout.createVerticalStrut( 6 ), "0, 1" );
+        panel.add( new JLabel( jEdit.getProperty( "beauty.msg.Pad_operators", "Pad operators" ) ), "0, 5, 1, 1, W, w, 2" );
+        panel.add( prePadOperators, "1, 5, 1, 1, W, 0, 2" );
+        panel.add( postPadOperators, "2, 5, 1, 1, W, 0, 2" );
 
-        add( new JLabel( jEdit.getProperty("beauty.msg.Mode>_", "Mode: ") ), "0, 2, 1, 1, W, w, 2" );
-        add( modeSelector, "1, 2, R, 1, W, w, 2" );
+        panel.add( new JLabel( jEdit.getProperty( "beauty.msg.Pad_digits", "Pad digits" ) ), "0, 6, 1, 1, W, w, 2" );
+        panel.add( prePadDigits, "1, 6, 1, 1, W, 0, 2" );
+        panel.add( postPadDigits, "2, 6, 1, 1, W, 0, 2" );
 
-        add( new JLabel( jEdit.getProperty("beauty.msg.Pad_functions", "Pad functions") ), "0, 4, 1, 1, W, w, 2" );
-        add( prePadFunctions, "1, 4, 1, 1, W, 0, 2" );
-        add( postPadFunctions, "2, 4, 1, 1, W, 0, 2" );
+        panel.add( new JLabel( jEdit.getProperty( "beauty.msg.Pad_keywords1", "Pad keywords1" ) ), "0, 7, 1, 1, W, w, 2" );
+        panel.add( prePadKeywords1, "1, 7, 1, 1, W, 0, 2" );
+        panel.add( postPadKeywords1, "2, 7, 1, 1, W, 0, 2" );
 
-        add( new JLabel( jEdit.getProperty("beauty.msg.Pad_operators", "Pad operators") ), "0, 5, 1, 1, W, w, 2" );
-        add( prePadOperators, "1, 5, 1, 1, W, 0, 2" );
-        add( postPadOperators, "2, 5, 1, 1, W, 0, 2" );
+        panel.add( new JLabel( jEdit.getProperty( "beauty.msg.Pad_keywords2", "Pad keywords2" ) ), "0, 8, 1, 1, W, w, 2" );
+        panel.add( prePadKeywords2, "1, 8, 1, 1, W, 0, 2" );
+        panel.add( postPadKeywords2, "2, 8, 1, 1, W, 0, 2" );
 
-        add( new JLabel( jEdit.getProperty("beauty.msg.Pad_digits", "Pad digits") ), "0, 6, 1, 1, W, w, 2" );
-        add( prePadDigits, "1, 6, 1, 1, W, 0, 2" );
-        add( postPadDigits, "2, 6, 1, 1, W, 0, 2" );
+        panel.add( new JLabel( jEdit.getProperty( "beauty.msg.Pad_keywords2", "Pad keywords2" ) ), "0, 9, 1, 1, W, w, 2" );
+        panel.add( prePadKeywords3, "1, 9, 1, 1, W, 0, 2" );
+        panel.add( postPadKeywords3, "2, 9, 1, 1, W, 0, 2" );
 
-        add( new JLabel( jEdit.getProperty("beauty.msg.Pad_keywords1", "Pad keywords1") ), "0, 7, 1, 1, W, w, 2" );
-        add( prePadKeywords1, "1, 7, 1, 1, W, 0, 2" );
-        add( postPadKeywords1, "2, 7, 1, 1, W, 0, 2" );
+        panel.add( new JLabel( jEdit.getProperty( "beauty.msg.Pad_keywords4", "Pad keywords4" ) ), "0, 10, 1, 1, W, w, 2" );
+        panel.add( prePadKeywords4, "1, 10, 1, 1, W, 0, 2" );
+        panel.add( postPadKeywords4, "2, 10, 1, 1, W, 0, 2" );
 
-        add( new JLabel( jEdit.getProperty("beauty.msg.Pad_keywords2", "Pad keywords2") ), "0, 8, 1, 1, W, w, 2" );
-        add( prePadKeywords2, "1, 8, 1, 1, W, 0, 2" );
-        add( postPadKeywords2, "2, 8, 1, 1, W, 0, 2" );
+        panel.add( labelOnSeparateLine, "0, 11, R, 1, W, w, 2" );
 
-        add( new JLabel( jEdit.getProperty("beauty.msg.Pad_keywords2", "Pad keywords2") ), "0, 9, 1, 1, W, w, 2" );
-        add( prePadKeywords3, "1, 9, 1, 1, W, 0, 2" );
-        add( postPadKeywords3, "2, 9, 1, 1, W, 0, 2" );
+        panel.add( KappaLayout.createVerticalStrut( 6 ), "0, 12" );
 
-        add( new JLabel( jEdit.getProperty("beauty.msg.Pad_keywords4", "Pad keywords4") ), "0, 10, 1, 1, W, w, 2" );
-        add( prePadKeywords4, "1, 10, 1, 1, W, 0, 2" );
-        add( postPadKeywords4, "2, 10, 1, 1, W, 0, 2" );
+        panel.add( new JLabel( jEdit.getProperty( "beauty.msg.Pad_before_these_characters>", "Pad before these characters:" ) ), "0, 13, R, 1, W, w, 2" );
+        panel.add( prePadCharacters, "0, 14, R, 1, W, w, 2" );
 
-        add( labelOnSeparateLine, "0, 11, R, 1, W, w, 2" );
+        panel.add( KappaLayout.createVerticalStrut( 6 ), "0, 15" );
 
-        add( KappaLayout.createVerticalStrut( 6 ), "0, 12" );
+        panel.add( new JLabel( jEdit.getProperty( "beauty.msg.Pad_after_these_characters>", "Pad after these characters:" ) ), "0, 16, R, 1, W, w, 2" );
+        panel.add( postPadCharacters, "0, 17, R, 1, W, w, 2" );
 
-        add( new JLabel( jEdit.getProperty("beauty.msg.Pad_before_these_characters>", "Pad before these characters:") ), "0, 13, R, 1, W, w, 2" );
-        add( prePadCharacters, "0, 14, R, 1, W, w, 2" );
+        panel.add( KappaLayout.createVerticalStrut( 6 ), "0, 18" );
 
-        add( KappaLayout.createVerticalStrut( 6 ), "0, 15" );
+        panel.add( new JLabel( jEdit.getProperty( "beauty.msg.Don't_pad_before_these_characters>", "Don't pad before these characters:" ) ), "0, 19, R, 1, W, w, 2" );
+        panel.add( dontPrePadCharacters, "0, 20, R, 1, W, w, 2" );
 
-        add( new JLabel( jEdit.getProperty("beauty.msg.Pad_after_these_characters>", "Pad after these characters:") ), "0, 16, R, 1, W, w, 2" );
-        add( postPadCharacters, "0, 17, R, 1, W, w, 2" );
+        panel.add( KappaLayout.createVerticalStrut( 6 ), "0, 21" );
 
-        add( KappaLayout.createVerticalStrut( 6 ), "0, 18" );
+        panel.add( new JLabel( jEdit.getProperty( "beauty.msg.Don't_pad_after_these_characters>", "Don't pad after these characters:" ) ), "0, 22, R, 1, W, w, 2" );
+        panel.add( dontPostPadCharacters, "0, 23, R, 1, W, w, 2" );
 
-        add( new JLabel( jEdit.getProperty("beauty.msg.Don't_pad_before_these_characters>", "Don't pad before these characters:") ), "0, 19, R, 1, W, w, 2" );
-        add( dontPrePadCharacters, "0, 20, R, 1, W, w, 2" );
+        panel.add( KappaLayout.createVerticalStrut( 6 ), "0, 24" );
 
-        add( KappaLayout.createVerticalStrut( 6 ), "0, 21" );
+        panel.add( new JLabel( jEdit.getProperty( "beauty.msg.Insert_line_separator_before_these_strings_(separate_with_comma)>", "Insert line separator before these strings (separate with comma):" ) ), "0, 25, R, 1, W, w, 2" );
+        panel.add( preInsertLineCharacters, "0, 26, R, 1, W, w, 2" );
 
-        add( new JLabel( jEdit.getProperty("beauty.msg.Don't_pad_after_these_characters>", "Don't pad after these characters:") ), "0, 22, R, 1, W, w, 2" );
-        add( dontPostPadCharacters, "0, 23, R, 1, W, w, 2" );
+        panel.add( KappaLayout.createVerticalStrut( 6 ), "0, 27" );
 
-        add( KappaLayout.createVerticalStrut( 6 ), "0, 24" );
+        panel.add( new JLabel( jEdit.getProperty( "beauty.msg.Insert_line_separator_after_these_strings_(separate_with_comma)>", "Insert line separator after these strings (separate with comma):" ) ), "0, 28, R, 1, W, w, 2" );
+        panel.add( postInsertLineCharacters, "0, 29, R, 1, W, w, 2" );
 
-        add( new JLabel( jEdit.getProperty("beauty.msg.Insert_line_separator_before_these_strings_(separate_with_comma)>", "Insert line separator before these strings (separate with comma):") ), "0, 25, R, 1, W, w, 2" );
-        add( preInsertLineCharacters, "0, 26, R, 1, W, w, 2" );
+        panel.add( KappaLayout.createVerticalStrut( 6 ), "0, 30" );
 
-        add( KappaLayout.createVerticalStrut( 6 ), "0, 27" );
+        panel.add( collapseBlankLines, "0, 31, R, 1, W, w, 2" );
 
-        add( new JLabel( jEdit.getProperty("beauty.msg.Insert_line_separator_after_these_strings_(separate_with_comma)>", "Insert line separator after these strings (separate with comma):") ), "0, 28, R, 1, W, w, 2" );
-        add( postInsertLineCharacters, "0, 29, R, 1, W, w, 2" );
-
-        add( KappaLayout.createVerticalStrut( 6 ), "0, 30" );
-
-        add( collapseBlankLines, "0, 31, R, 1, W, w, 2" );
-        
-        add( usejEditIndenter, "0, 32, R, 1, W, w, 2" );
+        return panel;
     }
 
     // install listeners for the various gui components
@@ -213,6 +265,20 @@ public class CustomBeautifierOptionPane extends AbstractOptionPane {
             new ItemListener() {
                 public void itemStateChanged( ItemEvent ie ) {
                     updateComponents( ie );
+                }
+            }
+        );
+
+        usejEditIndenter.addActionListener(
+            new ActionListener() {
+                public void actionPerformed( ActionEvent ae ) {
+                    indentOpenBrackets.setEnabled( usejEditIndenter.isSelected() );
+                    indentCloseBrackets.setEnabled( usejEditIndenter.isSelected() );
+                    unalignedOpenBrackets.setEnabled( usejEditIndenter.isSelected() );
+                    unalignedCloseBrackets.setEnabled( usejEditIndenter.isSelected() );
+                    indentNextLine.setEnabled( usejEditIndenter.isSelected() );
+                    unindentThisLine.setEnabled( usejEditIndenter.isSelected() );
+                    electricKeys.setEnabled( usejEditIndenter.isSelected() );
                 }
             }
         );
@@ -230,7 +296,6 @@ public class CustomBeautifierOptionPane extends AbstractOptionPane {
 
     public void _save() {
         String name = currentMode.getName();
-        modeProperties.setProperty( "usejEditIndenter", usejEditIndenter.isSelected() ? "true" : "false" );
         modeProperties.setProperty( "prePadFunctions", prePadFunctions.isSelected() ? "true" : "false" );
         modeProperties.setProperty( "prePadDigits", prePadDigits.isSelected() ? "true" : "false" );
         modeProperties.setProperty( "prePadOperators", prePadOperators.isSelected() ? "true" : "false" );
@@ -253,6 +318,25 @@ public class CustomBeautifierOptionPane extends AbstractOptionPane {
         modeProperties.setProperty( "dontPostPadCharacters", dontPostPadCharacters.getText() );
         modeProperties.setProperty( "preInsertLineCharacters", preInsertLineCharacters.getText() );
         modeProperties.setProperty( "postInsertLineCharacters", postInsertLineCharacters.getText() );
+
+        modeProperties.setProperty( "usejEditIndenter", usejEditIndenter.isSelected() ? "true" : "false" );
+        if ( usejEditIndenter.isSelected() ) {
+            modeProperties.setProperty( "indentOpenBrackets", indentOpenBrackets.getText() );
+            modeProperties.setProperty( "indentCloseBrackets", indentCloseBrackets.getText() );
+            modeProperties.setProperty( "unalignedOpenBrackets", unalignedOpenBrackets.getText() );
+            modeProperties.setProperty( "unalignedCloseBrackets", unalignedCloseBrackets.getText() );
+            modeProperties.setProperty( "indentNextLine", indentNextLine.getText() );
+            modeProperties.setProperty( "unindentThisLine", unindentThisLine.getText() );
+            modeProperties.setProperty( "electricKeys", electricKeys.getText() );
+            
+            currentMode.setProperty( "indentOpenBrackets", indentOpenBrackets.getText() );
+            currentMode.setProperty( "indentCloseBrackets", indentCloseBrackets.getText() );
+            currentMode.setProperty( "unalignedOpenBrackets", unalignedOpenBrackets.getText() );
+            currentMode.setProperty( "unalignedCloseBrackets", unalignedCloseBrackets.getText() );
+            currentMode.setProperty( "indentNextLine", indentNextLine.getText() );
+            currentMode.setProperty( "unindentThisLine", unindentThisLine.getText() );
+            currentMode.setProperty( "electricKeys", electricKeys.getText() );
+        }
 
         BeautyPlugin.saveProperties( name, modeProperties );
         BeautyPlugin.registerServices();
@@ -305,7 +389,6 @@ public class CustomBeautifierOptionPane extends AbstractOptionPane {
 
     private void setComponentValues() {
         // set the check box values
-        usejEditIndenter.setSelected( getBoolean( "usejEditIndenter" ) );
         prePadFunctions.setSelected( getBoolean( "prePadFunctions" ) );
         prePadDigits.setSelected( getBoolean( "prePadDigits" ) );
         prePadOperators.setSelected( getBoolean( "prePadOperators" ) );
@@ -321,8 +404,8 @@ public class CustomBeautifierOptionPane extends AbstractOptionPane {
         postPadKeywords3.setSelected( getBoolean( "postPadKeywords3" ) );
         postPadKeywords4.setSelected( getBoolean( "postPadKeywords4" ) );
         labelOnSeparateLine.setSelected( getBoolean( "labelOnSeparateLine" ) );
-        collapseBlankLines.setSelected(getBoolean("collapseBlankLines"));
-        
+        collapseBlankLines.setSelected( getBoolean( "collapseBlankLines" ) );
+
         // set the text field values
         prePadCharacters.setText( getText( "prePadCharacters" ) );
         postPadCharacters.setText( getText( "postPadCharacters" ) );
@@ -330,5 +413,22 @@ public class CustomBeautifierOptionPane extends AbstractOptionPane {
         dontPostPadCharacters.setText( getText( "dontPostPadCharacters" ) );
         preInsertLineCharacters.setText( getText( "preInsertLineCharacters" ) );
         postInsertLineCharacters.setText( getText( "postInsertLineCharacters" ) );
+
+        // indenter values
+        usejEditIndenter.setSelected( getBoolean( "usejEditIndenter" ) );
+        indentOpenBrackets.setEnabled( usejEditIndenter.isSelected() );
+        indentCloseBrackets.setEnabled( usejEditIndenter.isSelected() );
+        unalignedOpenBrackets.setEnabled( usejEditIndenter.isSelected() );
+        unalignedCloseBrackets.setEnabled( usejEditIndenter.isSelected() );
+        indentNextLine.setEnabled( usejEditIndenter.isSelected() );
+        unindentThisLine.setEnabled( usejEditIndenter.isSelected() );
+        electricKeys.setEnabled( usejEditIndenter.isSelected() );
+        indentOpenBrackets.setText( ( String ) currentMode.getProperty( "indentOpenBrackets" ) );
+        indentCloseBrackets.setText( ( String ) currentMode.getProperty( "indentCloseBrackets" ) );
+        unalignedOpenBrackets.setText( ( String ) currentMode.getProperty( "unalignedOpenBrackets" ) );
+        unalignedCloseBrackets.setText( ( String ) currentMode.getProperty( "unalignedCloseBrackets" ) );
+        indentNextLine.setText( ( String ) currentMode.getProperty( "indentNextLine" ) );
+        unindentThisLine.setText( ( String ) currentMode.getProperty( "unindentThisLine" ) );
+        electricKeys.setText( ( String ) currentMode.getProperty( "electricKeys" ) );
     }
 }
