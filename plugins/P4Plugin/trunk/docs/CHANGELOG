@@ -1,5 +1,11 @@
 CHANGELOG
 
+Version 0.3.0:
+	[marcelo vanzin]
+		- mostly changes to accomodate API changes in ProjectViewer.
+		- added PV file properties pane.
+		- the "delete" action now deletes the node from the PV tree.
+
 Version 0.2.4:
 	[marcelo vanzin]
 		- change name of P4Config.getEnv() method so that its value is
