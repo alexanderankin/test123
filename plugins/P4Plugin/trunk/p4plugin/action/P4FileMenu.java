@@ -59,11 +59,11 @@ public class P4FileMenu extends Action {
 
             addAction(new P4FileAction("edit",   true));
             addAction(new P4FileAction("add",    true));
-            addAction(new P4FileAction("delete", true));
+            addAction(new P4Delete(true));
             addAction(new P4FileAction("revert", true));
             addAction(new P4FileAction("edit",   false));
             addAction(new P4FileAction("add",    false));
-            addAction(new P4FileAction("delete", false));
+            addAction(new P4Delete(false));
             addAction(new P4FileAction("reopen", false, false));
             addAction(new P4FileInfoAction("diff"));
             addAction(new P4FileInfoAction("fstat"));

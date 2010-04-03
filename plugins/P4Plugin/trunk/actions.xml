@@ -42,7 +42,7 @@
     <ACTION NAME="p4plugin_delete">
         <CODE>
             projectviewer.PVActions.pvActionWrapper(
-                new p4plugin.action.P4FileAction("delete", true), view, false);
+                new p4plugin.action.P4Delete(true));
         </CODE>
     </ACTION>
 
@@ -63,7 +63,7 @@
     <ACTION NAME="p4plugin_delete_cl">
         <CODE>
             projectviewer.PVActions.pvActionWrapper(
-                new p4plugin.action.P4FileAction("delete", false), view, false);
+                new p4plugin.action.P4Delete(false));
         </CODE>
     </ACTION>
 
