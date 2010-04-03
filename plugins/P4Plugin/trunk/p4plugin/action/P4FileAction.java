@@ -57,6 +57,11 @@ public class P4FileAction extends AbstractP4Action {
         this.cmd = cmd;
     }
 
+    protected String getPath()
+    {
+        return path;
+    }
+
     /**
      *  If the path is set, it will be used instead of the current
      *  selection in ProjectViewer.
@@ -115,7 +120,7 @@ public class P4FileAction extends AbstractP4Action {
                     b.checkFileStatus(viewer.getView());
                 }
             }
-            ProjectViewer.nodeChanged(viewer.getSelectedNode());
+            ProjectViewer.nodeChanged(node);
         } else {
             jEdit.getBuffer(path).checkFileStatus(jEdit.getActiveView());
         }
