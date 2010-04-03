@@ -12,7 +12,7 @@ plugin.p4plugin.P4Plugin.description=Perforce integration for jEdit.
 
 plugin.p4plugin.P4Plugin.depend.0=jedit 04.03.99.00
 plugin.p4plugin.P4Plugin.depend.1=jdk 1.5
-plugin.p4plugin.P4Plugin.depend.2=plugin projectviewer.ProjectPlugin 2.9.4
+plugin.p4plugin.P4Plugin.depend.2=plugin projectviewer.ProjectPlugin 3.0.0
 plugin.p4plugin.P4Plugin.depend.3=plugin console.ConsolePlugin 4.2.5.1
 plugin.p4plugin.P4Plugin.depend.4=plugin CommonControlsPlugin 0.9.4
 
