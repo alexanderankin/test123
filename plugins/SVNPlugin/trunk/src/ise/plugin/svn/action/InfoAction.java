@@ -88,18 +88,21 @@ public class InfoAction extends SVNAction {
             data.setPaths( paths );
             data.setPathsAreURLs( pathsAreUrls );
 
-
-            if ( data.getUsername() == null ) {
-                verifyLogin( paths.get( 0 ) );
-                if ( isCanceled() ) {
-                    return ;
+            // don't need username/password if files are local since info
+            // data is in the .svn folders locally
+            if ( pathsAreUrls ) {
+                if ( data.getUsername() == null ) {
+                    verifyLogin( paths.get( 0 ) );
+                    if ( isCanceled() ) {
+                        return ;
+                    }
+                    data.setUsername( getUsername() );
+                    data.setPassword( getPassword() );
                 }
-                data.setUsername( getUsername() );
-                data.setPassword( getPassword() );
-            }
-            else {
-                setUsername( data.getUsername() );
-                setPassword( data.getPassword() );
+                else {
+                    setUsername( data.getUsername() );
+                    setPassword( data.getPassword() );
+                }
             }
 
             data.setOut( new ConsolePrintStream( getView() ) );
