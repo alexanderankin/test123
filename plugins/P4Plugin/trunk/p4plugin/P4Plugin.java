@@ -179,7 +179,7 @@ public class P4Plugin extends EditPlugin
         VPTProject proj = ProjectViewer.getActiveProject(jEdit.getActiveView());
         if (proj != null
             && proj.getChildNode(b.getPath()) != null
-            && P4Config.getProjectConfig(v) != null)
+            && P4Config.getProjectConfig(proj) != null)
         {
             v.setKeyEventInterceptor(keyHandler);
         }
