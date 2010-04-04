@@ -50,6 +50,7 @@ import common.gui.OkCancelButtons;
 import projectviewer.ProjectViewer;
 import projectviewer.action.Action;
 import projectviewer.vpt.VPTNode;
+import projectviewer.vpt.VPTProject;
 
 import p4plugin.Perforce;
 import p4plugin.config.P4Config;
@@ -97,17 +98,23 @@ public class ChangeListDialog implements Runnable,
                             boolean allowOthers)
     {
         this.view = v;
-        P4Config cfg = P4Config.getProjectConfig(v);
+        VPTProject proj = ProjectViewer.getActiveProject(v);
+        P4Config cfg = P4Config.getProjectConfig(proj);
         if (cfg != null) {
             List<String> args = new LinkedList<String>();
             if (cfg.getUser() != null) {
                 args.add("-u");
                 args.add(cfg.getUser());
             }
-            if (cfg.getClient() != null) {
-                args.add("-c");
-                args.add(cfg.getClient());
+
+            if (proj != null) {
+                String client = cfg.getClientName(proj.getRootPath());
+                if (client != null) {
+                    args.add("-c");
+                    args.add(client);
+                }
             }
+
             args.add("-s");
             args.add("pending");
 

@@ -20,15 +20,21 @@
  */
 package p4plugin.config;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.IOException;
 import java.io.Serializable;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.StringTokenizer;
 
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.PropertiesBean;
 
@@ -57,10 +63,6 @@ public class P4Config extends PropertiesBean {
     protected static final String P4CONFIG_EDITOR       = "p4plugin.cfg.p4Editor";
     protected static final String P4CONFIG_CLIENT       = "p4plugin.cfg.p4Client";
     protected static final String P4CONFIG_USER         = "p4plugin.cfg.p4User";
-
-    public static P4Config getProjectConfig(View v) {
-        return getProjectConfig(ProjectViewer.getActiveProject(v));
-    }
 
     /**
      *  Returns the config for the given project.
@@ -167,6 +169,66 @@ public class P4Config extends PropertiesBean {
             p4Config = fname;
         else
             p4Config = null;
+    }
+
+
+    /**
+     * Returns the client name based on this configuration.
+     *
+     * If the config has a client name specified, return it. If it
+     * has "P4CONFIG" configured instead, look for the config file
+     * starting at the given path and parse it looking for the client
+     * name.
+     *
+     * @param   basePath    Path where to look for the perforce config.
+     *
+     * @return The client name, or null if it couldn't be determined.
+     *
+     * @since P4P 0.3.2
+     */
+    public String getClientName(String basePath)
+    {
+        if (getClient() != null) {
+            return getClient();
+        }
+
+        if (getConfig() == null) {
+            return null;
+        }
+
+        /* Look for the config file. */
+        File cfg = null;
+        File base = new File(basePath);
+        if (!base.isDirectory()) {
+            base = base.getParentFile();
+        }
+
+        while (base != null) {
+            cfg = new File(base, getConfig());
+            if (cfg.isFile()) {
+                break;
+            }
+            cfg = null;
+            base = base.getParentFile();
+        }
+
+        if (cfg == null) {
+            return null;
+        }
+
+        /* Found the config file, parse it looking for P4CLIENT. */
+        Properties p = new Properties();
+        InputStream is = null;
+        try {
+            is = new FileInputStream(cfg);
+            p.load(is);
+        } catch (IOException ioe) {
+            Log.log(Log.ERROR, this, ioe);
+        } finally {
+            IOUtilities.closeQuietly(is);
+        }
+
+        return p.getProperty("P4CLIENT");
     }
 
     /**

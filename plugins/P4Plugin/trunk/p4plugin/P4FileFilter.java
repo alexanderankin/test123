@@ -36,6 +36,7 @@ import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
 
+import projectviewer.ProjectViewer;
 import projectviewer.importer.ImporterFileFilter;
 
 import p4plugin.config.P4Config;
@@ -185,7 +186,8 @@ public class P4FileFilter extends ImporterFileFilter implements Perforce.Visitor
      *              currently active project's configuration.
      */
     private boolean findClientRoot() {
-        P4Config cfg = P4Config.getProjectConfig(jEdit.getActiveView());
+        P4Config cfg = P4Config.getProjectConfig(
+            ProjectViewer.getActiveProject(jEdit.getActiveView()));
         if (cfg == null) {
             jEdit.getActiveView().getStatus().setMessageAndClear(
                 jEdit.getProperty("p4plugin.filter.no_config"));

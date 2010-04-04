@@ -75,7 +75,8 @@ public class P4FileMenu extends Action {
     }
 
     public void prepareForNode(VPTNode node) {
-        P4Config cfg = P4Config.getProjectConfig(jEdit.getActiveView());
+        P4Config cfg = P4Config.getProjectConfig(
+                ProjectViewer.getActiveProject(jEdit.getActiveView()));
         if (cfg != null) {
             boolean show = false;
             for (Action a : actions) {

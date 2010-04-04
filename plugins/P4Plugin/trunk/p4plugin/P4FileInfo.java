@@ -65,7 +65,7 @@ public class P4FileInfo implements NodePropertyProvider
 	{
 	    if (node.isFile()) {
 	        VPTProject p = VPTNode.findProjectFor(node);
-	        P4Config cfg = P4Config.getProjectConfig(jEdit.getActiveView());
+	        P4Config cfg = P4Config.getProjectConfig(p);
 	        return cfg != null;
 	    }
 	    return false;
