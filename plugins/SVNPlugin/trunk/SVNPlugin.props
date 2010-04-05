@@ -15,12 +15,12 @@ plugin.ise.plugin.svn.SVNPlugin.docs=docs/index.html
 # dependencies
 plugin.ise.plugin.svn.SVNPlugin.depend.0=jdk 1.5.0
 plugin.ise.plugin.svn.SVNPlugin.depend.1=jedit 04.03.15.00
-plugin.ise.plugin.svn.SVNPlugin.depend.2=plugin projectviewer.ProjectPlugin 2.9.1
+plugin.ise.plugin.svn.SVNPlugin.depend.2=plugin projectviewer.ProjectPlugin 3.0.0
 plugin.ise.plugin.svn.SVNPlugin.depend.3=plugin CommonControlsPlugin 1.1
 plugin.ise.plugin.svn.SVNPlugin.depend.4=plugin jdiff.JDiffPlugin 3.0.0
 plugin.ise.plugin.svn.SVNPlugin.depend.5=plugin infoviewer.InfoViewerPlugin 1.5.9
 plugin.ise.plugin.svn.SVNPlugin.depend.6=plugin jnaplugin.JNAPlugin 3.2.4
-plugin.ise.plugin.svn.SVNPlugin.jars=trilead.jar svnkit.jar svnkit-cli.jar jna.jar
+plugin.ise.plugin.svn.SVNPlugin.jars=trilead.jar svnkit.jar svnkit-cli.jar
 
 # titles for DockableWindowManager
 subversion.title=SVN
