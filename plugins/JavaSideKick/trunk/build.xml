@@ -70,9 +70,7 @@
          <pathelement location="${jedit.plugins.dir}/ErrorList.jar"/>
          <pathelement location="${jedit.plugins.dir}/SideKick.jar"/>
          <pathelement location="${jedit.plugins.dir}/ProjectViewer.jar"/>
-         
-         <pathelement location="/home/danson/tmp/portlet/final/portlet_20.jar"/>
-
+         <pathelement location="${jedit.plugins.dir}/SuperAbbrevs.jar"/>
       </path>
    </target>
 

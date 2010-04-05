@@ -38,31 +38,30 @@ import sidekick.java.util.*;
 public class PVHelper {
 
     // filename to project name lookup
-    private static HashMap<String, String> projectNameForFile = new HashMap<String, String>();
+    private static HashMap<String, VPTProject> projectForFile = new HashMap<String, VPTProject>();
 
     /**
      * @return the name of the project containing the given filename
      */
-    public static String getProjectNameForFile( String filename ) {
+    public static VPTProject getProjectForFile( String filename ) {
         if ( filename == null ) {
             return null;
         }
-        String project_name = projectNameForFile.get( filename );
-        if ( project_name != null ) {
-            return project_name;
+        VPTProject project = projectForFile.get( filename );
+        if ( project != null ) {
+            return project;
         }
         if ( !isProjectViewerAvailable() ) {
             return null;
         }
         ProjectManager pm = ProjectManager.getInstance();
-        for ( VPTProject project : pm.getProjects()) {
-            Collection nodes = project.getOpenableNodes();
+        for ( VPTProject _project : pm.getProjects()) {
+            Collection nodes = _project.getOpenableNodes();
             for ( Iterator iter = nodes.iterator(); iter.hasNext(); ) {
                 VPTNode node = ( VPTNode ) iter.next();
                 if ( node != null && filename.equals( node.getNodePath() ) ) {
-                    project_name = project.getName();
-                    projectNameForFile.put( filename, project_name );
-                    return project_name;
+                    projectForFile.put( filename, _project );
+                    return _project;
                 }
             }
         }
@@ -81,8 +80,8 @@ public class PVHelper {
      * @param projectName Get the class path information for this project.
      * @return a Path containing the classpath as set in ProjectViewer for the given project
      */
-    public static Path getClassPathForProject( String projectName ) {
-        return getClassPathForProject( projectName, true );   
+    public static Path getClassPathForProject( VPTProject proj ) {
+        return getClassPathForProject( proj, true );   
     }
 
     /**
@@ -90,9 +89,10 @@ public class PVHelper {
      * @param withJavaClasspath If true, include the paths for System.getProperty("java.class.path").
      * @return a Path containing the classpath as set in ProjectViewer for the given project
      */
-    public static Path getClassPathForProject( String projectName, boolean withJavaClasspath ) {
-        boolean useJavaClasspath = useJavaClasspath(projectName);
-        String classpath = jEdit.getProperty( "sidekick.java.pv." + projectName + ".optionalClasspath", "" );
+    public static Path getClassPathForProject( VPTProject proj, boolean withJavaClasspath ) {
+        boolean useJavaClasspath = useJavaClasspath(proj);
+        String classpath = proj.getProperty( "java.optionalClasspath");
+        if (classpath == null) classpath = "";
         Path path = new Path( classpath );
         if ( useJavaClasspath && withJavaClasspath ) {
             path.concatSystemClassPath();
@@ -100,20 +100,25 @@ public class PVHelper {
         return path;
     }
     
-    public static boolean useJavaClasspath( String projectName ) {
-        return jEdit.getBooleanProperty( "sidekick.java.pv." + projectName + ".useJavaClasspath" );
+    public static boolean useJavaClasspath( VPTProject proj ) {
+        if (proj == null) return true;
+        String prop = proj.getProperty( "java.useJavaClasspath" );
+        return (prop != null && prop.equals("true"));
     }
 
-    public static String getBuildOutputPathForProject( String projectName ) {
-        return jEdit.getProperty( "sidekick.java.pv." + projectName + ".optionalBuildpath", "" );
+    public static String getBuildOutputPathForProject( VPTProject proj ) {
+        String prop = proj.getProperty( "java.optionalBuildpath" );
+        if (prop == null) prop = "";
+        return prop;
     }
 
     /**
      * @return a Path containing the sourcepath as set in ProjectViewer for the given project
      */
-    public static Path getSourcePathForProject( String projectName ) {
-        String sourcepath = jEdit.getProperty( "sidekick.java.pv." + projectName + ".optionalSourcepath", "" );
-        Path path = new Path( sourcepath );
+    public static Path getSourcePathForProject( VPTProject proj ) {
+        String prop = proj.getProperty( "java.optionalSourcepath" );
+        if (prop == null) prop = "";
+        Path path = new Path( prop );
         return path;
     }
     
@@ -132,6 +137,14 @@ public class PVHelper {
     public static String getProjectName( View view ) {
         VPTProject project = ProjectViewer.getActiveProject( view );
         return project == null ? "" : project.getName();
+    }
+    
+    /**
+     * @return the current project in the given view.
+     */
+    public static VPTProject getProject( View view ) {
+        if (!isProjectViewerAvailable()) return null;
+        return ProjectViewer.getActiveProject( view );
     }
 
 

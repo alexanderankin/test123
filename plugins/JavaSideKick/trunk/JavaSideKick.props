@@ -5,8 +5,8 @@
 # general plugin properites
 plugin.sidekick.java.JavaSideKickPlugin.activate=defer
 plugin.sidekick.java.JavaSideKickPlugin.name=JavaSideKick
-plugin.sidekick.java.JavaSideKickPlugin.author=Dale Anson, Andre Kaplan, George Latkiewicz
-plugin.sidekick.java.JavaSideKickPlugin.version=2.8.1
+plugin.sidekick.java.JavaSideKickPlugin.author=Dale Anson, Andre Kaplan, George Latkiewicz, Damien Radtke
+plugin.sidekick.java.JavaSideKickPlugin.version=2.9.0
 plugin.sidekick.java.JavaSideKickPlugin.description=SideKick to browse java, javacc, and property files.
 
 # docs
@@ -19,6 +19,7 @@ plugin.sidekick.java.JavaSideKickPlugin.depend.1=jedit 04.03.17.00
 plugin.sidekick.java.JavaSideKickPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.4.2
 plugin.sidekick.java.JavaSideKickPlugin.depend.3=plugin sidekick.SideKickPlugin 0.9
 plugin.sidekick.java.JavaSideKickPlugin.depend.4=optional plugin projectviewer.ProjectPlugin 2.9.0.0
+plugin.sidekick.java.JavaSideKickPlugin.depend.5=optional plugin SuperAbbrevsPlugin 0.32
 
 
 Tiger2.title=JavaSideKick
@@ -26,8 +27,8 @@ Tiger2.label=JavaSideKick
 
 # menu
 # Menu bar properties
-plugin.sidekick.java.JavaSideKickPlugin.menu-item=sidekick.parser.java-switch
-sidekick.parser.java-switch.label=Java SideKick
+#plugin.sidekick.java.JavaSideKickPlugin.menu-item=sidekick.parser.java-switch
+#sidekick.parser.java-switch.label=Java SideKick
 
 
 # action labels
@@ -136,6 +137,7 @@ options.sidekick.java.showIconsLikeEclipse=like Eclipse
 options.sidekick.java.showLineNums=Line Numbers
 options.sidekick.java.expandClasses=Expand inner classes
 options.sidekick.java.showErrors=Show parse errors in ErrorList
+options.sidekick.java.parseOnComplete=Parse buffer on code completion (may be slow on large files)
 
 options.sidekick.java.sortBy=Sort by
 options.sidekick.java.sortByLine=Line
@@ -162,11 +164,16 @@ options.sidekick.java.custTypeIsSuffixed=Type identifier as a suffix
 
 options.sidekick.java.reparseWarning=You may need to reparse for changes to take effect.
 
+options.sidekick.java.ambiguousClass.title=Ambiguous Class
+options.sidekick.java.ambiguousClass.message=The class {0} is ambiguous. Use an \
+	import or the full class name to resolve the correct class.
+
 # Option values
 # general options
 sidekick.java.showStatusBar=true
 sidekick.java.automaticParse=false
 sidekick.java.sort=false
+sidekick.java.wordBreakWords=new,import
 
 #member filters by type
 sidekick.java.showAttr=false
@@ -192,6 +199,7 @@ sidekick.java.showIconsLikeEclipse=false
 sidekick.java.showLineNums=false
 sidekick.java.sortBy=Name
 sidekick.java.showErrors=true
+sidekick.java.parseOnComplete=true
 
 #display style
 # 0 == Options.Display.STYLE_UML
@@ -207,7 +215,7 @@ sidekick.java.custTypeIsSuffixed=false
 
 # ProjectViewer option pane
 plugin.projectviewer.sidekick.java.JavaSideKickPlugin.option-pane=javasidekick.pv.options
-options.javasidekick.pv.options.label=Classpath settings
+options.javasidekick.pv.options.label=Java classpath settings
 options.javasidekick.pv.options.code=new sidekick.java.options.PVClasspathOptionPane()
 
 # ProjectViewer option pane labels

@@ -123,13 +123,12 @@ public class JavaParser extends SideKickParser implements EBComponent {
 
     /**
      * Parse the current buffer in the current view.
-     * TODO: is this used anymore?
      */
-    public void parse() {
-        if ( currentView != null ) {
+    public SideKickParsedData parse() {
+        if ( currentView == null ) {
             currentView = jEdit.getActiveView();
         }
-        parse( currentView.getBuffer(), null );
+        return parse( currentView.getBuffer(), null );
     }
 
     /**
