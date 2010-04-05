@@ -14,6 +14,8 @@ import java.text.StringCharacterIterator;
 
 import org.gjt.sp.jedit.jEdit;
 
+import projectviewer.vpt.VPTProject;
+
 import sidekick.java.PVHelper;
 import sidekick.java.classloader.AntClassLoader;
 
@@ -42,8 +44,8 @@ public final class Locator {
     // list of class names in projectJars
     private List<String> projectClassNames = null;
     
-    // name of the current project
-    private String projectName = null;
+    // the current project
+    private VPTProject project = null;
     
     // a classloader to load classes found in projectJars
     private AntClassLoader classloader = null;
@@ -58,9 +60,9 @@ public final class Locator {
         classpathClassNames = getClassPathClassNames();
         runtimeJars = getRuntimeJars();
         runtimeClassNames = getRuntimeClassNames();
-        projectName = PVHelper.getProjectName( jEdit.getActiveView() );
-        projectJars = getProjectJars( projectName );
-        projectClassNames = getProjectClassNames( projectName );
+        project = PVHelper.getProject( jEdit.getActiveView() );
+        projectJars = getProjectJars( project );
+        projectClassNames = getProjectClassNames( project );
     }
 
     public static Locator getInstance() {
@@ -244,7 +246,7 @@ public final class Locator {
     /**
      * @param name class name minus the package part, e.g. "String" in "java.lang.String".
      */
-    public String getRuntimeClassName( String name ) {
+    public String[] getRuntimeClassName( String name ) {
         return getClassName( runtimeClassNames, name );
     }
 
@@ -263,16 +265,16 @@ public final class Locator {
         return classloader;   
     }
     
-    public File[] getProjectJars( String projectName ) {
-        if ( projectName == null ) {
+    public File[] getProjectJars( VPTProject proj ) {
+        if ( proj == null ) {
             return null;
         }
-        if ( projectJars != null && projectName.equals( this.projectName ) ) {
+        if ( projectJars != null && project == proj ) {
             return copyOf( projectJars );
         }
-        this.projectName = projectName;
+        this.project = proj;
 
-        String classpath = jEdit.getProperty( "sidekick.java.pv." + projectName + ".optionalClasspath", "" );
+        String classpath = proj.getProperty( "java.optionalClasspath" );
         if ( classpath == null || classpath.length() == 0 )
             return null;
         String path_sep = File.pathSeparator;
@@ -287,20 +289,20 @@ public final class Locator {
     /**
      * @return a list of class names of all classes in all jars in the classpath.
      */
-    public List<String> getProjectClassNames( String projectName ) {
-        if ( projectName == null ) {
+    public List<String> getProjectClassNames( VPTProject proj ) {
+        if ( project == null ) {
             return null;
         }
-        if ( projectClassNames != null && projectName.equals( this.projectName ) ) {
+        if ( projectClassNames != null && project == proj ) {
             return projectClassNames;
         }
 
-        return reloadProjectClassNames( projectName );
+        return reloadProjectClassNames( project );
     }
-    
-    public List<String> reloadProjectClassNames( String projectName ) {
+
+    public List<String> reloadProjectClassNames( VPTProject proj ) {
         // need both a list of names and a classloader for these classes
-        File[] jars = getProjectJars( projectName );
+        File[] jars = getProjectJars( proj );
         if (jars == null) {
             return null;   
         }
@@ -316,20 +318,33 @@ public final class Locator {
         projectClassNames = allnames;
         return allnames;
     }
-
+    
+    public void reloadProjectJars( VPTProject proj ) {
+        String classpath = proj.getProperty( "java.optionalClasspath" );
+        if ( classpath == null || classpath.length() == 0 )
+            return;
+        String path_sep = File.pathSeparator;
+        String[] path_jars = classpath.split( path_sep );
+        File[] jars = new File[ path_jars.length ];
+        for ( int i = 0; i < path_jars.length; i++ ) {
+            jars[ i ] = new File( path_jars[ i ] );
+        }
+        projectJars = jars;
+    }
+    
     /**
      * @param packageName package name with possibly a part of a classname, e.g.
      * "javax.swing.tree.DefaultMut"
      * @return a list of all class names that match.  The list may be empty, but
      * won't be null.
      */
-    public List<String> getProjectClasses( String projectName, String packageName ) {
-        if ( projectName == null ) {
+    public List<String> getProjectClasses( VPTProject proj, String packageName ) {
+        if ( proj == null ) {
             return null;
         }
-        if ( projectClassNames == null || !projectName.equals( this.projectName ) ) {
+        if ( projectClassNames == null || project != proj ) {
             // need to load jars and class names for the project
-            projectClassNames = getProjectClassNames( projectName );
+            projectClassNames = getProjectClassNames( proj );
         }
         return getClasses( projectClassNames, packageName );
     }
@@ -337,13 +352,13 @@ public final class Locator {
     /**
      * @param name class name minus the package part, e.g. "String" in "java.lang.String".
      */
-    public String getProjectClassName( String projectName, String name ) {
-        if ( projectName == null ) {
+    public String[] getProjectClassName( VPTProject proj, String name ) {
+        if ( proj == null ) {
             return null;
         }
-        if ( projectClassNames == null || !projectName.equals( this.projectName ) ) {
+        if ( projectClassNames == null || project != proj ) {
             // need to load jars and class names for the project
-            projectClassNames = getProjectClassNames( projectName );
+            projectClassNames = getProjectClassNames( proj );
         }
         return getClassName( projectClassNames, name );
     }
@@ -353,23 +368,29 @@ public final class Locator {
     /**
      * @param name class name minus the package part, e.g. "String" in "java.lang.String".
      */
-    public String getClassPathClassName( String name ) {
+    public String[] getClassPathClassName( String name ) {
         return getClassName( classpathClassNames, name );
     }
 
-    private String getClassName( List<String> classNames, String name ) {
+    private String[] getClassName( List<String> classNames, String name ) {
         if ( classNames == null ) {
             return null;
         }
+        ArrayList<String> list = new ArrayList<String>();
         for ( String fullClassName : classNames ) {
             int index = fullClassName.lastIndexOf( "/" ) + 1;
             String className = fullClassName.substring( index );
             if ( className.equals( name ) ) {
                 fullClassName = fullClassName.replaceAll( "/", "." );
-                return fullClassName;
+                list.add(fullClassName);
             }
         }
-        return null;
+        if (list.size() > 0) {
+            Collections.sort(list);
+            return list.toArray(new String[] {});
+        }
+        list.add("");
+        return list.toArray(new String[] {});
     }
 
 

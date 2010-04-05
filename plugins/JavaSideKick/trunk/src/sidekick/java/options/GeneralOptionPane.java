@@ -8,6 +8,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
 
     JLabel titleLabel = new JLabel( jEdit.getProperty("options.sidekick.java.generalOptions", "<html><b>General Options</b>") );
     private JCheckBox showErrorsInErrorList;
+    private JCheckBox parseOnCodeComplete;
 
     public GeneralOptionPane() {
         super( jEdit.getProperty("options.sidekick.java.general.label", "General") );
@@ -26,7 +27,9 @@ public class GeneralOptionPane extends AbstractOptionPane {
         addComponent( titleLabel );
         addComponent( Box.createVerticalStrut( 11 ) );
         showErrorsInErrorList = new JCheckBox( jEdit.getProperty( "options.sidekick.java.showErrors", "Show parse errors in ErrorList" ) );
+        parseOnCodeComplete = new JCheckBox( jEdit.getProperty( "options.sidekick.java.parseOnComplete", "Parse buffer on code completion" ) );
         addComponent( showErrorsInErrorList );
+        addComponent( parseOnCodeComplete );
     }
 
     /**
@@ -34,9 +37,11 @@ public class GeneralOptionPane extends AbstractOptionPane {
      */
     private void installDefaults() {
         showErrorsInErrorList.setSelected( jEdit.getBooleanProperty( "sidekick.java.showErrors", true ) );
+        parseOnCodeComplete.setSelected( jEdit.getBooleanProperty( "sidekick.java.parseOnComplete", true) );
     }
 
     protected void _save() {
         jEdit.setBooleanProperty( "sidekick.java.showErrors", showErrorsInErrorList.isSelected() );
+        jEdit.setBooleanProperty( "sidekick.java.parseOnComplete", parseOnCodeComplete.isSelected() );
     }
 }

@@ -16,6 +16,8 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 
+import projectviewer.vpt.VPTProject;
+
 import sidekick.java.PVHelper;
 import sidekick.java.util.Locator;
 
@@ -31,11 +33,13 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
     private JCheckBox useJavaClassPath;
     private JTextField buildPath;
     private View view;
+    private VPTProject proj;
     public static String PREFIX = "sidekick.java.pv.";
 
 
-    public PVClasspathOptionPane() {
+    public PVClasspathOptionPane(VPTProject proj) {
         super( "javasidekick.pv.options" );
+        this.proj = proj;
     }
 
     /** Initialises the option pane. */
@@ -45,13 +49,16 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
         view = jEdit.getActiveView();
 
         String name = PVHelper.getProjectName( view );
-
+        
         // Include java.class.path in classpath
+        // If prop is null or not equal to "true", set it to false
+        String prop = proj.getProperty( "java.useJavaClasspath" );
+        if (prop == null) prop = jEdit.getProperty( PREFIX + "useJavaClasspath" );
         useJavaClassPath = new JCheckBox(
                     jEdit.getProperty( PREFIX + "useJavaClasspath.label" ),
-                    jEdit.getBooleanProperty( PREFIX + name + ".useJavaClasspath" )
+                    prop.equals("true")
                 );
-        useJavaClassPath.setToolTipText( "<html>" + System.getProperty( "java.class.path" ).replaceAll( File.pathSeparator, File.pathSeparator + "<br>" ) );
+        useJavaClassPath.setToolTipText( System.getProperty("java.class.path") );
         addComponent( useJavaClassPath );
 
         // Classpath components
@@ -60,8 +67,9 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
                 );
         classpathBuilder.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
         classpathBuilder.setFileFilter( new ClasspathFilter() );
+        prop = proj.getProperty( "java.optionalClasspath" );
         classpathBuilder.setPath(
-            jEdit.getProperty( PREFIX + name + ".optionalClasspath", "" )
+            ((prop == null) ? "" : prop)
         );
         classpathBuilder.setStartDirectory( PVHelper.getProjectRoot( view ) );
         classpathBuilder.setEnabled( true );
@@ -75,8 +83,9 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
                 );
         sourcepathBuilder.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
         sourcepathBuilder.setFileFilter( new SourceFileFilter() );
+        prop = proj.getProperty( "java.optionalSourcepath" );
         sourcepathBuilder.setPath(
-            jEdit.getProperty( PREFIX + name + ".optionalSourcepath", "" )
+            ((prop == null) ? "" : prop)
         );
         sourcepathBuilder.setStartDirectory( PVHelper.getProjectRoot( view ) );
         sourcepathBuilder.setEnabled( true );
@@ -87,7 +96,8 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
         // build path components
         JLabel buildPathLabel = new JLabel( jEdit.getProperty( PREFIX + "buildOutputPath.label" ) );
         buildPath = new JTextField( 30 );
-        buildPath.setText( jEdit.getProperty( PREFIX + name + ".optionalBuildpath", "" ) );
+        prop = proj.getProperty( "java.optionalBuildpath" );
+        buildPath.setText( ((prop == null) ? "" : prop) );
         JButton browse_btn = new JButton( "Browse" );
         browse_btn.addActionListener( new ActionListener() {
                     public void actionPerformed( ActionEvent ae ) {
@@ -110,24 +120,48 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
     /** Saves properties from the option pane. */
     protected void _save() {
         String name = PVHelper.getProjectName( view );
+        /*
         jEdit.setBooleanProperty(
             PREFIX + name + ".useJavaClasspath",
             useJavaClassPath.isSelected()
         );
+        */
+        proj.setProperty(
+            "java.useJavaClasspath",
+            (useJavaClassPath.isSelected()) ? "true" : "false"
+        );
+        /*
         jEdit.setProperty(
             PREFIX + name + ".optionalClasspath",
             classpathBuilder.getPath()
         );
+        */
+        proj.setProperty(
+            "java.optionalClasspath",
+            classpathBuilder.getPath()
+        );
+        /*
         jEdit.setProperty(
             PREFIX + name + ".optionalSourcepath",
             sourcepathBuilder.getPath()
         );
+        */
+        proj.setProperty(
+            "java.optionalSourcepath",
+            sourcepathBuilder.getPath()
+        );
+        /*
         jEdit.setProperty(
             PREFIX + name + ".optionalBuildpath",
             buildPath.getText()
         );
-        
-        Locator.getInstance().reloadProjectClassNames( name );
+        */
+        proj.setProperty(
+            "java.optionalBuildpath",
+            buildPath.getText()
+        );
+        Locator.getInstance().reloadProjectJars( proj );
+        Locator.getInstance().reloadProjectClassNames( proj );
     }
 
     public void addComponent( JComponent comp ) {

@@ -36,15 +36,26 @@ public class JavaCompletionFinder {
     private JavaSideKickParsedData data = null;
     private EditPane editPane = null;
     private int caret = 0;
+    private String[] tempPossibles = null;
+    private boolean savePackages = false;
 
     public JavaCompletion complete( EditPane editPane, int caret ) {
         this.editPane = editPane;
         this.caret = caret;
 
-        SideKickParsedData skpd = SideKickParsedData.getParsedData( editPane.getView() );
+        SideKickParsedData skpd = null;
+        if ( jEdit.getBooleanProperty("sidekick.java.parseOnComplete") ) {
+            skpd = (new sidekick.java.JavaParser()).parse();
+        }
+        else {
+            skpd = SideKickParsedData.getParsedData( editPane.getView() );
+        }
+
         if ( skpd == null ) {
             return null;
         }
+
+        SideKickParsedData.setParsedData( editPane.getView() , skpd );
 
         if ( skpd instanceof JavaSideKickParsedData ) {
             data = ( JavaSideKickParsedData ) skpd;
@@ -64,6 +75,8 @@ public class JavaCompletionFinder {
             1. partial word: get matching fields and methods in the class
             2. words ending with dot: get matching fields and methods in the
                 class for the type represented by the word.
+            3. words ending with "(": get constructors
+            4. class name: get packages
         */ 
         //long start = System.currentTimeMillis();
         JavaCompletion completion = getPossibleCompletions( word );
@@ -71,24 +84,11 @@ public class JavaCompletionFinder {
         return completion ;
     }
 
-
-    /// doesn't handle identifiers spanning several lines, like:
-    /// com.
-    /// foo.
-    /// Bar.getSomething
-    /// which is legal. All this will return is Bar.getSomething. Without the
-    /// qualifiers, finding the class name is unlikely, so completion won't work.
-    /// Doesn't handle whitespace within an identifier, like:
-    /// com.     foo.   Bar.   getSomething, which is also legal.
-    /// Doesn't handle implicit return types, like:
-    /// StringBuffer sb = new StringBuffer(); sb.append().app
-    ///
     private String getWordAtCursor( Buffer buffer ) {
         if ( caret <= 0 )
             return "";
         if ( data == null )
             return null;
-
         // get the text in the current asset just before the cursor
         TigerNode tn = ( TigerNode ) data.getAssetAtOffset( caret );
         if ( tn == null ) {
@@ -103,16 +103,24 @@ public class JavaCompletionFinder {
         if ( text == null || text.length() == 0 ) {
             return null;
         }
-
         Mode mode = buffer.getMode();       // TODO: check for java mode?
         String word_break_chars = ( String ) mode.getProperty( "wordBreakChars" );
         if ( word_break_chars == null ) {
             word_break_chars = "";
         }
-        word_break_chars += "!;{}()";        // NOPMD
+        //word_break_chars += "!;{}()";        // NOPMD
+        word_break_chars += "!;{}";        // NOPMD
 
         // remove line enders and tabs
         text = text.replaceAll( "[\\n\\r\\t]", "" );
+
+        // NOTE: Remove keywords such as "new" and "import" that need to act as word breaks
+        // Keywords are saved as a comma-separated list in the jEdit property
+        // sidekick.java.wordBreakWords
+        String[] wordBreakWords = jEdit.getProperty( "sidekick.java.wordBreakWords" ).split(",");
+        for (int i = 0; i < wordBreakWords.length; i++) {
+            text = text.replace(wordBreakWords[i] + " ", "");
+        }
 
         // read the text backwards until a word break character is found.  It is
         // possible that there is no word break character.
@@ -145,28 +153,45 @@ public class JavaCompletionFinder {
         // static method, like String.valueOf
 
         // check if cast
-        /* // needs work.  This doesn't feel right, hand parsing a cast could
-           // be difficult as there are several variations in the depth of
-           // parens.
-        if (word.startsWith("(")) {
-            int index = word.indexOf(")");
-            if (index > 1) {
-                String cast = word.substring(1, index);
+        // needs work.  This doesn't feel right, hand parsing a cast could
+        // be difficult as there are several variations in the depth of
+        // parens.
+        int start = -1;
+        if ((start = word.lastIndexOf('(')) != -1) {
+            int index = word.indexOf(')', start);
+            if (index > (start + 1)) {
+                String cast = word.substring(start + 1, index);
                 if (cast != null && cast.length() > 0) {
                     Class c = getClassForType( cast, ( CUNode ) data.root.getUserObject() );
                     if ( c != null ) {
                         // filter the members of the class by the part of the word
                         // following the last dot.  The completion will replace this
                         // part of a word
-                        String filter = word.substring( word.lastIndexOf( "." ) + 1 );
+                        String filter = word.substring( word.lastIndexOf( '.' ) + 1 );
                         List members = getMembersForClass( c, filter );
                         if ( members != null && members.size() > 0 )
                             return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, members );
                     }
                 }
             }
-    }
-        */
+        }
+
+        char lastChar = word.charAt(word.length() - 1);
+        if (lastChar == ')')
+            return null;
+
+        if (lastChar == '(') {
+            // Constructors
+            word = word.substring(0, word.length() - 1);
+            Class c = validateClassName(word);
+            if (c == null) {
+                c = getClassForType(word, (CUNode) data.root.getUserObject() );
+            }
+            if (c != null) {
+                return new JavaCompletion( editPane.getView(), word, JavaCompletion.CONSTRUCTOR,
+                        getConstructorsForClass(c) );
+            }
+        }
 
         // check if "qualified", "qualified" means there is something.something
         boolean qualified = word.lastIndexOf( '.' ) > 0;
@@ -193,34 +218,100 @@ public class JavaCompletionFinder {
         if ( qualification.endsWith( ".this" ) )
             return getQualifiedThisCompletion( word );
 
-        // possibly local variable/field, e.g. data.get
-        FieldNode node = getLocalVariable( qualification );
-        //Log.log( Log.DEBUG, this, "field node: " + node );
-
+        StringTokenizer tokenizer = new StringTokenizer( qualification , "." );
+        String qual = "", old_token = "";
         Class c = null;
-        if ( node != null ) {
-            c = getClassForType( node.getType(), ( CUNode ) data.root.getUserObject() );
-        }
-
         boolean static_only = false;
-        // could have package.class.partialword, e.g. java.lang.String.valu
-        if ( c == null ) {
-            c = validateClassName( qualification );
-            static_only = c != null;
+        while (tokenizer.hasMoreTokens()) {
+            String token = old_token + tokenizer.nextToken();
+            qual += token;
+            // Check for nested parentheses
+            int p1 = -1, p2 = -1;
+            int p1count = 0, p2count = 0;
+            while ((p1 = qual.indexOf("(", p1 + 1)) != -1) {
+                p1count++;
+            }
+            while ((p2 = qual.indexOf(")", p2 + 1)) != -1) {
+                p2count++;
+            }
+            if (p1count != p2count) {
+                // We're in a nested parenthese, skip it
+                if (tokenizer.hasMoreTokens()) {
+                    old_token += token;
+                    qual += ".";
+                }
+                continue;
+            }
+            old_token = "";
+            if (c == null) {
+                // Class?
+                c = validateClassName(qual);
+                if (c == null)
+                    c = getClassForType(qual, (CUNode) data.root.getUserObject());
+                static_only = (c != null);
+                if (c == null) {
+                    // Field?
+                    FieldNode node = getLocalVariable(qual);
+                    if (node != null) {
+                        c = getClassForType(node.getType(), (CUNode) data.root.getUserObject());
+                        if (c == null)
+                            return null;
+                    }
+                }
+            }
+            else {
+                boolean found = false;
+                // Fields
+                Field[] fields = c.getFields();
+                for (int i = 0; i < fields.length; i++) {
+                    if (token.equals(fields[i].getName())) {
+                        c = fields[i].getType();
+                        found = true;
+                        static_only = false;
+                        break;
+                    }
+                }
+                if (!found) {
+                    // Methods
+                    Method[] methods = c.getMethods();
+                    for (int i = 0; i < methods.length; i++) {
+                        if (token.startsWith(methods[i].getName() + "(")) {
+                            c = methods[i].getReturnType();
+                            found = true;
+                            static_only = false;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        // Subclasses
+                        Class[] classes = c.getClasses();
+                        for (int i = 0; i < classes.length; i++) {
+                            if (token.equals(classes[i].getName())) {
+                                c = classes[i];
+                                found = true;
+                                static_only = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            if (tokenizer.hasMoreTokens())
+                qual += ".";
         }
-
-        // could have class.partialword, e.g. Math.ab
-        if ( c == null ) {
-            c = getClassForType( qualification, ( CUNode ) data.root.getUserObject() );
-            static_only = c != null;
-        }
-        if ( c != null ) {
+        if (c != null) {
             // filter the members of the class by the part of the word
             // following the last dot.  The completion will replace this
             // part of a word
             String filter = word.substring( word.lastIndexOf( '.' ) + 1 );
             if ( filter != null && filter.length() == 0 )
                 filter = null;
+            // If there is no filter and a parenthese, show constructors
+            if (filter == null && word.endsWith("(")) {
+                List constructors = getConstructorsForClass(c);
+                return new JavaCompletion( editPane.getView(), word, JavaCompletion.PARTIAL,
+                        constructors );
+            }
             List members = getMembersForClass( c, filter, static_only );
             if ( members != null && members.size() > 0 ) {
                 if ( members.size() == 1 && members.get( 0 ).equals( word ) ) {
@@ -231,8 +322,11 @@ public class JavaCompletionFinder {
         }
 
         // could have package.partialClass, e.g. javax.swing.tree.DefaultMu
-        String projectName = PVHelper.getProjectName( editPane.getView() );
-        List<String> possibles = Locator.getInstance().getProjectClasses( projectName, word );
+        List<String> possibles = null;
+        if (PVHelper.isProjectViewerAvailable()) {
+            possibles = Locator.getInstance().getProjectClasses(
+                        PVHelper.getProject( editPane.getView() ), word );
+        }
         if ( possibles == null || possibles.size() == 0 ) {
             possibles = Locator.getInstance().getClassPathClasses( word );
         }
@@ -245,11 +339,35 @@ public class JavaCompletionFinder {
             }
             return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, possibles );
         }
+
         return getLocalVariableCompletion( word );
     }
 
 
     private JavaCompletion getPossibleNonQualifiedCompletions( String word ) {
+        // If the word is a class, get its package
+        savePackages = true;
+        tempPossibles = null;
+        Class c = getClassForType(word, (CUNode) data.root.getUserObject());
+        if (tempPossibles != null) {
+            List<String> list = new ArrayList<String>(tempPossibles.length);
+            for (int i = 0; i < tempPossibles.length; i++) {
+                list.add(tempPossibles[i]);
+            }
+            //list.add(c.getPackage().getName()+"."+word);
+            return new JavaCompletion(editPane.getView(), word, list);
+        }
+        else if (c != null) {
+            // The package could potentially be null, in which case just return null
+            try {
+                List<String> list = new ArrayList<String>(1);
+                list.add(c.getPackage().getName() + "." + word);
+                return new JavaCompletion(editPane.getView(), word, list);
+            }
+            catch (Exception e) {
+                return null;
+            }
+        }
         // partialword
         // find all fields/variables declarations, methods, and classes in scope
         TigerNode tn = ( TigerNode ) data.getAssetAtOffset( caret );
@@ -445,7 +563,7 @@ public class JavaCompletionFinder {
                     }
                 }
             }
-            
+
             // check parameters to constructors and methods
             if ( tn.getOrdinal() == TigerNode.CONSTRUCTOR || tn.getOrdinal() == TigerNode.METHOD ) {
                 List params = ( ( Parameterizable ) tn ).getFormalParams();
@@ -456,7 +574,7 @@ public class JavaCompletionFinder {
                     }
                 }
             }
-            
+
             // up the tree
             tn = tn.getParent();
             if ( tn == null ) {
@@ -521,26 +639,74 @@ public class JavaCompletionFinder {
             }
         }
 
+        Class c = null;
+        String[] classNames = null;
+        String className = null;
         // check jars in project classpath. These are the jars and/or directories
         // specified in the ProjectViewer "Classpath settings" option pane.
-        String projectName = PVHelper.getProjectName( editPane.getView() );
-        String className = Locator.getInstance().getProjectClassName( projectName, type );
-        Class c = validateClassName( className, type, filename );
-
+        if (PVHelper.isProjectViewerAvailable()) {
+            classNames = Locator.getInstance().getProjectClassName(
+                        PVHelper.getProject( editPane.getView() ), type);
+            if (classNames != null && classNames.length > 1) {
+                if (!savePackages) {
+                    GUIUtilities.error(editPane.getView(), "options.sidekick.java.ambiguousClass",
+                            new String[] { type });
+                }
+                else {
+                    tempPossibles = classNames;
+                }
+                return null;
+            }
+            else if (classNames != null && classNames.length > 0) {
+                className = classNames[0];
+                c = validateClassName( className, type, filename );
+                if (c != null) {
+                    return c;
+                }
+            }
+        }
         // check jars in classpath.  These are the jars and/or directories specified
         // in System.getProperty("java.class.path").
-        if ( c == null && PVHelper.useJavaClasspath( projectName ) ) {
-            className = Locator.getInstance().getClassPathClassName( type );
+        if ( c == null && PVHelper.useJavaClasspath( PVHelper.getProject( editPane.getView() ) ) ) {
+            classNames = Locator.getInstance().getClassPathClassName( type );
+            if (classNames != null && classNames.length > 1) {
+                if (!savePackages) {
+                    GUIUtilities.error(editPane.getView(), "options.sidekick.java.ambiguousClass",
+                            new String[] { type });
+                }
+                else {
+                    tempPossibles = classNames;
+                }
+                return null;
+            }
+            className = classNames[0];
             c = validateClassName( className, type, filename );
+            if (c != null) {
+                return c;
+            }
         }
 
         // check Java runtime jars.  These are the jars specified in $JAVA_HOME/lib,
         // ext dirs, and endorsed dirs.
         if ( c == null ) {
-            className = Locator.getInstance().getRuntimeClassName( type );
+            classNames = Locator.getInstance().getRuntimeClassName( type );
+            if (classNames != null && classNames.length > 1) {
+                if (!savePackages) {
+                    GUIUtilities.error(editPane.getView(), "options.sidekick.java.ambiguousClass",
+                            new String[] { type });
+                }
+                else {
+                    tempPossibles = classNames;
+                }
+                return null;
+            }
+            className = classNames[0];
             c = validateClassName( className, type, filename );
+            if (c != null) {
+                return c;
+            }
         }
-        return c;
+        return null;
     }
 
 
@@ -588,13 +754,13 @@ public class JavaCompletionFinder {
      * probably aren't loaded in any class loader available to jEdit.
      */
     private Class findClassInProject( String classname, String type, String filename ) {
-        if ( filename == null ) {
+        if ( filename == null || !PVHelper.isProjectViewerAvailable() ) {
             return null;
         }
-        String project_name = PVHelper.getProjectNameForFile( filename );
+        projectviewer.vpt.VPTProject project = PVHelper.getProjectForFile( filename );
         Class c = null;
-        if ( project_name != null ) {
-            String pc = PVHelper.getBuildOutputPathForProject( project_name );
+        if ( project != null ) {
+            String pc = PVHelper.getBuildOutputPathForProject( project );
             AntClassLoader loader = new AntClassLoader( new Path( pc ), false );
             try {
                 c = loader.findClass( type );
@@ -627,13 +793,23 @@ public class JavaCompletionFinder {
         Set members = new HashSet();
         for ( Iterator it = cn.getChildren().iterator(); it.hasNext(); ) {
             TigerNode child = ( TigerNode ) it.next();
+            String more = "";
             switch ( child.getOrdinal() ) {     // NOPMD
                 case TigerNode.ENUM:
                 case TigerNode.FIELD:
+                    if (more.length() == 0) {
+                        FieldNode fn = (FieldNode) child;
+                        more = " : " + fn.getType();
+                    }
                 case TigerNode.METHOD:
+                    if (more.length() == 0) {
+                        MethodNode mn = (MethodNode) child;
+                        more = "(" + mn.getFormalParams(true, false, true, true) +
+                               ") : " + mn.getReturnType().getType();
+                    }
                 case TigerNode.CLASS:
                     if ( filter == null || child.getName().startsWith( filter ) ) {
-                        members.add( child.getName() );
+                        members.add( child.getName() + more );
                     }
             }
         }
@@ -666,13 +842,22 @@ public class JavaCompletionFinder {
                     continue;
                 }
                 if ( filter == null || methods[ i ].getName().startsWith( filter ) ) {
-                    list.add( methods[ i ].getName() );
+                    Method method = methods[ i ];
+                    Class[] paramTypes = method.getParameterTypes();
+                    StringBuilder params = new StringBuilder("(");
+                    for (int j = 0; j < paramTypes.length; j++) {
+                        params.append( paramTypes[j].getSimpleName() );
+                        if (j < paramTypes.length - 1)
+                            params.append( ',' );
+                    }
+                    params.append( ')' );
+                    list.add( method.getName() + params.toString() + " : " + method.getReturnType().getName() );
                 }
             }
             Field[] fields = c.getFields();
             for ( int i = 0; i < fields.length; i++ ) {
                 if ( filter == null || fields[ i ].getName().startsWith( filter ) )
-                    list.add( fields[ i ].getName() );
+                    list.add( fields[ i ].getName() + " : " + fields[ i ].getName() );
             }
         }
         catch ( Exception e ) {
@@ -687,6 +872,31 @@ public class JavaCompletionFinder {
         List members = new ArrayList( list );
         Collections.sort( members );
         return members;
+    }
+
+    private List getConstructorsForClass( Class c ) {
+        Set list = new HashSet();
+        try {
+            Constructor[] cons = c.getConstructors();
+            for (int i = 0; i < cons.length; i++) {
+                StringBuilder name = new StringBuilder();
+                name.append(c.getSimpleName()).append('(');
+                Class[] params = cons[i].getParameterTypes();
+                for (int j = 0; j < params.length; j++) {
+                    name.append( params[j].getSimpleName() );
+                    if (j < params.length - 1)
+                        name.append( ',' );
+                }
+                name.append( ')' );
+                list.add(name);
+            }
+        }
+        catch (Exception e) {
+            return null;
+        }
+        List constructors = new ArrayList( list );
+        Collections.sort( constructors );
+        return constructors;
     }
 
 }

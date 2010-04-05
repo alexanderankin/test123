@@ -21,6 +21,8 @@ import sidekick.*;
 import javax.swing.tree.*;
 import java.util.*;
 
+import org.gjt.sp.util.Log;
+
 import sidekick.java.node.TigerNode;
 
 
