@@ -165,20 +165,44 @@ public class BufferLocalPlugin extends EBPlugin implements WindowListener {
         loadProperties();
 
         // load configuration setings
-        String dir = jEdit.getSettingsDirectory();
-        if ( dir == null ) {
-            dir = System.getProperty( "user.home" );
-        }
-        configFile = new File( dir, ".bufferlocalplugin.cfg" );
-        if ( configFile.exists() ) {
-            try {
+        // Previously, this file was stored either in the jEdit settings directory
+        // or user.home.  Now it is stored in plugin home.  For backward compatibility,
+        // first check plugin home.  If the config file is there, assume it has already
+        // been migrated.  If not, check settings directory and user home and copy it
+        // to plugin home, then use it.  Once done, delete the old file.
+        try {
+            File homeDir = jEdit.getPlugin( "ise.plugin.bmp.BufferLocalPlugin" ).getPluginHome();
+            homeDir.mkdir();
+            configFile = new File( homeDir, ".bufferlocalplugin.cfg" );
+            if ( configFile.exists() ) {
                 BufferedInputStream in = new BufferedInputStream( new FileInputStream( configFile ) );
                 map.load( in );
                 in.close();
             }
-            catch ( Exception e ) {     // NOPMD
-                // ignored, don't worry about what doesn't work
+            else {
+                String oldDir = jEdit.getSettingsDirectory();
+                if ( oldDir == null ) {
+                    oldDir = System.getProperty( "user.home" );
+                }
+                configFile = new File( oldDir, ".bufferlocalplugin.cfg" );
+                if ( configFile.exists() ) {
+                    BufferedInputStream in = new BufferedInputStream( new FileInputStream( configFile ) );
+                    map.load( in );
+                    in.close();
+                    // delete the old file and write out the new file
+                    configFile.delete();
+                    configFile = new File( homeDir, ".bufferlocalplugin.cfg" );
+                    synchronized ( map ) {
+                        BufferedOutputStream out = new BufferedOutputStream( new FileOutputStream( configFile ) );
+                        map.store( out, "Machine generated for BufferLocalPlugin, DO NOT EDIT!" );
+                        out.flush();
+                        out.close();
+                    }
+                }
             }
+        }
+        catch (Exception e) {       // NOPMD
+            // ignored
         }
 
         // TODO: attach to open Views
@@ -217,11 +241,9 @@ public class BufferLocalPlugin extends EBPlugin implements WindowListener {
         janitor.interrupt();
         bufferCleaner.interrupt();
         if ( configFile == null || !configFile.exists() ) {
-            String dir = jEdit.getSettingsDirectory();
-            if ( dir == null ) {
-                dir = System.getProperty( "user.home" );
-            }
-            configFile = new File( dir, ".bufferlocalplugin.cfg" );
+            File homeDir = jEdit.getPlugin( "ise.plugin.bmp.BufferLocalPlugin" ).getPluginHome();
+            homeDir.mkdir();
+            configFile = new File( homeDir, ".bufferlocalplugin.cfg" );
         }
         try {
             synchronized ( map ) {
