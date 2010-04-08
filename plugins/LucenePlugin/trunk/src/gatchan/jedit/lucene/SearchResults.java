@@ -10,6 +10,8 @@ import java.util.Vector;
 import java.util.Collections;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -67,7 +69,6 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		JPanel maxPanel = new JPanel(new BorderLayout());
 		maxPanel.add(BorderLayout.WEST, new JLabel("Max results:"));
 		maxPanel.add(BorderLayout.EAST, maxResults);
-
 		indexStatus = new JLabel();
 		String[] items = LucenePlugin.instance.getIndexes();
 		indexModel = new IndexComboBoxModel(items);
@@ -104,7 +105,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		add(panel, BorderLayout.NORTH);
 		panel.add(new JLabel("Search for:"), BorderLayout.WEST);
 		searchField = new HistoryTextField("lucene.search-history");
-		MyActionListener actionListener = new MyActionListener();
+		final MyActionListener actionListener = new MyActionListener();
 		searchField.addActionListener(actionListener);
 		type.addActionListener(actionListener);
 		clear = new RolloverButton(GUIUtilities.loadIcon(
@@ -189,6 +190,13 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			}
 			indexes.setSelectedIndex(index);
 		}
+
+		maxResults.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				if (! searchField.getText().isEmpty())
+					actionListener.actionPerformed(null);
+			}
+		});
 	}
 
 	private void updateMultiStatus()
