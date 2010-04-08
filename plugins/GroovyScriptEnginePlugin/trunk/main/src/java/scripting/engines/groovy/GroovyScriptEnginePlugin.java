@@ -23,7 +23,7 @@ package scripting.engines.groovy;
 
 import com.sun.script.groovy.GroovyScriptEngineFactory;
 
-import com.townsfolkdesigns.jedit.plugins.scripting.ScriptEngineService;
+import scripting.ScriptEngineService;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.jEdit;

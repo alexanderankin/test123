@@ -8,7 +8,7 @@ Paste the text below into the Plugin Central Submission Tracker at https://sourc
     Requires Java 1.5
     Requires jEdit 04.03.15.00
     Required plugins: 
-        com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin 0.3.0
+        scripting.ScriptEnginePlugin 0.3.0
     
     Short Description: Provides jEdit with the ability to use the Groovy ScriptEngine provided on scripting.dev.java.net.
     
