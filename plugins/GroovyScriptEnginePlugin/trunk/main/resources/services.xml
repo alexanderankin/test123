@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<!DOCTYPE SERVICES SYSTEM "services.dtd">
-<SERVICES>
-	<SERVICE CLASS="scripting.ScriptEngineService" NAME="GroovyScriptEngine">
-		return new scripting.engines.groovy.GroovyScriptEnginePlugin();
-	</SERVICE>
-</SERVICES>

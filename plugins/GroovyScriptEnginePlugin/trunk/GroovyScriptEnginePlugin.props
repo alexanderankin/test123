@@ -1,0 +1,14 @@
+plugin.scripting.engines.groovy.GroovyScriptEnginePlugin.activate=defer
+plugin.scripting.engines.groovy.GroovyScriptEnginePlugin.author=Eric Berry
+plugin.scripting.engines.groovy.GroovyScriptEnginePlugin.depend.0=jdk 1.6
+plugin.scripting.engines.groovy.GroovyScriptEnginePlugin.depend.1=jedit 04.04.01.00
+plugin.scripting.engines.groovy.GroovyScriptEnginePlugin.depend.2=plugin scripting.ScriptEnginePlugin 0.6.0
+plugin.scripting.engines.groovy.GroovyScriptEnginePlugin.description=Provides jEdit with the ability to use the Groovy ScriptEngine provided on scripting.dev.java.net.
+# Versons: Groovy 1.7.1, miglayout-swing 3.7.2
+plugin.scripting.engines.groovy.GroovyScriptEnginePlugin.jars=groovy-all.jar groovy-engine.jar miglayout-swing.jar
+plugin.scripting.engines.groovy.GroovyScriptEnginePlugin.name=Groovy Script Engine Plugin
+plugin.scripting.engines.groovy.GroovyScriptEnginePlugin.version=1.1.0
+
+
+plugin.scripting.engines.groovy.GroovyScriptEnginePlugin.docs=docs/GroovyScriptEnginePlugin.html
+
