@@ -9,7 +9,7 @@
 <body>
 <h1>Introduction</h1>
 The ScriptEnginePlugin provides an easy to use and easy to implement framework
-that makes <a href="https://scripting.dev.java.net">scripting.dev.java.net</a>
+that makes <a href="https://scripting.dev.java.net">scripting.dev.java.net</a>
 ScriptEngines usable inside of jEdit.<br>
 
 
@@ -47,7 +47,7 @@ menu.<br>
 <ul>
   <li><span style="font-weight: bold;">wm</span> - a DockableWindowManager is
     the visible component that manages dockable windows in the current view.
-    This class is discussed in detail in Part IV, &ldquo;Writing
+    This class is discussed in detail in Part IV, &ldquo;Writing
     Plugins&rdquo;. This object is useful for writing macros that interface
     with, open, or close plugin windows. </li>
 </ul>
@@ -70,7 +70,7 @@ set then whatever value came from normal script execution will be returned.
 
 <h1>Macros</h1>
 
-<p>The ScriptEngine plugin provides to actions which allows the creation of
+<p>The ScriptEngine plugin provides two actions which allows the creation of
 jEdit macros from other scripting languages other than BeanShell.</p>
 <ul>
   <li>Create Macro</li>
@@ -154,29 +154,29 @@ border="1" cellpadding="5" cellspacing="0">
         <pre><span style="font-family: mon;"></span></pre>
         <pre><span style="font-family: mon;"></span></pre>
         <pre><span style="font-family: mon;">/**</span></pre>
-        <pre><span style="font-family: mon;"> * The GroovyScriptEnginePlugin provides the Groovy ScriptEngine to jEdit plugins.</span></pre>
-        <pre><span style="font-family: mon;"> * @author elberry</span></pre>
-        <pre><span style="font-family: mon;"> */</span></pre>
+        <pre><span style="font-family: mon;"> * The GroovyScriptEnginePlugin provides the Groovy ScriptEngine to jEdit plugins.</span></pre>
+        <pre><span style="font-family: mon;"> * @author elberry</span></pre>
+        <pre><span style="font-family: mon;"> */</span></pre>
         <pre><span style="font-family: mon;">public class GroovyScriptEnginePlugin extends EditPlugin implements ScriptEngineService {</span></pre>
         <pre><span style="font-family: mon;"></span></pre>
-        <pre><span style="font-family: mon;">   private GroovyScriptEngineFactory factory = new GroovyScriptEngineFactory();</span></pre>
+        <pre><span style="font-family: mon;">   private GroovyScriptEngineFactory factory = new GroovyScriptEngineFactory();</span></pre>
         <pre><span style="font-family: mon;"></span></pre>
-        <pre><span style="font-family: mon;">   public Class getEngineFactoryClass() {</span></pre>
-        <pre><span style="font-family: mon;">      return factory.getClass();</span></pre>
-        <pre><span style="font-family: mon;">   }</span></pre>
+        <pre><span style="font-family: mon;">   public Class getEngineFactoryClass() {</span></pre>
+        <pre><span style="font-family: mon;">      return factory.getClass();</span></pre>
+        <pre><span style="font-family: mon;">   }</span></pre>
         <pre><span style="font-family: mon;"></span></pre>
-        <pre><span style="font-family: mon;">   public Mode getMode() {</span></pre>
-        <pre><span style="font-family: mon;">      return jEdit.getMode("groovy");</span></pre>
-        <pre><span style="font-family: mon;">   }</span></pre>
+        <pre><span style="font-family: mon;">   public Mode getMode() {</span></pre>
+        <pre><span style="font-family: mon;">      return jEdit.getMode("groovy");</span></pre>
+        <pre><span style="font-family: mon;">   }</span></pre>
         <pre><span style="font-family: mon;"></span></pre>
         <pre><span style="font-family: mon;"></span></pre>
-        <pre><span style="font-family: mon;">   @Override</span></pre>
-        <pre><span style="font-family: mon;">   public void start() {</span></pre>
-        <pre><span style="font-family: mon;">   }</span></pre>
+        <pre><span style="font-family: mon;">   @Override</span></pre>
+        <pre><span style="font-family: mon;">   public void start() {</span></pre>
+        <pre><span style="font-family: mon;">   }</span></pre>
         <pre><span style="font-family: mon;"></span></pre>
-        <pre><span style="font-family: mon;">   @Override</span></pre>
-        <pre><span style="font-family: mon;">   public void stop() {</span></pre>
-        <pre><span style="font-family: mon;">   }</span></pre>
+        <pre><span style="font-family: mon;">   @Override</span></pre>
+        <pre><span style="font-family: mon;">   public void stop() {</span></pre>
+        <pre><span style="font-family: mon;">   }</span></pre>
         <pre><span style="font-family: mon;"></span></pre>
         <pre><span style="font-family: mon;">}</span></pre>
       </td>
@@ -217,9 +217,9 @@ border="1" cellpadding="5" cellspacing="0">
       <td><pre>&lt;?xml version="1.0"?&gt;</pre>
         <pre>&lt;!DOCTYPE SERVICES SYSTEM "services.dtd"&gt;</pre>
         <pre>&lt;SERVICES&gt;</pre>
-        <pre>    &lt;SERVICE CLASS="com.townsfolkdesigns.jedit.plugins.scripting.ScriptEngineService" NAME="GroovyScriptEngine"&gt;</pre>
-        <pre>        return new com.townsfolkdesigns.jedit.plugins.scripting.GroovyScriptEnginePlugin();</pre>
-        <pre>    &lt;/SERVICE&gt;</pre>
+        <pre>&nbsp;&nbsp;&nbsp;&lt;SERVICE CLASS="scripting.ScriptEngineService" NAME="GroovyScriptEngine"&gt;</pre>
+        <pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return new scripting.GroovyScriptEnginePlugin();</pre>
+        <pre>&nbsp;&nbsp;&nbsp;&lt;/SERVICE&gt;</pre>
         <pre>&lt;/SERVICES&gt;</pre>
       </td>
     </tr>
@@ -240,9 +240,9 @@ style="text-align: left; background-color: rgb(204, 204, 204); width: 100%;"
 border="1" cellpadding="5" cellspacing="0">
   <tbody>
     <tr>
-      <td>plugin.com.townsfolkdesigns.jedit.plugins.scripting.GroovyScriptEnginePlugin.depend.2=plugin
-        com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin
-      0.3.0</td>
+      <td>plugin.scripting.GroovyScriptEnginePlugin.depend.2=plugin
+        scripting.ScriptEnginePlugin
+      0.6.0</td>
     </tr>
   </tbody>
 </table>
@@ -254,6 +254,9 @@ from within jEdit.<br>
 
 
 <h2>Author:</h2>
+
+<div style="margin-left: 40px;">
+Eric Berry (v. 0.6.0 - 2010)</div>
 
 <div style="margin-left: 40px;">
 Eric Berry (v. 0.5.0 - 2009)</div>
