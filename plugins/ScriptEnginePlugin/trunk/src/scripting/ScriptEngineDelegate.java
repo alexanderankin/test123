@@ -20,7 +20,7 @@
  *  THE SOFTWARE.
  */
 
-package com.townsfolkdesigns.jedit.plugins.scripting;
+package scripting;
 
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.ServiceManager;

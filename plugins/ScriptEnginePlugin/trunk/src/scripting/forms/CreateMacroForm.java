@@ -19,10 +19,10 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-package com.townsfolkdesigns.jedit.plugins.scripting.forms;
+package scripting.forms;
 
-import com.townsfolkdesigns.jedit.plugins.scripting.ScriptEngineDelegate;
-import com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin;
+import scripting.ScriptEngineDelegate;
+import scripting.ScriptEnginePlugin;
 
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.jEdit;

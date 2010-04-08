@@ -19,9 +19,9 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-package com.townsfolkdesigns.jedit.plugins.scripting;
+package scripting;
 
-import com.townsfolkdesigns.jedit.plugins.scripting.forms.CreateMacroForm;
+import scripting.forms.CreateMacroForm;
 
 import org.gjt.sp.jedit.Macros;
 import org.gjt.sp.jedit.Mode;

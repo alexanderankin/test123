@@ -2,9 +2,9 @@
 <ACTIONS>
 	<ACTION NAME="scriptengine.plugin.evaluate.buffer">
 		<CODE>
-			import com.townsfolkdesigns.jedit.plugins.scripting.*;
+			import scripting.*;
 			
-			ScriptEnginePlugin plugin = jEdit.getPlugin("com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin");
+			ScriptEnginePlugin plugin = jEdit.getPlugin("scripting.ScriptEnginePlugin");
 			ScriptExecutionDelegate delegate = plugin.getScriptExecutionDelegate();
 			
 			Object returnValue = delegate.evaluateBuffer(view);
@@ -15,9 +15,9 @@
 	</ACTION>
 	<ACTION NAME="scriptengine.plugin.evaluate.buffer.to.console">
 		<CODE>
-			import com.townsfolkdesigns.jedit.plugins.scripting.*;
+			import scripting.*;
 			
-			ScriptEnginePlugin plugin = jEdit.getPlugin("com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin");
+			ScriptEnginePlugin plugin = jEdit.getPlugin("scripting.ScriptEnginePlugin");
 			ScriptExecutionDelegate delegate = plugin.getScriptExecutionDelegate();
 			
 			Object returnValue = delegate.evaluateBuffer(view);
@@ -28,9 +28,9 @@
 	</ACTION>
 	<ACTION NAME="scriptengine.plugin.evaluate.selection">
 		<CODE>
-			import com.townsfolkdesigns.jedit.plugins.scripting.*;
+			import scripting.*;
 			
-			ScriptEnginePlugin plugin = jEdit.getPlugin("com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin");
+			ScriptEnginePlugin plugin = jEdit.getPlugin("scripting.ScriptEnginePlugin");
 			ScriptExecutionDelegate delegate = plugin.getScriptExecutionDelegate();
 			
 			if(view.getTextArea().getSelectedText() != null) {
@@ -45,9 +45,9 @@
 	</ACTION>
 	<ACTION NAME="scriptengine.plugin.evaluate.selection.to.console">
 		<CODE>
-			import com.townsfolkdesigns.jedit.plugins.scripting.*;
+			import scripting.*;
 			
-			ScriptEnginePlugin plugin = jEdit.getPlugin("com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin");
+			ScriptEnginePlugin plugin = jEdit.getPlugin("scripting.ScriptEnginePlugin");
 			ScriptExecutionDelegate delegate = plugin.getScriptExecutionDelegate();
 			
 			if(view.getTextArea().getSelectedText() != null) {
@@ -62,9 +62,9 @@
 	</ACTION>
 	<ACTION NAME="scriptengine.plugin.macro.create">
 		<CODE>
-			import com.townsfolkdesigns.jedit.plugins.scripting.*;
+			import scripting.*;
 			
-			ScriptEnginePlugin plugin = jEdit.getPlugin("com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin");
+			ScriptEnginePlugin plugin = jEdit.getPlugin("scripting.ScriptEnginePlugin");
 			MacroDelegate delegate = plugin.getMacroDelegate();
 			
 			delegate.createMacro(view);
@@ -72,9 +72,9 @@
 	</ACTION>
 	<ACTION NAME="scriptengine.plugin.macro.create.from.buffer">
 		<CODE>
-			import com.townsfolkdesigns.jedit.plugins.scripting.*;
+			import scripting.*;
 			
-			ScriptEnginePlugin plugin = jEdit.getPlugin("com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin");
+			ScriptEnginePlugin plugin = jEdit.getPlugin("scripting.ScriptEnginePlugin");
 			MacroDelegate delegate = plugin.getMacroDelegate();
 			
 			delegate.createMacroFromBuffer(view);
