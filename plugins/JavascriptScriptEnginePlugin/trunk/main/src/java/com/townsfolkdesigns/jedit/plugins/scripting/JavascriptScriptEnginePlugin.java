@@ -22,14 +22,14 @@
 package com.townsfolkdesigns.jedit.plugins.scripting;
 
 import com.sun.phobos.script.javascript.RhinoScriptEngineFactory;
-
+import scripting.ScriptEngineService;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.jEdit;
 
 
 /**
- * The JavascriptScriptEnginePlugin provides the Groovy ScriptEngine to jEdit plugins.
+ * The JavascriptScriptEnginePlugin provides the Javascript ScriptEngine to jEdit plugins.
  * @author elberry
  */
 public class JavascriptScriptEnginePlugin extends EditPlugin implements ScriptEngineService {

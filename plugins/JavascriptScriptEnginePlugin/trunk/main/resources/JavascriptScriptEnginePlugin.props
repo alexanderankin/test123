@@ -2,7 +2,7 @@ plugin.com.townsfolkdesigns.jedit.plugins.scripting.JavascriptScriptEnginePlugin
 plugin.com.townsfolkdesigns.jedit.plugins.scripting.JavascriptScriptEnginePlugin.author=Eric Berry
 plugin.com.townsfolkdesigns.jedit.plugins.scripting.JavascriptScriptEnginePlugin.depend.0=jdk 1.5
 plugin.com.townsfolkdesigns.jedit.plugins.scripting.JavascriptScriptEnginePlugin.depend.1=jedit 04.03.15.00
-plugin.com.townsfolkdesigns.jedit.plugins.scripting.JavascriptScriptEnginePlugin.depend.2=plugin com.townsfolkdesigns.jedit.plugins.scripting.ScriptEnginePlugin 0.3.0
+plugin.com.townsfolkdesigns.jedit.plugins.scripting.JavascriptScriptEnginePlugin.depend.2=plugin scripting.ScriptEnginePlugin 0.3.0
 plugin.com.townsfolkdesigns.jedit.plugins.scripting.JavascriptScriptEnginePlugin.description=Provides jEdit with the ability to use the Javascript ScriptEngine provided on scripting.dev.java.net.
 plugin.com.townsfolkdesigns.jedit.plugins.scripting.JavascriptScriptEnginePlugin.jars=js.jar js-engine.jar
 plugin.com.townsfolkdesigns.jedit.plugins.scripting.JavascriptScriptEnginePlugin.name=Javascript Script Engine Plugin
