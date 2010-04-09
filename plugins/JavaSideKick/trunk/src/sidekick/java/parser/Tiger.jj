@@ -132,7 +132,7 @@ public class TigerParser
    public Location getEndLocation(Token t) {
        if (t == null)
            return new Location(0, 0);
-       return new Location(t.endLine, t.endColumn);
+       return new Location(t.endLine, t.endColumn + 1);
    }
 
    public Location getLocation(Modifier m) {
@@ -2176,8 +2176,8 @@ Type ClassOrInterfaceType():
             if (type_args != null) {
                 s.typeArgs = "<" + toString(type_args) + ">";
             }
-            s.setStartLocation(new Location(t.beginLine, t.beginColumn));
-            s.setEndLocation(new Location(t.endLine, t.endColumn));
+            s.setStartLocation(getLocation(t));
+            s.setEndLocation(getEndLocation(t));
           }
           ( LOOKAHEAD(2) "." t=<IDENTIFIER> [ LOOKAHEAD(2) type_args=TypeArguments() ]
               {
@@ -2311,8 +2311,8 @@ Type PrimitiveType():
     }
     {
       if (t != null) {
-        s.setStartLocation(new Location(t.beginLine, t.beginColumn));
-        s.setEndLocation(new Location(t.endLine, t.endColumn));
+        s.setStartLocation(getLocation(t));
+        s.setEndLocation(getEndLocation(t));
       }
       s.isPrimitive = true;
       return s;
@@ -2332,8 +2332,8 @@ Type ResultType():
           {
             s.type = "void";
             s.isVoid = true;
-            s.setStartLocation(new Location(t.beginLine, t.beginColumn));
-            s.setEndLocation(new Location(t.endLine, t.endColumn));
+            s.setStartLocation(getLocation(t));
+            s.setEndLocation(getEndLocation(t));
           }
         |
           s = Type()
