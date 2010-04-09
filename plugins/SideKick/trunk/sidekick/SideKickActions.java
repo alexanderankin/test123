@@ -267,12 +267,15 @@ public class SideKickActions
 		// see if caret is at the end of a child of the current asset
 		for(int i = 0; i < node.getChildCount(); i++)
 		{
-			IAsset asset = (IAsset)((DefaultMutableTreeNode)node.getChildAt(i))
-				.getUserObject();
-			if(asset.getEnd() != null && caret == asset.getEnd().getOffset())
+			Object userObject = ((DefaultMutableTreeNode)node.getChildAt(i)).getUserObject();
+			if (userObject instanceof IAsset)
 			{
-				textArea.setCaretPosition(asset.getStart().getOffset());
-				return;
+				IAsset asset = (IAsset)userObject;
+				if(asset.getEnd() != null && caret == asset.getEnd().getOffset())
+				{
+					textArea.setCaretPosition(asset.getStart().getOffset());
+					return;
+				}
 			}
 		}
 
@@ -335,19 +338,22 @@ public class SideKickActions
 		// see if caret is at the end of a child of the current asset
 		for(int i = 0; i < node.getChildCount(); i++)
 		{
-			IAsset asset = (IAsset)((DefaultMutableTreeNode)node.getChildAt(i))
-				.getUserObject();
-			if(caret == asset.getEnd().getOffset())
+			Object userObject = ((DefaultMutableTreeNode)node.getChildAt(i)).getUserObject();
+			if (userObject instanceof IAsset)
 			{
-				if(i != node.getChildCount() - 1)
+				IAsset asset = (IAsset)userObject;
+				if(caret == asset.getEnd().getOffset())
 				{
-					IAsset nextAsset = (IAsset)((DefaultMutableTreeNode)
-						node.getChildAt(i + 1)).getUserObject();
-					textArea.setCaretPosition(nextAsset.getStart().getOffset());
-					return;
+					if(i != node.getChildCount() - 1)
+					{
+						IAsset nextAsset = (IAsset)((DefaultMutableTreeNode)
+							node.getChildAt(i + 1)).getUserObject();
+						textArea.setCaretPosition(nextAsset.getStart().getOffset());
+						return;
+					}
+					else
+						break;
 				}
-				else
-					break;
 			}
 		}
 
