@@ -740,7 +740,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 			textArea.setCaretPosition(asset.getEnd().getOffset());
 			Selection.Range range = new Selection.Range(
 				asset.getStart().getOffset(),
-				asset.getEnd().getOffset() );
+				asset.getEnd().getOffset() + (asset.getEnd().getOffset() == textArea.getBufferLength() ? 0 : 1) );
 			textArea.addToSelection(range);
 		}
 
