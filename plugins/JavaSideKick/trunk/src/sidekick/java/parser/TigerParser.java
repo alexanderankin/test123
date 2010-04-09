@@ -91,7 +91,7 @@ public class TigerParser implements TigerParserConstants {
    public Location getEndLocation(Token t) {
        if (t == null)
            return new Location(0, 0);
-       return new Location(t.endLine, t.endColumn);
+       return new Location(t.endLine, t.endColumn + 1);
    }
 
    public Location getLocation(Modifier m) {
@@ -2681,8 +2681,8 @@ public class TigerParser implements TigerParserConstants {
             if (type_args != null) {
                 s.typeArgs = "<" + toString(type_args) + ">";
             }
-            s.setStartLocation(new Location(t.beginLine, t.beginColumn));
-            s.setEndLocation(new Location(t.endLine, t.endColumn));
+            s.setStartLocation(getLocation(t));
+            s.setEndLocation(getEndLocation(t));
       label_31:
       while (true) {
         if (jj_2_28(2)) {
@@ -2865,8 +2865,8 @@ public class TigerParser implements TigerParserConstants {
         error_skipto(SEMICOLON);
     }
       if (t != null) {
-        s.setStartLocation(new Location(t.beginLine, t.beginColumn));
-        s.setEndLocation(new Location(t.endLine, t.endColumn));
+        s.setStartLocation(getLocation(t));
+        s.setEndLocation(getEndLocation(t));
       }
       s.isPrimitive = true;
       {if (true) return s;}
@@ -2882,8 +2882,8 @@ public class TigerParser implements TigerParserConstants {
         t = jj_consume_token(VOID);
             s.type = "void";
             s.isVoid = true;
-            s.setStartLocation(new Location(t.beginLine, t.beginColumn));
-            s.setEndLocation(new Location(t.endLine, t.endColumn));
+            s.setStartLocation(getLocation(t));
+            s.setEndLocation(getEndLocation(t));
         break;
       case BOOLEAN:
       case BYTE:
