@@ -38,6 +38,7 @@
       
       <!-- Dependencies that are supplied by other plugins. -->
       <!-- <pathelement path="${jedit.plugins.dir}/dependency.jar" /> -->
+      <pathelement path="${jedit.plugins.dir}/Console.jar" />
    </path>
    
 </project>

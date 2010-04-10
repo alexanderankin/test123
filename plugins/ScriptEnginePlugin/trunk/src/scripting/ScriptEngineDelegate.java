@@ -22,6 +22,8 @@
 
 package scripting;
 
+//import console.Shell;
+
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.ServiceManager;
 import org.gjt.sp.jedit.View;
@@ -102,8 +104,8 @@ public class ScriptEngineDelegate {
 
       for (String serviceName : scriptEngineServiceNames) {
          service = (ScriptEngineService) ServiceManager.getService(ScriptEngineService.class.getName(), serviceName);
-         scriptEngineServices.put(service.getMode(), service);
          serviceMode = service.getMode();
+         scriptEngineServices.put(serviceMode, service);
          Log.log(Log.DEBUG, ScriptEngineDelegate.class,
             "ScriptEngine Service found - mode: " + serviceMode.getName() + " | engine class: " +
             service.getEngineFactoryClass());
@@ -119,10 +121,14 @@ public class ScriptEngineDelegate {
             // Use the Mode as the ScriptEngine name for consistency. Some engine's are named not for their languages.
             // EG. The Javascript Engine used, is called "Mozilla Rhino" and not "javascript".
             manager.registerEngineName(serviceMode.getName(), factory);
+            ScriptEngine engine = manager.getEngineByName(serviceMode.getName());
+            //Shell shell = new ScriptEngineShell("scriptengine." + serviceMode.getName(), engine);
+            //Shell.registerShell(shell);
+
 
             Log.log(Log.DEBUG, ScriptEngineDelegate.class,
                "\"" + serviceMode.getName() + "\" ScriptEngine is registered: " +
-               (manager.getEngineByName(serviceMode.getName()) != null));
+               (engine != null));
 
 
          } catch (Exception e) {
