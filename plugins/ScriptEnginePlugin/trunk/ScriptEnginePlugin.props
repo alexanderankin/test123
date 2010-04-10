@@ -2,30 +2,31 @@ plugin.scripting.ScriptEnginePlugin.activate=defer
 plugin.scripting.ScriptEnginePlugin.author=Eric Berry
 plugin.scripting.ScriptEnginePlugin.depend.0=jdk 1.6
 plugin.scripting.ScriptEnginePlugin.depend.1=jedit 04.04.01.00
+plugin.scripting.ScriptEnginePlugin.depend.2=plugin console.ConsolePlugin 4.4.1
 plugin.scripting.ScriptEnginePlugin.description=Provides a framework to make JSR223/scripting.dev.java.net scripting engines usable within jEdit.
-plugin.scripting.ScriptEnginePlugin.docs=/docs/ScriptEnginePlugin.html
+plugin.scripting.ScriptEnginePlugin.docs=docs/ScriptEnginePlugin.html
 plugin.scripting.ScriptEnginePlugin.name=Script Engine Plugin
 plugin.scripting.ScriptEnginePlugin.version=0.6.0
 
 plugin.scripting.ScriptEnginePlugin.menu= \
 	scriptengine.plugin.evaluate.buffer \
-	scriptengine.plugin.evaluate.buffer.as \
 	scriptengine.plugin.evaluate.buffer.in.console \
 	- \
 	scriptengine.plugin.evaluate.selection \
 	scriptengine.plugin.evaluate.selection.as \
 	scriptengine.plugin.evaluate.selection.in.console \
+	scriptengine.plugin.evaluate.selection.as.in.console \
 	- \
 	scriptengine.plugin.macro.create \
 	scriptengine.plugin.macro.create.from.buffer
 
 # Menu Labels.
 scriptengine.plugin.evaluate.buffer.label=Evaluate Buffer
-scriptengine.plugin.evaluate.buffer.as.label=-   As
 scriptengine.plugin.evaluate.buffer.in.console.label=-   in Console
 scriptengine.plugin.evaluate.selection.label=Evaluate Selection
-scriptengine.plugin.evaluate.selection.as.label=-   As
+scriptengine.plugin.evaluate.selection.as.label=-   As ?
 scriptengine.plugin.evaluate.selection.in.console.label=-   in Console
+scriptengine.plugin.evaluate.selection.as.in.console.label=-   As ? in Console
 scriptengine.plugin.macro.create.label=Create Macro
 scriptengine.plugin.macro.create.from.buffer.label=Create Macro from Buffer
 scriptengine.plugin.menu.label=Scripting
