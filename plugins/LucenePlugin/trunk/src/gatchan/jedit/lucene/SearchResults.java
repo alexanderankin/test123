@@ -62,17 +62,20 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 	{
 		super(new BorderLayout());
 		
-		lineResults = new JCheckBox("Line-based results");
+		lineResults = new JCheckBox("Line-based");
+		lineResults.setToolTipText(jEdit.getProperty("lucene.results.line-based.tooltip"));
 		lineResults.setSelected(true);
 		type = new JTextField(6);
 		maxResults = new JSpinner(new SpinnerNumberModel(100, 1, 10000, 1));
-		JPanel maxPanel = new JPanel(new BorderLayout());
-		maxPanel.add(BorderLayout.WEST, new JLabel("Max results:"));
-		maxPanel.add(BorderLayout.EAST, maxResults);
+		//JPanel maxPanel = new JPanel(new BorderLayout());
+		//maxPanel.add(BorderLayout.WEST, new JLabel("Max results:"));
+		//maxPanel.add(BorderLayout.EAST, maxResults);
+		maxResults.setToolTipText(jEdit.getProperty("lucene.max.results.tooltip"));
 		indexStatus = new JLabel();
 		String[] items = LucenePlugin.instance.getIndexes();
 		indexModel = new IndexComboBoxModel(items);
 		indexes = new JComboBox(indexModel);
+		indexes.setToolTipText(jEdit.getProperty("lucene.index-combo.tooltip"));
 		indexes.addActionListener(new ActionListener()
 		{
 			private Index prevIndex = null;
@@ -101,10 +104,12 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			}
 		});
 
-		JPanel panel = new JPanel(new BorderLayout());
+		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 		add(panel, BorderLayout.NORTH);
-		panel.add(new JLabel("Search for:"), BorderLayout.WEST);
+		// panel.add(new JLabel("Search for:"), BorderLayout.WEST);
 		searchField = new HistoryTextField("lucene.search-history");
+		searchField.setToolTipText("Search String");
+	
 		final MyActionListener actionListener = new MyActionListener();
 		searchField.addActionListener(actionListener);
 		type.addActionListener(actionListener);
@@ -133,17 +138,17 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		multiStatus = true;
 		updateMultiStatus();
 	
-		JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
-		optionsPanel.add(new JLabel("file type:"));
-		optionsPanel.add(type);
-		optionsPanel.add(lineResults);
-		optionsPanel.add(maxPanel);
-		optionsPanel.add(indexes);
-		optionsPanel.add(clear);
-		optionsPanel.add(multi);
-		optionsPanel.add(indexStatus);
-		panel.add(searchField, BorderLayout.CENTER);
-		panel.add(optionsPanel, BorderLayout.EAST);
+		panel.add(searchField);
+		//optionsPanel.add(new JLabel("file type:"));
+		type.setToolTipText(jEdit.getProperty("lucene.file-type.tooltip"));
+		panel.add(type);
+		panel.add(lineResults);
+		panel.add(maxResults);
+		panel.add(indexes);
+		panel.add(clear);
+		panel.add(multi);
+		panel.add(indexStatus);
+		
 		model = new MyModel();
 		list = new JList(model);
 		tree = new SourceLinkTree(jEdit.getActiveView());
