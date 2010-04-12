@@ -54,3 +54,10 @@ lucene.index.locked.message=The index at path {0} is locked.\n\
                             It can happens if another processus is currently using it\n\
                             or there was a problem with the Lucene plugin (a bug or a crash).\n\
                             Do you want to unlock the index ?
+
+
+lucene.max.results.tooltip=Max Search Results
+lucene.results.line-based.tooltip=Show Line-based results
+lucene.file-type.tooltip=File Type Filter (e.g. *.c}
+lucene.index-combo.tooltip=Choose Lucene Index
+
