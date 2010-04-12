@@ -39,105 +39,40 @@ public class ScriptEngineShell extends Shell {
  
    private ScriptEngine scriptEngine;
  
-   public ScriptEngineShell() {
-      super("Script Engine Shell");
-      Log.log(Log.DEBUG, ScriptEngineShell .class,
-             "Creating new ScriptEngineShell");
-
-
-
-
-      ScriptEnginePlugin plugin = (ScriptEnginePlugin) jEdit.getPlugin("scripting.ScriptEnginePlugin");
-      ScriptEngineDelegate delegate = plugin.getScriptEngineDelegate();
-        // get the engines primed.
-      delegate.getScriptEngineManager();
-      for (Mode mode : delegate.getRegisteredModes()) {
-         Log.log(Log.DEBUG, ScriptEngineShell .class,
-                "Registering new shell for mode: " + mode);
-
-
-
-
-         ScriptEngine engine = delegate.getScriptEngineForMode(mode);
-         Shell shell = new ScriptEngineShell("scriptengine." + mode.getName(),
-                engine);
-
-
-
-
-
-         Shell.registerShell(shell);
-      }
-   }
- 
     /*
      * Constructor for ScriptEngineShell
      */ 
-   public ScriptEngineShell(String name, ScriptEngine scriptEngine) {
+   public ScriptEngineShell(String name, Mode mode) {
       super(name);
-      this.scriptEngine = scriptEngine;
+      System.out.println("Creating new ScriptEngineShell - name: " + name + " | mode: " + mode.getName());
+      ScriptEnginePlugin plugin = (ScriptEnginePlugin) jEdit.getPlugin("scripting.ScriptEnginePlugin");
+      ScriptEngineDelegate delegate = plugin.getScriptEngineDelegate();
+      scriptEngine = delegate.getScriptEngineForMode(mode);
    }
  
-   public void execute(final Console console, String input, Output output,
-          Output error, final String command) {
-
-
-
-
-
+   public void execute(final Console console, String input, Output output, Output error, final String command) {
  
-      if (scriptEngine == null) {
-            // if the script engine is null it's the base shell. Use the command as the name for the other shell.
-         output.print(Color.green, "Switching to " + command + " console.");
-         output.commandDone();
-         SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-               try {
-                  Thread.sleep(500);
-               } catch (Exception e) {
-                        // ignore just set the shell
-               }
-                    //console.setShell("scriptengine." + command);
-               ActionSet actionSet = jEdit.getActionSetForAction("console.shell.scriptengine." + command + "-show");
-               System.out.println("actionSet: " + actionSet);
-               if (actionSet != null) {
-                  EditAction []actions = actionSet.getActions();
-                  if (actions != null) {
-                     for (EditAction action : actions) {
-                        action.invoke(console.getView());
-                     }
-                  }
-               }
-            }
-         } );
-         return;
-      } else {
-         System.out.println("input: " + input + " | command: " + command);
-         StringWriter outWriter = new StringWriter();
-         ScriptContext scriptContext = ScriptEngineUtilities.getDefaultScriptContext(console.getView());
-         scriptContext.setWriter(outWriter);
-         scriptEngine.setContext(scriptContext);
-         Object returnVal = null;
-         try {
-            returnVal = scriptEngine.eval(command);
+      StringWriter outWriter = new StringWriter();
+      ScriptContext engineContext = scriptEngine.getContext();
+      ScriptContext scriptContext = ScriptEngineUtilities.getDefaultScriptContext(console.getView());
+      engineContext.getBindings(ScriptContext.ENGINE_SCOPE).putAll(scriptContext.getBindings(ScriptContext.ENGINE_SCOPE));
+      engineContext.setWriter(outWriter);
+      Object returnVal = null;
+      try {
+         returnVal = scriptEngine.eval(command);
 
-            if (scriptEngine.get(ScriptEnginePlugin.SCRIPT_VALUE_VARIABLE) != null) {
-               returnVal = scriptEngine.get(ScriptEnginePlugin.SCRIPT_VALUE_VARIABLE);
-            }
-
-         } catch (Exception e) {
-            Log.log(Log.ERROR, ScriptEngineShell .class,
-                   "Error executing script - content: \n" + command, e);
-
-
-
+         if (scriptEngine.get(ScriptEnginePlugin.SCRIPT_VALUE_VARIABLE) != null) {
+            returnVal = scriptEngine.get(ScriptEnginePlugin.SCRIPT_VALUE_VARIABLE);
          }
-         output.print(Color.black, outWriter.toString());
-         if (returnVal != null) {
-            output.print(Color.blue, String.valueOf(returnVal));
-         }
-         output.commandDone();
+
+      } catch (Exception e) {
+         Log.log(Log.ERROR, ScriptEngineShell .class, "Error executing script - content: \n" + command, e);
       }
+      output.print(Color.black, outWriter.toString());
+      if (returnVal != null) {
+         output.print(Color.blue, String.valueOf(returnVal));
+      }
+      output.commandDone();
    }
  
 }
