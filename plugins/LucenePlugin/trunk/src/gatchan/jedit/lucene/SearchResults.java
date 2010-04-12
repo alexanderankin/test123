@@ -108,7 +108,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		add(panel, BorderLayout.NORTH);
 		// panel.add(new JLabel("Search for:"), BorderLayout.WEST);
 		searchField = new HistoryTextField("lucene.search-history");
-		searchField.setToolTipText("Search String");
+		searchField.setToolTipText(jEdit.getProperty("lucene.search-string.tooltip"));
 	
 		final MyActionListener actionListener = new MyActionListener();
 		searchField.addActionListener(actionListener);
