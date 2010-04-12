@@ -42,21 +42,31 @@ public class ScriptEngineShell extends Shell {
     /*
      * Constructor for ScriptEngineShell
      */ 
-   public ScriptEngineShell(String name, Mode mode) {
-      super(name);
-      System.out.println("Creating new ScriptEngineShell - name: " + name + " | mode: " + mode.getName());
+   public ScriptEngineShell(Mode mode) {
+      super(mode.getName());
       ScriptEnginePlugin plugin = (ScriptEnginePlugin) jEdit.getPlugin("scripting.ScriptEnginePlugin");
       ScriptEngineDelegate delegate = plugin.getScriptEngineDelegate();
       scriptEngine = delegate.getScriptEngineForMode(mode);
    }
  
-   public void execute(final Console console, String input, Output output, Output error, final String command) {
- 
+   public void execute(Console console, String input, Output output, Output error, String command) {
+
       StringWriter outWriter = new StringWriter();
       ScriptContext engineContext = scriptEngine.getContext();
       ScriptContext scriptContext = ScriptEngineUtilities.getDefaultScriptContext(console.getView());
-      engineContext.getBindings(ScriptContext.ENGINE_SCOPE).putAll(scriptContext.getBindings(ScriptContext.ENGINE_SCOPE));
-      engineContext.setWriter(outWriter);
+      if (! "clear".equals(command)) {
+			// overwrite old context bindings with new ones. This allows for the creation of variables in the console to be
+			// used later.
+         engineContext.setWriter(outWriter);
+         engineContext.getBindings(ScriptContext.ENGINE_SCOPE).putAll(scriptContext.getBindings(ScriptContext.ENGINE_SCOPE));
+      } else {
+			// overwrite entire old context with new one.
+         scriptContext.setWriter(outWriter);
+         scriptEngine.setContext(scriptContext);
+         output.commandDone();
+         return;
+      }
+
       Object returnVal = null;
       try {
          returnVal = scriptEngine.eval(command);
@@ -67,6 +77,7 @@ public class ScriptEngineShell extends Shell {
 
       } catch (Exception e) {
          Log.log(Log.ERROR, ScriptEngineShell .class, "Error executing script - content: \n" + command, e);
+
       }
       output.print(Color.black, outWriter.toString());
       if (returnVal != null) {
