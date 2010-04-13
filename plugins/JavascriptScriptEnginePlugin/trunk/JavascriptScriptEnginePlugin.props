@@ -1,0 +1,14 @@
+plugin.scripting.JavascriptScriptEnginePlugin.activate=defer
+plugin.scripting.JavascriptScriptEnginePlugin.author=Eric Berry
+plugin.scripting.JavascriptScriptEnginePlugin.depend.0=jdk 1.6
+plugin.scripting.JavascriptScriptEnginePlugin.depend.1=jedit 04.04.01.00
+plugin.scripting.JavascriptScriptEnginePlugin.depend.2=plugin scripting.ScriptEnginePlugin 0.6.0
+plugin.scripting.JavascriptScriptEnginePlugin.description=Provides jEdit with the ability to use the Javascript ScriptEngine provided on scripting.dev.java.net.
+plugin.scripting.JavascriptScriptEnginePlugin.jars=js.jar js-engine.jar
+plugin.scripting.JavascriptScriptEnginePlugin.name=Javascript Script Engine Plugin
+plugin.scripting.JavascriptScriptEnginePlugin.version=1.1.0
+plugin.scripting.JavascriptScriptEnginePlugin.docs=docs/JavascriptScriptEnginePlugin.html
+
+# Console labels.
+console.shell.scriptengine.javascript-show.label=Show Javascript Console
+console.shell.scriptengine.javascript-toggle.label=Toggle Javascript Console
