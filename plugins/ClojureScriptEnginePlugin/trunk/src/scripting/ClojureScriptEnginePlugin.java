@@ -1,7 +1,7 @@
-package scripting.engines.clojure;
+package scripting;
 
 import clojure.contrib.jsr223.ClojureScriptEngineFactory;
-import com.townsfolkdesigns.jedit.plugins.scripting.ScriptEngineService;
+import scripting.ScriptEngineService;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.jEdit;
