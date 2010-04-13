@@ -1,0 +1,48 @@
+<!-- 
+    Document   : JavascriptScriptEnginePlugin
+    Created on : Apr. 12, 2010
+    Author     : elberry
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+   <head>
+      <title></title>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+   </head>
+   <body>
+      <h1>Getting value from your scripts</h1>
+      <p>
+	 The Javascript ScriptEngine supports returning values from your scripts via the last evaluation.
+	 <p>
+	    <p><h3>The last evaluation</h3>
+	       <pre>
+		  var myScriptValue = "Hello World";
+		  var myScriptValue2 = "Goodbye World";
+		  myScriptValue;
+	       </pre>
+	       => "Hello World"
+	       <pre>
+	     function printz(text) {
+	        return text;
+	     }
+	     printz("Doh!");
+	       <pre>
+	       => Doh!
+	    </p>
+	    <p><h3>Using the magic variable, "SCRIPTVALUE"</h3>
+	       <pre>
+		  var SCRIPTVALUE = "Hello World";
+		  if(SCRIPTVALUE != "") {
+			  SCRIPTVALUE += ", and nice to meet you";
+		  }
+		  var foo = "bar";
+	       </pre>
+	       => "Hello World, and nice to meet you"
+	       <br>
+	       For more information please refer to the <a href="https://developer.mozilla.org/en/Rhino_documentation">"Rhino documentation"</a>
+	    </p>
+	    <p><h2>Using the SCRIPTVALUE variable is the only way to absolutely guarantee what will be returned. The ScriptEnginePlugin looks specifically for this variable before using the Javascript ScriptEngine's result.</h2>
+	 </p>
+      </p>
+   </body>
+</html>
