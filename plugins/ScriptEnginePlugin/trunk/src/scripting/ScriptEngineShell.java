@@ -49,7 +49,10 @@ public class ScriptEngineShell extends Shell {
       scriptEngine = delegate.getScriptEngineForMode(mode);
    }
  
-   public void execute(Console console, String input, Output output, Output error, String command) {
+   public void execute(Console console, String input, Output output,
+          Output error, String command) {
+
+
 
       StringWriter outWriter = new StringWriter();
       ScriptContext engineContext = scriptEngine.getContext();
@@ -76,12 +79,15 @@ public class ScriptEngineShell extends Shell {
          }
 
       } catch (Exception e) {
-         Log.log(Log.ERROR, ScriptEngineShell .class, "Error executing script - content: \n" + command, e);
+         String message = e.getMessage();
+         Log.log(Log.ERROR, ScriptEngineShell .class,
+                "Error executing script - returnVal: " + returnVal + " | content: \n" + command, e);
 
+         output.print(console.getErrorColor(), message);
       }
       output.print(Color.black, outWriter.toString());
       if (returnVal != null) {
-         output.print(Color.blue, String.valueOf(returnVal));
+         output.print(console.getInfoColor(), String.valueOf(returnVal));
       }
       output.commandDone();
    }
