@@ -19,7 +19,7 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-package scripting.engines.groovy;
+package scripting;
 
 import com.sun.script.groovy.GroovyScriptEngineFactory;
 

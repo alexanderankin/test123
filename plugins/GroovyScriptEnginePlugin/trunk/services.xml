@@ -2,6 +2,11 @@
 <!DOCTYPE SERVICES SYSTEM "services.dtd">
 <SERVICES>
 	<SERVICE CLASS="scripting.ScriptEngineService" NAME="GroovyScriptEngine">
-		return new scripting.engines.groovy.GroovyScriptEnginePlugin();
+		return new scripting.GroovyScriptEnginePlugin();
+	</SERVICE>
+	<SERVICE CLASS="console.Shell" NAME="groovy">
+		import scripting.*;
+		GroovyScriptEnginePlugin groovyPlugin = (GroovyScriptEnginePlugin)jEdit.getPlugin("scripting.GroovyScriptEnginePlugin", true);
+		return new scripting.ScriptEngineShell(groovyPlugin.getMode());
 	</SERVICE>
 </SERVICES>
