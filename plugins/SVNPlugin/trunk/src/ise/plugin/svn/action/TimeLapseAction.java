@@ -168,14 +168,14 @@ public class TimeLapseAction extends SVNAction {
         private List<SVNFileRevision> getRevisions() {
             List<SVNFileRevision> revisions = new ArrayList<SVNFileRevision>();
             try {
-                SVNURL fullUrl = svnUrl(path1);
+                SVNURL fullUrl = svnUrl( path1 );
                 String url = fullUrl.removePathTail().toString();
-                repository = getRepository(url);
-                String filePath = fullUrl.getPath().replaceAll(".*/", "");
+                repository = getRepository( url );
+                String filePath = fullUrl.getPath().replaceAll( ".*/", "" );
                 if ( repository != null ) {
                     Collection revs = repository.getFileRevisions( filePath, null, 0, repository.getLatestRevision() );
-                    for (Object rev : revs) {
-                        revisions.add((SVNFileRevision)rev);
+                    for ( Object rev : revs ) {
+                        revisions.add( ( SVNFileRevision ) rev );
                     }
                 }
             }
@@ -207,7 +207,7 @@ public class TimeLapseAction extends SVNAction {
         /**
          * @return the repository for the given url
          */
-        public SVNRepository getRepository(String url) throws SVNException {
+        public SVNRepository getRepository( String url ) throws SVNException {
             if ( repository != null ) {
                 return repository;
             }
@@ -215,7 +215,7 @@ public class TimeLapseAction extends SVNAction {
             try {
                 SVNKit.setupLibrary();
                 // create repository
-                repository = SVNRepositoryFactory.create( SVNURL.parseURIEncoded(url) );
+                repository = SVNRepositoryFactory.create( SVNURL.parseURIEncoded( url ) );
 
                 // set up authentication
                 ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager( data.getUsername(), data.getDecryptedPassword() );
@@ -223,9 +223,8 @@ public class TimeLapseAction extends SVNAction {
             }
             catch ( SVNException svne ) {
                 // perhaps a malformed URL is the cause of this exception
-                /// TODO: put message in property file
                 log( "Error while creating an SVNRepository for location '"
-                        + url + "': " + svne.getMessage() );
+                     + url + "': " + svne.getMessage() );
                 return null;
             }
             return repository;
@@ -262,6 +261,10 @@ public class TimeLapseAction extends SVNAction {
 
         @Override
         protected void done() {
+            if ( isCancelled() ) {
+                return ;
+            }
+
             try {
                 File[] files = get();
                 if ( files == null ) {
