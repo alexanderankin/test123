@@ -1,0 +1,151 @@
+Eclipse has these in the Team menu, I'm using that as my model for user actions for the context menu in ProjectViewer.  There is a different context menu for the repository browser.  In general, commands operate on working copies through Project Viewer and remote copies in the repository browser.
+
+Project Viewer context menu:
+
+status - done
+update - done
+commit - done
+(not in Eclipse, I added "diff" here)
+create patch - svn diff, see notes below
+apply patch - won't do, use JDiff for this
+--
+revert - done
+add - done
+ignore - done
+edit conflicts - done?
+resolve - done
+(not in Eclipse, I added "delete" here)
+--
+lock - done
+unlock - done
+--
+tag - done
+branch - done
+merge - done         // TODO
+switch - done
+--
+show properties - done
+set properties - done, see notes below
+set keywords   // TODO
+--
+history - done, I called it "log"
+annotations - done, I called it "blame"
+--
+copy - done
+export - done
+cleanup - done
+
+
+Property notes:
+- set properties is not part of the context menu in PV.  Instead, it is accessed through the "show properties" results panel with buttons for add a property, edit an existing property, or delete an existing property.
+- the 'ignore' and 'keywords' commands need property manipulation working first.
+
+The basic subversion commands:
+
+svn add - done
+svn blame - done, need to fix Sidekick so it doesn't send out inappropriate Buffer changing messages
+svn cat - done, double click on a file in svnbrowser to see the contents
+svn checkout - done
+svn cleanup - done
+svn commit - done
+svn copy - done
+svn delete - done
+svn diff - done
+svn export - done
+svn help - won't do this one, see the help file
+svn import - done
+svn info - done
+svn list - done
+svn lock - done
+svn log - done
+svn merge - done
+svn mkdir - done
+svn move - done
+svn propdel - done
+svn propedit - done
+svn propget - done
+svn proplist - done
+svn propset - done
+svn resolved - done
+svn revert - done
+svn status - done
+svn switch - done
+svn unlock - done
+svn update - done
+
+
+Move: is a copy and delete from a working copy to a working copy.  If in the same directory, then this is "rename".  PV has a "rename" command already, can it be modified without modifying PV code?
+
+Copy: is a copy from a working copy to a working copy.  Don't allow copy in the same directory as that is a move/rename.
+
+Branch: branch is a copy from a URL to a URL within the same repository.  Need to let the user pick the "from" URL and the base of the "to" URL with the SVN Browser.  The "to" URL should default to base repository + /branch.
+
+Tag: exact same as branch, except should default to base repository + /tags.  A variation is copy from a working copy to a URL.
+
+Undelete: copy from URL to working copy at a specific revision prior to the delete revision.  Should be able to pick the deleted file from the log results interface.  This is done and documented in help file.
+
+TODO:
+Done - Fix Info and Log commands to work correctly with svn:external links.
+
+- History diff, see email from Alan.
+
+- bugtraq
+
+- on the various results panels, add ability to open a file in a jEdit buffer. --> done in some places
+
+- add Tag/Branch command to Log output.  It would be handy to be able to look at a log, pick a revision and create a branch or tag from that revision.
+
+- remove ... from Info in context menu, there is no interstitial dialog
+
+- clean up popups, the tool tips are often too large to be useful and don't stay visible long enough. The TableCellViewer that I borrowed from Antelope conflicts with the popup menu mouse gesture.  Right now, there is a mix, should figure out how to avoid the popup menu conflict and use the TableCellViewer popup as it is more useful. Maybe a "zoom" menu item? --> added "zoom" in some places.
+
+*** add option to automatically tag external links when tagging a project?
+
+Done - in the property display, multi-line values are shown in a single line in the table.  They look good in the popup, but should look good in the table too. --> done, using BestRowTable
+
+Done - who owns JDiff? It needs some work, like the ability to move lines/blocks left or right between files.  --> Looks like there is no owner at the moment, so I went ahead and make the changes, also added ability to create and apply patches.  JDiff already could create normal patches, now it can also create unified diffs and apply both normal and unified patches.
+
+Done - Need to check, doesn't Eclipse have a "Move"? --> Don't care, move is done.
+
+Done - There should be a "compare" to open a diff.  This needs a dialog to be able to pick a specific revision to compare the local file to, or to
+diff two non-local revisions.  Need to pop this as an option in the log
+viewer. -> done, I called it "diff" rather than "compare" and am using JDiff
+plugin rather than svn diff.  
+
+Done - there is a need for svn diff.  It's currently working from PV and text area context menu, but not from SVN Browser. --> done for SVNBrowser
+
+Done - Update docs on undelete to point out that Move is really a copy and delete, so to undo a move, either move back or revert and undelete.
+
+Done - Move doesn't work right if it's a rename. -- Works correctly now.
+
+
+----------------------------------------------------------------------------
+
+All Done - Passwords:
+
+Passwords can be set per repository and per project.  Most likely, a project
+will be created by doing a checkout from the repository browser, but not
+necessarily.
+
+Passwords are always encrypted until needed.  SVNAction and SVNData both provide get/setPassword methods, these are assumed to be encrypted passwords.  They both also provide a getDecryptedPassword method for access to the decrypted password.
+
+Fixed: Password refactoring has broke:
+   - Log from SVN Browser
+   - Diff from SVN Browser
+   - Better check all of SVN Browser
+
+Log from PV looks broke too, could only get 1 entry from header.jsp - not a bug.
+
+----------------------------------------------------------------------------
+
+4 Oct 2008 Diff use cases:
+
+1. working file against remote revision - in PV, want to compare the current working file against a revision in the repository.  The repository version could be the same file but a previous revision, or a file in a different branch.
+
+-- currently can only do against a previous version of the file.
+
+2. remote revision against remote revision - in SVN Browser, want to compare two revisions of the same remote file, or files in different branches.  For example, I might want to compare two revisions of the same file, or the same file in different branches.
+
+-- currently can only do against two revisions of the same file.  This is done in RemoteDiffAction, need to check if this class can be combined with DiffAction so all diff code is in one place.
+++ 22 Oct 2008, apparently I don't remember what all I've already done.  I looked into the code for this, and found it has worked since January.  Just pick 2 files in the browser to diff.
+
