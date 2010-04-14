@@ -14,7 +14,7 @@ plugin.ise.plugin.svn.SVNPlugin.docs=docs/index.html
 
 # dependencies
 plugin.ise.plugin.svn.SVNPlugin.depend.0=jdk 1.5.0
-plugin.ise.plugin.svn.SVNPlugin.depend.1=jedit 04.03.15.00
+plugin.ise.plugin.svn.SVNPlugin.depend.1=jedit 04.03.99.00
 plugin.ise.plugin.svn.SVNPlugin.depend.2=plugin projectviewer.ProjectPlugin 3.0.0
 plugin.ise.plugin.svn.SVNPlugin.depend.3=plugin CommonControlsPlugin 1.1
 plugin.ise.plugin.svn.SVNPlugin.depend.4=plugin jdiff.JDiffPlugin 3.0.0
@@ -49,6 +49,8 @@ ise.plugin.svn.pv.password.label=Password:
 plugin.ise.plugin.svn.SVNPlugin.menu.label=Subversion
 plugin.ise.plugin.svn.SVNPlugin.menu=subversion subversion.browser
 subversion.label=SVN Console
+
+svn.diff-against-base.label=Diff against base revision
 
 # subversion commands for ProjectViewer popup menu
 ise.plugin.svn.action.label.1=Status

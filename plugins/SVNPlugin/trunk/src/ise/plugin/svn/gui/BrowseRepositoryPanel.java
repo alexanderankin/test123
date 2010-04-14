@@ -126,9 +126,9 @@ public class BrowseRepositoryPanel extends JPanel {
                             else {
                                 Object[] parts = path.getPath();
                                 StringBuilder sb = new StringBuilder();
-                                String part = parts[0].toString();
-                                while (part.endsWith("/")) {
-                                    part = part.substring(0, part.length() - 1);   
+                                String part = parts[ 0 ].toString();
+                                while ( part.endsWith( "/" ) ) {
+                                    part = part.substring( 0, part.length() - 1 );
                                 }
                                 sb.append( part );
                                 for ( int i = 1; i < parts.length; i++ ) {
@@ -318,9 +318,9 @@ public class BrowseRepositoryPanel extends JPanel {
                             }
                             else {
                                 Object[] parts = path.getPath();
-                                String part = parts[0].toString();
-                                while(part.endsWith("/")) {
-                                    part = part.substring(0, part.length() - 1);
+                                String part = parts[ 0 ].toString();
+                                while ( part.endsWith( "/" ) ) {
+                                    part = part.substring( 0, part.length() - 1 );
                                 }
                                 StringBuilder sb = new StringBuilder();
                                 sb.append( part );
@@ -569,18 +569,21 @@ public class BrowseRepositoryPanel extends JPanel {
             if ( r instanceof JLabel ) {
                 JLabel label = ( JLabel ) r;
                 DirTreeNode node = ( DirTreeNode ) value;
-                String text = node.toString();
+                StringBuilder text;
                 if ( node.isExternal() ) {
-                    // TODO: make the color configurable by the user? Blue is hard
-                    // to read in some LAFs.  Maybe use a jEdit color from either
-                    // the file system browser or syntax highlighting?
-                    text = "<html><font color=blue>" + node.toString();
+                    // Use view.style.digit color since this should look good
+                    // with the current look and feel.
+                    text = new StringBuilder();
+                    text.append( "<html><font color=\"" ).append( jEdit.getProperty( "view.style.digit" ) ).append( "\">" ).append( node.toString() );
                     label.setToolTipText( "<html><b>External: </b> " + node.getRepositoryLocation() );
                 }
-                if ( node.hasProperties() ) {
-                    text += " *";
+                else {
+                    text = new StringBuilder( node.toString() );
                 }
-                label.setText( text );
+                if ( node.hasProperties() ) {
+                    text.append( " *" );
+                }
+                label.setText( text.toString() );
             }
             return r;
         }
