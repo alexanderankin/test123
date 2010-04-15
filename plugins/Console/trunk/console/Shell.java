@@ -69,8 +69,8 @@ public abstract class Shell
 	public static final String SERVICE = "console.Shell";
 
 	//{{{ Private members
-	/** @deprecated list of shells defined in the old API */
-	private static Vector<Shell> shells = new Vector<Shell>();
+//	/** @deprecated list of shells defined in the old API */
+//	private static Vector<Shell> shells = new Vector<Shell>();
 	private String name;
 	//}}}
 
@@ -81,23 +81,6 @@ public abstract class Shell
 	} //}}}
 
 	// {{{ Member functions
-	//{{{ registerShell() method
-	/**
-	 * @deprecated Write a <code>services.xml</code> file instead.
-	 */
-	public static void registerShell(Shell shell)
-	{
-		shells.addElement(shell);
-	} //}}}
-
-	//{{{ unregisterShell() method
-	/**
-	 * @deprecated Write a <code>services.xml</code> file instead.
-	 */
-	public static void unregisterShell(Shell shell)
-	{
-		shells.removeElement(shell);
-	} //}}}
 
 	//{{{ getShellNames() method
 	/**
@@ -106,10 +89,6 @@ public abstract class Shell
 	public static String[] getShellNames()
 	{
 		StringList retVal = new StringList();
-		for(int i = 0; i < shells.size(); i++)
-		{
-			retVal.add(shells.get(i).getName());
-		}
 
 		String[] newAPI = ServiceManager.getServiceNames(SERVICE);
 		for(int i = 0; i < newAPI.length; i++)
@@ -128,16 +107,6 @@ public abstract class Shell
 	 */
 	public static Shell getShell(String name)
 	{
-		// old API
-		for(int i = 0; i < shells.size(); i++)
-		{
-			Shell shell = shells.get(i);
-			if(shell.getName().equals(name))
-			{
-				return shell;
-			}
-		}
-
 		// new API
 		return (Shell)ServiceManager.getService(SERVICE,name);
 	} //}}}
