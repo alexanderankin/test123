@@ -138,10 +138,11 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		});
 		multiStatus = true;
 		updateMultiStatus();
-	        panel.add(new JLabel("Search:"));
+	        panel.add(new JLabel("For:"));
 		panel.add(searchField);
 		//optionsPanel.add(new JLabel("file type:"));
 		type.setToolTipText(jEdit.getProperty("lucene.file-type.tooltip"));
+		panel.add(new JLabel("In:"));
 		panel.add(type);
 		panel.add(lineResults);
 		panel.add(maxResults);
