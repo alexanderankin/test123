@@ -1,0 +1,4 @@
+Dirk Moebius <dmoebius@gmx.net>
+
+HelpfulJList by Jason Ginchereau
+portions of ZIPClassLoader by Slava Pestov, Mike Dillon

@@ -1,0 +1,14 @@
+TODO for Jindex
+---------------
+
+- merge with CodeAid, SpeedJava or JavaInsight ==> no index necessary at all?!?
+- or more than one index file ? (Library of indices, eg. a directory full of index files)
+- small JIndex popup: add search textfield
+- if nothing found: don't beep, display error message
+- "Open JIndex on current word": if no word could be selected,
+   open index window with no index selected (instead of beeping)
+- option for substituting spaces in URL's by %20
+- directory selection dialog for the "doc" field
+- inner classes in keyword index: duplicate entries? (a.b.c and b.c and c)
+- edit index.html: General info
+

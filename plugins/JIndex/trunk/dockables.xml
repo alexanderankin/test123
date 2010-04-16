@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+
+<!-- jswatplugin.JSwatDockable dockable window -->
+
+<DOCKABLES>
+  <DOCKABLE NAME="jindex">
+   		new jindex.JIndexDockable(view);
+  </DOCKABLE>
+</DOCKABLES>
