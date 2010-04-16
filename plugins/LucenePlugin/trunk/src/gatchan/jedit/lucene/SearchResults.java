@@ -201,7 +201,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 
 		maxResults.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
-				if (! searchField.getText().isEmpty())
+				if (searchField.getText().length() != 0)
 					actionListener.actionPerformed(null);
 			}
 		});
