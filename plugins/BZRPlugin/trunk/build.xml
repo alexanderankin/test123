@@ -1,0 +1,63 @@
+<?xml version="1.0" ?>
+<project name="BZRPlugin" default="build" basedir=".">
+   <property file="build.properties" />
+   <property file="../build.properties" />
+   <property name="compiler.source" value="1.6" />
+   <property name="compiler.target" value="1.6" />
+   <property name="src.dir" value="src" />
+   
+   
+   <!-- for groovyc -->
+   <property name="groovy.jar.name" value="groovy-all.jar" />
+   
+   <!-- Documentation process
+      none: if you supply your own html file as this template does.
+      xsltproc: if you plan on using docbook
+   -->
+   <property name="docs-proc.target" value="none" />
+   
+   <!-- jEdit installation properties. -->
+   <property name="build.support" value=".." />
+   <property name="install.dir" value=".." />
+   <property name="jedit.install.dir" value=".." />
+   <property name="jedit.plugins.dir" value="${install.dir}" />
+   <import file="${build.support}/plugin-build.xml" />
+   
+   <!-- If you want any extra files to be included with your plugin's jar,
+        such as custom images, you need to specify them here. -->
+   <selector id="packageFiles">
+      <and>
+         <or>
+            <filename name="**/BZRPlugin.html" />
+         </or>
+      </and>
+   </selector>
+   
+   <!-- Add your plugin's specific dependencies here -->
+   <path id="project.class.path">
+      <pathelement path="${jedit.install.dir}/jedit.jar" />
+      
+      <!-- Dependencies that are bundled with your plugin.
+           These should also be represented in your props file under the, 
+           "plugin.[plugin class].jars" property. -->
+      <!-- <pathelement path="lib/dependency.jar" /> -->
+      
+      <!-- Dependencies that are supplied by other plugins. -->
+      <pathelement path="${jedit.plugins.dir}/${groovy.jar.name}" />
+      <pathelement path="${jedit.plugins.dir}/miglayout-swing.jar" />
+   </path>
+   
+   <!-- Overridden to use joint Groovy compilation -->
+   <target name="compile">
+      <!-- Compile the ProjectBuilder groovy classes -->
+      <echo>${build.classes}</echo>
+      <groovyc srcdir="${src.dir}" destdir="${build.classes}" verbose="${compiler.verbose}" listfiles="${compiler.listfiles}">
+         <classpath refid="project.class.path" />
+         <javac debuglevel="${compiler.debuglevel}" deprecation="${compiler.deprecation}" fork="${compiler.fork}" listfiles="${compiler.listfiles}" nowarn="${compiler.nowarn}" optimize="${compiler.optimize}" source="${compiler.source}" target="${compiler.target}" verbose="${compiler.verbose}" debug="${compiler.debug}"></javac>
+      </groovyc>
+   </target>
+
+   <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc" classpath="${jedit.plugins.dir}/${groovy.jar.name}" />
+
+</project>
+<!-- ::mode=xml:noTabs=true:: -->
