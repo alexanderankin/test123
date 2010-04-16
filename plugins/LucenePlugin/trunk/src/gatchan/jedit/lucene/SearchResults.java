@@ -62,10 +62,11 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 	{
 		super(new BorderLayout());
 		
-		lineResults = new JCheckBox("Line-based");
+		lineResults = new JCheckBox(getLabel("lucene.line-based"));
 		lineResults.setToolTipText(jEdit.getProperty("lucene.results.line-based.tooltip"));
 		lineResults.setSelected(true);
 		type = new JTextField(6);
+		type.setToolTipText(jEdit.getProperty("lucene.file-type.tooltip"));
 		maxResults = new JSpinner(new SpinnerNumberModel(100, 1, 10000, 1));
 		//JPanel maxPanel = new JPanel(new BorderLayout());
 		//maxPanel.add(BorderLayout.WEST, new JLabel("Max results:"));
@@ -108,7 +109,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		add(panel, BorderLayout.NORTH);
 		// panel.add(new JLabel("Search for:"), BorderLayout.WEST);
 		searchField = new HistoryTextField("lucene.search-history");
-		searchField.setColumns(10);
+		searchField.setColumns(OptionPane.getSearchStringLength());
 		searchField.setToolTipText(jEdit.getProperty("lucene.search-string.tooltip"));
 	
 		final MyActionListener actionListener = new MyActionListener();
@@ -138,13 +139,13 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		});
 		multiStatus = true;
 		updateMultiStatus();
-	        panel.add(new JLabel("For:"));
+
+	    panel.add(new JLabel(getLabel("lucene.search-string")));
 		panel.add(searchField);
-		//optionsPanel.add(new JLabel("file type:"));
-		type.setToolTipText(jEdit.getProperty("lucene.file-type.tooltip"));
-		panel.add(new JLabel("In:"));
+		panel.add(new JLabel(getLabel("lucene.file-type")));
 		panel.add(type);
 		panel.add(lineResults);
+		panel.add(new JLabel(getLabel("lucene.max-results")));
 		panel.add(maxResults);
 		panel.add(indexes);
 		panel.add(clear);
@@ -204,6 +205,12 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 					actionListener.actionPerformed(null);
 			}
 		});
+	}
+
+	private String getLabel(String prefix)
+	{
+		return jEdit.getProperty(prefix + ".label." +
+			(OptionPane.getUseShortLabels() ? "short" : "long"));
 	}
 
 	private void updateMultiStatus()

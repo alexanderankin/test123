@@ -48,6 +48,9 @@ lucene.options.IncludeGlobs=*
 lucene.options.IncludeGlobs.label=Include only files matching:
 lucene.options.ExcludeGlobs=*.*~ *.bak *.bmp *.ico *.gif *.gif *.png *.jpg *.class *.exe  *.obj *.jar *.zip *.7z *.rar *.tgz *.wav *.mp3 *.ogg
 lucene.options.ExcludeGlobs.label=... except files matching:
+lucene.options.SearchDockable.label=Search Results Dockable
+lucene.options.SearchStringLength.label=Length of search string field:
+lucene.options.ShortLabels.label=Use short field labels
 
 lucene.index.locked.title=Index locked
 lucene.index.locked.message=The index at path {0} is locked.\n\
@@ -55,6 +58,18 @@ lucene.index.locked.message=The index at path {0} is locked.\n\
                             or there was a problem with the Lucene plugin (a bug or a crash).\n\
                             Do you want to unlock the index ?
 
+##
+## Search results dockable labels
+##
+
+lucene.search-string.label.long=Search for:
+lucene.search-string.label.short=For:
+lucene.file-type.label.long=file type:
+lucene.file-type.label.short=In:
+lucene.line-based.label.long=Line-based results
+lucene.line-based.label.short=Line-based
+lucene.max-results.label.long=Max results:
+lucene.max-results.label.short=
 
 lucene.search-string.tooltip=Search string (up/dn arrow keys = history)
 lucene.max.results.tooltip=Max Search Results
