@@ -1,0 +1,257 @@
+#
+# Plugin properties
+#
+
+plugin.jindex.JIndexPlugin.name=JIndex
+plugin.jindex.JIndexPlugin.title=JIndex
+plugin.jindex.JIndexPlugin.author=Dirk Moebius
+plugin.jindex.JIndexPlugin.version=1.2
+plugin.jindex.JIndexPlugin.docs=index.html
+
+plugin.jindex.JIndexPlugin.depend.0=jdk 1.1
+plugin.jindex.JIndexPlugin.depend.1=jedit 04.03.99.00
+plugin.jindex.JIndexPlugin.depend.2=plugin infoviewer.InfoViewerPlugin 1.5.9
+
+
+#
+# Dockable
+#
+
+jindex.label=JIndex
+jindex.title=JIndex
+
+#
+# Menu properties
+#
+
+jindex-menu=jindex jindex-open-sel - jindex-options
+jindex-menu.label=JIndex
+jindex-open-sel.label=Search current word
+jindex-options.label=JIndex Configuration
+
+
+#
+# Default properties (now defined in JIndexPlugin.java)
+#
+
+#jindex.lib.name.0=C:\\Java\\jdk1.2\\jre\\lib\\rt.jar
+#jindex.lib.doc.0=file:C:\\Java\\jdk1.2\\docs\\api
+#jindex.lib.oldjdoc.0=false
+
+#
+# Option pane properties
+#
+
+options.jindex.label=JIndex
+options.jindex.fastDisplay=Don't show select dialog, if word is unique
+options.jindex.createIndex=Create/Update Index...
+options.jindex.table.label=List of libraries
+options.jindex.table.col0=Library
+options.jindex.table.col1=Documentation URL
+options.jindex.table.col2=Is Old JavaDoc
+options.jindex.table.col3=Include
+options.jindex.table.public=Public only
+options.jindex.table.protected=Public/Protected
+options.jindex.table.package=Public/Protected/Package
+options.jindex.table.private=All
+options.jindex.addLibEntry=Add
+options.jindex.addLibEntry.title=Please choose a JAR or ZIP file
+options.jindex.addLibEntry.filefilter=JAR and ZIP files
+options.jindex.delLibEntry=Remove
+options.jindex.ok=Ok
+options.jindex.cancel=Cancel
+options.jindex.recreate=Recreate
+options.jindex.inputDoc.title=Please enter a documentation URL
+options.jindex.inputDoc.message=\
+        Please enter the URL, where the documentation for the\n\
+        library is located. This may be a "file:", "http:" or\n\
+        any other URL type.\n\
+        \n\
+        You can leave this as it is and input the URL later.\n\
+        \n\
+        If you press cancel now, the entry will not be created.\n
+
+
+#
+# Errors
+#
+
+options.jindex.error.noselection.title=No selection
+options.jindex.error.noselection.message=Please select one or more rows to delete.
+
+options.jindex.error.nolibs.title=Please enter libraries
+options.jindex.error.nolibs.message=\
+        Please enter at least one library\n\
+        together with a documentation URL.
+
+options.jindex.error.libexists.title=Duplicate Library
+options.jindex.error.libexists.message=This library file is already in the list.
+
+options.jindex.error.libmissing.title=No library name
+options.jindex.error.libmissing.message=The library name in row {0} is empty.
+
+options.jindex.error.libwrong.title=Not a library
+options.jindex.error.libwrong.message=\
+        The library "{0}"\n\
+        in row {1} does not denote a valid ZIP or JAR file.\n\
+        \n\
+        Please delete this entry and add a correct one.
+
+options.jindex.error.docmissing.title=No documentation URL
+options.jindex.error.docmissing.message=Documentation URL in row {0} is empty.
+
+options.jindex.error.docwrong.title=Wrong documentation URL
+options.jindex.error.docwrong.message=\
+        The documentation URL\n\
+        "{0}"\n\
+        in row {1} is not a valid URL:\n\
+        \n\
+        {2}\n\
+        \n\
+        Maybe you forgot to prepend "file:", if it\n\
+        is a folder on your local file system?
+
+options.jindex.error.overwrite.title=Overwrite?
+options.jindex.error.overwrite.message=\
+        A new index has to be created,\n\
+        but an old index file exists in\n\
+        "{0}".\n\
+        \n\
+        Do you really want to overwrite this file\n\
+        and create a new index?
+
+jindex.error.noinfoviewer.title=No InfoViewer
+jindex.error.noinfoviewer.message=\
+    There is no plugin installed to view URLs.\n\
+    Please install InfoViewer or any other plugin\n\
+    for ViewURL messages.
+
+jindex.error.nohome.title=No directory for user settings
+jindex.error.nohome.message=\
+        The directory for user settings could not be found.\n\
+        This is probably because you specified "-nosettings" at startup.\n\
+        JIndex cannot be used then.
+
+jindex.error.load.title=Error loading index file
+jindex.error.load.message=\
+        An error occurred while loading the index file\n\
+        {0}.\n\
+        \n\
+        The complete error message was:\n\
+        {1}\n\
+        \n\
+        More information may be found in the activity log.
+
+jindex.error.invalidfile.title=Error loading index file
+jindex.error.invalidfile.message=\
+        An error occurred while loading the index file\n\
+        {0}.\n\
+        \n\
+        The XML parser could not parse the index file.\n\
+        The message was:\n\
+        {1}\n\
+        at line {2}, column {3}.\n\
+        \n\
+        The index file is problably damaged. Try to recreate\n\
+        the index.
+
+jindex.error.wrongversion.title=Index out of date
+jindex.error.wrongversion.message=\
+        JIndex tried to load an outdated index file.\n\
+        The detailled error message is:\n\
+        \n\
+        {1}\n\
+        \n\
+        Don't worry, you just have to recreate the index.\n\
+        In the following dialog, press "Recreate".
+
+jindex.error.outofmemory.title=Error loading/creating index file
+jindex.error.outofmemory.message=\
+        An out-of-memory error occurred while {0} the index file.\n\
+        \n\
+        You need to increase the maximum memory size of\n\
+        the Java virtual machine. Try setting the option\n\
+        "{1}" in the command line that starts jEdit.\n\
+        \n\
+        Note: <size> is the amount of memory you want to reserve\n\
+        for the Java virtual machine in megabytes. The default\n\
+        is 32. You may want to increase it to 64 or higher.\n\
+        \n\
+        More information about this option can be found in the\n\
+        documentation of the Java virtual machine.
+
+jindex.error.docwrong.title=Malformed URL
+jindex.error.docwrong.message=\
+        The documentation URL\n\
+        "{0}"\n\
+        is no valid URL:\n\
+        \n\
+        {1}
+
+jindex.error.write.title=Error writing index file
+jindex.error.write.message=\
+        Error writing index file\n\
+        "{0}":\n\
+        {1}
+
+
+#
+# The JIndex frame
+#
+
+jindex.frame.title=JIndex
+jindex.frame.search.label=Search:
+jindex.frame.search.mnemonic=S
+jindex.frame.index.label=Index:
+jindex.frame.index.mnemonic=n
+jindex.frame.topics.label=Topics found:
+jindex.frame.topics.mnemonic=T
+
+jindex.frame.status.label=JIndex (c) 1999-2001 by Dirk Moebius
+jindex.frame.status.notloaded=The index is not loaded yet.
+jindex.frame.status.loading=Loading index file. Please wait...
+jindex.frame.status.ready=Ready.
+jindex.frame.status.error=Error loading index file
+jindex.frame.status.keywordnotfound=Nothing found on {0}
+jindex.frame.status.countEntries={0,choice,0#Nothing|1#One entry|2#{0} entries} found on {1}
+jindex.frame.status.open=Opening {0} ...
+
+
+#
+# The JIndex chooser
+#
+
+jindex.chooser.title=JIndex: {0}
+jindex.chooser.info=[Up]/[Down] Choose    [Enter] Select    [Esc] Close
+
+
+#
+# misc
+#
+
+jindex.createinfo.title=No index file
+jindex.createinfo.message=\
+        Before the first use of JIndex\n\
+        you have to create a search index\n\
+        for your API documentation.\n\
+        Please enter the list of APIs\n\
+        and documentation URLs in the\n\
+        following dialog.
+
+jindex.backgroundinfo.title=Information
+jindex.backgroundinfo.message=\
+        The new index will be created in the background.\n\
+        You can continue to work with jEdit. The new index\n\
+        will show up automatically when it's ready.\n\
+        \n\
+        You can watch the status of the index creation\n\
+        by the I/O Progress Monitor, or by the little icon\n\
+        displayed in the right area of the menubar.\n\
+        \n
+jindex.backgroundinfo.dontShowAgain=Don\'t show this message again.
+
+jindex.createIsRunning.title=Creating Index...
+jindex.createIsRunning.message=\
+        Another index is created currently.\n\
+        Please wait till this process is finished.
+

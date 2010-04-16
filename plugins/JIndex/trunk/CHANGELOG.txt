@@ -1,0 +1,197 @@
+ChangeLog for JIndex plugin
+===========================================================================
+
+VERSION 1.0
+
+* Now dependent on InfoViewer directly, instead of EditBus
+* Requires: jEdit 3.1final, InfoViewer 1.0
+
+
+VERSION 0.8.2
+
+* Bugfix: #448471 deadlock if index was loaded during "JIndex on current word".
+* All source code is now in the "jindex" package.
+* Slightly modified Configure dialog.
+* The action "Configure..." is now named "JIndex Configuration".
+* Requires: jEdit 3.0pre5, EditBus 0.9.4
+
+
+VERSION 0.8.1
+
+* The index is now loaded and created in the background by using jEdit's
+  IO threads. The status of index creation can be watched by the
+  IO Progress Monitor.
+* Doesn't use EditBus to listen for create/load events any more, uses it's
+  own listener.
+* Bugfix: deadlocks occurred under some obscure conditions on Windows NT,
+  when the index was loaded, locking up jEdit entirely.
+* Requires: jEdit 3.0pre5, EditBus 0.9.4
+
+
+VERSION 0.8
+
+* The index file is now an xml file. Object serialization is not used anymore.
+  This should solve any (de)serialization errors on various VM's.
+  The disadvantage is that loading takes a little longer.
+* Entries for keys are now sorted alphabetically, too.
+* Location of split pane divider is saved
+* Bugfix: progress bar had wrong size
+* Bugfix: non-editable entries in table rendered wrong
+* Bugfix: configuration window had wrong position
+* Bugfix: deadlock after index creation, if creation was performed after
+  "invalidfile" error message
+* Requires: jEdit 3.0pre5, EditBus 0.9.4
+
+
+VERSION 0.7.4
+
+* Bugfix: "JIndex on current word" throws ClassNotFoundException
+* Updated to new 2.7pre3 action API
+* Requires: jEdit 3.0pre5, EditBus 0.9.4
+
+
+VERSION 0.7.3
+
+* Switch from PluginHolder to the new jEdit Dockable API.
+* New menu entry "Plugins->JIndex->Configure" to configure
+  the index directly.
+* Other plugins may now use the JIndex API and listen on EditBus
+  for index creation and completion.
+* Requires: jEdit 2.6pre3, EditBus 0.9.4
+
+
+VERSION 0.7.2
+
+* Fixed compatibility with jEdit 2.5.1 and PluginHolder 0.0.5
+* Index is now lower case
+* Requires: jEdit 2.5.1, PluginHolder 0.0.5, EditBus 0.9.4
+* InfoViewer 0.5.0 or higher is needed to actually display any API doc.
+
+
+VERSION 0.7.1
+
+* If the index format has changed and you need to recreate the index, the
+  configuration dialog now pops up automatically.
+* There _should_ be less memory consumption when creating index
+* BugFix: upper/lowercase names appeared twice in index
+  (e.g. DATE vs. Date ==> nothing could be found on Date)
+  (thanks to Matthias Schneider)
+* BugFix: sometimes wrong URLs, when methods have inner classes as parameters.
+* Requires: jEdit 2.2final, EditBus 0.8, PluginHolder 0.0.3
+
+
+VERSION 0.7.0
+
+* There are now three ways of using JIndex:
+  - As a standalone window (choose Plugins->JIndex)
+  - Docked in the view. Set a check on
+    "Global Options->Plugin Options->Plugin Holder->JIndex" and enable
+    "Plugins->Plugin Holder->Plugin Holder".
+  - Only on demand. Don't open any window or docked panel, just use
+    "Plugins->JIndex on current token". If the token is ambiguous, a chooser
+    dialog is shown. You can set a keyboard shortcut for this action.
+    I recommend S+F1.
+* Can now include private or package private members in index. See Option pane.
+* Thread safety when loading the index (hopefully!)
+* now better works together with PluginHolder
+* BugFix: generated wrong doc URLs in some situations. Alas, this forced
+  a change in the index structure again. You have to recreate any existing
+  index. JIndex is now more helpful to support you with this task.
+* BugFix: always ensure, that the doc location ends with '/'
+* Requires: jEdit 2.2final, EditBus 0.8, PluginHolder 0.0.3
+
+
+VERSION 0.6.1
+
+* BugFix: wrong name in dependency on PluginHolder; prevented startup of
+  JIndex.
+* Requires at least: jEdit 2.2pre9, EditBus 0.8, PluginHolder 0.0.3
+
+
+VERSION 0.6
+
+* JIndex is now a HoldablePlugin. You need the PluginHolder plugin.
+* The menu entry "Plugins->JIndex" just opens the plugin in it's docked
+  area. The command "Open JIndex on the current selected word/token" (used
+  to be S+F1) is temporarily disabled until the next release.
+* Split bar between key list and topic list
+* No longer depends directly on InfoViewer (uses messages from the EditBus
+  plugin) at compile time. But you need InfoViewer 0.3 or higher to display
+  the documentation pages.
+* Now listens on messages of type org.gjt.sp.jedit.msg.ShowTokenInfo from
+  the EditBus plugin.
+* BugFix: no longer adds itself to EditBus (jEdit does this)
+* Requires at least: jEdit 2.2pre9, EditBus 0.8, PluginHolder 0.0.3
+* InfoViewer 0.3 is recommended.
+
+
+VERSION 0.5
+
+* The index file is now stored in "<jedithome>/jindex/jindex.ser" instead of
+  "<jedithome>/jindex.ser". IMPORTANT: if you want to reuse your old index,
+  move the file to the new location before starting jEdit (creating the
+  folder "jindex" on the way). If you don't do this, JIndex will ask you to
+  create a new index on first use.
+* The default shortcut "S+F1" is no longer. You have to set your favorite
+  shortcut yourself via "File->Global Options->Shortcuts". The command is
+  "JIndex".
+* When adding a new library to the index, a dialog box asks for the
+  documentation URL.
+* BugFix: Progress window was maximized due to Solaris JDK 1.2 bug
+* BugFix: Configure dialog couldn't be reached, when Plugin Options window
+          was open on JDK 1.2
+* BugFix: Tooltips had wrong offset in keyword index
+* BugFix: Index creation is now in a more "friendly" thread. Hopefully, this
+          resolves some thread errors, that users reported.
+* Requires InfoViewerPlugin 0.2 and jEdit 2.2pre8 or higher.
+
+* For developers: JIndex is now an EditBus plugin and accepts messages of
+  type "org.gjt.sp.jedit.msg.JIndexSearch". With this message you can send
+  search strings like "javax.swing.JLabel" or "getPreferredSize" to JIndex.
+  JIndex will display API doc on these classes/methods/fields, if available.
+  See org.gjt.sp.jedit.msg.JIndexSearch and jindex.JIndex.search(String) for
+  an explanation.
+  The message type JIndexSearch is not yet integrated into the EditBus plugin,
+  so you need a direct dependancy on JIndex for now, but this will change in
+  the future.
+
+
+VERSION 0.4
+
+* Use the InfoViewerPlugin 0.1. Runs not without.
+* Moved to package "jindex" to avoid name clashes.
+* The index format has changed (again). You need to recreate the index.
+  You get an "ClassNotFoundException: JIndex" if you try to load the old
+  index.
+* Explicit "Recreate" button in configure dialog.
+* BugFix: Tooltips on entries longer than frame were not displayed properly.
+* Requires jEdit 2.2pre6 or higher, JDK 1.1 or higher
+
+
+VERSION 0.3
+
+* Changed configuration dialog in "Plugin Options": now the index has to be
+  composed in a second window. When you added or deleted a library, the
+  index *must* be recreated (or the dialog can be cancelled, you will loose
+  all changes).
+* You may change now the location of the documentation folders and the
+  "Is old JavaDoc" flag without index recreation.
+* The index format has changed. You need to recreate the index.
+  Version 0.2 indices become invalid. You will get an error dialog, if you try
+  to use the old index before recreation.
+* Fixed error in external browser invokation. Chars in the command string
+  may now be escaped with '\'.
+* Fixed two errors in index generation: wrong signatures on parameters
+  with arrays, wrong spaces in param lists for constructors.
+* Join the two commands "Open..." and "Open doc on current word" into one.
+  So there is just one menu item insteada  a submenu.
+* Shortcut is now S+F1 instead of F9 (conflicts with HyperSearch in pre8).
+* Minor gui changes (images, help button)
+* Requires jEdit 2.2pre6 or higher, JDK 1.1 or higher
+
+
+VERSION 0.2
+
+* Initial release
+* Requires jEdit 2.2pre6 or higher, JDK 1.1 or higher
+
