@@ -68,6 +68,7 @@
     <selector id="packageFiles">
             <or>
                 <filename name="docs/*.html" />
+                <filename name="docs/copying.txt" />
                 <filename name="icons/*.gif" />
                 <filename name="xml/**/*.xml" />
                 <filename name="xml/**/catalog" />

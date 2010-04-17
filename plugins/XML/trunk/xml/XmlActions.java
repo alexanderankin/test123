@@ -319,14 +319,17 @@ loop:			for(;;)
 
 		SideKickParsedData _data = SideKickParsedData.getParsedData(view);
 
-		if(!(_data instanceof XmlParsedData))
+		XmlParsedData data;
+		
+		if(_data instanceof XmlParsedData)
 		{
-			GUIUtilities.error(view,"xml-no-data",null);
-			return;
+			data = (XmlParsedData)_data;
 		}
-
-		XmlParsedData data = (XmlParsedData)_data;
-
+		else
+		{
+			data = null;
+		}
+		
 		TagParser.Tag tag = TagParser.findLastOpenTag(
 			buffer.getText(0,textArea.getCaretPosition()),
 			textArea.getCaretPosition(),data);

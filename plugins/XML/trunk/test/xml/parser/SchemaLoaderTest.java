@@ -173,7 +173,7 @@ public class SchemaLoaderTest{
     	try{
 			ValidatorHandler verifierFilter = l.loadJaxpGrammar(
 					null,
-					brokenSchema.toURL().toString(),
+					brokenSchema.toURI().toString(),
 					new DraconianErrorHandler());
 			fail("should throw an exception");
 		}catch(IOException ioe){

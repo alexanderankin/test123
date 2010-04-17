@@ -58,6 +58,7 @@ import org.w3c.dom.ls.LSResourceResolver;
 import org.w3c.dom.ls.LSInput;
 
 import static xml.Debug.*;
+import xml.PathUtilities;
 // }}}
 
 /**
@@ -546,7 +547,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 			newSystemId = lastChance;
 		}
 
-		Buffer buf = jEdit.getBuffer(XmlPlugin.uriToFile(newSystemId));
+		Buffer buf = jEdit.getBuffer(PathUtilities.urlToPath(newSystemId));
 		if(buf != null)
 		{
 			if(buf.isPerformingIO())
@@ -683,7 +684,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 			Object obj = files.next();
 			if(obj instanceof String)
 			{
-				String file = (String)XmlPlugin.uriToFile((String)obj);
+				String file = (String)PathUtilities.urlToPath((String)obj);
 				Log.log(Log.NOTICE, getClass(), "Deleting " + file);
 				new File(file).delete();
 			}

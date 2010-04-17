@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
 <ACTIONS>
     <ACTION NAME="xmlindenter.indent">
         <CODE>xml.indent.XmlIndenterPlugin.indentXml(view);</CODE>
@@ -117,5 +116,30 @@
         </CODE>
     </ACTION>
     
+    <ACTION NAME="xml-trang-translate">
+        <CODE>
+            new xml.translate.TrangGUI(view,buffer).setVisible(true);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="xml-translate-to-dtd">
+        <CODE>
+            xml.translate.TrangTranslator.translateCurrentBuffer(view,buffer,"dtd");
+        </CODE>
+    </ACTION>
+    <ACTION NAME="xml-translate-to-rng">
+        <CODE>
+            xml.translate.TrangTranslator.translateCurrentBuffer(view,buffer,"rng");
+        </CODE>
+    </ACTION>
+    <ACTION NAME="xml-translate-to-rnc">
+        <CODE>
+            xml.translate.TrangTranslator.translateCurrentBuffer(view,buffer,"rnc");
+        </CODE>
+    </ACTION>
+    <ACTION NAME="xml-translate-to-xsd">
+        <CODE>
+            xml.translate.TrangTranslator.translateCurrentBuffer(view,buffer,"xsd");
+        </CODE>
+    </ACTION>
 </ACTIONS>
 

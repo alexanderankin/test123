@@ -16,44 +16,11 @@ package xml;
 
 //{{{ Imports
 import java.io.File;
-import java.io.IOException;
-import java.net.URL;
 import java.net.URI;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-
-import javax.swing.JOptionPane;
-import javax.swing.JCheckBox;
-import javax.swing.JTextField;
-import javax.swing.JPanel;
-import javax.swing.JLabel;
-import javax.swing.JButton;
-import javax.swing.BorderFactory;
-import java.awt.Color;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.ActionListener;
-
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Arrays;
 import java.util.regex.Pattern;
 
-import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.browser.VFSBrowser;
-import org.gjt.sp.jedit.MiscUtilities;
-import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.util.Log;
-import org.gjt.sp.jedit.gui.EnhancedDialog;
-import org.gjt.sp.jedit.gui.HistoryTextField;
-
-import common.gui.OkCancelButtons;
-import ise.java.awt.KappaLayout;
-
-import xml.parser.SchemaMapping;
 //}}}
 
 /**

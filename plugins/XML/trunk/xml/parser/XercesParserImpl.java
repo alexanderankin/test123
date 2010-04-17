@@ -109,7 +109,11 @@ public class XercesParserImpl extends XmlParser
 			mapping = null;
 		}
 
-		Handler handler = new Handler(buffer,text,errorSource,data);
+		ErrorListErrorHandler errorHandler = new ErrorListErrorHandler(
+				 errorSource
+				,buffer.getPath()
+			);
+		Handler handler = new Handler(buffer,text,errorHandler,data);
 
 
 		XMLReader reader = null;
@@ -141,7 +145,7 @@ public class XercesParserImpl extends XmlParser
 
 			schemaLoader = new SchemaAutoLoader(reader,mapping);
 
-			schemaLoader.setErrorHandler(handler);
+			schemaLoader.setErrorHandler(errorHandler);
 			schemaLoader.setContentHandler(handler);
 			schemaLoader.setEntityResolver(handler);
 
@@ -454,7 +458,7 @@ public class XercesParserImpl extends XmlParser
 	    // {{{ members
 		Buffer buffer;
 
-		DefaultErrorSource errorSource;
+		ErrorListErrorHandler errorHandler;
 		String text;
 		XmlParsedData data;
 
@@ -474,12 +478,12 @@ public class XercesParserImpl extends XmlParser
 		
 		// }}}
 		// {{{ Handler constructor
-		Handler(Buffer buffer, String text, DefaultErrorSource errorSource,
+		Handler(Buffer buffer, String text, ErrorListErrorHandler errorHandler,
 			XmlParsedData data)
 		{
 			this.buffer = buffer;
 			this.text = text;
-			this.errorSource = errorSource;
+			this.errorHandler = errorHandler;
 			this.data = data;
 			//this.activePrefixes = new HashMap<String, String>();
 			this.currentNodeStack = new Stack<DefaultMutableTreeNode>();
@@ -497,20 +501,6 @@ public class XercesParserImpl extends XmlParser
 			this.schemaAutoLoader = sal;
 		}
 		
-		private boolean ignoreMessage(String message) {
-			if (message.startsWith("More pseudo attributes are expected")) return true;
-			if (message.startsWith("Content is not allowed in prolog")) return true;
-			return false;
-
-		}
-
-		private void addError(int type, String uri, int line, String message)
-		{
-//			if (ignoreMessage(message)) return;
-			errorSource.addError(type,XmlPlugin.uriToFile(uri),line,
-				0,0,message);
-		}
-
 		//{{{ grammarToCompletionInfo() method
 		private CompletionInfo modelToCompletionInfo(XSModel model)
 		{
@@ -577,7 +567,7 @@ public class XercesParserImpl extends XmlParser
 			catch(Exception e)
 			{
 				e.printStackTrace();
-				errorSource.addError(ErrorSource.ERROR,
+				errorHandler.getErrorSource().addError(ErrorSource.ERROR,
 					buffer.getPath(),
 					Math.max(0,loc.getLineNumber()-1),0,0,
 					e.getMessage());
@@ -675,7 +665,7 @@ public class XercesParserImpl extends XmlParser
 			
 			empty = true;
 
-			String currentURI = XmlPlugin.uriToFile(loc.getSystemId());
+			String currentURI = xml.PathUtilities.urlToPath(loc.getSystemId());
 
 			// what do we do in this case?
 			if(loc.getLineNumber() == -1){
@@ -782,7 +772,7 @@ public class XercesParserImpl extends XmlParser
 				}
 			}
 
-			if(!buffer.getPath().equals(XmlPlugin.uriToFile(loc.getSystemId())))
+			if(!buffer.getPath().equals(xml.PathUtilities.urlToPath(loc.getSystemId())))
 				return;
 
 			// what do we do in this case?
@@ -826,40 +816,6 @@ public class XercesParserImpl extends XmlParser
 				throw new StoppedException();
 
 			empty = false;
-		} //}}}
-
-		//{{{ error() method
-		public void error(SAXParseException spe)
-		{
-			String systemId = spe.getSystemId();
-			if(systemId == null)
-				systemId = buffer.getPath();
-			addError(ErrorSource.ERROR,spe.getSystemId(),
-				Math.max(0,spe.getLineNumber()-1),
-				spe.getMessage());
-		} //}}}
-
-		//{{{ warning() method
-		public void warning(SAXParseException spe)
-		{
-			String systemId = spe.getSystemId();
-			if(systemId == null)
-				systemId = buffer.getPath();
-			addError(ErrorSource.WARNING,spe.getSystemId(),
-				Math.max(0,spe.getLineNumber()-1),
-				spe.getMessage());
-		} //}}}
-
-		//{{{ fatalError() method
-		public void fatalError(SAXParseException spe)
-			throws SAXParseException
-		{
-			String systemId = spe.getSystemId();
-			if(systemId == null)
-				systemId = buffer.getPath();
-			addError(ErrorSource.ERROR,systemId,
-				Math.max(0,spe.getLineNumber()-1),
-				spe.getMessage());
 		} //}}}
 
 		//{{{ elementDecl() method
@@ -1050,53 +1006,6 @@ public class XercesParserImpl extends XmlParser
 		{
 			if(stopped)
 				throw new StoppedException();
-			/*
-			empty = true;
-
-			String currentURI = XmlPlugin.uriToFile(loc.getSystemId());
-
-			// what do we do in this case?
-			if(loc.getLineNumber() == -1){
-				Log.log(Log.WARNING,XercesParserImpl.class,"no location for "+qName);
-				return;
-			}
-
-			if(!buffer.getPath().equals(currentURI))
-				return;
-
-			buffer.readLock();
-
-			try
-			{
-				int line = Math.min(buffer.getLineCount() - 1,
-					loc.getLineNumber() - 1);
-				int column = loc.getColumnNumber() - 1;
-				int offset = Math.min(text.length() - 1,
-					buffer.getLineStartOffset(line)
-					+ column - 1);
-
-				offset = findTagStart(offset);
-				Position pos = buffer.createPosition(offset);
-
-				DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(
-					new XmlTag(qName,namespaceURI,pos,attrs));
-
-				if(!currentNodeStack.isEmpty())
-				{
-					DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-						currentNodeStack.peek();
-
-					node.insert(newNode,node.getChildCount());
-				}
-				else
-					data.root.insert(newNode,0);
-
-				currentNodeStack.push(newNode);
-			}
-			finally
-			{
-				buffer.readUnlock();
-			}*/
 		} //}}}
 
 		//{{{ endElement() method
@@ -1108,41 +1017,6 @@ public class XercesParserImpl extends XmlParser
 			if(stopped)
 				throw new StoppedException();
 
-			/*
-			if(!buffer.getPath().equals(XmlPlugin.uriToFile(loc.getSystemId())))
-				return;
-
-			// what do we do in this case?
-			if(loc.getLineNumber() == -1)
-				return;
-
-			buffer.readLock();
-
-			try
-			{
-				DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-					currentNodeStack.peek();
-				XmlTag tag = (XmlTag)node.getUserObject();
-				if(tag.getName().equals(qName))
-				{
-					int line = Math.min(buffer.getLineCount() - 1,
-						loc.getLineNumber() - 1);
-					int column = loc.getColumnNumber() - 1;
-					int offset = Math.min(buffer.getLength(),
-						buffer.getLineStartOffset(line)
-						+ column);
-
-					tag.setEnd(buffer.createPosition(offset));
-					tag.empty = empty;
-					currentNodeStack.pop();
-				}
-			}
-			finally
-			{
-				buffer.readUnlock();
-			}
-
-			empty = false;*/
 		} //}}}
 
 		//{{{ characters() method
@@ -1154,29 +1028,6 @@ public class XercesParserImpl extends XmlParser
 
 			empty = false;
 		} //}}}
-
-		//{{{ error() method
-		public void error(SAXParseException spe)
-		{
-		} //}}}
-
-		//{{{ warning() method
-		public void warning(SAXParseException spe)
-		{
-		} //}}}
-
-		//{{{ fatalError() method
-		public void fatalError(SAXParseException spe)
-			throws SAXParseException
-		{
-/*			String systemId = spe.getSystemId();
-			if(systemId == null)
-				systemId = buffer.getPath();
-			addError(ErrorSource.ERROR,systemId,
-				Math.max(0,spe.getLineNumber()-1),
-				spe.getMessage());
-*/		} //}}}
-
 
 		//{{{ findTagStart() method
 		private int findTagStart(int offset)
