@@ -32,7 +32,7 @@ import p4plugin.Perforce;
  *
  * @author     Marcelo Vanzin
  * @version    $Id$
- * @since      P4P 0.3.2
+ * @since      P4P 0.4.0
  */
 public class P4Delete extends P4FileAction
 {

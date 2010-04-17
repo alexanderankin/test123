@@ -184,7 +184,7 @@ public class P4Config extends PropertiesBean {
      *
      * @return The client name, or null if it couldn't be determined.
      *
-     * @since P4P 0.3.2
+     * @since P4P 0.4.0
      */
     public String getClientName(String basePath)
     {
