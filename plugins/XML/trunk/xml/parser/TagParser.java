@@ -149,11 +149,25 @@ loop:		for (int i = Math.min(text.length() - 1,pos); i >= 0; i--)
 					continue;
 				else
 				{
-					String tagName = (data.html
-						? tag.tag.toLowerCase()
-						: tag.tag);
-
-					ElementDecl decl = data.getElementDecl(tag.tag);
+					String tagName;
+					ElementDecl decl;
+					if(data == null)
+					{
+						tagName = tag.tag;
+						decl = null;
+					}
+					else
+					{
+						if(data.html){
+							tagName = tag.tag.toLowerCase();
+						}else{
+							tagName = tag.tag;
+						}
+						
+						decl = data.getElementDecl(tag.tag);
+					}
+					
+					 
 					if(tag.type == T_STANDALONE_TAG
 						|| (decl != null && decl.empty))
 					{

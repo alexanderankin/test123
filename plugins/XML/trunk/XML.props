@@ -1,8 +1,9 @@
+# :mode=properties:folding=explicit:
 # Plugin properties
 plugin.xml.XmlPlugin.activate=defer
 plugin.xml.XmlPlugin.name=XML
 plugin.xml.XmlPlugin.author=Slava Pestov, Dale Anson, Alan Ezust, Rob McKinnon, Martin Raspe, Jakub Roztocil, Eric Le Lay
-plugin.xml.XmlPlugin.version=2.6.1
+plugin.xml.XmlPlugin.version=2.7.0
 plugin.xml.XmlPlugin.docs=index.html
 
 plugin.xml.XmlPlugin.depend.0=jdk 1.5
@@ -41,7 +42,9 @@ plugin.xml.XmlPlugin.menu= \
     xml-entities-to-chars \
     xmlindenter.indent \
     xmlindenter.toggleSplitAttributes \
+    - \
     xml-generate-dtd \
+    xml-trang-translate \
     - \
     csssidekick-insert-relative-path \
     - \
@@ -74,6 +77,7 @@ xml-reload-catalogs.label=Reload Catalogs
 xml-select-element.label=Select Element or Code Block
 xml-select-between-tags.label=Selection Between Tags
 xml-generate-dtd.label=Generate DTD
+xml-trang-translate.label=Translate Schema using Trang
 xml-open-schema.label=Open Schema
 xml-prompt-typeid.label=Set Schema Type...
 xml-prompt-schema.label=Set Schema...
@@ -386,3 +390,105 @@ xml.choose-schema.browse=Browse...
 xml.choose-schema.relative=make this location relative (preview bellow)
 xml.choose-schema.error-uri.title=Strange path indeed !
 xml.choose-schema.error-uri.message=Encountered an Exception with URI {0} :\n\t{1}
+
+xml.translate.choose-input-type.title=Couldn't guess input type
+xml.translate.choose-input-type.message=Please select the type of input...
+
+# {{{ TrangGUI props
+
+xml.gui.file.open.name=Open file
+xml.gui.file.open.short-desc=Open file
+xml.gui.file.open.small-icon=22x22/actions/document-open.png
+
+
+xml.translate.xml-inputs.label=Additional input Documents
+
+xml.translate.input.browse.prompt=Please select a source document
+
+xml.translate.input.select.name=Select source
+xml.translate.input.select.short-desc=Select source Schema
+xml.translate.input.select.small-icon=22x22/actions/document-open.png
+
+xml.translate.xml-inputs.add.name=Add
+xml.translate.xml-inputs.add.short-desc=Add Input
+xml.translate.xml-inputs.add.small-icon=22x22/actions/list-add.png
+
+xml.translate.xml-inputs.remove.name=Remove
+xml.translate.xml-inputs.remove.short-desc=Remove Input
+xml.translate.xml-inputs.remove.small-icon=22x22/actions/list-remove.png
+
+xml.translate.xml-inputs.up.name=Move up
+xml.translate.xml-inputs.up.short-desc=Move Input up
+xml.translate.xml-inputs.up.small-icon=22x22/actions/go-up.png
+
+xml.translate.xml-inputs.down.name=Move down
+xml.translate.xml-inputs.down.short-desc=Move Input down
+xml.translate.xml-inputs.down.small-icon=22x22/actions/go-down.png
+
+xml.translate.output.browse.prompt=Please select a main destination Schema
+xml.translate.output.select.name=Select destination
+xml.translate.output.select.short-desc=Select main destination Schema
+xml.translate.output.select.small-icon=22x22/actions/document-save.png
+
+xml.translate.output-type=rng
+
+xml.translate.failed.title = Translation failed
+xml.translate.failed.message = Translation failed ! Complete error is:\n{0}
+
+xml.translate.done.title = Translation succeeded
+xml.translate.done.message = Translation succeeded: created/updated {0} files
+
+# {{{ DTD input options
+xml.translate.dtd.xmlns.label=xmlns
+xml.translate.dtd.xmlns.tooltip=Specifies the default namespace (for unqualified element names)
+xml.translate.dtd.xmlns=
+
+xml.translate.dtd.colon-replacement.label=colon-replacement
+xml.translate.dtd.colon-replacement.tooltip=Replacement for colons in element and attribute lists names
+xml.translate.dtd.colon-replacement=
+
+xml.translate.dtd.element-define.label=element-define
+xml.translate.dtd.element-define.tooltip=How to construct the name of the definition representing an element declaration from the name of the element
+xml.translate.dtd.element-define=
+
+xml.translate.dtd.inline-attlist.label=inline-attlist
+xml.translate.dtd.inline-attlist.tooltip=Move attributes declared in attribute list declarations into the definitions generated for element declarations
+xml.translate.dtd.inline-attlist=no-inline-attlist
+
+xml.translate.dtd.attlist-define.label=attlist-define
+xml.translate.dtd.attlist-define.tooltip=How to construct the name of the definition representing an attribute list declaration from the name of the element
+xml.translate.dtd.attlist-define=
+
+xml.translate.dtd.any-name.label=any-name
+xml.translate.dtd.any-name.tooltip=Name of the definition for the ANY content-model in the DTD
+xml.translate.dtd.any-name=
+
+xml.translate.dtd.strict-any.label=strict-any
+xml.translate.dtd.strict-any.tooltip=Preserves the exact semantics of ANY content models by using an explicit choice of references to all declared elements
+xml.translate.dtd.strict-any=no-strict-any
+
+xml.translate.dtd.annotation-prefix.label=annotation-prefix
+xml.translate.dtd.annotation-prefix.tooltip=prefix used for annotations
+xml.translate.dtd.annotation-prefix=a
+
+xml.translate.dtd.generate-start.label=generate-start
+xml.translate.dtd.generate-start.tooltip=Should it generate a start element
+xml.translate.dtd.generate-start=no-generate-start
+
+# }}}
+
+# {{{ XSD output options
+xml.translate.xsd.disable-abstract-elements.label=disable-abstract-elements
+xml.translate.xsd.disable-abstract-elements.message=No abstract elements and subsitution groups in the generated XML Schema
+xml.translate.xsd.disable-abstract-elements=no-disable-abstract-elements
+
+xml.translate.xsd.any-process-contents.label=any-process-contents
+xml.translate.xsd.any-process-contents.message=Value for the processContents attribute of any elements
+xml.translate.xsd.any-process-contents=skip
+
+xml.translate.xsd.any-attribute-process-contents.label=any-attribute-process-contents
+xml.translate.xsd.any-attribute-process-contents.message=Value for the processContents attribute of anyAttribute elements
+xml.translate.xsd.any-attribute-process-contents=skip
+# }}}
+
+# }}}

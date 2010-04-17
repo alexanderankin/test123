@@ -606,6 +606,33 @@
   
 </section>
 
+<section id="translate"><title>Translating between schemas</title>
+
+<para>Thanks to Trang's schema translation capabilities, you will be able to translate
+from any of DTD, RNG, RNC, XML instances to DTD, RNG, RNC, XSD.
+</para>
+
+<para>Trang (<uri>http://www.thaiopensource.com/relaxng/trang.html</uri>, James Clark and others) 
+is Copyright © 2002, 2003, 2008 Thai Open Source Software Center Ltd.</para>
+
+<para>A copy of its user-guide is included <ulink url="docs/trang-manual.html">here</ulink>.</para>
+
+<para>You may do a basic conversion of current buffer using the
+<code>xml-translate-to-dtd</code>, <code>xml-translate-to-rnc</code>, <code>xml-translate-to-rng</code>,
+<code>xml-translate-to-xsd</code> actions.</para>
+
+<para>You may specify advanced options using <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;
+  <guimenuitem>Translate Schema using Trang</guimenuitem>.
+  The meaning of each parameter is described in Trang's user manual (<ulink url="docs/trang-manual.html"/>).
+</para>
+
+<para>The output of Trang is converted to jEdit buffers, so that you may review them before saving.
+Any existing file will be overwritten but you'll get its contents back, using <guimenuitem>
+undo</guimenuitem>. For the moment, it's not the live contents of the buffer which is sent to Trang,
+but the file's content on disk, so remember to save before invoking it.</para>
+
+</section>
+
 <section id="include">
 <title>XML Inclusion</title>
 
@@ -884,6 +911,14 @@ Chapter 22 of <emphasis>DocBook XSL: The Complete Guide</emphasis> by Bob Stayto
 
 
 <title>Change log</title> <itemizedlist>
+
+ <listitem><para><emphasis role="bold">Version 2.7.0</emphasis>
+ Requires jEdit 4.3 final, Java 1.5, ErrorList 1.8, SideKick 0.9, BeautyPlugin 0.3.0 and XercesPlugin 2.9.1.
+ </para>
+     <itemizedlist>
+      <listitem><para>Translate an RNG,RNC schema or a sample XML to a RNC,RNG,DTD or XSD (Eric Le Lay - #1465879)</para></listitem>
+     </itemizedlist>
+ </listitem>
 
  <listitem><para><emphasis role="bold">Version 2.6.1</emphasis>
  Requires jEdit 4.3 final, Java 1.5, ErrorList 1.8, SideKick 0.9, BeautyPlugin 0.3.0 and XercesPlugin 2.9.1.

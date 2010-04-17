@@ -86,6 +86,8 @@ public class XmlPlugin extends EBPlugin
 		Resolver.instance().save();
 
 		Resolver.instance().uninit();
+		
+		xml.translate.TrangTranslator.stop();
 	} //}}}
 
 	//{{{ handleMessage() method
@@ -141,56 +143,6 @@ public class XmlPlugin extends EBPlugin
 
 		return jEdit.getProperty("mode." + modeName + "."
 			+ SideKickPlugin.PARSER_PROPERTY) == null;
-	} //}}}
-
-	//{{{ uriToFile() method
-    /**
-     * This method is hacky and should be rewritten to use
-     * java.net.URI. In particular, it does not work if
-     * the file:// URI points to a samba share.
-     *
-     */
-	public static String uriToFile(String uri)
-	{
-		if (uri.startsWith("http:/")) try {
-			// TODO: document the usage of uriToFile in Resolver
-			//       and gain confidence that it doesn't loop
-			String result = Resolver.instance().resolvePublicOrSystem(uri,false);
-			if (result != null) return result;
-		}
-		catch (Exception e) {
-			Log.log(Log.ERROR, XmlPlugin.class, e.getMessage());
-		}
-
-
-		if(uri.startsWith("file:/"))
-		{
-			int start;
-			if(uri.startsWith("file:///") && OperatingSystem.isDOSDerived())
-				start = 8;
-			else if(uri.startsWith("file://"))
-				start = 7;
-			else
-				start = 5;
-
-			StringBuffer buf = new StringBuffer();
-			for(int i = start; i < uri.length(); i++)
-			{
-				char ch = uri.charAt(i);
-				if(ch == '/')
-					buf.append(java.io.File.separatorChar);
-				else if(ch == '%')
-				{
-					String str = uri.substring(i + 1,i + 3);
-					buf.append((char)Integer.parseInt(str,16));
-					i += 2;
-				}
-				else
-					buf.append(ch);
-			}
-			uri = buf.toString();
-		}
-		return uri;
 	} //}}}
 
 	private TagMouseHandler tagMouseHandler;

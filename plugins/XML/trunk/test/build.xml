@@ -81,7 +81,7 @@
 
     <!-- this selector holds just one test.  This is optional. -->
     <selector id="testcases.current">
-        <filename name="xml/XmlPluginTest.java"/>
+        <filename name="xml/gui/*Test.java"/>
     </selector>
 
     <!-- this selector controls which tests to run, set the refid to either
@@ -90,7 +90,7 @@
     defined, no tests will run. -->
     <selector id="junit.testcases">
         <or>
-            <selector refid="testcases.all"/>
+            <selector refid="testcases.current"/>
         </or>
     </selector>
 
