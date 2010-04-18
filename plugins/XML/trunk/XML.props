@@ -447,6 +447,10 @@ xml.translate.dtd.colon-replacement.label=colon-replacement
 xml.translate.dtd.colon-replacement.tooltip=Replacement for colons in element and attribute lists names
 xml.translate.dtd.colon-replacement=
 
+xml.translate.dtd.namespaces.label=namespaces
+xml.translate.dtd.namespaces.tooltip=enter here a list of xmlns:prefix=uri namespace declarations (no quotes)
+xml.translate.dtd.namespaces=
+
 xml.translate.dtd.element-define.label=element-define
 xml.translate.dtd.element-define.tooltip=How to construct the name of the definition representing an element declaration from the name of the element
 xml.translate.dtd.element-define=
