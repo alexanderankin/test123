@@ -37,6 +37,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
 import java.awt.Color;
@@ -46,6 +47,8 @@ import java.awt.Container;
 import java.awt.CardLayout;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyAdapter;
 //}}}
 
 // jEdit
@@ -289,6 +292,13 @@ public class TrangGUI extends EnhancedDialog {
 			y++;
 		}
 		
+		protected final void addCustomOption(String name,JComponent comp, int h){
+			JLabel l = new JLabel(jEdit.getProperty(propertyPrefix+name+".label"));
+			add(l,"0, "+y+", 1, 1, E, 0, 5");
+			add(comp, "1, "+y+", 8, "+h+", W, w, 5");
+			y+=h;
+		}
+		
 		protected final void addCheckOption(String name, boolean isNoOption){
 			CheckOption option = new CheckOption(name
 				,jEdit.getProperty(propertyPrefix+name+".label")
@@ -358,12 +368,13 @@ public class TrangGUI extends EnhancedDialog {
 	}
 	
 	class DTDOptions extends Options{
+		JTextArea namespaces;
 		
 		DTDOptions(){
 			super("xml.translate.dtd.");
 			
 			addStringOption("xmlns");
-			// TODO: xmlns:prefix=...
+			addCustomOption("namespaces",initNamespaces(),2);
 			addStringOption("colon-replacement");
 			addStringOption("element-define");
 			addCheckOption("inline-attlist",true);
@@ -375,12 +386,53 @@ public class TrangGUI extends EnhancedDialog {
 			
 		}
 		
+		private JComponent initNamespaces(){
+			namespaces = new JTextArea(3,30);
+			namespaces.setName("namespaces");
+			namespaces.setText(jEdit.getProperty("xml.translate.dtd.namespaces",""));
+			namespaces.setToolTipText(jEdit.getProperty("xml.translate.dtd.namespaces.tooltip"));
+			namespaces.addKeyListener(new KeyAdapter(){
+					public void keyPressed(KeyEvent e){
+						if(KeyEvent.VK_ENTER == e.getKeyCode()){
+							namespaces.setText(namespaces.getText()+"\n");
+							e.consume();
+						}
+					}
+					public void keyReleased(KeyEvent e){
+						if(KeyEvent.VK_ENTER == e.getKeyCode()){
+							e.consume();
+						}
+					}
+			});
+			JScrollPane scr = new JScrollPane(namespaces);
+			//scr.setVerticalScrollBarPolicy(scr.VERTICAL_SCROLLBAR_NEVER);
+			return scr;
+		}
+		
 		public void outputTypeChanged(String newOutputType){
 			options.get("inline-attlist").setParamValue(
 				"xsd".equals(newOutputType)? 
 					"inline-attlist" : "no-inline-attlist");
 		}
 
+		@Override
+		public List<String> getOptions(){
+			List<String> opts = super.getOptions();
+			String[] nsa = namespaces.getText().split("\\s+");
+			for(String ns : nsa){
+				System.err.println("<"+ns+">");
+				opts.add(ns);
+			}
+			return opts;
+		}
+		
+		@Override
+		public void saveOptions(){
+			super.saveOptions();
+			jEdit.setProperty("xml.translate.dtd.namespaces",namespaces.getText());
+		}
+
+		
 	}
 	
 	class XSDOptions extends Options{
