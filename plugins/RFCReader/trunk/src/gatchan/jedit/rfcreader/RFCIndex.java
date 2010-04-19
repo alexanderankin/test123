@@ -64,7 +64,7 @@ public class RFCIndex
 	public RFCIndex(File home, Map<Integer, RFC> rfcList) throws IOException
 	{
 		directory = FSDirectory.open(new File(home, "lucene"));
-		analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);
+		analyzer = new StandardAnalyzer(Version.LUCENE_30);
 		rfcs = rfcList;
 	}
 
@@ -79,9 +79,11 @@ public class RFCIndex
 			for (RFC rfc : rfcs.values())
 			{
 				Document document = new Document();
-				document.add(new Field("number", Integer.toString(rfc.getNumber()), Field.Store.YES,
+				document.add(new Field("number",
+					Integer.toString(rfc.getNumber()), Field.Store.YES,
 					Field.Index.ANALYZED, Field.TermVector.NO));
-				document.add(new Field("title", rfc.getTitle(), Field.Store.NO, Field.Index.ANALYZED,
+				document.add(new Field("title", rfc.getTitle(),
+					Field.Store.NO, Field.Index.ANALYZED,
 					Field.TermVector.NO));
 
 				writer.addDocument(document);
@@ -96,7 +98,8 @@ public class RFCIndex
 	public List<RFC> search(String query)
 	{
 		if (parser == null)
-			parser = new MultiFieldQueryParser(Version.LUCENE_CURRENT, new String[]{"number", "title"},
+			parser = new MultiFieldQueryParser(Version.LUCENE_30,
+				new String[]{"number", "title"},
 				analyzer);
 
 		return _search(query, parser);
@@ -105,7 +108,8 @@ public class RFCIndex
 	public List<RFC> searchByNumber(String query)
 	{
 		if (numberQueryParser == null)
-			numberQueryParser = new MultiFieldQueryParser(Version.LUCENE_CURRENT, new String[]{"number"},
+			numberQueryParser = new MultiFieldQueryParser(Version.LUCENE_30,
+				new String[]{"number"},
 				analyzer);
 
 		return _search(query, numberQueryParser);
