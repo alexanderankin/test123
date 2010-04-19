@@ -18,12 +18,12 @@ public class AnalyzerFactory
 
 	static
 	{
-		analyzers.put("Standard", new StandardAnalyzer(Version.LUCENE_CURRENT));
+		analyzers.put("Standard", new StandardAnalyzer(Version.LUCENE_30));
 		analyzers.put("Simple", new SimpleAnalyzer());
 		analyzers.put("Java identifier", new SourceCodeAnalyzer());
 		analyzers.put("Whitespace", new WhitespaceAnalyzer());
 		analyzers.put("Keyword", new KeywordAnalyzer());
-		analyzers.put("Stop", new StopAnalyzer(Version.LUCENE_CURRENT));
+		analyzers.put("Stop", new StopAnalyzer(Version.LUCENE_30));
 	}
 
 	static String[] getAnalyzerNames()

@@ -240,7 +240,7 @@ public class IndexImpl extends AbstractIndex implements Index
 		Searcher searcher = getSearcher();
 		if (searcher == null)
 			return;
-		QueryParser parser = new MultiFieldQueryParser(Version.LUCENE_CURRENT, new String[]{"path", "content"},
+		QueryParser parser = new MultiFieldQueryParser(Version.LUCENE_30, new String[]{"path", "content"},
 			getAnalyzer());
 		try
 		{
