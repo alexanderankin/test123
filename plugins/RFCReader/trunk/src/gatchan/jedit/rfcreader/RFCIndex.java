@@ -52,7 +52,7 @@ import java.util.Map;
 public class RFCIndex
 {
 	/** increment this */
-	public static final int INDEX_VERSION = 1;
+	public static final int INDEX_VERSION = 2;
 	private IndexSearcher searcher;
 
 	private Directory directory;
