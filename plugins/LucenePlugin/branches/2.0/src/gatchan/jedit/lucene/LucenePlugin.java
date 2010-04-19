@@ -36,6 +36,7 @@ import gatchan.jedit.lucene.Index.FileProvider;
 import javax.swing.*;
 import java.io.*;
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * @author Matthieu Casanova
@@ -45,10 +46,11 @@ public class LucenePlugin extends EditPlugin
 	static CentralIndex CENTRAL;
 	private static final String CENTRAL_INDEX_NAME = "__CENTRAL__";
 	private static final String INDEXES_FILE_NAME = "indexes.cfg";
-	private Map<String, Index> indexMap = new HashMap<String, Index>();
-	private ProjectWatcher projectWatcher = null;
+	private final Map<String, Index> indexMap = new HashMap<String, Index>();
+	private ProjectWatcher projectWatcher;
 	
 	public static LucenePlugin instance;
+	private static final Pattern COMMA_PATTERN = Pattern.compile(",");
 
 	@Override
 	public void start()
@@ -93,7 +95,7 @@ public class LucenePlugin extends EditPlugin
 	private void loadIndexes()
 	{
 		File f = new File(getPluginHome(), INDEXES_FILE_NAME);
-		if (! f.exists())
+		if (!f.exists())
 			return;
 		BufferedReader reader = null;
 		try
@@ -106,7 +108,7 @@ public class LucenePlugin extends EditPlugin
 				line = reader.readLine();
 				if (line == null)
 					break;
-				String [] parts = line.split(",");
+				String [] parts = COMMA_PATTERN.split(line);
 				if (parts.length < 2)
 					break;
 				String type = parts[0];
@@ -116,7 +118,7 @@ public class LucenePlugin extends EditPlugin
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			Log.log(Log.ERROR, this, e);
 		}
 		finally
 		{
@@ -134,18 +136,18 @@ public class LucenePlugin extends EditPlugin
 		try
 		{
 			writer = new PrintWriter(new FileWriter(f));
-			for (String name: indexMap.keySet())
+			for (Map.Entry<String, Index> stringIndexEntry : indexMap.entrySet())
 			{
-				writer.println(name);
-				Index index = indexMap.get(name);
+				writer.println(stringIndexEntry.getKey());
+				Index index = stringIndexEntry.getValue();
 				String type = IndexFactory.getType(index);
 				String analyzer = AnalyzerFactory.getAnalyzerName(index.getAnalyzer());
-				writer.println(type + "," + analyzer);
+				writer.println(type + ',' + analyzer);
 			}
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			Log.log(Log.ERROR, this, e);
 		}
 		finally
 		{
@@ -308,8 +310,8 @@ public class LucenePlugin extends EditPlugin
 	 * @param files     the file array to add
 	 * @param sharedSession whether the VFS session can be shared by all files
 	 */
-	public void addToIndex(final String indexName, FileProvider files,
-		final boolean sharedSession)
+	public void addToIndex(String indexName, FileProvider files,
+		boolean sharedSession)
 	{
 		Index index = getIndex(indexName);
 		if (index == null)
@@ -390,7 +392,7 @@ public class LucenePlugin extends EditPlugin
 	 */
 	public static void runInWorkThread(Runnable r)
 	{
-		Thread t = new Thread(r);
+		Thread t = new Thread(r, "Lucene");
 		t.start();
 	}
 }
