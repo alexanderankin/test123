@@ -90,7 +90,7 @@ public class RFCIndex
 			}
 			writer.optimize();
 			writer.close();
-
+			jEdit.setIntegerProperty("rfcreader.index.version",INDEX_VERSION);
 		}
 		searcher = new IndexSearcher(directory, true);
 	}
