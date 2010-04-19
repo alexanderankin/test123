@@ -57,7 +57,7 @@ public class TemporaryIndex implements Index
 	public TemporaryIndex(String name)
 	{
 		this.name = name;
-		this.analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);
+		this.analyzer = new StandardAnalyzer(Version.LUCENE_30);
 		directory = new RAMDirectory();
 		try
 		{
@@ -178,7 +178,7 @@ public class TemporaryIndex implements Index
 		}
 		if (searcher == null)
 			return;
-		QueryParser parser = new MultiFieldQueryParser(Version.LUCENE_CURRENT, new String[]{"path", "content"},
+		QueryParser parser = new MultiFieldQueryParser(Version.LUCENE_30, new String[]{"path", "content"},
 			getAnalyzer());
 		try
 		{
