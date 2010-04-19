@@ -1,0 +1,127 @@
+<html>
+<head>
+   <title>LucenePlugin</title>
+</head>
+<body>
+<h1> LucenePlugin </h1>
+<p>
+Written by: Matthieu Casanova, Shlomy Reinstein.
+</p>
+<a href="#CreateIndex"> Creating an index </a><br>
+<a href="#SearchIndex"> Searching an index </a><br>
+<a href="#DeleteIndex"> Deleting an index </a><br>
+<a href="#Support"> Support </a><br>
+<p>
+LucenePlugin allows you to perform quick and complex text searches using the
+Lucene search engine. It can save you a lot of time when searching across
+projects, directory trees or large files. It builds up an index for the text
+in the files, and enables you to search this index efficiently.
+Information about Lucene is available on the
+<a href="http://lucene.apache.org/java/docs">Lucene website</a>.
+</p>
+<p>
+The plugin allows you to create a Lucene index, using one of the built-in
+analyzers, and then search the index. Once created, the index remains updated
+when the files in it are changed inside jEdit (i.e. when their buffers are
+saved). If the files in the index are changed externally (e.g. by updating them
+from a version control system), you can ask the plugin to update the index.
+</p>
+<p>
+<a name="CreateIndex">
+<h3> Creating an index: </h3>
+</a>
+<ol>
+<li>
+Select the files to index.
+<ul>
+<li>
+To create an index for a project, right-click the project in the ProjectViewer
+dockable window, and select "Index in Lucene".
+<li>
+To create an index for a directory tree, right-click the root of the directory
+tree in the File System Browser dockable window, and select Plugins ->
+LucenePlugin -> Add selected file(s) to a new index.<br>
+You can later add more files / directories to an existing index by selecting
+"Add selected file(s) to an existing index".
+</ul>
+<li>
+The "New Lucene Index" dialog will show up. Fill-in the details.
+<ol>
+<li>
+If this is not a project index, specify the index name.
+<li>
+Select the type of index: Line-based or file-based. A file-based index creates
+a Lucene document for each file, whereas a line-based index creates a Lucene
+document for each line in each file. A line-based index is a lot larger than
+a file-based index; its only advantage is that there is no need to scan the file
+again later to find which lines contain the words you search for. Both types of
+index can produce the line numbers where the words occur, but the file-based
+index will require an additional scan of the files containing the words in order
+to produce the line numbers. A line-based index may be appropriate if you're
+indexing network files with very slow access.
+<li>
+Select the analyzer to use for indexing. If you are not familiar with analyzers,
+use "Java identifier" for source code, which allows you to look for precise
+identifier occurrences, and "Standard" for text, or check the Lucene website for
+information about the other analyzers.
+</ol>
+<li>
+Click Ok to start creating the index.
+</ol>
+</p>
+<p>
+<a name="SearchIndex">
+<h3> Searching an index: </h3>
+</a>
+<ol>
+<li>
+Open the "Search with Lucene" dockable window using <tt>Plugins -&gt; LucenePlugin -&gt;
+Lucene Search </tt>.
+<li>
+Select the index to search in the combo-box on the right of the dockable.
+<li>
+Specify the maximal number of results that you want to get for your search in
+the "Max results:" box.
+<li>
+If you'd like to see the line numbers where the search matches, select the
+'Line-based results' check-box. If the index is file-based, the files that
+match will be re-scanned to find the line numbers.
+<li>
+If you'd like to constrain the search to a specific file extension, enter the
+extension in the 'file type:' box.
+<li>
+Finally, enter the words to search for in the "Search for:" box. For those
+familiar with Lucene, this can be any Lucene query, not just words.
+Click [Enter] to perform the search.
+</ol>
+<p>
+The rightmost button in the dockable toggles between multiple results and a
+single-result, much like the "Hypersearch Results" dockable of jEdit. The
+button to its left clears all previous results that are currently shown.
+</p>
+<p>
+While an index is being created or updated, the word "Indexing" will show on
+the right of the dockable when that index is selected for searching, so you
+know that the index is not yet complete.
+</p>
+<a name="DeleteIndex">
+<h3> Deleting an index: </h3>
+</a>
+Select Plugins -> Lucene -> Delete an index, then select the index you'd like to
+delete.
+<a name="Support">
+<h3> Support </h3>
+</a>
+<ul>
+<li>
+To report bugs, use the
+<a href="https://sourceforge.net/tracker/?group_id=588&atid=565475">
+Plugins Bugs tracker </a>. Specify the plugin name in the Summary field.
+<li>
+To ask for new features, use the
+<a href="https://sourceforge.net/tracker/?group_id=588&atid=997936">
+Plugin Feature Requests tracker </a>. Specify the plugin name in the Summary
+field.
+</ul>
+</body>
+</html>
