@@ -74,6 +74,6 @@ lucene.max-results.label.short=
 lucene.search-string.tooltip=Search string (up/dn arrow keys = history)
 lucene.max.results.tooltip=Max Search Results
 lucene.results.line-based.tooltip=Show Line-based results
-lucene.file-type.tooltip=File Type Filter (e.g. *.c}
+lucene.file-type.tooltip=File Type Filter (e.g. *.java)
 lucene.index-combo.tooltip=Choose Lucene Index
 
