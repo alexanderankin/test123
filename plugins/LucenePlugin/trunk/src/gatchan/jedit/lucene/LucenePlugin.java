@@ -445,7 +445,7 @@ public class LucenePlugin extends EditPlugin
 	{
 		JEditTextArea ta = view.getTextArea();
 		String selected = ta.getSelectedText();
-		if ((selected != null) && (! selected.isEmpty()))
+		if ((selected != null) && (! "".equals(selected)))
 			return selected;
 		int line = ta.getCaretLine();
 		String text = ta.getLineText(line);
