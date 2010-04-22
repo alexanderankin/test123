@@ -21,17 +21,16 @@
  */
 package gatchan.jedit.lucene;
 
-import java.util.List;
-
 import org.apache.lucene.search.highlight.Formatter;
 import org.apache.lucene.search.highlight.TokenGroup;
+import org.gjt.sp.util.IntegerArray;
 
 public class SearchFormatter implements Formatter
 {
-	private final List<Integer> positions;
+	private final IntegerArray positions;
 	private final int max;
 
-	public SearchFormatter(List<Integer> positions, int max)
+	public SearchFormatter(IntegerArray positions, int max)
 	{
 		this.positions = positions;
 		this.max = max;
@@ -39,7 +38,7 @@ public class SearchFormatter implements Formatter
 	public String highlightTerm(String originalText,
 		TokenGroup tokenGroup)
 	{
-        if ((positions.size() < max) &&
+        if ((positions.getSize() < max) &&
         	(tokenGroup.getTotalScore() > 0))
         {
         	positions.add(tokenGroup.getStartOffset());

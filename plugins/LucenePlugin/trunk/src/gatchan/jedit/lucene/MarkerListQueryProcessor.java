@@ -22,6 +22,8 @@ import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.IOUtilities;
+import org.gjt.sp.util.IntegerArray;
+import org.gjt.sp.util.Log;
 
 /*
  * A query result processor that collects the lines containing results,
@@ -29,9 +31,9 @@ import org.gjt.sp.util.IOUtilities;
  */
 public class MarkerListQueryProcessor implements ResultProcessor
 {
-	private Index index;
-	private List<Object> results;
-	private int max;
+	private final Index index;
+	private final List<Object> results;
+	private final int max;
 
 	public MarkerListQueryProcessor(Index index,
 	                                List<Object> results, int max)
@@ -60,17 +62,17 @@ public class MarkerListQueryProcessor implements ResultProcessor
 
 	private void addLinesMatching(Query query, String file, int max)
 	{
-		List<Integer> positions = new ArrayList<Integer>();
+		IntegerArray positions = new IntegerArray(30);
 		Formatter sf = new SearchFormatter(positions, max);
 		QueryScorer scorer = new QueryScorer(query);
 		StringBuilder sb = new StringBuilder();
-		List<Integer> lineStart = new ArrayList<Integer>();
+		List<Integer> lineStart = new ArrayList<Integer>(500);
 		BufferedReader br = null;
 		try
 		{
 			br = getReader(file);
 			String s;
-			String sep = "\n";
+			char sep = '\n';
 			while ((s = br.readLine()) != null)
 			{
 				if (sb.length() > 0)
@@ -86,15 +88,14 @@ public class MarkerListQueryProcessor implements ResultProcessor
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			Log.log(Log.ERROR, this, e);
 		}
 		finally
 		{
 			IOUtilities.closeQuietly(br);
 		}
 
-		FileMarker marker;
-		for (int i = 0; i < positions.size(); i += 2)
+		for (int i = 0; i < positions.getSize(); i += 2)
 		{
 			int tokenStart = positions.get(i), tokenEnd = positions.get(i + 1); 
 			int start = tokenStart, stop = tokenEnd;
@@ -108,7 +109,7 @@ public class MarkerListQueryProcessor implements ResultProcessor
 			int line = Collections.binarySearch(lineStart, tokenStart);
 			if (line < 0)
 				line = -line - 2;
-			marker = new FileMarker(file, line, lineText);
+			FileMarker marker = new FileMarker(file, line, lineText);
 			int startOffset = tokenStart - start;
 			int endOffset = startOffset + tokenEnd - tokenStart;
 			if (endOffset > lineText.length())
@@ -119,23 +120,22 @@ public class MarkerListQueryProcessor implements ResultProcessor
 		}
 	}
 
-	private BufferedReader getReader(String file)
+	private static BufferedReader getReader(String file)
 	{
 		VFS vfs = VFSManager.getVFSForPath(file);
 		View view = jEdit.getActiveView();
 		Object session = vfs.createVFSSession(file, view);
-		VFSFile vfsFile;
 		BufferedReader reader = null;
 		try
 		{
-			vfsFile = vfs._getFile(session, file, view);
+			VFSFile vfsFile = vfs._getFile(session, file, view);
 			reader = new BufferedReader(new InputStreamReader(
 				vfsFile.getVFS()._createInputStream(session,
 				                                    vfsFile.getPath(), false, view)));
 		}
 		catch (IOException e)
 		{
-			e.printStackTrace();
+			Log.log(Log.ERROR, MarkerListQueryProcessor.class, e);
 		}
 		return reader;
 	}
