@@ -122,7 +122,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		if (OptionPane.getSearchStringLength() != 0)
 			searchField.setColumns(OptionPane.getSearchStringLength());
 		searchField.setToolTipText(jEdit.getProperty("lucene.search-string.tooltip"));
-	
+
 		final MyActionListener actionListener = new MyActionListener();
 		searchField.addActionListener(actionListener);
 		type.addActionListener(actionListener);
@@ -231,7 +231,13 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			JPanel searchPanel = new JPanel(new BorderLayout());
 			add(searchPanel, BorderLayout.NORTH);
 			searchPanel.add(textLabel, BorderLayout.WEST);
-			searchPanel.add(searchField, BorderLayout.CENTER);
+			JPanel searchFieldContainer = new JPanel();
+			searchFieldContainer.setLayout(new BoxLayout(searchFieldContainer,
+				BoxLayout.PAGE_AXIS));
+			searchFieldContainer.add(new JPanel());
+			searchFieldContainer.add(searchField);
+			searchFieldContainer.add(new JPanel());
+			searchPanel.add(searchFieldContainer, BorderLayout.CENTER);
 			JPanel p = new JPanel();
 			searchPanel.add(BorderLayout.EAST, p);
 			p.add(fileTypeLabel);
@@ -249,29 +255,34 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			JPanel searchPanel = new JPanel();
 			searchPanel.setLayout(new BoxLayout(searchPanel, BoxLayout.Y_AXIS));
 			add(searchPanel, BorderLayout.NORTH);
-			JPanel p = new JPanel();
+			JPanel p = new JPanel(new BorderLayout());
 			searchPanel.add(p);
-			p.add(textLabel);
-			p = new JPanel();
+			p.add(textLabel, BorderLayout.WEST);
+			p.add(searchField, BorderLayout.CENTER);
+			p = new JPanel(new BorderLayout());
 			searchPanel.add(p);
-			p.add(searchField);
-			p = new JPanel();
-			searchPanel.add(p);
-			p.add(fileTypeLabel);
-			p.add(type);
-			p = new JPanel();
-			searchPanel.add(p);
+			p.add(fileTypeLabel, BorderLayout.WEST);
+			p.add(type, BorderLayout.CENTER);
+			p = new JPanel(new BorderLayout());
+			searchPanel.add(p, BorderLayout.CENTER);
 			p.add(lineResults);
-			p = new JPanel();
+			p = new JPanel(new BorderLayout());
 			searchPanel.add(p);
-			p.add(maxResultsLabel);
-			p.add(maxResults);
+			p.add(maxResultsLabel, BorderLayout.WEST);
+			p.add(maxResults, BorderLayout.CENTER);
+			JPanel bottom = new JPanel(new BorderLayout());
+			searchPanel.add(bottom);
 			p = new JPanel();
-			searchPanel.add(p);
+			bottom.add(p, BorderLayout.WEST);
+			p.setLayout(new BoxLayout(p, BoxLayout.PAGE_AXIS));
+			p.add(new JPanel());
 			p.add(indexes);
+			p.add(new JPanel());
+			p = new JPanel();
 			p.add(clear);
 			p.add(multi);
 			p.add(indexStatus);
+			bottom.add(p, BorderLayout.EAST);
 		}
 		revalidate();
 	}
