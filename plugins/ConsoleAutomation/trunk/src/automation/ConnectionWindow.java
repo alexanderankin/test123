@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -80,7 +81,13 @@ public class ConnectionWindow extends JPanel implements CharHandler, EventHandle
 					send.doClick();
 			}
 		});
-		top.add(input, BorderLayout.CENTER);
+		JPanel inputContainer = new JPanel();
+		inputContainer.setLayout(new BoxLayout(inputContainer,
+			BoxLayout.PAGE_AXIS));
+		inputContainer.add(new JPanel());
+		inputContainer.add(input);
+		inputContainer.add(new JPanel());
+		top.add(inputContainer, BorderLayout.CENTER);
 		JPanel buttonPanel = new JPanel();
 		top.add(buttonPanel, BorderLayout.EAST);
 		send = new JButton("Send");
