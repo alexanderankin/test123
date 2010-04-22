@@ -5,6 +5,8 @@ import gatchan.jedit.lucene.Index.ActivityListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.Vector;
 import java.util.Collections;
@@ -56,7 +58,12 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 	private RolloverButton clear;
 	private RolloverButton multi;
 	private boolean multiStatus;
+	private boolean horizontalLayout;
+	private boolean firstTimeLayout = true;
 //	private JTextPane preview;
+	private JLabel textLabel;
+	private JLabel fileTypeLabel;
+	private JLabel maxResultsLabel;
 
 	public SearchResults()
 	{
@@ -65,8 +72,10 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		lineResults = new JCheckBox(getLabel("lucene.line-based"));
 		lineResults.setToolTipText(jEdit.getProperty("lucene.results.line-based.tooltip"));
 		lineResults.setSelected(true);
+		fileTypeLabel = new JLabel(getLabel("lucene.file-type"));
 		type = new JTextField(6);
 		type.setToolTipText(jEdit.getProperty("lucene.file-type.tooltip"));
+		maxResultsLabel = new JLabel(getLabel("lucene.max-results"));
 		maxResults = new JSpinner(new SpinnerNumberModel(100, 1, 10000, 1));
 		//JPanel maxPanel = new JPanel(new BorderLayout());
 		//maxPanel.add(BorderLayout.WEST, new JLabel("Max results:"));
@@ -105,11 +114,11 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			}
 		});
 
-		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-		add(panel, BorderLayout.NORTH);
 		// panel.add(new JLabel("Search for:"), BorderLayout.WEST);
+		textLabel = new JLabel(getLabel("lucene.search-string"));
 		searchField = new HistoryTextField("lucene.search-history");
-		searchField.setColumns(OptionPane.getSearchStringLength());
+		if (OptionPane.getSearchStringLength() != 0)
+			searchField.setColumns(OptionPane.getSearchStringLength());
 		searchField.setToolTipText(jEdit.getProperty("lucene.search-string.tooltip"));
 	
 		final MyActionListener actionListener = new MyActionListener();
@@ -140,17 +149,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		multiStatus = true;
 		updateMultiStatus();
 
-	    panel.add(new JLabel(getLabel("lucene.search-string")));
-		panel.add(searchField);
-		panel.add(new JLabel(getLabel("lucene.file-type")));
-		panel.add(type);
-		panel.add(lineResults);
-		panel.add(new JLabel(getLabel("lucene.max-results")));
-		panel.add(maxResults);
-		panel.add(indexes);
-		panel.add(clear);
-		panel.add(multi);
-		panel.add(indexStatus);
+		setLayoutByGeometry();
 		
 		model = new MyModel();
 		list = new JList(model);
@@ -205,6 +204,74 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 					actionListener.actionPerformed(null);
 			}
 		});
+		addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(ComponentEvent e) {
+				setLayoutByGeometry();
+			}
+			
+		});
+	}
+
+	private void setLayoutByGeometry()
+	{
+		boolean horizontal = (getWidth() > getHeight());
+		if ((! firstTimeLayout) && (horizontal == horizontalLayout))
+			return;
+		firstTimeLayout = false;
+		horizontalLayout = horizontal;
+		Component c = ((BorderLayout)getLayout()).getLayoutComponent(
+			BorderLayout.NORTH);
+		if (c != null)
+			remove(c);
+		if (horizontal)
+		{
+			JPanel searchPanel = new JPanel(new BorderLayout());
+			add(searchPanel, BorderLayout.NORTH);
+			searchPanel.add(textLabel, BorderLayout.WEST);
+			searchPanel.add(searchField, BorderLayout.CENTER);
+			JPanel p = new JPanel();
+			searchPanel.add(BorderLayout.EAST, p);
+			p.add(fileTypeLabel);
+			p.add(type);
+			p.add(lineResults);
+			p.add(maxResultsLabel);
+			p.add(maxResults);
+			p.add(indexes);
+			p.add(clear);
+			p.add(multi);
+			p.add(indexStatus);
+		}
+		else
+		{
+			JPanel searchPanel = new JPanel();
+			searchPanel.setLayout(new BoxLayout(searchPanel, BoxLayout.Y_AXIS));
+			add(searchPanel, BorderLayout.NORTH);
+			JPanel p = new JPanel();
+			searchPanel.add(p);
+			p.add(textLabel);
+			p = new JPanel();
+			searchPanel.add(p);
+			p.add(searchField);
+			p = new JPanel();
+			searchPanel.add(p);
+			p.add(fileTypeLabel);
+			p.add(type);
+			p = new JPanel();
+			searchPanel.add(p);
+			p.add(lineResults);
+			p = new JPanel();
+			searchPanel.add(p);
+			p.add(maxResultsLabel);
+			p.add(maxResults);
+			p = new JPanel();
+			searchPanel.add(p);
+			p.add(indexes);
+			p.add(clear);
+			p.add(multi);
+			p.add(indexStatus);
+		}
+		revalidate();
 	}
 
 	private String getLabel(String prefix)
