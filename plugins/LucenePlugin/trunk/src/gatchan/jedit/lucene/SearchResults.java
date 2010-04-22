@@ -32,6 +32,7 @@ import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.gui.HistoryTextField;
 import org.gjt.sp.jedit.gui.RolloverButton;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.util.StandardUtilities;
 import org.gjt.sp.util.Log;
 
@@ -64,6 +65,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 	private JLabel textLabel;
 	private JLabel fileTypeLabel;
 	private JLabel maxResultsLabel;
+	private boolean shortLabels;
 
 	public SearchResults()
 	{
@@ -209,8 +211,8 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			public void componentResized(ComponentEvent e) {
 				setLayoutByGeometry();
 			}
-			
 		});
+		propertiesChanged(true);
 	}
 
 	private void setLayoutByGeometry()
@@ -418,6 +420,35 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		String [] names = new String[items.size()];
 		items.toArray(names);
 		indexModel.setIndexes(names);
+	}
+
+	@EBHandler
+	public void handlePropertiesChanged(PropertiesChanged msg)
+	{
+		propertiesChanged(false);
+	}
+
+	private void propertiesChanged(boolean firstTime)
+	{
+		boolean updateLayout = false;
+		int columns = OptionPane.getSearchStringLength();
+		if ((columns != 0) && (firstTime || (columns != searchField.getColumns())))
+		{
+			updateLayout = true;
+			searchField.setColumns(columns);
+		}
+		boolean newShortLabels = OptionPane.getUseShortLabels();
+		if (firstTime || (shortLabels != newShortLabels))
+		{
+			updateLayout = true;
+			shortLabels = newShortLabels;
+			lineResults.setText(getLabel("lucene.line-based"));
+			fileTypeLabel.setText(getLabel("lucene.file-type"));
+			maxResultsLabel.setText(getLabel("lucene.max-results"));
+			textLabel.setText(getLabel("lucene.search-string"));
+		}
+		if (updateLayout)
+			revalidate();
 	}
 
 	private static class MyModel extends AbstractListModel
