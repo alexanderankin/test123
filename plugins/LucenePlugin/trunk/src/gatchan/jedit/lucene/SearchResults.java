@@ -3,10 +3,7 @@ package gatchan.jedit.lucene;
 import gatchan.jedit.lucene.Index.ActivityListener;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Vector;
 import java.util.Collections;
@@ -35,6 +32,7 @@ import org.gjt.sp.jedit.gui.RolloverButton;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.util.StandardUtilities;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.WorkRequest;
 
 @SuppressWarnings("serial")
 public class SearchResults extends JPanel implements DefaultFocusComponent
@@ -45,26 +43,26 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 	private static final String LUCENE_SEARCH_INDEX = "lucene.search.index";
 	private static final String MESSAGE_IDLE = "";
 	private static final String MESSAGE_INDEXING = "Indexing";
-	private HistoryTextField searchField;
-	private JTextField type;
-	private JPanel mainPanel;
-	private JList list;
-	private JCheckBox lineResults;
+	private final HistoryTextField searchField;
+	private final JTextField type;
+	private final JPanel mainPanel;
+	private final JList list;
+	private final JCheckBox lineResults;
 	private JSpinner maxResults;
-	private JComboBox indexes;
-	private MyModel model;
-	private SourceLinkTree tree;
-	private IndexComboBoxModel indexModel;
-	private JLabel indexStatus;
-	private RolloverButton clear;
-	private RolloverButton multi;
+	private final JComboBox indexes;
+	private final MyModel model;
+	private final SourceLinkTree tree;
+	private final IndexComboBoxModel indexModel;
+	private final JLabel indexStatus;
+	private final RolloverButton clear;
+	private final RolloverButton multi;
 	private boolean multiStatus;
 	private boolean horizontalLayout;
 	private boolean firstTimeLayout = true;
 //	private JTextPane preview;
-	private JLabel textLabel;
-	private JLabel fileTypeLabel;
-	private JLabel maxResultsLabel;
+	private final JLabel textLabel;
+	private final JLabel fileTypeLabel;
+	private final JLabel maxResultsLabel;
 	private boolean shortLabels;
 
 	public SearchResults()
@@ -210,6 +208,32 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			@Override
 			public void componentResized(ComponentEvent e) {
 				setLayoutByGeometry();
+			}
+		});
+
+		indexes.addMouseListener(new MouseAdapter()
+		{
+			private JPopupMenu menu;
+			@Override
+			public void mouseClicked(MouseEvent e)
+			{
+				if (GUIUtilities.isRightButton(e.getModifiers()))
+				{
+					menu = new JPopupMenu();
+					JMenuItem refresh = new JMenuItem("refresh");
+					refresh.addActionListener(new ActionListener()
+					{
+						public void actionPerformed(ActionEvent e)
+						{
+							String selectedIndex = (String) indexes.getSelectedItem();
+							ReindexWorkRequest reindexer = new ReindexWorkRequest(selectedIndex);
+							indexes.setEnabled(false);
+							LucenePlugin.runInWorkThread(reindexer);
+						}
+					});
+					menu.add(refresh);
+					GUIUtilities.showPopupMenu(menu, indexes, e.getX(),  e.getY());
+				}
 			}
 		});
 		propertiesChanged(true);
@@ -592,5 +616,45 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 	public void focusOnDefaultComponent()
 	{
 		searchField.requestFocusInWindow();		
+	}
+
+	private class ReindexWorkRequest extends WorkRequest
+	{
+		private final String indexName;
+
+		private ReindexWorkRequest(String indexName)
+		{
+			this.indexName = indexName;
+		}
+
+		public void run()
+		{
+			try
+			{
+				Log.log(Log.NOTICE, this, "Reindex " + indexName + " asked");
+				Index index = LucenePlugin.instance.getIndex(indexName);
+				index.reindex();
+				Log.log(Log.NOTICE, this, "Reindex " + indexName + " DONE");
+				Log.log(Log.NOTICE, this, "Optimize index:"+indexName);
+				index.optimize();
+				index.commit();
+				Log.log(Log.NOTICE, this, "Optimize index:"+indexName+ "DONE");
+				Log.log(Log.NOTICE, this, "Optimize Central Index");
+				LucenePlugin.CENTRAL.optimize();
+				LucenePlugin.CENTRAL.commit();
+				Log.log(Log.NOTICE, this, "Optimize Central Index DONE");
+			}
+			finally
+			{
+				EventQueue.invokeLater(new Runnable()
+				{
+					public void run()
+					{
+						indexes.setEnabled(true);
+					}
+				});
+
+			}
+		}
 	}
 }
