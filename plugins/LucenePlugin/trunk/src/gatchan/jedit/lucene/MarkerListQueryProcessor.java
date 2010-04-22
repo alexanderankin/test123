@@ -1,10 +1,7 @@
 package gatchan.jedit.lucene;
 
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -71,6 +68,12 @@ public class MarkerListQueryProcessor implements ResultProcessor
 		try
 		{
 			br = getReader(file);
+			if (br == null)
+			{
+				Log.log(Log.WARNING, this, "Cannot read file " + file +
+					" maybe it doesn't exists anymore");
+				return;
+			}
 			String s;
 			char sep = '\n';
 			while ((s = br.readLine()) != null)
@@ -120,6 +123,12 @@ public class MarkerListQueryProcessor implements ResultProcessor
 		}
 	}
 
+	/**
+	 * Return a reader for the given file
+	 * @param file the file
+	 * @return a reader or null of the reader cannot be opened or if
+	 * the file do not exists anymore
+	 */
 	private static BufferedReader getReader(String file)
 	{
 		VFS vfs = VFSManager.getVFSForPath(file);
@@ -129,9 +138,14 @@ public class MarkerListQueryProcessor implements ResultProcessor
 		try
 		{
 			VFSFile vfsFile = vfs._getFile(session, file, view);
-			reader = new BufferedReader(new InputStreamReader(
-				vfsFile.getVFS()._createInputStream(session,
-				                                    vfsFile.getPath(), false, view)));
+			if (vfsFile != null)
+			{
+				InputStream inputStream = vfs._createInputStream(session,
+					vfsFile.getPath(), false, view);
+				if (inputStream != null)
+					reader = new BufferedReader(new InputStreamReader(
+						inputStream));
+			}
 		}
 		catch (IOException e)
 		{
