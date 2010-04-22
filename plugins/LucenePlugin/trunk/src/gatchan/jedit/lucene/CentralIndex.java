@@ -57,8 +57,9 @@ public class CentralIndex extends AbstractIndex
 	@EBHandler
 	public void handleBufferUpdate(BufferUpdate message)
 	{
-		// test if the central index exists. If it doesnt exists, no need to start working
-		// it is possible that it doesn't exists if the plugin is just installed an no index has been created yet
+		/* test if the central index exists. If it doesnt exist, no need to start working
+		   it is possible that it doesn't exist if the plugin is newly installed
+		   and/or no index has been created yet */
 		try
 		{
 			if (IndexReader.indexExists(FSDirectory.open(path)))

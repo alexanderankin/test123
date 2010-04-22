@@ -152,7 +152,7 @@ public class IndexImpl extends AbstractIndex implements Index
 			VFSFile vfsFile = vfs._getFile(session, path, jEdit.getActiveView());
 			if (vfsFile == null)
 			{
-				Log.log(Log.ERROR, this, "Unable to add document " + path + " the file doesn't exists");
+				Log.log(Log.ERROR, this, "Unable to add document " + path + " the file doesn't exist");
 				return;
 			}
 			addFile(vfsFile, session);
