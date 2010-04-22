@@ -50,7 +50,7 @@ public class OptionPane extends AbstractOptionPane
 		searchResultsPanel.setBorder(BorderFactory.createTitledBorder(
 			jEdit.getProperty(SEARCH_DOCKABLE_LABEL)));
 		searchStringLength = new JSpinner(new SpinnerNumberModel(
-			getSearchStringLength(), 1, 120, 1));
+			getSearchStringLength(), 0, 120, 1));
 		JPanel p = new JPanel();
 		p.add(new JLabel(jEdit.getProperty(SEARCH_STRING_LENGTH_LABEL)));
 		p.add(searchStringLength);
