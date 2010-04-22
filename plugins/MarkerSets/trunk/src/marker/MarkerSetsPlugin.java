@@ -22,6 +22,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import marker.FileMarker.Selection;
+
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
@@ -304,7 +306,8 @@ public class MarkerSetsPlugin extends EditPlugin {
 		}
 	}
 
-	static public void jump(final View view, final String file, final int line)
+	static public void jump(final View view, final String file, final int line,
+		final Vector<Selection> selections)
 	{
 		if (file == null)
 			return;
@@ -318,7 +321,19 @@ public class MarkerSetsPlugin extends EditPlugin {
 				JEditTextArea ta = view.getTextArea();
 				if (ta.getLineCount() <= line)
 					return;
-				ta.setCaretPosition(ta.getLineStartOffset(line));
+				int offset = ta.getLineStartOffset(line);
+				ta.setCaretPosition(offset);
+				boolean first = true;
+				for (Selection s: selections) {
+					org.gjt.sp.jedit.textarea.Selection.Range r =
+						new org.gjt.sp.jedit.textarea.Selection.Range(
+							offset+s.start, offset+s.end);
+					if(ta.isMultipleSelectionEnabled() || (! first))
+						ta.addToSelection(r);
+					else
+						ta.setSelection(r);
+				}
+				
 			}
 		};
 		if (buffer.isLoaded())

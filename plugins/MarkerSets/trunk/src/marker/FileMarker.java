@@ -81,7 +81,7 @@ public class FileMarker implements Comparable {
 	}
 
 	public void jump(View view) {
-		MarkerSetsPlugin.jump(view, file, getLine());
+		MarkerSetsPlugin.jump(view, file, getLine(), getSelections());
 	}
 	
 	public String toString() {
