@@ -61,6 +61,7 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
 	private JCheckBox doubleClickCB;
     private JCheckBox middleClickCB;
     private JCheckBox toggleDocksDoubleClickCB;
+    private JCheckBox doNotStretchTabsCB;
 
     public BufferTabsOptionPane() {
         super("buffertabs");
@@ -140,6 +141,8 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
         
         iconsCB = new JCheckBox(jEdit.getProperty("options.buffertabs.icons.label"));
         addComponent(iconsCB);
+        doNotStretchTabsCB = new JCheckBox(jEdit.getProperty("options.buffertabs.nostretch.label"));
+        addComponent(doNotStretchTabsCB);
         addComponent(new Box.Filler(ySpace, ySpace, ySpace));
         
         locationChoice = new JComboBox(new String[] { "top", "bottom", "left", "right"});
@@ -238,6 +241,9 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
         iconsCB.setSelected(
             jEdit.getBooleanProperty("buffertabs.icons", true)
         );
+        doNotStretchTabsCB.setSelected(
+        	jEdit.getBooleanProperty("buffertabs.nostretch", false)
+        );
         popupCB.setSelected(
             jEdit.getBooleanProperty("buffertabs.usePopup", true)
         );
@@ -312,6 +318,7 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
     public void _save() {
         jEdit.setBooleanProperty("buffertabs.enable", enableCB.isSelected());
         jEdit.setBooleanProperty("buffertabs.icons", iconsCB.isSelected());
+        jEdit.setBooleanProperty("buffertabs.nostretch", doNotStretchTabsCB.isSelected());
         jEdit.setBooleanProperty("buffertabs.usePopup", popupCB.isSelected());
         jEdit.setBooleanProperty("buffertabs.closeButton", closeButtonCB.isSelected());
         jEdit.setProperty("buffertabs.location",
@@ -323,7 +330,7 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
         jEdit.setBooleanProperty( "buffertabs.color-mute", muteColorsCB.isSelected() );
         jEdit.setBooleanProperty( "buffertabs.color-variation", variationColorsCB.isSelected() );
         jEdit.setBooleanProperty( "buffertabs.color-foreground", colorTextRB.isSelected() );
-     jEdit.setBooleanProperty("buffertabs.close-tab-on.single-middle-click", middleClickCB.isSelected());		jEdit.setBooleanProperty( "buffertabs.color-selected-foreground", colorSelTextRB.isSelected() );
+        jEdit.setBooleanProperty("buffertabs.close-tab-on.single-middle-click", middleClickCB.isSelected());		jEdit.setBooleanProperty( "buffertabs.color-selected-foreground", colorSelTextRB.isSelected() );
 	    jEdit.setBooleanProperty("buffertabs.close-tab-on.double-left-click", doubleClickCB.isSelected());
 	    jEdit.setBooleanProperty("buffertabs.toggle-docks-on.double-left-click", toggleDocksDoubleClickCB.isSelected());
 
