@@ -26,9 +26,12 @@ import com.jcraft.jsch.*;
 
 import ftp.FtpVFS.FtpDirectoryEntry;
 
+import java.awt.*;
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import javax.swing.JOptionPane;
+
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.util.Log;
@@ -302,19 +305,70 @@ public class SFtpConnection extends Connection implements UserInfo
 		keyAttempts++;
 		return true;
 	}
-	public boolean promptYesNo(String message)
+	public boolean promptYesNo(final String message)
 	{
-		Object[] options={ "yes", "no" };
-		int foo=JOptionPane.showOptionDialog(null, 
-			message,
-			"Warning",
-			JOptionPane.DEFAULT_OPTION, 
-			JOptionPane.WARNING_MESSAGE,
-			null, options, options[0]);
-		return foo==0;
+		final int ret[] = new int[1];
+		try
+		{
+			Runnable runnable = new Runnable()
+			{
+				public void run()
+				{
+					Object[] options = {"yes", "no"};
+					ret[0] = JOptionPane.showOptionDialog(jEdit.getActiveView(),
+						message,
+						"Warning",
+						JOptionPane.DEFAULT_OPTION,
+						JOptionPane.WARNING_MESSAGE,
+						null, options, options[0]);
+				}
+			};
+			if (EventQueue.isDispatchThread())
+			{
+				runnable.run();
+			}
+			else
+			{
+				EventQueue.invokeAndWait(runnable);
+			}
+		}
+		catch (InterruptedException e)
+		{
+			Log.log(Log.ERROR, this, e);
+		}
+		catch (InvocationTargetException e)
+		{
+			Log.log(Log.ERROR, this, e); 
+		}
+		return ret[0]==0;
 	}
-	public void showMessage(String message)
+	public void showMessage(final String message)
 	{
-		JOptionPane.showMessageDialog(null, message);
+		try
+		{
+			Runnable runnable = new Runnable()
+			{
+				public void run()
+				{
+					JOptionPane.showMessageDialog(jEdit.getActiveView(), message);
+				}
+			};
+			if (EventQueue.isDispatchThread())
+			{
+				runnable.run();
+			}
+			else
+			{
+				EventQueue.invokeAndWait(runnable);
+			}
+		}
+		catch (InterruptedException e)
+		{
+			Log.log(Log.ERROR, this, e);
+		}
+		catch (InvocationTargetException e)
+		{
+			Log.log(Log.ERROR, this, e);
+		}
 	}
 }
