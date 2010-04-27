@@ -116,6 +116,19 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 		mouseHandler = new MouseHandler();
 		mouseMotionHandler = new MouseMotionHandler();
 		knownBuffers = Collections.synchronizedSet(new HashSet<Buffer>());
+		if (jEdit.getBooleanProperty("buffertabs.nostretch", false) &&
+				(getUI() instanceof BasicTabbedPaneUI))
+			{
+				String name = getUI().getClass().getCanonicalName();
+				String bsh = "class MyUI extends " + name + "{\n" +
+					"	protected boolean shouldPadTabRun(int tabPlacement, int run) {\n" +
+					"		return false;\n" +
+					"	}\n" +
+					"}\n" +
+					"return new MyUI();";
+				Object o = BeanShell.eval(null, BeanShell.getNameSpace(), bsh);
+				setUI((TabbedPaneUI) o);
+			}
 	}
 
 	/**
@@ -418,19 +431,6 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 
 	public void propertiesChanged()
 	{
-		if (jEdit.getBooleanProperty("buffertabs.nostretch", false) &&
-			(getUI() instanceof BasicTabbedPaneUI))
-		{
-			String name = getUI().getClass().getCanonicalName();
-			String bsh = "class MyUI extends " + name + "{\n" +
-				"	protected boolean shouldPadTabRun(int tabPlacement, int run) {\n" +
-				"		return false;\n" +
-				"	}\n" +
-				"}\n" +
-				"return new MyUI();";
-			Object o = BeanShell.eval(null, BeanShell.getNameSpace(), bsh);
-			setUI((TabbedPaneUI) o);
-		}
 		if (ColorTabs.instance().isEnabled() != jEdit.getBooleanProperty("buffertabs.color-tabs"))
 		{
 			ColorTabs.instance().setEnabled(!ColorTabs.instance().isEnabled());
