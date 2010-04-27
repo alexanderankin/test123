@@ -55,7 +55,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.plaf.TabbedPaneUI;
+import javax.swing.plaf.basic.BasicTabbedPaneUI;
 
+import org.gjt.sp.jedit.BeanShell;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
@@ -114,7 +117,6 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 		mouseMotionHandler = new MouseMotionHandler();
 		knownBuffers = Collections.synchronizedSet(new HashSet<Buffer>());
 	}
-
 
 	/**
 	 * Initializes tabs and starts listening for events.
@@ -416,6 +418,19 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 
 	public void propertiesChanged()
 	{
+		if (jEdit.getBooleanProperty("buffertabs.nostretch", false) &&
+			(getUI() instanceof BasicTabbedPaneUI))
+		{
+			String name = getUI().getClass().getCanonicalName();
+			String bsh = "class MyUI extends " + name + "{\n" +
+				"	protected boolean shouldPadTabRun(int tabPlacement, int run) {\n" +
+				"		return false;\n" +
+				"	}\n" +
+				"}\n" +
+				"return new MyUI();";
+			Object o = BeanShell.eval(null, BeanShell.getNameSpace(), bsh);
+			setUI((TabbedPaneUI) o);
+		}
 		if (ColorTabs.instance().isEnabled() != jEdit.getBooleanProperty("buffertabs.color-tabs"))
 		{
 			ColorTabs.instance().setEnabled(!ColorTabs.instance().isEnabled());
@@ -923,7 +938,6 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 					else if (toggleDocks)
 					{
 						//set the focus on the selected buffer
-						int tabIndex = getTabAt(e.getX(), e.getY());
 						editPane.focusOnTextArea();
 						jEdit.getActiveView().getDockableWindowManager().toggleDockAreas();
 					}
