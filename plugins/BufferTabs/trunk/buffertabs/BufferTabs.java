@@ -38,6 +38,7 @@ import java.awt.Rectangle;
 import java.awt.event.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -424,9 +425,12 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 		boolean myUI = currentUI.getClass().getCanonicalName().endsWith("MyUI");
 		if (jEdit.getBooleanProperty("buffertabs.nostretch", false))
 		{
-			if ((currentUI instanceof BasicTabbedPaneUI) && (! myUI))  
+			if ((currentUI instanceof BasicTabbedPaneUI) && (! myUI))
 			{
-				if (bshUI == null)
+				int mod = currentUI.getClass().getModifiers();
+				boolean extensible = (! Modifier.isFinal(mod)) &&
+					(! Modifier.isAbstract(mod)) && Modifier.isPublic(mod);
+				if (extensible && (bshUI == null))
 				{
 					ui = currentUI;
 					String name = getUI().getClass().getCanonicalName();
@@ -440,7 +444,8 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 						null, BeanShell.getNameSpace(), bsh);
 				}
 				try {
-					setUI(bshUI);
+					if (bshUI != null)
+						setUI(bshUI);
 				} catch (Exception e) {
 					setUI(ui);
 				}
