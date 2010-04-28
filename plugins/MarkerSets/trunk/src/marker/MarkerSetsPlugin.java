@@ -324,16 +324,17 @@ public class MarkerSetsPlugin extends EditPlugin {
 				int offset = ta.getLineStartOffset(line);
 				ta.setCaretPosition(offset);
 				boolean first = true;
-				for (Selection s: selections) {
-					org.gjt.sp.jedit.textarea.Selection.Range r =
-						new org.gjt.sp.jedit.textarea.Selection.Range(
-							offset+s.start, offset+s.end);
-					if(ta.isMultipleSelectionEnabled() || (! first))
-						ta.addToSelection(r);
-					else
-						ta.setSelection(r);
+				if (selections != null) {
+					for (Selection s: selections) {
+						org.gjt.sp.jedit.textarea.Selection.Range r =
+							new org.gjt.sp.jedit.textarea.Selection.Range(
+								offset+s.start, offset+s.end);
+						if(ta.isMultipleSelectionEnabled() || (! first))
+							ta.addToSelection(r);
+						else
+							ta.setSelection(r);
+					}
 				}
-				
 			}
 		};
 		if (buffer.isLoaded())
