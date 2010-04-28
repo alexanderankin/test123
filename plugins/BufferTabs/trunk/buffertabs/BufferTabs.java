@@ -100,6 +100,8 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 	private final MouseMotionHandler mouseMotionHandler;
 
 	private final Set<Buffer> knownBuffers;
+	private TabbedPaneUI ui;
+	private TabbedPaneUI bshUI;
 
 	/**
 	 * Creates a new set of buffer tabs that is attached to an EditPane,
@@ -116,19 +118,6 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 		mouseHandler = new MouseHandler();
 		mouseMotionHandler = new MouseMotionHandler();
 		knownBuffers = Collections.synchronizedSet(new HashSet<Buffer>());
-		if (jEdit.getBooleanProperty("buffertabs.nostretch", false) &&
-				(getUI() instanceof BasicTabbedPaneUI))
-			{
-				String name = getUI().getClass().getCanonicalName();
-				String bsh = "class MyUI extends " + name + "{\n" +
-					"	protected boolean shouldPadTabRun(int tabPlacement, int run) {\n" +
-					"		return false;\n" +
-					"	}\n" +
-					"}\n" +
-					"return new MyUI();";
-				Object o = BeanShell.eval(null, BeanShell.getNameSpace(), bsh);
-				setUI((TabbedPaneUI) o);
-			}
 	}
 
 	/**
@@ -431,6 +420,41 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 
 	public void propertiesChanged()
 	{
+		TabbedPaneUI currentUI = getUI();
+		boolean myUI = currentUI.getClass().getCanonicalName().endsWith("MyUI");
+		if (jEdit.getBooleanProperty("buffertabs.nostretch", false))
+		{
+			if ((currentUI instanceof BasicTabbedPaneUI) && (! myUI))  
+			{
+				if (bshUI == null)
+				{
+					ui = currentUI;
+					String name = getUI().getClass().getCanonicalName();
+					String bsh = "class MyUI extends " + name + "{\n" +
+						"	protected boolean shouldPadTabRun(int tabPlacement, int run) {\n" +
+						"		return false;\n" +
+						"	}\n" +
+						"}\n" +
+						"return new MyUI();";
+					bshUI = (TabbedPaneUI) BeanShell.eval(
+						null, BeanShell.getNameSpace(), bsh);
+				}
+				try {
+					setUI(bshUI);
+				} catch (Exception e) {
+					setUI(ui);
+				}
+			}
+		}
+		else
+		{
+			if (myUI)
+				try {
+					setUI(ui);
+				} catch (Exception e) {
+					setUI(bshUI);
+				}
+		}
 		if (ColorTabs.instance().isEnabled() != jEdit.getBooleanProperty("buffertabs.color-tabs"))
 		{
 			ColorTabs.instance().setEnabled(!ColorTabs.instance().isEnabled());
