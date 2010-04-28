@@ -142,7 +142,8 @@ public class SFtpConnection extends Connection implements UserInfo
 		FtpVFS.FtpDirectoryEntry returnValue = null;
 		try {
 			SftpATTRS attrs = sftp.stat(path);
-			returnValue = createDirectoryEntry(path, attrs);
+			String name = MiscUtilities.getFileName(path);
+			returnValue = createDirectoryEntry(name, attrs);
 			returnValue.setPath(path);
 			returnValue.setDeletePath(path);
 		} catch(SftpException e) {
