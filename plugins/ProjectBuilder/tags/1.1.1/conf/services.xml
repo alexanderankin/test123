@@ -1,0 +1,16 @@
+<!DOCTYPE SERVICES SYSTEM "services.dtd">
+<SERVICES>
+	<!--
+	<SERVICE CLASS="projectviewer.action.Action" NAME="PVMenu">
+		new projectbuilder.actions.PVMenu();
+	</SERVICE>
+	-->
+	<SERVICE CLASS="projectviewer.config.OptionsService" NAME="ProjectBuilder Build/Run Settings">
+		new projectbuilder.options.BuildRunOptionsService();
+	</SERVICE>
+	<!--
+	<SERVICE CLASS="projectviewer.config.OptionsService" NAME="ProjectBuilder Project Settings">
+		new projectbuilder.options.ProjectOptionsService();
+	</SERVICE>
+	-->
+</SERVICES>
