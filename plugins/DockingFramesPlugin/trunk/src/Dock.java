@@ -119,6 +119,11 @@ class ColorFactory implements MultipleCDockableFactory<ColorDockable, ColorLayou
        public ColorLayout write( ColorDockable dockable ){
                return new ColorLayout( dockable.getTitleText(), dockable.getColor() );
        }
+
+	public boolean match(ColorDockable dockable, ColorLayout layout)
+	{
+		return false;
+	}
 }
 
 //Layout information about a ColorDockable

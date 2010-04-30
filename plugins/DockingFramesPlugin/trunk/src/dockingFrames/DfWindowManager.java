@@ -46,12 +46,12 @@ import bibliothek.gui.dock.common.action.predefined.CMinimizeAction;
 import bibliothek.gui.dock.common.event.CFocusListener;
 import bibliothek.gui.dock.common.intern.CDockable;
 import bibliothek.gui.dock.common.intern.CommonDockable;
-import bibliothek.gui.dock.common.intern.CDockable.ExtendedMode;
 import bibliothek.gui.dock.common.layout.ThemeMap;
 import bibliothek.gui.dock.common.location.CBaseLocation;
 import bibliothek.gui.dock.common.location.CContentAreaCenterLocation;
 import bibliothek.gui.dock.common.location.CFlapIndexLocation;
 import bibliothek.gui.dock.common.location.CRectangleLocation;
+import bibliothek.gui.dock.common.mode.ExtendedMode;
 import bibliothek.gui.dock.event.DockHierarchyEvent;
 import bibliothek.gui.dock.event.DockHierarchyListener;
 import bibliothek.gui.dock.event.DockStationListener;
@@ -665,6 +665,10 @@ public class DfWindowManager extends DockableWindowManager
 		public JEditDockableLayout write(JEditDockable dockable)
 		{
 			return new JEditDockableLayout(dockable.getName());
+		}
+		public boolean match(JEditDockable dockable, JEditDockableLayout layout)
+		{
+			return layout.getName().equals(dockable.getName());
 		}
 	}
 	private static class JEditDockableLayout implements MultipleCDockableLayout
