@@ -43,6 +43,8 @@ import bibliothek.gui.dock.common.DefaultSingleCDockable;
 import bibliothek.gui.dock.common.MultipleCDockableFactory;
 import bibliothek.gui.dock.common.MultipleCDockableLayout;
 import bibliothek.gui.dock.common.action.predefined.CMinimizeAction;
+import bibliothek.gui.dock.common.event.CDockableAdapter;
+import bibliothek.gui.dock.common.event.CDockableStateListener;
 import bibliothek.gui.dock.common.event.CFocusListener;
 import bibliothek.gui.dock.common.intern.CDockable;
 import bibliothek.gui.dock.common.intern.CommonDockable;
@@ -73,6 +75,7 @@ public class DfWindowManager extends DockableWindowManager
 	private JEditDockStationListener listener;
 	private JEditDockHierarchyListener hierarchyListener;
 	private HashSet<DockStation> listenedStations;
+	private CDockableStateListener stateListener;
 	private boolean loadingLayout;
 	private int toggleViewIndex;
 
@@ -108,6 +111,7 @@ public class DfWindowManager extends DockableWindowManager
 		listener = new JEditDockStationListener();
 		listenedStations = new HashSet<DockStation>();
 		hierarchyListener = new JEditDockHierarchyListener();
+		stateListener = new DockableStateListener();
 		loadingLayout = false;
 		toggleViewIndex = -1;
 	}
@@ -485,21 +489,18 @@ public class DfWindowManager extends DockableWindowManager
 	private DfDockingArea getDockingAreaOf(JEditDockable dockable)
 	{
 		DfDockingArea area = (DfDockingArea) getTopDockingArea(); 
-		if (! area.belongsToArea(dockable, false))
-		{
-			area = (DfDockingArea) getBottomDockingArea(); 
-			if (! area.belongsToArea(dockable, false))
-			{
-				area = (DfDockingArea) getLeftDockingArea();
-				if (! area.belongsToArea(dockable, false))
-				{
-					area = (DfDockingArea) getRightDockingArea();
-					if (! area.belongsToArea(dockable, false))
-						area = null;
-				}
-			}
-		}
-		return area;
+		if (area.belongsToArea(dockable, false))
+			return area;
+		area = (DfDockingArea) getBottomDockingArea(); 
+		if (area.belongsToArea(dockable, false))
+			return area;
+		area = (DfDockingArea) getLeftDockingArea();
+		if (area.belongsToArea(dockable, false))
+			return area;
+		area = (DfDockingArea) getRightDockingArea();
+		if (area.belongsToArea(dockable, false))
+			return area;
+		return null;
 	}
 
 	private boolean minimizeDockable(JEditDockable d)
@@ -569,6 +570,7 @@ public class DfWindowManager extends DockableWindowManager
 		created.put(name, d);
 		MinimizeAction minimizeAction = new MinimizeAction();
 		d.putAction(CDockable.ACTION_KEY_MINIMIZE, minimizeAction);
+		d.addCDockableStateListener(stateListener);
 		return d;
 	}
 
@@ -758,6 +760,15 @@ public class DfWindowManager extends DockableWindowManager
 				}
 				intern().removeDockHierarchyListener(hierarchyListener);
 			}
+		}
+	}
+
+	private class DockableStateListener extends CDockableAdapter
+	{
+		public void visibilityChanged(CDockable dockable)
+		{
+			if ((dockable instanceof JEditDockable) && (! dockable.isVisible()))
+				created.remove(((JEditDockable) dockable).getName());
 		}
 	}
 
