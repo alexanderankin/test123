@@ -106,6 +106,9 @@
             <fileset dir="${src.dir}/docs">
                 <include name="**/*"/>
             </fileset>
+            <fileset dir="${src.dir}/ise/plugin/svn/gui/icons">
+                <include name="**/*.png"/>
+            </fileset>
         </copy>
         <copy todir="${classes.dir}/ise/plugin/svn/gui/dateselector/images" overwrite="no">
             <fileset dir="${src.dir}/ise/plugin/svn/gui/dateselector/images">
