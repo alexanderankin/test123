@@ -51,7 +51,7 @@ public class LucenePlugin extends EditPlugin
 	private static final String INDEXES_FILE_NAME = "indexes.cfg";
 	private static final String SEARCH_DOCKABLE_NAME = "lucene-search";
 	private Map<String, Index> indexMap = new HashMap<String, Index>();
-	private ProjectWatcher projectWatcher = null;
+	private ProjectWatcher projectWatcher;
 	
 	public static LucenePlugin instance;
 
@@ -103,6 +103,7 @@ public class LucenePlugin extends EditPlugin
 		BufferedReader reader = null;
 		try
 		{
+			Pattern pattern = Pattern.compile(",");
 			reader = new BufferedReader(new FileReader(f));
 			String line;
 			while ((line = reader.readLine()) != null)
@@ -111,7 +112,7 @@ public class LucenePlugin extends EditPlugin
 				line = reader.readLine();
 				if (line == null)
 					break;
-				String [] parts = line.split(",");
+				String [] parts = pattern.split(line);
 				if (parts.length < 2)
 					break;
 				String type = parts[0];
@@ -145,7 +146,7 @@ public class LucenePlugin extends EditPlugin
 				Index index = indexMap.get(name);
 				String type = IndexFactory.getType(index);
 				String analyzer = AnalyzerFactory.getAnalyzerName(index.getAnalyzer());
-				writer.println(type + "," + analyzer);
+				writer.println(type + ',' + analyzer);
 			}
 		}
 		catch (Exception e)
