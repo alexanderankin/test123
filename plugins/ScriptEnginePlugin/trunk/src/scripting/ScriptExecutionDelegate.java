@@ -21,6 +21,9 @@
  */
 package scripting;
 
+import console.Shell;
+import console.Console;
+
 import org.gjt.sp.jedit.Macros;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.View;
@@ -57,6 +60,11 @@ public class ScriptExecutionDelegate {
 
       return evaluateString(bufferText, bufferMode.getName(), scriptContext);
    }
+   
+   public void evaluateBufferInConsole(View view) {
+   	String bufferText = view.getTextArea().getText();
+      evaluateStringInConsole(view, bufferText);
+   }
 
    public Object evaluateSelection(View view) {
       String bufferText = view.getTextArea().getSelectedText();
@@ -64,6 +72,11 @@ public class ScriptExecutionDelegate {
       ScriptContext scriptContext = ScriptEngineUtilities.getDefaultScriptContext(view);
 
       return evaluateString(bufferText, bufferMode.getName(), scriptContext);
+   }
+   
+   public void evaluateSelectionInConsole(View view) {
+   	String bufferText = view.getTextArea().getSelectedText();
+   	evaluateStringInConsole(view, bufferText);
    }
 
    public Object evaluateString(String script, String engineName, ScriptContext scriptContext) {
@@ -93,6 +106,24 @@ public class ScriptExecutionDelegate {
       }
 
       return returnVal;
+   }
+   
+   public void evaluateStringInConsole(View view, String script) {
+   	Log.log(Log.DEBUG, ScriptExecutionDelegate.class, "Evaluating script in console");
+   	
+   	Mode bufferMode = view.getBuffer().getMode();
+      
+		// Open the console if it isn't already open
+		view.getDockableWindowManager().addDockableWindow("console");
+		
+		// Obtain the console instance
+		Console console = (Console)view.getDockableWindowManager().getDockable("console");
+		
+		// Set the shell to use
+		Shell _shell = Shell.getShell(bufferMode.getName());
+		
+		// Run the command
+		console.run(_shell, script);
    }
 
    public ScriptEngineDelegate getScriptEngineManager() {
