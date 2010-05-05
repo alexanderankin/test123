@@ -38,33 +38,30 @@ import org.gjt.sp.util.Log;
 public class ScriptEngineShell extends Shell {
  
    private ScriptEngine scriptEngine;
+   private Mode mode;
  
     /*
      * Constructor for ScriptEngineShell
      */ 
    public ScriptEngineShell(Mode mode) {
       super(mode.getName());
-      ScriptEnginePlugin plugin = (ScriptEnginePlugin) jEdit.getPlugin("scripting.ScriptEnginePlugin");
-      ScriptEngineDelegate delegate = plugin.getScriptEngineDelegate();
-      scriptEngine = delegate.getScriptEngineForMode(mode);
+      this.mode = mode;
+      initScriptEngine();
    }
  
-   public void execute(Console console, String input, Output output,
-          Output error, String command) {
-
-
+   public void execute(Console console, String input, Output output, Output error, String command) {
 
       StringWriter outWriter = new StringWriter();
       ScriptContext engineContext = scriptEngine.getContext();
       ScriptContext scriptContext = ScriptEngineUtilities.getDefaultScriptContext(console.getView());
+      engineContext.setWriter(outWriter);
       if (! "clear".equals(command)) {
 			// overwrite old context bindings with new ones. This allows for the creation of variables in the console to be
 			// used later.
-         engineContext.setWriter(outWriter);
          engineContext.getBindings(ScriptContext.ENGINE_SCOPE).putAll(scriptContext.getBindings(ScriptContext.ENGINE_SCOPE));
       } else {
 			// overwrite entire old context with new one.
-         scriptContext.setWriter(outWriter);
+         initScriptEngine();
          scriptEngine.setContext(scriptContext);
          output.commandDone();
          return;
@@ -80,9 +77,7 @@ public class ScriptEngineShell extends Shell {
 
       } catch (Exception e) {
          String message = e.getMessage();
-         Log.log(Log.ERROR, ScriptEngineShell .class,
-                "Error executing script - returnVal: " + returnVal + " | content: \n" + command, e);
-
+         Log.log(Log.ERROR, ScriptEngineShell .class, "Error executing script - returnVal: " + returnVal + " | content: \n" + command, e);
          output.print(console.getErrorColor(), message);
       }
       output.print(Color.black, outWriter.toString());
@@ -90,6 +85,12 @@ public class ScriptEngineShell extends Shell {
          output.print(console.getInfoColor(), String.valueOf(returnVal));
       }
       output.commandDone();
+   }
+ 
+   private void initScriptEngine() {
+      ScriptEnginePlugin plugin = (ScriptEnginePlugin) jEdit.getPlugin("scripting.ScriptEnginePlugin");
+      ScriptEngineDelegate delegate = plugin.getScriptEngineDelegate();
+      scriptEngine = delegate.getScriptEngineForMode(mode);
    }
  
 }

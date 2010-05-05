@@ -13,17 +13,14 @@
 			}
 		</CODE>
 	</ACTION>
-	<ACTION NAME="scriptengine.plugin.evaluate.buffer.to.console">
+	<ACTION NAME="scriptengine.plugin.evaluate.buffer.in.console">
 		<CODE>
 			import scripting.*;
 			
 			ScriptEnginePlugin plugin = jEdit.getPlugin("scripting.ScriptEnginePlugin");
 			ScriptExecutionDelegate delegate = plugin.getScriptExecutionDelegate();
 			
-			Object returnValue = delegate.evaluateBuffer(view);
-			if(returnValue != null) {
-				view.getTextArea().setSelectedText(returnValue.toString());
-			}
+			delegate.evaluateBufferInConsole(view);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="scriptengine.plugin.evaluate.selection">
@@ -43,7 +40,7 @@
 			}
 		</CODE>
 	</ACTION>
-	<ACTION NAME="scriptengine.plugin.evaluate.selection.to.console">
+	<ACTION NAME="scriptengine.plugin.evaluate.selection.in.console">
 		<CODE>
 			import scripting.*;
 			
@@ -51,10 +48,7 @@
 			ScriptExecutionDelegate delegate = plugin.getScriptExecutionDelegate();
 			
 			if(view.getTextArea().getSelectedText() != null) {
-				Object returnValue = delegate.evaluateSelection(view);
-				if(returnValue != null) {
-					view.getTextArea().setSelectedText(returnValue.toString());
-				}
+				delegate.evaluateSelectionInConsole(view);
 			} else {
 				Toolkit.getDefaultToolkit().beep();
 			}
