@@ -62,23 +62,7 @@ public class ItemFinderWindow<E> extends JFrame
 		itemList.addMouseListener(new MyMouseAdapter());
 
 		searchField.addKeyListener(new SearchFieldKeyAdapter());
-		searchField.getDocument().addDocumentListener(new DocumentListener()
-		{
-			public void insertUpdate(DocumentEvent e)
-			{
-				updateList(searchField.getText());
-			}
-
-			public void removeUpdate(DocumentEvent e)
-			{
-				updateList(searchField.getText());
-			}
-
-			public void changedUpdate(DocumentEvent e)
-			{
-				updateList(searchField.getText());
-			}
-		});
+		searchField.getDocument().addDocumentListener(new MyDocumentListener());
 		JScrollPane scroll = new JScrollPane(itemList);
 		window.setContentPane(scroll);
 		JPanel panel = new JPanel(new BorderLayout());
@@ -90,21 +74,6 @@ public class ItemFinderWindow<E> extends JFrame
 		pack();
 		if (itemFinder.getWidth() != -1)
 			setSize(itemFinder.getWidth(), getHeight());
-	}
-
-	private void updateList(String s)
-	{
-		itemFinder.updateList(s);
-		if (itemList.getModel().getSize() != 0)
-		{
-			window.pack();
-			window.setVisible(true);
-			if (itemList.getSelectedIndex() == -1)
-			{
-				itemList.setSelectedIndex(0);
-			}
-		}
-		EventQueue.invokeLater(requestFocusWorker);
 	}
 
 	@Override
@@ -121,7 +90,7 @@ public class ItemFinderWindow<E> extends JFrame
 	public void dispose()
 	{
 		window.dispose();
-		super.dispose(); 
+		super.dispose();
 	}
 
 	private static boolean handledByList(KeyEvent e)
@@ -153,7 +122,7 @@ public class ItemFinderWindow<E> extends JFrame
 			}
 			else if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
 			{
-				setVisible(false);
+				dispose();
 			}
 			else if (e.getKeyCode() == KeyEvent.VK_ENTER)
 			{
@@ -211,6 +180,39 @@ public class ItemFinderWindow<E> extends JFrame
 		public void run()
 		{
 			searchField.requestFocus();
+		}
+	}
+
+	private class MyDocumentListener implements DocumentListener
+	{
+		public void insertUpdate(DocumentEvent e)
+		{
+			updateList(searchField.getText());
+		}
+
+		public void removeUpdate(DocumentEvent e)
+		{
+			updateList(searchField.getText());
+		}
+
+		public void changedUpdate(DocumentEvent e)
+		{
+			updateList(searchField.getText());
+		}
+
+		private void updateList(String s)
+		{
+			itemFinder.updateList(s);
+			if (itemList.getModel().getSize() != 0)
+			{
+				window.pack();
+				window.setVisible(true);
+				if (itemList.getSelectedIndex() == -1)
+				{
+					itemList.setSelectedIndex(0);
+				}
+			}
+			EventQueue.invokeLater(requestFocusWorker);
 		}
 	}
 }
