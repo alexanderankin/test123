@@ -26,6 +26,11 @@ public class AnalyzerFactory
 		analyzers.put("Stop", new StopAnalyzer(Version.LUCENE_30));
 	}
 
+	static void dispose()
+	{
+		analyzers.clear();
+	}
+
 	static String[] getAnalyzerNames()
 	{
 		String[] names = new String[analyzers.size()];
