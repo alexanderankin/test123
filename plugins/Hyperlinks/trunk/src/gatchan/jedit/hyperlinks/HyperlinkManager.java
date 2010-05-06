@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2007, 2009 Matthieu Casanova
+ * Copyright (C) 2007, 2010 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,6 +23,7 @@ package gatchan.jedit.hyperlinks;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.OperatingSystem;
 import org.gjt.sp.jedit.ServiceManager;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
@@ -65,10 +66,15 @@ public class HyperlinkManager
 		textArea.getPainter().removeMouseListener(mouseAdapter);
 		textArea.getPainter().removeMouseMotionListener(mouseMotionAdapter);
 		textArea.removeFocusListener(focusListener);
+		painter = null;
+		mouseAdapter = null;
+		mouseMotionAdapter = null;
+		focusListener = null;
 	}
 
 	private class MyFocusListener extends FocusAdapter
 	{
+		@Override
 		public void focusLost(FocusEvent e)
 		{
 			painter.setHyperLink(null);
@@ -77,6 +83,7 @@ public class HyperlinkManager
 
 	private class MyMouseAdapter extends MouseAdapter
 	{
+		@Override
 		public void mouseClicked(MouseEvent e)
 		{
 			boolean control = (OperatingSystem.isMacOS() && e.isMetaDown())
@@ -97,6 +104,7 @@ public class HyperlinkManager
 
 	private class MyMouseMotionAdapter extends MouseMotionAdapter
 	{
+		@Override
 		public void mouseMoved(MouseEvent e)
 		{
 			boolean control = (OperatingSystem.isMacOS() && e.isMetaDown())
@@ -122,7 +130,7 @@ public class HyperlinkManager
 			painter.setHyperLink(link);
 		}
 
-		private HyperlinkSource getHyperlinkSource(Buffer buffer)
+		private HyperlinkSource getHyperlinkSource(JEditBuffer buffer)
 		{
 			String hyperlinkSourceName = buffer.getStringProperty(HyperlinkSource.PROPERTY);
 			if (hyperlinkSourceName == null)
