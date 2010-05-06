@@ -51,8 +51,8 @@ import java.util.List;
 public class IndexImpl extends AbstractIndex implements Index
 {
 	private final String name;
-	private static final VFSFileFilter filter = new MyVFSFilter();
-	private int writerCount = 0;
+	private final VFSFileFilter filter = new MyVFSFilter();
+	private int writerCount;
 
 	private boolean closeWriter;
 

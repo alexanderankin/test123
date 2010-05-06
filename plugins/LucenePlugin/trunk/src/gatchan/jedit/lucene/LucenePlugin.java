@@ -174,6 +174,7 @@ public class LucenePlugin extends EditPlugin
 		instance = null;
 		closeAllIndexes();
 		indexMap.clear();
+		AnalyzerFactory.dispose();
 	}
 
 	/**
