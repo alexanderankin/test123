@@ -34,6 +34,7 @@ import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
 
 import gatchan.jedit.lucene.Index.FileProvider;
+import org.gjt.sp.util.ThreadUtilities;
 
 import javax.swing.*;
 import java.io.*;
@@ -346,7 +347,7 @@ public class LucenePlugin extends EditPlugin
 	public void addToIndex(final String indexName, final VFSFile[] files,
 		final boolean sharedSession)
 	{
-		runInWorkThread(new Runnable()
+		ThreadUtilities.runInBackground(new Runnable()
 		{
 			public void run()
 			{
@@ -413,17 +414,6 @@ public class LucenePlugin extends EditPlugin
 		if (dockable == null)	// Should not happen
 			return;
 		dockable.goToPreviousResult();
-	}
-
-	/**
-	 * Runs the given task in the background without going through
-	 * the VFSManager's thread pool, to avoid blocking AWT tasks (such
-	 * as opening a file) while the background task is running.
-	 */
-	public static void runInWorkThread(Runnable r)
-	{
-		Thread t = new Thread(r);
-		t.start();
 	}
 
 	/**

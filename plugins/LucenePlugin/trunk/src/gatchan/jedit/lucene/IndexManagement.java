@@ -22,6 +22,7 @@ package gatchan.jedit.lucene;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.ThreadUtilities;
 import org.gjt.sp.util.WorkRequest;
 
 import javax.swing.*;
@@ -192,7 +193,7 @@ public class IndexManagement extends AbstractOptionPane
 					reindex.setEnabled(false);
 					delete.setEnabled(false);
 					OptimizeWorkRequest wr = new OptimizeWorkRequest(indexName);
-					LucenePlugin.runInWorkThread(wr);
+					ThreadUtilities.runInBackground(wr);
 				}
 				else if (e.getSource() == delete)
 				{
@@ -208,7 +209,7 @@ public class IndexManagement extends AbstractOptionPane
 					reindex.setEnabled(false);
 					delete.setEnabled(false);
 					ReindexWorkRequest wr = new ReindexWorkRequest(indexName);
-					LucenePlugin.runInWorkThread(wr);
+					ThreadUtilities.runInBackground(wr);
 				}
 			}
 		}

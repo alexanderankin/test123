@@ -32,6 +32,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.ThreadUtilities;
 
 import java.io.File;
 import java.io.IOException;
@@ -67,7 +68,7 @@ public class CentralIndex extends AbstractIndex
 				final BufferUpdate bufferUpdate = message;
 				if (bufferUpdate.getWhat() == BufferUpdate.SAVED)
 				{
-					LucenePlugin.runInWorkThread(new Runnable()
+					ThreadUtilities.runInBackground(new Runnable()
 					{
 						public void run()
 						{

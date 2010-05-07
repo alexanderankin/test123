@@ -8,6 +8,7 @@ import java.util.Vector;
 
 import org.gjt.sp.jedit.io.VFSFile;
 
+import org.gjt.sp.util.ThreadUtilities;
 import projectviewer.action.Action;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
@@ -41,7 +42,7 @@ public class IndexProjectAction extends Action
 				return;
 			}
 			ProjectIndexer indexer = new ProjectIndexer(project, index);
-			LucenePlugin.runInWorkThread(indexer);
+			ThreadUtilities.runInBackground(indexer);
 		}
 	}
 
