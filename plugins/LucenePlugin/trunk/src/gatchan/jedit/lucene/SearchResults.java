@@ -32,6 +32,7 @@ import org.gjt.sp.jedit.gui.RolloverButton;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.util.StandardUtilities;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.ThreadUtilities;
 import org.gjt.sp.util.WorkRequest;
 
 @SuppressWarnings("serial")
@@ -228,7 +229,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 							String selectedIndex = (String) indexes.getSelectedItem();
 							ReindexWorkRequest reindexer = new ReindexWorkRequest(selectedIndex);
 							indexes.setEnabled(false);
-							LucenePlugin.runInWorkThread(reindexer);
+							ThreadUtilities.runInBackground(reindexer);
 						}
 					});
 					menu.add(refresh);
