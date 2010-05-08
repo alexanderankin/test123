@@ -457,4 +457,25 @@ public class LucenePlugin extends EditPlugin
 			return null;
 		return selected;
 	}
+
+	private static LucenePlugin getPluginInstance()
+	{
+		return (LucenePlugin) jEdit.getPlugin("gatchan.jedit.lucene.LucenePlugin");
+	}
+
+	// Plugin-API
+
+	public static boolean search(String indexName, String text, int max,
+		final java.util.List<Object> files)
+	{
+		LucenePlugin instance = getPluginInstance();
+		if (instance == null)
+			return false;
+		Index index = instance.getIndex(indexName);
+		if (index == null)
+			return false;
+		ResultProcessor processor = new MarkerListQueryProcessor(index, files, max);
+		index.search(text, "", max, processor);
+		return true;
+	}
 }
