@@ -10,12 +10,14 @@ public class Query {
 	private Vector<Object> conditions;
 	private Vector<Object> tables;
 	private Vector<Object> columns;
+	private Vector<Object> order;
 	private int limit = 0;
 	
 	public Query() {
 		conditions = new Vector<Object>();
 		tables = new Vector<Object>();
 		columns = new Vector<Object>();
+		order = new Vector<Object>();
 	}
 	public Query(Object column, Object table, Object condition) {
 		this();
@@ -79,7 +81,15 @@ public class Query {
 	public void setColumns(Vector<Object> columns) {
 		this.columns = columns;
 	}
-	
+
+	public void setOrder(Vector<Object> order) {
+		this.order = order;
+	}
+	public void setOrder(Object order) {
+		this.order.clear();
+		this.order.add(order);
+	}
+
 	// Set the max number of rows to return.
 	public void setLimit(int limit) {
 		this.limit = limit; 
@@ -93,6 +103,8 @@ public class Query {
 		s.append(join(",", tables));
 		s.append(" WHERE ");
 		s.append(join(" AND ", conditions));
+		if (! order.isEmpty())
+			s.append(" ORDER BY " + join(",", order));
 		if (limit > 0)
 			s.append(" LIMIT " + limit);
 		return s.toString();
