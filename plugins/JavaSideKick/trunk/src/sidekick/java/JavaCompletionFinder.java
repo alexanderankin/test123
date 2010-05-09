@@ -138,6 +138,7 @@ public class JavaCompletionFinder {
     }
 
     private JavaCompletion getPossibleCompletions( String word ) {
+    	org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, this, "Get possible completions on "+word);
         if ( word == null || word.length() == 0 )
             return null;
 
@@ -345,6 +346,7 @@ public class JavaCompletionFinder {
 
 
     private JavaCompletion getPossibleNonQualifiedCompletions( String word ) {
+    	org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, this, "Getting non-qualified completions");
         // If the word is a class, get its package
         savePackages = true;
         tempPossibles = null;
@@ -358,14 +360,16 @@ public class JavaCompletionFinder {
             return new JavaCompletion(editPane.getView(), word, list);
         }
         else if (c != null) {
-            // The package could potentially be null, in which case just return null
+            // The package could potentially be null, in which case just return its name
             try {
                 List<String> list = new ArrayList<String>(1);
                 list.add(c.getPackage().getName() + "." + word);
                 return new JavaCompletion(editPane.getView(), word, list);
             }
             catch (Exception e) {
-                return null;
+            	List<String> list = new ArrayList<String>(1);
+            	list.add(c.getName());
+                return new JavaCompletion(editPane.getView(), word, list);
             }
         }
         // partialword
@@ -644,9 +648,11 @@ public class JavaCompletionFinder {
         String className = null;
         // check jars in project classpath. These are the jars and/or directories
         // specified in the ProjectViewer "Classpath settings" option pane.
+        org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, this, "Looking in project class path");
         if (PVHelper.isProjectViewerAvailable()) {
             classNames = Locator.getInstance().getProjectClassName(
                         PVHelper.getProject( editPane.getView() ), type);
+            org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, this, "classNames = "+java.util.Arrays.toString(classNames));
             if (classNames != null && classNames.length > 1) {
                 if (!savePackages) {
                     GUIUtilities.error(editPane.getView(), "options.sidekick.java.ambiguousClass",

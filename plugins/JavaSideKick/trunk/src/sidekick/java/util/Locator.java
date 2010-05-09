@@ -120,6 +120,9 @@ public final class Locator {
     private List<String> getJarClassNames( File jar ) {
         List<String> names = new ArrayList<String>();
         try {
+        	if (jar.isDirectory()) {
+        		return names;
+        	}
             JarFile jar_file = new JarFile( jar );
             Enumeration entries = jar_file.entries();
             while ( entries.hasMoreElements() ) {
