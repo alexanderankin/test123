@@ -3,6 +3,7 @@ package codehelper;
 import gatchan.jedit.lucene.LucenePlugin;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
@@ -15,6 +16,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreePath;
@@ -48,6 +50,7 @@ public class StaticCallTree extends JPanel
 		root = new DefaultMutableTreeNode();
 		model = new DefaultTreeModel(root);
 		tree = new JTree(model);
+		tree.setCellRenderer(new MarkerNodeCellRenderer());
 		tree.addTreeWillExpandListener(new TreeWillExpandListener() {
 			public void treeWillCollapse(TreeExpansionEvent event)
 					throws ExpandVetoException
@@ -58,7 +61,7 @@ public class StaticCallTree extends JPanel
 			{
 				TreePath tp = event.getPath();
 				MarkerTreeNode node = (MarkerTreeNode) tp.getLastPathComponent();
-				expand(node, node.function);
+				expand(node, node.getName());
 			}
 		});
 		tree.addMouseListener(new MouseAdapter() {
@@ -120,7 +123,7 @@ public class StaticCallTree extends JPanel
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run()
 						{
-							parent.insert(new MarkerTreeNode(m, newChild.getName()),
+							parent.insert(new MarkerTreeNode(m, newChild),
 								parent.getChildCount() - 1);
 							model.nodeStructureChanged(parent);
 						}
@@ -191,23 +194,41 @@ public class StaticCallTree extends JPanel
 	private class MarkerTreeNode extends DefaultMutableTreeNode
 	{
 		FileMarker marker;
-		String function;
 		boolean expanded;
-		public MarkerTreeNode(FileMarker marker, String function)
+		Tag container;
+		public MarkerTreeNode(FileMarker marker, Tag container)
 		{
 			this.marker = marker;
-			this.function = function;
+			this.container = container;
 			expanded = false;
 			addLoadingChild(this);
 		}
-		
+		public String getName()
+		{
+			return container.getName();
+		}
 		public String toString()
 		{
-			return function;
+			return container.getName();
 		}
 		public void goTo()
 		{
 			marker.jump(view);
+		}
+	}
+	private class MarkerNodeCellRenderer extends DefaultTreeCellRenderer
+	{
+
+		@Override
+		public Component getTreeCellRendererComponent(JTree tree, Object value,
+				boolean sel, boolean expanded, boolean leaf, int row,
+				boolean hasFocus) {
+			DefaultTreeCellRenderer r = (DefaultTreeCellRenderer)
+				super.getTreeCellRendererComponent(tree, value, sel,
+				expanded, leaf, row, hasFocus);
+			if (value instanceof MarkerTreeNode)
+				r.setIcon(((MarkerTreeNode)value).container.getIcon());
+			return r;
 		}
 	}
 }
