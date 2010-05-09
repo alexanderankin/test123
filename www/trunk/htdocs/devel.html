@@ -11,15 +11,15 @@
 
 <li><a href="index.php?page=feedback">Mailing list subscription</a>
 </li>
-<li> <a href="http://subversion.tigris.org">Subversion</a>: <a href="https://sourceforge.net/svn/?group_id=588">Help</a>, <a href="#migration">Migration</a>,  <a href="http://jedit.svn.sourceforge.net/viewvc/jedit/">Browse SVN</a>, <a href="http://jedit.cvs.sourceforge.net/jedit/">Browse CVS</a> </li>
+<li> <a href="http://jedit.svn.sourceforge.net/viewvc/jedit/">Browse SVN</a>, <a href="http://jedit.cvs.sourceforge.net/jedit/">Browse CVS</a> </li>
 <li> <b>Docs:</b> <a href="http://www.jedit.org/users-guide/">Users Guide</a>,
 <a href="api/index.html">API docs</a>, <a href="42docs/news42/index.html">jEdit 4.2 plugin porting guide</a> </li>
-<li> <b>Trackers: </b> <a href="https://sourceforge.net/tracker/?group_id=588&atid=100588">Bugs</a>, 
-<a href="https://sourceforge.net/tracker/?group_id=588&atid=565475">Plugin Bugs</a>, 
+<li> <b>Trackers: </b> <a href="https://sourceforge.net/tracker/?group_id=588&atid=100588">Bugs</a>,
+<a href="https://sourceforge.net/tracker/?group_id=588&atid=565475">Plugin Bugs</a>,
 <a href="https://sourceforge.net/tracker/?group_id=588&atid=350588">Feature Requests</a>,
 
-<a href="https://sourceforge.net/tracker/?group_id=588&atid=997936">Plugin Feature Requests</a>, 
-<a href="https://sourceforge.net/tracker/?group_id=588&atid=625093">Plugin Central Submissions</a>, 
+<a href="https://sourceforge.net/tracker/?group_id=588&atid=997936">Plugin Feature Requests</a>,
+<a href="https://sourceforge.net/tracker/?group_id=588&atid=625093">Plugin Central Submissions</a>,
 <a href="https://sourceforge.net/tracker/?group_id=588&atid=300588">Patches</a>, <a href="https://sourceforge.net/tracker/?group_id=588&atid=997936">Plugin Patches</a></li>
 <li> <a href="#patches">Creating</a> and <a href="https://sourceforge.net/tracker/?group_id=588&atid=300588">Submitting</a> patches. </li>
 <li> <a href="http://plugins.jedit.org/releasing.php">Releasing plugins</a></li>
@@ -35,11 +35,11 @@
 </a>
 <p> A new release of jEdit is scheduled to come out every 1-3 months.
 Whether it is a "pre" or a final depends on what kinds of bugs
-are reported/fixed. After 4.3final is released, we will start development on 4.4pre1. </p>
+are reported/fixed. After 4.3 is released, we will start development on 4.4pre1. </p>
 
 
 <ul>
-<li> <b>jEdit 4.3pre9</b>: January 20, 2007</li>
+<li> <b>jEdit 4.3pre9</b>: January 20 2007</li>
 <li> <b>jEdit 4.3pre10</b>: July 15 2007</li>
 <li> <b>jEdit 4.3pre11</b>: October 04 2007</li>
 <li> <b>jEdit 4.3pre12</b>: December 08 2007</li>
@@ -49,14 +49,16 @@ are reported/fixed. After 4.3final is released, we will start development on 4.4
 <li> <b>jEdit 4.3pre16</b>: November 19 2008</li>
 <li> <b>jEdit 4.3pre17</b>: July 05 2009</li>
 <li> <b>jEdit 4.3pre18</b>: November 07 2009</li>
-<li> <b>jEdit 4.3pre19</b>: February ?? 2010</li>
+<li> <b>jEdit 4.3</b>: December 23 2009</li>
+<li> <b>jEdit 4.3.1</b>: January 28 2010</li>
+<li> <b>jEdit 4.3.2</b>: May 09 2010</li>
 </ul>
 
 <a name="help" >
 <h2> Want to join us? Help Wanted! </h2>
 </a>
 
-<p> Specific requests for help can be found on the <a href="http://jedit.wiki.sourceforge.net/Help+Wanted">wiki page</a>. </p> 
+<p> Specific requests for help can be found on the <a href="http://jedit.wiki.sourceforge.net/Help+Wanted">wiki page</a>. </p>
 
 <h2>Becoming a jEdit developer</h2>
 
@@ -120,7 +122,7 @@ always a good thing.
 
 <p>
 If you want to make changes to existing plugins, or jEdit itself, make sure that you are working on the latest released (i.e. development) versions. Until you are ready to commit directly, you can submit your patches via the
-<a href="https://sourceforge.net/tracker/?group_id=588&atid=300588">jedit patches</a> tracker, as an attachment or a comment in the actual tracker item. After you have submitted a few patches, you can ask for permission to commit directly. 
+<a href="https://sourceforge.net/tracker/?group_id=588&atid=300588">jedit patches</a> tracker, as an attachment or a comment in the actual tracker item. After you have submitted a few patches, you can ask for permission to commit directly.
 </p>
 
 <a name="patches" >
@@ -140,57 +142,6 @@ user account.</p>
 <p>Once you feel your plugin is reasonably complete (this should be determined partly by feedback you get during the development process), you can post your submission on the submissions tracker.  At this point, it will become a candidate for release on <a href="http://plugins.jedit.org">plugin central</a>.
 See <a href="http://plugins.jedit.org/releasing.php">this page</a> to find out how.</p>
 
-
-<a name="migration" >  
-<h3> Migration to Subversion </h3> 
-</a>
-<p> We are moving projects, on a one-by-one basis, from CVS to Subversion. Plugins which are not being actively developed will be left on the CVS repository and not migrated (but we will not remove them either, in case someone wants to revive them). Access to the Subversion repository is granted on a one-by-one basis. </p>
-<ol>
-<li> Download from the CVS repository what you want to migrate using rsync. 
-<pre># change this to your plugin name
-<b>export PLUGIN=TextFilter
-export JEDITSVN=https://jedit.svn.sourceforge.net/svnroot/jedit/
-rsync -avz rsync://jedit.cvs.sourceforge.net/cvsroot/jedit/plugins/$PLUGIN . </b></pre>
-</li>
-<li> <p> Examine the files and clean up any old Attic files you don't think need to be imported. </p>
-</li>
-<li> Run <tt>cvs2svn</tt>, which will generate an svn dump file, you can import into jEdit's svn repo. </p>
-<p> (svn 1.3 and earlier) </p>
-<pre><b>cvs2svn --dump-only $PLUGIN</b>
-<b>mv cvs2svn-dump $PLUGIN-dump</b>
-</pre>
-<p> (svn 1.4 and later) </p>
-<pre>
-<b>cvs2svn --dumpfile=$PLUGIN-dump $PLUGIN</b>
-</pre>
-</li>
-<li> compress to .gz
-<pre>
-<b>gzip $PLUGIN-dump</b>
-</pre>
-</li>
-<li> Upload the file to sf.net shell server:
-<pre>
-<b>scp $PLUGIN-dump.gz plugins.jedit.org:/home/groups/j/je/jedit </b>
-</pre>
-</li>
-<li> Create a plugin directory in the jedit svn repository <a href="http://jedit.svn.sourceforge.net/viewvc/jedit/plugins/">plugins directory</a>.  
-<pre>
-<b>svn mkdir $JEDITSVN/plugins/$PLUGIN</b>
-</pre>
-
-</li>
-<li> Go to the <a href="https://sourceforge.net/project/admin/svn_migration.php?group_id=588">Migration page</a>. Select "SVN dump file archive", give name of the file you uploaded, and the destination in the repository: (e.g., "plugins/$PLUGIN" ). <b>Do not check the "replace" checkbox. </b>
-</li>
-<li> Checkout trunk of new project and verify it's all working: 
-<pre>
-<b> svn co $JEDITSVN/plugins/$PLUGIN/trunk $PLUGIN </b>
-</pre>
-(if you don't specify "trunk", you'll checkout all the tags/branches/etc that cvs2svn created during the migration)
-</li>
-<li> Last, but not least, open a ticket in the <a href="https://sourceforge.net/tracker/?func=add&group_id=1&atid=200001">Sourceforge.net support tracker</a> requesting that the old CVS repo directory for this plugin be cleaned up.
-</li>
-</ol>
 
 <h2>Thanks</h2>
 

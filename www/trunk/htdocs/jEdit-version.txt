@@ -1,9 +1,9 @@
-.version 4.3pre18
-.build 04.03.18.00
-.stablebuild 04.02.99.00
+.version 4.3.2
+.build 04.03.99.02
+.stablebuild 04.03.99.02
 
-The current development version is 4.3pre18. You can find a list of
+The current development version is 4.4pre1. You can find a list of
+changes since 4.3 at www.jedit.org/CHANGES44.txt
+
+The current stable version is 4.3.2. You can find a list of major
 changes since 4.2 at www.jedit.org/CHANGES43.txt
-
-The current stable version is 4.2. You can find a list of major
-changes since 4.1 at www.jedit.org/42docs/news42/index.html
