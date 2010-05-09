@@ -160,15 +160,11 @@ public class StaticCallTree extends JPanel
 	}
 	private Vector<Tag> getTagsOfFile(String file)
 	{
-		Query q = new Query();
-		q.addColumn(TagDB.TAGS_TABLE + ".*");
-		q.addColumn(TagDB.FILES_TABLE + "." + TagDB.FILES_NAME);
-		q.addTable(TagDB.TAGS_TABLE);
-		q.addTable(TagDB.FILES_TABLE);
-		q.addCondition(TagDB.TAGS_TABLE + "." + TagDB.TAGS_FILE_ID + "=" +
-			TagDB.FILES_TABLE + "." + TagDB.FILES_ID);
-		q.addCondition(TagDB.FILES_TABLE + "." + TagDB.FILES_NAME + "=" +
-			"'" + file + "'");
+		int fileId = CtagsInterfacePlugin.getDB().getSourceFileID(file);
+		if (fileId == -1)
+			return null;
+		Query q = new Query(TagDB.TAGS_TABLE + ".*", TagDB.TAGS_TABLE,
+			TagDB.TAGS_FILE_ID + "=" + fileId);
 		return CtagsInterfacePlugin.query(q);
 	}
 	private class MarkerTreeNode extends DefaultMutableTreeNode
