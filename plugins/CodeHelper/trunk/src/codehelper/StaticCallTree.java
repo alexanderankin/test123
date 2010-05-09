@@ -99,7 +99,7 @@ public class StaticCallTree extends JPanel
 					return;
 				Vector<Object> results = new Vector<Object>();
 				String name = ProjectViewer.getActiveProject(view).getName(); 
-				LucenePlugin.search(name, text, 10, results);
+				LucenePlugin.search(name, text, 100, results);
 				HashMap<String, Vector<Tag>> tagsPerFile = new
 					HashMap<String, Vector<Tag>>();
 				for (Object o: results)
@@ -108,29 +108,12 @@ public class StaticCallTree extends JPanel
 						continue;
 					final FileMarker m = (FileMarker) o;
 					final String file = m.file;
-					int line = m.getLine() + 1;
 					if (! tagsPerFile.containsKey(file))
 						tagsPerFile.put(file, getTagsOfFile(file));
-					Vector<Tag> tags = tagsPerFile.get(m.file);
+					Vector<Tag> tags = tagsPerFile.get(file);
 					if ((tags == null) || tags.isEmpty())
 						continue;
-					Tag nearestTag = null;
-					int nearestLine = -1;
-					for (Tag tag: tags)
-					{
-						String tagName = tag.getName();
-						int tagLine = tag.getLine();
-						if (tagName.equals(text) && (tagLine == line))
-						{
-							nearestTag = null;
-							break;
-						}
-						if ((tagLine > nearestLine) && (tagLine < line))
-						{
-							nearestLine = tagLine;
-							nearestTag = tag;
-						}
-					}
+					Tag nearestTag = getContainingTag(tags, m, text);
 					if (nearestTag == null)
 						continue;
 					final Tag newChild = nearestTag; 
@@ -154,6 +137,44 @@ public class StaticCallTree extends JPanel
 		});
 	}
 
+	private final static String[] CONTAINER_KINDS = {
+		"function", "subroutine", "macro"
+	};
+
+	private boolean isContainerTag(Tag tag)
+	{
+		String kind = tag.getKind();
+		for (String k: CONTAINER_KINDS)
+			if (k.equals(kind))
+				return true;
+		return false;
+	}
+	private Tag getContainingTag(Vector<Tag> tags, FileMarker marker,
+		String text)
+	{
+		int line = marker.getLine() + 1;
+		Tag nearestTag = null;
+		int nearestLine = -1;
+		for (Tag tag: tags)
+		{
+			String tagName = tag.getName();
+			int tagLine = tag.getLine();
+			if (tagName.equals(text) && (tagLine == line))
+			{
+				nearestTag = null;
+				break;
+			}
+			if ((tagLine > nearestLine) && (tagLine < line))
+			{
+				if (isContainerTag(tag))
+				{
+					nearestLine = tagLine;
+					nearestTag = tag;
+				}
+			}
+		}
+		return nearestTag;
+	}
 	private void addLoadingChild(DefaultMutableTreeNode parent)
 	{
 		parent.add(new DefaultMutableTreeNode("Loading, please wait..."));
