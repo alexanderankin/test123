@@ -5,6 +5,7 @@ import gatchan.jedit.lucene.LucenePlugin;
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.JPanel;
@@ -47,7 +48,6 @@ public class StaticCallTree extends JPanel
 		root = new DefaultMutableTreeNode();
 		model = new DefaultTreeModel(root);
 		tree = new JTree(model);
-		tree.setRootVisible(false);
 		tree.addTreeWillExpandListener(new TreeWillExpandListener() {
 			public void treeWillCollapse(TreeExpansionEvent event)
 					throws ExpandVetoException
@@ -75,6 +75,8 @@ public class StaticCallTree extends JPanel
 
 	public void showTreeFor(String text)
 	{
+		root.removeAllChildren();
+		root.setUserObject(text);
 		addLoadingChild(root);
 		model.nodeStructureChanged(root);
 		expand(root, text);
@@ -91,7 +93,6 @@ public class StaticCallTree extends JPanel
 		}
 		ThreadUtilities.runInBackground(new Runnable() {
 			public void run() {
-				final Vector<MarkerTreeNode> children = new Vector<MarkerTreeNode>();
 				ProjectPlugin pv = (ProjectPlugin)
 					jEdit.getPlugin("projectviewer.ProjectPlugin");
 				if (pv == null)
@@ -99,19 +100,44 @@ public class StaticCallTree extends JPanel
 				Vector<Object> results = new Vector<Object>();
 				String name = ProjectViewer.getActiveProject(view).getName(); 
 				LucenePlugin.search(name, text, 10, results);
+				HashMap<String, Vector<Tag>> tagsPerFile = new
+					HashMap<String, Vector<Tag>>();
 				for (Object o: results)
 				{
 					if (! (o instanceof FileMarker))
-						return;
-					final FileMarker m = (FileMarker) o;
-					final Tag best = getFunctionContainingReference(m, text);
-					if (best == null)
 						continue;
-					children.add(new MarkerTreeNode(m, best.getName()));
+					final FileMarker m = (FileMarker) o;
+					final String file = m.file;
+					int line = m.getLine() + 1;
+					if (! tagsPerFile.containsKey(file))
+						tagsPerFile.put(file, getTagsOfFile(file));
+					Vector<Tag> tags = tagsPerFile.get(m.file);
+					if ((tags == null) || tags.isEmpty())
+						continue;
+					Tag nearestTag = null;
+					int nearestLine = -1;
+					for (Tag tag: tags)
+					{
+						String tagName = tag.getName();
+						int tagLine = tag.getLine();
+						if (tagName.equals(text) && (tagLine == line))
+						{
+							nearestTag = null;
+							break;
+						}
+						if ((tagLine > nearestLine) && (tagLine < line))
+						{
+							nearestLine = tagLine;
+							nearestTag = tag;
+						}
+					}
+					if (nearestTag == null)
+						continue;
+					final Tag newChild = nearestTag; 
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run()
 						{
-							parent.insert(new MarkerTreeNode(m, best.getName()),
+							parent.insert(new MarkerTreeNode(m, newChild.getName()),
 								parent.getChildCount() - 1);
 							model.nodeStructureChanged(parent);
 						}
@@ -121,6 +147,7 @@ public class StaticCallTree extends JPanel
 					public void run()
 					{
 						parent.remove(parent.getChildCount() - 1);
+						model.nodeStructureChanged(parent);
 					}
 				});
 			}
@@ -131,9 +158,8 @@ public class StaticCallTree extends JPanel
 	{
 		parent.add(new DefaultMutableTreeNode("Loading, please wait..."));
 	}
-	private Tag getFunctionContainingReference(FileMarker m, String text)
+	private Vector<Tag> getTagsOfFile(String file)
 	{
-		int line = m.getLine() + 1;	// FileMarker starts from line 0
 		Query q = new Query();
 		q.addColumn(TagDB.TAGS_TABLE + ".*");
 		q.addColumn(TagDB.FILES_TABLE + "." + TagDB.FILES_NAME);
@@ -142,17 +168,8 @@ public class StaticCallTree extends JPanel
 		q.addCondition(TagDB.TAGS_TABLE + "." + TagDB.TAGS_FILE_ID + "=" +
 			TagDB.FILES_TABLE + "." + TagDB.FILES_ID);
 		q.addCondition(TagDB.FILES_TABLE + "." + TagDB.FILES_NAME + "=" +
-			"'" + m.file + "'");
-		q.addCondition(TagDB.TAGS_TABLE + "." + TagDB.TAGS_LINE + "<=" + line);
-		q.setOrder(TagDB.TAGS_LINE + " DESC");
-		q.setLimit(1);
-		Vector<Tag> tags = CtagsInterfacePlugin.query(q);
-		if ((tags == null) || tags.isEmpty())
-			return null;
-		Tag t = tags.get(0);
-		if (t.getName().equals(text) && (t.getLine() == line))
-			return null;
-		return t;
+			"'" + file + "'");
+		return CtagsInterfacePlugin.query(q);
 	}
 	private class MarkerTreeNode extends DefaultMutableTreeNode
 	{
