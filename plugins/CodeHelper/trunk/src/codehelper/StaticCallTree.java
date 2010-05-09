@@ -128,13 +128,24 @@ public class StaticCallTree extends JPanel
 		q.addCondition(TagDB.FILES_TABLE + "." + TagDB.FILES_NAME + "=" +
 			"'" + m.file + "'");
 		q.addCondition(TagDB.TAGS_TABLE + "." + TagDB.TAGS_LINE + "<=" +
-			m.getLine());
-		q.setOrder(TagDB.TAGS_LINE + " DESC");
-		q.setLimit(1);
+			m.getLine() + 1);
+		//q.setOrder(TagDB.TAGS_LINE + " DESC");
+		//q.setLimit(1);
 		Vector<Tag> tags = CtagsInterfacePlugin.query(q);
 		if ((tags == null) || tags.isEmpty())
 			return null;
+		// Find closest tag
 		Tag t = tags.get(0);
+		int best = t.getLine();
+		for (int i = 1; i < tags.size(); i++)
+		{
+			Tag tested = tags.get(i);
+			if (tested.getLine() > best)
+			{
+				best = tested.getLine();
+				t = tested;
+			}
+		}
 		if (t.getName().equals(text) && (t.getLine() == m.getLine()))
 			return null;
 		return t;
