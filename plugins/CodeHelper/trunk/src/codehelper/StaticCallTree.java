@@ -9,8 +9,11 @@ import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Vector;
 
+import javax.swing.DefaultListModel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TreeExpansionEvent;
@@ -42,6 +45,9 @@ public class StaticCallTree extends JPanel
 	private JTree tree;
 	private DefaultTreeModel model;
 	private DefaultMutableTreeNode root;
+	private JList list;
+	private DefaultListModel listModel;
+	private JSplitPane sp;
 
 	public StaticCallTree(View view)
 	{
@@ -70,14 +76,35 @@ public class StaticCallTree extends JPanel
 			{
 				TreePath tp = tree.getPathForLocation(e.getX(), e.getY());
 				MarkerTreeNode node = (MarkerTreeNode) tp.getLastPathComponent();
-				node.goTo();
+				if (e.isPopupTrigger())
+					node.goTo();
+				else
+					updateMarkerView(node);
 			}
 		});
-		add(new JScrollPane(tree), BorderLayout.CENTER);
+		listModel = new DefaultListModel();
+		list = new JList(listModel);
+		list.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e)
+			{
+				((FileMarker) list.getSelectedValue()).jump(StaticCallTree.this.view);
+			}
+		});
+		sp = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+			new JScrollPane(tree), new JScrollPane(list));
+		add(sp, BorderLayout.CENTER);
 	}
 
+	private void updateMarkerView(MarkerTreeNode node)
+	{
+		listModel.removeAllElements();
+		for (FileMarker m: node.markers)
+			listModel.addElement(m);
+	}
 	public void showTreeFor(String text)
 	{
+		sp.setDividerLocation(0.6d);
 		root.removeAllChildren();
 		root.setUserObject(text);
 		addLoadingChild(root);
@@ -95,6 +122,7 @@ public class StaticCallTree extends JPanel
 			mtn.expanded = true;
 		}
 		ThreadUtilities.runInBackground(new Runnable() {
+			private MarkerTreeNode lastNode = null;
 			public void run() {
 				ProjectPlugin pv = (ProjectPlugin)
 					jEdit.getPlugin("projectviewer.ProjectPlugin");
@@ -105,6 +133,7 @@ public class StaticCallTree extends JPanel
 				LucenePlugin.search(name, text, 100, results);
 				HashMap<String, Vector<Tag>> tagsPerFile = new
 					HashMap<String, Vector<Tag>>();
+				Tag lastTag = null;
 				for (Object o: results)
 				{
 					if (! (o instanceof FileMarker))
@@ -119,15 +148,22 @@ public class StaticCallTree extends JPanel
 					Tag nearestTag = getContainingTag(tags, m, text);
 					if (nearestTag == null)
 						continue;
-					final Tag newChild = nearestTag; 
-					SwingUtilities.invokeLater(new Runnable() {
-						public void run()
-						{
-							parent.insert(new MarkerTreeNode(m, newChild),
-								parent.getChildCount() - 1);
-							model.nodeStructureChanged(parent);
-						}
-					});
+					if (lastTag == nearestTag)
+						lastNode.addMarker(m);
+					else
+					{
+						final Tag newChild = lastTag = nearestTag;
+						lastNode = new MarkerTreeNode(m, newChild);
+						final MarkerTreeNode fLastNode = lastNode;
+						SwingUtilities.invokeLater(new Runnable() {
+							public void run()
+							{
+								parent.insert(fLastNode,
+									parent.getChildCount() - 1);
+								model.nodeStructureChanged(parent);
+							}
+						});
+					}
 				}
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run()
@@ -193,27 +229,40 @@ public class StaticCallTree extends JPanel
 	}
 	private class MarkerTreeNode extends DefaultMutableTreeNode
 	{
-		FileMarker marker;
+		Vector<FileMarker> markers;
 		boolean expanded;
-		Tag container;
-		public MarkerTreeNode(FileMarker marker, Tag container)
+		Tag tag;
+		public MarkerTreeNode(FileMarker marker, Tag tag)
 		{
-			this.marker = marker;
-			this.container = container;
+			markers = new Vector<FileMarker>();
+			markers.add(marker);
+			this.tag = tag;
 			expanded = false;
 			addLoadingChild(this);
 		}
-		public String getName()
+		public void addMarker(FileMarker marker)
 		{
-			return container.getName();
+			markers.add(marker);
 		}
 		public String toString()
 		{
-			return container.getName();
+			StringBuffer s = new StringBuffer();
+			s.append(tag.getName());
+			String signature = tag.getExtension("signature");
+			if (signature != null && signature.length() > 0)
+				s.append(signature);
+			String ns = tag.getNamespace();
+			if ((ns != null) && (ns.length() > 0))
+				s.append(" - " + ns);
+			return s.toString();
+		}
+		public String getName()
+		{
+			return tag.getName();
 		}
 		public void goTo()
 		{
-			marker.jump(view);
+			CtagsInterfacePlugin.jumpToTag(view);
 		}
 	}
 	private class MarkerNodeCellRenderer extends DefaultTreeCellRenderer
@@ -227,7 +276,7 @@ public class StaticCallTree extends JPanel
 				super.getTreeCellRendererComponent(tree, value, sel,
 				expanded, leaf, row, hasFocus);
 			if (value instanceof MarkerTreeNode)
-				r.setIcon(((MarkerTreeNode)value).container.getIcon());
+				r.setIcon(((MarkerTreeNode)value).tag.getIcon());
 			return r;
 		}
 	}
