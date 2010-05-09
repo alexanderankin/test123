@@ -22,6 +22,7 @@ import marker.FileMarker;
 
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.util.ThreadUtilities;
 
 import ctagsinterface.db.Query;
 import ctagsinterface.db.TagDB;
@@ -74,10 +75,12 @@ public class StaticCallTree extends JPanel
 
 	public void showTreeFor(String text)
 	{
+		addLoadingChild(root);
+		model.nodeStructureChanged(root);
 		expand(root, text);
 	}
 	
-	public void expand(final DefaultMutableTreeNode parent, String text)
+	public void expand(final DefaultMutableTreeNode parent, final String text)
 	{
 		if (parent instanceof MarkerTreeNode)
 		{
@@ -86,38 +89,51 @@ public class StaticCallTree extends JPanel
 				return;
 			mtn.expanded = true;
 		}
-		final Vector<MarkerTreeNode> children = new Vector<MarkerTreeNode>();
-		ProjectPlugin pv = (ProjectPlugin)
-			jEdit.getPlugin("projectviewer.ProjectPlugin");
-		if (pv == null)
-			return;
-		Vector<Object> results = new Vector<Object>();
-		String name = ProjectViewer.getActiveProject(view).getName(); 
-		LucenePlugin.search(name, text, 10, results);
-		for (Object o: results)
-		{
-			if (! (o instanceof FileMarker))
-				return;
-			FileMarker m = (FileMarker) o;
-			Tag best = getFunctionContainingReference(m, text);
-			if (best == null)
-				continue;
-			children.add(new MarkerTreeNode(m, best.getName()));
-		}
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run()
-			{
-				for (MarkerTreeNode child: children)
-					parent.add(child);
-				if (parent instanceof MarkerTreeNode)
-					parent.remove(0);
-				model.nodeStructureChanged(parent);
+		ThreadUtilities.runInBackground(new Runnable() {
+			public void run() {
+				final Vector<MarkerTreeNode> children = new Vector<MarkerTreeNode>();
+				ProjectPlugin pv = (ProjectPlugin)
+					jEdit.getPlugin("projectviewer.ProjectPlugin");
+				if (pv == null)
+					return;
+				Vector<Object> results = new Vector<Object>();
+				String name = ProjectViewer.getActiveProject(view).getName(); 
+				LucenePlugin.search(name, text, 10, results);
+				for (Object o: results)
+				{
+					if (! (o instanceof FileMarker))
+						return;
+					final FileMarker m = (FileMarker) o;
+					final Tag best = getFunctionContainingReference(m, text);
+					if (best == null)
+						continue;
+					children.add(new MarkerTreeNode(m, best.getName()));
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run()
+						{
+							parent.insert(new MarkerTreeNode(m, best.getName()),
+								parent.getChildCount() - 1);
+							model.nodeStructureChanged(parent);
+						}
+					});
+				}
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run()
+					{
+						parent.remove(parent.getChildCount() - 1);
+					}
+				});
 			}
 		});
 	}
 
+	private void addLoadingChild(DefaultMutableTreeNode parent)
+	{
+		parent.add(new DefaultMutableTreeNode("Loading, please wait..."));
+	}
 	private Tag getFunctionContainingReference(FileMarker m, String text)
 	{
+		int line = m.getLine() + 1;	// FileMarker starts from line 0
 		Query q = new Query();
 		q.addColumn(TagDB.TAGS_TABLE + ".*");
 		q.addColumn(TagDB.FILES_TABLE + "." + TagDB.FILES_NAME);
@@ -127,26 +143,14 @@ public class StaticCallTree extends JPanel
 			TagDB.FILES_TABLE + "." + TagDB.FILES_ID);
 		q.addCondition(TagDB.FILES_TABLE + "." + TagDB.FILES_NAME + "=" +
 			"'" + m.file + "'");
-		q.addCondition(TagDB.TAGS_TABLE + "." + TagDB.TAGS_LINE + "<=" +
-			m.getLine() + 1);
-		//q.setOrder(TagDB.TAGS_LINE + " DESC");
-		//q.setLimit(1);
+		q.addCondition(TagDB.TAGS_TABLE + "." + TagDB.TAGS_LINE + "<=" + line);
+		q.setOrder(TagDB.TAGS_LINE + " DESC");
+		q.setLimit(1);
 		Vector<Tag> tags = CtagsInterfacePlugin.query(q);
 		if ((tags == null) || tags.isEmpty())
 			return null;
-		// Find closest tag
 		Tag t = tags.get(0);
-		int best = t.getLine();
-		for (int i = 1; i < tags.size(); i++)
-		{
-			Tag tested = tags.get(i);
-			if (tested.getLine() > best)
-			{
-				best = tested.getLine();
-				t = tested;
-			}
-		}
-		if (t.getName().equals(text) && (t.getLine() == m.getLine()))
+		if (t.getName().equals(text) && (t.getLine() == line))
 			return null;
 		return t;
 	}
@@ -160,7 +164,7 @@ public class StaticCallTree extends JPanel
 			this.marker = marker;
 			this.function = function;
 			expanded = false;
-			add(new DefaultMutableTreeNode("Loading, please wait..."));
+			addLoadingChild(this);
 		}
 		
 		public String toString()
