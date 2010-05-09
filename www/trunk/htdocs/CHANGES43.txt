@@ -1,5 +1,145 @@
 JEDIT 4.3 VERSION HISTORY
 
+{{{ Version 4.3.2
+
+Thanks to Björn "Vampire" Kautler, Matthieu Casanova, Shlomy Reinstein,
+Kazutoshi Satoda, oman002, and Eric Le Lay for contributing to this release.
+
+{{{ Bug Fixes
+
+- Fixed Standalone TextArea build target (Shlomy Reinstein)
+
+- Fixed a NPE that happens when an error occurs before the view is loaded
+  (Matthieu Casanova #2905487)
+
+- Fixed bug #2927555: beanshell load() fails w/ exception (Shlomy Reinstein)
+
+- Fixed a memory leak which held closed View and EditPane when using
+  global bufferset scope. (Kazutoshi Satoda)
+
+- When removing text from the buffer, the event contentRemoved was sent before
+  making the buffer dirty (oman002 #2944145)
+
+- Fixed leaky memory usage after some specific text operations.
+  (Kazutoshi Satoda)
+
+- Worked around a memory leak in Sun Java 6 where the sun.font.GlyphLayout is
+  cached and reused while holding an instance to the char array
+  (Björn "Vampire" Kautler)
+
+- When setting a new message in the status bar in a macro called from the
+  Macro menu the message was cleared immediately (Matthieu Casanova #2964522)
+
+- don't log an error when the API docs are not available. Provide a link
+  to the online docs instead (SF.net bug #1777806 - Eric Le Lay)
+
+- RFC edit mode was misplaced in catalog and was never matching anything because
+  text edit mode glob was more global and checked first (Matthieu Casanova)
+
+- java installer refuses to install from a directory containing exclamation
+  marks (SF.net bug #2065330 - Eric Le Lay)
+
+}}}
+{{{ Miscellaneous
+
+
+}}}
+{{{ API Changes
+
+- Applied patch #2932330 to suppress BufferUpdate messages from temporary
+  buffers to improve performance. (Dale Anson)
+
+}}}
+{{{ Editing
+
+
+}}}
+
+}}}
+
+{{{ Version 4.3.1
+
+Thanks to Björn "Vampire" Kautler, Alan Ezust, Damien Radtke,
+Kazutoshi Satoda, Dale Anson, and Shlomy Reinstein for contributing
+to this release.
+
+{{{ Bug Fixes
+
+- Searching for regex "^\s*.*$" missed every second line of adjacent
+  matching lines. (SF.net bug #2915720 - Kazutoshi Satoda)
+
+- Fix for 2924261, BufferLocal ignores request to change encoding.  (Dale
+Anson)
+
+- Fix # 2921611 - PluginSets fail to load grand-dependencies. (Damien Radtke)
+
+- Fix # 2920287 - Macro recording for home/end actions fixed. (Alan Ezust)
+
+- Fixed #2920352: Can't disable "Restore previously open files on startup".
+  (Shlomy Reinstein)
+
+}}}
+
+}}}
+
+{{{ Version 4.3
+
+Thanks to Björn "Vampire" Kautler, Marcelo Vanzin, Matthieu Casanova,
+Alan Ezust, Eric Berry, and Eric Le Lay for contributing to this release.
+
+{{{ Bug Fixes
+
+- Merged rev# 16624 from trunk, to fix printing which was broken by
+  patch#2876132. (Eric Le Lay)
+
+- Applied patch #2876132 - anonymous instances of JARClassLoader will now
+  resolve resources like instances associated with a JAR file (fix for Xerces).
+  The context ClassLoader for jedit server thread is now a JARClassLoader.
+  (Eric Le Lay)
+
+- Fixed bug #2907139: Upgrading from 4.2final to 4.3pre18 causes freeze at
+  startup (Shlomy Reinstein)
+
+}}}
+{{{ Miscellaneous
+
+- When creating a new file from the VFS Browser, if a clean untitled buffer
+  already exists but with another path it is now replaced by a new untitled
+  buffer using the selected path (Matthieu Casanova)
+
+- Applied patch #2887515: Navigate in AboutDialog (contributed by spj).
+  The name list in the about dialog can be scrolled faster using the up and
+  down arrow keys, and the scrolling can be stopped using the right and left
+  arrow keys or the escape key.
+
+- EnhancedButton have its name set to the last part of the action name,
+  to facilitate unit-tests (e.g. the 'previous' button in the VFSBrowser
+  has the action 'vfs.browser.previous', so will be named 'previous').
+
+}}}
+{{{ API Changes
+
+- Add support for type-specific EditBus message handlers. EditBus handlers
+  don't need to implement EBComponent anymore; they just need to annotate their
+  EditBus handler methods with the new "EBHandler" annotation. The methods
+  should expect a single argument (an instance of any EBMessage type), and the
+  method will be called whenever a message of a matching type is sent on the
+  EditBus. Classes that still implement EBComponent will continue to work
+  exactly like before, even if they include handlers using the new annotation.
+  (Marcelo Vanzin)
+
+}}}
+{{{ Editing
+
+- Improved indenting rules of Python edit mode. (Björn "Vampire" Kautler)
+
+- Reverted a change for jsp mode, which was made on 4.3pre17 to fix a
+  bug, since it doesn't work any more. (see SF.net bug #846913)
+
+}}}
+
+}}}
+
 {{{ Version 4.3pre18
 
 Thanks to Björn "Vampire" Kautler, Shlomy Reinstein, Alan Ezust, Chepel
@@ -83,6 +223,7 @@ Suraj Kurapati for contributing to this release.
 
 - Applied patch #2844750: line height correction (disappearing underscores),
   using OpenJDK (Suraj Kurapati)
+
 }}}
 {{{ Miscellaneous
 - New Macro - "Text/Compose Tag". (Gordon Hollenbeck # 2644277)
@@ -439,6 +580,7 @@ contributing to this release.
 - Fix for jsp mode (tracker 846913), syntax highlighting doesn't ignore comments
   and strings, where a single line java comment on the same line as a scriptlet
   terminator improperly highlighted the terminator as a comment (Dale Anson)
+  (Note: This change was reverted on 4.3.0)
 
 - HTML mode: Fix delegation of "style" attribute to CSS mode and delegate
   on* attributes to JavaScript mode (Daniel Hahler)
