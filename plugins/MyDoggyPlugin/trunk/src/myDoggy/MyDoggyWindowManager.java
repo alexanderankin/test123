@@ -335,7 +335,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 			}
 			Object reason = tw.isVisible() ? DockableWindowUpdate.ACTIVATED :
 				DockableWindowUpdate.DEACTIVATED;
-			EditBus.send(new DockableWindowUpdate(MyDoggyWindowManager.this,
+			EditBus.sendAsync(new DockableWindowUpdate(MyDoggyWindowManager.this,
 				reason, name));
 		}
 	}
