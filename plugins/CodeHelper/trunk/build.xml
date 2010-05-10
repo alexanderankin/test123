@@ -38,6 +38,7 @@
 		<pathelement location="${jedit.plugins.dir}/CtagsInterface.jar"/>
 		<pathelement location="${jedit.plugins.dir}/LucenePlugin.jar"/>
 		<pathelement location="${jedit.plugins.dir}/MarkerSets.jar"/>
+		<pathelement location="${jedit.plugins.dir}/CommonControls.jar"/>
 	</path>
 
 	<target name="tags">

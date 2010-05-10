@@ -9,8 +9,6 @@ import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Vector;
 
-import javax.swing.DefaultListModel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -18,6 +16,7 @@ import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeWillExpandListener;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
@@ -29,6 +28,8 @@ import marker.FileMarker;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.ThreadUtilities;
+
+import common.gui.HelpfulJTable;
 
 import ctagsinterface.db.Query;
 import ctagsinterface.db.TagDB;
@@ -45,8 +46,8 @@ public class StaticCallTree extends JPanel
 	private JTree tree;
 	private DefaultTreeModel model;
 	private DefaultMutableTreeNode root;
-	private JList list;
-	private DefaultListModel listModel;
+	private HelpfulJTable table;
+	private DefaultTableModel tableModel;
 	private JSplitPane sp;
 
 	public StaticCallTree(View view)
@@ -85,26 +86,30 @@ public class StaticCallTree extends JPanel
 					updateMarkerView(node);
 			}
 		});
-		listModel = new DefaultListModel();
-		list = new JList(listModel);
-		list.addMouseListener(new MouseAdapter() {
+		tableModel = new DefaultTableModel(new String [] {"Line", "Call", "File"}, 0);
+		table = new HelpfulJTable();
+		table.setModel(tableModel);
+		table.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e)
 			{
-				FileMarker m = (FileMarker) list.getSelectedValue();
+				FileMarker m = ((FileMarkerWrapper) table.getValueAt(
+					table.getSelectedRow(),1)).m;
 				m.jump(StaticCallTree.this.view);
 			}
 		});
 		sp = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-			new JScrollPane(tree), new JScrollPane(list));
+			new JScrollPane(tree), new JScrollPane(table));
 		add(sp, BorderLayout.CENTER);
 	}
 
 	private void updateMarkerView(MarkerTreeNode node)
 	{
-		listModel.removeAllElements();
+		while (tableModel.getRowCount() > 0)
+			tableModel.removeRow(0);
 		for (FileMarker m: node.markers)
-			listModel.addElement(m);
+			tableModel.addRow(new Object[] {Integer.valueOf(m.getLine() + 1),
+				new FileMarkerWrapper(m), m.file});
 	}
 	public void showTreeFor(String text)
 	{
@@ -288,6 +293,18 @@ public class StaticCallTree extends JPanel
 			if (value instanceof MarkerTreeNode)
 				r.setIcon(((MarkerTreeNode)value).tag.getIcon());
 			return r;
+		}
+	}
+	private class FileMarkerWrapper
+	{
+		public FileMarker m;
+		public FileMarkerWrapper(FileMarker m)
+		{
+			this.m = m;
+		}
+		public String toString()
+		{
+			return m.getLineText();
 		}
 	}
 }
