@@ -23,6 +23,7 @@ import java.util.Vector;
 import javax.swing.JOptionPane;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.util.Log;
 
 import ctagsinterface.main.CtagsInterfacePlugin;
 import ctagsinterface.main.Tag;
@@ -527,8 +528,10 @@ public class TagDB {
 			return null;
 		}
 		try {
+			Log.log(Log.MESSAGE, TagDB.class, "Query '" + expression + "' started");
 			Statement st = conn.createStatement();
 			ResultSet rs = st.executeQuery(expression);
+			Log.log(Log.MESSAGE, TagDB.class, "Query '" + expression + "' completed");
 			return rs;
 		}
 		catch (SQLException e) {

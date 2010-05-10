@@ -77,4 +77,7 @@ public class Tag {
 			return getName();
 		return "(" + ns + ") " + getName();
 	}
+	public void setFile(String file) {
+		this.file = file;
+	}
 }
