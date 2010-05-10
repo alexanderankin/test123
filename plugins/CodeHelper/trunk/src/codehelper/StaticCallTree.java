@@ -72,12 +72,15 @@ public class StaticCallTree extends JPanel
 		});
 		tree.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e)
+			public void mouseReleased(MouseEvent e)
 			{
 				TreePath tp = tree.getPathForLocation(e.getX(), e.getY());
 				MarkerTreeNode node = (MarkerTreeNode) tp.getLastPathComponent();
 				if (e.isPopupTrigger())
+				{
+					tree.setSelectionPath(tp);
 					node.goTo();
+				}
 				else
 					updateMarkerView(node);
 			}
@@ -88,7 +91,8 @@ public class StaticCallTree extends JPanel
 			@Override
 			public void mouseClicked(MouseEvent e)
 			{
-				((FileMarker) list.getSelectedValue()).jump(StaticCallTree.this.view);
+				FileMarker m = (FileMarker) list.getSelectedValue();
+				m.jump(StaticCallTree.this.view);
 			}
 		});
 		sp = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
@@ -220,12 +224,18 @@ public class StaticCallTree extends JPanel
 	}
 	private Vector<Tag> getTagsOfFile(String file)
 	{
+		// A join between the TAGS table and the FILES table causes the query
+		// to be very slow. Use two separate queries to avoid the join.
 		int fileId = CtagsInterfacePlugin.getDB().getSourceFileID(file);
 		if (fileId == -1)
 			return null;
 		Query q = new Query(TagDB.TAGS_TABLE + ".*", TagDB.TAGS_TABLE,
 			TagDB.TAGS_FILE_ID + "=" + fileId);
-		return CtagsInterfacePlugin.query(q);
+		Vector<Tag> tags = CtagsInterfacePlugin.query(q);
+		// Now update the file of all tags...
+		for (Tag tag: tags)
+			tag.setFile(file);
+		return tags;
 	}
 	private class MarkerTreeNode extends DefaultMutableTreeNode
 	{
@@ -262,7 +272,7 @@ public class StaticCallTree extends JPanel
 		}
 		public void goTo()
 		{
-			CtagsInterfacePlugin.jumpToTag(view);
+			CtagsInterfacePlugin.jumpToTag(view, tag);
 		}
 	}
 	private class MarkerNodeCellRenderer extends DefaultTreeCellRenderer
