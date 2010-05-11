@@ -14,6 +14,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
+import javax.swing.ToolTipManager;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeWillExpandListener;
 import javax.swing.table.DefaultTableModel;
@@ -58,6 +59,7 @@ public class StaticCallTree extends JPanel
 		model = new DefaultTreeModel(root);
 		tree = new JTree(model);
 		tree.setCellRenderer(new MarkerNodeCellRenderer());
+		ToolTipManager.sharedInstance().registerComponent(tree);
 		tree.addTreeWillExpandListener(new TreeWillExpandListener() {
 			public void treeWillCollapse(TreeExpansionEvent event)
 					throws ExpandVetoException
@@ -86,8 +88,9 @@ public class StaticCallTree extends JPanel
 					updateMarkerView(node);
 			}
 		});
-		tableModel = new DefaultTableModel(new String [] {"Line", "Call", "File"}, 0);
+		tableModel = new DefaultTableModel(new String [] {"Line", "Call"}, 0);
 		table = new HelpfulJTable();
+		table.getColumnModel().setColumnMargin(10);
 		table.setModel(tableModel);
 		table.addMouseListener(new MouseAdapter() {
 			@Override
@@ -109,7 +112,7 @@ public class StaticCallTree extends JPanel
 			tableModel.removeRow(0);
 		for (FileMarker m: node.markers)
 			tableModel.addRow(new Object[] {Integer.valueOf(m.getLine() + 1),
-				new FileMarkerWrapper(m), m.file});
+				new FileMarkerWrapper(m)});
 	}
 	public void showTreeFor(String text)
 	{
@@ -292,6 +295,7 @@ public class StaticCallTree extends JPanel
 				expanded, leaf, row, hasFocus);
 			if (value instanceof MarkerTreeNode)
 				r.setIcon(((MarkerTreeNode)value).tag.getIcon());
+			setToolTipText(value.toString());
 			return r;
 		}
 	}
