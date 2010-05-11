@@ -59,7 +59,7 @@ public class StaticCallTree extends JPanel
 		root = new DefaultMutableTreeNode();
 		model = new DefaultTreeModel(root);
 		tree = new JTree(model);
-		tree.setCellRenderer(new MarkerNodeCellRenderer());
+		tree.setCellRenderer(new CallerTreeCellRenderer());
 		ToolTipManager.sharedInstance().registerComponent(tree);
 		tree.addTreeWillExpandListener(new TreeWillExpandListener() {
 			public void treeWillCollapse(TreeExpansionEvent event)
@@ -104,24 +104,25 @@ public class StaticCallTree extends JPanel
 		});
 		sp = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
 			new JScrollPane(tree), new JScrollPane(table));
+		sp.setOneTouchExpandable(true);
 		add(sp, BorderLayout.CENTER);
 	}
 
 	private void updateMarkerView(MarkerTreeNode node)
 	{
-		while (tableModel.getRowCount() > 0)
-			tableModel.removeRow(0);
+		tableModel.setRowCount(0);
 		for (FileMarker m: node.markers)
 			tableModel.addRow(new Object[] {Integer.valueOf(m.getLine() + 1),
 				new FileMarkerWrapper(m)});
 	}
 	public void showTreeFor(String text)
 	{
-		sp.setDividerLocation(0.6d);
+		sp.setDividerLocation(0.5d);
 		root.removeAllChildren();
 		root.setUserObject(text);
 		addLoadingChild(root);
 		model.nodeStructureChanged(root);
+		tableModel.setRowCount(0);
 		expand(root, text);
 	}
 	
@@ -310,18 +311,21 @@ public class StaticCallTree extends JPanel
 			CtagsInterfacePlugin.jumpToTag(view, tag);
 		}
 	}
-	private class MarkerNodeCellRenderer extends DefaultTreeCellRenderer
+
+	private class CallerTreeCellRenderer extends DefaultTreeCellRenderer
 	{
 
 		@Override
 		public Component getTreeCellRendererComponent(JTree tree, Object value,
-				boolean sel, boolean expanded, boolean leaf, int row,
-				boolean hasFocus) {
+			boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus)
+		{
 			DefaultTreeCellRenderer r = (DefaultTreeCellRenderer)
 				super.getTreeCellRendererComponent(tree, value, sel,
 				expanded, leaf, row, hasFocus);
 			if (value instanceof MarkerTreeNode)
 				r.setIcon(((MarkerTreeNode)value).tag.getIcon());
+			else
+				r.setIcon(null);
 			setToolTipText(value.toString());
 			return r;
 		}
