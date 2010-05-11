@@ -49,13 +49,13 @@ public class SchemaToCompletion
 	*/
 	public static Map<String,CompletionInfo> rngSchemaToCompletionInfo(String current, String schemaFileNameOrURL, ErrorHandler handler){
 		Map<String,CompletionInfo> infos = new HashMap<String,CompletionInfo>();
-		
-		com.thaiopensource.relaxng.input.parse.ParseInputFormat pif;
+
+		com.thaiopensource.relaxng.input.InputFormat pif;
 		
 		if(schemaFileNameOrURL.endsWith(".rnc")){
-			pif = new com.thaiopensource.relaxng.input.parse.compact.CompactParseInputFormat();
+			pif = new xml.translate.BufferCompactParseInputFormat();
 		}else{
-			pif = new com.thaiopensource.relaxng.input.parse.sax.SAXParseInputFormat();
+			pif = new xml.translate.BufferSAXParseInputFormat();
 		}
 		
 		try{
@@ -70,7 +70,7 @@ public class SchemaToCompletion
 				new String[]{},
 				"unused",
 				handler,
-				SAX.createResolver(xml.Resolver.instance(),false));
+				new xml.translate.EntityResolverWrapper(xml.Resolver.instance(),false));
 			
 			SchemaDocument mainSchema = schemas.getSchemaDocumentMap().get(schemas.getMainUri());
 			
