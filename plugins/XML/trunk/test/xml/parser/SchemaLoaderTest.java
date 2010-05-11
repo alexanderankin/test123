@@ -167,6 +167,7 @@ public class SchemaLoaderTest{
 		}
    }
    
+   /** this test fails... */
    @Test
    public void testBrokenSchema(){
     	File brokenSchema = new File(testData,"dir with space/actions.xsd");

@@ -45,6 +45,8 @@ import org.gjt.sp.jedit.Buffer;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.Pattern;
+import javax.swing.SwingUtilities;
 
 import com.thaiopensource.relaxng.output.OutputDirectory;
 
@@ -238,4 +240,52 @@ public class TrangTranslatorTest{
     	close(view(),outB);
     }
    
+    @Test
+    public void testLiveBufferContents() throws IOException{
+    	final File in = new File(testData,"rnc/actions.rnc");
+     	final File out = new File(testData,"rnc/actions.dtd");
+     	
+     	Buffer b = openFile(in.getPath());
+    	
+    	b.insert(96," | \"MAYBE\"");
+    	
+     	ClickT clickT = new ClickT(Option.OK);
+    	clickT.start();
+    	
+		GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					TrangTranslator.translate(view()
+						,null,Collections.singletonList(in.getPath()),empty
+						,null,out.getPath(),empty);
+				}
+		});
+    	
+		clickT.waitForClick();
+    	
+    	Buffer outB = jEdit.getBuffer(out.getPath());
+    	assertNotNull(outB);
+    	assertTrue(outB.getText(0,outB.getLength())
+    		.contains("<!ENTITY % att-bool \"TRUE|FALSE|MAYBE\">"));
+    	close(view(),outB);
+   }
+
+    @Test
+    public void testNonExistantBuffer() throws IOException{
+    	final File in = new File(testData,"rnc/NOT_THERE.rnc");
+     	final File out = new File(testData,"rnc/actions.dtd");
+     	
+		SwingUtilities.invokeLater(new Runnable(){
+				public void run(){
+					TrangTranslator.translate(view()
+						,null,Collections.singletonList(in.getPath()),empty
+						,null,out.getPath(),empty);
+				}
+		});
+    	
+		// triggers an IOException
+		final JOptionPaneFixture options = jEditFrame().optionPane(Timeout.timeout(5000));
+		options.requireErrorMessage();
+		options.requireMessage(Pattern.compile(".*FileNotFoundException.*NOT_THERE.*",Pattern.DOTALL));
+		options.okButton().click();
+   }
 }

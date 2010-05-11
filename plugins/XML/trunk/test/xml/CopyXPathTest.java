@@ -148,7 +148,13 @@ public class CopyXPathTest{
 					TestUtils.view().getTextArea().setCaretPosition(161);
 				}
 		});
-		action("xml-copy-xpath",1);
+		Pause.pause(500);
+		GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					action("xml-copy-xpath",1);
+				}
+		});
+		Pause.pause(500);
 		assertEquals("/a:document/b:created[1]",Registers.getRegister('$').toString());
 		
 		

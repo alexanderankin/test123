@@ -159,7 +159,17 @@ public class TrangTranslator
 				inputType = inputType.substring(1);
 		}
 		
-		final InputFormat inputFormat = Formats.createInputFormat(inputType);
+		final InputFormat inputFormat;
+		if (inputType.equalsIgnoreCase("dtd")){
+			inputFormat = new BufferDtdInputFormat();
+		}else if(inputType.equalsIgnoreCase("rng")){
+			inputFormat = new BufferSAXParseInputFormat();
+		}else if(inputType.equalsIgnoreCase("rnc")){
+			inputFormat = new BufferCompactParseInputFormat();
+		}else{
+			inputFormat = Formats.createInputFormat(inputType);
+		}
+		
 		if (inputFormat == null) {
 			throw new IllegalArgumentException("unsupported input format : "+inputType);
 		}
@@ -175,7 +185,7 @@ public class TrangTranslator
 			throw new IllegalArgumentException("unsupported output format : "+outputType);
 		}
 		
-		Resolver resolver = SAX.createResolver(xml.Resolver.instance(),false);
+		Resolver resolver = new EntityResolverWrapper(xml.Resolver.instance(),true);
 		
 		String[] inputParamArray = inputParams.toArray(new String[inputParams.size()]);
 		outputType = outputType.toLowerCase();

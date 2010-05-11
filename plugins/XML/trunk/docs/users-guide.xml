@@ -628,8 +628,7 @@ is Copyright © 2002, 2003, 2008 Thai Open Source Software Center Ltd.</para>
 
 <para>The output of Trang is converted to jEdit buffers, so that you may review them before saving.
 Any existing file will be overwritten but you'll get its contents back, using <guimenuitem>
-undo</guimenuitem>. For the moment, it's not the live contents of the buffer which is sent to Trang,
-but the file's content on disk, so remember to save before invoking it.</para>
+undo</guimenuitem>.</para>
 
 </section>
 
