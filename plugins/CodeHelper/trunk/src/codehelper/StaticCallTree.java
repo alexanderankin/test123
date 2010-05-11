@@ -30,15 +30,16 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.ThreadUtilities;
 
+import projectviewer.ProjectPlugin;
+import projectviewer.ProjectViewer;
+import projectviewer.vpt.VPTProject;
+
 import common.gui.HelpfulJTable;
 
 import ctagsinterface.db.Query;
 import ctagsinterface.db.TagDB;
 import ctagsinterface.main.CtagsInterfacePlugin;
 import ctagsinterface.main.Tag;
-
-import projectviewer.ProjectPlugin;
-import projectviewer.ProjectViewer;
 
 @SuppressWarnings("serial")
 public class StaticCallTree extends JPanel
@@ -141,7 +142,7 @@ public class StaticCallTree extends JPanel
 				if (pv == null)
 					return;
 				Vector<Object> results = new Vector<Object>();
-				String name = ProjectViewer.getActiveProject(view).getName(); 
+				String name = getLuceneIndexName(); 
 				LucenePlugin.search(name, text, 100, results);
 				HashMap<String, Vector<Tag>> tagsPerFile = new
 					HashMap<String, Vector<Tag>>();
@@ -186,6 +187,32 @@ public class StaticCallTree extends JPanel
 				});
 			}
 		});
+	}
+
+	private static class LuceneIndexSelector
+	{
+		static String index = null;
+		static public String selectIndex()
+		{
+			try {
+				SwingUtilities.invokeAndWait(new Runnable() {
+					public void run()
+					{
+						index = LucenePlugin.instance.chooseIndex();	
+					}
+				});
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return index;
+		}
+	}
+	private String getLuceneIndexName()
+	{
+		VPTProject project = ProjectViewer.getActiveProject(view);
+		if (project != null)
+			return project.getName();
+		return LuceneIndexSelector.selectIndex();
 	}
 
 	private final static String[] CONTAINER_KINDS = {
