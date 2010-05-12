@@ -198,25 +198,15 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 			name = (String) obj;
 		Query q = CtagsInterfacePlugin.getBasicScopedTagQuery(view);
 		String inheritsCol = columnName(INHERITS_EXTENSION);
-		String [] expressions = new String [] {
-			inheritsCol + "='" + name + "'",
-			inheritsCol + " LIKE '%," + name + "'",
-			inheritsCol + " LIKE '" + name + ",%'",
-			inheritsCol + " LIKE '%," + name + ",%'",
-			inheritsCol + " LIKE '%,%::" + name + "'",
-			inheritsCol + " LIKE '%::" + name + ",%'",
-			inheritsCol + " LIKE '%,%::" + name + ",%'",
-		};
-		StringBuffer matchExpr = new StringBuffer();
-		for (int i = 0; i < expressions.length; i++) {
-			if (i > 0)
-				matchExpr.append(" OR ");
-			matchExpr.append(expressions[i]);
-		}
-		q.addCondition("(" + matchExpr.toString() + ")");
+		q.addCondition("(" + inheritsCol + " LIKE '%" + name + "%')");
 		Vector<Tag> tags = CtagsInterfacePlugin.query(q.toString());
 		for (int i = 0; i < tags.size(); i++) {
 			Tag subclass = tags.get(i);
+			if (! subclass.getExtension(INHERITS_EXTENSION).matches(
+				"^(.*,)?(\\w+::)?" + name + "(,.*)?$"))
+			{
+				continue;
+			}
 			classes.add(subclass.getName());
 			DefaultMutableTreeNode child = new DefaultMutableTreeNode(subclass);
 			node.add(child);
