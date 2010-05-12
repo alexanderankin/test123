@@ -48,9 +48,11 @@ public class TagDB {
 	public static final String IDENTITY_TYPE = "IDENTITY";
 	public static final String VARCHAR_TYPE = "VARCHAR";
 	public static final String INTEGER_TYPE = "INTEGER";
+	public static final String IDENTITY_REF_TYPE = "BIGINT";
 	private String identityType;
 	private String varcharType;
 	private String integerType;
+	private String identityRefType;
 	// Tags table
 	public static final String TAGS_TABLE = "TAGS";
 	public static final String TAGS_NAME = "NAME";
@@ -105,6 +107,7 @@ public class TagDB {
 		identityType = IDENTITY_TYPE;
 		varcharType = VARCHAR_TYPE;
 		integerType = INTEGER_TYPE;
+		identityRefType = IDENTITY_REF_TYPE;
 		String mapFile = getDbMappingsFile();
 		if (mapFile == null || mapFile.length() == 0)
 			return;
@@ -124,6 +127,7 @@ public class TagDB {
 		identityType = props.getProperty("identityType", identityType);
 		varcharType = props.getProperty("varcharType", varcharType);
 		integerType = props.getProperty("integerType", integerType);
+		identityRefType = props.getProperty("identityRefType", identityRefType);
 		charsToEscape = props.getProperty("stringValueCharsToEscape");
 		if (charsToEscape != null) {
 			// Prepare a pattern for the characters to escape
@@ -695,7 +699,7 @@ public class TagDB {
 			// Create Tags table
 			createTable(TAGS_TABLE, new String [] {
 				TAGS_NAME, varcharType,
-				TAGS_FILE_ID, integerType,
+				TAGS_FILE_ID, identityRefType,
 				TAGS_PATTERN, varcharType
 			});
 			createIndex("TAGS_NAME", TAGS_TABLE, TAGS_NAME);
@@ -719,8 +723,8 @@ public class TagDB {
 					"," + quote(TEMP_ORIGIN_NAME) + ", " + quote(TEMP_ORIGIN) + ")");
 			// Create Map table
 			createTable(MAP_TABLE, new String [] {
-				MAP_FILE_ID, integerType,
-				MAP_ORIGIN_ID, integerType
+				MAP_FILE_ID, identityRefType,
+				MAP_ORIGIN_ID, identityRefType
 			});
 			createIndex("MAP_FILE_ID", MAP_TABLE, MAP_FILE_ID);
 			createIndex("MAP_ORIGIN_ID", MAP_TABLE, MAP_ORIGIN_ID);
