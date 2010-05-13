@@ -325,25 +325,19 @@ public class TagDB {
 	}
 	// Returns a query for a tag name in a specified project
 	private Query getTagInProjectQuery(String tag, String project) {
-		Query projectQuery = new Query(ORIGINS_ID, ORIGINS_TABLE, ORIGINS_NAME + "=" +
-			quote(project));
-		projectQuery.addCondition(ORIGINS_TYPE + "=" + quote(PROJECT_ORIGIN));
-		
-		Query projectFilesQuery = new Query();
-		projectFilesQuery.setColumn(MAP_FILE_ID);
-		projectFilesQuery.setTable(MAP_TABLE);
-		projectFilesQuery.addCondition(field(
-			MAP_TABLE, MAP_FILE_ID) + "=" + field(FILES_TABLE, FILES_ID));
-		projectFilesQuery.addCondition(field(
-			MAP_TABLE, MAP_ORIGIN_ID) + "=(" + projectQuery.toString() + ")");
-		
 		Query q = new Query();
-		q.addColumn("*");
+		q.addColumn("TAGS.*");
+		q.addColumn("FILES.FILE");
 		q.addTable(TAGS_TABLE);
 		q.addTable(FILES_TABLE);
+		q.addTable(MAP_TABLE);
+		q.addTable(ORIGINS_TABLE);
 		q.addCondition(field(TAGS_TABLE, TAGS_NAME) + "=" + quote(tag));
 		q.addCondition(field(TAGS_TABLE, TAGS_FILE_ID) + "=" + field(FILES_TABLE, FILES_ID));
-		q.addCondition("EXISTS (" + projectFilesQuery.toString() + ")");
+		q.addCondition(field(TAGS_TABLE, TAGS_FILE_ID) + "=" + field(MAP_TABLE, MAP_FILE_ID));
+		q.addCondition(field(MAP_TABLE, MAP_ORIGIN_ID) + "=" + field(ORIGINS_TABLE, ORIGINS_ID));
+		q.addCondition(field(ORIGINS_TABLE, ORIGINS_TYPE) + "=" + quote(PROJECT_ORIGIN));
+		q.addCondition(field(ORIGINS_TABLE, ORIGINS_NAME) + "=" + quote(project));
 		return q;
 	}
 	// Runs a query for the specified tag name

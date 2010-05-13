@@ -129,21 +129,24 @@ public class QuickSearchTagDialog extends JDialog {
 		Query q = new Query();
 		q.setColumns(new Object [] {TagDB.TAGS_TABLE + ".*", TagDB.FILES_NAME});
 		q.setTables(new Object [] {TagDB.TAGS_TABLE, TagDB.FILES_TABLE});
-		q.addCondition(TagDB.TAGS_FILE_ID + "=" + TagDB.FILES_ID);
+		q.addCondition(db.field(TagDB.TAGS_TABLE, TagDB.TAGS_FILE_ID) + "=" +
+			db.field(TagDB.FILES_TABLE, TagDB.FILES_ID));
 		
 		if (ProjectsOptionPane.getSearchActiveProjectOnly()) {
 			String project = CtagsInterfacePlugin.getProjectWatcher().getActiveProject(view);
 			if (project != null) {
-				Query projectQuery = new Query();
-				projectQuery.setColumn(TagDB.MAP_FILE_ID);
-				projectQuery.setTables(new Object [] {TagDB.MAP_TABLE, TagDB.ORIGINS_TABLE});
-				projectQuery.addCondition(TagDB.MAP_TABLE + "." + TagDB.MAP_ORIGIN_ID +
-					"=" + TagDB.ORIGINS_TABLE + "." + TagDB.ORIGINS_ID);
-				projectQuery.addCondition(TagDB.ORIGINS_TABLE + "." + TagDB.ORIGINS_NAME +
-					"=" + TagDB.quote(project));
-				projectQuery.addCondition(TagDB.ORIGINS_TABLE + "." + TagDB.ORIGINS_TYPE +
-						"=" + TagDB.quote(TagDB.PROJECT_ORIGIN));
-				q.addCondition("ID IN (" + projectQuery.toString() + ")");
+				q.addTable(TagDB.MAP_TABLE);
+				q.addTable(TagDB.ORIGINS_TABLE);
+				q.addCondition(db.field(TagDB.TAGS_TABLE, TagDB.TAGS_FILE_ID) + "=" +
+					db.field(TagDB.FILES_TABLE, TagDB.FILES_ID));
+				q.addCondition(db.field(TagDB.TAGS_TABLE, TagDB.TAGS_FILE_ID) + "=" +
+					db.field(TagDB.MAP_TABLE, TagDB.MAP_FILE_ID));
+				q.addCondition(db.field(TagDB.MAP_TABLE, TagDB.MAP_ORIGIN_ID) + "=" +
+					db.field(TagDB.ORIGINS_TABLE, TagDB.ORIGINS_ID));
+				q.addCondition(db.field(TagDB.ORIGINS_TABLE, TagDB.ORIGINS_TYPE) + "=" +
+					TagDB.quote(TagDB.PROJECT_ORIGIN));
+				q.addCondition(db.field(TagDB.ORIGINS_TABLE, TagDB.ORIGINS_NAME) + "=" +
+					TagDB.quote(project));
 			}
 		}
 		switch (mode) {
