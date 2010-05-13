@@ -61,7 +61,7 @@ public interface Index
 	 */
 	void search(String query, String fileType, int max, ResultProcessor processor);
 
-	public interface ActivityListener
+	interface ActivityListener
 	{
 		void indexingStarted(Index index);
 		void indexingEnded(Index index);
