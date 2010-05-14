@@ -397,7 +397,7 @@ public class XmlInsert extends JPanel implements EBComponent
 				/* Check if we are inside a tag, and if so, wipe it out before
 				   inserting the one we just created */
 				if (TagParser.isInsideTag(t, pos)) {
-					int openAngle = t.lastIndexOf("<");
+					int openAngle = t.lastIndexOf('<');
 					insideTag = new Selection.Range(openAngle, pos);
 				}
 				

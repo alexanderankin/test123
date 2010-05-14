@@ -39,7 +39,7 @@
 		<file name="trang.jar"/>
 		<!-- XercesPlugin -->
 		<file name="XercesPlugin.jar"/>
-		<file name="xml-apis.jar"/>
+<!--		<file name="xml-apis.jar"/>-->
 		<file name="xercesImpl.jar"/>
 		<file name="resolver.jar"/>
 		<!-- Beauty -->
@@ -90,7 +90,7 @@
     defined, no tests will run. -->
     <selector id="junit.testcases">
         <or>
-            <selector refid="testcases.current"/>
+            <selector refid="testcases.all"/>
         </or>
     </selector>
 

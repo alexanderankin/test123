@@ -376,9 +376,10 @@ loop:			for(;;)
 		if (user_object instanceof XmlTag) {
 			XmlTag xmltag = (XmlTag) node.getUserObject();
 			result.append("<");
-			result.append(xmltag.getName() + " ");
+			result.append(xmltag.getName());
 			Attributes attrs = xmltag.attributes;
 			count = attrs.getLength();
+			if(count>0)result.append(' ');
 			for (int i=0; i<count; ++i) {
 				String formatstr = String.format("%s = \"%s\"", new Object[] {attrs.getQName(i), attrs.getValue(i) });
 				result.append(formatstr);
@@ -391,8 +392,9 @@ loop:			for(;;)
 			if (element instanceof HtmlDocument.Tag) {
 				HtmlDocument.Tag htmlTag = (HtmlDocument.Tag)element;
 				result.append(htmlTag.tagStart);
-				result.append(htmlTag.tagName).append(" ");
+				result.append(htmlTag.tagName);
 				List attrs = ((HtmlDocument.Tag)element).attributeList.attributes;
+				if(attrs.size()>0)result.append(" ");
 				for (Iterator it = attrs.iterator(); it.hasNext(); ) {
 					HtmlDocument.Attribute attr = (HtmlDocument.Attribute)it.next();
 					result.append(attr.name);
@@ -515,7 +517,7 @@ loop:			for(;;)
 		int pos = textArea.getCaretPosition();
 		String text = buffer.getText(0,buffer.getLength());
 		Tag t = TagParser.getTagAtOffset(text, pos);
-		if (t != null) {
+		if (t != null && t.end != pos) { // getTagAtOffset will return a tag if you are just after it
 			splitTag(t, textArea);
 			return;
 		}

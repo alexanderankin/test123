@@ -6,6 +6,7 @@
  *
  * Copyright (C) 2000 Scott Wyatt, 2001 Andre Kaplan
  * Portions copyright (C) 2001, 2003 Slava Pestov
+ * Portions copyright (C) 2010 Eric Le Lay
  *
  * The XML plugin is licensed under the GNU General Public License, with
  * the following exception:
@@ -37,11 +38,11 @@ public class TagParser
 			return null;
 
 		// Get the last '<' before current position.
-		int startTag = text.lastIndexOf('<', pos - 1);
+		int startTag = text.lastIndexOf('<', pos - 1);			// -1 because don't want to return something when cursor is here:  |<a>
 		if(startTag == -1 || startTag + 2 >= text.length()) // at least 2 chars after '<'
 			return null;
 
-		int endTag = text.indexOf('>', startTag + 1) + 1;
+		int endTag = text.indexOf('>', startTag + 1) + 1;		// NB. end of tag is AFTER >
 		if(endTag == 0 || endTag < pos)
 			return null;
 
@@ -68,7 +69,7 @@ public class TagParser
 				if(endTagName == endTag - 1)
 					endTagName = i;
 			}
-			else if(ch == '<')
+			else if(ch == '<')					// FIXME: what is this for ? not closed tag (see:  <a | <b> )
 				return null;
 			else if(ch == '/' && i == endTag - 2)
 			{
@@ -107,7 +108,7 @@ public class TagParser
 		// this works fine for JSP, PHP, and maybe others.
 		boolean notATag = false;
 
-loop:		for (int i = Math.min(text.length() - 1,pos); i >= 0; i--)
+		for (int i = Math.min(text.length() - 1,pos); i >= 0; i--)
 		{
 			char ch = text.charAt(i);
 			if(ch == '<')
@@ -119,10 +120,7 @@ loop:		for (int i = Math.min(text.length() - 1,pos); i >= 0; i--)
 						&& !Character.isWhitespace(ch2)
 						&& !Character.isLetterOrDigit(ch2))
 					{
-						if(notATag)
-							notATag = false;
-						//else
-						//	return null;
+						notATag = false;
 					}
 				}
 			}
@@ -143,7 +141,7 @@ loop:		for (int i = Math.min(text.length() - 1,pos); i >= 0; i--)
 					}
 				}
 
-				Tag tag = getTagAtOffset(text,i + 1);
+				Tag tag = getTagAtOffset(text,i + 1);           // TODO: it's i+1, but could it not work with i (inside tag)
 
 				if (tag == null)
 					continue;
@@ -169,7 +167,7 @@ loop:		for (int i = Math.min(text.length() - 1,pos); i >= 0; i--)
 					
 					 
 					if(tag.type == T_STANDALONE_TAG
-						|| (decl != null && decl.empty))
+						|| (decl != null && decl.empty))   // TODO: try with <br></br> or such empty element
 					{
 						continue;
 					}
@@ -210,6 +208,7 @@ loop:		for (int i = Math.min(text.length() - 1,pos); i >= 0; i--)
 	} //}}}
 
 	//{{{ isInsideTag() method
+	//it doesn't skip comments and such but it works ???
 	public static boolean isInsideTag(String text, int pos)
 	{
 		int start = text.lastIndexOf('<',pos);
@@ -224,7 +223,7 @@ loop:		for (int i = Math.min(text.length() - 1,pos); i >= 0; i--)
 			else
 				return false;
 		}
-		else if(end > -1)
+		else if(end > -1)						// FIXME: why is it so ? There is no start, end of story !
 			return true;
 		else
 			return false;
@@ -243,7 +242,7 @@ loop:		for (int i = Math.min(text.length() - 1,pos); i >= 0; i--)
 		// this works fine for JSP, PHP, and maybe others.
 		boolean notATag = false;
 
-loop:		for (int i = startTag.end; i < text.length(); i++)
+		for (int i = startTag.end; i < text.length(); i++)
 		{
 			char ch = text.charAt(i);
 			if(ch == '<')
@@ -263,7 +262,7 @@ loop:		for (int i = startTag.end; i < text.length(); i++)
 					}
 				}
 
-				Tag tag = getTagAtOffset(text,i + 1);
+				Tag tag = getTagAtOffset(text,i + 1);		// here we want to be inside the tag (at the pipe in <|a href="..."> )
 				if (tag == null)
 					continue;
 				else if(tag.tag.equals(startTag.tag))
@@ -281,22 +280,16 @@ loop:		for (int i = startTag.end; i < text.length(); i++)
 					}
 				}
 
-				i = tag.end - 1;
+				i = tag.end - 1; //skip to the end of tag
 			}
-			else if(ch == '>')
+			else if(ch == '>' && i != 0)
 			{
-				if(i != 0)
+				char ch2 = text.charAt(i - 1);
+				if(ch2 != '"' && ch2 != '\''
+					&& !Character.isWhitespace(ch2)
+					&& !Character.isLetterOrDigit(ch2))
 				{
-					char ch2 = text.charAt(i - 1);
-					if(ch2 != '"' && ch2 != '\''
-						&& !Character.isWhitespace(ch2)
-						&& !Character.isLetterOrDigit(ch2))
-					{
-						if(notATag)
-							notATag = false;
-						//else
-						//	return null;
-					}
+					notATag= false;
 				}
 			}
 		}
@@ -315,7 +308,7 @@ loop:		for (int i = startTag.end; i < text.length(); i++)
 		// this works fine for JSP, PHP, and maybe others.
 		boolean notATag = false;
 
-loop:		for (int i = endTag.start - 1; i >= 0; i--)
+		for (int i = endTag.start - 1; i >= 0; i--)
 		{
 			char ch = text.charAt(i);
 			if(ch == '<')
@@ -327,10 +320,7 @@ loop:		for (int i = endTag.start - 1; i >= 0; i--)
 						&& !Character.isWhitespace(ch2)
 						&& !Character.isLetterOrDigit(ch2))
 					{
-						if(notATag)
-							notATag = false;
-						//else
-						//	return null;
+						notATag = false;
 					}
 				}
 			}
@@ -368,7 +358,7 @@ loop:		for (int i = endTag.start - 1; i >= 0; i--)
 						tagCounter++;
 				}
 
-				i = tag.start;
+				i = tag.start; // go to before tag
 			}
 		}
 
