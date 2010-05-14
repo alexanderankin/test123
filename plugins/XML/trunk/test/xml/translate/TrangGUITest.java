@@ -40,13 +40,12 @@ import org.gjt.sp.jedit.testframework.TestUtils;
 // }}}
 
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.Buffer;
 
 import java.io.*;
 import java.util.*;
+import javax.swing.text.JTextComponent;
 
-import com.thaiopensource.relaxng.output.OutputDirectory;
 
 
 /**
@@ -55,7 +54,6 @@ import com.thaiopensource.relaxng.output.OutputDirectory;
  */
 public class TrangGUITest{
 	private static File testData;
-	private final List<String> empty = Collections.<String>emptyList();
 	
     @BeforeClass
     public static void setUpjEdit() throws IOException{
@@ -137,5 +135,46 @@ public class TrangGUITest{
     	outB = jEdit.getBuffer(out2.getPath());
     	assertNotNull(outB);
     	close(view(),outB);
+    	close(view(),b);
+    }
+    
+    @Test
+    public void testInputFormatChange() throws IOException{
+    	final File in1 = new File(testData,"rnc/actions.xml").getCanonicalFile();
+    	final File in2 = new File(testData,"rnc/actions.rnc").getCanonicalFile();
+    	
+    	Buffer b = openFile(in1.getPath());
+    	
+		GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					action("xml-trang-translate");
+				}
+		});
+    	
+		final DialogFixture f = findDialogByTitle("Trang GUI");
+		
+		
+		f.textBox("xml.translate.input.prompt").requireText(in1.getPath());
+		f.comboBox("input-type").requireSelection("xml");
+		
+		f.button("xml.translate.input.select").click();
+		
+		DialogFixture browseDialog = findDialogByTitle("File Browser");
+		Pause.pause(1000);
+		browseDialog.button("up").click();
+		Pause.pause(1000);
+		browseDialog.table("file").cell(
+			browseDialog.table("file").cell(in1.getParentFile().getName())).doubleClick();
+		Pause.pause(1000);
+		browseDialog.table("file").selectCell(
+			browseDialog.table("file").cell(in2.getName()));
+		browseDialog.button("ok").click();
+
+		Pause.pause(500);
+		f.comboBox("input-type").requireSelection("rnc");
+
+    	f.close();
+    	
+    	close(view(),b);
     }
 }

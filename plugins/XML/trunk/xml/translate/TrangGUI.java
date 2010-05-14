@@ -245,7 +245,6 @@ public class TrangGUI extends EnhancedDialog {
 			inputs = Collections.singletonList(inputField.getFile());
 			inputParams = selectedInputOptions.getOptions();
 		}
-		
 		outputParams = selectedOutputOptions.getOptions();
 		
 		jEdit.setProperty(OUTPUT_TYPE_PROP,(String)outputTypeBox.getSelectedItem());
@@ -420,8 +419,7 @@ public class TrangGUI extends EnhancedDialog {
 			List<String> opts = super.getOptions();
 			String[] nsa = namespaces.getText().split("\\s+");
 			for(String ns : nsa){
-				System.err.println("<"+ns+">");
-				opts.add(ns);
+				if(!"".equals(ns))opts.add(ns);
 			}
 			return opts;
 		}
