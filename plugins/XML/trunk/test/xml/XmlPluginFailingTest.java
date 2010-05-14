@@ -206,44 +206,4 @@ public class XmlPluginFailingTest{
 		insert.close();
 	}
 	
-	
-	@Test
-	public void testSplitTag(){
-    	File xml = new File(testData,"split_tag/test.xml");
-    	
-    	Buffer b = TestUtils.openFile(xml.getPath());
-    	
-		// wait for end of parsing
-		simplyWaitForMessageOfClass(sidekick.SideKickUpdate.class,10000);
-		
-
-		// after bbbb
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(48);
-				}
-		});
-
-		action("xml-split-tag",1);
-		assertEquals("<a> bbbb</a>",b.getLineText(1));
-		action("undo",1);
-		
-		// after bbbb
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(43);
-				}
-		});
-		
-		/*  this one fails !! */
-		action("xml-split-tag",1);
-		String txt = b.getLineText(1);
-		
-		// don't leave modified files...
-		action("undo",1);
-		
-		assertEquals("<a></a> bbbb",txt);
-		
-	}
-	
 }

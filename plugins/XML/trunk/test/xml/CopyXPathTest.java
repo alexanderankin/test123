@@ -92,7 +92,7 @@ public class CopyXPathTest{
 					TestUtils.view().getTextArea().setCaretPosition(22);
 				}
 		});
-		action("xml-copy-xpath",1);
+		action("xml-copy-xpath");
 		assertEquals("NULL",Registers.getRegister('$').toString());
 
 		// go into the ACTIONS element
@@ -101,7 +101,7 @@ public class CopyXPathTest{
 					TestUtils.view().getTextArea().setCaretPosition(151);
 				}
 		});
-		action("xml-copy-xpath",1);
+		action("xml-copy-xpath");
 		assertEquals("/ACTIONS",Registers.getRegister('$').toString());
 
 		// go into the second ACTION element
@@ -110,7 +110,7 @@ public class CopyXPathTest{
 					TestUtils.view().getTextArea().setCaretPosition(325);
 				}
 		});
-		action("xml-copy-xpath",1);
+		action("xml-copy-xpath");
 		assertEquals("/ACTIONS/ACTION[2]",Registers.getRegister('$').toString());
 
 		Registers.getRegister('$').setValue("NULL");
@@ -121,7 +121,7 @@ public class CopyXPathTest{
 					TestUtils.view().getTextArea().setCaretPosition(431);
 				}
 		});
-		action("xml-copy-xpath",1);
+		action("xml-copy-xpath");
 		assertEquals("NULL",Registers.getRegister('$').toString());
 	}
 
@@ -151,10 +151,9 @@ public class CopyXPathTest{
 		Pause.pause(500);
 		GuiActionRunner.execute(new GuiTask(){
 				protected void executeInEDT(){
-					action("xml-copy-xpath",1);
+					action("xml-copy-xpath");
 				}
 		});
-		Pause.pause(500);
 		assertEquals("/a:document/b:created[1]",Registers.getRegister('$').toString());
 		
 		
@@ -164,7 +163,11 @@ public class CopyXPathTest{
 					TestUtils.view().getTextArea().setCaretPosition(511);
 				}
 		});
-		action("xml-copy-xpath",1);
+		GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					action("xml-copy-xpath");
+				}
+		});
 		assertTrue(Registers.getRegister('$').toString().startsWith("/a:document/"));
 		assertNotSame("/a:document/a:trap[1]",Registers.getRegister('$').toString());
 
@@ -174,7 +177,11 @@ public class CopyXPathTest{
 					TestUtils.view().getTextArea().setCaretPosition(774);
 				}
 		});
-		action("xml-copy-xpath",1);
+		GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					action("xml-copy-xpath");
+				}
+		});
 		assertEquals("/a:document/a:trap[1]",Registers.getRegister('$').toString());
 		
 		// go into the 3rd trap
@@ -183,7 +190,11 @@ public class CopyXPathTest{
 					TestUtils.view().getTextArea().setCaretPosition(1018);
 				}
 		});
-		action("xml-copy-xpath",1);
+		GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					action("xml-copy-xpath");
+				}
+		});
 		assertEquals("/a:document/a:trap[2]",Registers.getRegister('$').toString());
 	}
 	
@@ -213,7 +224,11 @@ public class CopyXPathTest{
 					TestUtils.view().getTextArea().setCaretPosition(161);
 				}
 		});
-		action("xml-copy-xpath",1);
+		GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					action("xml-copy-xpath");
+				}
+		});
 		assertEquals("NULL",Registers.getRegister('$').toString());
 	}
 	
@@ -239,7 +254,11 @@ public class CopyXPathTest{
 					TestUtils.view().getTextArea().setCaretPosition(62);
 				}
 		});
-		action("xml-copy-xpath",1);
+		GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					action("xml-copy-xpath");
+				}
+		});
 		assertEquals("NULL",Registers.getRegister('$').toString());
 		
 		// go into the html
@@ -248,7 +267,11 @@ public class CopyXPathTest{
 					TestUtils.view().getTextArea().setCaretPosition(117);
 				}
 		});
-		action("xml-copy-xpath",1);
+		GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					action("xml-copy-xpath");
+				}
+		});
 		assertEquals("/html",Registers.getRegister('$').toString());
 		
 		// go into the css, right into @import, which is a CSS node
@@ -257,7 +280,11 @@ public class CopyXPathTest{
 					TestUtils.view().getTextArea().setCaretPosition(300);
 				}
 		});
-		action("xml-copy-xpath",1);
+		GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					action("xml-copy-xpath");
+				}
+		});
 		assertEquals("/html/head[1]/style[1]",Registers.getRegister('$').toString());
 		
 		// go into the body (second link)
@@ -266,7 +293,11 @@ public class CopyXPathTest{
 					TestUtils.view().getTextArea().setCaretPosition(659);
 				}
 		});
-		action("xml-copy-xpath",1);
+		GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					action("xml-copy-xpath");
+				}
+		});
 		assertEquals("/html/body[1]/div[2]/a[1]",Registers.getRegister('$').toString());
 
 	}
