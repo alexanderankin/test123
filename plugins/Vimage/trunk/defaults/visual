@@ -67,7 +67,7 @@ vmap ~ { _("vimage.swap-case"); __("nmap"); }
 
 vmap = { _("indent-lines"); __("nmap"); }
 
-nmap " { __("register-key"); }
+vmap " { __("register-key"); }
 
 vmap 1 { mode.addDigit(1); }
 vmap 2 { mode.addDigit(2); }
