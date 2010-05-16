@@ -169,7 +169,7 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 		viewer.addKeyListener(escKeyHandler);
 		viewer.setEditable(false);
 		viewer.setFocusable(true);
-		Font vf = jEdit.getFontProperty("view.font");
+		Font vf = jEdit.getFontProperty("metal.primary.font");
 		viewer.setFont(jEdit.getFontProperty("helpviewer.font", vf));
 		viewer.addHyperlinkListener(this);
 		viewer.addPropertyChangeListener(this);
