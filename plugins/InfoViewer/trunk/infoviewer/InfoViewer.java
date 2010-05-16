@@ -165,10 +165,11 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 
 		// the viewer
 		viewer = new EnhancedJEditorPane();
+		viewer.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
 		viewer.addKeyListener(escKeyHandler);
 		viewer.setEditable(false);
 		viewer.setFocusable(true);
-		viewer.setFont(new Font("Monospaced", Font.PLAIN, 12));
+		viewer.setFont(jEdit.getFontProperty("view.font"));
 		viewer.addHyperlinkListener(this);
 		viewer.addPropertyChangeListener(this);
 		viewer.addMouseListener(new MouseHandler());
@@ -444,11 +445,6 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 								}
 							}
 						}
-						String size = jEdit.getProperty("infoviewer.viewer.fontsize");
-						if (size == null)
-							size = "14";
-						Log.log(Log.DEBUG, this, "new fontSize:" + size);
-						newbodyrule.addAttribute("font-size", size + "pt");
 
 						// Action myaction=new
 						// StyledEditorKit.FontSizeAction("new

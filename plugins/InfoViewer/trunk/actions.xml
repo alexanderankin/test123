@@ -21,15 +21,4 @@
 		</CODE>
 	</ACTION>
 
-	<ACTION NAME="infoviewer.increase-viewer-fontsize">
-		<CODE>
-			infoviewer.InfoViewerPlugin.increaseViewerFontSize(view);
-		</CODE>
-	</ACTION>
-
-	<ACTION NAME="infoviewer.decrease-viewer-fontsize">
-		<CODE>
-			infoviewer.InfoViewerPlugin.decreaseViewerFontSize(view);
-		</CODE>
-	</ACTION>
 </ACTIONS>

@@ -444,37 +444,4 @@ public class InfoViewerPlugin extends EditPlugin
 		}
 	}
 
-	public static void increaseViewerFontSize(View view)
-	{
-		String size = jEdit.getProperty("infoviewer.viewer.fontsize");
-		Log.log(Log.DEBUG, null, "fontSize++ : old size:" + size);
-		if (size == null)
-			size = "15";
-		else
-		{
-			size = String.valueOf(Integer.parseInt(size) + 1);
-		}
-		jEdit.setProperty("infoviewer.viewer.fontsize", size);
-		DockableWindowManager mgr = view.getDockableWindowManager();
-		mgr.showDockableWindow("infoviewer");
-		InfoViewer iv = (InfoViewer) mgr.getDockable("infoviewer");
-		iv.reload();
-	}
-
-	public static void decreaseViewerFontSize(View view)
-	{
-		String size = jEdit.getProperty("infoviewer.viewer.fontsize");
-		Log.log(Log.DEBUG, null, "fontSize--:" + size);
-		if (size == null)
-			size = "13";
-		else
-		{
-			size = String.valueOf(Integer.parseInt(size) - 1);
-		}
-		jEdit.setProperty("infoviewer.viewer.fontsize", size);
-		DockableWindowManager mgr = view.getDockableWindowManager();
-		mgr.showDockableWindow("infoviewer");
-		InfoViewer iv = (InfoViewer) mgr.getDockable("infoviewer");
-		iv.reload();
-	}
 }
