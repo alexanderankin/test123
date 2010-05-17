@@ -1,12 +1,10 @@
-<?xml version="1.0"?>
-<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN" "docbookx.dtd">
-<article>
-<!--<book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >-->
+<article xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
+ <!-- <?xml version="1.0"?>
+ <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN" "docbookx.dtd"> -->
   <title>XML plugin user's guide</title>
 
  <articleinfo>
-
  <authorgroup>
   <author><firstname>Slava</firstname><surname>Pestov</surname></author>
   <author><firstname>Dale</firstname><surname>Anson</surname></author>
