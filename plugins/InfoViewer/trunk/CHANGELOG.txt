@@ -3,7 +3,7 @@ ChangeLog for InfoViewer plugin
 
 Version 1.6 depends on jEdit 4.3, Java 1.5
     * Removed font size actions which didn't work. Now uses the same font as
-      primary metal font (jedit 4.3) or new helpviewer font (jedit 4.4) as specified in
+      secondary metal font (jedit 4.3) or new helpviewer font (jedit 4.4) as specified in
       appearance option pane. 
 
 Version 1.5.9 Depends on jedit 4.3pre5, Java 1.5
