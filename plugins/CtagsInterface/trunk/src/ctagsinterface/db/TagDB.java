@@ -266,20 +266,16 @@ public class TagDB {
 		return q;
 	}
 
-	// Makes the given tagQuery be scoped to the given project
-	public void makeProjectScopedQuery(Query tagQuery, String project) {
-		Query projectQuery = new Query(ORIGINS_ID, ORIGINS_TABLE,
-			ORIGINS_NAME + "=" + quote(project));
-		projectQuery.addCondition(ORIGINS_TYPE + "=" + quote(PROJECT_ORIGIN));
-		Query projectFilesQuery = new Query();
-		projectFilesQuery.setColumn(MAP_FILE_ID);
-		projectFilesQuery.setTable(MAP_TABLE);
-		projectFilesQuery.addCondition(field(MAP_TABLE, MAP_FILE_ID) + "=" +
-			field(FILES_TABLE, FILES_ID));
-		projectFilesQuery.addCondition(field(MAP_TABLE, MAP_ORIGIN_ID) + "=(" +
-			projectQuery.toString() + ")");
-		tagQuery.addCondition("EXISTS (" + projectFilesQuery.toString() + ")");
+	// Makes the given tag query (q) be scoped to the given project
+	public void makeProjectScopedQuery(Query q, String project) {
+		q.addTable(MAP_TABLE);
+		q.addTable(ORIGINS_TABLE);
+		q.addCondition(field(TAGS_TABLE, TAGS_FILE_ID) + "=" + field(MAP_TABLE, MAP_FILE_ID));
+		q.addCondition(field(MAP_TABLE, MAP_ORIGIN_ID) + "=" + field(ORIGINS_TABLE, ORIGINS_ID));
+		q.addCondition(field(ORIGINS_TABLE, ORIGINS_TYPE) + "=" + quote(PROJECT_ORIGIN));
+		q.addCondition(field(ORIGINS_TABLE, ORIGINS_NAME) + "=" + quote(project));
 	}
+
 	// Returns a query for a tag name in a list of specified origins
 	// origins: A hash of origin type -> vector of origin names
 	private Query getTagInOriginsQuery(String tag,
