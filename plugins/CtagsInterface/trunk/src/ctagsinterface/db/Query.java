@@ -12,7 +12,9 @@ public class Query {
 	private Vector<Object> columns;
 	private Vector<Object> order;
 	private int limit = 0;
-	
+	private String baseQuery; // a user-specified SELECT query
+		// When used, only conditions, order and limit can be added later.
+
 	public Query() {
 		conditions = new Vector<Object>();
 		tables = new Vector<Object>();
@@ -30,6 +32,10 @@ public class Query {
 		setColumns(columns);
 		setTables(tables);
 		setConditions(conditions);
+	}
+	public Query(String baseQuery) {
+		this();
+		this.baseQuery = baseQuery;
 	}
 
 	public ResultSet run() throws SQLException {
@@ -97,11 +103,20 @@ public class Query {
 	
 	public String toString() {
 		StringBuffer s = new StringBuffer();
-		s.append("SELECT ");
-		s.append(join(",", columns));
-		s.append(" FROM ");
-		s.append(join(",", tables));
-		s.append(" WHERE ");
+		if (baseQuery == null)
+		{
+			s.append("SELECT ");
+			s.append(join(",", columns));
+			s.append(" FROM ");
+			s.append(join(",", tables));
+			s.append(" WHERE ");
+		}
+		else
+		{
+			s.append(baseQuery);
+			if (! conditions.isEmpty())
+				s.append(" AND ");
+		}
 		s.append(join(" AND ", conditions));
 		if (! order.isEmpty())
 			s.append(" ORDER BY " + join(",", order));

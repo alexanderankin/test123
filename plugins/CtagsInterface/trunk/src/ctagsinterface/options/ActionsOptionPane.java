@@ -4,14 +4,19 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
@@ -24,6 +29,7 @@ import org.gjt.sp.jedit.gui.RolloverButton;
 
 import ctagsinterface.main.CtagsInterfacePlugin;
 import ctagsinterface.main.QueryAction;
+import ctagsinterface.main.QueryAction.QueryType;
 
 @SuppressWarnings("serial")
 public class ActionsOptionPane extends AbstractOptionPane {
@@ -33,15 +39,15 @@ public class ActionsOptionPane extends AbstractOptionPane {
 	static public final String ACTIONS = OPTION + "actions.";
 	JList actions;
 	DefaultListModel actionsModel;
-	
+
 	public ActionsOptionPane() {
 		super("CtagsInterface-Actions");
 		setBorder(new EmptyBorder(5, 5, 5, 5));
-		
+
 		actionsModel = new DefaultListModel();
 		QueryAction[] queries = loadActions();
-		for (int i = 0; i < queries.length; i++)
-			actionsModel.addElement(queries[i]);
+		for (QueryAction querie : queries)
+			actionsModel.addElement(querie);
 		actions = new JList(actionsModel);
 		JScrollPane scroller = new JScrollPane(actions);
 		scroller.setBorder(BorderFactory.createTitledBorder(
@@ -90,7 +96,7 @@ public class ActionsOptionPane extends AbstractOptionPane {
 			actionArr[i] = new QueryAction(i);
 		return actionArr;
 	}
-	
+
 	public void save() {
 		jEdit.setIntegerProperty(ACTIONS + "size", actionsModel.size());
 		for (int i = 0; i < actionsModel.size(); i++) {
@@ -101,16 +107,19 @@ public class ActionsOptionPane extends AbstractOptionPane {
 	}
 
 	static public class ActionEditor extends JDialog {
-		
+
 		QueryAction action;
 		JTextField query;
 		JTextField name;
 		JButton ok;
 		JButton cancel;
-		
+		ButtonGroup querytype;
+		List<JRadioButton> buttons = new ArrayList<JRadioButton>();
+		JCheckBox callImmediately;
+
 		public ActionEditor(QueryAction qa) {
 			super(jEdit.getActiveView(), jEdit.getProperty(MESSAGE + "actionEditorTitle"),
-				true);
+					true);
 			setLayout(new GridBagLayout());
 			GridBagConstraints c = new GridBagConstraints();
 			JPanel p = new JPanel();
@@ -122,6 +131,7 @@ public class ActionsOptionPane extends AbstractOptionPane {
 			c.gridx = c.gridy = 0;
 			c.gridwidth = c.gridheight = 1;
 			add(p, c);
+
 			p = new JPanel();
 			p.add(new JLabel(jEdit.getProperty(MESSAGE + "sqlQuery")));
 			query = new JTextField(60);
@@ -129,6 +139,33 @@ public class ActionsOptionPane extends AbstractOptionPane {
 			p.setAlignmentX(LEFT_ALIGNMENT);
 			c.gridy++;
 			add(p, c);
+
+			p = new JPanel();
+			p.add(new JLabel(jEdit.getProperty(MESSAGE + "queryType")));
+			querytype = new ButtonGroup();
+			for (QueryAction.QueryType type : QueryAction.QueryType.values()) {
+				JRadioButton b = new JRadioButton(type.text);
+				b.setActionCommand(type.toString());
+				querytype.add(b);
+				if (type == QueryAction.QueryType.JUMP_TO_TAG) {
+					b.setSelected(true);
+				}
+				p.add(b);
+				buttons.add(b);
+			}
+			p.setAlignmentX(LEFT_ALIGNMENT);
+			c.gridy++;
+			add(p, c);
+
+			p = new JPanel();
+			p.add(new JLabel(jEdit.getProperty(MESSAGE + "callImmediately")));
+			callImmediately = new JCheckBox();
+			p.add(callImmediately);
+			p.setAlignmentX(LEFT_ALIGNMENT);
+			c.gridy++;
+			add(p, c);
+
+
 			p = new JPanel();
 			JButton ok = new JButton("Ok");
 			p.add(ok);
@@ -137,10 +174,17 @@ public class ActionsOptionPane extends AbstractOptionPane {
 			p.setAlignmentX(LEFT_ALIGNMENT);
 			c.gridy++;
 			add(p, c);
-			
+
 			ok.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent ae) {
-					action = new QueryAction(name.getText(), query.getText());
+					QueryType type = QueryType.JUMP_TO_TAG;
+					for (JRadioButton b : buttons) {
+						if (b.isSelected()) {
+							type = QueryType.valueOf(b.getActionCommand());
+							break;
+						}
+					}
+					action = new QueryAction(name.getText(), query.getText(), type, callImmediately.isSelected());
 					dispose();
 				}
 			});
@@ -153,6 +197,11 @@ public class ActionsOptionPane extends AbstractOptionPane {
 			if (action != null) {
 				name.setText(action.getName());
 				query.setText(action.getQuery());
+				QueryType type = action.getQueryType();
+				for (JRadioButton b : buttons) {
+					b.setSelected(QueryType.valueOf(b.getActionCommand()) == type);
+				}
+				callImmediately.setSelected(action.isShowImmediately());
 			}
 			pack();
 			setLocationRelativeTo(null);
@@ -162,7 +211,7 @@ public class ActionsOptionPane extends AbstractOptionPane {
 		public ActionEditor() {
 			this(null);
 		}
-		
+
 		public QueryAction getAction() {
 			return action;
 		}

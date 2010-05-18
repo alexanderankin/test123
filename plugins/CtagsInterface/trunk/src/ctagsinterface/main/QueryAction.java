@@ -14,56 +14,103 @@ import ctagsinterface.projects.ProjectWatcher;
 
 public class QueryAction extends EditAction {
 
+	public enum QueryType {
+		JUMP_TO_TAG("Jump to tag"),
+		SEARCH_SUBSTRING("Search substring"),
+		SEARCH_PREFIX("Search prefix");
+
+		private QueryType (String txt)
+		{
+			text = txt;
+		}
+		public final String text;
+	};
+
 	public static final String TAG = "{tag}";
 	public static final String PROJECT = "{project}";
+	public static final String FILE = "{file}";
 	private String query;
 	private String desc;
-	
-	public QueryAction(String name, String query) {
+	private QueryType queryType;
+	private boolean callImmediately;
+
+	public QueryAction(String name, String query, QueryType queryType,
+		boolean showImmediately)
+	{
 		super(name);
 		jEdit.setTemporaryProperty(name + ".label", name);
 		this.query = query;
 		desc = name + " (" + query + ")";
+		this.queryType = queryType;
+		this.callImmediately = showImmediately;
 	}
 
 	public QueryAction(int index) {
 		super(jEdit.getProperty(ActionsOptionPane.ACTIONS + index + ".name"));
 		String name = getName();
 		jEdit.setTemporaryProperty(getName() + ".label", getName());
-		query = jEdit.getProperty(ActionsOptionPane.ACTIONS + index + ".query");
+		String base= ActionsOptionPane.ACTIONS + index + ".";
+		query = jEdit.getProperty(base + "query");
 		desc = name + " (" + query + ")";
+		String queryTypeString = jEdit.getProperty(base + "queryType");
+		if (queryTypeString == null || queryTypeString.length() == 0)
+		    queryType = QueryType.JUMP_TO_TAG;
+		else
+		    queryType = QueryType.valueOf(queryTypeString);
+		callImmediately = jEdit.getBooleanProperty(base + "callImmediately",
+			false);
 	}
-	
+
+	private String fillQueryParameters(View view)
+	{
+	    ProjectWatcher pvi = CtagsInterfacePlugin.getProjectWatcher();
+	    String project = (pvi == null) ? null : pvi.getActiveProject(view);
+	    if (project == null && query.contains(PROJECT)) {
+	        JOptionPane.showMessageDialog(view,
+	            "No active project exists");
+	        return null;
+	    }
+	    String s = query;
+	    if (project != null)
+	        s = s.replace(PROJECT, project);
+	    s = s.replace(FILE, view.getBuffer().getPath());
+	    if (s.contains(TAG)) {
+	        String tag = CtagsInterfacePlugin.getDestinationTag(view);
+	        if (tag == null) {
+	            JOptionPane.showMessageDialog(view,
+	            	"No tag selected nor identified at caret");
+	            return null;
+	        }
+	        s = s.replace(TAG, tag);
+	    }
+	    return s;
+	}
+
 	@Override
 	public void invoke(View view) {
-		String tag = CtagsInterfacePlugin.getDestinationTag(view);
-		if (tag == null && query.contains(TAG)) {
-			JOptionPane.showMessageDialog(view,
-				"No tag selected nor identified at caret");
-			return;
-		}
-		String s = (tag == null) ? query : query.replace(TAG, tag);
-		ProjectWatcher pvi = CtagsInterfacePlugin.getProjectWatcher();
-		String project = (pvi == null) ? null : pvi.getActiveProject(view);
-		if (project == null && s.contains(PROJECT)) {
-			JOptionPane.showMessageDialog(view,
-				"No active project exists");
-			return;
-		}
-		if (project != null)
-			s = s.replace(PROJECT, project);
-		ResultSet rs;
-		try {
-			rs = CtagsInterfacePlugin.getDB().query(s);
-			if (rs == null)
-				return;
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return;
-		}
-		CtagsInterfacePlugin.jumpToQueryResults(view, rs);
+	    String s = fillQueryParameters(view);
+	    switch (queryType) {
+	    case JUMP_TO_TAG:
+	        ResultSet rs;
+	        try {
+	            rs = CtagsInterfacePlugin.getDB().query(s);
+	            if (rs == null)
+	                return;
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	            return;
+	        }
+	        CtagsInterfacePlugin.jumpToQueryResults(view, rs);
+	    break;
+	    case SEARCH_PREFIX:
+	        new QuickSearchTagDialog(view, QuickSearchTagDialog.Mode.PREFIX, name, s, callImmediately);
+	        break;
+	    case SEARCH_SUBSTRING:
+	        new QuickSearchTagDialog(view, QuickSearchTagDialog.Mode.SUBSTRING, name, s, callImmediately);
+	        break;
+	    }
 	}
-	
+
 	public String toString() {
 		return desc;
 	}
@@ -72,8 +119,19 @@ public class QueryAction extends EditAction {
 		return query;
 	}
 
+	public QueryType getQueryType() {
+        return queryType;
+    }
+
+	public boolean isShowImmediately() {
+        return callImmediately;
+    }
+
 	public void save(int index) {
-		jEdit.setProperty(ActionsOptionPane.ACTIONS + index + ".name", getName());
-		jEdit.setProperty(ActionsOptionPane.ACTIONS + index + ".query", query);
+		String base = ActionsOptionPane.ACTIONS + index + ".";
+		jEdit.setProperty(base + "name", getName());
+		jEdit.setProperty(base + "query", query);
+		jEdit.setProperty(base + "queryType", queryType.toString());
+		jEdit.setBooleanProperty(base + "callImmediately", callImmediately);
 	}
 }

@@ -12,6 +12,7 @@ plugin.ctagsinterface.main.CtagsInterfacePlugin.depend.1=jedit 04.03.13.00
 plugin.ctagsinterface.main.CtagsInterfacePlugin.depend.2=optional plugin projectviewer.ProjectPlugin 2.9.0.0
 plugin.ctagsinterface.main.CtagsInterfacePlugin.depend.3=plugin SuperAbbrevsPlugin 0.32
 plugin.ctagsinterface.main.CtagsInterfacePlugin.depend.4=optional plugin plugin.ise.plugin.nav.NavigatorPlugin 2.2.0.0
+plugin.ctagsinterface.main.CtagsInterfacePlugin.depend.5=plugin gatchan.jedit.lucene.LucenePlugin 2.5
 
 plugin.ctagsinterface.main.CtagsInterfacePlugin.jars=hsqldb.jar
 plugin.ctagsinterface.main.CtagsInterfacePlugin.docs=index.html
@@ -114,6 +115,8 @@ messages.CtagsInterface.actions=Actions:
 messages.CtagsInterface.actionEditorTitle=Action Editor
 messages.CtagsInterface.actionName=Action name:
 messages.CtagsInterface.sqlQuery=SQL query:
+messages.CtagsInterface.queryType=Query Type:
+messages.CtagsInterface.callImmediately=Call query immediately (without waiting for input):
 messages.CtagsInterface.dirs=Source trees:
 messages.CtagsInterface.archives=Source archives:
 messages.CtagsInterface.projects=Projects:
