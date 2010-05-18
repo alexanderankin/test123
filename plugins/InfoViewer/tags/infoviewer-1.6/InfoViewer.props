@@ -1,0 +1,283 @@
+# Plugin properties
+plugin.infoviewer.InfoViewerPlugin.name=Info Viewer
+plugin.infoviewer.InfoViewerPlugin.activate=startup
+
+plugin.infoviewer.InfoViewerPlugin.author=Dirk Moebius, Alan Ezust
+plugin.infoviewer.InfoViewerPlugin.version=1.6
+plugin.infoviewer.InfoViewerPlugin.docs=index.html
+plugin.infoviewer.InfoViewerPlugin.description=A Swing-based web browser, which can also provide a replacement for HelpViewer.
+plugin.infoviewer.InfoViewerPlugin.depend.0=jedit 04.03.99.00
+plugin.infoviewer.InfoViewerPlugin.depend.1=jdk 1.5
+#plugin.infoviewer.InfoViewerPlugin.depend.2=plugin lucene.LucenePlugin 2.0
+
+# Two option panes
+plugin.infoviewer.InfoViewerPlugin.option-group=chooseBrowser internalBrowser
+
+# first optionpane
+options.chooseBrowser.label=Choose Browser
+options.chooseBrowser.code=new infoviewer.InfoViewerOptionPane();
+
+# second optionpane 
+options.internalBrowser.label=Internal Browser
+options.internalBrowser.code=new infoviewer.InfoViewerOptionPane2();
+
+# plugin menu
+plugin.infoviewer.InfoViewerPlugin.menu = infoviewer helpviewer - infoviewer.open-buffer infoviewer.open-sel
+
+# Plugin menu properties 
+infoviewer-toggle.label=Toggle InfoViewer
+helpviewer-toggle.label=Toggle HelpViewer
+infoviewer.menu.label=InfoViewer
+infoviewer.label=InfoViewer
+helpviewer.label=HelpViewer
+infoviewer.open-buffer.label=Open current buffer with browser
+infoviewer.open-sel.label=Open selected URL with browser
+
+# Default option pane properties
+infoviewer.browsertype=internal
+infoviewer.class=infoviewer.HelpInfoViewer
+infoviewer.method=showInternalInfoViewer
+infoviewer.otherBrowser=netscape -remote openURL($u) -raise
+infoviewer.homepage=jeditresource:/InfoViewer.jar!/index.html
+infoviewer.appearance.floating.showMenu=true
+infoviewer.appearance.floating.showToolbar=true
+infoviewer.appearance.floating.showAddressbar=true
+infoviewer.appearance.floating.showStatusbar=true
+infoviewer.appearance.docked.showMenu=false
+infoviewer.appearance.docked.showToolbar=true
+infoviewer.appearance.docked.showAddressbar=false
+infoviewer.appearance.docked.showStatusbar=true
+infoviewer.autoupdate=false
+infoviewer.autoupdate.onSwitch=false
+infoviewer.autoupdate.onSave=false
+infoviewer.autoupdate.onChange=false
+infoviewer.autoupdate.onChange.delay=3000
+infoviewer.autoupdate.periodically=false
+infoviewer.autoupdate.periodically.delay=20000
+
+
+# InfoViewer menu properties
+infoviewer.menu.file=File
+infoviewer.menu.file.mnemonic=F
+infoviewer.menu.edit=Edit
+infoviewer.menu.edit.mnemonic=E
+infoviewer.menu.goto=Go
+infoviewer.menu.goto.mnemonic=G
+infoviewer.menu.view=View
+infoviewer.menu.view.mnemonic=V
+
+infoviewer.menu.bmarks=Bookmarks
+infoviewer.menu.bmarks.mnemonic=B
+infoviewer.menu.help=Help
+infoviewer.menu.help.mnemonic=H
+infoviewer.menu.help.readme=InfoViewer UserGuide
+infoviewer.menu.help.readme.mnemonic=I
+infoviewer.menu.help.readme.url=jeditresource:/InfoViewer.jar!/index.html
+
+
+# Misc properties
+infoviewer.title=InfoViewer
+infoviewer.notitle=(no title)
+infoviewer.greetstring={0} v{1}
+infoviewer.label.gotoURL=Go to:\ 
+infoviewer.status.opening=Opening {0} ...
+infoviewer.status.loading=Loading {0} ...
+infoviewer.status.ready=Ready. {0} bytes.
+infoviewer.status.error=Error.
+
+
+# Actions
+infoviewer.open_file=Open File...
+infoviewer.open_file.icon=Open.png
+infoviewer.open_file.mnemonic=O
+infoviewer.open_file.description=Open a file...
+infoviewer.open_file.shortcut=C+o
+
+infoviewer.open_buffer=Open Current Buffer
+infoviewer.open_buffer.icon=New.png
+infoviewer.open_buffer.description=Open the current selected jEdit buffer
+infoviewer.open_buffer.shortcut=A+b
+
+infoviewer.edit_url=Edit Current URL
+infoviewer.edit_url.icon=Save.png
+infoviewer.edit_url.mnemonic=O
+infoviewer.edit_url.description=Edit the current document with jEdit
+infoviewer.edit_url.shortcut=C+e
+
+infoviewer.toggle_sidebar.label=Help Sidebar
+infoviewer.toggle_sidebar.mouse-over=Toggle the Help Sidebar
+infoviewer.toggle_sidebar.shortcut=C+b
+infoviewer.toggle_sidebar.toggle=true;
+infoviewer.toggle_sidebar.selected=true;
+
+infoviewer.reload=Reload
+infoviewer.reload.icon=Reload.png
+infoviewer.reload.description=Reload the current page
+infoviewer.reload.shortcut=F5
+
+infoviewer.close=Close
+infoviewer.close.icon=BrokenImage.png
+infoviewer.close.description=Close InfoViewer
+infoviewer.close.shortcut=C+q
+
+infoviewer.copy=Copy
+infoviewer.copy.icon=Copy.png
+infoviewer.copy.description=Copy selected text to clipboard
+infoviewer.copy.shortcut=C+c
+
+infoviewer.select_all=Select All
+infoviewer.select_all.icon=BrokenImage.png
+infoviewer.select_all.description=Select all
+infoviewer.select_all.shortcut=C+a
+
+infoviewer.back=Back
+infoviewer.back.icon=ArrowL.png
+infoviewer.back.description=Back in history
+infoviewer.back.shortcut=A+LEFT
+
+infoviewer.forward=Forward
+infoviewer.forward.icon=ArrowR.png
+infoviewer.forward.description=Forward in history
+infoviewer.forward.shortcut=A+RIGHT
+
+infoviewer.home=Home
+infoviewer.home.icon=Home.png
+infoviewer.home.shortcut=A+HOME
+infoviewer.home.description=Go to Homepage
+
+
+infoviewer.openlocation=Open Location
+infoviewer.openlocation.icon=Open.png
+infoviewer.openlocation.shortcut=C+l
+infoviewer.openlocation.description=Open location bar
+
+infoviewer.bookmarks_add=Add Bookmark
+infoviewer.bookmarks_add.icon=Plus.png
+infoviewer.bookmarks_add.description=Bookmark this page
+infoviewer.bookmarks_add.shortcut=C+d
+
+infoviewer.bookmarks_edit=Manage Bookmarks...
+infoviewer.bookmarks_edit.shortcut=C+e
+infoviewer.bookmarks_edit.description=Manage bookmarks
+
+infoviewer.about=About InfoViewer...
+infoviewer.about.mnemonic=A
+infoviewer.about.shortcut=F1
+
+infoviewer.follow_link=Follow Link
+infoviewer.follow_link.icon=Run.png
+infoviewer.follow_link.mnemonic=L
+infoviewer.follow_link.description=Follow the link under the pointer
+
+# Option pane properties
+options.infoviewer.label=InfoViewer
+options.infoviewer.chooseBrowser.label=Choose Browser
+options.infoviewer.internalBrowser.label=Internal Browser
+options.infoviewer.useforhelp.label=Use internal InfoViewer instead of HelpViewer
+options.infoviewer.browser.label=Choose Preferred Browser:
+options.infoviewer.browser.internal=Internal (InfoViewer)
+options.infoviewer.browser.class=Class in classpath
+options.infoviewer.browser.netscape=Netscape (with reuse, Unix only)
+options.infoviewer.browser.other=External browser
+
+options.infoviewer.browser.settings.label=Configure Browser:
+options.infoviewer.browser.class.label=Class:
+options.infoviewer.browser.method.label=Method:
+options.infoviewer.browser.other.label=External browser command:
+
+options.infoviewer.homepage=Homepage:\ 
+
+options.infoviewer.appearance.label=Appearance
+options.infoviewer.appearance.floating.label=If floating...
+options.infoviewer.appearance.floating.showMenu=Show Menu
+options.infoviewer.appearance.floating.showToolbar=Show Toolbar
+options.infoviewer.appearance.floating.showAddressbar=Show Addressbar
+options.infoviewer.appearance.floating.showStatusbar=Show Statusbar
+options.infoviewer.appearance.docked.label=If docked...
+options.infoviewer.appearance.docked.showMenu=Show Menu
+options.infoviewer.appearance.docked.showToolbar=Show Toolbar
+options.infoviewer.appearance.docked.showAddressbar=Show Addressbar
+options.infoviewer.appearance.docked.showStatusbar=Show Statusbar
+
+options.infoviewer.autoupdate.label=Auto-Update
+options.infoviewer.autoupdate=Update InfoViewer automatically...
+options.infoviewer.autoupdate.onSwitch=...on buffer switch (sync with current buffer)
+options.infoviewer.autoupdate.onSave=...on buffer save (reload same address)
+options.infoviewer.autoupdate.onChange=...on buffer changes
+options.infoviewer.autoupdate.onChange.delay=After buffer change, wait (seconds):
+options.infoviewer.autoupdate.periodically=...periodically
+options.infoviewer.autoupdate.periodically.delay=Update every (seconds):
+
+# Dialog "Edit Bookmarks"
+infoviewer.bdialog.title=Edit Bookmarks
+infoviewer.bdialog.ok=Ok
+infoviewer.bdialog.cancel=Cancel
+infoviewer.bdialog.add=Add
+infoviewer.bdialog.delete=Delete
+infoviewer.bdialog.moveup=Move Up
+infoviewer.bdialog.movedown=Move down
+infoviewer.bdialog.col0=Title
+infoviewer.bdialog.col1=URL
+
+
+# Dialog "About..."
+infoviewer.aboutdialog.title=About InfoViewer
+infoviewer.aboutdialog.message=\
+    InfoViewer v{0}\n\
+    \n\
+    (c) 1999-2001 by Dirk Moebius <dmoebius@gmx.net>
+
+
+# Error messages
+infoviewer.error.noselection.title=No URL selected
+infoviewer.error.noselection.message=Please select an URL text in a buffer.
+
+infoviewer.error.nohome.title=No homepage
+infoviewer.error.nohome.message=\
+    Please set the URL of the homepage\n\
+    in Utilities->General Options->InfoViewer.
+
+infoviewer.error.classnotfound.title=Error invoking class
+infoviewer.error.classnotfound.message=\
+    Could not find a suitable constructor for class:\n\
+    {0}\n\n\
+    Note: the class you specified in the options\n\
+    must contain a String, URL or empty constructor.
+
+infoviewer.error.methodnotfound.title=Error invoking method
+infoviewer.error.methodnotfound.message=\
+    Could not find a suitable method named\n\
+    {1} in class {0}\n\n\
+    Note: the method must be static, and accept\n\
+    zero or one String or URL parameter.
+
+infoviewer.error.filenotfound.title=URL not found
+infoviewer.error.filenotfound.message=The URL\n{0}\ncould not be found.
+
+infoviewer.error.ioerror.title=I/O Error
+infoviewer.error.ioerror.message=\
+    An I/O Error occurred opening the URL\n\
+    {0} :\n\n\
+    {1}
+
+infoviewer.error.badurl.title=Bad URL
+infoviewer.error.badurl.message=This URL is invalid:\n{0}
+
+infoviewer.error.invokeBrowser.title=Error starting external browser
+infoviewer.error.invokeBrowser.message=\
+    An exception occured while starting the browser:\n\n\
+    {0}\n\n\
+    The command was:\n\n\
+    {1}
+
+infoviewer.error.nourl.title=No URL
+infoviewer.error.nourl.message=You are currently not viewing an URL.
+
+infoviewer.error.bdialog.noselection.title=No selection
+infoviewer.error.bdialog.noselection.message=\
+    Please select the entries to delete.
+
+infoviewer.error.bdialog.selecttoomuch.title=Not possible
+infoviewer.error.bdialog.selecttoomuch.message=\
+    Please select only one row for move up/down operation.
+
