@@ -137,15 +137,15 @@ public class HtmlDocument {
             StringBuffer s = new StringBuffer();
             s.append(tagStart);
             if (isJspTag)
-                s.append(" ");
+                s.append(' ');
             s.append(tagName);
             for (Iterator iterator = attributeList.attributes.iterator(); iterator.hasNext();) {
                 Attribute attribute = (Attribute) iterator.next();
-                s.append(" ");
+                s.append(' ');
                 s.append(attribute.toString());
             }
             if (isJspTag)
-                s.append(" ");
+                s.append(' ');
             s.append(tagEnd);
             return s.toString();
         }
@@ -397,7 +397,7 @@ public class HtmlDocument {
         public Attribute(String n, String v) {
             name = n;
             value = v;
-            hasValue = true;
+            hasValue = v != null && !v.isEmpty();
         }
 
         public int getLength() {
