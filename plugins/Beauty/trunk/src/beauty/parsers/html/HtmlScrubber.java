@@ -67,7 +67,7 @@ public class HtmlScrubber extends HtmlVisitor {
                 ++upperCount;
             else if (Character.isLowerCase(c))
                 ++lowerCount;
-        };
+        }
         return (qs.length()-2 > 0
                 && (qs.length()-2 == idCount
                 && (upperCount == 0 || lowerCount == 0)));
@@ -79,24 +79,26 @@ public class HtmlScrubber extends HtmlVisitor {
     };
 
     public void visit(HtmlDocument.Tag t) {
-        if ((flags & TAGS_UPCASE) != 0)
+        // don't change case on jsp tags
+        if ((flags & TAGS_UPCASE) != 0 && !t.isJspTag)
             t.tagName = t.tagName.toUpperCase();
-        else if ((flags & TAGS_DOWNCASE) != 0 && t.tagName != null)
+        else if ((flags & TAGS_DOWNCASE) != 0 && t.tagName != null && !t.isJspTag)
             t.tagName = t.tagName.toLowerCase();
         for (Iterator it=t.attributeList.attributes.iterator(); it.hasNext(); ) {
             HtmlDocument.Attribute a = (HtmlDocument.Attribute) it.next();
-            if ((flags & ATTR_UPCASE) != 0)
+            if ((flags & ATTR_UPCASE) != 0 && !t.isJspTag)
                 a.name = a.name.toUpperCase();
-            else if ((flags & ATTR_DOWNCASE) != 0)
+            else if ((flags & ATTR_DOWNCASE) != 0 && !t.isJspTag)
                 a.name = a.name.toLowerCase();
-            if (((flags & STRIP_QUOTES) != 0)
+            // don't strip quotes on jsp tags
+            if (((flags & STRIP_QUOTES) != 0 && !t.isJspTag)
                     && a.hasValue
                     && ((a.value.charAt(0) == '\'' && a.value.charAt(a.value.length()-1) == '\'')
                         || (a.value.charAt(0) == '\"' && a.value.charAt(a.value.length()-1) == '\"'))
                     && safeToUnquote(a.value)) {
                 a.value = a.value.substring(1, a.value.length()-1);
-            };
-        };
+            }
+        }
 
         previousElement = t;
     }
@@ -124,7 +126,7 @@ public class HtmlScrubber extends HtmlVisitor {
                     break;
             if (i > 0)
                 t.text = t.text.substring(i);
-        };
+        }
         previousElement = t;
     }
 
