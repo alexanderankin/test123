@@ -845,12 +845,26 @@ TOKEN :
  * Program structuring syntax follows.
  */
 
+/** 
+ * This is the main entry  point of the parser. In general, a full compilation
+ * is expected, however, a block statement is also acceptable.  This means that
+ * this beautifier can be used to clean up random bits of java code, like
+ * perhaps code in a scriptlet section in a jsp file.  A nice enhancement would
+ * be to be able to support beanshell code.
+ */
 void CompilationUnit():
 {}
 {
-  [ PackageDeclaration() ]
-  ( ImportDeclaration() )*
-  ( TypeDeclaration() )*
+    LOOKAHEAD(3)
+    (
+        BlockStatement()
+    )
+    |
+    (
+      [ PackageDeclaration() ]
+      ( ImportDeclaration() )*
+      ( TypeDeclaration() )*
+    )
   <EOF>
 }
 
@@ -877,6 +891,7 @@ int Modifiers():
    int modifiers = 0;
 }
 {
+    try {
  (
   LOOKAHEAD(2)
   (
@@ -905,7 +920,11 @@ int Modifiers():
    Annotation()
   )
  )*
-
+    }
+    catch(ParseException pe) {
+        return 0;   
+    }
+   
  {
     return modifiers;
  }

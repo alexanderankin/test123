@@ -85,12 +85,17 @@ public class HtmlDocument {
 
         public Tag(String name, AttributeList a) {
             tagName = name;
+            if (a == null)
+                a = new AttributeList();
             attributeList = a;
         }
         
         public Tag(String tagStart, String name, AttributeList a, String tagEnd) {
-            this.tagStart = tagStart;
+            if (tagStart != null)
+                this.tagStart = tagStart;
             tagName = name;
+            if (a == null)
+                a = new AttributeList();
             attributeList = a;
             this.tagEnd = tagEnd;
         }
@@ -192,7 +197,45 @@ public class HtmlDocument {
             return startTag.toString();   
         }
     }
+    
+    public static class JspScriptletBlock extends TagBlock {
+        public JspScriptletBlock(ElementSequence b) {
+            super(null, null, b);
+            startTag = new JspScriptletStartTag();
+            endTag = new JspScriptletEndTag();
+        }
+    }
 
+    public static class JspScriptletStartTag extends Tag {
+        public JspScriptletStartTag() {
+            super(null, null);
+            tagStart = "<";
+            tagEnd = "%";
+        }
+        
+        public int getLength() {
+            return 2;   
+        }
+        
+        public String toString() {
+            return "<%";   
+        }
+    }
+    
+    public static class JspScriptletEndTag extends EndTag {
+        public JspScriptletEndTag() {
+            super(null);
+        }
+        
+        public int getLength() {
+            return 2;   
+        }
+        
+        public String toString() {
+            return "%>";   
+        }
+    }
+    
     /**
      * HTML comments.
      */

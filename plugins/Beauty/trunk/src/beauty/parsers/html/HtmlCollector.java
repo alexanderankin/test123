@@ -92,8 +92,8 @@ public class HtmlCollector extends HtmlVisitor {
             ts.tagName = t.tagName;
             ts.index = index;
             tagStack.addElement(ts);
-        };
-    };
+        }
+    }
 
     public void visit(HtmlDocument.EndTag t) {
         int i;
@@ -113,6 +113,7 @@ public class HtmlCollector extends HtmlVisitor {
                 tag = (HtmlDocument.Tag) elements.elementAt(ts.index);
                 block = new HtmlDocument.TagBlock(tag.tagName,
                         tag.attributeList, blockElements);
+                block.startTag.setIsJspTag(tag.isJspTag);   
 
                 // Pop the elements off the stack, push the new block
                 elements.popN(elements.size() - ts.index);
@@ -123,8 +124,8 @@ public class HtmlCollector extends HtmlVisitor {
 
                 collected = true;
                 break;
-            };
-        };
+            }
+        }
 
         // If we didn't find a match, just push the end tag
         if (i < 0)
@@ -162,7 +163,7 @@ public class HtmlCollector extends HtmlVisitor {
             document.accept(new HtmlDumper(System.out));
         } finally {
             r.close();
-        };
-    };
+        }
+    }
 }
 

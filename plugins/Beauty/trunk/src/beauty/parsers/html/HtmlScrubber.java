@@ -81,7 +81,7 @@ public class HtmlScrubber extends HtmlVisitor {
     public void visit(HtmlDocument.Tag t) {
         if ((flags & TAGS_UPCASE) != 0)
             t.tagName = t.tagName.toUpperCase();
-        else if ((flags & TAGS_DOWNCASE) != 0)
+        else if ((flags & TAGS_DOWNCASE) != 0 && t.tagName != null)
             t.tagName = t.tagName.toLowerCase();
         for (Iterator it=t.attributeList.attributes.iterator(); it.hasNext(); ) {
             HtmlDocument.Attribute a = (HtmlDocument.Attribute) it.next();
@@ -104,7 +104,7 @@ public class HtmlScrubber extends HtmlVisitor {
     public void visit(HtmlDocument.EndTag t) {
         if ((flags & TAGS_UPCASE) != 0)
             t.tagName = t.tagName.toUpperCase();
-        else if ((flags & TAGS_DOWNCASE) != 0)
+        else if ((flags & TAGS_DOWNCASE) != 0 && t.tagName != null)
             t.tagName = t.tagName.toLowerCase();
 
         previousElement = t;
@@ -132,7 +132,8 @@ public class HtmlScrubber extends HtmlVisitor {
     public void visit(HtmlDocument.Newline n)     { previousElement = n; }
     public void visit(HtmlDocument.Annotation a)  { previousElement = a; }
     public void visit(HtmlDocument.TagBlock bl) {
-        if (bl.startTag.tagName.equalsIgnoreCase("PRE")
+        if (bl.startTag.tagName == null     // jsp scriptlets have a null tag name
+                || bl.startTag.tagName.equalsIgnoreCase("PRE")
                 || bl.startTag.tagName.equalsIgnoreCase("SCRIPT")
                 || bl.startTag.tagName.equalsIgnoreCase("STYLE")) {
             inPreBlock = true;
