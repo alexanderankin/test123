@@ -43,7 +43,11 @@
  * html-parser@quiotix.com.  If you like it/hate it/use it, please let us know!  
  */
 
-options { IGNORE_CASE = true; STATIC = false; /*DEBUG_PARSER = true;*/ } 
+options { 
+    IGNORE_CASE = true; 
+    STATIC = false; 
+    //DEBUG_PARSER = true;
+} 
 
 PARSER_BEGIN(HtmlParser)
 
@@ -101,7 +105,6 @@ public class HtmlParser {
 PARSER_END(HtmlParser)
 
 
-
 <*> TOKEN :
 {
   <#ALPHA_CHAR: ["a"-"z", "A"-"Z"] >
@@ -124,7 +127,8 @@ PARSER_END(HtmlParser)
 <DEFAULT> TOKEN : 
 {
   <EOL:            ( " " | "\t" )* <NEWLINE> >
-| <TAG_START:      "<" (<WHITESPACE>)* | "<%" (<WHITESPACE>)* | "<%@" (<WHITESPACE>)* > : LexStartTag
+| <TAG_START:      "<" (<WHITESPACE>)* | "<%@" (<WHITESPACE>)* > : LexStartTag
+| <SCRIPTLET_TAG:  "<%"      > : LexScriptlet
 | <ENDTAG_START:   "</"      > : LexStartTag
 | <COMMENT_START:     "<!--" | "<%--"    >   : LexComment
 | <DECL_START:     "<!"      > : LexDecl
@@ -219,6 +223,11 @@ PARSER_END(HtmlParser)
                     | <QUOTE> ) >
 }
 
+<LexScriptlet> TOKEN :
+{
+  <SCRIPTLET_END: (<WHITESPACE>)* "%>" > : DEFAULT
+}
+
 <LexDecl> TOKEN :
 {
   <DECL_ANY: ( <QUOTED_STRING_NB> | <QUOTE> | ~[ ">" ] )+ >
@@ -233,13 +242,13 @@ PARSER_END(HtmlParser)
   <STYLE_END:    ("</STYLE>" | "</style>") > : DEFAULT
 }
 
-<LexScript, LexStyle> TOKEN :
+<LexScript, LexStyle, LexScriptlet> TOKEN :
 {
   <BLOCK_EOL:    <NEWLINE> >
 | <BLOCK_LBR:    "<" >
 | <BLOCK_WORD:   ( <QUOTED_STRING_NB> 
                    | <QUOTE> 
-                   | (~[ "\n", "\r", "'", "\"", "<"])+ ) >
+                   | (~[ "\n", "\r", "'", "\"", "<", "%"])+ ) >
 }
 
 HtmlDocument HtmlDocument() :
@@ -269,19 +278,21 @@ HtmlDocument.HtmlElement Element() :
 {
 (
     LOOKAHEAD(2) 
-         e = Tag()        { return e; }
-  |      e = EndTag()     { return e; }
-  |      e = CommentTag() { return e; }
-  |      e = DeclTag()    { return e; }
+         e = Tag()          { return e; }
+  |      e = EndTag()       { return e; }
+  |      e = CommentTag()   { return e; }
+  |      e = DeclTag()      { return e; }
+  | LOOKAHEAD(3)
+       e = ScriptletBlock() { return e; }
   | LOOKAHEAD(2) 
-         e = ScriptBlock() { return e; }
+         e = ScriptBlock()  { return e; }
   | LOOKAHEAD(2) 
-         e = StyleBlock()  { return e; }
+         e = StyleBlock()   { return e; }
   | LOOKAHEAD(2) 
              <TAG_START> text=<LST_ERROR>
-                          { return new HtmlDocument.Text("<" + text.image); }
-  |   text = <PCDATA>     { return new HtmlDocument.Text(text.image); }
-  |          <EOL>        { return new HtmlDocument.Newline(); }
+                            { return new HtmlDocument.Text("<" + text.image); }
+  |   text = <PCDATA>       { return new HtmlDocument.Text(text.image); }
+  |          <EOL>          { return new HtmlDocument.Newline(); }
 )
 }
 
@@ -543,4 +554,52 @@ HtmlDocument.Comment DeclTag() :
   { 
     return new HtmlDocument.Comment(t.image); 
   }
+}
+
+HtmlDocument.HtmlElement ScriptletBlock() :
+{
+  HtmlDocument.ElementSequence e;
+  Token firstToken = getToken(1);
+}
+{
+  try {
+    <SCRIPTLET_TAG> 
+    { 
+        String block = getScriptletBlock();
+        e = new HtmlDocument.ElementSequence();
+        e.addElement(new HtmlDocument.Text(block));
+        token_source.SwitchTo(DEFAULT); 
+        return new HtmlDocument.JspScriptletBlock(e); 
+    }
+  }
+  catch (ParseException ex) {
+    // ex.printStackTrace();
+    token_source.SwitchTo(DEFAULT); 
+    String s = getTokenText(firstToken, getNextToken());
+    return new HtmlDocument.Text(s);
+  }
+}
+
+/*
+ Originally I tried to use BlockContents to get the contents of a jsp scriptlet,
+ but the matching rules for a word trump the matching rules for the %> end tag.
+ This works well anyway, since I really don't care about tokenizing the contents
+ of a jsp scriptlet.  I just want the contents verbatim.
+ 
+ This returns the contents of the jsp scriptlet block without the <% or %>.
+*/
+JAVACODE
+String getScriptletBlock() {
+    StringBuilder sb = new StringBuilder();
+    try {
+        while (true) {
+            sb.append(jj_input_stream.readChar());
+            if (sb.length() > 2 && sb.substring(sb.length() - 2).equals("%>")) {
+                return sb.substring(0, sb.length() - 2);
+            }
+        }
+    }
+    catch(Exception e) {
+    }
+    return sb.toString();
 }
