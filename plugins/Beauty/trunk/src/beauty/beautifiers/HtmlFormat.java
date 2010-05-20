@@ -34,7 +34,7 @@ public class HtmlFormat extends Beautifier {
             HtmlDocument document = parser.HtmlDocument();
             document.setLineSeparator( getLineSeparator() );
             document.accept( new HtmlCollector() );
-            document.accept( new HtmlScrubber( HtmlScrubber.DEFAULT_OPTIONS | HtmlScrubber.TRIM_SPACES ) );
+            document.accept( new HtmlScrubber( HtmlScrubber.TAGS_DOWNCASE | HtmlScrubber.ATTR_DOWNCASE | HtmlScrubber.TRIM_SPACES ) );
             formatter = new HtmlFormatter();
             if ( getWrapMode().equals( "none" ) ) {
                 formatter.setRightMargin( Integer.MAX_VALUE );
