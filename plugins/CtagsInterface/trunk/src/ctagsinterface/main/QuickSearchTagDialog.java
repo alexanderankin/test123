@@ -203,7 +203,7 @@ public class QuickSearchTagDialog extends JDialog {
 
 	private void applyFilter() {
 		model.removeAllElements();
-		String input = name.getText().toLowerCase();
+		String input = name.getText();
 		if (showImmediately || (! input.isEmpty())) {
 			switch (mode) {
 			case SUBSTRING:
@@ -218,9 +218,8 @@ public class QuickSearchTagDialog extends JDialog {
 				Vector<Object> conditions = baseQuery.getConditions();
 				Object prefixCondition = null;
 				if (! input.isEmpty()) {
-					prefixCondition = "LOWER(" +
-						db.field(TagDB.TAGS_TABLE, TagDB.TAGS_NAME) +
-						") LIKE " + TagDB.quote(input.toLowerCase() + "%");
+					prefixCondition = db.field(TagDB.TAGS_TABLE, TagDB.TAGS_NAME) +
+						" LIKE " + TagDB.quote(input + "%");
 					conditions.add(prefixCondition);
 					baseQuery.setConditions(conditions);
 				}
