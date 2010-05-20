@@ -350,6 +350,7 @@ public class HtmlParser implements HtmlParserConstants {
         throw new ParseException();
       }
         HtmlDocument.Tag tag = new HtmlDocument.Tag(st.image, t.image, alist, et.image);
+        System.out.println("+++++ st.image ^" + st.image + "^");
         if (st.image.startsWith("<%") || t.image.indexOf(":") > 0) {
             tag.setIsJspTag(true);
         }

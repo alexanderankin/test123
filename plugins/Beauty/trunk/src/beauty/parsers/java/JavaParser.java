@@ -432,9 +432,9 @@ public class JavaParser implements JavaParserConstants {
         break label_4;
       }
       jj_consume_token(COMMA);
-           add(",\u001c");
+           add(", \u001c");
       ClassOrInterfaceType();
-                                                      extendsMoreThanOne = true;
+                                                       extendsMoreThanOne = true;
     }
       if (extendsMoreThanOne && !isInterface)
          {if (true) throw new ParseException("A class cannot extend more than one other class");}
@@ -455,7 +455,7 @@ public class JavaParser implements JavaParserConstants {
         break label_5;
       }
       jj_consume_token(COMMA);
-           add(",\u001c");
+           add(", \u001c");
       ClassOrInterfaceType();
     }
       if (isInterface)
@@ -494,7 +494,7 @@ public class JavaParser implements JavaParserConstants {
         break label_6;
       }
       jj_consume_token(COMMA);
-                          add(",\u001c");
+                          add(", \u001c");
       EnumConstant();
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -585,11 +585,11 @@ public class JavaParser implements JavaParserConstants {
         break label_8;
       }
       jj_consume_token(COMMA);
-                                              add(",\u001c");
+                                              add(", \u001c");
       TypeParameter();
     }
     jj_consume_token(GT);
-                                                                                         add("> ");
+                                                                                          add("> ");
   }
 
   final public void TypeParameter() throws ParseException {
@@ -771,11 +771,11 @@ public class JavaParser implements JavaParserConstants {
         break label_11;
       }
       jj_consume_token(COMMA);
-                                      add(",\u001c");
+                                      add(", \u001c");
       VariableDeclarator();
     }
     jj_consume_token(SEMICOLON);
-                                                                                      add(";"); write();
+                                                                                       add(";"); write();
   }
 
   final public void VariableDeclarator() throws ParseException {
@@ -893,7 +893,7 @@ public class JavaParser implements JavaParserConstants {
           break label_13;
         }
         jj_consume_token(COMMA);
-                                                                   add(",\u001c");
+                                                                   add(", \u001c");
         VariableInitializer();
       }
       break;
@@ -904,14 +904,14 @@ public class JavaParser implements JavaParserConstants {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case COMMA:
       jj_consume_token(COMMA);
-                                                                                                                        add(",\u001c");
+                                                                                                                         add(", \u001c");
       break;
     default:
       jj_la1[33] = jj_gen;
       ;
     }
     jj_consume_token(RBRACE);
-                                                                                                                                                  add("}"); write();
+                                                                                                                                                    add("}"); write();
   }
 
   final public void MethodDeclaration(int modifiers) throws ParseException {
@@ -999,7 +999,7 @@ public class JavaParser implements JavaParserConstants {
           break label_15;
         }
         jj_consume_token(COMMA);
-                                                                                              add(",\u001c");
+                                                                                              add(", \u001c");
         FormalParameter();
       }
       break;
@@ -1008,7 +1008,7 @@ public class JavaParser implements JavaParserConstants {
       ;
     }
     jj_consume_token(RPAREN);
-                                                                                                                                             if (!added) trim(); add(")");
+                                                                                                                                              if (!added) trim(); add(")");
   }
 
   final public void FormalParameter() throws ParseException {
@@ -2258,7 +2258,7 @@ public class JavaParser implements JavaParserConstants {
         break label_34;
       }
       jj_consume_token(COMMA);
-                       add(",\u001c");
+                       add(", \u001c");
       Expression();
     }
   }
@@ -2619,7 +2619,7 @@ public class JavaParser implements JavaParserConstants {
         break label_39;
       }
       jj_consume_token(COMMA);
-                                                                     add(",\u001c");
+                                                                     add(", \u001c");
       VariableDeclarator();
     }
   }
@@ -3123,7 +3123,7 @@ public class JavaParser implements JavaParserConstants {
         break label_42;
       }
       jj_consume_token(COMMA);
-                                add(",\u001c");
+                                add(", \u001c");
       StatementExpression();
     }
   }
@@ -3352,7 +3352,7 @@ public class JavaParser implements JavaParserConstants {
         break label_44;
       }
       jj_consume_token(COMMA);
-                             add(",\u001c");
+                             add(", \u001c");
       MemberValuePair();
     }
   }
@@ -3421,20 +3421,20 @@ public class JavaParser implements JavaParserConstants {
         break label_45;
       }
       jj_consume_token(COMMA);
-                                                         add(",\u001c");
+                                                         add(", \u001c");
       MemberValue();
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case COMMA:
       jj_consume_token(COMMA);
-                                                                                                    add(",\u001c");
+                                                                                                     add(", \u001c");
       break;
     default:
       jj_la1[124] = jj_gen;
       ;
     }
     jj_consume_token(RBRACE);
-                                                                                                                              add("}"); write();
+                                                                                                                                add("}"); write();
   }
 
 /* Annotation Types. */
@@ -3867,25 +3867,6 @@ public class JavaParser implements JavaParserConstants {
     try { return !jj_3_41(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(40, xla); }
-  }
-
-  private boolean jj_3R_133() {
-    if (jj_3R_71()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_169()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  private boolean jj_3R_67() {
-    if (jj_scan_token(LPAREN)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_98()) jj_scanpos = xsp;
-    if (jj_scan_token(RPAREN)) return true;
-    return false;
   }
 
   private boolean jj_3R_209() {
@@ -4830,14 +4811,14 @@ public class JavaParser implements JavaParserConstants {
     return false;
   }
 
-  private boolean jj_3R_321() {
+  private boolean jj_3R_248() {
     if (jj_scan_token(COMMA)) return true;
-    if (jj_3R_320()) return true;
     return false;
   }
 
-  private boolean jj_3R_248() {
+  private boolean jj_3R_321() {
     if (jj_scan_token(COMMA)) return true;
+    if (jj_3R_320()) return true;
     return false;
   }
 
@@ -6581,6 +6562,25 @@ public class JavaParser implements JavaParserConstants {
     if (jj_scan_token(NEW)) return true;
     if (jj_3R_76()) return true;
     if (jj_3R_229()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_133() {
+    if (jj_3R_71()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_169()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  private boolean jj_3R_67() {
+    if (jj_scan_token(LPAREN)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_98()) jj_scanpos = xsp;
+    if (jj_scan_token(RPAREN)) return true;
     return false;
   }
 

@@ -1,10 +1,10 @@
 /*
  * HtmlDocument.java -- classes to represent HTML documents as parse trees
- * Copyright (C) 1999 Quiotix Corporation.  
+ * Copyright (C) 1999 Quiotix Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2, as 
- * published by the Free Software Foundation.  
+ * it under the terms of the GNU General Public License, version 2, as
+ * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -38,9 +38,9 @@ public class HtmlDocument {
     public HtmlDocument(ElementSequence s) {
         elements = s;
     }
-    
+
     public void setLineSeparator(String ls) {
-        NL = ls;   
+        NL = ls;
     }
 
     public void accept(HtmlVisitor v) {
@@ -89,7 +89,7 @@ public class HtmlDocument {
                 a = new AttributeList();
             attributeList = a;
         }
-        
+
         public Tag(String tagStart, String name, AttributeList a, String tagEnd) {
             if (tagStart != null)
                 this.tagStart = tagStart;
@@ -119,7 +119,7 @@ public class HtmlDocument {
         public String getAttributeValue(String name) {
             return attributeList.getValue(name);
         }
-        
+
         public void setIsJspTag( boolean b ) {
             isJspTag = b;
         }
@@ -136,16 +136,12 @@ public class HtmlDocument {
         public String toString() {
             StringBuffer s = new StringBuffer();
             s.append(tagStart);
-            if (isJspTag)
-                s.append(' ');
             s.append(tagName);
             for (Iterator iterator = attributeList.attributes.iterator(); iterator.hasNext();) {
                 Attribute attribute = (Attribute) iterator.next();
                 s.append(' ');
                 s.append(attribute.toString());
             }
-            if (isJspTag)
-                s.append(' ');
             s.append(tagEnd);
             return s.toString();
         }
@@ -192,12 +188,12 @@ public class HtmlDocument {
         public void accept(HtmlVisitor v) {
             v.visit(this);
         }
-        
+
         public String toString() {
-            return startTag.toString();   
+            return startTag.toString();
         }
     }
-    
+
     public static class JspScriptletBlock extends TagBlock {
         public JspScriptletBlock(ElementSequence b) {
             super(null, null, b);
@@ -212,30 +208,30 @@ public class HtmlDocument {
             tagStart = "<";
             tagEnd = "%";
         }
-        
+
         public int getLength() {
-            return 2;   
+            return 2;
         }
-        
+
         public String toString() {
-            return "<%";   
+            return "<%";
         }
     }
-    
+
     public static class JspScriptletEndTag extends EndTag {
         public JspScriptletEndTag() {
             super(null);
         }
-        
+
         public int getLength() {
-            return 2;   
+            return 2;
         }
-        
+
         public String toString() {
-            return "%>";   
+            return "%>";
         }
     }
-    
+
     /**
      * HTML comments.
      */
@@ -344,7 +340,7 @@ public class HtmlDocument {
         public int size() {
             return elements.size();
         }
-        
+
         public Iterator iterator() {
             return elements.iterator();
         }
@@ -407,16 +403,16 @@ public class HtmlDocument {
         public String toString() {
             return (hasValue ? name + "=" + quote(value) : name);
         }
-        
+
         public String quote(String s) {
             if (s == null) {
-                return "";   
+                return "";
             }
             if (!s.startsWith("\"")) {
-                s = "\"" + s;   
+                s = "\"" + s;
             }
             if (!s.endsWith("\"")) {
-                s += "\"";   
+                s += "\"";
             }
             return s;
         }
