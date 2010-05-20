@@ -25,6 +25,7 @@ options {
   //JAVA_UNICODE_ESCAPE = false;
   //UNICODE_INPUT = false;
   //ERROR_REPORTING = false;
+  //DEBUG_PARSER = true;
   STATIC = false;
 }
 
@@ -160,11 +161,11 @@ TOKEN_MGR_DECLS :
 
     // line buffer, text is accumulated here, then written to the output stream
     // on end of line marker.
-    static StringBuffer b = new StringBuffer();
+    static StringBuilder b = new StringBuilder();
 
     // all text is accumulated here.  When processing is complete, this buffer
     // will contain the final beautified text.
-    static StringBuffer outputBuffer = new StringBuffer();
+    static StringBuilder outputBuffer = new StringBuilder();
 
     // accumulate pieces a token or string at a time.  The objects in this array
     // will be ocnverted to strings, padded as appropriate, and added to the
@@ -190,8 +191,8 @@ TOKEN_MGR_DECLS :
     static String ls = System.getProperty("line.separator");
 
     static void reset() {
-        b = new StringBuffer();
-        outputBuffer = new StringBuffer();
+        b = new StringBuilder();
+        outputBuffer = new StringBuilder();
         a.clear();
         level = 0;
     }
@@ -246,7 +247,7 @@ TOKEN_MGR_DECLS :
         if (a.size() == 0)
             return;
         Object o = a.get(a.size() - 1);
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         if (o instanceof Token)
             sb.append( ((Token)o).image );
         else
@@ -266,14 +267,14 @@ TOKEN_MGR_DECLS :
 
     // trim all \n and/or \r from the end of the given string
     static void trimNL(String s) {
-        StringBuffer sb = new StringBuffer(s);
+        StringBuilder sb = new StringBuilder(s);
         while(sb.length() > 0 && (sb.charAt(sb.length() - 1) == '\r' || sb.charAt(sb.length() - 1) == '\n'))
             sb.deleteCharAt(sb.length() - 1);
     }
 
     // trim all whitespace (\r, \n, space, \t) from the start of the given string
     static String trimStart(String s) {
-        StringBuffer sb = new StringBuffer(s);
+        StringBuilder sb = new StringBuilder(s);
         while(sb.length() > 0 && (sb.charAt(0) == '\r'
                 || sb.charAt(0) == '\n'
                 || sb.charAt(0) == '\t'
@@ -291,7 +292,7 @@ TOKEN_MGR_DECLS :
     static void trimWhitespace() {
         for (int i = a.size() - 1; i >= 0; i-- ) {
             Object o = a.get(i);
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             if (o instanceof Token)
                 sb.append( ((Token)o).image );
             else
@@ -324,7 +325,7 @@ TOKEN_MGR_DECLS :
     // buffer (b) is used to build the line.
     static void write() {
         try {
-            b.delete(0, b.length());
+            b.setLength(0); // clear the line buffer
 
             // this next section builds the output string while protecting
             // string literals.  All extra spaces are removed from the output
@@ -425,10 +426,19 @@ TOKEN_MGR_DECLS :
             // by a space or ')' is preceded with by a space
             s = s.replaceAll("[(][ ]", "(");
             s = s.replaceAll("[ ][)]", ")");
+            
+            // there should be no situation where a comma is preceded by a space,
+            // although that seems to happen when formatting string arrays.
+            s = s.replaceAll("\\s+[,]", ",");
 
             // finally! add the string to the output buffer
             // check for line length, may need to wrap.  Sun says to avoid lines
-            // longer than 80 characters.
+            // longer than 80 characters.  This doesn't work well yet, so I've 
+            // commented out the wrapping code.  Still need to clean out the
+            // wrapping markers.
+            s = s.replaceAll("[\u001c]", "");
+            outputBuffer.append(s);
+            /*
             int wrap_sep_count = countWrapSep(s);
             if (s.length() - wrap_sep_count > 80) {
                 String[] lines = wrapLines(s);
@@ -448,6 +458,7 @@ TOKEN_MGR_DECLS :
                 s = s.replaceAll("[\u001c]", "");
                 outputBuffer.append(s);
             }
+            */
             // clear the accumulator for the next line
             a.clear();
         }
@@ -516,8 +527,8 @@ TOKEN_MGR_DECLS :
         return null;
     }
 
-    // StringBuffer doesn't have an "endsWith" method
-    static boolean endsWith(StringBuffer sb, String s) {
+    // StringBuilder doesn't have an "endsWith" method
+    static boolean endsWith(StringBuilder sb, String s) {
         if (sb == null && s == null)
             return true;
         if (sb == null && sb != null)
@@ -971,7 +982,7 @@ void ExtendsList(boolean isInterface):
 }
 {
    "extends" { add("extends"); } ClassOrInterfaceType()
-   ( "," { add(",\u001c"); } ClassOrInterfaceType() { extendsMoreThanOne = true; } )*
+   ( "," { add(", \u001c"); } ClassOrInterfaceType() { extendsMoreThanOne = true; } )*
    {
       if (extendsMoreThanOne && !isInterface)
          throw new ParseException("A class cannot extend more than one other class");
@@ -982,7 +993,7 @@ void ImplementsList(boolean isInterface):
 {}
 {
    "implements" { add("implements"); } ClassOrInterfaceType()
-   ( "," { add(",\u001c"); } ClassOrInterfaceType() )*
+   ( "," { add(", \u001c"); } ClassOrInterfaceType() )*
    {
       if (isInterface)
          throw new ParseException("An interface cannot implement other interfaces");
@@ -1004,7 +1015,7 @@ void EnumBody():
 {}
 {
     "{" { add("{"); }
-   EnumConstant() ( "," { add(",\u001c"); } EnumConstant() )*
+   EnumConstant() ( "," { add(", \u001c"); } EnumConstant() )*
    [ ";" { add(";"); write(); } ( ClassOrInterfaceBodyDeclaration(false) )* ]
    "}" { add("}"); write(); }
 }
@@ -1018,7 +1029,7 @@ void EnumConstant():
 void TypeParameters():
 {}
 {
-    "<" { add("<"); } TypeParameter() ( "," { add(",\u001c"); } TypeParameter() )* ">" { add("> "); }
+    "<" { add("<"); } TypeParameter() ( "," { add(", \u001c"); } TypeParameter() )* ">" { add("> "); }
 }
 
 void TypeParameter():
@@ -1077,7 +1088,7 @@ void FieldDeclaration(int modifiers):
 }
 {
   // Modifiers are already matched in the caller
-  Type() VariableDeclarator() ( "," { add(",\u001c"); } VariableDeclarator() )* ";" { add(";"); write(); }
+  Type() VariableDeclarator() ( "," { add(", \u001c"); } VariableDeclarator() )* ";" { add(";"); write(); }
 }
 
 void VariableDeclarator():
@@ -1103,7 +1114,7 @@ void VariableInitializer():
 void ArrayInitializer():
 {}
 {
-    "{" { add("{"); } [ VariableInitializer() ( LOOKAHEAD(2) "," { add(",\u001c"); } VariableInitializer() )* ] [ "," { add(",\u001c"); } ] "}" { add("}"); write(); }
+    "{" { add("{"); } [ VariableInitializer() ( LOOKAHEAD(2) "," { add(", \u001c"); } VariableInitializer() )* ] [ "," { add(", \u001c"); } ] "}" { add("}"); write(); }
 }
 
 void MethodDeclaration(int modifiers):
@@ -1129,7 +1140,7 @@ void FormalParameters():
     boolean added = false;
 }
 {
-    "(" { trimWhitespace(); trim(); add("("); } [ FormalParameter() { added = true; } ( "," { add(",\u001c"); } FormalParameter() )* ] ")" { if (!added) trim(); add(")"); }
+    "(" { trimWhitespace(); trim(); add("("); } [ FormalParameter() { added = true; } ( "," { add(", \u001c"); } FormalParameter() )* ] ")" { if (!added) trim(); add(")"); }
 }
 
 void FormalParameter():
@@ -1527,7 +1538,7 @@ void Arguments():
 void ArgumentList():
 {}
 {
-  Expression() ( "," { add(",\u001c"); } Expression() )*
+  Expression() ( "," { add(", \u001c"); } Expression() )*
 }
 
 void AllocationExpression():
@@ -1633,7 +1644,7 @@ void BlockStatement():
 void LocalVariableDeclaration():
 {}
 {
-  [ "final" { add("final "); } ] Type() VariableDeclarator() ( "," { add(",\u001c"); } VariableDeclarator() )*
+  [ "final" { add("final "); } ] Type() VariableDeclarator() ( "," { add(", \u001c"); } VariableDeclarator() )*
 }
 
 void EmptyStatement():
@@ -1832,7 +1843,7 @@ void ForInit():
 void StatementExpressionList():
 {}
 {
-  StatementExpression() ( "," { add(",\u001c"); } StatementExpression() )*
+  StatementExpression() ( "," { add(", \u001c"); } StatementExpression() )*
 }
 
 void ForUpdate():
@@ -1940,7 +1951,7 @@ void SingleMemberAnnotation():
 void MemberValuePairs():
 {}
 {
-   MemberValuePair() ( "," { add(",\u001c"); } MemberValuePair() )*
+   MemberValuePair() ( "," { add(", \u001c"); } MemberValuePair() )*
 }
 
 void MemberValuePair():
@@ -1962,7 +1973,7 @@ void MemberValue():
 void  MemberValueArrayInitializer():
 {}
 {
-    "{" { add("{"); } MemberValue() ( LOOKAHEAD(2) "," { add(",\u001c"); } MemberValue() )* [ "," { add(",\u001c"); } ] "}" { add("}"); write(); }
+    "{" { add("{"); } MemberValue() ( LOOKAHEAD(2) "," { add(", \u001c"); } MemberValue() )* [ "," { add(", \u001c"); } ] "}" { add("}"); write(); }
 }
 
 

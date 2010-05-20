@@ -1,10 +1,10 @@
 /*
- * HtmlParser.jj -- JavaCC grammar for HTML.  
- * Copyright (C) 1999 Quiotix Corporation.  
+ * HtmlParser.jj -- JavaCC grammar for HTML.
+ * Copyright (C) 1999 Quiotix Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2, as 
- * published by the Free Software Foundation.  
+ * it under the terms of the GNU General Public License, version 2, as
+ * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,40 +14,40 @@
  */
 
 
-/* 
+/*
  * JavaCC grammar file for HTML.
- * 
+ *
  * Author: Brian Goetz, Quiotix
  * Version: 1.03
  * Revision: $Id$
  *
- * This grammar parses an HTML document and produces a (flat) parse "tree" 
+ * This grammar parses an HTML document and produces a (flat) parse "tree"
  * representing the document.  It preserves almost all information in the
  * source document, including carriage control and spacing (except inside
- * of tags.)  See the HtmlDocument and HtmlDocument.* classes for a 
+ * of tags.)  See the HtmlDocument and HtmlDocument.* classes for a
  * description of the parse tree.  The parse tree supports traversal using
  * the commonly used "Visitor" pattern.  The HtmlDumper class is a visitor
- * which dumps out the tree to an output stream.  
- * 
+ * which dumps out the tree to an output stream.
+ *
  * It does not require begin tags to be matched with end tags, or validate
- * the names or contents of the tags (this can easily be done post-parsing; 
- * see the HtmlCollector class (which matches begin tags with end tags) 
- * for an example.)  
- * 
- * Notable edge cases include: 
+ * the names or contents of the tags (this can easily be done post-parsing;
+ * see the HtmlCollector class (which matches begin tags with end tags)
+ * for an example.)
+ *
+ * Notable edge cases include:
  * - Quoted string processing.  Quoted strings are matched inside of comments, and
  *   as tag attribute values.  Quoted strings are matched in normal text only
- *   to the extent that they do not span line breaks.  
- * 
- * Please direct comments, questions, gripes or praise to 
- * html-parser@quiotix.com.  If you like it/hate it/use it, please let us know!  
+ *   to the extent that they do not span line breaks.
+ *
+ * Please direct comments, questions, gripes or praise to
+ * html-parser@quiotix.com.  If you like it/hate it/use it, please let us know!
  */
 
-options { 
-    IGNORE_CASE = true; 
-    STATIC = false; 
+options {
+    IGNORE_CASE = true;
+    STATIC = false;
     //DEBUG_PARSER = true;
-} 
+}
 
 PARSER_BEGIN(HtmlParser)
 
@@ -64,9 +64,9 @@ public class HtmlParser {
     for (t=first; t != cur.next; t = t.next) {
       if (t.specialToken != null) {
         Token tt=t.specialToken;
-        while (tt.specialToken != null) 
+        while (tt.specialToken != null)
           tt = tt.specialToken;
-        for (; tt != null; tt = tt.next) 
+        for (; tt != null; tt = tt.next)
           sb.append(tt.image);
       }
       sb.append(t.image);
@@ -76,14 +76,14 @@ public class HtmlParser {
 
   public static void main(String[] args) throws ParseException {
       if (args.length == 0) {
-        return;   
+        return;
       }
       try {
         String filename = args[0];
         HtmlParser parser = new HtmlParser(new java.io.FileReader(filename));
         HtmlDocument document = parser.HtmlDocument();
         //doc.accept(new HtmlDumper(System.out));
-        
+
             document.setLineSeparator("\n");
             document.accept(new HtmlCollector());
             document.accept(new HtmlScrubber(HtmlScrubber.DEFAULT_OPTIONS | HtmlScrubber.TRIM_SPACES));
@@ -112,7 +112,7 @@ PARSER_END(HtmlParser)
 | <#ALPHANUM_CHAR: [ "a"-"z", "A"-"Z", "0"-"9" ] >
 | <#IDENTIFIER_CHAR: [ "a"-"z", "A"-"Z", "0"-"9", "_", "-", ".", ":" ] >
 | <#IDENTIFIER: <ALPHA_CHAR> (<IDENTIFIER_CHAR>)* >
-| <#QUOTED_STRING_NB: ( "'" ( ~["'", "\r", "\n"] )* "'" ) 
+| <#QUOTED_STRING_NB: ( "'" ( ~["'", "\r", "\n"] )* "'" )
                     | ( "\"" ( ~["\"", "\r", "\n"] )* "\"" ) >
 | <#QUOTED_STRING: ( "'" ( ~["'"] )* "'" ) | ( "\"" ( ~["\""] )* "\"" ) >
 | <#WHITESPACE: ( " " | "\t" | "\n" | "\r" ) >
@@ -124,7 +124,7 @@ PARSER_END(HtmlParser)
 | <#NO_TAG_END: ( ~[">"] | ( "/" ~[">"]) )+ >
 }
 
-<DEFAULT> TOKEN : 
+<DEFAULT> TOKEN :
 {
   <EOL:            ( " " | "\t" )* <NEWLINE> >
 | <TAG_START:      "<" (<WHITESPACE>)* | "<%@" (<WHITESPACE>)* > : LexStartTag
@@ -155,8 +155,8 @@ PARSER_END(HtmlParser)
 | <TAG_PERCENTEND: "%>" >               : DEFAULT
 | <TAG_SLASHEND: "/>" >                 : DEFAULT
 | <ATTR_EQ: "=" >                       : LexAttrVal
-| <IMPLICIT_TAG_END: "<">               
-  { 
+| <IMPLICIT_TAG_END: "<">
+  {
     Token t = new Token();
     t.image       = "<";
     t.kind        = TAG_START;
@@ -171,7 +171,7 @@ PARSER_END(HtmlParser)
   }                                     : LexStartTag
 | <LIT_ERROR: ~[]>
 }
-  
+
 <LexAttrVal> TOKEN :
 {
 	<SINGLE_QUOTE: "'"> : AttrValueBetweenSingleQuotesState
@@ -187,7 +187,7 @@ PARSER_END(HtmlParser)
 <AttrValueBetweenSingleQuotesState> TOKEN :
 {
 	<ENDING_SINGLE_QUOTE: "'"> : LexInTag
-|	<UNPARSED_TEXT_NO_SINGLE_QUOTES: 
+|	<UNPARSED_TEXT_NO_SINGLE_QUOTES:
 		( (~["$", "#", "'"]) | (["$", "#"] ~["{", "'"]) | <EL_ESCAPE> )+ >
 |	<DOLLAR_OR_HASH_SINGLE_QUOTE: ["$", "#"] "'" > : LexInTag
 }
@@ -204,7 +204,7 @@ PARSER_END(HtmlParser)
 	<EL_EXPRESSION_IN_ATTRIBUTE: "${" (<QUOTED_STRING> | <TEXT_IN_EL>)* "}" >
 |	<VALUE_BINDING_IN_ATTRIBUTE: "#{" (<QUOTED_STRING> | <TEXT_IN_EL>)* "}" >
 |	<JSP_EXPRESSION_IN_ATTRIBUTE: "<%=" <NO_JSP_TAG_END> "%>" >
-|   <JSP_TAG_IN_ATTRIBUTE: "<" <NO_TAG_END> "/>" > 
+|   <JSP_TAG_IN_ATTRIBUTE: "<" <NO_TAG_END> "/>" >
 }
 
 <LexInAttrVal> TOKEN :
@@ -213,13 +213,13 @@ PARSER_END(HtmlParser)
 }
 
 
-<LexComment> TOKEN : 
+<LexComment> TOKEN :
 {
   < COMMENT_END:  ("--" (" ")* ">" | "->" | "--%>" ) > : DEFAULT
 | < DASH:         "-" >
 | < COMMENT_EOL:  <NEWLINE> >
-| < COMMENT_WORD: ( (~[ "\n", "\r", "'", "\"", "-" ])+ 
-                    | <QUOTED_STRING_NB> 
+| < COMMENT_WORD: ( (~[ "\n", "\r", "'", "\"", "-" ])+
+                    | <QUOTED_STRING_NB>
                     | <QUOTE> ) >
 }
 
@@ -246,8 +246,8 @@ PARSER_END(HtmlParser)
 {
   <BLOCK_EOL:    <NEWLINE> >
 | <BLOCK_LBR:    "<" >
-| <BLOCK_WORD:   ( <QUOTED_STRING_NB> 
-                   | <QUOTE> 
+| <BLOCK_WORD:   ( <QUOTED_STRING_NB>
+                   | <QUOTE>
                    | (~[ "\n", "\r", "'", "\"", "<", "%"])+ ) >
 }
 
@@ -256,7 +256,7 @@ HtmlDocument HtmlDocument() :
   HtmlDocument.ElementSequence s;
 }
 {
-  s=ElementSequence() <EOF> 
+  s=ElementSequence() <EOF>
   { return new HtmlDocument(s); }
 }
 
@@ -277,18 +277,18 @@ HtmlDocument.HtmlElement Element() :
 }
 {
 (
-    LOOKAHEAD(2) 
+    LOOKAHEAD(2)
          e = Tag()          { return e; }
   |      e = EndTag()       { return e; }
   |      e = CommentTag()   { return e; }
   |      e = DeclTag()      { return e; }
   | LOOKAHEAD(3)
        e = ScriptletBlock() { return e; }
-  | LOOKAHEAD(2) 
+  | LOOKAHEAD(2)
          e = ScriptBlock()  { return e; }
-  | LOOKAHEAD(2) 
+  | LOOKAHEAD(2)
          e = StyleBlock()   { return e; }
-  | LOOKAHEAD(2) 
+  | LOOKAHEAD(2)
              <TAG_START> text=<LST_ERROR>
                             { return new HtmlDocument.Text("<" + text.image); }
   |   text = <PCDATA>       { return new HtmlDocument.Text(text.image); }
@@ -296,17 +296,17 @@ HtmlDocument.HtmlElement Element() :
 )
 }
 
-HtmlDocument.Attribute Attribute() : 
+HtmlDocument.Attribute Attribute() :
 {
-  HtmlDocument.Attribute a; 
+  HtmlDocument.Attribute a;
   Token t;
   String value=null;
 }
 {
       //t1=<ATTR_NAME> [ <ATTR_EQ> t2=<ATTR_VAL> ]
       t=<ATTR_NAME> [ <ATTR_EQ> value=AttributeValue() ]
-      { if (value == null) 
-          return new HtmlDocument.Attribute(t.image); 
+      { if (value == null)
+          return new HtmlDocument.Attribute(t.image);
         else
           return new HtmlDocument.Attribute(t.image, value);
       }
@@ -314,7 +314,7 @@ HtmlDocument.Attribute Attribute() :
 
 String AttributeValue() :
 {
-    StringBuffer content = new StringBuffer();  
+    StringBuffer content = new StringBuffer();
     Token t = null;
     HtmlDocument.HtmlElement inner_tag = null;
 }
@@ -322,37 +322,37 @@ String AttributeValue() :
     try {
         (
             ( 	<DOUBLE_QUOTE>
-                ( 
-                    (	
+                (
+                    (
                      	t = QuoteIndependentAttributeValueContent()
-                    ) 
-                    { 
+                    )
+                    {
                         if (t != null) {
                             content.append(t.image);
                         }
                         else if (inner_tag != null) {
                             content.append(inner_tag.toString());
                         }
-                    } 
+                    }
                 )*
-                ( 	<ENDING_DOUBLE_QUOTE> 
+                ( 	<ENDING_DOUBLE_QUOTE>
                   |	t = <DOLLAR_OR_HASH_DOUBLE_QUOTE> { content.append(t.image.substring(0, 1)); }
-                ) 
+                )
                 [ t=<ATTR_VAL> { content.append( t.image ); } ]
             )
             |
             ( 	<SINGLE_QUOTE>
-                ( 
+                (
                     ( t = <UNPARSED_TEXT_NO_SINGLE_QUOTES>
-                    | t = QuoteIndependentAttributeValueContent()			
-                    ) { content.append(t.image); } 
+                    | t = QuoteIndependentAttributeValueContent()
+                    ) { content.append(t.image); }
                 )*
-                ( 	<ENDING_SINGLE_QUOTE> 
+                ( 	<ENDING_SINGLE_QUOTE>
                   | t = <DOLLAR_OR_HASH_SINGLE_QUOTE>  { content.append(t.image.substring(0, 1)); }
-                ) 
+                )
             )
         )
-        { 
+        {
             return content.toString();
         }
     }
@@ -369,16 +369,16 @@ Token QuoteIndependentAttributeValueContent() :
 { 	Token t; }
 {
     try {
-	(	
+	(
 	    LOOKAHEAD(2)
-	    t = <EL_EXPRESSION_IN_ATTRIBUTE> 
+	    t = <EL_EXPRESSION_IN_ATTRIBUTE>
 	| 	LOOKAHEAD(2) t = <VALUE_BINDING_IN_ATTRIBUTE>
   	| 	LOOKAHEAD(2) t = <JSP_EXPRESSION_IN_ATTRIBUTE>
   	|   LOOKAHEAD(2) t = <JSP_TAG_IN_ATTRIBUTE>
   	|   LOOKAHEAD(2) t = <UNPARSED_TEXT_NO_DOUBLE_QUOTES>
 	)
 	{ return t; }
-        
+
     }
     catch(Exception e) {
         e.printStackTrace();
@@ -386,7 +386,7 @@ Token QuoteIndependentAttributeValueContent() :
 }
 
 
-HtmlDocument.AttributeList AttributeList() : 
+HtmlDocument.AttributeList AttributeList() :
 {
   HtmlDocument.AttributeList alist = new HtmlDocument.AttributeList();
   HtmlDocument.Attribute a;
@@ -438,19 +438,19 @@ HtmlDocument.ElementSequence BlockContents() : {
   HtmlDocument.ElementSequence e = new HtmlDocument.ElementSequence();
 }
 {
-  ( <BLOCK_EOL> { 
+  ( <BLOCK_EOL> {
       if (s.length() > 0) {
-        e.addElement(new HtmlDocument.Text(s.toString())); 
+        e.addElement(new HtmlDocument.Text(s.toString()));
         s.setLength(0);
       };
-      e.addElement(new HtmlDocument.Newline()); 
+      e.addElement(new HtmlDocument.Newline());
     }
-    | t=<BLOCK_WORD> { s.append(t.image); } 
-    | t=<BLOCK_LBR>  { s.append(t.image); } 
-  )* 
-  { 
-    if (s.length() > 0) 
-      e.addElement(new HtmlDocument.Text(s.toString())); 
+    | t=<BLOCK_WORD> { s.append(t.image); }
+    | t=<BLOCK_LBR>  { s.append(t.image); }
+  )*
+  {
+    if (s.length() > 0)
+      e.addElement(new HtmlDocument.Text(s.toString()));
     // danson, removed next line, it causes an extra blank line to be inserted
     // in script and style blocks
     //e.addElement(new HtmlDocument.Newline());
@@ -467,17 +467,17 @@ HtmlDocument.HtmlElement ScriptBlock() :
 {
   try {
     <TAG_START> <TAG_SCRIPT> alist=AttributeList() <TAG_END>
-    { 
-      token_source.SwitchTo(LexScript); 
+    {
+      token_source.SwitchTo(LexScript);
     }
     e=BlockContents()
     <SCRIPT_END>
-    { 
-      return new HtmlDocument.TagBlock("SCRIPT", alist, e); 
+    {
+      return new HtmlDocument.TagBlock("SCRIPT", alist, e);
     }
   }
   catch (ParseException ex) {
-    token_source.SwitchTo(DEFAULT); 
+    token_source.SwitchTo(DEFAULT);
     String s = getTokenText(firstToken, getNextToken());
     return new HtmlDocument.Text(s);
   }
@@ -493,17 +493,17 @@ HtmlDocument.HtmlElement StyleBlock() :
 {
   try {
     <TAG_START> <TAG_STYLE> alist=AttributeList() <TAG_END>
-    { 
-      token_source.SwitchTo(LexStyle); 
+    {
+      token_source.SwitchTo(LexStyle);
     }
     e=BlockContents()
     <STYLE_END>
-    { 
-      return new HtmlDocument.TagBlock("STYLE", alist, e); 
+    {
+      return new HtmlDocument.TagBlock("STYLE", alist, e);
     }
   }
   catch (ParseException ex) {
-    token_source.SwitchTo(DEFAULT); 
+    token_source.SwitchTo(DEFAULT);
     String s = getTokenText(firstToken, getNextToken());
     return new HtmlDocument.Text(s);
   }
@@ -521,7 +521,7 @@ HtmlDocument.HtmlElement EndTag() :
     { return new HtmlDocument.EndTag(t.image); }
   }
   catch (ParseException ex) {
-    token_source.SwitchTo(DEFAULT); 
+    token_source.SwitchTo(DEFAULT);
     String s = getTokenText(firstToken, getNextToken());
     return new HtmlDocument.Text(s);
   }
@@ -544,15 +544,15 @@ HtmlDocument.Comment CommentTag() :
   }
 }
 
-  
+
 HtmlDocument.Comment DeclTag() :
 {
   Token t;
 }
 {
   <DECL_START> t=<DECL_ANY> <DECL_END>
-  { 
-    return new HtmlDocument.Comment(t.image); 
+  {
+    return new HtmlDocument.Comment(t.image);
   }
 }
 
@@ -563,18 +563,18 @@ HtmlDocument.HtmlElement ScriptletBlock() :
 }
 {
   try {
-    <SCRIPTLET_TAG> 
-    { 
+    <SCRIPTLET_TAG>
+    {
         String block = getScriptletBlock();
         e = new HtmlDocument.ElementSequence();
         e.addElement(new HtmlDocument.Text(block));
-        token_source.SwitchTo(DEFAULT); 
-        return new HtmlDocument.JspScriptletBlock(e); 
+        token_source.SwitchTo(DEFAULT);
+        return new HtmlDocument.JspScriptletBlock(e);
     }
   }
   catch (ParseException ex) {
     // ex.printStackTrace();
-    token_source.SwitchTo(DEFAULT); 
+    token_source.SwitchTo(DEFAULT);
     String s = getTokenText(firstToken, getNextToken());
     return new HtmlDocument.Text(s);
   }
@@ -585,7 +585,7 @@ HtmlDocument.HtmlElement ScriptletBlock() :
  but the matching rules for a word trump the matching rules for the %> end tag.
  This works well anyway, since I really don't care about tokenizing the contents
  of a jsp scriptlet.  I just want the contents verbatim.
- 
+
  This returns the contents of the jsp scriptlet block without the <% or %>.
 */
 JAVACODE

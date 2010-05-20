@@ -8,11 +8,11 @@ public class JavaParserTokenManager implements JavaParserConstants
 {
     // line buffer, text is accumulated here, then written to the output stream
     // on end of line marker.
-    static StringBuffer b = new StringBuffer();
+    static StringBuilder b = new StringBuilder();
 
     // all text is accumulated here.  When processing is complete, this buffer
     // will contain the final beautified text.
-    static StringBuffer outputBuffer = new StringBuffer();
+    static StringBuilder outputBuffer = new StringBuilder();
 
     // accumulate pieces a token or string at a time.  The objects in this array
     // will be ocnverted to strings, padded as appropriate, and added to the
@@ -38,8 +38,8 @@ public class JavaParserTokenManager implements JavaParserConstants
     static String ls = System.getProperty("line.separator");
 
     static void reset() {
-        b = new StringBuffer();
-        outputBuffer = new StringBuffer();
+        b = new StringBuilder();
+        outputBuffer = new StringBuilder();
         a.clear();
         level = 0;
     }
@@ -94,7 +94,7 @@ public class JavaParserTokenManager implements JavaParserConstants
         if (a.size() == 0)
             return;
         Object o = a.get(a.size() - 1);
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         if (o instanceof Token)
             sb.append( ((Token)o).image );
         else
@@ -114,14 +114,14 @@ public class JavaParserTokenManager implements JavaParserConstants
 
     // trim all \n and/or \r from the end of the given string
     static void trimNL(String s) {
-        StringBuffer sb = new StringBuffer(s);
+        StringBuilder sb = new StringBuilder(s);
         while(sb.length() > 0 && (sb.charAt(sb.length() - 1) == '\u005cr' || sb.charAt(sb.length() - 1) == '\u005cn'))
             sb.deleteCharAt(sb.length() - 1);
     }
 
     // trim all whitespace (\r, \n, space, \t) from the start of the given string
     static String trimStart(String s) {
-        StringBuffer sb = new StringBuffer(s);
+        StringBuilder sb = new StringBuilder(s);
         while(sb.length() > 0 && (sb.charAt(0) == '\u005cr'
                 || sb.charAt(0) == '\u005cn'
                 || sb.charAt(0) == '\u005ct'
@@ -139,7 +139,7 @@ public class JavaParserTokenManager implements JavaParserConstants
     static void trimWhitespace() {
         for (int i = a.size() - 1; i >= 0; i-- ) {
             Object o = a.get(i);
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             if (o instanceof Token)
                 sb.append( ((Token)o).image );
             else
@@ -172,7 +172,7 @@ public class JavaParserTokenManager implements JavaParserConstants
     // buffer (b) is used to build the line.
     static void write() {
         try {
-            b.delete(0, b.length());
+            b.setLength(0); // clear the line buffer
 
             // this next section builds the output string while protecting
             // string literals.  All extra spaces are removed from the output
@@ -274,9 +274,18 @@ public class JavaParserTokenManager implements JavaParserConstants
             s = s.replaceAll("[(][ ]", "(");
             s = s.replaceAll("[ ][)]", ")");
 
+            // there should be no situation where a comma is preceded by a space,
+            // although that seems to happen when formatting string arrays.
+            s = s.replaceAll("\u005c\u005cs+[,]", ",");
+
             // finally! add the string to the output buffer
             // check for line length, may need to wrap.  Sun says to avoid lines
-            // longer than 80 characters.
+            // longer than 80 characters.  This doesn't work well yet, so I've 
+            // commented out the wrapping code.  Still need to clean out the
+            // wrapping markers.
+            s = s.replaceAll("[\u001c]", "");
+            outputBuffer.append(s);
+            /*
             int wrap_sep_count = countWrapSep(s);
             if (s.length() - wrap_sep_count > 80) {
                 String[] lines = wrapLines(s);
@@ -287,15 +296,16 @@ public class JavaParserTokenManager implements JavaParserConstants
                 }
                 else {
                     // whack any remaining  characters
-                    s = s.replaceAll("[\u001c]", "");
+                    s = s.replaceAll("[]", "");
                     outputBuffer.append(s);
                 }
             }
             else {
                 // whack any remaining  characters
-                s = s.replaceAll("[\u001c]", "");
+                s = s.replaceAll("[]", "");
                 outputBuffer.append(s);
             }
+            */
             // clear the accumulator for the next line
             a.clear();
         }
@@ -364,8 +374,8 @@ public class JavaParserTokenManager implements JavaParserConstants
         return null;
     }
 
-    // StringBuffer doesn't have an "endsWith" method
-    static boolean endsWith(StringBuffer sb, String s) {
+    // StringBuilder doesn't have an "endsWith" method
+    static boolean endsWith(StringBuilder sb, String s) {
         if (sb == null && s == null)
             return true;
         if (sb == null && sb != null)

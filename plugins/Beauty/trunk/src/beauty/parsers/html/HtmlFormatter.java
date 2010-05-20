@@ -60,27 +60,20 @@ public class HtmlFormatter extends HtmlVisitor {
     protected static Set tagsTryMatch = new HashSet();
 
     // these tags _should_ be block tags, so indent the block
- 
-    protected static final String []tagsIndentStrings = {"TABLE" ,"TR" ,"TD" ,"TH" ,"FORM" ,"HTML" ,"HEAD" ,"BODY" ,"SELECT" ,"OL" ,"UL" ,"LI" ,
-        "DIV" ,"SPAN"}
-
-    ;
+    protected static final String []tagsIndentStrings = 
+    {"TABLE", "TR", "TD", "TH", "FORM", "HTML", "HEAD", "BODY", "SELECT", 
+        "OL", "UL", "LI", "DIV", "SPAN", "P", "H1", "H2", "H3", "H4", "H5", "H6"};
 
     // always start these tags on a new line
- 
-    protected static final String []tagsNewlineBeforeStrings = {"P" ,"H1" ,"H2" ,"H3" ,"H4" ,"H5" ,"H6" ,"BR" ,"HR" ,"taglib" ,"OL" ,"UL" ,"LI" ,"LINK"}
-    ;
+    protected static final String []tagsNewlineBeforeStrings = 
+    {"P", "H1", "H2", "H3", "H4", "H5", "H6", "BR", "HR", "taglib", "OL", "UL", "LI", "LINK"};
 
     // don't format inside these tags
- 
-    protected static final String []tagsPreformattedStrings = {"PRE" ,"SCRIPT" ,"STYLE" ,"%"}
-    ;
+    protected static final String []tagsPreformattedStrings = {"PRE", "SCRIPT", "STYLE", "%"};
 
     // these are often missing the closing tag, attempt to match
- 
     //= {"A", "TD", "TH", "TR", "I", "B", "EM", "FONT", "TT", "UL"};
-    protected static final String []tagsTryMatchStrings = {"A" ,"I" ,"B" ,"EM" ,"FONT" ,"TT"}
-    ;
+    protected static final String []tagsTryMatchStrings = {"A", "I", "B", "EM", "FONT", "TT"};
 
     static {
         for (int i = 0; i < tagsIndentStrings.length; i++) {
@@ -132,8 +125,6 @@ public class HtmlFormatter extends HtmlVisitor {
         boolean indent;
         boolean preformat;
         int wasMargin = 0;
-        System.out.println("+++++ block jsp startTag: " + block.startTag); 
-        System.out.println("+++++ is jsp tag? " + block.startTag.isJspTag);
 
         preformat = block.startTag.tagName == null || tagsPreformatted.contains(block.startTag.tagName.toUpperCase());
 
