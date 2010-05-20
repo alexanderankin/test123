@@ -350,7 +350,6 @@ public class HtmlParser implements HtmlParserConstants {
         throw new ParseException();
       }
         HtmlDocument.Tag tag = new HtmlDocument.Tag(st.image, t.image, alist, et.image);
-        System.out.println("+++++ st.image ^" + st.image + "^");
         if (st.image.startsWith("<%") || t.image.indexOf(":") > 0) {
             tag.setIsJspTag(true);
         }
@@ -561,7 +560,9 @@ public class HtmlParser implements HtmlParserConstants {
         while (true) {
             sb.append(jj_input_stream.readChar());
             if (sb.length() > 2 && sb.substring(sb.length() - 2).equals("%>")) {
-                return sb.substring(0, sb.length() - 2);
+                // trim the %> from the end of the string
+                sb.setLength(sb.length() - 2);
+                return sb.toString();
             }
         }
     }

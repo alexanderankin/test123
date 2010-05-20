@@ -586,7 +586,8 @@ HtmlDocument.HtmlElement ScriptletBlock() :
  This works well anyway, since I really don't care about tokenizing the contents
  of a jsp scriptlet.  I just want the contents verbatim.
 
- This returns the contents of the jsp scriptlet block without the <% or %>.
+ This returns the contents of the jsp scriptlet block without the <% or %>.  The
+ %> will be consumed.
 */
 JAVACODE
 String getScriptletBlock() {
@@ -595,7 +596,9 @@ String getScriptletBlock() {
         while (true) {
             sb.append(jj_input_stream.readChar());
             if (sb.length() > 2 && sb.substring(sb.length() - 2).equals("%>")) {
-                return sb.substring(0, sb.length() - 2);
+                // trim the %> from the end of the string
+                sb.setLength(sb.length() - 2);
+                return sb.toString();
             }
         }
     }

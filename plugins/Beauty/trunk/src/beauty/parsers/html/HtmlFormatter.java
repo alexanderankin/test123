@@ -60,20 +60,19 @@ public class HtmlFormatter extends HtmlVisitor {
     protected static Set tagsTryMatch = new HashSet();
 
     // these tags _should_ be block tags, so indent the block
-    protected static final String []tagsIndentStrings = 
-    {"TABLE", "TR", "TD", "TH", "FORM", "HTML", "HEAD", "BODY", "SELECT", 
-        "OL", "UL", "LI", "DIV", "SPAN", "P", "H1", "H2", "H3", "H4", "H5", "H6"};
+    protected static final String []tagsIndentStrings = {"TABLE", "TR", "TD", "TH", "FORM", "HTML", "HEAD", "BODY", "SELECT" 
+
+, "OL", "UL", "LI", "DIV", "SPAN", "P", "H1", "H2", "H3", "H4", "H5", "H6"} ;
 
     // always start these tags on a new line
-    protected static final String []tagsNewlineBeforeStrings = 
-    {"P", "H1", "H2", "H3", "H4", "H5", "H6", "BR", "HR", "taglib", "OL", "UL", "LI", "LINK"};
+    protected static final String []tagsNewlineBeforeStrings = {"P", "H1", "H2", "H3", "H4", "H5", "H6", "BR", "HR", "taglib", "OL", "UL", "LI", "LINK"} ;
 
     // don't format inside these tags
-    protected static final String []tagsPreformattedStrings = {"PRE", "SCRIPT", "STYLE", "%"};
+    protected static final String []tagsPreformattedStrings = {"PRE", "SCRIPT", "STYLE", "%"} ;
 
     // these are often missing the closing tag, attempt to match
     //= {"A", "TD", "TH", "TR", "I", "B", "EM", "FONT", "TT", "UL"};
-    protected static final String []tagsTryMatchStrings = {"A", "I", "B", "EM", "FONT", "TT"};
+    protected static final String []tagsTryMatchStrings = {"A", "I", "B", "EM", "FONT", "TT"} ;
 
     static {
         for (int i = 0; i < tagsIndentStrings.length; i++) {
@@ -201,7 +200,7 @@ public class HtmlFormatter extends HtmlVisitor {
                     out.print(lineSeparator);
                 }
             } else {
-                out.printAutoWrap(" " + a.toString(), hanging);
+                out.printAutoWrap(" " + a.toString(),  hanging);
             }
         }
         if (splitAttrs) {
@@ -222,7 +221,7 @@ public class HtmlFormatter extends HtmlVisitor {
 
     public void visit(HtmlDocument.EndTag t) {
         out.printAutoWrap(t.toString());
-        if (t.tagName != null && tagsNewlineBefore.contains(t.tagName.toUpperCase())) {
+        if (t.tagName == null || tagsNewlineBefore.contains(t.tagName.toUpperCase())) {
             out.printlnSoft();
         } else {
             out.print(" ");
@@ -241,15 +240,15 @@ public class HtmlFormatter extends HtmlVisitor {
         } else {
             // TODO: this should be a user setting
             // collapse multiple spaces to a single space
-            t.text = t.text.replaceAll("[ ]+", " ");
+            t.text = t.text.replaceAll("[ ]+",  " ");
             int start = 0;
             while (start < t.text.length()) {
-                int index = t.text.indexOf(' ', start) + 1;
+                int index = t.text.indexOf(' ',  start) + 1;
                 if (index == 0) {
                     index = t.text.length();
                 }
 
-                out.printAutoWrap(t.text.substring(start, index));
+                out.printAutoWrap(t.text.substring(start,  index));
                 start = index;
             }
         }
@@ -260,10 +259,7 @@ public class HtmlFormatter extends HtmlVisitor {
         if (inPreBlock) {
             out.print(lineSeparator);
         } else {
-            if (previousElement instanceof HtmlDocument.Tag 
-                || previousElement instanceof HtmlDocument.EndTag 
-                || previousElement instanceof HtmlDocument.Comment 
-                || previousElement instanceof HtmlDocument.Newline) {
+            if (previousElement instanceof HtmlDocument.Tag || previousElement instanceof HtmlDocument.EndTag || previousElement instanceof HtmlDocument.Comment || previousElement instanceof HtmlDocument.Newline) {
                 out.printlnSoft();
             } else {
                 if (previousElement instanceof HtmlDocument.Text) {
@@ -315,7 +311,7 @@ class MarginWriter {
         }
 
         if (curPosition == 0 && leftMargin > 0) {
-            sb.append(spaces, 0, leftMargin);
+            sb.append(spaces,  0,  leftMargin);
             curPosition = leftMargin;
         }
         sb.append(s);
@@ -333,14 +329,14 @@ class MarginWriter {
         print(s);
     }
 
-    public void printAutoWrap(String s, int hanging) {
+    public void printAutoWrap(String s,  int hanging) {
         if (s == null) {
             s = "";
         }
 
         if (curPosition > leftMargin && curPosition + s.length() > rightMargin) {
             println();
-            sb.append(spaces, 0, hanging + leftMargin);
+            sb.append(spaces,  0,  hanging + leftMargin);
             curPosition = leftMargin + hanging;
         }
         print(s);
@@ -356,7 +352,7 @@ class MarginWriter {
             s = "";
         }
 
-        sb.append(spaces, 0, leftMargin);
+        sb.append(spaces,  0,  leftMargin);
         print(s);
     }
 
