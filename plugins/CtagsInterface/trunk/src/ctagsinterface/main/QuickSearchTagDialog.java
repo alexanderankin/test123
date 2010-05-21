@@ -192,7 +192,7 @@ public class QuickSearchTagDialog extends JDialog {
 	private void applyFilter()
 	{
 		model.removeAllElements();
-		String input = name.getText().toLowerCase();
+		String input = name.getText();
 		if (showImmediately || (! input.isEmpty()))
 		{
 			switch (mode)
