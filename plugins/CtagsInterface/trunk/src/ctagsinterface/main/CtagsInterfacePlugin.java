@@ -1,12 +1,11 @@
 package ctagsinterface.main;
 import ise.plugin.nav.AutoJump;
 
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Vector;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,10 +26,10 @@ import org.gjt.sp.jedit.msg.PositionChanging;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
 
-import ctagsinterface.db.Query;
-import ctagsinterface.db.TagDB;
-import ctagsinterface.dialogs.ChangeDbSettings;
 import ctagsinterface.dockables.TagList;
+import ctagsinterface.index.TagIndex;
+import ctagsinterface.index.TagIndex.Origin;
+import ctagsinterface.index.TagIndex.OriginType;
 import ctagsinterface.jedit.BufferWatcher;
 import ctagsinterface.jedit.TagCompletion;
 import ctagsinterface.jedit.TagTooltip;
@@ -41,15 +40,17 @@ import ctagsinterface.options.ProjectsOptionPane;
 import ctagsinterface.projects.ProjectDependencies;
 import ctagsinterface.projects.ProjectWatcher;
 
-public class CtagsInterfacePlugin extends EditPlugin {
+public class CtagsInterfacePlugin extends EditPlugin
+{
 	
+	private static final String MISC_ORIGIN_ID = "temp";
 	public static final String TAGS_UPDATED_BUFFER_PROP = "TagsUpdated";
 	private static final String QUALIFIED_PLUGIN_NAME = "ctagsinterface.main.CtagsInterfacePlugin";
 	private static final String DOCKABLE = "ctags-interface-tag-list";
 	static public final String OPTION = "options.CtagsInterface.";
 	static public final String MESSAGE = "messages.CtagsInterface.";
 	static public final String ACTION_SET = "Plugin: CtagsInterface - Actions";
-	private static TagDB db;
+	private static TagIndex index;
 	private static Parser parser;
 	private static Runner runner;
 	private static BufferWatcher watcher;
@@ -61,17 +62,12 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	public void start()
 	{
 		Log.log(Log.MESSAGE, this, "Setting up Tagdb...");
-		db = new TagDB();
-		if (db.isFailed())
-			return;
+		index = new TagIndex();
 		parser = new Parser();
 		runner = new Runner();
-		watcher = new BufferWatcher(db);
+		watcher = new BufferWatcher(index);
 		EditPlugin p = jEdit.getPlugin("projectviewer.ProjectPlugin",false);
-		if(p == null)
-			pvi = null;
-		else
-			pvi = new ProjectWatcher();
+		pvi = (p == null) ? null : new ProjectWatcher();
 		actions = new ActionSet(ACTION_SET);
 		updateActions();
 		jEdit.addActionSet(actions);
@@ -81,30 +77,35 @@ public class CtagsInterfacePlugin extends EditPlugin {
 
 	public void stop()
 	{
+		TagTooltip.stop();
 		if (pvi != null)
-			pvi.stop();
-		if (watcher != null)
-			watcher.shutdown();
-		if ((db != null) && (! db.isFailed()))
 		{
-			TagTooltip.stop();
-			db.shutdown();
+			pvi.stop();
+			pvi = null;
 		}
+		watcher.shutdown();
+		watcher = null;
+		index.close();
+		index = null;
 	}
 	
-	static public TagDB getDB() {
-		return db;
+	static public TagIndex getIndex()
+	{
+		return index;
 	}
 
-	static public ImageIcon getIcon(Tag tag) {
+	static public ImageIcon getIcon(Tag tag)
+	{
 		return iconProvider.getIcon(tag);
 	}
 
-	static public Object getBufferUpdateLock() {
+	static public Object getBufferUpdateLock()
+	{
 		return bufferUpdateLock;
 	}
 
-	static public void updateActions() {
+	static public void updateActions()
+	{
 		actions.removeAllActions();
 		QueryAction[] queries = ActionsOptionPane.loadActions();
 		for (int i = 0; i < queries.length; i++)
@@ -112,69 +113,29 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		actions.initKeyBindings();
 	}
 	
-    static public void dumpQuery(String expression) {
-    	try {
-    		ResultSet rs = db.query(expression);
-    		if (rs == null)
-    			return;
-			dump(rs);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-    }
-    public static void dump(ResultSet rs) throws SQLException {
-        ResultSetMetaData meta   = rs.getMetaData();
-        int               colmax = meta.getColumnCount();
-        int               i;
-        Object            o = null;
-        for (; rs.next(); ) {
-        	StringBuffer buf = new StringBuffer();
-            for (i = 0; i < colmax; ++i) {
-                o = rs.getObject(i + 1);
-                if (o != null)
-                buf.append(o.toString() + " ");
-            }
-            System.err.println(buf.toString());
-        }
-    }
-    static void printTags() {
-		dumpQuery("SELECT * FROM " + TagDB.TAGS_TABLE);
-    }
-    static void printTagsContaining(View view) {
-		String s = JOptionPane.showInputDialog("Substring:");
-		if (s == null || s.length() == 0)
-			return;
-		dumpQuery("SELECT * FROM " + TagDB.TAGS_TABLE +
-			" WHERE " + TagDB.TAGS_NAME + " LIKE " +
-			TagDB.quote("%" + s + "%"));
-    }
+    static private class TagFileHandler implements TagHandler
+    {
+		private HashSet<String> files = new HashSet<String>();
+		private Origin origin;
 
-    static private class TagFileHandler implements TagHandler {
-		private HashSet<Integer> files = new HashSet<Integer>();
-		private int originId;
-		public TagFileHandler(int originId) {
-			this.originId = originId;
+		public TagFileHandler(Origin origin)
+		{
+			this.origin = origin;
 		}
-		public void processTag(Tag t) {
+		public void processTag(Tag t)
+		{
 			String file = t.getFile();
-			int fileId = db.getSourceFileID(file);
-			if (! files.contains(fileId)) {
-				if (fileId < 0) {
-					// Add source file to DB
-					db.insertSourceFile(file);
-					fileId = db.getSourceFileID(file);
-				} else {
-					// Delete all tags from this source file
-					db.deleteTagsFromSourceFile(fileId);
-				}
-				files.add(fileId);
-				db.insertSourceFileOrigin(fileId, originId);
+			if (! files.contains(file))
+			{
+				index.deleteTagsFromSourceFile(file);
+				files.add(file);
 			}
-			db.insertTag(t, fileId);
+			index.insertTag(t, origin);
 		}
     }
     
-	private static String getScopeName(View view) {
+	private static String getScopeName(View view)
+	{
 		boolean projectScope = (pvi != null &&
 				(ProjectsOptionPane.getSearchActiveProjectOnly() ||
 				 ProjectsOptionPane.getSearchActiveProjectFirst()));
@@ -183,12 +144,15 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	
     // Adds a temporary tag file to the DB
     // Existing tags from source files in the tag file are removed first.  
-    static private void addTempTagFile(String tagFile) {
-		parser.parseTagFile(tagFile, new TagFileHandler(TagDB.TEMP_ORIGIN_INDEX));
+    static private void addTempTagFile(String tagFile)
+    {
+		parser.parseTagFile(tagFile, new TagFileHandler(
+			index.getOrigin(OriginType.MISC, MISC_ORIGIN_ID, true)));
     }
     
     // Action: Prompt for a temporary tag file to add to the DB
-	static public void addTagFile(View view) {
+	static public void addTagFile(View view)
+	{
 		String tagFile = JOptionPane.showInputDialog("Tag file:");
 		if (tagFile == null || tagFile.length() == 0)
 			return;
@@ -196,25 +160,23 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	}
 
 	// Action: Add current file to the DB
-	static public void addCurrentFile(View view) {
+	static public void addCurrentFile(View view)
+	{
 		String path = view.getBuffer().getPath();
-		TagFileHandler handler = new TagFileHandler(TagDB.TEMP_ORIGIN_INDEX);
+		TagFileHandler handler = new TagFileHandler(
+			index.getOrigin(TagIndex.OriginType.MISC, MISC_ORIGIN_ID, true));
 		tagSourceTree(path, handler);
 	}
-	// If query results contain a single tag, jump to it, otherwise
-	// present the list of tags in the Tag List dockable.
-	public static void jumpToQueryResults(final View view, ResultSet rs)
-	{
-		Vector<Tag> tags = db.getResultSetTags(rs);
-		jumpToTags(view, tags);
-	}
 
-	private static void jumpToTags(final View view, Vector<Tag> tags) {
-		if (tags.size() == 0) {
+	public static void jumpToTags(final View view, List<Tag> tags)
+	{
+		if (tags == null || tags.size() == 0)
+		{
 			JOptionPane.showMessageDialog(view, "No tags found");
 			return;
 		}
-		if (tags.size() > 1) {
+		if (tags.size() > 1)
+		{
 			view.getDockableWindowManager().showDockableWindow(DOCKABLE);
 			JComponent c = view.getDockableWindowManager().getDockable(DOCKABLE);
 			TagList tl = (TagList) c;
@@ -226,17 +188,20 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	}
 	
 	// Action: Add all projects to the database
-	public static void tagAllProjects(View view) {
-		if (pvi == null) {
+	public static void tagAllProjects(View view)
+	{
+		if (pvi == null)
+		{
 			JOptionPane.showMessageDialog(view, "Project support disabled.");
 			return;
 		}
 		Vector<String> allProjects = pvi.getProjects();
 		Vector<String> dbProjects = ProjectsOptionPane.getProjects();
-		for (int i = 0; i < allProjects.size(); i++) {
+		for (int i = 0; i < allProjects.size(); i++)
+		{
 			String project = allProjects.get(i);
 			if (! dbProjects.contains(project))
-				insertOrigin(TagDB.PROJECT_ORIGIN, project);
+				insertOrigin(OriginType.PROJECT, project);
 		}
 	}
 	
@@ -252,53 +217,52 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		new QuickSearchTagDialog(view, QuickSearchTagDialog.Mode.PREFIX);
 	}
 	
-	public static Vector<Tag> queryScopedTag(View view, String tag) {
+	public static Vector<Tag> queryScopedTag(View view, String tag)
+	{
 		if (tag == null || tag.length() == 0)
 			return null;
 		boolean projectScope = (pvi != null &&
 			(ProjectsOptionPane.getSearchActiveProjectOnly() ||
 			 ProjectsOptionPane.getSearchActiveProjectFirst() ||
 			 ProjectsOptionPane.getSearchActiveProjectAndDeps()));
-		Vector<Tag> tags;
-		try {
-			String project = projectScope ? pvi.getActiveProject(view) : null;
-			if (project != null && projectScope) {
-				if (ProjectsOptionPane.getSearchActiveProjectAndDeps()) {
-					HashMap<String, Vector<String>> origins =
-						ProjectDependencies.getDependencies(project);
-					Vector<String> projects = origins.get(TagDB.PROJECT_ORIGIN);
-					if (projects == null) {
-						projects = new Vector<String>();
-						origins.put(TagDB.PROJECT_ORIGIN, projects);
-					}
-					projects.add(project);
-					ResultSet rs = db.queryTagInOrigins(tag, origins);
-					if (rs == null)
-						return null;
-					tags = db.getResultSetTags(rs);
-				} else {
-					ResultSet rs = db.queryTagInProject(tag, project);
-					if (rs == null)
-						return null;
-					tags = db.getResultSetTags(rs);
-					if (ProjectsOptionPane.getSearchActiveProjectFirst() &&
-							tags.isEmpty())
+		Vector<Tag> tags = new Vector<Tag>();
+		String project = projectScope ? pvi.getActiveProject(view) : null;
+		if (project != null && projectScope)
+		{
+			Vector<Origin> origins = new Vector<Origin>();
+			if (ProjectsOptionPane.getSearchActiveProjectAndDeps())
+			{
+				HashMap<String, Vector<String>> originsHash =
+					ProjectDependencies.getDependencies(project);
+				Vector<String> projects = originsHash.get(OriginType.PROJECT.name);
+				if (projects == null)
+				{
+					projects = new Vector<String>();
+					originsHash.put(OriginType.PROJECT.name, projects);
+				}
+				projects.add(project);
+				for (Entry<String, Vector<String>> origin: originsHash.entrySet())
+				{
+					for (String s: origin.getValue())
 					{
-						rs = db.queryTag(tag);
-						if (rs == null)
-							return null;
-						tags = db.getResultSetTags(rs);
+						origins.add(index.getOrigin(
+							OriginType.valueOf(origin.getKey()), s, false));
 					}
 				}
-			} else {
-				ResultSet rs = db.queryTag(tag);
-				if (rs == null)
-					return null;
-				tags = db.getResultSetTags(rs);
+				index.queryTagInOrigins(tag, origins, tags);
 			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
+			else
+			{
+				origins.add(index.getOrigin(OriginType.PROJECT, project, false));
+				index.queryTagInOrigins(tag, origins, tags);
+				if (ProjectsOptionPane.getSearchActiveProjectFirst() &&
+						tags.isEmpty())
+				{
+					index.queryTag(tag, tags);
+				}
+			}
+		} else {
+			index.queryTag(tag, tags);
 		}
 		return tags;
 	}
@@ -307,7 +271,8 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	public static void jumpToTag(final View view)
 	{
 		String tag = getDestinationTag(view);
-		if (tag == null || tag.length() == 0) {
+		if (tag == null || tag.length() == 0)
+		{
 			JOptionPane.showMessageDialog(
 				view, "No tag selected nor identified at caret");
 			return;
@@ -328,14 +293,16 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	}
 	
 	// Returns the prefix for code completion
-	public static String getCompletionPrefix(View view) {
+	public static String getCompletionPrefix(View view)
+	{
 		String tag = view.getTextArea().getSelectedText();
 		if (tag == null || tag.length() == 0)
 			tag = getTagUpToCaret(view);
 		return tag;
 	}
 
-	private static String getTagUpToCaret(View view) {
+	private static String getTagUpToCaret(View view)
+	{
 		JEditTextArea ta = view.getTextArea();
 		int line = ta.getCaretLine();
 		int index = ta.getCaretPosition() - ta.getLineStartOffset(line);
@@ -345,7 +312,8 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		int end = -1;
 		int start = -1;
 		String selected = "";
-		while (end < index) {
+		while (end < index)
+		{
 			if (! m.find())
 				return null;
 			end = m.end();
@@ -358,7 +326,8 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	}
 	
 	// Returns the tag to jump to: The selected tag or the one at the caret.
-	static public String getDestinationTag(View view) {
+	static public String getDestinationTag(View view)
+	{
 		String tag = view.getTextArea().getSelectedText();
 		if (tag == null || tag.length() == 0)
 			tag = getTagAtCaret(view);
@@ -366,7 +335,8 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	}
 	
 	// Returns the tag at the caret.
-	static private String getTagAtCaret(View view) {
+	static private String getTagAtCaret(View view)
+	{
 		JEditTextArea ta = view.getTextArea();
 		int line = ta.getCaretLine();
 		int index = ta.getCaretPosition() - ta.getLineStartOffset(line);
@@ -382,7 +352,8 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		int end = -1;
 		int start = -1;
 		String selected = "";
-		while (end <= offsetInLine) {
+		while (end <= offsetInLine)
+		{
 			if (! m.find())
 				return null;
 			end = m.end();
@@ -395,7 +366,9 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	}
 
 	// Jumps to the specified location
-	public static void jumpTo(final View view, final String file, final int line) {
+	public static void jumpTo(final View view, final String file,
+		final int line)
+	{
 		Runnable r = new Runnable() {
 			public void run() {
 				jumpToDirect(view, file, line);
@@ -408,7 +381,8 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	}
 
 	private static void jumpToDirect(final View view, String file,
-			final int line) {
+		final int line)
+	{
 		final EditPlugin p = jEdit.getPlugin("plugin.ise.plugin.nav.NavigatorPlugin",false);
 		if (p != null)
 		{
@@ -443,7 +417,8 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		});
 	}
 	// Jumps to the specified tag
-	public static void jumpToTag(final View view, final Tag tag) {
+	public static void jumpToTag(final View view, final Tag tag)
+	{
 		String file = tag.getFile();
 		if (file == null)
 			return;
@@ -487,22 +462,16 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	}
 	private static Tag getUpdatedTag(Tag tag)
 	{
-		Query q = db.getIdenticalTagQuery(tag);
-		ResultSet rs;
-		try {
-			rs = db.query(q);
-			if (rs == null)
-				return tag;
-			Vector<Tag> tags = db.getResultSetTags(rs);
-			if ((tags == null) || tags.isEmpty())
-				return tag;
-			return tags.get(0);
-		} catch (SQLException e) {
+		Vector<Tag> tags = new Vector<Tag>();
+		index.getIdenticalTags(tag, tags);
+		if ((tags == null) || tags.isEmpty())
 			return tag;
-		}
+		return tags.get(0);
 	}
 	// Jumps to the specified location
-	public static void jumpToOffset(final View view, String file, final int offset) {
+	public static void jumpToOffset(final View view, String file,
+		final int offset)
+	{
 		final EditPlugin p = jEdit.getPlugin("plugin.ise.plugin.nav.NavigatorPlugin",false);
 		if (p != null)
 		{
@@ -526,59 +495,21 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		});
 	}
 
-	// Opens the dialog to change the database settings.
-	public static void changeDbSettings(final View view) {
-		ChangeDbSettings dlg = new ChangeDbSettings(view);
-		dlg.setVisible(true);
-	}
-	
-	// Switch to a new database. If 'rebuild' is true, rebuild the
-	// new database using the previous origins.
-	static public void switchDatabase(boolean rebuild) {
-		EditPlugin plugin = jEdit.getPlugin(QUALIFIED_PLUGIN_NAME);
-		if (plugin == null) {
-			JOptionPane.showMessageDialog(jEdit.getActiveView(),
-				jEdit.getProperty(MESSAGE + "cannotSwitchDatabase"));
-			return;
-		}
-		Vector<String> dirs = null;
-		Vector<String> archives = null;
-		Vector<String> projects = null;
-		if (rebuild) {
-			dirs = db.getOrigins(TagDB.DIR_ORIGIN);
-			archives = db.getOrigins(TagDB.ARCHIVE_ORIGIN);
-			projects = db.getOrigins(TagDB.PROJECT_ORIGIN);
-		}
-		plugin.stop();
-		plugin.start();
-		if (rebuild) {
-			if (dirs != null)
-				rebuildOrigins(TagDB.DIR_ORIGIN, dirs);
-			if (archives != null)
-				rebuildOrigins(TagDB.ARCHIVE_ORIGIN, archives);
-			if (projects != null)
-				rebuildOrigins(TagDB.PROJECT_ORIGIN, projects);
-		}
-	}
-	
-	static public void rebuildOrigins(String type, Vector<String> names) {
-		for (String name: names) {
-			deleteOrigin(type, name);
-			insertOrigin(type, name);
-		}
-	}
-	
 	// Updates the given origins in the DB
-	static public void updateOrigins(String type, Vector<String> names) {
+	static public void updateOrigins(OriginType type, Vector<String> names)
+	{
 		// Remove obsolete origins
-		Vector<String> current = db.getOrigins(type);
-		for (int i = 0; i < current.size(); i++) {
+		Vector<String> current = new Vector<String>();
+		index.getOrigins(type, current);
+		for (int i = 0; i < current.size(); i++)
+		{
 			String name = current.get(i);
 			if (! names.contains(name))
 				deleteOrigin(type, name);
 		}
 		// Add new origins
-		for (int i = 0; i < names.size(); i++) {
+		for (int i = 0; i < names.size(); i++)
+		{
 			String name = names.get(i);
 			if (! current.contains(name))
 				insertOrigin(type, name);
@@ -586,55 +517,46 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	}
 	
 	// Refreshes the given origin in the DB
-	static public void refreshOrigin(String type, String name) {
-		try {
-			db.deleteOriginAssociatedData(type, name);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		tagOrigin(type, name);
+	static public void refreshOrigin(OriginType type, String name)
+	{
+		Origin origin = index.getOrigin(type, name, false);
+		index.deleteTagsOfOrigin(origin);
+		tagOrigin(origin);
 	}
 	
 	// Deletes an origin with all associated data from the DB
-	public static void deleteOrigin(final String type, final String name) {
-		addWorkRequest(new Runnable() {
-			public void run() {
-				try {
-					db.deleteOrigin(type, name);
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-				if (pvi != null && type.equals(TagDB.PROJECT_ORIGIN))
+	public static void deleteOrigin(final OriginType type, final String name)
+	{
+		addWorkRequest(new Runnable()
+		{
+			public void run()
+			{
+				index.deleteOrigin(index.getOrigin(type, name, false));
+				if (pvi != null && type == OriginType.PROJECT)
 					pvi.updateWatchers();	
 			}
 		}, false);
 	}
+
 	// Inserts a new origin to the DB, runs Ctags on it and adds the tags
 	// to the DB.
-	public static void insertOrigin(String type, String name) {
-		try {
-			db.insertOrigin(type, name);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		tagOrigin(type, name);
-		if (pvi != null && type.equals(TagDB.PROJECT_ORIGIN))
+	public static void insertOrigin(OriginType type, String name)
+	{
+		Origin origin = index.getOrigin(type, name, true);
+		tagOrigin(origin);
+		if (pvi != null && type == OriginType.PROJECT)
 			pvi.updateWatchers();
 	}
 	// Runs Ctags on the specified origin and adds the tags to the DB.
-	private static void tagOrigin(String type, String name) {
-		int originId = db.getOriginID(type, name);
-		if (originId < 0) {
-			System.err.println("Cannot find newly inserted origin " + name + " in DB.");
-			return;
+	private static void tagOrigin(Origin origin)
+	{
+		TagFileHandler handler = new TagFileHandler(origin);
+		switch (origin.type)
+		{
+		case PROJECT: tagProject(origin.id, handler); break;
+		case DIRECTORY: tagSourceTree(origin.id, handler); break;
+		case ARCHIVE: tagArchive(origin.id, handler); break;
 		}
-		TagFileHandler handler = new TagFileHandler(originId);
-		if (type.equals(TagDB.PROJECT_ORIGIN))
-			tagProject(name, handler);
-		else if (type.equals(TagDB.DIR_ORIGIN))
-			tagSourceTree(name, handler);
-		else if (type.equals(TagDB.ARCHIVE_ORIGIN))
-			tagArchive(name, handler);
 	}
 	
 	private static void addWorkRequest(Runnable run, boolean inAWT) {
@@ -677,39 +599,48 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	
 	/* Source file support */
 	
-	public static void tagSourceFile(final String file) {
+	public static void tagSourceFile(final String file)
+	{
 		tagSourceFile(file, true);
 	}
 
-	public static void tagSourceFile(final String file, boolean sync) {
+	public static void tagSourceFile(final String file, boolean sync)
+	{
 		setStatusMessage("Tagging file: " + file);
 		final Object syncObject = sync ? new Object() : null;
 		final boolean [] done = { false };
-		addWorkRequest(new Runnable() {
-			public void run() {
-				final int fileId = db.getSourceFileID(file);
-				db.deleteTagsFromSourceFile(fileId);
+		addWorkRequest(new Runnable()
+		{
+			public void run()
+			{
+				// Get the file origins, to restore when updating the file.
+				final Origin origin = index.getOriginOfFile(file);
+				index.deleteTagsFromSourceFile(file);
 				String tagFile = runner.runOnFile(file);
-				TagHandler handler = new TagHandler() {
-					public void processTag(Tag t) {
-						db.insertTag(t, fileId);
+				TagHandler handler = new TagHandler()
+				{
+					public void processTag(Tag t)
+					{
+						index.insertTag(t, origin);
 					}
 				};
 				parseTagFile(tagFile, handler);
 				if (syncObject != null)
-					synchronized (syncObject) {
+				{
+					synchronized (syncObject)
+					{
 						done[0] = true;
 						syncObject.notifyAll();
 					}
+				}
 			}
 		}, false);
-		synchronized (syncObject) {
-			if (! done[0]) {
-				try {
-					syncObject.wait();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+		synchronized (syncObject)
+		{
+			if (! done[0])
+			{
+				try { syncObject.wait(); }
+				catch (InterruptedException e) { e.printStackTrace(); }
 			}
 		}
 		removeStatusMessage();
@@ -753,28 +684,6 @@ public class CtagsInterfacePlugin extends EditPlugin {
 		return pvi;
 	}
 	
-	private static void removeProjectFiles(int projectId,
-		Vector<String> files)
-	{
-		StringBuffer filesStr = new StringBuffer();
-		for (int i = 0; i < files.size(); i++) {
-			if (i > 0)
-				filesStr.append(",");
-			filesStr.append(TagDB.quote(files.get(i)));
-		}
-		String st = "DELETE FROM " + TagDB.FILES_TABLE + " WHERE " +
-			TagDB.FILES_NAME + " IN (" + filesStr.toString() + ")" +
-			" AND NOT EXISTS " +
-			"(SELECT " + TagDB.MAP_FILE_ID + " FROM " + TagDB.MAP_TABLE +
-			" WHERE " + TagDB.MAP_ORIGIN_ID + "<>" + projectId +
-			" AND " + TagDB.MAP_FILE_ID + "=" + TagDB.FILES_ID + ")";
-		try {
-			db.update(st);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-	
 	// Runs Ctags on a list of files and add the tags and associated data to the DB
 	private static void tagFiles(Vector<String> files, TagHandler handler)
 	{
@@ -802,14 +711,13 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	public static void updateProject(String project, Vector<String> added,
 		Vector<String> removed)
 	{
-		int projectId = db.getOriginID(TagDB.PROJECT_ORIGIN, project);
-		if (projectId < 0)
-			return;
 		setStatusMessage("Updating project: " + project);
-		if ((removed != null) && (! removed.isEmpty()))
-			removeProjectFiles(projectId, removed);
-		if ((added != null) && (! added.isEmpty())) {
-			TagHandler handler = new TagFileHandler(projectId);
+		Origin origin = index.getOrigin(OriginType.PROJECT, project, true);
+		if (origin != null && removed != null && (! removed.isEmpty()))
+			index.deleteTagsOfOrigin(origin);
+		if ((added != null) && (! added.isEmpty()))
+		{
+			TagHandler handler = new TagFileHandler(origin);
 			tagFiles(added, handler);
 		}
 		removeStatusMessage();
@@ -821,60 +729,34 @@ public class CtagsInterfacePlugin extends EditPlugin {
 	
 	public static Vector<Tag> queryTag(String tag)
 	{
-		ResultSet rs;
-		try {
-			rs = db.queryTag(tag);
-			if (rs != null)
-				return db.getResultSetTags(rs);
-		} catch (SQLException e) {
-			Log.log(Log.ERROR, CtagsInterfacePlugin.class, "queryTag failed: ", e);
-		}
-		return new Vector<Tag>();
-	}
-	public static Vector<Tag> query(Query query)
-	{
-		return query(query.toString());
+		Vector<Tag> tags = new Vector<Tag>(); 
+		index.queryTag(tag, tags);
+		return tags;
 	}
 	public static Vector<Tag> query(String query)
 	{
-		ResultSet rs;
-		try {
-			rs = db.query(query);
-			if (rs != null)
-				return db.getResultSetTags(rs);
-		} catch (SQLException e) {
-			Log.log(Log.ERROR, CtagsInterfacePlugin.class, "query failed: ", e);
-		}
-		return new Vector<Tag>();
+		Vector<Tag> tags = new Vector<Tag>();
+		index.queryTags(query, tags);
+		return tags;
 	}
-	public static Query getBasicTagQuery() {
-		return db.getBasicTagQuery();
-	}
-	public static Query getBasicScopedTagQuery(View view) {
-		Query q = getBasicTagQuery();
+	public static String getScopedTagQuery(View view)
+	{
 		String project = getScopeName(view);
-		if (project != null)
-			db.makeProjectScopedQuery(q, project); 
-		return q;
+		if (project == null)
+			return "";
+		return index.getOriginScopedQuery(index.getOrigin(OriginType.PROJECT,
+			project, false)); 
 	}
-	public static Query getTagNameQuery(String tag) {
-		return db.getTagNameQuery(tag);
+	public static String getTagNameQuery(String tag)
+	{
+		return index.getTagNameQuery(tag);
 	}
-	public static Query getScopedTagNameQuery(View view, String tag) {
-		Query q = db.getTagNameQuery(tag);
-		String project = getScopeName(view);
-		if (project != null)
-			db.makeProjectScopedQuery(q, project); 
-		return q;
-	}
-	public static HashSet<String> getTagColumns() {
-		return db.getColumns();
-	}
-	public static void createIndexOnExtension(String indexName, String extension) {
-		try {
-			db.createIndex(indexName, extension);
-		} catch (SQLException e) {
-			// Already exists...?
-		}
+	public static String getScopedTagNameQuery(View view, String tag)
+	{
+		String s = index.getTagNameQuery(tag);
+		String scopeQuery = getScopedTagQuery(view);
+		if (! scopeQuery.isEmpty())
+			s = s +  " AND " + scopeQuery;
+		return s;
 	}
 }

@@ -21,15 +21,14 @@ import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.browser.VFSFileChooserDialog;
 import org.gjt.sp.jedit.gui.RolloverButton;
 
-import ctagsinterface.db.TagDB;
+import ctagsinterface.index.TagIndex.OriginType;
 import ctagsinterface.main.CtagsInterfacePlugin;
 import ctagsinterface.main.VFSHelper;
 
 @SuppressWarnings("serial")
-public class DirsOptionPane extends AbstractOptionPane {
+public class DirsOptionPane extends AbstractOptionPane
+{
 
-	private static final String DIR_ORIGIN = TagDB.DIR_ORIGIN;
-	private static final String ARCHIVE_ORIGIN = TagDB.ARCHIVE_ORIGIN;
 	static public final String OPTION = CtagsInterfacePlugin.OPTION;
 	static public final String MESSAGE = CtagsInterfacePlugin.MESSAGE;
 	static public final String DIRS = OPTION + "dirs.";
@@ -38,7 +37,8 @@ public class DirsOptionPane extends AbstractOptionPane {
 	private DefaultListModel archivesModel;
 	private JList archives;
 	
-	public DirsOptionPane() {
+	public DirsOptionPane()
+	{
 		super("CtagsInterface-Dirs");
 		setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -104,7 +104,7 @@ public class DirsOptionPane extends AbstractOptionPane {
 				int i = dirs.getSelectedIndex();
 				if (i >= 0) {
 					String tree = (String) dirsModel.getElementAt(i);
-					CtagsInterfacePlugin.refreshOrigin(DIR_ORIGIN, tree);
+					CtagsInterfacePlugin.refreshOrigin(OriginType.DIRECTORY, tree);
 				}
 			}
 		});
@@ -134,7 +134,8 @@ public class DirsOptionPane extends AbstractOptionPane {
 		});
 	}
 
-	public void saveOrigins(String origin, DefaultListModel model) {
+	public void saveOrigins(OriginType origin, DefaultListModel model)
+	{
 		Vector<String> names = new Vector<String>();
 		int nItems = model.size();
 		for (int i = 0; i < nItems; i++)
@@ -142,16 +143,23 @@ public class DirsOptionPane extends AbstractOptionPane {
 		CtagsInterfacePlugin.updateOrigins(origin, names);
 	}
 	
-	public void save() {
-		saveOrigins(DIR_ORIGIN, dirsModel);
-		saveOrigins(ARCHIVE_ORIGIN, archivesModel);
+	public void save()
+	{
+		saveOrigins(OriginType.DIRECTORY, dirsModel);
+		saveOrigins(OriginType.ARCHIVE, archivesModel);
 	}
 	
-	static public Vector<String> getDirs() {
-		return CtagsInterfacePlugin.getDB().getOrigins(DIR_ORIGIN);
+	static public Vector<String> getDirs()
+	{
+		Vector<String> dirs = new Vector<String>();
+		CtagsInterfacePlugin.getIndex().getOrigins(OriginType.DIRECTORY, dirs);
+		return dirs;
 	}
 	
-	static public Vector<String> getArchives() {
-		return CtagsInterfacePlugin.getDB().getOrigins(ARCHIVE_ORIGIN);
+	static public Vector<String> getArchives()
+	{
+		Vector<String> archives = new Vector<String>();
+		CtagsInterfacePlugin.getIndex().getOrigins(OriginType.ARCHIVE, archives);
+		return archives;
 	}
 }

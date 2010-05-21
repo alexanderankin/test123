@@ -26,14 +26,13 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.RolloverButton;
 import org.gjt.sp.util.StandardUtilities;
 
-import ctagsinterface.db.TagDB;
+import ctagsinterface.index.TagIndex.OriginType;
 import ctagsinterface.main.CtagsInterfacePlugin;
 import ctagsinterface.projects.ProjectWatcher;
 
 @SuppressWarnings("serial")
-public class ProjectsOptionPane extends AbstractOptionPane {
-	
-	private static final String PROJECT_ORIGIN = TagDB.PROJECT_ORIGIN;
+public class ProjectsOptionPane extends AbstractOptionPane
+{
 	static public final String OPTION = CtagsInterfacePlugin.OPTION;
 	static public final String MESSAGE = CtagsInterfacePlugin.MESSAGE;
 	static public final String PROJECTS = OPTION + "projects.";
@@ -53,7 +52,8 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 	JRadioButton activeAndDeps;
 	JRadioButton activeFirst;
 	
-	public ProjectsOptionPane() {
+	public ProjectsOptionPane()
+	{
 		super("CtagsInterface-Projects");
 		setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -103,13 +103,17 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 		g.add(activeFirst);
 
 		pvi = CtagsInterfacePlugin.getProjectWatcher();
-		if (pvi == null) {
+		if (pvi == null)
+		{
 			add.setEnabled(false);
 			tag.setEnabled(false);
 		}
-		else {
-			add.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent ae) {
+		else
+		{
+			add.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent ae)
+				{
 					Vector<String> nameVec = pvi.getProjects();
 					String [] names = new String[nameVec.size()];
 					nameVec.toArray(names);
@@ -121,18 +125,24 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 						projectsModel.addElement(selected);
 				}
 			});
-			tag.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent ae) {
+			tag.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent ae)
+				{
 					int i = projects.getSelectedIndex();
-					if (i >= 0) {
+					if (i >= 0)
+					{
 						String project = (String) projectsModel.getElementAt(i);
-						CtagsInterfacePlugin.refreshOrigin(PROJECT_ORIGIN, project);
+						CtagsInterfacePlugin.refreshOrigin(OriginType.PROJECT,
+							project);
 					}
 				}
 			});
 		}
-		remove.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
+		remove.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent ae)
+			{
 				int i = projects.getSelectedIndex();
 				if (i >= 0)
 					projectsModel.removeElementAt(i);
@@ -140,12 +150,13 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 		});
 	}
 
-	public void save() {
+	public void save()
+	{
 		Vector<String> names = new Vector<String>();
 		int nProjects = projectsModel.size(); 
 		for (int i = 0; i < nProjects; i++)
 			names.add((String) projectsModel.getElementAt(i));
-		CtagsInterfacePlugin.updateOrigins(PROJECT_ORIGIN, names);
+		CtagsInterfacePlugin.updateOrigins(OriginType.PROJECT, names);
 		jEdit.setBooleanProperty(TRACK_PROJECTS, trackProjectList.isSelected());
 		jEdit.setBooleanProperty(AUTO_UPDATE, autoUpdate.isSelected());
 		jEdit.setBooleanProperty(GLOBAL, global.isSelected());
@@ -154,25 +165,34 @@ public class ProjectsOptionPane extends AbstractOptionPane {
 		jEdit.setBooleanProperty(ACTIVE_FIRST, activeFirst.isSelected());
 	}
 	
-	static public Vector<String> getProjects() {
-		return CtagsInterfacePlugin.getDB().getOrigins(PROJECT_ORIGIN);
+	static public Vector<String> getProjects()
+	{
+		Vector<String> projects = new Vector<String>();
+		CtagsInterfacePlugin.getIndex().getOrigins(OriginType.PROJECT, projects);
+		return projects;
 	}
-	static public boolean getTrackProjectList() {
+	static public boolean getTrackProjectList()
+	{
 		return jEdit.getBooleanProperty(TRACK_PROJECTS);
 	}
-	static public boolean getAutoUpdateProjects() {
+	static public boolean getAutoUpdateProjects()
+	{
 		return jEdit.getBooleanProperty(AUTO_UPDATE);
 	}
-	static public boolean getSearchGlobally() {
+	static public boolean getSearchGlobally()
+	{
 		return jEdit.getBooleanProperty(GLOBAL);
 	}
-	static public boolean getSearchActiveProjectOnly() {
+	static public boolean getSearchActiveProjectOnly()
+	{
 		return jEdit.getBooleanProperty(ACTIVE_ONLY);
 	}
-	static public boolean getSearchActiveProjectAndDeps() {
+	static public boolean getSearchActiveProjectAndDeps()
+	{
 		return jEdit.getBooleanProperty(ACTIVE_AND_DEPS);
 	}
-	static public boolean getSearchActiveProjectFirst() {
+	static public boolean getSearchActiveProjectFirst()
+	{
 		return jEdit.getBooleanProperty(ACTIVE_FIRST);
 	}
 }

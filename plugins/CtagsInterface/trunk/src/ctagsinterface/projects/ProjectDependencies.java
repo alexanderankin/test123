@@ -26,13 +26,12 @@ import org.gjt.sp.jedit.gui.RolloverButton;
 import projectviewer.ProjectManager;
 import projectviewer.config.OptionsService;
 import projectviewer.vpt.VPTProject;
-import ctagsinterface.db.TagDB;
+import ctagsinterface.index.TagIndex;
 import ctagsinterface.main.CtagsInterfacePlugin;
 
 @SuppressWarnings("serial")
 public class ProjectDependencies extends AbstractOptionPane
 {
-
 	private static final String PROJECT_DEPENDENCY = "projectDependency";
 	private static final String TREE_DEPENDENCY = "treeDependency";
 	JList projects;
@@ -41,18 +40,23 @@ public class ProjectDependencies extends AbstractOptionPane
 	DefaultListModel treesModel;
 	VPTProject project;
 	
-	public ProjectDependencies(VPTProject project) {
+	public ProjectDependencies(VPTProject project)
+	{
 		super("CtagsInterface-ProjectDependencies");
 		this.project = project;
 	}
 
-	private interface DependencyAsker {
+	private interface DependencyAsker
+	{
 		String getDependency();
 	}
-	protected void _init() {
+	protected void _init()
+	{
 		projectsModel = getListModel(PROJECT_DEPENDENCY);
-		projects = createList("Projects:", projectsModel, new DependencyAsker () {
-			public String getDependency() {
+		projects = createList("Projects:", projectsModel, new DependencyAsker ()
+		{
+			public String getDependency()
+			{
 				return showProjectSelectionDialog();
 			}
 		});
@@ -65,13 +69,15 @@ public class ProjectDependencies extends AbstractOptionPane
 		});
 	}
 
-	private void setListModel(String propertyName, DefaultListModel model) {
+	private void setListModel(String propertyName, DefaultListModel model)
+	{
 		Vector<String> list = new Vector<String>();
 		for (int i = 0; i < model.size(); i++)
 			list.add((String) model.getElementAt(i));
 		setListProperty(propertyName, list);
 	}
-	private DefaultListModel getListModel(String propertyName) {
+	private DefaultListModel getListModel(String propertyName)
+	{
 		Vector<String> list = getListProperty(propertyName);
 		DefaultListModel model = new DefaultListModel();
 		for (int i = 0; i < list.size(); i++)
@@ -79,13 +85,16 @@ public class ProjectDependencies extends AbstractOptionPane
 		return model;
 	}
 
-	private Vector<String> getListProperty(String propertyName) {
+	private Vector<String> getListProperty(String propertyName)
+	{
 		return getListProperty(project, propertyName);
 	}
-	private void setListProperty(String propertyName, Vector<String> list) {
+	private void setListProperty(String propertyName, Vector<String> list)
+	{
 		for (int i = 0; i < list.size(); i++)
 			project.setProperty(propertyName + i, list.get(i));
-		for (int i = list.size(); true; i++) {
+		for (int i = list.size(); true; i++)
+		{
 			String prop = propertyName + i;
 			if (project.getProperty(prop) == null)
 				break;
@@ -93,16 +102,21 @@ public class ProjectDependencies extends AbstractOptionPane
 		}
 	}
 	
-	private JList createList(String title, final DefaultListModel model, final DependencyAsker da) {
+	private JList createList(String title, final DefaultListModel model,
+		final DependencyAsker da)
+	{
 		addComponent(new JLabel(title));
 		final JList list = new JList(model);
 		addComponent(new JScrollPane(list), GridBagConstraints.HORIZONTAL);
 		JPanel buttons = new JPanel();
 		JButton add = new RolloverButton(GUIUtilities.loadIcon("Plus.png"));
-		add.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		add.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
 				String s = da.getDependency();
-				if (s != null) {
+				if (s != null)
+				{
 					int index = list.getSelectedIndex();
 					model.add(index + 1, s);
 					list.setSelectedIndex(index + 1);
@@ -110,10 +124,13 @@ public class ProjectDependencies extends AbstractOptionPane
 			}
 		});
 		JButton remove = new RolloverButton(GUIUtilities.loadIcon("Minus.png"));
-		remove.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		remove.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
 				int index = list.getSelectedIndex();
-				if (index >= 0) {
+				if (index >= 0)
+				{
 					model.removeElementAt(index);
 					if (index < model.size())
 						list.setSelectedIndex(index);
@@ -128,9 +145,11 @@ public class ProjectDependencies extends AbstractOptionPane
 		return list;
 	}
 
-	private String showProjectSelectionDialog() {
+	private String showProjectSelectionDialog()
+	{
 		ProjectWatcher pw = CtagsInterfacePlugin.getProjectWatcher();
-		if (pw == null) {
+		if (pw == null)
+		{
 			JOptionPane.showMessageDialog(this, jEdit.getProperty(
 				"messages.CtagsInterface.noPVSupport"));
 			return null;
@@ -144,7 +163,8 @@ public class ProjectDependencies extends AbstractOptionPane
 			"Projects", JOptionPane.QUESTION_MESSAGE, null, names, names[0]);
 		return selected;
 	}
-	private String showSourceTreeSelectionDialog() {
+	private String showSourceTreeSelectionDialog()
+	{
 		JFileChooser fc = new JFileChooser();
 		fc.setDialogTitle("Select root of source tree");
 		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -154,7 +174,8 @@ public class ProjectDependencies extends AbstractOptionPane
 		String dir = fc.getSelectedFile().getAbsolutePath();
 		return MiscUtilities.resolveSymlinks(dir);
 	}
-	protected void _save() {
+	protected void _save()
+	{
 		setListModel(PROJECT_DEPENDENCY, projectsModel);
 		setListModel(TREE_DEPENDENCY, treesModel);
 	}
@@ -163,7 +184,8 @@ public class ProjectDependencies extends AbstractOptionPane
 	{
 		Vector<String> list = new Vector<String>();
 		int i = 0;
-		while (true) {
+		while (true)
+		{
 			String value = project.getProperty(propertyName + i);
 			if (value == null)
 				break;
@@ -180,20 +202,22 @@ public class ProjectDependencies extends AbstractOptionPane
 		if (project == null)
 			return map;
 		Vector<String> projectDeps = getListProperty(project, PROJECT_DEPENDENCY);
-		map.put(TagDB.PROJECT_ORIGIN, projectDeps);
+		map.put(TagIndex.OriginType.PROJECT.name, projectDeps);
 		Vector<String> treeDeps = getListProperty(project, TREE_DEPENDENCY);
-		map.put(TagDB.DIR_ORIGIN, treeDeps);
+		map.put(TagIndex.OriginType.DIRECTORY.name, treeDeps);
 		return map;
 	}
 
 	public static class ProjectDependencyOptionService
 		implements OptionsService
 	{
-		public OptionGroup getOptionGroup(VPTProject proj) {
+		public OptionGroup getOptionGroup(VPTProject proj)
+		{
 			return null;
 		}
 	
-		public OptionPane getOptionPane(VPTProject proj) {
+		public OptionPane getOptionPane(VPTProject proj)
+		{
 			return new ProjectDependencies(proj);
 		}
 	}

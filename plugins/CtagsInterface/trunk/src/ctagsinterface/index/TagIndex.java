@@ -9,6 +9,8 @@ import java.util.Set;
 
 import javax.swing.JOptionPane;
 
+import org.apache.lucene.analysis.KeywordAnalyzer;
+import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -16,7 +18,6 @@ import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
@@ -30,24 +31,75 @@ import org.gjt.sp.util.Log;
 
 import ctagsinterface.main.Tag;
 
+/*
+ * TagIndex manages a Lucece index with the tag information.
+ * Usage:
+ * --- General ---
+ * - When the plugin is started, create a new TagIndex object.
+ * - When the plugin is stopped, call close() to release any resources.
+ * --- Index creation ---
+ * - Before indexing a set of files, call startActivity().
+ * - Add tags for the set of files using insertTag().
+ *   Use getOrigin() to get an object representing the origin of the tags.
+ * - When done, call endActivity(). This will commit the changes to make
+ *   them available for searching.
+ * --- Searching the index ---
+ * - Call queryTag() with the tag name and a list of tags (for output).
+ */
 public class TagIndex
 {
-	private static final int MAX_RESULTS = 1000;
+	public static final String ORIGIN_FLD = "origin";
+	public static final String TYPE_FLD = "type";
+	public static final String DOCTYPE_FLD = "doctype";
+	public static final String _PATH_FLD = "_path";
+	public static final String PATH_FLD = "path";
+	public static final String PATTERN_FLD = "pattern";
+	public static final String NAME_FLD = "name";
+	public static final String _NAME_FLD = "_name";
+	public static final String LINE_FLD = "line";
+	public static final String ORIGIN_DOC_TYPE = "origin";
+	public static final String TAG_DOC_TYPE = "tag";
+	public static final int MAX_RESULTS = 1000;
+	private FSDirectory directory;
 	private IndexWriter writer;
-	private StandardAnalyzer analyzer;
-	private IndexSearcher searcher;
+	private PerFieldAnalyzerWrapper analyzer;
+	private StandardAnalyzer standardAnalyzer;
+	private KeywordAnalyzer keywordAnalyzer;
 	private static final String[] FIXED_FIELDS = {
-		"name", "_name", "pattern", "path", "_path"
+		NAME_FLD, _NAME_FLD, PATTERN_FLD, PATH_FLD, _PATH_FLD, DOCTYPE_FLD
 	};
 	private static Set<String> fixedFields;
+	private int writeCount;
+	public enum OriginType
+	{
+		PROJECT("Project"),
+		DIRECTORY("Directory"),
+		ARCHIVE("Archive"),
+		MISC("Misc");
+		private OriginType(String name)
+		{
+			this.name = name;
+		}
+		public String name;
+	}
 
 	public TagIndex()
 	{
 		File path = new File(getIndexPath());
 		path.mkdirs();
+		standardAnalyzer = new StandardAnalyzer(Version.LUCENE_30,
+			new HashSet<String>());
+		keywordAnalyzer = new KeywordAnalyzer();
+		analyzer = new PerFieldAnalyzerWrapper(standardAnalyzer);
+		analyzer.addAnalyzer(_NAME_FLD, keywordAnalyzer);
+		analyzer.addAnalyzer(_PATH_FLD, keywordAnalyzer);
+		fixedFields = new HashSet<String>();
+		for (String s: FIXED_FIELDS)
+			fixedFields.add(s);
+		writeCount = 0;
 		try
 		{
-			FSDirectory directory = FSDirectory.open(path);
+			directory = FSDirectory.open(path);
 			if (IndexWriter.isLocked(directory))
 			{
 				Log.log(Log.WARNING, this, "The lucene index at " + path.getAbsolutePath() + " is locked");
@@ -57,77 +109,11 @@ public class TagIndex
 				if (ret == JOptionPane.YES_OPTION)
 					IndexWriter.unlock(directory);
 			}
-			analyzer = new StandardAnalyzer(Version.LUCENE_30,
-				new HashSet<String>());
 			writer = new IndexWriter(directory, analyzer,
 				IndexWriter.MaxFieldLength.UNLIMITED);
-			searcher = new IndexSearcher(directory, true);
-			fixedFields = new HashSet<String>();
-			for (String s: FIXED_FIELDS)
-				fixedFields.add(s);
+			
 		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-	}
-
-	public void close()
-	{
-		try
-		{
-			writer.close();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-
-	public void insertTag(Tag t, int origin)
-	{
-		Document doc = tagToDocument(t, origin);
-		try
-		{
-			writer.addDocument(doc);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-
-	public void queryTag(String name, List<Tag> tags)
-	{
-		if (tags == null)
-			return;
-		QueryParser qp = new QueryParser(Version.LUCENE_30, "_name", analyzer);
-		Query q = null;
-		try
-		{
-			qp.parse(name);
-		}
-		catch (ParseException e)
-		{
-			e.printStackTrace();
-		}
-		if (q != null)
-		{
-			try
-			{
-				TopDocs topDocs = searcher.search(q, MAX_RESULTS);
-				for (ScoreDoc scoreDoc: topDocs.scoreDocs)
-				{
-					Document doc = searcher.doc(scoreDoc.doc);
-					Tag tag = documentToTag(doc);
-					tags.add(tag);
-				}
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
-		}
+		catch (IOException e) { e.printStackTrace(); }
 	}
 
 	private static String getIndexPath()
@@ -136,14 +122,228 @@ public class TagIndex
 			"CtagsInterface" + File.separator + "index";
 	}
 
-	private Document tagToDocument(Tag t, int origin)
+	public void startActivity()
+	{
+		synchronized(this)
+		{
+			writeCount++;
+		}
+	}
+
+	public void endActivity()
+	{
+		synchronized(this)
+		{
+			writeCount--;
+			if (writeCount == 0)
+			{
+				try { writer.commit(); }
+				catch (IOException e) { e.printStackTrace(); }
+			}
+		}
+	}
+
+	public void close()
+	{
+		try { writer.close(); }
+		catch (Exception e) { e.printStackTrace(); }
+	}
+
+	public void getOrigins(OriginType type, final List<String> origins)
+	{
+		String query = DOCTYPE_FLD + ":" + ORIGIN_DOC_TYPE + " AND " +
+			TYPE_FLD + ":" + type;
+		runQuery(query, 1, new DocHandler()
+		{
+			public void handle(Document doc)
+			{
+				origins.add(doc.get(ORIGIN_FLD));
+			}
+		});
+	}
+
+	public Origin getOriginOfFile(String file)
+	{
+		String query = DOCTYPE_FLD + ":" + TAG_DOC_TYPE + " AND " +
+			_PATH_FLD + ":" + escape(file);
+		final Origin [] origin = new Origin[1]; 
+		runQuery(query, 1, new DocHandler()
+		{
+			public void handle(Document doc)
+			{
+				origin[0] = Origin.fromString(doc.get(ORIGIN_FLD));
+			}
+		});
+		return origin[0];
+	}
+
+	public void deleteTagsFromSourceFile(String file)
+	{
+		Query q = getQuery(_PATH_FLD + ":" + escape(file));
+		if (q != null)
+		{
+			try { writer.deleteDocuments(q); }
+			catch (IOException e) { e.printStackTrace(); }
+		}
+	}
+
+	public void getIdenticalTags(Tag tag, List<Tag> tags)
+	{
+		StringBuilder q = new StringBuilder(_NAME_FLD + ":" +
+			escape(tag.getName()));
+		q.append(" AND " + _PATH_FLD + ":" + escape(tag.getFile()));
+		Set<String> extensions = tag.getExtensions();
+		if (extensions != null)
+		{
+			for (String s: extensions)
+			{
+				if (! s.equals(LINE_FLD))
+					q.append(" AND " + s + ":" + escape(tag.getExtension(s)));
+			}
+		}
+		queryTags(q.toString(), tags);
+	}
+
+	public void deleteTagsOfOrigin(Origin origin)
+	{
+		String s = DOCTYPE_FLD + ":" + TAG_DOC_TYPE + " AND " +
+			ORIGIN_FLD + ":" + escape(origin.toString());
+		Query q = getQuery(s);
+		if (q != null)
+		{
+			try { writer.deleteDocuments(q); }
+			catch (IOException e) { e.printStackTrace(); }
+		}
+	}
+
+	public static String escape(String s)
+	{
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < s.length(); i++)
+		{
+			char c = s.charAt(i);
+			switch (c)
+			{
+			case '+': case '-': case '!': case '(': case ')':
+			case '{': case '}': case '[': case ']': case '^':
+			case '"': case '~': case '*': case '?': case ':':
+			case '\\':
+				sb.append('\\');
+				break;
+			case '&':
+			case '|':
+				if (i < s.length() - 1 && s.charAt(i + 1) == c)
+					sb.append('\\');
+				break;
+			}
+			sb.append(c);
+		}
+		return sb.toString();
+	}
+
+	// Deletes an origin and all its associated data from the index
+	public void deleteOrigin(Origin origin)
+	{
+		startActivity();
+		deleteTagsOfOrigin(origin);
+		String s = DOCTYPE_FLD + ":" + ORIGIN_DOC_TYPE + " AND " +
+			TYPE_FLD + origin.type + " AND " + ORIGIN_FLD + ":" +
+			escape(origin.id);
+		Query q = getQuery(s);
+		if (q != null)
+		{
+			try	{ writer.deleteDocuments(q); }
+			catch (IOException e) {	e.printStackTrace(); }
+		}
+		endActivity();
+	}
+
+	public Origin getOrigin(OriginType type, String id,
+		boolean createIfNotExists)
+	{
+		Origin origin = new Origin(type, id);
+		if (! createIfNotExists)
+			return origin;
+		// Create an origin document if needed
+		final boolean b[] = new boolean[1];
+		b[0] = false;
+		String query = DOCTYPE_FLD + ":" + ORIGIN_DOC_TYPE + " AND " +
+			TYPE_FLD + ":" + type + " AND " + ORIGIN_FLD + ":" + escape(id);
+		runQuery(query, 1, new DocHandler() {
+			public void handle(Document doc)
+			{
+				b[0] = true;
+			}
+		});
+		if (! b[0])
+		{
+			// Create a document for this origin
+			startActivity();
+			Document doc = new Document();
+			doc.add(new Field(DOCTYPE_FLD, ORIGIN_DOC_TYPE, Store.YES, Index.ANALYZED));
+			doc.add(new Field(TYPE_FLD, type.name, Store.YES, Index.ANALYZED));
+			doc.add(new Field(ORIGIN_FLD, id, Store.YES, Index.ANALYZED));
+			try { writer.addDocument(doc); }
+			catch (IOException e) { e.printStackTrace(); }
+			endActivity();
+		}
+		return origin;
+	}
+
+	public void insertTag(Tag t, Origin origin)
+	{
+		Document doc = tagToDocument(t, origin);
+		try { writer.addDocument(doc); }
+		catch (Exception e) { e.printStackTrace(); }
+	}
+
+	public boolean hasSourceFile(String file)
+	{
+		final boolean b[] = new boolean[1];
+		b[0] = false;
+		runQuery(_PATH_FLD + ":" + escape(file), 1, new DocHandler() {
+			public void handle(Document doc)
+			{
+				b[0] = true;
+			}
+		});
+		return b[0];
+	}
+
+	public void queryTag(String name, final List<Tag> tags)
+	{
+		if (tags == null)
+			return;
+		runQuery(_NAME_FLD + ":" + escape(name), MAX_RESULTS, new DocHandler() {
+			public void handle(Document doc)
+			{
+				Tag tag = documentToTag(doc);
+				tags.add(tag);
+			}
+		});
+	}
+
+	public void queryTags(String query, final List<Tag> tags)
+	{
+		if (tags == null)
+			return;
+		runQuery(query, MAX_RESULTS, new DocHandler() {
+			public void handle(Document doc)
+			{
+				Tag tag = documentToTag(doc);
+				tags.add(tag);
+			}
+		});
+	}
+
+	private Document tagToDocument(Tag t, Origin origin)
 	{
 		Document doc = new Document();
-		doc.add(new Field("name", t.getName(), Store.NO, Index.ANALYZED));
-		doc.add(new Field("_name", t.getName(), Store.YES, Index.NOT_ANALYZED));
-		doc.add(new Field("pattern", t.getPattern(), Store.YES, Index.ANALYZED));
-		doc.add(new Field("path", t.getFile(), Store.NO, Index.ANALYZED));
-		doc.add(new Field("_path", t.getFile(), Store.YES, Index.NOT_ANALYZED));
+		doc.add(new Field(NAME_FLD, t.getName(), Store.NO, Index.ANALYZED));
+		doc.add(new Field(_NAME_FLD, t.getName(), Store.YES, Index.ANALYZED));
+		doc.add(new Field(PATTERN_FLD, t.getPattern(), Store.YES, Index.ANALYZED));
+		doc.add(new Field(PATH_FLD, t.getFile(), Store.NO, Index.ANALYZED));
+		doc.add(new Field(_PATH_FLD, t.getFile(), Store.YES, Index.ANALYZED));
 		for (String ext: t.getExtensions())
 		{
 			String val = t.getExtension(ext);
@@ -151,15 +351,14 @@ public class TagIndex
 				val = "";
 			doc.add(new Field(ext, val, Store.YES, Index.ANALYZED));
 		}
-		doc.add(new Field("origin", String.valueOf(origin), Store.YES,
-			Index.ANALYZED));
+		doc.add(new Field(ORIGIN_FLD, origin.toString(), Store.YES, Index.ANALYZED));
+		doc.add(new Field(DOCTYPE_FLD, TAG_DOC_TYPE, Store.YES, Index.ANALYZED));
 		return doc;
 	}
 
 	private Tag documentToTag(Document doc)
 	{
-		Tag tag = new Tag(doc.get("_name"), doc.get("_path"),
-			doc.get("pattern"));
+		Tag tag = new Tag(doc.get(_NAME_FLD), doc.get(_PATH_FLD), doc.get(PATTERN_FLD));
 		Hashtable<String, String> extensions = new Hashtable<String, String>(); 
 		for (Fieldable field: doc.getFields())
 		{
@@ -171,6 +370,106 @@ public class TagIndex
 			extensions.put(field.name(), val);
 		}
 		tag.setExtensions(extensions);
+		Hashtable<String, String> attachments = new Hashtable<String, String>();
+		attachments.put(ORIGIN_FLD, doc.get(ORIGIN_FLD));
+		tag.setAttachments(attachments);
 		return tag;
+	}
+
+	/* Various queries */
+
+	// Returns a query for a tag name in a list of specified origins
+	// origins: A hash of origin type -> vector of origin names
+	// tags: List of tags to be filled in by this query
+	public void queryTagInOrigins(String tag, List<Origin> origins,
+		final List<Tag> tags)
+	{
+		if (origins == null || origins.isEmpty())
+			return;
+		StringBuffer sb = new StringBuffer("(");
+		boolean isFirst = true;
+		for (Origin origin: origins)
+		{
+			if (! isFirst)
+			{
+				sb.append(" OR ");
+				isFirst = true;
+			}
+			sb.append("origin:" + escape(origin.toString()));
+		}
+		sb.append(") AND " + _NAME_FLD + ":" + escape(tag));
+		runQuery(sb.toString(), MAX_RESULTS, new DocHandler() {
+			public void handle(Document doc)
+			{
+				tags.add(documentToTag(doc));
+			}
+		});
+	}
+
+	public String getOriginScopedQuery(Origin origin)
+	{
+		return DOCTYPE_FLD + ":" + ORIGIN_DOC_TYPE + " AND " +
+			ORIGIN_FLD + ":" + escape(origin.toString());
+	}
+
+	public String getTagNameQuery(String name)
+	{
+		return DOCTYPE_FLD + ":" + ORIGIN_DOC_TYPE + " AND " +
+			_NAME_FLD + ":" + escape(name);
+	}
+
+	private Query getQuery(String query)
+	{
+		QueryParser qp = new QueryParser(Version.LUCENE_30, NAME_FLD, analyzer);
+		try { return qp.parse(query); }
+		catch (Exception e) { e.printStackTrace(); }
+		return null;
+	}
+
+	public void runQuery(String query, int maxResults, DocHandler handler)
+	{
+		Query q = getQuery(query);
+		if (q == null)
+			return;
+		try
+		{
+			IndexSearcher searcher = new IndexSearcher(directory, true);
+			TopDocs topDocs = searcher.search(q, maxResults);
+			for (ScoreDoc scoreDoc: topDocs.scoreDocs)
+			{
+				Document doc = searcher.doc(scoreDoc.doc);
+				handler.handle(doc);
+			}
+			searcher.close();
+		}
+		catch (IOException e) { e.printStackTrace(); }
+	}
+
+	public static class Origin
+	{
+		public OriginType type;
+		public String id;
+		public String s;
+
+		public Origin(OriginType type, String id)
+		{
+			this.type = type;
+			this.id = id;
+			s = type + ":" + id;
+		}
+		public String toString()
+		{
+			return s;
+		}
+		public static Origin fromString(String s)
+		{
+			String [] parts = s.split(":", 2);
+			return new Origin(OriginType.valueOf(parts[0]), parts[1]);
+		}
+	}
+
+	public interface DocHandler
+	{
+		void handle(Document doc);
 	}
 }

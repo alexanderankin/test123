@@ -8,7 +8,7 @@ import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 
-import ctagsinterface.db.TagDB;
+import ctagsinterface.index.TagIndex;
 import ctagsinterface.main.CtagsInterfacePlugin;
 import ctagsinterface.options.DirsOptionPane;
 import ctagsinterface.options.GeneralOptionPane;
@@ -16,14 +16,16 @@ import ctagsinterface.options.GeneralOptionPane;
 public class BufferWatcher
 {
 
-	private TagDB db;
+	private TagIndex index;
 	
-	public BufferWatcher(TagDB db) {
+	public BufferWatcher(TagIndex index)
+	{
 		EditBus.addToBus(this);
-		this.db = db;
+		this.index = index;
 	}
 	
-	public void shutdown() {
+	public void shutdown()
+	{
 		EditBus.removeFromBus(this);
 	}
 
@@ -49,20 +51,25 @@ public class BufferWatcher
 		}
 	}
 
-	private void update(String file) {
+	private void update(String file)
+	{
 		CtagsInterfacePlugin.tagSourceFile(file);
 	}
 
-	private boolean monitored(String file) {
-		return (isInMonitoredTree(file) || db.hasSourceFile(file));
+	private boolean monitored(String file)
+	{
+		return (isInMonitoredTree(file) || index.hasSourceFile(file));
 	}
 
-	private boolean isInMonitoredTree(String file) {
+	private boolean isInMonitoredTree(String file)
+	{
 		Vector<String> dirs = DirsOptionPane.getDirs();
 		file = MiscUtilities.resolveSymlinks(file);
 		for (int i = 0; i < dirs.size(); i++)
+		{
 			if (file.startsWith(dirs.get(i)))
 				return true;
+		}
 		return false;
 	}
 

@@ -15,8 +15,7 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.TextAreaPainter;
 
 import superabbrevs.SuperAbbrevs;
-import ctagsinterface.db.Query;
-import ctagsinterface.db.TagDB;
+import ctagsinterface.index.TagIndex;
 import ctagsinterface.main.CtagsInterfacePlugin;
 import ctagsinterface.main.KindIconProvider;
 import ctagsinterface.main.Tag;
@@ -149,13 +148,11 @@ public class TagCompletion {
 		return sb.toString();
 	}
 	
-	public Vector<Tag> getCompletions() {
-		Query q = CtagsInterfacePlugin.getBasicScopedTagQuery(view);
-		TagDB db = CtagsInterfacePlugin.getDB();
-		q.addCondition(db.field(TagDB.TAGS_TABLE, TagDB.TAGS_NAME) +
-			" LIKE " + TagDB.quote(prefix + '%'));
-		Vector<Tag> tags = CtagsInterfacePlugin.query(q);
-		return tags;
+	public Vector<Tag> getCompletions()
+	{
+		String s = CtagsInterfacePlugin.getScopedTagQuery(view);
+		s = s + " AND " + TagIndex._NAME_FLD + ":" + prefix + "*";
+		return CtagsInterfacePlugin.query(s);
 	}
 	public String createAbbrev(String signature)
 	{
