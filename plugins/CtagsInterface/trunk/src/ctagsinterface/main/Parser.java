@@ -28,6 +28,7 @@ public class Parser {
 			e.printStackTrace();
 			return;
 		}
+		CtagsInterfacePlugin.getIndex().startActivity();
 		try {
 			String line;
 			while ((line = in.readLine()) != null) {
@@ -46,6 +47,7 @@ public class Parser {
 				e.printStackTrace();
 			}
 		}
+		CtagsInterfacePlugin.getIndex().endActivity();
 	}
 
 	public void setSourcePathMapping(HashMap<String, String> map) {

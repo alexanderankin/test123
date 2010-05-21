@@ -14,6 +14,8 @@ import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Fieldable;
 import org.gjt.sp.jedit.ActionSet;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditBus;
@@ -28,6 +30,7 @@ import org.gjt.sp.util.Log;
 
 import ctagsinterface.dockables.TagList;
 import ctagsinterface.index.TagIndex;
+import ctagsinterface.index.TagIndex.DocHandler;
 import ctagsinterface.index.TagIndex.Origin;
 import ctagsinterface.index.TagIndex.OriginType;
 import ctagsinterface.jedit.BufferWatcher;
@@ -291,7 +294,26 @@ public class CtagsInterfacePlugin extends EditPlugin
 			return;
 		TagCompletion.complete(view, prefix);
 	}
-	
+
+	// Run a query on the database and display the results (for debugging) 
+	public static void runQuery(final View view)
+	{
+		String q = JOptionPane.showInputDialog("Enter query:");
+		if (q == null)
+			return;
+		System.err.println("-- Executing query: " + q);
+		index.runQuery(q, 1000000, new DocHandler()
+		{
+			public void handle(Document doc)
+			{
+				String s = "";
+				for (Fieldable f: doc.getFields())
+					s += f.name() + ":" + f.stringValue() + " ";
+				System.err.println(s);
+			}
+		});
+	}
+
 	// Returns the prefix for code completion
 	public static String getCompletionPrefix(View view)
 	{

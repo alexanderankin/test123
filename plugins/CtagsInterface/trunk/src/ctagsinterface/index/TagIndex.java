@@ -420,9 +420,17 @@ public class TagIndex
 
 	private Query getQuery(String query)
 	{
+		Log.log(Log.MESSAGE, TagIndex.class, "Parsing query: " + query); 
 		QueryParser qp = new QueryParser(Version.LUCENE_30, NAME_FLD, analyzer);
-		try { return qp.parse(query); }
-		catch (Exception e) { e.printStackTrace(); }
+		try
+		{
+			return qp.parse(query);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			Log.log(Log.WARNING, TagIndex.class, "Parsing failed for query: " + query);
+		}
 		return null;
 	}
 
@@ -433,14 +441,20 @@ public class TagIndex
 			return;
 		try
 		{
+			Log.log(Log.MESSAGE, TagIndex.class, "Searching query '" + q.toString() + "' started.");
 			IndexSearcher searcher = new IndexSearcher(directory, true);
 			TopDocs topDocs = searcher.search(q, maxResults);
+			Log.log(Log.MESSAGE, TagIndex.class, "Searching query: '" + q.toString() + "' ended.");
+			Log.log(Log.MESSAGE, TagIndex.class, "Processing of " + topDocs.scoreDocs.length + " query results started.");
 			for (ScoreDoc scoreDoc: topDocs.scoreDocs)
 			{
 				Document doc = searcher.doc(scoreDoc.doc);
 				handler.handle(doc);
 			}
+			Log.log(Log.MESSAGE, TagIndex.class, "Processing query results ended.");
+			Log.log(Log.MESSAGE, TagIndex.class, "Closing searcher started.");
 			searcher.close();
+			Log.log(Log.MESSAGE, TagIndex.class, "Closing searcher ended.");
 		}
 		catch (IOException e) { e.printStackTrace(); }
 	}
