@@ -408,7 +408,7 @@ public class TagIndex
 
 	public String getOriginScopedQuery(Origin origin)
 	{
-		return DOCTYPE_FLD + ":" + ORIGIN_DOC_TYPE + " AND " +
+		return DOCTYPE_FLD + ":" + TAG_DOC_TYPE + " AND " +
 			ORIGIN_FLD + ":" + escape(origin.toString());
 	}
 
