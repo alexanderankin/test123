@@ -1,7 +1,6 @@
 package ctagsinterface.main;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
@@ -91,16 +90,9 @@ public class QueryAction extends EditAction {
 	    String s = fillQueryParameters(view);
 	    switch (queryType) {
 	    case JUMP_TO_TAG:
-	        ResultSet rs;
-	        try {
-	            rs = CtagsInterfacePlugin.getDB().query(s);
-	            if (rs == null)
-	                return;
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	            return;
-	        }
-	        CtagsInterfacePlugin.jumpToQueryResults(view, rs);
+	    	ArrayList<Tag> tags = new ArrayList<Tag>();
+            CtagsInterfacePlugin.getIndex().queryTags(s, tags);
+	        CtagsInterfacePlugin.jumpToTags(view, tags);
 	    break;
 	    case SEARCH_PREFIX:
 	        new QuickSearchTagDialog(view, QuickSearchTagDialog.Mode.PREFIX, name, s, callImmediately);

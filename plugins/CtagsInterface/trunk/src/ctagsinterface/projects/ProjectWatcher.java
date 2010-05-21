@@ -20,7 +20,7 @@ import projectviewer.event.StructureUpdate;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
-import ctagsinterface.db.TagDB;
+import ctagsinterface.index.TagIndex.OriginType;
 import ctagsinterface.main.CtagsInterfacePlugin;
 import ctagsinterface.options.ProjectsOptionPane;
 
@@ -108,16 +108,19 @@ public class ProjectWatcher
 	
 	// ProjectListener methods
 	
-	public void handleFilesChanged(ProjectUpdate pu) {
+	public void handleFilesChanged(ProjectUpdate pu)
+	{
 		Vector<String> removed = new Vector<String>();
 		Collection<VPTFile> nodes = pu.getRemovedFiles();
-		if (nodes != null) {
+		if (nodes != null)
+		{
 			for (VPTFile node: nodes)
 				removed.add(node.getNodePath());
 		}
 		Vector<String> added = new Vector<String>();
 		nodes = pu.getAddedFiles();
-		if (nodes != null) {
+		if (nodes != null)
+		{
 			for (VPTFile node: nodes)
 				added.add(node.getNodePath());
 		}
@@ -125,7 +128,8 @@ public class ProjectWatcher
 			added, removed);
 	}
 
-	public void handlePropertiesChanged(ProjectUpdate pu) {
+	public void handlePropertiesChanged(ProjectUpdate pu)
+	{
 		// TODO Auto-generated method stub
 	}
 
@@ -134,14 +138,17 @@ public class ProjectWatcher
 	{
 		if (! ProjectsOptionPane.getTrackProjectList())
 			return;
-		if (su.getType() == StructureUpdate.Type.PROJECT_ADDED) {
+		if (su.getType() == StructureUpdate.Type.PROJECT_ADDED)
+		{
 			String name = su.getNode().getName();
-			CtagsInterfacePlugin.insertOrigin(TagDB.PROJECT_ORIGIN, name);
+			CtagsInterfacePlugin.insertOrigin(OriginType.PROJECT, name);
 			watched.add(name);
 		}
-		else if (su.getType() == StructureUpdate.Type.PROJECT_REMOVED) {
-			Vector<String> projects = CtagsInterfacePlugin.getDB().getOrigins(
-				TagDB.PROJECT_ORIGIN);
+		else if (su.getType() == StructureUpdate.Type.PROJECT_REMOVED)
+		{
+			Vector<String> projects = new Vector<String>();
+				CtagsInterfacePlugin.getIndex().getOrigins(
+					OriginType.PROJECT, projects);
 			String name = su.getNode().getName();
 			if (! projects.contains(name))
 				return;
@@ -150,7 +157,7 @@ public class ProjectWatcher
 				"CtagsInterface plugin", JOptionPane.YES_NO_OPTION);
 			if (res != JOptionPane.YES_OPTION)
 				return;
-			CtagsInterfacePlugin.deleteOrigin(TagDB.PROJECT_ORIGIN, name);
+			CtagsInterfacePlugin.deleteOrigin(OriginType.PROJECT, name);
 			watched.remove(name);
 		}
 	}

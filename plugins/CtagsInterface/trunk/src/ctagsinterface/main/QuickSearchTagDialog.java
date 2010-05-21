@@ -9,8 +9,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -28,11 +26,14 @@ import javax.swing.Timer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.apache.lucene.document.Document;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
 
-import ctagsinterface.db.Query;
-import ctagsinterface.db.TagDB;
+import ctagsinterface.index.TagIndex;
+import ctagsinterface.index.TagIndex.DocHandler;
+import ctagsinterface.index.TagIndex.Origin;
+import ctagsinterface.index.TagIndex.OriginType;
 import ctagsinterface.options.ProjectsOptionPane;
 
 @SuppressWarnings("serial")
@@ -48,7 +49,7 @@ public class QuickSearchTagDialog extends JDialog {
 	private DefaultListModel model;
 	private View view;
 	private Vector<QuickSearchTag> tagNames;
-	private Query baseQuery;
+	private String baseQuery;
 	private Timer filterTimer;
 	private String query;
 	private boolean showImmediately;
@@ -137,52 +138,39 @@ public class QuickSearchTagDialog extends JDialog {
 			applyFilter();
 	}
 
-	private void prepareData() {
-		TagDB db = CtagsInterfacePlugin.getDB();
-		Query q;
-		if (query == null) {
-			q = new Query();
-			q.setColumns(new Object [] {TagDB.TAGS_TABLE + ".*", TagDB.FILES_NAME});
-			q.setTables(new Object [] {TagDB.TAGS_TABLE, TagDB.FILES_TABLE});
-			q.addCondition(db.field(TagDB.TAGS_TABLE, TagDB.TAGS_FILE_ID) + "=" +
-				db.field(TagDB.FILES_TABLE, TagDB.FILES_ID));
-	
-			if (ProjectsOptionPane.getSearchActiveProjectOnly()) {
-				String project = CtagsInterfacePlugin.getProjectWatcher().getActiveProject(view);
-				if (project != null) {
-					q.addTable(TagDB.MAP_TABLE);
-					q.addTable(TagDB.ORIGINS_TABLE);
-					q.addCondition(db.field(TagDB.TAGS_TABLE, TagDB.TAGS_FILE_ID) + "=" +
-						db.field(TagDB.FILES_TABLE, TagDB.FILES_ID));
-					q.addCondition(db.field(TagDB.TAGS_TABLE, TagDB.TAGS_FILE_ID) + "=" +
-						db.field(TagDB.MAP_TABLE, TagDB.MAP_FILE_ID));
-					q.addCondition(db.field(TagDB.MAP_TABLE, TagDB.MAP_ORIGIN_ID) + "=" +
-						db.field(TagDB.ORIGINS_TABLE, TagDB.ORIGINS_ID));
-					q.addCondition(db.field(TagDB.ORIGINS_TABLE, TagDB.ORIGINS_TYPE) + "=" +
-						TagDB.quote(TagDB.PROJECT_ORIGIN));
-					q.addCondition(db.field(TagDB.ORIGINS_TABLE, TagDB.ORIGINS_NAME) + "=" +
-						TagDB.quote(project));
+	private void prepareData()
+	{
+		TagIndex index = CtagsInterfacePlugin.getIndex();
+		String s = "";
+		if (query == null)
+		{
+			if (ProjectsOptionPane.getSearchActiveProjectOnly())
+			{
+				String project = CtagsInterfacePlugin.getProjectWatcher().
+					getActiveProject(view);
+				if (project != null)
+				{
+					Origin origin = index.getOrigin(OriginType.PROJECT,
+						project, false);
+					s = index.getOriginScopedQuery(origin);
 				}
 			}
 		}
 		else
-			q = new Query(query);
+			s = query;
 		switch (mode) {
 		case SUBSTRING:
-			try {
-				tagNames = new Vector<QuickSearchTag>();
-				ResultSet rs = db.query(q);
-				if (rs == null)
-					return;
-				while (rs.next())
-					tagNames.add(new QuickSearchTag(rs));
-				rs.close();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
+			tagNames = new Vector<QuickSearchTag>();
+			index.runQuery(s, TagIndex.MAX_RESULTS, new DocHandler()
+			{
+				public void handle(Document doc)
+				{
+					tagNames.add(new QuickSearchTag(doc));
+				}
+			});
 			break;
 		case PREFIX:
-			baseQuery = q;
+			baseQuery = s;
 			break;
 		}
 	}
@@ -201,42 +189,34 @@ public class QuickSearchTagDialog extends JDialog {
 			filterTimer.start();
 	}
 
-	private void applyFilter() {
+	private void applyFilter()
+	{
 		model.removeAllElements();
-		String input = name.getText();
-		if (showImmediately || (! input.isEmpty())) {
-			switch (mode) {
+		String input = name.getText().toLowerCase();
+		if (showImmediately || (! input.isEmpty()))
+		{
+			switch (mode)
+			{
 			case SUBSTRING:
-				for (int i = 0; i < tagNames.size(); i++) {
+				for (int i = 0; i < tagNames.size(); i++)
+				{
 					QuickSearchTag t = tagNames.get(i);
 					if (t.name.toLowerCase().contains(input.toLowerCase()))
 						model.addElement(t);
 				}
 				break;
 			case PREFIX:
-				TagDB db = CtagsInterfacePlugin.getDB();
-				Vector<Object> conditions = baseQuery.getConditions();
-				Object prefixCondition = null;
-				if (! input.isEmpty()) {
-					prefixCondition = db.field(TagDB.TAGS_TABLE, TagDB.TAGS_NAME) +
-						" LIKE " + TagDB.quote(input + "%");
-					conditions.add(prefixCondition);
-					baseQuery.setConditions(conditions);
-				}
-				try {
-					ResultSet rs = db.query(baseQuery);
-					if (rs == null)
-						break;
-					while (rs.next())
-						model.addElement(new QuickSearchTag(rs));
-					rs.close();
-				} catch (SQLException e1) {
-					e1.printStackTrace();
-				}
-				if (prefixCondition != null) {
-					conditions.remove(prefixCondition);
-					baseQuery.setConditions(conditions);
-				}
+				TagIndex index = CtagsInterfacePlugin.getIndex();
+				String s = baseQuery;
+				if (! input.isEmpty())
+					s = s + " AND " + TagIndex._NAME_FLD + ":" + input + "*";
+				index.runQuery(s, TagIndex.MAX_RESULTS, new DocHandler()
+				{
+					public void handle(Document doc)
+					{
+						model.addElement(new QuickSearchTag(doc));
+					}
+				});
 				break;
 			}
 		}
@@ -267,40 +247,41 @@ public class QuickSearchTagDialog extends JDialog {
 		super.setVisible(b);
 	}
 
-	static private class QuickSearchTag {
+	static private class QuickSearchTag
+	{
 		String file;
 		int line;
 		String name;
 		String desc;
 		String kind;
-		public QuickSearchTag(ResultSet rs) {
+		public QuickSearchTag(Document doc)
+		{
 			StringBuffer text = new StringBuffer();
-			try {
-				name = rs.getString(TagDB.TAGS_NAME);
-				text.append(rs.getString(TagDB.TAGS_NAME));
-				kind = rs.getString(TagDB.extension2column("kind"));
-				if (kind != null)
-					text.append(" (" + kind + ")");
-				file = rs.getString(TagDB.FILES_NAME);
-				String lineStr = rs.getString(TagDB.extension2column("line"));
-				if (lineStr != null)
-					line = Integer.valueOf(lineStr);
-				else
-					line = -1;
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			name = doc.get(TagIndex._NAME_FLD);
+			text.append(name);
+			kind = doc.get("kind");
+			if (kind != null)
+				text.append(" (" + kind + ")");
+			file = doc.get(TagIndex._PATH_FLD);
+			String lineStr = doc.get(TagIndex.LINE_FLD);
+			if (lineStr != null)
+				line = Integer.valueOf(lineStr);
+			else
+				line = -1;
 			desc = text.toString();
 			if (isValid())
 				desc = desc + "   [" + file + ":" + line + "]";
 		}
-		public boolean isValid() {
+		public boolean isValid()
+		{
 			return (desc.length() > 0 && file != null && line >= 0);
 		}
-		public String toString() {
+		public String toString()
+		{
 			return desc;
 		}
-		public ImageIcon getIcon() {
+		public ImageIcon getIcon()
+		{
 			return KindIconProvider.getIcon(kind);
 		}
 	}
