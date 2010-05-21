@@ -1,6 +1,10 @@
 CHANGELOG for LookAndFeel plugin
 ================================
 
+Version 1.5
+-----------
+* Updated Substance LAF to version 6.0
+
 VERSION 1.4
 -----------
 * added Substance LAF, version 5.3.

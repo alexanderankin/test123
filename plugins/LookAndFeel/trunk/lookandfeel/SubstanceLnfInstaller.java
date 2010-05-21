@@ -20,10 +20,12 @@ public class SubstanceLnfInstaller extends LnfInstaller {
                 "Dust",
                 "DustCoffee",
                 "EmeraldDusk",
-                "Gemini",           // api package
-                "GraphiteAqua",     // api package
-                "Magellan",         // api package
-                "Magma",
+                "Gemini",           
+                "Graphite",
+                "GraphiteAqua",     
+                "GraphiteGlassLookAndFeel",
+                "Magellan",        
+                //"Magma",                  // removed in 6.0
                 "MistAqua",
                 "MistSilver",
                 "Moderate",
@@ -32,8 +34,8 @@ public class SubstanceLnfInstaller extends LnfInstaller {
                 "OfficeBlue2007",
                 "OfficeSilver2007",
                 "Raven",
-                "RavenGraphite",
-                "RavenGraphiteGlass",
+                //"RavenGraphite",          // removed in 6.0
+                //"RavenGraphiteGlass",     // removed in 6.0
                 "Sahara",
                 "Twilight"
             };
@@ -45,13 +47,7 @@ public class SubstanceLnfInstaller extends LnfInstaller {
         }
 
         try {
-            Class c;
-            if (theme.equals("Gemini") || theme.equals("GraphiteAqua") || theme.equals("Magellan")) {
-                c = Class.forName( "org.jvnet.substance.api.skin.Substance" + theme + "LookAndFeel");
-            }
-            else {
-                c = Class.forName( "org.jvnet.substance.skin.Substance" + theme + "LookAndFeel" );
-            }
+            Class c = Class.forName( "org.pushingpixels.substance.api.skin.Substance" + theme + "LookAndFeel" );
             UIManager.setLookAndFeel( (LookAndFeel)c.newInstance() );
             UIManager.put( "ClassLoader", c.getClassLoader() );
         }
