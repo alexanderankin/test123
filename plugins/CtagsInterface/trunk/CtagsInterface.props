@@ -26,8 +26,8 @@ ctags-interface-search-tag-by-substring.label=Search for a tag with substring...
 ctags-interface-search-tag-by-prefix.label=Search for a tag with prefix...
 ctags-interface-tag-all-projects.label=Tag all projects
 ctags-interface-complete-from-db.label=Suggest completion options
-ctags-interface-change-db-settings.label=Change database settings...
 ctags-interface-add-current-file.label=Tag current file
+ctags-interface-run-query.label=Run a query (for debugging)
 
 # menu items
 plugin.ctagsinterface.main.CtagsInterfacePlugin.menu=\
@@ -40,9 +40,9 @@ plugin.ctagsinterface.main.CtagsInterfacePlugin.menu=\
 	- \
 	ctags-interface-tag-all-projects \
 	- \
-	ctags-interface-change-db-settings \
+	ctags-interface-add-current-file \
 	- \
-	ctags-interface-add-current-file
+	ctags-interface-run-query
 
 # option panes
 plugin.ctagsinterface.main.CtagsInterfacePlugin.option-group=CtagsInterface-General \

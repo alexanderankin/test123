@@ -11,16 +11,6 @@
 			ctagsinterface.main.CtagsInterfacePlugin.addTagFile(view);
 		</CODE>
 	</ACTION>
-	<ACTION NAME="ctags-interface-print-tags" NO_REPEAT="TRUE">
-		<CODE>
-			ctagsinterface.main.CtagsInterfacePlugin.printTags();
-		</CODE>
-	</ACTION>
-	<ACTION NAME="ctags-interface-print-tags-containing" NO_REPEAT="TRUE">
-		<CODE>
-			ctagsinterface.main.CtagsInterfacePlugin.printTagsContaining(view);
-		</CODE>
-	</ACTION>
 	<ACTION NAME="ctags-interface-jump-to-tag" NO_REPEAT="TRUE">
 		<CODE>
 			ctagsinterface.main.CtagsInterfacePlugin.jumpToTag(view);
@@ -41,14 +31,14 @@
 			ctagsinterface.main.CtagsInterfacePlugin.tagAllProjects(view);
 		</CODE>
 	</ACTION>
-	<ACTION NAME="ctags-interface-change-db-settings" NO_REPEAT="TRUE">
-		<CODE>
-			ctagsinterface.main.CtagsInterfacePlugin.changeDbSettings(view);
-		</CODE>
-	</ACTION>
 	<ACTION NAME="ctags-interface-complete-from-db" NO_REPEAT="TRUE">
 		<CODE>
 			ctagsinterface.main.CtagsInterfacePlugin.completeFromDb(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="ctags-interface-run-query" NO_REPEAT="TRUE">
+		<CODE>
+			ctagsinterface.main.CtagsInterfacePlugin.runQuery(view);
 		</CODE>
 	</ACTION>
 </ACTIONS>

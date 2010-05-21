@@ -192,7 +192,7 @@ public class QuickSearchTagDialog extends JDialog {
 	private void applyFilter()
 	{
 		model.removeAllElements();
-		String input = name.getText();
+		final String input = name.getText().toLowerCase();
 		if (showImmediately || (! input.isEmpty()))
 		{
 			switch (mode)
@@ -201,7 +201,7 @@ public class QuickSearchTagDialog extends JDialog {
 				for (int i = 0; i < tagNames.size(); i++)
 				{
 					QuickSearchTag t = tagNames.get(i);
-					if (t.name.toLowerCase().contains(input.toLowerCase()))
+					if (t.name.toLowerCase().contains(input))
 						model.addElement(t);
 				}
 				break;
@@ -209,12 +209,14 @@ public class QuickSearchTagDialog extends JDialog {
 				TagIndex index = CtagsInterfacePlugin.getIndex();
 				String s = baseQuery;
 				if (! input.isEmpty())
-					s = s + " AND " + TagIndex._NAME_FLD + ":" + input + "*";
+					s = s + " AND " + TagIndex.NAME_FLD + ":" + input + "*";
 				index.runQuery(s, TagIndex.MAX_RESULTS, new DocHandler()
 				{
 					public void handle(Document doc)
 					{
-						model.addElement(new QuickSearchTag(doc));
+						String name = doc.getField(TagIndex._NAME_FLD).stringValue();
+						if (name.toLowerCase().startsWith(input))
+							model.addElement(new QuickSearchTag(doc));
 					}
 				});
 				break;
