@@ -36,8 +36,7 @@ import projectviewer.vpt.VPTProject;
 
 import common.gui.HelpfulJTable;
 
-import ctagsinterface.db.Query;
-import ctagsinterface.db.TagDB;
+import ctagsinterface.index.TagIndex;
 import ctagsinterface.main.CtagsInterfacePlugin;
 import ctagsinterface.main.Tag;
 
@@ -260,14 +259,7 @@ public class StaticCallTree extends JPanel
 	}
 	private Vector<Tag> getTagsOfFile(String file)
 	{
-		// A join between the TAGS table and the FILES table causes the query
-		// to be very slow. Use two separate queries to avoid the join.
-		int fileId = CtagsInterfacePlugin.getDB().getSourceFileID(file);
-		if (fileId == -1)
-			return null;
-		Query q = new Query(TagDB.TAGS_TABLE + ".*", TagDB.TAGS_TABLE,
-			TagDB.TAGS_FILE_ID + "=" + fileId);
-		Vector<Tag> tags = CtagsInterfacePlugin.query(q);
+		Vector<Tag> tags = CtagsInterfacePlugin.query("_path:" + TagIndex.escape(file));
 		// Now update the file of all tags...
 		for (Tag tag: tags)
 			tag.setFile(file);
