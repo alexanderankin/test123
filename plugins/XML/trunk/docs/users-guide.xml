@@ -1,6 +1,7 @@
+<?xml version="1.0"?>
 <article xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
- <!-- <?xml version="1.0"?>
+ <!-- 
  <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN" "docbookx.dtd"> -->
   <title>XML plugin user's guide</title>
 
@@ -914,6 +915,8 @@ Chapter 22 of <emphasis>DocBook XSL: The Complete Guide</emphasis> by Bob Stayto
  </para>
      <itemizedlist>
       <listitem><para>Translate an RNG,RNC schema or a sample XML to a RNC,RNG,DTD or XSD (Eric Le Lay - #1465879)</para></listitem>
+      <listitem><para>Split/Join tag doesn't remove namespace bindings,
+      ignores '>' in attributes and preserves entities in attributes (Eric Le Lay)</para></listitem>
      </itemizedlist>
  </listitem>
 

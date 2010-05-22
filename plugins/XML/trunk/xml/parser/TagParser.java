@@ -42,7 +42,30 @@ public class TagParser
 		if(startTag == -1 || startTag + 2 >= text.length()) // at least 2 chars after '<'
 			return null;
 
-		int endTag = text.indexOf('>', startTag + 1) + 1;		// NB. end of tag is AFTER >
+		int len = text.length();
+		
+		int endTag = 0;
+		for(int i = startTag+1; i < len ; i++)
+		{
+			int ch = text.charAt(i);
+			if(ch == '>'){
+				endTag = i+1;
+				break;
+			}else if(ch == '\'' || ch == '"'){
+				int nextQuote = text.indexOf(ch,i+1);
+				if(nextQuote == -1)
+				{
+					System.err.println("quote is not closed !");
+					return null;
+				}
+				else
+				{
+					i = nextQuote;
+					continue;
+				}
+			}
+		}
+		
 		if(endTag == 0 || endTag < pos)
 			return null;
 
@@ -212,10 +235,31 @@ public class TagParser
 	public static boolean isInsideTag(String text, int pos)
 	{
 		int start = text.lastIndexOf('<',pos);
-		int end = text.lastIndexOf('>',pos);
 
-		if(start > -1) 
+		if(start > -1 && start < pos) 
 		{
+			int end = -1;
+			int len = text.length();
+			for(int i = start+1; i < len && i < pos; i++) // +1 because start after <
+			{
+				int ch = text.charAt(i);
+				if(ch == '>'){
+					end = i;
+					break;
+				}else if(ch == '\'' || ch == '"'){
+					int nextQuote = text.indexOf(ch,i+1);
+					if(nextQuote == -1)
+					{
+						System.err.println("quote is not closed !");
+						return false;
+					}
+					else
+					{
+						i = nextQuote;
+						continue;
+					}
+				}
+			}
 			if(end == -1)
 				return true;
 			else if(end < start)
@@ -223,8 +267,6 @@ public class TagParser
 			else
 				return false;
 		}
-		else if(end > -1)						// FIXME: why is it so ? There is no start, end of story !
-			return true;
 		else
 			return false;
 	} //}}}
@@ -365,6 +407,85 @@ public class TagParser
 		return null;
 	} //}}}
 
+	//{{{ getAttrs() method
+	// works only for XML : all attributes must be quote
+	public static List<Attr> getAttrs(String text, Tag tag)
+	{
+		if (tag.type == T_START_TAG || tag.type == T_STANDALONE_TAG)
+		{
+			List<Attr> attrs = new ArrayList<Attr>();
+			int end = tag.end;
+			if(tag.type == T_STANDALONE_TAG)
+			{
+				end--;
+			}
+			if(text.length() < end)
+			{
+				end = text.length();
+			}
+			
+			int startAttrName = -1;
+			int endAttrName = -1;
+			boolean inName = false;
+			for(int i=tag.start+tag.tag.length()+1 ; i<end ; i++)
+			{
+				int ch = text.charAt(i);
+				
+				if(Character.isWhitespace(ch))
+				{
+					// end of name
+					if(inName){
+						endAttrName = i;
+						inName = false;
+					}
+				}
+				else if(startAttrName == -1)   		// start of name
+				{
+					startAttrName = i;
+					inName = true;
+				}
+				else if( ch == '=' )
+				{
+					if(inName)
+					{
+						endAttrName = i;
+						inName = false;
+					}
+				}
+				else if( ch == '\'' || ch == '"' )
+				{
+					int nextQuote = text.indexOf(ch,i+1);
+					if(nextQuote == -1)
+					{
+						System.err.println("quote is not closed !");
+						break;
+					}
+					else
+					{
+						Attr a = new Attr(startAttrName,nextQuote+1);
+						a.name = text.substring(startAttrName,endAttrName);
+						a.val = text.substring(i, nextQuote+1);
+						attrs.add(a);
+						
+						startAttrName=-1;
+						endAttrName=-1;
+						inName=false;
+						
+						i = nextQuote;
+					}
+					
+				}
+			}
+			
+			
+			return attrs;
+		}
+		else
+		{
+			return Collections.<Attr>emptyList();
+		}
+	} //}}}
+	
 	//}}}
 
 	//{{{ Tag class
@@ -398,6 +519,34 @@ public class TagParser
 			default:
 				throw new InternalError();
 			}
+		}
+	} //}}}
+	//{{{ Attr class : a text-level attribute
+	public static class Attr
+	{
+		/** Attribute's name (what's before the =) */
+		public String name = null;
+		/** Attribute's value (with quotes) */
+		public String val = null;
+		/** Attribute's start */ 
+		public int start;
+		/** Attribute's end */ 
+		public int end;
+		
+		/**
+		 * 
+		 * @param start offset from start of buffer
+		 * @param end offset from start of buffer
+		 */
+		Attr(int start, int end)
+		{
+			this.start = start;
+			this.end = end;
+		}
+
+		public String toString()
+		{
+			return name+"="+val;
 		}
 	} //}}}
 }

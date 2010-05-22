@@ -57,6 +57,7 @@ import xml.completion.ElementDecl;
 import xml.parser.TagParser;
 import xml.parser.XmlTag;
 import xml.parser.TagParser.Tag;
+import xml.parser.TagParser.Attr;
 
 import sidekick.html.parser.html.HtmlDocument;
 import sidekick.util.SideKickElement;
@@ -346,7 +347,7 @@ loop:			for(;;)
 	/**
 	 * Splits tag at caret, so that attributes are on separate lines.
 	 */
-	public static void splitTag(Tag tag, JEditTextArea textArea) {
+	public static void splitTag(Tag tag, JEditTextArea textArea, String text) {
 		View view = textArea.getView();
 		textArea.setSelection(new Selection.Range(tag.start, tag.end));
 		SideKickParsedData _data = SideKickParsedData.getParsedData(view);
@@ -374,18 +375,17 @@ loop:			for(;;)
 		StringBuffer result = new StringBuffer();
 		Object user_object = node.getUserObject();
 		if (user_object instanceof XmlTag) {
-			XmlTag xmltag = (XmlTag) node.getUserObject();
-			result.append("<");
-			result.append(xmltag.getName());
-			Attributes attrs = xmltag.attributes;
-			count = attrs.getLength();
+			result.append('<');
+			result.append(tag.tag);
+			List<Attr> attrs = TagParser.getAttrs(text,tag);
+			count = attrs.size();
 			if(count>0)result.append(' ');
 			for (int i=0; i<count; ++i) {
-				String formatstr = String.format("%s = \"%s\"", new Object[] {attrs.getQName(i), attrs.getValue(i) });
-				result.append(formatstr);
+				Attr a = attrs.get(i);
+				result.append(a.name).append(" = ").append(a.val);
 				if (i < count ) result.append(indent.toString());
 			}
-			result.append(">");
+			result.append('>');
 		}
 		else if (user_object instanceof SideKickAsset) {
 			SideKickElement element = ((SideKickAsset)user_object).getElement();
@@ -447,7 +447,6 @@ loop:			for(;;)
 		Selection sel = s[0];
 		if (sel.getEnd() - sel.getStart() < 2) return;
 		int line = textArea.getLineOfOffset(tag.start);
-//		int lineStartOffset = textArea.getLineStartOffset(line);
 		XmlParsedData data = (XmlParsedData)_data;
 		TreePath path = data.getTreePathForPosition(textArea.getCaretPosition());
 		int count = path.getPathCount();
@@ -455,18 +454,18 @@ loop:			for(;;)
 		StringBuffer result = new StringBuffer();
 		Object user_object = node.getUserObject();
 		if (user_object instanceof XmlTag) {
-			XmlTag xmltag = (XmlTag) node.getUserObject();
-			result.append("<");
-			result.append(xmltag.getName());
-			Attributes attrs = xmltag.attributes;
-			count = attrs.getLength();
-			for (int i=0; i<count; ++i) {
-				String formatstr = String.format(" %s = \"%s\"",
-					new Object[] {attrs.getQName(i), attrs.getValue(i) });
-				result.append(formatstr);
+			result.append('<');
+			result.append(tag.tag);
+			List<Attr> attrs = TagParser.getAttrs(text,tag);
+			for(Attr a: attrs)
+			{
+				result.append(' ').append(a.name).append(" = ").append(a.val);
 			}
-			// TODO: WE NEED TO CHECK IF THIS IS A SELF_TERMINATING TAG, ending with /> 
-			result.append(">");
+			if(tag.type == TagParser.T_STANDALONE_TAG)
+			{
+				result.append('/');
+			}
+			result.append('>');
 		}
 		else if (user_object instanceof SideKickAsset) {
 			SideKickElement element = ((SideKickAsset)user_object).getElement();
@@ -518,7 +517,7 @@ loop:			for(;;)
 		String text = buffer.getText(0,buffer.getLength());
 		Tag t = TagParser.getTagAtOffset(text, pos);
 		if (t != null && t.end != pos) { // getTagAtOffset will return a tag if you are just after it
-			splitTag(t, textArea);
+			splitTag(t, textArea, text);
 			return;
 		}
 		if(XmlPlugin.isDelegated(textArea) || !buffer.isEditable())
