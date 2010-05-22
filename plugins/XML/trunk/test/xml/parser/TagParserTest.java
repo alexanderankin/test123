@@ -48,6 +48,7 @@ import java.io.*;
 import java.util.regex.Pattern;
 import javax.swing.text.*;
 import javax.swing.*;
+import java.util.List;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.InputEvent;
@@ -89,24 +90,21 @@ public class TagParserTest{
     @Test
     public void testIsInsideTagSimple(){
     	String text = "<a>b <c>";
+    	assertFalse(TagParser.isInsideTag(text,0)); // |<a>b <c>
     	assertTrue( TagParser.isInsideTag(text,1)); // <|a>b <c>
+    	assertTrue( TagParser.isInsideTag(text,2)); // <a|>b <c>
     	assertFalse(TagParser.isInsideTag(text,3)); // <a>|b <c>
     	assertFalse(TagParser.isInsideTag(text,4)); // <a>b| <c>
     	assertTrue(TagParser.isInsideTag(text,6)); // <a>b <|c>
-    	// FIXME: FAILS HERE
-    	assertFalse(TagParser.isInsideTag(text,0)); // |<a>b <c>
-    	assertTrue( TagParser.isInsideTag(text,2)); // <a|>b <c>
     }
 
     @Test
     public void testIsInsideTagGtInAttr(){
     	String text = "<a b='>'>";
     	assertTrue( TagParser.isInsideTag(text,1)); // <|a b='>'>
-    	
-    	// FAILS AFTER THAT
     	assertTrue( TagParser.isInsideTag(text,6)); // <a b='|>'>
-    	assertFalse(TagParser.isInsideTag(text,7)); // <a b='>|'>
-    	assertFalse(TagParser.isInsideTag(text,8)); // <a b='>'|>
+    	assertTrue(TagParser.isInsideTag(text,7)); // <a b='>|'>
+    	assertTrue(TagParser.isInsideTag(text,8)); // <a b='>'|>
     	assertFalse(TagParser.isInsideTag(text,9)); // <a b='>'>|
     }
 
@@ -119,9 +117,8 @@ public class TagParserTest{
     	assertNotNull( TagParser.getTagAtOffset(text,1)); // <|a b='>'>
     	assertNotNull( TagParser.getTagAtOffset(text,6)); // <a b='|>'>
     	assertNotNull( TagParser.getTagAtOffset(text,7)); // <a b='>|'>
-    	// FAILS
     	assertNotNull( TagParser.getTagAtOffset(text,8)); // <a b='>'|>
-    	assertNull( TagParser.getTagAtOffset(text,9)); // <a b='>'>|
+    	assertNotNull( TagParser.getTagAtOffset(text,9)); // <a b='>'>|
     	assertNull( TagParser.getTagAtOffset(text,10)); // <a b='>'> |
     }
     
@@ -213,18 +210,21 @@ public class TagParserTest{
     /* success */
     @Test
     public void testGetTagAtOffsetNotClosed(){
-    	String text = "<a <b>";
+    	String text = "<a <b> <c d='>";
     	Tag t;
 
-    	t = TagParser.getTagAtOffset(text,1);             // <|a <b>
+    	t = TagParser.getTagAtOffset(text,1);             // <|a <b> <c d='>
     	assertNull(t);
     	
-    	t = TagParser.getTagAtOffset(text,4);             // <a <|b>
+    	t = TagParser.getTagAtOffset(text,4);             // <a <|b> <c d='>
     	assertNotNull(t);
     	assertEquals(3,t.start);
     	assertEquals(6,t.end);
     	assertEquals("b",t.tag);
     	assertEquals(T_START_TAG,t.type);
+
+    	t = TagParser.getTagAtOffset(text,8);             // <a <b> <|c d='>
+    	assertNull(t);
     }
     
     @Test
@@ -506,14 +506,125 @@ public class TagParserTest{
 
     }
 
+    @Test
+    public void testGetAttrsContents()
+    {
+		String text = "<a title= 'a \"nice\" title' a:href=\"../test\" xmlns:a\n= 'urn:a&lt;b'>";
+    	Tag t;
+    	t = new Tag(0,text.length());
+    	t.tag="a";
+    	t.type=T_START_TAG;
+    	
+    	List<Attr> attrs = TagParser.getAttrs(text,t);
+    	assertEquals(3,attrs.size());
+    	
+    	Attr a;
+    	
+    	a = attrs.get(0);
+    	assertEquals("title",a.name);
+    	assertEquals("'a \"nice\" title'",a.val);
+
+    	a = attrs.get(1);
+    	assertEquals("a:href",a.name);
+    	assertEquals("\"../test\"",a.val);
+
+    	a = attrs.get(2);
+    	assertEquals("xmlns:a",a.name);
+    	assertEquals("'urn:a&lt;b'",a.val);
+    }
+
+    @Test
+    public void testGetAttrsStandaloneAndEmpty()
+    {
+		String text = "<a><img src='i.png'/></a>";
+    	Tag t;
+    	t = new Tag(0,3);
+    	t.tag="a";
+    	t.type=T_START_TAG;
+    	
+    	List<Attr> attrs;
+    	Attr a;
+    	
+    	attrs = TagParser.getAttrs(text,t);
+    	assertEquals(0,attrs.size());
+    	
+    	t = new Tag(3,21);
+    	t.tag="img";
+    	t.type=T_STANDALONE_TAG;
+    	
+    	attrs = TagParser.getAttrs(text,t);
+    	assertEquals(1,attrs.size());
+
+    	a = attrs.get(0);
+    	assertEquals("src",a.name);
+    	assertEquals("'i.png'",a.val);
+
+    	t = new Tag(21,25);
+    	t.tag="a";
+    	t.type=T_END_TAG;
+    	
+    	attrs = TagParser.getAttrs(text,t);
+    	assertEquals(0,attrs.size());
+
+    }
+
+    @Test
+    public void testGetAttrsMalformed()
+    {
+		String text = "<i a=='b'>";
+    	Tag t;
+    	t = new Tag(0,10);
+    	t.tag="i";
+    	t.type=T_START_TAG;
+    	
+    	List<Attr> attrs;
+    	Attr a;
+    	
+    	attrs = TagParser.getAttrs(text,t);
+    	assertEquals(1,attrs.size());
+
+    	a = attrs.get(0);
+    	assertEquals("a",a.name);
+    	assertEquals("'b'",a.val);
+
+    	text = "<j 'no name'>";
+    	t = new Tag(0,13);
+    	t.tag="j";
+    	t.type=T_START_TAG;
+    	
+    	attrs = TagParser.getAttrs(text,t);
+    	System.err.println(attrs);
+    	assertEquals(0,attrs.size());
+
+    	text= "<k l='1' 'not closed>";
+    	t = new Tag(0,21);
+    	t.tag="k";
+    	t.type=T_START_TAG;
+    	
+    	attrs = TagParser.getAttrs(text,t);
+    	assertEquals(1,attrs.size());
+
+    	a = attrs.get(0);
+    	assertEquals("l",a.name);
+    	assertEquals("'1'",a.val);
+
+    	text = "<l &attrRef;>";
+    	t = new Tag(0,13);
+    	t.tag="l";
+    	t.type=T_START_TAG;
+    	
+    	attrs = TagParser.getAttrs(text,t);
+    	assertEquals(0,attrs.size());
+    }
 
    	/**
    	 * utility method to return the XmlParsedData of current view/buffer
    	 * fails if data is not instance of XmlParsedData
    	 */
     public static XmlParsedData getXmlParsedData(){
+    	Pause.pause(500);
   		SideKickParsedData _data = SideKickParsedData.getParsedData(view());
-  		//System.err.println("XMLParsedData:"+_data.getClass()+":"+_data);
+  		System.err.println("XMLParsedData:"+_data.getClass()+":"+_data);
 		assertTrue("no XMLParsedData in current view/buffer",
 			_data instanceof XmlParsedData);
 		
