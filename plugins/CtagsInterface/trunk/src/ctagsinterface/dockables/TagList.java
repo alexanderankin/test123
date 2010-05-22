@@ -9,6 +9,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -199,15 +200,19 @@ public class TagList extends JPanel implements DefaultFocusComponent
 			s.append(tag.getQualifiedName());
 			s.append("</b>  ");
 			String originStr = tag.getAttachment(TagIndex.ORIGIN_FLD);
-			Origin origin = Origin.fromString(originStr); 
-			if (origin != null && origin.type == OriginType.PROJECT)
+			ArrayList<Origin> origins = new ArrayList<Origin>();
+			Origin.fromString(originStr, origins);
+			for (Origin origin: origins)
 			{
-				String project = tag.getAttachment("O_NAME");
-				if (project != null && project.length() > 0)
+				if (origin != null && origin.type == OriginType.PROJECT)
 				{
-					s.append("(<i>");
-					s.append(project);
-					s.append("</i>)  ");
+					String project = origin.id;
+					if (project != null && project.length() > 0)
+					{
+						s.append("(<i>");
+						s.append(project);
+						s.append("</i>)  ");
+					}
 				}
 			}
 			s.append(tag.getFile());

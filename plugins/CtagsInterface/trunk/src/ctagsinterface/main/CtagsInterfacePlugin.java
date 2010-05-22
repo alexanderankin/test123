@@ -48,7 +48,6 @@ public class CtagsInterfacePlugin extends EditPlugin
 	
 	private static final String MISC_ORIGIN_ID = "temp";
 	public static final String TAGS_UPDATED_BUFFER_PROP = "TagsUpdated";
-	private static final String QUALIFIED_PLUGIN_NAME = "ctagsinterface.main.CtagsInterfacePlugin";
 	private static final String DOCKABLE = "ctags-interface-tag-list";
 	static public final String OPTION = "options.CtagsInterface.";
 	static public final String MESSAGE = "messages.CtagsInterface.";
@@ -120,6 +119,7 @@ public class CtagsInterfacePlugin extends EditPlugin
     {
 		private HashSet<String> files = new HashSet<String>();
 		private Origin origin;
+		private String originsStr;
 
 		public TagFileHandler(Origin origin)
 		{
@@ -130,10 +130,14 @@ public class CtagsInterfacePlugin extends EditPlugin
 			String file = t.getFile();
 			if (! files.contains(file))
 			{
+				// Add the new origin to the current list of origins, if not
+				// yet included.
+				originsStr = index.getOriginsOfFile(file);
+				originsStr = index.appendOrigin(originsStr, origin.toString());
 				index.deleteTagsFromSourceFile(file);
 				files.add(file);
 			}
-			index.insertTag(t, origin);
+			index.insertTag(t, originsStr);
 		}
     }
     
@@ -636,14 +640,14 @@ public class CtagsInterfacePlugin extends EditPlugin
 			public void run()
 			{
 				// Get the file origins, to restore when updating the file.
-				final Origin origin = index.getOriginOfFile(file);
+				final String originsStr = index.getOriginsOfFile(file);
 				index.deleteTagsFromSourceFile(file);
 				String tagFile = runner.runOnFile(file);
 				TagHandler handler = new TagHandler()
 				{
 					public void processTag(Tag t)
 					{
-						index.insertTag(t, origin);
+						index.insertTag(t, originsStr);
 					}
 				};
 				parseTagFile(tagFile, handler);

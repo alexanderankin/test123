@@ -49,6 +49,7 @@ import ctagsinterface.main.Tag;
 public class TagIndex
 {
 	public static final String ORIGIN_FLD = "origin";
+	public static final String _ORIGIN_FLD = "_origin";
 	public static final String TYPE_FLD = "type";
 	public static final String DOCTYPE_FLD = "doctype";
 	public static final String _PATH_FLD = "_path";
@@ -66,7 +67,8 @@ public class TagIndex
 	private StandardAnalyzer standardAnalyzer;
 	private KeywordAnalyzer keywordAnalyzer;
 	private static final String[] FIXED_FIELDS = {
-		NAME_FLD, _NAME_FLD, PATTERN_FLD, PATH_FLD, _PATH_FLD, DOCTYPE_FLD
+		NAME_FLD, _NAME_FLD, PATTERN_FLD, PATH_FLD, _PATH_FLD, DOCTYPE_FLD,
+		ORIGIN_FLD, _ORIGIN_FLD
 	};
 	private static Set<String> fixedFields;
 	private int writeCount;
@@ -93,6 +95,7 @@ public class TagIndex
 		analyzer = new PerFieldAnalyzerWrapper(standardAnalyzer);
 		analyzer.addAnalyzer(_NAME_FLD, keywordAnalyzer);
 		analyzer.addAnalyzer(_PATH_FLD, keywordAnalyzer);
+		analyzer.addAnalyzer(_ORIGIN_FLD, keywordAnalyzer);
 		fixedFields = new HashSet<String>();
 		for (String s: FIXED_FIELDS)
 			fixedFields.add(s);
@@ -162,19 +165,34 @@ public class TagIndex
 		});
 	}
 
-	public Origin getOriginOfFile(String file)
+	public String getOriginsOfFile(String file)
 	{
+		final StringBuilder sb = new StringBuilder();
 		String query = DOCTYPE_FLD + ":" + TAG_DOC_TYPE + " AND " +
 			_PATH_FLD + ":" + escape(file);
-		final Origin [] origin = new Origin[1]; 
 		runQuery(query, 1, new DocHandler()
 		{
 			public void handle(Document doc)
 			{
-				origin[0] = Origin.fromString(doc.get(ORIGIN_FLD));
+				sb.append(doc.get(ORIGIN_FLD));
 			}
 		});
-		return origin[0];
+		return sb.toString();
+	}
+
+	public String appendOrigin(String origins, String origin)
+	{
+		if (origin.length() > origins.length())
+			return origins + origin;
+		// Check end of origins string
+		int index = origins.lastIndexOf(origin);
+		if (index >= 0 && index + origin.length() == origins.length())
+			return origins;
+		// Check middle of origins string
+		String originInMiddle = origin + Origin.SEP;
+		if (origins.indexOf(originInMiddle) >= 0)
+			return origins;
+		return origins + origin;
 	}
 
 	public void deleteTagsFromSourceFile(String file)
@@ -204,16 +222,57 @@ public class TagIndex
 		queryTags(q.toString(), tags);
 	}
 
-	public void deleteTagsOfOrigin(Origin origin)
+	/*
+	 * Delete all tags that belong only to the specified origin. If a tag
+	 * belongs to multiple origins, only remove the specified origin from it.
+	 */
+	public void deleteTagsOfOrigin(final Origin origin)
 	{
+		// Delete the tags which belong only to the specified origin.
+		// Using _ORIGIN_FLD for a precise match.
 		String s = DOCTYPE_FLD + ":" + TAG_DOC_TYPE + " AND " +
-			ORIGIN_FLD + ":" + escape(origin.toString());
+			_ORIGIN_FLD + ":" + escape(origin.toString());
 		Query q = getQuery(s);
 		if (q != null)
 		{
-			try { writer.deleteDocuments(q); }
+			try
+			{
+				writer.deleteDocuments(q);
+				writer.commit();	// Verify they won't show up again
+			}
 			catch (IOException e) { e.printStackTrace(); }
 		}
+		
+		// Remove the specified origin from remaining tags.
+		// Using ORIGIN_FLD for a substring match.
+		s = DOCTYPE_FLD + ":" + TAG_DOC_TYPE + " AND " +
+			ORIGIN_FLD + ":" + escape(origin.toString());
+		runQuery(s, MAX_RESULTS, new DocHandler()
+		{
+			public void handle(Document doc)
+			{
+				// Try the end of the string
+				String origins = doc.get(ORIGIN_FLD);
+				String s = origin.toString();
+				int index = origins.lastIndexOf(s);
+				if (index < 0)
+					return;
+				String newValue;
+				if (index + s.length() == origins.length())
+					newValue = origins.substring(0, index);
+				else
+				{
+					index = origins.indexOf(s + Origin.SEP);
+					if (index < 0)
+						return;
+					newValue = origins.substring(0, index) +
+						origins.substring(index + s.length());
+				}
+				doc.removeField(ORIGIN_FLD);
+				doc.removeField(_ORIGIN_FLD);
+				addTagOrigins(doc, newValue);
+			}
+		});
 	}
 
 	public static String escape(String s)
@@ -290,9 +349,9 @@ public class TagIndex
 		return origin;
 	}
 
-	public void insertTag(Tag t, Origin origin)
+	public void insertTag(Tag t, String originsStr)
 	{
-		Document doc = tagToDocument(t, origin);
+		Document doc = tagToDocument(t, originsStr);
 		try { writer.addDocument(doc); }
 		catch (Exception e) { e.printStackTrace(); }
 	}
@@ -336,7 +395,7 @@ public class TagIndex
 		});
 	}
 
-	private Document tagToDocument(Tag t, Origin origin)
+	private Document tagToDocument(Tag t, String originsStr)
 	{
 		Document doc = new Document();
 		doc.add(new Field(NAME_FLD, t.getName(), Store.NO, Index.ANALYZED));
@@ -351,7 +410,7 @@ public class TagIndex
 				val = "";
 			doc.add(new Field(ext, val, Store.YES, Index.ANALYZED));
 		}
-		doc.add(new Field(ORIGIN_FLD, origin.toString(), Store.YES, Index.ANALYZED));
+		addTagOrigins(doc, originsStr);
 		doc.add(new Field(DOCTYPE_FLD, TAG_DOC_TYPE, Store.YES, Index.ANALYZED));
 		return doc;
 	}
@@ -374,6 +433,12 @@ public class TagIndex
 		attachments.put(ORIGIN_FLD, doc.get(ORIGIN_FLD));
 		tag.setAttachments(attachments);
 		return tag;
+	}
+
+	private void addTagOrigins(Document doc, String originsStr)
+	{
+		doc.add(new Field(ORIGIN_FLD, originsStr, Store.YES, Index.ANALYZED));
+		doc.add(new Field(_ORIGIN_FLD, originsStr, Store.NO, Index.ANALYZED));
 	}
 
 	/* Various queries */
@@ -461,6 +526,7 @@ public class TagIndex
 
 	public static class Origin
 	{
+		private static String SEP = ">>";
 		public OriginType type;
 		public String id;
 		public String s;
@@ -469,16 +535,33 @@ public class TagIndex
 		{
 			this.type = type;
 			this.id = id;
-			s = type + ":" + id;
+			s = SEP + type + ":" + id;
 		}
 		public String toString()
 		{
 			return s;
 		}
-		public static Origin fromString(String s)
+		public static void fromString(String s, List<Origin> origins)
 		{
-			String [] parts = s.split(":", 2);
-			return new Origin(OriginType.valueOf(parts[0]), parts[1]);
+			int index = 0;
+			do
+			{
+				index = s.indexOf(SEP);
+				int nextIndex = s.indexOf(SEP, index + 1);
+				String origin;
+				if (nextIndex >= 0)
+					origin = s.substring(index, nextIndex);
+				else
+					origin = s.substring(index);
+				String [] parts = origin.substring(SEP.length()).split(":", 2);
+				origins.add(new Origin(OriginType.valueOf(parts[0]), parts[1]));
+				index = nextIndex;
+			}
+			while (index >= 0);
+		}
+		public boolean equals(Origin origin)
+		{
+			return (type == origin.type && id.equals(origin.id));
 		}
 	}
 
