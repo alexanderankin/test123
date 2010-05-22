@@ -108,7 +108,9 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 	PublicMemberFilter publicFilter = new PublicMemberFilter();
 	private int rootLevel = 0;
 	private Vector<Object> emptyMembers = new Vector<Object>();
-	private static final String [] CLASS_KINDS = { "class","struct","union","interface" };
+	private static String CLASS_KIND_QUERY = "(" +
+		KIND_EXTENSION + ":class OR " + KIND_EXTENSION + ":struct OR " +
+		KIND_EXTENSION + ":union OR " + KIND_EXTENSION + ":interface)";
 
 	public ClassHierarchy(View view) {
 		super(new BorderLayout());
@@ -148,8 +150,7 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 	}
 	private Tag findClass(String clazz) {
 		String q = CtagsInterfacePlugin.getScopedTagNameQuery(view, clazz);
-		for (String kind: CLASS_KINDS)
-			q = q + " AND kind:" + kind;
+		q = q + " AND " + CLASS_KIND_QUERY;
 		Vector<Tag> tags = CtagsInterfacePlugin.query(q);
 		if (tags.isEmpty())
 			return null;
@@ -166,8 +167,7 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 			if (inheritsStr == null)
 				return;
 			String[] superClasses = inheritsStr.split(",");
-			for (int i = 0; i < superClasses.length; i++) {
-				String superClass = superClasses[i];
+			for (String superClass: superClasses) {
 				classes.add(superClass);
 				DefaultMutableTreeNode child = new DefaultMutableTreeNode(superClass);
 				node.add(child);
@@ -193,7 +193,7 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 		else
 			name = (String) obj;
 		String q = CtagsInterfacePlugin.getScopedTagQuery(view);
-		q = q + " AND inherits:" + TagIndex.escape(name);
+		q = q + " AND " + INHERITS_EXTENSION + ":" + TagIndex.escape(name);
 		Vector<Tag> tags = CtagsInterfacePlugin.query(q.toString());
 		for (int i = 0; i < tags.size(); i++) {
 			Tag subclass = tags.get(i);
@@ -370,11 +370,6 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 	private void getMembers(HashSet<String> classes) {
 		membersHash.clear();
 		derivedMembersHash.clear();
-		StringBuffer classStr = new StringBuffer("(");
-		Iterator<String> it = classes.iterator();
-		while (it.hasNext())
-			classStr.append("'" + it.next() + "',");
-		classStr.replace(classStr.length() - 1, classStr.length(), ")");
 		String q = CtagsInterfacePlugin.getScopedTagQuery(view);
 		String [] scopes = "class struct union enum interface namespace".split(" ");
 		StringBuffer sb = new StringBuffer();
@@ -382,7 +377,13 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 		{
 			if (sb.length() > 0)
 				sb.append(" OR ");
-			sb.append(scope + ":" + classStr.toString());
+			Iterator<String> it = classes.iterator();
+			while (it.hasNext())
+			{
+				sb.append(scope + ":" + it.next());
+				if (it.hasNext())
+					sb.append(" OR ");
+			}
 		}
 		q = q + " AND (" + sb.toString() + ")";
 		Vector<Tag> tags = CtagsInterfacePlugin.query(q.toString());
@@ -403,7 +404,7 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 			}
 		}
 		// Sort the members (if not sorted)
-		it = classes.iterator();
+		Iterator<String> it = classes.iterator();
 		while (it.hasNext()) {
 			Vector<Object> classMembers = membersHash.get(it.next());
 			if (classMembers == null)
