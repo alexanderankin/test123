@@ -1,4 +1,17 @@
 To do:
+- Allow files to be shared by several origins. This means:
+  + Multiple origins in the tag doctype documents.
+    Can be either multiple fields with the same name, or one single field with
+    a concatenated string of origins.
+  + Tag parser - before deleting all tags of a file from the index, find the
+    origins to which the file belongs, to save for later.
+    Later, when inserting the new tags of the file, use all the origins it
+    previously had.
+  --> Deleting an origin: Search all tags with that origin. Check the number
+    of origins - delete the document if it's 1, otherwise just remove the
+    origin being deleted. This might mean removing all origin fields, and
+    adding back all of them except for the one being deleted.
+  - Insertion always comes 
 - Option for case-insensitive tag name DB queries. (also for the preview pane) 
 - Option to include dependencies in active project tag searches.
 - Easy way to add project dependencies to tag db.
@@ -10,6 +23,7 @@ To do:
 - User guide.
 
 Done:
++ Switch from using a relational database to Lucene.
 + Add project dependency properties. (To be integrated into PV later)
 + An action to add all existing projects to the DB.
 + An option to track project creation/removal and update the DB.
