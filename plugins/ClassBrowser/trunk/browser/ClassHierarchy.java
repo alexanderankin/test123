@@ -62,8 +62,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.util.Log;
 
-import ctagsinterface.db.Query;
-import ctagsinterface.db.TagDB;
+import ctagsinterface.index.TagIndex;
 import ctagsinterface.main.CtagsInterfacePlugin;
 import ctagsinterface.main.Tag;
 
@@ -109,6 +108,7 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 	PublicMemberFilter publicFilter = new PublicMemberFilter();
 	private int rootLevel = 0;
 	private Vector<Object> emptyMembers = new Vector<Object>();
+	private static final String [] CLASS_KINDS = { "class","struct","union","interface" };
 
 	public ClassHierarchy(View view) {
 		super(new BorderLayout());
@@ -146,12 +146,10 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 		setLayout(new BorderLayout());
 		add(topPanel, BorderLayout.CENTER);
 	}
-	private String getClassKindList() {
-		return "('class','struct','union','interface')";
-	}
 	private Tag findClass(String clazz) {
-		Query q = CtagsInterfacePlugin.getScopedTagNameQuery(view, clazz);
-		q.addCondition(columnName(KIND_EXTENSION) + " IN " + getClassKindList());
+		String q = CtagsInterfacePlugin.getScopedTagNameQuery(view, clazz);
+		for (String kind: CLASS_KINDS)
+			q = q + " AND kind:" + kind;
 		Vector<Tag> tags = CtagsInterfacePlugin.query(q);
 		if (tags.isEmpty())
 			return null;
@@ -185,20 +183,17 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 		}
 	}
 
-	private String columnName(String extension) {
-		return TagDB.extension2column(extension);
-	}
 	private void addSubClasses(DefaultMutableTreeNode node,
-			HashSet<String> classes) {
+		HashSet<String> classes)
+	{
 		Object obj = node.getUserObject();
 		String name;
 		if (obj instanceof Tag)
 			name = ((Tag) obj).getName();
 		else
 			name = (String) obj;
-		Query q = CtagsInterfacePlugin.getBasicScopedTagQuery(view);
-		String inheritsCol = columnName(INHERITS_EXTENSION);
-		q.addCondition("(" + inheritsCol + " LIKE '%" + name + "%')");
+		String q = CtagsInterfacePlugin.getScopedTagQuery(view);
+		q = q + " AND inherits:" + TagIndex.escape(name);
 		Vector<Tag> tags = CtagsInterfacePlugin.query(q.toString());
 		for (int i = 0; i < tags.size(); i++) {
 			Tag subclass = tags.get(i);
@@ -380,22 +375,16 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 		while (it.hasNext())
 			classStr.append("'" + it.next() + "',");
 		classStr.replace(classStr.length() - 1, classStr.length(), ")");
-		Query q = CtagsInterfacePlugin.getBasicScopedTagQuery(view);
+		String q = CtagsInterfacePlugin.getScopedTagQuery(view);
 		String [] scopes = "class struct union enum interface namespace".split(" ");
 		StringBuffer sb = new StringBuffer();
-		HashSet<String> columns = CtagsInterfacePlugin.getTagColumns();
-		boolean first = true;
-		for (int i = 0; i < scopes.length; i++) {
-			String cname = columnName(scopes[i]);
-			if (! columns.contains(cname))
-				continue;
-			if (! first)
+		for (String scope: scopes)
+		{
+			if (sb.length() > 0)
 				sb.append(" OR ");
-			else
-				first = false;
-			sb.append(columnName(scopes[i]) + " IN " + classStr.toString());
+			sb.append(scope + ":" + classStr.toString());
 		}
-		q.addCondition("(" + sb.toString() + ")");
+		q = q + " AND (" + sb.toString() + ")";
 		Vector<Tag> tags = CtagsInterfacePlugin.query(q.toString());
 		for (int i = 0; i < tags.size(); i++) {
 			Tag member = tags.get(i);
