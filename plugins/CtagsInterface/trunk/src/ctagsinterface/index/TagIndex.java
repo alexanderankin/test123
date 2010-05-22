@@ -414,7 +414,7 @@ public class TagIndex
 
 	public String getTagNameQuery(String name)
 	{
-		return DOCTYPE_FLD + ":" + ORIGIN_DOC_TYPE + " AND " +
+		return DOCTYPE_FLD + ":" + TAG_DOC_TYPE + " AND " +
 			_NAME_FLD + ":" + escape(name);
 	}
 
