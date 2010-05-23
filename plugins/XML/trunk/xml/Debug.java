@@ -24,6 +24,9 @@ public final class Debug
 	/** turn on/off messages about resource resolution */
 	public static final boolean DEBUG_RESOLVER = true;
 
+	/** turn on/off messages about which parser is used */
+	public static final boolean DEBUG_JAXP = false;
+
 	/** turn on/off messages about XSD schema reading (in XercesParserImpl) */
 	public static final boolean DEBUG_XSD_SCHEMA = false;
 	

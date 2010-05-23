@@ -10,12 +10,26 @@
     </documentation>
   </annotation>
 
-  <element name="comment" type="string" abstract="true"/>
+  <element name="comment" abstract="true"/>
 
   <element name="shipComment" type="string"
          substitutionGroup="ipo:comment"/>
-  <element name="customerComment" type="string"
-         substitutionGroup="ipo:comment"/>
-
+  
+  <!-- customerComment is defined like para in docbook
+       see plugin bug #3002849 - XML 2.7: XSD completion is shallow
+    -->
+  <element name="customerComment"
+         substitutionGroup="ipo:comment">
+    <complexType mixed="true">
+    	<sequence>
+         <element name="customerId" type="string" minOccurs="0" maxOccurs="1"/>
+        </sequence>
+    </complexType>
+  </element>
+  
+  <!-- test when the inheriting element is itself abstract -->
+  <element name="otherComment" abstract="true" substitutionGroup="ipo:comment"/>
+  
+  <element name="concreteOtherComment" substitutionGroup="ipo:otherComment" type="string"/>
 </schema>
 

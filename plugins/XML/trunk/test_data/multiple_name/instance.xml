@@ -12,8 +12,7 @@
   </text>
 
   <comment>
-	<!-- no completion info here : the first "comment" element has taken
-	     precedence -->
+	<!-- p is allowed here : it should be proposed ! -->
 	<p>some comment</p>
   </comment>
 </root>

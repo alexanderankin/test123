@@ -93,9 +93,20 @@ public class XmlPluginTest{
 				}
 		});
 		
-		assertThat(insert.list("elements").contents()).contains("shipComment");
-		assertThat(insert.list("elements").contents()).excludes("comment");
+		assertThat(insert.list("elements").contents()).contains("ipo:shipComment");
+		assertThat(insert.list("elements").contents()).excludes("ipo:comment").excludes("comment");
+		assertThat(insert.list("elements").contents()).excludes("ipo:otherComment").excludes("otherComment");
+		assertThat(insert.list("elements").contents()).contains("ipo:concreteOtherComment");
 		
+		// go into the customerComment
+		GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					TestUtils.view().getTextArea().setCaretPosition(483);
+				}
+		});
+		Pause.pause(500);
+		assertThat(insert.list("elements").contents()).contains("customerId");
+
 		insert.close();
     }
     
@@ -510,4 +521,43 @@ public class XmlPluginTest{
 		//already tested by XMLTagTest
 	}
 	
+	@Test
+	public void testMultipleName(){
+    	File xml = new File(testData,"multiple_name/instance.xml");
+    	
+    	TestUtils.openFile(xml.getPath());
+    	
+    	action("xml-insert-float",1);
+    	FrameFixture insert = TestUtils.findFrameByTitle("XML Insert");
+    	
+    	action("sidekick-parse",1);
+		// wait for end of parsing
+		simplyWaitForMessageOfClass(sidekick.SideKickUpdate.class,10000);
+		
+
+		action("error-list-show",1);
+    	FrameFixture errorlist = TestUtils.findFrameByTitle("Error List");
+    	requireEmpty(errorlist.tree());
+		errorlist.close();
+		
+		// inside body
+		GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					gotoPosition(208);
+				}
+		});
+		Pause.pause(500);
+		assertThat(insert.list("elements").contents()).isEmpty();
+		
+		// inside second comment (succeeds now !)
+		GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					gotoPosition(276);
+				}
+		});
+		Pause.pause(500);
+		assertThat(insert.list("elements").contents()).contains("p");
+
+		insert.close();
+	}
 }

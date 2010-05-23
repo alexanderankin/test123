@@ -917,6 +917,9 @@ Chapter 22 of <emphasis>DocBook XSL: The Complete Guide</emphasis> by Bob Stayto
       <listitem><para>Translate an RNG,RNC schema or a sample XML to a RNC,RNG,DTD or XSD (Eric Le Lay - #1465879)</para></listitem>
       <listitem><para>Split/Join tag doesn't remove namespace bindings,
       ignores '>' in attributes and preserves entities in attributes (Eric Le Lay)</para></listitem>
+      <listitem><para>XML Insert and completion are namespace aware (Eric Le Lay)</para></listitem>
+      <listitem><para>Fixed a bug that prevented para content from being suggested 
+      by XML Insert or completion in docbook (bug #3002849 - Eric Le Lay)</para></listitem>
      </itemizedlist>
  </listitem>
 

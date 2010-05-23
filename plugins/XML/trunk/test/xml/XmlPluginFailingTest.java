@@ -175,35 +175,4 @@ public class XmlPluginFailingTest{
 		insert.close();
 	}
 	
-	
-	@Test
-	public void testMultipleName(){
-    	File xml = new File(testData,"multiple_name/instance.xml");
-    	
-    	TestUtils.openFile(xml.getPath());
-    	
-    	action("xml-insert-float",1);
-    	FrameFixture insert = TestUtils.findFrameByTitle("XML Insert");
-    	
-    	action("sidekick-parse",1);
-		// wait for end of parsing
-		simplyWaitForMessageOfClass(sidekick.SideKickUpdate.class,10000);
-		
-
-		action("error-list-show",1);
-    	FrameFixture errorlist = TestUtils.findFrameByTitle("Error List");
-    	requireEmpty(errorlist.tree());
-		errorlist.close();
-		
-		// inside body
-		gotoPosition(208);
-		assertThat(insert.list("elements").contents()).isEmpty();
-		
-		// inside second comment (fails)
-		gotoPosition(276);
-		assertThat(insert.list("elements").contents()).contains("p");
-
-		insert.close();
-	}
-	
 }

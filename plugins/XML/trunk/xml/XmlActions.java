@@ -193,7 +193,7 @@ loop:			for(;;)
 			Log.log(Log.ERROR, XmlActions.class, "this shouldn't happen:", io);
 		} //}}}
 
-		ElementDecl elementDecl = data.getElementDecl(tag.tag);
+		ElementDecl elementDecl = data.getElementDecl(tag.tag,tag.start+1);
 		if(elementDecl == null)
 		{
 			String[] pp = { tag.tag };
@@ -866,7 +866,7 @@ loop:			for(;;)
 		if(tag == null)
 			return;
 
-		ElementDecl decl = data.getElementDecl(tag.tag);
+		ElementDecl decl = data.getElementDecl(tag.tag,tag.start+1);
 		if(tag.type == TagParser.T_STANDALONE_TAG
 			|| (decl != null && decl.empty))
 			return;

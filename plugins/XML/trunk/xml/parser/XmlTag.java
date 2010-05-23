@@ -23,6 +23,8 @@ import org.xml.sax.Attributes;
 import org.xml.sax.helpers.AttributesImpl;
 import sidekick.Asset;
 import xml.XmlListCellRenderer;
+import java.util.Map;
+import java.util.HashMap;
 //}}}
 
 public class XmlTag extends Asset
@@ -33,6 +35,8 @@ public class XmlTag extends Asset
 	public String idAttributeString;
 	public boolean empty;
 	public String namespace;
+	/** namespace -> prefix */
+	public Map<String,String> namespaceBindings;
 	//}}}
 
 	//{{{ XmlTag constructor
@@ -40,6 +44,7 @@ public class XmlTag extends Asset
 	{
 		super(name);
 		this.namespace = namespace;
+		this.namespaceBindings = new HashMap<String,String>();
 		this.start = this.end = start;
 		this.attributes = new AttributesImpl(attributes);
 

@@ -272,6 +272,7 @@ public class CopyXPathTest{
 					action("xml-copy-xpath");
 				}
 		});
+		Pause.pause(500);
 		assertEquals("/html",Registers.getRegister('$').toString());
 		
 		// go into the css, right into @import, which is a CSS node
