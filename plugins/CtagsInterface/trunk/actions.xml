@@ -41,5 +41,10 @@
 			ctagsinterface.main.CtagsInterfacePlugin.runQuery(view);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="ctags-interface-show-query-dialog" NO_REPEAT="TRUE">
+		<CODE>
+			ctagsinterface.main.CtagsInterfacePlugin.showQueryDialog(view);
+		</CODE>
+	</ACTION>
 </ACTIONS>
 

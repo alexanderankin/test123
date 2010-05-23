@@ -28,6 +28,7 @@ ctags-interface-tag-all-projects.label=Tag all projects
 ctags-interface-complete-from-db.label=Suggest completion options
 ctags-interface-add-current-file.label=Tag current file
 ctags-interface-run-query.label=Run a query (for debugging)
+ctags-interface-show-query-dialog.label=Show query dialog (for debugging)
 
 # menu items
 plugin.ctagsinterface.main.CtagsInterfacePlugin.menu=\
@@ -42,7 +43,8 @@ plugin.ctagsinterface.main.CtagsInterfacePlugin.menu=\
 	- \
 	ctags-interface-add-current-file \
 	- \
-	ctags-interface-run-query
+	ctags-interface-run-query \
+	ctags-interface-show-query-dialog
 
 # option panes
 plugin.ctagsinterface.main.CtagsInterfacePlugin.option-group=CtagsInterface-General \
