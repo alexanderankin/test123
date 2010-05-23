@@ -154,7 +154,31 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 		Vector<Tag> tags = CtagsInterfacePlugin.query(q);
 		if (tags.isEmpty())
 			return null;
-		return tags.firstElement();
+		int index = 0;
+		if (tags.size() > 1) {
+			String [] tagStrings = new String[tags.size()];
+			for (int i = 0; i < tags.size(); i++) {
+				Tag tag = tags.get(i);
+				tagStrings[i] = tag.getName();
+				String namespace = tag.getNamespace();
+				if (namespace != null && ! namespace.isEmpty())
+					tagStrings[i] += ": " + tag.getNamespace();
+				tagStrings[i] += " - " + tag.getFile() + ":" + tag.getLine();
+			}
+			String sel = (String) JOptionPane.showInputDialog(this,
+				"Multiple classes found with name " + clazz + ", please select:",
+				"Select Class for Hierarchy", JOptionPane.QUESTION_MESSAGE, null,
+				tagStrings, tagStrings[0]);
+			if (sel == null)
+				return null;
+			for (int i = 0; i < tagStrings.length; i++) {
+				if (sel == tagStrings[i]) {
+					index = i;
+					break;
+				}
+			}
+		}
+		return tags.get(index);
 	}
 
 	private void addSuperClasses(DefaultMutableTreeNode node,
