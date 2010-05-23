@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
@@ -29,6 +30,7 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
 
 import ctagsinterface.dockables.TagList;
+import ctagsinterface.index.QueryDialog;
 import ctagsinterface.index.TagIndex;
 import ctagsinterface.index.TagIndex.DocHandler;
 import ctagsinterface.index.TagIndex.Origin;
@@ -316,6 +318,12 @@ public class CtagsInterfacePlugin extends EditPlugin
 				System.err.println(s);
 			}
 		});
+	}
+
+	// Show a query dialog 
+	public static void showQueryDialog(final View view)
+	{
+		QueryDialog frame = new QueryDialog(view);
 	}
 
 	// Returns the prefix for code completion
