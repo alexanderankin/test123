@@ -220,8 +220,8 @@ public class SchemaToCompletion
 			}
 			
 			for(Name name:names){
-				// TODO: namespaces in attributes ?
 				attrs.add(new AttributeDecl(name.getLocalName(),
+					name.getNamespaceUri(),
 					value,
 					new ArrayList<String>(values.keySet()),
 					type,

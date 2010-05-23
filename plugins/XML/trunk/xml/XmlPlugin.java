@@ -41,7 +41,7 @@ public class XmlPlugin extends EBPlugin
 	//{{{ start() method
 	public void start()
 	{
-		if(DEBUG_RESOLVER)System.setProperty("jaxp.debug","1");
+		if(DEBUG_JAXP)System.setProperty("jaxp.debug","1");
 	
 		Resolver.instance().init();
 		Resolver.instance().propertiesChanged();

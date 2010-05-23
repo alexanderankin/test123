@@ -135,7 +135,7 @@ public class CompletionInfoHandler extends DefaultHandler2
 			boolean required = "true".equals(attrs.getValue("required"));
 
 			element.addAttribute(new ElementDecl.AttributeDecl(
-				name,value,values,type,required));
+				name,null,value,values,type,required));
 		}
 	} //}}}
 

@@ -181,16 +181,19 @@ public class TagParser
 					{
 						if(data.html){
 							tagName = tag.tag.toLowerCase();
+							// only fetch the declaration in HTML mode,
+							// to know if an unclosed element is allowed
+							decl = data.getElementDecl(tag.tag, tag.start+1);
 						}else{
 							tagName = tag.tag;
+							decl = null;
 						}
 						
-						decl = data.getElementDecl(tag.tag);
 					}
 					
 					 
 					if(tag.type == T_STANDALONE_TAG
-						|| (decl != null && decl.empty))   // TODO: try with <br></br> or such empty element
+						|| (decl != null && decl.empty))
 					{
 						continue;
 					}

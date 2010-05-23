@@ -90,7 +90,7 @@
     defined, no tests will run. -->
     <selector id="junit.testcases">
         <or>
-            <selector refid="testcases.all"/>
+            <selector refid="testcases.current"/>
         </or>
     </selector>
 

@@ -38,6 +38,7 @@ public class ElementDecl
 	public List<AttributeDecl> attributes;
 	public Map<String, AttributeDecl> attributeHash;
 	public Set<String> content;
+	public Map<String, ElementDecl> elementHash;
 
 	//{{{ ElementDecl constructor
 	public ElementDecl(CompletionInfo completionInfo, String name, String content)
@@ -112,8 +113,33 @@ public class ElementDecl
 			return this;
 		else
 		{
-			return new ElementDecl(completionInfo, prefix + ':' + name,
+			ElementDecl d =  new ElementDecl(completionInfo, prefix + ':' + name,
 				empty, any, attributes, attributeHash, content);
+			d.elementHash = elementHash;
+			return d;
+		}
+	} //}}}
+
+	//{{{ withPrefix()
+	/**
+	 *  Acts as a filter for getting rid of completions that can't
+	 *  work because of what you already typed
+	 *  
+	 *  @param prefix the prefix you already typed.
+	 *  @return the same object, or null if you can't get there from here.
+	 */
+	public ElementDecl withContext(Map<String,String> context)
+	{
+		String ns = completionInfo.namespace;
+		String prefix = context.get(ns);
+		if(prefix == null || prefix.equals(""))
+			return this;
+		else
+		{
+			ElementDecl d =  new ElementDecl(completionInfo, prefix + ':' + name,
+				empty, any, attributes, attributeHash, content);
+			d.elementHash = elementHash;
+			return d;
 		}
 	} //}}}
 
@@ -142,13 +168,69 @@ public class ElementDecl
 				Iterator iter = content.iterator();
 				while(iter.hasNext())
 				{
-					ElementDecl decl = (ElementDecl)completionInfo
-						.elementHash.get(iter.next());
+					ElementDecl decl = null;
+					Object n = (String)iter.next();
+					if(elementHash == null){
+						//backward compatible
+						decl = (ElementDecl)completionInfo
+							.elementHash.get(n);
+					}else{
+						decl = elementHash.get(n);
+					}
+						
 					if(decl != null) {
 						if (decl.isAbstract())
 							children.addAll(decl.findReplacements(prefix));
 						else 
 							children.add(decl.withPrefix(prefix));
+					}
+				}
+			}
+		}
+		
+		return children;
+	} //}}}
+
+	//{{{ getChildElements() method
+	public List<ElementDecl> getChildElements(Map<String,String> namespaceContext)
+	{
+		ArrayList<ElementDecl>children = new ArrayList<ElementDecl>(100);
+
+		if(any)
+		{
+			for(int i = 0; i < completionInfo.elements.size(); i++)
+			{
+				children.add(((ElementDecl)completionInfo.elements.get(i)).withContext(namespaceContext));
+			}
+		}
+		else
+		{
+			for(int i = 0; i < completionInfo.elementsAllowedAnywhere.size(); i++)
+			{
+				children.add(((ElementDecl)completionInfo.elementsAllowedAnywhere.get(i))
+					.withContext(namespaceContext));
+			}
+
+			if(content != null)
+			{
+				Iterator iter = content.iterator();
+				while(iter.hasNext())
+				{
+					ElementDecl decl = null;
+					Object n = (String)iter.next();
+					if(elementHash == null){
+						//backward compatible
+						decl = (ElementDecl)completionInfo
+							.elementHash.get(n);
+					}else{
+						decl = elementHash.get(n);
+					}
+						
+					if(decl != null) {
+						if (decl.isAbstract())
+							children.addAll(decl.findReplacements(namespaceContext));
+						else 
+							children.add(decl.withContext(namespaceContext));
 					}
 				}
 			}
@@ -168,6 +250,16 @@ public class ElementDecl
 		return null;
 	}
 	
+	/**
+	 * Finds all elements which can be replaced by this one. 
+	 *  
+	 * @return a list of all elements with matching substitutionGroup, or null if there are
+	 * none.
+	 * 
+	 */
+	public List<ElementDecl> findReplacements(Map<String,String> prefix) {
+		return null;
+	}
 	
 	//{{{ getAttribute() method
 	public AttributeDecl getAttribute(String attrname)
@@ -265,15 +357,17 @@ public class ElementDecl
 	public static class AttributeDecl
 	{
 		public String name;
+		public String namespace;
 		public String value;
 		public ArrayList values;
 		public String type;
 		public boolean required;
-
-		public AttributeDecl(String name, String value, ArrayList<String> values,
+		
+		public AttributeDecl(String name, String namespace, String value, ArrayList<String> values,
 			String type, boolean required)
 		{
 			this.name = name;
+			this.namespace = namespace;
 			this.value = value;
 			this.values = values;
 			this.type = type;

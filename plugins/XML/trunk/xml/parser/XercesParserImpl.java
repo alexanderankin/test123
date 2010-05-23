@@ -4,8 +4,10 @@ package xml.parser;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Map;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Stack;
@@ -327,21 +329,37 @@ public class XercesParserImpl extends XmlParser
 	
 	
 	//{{{ xsElementToElementDecl() method
-	private void xsElementToElementDecl(XSNamedMap elements, CompletionInfo info,
+	private void xsElementToElementDecl(XSNamedMap elements, Map<String,CompletionInfo> infos,
 		XSElementDeclaration element, ElementDecl parent)
 	{
 		if(parent != null && parent.content == null)
 			parent.content = new HashSet<String>();
+		if(parent != null && parent.elementHash == null)
+			parent.elementHash = new HashMap<String,ElementDecl>();
 
 		String name = element.getName();
+		String namespace = element.getNamespace();
 		
-		if(DEBUG_XSD_SCHEMA)Log.log(Log.DEBUG,XercesParserImpl.class,"xsElementToElementDecl("+element.getNamespace()+":"+name+")");
+		if(DEBUG_XSD_SCHEMA)Log.log(Log.DEBUG,XercesParserImpl.class,"xsElementToElementDecl("+namespace+":"+name+")");
 		
-		if(info.elementHash.get(name) != null)
+		CompletionInfo info;
+		if(infos.containsKey(namespace)){
+			info = infos.get(namespace);
+		}else{
+			info = new CompletionInfo();
+			info.namespace = namespace;
+			infos.put(namespace, info);
+		}
+		
+		if(info.elementHash.containsKey(name))
 		{
 			// one must add the element to its parent's content, even if
 			// one knows the element already
-			if(parent!=null) parent.content.add(name);
+			if(parent!=null)
+			{
+				parent.content.add(name);
+				parent.elementHash.put(name,info.elementHash.get(name));
+			}
 			return;
 		}
 
@@ -360,19 +378,17 @@ public class XercesParserImpl extends XmlParser
 		       || element.getName().endsWith(".class") */
 		   )
 		{
-
-			for (int j=0; j<elements.getLength(); ++j) {
-				XSElementDeclaration decl = (XSElementDeclaration)elements.item(j);
-				XSElementDeclaration group = decl.getSubstitutionGroupAffiliation();
-				if (group != null && group.getName().equals(name)) {
-					if(info.elementHash.get(decl.getName()) == null){
-						//only add it if it's undeclared or we'll get it twice in XML Insert
-						info.addElement(new ElementDecl(info, decl.getName(), null));
+			if( parent != null ) {
+				for (int j=0; j<elements.getLength(); ++j) {
+					XSElementDeclaration decl = (XSElementDeclaration)elements.item(j);
+					XSElementDeclaration group = decl.getSubstitutionGroupAffiliation();
+					if (group != null && group.getName().equals(name)) {
+						// allows to handle elements which are themselves abstract
+						// see otherComment in abstract_substitution/comments.xsd
+						xsElementToElementDecl(elements, infos, decl, parent); 
 					}
-					if (parent != null) parent.content.add(decl.getName());
 				}
 			}
-
 			/* we shouldn't care about the type of an abstract element,
 			   as it's not allowed in a document. Would it be the case,
 			   one should not forget to fix the NullPointerException on elementDecl
@@ -382,8 +398,21 @@ public class XercesParserImpl extends XmlParser
 		}
 		else {
 			elementDecl = new ElementDecl(info, name, null);
-			info.addElement(elementDecl);
-			if (parent != null) parent.content.add(name);
+			// don't let locally defined elements take precedence other global elements
+			// see test_data/multiple_name
+			if(element.getScope() == XSConstants.SCOPE_LOCAL)
+			{
+				info.elements.add(elementDecl);
+			}
+			else
+			{
+				info.addElement(elementDecl);
+			}
+			
+			if (parent != null) {
+				parent.elementHash.put(name,elementDecl);
+				parent.content.add(name);
+			}
 		}
 		XSTypeDefinition typedef = element.getTypeDefinition();
 
@@ -398,7 +427,7 @@ public class XercesParserImpl extends XmlParser
 				if(particleTerm instanceof XSWildcard)
 					elementDecl.any = true;
 				else
-					xsTermToElementDecl(elements, info,particleTerm,elementDecl);
+					xsTermToElementDecl(elements, infos,particleTerm,elementDecl);
 			}
 
 			XSObjectList attributes = complex.getAttributeUses();
@@ -413,6 +442,7 @@ public class XercesParserImpl extends XmlParser
 
 	private void xsAttributeToElementDecl(ElementDecl elementDecl,XSAttributeDeclaration decl, boolean required){
 				String attrName = decl.getName();
+				String attrNamespace = decl.getNamespace();
 				String value = decl.getConstraintValue();
 				XSSimpleTypeDefinition typeDef = decl.getTypeDefinition();
 				String type = typeDef.getName();
@@ -425,17 +455,17 @@ public class XercesParserImpl extends XmlParser
 				if(type == null)
 					type = "CDATA";
 				elementDecl.addAttribute(new ElementDecl.AttributeDecl(
-					attrName,value,values,type,required));
+					attrName,attrNamespace,value,values,type,required));
 	}
 	
 	//{{{ xsTermToElementDecl() method
-	private void xsTermToElementDecl(XSNamedMap elements, CompletionInfo info, XSTerm term,
+	private void xsTermToElementDecl(XSNamedMap elements, Map<String,CompletionInfo> infos, XSTerm term,
 		ElementDecl parent)
 	{
 
 		if(term instanceof XSElementDeclaration)
 		{
-			xsElementToElementDecl(elements, info,
+			xsElementToElementDecl(elements, infos,
 				(XSElementDeclaration)term, parent);
 		}
 		else if(term instanceof XSModelGroup)
@@ -444,7 +474,7 @@ public class XercesParserImpl extends XmlParser
 			for(int i = 0; i < content.getLength(); i++)
 			{
 				XSTerm childTerm = ((XSParticleDecl)content.item(i)).getTerm();
-				xsTermToElementDecl(elements, info,childTerm,parent);
+				xsTermToElementDecl(elements, infos,childTerm,parent);
 			}
 		}
 	}
@@ -462,8 +492,7 @@ public class XercesParserImpl extends XmlParser
 		String text;
 		XmlParsedData data;
 
-		//not used anymore : everything is done in startPrefixMapping
-		//HashMap<String, String> activePrefixes;
+		HashMap<String, String> declaredPrefixes;
 		Stack<DefaultMutableTreeNode> currentNodeStack;
 		Locator loc;
 		boolean empty;
@@ -485,7 +514,6 @@ public class XercesParserImpl extends XmlParser
 			this.text = text;
 			this.errorHandler = errorHandler;
 			this.data = data;
-			//this.activePrefixes = new HashMap<String, String>();
 			this.currentNodeStack = new Stack<DefaultMutableTreeNode>();
 			this.empty = true;
 			this.psviProvider = null;
@@ -502,11 +530,11 @@ public class XercesParserImpl extends XmlParser
 		}
 		
 		//{{{ grammarToCompletionInfo() method
-		private CompletionInfo modelToCompletionInfo(XSModel model)
+		private Map<String,CompletionInfo> modelToCompletionInfo(XSModel model)
 		{
 
 			if(DEBUG_XSD_SCHEMA)Log.log(Log.DEBUG,XercesParserImpl.this,"modelToCompletionInfo("+model+")");
-			CompletionInfo info = new CompletionInfo();
+			Map<String,CompletionInfo> infos = new HashMap<String,CompletionInfo>();
 
 			XSNamedMap elements = model.getComponents(XSConstants.ELEMENT_DECLARATION);
 			for(int i = 0; i < elements.getLength(); i++)
@@ -514,10 +542,12 @@ public class XercesParserImpl extends XmlParser
 				XSElementDeclaration element = (XSElementDeclaration)
 					elements.item(i);
 
-				xsElementToElementDecl(elements, info, element, null);
+				xsElementToElementDecl(elements, infos, element, null);
 			}
 
-			XSNamedMap attributes = model.getComponents(XSConstants.ATTRIBUTE_DECLARATION);
+			/* // don't need them : they are declared for each element
+			   // tested with xml:base in user-guide.xml 
+			/*XSNamedMap attributes = model.getComponents(XSConstants.ATTRIBUTE_DECLARATION);
 			for(int i = 0; i < attributes.getLength(); i++)
 			{
 				XSAttributeDeclaration attribute = (XSAttributeDeclaration)attributes.item(i);
@@ -527,12 +557,14 @@ public class XercesParserImpl extends XmlParser
 				// FIXME: now the attributes appear in the edit tag dialog, but in the same namespace
 				// as the other attributes (no mixed namespace support for elements either)
 				System.err.println("look! " + attribute.getName());
-				for(ElementDecl e:info.elements){
-					xsAttributeToElementDecl(e,attribute,false);
+				for(CompletionInfo info : infos.values()){
+					for(ElementDecl e:info.elements){
+						xsAttributeToElementDecl(e,attribute,false);
+					}
 				}
-			}
+			}*/
 
-			return info;
+			return infos;
 		} //}}}
 
 		//{{{ endDocument() method
@@ -598,7 +630,9 @@ public class XercesParserImpl extends XmlParser
 		//{{{ startPrefixMapping() method
 		public void startPrefixMapping(String prefix, String uri)
 		{
-			//not used anymore activePrefixes.put(prefix,uri);
+			if(declaredPrefixes == null)declaredPrefixes = new HashMap<String,String>();
+			declaredPrefixes.put(uri,prefix);
+
 			// check for built-in completion info for this URI
 			// (eg, XSL, XSD, XHTML has this).
 			if(uri != null)
@@ -608,7 +642,7 @@ public class XercesParserImpl extends XmlParser
 				if(info != null)
 				{
 					Log.log(Log.DEBUG,XercesParserImpl.class,"using built-in completion info for "+uri);
-					data.setCompletionInfo(prefix,info);
+					data.setCompletionInfo(uri,info);
 					return;
 				}
 				if(schemaAutoLoader != null 
@@ -618,24 +652,16 @@ public class XercesParserImpl extends XmlParser
 					info = schemaAutoLoader.getCompletionInfo().get(uri);
 					Log.log(Log.DEBUG,XercesParserImpl.class,"setting completionInfo for '"+prefix+"' : "+info.namespace+")");
 					if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,XercesParserImpl.class,info);
-					data.setCompletionInfo(prefix,info);
+					data.setCompletionInfo(uri,info);
 				}
 			}
-			
-			
 			// don't retrieve schema based on prefix mapping anymore (for XSD).
 			// see endElement(), where we use the PSVI
-			// that's wrong because CompletionInfos are no more associated with
-			// prefixes
-			// TODO: test this assertion
 		} //}}}
 
 		//{{{ endPrefixMapping() method
 		public void endPrefixMapping(String prefix)
 		{
-			// moved everything to startPrefixMapping()
-			// then we get completion even if there is an error afterward
-			
 		} //}}}
 
 		//{{{ startElement() method
@@ -704,8 +730,11 @@ public class XercesParserImpl extends XmlParser
 				offset = findTagStart(offset);
 				Position pos = buffer.createPosition(offset);
 
-				DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(
-					new XmlTag(qName,namespaceURI==null ? "" : namespaceURI,pos,attrs));
+				XmlTag newTag = new XmlTag(qName,namespaceURI==null ? "" : namespaceURI,pos,attrs);
+				newTag.namespaceBindings = declaredPrefixes;
+				declaredPrefixes = null;
+				
+				DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(newTag);
 
 				if(!currentNodeStack.isEmpty())
 				{
@@ -760,14 +789,13 @@ public class XercesParserImpl extends XmlParser
 						prefix=qName.substring(0,qName.length()-sName.length()-1);
 
 					//convert to Completion info
-					CompletionInfo info = modelToCompletionInfo(model);
+					Map<String,CompletionInfo> infos = modelToCompletionInfo(model);
 
 					//set Completion Info
-					// TODO: what happens when reusing the same prefix for several
-					//       namespaces
-					if(info != null){
-						Log.log(Log.DEBUG,this,"setting completion info for :"+prefix);
-						data.setCompletionInfo(prefix,info);
+					for(Map.Entry<String,CompletionInfo> en: infos.entrySet()){
+						String ns = en.getKey();
+						Log.log(Log.DEBUG,this,"setting completion info for :'"+ns+"'");
+						data.setCompletionInfo(ns, en.getValue());
 					}
 				}
 			}
@@ -822,7 +850,7 @@ public class XercesParserImpl extends XmlParser
 		public void elementDecl(String name, String model)
 		{
 			if(DEBUG_DTD)Log.log(Log.DEBUG,XercesParserImpl.class,"elementDecl("+name+","+model+")");
-			ElementDecl element = data.getElementDecl(name);
+			ElementDecl element = data.getElementDecl(name,0);
 			if(element == null)
 			{
 				CompletionInfo info = data.getNoNamespaceCompletionInfo();
@@ -837,7 +865,7 @@ public class XercesParserImpl extends XmlParser
 		public void attributeDecl(String eName, String aName,
 			String type, String valueDefault, String value)
 		{
-			ElementDecl element = data.getElementDecl(eName);
+			ElementDecl element = data.getElementDecl(eName,0);
 			if(element == null)
 			{
 				CompletionInfo info = data.getNoNamespaceCompletionInfo();
@@ -868,7 +896,7 @@ public class XercesParserImpl extends XmlParser
 			boolean required = "#REQUIRED".equals(valueDefault);
 
 			element.addAttribute(new ElementDecl.AttributeDecl(
-				aName,value,values,type,required));
+				aName,null,value,values,type,required));
 		} //}}}
 
 		//{{{ internalEntityDecl() method

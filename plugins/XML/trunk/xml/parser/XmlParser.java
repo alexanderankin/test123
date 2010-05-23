@@ -18,6 +18,7 @@
 package xml.parser;
 
 import java.util.*;
+import org.xml.sax.helpers.NamespaceSupport;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.syntax.*;
 import sidekick.*;
@@ -241,11 +242,9 @@ public abstract class XmlParser extends SideKickParser
 					word = text.substring(wordStart + 1, caret);
 			}
 
-			List completions = new ArrayList();
-
 			if(mode == ELEMENT_COMPLETE)
 			{
-				completions = data.getAllowedElements(buffer, lastchar);
+				List<ElementDecl> completions = data.getAllowedElements(buffer, lastchar);
 				TagParser.Tag tag = TagParser.findLastOpenTag(text,lastchar - 1,data);
 				if(tag != null)
 					closingTag = tag.tag;
@@ -270,8 +269,7 @@ public abstract class XmlParser extends SideKickParser
 
 				for(int i = 0; i < completions.size(); i++)
 				{
-					Object obj = completions.get(i);
-					ElementDecl element = (ElementDecl)obj;
+					ElementDecl element = completions.get(i);
 					if(element.name.startsWith(word)
 						|| (data.html && element.name.toLowerCase()
 						.startsWith(word.toLowerCase())))
@@ -282,11 +280,10 @@ public abstract class XmlParser extends SideKickParser
 			}
 			else if (mode == ENTITY_COMPLETE)
 			{
-				completions = data.getNoNamespaceCompletionInfo().entities;
+				List<EntityDecl> completions = data.getNoNamespaceCompletionInfo().entities;
 				for(int i = 0; i < completions.size(); i++)
 				{
-					Object obj = completions.get(i);
-					EntityDecl entity = (EntityDecl)obj;
+					EntityDecl entity = completions.get(i);
 					if(entity.name.startsWith(word))
 						allowedCompletions.add(entity);
 				}
@@ -294,13 +291,44 @@ public abstract class XmlParser extends SideKickParser
 			else if (mode == ATTRIB_COMPLETE) 
 			{
 				String prefix = text.substring(attribStart, caret);
-				ElementDecl decl = data.getElementDecl(word);
-				if (decl != null) completions = decl.attributes;
-				for (int i=0; i<completions.size(); ++i) 
+				ElementDecl decl = data.getElementDecl(word,caret);
+				List<AttributeDecl> completions;
+				if (decl != null)
 				{
-					AttributeDecl attrDecl = (AttributeDecl)completions.get(i);
-					if (attrDecl.name.startsWith(prefix)) 
-						allowedCompletions.add(attrDecl);
+					completions = decl.attributes;
+					Map<String,String> namespaces = data.getNamespaceBindings(data.getTreePathForPosition(caret));
+					for (int i=0; i<completions.size(); ++i) 
+					{
+						AttributeDecl attrDecl = completions.get(i);
+						String attrName;
+						if(attrDecl.namespace == null)
+						{
+							attrName = attrDecl.name;
+						}
+						else
+						{
+							String pre = namespaces.get(attrDecl.namespace);
+							if(pre == null)
+							{
+								if(attrDecl.namespace.equals(NamespaceSupport.XMLNS))
+								{
+									attrName = "xml:"+attrDecl.name;
+								}
+								else
+								{
+									attrName = attrDecl.name;
+								}
+							}
+							else
+							{
+								attrName = pre + ":" + attrDecl.name;
+							}
+						}
+						if (attrName.startsWith(prefix))
+						{
+							allowedCompletions.add(attrName);
+						}
+					}
 				}
 				word = prefix;
 			}
