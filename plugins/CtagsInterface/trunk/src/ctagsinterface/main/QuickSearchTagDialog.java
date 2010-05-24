@@ -209,7 +209,11 @@ public class QuickSearchTagDialog extends JDialog {
 				TagIndex index = CtagsInterfacePlugin.getIndex();
 				String s = baseQuery;
 				if (! input.isEmpty())
-					s = s + " AND " + TagIndex._NAME_FLD + ":" + input + "*";
+				{
+					if (s.length() > 0)
+						s = s + " AND ";
+					s = s + TagIndex._NAME_FLD + ":" + input + "*";
+				}
 				index.runQuery(s, TagIndex.MAX_RESULTS, new DocHandler()
 				{
 					public void handle(Document doc)
