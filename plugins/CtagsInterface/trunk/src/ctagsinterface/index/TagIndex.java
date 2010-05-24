@@ -268,9 +268,23 @@ public class TagIndex
 					newValue = origins.substring(0, index) +
 						origins.substring(index + s.length());
 				}
+				// Create a query for deleting this document, then delete it
+				// and re-add it.
+				String queryStr = DOCTYPE_FLD + ":" + doc.get(DOCTYPE_FLD) + " AND " +
+					_NAME_FLD + ":" + doc.get(_NAME_FLD) + " AND " +
+					_PATH_FLD + ":" + doc.get(_PATH_FLD) + " AND " +
+					LINE_FLD + ":" + doc.get(LINE_FLD);
+				Query q = getQuery(queryStr);
+				if (q != null)
+				{
+					try { writer.deleteDocuments(q); }
+					catch (IOException e) { e.printStackTrace(); }
+				}
 				doc.removeField(ORIGIN_FLD);
 				doc.removeField(_ORIGIN_FLD);
 				addTagOrigins(doc, newValue);
+				try { writer.addDocument(doc); }
+				catch (IOException e) { e.printStackTrace(); }
 			}
 		});
 	}
