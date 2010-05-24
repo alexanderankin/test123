@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
@@ -323,7 +322,7 @@ public class CtagsInterfacePlugin extends EditPlugin
 	// Show a query dialog 
 	public static void showQueryDialog(final View view)
 	{
-		QueryDialog frame = new QueryDialog(view);
+		new QueryDialog(view);
 	}
 
 	// Returns the prefix for code completion
