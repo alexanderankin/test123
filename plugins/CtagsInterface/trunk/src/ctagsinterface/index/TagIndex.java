@@ -487,6 +487,8 @@ public class TagIndex
 	{
 		Log.log(Log.MESSAGE, TagIndex.class, "Parsing query: " + query); 
 		QueryParser qp = new QueryParser(Version.LUCENE_30, NAME_FLD, analyzer);
+		qp.setAllowLeadingWildcard(true);
+		qp.setLowercaseExpandedTerms(false);
 		try
 		{
 			return qp.parse(query);
