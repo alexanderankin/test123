@@ -3,15 +3,19 @@ package ctagsinterface.index;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.HashMap;
+import java.util.Vector;
 
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Fieldable;
@@ -23,8 +27,8 @@ import ctagsinterface.main.CtagsInterfacePlugin;
 public class QueryDialog extends JFrame {
 
 	private JTextField query;
-	private DefaultListModel model;
-	private JList list;
+	private DefaultTableModel model;
+	private JTable table;
 
 	public QueryDialog(JFrame parent)
 	{
@@ -36,28 +40,61 @@ public class QueryDialog extends JFrame {
 		p.add(new JLabel("Query:"), BorderLayout.WEST);
 		query = new JTextField();
 		p.add(query, BorderLayout.CENTER);
-		model = new DefaultListModel();
-		list = new JList(model);
-		add(new JScrollPane(list), BorderLayout.CENTER);
-		JButton go = new JButton("Search");
+		model = new DefaultTableModel();
+		table = new JTable(model);
+		add(new JScrollPane(table), BorderLayout.CENTER);
+		table.setAutoCreateRowSorter(true);
+		final JButton go = new JButton("Search");
 		p.add(go, BorderLayout.EAST);
 		go.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				model.removeAllElements();
-				CtagsInterfacePlugin.getIndex().runQuery(query.getText(),
-					1000000, new DocHandler()
-				{
-					public void handle(Document doc)
-					{
-						String s = "";
-						for (Fieldable f: doc.getFields())
-							s += f.name() + ":" + f.stringValue() + "  ||  ";
-						model.addElement(s);
-					}
-				});
+				performQuery();
+			}
+		});
+		query.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER)
+					go.doClick();
 			}
 		});
 		pack();
 		setVisible(true);
+	}
+
+	void performQuery()
+	{
+		model.setRowCount(0);
+		final Vector<String> columns = new Vector<String>();
+		final Vector<HashMap<String, String>> data = new Vector<HashMap<String, String>>();
+		CtagsInterfacePlugin.getIndex().runQuery(query.getText(),
+			1000000, new DocHandler()
+		{
+			public void handle(Document doc)
+			{
+				HashMap<String, String> values = new HashMap<String, String>();
+				data.add(values);
+				for (Fieldable f: doc.getFields())
+				{
+					String name = f.name();
+					String value = f.stringValue();
+					if (! columns.contains(name))
+						columns.add(name);
+					values.put(name, value);
+				}
+			}
+		});
+		model.setColumnIdentifiers(columns);
+		HashMap<String, Integer> columnIndex = new HashMap<String, Integer>();
+		int index = 0;
+		for (String col: columns)
+			columnIndex.put(col, Integer.valueOf(index++));
+		for (HashMap<String, String> row: data)
+		{
+			String [] values = new String[columns.size()];
+			for (String name: row.keySet())
+				values[columnIndex.get(name).intValue()] = row.get(name);
+			model.addRow(values);
+		}
 	}
 }
