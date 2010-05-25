@@ -154,6 +154,7 @@ public class Runner {
 		String tagFile = getTempFile("tags");
 		Vector<String> cmdLine = new Vector<String>();
 		cmdLine.add(ctags);
+		cmdLine.add("--sort=no");	// Avoid sorting to improve performance
 		cmdLine.add("-f");
 		cmdLine.add(tagFile);
 		String [] customOptions = cmd.split(SPACES);
