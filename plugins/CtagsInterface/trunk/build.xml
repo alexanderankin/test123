@@ -43,12 +43,6 @@
 		<pathelement location="${jedit.plugins.dir}/lucene-core-3.0.1.jar"/>
 	</path>
 
-	<target name="build.prepare" >
-	 	<mkdir dir="${build.dir}" />
-		<copy file="hsqldb.jar" todir="${install.dir}" />
-
-	</target>
-
 	<target name="tags">
 		<exec executable="ctags">
 			<arg value="-f" />
