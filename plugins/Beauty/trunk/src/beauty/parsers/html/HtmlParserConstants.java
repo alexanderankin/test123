@@ -212,11 +212,6 @@ public interface HtmlParserConstants {
     "<BLOCK_EOL>",
     "\"<\"",
     "<BLOCK_WORD>",
-    "\" \"",
-    "\"\\t\"",
-    "\"\\r\"",
-    "\"\\n\"",
-    "\"\\rn\"",
   };
 
 }

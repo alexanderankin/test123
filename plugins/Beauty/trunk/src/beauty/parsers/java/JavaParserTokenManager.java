@@ -283,7 +283,7 @@ public class JavaParserTokenManager implements JavaParserConstants
             // longer than 80 characters.  This doesn't work well yet, so I've 
             // commented out the wrapping code.  Still need to clean out the
             // wrapping markers.
-            s = s.replaceAll("[\u001c]", "");
+            //s = s.replaceAll("[]", "");
             outputBuffer.append(s);
             /*
             int wrap_sep_count = countWrapSep(s);
@@ -367,8 +367,8 @@ public class JavaParserTokenManager implements JavaParserConstants
             String leading_ws = s.substring(0, ws_length);
             String head = s.substring(0, first_break);
             String tail = s.substring(first_break);
-            head = head.replaceAll("[\u001c]", "");
-            tail = tail.replaceAll("[\u001c]", "");
+            //head = head.replaceAll("[]", "");
+            //tail = tail.replaceAll("[]", "");
             return new String[]{head, leading_ws + double_indent + tail};
         }
         return null;
