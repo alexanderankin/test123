@@ -1,4 +1,3 @@
-
 <project name="Beauty" default="dist" basedir=".">
     <echo>${java.home}</echo>
     <!-- read build.props to override properties set below -->
