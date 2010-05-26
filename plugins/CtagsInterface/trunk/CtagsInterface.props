@@ -65,6 +65,8 @@ ctags-interface-tag-list.title=Tag List
 ctags-interface-tag-list.label=Tag List
 ctags-interface-preview.title=Tag Preview
 ctags-interface-preview.label=Tag Preview
+ctags-interface-progress.title=Tagging Progress
+ctags-interface-progress.label=Tagging Progress
 
 # docs
 #plugin.ctagsinterface.main.CtagsInterfacePlugin.docs=index.html
@@ -98,7 +100,6 @@ messages.CtagsInterface.cmd=Ctags invocation options:
 messages.CtagsInterface.pattern=Tag pattern (to extract tag at caret):
 messages.CtagsInterface.updateOnLoad=Refresh file tags when loaded
 messages.CtagsInterface.updateOnSave=Refresh file tags when saved
-messages.CtagsInterface.background=Perform tag updates in background
 messages.CtagsInterface.previewTitle=Tag Preview dockable
 messages.CtagsInterface.previewVerticalSplit=Vertical split
 messages.CtagsInterface.previewToolbar=Show toolbar
@@ -140,6 +141,8 @@ messages.CtagsInterface.badCtagsPath=Ctags path does not exist or is not an exec
 messages.CtagsInterface.goodCtagsPath=Ctags path is okay
 messages.CtagsInterface.noPVSupport=ProjectViewer integration not initialized. \
 	Please make sure ProjectViewer is loaded and then restart CtagsInterface.
+messages.CtagsInterface.taggingBegins=*** Tagging begins ***
+messages.CtagsInterface.taggingEnds=*** Tagging completed ***
 
 # projectviewer option pane
 plugin.projectviewer.ctagsinterface.main.CtagsInterfacePlugin.option-pane=CtagsInterface-ProjectDependencies
