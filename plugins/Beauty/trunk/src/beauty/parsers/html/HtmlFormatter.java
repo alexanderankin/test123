@@ -289,12 +289,12 @@ class MarginWriter {
     protected int curPosition;
     protected int leftMargin;
     protected int rightMargin;
-    StringBuffer sb = null;
+    StringBuilder sb = null;
     protected char []spaces = new char [256 ];
     protected String lineSeparator = System.getProperty("line.separator");
 
     public MarginWriter() {
-        sb = new StringBuffer();
+        sb = new StringBuilder();
         for (int i = 0; i < spaces.length; i++) {
             spaces[i] = ' ';
         }
@@ -360,7 +360,6 @@ class MarginWriter {
         if (curPosition > 0) {
             println();
         }
-
     }
 
     public void setLeftMargin(int leftMargin) {
