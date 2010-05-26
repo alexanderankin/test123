@@ -395,13 +395,17 @@ public class JavaParserTokenManager implements JavaParserConstants
             if (line.startsWith("*")) {
                 line = " " + line;
             }
+            else if (!line.startsWith("/*") && !line.startsWith("//")){
+                line = " * " + line;
+            }
 
             for (int j = 0; j < level; j++) {
                 line = "    " + line;
             }
             outputBuffer.append(line);
-            if (i < lines.length - 1)
+            if (i < lines.length - 1) {
                 outputBuffer.append(ls);
+            }
         }
     }
 
