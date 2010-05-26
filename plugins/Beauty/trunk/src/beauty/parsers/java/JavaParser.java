@@ -3869,11 +3869,6 @@ public class JavaParser implements JavaParserConstants {
     finally { jj_save(40, xla); }
   }
 
-  private boolean jj_3R_209() {
-    if (jj_scan_token(NULL)) return true;
-    return false;
-  }
-
   private boolean jj_3R_217() {
     if (jj_scan_token(FALSE)) return true;
     return false;
@@ -6581,6 +6576,11 @@ public class JavaParser implements JavaParserConstants {
     xsp = jj_scanpos;
     if (jj_3R_98()) jj_scanpos = xsp;
     if (jj_scan_token(RPAREN)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_209() {
+    if (jj_scan_token(NULL)) return true;
     return false;
   }
 
