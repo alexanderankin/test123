@@ -10,6 +10,9 @@
 	<DOCKABLE NAME="ctags-interface-preview" MOVABLE="TRUE">
 		new ctagsinterface.dockables.Preview(view);
 	</DOCKABLE>
+	<DOCKABLE NAME="ctags-interface-progress" MOVABLE="TRUE">
+		new ctagsinterface.dockables.Progress(view);
+	</DOCKABLE>
 </DOCKABLES>
 
 <!-- :noTabs=false:lineSeparator=\r\n:tabSize=4:folding=none: -->

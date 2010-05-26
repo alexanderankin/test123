@@ -13,12 +13,18 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.util.Log;
 
+import ctagsinterface.dockables.Progress;
 import ctagsinterface.options.GeneralOptionPane;
 
 public class Runner {
 
+	private static final String PROGRESS = "ctags-interface-progress";
+	static public final String MESSAGE = CtagsInterfacePlugin.MESSAGE;
+	static public final String TAGGING_BEGINS = MESSAGE + "taggingBegins";
+	static public final String TAGGING_ENDS = MESSAGE + "taggingEnds";
 	private static final String SPACES = "\\s+";
 	private static Set<String> tempFiles;
 	
@@ -154,6 +160,7 @@ public class Runner {
 		String tagFile = getTempFile("tags");
 		Vector<String> cmdLine = new Vector<String>();
 		cmdLine.add(ctags);
+		cmdLine.add("--verbose");	// Allow progress tracking
 		cmdLine.add("--sort=no");	// Avoid sorting to improve performance
 		cmdLine.add("-f");
 		cmdLine.add(tagFile);
@@ -163,21 +170,40 @@ public class Runner {
 		cmdLine.addAll(what);
 		String [] args = new String[cmdLine.size()]; 
 		cmdLine.toArray(args);
+		Progress progress = getProgressDockable();
+		if (progress != null)
+			progress.add(jEdit.getProperty(TAGGING_BEGINS));
 		try {
 			Process p = Runtime.getRuntime().exec(args);
-			StreamConsumer osc = new StreamConsumer(p.getInputStream());
+			StreamConsumer osc = new StreamConsumer(p.getInputStream(),
+				progress);
 			osc.start();
-			StreamConsumer esc = new StreamConsumer(p.getErrorStream());
+			StreamConsumer esc = new StreamConsumer(p.getErrorStream(),
+				progress);
 			esc.start();
 			p.waitFor();
 		} catch (IOException e) {
 			e.printStackTrace();
-			return null;
+			tagFile = null;
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-			return null;
+			tagFile = null;
+		} finally {
+			if (progress != null)
+				progress.add(jEdit.getProperty(TAGGING_ENDS));
 		}
 		return tagFile;
+	}
+	private Progress getProgressDockable()
+	{
+		Progress progress = null;
+		if (jEdit.getActiveView() != null)
+		{
+			DockableWindowManager dwm = jEdit.getActiveView().getDockableWindowManager();
+			dwm.showDockableWindow(PROGRESS);
+			progress = (Progress) dwm.getDockable(PROGRESS);
+		}
+		return progress;
 	}
 	private String getTempDirectory() {
 		return jEdit.getSettingsDirectory() + "/CtagsInterface";
@@ -200,14 +226,23 @@ public class Runner {
 	private static class StreamConsumer extends Thread
 	{
 		private InputStream is;
-		public StreamConsumer(InputStream is) {
+		private Progress progress;
+
+		public StreamConsumer(InputStream is, Progress progress) {
 			this.is = is;
+			this.progress = progress;
 		}
 		public void run() {
 			try {
 				BufferedReader br = new BufferedReader(new InputStreamReader(is));
-				while (br.readLine() != null)
-					;
+				String line;
+				do
+				{
+					line = br.readLine();
+					if (line != null && progress != null)
+						progress.add(line);
+				}
+				while (line != null);
 			} catch (IOException ioe) {
 				ioe.printStackTrace();  
 			}

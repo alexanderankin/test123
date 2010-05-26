@@ -568,7 +568,7 @@ public class CtagsInterfacePlugin extends EditPlugin
 				if (pvi != null && type == OriginType.PROJECT)
 					pvi.updateWatchers();	
 			}
-		}, false);
+		});
 	}
 
 	// Inserts a new origin to the DB, runs Ctags on it and adds the tags
@@ -592,17 +592,9 @@ public class CtagsInterfacePlugin extends EditPlugin
 		}
 	}
 	
-	private static void addWorkRequest(Runnable run, boolean inAWT) {
-		if (! GeneralOptionPane.getUpdateInBackground()) {
-			run.run();
-			return;
-		}
-		if (inAWT)
-			SwingUtilities.invokeLater(run);
-		else {
-			Thread bgTask = new Thread(run);
-			bgTask.start();
-		}
+	private static void addWorkRequest(Runnable run) {
+		Thread bgTask = new Thread(run);
+		bgTask.start();
 	}
 
 	private static StatusBar getStatusBar()
@@ -667,7 +659,7 @@ public class CtagsInterfacePlugin extends EditPlugin
 					}
 				}
 			}
-		}, false);
+		});
 		synchronized (syncObject)
 		{
 			if (! done[0])
@@ -693,7 +685,7 @@ public class CtagsInterfacePlugin extends EditPlugin
 				parser.setSourcePathMapping(localToVFS);
 				parseTagFile(tagFile, handler);
 			}
-		}, false);
+		});
 		removeStatusMessage();
 	}
 	
@@ -707,7 +699,7 @@ public class CtagsInterfacePlugin extends EditPlugin
 				String tagFile = runner.runOnTree(tree);
 				parseTagFile(tagFile, handler);
 			}
-		}, false);
+		});
 		removeStatusMessage();
 	}
 	
@@ -738,7 +730,7 @@ public class CtagsInterfacePlugin extends EditPlugin
 				else
 					tagFiles(files, handler);
 			}
-		}, false);
+		});
 		removeStatusMessage();
 	}
 	public static void updateProject(String project, Vector<String> added,

@@ -33,7 +33,6 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	static public final String PATTERN = OPTION + "pattern";
 	static public final String UPDATE_ON_LOAD = OPTION + "updateOnLoad";
 	static public final String UPDATE_ON_SAVE = OPTION + "updateOnSave";
-	static public final String BACKGROUND = OPTION + "background";
 	static public final String TOOLTIPS = OPTION + "tooltips";
 	static public final String COMPLETE_DESC = OPTION + "completeDesc";
 	static public final String PREVIEW_VERTICAL_SPLIT = OPTION + "previewVerticalSplit";
@@ -87,10 +86,6 @@ public class GeneralOptionPane extends AbstractOptionPane {
 			getUpdateOnSave());
 		addComponent(updateOnSave);
 		
-		background = new JCheckBox(jEdit.getProperty(MESSAGE + "background"),
-			getUpdateInBackground());
-		addComponent(background);
-
 		tooltips = new JCheckBox(jEdit.getProperty(MESSAGE + "showTooltips"),
 			getShowTooltips());
 		addComponent(tooltips);
@@ -139,7 +134,6 @@ public class GeneralOptionPane extends AbstractOptionPane {
 		jEdit.setProperty(PATTERN, pattern.getText());
 		jEdit.setBooleanProperty(UPDATE_ON_LOAD, updateOnLoad.isSelected());
 		jEdit.setBooleanProperty(UPDATE_ON_SAVE, updateOnSave.isSelected());
-		jEdit.setBooleanProperty(BACKGROUND, background.isSelected());
 		jEdit.setBooleanProperty(TOOLTIPS, tooltips.isSelected());
 		jEdit.setBooleanProperty(COMPLETE_DESC, completeDesc.isSelected());
 		jEdit.setBooleanProperty(PREVIEW_VERTICAL_SPLIT, previewVerticalSplitter.isSelected());
@@ -183,9 +177,6 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	}
 	public static boolean getUpdateOnLoad() {
 		return jEdit.getBooleanProperty(UPDATE_ON_LOAD, true);
-	}
-	public static boolean getUpdateInBackground() {
-		return jEdit.getBooleanProperty(BACKGROUND, true);
 	}
 	public static boolean getShowTooltips() {
 		return jEdit.getBooleanProperty(TOOLTIPS, true);
