@@ -17,11 +17,11 @@ public interface JavaParserConstants {
   /** RegularExpression Id. */
   int TABS = 4;
   /** RegularExpression Id. */
-  int SINGLE_LINE_COMMENT = 5;
+  int END_OF_LINE_COMMENT = 5;
   /** RegularExpression Id. */
-  int FORMAL_COMMENT = 6;
+  int JAVADOC_COMMENT = 6;
   /** RegularExpression Id. */
-  int MULTI_LINE_COMMENT = 7;
+  int BLOCK_COMMENT = 7;
   /** RegularExpression Id. */
   int ABSTRACT = 8;
   /** RegularExpression Id. */
@@ -257,9 +257,9 @@ public interface JavaParserConstants {
     "<LINE_ENDERS>",
     "<SPACES>",
     "<TABS>",
-    "<SINGLE_LINE_COMMENT>",
-    "<FORMAL_COMMENT>",
-    "<MULTI_LINE_COMMENT>",
+    "<END_OF_LINE_COMMENT>",
+    "<JAVADOC_COMMENT>",
+    "<BLOCK_COMMENT>",
     "\"abstract\"",
     "\"assert\"",
     "\"boolean\"",
