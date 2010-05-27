@@ -445,7 +445,7 @@ public class JavaParserTokenManager implements JavaParserConstants
 
         // output body of comment without change
         for (int i = 1; i < lines.length - 1; i++) {
-            line = trimStart(lines[i], level * 4);
+            line = lines[i];    // trimStart(lines[i], level * 4);
             outputBuffer.append(line).append(ls);
         }
 
