@@ -13,8 +13,7 @@ import org.gjt.sp.jedit.jEdit;
 public class Parser
 {
 	static public final String MESSAGE = CtagsInterfacePlugin.MESSAGE;
-	static public final String PARSING_BEGINS = MESSAGE + "parsingBegins";
-	static public final String PARSING_ENDS = MESSAGE + "parsingEnds";
+	static public final String PARSING = MESSAGE + "parsing";
 	private Logger logger;
 	String tagFileDir;
 	HashMap<String, String> sourcePathMap;
@@ -44,7 +43,8 @@ public class Parser
 			e.printStackTrace();
 			return;
 		}
-		addProgressMessage(jEdit.getProperty(PARSING_BEGINS));
+		if (logger != null)
+			logger.beginTask(jEdit.getProperty(PARSING));
 		CtagsInterfacePlugin.getIndex().startActivity();
 		try
 		{
@@ -68,18 +68,13 @@ public class Parser
 			catch (IOException e) { e.printStackTrace(); }
 		}
 		CtagsInterfacePlugin.getIndex().endActivity();
-		addProgressMessage(jEdit.getProperty(PARSING_ENDS));
+		if (logger != null)
+			logger.endTask();
 	}
 
 	public void setSourcePathMapping(HashMap<String, String> map)
 	{
 		sourcePathMap = map;
-	}
-
-	private void addProgressMessage(String s)
-	{
-		if (logger != null)
-			logger.log(s);
 	}
 
 	private Tag parse(String line)

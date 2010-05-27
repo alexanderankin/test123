@@ -6,6 +6,8 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -48,7 +50,11 @@ public class Progress extends JPanel
 			}
 		});
 	}
-	public void add(final Logger logger, String s)
+	public void add(Logger logger, String s)
+	{
+		getTab(logger).append(s);
+	}
+	private ProgressTab getTab(Logger logger)
 	{
 		ProgressTab tab;
 		synchronized(progressTabs)
@@ -61,19 +67,36 @@ public class Progress extends JPanel
 				progressTabs.put(logger, tab);
 			}
 		}
-		tab.append(s);
+		return tab;
 	}
-
+	public void beginTask(Logger logger, String task)
+	{
+		getTab(logger).beginTask(task);
+	}
+	public void endTask(Logger logger)
+	{
+		getTab(logger).endTask();
+	}
 	private static class ProgressTab extends JPanel
 	{
+		private static final String IDLE = "Idle";
 		private Logger logger;
 		private JTextArea textArea;
 		private ArrayList<String> toAdd = new ArrayList<String>();
+		private JButton close;
+		private JLabel status;
 
 		public ProgressTab(Logger logger)
 		{
 			this.logger = logger;
 			setLayout(new BorderLayout());
+			JPanel top = new JPanel();
+			add(top, BorderLayout.NORTH);
+			top.setLayout(new BorderLayout());
+			close = new JButton("Close");
+			top.add(close, BorderLayout.EAST);
+			status = new JLabel(IDLE);
+			top.add(status, BorderLayout.CENTER);
 			textArea = new JTextArea();
 			add(new JScrollPane(textArea), BorderLayout.CENTER);
 		}
@@ -101,6 +124,14 @@ public class Progress extends JPanel
 					}
 				});			
 			}
+		}
+		public void beginTask(String task)
+		{
+			status.setText(task);
+		}
+		public void endTask()
+		{
+			status.setText(IDLE);
 		}
 	}
 }

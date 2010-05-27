@@ -21,8 +21,7 @@ public class Runner
 {
 
 	static public final String MESSAGE = CtagsInterfacePlugin.MESSAGE;
-	static public final String TAGGING_BEGINS = MESSAGE + "taggingBegins";
-	static public final String TAGGING_ENDS = MESSAGE + "taggingEnds";
+	static public final String TAGGING = MESSAGE + "tagging";
 	private static final String SPACES = "\\s+";
 	private static Set<String> tempFiles;
 	private Logger logger;
@@ -174,7 +173,8 @@ public class Runner
 		cmdLine.addAll(what);
 		String [] args = new String[cmdLine.size()]; 
 		cmdLine.toArray(args);
-		addProgressMessage(jEdit.getProperty(TAGGING_BEGINS));
+		if (logger != null)
+			logger.beginTask(jEdit.getProperty(TAGGING));
 		try {
 			Process p = Runtime.getRuntime().exec(args);
 			StreamConsumer osc = new StreamConsumer(p.getInputStream());
@@ -189,7 +189,8 @@ public class Runner
 			e.printStackTrace();
 			tagFile = null;
 		} finally {
-			addProgressMessage(jEdit.getProperty(TAGGING_ENDS));
+			if (logger != null)
+				logger.endTask();
 		}
 		return tagFile;
 	}

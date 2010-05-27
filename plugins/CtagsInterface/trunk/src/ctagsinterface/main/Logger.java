@@ -18,6 +18,15 @@ public class Logger
 		return name;
 	}
 
+	public void beginTask(String task)
+	{
+		progress.beginTask(this, task);
+	}
+	public void endTask()
+	{
+		progress.endTask(this);
+	}
+
 	public void log(String s)
 	{
 		progress.add(this, s);
