@@ -156,7 +156,7 @@ public class TagIndex
 	public void getOrigins(OriginType type, final List<String> origins)
 	{
 		String query = DOCTYPE_FLD + ":" + ORIGIN_DOC_TYPE + " AND " +
-			TYPE_FLD + ":" + type;
+			TYPE_FLD + ":" + type.name.toLowerCase();
 		runQuery(query, 1, new DocHandler()
 		{
 			public void handle(Document doc)
@@ -321,8 +321,8 @@ public class TagIndex
 		startActivity();
 		deleteTagsOfOrigin(logger, origin);
 		String s = DOCTYPE_FLD + ":" + ORIGIN_DOC_TYPE + " AND " +
-			TYPE_FLD + origin.type + " AND " + ORIGIN_FLD + ":" +
-			escape(origin.id);
+			TYPE_FLD + origin.type.name.toLowerCase() + " AND " + ORIGIN_FLD + ":" +
+			escape(origin.id.toLowerCase());
 		Query q = getQuery(s);
 		if (q != null)
 		{
@@ -342,7 +342,8 @@ public class TagIndex
 		final boolean b[] = new boolean[1];
 		b[0] = false;
 		String query = DOCTYPE_FLD + ":" + ORIGIN_DOC_TYPE + " AND " +
-			TYPE_FLD + ":" + type + " AND " + ORIGIN_FLD + ":" + escape(id);
+			TYPE_FLD + ":" + type.name.toLowerCase() + " AND " + ORIGIN_FLD + ":" +
+			escape(id.toLowerCase());
 		runQuery(query, 1, new DocHandler() {
 			public void handle(Document doc)
 			{

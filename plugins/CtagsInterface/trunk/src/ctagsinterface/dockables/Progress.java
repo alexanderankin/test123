@@ -1,6 +1,8 @@
 package ctagsinterface.dockables;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -40,12 +42,7 @@ public class Progress extends JPanel
 					int i = tabs.getSelectedIndex();
 					if (i < 0)
 						return;
-					ProgressTab tab = (ProgressTab) tabs.getComponentAt(i);
-					synchronized(progressTabs)
-					{
-						progressTabs.remove(tab.logger);
-						tabs.removeTabAt(i);
-					}
+					closeTab((ProgressTab) tabs.getComponentAt(i));
 				}
 			}
 		});
@@ -77,7 +74,15 @@ public class Progress extends JPanel
 	{
 		getTab(logger).endTask();
 	}
-	private static class ProgressTab extends JPanel
+	public void closeTab(ProgressTab tab)
+	{
+		synchronized(progressTabs)
+		{
+			progressTabs.remove(tab.logger);
+		}
+		tabs.remove(tab);
+	}
+	private class ProgressTab extends JPanel
 	{
 		private static final String IDLE = "Idle";
 		private Logger logger;
@@ -95,6 +100,13 @@ public class Progress extends JPanel
 			top.setLayout(new BorderLayout());
 			close = new JButton("Close");
 			top.add(close, BorderLayout.EAST);
+			close.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					closeTab(ProgressTab.this);
+				}
+			});
 			status = new JLabel(IDLE);
 			top.add(status, BorderLayout.CENTER);
 			textArea = new JTextArea();

@@ -222,10 +222,10 @@ public class CtagsInterfacePlugin extends EditPlugin
 		}
 		Vector<String> allProjects = pvi.getProjects();
 		Vector<String> dbProjects = ProjectsOptionPane.getProjects();
-		Logger logger = getLogger(view, "All projects");
 		for (int i = 0; i < allProjects.size(); i++)
 		{
 			String project = allProjects.get(i);
+			Logger logger = getLogger(view, "Project " + project);
 			if (! dbProjects.contains(project))
 				insertOrigin(logger, OriginType.PROJECT, project);
 		}
@@ -546,18 +546,6 @@ public class CtagsInterfacePlugin extends EditPlugin
 		});
 	}
 
-	static private String join(Vector<String> strings)
-	{
-		StringBuilder sb = new StringBuilder();
-		for (String s: strings)
-		{
-			if (sb.length() > 0)
-				sb.append(",");
-			sb.append(s);
-		}
-		return sb.toString();
-	}
-
 	// Updates the given origins in the DB
 	static public void updateOrigins(OriginType type, Vector<String> names)
 	{
@@ -565,19 +553,24 @@ public class CtagsInterfacePlugin extends EditPlugin
 		Vector<String> current = new Vector<String>();
 		index.getOrigins(type, current);
 		View view = jEdit.getActiveView();
-		Logger logger = getLogger(view, "Origins " + join(names) + " of type "+ type);
 		for (int i = 0; i < current.size(); i++)
 		{
 			String name = current.get(i);
 			if (! names.contains(name))
+			{
+				Logger logger = getLogger(view, "Delete " + type.name + " " + name);
 				deleteOrigin(logger, type, name);
+			}
 		}
 		// Add new origins
 		for (int i = 0; i < names.size(); i++)
 		{
 			String name = names.get(i);
 			if (! current.contains(name))
+			{
+				Logger logger = getLogger(view, type.name + " " + name);
 				insertOrigin(logger, type, name);
+			}
 		}
 	}
 	
@@ -800,7 +793,7 @@ public class CtagsInterfacePlugin extends EditPlugin
 		setStatusMessage("Updating project: " + project);
 		Origin origin = index.getOrigin(OriginType.PROJECT, project, true);
 		View view = jEdit.getActiveView();
-		Logger logger = getLogger(view, "update project " + project);
+		Logger logger = getLogger(view, "Project " + project);
 		if (origin != null && removed != null && (! removed.isEmpty()))
 			index.deleteTagsOfOrigin(logger, origin);
 		if ((added != null) && (! added.isEmpty()))
