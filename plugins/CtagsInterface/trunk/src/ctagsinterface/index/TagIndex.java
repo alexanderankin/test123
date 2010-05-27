@@ -29,6 +29,7 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
+import ctagsinterface.main.Logger;
 import ctagsinterface.main.Tag;
 
 /*
@@ -226,7 +227,7 @@ public class TagIndex
 	 * Delete all tags that belong only to the specified origin. If a tag
 	 * belongs to multiple origins, only remove the specified origin from it.
 	 */
-	public void deleteTagsOfOrigin(final Origin origin)
+	public void deleteTagsOfOrigin(Logger logger, final Origin origin)
 	{
 		// Delete the tags which belong only to the specified origin.
 		// Using _ORIGIN_FLD for a precise match.
@@ -315,10 +316,10 @@ public class TagIndex
 	}
 
 	// Deletes an origin and all its associated data from the index
-	public void deleteOrigin(Origin origin)
+	public void deleteOrigin(Logger logger, Origin origin)
 	{
 		startActivity();
-		deleteTagsOfOrigin(origin);
+		deleteTagsOfOrigin(logger, origin);
 		String s = DOCTYPE_FLD + ":" + ORIGIN_DOC_TYPE + " AND " +
 			TYPE_FLD + origin.type + " AND " + ORIGIN_FLD + ":" +
 			escape(origin.id);

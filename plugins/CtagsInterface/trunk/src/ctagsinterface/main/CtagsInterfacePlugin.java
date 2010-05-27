@@ -22,12 +22,14 @@ import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.StatusBar;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.PositionChanging;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
 
+import ctagsinterface.dockables.Progress;
 import ctagsinterface.dockables.TagList;
 import ctagsinterface.index.QueryDialog;
 import ctagsinterface.index.TagIndex;
@@ -53,9 +55,8 @@ public class CtagsInterfacePlugin extends EditPlugin
 	static public final String OPTION = "options.CtagsInterface.";
 	static public final String MESSAGE = "messages.CtagsInterface.";
 	static public final String ACTION_SET = "Plugin: CtagsInterface - Actions";
+	private static final String PROGRESS = "ctags-interface-progress";
 	private static TagIndex index;
-	private static Parser parser;
-	private static Runner runner;
 	private static BufferWatcher watcher;
 	private static ProjectWatcher pvi;
 	private static ActionSet actions;
@@ -66,8 +67,6 @@ public class CtagsInterfacePlugin extends EditPlugin
 	{
 		Log.log(Log.MESSAGE, this, "Setting up Tagdb...");
 		index = new TagIndex();
-		parser = new Parser();
-		runner = new Runner();
 		watcher = new BufferWatcher(index);
 		EditPlugin p = jEdit.getPlugin("projectviewer.ProjectPlugin",false);
 		pvi = (p == null) ? null : new ProjectWatcher();
@@ -91,7 +90,7 @@ public class CtagsInterfacePlugin extends EditPlugin
 		index.close();
 		index = null;
 	}
-	
+
 	static public TagIndex getIndex()
 	{
 		return index;
@@ -107,6 +106,22 @@ public class CtagsInterfacePlugin extends EditPlugin
 		return bufferUpdateLock;
 	}
 
+	static public Runner getRunner(Logger logger)
+	{
+		return new Runner(logger);
+	}
+
+	static public Parser getParser(Logger logger)
+	{
+		return new Parser(logger);
+	}
+
+	static public Logger getLogger(View view, String name)
+	{
+		Progress progress = getProgressDockable(view);
+		return new Logger(name, progress);
+	}
+
 	static public void updateActions()
 	{
 		actions.removeAllActions();
@@ -115,7 +130,7 @@ public class CtagsInterfacePlugin extends EditPlugin
 			actions.addAction(queries[i]);
 		actions.initKeyBindings();
 	}
-	
+
     static private class TagFileHandler implements TagHandler
     {
 		private HashSet<String> files = new HashSet<String>();
@@ -141,7 +156,7 @@ public class CtagsInterfacePlugin extends EditPlugin
 			index.insertTag(t, originsStr);
 		}
     }
-    
+
 	private static String getScopeName(View view)
 	{
 		boolean projectScope = (pvi != null &&
@@ -149,22 +164,24 @@ public class CtagsInterfacePlugin extends EditPlugin
 				 ProjectsOptionPane.getSearchActiveProjectFirst()));
 		return projectScope ? pvi.getActiveProject(view) : null;
 	}
-	
+
     // Adds a temporary tag file to the DB
     // Existing tags from source files in the tag file are removed first.  
-    static private void addTempTagFile(String tagFile)
+    static private void addTempTagFile(View view, String tagFile)
     {
+    	Logger logger = getLogger(view, "Tag file " + tagFile);
+    	Parser parser = getParser(logger);
 		parser.parseTagFile(tagFile, new TagFileHandler(
 			index.getOrigin(OriginType.MISC, MISC_ORIGIN_ID, true)));
     }
-    
+
     // Action: Prompt for a temporary tag file to add to the DB
 	static public void addTagFile(View view)
 	{
 		String tagFile = JOptionPane.showInputDialog("Tag file:");
 		if (tagFile == null || tagFile.length() == 0)
 			return;
-		addTempTagFile(tagFile);
+		addTempTagFile(view, tagFile);
 	}
 
 	// Action: Add current file to the DB
@@ -173,7 +190,7 @@ public class CtagsInterfacePlugin extends EditPlugin
 		String path = view.getBuffer().getPath();
 		TagFileHandler handler = new TagFileHandler(
 			index.getOrigin(TagIndex.OriginType.MISC, MISC_ORIGIN_ID, true));
-		tagSourceTree(path, handler);
+		tagSourceTree(null, path, handler);
 	}
 
 	public static void jumpToTags(final View view, List<Tag> tags)
@@ -194,7 +211,7 @@ public class CtagsInterfacePlugin extends EditPlugin
 		Tag t = tags.get(0);
 		jumpToTag(view, t);
 	}
-	
+
 	// Action: Add all projects to the database
 	public static void tagAllProjects(View view)
 	{
@@ -205,26 +222,27 @@ public class CtagsInterfacePlugin extends EditPlugin
 		}
 		Vector<String> allProjects = pvi.getProjects();
 		Vector<String> dbProjects = ProjectsOptionPane.getProjects();
+		Logger logger = getLogger(view, "All projects");
 		for (int i = 0; i < allProjects.size(); i++)
 		{
 			String project = allProjects.get(i);
 			if (! dbProjects.contains(project))
-				insertOrigin(OriginType.PROJECT, project);
+				insertOrigin(logger, OriginType.PROJECT, project);
 		}
 	}
-	
+
 	// Action: Search for a tag containing a substring
 	public static void searchTagBySubstring(final View view)
 	{
 		new QuickSearchTagDialog(view, QuickSearchTagDialog.Mode.SUBSTRING);
 	}
-	
+
 	// Action: Search for a tag by prefix
 	public static void searchTagByPrefix(final View view)
 	{
 		new QuickSearchTagDialog(view, QuickSearchTagDialog.Mode.PREFIX);
 	}
-	
+
 	public static Vector<Tag> queryScopedTag(View view, String tag)
 	{
 		if (tag == null || tag.length() == 0)
@@ -528,24 +546,38 @@ public class CtagsInterfacePlugin extends EditPlugin
 		});
 	}
 
+	static private String join(Vector<String> strings)
+	{
+		StringBuilder sb = new StringBuilder();
+		for (String s: strings)
+		{
+			if (sb.length() > 0)
+				sb.append(",");
+			sb.append(s);
+		}
+		return sb.toString();
+	}
+
 	// Updates the given origins in the DB
 	static public void updateOrigins(OriginType type, Vector<String> names)
 	{
 		// Remove obsolete origins
 		Vector<String> current = new Vector<String>();
 		index.getOrigins(type, current);
+		View view = jEdit.getActiveView();
+		Logger logger = getLogger(view, "Origins " + join(names) + " of type "+ type);
 		for (int i = 0; i < current.size(); i++)
 		{
 			String name = current.get(i);
 			if (! names.contains(name))
-				deleteOrigin(type, name);
+				deleteOrigin(logger, type, name);
 		}
 		// Add new origins
 		for (int i = 0; i < names.size(); i++)
 		{
 			String name = names.get(i);
 			if (! current.contains(name))
-				insertOrigin(type, name);
+				insertOrigin(logger, type, name);
 		}
 	}
 	
@@ -553,18 +585,21 @@ public class CtagsInterfacePlugin extends EditPlugin
 	static public void refreshOrigin(OriginType type, String name)
 	{
 		Origin origin = index.getOrigin(type, name, false);
-		index.deleteTagsOfOrigin(origin);
-		tagOrigin(origin);
+		View view = jEdit.getActiveView();
+		Logger logger = getLogger(view, name);
+		index.deleteTagsOfOrigin(logger, origin);
+		tagOrigin(logger, origin);
 	}
 	
 	// Deletes an origin with all associated data from the DB
-	public static void deleteOrigin(final OriginType type, final String name)
+	public static void deleteOrigin(final Logger logger, final OriginType type,
+		final String name)
 	{
 		addWorkRequest(new Runnable()
 		{
 			public void run()
 			{
-				index.deleteOrigin(index.getOrigin(type, name, false));
+				index.deleteOrigin(logger, index.getOrigin(type, name, false));
 				if (pvi != null && type == OriginType.PROJECT)
 					pvi.updateWatchers();	
 			}
@@ -573,28 +608,35 @@ public class CtagsInterfacePlugin extends EditPlugin
 
 	// Inserts a new origin to the DB, runs Ctags on it and adds the tags
 	// to the DB.
-	public static void insertOrigin(OriginType type, String name)
+	public static void insertOrigin(Logger logger, OriginType type, String name)
 	{
 		Origin origin = index.getOrigin(type, name, true);
-		tagOrigin(origin);
+		tagOrigin(logger, origin);
 		if (pvi != null && type == OriginType.PROJECT)
 			pvi.updateWatchers();
 	}
 	// Runs Ctags on the specified origin and adds the tags to the DB.
-	private static void tagOrigin(Origin origin)
+	private static void tagOrigin(Logger logger, Origin origin)
 	{
 		TagFileHandler handler = new TagFileHandler(origin);
 		switch (origin.type)
 		{
-		case PROJECT: tagProject(origin.id, handler); break;
-		case DIRECTORY: tagSourceTree(origin.id, handler); break;
-		case ARCHIVE: tagArchive(origin.id, handler); break;
+		case PROJECT: tagProject(logger, origin.id, handler); break;
+		case DIRECTORY: tagSourceTree(logger, origin.id, handler); break;
+		case ARCHIVE: tagArchive(logger, origin.id, handler); break;
 		}
 	}
 	
 	private static void addWorkRequest(Runnable run) {
 		Thread bgTask = new Thread(run);
 		bgTask.start();
+	}
+
+	private static Progress getProgressDockable(View view)
+	{
+		DockableWindowManager dwm = view.getDockableWindowManager();
+		dwm.showDockableWindow(PROGRESS);
+		return (Progress) dwm.getDockable(PROGRESS);
 	}
 
 	private static StatusBar getStatusBar()
@@ -617,7 +659,9 @@ public class CtagsInterfacePlugin extends EditPlugin
 		s.setMessage("");
 	}
 	
-	private static void parseTagFile(String tagFile, TagHandler handler) {
+	private static void parseTagFile(Runner runner, Parser parser,
+		String tagFile, TagHandler handler)
+	{
 		parser.parseTagFile(tagFile, handler);
 		runner.releaseFile(tagFile);
 	}
@@ -641,6 +685,7 @@ public class CtagsInterfacePlugin extends EditPlugin
 				// Get the file origins, to restore when updating the file.
 				final String originsStr = index.getOriginsOfFile(file);
 				index.deleteTagsFromSourceFile(file);
+				Runner runner = getRunner(null);
 				String tagFile = runner.runOnFile(file);
 				TagHandler handler = new TagHandler()
 				{
@@ -649,7 +694,8 @@ public class CtagsInterfacePlugin extends EditPlugin
 						index.insertTag(t, originsStr);
 					}
 				};
-				parseTagFile(tagFile, handler);
+				Parser parser = getParser(null);
+				parseTagFile(runner, parser, tagFile, handler);
 				if (syncObject != null)
 				{
 					synchronized (syncObject)
@@ -673,17 +719,23 @@ public class CtagsInterfacePlugin extends EditPlugin
 
 	/* Archive support */
 	
-	public static void tagArchive(final String archive, final TagHandler handler) {
+	public static void tagArchive(final Logger logger, final String archive,
+		final TagHandler handler)
+	{
 		setStatusMessage("Tagging archive: " + archive);
-		addWorkRequest(new Runnable() {
-			public void run() {
+		addWorkRequest(new Runnable()
+		{
+			public void run()
+			{
 				HashMap<String, String> localToVFS =
 					new HashMap<String, String>();
+				Runner runner = getRunner(logger);
 				String tagFile = runner.runOnArchive(archive, localToVFS);
 				if (tagFile == null)
 					return;
+				Parser parser = getParser(logger);
 				parser.setSourcePathMapping(localToVFS);
-				parseTagFile(tagFile, handler);
+				parseTagFile(runner, parser, tagFile, handler);
 			}
 		});
 		removeStatusMessage();
@@ -692,12 +744,16 @@ public class CtagsInterfacePlugin extends EditPlugin
 	/* Source tree support */
 	
 	// Runs Ctags on a source tree and add the tags and associated data to the DB
-	public static void tagSourceTree(final String tree, final TagHandler handler) {
+	public static void tagSourceTree(final Logger logger, final String tree,
+		final TagHandler handler)
+	{
 		setStatusMessage("Tagging source tree: " + tree);
 		addWorkRequest(new Runnable() {
 			public void run() {
+				Runner runner = getRunner(logger);
 				String tagFile = runner.runOnTree(tree);
-				parseTagFile(tagFile, handler);
+				Parser parser = getParser(logger);
+				parseTagFile(runner, parser, tagFile, handler);
 			}
 		});
 		removeStatusMessage();
@@ -710,14 +766,19 @@ public class CtagsInterfacePlugin extends EditPlugin
 	}
 	
 	// Runs Ctags on a list of files and add the tags and associated data to the DB
-	private static void tagFiles(Vector<String> files, TagHandler handler)
+	private static void tagFiles(Logger logger, Vector<String> files,
+		TagHandler handler)
 	{
+		Runner runner = getRunner(logger);
+		Parser parser = getParser(logger);
 		String tagFile = runner.runOnFiles(files);
-		parseTagFile(tagFile, handler);
+		parseTagFile(runner, parser, tagFile, handler);
 	}
 	
 	// Runs Ctags on a project and inserts the tags and associated data to the DB
-	public static void tagProject(final String project, final TagHandler handler) {
+	public static void tagProject(final Logger logger, final String project,
+		final TagHandler handler)
+	{
 		if (pvi == null)
 			return;
 		setStatusMessage("Tagging project: " + project);
@@ -728,7 +789,7 @@ public class CtagsInterfacePlugin extends EditPlugin
 					JOptionPane.showMessageDialog(jEdit.getActiveView(),
 						"Cannot find project named '" + project + "'.");
 				else
-					tagFiles(files, handler);
+					tagFiles(logger, files, handler);
 			}
 		});
 		removeStatusMessage();
@@ -738,12 +799,14 @@ public class CtagsInterfacePlugin extends EditPlugin
 	{
 		setStatusMessage("Updating project: " + project);
 		Origin origin = index.getOrigin(OriginType.PROJECT, project, true);
+		View view = jEdit.getActiveView();
+		Logger logger = getLogger(view, "update project " + project);
 		if (origin != null && removed != null && (! removed.isEmpty()))
-			index.deleteTagsOfOrigin(origin);
+			index.deleteTagsOfOrigin(logger, origin);
 		if ((added != null) && (! added.isEmpty()))
 		{
 			TagHandler handler = new TagFileHandler(origin);
-			tagFiles(added, handler);
+			tagFiles(logger, added, handler);
 		}
 		removeStatusMessage();
 	}

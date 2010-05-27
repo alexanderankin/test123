@@ -22,6 +22,7 @@ import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 import ctagsinterface.index.TagIndex.OriginType;
 import ctagsinterface.main.CtagsInterfacePlugin;
+import ctagsinterface.main.Logger;
 import ctagsinterface.options.ProjectsOptionPane;
 
 public class ProjectWatcher
@@ -141,7 +142,9 @@ public class ProjectWatcher
 		if (su.getType() == StructureUpdate.Type.PROJECT_ADDED)
 		{
 			String name = su.getNode().getName();
-			CtagsInterfacePlugin.insertOrigin(OriginType.PROJECT, name);
+			Logger logger = CtagsInterfacePlugin.getLogger(jEdit.getActiveView(),
+				"project " + name);
+			CtagsInterfacePlugin.insertOrigin(logger, OriginType.PROJECT, name);
 			watched.add(name);
 		}
 		else if (su.getType() == StructureUpdate.Type.PROJECT_REMOVED)
@@ -157,7 +160,9 @@ public class ProjectWatcher
 				"CtagsInterface plugin", JOptionPane.YES_NO_OPTION);
 			if (res != JOptionPane.YES_OPTION)
 				return;
-			CtagsInterfacePlugin.deleteOrigin(OriginType.PROJECT, name);
+			Logger logger = CtagsInterfacePlugin.getLogger(jEdit.getActiveView(),
+					"project " + name);
+			CtagsInterfacePlugin.deleteOrigin(logger, OriginType.PROJECT, name);
 			watched.remove(name);
 		}
 	}

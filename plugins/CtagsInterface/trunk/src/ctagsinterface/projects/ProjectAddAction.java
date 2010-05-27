@@ -10,6 +10,7 @@ import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 import ctagsinterface.index.TagIndex.OriginType;
 import ctagsinterface.main.CtagsInterfacePlugin;
+import ctagsinterface.main.Logger;
 
 public class ProjectAddAction extends Action
 {
@@ -32,8 +33,10 @@ public class ProjectAddAction extends Action
 			VPTProject project = VPTNode.findProjectFor(node);
 			if (project == null)
 				return;
-			CtagsInterfacePlugin.insertOrigin(OriginType.PROJECT,
-				project.getName());
+			String name = project.getName();
+			Logger logger = CtagsInterfacePlugin.getLogger(viewer.getView(),
+				"project " + name);
+			CtagsInterfacePlugin.insertOrigin(logger, OriginType.PROJECT, name);
 		}
 	}
 }

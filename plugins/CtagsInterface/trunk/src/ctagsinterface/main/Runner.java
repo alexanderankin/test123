@@ -13,25 +13,29 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.util.Log;
 
-import ctagsinterface.dockables.Progress;
 import ctagsinterface.options.GeneralOptionPane;
 
-public class Runner {
+public class Runner
+{
 
-	private static final String PROGRESS = "ctags-interface-progress";
 	static public final String MESSAGE = CtagsInterfacePlugin.MESSAGE;
 	static public final String TAGGING_BEGINS = MESSAGE + "taggingBegins";
 	static public final String TAGGING_ENDS = MESSAGE + "taggingEnds";
 	private static final String SPACES = "\\s+";
 	private static Set<String> tempFiles;
-	
+	private Logger logger;
+
 	static {
 		tempFiles = new HashSet<String>();
 	}
-	
+
+	public Runner(Logger logger)
+	{
+		this.logger = logger;
+	}
+
 	// Runs Ctags on a single file. Returns the tag file.
 	public String runOnFile(String file) {
 		Vector<String> what = new Vector<String>();
@@ -170,16 +174,12 @@ public class Runner {
 		cmdLine.addAll(what);
 		String [] args = new String[cmdLine.size()]; 
 		cmdLine.toArray(args);
-		Progress progress = getProgressDockable();
-		if (progress != null)
-			progress.add(jEdit.getProperty(TAGGING_BEGINS));
+		addProgressMessage(jEdit.getProperty(TAGGING_BEGINS));
 		try {
 			Process p = Runtime.getRuntime().exec(args);
-			StreamConsumer osc = new StreamConsumer(p.getInputStream(),
-				progress);
+			StreamConsumer osc = new StreamConsumer(p.getInputStream());
 			osc.start();
-			StreamConsumer esc = new StreamConsumer(p.getErrorStream(),
-				progress);
+			StreamConsumer esc = new StreamConsumer(p.getErrorStream());
 			esc.start();
 			p.waitFor();
 		} catch (IOException e) {
@@ -189,21 +189,14 @@ public class Runner {
 			e.printStackTrace();
 			tagFile = null;
 		} finally {
-			if (progress != null)
-				progress.add(jEdit.getProperty(TAGGING_ENDS));
+			addProgressMessage(jEdit.getProperty(TAGGING_ENDS));
 		}
 		return tagFile;
 	}
-	private Progress getProgressDockable()
+	private void addProgressMessage(String s)
 	{
-		Progress progress = null;
-		if (jEdit.getActiveView() != null)
-		{
-			DockableWindowManager dwm = jEdit.getActiveView().getDockableWindowManager();
-			dwm.showDockableWindow(PROGRESS);
-			progress = (Progress) dwm.getDockable(PROGRESS);
-		}
-		return progress;
+		if (logger != null)
+			logger.log(s);
 	}
 	private String getTempDirectory() {
 		return jEdit.getSettingsDirectory() + "/CtagsInterface";
@@ -223,14 +216,12 @@ public class Runner {
 		return null; 
 	}
 
-	private static class StreamConsumer extends Thread
+	private class StreamConsumer extends Thread
 	{
 		private InputStream is;
-		private Progress progress;
 
-		public StreamConsumer(InputStream is, Progress progress) {
+		public StreamConsumer(InputStream is) {
 			this.is = is;
-			this.progress = progress;
 		}
 		public void run() {
 			try {
@@ -239,8 +230,8 @@ public class Runner {
 				do
 				{
 					line = br.readLine();
-					if (line != null && progress != null)
-						progress.add(line);
+					if (line != null)
+						addProgressMessage(line);
 				}
 				while (line != null);
 			} catch (IOException ioe) {
