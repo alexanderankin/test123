@@ -10,6 +10,7 @@ import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 import ctagsinterface.index.TagIndex.OriginType;
 import ctagsinterface.main.CtagsInterfacePlugin;
+import ctagsinterface.main.Logger;
 
 public class ProjectRemoveAction extends Action
 {
@@ -32,7 +33,10 @@ public class ProjectRemoveAction extends Action
 			if (sel == null)
 				return;
 			VPTProject p = (VPTProject) sel;
-			CtagsInterfacePlugin.deleteOrigin(OriginType.PROJECT, p.getName());
+			String name = p.getName();
+			Logger logger = CtagsInterfacePlugin.getLogger(viewer.getView(),
+				"Removing project " + name);
+			CtagsInterfacePlugin.deleteOrigin(logger, OriginType.PROJECT, name);
 		}
 	}
 }

@@ -8,53 +8,80 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Hashtable;
 
-public class Parser {
-	
+public class Parser
+{
+	static public final String MESSAGE = CtagsInterfacePlugin.MESSAGE;
+	static public final String PARSING_BEGINS = MESSAGE + "parsingBegins";
+	static public final String PARSING_ENDS = MESSAGE + "parsingEnds";
+	private Logger logger;
 	String tagFileDir;
 	HashMap<String, String> sourcePathMap;
-	
-	interface TagHandler {
+
+	interface TagHandler
+	{
 		void processTag(Tag t);
 	}
-	
-	void parseTagFile(String tagFile, TagHandler handler) {
+
+	public Parser(Logger logger)
+	{
+		this.logger = logger;
+	}
+
+	void parseTagFile(String tagFile, TagHandler handler)
+	{
 		if (tagFile == null || tagFile.length() == 0)
 			return;
 		tagFileDir = new File(tagFile).getAbsoluteFile().getParent();
 		BufferedReader in;
-		try {
+		try
+		{
 			in = new BufferedReader(new FileReader(tagFile));
-		} catch (FileNotFoundException e) {
+		}
+		catch (FileNotFoundException e)
+		{
 			e.printStackTrace();
 			return;
 		}
+		addProgressMessage(PARSING_BEGINS);
 		CtagsInterfacePlugin.getIndex().startActivity();
-		try {
+		try
+		{
 			String line;
-			while ((line = in.readLine()) != null) {
+			while ((line = in.readLine()) != null)
+			{
 				Tag t = parse(line);
 				if (t == null)
 					continue;
 				handler.processTag(t);
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
+		}
+		catch (IOException e) { e.printStackTrace(); }
+		finally
+		{
+			try
+			{
 				if (in != null)
 					in.close();
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
+			catch (IOException e) { e.printStackTrace(); }
 		}
 		CtagsInterfacePlugin.getIndex().endActivity();
+		addProgressMessage(PARSING_ENDS);
 	}
 
-	public void setSourcePathMapping(HashMap<String, String> map) {
+	public void setSourcePathMapping(HashMap<String, String> map)
+	{
 		sourcePathMap = map;
 	}
-	
-	private Tag parse(String line) {
+
+	private void addProgressMessage(String s)
+	{
+		if (logger != null)
+			logger.log(s);
+	}
+
+	private Tag parse(String line)
+	{
 		Hashtable<String, String> info =
 			new Hashtable<String, String>();
 		if (line.endsWith("\n") || line.endsWith("\r"))
@@ -70,11 +97,11 @@ public class Parser {
 		String file = fields[1];
 		if (! new File(file).isAbsolute())
 			file = tagFileDir + "/" + fields[1];
-		if (sourcePathMap != null) {
+		if (sourcePathMap != null)
+		{
 			String target = sourcePathMap.get(file);
-			if (target != null) {
+			if (target != null)
 				file = target;
-			}
 		}
 		Tag t = new Tag(fields[0], file, fields[2]);
 		// Extensions

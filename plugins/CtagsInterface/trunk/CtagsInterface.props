@@ -141,8 +141,10 @@ messages.CtagsInterface.badCtagsPath=Ctags path does not exist or is not an exec
 messages.CtagsInterface.goodCtagsPath=Ctags path is okay
 messages.CtagsInterface.noPVSupport=ProjectViewer integration not initialized. \
 	Please make sure ProjectViewer is loaded and then restart CtagsInterface.
-messages.CtagsInterface.taggingBegins=*** Tagging begins ***
-messages.CtagsInterface.taggingEnds=*** Tagging completed ***
+messages.CtagsInterface.taggingBegins=*** Ctags invocation begins ***
+messages.CtagsInterface.taggingEnds=*** Ctags invocation completed ***
+messages.CtagsInterface.parsingBegins=*** Tag file parsing begins ***
+messages.CtagsInterface.parsingEnds=*** Tag file parsing completed ***
 
 # projectviewer option pane
 plugin.projectviewer.ctagsinterface.main.CtagsInterfacePlugin.option-pane=CtagsInterface-ProjectDependencies
