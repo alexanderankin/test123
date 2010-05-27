@@ -284,6 +284,17 @@ TOKEN_MGR_DECLS :
         return sb.toString();
     }
 
+    // trim up to max whitespace (\r, \n, space, \t) from the start of the given string
+    static String trimStart(String s, int max) {
+        StringBuilder sb = new StringBuilder(s);
+        int trimmed = 0;
+        while(sb.length() > 0 && Character.isWhitespace(sb.charAt(0)) && trimmed < max) {
+            sb.deleteCharAt(0);
+            ++trimmed;
+        }
+        return sb.toString();
+    }
+
     // trims whitespace (\r, \n, space, \t) from the last items in the
     // accumulator.  If the last item is all whitespace, continues on to the
     // previous until a non-whitespace character is encountered.  If the
@@ -538,23 +549,32 @@ TOKEN_MGR_DECLS :
         String end = sb.substring(sb.length() - s.length());
         return end.equals(s);
     }
-
-    static void writeMultiLineComment(String s) {
+    
+    static void writeJavadocComment(String s) {
         String[] lines = s.split("\r\n|\r|\n");
-        for (int i = 0; i < lines.length; i++) {
-            String line = lines[i];
-            line = line.trim();
-
+        
+        // handle /** line
+        String line = lines[0];
+        line = line.trim();
+        outputBuffer.append(line).append(ls);
+        
+        // handle the remaining lines
+        for (int i = 1; i < lines.length; i++) {
+            line = lines[i].trim();
+            
+            // apply padding. All javadoc lines start with a *.
             if (line.startsWith("*")) {
                 line = " " + line;
             }
-            else if (!line.startsWith("/*") && !line.startsWith("//")){
+            else {
                 line = " * " + line;   
             }
 
+            // apply indenting. The Sun rule is 4 spaces.
             for (int j = 0; j < level; j++) {
                 line = "    " + line;
             }
+            
             outputBuffer.append(line);
             if (i < lines.length - 1) {
                 outputBuffer.append(ls);
@@ -562,9 +582,43 @@ TOKEN_MGR_DECLS :
         }
     }
 
-    static void writeSingleLineComment(String s) {
-        writeMultiLineComment(s);
-        outputBuffer.append(ls);
+    // comments of the /* ... */ variety.  This sort of comment is commonly
+    // used to "comment out" a block of code, so I don't want to modify the
+    // existing indenting within the block.
+    static void writeBlockComment(String s) {
+        String[] lines = s.split("\r\n|\r|\n");
+
+        // indent the first line.  It won't have any leading whitespace, but
+        // may have trailing whitespace
+        String line = lines[0].trim();
+        for (int j = 0; j < level; j++) {
+            line = "    " + line;       // 4 spaces
+        }
+        outputBuffer.append(line).append(ls);
+        
+        // output body of comment without change
+        for (int i = 1; i < lines.length - 1; i++) {
+            line = trimStart(lines[i], level * 4);
+            outputBuffer.append(line).append(ls);
+        }
+        
+        // output the last line.  It will probably have leading whitespace, so
+        // trim it then indent it the same as the first line.
+        line = lines[lines.length - 1].trim();
+        for (int j = 0; j < level; j++) {
+            line = "    " + line;       // 4 spaces
+        }
+        outputBuffer.append(line);
+    }
+    
+
+    // handle comments like this one
+    static void writeEndOfLineComment(String s) {
+        String line = s.trim();
+        for (int j = 0; j < level; j++) {
+            line = "    " + line;       // 4 spaces
+        }
+        outputBuffer.append(line).append(ls);
     }
 
 }
@@ -612,9 +666,9 @@ SPECIAL_TOKEN :
 
 SPECIAL_TOKEN :
 {
-  <SINGLE_LINE_COMMENT: "//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>  { writeSingleLineComment(matchedToken.image); }
-| <FORMAL_COMMENT: "/**" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">  { writeMultiLineComment(matchedToken.image); }
-| <MULTI_LINE_COMMENT: "/*" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">  { writeMultiLineComment(matchedToken.image); }
+  <END_OF_LINE_COMMENT: "//"  (~["\n","\r"])* ("\n"|"\r"|"\r\n")>  { writeEndOfLineComment(matchedToken.image); }
+| <JAVADOC_COMMENT:     "/**" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">  { writeJavadocComment(matchedToken.image); }
+| <BLOCK_COMMENT:       "/*"  (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">  { writeBlockComment(matchedToken.image); }
 }
 
 
@@ -1033,7 +1087,7 @@ void EnumConstant():
 void TypeParameters():
 {}
 {
-    "<" { add("<"); } TypeParameter() ( "," { add(", "); } TypeParameter() )* ">" { add("> "); }
+    "<" { trim(); add("<"); } TypeParameter() ( "," { add(", "); } TypeParameter() )* ">" { add("> "); }
 }
 
 void TypeParameter():
@@ -1104,7 +1158,7 @@ void VariableDeclarator():
 void VariableDeclaratorId():
 {}
 {
-  t=<IDENTIFIER> { add(t); } ( "[" "]" { add("[]"); } )*
+  t=<IDENTIFIER> { add(t); } ( "[" "]" { trim(); add("[] "); } )*
 }
 
 void VariableInitializer():
@@ -1136,7 +1190,7 @@ void MethodDeclaration(int modifiers):
 void MethodDeclarator():
 {}
 {
-  t=<IDENTIFIER> { add(t); } FormalParameters() ( "[" "]" { add("[]"); } )*
+  t=<IDENTIFIER> { add(t); } FormalParameters() ( "[" "]" { trim(); add("[] "); } )*
 }
 
 void FormalParameters():
@@ -1197,9 +1251,9 @@ void Type():
 void ReferenceType():
 {}
 {
-   PrimitiveType() ( LOOKAHEAD(2) "[" "]" { add("[]"); } )+
+   PrimitiveType() ( LOOKAHEAD(2) "[" "]" { trim(); add("[] "); } )+
   |
-   ( ClassOrInterfaceType() ) ( LOOKAHEAD(2) "[" "]" { add("[]"); } )*
+   ( ClassOrInterfaceType() ) ( LOOKAHEAD(2) "[" "]" { trim(); add("[] "); } )*
 }
 
 void ClassOrInterfaceType():
@@ -1212,7 +1266,7 @@ void ClassOrInterfaceType():
 void TypeArguments():
 {}
 {
-   "<" { add("<"); } TypeArgument() ( "," { trim(); add(", "); } TypeArgument() )* ">" { trim(); add("> "); }
+   "<" { trim(); add("<"); } TypeArgument() ( "," { trim(); add(", "); } TypeArgument() )* ">" { trim(); add("> "); }
 }
 
 void TypeArgument():
@@ -1431,7 +1485,7 @@ void CastLookahead():
   "("  PrimitiveType()
 |
   LOOKAHEAD("(" Type() "[")
-  "("  Type() "[" "]" { add("[]"); }
+  "("  Type() "[" "]" { trim(); add("[] "); }
 |
   "("  Type() ")" ( "~" | "!" | "(" | <IDENTIFIER> | "this" | "super" | "new" | Literal() )
 }
@@ -1494,7 +1548,7 @@ void PrimarySuffix():
   LOOKAHEAD(3)
   MemberSelector()
 |
-  "[" { add("["); } Expression() "]" { add("]"); }
+  "[" { trim(); add("["); } Expression() "]" { trim(); add("]"); }
 |
   "." { add("."); } t=<IDENTIFIER> { add(t); }
 |
@@ -1567,9 +1621,9 @@ void ArrayDimsAndInits():
 {}
 {
   LOOKAHEAD(2)
-  ( LOOKAHEAD(2) "[" { add("["); } Expression() "]" { add("]"); } )+ ( LOOKAHEAD(2) "[" "]" { add("[]"); } )*
+  ( LOOKAHEAD(2) "[" { trimWhitespace(); add("["); } Expression() "]" { trim(); add("]"); } )+ ( LOOKAHEAD(2) "[" "]" { trim(); add("[] "); } )*
 |
-  ( "[" "]" { add("[]"); } )+ ArrayInitializer()
+  ( "[" "]" { trim(); add("[]"); } )+ ArrayInitializer()
 }
 
 

@@ -131,6 +131,17 @@ public class JavaParserTokenManager implements JavaParserConstants
         return sb.toString();
     }
 
+    // trim up to max whitespace (\r, \n, space, \t) from the start of the given string
+    static String trimStart(String s, int max) {
+        StringBuilder sb = new StringBuilder(s);
+        int trimmed = 0;
+        while(sb.length() > 0 && Character.isWhitespace(sb.charAt(0)) && trimmed < max) {
+            sb.deleteCharAt(0);
+            ++trimmed;
+        }
+        return sb.toString();
+    }
+
     // trims whitespace (\r, \n, space, \t) from the last items in the
     // accumulator.  If the last item is all whitespace, continues on to the
     // previous until a non-whitespace character is encountered.  If the
@@ -386,22 +397,31 @@ public class JavaParserTokenManager implements JavaParserConstants
         return end.equals(s);
     }
 
-    static void writeMultiLineComment(String s) {
+    static void writeJavadocComment(String s) {
         String[] lines = s.split("\u005cr\u005cn|\u005cr|\u005cn");
-        for (int i = 0; i < lines.length; i++) {
-            String line = lines[i];
-            line = line.trim();
 
+        // handle /** line
+        String line = lines[0];
+        line = line.trim();
+        outputBuffer.append(line).append(ls);
+
+        // handle the remaining lines
+        for (int i = 1; i < lines.length; i++) {
+            line = lines[i].trim();
+
+            // apply padding. All javadoc lines start with a *.
             if (line.startsWith("*")) {
                 line = " " + line;
             }
-            else if (!line.startsWith("/*") && !line.startsWith("//")){
+            else {
                 line = " * " + line;
             }
 
+            // apply indenting. The Sun rule is 4 spaces.
             for (int j = 0; j < level; j++) {
                 line = "    " + line;
             }
+
             outputBuffer.append(line);
             if (i < lines.length - 1) {
                 outputBuffer.append(ls);
@@ -409,9 +429,43 @@ public class JavaParserTokenManager implements JavaParserConstants
         }
     }
 
-    static void writeSingleLineComment(String s) {
-        writeMultiLineComment(s);
-        outputBuffer.append(ls);
+    // comments of the /* ... */ variety.  This sort of comment is commonly
+    // used to "comment out" a block of code, so I don't want to modify the
+    // existing indenting within the block.
+    static void writeBlockComment(String s) {
+        String[] lines = s.split("\u005cr\u005cn|\u005cr|\u005cn");
+
+        // indent the first line.  It won't have any leading whitespace, but
+        // may have trailing whitespace
+        String line = lines[0].trim();
+        for (int j = 0; j < level; j++) {
+            line = "    " + line;       // 4 spaces
+        }
+        outputBuffer.append(line).append(ls);
+
+        // output body of comment without change
+        for (int i = 1; i < lines.length - 1; i++) {
+            line = trimStart(lines[i], level * 4);
+            outputBuffer.append(line).append(ls);
+        }
+
+        // output the last line.  It will probably have leading whitespace, so
+        // trim it then indent it the same as the first line.
+        line = lines[lines.length - 1].trim();
+        for (int j = 0; j < level; j++) {
+            line = "    " + line;       // 4 spaces
+        }
+        outputBuffer.append(line);
+    }
+
+
+    // handle comments like this one
+    static void writeEndOfLineComment(String s) {
+        String line = s.trim();
+        for (int j = 0; j < level; j++) {
+            line = "    " + line;       // 4 spaces
+        }
+        outputBuffer.append(line).append(ls);
     }
 
   /** Debug output. */
@@ -2114,15 +2168,15 @@ void SkipLexicalActions(Token matchedToken)
          break;
       case 5 :
          image.append(input_stream.GetSuffix(jjimageLen + (lengthOfMatch = jjmatchedPos + 1)));
-                                                                    writeSingleLineComment(matchedToken.image);
+                                                                     writeEndOfLineComment(matchedToken.image);
          break;
       case 6 :
          image.append(input_stream.GetSuffix(jjimageLen + (lengthOfMatch = jjmatchedPos + 1)));
-                                                                                   writeMultiLineComment(matchedToken.image);
+                                                                                        writeJavadocComment(matchedToken.image);
          break;
       case 7 :
          image.append(input_stream.GetSuffix(jjimageLen + (lengthOfMatch = jjmatchedPos + 1)));
-                                                                                      writeMultiLineComment(matchedToken.image);
+                                                                                        writeBlockComment(matchedToken.image);
          break;
       default :
          break;
