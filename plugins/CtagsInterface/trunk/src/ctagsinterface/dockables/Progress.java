@@ -1,6 +1,8 @@
 package ctagsinterface.dockables;
 
 import java.awt.BorderLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -18,57 +20,87 @@ import ctagsinterface.main.Logger;
 public class Progress extends JPanel
 {
 	private JTabbedPane tabs;
-	private HashMap<Logger, ArrayList<String>> toAdd =
-		new HashMap<Logger, ArrayList<String>>();
-	private HashMap<Logger, JTextArea> textAreas =
-		new HashMap<Logger, JTextArea>();
+	private HashMap<Logger, ProgressTab> progressTabs =
+		new HashMap<Logger, ProgressTab>();
 
 	public Progress(View view)
 	{
 		setLayout(new BorderLayout());
 		tabs = new JTabbedPane();
 		add(tabs, BorderLayout.CENTER);
+		tabs.addMouseListener(new MouseAdapter()
+		{
+			@Override
+			public void mouseClicked(MouseEvent e)
+			{
+				if (SwingUtilities.isMiddleMouseButton(e))
+				{
+					int i = tabs.getSelectedIndex();
+					if (i < 0)
+						return;
+					ProgressTab tab = (ProgressTab) tabs.getComponentAt(i);
+					synchronized(progressTabs)
+					{
+						progressTabs.remove(tab.logger);
+						tabs.removeTabAt(i);
+					}
+				}
+			}
+		});
 	}
 	public void add(final Logger logger, String s)
 	{
-		synchronized(logger)
+		ProgressTab tab;
+		synchronized(progressTabs)
 		{
-			ArrayList<String> arr = toAdd.get(logger);
-			boolean update = false;
-			if (arr == null)
+			tab = progressTabs.get(logger);
+			if (tab == null)
 			{
-				arr = new ArrayList<String>();
-				toAdd.put(logger, arr);
-				update = true;
+				tab = new ProgressTab(logger);
+				tabs.addTab(logger.name(), tab);
+				progressTabs.put(logger, tab);
 			}
-			arr.add(s);
+		}
+		tab.append(s);
+	}
+
+	private static class ProgressTab extends JPanel
+	{
+		private Logger logger;
+		private JTextArea textArea;
+		private ArrayList<String> toAdd = new ArrayList<String>();
+
+		public ProgressTab(Logger logger)
+		{
+			this.logger = logger;
+			setLayout(new BorderLayout());
+			textArea = new JTextArea();
+			add(new JScrollPane(textArea), BorderLayout.CENTER);
+		}
+		public void append(String s)
+		{
+			boolean update;
+			synchronized(toAdd)
+			{
+				update = toAdd.isEmpty();
+				toAdd.add(s);
+			}
 			if (update)
 			{
 				SwingUtilities.invokeLater(new Runnable()
 				{
 					public void run()
 					{
-						updateTab(logger);
+						synchronized(toAdd)
+						{
+							for (String s: toAdd)
+								textArea.append(s + "\n");
+							toAdd.clear();
+						}
+						textArea.setCaretPosition(textArea.getText().length());
 					}
 				});			
 			}
-		}
-	}
-	private void updateTab(final Logger logger)
-	{
-		JTextArea textArea = textAreas.get(logger);
-		if (textArea == null)
-		{
-			textArea = new JTextArea();
-			tabs.addTab(logger.name(), new JScrollPane(textArea));
-			textAreas.put(logger, textArea);
-		}
-		synchronized(logger)
-		{
-			for (String s: toAdd.get(logger))
-				textArea.append(s + "\n");
-			textArea.setCaretPosition(textArea.getText().length());
-			toAdd.clear();
 		}
 	}
 }

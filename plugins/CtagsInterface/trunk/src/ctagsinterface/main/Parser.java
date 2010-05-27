@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Hashtable;
 
+import org.gjt.sp.jedit.jEdit;
+
 public class Parser
 {
 	static public final String MESSAGE = CtagsInterfacePlugin.MESSAGE;
@@ -42,7 +44,7 @@ public class Parser
 			e.printStackTrace();
 			return;
 		}
-		addProgressMessage(PARSING_BEGINS);
+		addProgressMessage(jEdit.getProperty(PARSING_BEGINS));
 		CtagsInterfacePlugin.getIndex().startActivity();
 		try
 		{
@@ -66,7 +68,7 @@ public class Parser
 			catch (IOException e) { e.printStackTrace(); }
 		}
 		CtagsInterfacePlugin.getIndex().endActivity();
-		addProgressMessage(PARSING_ENDS);
+		addProgressMessage(jEdit.getProperty(PARSING_ENDS));
 	}
 
 	public void setSourcePathMapping(HashMap<String, String> map)
