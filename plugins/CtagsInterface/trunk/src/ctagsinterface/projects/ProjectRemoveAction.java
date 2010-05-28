@@ -21,7 +21,7 @@ public class ProjectRemoveAction extends Action
 	@Override
 	public String getText()
 	{
-		return "Remove project from tag database";
+		return "Remove project from tag index";
 	}
 	public void actionPerformed(ActionEvent arg0)
 	{

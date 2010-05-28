@@ -21,7 +21,7 @@ public class ProjectAddAction extends Action
 	@Override
 	public String getText()
 	{
-		return "Add project to tag database";
+		return "Add project to tag index";
 	}
 	public void actionPerformed(ActionEvent arg0)
 	{
