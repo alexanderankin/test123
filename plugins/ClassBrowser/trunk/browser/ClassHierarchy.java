@@ -35,6 +35,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Vector;
+import java.util.regex.Pattern;
 
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListCellRenderer;
@@ -111,6 +112,7 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 	private static String CLASS_KIND_QUERY = "(" +
 		KIND_EXTENSION + ":class OR " + KIND_EXTENSION + ":struct OR " +
 		KIND_EXTENSION + ":union OR " + KIND_EXTENSION + ":interface)";
+	private Pattern emptyQuery = Pattern.compile("^\\s*$");
 
 	public ClassHierarchy(View view) {
 		super(new BorderLayout());
@@ -207,6 +209,11 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 		}
 	}
 
+	private boolean isEmptyQuery(String query)
+	{
+		return emptyQuery.matcher(query).matches();
+	}
+
 	private void addSubClasses(DefaultMutableTreeNode node,
 		HashSet<String> classes)
 	{
@@ -217,7 +224,9 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 		else
 			name = (String) obj;
 		String q = CtagsInterfacePlugin.getScopedTagQuery(view);
-		q = q + " AND " + INHERITS_EXTENSION + ":" + TagIndex.escape(name);
+		if (! isEmptyQuery(q))
+			q = q + " AND ";
+		q = q + INHERITS_EXTENSION + ":" + TagIndex.escape(name);
 		Vector<Tag> tags = CtagsInterfacePlugin.query(q.toString());
 		for (int i = 0; i < tags.size(); i++) {
 			Tag subclass = tags.get(i);
@@ -409,7 +418,7 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 					sb.append(" OR ");
 			}
 		}
-		if (! q.matches("^\\s*$"))
+		if (! isEmptyQuery(q))
 			q = q + " AND ";
 		q = q + "(" + sb.toString() + ")";
 		Vector<Tag> tags = CtagsInterfacePlugin.query(q.toString());
