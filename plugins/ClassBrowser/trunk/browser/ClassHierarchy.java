@@ -409,7 +409,9 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 					sb.append(" OR ");
 			}
 		}
-		q = q + " AND (" + sb.toString() + ")";
+		if (! q.matches("^\\s*$"))
+			q = q + " AND ";
+		q = q + "(" + sb.toString() + ")";
 		Vector<Tag> tags = CtagsInterfacePlugin.query(q.toString());
 		for (int i = 0; i < tags.size(); i++) {
 			Tag member = tags.get(i);
