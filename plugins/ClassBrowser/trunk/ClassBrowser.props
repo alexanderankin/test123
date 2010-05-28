@@ -9,7 +9,7 @@ plugin.browser.ClassBrowserPlugin.description=\
 
 plugin.browser.ClassBrowserPlugin.depend.0=jdk 1.5
 plugin.browser.ClassBrowserPlugin.depend.1=jedit 04.03.99.00
-plugin.browser.ClassBrowserPlugin.depend.2=plugin ctagsinterface.main.CtagsInterfacePlugin 1.0
+plugin.browser.ClassBrowserPlugin.depend.2=plugin ctagsinterface.main.CtagsInterfacePlugin 2.0
 
 # action labels
 class-browser-show-hierarchy.label=Show Class Hierarchy ..
