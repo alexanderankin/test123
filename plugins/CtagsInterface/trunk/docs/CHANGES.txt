@@ -1,5 +1,17 @@
 Changes:
 
+Version 2.0:
+- Changed CtagsInterface to use a Lucene index for the tag information instead
+  of a relational database. This was done mainly to improve performance of
+  queries that need to check substrings of the values in the database.
+  As a result, dynamic action queries (which used to be in SQL) need to be
+  replaced by Lucene queries.
+- Added progress indication while tagging. A new dockable shows the Ctags
+  verbose output. Each tagging task has its own tab in the dockable, and there
+  is an option to automatically close the tab when the tagging is over.
+- All tagging is done in the background, so the option for background tagging
+  was removed.
+
 Version 1.1:
 - Fixed an NPE when the tag database is not configured correctly
   or not installed correctly.
