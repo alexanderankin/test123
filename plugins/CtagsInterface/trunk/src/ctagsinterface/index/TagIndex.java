@@ -83,6 +83,13 @@ public class TagIndex
 		{
 			this.name = name;
 		}
+		public static OriginType fromString(String s)
+		{
+			for (OriginType type: OriginType.values())
+				if (type.name.equals(s))
+					return type;
+			return OriginType.MISC;
+		}
 		public String name;
 	}
 

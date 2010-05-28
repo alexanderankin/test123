@@ -272,7 +272,7 @@ public class CtagsInterfacePlugin extends EditPlugin
 					for (String s: origin.getValue())
 					{
 						origins.add(index.getOrigin(
-							OriginType.valueOf(origin.getKey()), s, false));
+							OriginType.fromString(origin.getKey()), s, false));
 					}
 				}
 				index.queryTagInOrigins(tag, origins, tags);
