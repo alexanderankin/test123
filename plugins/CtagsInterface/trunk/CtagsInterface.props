@@ -3,7 +3,7 @@ plugin.ctagsinterface.main.CtagsInterfacePlugin.activate=startup
 # general plugin information
 plugin.ctagsinterface.main.CtagsInterfacePlugin.name=CtagsInterface
 plugin.ctagsinterface.main.CtagsInterfacePlugin.author=Shlomy Reinstein
-plugin.ctagsinterface.main.CtagsInterfacePlugin.version=1.1
+plugin.ctagsinterface.main.CtagsInterfacePlugin.version=2.0
 plugin.ctagsinterface.main.CtagsInterfacePlugin.description=\
 	CtagsInterface provides common Ctags services to interested plugins.
 
@@ -14,7 +14,6 @@ plugin.ctagsinterface.main.CtagsInterfacePlugin.depend.3=plugin SuperAbbrevsPlug
 plugin.ctagsinterface.main.CtagsInterfacePlugin.depend.4=optional plugin plugin.ise.plugin.nav.NavigatorPlugin 2.2.0.0
 plugin.ctagsinterface.main.CtagsInterfacePlugin.depend.5=plugin gatchan.jedit.lucene.LucenePlugin 2.5
 
-plugin.ctagsinterface.main.CtagsInterfacePlugin.jars=hsqldb.jar
 plugin.ctagsinterface.main.CtagsInterfacePlugin.docs=index.html
 
 # action labels
@@ -75,24 +74,6 @@ ctags-interface-progress.label=Tagging Progress
 options.CtagsInterface.ctags=ctags
 options.CtagsInterface.cmd=--fields\=+anzKiS
 options.CtagsInterface.pattern=\\w+
-# Default db settings
-options.CtagsInterface.dbSelectedPreset=hsqldb
-options.CtagsInterface.dbClass=org.hsqldb.jdbcDriver
-options.CtagsInterface.dbConnection=jdbc:hsqldb:file:<default>
-options.CtagsInterface.dbUser=sa
-options.CtagsInterface.dbPassword=
-# Preset db settings
-options.CtagsInterface.dbPresets=hsqldb,h2
-options.CtagsInterface.dbClass.hsqldb=org.hsqldb.jdbcDriver
-options.CtagsInterface.dbConnection.hsqldb=jdbc:hsqldb:file:<default>
-options.CtagsInterface.dbUser.hsqldb=sa
-options.CtagsInterface.dbPassword.hsqldb=
-options.CtagsInterface.dbOnExit.hsqldb=SHUTDOWN
-options.CtagsInterface.dbClass.h2=org.h2.Driver
-options.CtagsInterface.dbConnection.h2=jdbc:h2:<default>
-options.CtagsInterface.dbUser.h2=sa
-options.CtagsInterface.dbPassword.h2=
-options.CtagsInterface.dbOnExit.h2=SHUTDOWN
 
 # messages
 messages.CtagsInterface.ctags=Ctags executable path:
@@ -117,7 +98,7 @@ messages.CtagsInterface.dbOnExit=SQL statement to run on exit:
 messages.CtagsInterface.actions=Actions:
 messages.CtagsInterface.actionEditorTitle=Action Editor
 messages.CtagsInterface.actionName=Action name:
-messages.CtagsInterface.sqlQuery=SQL query:
+messages.CtagsInterface.luceneQuery=Lucene query:
 messages.CtagsInterface.queryType=Query Type:
 messages.CtagsInterface.callImmediately=Call query immediately (without waiting for input):
 messages.CtagsInterface.dirs=Source trees:
@@ -130,10 +111,6 @@ messages.CtagsInterface.searchGlobally=Global
 messages.CtagsInterface.searchActiveProjectOnly=Active project only
 messages.CtagsInterface.searchActiveProjectAndDeps=Active project and its dependencies
 messages.CtagsInterface.searchActiveProjectFirst=Active project first, and only if not found, search in other sources.
-messages.CtagsInterface.dbMappingsFile=Database SQL mappings file:
-messages.CtagsInterface.rebuildNewDb=Rebuild the new database using current projects and source trees (might take a while)
-messages.CtagsInterface.cannotSwitchDatabase=Cannot switch to the new database settings due to an internal error.
-messages.CtagsInterface.changeDbSettingsDialogTitle=Database settings
 messages.CtagsInterface.showTooltips=Show tag tooltips
 messages.CtagsInterface.completeDesc=Show tag description in code completion
 messages.CtagsInterface.checkCtags=Check path

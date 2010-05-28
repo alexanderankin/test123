@@ -133,7 +133,7 @@ public class ActionsOptionPane extends AbstractOptionPane {
 			add(p, c);
 
 			p = new JPanel();
-			p.add(new JLabel(jEdit.getProperty(MESSAGE + "sqlQuery")));
+			p.add(new JLabel(jEdit.getProperty(MESSAGE + "luceneQuery")));
 			query = new JTextField(60);
 			p.add(query);
 			p.setAlignmentX(LEFT_ALIGNMENT);
