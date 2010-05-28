@@ -47,7 +47,7 @@
    <para> The first step is to add the projects and source trees that you want to be tagged in
    the index. Tagging is done in the background, you can continue working with jEdit meanwhile.
    The tagging progress is shown in the <guilabel>Progress</guilabel> dockable, in a tab of a tabbed pane.
-   When done, you can lookup tags from the projects and source trees.
+   When done, you can lookup tags from the projects and source trees.</para>
 
    <para> You can add projects two ways. From the ProjectViewer, right click on the project and
    <guimenuitem>Add Project to index</guimenuitem>. Or, from <guimenuitem>Plugin Options -
