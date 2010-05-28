@@ -9,7 +9,7 @@ plugin.codehelper.CodeHelperPlugin.description=Common code development aids.
 plugin.codehelper.CodeHelperPlugin.depend.0=jdk 1.5
 plugin.codehelper.CodeHelperPlugin.depend.1=jedit 04.04.00.00
 plugin.codehelper.CodeHelperPlugin.depend.2=plugin projectviewer.ProjectPlugin 2.9.0.0
-plugin.codehelper.CodeHelperPlugin.depend.3=plugin ctagsinterface.main.CtagsInterfacePlugin 1.1
+plugin.codehelper.CodeHelperPlugin.depend.3=plugin ctagsinterface.main.CtagsInterfacePlugin 1.2
 plugin.codehelper.CodeHelperPlugin.depend.4=plugin gatchan.jedit.lucene.LucenePlugin 2.5
 plugin.codehelper.CodeHelperPlugin.depend.5=plugin CommonControlsPlugin 1.2
 
