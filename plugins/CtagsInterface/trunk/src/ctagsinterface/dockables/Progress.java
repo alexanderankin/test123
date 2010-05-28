@@ -15,10 +15,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 import org.gjt.sp.jedit.View;
 
 import ctagsinterface.main.Logger;
+import ctagsinterface.options.GeneralOptionPane;
 
 @SuppressWarnings("serial")
 public class Progress extends JPanel
@@ -90,7 +92,8 @@ public class Progress extends JPanel
 		private ArrayList<String> toAdd = new ArrayList<String>();
 		private JButton close;
 		private JLabel status;
-
+		private Timer timer = null;
+	
 		public ProgressTab(Logger logger)
 		{
 			this.logger = logger;
@@ -111,6 +114,13 @@ public class Progress extends JPanel
 			top.add(status, BorderLayout.CENTER);
 			textArea = new JTextArea();
 			add(new JScrollPane(textArea), BorderLayout.CENTER);
+			timer = new Timer(5000, new ActionListener()
+			{
+				public void actionPerformed(ActionEvent arg0)
+				{
+					closeTab(ProgressTab.this);
+				}
+			});
 		}
 		public void append(String s)
 		{
@@ -139,11 +149,14 @@ public class Progress extends JPanel
 		}
 		public void beginTask(String task)
 		{
+			timer.stop();
 			status.setText(task);
 		}
 		public void endTask()
 		{
 			status.setText(IDLE);
+			if (GeneralOptionPane.getAutoCloseProgress())
+				timer.start();
 		}
 	}
 }

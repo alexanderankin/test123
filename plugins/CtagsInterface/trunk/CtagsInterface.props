@@ -120,6 +120,7 @@ messages.CtagsInterface.noPVSupport=ProjectViewer integration not initialized. \
 	Please make sure ProjectViewer is loaded and then restart CtagsInterface.
 messages.CtagsInterface.tagging=Running Ctags
 messages.CtagsInterface.parsing=Parsing tag file
+messages.CtagsInterface.autoCloseProgress=Automatically close progress tab when tagging is over
 
 # projectviewer option pane
 plugin.projectviewer.ctagsinterface.main.CtagsInterfacePlugin.option-pane=CtagsInterface-ProjectDependencies
