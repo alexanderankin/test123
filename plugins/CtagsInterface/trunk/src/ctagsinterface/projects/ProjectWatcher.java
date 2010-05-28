@@ -156,7 +156,7 @@ public class ProjectWatcher
 			if (! projects.contains(name))
 				return;
 			int res = JOptionPane.showConfirmDialog(jEdit.getActiveView(), 
-				"Remove tag database of project '" + name + "'?",
+				"Remove tag index of project '" + name + "'?",
 				"CtagsInterface plugin", JOptionPane.YES_NO_OPTION);
 			if (res != JOptionPane.YES_OPTION)
 				return;

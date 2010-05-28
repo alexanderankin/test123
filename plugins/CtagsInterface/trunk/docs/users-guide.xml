@@ -25,7 +25,7 @@
  <chapter id="intro">
   <title> Introduction </title>
 
- <para> The CtagsInterfacePlugin provides two dockables, a <guilabel>Tag List</guilabel> and a <guilabel>Tag Preview</guilabel>. It also provides a number of operations that allow you to quickly jump from one file location to another in the editor, based on the context of the caret, and the indexed tag information obtained from the <ulink url="http://ctags.sourceforge.net/">Exuberant Ctags</ulink> executable. And finally, it provides a plugin interface through which other jedit plugins can easily access ctags data.
+ <para> The CtagsInterfacePlugin provides three dockables, a <guilabel>Tag List</guilabel>, a <guilabel>Tag Preview</guilabel> and a <guilabel>Progress</guilabel>. It also provides a number of operations that allow you to quickly jump from one file location to another in the editor, based on the context of the caret, and the indexed tag information obtained from the <ulink url="http://ctags.sourceforge.net/">Exuberant Ctags</ulink> executable. And finally, it provides a plugin interface through which other jedit plugins can easily access ctags data.
  </para>
  </chapter>
 
@@ -40,30 +40,29 @@
  <chapter id="tagdbs">
    <title> Tagging Projects and Source Trees </title>
 
-   <para> CtagsInterface uses an sql database to keep track of tag data from multiple projects and directory trees.    The <guimenuitem>Plugin Options - CtagsInterface</guimenuitem>
+   <para> CtagsInterface uses a Lucene index to keep track of tag data from multiple projects and directory trees.    The <guimenuitem>Plugin Options - CtagsInterface</guimenuitem>
    provides dialogs for adding projects and directory trees that should be indexed.
    </para>
 
    <para> The first step is to add the projects and source trees that you want to be tagged in
-   the database. Tag them in the background, and go back into jEdit.
-   When they are done, you should see no pending I/O requests in the <guimenuitem>Utilities -
-   Troubleshooting - I/O Progress Monitor</guimenuitem>. After your selected projects have been
-   added, you can lookup some tags. </para>
+   the index. Tagging is done in the background, you can continue working with jEdit meanwhile.
+   The tagging progress is shown in the <guilabel>Progress</guilabel> dockable, in a tab of a tabbed pane.
+   When done, you can lookup tags from the projects and source trees.
 
    <para> You can add projects two ways. From the ProjectViewer, right click on the project and
-   <guimenuitem>Add Project to Database</guimenuitem>. Or, from <guimenuitem>Plugin Options -
+   <guimenuitem>Add Project to index</guimenuitem>. Or, from <guimenuitem>Plugin Options -
    CtagsInterface - Projects</guimenuitem>. </para>
 
-   <para> Similarly, you can add sourcetrees from the <guimenuitem>plugin options -
+   <para> Similarly, you can add source trees from the <guimenuitem>Plugin options -
    CtagsInterface - Source Trees</guimenuitem>, or from the file system browser context menu:
-   <guimenuitem>Plugins - Add source tree to Tags Database</guimenuitem>. </para>
+   <guimenuitem>Plugins - Add source tree to tag index</guimenuitem>. </para>
 
  </chapter>
 
  <chapter id="lookup">
    <title> Tag Lookup </title>
 
-   <para> By default, tag lookup will search the entire tag database for matching tags,
+   <para> By default, tag lookup will search the entire tag index for matching tags,
    including all added projects and source trees. </para>
 
    <para> When using jEdit with ProjectViewer, you might be working with a set of files, and have to frequently check another set of files that you are reusing. This means that you will probably want to restrict your search to only the projects and source trees that are related to your project. </para>
@@ -96,19 +95,19 @@
    <title> Dynamic Actions </title>
 
 
-   <para> In addition to these built-in actions, CtagsInterface allows you to create dynamic Actions, which are custom SQL queries, which can be bound to keyboard shortcuts. Each such SQL query should retrieve a list of tags from the database. The dynamic action associated with the query will execute the query and show the list of tags it retrieved in the <guilabel>Tag List</guilabel> dockable, allowing you to jump to any of them. In case the query returns a single tag, the dynamic action jumps to it directly, without showing it in the dockable.
+   <para> In addition to these built-in actions, CtagsInterface allows you to create dynamic Actions, which are custom Lucene queries, which can be bound to keyboard shortcuts. Each such Lucene query should retrieve a list of tags from the database. The dynamic action associated with the query will execute the query and show the list of tags it retrieved in the <guilabel>Tag List</guilabel> dockable, allowing you to jump to any of them. In case the query returns a single tag, the dynamic action jumps to it directly, without showing it in the dockable.
    </para>
    <para> To manage (create/delete/modify) dynamic actions, select the <guilabel>Actions</guilabel> pane in the plugin options.
-   To define a new dynamic action, click the <guilabel>+</guilabel> button. You will be asked to provide a name for the action and an SQL query. The action name you provide should not contain spaces, as it is used to define an ordinary edit action. The SQL query is an ordinary SQL <guilabel>select</guilabel> statement, which can make use of the following keywords:
+   To define a new dynamic action, click the <guilabel>+</guilabel> button. You will be asked to provide a name for the action and a Lucene query. The action name you provide should not contain spaces, as it is used to define an ordinary edit action. The Lucene query can make use of the following keywords:
    <itemizedlist>
       <listitem><para><guilabel>{tag}</guilabel>: The tag being looked up</para></listitem>
       <listitem><para><guilabel>{project}</guilabel>: The name of the active project</para></listitem>
    </itemizedlist>
    Here are a few examples:
    <itemizedlist>
-      <listitem><para>select * from tags,files,map,origins where tags.file_id=files.id and tags.name='{tag}' and a_kind='function' and files.id=map.file_id and map.origin_id=origins.id and origins.name='{project}'
+      <listitem><para>_name:{tag} AND kind:function AND origin:{project}
 	  </para></listitem>
-      <listitem><para>select * from tags,files,map,origins where tags.file_id=files.id and tags.name='{tag}' and a_kind='prototype'  and files.id=map.file_id and map.origin_id=origins.id and origins.name='{project}'
+      <listitem><para>_name:{tag} AND kind:prototype AND origin:{project}
 	  </para></listitem>
    </itemizedlist>
    </para>
@@ -120,14 +119,24 @@
  <chapter id="dockables">
    <title> CtagsInterface Dockables </title>
 
-   <para> There are two dockables that you can use from CtagsInterface. </para>
+   <para> There are three dockables that you can use from CtagsInterface. </para>
 
    <formalpara> <title> Tag List </title>
    <para> When <action>jump to tag</action> is invoked, if there is more than one possible match, the Tag List dockable is displayed, where you can preview and select the choices of jump locations. </para>
 
    </formalpara>
    <formalpara> <title> Tag Preview </title>
-   <para> This dockable is updated automatically (after a configurable delay) whenever the caret is moved over a location that is a known symbol in the tag database.
+   <para> This dockable is updated automatically (after a configurable delay) whenever the caret is moved over a location that is a known symbol in the tag index.
+   </para>
+
+   </formalpara>
+   <formalpara> <title> Progress </title>
+   <para> This dockable shows the progress of tagging activities in a tabbed pane.
+     Each activity has its own tab. By default, a tab closes automatically a few
+     seconds after the activity is over, but you can configure this in the
+     <guilabel>General </guilabel> option pane.
+     You can close a tab manually by middle-clicking the tab title or clicking
+     the <guilabel>Close</guilabel> button in the dockable.
    </para>
 
    </formalpara>
@@ -136,14 +145,14 @@
 
  <chapter id="pluginservices">
    <title> Services to other plugins </title>
-   <para> CtagsInterface also offers services to other plugins: ClassBrowser, and Tags: </para>
+   <para> CtagsInterface also offers services to other plugins, such as ClassBrowser and CodeHelper: </para>
 
    <orderedlist>
-   <listitem><para> Queries of the tags database </para></listitem>
-   <listitem><para> Jumping to tags. </para></listitem>
+   <listitem><para> Queries of the tag index</para></listitem>
+   <listitem><para> Jumping to tags </para></listitem>
    </orderedlist>
 
-   <para> Since the CtagsInterface manages the tags information and runs ctags, this means that other plugins do not need to call/depend on ctags directly. This also means that in the future, the CtagsInterface may be extended to work with other code-indexing tools. </para>
+   <para> Since the CtagsInterface manages the tag information and runs ctags, other plugins do not need to call/depend on ctags directly. This also means that in the future, the CtagsInterface may be extended to work with other code-indexing tools. </para>
 
   </chapter>
 
