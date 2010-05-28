@@ -702,6 +702,11 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 			super(tagName(member), null, null);
 			Hashtable<String, String> hash = new Hashtable<String, String>();
 			hash.put(SCOPE_EXTENSION, clazz);
+			if (member instanceof Tag) {
+				Tag t = (Tag) member;
+				for (String ext: t.getExtensions())
+					hash.put(ext, t.getExtension(ext));
+			}
 			setExtensions(hash);
 		}
 
@@ -741,6 +746,8 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 				String signature = tag.getExtension("signature");
 				if (signature != null && signature.length() > 0)
 					s.append(signature);
+				if (tag instanceof InheritedMember)
+					s.append(((InheritedMember)tag).getMiddle());
 				label.setText(s.toString());
 				ImageIcon icon = tag.getIcon();
 				if (icon != null)
