@@ -39,6 +39,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	static public final String PREVIEW_TOOLBAR = OPTION + "previewToolbar";
 	static public final String PREVIEW_WRAP = OPTION + "previewWrap";
 	static public final String PREVIEW_DELAY = OPTION + "previewDelay";
+	static public final String AUTO_CLOSE_PROGRESS = OPTION + "autoCloseProgress";
 	static private final String CHECK_CTAGS = MESSAGE + "checkCtags";
 	static private final String BAD_CTAGS_PATH = MESSAGE + "badCtagsPath";
 	static private final String GOOD_CTAGS_PATH= MESSAGE + "goodCtagsPath";
@@ -55,7 +56,8 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	JCheckBox previewToolbar;
 	JCheckBox previewWrap;
 	JTextField previewDelay;
-	
+	JCheckBox autoCloseProgress;
+
 	public GeneralOptionPane() {
 		super("CtagsInterface-General");
 		setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -125,6 +127,10 @@ public class GeneralOptionPane extends AbstractOptionPane {
 		previewDelayPanel.add(previewDelay, BorderLayout.EAST);
 		previewPanel.add(previewDelayPanel);
 		addComponent(previewPanel);
+
+		autoCloseProgress = new JCheckBox(jEdit.getProperty(MESSAGE + "autoCloseProgress"),
+			getAutoCloseProgress());
+		addComponent(autoCloseProgress);
 	}
 
 	@Override
@@ -140,6 +146,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
 		jEdit.setBooleanProperty(PREVIEW_TOOLBAR, previewToolbar.isSelected());
 		jEdit.setBooleanProperty(PREVIEW_WRAP, previewWrap.isSelected());
 		jEdit.setIntegerProperty(PREVIEW_DELAY, Integer.valueOf(previewDelay.getText()));
+		jEdit.setBooleanProperty(AUTO_CLOSE_PROGRESS, autoCloseProgress.isSelected());
 		EditBus.send(new PropertiesChanged(null));
 	}
 
@@ -198,5 +205,8 @@ public class GeneralOptionPane extends AbstractOptionPane {
 	}
 	public static int getPreviewDelay() {
 		return jEdit.getIntegerProperty(PREVIEW_DELAY, 0);
+	}
+	public static boolean getAutoCloseProgress() {
+		return jEdit.getBooleanProperty(AUTO_CLOSE_PROGRESS, true);
 	}
 }
