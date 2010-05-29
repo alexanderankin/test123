@@ -28,7 +28,6 @@ import org.gjt.sp.jedit.gui.StatusBar;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.PositionChanging;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.util.Log;
 
 import ctagsinterface.dockables.Progress;
 import ctagsinterface.dockables.TagList;

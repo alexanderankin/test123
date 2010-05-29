@@ -16,6 +16,9 @@ Version 2.0:
   is an option to automatically close the tab when the tagging is over.
 - All tagging is done in the background, so the option for background tagging
   was removed.
+- Dynamic action queries can now be used also for tag lookups by prefix or
+  substring. Instead of searching for all tags with a specific prefix or
+  substring, the search can be limited to the results of the action query.
 
 Version 1.1:
 - Fixed an NPE when the tag database is not configured correctly
