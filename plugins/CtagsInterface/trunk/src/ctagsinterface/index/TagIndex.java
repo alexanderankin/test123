@@ -102,10 +102,13 @@ public class TagIndex
 			new HashSet<String>());
 		keywordAnalyzer = new KeywordAnalyzer();
 		analyzer = new PerFieldAnalyzerWrapper(standardAnalyzer);
+		// Tag documents
 		analyzer.addAnalyzer(_NAME_FLD, keywordAnalyzer);
 		analyzer.addAnalyzer(_PATH_FLD, keywordAnalyzer);
 		analyzer.addAnalyzer(_ORIGIN_FLD, keywordAnalyzer);
+		// Origin documents
 		analyzer.addAnalyzer(ORIGIN_ID_FLD, keywordAnalyzer);
+		analyzer.addAnalyzer(TYPE_FLD, keywordAnalyzer);
 		fixedFields = new HashSet<String>();
 		for (String s: FIXED_FIELDS)
 			fixedFields.add(s);
@@ -170,7 +173,7 @@ public class TagIndex
 		{
 			public void handle(Document doc)
 			{
-				origins.add(doc.get(ORIGIN_FLD));
+				origins.add(doc.get(ORIGIN_ID_FLD));
 			}
 		});
 	}
@@ -335,7 +338,7 @@ public class TagIndex
 		Query q = getQuery(s);
 		if (q != null)
 		{
-			try	{ writer.deleteDocuments(q); }
+			try	{ writer.deleteDocuments(q); writer.optimize(); }
 			catch (IOException e) {	e.printStackTrace(); }
 		}
 		endActivity();
@@ -366,7 +369,7 @@ public class TagIndex
 			Document doc = new Document();
 			doc.add(new Field(DOCTYPE_FLD, ORIGIN_DOC_TYPE, Store.YES, Index.ANALYZED));
 			doc.add(new Field(TYPE_FLD, type.name, Store.YES, Index.ANALYZED));
-			doc.add(new Field(ORIGIN_FLD, id, Store.YES, Index.ANALYZED));
+			doc.add(new Field(ORIGIN_ID_FLD, id, Store.YES, Index.ANALYZED));
 			try { writer.addDocument(doc); }
 			catch (IOException e) { e.printStackTrace(); }
 			endActivity();
