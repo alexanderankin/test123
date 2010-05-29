@@ -15,6 +15,7 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -53,6 +54,7 @@ public class QuickSearchTagDialog extends JDialog {
 	private Timer filterTimer;
 	private String query;
 	private boolean showImmediately;
+	private JCheckBox caseSensitive;
 
 	/** This window will contains the scroll with the items. */
 	final JWindow window = new JWindow(this);
@@ -74,6 +76,8 @@ public class QuickSearchTagDialog extends JDialog {
 		p.add(new JLabel("Type part of the tag name:"));
 		name = new JTextField(30);
 		p.add(name);
+		caseSensitive = new JCheckBox("Case-sensitive", false);
+		p.add(caseSensitive);
 		add(p, BorderLayout.NORTH);
 		model = new DefaultListModel();
 		tags = new JList(model);
@@ -192,7 +196,8 @@ public class QuickSearchTagDialog extends JDialog {
 	private void applyFilter()
 	{
 		model.removeAllElements();
-		final String input = name.getText();
+		final String input = caseSensitive.isSelected() ? name.getText():
+			name.getText().toLowerCase();
 		if (showImmediately || (! input.isEmpty()))
 		{
 			switch (mode)
@@ -201,7 +206,10 @@ public class QuickSearchTagDialog extends JDialog {
 				for (int i = 0; i < tagNames.size(); i++)
 				{
 					QuickSearchTag t = tagNames.get(i);
-					if (t.name.toLowerCase().contains(input))
+					String name = t.name;
+					if (! caseSensitive.isSelected())
+						name = name.toLowerCase();
+					if (name.contains(input))
 						model.addElement(t);
 				}
 				break;
@@ -219,6 +227,8 @@ public class QuickSearchTagDialog extends JDialog {
 					public void handle(Document doc)
 					{
 						String name = doc.getField(TagIndex._NAME_FLD).stringValue();
+						if (! caseSensitive.isSelected())
+							name = name.toLowerCase();
 						if (name.startsWith(input))
 							model.addElement(new QuickSearchTag(doc));
 					}
