@@ -66,7 +66,6 @@ public class CtagsInterfacePlugin extends EditPlugin
 
 	public void start()
 	{
-		Log.log(Log.MESSAGE, this, "Setting up Tagdb...");
 		index = new TagIndex();
 		watcher = new BufferWatcher(index);
 		EditPlugin p = jEdit.getPlugin("projectviewer.ProjectPlugin",false);
