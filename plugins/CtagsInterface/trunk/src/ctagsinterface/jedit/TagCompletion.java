@@ -151,7 +151,9 @@ public class TagCompletion {
 	public Vector<Tag> getCompletions()
 	{
 		String s = CtagsInterfacePlugin.getScopedTagQuery(view);
-		s = s + " AND " + TagIndex._NAME_FLD + ":" + prefix + "*";
+		if (! s.isEmpty())
+			s = s + " AND ";
+		s = s + TagIndex._NAME_FLD + ":" + prefix + "*";
 		return CtagsInterfacePlugin.query(s);
 	}
 	public String createAbbrev(String signature)
