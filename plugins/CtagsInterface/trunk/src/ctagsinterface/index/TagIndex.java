@@ -61,6 +61,7 @@ public class TagIndex
 	public static final String LINE_FLD = "line";
 	public static final String ORIGIN_DOC_TYPE = "origin";
 	public static final String TAG_DOC_TYPE = "tag";
+	public static final String ORIGIN_ID_FLD = "id";
 	public static final int MAX_RESULTS = 1000;
 	private FSDirectory directory;
 	private IndexWriter writer;
@@ -104,6 +105,7 @@ public class TagIndex
 		analyzer.addAnalyzer(_NAME_FLD, keywordAnalyzer);
 		analyzer.addAnalyzer(_PATH_FLD, keywordAnalyzer);
 		analyzer.addAnalyzer(_ORIGIN_FLD, keywordAnalyzer);
+		analyzer.addAnalyzer(ORIGIN_ID_FLD, keywordAnalyzer);
 		fixedFields = new HashSet<String>();
 		for (String s: FIXED_FIELDS)
 			fixedFields.add(s);
@@ -279,8 +281,8 @@ public class TagIndex
 				// Create a query for deleting this document, then delete it
 				// and re-add it.
 				String queryStr = DOCTYPE_FLD + ":" + doc.get(DOCTYPE_FLD) + " AND " +
-					_NAME_FLD + ":" + doc.get(_NAME_FLD) + " AND " +
-					_PATH_FLD + ":" + doc.get(_PATH_FLD) + " AND " +
+					_NAME_FLD + ":" + escape(doc.get(_NAME_FLD)) + " AND " +
+					_PATH_FLD + ":" + escape(doc.get(_PATH_FLD)) + " AND " +
 					LINE_FLD + ":" + doc.get(LINE_FLD);
 				Query q = getQuery(queryStr);
 				if (q != null)
@@ -328,7 +330,7 @@ public class TagIndex
 		startActivity();
 		deleteTagsOfOrigin(logger, origin);
 		String s = DOCTYPE_FLD + ":" + ORIGIN_DOC_TYPE + " AND " +
-			TYPE_FLD + origin.type.name + " AND " + ORIGIN_FLD + ":" +
+			TYPE_FLD + ":" + origin.type.name + " AND " + ORIGIN_ID_FLD + ":" +
 			escape(origin.id);
 		Query q = getQuery(s);
 		if (q != null)
@@ -349,7 +351,7 @@ public class TagIndex
 		final boolean b[] = new boolean[1];
 		b[0] = false;
 		String query = DOCTYPE_FLD + ":" + ORIGIN_DOC_TYPE + " AND " +
-			TYPE_FLD + ":" + type.name + " AND " + ORIGIN_FLD + ":" +
+			TYPE_FLD + ":" + type.name + " AND " + ORIGIN_ID_FLD + ":" +
 			escape(id);
 		runQuery(query, 1, new DocHandler() {
 			public void handle(Document doc)
