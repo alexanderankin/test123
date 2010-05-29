@@ -1,6 +1,7 @@
 package ctagsinterface.main;
 import ise.plugin.nav.AutoJump;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -292,7 +293,18 @@ public class CtagsInterfacePlugin extends EditPlugin
 		}
 		return tags;
 	}
-	
+
+	// Context menu action from FSB
+	public static void addFromFSB(View view, String directory)
+	{
+		// FSB adds a trailing directory separator, that Ctags cannot handle
+		if (directory.endsWith(File.separator))
+			directory = directory.substring(0, directory.length() - 1);
+		Logger logger = CtagsInterfacePlugin.getLogger(jEdit.getActiveView(),
+			OriginType.DIRECTORY.name + " " + directory);
+		insertOrigin(logger, OriginType.DIRECTORY, directory);
+	}
+
 	// Action: Jump to the selected tag (or tag at caret).
 	public static void jumpToTag(final View view)
 	{
