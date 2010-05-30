@@ -2,7 +2,6 @@ package ctagsinterface.jedit;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
-import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 
