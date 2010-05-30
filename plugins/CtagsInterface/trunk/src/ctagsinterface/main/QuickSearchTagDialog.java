@@ -142,6 +142,7 @@ public class QuickSearchTagDialog extends JDialog {
 
 	private void prepareData()
 	{
+		baseQuery = "";
 		TagIndex index = CtagsInterfacePlugin.getIndex();
 		if (query == null)
 		{
