@@ -76,6 +76,13 @@ public class QuickSearchTagDialog extends JDialog {
 		p.add(name);
 		caseSensitive = new JCheckBox("Case-sensitive", false);
 		p.add(caseSensitive);
+		caseSensitive.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				applyFilter();
+			}
+		});
 		add(p, BorderLayout.NORTH);
 		model = new DefaultListModel();
 		tags = new JList(model);
