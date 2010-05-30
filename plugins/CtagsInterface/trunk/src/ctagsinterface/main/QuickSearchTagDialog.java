@@ -9,7 +9,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
@@ -49,7 +48,6 @@ public class QuickSearchTagDialog extends JDialog {
 	private JList tags;
 	private DefaultListModel model;
 	private View view;
-	private Vector<QuickSearchTag> tagNames;
 	private String baseQuery;
 	private Timer filterTimer;
 	private String query;
@@ -145,7 +143,6 @@ public class QuickSearchTagDialog extends JDialog {
 	private void prepareData()
 	{
 		TagIndex index = CtagsInterfacePlugin.getIndex();
-		String s = "";
 		if (query == null)
 		{
 			if (ProjectsOptionPane.getSearchActiveProjectOnly())
@@ -156,27 +153,12 @@ public class QuickSearchTagDialog extends JDialog {
 				{
 					Origin origin = index.getOrigin(OriginType.PROJECT,
 						project, false);
-					s = index.getOriginScopedQuery(origin);
+					baseQuery = index.getOriginScopedQuery(origin);
 				}
 			}
 		}
 		else
-			s = query;
-		switch (mode) {
-		case SUBSTRING:
-			tagNames = new Vector<QuickSearchTag>();
-			index.runQuery(s, TagIndex.MAX_RESULTS, new DocHandler()
-			{
-				public void handle(Document doc)
-				{
-					tagNames.add(new QuickSearchTag(doc));
-				}
-			});
-			break;
-		case PREFIX:
-			baseQuery = s;
-			break;
-		}
+			baseQuery = query;
 	}
 
 	private void jumpToSelected() {
@@ -200,43 +182,28 @@ public class QuickSearchTagDialog extends JDialog {
 			name.getText().toLowerCase();
 		if (showImmediately || (! input.isEmpty()))
 		{
-			switch (mode)
+			TagIndex index = CtagsInterfacePlugin.getIndex();
+			String s = baseQuery;
+			if (! input.isEmpty())
 			{
-			case SUBSTRING:
-				for (int i = 0; i < tagNames.size(); i++)
+				if (s.length() > 0)
+					s = s + " AND ";
+				String field = caseSensitive.isSelected() ?
+					TagIndex._NAME_FLD : TagIndex.NAME_FLD;
+				s = s + field + ":" + (mode == Mode.SUBSTRING ? "*" : "") +
+					input + "*";
+			}
+			index.runQuery(s, TagIndex.MAX_RESULTS, new DocHandler()
+			{
+				public void handle(Document doc)
 				{
-					QuickSearchTag t = tagNames.get(i);
-					String name = t.name;
+					String name = doc.getField(TagIndex._NAME_FLD).stringValue();
 					if (! caseSensitive.isSelected())
 						name = name.toLowerCase();
-					if (name.contains(input))
-						model.addElement(t);
+					if (name.startsWith(input))
+						model.addElement(new QuickSearchTag(doc));
 				}
-				break;
-			case PREFIX:
-				TagIndex index = CtagsInterfacePlugin.getIndex();
-				String s = baseQuery;
-				if (! input.isEmpty())
-				{
-					if (s.length() > 0)
-						s = s + " AND ";
-					String field = caseSensitive.isSelected() ?
-						TagIndex._NAME_FLD : TagIndex.NAME_FLD;
-					s = s + field + ":" + input + "*";
-				}
-				index.runQuery(s, TagIndex.MAX_RESULTS, new DocHandler()
-				{
-					public void handle(Document doc)
-					{
-						String name = doc.getField(TagIndex._NAME_FLD).stringValue();
-						if (! caseSensitive.isSelected())
-							name = name.toLowerCase();
-						if (name.startsWith(input))
-							model.addElement(new QuickSearchTag(doc));
-					}
-				});
-				break;
-			}
+			});
 		}
 		if (model.isEmpty())
 		{
