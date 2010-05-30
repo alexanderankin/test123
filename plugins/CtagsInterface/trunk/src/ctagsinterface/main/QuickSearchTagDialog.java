@@ -220,7 +220,9 @@ public class QuickSearchTagDialog extends JDialog {
 				{
 					if (s.length() > 0)
 						s = s + " AND ";
-					s = s + TagIndex._NAME_FLD + ":" + input + "*";
+					String field = caseSensitive.isSelected() ?
+						TagIndex._NAME_FLD : TagIndex.NAME_FLD;
+					s = s + field + ":" + input + "*";
 				}
 				index.runQuery(s, TagIndex.MAX_RESULTS, new DocHandler()
 				{
