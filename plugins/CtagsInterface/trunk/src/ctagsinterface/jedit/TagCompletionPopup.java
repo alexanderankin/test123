@@ -1,5 +1,6 @@
 package ctagsinterface.jedit;
 
+import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.Point;
@@ -30,23 +31,28 @@ public class TagCompletionPopup extends CompletionPopup {
 		desc = new JTextArea();
 		desc.append("The description\nof this item");
 		desc.setBorder(BorderFactory.createEtchedBorder());
+		desc.setRows(8);
 		Container c = getContentPane();
-		JPanel p = new JPanel(new GridLayout(1, 0));
-		p.add(c);
-		p.add(new JScrollPane(desc));
+		JPanel p = new JPanel(new BorderLayout());
+		p.add(c, BorderLayout.CENTER);
+		p.add(new JScrollPane(desc), BorderLayout.SOUTH);
 		setContentPane(p);
 	}
-	
-	
+
 	public void setSelectedTag(Tag tag)
 	{
 		if (! GeneralOptionPane.getCompleteDesc())
 			return;
+		desc.setText(getDescription(tag));
+	}
+
+	private String getDescription(Tag tag)
+	{
 		StringBuffer sb = new StringBuffer();
 		sb.append(tag.getFile() + ":" + tag.getLine() + "\n");
 		for (String ext: tag.getExtensions())
 			sb.append(ext + ": " + tag.getExtension(ext) + "\n");
-		desc.setText(sb.toString());
+		return sb.toString();
 	}
 
 	@Override
