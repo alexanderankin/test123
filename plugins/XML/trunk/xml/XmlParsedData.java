@@ -292,12 +292,6 @@ public class XmlParsedData extends SideKickParsedData
 
 		String text = buffer.getText(0,pos);
 		
-		// make sure we are not inside a tag
-		if(TagParser.isInsideTag(text,pos))
-		{
-			return returnValue;
-		}
-		
 		TagParser.Tag parentTag = null;
 		try
 		{
