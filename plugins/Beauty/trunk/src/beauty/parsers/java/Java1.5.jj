@@ -1987,12 +1987,12 @@ void Annotation():
 {}
 {
    LOOKAHEAD( "@" Name() "(" ( <IDENTIFIER> "=" | ")" ))
-   NormalAnnotation()
+   NormalAnnotation() {writeln();}
  |
    LOOKAHEAD( "@" Name() "(" )
-   SingleMemberAnnotation()
+   SingleMemberAnnotation() {writeln();}
  |
-   MarkerAnnotation()
+   MarkerAnnotation() {writeln();}
 }
 
 void NormalAnnotation():
@@ -2004,7 +2004,7 @@ void NormalAnnotation():
 void MarkerAnnotation():
 {}
 {
-  "@" { add("@"); } Name()
+    "@" { add("@"); } Name() 
 }
 
 void SingleMemberAnnotation():
