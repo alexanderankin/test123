@@ -1538,7 +1538,7 @@ void PrimaryPrefix():
   AllocationExpression()
 |
   LOOKAHEAD( ResultType() "." "class" )
-  ResultType() "." "class" { add(".class"); }
+  ResultType() "." "class" { trim(); add(".class"); }
 |
   Name()
 }
