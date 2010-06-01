@@ -42,6 +42,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 	public static final String ALL_BUFFERS = "__all buffers__";
 
 	private static final String LUCENE_SEARCH_INDEX = "lucene.search.index";
+	private static final String DOCKABLE_NAME = "lucene-search";
 	private static final String MESSAGE_IDLE = "";
 	private static final String MESSAGE_INDEXING = "Indexing";
 	private final HistoryTextField searchField;
@@ -66,15 +67,17 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 	private final JLabel maxResultsLabel;
 	private boolean shortLabels;
 
-	public SearchResults()
+	public SearchResults(View v)
 	{
 		super(new BorderLayout());
+		KeyListener kl = v.getDockableWindowManager().closeListener(DOCKABLE_NAME);
 		
 		lineResults = new JCheckBox(getLabel("lucene.line-based"));
 		lineResults.setToolTipText(jEdit.getProperty("lucene.results.line-based.tooltip"));
 		lineResults.setSelected(true);
 		fileTypeLabel = new JLabel(getLabel("lucene.file-type"));
 		type = new JTextField(6);
+		type.addKeyListener(kl);
 		type.setToolTipText(jEdit.getProperty("lucene.file-type.tooltip"));
 		maxResultsLabel = new JLabel(getLabel("lucene.max-results"));
 		maxResults = new JSpinner(new SpinnerNumberModel(100, 1, 10000, 1));
@@ -118,6 +121,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		// panel.add(new JLabel("Search for:"), BorderLayout.WEST);
 		textLabel = new JLabel(getLabel("lucene.search-string"));
 		searchField = new HistoryTextField("lucene.search-history");
+		searchField.addKeyListener(kl);
 		if (OptionPane.getSearchStringLength() != 0)
 			searchField.setColumns(OptionPane.getSearchStringLength());
 		searchField.setToolTipText(jEdit.getProperty("lucene.search-string.tooltip"));
