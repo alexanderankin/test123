@@ -71,7 +71,7 @@ public class MarkerListQueryProcessor implements ResultProcessor
 			if (br == null)
 			{
 				Log.log(Log.WARNING, this, "Cannot read file " + file +
-					" maybe it doesn't exists anymore");
+					" maybe it doesn't exist anymore");
 				return;
 			}
 			String s;
@@ -100,7 +100,7 @@ public class MarkerListQueryProcessor implements ResultProcessor
 
 		for (int i = 0; i < positions.getSize(); i += 2)
 		{
-			int tokenStart = positions.get(i), tokenEnd = positions.get(i + 1); 
+			int tokenStart = positions.get(i), tokenEnd = positions.get(i + 1);
 			int start = tokenStart, stop = tokenEnd;
 			// Find beginning and end of line
 			while ((start >= 0) && (sb.charAt(start) != '\n'))
@@ -127,7 +127,7 @@ public class MarkerListQueryProcessor implements ResultProcessor
 	 * Return a reader for the given file
 	 * @param file the file
 	 * @return a reader or null of the reader cannot be opened or if
-	 * the file do not exists anymore
+	 * the file do not exist anymore
 	 */
 	private static BufferedReader getReader(String file)
 	{
