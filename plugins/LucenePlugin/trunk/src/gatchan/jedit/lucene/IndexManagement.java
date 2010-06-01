@@ -22,8 +22,8 @@ package gatchan.jedit.lucene;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.Task;
 import org.gjt.sp.util.ThreadUtilities;
-import org.gjt.sp.util.WorkRequest;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -71,7 +71,7 @@ public class IndexManagement extends AbstractOptionPane
 
 		add(split);
 		updateListModel();
-		if (model.size() > 0)
+		if (!model.isEmpty())
 		{
 			indexList.setSelectedIndex(0);
 		}
@@ -89,7 +89,7 @@ public class IndexManagement extends AbstractOptionPane
 				selectionStillExists = true;
 			model.addElement(name);
 		}
-		if (!selectionStillExists && model.size() != 0)
+		if (!selectionStillExists && !model.isEmpty())
 		{
 			indexList.setSelectedIndex(0);
 		}
@@ -105,9 +105,9 @@ public class IndexManagement extends AbstractOptionPane
 		private final JTextField indexNameField;
 		private String indexName;
 
-		private JButton optimize;
-		private JButton delete;
-		private JButton reindex;
+		private final JButton optimize;
+		private final JButton delete;
+		private final JButton reindex;
 
 		private IndexOptionPanel()
 		{
@@ -192,7 +192,7 @@ public class IndexManagement extends AbstractOptionPane
 					optimize.setEnabled(false);
 					reindex.setEnabled(false);
 					delete.setEnabled(false);
-					OptimizeWorkRequest wr = new OptimizeWorkRequest(indexName);
+					OptimizeTask wr = new OptimizeTask(indexName);
 					ThreadUtilities.runInBackground(wr);
 				}
 				else if (e.getSource() == delete)
@@ -208,35 +208,40 @@ public class IndexManagement extends AbstractOptionPane
 					optimize.setEnabled(false);
 					reindex.setEnabled(false);
 					delete.setEnabled(false);
-					ReindexWorkRequest wr = new ReindexWorkRequest(indexName);
+					ReindexTask wr = new ReindexTask(indexName);
 					ThreadUtilities.runInBackground(wr);
 				}
 			}
 		}
 
-		private class OptimizeWorkRequest extends WorkRequest
+		private class OptimizeTask extends Task
 		{
 			private final String indexName;
 
-			private OptimizeWorkRequest(String indexName)
+			private OptimizeTask(String indexName)
 			{
 				this.indexName = indexName;
 			}
 
-			public void run()
+			@Override
+			public void _run()
 			{
 				try
 				{
-
+					setMaximum(2L);
 					Log.log(Log.NOTICE, this, "Optimize " + indexName + " asked");
 					Index index = LucenePlugin.instance.getIndex(indexName);
+					setStatus("Optimize " + indexName);
 					index.optimize();
+					setValue(1L);
+					setStatus("Commit " + indexName);
 					index.commit();
+					setValue(2L);
 					Log.log(Log.NOTICE, this, "Optimize " + indexName + " DONE");
 				}
 				finally
 				{
-					EventQueue.invokeLater(new Runnable()
+					ThreadUtilities.runInDispatchThread(new Runnable()
 					{
 						public void run()
 						{
@@ -248,35 +253,47 @@ public class IndexManagement extends AbstractOptionPane
 			}
 		}
 
-		private class ReindexWorkRequest extends WorkRequest
+		private class ReindexTask extends Task
 		{
 			private final String indexName;
 
-			private ReindexWorkRequest(String indexName)
+			private ReindexTask(String indexName)
 			{
 				this.indexName = indexName;
 			}
 
-			public void run()
+			@Override
+			public void _run()
 			{
 				try
 				{
+					setMaximum(5L);
 					Log.log(Log.NOTICE, this, "Reindex " + indexName + " asked");
 					Index index = LucenePlugin.instance.getIndex(indexName);
+					setStatus("Reindex " + indexName);
 					index.reindex();
+					setValue(1L);
 					Log.log(Log.NOTICE, this, "Reindex " + indexName + " DONE");
 					Log.log(Log.NOTICE, this, "Optimize index:"+indexName);
+					setStatus("Optimize " + indexName);
 					index.optimize();
+					setValue(2L);
+					setStatus("Commit " + indexName);
 					index.commit();
+					setValue(3L);
 					Log.log(Log.NOTICE, this, "Optimize index:"+indexName+ "DONE");
 					Log.log(Log.NOTICE, this, "Optimize Central Index");
+					setStatus("Optimize Central Index");
 					LucenePlugin.CENTRAL.optimize();
+					setValue(4L);
+					setStatus("Commit Central Index");
 					LucenePlugin.CENTRAL.commit();
+					setValue(5L);
 					Log.log(Log.NOTICE, this, "Optimize Central Index DONE");
 				}
 				finally
 				{
-					EventQueue.invokeLater(new Runnable()
+					ThreadUtilities.runInDispatchThread(new Runnable()
 					{
 						public void run()
 						{
