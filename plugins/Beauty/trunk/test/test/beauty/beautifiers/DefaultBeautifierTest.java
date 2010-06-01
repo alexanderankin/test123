@@ -162,6 +162,21 @@ public class DefaultBeautifierTest {
         assertTrue("postInsertLinseSeparators failed, expected\n" + answer + "\nbut was\n" + after, answer.equals(after));
     }
     
+    @Test public void testPrePostInsertLineSeparators() {
+        String before = 
+            ".pageUserName{color:#5c93c9,#5c93c9;}";
+        String answer = 
+            ".pageUserName{color:#5c93c9,#5c93c9;\n}";
+ 
+        DefaultBeautifier db = new DefaultBeautifier();
+        db.setLineSeparator("\n");
+        db.setPreInsertLineCharacters("\\}");
+        db.setPostInsertLineCharacters(";");
+        String after = db.preInsertLineSeparators(new StringBuilder(before)).toString();
+        after = db.postInsertLineSeparators(new StringBuilder(after)).toString();
+        assertTrue("pre/postInsertLineSeparators failed, expected\n" + answer + "\nbut was\n" + after, answer.equals(after));
+    }
+    
     @Test public void testDontPrePadCharacters() {
         String before = 
             ".pageUserName{" +
