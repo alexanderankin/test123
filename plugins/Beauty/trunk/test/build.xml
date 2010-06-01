@@ -85,6 +85,10 @@
             <filelist refid="plugin.jars"/>
         </path>
     </path>
+    
+    <fileset id="project.resources" dir="resource">
+        <include name="**/*"/>
+    </fileset>
 
     <!-- these are the actual test files to compile.  This is included so it
     is easy to fine tune which tests are compiled and ran. --> 

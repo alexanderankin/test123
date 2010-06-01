@@ -3293,12 +3293,15 @@ public class JavaParser implements JavaParserConstants {
   final public void Annotation() throws ParseException {
     if (jj_2_38(2147483647)) {
       NormalAnnotation();
+                       writeln();
     } else if (jj_2_39(2147483647)) {
       SingleMemberAnnotation();
+                             writeln();
     } else {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case AT:
         MarkerAnnotation();
+                       writeln();
         break;
       default:
         jj_la1[120] = jj_gen;
@@ -3328,7 +3331,7 @@ public class JavaParser implements JavaParserConstants {
 
   final public void MarkerAnnotation() throws ParseException {
     jj_consume_token(AT);
-        add("@");
+          add("@");
     Name();
   }
 
