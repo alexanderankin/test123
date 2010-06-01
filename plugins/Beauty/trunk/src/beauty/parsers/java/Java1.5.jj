@@ -553,12 +553,17 @@ TOKEN_MGR_DECLS :
     static void writeJavadocComment(String s) {
         String[] lines = s.split("\r\n|\r|\n");
         
-        // handle /** line
-        String line = lines[0];
-        line = line.trim();
+        // indent the first line.  It won't have any leading whitespace, but
+        // may have trailing whitespace
+        String line = lines[0].trim();
+        for (int j = 0; j < level; j++) {
+            line = "    " + line;       // 4 spaces
+        }
         outputBuffer.append(line).append(ls);
         
-        // handle the remaining lines
+        // handle the remaining lines, put stars in front of them.
+        // TODO: this needs work.  Need to preserve whitepsace after
+        // the star.
         for (int i = 1; i < lines.length; i++) {
             line = lines[i].trim();
             
@@ -1169,6 +1174,8 @@ void VariableInitializer():
   Expression()
 }
 
+// TODO: try to capture line separators after commas.  Long lines of array initializers
+// are often split out by hand over several lines for readability.
 void ArrayInitializer():
 {}
 {
@@ -1961,7 +1968,7 @@ void RUNSIGNEDSHIFT():
 {
   ( LOOKAHEAD({ getToken(1).kind == GT &&
                 ((Token.GTToken)getToken(1)).realKind == RUNSIGNEDSHIFT} )
-   ">" ">" ">"
+      ">" ">" ">" { add(" >>> "); }
   )
 }
 
@@ -1970,7 +1977,7 @@ void RSIGNEDSHIFT():
 {
   ( LOOKAHEAD({ getToken(1).kind == GT &&
                 ((Token.GTToken)getToken(1)).realKind == RSIGNEDSHIFT} )
-  ">" ">"
+      ">" ">" { add(" >> "); }
   )
 }
 

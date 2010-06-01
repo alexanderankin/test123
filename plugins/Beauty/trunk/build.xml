@@ -21,7 +21,7 @@
 
     <!-- source code directory, this is where the .java files live -->
     <property name="src.dir" location="src" />
-
+    
     <!-- parser source code directory, this is where the .jj file lives -->
     <property name="parser.src.dir" location="${src.dir}/beauty/parsers"/>
 
@@ -260,6 +260,5 @@
     </target>
 
     <target name="all" depends="javacc,compile,run"/>
-
 
 </project>
