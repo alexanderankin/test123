@@ -374,8 +374,8 @@ public class DefaultBeautifier extends Beautifier {
             return sb;
         }
         String s = sb.toString();
-        String regex = "(" + getLSString() + "){3,}";
-        s = s.replaceAll( regex, getLineSeparator() + getLineSeparator() );
+        String regex = "(([ ]|[\\t])*(" + getLSString() + ")){2,}";
+        s = s.replaceAll( regex, getLineSeparator() );
         return new StringBuilder( s );
     }
 

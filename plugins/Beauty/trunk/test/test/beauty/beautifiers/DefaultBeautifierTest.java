@@ -212,7 +212,7 @@ public class DefaultBeautifierTest {
             ".pageUserName{\n\n\n\n\n\n\n\n" +
             "	color: #5c93c9,#5c93c9;}";
         String answer = 
-            ".pageUserName{\n\n" +
+            ".pageUserName{\n" +
             "	color: #5c93c9,#5c93c9;}";
  
         DefaultBeautifier db = new DefaultBeautifier();

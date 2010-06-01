@@ -680,6 +680,7 @@ p:not([class*=""]) { color: lime; }
 #test { background: red; display: block; padding: 1em; }
 #test:not(:empty) { background: lime; }
 
+/* 3099 */
 #test1 { background: red; display: block; padding: 1em; margin: 1em; }
 #test1:empty { background: lime; }
 #test2 { background: lime; display: block; padding: 1em; margin: 1em; }
