@@ -2098,7 +2098,7 @@ public class JavaParser implements JavaParserConstants {
         ResultType();
         jj_consume_token(DOT);
         jj_consume_token(CLASS);
-                             add(".class");
+                             trim(); add(".class");
       } else {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case IDENTIFIER:
