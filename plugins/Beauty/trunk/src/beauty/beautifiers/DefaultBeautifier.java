@@ -3,6 +3,7 @@ package beauty.beautifiers;
 
 import java.io.*;
 import java.util.Properties;
+import java.util.regex.*;
 import org.gjt.sp.jedit.syntax.DefaultTokenHandler;
 import org.gjt.sp.jedit.syntax.Token;
 import beauty.BeautyPlugin;
@@ -42,7 +43,11 @@ public class DefaultBeautifier extends Beautifier {
     private String postInsertLineCharacters = "";
 
     private boolean collapseBlankLines = false;
-
+    
+    // this constructor is used for testing
+    public DefaultBeautifier() {
+        
+    }
 
     public DefaultBeautifier( String modeName ) {
         Properties props = BeautyPlugin.getCustomModeProperties( modeName );
@@ -77,6 +82,7 @@ public class DefaultBeautifier extends Beautifier {
     public String beautify( String text ) {
         StringBuilder sb = new StringBuilder();
         //long startTime = System.currentTimeMillis();
+        // padTokens reads in the buffer contents
         sb = padTokens( sb );
         //long padTokensTime = System.currentTimeMillis();
         sb = prePadCharacters( sb );
@@ -113,7 +119,7 @@ public class DefaultBeautifier extends Beautifier {
      * general, I found that this is pretty horrible since many of the
      * mode files do a poor job of identifying tokens.
      */
-    private StringBuilder padTokens( StringBuilder sb ) {
+    StringBuilder padTokens( StringBuilder sb ) {
         if ( prePadFunction ||
                 postPadFunction ||
                 prePadOperator ||
@@ -196,13 +202,16 @@ public class DefaultBeautifier extends Beautifier {
                 }
             }
         }
+        if (sb.length() == 0) {
+            sb = new StringBuilder(buffer.getText(0, buffer.getLength()));   
+        }
         return sb;
     }
 
     /**
      * The user may specify a list of characters to pad in front of.
      */
-    private StringBuilder prePadCharacters( StringBuilder sb ) {
+    StringBuilder prePadCharacters( StringBuilder sb ) {
         if ( prePadCharacters.length() == 0 ) {
             return sb;
         }
@@ -220,7 +229,7 @@ public class DefaultBeautifier extends Beautifier {
     /**
      * The user may specify a list of characters to pad after.
      */
-    private StringBuilder postPadCharacters( StringBuilder sb ) {
+    StringBuilder postPadCharacters( StringBuilder sb ) {
         if ( postPadCharacters.length() == 0 ) {
             return sb;
         }
@@ -237,15 +246,17 @@ public class DefaultBeautifier extends Beautifier {
 
     /**
      * The user may specify a comma separated list of strings before which a
-     * line separator will be inserted.
+     * line separator will be inserted.  The strings are regular expressions.
      */
-    private StringBuilder preInsertLineSeparators( StringBuilder sb ) {
+    StringBuilder preInsertLineSeparators( StringBuilder sb ) {
         if ( preInsertLineCharacters.length() == 0 ) {
             return sb;
         }
 
         // need to deal with commas that may be part of a regex in a comma-
-        // separated list of regex's.
+        // separated list of regex's.  Find all escaped commas and replace with
+        // c1f, then split on remaining commas, then revert the c1f's to normal
+        // unescaped commas.
         String pilc = preInsertLineCharacters;
         pilc = pilc.replaceAll( "\\\\,", "\\\\c1f" );
         String[] chars = pilc.split( "," );
@@ -256,36 +267,15 @@ public class DefaultBeautifier extends Beautifier {
         return sb;
     }
 
-    private StringBuilder preInsertLineSeparators( StringBuilder sb, String c ) {
+    StringBuilder preInsertLineSeparators( StringBuilder sb, String c ) {
         String s = sb.toString();
         try {
-            // I'm doing this line by line since this is way faster than the
-            // original regex implementation -- 6 seconds with regex on my test
-            // file versus 22 milliseconds doing line by line.
-            BufferedReader reader = new BufferedReader( new StringReader( s ) );
-            StringWriter stringWriter = new StringWriter();
-            BufferedWriter writer = new BufferedWriter( stringWriter );
-
-            String line;
             String ls = getLineSeparator();
-
-            while ( ( line = reader.readLine() ) != null ) {
-                String unc = c.startsWith( "\\" ) ? c.substring( 1 ) : c;
-                // there may be more than one 'c' on the line
-                String[] lineParts = line.split( c, Integer.MAX_VALUE );
-                for ( int j = 0; j < lineParts.length; j++ ) {
-                    String part = lineParts[ j ];
-                    writer.write( part );
-                    writer.write( ls );
-                    if ( j < lineParts.length - 1 ) {
-                        writer.write( unc );
-                    }
-                }
-            }
-            reader.close();
-            writer.flush();
-            writer.close();
-            return new StringBuilder( stringWriter.toString() );
+            String regex = "(?<!(" + getLSString() + "))(" + c + ")";
+            Pattern p = Pattern.compile(regex);
+            Matcher m = p.matcher(s);
+            s = m.replaceAll(ls + "$2");
+            return new StringBuilder( s );
         }
         catch ( Exception e ) {
             e.printStackTrace();
@@ -297,7 +287,7 @@ public class DefaultBeautifier extends Beautifier {
      * The user may specify a comma separated list of strings after which a
      * line separator will be inserted.
      */
-    private StringBuilder postInsertLineSeparators( StringBuilder sb ) {
+    StringBuilder postInsertLineSeparators( StringBuilder sb ) {
         if ( postInsertLineCharacters.length() == 0 ) {
             return sb;
         }
@@ -314,48 +304,15 @@ public class DefaultBeautifier extends Beautifier {
         return sb;
     }
 
-    private StringBuilder postInsertLineSeparators( StringBuilder sb, String c ) {
+    StringBuilder postInsertLineSeparators( StringBuilder sb, String c ) {
         String s = sb.toString();
         try {
-            // I'm doing this line by line because I need to be able to avoid
-            // inserting extra blank lines.  The original regex implementation
-            // was fast enough, but inserted extra blank lines.
-            BufferedReader reader = new BufferedReader( new StringReader( s ) );
-            StringWriter stringWriter = new StringWriter();
-            BufferedWriter writer = new BufferedWriter( stringWriter );
-
-            String line;
             String ls = getLineSeparator();
-            boolean wroteLS = false;
-
-            while ( ( line = reader.readLine() ) != null ) {
-                // don't add extra blank lines
-                if ( wroteLS && line.trim().equals( "" ) ) {
-                    continue;
-                }
-                wroteLS = false;
-
-                String unc = c.startsWith( "\\" ) ? c.substring( 1 ) : c;
-                // there may be more than one 'c' on the line
-                String[] lineParts = line.split( c, Integer.MAX_VALUE );
-                for ( int j = 0; j < lineParts.length; j++ ) {
-                    String part = lineParts[ j ];
-                    writer.write( part );
-                    if ( j < lineParts.length - 1 ) {
-                        writer.write( unc );
-                        writer.write( ls );
-                        wroteLS = true;
-                    }
-                    else if ( j == lineParts.length - 1 && part.length() > 0 ) {
-                        writer.write( ls );
-                        wroteLS = true;
-                    }
-                }
-            }
-            reader.close();
-            writer.flush();
-            writer.close();
-            return new StringBuilder( stringWriter.toString() );
+            String regex = "(" + c + ")(?!(" + getLSString() + "))";
+            Pattern p = Pattern.compile(regex);
+            Matcher m = p.matcher(s);
+            s = m.replaceAll("$1" + ls);
+            return new StringBuilder( s );
         }
         catch ( Exception e ) {
             e.printStackTrace();
@@ -371,7 +328,7 @@ public class DefaultBeautifier extends Beautifier {
      * the don't pad list and have that padding removed.  An example is the
      * javascript mode, where ; is defined as an operator.
      */
-    private StringBuilder dontPrePadCharacters( StringBuilder sb ) {
+    StringBuilder dontPrePadCharacters( StringBuilder sb ) {
         if ( dontPrePadCharacters.length() == 0 ) {
             return sb;
         }
@@ -394,7 +351,7 @@ public class DefaultBeautifier extends Beautifier {
      * the don't pad list and have that padding removed.  An example is the
      * javascript mode, where ; is defined as an operator.
      */
-    private StringBuilder dontPostPadCharacters( StringBuilder sb ) {
+    StringBuilder dontPostPadCharacters( StringBuilder sb ) {
         if ( dontPostPadCharacters.length() == 0 ) {
             return sb;
         }
@@ -412,12 +369,13 @@ public class DefaultBeautifier extends Beautifier {
     /**
      * Collapse two or more blank lines to a single blank line.
      */
-    private StringBuilder collapseBlankLines( StringBuilder sb ) {
+    StringBuilder collapseBlankLines( StringBuilder sb ) {
         if ( !collapseBlankLines ) {
             return sb;
         }
         String s = sb.toString();
-        s = s.replaceAll( "(\\s*" + getLSString() + "){3}", getLineSeparator() + getLineSeparator() );
+        String regex = "(" + getLSString() + "){3,}";
+        s = s.replaceAll( regex, getLineSeparator() + getLineSeparator() );
         return new StringBuilder( s );
     }
 
@@ -428,11 +386,230 @@ public class DefaultBeautifier extends Beautifier {
     private String getLSString() {
         String ls = getLineSeparator();
         if ( "\r".equals( ls ) ) {
-            return "\\\\r";
+            return "\\r";
         }
         if ( "\r\n".equals( ls ) ) {
-            return "\\\\r\\\\n";
+            return "\\r\\n";
         }
-        return "\\\\n";
+        return "\\n";
     }
+    
+    // the following setters are used for testing
+
+	/**
+	 * Sets the value of prePadOperator.
+	 * @param prePadOperator The value to assign prePadOperator.
+	 */
+	public void setPrePadOperator(boolean prePadOperator) {
+		this.prePadOperator = prePadOperator;
+	}
+
+
+
+	/**
+	 * Sets the value of prePadFunction.
+	 * @param prePadFunction The value to assign prePadFunction.
+	 */
+	public void setPrePadFunction(boolean prePadFunction) {
+		this.prePadFunction = prePadFunction;
+	}
+
+
+
+	/**
+	 * Sets the value of prePadDigit.
+	 * @param prePadDigit The value to assign prePadDigit.
+	 */
+	public void setPrePadDigit(boolean prePadDigit) {
+		this.prePadDigit = prePadDigit;
+	}
+
+
+
+	/**
+	 * Sets the value of prePadKeyword1.
+	 * @param prePadKeyword1 The value to assign prePadKeyword1.
+	 */
+	public void setPrePadKeyword1(boolean prePadKeyword1) {
+		this.prePadKeyword1 = prePadKeyword1;
+	}
+
+
+
+	/**
+	 * Sets the value of prePadKeyword2.
+	 * @param prePadKeyword2 The value to assign prePadKeyword2.
+	 */
+	public void setPrePadKeyword2(boolean prePadKeyword2) {
+		this.prePadKeyword2 = prePadKeyword2;
+	}
+
+
+
+	/**
+	 * Sets the value of prePadKeyword3.
+	 * @param prePadKeyword3 The value to assign prePadKeyword3.
+	 */
+	public void setPrePadKeyword3(boolean prePadKeyword3) {
+		this.prePadKeyword3 = prePadKeyword3;
+	}
+
+
+
+	/**
+	 * Sets the value of prePadKeyword4.
+	 * @param prePadKeyword4 The value to assign prePadKeyword4.
+	 */
+	public void setPrePadKeyword4(boolean prePadKeyword4) {
+		this.prePadKeyword4 = prePadKeyword4;
+	}
+
+
+
+	/**
+	 * Sets the value of postPadOperator.
+	 * @param postPadOperator The value to assign postPadOperator.
+	 */
+	public void setPostPadOperator(boolean postPadOperator) {
+		this.postPadOperator = postPadOperator;
+	}
+
+
+
+	/**
+	 * Sets the value of postPadFunction.
+	 * @param postPadFunction The value to assign postPadFunction.
+	 */
+	public void setPostPadFunction(boolean postPadFunction) {
+		this.postPadFunction = postPadFunction;
+	}
+
+
+
+	/**
+	 * Sets the value of postPadDigit.
+	 * @param postPadDigit The value to assign postPadDigit.
+	 */
+	public void setPostPadDigit(boolean postPadDigit) {
+		this.postPadDigit = postPadDigit;
+	}
+
+
+
+	/**
+	 * Sets the value of postPadKeyword1.
+	 * @param postPadKeyword1 The value to assign postPadKeyword1.
+	 */
+	public void setPostPadKeyword1(boolean postPadKeyword1) {
+		this.postPadKeyword1 = postPadKeyword1;
+	}
+
+
+
+	/**
+	 * Sets the value of postPadKeyword2.
+	 * @param postPadKeyword2 The value to assign postPadKeyword2.
+	 */
+	public void setPostPadKeyword2(boolean postPadKeyword2) {
+		this.postPadKeyword2 = postPadKeyword2;
+	}
+
+
+
+	/**
+	 * Sets the value of postPadKeyword3.
+	 * @param postPadKeyword3 The value to assign postPadKeyword3.
+	 */
+	public void setPostPadKeyword3(boolean postPadKeyword3) {
+		this.postPadKeyword3 = postPadKeyword3;
+	}
+
+
+
+	/**
+	 * Sets the value of postPadKeyword4.
+	 * @param postPadKeyword4 The value to assign postPadKeyword4.
+	 */
+	public void setPostPadKeyword4(boolean postPadKeyword4) {
+		this.postPadKeyword4 = postPadKeyword4;
+	}
+
+
+
+	/**
+	 * Sets the value of labelOnSeparateLine.
+	 * @param labelOnSeparateLine The value to assign labelOnSeparateLine.
+	 */
+	public void setLabelOnSeparateLine(boolean labelOnSeparateLine) {
+		this.labelOnSeparateLine = labelOnSeparateLine;
+	}
+
+
+
+	/**
+	 * Sets the value of prePadCharacters.
+	 * @param prePadCharacters The value to assign prePadCharacters.
+	 */
+	public void setPrePadCharacters(String prePadCharacters) {
+		this.prePadCharacters = prePadCharacters;
+	}
+
+
+
+	/**
+	 * Sets the value of postPadCharacters.
+	 * @param postPadCharacters The value to assign postPadCharacters.
+	 */
+	public void setPostPadCharacters(String postPadCharacters) {
+		this.postPadCharacters = postPadCharacters;
+	}
+
+
+
+	/**
+	 * Sets the value of dontPrePadCharacters.
+	 * @param dontPrePadCharacters The value to assign dontPrePadCharacters.
+	 */
+	public void setDontPrePadCharacters(String dontPrePadCharacters) {
+		this.dontPrePadCharacters = dontPrePadCharacters;
+	}
+
+
+
+	/**
+	 * Sets the value of dontPostPadCharacters.
+	 * @param dontPostPadCharacters The value to assign dontPostPadCharacters.
+	 */
+	public void setDontPostPadCharacters(String dontPostPadCharacters) {
+		this.dontPostPadCharacters = dontPostPadCharacters;
+	}
+
+
+
+	/**
+	 * Sets the value of preInsertLineCharacters.
+	 * @param preInsertLineCharacters The value to assign preInsertLineCharacters.
+	 */
+	public void setPreInsertLineCharacters(String preInsertLineCharacters) {
+		this.preInsertLineCharacters = preInsertLineCharacters;
+	}
+
+
+
+	/**
+	 * Sets the value of postInsertLineCharacters.
+	 * @param postInsertLineCharacters The value to assign postInsertLineCharacters.
+	 */
+	public void setPostInsertLineCharacters(String postInsertLineCharacters) {
+		this.postInsertLineCharacters = postInsertLineCharacters;
+	}
+
+	/**
+	 * Sets the value of collapseBlankLines.
+	 * @param collapseBlankLines The value to assign collapseBlankLines.
+	 */
+	public void setCollapseBlankLines(boolean collapseBlankLines) {
+		this.collapseBlankLines = collapseBlankLines;
+	}
+
 }
