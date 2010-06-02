@@ -152,6 +152,7 @@ public class HtmlDocument {
      */
     public static class EndTag extends HtmlElement {
         public String tagName;
+        public boolean isJspTag = false;
 
         public EndTag(String t) {
             tagName = t;
@@ -163,6 +164,10 @@ public class HtmlDocument {
 
         public int getLength() {
             return 3 + tagName.length();
+        }
+
+        public void setIsJspTag( boolean b ) {
+            isJspTag = b;
         }
 
         public String toString() {

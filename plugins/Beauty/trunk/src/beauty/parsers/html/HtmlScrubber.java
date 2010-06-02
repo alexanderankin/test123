@@ -104,9 +104,10 @@ public class HtmlScrubber extends HtmlVisitor {
     }
 
     public void visit(HtmlDocument.EndTag t) {
-        if ((flags & TAGS_UPCASE) != 0)
+        // don't change case on jsp tags
+        if ((flags & TAGS_UPCASE) != 0 && !t.isJspTag)
             t.tagName = t.tagName.toUpperCase();
-        else if ((flags & TAGS_DOWNCASE) != 0 && t.tagName != null)
+        else if ((flags & TAGS_DOWNCASE) != 0 && t.tagName != null && !t.isJspTag)
             t.tagName = t.tagName.toLowerCase();
 
         previousElement = t;

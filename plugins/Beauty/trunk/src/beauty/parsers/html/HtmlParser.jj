@@ -518,7 +518,13 @@ HtmlDocument.HtmlElement EndTag() :
 {
   try {
     <ENDTAG_START> t=<TAG_NAME> <TAG_END>
-    { return new HtmlDocument.EndTag(t.image); }
+    { 
+        HtmlDocument.EndTag tag = new HtmlDocument.EndTag(t.image);
+        if (t.image.indexOf(":") > 0) {
+            tag.setIsJspTag(true);
+        }
+        return tag; 
+    }
   }
   catch (ParseException ex) {
     token_source.SwitchTo(DEFAULT);
