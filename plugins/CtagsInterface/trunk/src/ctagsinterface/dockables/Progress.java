@@ -18,6 +18,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.util.ThreadUtilities;
 
 import ctagsinterface.main.Logger;
 import ctagsinterface.options.GeneralOptionPane;
@@ -49,9 +50,16 @@ public class Progress extends JPanel
 			}
 		});
 	}
-	public void add(Logger logger, String s)
+	public void add(final Logger logger, final String s)
 	{
-		getTab(logger).append(s);
+		ThreadUtilities.runInDispatchThread(new Runnable()
+		{
+			public void run()
+			{
+				getTab(logger).append(s);
+			}
+		});
+
 	}
 	private ProgressTab getTab(Logger logger)
 	{
@@ -68,13 +76,26 @@ public class Progress extends JPanel
 		}
 		return tab;
 	}
-	public void beginTask(Logger logger, String task)
+	public void beginTask(final Logger logger, final String task)
 	{
-		getTab(logger).beginTask(task);
+		ThreadUtilities.runInDispatchThread(new Runnable()
+		{
+			public void run()
+			{
+				getTab(logger).beginTask(task);
+			}
+		});
+
 	}
-	public void endTask(Logger logger)
+	public void endTask(final Logger logger)
 	{
-		getTab(logger).endTask();
+		ThreadUtilities.runInDispatchThread(new Runnable()
+		{
+			public void run()
+			{
+				getTab(logger).endTask();
+			}
+		});
 	}
 	public void closeTab(ProgressTab tab)
 	{
@@ -93,7 +114,7 @@ public class Progress extends JPanel
 		private JButton close;
 		private JLabel status;
 		private Timer timer = null;
-	
+
 		public ProgressTab(Logger logger)
 		{
 			this.logger = logger;
@@ -144,7 +165,7 @@ public class Progress extends JPanel
 						}
 						textArea.setCaretPosition(textArea.getText().length());
 					}
-				});			
+				});
 			}
 		}
 		public void beginTask(String task)
