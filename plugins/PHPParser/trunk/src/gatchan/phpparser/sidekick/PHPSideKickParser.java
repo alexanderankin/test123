@@ -97,6 +97,7 @@ public final class PHPSideKickParser extends SideKickParser
 	 * @param errorSource An error source to add errors to.
 	 * @return A new instance of the <code>SideKickParsedData</code> class.
 	 */
+	@Override
 	public SideKickParsedData parse(Buffer buffer, DefaultErrorSource errorSource)
 	{
 		phpErrorSource.setErrorSource(errorSource);
@@ -170,6 +171,7 @@ public final class PHPSideKickParser extends SideKickParser
 	} //}}}
 
 	//{{{ stop() method
+	@Override
 	public void stop()
 	{
 		if (parser != null)
@@ -216,6 +218,7 @@ public final class PHPSideKickParser extends SideKickParser
 	} //}}}
 
 	//{{{ complete() method
+	@Override
 	public SideKickCompletion complete(EditPane editPane, int caret)
 	{
 		Log.log(Log.DEBUG, this, "Requesting sidekick complete");
