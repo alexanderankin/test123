@@ -34,7 +34,11 @@ public class HtmlFormat extends Beautifier {
             HtmlDocument document = parser.HtmlDocument();
             document.setLineSeparator( getLineSeparator() );
             document.accept( new HtmlCollector() );
-            document.accept( new HtmlScrubber( HtmlScrubber.TAGS_DOWNCASE | HtmlScrubber.ATTR_DOWNCASE | HtmlScrubber.TRIM_SPACES ) );
+            int scrubber_params = HtmlScrubber.TAGS_DOWNCASE | HtmlScrubber.ATTR_DOWNCASE | HtmlScrubber.TRIM_SPACES;
+            if ("jsp".equals(getEditMode())) {
+                scrubber_params = HtmlScrubber.TRIM_SPACES;       
+            }
+            document.accept( new HtmlScrubber( scrubber_params ) );
             formatter = new HtmlFormatter();
             if ( getWrapMode().equals( "none" ) ) {
                 formatter.setRightMargin( Integer.MAX_VALUE );
