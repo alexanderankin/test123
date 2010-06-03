@@ -195,7 +195,7 @@ public class SideKickActions
 			return;
 		}
 
-		int pos = asset.getEnd().getOffset() + 1;
+		int pos = asset.getEnd().getOffset();
 		if (pos > textArea.getBuffer().getLength())
 		{
 		    view.getToolkit().beep();
