@@ -144,8 +144,8 @@ public class HtmlParser extends XmlParser implements EBComponent {
 
             // collect and clean
             document.accept(new HtmlCollector());
-            document.accept(new HtmlScrubber(HtmlScrubber.DEFAULT_OPTIONS
-                     | HtmlScrubber.TRIM_SPACES));
+            //document.accept(new HtmlScrubber(HtmlScrubber.DEFAULT_OPTIONS
+            //         | HtmlScrubber.TRIM_SPACES));
 
             // make a tree
             builder = new HtmlTreeBuilder(root);
