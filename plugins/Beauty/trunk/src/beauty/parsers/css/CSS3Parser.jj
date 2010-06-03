@@ -579,10 +579,7 @@ TOKEN_MGR_DECLS :
 <DEFAULT>
 SPECIAL_TOKEN :
 {
-    <COMMENT: "/*" (
-    ~["*"] )* ( "*" )+ (
-    ~["/", "*"] (
-    ~["*"] )* ( "*" )+ )* "/" >
+    <COMMENT:  "/*"  (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">  { writeBlockComment(matchedToken.image); }
 } 
 
 <DEFAULT>
@@ -621,7 +618,7 @@ TOKEN [IGNORE_CASE] :/* basic tokens */
   | <#_URL : (
     [ "!", "#", "$", "%", "&", "*"-"[", "]"-"~" ] | <NONASCII> | <ESCAPE> )* >
   | <#_S : (
-    [ " ", "\t" , "\n" , "\r", "\f" ] ) ( <COMMENT> |
+    [ " ", "\t" , "\n" , "\r", "\f" ] ) ( /*<COMMENT> |*/
     [ " ", "\t" , "\n" , "\r", "\f" ] )* >
   | <#_W : ( <_S> )? >
   | <#NL : ( "\n" | "\r\n" | "\r" | "\f" ) >
