@@ -29,17 +29,19 @@ import java.util.List;
  */
 public class Namespace extends Statement
 {
-	private final Expression name;
+	private final String name;
 
-	public Namespace(Expression name, int sourceStart, int sourceEnd, int beginLine, int endLine, int beginColumn, int endColumn)
+	public Namespace(String name, int sourceStart, int sourceEnd, int beginLine, int endLine,
+			 int beginColumn, int endColumn)
 	{
 		super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
 		this.name = name;
 	}
 
+	@Override
 	public Expression expressionAt(int line, int column)
 	{
-		return name.isAt(line, column) ? name : null;
+		return null;
 	}
 
 	@Override
@@ -48,32 +50,29 @@ public class Namespace extends Statement
 		return "namespace " + name + ';';
 	}
 
+	@Override
 	public String toString(int tab)
 	{
 		return tabString(tab) + toString();
 	}
 
+	@Override
 	public void getOutsideVariable(List list)
 	{
-		if (name != null)
-			name.getOutsideVariable(list);
 	}
 
+	@Override
 	public void getModifiedVariable(List list)
 	{
-		if (name != null)
-			name.getModifiedVariable(list);
 	}
 
+	@Override
 	public void getUsedVariable(List list)
 	{
-		if (name != null)
-			name.getUsedVariable(list);
 	}
 
+	@Override
 	public void analyzeCode(PHPParser parser)
 	{
-		if (name != null)
-			name.analyzeCode(parser);
 	}
 }
