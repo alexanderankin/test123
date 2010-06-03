@@ -1438,21 +1438,35 @@ ClassHeader classHeader(Token abstractToken) :
 
 	//{{{ implements xxx,yyy
 	[
-	{
-		interfaceNames = new ArrayList();
-	}
-	<IMPLEMENTS>
-	interfaceToken = <IDENTIFIER>
-	{
-		interfaceNames.add(interfaceToken.image);
-	}
-	(
-	 <COMMA>
-	 interfaceToken = <IDENTIFIER>
-	 {
-		 interfaceNames.add(interfaceToken.image);
-	 }
-	)*
+		{
+			interfaceNames = new ArrayList();
+		}
+		<IMPLEMENTS>
+		try
+		{
+			interfaceToken = <IDENTIFIER>
+			{
+				interfaceNames.add(interfaceToken.image);
+			}
+		}
+		catch (ParseException e)
+		{
+			fireParseError("interface identifier expected", "identifier", e.currentToken.next);
+		}
+		(
+			 <COMMA>
+			 try
+			{
+				interfaceToken = <IDENTIFIER>
+				{
+					interfaceNames.add(interfaceToken.image);
+				}
+			}
+			catch (ParseException e)
+			{
+				fireParseError("interface identifier expected", "identifier", e.currentToken.next);
+			}
+		)*
 	] //}}}
 
 	{
@@ -1483,49 +1497,42 @@ ClassHeader classHeader(Token abstractToken) :
 }//}}}
 
 //{{{ ClassBody(ClassDeclaration classDeclaration)
-
 void ClassBody(ClassDeclaration classDeclaration) :
 {
-  final Token lBraceToken;
-  Token rBraceToken;
+	Token lBraceToken;
+	Token rBraceToken;
 }
 {
-  try {
-    lBraceToken = <LBRACE>
-    {
-      classDeclaration.setBodyLineStart(lBraceToken.beginLine);
-      classDeclaration.setBodyColumnStart(lBraceToken.beginColumn);
-    }
-  } catch (ParseException e) {
-    fireParseError("'{' expected", "{", e.currentToken);
-  }
-  ( ClassBodyDeclaration(classDeclaration) )*
-  try {
-    rBraceToken = <RBRACE>
-    {
-      classDeclaration.setBodyLineEnd(rBraceToken.endLine);
-      classDeclaration.setBodyColumnEnd(rBraceToken.endColumn);
-    }
-  } catch (ParseException e) {
-    //{{{ Parse error
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "'}' expected",
-                                          "}",
-                                          e.currentToken.image,
-                                          e.currentToken.sourceStart,
-                                          e.currentToken.sourceEnd,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1)); //}}}
-    rBraceToken = error_skipto(RBRACE);
-    classDeclaration.setBodyLineEnd(rBraceToken.endLine);
-    classDeclaration.setBodyColumnEnd(rBraceToken.endColumn);
-  }
-}
+	try 
+	{
+		lBraceToken = <LBRACE>
+		{
+			classDeclaration.setBodyLineStart(lBraceToken.beginLine);
+			classDeclaration.setBodyColumnStart(lBraceToken.beginColumn);
+		}
+	}
+	catch (ParseException e) 
+	{
+		fireParseError("'{' expected", "{", e.currentToken);
+	}
+	( ClassBodyDeclaration(classDeclaration) )*
+	try 
+	{
+		rBraceToken = <RBRACE>
+		{
+			classDeclaration.setBodyLineEnd(rBraceToken.endLine);
+			classDeclaration.setBodyColumnEnd(rBraceToken.endColumn);
+		}
+	} 
+	catch (ParseException e) 
+	{
+		fireParseError("'}' expected", "}", e.currentToken.next);
+		rBraceToken = error_skipto(RBRACE);
+		classDeclaration.setBodyLineEnd(rBraceToken.endLine);
+		classDeclaration.setBodyColumnEnd(rBraceToken.endColumn);
+	}
+} //}}}
 
-//}}}
 //{{{ abstractClassBody(ClassDeclaration classDeclaration)
 void abstractClassBody(ClassDeclaration classDeclaration) :
 {
