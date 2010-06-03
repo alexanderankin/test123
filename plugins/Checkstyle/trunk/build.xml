@@ -11,9 +11,9 @@
 	<import file="${build.support}/plugin-build.xml"/>
 
 	<path id="project.class.path">
-		<pathelement location="lib/checkstyle-5.0.jar"/>
-		<pathelement location="lib/commons-beanutils-core-1.8.0.jar"/>
-		<pathelement location="lib/google-collect-snapshot-20090211.jar"/>
+		<pathelement location="lib/checkstyle-5.1.jar"/>
+		<pathelement location="lib/commons-beanutils-core-1.8.3.jar"/>
+		<pathelement location="lib/google-collect-1.0.jar"/>
 		<pathelement location="lib/antlr.jar"/>
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
 		<pathelement location="${install.dir}/ErrorList.jar"/>

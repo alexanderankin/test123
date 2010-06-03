@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2009 Matthieu Casanova
+ * Copyright (C) 2010 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,6 +25,7 @@ import com.puppycrawl.tools.checkstyle.ConfigurationLoader;
 import com.puppycrawl.tools.checkstyle.PropertiesExpander;
 import com.puppycrawl.tools.checkstyle.api.*;
 import errorlist.DefaultErrorSource;
+import errorlist.ErrorSource;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.io.FileVFS;
@@ -35,6 +36,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.syntax.ModeProvider;
 import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
+import org.xml.sax.InputSource;
 
 import javax.swing.text.Segment;
 import java.io.File;
@@ -48,9 +50,9 @@ import java.util.List;
  */
 public class CheckstyleParse implements Runnable, AuditListener
 {
-	private List<File> file;
+	private final List<File> file;
 
-	private DefaultErrorSource errorSource;
+	private final DefaultErrorSource errorSource;
 
 	private Buffer buffer;
 
@@ -159,9 +161,10 @@ public class CheckstyleParse implements Runnable, AuditListener
 		return null;
 	}
 
-	private Configuration getConfiguration(InputStream stream) throws CheckstyleException
+	private static Configuration getConfiguration(InputStream stream) throws CheckstyleException
 	{
-		return ConfigurationLoader.loadConfiguration(stream, new PropertiesExpander(System.getProperties()), false);
+		InputSource is = new InputSource(stream);
+		return ConfigurationLoader.loadConfiguration(is, new PropertiesExpander(System.getProperties()), false);
 	}
 
 	private Configuration getConfiguration(String path)
@@ -264,13 +267,13 @@ public class CheckstyleParse implements Runnable, AuditListener
 		SeverityLevel severityLevel = auditEvent.getSeverityLevel();
 		int level;
 
-		if (severityLevel.equals(SeverityLevel.ERROR))
+		if (severityLevel == SeverityLevel.ERROR)
 		{
-			level = DefaultErrorSource.ERROR;
+			level = ErrorSource.ERROR;
 		}
 		else
 		{
-			level = DefaultErrorSource.WARNING;
+			level = ErrorSource.WARNING;
 		}
 
 		int start = column == 0 ? 0 : column - 1;
