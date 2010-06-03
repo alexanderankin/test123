@@ -113,6 +113,7 @@
         <javacc javacchome="${javacchome}" target="./src/beauty/parsers/java/Java1.5.jj"/>
         <javacc javacchome="${javacchome}" target="./src/beauty/parsers/javacc/JavaCC.jj"/>
         <javacc javacchome="${javacchome}" target="./src/beauty/parsers/html/HtmlParser.jj"/>
+        <javacc javacchome="${javacchome}" target="./src/beauty/parsers/css/CSS3Parser.jj"/>
     </target>
 
 
