@@ -9,6 +9,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
@@ -26,15 +27,10 @@ import javax.swing.Timer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import org.apache.lucene.document.Document;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
 
 import ctagsinterface.index.TagIndex;
-import ctagsinterface.index.TagIndex.DocHandler;
-import ctagsinterface.index.TagIndex.Origin;
-import ctagsinterface.index.TagIndex.OriginType;
-import ctagsinterface.options.ProjectsOptionPane;
 
 @SuppressWarnings("serial")
 public class QuickSearchTagDialog extends JDialog {
@@ -48,7 +44,6 @@ public class QuickSearchTagDialog extends JDialog {
 	private JList tags;
 	private DefaultListModel model;
 	private View view;
-	private String baseQuery;
 	private Timer filterTimer;
 	private String query;
 	private boolean showImmediately;
@@ -139,34 +134,11 @@ public class QuickSearchTagDialog extends JDialog {
 			}
 		});
 		filterTimer.setRepeats(false);
-		prepareData();
 		pack();
 		setLocationRelativeTo(view);
 		setVisible(true);
 		if (showImmediately)
 			applyFilter();
-	}
-
-	private void prepareData()
-	{
-		baseQuery = "";
-		TagIndex index = CtagsInterfacePlugin.getIndex();
-		if (query == null)
-		{
-			if (ProjectsOptionPane.getSearchActiveProjectOnly())
-			{
-				String project = CtagsInterfacePlugin.getProjectWatcher().
-					getActiveProject(view);
-				if (project != null)
-				{
-					Origin origin = index.getOrigin(OriginType.PROJECT,
-						project, false);
-					baseQuery = index.getOriginScopedQuery(origin);
-				}
-			}
-		}
-		else
-			baseQuery = query;
 	}
 
 	private void jumpToSelected() {
@@ -190,8 +162,7 @@ public class QuickSearchTagDialog extends JDialog {
 			name.getText().toLowerCase();
 		if (showImmediately || (! input.isEmpty()))
 		{
-			TagIndex index = CtagsInterfacePlugin.getIndex();
-			String s = baseQuery;
+			String s = (query == null) ? "" : query;
 			if (! input.isEmpty())
 			{
 				if (s.length() > 0)
@@ -201,20 +172,18 @@ public class QuickSearchTagDialog extends JDialog {
 				s = s + field + ":" + (mode == Mode.SUBSTRING ? "*" : "") +
 					input + "*";
 			}
-			index.runQuery(s, TagIndex.MAX_RESULTS, new DocHandler()
+			Vector<Tag> tags = CtagsInterfacePlugin.runScopedQuery(view, s);
+			for (Tag t: tags)
 			{
-				public void handle(Document doc)
+				String name = t.getName();
+				if (! caseSensitive.isSelected())
+					name = name.toLowerCase();
+				if ((mode == Mode.PREFIX && name.startsWith(input)) ||
+					(mode == Mode.SUBSTRING && name.contains(input)))
 				{
-					String name = doc.getField(TagIndex._NAME_FLD).stringValue();
-					if (! caseSensitive.isSelected())
-						name = name.toLowerCase();
-					if ((mode == Mode.PREFIX && name.startsWith(input)) ||
-						(mode == Mode.SUBSTRING && name.contains(input)))
-					{
-						model.addElement(new QuickSearchTag(doc));
-					}
+					model.addElement(new QuickSearchTag(t));
 				}
-			});
+			}
 		}
 		if (model.isEmpty())
 		{
@@ -250,20 +219,16 @@ public class QuickSearchTagDialog extends JDialog {
 		String name;
 		String desc;
 		String kind;
-		public QuickSearchTag(Document doc)
+		public QuickSearchTag(Tag t)
 		{
 			StringBuffer text = new StringBuffer();
-			name = doc.get(TagIndex._NAME_FLD);
+			name = t.getName();
 			text.append(name);
-			kind = doc.get("kind");
+			kind = t.getKind();
 			if (kind != null)
 				text.append(" (" + kind + ")");
-			file = doc.get(TagIndex._PATH_FLD);
-			String lineStr = doc.get(TagIndex.LINE_FLD);
-			if (lineStr != null)
-				line = Integer.valueOf(lineStr);
-			else
-				line = -1;
+			file = t.getFile();
+			line = t.getLine();
 			desc = text.toString();
 			if (isValid())
 				desc = desc + "   [" + file + ":" + line + "]";

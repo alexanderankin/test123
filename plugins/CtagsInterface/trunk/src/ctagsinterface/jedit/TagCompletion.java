@@ -150,11 +150,8 @@ public class TagCompletion {
 	
 	public Vector<Tag> getCompletions()
 	{
-		String s = CtagsInterfacePlugin.getScopedTagQuery(view);
-		if (! s.isEmpty())
-			s = s + " AND ";
-		s = s + TagIndex._NAME_FLD + ":" + prefix + "*";
-		return CtagsInterfacePlugin.query(s);
+		String q = TagIndex._NAME_FLD + ":" + prefix + "*";
+		return CtagsInterfacePlugin.runScopedQuery(view, q);
 	}
 	public String createAbbrev(String signature)
 	{

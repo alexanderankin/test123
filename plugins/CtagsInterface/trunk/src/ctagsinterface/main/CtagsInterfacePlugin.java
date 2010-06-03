@@ -156,14 +156,6 @@ public class CtagsInterfacePlugin extends EditPlugin
 		}
     }
 
-	private static String getScopeName(View view)
-	{
-		boolean projectScope = (pvi != null &&
-				(ProjectsOptionPane.getSearchActiveProjectOnly() ||
-				 ProjectsOptionPane.getSearchActiveProjectFirst()));
-		return projectScope ? pvi.getActiveProject(view) : null;
-	}
-
     // Adds a temporary tag file to the DB
     // Existing tags from source files in the tag file are removed first.  
     static private void addTempTagFile(View view, String tagFile)
@@ -242,10 +234,8 @@ public class CtagsInterfacePlugin extends EditPlugin
 		new QuickSearchTagDialog(view, QuickSearchTagDialog.Mode.PREFIX);
 	}
 
-	public static Vector<Tag> queryScopedTag(View view, String tag)
+	public static Vector<Tag> runScopedQuery(View view, String q)
 	{
-		if (tag == null || tag.length() == 0)
-			return null;
 		boolean projectScope = (pvi != null &&
 			(ProjectsOptionPane.getSearchActiveProjectOnly() ||
 			 ProjectsOptionPane.getSearchActiveProjectFirst() ||
@@ -274,22 +264,29 @@ public class CtagsInterfacePlugin extends EditPlugin
 							OriginType.fromString(origin.getKey()), s, false));
 					}
 				}
-				index.queryTagInOrigins(tag, origins, tags);
+				index.runQueryInOrigins(q, origins, tags);
 			}
 			else
 			{
 				origins.add(index.getOrigin(OriginType.PROJECT, project, false));
-				index.queryTagInOrigins(tag, origins, tags);
+				index.runQueryInOrigins(q, origins, tags);
 				if (ProjectsOptionPane.getSearchActiveProjectFirst() &&
-						tags.isEmpty())
+					tags.isEmpty())
 				{
-					index.queryTag(tag, tags);
+					index.runQuery(q, tags);
 				}
 			}
-		} else {
-			index.queryTag(tag, tags);
 		}
+		else
+			index.runQuery(q, tags);
 		return tags;
+	}
+
+	public static Vector<Tag> queryScopedTag(View view, String tag)
+	{
+		if (tag == null || tag.length() == 0)
+			return null;
+		return runScopedQuery(view, index.getTagNameQuery(tag));
 	}
 
 	// Context menu action from FSB
@@ -830,24 +827,8 @@ public class CtagsInterfacePlugin extends EditPlugin
 		index.queryTags(query, tags);
 		return tags;
 	}
-	public static String getScopedTagQuery(View view)
-	{
-		String project = getScopeName(view);
-		if (project == null)
-			return "";
-		return index.getOriginScopedQuery(index.getOrigin(OriginType.PROJECT,
-			project, false)); 
-	}
 	public static String getTagNameQuery(String tag)
 	{
 		return index.getTagNameQuery(tag);
-	}
-	public static String getScopedTagNameQuery(View view, String tag)
-	{
-		String s = index.getTagNameQuery(tag);
-		String scopeQuery = getScopedTagQuery(view);
-		if (! scopeQuery.isEmpty())
-			s = s +  " AND " + scopeQuery;
-		return s;
 	}
 }

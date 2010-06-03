@@ -471,16 +471,24 @@ public class TagIndex
 
 	/* Various queries */
 
-	// Returns a query for a tag name in a list of specified origins
-	// origins: A hash of origin type -> vector of origin names
-	// tags: List of tags to be filled in by this query
-	public void queryTagInOrigins(String tag, List<Origin> origins,
+	public void runQuery(String query, final List<Tag> tags)
+	{
+		runQuery(query, MAX_RESULTS, new DocHandler()
+		{
+			public void handle(Document doc)
+			{
+				tags.add(documentToTag(doc));
+			}
+		});
+	}
+
+	public void runQueryInOrigins(String query, List<Origin> origins,
 		final List<Tag> tags)
 	{
 		if (origins == null || origins.isEmpty())
 			return;
-		StringBuffer sb = new StringBuffer("(");
 		boolean isFirst = true;
+		StringBuilder sb = new StringBuilder("(");
 		for (Origin origin: origins)
 		{
 			if (! isFirst)
@@ -490,19 +498,19 @@ public class TagIndex
 			}
 			sb.append("origin:" + escape(origin.toString()));
 		}
-		sb.append(") AND " + _NAME_FLD + ":" + escape(tag));
-		runQuery(sb.toString(), MAX_RESULTS, new DocHandler() {
-			public void handle(Document doc)
-			{
-				tags.add(documentToTag(doc));
-			}
-		});
+		sb.append(")");
+		if (query != null && (! query.isEmpty()))
+			sb.append(" AND (" + query + ")");
+		runQuery(sb.toString(), tags);
 	}
 
-	public String getOriginScopedQuery(Origin origin)
+	// Returns a query for a tag name in a list of specified origins
+	// origins: A hash of origin type -> vector of origin names
+	// tags: List of tags to be filled in by this query
+	public void queryTagInOrigins(String tag, List<Origin> origins,
+		final List<Tag> tags)
 	{
-		return DOCTYPE_FLD + ":" + TAG_DOC_TYPE + " AND " +
-			ORIGIN_FLD + ":" + escape(origin.toString());
+		runQueryInOrigins(_NAME_FLD + ":" + escape(tag), origins, tags);
 	}
 
 	public String getTagNameQuery(String name)
