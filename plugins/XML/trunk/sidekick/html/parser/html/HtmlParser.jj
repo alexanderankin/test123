@@ -428,7 +428,7 @@ HtmlDocument.HtmlElement Tag() :
           rtn_tag.setEmpty(true);
       }
       rtn_tag.setStartLocation(st.beginLine, st.beginColumn);
-      rtn_tag.setEndLocation(et.endLine, et.endColumn);
+      rtn_tag.setEndLocation(et.endLine, et.endColumn + 1);
       rtn_tag.setIsJspTag(isJspTag);
       return rtn_tag;
     }
@@ -518,7 +518,7 @@ HtmlDocument.HtmlElement ScriptBlock() :
         seq.addElement(text);
         HtmlDocument.TagBlock b = new HtmlDocument.TagBlock("SCRIPT", alist, seq);
         b.setStartLocation(st.beginLine, st.beginColumn);
-        b.setEndLocation(et.endLine, et.endColumn);
+        b.setEndLocation(et.endLine, et.endColumn + 1);
         return b;
     }
   }
@@ -552,7 +552,7 @@ HtmlDocument.HtmlElement StyleBlock() :
         seq.addElement(text);
         HtmlDocument.TagBlock b = new HtmlDocument.TagBlock("STYLE", alist, seq);
         b.setStartLocation(st.beginLine, st.beginColumn);
-        b.setEndLocation(et.endLine, et.endColumn);
+        b.setEndLocation(et.endLine, et.endColumn + 1);
         return b;
     }
   }
@@ -582,7 +582,7 @@ HtmlDocument.HtmlElement EndTag() :
             tag_name = t.image;
         HtmlDocument.EndTag b = new HtmlDocument.EndTag(tag_name);
         b.setStartLocation(st.beginLine, st.beginColumn);
-        b.setEndLocation(et.endLine, et.endColumn);
+        b.setEndLocation(et.endLine, et.endColumn + 1);
         return b;
     }
   }
