@@ -152,7 +152,7 @@ public class EcmaScript {
     public Location getEndLocation(Token t) {
        if (t == null)
            return new Location(0 + lineOffset, 0);
-       return new Location(t.endLine + lineOffset, t.endColumn);
+       return new Location(t.endLine + lineOffset, t.endColumn + 1);
     }
 
     public void setLineOffset(int offset) {
