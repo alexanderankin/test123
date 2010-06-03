@@ -137,8 +137,7 @@ public class CSS3Parser {
                 return line_number > -1 ? new Range( new Location( line_number - 1, column_number - 1 ), new Location( line_number - 1, column_number ) ) : null;
             }
             return new Range();
-        }
-        catch ( Exception e ) {
+        } catch ( Exception e ) {
             //e.printStackTrace();
             return new Range();
         }
@@ -173,7 +172,7 @@ public class CSS3Parser {
     public Location getEndLocation(Token t) {
        if (t == null)
            return new Location(0 + lineOffset, 0);
-       return new Location(t.endLine + lineOffset, t.endColumn);
+       return new Location(t.endLine + lineOffset, t.endColumn + 1);
     }
     
     /**
@@ -1464,6 +1463,7 @@ List<CSSNode> declarations() :
 {
     CSSNode node = null;
     List<CSSNode> nodes = new ArrayList<CSSNode>();
+    Token semi;
 }
 { 
     try {
@@ -1471,7 +1471,7 @@ List<CSSNode> declarations() :
             node=declaration() {if (node != null) nodes.add(node); }
         ) ?
         (
-            ";"
+            semi=";" {node.setEndLocation(getEndLocation(semi)); }
             (
                 <S>
             ) *

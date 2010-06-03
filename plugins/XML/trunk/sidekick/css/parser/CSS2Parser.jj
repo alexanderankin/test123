@@ -173,12 +173,12 @@ TOKEN_MGR_DECLS :
 {
     private boolean _quiet = true;
 
-    private String trimBy(StringBuffer s, int left, int right) {
+    private String trimBy(CharSequence s, int left, int right) {
         int end = s.length();
         return s.toString().substring(left, end-right);
     }
 
-    private String trimUrl(StringBuffer s) {
+    private String trimUrl(CharSequence s) {
         StringBuffer s1 = new StringBuffer( trimBy(s, 4, 1).trim() );
         if (s1.length() == 0)
         {
