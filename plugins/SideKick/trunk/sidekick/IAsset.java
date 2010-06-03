@@ -75,12 +75,14 @@ public interface IAsset
 	Position getStart();
 	
 	/**
-	 * Set the end position
+	 * Set the end position - the position of the first character
+	 * following the asset (or the end of the buffer).
 	 */
 	void setEnd(Position end);
 
 	/**
-	 * Returns the end position.
+	 * Returns the end position - the position of the first character
+	 * following the asset (or the end of the buffer).
 	 */
 	Position getEnd();
 	

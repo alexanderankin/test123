@@ -739,8 +739,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 			JEditTextArea textArea = view.getTextArea();
 			textArea.setCaretPosition(asset.getEnd().getOffset());
 			Selection.Range range = new Selection.Range(
-				asset.getStart().getOffset(),
-				asset.getEnd().getOffset() + (asset.getEnd().getOffset() == textArea.getBufferLength() ? 0 : 1) );
+				asset.getStart().getOffset(), asset.getEnd().getOffset());
 			textArea.addToSelection(range);
 		}
 
