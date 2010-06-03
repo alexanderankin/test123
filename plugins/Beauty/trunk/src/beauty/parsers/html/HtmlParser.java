@@ -467,7 +467,7 @@ public class HtmlParser implements HtmlParserConstants {
       t = jj_consume_token(TAG_NAME);
       jj_consume_token(TAG_END);
         HtmlDocument.EndTag tag = new HtmlDocument.EndTag(t.image);
-        if (t.image.startsWith("<%") || t.image.indexOf(":") > 0) {
+        if (t.image.indexOf(":") > 0) {
             tag.setIsJspTag(true);
         }
         {if (true) return tag;}
