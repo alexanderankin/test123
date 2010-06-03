@@ -37,6 +37,7 @@ import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
 import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
 import sidekick.IAsset;
@@ -476,7 +477,7 @@ public final class PHPSideKickParser extends SideKickParser
 	 * @param buffer the buffer
 	 * @return the previous word or ""
 	 */
-	private static String getPreviousWord(int caret, Buffer buffer)
+	private static String getPreviousWord(int caret, JEditBuffer buffer)
 	{
 		int i;
 		for (i = caret - 1; i > 0; i--)
