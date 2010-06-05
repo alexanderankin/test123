@@ -58,6 +58,7 @@ public class TagIndex
 	public static final String PATTERN_FLD = "pattern";
 	public static final String NAME_FLD = "name";
 	public static final String _NAME_FLD = "_name";
+	public static final String _NAME_LOWERCASE_FLD = "_nameLC";
 	public static final String LINE_FLD = "line";
 	public static final String ORIGIN_DOC_TYPE = "origin";
 	public static final String TAG_DOC_TYPE = "tag";
@@ -69,8 +70,8 @@ public class TagIndex
 	private StandardAnalyzer standardAnalyzer;
 	private KeywordAnalyzer keywordAnalyzer;
 	private static final String[] FIXED_FIELDS = {
-		NAME_FLD, _NAME_FLD, PATTERN_FLD, PATH_FLD, _PATH_FLD, DOCTYPE_FLD,
-		ORIGIN_FLD, _ORIGIN_FLD
+		NAME_FLD, _NAME_FLD, _NAME_LOWERCASE_FLD, PATTERN_FLD, PATH_FLD,
+		_PATH_FLD, DOCTYPE_FLD, ORIGIN_FLD, _ORIGIN_FLD
 	};
 	private static Set<String> fixedFields;
 	private int writeCount;
@@ -104,6 +105,7 @@ public class TagIndex
 		analyzer = new PerFieldAnalyzerWrapper(standardAnalyzer);
 		// Tag documents
 		analyzer.addAnalyzer(_NAME_FLD, keywordAnalyzer);
+		analyzer.addAnalyzer(_NAME_LOWERCASE_FLD, keywordAnalyzer);
 		analyzer.addAnalyzer(_PATH_FLD, keywordAnalyzer);
 		analyzer.addAnalyzer(_ORIGIN_FLD, keywordAnalyzer);
 		// Origin documents
@@ -428,6 +430,8 @@ public class TagIndex
 		Document doc = new Document();
 		doc.add(new Field(NAME_FLD, t.getName(), Store.NO, Index.ANALYZED));
 		doc.add(new Field(_NAME_FLD, t.getName(), Store.YES, Index.ANALYZED));
+		doc.add(new Field(_NAME_LOWERCASE_FLD, t.getName().toLowerCase(),
+			Store.YES, Index.ANALYZED));
 		doc.add(new Field(PATTERN_FLD, t.getPattern(), Store.YES, Index.ANALYZED));
 		doc.add(new Field(PATH_FLD, t.getFile(), Store.NO, Index.ANALYZED));
 		doc.add(new Field(_PATH_FLD, t.getFile(), Store.YES, Index.ANALYZED));
