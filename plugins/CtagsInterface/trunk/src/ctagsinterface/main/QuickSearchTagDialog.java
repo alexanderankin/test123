@@ -168,7 +168,7 @@ public class QuickSearchTagDialog extends JDialog {
 				if (s.length() > 0)
 					s = s + " AND ";
 				String field = caseSensitive.isSelected() ?
-					TagIndex._NAME_FLD : TagIndex.NAME_FLD;
+					TagIndex._NAME_FLD : TagIndex._NAME_LOWERCASE_FLD;
 				s = s + field + ":" + (mode == Mode.SUBSTRING ? "*" : "") +
 					input + "*";
 			}
