@@ -178,11 +178,7 @@ public class QuickSearchTagDialog extends JDialog {
 				String name = t.getName();
 				if (! caseSensitive.isSelected())
 					name = name.toLowerCase();
-				if ((mode == Mode.PREFIX && name.startsWith(input)) ||
-					(mode == Mode.SUBSTRING && name.contains(input)))
-				{
-					model.addElement(new QuickSearchTag(t));
-				}
+				model.addElement(new QuickSearchTag(t));
 			}
 		}
 		if (model.isEmpty())

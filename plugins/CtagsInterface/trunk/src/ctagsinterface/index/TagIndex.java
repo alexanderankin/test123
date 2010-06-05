@@ -56,7 +56,6 @@ public class TagIndex
 	public static final String _PATH_FLD = "_path";
 	public static final String PATH_FLD = "path";
 	public static final String PATTERN_FLD = "pattern";
-	public static final String NAME_FLD = "name";
 	public static final String _NAME_FLD = "_name";
 	public static final String _NAME_LOWERCASE_FLD = "_nameLC";
 	public static final String LINE_FLD = "line";
@@ -70,7 +69,7 @@ public class TagIndex
 	private StandardAnalyzer standardAnalyzer;
 	private KeywordAnalyzer keywordAnalyzer;
 	private static final String[] FIXED_FIELDS = {
-		NAME_FLD, _NAME_FLD, _NAME_LOWERCASE_FLD, PATTERN_FLD, PATH_FLD,
+		_NAME_FLD, _NAME_LOWERCASE_FLD, PATTERN_FLD, PATH_FLD,
 		_PATH_FLD, DOCTYPE_FLD, ORIGIN_FLD, _ORIGIN_FLD
 	};
 	private static Set<String> fixedFields;
@@ -428,7 +427,6 @@ public class TagIndex
 	private Document tagToDocument(Tag t, String originsStr)
 	{
 		Document doc = new Document();
-		doc.add(new Field(NAME_FLD, t.getName(), Store.NO, Index.ANALYZED));
 		doc.add(new Field(_NAME_FLD, t.getName(), Store.YES, Index.ANALYZED));
 		doc.add(new Field(_NAME_LOWERCASE_FLD, t.getName().toLowerCase(),
 			Store.YES, Index.ANALYZED));
@@ -526,7 +524,7 @@ public class TagIndex
 	private Query getQuery(String query)
 	{
 		Log.log(Log.MESSAGE, TagIndex.class, "Parsing query: " + query); 
-		QueryParser qp = new QueryParser(Version.LUCENE_30, NAME_FLD, analyzer);
+		QueryParser qp = new QueryParser(Version.LUCENE_30, _NAME_FLD, analyzer);
 		qp.setAllowLeadingWildcard(true);
 		qp.setLowercaseExpandedTerms(false);
 		try
