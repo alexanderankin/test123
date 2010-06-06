@@ -439,6 +439,11 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 	{
 		super.addNotify();
 		EditBus.addToBus(this);
+		// It is not sufficient to register to the edit bus. If new indexes
+		// were created while this dockable was hidden (e.g. with MyDoggy),
+		// it did not receive the edit bus messages and needs to refresh the
+		// index list.
+		indexModel.setIndexes(LucenePlugin.instance.getIndexes());
 	} //}}}
 
 	//{{{ removeNotify() method
