@@ -1,16 +1,17 @@
+<!-- :xml.validate.ignore-dtd=true: -->
 <!DOCTYPE article [
   <!ENTITY % isolat1 PUBLIC "ISO 8879:1986//ENTITIES Added Latin 1//EN//XML" "http://www.oasis-open.org/docbook/xmlcharent/0.3/iso-lat1.ent" >
   <!ENTITY % isogrk1 PUBLIC "ISO 8879:1986//ENTITIES Greek Letters//EN//XML"  "http://www.oasis-open.org/docbook/xmlcharent/0.3/iso-grk1.ent" >
   %isolat1;
   %isogrk1;
 ]>
-<article xmlns="http://docbook.org/ns/docbook"
+<article
     xmlns:xi="http://www.w3.org/2001/XInclude"
     xsi:noNamespaceSchemaLocation="http://www.docbook.org/xsd/4.4/docbook.xsd"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     id="root-article">
 <title>Slacker's Docbook </title>
-
+<toto/>
 <articleinfo>
  <date>2010-05-30</date>
   <releaseinfo>2.8 </releaseinfo>
