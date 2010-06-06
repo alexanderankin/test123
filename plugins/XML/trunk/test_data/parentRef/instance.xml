@@ -3,11 +3,11 @@
 <doc>
 <p>Hello <em>world</em>.</p>
 
-<!--  XML Insert should propose p and table -->
+<!--  XML Insert proposes p and table -->
 <table>
 <tr><td>cell nr <em>1</em></td></tr>
-<tr><td> <!-- XML Insert should propose <em> --></td></tr>
+<tr><td> <!-- XML Insert proposes <em> --></td></tr>
 </table>
 
 </doc>
-<!-- FIXME: XML Insert proposes em, p, tr -->
+<!-- XML Insert proposes only doc -->
