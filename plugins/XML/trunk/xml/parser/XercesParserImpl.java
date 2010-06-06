@@ -126,19 +126,37 @@ public class XercesParserImpl extends XmlParser
 			// one gets the crimson version bundled in the JRE and the rest fails
 			// miserably (see Plugin Bug #2950392)
 			reader = new org.apache.xerces.parsers.SAXParser();
+			
+			// customize validation
 			reader.setFeature("http://xml.org/sax/features/validation",
 				buffer.getBooleanProperty("xml.validate"));
-			reader.setFeature("http://apache.org/xml/features/validation/dynamic",true);
+			// to enable documents without schemas
+			reader.setFeature("http://apache.org/xml/features/validation/dynamic",
+				buffer.getBooleanProperty("xml.validate"));
+			// for Schema validation (eg in slackerdoc/index.xml
 			reader.setFeature("http://apache.org/xml/features/validation/schema",
 				buffer.getBooleanProperty("xml.validate"));
+			// for documents using dtd for entities and schemas for validation
+			if(buffer.getBooleanProperty("xml.validate.ignore-dtd"))
+			{
+				reader.setProperty("http://java.sun.com/xml/jaxp/properties/schemaLanguage",
+					"http://www.w3.org/2001/XMLSchema");
+			}
+
+			// turn on/off namespace support.
+			// For some legacy documents, namespaces must be disabled
 			reader.setFeature("http://xml.org/sax/features/namespaces",
 				!buffer.getBooleanProperty("xml.namespaces.disable"));
-			reader.setFeature("http://xml.org/sax/features/use-entity-resolver2", true);
+			
+			// always use EntityResolver2 so that built-in DTDs can be found
+			reader.setFeature("http://xml.org/sax/features/use-entity-resolver2",
+				true);
+			
+			// XInclude support
 			reader.setFeature("http://apache.org/xml/features/xinclude",
 				buffer.getBooleanProperty("xml.xinclude"));
 			reader.setFeature("http://apache.org/xml/features/xinclude/fixup-base-uris",
 				buffer.getBooleanProperty("xml.xinclude.fixup-base-uris"));
-			//reader.setFeature("http://apache.org/xml/features/continue-after-fatal-error",true);
 			
 			//get access to the DTD
 			reader.setProperty("http://xml.org/sax/properties/declaration-handler",handler);
@@ -865,6 +883,7 @@ public class XercesParserImpl extends XmlParser
 		public void attributeDecl(String eName, String aName,
 			String type, String valueDefault, String value)
 		{
+			if(DEBUG_DTD)Log.log(Log.DEBUG,XercesParserImpl.class,"attributeDecl("+eName+","+aName+","+type+","+valueDefault+","+value+")");
 			ElementDecl element = data.getElementDecl(eName,0);
 			if(element == null)
 			{
