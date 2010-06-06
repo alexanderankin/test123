@@ -5,13 +5,13 @@
   	xmlns:ipo="http://www.example.com/IPO"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   >
-  <!-- this one is wrong, and XML Insert shouldn't propose it -->
+  <!-- this one is wrong, and XML Insert doesn't propose it -->
   <ipo:comment></ipo:comment>
   <!--  that one is correct : -->
   <comment>
-  		<!-- the completion information is missing here ! -->
+  		<!-- the completion information is here -->
   		<ipo:comment>erjrj
-		<!-- the completion information is misleading here : only string content -->
+		<!-- no completion information here : only string content -->
 		</ipo:comment>
   </comment>
   
