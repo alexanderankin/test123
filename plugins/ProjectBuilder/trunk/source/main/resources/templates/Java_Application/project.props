@@ -1,0 +1,5 @@
+projectbuilder.bsh.menu=build-dist - run
+projectbuilder.bsh.build-dist.label=Build Application
+projectbuilder.bsh.build-dist.script=bsh/build-dist.bsh
+projectbuilder.bsh.run.label=Run Application
+projectbuilder.bsh.run.script=bsh/run.bsh
