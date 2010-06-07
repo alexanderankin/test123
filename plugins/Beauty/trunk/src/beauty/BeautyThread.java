@@ -152,6 +152,7 @@ public class BeautyThread implements Runnable {
             //Log.log( Log.DEBUG, this, "completed with success." );
         }
         catch ( Exception ex ) {
+            buffer.readUnlock();
             Log.log( Log.ERROR, this, ex );
             if ( showErrorDialogs ) {
                 GUIUtilities.error( view, "beauty.error.other", new Object[] { ex } );

@@ -83,6 +83,10 @@ public class CSS3Parser
         lineSep = le;
         token_source.setLineSeparator(le);
     }
+    
+    public void addComment(Token t) {
+        token_source.addComment(t);   
+    }
 
    public CSS3Parser(String fileName)
    {
@@ -99,6 +103,9 @@ PARSER_END(CSS3Parser)
     added to a file named CSS3ParserTokenManager.java.  Some accessor are
     duplicated in the PARSER section above to make it a little easier to write
     code for the productions.
+    
+    I copied most of this from the Java parser, so there is probably extra
+    code here that isn't used for CSS.
 */
 TOKEN_MGR_DECLS :
 {
@@ -291,7 +298,7 @@ TOKEN_MGR_DECLS :
                 Object o = a.get(i);
                 if (o instanceof Token) {
                     Token token = (Token)o;
-                    if (token.kind == CSS3ParserConstants.STRING1) {
+                    if (token.kind == CSS3ParserConstants.STRING1 || token.kind == CSS3ParserConstants.COMMENT) {
                         s = s.replaceAll("[ ]+", " ");
                         list.add(s);
                         s = new String("");
@@ -316,7 +323,7 @@ TOKEN_MGR_DECLS :
 
             // check for blank line(s)
             String maybe_blank = new String(s);
-            if (maybe_blank.trim().length() == 0) {
+            if (maybe_blank.trim().isEmpty()) {
                 // yep, it's a blank, so just print it out
                 if (s.length() >= ls.length()) {
                     s = s.substring(0, s.length() - ls.length());
@@ -333,23 +340,11 @@ TOKEN_MGR_DECLS :
             // The "while" at the end of a "do" loop is marked as "^while" to
             // differentiate it from a regular "while" block. "else if" is also
             // a special case.
-            if (!s.startsWith(" else")
-                    && !s.startsWith(" catch")
-                    && !s.startsWith(" finally")
-                    && !s.startsWith(" ^while")
-                    && !s.startsWith(" {")
-                    && (!endsWith(outputBuffer, "else") && !endsWith(outputBuffer, "else "))) {
+            if (!s.startsWith(" {")) {
                 s = s.trim();
                 for (int i = 0; i < level; i++) {
                     s = indent + s;
                 }
-            }
-
-            // maybe clean out the ^ from the specially marked "while" at the
-            // end of a "do" loop
-            if (s.startsWith(" ^while")) {
-                b.deleteCharAt(1);
-                s = b.toString();
             }
 
             // check if the output buffer does NOT end with a new line.  If it
@@ -494,80 +489,10 @@ TOKEN_MGR_DECLS :
         return end.equals(s);
     }
     
-    static void writeJavadocComment(String s) {
-        String[] lines = s.split("\r\n|\r|\n");
-        
-        // indent the first line.  It won't have any leading whitespace, but
-        // may have trailing whitespace
-        String line = lines[0].trim();
-        for (int j = 0; j < level; j++) {
-            line = "    " + line;       // 4 spaces
+    static void addComment(Token t) {
+        if (t != null) {
+            add(t);
         }
-        outputBuffer.append(line).append(ls);
-        
-        // handle the remaining lines, put stars in front of them.
-        // TODO: this needs work.  Need to preserve whitepsace after
-        // the star.
-        for (int i = 1; i < lines.length; i++) {
-            line = lines[i].trim();
-            
-            // apply padding. All javadoc lines start with a *.
-            if (line.startsWith("*")) {
-                line = " " + line;
-            }
-            else {
-                line = " * " + line;   
-            }
-
-            // apply indenting. The Sun rule is 4 spaces.
-            for (int j = 0; j < level; j++) {
-                line = "    " + line;
-            }
-            
-            outputBuffer.append(line);
-            if (i < lines.length - 1) {
-                outputBuffer.append(ls);
-            }
-        }
-    }
-
-    // comments of the /* ... */ variety.  This sort of comment is commonly
-    // used to "comment out" a block of code, so I don't want to modify the
-    // existing indenting within the block.
-    static void writeBlockComment(String s) {
-        String[] lines = s.split("\r\n|\r|\n");
-
-        // indent the first line.  It won't have any leading whitespace, but
-        // may have trailing whitespace
-        String line = lines[0].trim();
-        for (int j = 0; j < level; j++) {
-            line = "    " + line;       // 4 spaces
-        }
-        outputBuffer.append(line).append(ls);
-        
-        // output body of comment without change
-        for (int i = 1; i < lines.length - 1; i++) {
-            line = lines[i];    // trimStart(lines[i], level * 4);
-            outputBuffer.append(line).append(ls);
-        }
-        
-        // output the last line.  It will probably have leading whitespace, so
-        // trim it then indent it the same as the first line.
-        line = lines[lines.length - 1].trim();
-        for (int j = 0; j < level; j++) {
-            line = "    " + line;       // 4 spaces
-        }
-        outputBuffer.append(line);
-    }
-    
-
-    // handle comments like this one
-    static void writeEndOfLineComment(String s) {
-        String line = s.trim();
-        for (int j = 0; j < level; j++) {
-            line = "    " + line;       // 4 spaces
-        }
-        outputBuffer.append(line).append(ls);
     }
 
 }
@@ -577,9 +502,11 @@ TOKEN_MGR_DECLS :
  * The tokenizer
  ******************************************************************************/
 <DEFAULT>
-SPECIAL_TOKEN :
+TOKEN :
 {
-    <COMMENT:  "/*"  (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">  { writeBlockComment(matchedToken.image); }
+    // comments can occur between any two tokens
+    <COMMENT:  ("\n" |"\r" | "\r\n" | " " | "\t")* "/*"  (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/" ("\n" |"\r" | "\r\n" | " " | "\t")*>
+        
 } 
 
 <DEFAULT>
@@ -596,9 +523,9 @@ TOKEN [IGNORE_CASE] :/* basic tokens */
   | <#ESCAPE : <UNICODE> | ( "\\"
     ~[ "\r", "\n", "\f", "0"-"9", "a"-"f" ] ) >
   | <#NMSTART :
-    [ "a"-"z", "_" ] | <NONASCII> | <ESCAPE> >
+    [ "a"-"z", "A"-"Z", "-", "_" ] | <NONASCII> | <ESCAPE> >
   | <#NMCHAR :
-    ["a"-"z", "0"-"9", "-", "_"] | <NONASCII> | <ESCAPE> >
+    ["a"-"z", "A"-"Z", "0"-"9", "-", "_"] | <NONASCII> | <ESCAPE> >
   | <#STRING1 : "\"" (
     ~[ "\n", "\r", "\f", "\\", "\"" ] | "\\" <NL> | <ESCAPE> )* "\"" >
   | <#STRING2 : "\'" (
@@ -684,8 +611,8 @@ TOKEN :
   | <RBRACKET: "]" >
   | <ANY: "*" >
   | <DOT: "." >
-  | <LPARAN: ")" >
-  | <RPARAN: "(">
+  | <LPARAN: "(" >
+  | <RPARAN: ")">
 }
 
 <DEFAULT>
@@ -827,53 +754,45 @@ TOKEN :
  *
  * @exception ParseException exception during the parse
  */
-void styleSheet() :
+void styleSheet() throws Exception :
 {
 }
 {
-    try {
-            // used as an error recovery for HTML tags in CSS pages
-            (
-                (
-                    t=<HTMLSTARTTAG> {add(t); }
-                  | t=<HTMLENDTAG> {add(t); }
-                )
-            ) *
-            (
-                charset()
-            ) *
-        
-            // * instead of ? to capture the reinit part
-            (
-                <S>
-              | t=<CDO> {add(t); }
-              | t=<CDC> {add(t); }
-            ) *
-         
-            (
-                importDeclaration()
-                (
-                    ignoreStatement()
-                )
-            ) *
-         
-            (
-                namespaceDeclaration()
-                (
-                    ignoreStatement()
-                )
-            ) *
-         
-            afterImportDeclaration()
-            <EOF> 
+    // used to capture html tags that might be surrounding a css block
+    (
+        (
+            t=<HTMLSTARTTAG> {add(t); }
+          | t=<HTMLENDTAG> {add(t); }
+        )
+    ) *
+    (
+        charset()
+    ) *
+
+    // * instead of ? to capture the reinit part
+    (
+        <S> | t=<COMMENT> { addComment(t); }
+      | t=<CDO> {add(t); }
+      | t=<CDC> {add(t); }
+    ) *
+ 
+    (
+        importDeclaration()
+        (
+            ignoreStatement()
+        )
+    ) *
+ 
+    (
+        namespaceDeclaration()
+        (
+            ignoreStatement()
+        )
+    ) *
+ 
+    afterImportDeclaration()
+    <EOF> 
             
-    } 
-    catch(ParseException pe) {
-        pe.printStackTrace();   
-    }
-    catch ( TokenMgrError err ) {
-        err.printStackTrace();
-    }
     {
         write();
     }
@@ -885,11 +804,11 @@ void charset() :
 { 
         t=<CHARSET_SYM>  {add(t); }
         (
-            <S>
+            <S> | t=<COMMENT> { addComment(t); }
         ) *
         t=<STRING>  {add(t); }
         (
-            <S>
+            <S> | t=<COMMENT> { addComment(t); }
         ) *
         t=<SEMICOLON> {add(t); }
 }
@@ -930,7 +849,7 @@ void ignoreStatement() :
           | atRuleDeclaration()
         )
         (
-            <S>
+            <S> | t=<COMMENT> { addComment(t); }
         ) *
     ) *
 }
@@ -943,12 +862,12 @@ void namespaceDeclaration() :
     (
         t=<NAMESPACE_SYM>  {add(t); }
         (
-            <S>
+            <S> | t=<COMMENT> { addComment(t); }
         ) *
         (
             t=<IDENT> {add(t); }
             (
-                <S>
+                <S> | t=<COMMENT> { addComment(t); }
             ) *
         ) ?
         (
@@ -956,11 +875,11 @@ void namespaceDeclaration() :
           | t=<URL> {add(t); }
         )
         (
-            <S>
+            <S> | t=<COMMENT> { addComment(t); }
         ) *
         t=<SEMICOLON>  {add(t); }
         (
-            <S>
+            <S> | t=<COMMENT> { addComment(t); }
         ) *
     )
 }
@@ -977,28 +896,28 @@ void importDeclaration() :
 {
     t=<IMPORT_SYM>  {add(t); }
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
     (
         t=<STRING> {add(t); }
       | t=<URL> {add(t); }
     )
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
     (
         medium()
         (
             t=<COMMA>  {add(t); }
             (
-                <S>
+                <S> | t=<COMMENT> { addComment(t); }
             ) *
             medium()
         ) *
     ) ?
     t=<SEMICOLON>  {add(t); writeln(); }
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
 }
 
@@ -1009,47 +928,47 @@ void media() :
 {
     t=<MEDIA_SYM>  { add(t); }
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
     (
         t=<MEDIARESTRICTOR> {add(t); }
         (
-            <S>
+            <S> | t=<COMMENT> { addComment(t); }
         ) +
     ) ?
     medium()
     (
         t=<COMMA>  {add(t); }
         (
-            <S>
+            <S> | t=<COMMENT> { addComment(t); }
         ) *
         medium()
     ) *
     (
         t=<AND>  {add(t); }
         (
-            <S>
+            <S> | t=<COMMENT> { addComment(t); }
         ) *
-        t=<RPARAN>  {add(t); }
-        (
-            <S>
-        ) *
-        mediadeclaration()
         t=<LPARAN>  {add(t); }
         (
-            <S>
+            <S> | t=<COMMENT> { addComment(t); }
+        ) *
+        mediadeclaration()
+        t=<RPARAN>  {add(t); }
+        (
+            <S> | t=<COMMENT> { addComment(t); }
         ) *
     ) *
     t=<LBRACE>  {add(t); writeln(); ++token_source.level; }
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
     (
         ruleSet()
     ) *
     t=<RBRACE>  {add(t); --token_source.level; writeln(); }
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
 }
 
@@ -1061,7 +980,7 @@ void medium() :/* tv, projection, screen, ... */
 {
     t=<IDENT>  { add(t); }
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
 }
 
@@ -1071,7 +990,7 @@ void unused_production_generic_syntax() :
 {
     "(" { add("("); }
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
     term() 
     ")" { add(")"); }
@@ -1083,7 +1002,7 @@ void definition() :
 {
     "[" { add("["); }
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
     term() 
     "]" { add("]"); }
@@ -1095,12 +1014,12 @@ void page() :
 {
     t=<PAGE_SYM>  { add(t); }
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
     (
         t=<IDENT> { add(t); }
         (
-            <S>
+            <S> | t=<COMMENT> { addComment(t); }
         ) *
     ) ?
     (
@@ -1108,14 +1027,14 @@ void page() :
     ) ?
     t=<LBRACE>  { add(t); writeln(); ++token_source.level; }
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
     (
         pageContent()
     )
     t=<RBRACE>  { add(t); --token_source.level; writeln(); }
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
 }
 
@@ -1138,15 +1057,15 @@ void prefAtRule() :
       | t=<ATRIGHT> { add(t); }
     )
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
     t=<LBRACE>  { add(t); writeln(); ++token_source.level; }
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
-    declarations() t=<RBRACE>  { add(t); --token_source.level;  writeln(); }
+    declarations() t=<RBRACE>  { trimWhitespace(); writeln(); add(t); --token_source.level;  writeln(); }
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
 }
 
@@ -1156,7 +1075,7 @@ void pseudo_page() :
 {
     ":" t=<IDENT>  { add(":"); add(t); }
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
 }
 
@@ -1166,15 +1085,15 @@ void fontFace() :
 {
     t=<FONT_FACE_SYM>  { add(t); }
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
     t=<LBRACE>  { add(t); writeln(); ++token_source.level; }
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
-    declarations() t=<RBRACE>  { add(t); --token_source.level; writeln(); }
+    declarations() t=<RBRACE>  { trimWhitespace(); writeln(); add(t); --token_source.level; writeln(); }
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
 }
 
@@ -1184,15 +1103,15 @@ void colorprofile() :
 {
     t=<COLOR_PROFILE>  { add(t); }
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
     t=<LBRACE>  { add(t); writeln(); ++token_source.level; }
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
-    declarations() t=<RBRACE>  { add(t); --token_source.level; writeln(); }
+    declarations() t=<RBRACE>  { trimWhitespace(); writeln(); add(t); --token_source.level; writeln(); }
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
 }
 
@@ -1203,15 +1122,15 @@ void preference() :
 {
     t=<PREF_SYM>  { add(t); }
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
     t=<LBRACE>  { add(t); writeln(); ++token_source.level; }
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
-    declarations() t=<RBRACE>  { add(t); --token_source.level;  writeln(); }
+    declarations() t=<RBRACE>  { trimWhitespace(); writeln(); add(t); --token_source.level;  writeln(); }
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
 }
 
@@ -1221,15 +1140,15 @@ void phoneticAlphabet() :
 {
     t=<PHONETIC_ALPHABET_SYM>  { add(t); }
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
 
     t=<STRING>  { add(t); }
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
 
-    ";" { add(";"); }
+    ";" { add(";"); writeln(); }
 }
 
 void atRuleDeclaration() :
@@ -1249,7 +1168,7 @@ void operator() :
           | t=<COMMA> { add(t); }
         )
         (
-            <S>
+            <S> | t=<COMMENT> { addComment(t); }
         ) *
     ) ?
 }
@@ -1266,11 +1185,11 @@ void combinator() :
           | <TILDE>  { add("~"); }
         )
         (
-            <S>
+            <S> | t=<COMMENT> { addComment(t); }
         ) *
       | 
         (
-            <S>
+            <S> | t=<COMMENT> { addComment(t); }
         ) +
     )
 }
@@ -1289,7 +1208,7 @@ void property() :
 {
     t=<IDENT>  { add(t); }
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
 }
 
@@ -1300,19 +1219,19 @@ void ruleSet() :
 {
     selector()
     (
-        t=<COMMA>  { add(t); }
+        t=<COMMA>  { add(t); add(" "); }
         (
-            <S>
+            <S> | t=<COMMENT> { addComment(t); }
         ) *
         selector()
     ) *
     t=<LBRACE> { add(t); writeln(); ++token_source.level; }
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
-    declarations() t=<RBRACE>  { add(t); --token_source.level; writeln(); }
+    declarations() t=<RBRACE>  { trimWhitespace(); writeln(); add(t); --token_source.level; writeln(); }
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
 }
 
@@ -1324,10 +1243,11 @@ void declarations() :
         declaration()
     ) ?
     (
-        ";" { add(";"); writeln(); }
+        ";" { add(";"); }
         (
-            <S>
+            <S> | t=<COMMENT> { add(t); }
         ) *
+        { writeln(); }
  
         (
             declaration()
@@ -1356,7 +1276,7 @@ void externalSelector() :
     simple_selector() 
     (
         (
-            <S>
+            <S> | t=<COMMENT> { addComment(t); }
         ) +
         simple_selector()
     ) *
@@ -1439,30 +1359,31 @@ void attrib() :
 {
     t=<LBRACKET>  { add(t); }
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
     t=<IDENT>  { add(t); }
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
     (
         (
-            t=<EQ> { add(t); }
-          | t=<INCLUDES> { add(t); }
-          | t=<DASHMATCH> { add(t); }
-          | t=<PREFIXMATCH> { add(t); }
-          | t=<SUFFIXMATCH> { add(t); }
-          | t=<SUBSTRINGMATCH> { add(t); }
+            t=<EQ> 
+          | t=<INCLUDES>
+          | t=<DASHMATCH> 
+          | t=<PREFIXMATCH>
+          | t=<SUFFIXMATCH>
+          | t=<SUBSTRINGMATCH> 
         )
+        { trim(); add(" ");add(t);  add(" ");}
         (
-            <S>
+            <S> | t=<COMMENT> { addComment(t); }
         ) *
         (
             t=<IDENT> { add(t); }
           | t=<STRING> { add(t); }
         )
         (
-            <S>
+            <S> | t=<COMMENT> { addComment(t); }
         ) *
     ) ?
     t=<RBRACKET> { add(t); }
@@ -1476,7 +1397,7 @@ void negation() :
  
     t=<FUNCTIONNOT>  { add(t); }
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
     (
         element_name()
@@ -1487,9 +1408,9 @@ void negation() :
       | negation()
     )
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
-    t=<LPARAN>  { add(t); }
+    t=<RPARAN>  { add(t); }
 }
 
 
@@ -1513,7 +1434,7 @@ void pseudo() :
             (
                 t=<FUNCTIONLANG>  { add(t); }
                 (
-                    <S>
+                    <S> | t=<COMMENT> { addComment(t); }
                 ) *
                 (
                     t=<NUMBER> { add(t); }
@@ -1521,19 +1442,19 @@ void pseudo() :
                   | t=<STRING> { add(t); }
                 )
                 (
-                    <S>
+                    <S> | t=<COMMENT> { addComment(t); }
                 ) *
             )
           | 
             (
                 t=<FUNCTION>  { add(t); }
                 (
-                    <S>
+                    <S> | t=<COMMENT> { addComment(t); }
                 ) *
                 expression()
             )
         )
-        t=<LPARAN> { add(t); }
+        t=<RPARAN> { add(t); }
     )
 }
 
@@ -1555,7 +1476,7 @@ void mediadeclaration() :
     (
         ":" { add(": "); }
         (
-            <S>
+            <S> | t=<COMMENT> { addComment(t); }
         ) *
         expr() 
         (
@@ -1570,9 +1491,9 @@ void declaration() :
 }
 {
     property() 
-    ":" { add(": "); }
+    ":" { trim(); add(": "); }
     (
-        <S>
+        <S> | t=<COMMENT> { if(Character.isWhitespace(t.image.charAt(0))) trim(); addComment(t); }
     ) *
 
     expr()
@@ -1588,7 +1509,7 @@ void prio() :
 {
     t=<IMPORTANT_SYM>  { add(t); }
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
 }
 
@@ -1606,7 +1527,7 @@ void expression() :
           | t=<IDENT> { add(t); }
         )
         (
-            <S>
+            <S> | t=<COMMENT> { addComment(t); }
         ) *
     ) +
 } 
@@ -1646,7 +1567,7 @@ void term() :
           | function()
         )
         (
-            <S>
+            <S> | t=<COMMENT> { addComment(t); }
         ) *
     )
   | 
@@ -1659,7 +1580,7 @@ void term() :
           | t=<UNICODERANGE> { add(t); }
         )
         (
-            <S>
+            <S> | t=<COMMENT> { addComment(t); }
         ) *
     )
 }
@@ -1671,7 +1592,7 @@ void function() :
 {
     t=<FUNCTION> { add(t); }
     (
-        <S>
+        <S> | t=<COMMENT> { addComment(t); }
     ) *
 
     expr() 

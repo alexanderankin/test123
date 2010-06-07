@@ -80,9 +80,7 @@ beauty.error.other.message=\
     unhandled exception occurred:\n\
     {0}\n\
     \n\
-    See the activity log for any details.\n\
-    Please report this error to the maintainer of the Beauty plugin.\n\
-    Thank you.
+    See the activity log for any details.
 
 beauty.error.isReadOnly.title=Beauty Error
 beauty.error.isReadOnly.message=\
