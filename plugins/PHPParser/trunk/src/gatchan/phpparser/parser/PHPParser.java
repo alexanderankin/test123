@@ -770,7 +770,7 @@ public class PHPParser implements PHPParserConstants {
     } catch (ParseException e) {
                 fireParseError("; expected",";",e.currentToken.next);
     }
-                namespace = namespaceNameToken.image;
+                namespace = Namespace.getNamespace(namespaceNameToken.image);
                 {if (true) return new Namespace(namespace,
                                      namespaceToken.sourceStart,
                                      sourceEnd,
