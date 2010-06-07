@@ -75,4 +75,18 @@ public class Namespace extends Statement
 	public void analyzeCode(PHPParser parser)
 	{
 	}
+
+	public static String getNamespace(String namespace)
+	{
+		if (namespace == null || namespace.length() == 0)
+			return namespace;
+		if (namespace.charAt(0) == '\\')
+		{
+			namespace = namespace.substring(1);
+			if (namespace.length() == 0)
+				return null;
+		}
+		return namespace;
+
+	}
 }
