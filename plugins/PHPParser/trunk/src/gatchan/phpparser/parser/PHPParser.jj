@@ -1025,7 +1025,7 @@ Namespace namespace():
 		fireParseError("; expected",";",e.currentToken.next);
 	}
 	{
-		namespace = namespaceNameToken.image;
+		namespace = Namespace.getNamespace(namespaceNameToken.image);
 		return new Namespace(namespace,
 				     namespaceToken.sourceStart,
 				     sourceEnd,
