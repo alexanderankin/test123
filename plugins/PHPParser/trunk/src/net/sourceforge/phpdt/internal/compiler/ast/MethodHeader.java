@@ -3,7 +3,7 @@
 * :tabSize=8:indentSize=8:noTabs=false:
 * :folding=explicit:collapseFolds=1:
 *
-* Copyright (C) 2003, 2009 Matthieu Casanova
+* Copyright (C) 2003, 2010 Matthieu Casanova
 *
 * This program is free software; you can redistribute it and/or
 * modify it under the terms of the GNU General Public License
@@ -42,16 +42,16 @@ public class MethodHeader extends Statement implements PHPItem, Serializable
 {
 	private final List modifiers;
 	/** The path of the file containing this class. */
-	private String path;
-
+	private final String path;
+	private final String namespace;
 	/** The name of the method. */
-	private String name;
+	private final String name;
 
 	/** Indicate if the method returns a reference. */
 	private boolean reference;
 
 	/** The arguments. */
-	private List arguments;
+	private final List arguments;
 
 	private String cachedToString;
 
@@ -61,7 +61,7 @@ public class MethodHeader extends Statement implements PHPItem, Serializable
 	private static final long serialVersionUID = -8681675454927194940L;
 
 	//{{{ MethodHeader constructor
-	public MethodHeader(String path,
+	public MethodHeader(String namespace, String path,
 			    List modifiers,
 			    String name,
 			    boolean reference,
@@ -74,12 +74,18 @@ public class MethodHeader extends Statement implements PHPItem, Serializable
 			    int endColumn)
 	{
 		super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+		this.namespace = namespace;
 		this.modifiers = modifiers;
 		this.path = path;
 		this.name = name;
 		this.reference = reference;
 		this.arguments = arguments;
 	} //}}}
+
+	public String getNamespace()
+	{
+		return namespace;
+	}
 
 	//{{{ getName() method
 	public String getName()
@@ -102,7 +108,7 @@ public class MethodHeader extends Statement implements PHPItem, Serializable
 	{
 		if (cachedToString == null)
 		{
-			StringBuffer buff = new StringBuffer(100);
+			StringBuilder buff = new StringBuilder(100);
 			if (reference) buff.append('&');
 			buff.append(name);
 			buff.append('(');
@@ -124,6 +130,7 @@ public class MethodHeader extends Statement implements PHPItem, Serializable
 		return cachedToString;
 	}
 
+	@Override
 	public String toString(int tab)
 	{
 		return tabString(tab) + toString();

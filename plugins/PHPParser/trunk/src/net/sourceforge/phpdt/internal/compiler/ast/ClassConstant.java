@@ -1,3 +1,24 @@
+/*
+* ClassConstant.java
+* :tabSize=8:indentSize=8:noTabs=false:
+* :folding=explicit:collapseFolds=1:
+*
+* Copyright (C) 2003, 2010 Matthieu Casanova
+*
+* This program is free software; you can redistribute it and/or
+* modify it under the terms of the GNU General Public License
+* as published by the Free Software Foundation; either version 2
+* of the License, or any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
 package net.sourceforge.phpdt.internal.compiler.ast;
 
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
@@ -20,200 +41,223 @@ import org.gjt.sp.jedit.GUIUtilities;
  */
 public class ClassConstant extends Statement implements Outlineable, PHPItem, IAsset
 {
-  private final String path;
+	private final String path;
 
-  private final String name;
+	private final String name;
 
-  /** The value can be null when there are parse errors. */
-  private final Expression value;
+	/**
+	 * The value can be null when there are parse errors.
+	 */
+	private final Expression value;
 
-  private final OutlineableWithChildren parent;
+	private final OutlineableWithChildren parent;
 
-  private static transient Icon icon;
+	private static transient Icon icon;
 
-  private transient Position start;
-  private transient Position end;
+	private transient Position start;
+	private transient Position end;
 
-  private static final long serialVersionUID = 6115937167801653273L;
-
-
-  /**
-   * Create a node.
-   *
-   * @param path        the path
-   * @param parent      the parent class
-   * @param name        the name of the constant
-   * @param value       the value (it could be null in case of parse error)
-   * @param sourceStart starting offset
-   * @param sourceEnd   ending offset
-   * @param beginLine   begin line
-   * @param endLine     ending line
-   * @param beginColumn begin column
-   * @param endColumn   ending column
-   */
-  public ClassConstant(String path,
-                       OutlineableWithChildren parent,
-                       String name,
-                       Expression value,
-                       int sourceStart,
-                       int sourceEnd,
-                       int beginLine,
-                       int endLine,
-                       int beginColumn,
-                       int endColumn)
-  {
-    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
-    this.path = path;
-    this.name = name;
-    this.value = value;
-    this.parent = parent;
-  }
+	private final String namespace;
+	private static final long serialVersionUID = 6115937167801653273L;
 
 
-  public Expression expressionAt(int line, int column)
-  {
-    return null;
-  }
+	/**
+	 * Create a node.
+	 *
+	 * @param namespace
+	 * @param path	the path
+	 * @param parent      the parent class
+	 * @param name	the name of the constant
+	 * @param value       the value (it could be null in case of parse error)
+	 * @param sourceStart starting offset
+	 * @param sourceEnd   ending offset
+	 * @param beginLine   begin line
+	 * @param endLine     ending line
+	 * @param beginColumn begin column
+	 * @param endColumn   ending column
+	 */
+	public ClassConstant(String namespace, String path,
+			     OutlineableWithChildren parent,
+			     String name,
+			     Expression value,
+			     int sourceStart,
+			     int sourceEnd,
+			     int beginLine,
+			     int endLine,
+			     int beginColumn,
+			     int endColumn)
+	{
+		super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+		this.namespace = namespace;
+		this.path = path;
+		this.name = name;
+		this.value = value;
+		this.parent = parent;
+	}
 
-  /**
-   * Return the object into String.
-   *
-   * @param tab how many tabs (not used here
-   * @return a String
-   */
-  public String toString(int tab)
-  {
-    return tabString(tab) + "const "+name + " = "+ (value == null ? "?" : value.toStringExpression());
-  }
+	public String getNamespace()
+	{
+		return namespace;
+	}
 
-  /**
-   * Get the variables from outside (parameters, globals ...)
-   *
-   * @param list the list where we will put variables
-   */
-  public void getOutsideVariable(List list)
-  {
-  }
+	public Expression expressionAt(int line, int column)
+	{
+		return null;
+	}
 
-  /**
-   * get the modified variables.
-   *
-   * @param list the list where we will put variables
-   */
-  public void getModifiedVariable(List list)
-  {
-  }
+	/**
+	 * Return the object into String.
+	 *
+	 * @param tab how many tabs (not used here
+	 * @return a String
+	 */
+	public String toString(int tab)
+	{
+		return tabString(tab) + "const " + name + " = " + (value == null ? "?" : value.toStringExpression());
+	}
 
-  /**
-   * Get the variables used.
-   *
-   * @param list the list where we will put variables
-   */
-  public void getUsedVariable(List list)
-  {
-  }
+	/**
+	 * Get the variables from outside (parameters, globals ...)
+	 *
+	 * @param list the list where we will put variables
+	 */
+	public void getOutsideVariable(List list)
+	{
+	}
 
-  /** This method will analyze the code. by default it will do nothing */
-  public void analyzeCode(PHPParser parser)
-  {
-  }
+	/**
+	 * get the modified variables.
+	 *
+	 * @param list the list where we will put variables
+	 */
+	public void getModifiedVariable(List list)
+	{
+	}
 
-  /**
-   * Returns the parent of the item.
-   *
-   * @return the parent
-   */
-  public OutlineableWithChildren getParent()
-  {
-    return parent;
-  }
+	/**
+	 * Get the variables used.
+	 *
+	 * @param list the list where we will put variables
+	 */
+	public void getUsedVariable(List list)
+	{
+	}
 
-  /**
-   * Give the name of the item.
-   *
-   * @return the name of the item
-   */
-  public String getName()
-  {
-    return name;
-  }
+	/**
+	 * This method will analyze the code. by default it will do nothing
+	 */
+	public void analyzeCode(PHPParser parser)
+	{
+	}
 
-  /**
-   * Returns the item type.
-   * in {@link PHPItem#CLASS},{@link PHPItem#FIELD}, {@link PHPItem#INTERFACE}, {@link PHPItem#METHOD}
-   *
-   * @return the item type
-   */
-  public int getItemType()
-  {
-    return CLASS_CONSTANT;
-  }
+	/**
+	 * Returns the parent of the item.
+	 *
+	 * @return the parent
+	 */
+	public OutlineableWithChildren getParent()
+	{
+		return parent;
+	}
 
-  public String getNameLowerCase()
-  {
-    return name.toLowerCase();
-  }
+	/**
+	 * Give the name of the item.
+	 *
+	 * @return the name of the item
+	 */
+	public String getName()
+	{
+		return name;
+	}
 
-  public String getPath()
-  {
-    return path;
-  }
+	/**
+	 * Returns the item type.
+	 * in {@link PHPItem#CLASS},{@link PHPItem#FIELD}, {@link PHPItem#INTERFACE}, {@link PHPItem#METHOD}
+	 *
+	 * @return the item type
+	 */
+	public int getItemType()
+	{
+		return CLASS_CONSTANT;
+	}
 
-  public Icon getIcon()
-  {
-    if (icon == null)
-    {
-      icon = GUIUtilities.loadIcon(ClassHeader.class.getResource("/gatchan/phpparser/icons/field.png").toString());
-    }
-    return icon;
-  }
+	public String getNameLowerCase()
+	{
+		return name.toLowerCase();
+	}
 
-  /** Returns a brief description of the asset to be shown in the tree. */
-  public String getShortString()
-  {
-    return toString();
-  }
+	public String getPath()
+	{
+		return path;
+	}
 
-  /**
-   * Returns a full description of the asset to be shown in the view's
-   * status bar on when the mouse is over the asset in the tree.
-   */
-  public String getLongString()
-  {
-    return toString();
-  }
+	public Icon getIcon()
+	{
+		if (icon == null)
+		{
+			icon = GUIUtilities.loadIcon(ClassHeader.class.getResource("/gatchan/phpparser/icons/field.png").toString());
+		}
+		return icon;
+	}
 
-  /** Set the name of the asset */
-  public void setName(String name)
-  {
-  }
+	/**
+	 * Returns a brief description of the asset to be shown in the tree.
+	 */
+	public String getShortString()
+	{
+		return toString();
+	}
 
-  /** Set the start position */
-  public void setStart(Position start)
-  {
-    this.start = start;
-  }
+	/**
+	 * Returns a full description of the asset to be shown in the view's
+	 * status bar on when the mouse is over the asset in the tree.
+	 */
+	public String getLongString()
+	{
+		return toString();
+	}
 
-  /** Returns the starting position. */
-  public Position getStart()
-  {
-    return start;
-  }
+	/**
+	 * Set the name of the asset
+	 */
+	public void setName(String name)
+	{
+	}
 
-  /** Set the end position */
-  public void setEnd(Position end)
-  {
-    this.end = end;
-  }
+	/**
+	 * Set the start position
+	 */
+	public void setStart(Position start)
+	{
+		this.start = start;
+	}
 
-  /** Returns the end position. */
-  public Position getEnd()
-  {
-    return end;
-  }
+	/**
+	 * Returns the starting position.
+	 */
+	public Position getStart()
+	{
+		return start;
+	}
 
-  public String toString()
-  {
-    return getName();
-  }
+	/**
+	 * Set the end position
+	 */
+	public void setEnd(Position end)
+	{
+		this.end = end;
+	}
+
+	/**
+	 * Returns the end position.
+	 */
+	public Position getEnd()
+	{
+		return end;
+	}
+
+	public String toString()
+	{
+		return getName();
+	}
 }

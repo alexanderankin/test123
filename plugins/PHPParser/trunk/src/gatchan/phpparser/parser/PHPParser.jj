@@ -122,6 +122,11 @@ public class PHPParser
 	private Scope scope;
 
 	private final List tempList = new ArrayList();
+
+	/**
+	 * The current namespace
+	 */
+	private String namespace;
 	//}}}
 
 	//{{{ PHPParser constructor
@@ -994,6 +999,9 @@ Namespace namespace():
 	int endColumn;
 }
 {
+	{
+		namespace = null;
+	}
 	namespaceToken = <NAMESPACE>
 	{
 		sourceEnd = namespaceToken.sourceEnd;
@@ -1017,7 +1025,8 @@ Namespace namespace():
 		fireParseError("; expected",";",e.currentToken.next);
 	}
 	{
-		return new Namespace(namespaceNameToken.image,
+		namespace = namespaceNameToken.image;
+		return new Namespace(namespace,
 				     namespaceToken.sourceStart,
 				     sourceEnd,
 				     namespaceToken.beginLine,
@@ -1071,7 +1080,8 @@ InterfaceDeclaration interfaceDeclaration() :
 	]
 
 	{
-		interfaceDeclaration = new InterfaceDeclaration(path,
+		interfaceDeclaration = new InterfaceDeclaration(namespace,
+								path,
 								currentSegment,
 								interfaceNameImage,
 								superInterfaces,
@@ -1237,7 +1247,8 @@ ClassConstant classConstant() :
   } //}}}
 
   {
-    return new ClassConstant(path,
+    return new ClassConstant(namespace,
+    	    		     path,
                              currentSegment,
                              constName,
                              initializer,
@@ -1480,7 +1491,8 @@ ClassHeader classHeader(Token abstractToken) :
 			endLine     = className.endLine;
 			endColumn   = className.endColumn;
 		}
-		return new ClassHeader(path,
+		return new ClassHeader(namespace,
+				       path,
 				       classNameImage,
 				       superclassNameImage,
 				       interfaceNames,
@@ -1784,7 +1796,8 @@ List FieldDeclaration() :
   try {
     variableDeclaration = field()
       {
-        arrayList.add(new FieldDeclaration(path,
+        arrayList.add(new FieldDeclaration(namespace,
+        				   path,
                                            variableDeclaration,
                                            currentSegment,
                                            variableDeclaration.getSourceStart(),
@@ -1813,7 +1826,8 @@ List FieldDeclaration() :
   (
     <COMMA> variableDeclaration = field()
       {
-        arrayList.add(new FieldDeclaration(path,
+        arrayList.add(new FieldDeclaration(namespace,
+        				   path,
                                            variableDeclaration,
                                            currentSegment,
                                            variableDeclaration.getSourceStart(),
@@ -1856,7 +1870,8 @@ List fieldDeclarationPHP5(List modifiers):
 	{
 		variableDeclaration = field()
 		{
-			fields.add(new FieldDeclaration(modifiers,
+			fields.add(new FieldDeclaration(namespace,
+				modifiers,
 				path,
 				variableDeclaration,
 				currentSegment,
@@ -1897,7 +1912,8 @@ List fieldDeclarationPHP5(List modifiers):
 		{
 			variableDeclaration = field()
 			{
-				fields.add(new FieldDeclaration(modifiers,
+				fields.add(new FieldDeclaration(namespace,
+					modifiers,
 					path,
 					variableDeclaration,
 					currentSegment,
@@ -2547,7 +2563,8 @@ MethodDeclaration closureDeclaration():
 	functionToken = <FUNCTION>
 	FormalParameters(formalParameters)
 	{
-		methodHeader = new MethodHeader(path,
+		methodHeader = new MethodHeader(namespace,
+			path,
 			null,
 			"",
 			false,
@@ -2633,7 +2650,8 @@ MethodHeader methodHeader(Token functionToken,int type, List modifiers):
 	}
 	FormalParameters(formalParameters)
 	{
-		return new MethodHeader(path,
+		return new MethodHeader(namespace,
+					path,
 					modifiers,
 					identifierChar,
 					reference != null,

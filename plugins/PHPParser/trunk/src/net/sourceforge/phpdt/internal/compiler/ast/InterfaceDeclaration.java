@@ -1,3 +1,23 @@
+/*
+ * InterfaceDeclaration.java
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
+ * Copyright (C) 2003-2010 Matthieu Casanova
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
 package net.sourceforge.phpdt.internal.compiler.ast;
 
 import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
@@ -21,179 +41,230 @@ import sidekick.IAsset;
  * @author Matthieu Casanova
  * @version $Id$
  */
-public class InterfaceDeclaration extends Statement implements OutlineableWithChildren, PHPItem, IAsset {
-  private final String path;
-  private final transient OutlineableWithChildren parent;
-  private final String name;
+public class InterfaceDeclaration extends Statement implements OutlineableWithChildren, PHPItem, IAsset
+{
+	private final String path;
+	private final transient OutlineableWithChildren parent;
+	private final String name;
+	private final String namespace;
 
-  private List children = new ArrayList();
+	private final List children = new ArrayList();
 
-  /** The constants of the class (for php5). */
-  private final List constants = new ArrayList();
+	/**
+	 * The constants of the class (for php5).
+	 */
+	private final List constants = new ArrayList();
 
-  private static transient Icon icon;
-  private String nameLowerCase;
+	private static transient Icon icon;
+	private String nameLowerCase;
 
-  private transient Position start;
-  private transient Position end;
+	private transient Position start;
+	private transient Position end;
 
-  /** The list of the super interfaces names. This list could be null */
-  private List superInterfaces;
+	/**
+	 * The list of the super interfaces names. This list could be null
+	 */
+	private final List superInterfaces;
 
-  /** The methodsHeaders of the class. */
-  private final List methodsHeaders = new ArrayList();
+	/**
+	 * The methodsHeaders of the class.
+	 */
+	private final List methodsHeaders = new ArrayList();
 
-  private static final long serialVersionUID = -6768547707320365598L;
+	private static final long serialVersionUID = -6768547707320365598L;
 
-  public InterfaceDeclaration(String path,
-                              OutlineableWithChildren parent,
-                              String name,
-                              List superInterfaces,
-                              int sourceStart,
-                              int beginLine,
-                              int beginColumn) {
-    this.path = path;
-    this.parent = parent;
-    this.name = name;
-    this.superInterfaces = superInterfaces;
-    this.sourceStart = sourceStart;
-    this.beginLine = beginLine;
-    this.beginColumn = beginColumn;
-  }
+	public InterfaceDeclaration(String namespace,
+				    String path,
+				    OutlineableWithChildren parent,
+				    String name,
+				    List superInterfaces,
+				    int sourceStart,
+				    int beginLine,
+				    int beginColumn)
+	{
+		this.namespace = namespace;
+		this.path = path;
+		this.parent = parent;
+		this.name = name;
+		this.superInterfaces = superInterfaces;
+		this.sourceStart = sourceStart;
+		this.beginLine = beginLine;
+		this.beginColumn = beginColumn;
+	}
 
-  public String toString(int tab) {
-    return null;
-  }
+	public String getNamespace()
+	{
+		return namespace;
+	}
 
-  public String toString() {
-    StringBuffer buf = new StringBuffer();
-    buf.append("interface ");
-    buf.append(name);
-    if (superInterfaces != null)
-    {
-      buf.append(" extends ");
-      for (int i = 0; i < superInterfaces.size(); i++) {
-        if (i != 0)
-          buf.append(", ");
-        buf.append(superInterfaces.get(i));
-      }
-    }
-    return buf.toString();
-  }
+	@Override
+	public String toString(int tab)
+	{
+		return null;
+	}
 
-  public void getOutsideVariable(List list) {
-  }
+	public String toString()
+	{
+		StringBuilder buf = new StringBuilder();
+		buf.append("interface ");
+		buf.append(name);
+		if (superInterfaces != null)
+		{
+			buf.append(" extends ");
+			for (int i = 0; i < superInterfaces.size(); i++)
+			{
+				if (i != 0)
+					buf.append(", ");
+				buf.append(superInterfaces.get(i));
+			}
+		}
+		return buf.toString();
+	}
 
-  public void getModifiedVariable(List list) {
-  }
+	@Override
+	public void getOutsideVariable(List list)
+	{
+	}
 
-  public void getUsedVariable(List list) {
-  }
+	@Override
+	public void getModifiedVariable(List list)
+	{
+	}
 
-  public boolean add(Outlineable o) {
-    return children.add(o);
-  }
+	@Override
+	public void getUsedVariable(List list)
+	{
+	}
 
-  /**
-   * Add a constant to the class.
-   *
-   * @param constant the constant
-   */
-  public void addConstant(ClassConstant constant)
-  {
-    constants.add(constant);
-  }
+	public boolean add(Outlineable o)
+	{
+		return children.add(o);
+	}
 
-  /**
-   * Add a method to the interface.
-   *
-   * @param method the method declaration
-   */
-  public void addMethod(MethodDeclaration method) {
-    methodsHeaders.add(method.getMethodHeader());
-    add(method);
-  }
+	/**
+	 * Add a constant to the class.
+	 *
+	 * @param constant the constant
+	 */
+	public void addConstant(ClassConstant constant)
+	{
+		constants.add(constant);
+	}
 
-  public Outlineable get(int index) {
-    return (Outlineable) children.get(index);
-  }
+	/**
+	 * Add a method to the interface.
+	 *
+	 * @param method the method declaration
+	 */
+	public void addMethod(MethodDeclaration method)
+	{
+		methodsHeaders.add(method.getMethodHeader());
+		add(method);
+	}
 
-  public int size() {
-    return children.size();
-  }
+	public Outlineable get(int index)
+	{
+		return (Outlineable) children.get(index);
+	}
 
-  public OutlineableWithChildren getParent() {
-    return parent;
-  }
+	public int size()
+	{
+		return children.size();
+	}
 
-  public String getName() {
-    return name;
-  }
+	public OutlineableWithChildren getParent()
+	{
+		return parent;
+	}
 
-  public String getNameLowerCase() {
-    if (nameLowerCase == null) {
-      nameLowerCase = name.toLowerCase();
-    }
-    return nameLowerCase;
-  }
+	public String getName()
+	{
+		return name;
+	}
 
-  public int getItemType() {
-    return INTERFACE;
-  }
+	public String getNameLowerCase()
+	{
+		if (nameLowerCase == null)
+		{
+			nameLowerCase = name.toLowerCase();
+		}
+		return nameLowerCase;
+	}
 
-  public String getPath() {
-    return path;
-  }
+	public int getItemType()
+	{
+		return INTERFACE;
+	}
 
-  public Icon getIcon() {
-    // todo an interface icon
-    if (icon == null) {
-      icon = GUIUtilities.loadIcon(ClassHeader.class.getResource("/gatchan/phpparser/icons/class.png").toString());
-    }
-    return icon;
-  }
+	public String getPath()
+	{
+		return path;
+	}
 
-  public Position getStart() {
-    return start;
-  }
+	public Icon getIcon()
+	{
+		// todo an interface icon
+		if (icon == null)
+		{
+			icon = GUIUtilities.loadIcon(ClassHeader.class.getResource("/gatchan/phpparser/icons/class.png").toString());
+		}
+		return icon;
+	}
 
-  public void setStart(Position start) {
-    this.start = start;
-  }
+	public Position getStart()
+	{
+		return start;
+	}
 
-  public Position getEnd() {
-    return end;
-  }
+	public void setStart(Position start)
+	{
+		this.start = start;
+	}
 
-  public void setEnd(Position end) {
-    this.end = end;
-  }
+	public Position getEnd()
+	{
+		return end;
+	}
 
-  public String getShortString() {
-    return name;
-  }
+	public void setEnd(Position end)
+	{
+		this.end = end;
+	}
 
-  public String getLongString() {
-    return name;
-  }
+	public String getShortString()
+	{
+		return name;
+	}
 
-  public void setName(String name) {
-  }
+	public String getLongString()
+	{
+		return name;
+	}
 
-  public Expression expressionAt(int line, int column) {
-    //todo : fix interface declaration
-    return null;
-  }
+	public void setName(String name)
+	{
+	}
 
-  public void analyzeCode(PHPParser parser) {
-    // todo : analyze the interface
-  }
+	@Override
+	public Expression expressionAt(int line, int column)
+	{
+		//todo : fix interface declaration
+		return null;
+	}
 
-  public List getMethodsHeaders() {
-    return methodsHeaders;
-  }
+	@Override
+	public void analyzeCode(PHPParser parser)
+	{
+		// todo : analyze the interface
+	}
 
-  public List getSuperInterfaces() {
-    return superInterfaces;
-  }
+	public List getMethodsHeaders()
+	{
+		return methodsHeaders;
+	}
+
+	public List getSuperInterfaces()
+	{
+		return superInterfaces;
+	}
 }
