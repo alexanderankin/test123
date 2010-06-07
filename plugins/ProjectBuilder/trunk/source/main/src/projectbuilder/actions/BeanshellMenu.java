@@ -50,14 +50,15 @@ public class BeanshellMenu extends projectviewer.action.Action {
 				return;
 			}
 		}
-		String text = project.getProperty("project.type");
-		if (text == null) {
+		String type = project.getProperty("project.type");
+		if (type == null) {
 			menu.setVisible(false);
 			return;
 		}
+		menu.setVisible(true);
 		menu.removeAll();
 		map = new HashMap<JMenuItem, String>();
-		menu.setText(text);
+		menu.setText(type.replace("_", " "));
 		String scripts = project.getProperty("projectbuilder.bsh.menu");
 		if (scripts == null) {
 			JMenuItem none = new JMenuItem("No scripts found");

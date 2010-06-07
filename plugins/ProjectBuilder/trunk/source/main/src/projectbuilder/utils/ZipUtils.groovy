@@ -23,10 +23,11 @@ import org.gjt.sp.util.Log
 public class ZipUtils {
 
    public static void copyStream(InputStream iStream, OutputStream oStream) throws IOException {
-      byte[] buffer = new byte[1024]
+      byte[] buffer = new byte[4096]
       int len
 
       while ((len = iStream.read(buffer)) >= 0) {
+      	 Log.log(Log.DEBUG, ZipUtils.class, len)
          oStream.write(buffer, 0, len)
       }
 

@@ -40,6 +40,7 @@ public class ProjectBuilderPlugin extends EditPlugin implements EBComponent {
    @Override
    public void start() {
       Log.log(Log.DEBUG, ProjectBuilderPlugin.class, "Start called")
+      BeanShell.getNameSpace().addCommandPath("/bsh", getClass());
       File pluginHome = this.pluginHome
       if (!pluginHome.exists()) {
          pluginHome.mkdirs()
@@ -56,8 +57,10 @@ public class ProjectBuilderPlugin extends EditPlugin implements EBComponent {
          try {
             pluginZip = pluginJar.getZipFile()
             ZipEntry templatesEntry = pluginZip.getEntry("templates.zip")
+            Log.log(Log.DEBUG, ProjectBuilderPlugin.class, "templatesEntry = "+templatesEntry);
             if (templatesEntry) {
                Log.log(Log.DEBUG, ProjectBuilderPlugin.class, "Attempting to extract templates.zip from PluginJar to: ${templatesZipFile.path}")
+               Log.log(Log.DEBUG, ProjectBuilderPlugin.class, "input stream = "+pluginZip.getInputStream(templatesEntry));
                ZipUtils.copyStream(pluginZip.getInputStream(templatesEntry), templatesZipFile.newOutputStream())
             }
          } catch (Exception e) {
@@ -105,13 +108,30 @@ public class ProjectBuilderPlugin extends EditPlugin implements EBComponent {
    public static String findTemplateDir(String template) {
    	   try {
    	   	   // Try user template dir
-		   File dir = new File(userTemplateDir)+File.separator+template
-		   if (dir.exists() && dir.isDirectory()) return dir.getPath()+File.separator
+		   File dir = new File(userTemplateDir+File.separator+template)
+		   if (dir.exists() && dir.isDirectory()) return dir.getPath()
 		   // Try plugin home
-		   dir = new File(templateDir)+File.separator+template
-		   if (dir.exists() && dir.isDirectory()) return dir.getPath()+File.separator
+		   dir = new File(templateDir+File.separator+template)
+		   if (dir.exists() && dir.isDirectory()) return dir.getPath()
 		   return null
 	   } catch (Exception e) { return null }
+   }
+   
+   public static ArrayList getTemplateNames() {
+   	   def list = []
+   	   File template_dir = new File(userTemplateDir)
+   	   if (template_dir.exists()) {
+		   template_dir.eachDir { dir ->
+			   list << dir.name
+		   }
+	   }
+   	   template_dir = new File(templateDir)
+   	   if (template_dir.exists()) {
+   	   	   template_dir.eachDir { dir ->
+   	   	   	   list << dir.name
+   	   	   }
+   	   }
+   	   return list
    }
    
    // Edit Bus

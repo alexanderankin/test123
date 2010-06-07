@@ -1,0 +1,27 @@
+// Utility script to easily add ant build commands to project templates
+
+void runAntTarget(projectviewer.vpt.VPTProject project, String target) {
+	if (jEdit.getPlugin("console.ConsolePlugin") == null) {
+		Macros.error(view, "Console plugin not found. Aborting.");
+		return;
+	}
+	buildfile = project.getRootPath()+"/trunk/build.xml";
+	if (!new File(buildfile).exists())
+		buildfile = project.getRootPath()+"/build.xml";
+	if (!new File(buildfile).exists()) {
+		Macros.error(view, "No buildfile found for project '"+project.getName()+"'.");
+		return;
+	}
+	ant = console.Shell.getShell("Ant");
+	if (ant != null) {
+		// AntFarm is installed, so use that shell
+		if (!buildfile.equals(ant.getCurrentProjectPath())) {
+			runCommandInConsole(view, "Ant", "+"+buildfile);
+			waitForConsole(view);
+		}
+		runCommandInConsole(view, "Ant", "!"+target);
+	} else {
+		// Run in the system shell
+		runInSystemShell(view, "ant -f \""+buildfile+"\" "+target);
+	}
+}

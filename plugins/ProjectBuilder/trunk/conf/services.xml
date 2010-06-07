@@ -3,4 +3,7 @@
 	<SERVICE CLASS="projectviewer.action.Action" NAME="Beanshell Menu">
 		new projectbuilder.actions.BeanshellMenu();
 	</SERVICE>
+	<SERVICE CLASS="projectviewer.action.Action" NAME="Convert Project Menu">
+		new projectbuilder.actions.ConvertProjectMenu();
+	</SERVICE>
 </SERVICES>
