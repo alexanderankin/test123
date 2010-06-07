@@ -240,7 +240,7 @@ def pv_options = swing.panel() { -> dialog
 				project = new VPTProject(name)
 				project.setRootPath("${dir}${File.separator}${name}")
 				project.setIconPath("${chosen.dir.getPath()}${File.separator}menu-icon.png")
-				project.setProperty("project.type", chosen.toString())
+				project.setProperty("project.type", chosen.name)
 				project.setProperty("project.template.dir", chosen.dir.getPath());
 				binding.setVariable("project", project)
 				binding.setVariable("workspace", dir)

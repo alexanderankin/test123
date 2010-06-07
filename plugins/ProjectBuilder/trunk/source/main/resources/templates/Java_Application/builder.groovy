@@ -37,11 +37,3 @@ PB.build(name, workspace) {
 }
 
 open_after = ["trunk/src/${mainClassDir}/${mainClassName}.java"]
-
-/*
-project.setProperty("projectbuilder.bsh.menu", "build-dist - run");
-project.setProperty("projectbuilder.bsh.0", "${templateDir}/bsh/build-dist.bsh")
-project.setProperty("projectbuilder.bsh.0.label", "Build Application")
-project.setProperty("projectbuilder.bsh.1", "${templateDir}/bsh/run.bsh")
-project.setProperty("projectbuilder.bsh.1.label", "Run Application")
-*/

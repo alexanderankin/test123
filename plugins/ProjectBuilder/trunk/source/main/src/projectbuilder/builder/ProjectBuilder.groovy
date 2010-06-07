@@ -61,10 +61,10 @@ public class ProjectBuilder extends FactoryBuilderSupport {
 
         // create our initial directories.
         // the project root
-        builder.d(projectRoot, id: "project_root") {
+        builder.d(projectRoot, id:"project_root") {
             // and project directory
-            d(projectName, id: "project_directory") {
-                // handle the rest of the closure.
+            d(projectName, id:"project_directory") {
+                // handle the rest of the closure
                 closure.call(builder)
             }
         }

@@ -21,13 +21,11 @@
    <import file="${build.support}/plugin-build.xml" />
 	
 	<!-- Extra files to package into the jar -->
-   <selector id="extraFiles">
-      <and>
-         <or>
-            <filename name="**/*.html" />
-            <filename name="**/*.png" />
-         </or>
-      </and>
+	<selector id="extraFiles">
+	   <!-- Don't include extras; everything we need is copied over in resources -->
+      <not>
+         <filename name="**/*" />
+      </not>
    </selector>
    
    <path id="project.class.path">
@@ -58,7 +56,7 @@
          <fileset dir="${src.resources.dir}">
             <filename name="**/*" />
             <exclude name="templates/"/>
-         </fileset>
+         </fileset> 
          <fileset dir="conf">
             <filename name="**/*" />
          </fileset>
