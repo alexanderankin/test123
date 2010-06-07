@@ -1,5 +1,5 @@
 ${pkg}
-public class ${mainClass} {
+public class ${mainClassName} {
 	public static void main(String[] args) {
 		
 	}

@@ -1,0 +1,17 @@
+if (jEdit.getPlugin("console.ConsolePlugin") == null) {
+	Macros.error(view, "Console plugin not found. Aborting.");
+	return;
+}
+buildfile = project.getRootPath()+"/trunk/build.xml";
+ant = console.Shell.getShell("Ant");
+if (ant != null) {
+	// AntFarm is installed, so use that shell
+	if (!buildfile.equals(ant.getCurrentProjectPath())) {
+		runCommandInConsole(view, "Ant", "+"+buildfile);
+		waitForConsole(view);
+	}
+	runCommandInConsole(view, "Ant", "!run");
+} else {
+	// Run in the system shell
+	runInSystemShell(view, "ant -f \""+buildfile+"\" run");
+}

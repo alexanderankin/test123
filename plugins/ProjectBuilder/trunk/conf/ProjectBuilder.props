@@ -2,14 +2,13 @@
 plugin.projectbuilder.ProjectBuilderPlugin.activate=startup
 plugin.projectbuilder.ProjectBuilderPlugin.author=Eric Berry, Damien Radtke
 plugin.projectbuilder.ProjectBuilderPlugin.description=ProjectBuilder expands on the ProjectViewer plugin by allowing you \
-	to create projects of specific types through the use of a Groovy-based template system, as well as creating separate \
-	actions for building and running projects. \
+	to create projects of specific types through the use of a Groovy-based template system. \
 	This version comes bundled with project templates for creating jEdit plugins and standalone Java applications.
 plugin.projectbuilder.ProjectBuilderPlugin.docs=index.html
 plugin.projectbuilder.ProjectBuilderPlugin.longdescription=description.html
 plugin.projectbuilder.ProjectBuilderPlugin.name=Project Builder
 plugin.projectbuilder.ProjectBuilderPlugin.usePluginHome=true
-plugin.projectbuilder.ProjectBuilderPlugin.version=1.1.1
+plugin.projectbuilder.ProjectBuilderPlugin.version=1.2
 # }}} Basic Plugin Information
 
 # Dependencies {{{
@@ -22,57 +21,23 @@ plugin.projectbuilder.ProjectBuilderPlugin.depend.5=optional plugin AntFarm 1.7
 # }}} Dependencies
 
 # Menu {{{
-plugin.projectbuilder.ProjectBuilderPlugin.menu=- projectBuilder.actions.buildProject projectBuilder.actions.runProject - \
-												  projectBuilder.actions.toggleToolbar
-plugin.projectbuilder.ProjectBuilderPlugin.menu.code=new projectbuilder.NewProjectMenu()
-projectBuilder.actions.newProject.label=Create new Project
-projectBuilder.actions.buildProject.label=Build Current Project
-projectBuilder.actions.runProject.label=Run Current Project
-projectBuilder.actions.toggleToolbar.label=Show Toolbar
-#projectBuilder.actions.editBuildSettings.label=Edit Project Build Settings
-#projectBuilder.actions.editRunSettings.label=Edit Project Run Settings
+plugin.projectbuilder.ProjectBuilderPlugin.menu=projectbuilder.actions.newProject
+projectbuilder.actions.newProject.label=Create new Project
 # }}} Menu
 
 # ProjectViewer settings {{{
-#options.projectBuilder.pv.options.jEdit_Plugin.label=jEdit Plugin Properties
-options.projectBuilder.pv.options.Java_Application.label=Java App Properties
-options.projectBuilder.pv.build-run-options.label=Build/Run settings
-options.projectBuilder.toolbar.visible=false
+#options.projectbuilder.pv.options.jEdit_Plugin.label=jEdit Plugin Properties
+options.projectbuilder.pv.options.Java_Application.label=Java App Properties
+projectbuilder.action.pv-menu.label=Project Builder
 # }}} ProjectViewer settings
 
 # Messages {{{
-projectBuilder.msg.no-shell.title=Shell Error
-projectBuilder.msg.no-shell.message=This action requires the {0} shell. Please install it and try again.
-projectBuilder.msg.no-project.title=Error
-projectBuilder.msg.no-project.message=No Active Project
-projectBuilder.msg.no-build-command.title=Build Error
-projectBuilder.msg.no-build-command.message=No build setting chosen for this project.\n\
-	To edit build settings right-click on the root project node in ProjectViewer,\n\
-	select Properties, and click on the Build/Run Settings option in the left-hand pane.
-projectBuilder.msg.no-run-command.title=Run Error
-projectBuilder.msg.no-run-command.message=No run setting chosen for this project.\n\
-	To edit run settings right-click on the root project node in ProjectViewer,\n\
-	select Properties, and click on the Build/Run Settings option in the left-hand pane.
-projectBuilder.msg.remove-setting.title=Remove Setting
-projectBuilder.msg.remove-setting.message=Are you sure you want to remove this setting? ({0})
-projectBuilder.msg.no-tools-jar.title=Ant Error
-projectBuilder.msg.no-tools-jar.message=tools.jar not found
-projectBuilder.msg.add-build-command.title=New Build Command
-projectBuilder.msg.add-build-command.message=Add this to the list of build commands for this project...
-projectBuilder.msg.add-run-command.title=New Run Command
-projectBuilder.msg.add-run-command.message=Add this to the list of run commands for this project...
-projectBuilder.msg.modify-build-command.title=Modify Build Command
-projectBuilder.msg.modify-build-command.message=Change this build command to...
-projectBuilder.msg.modify-run-command.title=Modify Run Command
-projectBuilder.msg.modify-run-command.message=Change this run command to...
-projectBuilder.msg.invalid-build-file.title=Build File
-projectBuilder.msg.invalid-build-file.message=That build file doesn't exist.
-projectBuilder.msg.project-exists.title=Can't Create Project
-projectBuilder.msg.project-exists.message=A project with that name already exists.
-projectBuilder.msg.field-missing.title=Field Missing
-projectBuilder.msg.field-missing.message=Please choose a(n) {0} for your project.
-projectBuilder.msg.no-ant-farm.title=AntFarm Plugin required
-projectBuilder.msg.no-ant-farm.message=In order to build projects using Ant, you must install the AntFarm plugin.
+projectbuilder.msg.no-name.title=Name Missing
+projectbuilder.msg.no-name.message=You must specify a name for this project.
+projectbuilder.msg.no-directory.title=Directory Missing
+projectbuilder.msg.no-directory.message=You must specify a directory for this project.
+projectbuilder.msg.project-exists.title=Project Exists
+projectbuilder.msg.project-exists.message=There already exists a project with that name.
 # }}}
 
 # ::mode=properties:folding=explicit::
