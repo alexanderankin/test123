@@ -25,6 +25,7 @@ import org.gjt.sp.jedit.buffer.FoldHandler;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 
 import javax.swing.text.Segment;
+import java.util.Arrays;
 
 /**
  * @author Matthieu Casanova
@@ -32,13 +33,17 @@ import javax.swing.text.Segment;
  */
 public class RFCChaptersFoldHandler extends FoldHandler
 {
+	private static final char[] match = new char[4];
+
 	//{{{ RFCChaptersFoldHandler constructor
 	public RFCChaptersFoldHandler()
 	{
 		super("rfc-chapters");
+		Arrays.fill(match, '.');
 	} //}}}
 
 	//{{{ getFoldLevel() method
+	@Override
 	public int getFoldLevel(JEditBuffer buffer, int lineIndex, Segment seg)
 	{
 		if(lineIndex == 0)
@@ -62,11 +67,33 @@ public class RFCChaptersFoldHandler extends FoldHandler
 	} //}}}
 
 	//{{{ segmentIsChapter() method
-	private boolean segmentIsChapter(Segment seg)
+	private static boolean segmentIsChapter(Segment seg)
 	{
 		if (seg.count < 3)
 			return false;
-		
-		return Character.isDigit(seg.array[seg.offset]);
+
+		boolean digit = Character.isDigit(seg.array[seg.offset]);
+		if (!digit)
+			return false;
+
+		if (seg.length() < 71)
+			return true;
+
+		int pos = 0;
+		for (int i = 0;i < seg.length();i++)
+		{
+			char c = seg.charAt(i);
+			if (match[pos] == c)
+			{
+				pos++;
+				if (pos == match.length)
+					return false;
+			}
+			else
+			{
+				pos = 0;
+			}
+		}
+		return true;
 	} //}}}
 }
