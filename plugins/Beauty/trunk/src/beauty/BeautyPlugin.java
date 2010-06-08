@@ -45,7 +45,6 @@ public class BeautyPlugin extends EditPlugin {
         }
         String[] filenames = propsFiles.split( "," );
         File homeDir = jEdit.getPlugin( "beauty.BeautyPlugin" ).getPluginHome();
-        System.out.println("+++++ Beauty home dir = " + homeDir);
         homeDir.mkdirs();
         for ( String filename : filenames ) {
             filename = filename.trim();
@@ -109,7 +108,6 @@ public class BeautyPlugin extends EditPlugin {
             // nothing more to do.
             StringWriter sw = new StringWriter();
             props.list(new PrintWriter(sw));
-            System.out.println("+++++ props for " + modeName + ": " + sw.toString());
             return props;
         }
 
@@ -122,7 +120,6 @@ public class BeautyPlugin extends EditPlugin {
             props.putAll(p);
             StringWriter sw = new StringWriter();
             props.list(new PrintWriter(sw));
-            System.out.println("+++++ props for " + modeName + ": " + sw.toString());
             return props;
         }
         catch ( Exception e ) {
