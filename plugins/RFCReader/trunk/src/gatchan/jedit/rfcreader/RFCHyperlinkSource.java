@@ -112,7 +112,7 @@ public class RFCHyperlinkSource implements HyperlinkSource
 			for (int i = wordStart -1 ;i>= 0;i--)
 			{
 				char ch = lineText.charAt(i);
-				if (Character.isWhitespace(ch))
+				if (Character.isWhitespace(ch) || ch == '-' || ch == '_')
 					continue;
 				
 				if (Character.isLetter(ch))
