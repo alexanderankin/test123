@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2007 Matthieu Casanova
+ * Copyright (C) 2007-2010 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,6 +26,8 @@ import gatchan.jedit.hyperlinks.HyperlinkSource;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.TextUtilities;
 
+import java.util.regex.Pattern;
+
 /**
  * @author Matthieu Casanova
  * @version $Id: Buffer.java 8190 2006-12-07 07:58:34Z kpouer $
@@ -35,13 +37,21 @@ public class RFCHyperlinkSource implements HyperlinkSource
 	private static final String NO_WORD_SEP = "";
 
 	private Hyperlink currentLink;
+	private final char[] rfcChars;
+	private static final Pattern PATTERN = Pattern.compile("rfc\\d+");
+
+	public RFCHyperlinkSource()
+	{
+		rfcChars = new char[]{'c','f','r'};
+	}
 
 	//{{{ getHyperlink() method
 	public Hyperlink getHyperlink(Buffer buffer, int caretPosition)
 	{
 		if (currentLink != null)
 		{
-			if (currentLink.getStartOffset() <= caretPosition && currentLink.getEndOffset() >= caretPosition)
+			if (currentLink.getStartOffset() <= caretPosition &&
+				currentLink.getEndOffset() >= caretPosition)
 			{
 				return currentLink;
 			}
@@ -66,7 +76,7 @@ public class RFCHyperlinkSource implements HyperlinkSource
 		int rfcNum;
 		
 		// todo : rewrite this crap 
-		if (currentWord.equals("rfc"))
+		if ("rfc".equals(currentWord))
 		{
 			int rfcStart = -1;
 			int rfcEnd = -1;
@@ -95,11 +105,10 @@ public class RFCHyperlinkSource implements HyperlinkSource
 			else
 				return null;
 		}
-		else if (currentWord.matches("\\d+"))
+		else if (isDigitWord(currentWord))
 		{
 			int start = -1;
 			int j = 0;
-			char[] rfcChars = new char[]{'c','f','r'};
 			for (int i = wordStart -1 ;i>= 0;i--)
 			{
 				char ch = lineText.charAt(i);
@@ -125,9 +134,26 @@ public class RFCHyperlinkSource implements HyperlinkSource
 			wordStart = start;
 			rfcNum = Integer.parseInt(currentWord);
 		}
-		else if (currentWord.matches("rfc\\d+"))
+		else if (PATTERN.matcher(currentWord).matches())
 		{
 			rfcNum = Integer.parseInt(currentWord.substring(3, currentWord.length()));
+		}
+		else if (isIndexLine(lineText))
+		{
+			int pos = lineText.indexOf("....");
+			if (pos < wordStart)
+				return null;
+			int spacePos = lineText.indexOf(' ');
+			String tooltip = lineText.substring(spacePos + 1, pos - 1);
+			String num = lineText.substring(0, spacePos);
+			if (num.endsWith("."))
+			{
+				num = num.substring(0, num.length() - 2);
+			}
+			String pattern = num + "\\.?\\s+" + tooltip;
+			currentLink = new ChapterHyperlink(lineStart, lineStart + pos - 1, line,
+				tooltip, pattern, buffer.getPath());
+			return currentLink;
 		}
 		else
 		{
@@ -137,5 +163,31 @@ public class RFCHyperlinkSource implements HyperlinkSource
 		currentLink = new RFCHyperlink(lineStart + wordStart, lineStart + wordEnd, line,"rfc"+ rfcNum, rfcNum);
 		return currentLink;
 	} //}}}
+
+	private static boolean isIndexLine(String seg)
+	{
+		if (seg.length() < 3)
+			return false;
+
+		boolean digit = Character.isDigit(seg.charAt(0));
+		if (!digit)
+			return false;
+
+		if (seg.length() < 71)
+			return true;
+		if (seg.contains("...."))
+			return true;
+		return false;
+	}
+
+	private static boolean isDigitWord(CharSequence seq)
+	{
+		for (int i = 0;i<seq.length();i++)
+		{
+			if (!Character.isDigit(seq.charAt(i)))
+				return false;
+		}
+		return true;
+	}
 
 }
