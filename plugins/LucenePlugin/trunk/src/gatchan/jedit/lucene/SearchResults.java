@@ -30,10 +30,7 @@ import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.gui.HistoryTextField;
 import org.gjt.sp.jedit.gui.RolloverButton;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
-import org.gjt.sp.util.StandardUtilities;
-import org.gjt.sp.util.Log;
-import org.gjt.sp.util.ThreadUtilities;
-import org.gjt.sp.util.WorkRequest;
+import org.gjt.sp.util.*;
 
 @SuppressWarnings("serial")
 public class SearchResults extends JPanel implements DefaultFocusComponent
@@ -231,9 +228,15 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 						public void actionPerformed(ActionEvent e)
 						{
 							String selectedIndex = (String) indexes.getSelectedItem();
-							ReindexWorkRequest reindexer = new ReindexWorkRequest(selectedIndex);
+							Task task = new ReindexTask(selectedIndex, new Runnable()
+							{
+								public void run()
+								{
+									indexes.setEnabled(true);
+								}
+							});
 							indexes.setEnabled(false);
-							ThreadUtilities.runInBackground(reindexer);
+							ThreadUtilities.runInBackground(task);
 						}
 					});
 					menu.add(refresh);
@@ -628,7 +631,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		searchField.requestFocusInWindow();		
 	}
 
-	private class ReindexWorkRequest extends WorkRequest
+	private class ReindexWorkRequest extends Task
 	{
 		private final String indexName;
 
@@ -637,7 +640,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			this.indexName = indexName;
 		}
 
-		public void run()
+		public void _run()
 		{
 			try
 			{

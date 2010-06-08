@@ -208,7 +208,14 @@ public class IndexManagement extends AbstractOptionPane
 					optimize.setEnabled(false);
 					reindex.setEnabled(false);
 					delete.setEnabled(false);
-					ReindexTask wr = new ReindexTask(indexName);
+					ReindexTask wr = new ReindexTask(indexName, new Runnable()
+					{
+						public void run()
+						{
+							setIndex(indexName);
+							indexList.setEnabled(true);
+						}
+					});
 					ThreadUtilities.runInBackground(wr);
 				}
 			}
@@ -249,59 +256,6 @@ public class IndexManagement extends AbstractOptionPane
 							indexList.setEnabled(true);
 						}
 					});
-				}
-			}
-		}
-
-		private class ReindexTask extends Task
-		{
-			private final String indexName;
-
-			private ReindexTask(String indexName)
-			{
-				this.indexName = indexName;
-			}
-
-			@Override
-			public void _run()
-			{
-				try
-				{
-					setMaximum(5L);
-					Log.log(Log.NOTICE, this, "Reindex " + indexName + " asked");
-					Index index = LucenePlugin.instance.getIndex(indexName);
-					setStatus("Reindex " + indexName);
-					index.reindex();
-					setValue(1L);
-					Log.log(Log.NOTICE, this, "Reindex " + indexName + " DONE");
-					Log.log(Log.NOTICE, this, "Optimize index:"+indexName);
-					setStatus("Optimize " + indexName);
-					index.optimize();
-					setValue(2L);
-					setStatus("Commit " + indexName);
-					index.commit();
-					setValue(3L);
-					Log.log(Log.NOTICE, this, "Optimize index:"+indexName+ "DONE");
-					Log.log(Log.NOTICE, this, "Optimize Central Index");
-					setStatus("Optimize Central Index");
-					LucenePlugin.CENTRAL.optimize();
-					setValue(4L);
-					setStatus("Commit Central Index");
-					LucenePlugin.CENTRAL.commit();
-					setValue(5L);
-					Log.log(Log.NOTICE, this, "Optimize Central Index DONE");
-				}
-				finally
-				{
-					ThreadUtilities.runInDispatchThread(new Runnable()
-					{
-						public void run()
-						{
-							setIndex(indexName);
-							indexList.setEnabled(true);
-						}
-					});
-
 				}
 			}
 		}
