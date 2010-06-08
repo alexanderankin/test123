@@ -51,6 +51,10 @@
 		<echo>   ${package.targets.file}</echo>
 		<echo></echo>
 		<echo>Java Version:${ant.java.version} | Compiler Source: ${compiler.source} | Compiler Target: ${compiler.target}</echo>
+		<echo>
+docbookx.dtd=${docbookx.dtd}
+docbook.xsl=${docbook.xsl}
+		</echo>
 	</target>
 	<target name="build">
 		<input addproperty="plugin.name" message="Plugin Name:" />
@@ -81,8 +85,8 @@
 		<antcall target="copy-sample-build" />
 		<property file="build.properties" />
 		<input addproperty="sandbox.dir" message="Sandbox Directory:" />
-		<input addproperty="scm.targets.file" message="SCM Targets File:" />
-		<input addproperty="package.targets.file" message="Packaging Targets File:" />
+		<input addproperty="scm.targets.file" defaultvalue="svn_cl.xml" message="SCM Targets File:" />
+		<input addproperty="package.targets.file" defaultvalue="package.xml" message="Packaging Targets File:" />
 		<input addproperty="build.support" message="Build Support Directory:" />
 		<input addproperty="junit.jar" message="Path to junit.jar:" />
 		<input addproperty="jedit.version.04.02.install.dir" defaultvalue="${sandbox.dir}/4.2" message="Path to jEdit 4.2 Installation:"/>
@@ -141,7 +145,8 @@ jedit.svn.url=https://jedit.svn.sourceforge.net/svnroot/jedit
 					<exclude name="@{pluginName}/dist/**"/>
 					<exclude name="@{pluginName}/classes/**"/>
 					<exclude name="@{pluginName}/config/**"/>
-					<include name="**/*.props"/>
+					<exclude name="@{pluginName}/temp/**"/>
+					<include name="**/@{pluginName}.props"/>
 				</fileset>
 				<filterchain>
 					<tokenfilter>

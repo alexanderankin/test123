@@ -20,6 +20,7 @@
 		<exec executable="git" failonerror="true" dir="${plugin.download.dir}">
 			<arg value="checkout" />
 			<arg value="-b" />
+			<arg value="rel_${plugin.tag}" />
 			<arg value="${plugin.tag}" />
 		</exec>
 	</target>
