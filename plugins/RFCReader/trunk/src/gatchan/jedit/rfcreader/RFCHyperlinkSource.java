@@ -143,15 +143,23 @@ public class RFCHyperlinkSource implements HyperlinkSource
 			int pos = lineText.indexOf("....");
 			if (pos < wordStart)
 				return null;
-			int spacePos = lineText.indexOf(' ');
-			String tooltip = lineText.substring(spacePos + 1, pos - 1);
-			String num = lineText.substring(0, spacePos);
+			int i;
+			for (i = 0;i<lineText.length();i++)
+			{
+				if (!Character.isWhitespace(lineText.charAt(i)))
+					break;
+			}
+			pos -= i;
+			String txt = lineText.substring(i);
+			int spacePos = txt.indexOf(' ');
+			String tooltip = txt.substring(spacePos + 1, pos - 1);
+			String num = txt.substring(0, spacePos);
 			if (num.endsWith("."))
 			{
 				num = num.substring(0, num.length() - 2);
 			}
 			String pattern = num + "\\.?\\s+" + tooltip;
-			currentLink = new ChapterHyperlink(lineStart, lineStart + pos - 1, line,
+			currentLink = new ChapterHyperlink(lineStart + i, i+lineStart + pos - 1, line,
 				tooltip, pattern, buffer.getPath());
 			return currentLink;
 		}
@@ -166,6 +174,7 @@ public class RFCHyperlinkSource implements HyperlinkSource
 
 	private static boolean isIndexLine(String seg)
 	{
+		seg = seg.trim();
 		if (seg.length() < 3)
 			return false;
 
@@ -173,7 +182,7 @@ public class RFCHyperlinkSource implements HyperlinkSource
 		if (!digit)
 			return false;
 
-		if (seg.length() < 71)
+		if (seg.length() < 50)
 			return true;
 		if (seg.contains("...."))
 			return true;
