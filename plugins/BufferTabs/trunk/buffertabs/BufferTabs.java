@@ -372,7 +372,8 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 	}
 
 
-	private void setTabComponent(final int index, final boolean set) {
+	private void setTabComponent(final int index, final boolean set)
+	{
 		try
 		{
 			final Method m = getClass().getMethod("setTabComponentAt",
@@ -425,12 +426,12 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 		boolean myUI = currentUI.getClass().getCanonicalName().endsWith("MyUI");
 		if (jEdit.getBooleanProperty("buffertabs.nostretch", false))
 		{
-			if ((currentUI instanceof BasicTabbedPaneUI) && (! myUI))
+			if (currentUI instanceof BasicTabbedPaneUI && !myUI)
 			{
 				int mod = currentUI.getClass().getModifiers();
-				boolean extensible = (! Modifier.isFinal(mod)) &&
-					(! Modifier.isAbstract(mod)) && Modifier.isPublic(mod);
-				if (extensible && (bshUI == null))
+				boolean extensible = !Modifier.isFinal(mod) &&
+					!Modifier.isAbstract(mod) && Modifier.isPublic(mod);
+				if (extensible && bshUI == null)
 				{
 					ui = currentUI;
 					String name = getUI().getClass().getCanonicalName();
@@ -443,10 +444,13 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 					bshUI = (TabbedPaneUI) BeanShell.eval(
 						null, BeanShell.getNameSpace(), bsh);
 				}
-				try {
+				try
+				{
 					if (bshUI != null)
 						setUI(bshUI);
-				} catch (Exception e) {
+				}
+				catch (Exception e)
+				{
 					setUI(ui);
 				}
 			}
@@ -454,9 +458,12 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 		else
 		{
 			if (myUI)
-				try {
+				try
+				{
 					setUI(ui);
-				} catch (Exception e) {
+				}
+				catch (Exception e)
+				{
 					setUI(bshUI);
 				}
 		}
@@ -790,14 +797,18 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 	{
 		private static final String GEOMETRY =
 			"buffertabs.reorderBuffersDisabledDialog.geometry";
-		private JRadioButton disableSorting;
-		private JRadioButton keepSorting;
+		private final JRadioButton disableSorting;
+		private final JRadioButton keepSorting;
 
-		ReorderBuffersDisabledDialog(Frame frame) {
+		ReorderBuffersDisabledDialog(Frame frame)
+		{
 			super(frame, jEdit.getProperty(
 				"buffertabs.reorderBuffersDisabled.label"), true);
-			addWindowListener(new java.awt.event.WindowAdapter() {
-				public void windowClosing(java.awt.event.WindowEvent evt) {
+			addWindowListener(new WindowAdapter()
+			{
+				@Override
+				public void windowClosing(WindowEvent evt)
+				{
 					saveGeometry();
 				}
 			});
@@ -828,8 +839,10 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 			options.add(keepSorting);
 
 			JButton close = new JButton("Close");
-			close.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
+			close.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
 					saveGeometry();
 					save();
 					setVisible(false);
@@ -841,11 +854,15 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 			pack();
 			GUIUtilities.loadGeometry(this, GEOMETRY);
 		}
-		private void save() {
+
+		private void save()
+		{
 			if (disableSorting.isSelected())
 				stopBufferSorting();
 		}
-		private void saveGeometry() {
+
+		private void saveGeometry()
+		{
 			GUIUtilities.saveGeometry(this, GEOMETRY);
 		}
 	}
@@ -924,13 +941,15 @@ public class BufferTabs extends JTabbedPane implements BufferSetListener
 					if (index != -1 && index != mv)
 					{
 						boolean movingEnabled = true;
-						if (areBuffersSorted()) {
+						if (areBuffersSorted())
+						{
 							JDialog dlg = new ReorderBuffersDisabledDialog(
 								editPane.getView());
 							dlg.setVisible(true);
 							movingEnabled = !areBuffersSorted();
 						}
-						if (movingEnabled) {
+						if (movingEnabled)
+						{
 							jEdit.moveBuffer(editPane, mv, index);
 						}
 					}
