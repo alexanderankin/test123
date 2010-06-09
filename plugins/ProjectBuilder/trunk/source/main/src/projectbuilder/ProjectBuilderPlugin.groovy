@@ -5,6 +5,7 @@
 package projectbuilder
 // imports {{{
 import projectbuilder.utils.ZipUtils
+import projectbuilder.actions.BeanshellToolbar
 
 import java.util.*
 import java.util.zip.*
@@ -78,12 +79,23 @@ public class ProjectBuilderPlugin extends EditPlugin implements EBComponent {
             }
          }
       }
+      for (view in JEDIT.getViews()) {
+      	  def viewer = ProjectViewer.getViewer(view)
+      	  def project
+      	  if (viewer != null && (project = viewer.getActiveProject(view)) != null) {
+      	  	  BeanshellToolbar.create(view, project)
+      	  }
+      }
       EditBus.addToBus(this)
    }
 
    @Override
    public void stop() {
    	  EditBus.removeFromBus(this)
+   	  for (view in JEDIT.getViews()) {
+   	  	  println("view = ${view}")
+   	  	  BeanshellToolbar.remove(view)
+   	  }
    }
 
    public void createNewProject(View view, String projectType) {
@@ -134,11 +146,63 @@ public class ProjectBuilderPlugin extends EditPlugin implements EBComponent {
    	   return list
    }
    
+   public static ArrayList<ArrayList<String>> getBeanshellScripts(VPTProject project) {
+		def list = new ArrayList<String[]>()
+		def scripts = project.getProperty("projectbuilder.bsh.menu");
+		if (scripts == null) {
+			list.add(["No scripts found", null]);
+			return list;
+		}
+		def tokenizer = new StringTokenizer(scripts);
+		while (tokenizer.hasMoreTokens()) {
+			def token = tokenizer.nextToken();
+			if (token.equals("-")) {
+				list.add(["-", null])
+				continue;
+			}
+			def prefix = "projectbuilder.bsh."+token;
+			list.add([project.getProperty(prefix+".label"), project.getProperty(prefix+".script")]);
+		}
+		return list;
+	}
+	
+	public static void toggleToolbar() {
+		def visible = !JEDIT.getBooleanProperty("options.projectbuilder.show-toolbar")
+		JEDIT.setBooleanProperty("options.projectbuilder.show-toolbar", visible)
+		if (visible) {
+			for (view in JEDIT.getViews()) {
+				def viewer = ProjectViewer.getViewer(view)
+				def project = viewer.getActiveProject(view)
+				if (project != null)
+					BeanshellToolbar.create(view, project)
+			}
+		} else {
+			for (view in JEDIT.getViews()) {
+				BeanshellToolbar.remove(view)
+			}
+		}
+	}
+   
    // Edit Bus
    public void handleMessage(EBMessage message) {
-   	   // If a project was just opened, save its type somewhere
-   	   if (message instanceof ViewerUpdate) {
-   	   	   
+   	   def view = JEDIT.getActiveView()
+   	   if (message instanceof ViewUpdate) {
+   	   	   def update = (ViewUpdate) message
+   	   	   if (update.getWhat() == ViewUpdate.CLOSED) {
+   	   	   	   BeanshellToolbar.remove(update.getView())
+   	   	   	   return
+   	   	   } else {
+   	   	   	   view = update.getView()
+   	   	   }
+   	   }
+   	   if (JEDIT.getBooleanProperty("options.projectbuilder.show-toolbar")) {
+   	   	   def project = ProjectViewer.getViewer(view).getActiveProject(view)
+   	   	   if (!BeanshellToolbar.exists(view) && project != null)
+   	   	   	   BeanshellToolbar.create(view, project)
+   	   	   else if (BeanshellToolbar.exists(view) && project == null)
+   	   	   	   BeanshellToolbar.remove(view)
+   	   } else if (!JEDIT.getBooleanProperty("options.projectbuilder.show-toolbar") && BeanshellToolbar.exist(view)) {
+   	   	   BeanshellToolbar.remove(view)
    	   }
    }
    

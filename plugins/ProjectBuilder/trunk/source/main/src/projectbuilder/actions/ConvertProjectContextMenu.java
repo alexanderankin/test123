@@ -31,7 +31,7 @@ import org.gjt.sp.jedit.bsh.NameSpace;
  * convert an existing project to a type defined by a template
  */
 
-public class ConvertProjectMenu extends projectviewer.action.Action {
+public class ConvertProjectContextMenu extends projectviewer.action.Action {
 	private HashMap<JMenuItem, String> map;
 	private VPTProject project;
 	public String getText() {

@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.StringTokenizer;
+import java.util.ArrayList;
 import java.io.File;
 
 import javax.swing.JMenu;
@@ -20,6 +21,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.Macros;
 import org.gjt.sp.jedit.BeanShell;
+import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.bsh.NameSpace;
 // }}} imports
 /**
@@ -27,9 +29,8 @@ import org.gjt.sp.jedit.bsh.NameSpace;
  * with menu items for running template-defined beanshell scripts
  */
 
-public class BeanshellMenu extends projectviewer.action.Action {
+public class BeanshellContextMenu extends projectviewer.action.Action {
 	private VPTProject project;
-	private HashMap<JMenuItem, String> map;
 	public String getText() {
 		return "Project Builder";
 	}
@@ -57,36 +58,34 @@ public class BeanshellMenu extends projectviewer.action.Action {
 		}
 		menu.setVisible(true);
 		menu.removeAll();
-		map = new HashMap<JMenuItem, String>();
 		menu.setText(type.replace("_", " "));
-		String scripts = project.getProperty("projectbuilder.bsh.menu");
-		if (scripts == null) {
-			JMenuItem none = new JMenuItem("No scripts found");
-			none.setEnabled(false);
-			menu.add(none);
-			return;
-		}
-		StringTokenizer tokenizer = new StringTokenizer(scripts);
-		while (tokenizer.hasMoreTokens()) {
-			String token = tokenizer.nextToken();
-			if (token.equals("-")) {
+		ArrayList<ArrayList<String>> list = projectbuilder.ProjectBuilderPlugin.getBeanshellScripts(project);
+		for (ArrayList<String> script : list) {
+			String name = script.get(0);
+			if (name.equals("-")) {
 				menu.addSeparator();
 				continue;
 			}
-			String prefix = "projectbuilder.bsh.";
-			JMenuItem item = new JMenuItem(project.getProperty(prefix+token+".label"));
-			item.addActionListener(this);
-			map.put(item, project.getProperty(prefix+token+".script"));
+			JMenuItem item = new JMenuItem(name);
+			if (script.get(1) == null) {
+				item.setEnabled(false);
+			} else {
+				final String bsh = MiscUtilities.constructPath(project.getProperty("project.template.dir"), script.get(1));
+				item.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							try {
+								NameSpace namespace = BeanShell.getNameSpace();
+								namespace.setVariable("project", project);
+								namespace.setVariable("view", viewer.getView());
+								BeanShell.runScript(viewer.getView(), bsh, null, namespace);
+							} catch (Exception ex) {
+								ex.printStackTrace();
+							}
+						}
+				});
+			}
 			menu.add(item);
 		}
 	}
-	public void actionPerformed(ActionEvent e) {
-		try {
-			JMenuItem item = (JMenuItem) e.getSource();
-			String script = project.getProperty("project.template.dir")+File.separator+map.get(item);
-			NameSpace namespace = BeanShell.getNameSpace();
-			namespace.setVariable("project", project);
-			BeanShell.runScript(viewer.getView(), script, null, namespace);
-		} catch (Exception _e) {}
-	}
+	public void actionPerformed(ActionEvent e) {}
 }
