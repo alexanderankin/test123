@@ -1,4 +1,4 @@
-package beauty;
+package beauty.options;
 
 import javax.swing.table.*;
 import javax.swing.*;
@@ -9,6 +9,8 @@ import java.io.*;
 import java.util.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.msg.*;
+
+import beauty.BeautyPlugin;
 
 import ise.java.awt.*;
 
