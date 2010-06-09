@@ -21,14 +21,13 @@ plugin.projectbuilder.ProjectBuilderPlugin.depend.5=optional plugin AntFarm 1.7
 # }}} Dependencies
 
 # Menu {{{
-plugin.projectbuilder.ProjectBuilderPlugin.menu=projectbuilder.actions.newProject
-projectbuilder.actions.newProject.label=Create new Project
+plugin.projectbuilder.ProjectBuilderPlugin.menu=projectbuilder-new-project - projectbuilder-toggle-toolbar
+projectbuilder-new-project.label=Create new Project
+projectbuilder-toggle-toolbar.label=Toggle Toolbar
 # }}} Menu
 
 # ProjectViewer settings {{{
-#options.projectbuilder.pv.options.jEdit_Plugin.label=jEdit Plugin Properties
-options.projectbuilder.pv.options.Java_Application.label=Java App Properties
-projectbuilder.action.pv-menu.label=Project Builder
+options.projectbuilder.show-toolbar=true
 # }}} ProjectViewer settings
 
 # Messages {{{
