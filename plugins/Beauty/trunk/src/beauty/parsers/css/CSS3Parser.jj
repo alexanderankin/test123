@@ -14,10 +14,42 @@ package beauty.parsers.css;
 import java.io.*;
 import java.util.*;
 
+import org.gjt.sp.jedit.jEdit;
+
 public class CSS3Parser
 {
     Token t;
-
+    
+    // beautifier options
+    boolean padCombinators;
+    boolean padSelectors;
+    boolean padAttribs; // TODO
+    boolean padOperators;
+    boolean padPrio;    
+    boolean padTerm;    // TODO
+    boolean padParams;  // TODO
+    public void setPadCombinators(boolean b) {
+        padCombinators = b;   
+    }
+    public void setPadSelectors(boolean b) {
+        padSelectors = b;   
+    }
+    public void setPadAttribs(boolean b) {
+        padAttribs = b;   
+    }
+    public void setPadOperators(boolean b) {
+        padOperators = b;   
+    }
+    public void setPadPrio(boolean b) {
+        padPrio = b;   
+    }
+    public void setPadTerm(boolean b) {
+        padTerm = b;   
+    }
+    public void setPadParams(boolean b) {
+        padParams = b;   
+    }
+    
     // shouldn't use this, a specific line separator should be set based on
     // buffer settings.  Of course, it may be the same as what the buffer
     // uses anyway.
@@ -46,6 +78,9 @@ public class CSS3Parser
     public void setUseSoftTabs(boolean b) {
         token_source.setUseSoftTabs(b);
     }
+  
+       
+    
 
     public String getText() {
         return token_source.getText();
@@ -87,6 +122,8 @@ public class CSS3Parser
     public void addComment(Token t) {
         token_source.addComment(t);   
     }
+    
+    
 
    public CSS3Parser(String fileName)
    {
@@ -1164,8 +1201,8 @@ void operator() :
 {
     (
         (
-            t=<DIV> { add(t); }
-          | t=<COMMA> { add(t); }
+            t=<DIV> { if (padOperators){trim();add(" ");}add(t);if(padOperators) add(" "); }
+          | t=<COMMA> { if (padOperators){trim();add(" ");}add(t);if(padOperators) add(" "); }
         )
         (
             <S> | t=<COMMENT> { addComment(t); }
@@ -1180,9 +1217,9 @@ void combinator() :
 {
     (
         (
-            <PLUS>  { add("+"); }
-          | <GREATER>  { add(">"); }
-          | <TILDE>  { add("~"); }
+            <PLUS>  { if (padCombinators) {trim();add(" ");}add("+");if (padCombinators) add(" "); }
+          | <GREATER>  { if (padCombinators) {trim();add(" ");}add(">");if (padCombinators) add(" "); }
+          | <TILDE>  { if (padCombinators) {trim();add(" ");}add("~");if (padCombinators) add(" "); }
         )
         (
             <S> | t=<COMMENT> { addComment(t); }
@@ -1374,7 +1411,7 @@ void attrib() :
           | t=<SUFFIXMATCH>
           | t=<SUBSTRINGMATCH> 
         )
-        { trim(); add(" ");add(t);  add(" ");}
+        { if (padAttribs) {trim(); add(" ");} add(t);  if (padAttribs) add(" ");}
         (
             <S> | t=<COMMENT> { addComment(t); }
         ) *
@@ -1507,7 +1544,7 @@ void prio() :
 {
 }
 {
-    t=<IMPORTANT_SYM>  { add(t); }
+    t=<IMPORTANT_SYM>  { add(t); if (padPrio) add(" ");}
     (
         <S> | t=<COMMENT> { addComment(t); }
     ) *

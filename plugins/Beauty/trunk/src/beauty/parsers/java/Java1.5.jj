@@ -762,7 +762,7 @@ TOKEN :
   < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
 |
 
-  < CHARACTER_LITERAL:
+  <CHARACTER_LITERAL:
       "'"
       (   (~["'","\\","\n","\r"])
         | ("\\"
@@ -776,7 +776,7 @@ TOKEN :
       "'"
   >
 |
-  < STRING_LITERAL:
+  <STRING_LITERAL:
       "\""
       (   (~["\"","\\","\n","\r"])
         | ("\\"

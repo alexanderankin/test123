@@ -2,6 +2,7 @@
 package beauty.parsers.css;
 import java.io.*;
 import java.util.*;
+import org.gjt.sp.jedit.jEdit;
 
 /** Token Manager. */
 public class CSS3ParserTokenManager implements CSS3ParserConstants

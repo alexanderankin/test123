@@ -4,8 +4,40 @@ package beauty.parsers.css;
 import java.io.*;
 import java.util.*;
 
+import org.gjt.sp.jedit.jEdit;
+
 public class CSS3Parser implements CSS3ParserConstants {
     Token t;
+
+    // beautifier options
+    boolean padCombinators;
+    boolean padSelectors;
+    boolean padAttribs; // TODO
+    boolean padOperators;
+    boolean padPrio;
+    boolean padTerm;    // TODO
+    boolean padParams;  // TODO
+    public void setPadCombinators(boolean b) {
+        padCombinators = b;
+    }
+    public void setPadSelectors(boolean b) {
+        padSelectors = b;
+    }
+    public void setPadAttribs(boolean b) {
+        padAttribs = b;
+    }
+    public void setPadOperators(boolean b) {
+        padOperators = b;
+    }
+    public void setPadPrio(boolean b) {
+        padPrio = b;
+    }
+    public void setPadTerm(boolean b) {
+        padTerm = b;
+    }
+    public void setPadParams(boolean b) {
+        padParams = b;
+    }
 
     // shouldn't use this, a specific line separator should be set based on
     // buffer settings.  Of course, it may be the same as what the buffer
@@ -35,6 +67,9 @@ public class CSS3Parser implements CSS3ParserConstants {
     public void setUseSoftTabs(boolean b) {
         token_source.setUseSoftTabs(b);
     }
+
+
+
 
     public String getText() {
         return token_source.getText();
@@ -76,6 +111,8 @@ public class CSS3Parser implements CSS3ParserConstants {
     public void addComment(Token t) {
         token_source.addComment(t);
     }
+
+
 
    public CSS3Parser(String fileName)
    {
@@ -1635,11 +1672,11 @@ public class CSS3Parser implements CSS3ParserConstants {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case DIV:
         t = jj_consume_token(DIV);
-                      add(t);
+                      if (padOperators){trim();add(" ");}add(t);if(padOperators) add(" ");
         break;
       case COMMA:
         t = jj_consume_token(COMMA);
-                        add(t);
+                        if (padOperators){trim();add(" ");}add(t);if(padOperators) add(" ");
         break;
       default:
         jj_la1[105] = jj_gen;
@@ -1686,15 +1723,15 @@ public class CSS3Parser implements CSS3ParserConstants {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case PLUS:
         jj_consume_token(PLUS);
-                      add("+");
+                      if (padCombinators) {trim();add(" ");}add("+");if (padCombinators) add(" ");
         break;
       case GREATER:
         jj_consume_token(GREATER);
-                         add(">");
+                         if (padCombinators) {trim();add(" ");}add(">");if (padCombinators) add(" ");
         break;
       case TILDE:
         jj_consume_token(TILDE);
-                       add("~");
+                       if (padCombinators) {trim();add(" ");}add("~");if (padCombinators) add(" ");
         break;
       default:
         jj_la1[109] = jj_gen;
@@ -2369,7 +2406,7 @@ public class CSS3Parser implements CSS3ParserConstants {
         jj_consume_token(-1);
         throw new ParseException();
       }
-          trim(); add(" ");add(t);  add(" ");
+          if (padAttribs) {trim(); add(" ");} add(t);  if (padAttribs) add(" ");
       label_70:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -2787,7 +2824,7 @@ public class CSS3Parser implements CSS3ParserConstants {
 
   final public void prio() throws ParseException {
     t = jj_consume_token(IMPORTANT_SYM);
-                         add(t);
+                         add(t); if (padPrio) add(" ");
     label_79:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -3274,14 +3311,6 @@ public class CSS3Parser implements CSS3ParserConstants {
     finally { jj_save(0, xla); }
   }
 
-  private boolean jj_3_1() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_86()) jj_scanpos = xsp;
-    if (jj_scan_token(98)) return true;
-    return false;
-  }
-
   private boolean jj_3R_88() {
     if (jj_scan_token(ANY)) return true;
     return false;
@@ -3299,6 +3328,14 @@ public class CSS3Parser implements CSS3ParserConstants {
     jj_scanpos = xsp;
     if (jj_3R_88()) return true;
     }
+    return false;
+  }
+
+  private boolean jj_3_1() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_86()) jj_scanpos = xsp;
+    if (jj_scan_token(98)) return true;
     return false;
   }
 
