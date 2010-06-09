@@ -31,8 +31,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.TextEvent;
 import java.awt.event.TextListener;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Set;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -68,6 +70,7 @@ public class TabbedOptionDialog extends EnhancedDialog implements ActionListener
 	JTabbedPane tabs;
 
 	LinkedList<OptionPane> panes;
+	Set<OptionPane> shownPanes;
 
 	private JButton ok;
 
@@ -105,6 +108,7 @@ public class TabbedOptionDialog extends EnhancedDialog implements ActionListener
 	void setupTabs()
 	{
 		panes = new LinkedList<OptionPane>();
+		shownPanes = new HashSet<OptionPane>();
 		tabs = new JTabbedPane();
 		JPanel content = new JPanel(new BorderLayout());
 		content.setBorder(new EmptyBorder(12, 12, 12, 12));
@@ -186,7 +190,8 @@ public class TabbedOptionDialog extends EnhancedDialog implements ActionListener
 		while (itr.hasNext())
 		{
 			OptionPane op = itr.next();
-			op.save();
+			if (shownPanes.contains(op))
+				op.save();
 		}
 		Point p = getLocation();
 		Dimension d = getSize();
@@ -226,6 +231,7 @@ public class TabbedOptionDialog extends EnhancedDialog implements ActionListener
 	{
 
 		OptionPane op = (OptionPane) tabs.getSelectedComponent();
+		shownPanes.add(op);
 		jEdit.setIntegerProperty("optional.last.tab", tabs.getSelectedIndex());
 		setTitle(op.getName());
 	} // }}}
