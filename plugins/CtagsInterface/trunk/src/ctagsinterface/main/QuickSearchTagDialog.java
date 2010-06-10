@@ -208,7 +208,7 @@ public class QuickSearchTagDialog extends JDialog {
 		super.setVisible(b);
 	}
 
-	static private class QuickSearchTag
+	private static class QuickSearchTag
 	{
 		String file;
 		int line;
@@ -242,8 +242,7 @@ public class QuickSearchTagDialog extends JDialog {
 			return KindIconProvider.getIcon(kind);
 		}
 	}
-
-	static public class TagListCellRenderer extends DefaultListCellRenderer {
+	private class TagListCellRenderer extends DefaultListCellRenderer {
 
 		@Override
 		public Component getListCellRendererComponent(JList list, Object value,
@@ -259,5 +258,4 @@ public class QuickSearchTagDialog extends JDialog {
 		}
 
 	}
-
 }

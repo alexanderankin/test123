@@ -13,6 +13,9 @@
 	<DOCKABLE NAME="ctags-interface-progress" MOVABLE="TRUE">
 		new ctagsinterface.dockables.Progress(view);
 	</DOCKABLE>
+	<DOCKABLE NAME="ctags-interface-browser" MOVABLE="TRUE">
+		new ctagsinterface.dockables.TagBrowser(view);
+	</DOCKABLE>
 </DOCKABLES>
 
 <!-- :noTabs=false:lineSeparator=\r\n:tabSize=4:folding=none: -->

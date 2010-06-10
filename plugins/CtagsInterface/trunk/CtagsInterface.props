@@ -66,6 +66,8 @@ ctags-interface-preview.title=Tag Preview
 ctags-interface-preview.label=Tag Preview
 ctags-interface-progress.title=Tagging Progress
 ctags-interface-progress.label=Tagging Progress
+ctags-interface-browser.title=Tag Index browser
+ctags-interface-browser.label=Tag Index browser
 
 # docs
 #plugin.ctagsinterface.main.CtagsInterfacePlugin.docs=index.html

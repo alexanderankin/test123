@@ -234,7 +234,8 @@ public class CtagsInterfacePlugin extends EditPlugin
 		new QuickSearchTagDialog(view, QuickSearchTagDialog.Mode.PREFIX);
 	}
 
-	public static Vector<Tag> runScopedQuery(View view, String q)
+	public static Vector<Tag> runScopedQuery(View view, String q,
+		int maxResults)
 	{
 		boolean projectScope = (pvi != null &&
 			(ProjectsOptionPane.getSearchActiveProjectOnly() ||
@@ -264,22 +265,27 @@ public class CtagsInterfacePlugin extends EditPlugin
 							OriginType.fromString(origin.getKey()), s, false));
 					}
 				}
-				index.runQueryInOrigins(q, origins, tags);
+				index.runQueryInOrigins(q, origins, maxResults, tags);
 			}
 			else
 			{
 				origins.add(index.getOrigin(OriginType.PROJECT, project, false));
-				index.runQueryInOrigins(q, origins, tags);
+				index.runQueryInOrigins(q, origins, maxResults, tags);
 				if (ProjectsOptionPane.getSearchActiveProjectFirst() &&
 					tags.isEmpty())
 				{
-					index.runQuery(q, tags);
+					index.runQuery(q, maxResults, tags);
 				}
 			}
 		}
 		else
-			index.runQuery(q, tags);
+			index.runQuery(q, maxResults, tags);
 		return tags;
+	}
+
+	public static Vector<Tag> runScopedQuery(View view, String q)
+	{
+		return runScopedQuery(view, q, TagIndex.MAX_RESULTS);
 	}
 
 	public static Vector<Tag> queryScopedTag(View view, String tag)
