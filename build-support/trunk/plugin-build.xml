@@ -396,7 +396,6 @@
             </filterset>
         </copy>
         <antcall target="docs-${docs-proc.target}" />
-        <antcall target="error-catalog" />
         <delete file="${build.docs}/users-guide.xsl" />
         <delete>
             <fileset dir="${build.docs}">
@@ -452,7 +451,12 @@
          "user-doc.xml" property, and defaults to
          "docs/users-guide.xml". The output is defined in
          the "user-doc.out" property.                       -->
-    <target name="docs-xsltproc" description="Generate user documentation in html format with xsltproc" if="docbook.catalog">
+    <target name="docs-xsltproc" description="Generate user documentation in html format with xsltproc">
+        <fail message="Please set the &quot;docbook.catalog&quot; in build.properties"
+              unless="docbook.catalog" />
+        <fail message="Please set &quot;docbook.xsl&quot; in build.properties"
+              unless="docbook.xsl" />
+
         <exec executable="${xsltproc.executable}" dir="${build.docs}" failonerror="true">
             <arg value="--output" />
             <arg value="${user-doc.out}" />
@@ -462,10 +466,6 @@
             <env key="SGML_CATALOG_FILES"
                  file="${docbook.catalog}" />
         </exec>
-    </target>
-
-    <target name="error-catalog" unless="docbook.catalog" >
-        <echo message="docbook.catalog not set" />
     </target>
 
     <!-- ===============================================}}} -->
@@ -478,8 +478,12 @@
          xml.apache.org . Same properties as the
          "docs-xsltproc" target apply here.                 -->
     <target name="docs-xalan"
-            if="docbookx.dtd"
             description="Generate user documentation in html format with xalan (not working)">
+        <fail message="Please set the &quot;docbookx.dtd&quot; in build.properties"
+              unless="docbookx.dtd" />
+        <fail message="Please set &quot;docbook.xsl&quot; in build.properties"
+              unless="docbook.xsl" />
+
         <xslt basedir="."
               destdir="${build.docs}"
               style="${build.docs}/users-guide.xsl"
