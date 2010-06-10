@@ -475,7 +475,12 @@ public class TagIndex
 
 	public void runQuery(String query, final List<Tag> tags)
 	{
-		runQuery(query, MAX_RESULTS, new DocHandler()
+		runQuery(query, MAX_RESULTS, tags);
+	}
+
+	public void runQuery(String query, int maxResults, final List<Tag> tags)
+	{
+		runQuery(query, maxResults, new DocHandler()
 		{
 			public void handle(Document doc)
 			{
@@ -485,7 +490,7 @@ public class TagIndex
 	}
 
 	public void runQueryInOrigins(String query, List<Origin> origins,
-		final List<Tag> tags)
+		int maxResults, final List<Tag> tags)
 	{
 		if (origins == null || origins.isEmpty())
 			return;
@@ -503,7 +508,7 @@ public class TagIndex
 		sb.append(")");
 		if (query != null && (! query.isEmpty()))
 			sb.append(" AND (" + query + ")");
-		runQuery(sb.toString(), tags);
+		runQuery(sb.toString(), maxResults, tags);
 	}
 
 	// Returns a query for a tag name in a list of specified origins
@@ -512,7 +517,13 @@ public class TagIndex
 	public void queryTagInOrigins(String tag, List<Origin> origins,
 		final List<Tag> tags)
 	{
-		runQueryInOrigins(_NAME_FLD + ":" + escape(tag), origins, tags);
+		queryTagInOrigins(tag, origins, MAX_RESULTS, tags);
+	}
+	public void queryTagInOrigins(String tag, List<Origin> origins,
+		int maxResults, final List<Tag> tags)
+	{
+		runQueryInOrigins(_NAME_FLD + ":" + escape(tag), origins,
+			maxResults, tags);
 	}
 
 	public String getTagNameQuery(String name)
