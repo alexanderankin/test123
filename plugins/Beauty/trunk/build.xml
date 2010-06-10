@@ -114,7 +114,7 @@
         <javacc javacchome="${javacchome}" target="./src/beauty/parsers/javacc/JavaCC.jj"/>
         <javacc javacchome="${javacchome}" target="./src/beauty/parsers/html/HtmlParser.jj"/>
         <javacc javacchome="${javacchome}" target="./src/beauty/parsers/css/CSS3Parser.jj"/>
-        <javacc javacchome="${javacchome}" target="./src/beauty/parsers/json/json.jj"/>
+        <javacc javacchome="${javacchome}" target="./src/beauty/parsers/json/json_clean.jj"/>
     </target>
 
 
