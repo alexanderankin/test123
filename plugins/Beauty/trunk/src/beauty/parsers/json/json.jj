@@ -143,7 +143,8 @@ TOKEN :
           )
       )>
 |  
-  // json only allows base 10 numbers, no octal or hex or binary
+  // json only allows base 10 numbers, no octal or hex or binary, at least, not as a number.
+  // Unicode values are allowed in char and string.
   <NUMBER: (["-"])? ["1"-"9"] (["0"-"9"])* ("." (["0"-"9"])+)? (["e","E"] (["+","-"])? (["0"-"9"])+ )?>
 |
   <TRUE: "true">
