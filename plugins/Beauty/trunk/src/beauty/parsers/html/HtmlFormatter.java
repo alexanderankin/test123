@@ -407,6 +407,10 @@ class MarginWriter {
  * failure through the hasBlownTarget method; if it can, the contents can
  * be retrieved through the getString method.
  */
+// TODO: fix this.  This does a poor job on <script> tags, the start tag will 
+// be indented properly, but the rest will always be one indent from the left
+// margin, with the end tag on the left margin.  The start and end tags should
+// line up vertically, and the contents should be indented one from there.
 class TagBlockRenderer extends HtmlVisitor {
     protected String s;
     protected boolean multiLine;
