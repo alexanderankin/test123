@@ -42,6 +42,9 @@ public abstract class HtmlVisitor {
     public void visit(HtmlDocument.Newline n) {
     }
 
+    public void visit(HtmlDocument.BlankLines n) {
+    }
+
     public void visit(HtmlDocument.Annotation a) {
     }
 

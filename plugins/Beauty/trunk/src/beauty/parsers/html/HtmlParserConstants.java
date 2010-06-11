@@ -53,77 +53,79 @@ public interface HtmlParserConstants {
   /** RegularExpression Id. */
   int PCDATA = 21;
   /** RegularExpression Id. */
-  int TAG_SCRIPT = 22;
+  int BLANK_LINES = 22;
   /** RegularExpression Id. */
-  int TAG_STYLE = 23;
+  int TAG_SCRIPT = 23;
   /** RegularExpression Id. */
-  int TAG_NAME = 24;
+  int TAG_STYLE = 24;
   /** RegularExpression Id. */
-  int LST_ERROR = 25;
+  int TAG_NAME = 25;
   /** RegularExpression Id. */
-  int ATTR_NAME = 27;
+  int LST_ERROR = 26;
   /** RegularExpression Id. */
-  int TAG_END = 28;
+  int ATTR_NAME = 28;
   /** RegularExpression Id. */
-  int TAG_PERCENTEND = 29;
+  int TAG_END = 29;
   /** RegularExpression Id. */
-  int TAG_SLASHEND = 30;
+  int TAG_PERCENTEND = 30;
   /** RegularExpression Id. */
-  int ATTR_EQ = 31;
+  int TAG_SLASHEND = 31;
   /** RegularExpression Id. */
-  int IMPLICIT_TAG_END = 32;
+  int ATTR_EQ = 32;
   /** RegularExpression Id. */
-  int LIT_ERROR = 33;
+  int IMPLICIT_TAG_END = 33;
   /** RegularExpression Id. */
-  int SINGLE_QUOTE = 34;
+  int LIT_ERROR = 34;
   /** RegularExpression Id. */
-  int DOUBLE_QUOTE = 35;
+  int SINGLE_QUOTE = 35;
   /** RegularExpression Id. */
-  int ENDING_SINGLE_QUOTE = 37;
+  int DOUBLE_QUOTE = 36;
   /** RegularExpression Id. */
-  int UNPARSED_TEXT_NO_SINGLE_QUOTES = 38;
+  int ENDING_SINGLE_QUOTE = 38;
   /** RegularExpression Id. */
-  int DOLLAR_OR_HASH_SINGLE_QUOTE = 39;
+  int UNPARSED_TEXT_NO_SINGLE_QUOTES = 39;
   /** RegularExpression Id. */
-  int ENDING_DOUBLE_QUOTE = 40;
+  int DOLLAR_OR_HASH_SINGLE_QUOTE = 40;
   /** RegularExpression Id. */
-  int UNPARSED_TEXT_NO_DOUBLE_QUOTES = 41;
+  int ENDING_DOUBLE_QUOTE = 41;
   /** RegularExpression Id. */
-  int DOLLAR_OR_HASH_DOUBLE_QUOTE = 42;
+  int UNPARSED_TEXT_NO_DOUBLE_QUOTES = 42;
   /** RegularExpression Id. */
-  int EL_EXPRESSION_IN_ATTRIBUTE = 43;
+  int DOLLAR_OR_HASH_DOUBLE_QUOTE = 43;
   /** RegularExpression Id. */
-  int VALUE_BINDING_IN_ATTRIBUTE = 44;
+  int EL_EXPRESSION_IN_ATTRIBUTE = 44;
   /** RegularExpression Id. */
-  int JSP_EXPRESSION_IN_ATTRIBUTE = 45;
+  int VALUE_BINDING_IN_ATTRIBUTE = 45;
   /** RegularExpression Id. */
-  int JSP_TAG_IN_ATTRIBUTE = 46;
+  int JSP_EXPRESSION_IN_ATTRIBUTE = 46;
   /** RegularExpression Id. */
-  int ATTR_VAL = 47;
+  int JSP_TAG_IN_ATTRIBUTE = 47;
   /** RegularExpression Id. */
-  int COMMENT_END = 48;
+  int ATTR_VAL = 48;
   /** RegularExpression Id. */
-  int DASH = 49;
+  int COMMENT_END = 49;
   /** RegularExpression Id. */
-  int COMMENT_EOL = 50;
+  int DASH = 50;
   /** RegularExpression Id. */
-  int COMMENT_WORD = 51;
+  int COMMENT_EOL = 51;
   /** RegularExpression Id. */
-  int SCRIPTLET_END = 52;
+  int COMMENT_WORD = 52;
   /** RegularExpression Id. */
-  int DECL_ANY = 53;
+  int SCRIPTLET_END = 53;
   /** RegularExpression Id. */
-  int DECL_END = 54;
+  int DECL_ANY = 54;
   /** RegularExpression Id. */
-  int SCRIPT_END = 55;
+  int DECL_END = 55;
   /** RegularExpression Id. */
-  int STYLE_END = 56;
+  int SCRIPT_END = 56;
   /** RegularExpression Id. */
-  int BLOCK_EOL = 57;
+  int STYLE_END = 57;
   /** RegularExpression Id. */
-  int BLOCK_LBR = 58;
+  int BLOCK_EOL = 58;
   /** RegularExpression Id. */
-  int BLOCK_WORD = 59;
+  int BLOCK_LBR = 59;
+  /** RegularExpression Id. */
+  int BLOCK_WORD = 60;
 
   /** Lexical state. */
   int LexStyle = 0;
@@ -174,11 +176,12 @@ public interface HtmlParserConstants {
     "<COMMENT_START>",
     "\"<!\"",
     "<PCDATA>",
+    "<BLANK_LINES>",
     "<TAG_SCRIPT>",
     "<TAG_STYLE>",
     "<TAG_NAME>",
     "<LST_ERROR>",
-    "<token of kind 26>",
+    "<token of kind 27>",
     "<ATTR_NAME>",
     "\">\"",
     "\"%>\"",
@@ -188,7 +191,7 @@ public interface HtmlParserConstants {
     "<LIT_ERROR>",
     "\"\\\'\"",
     "\"\\\"\"",
-    "<token of kind 36>",
+    "<token of kind 37>",
     "\"\\\'\"",
     "<UNPARSED_TEXT_NO_SINGLE_QUOTES>",
     "<DOLLAR_OR_HASH_SINGLE_QUOTE>",

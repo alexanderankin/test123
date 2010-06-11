@@ -133,6 +133,7 @@ PARSER_END(HtmlParser)
 | <COMMENT_START:     "<!--" | "<%--"    >   : LexComment
 | <DECL_START:     "<!"      > : LexDecl
 | <PCDATA:         ( ~["<", "\r", "\n"] )+ >
+| <BLANK_LINES: <EOL> (<EOL>)+ >
 }
 
 <LexStartTag> TOKEN :
@@ -266,8 +267,10 @@ HtmlDocument.ElementSequence ElementSequence() :
   HtmlDocument.HtmlElement h;
 }
 {
-  ( h=Element() { s.addElement(h); } ) *
-  { return s; }
+    ( h=Element() { s.addElement(h); } ) *
+  { 
+    return s; 
+  }
 }
 
 HtmlDocument.HtmlElement Element() :
@@ -292,6 +295,7 @@ HtmlDocument.HtmlElement Element() :
              <TAG_START> text=<LST_ERROR>
                             { return new HtmlDocument.Text("<" + text.image); }
   |   text = <PCDATA>       { return new HtmlDocument.Text(text.image); }
+  |          <BLANK_LINES>  { return new HtmlDocument.BlankLines(); }
   |          <EOL>          { return new HtmlDocument.Newline(); }
 )
 }

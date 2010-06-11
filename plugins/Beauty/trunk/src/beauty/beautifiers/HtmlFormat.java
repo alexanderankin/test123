@@ -52,7 +52,7 @@ public class HtmlFormat extends Beautifier {
             document.accept( formatter );
         }
         catch ( Exception e ) {
-            e.printStackTrace();
+            throw new ParserException(e);
         }
         finally {
             reader.close();

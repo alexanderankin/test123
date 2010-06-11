@@ -62,6 +62,10 @@ public class HtmlDumper extends HtmlVisitor {
     public void visit(HtmlDocument.Newline n) {
         out.println();
     }
+    
+    public void visit(HtmlDocument.BlankLines b) {
+        out.print(b);   
+    }
 
     public void visit(HtmlDocument.Annotation a) {
         out.print(a);

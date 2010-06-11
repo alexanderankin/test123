@@ -55,6 +55,10 @@ public class HtmlDebugDumper extends HtmlVisitor {
     public void visit(HtmlDocument.Newline n) {
         out.println("-NL-");
     }
+    
+    public void visit(HtmlDocument.BlankLines b) {
+        out.println("-BLANK LINE-");   
+    }
 
     public void visit(HtmlDocument.Annotation a) {
         out.print(a);

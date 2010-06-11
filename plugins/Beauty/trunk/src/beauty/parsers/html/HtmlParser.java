@@ -69,6 +69,7 @@ public class HtmlParser implements HtmlParserConstants {
       case COMMENT_START:
       case DECL_START:
       case PCDATA:
+      case BLANK_LINES:
         ;
         break;
       default:
@@ -76,7 +77,7 @@ public class HtmlParser implements HtmlParserConstants {
         break label_1;
       }
       h = Element();
-                  s.addElement(h);
+                    s.addElement(h);
     }
     {if (true) return s;}
     throw new Error("Missing return statement in function");
@@ -122,6 +123,10 @@ public class HtmlParser implements HtmlParserConstants {
           case PCDATA:
             text = jj_consume_token(PCDATA);
                               {if (true) return new HtmlDocument.Text(text.image);}
+            break;
+          case BLANK_LINES:
+            jj_consume_token(BLANK_LINES);
+                              {if (true) return new HtmlDocument.BlankLines();}
             break;
           case EOL:
             jj_consume_token(EOL);
@@ -645,28 +650,6 @@ public class HtmlParser implements HtmlParserConstants {
     finally { jj_save(9, xla); }
   }
 
-  private boolean jj_3R_8() {
-    if (jj_scan_token(SCRIPTLET_TAG)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_7() {
-    if (jj_scan_token(TAG_START)) return true;
-    if (jj_scan_token(TAG_NAME)) return true;
-    return false;
-  }
-
-  private boolean jj_3_9() {
-    if (jj_scan_token(JSP_TAG_IN_ATTRIBUTE)) return true;
-    return false;
-  }
-
-  private boolean jj_3_5() {
-    if (jj_scan_token(TAG_START)) return true;
-    if (jj_scan_token(LST_ERROR)) return true;
-    return false;
-  }
-
   private boolean jj_3_6() {
     if (jj_scan_token(EL_EXPRESSION_IN_ATTRIBUTE)) return true;
     return false;
@@ -719,6 +702,28 @@ public class HtmlParser implements HtmlParserConstants {
     return false;
   }
 
+  private boolean jj_3R_8() {
+    if (jj_scan_token(SCRIPTLET_TAG)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_7() {
+    if (jj_scan_token(TAG_START)) return true;
+    if (jj_scan_token(TAG_NAME)) return true;
+    return false;
+  }
+
+  private boolean jj_3_9() {
+    if (jj_scan_token(JSP_TAG_IN_ATTRIBUTE)) return true;
+    return false;
+  }
+
+  private boolean jj_3_5() {
+    if (jj_scan_token(TAG_START)) return true;
+    if (jj_scan_token(LST_ERROR)) return true;
+    return false;
+  }
+
   /** Generated Token Manager. */
   public HtmlParserTokenManager token_source;
   SimpleCharStream jj_input_stream;
@@ -738,10 +743,10 @@ public class HtmlParser implements HtmlParserConstants {
       jj_la1_init_1();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x3f8000,0x1c0000,0x208000,0x80000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x8000000,0x70000000,0x0,0x0,0x0,0x0,0x1,};
+      jj_la1_0 = new int[] {0x7f8000,0x1c0000,0x608000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10000000,0xe0000000,0x0,0x0,0x0,0x0,0x1,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x7a00,0x500,0x8000,0x7a40,0x7a40,0xa0,0xc,0x0,0x0,0xe000000,0xe000000,0xe0000,0xe0000,0x10000,};
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0x1,0xf400,0xa00,0x10000,0xf480,0xf480,0x140,0x18,0x0,0x0,0x1c000000,0x1c000000,0x1c0000,0x1c0000,0x20000,};
    }
   final private JJCalls[] jj_2_rtns = new JJCalls[10];
   private boolean jj_rescan = false;
@@ -927,7 +932,7 @@ public class HtmlParser implements HtmlParserConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[60];
+    boolean[] la1tokens = new boolean[61];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -944,7 +949,7 @@ public class HtmlParser implements HtmlParserConstants {
         }
       }
     }
-    for (int i = 0; i < 60; i++) {
+    for (int i = 0; i < 61; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
