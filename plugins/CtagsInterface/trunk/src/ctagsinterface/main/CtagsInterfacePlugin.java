@@ -28,6 +28,8 @@ import org.gjt.sp.jedit.gui.StatusBar;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.PositionChanging;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.util.Task;
+import org.gjt.sp.util.ThreadUtilities;
 
 import ctagsinterface.dockables.Progress;
 import ctagsinterface.dockables.TagList;
@@ -601,9 +603,9 @@ public class CtagsInterfacePlugin extends EditPlugin
 	public static void deleteOrigin(final Logger logger, final OriginType type,
 		final String name)
 	{
-		addWorkRequest(new Runnable()
+		addWorkRequest(new Task()
 		{
-			public void run()
+			public void _run()
 			{
 				index.deleteOrigin(logger, index.getOrigin(type, name, false));
 				if (pvi != null && type == OriginType.PROJECT)
@@ -633,9 +635,9 @@ public class CtagsInterfacePlugin extends EditPlugin
 		}
 	}
 	
-	private static void addWorkRequest(Runnable run) {
-		Thread bgTask = new Thread(run);
-		bgTask.start();
+	private static void addWorkRequest(Task task)
+	{
+		ThreadUtilities.runInBackground(task);
 	}
 
 	private static Progress getProgressDockable(View view)
@@ -684,9 +686,9 @@ public class CtagsInterfacePlugin extends EditPlugin
 		setStatusMessage("Tagging file: " + file);
 		final Object syncObject = sync ? new Object() : null;
 		final boolean [] done = { false };
-		addWorkRequest(new Runnable()
+		addWorkRequest(new Task()
 		{
-			public void run()
+			public void _run()
 			{
 				// Get the file origins, to restore when updating the file.
 				final String originsStr = index.getOriginsOfFile(file);
@@ -729,9 +731,9 @@ public class CtagsInterfacePlugin extends EditPlugin
 		final TagHandler handler)
 	{
 		setStatusMessage("Tagging archive: " + archive);
-		addWorkRequest(new Runnable()
+		addWorkRequest(new Task()
 		{
-			public void run()
+			public void _run()
 			{
 				HashMap<String, String> localToVFS =
 					new HashMap<String, String>();
@@ -754,8 +756,8 @@ public class CtagsInterfacePlugin extends EditPlugin
 		final TagHandler handler)
 	{
 		setStatusMessage("Tagging source tree: " + tree);
-		addWorkRequest(new Runnable() {
-			public void run() {
+		addWorkRequest(new Task() {
+			public void _run() {
 				Runner runner = getRunner(logger);
 				String tagFile = runner.runOnTree(tree);
 				Parser parser = getParser(logger);
@@ -788,8 +790,8 @@ public class CtagsInterfacePlugin extends EditPlugin
 		if (pvi == null)
 			return;
 		setStatusMessage("Tagging project: " + project);
-		addWorkRequest(new Runnable() {
-			public void run() {
+		addWorkRequest(new Task() {
+			public void _run() {
 				Vector<String> files = pvi.getFiles(project);
 				if (files == null)
 					JOptionPane.showMessageDialog(jEdit.getActiveView(),
