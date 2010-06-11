@@ -198,6 +198,7 @@ public class TagBrowser extends JPanel
 
 	private static class NamespaceMapper implements IMapper
 	{
+		private static final String GLOBAL_SCOPE = "<< Global (no namespace) >>";
 		private static final String [] Keywords = {
 			"namespace", "class", "union", "struct", "enum"
 		};
@@ -217,7 +218,7 @@ public class TagBrowser extends JPanel
 				}
 			}
 			if (path.isEmpty())
-				path.add("Global (no namespace)");
+				path.add(GLOBAL_SCOPE);
 			path.add(tag);
 		}
 	}
