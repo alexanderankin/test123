@@ -184,6 +184,7 @@ public class HtmlFormatter extends HtmlVisitor {
 
         out.print(t.tagStart + (t.tagName == null ? "" : t.tagName));
         hanging = t.tagName == null ? 0 : t.tagName.length() + 1;
+        // TODO: make this a user option
         ///boolean splitAttrs = jEdit.getBooleanProperty( "xmlindenter.splitAttributes", false );
         boolean splitAttrs = false;
         if (splitAttrs) {
@@ -222,7 +223,7 @@ public class HtmlFormatter extends HtmlVisitor {
         if (t.tagName == null || tagsNewlineBefore.contains(t.tagName.toUpperCase())) {
             out.printlnSoft();
         } else {
-            //out.print(" ");
+            out.print(" ");
         }
         previousElement = t;
     }
@@ -269,6 +270,9 @@ public class HtmlFormatter extends HtmlVisitor {
     }
     
     public void visit(HtmlDocument.BlankLines b) {
+        // TODO: make this a user setting.  Currently, all multiple blank lines
+        // are collapsed to a single blank line.  Making this a setting means
+        // also adjusting the HtmlCollector and the parser.
         if (!(previousElement instanceof HtmlDocument.BlankLines)) {
             out.println(); 
         }
@@ -403,7 +407,6 @@ class MarginWriter {
  * failure through the hasBlownTarget method; if it can, the contents can
  * be retrieved through the getString method.
  */
-
 class TagBlockRenderer extends HtmlVisitor {
     protected String s;
     protected boolean multiLine;
