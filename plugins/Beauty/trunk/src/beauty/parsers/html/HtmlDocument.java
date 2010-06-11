@@ -325,6 +325,24 @@ public class HtmlDocument {
     }
 
     /**
+     * One or more blank lines.
+     */
+    public static class BlankLines extends HtmlElement {
+
+        public void accept(HtmlVisitor v) {
+            v.visit(this);
+        }
+
+        public int getLength() {
+            return (NL + NL).length();
+        }
+
+        public String toString() {
+            return NL + NL;
+        }
+    }
+
+    /**
      * A sequence of HTML elements.
      */
     public static class ElementSequence {

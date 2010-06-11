@@ -117,6 +117,7 @@ public class HtmlScrubber extends HtmlVisitor {
         if (((flags & TRIM_SPACES) != 0)
                 && !inPreBlock
                 && (previousElement instanceof HtmlDocument.Newline
+                || previousElement instanceof HtmlDocument.BlankLines
                 || previousElement instanceof HtmlDocument.Tag
                 || previousElement instanceof HtmlDocument.EndTag
                 || previousElement instanceof HtmlDocument.Comment)) {
@@ -133,6 +134,7 @@ public class HtmlScrubber extends HtmlVisitor {
 
     public void visit(HtmlDocument.Comment c)     { previousElement = c; }
     public void visit(HtmlDocument.Newline n)     { previousElement = n; }
+    public void visit(HtmlDocument.BlankLines b)  { previousElement = b; }
     public void visit(HtmlDocument.Annotation a)  { previousElement = a; }
     public void visit(HtmlDocument.TagBlock bl) {
         if (bl.startTag.tagName == null     // jsp scriptlets have a null tag name

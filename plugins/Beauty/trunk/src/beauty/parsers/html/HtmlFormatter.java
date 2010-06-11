@@ -60,9 +60,7 @@ public class HtmlFormatter extends HtmlVisitor {
     protected static Set tagsTryMatch = new HashSet();
 
     // these tags _should_ be block tags, so indent the block
-    protected static final String []tagsIndentStrings = {"TABLE", "TR", "TD", "TH", "FORM", "HTML", "HEAD", "BODY", "SELECT" 
-
-, "OL", "UL", "LI", "DIV", "SPAN", "P", "H1", "H2", "H3", "H4", "H5", "H6"} ;
+    protected static final String []tagsIndentStrings = {"TABLE", "TR", "TD", "TH", "FORM", "HTML", "HEAD", "BODY", "SELECT", "OL", "UL", "LI", "DIV", "SPAN", "P", "H1", "H2", "H3", "H4", "H5", "H6"} ;
 
     // always start these tags on a new line
     protected static final String []tagsNewlineBeforeStrings = {"P", "H1", "H2", "H3", "H4", "H5", "H6", "BR", "HR", "taglib", "OL", "UL", "LI", "LINK"} ;
@@ -224,7 +222,7 @@ public class HtmlFormatter extends HtmlVisitor {
         if (t.tagName == null || tagsNewlineBefore.contains(t.tagName.toUpperCase())) {
             out.printlnSoft();
         } else {
-            out.print(" ");
+            //out.print(" ");
         }
         previousElement = t;
     }
@@ -268,6 +266,13 @@ public class HtmlFormatter extends HtmlVisitor {
             }
         }
         previousElement = n;
+    }
+    
+    public void visit(HtmlDocument.BlankLines b) {
+        if (!(previousElement instanceof HtmlDocument.BlankLines)) {
+            out.println(); 
+        }
+        previousElement = b;
     }
 
     public void start() {

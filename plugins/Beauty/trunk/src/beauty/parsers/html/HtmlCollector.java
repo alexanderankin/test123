@@ -11,7 +11,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License (http://www.gnu.org/copyleft/gpl.txt)
  * for more details.
- */
+*/
 
 package beauty.parsers.html;
 
@@ -35,19 +35,20 @@ public class HtmlCollector extends HtmlVisitor {
     protected ElementStack elements;
     protected boolean collected;
     protected static Set dontMatch = new HashSet();
-    protected static String[] dontMatchStrings
-            = {"AREA", "BASE", "BASEFONT", "BR", "COL", "HR", "IMG", "INPUT",
-               "ISINDEX", "LINK", "META", "PARAM"};
+ 
+    protected static String[] dontMatchStrings = {"AREA", "BASE", "BASEFONT", "BR", "COL", "HR", "IMG", "INPUT" , "ISINDEX", "LINK", "META", "PARAM"} ;
 
     static {
-        for (int i = 0; i < dontMatchStrings.length; i++)
+        for (int i = 0; i < dontMatchStrings.length; i++) {
             dontMatch.add(dontMatchStrings[i]);
-    };
+        }
+
+    }
 
     private static class TagStackEntry {
         String tagName;
         int index;
-    };
+    }
 
     private static class ElementStack extends Vector {
         ElementStack() {
@@ -61,24 +62,34 @@ public class HtmlCollector extends HtmlVisitor {
         public void popN(int n) {
             elementCount -= n;
         }
-    };
+ 
+        public Object peek() {
+            return lastElement(); 
+        }
+    }
 
     protected int pushNode(HtmlDocument.HtmlElement e) {
         elements.addElement(e);
         return elements.size() - 1;
-    };
+    }
 
     public void visit(HtmlDocument.Comment c) {
         pushNode(c);
-    };
+    }
 
     public void visit(HtmlDocument.Text t) {
         pushNode(t);
-    };
+    }
 
     public void visit(HtmlDocument.Newline n) {
         pushNode(n);
-    };
+    }
+ 
+    public void visit(HtmlDocument.BlankLines b) {
+        if (! (elements.peek() instanceof HtmlDocument.BlankLines)) {
+            pushNode(b); 
+        }
+    }
 
     public void visit(HtmlDocument.Tag t) {
         TagStackEntry ts = new TagStackEntry();
@@ -87,8 +98,7 @@ public class HtmlCollector extends HtmlVisitor {
         // Push the tag onto the element stack, and push an entry on the tag
         // stack if it's a tag we care about matching
         index = pushNode(t);
-        if (!t.emptyTag
-                && !dontMatch.contains(t.tagName.toUpperCase())) {
+        if (! t.emptyTag && ! dontMatch.contains(t.tagName.toUpperCase())) {
             ts.tagName = t.tagName;
             ts.index = index;
             tagStack.addElement(ts);
@@ -105,14 +115,13 @@ public class HtmlCollector extends HtmlVisitor {
                 HtmlDocument.Tag tag;
 
                 // Create a new ElementSequence and copy the elements to it
-                blockElements =
-                        new HtmlDocument.ElementSequence(elements.size() - ts.index - 1);
-                for (int j = ts.index + 1; j < elements.size(); j++)
-                    blockElements.addElement((HtmlDocument.HtmlElement)
-                            elements.elementAt(j));
+                blockElements = new HtmlDocument.ElementSequence(elements.size() - ts.index - 1);
+                for (int j = ts.index + 1; j < elements.size(); j++) {
+                    blockElements.addElement( (HtmlDocument.HtmlElement) elements.elementAt(j));
+                }
+
                 tag = (HtmlDocument.Tag) elements.elementAt(ts.index);
-                block = new HtmlDocument.TagBlock(tag.tagName,
-                        tag.attributeList, blockElements);
+                block = new HtmlDocument.TagBlock(tag.tagName, tag.attributeList, blockElements);
                 block.startTag.setIsJspTag(tag.isJspTag);
 
                 // Pop the elements off the stack, push the new block
@@ -128,9 +137,11 @@ public class HtmlCollector extends HtmlVisitor {
         }
 
         // If we didn't find a match, just push the end tag
-        if (i < 0)
+        if (i < 0) {
             pushNode(t);
-    };
+        }
+
+    } ;
 
     public void visit(HtmlDocument.TagBlock bl) {
         HtmlCollector c = new HtmlCollector();
@@ -149,8 +160,10 @@ public class HtmlCollector extends HtmlVisitor {
             HtmlDocument.HtmlElement htmlElement = (HtmlDocument.HtmlElement) iterator.next();
             htmlElement.accept(this);
         }
-        if (collected)
+        if (collected) {
             s.setElements(elements);
+        }
+
     }
 
     public static void main(String[] args) throws Exception {
