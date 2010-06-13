@@ -64,6 +64,8 @@ public class CtagsInterfacePlugin extends EditPlugin
 	private static ActionSet actions;
 	private static KindIconProvider iconProvider;
 	private static Object bufferUpdateLock = new Object();
+	private static HashMap<String, Task> tasks =
+		new HashMap<String, Task>();
 
 	public void start()
 	{
@@ -603,7 +605,7 @@ public class CtagsInterfacePlugin extends EditPlugin
 	public static void deleteOrigin(final Logger logger, final OriginType type,
 		final String name)
 	{
-		addWorkRequest(new Task()
+		addWorkRequest(name, new Task()
 		{
 			public void _run()
 			{
@@ -635,8 +637,12 @@ public class CtagsInterfacePlugin extends EditPlugin
 		}
 	}
 	
-	private static void addWorkRequest(Task task)
+	private static void addWorkRequest(String originId, Task task)
 	{
+		Task current = tasks.get(originId);
+		if (current != null)
+			current.cancel();
+		tasks.put(originId, task);
 		ThreadUtilities.runInBackground(task);
 	}
 
@@ -686,7 +692,7 @@ public class CtagsInterfacePlugin extends EditPlugin
 		setStatusMessage("Tagging file: " + file);
 		final Object syncObject = sync ? new Object() : null;
 		final boolean [] done = { false };
-		addWorkRequest(new Task()
+		addWorkRequest(file, new Task()
 		{
 			public void _run()
 			{
@@ -731,7 +737,7 @@ public class CtagsInterfacePlugin extends EditPlugin
 		final TagHandler handler)
 	{
 		setStatusMessage("Tagging archive: " + archive);
-		addWorkRequest(new Task()
+		addWorkRequest(archive, new Task()
 		{
 			public void _run()
 			{
@@ -756,7 +762,7 @@ public class CtagsInterfacePlugin extends EditPlugin
 		final TagHandler handler)
 	{
 		setStatusMessage("Tagging source tree: " + tree);
-		addWorkRequest(new Task() {
+		addWorkRequest(tree, new Task() {
 			public void _run() {
 				Runner runner = getRunner(logger);
 				String tagFile = runner.runOnTree(tree);
@@ -790,7 +796,7 @@ public class CtagsInterfacePlugin extends EditPlugin
 		if (pvi == null)
 			return;
 		setStatusMessage("Tagging project: " + project);
-		addWorkRequest(new Task() {
+		addWorkRequest(project, new Task() {
 			public void _run() {
 				Vector<String> files = pvi.getFiles(project);
 				if (files == null)
