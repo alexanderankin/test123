@@ -32,15 +32,16 @@ import ctagsinterface.main.QueryAction;
 import ctagsinterface.main.QueryAction.QueryType;
 
 @SuppressWarnings("serial")
-public class ActionsOptionPane extends AbstractOptionPane {
-
+public class ActionsOptionPane extends AbstractOptionPane
+{
 	static public final String OPTION = CtagsInterfacePlugin.OPTION;
 	static public final String MESSAGE = CtagsInterfacePlugin.MESSAGE;
 	static public final String ACTIONS = OPTION + "actions.";
-	JList actions;
-	DefaultListModel actionsModel;
+	private JList actions;
+	private DefaultListModel actionsModel;
 
-	public ActionsOptionPane() {
+	public ActionsOptionPane()
+	{
 		super("CtagsInterface-Actions");
 		setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -62,22 +63,28 @@ public class ActionsOptionPane extends AbstractOptionPane {
 		buttons.add(edit);
 		addComponent(buttons);
 
-		add.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
+		add.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent ae)
+			{
 				EditAction action = new ActionEditor().getAction();
 				if (action != null)
 					actionsModel.addElement(action);
 			}
 		});
-		remove.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
+		remove.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent ae)
+			{
 				int i = actions.getSelectedIndex();
 				if (i >= 0)
 					actionsModel.removeElementAt(i);
 			}
 		});
-		edit.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
+		edit.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent ae)
+			{
 				int i = actions.getSelectedIndex();
 				if (i < 0)
 					return;
@@ -89,7 +96,8 @@ public class ActionsOptionPane extends AbstractOptionPane {
 		});
 	}
 
-	static public QueryAction[] loadActions() {
+	static public QueryAction[] loadActions()
+	{
 		int n = jEdit.getIntegerProperty(ACTIONS + "size", 0);
 		QueryAction[] actionArr = new QueryAction[n];
 		for (int i = 0; i < n; i++)
@@ -97,29 +105,30 @@ public class ActionsOptionPane extends AbstractOptionPane {
 		return actionArr;
 	}
 
-	public void save() {
+	public void save()
+	{
 		jEdit.setIntegerProperty(ACTIONS + "size", actionsModel.size());
-		for (int i = 0; i < actionsModel.size(); i++) {
+		for (int i = 0; i < actionsModel.size(); i++)
+		{
 			QueryAction qa = (QueryAction) actionsModel.getElementAt(i);
 			qa.save(i);
 		}
 		CtagsInterfacePlugin.updateActions();
 	}
 
-	static public class ActionEditor extends JDialog {
+	static public class ActionEditor extends JDialog
+	{
+		private QueryAction action;
+		private JTextField query;
+		private JTextField name;
+		private ButtonGroup querytype;
+		private List<JRadioButton> buttons = new ArrayList<JRadioButton>();
+		private JCheckBox callImmediately;
 
-		QueryAction action;
-		JTextField query;
-		JTextField name;
-		JButton ok;
-		JButton cancel;
-		ButtonGroup querytype;
-		List<JRadioButton> buttons = new ArrayList<JRadioButton>();
-		JCheckBox callImmediately;
-
-		public ActionEditor(QueryAction qa) {
-			super(jEdit.getActiveView(), jEdit.getProperty(MESSAGE + "actionEditorTitle"),
-					true);
+		public ActionEditor(QueryAction qa)
+		{
+			super(jEdit.getActiveView(), jEdit.getProperty(MESSAGE +
+				"actionEditorTitle"), true);
 			setLayout(new GridBagLayout());
 			GridBagConstraints c = new GridBagConstraints();
 			JPanel p = new JPanel();
@@ -143,13 +152,13 @@ public class ActionsOptionPane extends AbstractOptionPane {
 			p = new JPanel();
 			p.add(new JLabel(jEdit.getProperty(MESSAGE + "queryType")));
 			querytype = new ButtonGroup();
-			for (QueryAction.QueryType type : QueryAction.QueryType.values()) {
+			for (QueryAction.QueryType type: QueryAction.QueryType.values())
+			{
 				JRadioButton b = new JRadioButton(type.text);
 				b.setActionCommand(type.toString());
 				querytype.add(b);
-				if (type == QueryAction.QueryType.JUMP_TO_TAG) {
+				if (type == QueryAction.QueryType.JUMP_TO_TAG)
 					b.setSelected(true);
-				}
 				p.add(b);
 				buttons.add(b);
 			}
@@ -175,32 +184,40 @@ public class ActionsOptionPane extends AbstractOptionPane {
 			c.gridy++;
 			add(p, c);
 
-			ok.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent ae) {
+			ok.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent ae)
+				{
 					QueryType type = QueryType.JUMP_TO_TAG;
-					for (JRadioButton b : buttons) {
-						if (b.isSelected()) {
+					for (JRadioButton b : buttons)
+					{
+						if (b.isSelected())
+						{
 							type = QueryType.valueOf(b.getActionCommand());
 							break;
 						}
 					}
-					action = new QueryAction(name.getText(), query.getText(), type, callImmediately.isSelected());
+					action = new QueryAction(name.getText(), query.getText(),
+						type, callImmediately.isSelected());
 					dispose();
 				}
 			});
-			cancel.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent ae) {
+			cancel.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent ae)
+				{
 					dispose();
 				}
 			});
 			action = qa;
-			if (action != null) {
+			if (action != null)
+			{
 				name.setText(action.getName());
 				query.setText(action.getQuery());
 				QueryType type = action.getQueryType();
-				for (JRadioButton b : buttons) {
-					b.setSelected(QueryType.valueOf(b.getActionCommand()) == type);
-				}
+				for (JRadioButton b : buttons)
+					b.setSelected(
+						QueryType.valueOf(b.getActionCommand()) == type);
 				callImmediately.setSelected(action.isShowImmediately());
 			}
 			pack();
@@ -208,11 +225,13 @@ public class ActionsOptionPane extends AbstractOptionPane {
 			setVisible(true);
 		}
 
-		public ActionEditor() {
+		public ActionEditor()
+		{
 			this(null);
 		}
 
-		public QueryAction getAction() {
+		public QueryAction getAction()
+		{
 			return action;
 		}
 	}

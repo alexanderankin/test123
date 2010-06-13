@@ -13,12 +13,13 @@ import ctagsinterface.projects.ProjectWatcher;
 
 public class QueryAction extends EditAction {
 
-	public enum QueryType {
+	public enum QueryType
+	{
 		JUMP_TO_TAG("Jump to tag"),
 		SEARCH_SUBSTRING("Search substring"),
 		SEARCH_PREFIX("Search prefix");
 
-		private QueryType (String txt)
+		private QueryType(String txt)
 		{
 			text = txt;
 		}
@@ -39,18 +40,17 @@ public class QueryAction extends EditAction {
 		super(name);
 		jEdit.setTemporaryProperty(name + ".label", name);
 		this.query = query;
-		desc = name + " (" + query + ")";
 		this.queryType = queryType;
 		this.callImmediately = showImmediately;
+		desc = getDesc();
 	}
 
-	public QueryAction(int index) {
+	public QueryAction(int index)
+	{
 		super(jEdit.getProperty(ActionsOptionPane.ACTIONS + index + ".name"));
-		String name = getName();
 		jEdit.setTemporaryProperty(getName() + ".label", getName());
 		String base= ActionsOptionPane.ACTIONS + index + ".";
 		query = jEdit.getProperty(base + "query");
-		desc = name + " (" + query + ")";
 		String queryTypeString = jEdit.getProperty(base + "queryType");
 		if (queryTypeString == null || queryTypeString.length() == 0)
 		    queryType = QueryType.JUMP_TO_TAG;
@@ -58,13 +58,20 @@ public class QueryAction extends EditAction {
 		    queryType = QueryType.valueOf(queryTypeString);
 		callImmediately = jEdit.getBooleanProperty(base + "callImmediately",
 			false);
+		desc = getDesc();
+	}
+
+	private String getDesc()
+	{
+		return name + " (" + queryType.text + " - \"" + query + "\")";
 	}
 
 	private String fillQueryParameters(View view)
 	{
 	    ProjectWatcher pvi = CtagsInterfacePlugin.getProjectWatcher();
 	    String project = (pvi == null) ? null : pvi.getActiveProject(view);
-	    if (project == null && query.contains(PROJECT)) {
+	    if (project == null && query.contains(PROJECT))
+	    {
 	        JOptionPane.showMessageDialog(view,
 	            "No active project exists");
 	        return null;
@@ -73,9 +80,11 @@ public class QueryAction extends EditAction {
 	    if (project != null)
 	        s = s.replace(PROJECT, project);
 	    s = s.replace(FILE, view.getBuffer().getPath());
-	    if (s.contains(TAG)) {
+	    if (s.contains(TAG))
+	    {
 	        String tag = CtagsInterfacePlugin.getDestinationTag(view);
-	        if (tag == null) {
+	        if (tag == null)
+	        {
 	            JOptionPane.showMessageDialog(view,
 	            	"No tag selected nor identified at caret");
 	            return null;
@@ -86,9 +95,11 @@ public class QueryAction extends EditAction {
 	}
 
 	@Override
-	public void invoke(View view) {
+	public void invoke(View view)
+	{
 	    String s = fillQueryParameters(view);
-	    switch (queryType) {
+	    switch (queryType)
+	    {
 	    case JUMP_TO_TAG:
 	    	ArrayList<Tag> tags = new ArrayList<Tag>();
             CtagsInterfacePlugin.getIndex().queryTags(s, tags);
@@ -103,23 +114,28 @@ public class QueryAction extends EditAction {
 	    }
 	}
 
-	public String toString() {
+	public String toString()
+	{
 		return desc;
 	}
 
-	public String getQuery() {
+	public String getQuery()
+	{
 		return query;
 	}
 
-	public QueryType getQueryType() {
+	public QueryType getQueryType()
+	{
         return queryType;
     }
 
-	public boolean isShowImmediately() {
+	public boolean isShowImmediately()
+	{
         return callImmediately;
     }
 
-	public void save(int index) {
+	public void save(int index)
+	{
 		String base = ActionsOptionPane.ACTIONS + index + ".";
 		jEdit.setProperty(base + "name", getName());
 		jEdit.setProperty(base + "query", query);
