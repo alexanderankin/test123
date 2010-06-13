@@ -38,6 +38,8 @@ plugin.ctagsinterface.main.CtagsInterfacePlugin.menu=\
 	ctags-interface-preview \
 	ctags-interface-complete-from-db \
 	- \
+	ctags-interface-browser \
+	- \
 	ctags-interface-tag-all-projects \
 	- \
 	ctags-interface-add-current-file \
