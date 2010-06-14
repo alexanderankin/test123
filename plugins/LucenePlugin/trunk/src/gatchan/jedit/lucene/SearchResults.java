@@ -47,7 +47,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 	private final JPanel mainPanel;
 	private final JList list;
 	private final JCheckBox lineResults;
-	private JSpinner maxResults;
+	private final JSpinner maxResults;
 	private final JComboBox indexes;
 	private final MyModel model;
 	private final SourceLinkTree tree;
@@ -89,7 +89,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		indexes.setToolTipText(jEdit.getProperty("lucene.index-combo.tooltip"));
 		indexes.addActionListener(new ActionListener()
 		{
-			private Index prevIndex = null;
+			private Index prevIndex;
 			private ActivityListener listener = new ActivityListener()
 			{
 				public void indexingEnded(Index index)
@@ -200,15 +200,19 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			indexes.setSelectedIndex(index);
 		}
 
-		maxResults.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
+		maxResults.addChangeListener(new ChangeListener()
+		{
+			public void stateChanged(ChangeEvent e)
+			{
 				if (searchField.getText().length() != 0)
 					actionListener.actionPerformed(null);
 			}
 		});
-		addComponentListener(new ComponentAdapter() {
+		addComponentListener(new ComponentAdapter()
+		{
 			@Override
-			public void componentResized(ComponentEvent e) {
+			public void componentResized(ComponentEvent e)
+			{
 				setLayoutByGeometry();
 			}
 		});
@@ -325,7 +329,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		revalidate();
 	}
 
-	private String getLabel(String prefix)
+	private static String getLabel(String prefix)
 	{
 		return jEdit.getProperty(prefix + ".label." +
 			(OptionPane.getUseShortLabels() ? "short" : "long"));
@@ -377,52 +381,12 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 
 	public void search(String text, String fileType)
 	{
-		Log.log(Log.NOTICE, this, "Search for " + text + " in file type: " + fileType);
 		Index index = getSelectedIndex();
 		if (index == null)
 			return;
-
-		final java.util.List<Object> files = new ArrayList<Object>();
-		int max = ((Integer)(maxResults.getValue())).intValue();
-		ResultProcessor processor;
-		if (lineResults.isSelected())
-			processor = new MarkerListQueryProcessor(index, files, max);
-		else
-			processor = new FileListQueryProcessor(index, files, max);
-		index.search(text, fileType, max, processor);
-		if (lineResults.isSelected())
-		{
-			SearchRootNode rootNode = new SearchRootNode(text);
-			SourceLinkParentNode parent = tree.addSourceLinkParent(rootNode);
-			FileMarker prev = null;
-			int count = 0;
-			for (Object o: files)
-			{
-				FileMarker marker = (FileMarker) o;
-				if (marker.equals(prev))
-				{
-					Vector<FileMarker.Selection> selections = marker.getSelections();
-					for (FileMarker.Selection selection: selections)
-						prev.addSelection(selection);
-				}
-				else
-				{
-					parent.addSourceLink(marker);
-					prev = marker;
-					count++;
-				}
-			}
-			rootNode.addChildCount(count);
-			TreeModel model = tree.getModel();
-			if (model instanceof DefaultTreeModel)
-				((DefaultTreeModel)model).nodeChanged(parent);
-			((CardLayout) mainPanel.getLayout()).show(mainPanel, "tree");
-		}
-		else
-		{
-			model.setFiles(files);
-			((CardLayout) mainPanel.getLayout()).show(mainPanel, "list");
-		}
+		int max = (Integer) maxResults.getValue();
+		ThreadUtilities.runInBackground(new SearchQuery(index, text, fileType, max,
+			lineResults.isSelected()));
 	}
 
 	public void goToNextResult()
@@ -438,6 +402,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 	}
 
 	//{{{ addNotify() method
+	@Override
 	public void addNotify()
 	{
 		super.addNotify();
@@ -450,6 +415,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 	} //}}}
 
 	//{{{ removeNotify() method
+	@Override
 	public void removeNotify()
 	{
 		super.removeNotify();
@@ -503,6 +469,76 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		}
 		if (updateLayout)
 			revalidate();
+	}
+
+	private class SearchQuery extends Task
+	{
+		private final Index index;
+		private final String text;
+		private final String fileType;
+		private final int max;
+		private final boolean lineResult;
+
+		private SearchQuery(Index index, String text, String fileType, int max, boolean lineResult)
+		{
+			this.index = index;
+			this.text = text;
+			this.fileType = fileType;
+			this.max = max;
+			this.lineResult = lineResult;
+		}
+
+		@Override
+		public void _run()
+		{
+			Log.log(Log.NOTICE, this, "Search for " + text + " in file type: " + fileType);
+			ResultProcessor processor;
+			final java.util.List<Object> files = new ArrayList<Object>();
+			if (lineResult)
+				processor = new MarkerListQueryProcessor(index, files, max);
+			else
+				processor = new FileListQueryProcessor(index, files, max);
+			index.search(text, fileType, max, processor);
+			ThreadUtilities.runInDispatchThread(new Runnable()
+			{
+				public void run()
+				{
+					if (lineResult)
+					{
+						SearchRootNode rootNode = new SearchRootNode(text);
+						SourceLinkParentNode parent = tree.addSourceLinkParent(rootNode);
+						FileMarker prev = null;
+						int count = 0;
+						for (Object o: files)
+						{
+							FileMarker marker = (FileMarker) o;
+							if (marker.equals(prev))
+							{
+								Vector<FileMarker.Selection> selections = marker.getSelections();
+								for (FileMarker.Selection selection: selections)
+									prev.addSelection(selection);
+							}
+							else
+							{
+								parent.addSourceLink(marker);
+								prev = marker;
+								count++;
+							}
+						}
+						rootNode.addChildCount(count);
+						TreeModel model = tree.getModel();
+						if (model instanceof DefaultTreeModel)
+							((DefaultTreeModel)model).nodeChanged(parent);
+						((CardLayout) mainPanel.getLayout()).show(mainPanel, "tree");
+					}
+					else
+					{
+						model.setFiles(files);
+						((CardLayout) mainPanel.getLayout()).show(mainPanel, "list");
+					}
+				}
+			});
+		}
 	}
 
 	private static class MyModel extends AbstractListModel
@@ -588,7 +624,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 	private static class SearchRootNode implements SubtreePopupMenuProvider
 	{
 		private String text;
-		public SearchRootNode(String searchText)
+		SearchRootNode(String searchText)
 		{
 			text = searchText;
 		}
@@ -602,8 +638,10 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		{
 			if (popup == null)
 				return;
-			popup.add(new AbstractAction("Toggle marker(s)") {
-				public void actionPerformed(ActionEvent e) {
+			popup.add(new AbstractAction("Toggle marker(s)")
+			{
+				public void actionPerformed(ActionEvent e)
+				{
 					Vector<FileMarker> markers = parent.getFileMarkers(node);
 					for (FileMarker marker: markers)
 						MarkerSetsPlugin.toggleMarker(marker);
@@ -629,45 +667,5 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 	public void focusOnDefaultComponent()
 	{
 		searchField.requestFocusInWindow();		
-	}
-
-	private class ReindexWorkRequest extends Task
-	{
-		private final String indexName;
-
-		private ReindexWorkRequest(String indexName)
-		{
-			this.indexName = indexName;
-		}
-
-		public void _run()
-		{
-			try
-			{
-				Log.log(Log.NOTICE, this, "Reindex " + indexName + " asked");
-				Index index = LucenePlugin.instance.getIndex(indexName);
-				index.reindex();
-				Log.log(Log.NOTICE, this, "Reindex " + indexName + " DONE");
-				Log.log(Log.NOTICE, this, "Optimize index:"+indexName);
-				index.optimize();
-				index.commit();
-				Log.log(Log.NOTICE, this, "Optimize index:"+indexName+ "DONE");
-				Log.log(Log.NOTICE, this, "Optimize Central Index");
-				LucenePlugin.CENTRAL.optimize();
-				LucenePlugin.CENTRAL.commit();
-				Log.log(Log.NOTICE, this, "Optimize Central Index DONE");
-			}
-			finally
-			{
-				EventQueue.invokeLater(new Runnable()
-				{
-					public void run()
-					{
-						indexes.setEnabled(true);
-					}
-				});
-
-			}
-		}
 	}
 }
