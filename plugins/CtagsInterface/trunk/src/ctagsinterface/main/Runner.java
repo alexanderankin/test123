@@ -175,17 +175,24 @@ public class Runner
 		cmdLine.toArray(args);
 		if (logger != null)
 			logger.beginTask(jEdit.getProperty(TAGGING));
+		Process p = null;
+		StreamConsumer osc = null, esc = null;
 		try {
-			Process p = Runtime.getRuntime().exec(args);
-			StreamConsumer osc = new StreamConsumer(p.getInputStream());
+			p = Runtime.getRuntime().exec(args);
+			osc = new StreamConsumer(p.getInputStream());
 			osc.start();
-			StreamConsumer esc = new StreamConsumer(p.getErrorStream());
+			esc = new StreamConsumer(p.getErrorStream());
 			esc.start();
 			p.waitFor();
 		} catch (IOException e) {
 			e.printStackTrace();
 			tagFile = null;
 		} catch (InterruptedException e) {
+			if (p != null)
+				p.destroy();
+			// The output and error streams should close as a result of
+			// killing the process, and the reader threads should get an
+			// exception and end.
 			e.printStackTrace();
 			tagFile = null;
 		} finally {
@@ -221,11 +228,14 @@ public class Runner
 	{
 		private InputStream is;
 
-		public StreamConsumer(InputStream is) {
+		public StreamConsumer(InputStream is)
+		{
 			this.is = is;
 		}
-		public void run() {
-			try {
+		public void run()
+		{
+			try
+			{
 				BufferedReader br = new BufferedReader(new InputStreamReader(is));
 				String line;
 				do
@@ -235,7 +245,9 @@ public class Runner
 						addProgressMessage(line);
 				}
 				while (line != null);
-			} catch (IOException ioe) {
+			}
+			catch (IOException ioe)
+			{
 				ioe.printStackTrace();  
 			}
 		}
