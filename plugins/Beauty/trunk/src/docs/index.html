@@ -14,7 +14,7 @@
                </strong>
             </td>
             <td valign="TOP" align="RIGHT">
-               <font size="-1"><p><strong>Version 0.4.0 (@@tstamp@@)</strong> <p>Dale Anson</font>
+               <font size="-1"><p><strong>Version 0.5.0 (@@tstamp@@)</strong> <p>Dale Anson</font>
             </td>
          </tr>
       </table>
@@ -32,9 +32,9 @@
       <p>
       There are currently 5 beautifiers/formatters included:
       <ul>
-         <li>HTML: works very well, even when presented with poorly formatted html.</li>
-         <li>JSP: works very well.</li>
-         <li>CSS: works very well. (Added in Beauty 0.5)</li>
+         <li>HTML: works very well, even when presented with poorly formatted html.  Delegates to the CSS beautifier to format style blocks within an HTML file.  Delegates to the included custom javascript beautifier to format script blocks within an HTML file.</li>
+         <li>JSP: has been combined with the HTML beautifier.  It works pretty well, although it will choke on a few things.  In particular, it doesn't like jsp comments or EL expressions within style or script blocks. These should be fixed for the 0.6 release.</li>
+         <li>CSS: works very well.</li>
          <li>Java: works very well, formats strictly to Sun's formatting standard only. Needs work on doing line wrapping per Sun's guidelines.</li>
          <li>JavaCC: needs work, formats to a combination of Sun's Java formatting standard and my own style for javacc files.</li>
       </ul>
@@ -47,9 +47,21 @@
       <p>
       With the 0.4 release, Beauty has the ability to <a href="#custom">configure a custom beautifier</a> per mode, which allows padding of various items, clean up of extra blank lines, and the ability to use the jEdit indenter. I've included custom beautifiers for Ada, Javascript, CSS, and json files. Making custom beautifiers is very easy to do, and you are encouraged to create and share beautifiers for any language that jEdit supports.
       <p>
-      (Note: the custom CSS beautifier is still included, but the built-in CSS beautifier does a much better job.)
+      (Note: the custom CSS beautifier is still included, but the built-in CSS beautifier introduced in Beauty 0.5 does a much better job.)
       <p>
       All other modes can default to use the built-in jEdit indenter, which works pretty well for most modes. To turn on this option, check the box in the Beauty options.
+      <p>
+      <table summary="Configuration" border="0" cellspacing="0" cellspacing="0" width="100%">
+         <tr align="CENTER" width="100%">
+            <td bgcolor="#7FB2FF" width="100%">
+               <strong>
+                  <font color="#FFFFFF" size="+1"><a name="usage">Usage</a></font>
+               </strong>
+            </td>
+         </tr>
+      </table>
+      <p>
+      To beautify a buffer, go to Plugins - Beauty - Beautify Buffer.  This action is mappable as a keyboard shortcut. Go to Utilities - Global Options - Shortcuts - Plugin: Beauty.  I've mapped Ctrl+B for this action.
       <p>
       <table summary="Configuration" border="0" cellspacing="0" cellspacing="0" width="100%">
          <tr align="CENTER" width="100%">
@@ -69,6 +81,8 @@
          <li>Indent width: as set for the current buffer.
          <li>Soft tabs: in this initial release, all tabs are converted to soft tabs. This should be fixed in the next release to honor the soft tab setting for the buffer.
       </ul>
+      <p>
+      The CSS beautifier introduced in Beauty 0.5 has some additional configuration options.  See the plugin option pane for details.
       <p>
       It is quite possible that new beautifiers are introduced as jEdit plugins for specific languages. Please consult the documentation for those beautifiers for any settings that might be possible.
       <p>
@@ -96,7 +110,7 @@
             Go to Plugins - Plugin Options - Beauty - Custom Beautifier
          </li>
          <li>
-            Select the mode to configure
+            Select the mode to configure. For your convenience, the mode will automatically be selected to the mode of the current buffer.
          </li>
          <li>
             Configure the beautifier, click "Apply".
@@ -106,7 +120,7 @@
          </li>
       </ol>
       <p>
-      The configuration should need only a little explanation.
+      The configuration should need only a little explanation:
       <p>
       There are 2 tabs, "Padding" and "Indenting".
 
@@ -130,7 +144,7 @@
       &gt;&gt;
       </pre>
       <br>
-      In this case, either the mode file needs to be fixed, or use the "Insert line separator before" and "Insert line separators after" text fields, and enter <tt>&lt;&lt;</tt>in the before and <tt>&gt;&gt;</tt>in the after.
+      In this case, either the mode file needs to be fixed, or use the "Insert line separator before" and "Insert line separator after" text fields, and enter <tt>&lt;&lt;</tt>in the before and <tt>&gt;&gt;</tt>in the after.
       <p>
       <b>Character padding</b><br>
       Four text fields are for setting up padding of individual characters.  Just enter the characters, don't separate with a comma.  If you do separate with a comma, then the padding will also be applied to any commas in your file.<br>
