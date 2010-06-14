@@ -3,7 +3,6 @@
 package beauty;
 
 import java.util.Enumeration;
-import java.util.Properties;
 import java.util.Vector;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
@@ -104,34 +103,6 @@ public class BeautyThread implements Runnable {
             buffer.beginCompoundEdit();
             buffer.remove( 0, buffer.getLength() );
             buffer.insert( 0, contents );
-
-            // if using the default beautifier, have jEdit indent the lines
-            if ( beautifier instanceof DefaultBeautifier ) {
-                Properties props = BeautyPlugin.getCustomModeProperties( modeName );
-                if ( "true".equals( props.getProperty( "usejEditIndenter" ) ) ) {
-                    try {
-                        // unfortunate hack here -- the Mode class only loads the indenting rules once,
-                        // so need to set the rules to null so they get reloaded with the user defined
-                        // properties for this custom beautifier.
-                        PrivilegedAccessor.setValue(mode, "indentRules", null);
-                        
-                        // now the indenting rules can be set and will be used by jEdit
-                        mode.setProperty( "indentOpenBrackets ", props.getProperty( "indentOpenBrackets" ) == null ? "" : props.getProperty( "indentOpenBrackets" ) );
-                        mode.setProperty( "indentCloseBrackets ", props.getProperty( "indentCloseBrackets" ) == null ? "" : props.getProperty( "indentCloseBrackets" ) );
-                        mode.setProperty( "unalignedOpenBrackets ", props.getProperty( "unalignedOpenBrackets" ) == null ? "" : props.getProperty( "unalignedOpenBrackets" ) );
-                        mode.setProperty( "unalignedCloseBrackets ", props.getProperty( "unalignedCloseBrackets" ) == null ? "" : props.getProperty( "unalignedCloseBrackets" ) );
-                        mode.setProperty( "indentNextLine ", props.getProperty( "indentNextLine" ) == null ? "" : props.getProperty( "indentNextLine" ) );
-                        mode.setProperty( "unindentThisLine ", props.getProperty( "unindentThisLine" ) == null ? "" : props.getProperty( "unindentThisLine" ) );
-                        mode.setProperty( "electricKeys ", props.getProperty( "electricKeys" ) == null ? "" : props.getProperty( "electricKeys" ) );
-                    }
-                    catch(Exception e) {        // NOPMD
-                        // oh well
-                    }
-                    
-                    // regardless of any exception, have jEdit indent the lines
-                    BeautyPlugin.indentLines( view );
-                }
-            }
 
             buffer.endCompoundEdit();
 

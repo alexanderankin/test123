@@ -6,9 +6,11 @@ import java.util.Properties;
 import java.util.regex.*;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.syntax.DefaultTokenHandler;
 import org.gjt.sp.jedit.syntax.Token;
 import beauty.BeautyPlugin;
+import beauty.PrivilegedAccessor;
 
 /**
  * This is a default beautifier to use when there is no specific beautifier
@@ -48,6 +50,15 @@ public class DefaultBeautifier extends Beautifier {
 
     private boolean collapseBlankLines = false;
  
+    private boolean indentLines = false;
+    private String indentOpenBrackets = "";
+    private String indentCloseBrackets = "";
+    private String unalignedOpenBrackets = "";
+    private String unalignedCloseBrackets = ""; 
+    private String indentNextLine = "";
+    private String unindentThisLine = "";
+    private String electricKeys = "";
+
     // this constructor is used for testing
     public DefaultBeautifier() {
  
@@ -59,6 +70,7 @@ public class DefaultBeautifier extends Beautifier {
         }
         this.modeName = modeName;
  
+        // TODO: put these property keys as static strings somewhere
         Properties props = BeautyPlugin.getCustomModeProperties(modeName);
         prePadOperator = "true".equals(props.getProperty("prePadOperators")) ? true : false;
         prePadFunction = "true".equals(props.getProperty("prePadFunctions")) ? true : false;
@@ -82,19 +94,25 @@ public class DefaultBeautifier extends Beautifier {
         preInsertLineCharacters = props.getProperty("preInsertLineCharacters") == null ? "" : props.getProperty("preInsertLineCharacters");
         postInsertLineCharacters = props.getProperty("postInsertLineCharacters") == null ? "" : props.getProperty("postInsertLineCharacters");
         collapseBlankLines = "true".equals(props.getProperty("collapseBlankLines")) ? true : false;
+ 
+        indentLines = "true".equals(props.getProperty("usejEditIndenter")) ? true : false;
+        indentOpenBrackets = props.getProperty("indentOpenBrackets") == null ? "" : props.getProperty("indentOpenBrackets");
+        indentCloseBrackets = props.getProperty("indentCloseBrackets") == null ? "" : props.getProperty("indentCloseBrackets");
+        unalignedOpenBrackets = props.getProperty("unalignedOpenBrackets") == null ? "" : props.getProperty("unalignedOpenBrackets");
+        unalignedCloseBrackets = props.getProperty("unalignedCloseBrackets") == null ? "" : props.getProperty("unalignedCloseBrackets");
+        indentNextLine = props.getProperty("indentNextLine") == null ? "" : props.getProperty("indentNextLine");
+        unindentThisLine = props.getProperty("unindentThisLine") == null ? "" : props.getProperty("unindentThisLine");
+        electricKeys = props.getProperty("electricKeys") == null ? "" : props.getProperty("electricKeys");
+ 
     }
 
     /**
      * @param text Not used in this beautifier. Instead the buffer is used directly
      * so that tokenization by line can be done.
-     * TODO: this is bad.  Need to use the given text, then create a temporary buffer
-     * to do the beautification, then return the text.  Otherwise, it is impossible
-     * to use this beautifier to format javascript contained within an html file.
      */ 
     public String beautify(String text) {
         StringBuilder sb = new StringBuilder(text);
         //long startTime = System.currentTimeMillis();
-        // padTokens reads in the buffer contents
         sb = padTokens(sb);
         //long padTokensTime = System.currentTimeMillis();
         sb = prePadCharacters(sb);
@@ -123,6 +141,10 @@ public class DefaultBeautifier extends Beautifier {
         System.out.println( "+++++ collapse blank lines time = " + ( collapseBlankLinesTime - dontPostPadCharactersTime ) );
         */ 
 
+        if (indentLines) {
+            sb = indentLines(sb);
+        }
+ 
         return sb.toString();
     }
 
@@ -159,9 +181,8 @@ public class DefaultBeautifier extends Beautifier {
                     while (token.id != Token.END) {
 
                         // maybe pad start
-                        if (! previousTokenText.endsWith(" ")) {
-                            // NOPMD
-                            if ((token.id == Token.OPERATOR && prePadOperator && previousTokenId != Token.OPERATOR) || (token.id == Token.FUNCTION && prePadFunction) || (token.id == Token.DIGIT && prePadDigit) || (token.id == Token.KEYWORD1 && prePadKeyword1) || (token.id == Token.KEYWORD2 && prePadKeyword2) || (token.id == Token.KEYWORD3 && prePadKeyword3) || (token.id == Token.KEYWORD4 && prePadKeyword4)) {
+                        if (! previousTokenText.endsWith(" ")) {                            // NOPMD
+                            if ((token.id == Token.OPERATOR && prePadOperator && previousTokenId != Token.OPERATOR) || (token.id == Token.FUNCTION && prePadFunction) || (token.id == Token.DIGIT && prePadDigit) || (token.id == Token.KEYWORD1 && prePadKeyword1) || (token.id == Token.KEYWORD2 && prePadKeyword2) || (token.id == Token.KEYWORD3 && prePadKeyword3) || (token.id == Token.KEYWORD4 && prePadKeyword4)) {                                // NOPMD
                                 sb.append(' ');
                             }
                         }
@@ -177,8 +198,7 @@ public class DefaultBeautifier extends Beautifier {
 
                         // maybe pad after token
                         if (! nextTokenText.startsWith(" ")) {
-                            // NOPMD
-                            if ((token.id == Token.OPERATOR && postPadOperator && token.next.id != Token.OPERATOR) || (token.id == Token.FUNCTION && postPadFunction) || (token.id == Token.DIGIT && postPadDigit) || (token.id == Token.KEYWORD1 && postPadKeyword1) || (token.id == Token.KEYWORD2 && postPadKeyword2) || (token.id == Token.KEYWORD3 && postPadKeyword3) || (token.id == Token.KEYWORD4 && postPadKeyword4)) {
+                            if ((token.id == Token.OPERATOR && postPadOperator && token.next.id != Token.OPERATOR) || (token.id == Token.FUNCTION && postPadFunction) || (token.id == Token.DIGIT && postPadDigit) || (token.id == Token.KEYWORD1 && postPadKeyword1) || (token.id == Token.KEYWORD2 && postPadKeyword2) || (token.id == Token.KEYWORD3 && postPadKeyword3) || (token.id == Token.KEYWORD4 && postPadKeyword4)) {                                // NOPMD
                                 sb.append(' ');
                                 currentTokenText += " ";                                // NOPMD
                             }
@@ -199,13 +219,12 @@ public class DefaultBeautifier extends Beautifier {
                 }
             }
             if (sb.length() == 0) {
-                sb = new StringBuilder(buffer.getText(0, buffer.getLength())); 
+                sb = new StringBuilder(tempBuffer.getText(0, tempBuffer.getLength())); 
             }
-        } catch(IOException ioe) {
+        } catch (IOException ioe) {
             ioe.printStackTrace();
-        } finally {
-            return sb;
-        }
+        } 
+        return sb;
     }
 
     /**
@@ -375,6 +394,39 @@ public class DefaultBeautifier extends Beautifier {
         String regex = "(([ ]|[\\t])*(" + getLSString() + ")){2,}";
         s = s.replaceAll(regex, getLineSeparator());
         return new StringBuilder(s);
+    }
+    
+    /**
+     * Use the jEdit indenter to indent the lines.    
+     */
+    StringBuilder indentLines(StringBuilder sb) {
+        try {
+            // unfortunate hack here -- the Mode class only loads the indenting rules once,
+            // so need to set the rules to null so they get reloaded with the user defined
+            // properties for this custom beautifier.
+            Mode mode = jEdit.getMode(modeName);
+            PrivilegedAccessor.setValue(mode, "indentRules", null);
+ 
+            // now the indenting rules can be set and will be used by jEdit
+            mode.setProperty("indentOpenBrackets", indentOpenBrackets);
+            mode.setProperty("indentCloseBrackets", indentCloseBrackets);
+            mode.setProperty("unalignedOpenBrackets", unalignedOpenBrackets);
+            mode.setProperty("unalignedCloseBrackets", unalignedCloseBrackets);
+            mode.setProperty("indentNextLine", indentNextLine);
+            mode.setProperty("unindentThisLine", unindentThisLine);
+            mode.setProperty("electricKeys", electricKeys); 
+ 
+            File tempFile = File.createTempFile("tmp", null);
+            tempFile.deleteOnExit();
+            Buffer tempBuffer = jEdit.openTemporary(jEdit.getActiveView(), null, tempFile.getAbsolutePath(), true);
+            tempBuffer.setMode(mode);
+            tempBuffer.insert(0, sb.toString());
+            tempBuffer.indentLines(0, tempBuffer.getLineCount() - 1);
+            sb = new StringBuilder(tempBuffer.getText(0, tempBuffer.getLength())); 
+        } catch (Exception ioe) {
+            ioe.printStackTrace();
+        } 
+        return sb;
     }
 
     /**
