@@ -101,60 +101,69 @@ JSON token descriptions start here
 // white space
 SKIP : 
 {
-  " "
-| "\t"
-| "\n"
-| "\r"
-| "\f"
+    " "
+    | "\t"
+    | "\n"
+    | "\r"
+    | "\f"
 }
 
 // The JSON standard does not allow comments of any variety, although people use
-// javascript comments and html comments within json files.  Such comments break
-// many parsers.  This parser just passes them through without change.
-SKIP : /* The JSON standard does not allow comments of any sort.  */
+// javascript comments and html comments within json files.  Files containing
+// comments are not acceptable to many parsers since the standard does not allow
+// them.  THIS PARSER WILL NOT ACCEPT COMMENTS. However, if you'd rather it just
+// silently skipped over comments, uncomment this block.
+/*
+SKIP : 
 {
-  <SINGLE_LINE_COMMENT: "//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
-| <FORMAL_COMMENT: "/**" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
-| <MULTI_LINE_COMMENT: "/*" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
-// TODO: add html comment handling
+    <SINGLE_LINE_COMMENT: "//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
+    | <BLOCK_COMMENT: "/*" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
+    | <HTML_COMMENT: "<!--" (~["-"])* "-" ("-" | (~["-",">"] (~["-"])* "-"))* ">"> 
 }
-
+*/
 // literals
 TOKEN : 
 {
-<LBRACE: "{">
-|
-<RBRACE: "}">
-|
-<LSQUARE: "[">
-|
-<RSQUARE: "]">
-|
-<COMMA: ",">
-|
-<COLON: ":">  
-|
-<CHAR:(   
-      (~["\"","\\", "\u0000"-"\u001f"])
+    <LBRACE: "{">
+    |
+    <RBRACE: "}">
+    |
+    <LSQUARE: "[">
+    |
+    <RSQUARE: "]">
+    |
+    <COMMA: ",">
+    |
+    <COLON: ":">  
+    |
+    <TRUE: "true">
+    |
+    <FALSE: "false">
+    |
+    <NULL: "null">
+    |
+    // a 'char' is any unicode character except " (double quote) or \ (backslash) or
+    // control character (unicode range 0000 - 001f).  Certain special characters and
+    // certain control characters are allowed if escaped with \: ", \, /, b, f, n, r, t.
+    // Unicode characters are allowed using the \\u four-hex-digits notation, e.g.
+    // \\u04af
+    <CHAR:(   
+        (~["\"", "\\", "\u0000"-"\u001f"])
         | ("\\"
             ( ["u"] ["0"-"9","a"-"f", "A"-"F"] ["0"-"9","a"-"f", "A"-"F"] ["0"-"9","a"-"f", "A"-"F"] ["0"-"9","a"-"f", "A"-"F"]
-            | ["\"", "\\", "b","f","n","r","t"]
+                | ["\"", "\\", "b", "f", "n", "r", "t"]
+                )
             )
-          )
-      )>
-|  
-  // json only allows base 10 numbers, no octal or hex or binary, at least, not as a number.
-  // Unicode values are allowed in char and string.
-  <NUMBER: (["-"])? ["1"-"9"] (["0"-"9"])* ("." (["0"-"9"])+)? (["e","E"] (["+","-"])? (["0"-"9"])+ )?>
-|
-  <TRUE: "true">
-|
-  <FALSE: "false">
-|
-  <NULL: "null">
-|
-  <STRING: "\"" (<CHAR>)* "\"">
-
+        )>
+    |
+    // A string is a collection of zero or more Unicode characters, wrapped in 
+    // double quotes, using backslash escapes. A character is represented as a 
+    // single character string.
+    <STRING: "\"" (<CHAR>)* "\"">
+    |  
+    // json only allows base 10 numbers, no octal or hex or binary, at least, not as a number.
+    // Unicode values are allowed in char and string.
+    <NUMBER: (["-"])? ["1"-"9"] (["0"-"9"])* ("." (["0"-"9"])+)? (["e","E"] (["+","-"])? (["0"-"9"])+ )?>
 }
 
 
@@ -168,73 +177,81 @@ void parse() :
 {
 }
 {
-  (
-    object() <EOF> 
-  |
-    array() <EOF> 
-  )
+    (
+        object() <EOF> 
+        |
+        array() <EOF> 
+        )
 }
 
-void object() : {}
+void object() : 
 {
-  <LBRACE> (members())? <RBRACE>
+}
+{
+    <LBRACE> (members())? <RBRACE>
 }
 
-void array() : {}
+void array() : 
 {
-  <LSQUARE> (elements())? <RSQUARE>
+}
+{
+    <LSQUARE> (elements())? <RSQUARE>
 }
 
-void members() : {}
+void members() : 
 {
-  key() <COLON> value() ( <COMMA> members() )?
+}
+{
+    key() <COLON> value() ( <COMMA> members() )?
 }
 
-void elements() : {}
+void elements() : 
 {
-  value() ( <COMMA> elements() )?
+}
+{
+    value() ( <COMMA> elements() )?
 }
 
 void value() : 
 {
 }
 {
-  (
-    string() | number() | object() | array() 
-  |
-    t=<TRUE>  
-  |
-    t=<FALSE>  
-  |
-    t=<NULL> 
-  ) 
+    (
+        string() | number() | object() | array() 
+        |
+        <TRUE>  
+        |
+        <FALSE>  
+        |
+        <NULL> 
+        ) 
 }
 
 void key() :
 {
 }
 {
-  (
-    t=<STRING> 
-  )
+    (
+        <STRING> 
+        )
 }
 
 void string() : 
 {
 }
 {
-  (
-    t=<STRING> 
-  )
+    (
+        <STRING> 
+        )
 }
 
 void number() :
 {
 }
 {
-  (
-    t=<NUMBER>  
-  )
+    (
+        <NUMBER>  
+        )
 }
 
 
