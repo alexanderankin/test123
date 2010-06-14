@@ -13,6 +13,7 @@
 		<fileset dir="\${lib.dir}" includes="**/*.jar" />
 		<!-- Add jars here that you don't want bundled with the app, like this: -->
 		<!-- <pathelement path="path/to/dependency.jar" /> -->
+		${dependencies}
 	</path>
 
 	<!-- Targets -->
@@ -37,6 +38,7 @@
 	<target name="compile" depends="init">
 		<!-- Compile source code to build directory -->
 		<javac srcdir="\${src.dir}" destdir="\${build.dir}" classpathref="classpath" />
+		<!-- Copy all non-java files from src -->
 		<copy todir="\${build.dir}">
 			<fileset dir="\${src.dir}" excludes="**/*.java" />
 		</copy>

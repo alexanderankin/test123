@@ -1,6 +1,7 @@
 import groovy.swing.SwingBuilder
 import java.awt.GridBagConstraints as GBC
 import javax.swing.SwingConstants as SC
+import org.gjt.sp.jedit.jEdit as JEDIT
 import org.gjt.sp.jedit.browser.VFSFileChooserDialog
 import org.gjt.sp.jedit.browser.VFSBrowser
 
@@ -24,11 +25,11 @@ def form = swing.panel() {
 	gbc.insets = [10, 5, 0, 0]
 	gbc.gridy = 0
 	gbc.gridx = 1
-	textField(id:'build_support_field', columns:30, constraints:gbc)
+	textField(id:'build_support_field', columns:30, text:JEDIT.getProperty("projectbuilder.jEdit_Plugin.build-support", ""), constraints:gbc)
 	gbc.gridy += 2
-	textField(id:'docbook_xsl_field', columns:30, constraints:gbc)
+	textField(id:'docbook_xsl_field', columns:30, text:JEDIT.getProperty("projectbuilder.jEdit_Plugin.docbook-xsl", ""), constraints:gbc)
 	gbc.gridy++
-	textField(id:'dtd_catalog_field', columns:30, constraints:gbc)
+	textField(id:'docbook_catalog_field', columns:30, JEDIT.getProperty("projectbuilder.jEdit_Plugin.docbook-catalog", ""), constraints:gbc)
 	// Add a browse button
 	gbc.gridy = 0
 	gbc.gridx = 2

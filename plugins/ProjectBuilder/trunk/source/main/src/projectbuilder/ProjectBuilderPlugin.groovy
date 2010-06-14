@@ -82,7 +82,7 @@ public class ProjectBuilderPlugin extends EditPlugin implements EBComponent {
       for (view in JEDIT.getViews()) {
       	  def viewer = ProjectViewer.getViewer(view)
       	  def project
-      	  if (viewer != null && (project = viewer.getActiveProject(view)) != null) {
+      	  if (JEDIT.getBooleanProperty("options.projectbuilder.show-toolbar") && viewer != null && (project = viewer.getActiveProject(view)) != null) {
       	  	  BeanshellToolbar.create(view, project)
       	  }
       }
@@ -173,11 +173,13 @@ public class ProjectBuilderPlugin extends EditPlugin implements EBComponent {
 			for (view in JEDIT.getViews()) {
 				def viewer = ProjectViewer.getViewer(view)
 				def project = viewer.getActiveProject(view)
-				if (project != null)
+				if (project != null) {
 					BeanshellToolbar.create(view, project)
+				}
 			}
 		} else {
 			for (view in JEDIT.getViews()) {
+				println("removing: ${view}")
 				BeanshellToolbar.remove(view)
 			}
 		}
@@ -185,25 +187,52 @@ public class ProjectBuilderPlugin extends EditPlugin implements EBComponent {
    
    // Edit Bus
    public void handleMessage(EBMessage message) {
-   	   def view = JEDIT.getActiveView()
    	   if (message instanceof ViewUpdate) {
    	   	   def update = (ViewUpdate) message
    	   	   if (update.getWhat() == ViewUpdate.CLOSED) {
    	   	   	   BeanshellToolbar.remove(update.getView())
-   	   	   	   return
-   	   	   } else {
-   	   	   	   view = update.getView()
+   	   	   } else if (update.getWhat() == ViewUpdate.CREATED) {
+   	   	   	   if (JEDIT.getBooleanProperty("options.projectbuilder.show-toolbar")) {
+   	   	   	   	   def view = update.getView()
+   	   	   	   	   def viewer = ProjectViewer.getViewer(view)
+   	   	   	   	   def project
+   	   	   	   	   if (viewer != null && (project = viewer.getActiveProject(view)) != null) {
+   	   	   	   	   	   BeanshellToolbar.create(view, project)
+   	   	   	   	   }
+   	   	   	   }
+   	   	   }
+   	   	   return
+   	   } else if (message instanceof ViewerUpdate) {
+   	   	   def update = (ViewerUpdate) message
+   	   	   def view = update.getView()
+   	   	   if (update.getType() == ViewerUpdate.Type.PROJECT_LOADED && JEDIT.getBooleanProperty("options.projectbuilder.show-toolbar")) {
+   	   	   	   BeanshellToolbar.create(view, (VPTProject) update.getNode())
+   	   	   } else if (update.getType() == ViewerUpdate.Type.GROUP_ACTIVATED) {
+   	   	   	   BeanshellToolbar.remove(view)
+   	   	   }
+   	   	   return
+   	   }
+   	   /*
+   	   def viewer = ProjectViewer.getViewer(view)
+   	   def project = null
+   	   if (viewer != null)
+   	   	   project = viewer.getActiveProject(view)
+   	   if (message instanceof ViewerUpdate) {
+   	   	   def update = (ViewerUpdate) message
+   	   	   if (update.getType() == ViewerUpdate.Type.PROJECT_LOADED) {
+   	   	   	   project = (VPTProject) update.getNode()
+   	   	   	   println("Project Loaded: ${project}")
    	   	   }
    	   }
-   	   if (JEDIT.getBooleanProperty("options.projectbuilder.show-toolbar")) {
-   	   	   def project = ProjectViewer.getViewer(view).getActiveProject(view)
-   	   	   if (!BeanshellToolbar.exists(view) && project != null)
+   	   if () {
+   	   	   if (project != null)
    	   	   	   BeanshellToolbar.create(view, project)
    	   	   else if (BeanshellToolbar.exists(view) && project == null)
    	   	   	   BeanshellToolbar.remove(view)
-   	   } else if (!JEDIT.getBooleanProperty("options.projectbuilder.show-toolbar") && BeanshellToolbar.exist(view)) {
+   	   } else if (!JEDIT.getBooleanProperty("options.projectbuilder.show-toolbar") && BeanshellToolbar.exists(view)) {
    	   	   BeanshellToolbar.remove(view)
    	   }
+   	   */
    }
    
 }
