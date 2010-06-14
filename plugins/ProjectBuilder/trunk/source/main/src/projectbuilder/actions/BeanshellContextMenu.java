@@ -76,8 +76,7 @@ public class BeanshellContextMenu extends projectviewer.action.Action {
 							try {
 								NameSpace namespace = BeanShell.getNameSpace();
 								namespace.setVariable("project", project);
-								namespace.setVariable("view", viewer.getView());
-								BeanShell.runScript(viewer.getView(), bsh, null, namespace);
+								BeanShell._runScript(viewer.getView(), bsh, null, namespace);
 							} catch (Exception ex) {
 								ex.printStackTrace();
 							}

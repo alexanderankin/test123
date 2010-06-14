@@ -18,6 +18,11 @@ templateData.buildSupport = swing.build_support_field.text
 templateData.docbookXSL = swing.docbook_xsl_field.text
 templateData.docbookCatalog = swing.docbook_catalog.text
 
+// Save values chosen for these fields
+JEDIT.setProperty("projectbuilder.jEdit_Plugin.build-support", swing.build_support_field.text)
+JEDIT.setProperty("projectbuilder.jEdit_Plugin.docbook-xsl", swing.docbook_xsl_field.text)
+JEDIT.setProperty("projectbuilder.jEdit_Plugin.docbook-catalog", swing.docbook_catalog_field.text)
+
 PB.build(name, workspace) {
    d("trunk") {
        d("docs") {
@@ -43,4 +48,7 @@ PB.build(name, workspace) {
        f("build.properties", template:"${templateDir}/BuildProperties.template", templateData:templateData)
    }
 }
+
+return true
+
 /* ::mode=groovy:folding=indent:noTabs=true:: */

@@ -15,19 +15,18 @@ import javax.swing.JToolBar;
 import javax.swing.JButton;
 //}}}
 public class BeanshellToolbar {
-	private static HashMap<View, JToolBar> map = new HashMap<View, JToolBar>();
+	private static HashMap<View, JToolBar> map = new HashMap<View, JToolBar>(); // keeps track of existing toolbars
 	public static void create(final View view, final VPTProject project) {
-		if (map.get(view) != null)
+		if (map.get(view) != null) {
+			view.removeToolBar(map.get(view));
 			map.remove(view);
-		
+		}
 		ArrayList<ArrayList<String>> list = projectbuilder.ProjectBuilderPlugin.getBeanshellScripts(project);
-		System.out.println("list = "+list);
 		JToolBar toolbar = new JToolBar();
 		toolbar.setFloatable(true);
 		boolean empty = true;
 		for (ArrayList<String> script : list) {
 			String name = script.get(0);
-			System.out.println("name = "+name);
 			if (name.equals("-")) {
 				toolbar.addSeparator();
 				continue;
@@ -41,8 +40,7 @@ public class BeanshellToolbar {
 						try {
 							NameSpace namespace = new NameSpace(BeanShell.getNameSpace(), "Project Builder Script");
 							namespace.setVariable("project", project);
-							namespace.setVariable("view", view);
-							BeanShell.runScript(view, bsh, null, namespace);
+							BeanShell._runScript(view, bsh, null, namespace);
 						} catch (Exception ex) {
 							ex.printStackTrace();
 						}
@@ -51,6 +49,7 @@ public class BeanshellToolbar {
 			toolbar.add(item);
 			empty = false;
 		}
+		System.out.println("toolbar: "+toolbar+", empty = "+empty);
 		if (!empty) {
 			view.addToolBar(toolbar);
 			map.put(view, toolbar);

@@ -5,6 +5,8 @@ import java.awt.BorderLayout as BL
 import java.awt.CardLayout
 import java.awt.Dimension
 import java.awt.Component
+import java.awt.Font
+import java.awt.Color
 import javax.swing.*
 import javax.swing.SwingConstants as SC
 import javax.swing.WindowConstants as WC
@@ -122,6 +124,10 @@ def project_type = swing.panel() { -> dialog
 
 def pv_options = swing.panel() { -> dialog
 	boxLayout(axis:BoxLayout.Y_AXIS)
+	panel(background:Color.WHITE) {
+		label(id:'pv_options_title', text:'', font:new Font("SansSerif", Font.PLAIN, 18))
+	}
+	separator()
 	panel() {
 		gridBagLayout()
 		def gbc = swing.gbc(gridx: 0, gridy: 0, weightx: 0.0f, weighty: 0.0f, gridwidth: 1, gridheight: 1, fill: GBC.HORIZONTAL)
@@ -230,10 +236,11 @@ while (state > 0) {
 	else if (state == 2) {
 		// Set project options (name, directory, and group)
 		state = 0
+		swing.pv_options_title.text = "New ${chosen.toString()}"
 		dialog.setContentPane(pv_options)
 		dialog.pack()
 		dialog.setLocationRelativeTo(view)
-		dialog.setTitle('New '+chosen.toString())
+		//dialog.setTitle('New '+chosen.toString())
 		dialog.setVisible(true)
 	}
 	else if (state == 3) {
@@ -247,6 +254,10 @@ while (state > 0) {
 			def pane = gse.run(gui_script.getPath(), gui_binding)
 			def config_dialog = swing.panel() {
 				boxLayout(axis:BoxLayout.Y_AXIS)
+				panel(background:Color.WHITE) {
+					label(id:'gui_script_title', text:"New ${chosen.toString()}", font:new Font("SansSerif", Font.PLAIN, 18))
+				}
+				separator()
 				panel(pane)
 				separator()
 				panel() {
@@ -265,7 +276,7 @@ while (state > 0) {
 			dialog.setContentPane(config_dialog)
 			dialog.pack()
 			dialog.setLocationRelativeTo(view)
-			dialog.setTitle("New "+chosen.toString())
+			//dialog.setTitle("New "+chosen.toString())
 			dialog.setVisible(true)
 			// Copy over defined variables to the script binding
 			binding = new Binding(gui_binding.getVariables())
@@ -279,7 +290,13 @@ while (state > 0) {
 		println("        dir: " + dir)
 		println("     script: " + chosen.getBuilderScriptPath())
 		def script = chosen.getBuilderScriptPath()
-		gse.run(script, binding)
+		boolean success = gse.run(script, binding)
+		if (!success) {
+			if (new File(chosen.getGuiScriptPath()).exists())
+				state = 3
+			else
+				state = 2
+		}
 		//Macros.message(view, "Congratulations. You've just created a project.")
 	}
 	else if (state == 5) {
@@ -298,6 +315,10 @@ while (state > 0) {
 		for (file in binding.getVariable("open_after")) {
 			JEDIT.openFile(view, "${dir}/${name}/${file}")
 		}
+		/*
+		if (JEDIT.getBooleanProperty("options.projectbuilder.show-toolbar"))
+			projectbuilder.actions.BeanshellToolbar.create(view, project)
+		*/
 	}
 }
 
