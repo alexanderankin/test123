@@ -36,6 +36,7 @@ import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.textarea.Gutter;
+import org.gjt.sp.jedit.textarea.GutterPopupHandler;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.visitors.JEditVisitorAdapter;
 import org.w3c.dom.Document;
@@ -375,7 +376,26 @@ public class MarkerSetsPlugin extends EditPlugin {
 	}
 	
 	// Actions
-	
+
+	static public void mapMarkerActionsToMarkerSets()
+	{
+		jEdit.visit(new JEditVisitorAdapter() {
+			@Override
+			public void visit(final JEditTextArea textArea)
+			{
+				textArea.getGutter().setSelectionPopupHandler(
+					new GutterPopupHandler()
+					{
+						public void handlePopup(int x, int y, int line)
+						{
+							toggleMarker((Buffer)textArea.getBuffer(), line);
+						}
+					}
+				);
+			}
+		});
+	}
+
 	static public void setActiveMarkerSet(View view)
 	{
 		String current = (active == null) ? null : active.getName();
@@ -402,15 +422,17 @@ public class MarkerSetsPlugin extends EditPlugin {
 	{
 		active = markerSets.get(GLOBAL_SET);
 	}
-	static public void toggleMarker(View view)
+	static private void toggleMarker(final Buffer b, int line)
 	{
-		Buffer b = view.getBuffer();
-		JEditTextArea ta = view.getTextArea();
-		FileMarker m = new FileMarker(b, ta.getCaretLine());
+		FileMarker m = new FileMarker(b, line);
 		if (active.toggle(m))
 			notifyChange(Event.MARKER_ADDED, m, active);
 		else
 			notifyChange(Event.MARKER_REMOVED, m, active);
+	}
+	static public void toggleMarker(View view)
+	{
+		toggleMarker(view.getBuffer(), view.getTextArea().getCaretLine());
 	}
 	static public void jumpToMarker(View view)
 	{
