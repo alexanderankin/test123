@@ -19,6 +19,7 @@ markersets-import.label=Import marker sets from file...
 markersets-jump-to-marker.label=Jump to marker...
 markersets-next-marker.label=Jump to next marker in active marker set
 markersets-prev-marker.label=Jump to previous marker in active marker set
+markersets-map-actions.label=Map marker actions to MarkerSets
 
 # menu items
 plugin.marker.MarkerSetsPlugin.menu=\
@@ -32,7 +33,9 @@ plugin.marker.MarkerSetsPlugin.menu=\
 	markersets-prev-marker \
 	- \
 	markersets-import \
-	markersets-export
+	markersets-export \
+	- \
+	markersets-map-actions
 
 # dockables
 marker-set-manager.title=Marker Sets

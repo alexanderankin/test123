@@ -43,6 +43,10 @@
 			marker.MarkerSetsPlugin.getActiveMarkerSet().prevMarker(view);
 		</CODE>
 	</ACTION>
-	
+	<ACTION NAME="markersets-map-actions" NO_REPEAT="TRUE">
+		<CODE>
+			marker.MarkerSetsPlugin.mapMarkerActionsToMarkerSets();
+		</CODE>
+	</ACTION>
 </ACTIONS>
 
