@@ -237,7 +237,7 @@
     Target: test
     Runs all tests as specified in the junit.testcases selector.
     ======================================================================== -->
-    <target name="-test" description="Runs the jUnit tests." depends="-prepSettingsDir, -deletePluginJars, -instrument, -compileTests">
+    <target name="-test" description="Runs the jUnit tests." depends="-prepSettingsDir, -deletePluginJars, -instrument, -compileTests, -copyResources">
         <echo message="Running tests..."/>
 
         <mkdir dir="${test.output}"/>
@@ -335,6 +335,18 @@
         <!-- then copy the specified files into the jars directory -->
         <copy todir="${test.jedit.jars}">
             <filelist refid="plugin.jars"/>
+        </copy>
+    </target>
+    
+    <!-- =======================================================================
+    Target: -copyResouces
+    Copies resources specified in a selector named "project.resources".  This is
+    to allow static resources such as test data files to be copied into the 
+    classpath so they are available for tests to use.
+    ======================================================================== -->
+    <target name="-copyResources">
+        <copy todir="${project.test.classes.dir}">
+            <fileset refid="project.resources"/>
         </copy>
     </target>
     
