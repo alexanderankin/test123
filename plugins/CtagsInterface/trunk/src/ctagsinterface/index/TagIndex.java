@@ -94,7 +94,7 @@ public class TagIndex
 		public String name;
 	}
 
-	public TagIndex()
+	public TagIndex() throws RuntimeException
 	{
 		File path = new File(getIndexPath());
 		path.mkdirs();
@@ -133,8 +133,11 @@ public class TagIndex
 		catch (IOException e) { e.printStackTrace(); }
 	}
 
-	private static String getIndexPath()
+	private static String getIndexPath() throws RuntimeException
 	{
+		String settings = jEdit.getSettingsDirectory();
+		if (settings == null || settings.isEmpty())
+			throw new RuntimeException("CtagsInterface plugin cannot work without a settings directory.");
 		return jEdit.getSettingsDirectory() + File.separator +
 			"CtagsInterface" + File.separator + "index";
 	}
