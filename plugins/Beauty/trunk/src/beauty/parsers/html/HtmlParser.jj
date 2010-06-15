@@ -53,6 +53,7 @@ PARSER_BEGIN(HtmlParser)
 
 package beauty.parsers.html;
 
+// TODO: need to support jsp markup and comments in script and style blocks.
 public class HtmlParser {
 
   final static String NL = System.getProperty("line.separator");
