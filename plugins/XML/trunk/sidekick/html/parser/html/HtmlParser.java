@@ -211,28 +211,32 @@ public class HtmlParser implements HtmlParserConstants {
   final public HtmlDocument.Attribute Attribute() throws ParseException {
   HtmlDocument.Attribute a;
   Token t1, t2=null;
-    t1 = jj_consume_token(ATTR_NAME);
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case ATTR_EQ:
-      jj_consume_token(ATTR_EQ);
-      t2 = jj_consume_token(ATTR_VAL);
-      break;
-    default:
-      jj_la1[3] = jj_gen;
-      ;
-    }
-    if (t2 == null) {
-      a = new HtmlDocument.Attribute(t1.image);
-    }
-    else {
-      a = new HtmlDocument.Attribute(t1.image, t2.image);
-      if (!isProperAttribute(t2.image)) {
-       ParseException e = new ParseException("Parse error at line " + t2.beginLine + ", column " + t2.beginColumn + ".  Attribute is improperly quoted." );
-       addException(e);
+    try {
+      t1 = jj_consume_token(ATTR_NAME);
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case ATTR_EQ:
+        jj_consume_token(ATTR_EQ);
+        t2 = jj_consume_token(ATTR_VAL);
+        break;
+      default:
+        jj_la1[3] = jj_gen;
+        ;
       }
-    }
+        if (t2 == null) {
+          a = new HtmlDocument.Attribute(t1.image);
+        }
+        else {
+          a = new HtmlDocument.Attribute(t1.image, t2.image);
+          if (!isProperAttribute(t2.image)) {
+           ParseException e = new ParseException("Parse error at line " + t2.beginLine + ", column " + t2.beginColumn + ".  Attribute is improperly quoted." );
+           addException(e);
+          }
+        }
 
-     {if (true) return a;}
+         {if (true) return a;}
+    } catch (ParseException e) {
+        addException(e);
+    }
     throw new Error("Missing return statement in function");
   }
 
@@ -300,6 +304,7 @@ public class HtmlParser implements HtmlParserConstants {
       rtn_tag.setIsJspTag(isJspTag);
       {if (true) return rtn_tag;}
     } catch (ParseException ex) {
+      addException(ex);
     token_source.SwitchTo(DEFAULT);
     String s = getTokenText(firstToken, getNextToken());
     {if (true) return new HtmlDocument.Text(s);}
@@ -310,50 +315,54 @@ public class HtmlParser implements HtmlParserConstants {
   final public String StyleBlockContents() throws ParseException {
     StringBuffer sb = new StringBuffer();
     Token t = null;
-    label_3:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case BLOCK_EOL:
-      case BLOCK_LBR:
-      case BLOCK_WORD:
-        ;
-        break;
-      default:
-        jj_la1[6] = jj_gen;
-        break label_3;
+    try {
+      label_3:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case BLOCK_EOL:
+        case BLOCK_LBR:
+        case BLOCK_WORD:
+          ;
+          break;
+        default:
+          jj_la1[6] = jj_gen;
+          break label_3;
+        }
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case BLOCK_EOL:
+          t = jj_consume_token(BLOCK_EOL);
+                          sb.append(t.image);
+          break;
+        case BLOCK_WORD:
+          t = jj_consume_token(BLOCK_WORD);
+                           sb.append(t.image);
+          break;
+        case BLOCK_LBR:
+          t = jj_consume_token(BLOCK_LBR);
+                          sb.append(t.image);
+          break;
+        default:
+          jj_la1[7] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
+        }
       }
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case BLOCK_EOL:
-        t = jj_consume_token(BLOCK_EOL);
-                      sb.append(t.image);
-        break;
-      case BLOCK_WORD:
-        t = jj_consume_token(BLOCK_WORD);
-                       sb.append(t.image);
-        break;
-      case BLOCK_LBR:
-        t = jj_consume_token(BLOCK_LBR);
-                      sb.append(t.image);
-        break;
-      default:
-        jj_la1[7] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
+            String contents = sb.toString();
+            contents = contents.trim();
+            // sometimes people wrap the contents of style tags with html comments
+            // to protect older browsers that don't understand style tags from puking.
+            // I'm removing them here as they don't serve a purpose as far as a jEdit
+            // SideKick plugin is concerned.
+            if (contents.startsWith("<!--")) {
+                contents = contents.substring(4);
+            }
+            if (contents.endsWith("-->")) {
+                contents = contents.substring(0, contents.length() - 3);
+            }
+            {if (true) return contents.trim();}
+    } catch (ParseException e) {
+        addException(e);
     }
-        String contents = sb.toString();
-        contents = contents.trim();
-        // sometimes people wrap the contents of style tags with html comments
-        // to protect older browsers that don't understand style tags from puking.
-        // I'm removing them here as they don't serve a purpose as far as a jEdit
-        // SideKick plugin is concerned.
-        if (contents.startsWith("<!--")) {
-            contents = contents.substring(4);
-        }
-        if (contents.endsWith("-->")) {
-            contents = contents.substring(0, contents.length() - 3);
-        }
-        {if (true) return contents.trim();}
     throw new Error("Missing return statement in function");
   }
 
@@ -361,52 +370,56 @@ public class HtmlParser implements HtmlParserConstants {
   //HtmlDocument.ElementSequence e = new HtmlDocument.ElementSequence();
   StringBuffer sb = new StringBuffer();
   Token t = null;
-    label_4:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case BLOCK_EOL:
-      case BLOCK_LBR:
-      case BLOCK_WORD:
-        ;
-        break;
-      default:
-        jj_la1[8] = jj_gen;
-        break label_4;
-      }
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case BLOCK_EOL:
-        t = jj_consume_token(BLOCK_EOL);
-                       sb.append(t.image);
-        break;
-      case BLOCK_WORD:
-        t = jj_consume_token(BLOCK_WORD);
-                        sb.append(t.image);
-        break;
-      case BLOCK_LBR:
-        t = jj_consume_token(BLOCK_LBR);
-                       sb.append(t.image);
-        break;
-      default:
-        jj_la1[9] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-    }
-        String contents = sb.toString();
-        contents = contents.trim();
-        // sometimes people wrap the contents of script tags with html comments
-        // to protect older browsers that don't understand script tags from puking.
-        // I'm removing them here as they don't serve a purpose as far as a jEdit
-        // SideKick plugin is concerned.
-        if (contents.startsWith("<!--")) {
-            contents = contents.substring(4);
+    try {
+      label_4:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case BLOCK_EOL:
+        case BLOCK_LBR:
+        case BLOCK_WORD:
+          ;
+          break;
+        default:
+          jj_la1[8] = jj_gen;
+          break label_4;
         }
-        if (contents.endsWith("//-->")) {
-            contents = contents.substring(0, contents.length() - 5);
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case BLOCK_EOL:
+          t = jj_consume_token(BLOCK_EOL);
+                           sb.append(t.image);
+          break;
+        case BLOCK_WORD:
+          t = jj_consume_token(BLOCK_WORD);
+                            sb.append(t.image);
+          break;
+        case BLOCK_LBR:
+          t = jj_consume_token(BLOCK_LBR);
+                           sb.append(t.image);
+          break;
+        default:
+          jj_la1[9] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
         }
-        {if (true) return contents.trim();}
-    //return e;
+      }
+            String contents = sb.toString();
+            contents = contents.trim();
+            // sometimes people wrap the contents of script tags with html comments
+            // to protect older browsers that don't understand script tags from puking.
+            // I'm removing them here as they don't serve a purpose as far as a jEdit
+            // SideKick plugin is concerned.
+            if (contents.startsWith("<!--")) {
+                contents = contents.substring(4);
+            }
+            if (contents.endsWith("//-->")) {
+                contents = contents.substring(0, contents.length() - 5);
+            }
+            {if (true) return contents.trim();}
+        //return e;
 
+    } catch (ParseException e) {
+    addException(e);
+    }
     throw new Error("Missing return statement in function");
   }
 
@@ -431,7 +444,7 @@ public class HtmlParser implements HtmlParserConstants {
         b.setEndLocation(et.endLine, et.endColumn + 1);
         {if (true) return b;}
     } catch (ParseException ex) {
-      ex.printStackTrace();
+    addException(ex);
     token_source.SwitchTo(DEFAULT);
     String s = getTokenText(firstToken, getNextToken());
     {if (true) return new HtmlDocument.Text(s);}
@@ -460,6 +473,7 @@ public class HtmlParser implements HtmlParserConstants {
         b.setEndLocation(et.endLine, et.endColumn + 1);
         {if (true) return b;}
     } catch (ParseException ex) {
+    addException(ex);
     token_source.SwitchTo(DEFAULT);
     String s = getTokenText(firstToken, getNextToken());
     {if (true) return new HtmlDocument.Text(s);}
@@ -486,6 +500,7 @@ public class HtmlParser implements HtmlParserConstants {
         b.setEndLocation(et.endLine, et.endColumn + 1);
         {if (true) return b;}
     } catch (ParseException ex) {
+    addException(ex);
     token_source.SwitchTo(DEFAULT);
     String s = getTokenText(firstToken, getNextToken());
     {if (true) return new HtmlDocument.Text(s);}
@@ -496,60 +511,68 @@ public class HtmlParser implements HtmlParserConstants {
   final public HtmlDocument.Comment CommentTag() throws ParseException {
   Token t, comment_start, comment_end = null;
   StringBuffer s = new StringBuffer();
-    comment_start = jj_consume_token(COMMENT_START);
-    label_5:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case DASH:
-      case COMMENT_EOL:
-      case COMMENT_WORD:
-        ;
-        break;
-      default:
-        jj_la1[10] = jj_gen;
-        break label_5;
+    try {
+      comment_start = jj_consume_token(COMMENT_START);
+      label_5:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case DASH:
+        case COMMENT_EOL:
+        case COMMENT_WORD:
+          ;
+          break;
+        default:
+          jj_la1[10] = jj_gen;
+          break label_5;
+        }
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case DASH:
+          t = jj_consume_token(DASH);
+                       s.append(t.image);
+          break;
+        case COMMENT_EOL:
+          jj_consume_token(COMMENT_EOL);
+                               s.append(NL);
+          break;
+        case COMMENT_WORD:
+          t = jj_consume_token(COMMENT_WORD);
+                                 s.append(t.image);
+          break;
+        default:
+          jj_la1[11] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
+        }
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case DASH:
-        t = jj_consume_token(DASH);
-               s.append(t.image);
+      case 0:
+        jj_consume_token(0);
         break;
-      case COMMENT_EOL:
-        jj_consume_token(COMMENT_EOL);
-                       s.append(NL);
-        break;
-      case COMMENT_WORD:
-        t = jj_consume_token(COMMENT_WORD);
-                         s.append(t.image);
+      case COMMENT_END:
+        comment_end = jj_consume_token(COMMENT_END);
         break;
       default:
-        jj_la1[11] = jj_gen;
+        jj_la1[12] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
+            {if (true) return new HtmlDocument.Comment(comment_start.image + s.toString() + (comment_end == null ? "" : comment_end.image));}
+    } catch (ParseException e) {
+        addException(e);
     }
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case 0:
-      jj_consume_token(0);
-      break;
-    case COMMENT_END:
-      comment_end = jj_consume_token(COMMENT_END);
-      break;
-    default:
-      jj_la1[12] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
-    {if (true) return new HtmlDocument.Comment(comment_start.image + s.toString() + (comment_end == null ? "" : comment_end.image));}
     throw new Error("Missing return statement in function");
   }
 
   final public HtmlDocument.Comment DeclTag() throws ParseException {
   Token t;
-    jj_consume_token(DECL_START);
-    t = jj_consume_token(DECL_ANY);
-    jj_consume_token(DECL_END);
-    {if (true) return new HtmlDocument.Comment(t.image);}
+    try {
+      jj_consume_token(DECL_START);
+      t = jj_consume_token(DECL_ANY);
+      jj_consume_token(DECL_END);
+            {if (true) return new HtmlDocument.Comment(t.image);}
+    } catch (ParseException e) {
+        addException(e);
+    }
     throw new Error("Missing return statement in function");
   }
 
@@ -581,23 +604,6 @@ public class HtmlParser implements HtmlParserConstants {
     finally { jj_save(3, xla); }
   }
 
-  private boolean jj_3_4() {
-    if (jj_scan_token(TAG_START)) return true;
-    if (jj_scan_token(LST_ERROR)) return true;
-    return false;
-  }
-
-  private boolean jj_3_3() {
-    if (jj_3R_8()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_8() {
-    if (jj_scan_token(TAG_START)) return true;
-    if (jj_scan_token(TAG_STYLE)) return true;
-    return false;
-  }
-
   private boolean jj_3R_7() {
     if (jj_scan_token(TAG_START)) return true;
     if (jj_scan_token(TAG_SCRIPT)) return true;
@@ -610,8 +616,25 @@ public class HtmlParser implements HtmlParserConstants {
     return false;
   }
 
+  private boolean jj_3_4() {
+    if (jj_scan_token(TAG_START)) return true;
+    if (jj_scan_token(LST_ERROR)) return true;
+    return false;
+  }
+
+  private boolean jj_3_3() {
+    if (jj_3R_8()) return true;
+    return false;
+  }
+
   private boolean jj_3_2() {
     if (jj_3R_7()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_8() {
+    if (jj_scan_token(TAG_START)) return true;
+    if (jj_scan_token(TAG_STYLE)) return true;
     return false;
   }
 

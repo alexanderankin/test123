@@ -367,22 +367,27 @@ HtmlDocument.Attribute Attribute() :
   Token t1, t2=null;
 }
 {
-  t1=<ATTR_NAME> [ <ATTR_EQ> t2=<ATTR_VAL> ]
-  {
-
-    if (t2 == null) {
-      a = new HtmlDocument.Attribute(t1.image);
-    }
-    else {
-      a = new HtmlDocument.Attribute(t1.image, t2.image);
-      if (!isProperAttribute(t2.image)) {
-       ParseException e = new ParseException("Parse error at line " + t2.beginLine + ", column " + t2.beginColumn + ".  Attribute is improperly quoted." );
-       addException(e);
+    try {
+      t1=<ATTR_NAME> [ <ATTR_EQ> t2=<ATTR_VAL> ]
+      {
+    
+        if (t2 == null) {
+          a = new HtmlDocument.Attribute(t1.image);
+        }
+        else {
+          a = new HtmlDocument.Attribute(t1.image, t2.image);
+          if (!isProperAttribute(t2.image)) {
+           ParseException e = new ParseException("Parse error at line " + t2.beginLine + ", column " + t2.beginColumn + ".  Attribute is improperly quoted." );
+           addException(e);
+          }
+        }
+    
+         return a;
       }
     }
-
-     return a;
-  }
+      catch(ParseException e) {
+        addException(e);          
+      }
 }
 
 HtmlDocument.AttributeList AttributeList() :
@@ -434,6 +439,7 @@ HtmlDocument.HtmlElement Tag() :
     }
   }
   catch (ParseException ex) {
+      addException(ex);
     token_source.SwitchTo(DEFAULT);
     String s = getTokenText(firstToken, getNextToken());
     return new HtmlDocument.Text(s);
@@ -447,25 +453,30 @@ String StyleBlockContents() :
     Token t = null;
 }
 {
-    ( t=<BLOCK_EOL> { sb.append(t.image); }
-    | t=<BLOCK_WORD> { sb.append(t.image); }
-    | t=<BLOCK_LBR> { sb.append(t.image); }
-    )*
-    {
-        String contents = sb.toString();
-        contents = contents.trim();
-        // sometimes people wrap the contents of style tags with html comments
-        // to protect older browsers that don't understand style tags from puking.
-        // I'm removing them here as they don't serve a purpose as far as a jEdit
-        // SideKick plugin is concerned.
-        if (contents.startsWith("<!--")) {
-            contents = contents.substring(4);
+    try {
+        ( t=<BLOCK_EOL> { sb.append(t.image); }
+        | t=<BLOCK_WORD> { sb.append(t.image); }
+        | t=<BLOCK_LBR> { sb.append(t.image); }
+        )*
+        {
+            String contents = sb.toString();
+            contents = contents.trim();
+            // sometimes people wrap the contents of style tags with html comments
+            // to protect older browsers that don't understand style tags from puking.
+            // I'm removing them here as they don't serve a purpose as far as a jEdit
+            // SideKick plugin is concerned.
+            if (contents.startsWith("<!--")) {
+                contents = contents.substring(4);
+            }
+            if (contents.endsWith("-->")) {
+                contents = contents.substring(0, contents.length() - 3);
+            }
+            return contents.trim();
         }
-        if (contents.endsWith("-->")) {
-            contents = contents.substring(0, contents.length() - 3);
-        }
-        return contents.trim();
-    }
+      }
+      catch(ParseException e) {
+        addException(e);          
+      }
 }
 
 String ScriptBlockContents() :
@@ -475,25 +486,30 @@ String ScriptBlockContents() :
   Token t = null;
 }
 {
-  ( t=<BLOCK_EOL>    { sb.append(t.image); }
-    | t=<BLOCK_WORD>  { sb.append(t.image); }
-    | t=<BLOCK_LBR>  { sb.append(t.image); }
-  )*
-  {
-        String contents = sb.toString();
-        contents = contents.trim();
-        // sometimes people wrap the contents of script tags with html comments
-        // to protect older browsers that don't understand script tags from puking.
-        // I'm removing them here as they don't serve a purpose as far as a jEdit
-        // SideKick plugin is concerned.
-        if (contents.startsWith("<!--")) {
-            contents = contents.substring(4);
-        }
-        if (contents.endsWith("//-->")) {
-            contents = contents.substring(0, contents.length() - 5);
-        }
-        return contents.trim();
-    //return e;
+    try {
+      ( t=<BLOCK_EOL>    { sb.append(t.image); }
+        | t=<BLOCK_WORD>  { sb.append(t.image); }
+        | t=<BLOCK_LBR>  { sb.append(t.image); }
+      )*
+      {
+            String contents = sb.toString();
+            contents = contents.trim();
+            // sometimes people wrap the contents of script tags with html comments
+            // to protect older browsers that don't understand script tags from puking.
+            // I'm removing them here as they don't serve a purpose as far as a jEdit
+            // SideKick plugin is concerned.
+            if (contents.startsWith("<!--")) {
+                contents = contents.substring(4);
+            }
+            if (contents.endsWith("//-->")) {
+                contents = contents.substring(0, contents.length() - 5);
+            }
+            return contents.trim();
+        //return e;
+      }
+  }
+  catch(ParseException e) {
+    addException(e);          
   }
 }
 
@@ -523,7 +539,7 @@ HtmlDocument.HtmlElement ScriptBlock() :
     }
   }
   catch (ParseException ex) {
-      ex.printStackTrace();
+    addException(ex);
     token_source.SwitchTo(DEFAULT);
     String s = getTokenText(firstToken, getNextToken());
     return new HtmlDocument.Text(s);
@@ -557,6 +573,7 @@ HtmlDocument.HtmlElement StyleBlock() :
     }
   }
   catch (ParseException ex) {
+    addException(ex);
     token_source.SwitchTo(DEFAULT);
     String s = getTokenText(firstToken, getNextToken());
     return new HtmlDocument.Text(s);
@@ -587,6 +604,7 @@ HtmlDocument.HtmlElement EndTag() :
     }
   }
   catch (ParseException ex) {
+    addException(ex);
     token_source.SwitchTo(DEFAULT);
     String s = getTokenText(firstToken, getNextToken());
     return new HtmlDocument.Text(s);
@@ -599,12 +617,18 @@ HtmlDocument.Comment CommentTag() :
   StringBuffer s = new StringBuffer();
 }
 {
-  comment_start=<COMMENT_START>
-  ( t=<DASH> { s.append(t.image); }
-    | <COMMENT_EOL>  { s.append(NL); }
-    | t=<COMMENT_WORD> { s.append(t.image); } )*
-  (<EOF> | comment_end=<COMMENT_END>)
-  { return new HtmlDocument.Comment(comment_start.image + s.toString() + (comment_end == null ? "" : comment_end.image)); }
+    try {
+          comment_start=<COMMENT_START>
+          ( t=<DASH> { s.append(t.image); }
+            | <COMMENT_EOL>  { s.append(NL); }
+            | t=<COMMENT_WORD> { s.append(t.image); } )*
+          (<EOF> | comment_end=<COMMENT_END>)
+          { return new HtmlDocument.Comment(comment_start.image + s.toString() + (comment_end == null ? "" : comment_end.image)); }
+      }
+      catch(ParseException e) {
+        addException(e);          
+      }
+  
 }
 
 HtmlDocument.Comment DeclTag() :
@@ -612,8 +636,13 @@ HtmlDocument.Comment DeclTag() :
   Token t;
 }
 {
-  <DECL_START> t=<DECL_ANY> <DECL_END>
-  {
-    return new HtmlDocument.Comment(t.image);
-  }
+    try {
+          <DECL_START> t=<DECL_ANY> <DECL_END>
+          {
+            return new HtmlDocument.Comment(t.image);
+          }
+      }
+      catch(ParseException e) {
+        addException(e);          
+      }
 }
