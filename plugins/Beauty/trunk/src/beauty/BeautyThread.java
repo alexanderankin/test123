@@ -82,9 +82,7 @@ public class BeautyThread implements Runnable {
             beautifier.setWrapMode( wrapMode );
 
             // format the buffer
-            buffer.readLock();
             String contents = beautifier.beautify( buffer.getText( 0, buffer.getLength() ) );
-            buffer.readUnlock();
 
             // store the string back:
             if ( contents == null || contents.length() == 0 ) {
@@ -103,7 +101,6 @@ public class BeautyThread implements Runnable {
             buffer.beginCompoundEdit();
             buffer.remove( 0, buffer.getLength() );
             buffer.insert( 0, contents );
-
             buffer.endCompoundEdit();
 
             // restore markers:
@@ -123,7 +120,6 @@ public class BeautyThread implements Runnable {
             //Log.log( Log.DEBUG, this, "completed with success." );
         }
         catch ( Exception ex ) {
-            buffer.readUnlock();
             Log.log( Log.ERROR, this, ex );
             if ( showErrorDialogs ) {
                 GUIUtilities.error( view, "beauty.error.other", new Object[] { ex } );
