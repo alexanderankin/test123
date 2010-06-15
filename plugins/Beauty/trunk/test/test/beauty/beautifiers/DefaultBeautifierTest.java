@@ -189,18 +189,4 @@ public class DefaultBeautifierTest {
         assertTrue("collapseBlankLines failed, expected\n" + answer + "\nbut was\n" + after, answer.equals(after));
     }
  
-    @Test
-    public void testCssBeautifier() {
-        // TODO: finish writing this test, need to compare before and after
-        String resource = "before/test_css3.css";
-        File outfile = new File(System.getProperty("java.io.tmpdir"), "text_css3.css");
-        BeautyPlugin.copyToFile(getClass().getClassLoader().getResourceAsStream(resource), outfile); 
-        Buffer buffer = jEdit.openFile(jEdit.getActiveView(), outfile.getAbsolutePath());
-        buffer.setMode(jEdit.getMode("css"));
-        buffer.setProperty("beauty.beautifier", "css:beauty");
-        Pause.pause(5000);
-        BeautyPlugin.beautify(buffer, jEdit.getActiveView(), true);
-        String s = buffer.getText(0, buffer.getLength());
-        //assertTrue(s, false);
-    }
 }
