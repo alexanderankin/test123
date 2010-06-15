@@ -243,9 +243,9 @@ TOKEN [IGNORE_CASE] :/* basic tokens */
   | <#ESCAPE : <UNICODE> | ( "\\"
     ~[ "\r", "\n", "\f", "0"-"9", "a"-"f" ] ) >
   | <#NMSTART :
-    [ "a"-"z", "_" ] | <NONASCII> | <ESCAPE> >
+    [ "a"-"z", "A"-"Z", "-", "_" ] | <NONASCII> | <ESCAPE> >
   | <#NMCHAR :
-    ["a"-"z", "0"-"9", "-", "_"] | <NONASCII> | <ESCAPE> >
+    ["a"-"z", "A"-"Z", "0"-"9", "-", "_"] | <NONASCII> | <ESCAPE> >
   | <#STRING1 : "\"" (
     ~[ "\n", "\r", "\f", "\\", "\"" ] | "\\" <NL> | <ESCAPE> )* "\"" >
   | <#STRING2 : "\'" (
@@ -1838,7 +1838,6 @@ CSSNode pseudo() :
             (
                 i=<IDENT>
             )
-            // FXIXME rewrite to make :lang( use a special case
           | 
             (
                 (
