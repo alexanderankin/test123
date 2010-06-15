@@ -108,58 +108,58 @@ public interface PHPParserConstants {
   int STRING_LITERAL = 122;
   int STRING_2 = 123;
   int STRING_3 = 124;
-  int NAMESPACE_NAME = 125;
-  int ESCAPED = 126;
-  int DOUBLEQUOTE = 127;
-  int DOLLARS = 128;
-  int DOUBLEQUOTE2 = 129;
-  int LBRACE1 = 130;
-  int RBRACE1 = 134;
-  int HEREDOCSTARTTOKEN = 137;
-  int DOLLAR = 138;
-  int IDENTIFIER = 139;
-  int LETTER = 140;
-  int DIGIT = 141;
-  int SPECIAL = 142;
-  int LPAREN = 144;
-  int RPAREN = 145;
-  int LBRACE = 146;
-  int RBRACE = 147;
-  int LBRACKET = 148;
-  int RBRACKET = 149;
-  int SEMICOLON = 150;
-  int COMMA = 151;
-  int DOT = 152;
-  int GT = 153;
-  int LT = 154;
-  int EQUAL_EQUAL = 155;
-  int LE = 156;
-  int GE = 157;
-  int NOT_EQUAL = 158;
-  int DIF = 159;
-  int BANGDOUBLEEQUAL = 160;
-  int TRIPLEEQUAL = 161;
-  int ASSIGN = 162;
-  int PLUSASSIGN = 163;
-  int MINUSASSIGN = 164;
-  int STARASSIGN = 165;
-  int SLASHASSIGN = 166;
-  int ANDASSIGN = 167;
-  int ORASSIGN = 168;
-  int XORASSIGN = 169;
-  int DOTASSIGN = 170;
-  int REMASSIGN = 171;
-  int TILDEEQUAL = 172;
-  int LSHIFTASSIGN = 173;
-  int RSIGNEDSHIFTASSIGN = 174;
+  int ESCAPED = 125;
+  int DOUBLEQUOTE = 126;
+  int DOLLARS = 127;
+  int DOUBLEQUOTE2 = 128;
+  int LBRACE1 = 129;
+  int RBRACE1 = 133;
+  int HEREDOCSTARTTOKEN = 136;
+  int DOLLAR = 137;
+  int IDENTIFIER = 138;
+  int LETTER = 139;
+  int DIGIT = 140;
+  int SPECIAL = 141;
+  int LPAREN = 143;
+  int RPAREN = 144;
+  int RBRACE = 145;
+  int LBRACKET = 146;
+  int RBRACKET = 147;
+  int SEMICOLON = 148;
+  int COMMA = 149;
+  int DOT = 150;
+  int LBRACE = 151;
+  int GT = 152;
+  int LT = 153;
+  int EQUAL_EQUAL = 154;
+  int LE = 155;
+  int GE = 156;
+  int NOT_EQUAL = 157;
+  int DIF = 158;
+  int BANGDOUBLEEQUAL = 159;
+  int TRIPLEEQUAL = 160;
+  int ASSIGN = 161;
+  int PLUSASSIGN = 162;
+  int MINUSASSIGN = 163;
+  int STARASSIGN = 164;
+  int SLASHASSIGN = 165;
+  int ANDASSIGN = 166;
+  int ORASSIGN = 167;
+  int XORASSIGN = 168;
+  int DOTASSIGN = 169;
+  int REMASSIGN = 170;
+  int TILDEEQUAL = 171;
+  int LSHIFTASSIGN = 172;
+  int RSIGNEDSHIFTASSIGN = 173;
+  int NAMESPACE_NAME = 174;
 
   int DEFAULT = 0;
   int PHPPARSING = 1;
   int IN_SINGLE_LINE_COMMENT = 2;
   int IN_VARIABLE = 3;
-  int IN_FORMAL_COMMENT = 4;
-  int IN_MULTI_LINE_COMMENT = 5;
-  int IN_NAMESPACE = 6;
+  int IN_NAMESPACE = 4;
+  int IN_FORMAL_COMMENT = 5;
+  int IN_MULTI_LINE_COMMENT = 6;
   int IN_STRING = 7;
   int DOLLAR_IN_STRING = 8;
   int SKIPSTRING = 9;
@@ -173,9 +173,9 @@ public interface PHPParserConstants {
     "\"?>\"",
     "<token of kind 5>",
     "\"<?xml\"",
+    "\"\\n\"",
     "\" \"",
     "\"\\t\"",
-    "\"\\n\"",
     "\"\\r\"",
     "\"\\f\"",
     "\" \"",
@@ -291,7 +291,6 @@ public interface PHPParserConstants {
     "<STRING_LITERAL>",
     "<STRING_2>",
     "<STRING_3>",
-    "<NAMESPACE_NAME>",
     "<ESCAPED>",
     "\"\\\"\"",
     "\"$\"",
@@ -299,26 +298,26 @@ public interface PHPParserConstants {
     "\"{\"",
     "\"{\"",
     "\"}\"",
-    "<token of kind 133>",
+    "<token of kind 132>",
     "\"}\"",
+    "<token of kind 134>",
     "<token of kind 135>",
-    "<token of kind 136>",
     "\"<<<\"",
     "\"$\"",
     "<IDENTIFIER>",
     "<LETTER>",
     "<DIGIT>",
     "<SPECIAL>",
-    "<token of kind 143>",
+    "<token of kind 142>",
     "\"(\"",
     "\")\"",
-    "\"{\"",
     "\"}\"",
     "\"[\"",
     "\"]\"",
     "\";\"",
     "\",\"",
     "\".\"",
+    "\"{\"",
     "\">\"",
     "\"<\"",
     "\"==\"",
@@ -341,6 +340,7 @@ public interface PHPParserConstants {
     "\"~=\"",
     "\"<<=\"",
     "\">>=\"",
+    "<NAMESPACE_NAME>",
   };
 
 }
