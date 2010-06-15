@@ -82,10 +82,34 @@ public class JsonParser {
         token_source.setLineSeparator(le);
     }
     
-    public Json3Parser(String fileName) {
-        this(System.in);
-        try { ReInit(new FileInputStream(new File(fileName))); }
-        catch(Exception e) { e.printStackTrace(); }
+    public static void main(String args[]) {
+        JsonParser parser;
+        if (args.length == 0) {
+            System.out.println("JSON Parser:  Reading from standard input . . .");
+            parser = new JsonParser(System.in);
+        } else if (args.length == 1) {
+            System.out.println("JSON Parser:  Reading from file " + args[0] + " . . .");
+            try {
+                parser = new JsonParser(new java.io.FileInputStream(args[0]));
+            } catch (java.io.FileNotFoundException e) {
+                System.out.println("JSON Parser:  File " + args[0] + " not found.");
+                return;
+            }
+        } else {
+            System.out.println("JSON Parser:  Usage is one of:");
+            System.out.println("         java JsonParser < inputfile");
+            System.out.println("OR");
+            System.out.println("         java JsonParser inputfile");
+            return;
+        }
+        try {
+            parser.enable_tracing();
+            parser.parse();
+            System.out.println("JSON Parser:  JSON input parsed successfully.");
+        } catch (ParseException e) {
+            System.out.println("JSON Parser:  Encountered errors during parse.");
+            System.out.println(e.getMessage());
+        }
     }
 }
 
@@ -181,37 +205,99 @@ void parse() :
         object() <EOF> 
         |
         array() <EOF> 
-        )
+    )
+    {
+        write();   
+    }
 }
 
+/*
+    Objects are formatted like this:
+    {
+        (members())*
+    }
+    
+    The left brace triggers an indent level increase, for the object members. 
+    The right brace a corresponding indent level decrease.
+*/
 void object() : 
 {
 }
 {
-    <LBRACE> (members())? <RBRACE>
+    <LBRACE> { 
+        writeln(); 
+        add("{"); 
+        writeln(); 
+        ++token_source.level; 
+    }
+    (members())? 
+    t=<RBRACE> { 
+        writeln(); 
+        --token_source.level; 
+        add("}"); 
+        if (t.next != null && t.next.kind != JsonParserConstants.COMMA) 
+            writeln(); 
+    }
 }
 
+/*
+    Arrays are formatted like this:
+    [ element(, element...) ]
+    
+    Note that if an element is an object, it will look like this:
+    [
+        {
+            ...
+        }
+    ]
+    
+*/
 void array() : 
 {
 }
 {
-    <LSQUARE> (elements())? <RSQUARE>
+    <LSQUARE> 
+    {
+        add("[");   
+    }
+    (elements())? 
+    <RSQUARE> 
+    { 
+        add("]"); 
+    }
 }
 
+/*
+    A member is a pair of one more key/value.
+    Pairs are separated by a comma.
+    Comma signals a newline to be inserted.
+    A member is formatted like this:
+    
+    key: value(, key: value...)
+*/
 void members() : 
 {
 }
 {
-    key() <COLON> value() ( <COMMA> members() )?
+    key() <COLON> { add(": "); } value() ( <COMMA> { trimWhitespace(); add(", "); writeln(); } members() )?
 }
 
+/*
+    Elements are members of an array.
+    Elements are one or more values separated by commas.
+    Elements do not trigger insertion of newlines nor change of indent level.
+*/
 void elements() : 
 {
 }
 {
-    value() ( <COMMA> elements() )?
+    value() ( <COMMA> { add(", "); } elements() )?
 }
 
+/*
+    A value is the RHS of a pair.  It can be pretty much any of the
+    other types.
+*/
 void value() : 
 {
 }
@@ -219,39 +305,48 @@ void value() :
     (
         string() | number() | object() | array() 
         |
-        <TRUE>  
+        t=<TRUE>  { add(t); }
         |
-        <FALSE>  
+        t=<FALSE>  { add(t); }
         |
-        <NULL> 
-        ) 
+        t=<NULL> { add(t); }
+    ) 
 }
 
+/*
+    A key is the LHS of a pair.  It is a simple string.
+*/
 void key() :
 {
 }
 {
     (
-        <STRING> 
-        )
+        t=<STRING> { add(t); }
+    )
 }
 
+/*
+    A string is a string, and it's the same as a key.
+*/
 void string() : 
 {
 }
 {
     (
-        <STRING> 
-        )
+        t=<STRING> { add(t); }
+    )
 }
 
+/*
+    A number is a number.
+*/
 void number() :
 {
 }
 {
     (
-        <NUMBER>  
-        )
+        t=<NUMBER> { add(t); }
+    )
 }
 
 
@@ -267,7 +362,7 @@ TOKEN_MGR_DECLS :
     static StringBuilder outputBuffer = new StringBuilder();
 
     // accumulate pieces a token or string at a time.  The objects in this array
-    // will be ocnverted to strings, padded as appropriate, and added to the
+    // will be converted to strings, padded as appropriate, and added to the
     // line buffer b.  This is the "accumulator".
     static ArrayList a = new ArrayList();
 
@@ -446,7 +541,7 @@ TOKEN_MGR_DECLS :
                 Object o = a.get(i);
                 if (o instanceof Token) {
                     Token token = (Token)o;
-                    if (token.kind == CSS3ParserConstants.STRING1 || token.kind == CSS3ParserConstants.COMMENT) {
+                    if (token.kind == JsonParserConstants.STRING) {
                         s = s.replaceAll("[ ]+", " ");
                         list.add(s);
                         s = new String("");
