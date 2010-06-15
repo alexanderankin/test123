@@ -30,13 +30,14 @@
       <p>
       The Beauty plugin is a general framework for code beautifiers and provides several built-in beautifiers. While there are several existing plugins for beautifying/formatting various source file formats, this plugin aims to consolidate those formatters into a standard API so that beautifying can be performed in a general way, similar to how the SideKick plugin provides a general framework for code browsers.
       <p>
-      There are currently 5 beautifiers/formatters included:
+      There are several beautifiers/formatters included:
       <ul>
          <li>HTML: works very well, even when presented with poorly formatted html.  Delegates to the CSS beautifier to format style blocks within an HTML file.  Delegates to the included custom javascript beautifier to format script blocks within an HTML file.</li>
          <li>JSP: has been combined with the HTML beautifier.  It works pretty well, although it will choke on a few things.  In particular, it doesn't like jsp comments or EL expressions within style or script blocks. These should be fixed for the 0.6 release.</li>
          <li>CSS: works very well.</li>
          <li>Java: works very well, formats strictly to Sun's formatting standard only. Needs work on doing line wrapping per Sun's guidelines.</li>
          <li>JavaCC: needs work, formats to a combination of Sun's Java formatting standard and my own style for javacc files.</li>
+         <li>JSON: works very well.  JSON files are usually machine-generated in a single long line, so it is nice to be able to format them quickly to a more human-readable format.</li>
       </ul>
       <p>
       Two other plugins have been updated to support the Beauty framework:
@@ -45,7 +46,7 @@
          <li>XmlIndenter: part of the XML plugin, this beautifier works on all xml-based files. Use this for well-formed xml dialects like docbook files, Ant files, and so on, use the HTML beautifier for those xml-like files that are not necessarily well-formed.
       </ul>
       <p>
-      With the 0.4 release, Beauty has the ability to <a href="#custom">configure a custom beautifier</a> per mode, which allows padding of various items, clean up of extra blank lines, and the ability to use the jEdit indenter. I've included custom beautifiers for Ada, Javascript, CSS, and json files. Making custom beautifiers is very easy to do, and you are encouraged to create and share beautifiers for any language that jEdit supports.
+      With the 0.4 release, Beauty has the ability to <a href="#custom">configure a custom beautifier</a> per mode, which allows padding of various items, clean up of extra blank lines, and the ability to use the jEdit indenter. I've included custom beautifiers for Ada, Javascript, CSS files. Making custom beautifiers is very easy to do, and you are encouraged to create and share beautifiers for any language that jEdit supports.
       <p>
       (Note: the custom CSS beautifier is still included, but the built-in CSS beautifier introduced in Beauty 0.5 does a much better job.)
       <p>
