@@ -119,13 +119,13 @@
         </condition>
         <fail unless="javacchome.set" message="Property 'javacchome' needs to be set."/>
         <!-- out temporarily, be sure to make these live before release
+        <javacc javacchome="${javacchome}" target="./sidekick/css/parser/CSS3Parser.jj"/>
+        -->
         <javacc javacchome="${javacchome}" target="./sidekick/html/parser/html/HtmlParser.jj"/>
-        <javacc javacchome="${javacchome}" target="./sidekick/css/parser/CSS2Parser.jj"/>
         <jjtree javacchome="${javacchome}"
             target="./sidekick/ecmascript/parser/EcmaScript.jjt"
-            outputdirectory="./sidekick/ecmascript/parser"/>
+        outputdirectory="./sidekick/ecmascript/parser"/>
         <javacc javacchome="${javacchome}" target="./sidekick/ecmascript/parser/EcmaScript.jj"/>
-        -->
         <javacc javacchome="${javacchome}" target="./sidekick/css/parser/CSS3Parser.jj"/>
         
     </target>
