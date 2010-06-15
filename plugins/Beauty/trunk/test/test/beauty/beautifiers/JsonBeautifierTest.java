@@ -21,8 +21,6 @@ public class JsonBeautifierTest {
  
             String before = writer.toString();
             String answer = before;
-            System.err.println(answer);
-            fail(answer);
  
             Beautifier beautifier = new JsonBeautifier();
             beautifier.setEditMode("json");
