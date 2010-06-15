@@ -444,15 +444,21 @@ TOKEN_MGR_DECLS:
 }
 
 
-/* WHITE SPACE */
+//{{{ WHITE SPACE
 <PHPPARSING> SKIP :
 {
-  " "
-| "\t"
-| "\n"
-| "\r"
-| "\f"
+	"\n"
 }
+
+<IN_NAMESPACE,PHPPARSING> SKIP :
+{
+	" "
+	| "\t"
+	| "\r"
+	| "\f"
+}
+//}}}
+
 
 <IN_VARIABLE> SPECIAL_TOKEN :
 {
@@ -462,14 +468,16 @@ TOKEN_MGR_DECLS:
 | "\r" : PHPPARSING
 | "\f" : PHPPARSING
 }
-/* COMMENTS */
+
+//{{{ COMMENTS
 <PHPPARSING> SPECIAL_TOKEN :
 {
   "//" : IN_SINGLE_LINE_COMMENT
 | "#"  : IN_SINGLE_LINE_COMMENT
 | <"/**" ~["/"]> { input_stream.backup(1); } : IN_FORMAL_COMMENT
 | "/*" : IN_MULTI_LINE_COMMENT
-}
+} //}}}
+
 
 <IN_SINGLE_LINE_COMMENT> SPECIAL_TOKEN :
 {
@@ -525,7 +533,7 @@ MORE :
 //}}}
 
 
-/* KEYWORDS */
+//{{{ KEYWORDS
 <PHPPARSING> TOKEN :
 {
   <CLASS    : "class">
@@ -538,9 +546,10 @@ MORE :
 | <ARRAY    : "array">
 | <BREAK    : "break">
 | <LIST     : "list">
-}
+} //}}}
 
-/* LANGUAGE CONSTRUCT */
+
+//{{{ LANGUAGE CONSTRUCT
 <PHPPARSING> TOKEN :
 {
   <PRINT              : "print">
@@ -570,7 +579,8 @@ MORE :
 | <ENDFOREACH         : "endforeach">
 | <FOREACH            : "foreach">
 | <AS                 : "as" >
-}
+} //}}}
+
 
 <PHPPARSING,IN_VARIABLE> TOKEN :
 {
@@ -608,7 +618,7 @@ MORE :
 } //}}}
 
 
-//Misc token
+//{{{ Misc token
 <PHPPARSING,IN_VARIABLE> TOKEN :
 {
   <AT                 : "@"> : PHPPARSING
@@ -616,9 +626,10 @@ MORE :
 | <TILDE              : "~"> : PHPPARSING
 | <HOOK               : "?"> : PHPPARSING
 | <COLON              : ":"> : PHPPARSING
-}
+} //}}}
 
-/* OPERATORS */
+
+//{{{ OPERATORS
 <PHPPARSING,IN_VARIABLE> TOKEN :
 {
   <OR_OR              : "||">  : PHPPARSING
@@ -639,9 +650,10 @@ MORE :
 | <_ORL               : "OR">  : PHPPARSING
 | <XOR                : "XOR"> : PHPPARSING
 | <_ANDL              : "AND"> : PHPPARSING
-}
+} //}}}
 
-/* LITERALS */
+
+//{{{ LITERALS
 <PHPPARSING> TOKEN :
 {
   <INTEGER_LITERAL:
@@ -669,11 +681,6 @@ MORE :
 /*|   <STRING_1: "\"" ( ~["\"","\\"] | "\\" ~[] )* "\"">*/
 |   <STRING_2: "'"  ( ~["'","\\"]  | "\\" ~[] )* "'">
 |   <STRING_3: "`"  ( ~["`","\\"]  | "\\" ~[] )* "`">
-}
-
-<IN_NAMESPACE> TOKEN:
-{
-	<NAMESPACE_NAME: ( ~[";","\n"] )*> : PHPPARSING
 }
 
 <IN_STRING,DOLLAR_IN_STRING,SKIPSTRING> SKIP :
@@ -762,33 +769,17 @@ MORE :
   >
 }
 
-/*
-<HEREDOC> SKIP :
-{
-  <NEWLINE2 : "\n"> : HEREDOCLINESTART
-| <~[]>
-}
-  */
-
-/* IDENTIFIERS */
-
-
-
-
-//<PHPPARSING, IN_VARIABLE, DOLLAR_IN_STRING> TOKEN :
-
-
 <DOLLAR_IN_STRING> SPECIAL_TOKEN :
 {
  < ~[] > : IN_STRING
-}
+} //}}}
+
 
 //{{{ SEPARATORS
 <PHPPARSING,IN_VARIABLE> TOKEN :
 {
   <LPAREN    : "("> : PHPPARSING
 | <RPAREN    : ")"> : PHPPARSING
-| <LBRACE    : "{"> : PHPPARSING
 | <RBRACE    : "}"> : PHPPARSING
 | <LBRACKET  : "["> : PHPPARSING
 | <RBRACKET  : "]"> : PHPPARSING
@@ -796,7 +787,11 @@ MORE :
 | <COMMA     : ","> : PHPPARSING
 | <DOT       : "."> : PHPPARSING
 }
-//}}}
+
+<PHPPARSING,IN_VARIABLE, IN_NAMESPACE> TOKEN :
+{
+ <LBRACE    : "{"> : PHPPARSING
+} //}}}
 
 //{{{ COMPARATOR
 <PHPPARSING,IN_VARIABLE> TOKEN :
@@ -832,6 +827,11 @@ MORE :
 }
 //}}}
 
+
+<IN_NAMESPACE> TOKEN:
+{
+	<NAMESPACE_NAME: ((<LETTER>|<SPECIAL>) (<LETTER>|<DIGIT>|<SPECIAL>|"\\")*)> : PHPPARSING
+}
 //}}}
 
 
@@ -980,7 +980,11 @@ PHPEchoBlock phpEchoBlock() :
 void Php() :
 {}
 {
-	(BlockStatement())*
+	(
+		namespace()
+	|
+		BlockStatement()
+	)*
 } //}}}
 
 //}}}
@@ -990,13 +994,14 @@ Namespace namespace():
 {
 	Expression expression = null;
 	Token namespaceToken;
-	Token namespaceNameToken;
+	Token namespaceNameToken = null;
 	Token semicolon;
 	int sourceEnd;
 	int endLine;
 	int endColumn;
 }
 {
+	//{{{ <NAMESPACE>
 	{
 		namespace = null;
 	}
@@ -1005,33 +1010,72 @@ Namespace namespace():
 		sourceEnd = namespaceToken.sourceEnd;
 		endLine = namespaceToken.endLine;
 		endColumn = namespaceToken.endColumn;
-	}
-	namespaceNameToken = <NAMESPACE_NAME>
+	} //}}}
 
-
-	try
-	{
-		semicolon = <SEMICOLON>
+	(
+		//{{{ block
+		<LBRACE>
+		(BlockStatement())*
+		<RBRACE>
 		{
-			sourceEnd = semicolon.sourceEnd;
-			endLine = semicolon.endLine;
-			endColumn = semicolon.endColumn;
+			String namespaceName = namespaceNameToken == null ? null : namespaceNameToken.image;
+			namespace = Namespace.getNamespace(namespaceName);
+			return new Namespace(namespace,
+					     namespaceToken.sourceStart,
+					     sourceEnd,
+					     namespaceToken.beginLine,
+					     endLine,
+					     namespaceToken.beginColumn,
+					     endColumn);
+		} //}}}
+
+	|
+
+		namespaceNameToken = <NAMESPACE_NAME>
+		try
+		{
+
+			(
+				//{{{ { block()* }
+				<LBRACE>
+				(BlockStatement())*
+				<RBRACE>
+				{
+					namespace = Namespace.getNamespace(namespaceNameToken.image);
+					return new Namespace(namespace,
+							     namespaceToken.sourceStart,
+							     sourceEnd,
+							     namespaceToken.beginLine,
+							     endLine,
+							     namespaceToken.beginColumn,
+							     endColumn);
+				}
+				//}}}
+			|
+				semicolon = <SEMICOLON>
+				{
+					sourceEnd = semicolon.sourceEnd;
+					endLine = semicolon.endLine;
+					endColumn = semicolon.endColumn;
+				}
+			)
 		}
-	}
-	catch (ParseException e)
-	{
-		fireParseError("; expected",";",e.currentToken.next);
-	}
-	{
-		namespace = Namespace.getNamespace(namespaceNameToken.image);
-		return new Namespace(namespace,
-				     namespaceToken.sourceStart,
-				     sourceEnd,
-				     namespaceToken.beginLine,
-				     endLine,
-				     namespaceToken.beginColumn,
-				     endColumn);
-	}
+		catch (ParseException e)
+		{
+			fireParseError("{ ...} or ; expected",";",e.currentToken.next);
+		}
+		{
+			namespace = Namespace.getNamespace(namespaceNameToken.image);
+			return new Namespace(namespace,
+					     namespaceToken.sourceStart,
+					     sourceEnd,
+					     namespaceToken.beginLine,
+					     endLine,
+					     namespaceToken.beginColumn,
+					     endColumn);
+		}
+	)
+
 } //}}}
 
 //{{{ interfaceDeclaration()
@@ -5643,8 +5687,6 @@ Statement BlockStatement() :
 }
 {
 (
-	namespace()
-	|
 	try
 	{
 		statement = Statement()
