@@ -385,6 +385,8 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		if (index == null)
 			return;
 		int max = (Integer) maxResults.getValue();
+		searchField.setText(text);
+		type.setText(fileType);
 		ThreadUtilities.runInBackground(new SearchQuery(index, text, fileType, max,
 			lineResults.isSelected()));
 	}
