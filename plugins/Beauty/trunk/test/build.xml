@@ -56,7 +56,7 @@
     
     <!-- location of the test framework, this should be set in the build.properties
     file loaded above. -->
-    <property name="test.framework.home" location="/home/danson/src/jEditTestFramework"/>
+    <property name="test.framework.home" location="/home/danson/src/jedit/test/Fest"/>
     
     <!-- test source and classes -->
     <property name="project.test.src.dir" location="${basedir}/test"/>
@@ -123,6 +123,6 @@
     framework. -->
     <target name="test">
         <echo>${test.framework.home}</echo>
-        <ant antfile="${test.framework.home}/build.xml" target="test" inheritRefs="true"/>
+        <ant antfile="${test.framework.home}/build.xml" target="-test" inheritRefs="true"/>
     </target>
 </project>
