@@ -1,4 +1,4 @@
-// TODO: this is actually in jjt format.  Need to convert it to .jj and 
+// DONE: this is actually in jjt format.  Need to convert it to .jj and 
 // eliminate the AST since it doesn't provide anything particularly useful
 // in the case of a beautifier.  This is the latest from www.beanshell.org as
 // of Jun 14, 2010.  It is not the one from the jEdit source code.
@@ -48,10 +48,6 @@
 options {
     JAVA_UNICODE_ESCAPE=true;
     STATIC=false;
-    MULTI=true;
-    NODE_DEFAULT_VOID=true;
-	NODE_SCOPE_HOOK=true;
-	NODE_PREFIX="BSH";
 	/* Print grammar debugging info as we parse 
 	DEBUG_PARSER=true;
 	*/
@@ -77,7 +73,7 @@ options {
 }
 
 PARSER_BEGIN(Parser)
-package bsh;
+package beauty.parsers.bsh;
 
 import java.io.*;
 import java.util.Vector;
@@ -115,14 +111,6 @@ public class Parser
 		retainComments = b;
 	}
 
-	void jjtreeOpenNodeScope(Node n) {
-		((SimpleNode)n).firstToken = getToken(1);
-	}
-
-	void jjtreeCloseNodeScope(Node n) {
-		((SimpleNode)n).lastToken = getToken(0);
-	}
-
 	/**
 		Re-initialize the input stream and token source.
 	*/
@@ -130,43 +118,26 @@ public class Parser
 		ReInit(in);
 	}
 
-	public SimpleNode popNode() 
-	{
-		if ( jjtree.nodeArity() > 0)  // number of child nodes 
-			return (SimpleNode)jjtree.popNode();
-		else
-			return null;
-	}
-
-	/**
-		Explicitly re-initialize just the token reader.
-		This seems to be necessary to avoid certain looping errors when
-		reading bogus input.  See Interpreter.
-	*/
-	void reInitTokenInput( Reader in ) {
-		jj_input_stream.ReInit( in, 
-			jj_input_stream.getEndLine(), 
-			jj_input_stream.getEndColumn() );
-	}
-
+	/*
 	public static void main( String [] args ) 
 		throws IOException, ParseException
 	{
-		boolean print = false;
+		boolean prinfalse;
 		int i=0;
 		if ( args[0].equals("-p") ) {
 			i++;
-			print=true;
+			printrue;
 		}
 		for(; i< args.length; i++) {
 			Reader in = new FileReader(args[i]);
 			Parser parser = new Parser(in);
 			parser.setRetainComments(true);
-			while( !parser.Line()/*eof*/ )
+			while( !parser.Line() )    // eof
 				if ( print )
 					System.out.println( parser.popNode() );
 		}
 	}
+	*/
 
 	/**
 		Lookahead for the enhanced for statement.  
@@ -466,7 +437,6 @@ boolean Line() :
 {}
 {
   <EOF> { 
-	Interpreter.debug("End of File!"); 
 	return true; 
   }
 |
@@ -485,70 +455,79 @@ boolean Line() :
 	should not enforce any rules.  Otherwise we validate based on context
 	(field, method, class)
 */
-Modifiers Modifiers( int context, boolean lookahead ) : 
+int Modifiers():
 {
-	Modifiers mods = null;
+   int modifiers = 0;
 }
 {
+    try {
+ (
+  LOOKAHEAD(2)
   (
-	( 
-		"private" |	"protected" | "public" | "synchronized" | "final"
-		| "native" | "transient" | "volatile" |	"abstract" | "static" 
-		| "strictfp"
-	) {
-		if ( !lookahead )
-			try {
-				if ( mods == null ) mods = new Modifiers(); 
-				mods.addModifier( context, getToken(0).image );
-			} catch ( IllegalStateException e ) { 
-				throw createParseException( e.getMessage() );
-			}
-	}
-  )* {
-  	return mods;
-  }
+   "public" { modifiers |= ModifierSet.PUBLIC; }
+  |
+   "static" { modifiers |= ModifierSet.STATIC; }
+  |
+   "protected" { modifiers |= ModifierSet.PROTECTED; }
+  |
+   "private" { modifiers |= ModifierSet.PRIVATE; }
+  |
+   "final" { modifiers |= ModifierSet.FINAL; }
+  |
+   "abstract" { modifiers |= ModifierSet.ABSTRACT; }
+  |
+   "synchronized" { modifiers |= ModifierSet.SYNCHRONIZED; }
+  |
+   "native" { modifiers |= ModifierSet.NATIVE; }
+  |
+   "transient" { modifiers |= ModifierSet.TRANSIENT; }
+  |
+   "volatile" { modifiers |= ModifierSet.VOLATILE; }
+  |
+   "strictfp" { modifiers |= ModifierSet.STRICTFP; }
+  )
+ )*
+    }
+    catch(ParseException pe) {
+        return 0;   
+    }
+   
+ {
+    return modifiers;
+ }
 }
-
 
 /**
 */
 void ClassDeclaration()  :
 {
-	Modifiers mods;
-	Token name;
-	int numInterfaces;
 }
 {
-	mods = Modifiers( Modifiers.CLASS, false ) 
+	Modifiers() 
 	( "class" | "interface"  ) 
-	name=<IDENTIFIER> 
+	<IDENTIFIER> 
 	[ "extends" AmbiguousName()  ] 
-	[ "implements" numInterfaces=NameList() 
+	[ "implements" NameList() 
 		 ]
 	Block()
 	{
-		jjtThis.modifiers = mods;
-		jjtThis.name = name.image;
 	}
 }
 
 void MethodDeclaration()  :
 {
-	Token t = null;
-	Modifiers mods;
-	int count;
 }
 {
-	mods = Modifiers( Modifiers.METHOD, false ) 
+	Modifiers( ) 
 (
 	LOOKAHEAD( <IDENTIFIER> "(" )
-	t = <IDENTIFIER> 
+	<IDENTIFIER> 
 |
     ReturnType()
-	t = <IDENTIFIER> 
+	<IDENTIFIER> 
 )
     FormalParameters()
-	[ "throws" count=NameList()  ]
+	[ "throws" NameList()  ]
 	( Block() | ";" )
 }
 
@@ -560,21 +539,17 @@ void PackageDeclaration () :
 
 void ImportDeclaration()  :
 {
-    Token s = null;
-	Token t = null;
 }
 {
   LOOKAHEAD( 3 )
-  "import" [ s = "static" ] AmbiguousName() [ t = "." "*" ] ";"
+  "import" [ "static" ] AmbiguousName() [ "." "*" ] ";"
   {
-		if ( s != null ) jjtThis.staticImport = true;
-		if ( t != null ) jjtThis.importPackage = true;
   }
   |
 	// bsh super import statement
-  "import" "*" ";" {
-		jjtThis.superImport = true;
-	}
+  "import" "*" ";" 
+  {
+  }
 }
 
 void VariableDeclarator()  :
@@ -582,9 +557,8 @@ void VariableDeclarator()  :
 	Token t;
 }
 {
-	t=<IDENTIFIER> [ "=" VariableInitializer() ]
+	<IDENTIFIER> [ "=" VariableInitializer() ]
 	{
-  		jjtThis.name = t.image;
 	}
 }
 
@@ -594,7 +568,7 @@ this originally handled postfix array dimensions...
 void VariableDeclaratorId()  :
 { Token t; }
 {
-  t=<IDENTIFIER> 
+  <IDENTIFIER> 
   ( "[" "]"  )*
 }
 */
@@ -621,12 +595,13 @@ void FormalParameters()  :
 }
 
 void FormalParameter()  :
-{ Token t; }
+{ 
+}
 {
   // added [] to Type for bsh.  Removed [ final ] - is that legal?
-  LOOKAHEAD(2) Type() t=<IDENTIFIER> 
+  LOOKAHEAD(2) Type() <IDENTIFIER> 
 |
-  t=<IDENTIFIER> 
+  <IDENTIFIER> 
 }
 
 
@@ -674,23 +649,21 @@ void AmbiguousName()  :
 	when used in the context of an "ImportDeclaration".
 */
 {
-    Token t;
-    StringBuffer s;
 }
 {
-  t = <IDENTIFIER> {
-  	s = new StringBuffer(t.image);
+  <IDENTIFIER> 
+  {
   }
-  ( LOOKAHEAD(2) "." t = <IDENTIFIER> { s.append("."+t.image); } )* {
-  	jjtThis.text = s.toString();
+  ( LOOKAHEAD(2) "." <IDENTIFIER> )* 
+  {
   }
 }
 
-int NameList() :
-{ int count = 0; }
+void NameList() :
+{ 
+}
 {
-  AmbiguousName() { ++count; } ( "," AmbiguousName() { ++count; } )*
-  { return count; }
+  AmbiguousName() ( "," AmbiguousName() )*
 }
 
 /*
@@ -711,25 +684,23 @@ void Expression() :
 }
 
 void Assignment()  :
-{ int op ; }
+{ 
+}
 {
   PrimaryExpression()
-  	op = AssignmentOperator() 
+  	AssignmentOperator() 
 	// Add this for blocks, e.g. foo = { };
 	//( Expression() | Block() )
 	Expression()
 }
 
-int AssignmentOperator() :
-{ Token t; }
+void AssignmentOperator() :
+{ 
+}
 {
     ( "=" | "*=" | "/=" | "%=" | "+=" | "-=" | "&=" | "^=" | "|=" |
       "<<=" | "@left_shift_assign" | ">>=" | "@right_shift_assign" |
       ">>>=" | "@right_unsigned_shift_assign" )
-    {
-        t = getToken(0);
-        return t.kind;
-    }
 }
 
 void ConditionalExpression() :
@@ -740,103 +711,103 @@ void ConditionalExpression() :
 }
 
 void ConditionalOrExpression() :
-{ Token t=null; }
+{  }
 {
   ConditionalAndExpression()
-  ( ( t = "||" | t = "@or" )
+  ( ( "||" |"@or" )
     ConditionalAndExpression()
       )*
 }
 
 void ConditionalAndExpression() :
-{ Token t=null; }
+{  }
 {
   InclusiveOrExpression()
-  ( ( t = "&&" | t = "@and" )
+  ( ( "&&" | "@and" )
     InclusiveOrExpression()
       )*
 }
 
 void InclusiveOrExpression() :
-{ Token t=null; }
+{  }
 {
   ExclusiveOrExpression()
-  ( ( t = "|" | t = "@bitwise_or" )
+  ( ( "|" | "@bitwise_or" )
     ExclusiveOrExpression()
       )*
 }
 
 void ExclusiveOrExpression() :
-{ Token t=null; }
+{  }
 {
-  AndExpression() ( t="^" AndExpression()
+  AndExpression() ( "^" AndExpression()
       )*
 }
 
 void AndExpression() :
-{ Token t=null; }
+{  }
 {
   EqualityExpression()
-  ( ( t = "&" | t = "@bitwise_and" )
+  ( ( "&" | "@bitwise_and" )
     EqualityExpression()
       )*
 }
 
 void EqualityExpression() :
-{ Token t = null; }
+{  }
 {
-  InstanceOfExpression() ( ( t= "==" | t= "!=" ) InstanceOfExpression()
+  InstanceOfExpression() ( ( "==" | "!=" ) InstanceOfExpression()
      
   )*
 }
 
 void InstanceOfExpression() :
-{ Token t = null; }
+{  }
 {
   RelationalExpression()
-  [ t = "instanceof" Type()   ]
+  [ "instanceof" Type()   ]
 }
 
 void RelationalExpression() :
-{ Token t = null; }
+{  }
 {
   ShiftExpression()
-  ( ( t = "<" | t = "@lt" | t = ">" | t = "@gt" |
-      t = "<=" | t = "@lteq" | t = ">=" | t = "@gteq" )
+  ( ( "<" | "@lt" | ">" | "@gt" |
+      "<=" | "@lteq" | ">=" | "@gteq" )
   ShiftExpression()
     )*
 }
 
 void ShiftExpression() :
-{ Token t = null; }
+{  }
 {
   AdditiveExpression()
-  ( ( t = "<<" | t = "@left_shift" | t = ">>" | t = "@right_shift" |
-      t = ">>>" | t = "@right_unsigned_shift" )
+  ( ( "<<" | "@left_shift" | ">>" | "@right_shift" |
+      ">>>" | "@right_unsigned_shift" )
   AdditiveExpression()
     )*
 }
 
 void AdditiveExpression() :
-{ Token t = null; }
+{  }
 {
   MultiplicativeExpression()
-  ( ( t= "+" | t= "-" ) MultiplicativeExpression() 
+  ( ( "+" | "-" ) MultiplicativeExpression() 
     
   )*
 }
 
 void MultiplicativeExpression() :
-{ Token t = null; }
+{  }
 {
-  UnaryExpression() ( ( t= "*" | t= "/" | t= "%" )
+  UnaryExpression() ( ( "*" | "/" | "%" )
   UnaryExpression()   )*
 }
 
 void UnaryExpression() :
-{ Token t = null; }
+{  }
 {
-  ( t="+" | t="-" ) UnaryExpression()
+  ( "+" | "-" ) UnaryExpression()
      
 |
   PreIncrementExpression()
@@ -847,23 +818,23 @@ void UnaryExpression() :
 }
 
 void PreIncrementExpression() :
-{ Token t = null; }
+{  }
 {
-  t="++" PrimaryExpression()
+  "++" PrimaryExpression()
      
 }
 
 void PreDecrementExpression() :
-{ Token t = null; }
+{  }
 {
-  t="--" PrimaryExpression()
+  "--" PrimaryExpression()
      
 }
 
 void UnaryExpressionNotPlusMinus() :
-{ Token t = null; }
+{  }
 {
-  ( t="~" | t="!" ) UnaryExpression()
+  ( "~" | "!" ) UnaryExpression()
      
 |
 	// SYNTACTIC_LOOKAHEAD
@@ -884,12 +855,12 @@ void CastLookahead() : { }
 }
 
 void PostfixExpression() :
-{ Token t = null; }
+{  }
 {
 // SYNTACTIC_LOOKAHEAD
   LOOKAHEAD( PrimaryExpression() ("++"|"--") )
   PrimaryExpression()
-	  ( t="++" | t="--" )  
+	  ( "++" | "--" )  
 |
   PrimaryExpression()
 }
@@ -938,26 +909,21 @@ void PrimaryPrefix() : { }
 
 void PrimarySuffix()  :
 {
-    Token t = null;
+    
 }
 {
   LOOKAHEAD(2)
   "." "class" {
-        jjtThis.operation = BSHPrimarySuffix.CLASS;
     }
 |
   "[" Expression() "]" {
-        jjtThis.operation = BSHPrimarySuffix.INDEX;
     }
 |
     // Field access or method invocation
-  "." t = <IDENTIFIER> [ Arguments() ] {
-        jjtThis.operation = BSHPrimarySuffix.NAME;
-        jjtThis.field = t.image;
+  "." <IDENTIFIER> [ Arguments() ] {
     }
 |
   "{" Expression() "}" {
-        jjtThis.operation = BSHPrimarySuffix.PROPERTY;
     }
 /*
     For inner classes
@@ -969,71 +935,19 @@ void PrimarySuffix()  :
 
 void Literal()  :
 {
-    Token x;
-    boolean b;
-    String literal;
-    char ch;
 }
 {
-  x = <INTEGER_LITERAL>
-  {
-    literal = x.image;
-    ch = literal.charAt(literal.length()-1);
-    if(ch == 'l' || ch == 'L')
-    {
-        literal = literal.substring(0,literal.length()-1);
-        jjtThis.value = new Primitive( Long.decode(literal).longValue() );
-        
-    }
-    else
-		try {
-        	jjtThis.value = new Primitive(
-				Integer.decode( literal ).intValue() );
-		} catch ( NumberFormatException e ) {
-			throw createParseException(
-				"Error or number too big for integer type: "+ literal );
-		}
-  }
+  <INTEGER_LITERAL>
 |
-  x = <FLOATING_POINT_LITERAL>
-  {
-    literal = x.image;
-    ch = literal.charAt(literal.length()-1);
-    if(ch == 'f' || ch == 'F')
-    {
-        literal = literal.substring(0,literal.length()-1);
-        jjtThis.value = new Primitive( new Float( literal ).floatValue() );
-    }
-    else
-    {
-        if(ch == 'd' || ch == 'D')
-            literal = literal.substring(0,literal.length()-1);
-
-        jjtThis.value = new Primitive( new Double( literal ).doubleValue() );
-    }
-  }
+  <FLOATING_POINT_LITERAL>
 |
-  x = <CHARACTER_LITERAL> {
-		try {
-    		jjtThis.charSetup( x.image.substring(1, x.image.length() - 1) );
-		} catch ( Exception e ) {
-			throw createParseException("Error parsing character: "+x.image);
-		}
-    }
+  <CHARACTER_LITERAL> 
 |
-  x = <STRING_LITERAL> {
-		try {
-			jjtThis.stringSetup( x.image.substring(1, x.image.length() - 1) );
-		} catch ( Exception e ) {
-			throw createParseException("Error parsing string: "+x.image);
-		}
-    }
+  <STRING_LITERAL> 
 |
-  b = BooleanLiteral()  
+  BooleanLiteral()  
 |
-  NullLiteral() {
-    jjtThis.value = Primitive.NULL;
-}
+  NullLiteral() 
 |
  VoidLiteral() 
 }
@@ -1149,7 +1063,6 @@ void LabeledStatement() :
 
 void Block()  :
 {
-	Token s = null;
 }
 {
 /*
@@ -1158,9 +1071,8 @@ void Block()  :
 	Is it worth moving the grammar around to make this a static parse time
 	check?  (Sreeni? ;) )
 */
-	[ s = "static" ] "{" ( BlockStatement() )* "}"
+	[ "static" ] "{" ( BlockStatement() )* "}"
 	{
-		if ( s != null ) jjtThis.isStatic = true;
 	}
 }
 
@@ -1168,21 +1080,21 @@ void BlockStatement() :
 {
 }
 {
-  LOOKAHEAD( Modifiers( Modifiers.FIELD, true ) ( "class" | "interface" ) )
+  LOOKAHEAD( Modifiers() ( "class" | "interface" ) )
   ClassDeclaration() 
 |
-  LOOKAHEAD ( Modifiers( Modifiers.METHOD, true ) 
+  LOOKAHEAD ( Modifiers() 
 		ReturnType() <IDENTIFIER> "(" 
   )
   	MethodDeclaration()
 |
-  LOOKAHEAD ( Modifiers( Modifiers.METHOD, true ) 
+  LOOKAHEAD ( Modifiers() 
 		<IDENTIFIER> FormalParameters() [ "throws" NameList() ] "{" 
   )
   	MethodDeclaration()
 |
   // SYNTACTIC_LOOKAHEAD
-  LOOKAHEAD( Modifiers( Modifiers.FIELD, true ) Type() <IDENTIFIER> )
+  LOOKAHEAD( Modifiers() Type() <IDENTIFIER> )
   TypedVariableDeclaration() ";"
 |
   Statement()
@@ -1202,8 +1114,7 @@ void FormalComment()  :
 	Token t;
 }
 {
-	t=<FORMAL_COMMENT>  {
-		jjtThis.text=t.image;
+	<FORMAL_COMMENT>  {
 	}
 }
 
@@ -1286,7 +1197,7 @@ void DoStatement()  :
 }
 
 void ForStatement()  :
-{ Token t = null; }
+{  }
 {
   "for" "(" [ ForInit()  ]
     ";" [ Expression()  ]
@@ -1301,21 +1212,21 @@ void ForStatement()  :
 	e.g. for( a : arrayOfInts ) { }
 */
 void EnhancedForStatement()  :
-{ Token t = null; }
+{  }
 {
   LOOKAHEAD( 4 ) // look ahead for the ":" before deciding
-  "for" "(" t=<IDENTIFIER> ":" Expression() ")"
+  "for" "(" <IDENTIFIER> ":" Expression() ")"
     Statement() 
   |
-  "for" "(" Type() t=<IDENTIFIER> ":" Expression() ")"
+  "for" "(" Type() <IDENTIFIER> ":" Expression() ")"
     Statement() 
 }
 
 void ForInit() :
-{ Token t = null; }
+{  }
 {
 // SYNTACTIC_LOOKAHEAD
-  LOOKAHEAD( Modifiers( Modifiers.FIELD, true ) Type() <IDENTIFIER> )
+  LOOKAHEAD( Modifiers() Type() <IDENTIFIER> )
   TypedVariableDeclaration()
 |
   StatementExpressionList()
@@ -1328,14 +1239,11 @@ void ForInit() :
 */
 void TypedVariableDeclaration()  :
 { 
-	Token t = null; 
-	Modifiers mods;
 }
 {
-	mods = Modifiers( Modifiers.FIELD, false )
+	Modifiers()
   	Type() VariableDeclarator() ( "," VariableDeclarator() )*  
 	{
-        jjtThis.modifiers = mods;
     }
 }
 
@@ -1374,7 +1282,6 @@ void SynchronizedStatement()  :
 }
 {
   "synchronized" "(" Expression() ")" Block() {
-  		jjtThis.isSynchronized=true;
   }
 }
 

@@ -1,4 +1,4 @@
-// TODO: this is actually in jjt format.  Need to convert it to .jj and 
+// DONE: this is actually in jjt format.  Need to convert it to .jj and 
 // eliminate the AST since it doesn't provide anything particularly useful
 // in the case of a beautifier.  This is the latest from www.beanshell.org as
 // of Jun 14, 2010.  It is not the one from the jEdit source code.
