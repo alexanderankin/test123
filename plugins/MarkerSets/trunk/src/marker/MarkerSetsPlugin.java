@@ -35,6 +35,7 @@ import org.gjt.sp.jedit.buffer.BufferAdapter;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.textarea.Gutter;
 import org.gjt.sp.jedit.textarea.GutterPopupHandler;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
@@ -55,7 +56,8 @@ public class MarkerSetsPlugin extends EditPlugin {
 	private static MarkerSet active;
 	private static String xmlFile;
 	private static Vector<ChangeListener> listeners;
-	
+	private boolean replaceBuiltInMarkers = false;
+
 	public enum Event {
 		MARKER_SET_ADDED,
 		MARKER_SET_REMOVED,
@@ -84,10 +86,12 @@ public class MarkerSetsPlugin extends EditPlugin {
 		loadState();
 		jEdit.visit(new MarkerSetVisitor(true));
 		EditBus.addToBus(this);
+		replaceBuiltInMarkers(MarkerSetsOptions.shouldReplaceBuiltInMarkers());
 	}
 
 	public void stop()
 	{
+		replaceBuiltInMarkers(false);
 		EditBus.removeFromBus(this);
 		saveState();
 		jEdit.visit(new MarkerSetVisitor(false));
@@ -191,6 +195,41 @@ public class MarkerSetsPlugin extends EditPlugin {
 	{
 		for (MarkerSet ms: markerSets.values())
 			ms.handleBufferUpdate(bu);
+	}
+	@EBHandler
+	public void handlePropertiesChanged(PropertiesChanged pc)
+	{
+		boolean newValue = MarkerSetsOptions.shouldReplaceBuiltInMarkers();
+		if (replaceBuiltInMarkers == newValue)
+			return;
+		replaceBuiltInMarkers = newValue;
+		replaceBuiltInMarkers(replaceBuiltInMarkers);
+	}
+
+	public void replaceBuiltInMarkers(final boolean replace)
+	{
+		jEdit.visit(new JEditVisitorAdapter() {
+			@Override
+			public void visit(final EditPane editPane)
+			{
+				final JEditTextArea textArea = editPane.getTextArea();
+				Gutter g = textArea.getGutter();
+				g.setSelectionPopupHandler(new GutterPopupHandler()
+				{
+					public void handlePopup(int x, int y, int line)
+					{
+						if (replace)
+							toggleMarker((Buffer)textArea.getBuffer(), line);
+						else
+						{
+							Buffer buffer = editPane.getBuffer();
+							buffer.addOrRemoveMarker('\0',
+								buffer.getLineStartOffset(line));
+						}
+					}
+				});
+			}
+		});
 	}
 
 	static public Vector<String> getMarkerSetNames()
@@ -364,7 +403,7 @@ public class MarkerSetsPlugin extends EditPlugin {
 		notifyChange(Event.ACTIVE_MARKER_SET_CHANGED, active);
 		return true;
 	}
-	
+
 	// Interface for plugins
 	
 	static public void toggleMarker(FileMarker marker)
@@ -376,25 +415,6 @@ public class MarkerSetsPlugin extends EditPlugin {
 	}
 	
 	// Actions
-
-	static public void mapMarkerActionsToMarkerSets()
-	{
-		jEdit.visit(new JEditVisitorAdapter() {
-			@Override
-			public void visit(final JEditTextArea textArea)
-			{
-				textArea.getGutter().setSelectionPopupHandler(
-					new GutterPopupHandler()
-					{
-						public void handlePopup(int x, int y, int line)
-						{
-							toggleMarker((Buffer)textArea.getBuffer(), line);
-						}
-					}
-				);
-			}
-		});
-	}
 
 	static public void setActiveMarkerSet(View view)
 	{
