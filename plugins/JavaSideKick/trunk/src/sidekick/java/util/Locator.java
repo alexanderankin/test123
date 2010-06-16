@@ -277,9 +277,11 @@ public final class Locator {
         }
         this.project = proj;
 
-        String classpath = proj.getProperty( "java.optionalClasspath" );
-        if ( classpath == null || classpath.length() == 0 )
+        String classpath = PVHelper.getClassPathForProject(proj).toString();
+        if ( classpath == null || classpath.length() == 0 ) {
+        	projectJars = null;
             return null;
+        }
         String path_sep = File.pathSeparator;
         String[] path_jars = classpath.split( path_sep );
         File[] jars = new File[ path_jars.length ];
@@ -323,7 +325,7 @@ public final class Locator {
     }
     
     public void reloadProjectJars( VPTProject proj ) {
-        String classpath = proj.getProperty( "java.optionalClasspath" );
+        String classpath = PVHelper.getClassPathForProject(proj).toString();
         if ( classpath == null || classpath.length() == 0 )
             return;
         String path_sep = File.pathSeparator;
