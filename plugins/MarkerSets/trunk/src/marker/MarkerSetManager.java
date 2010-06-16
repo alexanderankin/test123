@@ -302,9 +302,6 @@ public class MarkerSetManager extends JPanel {
 			public MarkerSetIcon(MarkerSet ms) {
 				this.ms = ms;
 			}
-			public Color getColor() {
-				return ms.getColor();
-			}
 			public int getIconHeight() {
 				return getDefaultIconHeight();
 			}
