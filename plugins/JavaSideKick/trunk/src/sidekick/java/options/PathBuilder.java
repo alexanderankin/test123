@@ -34,6 +34,7 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.gui.RolloverButton;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.jedit.browser.*;
 import sidekick.java.util.CopyUtils;
 
 /**
@@ -139,6 +140,7 @@ public class PathBuilder extends JPanel {
         // defaults
         fileSelectionMode = JFileChooser.FILES_AND_DIRECTORIES;
         multiSelectionEnabled = true;
+        VFSFileChooserDialog dialog;
         fileFilter = null;
         fileDialogTitle = jEdit.getProperty( "vfs.browser.title" );
 
@@ -191,7 +193,7 @@ public class PathBuilder extends JPanel {
                                 PathBuilder.this.getRootPane(),
                                 null
                             );
-
+                    
                     if ( returnVal == JFileChooser.APPROVE_OPTION ) {
                         try {
                             if ( multiSelectionEnabled ) {

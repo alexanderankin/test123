@@ -857,7 +857,7 @@ public class JavaCompletionFinder {
                             params.append( ',' );
                     }
                     params.append( ')' );
-                    list.add( method.getName() + params.toString() + " : " + method.getReturnType().getName() );
+                    list.add( method.getName() + params.toString() + " : " + method.getReturnType().getSimpleName() );
                 }
             }
             Field[] fields = c.getFields();
@@ -894,7 +894,7 @@ public class JavaCompletionFinder {
                         name.append( ',' );
                 }
                 name.append( ')' );
-                list.add(name);
+                list.add(name.toString());
             }
         }
         catch (Exception e) {

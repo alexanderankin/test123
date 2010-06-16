@@ -21,6 +21,22 @@ public class Path {
             paths.addAll( Arrays.asList( parts ) );
         }
     }
+    
+    public void concat( String path ) {
+    	concat( path, false );
+    }
+    
+    public void concat( String path, boolean before ) {
+    	if ( path != null ) {
+    		if ( paths == null )
+				paths = new ArrayList<String>();
+    		String[] parts = path.split( System.getProperty( "path.separator" ) );
+            if ( before )
+            	paths.addAll( 0, Arrays.asList( parts ) );
+            else
+            	paths.addAll( Arrays.asList( parts ) );
+        }
+    }
 
     public void concatSystemClassPath() {
         concatSystemClassPath( true );

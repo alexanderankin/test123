@@ -91,12 +91,14 @@ public class PVHelper {
      */
     public static Path getClassPathForProject( VPTProject proj, boolean withJavaClasspath ) {
         boolean useJavaClasspath = useJavaClasspath(proj);
-        String classpath = proj.getProperty( "java.optionalClasspath");
+        String classpath = proj.getProperty( "java.optionalClasspath" );
         if (classpath == null) classpath = "";
         Path path = new Path( classpath );
         if ( useJavaClasspath && withJavaClasspath ) {
             path.concatSystemClassPath();
         }
+        String buildpath = getBuildOutputPathForProject( proj );
+        if (buildpath.length() > 0) path.concat(buildpath, true);
         return path;
     }
     
