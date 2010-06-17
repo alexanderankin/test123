@@ -19,4 +19,7 @@
     <SERVICE CLASS="beauty.beautifiers.Beautifier" NAME="json:beauty">
         new beauty.beautifiers.JsonBeautifier();
     </SERVICE>
+    <SERVICE CLASS="beauty.beautifiers.Beautifier" NAME="beanshell:beauty">
+        new beauty.beautifiers.BSHBeautifier();
+    </SERVICE>
 </SERVICES>
