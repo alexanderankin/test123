@@ -1,7 +1,15 @@
+// danson:
 // DONE: this is actually in jjt format.  Need to convert it to .jj and 
 // eliminate the AST since it doesn't provide anything particularly useful
 // in the case of a beautifier.  This is the latest from www.beanshell.org as
 // of Jun 14, 2010.  It is not the one from the jEdit source code.
+
+// danson: Modified this to use as a bsh beautifier.  Pretty much I'm following
+// the same beautification rules as the java beautifier, that is, Sun's java
+// coding standard.  
+
+// danson; my comments start with danson:, just so I can tell them from the
+// original comments.
 
 /*****************************************************************************
  *                                                                           *
@@ -72,11 +80,11 @@ options {
 	//CACHE_TOKENS=true;
 }
 
-PARSER_BEGIN(Parser)
+PARSER_BEGIN(BSHParser)
 package beauty.parsers.bsh;
 
 import java.io.*;
-import java.util.Vector;
+import java.util.*;
 
 /**
 	This is the BeanShell parser.  It is used internally by the Interpreter
@@ -103,13 +111,75 @@ import java.util.Vector;
 		}
 	</pre></code>
 */
-public class Parser 
+public class BSHParser 
 { 
-	boolean retainComments = false;
-	
-	public void setRetainComments( boolean b ) {
-		retainComments = b;
-	}
+    Token t;
+
+    // shouldn't use this, a specific line separator should be set based on
+    // buffer settings.  Of course, it may be the same as what the buffer
+    // uses anyway.
+    String lineSep = System.getProperty("line.separator");
+
+    // one of these is inserted at every place in a line that qualifies as a
+    // good place to break a line if it needs wrapped.  You can't type one of
+    // these from the keyboard,
+    char wrapSep = '\u001c';
+
+    public void setIndentWidth(int i) {
+        token_source.setIndentWidth(i);
+    }
+
+    public void setTabSize(int size) {
+        jj_input_stream.setTabSize(size);
+    }
+
+    public int getTabSize() {
+        // this really isn't necessary for this beautifier.  Setting the tab
+        // size on the input stream makes the token locations more accurate
+        // is all.
+        return jj_input_stream.getTabSize(0);
+    }
+
+    public void setUseSoftTabs(boolean b) {
+        token_source.setUseSoftTabs(b);
+    }
+
+    public String getText() {
+        return token_source.getText();
+    }
+
+    public void resetTokenSource() {
+        token_source.reset();
+    }
+
+    private void add(Token t) {
+        token_source.add(t);
+    }
+
+    private void add(String s) {
+        token_source.add(s);
+    }
+
+    private void trim() {
+        token_source.trim();
+    }
+
+    private void trimWhitespace() {
+        token_source.trimWhitespace();
+    }
+
+    private void write() {
+        token_source.write();
+    }
+
+    private void writeln() {
+        token_source.writeln();
+    }
+
+    public void setLineSeparator(String le) {
+        lineSep = le;
+        token_source.setLineSeparator(le);
+    }
 
 	/**
 		Re-initialize the input stream and token source.
@@ -118,27 +188,43 @@ public class Parser
 		ReInit(in);
 	}
 
-	/*
-	public static void main( String [] args ) 
-		throws IOException, ParseException
-	{
-		boolean prinfalse;
-		int i=0;
-		if ( args[0].equals("-p") ) {
-			i++;
-			printrue;
-		}
-		for(; i< args.length; i++) {
-			Reader in = new FileReader(args[i]);
-			Parser parser = new Parser(in);
-			parser.setRetainComments(true);
-			while( !parser.Line() )    // eof
-				if ( print )
-					System.out.println( parser.popNode() );
-		}
-	}
-	*/
+    public void parse() throws ParseException {
+        while(Line()); 
+    }
+    
+    public static void main(String args[]) {
+        BSHParser parser;
+        if (args.length == 0) {
+            System.out.println("BSH Parser:  Reading from standard input . . .");
+            parser = new BSHParser(System.in);
+        } else{
+            if (args.length == 1) {
+                System.out.println("BSH Parser:  Reading from file " + args[0] + " . . .");
+                try {
+                    parser = new BSHParser(new java.io.FileInputStream(args[0]));
+                } catch (java.io.FileNotFoundException e) {
+                    System.out.println("BSH Parser:  File " + args[0] + " not found.");
+                    return;
+                }
+            } else {
+                System.out.println("BSH Parser:  Usage is one of:");
+                System.out.println("         java Parser < inputfile");
+                System.out.println("OR");
+                System.out.println("         java Parser inputfile");
+                return;
+            }
+        }
 
+        try {
+            parser.parse();
+            System.out.println(parser.getText());
+            System.out.println("BSH Parser:  Java program parsed successfully.");
+        } catch (ParseException e) {
+            System.out.println(e.getMessage());
+            System.out.println("BSH Parser:  Encountered errors during parse.");
+        }
+    }
+    
 	/**
 		Lookahead for the enhanced for statement.  
 		Expect "for" "(" and then see whether we hit ":" or a ";" first.
@@ -181,31 +267,47 @@ public class Parser
 	}
 }
 
-PARSER_END(Parser)
+PARSER_END(BSHParser)
 
 SKIP : /* WHITE SPACE */
 { 
-	" " | "\t" | "\r" | "\f"
-	| "\n" 
-	| < NONPRINTABLE: (["\u0000"-"\u0020", "\u0080"-"\u00ff"])+ >
+	"\f"
+	//| < NONPRINTABLE: (["\u0000"-"\u0020", "\u0080"-"\u00ff"])+ >
 }
 
-SPECIAL_TOKEN : /* COMMENTS */
+SPECIAL_TOKEN :
 {
-/*
-	SINGLE_LINE_COMMENT includes a hack to accept SLC at the end of a file
-	with no terminanting linefeed.  This is actually illegal according to 
-	spec, but comes up often enough to warrant it... (especially in eval()).
-*/
-  <SINGLE_LINE_COMMENT: "//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")? >
-
-| <HASH_BANG_COMMENT: "#!" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
-
- /* Moved FORMAL_COMMENT to a real token.  Modified MULTI_LINE_COMMENT to not 
-    catch formal comments (require no star after star) */
-| <MULTI_LINE_COMMENT: 
-	"/*" (~["*"])+ "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
+  <LINE_ENDERS: ("\n"|"\r"|"\r\n")+ >
+  {
+    String s = matchedToken.image;
+    int n = 0;
+    int r = 0;
+    for (int i = 0; i < s.length(); i++) {
+        if (s.charAt(i) == 'n')
+            ++n;
+        else
+            ++r;
+    }
+    int cnt = Math.max(n, r);
+    System.out.println("++++ found " + cnt + " line separators");
+    for (int i = 0; i < cnt; i++) {
+        add(" ");
+        writeln();   
+    }
+  }
+| <SPACES: ([" "])+ >  { add(matchedToken); }
+| <TABS: (["\t"])+ >  { for (int i = 0; i < matchedToken.image.length() * 8; i++) add(" "); }
 }
+
+/* COMMENTS */
+SPECIAL_TOKEN :
+{
+  <END_OF_LINE_COMMENT: "//"  (~["\n","\r"])* ("\n"|"\r"|"\r\n")?>  { writeEndOfLineComment(matchedToken.image); }
+| <HASH_BANG_COMMENT: "#!" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>  { writeEndOfLineComment(matchedToken.image); }
+| <JAVADOC_COMMENT:     "/**" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">  { writeJavadocComment(matchedToken.image); }
+| <BLOCK_COMMENT:       "/*"  (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">  { writeBlockComment(matchedToken.image); }
+}
+
 
 TOKEN : /* RESERVED WORDS AND LITERALS */
 {
@@ -309,10 +411,6 @@ TOKEN : /* LITERALS */
       )*
       "\""
   >
-|
-   < FORMAL_COMMENT: 
-		"/**" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/"
-	>
 }
 
 TOKEN : /* IDENTIFIERS */
@@ -432,16 +530,17 @@ TOKEN : /* OPERATORS */
 /*
 	Thanks to Sreenivasa Viswanadha for suggesting how to get rid of expensive
 	lookahead here.
+	@return if there is more, false on EOF.
 */
 boolean Line() :
 {}
 {
   <EOF> { 
-	return true; 
+	return false; 
   }
 |
   BlockStatement() {
-	return false; 
+	return true; 
   }
 }
 
@@ -504,10 +603,10 @@ void ClassDeclaration()  :
 }
 {
 	Modifiers() 
-	( "class" | "interface"  ) 
+	( "class" { add("class"); } | "interface" { add("interface"); }  ) 
 	<IDENTIFIER> 
-	[ "extends" AmbiguousName()  ] 
-	[ "implements" NameList() 
+	[ "extends" { add("extends"); } AmbiguousName()  ] 
+	[ "implements" { add("implements"); } NameList() 
 		 ]
 	Block()
 	{
@@ -521,20 +620,20 @@ void MethodDeclaration()  :
 	Modifiers( ) 
 (
 	LOOKAHEAD( <IDENTIFIER> "(" )
-	<IDENTIFIER> 
+	t=<IDENTIFIER>  { add(t); }
 |
     ReturnType()
-	<IDENTIFIER> 
+	t=<IDENTIFIER> { add(" "); add(t); }
 )
     FormalParameters()
-	[ "throws" NameList()  ]
-	( Block() | ";" )
+	[ "throws" { add("throws "); } NameList()  ]
+	( Block() | ";" { add(";"); write(); })
 }
 
 void PackageDeclaration () :
 { }
 {
-	"package" AmbiguousName()
+    "package" { add("package"); } AmbiguousName() ";" { add(";"); write(); }
 }
 
 void ImportDeclaration()  :
@@ -542,24 +641,17 @@ void ImportDeclaration()  :
 }
 {
   LOOKAHEAD( 3 )
-  "import" [ "static" ] AmbiguousName() [ "." "*" ] ";"
-  {
-  }
+  "import" { add("import "); } [ "static" { add("static "); } ] AmbiguousName() [ "." "*" { add(".*"); } ] ";" { add(";"); write(); }
   |
 	// bsh super import statement
-  "import" "*" ";" 
-  {
-  }
+	"import" "*" ";" { add("import *;"); write(); } 
 }
 
 void VariableDeclarator()  :
 {
-	Token t;
 }
 {
-	<IDENTIFIER> [ "=" VariableInitializer() ]
-	{
-	}
+	t=<IDENTIFIER> { add(t); } [ "=" { add(" = "); } VariableInitializer() ]
 }
 
 /*
@@ -584,14 +676,15 @@ void VariableInitializer() :
 void ArrayInitializer()  :
 {}
 {
-  "{" [ VariableInitializer()
-		( LOOKAHEAD(2) "," VariableInitializer() )* ] [ "," ] "}"
+  "{" { add("{"); } [ VariableInitializer() ( LOOKAHEAD(2) "," { add(", "); } VariableInitializer() )* ] [ "," { add(", "); } ] "}" { add("}"); write(); }
 }
 
 void FormalParameters()  :
-{}
 {
-  "(" [ FormalParameter() ( "," FormalParameter() )* ] ")"
+    boolean added = false;
+}
+{
+  "(" { trimWhitespace(); trim(); add("("); } [ FormalParameter() { added = true; } ( "," { add(", "); } FormalParameter() )* ] ")" { if (!added) trim(); add(")"); }
 }
 
 void FormalParameter()  :
@@ -599,9 +692,9 @@ void FormalParameter()  :
 }
 {
   // added [] to Type for bsh.  Removed [ final ] - is that legal?
-  LOOKAHEAD(2) Type() <IDENTIFIER> 
+  LOOKAHEAD(2) Type() t=<IDENTIFIER> { add(" "); add(t); }
 |
-  <IDENTIFIER> 
+  t=<IDENTIFIER> { add(t); }
 }
 
 
@@ -617,7 +710,7 @@ void Type()  :
 		figure out where to put that.  This stuff is annoying.
 	*/
   ( PrimitiveType() | AmbiguousName() )
-	( LOOKAHEAD(2) "[" "]"  )*
+  ( LOOKAHEAD(2) "[" "]" {add("[]"); } )*
 }
 
 /*
@@ -626,21 +719,21 @@ void Type()  :
 void ReturnType()  :
 { }
 {
-  "void" 
+    "void" { add("void"); }
 |
   Type()
 }
 
 void PrimitiveType()  :
 { } {
-  "boolean" 
-| "char" 
-| "byte" 
-| "short" 
-| "int" 
-| "long" 
-| "float" 
-| "double" 
+  "boolean" { add("boolean "); } 
+| "char" { add("char "); } 
+| "byte" { add("byte "); } 
+| "short" { add("short "); } 
+| "int" { add("int "); } 
+| "long" { add("long "); } 
+| "float" { add("float "); } 
+| "double" { add("double "); } 
 }
 
 void AmbiguousName()  :
@@ -651,19 +744,15 @@ void AmbiguousName()  :
 {
 }
 {
-  <IDENTIFIER> 
-  {
-  }
-  ( LOOKAHEAD(2) "." <IDENTIFIER> )* 
-  {
-  }
+    t=<IDENTIFIER> { add(t); }
+  ( LOOKAHEAD(2) "." t=<IDENTIFIER> { add("."); add(t); } )* 
 }
 
 void NameList() :
 { 
 }
 {
-  AmbiguousName() ( "," AmbiguousName() )*
+    AmbiguousName() ( "," { add(", "); } AmbiguousName() )*
 }
 
 /*
@@ -698,15 +787,27 @@ void AssignmentOperator() :
 { 
 }
 {
-    ( "=" | "*=" | "/=" | "%=" | "+=" | "-=" | "&=" | "^=" | "|=" |
-      "<<=" | "@left_shift_assign" | ">>=" | "@right_shift_assign" |
-      ">>>=" | "@right_unsigned_shift_assign" )
+    ( "=" { add(" = "); } | 
+      "*=" { add(" *= "); } | 
+      "/=" { add(" /= "); } | 
+      "%=" { add(" %= "); } | 
+      "+=" { add(" += "); } | 
+      "-=" { add(" -= "); } | 
+      "&=" { add(" &= "); } | 
+      "^=" { add(" ^= "); } | 
+      "|=" { add(" |= "); } |
+      "<<=" { add(" <<= "); } | 
+      "@left_shift_assign" { add(" @left_shift_assign "); } | 
+      ">>=" { add(" >>= "); } | 
+      "@right_shift_assign" { add(" @right_shift_assign "); } |
+      ">>>=" { add(" >>>= "); } | 
+      "@right_unsigned_shift_assign" { add(" @right_unsigned_shift_assign "); } )
 }
 
 void ConditionalExpression() :
 { }
 {
-  ConditionalOrExpression() [ "?" Expression() ":" ConditionalExpression()
+    ConditionalOrExpression() [ "?" { add(" ? "); } Expression() ":" { add(" : "); } ConditionalExpression()
 	 ]
 }
 
@@ -714,7 +815,7 @@ void ConditionalOrExpression() :
 {  }
 {
   ConditionalAndExpression()
-  ( ( "||" |"@or" )
+  ( ( "||" { add(" || "); } |"@or" { add(" @or "); } )
     ConditionalAndExpression()
       )*
 }
@@ -723,7 +824,7 @@ void ConditionalAndExpression() :
 {  }
 {
   InclusiveOrExpression()
-  ( ( "&&" | "@and" )
+  ( ( "&&" { add(" && "); } | "@and" { add(" @and "); } )
     InclusiveOrExpression()
       )*
 }
@@ -732,7 +833,7 @@ void InclusiveOrExpression() :
 {  }
 {
   ExclusiveOrExpression()
-  ( ( "|" | "@bitwise_or" )
+  ( ( "|" { add(" | "); } | "@bitwise_or" { add(" @bitwise_or" ); } )
     ExclusiveOrExpression()
       )*
 }
@@ -740,8 +841,7 @@ void InclusiveOrExpression() :
 void ExclusiveOrExpression() :
 {  }
 {
-  AndExpression() ( "^" AndExpression()
-      )*
+  AndExpression() ( "^" { add(" ^ "); } AndExpression() )*
 }
 
 void AndExpression() :
@@ -756,24 +856,21 @@ void AndExpression() :
 void EqualityExpression() :
 {  }
 {
-  InstanceOfExpression() ( ( "==" | "!=" ) InstanceOfExpression()
-     
-  )*
+  InstanceOfExpression() ( ( "==" { add(" == "); } | "!=" { add(" != "); } ) InstanceOfExpression() )*
 }
 
 void InstanceOfExpression() :
 {  }
 {
   RelationalExpression()
-  [ "instanceof" Type()   ]
+  [ "instanceof" { add(" instanceof "); } Type()   ]
 }
 
 void RelationalExpression() :
 {  }
 {
   ShiftExpression()
-  ( ( "<" | "@lt" | ">" | "@gt" |
-      "<=" | "@lteq" | ">=" | "@gteq" )
+  ( ( "<" { add(" < "); } | "@lt" { add(" @lt "); } | ">" { add(" > "); } | "@gt" { add(" @gt "); } | "<=" { add(" <= "); } | "@lteq" { add(" @lteq "); } | ">=" { add(" >= "); } | "@gteq" { add(" @gteq "); } )
   ShiftExpression()
     )*
 }
@@ -782,8 +879,7 @@ void ShiftExpression() :
 {  }
 {
   AdditiveExpression()
-  ( ( "<<" | "@left_shift" | ">>" | "@right_shift" |
-      ">>>" | "@right_unsigned_shift" )
+  ( ( "<<" { add(" << "); } | "@left_shift" { add(" @left_shift "); } | ">>" { add(" >> "); } | "@right_shift" { add(" @right_shift "); } | ">>>" { add(" >>> "); } | "@right_unsigned_shift" { add(" @right_unsigned_shift "); } )
   AdditiveExpression()
     )*
 }
@@ -791,23 +887,19 @@ void ShiftExpression() :
 void AdditiveExpression() :
 {  }
 {
-  MultiplicativeExpression()
-  ( ( "+" | "-" ) MultiplicativeExpression() 
-    
-  )*
+  MultiplicativeExpression() ( ( "+" { add(" + "); } | "-" { add(" - "); } ) MultiplicativeExpression() )*
 }
 
 void MultiplicativeExpression() :
 {  }
 {
-  UnaryExpression() ( ( "*" | "/" | "%" )
-  UnaryExpression()   )*
+  UnaryExpression() ( ( "*" { add(" * "); } | "/" { add(" / "); } | "%" { add(" % "); } ) UnaryExpression() )*
 }
 
 void UnaryExpression() :
 {  }
 {
-  ( "+" | "-" ) UnaryExpression()
+  ( "+" { add(" + "); } | "-" { add(" - "); } ) UnaryExpression()
      
 |
   PreIncrementExpression()
@@ -820,21 +912,21 @@ void UnaryExpression() :
 void PreIncrementExpression() :
 {  }
 {
-  "++" PrimaryExpression()
+  "++" { add(" ++"); } PrimaryExpression()
      
 }
 
 void PreDecrementExpression() :
 {  }
 {
-  "--" PrimaryExpression()
+  "--" { add(" --"); } PrimaryExpression()
      
 }
 
 void UnaryExpressionNotPlusMinus() :
 {  }
 {
-  ( "~" | "!" ) UnaryExpression()
+  ( "~" { add(" ~ "); } | "!" { add(" ! "); } ) UnaryExpression()
      
 |
 	// SYNTACTIC_LOOKAHEAD
@@ -843,7 +935,8 @@ void UnaryExpressionNotPlusMinus() :
   PostfixExpression()
 }
 
-// This production is to determine lookahead only.
+// This production is to determine lookahead only.  Nothing needs to be
+// output from this production.
 void CastLookahead() : { }
 {
   LOOKAHEAD(2) "(" PrimitiveType()
@@ -858,20 +951,17 @@ void PostfixExpression() :
 {  }
 {
 // SYNTACTIC_LOOKAHEAD
-  LOOKAHEAD( PrimaryExpression() ("++"|"--") )
-  PrimaryExpression()
-	  ( "++" | "--" )  
-|
-  PrimaryExpression()
+    PrimaryExpression() [ "++" { trim(); add("++"); } | "--" { trim(); add("--"); } ]
 }
 
 void CastExpression()  :
 { }
 {
 // SYNTACTIC_LOOKAHEAD
-  LOOKAHEAD( "(" PrimitiveType() ) "(" Type() ")" UnaryExpression()
+    LOOKAHEAD(3)
+  "(" { add("("); } Type() ")" { trim(); add(") "); } UnaryExpression()
 |
-  "(" Type() ")" UnaryExpressionNotPlusMinus()
+  "(" { add("("); } Type() ")" { trim(); add(") "); } UnaryExpressionNotPlusMinus()
 }
 
 void PrimaryExpression()  : { }
@@ -888,7 +978,7 @@ void PrimaryPrefix() : { }
 {
   Literal()
 |
-  "(" Expression() ")"
+  "(" { add("("); } Expression() ")" { add(")"); }
 |
   AllocationExpression()
 |
@@ -914,16 +1004,16 @@ void PrimarySuffix()  :
 {
   LOOKAHEAD(2)
   "." "class" {
+      add(".class");
     }
 |
-  "[" Expression() "]" {
-    }
+  "[" { trim(); add("["); } Expression() "]" { trim(); add("]"); }
 |
     // Field access or method invocation
-  "." <IDENTIFIER> [ Arguments() ] {
+    "." { add("."); } t=<IDENTIFIER> { add(t); } [ Arguments() ] {
     }
 |
-  "{" Expression() "}" {
+"{" { add("{"); write(); } Expression() "}" { write(); add("}"); write(); } {
     }
 /*
     For inner classes
@@ -937,13 +1027,13 @@ void Literal()  :
 {
 }
 {
-  <INTEGER_LITERAL>
+  t=<INTEGER_LITERAL> { add(t); }
 |
-  <FLOATING_POINT_LITERAL>
+  t=<FLOATING_POINT_LITERAL> { add(t); }
 |
-  <CHARACTER_LITERAL> 
+  t=<CHARACTER_LITERAL> { add(t); } 
 |
-  <STRING_LITERAL> 
+  t=<STRING_LITERAL> { add(t); } 
 |
   BooleanLiteral()  
 |
@@ -952,47 +1042,48 @@ void Literal()  :
  VoidLiteral() 
 }
 
-boolean BooleanLiteral() :
+void BooleanLiteral() :
 {}
 {
-  "true" { return true; }
+    "true" { add("true"); }
 |
-  "false" { return false; }
+  "false" { add("false"); }
 }
 
 void NullLiteral() :
 {}
 {
-  "null"
+    "null" { add("null"); }
 }
 
 void VoidLiteral() :
 {}
 {
-  "void"
+    "void" { add("void "); }
 }
 
 void Arguments()  :
-{ }
+{ 
+    boolean added = false;
+}
 {
-  "(" [ ArgumentList()  ]  ")"
+  "(" { trimWhitespace(); trim(); add("("); } [ ArgumentList() { added = true; } ] ")" { if (!added) trim(); add(")"); }
 }
 
 // leave these on the stack for Arguments() to handle
 void ArgumentList() :
 { }
 {
-  Expression()
-  ( "," Expression() )*
+    Expression() ( "," { add(", "); } Expression() )*
 }
 
 void AllocationExpression()  :
 { }
 {
   LOOKAHEAD(2)
-  "new" PrimitiveType() ArrayDimensions()
+  "new" { add("new "); } PrimitiveType() ArrayDimensions()
 |
-  "new" AmbiguousName()
+  "new" { add("new "); } AmbiguousName()
 	(
 		ArrayDimensions()
 	|
@@ -1006,11 +1097,9 @@ void ArrayDimensions()  :
 {
 	// e.g. int [4][3][][];
   LOOKAHEAD(2)
-  ( LOOKAHEAD(2) "[" Expression() "]"  )+
-  ( LOOKAHEAD(2) "[" "]"  )*
+  ( LOOKAHEAD(2) "[" { trimWhitespace(); add("["); } Expression() "]" { trim(); add("]"); } )+ ( LOOKAHEAD(2) "[" "]" { trim(); add("[] "); } )*
 |
-	// e.g. int [][] { {1,2}, {3,4} };
-  ( "[" "]"  )+ ArrayInitializer()
+  ( "[" "]" { trim(); add("[]"); } )+ ArrayInitializer()
 }
 
 
@@ -1027,7 +1116,7 @@ void Statement() : { }
 |
   EmptyStatement()
 |
-  StatementExpression() ";"
+  StatementExpression() ";" { add(";"); write(); }
 |
   SwitchStatement()
 |
@@ -1058,7 +1147,7 @@ void Statement() : { }
 void LabeledStatement() :
 {}
 {
-  <IDENTIFIER> ":" Statement()
+  t=<IDENTIFIER> { add(t); } ":" { add(":"); } Statement()
 }
 
 void Block()  :
@@ -1071,9 +1160,10 @@ void Block()  :
 	Is it worth moving the grammar around to make this a static parse time
 	check?  (Sreeni? ;) )
 */
-	[ "static" ] "{" ( BlockStatement() )* "}"
-	{
-	}
+[ "static" { add("static "); } ] 
+    "{" { trimWhitespace(); add(" {"); write(); ++token_source.level; }
+    ( BlockStatement() )*
+    "}" { add("}"); --token_source.level; write(); }
 }
 
 void BlockStatement() :
@@ -1095,7 +1185,7 @@ void BlockStatement() :
 |
   // SYNTACTIC_LOOKAHEAD
   LOOKAHEAD( Modifiers() Type() <IDENTIFIER> )
-  TypedVariableDeclaration() ";"
+  TypedVariableDeclaration() ";" { add(";"); write(); }
 |
   Statement()
 
@@ -1105,23 +1195,12 @@ void BlockStatement() :
 |
   // Allow BeanShell package declarations in any block
   PackageDeclaration()
-|
-  FormalComment()
-}
-
-void FormalComment()  :
-{
-	Token t;
-}
-{
-	<FORMAL_COMMENT>  {
-	}
 }
 
 void EmptyStatement() :
 {}
 {
-  ";"
+  ";" { add(token_source.ls); add(token_source.ls);  write(); add(";"); write(); }
 }
 
 void StatementExpression() :
@@ -1152,37 +1231,115 @@ void StatementExpression() :
 
 }
 
-void SwitchStatement()  :
+void SwitchStatement():
 {}
 {
-  "switch" "(" Expression() ")" "{"
-    ( SwitchLabel() ( BlockStatement() )* )*
-  "}"
+    "switch" "(" { add("switch ("); } Expression() ")" "{" { add(") {"); write(); ++token_source.level; }
+        ( SwitchLabel() { ++token_source.level;} ( BlockStatement() )* { --token_source.level;} )*
+    "}" { add("}"); --token_source.level; write(); }
 }
 
-void SwitchLabel()  :
+void SwitchLabel():
 {}
 {
-  "case" Expression() ":"
+"case" { add("case"); } Expression() ":" { add(":"); write(); }
 |
-  "default" ":" 
+"default" ":" { add("default:"); write(); }
 }
 
-void IfStatement()  :
+void IfStatement():
 /*
  * The disambiguating algorithm of JavaCC automatically binds dangling
  * else's to the innermost if statement.  The LOOKAHEAD specification
  * is to tell JavaCC that we know what we are doing.
  */
-{}
 {
-  "if" "(" Expression() ")" Statement() [ LOOKAHEAD(1) "else" Statement() ]
+    boolean no_block = false;
+}
+{
+    "if" "("
+    {
+        add("if (");
+    }
+    Expression() ")"
+    { add(") ");}
+
+
+    {
+        // Sun's coding standard says there should always be a block following
+        // an "if" statement, so add the brackets if they are missing
+        if (!getToken(1).image.equals("{")) {
+            add("{");
+            writeln();
+            ++token_source.level;
+            no_block = true;
+        }
+    }
+    Statement()
+    {
+        if (no_block) {
+            writeln();
+            --token_source.level;
+            add("}");
+            writeln();
+        }
+        no_block = false;
+    }
+
+    [
+        LOOKAHEAD(1) "else"
+        { trimWhitespace(); trim(); add(" else "); }
+        {
+        // Sun's coding standard says there should always be a block following
+        // an "if" statement, so add the brackets if they are missing
+            if (!getToken(1).image.equals("{")) {
+                // remove any excess whitespace between the 'else' and the '{'
+                trimWhitespace();
+                trim();
+                add("{");
+                writeln();
+                ++token_source.level;
+                no_block = true;
+            }
+        }
+        Statement()
+        {
+            if (no_block) {
+                writeln();
+                --token_source.level;
+                add("}");
+                writeln();
+            }
+        }
+    ]
 }
 
-void WhileStatement()  :
-{}
+void WhileStatement():
 {
-  "while" "(" Expression() ")" Statement()
+    boolean no_block = false;
+}
+{
+    "while" "(" { add("while ("); } Expression() ")" { add(")"); }
+    {
+        // if the next token isn't a "{" (indicating the start of a block) or
+        // a ";" (indicating an empty statement), add "{" to make sure there is
+        // indeed a block written.
+        if (!getToken(1).image.equals("{") && !getToken(1).image.equals(";")) {
+            add("{");
+            writeln();
+            ++token_source.level;
+            no_block = true;
+        }
+    }
+    Statement()
+    {
+        if (no_block) {
+            writeln();
+            --token_source.level;
+            add("}");
+            writeln();
+        }
+    }
 }
 
 /*
@@ -1192,17 +1349,46 @@ void WhileStatement()  :
 void DoStatement()  :
 {}
 {
-  "do" Statement() "while" "(" Expression() ")" ";" 
-	
+  // adding a ^ to the front of 'while' to differentiate it from 'while' at the
+  // start of a 'while' loop.  This will be stripped off later.
+  "do" { add("do "); } Statement() "while" "(" { trimWhitespace(); add(" ^while ("); } Expression() ")" ";" { add(");"); write(); }
 }
 
-void ForStatement()  :
-{  }
+void ForStatement():
 {
-  "for" "(" [ ForInit()  ]
-    ";" [ Expression()  ]
-    ";" [ ForUpdate()  ] ")"
+    boolean no_block = false;
+}
+{
+  "for" "(" { add("for ("); }
+
+  (
+      LOOKAHEAD(Type() <IDENTIFIER> ":")
+      Type() t=<IDENTIFIER> { add(" "); add(t); } ":" { add(" : "); } Expression()
+    |
+    [ ForInit() ] ";" { add("; "); } [ Expression() ] ";" { add("; "); } [ ForUpdate() ]
+  )
+
+  ")" { add(")"); }
+    {
+        // if the next token isn't a "{" (indicating the start of a block) or
+        // a ";" (indicating an empty statement), add "{" to make sure there is
+        // indeed a block written.
+        if (!getToken(1).image.equals("{") && !getToken(1).image.equals(";") ) {
+            add("{");
+            writeln();
+            ++token_source.level;
+            no_block = true;
+        }
+    }
     Statement()
+    {
+        if (no_block) {
+            writeln();
+            --token_source.level;
+            add("}");
+            writeln();
+        }
+    }
 }
 
 /*
@@ -1215,10 +1401,10 @@ void EnhancedForStatement()  :
 {  }
 {
   LOOKAHEAD( 4 ) // look ahead for the ":" before deciding
-  "for" "(" <IDENTIFIER> ":" Expression() ")"
+  "for" "(" { add("for ("); } t=<IDENTIFIER> ":" { add(t); add(" : "); } Expression() ")" { add(")"); }
     Statement() 
   |
-  "for" "(" Type() <IDENTIFIER> ":" Expression() ")"
+  "for" "(" { add("for ("); } Type() t=<IDENTIFIER> ":" { add(" "); add(t); add(" : "); } Expression() ")" { add(")"); }
     Statement() 
 }
 
@@ -1242,15 +1428,13 @@ void TypedVariableDeclaration()  :
 }
 {
 	Modifiers()
-  	Type() VariableDeclarator() ( "," VariableDeclarator() )*  
-	{
-    }
+  	Type() { add(" "); } VariableDeclarator() ( "," { add(", "); } VariableDeclarator() )*  
 }
 
 void StatementExpressionList()  :
 {}
 {
-  StatementExpression() ( "," StatementExpression() )*
+  StatementExpression() ( "," { add(", "); } StatementExpression() )*
 }
 
 void ForUpdate() :
@@ -1262,33 +1446,33 @@ void ForUpdate() :
 void BreakStatement()  :
 {}
 {
-  "break" [ <IDENTIFIER> ] ";" 
+  "break" { add("break"); } [ t=<IDENTIFIER> { add(t); } ] ";" { add(";"); writeln(); }
 }
 
 void ContinueStatement()  :
 {}
 {
-  "continue" [ <IDENTIFIER> ] ";" 
+  "continue" { add("continue"); } [ t=<IDENTIFIER> { add(t); } ] ";" { add(";"); writeln(); }
 }
 
 void ReturnStatement()  :
 {}
 {
-  "return" [ Expression() ] ";" 
+  "return" { add("return"); } [ Expression() ] ";" { add(";"); writeln(); }
 }
 
 void SynchronizedStatement()  :
 {
 }
 {
-  "synchronized" "(" Expression() ")" Block() {
+  "synchronized" "(" { add("synchronized ( "); } Expression() ")" { add(" )"); } Block() {
   }
 }
 
 void ThrowStatement()  :
 {}
 {
-  "throw" Expression() ";"
+  "throw" { add("throw"); } Expression() ";" { add(";"); write(); }
 }
 
 void TryStatement() :
@@ -1298,10 +1482,486 @@ void TryStatement() :
  */
 { boolean closed = false; }
 {
-	"try" Block()
-	( "catch" "(" FormalParameter() ")" Block() { closed = true; } )*
-	[ "finally" Block() { closed = true; } ]
+	"try" { add("try"); } Block()
+	( "catch" "(" { trimWhitespace(); add(" catch ( "); } FormalParameter() ")"  { add(" ) "); } Block() { closed = true; } )*
+	[ "finally" { trimWhitespace(); add(" finally"); } Block() { closed = true; } ]
 	{ 	
 		if ( !closed ) throw generateParseException();
 	}
+}
+
+/*******************************************************************************
+    danson:
+    A lot of work happens in the token manager.  All code in this section is
+    added to a file named BSHParserTokenManager.java.  Some accessor are
+    duplicated in the PARSER section above to make it a little easier to write
+    code for the productions.
+*/
+TOKEN_MGR_DECLS :
+{
+
+    // line buffer, text is accumulated here, then written to the output stream
+    // on end of line marker.
+    static StringBuilder b = new StringBuilder();
+
+    // all text is accumulated here.  When processing is complete, this buffer
+    // will contain the final beautified text.
+    static StringBuilder outputBuffer = new StringBuilder();
+
+    // accumulate pieces a token or string at a time.  The objects in this array
+    // will be ocnverted to strings, padded as appropriate, and added to the
+    // line buffer b.  This is the "accumulator".
+    static ArrayList a = new ArrayList();
+
+    // where to write the completely beautified code.
+    private static PrintWriter out = null;
+
+    // level of indentation
+    static int level = 0;
+
+    // width of indent
+    static int indent_width = 4;
+    static String indent = "    ";
+    static String double_indent = indent + indent;
+
+    // the soft tab setting from jEdit, use soft tabs by default.
+    static boolean useSoftTabs = true;
+
+    // line separator, defaults to system line separator, but can be set to
+    // a specific separator
+    static String ls = System.getProperty("line.separator");
+
+    static void reset() {
+        b = new StringBuilder();
+        outputBuffer = new StringBuilder();
+        a.clear();
+        level = 0;
+    }
+
+    static String getText() {
+        return outputBuffer.toString();
+    }
+
+    static void setLineSeparator(String le) {
+        ls = le;
+    }
+
+    static void setIndentWidth(int w) {
+        indent_width = w;
+        if (indent_width <= 0) {
+            indent_width = 4;
+        }
+        indent = "";
+        for (int i = 0; i < w; i++) {
+            indent += " ";
+        }
+        double_indent = indent + indent;
+    }
+
+    static void setUseSoftTabs(boolean b) {
+        useSoftTabs = b;
+        if (b) {
+            indent = "\t";
+            double_indent = "\t\t";
+        }
+        else {
+            setIndentWidth(indent_width);
+        }
+    }
+
+    // add a token to the accumulator
+    static void add(Token t) {
+        if (t != null) {
+            a.add(t);
+        }
+    }
+
+    // add a string to the accumulator
+    static void add(String s) {
+        if (s != null) {
+            a.add(s);
+        }
+    }
+
+    // trim spaces from the last item in the accumulator
+    static void trim() {
+        if (a.size() == 0)
+            return;
+        Object o = a.get(a.size() - 1);
+        StringBuilder sb = new StringBuilder();
+        if (o instanceof Token)
+            sb.append( ((Token)o).image );
+        else
+            sb.append((String)o);
+        while(sb.length() > 0 && sb.charAt(sb.length() - 1) == ' ')
+            sb.deleteCharAt(sb.length() - 1);
+        a.set(a.size() - 1, sb.toString() );
+    }
+
+    // trim a single new line from the end of the output buffer
+    static void trimNL() {
+        if(outputBuffer.length() > 0 && outputBuffer.charAt(outputBuffer.length() - 1) == '\n')
+            outputBuffer.deleteCharAt(outputBuffer.length() - 1);
+        if(outputBuffer.length() > 0 && outputBuffer.charAt(outputBuffer.length() - 1) == '\r')
+            outputBuffer.deleteCharAt(outputBuffer.length() - 1);
+    }
+
+    // trim all \n and/or \r from the end of the given string
+    static void trimNL(String s) {
+        StringBuilder sb = new StringBuilder(s);
+        while(sb.length() > 0 && (sb.charAt(sb.length() - 1) == '\r' || sb.charAt(sb.length() - 1) == '\n'))
+            sb.deleteCharAt(sb.length() - 1);
+    }
+
+    // trim all whitespace (\r, \n, space, \t) from the start of the given string
+    static String trimStart(String s) {
+        StringBuilder sb = new StringBuilder(s);
+        while(sb.length() > 0 && (sb.charAt(0) == '\r'
+                || sb.charAt(0) == '\n'
+                || sb.charAt(0) == '\t'
+                || sb.charAt(0) == ' ')) {
+            sb.deleteCharAt(0);
+        }
+        return sb.toString();
+    }
+
+    // trim up to max whitespace (\r, \n, space, \t) from the start of the given string
+    static String trimStart(String s, int max) {
+        StringBuilder sb = new StringBuilder(s);
+        int trimmed = 0;
+        while(sb.length() > 0 && Character.isWhitespace(sb.charAt(0)) && trimmed < max) {
+            sb.deleteCharAt(0);
+            ++trimmed;
+        }
+        return sb.toString();
+    }
+
+    // trims whitespace (\r, \n, space, \t) from the last items in the
+    // accumulator.  If the last item is all whitespace, continues on to the
+    // previous until a non-whitespace character is encountered.  If the
+    // entire accumulator is whitespace, continues to trim whitespace from the
+    // outputBuffer.
+    static void trimWhitespace() {
+        for (int i = a.size() - 1; i >= 0; i-- ) {
+            Object o = a.get(i);
+            StringBuilder sb = new StringBuilder();
+            if (o instanceof Token)
+                sb.append( ((Token)o).image );
+            else
+                sb.append((String)o);
+            while(sb.length() > 0 && (sb.charAt(sb.length() - 1) == '\r'
+                    || sb.charAt(sb.length() - 1) == '\n'
+                    || sb.charAt(sb.length() - 1) == '\t'
+                    || sb.charAt(sb.length() - 1) == ' ')) {
+                sb.deleteCharAt(sb.length() - 1);
+            }
+            if (sb.length() == 0) {
+                a.remove(i);
+            }
+            else {
+                a.set(i, sb.toString());
+                break;
+            }
+        }
+        if (a.size() == 0) {
+            while(outputBuffer.length() > 0 && (outputBuffer.charAt(outputBuffer.length() - 1) == '\r'
+                    || outputBuffer.charAt(outputBuffer.length() - 1) == '\n'
+                    || outputBuffer.charAt(outputBuffer.length() - 1) == '\t'
+                    || outputBuffer.charAt(outputBuffer.length() - 1) == ' ')) {
+                outputBuffer.deleteCharAt(outputBuffer.length() - 1);
+            }
+        }
+    }
+
+    // writes the contents of the accumulator to the outputBuffer.  The line
+    // buffer (b) is used to build the line.
+    static void write() {
+        try {
+            b.setLength(0); // clear the line buffer
+
+            // this next section builds the output string while protecting
+            // string literals.  All extra spaces are removed from the output
+            // string, except that string literals are left as is.
+            ArrayList list = new ArrayList();
+            String s = new String("");
+            for (int i = 0; i < a.size(); i++) {
+                Object o = a.get(i);
+                if (o instanceof Token) {
+                    Token token = (Token)o;
+                    if (token.kind == BSHParserConstants.STRING_LITERAL) {
+                        s = s.replaceAll("[ ]+", " ");
+                        list.add(s);
+                        s = new String("");
+                        list.add(token.image);
+                    }
+                    else {
+                        s += ((Token)o).image;
+                        s = s.replaceAll("[ ]+", " ");
+                    }
+                }
+                else {
+                    s += (String)o;
+                    s = s.replaceAll("[ ]+", " ");
+                }
+            }
+            for (int i = 0; i < list.size(); i++) {
+                b.append((String)list.get(i));
+            }
+
+            b.append(s);
+            s = b.toString();
+
+            // check for blank line(s)
+            String maybe_blank = new String(s);
+            if (maybe_blank.trim().isEmpty()) {
+                // yep, it's a blank, so just print out a line separator
+                outputBuffer.append(ls);
+                a.clear();
+                return;
+            }
+
+            // indent --
+            // most lines get indented, but there are a few special cases:
+            // "else" gets put on the same line as the closing "}" for the "if",
+            // so don't want to indent.  Similarly with "catch" and "finally".
+            // The "while" at the end of a "do" loop is marked as "^while" to
+            // differentiate it from a regular "while" block. "else if" is also
+            // a special case.
+            if (!s.startsWith(" else")
+                    && !s.startsWith(" catch")
+                    && !s.startsWith(" finally")
+                    && !s.startsWith(" ^while")
+                    && !s.startsWith(" {")
+                    && (!endsWith(outputBuffer, "else") && !endsWith(outputBuffer, "else "))) {
+                s = s.trim();
+                for (int i = 0; i < level; i++) {
+                    s = indent + s;
+                }
+            }
+
+            // maybe clean out the ^ from the specially marked "while" at the
+            // end of a "do" loop
+            if (s.startsWith(" ^while")) {
+                b.deleteCharAt(1);
+                s = b.toString();
+            }
+
+            // check if the output buffer does NOT end with a new line.  If it
+            // doesn't, remove any leading whitespace from this line
+            if (!endsWith(outputBuffer, "\n") && !endsWith(outputBuffer, "\r")) {
+                s = trimStart(s);
+            }
+
+            // check that there aren't extra spaces in the buffer already --
+            // this handles the case where the output buffer ends with a space
+            // and the new string starts with a space, don't want 2 spaces.
+            if (s.startsWith(" ") && endsWith(outputBuffer, " ")) {
+                s = s.substring(1);
+            }
+
+            // check that there is one space between the end of the output
+            // buffer and this line -- this handles the case where the output
+            // buffer does not end in a space and the new string does not start
+            // with a space, want one space in between.
+            if (!s.startsWith(" ")
+                    && !endsWith(outputBuffer, " ")
+                    && !endsWith(outputBuffer, "\r")
+                    && !endsWith(outputBuffer, "\n")
+                    && outputBuffer.length() > 0) {
+                outputBuffer.append(" ");
+            }
+
+            // by the Sun standard, there is no situation where '(' is followed
+            // by a space or ')' is preceded with by a space
+            s = s.replaceAll("[(][ ]", "(");
+            s = s.replaceAll("[ ][)]", ")");
+            
+            // there should be no situation where a comma is preceded by a space,
+            // although that seems to happen when formatting string arrays.
+            s = s.replaceAll("\\s+[,]", ",");
+
+            // finally! add the string to the output buffer
+            // check for line length, may need to wrap.  Sun says to avoid lines
+            // longer than 80 characters.  This doesn't work well yet, so I've 
+            // commented out the wrapping code.  Still need to clean out the
+            // wrapping markers.
+            //s = s.replaceAll("[\u001c]", "");
+            outputBuffer.append(s);
+            /*
+            int wrap_sep_count = countWrapSep(s);
+            if (s.length() - wrap_sep_count > 80) {
+                String[] lines = wrapLines(s);
+                if ( lines != null ) {
+                    for (int i = 0; i < lines.length; i++) {
+                        outputBuffer.append(lines[i]).append(ls);
+                    }
+                }
+                else {
+                    // whack any remaining \u001c characters
+                    s = s.replaceAll("[\u001c]", "");
+                    outputBuffer.append(s);
+                }
+            }
+            else {
+                // whack any remaining \u001c characters
+                s = s.replaceAll("[\u001c]", "");
+                outputBuffer.append(s);
+            }
+            */
+            // clear the accumulator for the next line
+            a.clear();
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    static void writeln() {
+        write();
+        trimNL();
+        outputBuffer.append(ls);
+    }
+
+    static int countWrapSep(String s) {
+        int count = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '\u001c') {
+                ++count;
+            }
+        }
+        return count;
+    }
+
+    // needs work, does a wrap, but not per spec
+    static String[] wrapLines(String s) {
+        if (s.length() <= 80) {
+            return new String[]{s};
+        }
+        int wc = countWrapSep(s);
+        if (wc > 0) {
+            int[] break_points = new int[wc];
+            int offset = 0;
+            for (int i = 0; i < wc; i++) {
+                int index = s.indexOf('\u001c', offset);
+                break_points[i] = index;
+                offset = index + 1;
+            }
+
+            int first_break = -1;
+            for (int i = 0; i < break_points.length; i++) {
+                int possible = break_points[i];
+                if (possible > 80) {
+                    break;
+                }
+                first_break = possible;
+            }
+            if ( first_break == -1 ) {
+                first_break = s.length();
+            }
+
+            int ws_length = 0;
+            for (int i = 0; i < s.length(); i++) {
+                if (s.charAt(i) == ' ')
+                    ++ws_length;
+                else
+                    break;
+            }
+            String leading_ws = s.substring(0, ws_length);
+            String head = s.substring(0, first_break);
+            String tail = s.substring(first_break);
+            //head = head.replaceAll("[\u001c]", "");
+            //tail = tail.replaceAll("[\u001c]", "");
+            return new String[]{head, leading_ws + double_indent + tail};
+        }
+        return null;
+    }
+
+    // StringBuilder doesn't have an "endsWith" method
+    static boolean endsWith(StringBuilder sb, String s) {
+        if (sb == null && s == null)
+            return true;
+        if (sb == null && sb != null)
+            return false;
+        if (sb.length() < s.length())
+            return false;
+        String end = sb.substring(sb.length() - s.length());
+        return end.equals(s);
+    }
+    
+    static void writeJavadocComment(String s) {
+        String[] lines = s.split("\r\n|\r|\n");
+        
+        // indent the first line.  It won't have any leading whitespace, but
+        // may have trailing whitespace
+        String line = lines[0].trim();
+        for (int j = 0; j < level; j++) {
+            line = "    " + line;       // 4 spaces
+        }
+        outputBuffer.append(line).append(ls);
+        
+        // handle the remaining lines, put stars in front of them.
+        // TODO: this needs work.  Need to preserve whitepsace after
+        // the star.
+        for (int i = 1; i < lines.length; i++) {
+            line = lines[i].trim();
+            
+            // apply padding. All javadoc lines start with a *.
+            if (line.startsWith("*")) {
+                line = " " + line;
+            }
+            else {
+                line = " * " + line;   
+            }
+
+            // apply indenting. The Sun rule is 4 spaces.
+            for (int j = 0; j < level; j++) {
+                line = "    " + line;
+            }
+            
+            outputBuffer.append(line);
+            if (i < lines.length - 1) {
+                outputBuffer.append(ls);
+            }
+        }
+    }
+
+    // comments of the /* ... */ variety.  This sort of comment is commonly
+    // used to "comment out" a block of code, so I don't want to modify the
+    // existing indenting within the block.
+    static void writeBlockComment(String s) {
+        String[] lines = s.split("\r\n|\r|\n");
+
+        // indent the first line.  It won't have any leading whitespace, but
+        // may have trailing whitespace
+        String line = lines[0].trim();
+        for (int j = 0; j < level; j++) {
+            line = "    " + line;       // 4 spaces
+        }
+        outputBuffer.append(line).append(ls);
+        
+        // output body of comment without change
+        for (int i = 1; i < lines.length - 1; i++) {
+            line = lines[i];    // trimStart(lines[i], level * 4);
+            outputBuffer.append(line).append(ls);
+        }
+        
+        // output the last line.  It will probably have leading whitespace, so
+        // trim it then indent it the same as the first line.
+        line = lines[lines.length - 1].trim();
+        for (int j = 0; j < level; j++) {
+            line = "    " + line;       // 4 spaces
+        }
+        outputBuffer.append(line);
+    }
+    
+
+    // handle comments like this one
+    static void writeEndOfLineComment(String s) {
+        String line = s.trim();
+        for (int j = 0; j < level; j++) {
+            line = "    " + line;       // 4 spaces
+        }
+        outputBuffer.append(line).append(ls);
+    }
+
 }

@@ -1,3 +1,4 @@
+// danson:
 // DONE: this is actually in jjt format.  Need to convert it to .jj and 
 // eliminate the AST since it doesn't provide anything particularly useful
 // in the case of a beautifier.  This is the latest from www.beanshell.org as
@@ -72,11 +73,11 @@ options {
 	//CACHE_TOKENS=true;
 }
 
-PARSER_BEGIN(Parser)
+PARSER_BEGIN(BSHParser)
 package beauty.parsers.bsh;
 
 import java.io.*;
-import java.util.Vector;
+import java.util.*;
 
 /**
 	This is the BeanShell parser.  It is used internally by the Interpreter
@@ -181,31 +182,47 @@ public class Parser
 	}
 }
 
-PARSER_END(Parser)
+PARSER_END(BSHParser)
 
 SKIP : /* WHITE SPACE */
 { 
-	" " | "\t" | "\r" | "\f"
-	| "\n" 
-	| < NONPRINTABLE: (["\u0000"-"\u0020", "\u0080"-"\u00ff"])+ >
+	"\f"
+	//| < NONPRINTABLE: (["\u0000"-"\u0020", "\u0080"-"\u00ff"])+ >
 }
 
-SPECIAL_TOKEN : /* COMMENTS */
+SPECIAL_TOKEN :
 {
-/*
-	SINGLE_LINE_COMMENT includes a hack to accept SLC at the end of a file
-	with no terminanting linefeed.  This is actually illegal according to 
-	spec, but comes up often enough to warrant it... (especially in eval()).
-*/
-  <SINGLE_LINE_COMMENT: "//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")? >
-
-| <HASH_BANG_COMMENT: "#!" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
-
- /* Moved FORMAL_COMMENT to a real token.  Modified MULTI_LINE_COMMENT to not 
-    catch formal comments (require no star after star) */
-| <MULTI_LINE_COMMENT: 
-	"/*" (~["*"])+ "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
+  <LINE_ENDERS: ("\n"|"\r"|"\r\n")+ >
+  {
+    String s = matchedToken.image;
+    int n = 0;
+    int r = 0;
+    for (int i = 0; i < s.length(); i++) {
+        if (s.charAt(i) == 'n')
+            ++n;
+        else
+            ++r;
+    }
+    int cnt = Math.max(n, r);
+    System.out.println("++++ found " + cnt + " line separators");
+    for (int i = 0; i < cnt; i++) {
+        add(" ");
+        writeln();   
+    }
+  }
+| <SPACES: ([" "])+ >  { add(matchedToken); }
+| <TABS: (["\t"])+ >  { for (int i = 0; i < matchedToken.image.length() * 8; i++) add(" "); }
 }
+
+/* COMMENTS */
+SPECIAL_TOKEN :
+{
+  <END_OF_LINE_COMMENT: "//"  (~["\n","\r"])* ("\n"|"\r"|"\r\n")?>  { writeEndOfLineComment(matchedToken.image); }
+| <HASH_BANG_COMMENT: "#!" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>  { writeEndOfLineComment(matchedToken.image); }
+| <JAVADOC_COMMENT:     "/**" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">  { writeJavadocComment(matchedToken.image); }
+| <BLOCK_COMMENT:       "/*"  (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">  { writeBlockComment(matchedToken.image); }
+}
+
 
 TOKEN : /* RESERVED WORDS AND LITERALS */
 {
@@ -309,10 +326,6 @@ TOKEN : /* LITERALS */
       )*
       "\""
   >
-|
-   < FORMAL_COMMENT: 
-		"/**" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/"
-	>
 }
 
 TOKEN : /* IDENTIFIERS */
@@ -432,16 +445,17 @@ TOKEN : /* OPERATORS */
 /*
 	Thanks to Sreenivasa Viswanadha for suggesting how to get rid of expensive
 	lookahead here.
+	@return if there is more, false on EOF.
 */
 boolean Line() :
 {}
 {
   <EOF> { 
-	return true; 
+	return false; 
   }
 |
   BlockStatement() {
-	return false; 
+	return true; 
   }
 }
 
@@ -554,12 +568,9 @@ void ImportDeclaration()  :
 
 void VariableDeclarator()  :
 {
-	Token t;
 }
 {
 	<IDENTIFIER> [ "=" VariableInitializer() ]
-	{
-	}
 }
 
 /*
@@ -652,11 +663,7 @@ void AmbiguousName()  :
 }
 {
   <IDENTIFIER> 
-  {
-  }
   ( LOOKAHEAD(2) "." <IDENTIFIER> )* 
-  {
-  }
 }
 
 void NameList() :
@@ -1105,17 +1112,6 @@ void BlockStatement() :
 |
   // Allow BeanShell package declarations in any block
   PackageDeclaration()
-|
-  FormalComment()
-}
-
-void FormalComment()  :
-{
-	Token t;
-}
-{
-	<FORMAL_COMMENT>  {
-	}
 }
 
 void EmptyStatement() :
