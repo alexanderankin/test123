@@ -24,7 +24,10 @@ import javax.xml.transform.stream.StreamResult;
 
 import marker.FileMarker.Selection;
 
+import org.gjt.sp.jedit.ActionContext;
+import org.gjt.sp.jedit.ActionSet;
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.EditPlugin;
@@ -57,6 +60,13 @@ public class MarkerSetsPlugin extends EditPlugin {
 	private static String xmlFile;
 	private static Vector<ChangeListener> listeners;
 	private boolean replaceBuiltInMarkers = false;
+	private HashMap<Gutter, GutterPopupHandler> gutterPopupHandlers;
+	private static final String [] actionMap = {
+		"add-marker", "markersets-toggle-marker",
+		"goto-marker", "markersets-jump-to-marker",
+		"next-marker", "markersets-next-marker",
+		"prev-marker", "markersets-prev-marker"
+	};
 
 	public enum Event {
 		MARKER_SET_ADDED,
@@ -79,6 +89,7 @@ public class MarkerSetsPlugin extends EditPlugin {
 	{
 		listeners = new Vector<ChangeListener>();
 		markerSets = new HashMap<String, MarkerSet>();
+		gutterPopupHandlers = new HashMap<Gutter, GutterPopupHandler>();
 		File f = getPluginHome();
 		if (! f.exists())
 			f.mkdir();
@@ -161,6 +172,8 @@ public class MarkerSetsPlugin extends EditPlugin {
 		MarkerExtension ext = new MarkerExtension(ep); 
 		g.addExtension(ext);
 		g.putClientProperty(MARKER_SET_EXTENSION, ext);
+		if (MarkerSetsOptions.shouldReplaceBuiltInMarkers())
+			replaceGutterPopupHandler(ep.getTextArea());
 	}
 	
 	private void uninitEditPane(EditPane ep)
@@ -173,6 +186,8 @@ public class MarkerSetsPlugin extends EditPlugin {
 			g.removeExtension(ext);
 			g.putClientProperty(MARKER_SET_EXTENSION, null);
 		}
+		if (MarkerSetsOptions.shouldReplaceBuiltInMarkers())
+			restoreGutterPopupHandler(ep.getTextArea());
 	}
 
 	@EBHandler
@@ -199,37 +214,68 @@ public class MarkerSetsPlugin extends EditPlugin {
 	@EBHandler
 	public void handlePropertiesChanged(PropertiesChanged pc)
 	{
-		boolean newValue = MarkerSetsOptions.shouldReplaceBuiltInMarkers();
-		if (replaceBuiltInMarkers == newValue)
-			return;
-		replaceBuiltInMarkers = newValue;
-		replaceBuiltInMarkers(replaceBuiltInMarkers);
+		replaceBuiltInMarkers(MarkerSetsOptions.shouldReplaceBuiltInMarkers());
+	}
+
+	private void replaceGutterPopupHandler(final JEditTextArea textArea)
+	{
+		Gutter g = textArea.getGutter();
+		gutterPopupHandlers.put(g, g.getSelectionPopupHandler());
+		g.setSelectionPopupHandler(new GutterPopupHandler()
+		{
+			public void handlePopup(int x, int y, int line)
+			{
+				toggleMarker((Buffer)textArea.getBuffer(), line);
+			}
+		});
+	}
+	private void restoreGutterPopupHandler(JEditTextArea textArea)
+	{
+		Gutter g = textArea.getGutter();
+		GutterPopupHandler h = gutterPopupHandlers.get(g);
+		if (h != null)
+		{
+			g.setSelectionPopupHandler(h);
+			gutterPopupHandlers.remove(g);
+		}
 	}
 
 	public void replaceBuiltInMarkers(final boolean replace)
 	{
+		if (replaceBuiltInMarkers == replace)
+			return;
+		replaceBuiltInMarkers = replace;
 		jEdit.visit(new JEditVisitorAdapter() {
 			@Override
-			public void visit(final EditPane editPane)
+			public void visit(final JEditTextArea textArea)
 			{
-				final JEditTextArea textArea = editPane.getTextArea();
-				Gutter g = textArea.getGutter();
-				g.setSelectionPopupHandler(new GutterPopupHandler()
-				{
-					public void handlePopup(int x, int y, int line)
-					{
-						if (replace)
-							toggleMarker((Buffer)textArea.getBuffer(), line);
-						else
-						{
-							Buffer buffer = editPane.getBuffer();
-							buffer.addOrRemoveMarker('\0',
-								buffer.getLineStartOffset(line));
-						}
-					}
-				});
+				if (replace)
+					replaceGutterPopupHandler(textArea);
+				else
+					restoreGutterPopupHandler(textArea);
 			}
 		});
+		ActionContext ac = jEdit.getActionContext();
+		ActionSet pluginSet = ac.getActionSetForAction(
+			"markersets-toggle-marker");
+		for (int i = 0; i < actionMap.length; i += 2)
+		{
+			String coreName = actionMap[i];
+			String pluginName = actionMap[i + 1];
+			if (replace)
+			{
+				EditAction a = pluginSet.getAction(pluginName);
+				a.setName(replace ? coreName : pluginName);
+				pluginSet.addAction(a);
+			}
+			else
+			{
+				pluginSet.removeAction(coreName);
+				ActionSet coreSet = ac.getActionSetForAction("save");
+				EditAction a = coreSet.getAction(coreName);
+				coreSet.addAction(a);
+			}
+		}
 	}
 
 	static public Vector<String> getMarkerSetNames()
