@@ -27,7 +27,6 @@ package sidekick.html;
 import java.io.StringReader;
 import java.util.*;
 
-import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 import errorlist.*;
 
@@ -40,12 +39,10 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 
-import sidekick.IAsset;
 import sidekick.SideKickParsedData;
 import sidekick.util.*;
 import sidekick.html.parser.html.HtmlCollector;
 import sidekick.html.parser.html.HtmlDocument;
-import sidekick.html.parser.html.HtmlScrubber;
 import sidekick.html.parser.html.HtmlTreeBuilder;
 import xml.parser.XmlParser;
 
@@ -144,8 +141,6 @@ public class HtmlParser extends XmlParser implements EBComponent {
 
             // collect and clean
             document.accept(new HtmlCollector());
-            //document.accept(new HtmlScrubber(HtmlScrubber.DEFAULT_OPTIONS
-            //         | HtmlScrubber.TRIM_SPACES));
 
             // make a tree
             builder = new HtmlTreeBuilder(root);
@@ -178,6 +173,7 @@ public class HtmlParser extends XmlParser implements EBComponent {
             }
         }
         catch (Exception e) {
+            errorSource.addError(ErrorSource.ERROR, filename, 0, 0, 0, e.getMessage());
             e.printStackTrace();
         }
         finally {
