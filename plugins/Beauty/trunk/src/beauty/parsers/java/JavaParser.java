@@ -84,34 +84,37 @@ public class JavaParser implements JavaParserConstants {
       catch(Exception e) { e.printStackTrace(); }
    }
 
-  public static void main(String args[]) {
-    JavaParser parser;
-    if (args.length == 0) {
-      System.out.println("Java Parser Version 1.1:  Reading from standard input . . .");
-      parser = new JavaParser(System.in);
-    } else if (args.length == 1) {
-      System.out.println("Java Parser Version 1.1:  Reading from file " + args[0] + " . . .");
-      try {
-        parser = new JavaParser(new java.io.FileInputStream(args[0]));
-      } catch (java.io.FileNotFoundException e) {
-        System.out.println("Java Parser Version 1.1:  File " + args[0] + " not found.");
-        return;
-      }
-    } else {
-      System.out.println("Java Parser Version 1.1:  Usage is one of:");
-      System.out.println("         java JavaParser < inputfile");
-      System.out.println("OR");
-      System.out.println("         java JavaParser inputfile");
-      return;
+    public static void main(String args[]) {
+        JavaParser parser;
+        if (args.length == 0) {
+            System.out.println("Java Parser Version 1.1:  Reading from standard input . . .");
+            parser = new JavaParser(System.in);
+        } else{
+            if (args.length == 1) {
+                System.out.println("Java Parser Version 1.1:  Reading from file " + args[0] + " . . .");
+                try {
+                    parser = new JavaParser(new java.io.FileInputStream(args[0]));
+                } catch (java.io.FileNotFoundException e) {
+                    System.out.println("Java Parser Version 1.1:  File " + args[0] + " not found.");
+                    return;
+                }
+            } else {
+                System.out.println("Java Parser Version 1.1:  Usage is one of:");
+                System.out.println("         java JavaParser < inputfile");
+                System.out.println("OR");
+                System.out.println("         java JavaParser inputfile");
+                return;
+            }
+        }
+
+        try {
+            parser.CompilationUnit();
+            System.out.println("Java Parser Version 1.1:  Java program parsed successfully.");
+        } catch (ParseException e) {
+            System.out.println(e.getMessage());
+            System.out.println("Java Parser Version 1.1:  Encountered errors during parse.");
+        }
     }
-    try {
-      parser.CompilationUnit();
-      System.out.println("Java Parser Version 1.1:  Java program parsed successfully.");
-    } catch (ParseException e) {
-      System.out.println(e.getMessage());
-      System.out.println("Java Parser Version 1.1:  Encountered errors during parse.");
-    }
-  }
 
 /*****************************************
  * THE JAVA LANGUAGE GRAMMAR STARTS HERE *
@@ -1925,7 +1928,7 @@ public class JavaParser implements JavaParserConstants {
 
 // This production is to determine lookahead only.  The LOOKAHEAD specifications
 // below are not used, but they are there just to indicate that we know about
-// this.
+// this. Nothing needs to be output from this production.
   final public void CastLookahead() throws ParseException {
     if (jj_2_22(2)) {
       jj_consume_token(LPAREN);
@@ -3221,7 +3224,7 @@ public class JavaParser implements JavaParserConstants {
                        add("synchronized ( ");
     Expression();
     jj_consume_token(RPAREN);
-                                                                   add(" )");
+                                                                    add(" )");
     Block();
   }
 
@@ -3874,36 +3877,6 @@ public class JavaParser implements JavaParserConstants {
     try { return !jj_3_41(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(40, xla); }
-  }
-
-  private boolean jj_3R_126() {
-    if (jj_3R_168()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_97() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_126()) {
-    jj_scanpos = xsp;
-    if (jj_3R_127()) {
-    jj_scanpos = xsp;
-    if (jj_3R_128()) {
-    jj_scanpos = xsp;
-    if (jj_3R_129()) {
-    jj_scanpos = xsp;
-    if (jj_3R_130()) {
-    jj_scanpos = xsp;
-    if (jj_3R_131()) {
-    jj_scanpos = xsp;
-    if (jj_3R_132()) return true;
-    }
-    }
-    }
-    }
-    }
-    }
-    return false;
   }
 
   private boolean jj_3R_336() {
@@ -6588,6 +6561,36 @@ public class JavaParser implements JavaParserConstants {
 
   private boolean jj_3R_127() {
     if (jj_scan_token(THIS)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_126() {
+    if (jj_3R_168()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_97() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_126()) {
+    jj_scanpos = xsp;
+    if (jj_3R_127()) {
+    jj_scanpos = xsp;
+    if (jj_3R_128()) {
+    jj_scanpos = xsp;
+    if (jj_3R_129()) {
+    jj_scanpos = xsp;
+    if (jj_3R_130()) {
+    jj_scanpos = xsp;
+    if (jj_3R_131()) {
+    jj_scanpos = xsp;
+    if (jj_3R_132()) return true;
+    }
+    }
+    }
+    }
+    }
+    }
     return false;
   }
 
