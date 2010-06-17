@@ -276,6 +276,12 @@ xml.download-resource.message=This XML file depends on a resource which is store
 options.sidekick.css.label=CSS
 options.sidekick.css.code=new sidekick.css.CssSideKickOptionPane();
 
+# toolbar text
+options.sidekick.css.sortBy=Sort
+options.sidekick.css.sortByLine=Line
+options.sidekick.css.sortByName=Name
+options.sidekick.css.showLineNums=Line Numbers
+
 # actions labels
 csssidekick-reload-completion-config.label=Reload css completion config
 csssidekick-insert-relative-path.label=Insert relative css path

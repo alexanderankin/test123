@@ -3,6 +3,7 @@ package sidekick.css.parser;
 import java.util.*;
 import javax.swing.text.Position;
 import sidekick.util.*;
+import org.gjt.sp.jedit.jEdit;
 
 public class CSSNode implements SideKickElement, Comparable<CSSNode> {
 
@@ -30,7 +31,13 @@ public class CSSNode implements SideKickElement, Comparable<CSSNode> {
     }
 
     public String toString() {
-        return getName();
+        String name = getName();
+        if (jEdit.getBooleanProperty( "sidekick.css.showLineNums", false )) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(getStartLocation().line).append(": ").append(name);
+            name = sb.toString();
+        }
+        return name;
     }
 
     public void setStartLocation( Location loc ) {
