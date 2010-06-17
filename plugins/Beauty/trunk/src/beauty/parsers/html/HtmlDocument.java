@@ -201,7 +201,7 @@ public class HtmlDocument {
 
     public static class JspScriptletBlock extends TagBlock {
         public JspScriptletBlock(ElementSequence b) {
-            super(null, null, b);
+            super("%", null, b);
             startTag = new JspScriptletStartTag();
             endTag = new JspScriptletEndTag();
         }
@@ -209,7 +209,7 @@ public class HtmlDocument {
 
     public static class JspScriptletStartTag extends Tag {
         public JspScriptletStartTag() {
-            super(null, null);
+            super("%", null);
             tagStart = "<";
             tagEnd = "%";
         }
@@ -225,7 +225,7 @@ public class HtmlDocument {
 
     public static class JspScriptletEndTag extends EndTag {
         public JspScriptletEndTag() {
-            super(null);
+            super("%");
         }
 
         public int getLength() {
