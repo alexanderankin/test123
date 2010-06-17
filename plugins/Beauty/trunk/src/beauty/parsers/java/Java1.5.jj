@@ -117,34 +117,37 @@ public class JavaParser
       catch(Exception e) { e.printStackTrace(); }
    }
 
-  public static void main(String args[]) {
-    JavaParser parser;
-    if (args.length == 0) {
-      System.out.println("Java Parser Version 1.1:  Reading from standard input . . .");
-      parser = new JavaParser(System.in);
-    } else if (args.length == 1) {
-      System.out.println("Java Parser Version 1.1:  Reading from file " + args[0] + " . . .");
-      try {
-        parser = new JavaParser(new java.io.FileInputStream(args[0]));
-      } catch (java.io.FileNotFoundException e) {
-        System.out.println("Java Parser Version 1.1:  File " + args[0] + " not found.");
-        return;
-      }
-    } else {
-      System.out.println("Java Parser Version 1.1:  Usage is one of:");
-      System.out.println("         java JavaParser < inputfile");
-      System.out.println("OR");
-      System.out.println("         java JavaParser inputfile");
-      return;
+    public static void main(String args[]) {
+        JavaParser parser;
+        if (args.length == 0) {
+            System.out.println("Java Parser Version 1.1:  Reading from standard input . . .");
+            parser = new JavaParser(System.in);
+        } else{
+            if (args.length == 1) {
+                System.out.println("Java Parser Version 1.1:  Reading from file " + args[0] + " . . .");
+                try {
+                    parser = new JavaParser(new java.io.FileInputStream(args[0]));
+                } catch (java.io.FileNotFoundException e) {
+                    System.out.println("Java Parser Version 1.1:  File " + args[0] + " not found.");
+                    return;
+                }
+            } else {
+                System.out.println("Java Parser Version 1.1:  Usage is one of:");
+                System.out.println("         java JavaParser < inputfile");
+                System.out.println("OR");
+                System.out.println("         java JavaParser inputfile");
+                return;
+            }
+        }
+
+        try {
+            parser.CompilationUnit();
+            System.out.println("Java Parser Version 1.1:  Java program parsed successfully.");
+        } catch (ParseException e) {
+            System.out.println(e.getMessage());
+            System.out.println("Java Parser Version 1.1:  Encountered errors during parse.");
+        }
     }
-    try {
-      parser.CompilationUnit();
-      System.out.println("Java Parser Version 1.1:  Java program parsed successfully.");
-    } catch (ParseException e) {
-      System.out.println(e.getMessage());
-      System.out.println("Java Parser Version 1.1:  Encountered errors during parse.");
-    }
-  }
 
 }
 
@@ -1484,7 +1487,7 @@ void UnaryExpressionNotPlusMinus():
 
 // This production is to determine lookahead only.  The LOOKAHEAD specifications
 // below are not used, but they are there just to indicate that we know about
-// this.
+// this. Nothing needs to be output from this production.
 void CastLookahead():
 {}
 {
@@ -1944,7 +1947,7 @@ void ThrowStatement():
 void SynchronizedStatement():
 {}
 {
-  "synchronized" "(" { add("synchronized ( "); }Expression() ")" { add(" )"); } Block()
+  "synchronized" "(" { add("synchronized ( "); } Expression() ")" { add(" )"); } Block()
 }
 
 void TryStatement():
