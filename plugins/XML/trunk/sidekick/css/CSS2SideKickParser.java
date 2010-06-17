@@ -27,12 +27,12 @@ package sidekick.css;
 import java.io.StringReader;
 import java.util.*;
 
+import javax.swing.JPanel;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EditPane;
-import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.msg.*;
+
 
 import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
@@ -47,7 +47,7 @@ import sidekick.css.parser.CSS3Parser;
  * @author    Dale Anson
  * @version   $Revision$
  */
-public class CSS2SideKickParser extends SideKickParser {
+public class CSS2SideKickParser extends SideKickParser implements EBComponent {
 
     private View currentView = null;
 
@@ -56,6 +56,7 @@ public class CSS2SideKickParser extends SideKickParser {
 
     public CSS2SideKickParser() {
         super( "css" );
+        EditBus.addToBus( this );
     }
 
     /**
@@ -69,6 +70,21 @@ public class CSS2SideKickParser extends SideKickParser {
         }
     }
 
+    /**
+     * Reparse if the option settings have changed.
+     */
+    public void handleMessage( EBMessage msg ) {
+        // reparse on properties changed
+        // TODO: fix this, should only parse if properties for this plugin
+        // have changed.
+        if ( ( msg instanceof PropertiesChanged ) ) {
+            if ( currentView != null ) {
+                currentView = jEdit.getActiveView();
+            }
+            EditBus.send( new SideKickUpdate( currentView ) );
+        }
+    }
+    
     public void parse() {
         if ( currentView != null ) {
             parse( currentView.getBuffer(), null );
@@ -163,8 +179,9 @@ public class CSS2SideKickParser extends SideKickParser {
 
     private void addTreeNodes( DefaultMutableTreeNode root, CSSNode ss ) {
         if ( ss.hasChildren() ) {
-            for ( Iterator it = ss.getChildren().iterator(); it.hasNext(); ) {
-                CSSNode cssChild = ( CSSNode ) it.next();
+            List<CSSNode> children = ss.getChildren();
+            Collections.sort(children, nodeSorter);
+            for ( CSSNode cssChild : children ) {
                 if ( cssChild != null ) {
                     DefaultMutableTreeNode dmtNode = new DefaultMutableTreeNode( cssChild );
                     root.add( dmtNode );
@@ -176,8 +193,9 @@ public class CSS2SideKickParser extends SideKickParser {
 
     private void addTreeNodeChildren( DefaultMutableTreeNode dmtNode, CSSNode cssNode ) {
         if ( cssNode.hasChildren() ) {
-            for ( Iterator it = cssNode.getChildren().iterator(); it.hasNext(); ) {
-                CSSNode cssChild = ( CSSNode ) it.next();
+            List<CSSNode> children = cssNode.getChildren();
+            Collections.sort(children, nodeSorter);
+            for ( CSSNode cssChild : children ) {
                 if ( cssChild != null ) {
                     DefaultMutableTreeNode dmtChild = new DefaultMutableTreeNode( cssChild );
                     dmtNode.add( dmtChild );
@@ -200,4 +218,32 @@ public class CSS2SideKickParser extends SideKickParser {
         return cr.getSideKickCompletion();
     }
 
+    public JPanel getPanel() {
+        return new CSSModeToolBar( this );
+    }
+    
+    private Comparator<CSSNode> nodeSorter =
+        new Comparator<CSSNode>() {
+            /**
+             * Compares a CSSNode to another CSSNode for sorting. 
+             * @param tna A CSSNode to compare.
+             * @param tnb A CSSNode to compare.
+             * @return a negative integer, zero, or a positive integer as the first CSSNode is
+             * less than, equal to, or greater than the second CSSNode.
+             */
+            public int compare( CSSNode tna, CSSNode tnb ) {
+                int sortBy = jEdit.getIntegerProperty( "sidekick.css.sortBy", CSSModeToolBar.SORT_BY_NAME);
+                switch ( sortBy ) {     // NOPMD, no breaks are necessary here
+                    case CSSModeToolBar.SORT_BY_LINE:
+                        Integer my_line = new Integer( tna.getStartLocation().line );
+                        Integer other_line = new Integer( tnb.getStartLocation().line );
+                        return my_line.compareTo( other_line );
+                    case CSSModeToolBar.SORT_BY_NAME:
+                    default:
+                        return tna.getName().toLowerCase().compareTo( tnb.getName().toLowerCase() );
+                }
+            }
+        };
+
+    
 }
