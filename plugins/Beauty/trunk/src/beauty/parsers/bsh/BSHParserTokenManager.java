@@ -220,12 +220,7 @@ public class BSHParserTokenManager implements BSHParserConstants
             // check for blank line(s)
             String maybe_blank = new String(s);
             if (maybe_blank.trim().isEmpty()) {
-                // yep, it's a blank, so just print it out
-                /*
-                if (s.length() >= ls.length()) {
-                    s = s.substring(0, s.length() - ls.length());
-                }
-                */
+                // yep, it's a blank, so just print out a line separator
                 outputBuffer.append(ls);
                 a.clear();
                 return;
@@ -2596,7 +2591,6 @@ void SkipLexicalActions(Token matchedToken)
             ++r;
     }
     int cnt = Math.max(n, r);
-    System.out.println("++++ found " + cnt + " line separators");
     for (int i = 0; i < cnt; i++) {
         add(" ");
         writeln();

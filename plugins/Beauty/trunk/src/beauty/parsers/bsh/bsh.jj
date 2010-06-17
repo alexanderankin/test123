@@ -289,7 +289,6 @@ SPECIAL_TOKEN :
             ++r;
     }
     int cnt = Math.max(n, r);
-    System.out.println("++++ found " + cnt + " line separators");
     for (int i = 0; i < cnt; i++) {
         add(" ");
         writeln();   
