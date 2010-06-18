@@ -41,10 +41,10 @@ import org.gjt.sp.util.Log;
  * @author Slava Pestov
  * @author Vadim Voituk
  */
-public class SFtpConnection extends Connection implements UserInfo
+public class SFtpConnection extends Connection implements UserInfo, UIKeyboardInteractive
 {
 	
-	SFtpConnection(final ConnectionInfo info) throws IOException
+	public SFtpConnection(final ConnectionInfo info) throws IOException
 	{
 		super(info);
 		try {
@@ -96,8 +96,7 @@ public class SFtpConnection extends Connection implements UserInfo
 			keyAttempts = 0;
 			session.setUserInfo(this);
 			
-			//FIXME: Timeout hardcoded to 60seconds
-			session.connect(60000);
+			session.connect(ConnectionManager.connectionTimeout);
 			
 			Channel channel = session.openChannel("sftp");
 			channel.connect();
@@ -239,8 +238,7 @@ public class SFtpConnection extends Connection implements UserInfo
 	
 	public String resolveSymlink(String path, String[] name) throws IOException
 	{
-		String returnValue = path;
-		return returnValue;
+		return path;
 	}
 	
 	void logout() throws IOException {
@@ -287,10 +285,11 @@ public class SFtpConnection extends Connection implements UserInfo
 	
 	public String getPassword()
 	{
-		return new String(info.password);
+		return info.password;
 	}
 	
 	public boolean promptPassword(String message){ return true;}
+	
 	public boolean promptPassphrase(String message)
 	{
 		Log.log(Log.DEBUG,this,message);
@@ -372,4 +371,14 @@ public class SFtpConnection extends Connection implements UserInfo
 			Log.log(Log.ERROR, this, e);
 		}
 	}
+	
+	// See http://marc.info/?l=ant-dev&m=111959408515300&w=2
+	public String[] promptKeyboardInteractive(String destination, String name, String instruction, String[] prompt, boolean[] echo){
+		if(prompt.length!=1 || echo[0]!=false )
+			return null;
+		String[] response = new String[1];
+		response[0] = getPassword();
+		return response;
+	}
+
 }
