@@ -127,6 +127,8 @@ public class DefaultBeautifier extends Beautifier {
         //long dontPrePadCharactersTime = System.currentTimeMillis();
         sb = dontPostPadCharacters(sb);
         //long dontPostPadCharactersTime = System.currentTimeMillis();
+        sb = padKeywords(sb);
+        
         sb = collapseBlankLines(sb);
         //long collapseBlankLinesTime = System.currentTimeMillis();
  
@@ -154,14 +156,14 @@ public class DefaultBeautifier extends Beautifier {
      * mode files do a poor job of identifying tokens.
      */ 
     StringBuilder padTokens(StringBuilder sb) {
-        try {
-            File tempFile = File.createTempFile("tmp", null);
-            tempFile.deleteOnExit();
-            Buffer tempBuffer = jEdit.openTemporary(jEdit.getActiveView(), null, tempFile.getAbsolutePath(), true);
-            tempBuffer.setMode(jEdit.getMode(modeName));
-            tempBuffer.insert(0, sb.toString());
-            sb.setLength(0);
-            if (prePadFunction || postPadFunction || prePadOperator || postPadOperator || prePadDigit || postPadDigit || prePadKeyword1 || postPadKeyword1 || prePadKeyword2 || postPadKeyword2 || prePadKeyword3 || postPadKeyword3 || prePadKeyword4 || postPadKeyword4) {
+        if (prePadFunction || postPadFunction || prePadOperator || postPadOperator || prePadDigit || postPadDigit || prePadKeyword1 || postPadKeyword1 || prePadKeyword2 || postPadKeyword2 || prePadKeyword3 || postPadKeyword3 || prePadKeyword4 || postPadKeyword4) {
+            try {
+                File tempFile = File.createTempFile("tmp", null);
+                tempFile.deleteOnExit();
+                Buffer tempBuffer = jEdit.openTemporary(jEdit.getActiveView(), null, tempFile.getAbsolutePath(), true);
+                tempBuffer.setMode(jEdit.getMode(modeName));
+                tempBuffer.insert(0, sb.toString());
+                sb.setLength(0);
                 int firstLine = 0;
                 int lastLine = tempBuffer.getLineCount();
                 DefaultTokenHandler tokenHandler = new DefaultTokenHandler();
@@ -217,13 +219,13 @@ public class DefaultBeautifier extends Beautifier {
                         sb.append(getLineSeparator());
                     }
                 }
-            }
-            if (sb.length() == 0) {
-                sb = new StringBuilder(tempBuffer.getText(0, tempBuffer.getLength())); 
-            }
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        } 
+                if (sb.length() == 0) {
+                    sb = new StringBuilder(tempBuffer.getText(0, tempBuffer.getLength())); 
+                }
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            } 
+        }
         return sb;
     }
 
@@ -382,7 +384,79 @@ public class DefaultBeautifier extends Beautifier {
         }
         return new StringBuilder(s);
     }
+ 
+    /**
+     * Keywords get padded last rather than with padTokens.  Otherwise, the other
+     * pad/dontPad methods may eliminate the keyword padding, for example,
+     * the space between "for (" may be removed by some other rule even when
+     * pad keywords is checked.
+     */ 
+    StringBuilder padKeywords(StringBuilder sb) {
+        if (prePadKeyword1 || postPadKeyword1 || prePadKeyword2 || postPadKeyword2 || prePadKeyword3 || postPadKeyword3 || prePadKeyword4 || postPadKeyword4) {
+            try {
+                File tempFile = File.createTempFile("tmp", null);
+                tempFile.deleteOnExit();
+                Buffer tempBuffer = jEdit.openTemporary(jEdit.getActiveView(), null, tempFile.getAbsolutePath(), true);
+                tempBuffer.setMode(jEdit.getMode(modeName));
+                tempBuffer.insert(0, sb.toString());
+                sb.setLength(0);
+                int firstLine = 0;
+                int lastLine = tempBuffer.getLineCount();
+                DefaultTokenHandler tokenHandler = new DefaultTokenHandler();
+                for (int lineNum = firstLine; lineNum < lastLine; lineNum++) {
+                    tokenHandler.init();
 
+                    int lineStart = tempBuffer.getLineStartOffset(lineNum);
+                    tempBuffer.markTokens(lineNum, tokenHandler);
+                    Token token = tokenHandler.getTokens();
+                    int tokenStart = lineStart;
+
+                    String previousTokenText = "";
+                    String currentTokenText = tempBuffer.getText(tokenStart, token.length);
+                    String nextTokenText = token.next != null ? tempBuffer.getText(tokenStart + token.length, token.next.length) : "";
+
+                    while (token.id != Token.END) {
+
+                        // maybe pad start
+                        if (! previousTokenText.endsWith(" ")) {                            // NOPMD
+                            if ((token.id == Token.KEYWORD1 && prePadKeyword1) || (token.id == Token.KEYWORD2 && prePadKeyword2) || (token.id == Token.KEYWORD3 && prePadKeyword3) || (token.id == Token.KEYWORD4 && prePadKeyword4)) {                                // NOPMD
+                                sb.append(' ');
+                            }
+                        }
+
+                        // definitely add text of current token
+                        sb.append(currentTokenText);
+
+                        // maybe pad after token
+                        if (! nextTokenText.startsWith(" ")) {
+                            if ((token.id == Token.KEYWORD1 && postPadKeyword1) || (token.id == Token.KEYWORD2 && postPadKeyword2) || (token.id == Token.KEYWORD3 && postPadKeyword3) || (token.id == Token.KEYWORD4 && postPadKeyword4)) {                                // NOPMD
+                                sb.append(' ');
+                                currentTokenText += " ";                                // NOPMD
+                            }
+                        }
+
+                        previousTokenText = currentTokenText;
+                        currentTokenText = nextTokenText;
+                        tokenStart += token.length;
+                        token = token.next;
+                        if (token.next != null) {
+                            nextTokenText = tempBuffer.getText(tokenStart + token.length, token.next.length);
+                        }
+                    }
+                    if (lineNum <= lastLine - 2) {
+                        sb.append(getLineSeparator());
+                    }
+                }
+                if (sb.length() == 0) {
+                    sb = new StringBuilder(tempBuffer.getText(0, tempBuffer.getLength())); 
+                }
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            } 
+        }
+        return sb;
+    }
+ 
     /**
      * Collapse two or more blank lines to a single blank line.
      */ 
@@ -395,10 +469,10 @@ public class DefaultBeautifier extends Beautifier {
         s = s.replaceAll(regex, getLineSeparator());
         return new StringBuilder(s);
     }
-    
+ 
     /**
-     * Use the jEdit indenter to indent the lines.    
-     */
+     * Use the jEdit indenter to indent the lines.
+     */ 
     StringBuilder indentLines(StringBuilder sb) {
         try {
             // unfortunate hack here -- the Mode class only loads the indenting rules once,

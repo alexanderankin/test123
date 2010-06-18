@@ -201,9 +201,13 @@ public class HtmlDocument {
 
     public static class JspScriptletBlock extends TagBlock {
         public JspScriptletBlock(ElementSequence b) {
-            super("%", null, b);
+            super("", null, b);
             startTag = new JspScriptletStartTag();
             endTag = new JspScriptletEndTag();
+        }
+        
+        public String toString() {
+            return "";   
         }
     }
 
@@ -211,7 +215,7 @@ public class HtmlDocument {
         public JspScriptletStartTag() {
             super("%", null);
             tagStart = "<";
-            tagEnd = "%";
+            tagEnd = "";
         }
 
         public int getLength() {
