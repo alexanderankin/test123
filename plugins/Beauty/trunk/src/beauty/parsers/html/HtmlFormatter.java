@@ -161,7 +161,7 @@ public class HtmlFormatter extends HtmlVisitor {
             // For the moment, only javascript and css are passed off as I don't have a
             // suitable formatter for java fragments yet.
             String tagName = block.startTag.tagName;
-            if ("SCRIPT".equals(tagName.toUpperCase()) || "STYLE".equals(tagName.toUpperCase())) {
+            if ("SCRIPT".equals(tagName.toUpperCase()) || "STYLE".equals(tagName.toUpperCase()) || "%".equals(tagName)) {
                 try {
                     // combine the tag body into a single string
                     HtmlDocument.ElementSequence elements = block.body;
@@ -181,6 +181,8 @@ public class HtmlFormatter extends HtmlVisitor {
                     String formatted;
                     if ("SCRIPT".equals(tagName.toUpperCase())) {
                         beautifier = new DefaultBeautifier("javascript");
+                    } else if ("%".equals(tagName)) {
+                        beautifier = new DefaultBeautifier("java");
                     } else {
                         beautifier = new CSSBeautifier();
                     }
