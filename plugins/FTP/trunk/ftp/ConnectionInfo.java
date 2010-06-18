@@ -14,8 +14,7 @@ public class ConnectionInfo
 	public String privateKey;
 	// }}}
 	
-	public ConnectionInfo(boolean secure, String host, int port,
-		String user, String password, String privateKey)
+	public ConnectionInfo(boolean secure, String host, int port,String user, String password, String privateKey)
 	{
 		this.secure = secure;
 		this.host = host;
@@ -45,8 +44,7 @@ public class ConnectionInfo
 
 	public String toString()
 	{
-		return (secure ? FtpVFS.SFTP_PROTOCOL : FtpVFS.FTP_PROTOCOL)
-			+ "://" + host + ":" + port;
+		return (secure ? FtpVFS.SFTP_PROTOCOL : FtpVFS.FTP_PROTOCOL) + "://" + host + ":" + port;
 	}
 
 	public int hashCode()

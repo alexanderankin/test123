@@ -41,6 +41,7 @@ import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
 
 /**
@@ -57,8 +58,9 @@ public class FtpVFS extends VFS
 	public static final String EA_OWNER_USER = "user";
 	public static final String EA_OWNER_GROUP = "group";
 	
-	// same as File VFS permissions key!
+	// same as File VFS permissions key should be used!!!!
 	public static final String PERMISSIONS_PROPERTY = "FileVFS__perms";
+	public static final String MD5SUM_PROPERTY      = "FtpVFS__MD5";
 	
 	//{{{ FtpVFS method
 	public FtpVFS(boolean secure)
@@ -171,7 +173,7 @@ public class FtpVFS extends VFS
 		try {
 			Log.log(Log.DEBUG, this, "FtpVFS.createVFSSession("+path+", "+comp+")" );
 			ConnectionInfo info = ConnectionManager.getConnectionInfo(comp,
-				path == null ? null : new FtpAddress(path), secure);
+				path == null ? null : new FtpAddress(path));
 			
 			if(info == null)
 				return null;
@@ -214,8 +216,7 @@ public class FtpVFS extends VFS
 	} //}}}
 	
 	//{{{ _listFiles() method
-	public VFSFile[] _listFiles(Object _session, String url,
-		Component comp) throws IOException
+	public VFSFile[] _listFiles(Object _session, String url, Component comp) throws IOException
 	{
 		VFSFile[] directory = DirectoryCache.getCachedDirectory(url);
 		if(directory != null)
@@ -319,6 +320,7 @@ public class FtpVFS extends VFS
 				{
 					Log.log(Log.DEBUG,this,path + " has permissions 0" + Integer.toString(dirEntry.permissions,8));
 					buffer.setIntegerProperty(PERMISSIONS_PROPERTY, dirEntry.permissions);
+					//buffer.setStringProperty(MD5_PROPERTY, );
 				} else {
 					//Log.log(Log.ERROR,this, path + " not open?");
 				}
@@ -440,10 +442,15 @@ public class FtpVFS extends VFS
 	} //}}}
 	
 	
+	/**{@inheritDoc}*/
 	public void _saveComplete(java.lang.Object session, Buffer buffer,
 		java.lang.String path, java.awt.Component comp)
 	throws java.io.IOException
 	{
+		//String s = new String(StandardUtilities.md5(buffer.getText()), "UTF-8");
+		//GUIUtilities.message(comp, s, null);
+		//buffer.setStringProperty(FtpVFS.MD5SUM_PROPERTY, StandardUtilities.md5(buffer.getText()) );
+		//Log.log(Log.DEBUG, "TEST", buffer.getStringProperty(FtpVFS.MD5SUM_PROPERTY));
 	}
 	
 	/**{@inheritDoc}*/
@@ -457,7 +464,8 @@ public class FtpVFS extends VFS
 			return;
 		
 		Buffer buffer = jEdit.getBuffer(path);
-		String s = buffer.getText(0, buffer.getLength());
+		if (buffer == null)
+			return;
 		
 		FtpAddress uri = new FtpAddress(path);
 		String backFile = "_"+uri.getScheme()+"_"+uri.getUser() + "@" + uri.getHost() + uri.getPath();
@@ -468,10 +476,10 @@ public class FtpVFS extends VFS
 			f.getParentFile().mkdirs();
 		
 		
-		//if (!f.canWrite()) {
-		//	Log.log(Log.WARNING, this, "Can't write file " + backPath);
-		//	return;
-		//}
+		if ( f.exists() && !f.canWrite()) {
+			Log.log(Log.ERROR, this, "Can't write file " + backPath);
+			return;
+		}
 		
 		// Store file content
 		FileOutputStream os = new FileOutputStream(f);
@@ -480,11 +488,12 @@ public class FtpVFS extends VFS
 		Charset charset = Charset.forName(buffer.getStringProperty(JEditBuffer.ENCODING));
 		CharsetEncoder encoder = charset.newEncoder();
 		
+		String s = buffer.getText();
 		CharBuffer buf = CharBuffer.allocate(s.length());
 		buf.append(s).flip();
 		
 		channel.write(encoder.encode(buf));
-		os.close();
+		IOUtilities.closeQuietly(os);
 	}
 	
 	//{{{ Private members
