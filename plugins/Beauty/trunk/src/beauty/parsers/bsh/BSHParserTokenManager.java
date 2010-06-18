@@ -2592,7 +2592,7 @@ void SkipLexicalActions(Token matchedToken)
     }
     int cnt = Math.max(n, r);
     for (int i = 0; i < cnt; i++) {
-        add(" ");
+        //add(" ");
         writeln();
     }
          break;
