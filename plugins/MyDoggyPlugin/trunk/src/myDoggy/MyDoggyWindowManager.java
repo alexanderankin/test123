@@ -162,9 +162,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 	@Override
 	public JComponent floatDockableWindow(String name)
 	{
-		ToolWindow tw = wm.getToolWindow(name);
-		if (tw == null)
-			tw = createToolWindow(name);
+		ToolWindow tw = createNewToolWindowInstance(name);
 		if (tw == null)
 			return null;
 		tw.setType(ToolWindowType.FLOATING);
@@ -340,6 +338,28 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		}
 	}
 
+	private ToolWindow createNewToolWindowInstance(String name)
+	{
+		String position = getDockablePosition(name); 
+		JComponent window = createDockable(name);
+		if (window == null)
+			return null;
+		String id = getToolWindowID(name);
+		for (int i = 0; i < 10; i++)
+		{
+			if (wm.getToolWindow(id) == null)
+				break;
+			id = id + "#" + i;
+		}
+		String title = getDockableTitle(name);
+		ToolWindowAnchor anchor = position2anchor(position);
+		ToolWindow tw = wm.registerToolWindow(id, title, null, window, anchor);
+		initToolWindowsDescriptors(name, tw);
+		PropertyChangeListener listener = new VisibilityChangeListener(tw,
+			name, window, false);
+		tw.addPropertyChangeListener("visible", listener);
+		return tw;
+	}
 	private ToolWindow createToolWindow(String name)
 	{
 		JComponent window = getDockable(name);
@@ -363,6 +383,7 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 		tw.getRepresentativeAnchorDescriptor().setTitle(shortTitle(name));
 		tw.getTypeDescriptor(ToolWindowType.DOCKED).setIdVisibleOnTitleBar(false);
 		DockedTypeDescriptor dockedDescriptor = tw.getTypeDescriptor(DockedTypeDescriptor.class);
+		dockedDescriptor.addToolWindowAction(new NewFloatingInstanceAction());
 		dockedDescriptor.addToolWindowAction(new FloatingFreeAction());
 		dockedDescriptor.addToolWindowAction(new RemoveDockableAction(), 0);
 		setFloatingProperties(tw);
@@ -429,7 +450,17 @@ public class MyDoggyWindowManager extends DockableWindowManager {
 			toolWindow.setType(ToolWindowType.FLOATING);
 		}
 	}
-	
+
+	private class NewFloatingInstanceAction extends DockableAction {
+		public NewFloatingInstanceAction() {
+			super("NewFloatingInstanceAction", null, "New floating instance",
+				"New floating instance");
+		}
+		public void actionPerformed(ActionEvent e) {
+			floatDockableWindow(getToolWindow().getId());
+		}
+	}
+
 	@Override
 	public void showDockableWindow(String name)
 	{
