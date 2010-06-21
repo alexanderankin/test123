@@ -178,7 +178,8 @@ public class HtmlFormatter extends HtmlVisitor {
  
                     // format the string with the appropriate beautifier
                     Beautifier beautifier;
-                    String formatted;
+                    String formatted = sb.toString();
+                    /*
                     if ("SCRIPT".equals(tagName.toUpperCase())) {
                         beautifier = new DefaultBeautifier("javascript");
                     } else if ("%".equals(tagName)) {
@@ -187,7 +188,8 @@ public class HtmlFormatter extends HtmlVisitor {
                         beautifier = new CSSBeautifier();
                     }
                     formatted = beautifier.beautify(sb.toString());
- 
+                    */
+                    
                     // replace the tag body with the formatted text
                     String[] lines = formatted.split(lineSeparator);
                     elements = new HtmlDocument.ElementSequence(lines.length * 2);
@@ -197,7 +199,7 @@ public class HtmlFormatter extends HtmlVisitor {
                         elements.addElement(new HtmlDocument.Newline());
                     }
                     block.body = elements;
-                } catch (ParserException pe) {                    // NOPMD
+                } catch (Exception /*ParserException*/ pe) {                    // NOPMD
                     // do nothing, just handle the block as a regular block
                 }
             }

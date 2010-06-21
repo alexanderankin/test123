@@ -11,7 +11,7 @@
         new beauty.beautifiers.HtmlFormat();
     </SERVICE>
     <SERVICE CLASS="beauty.beautifiers.Beautifier" NAME="jsp:beauty">
-        new beauty.beautifiers.HtmlFormat();
+        new beauty.beautifiers.JspBeautifier();
     </SERVICE>
     <SERVICE CLASS="beauty.beautifiers.Beautifier" NAME="css:beauty">
         new beauty.beautifiers.CSSBeautifier();
