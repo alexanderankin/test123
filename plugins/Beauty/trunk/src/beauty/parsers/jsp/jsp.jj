@@ -681,7 +681,7 @@ void Attributes() :
         haveAttr=Attribute() 
         { 
             ++count;
-            if (haveAttr && wrapAttributes && count > 1) {
+            if (haveAttr && wrapAttributes && count >= 1) {
                 writeln();
             }
         }
