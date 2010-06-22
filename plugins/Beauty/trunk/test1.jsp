@@ -1,12 +1,10 @@
-<%@ include file="/estore/common/common.jspf" %>
-<%@ taglib uri="/WEB-INF/tlds/pageTemplate.tld" prefix="page" %>
-<%@ page import="com.avenueme.util.WebKeys" %>
-<%@ page import="com.avenueme.beans.UserInfoBean" %>
-<%@ page import="com.avenueme.beans.UserInfoFactory" %>
+<%@ include file="/estore/common/common.jspf"%>
+<%@ taglib uri="/WEB-INF/tlds/pageTemplate.tld" prefix="page"%>
+<%@ page import="com.avenueme.util.WebKeys"%>
+<%@ page import="com.avenueme.beans.UserInfoBean"%>
+<%@ page import="com.avenueme.beans.UserInfoFactory"%>
 <html>
   <body>
-    <p>
-    <br>
     <dsp:page xml="true">
       <table>
         <tr>
@@ -16,21 +14,20 @@
             <table cellpadding="0" cellspacing="0">
               <tr>
                 <td class="ma_mod_pageHeader">
-                  <img src="<page:fqdnLink url="/estore/images/cart/ma/ma_mod/pageHeader_myAccount.jpg" isImage="true" 
-                  useStaticServer="true" />" />  
-                </td> 
+                  <c:set var="imgsrc" value="/estore/images/cart/ma/ma_mod/pageHeader_myAccount.jpg"/>
+                  <img src="${imgsrc}"/>
+                </td>
                 <td class="ma_mod_pageHeader">
-                  <img src="<page:fqdnLink url="/estore/images/cart/ma/ma_mod/pageHeader_myAddressBook.jpg" 
-                  isImage="true" useStaticServer="true" />" />  
-                </td> 
+                  <img src="/estore/images/cart/ma/ma_mod/pageHeader_myAddressBook.jpg"/>
+                </td>
                 <td width="100%">
-                  &nbsp;  
-                </td> 
-              </tr> 
-            </table> 
-          </td> 
-        </tr> 
-      </table> 
-    </dsp:page> 
-  </body> 
-</html> 
+                  &nbsp;
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </dsp:page>
+  </body>
+</html>
