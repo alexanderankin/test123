@@ -80,6 +80,10 @@ public class JspParser {
     private void trim() {
         token_source.trim();
     }
+    
+    private void trimNL() {
+        token_source.trimNL();   
+    }
 
     private void trimWhitespace() {
         token_source.trimWhitespace();
@@ -467,20 +471,50 @@ void JspDirective() :
 { }
 {
 	t=<JSP_DIRECTIVE_START> { add(t); } 
-	t=<JSP_DIRECTIVE_NAME> { add(t); }  
+	t=<JSP_DIRECTIVE_NAME> { trim(); add(" "); add(t); }  
 	
 	(
-		JspDirectiveAttribute()
-	)*
+		JspDirectiveAttributes()
+	)
 	t=<JSP_DIRECTIVE_END> { add(t); writeln(); } 
 }
 
-void JspDirectiveAttribute() : 
-{ }
+void JspDirectiveAttributes() : 
 {
-	t=<JSP_DIRECTIVE_ATTRIBUTE_NAME> { add(t); }  
+    boolean wrapAttributes = true;
+    boolean haveAttr = false;
+    writeln();
+    ++token_source.level;
+
+}
+{
+    (
+        haveAttr=JspDirectiveAttribute() 
+        { 
+            if (haveAttr && wrapAttributes) {
+                writeln();
+            }
+        }
+        
+    )*   
+    
+    {
+        trimNL();
+        --token_source.level;   
+    }
+}
+
+boolean JspDirectiveAttribute() : 
+{ 
+    boolean added = false;
+}
+{
+	t=<JSP_DIRECTIVE_ATTRIBUTE_NAME> { trim(); add(" "); add(t); added = true; }  
 	t=<JSP_DIRECTIVE_ATTRIBUTE_EQUALS> { add(t); } 
 	t=<JSP_DIRECTIVE_ATTRIBUTE_VALUE> { add(t); } 
+	{
+	     return added;   
+	}
 }
 
 void JspScriptlet() :
@@ -596,7 +630,7 @@ void Element() :
 {
     t=<TAG_START>  { add(t); } 
     startTagName = <TAG_NAME> { tagName = startTagName.image; add(startTagName); }
-    (Attribute())*
+    (Attributes())
     ( 
     	(t=<TAG_END> 
     		{
@@ -618,7 +652,7 @@ void Element() :
     	
    		(HtmlScript() | HtmlStyle() | Content())?
     	
-    	t=<ENDTAG_START>  { add(t); --token_source.level;  } 
+    	t=<ENDTAG_START>  { writeln(); --token_source.level; add(t); } 
     	endTagName = <TAG_NAME> 
     		{ 
     		    add(endTagName);
@@ -634,14 +668,45 @@ void Element() :
     )
 }
 
-void Attribute() : 
-{	}
+void Attributes() :
 {
-  t=<ATTR_NAME> { trim(); add(" "); add(t); } 
+    boolean wrapAttributes = true;
+    boolean haveAttr = false;
+    int count = 0;
+    writeln();
+    ++token_source.level;
+}
+{
+    (
+        haveAttr=Attribute() 
+        { 
+            ++count;
+            if (haveAttr && wrapAttributes && count > 1) {
+                writeln();
+            }
+        }
+        
+    )*   
+    
+    {
+        trimNL();
+        --token_source.level;   
+    }
+}
+
+boolean Attribute() : 
+{
+    boolean added = true;
+}
+{
+  t=<ATTR_NAME> { trim(); add(" "); add(t); added=true;} 
   (
   	t=<ATTR_EQ>  { add(t); } 
   	AttributeValue()
   )
+  {
+    return added;   
+  }
 }
 
 /**
