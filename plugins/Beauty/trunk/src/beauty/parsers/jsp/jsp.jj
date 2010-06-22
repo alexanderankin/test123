@@ -7,9 +7,18 @@
  * captured as a single token, which means the token image can be passed off to
  * a javascript beautifier.
  *
- * TODO: check that code inside <style> ... </style> is not parsed. -- Need to
+ * DONE: check that code inside <style> ... </style> is not parsed. -- Need to
  * to the same with <style> as with <script> so that the tag body is parsed as
  * a single token, then the token image can be passed off to the css beautifier.
+ *
+ * TODO: Options:
+ * - wrap attributes, but only if there is more than 1 attribute
+ * - indent multi-line attribute
+ * - space before slashend
+ * - fix scriptlet indenting (pass to java parser)
+ * - fix script indenting (pass to javascript parser)
+ * - fix style indenting (pass to css parser)
+ *
  */
 
 options { 
@@ -31,6 +40,13 @@ import java.util.*;
 public class JspParser {
 
     Token t;
+    
+    // option to put a space before a closing />
+    boolean padSlashEnd = false;
+    
+    // option to wrap attributes.  Attributes are wrapped only if there is 
+    // more than one attribute.
+    boolean wrapAttributes = false;
 
     // shouldn't use this, a specific line separator should be set based on
     // buffer settings.  Of course, it may be the same as what the buffer
@@ -471,37 +487,27 @@ void JspDirective() :
 { }
 {
 	t=<JSP_DIRECTIVE_START> { add(t); } 
-	t=<JSP_DIRECTIVE_NAME> { trim(); add(" "); add(t); }  
+	t=<JSP_DIRECTIVE_NAME> { trim(); add(" "); add(t); add(" "); }  
 	
 	(
 		JspDirectiveAttributes()
 	)
-	t=<JSP_DIRECTIVE_END> { add(t); writeln(); } 
+	t=<JSP_DIRECTIVE_END> { trim(); add(t); writeln(); } 
 }
 
 void JspDirectiveAttributes() : 
 {
-    boolean wrapAttributes = true;
-    boolean haveAttr = false;
-    writeln();
-    ++token_source.level;
-
+    boolean haveAttrs = false;
 }
 {
     (
-        haveAttr=JspDirectiveAttribute() 
-        { 
-            if (haveAttr && wrapAttributes) {
-                writeln();
+        haveAttrs=JspDirectiveAttribute() 
+        {
+            if (haveAttrs) {
+                add(" ");   
             }
         }
-        
     )*   
-    
-    {
-        trimNL();
-        --token_source.level;   
-    }
 }
 
 boolean JspDirectiveAttribute() : 
@@ -509,7 +515,7 @@ boolean JspDirectiveAttribute() :
     boolean added = false;
 }
 {
-	t=<JSP_DIRECTIVE_ATTRIBUTE_NAME> { trim(); add(" "); add(t); added = true; }  
+	t=<JSP_DIRECTIVE_ATTRIBUTE_NAME> { add(t); added=true; }  
 	t=<JSP_DIRECTIVE_ATTRIBUTE_EQUALS> { add(t); } 
 	t=<JSP_DIRECTIVE_ATTRIBUTE_VALUE> { add(t); } 
 	{
@@ -629,11 +635,12 @@ void Element() :
 }
 {
     t=<TAG_START>  { add(t); } 
-    startTagName = <TAG_NAME> { tagName = startTagName.image; add(startTagName); }
+    startTagName = <TAG_NAME> { tagName = startTagName.image; add(startTagName); add(" "); }
     (Attributes())
     ( 
     	(t=<TAG_END> 
     		{
+    		    trim();
     		    add(t);
     		    writeln();
     		    ++token_source.level;
@@ -664,42 +671,62 @@ void Element() :
     	
      	| 
      	
-     	(t=<TAG_SLASHEND> { add(t);writeln(); }  )
+     	(t=<TAG_SLASHEND> 
+            { 
+              trim();
+              if (padSlashEnd) {
+                add(" ");   
+              }
+              add(t);
+              writeln(); 
+            }  
+     	)
     )
 }
 
 void Attributes() :
 {
-    boolean wrapAttributes = true;
-    boolean haveAttr = false;
-    int count = 0;
-    writeln();
-    ++token_source.level;
+    boolean haveAttrs = false;
+    int attrCount = 0;
+    boolean adjustedLevel = false;
 }
 {
     (
-        haveAttr=Attribute() 
-        { 
-            ++count;
-            if (haveAttr && wrapAttributes && count >= 1) {
-                writeln();
+        haveAttrs = Attribute(wrapAttributes && attrCount > 0) 
+        {
+            if (haveAttrs) {
+                add(" ");   
+                ++attrCount;
+                if (wrapAttributes && !adjustedLevel) {
+                    ++token_source.level;  
+                    adjustedLevel = true;
+                }
             }
         }
-        
     )*   
-    
     {
-        trimNL();
-        --token_source.level;   
+        if (haveAttrs) {
+            write();   
+        }
+        if (wrapAttributes && adjustedLevel) {
+            --token_source.level;   
+        }
     }
 }
 
-boolean Attribute() : 
+boolean Attribute(boolean onNextLine) : 
 {
-    boolean added = true;
+    boolean added = false;
 }
 {
-  t=<ATTR_NAME> { trim(); add(" "); add(t); added=true;} 
+  t=<ATTR_NAME> 
+  { 
+      if (onNextLine) {
+        writeln();   
+      }
+      add(t); 
+      added=true; 
+  } 
   (
   	t=<ATTR_EQ>  { add(t); } 
   	AttributeValue()
@@ -771,7 +798,7 @@ void Declaration() :
 { }
 {
   t=<DECL_START>  { add(t); } 
-  (Attribute())* 
+  (Attribute(false))* 
   t=<DECL_END> { add(t); } 
 }
 
