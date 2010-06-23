@@ -46,8 +46,17 @@ public class CSS3Parser implements CSS3ParserConstants {
 
     // one of these is inserted at every place in a line that qualifies as a
     // good place to break a line if it needs wrapped.  You can't type one of
-    // these from the keyboard,
+    // these from the keyboard.
     char wrapSep = '\u001c';
+
+    // set the initial indent level.  This is useful when parsing styles contained
+    // within an html file, this lets the css get indented properly.
+    public void setInitialIndentLevel(int level) {
+        if (level >= 0) {
+            token_source.initialIndent = level;
+            token_source.level = level;
+        }
+    }
 
     public void setIndentWidth(int i) {
         token_source.setIndentWidth(i);

@@ -29,6 +29,7 @@ public abstract class Beautifier {
     protected boolean softTabs = true;
     protected int wrapMargin = 1024;
     protected String wrapMode = "none";
+    protected int initialIndent = 0;
     
     public static final String SERVICE_NAME = "beauty.beautifiers.Beautifier";
     
@@ -104,5 +105,9 @@ public abstract class Beautifier {
     
     public String getEditMode() {
         return editMode;   
+    }
+    
+    public void setInitialIndentLevel(int level) {
+        initialIndent = level;   
     }
 }
