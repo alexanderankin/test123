@@ -22,6 +22,9 @@ public class CSS3ParserTokenManager implements CSS3ParserConstants
     // where to write the completely beautified code.
     private static PrintWriter out = null;
 
+    // initial indentation level
+    static int initialIndent = 0;
+
     // level of indentation
     static int level = 0;
 
@@ -41,7 +44,7 @@ public class CSS3ParserTokenManager implements CSS3ParserConstants
         b = new StringBuilder();
         outputBuffer = new StringBuilder();
         a.clear();
-        level = 0;
+        level = initialIndent;
     }
 
     static String getText() {
@@ -230,12 +233,7 @@ public class CSS3ParserTokenManager implements CSS3ParserConstants
             }
 
             // indent --
-            // most lines get indented, but there are a few special cases:
-            // "else" gets put on the same line as the closing "}" for the "if",
-            // so don't want to indent.  Similarly with "catch" and "finally".
-            // The "while" at the end of a "do" loop is marked as "^while" to
-            // differentiate it from a regular "while" block. "else if" is also
-            // a special case.
+            // most lines get indented
             if (!s.startsWith(" {")) {
                 s = s.trim();
                 for (int i = 0; i < level; i++) {
@@ -244,8 +242,10 @@ public class CSS3ParserTokenManager implements CSS3ParserConstants
             }
 
             // check if the output buffer does NOT end with a new line.  If it
-            // doesn't, remove any leading whitespace from this line
-            if (!endsWith(outputBuffer, "\n") && !endsWith(outputBuffer, "\r")) {
+            // doesn't, remove any leading whitespace from this line.
+            // Hmm, yeah, well, this fucks up the first line.  Added the length
+            // check.
+            if (outputBuffer.length() > 0 && !endsWith(outputBuffer, "\n") && !endsWith(outputBuffer, "\r")) {
                 s = trimStart(s);
             }
 

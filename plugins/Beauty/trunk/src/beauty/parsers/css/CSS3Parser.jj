@@ -57,9 +57,18 @@ public class CSS3Parser
 
     // one of these is inserted at every place in a line that qualifies as a
     // good place to break a line if it needs wrapped.  You can't type one of
-    // these from the keyboard,
+    // these from the keyboard.
     char wrapSep = '\u001c';
-
+    
+    // set the initial indent level.  This is useful when parsing styles contained
+    // within an html file, this lets the css get indented properly.
+    public void setInitialIndentLevel(int level) {
+        if (level >= 0) {
+            token_source.initialIndent = level;
+            token_source.level = level;   
+        }
+    }
+    
     public void setIndentWidth(int i) {
         token_source.setIndentWidth(i);
     }
@@ -163,6 +172,9 @@ TOKEN_MGR_DECLS :
     // where to write the completely beautified code.
     private static PrintWriter out = null;
 
+    // initial indentation level
+    static int initialIndent = 0;
+    
     // level of indentation
     static int level = 0;
 
@@ -182,7 +194,7 @@ TOKEN_MGR_DECLS :
         b = new StringBuilder();
         outputBuffer = new StringBuilder();
         a.clear();
-        level = 0;
+        level = initialIndent;
     }
 
     static String getText() {
@@ -371,12 +383,7 @@ TOKEN_MGR_DECLS :
             }
 
             // indent --
-            // most lines get indented, but there are a few special cases:
-            // "else" gets put on the same line as the closing "}" for the "if",
-            // so don't want to indent.  Similarly with "catch" and "finally".
-            // The "while" at the end of a "do" loop is marked as "^while" to
-            // differentiate it from a regular "while" block. "else if" is also
-            // a special case.
+            // most lines get indented
             if (!s.startsWith(" {")) {
                 s = s.trim();
                 for (int i = 0; i < level; i++) {
@@ -385,8 +392,10 @@ TOKEN_MGR_DECLS :
             }
 
             // check if the output buffer does NOT end with a new line.  If it
-            // doesn't, remove any leading whitespace from this line
-            if (!endsWith(outputBuffer, "\n") && !endsWith(outputBuffer, "\r")) {
+            // doesn't, remove any leading whitespace from this line.
+            // Hmm, yeah, well, this fucks up the first line.  Added the length
+            // check.
+            if (outputBuffer.length() > 0 && !endsWith(outputBuffer, "\n") && !endsWith(outputBuffer, "\r")) {
                 s = trimStart(s);
             }
 
