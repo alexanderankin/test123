@@ -13,6 +13,8 @@ import ctagsinterface.projects.ProjectWatcher;
 
 public class QueryAction extends EditAction {
 
+	private static int MAX_RESULTS = 1000;
+
 	public enum QueryType
 	{
 		JUMP_TO_TAG("Jump to tag"),
@@ -102,7 +104,7 @@ public class QueryAction extends EditAction {
 	    {
 	    case JUMP_TO_TAG:
 	    	ArrayList<Tag> tags = new ArrayList<Tag>();
-            CtagsInterfacePlugin.getIndex().queryTags(s, tags);
+            CtagsInterfacePlugin.getIndex().queryTags(s, MAX_RESULTS, tags);
 	        CtagsInterfacePlugin.jumpToTags(view, tags);
 	    break;
 	    case SEARCH_PREFIX:

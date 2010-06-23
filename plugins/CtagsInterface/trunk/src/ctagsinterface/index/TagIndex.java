@@ -236,7 +236,7 @@ public class TagIndex
 					q.append(" AND " + s + ":" + escape(tag.getExtension(s)));
 			}
 		}
-		queryTags(q.toString(), tags);
+		queryTags(q.toString(), MAX_RESULTS, tags);
 	}
 
 	/*
@@ -414,11 +414,11 @@ public class TagIndex
 		});
 	}
 
-	public void queryTags(String query, final List<Tag> tags)
+	public void queryTags(String query, int maxResults, final List<Tag> tags)
 	{
 		if (tags == null)
 			return;
-		runQuery(query, MAX_RESULTS, new DocHandler() {
+		runQuery(query, maxResults, new DocHandler() {
 			public void handle(Document doc)
 			{
 				Tag tag = documentToTag(doc);
