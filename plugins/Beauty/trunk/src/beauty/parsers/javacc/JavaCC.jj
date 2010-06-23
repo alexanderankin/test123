@@ -101,6 +101,10 @@ public class JavaCCParser
     if (t.kind == BIT_OR || t.kind == COMMA || t.kind == RPAREN || t.kind == RBRACE || t.kind == RBRACKET) return false;
     return true;
   }
+  
+  public void parse() throws ParseException {
+    javacc_input();   
+  }
 
   public JavaCCParser(String fileName)
    {

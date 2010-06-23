@@ -26,7 +26,7 @@ public class JavaCCBeautifier extends Beautifier {
             }
             
             // do the parse
-            parser.javacc_input();
+            parser.parse();
             
             // restore the unicode sequences
             text = parser.getText();

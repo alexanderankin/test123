@@ -496,7 +496,25 @@ public class DefaultBeautifier extends Beautifier {
             tempBuffer.setMode(mode);
             tempBuffer.insert(0, sb.toString());
             tempBuffer.indentLines(0, tempBuffer.getLineCount() - 1);
-            sb = new StringBuilder(tempBuffer.getText(0, tempBuffer.getLength())); 
+            sb = new StringBuilder(tempBuffer.getText(0, tempBuffer.getLength()));
+            
+            if (initialLevel > 0) {
+                // do additional indenting, for example, this is the case when
+                // javascript is inside a <script> block in an html or jsp file
+                // and the entire block needs indented some more to fit with
+                // the rest of the file.
+                StringBuilder pad = new StringBuilder();
+                for (int i = 0; i < initialLevel; i++) {
+                    pad.append(indent);
+                }
+                String all = sb.toString();
+                String ls = getLineSeparator();
+                String[] lines = all.split(ls);
+                sb.setLength(0);
+                for (String line : lines) {
+                    sb.append(pad).append(line).append(ls);
+                }
+            }
         } catch (Exception ioe) {
             ioe.printStackTrace();
         } 

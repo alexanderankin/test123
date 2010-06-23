@@ -25,11 +25,13 @@ public abstract class Beautifier {
     // buffer settings
     protected String editMode = null;
     protected int tabWidth = 4;
-    protected int indentWidth = 4;
-    protected boolean softTabs = true;
     protected int wrapMargin = 1024;
     protected String wrapMode = "none";
-    protected int initialIndent = 0;
+    protected int initialLevel = 0;
+    protected int indentWidth = 4;
+    protected boolean softTabs = true;
+    protected String indent = "    ";
+    protected String doubleIndent = indent + indent;
     
     public static final String SERVICE_NAME = "beauty.beautifiers.Beautifier";
     
@@ -57,9 +59,17 @@ public abstract class Beautifier {
     public int getTabWidth() {
         return tabWidth;   
     }
-    
+
     public void setIndentWidth(int w) {
-        indentWidth = w;   
+        indentWidth = w;
+        if (indentWidth <= 0) {
+            indentWidth = 4;
+        }
+        indent = "";
+        for (int i = 0; i < w; i++) {
+            indent += " ";
+        }
+        doubleIndent = indent + indent;
     }
     
     public int getIndentWidth() {
@@ -68,6 +78,13 @@ public abstract class Beautifier {
     
     public void setUseSoftTabs(boolean b) {
         softTabs = b;
+        if (b) {
+            indent = "\t";
+            doubleIndent = "\t\t";
+        }
+        else {
+            setIndentWidth(indentWidth);
+        }
     }
     
     public boolean getUseSoftTabs() {
@@ -108,6 +125,6 @@ public abstract class Beautifier {
     }
     
     public void setInitialIndentLevel(int level) {
-        initialIndent = level;   
+        initialLevel = level;   
     }
 }

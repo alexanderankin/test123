@@ -34,10 +34,10 @@ public class CSSBeautifier extends Beautifier {
             parser.setPadTerm(jEdit.getBooleanProperty("beauty.css.padTerm", true));
             parser.setPadParams(jEdit.getBooleanProperty("beauty.css.padParams", true));
             parser.setPadSelectors(jEdit.getBooleanProperty("beauty.css.padSelectors", true));
-            parser.setInitialIndentLevel(initialIndent);
+            parser.setInitialIndentLevel(initialLevel);
  
             // do the parse
-            parser.styleSheet();
+            parser.parse();
             return parser.getText();
         } catch (Exception e) {
             throw new ParserException(e);

@@ -116,6 +116,10 @@ public class JavaParser
       try { ReInit(new FileInputStream(new File(fileName))); }
       catch(Exception e) { e.printStackTrace(); }
    }
+   
+   public void parse() throws ParseException {
+       CompilationUnit();   
+   }
 
     public static void main(String args[]) {
         JavaParser parser;
