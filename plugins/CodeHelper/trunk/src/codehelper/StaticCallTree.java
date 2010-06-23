@@ -259,7 +259,8 @@ public class StaticCallTree extends JPanel
 	}
 	private Vector<Tag> getTagsOfFile(String file)
 	{
-		Vector<Tag> tags = CtagsInterfacePlugin.query("_path:" + TagIndex.escape(file));
+		Vector<Tag> tags = CtagsInterfacePlugin.query("_path:" +
+			TagIndex.escape(file), 1000000);
 		// Now update the file of all tags...
 		for (Tag tag: tags)
 			tag.setFile(file);
