@@ -835,10 +835,10 @@ public class CtagsInterfacePlugin extends EditPlugin
 		index.queryTag(tag, tags);
 		return tags;
 	}
-	public static Vector<Tag> query(String query)
+	public static Vector<Tag> query(String query, int maxResults)
 	{
 		Vector<Tag> tags = new Vector<Tag>();
-		index.queryTags(query, tags);
+		index.queryTags(query, maxResults, tags);
 		return tags;
 	}
 	public static String getTagNameQuery(String tag)
