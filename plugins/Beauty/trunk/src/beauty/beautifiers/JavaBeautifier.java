@@ -32,7 +32,7 @@ public class JavaBeautifier extends Beautifier {
             parser.setLineSeparator(getLineSeparator());
 
             // do the parse
-            parser.CompilationUnit();
+            parser.parse();
 
             // restore the unicode sequences
             text = parser.getText();

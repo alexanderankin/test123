@@ -12,11 +12,11 @@
  * a single token, then the token image can be passed off to the css beautifier.
  *
  * Options:
- * TODO: wrap attributes, but only if there is more than 1 attribute
- * TODO: indent multi-line attribute
- * TODO: space before slashend
- * TODO: fix scriptlet indenting (pass to java parser)
- * TODO: fix script indenting (pass to javascript parser)
+ * DONE: wrap attributes, but only if there is more than 1 attribute
+ * DONE: indent multi-line attribute
+ * DONE: space before slashend
+ * DONE: fix scriptlet indenting (pass to java line parser)
+ * DONE: fix script indenting (pass to javascript parser)
  * DONE: fix style indenting (pass to css parser)
  *
  */
@@ -47,6 +47,9 @@ public class JspParser {
     
     // option to put a space before a closing />
     boolean padSlashEnd = false;
+    
+    // option to put a space before a closing >
+    boolean padTagEnd = false;
     
     // option to wrap attributes.  Attributes are wrapped only if there is 
     // more than one attribute.
@@ -111,6 +114,10 @@ public class JspParser {
     private void trimNL() {
         token_source.trimNL();   
     }
+    
+    private void trimNL(String s) {
+        token_source.trimNL(s);   
+    }
 
     private void trimWhitespace() {
         token_source.trimWhitespace();
@@ -133,26 +140,10 @@ public class JspParser {
         token_source.setLineSeparator(le);
     }
     
-	/**
-	 * Return the contents of a quote.
-	 * @param quote String - starting and ending with " or '
-	 * @return String a substring of quote: quote without the first and list
-	 * character.
-	 */
-	private static String quoteContent(String quote) {
-		return quote.substring(1, quote.length()-1);
-	}
-	
-	/**
-	 * Return the contents of a EL expression or a Value Binding expression.
-	 * @param expression String - starting with ${ or #{ and ending with }
-	 * @return String a substring of expression: expression without the first two and list
-	 * characters.
-	 */
-	private static String expressionContent(String expression) {
-		return expression.substring(2, expression.length()-1).trim();
-	}
-	
+    public void parse() throws ParseException {
+        CompilationUnit();   
+    }
+    
     public static void main(String args[]) {
         JspParser parser;
         if (args.length == 0) {
@@ -266,7 +257,7 @@ PARSER_END(JspParser)
 
 <AttrValueState, AfterTagState, InTagState> SPECIAL_TOKEN :
 {
-  < (<WHITESPACE>)+ >
+    < (<WHITESPACE>)+ > { add(matchedToken.image); System.out.println("+++++ adding whitepace"); }
 }
 
 <DEFAULT, AfterTagState> TOKEN : 
@@ -498,6 +489,7 @@ void ContentElementPossiblyWithText() :
 	( Text() )?
 }
 
+// <%@
 void JspDirective() :
 { }
 {
@@ -539,11 +531,40 @@ boolean JspDirectiveAttribute() :
 }
 
 void JspScriptlet() :
-{ }
 {
-	t=<JSP_SCRIPTLET_START> { add(t); writeln(); ++token_source.level; } 
-	t=<JSP_SCRIPTLET> { add(t); }       // TODO: indent the scriptlet block
-	t=<JSP_SCRIPTLET_END> { --token_source.level; add(t); writeln(); } 
+    Token start;
+    Token content;
+    Token end;
+}
+{
+	start=<JSP_SCRIPTLET_START> 
+	content=<JSP_SCRIPTLET> 
+	end=<JSP_SCRIPTLET_END> 
+	
+	{
+	     add(start);
+	     writeln();
+	     ++token_source.level;
+
+	     try {
+            if (content != null && content.image.trim().length() > 0) {
+                Beautifier beautifier = new JavaLineBeautifier();
+                beautifier.setIndentWidth(indentWidth);
+                beautifier.setTabWidth(tabSize);
+                beautifier.setUseSoftTabs(useSoftTabs);
+                beautifier.setInitialIndentLevel(token_source.level);
+                String java = beautifier.beautify(content.image.trim());
+                writePre(java);
+            }
+         }
+         catch(ParserException pe) {
+             // TODO: handle this
+         }
+	     
+	     --token_source.level;
+	     add(end);
+	     writeln();
+	}
 }
 
 void JspExpression() :
@@ -650,12 +671,15 @@ void Element() :
 }
 {
     t=<TAG_START>  { add(t); } 
-    startTagName = <TAG_NAME> { tagName = startTagName.image; add(startTagName); add(" "); }
+    startTagName = <TAG_NAME> { tagName = startTagName.image; add(startTagName); }
     (Attributes())
     ( 
     	(t=<TAG_END> 
     		{
-    		    trim();
+    		    trimWhitespace();
+    		    if (padTagEnd) {
+    		      add(" ");   
+    		    }
     		    add(t);
     		    writeln();
     		    ++token_source.level;
@@ -674,7 +698,7 @@ void Element() :
     	
    		(HtmlScript() | HtmlStyle() | Content())?
     	
-    	t=<ENDTAG_START>  { writeln(); --token_source.level; add(t); } 
+    	t=<ENDTAG_START>  { trimNL(); writeln(); --token_source.level; add(t); } 
     	endTagName = <TAG_NAME> 
     		{ 
     		    add(endTagName);
@@ -682,13 +706,22 @@ void Element() :
     			    // throw exception
     			}
     		}
-    	t=<TAG_END> { add(t); writeln();} )
+    	t=<TAG_END>
+            { 
+               trimWhitespace(); 
+               if (padTagEnd) {
+                    add(" ");   
+               }
+               add(t); 
+               writeln();
+            } 
+    	)
     	
      	| 
      	
      	(t=<TAG_SLASHEND> 
             { 
-              trim();
+              trimWhitespace();
               if (padSlashEnd) {
                 add(" ");   
               }
@@ -710,7 +743,6 @@ void Attributes() :
         haveAttrs = Attribute(wrapAttributes && attrCount > 0) 
         {
             if (haveAttrs) {
-                add(" ");   
                 ++attrCount;
                 if (wrapAttributes && !adjustedLevel) {
                     ++token_source.level;  
@@ -720,9 +752,6 @@ void Attributes() :
         }
     )*   
     {
-        if (haveAttrs) {
-            write();   
-        }
         if (wrapAttributes && adjustedLevel) {
             --token_source.level;   
         }
@@ -736,8 +765,14 @@ boolean Attribute(boolean onNextLine) :
 {
   t=<ATTR_NAME> 
   { 
+      // there is always whitespace in front of an attribute, either the
+      // attribute starts on a new line or it needs a space between the
+      // attribute and the previous token.
       if (onNextLine) {
         writeln();   
+      }
+      else {
+        add(" ");   
       }
       add(t); 
       added=true; 
@@ -847,10 +882,41 @@ void DoctypeExternalId() :
 
 void HtmlScript() :
 {
+    Token scriptToken = null;
+    Token endToken = null;
+    StringBuilder script = new StringBuilder();
 }
 {
-	(t=<HTML_SCRIPT_CONTENT> { add(t); } )*
-	t=<HTML_SCRIPT_END_TAG> { add(t); } 
+	(scriptToken=<HTML_SCRIPT_CONTENT> 
+	    { 
+	        if (scriptToken != null) {
+	             script.append(scriptToken.image);   
+	        }
+	    } 
+	)*
+	endToken=<HTML_SCRIPT_END_TAG>
+	{
+        try {
+            if (script.length() > 0) {
+                Beautifier beautifier = new DefaultBeautifier("javascript");
+                beautifier.setIndentWidth(indentWidth);
+                beautifier.setTabWidth(tabSize);
+                beautifier.setUseSoftTabs(useSoftTabs);
+                beautifier.setInitialIndentLevel(token_source.level);
+                String js = beautifier.beautify(script.toString().trim());
+                writePre(js);
+            }
+            else if (scriptToken != null) {
+                add(scriptToken);   
+            }
+        }
+        catch(ParserException pe) {
+            // TODO: handle this
+        }
+        if (endToken != null) {
+            add(endToken);   
+        }
+	}
 }
 
 void HtmlStyle() :
@@ -877,8 +943,9 @@ void HtmlStyle() :
                 beautifier.setTabWidth(tabSize);
                 beautifier.setUseSoftTabs(useSoftTabs);
                 beautifier.setInitialIndentLevel(token_source.level);
-                String css = beautifier.beautify(style.toString());
+                String css = beautifier.beautify(style.toString().trim());
                 writePre(css);
+                trimWhitespace();
             }
             else if (styleToken != null) {
                 add(styleToken);   
@@ -1117,11 +1184,8 @@ TOKEN_MGR_DECLS :
             // check for blank line(s)
             String maybe_blank = new String(s);
             if (maybe_blank.trim().length() == 0) {
-                // yep, it's a blank, so just print it out
-                if (s.length() >= ls.length()) {
-                    s = s.substring(0, s.length() - ls.length());
-                }
-                outputBuffer.append(s);
+                // yep, it's a blank, so just print out a line separator
+                outputBuffer.append(ls);
                 a.clear();
                 return;
             }

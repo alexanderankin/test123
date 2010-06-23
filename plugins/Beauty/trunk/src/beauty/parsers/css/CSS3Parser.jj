@@ -132,7 +132,9 @@ public class CSS3Parser
         token_source.addComment(t);   
     }
     
-    
+    public void parse() throws Exception {
+        styleSheet();   
+    }
 
    public CSS3Parser(String fileName)
    {
@@ -373,11 +375,8 @@ TOKEN_MGR_DECLS :
             // check for blank line(s)
             String maybe_blank = new String(s);
             if (maybe_blank.trim().isEmpty()) {
-                // yep, it's a blank, so just print it out
-                if (s.length() >= ls.length()) {
-                    s = s.substring(0, s.length() - ls.length());
-                }
-                outputBuffer.append(s);
+                // yep, it's a blank, so just print out a line separator
+                outputBuffer.append(ls);
                 a.clear();
                 return;
             }
