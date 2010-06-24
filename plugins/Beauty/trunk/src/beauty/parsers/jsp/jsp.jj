@@ -18,6 +18,8 @@
  * DONE: fix scriptlet indenting (pass to java line parser)
  * DONE: fix script indenting (pass to javascript parser)
  * DONE: fix style indenting (pass to css parser)
+ * TODO: currently removes all blank lines.  Need to collapse multiple blank lines
+ * into a single blank line.
  *
  */
 
@@ -54,6 +56,18 @@ public class JspParser {
     // option to wrap attributes.  Attributes are wrapped only if there is 
     // more than one attribute.
     boolean wrapAttributes = false;
+    
+    public void setPadSlashEnd(boolean b) {
+        padSlashEnd = b;   
+    }
+    
+    public void setPadTagEnd(boolean b) {
+        padTagEnd = b;   
+    }
+    
+    public void setWrapAttributes(boolean b) {
+        wrapAttributes = b;   
+    }
 
     // shouldn't use this, a specific line separator should be set based on
     // buffer settings.  Of course, it may be the same as what the buffer
