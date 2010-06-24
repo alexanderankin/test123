@@ -152,6 +152,9 @@ public class HtmlFormatter extends HtmlVisitor {
         haveLanguage = tagsLanguages.contains(block.startTag.tagName.toUpperCase());
  
         if (haveLanguage) {
+            // ----- Don't worry about this anymore.  This was to support jsp files,
+            // and the jsp parser does that better than this hack. 
+            // -----
             // Format other languages with their own formatters.
             // There are 3 other languages at the moment: javascript, css, and java.
             // Combine the elements of the block (they are either text or new line elements)
