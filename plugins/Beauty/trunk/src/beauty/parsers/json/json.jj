@@ -136,7 +136,8 @@ SKIP :
 // javascript comments and html comments within json files.  Files containing
 // comments are not acceptable to many parsers since the standard does not allow
 // them.  THIS PARSER WILL NOT ACCEPT COMMENTS. However, if you'd rather it just
-// silently skipped over comments, uncomment this block.
+// silently skipped over comments, uncomment this block. This will cause the
+// beautifier to remove comments.
 /*
 SKIP : 
 {
