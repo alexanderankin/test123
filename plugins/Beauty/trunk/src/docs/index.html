@@ -32,9 +32,9 @@
       <p>
       There are several beautifiers/formatters included:
       <ul>
-         <li>HTML: works very well, even when presented with poorly formatted html.  Delegates to the CSS beautifier to format style blocks within an HTML file.  Delegates to the included custom javascript beautifier to format script blocks within an HTML file. Delegates to the included custom java beautifier to format java scriptlet blocks within an HTML file.</li>
-         <li>JSP: has been combined with the HTML beautifier.  It works pretty well, although it will choke on a few things.  In particular, it doesn't like jsp comments or EL expressions within style or script blocks. These should be fixed for the 0.6 release.</li>
-         <li>CSS: works very well.</li>
+         <li>HTML: works very well, even when presented with poorly formatted html.  Delegates to the CSS beautifier to format style blocks within an HTML file.  Delegates to the included custom javascript beautifier to format script blocks within an HTML file. Delegates to the included custom java beautifier to format java scriptlet blocks within an HTML file.  This does a pretty good job on JSP files, although it will choke on a few things, like EL code within style or script blocks.</li>
+         <li>JSP: this is new for Beauty 0.5 and takes care of the shortcomings of the HTML beautifier for JSP files.  This beautifier handles cleaning up jsp files, including script and style blocks and will even beautify java code withing scriptlet blocks.
+         <li>CSS: works very well.  The JSP beautifier delegates to this beautifier to clean up style blocks within JSP files.</li>
          <li>Java: works very well, formats strictly to Sun's formatting standard only. Needs work on doing line wrapping per Sun's guidelines.</li>
          <li>JavaCC: needs work, formats to a combination of Sun's Java formatting standard and my own style for javacc files.</li>
          <li>JSON: works very well.  JSON files are usually machine-generated in a single long line, so it is nice to be able to format them quickly to a more human-readable format.</li>
@@ -47,11 +47,19 @@
          <li>XmlIndenter: part of the XML plugin, this beautifier works on all xml-based files. Use this for well-formed xml dialects like docbook files, Ant files, and so on, use the HTML beautifier for those xml-like files that are not necessarily well-formed.
       </ul>
       <p>
-      With the 0.4 release, Beauty has the ability to <a href="#custom">configure a custom beautifier</a> per mode, which allows padding of various items, clean up of extra blank lines, and the ability to use the jEdit indenter. I've included custom beautifiers for Ada, Java, Javascript, CSS files. Making custom beautifiers is very easy to do, and you are encouraged to create and share beautifiers for any language that jEdit supports.
+      With the 0.4 release, Beauty has the ability to <a href="#custom">configure a custom beautifier</a> per mode, which allows padding of various items, clean up of extra blank lines, and the ability to use the jEdit indenter. I've included custom beautifiers for 
+      <ul>
+      <li>Ada</li>
+      <li>Java</li> 
+      <li>Javascript</li>
+      <li>CSS</li>
+      </ul>
       <p>
       (Note: the custom CSS beautifier is still included, but the built-in CSS beautifier introduced in Beauty 0.5 does a much better job.)
       <p>
-      (Another note: The built in Java beautifier does a much better job than the custom Java beautifier, but the built in Java beautifier requires grammatically correct Java code, where the custom beautifier does not.  The custom beautifier is used by the HTML beautifier for JSP pages to format Java scriptlet blocks.)
+      (Another note: The built in Java beautifier does a much better job than the custom Java beautifier, but the built in Java beautifier requires grammatically correct Java code, where the custom beautifier does not.  The custom beautifier is used by the JSP beautifier for JSP pages to format Java scriptlet blocks.)
+      <p>
+      Making custom beautifiers is very easy to do, and you are encouraged to create and share beautifiers for any language that jEdit supports.
       <p>
       All other modes can default to use the built-in jEdit indenter, which works pretty well for most modes. To turn on this option, check the box in the Beauty options.
       <p>
@@ -86,11 +94,23 @@
          <li>Soft tabs: in this initial release, all tabs are converted to soft tabs. This should be fixed in the next release to honor the soft tab setting for the buffer.
       </ul>
       <p>
+      To set which beautifier to use per mode, use the Beauty option settings under the Plugins - Plugin Options menu.
+      <p>
+      <strong>CSS Beautifier</strong>
+      <p>
       The CSS beautifier introduced in Beauty 0.5 has some additional configuration options.  See the plugin option pane for details.
       <p>
-      It is quite possible that new beautifiers are introduced as jEdit plugins for specific languages. Please consult the documentation for those beautifiers for any settings that might be possible.
+      <strong>JSP Beautifier</strong>
       <p>
-      To set which beautifier to use per mode, use the Beauty option settings under the Plugins - Plugin Options menu.
+      The JSP beautifier does not (yet) have any specific configuration other than the buffer settings mentioned above, however, some configuration of java scriptlets, style blocks, and javascript blocks is possible.
+      <p>
+      This beautifier delegates to the CSS beautifier for style blocks, so any configuration you make for the CSS beautifier applies to the style blocks within a JSP file.
+      <p>
+      Similarly, this beautifier delegates to the custom beautifiers for java and javascript blocks within a JSP file, so you can make adjustments via the custom beautifier dialog in the plugin options.
+      <p>
+      <strong>Others</strong>
+      <p>
+      It is quite possible that new beautifiers are introduced as jEdit plugins for specific languages. Please consult the documentation for those beautifiers for any settings that might be possible.
       <p>
       <table summary="Custom Beautifier" border="0" cellspacing="0" cellspacing="0" width="100%">
          <tr align="CENTER" width="100%">
@@ -103,9 +123,10 @@
       </table>
       <p>
       <b><i>Custom beautifiers can be shared.  If you create one for a mode, post it on the jEdit mailing lists or add it to the jEdit plugin feature tracker or email it to me at danson@grafidog.com, and I'll include it in the next release of Beauty.</i></b>
-      To post the custom beautifier, just copy the appropriate properties file from $USER_HOME/.jedit/plugins/beauty.BeautyPlugin. To locate your $USER_HOME, from jEdit, go to Utilities - Beanshell - Evaluate Beanshell Expression..., then enter
-      <br>
-      <tt>System.getProperty("user.home")</tt>
+      <p>
+      To post the custom beautifier, just copy the appropriate properties file from <code>$USER_HOME/.jedit/plugins/beauty.BeautyPlugin</code>. To locate your <code>$USER_HOME</code>, in jEdit go to Utilities - Beanshell - Evaluate Beanshell Expression..., then enter
+      <p>
+      <code>System.getProperty("user.home")</code>
       <p>
       <p>
       To set up a custom beautifier:
@@ -114,7 +135,7 @@
             Go to Plugins - Plugin Options - Beauty - Custom Beautifier
          </li>
          <li>
-            Select the mode to configure. For your convenience, the mode will automatically be selected to the mode of the current buffer.
+            Select the mode to configure. For your convenience, the mode will initially be set to the mode of the current buffer.
          </li>
          <li>
             Configure the beautifier, click "Apply".
@@ -141,30 +162,37 @@
       KEYWORD4<br>
       OPERATOR
       <p>
-      Labels are also defined in the mode file, and you may want to put labels on a separate line. This may or may not  work well, again, it depends on the quality of  the mode file. For example, in the Ada language, a label is defined as <tt>&lt;&lt;</tt>sometext<tt>&gt;&gt;</tt>,  but in the Ada mode file, both <tt>&lt;&lt;</tt>and <tt>&gt;&gt;</tt>are defined as labels. This means that  if you elect to put a label on a separate line, you'll end up with
+      Labels are also defined in the mode file, and you may want to put labels on a separate line. This may or may not  work well, again, it depends on the quality of  the mode file. For example, in the Ada language, a label is defined as <tt>&lt;&lt;</tt>sometext<tt>&gt;&gt;</tt>,  but in the Ada mode file, both <tt>&lt;&lt;</tt> and <tt>&gt;&gt;</tt> are defined as labels. This means that  if you elect to put a label on a separate line, you'll end up with
       <br>
       <pre>
       &lt;&lt;sometext
       &gt;&gt;
       </pre>
       <br>
-      In this case, either the mode file needs to be fixed, or use the "Insert line separator before" and "Insert line separator after" text fields, and enter <tt>&lt;&lt;</tt>in the before and <tt>&gt;&gt;</tt>in the after.
+      In this case, either the mode file needs to be fixed, or use the "Insert line separator before" and "Insert line separator after" text fields, and enter <tt>&lt;&lt;</tt> in the before and <tt>&gt;&gt;</tt> in the after.
       <p>
       <b>Character padding</b><br>
-      Four text fields are for setting up padding of individual characters.  Just enter the characters, don't separate with a comma.  If you do separate with a comma, then the padding will also be applied to any commas in your file.<br>
-      Pad before these characters<br>
-      Pad after these characters<br>
-      Don't pad before these characters<br>
-      Don't pad after these characters<br>
+      Four text fields are for setting up padding of individual characters.  Just enter the characters, don't separate with a comma.  If you do separate with a comma, then the padding will also be applied to any commas in your file.
+      <p>
+      <ul>
+      <li>Pad before these characters</li>
+      <li>Pad after these characters</li>
+      <li>Don't pad before these characters</li>
+      <li>Don't pad after these characters</li>
+      </ul>
+      <p>
       These are applied by the beautifier in this order, so if you say to pad before ":" and then say don't pad before ":", the don't pad wins.
-      For example, you might use these when you want a space following each <tt>()</tt> and before each <tt>){</tt>.
+      For example, you might use these when you want a space following each <tt>(</tt> and before each <tt>)</tt>.
       <p>
       The "don't pad" characters are handy for modes like javascript that define ".", ",", and ";" as operators. Adding these characters to the don't pad text fields will cause the beautifier to remove spaces before and after these characters even though they may be padded as operators.
       <p>
       <b>Line insertion</b><br>
-      The next two text fields are for entering <b>regular expressions</b> to describe items that should have a line separator inserted either before and/or after:<br>
-      Insert line separators before these strings<br>
-      Insert line separators after these strings
+      The next two text fields are for entering <b>regular expressions</b> to describe items that should have a line separator inserted either before and/or after:
+      <p>
+      <ul>
+      <li>Insert line separators before these strings</li>
+      <li>Insert line separators after these strings</li>
+      </ul>
       <p>
       <b>Endless trouble can happen here, so be careful!</b>
       The "Insert line separators before" and "Insert line separators after" text fields can take a comma separated list of strings. Do not put spaces in this string unless you really mean it. <b>These strings are used as regular  expressions</b>, but note that this is a comma separated list, so if your regex contains commas, you must escape the commas or things probably won't  work as you'd want. <b>Warning: be sure to escape special regular expression characters within your regular expressions.</b>For example, if you want to insert a line separator before the start of a C-style comment, /*, enter "/\*" rather than "/*". Round, curly, and square brackets also need to be escaped. Other possible characters that might need escaped are ".", "?", "*", and "+".  There may be more.  Here's a good example: Suppose you are wanting to insert line separators in a json file after any of {, [, comma, ], and }. In the "Insert line separators after these strings" box, enter
@@ -177,30 +205,38 @@
       The custom beautifier applies the configuration in order from top to bottom (mostly), so, for example, operators are padded before applying the 'don't pad before' configuration. Padding is only applied if there is no whitespace before or after the item to be padded, so additional whitespace is not added unnecessarily. Similarly, if you want to insert a line break before or after an item and there already is a line separator, no additional blank lines will be added.  The exception to the "top to bottom" rule is padding of keywords.  Keywords are padded last.  This is to prevent the other pad/don't pad rules from removing padding from keywords.  For example, if you have
       <p>
       <code>
-         for (int i = 0 i &lt; a.length(); i++)
+         for (int i = 0; i &lt; a.length(); i++)
       </code>
       <p>
-      You can set to not pad before "(" so that <code>a.length()</code> looks good and still have the space between <code>for (</code>.
+      You can set to not pad before <tt>(</tt> so that <code>a.length()</code> looks good and still have the space between <code>for (</code>.
       <p>
       <b>Indenting</b><br>
-      Indenting is applied by the beautifier after padding.  On the "Indenting" tab, you can have the custom beautifier use the jEdit indenter to do the line indentation. Each of the text fields on this tab correspond exactly to the properties of the same names used by the jEdit mode files.  They are filled in initially with the values from the jEdit mode file for the mode you are working with.  Unfortunately, the documentation for these in the jEdit help file is not very good, so it may take some experiementation to make these work as you'd like.
+      Indenting is applied by the beautifier after padding.  On the "Indenting" tab, you can have the custom beautifier use the jEdit indenter to do the line indentation. Each of the text fields on this tab correspond exactly to the properties of the same names used by the jEdit mode files.  They are filled in initially with the values from the jEdit mode file for the mode you are working with.  Unfortunately, the documentation for these in the jEdit help file is not very good, so it may take some experimentation to make these work as you'd like.
       <p>
-      These are the supported indenting properties:<br>
-      These take a list of characters:<br>
-      Indent open brackets<br>
-      Indent close brackets<br>
-      Unaligned open brackets<br>
-      Unaligned close brackets<br>
-      Electric keys
+      These are the supported indenting properties:
       <p>
-      These take regular expressions:<br>
-      Indent next line<br>
-      Unindent this line<br>
+      These take a list of characters:
+      <ul>
+      <li>Indent open brackets</li>
+      <li>Indent close brackets</li>
+      <li>Unaligned open brackets</li>
+      <li>Unaligned close brackets</li>
+      <li>Electric keys</li>
+      </ul>
       <p>
-      These are true/false:<br>
-      Line up closing brackets<br>
-      Double bracket indent<br>
-
+      These take regular expressions:
+      <p>
+      <ul>
+      <li>Indent next line</li>
+      <li>Unindent this line</li>
+      </ul>
+      <p>
+      These are true/false:
+      <p>
+      <ul>
+      <li>Line up closing brackets</li>
+      <li>Double bracket indent</li>
+      </ul>
       <p>
       <table summary="For Developers" border="0" cellspacing="0" cellspacing="0" width="100%">
          <tr align="CENTER" width="100%">
@@ -290,8 +326,14 @@
          </tr>
       </table>
       <p>
-      I'd like to give credit to these people whose work I built off of:
-      <p>Sreenivasa Viswanadha for the Java 1.5 and javacc grammars
-      <p>Brian Goetz for the HTML grammar
+      I'd like to give credit to these people whose work I built off of: 
+      <p>
+      <ul>
+      <li>Sreenivasa Viswanadha for the Java 1.5 and javacc grammars (javacc.dev.java.net)</li>
+      <li>Brian Goetz for the HTML grammar</li>
+      <li>Patrick Niemeyer for the beanshell grammar (www.beanshell.org)</li>
+      <li>Pieter from the PMD project for the jsp grammar (www.pmd.org)</li> 
+      <li>The original CSS grammar came from W3C (www.w3c.org)</li>
+      </ul>
    </body>
 </html>
