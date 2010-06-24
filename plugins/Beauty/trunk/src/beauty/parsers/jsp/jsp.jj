@@ -263,6 +263,11 @@ PARSER_END(JspParser)
 | <#NO_JSP_TAG_END: ( ~["%"] | ("%" ~[">"]) )+ >
 }
 
+<*> TOKEN :
+{
+  <#EOL:            ( " " | "\t" )* <NEWLINE> >
+| <BLANK_LINES: <EOL> (<EOL>)+ >
+}
 
 <DEFAULT, JspDirectiveState, JspDirectiveAttributesState> SKIP :
 {
@@ -271,7 +276,7 @@ PARSER_END(JspParser)
 
 <AttrValueState, AfterTagState, InTagState> SPECIAL_TOKEN :
 {
-    < (<WHITESPACE>)+ > { add(matchedToken.image); System.out.println("+++++ adding whitepace"); }
+    < (<WHITESPACE>)+ > { add(matchedToken.image); }
 }
 
 <DEFAULT, AfterTagState> TOKEN : 
@@ -499,6 +504,7 @@ void ContentElementPossiblyWithText() :
 	  | JspExpression() 
 	  | JspScriptlet()
 	  | JspDirective()
+	  | <BLANK_LINES> { writeln(); writeln(); System.out.println("blank lines in ContentElementPossiblyWithText");}
 	)
 	( Text() )?
 }
@@ -614,7 +620,9 @@ void Text() :
 {
 }
 {
-	(	UnparsedText()
+	(	
+	    <BLANK_LINES> { writeln(); writeln(); System.out.println("blank lines in Text()");}
+	  | UnparsedText()
 	  |	ElExpression()
 	)+
 }
