@@ -31,7 +31,9 @@
     <property name="jedit.plugins.dir" value="${install.dir}" />
     <property name="lib.dir" value="lib" />
     <property name="user-doc.xsl" location="docs/users-guide.xsl" />
-
+    <!-- set this property if we wanted to chunk the user manual :
+    <property name="docbook.xsl.sheet" value="html/chunk.xsl" />
+    -->
 
     <import file="${build.support}/plugin-build.xml" />
 

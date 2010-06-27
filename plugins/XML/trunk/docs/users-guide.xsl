@@ -21,7 +21,11 @@
 
 	<xsl:import href="file:///@docs.style.sheet@" />
 
-<!-- Swing HTML control doesn't support &ldquo; and &rdquo; -->
+	<!-- chunk by chapters instead of sections by setting chunk.section.depth to 0
+	     instead of the default 1 -->
+	<xsl:param name="chunk.section.depth" select="1"/>
+	
+	<!-- Swing HTML control doesn't support &ldquo; and &rdquo; -->
 	<xsl:template match="quote">&quot;<xsl:apply-templates/>&quot;</xsl:template>
 
 	<xsl:template match="guibutton">
@@ -234,11 +238,22 @@
 
 	<!-- title banner, from docbook/html/titlepage.templates.xsl -->
 	<xsl:template name="article.titlepage.recto">
+		<xsl:call-template name="article-or-book.titlepage.recto"/>
+	</xsl:template>
+	
+	<xsl:template name="book.titlepage.recto">
+		<xsl:call-template name="article-or-book.titlepage.recto"/>
+	</xsl:template>
+
+	<xsl:template name="article-or-book.titlepage.recto">
 		<table summary="Header" cellspacing="0" border="0" width="100%" cols="2">
 			<tr width="100%"  bgcolor="#CCCCFF">
 				<!-- left cell : title, copyright -->
 				<td valign="TOP">
 					<xsl:choose>
+						<xsl:when test="bookinfo/title">
+							<xsl:apply-templates mode="article.titlepage.recto.auto.mode" select="bookinfo/title"/>
+						</xsl:when>
 						<xsl:when test="articleinfo/title">
 							<xsl:apply-templates mode="article.titlepage.recto.auto.mode" select="articleinfo/title"/>
 						</xsl:when>
@@ -255,6 +270,7 @@
 					
 					<!-- maybe the copyright notice should go on another line... -->
 					<xsl:apply-templates mode="article.titlepage.recto.auto.mode" select="articleinfo/copyright"/>
+					<xsl:apply-templates mode="article.titlepage.recto.auto.mode" select="bookinfo/copyright"/>
 					<xsl:apply-templates mode="article.titlepage.recto.auto.mode" select="artheader/copyright"/>
 					<xsl:apply-templates mode="article.titlepage.recto.auto.mode" select="info/copyright"/>
 				</td>
@@ -265,6 +281,7 @@
 							<strong>
 							<!-- release -->
 								<xsl:apply-templates mode="article.titlepage.recto.auto.mode" select="articleinfo/releaseinfo"/>
+								<xsl:apply-templates mode="article.titlepage.recto.auto.mode" select="bookinfo/releaseinfo"/>
 								<xsl:apply-templates mode="article.titlepage.recto.auto.mode" select="artheader/releaseinfo"/>
 								<xsl:apply-templates mode="article.titlepage.recto.auto.mode" select="info/releaseinfo"/>
 
@@ -377,5 +394,24 @@
 			</tr>
 		</table>
 	</xsl:template>
+	
+<!-- for chapter titles,
+     overrides docbook-xsl/html/component.xsl
+  -->
+<xsl:template name="component.title">
+  <xsl:param name="node" select="."/>
+
+   <xsl:call-template name="section.heading">
+   	<xsl:with-param name="title">
+      <xsl:apply-templates select="$node" mode="object.title.markup">
+    	  <xsl:with-param name="allow-anchors" select="1"/>
+      </xsl:apply-templates>
+    </xsl:with-param>
+    <xsl:with-param name="section" select="$node"/>
+    </xsl:call-template>
+    
+</xsl:template>
+
+
 <!-- }}} -->
 </xsl:stylesheet>
