@@ -68,11 +68,15 @@ public class JspParser {
     public void setWrapAttributes(boolean b) {
         wrapAttributes = b;   
     }
+    
+    public void setCollapseBlankLines(boolean b) {
+        token_source.collapseBlankLines = b;   
+    }
 
     // shouldn't use this, a specific line separator should be set based on
     // buffer settings.  Of course, it may be the same as what the buffer
     // uses anyway.
-    String lineSep = System.getProperty("line.separator");
+    String ls = System.getProperty("line.separator");
 
     // one of these is inserted at every place in a line that qualifies as a
     // good place to break a line if it needs wrapped.  You can't type one of
@@ -150,7 +154,7 @@ public class JspParser {
     }
 
     public void setLineSeparator(String le) {
-        lineSep = le;
+        ls = le;
         token_source.setLineSeparator(le);
     }
     
@@ -263,20 +267,32 @@ PARSER_END(JspParser)
 | <#NO_JSP_TAG_END: ( ~["%"] | ("%" ~[">"]) )+ >
 }
 
-<*> TOKEN :
-{
-  <#EOL:            ( " " | "\t" )* <NEWLINE> >
-| <BLANK_LINES: <EOL> (<EOL>)+ >
-}
-
 <DEFAULT, JspDirectiveState, JspDirectiveAttributesState> SKIP :
 {
   < (<WHITESPACE>)+ >
 }
 
-<AttrValueState, AfterTagState, InTagState> SPECIAL_TOKEN :
+<AttrValueState, InTagState> SPECIAL_TOKEN :
 {
     < (<WHITESPACE>)+ > { add(matchedToken.image); }
+}
+
+<AfterTagState> SPECIAL_TOKEN :
+{
+    < (<WHITESPACE>)+ > 
+    { 
+        String s = matchedToken.image;
+        StringTokenizer st = new StringTokenizer(s, ls, true);
+        int count = st.countTokens();
+        if (collapseBlankLines) {
+            count = Math.min(2, count);   
+        }
+        StringBuilder sb = new StringBuilder();
+        //for (int i = 0; i < count; i++) {
+            sb.append(ls);
+        //}
+        writePre(sb.toString());
+    }
 }
 
 <DEFAULT, AfterTagState> TOKEN : 
@@ -439,6 +455,20 @@ PARSER_END(JspParser)
 	} : AfterTagState
 }
 
+// Handle <pre> tag so tag body is not altered.
+<PreTagContentState> TOKEN :
+{
+	<PRE_TAG_CONTENT: (~[]) >
+	| <PRE_TAG_END_TAG : "</pre" | "</Pre" | "</PRE">
+	{
+		// We've done a custom lookahead for the closing </pre> and found it.
+		// Put it back into the input stream, so it can be processed normally.
+		input_stream.backup(5);
+		image.setLength(image.length() - 5); // kill the "</pre"
+		matchedToken.image = image.toString();
+	} : AfterTagState
+}
+
 /** ******************************************************************** */
 /** *************************  JSP GRAMMAR  **************************** */
 /** ******************************************************************** */
@@ -504,7 +534,6 @@ void ContentElementPossiblyWithText() :
 	  | JspExpression() 
 	  | JspScriptlet()
 	  | JspDirective()
-	  | <BLANK_LINES> { writeln(); writeln(); System.out.println("blank lines in ContentElementPossiblyWithText");}
 	)
 	( Text() )?
 }
@@ -519,7 +548,7 @@ void JspDirective() :
 	(
 		JspDirectiveAttributes()
 	)
-	t=<JSP_DIRECTIVE_END> { trim(); add(t); writeln(); } 
+	t=<JSP_DIRECTIVE_END> { trim(); add(t); write(); } 
 }
 
 void JspDirectiveAttributes() : 
@@ -563,7 +592,7 @@ void JspScriptlet() :
 	
 	{
 	     add(start);
-	     writeln();
+	     
 	     ++token_source.level;
 
 	     try {
@@ -592,7 +621,7 @@ void JspExpression() :
 {
 	t=<JSP_EXPRESSION_START> { add(t); } 
 	t=<JSP_EXPRESSION> { add(t); } 
-	t=<JSP_EXPRESSION_END> { add(t); } 
+	t=<JSP_EXPRESSION_END> { add(t); writeln(); } 
 }
 
 void JspDeclaration() :
@@ -600,7 +629,7 @@ void JspDeclaration() :
 {
 	t=<JSP_DECLARATION_START> { add(t); } 
 	t=<JSP_DECLARATION> { add(t); } 
-	t=<JSP_DECLARATION_END> { add(t); } 
+	t=<JSP_DECLARATION_END> { add(t); writeln(); } 
 }
 
 void JspComment() :
@@ -608,7 +637,7 @@ void JspComment() :
 {
 	t=<JSP_COMMENT_START> { add(t); } 
 	t=<JSP_COMMENT_CONTENT> { add(t); } 
-	t=<JSP_COMMENT_END> { add(t); writeln(); } 
+	t=<JSP_COMMENT_END> { add(t); write(); } 
 }
 
 /**
@@ -621,8 +650,7 @@ void Text() :
 }
 {
 	(	
-	    <BLANK_LINES> { writeln(); writeln(); System.out.println("blank lines in Text()");}
-	  | UnparsedText()
+	    UnparsedText()
 	  |	ElExpression()
 	)+
 }
@@ -630,7 +658,7 @@ void Text() :
 void UnparsedText() :
 { }
 {
-    t=<UNPARSED_TEXT> { add(t); } 
+    t=<UNPARSED_TEXT> { writeln(); add(t); writeln(); } 
 }
 
 /**
@@ -690,6 +718,7 @@ void Element() :
 	Token startTagName;
 	Token endTagName;
 	String tagName;
+	boolean inPreTag = false;
 }
 {
     t=<TAG_START>  { add(t); } 
@@ -703,7 +732,8 @@ void Element() :
     		      add(" ");   
     		    }
     		    add(t);
-    		    writeln();
+    		    //writeln();
+    		    write();
     		    ++token_source.level;
 		    	// Content in a <script> element needs special treatment (like a comment or CDataSection).
 		    	// Tell the TokenManager to start looking for the body of a script element.  In this
@@ -711,21 +741,36 @@ void Element() :
 		    	// This is a context sensitive switch for the token manager, not something one can
 		    	// express using normal JavaCC syntax.  Hence the hoop jumping.
 				if ("script".equalsIgnoreCase(startTagName.image)) {
+				    writeln();
 					token_source.SwitchTo(HtmlScriptContentState);
 				}
 				if ("style".equalsIgnoreCase(startTagName.image)) {
+				    writeln();
 					token_source.SwitchTo(HtmlStyleContentState);
+				}
+				if ("pre".equalsIgnoreCase(startTagName.image)) {
+				    token_source.SwitchTo(PreTagContentState);
+				    inPreTag = true;
+				    trimNL();
 				}
     		}
     	
-   		(HtmlScript() | HtmlStyle() | Content())?
+   		(HtmlScript() | HtmlStyle() | PreTag() | Content())?
     	
-    	t=<ENDTAG_START>  { trimNL(); writeln(); --token_source.level; add(t); } 
+   		t=<ENDTAG_START>  
+   		   { 
+   		       trimNL(); 
+   		       if (!inPreTag) {
+   		           writeln();
+   		       } 
+   		       --token_source.level; 
+   		       add(t); 
+   		   } 
     	endTagName = <TAG_NAME> 
     		{ 
     		    add(endTagName);
     			if (! tagName.equalsIgnoreCase(endTagName.image)) {
-    			    // throw exception
+    			    // TODO: handle this
     			}
     		}
     	t=<TAG_END>
@@ -735,7 +780,8 @@ void Element() :
                     add(" ");   
                }
                add(t); 
-               writeln();
+               //writeln();
+               write();
             } 
     	)
     	
@@ -748,7 +794,8 @@ void Element() :
                 add(" ");   
               }
               add(t);
-              writeln(); 
+              //writeln();
+              write();
             }  
      	)
     )
@@ -863,7 +910,7 @@ void CommentTag() :
 {
   t=<COMMENT_START> { add(t); } 
   ( t=<COMMENT_TEXT> { add(t); }  )* 
-  t=<COMMENT_END> { add(t); writeln(); } 
+  t=<COMMENT_END> { add(t); write(); } 
 }
   
 void Declaration() :
@@ -900,6 +947,24 @@ void DoctypeExternalId() :
 			t=<WHITESPACES> { add(t); }  
 			t=<QUOTED_LITERAL> { add(t); }  
 		)
+}
+
+// Handle <pre> tag content and end tag.
+void PreTag() :
+{
+    StringBuilder sb = new StringBuilder();
+}
+{
+    (
+        t=<PRE_TAG_CONTENT> 
+        { 
+            sb.append(t.image); 
+        } 
+    )*
+    t=<PRE_TAG_END_TAG> 
+    { 
+        writePre(sb.toString());
+    }
 }
 
 void HtmlScript() :
@@ -1022,6 +1087,8 @@ TOKEN_MGR_DECLS :
     // line separator, defaults to system line separator, but can be set to
     // a specific separator
     static String ls = System.getProperty("line.separator");
+    
+    static boolean collapseBlankLines = false;
 
     static void reset() {
         b = new StringBuilder();

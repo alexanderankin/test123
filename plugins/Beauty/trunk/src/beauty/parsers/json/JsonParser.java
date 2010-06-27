@@ -293,29 +293,23 @@ JSON grammar starts here
                      add(t);
   }
 
-  /** Generated Token Manager. */
   public JsonParserTokenManager token_source;
   JavaCharStream jj_input_stream;
-  /** Current token. */
-  public Token token;
-  /** Next token. */
-  public Token jj_nt;
+  public Token token, jj_nt;
   private int jj_ntk;
   private int jj_gen;
   final private int[] jj_la1 = new int[6];
   static private int[] jj_la1_0;
   static {
-      jj_la1_init_0();
+      jj_la1_0();
    }
-   private static void jj_la1_init_0() {
+   private static void jj_la1_0() {
       jj_la1_0 = new int[] {0x140,0x10000,0x37140,0x400,0x400,0x37140,};
    }
 
-  /** Constructor with InputStream. */
   public JsonParser(java.io.InputStream stream) {
      this(stream, null);
   }
-  /** Constructor with InputStream and supplied encoding */
   public JsonParser(java.io.InputStream stream, String encoding) {
     try { jj_input_stream = new JavaCharStream(stream, encoding, 1, 1); } catch(java.io.UnsupportedEncodingException e) { throw new RuntimeException(e); }
     token_source = new JsonParserTokenManager(jj_input_stream);
@@ -325,11 +319,9 @@ JSON grammar starts here
     for (int i = 0; i < 6; i++) jj_la1[i] = -1;
   }
 
-  /** Reinitialise. */
   public void ReInit(java.io.InputStream stream) {
      ReInit(stream, null);
   }
-  /** Reinitialise. */
   public void ReInit(java.io.InputStream stream, String encoding) {
     try { jj_input_stream.ReInit(stream, encoding, 1, 1); } catch(java.io.UnsupportedEncodingException e) { throw new RuntimeException(e); }
     token_source.ReInit(jj_input_stream);
@@ -339,7 +331,6 @@ JSON grammar starts here
     for (int i = 0; i < 6; i++) jj_la1[i] = -1;
   }
 
-  /** Constructor. */
   public JsonParser(java.io.Reader stream) {
     jj_input_stream = new JavaCharStream(stream, 1, 1);
     token_source = new JsonParserTokenManager(jj_input_stream);
@@ -349,7 +340,6 @@ JSON grammar starts here
     for (int i = 0; i < 6; i++) jj_la1[i] = -1;
   }
 
-  /** Reinitialise. */
   public void ReInit(java.io.Reader stream) {
     jj_input_stream.ReInit(stream, 1, 1);
     token_source.ReInit(jj_input_stream);
@@ -359,7 +349,6 @@ JSON grammar starts here
     for (int i = 0; i < 6; i++) jj_la1[i] = -1;
   }
 
-  /** Constructor with generated Token Manager. */
   public JsonParser(JsonParserTokenManager tm) {
     token_source = tm;
     token = new Token();
@@ -368,7 +357,6 @@ JSON grammar starts here
     for (int i = 0; i < 6; i++) jj_la1[i] = -1;
   }
 
-  /** Reinitialise. */
   public void ReInit(JsonParserTokenManager tm) {
     token_source = tm;
     token = new Token();
@@ -377,7 +365,7 @@ JSON grammar starts here
     for (int i = 0; i < 6; i++) jj_la1[i] = -1;
   }
 
-  private Token jj_consume_token(int kind) throws ParseException {
+  final private Token jj_consume_token(int kind) throws ParseException {
     Token oldToken;
     if ((oldToken = token).next != null) token = token.next;
     else token = token.next = token_source.getNextToken();
@@ -391,8 +379,6 @@ JSON grammar starts here
     throw generateParseException();
   }
 
-
-/** Get the next Token. */
   final public Token getNextToken() {
     if (token.next != null) token = token.next;
     else token = token.next = token_source.getNextToken();
@@ -401,7 +387,6 @@ JSON grammar starts here
     return token;
   }
 
-/** Get the specific Token. */
   final public Token getToken(int index) {
     Token t = token;
     for (int i = 0; i < index; i++) {
@@ -411,21 +396,23 @@ JSON grammar starts here
     return t;
   }
 
-  private int jj_ntk() {
+  final private int jj_ntk() {
     if ((jj_nt=token.next) == null)
       return (jj_ntk = (token.next=token_source.getNextToken()).kind);
     else
       return (jj_ntk = jj_nt.kind);
   }
 
-  private java.util.List<int[]> jj_expentries = new java.util.ArrayList<int[]>();
+  private java.util.Vector jj_expentries = new java.util.Vector();
   private int[] jj_expentry;
   private int jj_kind = -1;
 
-  /** Generate ParseException. */
   public ParseException generateParseException() {
-    jj_expentries.clear();
+    jj_expentries.removeAllElements();
     boolean[] la1tokens = new boolean[18];
+    for (int i = 0; i < 18; i++) {
+      la1tokens[i] = false;
+    }
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -443,21 +430,19 @@ JSON grammar starts here
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
-        jj_expentries.add(jj_expentry);
+        jj_expentries.addElement(jj_expentry);
       }
     }
     int[][] exptokseq = new int[jj_expentries.size()][];
     for (int i = 0; i < jj_expentries.size(); i++) {
-      exptokseq[i] = jj_expentries.get(i);
+      exptokseq[i] = (int[])jj_expentries.elementAt(i);
     }
     return new ParseException(token, exptokseq, tokenImage);
   }
 
-  /** Enable tracing. */
   final public void enable_tracing() {
   }
 
-  /** Disable tracing. */
   final public void disable_tracing() {
   }
 
