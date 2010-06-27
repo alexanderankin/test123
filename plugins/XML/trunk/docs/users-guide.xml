@@ -6,6 +6,9 @@
   <title>XML plugin user's guide</title>
 
  <articleinfo>
+
+ <releaseinfo>Version 2.7.1</releaseinfo>
+
  <authorgroup>
   <author><firstname>Slava</firstname><surname>Pestov</surname></author>
   <author><firstname>Dale</firstname><surname>Anson</surname></author>
@@ -472,8 +475,10 @@
  <programlisting>
 &lt;!-- :xml.validate.ignore-dtd=true: -->
 &lt;!DOCTYPE article [
-  &lt;!ENTITY % isolat1 PUBLIC "ISO 8879:1986//ENTITIES Added Latin 1//EN//XML" "http://www.oasis-open.org/docbook/xmlcharent/0.3/iso-lat1.ent" >
-  &lt;!ENTITY % isogrk1 PUBLIC "ISO 8879:1986//ENTITIES Greek Letters//EN//XML"  "http://www.oasis-open.org/docbook/xmlcharent/0.3/iso-grk1.ent" >
+  &lt;!ENTITY % isolat1 PUBLIC "ISO 8879:1986//ENTITIES Added Latin 1//EN//XML" 
+                "http://www.oasis-open.org/docbook/xmlcharent/0.3/iso-lat1.ent" >
+  &lt;!ENTITY % isogrk1 PUBLIC "ISO 8879:1986//ENTITIES Greek Letters//EN//XML"
+                "http://www.oasis-open.org/docbook/xmlcharent/0.3/iso-grk1.ent" >
   %isolat1;
   %isogrk1;
 ]>
@@ -791,7 +796,9 @@ Chapter 22 of <emphasis>DocBook XSL: The Complete Guide</emphasis> by Bob Stayto
   <para>
    Catalog files in the OASIS XML catalog format are themselves XML files, and must have the following <markup>DOCTYPE</markup> declaration:
   </para>
-  <programlisting><![CDATA[<!DOCTYPE catalog PUBLIC "-//OASIS//DTD Entity Resolution XML Catalog V1.0//EN" "oasis-catalog.dtd">]]></programlisting>
+  <programlisting><![CDATA[<!DOCTYPE catalog
+  PUBLIC "-//OASIS//DTD Entity Resolution XML Catalog V1.0//EN"
+  "oasis-catalog.dtd">]]></programlisting>
   <para>
    The XML plugin bundles the above DTD so you can use the completion features to construct an OASIS XML catalog.
   </para>
