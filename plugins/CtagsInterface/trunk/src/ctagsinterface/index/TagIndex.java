@@ -214,6 +214,7 @@ public class TagIndex
 
 	public void deleteTagsFromSourceFile(String file)
 	{
+		//System.err.println("Deleting tags from source file " + file);
 		Query q = getQuery(_PATH_FLD + ":" + escape(file));
 		if (q != null)
 		{
@@ -317,7 +318,7 @@ public class TagIndex
 			case '+': case '-': case '!': case '(': case ')':
 			case '{': case '}': case '[': case ']': case '^':
 			case '"': case '~': case '*': case '?': case ':':
-			case '\\':
+			case '\\': case ' ':
 				sb.append('\\');
 				break;
 			case '&':
