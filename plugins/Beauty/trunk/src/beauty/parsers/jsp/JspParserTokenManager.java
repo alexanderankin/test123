@@ -4608,15 +4608,17 @@ void SkipLexicalActions(Token matchedToken)
             image = new StringBuffer();
          image.append(input_stream.GetSuffix(jjimageLen + (lengthOfMatch = jjmatchedPos + 1)));
         String s = matchedToken.image;
+        s = s.replaceAll(" ", "");
+        s = s.replaceAll("\t", "");
         StringTokenizer st = new StringTokenizer(s, ls, true);
         int count = st.countTokens();
         if (collapseBlankLines) {
             count = Math.min(2, count);
         }
         StringBuilder sb = new StringBuilder();
-        //for (int i = 0; i < count; i++) {
+        for (int i = 0; i < count; i++) {
             sb.append(ls);
-        //}
+        }
         writePre(sb.toString());
          break;
       default :

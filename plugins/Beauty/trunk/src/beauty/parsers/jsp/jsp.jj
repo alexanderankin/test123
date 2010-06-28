@@ -282,15 +282,17 @@ PARSER_END(JspParser)
     < (<WHITESPACE>)+ > 
     { 
         String s = matchedToken.image;
+        s = s.replaceAll(" ", "");
+        s = s.replaceAll("\t", "");
         StringTokenizer st = new StringTokenizer(s, ls, true);
         int count = st.countTokens();
         if (collapseBlankLines) {
             count = Math.min(2, count);   
         }
         StringBuilder sb = new StringBuilder();
-        //for (int i = 0; i < count; i++) {
+        for (int i = 0; i < count; i++) {
             sb.append(ls);
-        //}
+        }
         writePre(sb.toString());
     }
 }
@@ -484,7 +486,8 @@ void CompilationUnit() :
   Content() <EOF> 
   
   {
-    write();   
+      trimWhitespace();
+      write();   
   }
 }
 
@@ -592,11 +595,12 @@ void JspScriptlet() :
 	
 	{
 	     add(start);
-	     
+	     writeln();
 	     ++token_source.level;
-
+	     
 	     try {
             if (content != null && content.image.trim().length() > 0) {
+                System.out.println("+++++ indent level = " + token_source.level);
                 Beautifier beautifier = new JavaLineBeautifier();
                 beautifier.setIndentWidth(indentWidth);
                 beautifier.setTabWidth(tabSize);
@@ -612,7 +616,7 @@ void JspScriptlet() :
 	     
 	     --token_source.level;
 	     add(end);
-	     writeln();
+	     write();
 	}
 }
 

@@ -46,6 +46,11 @@
     </style>
 
     <script>
+			// TODO: the javascript beautifier is not handling comments correctly.
+			// it will put several single line comments on the same line, and will
+			// put some lines in multi-line comments on the same line.
+			// ah ha! it's the rule to not to pad a . because
+			// dots have special meaning in code, but not in comments.
 			/* Finds the lowest common multiple of two numbers */
 			function LCMCalculator( x, y ) { // constructor function
 			    function checkInt( x ) { // inner function
@@ -55,54 +60,49 @@
 			    } 
 			    //semicolons are optional( but beware since this may cause consecutive lines to be
 			    //erroneously treated as a single statement )
-			    this.a = checkInt( x ) 
-			    this.b = checkInt( y ) 
+			    this . a = checkInt( x ) 
+			    this . b = checkInt( y ) 
 			} 
 			// The prototype of object instances created by a constructor is 
-			// that constructor's "prototype" property.
-			LCMCalculator.prototype = { // object literal
+			// that constructor's "prototype" property.LCMCalculator.prototype = { // object literal
 			gcd : function( ) { // method that calculates the greatest common divisor
 			    // Euclidean algorithm:
-			    var a = Math.abs( this.a ), b = Math.abs( this.b ), t; 
+			    var a = Math . abs( this . a ), b = Math . abs( this . b ), t; 
 			    if( a < b ) { 
 			        t = b; b = a; a = t; // swap variables
 			    } 
 			    while( b != 0 ) { 
 			        t = b; 
-			    // Only need to calculate gcd once, so "redefine" this method.
-			        b = a % b; 
+			        // Only need to calculate gcd once, so "redefine" this method.b = a % b; 
 			        a = t; 
 			    } 
 			    //( Actually not redefinition - it's defined on the instance itself,
-			    // so that this.gcd refers to this "redefinition" instead of LCMCalculator.prototype.gcd.)
+			    // so that this.gcd refers to this "redefinition" instead of LCMCalculator.prototype.gcd. )
 			    // Also, 'gcd' == "gcd", this[ 'gcd' ] == this.gcd
 			    this [ 'gcd' ] = function( ) { return a; }; 
 			    return a; 
 			}, 
 			"lcm" /* can use strings here */ : function( ) { 
-			    // Variable names don't collide with object properties, e.g.|lcm| is not |this.lcm|.
-			    // not using |this.a * this.b| to avoid FP precision issues 
-			    var lcm = this.a / this.gcd( ) * this.b; 
+			    // Variable names don't collide with object properties, e.g.|lcm| is not |this.lcm|.// not using |this.a * this.b| to avoid FP precision issues 
+			    var lcm = this . a / this . gcd( ) * this . b; 
 			    // Only need to calculate lcm once, so "redefine" this method.this.lcm = function( ) { return lcm; }; 
 			    return lcm; 
 			}, 
 			toString : function( ) { 
-			    return "LCMCalculator: a = " + this.a + ", b = " + this.b; 
+			    return "LCMCalculator: a = " + this . a + ", b = " + this . b; 
 			} 
 			}; 
-			[ [ 25, 55 ],[ 21, 56 ],[ 22, 58 ],[ 28, 56 ] ].map( function( pair ) { // array literal + mapping function
+			[ [ 25, 55 ],[ 21, 56 ],[ 22, 58 ],[ 28, 56 ] ]. map( function( pair ) { // array literal + mapping function
 			        return new LCMCalculator( pair [ 0 ], pair [ 1 ] ); 
-			} ).sort( function( a, b ) { // sort with this comparative function
-			    return a.lcm( ) - b.lcm( ); 
-			} ).forEach( function( obj ) { 
+			} ). sort( function( a, b ) { // sort with this comparative function
+			    return a . lcm( ) - b . lcm( ); 
+			} ). forEach( function( obj ) { 
 			    /* Note: print( ) is a JS builtin function available in Mozilla's js CLI;
-			    * it's functionally equivalent to Java's System.out.println( ).
-			    * Within a web browser, print( ) is a very different function( opens the "Print Page" dialog ),
+			    * it's functionally equivalent to Java's System.out.println( ).* Within a web browser, print( ) is a very different function( opens the "Print Page" dialog ),
 			    * so use something like document.write( ) instead.*/
-			    print( obj + ", gcd = " + obj.gcd( ) + ", lcm = " + obj.lcm( ) ); 
+			    print( obj + ", gcd = " + obj . gcd( ) + ", lcm = " + obj . lcm( ) ); 
 			} ); 
-			// Note: Array's map( ) and forEach( ) are predefined in JavaScript 1.6.
-			// They are currently not available in all major JavaScript engines( including Internet Explorer's ),
+			// Note: Array's map( ) and forEach( ) are predefined in JavaScript 1.6.// They are currently not available in all major JavaScript engines( including Internet Explorer's ),
 			// but are shown here to demonstrate JavaScript's inherent functional nature.
     </script>
   </head>

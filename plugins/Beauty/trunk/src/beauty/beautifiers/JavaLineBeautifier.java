@@ -30,7 +30,8 @@ public class JavaLineBeautifier extends DefaultBeautifier {
     // HashMap<String, List < String>>
     // where the second < is still treated as an operator.  Since the intent of
     // this beautifier is to clean up java scriptlets within a jsp file, I'm 
-    // not going to worry about it.
+    // not going to worry about it since people really shouldn't be using
+    // scriptlets much anyway.
     String adjustGenerics(String s) {
         String ls = getLineSeparator();
         String[] lines = s.split(ls);
