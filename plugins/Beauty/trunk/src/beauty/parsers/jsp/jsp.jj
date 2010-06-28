@@ -736,8 +736,18 @@ void Element() :
     		      add(" ");   
     		    }
     		    add(t);
+    		    
     		    //writeln();
     		    write();
+    		    if (t.next != null) {
+    		      Token st = t.next.specialToken;
+    		      if (st != null) {
+    		          System.out.println("next special token not null");
+    		          if (!st.image.contains(ls)) {
+    		              writeln();   
+    		          }
+    		      }
+    		    }
     		    ++token_source.level;
 		    	// Content in a <script> element needs special treatment (like a comment or CDataSection).
 		    	// Tell the TokenManager to start looking for the body of a script element.  In this
@@ -748,11 +758,11 @@ void Element() :
 				    writeln();
 					token_source.SwitchTo(HtmlScriptContentState);
 				}
-				if ("style".equalsIgnoreCase(startTagName.image)) {
+				else if ("style".equalsIgnoreCase(startTagName.image)) {
 				    writeln();
 					token_source.SwitchTo(HtmlStyleContentState);
 				}
-				if ("pre".equalsIgnoreCase(startTagName.image)) {
+				else if ("pre".equalsIgnoreCase(startTagName.image)) {
 				    token_source.SwitchTo(PreTagContentState);
 				    inPreTag = true;
 				    trimNL();
