@@ -17,6 +17,18 @@ import beauty.PrivilegedAccessor;
  * available.  This can make for a pretty decent beautifier if configured
  * correctly.
  * I wonder if this is a good place to implement elastic tab stops?
+ *
+ * TODO: need to adjust the flow on this.  The pad/don't pad methods need to be
+ * done at the same time as token padding so that padding isn't applied to
+ * comments.  Currently, if the user says don't pad before or after a . (period),
+ * which is a useful thing to do in javascript mode because . is an operator,
+ * then the line following a line ending with a period in a comment will be joined
+ * to the previous line, e.g.:
+ * This:
+ * // Line 1.
+ * // Line 2
+ * Will become:
+ * // Line 1.//Line 2
  */
 public class DefaultBeautifier extends Beautifier {
 
@@ -497,7 +509,7 @@ public class DefaultBeautifier extends Beautifier {
             tempBuffer.insert(0, sb.toString());
             tempBuffer.indentLines(0, tempBuffer.getLineCount() - 1);
             sb = new StringBuilder(tempBuffer.getText(0, tempBuffer.getLength()));
-            
+
             if (initialLevel > 0) {
                 // do additional indenting, for example, this is the case when
                 // javascript is inside a <script> block in an html or jsp file
