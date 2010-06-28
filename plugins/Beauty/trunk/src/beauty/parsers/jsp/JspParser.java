@@ -174,7 +174,8 @@ public class JspParser implements JspParserConstants {
     Prolog();
     Content();
     jj_consume_token(0);
-    write();
+      trimWhitespace();
+      write();
   }
 
 /**
@@ -382,11 +383,12 @@ public class JspParser implements JspParserConstants {
     content = jj_consume_token(JSP_SCRIPTLET);
     end = jj_consume_token(JSP_SCRIPTLET_END);
              add(start);
-
+             writeln();
              ++token_source.level;
 
              try {
             if (content != null && content.image.trim().length() > 0) {
+                System.out.println("+++++ indent level = " + token_source.level);
                 Beautifier beautifier = new JavaLineBeautifier();
                 beautifier.setIndentWidth(indentWidth);
                 beautifier.setTabWidth(tabSize);
@@ -402,7 +404,7 @@ public class JspParser implements JspParserConstants {
 
              --token_source.level;
              add(end);
-             writeln();
+             write();
   }
 
   final public void JspExpression() throws ParseException {
@@ -1132,13 +1134,13 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
-  final private boolean jj_3R_20() {
-    if (jj_3R_27()) return true;
+  final private boolean jj_3R_52() {
+    if (jj_3R_55()) return true;
     return false;
   }
 
-  final private boolean jj_3R_52() {
-    if (jj_3R_55()) return true;
+  final private boolean jj_3R_20() {
+    if (jj_3R_27()) return true;
     return false;
   }
 
@@ -1188,6 +1190,11 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
+  final private boolean jj_3R_39() {
+    if (jj_scan_token(DOLLAR_OR_HASH_DOUBLE_QUOTE)) return true;
+    return false;
+  }
+
   final private boolean jj_3R_22() {
     if (jj_3R_26()) return true;
     return false;
@@ -1200,11 +1207,6 @@ public class JspParser implements JspParserConstants {
     jj_scanpos = xsp;
     if (jj_3R_23()) return true;
     }
-    return false;
-  }
-
-  final private boolean jj_3R_39() {
-    if (jj_scan_token(DOLLAR_OR_HASH_DOUBLE_QUOTE)) return true;
     return false;
   }
 
