@@ -47,129 +47,131 @@ public interface JspParserConstants {
   /** RegularExpression Id. */
   int NO_JSP_COMMENT_END = 18;
   /** RegularExpression Id. */
-  int NO_JSP_TAG_END = 19;
+  int NO_HTML_COMMENT_END = 19;
   /** RegularExpression Id. */
-  int TAG_START = 23;
+  int NO_JSP_TAG_END = 20;
   /** RegularExpression Id. */
-  int ENDTAG_START = 24;
+  int TAG_START = 25;
   /** RegularExpression Id. */
-  int COMMENT_START = 25;
+  int ENDTAG_START = 26;
   /** RegularExpression Id. */
-  int DECL_START = 26;
+  int COMMENT_START = 27;
   /** RegularExpression Id. */
-  int DOCTYPE_DECL_START = 27;
+  int DECL_START = 28;
   /** RegularExpression Id. */
-  int CDATA_START = 28;
+  int DOCTYPE_DECL_START = 29;
   /** RegularExpression Id. */
-  int JSP_COMMENT_START = 29;
+  int CDATA_START = 30;
   /** RegularExpression Id. */
-  int JSP_DECLARATION_START = 30;
+  int JSP_COMMENT_START = 31;
   /** RegularExpression Id. */
-  int JSP_EXPRESSION_START = 31;
+  int JSP_DECLARATION_START = 32;
   /** RegularExpression Id. */
-  int JSP_SCRIPTLET_START = 32;
+  int JSP_EXPRESSION_START = 33;
   /** RegularExpression Id. */
-  int JSP_DIRECTIVE_START = 33;
+  int JSP_SCRIPTLET_START = 34;
   /** RegularExpression Id. */
-  int EL_EXPRESSION = 34;
+  int JSP_DIRECTIVE_START = 35;
   /** RegularExpression Id. */
-  int UNPARSED_TEXT = 35;
+  int EL_EXPRESSION = 36;
   /** RegularExpression Id. */
-  int JSP_DIRECTIVE_NAME = 36;
+  int UNPARSED_TEXT = 37;
   /** RegularExpression Id. */
-  int JSP_DIRECTIVE_ATTRIBUTE_NAME = 37;
+  int JSP_DIRECTIVE_NAME = 38;
   /** RegularExpression Id. */
-  int JSP_DIRECTIVE_ATTRIBUTE_EQUALS = 38;
+  int JSP_DIRECTIVE_ATTRIBUTE_NAME = 39;
   /** RegularExpression Id. */
-  int JSP_DIRECTIVE_ATTRIBUTE_VALUE = 39;
+  int JSP_DIRECTIVE_ATTRIBUTE_EQUALS = 40;
   /** RegularExpression Id. */
-  int JSP_DIRECTIVE_END = 40;
+  int JSP_DIRECTIVE_ATTRIBUTE_VALUE = 41;
   /** RegularExpression Id. */
-  int JSP_SCRIPTLET_END = 41;
+  int JSP_DIRECTIVE_END = 42;
   /** RegularExpression Id. */
-  int JSP_SCRIPTLET = 42;
+  int JSP_SCRIPTLET_END = 43;
   /** RegularExpression Id. */
-  int JSP_EXPRESSION_END = 43;
+  int JSP_SCRIPTLET = 44;
   /** RegularExpression Id. */
-  int JSP_EXPRESSION = 44;
+  int JSP_EXPRESSION_END = 45;
   /** RegularExpression Id. */
-  int JSP_DECLARATION_END = 45;
+  int JSP_EXPRESSION = 46;
   /** RegularExpression Id. */
-  int JSP_DECLARATION = 46;
+  int JSP_DECLARATION_END = 47;
   /** RegularExpression Id. */
-  int JSP_COMMENT_END = 47;
+  int JSP_DECLARATION = 48;
   /** RegularExpression Id. */
-  int JSP_COMMENT_CONTENT = 48;
+  int JSP_COMMENT_END = 49;
   /** RegularExpression Id. */
-  int WHITESPACES = 49;
+  int JSP_COMMENT_CONTENT = 50;
   /** RegularExpression Id. */
-  int NAME = 50;
+  int WHITESPACES = 51;
   /** RegularExpression Id. */
-  int PUBLIC = 51;
+  int NAME = 52;
   /** RegularExpression Id. */
-  int SYSTEM = 52;
+  int PUBLIC = 53;
   /** RegularExpression Id. */
-  int DOCTYPE_DECL_END = 53;
+  int SYSTEM = 54;
   /** RegularExpression Id. */
-  int QUOTED_LITERAL = 54;
+  int DOCTYPE_DECL_END = 55;
   /** RegularExpression Id. */
-  int UNPARSED = 55;
+  int QUOTED_LITERAL = 56;
   /** RegularExpression Id. */
-  int CDATA_END = 56;
+  int UNPARSED = 57;
   /** RegularExpression Id. */
-  int TAG_NAME = 57;
+  int CDATA_END = 58;
   /** RegularExpression Id. */
-  int LST_ERROR = 58;
+  int TAG_NAME = 59;
   /** RegularExpression Id. */
-  int ATTR_NAME = 59;
+  int LST_ERROR = 60;
   /** RegularExpression Id. */
-  int TAG_END = 60;
+  int ATTR_NAME = 61;
   /** RegularExpression Id. */
-  int DECL_END = 61;
+  int TAG_END = 62;
   /** RegularExpression Id. */
-  int TAG_SLASHEND = 62;
+  int DECL_END = 63;
   /** RegularExpression Id. */
-  int ATTR_EQ = 63;
+  int TAG_SLASHEND = 64;
   /** RegularExpression Id. */
-  int IN_TAG_ERROR = 64;
+  int ATTR_EQ = 65;
   /** RegularExpression Id. */
-  int SINGLE_QUOTE = 65;
+  int IN_TAG_ERROR = 66;
   /** RegularExpression Id. */
-  int DOUBLE_QUOTE = 66;
+  int SINGLE_QUOTE = 67;
   /** RegularExpression Id. */
-  int EL_EXPRESSION_IN_ATTRIBUTE = 67;
+  int DOUBLE_QUOTE = 68;
   /** RegularExpression Id. */
-  int VALUE_BINDING_IN_ATTRIBUTE = 68;
+  int EL_EXPRESSION_IN_ATTRIBUTE = 69;
   /** RegularExpression Id. */
-  int JSP_EXPRESSION_IN_ATTRIBUTE = 69;
+  int VALUE_BINDING_IN_ATTRIBUTE = 70;
   /** RegularExpression Id. */
-  int ENDING_SINGLE_QUOTE = 70;
+  int JSP_EXPRESSION_IN_ATTRIBUTE = 71;
   /** RegularExpression Id. */
-  int UNPARSED_TEXT_NO_SINGLE_QUOTES = 71;
+  int ENDING_SINGLE_QUOTE = 72;
   /** RegularExpression Id. */
-  int DOLLAR_OR_HASH_SINGLE_QUOTE = 72;
+  int UNPARSED_TEXT_NO_SINGLE_QUOTES = 73;
   /** RegularExpression Id. */
-  int ENDING_DOUBLE_QUOTE = 73;
+  int DOLLAR_OR_HASH_SINGLE_QUOTE = 74;
   /** RegularExpression Id. */
-  int UNPARSED_TEXT_NO_DOUBLE_QUOTES = 74;
+  int ENDING_DOUBLE_QUOTE = 75;
   /** RegularExpression Id. */
-  int DOLLAR_OR_HASH_DOUBLE_QUOTE = 75;
+  int UNPARSED_TEXT_NO_DOUBLE_QUOTES = 76;
   /** RegularExpression Id. */
-  int COMMENT_END = 76;
+  int DOLLAR_OR_HASH_DOUBLE_QUOTE = 77;
   /** RegularExpression Id. */
-  int COMMENT_TEXT = 77;
+  int COMMENT_END = 78;
   /** RegularExpression Id. */
-  int HTML_SCRIPT_CONTENT = 78;
+  int COMMENT_TEXT = 79;
   /** RegularExpression Id. */
-  int HTML_SCRIPT_END_TAG = 79;
+  int HTML_SCRIPT_CONTENT = 80;
   /** RegularExpression Id. */
-  int HTML_STYLE_CONTENT = 80;
+  int HTML_SCRIPT_END_TAG = 81;
   /** RegularExpression Id. */
-  int HTML_STYLE_END_TAG = 81;
+  int HTML_STYLE_CONTENT = 82;
   /** RegularExpression Id. */
-  int PRE_TAG_CONTENT = 82;
+  int HTML_STYLE_END_TAG = 83;
   /** RegularExpression Id. */
-  int PRE_TAG_END_TAG = 83;
+  int PRE_TAG_CONTENT = 84;
+  /** RegularExpression Id. */
+  int PRE_TAG_END_TAG = 85;
 
   /** Lexical state. */
   int PreTagContentState = 0;
@@ -233,10 +235,12 @@ public interface JspParserConstants {
     "<TEXT_IN_EL>",
     "<EL_ESCAPE>",
     "<NO_JSP_COMMENT_END>",
+    "<NO_HTML_COMMENT_END>",
     "<NO_JSP_TAG_END>",
-    "<token of kind 20>",
     "<token of kind 21>",
     "<token of kind 22>",
+    "<token of kind 23>",
+    "<token of kind 24>",
     "\"<\"",
     "\"</\"",
     "\"<!--\"",

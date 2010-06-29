@@ -7,6 +7,7 @@ import java.util.regex.*;
 // scriptlets are often just fragments of java code split up by jsp tags.  The
 // standard java parser won't accept such code.  This one will, but it won't
 // beautify as well as the standard java parser.
+// TODO: adjust ! to not have trailing space
 public class JavaLineBeautifier extends DefaultBeautifier {
     
     private Pattern genericPattern;

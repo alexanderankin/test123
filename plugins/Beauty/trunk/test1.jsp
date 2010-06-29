@@ -1,10 +1,28 @@
-<%@ include file="/estore/common/common.jspf"%>
+<%-- a leading comment --%> <%@ include file="/estore/common/common.jspf"%>
 <%@ taglib uri="/WEB-INF/tlds/pageTemplate.tld" prefix="page"%>
+<%--
+  another comment
+  with several
+  lines of text
+  just to test with 
+--%>
 <%@ page import="com.avenueme.util.WebKeys"%>
 <%@ page import="com.avenueme.beans.UserInfoBean"%>
 <%@ page import="com.avenueme.beans.UserInfoFactory"%>
 <html>
+  <%--
+    another comment
+    with several
+    lines of text
+    just to test with
+  --%>
   <head>
+    <%--
+      another comment
+      with several
+      lines of text
+      just to test with
+    --%>
     <style>
       /* a comment */
       li, p {
