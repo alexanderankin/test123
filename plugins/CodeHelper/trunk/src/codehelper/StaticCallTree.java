@@ -78,6 +78,8 @@ public class StaticCallTree extends JPanel
 			public void mouseReleased(MouseEvent e)
 			{
 				TreePath tp = tree.getPathForLocation(e.getX(), e.getY());
+				if (tp == null)
+					return;
 				MarkerTreeNode node = (MarkerTreeNode) tp.getLastPathComponent();
 				if (e.isPopupTrigger())
 				{
