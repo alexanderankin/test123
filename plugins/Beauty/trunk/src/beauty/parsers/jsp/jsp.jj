@@ -20,7 +20,10 @@
  * DONE: fix style indenting (pass to css parser)
  * TODO: currently removes all blank lines.  Need to collapse multiple blank lines
  * into a single blank line.
- *
+ * DONE: multi-line comments don't align with the opening comment tag, they are
+ * too far left.
+ * TODO: if a comment is the first item in the file, the following tag will always
+ * be on the same line as the end of the comment, e.g. --%> <%@ include
  */
 
 options { 
@@ -263,11 +266,34 @@ PARSER_END(JspParser)
 
 	// anything but --%>
 | <#NO_JSP_COMMENT_END: (~["-"] | "-" ~["-"] | "--" ~["%"] | "--%" ~[">"])+ > 
+	// anything but -->
+| <#NO_HTML_COMMENT_END: (~["-"] | "-" ~["-"] | "--" ~[">"] )+ > 
 
 | <#NO_JSP_TAG_END: ( ~["%"] | ("%" ~[">"]) )+ >
 }
 
-<DEFAULT, JspDirectiveState, JspDirectiveAttributesState> SKIP :
+<DEFAULT> SPECIAL_TOKEN :
+{
+    < (<WHITESPACE>)+ > 
+    { 
+        System.out.println("+++++ in the new block");
+        String sa = matchedToken.image;
+        sa = sa.replaceAll(" ", "");
+        sa = sa.replaceAll("\t", "");
+        StringTokenizer sta = new StringTokenizer(sa, ls, true);
+        int counta = sta.countTokens();
+        if (collapseBlankLines) {
+            counta = Math.min(2, counta);   
+        }
+        StringBuilder sba = new StringBuilder();
+        for (int i = 0; i < counta; i++) {
+            sba.append(ls);
+        }
+        writePre(sba.toString());
+    }
+}
+
+<JspDirectiveState, JspDirectiveAttributesState> SKIP :
 {
   < (<WHITESPACE>)+ >
 }
@@ -428,7 +454,7 @@ PARSER_END(JspParser)
 <CommentState> TOKEN : 
 {
   < COMMENT_END:  ("--" (" ")* ">" | "->") > : AfterTagState 
-| < COMMENT_TEXT: (~[]) >
+| < COMMENT_TEXT: <NO_HTML_COMMENT_END> >
 }
 
 <HtmlScriptContentState> TOKEN :
@@ -637,11 +663,62 @@ void JspDeclaration() :
 }
 
 void JspComment() :
-{}
 {
-	t=<JSP_COMMENT_START> { add(t); } 
-	t=<JSP_COMMENT_CONTENT> { add(t); } 
-	t=<JSP_COMMENT_END> { add(t); write(); } 
+    List<String> lines = new ArrayList<String>();
+}
+{
+	t=<JSP_COMMENT_START> { lines.add(t.image); } 
+	t=<JSP_COMMENT_CONTENT> 
+	{ 
+	    String s = t.image;
+	    String[] parts = s.split(ls);
+	    for (String line : parts) {
+	        lines.add(line);
+	    }
+	} 
+	t=<JSP_COMMENT_END> 
+	{ 
+        if (lines.size() > 2 && !lines.get(lines.size() - 1).trim().isEmpty()) {
+          lines.add(token_source.indent);   
+        }
+	    lines.add(t.image);
+	    StringBuilder sb = new StringBuilder();
+	    switch(lines.size()) {
+            case 0:
+            case 1:
+                return;
+            case 2:
+                // empty comment
+                sb.append(lines.get(0));
+                sb.append(" ");
+                sb.append(lines.get(1));
+                add(sb.toString());
+                write();
+                break;
+            case 3:
+                // have start tag, some text, and end tag, so put these all on one line
+                sb.append(lines.get(0));
+                sb.append(" ");
+                sb.append(lines.get(1));
+                sb.append(" ");
+                sb.append(lines.get(2));
+                add(sb.toString());
+                write();
+                break;
+            default:
+                // multiple line comment
+                add(lines.get(0));
+                write();
+                ++token_source.level;
+                for (int i = 1; i < lines.size() - 2; i++) {
+                    add(lines.get(i));
+                    writeln();
+                }
+                --token_source.level;
+                add(lines.get(lines.size() - 1));
+                write();
+	    }
+	} 
 }
 
 /**
@@ -920,11 +997,63 @@ void JspExpressionInAttribute() :
 
 void CommentTag() :
 {
+    List<String> lines = new ArrayList<String>();
 }
 {
-  t=<COMMENT_START> { add(t); } 
-  ( t=<COMMENT_TEXT> { add(t); }  )* 
-  t=<COMMENT_END> { add(t); write(); } 
+  t=<COMMENT_START> { lines.add(t.image); } 
+  ( t=<COMMENT_TEXT> 
+      { 
+	    String s = t.image;
+	    String[] parts = s.split(ls);
+	    for (String line : parts) {
+	        lines.add(line);
+	    }
+      }  
+  ) 
+  t=<COMMENT_END> 
+  { 
+        if (lines.size() > 2 && !lines.get(lines.size() - 1).trim().isEmpty()) {
+          lines.add(token_source.indent);   
+        }
+	    lines.add(t.image);
+	    StringBuilder sb = new StringBuilder();
+	    switch(lines.size()) {
+            case 0:
+            case 1:
+                return;
+            case 2:
+                // empty comment
+                sb.append(lines.get(0));
+                sb.append(" ");
+                sb.append(lines.get(1));
+                add(sb.toString());
+                write();
+                break;
+            case 3:
+                // have start tag, one line of text, and end tag, so put these all on one line
+                sb.append(lines.get(0));
+                sb.append(" ");
+                sb.append(lines.get(1));
+                sb.append(" ");
+                sb.append(lines.get(2));
+                add(sb.toString());
+                write();
+                break;
+            default:
+                // multiple line comment
+                add(lines.get(0));
+                write();
+                ++token_source.level;
+                for (int i = 1; i < lines.size() - 2; i++) {
+                    System.out.println("+++++|" + lines.get(i) + "|");
+                    add(lines.get(i));
+                    writeln();
+                }
+                --token_source.level;
+                add(lines.get(lines.size() - 1));
+                write();
+	    }
+  } 
 }
   
 void Declaration() :
