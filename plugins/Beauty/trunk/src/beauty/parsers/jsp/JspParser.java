@@ -122,6 +122,41 @@ public class JspParser implements JspParserConstants {
         token_source.writePre(s);
     }
 
+    /**
+     * All special tokens in this parser are whitespace tokens only.
+     * This method gathers all the special tokens preceeding the given
+     * token, removes all spaces and tabs, and collapses multiple
+     * line separators based on the <code>collapseBlankLines</code>
+     * setting.
+     */
+    private String getSpecial(Token token) {
+        if (token.specialToken == null) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        Token special = token.specialToken;
+        while(special.specialToken != null) {
+            special = special.specialToken;
+        }
+        while (special != null) {
+            sb.append(special.image);
+            special = special.next;
+        }
+        String s = sb.toString();
+        s = s.replaceAll(" ", "");
+        s = s.replaceAll("\t", "");
+        StringTokenizer st = new StringTokenizer(s, ls, true);
+        int count = st.countTokens();
+        if (token_source.collapseBlankLines) {
+            count = Math.min(2, count);
+        }
+        sb.setLength(0);
+        for (int i = 0; i < count; i++) {
+            sb.append(ls);
+        }
+        return sb.toString();
+    }
+
     public void setLineSeparator(String le) {
         ls = le;
         token_source.setLineSeparator(le);
@@ -336,7 +371,8 @@ public class JspParser implements JspParserConstants {
 // <%@
   final public void JspDirective() throws ParseException {
     t = jj_consume_token(JSP_DIRECTIVE_START);
-                                  add(t);
+            writePre(getSpecial(t));
+            add(t);
     t = jj_consume_token(JSP_DIRECTIVE_NAME);
                                  trim(); add(" "); add(t); add(" ");
     JspDirectiveAttributes();
@@ -382,13 +418,13 @@ public class JspParser implements JspParserConstants {
     start = jj_consume_token(JSP_SCRIPTLET_START);
     content = jj_consume_token(JSP_SCRIPTLET);
     end = jj_consume_token(JSP_SCRIPTLET_END);
+             writePre(getSpecial(start));
              add(start);
              writeln();
              ++token_source.level;
 
              try {
             if (content != null && content.image.trim().length() > 0) {
-                System.out.println("+++++ indent level = " + token_source.level);
                 Beautifier beautifier = new JavaLineBeautifier();
                 beautifier.setIndentWidth(indentWidth);
                 beautifier.setTabWidth(tabSize);
@@ -409,7 +445,8 @@ public class JspParser implements JspParserConstants {
 
   final public void JspExpression() throws ParseException {
     t = jj_consume_token(JSP_EXPRESSION_START);
-                                   add(t);
+                writePre(getSpecial(t));
+                add(t);
     t = jj_consume_token(JSP_EXPRESSION);
                              add(t);
     t = jj_consume_token(JSP_EXPRESSION_END);
@@ -418,7 +455,8 @@ public class JspParser implements JspParserConstants {
 
   final public void JspDeclaration() throws ParseException {
     t = jj_consume_token(JSP_DECLARATION_START);
-                                    add(t);
+                writePre(getSpecial(t));
+                add(t);
     t = jj_consume_token(JSP_DECLARATION);
                               add(t);
     t = jj_consume_token(JSP_DECLARATION_END);
@@ -428,7 +466,8 @@ public class JspParser implements JspParserConstants {
   final public void JspComment() throws ParseException {
     List<String> lines = new ArrayList<String>();
     t = jj_consume_token(JSP_COMMENT_START);
-                                lines.add(t.image);
+                writePre(getSpecial(t));
+                lines.add(t.image);
     t = jj_consume_token(JSP_COMMENT_CONTENT);
             String s = t.image;
             String[] parts = s.split(ls);
@@ -512,7 +551,36 @@ public class JspParser implements JspParserConstants {
 
   final public void UnparsedText() throws ParseException {
     t = jj_consume_token(UNPARSED_TEXT);
-                        writeln(); add(t); writeln();
+            // unparsed text will contain all whitespace, regardless of the 
+            // current lexing state, so need to deal with it here.
+            String s = t.image;
+
+            if (token_source.collapseBlankLines) {
+                String lsep;
+                if ("\r".equals(ls)) {
+                    lsep = "\\r";
+                }
+                else if ("\r\n".equals(ls)) {
+                    lsep = "\\r\\n";
+                }
+                else {
+                    lsep = "\\n";
+                }
+                String regex = "(([ ]|[\\t])*(" + lsep + ")){2,}";
+                s = s.replaceAll(regex, ls + ls);
+            }
+
+            StringTokenizer st = new StringTokenizer(s, ls, true);
+            while(st.hasMoreTokens()) {
+                String token = st.nextToken();
+                if (token.equals(ls)) {
+                    writeln();
+                }
+                else {
+                    add(token);
+                }
+
+            }
   }
 
 /**
@@ -553,7 +621,8 @@ public class JspParser implements JspParserConstants {
 
   final public void CData() throws ParseException {
     t = jj_consume_token(CDATA_START);
-                          add(t);
+                writePre(getSpecial(t));
+            add(t);
     label_6:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -565,10 +634,10 @@ public class JspParser implements JspParserConstants {
         break label_6;
       }
       t = jj_consume_token(UNPARSED);
-                                                       add(t);
+                      add(t);
     }
     t = jj_consume_token(CDATA_END);
-                                                                                     add(t);
+                    add(t);
   }
 
 /**
@@ -581,7 +650,8 @@ public class JspParser implements JspParserConstants {
         String tagName;
         boolean inPreTag = false;
     t = jj_consume_token(TAG_START);
-                     add(t);
+            writePre(getSpecial(t));
+            add(t);
     startTagName = jj_consume_token(TAG_NAME);
                                 tagName = startTagName.image; add(startTagName);
     Attributes();
@@ -677,10 +747,13 @@ public class JspParser implements JspParserConstants {
         ;
       }
       t = jj_consume_token(ENDTAG_START);
-                       trimNL();
-                       if (!inPreTag) {
-                           writeln();
-                       }
+                       writePre(getSpecial(t));
+                       /*
+   		       trimNL(); 
+   		       if (!inPreTag) {
+   		           writeln();
+   		       } 
+   		       */
                        --token_source.level;
                        add(t);
       endTagName = jj_consume_token(TAG_NAME);
@@ -899,7 +972,8 @@ public class JspParser implements JspParserConstants {
   final public void CommentTag() throws ParseException {
     List<String> lines = new ArrayList<String>();
     t = jj_consume_token(COMMENT_START);
-                      lines.add(t.image);
+        writePre(getSpecial(t));
+        lines.add(t.image);
     t = jj_consume_token(COMMENT_TEXT);
             String s = t.image;
             String[] parts = s.split(ls);
@@ -940,7 +1014,6 @@ public class JspParser implements JspParserConstants {
                 write();
                 ++token_source.level;
                 for (int i = 1; i < lines.size() - 2; i++) {
-                    System.out.println("+++++|" + lines.get(i) + "|");
                     add(lines.get(i));
                     writeln();
                 }
@@ -952,7 +1025,8 @@ public class JspParser implements JspParserConstants {
 
   final public void Declaration() throws ParseException {
     t = jj_consume_token(DECL_START);
-                    add(t);
+        writePre(getSpecial(t));
+        add(t);
     label_10:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -1072,7 +1146,7 @@ public class JspParser implements JspParserConstants {
       }
       scriptToken = jj_consume_token(HTML_SCRIPT_CONTENT);
                 if (scriptToken != null) {
-                     script.append(scriptToken.image);
+                    script.append(scriptToken.image);
                 }
     }
     endToken = jj_consume_token(HTML_SCRIPT_END_TAG);
@@ -1142,88 +1216,43 @@ public class JspParser implements JspParserConstants {
         }
   }
 
-  private boolean jj_2_1(int xla) {
+  final private boolean jj_2_1(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_1(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(0, xla); }
   }
 
-  private boolean jj_2_2(int xla) {
+  final private boolean jj_2_2(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_2(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(1, xla); }
   }
 
-  private boolean jj_3R_19() {
-    if (jj_3R_26()) return true;
+  final private boolean jj_3R_45() {
+    if (jj_scan_token(UNPARSED_TEXT_NO_DOUBLE_QUOTES)) return true;
     return false;
   }
 
-  private boolean jj_3R_21() {
-    if (jj_3R_25()) return true;
+  final private boolean jj_3R_47() {
+    if (jj_scan_token(UNPARSED_TEXT_NO_SINGLE_QUOTES)) return true;
     return false;
   }
 
-  private boolean jj_3R_16() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_21()) {
-    jj_scanpos = xsp;
-    if (jj_3R_22()) return true;
-    }
-    return false;
-  }
-
-  private boolean jj_3_2() {
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_16()) { jj_scanpos = xsp; break; }
-    }
-    if (jj_3R_17()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_14() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_18()) {
-    jj_scanpos = xsp;
-    if (jj_3R_19()) return true;
-    }
-    return false;
-  }
-
-  private boolean jj_3R_18() {
-    if (jj_3R_25()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_27() {
+  final private boolean jj_3R_27() {
     if (jj_scan_token(ATTR_NAME)) return true;
     if (jj_scan_token(ATTR_EQ)) return true;
     if (jj_3R_30()) return true;
     return false;
   }
 
-  private boolean jj_3_1() {
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_14()) { jj_scanpos = xsp; break; }
-    }
-    if (jj_3R_15()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_29() {
+  final private boolean jj_3R_29() {
     if (jj_scan_token(WHITESPACES)) return true;
     return false;
   }
 
-  private boolean jj_3R_32() {
+  final private boolean jj_3R_32() {
     if (jj_scan_token(PUBLIC)) return true;
     if (jj_scan_token(WHITESPACES)) return true;
     if (jj_scan_token(QUOTED_LITERAL)) return true;
@@ -1232,34 +1261,7 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
-  private boolean jj_3R_25() {
-    if (jj_scan_token(COMMENT_START)) return true;
-    if (jj_scan_token(COMMENT_TEXT)) return true;
-    if (jj_scan_token(COMMENT_END)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_50() {
-    if (jj_3R_53()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_39() {
-    if (jj_scan_token(ENDING_SINGLE_QUOTE)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_53() {
-    if (jj_scan_token(JSP_EXPRESSION_IN_ATTRIBUTE)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_49() {
-    if (jj_3R_52()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_28() {
+  final private boolean jj_3R_28() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3R_31()) {
@@ -1269,44 +1271,86 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
-  private boolean jj_3R_31() {
+  final private boolean jj_3R_31() {
     if (jj_scan_token(SYSTEM)) return true;
     if (jj_scan_token(WHITESPACES)) return true;
     if (jj_scan_token(QUOTED_LITERAL)) return true;
     return false;
   }
 
-  private boolean jj_3R_48() {
+  final private boolean jj_3R_26() {
+    if (jj_scan_token(JSP_COMMENT_START)) return true;
+    if (jj_scan_token(JSP_COMMENT_CONTENT)) return true;
+    if (jj_scan_token(JSP_COMMENT_END)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_25() {
+    if (jj_scan_token(COMMENT_START)) return true;
+    if (jj_scan_token(COMMENT_TEXT)) return true;
+    if (jj_scan_token(COMMENT_END)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_50() {
+    if (jj_3R_53()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_39() {
+    if (jj_scan_token(ENDING_SINGLE_QUOTE)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_53() {
+    if (jj_scan_token(JSP_EXPRESSION_IN_ATTRIBUTE)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_49() {
+    if (jj_3R_52()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_48() {
     if (jj_3R_51()) return true;
     return false;
   }
 
-  private boolean jj_3R_44() {
+  final private boolean jj_3R_44() {
     if (jj_3R_46()) return true;
     return false;
   }
 
-  private boolean jj_3R_40() {
+  final private boolean jj_3R_40() {
     if (jj_scan_token(DOLLAR_OR_HASH_SINGLE_QUOTE)) return true;
     return false;
   }
 
-  private boolean jj_3R_43() {
+  final private boolean jj_3R_43() {
     if (jj_3R_47()) return true;
     return false;
   }
 
-  private boolean jj_3R_37() {
+  final private boolean jj_3R_37() {
     if (jj_scan_token(DOLLAR_OR_HASH_DOUBLE_QUOTE)) return true;
     return false;
   }
 
-  private boolean jj_3R_36() {
+  final private boolean jj_3R_24() {
+    if (jj_3R_28()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_29()) jj_scanpos = xsp;
+    return false;
+  }
+
+  final private boolean jj_3R_36() {
     if (jj_scan_token(ENDING_DOUBLE_QUOTE)) return true;
     return false;
   }
 
-  private boolean jj_3R_38() {
+  final private boolean jj_3R_38() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3R_43()) {
@@ -1316,7 +1360,12 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
-  private boolean jj_3R_46() {
+  final private boolean jj_3R_23() {
+    if (jj_scan_token(WHITESPACES)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_46() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3R_48()) {
@@ -1329,30 +1378,30 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
-  private boolean jj_3R_42() {
+  final private boolean jj_3R_42() {
     if (jj_3R_46()) return true;
     return false;
   }
 
-  private boolean jj_3R_41() {
+  final private boolean jj_3R_41() {
     if (jj_3R_45()) return true;
     return false;
   }
 
-  private boolean jj_3R_24() {
-    if (jj_3R_28()) return true;
+  final private boolean jj_3R_17() {
+    if (jj_scan_token(DOCTYPE_DECL_START)) return true;
+    if (jj_scan_token(WHITESPACES)) return true;
+    if (jj_scan_token(NAME)) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_29()) jj_scanpos = xsp;
+    if (jj_3R_23()) jj_scanpos = xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_24()) jj_scanpos = xsp;
+    if (jj_scan_token(DOCTYPE_DECL_END)) return true;
     return false;
   }
 
-  private boolean jj_3R_23() {
-    if (jj_scan_token(WHITESPACES)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_35() {
+  final private boolean jj_3R_35() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3R_41()) {
@@ -1362,7 +1411,7 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
-  private boolean jj_3R_34() {
+  final private boolean jj_3R_34() {
     if (jj_scan_token(SINGLE_QUOTE)) return true;
     Token xsp;
     while (true) {
@@ -1377,30 +1426,22 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
-  private boolean jj_3R_17() {
-    if (jj_scan_token(DOCTYPE_DECL_START)) return true;
-    if (jj_scan_token(WHITESPACES)) return true;
-    if (jj_scan_token(NAME)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_23()) jj_scanpos = xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_24()) jj_scanpos = xsp;
-    if (jj_scan_token(DOCTYPE_DECL_END)) return true;
+  final private boolean jj_3R_22() {
+    if (jj_3R_26()) return true;
     return false;
   }
 
-  private boolean jj_3R_51() {
-    if (jj_scan_token(EL_EXPRESSION_IN_ATTRIBUTE)) return true;
+  final private boolean jj_3R_20() {
+    if (jj_3R_27()) return true;
     return false;
   }
 
-  private boolean jj_3R_52() {
-    if (jj_scan_token(VALUE_BINDING_IN_ATTRIBUTE)) return true;
+  final private boolean jj_3R_19() {
+    if (jj_3R_26()) return true;
     return false;
   }
 
-  private boolean jj_3R_33() {
+  final private boolean jj_3R_33() {
     if (jj_scan_token(DOUBLE_QUOTE)) return true;
     Token xsp;
     while (true) {
@@ -1415,12 +1456,7 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
-  private boolean jj_3R_20() {
-    if (jj_3R_27()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_15() {
+  final private boolean jj_3R_15() {
     if (jj_scan_token(DECL_START)) return true;
     Token xsp;
     while (true) {
@@ -1431,7 +1467,37 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
-  private boolean jj_3R_30() {
+  final private boolean jj_3R_51() {
+    if (jj_scan_token(EL_EXPRESSION_IN_ATTRIBUTE)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_21() {
+    if (jj_3R_25()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_16() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_21()) {
+    jj_scanpos = xsp;
+    if (jj_3R_22()) return true;
+    }
+    return false;
+  }
+
+  final private boolean jj_3_2() {
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_16()) { jj_scanpos = xsp; break; }
+    }
+    if (jj_3R_17()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_30() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3R_33()) {
@@ -1441,66 +1507,70 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
-  private boolean jj_3R_26() {
-    if (jj_scan_token(JSP_COMMENT_START)) return true;
-    if (jj_scan_token(JSP_COMMENT_CONTENT)) return true;
-    if (jj_scan_token(JSP_COMMENT_END)) return true;
+  final private boolean jj_3R_52() {
+    if (jj_scan_token(VALUE_BINDING_IN_ATTRIBUTE)) return true;
     return false;
   }
 
-  private boolean jj_3R_45() {
-    if (jj_scan_token(UNPARSED_TEXT_NO_DOUBLE_QUOTES)) return true;
+  final private boolean jj_3R_14() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_18()) {
+    jj_scanpos = xsp;
+    if (jj_3R_19()) return true;
+    }
     return false;
   }
 
-  private boolean jj_3R_47() {
-    if (jj_scan_token(UNPARSED_TEXT_NO_SINGLE_QUOTES)) return true;
+  final private boolean jj_3R_18() {
+    if (jj_3R_25()) return true;
     return false;
   }
 
-  private boolean jj_3R_22() {
-    if (jj_3R_26()) return true;
+  final private boolean jj_3_1() {
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_14()) { jj_scanpos = xsp; break; }
+    }
+    if (jj_3R_15()) return true;
     return false;
   }
 
-  /** Generated Token Manager. */
   public JspParserTokenManager token_source;
   SimpleCharStream jj_input_stream;
-  /** Current token. */
-  public Token token;
-  /** Next token. */
-  public Token jj_nt;
+  public Token token, jj_nt;
   private int jj_ntk;
   private Token jj_scanpos, jj_lastpos;
   private int jj_la;
+  public boolean lookingAhead = false;
+  private boolean jj_semLA;
   private int jj_gen;
   final private int[] jj_la1 = new int[32];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static private int[] jj_la1_2;
   static {
-      jj_la1_init_0();
-      jj_la1_init_1();
-      jj_la1_init_2();
+      jj_la1_0();
+      jj_la1_1();
+      jj_la1_2();
    }
-   private static void jj_la1_init_0() {
+   private static void jj_la1_0() {
       jj_la1_0 = new int[] {0x88000000,0x88000000,0x88000000,0x88000000,0xca000000,0xca000000,0xca000000,0x0,0x0,0x0,0x0,0x0,0xca000000,0xca000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
    }
-   private static void jj_la1_init_1() {
+   private static void jj_la1_1() {
       jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x3f,0xf,0xf,0x30,0x80,0x30,0x30,0x2000000,0x3f,0x3f,0x40000000,0x20000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x20000000,0x80000,0x80000,0x600000,0x600000,0x0,0x0,0x0,};
    }
-   private static void jj_la1_init_2() {
+   private static void jj_la1_2() {
       jj_la1_2 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3f0000,0x3f0000,0x1,0x0,0x10e0,0x10e0,0x2800,0x2e0,0x2e0,0x500,0x18,0xe0,0x0,0x0,0x0,0x0,0x0,0x100000,0x10000,0x40000,};
    }
   final private JJCalls[] jj_2_rtns = new JJCalls[2];
   private boolean jj_rescan = false;
   private int jj_gc = 0;
 
-  /** Constructor with InputStream. */
   public JspParser(java.io.InputStream stream) {
      this(stream, null);
   }
-  /** Constructor with InputStream and supplied encoding */
   public JspParser(java.io.InputStream stream, String encoding) {
     try { jj_input_stream = new SimpleCharStream(stream, encoding, 1, 1); } catch(java.io.UnsupportedEncodingException e) { throw new RuntimeException(e); }
     token_source = new JspParserTokenManager(jj_input_stream);
@@ -1511,11 +1581,9 @@ public class JspParser implements JspParserConstants {
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
-  /** Reinitialise. */
   public void ReInit(java.io.InputStream stream) {
      ReInit(stream, null);
   }
-  /** Reinitialise. */
   public void ReInit(java.io.InputStream stream, String encoding) {
     try { jj_input_stream.ReInit(stream, encoding, 1, 1); } catch(java.io.UnsupportedEncodingException e) { throw new RuntimeException(e); }
     token_source.ReInit(jj_input_stream);
@@ -1526,7 +1594,6 @@ public class JspParser implements JspParserConstants {
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
-  /** Constructor. */
   public JspParser(java.io.Reader stream) {
     jj_input_stream = new SimpleCharStream(stream, 1, 1);
     token_source = new JspParserTokenManager(jj_input_stream);
@@ -1537,7 +1604,6 @@ public class JspParser implements JspParserConstants {
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
-  /** Reinitialise. */
   public void ReInit(java.io.Reader stream) {
     jj_input_stream.ReInit(stream, 1, 1);
     token_source.ReInit(jj_input_stream);
@@ -1548,7 +1614,6 @@ public class JspParser implements JspParserConstants {
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
-  /** Constructor with generated Token Manager. */
   public JspParser(JspParserTokenManager tm) {
     token_source = tm;
     token = new Token();
@@ -1558,7 +1623,6 @@ public class JspParser implements JspParserConstants {
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
-  /** Reinitialise. */
   public void ReInit(JspParserTokenManager tm) {
     token_source = tm;
     token = new Token();
@@ -1568,7 +1632,7 @@ public class JspParser implements JspParserConstants {
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
-  private Token jj_consume_token(int kind) throws ParseException {
+  final private Token jj_consume_token(int kind) throws ParseException {
     Token oldToken;
     if ((oldToken = token).next != null) token = token.next;
     else token = token.next = token_source.getNextToken();
@@ -1594,7 +1658,7 @@ public class JspParser implements JspParserConstants {
 
   static private final class LookaheadSuccess extends java.lang.Error { }
   final private LookaheadSuccess jj_ls = new LookaheadSuccess();
-  private boolean jj_scan_token(int kind) {
+  final private boolean jj_scan_token(int kind) {
     if (jj_scanpos == jj_lastpos) {
       jj_la--;
       if (jj_scanpos.next == null) {
@@ -1615,8 +1679,6 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
-
-/** Get the next Token. */
   final public Token getNextToken() {
     if (token.next != null) token = token.next;
     else token = token.next = token_source.getNextToken();
@@ -1625,9 +1687,8 @@ public class JspParser implements JspParserConstants {
     return token;
   }
 
-/** Get the specific Token. */
   final public Token getToken(int index) {
-    Token t = token;
+    Token t = lookingAhead ? jj_scanpos : token;
     for (int i = 0; i < index; i++) {
       if (t.next != null) t = t.next;
       else t = t.next = token_source.getNextToken();
@@ -1635,14 +1696,14 @@ public class JspParser implements JspParserConstants {
     return t;
   }
 
-  private int jj_ntk() {
+  final private int jj_ntk() {
     if ((jj_nt=token.next) == null)
       return (jj_ntk = (token.next=token_source.getNextToken()).kind);
     else
       return (jj_ntk = jj_nt.kind);
   }
 
-  private java.util.List<int[]> jj_expentries = new java.util.ArrayList<int[]>();
+  private java.util.Vector jj_expentries = new java.util.Vector();
   private int[] jj_expentry;
   private int jj_kind = -1;
   private int[] jj_lasttokens = new int[100];
@@ -1657,26 +1718,31 @@ public class JspParser implements JspParserConstants {
       for (int i = 0; i < jj_endpos; i++) {
         jj_expentry[i] = jj_lasttokens[i];
       }
-      jj_entries_loop: for (java.util.Iterator<?> it = jj_expentries.iterator(); it.hasNext();) {
-        int[] oldentry = (int[])(it.next());
+      boolean exists = false;
+      for (java.util.Enumeration e = jj_expentries.elements(); e.hasMoreElements();) {
+        int[] oldentry = (int[])(e.nextElement());
         if (oldentry.length == jj_expentry.length) {
+          exists = true;
           for (int i = 0; i < jj_expentry.length; i++) {
             if (oldentry[i] != jj_expentry[i]) {
-              continue jj_entries_loop;
+              exists = false;
+              break;
             }
           }
-          jj_expentries.add(jj_expentry);
-          break jj_entries_loop;
+          if (exists) break;
         }
       }
+      if (!exists) jj_expentries.addElement(jj_expentry);
       if (pos != 0) jj_lasttokens[(jj_endpos = pos) - 1] = kind;
     }
   }
 
-  /** Generate ParseException. */
   public ParseException generateParseException() {
-    jj_expentries.clear();
+    jj_expentries.removeAllElements();
     boolean[] la1tokens = new boolean[86];
+    for (int i = 0; i < 86; i++) {
+      la1tokens[i] = false;
+    }
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -1700,7 +1766,7 @@ public class JspParser implements JspParserConstants {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
-        jj_expentries.add(jj_expentry);
+        jj_expentries.addElement(jj_expentry);
       }
     }
     jj_endpos = 0;
@@ -1708,20 +1774,18 @@ public class JspParser implements JspParserConstants {
     jj_add_error_token(0, 0);
     int[][] exptokseq = new int[jj_expentries.size()][];
     for (int i = 0; i < jj_expentries.size(); i++) {
-      exptokseq[i] = jj_expentries.get(i);
+      exptokseq[i] = (int[])jj_expentries.elementAt(i);
     }
     return new ParseException(token, exptokseq, tokenImage);
   }
 
-  /** Enable tracing. */
   final public void enable_tracing() {
   }
 
-  /** Disable tracing. */
   final public void disable_tracing() {
   }
 
-  private void jj_rescan_token() {
+  final private void jj_rescan_token() {
     jj_rescan = true;
     for (int i = 0; i < 2; i++) {
     try {
@@ -1741,7 +1805,7 @@ public class JspParser implements JspParserConstants {
     jj_rescan = false;
   }
 
-  private void jj_save(int index, int xla) {
+  final private void jj_save(int index, int xla) {
     JJCalls p = jj_2_rtns[index];
     while (p.gen > jj_gen) {
       if (p.next == null) { p = p.next = new JJCalls(); break; }
