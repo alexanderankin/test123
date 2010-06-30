@@ -6,6 +6,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -26,8 +27,11 @@ import javax.swing.tree.TreePath;
 
 import marker.FileMarker;
 
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.syntax.DefaultTokenHandler;
+import org.gjt.sp.jedit.syntax.Token;
 import org.gjt.sp.util.ThreadUtilities;
 
 import projectviewer.ProjectPlugin;
@@ -43,6 +47,7 @@ import ctagsinterface.main.Tag;
 @SuppressWarnings("serial")
 public class StaticCallTree extends JPanel
 {
+	private static final int MAX_RESULTS = 1000000;
 	private View view;
 	private JTree tree;
 	private DefaultTreeModel model;
@@ -70,7 +75,7 @@ public class StaticCallTree extends JPanel
 			{
 				TreePath tp = event.getPath();
 				MarkerTreeNode node = (MarkerTreeNode) tp.getLastPathComponent();
-				expand(node, node.getName());
+				expand(node, node.getName(), node.filterNonRefs);
 			}
 		});
 		tree.addMouseListener(new MouseAdapter() {
@@ -116,7 +121,7 @@ public class StaticCallTree extends JPanel
 			tableModel.addRow(new Object[] {Integer.valueOf(m.getLine() + 1),
 				new FileMarkerWrapper(m)});
 	}
-	public void showTreeFor(String text)
+	public void showTreeFor(String text, boolean filterNonRefs)
 	{
 		sp.setDividerLocation(0.5d);
 		root.removeAllChildren();
@@ -124,10 +129,11 @@ public class StaticCallTree extends JPanel
 		addLoadingChild(root);
 		model.nodeStructureChanged(root);
 		tableModel.setRowCount(0);
-		expand(root, text);
+		expand(root, text, filterNonRefs);
 	}
 	
-	public void expand(final DefaultMutableTreeNode parent, final String text)
+	public void expand(final DefaultMutableTreeNode parent, final String text,
+		final boolean filterNonRefs)
 	{
 		if (parent instanceof MarkerTreeNode)
 		{
@@ -145,7 +151,7 @@ public class StaticCallTree extends JPanel
 					return;
 				Vector<Object> results = new Vector<Object>();
 				String name = getLuceneIndexName(); 
-				LucenePlugin.search(name, text, 100, results);
+				LucenePlugin.search(name, text, MAX_RESULTS, results);
 				HashMap<String, Vector<Tag>> tagsPerFile = new
 					HashMap<String, Vector<Tag>>();
 				Tag lastTag = null;
@@ -154,6 +160,8 @@ public class StaticCallTree extends JPanel
 					if (! (o instanceof FileMarker))
 						continue;
 					final FileMarker m = (FileMarker) o;
+					if (filterNonRefs && (! isRef(text, m)))
+						continue;
 					final String file = m.file;
 					if (! tagsPerFile.containsKey(file))
 						tagsPerFile.put(file, getTagsOfFile(file));
@@ -168,7 +176,7 @@ public class StaticCallTree extends JPanel
 					else
 					{
 						final Tag newChild = lastTag = nearestTag;
-						lastNode = new MarkerTreeNode(m, newChild);
+						lastNode = new MarkerTreeNode(m, newChild, filterNonRefs);
 						final MarkerTreeNode fLastNode = lastNode;
 						SwingUtilities.invokeLater(new Runnable() {
 							public void run()
@@ -189,6 +197,52 @@ public class StaticCallTree extends JPanel
 				});
 			}
 		});
+	}
+
+	private boolean isRef(String text, FileMarker m)
+	{
+		Buffer b = jEdit.openTemporary(view, new File(m.file).getParent(), m.file,
+			false);
+		b.setMode();
+		// Mark the tokens on the line, to filter out comments and strings
+		int lineNum = m.getLine();
+		DefaultTokenHandler tokenHandler = new DefaultTokenHandler();
+		b.markTokens(m.getLine(), tokenHandler);
+		Token token = tokenHandler.getTokens();
+		int lineStart = b.getLineStartOffset(lineNum);
+		int start = lineStart;
+		int index = -1;
+		String l = b.getLineText(m.getLine());
+		while (true)
+		{
+			index = l.indexOf(text, index + 1);
+			if (index < 0)
+				break;
+			int indexPos = lineStart + index;
+			while(token.id != Token.END)
+			{
+				int next = start + token.length;
+				if (start <= indexPos && next > indexPos)
+					break;
+				start = next;
+				token = token.next;
+			}
+			switch (token.id)
+			{
+			case Token.COMMENT1:
+			case Token.COMMENT2:
+			case Token.COMMENT3:
+			case Token.COMMENT4:
+			case Token.LITERAL1:
+			case Token.LITERAL2:
+			case Token.LITERAL3:
+			case Token.LITERAL4:
+				break;
+			default:
+				return true;	// Found non-command and non-string occurrence
+			}
+		}
+		return false;
 	}
 
 	private static class LuceneIndexSelector
@@ -262,7 +316,7 @@ public class StaticCallTree extends JPanel
 	private Vector<Tag> getTagsOfFile(String file)
 	{
 		Vector<Tag> tags = CtagsInterfacePlugin.query("_path:" +
-			TagIndex.escape(file), 1000000);
+			TagIndex.escape(file), MAX_RESULTS);
 		// Now update the file of all tags...
 		for (Tag tag: tags)
 			tag.setFile(file);
@@ -273,11 +327,13 @@ public class StaticCallTree extends JPanel
 		Vector<FileMarker> markers;
 		boolean expanded;
 		Tag tag;
-		public MarkerTreeNode(FileMarker marker, Tag tag)
+		boolean filterNonRefs;
+		public MarkerTreeNode(FileMarker marker, Tag tag, boolean filterNonRefs)
 		{
 			markers = new Vector<FileMarker>();
 			markers.add(marker);
 			this.tag = tag;
+			this.filterNonRefs = filterNonRefs;
 			expanded = false;
 			addLoadingChild(this);
 		}
