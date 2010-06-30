@@ -4,15 +4,14 @@ package beauty.beautifiers;
 
 import org.junit.*;
 import static org.junit.Assert.*;
-import org.fest.swing.timing.Pause;
 
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.Buffer;
 
 import beauty.BeautyPlugin;
 import org.gjt.sp.jedit.testframework.TestUtils;
 
 import java.io.File;
+import java.util.List;
 
 public class DefaultBeautifierTest {
  
@@ -41,6 +40,35 @@ public class DefaultBeautifierTest {
         //jEdit.getPlugin(BeautyPlugin .class.getName()).getPluginJAR().deactivatePlugin(false);
     }
  
+    @Test
+    public void testParseTokens() {
+        String before = ".pageUserName{\n" + "	color:#5c93c9,#5c93c9;}";
+        DefaultBeautifier db = new DefaultBeautifier("css");
+        List<DefaultBeautifier.PToken> tokens = db.parseTokens(new StringBuilder(before));
+        assertTrue("Token count: " + tokens.size(), tokens.size() == 1);
+
+        before = ".pageUserName{\n" + "	color:#5c93c9,#5c93c9; } /* a comment */";
+        tokens = db.parseTokens(new StringBuilder(before));
+        assertTrue("Token count: " + tokens.size(), tokens.size() == 2);
+
+        before = ".pageUserName{\n" + "	color:#5c93c9,#5c93c9; /* a comment */ }";
+        tokens = db.parseTokens(new StringBuilder(before));
+        assertTrue("Token count: " + tokens.size(), tokens.size() == 3);
+        
+        StringBuilder sb = new StringBuilder();
+        for (DefaultBeautifier.PToken token : tokens) {
+            sb.append(token.tokenText);   
+        }
+        assertTrue("Reassembly failure 1", before.equals(sb.toString()));
+        
+        before = ".pageUserName{\n" + "	color:#5c93c9,#5c93c9;\n/* a comment\na line or two\nand another */\n }\n";
+        tokens = db.parseTokens(new StringBuilder(before));
+        sb = new StringBuilder();
+        for (DefaultBeautifier.PToken token : tokens) {
+            sb.append(token.tokenText);   
+        }
+        assertTrue("Reassembly failure 2, \n\nexpected:\n" + before + "\n\nhave:\n" + sb.toString(), before.equals(sb.toString()));
+    }
  
     @Test
     public void testPadTokens() {
@@ -62,7 +90,7 @@ public class DefaultBeautifierTest {
         String before = ".pageUserName{\n" + "	color:#5c93c9,#5c93c9;}";
         String answer = ".pageUserName {\n" + "	color:#5c93c9,#5c93c9;}";
  
-        DefaultBeautifier db = new DefaultBeautifier();
+        DefaultBeautifier db = new DefaultBeautifier("css");
         db.setPrePadCharacters("{");
         String after = db.prePadCharacters(new StringBuilder(before)).toString();
         assertTrue("prePadCharacters failed, expected >" + answer + "< but was >" + after + "<", answer.equals(after));
@@ -73,7 +101,7 @@ public class DefaultBeautifierTest {
         String before = ".pageUserName{\n" + "	color:#5c93c9,#5c93c9;}";
         String answer = ".pageUserName{\n" + "	color: #5c93c9, #5c93c9;}";
  
-        DefaultBeautifier db = new DefaultBeautifier();
+        DefaultBeautifier db = new DefaultBeautifier("css");
         db.setPostPadCharacters(":,");
         String after = db.postPadCharacters(new StringBuilder(before)).toString();
         assertTrue("postPadCharacters failed, expected >" + answer + "< but was >" + after + "<", answer.equals(after));
@@ -85,7 +113,7 @@ public class DefaultBeautifierTest {
         String before = ".pageUserName{" + "	color:#5c93c9,#5c93c9;}";
         String answer = ".pageUserName\n{" + "	color:#5c93c9,#5c93c9;}";
  
-        DefaultBeautifier db = new DefaultBeautifier();
+        DefaultBeautifier db = new DefaultBeautifier("css");
         db.setLineSeparator("\n");
         db.setPreInsertLineCharacters("\\{");
         String after = db.preInsertLineSeparators(new StringBuilder(before)).toString();
@@ -96,7 +124,7 @@ public class DefaultBeautifierTest {
         before = ".pageUserName{" + " color:#5c93c9,#5c93c9;}";
         answer = ".pageUserName\n{" + "\n color:#5c93c9,#5c93c9;}";
  
-        db = new DefaultBeautifier();
+        db = new DefaultBeautifier("css");
         db.setPreInsertLineCharacters("\\{,[ ].*?[:].*?[;]");
         after = db.preInsertLineSeparators(new StringBuilder(before)).toString();
         assertTrue("preInsertLinseSeparators failed, expected\n" + answer + "\nbut was\n" + after, answer.equals(after));
@@ -105,7 +133,7 @@ public class DefaultBeautifierTest {
         before = ".pageUserName{" + " color:#5c93c9,#5c93c9;\n}";
         answer = ".pageUserName{" + " color:#5c93c9,#5c93c9;\n}";
  
-        db = new DefaultBeautifier();
+        db = new DefaultBeautifier("css");
         db.setPreInsertLineCharacters("\\}");
         after = db.preInsertLineSeparators(new StringBuilder(before)).toString();
         assertTrue("preInsertLinseSeparators failed, expected\n" + answer + "\nbut was\n" + after, answer.equals(after));
@@ -116,7 +144,7 @@ public class DefaultBeautifierTest {
         String before = ".pageUserName{" + "	color:#5c93c9,#5c93c9;}";
         String answer = ".pageUserName{\n" + "	color:#5c93c9,#5c93c9;\n}";
  
-        DefaultBeautifier db = new DefaultBeautifier();
+        DefaultBeautifier db = new DefaultBeautifier("css");
         db.setLineSeparator("\n");
         db.setPostInsertLineCharacters("\\{,;");
         String after = db.postInsertLineSeparators(new StringBuilder(before)).toString();
@@ -125,7 +153,7 @@ public class DefaultBeautifierTest {
         before = ".pageUserName{" + " color:#5c93c9,#5c93c9;}";
         answer = ".pageUserName{\n" + " color:#5c93c9,#5c93c9;\n}";
  
-        db = new DefaultBeautifier();
+        db = new DefaultBeautifier("css");
         db.setPostInsertLineCharacters("\\{,[ ].*?[:].*?[;]");
         after = db.postInsertLineSeparators(new StringBuilder(before)).toString();
         assertTrue("postInsertLinseSeparators failed, expected\n" + answer + "\nbut was\n" + after, answer.equals(after));
@@ -133,7 +161,7 @@ public class DefaultBeautifierTest {
         before = ".pageUserName{\n" + " color:#5c93c9,#5c93c9;}\n";
         answer = ".pageUserName{\n" + " color:#5c93c9,#5c93c9;}\n";
  
-        db = new DefaultBeautifier();
+        db = new DefaultBeautifier("css");
         db.setPostInsertLineCharacters("\\}");
         after = db.postInsertLineSeparators(new StringBuilder(before)).toString();
         assertTrue("postInsertLinseSeparators failed, expected\n" + answer + "\nbut was\n" + after, answer.equals(after));
@@ -144,7 +172,7 @@ public class DefaultBeautifierTest {
         String before = ".pageUserName{color:#5c93c9,#5c93c9;}";
         String answer = ".pageUserName{color:#5c93c9,#5c93c9;\n}";
  
-        DefaultBeautifier db = new DefaultBeautifier();
+        DefaultBeautifier db = new DefaultBeautifier("css");
         db.setLineSeparator("\n");
         db.setPreInsertLineCharacters("\\}");
         db.setPostInsertLineCharacters(";");
@@ -158,7 +186,7 @@ public class DefaultBeautifierTest {
         String before = ".pageUserName{" + "	color : #5c93c9,#5c93c9;}";
         String answer = ".pageUserName{" + "	color: #5c93c9,#5c93c9;}";
  
-        DefaultBeautifier db = new DefaultBeautifier();
+        DefaultBeautifier db = new DefaultBeautifier("css");
         db.setLineSeparator("\n");
         db.setDontPrePadCharacters(":");
         String after = db.dontPrePadCharacters(new StringBuilder(before)).toString();
@@ -170,7 +198,7 @@ public class DefaultBeautifierTest {
         String before = ".pageUserName{" + "	color : #5c93c9,#5c93c9;}";
         String answer = ".pageUserName{" + "	color :#5c93c9,#5c93c9;}";
  
-        DefaultBeautifier db = new DefaultBeautifier();
+        DefaultBeautifier db = new DefaultBeautifier("css");
         db.setLineSeparator("\n");
         db.setDontPostPadCharacters(":");
         String after = db.dontPostPadCharacters(new StringBuilder(before)).toString();
@@ -182,7 +210,7 @@ public class DefaultBeautifierTest {
         String before = ".pageUserName{\n\n\n\n\n\n\n\n" + "	color: #5c93c9,#5c93c9;}";
         String answer = ".pageUserName{\n" + "	color: #5c93c9,#5c93c9;}";
  
-        DefaultBeautifier db = new DefaultBeautifier();
+        DefaultBeautifier db = new DefaultBeautifier("css");
         db.setLineSeparator("\n");
         db.setCollapseBlankLines(true);
         String after = db.collapseBlankLines(new StringBuilder(before)).toString();
