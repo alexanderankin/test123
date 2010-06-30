@@ -415,7 +415,7 @@ public class JspParserTokenManager implements JspParserConstants
         outputBuffer.append(line).append(ls);
 
         // handle the remaining lines, put stars in front of them.
-        // TODO: this needs work.  Need to preserve whitepsace after
+        // TODO: this needs work.  Need to preserve whitespace after
         // the star.
         for (int i = 1; i < lines.length; i++) {
             line = lines[i].trim();

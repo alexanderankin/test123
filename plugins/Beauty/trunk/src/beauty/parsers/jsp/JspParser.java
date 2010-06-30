@@ -435,7 +435,7 @@ public class JspParser implements JspParserConstants {
             }
          }
          catch(ParserException pe) {
-             // TODO: handle this
+             {if (true) throw new ParseException(pe.getMessage());}
          }
 
              --token_source.level;
@@ -759,7 +759,7 @@ public class JspParser implements JspParserConstants {
       endTagName = jj_consume_token(TAG_NAME);
                     add(endTagName);
                         if (! tagName.equalsIgnoreCase(endTagName.image)) {
-                            // TODO: handle this
+                            {if (true) throw new ParseException("Mismatch end tag: start tag '" + tagName + "' does not match end tag '" + endTagName + "'");}
                         }
       t = jj_consume_token(TAG_END);
                trimWhitespace();
@@ -1165,7 +1165,7 @@ public class JspParser implements JspParserConstants {
             }
         }
         catch(ParserException pe) {
-            // TODO: handle this
+            {if (true) throw new ParseException(pe.getMessage());}
         }
         if (endToken != null) {
             add(endToken);
@@ -1209,7 +1209,7 @@ public class JspParser implements JspParserConstants {
             }
         }
         catch(ParserException pe) {
-            // TODO: handle this
+            {if (true) throw new ParseException(pe.getMessage());}
         }
         if (endToken != null) {
             add(endToken);
@@ -1411,6 +1411,11 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
+  private boolean jj_3R_22() {
+    if (jj_3R_26()) return true;
+    return false;
+  }
+
   private boolean jj_3R_34() {
     if (jj_scan_token(SINGLE_QUOTE)) return true;
     Token xsp;
@@ -1426,18 +1431,13 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
-  private boolean jj_3R_22() {
+  private boolean jj_3R_19() {
     if (jj_3R_26()) return true;
     return false;
   }
 
   private boolean jj_3R_20() {
     if (jj_3R_27()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_19() {
-    if (jj_3R_26()) return true;
     return false;
   }
 
@@ -1467,11 +1467,6 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
-  private boolean jj_3R_51() {
-    if (jj_scan_token(EL_EXPRESSION_IN_ATTRIBUTE)) return true;
-    return false;
-  }
-
   private boolean jj_3R_21() {
     if (jj_3R_25()) return true;
     return false;
@@ -1484,6 +1479,11 @@ public class JspParser implements JspParserConstants {
     jj_scanpos = xsp;
     if (jj_3R_22()) return true;
     }
+    return false;
+  }
+
+  private boolean jj_3R_51() {
+    if (jj_scan_token(EL_EXPRESSION_IN_ATTRIBUTE)) return true;
     return false;
   }
 
@@ -1507,11 +1507,6 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
-  private boolean jj_3R_52() {
-    if (jj_scan_token(VALUE_BINDING_IN_ATTRIBUTE)) return true;
-    return false;
-  }
-
   private boolean jj_3R_14() {
     Token xsp;
     xsp = jj_scanpos;
@@ -1524,6 +1519,11 @@ public class JspParser implements JspParserConstants {
 
   private boolean jj_3R_18() {
     if (jj_3R_25()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_52() {
+    if (jj_scan_token(VALUE_BINDING_IN_ATTRIBUTE)) return true;
     return false;
   }
 

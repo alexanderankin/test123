@@ -574,7 +574,6 @@ void Prolog() :
 void Content() :
 {}
 {
-	// TODO: can this be refactored for more simplicity?
 	( Text() | ContentElementPossiblyWithText()	)
 	( ContentElementPossiblyWithText() )*
 }
@@ -673,7 +672,7 @@ void JspScriptlet() :
             }
          }
          catch(ParserException pe) {
-             // TODO: handle this
+             throw new ParseException(pe.getMessage());
          }
 	     
 	     --token_source.level;
@@ -954,7 +953,7 @@ void Element() :
     		{ 
     		    add(endTagName);
     			if (! tagName.equalsIgnoreCase(endTagName.image)) {
-    			    // TODO: handle this
+    			    throw new ParseException("Mismatch end tag: start tag '" + tagName + "' does not match end tag '" + endTagName + "'");
     			}
     		}
     	t=<TAG_END>
@@ -1241,7 +1240,7 @@ void HtmlScript() :
             }
         }
         catch(ParserException pe) {
-            // TODO: handle this
+            throw new ParseException(pe.getMessage());
         }
         if (endToken != null) {
             add(endToken);   
@@ -1282,7 +1281,7 @@ void HtmlStyle() :
             }
         }
         catch(ParserException pe) {
-            // TODO: handle this
+            throw new ParseException(pe.getMessage());
         }
         if (endToken != null) {
             add(endToken);   
@@ -1707,7 +1706,7 @@ TOKEN_MGR_DECLS :
         outputBuffer.append(line).append(ls);
         
         // handle the remaining lines, put stars in front of them.
-        // TODO: this needs work.  Need to preserve whitepsace after
+        // TODO: this needs work.  Need to preserve whitespace after
         // the star.
         for (int i = 1; i < lines.length; i++) {
             line = lines[i].trim();
