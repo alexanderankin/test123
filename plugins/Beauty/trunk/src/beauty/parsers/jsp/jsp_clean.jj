@@ -7,9 +7,6 @@
  * captured as a single token, which means the token image can be passed off to
  * a javascript beautifier.
  *
- * TODO: check that code inside <style> ... </style> is not parsed. -- Need to
- * to the same with <style> as with <script> so that the tag body is parsed as
- * a single token, then the token image can be passed off to the css beautifier.
  */
 
 options { 
@@ -363,7 +360,6 @@ void Prolog() :
 void Content() :
 {}
 {
-	// TODO: can this be refactored for more simplicity?
 	( Text() | ContentElementPossiblyWithText()	)
 	( ContentElementPossiblyWithText() )*
 }
