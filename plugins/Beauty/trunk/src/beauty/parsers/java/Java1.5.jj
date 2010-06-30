@@ -649,6 +649,9 @@ SKIP :
 }
 
 
+// TODO: this is the wrong way to handle these.  The TokenManager may be way
+// ahead of the parser, which can cause these tokens to be inserted in the
+// output in the wrong place.  See the jsp parser for a better way to do this.
 SPECIAL_TOKEN :
 {
   <LINE_ENDERS: ("\n"|"\r"|"\r\n")+ >
