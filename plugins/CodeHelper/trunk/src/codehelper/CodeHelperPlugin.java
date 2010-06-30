@@ -19,6 +19,14 @@ public class CodeHelperPlugin extends EditPlugin
 		dwm.showDockableWindow(STATIC_CALL_TREE_DOCKABLE);
 		StaticCallTree dockable = (StaticCallTree)
 			dwm.getDockable(STATIC_CALL_TREE_DOCKABLE);
-		dockable.showTreeFor(view.getTextArea().getSelectedText());
+		dockable.showTreeFor(view.getTextArea().getSelectedText(), true);
+	}
+	public static void showStaticOccurrenceTree(View view)
+	{
+		DockableWindowManager dwm = view.getDockableWindowManager();
+		dwm.showDockableWindow(STATIC_CALL_TREE_DOCKABLE);
+		StaticCallTree dockable = (StaticCallTree)
+			dwm.getDockable(STATIC_CALL_TREE_DOCKABLE);
+		dockable.showTreeFor(view.getTextArea().getSelectedText(), false);
 	}
 }

@@ -6,5 +6,10 @@
 			codehelper.CodeHelperPlugin.showStaticCallTree(view);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="codehelper-show-static-occurrence-tree" NO_REPEAT="TRUE">
+		<CODE>
+			codehelper.CodeHelperPlugin.showStaticOccurrenceTree(view);
+		</CODE>
+	</ACTION>
 </ACTIONS>
 
