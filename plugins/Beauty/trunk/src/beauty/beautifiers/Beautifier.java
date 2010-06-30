@@ -10,6 +10,8 @@ import org.gjt.sp.jedit.Buffer;
  * <p>
  * Added a reference to the Buffer itself.  I did this for the DefaultBeautifier
  * since it needs to tokenize the buffer.
+ * TODO: verify this is no longer necessary.  The DefaultBeautifier is now using
+ * a temporary buffer for tokenization.
  */
 
 public abstract class Beautifier {
