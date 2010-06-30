@@ -102,11 +102,19 @@
       <p>
       <strong>JSP Beautifier</strong>
       <p>
-      The JSP beautifier does not (yet) have any specific configuration other than the buffer settings mentioned above, however, some configuration of java scriptlets, style blocks, and javascript blocks is possible.
+      In addition to the buffer settings mentioned above, the JSP beautifier has a few options that can be set in the plugin options. Additionally, some configuration of java scriptlets, style blocks, and javascript blocks is possible.
       <p>
       This beautifier delegates to the CSS beautifier for style blocks, so any configuration you make for the CSS beautifier applies to the style blocks within a JSP file.
       <p>
       Similarly, this beautifier delegates to the custom beautifiers for java and javascript blocks within a JSP file, so you can make adjustments via the custom beautifier dialog in the plugin options.
+      <p>
+      Just to clarify the Java beautifiers:  Assuming you have the AStyle plugin installed, you have 3 choices for Java beautification:
+      <ul>
+         <li><code>java:custom</code></li>
+         <li><code>java:astyle</code></li>
+         <li><code>java:beauty</code></li>
+      </ul>
+      For regular Java files, you'll want to use either <code>java:astyle</code> or <code>java:beauty</code>.  The <code>java:custom</code> beautifier is the one used by the JSP beautifier.  It does not beautify as well as either <code>java:astyle</code> or <code>java:beauty</code> but will accept the Java code commonly found in JSP scriptlets where the other two won't.
       <p>
       <strong>Others</strong>
       <p>
