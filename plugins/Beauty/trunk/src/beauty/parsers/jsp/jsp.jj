@@ -18,18 +18,22 @@
  * DONE: fix scriptlet indenting (pass to java line parser)
  * DONE: fix script indenting (pass to javascript parser)
  * DONE: fix style indenting (pass to css parser)
- * TODO: currently removes all blank lines.  Need to collapse multiple blank lines
+ * DONE: currently removes all blank lines.  Need to collapse multiple blank lines
  * into a single blank line.
  * DONE: multi-line comments don't align with the opening comment tag, they are
  * too far left.
- * TODO: if a comment is the first item in the file, the following tag will always
+ * DONE: if a comment is the first item in the file, the following tag will always
  * be on the same line as the end of the comment, e.g. --%> <%@ include
+ * TODO: redo CommentTag and JspComment now that I've got the whitespace issues
+ * figured out.  Use the code from UnparsedText to handle the comment body.
  */
 
 options { 
 	UNICODE_INPUT=true;
 	IGNORE_CASE = true; 
 	STATIC = false; 
+	//DEBUG_PARSER=true;
+	//DEBUG_TOKEN_MANAGER=true;
 } 
 
 PARSER_BEGIN(JspParser)
@@ -155,6 +159,41 @@ public class JspParser {
     private void writePre(String s) {
         token_source.writePre(s);
     }
+    
+    /**
+     * All special tokens in this parser are whitespace tokens only.
+     * This method gathers all the special tokens preceeding the given
+     * token, removes all spaces and tabs, and collapses multiple
+     * line separators based on the <code>collapseBlankLines</code>
+     * setting.
+     */
+    private String getSpecial(Token token) {
+        if (token.specialToken == null) {
+            return "";   
+        }
+        StringBuilder sb = new StringBuilder();
+        Token special = token.specialToken;
+        while(special.specialToken != null) {
+            special = special.specialToken;
+        }
+        while (special != null) {
+            sb.append(special.image);
+            special = special.next;
+        }
+        String s = sb.toString();
+        s = s.replaceAll(" ", "");
+        s = s.replaceAll("\t", "");
+        StringTokenizer st = new StringTokenizer(s, ls, true);
+        int count = st.countTokens();
+        if (token_source.collapseBlankLines) {
+            count = Math.min(2, count);   
+        }
+        sb.setLength(0);
+        for (int i = 0; i < count; i++) {
+            sb.append(ls);
+        }
+        return sb.toString();
+    }
 
     public void setLineSeparator(String le) {
         ls = le;
@@ -274,39 +313,33 @@ PARSER_END(JspParser)
 
 <DEFAULT> SPECIAL_TOKEN :
 {
-    < (<WHITESPACE>)+ > 
-    { 
-        System.out.println("+++++ in the new block");
-        String sa = matchedToken.image;
-        sa = sa.replaceAll(" ", "");
-        sa = sa.replaceAll("\t", "");
-        StringTokenizer sta = new StringTokenizer(sa, ls, true);
-        int counta = sta.countTokens();
-        if (collapseBlankLines) {
-            counta = Math.min(2, counta);   
-        }
-        StringBuilder sba = new StringBuilder();
-        for (int i = 0; i < counta; i++) {
-            sba.append(ls);
-        }
-        writePre(sba.toString());
-    }
+    < (<WHITESPACE>)+ >
 }
 
 <JspDirectiveState, JspDirectiveAttributesState> SKIP :
 {
-  < (<WHITESPACE>)+ >
+    < (<WHITESPACE>)+ > 
 }
 
 <AttrValueState, InTagState> SPECIAL_TOKEN :
 {
-    < (<WHITESPACE>)+ > { add(matchedToken.image); }
+    < (<WHITESPACE>)+ > 
 }
 
 <AfterTagState> SPECIAL_TOKEN :
 {
     < (<WHITESPACE>)+ > 
-    { 
+    {
+        /*
+        String s = matchedToken.image;
+        s = s.replaceAll(" ", "");
+        s = s.replaceAll("\t", "");
+        s = s.replaceAll("\n", "N");
+        writePre(s);
+        */
+        
+        
+        /*
         String s = matchedToken.image;
         s = s.replaceAll(" ", "");
         s = s.replaceAll("\t", "");
@@ -320,6 +353,7 @@ PARSER_END(JspParser)
             sb.append(ls);
         }
         writePre(sb.toString());
+        */
     }
 }
 
@@ -571,7 +605,11 @@ void ContentElementPossiblyWithText() :
 void JspDirective() :
 { }
 {
-	t=<JSP_DIRECTIVE_START> { add(t); } 
+	t=<JSP_DIRECTIVE_START> 
+	{ 
+	    writePre(getSpecial(t));
+	    add(t); 
+	} 
 	t=<JSP_DIRECTIVE_NAME> { trim(); add(" "); add(t); add(" "); }  
 	
 	(
@@ -620,13 +658,13 @@ void JspScriptlet() :
 	end=<JSP_SCRIPTLET_END> 
 	
 	{
+	     writePre(getSpecial(start));
 	     add(start);
 	     writeln();
 	     ++token_source.level;
 	     
 	     try {
             if (content != null && content.image.trim().length() > 0) {
-                System.out.println("+++++ indent level = " + token_source.level);
                 Beautifier beautifier = new JavaLineBeautifier();
                 beautifier.setIndentWidth(indentWidth);
                 beautifier.setTabWidth(tabSize);
@@ -649,7 +687,11 @@ void JspScriptlet() :
 void JspExpression() :
 { }
 {
-	t=<JSP_EXPRESSION_START> { add(t); } 
+	t=<JSP_EXPRESSION_START> 
+	    { 
+	        writePre(getSpecial(t));
+	        add(t); 
+	    } 
 	t=<JSP_EXPRESSION> { add(t); } 
 	t=<JSP_EXPRESSION_END> { add(t); writeln(); } 
 }
@@ -657,7 +699,11 @@ void JspExpression() :
 void JspDeclaration() :
 { }
 {
-	t=<JSP_DECLARATION_START> { add(t); } 
+	t=<JSP_DECLARATION_START> 
+	    { 
+	        writePre(getSpecial(t));
+	        add(t); 
+	    } 
 	t=<JSP_DECLARATION> { add(t); } 
 	t=<JSP_DECLARATION_END> { add(t); writeln(); } 
 }
@@ -667,7 +713,11 @@ void JspComment() :
     List<String> lines = new ArrayList<String>();
 }
 {
-	t=<JSP_COMMENT_START> { lines.add(t.image); } 
+	t=<JSP_COMMENT_START> 
+	    { 
+	        writePre(getSpecial(t));
+	        lines.add(t.image); 
+	    } 
 	t=<JSP_COMMENT_CONTENT> 
 	{ 
 	    String s = t.image;
@@ -739,7 +789,39 @@ void Text() :
 void UnparsedText() :
 { }
 {
-    t=<UNPARSED_TEXT> { writeln(); add(t); writeln(); } 
+    t=<UNPARSED_TEXT> 
+        { 
+            // unparsed text will contain all whitespace, regardless of the 
+            // current lexing state, so need to deal with it here.
+            String s = t.image;
+
+            if (token_source.collapseBlankLines) {
+                String lsep;
+                if ("\r".equals(ls)) {
+                    lsep = "\\r";
+                }
+                else if ("\r\n".equals(ls)) {
+                    lsep = "\\r\\n";
+                }
+                else {
+                    lsep = "\\n";
+                }
+                String regex = "(([ ]|[\\t])*(" + lsep + ")){2,}";
+                s = s.replaceAll(regex, ls + ls);
+            }
+
+            StringTokenizer st = new StringTokenizer(s, ls, true);
+            while(st.hasMoreTokens()) {
+                String token = st.nextToken();
+                if (token.equals(ls)) {
+                    writeln();   
+                }
+                else {
+                    add(token);    
+                }
+                    
+            }
+        } 
 }
 
 /**
@@ -787,7 +869,13 @@ void CData() :
 {
 }
 {
-	t=<CDATA_START> { add(t); }  ( t=<UNPARSED>  { add(t); }  )* t=<CDATA_END> { add(t); } 
+	t=<CDATA_START> 
+	    { 
+	        writePre(getSpecial(t));
+            add(t); 
+        }  
+    ( t=<UNPARSED>  { add(t); }  )* 
+    t=<CDATA_END> { add(t); } 
 }
 
 /**
@@ -802,7 +890,11 @@ void Element() :
 	boolean inPreTag = false;
 }
 {
-    t=<TAG_START>  { add(t); } 
+    t=<TAG_START>  
+        { 
+            writePre(getSpecial(t));
+            add(t); 
+        } 
     startTagName = <TAG_NAME> { tagName = startTagName.image; add(startTagName); }
     (Attributes())
     ( 
@@ -850,10 +942,13 @@ void Element() :
     	
    		t=<ENDTAG_START>  
    		   { 
+   		       writePre(getSpecial(t));
+   		       /*
    		       trimNL(); 
    		       if (!inPreTag) {
    		           writeln();
    		       } 
+   		       */
    		       --token_source.level; 
    		       add(t); 
    		   } 
@@ -1000,7 +1095,11 @@ void CommentTag() :
     List<String> lines = new ArrayList<String>();
 }
 {
-  t=<COMMENT_START> { lines.add(t.image); } 
+  t=<COMMENT_START> 
+    { 
+        writePre(getSpecial(t));
+        lines.add(t.image); 
+    } 
   ( t=<COMMENT_TEXT> 
       { 
 	    String s = t.image;
@@ -1045,7 +1144,6 @@ void CommentTag() :
                 write();
                 ++token_source.level;
                 for (int i = 1; i < lines.size() - 2; i++) {
-                    System.out.println("+++++|" + lines.get(i) + "|");
                     add(lines.get(i));
                     writeln();
                 }
@@ -1059,7 +1157,11 @@ void CommentTag() :
 void Declaration() :
 { }
 {
-  t=<DECL_START>  { add(t); } 
+  t=<DECL_START>  
+    { 
+        writePre(getSpecial(t));
+        add(t); 
+    } 
   (Attribute(false))* 
   t=<DECL_END> { add(t); } 
 }
@@ -1120,7 +1222,7 @@ void HtmlScript() :
 	(scriptToken=<HTML_SCRIPT_CONTENT> 
 	    { 
 	        if (scriptToken != null) {
-	             script.append(scriptToken.image);   
+	            script.append(scriptToken.image);   
 	        }
 	    } 
 	)*
@@ -1231,7 +1333,7 @@ TOKEN_MGR_DECLS :
     // a specific separator
     static String ls = System.getProperty("line.separator");
     
-    static boolean collapseBlankLines = false;
+    static boolean collapseBlankLines = true;
 
     static void reset() {
         b = new StringBuilder();
