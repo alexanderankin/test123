@@ -9,9 +9,9 @@ import javax.swing.JComboBox;
 import javax.swing.border.EmptyBorder;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
-import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.util.StandardUtilities;
 
 import sidekick.ModeOptionPane;
 
@@ -27,7 +27,7 @@ public abstract class AbstractModeOptionPane extends AbstractOptionPane {
 		setBorder(new EmptyBorder(5, 5, 5, 5));
 
 		Mode[] modes = jEdit.getModes();
-		Arrays.sort(modes,new MiscUtilities.StringICaseCompare());
+		Arrays.sort(modes, new StandardUtilities.StringCompare<Mode>(true));
 		String[] modeNames = new String[modes.length + 1];
 		modeNames[0] = jEdit.getProperty("options.editing.global");
 		for(int i = 0; i < modes.length; i++)
