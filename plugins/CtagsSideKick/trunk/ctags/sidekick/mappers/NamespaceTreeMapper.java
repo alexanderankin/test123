@@ -61,7 +61,7 @@ public class NamespaceTreeMapper extends AbstractTreeMapper
 	public Vector<Object> getPath(Tag tag)
 	{
 		Vector<Object> path = new Vector<Object>();
-		Hashtable info = tag.getInfo();
+		Hashtable<String, String> info = tag.getInfo();
 		for (int i = 0; i < Keywords.length; i++)
 		{
 			String ns = (String)info.get(Keywords[i]);

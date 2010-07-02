@@ -27,14 +27,14 @@ import ctags.sidekick.renderers.ITextProvider;
 public class Tag extends SourceAsset
 {
 	static final String ICON_PREFIX = "icons.";
-	Hashtable info;
+	Hashtable<String, String> info;
 	String tag;
 	String pat;
 	int line;
 	String signature = null;
 	String kind = null;
 	
-	public Tag(final Buffer buffer, final Hashtable info)
+	public Tag(final Buffer buffer, final Hashtable<String, String> info)
 	{
 		super((String)info.get("k_tag"),
 			  Integer.parseInt((String)info.get("line")),
@@ -63,7 +63,7 @@ public class Tag extends SourceAsset
 	{
 		return kind;
 	}
-	public Hashtable getInfo()
+	public Hashtable<String, String> getInfo()
 	{
 		return info;
 	}
@@ -75,6 +75,10 @@ public class Tag extends SourceAsset
 	{
 		if (this == obj)
 			return true;
-		return (getShortString().equals(obj));
+		if (obj instanceof String)
+			return (getShortString().equals((String)obj));
+		else if (obj instanceof Tag)
+			return getShortString().equals(((Tag)obj).getShortString());
+		return false;
 	}
 };

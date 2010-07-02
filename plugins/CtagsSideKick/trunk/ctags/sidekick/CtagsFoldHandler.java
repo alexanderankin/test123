@@ -9,11 +9,11 @@ import org.gjt.sp.jedit.buffer.JEditBuffer;
 import sidekick.SideKickParsedData;
 import sidekick.SideKickPlugin;
 
-public class FoldHandler extends org.gjt.sp.jedit.buffer.FoldHandler {
+public class CtagsFoldHandler extends org.gjt.sp.jedit.buffer.FoldHandler {
 
 	public static final String CTAGS_SIDE_KICK_FOLD_HANDLER = "CtagsSideKick";
 
-	protected FoldHandler() {
+	protected CtagsFoldHandler() {
 		super(CTAGS_SIDE_KICK_FOLD_HANDLER);
 	}
 

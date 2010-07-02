@@ -39,7 +39,7 @@ import ctags.sidekick.sorters.ITreeSorter;
 
 public class ParsedData extends SideKickParsedData
 {
-	static FoldHandler foldHandler = new ctags.sidekick.FoldHandler();
+	static FoldHandler foldHandler = new ctags.sidekick.CtagsFoldHandler();
 	ITreeMapper mapper = null;
 	ITreeSorter sorter = null;
 	ITreeFilter filter = null;
