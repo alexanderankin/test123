@@ -33,7 +33,7 @@ import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.bsh.NameSpace;
 import org.gjt.sp.jedit.bsh.BshMethod;
 
-public class ExBar extends JPanel
+public class ExBar extends JPanel implements FocusListener
 {
 	protected View view;
 	protected HistoryTextField input;
@@ -48,6 +48,7 @@ public class ExBar extends JPanel
 
 		//add(Box.createHorizontalStrut(2));
 		add(input = new ExTextField());
+		input.addFocusListener(this);
 		input.setEnterAddsToHistory(true);	// ??? really wanted
 		Dimension max = input.getPreferredSize();
 		max.width = Integer.MAX_VALUE;
@@ -59,6 +60,15 @@ public class ExBar extends JPanel
 		close.addActionListener(new ActionHandler());
 		close.setToolTipText(jEdit.getProperty("view.action.close-tooltip"));
 		add(close);
+	}
+	
+	public void focusGained(FocusEvent e)
+	{
+	}
+	
+	public void focusLost(FocusEvent e)
+	{
+        view.removeToolBar(this);
 	}
 
 	public HistoryTextField getField()
