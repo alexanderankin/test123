@@ -214,7 +214,7 @@ public class TagIndex
 
 	public void deleteTagsFromSourceFile(String file)
 	{
-		//System.err.println("Deleting tags from source file " + file);
+		System.err.println("Deleting tags from source file " + file);
 		Query q = getQuery(_PATH_FLD + ":" + escape(file));
 		if (q != null)
 		{
@@ -598,10 +598,11 @@ public class TagIndex
 		}
 		public static void fromString(String s, List<Origin> origins)
 		{
-			int index = 0;
+			int index = s.indexOf(SEP);
+			if (index < 0)
+				return;
 			do
 			{
-				index = s.indexOf(SEP);
 				int nextIndex = s.indexOf(SEP, index + 1);
 				String origin;
 				if (nextIndex >= 0)
