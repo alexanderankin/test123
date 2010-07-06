@@ -676,6 +676,7 @@ public class CtagsInterfacePlugin extends EditPlugin
 	private static void parseTagFile(Runner runner, Parser parser,
 		String tagFile, TagHandler handler)
 	{
+		System.err.println("Parsing tag file " + tagFile);
 		parser.parseTagFile(tagFile, handler);
 		runner.releaseFile(tagFile);
 	}
@@ -684,13 +685,8 @@ public class CtagsInterfacePlugin extends EditPlugin
 	
 	public static void tagSourceFile(final String file)
 	{
-		tagSourceFile(file, true);
-	}
-
-	public static void tagSourceFile(final String file, boolean sync)
-	{
 		setStatusMessage("Tagging file: " + file);
-		final Object syncObject = sync ? new Object() : null;
+		final Object syncObject = new Object();
 		final boolean [] done = { false };
 		addWorkRequest(file, new Task()
 		{
@@ -710,13 +706,10 @@ public class CtagsInterfacePlugin extends EditPlugin
 				};
 				Parser parser = getParser(null);
 				parseTagFile(runner, parser, tagFile, handler);
-				if (syncObject != null)
+				synchronized (syncObject)
 				{
-					synchronized (syncObject)
-					{
-						done[0] = true;
-						syncObject.notifyAll();
-					}
+					done[0] = true;
+					syncObject.notifyAll();
 				}
 			}
 		});
