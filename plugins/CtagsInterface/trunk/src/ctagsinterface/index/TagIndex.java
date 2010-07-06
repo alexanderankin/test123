@@ -93,7 +93,7 @@ public class TagIndex
 		}
 		public String name;
 	}
-
+	
 	public TagIndex() throws RuntimeException
 	{
 		File path = new File(getIndexPath());
@@ -309,6 +309,8 @@ public class TagIndex
 
 	public static String escape(String s)
 	{
+		if (s.equals("AND") || s.equals("OR") || s.equals("NOT"))
+			return "\"" + s + "\"";
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < s.length(); i++)
 		{
