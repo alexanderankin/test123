@@ -103,8 +103,10 @@ public class StaticCallTree extends JPanel
 			@Override
 			public void mouseClicked(MouseEvent e)
 			{
-				FileMarker m = ((FileMarkerWrapper) table.getValueAt(
-					table.getSelectedRow(),1)).m;
+				Object value = table.getValueAt(table.getSelectedRow(),1);
+				if (! (value instanceof FileMarkerWrapper))
+					return;
+				FileMarker m = ((FileMarkerWrapper) value).m;
 				m.jump(StaticCallTree.this.view);
 			}
 		});
