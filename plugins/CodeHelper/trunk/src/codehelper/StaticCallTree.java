@@ -119,9 +119,12 @@ public class StaticCallTree extends JPanel
 	private void updateMarkerView(MarkerTreeNode node)
 	{
 		tableModel.setRowCount(0);
-		for (FileMarker m: node.markers)
+		Vector<FileMarker> markers = node.markers;
+		for (FileMarker m: markers)
 			tableModel.addRow(new Object[] {Integer.valueOf(m.getLine() + 1),
 				new FileMarkerWrapper(m)});
+		if (! markers.isEmpty())
+			markers.get(0).jump(view);
 	}
 	public void showTreeFor(String text, boolean filterNonRefs)
 	{
