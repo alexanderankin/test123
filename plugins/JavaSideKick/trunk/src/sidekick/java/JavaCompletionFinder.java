@@ -390,9 +390,38 @@ public class JavaCompletionFinder {
 
     private JavaCompletion getPossibleNonQualifiedCompletions( String word ) {
     	org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, this, "Getting non-qualified completions");
-        // If the word is a class, get its package
+        if (jEdit.getBooleanProperty("sidekick.java.importPackage")) {
+        	CUNode cu = (CUNode) data.root.getUserObject();
+        	List imports = cu.getImports();
+        	for ( Iterator it = imports.iterator(); it.hasNext(); ) {
+        		String packageName = ( String ) it.next();
+        		if ( packageName != null ) {
+        			String className = packageName;
+        			// might have a fully qualified import
+        			if ( className.endsWith( word ) ) {
+        				Class c = validateClassName( className, word, null );
+        				if ( c != null ) {
+        					return null;
+        				}
+        			}
+        			else {
+        				// wildcard import, need to add . and type
+        				className = packageName + "." + word;
+        				try {
+        					Class c = validateClassName( className, word, null );
+        					if ( c != null ) {
+        						return null;
+        					}
+        				}
+        				catch ( Exception e ) {
+        					continue;
+        				}
+        			}
+        		}
+        	}
+        }
+        // If the word is a class, get its package        
         String[] pkgs = Locator.getInstance().getClassName(word);
-        
         if (pkgs != null && pkgs.length>0) {
         	//String inUse = getClassForType(word, (CUNode) data.root.getUserObject()).getName();
         	ArrayList<String> list = new ArrayList<String>(pkgs.length);
