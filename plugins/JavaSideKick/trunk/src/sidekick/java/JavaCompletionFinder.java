@@ -1,5 +1,5 @@
 package sidekick.java;
-
+// imports
 import java.lang.reflect.*;
 import java.util.*;
 
@@ -9,6 +9,7 @@ import sidekick.java.options.*;
 import sidekick.java.util.*;
 
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.syntax.*;
 
 import sidekick.SideKickParsedData;
 
@@ -27,22 +28,23 @@ import sidekick.SideKickParsedData;
  *             ae.      // nothing happens here
  *         }
  *     }
+ *
  * );
  * 
- * TODO: code completion is active inside of comments. Is this useful or annoying?
+ * Code completion no longer works inside of comments
+ * If a word-break character wasn't found, the completion could potentially mix
+ * comments with tokens, which occasionally caused errors
  */
 public class JavaCompletionFinder {
 
     private JavaSideKickParsedData data = null;
     private EditPane editPane = null;
     private int caret = 0;
-    private String[] tempPossibles = null;
-    private boolean savePackages = false;
 
     public JavaCompletion complete( EditPane editPane, int caret ) {
         this.editPane = editPane;
         this.caret = caret;
-
+        
         SideKickParsedData skpd = null;
         if ( jEdit.getBooleanProperty("sidekick.java.parseOnComplete") ) {
             skpd = (new sidekick.java.JavaParser()).parse();
@@ -56,7 +58,7 @@ public class JavaCompletionFinder {
         }
 
         SideKickParsedData.setParsedData( editPane.getView() , skpd );
-
+        
         if ( skpd instanceof JavaSideKickParsedData ) {
             data = ( JavaSideKickParsedData ) skpd;
         }
@@ -98,6 +100,26 @@ public class JavaCompletionFinder {
         if ( caret - start < 0 ) {
             return "";
         }
+        
+        // Ensure that 'start' is not in a comment
+        DefaultTokenHandler handler = new DefaultTokenHandler();
+        int lastLine = -1;
+        for (int i = caret-1; i>=start; i--) {
+        	int line = buffer.getLineOfOffset(i);
+        	if (line != lastLine) {
+        		handler.init();
+        		buffer.markTokens(line, handler);
+        		lastLine = line;
+        	}
+        	int offset = i-buffer.getLineStartOffset(line);
+        	if (offset == buffer.getLineText(line).length()) offset--;
+        	if (offset < 0) continue;
+        	Token t = TextUtilities.getTokenAtOffset(handler.getTokens(), offset);
+        	if (t.id == Token.COMMENT1 || t.id == Token.COMMENT2 || t.id == Token.COMMENT3 || t.id == Token.COMMENT4) {
+        		start = i+1;
+        		break;
+        	}
+        }
 
         String text = buffer.getText( start, caret - start );
         if ( text == null || text.length() == 0 ) {
@@ -121,9 +143,9 @@ public class JavaCompletionFinder {
         for (int i = 0; i < wordBreakWords.length; i++) {
             text = text.replace(wordBreakWords[i] + " ", "");
         }
-
-        // read the text backwards until a word break character is found.  It is
-        // possible that there is no word break character.
+        
+        // read the text backwards until a word break character is found
+        // It is possible that there is no word break character
         for ( int i = text.length() - 1; i >= 0; i-- ) {
             char c = text.charAt( i );
             if ( word_break_chars.indexOf( c ) > -1 ) {
@@ -300,6 +322,27 @@ public class JavaCompletionFinder {
             if (tokenizer.hasMoreTokens())
                 qual += ".";
         }
+        if (c == null) {
+        	// Might be inside a method call, like: while (tokenizer.<COMPLETION>
+        	int paren = qualification.lastIndexOf("(");
+        	if (paren != -1) {
+        		String halfWord = qualification.substring(paren+1);
+        		// Class?
+                c = validateClassName(halfWord);
+                if (c == null)
+                    c = getClassForType(halfWord, (CUNode) data.root.getUserObject());
+                static_only = (c != null);
+                if (c == null) {
+                    // Field?
+                    FieldNode node = getLocalVariable(halfWord);
+                    if (node != null) {
+                        c = getClassForType(node.getType(), (CUNode) data.root.getUserObject());
+                        if (c == null)
+                            return null;
+                    }
+                }
+        	}
+        }
         if (c != null) {
             // filter the members of the class by the part of the word
             // following the last dot.  The completion will replace this
@@ -348,29 +391,17 @@ public class JavaCompletionFinder {
     private JavaCompletion getPossibleNonQualifiedCompletions( String word ) {
     	org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, this, "Getting non-qualified completions");
         // If the word is a class, get its package
-        savePackages = true;
-        tempPossibles = null;
-        Class c = getClassForType(word, (CUNode) data.root.getUserObject());
-        if (tempPossibles != null) {
-            List<String> list = new ArrayList<String>(tempPossibles.length);
-            for (int i = 0; i < tempPossibles.length; i++) {
-                list.add(tempPossibles[i]);
-            }
-            //list.add(c.getPackage().getName()+"."+word);
-            return new JavaCompletion(editPane.getView(), word, list);
-        }
-        else if (c != null) {
-            // The package could potentially be null, in which case just return its name
-            try {
-                List<String> list = new ArrayList<String>(1);
-                list.add(c.getPackage().getName() + "." + word);
-                return new JavaCompletion(editPane.getView(), word, list);
-            }
-            catch (Exception e) {
-            	List<String> list = new ArrayList<String>(1);
-            	list.add(c.getName());
-                return new JavaCompletion(editPane.getView(), word, list);
-            }
+        String[] pkgs = Locator.getInstance().getClassName(word);
+        
+        if (pkgs != null && pkgs.length>0) {
+        	//String inUse = getClassForType(word, (CUNode) data.root.getUserObject()).getName();
+        	ArrayList<String> list = new ArrayList<String>(pkgs.length);
+        	for (int i = 0; i<pkgs.length; i++) {
+        		//if (pkgs[i].equals(inUse)) continue;
+        		list.add(pkgs[i]);
+        	}
+        	//list.trimToSize();
+        	return new JavaCompletion(editPane.getView(), word, list);
         }
         // partialword
         // find all fields/variables declarations, methods, and classes in scope
@@ -654,13 +685,8 @@ public class JavaCompletionFinder {
                         PVHelper.getProject( editPane.getView() ), type);
             org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, this, "classNames = "+java.util.Arrays.toString(classNames));
             if (classNames != null && classNames.length > 1) {
-                if (!savePackages) {
-                    GUIUtilities.error(editPane.getView(), "options.sidekick.java.ambiguousClass",
-                            new String[] { type });
-                }
-                else {
-                    tempPossibles = classNames;
-                }
+            	GUIUtilities.error(editPane.getView(), "options.sidekick.java.ambiguousClass",
+            		new String[] { type });
                 return null;
             }
             else if (classNames != null && classNames.length > 0) {
@@ -676,20 +702,17 @@ public class JavaCompletionFinder {
         if ( c == null && PVHelper.useJavaClasspath( PVHelper.getProject( editPane.getView() ) ) ) {
             classNames = Locator.getInstance().getClassPathClassName( type );
             if (classNames != null && classNames.length > 1) {
-                if (!savePackages) {
-                    GUIUtilities.error(editPane.getView(), "options.sidekick.java.ambiguousClass",
-                            new String[] { type });
-                }
-                else {
-                    tempPossibles = classNames;
-                }
+            	GUIUtilities.error(editPane.getView(), "options.sidekick.java.ambiguousClass",
+            		new String[] { type });
                 return null;
             }
-            className = classNames[0];
-            c = validateClassName( className, type, filename );
-            if (c != null) {
-                return c;
-            }
+            else if (classNames != null && classNames.length > 0) {
+				className = classNames[0];
+				c = validateClassName( className, type, filename );
+				if (c != null) {
+					return c;
+				}
+			}
         }
 
         // check Java runtime jars.  These are the jars specified in $JAVA_HOME/lib,
@@ -697,20 +720,17 @@ public class JavaCompletionFinder {
         if ( c == null ) {
             classNames = Locator.getInstance().getRuntimeClassName( type );
             if (classNames != null && classNames.length > 1) {
-                if (!savePackages) {
-                    GUIUtilities.error(editPane.getView(), "options.sidekick.java.ambiguousClass",
-                            new String[] { type });
-                }
-                else {
-                    tempPossibles = classNames;
-                }
+            	GUIUtilities.error(editPane.getView(), "options.sidekick.java.ambiguousClass",
+            		new String[] { type });
                 return null;
             }
-            className = classNames[0];
-            c = validateClassName( className, type, filename );
-            if (c != null) {
-                return c;
-            }
+            else if (classNames != null && classNames.length > 0) {
+				className = classNames[0];
+				c = validateClassName( className, type, filename );
+				if (c != null) {
+					return c;
+				}
+			}
         }
         return null;
     }
