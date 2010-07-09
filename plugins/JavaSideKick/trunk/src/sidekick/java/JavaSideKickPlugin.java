@@ -26,11 +26,11 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package sidekick.java;
-
+//{{{ imports
 import org.gjt.sp.jedit.*;
 import errorlist.*;
 import sidekick.java.util.*;
-
+//}}}
 public class JavaSideKickPlugin extends EditPlugin implements EBComponent {
 	public final static String NAME = "sidekick.java";
 	public final static String OPTION_PREFIX = "options.sidekick.java.";
@@ -49,9 +49,12 @@ public class JavaSideKickPlugin extends EditPlugin implements EBComponent {
 			if (message instanceof projectviewer.event.ViewerUpdate) {
 				projectviewer.event.ViewerUpdate update = (projectviewer.event.ViewerUpdate) message;
 				if (update.getType() == projectviewer.event.ViewerUpdate.Type.PROJECT_LOADED) {
-					projectviewer.vpt.VPTProject proj = (projectviewer.vpt.VPTProject) update.getNode();
-					Locator.getInstance().reloadProjectJars(proj);
-					Locator.getInstance().reloadProjectClassNames(proj);
+					projectviewer.vpt.VPTNode node = update.getNode();
+					try {
+						projectviewer.vpt.VPTProject proj = (projectviewer.vpt.VPTProject) node;
+						Locator.getInstance().reloadProjectJars(proj);
+						Locator.getInstance().reloadProjectClassNames(proj);
+					} catch (ClassCastException e) {}
 				}
 			}
 		}

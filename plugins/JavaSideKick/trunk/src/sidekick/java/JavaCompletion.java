@@ -2,10 +2,12 @@ package sidekick.java;
 
 import java.util.List;
 import java.util.StringTokenizer;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import sidekick.java.node.*;
 
 import sidekick.SideKickCompletion;
+import sidekick.SideKickParsedData;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.textarea.*;
@@ -66,6 +68,10 @@ public class JavaCompletion extends SideKickCompletion {
             to_replace = "(";
             to_insert = to_insert.substring(to_insert.indexOf('('));
         }
+        else if (jEdit.getBooleanProperty("sidekick.java.importPackage")) {
+        	insertAsImport(to_insert);
+        	return;
+        }
 
         int caret = textArea.getCaretPosition();
         Selection s = textArea.getSelectionAtOffset( caret );
@@ -104,5 +110,48 @@ public class JavaCompletion extends SideKickCompletion {
         finally {
             buffer.endCompoundEdit();
         }
+    }
+    
+    private void insertAsImport(String cls) {
+    	JEditBuffer buffer = textArea.getBuffer();
+    	String newImport = "import "+cls+";\n";
+    	int startOfClass = -1;
+    	SideKickParsedData data = SideKickParsedData.getParsedData(view);
+    	for (int i = 0; i<data.root.getChildCount(); i++) {
+    		DefaultMutableTreeNode node = (DefaultMutableTreeNode) data.root.getChildAt(i);
+    		Object ob = node.getUserObject();
+    		if (ob instanceof ClassNode) {
+    			startOfClass = ((ClassNode) ob).getStart().getOffset();
+    			break;
+    		}
+    	}
+    	if (startOfClass == -1) return;
+    	int classLine = buffer.getLineOfOffset(startOfClass);
+    	int startOfImports = -1;
+    	for (int i = 0; i<classLine; i++) {
+    		if (buffer.getLineText(i).startsWith("import ")) {
+    			startOfImports = i;
+    			break;
+    		}
+    	}
+    	if (startOfImports != -1) {
+    		boolean inserted = false;
+    		int endOfImports = startOfImports;
+    		for (int i = startOfImports; i<classLine; i++) {
+    			String importLine = buffer.getLineText(i);
+    			if (!importLine.startsWith("import ")) continue;
+    			endOfImports = i;
+    			if (importLine.compareTo(newImport) > 0) {
+    				buffer.insert(textArea.getLineStartOffset(i), newImport);
+    				inserted = true;
+    				break;
+    			}
+    		}
+    		if (!inserted)
+    			buffer.insert(textArea.getLineStartOffset(endOfImports+1), newImport);
+    	}
+    	else {
+    		buffer.insert(startOfClass, "//{{{ Imports\n"+newImport+"//}}}\n");
+    	}
     }
 }
