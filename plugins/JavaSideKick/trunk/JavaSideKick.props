@@ -138,6 +138,7 @@ options.sidekick.java.showLineNums=Line Numbers
 options.sidekick.java.expandClasses=Expand inner classes
 options.sidekick.java.showErrors=Show parse errors in ErrorList
 options.sidekick.java.parseOnComplete=Parse buffer on code completion (may be slow on large files)
+options.sidekick.java.importPackage=Insert import statement on package completion
 
 options.sidekick.java.sortBy=Sort by
 options.sidekick.java.sortByLine=Line
@@ -174,6 +175,7 @@ sidekick.java.showStatusBar=true
 sidekick.java.automaticParse=false
 sidekick.java.sort=false
 sidekick.java.wordBreakWords=new,import
+sidekick.java.importPackage=false
 
 #member filters by type
 sidekick.java.showAttr=false
