@@ -77,6 +77,9 @@ public final class Locator {
         return newOne;
     }
 
+    public ClassLoader getClassLoader() {
+    	return classloader;
+    }
 
     public File[] getClassPathJars() {
         if ( classpathJars != null ) {
@@ -138,8 +141,7 @@ public final class Locator {
         }
         return names;
     }
-
-
+    
     /**
      * Returns a list of all jar files in the classpath, java.home/lib,
      * java.ext.dirs and java.endorsed.dirs
@@ -315,7 +317,9 @@ public final class Locator {
         List<String> allnames = new ArrayList<String>();
         for ( File jar : jars ) {
             classloader.addPathFile( jar );
-            List<String> names = getJarClassNames( jar );
+            List<String> names = null;
+            if (!jar.isDirectory()) names = getJarClassNames( jar );
+            else names = getDirClassNames(jar, jar.getPath());
             if ( names != null ) {
                 allnames.addAll( names );
             }
@@ -377,6 +381,24 @@ public final class Locator {
         return getClassName( classpathClassNames, name );
     }
 
+    public String[] getClassName(String name) {
+    	String[] runtime = getRuntimeClassName(name);
+    	String[] classpath = null;
+    	if (!PVHelper.isProjectViewerAvailable()) classpath = getClassPathClassName(name);
+    	else classpath = getProjectClassName(PVHelper.getProject(jEdit.getActiveView()), name);
+    	ArrayList<String> all = new ArrayList<String>();
+    	
+    	for (int i = 0; i<runtime.length; i++) {
+    		all.add(runtime[i]);
+    	}
+    	if (classpath != null) {
+    		for (int i = 0; i<classpath.length; i++) {
+    			all.add(classpath[i]);
+    		}
+    	}
+    	return all.toArray(new String[] {});
+    }
+    
     private String[] getClassName( List<String> classNames, String name ) {
         if ( classNames == null ) {
             return null;
@@ -394,7 +416,7 @@ public final class Locator {
             Collections.sort(list);
             return list.toArray(new String[] {});
         }
-        list.add("");
+        //list.add("");
         return list.toArray(new String[] {});
     }
 
@@ -468,8 +490,9 @@ public final class Locator {
         if ( classes != null ) {
             for ( int i = 0; i < classes.length; i++ ) {
                 String name = classes[ i ].getAbsolutePath();
-                name = name.substring( base.length(), name.lastIndexOf( '.' ) );
-                name = name.replaceAll( "/", "." );
+                name = name.substring( base.length()+1, name.lastIndexOf( '.' ) );
+                name = name.replace(File.separator, "/");
+                //name = name.replaceAll( "/", "." );
                 allclasses.add( name );
             }
         }
@@ -496,7 +519,20 @@ public final class Locator {
         return null;
     }
 
-
+    public File[] getAllJars() {
+    	File[] runtime = getRuntimeJars();
+    	File[] project = getProjectJars(PVHelper.getProject(jEdit.getActiveView()));
+    	File[] all = new File[runtime.length+project.length];
+    	for (int i = 0; i<all.length; i++) {
+    		if (i<runtime.length) {
+				all[i] = runtime[i];
+			} else {
+				all[i] = project[i-runtime.length];
+			}
+    	}
+    	return all;
+    }
+    
     /***********
         The following methods were borrowed from Ant from a class with the same
         name.
