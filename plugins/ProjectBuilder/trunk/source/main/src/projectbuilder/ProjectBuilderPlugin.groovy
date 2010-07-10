@@ -104,7 +104,7 @@ public class ProjectBuilderPlugin extends EditPlugin implements EBComponent {
       ScriptExecutionDelegate delegate = plugin.getScriptExecutionDelegate()
 
       ScriptContext scriptContext = ScriptEngineUtilities.getDefaultScriptContext(view)
-      scriptContext.setAttribute("projectType", projectType, ScriptContext.ENGINE_SCOPE)
+      //scriptContext.setAttribute("projectType", projectType, ScriptContext.ENGINE_SCOPE)
       
       File baseTemplateFile = EditPlugin.getResourcePath(this, "templates/Base.groovy")
       if(baseTemplateFile) {
@@ -114,6 +114,10 @@ public class ProjectBuilderPlugin extends EditPlugin implements EBComponent {
    
    public void createNewProject(View view) {
    	   createNewProject(view, "")
+   }
+   
+   public static String getTemplatePathForProject(VPTProject project) {
+   	   return findTemplateDir(project.getProperty("project.type"))
    }
    
    // Find template dir
@@ -148,22 +152,25 @@ public class ProjectBuilderPlugin extends EditPlugin implements EBComponent {
    
    public static ArrayList<ArrayList<String>> getBeanshellScripts(VPTProject project) {
 		def list = new ArrayList<String[]>()
-		def scripts = project.getProperty("projectbuilder.bsh.menu");
+		def scripts = project.getProperty("project.bsh.menu")
 		if (scripts == null) {
-			list.add(["No scripts found", null]);
-			return list;
+			list.add(["No scripts found", null])
+			return list
 		}
-		def tokenizer = new StringTokenizer(scripts);
+		def tokenizer = new StringTokenizer(scripts)
 		while (tokenizer.hasMoreTokens()) {
-			def token = tokenizer.nextToken();
+			def token = tokenizer.nextToken()
 			if (token.equals("-")) {
 				list.add(["-", null])
-				continue;
+				continue
 			}
-			def prefix = "projectbuilder.bsh."+token;
-			list.add([project.getProperty(prefix+".label"), project.getProperty(prefix+".script")]);
+			def prefix = "project.bsh."+token
+			def label = project.getProperty(prefix+".label")
+			def script = project.getProperty(prefix+".script")
+			if (label != null && script != null)
+				list.add([label, script])
 		}
-		return list;
+		return list
 	}
 	
 	public static void toggleToolbar() {
@@ -182,6 +189,38 @@ public class ProjectBuilderPlugin extends EditPlugin implements EBComponent {
 				println("removing: ${view}")
 				BeanshellToolbar.remove(view)
 			}
+		}
+	}
+	
+	public static void updateProjectConfig(VPTProject project) {
+		/*
+		ScriptEnginePlugin plugin = JEDIT.getPlugin(ScriptEnginePlugin.class.getCanonicalName())
+		ScriptExecutionDelegate delegate = plugin.getScriptExecutionDelegate()
+		ScriptContext scriptContext = ScriptEngineUtilities.getDefaultScriptContext(JEDIT.getActiveView())
+		def templateDir = getTemplatePathForProject(project)
+		
+		scriptContext.setAttribute("project", project, ScriptContext.ENGINE_SCOPE)
+		scriptContext.setAttribute("name", project.getName(), ScriptContext.ENGINE_SCOPE)
+		scriptContext.setAttribute("workspace", new File(project.getRootPath()).getParent(), ScriptContext.ENGINE_SCOPE)
+		scriptContext.setAttribute("templateDir", templateDir, ScriptContext.ENGINE_SCOPE)
+		*/
+		
+		def templateDir = getTemplatePathForProject(project)
+		String[] roots = [templateDir]
+		GroovyScriptEngine gse = new GroovyScriptEngine(roots)
+		Binding binding = new Binding()
+		binding.setVariable("project", project)
+		binding.setVariable("name", project.getName())
+		binding.setVariable("workspace", new File(project.getRootPath()).getParent())
+		binding.setVariable("templateDir", templateDir)
+		def view = JEDIT.getActiveView()
+		binding.setVariable("view", view)
+		binding.setVariable("viewer", ProjectViewer.getViewer(view))
+
+		File updateScript = new File(templateDir, "update.groovy")
+		if (updateScript.exists()) {
+			//delegate.evaluateString(updateScript.getText(), "groovy", scriptContext)
+			gse.run(updateScript.getPath(), binding)
 		}
 	}
    

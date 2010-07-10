@@ -6,4 +6,7 @@
 	<SERVICE CLASS="projectviewer.action.Action" NAME="Convert Project Menu">
 		new projectbuilder.actions.ConvertProjectContextMenu();
 	</SERVICE>
+	<SERVICE CLASS="projectviewer.config.OptionsService" NAME="Project Builder Config">
+		new projectbuilder.config.ProjectConfigOptionsService();
+	</SERVICE>
 </SERVICES>

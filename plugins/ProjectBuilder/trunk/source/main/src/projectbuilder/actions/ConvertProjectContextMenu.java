@@ -19,6 +19,7 @@ import javax.swing.JComponent;
 import projectviewer.ProjectViewer;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
+import projectviewer.event.ViewerUpdate;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
@@ -73,27 +74,32 @@ public class ConvertProjectContextMenu extends projectviewer.action.Action {
 	public void actionPerformed(ActionEvent e) {
 		JMenuItem item = (JMenuItem) e.getSource();
 		String name = map.get(item);
+		project.setIconPath(null);
 		if (name.equals("null")) {
 			// Remove existing type
 			project.removeProperty("project.type");
-			project.setIconPath(null);
+			project.removeProperty("project.bsh.menu");
 		} else {
 			String template_dir = projectbuilder.ProjectBuilderPlugin.findTemplateDir(name);
 			if (template_dir != null) {
+				System.out.println("Converting...");
 				try {
 					Properties new_props = new Properties();
-					new_props.load(new FileInputStream(template_dir+"/project.props"));
+					new_props.load(new FileInputStream(template_dir+File.separator+name+".props"));
 					for (Enumeration en = new_props.propertyNames(); en.hasMoreElements(); ) {
 						String prop = (String) en.nextElement();
 						project.setProperty(prop, new_props.getProperty(prop));
+						System.out.println(prop);
 					}
 					project.setProperty("project.type", name);
 					project.setProperty("project.template.dir", template_dir);
-					project.setIconPath(template_dir+"/menu-icon.png");
+					project.setIconPath(template_dir+"/icon.png");
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
 			}
 		}
+		// Notify edit bus
+		viewer.sendUpdate(project, ViewerUpdate.Type.PROJECT_LOADED);
 	}
 }
