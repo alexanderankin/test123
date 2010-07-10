@@ -57,6 +57,7 @@ public class FileFactory extends AbstractFactory {
       }
       if(!node.file.exists()) {
          println("FileFactory - creating file: ${node.file.path}")
+         node.file.getParentFile().mkdirs()
          node.file.createNewFile()
       }
 

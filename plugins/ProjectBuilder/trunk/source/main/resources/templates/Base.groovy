@@ -177,7 +177,7 @@ def pv_options = swing.panel() { -> dialog
 			state = 1
 			dialog.dispose()
 		})
-		button(text:'Next', icon:GUIUtilities.loadIcon("ArrowR.png"), actionPerformed: {
+		button(text:'Create', icon:GUIUtilities.loadIcon("Save.png"), actionPerformed: {
 			def _name = name_field.text.trim()
 			if (_name.length() == 0) {
 				GUIUtilities.error(dialog, "projectbuilder.msg.no-name", null)
@@ -200,7 +200,7 @@ def pv_options = swing.panel() { -> dialog
 				state = 3
 				project = new VPTProject(name)
 				project.setRootPath("${dir}${File.separator}${name}")
-				project.setIconPath("${chosen.dir.getPath()}${File.separator}menu-icon.png")
+				project.setIconPath("${chosen.dir.getPath()}${File.separator}icon.png")
 				project.setProperty("project.type", chosen.name)
 				project.setProperty("project.template.dir", chosen.dir.getPath());
 				binding.setVariable("project", project)
@@ -220,7 +220,7 @@ GroovyScriptEngine gse = new GroovyScriptEngine(roots)
 
 while (state > 0) {
 	if (state == 1) {
-		// Choose a project type
+		// Choose a project type              
 		state = 0
 		chosen = null
 		dialog.setContentPane(project_type)
@@ -244,66 +244,20 @@ while (state > 0) {
 		dialog.setVisible(true)
 	}
 	else if (state == 3) {
-		// Display the config dialog, if any
-		def gui_script = new File(chosen.getGuiScriptPath())
-		if (!gui_script.exists()) {
-			state = 4
-		} else {
-			state = 0
-			// set bindings
-			def pane = gse.run(gui_script.getPath(), gui_binding)
-			def config_dialog = swing.panel() {
-				boxLayout(axis:BoxLayout.Y_AXIS)
-				panel(background:Color.WHITE) {
-					label(id:'gui_script_title', text:"New ${chosen.toString()}", font:new Font("SansSerif", Font.PLAIN, 18))
-				}
-				separator()
-				panel(pane)
-				separator()
-				panel() {
-					boxLayout(axis:BoxLayout.X_AXIS)
-					hglue()
-					button(text:'Back', icon:GUIUtilities.loadIcon('ArrowL.png'), actionPerformed: {
-						state = 2
-						dialog.dispose()
-					})
-					button(text:'Finish', icon:GUIUtilities.loadIcon('Save.png'), actionPerformed: {
-						state = 4
-						dialog.dispose()
-					})
-				}
-			}
-			dialog.setContentPane(config_dialog)
-			dialog.pack()
-			dialog.setLocationRelativeTo(view)
-			//dialog.setTitle("New "+chosen.toString())
-			dialog.setVisible(true)
-			// Copy over defined variables to the script binding
-			binding = new Binding(gui_binding.getVariables())
-		}
-	}
-	else if (state == 4) {
 		// Run the project-creation script
-		state = 5
+		state = 4
 		println("       type: " + chosen.toString())
 		println("       name: " + name)
 		println("        dir: " + dir)
-		println("     script: " + chosen.getBuilderScriptPath())
-		def script = chosen.getBuilderScriptPath()
+		println("     script: " + chosen.getScriptPath())
+		def script = chosen.getScriptPath()
 		boolean success = gse.run(script, binding)
-		if (!success) {
-			if (new File(chosen.getGuiScriptPath()).exists())
-				state = 3
-			else
-				state = 2
-		}
-		//Macros.message(view, "Congratulations. You've just created a project.")
 	}
-	else if (state == 5) {
+	else if (state == 4) {
 		// Import the project into project viewer
 		state = 0
 		def props = new Properties()
-		props.load(new FileInputStream("${chosen.dir.getPath()}/project.props"))
+		props.load(new FileInputStream(chosen.getProjectPropsPath()))
 		for (prop in props.propertyNames()) {
 			project.setProperty(prop, props.getProperty(prop))
 		}
@@ -335,7 +289,7 @@ class TypeRenderer extends JLabel implements ListCellRenderer {
 			setBackground(list.getBackground())
 			setForeground(list.getForeground())
 		}
-		String iconPath = "file://${value.dir.getPath()}/menu-icon.png"
+		String iconPath = "file://${value.dir.getPath()}/icon.png"
 		setIcon(GUIUtilities.loadIcon(iconPath))
 		setText(value.toString())
 		setFont(list.getFont())
@@ -349,16 +303,16 @@ class TemplateTypeOption {
    File dir
    File templatesDir
    
-   String getBuilderScriptPath() {
-      File scriptFile = new File(dir, "builder.groovy")
-      return scriptFile.path
+   String getScriptPath() {
+   	   def scriptFile = new File(dir, "${name}.groovy")
+   	   return scriptFile.path
    }
    
-   String getGuiScriptPath() {
-      File scriptFile = new File(dir, "gui.groovy")
-      return scriptFile.path
+   String getProjectPropsPath() {
+   	   def propsFile = new File(dir, "${name}.props")
+   	   return propsFile.path
    }
-
+   
    String toString() {
       name.replaceAll('_', ' ')
    }

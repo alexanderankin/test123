@@ -1,9 +1,0 @@
-projectbuilder.bsh.menu=dist compile clean - run
-projectbuilder.bsh.dist.label=Build Application
-projectbuilder.bsh.dist.script=bsh/dist.bsh
-projectbuilder.bsh.compile.label=Compile
-projectbuilder.bsh.compile.script=bsh/compile.bsh
-projectbuilder.bsh.clean.label=Clean
-projectbuilder.bsh.clean.script=bsh/clean.bsh
-projectbuilder.bsh.run.label=Run Application
-projectbuilder.bsh.run.script=bsh/run.bsh

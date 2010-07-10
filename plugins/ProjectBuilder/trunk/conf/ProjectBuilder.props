@@ -42,4 +42,10 @@ projectbuilder.cannot.build.title=Cannot Build Project
 projectbuilder.cannot.build.message={0}
 # }}}
 
+# Labels {{{
+projectbuilder.label.add-file=Add File
+projectbuilder.label.add-folder=Add Folder
+projectbuilder.label.remove=Remove
+# }}}
+
 # ::mode=properties:folding=explicit::
