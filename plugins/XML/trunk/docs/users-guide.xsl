@@ -328,14 +328,16 @@
 	</xsl:template>
 
 	<!--  whole line white on blue banner for the legal notice
-	     overrides docbook-xsl/html/titlepage.xsl -->
-	<xsl:template match="legalnotice/title" mode="titlepage.mode">
+	     overrides docbook-xsl/html/titlepage.xsl
+	     disabled because I prefer a standard legal notice title
+	 -->
+	<!--<xsl:template match="legalnotice/title" mode="titlepage.mode">
 		<xsl:call-template name="section.heading">
 			<xsl:with-param name="section" select="parent::*"/>
 			<xsl:with-param name="allow-anchors" select="0"/>
 			<xsl:with-param name="title" select="string(.)"/>
 		</xsl:call-template>
-	</xsl:template>
+	</xsl:template>-->
 
 	<!-- whole line white on blue banner for each (sub)section
 	     overrides docbook-xsl/html/sections.xsl
