@@ -310,17 +310,21 @@ This is intended to be useful with file URIs.</a:documentation>
     </element>
   </define>
   <define name="common">
-    <zeroOrMore>
-      <!-- attribute xml:base { xsd:anyURI }?, -->
-      <attribute>
-        <anyName>
-          <except>
-            <name>xml:base</name>
-            <nsName/>
-            <nsName ns=""/>
-          </except>
-        </anyName>
-      </attribute>
-    </zeroOrMore>
+	<optional>
+		<attribute name="xml:base">
+			<data type="anyURI"/>
+		</attribute>
+	</optional>
+	<zeroOrMore>
+		<attribute>
+			<anyName>
+				<except>
+					<name>xml:base</name>
+					<nsName/>
+					<nsName ns=""/>
+				</except>
+			</anyName>
+		</attribute>
+	</zeroOrMore>
   </define>
 </grammar>

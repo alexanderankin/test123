@@ -45,6 +45,8 @@ public class CompletionInfo
 	/** namespace for this completion info */
 	public String namespace;
 	
+	public boolean nameConflict;
+	
 	//{{{ CompletionInfo constructor
 	public CompletionInfo()
 	{
@@ -121,6 +123,25 @@ public class CompletionInfo
 		}
 	} //}}}
 
+	//{{{ getElementDeclLocal(CompletionInfo, localName) method
+	/**
+	 * @return the first declaration (global or local) found for localName
+	 *         or null
+	 */
+	public ElementDecl getElementDeclLocal(String localName)
+	{
+		// resorting to the first one in all declarations,
+		// even if it's the wrong one
+		for(ElementDecl e: elements){
+			if(localName.equals(e.name)){
+				return e;
+			}
+		}
+		return null;
+	}
+	//}}}
+
+
 	//{{{ toString() method
 	public String toString()
 	{
@@ -183,6 +204,7 @@ public class CompletionInfo
 			if(obj instanceof String)
 			{
 				CompletionInfo info = getCompletionInfoFromResource((String)obj);
+				info.namespace = namespace;
 				completionInfoNamespaces.put(namespace, info);
 				return info;
 			}

@@ -420,6 +420,13 @@ public class XercesParserImpl extends XmlParser
 			// see test_data/multiple_name
 			if(element.getScope() == XSConstants.SCOPE_LOCAL)
 			{
+				for(ElementDecl e:info.elements){
+					if(e.name.equals(name)){
+						info.nameConflict = true;
+						Log.log(Log.DEBUG,XercesParserImpl.class,
+							"conflict in "+namespace+" between 2 "+name);
+					}
+				}
 				info.elements.add(elementDecl);
 			}
 			else
@@ -651,6 +658,10 @@ public class XercesParserImpl extends XmlParser
 			if(declaredPrefixes == null)declaredPrefixes = new HashMap<String,String>();
 			declaredPrefixes.put(uri,prefix);
 
+			if(!root){
+				data.allNamespacesBindingsAtTop = false;
+			}
+			
 			// check for built-in completion info for this URI
 			// (eg, XSL, XSD, XHTML has this).
 			if(uri != null)

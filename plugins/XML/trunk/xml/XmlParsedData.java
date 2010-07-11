@@ -30,6 +30,7 @@ import javax.swing.tree.TreeNode;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.util.StringList;
+import org.gjt.sp.util.Log;
 
 import sidekick.SideKickParsedData;
 import xml.completion.CompletionInfo;
@@ -50,6 +51,12 @@ public class XmlParsedData extends SideKickParsedData
 {
 	
 	public boolean html;
+	/** indicate that all xmlns: attributes appear only on the root element
+	 *  so there's no need to find the exact namespace context of the parent node.
+	 *  the namespace context of the root element is sufficient
+	 */
+	public boolean allNamespacesBindingsAtTop;
+
 	/**
 	 * A mapping of namespace to CompletionInfo objects.
 	 *  namespace of "" is the default namespace.
@@ -73,6 +80,7 @@ public class XmlParsedData extends SideKickParsedData
 		this.html = html;
 		mappings = new HashMap<String, CompletionInfo>();
 		ids = new ArrayList<IDDecl>();
+		allNamespacesBindingsAtTop = true;
 	} //}}}
 
 	//{{{ getNoNamespaceCompletionInfo() method
@@ -88,8 +96,143 @@ public class XmlParsedData extends SideKickParsedData
 		return info;
 	} //}}}
 
-	//{{{ getElementDecl() method
+	//{{{ getElementDecl(String,int) method
+	// FIXME: pass buffer as parameter, 
 	public ElementDecl getElementDecl(String name, int pos)
+	{
+		if(Debug.DEBUG_COMPLETION)Log.log(Log.DEBUG,XmlParsedData.class,
+			"getElementDecl("+name+","+pos+")");
+		
+		ElementDecl decl = null;
+		String prefix = getElementNamePrefix(name);
+		String localName = "".equals(prefix) ? name : name.substring(prefix.length()+1);
+	
+	
+		if(html)
+		{
+			decl = getElementDeclInternal(name,pos);
+		}
+		else
+		{
+			TreePath path = null;
+			Map<String,String> bindings = null;
+			
+			if(allNamespacesBindingsAtTop){
+				if(Debug.DEBUG_COMPLETION)Log.log(Log.DEBUG,XmlParsedData.class,
+					"allNamespacesBindingsAtTop");
+				bindings = getRootNamespaceBindings();
+			}else {
+				path = getTreePathForPosition(pos);
+				bindings = getNamespaceBindings(path);
+			}
+	
+			// find parent's CompletionInfo
+			CompletionInfo info;
+			
+			if(mappings.isEmpty()){
+				if(Debug.DEBUG_COMPLETION)Log.log(Log.DEBUG,XmlParsedData.class,
+					"no completionInfo");
+				return null;
+			}else if(mappings.size() == 1){
+				info = mappings.values().iterator().next();
+				if(Debug.DEBUG_COMPLETION)Log.log(Log.DEBUG,XmlParsedData.class,
+					"only 1 completionInfo, for ns "+info.namespace);
+			}else{
+				String NS = getNS(bindings,prefix);
+				info = mappings.get(NS);
+				if(Debug.DEBUG_COMPLETION)Log.log(Log.DEBUG,XmlParsedData.class,
+					"many completionInfos ("+mappings.keySet()+"); getting for NS ="+NS);
+			}
+			
+			if(info == null){
+				if(Debug.DEBUG_COMPLETION)Log.log(Log.DEBUG,XmlParsedData.class,
+					"CompletionInfo not found");
+			}else {
+				if(Debug.DEBUG_COMPLETION)Log.log(Log.DEBUG,XmlParsedData.class,
+					"got CompletionInfo for "+info.namespace);
+				
+				// find elementdecl inside CompletionInfo
+				if(info.nameConflict){
+					if(path == null)path = getTreePathForPosition(pos);
+					
+					// find the elements tree leading to parent in the document
+	
+					DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode)path.getLastPathComponent();
+					XmlTag parentXmlTag = (XmlTag)parentNode.getUserObject();
+
+					if(Debug.DEBUG_COMPLETION)Log.log(Log.DEBUG,XmlParsedData.class,
+						"parentXmlTag="+parentXmlTag.getName());
+					
+					// SideKick tree is in sync
+					if(name.equals(parentXmlTag.getName()))
+					{
+						if(Debug.DEBUG_COMPLETION)Log.log(Log.DEBUG,XmlParsedData.class,
+							"SideKick tree is in sync");
+						decl = getElementDecl(parentNode,parentXmlTag);
+					}
+					else 
+					{
+						// it's not the parent ; let's say it's an ancestor
+						/* wrong approach : don't know which one to return. 
+						   So either
+						    - keep the Sidekick tree in sync (ie Parse on Keystroke) !
+						    - parse backward to reconstruct ancestry to the last Sidekick node
+						   Don't do this :
+							ElementDecl ancestorDecl = getElementDecl(parentNode,parentXmlTag);
+							
+							String NS = getNS(bindings,prefix);
+							decl = findElementDeclInDescendants(ancestorDecl,NS,localName, new ArrayList<ElementDecl>());
+						*/
+						if(Debug.DEBUG_COMPLETION)Log.log(Log.DEBUG,XmlParsedData.class,
+							"Sidekick tree out of sync ; giving up");
+						decl = null;
+					}
+				}else{
+					if(Debug.DEBUG_COMPLETION)Log.log(Log.DEBUG,XmlParsedData.class,
+						"no nameConflict");
+					if(info.elementHash.containsKey(localName)){
+						if(Debug.DEBUG_COMPLETION)Log.log(Log.DEBUG,XmlParsedData.class,
+							"global declaration");
+						decl = info.elementHash.get(localName);
+					}else{
+						if(Debug.DEBUG_COMPLETION)Log.log(Log.DEBUG,XmlParsedData.class,
+							"local declaration");
+						decl = info.getElementDeclLocal(localName);
+					}
+				}
+			}
+		}
+		return decl;
+	}
+	/**
+	 * @param	ancestorDecl	ElementDecl to inspect; never the one looked for
+	 * @param	visitedDecls	avoid lopping by storing visited decls
+	 */
+	ElementDecl findElementDeclInDescendants(ElementDecl ancestorDecl,String namespace,String localName, List<ElementDecl> visitedDecls){
+		if(visitedDecls.contains(ancestorDecl))return null;
+		if(ancestorDecl.elementHash != null){
+			for(ElementDecl child : ancestorDecl.elementHash.values()){
+				ElementDecl res = null;
+				if(child.name.equals(localName) && namespace.equals(child.completionInfo.namespace)){
+					return child;
+				}else{
+					visitedDecls.add(ancestorDecl);
+					res = findElementDeclInDescendants(child,namespace,localName,visitedDecls);
+					if(res != null)return res;
+					else visitedDecls.remove(visitedDecls.size()-1);
+				}
+			}
+		}
+		return null;
+	}
+
+	//{{{ getElementDeclInternal(name, pos) method
+	/**
+	 * finds a global declaration of an element, returns it with correct prefix
+	 * @param	name	qualified name (with prefix) of an element
+	 * @param	pos	used to get the namespace bindings
+	 */
+	public ElementDecl getElementDeclInternal(String name,int pos)
 	{
 		if(html)
 			name = name.toLowerCase();
@@ -98,8 +241,12 @@ public class XmlParsedData extends SideKickParsedData
 		
 		CompletionInfo info;
 		
+		if(mappings.isEmpty())
+		{
+			return null;
+		}	
 		// simple case where we don't need to get the namespace
-		if(mappings.size() == 1)
+		else if(mappings.size() == 1)
 		{
 			info = mappings.values().iterator().next();
 		}
@@ -131,6 +278,8 @@ public class XmlParsedData extends SideKickParsedData
 	//{{{ getElementDecl() method
 	public ElementDecl getElementDecl(DefaultMutableTreeNode node,XmlTag tag)
 	{
+		if(Debug.DEBUG_COMPLETION)Log.log(Log.DEBUG,XmlParsedData.class,
+			"getElementDecl("+node+","+tag.getName()+")");
 		CompletionInfo info = mappings.get(tag.namespace);
 
 		if(info == null)
@@ -141,24 +290,30 @@ public class XmlParsedData extends SideKickParsedData
 			String lName = tag.getLocalName();
 
 			ElementDecl decl;
-			if(info.elementHash != null) decl = info.elementHash.get(lName);
-			else decl = null;
-			if(decl == null)
+			if(!info.nameConflict && info.elementHash != null) {
+				decl = info.elementHash.get(lName);
+				return decl.withPrefix(prefix);
+			}
+			else
 			{
 				DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) node.getParent();
 				if(parentNode.getUserObject() instanceof XmlTag)
 				{
 					XmlTag parentTag = (XmlTag)parentNode.getUserObject();
 					ElementDecl parentDecl = getElementDecl(parentNode,parentTag);
-					if(parentDecl.elementHash!=null && parentDecl.elementHash.containsKey(lName))
+					if(parentDecl != null && parentDecl.elementHash!=null && parentDecl.elementHash.containsKey(lName))
 					{
 						return parentDecl.elementHash.get(lName).withPrefix(prefix);
 					}
 				}
+				else if(info.elementHash != null)
+				{
+					// at root node : allowed to use a global ElementDecl
+					decl = info.elementHash.get(lName);
+					return decl.withPrefix(prefix);
+				}
 				return null;
 			}
-			else
-				return decl.withPrefix(prefix);
 		}
 	} //}}}
 
@@ -299,7 +454,8 @@ public class XmlParsedData extends SideKickParsedData
 		}
 		catch (Exception e) {}
 			
-		System.err.println("parentTag="+parentTag);
+		if(Debug.DEBUG_COMPLETION)Log.log(Log.DEBUG,XmlParsedData.class,
+			"parentTag="+parentTag);
 		if(parentTag == null)
 		{
 			// add everything
@@ -314,66 +470,35 @@ public class XmlParsedData extends SideKickParsedData
 		}
 		else
 		{
-			ElementDecl parentDecl;
+			ElementDecl parentDecl = null;
 			String parentPrefix = getElementNamePrefix(parentTag.tag);
+			String parentLocalName = "".equals(parentPrefix) ? parentTag.tag : parentTag.tag.substring(parentPrefix.length()+1);
 
-			TreePath path = getTreePathForPosition(pos);
-			Map<String,String> bindings = getNamespaceBindings(path);
 
 			if(html)
 			{
-				parentDecl = getElementDecl(parentTag.tag, parentTag.start+1);// +1 to be inside the tag
+				parentDecl = getElementDeclInternal(parentTag.tag,pos);
+				returnValue.addAll(parentDecl.getChildElements(Collections.<String,String>emptyMap()));
 			}
 			else
 			{
-				DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode)path.getLastPathComponent();
-				XmlTag parentXmlTag = (XmlTag)parentNode.getUserObject();
-	
-				if(parentTag.tag.equals(parentXmlTag.getName()))
-				{
-					parentDecl = getElementDecl(parentNode,parentXmlTag);
+				TreePath path = null;
+				Map<String,String> bindings = null;
+				
+				if(allNamespacesBindingsAtTop){
+					if(Debug.DEBUG_COMPLETION)Log.log(Log.DEBUG,XmlParsedData.class, "allNamespacesBindingsAtTop");
+					bindings = getRootNamespaceBindings();
+				}else {
+					path = getTreePathForPosition(pos);
+					bindings = getNamespaceBindings(path);
 				}
-				else if(parentNode.getParent()!=null)
-				{
-					parentNode = (DefaultMutableTreeNode)parentNode.getParent();
-					parentXmlTag = (XmlTag)parentNode.getUserObject();
-					
-					if(parentTag.tag.equals(parentXmlTag.getName()))
-					{
-						parentDecl = getElementDecl(parentNode,parentXmlTag);
-					}
-					else
-					{
-						parentDecl = getElementDecl(parentTag.tag, parentTag.start+1);// +1 to be inside the tag
-					}
-				}
-				else
-				{
-					parentDecl = getElementDecl(parentTag.tag, parentTag.start+1);// +1 to be inside the tag
+
+				parentDecl = getElementDecl(parentTag.tag,parentTag.start+1);
+				if(parentDecl != null){
+					if(bindings == null)bindings = Collections.<String,String>emptyMap();
+					returnValue.addAll(parentDecl.getChildElements(bindings));
 				}
 			}
-			
-			if(parentDecl != null)
-			{
-				returnValue.addAll(parentDecl.getChildElements(bindings));
-			}
-			/*
-			// don't need this, do we ?
-			else
-			{
-				// add everything but the parent's prefix now
-				Iterator iter = mappings.keySet().iterator();
-				while(iter.hasNext())
-				{
-					String prefix = (String)iter.next();
-					if(!prefix.equals(parentPrefix))
-					{
-						CompletionInfo info = (CompletionInfo)
-							mappings.get(prefix);
-						info.getAllElements(prefix,returnValue);
-					}
-				}
-			}*/
 		}
 		Collections.sort(returnValue, new ElementDecl.Compare());
 		return returnValue;
@@ -381,6 +506,7 @@ public class XmlParsedData extends SideKickParsedData
 
 	//{{{ getAllowedElements() method
 	/* called by updateTagList only */
+	// FIXME: use new algorithms
 	public List getAllowedElements(Buffer buffer, int startPos, int endPos)
 	{
 		ArrayList returnValue = new ArrayList();
@@ -476,26 +602,67 @@ public class XmlParsedData extends SideKickParsedData
 	}
 	//}}}
 	
+	//{{{ getRootNamespaceBindings() method
+	public Map<String,String> getRootNamespaceBindings(){
+		Map<String,String> bindings;
+		
+		if(!html && root != null && root.getChildCount() > 0){
+			TreeNode node = root.getChildAt(0);
+			DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode)node;
+			Object o = dmtn.getUserObject();
+			if(o instanceof XmlTag){
+				bindings = ((XmlTag)o).namespaceBindings;
+			}else {
+				bindings = Collections.emptyMap();
+			}
+		}else {
+			bindings = Collections.emptyMap();
+		}
+		if(Debug.DEBUG_COMPLETION)Log.log(Log.DEBUG,XmlParsedData.class,
+			"getRootNamespaceBindings()=>"+bindings);
+		return bindings;
+	}
+	//}}}
+
 	//{{{ getNamespaceForPrefix() method
 	public String getNamespaceForPrefix(String prefix, int pos){
 		
 		if(html)return null;
 		
-		TreePath path = getTreePathForPosition(pos);
-		if(path == null)return null;
-		
-		Object[] pathObjs = ((DefaultMutableTreeNode)path.getLastPathComponent()).getUserObjectPath();
-		for(int i=pathObjs.length-1;i>0;i--){  //first object is a SourceAsset for the file
-			XmlTag t = (XmlTag)pathObjs[i];
-			if(t.namespaceBindings != null){
-				for(Map.Entry<String,String> binding: t.namespaceBindings.entrySet()){
-					if(binding.getValue().equals(prefix))return binding.getKey();
+		if(allNamespacesBindingsAtTop){
+			Map<String,String> bindings=getRootNamespaceBindings();
+			if(bindings != null){
+				String ns = getNS(bindings,prefix);
+				if(ns != null)return ns;
+			}
+		}else{
+			TreePath path = getTreePathForPosition(pos);
+			if(path == null)return null;
+			
+			Object[] pathObjs = ((DefaultMutableTreeNode)path.getLastPathComponent()).getUserObjectPath();
+			for(int i=pathObjs.length-1;i>0;i--){  //first object (i==0) is a SourceAsset for the file
+				XmlTag t = (XmlTag)pathObjs[i];
+				if(t.namespaceBindings != null){
+					for(Map.Entry<String,String> binding: t.namespaceBindings.entrySet()){
+						if(binding.getValue().equals(prefix))return binding.getKey();
+					}
 				}
 			}
 		}
 		// no namespace is "" in the mappings
 		if("".equals(prefix))return "";
 		else return null;
+	}
+	//}}}
+	
+	//{{{ getNS() method
+	public String getNS(Map<String,String> nsToPrefix, String prefix){
+		for(Map.Entry<String,String> en:nsToPrefix.entrySet()){
+			if(prefix.equals(en.getValue())){
+				return en.getKey();
+			}
+		}
+		return "";
 	}
 	//}}}
 

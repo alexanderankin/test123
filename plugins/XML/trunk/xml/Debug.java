@@ -31,13 +31,15 @@ public final class Debug
 	public static final boolean DEBUG_XSD_SCHEMA = false;
 	
 	/** turn on/off messages about RNG schemas to CompletionInfo */
-	public static final boolean DEBUG_RNG_SCHEMA = false;
+	public static final boolean DEBUG_RNG_SCHEMA = true;
 	
 	/** turn on/off messages about DTD to CompletionInfo (in XercesParserImpl) */
-	public static final boolean DEBUG_DTD = false;
+	public static final boolean DEBUG_DTD = true;
 	
 	/** turn on/off messages about Schema discovery */
 	public static final boolean DEBUG_SCHEMA_MAPPING = true;
 	
+	/** turn on/off messages about schema completion */
+	public static final boolean DEBUG_COMPLETION = true;
 }
 
