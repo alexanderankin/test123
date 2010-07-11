@@ -182,16 +182,18 @@ public class SchemaToCompletion
 		private Map<String,String> values;
 		private List<String> data;
 		private StackableMap<String,List<DefineComponent>> defined;
-		
-		MyAttributeVisitor(StackableMap<String,List<DefineComponent>> defined){
+		private boolean required;
+		MyAttributeVisitor(StackableMap<String,List<DefineComponent>> defined,boolean required){
 			this.defined=defined;
+			this.required = required;
 		}
 		
 		public List<AttributeDecl> visitAttribute(AttributePattern p){
+			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyAttributeVisitor.class,"voidVisitAttribute(req="+required+")");
 			if(values!=null)throw new IllegalArgumentException("attribute//attribute isn't allowed");
 			values = new HashMap<String,String>();
 			data = new ArrayList<String>();
-			
+			boolean savedRequired = required;
 			
 			List<Name> names = p.getNameClass().accept(new MyNameClassVisitor());
 
@@ -227,18 +229,23 @@ public class SchemaToCompletion
 					value,
 					new ArrayList<String>(values.keySet()),
 					type,
-					true));//always required
+					savedRequired));
 			}
+			required = savedRequired;
 			return attrs;
 		}
 				   
 		public List<AttributeDecl> visitChoice(ChoicePattern p){
 			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyAttributeVisitor.class,"voidVisitChoice()");
+			boolean savedRequired = required;
+			// only one of the choice is required : don't mark any required
+			required = false;
 			List res = new ArrayList<AttributeDecl>();
 			for(Pattern c: p.getChildren())
 			{
 				res.addAll(c.accept(this));
 			}
+			required = savedRequired;
 			return res;
 		}
 				   
@@ -395,6 +402,7 @@ public class SchemaToCompletion
 		private Map<String,CompletionInfo> info;
 		private SchemaCollection schemas;
 		private boolean empty = false;
+		private boolean required = true;
 		private StackableMap<String,List<DefineComponent>> defines;
 		private Map<DefineComponent,List> definesContents;
 		private ElementDecl parent;
@@ -417,20 +425,31 @@ public class SchemaToCompletion
 		{
 			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"voidVisitAttribute()");
 
-			MyAttributeVisitor visitor = new MyAttributeVisitor(defines);
+			MyAttributeVisitor visitor = new MyAttributeVisitor(defines,required);
 			
-			return p.accept(visitor);
+			List<AttributeDecl> attrs = p.accept(visitor);
+			if(parent!=null)
+			{
+				for(AttributeDecl d:attrs)
+				{
+					parent.addAttribute(d);
+				}
+			}
+			return attrs;
 		}
 		
 		
 		public List visitChoice(ChoicePattern p)
 		{
 			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"voidVisitChoice()");
+			boolean savedRequired = required;
+			required = false;
 			List res = new ArrayList<Object>();
 			for(Pattern c: p.getChildren())
 			{
 				res.addAll(c.accept(this));
 			}
+			required = savedRequired;
 			return res;
 		}
 		
@@ -487,6 +506,8 @@ public class SchemaToCompletion
 			List<Name> myNames = p.getNameClass().accept(nameVisitor);
 			
 			boolean isEmpty = empty;
+			boolean isRequired = required;
+			required = true;// by default, attributes are required
 			
 			if(parent != null && parent.content == null)
 				parent.content = new HashSet<String>();
@@ -539,6 +560,7 @@ public class SchemaToCompletion
 				myParent.any   = nameVisitor.any;
 				myParent.empty = isEmpty;
 			}
+			required=isRequired;
 			return res;
 		}
 		
@@ -646,7 +668,11 @@ public class SchemaToCompletion
 		public List visitZeroOrMore(ZeroOrMorePattern p)
 		{
 			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"voidVisitZeroOrMore()");
-			return p.getChild().accept(this);
+			boolean savedRequired = required;
+			required = false;
+			List res =  p.getChild().accept(this);
+			savedRequired = required;
+			return res;
 		}
 
 		
@@ -688,7 +714,11 @@ public class SchemaToCompletion
 		public List visitOptional(OptionalPattern p)
 		{
 			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"voidVisitOptional()");
-			return p.getChild().accept(this);
+			boolean savedRequired = required;
+			required = false;
+			List res =  p.getChild().accept(this);
+			required = savedRequired;
+			return res;
 		}
 		
 		public List visitParentRef(ParentRefPattern p)
@@ -714,6 +744,11 @@ public class SchemaToCompletion
 			List res = new ArrayList();
 			for(DefineComponent dc : refs){
 				if(!definesContents.containsKey(dc)){
+					// let the attributes get their required flag from the body
+					// of the definition only
+					boolean savedRequired = required;
+					required = true;
+					
 					//don't recurse indefinitely :
 					//  - mark that this reference is explored
 					definesContents.put(dc,null);
@@ -722,9 +757,22 @@ public class SchemaToCompletion
 					if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,dc.getName()+" defined as "+r);
 					//  - set the actual value
 					definesContents.put(dc,r);
+					
+					// correct the requiredness of attributes
+					if(parent!=null && !savedRequired){
+						for(Object o: r){
+							if(o instanceof AttributeDecl){
+								AttributeDecl newO = ((AttributeDecl)o).copy();
+								newO.required = false;
+								parent.attributes.remove((AttributeDecl)o);
+								parent.addAttribute(newO);
+							}
+						}
+					}
+					required = savedRequired;
 				}else{
 					//first time we see a reference to this define
-					ElementDecl e = new ElementRefDecl(dc);
+					ElementDecl e = new ElementRefDecl(dc,required);
 					res.add(e);
 					if(parent != null){
 						// add the reference to the element as a normal child element
@@ -808,7 +856,8 @@ public class SchemaToCompletion
 					e.elementHash.remove(en.getKey());
 					e.content.remove(en.getKey());
 					b = true;
-					DefineComponent dc = ((ElementRefDecl)childDecl).ref;
+					ElementRefDecl ref = (ElementRefDecl)childDecl;
+					DefineComponent dc = ref.ref;
 					List res = definesContents.get(dc);
 					if(res == null)throw new IllegalArgumentException("can't find definitions for "+dc.getName()+"="+dc);
 					else {
@@ -823,7 +872,11 @@ public class SchemaToCompletion
 							}else if(o instanceof AttributeDecl){
 								AttributeDecl oo = (AttributeDecl)o;
 								if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,MyPatternVisitor.class,"adding "+oo);
-								e.addAttribute(oo);
+								if(ref.required){
+									e.addAttribute(oo);
+								}else{
+									e.addAttribute(oo.copy());
+								}
 							}else{
 								throw new IllegalArgumentException("what's this : "+o);
 							}
@@ -839,10 +892,12 @@ public class SchemaToCompletion
 	private static class ElementRefDecl extends ElementDecl{
 		DefineComponent ref;
 		static int i = 0;
+		boolean required;
 		
-		ElementRefDecl(DefineComponent ref){
+		ElementRefDecl(DefineComponent ref, boolean required){
 			super(null,"_:"+ref.getName()+"_"+(i++),null);
 			this.ref = ref;
+			this.required = required;
 		}
 		
 		public String toString(){
