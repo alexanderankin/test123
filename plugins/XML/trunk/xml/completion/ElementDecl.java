@@ -374,6 +374,15 @@ public class ElementDecl
 			this.required = required;
 		}
 
+		public AttributeDecl copy()
+		{
+			return new AttributeDecl(name,
+				namespace,value,
+				(values == null ? null : new ArrayList(values)),
+				type,
+				required);
+		}
+		
 		public String toString()
 		{
 			StringBuffer buf = new StringBuffer("<attribute name=\"");

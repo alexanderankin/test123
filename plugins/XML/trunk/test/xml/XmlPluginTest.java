@@ -525,7 +525,7 @@ public class XmlPluginTest{
 	public void testMultipleName(){
     	File xml = new File(testData,"multiple_name/instance.xml");
     	
-    	TestUtils.openFile(xml.getPath());
+    	final Buffer b = TestUtils.openFile(xml.getPath());
     	
     	action("xml-insert-float",1);
     	FrameFixture insert = TestUtils.findFrameByTitle("XML Insert");
@@ -558,6 +558,24 @@ public class XmlPluginTest{
 		Pause.pause(500);
 		assertThat(insert.list("elements").contents()).contains("p");
 
+		// demonstrate a limitation of local scope when Sidekick tree becomes
+		// out of sync : no completion is available because the parent <comment>
+		// is not in the SideKick Tree
+		GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					b.insert(367, "<comment>");
+				}
+		});
+		GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					gotoPosition(376);
+				}
+		});
+		Pause.pause(500);
+		assertThat(insert.list("elements").contents()).isEmpty();
+		
+		
 		insert.close();
+		close(view(),b);
 	}
 }
