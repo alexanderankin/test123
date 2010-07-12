@@ -3,16 +3,11 @@ package ctagsinterface.dockables;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
@@ -24,9 +19,6 @@ import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -38,6 +30,8 @@ import ctagsinterface.index.TagIndex.Origin;
 import ctagsinterface.index.TagIndex.OriginType;
 import ctagsinterface.main.CtagsInterfacePlugin;
 import ctagsinterface.main.Tag;
+import ctagsinterface.main.TagListFilterMenu;
+import ctagsinterface.main.TagListFilterMenu.TagListModelHandler;
 
 @SuppressWarnings("serial")
 public class TagList extends JPanel implements DefaultFocusComponent
@@ -45,17 +39,36 @@ public class TagList extends JPanel implements DefaultFocusComponent
 	View view;
 	JList tags;
 	DefaultListModel tagModel;
-	JMenuBar menu = null;
-	List<Tag> allTags;
+	TagListFilterMenu menu;
+	TagListDockableModelHandler handler;
 	static String [] extensionOrder = new String [] {
 		"class", "struct", "access" 
 	};
-	static final String MISSING_EXTENSION = "<none>";
+
+	public class TagListDockableModelHandler implements TagListModelHandler
+	{
+		public void clear()
+		{
+			tagModel.removeAllElements();
+		}
+		public void add(Tag t)
+		{
+			tagModel.addElement(t);
+		}
+		public void done()
+		{
+			if (tagModel.size() == 1)
+				jumpTo(0);
+		}
+	}
 
 	public TagList(View view)
 	{
 		super(new BorderLayout());
 		this.view = view;
+		handler = new TagListDockableModelHandler();
+		menu = new TagListFilterMenu(handler);
+		add(menu, BorderLayout.NORTH);
 		tagModel = new DefaultListModel();
 		tags = new JList(tagModel);
 		add(new JScrollPane(tags), BorderLayout.CENTER);
@@ -90,84 +103,7 @@ public class TagList extends JPanel implements DefaultFocusComponent
 
 	public void setTags(List<Tag> tags)
 	{
-		// Reset the tag filter menu
-		if (menu == null)
-		{
-			menu = new JMenuBar();
-			add(menu, BorderLayout.NORTH);
-		}
-		else
-			menu.removeAll();
-		// Update the tags and the filter menu
-		allTags = tags;
-		tagModel.removeAllElements();
-		if (tags == null)
-			return;
-		HashMap<String, HashSet<String>> menus =
-			new HashMap<String, HashSet<String>>();
-		for (int i = 0; i < allTags.size(); i++)
-		{
-			Tag tag = (Tag) allTags.get(i);
-			tagModel.addElement(tag);
-			Vector<String> missingExtensions = new Vector<String>(menus.keySet());
-			for (String ext: tag.getExtensions())
-			{
-				missingExtensions.remove(ext);
-				HashSet<String> keys = menus.get(ext);
-				if (keys == null)
-				{
-					keys = new HashSet<String>();
-					menus.put(ext, keys);
-					if (i > 0) // Previous tags did not have this extension
-						keys.add(MISSING_EXTENSION);
-				}
-				keys.add(tag.getExtension(ext));
-			}
-			// Add a <missing extension> item to menus for missing extensions
-			for (String missing: missingExtensions)
-			{
-				HashSet<String> keys = menus.get(missing);
-				if (keys == null)
-					continue;
-				keys.add(MISSING_EXTENSION);
-			}
-		}
-		Vector<String> keys = new Vector<String>(menus.keySet());
-		Collections.sort(keys);
-		for (final String key: keys)
-		{
-			if (menus.get(key).size() < 2)
-				continue;	// Avoid redundant menus
-			JMenu m = new JMenu(key);
-			menu.add(m);
-			Vector<String> values = new Vector<String>(menus.get(key));
-			Collections.sort(values);
-			for (final String value: values)
-			{
-				JMenuItem item = new JMenuItem(value);
-				m.add(item);
-				item.addActionListener(new ActionListener()
-				{
-					public void actionPerformed(ActionEvent e)
-					{
-						tagModel.removeAllElements();
-						for (int i = 0; i < allTags.size(); i++)
-						{
-							Tag t = (Tag) allTags.get(i);
-							String ext = t.getExtension(key);
-							if (ext == null)
-								ext = MISSING_EXTENSION;
-							if (value.equals(ext))
-								tagModel.addElement(t);
-						}
-						if (tagModel.getSize() == 1)
-							jumpTo(0);
-					}
-				});
-			}
-		}
-		menu.validate();
-		repaint();
+		menu.setTags(tags);
 	}
 
 	public void focusOnDefaultComponent()
