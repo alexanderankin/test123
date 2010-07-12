@@ -10,7 +10,7 @@ import org.gjt.sp.jedit.jEdit;
 import beauty.BeautyPlugin;
 import org.gjt.sp.jedit.testframework.TestUtils;
 
-import java.io.File;
+//import java.io.File;
 import java.util.List;
 
 public class DefaultBeautifierTest {
@@ -92,7 +92,7 @@ public class DefaultBeautifierTest {
  
         DefaultBeautifier db = new DefaultBeautifier("css");
         db.setPrePadCharacters("{");
-        String after = db.prePadCharacters(new StringBuilder(before)).toString();
+        String after = db.prePadCharacters(before);
         assertTrue("prePadCharacters failed, expected >" + answer + "< but was >" + after + "<", answer.equals(after));
     }
  
@@ -103,7 +103,7 @@ public class DefaultBeautifierTest {
  
         DefaultBeautifier db = new DefaultBeautifier("css");
         db.setPostPadCharacters(":,");
-        String after = db.postPadCharacters(new StringBuilder(before)).toString();
+        String after = db.postPadCharacters(before);
         assertTrue("postPadCharacters failed, expected >" + answer + "< but was >" + after + "<", answer.equals(after));
     }
  
@@ -116,7 +116,7 @@ public class DefaultBeautifierTest {
         DefaultBeautifier db = new DefaultBeautifier("css");
         db.setLineSeparator("\n");
         db.setPreInsertLineCharacters("\\{");
-        String after = db.preInsertLineSeparators(new StringBuilder(before)).toString();
+        String after = db.preInsertLineSeparators(before);
         assertTrue("preInsertLinseSeparators failed, expected\n" + answer + "\nbut was\n" + after, answer.equals(after));
 
         // more complex regex, check that new line is inserted before { and
@@ -126,7 +126,7 @@ public class DefaultBeautifierTest {
  
         db = new DefaultBeautifier("css");
         db.setPreInsertLineCharacters("\\{,[ ].*?[:].*?[;]");
-        after = db.preInsertLineSeparators(new StringBuilder(before)).toString();
+        after = db.preInsertLineSeparators(before);
         assertTrue("preInsertLinseSeparators failed, expected\n" + answer + "\nbut was\n" + after, answer.equals(after));
  
         // test that extra line is not inserted before }
@@ -135,7 +135,7 @@ public class DefaultBeautifierTest {
  
         db = new DefaultBeautifier("css");
         db.setPreInsertLineCharacters("\\}");
-        after = db.preInsertLineSeparators(new StringBuilder(before)).toString();
+        after = db.preInsertLineSeparators(before);
         assertTrue("preInsertLinseSeparators failed, expected\n" + answer + "\nbut was\n" + after, answer.equals(after));
     }
  
@@ -147,7 +147,7 @@ public class DefaultBeautifierTest {
         DefaultBeautifier db = new DefaultBeautifier("css");
         db.setLineSeparator("\n");
         db.setPostInsertLineCharacters("\\{,;");
-        String after = db.postInsertLineSeparators(new StringBuilder(before)).toString();
+        String after = db.postInsertLineSeparators(before);
         assertTrue("postInsertLinseSeparators failed, expected\n" + answer + "\nbut was\n" + after, answer.equals(after));
 
         before = ".pageUserName{" + " color:#5c93c9,#5c93c9;}";
@@ -155,7 +155,7 @@ public class DefaultBeautifierTest {
  
         db = new DefaultBeautifier("css");
         db.setPostInsertLineCharacters("\\{,[ ].*?[:].*?[;]");
-        after = db.postInsertLineSeparators(new StringBuilder(before)).toString();
+        after = db.postInsertLineSeparators(before);
         assertTrue("postInsertLinseSeparators failed, expected\n" + answer + "\nbut was\n" + after, answer.equals(after));
 
         before = ".pageUserName{\n" + " color:#5c93c9,#5c93c9;}\n";
@@ -163,7 +163,7 @@ public class DefaultBeautifierTest {
  
         db = new DefaultBeautifier("css");
         db.setPostInsertLineCharacters("\\}");
-        after = db.postInsertLineSeparators(new StringBuilder(before)).toString();
+        after = db.postInsertLineSeparators(before);
         assertTrue("postInsertLinseSeparators failed, expected\n" + answer + "\nbut was\n" + after, answer.equals(after));
     }
  
@@ -176,8 +176,8 @@ public class DefaultBeautifierTest {
         db.setLineSeparator("\n");
         db.setPreInsertLineCharacters("\\}");
         db.setPostInsertLineCharacters(";");
-        String after = db.preInsertLineSeparators(new StringBuilder(before)).toString();
-        after = db.postInsertLineSeparators(new StringBuilder(after)).toString();
+        String after = db.preInsertLineSeparators(before);
+        after = db.postInsertLineSeparators(after);
         assertTrue("pre/postInsertLineSeparators failed, expected\n" + answer + "\nbut was\n" + after, answer.equals(after));
     }
  
@@ -189,7 +189,7 @@ public class DefaultBeautifierTest {
         DefaultBeautifier db = new DefaultBeautifier("css");
         db.setLineSeparator("\n");
         db.setDontPrePadCharacters(":");
-        String after = db.dontPrePadCharacters(new StringBuilder(before)).toString();
+        String after = db.dontPrePadCharacters(before);
         assertTrue("dontPrePadCharacters failed, expected\n" + answer + "\nbut was\n" + after, answer.equals(after));
     }
  
@@ -201,7 +201,7 @@ public class DefaultBeautifierTest {
         DefaultBeautifier db = new DefaultBeautifier("css");
         db.setLineSeparator("\n");
         db.setDontPostPadCharacters(":");
-        String after = db.dontPostPadCharacters(new StringBuilder(before)).toString();
+        String after = db.dontPostPadCharacters(before);
         assertTrue("dontPostPadCharacters failed, expected\n" + answer + "\nbut was\n" + after, answer.equals(after));
     }
  
@@ -213,7 +213,7 @@ public class DefaultBeautifierTest {
         DefaultBeautifier db = new DefaultBeautifier("css");
         db.setLineSeparator("\n");
         db.setCollapseBlankLines(true);
-        String after = db.collapseBlankLines(new StringBuilder(before)).toString();
+        String after = db.collapseBlankLines(before);
         assertTrue("collapseBlankLines failed, expected\n" + answer + "\nbut was\n" + after, answer.equals(after));
     }
  

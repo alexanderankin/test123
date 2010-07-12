@@ -110,41 +110,26 @@ public class DefaultBeautifier extends Beautifier {
      */ 
     public String beautify(String text) {
         StringBuilder sb = new StringBuilder(text);
-        //long startTime = System.currentTimeMillis();
  
         // Token padding can work on the raw text
         sb = padTokens(sb);
-        //long padTokensTime = System.currentTimeMillis();
  
         // the next few operations need to work only on text, not on comments,
         // so split out the buffer contents into text and comments.
         List<PToken> tokens = parseTokens(sb);
- 
-        tokens = prePadCharacters(tokens);
-        //long prePadCharactersTime = System.currentTimeMillis();
-        tokens = postPadCharacters(tokens);
-        //long postPadCharactersTime = System.currentTimeMillis();
-        tokens = preInsertLineSeparators(tokens);
-        //long preInsertLineSeparatorsTime = System.currentTimeMillis();
-        tokens = postInsertLineSeparators(tokens);
-        //long postInsertLineSeparatorsTime = System.currentTimeMillis();
-        tokens = dontPrePadCharacters(tokens);
-        //long dontPrePadCharactersTime = System.currentTimeMillis();
-        tokens = dontPostPadCharacters(tokens);
-        //long dontPostPadCharactersTime = System.currentTimeMillis();
-        tokens = collapseBlankLines(tokens);
-        //long collapseBlankLinesTime = System.currentTimeMillis();
- 
-        /*
-        System.out.println( "+++++ pad tokens time = " + ( padTokensTime - startTime ) );
-        System.out.println( "+++++ pre-pad characters time = " + ( prePadCharactersTime - padTokensTime ) );
-        System.out.println( "+++++ post-pad characters time = " + ( postPadCharactersTime - prePadCharactersTime ) );
-        System.out.println( "+++++ pre-insert line separators = " + ( preInsertLineSeparatorsTime - postPadCharactersTime ) );
-        System.out.println( "+++++ post-insert line separators = " + ( postInsertLineSeparatorsTime - preInsertLineSeparatorsTime ) );
-        System.out.println( "+++++ dont pre-pad characters = " + ( dontPrePadCharactersTime - postInsertLineSeparatorsTime ) );
-        System.out.println( "+++++ dont post-pad characters = " + ( dontPostPadCharactersTime - dontPrePadCharactersTime ) );
-        System.out.println( "+++++ collapse blank lines time = " + ( collapseBlankLinesTime - dontPostPadCharactersTime ) );
-        */ 
+        for (PToken token : tokens) {
+            if (token.isText) {
+                String s = token.tokenText; 
+                s = prePadCharacters(s);
+                s = postPadCharacters(s);
+                s = preInsertLineSeparators(s);
+                s = postInsertLineSeparators(s);
+                s = dontPrePadCharacters(s);
+                s = dontPostPadCharacters(s);
+                s = collapseBlankLines(s);
+                token.tokenText = s;
+            }
+        }
  
         // convert the token list back to a string for padding keywords and indenting
         sb.setLength(0);
@@ -243,52 +228,40 @@ public class DefaultBeautifier extends Beautifier {
     /**
      * The user may specify a list of characters to pad in front of.
      */ 
-    List<PToken> prePadCharacters(List<PToken> tokens) {
+    String prePadCharacters(String s) {
         if (prePadCharacters.length() == 0) {
-            return tokens;
+            return s;
         }
  
-        for (PToken token : tokens) {
-            if (token.tokenType == Token.MARKUP) {
-                String s = token.tokenText; 
-                for (int i = 0; i < prePadCharacters.length(); i++) {
-                    char c = prePadCharacters.charAt(i);
-                    s = s.replaceAll("(\\S)[" + c + "]", "$1 " + c);
-                }
-                token.tokenText = s;
-            }
+        for (int i = 0; i < prePadCharacters.length(); i++) {
+            char c = prePadCharacters.charAt(i);
+            s = s.replaceAll("(\\S)[" + c + "]", "$1 " + c);
         }
-        return tokens;
+        return s;
     }
  
     /**
      * The user may specify a list of characters to pad after.
      */ 
-    List<PToken> postPadCharacters(List<PToken> tokens) {
+    String postPadCharacters(String s) {
         if (postPadCharacters.length() == 0) {
-            return tokens;
+            return s;
         }
  
-        for (PToken token : tokens) {
-            if (token.tokenType == Token.MARKUP) {
-                String s = token.tokenText;
-                for (int i = 0; i < postPadCharacters.length(); i++) {
-                    char c = postPadCharacters.charAt(i);
-                    s = s.replaceAll("[" + (c == '[' || c == ']' ? "\\" : "") + c + "](\\S)", c + " $1");
-                }
-                token.tokenText = s;
-            }
+        for (int i = 0; i < postPadCharacters.length(); i++) {
+            char c = postPadCharacters.charAt(i);
+            s = s.replaceAll("[" + (c == '[' || c == ']' ? "\\" : "") + c + "](\\S)", c + " $1");
         }
-        return tokens;
+        return s;
     }
  
     /**
      * The user may specify a comma separated list of strings before which a
      * line separator will be inserted.  The strings are regular expressions.
      */ 
-    List<PToken> preInsertLineSeparators(List<PToken> tokens) {
+    String preInsertLineSeparators(String s) {
         if (preInsertLineCharacters.length() == 0) {
-            return tokens;
+            return s;
         }
  
         // need to deal with commas that may be part of a regex in a comma-
@@ -300,37 +273,31 @@ public class DefaultBeautifier extends Beautifier {
         String[] chars = pilc.split(",");
         for (String c : chars) {
             c = c.replaceAll("\\\\c1f", ",");
-            tokens = preInsertLineSeparators(tokens, c);
+            s = preInsertLineSeparators(s, c);
         }
-        return tokens;
+        return s;
     }
  
-    List<PToken> preInsertLineSeparators(List<PToken> tokens, String c) {
-        for (PToken token : tokens) {
-            if (token.tokenType == Token.MARKUP) {
-                String s = token.tokenText;
-                try {
-                    String ls = getLineSeparator();
-                    String regex = "(?<!(" + getLSString() + "))(" + c + ")";
-                    Pattern p = Pattern.compile(regex);
-                    Matcher m = p.matcher(s);
-                    s = m.replaceAll(ls + "$2");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                token.tokenText = s;
-            }
+    String preInsertLineSeparators(String s, String c) {
+        try {
+            String ls = getLineSeparator();
+            String regex = "(?<!(" + getLSString() + "))(" + c + ")";
+            Pattern p = Pattern.compile(regex);
+            Matcher m = p.matcher(s);
+            s = m.replaceAll(ls + "$2");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return tokens;
+        return s;
     }
  
     /**
      * The user may specify a comma separated list of strings after which a
      * line separator will be inserted.
      */ 
-    List<PToken> postInsertLineSeparators(List<PToken> tokens) {
+    String postInsertLineSeparators(String s) {
         if (postInsertLineCharacters.length() == 0) {
-            return tokens;
+            return s;
         }
  
         // need to deal with commas that may be part of a regex in a comma-
@@ -340,28 +307,22 @@ public class DefaultBeautifier extends Beautifier {
         String[] chars = pilc.split(",");
         for (String c : chars) {
             c = c.replaceAll("\\\\c1f", ",");
-            tokens = postInsertLineSeparators(tokens, c);
+            s = postInsertLineSeparators(s, c);
         }
-        return tokens;
+        return s;
     }
  
-    List<PToken> postInsertLineSeparators(List<PToken> tokens, String c) {
-        for (PToken token : tokens) {
-            if (token.tokenType == Token.MARKUP) {
-                String s = token.tokenText;
-                try {
-                    String ls = getLineSeparator();
-                    String regex = "(" + c + ")(?!(" + getLSString() + "))";
-                    Pattern p = Pattern.compile(regex);
-                    Matcher m = p.matcher(s);
-                    s = m.replaceAll("$1" + ls);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                token.tokenText = s;
-            }
+    String postInsertLineSeparators(String s, String c) {
+        try {
+            String ls = getLineSeparator();
+            String regex = "(" + c + ")(?!(" + getLSString() + "))";
+            Pattern p = Pattern.compile(regex);
+            Matcher m = p.matcher(s);
+            s = m.replaceAll("$1" + ls);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return tokens;
+        return s;
     }
  
     /**
@@ -372,24 +333,18 @@ public class DefaultBeautifier extends Beautifier {
      * the don't pad list and have that padding removed.  An example is the
      * javascript mode, where ; is defined as an operator.
      */ 
-    List<PToken> dontPrePadCharacters(List<PToken> tokens) {
+    String dontPrePadCharacters(String s) {
         if (dontPrePadCharacters.length() == 0) {
-            return tokens;
+            return s;
         }
  
-        for (PToken token : tokens) {
-            if (token.tokenType == Token.MARKUP) {
-                String s = token.tokenText;
-                if (dontPrePadCharacters.length() > 0) {
-                    for (int i = 0; i < dontPrePadCharacters.length(); i++) {
-                        char c = dontPrePadCharacters.charAt(i);
-                        s = s.replaceAll("\\s+[" + (c == '[' || c == ']' || c == '\\' ? "\\" : "") + c + "]", String.valueOf(c));
-                    }
-                }
-                token.tokenText = s;
+        if (dontPrePadCharacters.length() > 0) {
+            for (int i = 0; i < dontPrePadCharacters.length(); i++) {
+                char c = dontPrePadCharacters.charAt(i);
+                s = s.replaceAll("\\s+[" + (c == '[' || c == ']' || c == '\\' ? "\\" : "") + c + "]", String.valueOf(c));
             }
         }
-        return tokens;
+        return s;
     }
  
     /**
@@ -400,24 +355,18 @@ public class DefaultBeautifier extends Beautifier {
      * the don't pad list and have that padding removed.  An example is the
      * javascript mode, where ; is defined as an operator.
      */ 
-    List<PToken> dontPostPadCharacters(List<PToken> tokens) {
+    String dontPostPadCharacters(String s) {
         if (dontPostPadCharacters.length() == 0) {
-            return tokens;
+            return s;
         }
  
-        for (PToken token : tokens) {
-            if (token.tokenType == Token.MARKUP) {
-                String s = token.tokenText;
-                if (dontPostPadCharacters.length() > 0) {
-                    for (int i = 0; i < dontPostPadCharacters.length(); i++) {
-                        char c = dontPostPadCharacters.charAt(i);
-                        s = s.replaceAll("[" + (c == '[' || c == ']' || c == '\\' ? "\\" : "") + c + "]\\s+", String.valueOf(c));
-                    }
-                }
-                token.tokenText = s;
+        if (dontPostPadCharacters.length() > 0) {
+            for (int i = 0; i < dontPostPadCharacters.length(); i++) {
+                char c = dontPostPadCharacters.charAt(i);
+                s = s.replaceAll("[" + (c == '[' || c == ']' || c == '\\' ? "\\" : "") + c + "]\\s+", String.valueOf(c));
             }
         }
-        return tokens;
+        return s;
     }
  
     /**
@@ -495,19 +444,13 @@ public class DefaultBeautifier extends Beautifier {
     /**
      * Collapse two or more blank lines to a single blank line.
      */ 
-    List<PToken> collapseBlankLines(List<PToken> tokens) {
+    String collapseBlankLines(String s) {
         if (! collapseBlankLines) {
-            return tokens;
+            return s;
         }
-        for (PToken token : tokens) {
-            if (token.tokenType == Token.MARKUP) {
-                String s = token.tokenText;
-                String regex = "(([ ]|[\\t])*(" + getLSString() + ")){2,}";
-                s = s.replaceAll(regex, getLineSeparator());
-                token.tokenText = s;
-            }
-        }
-        return tokens;
+        String regex = "(([ ]|[\\t])*(" + getLSString() + ")){2,}";
+        s = s.replaceAll(regex, getLineSeparator());
+        return s;
     }
  
     /**
@@ -575,16 +518,15 @@ public class DefaultBeautifier extends Beautifier {
         }
         return "\\n";
     }
-    
+ 
     /**
      * This splits the input string into a list of tokens, where a token is either
      * some text or a comment.  This allows the pad/don't pad and pre/post insert
      * methods to work only on the text portions and leave the comments alone.  This
      * uses the jEdit syntax highlighting engine to do the parsing.
      * @param sb Some text to parse.
-     * @param A list of PTokens.  The tokenType will be set to Token.MARKUP for text,
-     * and to Token.COMMENT1 for comments.
-     */
+     * @param A list of PTokens.
+     */ 
     public List<PToken> parseTokens(StringBuilder sb) {
         List<PToken> ptokens = new ArrayList<PToken>();
         try {
@@ -616,7 +558,7 @@ public class DefaultBeautifier extends Beautifier {
                     if (token.id == Token.COMMENT1 || token.id == Token.COMMENT2 || token.id == Token.COMMENT3 || token.id == Token.COMMENT4) {
                         if (textBuffer.length() > 0) {
                             PToken textToken = new PToken();
-                            textToken.tokenType = Token.MARKUP;
+                            textToken.isText = true;
                             textToken.tokenText = textBuffer.toString();
                             ptokens.add(textToken);
                             textBuffer.setLength(0);
@@ -625,7 +567,7 @@ public class DefaultBeautifier extends Beautifier {
                     } else {
                         if (commentBuffer.length() > 0) {
                             PToken commentToken = new PToken();
-                            commentToken.tokenType = Token.COMMENT1;
+                            commentToken.isText = false;
                             commentToken.tokenText = commentBuffer.toString();
                             ptokens.add(commentToken);
                             commentBuffer.setLength(0);
@@ -644,18 +586,18 @@ public class DefaultBeautifier extends Beautifier {
                     textBuffer.append(getLineSeparator());
                 }
                 if (lineNum <= lastLine - 2 && commentBuffer.length() > 0) {
-                    commentBuffer.append(getLineSeparator());   
+                    commentBuffer.append(getLineSeparator()); 
                 }
             }
             if (textBuffer.length() > 0) {
                 PToken textToken = new PToken();
-                textToken.tokenType = Token.MARKUP;
+                textToken.isText = true;
                 textToken.tokenText = textBuffer.toString();
                 ptokens.add(textToken);
             }
             if (commentBuffer.length() > 0) {
                 PToken commentToken = new PToken();
-                commentToken.tokenType = Token.COMMENT1;
+                commentToken.isText = false;
                 commentToken.tokenText = commentBuffer.toString();
                 ptokens.add(commentToken);
             }
@@ -665,17 +607,15 @@ public class DefaultBeautifier extends Beautifier {
         return ptokens;
     }
  
-    // A class to tell regular text from comments.  Regular text, that is, text
-    // that is eligible for padding etc will have tokenType = Token.MARKUP.
-    // Comments will have tokenType = Token.COMMENT1.
+    // A class to tell regular text from comments.
     public class PToken {
-        byte tokenType;
+        boolean isText = false;
         String tokenText;
     }
  
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-/// everything below is to support unit tests.
+    ////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
+    /// everything below is to support unit tests.
  
     /**
      * Sets the value of prePadOperator.
@@ -851,68 +791,5 @@ public class DefaultBeautifier extends Beautifier {
      */ 
     public void setCollapseBlankLines(boolean collapseBlankLines) {
         this.collapseBlankLines = collapseBlankLines;
-    }
- 
-    public StringBuilder prePadCharacters(StringBuilder sb) {
-        List<PToken> tokens = prePadCharacters(parseTokens(sb));
-        sb.setLength(0);
-        for (PToken token : tokens) {
-            sb.append(token.tokenText); 
-        }
-        return sb;
-    }
- 
-    public StringBuilder postPadCharacters(StringBuilder sb) {
-        List<PToken> tokens = postPadCharacters(parseTokens(sb));
-        sb.setLength(0);
-        for (PToken token : tokens) {
-            sb.append(token.tokenText); 
-        }
-        return sb;
-    }
- 
-    public StringBuilder preInsertLineSeparators(StringBuilder sb) {
-        List<PToken> tokens = preInsertLineSeparators(parseTokens(sb));
-        sb.setLength(0);
-        for (PToken token : tokens) {
-            sb.append(token.tokenText); 
-        }
-        return sb;
-    }
- 
-    public StringBuilder postInsertLineSeparators(StringBuilder sb) {
-        List<PToken> tokens = postInsertLineSeparators(parseTokens(sb));
-        sb.setLength(0);
-        for (PToken token : tokens) {
-            sb.append(token.tokenText); 
-        }
-        return sb;
-    }
- 
-    public StringBuilder dontPrePadCharacters(StringBuilder sb) {
-        List<PToken> tokens = dontPrePadCharacters(parseTokens(sb));
-        sb.setLength(0);
-        for (PToken token : tokens) {
-            sb.append(token.tokenText); 
-        }
-        return sb;
-    }
- 
-    public StringBuilder dontPostPadCharacters(StringBuilder sb) {
-        List<PToken> tokens = dontPostPadCharacters(parseTokens(sb));
-        sb.setLength(0);
-        for (PToken token : tokens) {
-            sb.append(token.tokenText); 
-        }
-        return sb;
-    }
- 
-    public StringBuilder collapseBlankLines(StringBuilder sb) {
-        List<PToken> tokens = collapseBlankLines(parseTokens(sb));
-        sb.setLength(0);
-        for (PToken token : tokens) {
-            sb.append(token.tokenText); 
-        }
-        return sb;
     }
 }
