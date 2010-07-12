@@ -126,3 +126,5 @@ beauty.msg.Unaligned_close_brackets>=Unaligned close brackets:
 beauty.msg.Indent_next_line>=Indent next line:
 beauty.msg.Unindent_this_line>=Unindent this line:
 beauty.msg.Electric_keys>=Electric keys:
+beauty.msg.Padding=Padding
+beauty.msg.Indenting=Indenting

@@ -11,6 +11,7 @@ import org.gjt.sp.jedit.syntax.DefaultTokenHandler;
 import org.gjt.sp.jedit.syntax.Token;
 import beauty.BeautyPlugin;
 import beauty.PrivilegedAccessor;
+import static beauty.beautifiers.Constants.*;
 
 /**
  * This is a default beautifier to use when there is no specific beautifier
@@ -69,39 +70,38 @@ public class DefaultBeautifier extends Beautifier {
         }
         this.modeName = modeName;
  
-        // TODO: put these property keys as static strings somewhere
         Properties props = BeautyPlugin.getCustomModeProperties(modeName);
-        prePadOperator = "true".equals(props.getProperty("prePadOperators")) ? true : false;
-        prePadFunction = "true".equals(props.getProperty("prePadFunctions")) ? true : false;
-        prePadDigit = "true".equals(props.getProperty("prePadDigits")) ? true : false;
-        prePadKeyword1 = "true".equals(props.getProperty("prePadKeywords1")) ? true : false;
-        prePadKeyword2 = "true".equals(props.getProperty("prePadKeywords2")) ? true : false;
-        prePadKeyword3 = "true".equals(props.getProperty("prePadKeywords3")) ? true : false;
-        prePadKeyword4 = "true".equals(props.getProperty("prePadKeywords4")) ? true : false;
-        postPadOperator = "true".equals(props.getProperty("postPadOperators")) ? true : false;
-        postPadFunction = "true".equals(props.getProperty("postPadFunctions")) ? true : false;
-        postPadDigit = "true".equals(props.getProperty("postPadDigits")) ? true : false;
-        postPadKeyword1 = "true".equals(props.getProperty("postPadKeywords1")) ? true : false;
-        postPadKeyword2 = "true".equals(props.getProperty("postPadKeywords2")) ? true : false;
-        postPadKeyword3 = "true".equals(props.getProperty("postPadKeywords3")) ? true : false;
-        postPadKeyword4 = "true".equals(props.getProperty("postPadKeywords4")) ? true : false;
-        labelOnSeparateLine = "true".equals(props.getProperty("labelOnSeparateLine")) ? true : false;
-        prePadCharacters = props.getProperty("prePadCharacters") == null ? "" : props.getProperty("prePadCharacters");
-        postPadCharacters = props.getProperty("postPadCharacters") == null ? "" : props.getProperty("postPadCharacters");
-        dontPrePadCharacters = props.getProperty("dontPrePadCharacters") == null ? "" : props.getProperty("dontPrePadCharacters");
-        dontPostPadCharacters = props.getProperty("dontPostPadCharacters") == null ? "" : props.getProperty("dontPostPadCharacters");
-        preInsertLineCharacters = props.getProperty("preInsertLineCharacters") == null ? "" : props.getProperty("preInsertLineCharacters");
-        postInsertLineCharacters = props.getProperty("postInsertLineCharacters") == null ? "" : props.getProperty("postInsertLineCharacters");
-        collapseBlankLines = "true".equals(props.getProperty("collapseBlankLines")) ? true : false;
+        prePadOperator = "true".equals(props.getProperty(PRE_PAD_OPERATORS)) ? true : false;
+        prePadFunction = "true".equals(props.getProperty(PRE_PAD_FUNCTIONS)) ? true : false;
+        prePadDigit = "true".equals(props.getProperty(PRE_PAD_DIGITS)) ? true : false;
+        prePadKeyword1 = "true".equals(props.getProperty(PRE_PAD_KEYWORDS1)) ? true : false;
+        prePadKeyword2 = "true".equals(props.getProperty(PRE_PAD_KEYWORDS2)) ? true : false;
+        prePadKeyword3 = "true".equals(props.getProperty(PRE_PAD_KEYWORDS3)) ? true : false;
+        prePadKeyword4 = "true".equals(props.getProperty(PRE_PAD_KEYWORDS4)) ? true : false;
+        postPadOperator = "true".equals(props.getProperty(POST_PAD_OPERATORS)) ? true : false;
+        postPadFunction = "true".equals(props.getProperty(POST_PAD_FUNCTIONS)) ? true : false;
+        postPadDigit = "true".equals(props.getProperty(POST_PAD_DIGITS)) ? true : false;
+        postPadKeyword1 = "true".equals(props.getProperty(POST_PAD_KEYWORDS1)) ? true : false;
+        postPadKeyword2 = "true".equals(props.getProperty(POST_PAD_KEYWORDS2)) ? true : false;
+        postPadKeyword3 = "true".equals(props.getProperty(POST_PAD_KEYWORDS3)) ? true : false;
+        postPadKeyword4 = "true".equals(props.getProperty(POST_PAD_KEYWORDS4)) ? true : false;
+        labelOnSeparateLine = "true".equals(props.getProperty(LABEL_ON_SEPARATE_LINE)) ? true : false;
+        prePadCharacters = props.getProperty(PRE_PAD_CHARACTERS) == null ? "" : props.getProperty(PRE_PAD_CHARACTERS);
+        postPadCharacters = props.getProperty(POST_PAD_CHARACTERS) == null ? "" : props.getProperty(POST_PAD_CHARACTERS);
+        dontPrePadCharacters = props.getProperty(DONT_PRE_PAD_CHARACTERS) == null ? "" : props.getProperty(DONT_PRE_PAD_CHARACTERS);
+        dontPostPadCharacters = props.getProperty(DONT_POST_PAD_CHARACTERS) == null ? "" : props.getProperty(DONT_POST_PAD_CHARACTERS);
+        preInsertLineCharacters = props.getProperty(PRE_INSERT_LINE_CHARACTERS) == null ? "" : props.getProperty(PRE_INSERT_LINE_CHARACTERS);
+        postInsertLineCharacters = props.getProperty(POST_INSERT_LINE_CHARACTERS) == null ? "" : props.getProperty(POST_INSERT_LINE_CHARACTERS);
+        collapseBlankLines = "true".equals(props.getProperty(COLLAPSE_BLANK_LINES)) ? true : false;
  
-        indentLines = "true".equals(props.getProperty("usejEditIndenter")) ? true : false;
-        indentOpenBrackets = props.getProperty("indentOpenBrackets") == null ? "" : props.getProperty("indentOpenBrackets");
-        indentCloseBrackets = props.getProperty("indentCloseBrackets") == null ? "" : props.getProperty("indentCloseBrackets");
-        unalignedOpenBrackets = props.getProperty("unalignedOpenBrackets") == null ? "" : props.getProperty("unalignedOpenBrackets");
-        unalignedCloseBrackets = props.getProperty("unalignedCloseBrackets") == null ? "" : props.getProperty("unalignedCloseBrackets");
-        indentNextLine = props.getProperty("indentNextLine") == null ? "" : props.getProperty("indentNextLine");
-        unindentThisLine = props.getProperty("unindentThisLine") == null ? "" : props.getProperty("unindentThisLine");
-        electricKeys = props.getProperty("electricKeys") == null ? "" : props.getProperty("electricKeys");
+        indentLines = "true".equals(props.getProperty(USE_JEDIT_INDENTER)) ? true : false;
+        indentOpenBrackets = props.getProperty(INDENT_OPEN_BRACKETS) == null ? "" : props.getProperty(INDENT_OPEN_BRACKETS);
+        indentCloseBrackets = props.getProperty(INDENT_CLOSE_BRACKETS) == null ? "" : props.getProperty(INDENT_CLOSE_BRACKETS);
+        unalignedOpenBrackets = props.getProperty(UNALIGNED_OPEN_BRACKETS) == null ? "" : props.getProperty(UNALIGNED_OPEN_BRACKETS);
+        unalignedCloseBrackets = props.getProperty(UNALIGNED_CLOSE_BRACKETS) == null ? "" : props.getProperty(UNALIGNED_CLOSE_BRACKETS);
+        indentNextLine = props.getProperty(INDENT_NEXT_LINE) == null ? "" : props.getProperty(INDENT_NEXT_LINE);
+        unindentThisLine = props.getProperty(UNINDENT_THIS_LINE) == null ? "" : props.getProperty(UNINDENT_THIS_LINE);
+        electricKeys = props.getProperty(ELECTRIC_KEYS) == null ? "" : props.getProperty(ELECTRIC_KEYS);
  
     }
  
@@ -465,13 +465,13 @@ public class DefaultBeautifier extends Beautifier {
             PrivilegedAccessor.setValue(mode, "indentRules", null);
  
             // now the indenting rules can be set and will be used by jEdit
-            mode.setProperty("indentOpenBrackets", indentOpenBrackets);
-            mode.setProperty("indentCloseBrackets", indentCloseBrackets);
-            mode.setProperty("unalignedOpenBrackets", unalignedOpenBrackets);
-            mode.setProperty("unalignedCloseBrackets", unalignedCloseBrackets);
-            mode.setProperty("indentNextLine", indentNextLine);
-            mode.setProperty("unindentThisLine", unindentThisLine);
-            mode.setProperty("electricKeys", electricKeys); 
+            mode.setProperty(INDENT_OPEN_BRACKETS, indentOpenBrackets);
+            mode.setProperty(INDENT_CLOSE_BRACKETS, indentCloseBrackets);
+            mode.setProperty(UNALIGNED_OPEN_BRACKETS, unalignedOpenBrackets);
+            mode.setProperty(UNALIGNED_CLOSE_BRACKETS, unalignedCloseBrackets);
+            mode.setProperty(INDENT_NEXT_LINE, indentNextLine);
+            mode.setProperty(UNINDENT_THIS_LINE, unindentThisLine);
+            mode.setProperty(ELECTRIC_KEYS, electricKeys); 
  
             File tempFile = File.createTempFile("tmp", null);
             tempFile.deleteOnExit();

@@ -11,6 +11,7 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.msg.*;
 
 import beauty.BeautyPlugin;
+import static beauty.beautifiers.Constants.*;
 
 import ise.java.awt.*;
 
@@ -122,8 +123,8 @@ public class CustomBeautifierOptionPane extends AbstractOptionPane {
 
         // tabs
         JTabbedPane tabs = new JTabbedPane();
-        tabs.add( "Padding", createPaddingPanel() );
-        tabs.add( "Indenting", createIndentingPanel() );
+        tabs.add( jEdit.getProperty("beauty.msg.Padding", "Padding"), createPaddingPanel() );
+        tabs.add( jEdit.getProperty("beauty.msg.Indenting", "Indenting"), createIndentingPanel() );
 
         add( description, "0, 0, 1, 1, W, w, 2" );
         add( KappaLayout.createVerticalStrut( 6 ), "0, 1" );
@@ -308,50 +309,50 @@ public class CustomBeautifierOptionPane extends AbstractOptionPane {
 
     public void _save() {
         String name = currentMode.getName();
-        modeProperties.setProperty( "prePadFunctions", prePadFunctions.isSelected() ? "true" : "false" );
-        modeProperties.setProperty( "prePadDigits", prePadDigits.isSelected() ? "true" : "false" );
-        modeProperties.setProperty( "prePadOperators", prePadOperators.isSelected() ? "true" : "false" );
-        modeProperties.setProperty( "prePadKeywords1", prePadKeywords1.isSelected() ? "true" : "false" );
-        modeProperties.setProperty( "prePadKeywords2", prePadKeywords2.isSelected() ? "true" : "false" );
-        modeProperties.setProperty( "prePadKeywords3", prePadKeywords3.isSelected() ? "true" : "false" );
-        modeProperties.setProperty( "prePadKeywords4", prePadKeywords4.isSelected() ? "true" : "false" );
-        modeProperties.setProperty( "postPadFunctions", postPadFunctions.isSelected() ? "true" : "false" );
-        modeProperties.setProperty( "postPadDigits", postPadDigits.isSelected() ? "true" : "false" );
-        modeProperties.setProperty( "postPadOperators", postPadOperators.isSelected() ? "true" : "false" );
-        modeProperties.setProperty( "postPadKeywords1", postPadKeywords1.isSelected() ? "true" : "false" );
-        modeProperties.setProperty( "postPadKeywords2", postPadKeywords2.isSelected() ? "true" : "false" );
-        modeProperties.setProperty( "postPadKeywords3", postPadKeywords3.isSelected() ? "true" : "false" );
-        modeProperties.setProperty( "postPadKeywords4", postPadKeywords4.isSelected() ? "true" : "false" );
-        modeProperties.setProperty( "labelOnSeparateLine", labelOnSeparateLine.isSelected() ? "true" : "false" );
-        modeProperties.setProperty( "collapseBlankLines", collapseBlankLines.isSelected() ? "true" : "false" );
-        modeProperties.setProperty( "prePadCharacters", prePadCharacters.getText() );
-        modeProperties.setProperty( "postPadCharacters", postPadCharacters.getText() );
-        modeProperties.setProperty( "dontPrePadCharacters", dontPrePadCharacters.getText() );
-        modeProperties.setProperty( "dontPostPadCharacters", dontPostPadCharacters.getText() );
-        modeProperties.setProperty( "preInsertLineCharacters", preInsertLineCharacters.getText() );
-        modeProperties.setProperty( "postInsertLineCharacters", postInsertLineCharacters.getText() );
+        modeProperties.setProperty( PRE_PAD_FUNCTIONS, prePadFunctions.isSelected() ? "true" : "false" );
+        modeProperties.setProperty( PRE_PAD_DIGITS, prePadDigits.isSelected() ? "true" : "false" );
+        modeProperties.setProperty( PRE_PAD_OPERATORS, prePadOperators.isSelected() ? "true" : "false" );
+        modeProperties.setProperty( PRE_PAD_KEYWORDS1, prePadKeywords1.isSelected() ? "true" : "false" );
+        modeProperties.setProperty( PRE_PAD_KEYWORDS2, prePadKeywords2.isSelected() ? "true" : "false" );
+        modeProperties.setProperty( PRE_PAD_KEYWORDS3, prePadKeywords3.isSelected() ? "true" : "false" );
+        modeProperties.setProperty( PRE_PAD_KEYWORDS4, prePadKeywords4.isSelected() ? "true" : "false" );
+        modeProperties.setProperty( POST_PAD_FUNCTIONS, postPadFunctions.isSelected() ? "true" : "false" );
+        modeProperties.setProperty( POST_PAD_DIGITS, postPadDigits.isSelected() ? "true" : "false" );
+        modeProperties.setProperty( POST_PAD_OPERATORS, postPadOperators.isSelected() ? "true" : "false" );
+        modeProperties.setProperty( POST_PAD_KEYWORDS1, postPadKeywords1.isSelected() ? "true" : "false" );
+        modeProperties.setProperty( POST_PAD_KEYWORDS2, postPadKeywords2.isSelected() ? "true" : "false" );
+        modeProperties.setProperty( POST_PAD_KEYWORDS3, postPadKeywords3.isSelected() ? "true" : "false" );
+        modeProperties.setProperty( POST_PAD_KEYWORDS4, postPadKeywords4.isSelected() ? "true" : "false" );
+        modeProperties.setProperty( LABEL_ON_SEPARATE_LINE, labelOnSeparateLine.isSelected() ? "true" : "false" );
+        modeProperties.setProperty( COLLAPSE_BLANK_LINES, collapseBlankLines.isSelected() ? "true" : "false" );
+        modeProperties.setProperty( PRE_PAD_CHARACTERS, prePadCharacters.getText() );
+        modeProperties.setProperty( POST_PAD_CHARACTERS, postPadCharacters.getText() );
+        modeProperties.setProperty( DONT_PRE_PAD_CHARACTERS, dontPrePadCharacters.getText() );
+        modeProperties.setProperty( DONT_POST_PAD_CHARACTERS, dontPostPadCharacters.getText() );
+        modeProperties.setProperty( PRE_INSERT_LINE_CHARACTERS, preInsertLineCharacters.getText() );
+        modeProperties.setProperty( POST_INSERT_LINE_CHARACTERS, postInsertLineCharacters.getText() );
 
-        modeProperties.setProperty( "usejEditIndenter", usejEditIndenter.isSelected() ? "true" : "false" );
+        modeProperties.setProperty( USE_JEDIT_INDENTER, usejEditIndenter.isSelected() ? "true" : "false" );
         if ( usejEditIndenter.isSelected() ) {
-            modeProperties.setProperty( "indentOpenBrackets", indentOpenBrackets.getText() );
-            modeProperties.setProperty( "indentCloseBrackets", indentCloseBrackets.getText() );
-            modeProperties.setProperty( "unalignedOpenBrackets", unalignedOpenBrackets.getText() );
-            modeProperties.setProperty( "unalignedCloseBrackets", unalignedCloseBrackets.getText() );
-            modeProperties.setProperty( "indentNextLine", indentNextLine.getText() );
-            modeProperties.setProperty( "unindentThisLine", unindentThisLine.getText() );
-            modeProperties.setProperty( "electricKeys", electricKeys.getText() );
-            modeProperties.setProperty( "lineUpClosingBracket", lineUpClosingBracket.isSelected() ? "true" : "false");
-            modeProperties.setProperty( "doubleBracketIndent", doubleBracketIndent.isSelected() ? "true" : "false");
+            modeProperties.setProperty( INDENT_OPEN_BRACKETS, indentOpenBrackets.getText() );
+            modeProperties.setProperty( INDENT_CLOSE_BRACKETS, indentCloseBrackets.getText() );
+            modeProperties.setProperty( UNALIGNED_OPEN_BRACKETS, unalignedOpenBrackets.getText() );
+            modeProperties.setProperty( UNALIGNED_CLOSE_BRACKETS, unalignedCloseBrackets.getText() );
+            modeProperties.setProperty( INDENT_NEXT_LINE, indentNextLine.getText() );
+            modeProperties.setProperty( UNINDENT_THIS_LINE, unindentThisLine.getText() );
+            modeProperties.setProperty( ELECTRIC_KEYS, electricKeys.getText() );
+            modeProperties.setProperty( LINE_UP_CLOSING_BRACKET, lineUpClosingBracket.isSelected() ? "true" : "false");
+            modeProperties.setProperty( DOUBLE_BRACKET_INDENT, doubleBracketIndent.isSelected() ? "true" : "false");
 
-            currentMode.setProperty( "indentOpenBrackets", indentOpenBrackets.getText() );
-            currentMode.setProperty( "indentCloseBrackets", indentCloseBrackets.getText() );
-            currentMode.setProperty( "unalignedOpenBrackets", unalignedOpenBrackets.getText() );
-            currentMode.setProperty( "unalignedCloseBrackets", unalignedCloseBrackets.getText() );
-            currentMode.setProperty( "indentNextLine", indentNextLine.getText() );
-            currentMode.setProperty( "unindentThisLine", unindentThisLine.getText() );
-            currentMode.setProperty( "electricKeys", electricKeys.getText() );
-            currentMode.setProperty( "lineUpClosingBracket", lineUpClosingBracket.isSelected());
-            currentMode.setProperty( "doubleBracketIndent", doubleBracketIndent.isSelected());
+            currentMode.setProperty( INDENT_OPEN_BRACKETS, indentOpenBrackets.getText() );
+            currentMode.setProperty( INDENT_CLOSE_BRACKETS, indentCloseBrackets.getText() );
+            currentMode.setProperty( UNALIGNED_OPEN_BRACKETS, unalignedOpenBrackets.getText() );
+            currentMode.setProperty( UNALIGNED_CLOSE_BRACKETS, unalignedCloseBrackets.getText() );
+            currentMode.setProperty( INDENT_NEXT_LINE, indentNextLine.getText() );
+            currentMode.setProperty( UNINDENT_THIS_LINE, unindentThisLine.getText() );
+            currentMode.setProperty( ELECTRIC_KEYS, electricKeys.getText() );
+            currentMode.setProperty( LINE_UP_CLOSING_BRACKET, lineUpClosingBracket.isSelected());
+            currentMode.setProperty( DOUBLE_BRACKET_INDENT, doubleBracketIndent.isSelected());
         }
 
         BeautyPlugin.saveProperties( name, modeProperties );
@@ -415,33 +416,33 @@ public class CustomBeautifierOptionPane extends AbstractOptionPane {
 
     private void setComponentValues() {
         // set the check box values
-        prePadFunctions.setSelected( getBoolean( "prePadFunctions" ) );
-        prePadDigits.setSelected( getBoolean( "prePadDigits" ) );
-        prePadOperators.setSelected( getBoolean( "prePadOperators" ) );
-        prePadKeywords1.setSelected( getBoolean( "prePadKeywords1" ) );
-        prePadKeywords2.setSelected( getBoolean( "prePadKeywords2" ) );
-        prePadKeywords3.setSelected( getBoolean( "prePadKeywords3" ) );
-        prePadKeywords4.setSelected( getBoolean( "prePadKeywords4" ) );
-        postPadFunctions.setSelected( getBoolean( "postPadFunctions" ) );
-        postPadDigits.setSelected( getBoolean( "postPadDigits" ) );
-        postPadOperators.setSelected( getBoolean( "postPadOperators" ) );
-        postPadKeywords1.setSelected( getBoolean( "postPadKeywords1" ) );
-        postPadKeywords2.setSelected( getBoolean( "postPadKeywords2" ) );
-        postPadKeywords3.setSelected( getBoolean( "postPadKeywords3" ) );
-        postPadKeywords4.setSelected( getBoolean( "postPadKeywords4" ) );
-        labelOnSeparateLine.setSelected( getBoolean( "labelOnSeparateLine" ) );
-        collapseBlankLines.setSelected( getBoolean( "collapseBlankLines" ) );
+        prePadFunctions.setSelected( getBoolean( PRE_PAD_FUNCTIONS ) );
+        prePadDigits.setSelected( getBoolean( PRE_PAD_DIGITS ) );
+        prePadOperators.setSelected( getBoolean( PRE_PAD_OPERATORS ) );
+        prePadKeywords1.setSelected( getBoolean( PRE_PAD_KEYWORDS1 ) );
+        prePadKeywords2.setSelected( getBoolean( PRE_PAD_KEYWORDS2 ) );
+        prePadKeywords3.setSelected( getBoolean( PRE_PAD_KEYWORDS3 ) );
+        prePadKeywords4.setSelected( getBoolean( PRE_PAD_KEYWORDS4 ) );
+        postPadFunctions.setSelected( getBoolean( POST_PAD_FUNCTIONS ) );
+        postPadDigits.setSelected( getBoolean( POST_PAD_DIGITS ) );
+        postPadOperators.setSelected( getBoolean( POST_PAD_OPERATORS ) );
+        postPadKeywords1.setSelected( getBoolean( POST_PAD_KEYWORDS1 ) );
+        postPadKeywords2.setSelected( getBoolean( POST_PAD_KEYWORDS2 ) );
+        postPadKeywords3.setSelected( getBoolean( POST_PAD_KEYWORDS3 ) );
+        postPadKeywords4.setSelected( getBoolean( POST_PAD_KEYWORDS4 ) );
+        labelOnSeparateLine.setSelected( getBoolean( LABEL_ON_SEPARATE_LINE ) );
+        collapseBlankLines.setSelected( getBoolean( COLLAPSE_BLANK_LINES ) );
 
         // set the text field values
-        prePadCharacters.setText( getText( "prePadCharacters" ) );
-        postPadCharacters.setText( getText( "postPadCharacters" ) );
-        dontPrePadCharacters.setText( getText( "dontPrePadCharacters" ) );
-        dontPostPadCharacters.setText( getText( "dontPostPadCharacters" ) );
-        preInsertLineCharacters.setText( getText( "preInsertLineCharacters" ) );
-        postInsertLineCharacters.setText( getText( "postInsertLineCharacters" ) );
+        prePadCharacters.setText( getText( PRE_PAD_CHARACTERS ) );
+        postPadCharacters.setText( getText( POST_PAD_CHARACTERS ) );
+        dontPrePadCharacters.setText( getText( DONT_PRE_PAD_CHARACTERS ) );
+        dontPostPadCharacters.setText( getText( DONT_POST_PAD_CHARACTERS ) );
+        preInsertLineCharacters.setText( getText( PRE_INSERT_LINE_CHARACTERS ) );
+        postInsertLineCharacters.setText( getText( POST_INSERT_LINE_CHARACTERS ) );
 
         // indenter values
-        usejEditIndenter.setSelected( getBoolean( "usejEditIndenter" ) );
+        usejEditIndenter.setSelected( getBoolean( USE_JEDIT_INDENTER ) );
         indentOpenBrackets.setEnabled( usejEditIndenter.isSelected() );
         indentCloseBrackets.setEnabled( usejEditIndenter.isSelected() );
         unalignedOpenBrackets.setEnabled( usejEditIndenter.isSelected() );
@@ -452,14 +453,14 @@ public class CustomBeautifierOptionPane extends AbstractOptionPane {
         lineUpClosingBracket.setEnabled( usejEditIndenter.isSelected() );
         doubleBracketIndent.setEnabled( usejEditIndenter.isSelected() );
 
-        indentOpenBrackets.setText( getText( "indentOpenBrackets" ) );
-        indentCloseBrackets.setText( getText( "indentCloseBrackets" ) );
-        unalignedOpenBrackets.setText( getText( "unalignedOpenBrackets" ) );
-        unalignedCloseBrackets.setText( getText( "unalignedCloseBrackets" ) );
-        indentNextLine.setText( getText( "indentNextLine" ) );
-        unindentThisLine.setText( getText( "unindentThisLine" ) );
-        electricKeys.setText( getText( "electricKeys" ) );
-        lineUpClosingBracket.setSelected( getBoolean("lineUpClosingBracket") );
-        doubleBracketIndent.setSelected( getBoolean("doubleBracketIndent") );
+        indentOpenBrackets.setText( getText( INDENT_OPEN_BRACKETS ) );
+        indentCloseBrackets.setText( getText( INDENT_CLOSE_BRACKETS ) );
+        unalignedOpenBrackets.setText( getText( UNALIGNED_OPEN_BRACKETS ) );
+        unalignedCloseBrackets.setText( getText( UNALIGNED_CLOSE_BRACKETS ) );
+        indentNextLine.setText( getText( INDENT_NEXT_LINE ) );
+        unindentThisLine.setText( getText( UNINDENT_THIS_LINE ) );
+        electricKeys.setText( getText( ELECTRIC_KEYS ) );
+        lineUpClosingBracket.setSelected( getBoolean(LINE_UP_CLOSING_BRACKET) );
+        doubleBracketIndent.setSelected( getBoolean(DOUBLE_BRACKET_INDENT) );
     }
 }
