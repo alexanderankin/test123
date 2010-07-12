@@ -509,7 +509,9 @@ public class TagIndex
 				sb.append(" OR ");
 				isFirst = true;
 			}
-			sb.append("origin:" + escape(origin.toString()));
+			String escaped = escape(origin.toString());
+			sb.append(_ORIGIN_FLD + ":*" + escaped + " OR " + _ORIGIN_FLD +
+				":*" + escaped + Origin.SEP + "*");
 		}
 		sb.append(")");
 		if (query != null && (! query.isEmpty()))

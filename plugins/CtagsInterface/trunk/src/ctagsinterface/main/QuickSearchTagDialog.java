@@ -31,6 +31,7 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
 
 import ctagsinterface.index.TagIndex;
+import ctagsinterface.main.TagListFilterMenu.TagListModelHandler;
 
 @SuppressWarnings("serial")
 public class QuickSearchTagDialog extends JDialog {
@@ -48,9 +49,28 @@ public class QuickSearchTagDialog extends JDialog {
 	private String query;
 	private boolean showImmediately;
 	private JCheckBox caseSensitive;
+	private TagListFilterMenu menu;
+	private QuickSearchTagListModelHandler handler;
 
 	/** This window will contains the scroll with the items. */
 	final JWindow window = new JWindow(this);
+
+	public class QuickSearchTagListModelHandler implements TagListModelHandler
+	{
+		public void clear()
+		{
+			model.removeAllElements();
+		}
+		public void add(Tag t)
+		{
+			model.addElement(new QuickSearchTag(t));
+		}
+		public void done()
+		{
+			if (model.getSize() == 1)
+				jumpTo((QuickSearchTag) model.get(0));
+		}
+	}
 
 	public QuickSearchTagDialog(View view, Mode mode)
 	{
@@ -79,11 +99,17 @@ public class QuickSearchTagDialog extends JDialog {
 			}
 		});
 		add(p, BorderLayout.NORTH);
+		JPanel listPanel = new JPanel();
+		listPanel.setLayout(new BorderLayout());
+		handler = new QuickSearchTagListModelHandler();
+		menu = new TagListFilterMenu(handler);
+		listPanel.add(menu, BorderLayout.NORTH);
+		listPanel.setBorder(BorderFactory.createEtchedBorder());
 		model = new DefaultListModel();
 		tags = new JList(model);
-		tags.setBorder(BorderFactory.createEtchedBorder());
 		tags.setCellRenderer(new TagListCellRenderer());
-		window.setContentPane(new JScrollPane(tags));
+		listPanel.add(new JScrollPane(tags), BorderLayout.CENTER);
+		window.setContentPane(listPanel);
 		name.getDocument().addDocumentListener(new DocumentListener() {
 			public void changedUpdate(DocumentEvent e) {
 				setFilter();
@@ -143,6 +169,10 @@ public class QuickSearchTagDialog extends JDialog {
 
 	private void jumpToSelected() {
 		QuickSearchTag t = (QuickSearchTag) tags.getSelectedValue();
+		jumpTo(t);
+	}
+
+	private void jumpTo(QuickSearchTag t) {
 		if (t != null)
 			CtagsInterfacePlugin.jumpTo(view, t.file, t.line);
 		dispose();
@@ -157,7 +187,6 @@ public class QuickSearchTagDialog extends JDialog {
 
 	private void applyFilter()
 	{
-		model.removeAllElements();
 		final String input = caseSensitive.isSelected() ? name.getText():
 			name.getText().toLowerCase();
 		if (showImmediately || (! input.isEmpty()))
@@ -173,18 +202,10 @@ public class QuickSearchTagDialog extends JDialog {
 					input + "*";
 			}
 			Vector<Tag> tags = CtagsInterfacePlugin.runScopedQuery(view, s);
-			for (Tag t: tags)
-			{
-				String name = t.getName();
-				if (! caseSensitive.isSelected())
-					name = name.toLowerCase();
-				model.addElement(new QuickSearchTag(t));
-			}
+			menu.setTags(tags);
 		}
 		if (model.isEmpty())
-		{
 			window.setVisible(false);
-		}
 		else
 		{
 			tags.setVisibleRowCount(Math.min(10, model.size()));
