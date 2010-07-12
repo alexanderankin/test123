@@ -1,17 +1,11 @@
 package beauty.beautifiers;
 
 import beauty.parsers.ParserException;
-import org.gjt.sp.jedit.Buffer;
 
 /**
-
  * Base class for all beautifiers.  This class contains methods to get and set
  * various Buffer parameters.
- * <p>
- * Added a reference to the Buffer itself.  I did this for the DefaultBeautifier
- * since it needs to tokenize the buffer.
  */
-
 public abstract class Beautifier {
 
     // the line separator, defaults to the system line separator, but will
