@@ -147,24 +147,23 @@ public class CustomBeautifierOptionPane extends AbstractOptionPane {
         indentNextLine = new JTextField();
         unindentThisLine = new JTextField();
         electricKeys = new JTextField();
-        // TODO: put strings in properties file
-        lineUpClosingBracket = new JCheckBox("Line up closing bracket");
-        doubleBracketIndent = new JCheckBox("Double bracket indent");
+        lineUpClosingBracket = new JCheckBox(jEdit.getProperty("beauty.msg.Line_up_closing_bracket", "Line up closing bracket"));
+        doubleBracketIndent = new JCheckBox(jEdit.getProperty("beauty.msg.Double_bracket_indent", "Double bracket indent"));
 
         panel.add( usejEditIndenter, "0, 0, 1, 1, W, w, 2" );
-        panel.add( new JLabel( "Indent open brackets:" ), "0, 1, 1, 1, W, w, 2" );
+        panel.add( new JLabel( jEdit.getProperty("beauty.msg.Indent_open_brackets>", "Indent open brackets:") ), "0, 1, 1, 1, W, w, 2" );
         panel.add( indentOpenBrackets, "0, 2, 1, 1, W, w, 2" );
-        panel.add( new JLabel( "Indent close brackets:" ), "0, 3, 1, 1, W, w, 2" );
+        panel.add( new JLabel( jEdit.getProperty("beauty.msg.Indent_close_brackets>", "Indent close brackets:") ), "0, 3, 1, 1, W, w, 2" );
         panel.add( indentCloseBrackets, "0, 4, 1, 1, W, w, 2" );
-        panel.add( new JLabel( "Unaligned open brackets:" ), "0, 5, 1, 1, W, w, 2" );
+        panel.add( new JLabel( jEdit.getProperty("beauty.msg.Unaligned_open_brackets>", "Unaligned open brackets:") ), "0, 5, 1, 1, W, w, 2" );
         panel.add( unalignedOpenBrackets, "0, 6, 1, 1, W, w, 2" );
-        panel.add( new JLabel( "Unaligned close brackets:" ), "0, 7, 1, 1, W, w, 2" );
+        panel.add( new JLabel( jEdit.getProperty("beauty.msg.Unaligned_close_brackets>", "Unaligned close brackets:") ), "0, 7, 1, 1, W, w, 2" );
         panel.add( unalignedCloseBrackets, "0, 8, 1, 1, W, w, 2" );
-        panel.add( new JLabel( "Indent next line:" ), "0, 9, 1, 1, W, w, 2" );
+        panel.add( new JLabel( jEdit.getProperty("beauty.msg.Indent_next_line>", "Indent next line:") ), "0, 9, 1, 1, W, w, 2" );
         panel.add( indentNextLine, "0, 10, 1, 1, W, w, 2" );
-        panel.add( new JLabel( "Unindent this line:" ), "0, 11, 1, 1, W, w, 2" );
+        panel.add( new JLabel( jEdit.getProperty("beauty.msg.Unindent_this_line>", "Unindent this line:") ), "0, 11, 1, 1, W, w, 2" );
         panel.add( unindentThisLine, "0, 12, 1, 1, W, w, 2" );
-        panel.add( new JLabel( "Electric keys:" ), "0, 13, 1, 1, W, w, 2" );
+        panel.add( new JLabel( jEdit.getProperty("beauty.msg.Electric_keys>", "Electric keys:") ), "0, 13, 1, 1, W, w, 2" );
         panel.add( electricKeys, "0, 14, 1, 1, W, w, 2" );
         panel.add( lineUpClosingBracket, "0, 15, 1, 1, W, w, 2");
         panel.add( doubleBracketIndent, "0, 16, 1, 1, W, w, 2");
