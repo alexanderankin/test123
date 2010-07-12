@@ -72,7 +72,6 @@ public class BeautyThread implements Runnable {
             boolean softTabs = buffer.getBooleanProperty( "noTabs" );
             int wrapMargin = buffer.getIntegerProperty( "maxLineLength", 1024 );
             String wrapMode = buffer.getStringProperty( "wrap" );
-            beautifier.setBuffer( buffer );
             beautifier.setEditMode( modeName );
             beautifier.setLineSeparator( ls );
             beautifier.setTabWidth( tabWidth );

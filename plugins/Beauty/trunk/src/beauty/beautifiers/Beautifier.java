@@ -10,8 +10,6 @@ import org.gjt.sp.jedit.Buffer;
  * <p>
  * Added a reference to the Buffer itself.  I did this for the DefaultBeautifier
  * since it needs to tokenize the buffer.
- * TODO: verify this is no longer necessary.  The DefaultBeautifier is now using
- * a temporary buffer for tokenization.
  */
 
 public abstract class Beautifier {
@@ -20,9 +18,6 @@ public abstract class Beautifier {
     // be populated with the current line separator for the buffer being
     // beautified
     protected String lineSeparator = System.getProperty("line.separator");
-    
-    // buffer reference
-    protected Buffer buffer = null;
     
     // buffer settings
     protected String editMode = null;
@@ -38,21 +33,11 @@ public abstract class Beautifier {
     public static final String SERVICE_NAME = "beauty.beautifiers.Beautifier";
     
     /**
-
      * Subclasses must have this method.
      * @param text The text to beautify.
      * @return The formatted text.
      */
-
     public abstract String beautify(String text) throws ParserException;
-    
-    public void setBuffer(Buffer buffer) {
-        this.buffer = buffer;   
-    }
-    
-    public Buffer getBuffer() {
-        return buffer;   
-    }
     
     public void setTabWidth(int w) {
         tabWidth = w;   
