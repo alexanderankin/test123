@@ -4,6 +4,7 @@
 
     <property file="../build.properties"/>
     <property file="build.properties"/>
+    <property file="/home/damien/.jedit/build.properties" />
     <property file="JavaSideKick.props"/>
 
     <!-- default location of jedit.jar -->

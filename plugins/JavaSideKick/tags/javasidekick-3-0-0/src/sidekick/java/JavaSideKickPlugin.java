@@ -50,7 +50,7 @@ public class JavaSideKickPlugin extends EditPlugin implements EBComponent {
 				projectviewer.event.ViewerUpdate update = (projectviewer.event.ViewerUpdate) message;
 				if (update.getType() == projectviewer.event.ViewerUpdate.Type.PROJECT_LOADED) {
 					if (update.getNode() instanceof projectviewer.vpt.VPTProject) {
-						projectviewer.vpt.VPTProject proj = (projectviewer.vpt.VPTProject) node;
+						projectviewer.vpt.VPTProject proj = (projectviewer.vpt.VPTProject) update.getNode();
 						Locator.getInstance().reloadProjectJars(proj);
 						Locator.getInstance().reloadProjectClassNames(proj);
 					}
