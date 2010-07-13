@@ -2,7 +2,6 @@
 <project name="ProjectBuilder" default="build" basedir=".">
    <property file="build.properties" />
    <property file="../build.properties" />
-   <property file="/home/damien/.jedit/build.properties" />
    <property name="compiler.source" value="1.6" />
    <property name="compiler.target" value="1.6" />
    

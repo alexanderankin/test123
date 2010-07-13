@@ -15,4 +15,14 @@
 			jEdit.getBooleanProperty("options.projectbuilder.show-toolbar");
 		</IS_SELECTED>
 	</ACTION>
+	<ACTION NAME="projectbuilder-run-beanshell">
+		<CODE>
+			projectviewer.vpt.VPTProject project = projectviewer.ProjectViewer.getViewer(view).getActiveProject(view);
+			if (project != null) {
+				projectbuilder.actions.RunBeanshellDialog.run(view, project);
+			} else {
+				view.getToolkit().beep();
+			}
+		</CODE>
+	</ACTION>
 </ACTIONS>
