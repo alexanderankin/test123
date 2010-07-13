@@ -21,9 +21,11 @@ plugin.projectbuilder.ProjectBuilderPlugin.depend.5=optional plugin AntFarm 1.7
 # }}} Dependencies
 
 # Menu {{{
-plugin.projectbuilder.ProjectBuilderPlugin.menu=projectbuilder-new-project - projectbuilder-toggle-toolbar
+plugin.projectbuilder.ProjectBuilderPlugin.menu=projectbuilder-new-project - projectbuilder-toggle-toolbar \
+	projectbuilder-run-beanshell
 projectbuilder-new-project.label=Create new Project
 projectbuilder-toggle-toolbar.label=Show Toolbar
+projectbuilder-run-beanshell.label=Run Project Beanshell Script
 # }}} Menu
 
 # ProjectViewer settings {{{
@@ -40,6 +42,7 @@ projectbuilder.msg.project-exists.title=Project Exists
 projectbuilder.msg.project-exists.message=There already exists a project with that name.
 projectbuilder.cannot.build.title=Cannot Build Project
 projectbuilder.cannot.build.message={0}
+projectbuilder.msg.run-beanshell=<html><small>Press [Enter] to run, [Escape] to cancel</small></html>
 # }}}
 
 # Labels {{{
