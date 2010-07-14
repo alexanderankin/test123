@@ -242,6 +242,8 @@ public class JavaCompletionFinder {
         if ( qualification.endsWith( ".this" ) )
             return getQualifiedThisCompletion( word );
 
+		// Break it down into tokens to allow for completion off a return type
+		// e.g. sb.append("hello").append("world")
         StringTokenizer tokenizer = new StringTokenizer( qualification , "." );
         String qual = "", old_token = "";
         Class c = null;
@@ -704,16 +706,25 @@ public class JavaCompletionFinder {
             }
         }
 
-        Class c = null;
-        String[] classNames = null;
-        String className = null;
+        String[] classNames = Locator.getInstance().getClassName( type );
+		if (classNames == null) {
+			return null;
+		} else {
+			if (classNames.length > 1) {
+				GUIUtilities.error(editPane.getView(), "options.sidekick.java.ambiguousClass",
+						new String[] { type });
+				return null;
+			}
+			else {
+				return validateClassName( classNames[0], type, filename );
+			}
+		}
         // check jars in project classpath. These are the jars and/or directories
         // specified in the ProjectViewer "Classpath settings" option pane.
-        org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, this, "Looking in project class path");
-        if (PVHelper.isProjectViewerAvailable()) {
+		/*
+        if (PVHelper.getProject( editPane.getView() ) != null) {
             classNames = Locator.getInstance().getProjectClassName(
                         PVHelper.getProject( editPane.getView() ), type);
-            org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, this, "classNames = "+java.util.Arrays.toString(classNames));
             if (classNames != null && classNames.length > 1) {
             	GUIUtilities.error(editPane.getView(), "options.sidekick.java.ambiguousClass",
             		new String[] { type });
@@ -762,7 +773,8 @@ public class JavaCompletionFinder {
 				}
 			}
         }
-        return null;
+		*/
+        //return null;
     }
 
 

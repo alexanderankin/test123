@@ -65,6 +65,11 @@ public final class Locator {
         projectClassNames = getProjectClassNames( project );
     }
 
+	public static Locator newInstance() {
+		cachedSingleton = null;
+		return getInstance();
+	}
+
     public static Locator getInstance() {
         if ( cachedSingleton != null ) {
             Locator cached = cachedSingleton.get();
@@ -278,17 +283,14 @@ public final class Locator {
             return copyOf( projectJars );
         }
 		this.project = proj;
-		boolean isNew = false;
 		if (project.getProperty("java.optionalClasspath") == null) {
-			isNew = true;
 			project.setProperty("java.optionalClasspath", "");
 			project.setProperty("java.optionalBuildpath", "");
 			project.setProperty("java.optionalSourcepath", "");
 			project.setProperty("java.useJavaClasspath", "true");
 		}
 		reloadProjectJars(proj);
-		if (isNew)
-			reloadProjectClassNames( project );
+		if (projectJars == null) projectJars = new File[] {};
 		return copyOf( projectJars );
     }
 
@@ -329,8 +331,10 @@ public final class Locator {
     public void reloadProjectJars( VPTProject proj ) {
 		boolean useJavaClasspath = proj.getProperty("java.useJavaClasspath").equals("true");
         String classpath = PVHelper.getClassPathForProject(proj, useJavaClasspath).toString();
-        if ( classpath == null || classpath.length() == 0 )
+        if ( classpath == null || classpath.length() == 0 ) {
+			projectJars = new File[] {};
             return;
+		}
         String path_sep = File.pathSeparator;
         String[] path_jars = classpath.split( path_sep );
         File[] jars = new File[ path_jars.length ];
@@ -383,8 +387,10 @@ public final class Locator {
     public String[] getClassName(String name) {
     	String[] runtime = getRuntimeClassName(name);
     	String[] classpath = null;
-    	if (!PVHelper.isProjectViewerAvailable()) classpath = getClassPathClassName(name);
-    	else classpath = getProjectClassName(PVHelper.getProject(jEdit.getActiveView()), name);
+    	if (PVHelper.getProject(jEdit.getActiveView()) == null)
+			classpath = getClassPathClassName(name);
+    	else
+			classpath = getProjectClassName(PVHelper.getProject(jEdit.getActiveView()), name);
     	ArrayList<String> all = new ArrayList<String>();
     	
     	for (int i = 0; i<runtime.length; i++) {
