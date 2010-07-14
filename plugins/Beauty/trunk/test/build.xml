@@ -105,7 +105,7 @@
 
     <!-- this selector holds just one test.  This is optional. -->
     <selector id="testcases.current">
-        <filename name="test/OptionPaneTest.java"/>
+        <filename name="beauty/beautifiers/DefaultBeautifierTest.java"/>
     </selector>
 
     <!-- this selector controls which tests to run, set the refid to either
