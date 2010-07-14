@@ -39,6 +39,10 @@ import java.util.*;
 /**
  * Grammar to parse Java version 1.5
  * @author Sreenivasa Viswanadha - Simplified and enhanced for 1.5
+ * @author Dale Anson, some updates for this and that
+ *
+ * TODO: look at whitespace handling in the jsp beautifier and port the ideas
+ * here.  In particular, look at the special token handling and getSpecial(Token).
  */
 public class JavaParser
 {
@@ -1460,6 +1464,9 @@ void MultiplicativeExpression():
 void UnaryExpression():
 {}
 {
+    // TODO: need to check for line separator following "+" and preserve it.
+    // It is fairly common to break long strings into several lines concatenated
+    // with +.  It's not good form, I know, but it is still done.
   ( "+" { add(" + "); } | "-" { add(" - "); } ) UnaryExpression()
 |
   PreIncrementExpression()
