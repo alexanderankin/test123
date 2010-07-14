@@ -68,6 +68,7 @@ public class JavaCompletionFinder {
 
         // get the word just before the caret.  It might be a partial word, that's okay.
         String word = getWordAtCursor( editPane.getBuffer() );
+		System.out.println("word = "+word);
         if ( word == null || word.length() == 0 ) {
             return null;
         }

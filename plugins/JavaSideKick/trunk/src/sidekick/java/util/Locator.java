@@ -277,20 +277,19 @@ public final class Locator {
         if ( projectJars != null && project == proj ) {
             return copyOf( projectJars );
         }
-        this.project = proj;
-
-        String classpath = PVHelper.getClassPathForProject(proj).toString();
-        if ( classpath == null || classpath.length() == 0 ) {
-        	projectJars = null;
-            return null;
-        }
-        String path_sep = File.pathSeparator;
-        String[] path_jars = classpath.split( path_sep );
-        File[] jars = new File[ path_jars.length ];
-        for ( int i = 0; i < path_jars.length; i++ ) {
-            jars[ i ] = new File( path_jars[ i ] );
-        }
-        return jars;
+		this.project = proj;
+		boolean isNew = false;
+		if (project.getProperty("java.optionalClasspath") == null) {
+			isNew = true;
+			project.setProperty("java.optionalClasspath", "");
+			project.setProperty("java.optionalBuildpath", "");
+			project.setProperty("java.optionalSourcepath", "");
+			project.setProperty("java.useJavaClasspath", "true");
+		}
+		reloadProjectJars(proj);
+		if (isNew)
+			reloadProjectClassNames( project );
+		return copyOf( projectJars );
     }
 
     /**
@@ -303,7 +302,6 @@ public final class Locator {
         if ( projectClassNames != null && project == proj ) {
             return projectClassNames;
         }
-
         return reloadProjectClassNames( project );
     }
 
@@ -329,7 +327,8 @@ public final class Locator {
     }
     
     public void reloadProjectJars( VPTProject proj ) {
-        String classpath = PVHelper.getClassPathForProject(proj).toString();
+		boolean useJavaClasspath = proj.getProperty("java.useJavaClasspath").equals("true");
+        String classpath = PVHelper.getClassPathForProject(proj, useJavaClasspath).toString();
         if ( classpath == null || classpath.length() == 0 )
             return;
         String path_sep = File.pathSeparator;
