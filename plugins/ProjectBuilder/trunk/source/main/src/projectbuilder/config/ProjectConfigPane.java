@@ -21,6 +21,7 @@ import java.awt.event.KeyAdapter;
 import javax.swing.text.JTextComponent;
 import javax.swing.*;
 
+import projectbuilder.ProjectBuilderPlugin;
 import projectviewer.vpt.VPTProject;
 import projectviewer.gui.OptionPaneBase;
 //}}}
@@ -30,10 +31,10 @@ public class ProjectConfigPane extends EasyOptionPane {
 	private HashMap<String, JComponent> map;
 	//public ProjectConfigPane() { super(null, null); }
 	public ProjectConfigPane(VPTProject proj, String name) {
-		super("project.config.pane."+name, proj.getProperty("project.config.pane."+name));
-		jEdit.setTemporaryProperty("options.project.config."+name+".label",
+		super("project.options."+name, proj.getProperty("project.options."+name));
+		jEdit.setTemporaryProperty("options.projectbuilder."+name+".label",
 			proj.getProperty("project.config.pane."+name+".label"));
-		StringTokenizer tokenizer = new StringTokenizer(proj.getProperty("project.config.pane."+name));
+		StringTokenizer tokenizer = new StringTokenizer(proj.getProperty("project.options."+name));
 		while (tokenizer.hasMoreTokens()) {
 			String token = tokenizer.nextToken();
 			String[] list = token.split(",");
@@ -58,6 +59,7 @@ public class ProjectConfigPane extends EasyOptionPane {
 			builder.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 			builder.setPath(value);
 			addComponent(label, builder);
+			return builder;
 		}
 		return null;
 	}
@@ -69,17 +71,21 @@ public class ProjectConfigPane extends EasyOptionPane {
 		}
 		else if (comp instanceof PathBuilder) {
 			PathBuilder builder = (PathBuilder) comp;
+			Log.log(Log.DEBUG,this,"Saving: "+builder.getPath());
 			return builder.getPath();
 		}
 		return super.parseComponent(comp, name);
 	}
 	
 	public String getName() {
-		return "project.config."+name;
+		return "projectbuilder."+name;
 	}
 	
 	public void _init() { super._init(); }
-	public void _save() { super._save(); }
+	public void _save() { 
+		super._save();
+		ProjectBuilderPlugin.updateProjectConfig(project);
+	}
 	
 	class ConfigTextArea extends JPanel {
 		private final JTextArea txt;

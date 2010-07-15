@@ -78,13 +78,36 @@ public class ProjectBuilder extends FactoryBuilderSupport {
         return projectDirectory;
     }
 
-    public static cmd(String cmd, String dir) {
+    /**
+     * Run an external command in the system shell
+     * @param cmd the command to run
+     * @param dir the directory to run it in
+     * TODO: see if there's a method in system shell to change directory directly
+     */
+    public static void cmd(String cmd, String dir) {
     	View view = JEDIT.getActiveView()
     	JComponent console = view.getDockableWindowManager().getDockable("console")
     	Shell system = Shell.getShell("System")
     	console.run(system, "cd \""+dir+"\"")
     	system.waitFor(console)
     	console.run(system, cmd)
+    }
+    
+    /**
+     * Sets the contents between two marks in a file
+     * @param file the file to replace contents in
+     * @param markStart the start of the mark
+     * @param markEnd the end of the mark
+     * @param contents the contents to insert
+     */
+    public static void mark(String file, String markStart, String markEnd, String contents) {
+    	def f = new File(file)
+    	def start = f.text.indexOf(markStart)
+    	def end = f.text.indexOf(markEnd)
+    	if (start == -1 || end == -1 || start > end)
+    		return
+    	f.text = f.text.substring(0, start+markStart.length())+contents+
+    		f.text.substring(end)
     }
     
 }

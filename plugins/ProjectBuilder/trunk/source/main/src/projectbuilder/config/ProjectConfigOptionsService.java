@@ -12,7 +12,7 @@ public class ProjectConfigOptionsService implements OptionsService {
 		return null;
 	}
 	public OptionGroup getOptionGroup(VPTProject proj) {
-		if (proj.getProperty("project.config.pane") !=  null && proj.getProperty("project.type") != null) {
+		if (proj.getProperty("project.options") !=  null && proj.getProperty("project.type") != null) {
 			return new ProjectConfigGroup(proj);
 		}
 		return null;

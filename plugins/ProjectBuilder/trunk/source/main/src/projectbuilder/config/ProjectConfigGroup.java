@@ -12,7 +12,7 @@ public class ProjectConfigGroup extends OptionGroup {
 		super(proj.getProperty("project.type"));
 		this.project = proj;
 		this.name = proj.getProperty("project.type");
-		StringTokenizer tokenizer = new StringTokenizer(project.getProperty("project.config.pane"));
+		StringTokenizer tokenizer = new StringTokenizer(project.getProperty("project.options"));
 		while (tokenizer.hasMoreTokens()) {
 			String token = tokenizer.nextToken();
 			addOptionPane(new ProjectConfigPane(project, token));
