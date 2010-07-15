@@ -493,5 +493,48 @@ public class JavaBeautifierTest {
         }
     }    
     
+    @Test
+    public void testBlankLines() {
+        // should be one blank line before each method
+        try {
+            StringBuilder sb = new StringBuilder();
+            sb.append("public class Test {\n");
+            sb.append("\n");
+            sb.append("    @Test\n");
+            sb.append("    public int markerAnnotation(int condition) {\n");
+            sb.append("    }\n");
+            sb.append("\n");
+            sb.append("    @SuppressWarnings(value = \"unchecked\")\n");
+            sb.append("    public void methodName() {\n");
+            sb.append("\n");
+            sb.append("    }\n");
+            sb.append("\n");
+            sb.append("    @SuppressWarnings({\"unchecked\", \"deprecation\"})\n");
+            sb.append("    public void methodName() {\n");
+            sb.append("\n");
+            sb.append("    }\n");
+            sb.append("\n");
+            sb.append("    @Test\n");
+            sb.append("    public int markerAnnotation(int condition) {\n");
+            sb.append("    }\n");
+            sb.append("}\n");
+            sb.append("\n");
+            
+            Beautifier beautifier = new JavaBeautifier();
+            beautifier.setEditMode("java");
+            beautifier.setLineSeparator("\n");
+            beautifier.setTabWidth(4);
+            beautifier.setIndentWidth(4);
+            beautifier.setUseSoftTabs(true);
+            beautifier.setWrapMargin(80);
+            beautifier.setWrapMode("none");
+            String after = beautifier.beautify(sb.toString());
+            assertTrue("returned text was null", after != null);
+            assertTrue("'blank lines' test failed:\nexpected:\n" + sb.toString() + "\nbut was:\n" + after, sb.toString().equals(after));
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
+    }    
     
 }

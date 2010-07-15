@@ -3894,21 +3894,6 @@ public class JavaParser implements JavaParserConstants {
     finally { jj_save(40, xla); }
   }
 
-  private boolean jj_3R_309() {
-    if (jj_scan_token(SLASH)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_301() {
-    if (jj_3R_314()) return true;
-    return false;
-  }
-
-  private boolean jj_3_19() {
-    if (jj_3R_73()) return true;
-    return false;
-  }
-
   private boolean jj_3R_311() {
     if (jj_scan_token(TILDE)) return true;
     return false;
@@ -6606,6 +6591,21 @@ public class JavaParser implements JavaParserConstants {
 
   private boolean jj_3_21() {
     if (jj_3R_75()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_309() {
+    if (jj_scan_token(SLASH)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_301() {
+    if (jj_3R_314()) return true;
+    return false;
+  }
+
+  private boolean jj_3_19() {
+    if (jj_3R_73()) return true;
     return false;
   }
 
