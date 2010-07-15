@@ -105,11 +105,18 @@ public class JavaParserTokenManager implements JavaParserConstants
     }
 
     // trim a single new line from the end of the output buffer
-    static void trimNL() {
-        if(outputBuffer.length() > 0 && outputBuffer.charAt(outputBuffer.length() - 1) == '\u005cn')
+    // return true if a line ender was removed
+    static boolean trimNL() {
+        boolean trimmed = false;
+        if(outputBuffer.length() > 0 && outputBuffer.charAt(outputBuffer.length() - 1) == '\u005cn') {
             outputBuffer.deleteCharAt(outputBuffer.length() - 1);
-        if(outputBuffer.length() > 0 && outputBuffer.charAt(outputBuffer.length() - 1) == '\u005cr')
+            trimmed = true;
+        }
+        if(outputBuffer.length() > 0 && outputBuffer.charAt(outputBuffer.length() - 1) == '\u005cr') {
             outputBuffer.deleteCharAt(outputBuffer.length() - 1);
+            trimmed = true;
+        }
+        return trimmed;
     }
 
     // trim all \n and/or \r from the end of the given string
@@ -2196,6 +2203,7 @@ void SkipLexicalActions(Token matchedToken)
             ++r;
     }
     int cnt = Math.max(n, r);
+    cnt = Math.min(2, cnt);
     if (cnt > 0) {
         for ( ; cnt >= 0; cnt--)
             add(ls);
@@ -2216,6 +2224,7 @@ void SkipLexicalActions(Token matchedToken)
             ++br;
     }
     int bcnt = Math.max(bn, br);
+    bcnt = Math.min(2, bcnt);
     if (bcnt > 0) {
         for ( ; bcnt >= 0; bcnt--)
             add(ls);
