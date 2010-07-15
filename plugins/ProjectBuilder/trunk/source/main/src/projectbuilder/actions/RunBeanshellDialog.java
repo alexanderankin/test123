@@ -25,8 +25,7 @@ import projectviewer.vpt.VPTProject;
 //}}}
 public class RunBeanshellDialog extends JDialog {
 	public static void run(View view, VPTProject proj) {
-		// TODO: Revert this to get rid of .menu
-		if (proj.getProperty("project.type") != null && proj.getProperty("project.bsh.menu") != null) {
+		if (proj.getProperty("project.type") != null && proj.getProperty("project.bsh") != null) {
 			RunBeanshellDialog dialog = new RunBeanshellDialog(view, proj);
 			dialog.setVisible(true);
 		}

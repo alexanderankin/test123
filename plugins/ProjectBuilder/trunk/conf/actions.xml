@@ -2,9 +2,7 @@
 <ACTIONS>
 	<ACTION NAME="projectbuilder-new-project">
 		<CODE>
-			import projectbuilder.ProjectBuilderPlugin;
-			ProjectBuilderPlugin plugin = jEdit.getPlugin("projectbuilder.ProjectBuilderPlugin");
-			plugin.createNewProject(view);
+			projectbuilder.ProjectBuilderPlugin.createNewProject(view);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="projectbuilder-toggle-toolbar">
@@ -20,6 +18,16 @@
 			projectviewer.vpt.VPTProject project = projectviewer.ProjectViewer.getViewer(view).getActiveProject(view);
 			if (project != null) {
 				projectbuilder.actions.RunBeanshellDialog.run(view, project);
+			} else {
+				view.getToolkit().beep();
+			}
+		</CODE>
+	</ACTION>
+	<ACTION NAME="projectbuilder-update-config">
+		<CODE>
+			projectviewer.vpt.VPTProject project = projectviewer.ProjectViewer.getViewer(view).getActiveProject(view);
+			if (project != null) {
+				projectbuilder.ProjectBuilderPlugin.updateProjectConfig(project);
 			} else {
 				view.getToolkit().beep();
 			}

@@ -3,8 +3,10 @@ package projectbuilder.config;
 import org.gjt.sp.jedit.OptionPane;
 import org.gjt.sp.jedit.OptionGroup;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.BeanShell;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.gui.RolloverButton;
+import org.gjt.sp.jedit.bsh.NameSpace;
 import org.gjt.sp.util.Log;
 
 import common.gui.pathbuilder.PathBuilder;
@@ -32,14 +34,16 @@ public class ProjectConfigPane extends EasyOptionPane {
 	//public ProjectConfigPane() { super(null, null); }
 	public ProjectConfigPane(VPTProject proj, String name) {
 		super("project.options."+name, proj.getProperty("project.options."+name));
-		jEdit.setTemporaryProperty("options.projectbuilder."+name+".label",
-			proj.getProperty("project.config.pane."+name+".label"));
+		String label = proj.getProperty("project.options."+name+".label");
+		if (label == null || label.length() == 0)
+			label = "PROPERTY NOT SET: project.options."+name+".label";
+		jEdit.setTemporaryProperty("options.projectbuilder."+name+".label", label);
 		StringTokenizer tokenizer = new StringTokenizer(proj.getProperty("project.options."+name));
 		while (tokenizer.hasMoreTokens()) {
 			String token = tokenizer.nextToken();
 			String[] list = token.split(",");
 			try {
-				jEdit.setTemporaryProperty(list[1], proj.getProperty(list[1]));
+				jEdit.setTemporaryProperty(list[1], proj.getProperty(list[1])+":");
 			} catch (Exception e) {}
 		}
 		this.project = proj;
@@ -48,8 +52,23 @@ public class ProjectConfigPane extends EasyOptionPane {
 		setPropertyStore(proj.getProperties());
 	}
 	protected Object createComponent(String type, String label, String value, String config) {
-		Log.log(Log.DEBUG,this,"Creating "+type);
-		if (type.equals("textArea")) {
+		if (value == null) value = "";
+		if (type.equals("custom")) {
+			try {
+				NameSpace ns = new NameSpace(BeanShell.getNameSpace(), "ProjectBuilder custom component (create)");
+				ns.setVariable("project", project);
+				ns.setVariable("value", value);
+				String code = project.getProperty(config+".code");
+				JComponent comp = (JComponent) BeanShell.eval(jEdit.getActiveView(), ns, code);
+				addComponent(label, comp);
+				return comp;
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+		else if (type.equals("textArea")) {
 			ConfigTextArea c = new ConfigTextArea(label, value, config);
 			addComponent(label, c);
 			return c;
@@ -64,7 +83,20 @@ public class ProjectConfigPane extends EasyOptionPane {
 		return null;
 	}
 	protected String parseComponent(Object comp, String name) {
-		Log.log(Log.DEBUG,this,"Parsing "+comp+", name = "+name);
+		String parse = project.getProperty(name+".parse");
+		if (parse != null) {
+			try {
+				NameSpace ns = new NameSpace(BeanShell.getNameSpace(), "ProjectBuilder custom component (parse)");
+				ns.setVariable("project", project);
+				ns.setVariable("component", comp);
+				String value = (String) BeanShell.eval(jEdit.getActiveView(), ns, parse);
+				return value;
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				return "";
+			}
+		}
 		if (comp instanceof ConfigTextArea) {
 			ConfigTextArea textArea = (ConfigTextArea) comp;
 			return textArea.getText();
