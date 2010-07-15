@@ -348,6 +348,7 @@ public class JavaBeautifierTest {
             fail(e.getMessage());
         }
     }
+    
     @Test
     public void testTryCatch() {
         // test the 'do/while' constructs
@@ -386,4 +387,111 @@ public class JavaBeautifierTest {
             fail(e.getMessage());
         }
     }
+    
+    @Test
+    public void testKeywordAndMethodPadding() {
+        // keywords followed by a ( should have a space separating the keyword
+        // and (.  Method names should not have a space between the name and
+        // the (.
+        try {
+            StringBuilder before = new StringBuilder();
+            before.append("public class Test {\n");
+            before.append("    public int noSpaceAfter (int condition) {\n");
+            before.append("        // space after for, while, and return\n");
+            before.append("        for(int i = 0; i < 10; i++) {\n");
+            before.append("            \n");
+            before.append("        }\n");
+            before.append("        while(true);\n");
+            before.append("        return(i > 10 ? 1 : -1);\n");
+            before.append("    }\n");
+            before.append("}\n");
+            
+            StringBuilder answer = new StringBuilder();
+            answer.append("public class Test {\n");
+            answer.append("    public int noSpaceAfter(int condition) {\n");
+            answer.append("        // space after for, while, and return\n");
+            answer.append("        for (int i = 0; i < 10; i++) {\n");
+            answer.append("\n");
+            answer.append("        }\n");
+            answer.append("        while (true);\n");
+            answer.append("        return (i > 10 ? 1 : - 1);\n");
+            answer.append("    }\n");
+            answer.append("}\n");
+            
+            Beautifier beautifier = new JavaBeautifier();
+            beautifier.setEditMode("java");
+            beautifier.setLineSeparator("\n");
+            beautifier.setTabWidth(4);
+            beautifier.setIndentWidth(4);
+            beautifier.setUseSoftTabs(true);
+            beautifier.setWrapMargin(80);
+            beautifier.setWrapMode("none");
+            String after = beautifier.beautify(before.toString());
+            assertTrue("returned text was null", after != null);
+            assertTrue("'keyword and method padding' test failed:\nexpected:\n" + answer.toString() + "\nbut was:\n" + after, answer.toString().equals(after));
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
+    }    
+    
+    @Test
+    public void testAnnotations() {
+        // test the various forms of annotations, including annotation type declarations
+        try {
+            StringBuilder sb = new StringBuilder();
+            sb.append("public class Test {\n");
+            sb.append("\n");
+            sb.append("    @Test\n");
+            sb.append("    public int markerAnnotation(int condition) {\n");
+            sb.append("    }\n");
+            sb.append("\n");
+            sb.append("    @SuppressWarnings(value = \"unchecked\")\n");
+            sb.append("    public void methodName() {\n");
+            sb.append("\n");
+            sb.append("    }\n");
+            sb.append("\n");
+            sb.append("    @SuppressWarnings({\"unchecked\", \"deprecation\"})\n");
+            sb.append("    public void methodName() {\n");
+            sb.append("\n");
+            sb.append("    }\n");
+            sb.append("\n");
+            sb.append("    @Test\n");
+            sb.append("    public int markerAnnotation(int condition) {\n");
+            sb.append("    }\n");
+            sb.append("\n");
+            sb.append("}\n");
+            sb.append("\n");
+            sb.append("public @interface RequestForEnhancement {\n");
+            sb.append("    int id();\n");
+            sb.append("    String synopsis();\n");
+            sb.append("    String engineer() default \"[unassigned]\";\n");
+            sb.append("    String date() default \"[unimplemented]\";\n");
+            sb.append("}\n");
+            sb.append("\n");
+            sb.append("@interface RequestForEnhancement {\n");
+            sb.append("    int id();\n");
+            sb.append("    String synopsis();\n");
+            sb.append("    String engineer() default \"[unassigned]\";\n");
+            sb.append("    String date() default \"[unimplemented]\";\n");
+            sb.append("}\n");
+            
+            Beautifier beautifier = new JavaBeautifier();
+            beautifier.setEditMode("java");
+            beautifier.setLineSeparator("\n");
+            beautifier.setTabWidth(4);
+            beautifier.setIndentWidth(4);
+            beautifier.setUseSoftTabs(true);
+            beautifier.setWrapMargin(80);
+            beautifier.setWrapMode("none");
+            String after = beautifier.beautify(sb.toString());
+            assertTrue("returned text was null", after != null);
+            assertTrue("'annotations' test failed:\nexpected:\n" + sb.toString() + "\nbut was:\n" + after, sb.toString().equals(after));
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
+    }    
+    
+    
 }

@@ -3312,15 +3312,12 @@ public class JavaParser implements JavaParserConstants {
   final public void Annotation() throws ParseException {
     if (jj_2_38(2147483647)) {
       NormalAnnotation();
-                       writeln();
     } else if (jj_2_39(2147483647)) {
       SingleMemberAnnotation();
-                             writeln();
     } else {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case AT:
         MarkerAnnotation();
-                       writeln();
         break;
       default:
         jj_la1[120] = jj_gen;
@@ -3345,13 +3342,14 @@ public class JavaParser implements JavaParserConstants {
       ;
     }
     jj_consume_token(RPAREN);
-                                                                           add(")");
+                                                                           trimWhitespace(); trim(); add(")"); write();
   }
 
   final public void MarkerAnnotation() throws ParseException {
     jj_consume_token(AT);
-          add("@");
+          token_source.trimNL(); add("@");
     Name();
+                                                       writeln();
   }
 
   final public void SingleMemberAnnotation() throws ParseException {
@@ -3362,7 +3360,7 @@ public class JavaParser implements JavaParserConstants {
                                  add("(");
     MemberValue();
     jj_consume_token(RPAREN);
-                                                                 add(")");
+                                                                 add(")"); write();
   }
 
   final public void MemberValuePairs() throws ParseException {
@@ -3387,7 +3385,7 @@ public class JavaParser implements JavaParserConstants {
     t = jj_consume_token(IDENTIFIER);
                      add(t);
     jj_consume_token(ASSIGN);
-                                     add("=");
+                                     add(" = ");
     MemberValue();
   }
 
@@ -3460,11 +3458,12 @@ public class JavaParser implements JavaParserConstants {
       ;
     }
     jj_consume_token(RBRACE);
-                                                                                                                    add("}"); write();
+                                                                                                                    add("}");
   }
 
 /* Annotation Types. */
   final public void AnnotationTypeDeclaration(int modifiers) throws ParseException {
+    add(ModifierSet.toString(modifiers) + " ");
     jj_consume_token(AT);
     jj_consume_token(INTERFACE);
                     add("@interface");
@@ -3475,7 +3474,7 @@ public class JavaParser implements JavaParserConstants {
 
   final public void AnnotationTypeBody() throws ParseException {
     jj_consume_token(LBRACE);
-          add("{");
+          add("{"); write(); ++token_source.level;
     label_46:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -3513,7 +3512,7 @@ public class JavaParser implements JavaParserConstants {
       AnnotationTypeMemberDeclaration();
     }
     jj_consume_token(RBRACE);
-                                                                   add("}"); write();
+                                                                                                  --token_source.level; add("}"); write();
   }
 
   final public void AnnotationTypeMemberDeclaration() throws ParseException {
@@ -4386,16 +4385,16 @@ public class JavaParser implements JavaParserConstants {
     return false;
   }
 
-  private boolean jj_3_40() {
-    if (jj_scan_token(COMMA)) return true;
-    if (jj_3R_84()) return true;
-    return false;
-  }
-
   private boolean jj_3_41() {
     if (jj_3R_61()) return true;
     if (jj_scan_token(IDENTIFIER)) return true;
     if (jj_scan_token(LPAREN)) return true;
+    return false;
+  }
+
+  private boolean jj_3_40() {
+    if (jj_scan_token(COMMA)) return true;
+    if (jj_3R_84()) return true;
     return false;
   }
 

@@ -373,7 +373,7 @@ PARSER_END(JspParser)
 <AfterTagState> TOKEN :
 {
 	<EL_EXPRESSION: "${" (<QUOTED_STRING> | <TEXT_IN_EL>)* "}" >
-|	<UNPARSED_TEXT: (<NO_LT_OR_DOLLAR>|<DOLLAR><NO_OPENBRACE_OR_LT>|<EL_ESCAPE>)+ >
+	|	<UNPARSED_TEXT: (<NO_LT_OR_DOLLAR>|<DOLLAR>(~["{"])|<EL_ESCAPE>)+ >
 }
 
 <JspDirectiveState> TOKEN :

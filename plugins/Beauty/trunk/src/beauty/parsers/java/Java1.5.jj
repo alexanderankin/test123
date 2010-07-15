@@ -2037,30 +2037,30 @@ void Annotation():
 {}
 {
    LOOKAHEAD( "@" Name() "(" ( <IDENTIFIER> "=" | ")" ))
-   NormalAnnotation() {writeln();}
+   NormalAnnotation()
  |
    LOOKAHEAD( "@" Name() "(" )
-   SingleMemberAnnotation() {writeln();}
+   SingleMemberAnnotation()
  |
-   MarkerAnnotation() {writeln();}
+   MarkerAnnotation() 
 }
 
 void NormalAnnotation():
 {}
 {
-   "@" { add("@"); } Name() "(" { add("("); } [ MemberValuePairs() ] ")" { add(")"); }
+   "@" { add("@"); } Name() "(" { add("("); } [ MemberValuePairs() ] ")" { trimWhitespace(); trim(); add(")"); write();}
 }
 
 void MarkerAnnotation():
 {}
 {
-    "@" { add("@"); } Name() 
+    "@" { token_source.trimNL(); add("@"); } Name() {  writeln(); }
 }
 
 void SingleMemberAnnotation():
 {}
 {
-  "@" { add("@"); } Name() "(" { add("("); } MemberValue() ")" { add(")"); }
+  "@" { add("@"); } Name() "(" { add("("); } MemberValue() ")" { add(")"); write(); }
 }
 
 void MemberValuePairs():
@@ -2072,7 +2072,7 @@ void MemberValuePairs():
 void MemberValuePair():
 {}
 {
-    t=<IDENTIFIER> { add(t); } "=" { add("="); } MemberValue()
+    t=<IDENTIFIER> { add(t); } "=" { add(" = "); } MemberValue()
 }
 
 void MemberValue():
@@ -2088,14 +2088,16 @@ void MemberValue():
 void  MemberValueArrayInitializer():
 {}
 {
-    "{" { add("{"); } MemberValue() ( LOOKAHEAD(2) "," { add(", "); } MemberValue() )* [ "," { add(", "); } ] "}" { add("}"); write(); }
+    "{" { add("{"); } MemberValue() ( LOOKAHEAD(2) "," { add(", "); } MemberValue() )* [ "," { add(", "); } ] "}" { add("}");  }
 }
 
 
 /* Annotation Types. */
 
 void AnnotationTypeDeclaration(int modifiers):
-{}
+{
+    add(ModifierSet.toString(modifiers) + " ");
+}
 {
   "@" "interface" { add("@interface"); } t=<IDENTIFIER> { add(t); } AnnotationTypeBody()
 }
@@ -2103,7 +2105,7 @@ void AnnotationTypeDeclaration(int modifiers):
 void AnnotationTypeBody():
 {}
 {
-    "{" { add("{"); } ( AnnotationTypeMemberDeclaration() )* "}" { add("}"); write(); }
+    "{" { add("{"); write(); ++token_source.level; } ( AnnotationTypeMemberDeclaration() )* "}" { --token_source.level; add("}"); write(); }
 }
 
 void AnnotationTypeMemberDeclaration():
