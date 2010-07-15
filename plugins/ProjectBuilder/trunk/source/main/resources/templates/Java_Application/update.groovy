@@ -18,6 +18,8 @@ def new_files = false
 PB.build(name, workspace) {
 	d("src") {
 		def mainclass = project.getProperty("project.config.mainclass").trim()
+		def tag = "<attribute name=\"Main-Class\" value=\"${mainclass}\" />"
+		PB.mark("${workspace}/${name}/build.xml", "<!-- mark:mainclass -->", "<!-- /mark:mainclass -->", tag)
 		if (mainclass.length() > 0) {
 			def classToPath = mainclass.replace('.', File.separator)
 			def testFile = new File("${workspace}/${name}/src", "${classToPath}.java")
@@ -37,8 +39,7 @@ PB.build(name, workspace) {
 					f("${classToPath}.java", template:"${templateDir}/JavaMainClass.template", templateData:templateData)
 					jEdit.openFile(view, testFile.getPath())
 					new_files = true
-					def tag = "<attribute name=\"Main-Class\" value=\"${mainclass}\" />"
-					def buildfile = new File("${workspace}/${name}/build.xml")
+					/*
 					def start = buildfile.text.indexOf("<!-- mark:mainclass -->")
 					if (start == -1) {
 						Log.log(Log.ERROR, ProjectBuilderPlugin.class, "Mark 'mainclass' not found in buildfile. Main-Class attribute will not be set.")
@@ -47,13 +48,41 @@ PB.build(name, workspace) {
 						buildfile.text = buildfile.text.substring(0, start+"<!-- mark:mainclass -->".length())+tag+
 							buildfile.text.substring(end)
 					}
+					*/
 				}
 			}
 		}
 	}
 }
 
-// TODO: Add dependencies and manifest to build.xml
+def manifest = project.getProperty("project.config.manifest")
+def manifest_tags = ""
+if (manifest != null) {
+	def tokenizer = new StringTokenizer(manifest, "\n")
+	while (tokenizer.hasMoreTokens()) {
+		def token = tokenizer.nextToken()
+		def colon = token.indexOf(":")
+		if (colon == -1)
+			continue
+		def name = token.substring(0, colon).trim()
+		def value = token.substring(colon+1).trim()
+		manifest_tags += "\n\t\t\t\t<attribute name=\"${name}\" value=\"${value}\" />"
+	}
+}
+manifest_tags += "\n\t\t\t\t"
+PB.mark("${workspace}/${name}/build.xml", "<!-- mark:manifest -->", "<!-- /mark:manifest -->", manifest_tags)
+
+def classpath = project.getProperty("project.config.classpath")
+def classpath_tags = ""
+if (classpath != null) {
+	def tokenizer = new StringTokenizer(classpath, File.pathSeparator)
+	while (tokenizer.hasMoreTokens()) {
+		def token = tokenizer.nextToken()
+		classpath_tags += "\n\t\t<pathelement path=\"${token}\" />"
+	}
+}
+classpath_tags += "\n\t\t"
+PB.mark("${workspace}/${name}/build.xml", "<!-- mark:dependencies -->", "<!-- /mark:dependencies -->", classpath_tags)
 
 if (new_files) {
 	new RootImporter(project, viewer, true).doImport()

@@ -1,4 +1,7 @@
-project.bsh.menu=build package - compile clean - userdocs javadoc
+# Property file for the jEdit Plugin template
+
+#{{{ Beanshell actions
+project.bsh=build package - compile clean - userdocs javadoc
 project.bsh.build.label=Build
 project.bsh.build.script=bsh/build.bsh
 project.bsh.package.label=Package
@@ -11,8 +14,10 @@ project.bsh.userdocs.label=Userdocs
 project.bsh.userdocs.script=bsh/userdocs.bsh
 project.bsh.javadoc.label=Javadoc
 project.bsh.javadoc.script=bsh/javadoc.bsh
-
-project.config.pane=build-config
-project.config.pane.build-config.label=Configuration
-project.config.pane.build-config=dir,project.config.build-support.label,project.config.build-support
+#}}}
+#{{{ Option pane
+project.options=build-config
+project.options.build-config.label=Configuration
+project.options.build-config=dir,project.config.build-support.label,project.config.build-support
 project.config.build-support.label=Build Support
+#}}}

@@ -252,6 +252,12 @@ while (state > 0) {
 		println("     script: " + chosen.getScriptPath())
 		def script = chosen.getScriptPath()
 		boolean success = gse.run(script, binding)
+		if (success) {
+			state = 4
+		} else {
+			state = 2
+			println("Script failed.")
+		}
 	}
 	else if (state == 4) {
 		// Import the project into project viewer

@@ -152,7 +152,7 @@ public class ProjectBuilderPlugin extends EditPlugin implements EBComponent {
    
    public static ArrayList<ArrayList<String>> getBeanshellScripts(VPTProject project) {
 		def list = new ArrayList<String[]>()
-		def scripts = project.getProperty("project.bsh.menu")
+		def scripts = project.getProperty("project.bsh")
 		if (scripts == null) {
 			list.add(["No scripts found", null])
 			return list
