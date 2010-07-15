@@ -388,6 +388,8 @@ TOKEN_MGR_DECLS :
                 if (s.length() >= ls.length()) {
                     s = s.substring(0, s.length() - ls.length());
                 }
+                s = s.replaceAll(" ", "");
+                s = s.replaceAll("\t", "");
                 outputBuffer.append(s);
                 a.clear();
                 return;
@@ -562,7 +564,7 @@ TOKEN_MGR_DECLS :
     }
     
     static void writeJavadocComment(String s) {
-        String[] lines = s.split("\r\n|\r|\n");
+        String[] lines = s.split(ls);
         
         // indent the first line.  It won't have any leading whitespace, but
         // may have trailing whitespace
@@ -570,12 +572,13 @@ TOKEN_MGR_DECLS :
         for (int j = 0; j < level; j++) {
             line = "    " + line;       // 4 spaces
         }
-        outputBuffer.append(line).append(ls);
+        outputBuffer.append(line);
         
         // handle the remaining lines, put stars in front of them.
-        // TODO: this needs work.  Need to preserve whitepsace after
+        // TODO: this needs work.  Need to preserve whitespace after
         // the star.
         for (int i = 1; i < lines.length; i++) {
+            outputBuffer.append(ls);
             line = lines[i].trim();
             
             // apply padding. All javadoc lines start with a *.
@@ -592,9 +595,6 @@ TOKEN_MGR_DECLS :
             }
             
             outputBuffer.append(line);
-            if (i < lines.length - 1) {
-                outputBuffer.append(ls);
-            }
         }
     }
 
@@ -602,7 +602,7 @@ TOKEN_MGR_DECLS :
     // used to "comment out" a block of code, so I don't want to modify the
     // existing indenting within the block.
     static void writeBlockComment(String s) {
-        String[] lines = s.split("\r\n|\r|\n");
+        String[] lines = s.split(ls);
 
         // indent the first line.  It won't have any leading whitespace, but
         // may have trailing whitespace
@@ -610,21 +610,25 @@ TOKEN_MGR_DECLS :
         for (int j = 0; j < level; j++) {
             line = "    " + line;       // 4 spaces
         }
-        outputBuffer.append(line).append(ls);
+        outputBuffer.append(line);
         
         // output body of comment without change
         for (int i = 1; i < lines.length - 1; i++) {
+            outputBuffer.append(ls);
             line = lines[i];    // trimStart(lines[i], level * 4);
-            outputBuffer.append(line).append(ls);
+            outputBuffer.append(line);
         }
         
         // output the last line.  It will probably have leading whitespace, so
         // trim it then indent it the same as the first line.
-        line = lines[lines.length - 1].trim();
-        for (int j = 0; j < level; j++) {
-            line = "    " + line;       // 4 spaces
+        if (lines.length > 1) {
+            outputBuffer.append(ls);
+            line = lines[lines.length - 1].trim();
+            for (int j = 0; j < level; j++) {
+                line = "    " + line;       // 4 spaces
+            }
+            outputBuffer.append(line);
         }
-        outputBuffer.append(line);
     }
     
 
@@ -672,6 +676,26 @@ SPECIAL_TOKEN :
     int cnt = Math.max(n, r);
     if (cnt > 0) {
         for ( ; cnt >= 0; cnt--)
+            add(ls);
+        write();
+    }
+  }
+| <BLANK_LINES: (" " | "\t")* ("\n"|"\r"|"\r\n")+ >
+  {
+    String b = matchedToken.image;
+    b = b.replaceAll(" ", "");
+    b = b.replaceAll("\t", "");
+    int bn = 0;
+    int br = 0;
+    for (int i = 0; i < b.length(); i++) {
+        if (b.charAt(i) == 'n')
+            ++bn;
+        else
+            ++br;
+    }
+    int bcnt = Math.max(bn, br);
+    if (bcnt > 0) {
+        for ( ; bcnt >= 0; bcnt--)
             add(ls);
         write();
     }
@@ -1732,7 +1756,12 @@ void LocalVariableDeclaration():
 void EmptyStatement():
 {}
 {
-  ";" { add(token_source.ls); add(token_source.ls);  write(); add(";"); write(); }
+  ";" 
+  {
+      // add(token_source.ls); add(token_source.ls);  write(); add(";"); write();
+      add(";");
+      write();
+  }
 }
 
 void StatementExpression():
@@ -1788,13 +1817,14 @@ void IfStatement():
         add("if (");
     }
     Expression() ")"
-    { add(") ");}
-
-
-    {
+    { 
+        add(") ");
+        
         // Sun's coding standard says there should always be a block following
         // an "if" statement, so add the brackets if they are missing
         if (!getToken(1).image.equals("{")) {
+            trimWhitespace(); 
+            trim(); 
             add("{");
             writeln();
             ++token_source.level;
@@ -1807,7 +1837,7 @@ void IfStatement():
             writeln();
             --token_source.level;
             add("}");
-            writeln();
+            write();
         }
         no_block = false;
     }
@@ -1816,13 +1846,16 @@ void IfStatement():
         LOOKAHEAD(1) "else"
         { trimWhitespace(); trim(); add(" else "); }
         {
-        // Sun's coding standard says there should always be a block following
-        // an "if" statement, so add the brackets if they are missing
+            if (getToken(1).image.equals("if")) {
+                return;   
+            }
+            // Sun's coding standard says there should always be a block following
+            // an "else" statement, so add the brackets if they are missing
             if (!getToken(1).image.equals("{")) {
                 // remove any excess whitespace between the 'else' and the '{'
                 trimWhitespace();
                 trim();
-                add("{");
+                add(" {");
                 writeln();
                 ++token_source.level;
                 no_block = true;
@@ -1834,7 +1867,7 @@ void IfStatement():
                 writeln();
                 --token_source.level;
                 add("}");
-                writeln();
+                write();
             }
         }
     ]
