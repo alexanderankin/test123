@@ -649,8 +649,9 @@ public class JspParser implements JspParserConstants {
         String tagName;
         boolean inPreTag = false;
     t = jj_consume_token(TAG_START);
-            // if the previous token is unparsed text, there will be an extra ls inserted...
             String s = getSpecial(t);   // s will have only line separators or be empty
+            // the getText check handles the case of the first line in the file, without
+            // the check, a blank line will be inserted.
             if (!s.contains(ls) && getText().length() > 0) {
                 trimNL();
                 writeln();
@@ -745,12 +746,6 @@ public class JspParser implements JspParserConstants {
       }
       t = jj_consume_token(ENDTAG_START);
                        writePre(getSpecial(t));
-                       /*
-   		       trimNL(); 
-   		       if (!inPreTag) {
-   		           writeln();
-   		       } 
-   		       */
                        --token_source.level;
                        add(t);
       endTagName = jj_consume_token(TAG_NAME);
@@ -1249,19 +1244,19 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
+  private boolean jj_3R_26() {
+    if (jj_scan_token(JSP_COMMENT_START)) return true;
+    if (jj_scan_token(JSP_COMMENT_CONTENT)) return true;
+    if (jj_scan_token(JSP_COMMENT_END)) return true;
+    return false;
+  }
+
   private boolean jj_3R_32() {
     if (jj_scan_token(PUBLIC)) return true;
     if (jj_scan_token(WHITESPACES)) return true;
     if (jj_scan_token(QUOTED_LITERAL)) return true;
     if (jj_scan_token(WHITESPACES)) return true;
     if (jj_scan_token(QUOTED_LITERAL)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_26() {
-    if (jj_scan_token(JSP_COMMENT_START)) return true;
-    if (jj_scan_token(JSP_COMMENT_CONTENT)) return true;
-    if (jj_scan_token(JSP_COMMENT_END)) return true;
     return false;
   }
 
@@ -1342,6 +1337,11 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
+  private boolean jj_3R_23() {
+    if (jj_scan_token(WHITESPACES)) return true;
+    return false;
+  }
+
   private boolean jj_3R_36() {
     if (jj_scan_token(ENDING_DOUBLE_QUOTE)) return true;
     return false;
@@ -1354,11 +1354,6 @@ public class JspParser implements JspParserConstants {
     jj_scanpos = xsp;
     if (jj_3R_44()) return true;
     }
-    return false;
-  }
-
-  private boolean jj_3R_23() {
-    if (jj_scan_token(WHITESPACES)) return true;
     return false;
   }
 
@@ -1380,6 +1375,11 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
+  private boolean jj_3R_22() {
+    if (jj_3R_26()) return true;
+    return false;
+  }
+
   private boolean jj_3R_41() {
     if (jj_3R_45()) return true;
     return false;
@@ -1398,7 +1398,7 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
-  private boolean jj_3R_22() {
+  private boolean jj_3R_19() {
     if (jj_3R_26()) return true;
     return false;
   }
@@ -1428,28 +1428,8 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
-  private boolean jj_3R_19() {
-    if (jj_3R_26()) return true;
-    return false;
-  }
-
   private boolean jj_3R_20() {
     if (jj_3R_27()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_33() {
-    if (jj_scan_token(DOUBLE_QUOTE)) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_35()) { jj_scanpos = xsp; break; }
-    }
-    xsp = jj_scanpos;
-    if (jj_3R_36()) {
-    jj_scanpos = xsp;
-    if (jj_3R_37()) return true;
-    }
     return false;
   }
 
@@ -1468,17 +1448,6 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
-  private boolean jj_3R_15() {
-    if (jj_scan_token(DECL_START)) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_20()) { jj_scanpos = xsp; break; }
-    }
-    if (jj_scan_token(DECL_END)) return true;
-    return false;
-  }
-
   private boolean jj_3R_51() {
     if (jj_scan_token(EL_EXPRESSION_IN_ATTRIBUTE)) return true;
     return false;
@@ -1491,6 +1460,32 @@ public class JspParser implements JspParserConstants {
       if (jj_3R_16()) { jj_scanpos = xsp; break; }
     }
     if (jj_3R_17()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_33() {
+    if (jj_scan_token(DOUBLE_QUOTE)) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_35()) { jj_scanpos = xsp; break; }
+    }
+    xsp = jj_scanpos;
+    if (jj_3R_36()) {
+    jj_scanpos = xsp;
+    if (jj_3R_37()) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3R_15() {
+    if (jj_scan_token(DECL_START)) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_20()) { jj_scanpos = xsp; break; }
+    }
+    if (jj_scan_token(DECL_END)) return true;
     return false;
   }
 
@@ -1509,16 +1504,6 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
-  private boolean jj_3R_30() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_33()) {
-    jj_scanpos = xsp;
-    if (jj_3R_34()) return true;
-    }
-    return false;
-  }
-
   private boolean jj_3R_52() {
     if (jj_scan_token(VALUE_BINDING_IN_ATTRIBUTE)) return true;
     return false;
@@ -1531,6 +1516,16 @@ public class JspParser implements JspParserConstants {
       if (jj_3R_14()) { jj_scanpos = xsp; break; }
     }
     if (jj_3R_15()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_30() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_33()) {
+    jj_scanpos = xsp;
+    if (jj_3R_34()) return true;
+    }
     return false;
   }
 

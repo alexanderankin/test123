@@ -181,7 +181,8 @@
                   <span>
                     some text
                   </span>
-                  <strong> <c:out value="${title}"/>
+                  <strong>
+                    <c:out value="${title}"/>
                   </strong>
                 </td>
                 <td width="100%">

@@ -888,8 +888,9 @@ void Element() :
 {
     t=<TAG_START>  
         { 
-            // if the previous token is unparsed text, there will be an extra ls inserted...
             String s = getSpecial(t);   // s will have only line separators or be empty
+            // the getText check handles the case of the first line in the file, without
+            // the check, a blank line will be inserted.
             if (!s.contains(ls) && getText().length() > 0) {
                 trimNL();
                 writeln();   
@@ -937,12 +938,6 @@ void Element() :
    		t=<ENDTAG_START>  
    		   { 
    		       writePre(getSpecial(t));
-   		       /*
-   		       trimNL(); 
-   		       if (!inPreTag) {
-   		           writeln();
-   		       } 
-   		       */
    		       --token_source.level; 
    		       add(t); 
    		   } 
