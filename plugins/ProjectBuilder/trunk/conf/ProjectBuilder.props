@@ -22,10 +22,11 @@ plugin.projectbuilder.ProjectBuilderPlugin.depend.5=optional plugin AntFarm 1.7
 
 # Menu {{{
 plugin.projectbuilder.ProjectBuilderPlugin.menu=projectbuilder-new-project - projectbuilder-toggle-toolbar \
-	projectbuilder-run-beanshell
+	projectbuilder-run-beanshell projectbuilder-update-config
 projectbuilder-new-project.label=Create new Project
 projectbuilder-toggle-toolbar.label=Show Toolbar
 projectbuilder-run-beanshell.label=Run Project Beanshell Script
+projectbuilder-update-config.label=Update Project Configuration
 # }}} Menu
 
 # ProjectViewer settings {{{

@@ -15,9 +15,61 @@ project.bsh.userdocs.script=bsh/userdocs.bsh
 project.bsh.javadoc.label=Javadoc
 project.bsh.javadoc.script=bsh/javadoc.bsh
 #}}}
-#{{{ Option pane
-project.options=build-config
-project.options.build-config.label=Configuration
-project.options.build-config=dir,project.config.build-support.label,project.config.build-support
+#{{{ Option panes
+project.options=build-properties build-config plugins
+project.options.build-properties.label=Build Properties File
+project.options.build-config.label=Manual Configuration
+project.options.plugins.label=Plugin Dependencies
+#{{{ Build properties pane
+project.options.build-properties=label,project.config.build-properties.desc \
+	file,project.config.build-properties.label,project.config.build-properties
+
+project.config.build-properties.label=Import
+project.config.build-properties.desc=This build.properties file will override any manual configuration
+#}}}
+#{{{ Manual configuration pane
+project.options.build-config=dir,project.config.build-support.label,project.config.build-support \
+	dir,project.config.install-dir.label,project.config.install-dir \
+	dir,project.config.jedit-install-dir.label,project.config.jedit-install-dir
+
 project.config.build-support.label=Build Support
+project.config.install-dir.label=Settings Directory
+project.config.jedit-install-dir.label=jEdit Installation Directory
+#}}}
+#{{{ Plugin dependencies pane
+project.options.plugins=custom,null,project.config.plugins,plugin-dependencies
+
+project.config.plugins.label=Specify plugin dependencies here
+project.config.plugins.parse=dependStr = ""; \
+	dependList = component.getValues(common.gui.SelectionListPanel.RIGHT); \
+	for (int i = 0; i<dependList.length; i++) { \
+		dependStr += dependList[i]; \
+		if (i < dependList.length-1) dependStr += " "; \
+	} \
+	return dependStr;
+plugin-dependencies.code=import common.gui.SelectionListPanel; \
+	SelectionListPanel list = new SelectionListPanel(); \
+	plugins = jEdit.getPlugins(); \
+	installed = new LinkedList(); \
+	for (int i = 0; i<plugins.length; i++) installed.add(plugins[i].getPluginJAR().getFile().getName()); \
+	depends = new LinkedList(); \
+	dependTokenizer = new StringTokenizer(value); \
+	while (dependTokenizer.hasMoreTokens()) { \
+		token = dependTokenizer.nextToken(); \
+		depends.add(token); \
+		for (int i = 0; i<installed.size(); i++) { \
+			if (token.equals(installed.get(i))) { \
+				installed.remove(i); \
+				break; \
+			} \
+		} \
+	} \
+	list.setListLabel(SelectionListPanel.LEFT, "Installed Plugins"); \
+	list.setListLabel(SelectionListPanel.RIGHT, "Dependencies"); \
+	Collections.sort(installed); \
+	Collections.sort(depends); \
+	list.setListContents(SelectionListPanel.LEFT, installed.toArray()); \
+	list.setListContents(SelectionListPanel.RIGHT, depends.toArray()); \
+	return list;
+#}}}
 #}}}

@@ -3,7 +3,7 @@
 	<!-- Project properties -->
 	<property name="lib.dir" value="lib" />
 	<property name="src.dir" value="src" />
-	<property name="build.dir" value="bin" />
+	<property name="build.dir" value="build" />
 	<property name="dist.dir" value="dist" />
 
 	<!-- Add lib to classpath -->
@@ -63,9 +63,9 @@
 	
 	<!-- Run -->
 	<target name="run">
-		<java fork="true" jar="dist/\${ant.project.name}.jar" classpathref="classpath" />
+		<java fork="true" jar="\${dist.dir}/\${ant.project.name}.jar" classpathref="classpath" />
 	</target>
 
 </project>
 
-<!-- ::mode=xml:noTabs=false:: -->
+<!-- ::mode=xml:: -->

@@ -215,6 +215,7 @@ def pv_options = swing.panel() { -> dialog
 	}
 }
 
+// TODO: Add the roots of both template dirs here
 String[] roots = [templatesDir.path]
 GroovyScriptEngine gse = new GroovyScriptEngine(roots)
 
@@ -250,7 +251,7 @@ while (state > 0) {
 		println("       name: " + name)
 		println("        dir: " + dir)
 		println("     script: " + chosen.getScriptPath())
-		def script = chosen.getScriptPath()
+		def script = chosen.getScriptName()
 		boolean success = gse.run(script, binding)
 		if (success) {
 			state = 4
@@ -260,13 +261,14 @@ while (state > 0) {
 		}
 	}
 	else if (state == 4) {
-		// Import the project into project viewer
+		// Transfer properties, run the update script, and import into PV
 		state = 0
 		def props = new Properties()
 		props.load(new FileInputStream(chosen.getProjectPropsPath()))
 		for (prop in props.propertyNames()) {
 			project.setProperty(prop, props.getProperty(prop))
 		}
+		ProjectBuilderPlugin.updateProjectConfig(project)
 		def viewer = ProjectViewer.getViewer(view)
 		manager.addProject(project, groups[group])
 		viewer.setRootNode(project)
@@ -312,6 +314,10 @@ class TemplateTypeOption {
    String getScriptPath() {
    	   def scriptFile = new File(dir, "${name}.groovy")
    	   return scriptFile.path
+   }
+
+   String getScriptName() {
+	   return "${name}/${name}.groovy"
    }
    
    String getProjectPropsPath() {

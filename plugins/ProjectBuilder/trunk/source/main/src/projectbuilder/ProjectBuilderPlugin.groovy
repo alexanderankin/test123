@@ -98,7 +98,7 @@ public class ProjectBuilderPlugin extends EditPlugin implements EBComponent {
    	  }
    }
 
-   public void createNewProject(View view, String projectType) {
+   public static void createNewProject(View view, String projectType) {
       Log.log(Log.DEBUG, ProjectBuilderPlugin.class, "Create new project: ${ScriptEnginePlugin.class.getCanonicalName()}")
       ScriptEnginePlugin plugin = JEDIT.getPlugin(ScriptEnginePlugin.class.getCanonicalName())
       ScriptExecutionDelegate delegate = plugin.getScriptExecutionDelegate()
@@ -107,12 +107,12 @@ public class ProjectBuilderPlugin extends EditPlugin implements EBComponent {
       //scriptContext.setAttribute("projectType", projectType, ScriptContext.ENGINE_SCOPE)
       
       File baseTemplateFile = EditPlugin.getResourcePath(this, "templates/Base.groovy")
-      if(baseTemplateFile) {
+      if (baseTemplateFile) {
          delegate.evaluateString(baseTemplateFile.getText(), "groovy", scriptContext)
       }
    }
    
-   public void createNewProject(View view) {
+   public static void createNewProject(View view) {
    	   createNewProject(view, "")
    }
    
@@ -193,19 +193,12 @@ public class ProjectBuilderPlugin extends EditPlugin implements EBComponent {
 	}
 	
 	public static void updateProjectConfig(VPTProject project) {
-		/*
-		ScriptEnginePlugin plugin = JEDIT.getPlugin(ScriptEnginePlugin.class.getCanonicalName())
-		ScriptExecutionDelegate delegate = plugin.getScriptExecutionDelegate()
-		ScriptContext scriptContext = ScriptEngineUtilities.getDefaultScriptContext(JEDIT.getActiveView())
 		def templateDir = getTemplatePathForProject(project)
-		
-		scriptContext.setAttribute("project", project, ScriptContext.ENGINE_SCOPE)
-		scriptContext.setAttribute("name", project.getName(), ScriptContext.ENGINE_SCOPE)
-		scriptContext.setAttribute("workspace", new File(project.getRootPath()).getParent(), ScriptContext.ENGINE_SCOPE)
-		scriptContext.setAttribute("templateDir", templateDir, ScriptContext.ENGINE_SCOPE)
-		*/
-		
-		def templateDir = getTemplatePathForProject(project)
+		File updateScript = new File(templateDir, "update.groovy")
+		println("updateScript = "+updateScript);
+		if (!updateScript.exists())
+			return;
+
 		String[] roots = [templateDir]
 		GroovyScriptEngine gse = new GroovyScriptEngine(roots)
 		Binding binding = new Binding()
@@ -213,15 +206,14 @@ public class ProjectBuilderPlugin extends EditPlugin implements EBComponent {
 		binding.setVariable("name", project.getName())
 		binding.setVariable("workspace", new File(project.getRootPath()).getParent())
 		binding.setVariable("templateDir", templateDir)
+		binding.setVariable("root", project.getRootPath())
 		def view = JEDIT.getActiveView()
 		binding.setVariable("view", view)
 		binding.setVariable("viewer", ProjectViewer.getViewer(view))
 
-		File updateScript = new File(templateDir, "update.groovy")
-		if (updateScript.exists()) {
-			//delegate.evaluateString(updateScript.getText(), "groovy", scriptContext)
-			gse.run(updateScript.getPath(), binding)
-		}
+		println("Running update script...");
+		gse.run("update.groovy", binding)
+		println("Done");
 	}
    
    // Edit Bus
