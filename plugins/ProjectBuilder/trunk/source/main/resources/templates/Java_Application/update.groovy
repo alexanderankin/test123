@@ -45,7 +45,7 @@ PB.build(name, workspace) {
 				def result = JOptionPane.showConfirmDialog(jEdit.getActiveView(),
 					"Class '${mainclass}' does not exist. Create it?", "Java Application", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE)
 				if (result == JOptionPane.YES_OPTION) {
-					f("${classToPath}.java", template:"${templateDir}/JavaMainClass.template", templateData:templateData)
+					f("${classToPath}.java", template:"${templateDir}/templates/JavaMainClass.template", templateData:templateData)
 					jEdit.openFile(view, testFile.getPath())
 					new_files = true
 				}

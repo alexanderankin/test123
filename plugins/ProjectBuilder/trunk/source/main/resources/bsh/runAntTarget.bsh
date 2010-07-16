@@ -2,12 +2,12 @@
 
 void runAntTarget(projectviewer.vpt.VPTProject project, String target) {
 	if (jEdit.getPlugin("console.ConsolePlugin") == null) {
-		Macros.error(view, "Console plugin not found. Aborting.");
+		Macros.error(view, "Console plugin not found. Please install it and try again.");
 		return;
 	}
-	buildfile = project.getRootPath()+"/trunk/build.xml";
+	buildfile = MiscUtilities.constructPath(project.getRootPath(), "build.xml");
 	if (!new File(buildfile).exists())
-		buildfile = project.getRootPath()+"/build.xml";
+		buildfile = MiscUtilities.constructPath(project.getRootPath(), "trunk/build.xml");
 	if (!new File(buildfile).exists()) {
 		Macros.error(view, "No buildfile found for project '"+project.getName()+"'.");
 		return;
@@ -18,6 +18,11 @@ void runAntTarget(projectviewer.vpt.VPTProject project, String target) {
 		if (!buildfile.equals(ant.getCurrentProjectPath())) {
 			runCommandInConsole(view, "Ant", "+"+buildfile);
 			waitForConsole(view);
+			if (!buildfile.equals(ant.getCurrentProjectPath())) {
+				Macros.error(view, "Encountered an error while trying to add the buildfile.\n"+
+					"Check the output of the Ant shell for details.");
+				return;
+			}
 		}
 		runCommandInConsole(view, "Ant", "!"+target);
 	} else {
