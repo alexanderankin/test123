@@ -25,7 +25,7 @@ PB.build(name, workspace) {
         d("lib")
         d("src") {
            d(pluginPackage) {
-              f("${pluginClass}.java", template:"${templateDir}/PluginClass.template", templateData:templateData)
+              f("${pluginClass}.java", template:"${templateDir}/templates/PluginClass.template", templateData:templateData)
            }
         }
         d("test") {
@@ -38,9 +38,9 @@ PB.build(name, workspace) {
         f("dockables.xml")
         f("services.xml")
 	    */
-        f("${name}.props", template:"${templateDir}/PluginProps.template", templateData:templateData)
-        f("build.xml", template:"${templateDir}/PluginBuild.template", templateData:templateData)
-        f("description.html", template:"${templateDir}/PluginDescription.template", templateData:templateData)
+        f("${name}.props", template:"${templateDir}/templates/PluginProps.template", templateData:templateData)
+        f("build.xml", template:"${templateDir}/templates/PluginBuild.template", templateData:templateData)
+        f("description.html", template:"${templateDir}/templates/PluginDescription.template", templateData:templateData)
         //f("build.properties", template:"${templateDir}/BuildProperties.template", templateData:templateData)
     }
 }

@@ -35,8 +35,8 @@ import console.Console
  */
 public class ProjectBuilderPlugin extends EditPlugin implements EBComponent {
 
-   public static final String templateDir = getPluginHome(this).getPath()+File.separator+"templates"
-   public static final String userTemplateDir = JEDIT.getSettingsDirectory()+File.separator+"project-templates"
+   public static final String templateDir = MiscUtilities.constructPath(getPluginHome(this).getPath(), "templates")
+   public static final String userTemplateDir = MiscUtilities.constructPath(JEDIT.getSettingsDirectory(), "project-templates")
    
    @Override
    public void start() {

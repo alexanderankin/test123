@@ -25,7 +25,7 @@ plugin.projectbuilder.ProjectBuilderPlugin.menu=projectbuilder-new-project - pro
 	projectbuilder-run-beanshell projectbuilder-update-config
 projectbuilder-new-project.label=Create new Project
 projectbuilder-toggle-toolbar.label=Show Toolbar
-projectbuilder-run-beanshell.label=Run Project Beanshell Script
+projectbuilder-run-beanshell.label=Run on Project...
 projectbuilder-update-config.label=Update Project Configuration
 # }}} Menu
 

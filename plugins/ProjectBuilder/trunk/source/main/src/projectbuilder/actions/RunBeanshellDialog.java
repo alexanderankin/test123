@@ -82,7 +82,7 @@ public class RunBeanshellDialog extends JDialog {
 					}
 				}
 		});
-		setSize(400, 200);
+		setSize(250, 200);
 		setLocationRelativeTo(view);
 	}
 	

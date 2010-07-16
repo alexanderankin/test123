@@ -91,16 +91,6 @@ binding.setVariable("textArea", textArea)
 binding.setVariable("wm", wm)
 binding.setVariable("open_after", [])
 
-// Binding object for the gui script
-def gui_binding = new Binding()
-gui_binding.setVariable("project", project)
-gui_binding.setVariable("view", view)
-gui_binding.setVariable("buffer", buffer)
-gui_binding.setVariable("editPane", editPane)
-gui_binding.setVariable("textArea", textArea)
-gui_binding.setVariable("wm", wm)
-gui_binding.setVariable("swing", new SwingBuilder())
-
 def project_type = swing.panel() { -> dialog
 	boxLayout(axis:BoxLayout.Y_AXIS)
 	emptyBorder([6, 6, 6, 6], parent:true)
@@ -115,7 +105,6 @@ def project_type = swing.panel() { -> dialog
 		button(text:'Next', icon:GUIUtilities.loadIcon('ArrowR.png'), actionPerformed: {
 			chosen = type_field.selectedItem;
 			binding.setVariable("templateDir", "${chosen.dir.getPath()}")
-			gui_binding.setVariable("templateDir", "${chosen.dir.getPath()}")
 			state = 2
 			dialog.dispose()
 		})
@@ -206,9 +195,6 @@ def pv_options = swing.panel() { -> dialog
 				binding.setVariable("project", project)
 				binding.setVariable("workspace", dir)
 				binding.setVariable("name", name)
-				gui_binding.setVariable("project", project)
-				gui_binding.setVariable("workspace", dir)
-				gui_binding.setVariable("name", name)
 				dialog.dispose()
 			}
 		})
@@ -251,6 +237,7 @@ while (state > 0) {
 		println("       name: " + name)
 		println("        dir: " + dir)
 		println("     script: " + chosen.getScriptPath())
+		binding.setVariable("root", "${dir}/${name}")
 		def script = chosen.getScriptName()
 		boolean success = gse.run(script, binding)
 		if (success) {

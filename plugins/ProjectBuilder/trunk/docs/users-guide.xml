@@ -26,311 +26,247 @@
 
 <chapter id="intro"><title>Introduction</title>
  <para>
-  The Project Builder plugin gives jEdit the ability to create projects of different
-  types, as well as provide tools for building and running them. Projects are displayed in Project
-  Viewer, and the projects themselves are created through a template framework.
+  The ProjectBuilder plugin provides jEdit with project-creation tools similar
+  to those of other IDE's. Project types (or natures) are defined through
+  the use of a template system that makes it easy to create and share them.
+  The plugin comes pre-packaged with two templates: Java Application and
+  jEdit Plugin.
  </para>
  <para>
-  The plugin comes bundled with templates
-  for creating jEdit Plugins and standalone Java Applications. New templates
-  can be written in Groovy, a scripting variant of Java, and the process for creating
-  custom templates is fairly simple.
+  ProjectBuilder ties in closely with ProjectViewer. New projects are imported
+  into the plugin directly, and all of the tools provided by ProjectBuilder
+  are accessible in the ProjectViewer window, through either the context
+  menu or the properties dialog.
  </para>
 </chapter>
 <chapter id="creating-projects"><title>Creating Projects</title>
  <para>
- Projects can be created by going to <guimenu>Plugins</guimenu> -> 
- <guimenu>Project Builder</guimenu> -> <guimenu>New Project</guimenu>, and selecting a project type
- from the sub-menu. Selecting one will present you with a window like this:
+  To create a project, go to <guimenu>Plugins</guimenu> -> <guimenu>Project 
+  Builder</guimenu> -> <guimenu>Create new Project</guimenu>. A small dialog
+  will pop up with a combo box to select the project type. Click Next and fill
+  in the basic project information. After clicking Create, the project will be
+  created and imported into ProjectViewer.
  </para>
  <para>
- <image>
-  <src>docs/create-project.png</src>
- </image>
- </para>
- <para>
- This window lets you choose a name for your project (in this case we're calling it "HelloWorld"), a
- project type (which should already be chosen, but if you picked the wrong one you can change it here),
- a ProjectViewer group to store the new project in, and the directory to create the project in. The last
- field will default to a subdirectory called "workspace" in your system's home folder, but you can browse
- to whatever location you like by clicking on the button next to the text box.
- </para>
- <para>
- After clicking OK, another dialog may or not show up, depending on which type of project you are creating.
- jEdit Plugin, for example, won't show any dialog, but Java Application will. This dialog will ask for project-
- specific details. If we continue with our above example, a dialog like this would show up:
- </para>
- <para>
- <image>
-   <src>docs/java-project.png</src>
- </image>
- </para>
- <para>
- A Java Application will prompt you for a main class name and an author. Here we're creating a class called "World"
- in the root package, called "hello". It is recommended that you store Java project files in a package hierarchy,
- and so creating a root package for your main class is a good idea.
- </para>
- <para>
- Once you click OK, your main class file will be opened and the "Import Files" dialog will show up. Simply click Import to import
- all the created files into your project in the Project Viewer window. If the Project Viewer popped up rudely
- at this step, then you didn't have it docked. Docking this window to one side of your screen will eliminate
- that in the future.
+  The initial structure of a project is barebones when compared to other IDE's.
+  Creating the project simply lays out the required base structure for the
+  selected project type. For information on how to configure and work with
+  the newly-created project, read on.
  </para>
 </chapter>
-<chapter id="project-settings"><title>Project Settings</title>
- <para>
- Aside from making it easier to create projects, Project Builder offers ways to easily build and run those projects
- from within jEdit. From the Project Viewer window, right-click on the root node, select "Properties", and then
- click on the "Build/Run Settings" option on the left to view available build and run settings.
- </para>
- <para>
- The settings window is split in two, with build settings on the top and run settings on the bottom. A list of
- pre-defined settings will be displayed in the boxes, but for added flexibility you can create new settings and
- remove existing ones. In most cases the defaults should work well.
- </para>
- <para>
- To select which setting to use when building or running the project, select an option from the appropriate combo box
- and click OK. If you don't want to go to this panel every time you want to use a different setting, you can turn on
- the toolbar by going to <guimenu>Plugins</guimenu> -> <guimenu>Project Builder</guimenu> -> <guimenu>Show Toolbar</guimenu>.
- The toolbar makes it easier to switch between these settings and allows a one-click method of running them.
- </para>
- <para>
- A configurable project options pane for each template type is on the TODO list for this plugin, but has not
- yet been implemented. For template developers, this means that you will be able to create a pane in the
- Project Viewer's properties dialog for your template in order to specify miscellaneous project-wide
- settings. For template users, this means that the templates will be much more robust in the future,
- allowing for new levels of functionality.
- </para>
- <sect1 id="shells"><title>Shells</title>
+<chapter id="working-with-projects"><title>Working With Projects</title>
+ <sect1 id="configuring-projects"><title>Configuring Projects</title>
   <para>
-  ProjectBuilder executes build and run commands through the Console plugin, and certain settings may require
-  additional shells to be installed. System commands will not require additional plugins, but projects that need
-  Ant will need the Ant shell provided by the AntFarm plugin.
+   Project templates will (often) define an option group in the ProjectViewer's
+   properties window. In the ProjectViewer window, right-click on the project
+   node and select Properties (or alternatively, go to 
+   <guimenu>Plugins</guimenu> -> <guimenu>Project Viewer</guimenu> ->
+   <guimenu>Edit Project Options</guimenu>). If the project template defined
+   any option panes (both Java Application and jEdit Plugin do), an option
+   group named after the project type will appear on the left.
   </para>
- </sect1>
-</chapter>
-<chapter id="creating-templates"><title>Creating Project Templates</title>
- <para>
- While creating Java Applications and jEdit Plugins is all well and good, the power of
- Project Builder comes from its flexibility due to the Groovy template framework.
- Using the pre-existing templates as a starting point, it's easy to create and share new templates.
- The flexilibity of the system also allows for interaction with external project-creation tools
- through the command-line.
- </para>
- <para>
- First, you'll want to create a folder called "project-templates" in your jEdit settings directory
- (<guimenu>Utilities</guimenu> -> <guimenu>Settings Directory</guimenu> -> first menu item).
- When creating the list of available templates, Project Builder looks in two locations: this folder, and
- the plugin's home folder ("plugins/projectbuilder.ProjectBuilderPlugin/templates").
- The former is intended for custom user-defined templates, while the latter is for plugins to use.
- </para>
- <sect1 id="template-contents"><title>What Makes up a Template</title>
-   <para>
-   A Project Builder template consists of the following files:<orderedlist>
-     <listitem> A groovy script </listitem>
-     <listitem> menu-icon.png and icon.png (both optional) </listitem>
-     <listitem> Any number of ".template" files </listitem>
-     <listitem> version.txt (if you plan on versioning your template) </listitem>
-   </orderedlist>
-   </para>
-   <para>
-   The groovy script is where all the actual work for your template will be done. menu-icon.png will
-   create a small icon to show next to your template in the "New Project" menu, and icon.png will
-   be used in your template's project settings dialog (if applicable). Any files your template will
-   need (for example, both Java Application and jEdit Plugin require an Ant buildfile) should be named
-   with a ".template" extension, and will be used by the groovy script to create the necessary project
-   files. version.txt is only necessary if you plan on distributing your template and then providing
-   updates in the future.
-   </para>
-   <para>
-   All of these files should be contained in a folder within the project-templates directory that
-   is named after your template, with spaces replaced by underscores. For example, the folder for
-   the Java Application template is called Java_Application. The groovy script should have the same
-   name, so that script is called Java_Application.groovy.
-   </para>
- </sect1>
- <sect1 id="template-script"><title>Writing the Template Script</title>                           
+  <sect2 id="configure-java-app"><title>Java Application</title>
   <para>
-  The groovy script is where most of the work of your template will be done. Looking at the scripts
-  provided by Java Application and jEdit Plugin will give you a reference to work with. Let's break
-  down the script for Java Application and see what does what.
-  </para> <para />
-  <code>
-  import projectbuilder.builder.ProjectBuilder as PB<br />
-  import groovy.swing.SwingBuilder<br />
-  import javax.swing.*<br />
-  import org.gjt.sp.jedit.*<br />
-  import org.gjt.sp.jedit.jEdit as JEDIT<br />
-  import java.awt.GridBagConstraints as GBC<br />
-  import javax.swing.SwingConstants as SC<br />
-  <br />
-  def templateDir = "${templatesDir}/Java_Application"<br />
-  def dist = "${project.directory.path}/${project.name}/dist"<br />
-  def templateData = [:]<br />
-  templateData.name = project.name<br />
-  </code>
-  <para>
-  The beginning of the file just imports any required java packages and makes a few initial
-  variable declarations. The syntax of groovy may be a little bit strange to Java developers,
-  but it's really fairly simple. The class imports are the same, except the "as" keyword changes
-  the name that will reference the imported class. For example, to access static methods
-  of the ProjectBuilder class this script will simply need to write PB. Also note that in groovy,
-  semicolons are optional.
+   A Java Application will have two option panes. In General you can define
+   a main class (required to make the project executable) and any manifest that
+   you want packaged with the resulting jar. In Dependencies you can add any
+   external libraries that may be required to build your project.
   </para>
+  </sect2>
+  <sect2 id="configure-jedit-plugin"><title>jEdit Plugin</title>
   <para>
-  The declarations are made using the def keyword, and as in other scripting languages like bash,
-  variable substitution is done using the ${} syntax. The groovy script is passed several
-  variables when it is called, providing information such as the project's creation directory and
-  name. Your script should define a similar templateDir variable (def templateDir = "${templatesDir}/My_Template"),
-  and a templateData object, which is used to store data that will be needed
-  by template files. The dist declaration is used in setting the project's run command later on.
+   jEdit Plugins need a certain amount of information before you can build them
+   successfully. Generally, this information is kept in a file called
+   build.properties and is kept in a location that is accessible by all plugins
+   on your system (the location of your build.properties file can be chosen
+   in the Build Properties File pane). For those who don't want to go about
+   the trouble of creating a reusable property file, it is also possible to
+   manually configure the plugin in the Manual Configuration pane (NOTE: for
+   a manual configuration to work, the build properties file field
+   must be blank, otherwise your configuration will be overridden). If you
+   create a build.properties file, it should look something like this:
   </para>
   <para>
    <programlisting>
-      <![CDATA[
-      def swing = new SwingBuilder()
-      def form = swing.panel() {
-         gridBagLayout()
-         def gbc = swing.gbc(gridx: 0, gridy: 0, weightx: 0.0f, weighty: 0.0f, gridwidth: 1, gridheight: 1, fill: GBC.HORIZONTAL)
-         gbc.insets = [10, 10, 0, 0]
-         // Labels
-         label(text: "Main class:", horizontalAlignment: SC.RIGHT, constraints: gbc)
-         gbc.gridy++
-         label(text: "Author:", horizontalAlignment: SC.RIGHT, constraints: gbc)
-         
-         // Text fields
-         gbc.gridx++
-         gbc.gridy = 0
-         textField(id: "main_class", columns:20, constraints: gbc)
-         gbc.gridy++
-         textField(id: "author", columns:20, constraints: gbc)
-      }
-      def answer = JOptionPane.showConfirmDialog(view, form, "Java Project Details : ${project.name}", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, new ImageIcon("${templateDir}/icon.png"))
-      ]]>
+    <![CDATA[
+    build.support=[/path/to/build-support]
+    install.dir=[/path/to/settings]/jars
+    jedit.install.dir=[/path/to/jEdit]
+    jedit.plugins.dir=${install.dir}
+    ]]>
    </programlisting>
   </para>
   <para>
-  This section creates the additional project-specific popup. Groovy syntax for creating swing components
-  is very different from Java, but also more compact and easy to work with. Feel free to play around
-  with this in your own scripts. In designing a dialog it may be easier to write it in its own script
-  to make testing easier. Just remember to add the groovy jar (which can be found in jars/ in your settings
-  directory) to the classpath and import the groovy.swing.SwingBuilder class and any actual swing
-  components used.
+   If your plugin depends on any existing plugins, you can specify those
+   dependencies in the Plugin Dependencies pane. Simply move the required
+   plugins to the right side, and they will automatically be added to your
+   project's classpath.
   </para>
-  <para>
-   <programlisting>
-      <![CDATA[
-      if (answer == JOptionPane.OK_OPTION) {
-         def mainClass = swing.main_class.text
-         templateData.mainClass = "${mainClass}"
-         templateData.author = swing.author.text
-         int dot = mainClass.lastIndexOf(".")
-         def deep = (dot != -1)
-         def mainClassDir = ""
-         if (deep) {
-            templateData.pkg = "package ${mainClass.substring(0, dot)};"
-         } else {
-            templateData.pkg = ""
-         }
-         PB.build(project.name, project.directory.path) {
-            f("build.xml", template: "${templateDir}/JavaBuild.template", templateData: templateData)
-            d("build") {}
-            d("lib") {}
-            d("dist") {}
-            d("src") {
-               if (deep) {
-                  // Add the main class file to an arbitrarily deep directory
-                  // This code is essentially a workaround to be able to have the folder structure
-                  // replicate the given package. There should hopefully be a better way to do this
-                  def pkg = mainClass.substring(0, dot)
-                  def dir = pkg.replace(".", File.separator)
-                  def cls = mainClass.substring(dot+1, mainClass.length())
-                  def file = "${cls}.java"
-                  new File("${project.directory.path}/${project.name}/src/${dir}").mkdirs()
-                  PrintWriter pw = new PrintWriter("${project.directory.path}/${project.name}/src/${dir}/${file}")
-                  pw.println("package ${pkg};")
-                  pw.println("public class ${cls} {")
-                  pw.println("   public static void main(String[] args) {")
-                  pw.println("      ")
-                  pw.println("   }")
-                  pw.println("}")
-                  pw.close()
-                  open.add("${project.directory.path}/${project.name}/src/${dir}/${file}")
-               } else {
-                  f("${mainClass}.java", template: "${templateDir}/JavaMainClass.template", templateData: templateData)
-                  open.add("${project.directory.path}/${project.name}/src/${mainClass}.java")
-               }
-            }
-         }
-         // Add an Ant build-command to the project's build settings
-         project.build.add("Build Executable:ANT[target=,buildfile=${project.directory.path}/${project.name}/build.xml]")
-         project.build.add("Clean:ANT[target=clean,buildfile=${project.directory.path}/${project.name}/build.xml]")
-         // Add a system command to the project's run settings
-         project.run.add("Run Executable:SYSTEM[cmd=java -jar ${dist}/${project.name}.jar]")
-      } else {
-         abort = true
-      }
-      ]]>
-   </programlisting>
-	  </para>
-   <para>
-   This section is where the actual project is built. First, you will need to check to see if the user
-   clicked OK. If they didn't, you must set a variable called "abort" to true, otherwise Project Builder
-   will continue to attempt creating the project after your script is run. Putting abort = true tells
-   the plugin to quit the project creation process altogether.
-   </para>
-   <para>
-   Within the if statement, the first section is pulling necessary data from the form we created and
-   determining a few things based on that data. The call to PB.build() is where you will put all
-   actual file and directory creation commands, using calls to f() and d() respectively. Files will
-   require that a template be specified, and the templateData object must be passed in to make
-   the required data available to the template. The if (deep) test in this particular template is
-   a workaround that allows the main class file to be placed arbitrarily deep within the "src"
-   directory. Hopefully, this will be changed in the future.
-   </para>
-   <para>
-   Also note the calls to open.add(). "open" is initially defined as an empty list, and you can
-   add any file paths to it. Any files added to this list will be opened in jEdit upon the
-   project's creation.
-   </para>
-   <para>
-   After PB.build(), the template adds two build commands to the project's settings, and one run
-   command. These commands are defined using a string of the format "Setting name:TYPE[var1=val1, var2
-   =val2, ...]". The string before the colon is that setting's name and identifier. TYPE specifies
-   what will be used to run the setting, and within the square brackets is a comma-separated list
-   of properties pertaining to the given type. Here are the available types:
-   </para>
-   <para>
-   <orderedlist>
-     <listitem> SYSTEM (build and run). The only property necessary for SYSTEM is cmd, which
-     will specify a command for jEdit to run in the system shell (first cd'ing into the new project's
-     root directory).</listitem>
-     <listitem> ANT (build only). ANT has two properties: a buildfile and a target. The buildfile,
-     if not specified, defaults to build.xml in the project's root dirctory. If target is not specified
-     then the buildfile's default target will be run.</listitem>
-   </orderedlist>
-   </para>
-   <para>
-   While none of the pre-defined templates use it, Project Builder also allows external tools to be
-   used in project creation through a command-line call. Use the method PB.cmd(String command, String
-   dir) to run a command (command) in a specified directory (dir) using the system shell. For example,
-   an option specified in the project-specific form could ask for the location of an executable required
-   to build the project, which could then be run via PB.cmd("my-executable", "${executableDir}").
-   </para>
+  </sect2>
  </sect1>
- <sect1 id="template-share"><title>Sharing Your Templates</title>
+ <sect1 id="project-actions"><title>Project Actions</title>
+  <para>
+   Projects will define a number of actions that make it easier to execute
+   common tasks on them. There are several different ways to execute one,
+   depending on your preference. You can right-click anywhere in the
+   ProjectViewer window and select one from the submenu named after the
+   project type. For the more keyboard-focused, there is an action in the
+   Plugin menu ("Run on Project...") that you can assign to a keyboard shortcut
+   which will open up a dialog with a list of actions to be selected using
+   the arrow keys and executed by hitting Enter. And lastly, you can turn on
+   the ProjectBuilder toolbar with <guimenu>Plugins</guimenu> -> <guimenu>
+   Project Builder</guimenu> -> <guimenu>Show Toolbar</guimenu>.
+  </para>
+  <para>
+   These actions can be used to compile the project, clean it, generate an
+   executable, documentation, or conceivably anything. Both Java Application
+   and jEdit Plugin use Ant for these actions, which means you'll need the
+   Console plugin and (a) the AntFarm plugin, or (b) ant installed somewhere
+   on your system path.
+  </para>
+ </sect1>
+ <sect1 id="converting-projects"><title>Converting Projects</title>
+  <para>
+   ProjectBuilder uses its template system to define a type for its projects,
+   which makes it easy to convert a project by simply changing its type.
+   There are a couple scenarios where it might be a good idea to convert a
+   project, the most obvious one being to turn an existing set of files
+   into a ProjectBuilder project (to gain access to that project type's set
+   of actions, for example). Or if you have a project created with
+   ProjectBuilder, you can remove its type by converting it to type "None".
+  </para>
+  <para>
+   To convert a project, right-click on the project node in the ProjectViewer
+   window and open up the "Convert Project" submenu. This will display a list
+   of available templates, and you can convert the project by simply selecting
+   the desired project type.
+  </para>
+  <para>
+   Note that working on a project created this way from an existing source
+   may break the option panes, as configuring a file this way currently relies
+   on specially-named markers in the project's build files; without the markers,
+   making a change in a project's configuration is useless.
+  </para>
+ </sect1>
+</chapter>
+<chapter id="creating-templates"><title>Creating Templates</title>
  <para>
- As it stands now, Project Builder's functionality is limited compared to what it is capable
- of. There are only two pre-defined templates, but jEdit being the incredibly versatile editor than
- it is, the plugin is capable of so many more. In particular, templates for creating C/C++ projects with
- Makefiles would be very useful, as would a template for Python projects or Ruby on Rails. If you feel that you've
- created a template that should be included with the plugin, send a message to the jEdit development mailing
- list or add an artifact to the plugin feature requests tracker on jEdit's sourceforge page
- (http://sourceforge.net/projects/jedit/develop).
- </para>
- <para>My personal thanks in advance to anyone who
- helps contribute. =)
- </para>
+  The power in ProjectBuilder lies in the flexibility of the template system.
+  Custom templates should be placed in the settings directory, in a subfolder
+  called "project-templates". You should not need to restart jEdit for it
+  to find new templates.
+  </para>
+  <sect1 id="template-parts"><title>Parts of a Template</title>
+  <para>
+   A template contains the following (replace "Project_Name" with the name
+   of your template with spaces replaced by underscores):
+   <itemizedlist>
+    <listitem>Project_Name.groovy: the script that lays out the project's
+    skeleton, creating directories and necessary files</listitem>
+    <listitem>Project_Name.props: used to define actions and option panes
+    </listitem>
+    <listitem>update.groovy: a script that is called when the project is first
+    created and when saving changes to the configuration; makes necessary
+    changes to the files based on the project's properties</listitem>
+    <listitem>icon.png: a 16x16 image used as the project's icon</listitem>
+    <listitem>Any number of template files</listitem>
+    <listitem>Any number of beanshell scripts (must be referenced in the .props
+    file in order to be found, however)</listitem>
+   </itemizedlist>
+  </para>
+  <para>
+   It's a good idea to look at the templates that come with ProjectBuilder
+   to get an idea of what these files contain. They can be found in
+   ProjectBuilder's "home" directory (from your settings directory, go to
+   plugins/projectbuilder.ProjectBuilderPlugin/templates).
+  </para>
+   <sect2 id="project-script"><title>Project_Name.groovy</title>
+   <para>
+    ProjectBuilder uses groovy, a scripting variant of Java, as the foundation
+    for its templating system. The primary reason is that this allows the
+    template-creation script to actually be quite short. For those new to
+    groovy, the syntax is very similar to Java, and should be pretty easy
+    to pick up as we go along.
+   </para>
+   <para>
+    Templates create a project layout by using a handy method called build()
+    in the ProjectBuilder class, with nested calls to f() and d() to create
+    files and directories respectively. Calls to d() can further nest calls
+    in order to create subdirectories and files. Directories only need a name
+    specified, but files need a couple extra parameters; "template", which is
+    the path of the template file to create the file from; and "templateData",
+    a map object that will map a variable name with its value. Technically these
+    are optional, but then you'd be creating blank files, and who wants to do
+    that?
+   </para>
+   <para>
+    The script has several useful variables pre-defined:
+    <itemizedlist>
+     <listitem>project: a reference to the VPTProject object that represents
+     this project</listitem>
+     <listitem>workspace: the path of the directory containing this project
+     </listitem>
+     <listitem>name: the name of this project</listitem>
+     <listitem>root: the root directory of this project (equivalent to 
+     workspace/name)</listitem>
+     <listitem>templateDir: the root directory of the template being used
+     </listitem>
+    </itemizedlist>
+    In addition, the standard beanshell-defined variables (view, editPane,
+    textArea, wm, and buffer) are defined just in case you find a use for them.
+   </para>
+   <para>
+    IMPORTANT: At the end of your script, you must return true. If the creation
+    fails at any time for any reason, you may return false in order to abort
+    and the project will not be created. But without returning true at the end,
+    creation will always fail and the template will be useless.
+   </para>
+  </sect2>
+  <sect2 id="project-props"><title>Project_Name.props</title>
+  <para>
+   This file is used for two things: defining project actions, and defining
+   option panes. This can also be used to define arbitrary properties you
+   want stored in the project's properties object, although it is recommended
+   to use the update.groovy script for other purposees.
+  </para>
+  <para>
+   Project actions are simply beanshell scripts. To define a list of actions
+   for your project, you need to set the "project.bsh" property. This should
+   be a whitespace-separated list of names similar to defining a plugin menu
+   (use a name of "-" to create a separator). For each name, you must define
+   "project.bsh.NAME.label" and "project.bsh.NAME.script". label is the
+   name for the action that the user will see, and script is a relative path
+   to the beanshell script to run when this action is invoked.
+  </para>
+  <para>
+   For convenience, ProjectBuilder offers a utility beanshell script for running
+   Ant targets. As a result, all of the scripts for Java Application and jEdit
+   Plugin are very short, but they can be as long as you like. Similar to the
+   project script, these beanshell scripts have the variable "project"
+   pre-defined as a reference to the project that the script is acting on.
+  </para>
+  <para>
+   To define option panes for the project, set the property "project.options"
+   with another whitespace-separated list of names. For each name, you should
+   define "project.options.NAME.label" as the displayed name, and
+   "project.options.NAME" as a whitespace-separated list of components to
+   add to that pane (ProjectBuilder uses the EasyOptionPane in CommonControls
+   to create the panes, so refer to that documentation and the existing
+   templates for how to structure each component's string. In addition,
+   components "pathbuilder" [for configuring paths], "textArea" [as an
+   alternative to CommonControls' "textarea"], and "custom" [for creating a
+   custom component using a beanshell snippet] are defined).
+  </para>
+  </sect2>
+  <sect2 id="update-script"><title>update.groovy</title>
+  <para>
+   This script will handle all the conversions between project properties
+   and what appears on disk. If a property is null, it should set some default
+   value, and then act on that value if necessary. A utility method in the
+   ProjectBuilder class ("mark") is defined to make it easier to write
+   into existing files.
+  </para>
+ </sect2>
  </sect1>
- </chapter>
-</book>            
+</chapter>
+</book>

@@ -7,7 +7,7 @@ def templateData = [:]
 templateData.name = name
 
 PB.build(name, workspace) {
-	f("build.xml", template:"${templateDir}/JavaBuild.template", templateData:templateData)
+	f("build.xml", template:"${templateDir}/templates/JavaBuild.template", templateData:templateData)
 	d("lib") {}
 	d("src") {}
 }
