@@ -505,13 +505,11 @@ public class TagIndex
 		for (Origin origin: origins)
 		{
 			if (! isFirst)
-			{
 				sb.append(" OR ");
-				isFirst = true;
-			}
 			String escaped = escape(origin.toString());
 			sb.append(_ORIGIN_FLD + ":*" + escaped + " OR " + _ORIGIN_FLD +
 				":*" + escaped + Origin.SEP + "*");
+			isFirst = false;
 		}
 		sb.append(")");
 		if (query != null && (! query.isEmpty()))
