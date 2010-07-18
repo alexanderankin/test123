@@ -49,6 +49,7 @@ public class QuickSearchTagDialog extends JDialog {
 	private String query;
 	private boolean showImmediately;
 	private JCheckBox caseSensitive;
+	private JCheckBox wholeWord;
 	private TagListFilterMenu menu;
 	private QuickSearchTagListModelHandler handler;
 
@@ -89,15 +90,19 @@ public class QuickSearchTagDialog extends JDialog {
 		p.add(new JLabel("Type part of the tag name:"));
 		name = new JTextField(30);
 		p.add(name);
-		caseSensitive = new JCheckBox("Case-sensitive", false);
-		p.add(caseSensitive);
-		caseSensitive.addActionListener(new ActionListener()
+		ActionListener refilter = new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
 			{
 				applyFilter();
 			}
-		});
+		};
+		caseSensitive = new JCheckBox("Case-sensitive", false);
+		p.add(caseSensitive);
+		caseSensitive.addActionListener(refilter);
+		wholeWord = new JCheckBox("Whole-word", false);
+		p.add(wholeWord);
+		wholeWord.addActionListener(refilter);
 		add(p, BorderLayout.NORTH);
 		JPanel listPanel = new JPanel();
 		listPanel.setLayout(new BorderLayout());
@@ -198,8 +203,9 @@ public class QuickSearchTagDialog extends JDialog {
 					s = s + " AND ";
 				String field = caseSensitive.isSelected() ?
 					TagIndex._NAME_FLD : TagIndex._NAME_LOWERCASE_FLD;
-				s = s + field + ":" + (mode == Mode.SUBSTRING ? "*" : "") +
-					input + "*";
+				String value = (wholeWord.isSelected()) ? input :
+					(mode == Mode.SUBSTRING ? "*" : "") + input + "*";
+				s = s + field + ":" + value;
 			}
 			Vector<Tag> tags = CtagsInterfacePlugin.runScopedQuery(view, s);
 			menu.setTags(tags);
