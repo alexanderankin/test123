@@ -1,0 +1,13 @@
+<project name="Javadoc" default="build" basedir=".">
+	<property name="build.support" value="../../jedit/build-support/trunk" />
+	<property name="jedit.install.dir" value="C:\Program Files\jEdit" />
+	<property name="install.dir"  value="C:\Documents and Settings\E16145\.jedit\jars"/>
+	<property name="build.dir" value="build"/>
+	<property name="jedit.plugins.dir" value="${install.dir}" />
+	<import file="${build.support}/plugin-build.xml" />
+	
+	<path id="project.class.path">
+		<pathelement location="${jedit.plugins.dir}\CommonControls.jar" />
+		<pathelement location="${jedit.plugins.dir}\InfoViewer.jar" />
+	</path>
+</project>
