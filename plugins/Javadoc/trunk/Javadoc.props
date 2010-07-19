@@ -11,6 +11,7 @@ plugin.javadoc.JavadocPlugin.docs=index.html
 plugin.javadoc.JavadocPlugin.depend.0=jdk 1.5.0
 plugin.javadoc.JavadocPlugin.depend.1=jedit 04.03.99.00
 plugin.javadoc.JavadocPlugin.depend.2=plugin infoviewer.InfoViewerPlugin 1.6
+plugin.javadoc.JavadocPlugin.depend.3=plugin CommonControlsPlugin 1.2
 
 plugin.javadoc.JavadocPlugin.menu=javadoc-search javadoc-search-sel - javadoc-settings
 javadoc-search.label=Search...
