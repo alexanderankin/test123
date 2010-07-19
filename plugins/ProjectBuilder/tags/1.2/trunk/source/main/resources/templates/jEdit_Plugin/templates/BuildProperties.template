@@ -1,6 +1,0 @@
-jedit.install.dir=${jeditInstallDir}
-install.dir=${installDir}
-jedit.plugins.dir=\${install.dir}
-build.support=${buildSupport}
-docbook.xsl=${docbookXSL}
-docbook.catalog=${docbookCatalog}

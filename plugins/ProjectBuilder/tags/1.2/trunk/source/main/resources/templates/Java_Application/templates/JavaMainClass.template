@@ -1,7 +1,0 @@
-${pkg}
-public class ${mainClassName} {
-	public static void main(String[] args) {
-		
-	}
-}
-
