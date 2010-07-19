@@ -1,0 +1,56 @@
+# Basic Plugin Information {{{
+plugin.projectbuilder.ProjectBuilderPlugin.activate=startup
+plugin.projectbuilder.ProjectBuilderPlugin.author=Eric Berry, Damien Radtke
+plugin.projectbuilder.ProjectBuilderPlugin.description=ProjectBuilder provides \
+	jEdit with project-creation tools similar to those of other IDE's. This \
+	version comes pre-packaged with project templates for jEdit plugins and \
+	standalone Java applications.
+plugin.projectbuilder.ProjectBuilderPlugin.docs=index.html
+plugin.projectbuilder.ProjectBuilderPlugin.longdescription=description.html
+plugin.projectbuilder.ProjectBuilderPlugin.name=Project Builder
+plugin.projectbuilder.ProjectBuilderPlugin.usePluginHome=true
+plugin.projectbuilder.ProjectBuilderPlugin.version=1.2
+# }}} Basic Plugin Information
+
+# Dependencies {{{
+plugin.projectbuilder.ProjectBuilderPlugin.depend.0=jedit 04.03.99.00
+plugin.projectbuilder.ProjectBuilderPlugin.depend.1=jdk 1.6
+plugin.projectbuilder.ProjectBuilderPlugin.depend.2=plugin com.townsfolkdesigns.jedit.plugins.scripting.GroovyScriptEnginePlugin 1.0.0
+plugin.projectbuilder.ProjectBuilderPlugin.depend.3=plugin projectviewer.ProjectPlugin 3.0.1
+plugin.projectbuilder.ProjectBuilderPlugin.depend.4=plugin CommonControlsPlugin 1.2
+plugin.projectbuilder.ProjectBuilderPlugin.depend.5=optional plugin AntFarm 1.7
+# }}} Dependencies
+
+# Menu {{{
+plugin.projectbuilder.ProjectBuilderPlugin.menu=projectbuilder-new-project - projectbuilder-toggle-toolbar \
+	projectbuilder-run-beanshell projectbuilder-update-config
+projectbuilder-new-project.label=Create new Project
+projectbuilder-toggle-toolbar.label=Show Toolbar
+projectbuilder-run-beanshell.label=Run on Project...
+projectbuilder-update-config.label=Update Project Configuration
+# }}} Menu
+
+# ProjectViewer settings {{{
+options.projectbuilder.show-toolbar=true
+projectbuilder.toolbar.type=
+# }}} ProjectViewer settings
+
+# Messages {{{
+projectbuilder.msg.no-name.title=Name Missing
+projectbuilder.msg.no-name.message=You must specify a name for this project.
+projectbuilder.msg.no-directory.title=Directory Missing
+projectbuilder.msg.no-directory.message=You must specify a directory for this project.
+projectbuilder.msg.project-exists.title=Project Exists
+projectbuilder.msg.project-exists.message=There already exists a project with that name.
+projectbuilder.cannot.build.title=Cannot Build Project
+projectbuilder.cannot.build.message={0}
+projectbuilder.msg.run-beanshell=<html><small>Press [Enter] to run, [Escape] to cancel</small></html>
+# }}}
+
+# Labels {{{
+projectbuilder.label.add-file=Add File
+projectbuilder.label.add-folder=Add Folder
+projectbuilder.label.remove=Remove
+# }}}
+
+# ::mode=properties:folding=explicit::
