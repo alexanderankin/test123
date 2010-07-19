@@ -32,14 +32,14 @@ project.options.build-config=dir,project.config.build-support.label,project.conf
 	dir,project.config.install-dir.label,project.config.install-dir \
 	dir,project.config.jedit-install-dir.label,project.config.jedit-install-dir
 
-project.config.build-support.label=Build Support
-project.config.install-dir.label=Settings Directory
-project.config.jedit-install-dir.label=jEdit Installation Directory
+project.config.build-support.label=Build Support:
+project.config.install-dir.label=Settings Directory:
+project.config.jedit-install-dir.label=jEdit Installation Directory:
 #}}}
 #{{{ Plugin dependencies pane
 project.options.plugins=custom,null,project.config.plugins,plugin-dependencies
 
-project.config.plugins.label=Specify plugin dependencies here
+project.config.plugins.label=Specify plugin dependencies here.
 project.config.plugins.parse=dependStr = ""; \
 	dependList = component.getValues(common.gui.SelectionListPanel.RIGHT); \
 	for (int i = 0; i<dependList.length; i++) { \

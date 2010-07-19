@@ -20,8 +20,8 @@ project.options.general=label,project.config.mainclass-desc \
 	text,project.config.mainclass.label,project.config.mainclass \
 	textArea,project.config.manifest.label,project.config.manifest
 project.config.mainclass-desc=If a main class is specified, the resulting jar will be executable. Use a fully-qualified class name, including package.
-project.config.mainclass.label=Main Class
-project.config.manifest.label=Manifest
+project.config.mainclass.label=Main Class:
+project.config.manifest.label=Manifest:
 #}}}
 #{{{ Dependency Pane
 project.options.depend=label,project.config.depend-desc1 label,project.config.depend-desc2 \

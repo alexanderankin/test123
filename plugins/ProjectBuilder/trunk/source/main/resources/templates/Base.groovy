@@ -20,6 +20,7 @@ import org.gjt.sp.jedit.browser.VFSBrowser
 import org.gjt.sp.jedit.browser.VFSFileChooserDialog
 import org.gjt.sp.jedit.jEdit as JEDIT
 import org.gjt.sp.jedit.View
+import org.gjt.sp.jedit.MiscUtilities
 import org.gjt.sp.jedit.io.VFSManager
 import org.gjt.sp.jedit.Macros
 import org.gjt.sp.jedit.GUIUtilities
@@ -63,7 +64,8 @@ userTemplatesDir.eachDir { dir ->
 
 // Create the form
 name = ""
-workspace = "${JEDIT.getProperty("projectbuilder.workspace", System.getProperty("user.home"))}${File.separator}workspace"
+workspace = JEDIT.getProperty("projectbuilder.workspace",
+	MiscUtilities.constructPath(System.getProperty("user.home"), "workspace"))
 
 def swing = new SwingBuilder()
 def state = 1
@@ -188,8 +190,12 @@ def pv_options = swing.panel() { -> dialog
 				group = group_field.selectedItem
 				state = 3
 				project = new VPTProject(name)
-				project.setRootPath("${dir}${File.separator}${name}")
-				project.setIconPath("${chosen.dir.getPath()}${File.separator}icon.png")
+				project.setRootPath(MiscUtilities.constructPath(
+					"${dir}", "${name}"))
+				def iconPath = MiscUtilities.constructPath(
+					"${chosen.dir.getPath()}", "icon.png")
+				if (new File(iconPath).exists())
+					project.setIconPath(iconPath)
 				project.setProperty("project.type", chosen.name)
 				project.setProperty("project.template.dir", chosen.dir.getPath());
 				binding.setVariable("project", project)
@@ -237,7 +243,7 @@ while (state > 0) {
 		println("       name: " + name)
 		println("        dir: " + dir)
 		println("     script: " + chosen.getScriptPath())
-		binding.setVariable("root", "${dir}/${name}")
+		binding.setVariable("root", MiscUtilities.constructPath(dir, name))
 		def script = chosen.getScriptName()
 		boolean success = gse.run(script, binding)
 		if (success) {
@@ -262,7 +268,7 @@ while (state > 0) {
 		new RootImporter(project, viewer, true).doImport()
 		VFSManager.waitForRequests()
 		for (file in binding.getVariable("open_after")) {
-			JEDIT.openFile(view, "${dir}/${name}/${file}")
+			JEDIT.openFile(view, MiscUtilities.constructPath("${dir}/${name}", file))
 		}
 		/*
 		if (JEDIT.getBooleanProperty("options.projectbuilder.show-toolbar"))

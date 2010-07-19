@@ -22,6 +22,7 @@ import projectviewer.vpt.VPTProject;
 import projectviewer.event.ViewerUpdate;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.Macros;
 import org.gjt.sp.jedit.BeanShell;
@@ -93,7 +94,10 @@ public class ConvertProjectContextMenu extends projectviewer.action.Action {
 					}
 					project.setProperty("project.type", name);
 					project.setProperty("project.template.dir", template_dir);
-					project.setIconPath(template_dir+"/icon.png");
+					if (new File(template_dir, "icon.png").exists()) {
+						project.setIconPath(MiscUtilities.constructPath(
+							template_dir, "icon.png"));
+					}
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
