@@ -2,9 +2,9 @@ plugin.javadoc.JavadocPlugin.activate=defer
 plugin.javadoc.JavadocPlugin.name=Javadoc
 plugin.javadoc.JavadocPlugin.author=Damien Radtke
 plugin.javadoc.JavadocPlugin.version=1.0
-plugin.javadoc.JavadocPlugin.description=The Javadoc plugin provides a quick, easy way
-	to search through java api trees that are saved to a local disk, through either a
-	dialog window or by using the word under the cursor. Api pages are displayed
+plugin.javadoc.JavadocPlugin.description=The Javadoc plugin provides a quick, easy way \
+	to search through java api trees that are saved to a local disk, through either a \
+	dialog window or by using the word under the cursor. Api pages are displayed \
 	through the InfoViewer plugin.
 plugin.javadoc.JavadocPlugin.docs=index.html
 
