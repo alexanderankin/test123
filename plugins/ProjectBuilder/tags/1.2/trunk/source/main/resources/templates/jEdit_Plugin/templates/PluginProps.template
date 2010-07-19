@@ -1,0 +1,16 @@
+# ::mode=properties:: #
+# Basic Plugin Information {{{
+plugin.${pluginPackage}.${pluginClass}.activate=defer
+plugin.${pluginPackage}.${pluginClass}.author=${userName}
+plugin.${pluginPackage}.${pluginClass}.description=Fill this in
+plugin.${pluginPackage}.${pluginClass}.docs=docs/${project.name}.html
+plugin.${pluginPackage}.${pluginClass}.longdescription=description.html
+plugin.${pluginPackage}.${pluginClass}.name=${project.name}
+plugin.${pluginPackage}.${pluginClass}.usePluginHome=true
+plugin.${pluginPackage}.${pluginClass}.version=0.1
+# }}} Basic Plugin Information
+
+# Dependencies {{{
+plugin.${pluginPackage}.${pluginClass}.depend.0=jedit 04.03.18.00
+plugin.${pluginPackage}.${pluginClass}.depend.1=jdk 1.5
+# }}} Dependencies
