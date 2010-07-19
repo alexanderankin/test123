@@ -43,7 +43,7 @@ public class ProjectConfigPane extends EasyOptionPane {
 			String token = tokenizer.nextToken();
 			String[] list = token.split(",");
 			try {
-				jEdit.setTemporaryProperty(list[1], proj.getProperty(list[1])+":");
+				jEdit.setTemporaryProperty(list[1], proj.getProperty(list[1]));
 			} catch (Exception e) {}
 		}
 		this.project = proj;
@@ -161,7 +161,10 @@ public class ProjectConfigPane extends EasyOptionPane {
 			private JTextArea txt;
 			private boolean save;
 			public TextDialog(String title, String old_text) {
-				super(jEdit.getActiveView(), title, true);
+				super(jEdit.getActiveView(), true);
+				if (title.endsWith(":"))
+					title = title.substring(0, title.length()-1);
+				setTitle(title);
 				setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				save = false;
 				contents = new JPanel(new BorderLayout());

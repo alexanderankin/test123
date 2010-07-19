@@ -158,7 +158,8 @@
   </para>
   <sect1 id="template-parts"><title>Parts of a Template</title>
   <para>
-   A template contains the following (replace "Project_Name" with the name
+   A template contains the following, kept together in a folder called
+   Project_Name (replace "Project_Name" with the name
    of your template with spaces replaced by underscores):
    <itemizedlist>
     <listitem>Project_Name.groovy: the script that lays out the project's
@@ -267,6 +268,21 @@
    into existing files.
   </para>
  </sect2>
+ <sect2 id="other-files"><title>Other Files</title>
+ <para>
+  You should also supply any template files needed, beanshell scripts for
+  the defined actions, and a 16x16 icon for the project (icon.png).
+ </para>
+ </sect2>
+ </sect1>
+ <sect1 id="sharing"><title>Sharing Your Templates</title>
+ <para>
+  You can use your templates by placing them in the "project-templates"
+  folder in your settings directory, and share them by distributing your
+  template source and telling others to do the same. If you want your template
+  included with the plugin, send a message to the jEdit dev mailing list at
+  jedit-devel@lists.sourceforge.net.
+ </para>
  </sect1>
 </chapter>
 </book>
