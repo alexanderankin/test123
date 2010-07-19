@@ -1,9 +1,10 @@
 # Basic Plugin Information {{{
 plugin.projectbuilder.ProjectBuilderPlugin.activate=startup
 plugin.projectbuilder.ProjectBuilderPlugin.author=Eric Berry, Damien Radtke
-plugin.projectbuilder.ProjectBuilderPlugin.description=ProjectBuilder expands on the ProjectViewer plugin by allowing you \
-	to create projects of specific types through the use of a Groovy-based template system. \
-	This version comes bundled with project templates for creating jEdit plugins and standalone Java applications.
+plugin.projectbuilder.ProjectBuilderPlugin.description=ProjectBuilder provides \
+	jEdit with project-creation tools similar to those of other IDE's. This \
+	version comes pre-packaged with project templates for jEdit plugins and \
+	standalone Java applications.
 plugin.projectbuilder.ProjectBuilderPlugin.docs=index.html
 plugin.projectbuilder.ProjectBuilderPlugin.longdescription=description.html
 plugin.projectbuilder.ProjectBuilderPlugin.name=Project Builder
@@ -15,8 +16,8 @@ plugin.projectbuilder.ProjectBuilderPlugin.version=1.2
 plugin.projectbuilder.ProjectBuilderPlugin.depend.0=jedit 04.03.99.00
 plugin.projectbuilder.ProjectBuilderPlugin.depend.1=jdk 1.6
 plugin.projectbuilder.ProjectBuilderPlugin.depend.2=plugin com.townsfolkdesigns.jedit.plugins.scripting.GroovyScriptEnginePlugin 1.0.0
-plugin.projectbuilder.ProjectBuilderPlugin.depend.3=plugin projectviewer.ProjectPlugin 2.9.4
-plugin.projectbuilder.ProjectBuilderPlugin.depend.4=plugin CommonControlsPlugin 1.1
+plugin.projectbuilder.ProjectBuilderPlugin.depend.3=plugin projectviewer.ProjectPlugin 3.0.1
+plugin.projectbuilder.ProjectBuilderPlugin.depend.4=plugin CommonControlsPlugin 1.2
 plugin.projectbuilder.ProjectBuilderPlugin.depend.5=optional plugin AntFarm 1.7
 # }}} Dependencies
 
