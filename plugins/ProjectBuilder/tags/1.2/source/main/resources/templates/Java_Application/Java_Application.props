@@ -1,0 +1,32 @@
+# Property file for the Java Application template
+
+#{{{ Beanshell Actions
+project.bsh=dist compile clean - run
+project.bsh.dist.label=Build Application
+project.bsh.dist.script=bsh/dist.bsh
+project.bsh.compile.label=Compile
+project.bsh.compile.script=bsh/compile.bsh
+project.bsh.clean.label=Clean
+project.bsh.clean.script=bsh/clean.bsh
+project.bsh.run.label=Run Application
+project.bsh.run.script=bsh/run.bsh
+#}}}
+#{{{ Option Panes
+project.options=general depend
+project.options.general.label=General
+project.options.depend.label=Dependencies
+#{{{ General Pane
+project.options.general=label,project.config.mainclass-desc \
+	text,project.config.mainclass.label,project.config.mainclass \
+	textArea,project.config.manifest.label,project.config.manifest
+project.config.mainclass-desc=If a main class is specified, the resulting jar will be executable. Use a fully-qualified class name, including package.
+project.config.mainclass.label=Main Class:
+project.config.manifest.label=Manifest:
+#}}}
+#{{{ Dependency Pane
+project.options.depend=label,project.config.depend-desc1 label,project.config.depend-desc2 \
+	pathbuilder,null,project.config.classpath
+project.config.depend-desc1=Jar libraries you want packaged with your project should be stored in the lib/ subdirectory.
+project.config.depend-desc2=Libraries your program needs access to, but should not have bundled with, should be specified here.
+#}}}
+#}}}
