@@ -73,7 +73,7 @@ tags = "\n\t";
 def lib = new File(root, "lib");
 if (!lib.exists()) lib = new File("${root}/trunk", "lib");
 if (lib.exists()) {
-	def libList = new File(root, "lib").list();
+	def libList = lib.list();
 	for (int i = 0; i<libList.length; i++) {
 		tags += "<pathelement path=\"lib/${libList[i]}\" />\n\t";
 	}
