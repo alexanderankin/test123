@@ -393,48 +393,40 @@ public class JavaCompletionFinder {
 
     private JavaCompletion getPossibleNonQualifiedCompletions( String word ) {
     	org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, this, "Getting non-qualified completions");
-        if (jEdit.getBooleanProperty("sidekick.java.importPackage")) {
-        	CUNode cu = (CUNode) data.root.getUserObject();
-        	List imports = cu.getImports();
-        	for ( Iterator it = imports.iterator(); it.hasNext(); ) {
-        		String packageName = ( String ) it.next();
-        		if ( packageName != null ) {
-        			String className = packageName;
+    	ArrayList<String> pkgs = new ArrayList(
+        		Arrays.asList(Locator.getInstance().getClassName(word)));
+        if (pkgs != null && pkgs.size() > 0) {
+        	if (jEdit.getBooleanProperty("sidekick.java.importPackage")) {
+        		CUNode cu = (CUNode) data.root.getUserObject();
+        		List imports = cu.getImports();
+        		for ( Iterator it = imports.iterator(); it.hasNext(); ) {
+        			String packageName = ( String ) it.next();
+        			if (packageName == null) continue;
         			// might have a fully qualified import
-        			if ( className.endsWith( word ) ) {
-        				Class c = validateClassName( className, word, null );
+        			if ( packageName.endsWith( "."+word ) ) {
+        				Class c = validateClassName( packageName );
         				if ( c != null ) {
-        					return null;
+        					pkgs.remove(packageName);
         				}
         			}
         			else {
         				// wildcard import, need to add . and type
-        				className = packageName + "." + word;
-        				try {
-        					Class c = validateClassName( className, word, null );
-        					if ( c != null ) {
-        						return null;
-        					}
-        				}
-        				catch ( Exception e ) {
-        					continue;
+        				String className = packageName + "." + word;
+        				Class c = validateClassName( className );
+        				if ( c != null ) {
+        					pkgs.remove(className);
         				}
         			}
         		}
+        		if (pkgs.size() > 0) {
+        			return new JavaCompletion(editPane.getView(), word, pkgs);
+        		} else {
+        			return null;
+        		}
+        	} else {
+				return new JavaCompletion(editPane.getView(), word, pkgs);
         	}
-        }
-        // If the word is a class, get its package        
-        String[] pkgs = Locator.getInstance().getClassName(word);
-        if (pkgs != null && pkgs.length>0) {
-        	//String inUse = getClassForType(word, (CUNode) data.root.getUserObject()).getName();
-        	ArrayList<String> list = new ArrayList<String>(pkgs.length);
-        	for (int i = 0; i<pkgs.length; i++) {
-        		//if (pkgs[i].equals(inUse)) continue;
-        		list.add(pkgs[i]);
-        	}
-        	//list.trimToSize();
-        	return new JavaCompletion(editPane.getView(), word, list);
-        }
+		}
         // partialword
         // find all fields/variables declarations, methods, and classes in scope
         TigerNode tn = ( TigerNode ) data.getAssetAtOffset( caret );
