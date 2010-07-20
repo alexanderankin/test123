@@ -2,6 +2,7 @@
 
 import projectbuilder.builder.ProjectBuilder as PB
 import org.gjt.sp.jedit.jEdit as JEDIT
+import org.gjt.sp.jedit.MiscUtilities
 
 def pluginPackage = name.toLowerCase()
 def pluginClass = "${name}Plugin"
