@@ -71,6 +71,7 @@ PB.mark(buildfile, "<!-- mark:plugins -->", "<!-- /mark:plugins -->", tags);
 
 tags = "\n\t";
 def lib = new File(root, "lib");
+if (!lib.exists()) lib = new File("${root}/trunk", "lib");
 if (lib.exists()) {
 	def libList = new File(root, "lib").list();
 	for (int i = 0; i<libList.length; i++) {
