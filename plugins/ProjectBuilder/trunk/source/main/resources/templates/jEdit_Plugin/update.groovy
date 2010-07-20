@@ -24,7 +24,7 @@ if (buildProps == null || buildProps.length() == 0) {
 		// Check the parent of the root directory
 		path = MiscUtilities.constructPath(root, "../build.properties");
 		if (new File(path).exists()) {
-			buildProps = f.getPath();
+			buildProps = path;
 		}
 	}
 	if (buildProps == null) buildProps = "";
