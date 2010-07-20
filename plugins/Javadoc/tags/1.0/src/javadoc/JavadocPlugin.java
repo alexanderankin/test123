@@ -54,7 +54,16 @@ public class JavadocPlugin extends EditPlugin {
 					chosenDoc = pathList.get(0);
 				}
 				if (chosenDoc != null) {
-					InfoViewerPlugin.openURL(view, "file:/"+chosenDoc);
+					File chosenDocFile = new File(chosenDoc);
+					if(chosenDocFile.exists()) {
+						try {
+							InfoViewerPlugin.openURL(view, chosenDocFile.toURI().toString());
+						} catch (SecurityException ex) {
+							Log.log(Log.ERROR, JavadocPlugin.class, "Error opening Chosen Doc: " + chosenDoc, ex);
+						}
+					} else {
+						Log.log(Log.ERROR, JavadocPlugin.class, "Chosen Doc file does not exist: " + chosenDocFile.getPath());
+					}
 				}
 				view.getStatus().setMessage("");
 			}
