@@ -69,7 +69,10 @@ public class QuickSearchTagDialog extends JDialog {
 		public void done()
 		{
 			if (model.getSize() == 1)
+			{
 				jumpTo((QuickSearchTag) model.get(0));
+				model.removeAllElements();
+			}
 		}
 	}
 
@@ -180,6 +183,7 @@ public class QuickSearchTagDialog extends JDialog {
 	private void jumpTo(QuickSearchTag t) {
 		if (t != null)
 			CtagsInterfacePlugin.jumpTo(view, t.file, t.line);
+		setVisible(false);
 		dispose();
 	}
 
@@ -228,10 +232,12 @@ public class QuickSearchTagDialog extends JDialog {
 	}
 
 	public void setVisible(boolean b) {
-		Rectangle bounds = getBounds();
-		window.setLocation(bounds.x, bounds.y + bounds.height);
-		GUIUtilities.requestFocus(this, name);
-		window.setVisible(false);
+		if (b) 	{
+			Rectangle bounds = getBounds();
+			window.setLocation(bounds.x, bounds.y + bounds.height);
+			GUIUtilities.requestFocus(this, name);
+			window.setVisible(false);	// Initially hide the tag list window
+		}
 		super.setVisible(b);
 	}
 
