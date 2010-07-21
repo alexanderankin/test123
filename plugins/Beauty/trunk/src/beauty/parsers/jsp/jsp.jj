@@ -158,6 +158,13 @@ public class JspParser {
         token_source.writePre(s);
     }
     
+    // utility method to check if a string builder/buffer ends with a particular
+    // string, No parameter checking is done here.
+    private boolean endsWith(CharSequence cs, String e) {
+        CharSequence end = cs.subSequence(cs.length() - 1 - e.length(), cs.length() - 1);   
+        return end.toString().equals(e);
+    }
+    
     /**
      * All special tokens in this parser are whitespace tokens only.
      * This method gathers all the special tokens preceeding the given
@@ -846,7 +853,15 @@ void UnparsedTextNoDoubleQuotes() :
 void ElExpression() :
 { }
 {
-	t=<EL_EXPRESSION>  { add(t); } 
+	t=<EL_EXPRESSION>  
+	{ 
+	    String s = getSpecial(t);
+	    StringTokenizer st = new StringTokenizer(s, ls, true);
+	    if (st.countTokens() > 0) {
+	        add(st.nextToken());
+	    }
+	    add(t); 
+	} 
 }
 
 void ValueBindingInAttribute() :
@@ -938,6 +953,9 @@ void Element() :
    		t=<ENDTAG_START>  
    		   { 
    		       writePre(getSpecial(t));
+   		       if (!endsWith(token_source.outputBuffer, ls)) {
+   		           writeln();   
+   		       }
    		       --token_source.level; 
    		       add(t); 
    		   } 
