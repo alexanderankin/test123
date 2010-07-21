@@ -699,7 +699,7 @@ public class JavaCompletionFinder {
         }
 
         String[] classNames = Locator.getInstance().getClassName( type );
-		if (classNames == null) {
+		if (classNames == null || classNames.length == 0) {
 			return null;
 		} else {
 			if (classNames.length > 1) {
