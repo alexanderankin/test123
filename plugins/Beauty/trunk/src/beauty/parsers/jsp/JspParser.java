@@ -122,6 +122,13 @@ public class JspParser implements JspParserConstants {
         token_source.writePre(s);
     }
 
+    // utility method to check if a string builder/buffer ends with a particular
+    // string, No parameter checking is done here.
+    private boolean endsWith(CharSequence cs, String e) {
+        CharSequence end = cs.subSequence(cs.length() - 1 - e.length(), cs.length() - 1);
+        return end.toString().equals(e);
+    }
+
     /**
      * All special tokens in this parser are whitespace tokens only.
      * This method gathers all the special tokens preceeding the given
@@ -605,7 +612,12 @@ public class JspParser implements JspParserConstants {
  */
   final public void ElExpression() throws ParseException {
     t = jj_consume_token(EL_EXPRESSION);
-                             add(t);
+            String s = getSpecial(t);
+            StringTokenizer st = new StringTokenizer(s, ls, true);
+            if (st.countTokens() > 0) {
+                add(st.nextToken());
+            }
+            add(t);
   }
 
   final public void ValueBindingInAttribute() throws ParseException {
@@ -746,6 +758,9 @@ public class JspParser implements JspParserConstants {
       }
       t = jj_consume_token(ENDTAG_START);
                        writePre(getSpecial(t));
+                       if (!endsWith(token_source.outputBuffer, ls)) {
+                           writeln();
+                       }
                        --token_source.level;
                        add(t);
       endTagName = jj_consume_token(TAG_NAME);
@@ -1222,11 +1237,6 @@ public class JspParser implements JspParserConstants {
     finally { jj_save(1, xla); }
   }
 
-  private boolean jj_3R_45() {
-    if (jj_scan_token(UNPARSED_TEXT_NO_DOUBLE_QUOTES)) return true;
-    return false;
-  }
-
   private boolean jj_3R_47() {
     if (jj_scan_token(UNPARSED_TEXT_NO_SINGLE_QUOTES)) return true;
     return false;
@@ -1241,13 +1251,6 @@ public class JspParser implements JspParserConstants {
 
   private boolean jj_3R_29() {
     if (jj_scan_token(WHITESPACES)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_26() {
-    if (jj_scan_token(JSP_COMMENT_START)) return true;
-    if (jj_scan_token(JSP_COMMENT_CONTENT)) return true;
-    if (jj_scan_token(JSP_COMMENT_END)) return true;
     return false;
   }
 
@@ -1274,6 +1277,13 @@ public class JspParser implements JspParserConstants {
     if (jj_scan_token(SYSTEM)) return true;
     if (jj_scan_token(WHITESPACES)) return true;
     if (jj_scan_token(QUOTED_LITERAL)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_26() {
+    if (jj_scan_token(JSP_COMMENT_START)) return true;
+    if (jj_scan_token(JSP_COMMENT_CONTENT)) return true;
+    if (jj_scan_token(JSP_COMMENT_END)) return true;
     return false;
   }
 
@@ -1337,11 +1347,6 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
-  private boolean jj_3R_23() {
-    if (jj_scan_token(WHITESPACES)) return true;
-    return false;
-  }
-
   private boolean jj_3R_36() {
     if (jj_scan_token(ENDING_DOUBLE_QUOTE)) return true;
     return false;
@@ -1354,6 +1359,11 @@ public class JspParser implements JspParserConstants {
     jj_scanpos = xsp;
     if (jj_3R_44()) return true;
     }
+    return false;
+  }
+
+  private boolean jj_3R_23() {
+    if (jj_scan_token(WHITESPACES)) return true;
     return false;
   }
 
@@ -1375,11 +1385,6 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
-  private boolean jj_3R_22() {
-    if (jj_3R_26()) return true;
-    return false;
-  }
-
   private boolean jj_3R_41() {
     if (jj_3R_45()) return true;
     return false;
@@ -1395,11 +1400,6 @@ public class JspParser implements JspParserConstants {
     xsp = jj_scanpos;
     if (jj_3R_24()) jj_scanpos = xsp;
     if (jj_scan_token(DOCTYPE_DECL_END)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_19() {
-    if (jj_3R_26()) return true;
     return false;
   }
 
@@ -1428,38 +1428,18 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
+  private boolean jj_3R_22() {
+    if (jj_3R_26()) return true;
+    return false;
+  }
+
   private boolean jj_3R_20() {
     if (jj_3R_27()) return true;
     return false;
   }
 
-  private boolean jj_3R_21() {
-    if (jj_3R_25()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_16() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_21()) {
-    jj_scanpos = xsp;
-    if (jj_3R_22()) return true;
-    }
-    return false;
-  }
-
-  private boolean jj_3R_51() {
-    if (jj_scan_token(EL_EXPRESSION_IN_ATTRIBUTE)) return true;
-    return false;
-  }
-
-  private boolean jj_3_2() {
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_16()) { jj_scanpos = xsp; break; }
-    }
-    if (jj_3R_17()) return true;
+  private boolean jj_3R_19() {
+    if (jj_3R_26()) return true;
     return false;
   }
 
@@ -1478,6 +1458,11 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
+  private boolean jj_3R_51() {
+    if (jj_scan_token(EL_EXPRESSION_IN_ATTRIBUTE)) return true;
+    return false;
+  }
+
   private boolean jj_3R_15() {
     if (jj_scan_token(DECL_START)) return true;
     Token xsp;
@@ -1486,6 +1471,46 @@ public class JspParser implements JspParserConstants {
       if (jj_3R_20()) { jj_scanpos = xsp; break; }
     }
     if (jj_scan_token(DECL_END)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_52() {
+    if (jj_scan_token(VALUE_BINDING_IN_ATTRIBUTE)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_21() {
+    if (jj_3R_25()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_16() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_21()) {
+    jj_scanpos = xsp;
+    if (jj_3R_22()) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3R_30() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_33()) {
+    jj_scanpos = xsp;
+    if (jj_3R_34()) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3_2() {
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_16()) { jj_scanpos = xsp; break; }
+    }
+    if (jj_3R_17()) return true;
     return false;
   }
 
@@ -1504,11 +1529,6 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
-  private boolean jj_3R_52() {
-    if (jj_scan_token(VALUE_BINDING_IN_ATTRIBUTE)) return true;
-    return false;
-  }
-
   private boolean jj_3_1() {
     Token xsp;
     while (true) {
@@ -1519,13 +1539,8 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
-  private boolean jj_3R_30() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_33()) {
-    jj_scanpos = xsp;
-    if (jj_3R_34()) return true;
-    }
+  private boolean jj_3R_45() {
+    if (jj_scan_token(UNPARSED_TEXT_NO_DOUBLE_QUOTES)) return true;
     return false;
   }
 

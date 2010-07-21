@@ -9,6 +9,7 @@
                   <span>
                     some text
                   </span>
+                  <b>${whatever}</b>
                   
                   <strong><c:out value="${title}"/>
                   </strong>
