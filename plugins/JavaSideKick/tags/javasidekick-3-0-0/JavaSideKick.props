@@ -174,7 +174,7 @@ options.sidekick.java.ambiguousClass.message=The class {0} is ambiguous. Use an 
 sidekick.java.showStatusBar=true
 sidekick.java.automaticParse=false
 sidekick.java.sort=false
-sidekick.java.wordBreakWords=new,import
+sidekick.java.wordBreakWords=new,import,private,public,protected,static,final
 sidekick.java.importPackage=false
 
 #member filters by type
