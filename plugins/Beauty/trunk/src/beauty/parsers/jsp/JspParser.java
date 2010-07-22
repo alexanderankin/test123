@@ -122,13 +122,6 @@ public class JspParser implements JspParserConstants {
         token_source.writePre(s);
     }
 
-    // utility method to check if a string builder/buffer ends with a particular
-    // string, No parameter checking is done here.
-    private boolean endsWith(CharSequence cs, String e) {
-        CharSequence end = cs.subSequence(cs.length() - 1 - e.length(), cs.length() - 1);
-        return end.toString().equals(e);
-    }
-
     /**
      * All special tokens in this parser are whitespace tokens only.
      * This method gathers all the special tokens preceeding the given
@@ -433,9 +426,6 @@ public class JspParser implements JspParserConstants {
              try {
             if (content != null && content.image.trim().length() > 0) {
                 Beautifier beautifier = new JavaLineBeautifier();
-                beautifier.setIndentWidth(indentWidth);
-                beautifier.setTabWidth(tabSize);
-                beautifier.setUseSoftTabs(useSoftTabs);
                 beautifier.setInitialIndentLevel(token_source.level);
                 String java = beautifier.beautify(content.image.trim());
                 writePre(java);
@@ -476,11 +466,25 @@ public class JspParser implements JspParserConstants {
                 writePre(getSpecial(t));
                 lines.add(t.image);
     t = jj_consume_token(JSP_COMMENT_CONTENT);
-            String s = t.image;
-            String[] parts = s.split(ls);
-            for (String line : parts) {
-                lines.add(line);
+            String s = t.image.trim();
+            if (token_source.collapseBlankLines) {
+            String lsep;
+            if ("\u005cr".equals(ls)) {
+                lsep = "\u005c\u005cr";
             }
+            else if ("\u005cr\u005cn".equals(ls)) {
+                lsep = "\u005c\u005cr\u005c\u005cn";
+            }
+            else {
+                lsep = "\u005c\u005cn";
+            }
+            String regex = "(([ ]|[\u005c\u005ct])*(" + lsep + ")){2,}";
+            s = s.replaceAll(regex, ls + ls);
+        }
+        String[] parts = s.split(ls);
+        for (String line : parts) {
+            lines.add(line);
+        }
     t = jj_consume_token(JSP_COMMENT_END);
         if (lines.size() > 2 && !lines.get(lines.size() - 1).trim().isEmpty()) {
           lines.add(token_source.indent);
@@ -500,7 +504,7 @@ public class JspParser implements JspParserConstants {
                 write();
                 break;
             case 3:
-                // have start tag, some text, and end tag, so put these all on one line
+                // single line comment
                 sb.append(lines.get(0));
                 sb.append(" ");
                 sb.append(lines.get(1));
@@ -510,9 +514,9 @@ public class JspParser implements JspParserConstants {
                 write();
                 break;
             default:
-                // multiple line comment
+                // multi-line comment
                 add(lines.get(0));
-                write();
+                writeln();
                 ++token_source.level;
                 for (int i = 1; i < lines.size() - 2; i++) {
                     add(lines.get(i));
@@ -612,11 +616,6 @@ public class JspParser implements JspParserConstants {
  */
   final public void ElExpression() throws ParseException {
     t = jj_consume_token(EL_EXPRESSION);
-            String s = getSpecial(t);
-            StringTokenizer st = new StringTokenizer(s, ls, true);
-            if (st.countTokens() > 0) {
-                add(st.nextToken());
-            }
             add(t);
   }
 
@@ -758,9 +757,6 @@ public class JspParser implements JspParserConstants {
       }
       t = jj_consume_token(ENDTAG_START);
                        writePre(getSpecial(t));
-                       if (!endsWith(token_source.outputBuffer, ls)) {
-                           writeln();
-                       }
                        --token_source.level;
                        add(t);
       endTagName = jj_consume_token(TAG_NAME);
@@ -1160,9 +1156,6 @@ public class JspParser implements JspParserConstants {
         try {
             if (script.length() > 0) {
                 Beautifier beautifier = new DefaultBeautifier("javascript");
-                beautifier.setIndentWidth(indentWidth);
-                beautifier.setTabWidth(tabSize);
-                beautifier.setUseSoftTabs(useSoftTabs);
                 beautifier.setInitialIndentLevel(token_source.level);
                 String js = beautifier.beautify(script.toString().trim());
                 writePre(js);
@@ -1203,9 +1196,6 @@ public class JspParser implements JspParserConstants {
         try {
             if (style.length() > 0) {
                 CSSBeautifier beautifier = new CSSBeautifier();
-                beautifier.setIndentWidth(indentWidth);
-                beautifier.setTabWidth(tabSize);
-                beautifier.setUseSoftTabs(useSoftTabs);
                 beautifier.setInitialIndentLevel(token_source.level);
                 String css = beautifier.beautify(style.toString().trim());
                 writePre(css);
@@ -1280,13 +1270,6 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
-  private boolean jj_3R_26() {
-    if (jj_scan_token(JSP_COMMENT_START)) return true;
-    if (jj_scan_token(JSP_COMMENT_CONTENT)) return true;
-    if (jj_scan_token(JSP_COMMENT_END)) return true;
-    return false;
-  }
-
   private boolean jj_3R_25() {
     if (jj_scan_token(COMMENT_START)) return true;
     if (jj_scan_token(COMMENT_TEXT)) return true;
@@ -1326,6 +1309,13 @@ public class JspParser implements JspParserConstants {
 
   private boolean jj_3R_40() {
     if (jj_scan_token(DOLLAR_OR_HASH_SINGLE_QUOTE)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_26() {
+    if (jj_scan_token(JSP_COMMENT_START)) return true;
+    if (jj_scan_token(JSP_COMMENT_CONTENT)) return true;
+    if (jj_scan_token(JSP_COMMENT_END)) return true;
     return false;
   }
 
@@ -1438,8 +1428,8 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
-  private boolean jj_3R_19() {
-    if (jj_3R_26()) return true;
+  private boolean jj_3R_51() {
+    if (jj_scan_token(EL_EXPRESSION_IN_ATTRIBUTE)) return true;
     return false;
   }
 
@@ -1458,8 +1448,8 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
-  private boolean jj_3R_51() {
-    if (jj_scan_token(EL_EXPRESSION_IN_ATTRIBUTE)) return true;
+  private boolean jj_3R_19() {
+    if (jj_3R_26()) return true;
     return false;
   }
 
@@ -1479,6 +1469,16 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
+  private boolean jj_3R_30() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_33()) {
+    jj_scanpos = xsp;
+    if (jj_3R_34()) return true;
+    }
+    return false;
+  }
+
   private boolean jj_3R_21() {
     if (jj_3R_25()) return true;
     return false;
@@ -1490,16 +1490,6 @@ public class JspParser implements JspParserConstants {
     if (jj_3R_21()) {
     jj_scanpos = xsp;
     if (jj_3R_22()) return true;
-    }
-    return false;
-  }
-
-  private boolean jj_3R_30() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_33()) {
-    jj_scanpos = xsp;
-    if (jj_3R_34()) return true;
     }
     return false;
   }
