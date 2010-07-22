@@ -15,7 +15,6 @@ import org.gjt.sp.util.Log;
 
 import beauty.beautifiers.*;
 
-// TODO: the wait cursor is not being displayed, need to fix that.
 public class BeautyThread implements Runnable {
 
     private View view = null;
@@ -90,6 +89,11 @@ public class BeautyThread implements Runnable {
                 if ( showErrorDialogs )
                     GUIUtilities.error( view, "beauty.error.empty", null );
                 return ;
+            }
+            
+            if (contents.equals(buffer.getText(0, buffer.getLength()))) {
+                // don't replace the buffer contents if they haven't changed.
+                return;   
             }
 
             // remember and remove all markers:

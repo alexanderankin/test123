@@ -7,20 +7,21 @@ import java.util.regex.*;
 // scriptlets are often just fragments of java code split up by jsp tags.  The
 // standard java parser won't accept such code.  This one will, but it won't
 // beautify as well as the standard java parser.
-// TODO: adjust ! to not have trailing space
 public class JavaLineBeautifier extends DefaultBeautifier {
     
-    private Pattern genericPattern;
+    private static Pattern genericPattern = Pattern.compile("\\s*[<]\\s*((\\w*?)\\s*[>]");
     
     public JavaLineBeautifier() {
         super("java");   
-        genericPattern = Pattern.compile("\\s*[<]\\s*(.*?)\\s*[>]");
     }
     
     @Override
     public String beautify(String text) {
         String s = super.beautify(text);   
         s = adjustGenerics(s);
+        
+        // ensure ! is not followed by whitespace
+        s = s.replaceAll("[!]\\s*", "!"); 
         return s;
     }
     
