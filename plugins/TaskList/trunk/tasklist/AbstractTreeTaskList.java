@@ -4,8 +4,6 @@ package tasklist;
 import java.awt.BorderLayout;
 import java.awt.event.*;
 import java.beans.*;
-import java.io.File;
-import java.net.URL;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.tree.*;
@@ -98,6 +96,7 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
         SortableTreeModel filteredModel = new SortableTreeModel( filteredRoot, new TreeNodeComparator() );
 
         DefaultMutableTreeNode root = ( DefaultMutableTreeNode ) fullModel.getRoot();
+        int taskCount = 0;
         for ( int i = 0; i < root.getChildCount(); i++ ) {
             DefaultMutableTreeNode bufferNode = ( DefaultMutableTreeNode ) root.getChildAt( i );
             DefaultMutableTreeNode filteredBufferNode = new DefaultMutableTreeNode( bufferNode.getUserObject() );
@@ -107,12 +106,15 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
                 TaskType type = TaskListPlugin.getTaskType( task );
                 if ( activeTypes.contains( type ) ) {
                     filteredBufferNode.add( new DefaultMutableTreeNode( task ) );
+                    ++taskCount;
                 }
             }
             if ( filteredBufferNode.getChildCount() > 0 ) {
                 filteredRoot.add( filteredBufferNode );
             }
         }
+        String rootDisplay = filteredRoot.getUserObject().toString() + " (" + taskCount + " task" + (taskCount > 1 ? "s)" : ")"); 
+        filteredRoot.setUserObject(rootDisplay);
         tree.setModel( filteredModel );
         expandTree();
         invalidate();
@@ -141,7 +143,7 @@ public abstract class AbstractTreeTaskList extends JPanel implements EBComponent
     }
 
     // this worker parses files for tasks and creates the tree for display
-    private class Runner extends SwingWorker<TreeModel, Object> {
+    private class Runner extends common.swingworker.SwingWorker<TreeModel, Object> {
 
         private JProgressBar progressBar = new JProgressBar( 0, 100 );
 

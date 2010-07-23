@@ -516,9 +516,6 @@ public class TaskListPlugin extends EditPlugin {
             while ( token.id != Token.END ) {
                 // For 4.2 there are no longer TAB and WHITESPACE tokens
                 // but tokens are still broken up by word.
-                // TODO: not all modes have COMMENT tokens, most notably, the
-                // text mode does not.  This means that a text file used to 
-                // record a list of TODOs will not be parsed by this plugin.
                 if ( Token.COMMENT1 <= token.id && token.id <= Token.COMMENT4 ) {
                     type = token.id;
                     chunkStart = tokenStart;
