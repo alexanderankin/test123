@@ -115,7 +115,12 @@
                 <include name="**/*.gif"/>
             </fileset>
         </copy>
-        <copy todir="${classes.dir}/ise/plugin/svn/gui/icons" overwrite="no">
+        <copy todir="${classes.dir}/ise/plugin/svn/gui/icons" overwrite="yes">
+            <fileset dir="${src.dir}/ise/plugin/svn/gui/icons">
+                <include name="**/*.png"/>
+            </fileset>
+        </copy>
+        <copy todir="${src.dir}/docs" overwrite="yes">
             <fileset dir="${src.dir}/ise/plugin/svn/gui/icons">
                 <include name="**/*.png"/>
             </fileset>
