@@ -7,7 +7,7 @@ plugin.gatchan.jedit.lucene.LucenePlugin.depend.0=jdk 1.6
 plugin.gatchan.jedit.lucene.LucenePlugin.depend.1=jedit 04.04.01.00
 plugin.gatchan.jedit.lucene.LucenePlugin.depend.2=plugin marker.MarkerSetsPlugin 0.4
 plugin.gatchan.jedit.lucene.LucenePlugin.depend.3=optional plugin projectviewer.ProjectPlugin 2.9.0.0
-plugin.gatchan.jedit.lucene.LucenePlugin.jars=lucene-core-3.0.1.jar lucene-highlighter-3.0.1.jar lucene-memory-3.0.1.jar
+plugin.gatchan.jedit.lucene.LucenePlugin.jars=lucene-core-3.0.2.jar lucene-highlighter-3.0.2.jar lucene-memory-3.0.2.jar
 plugin.gatchan.jedit.lucene.LucenePlugin.browser-menu=\
 	lucene.add-to-index lucene.add-to-newindex
 plugin.gatchan.jedit.lucene.LucenePlugin.menu=\
@@ -46,7 +46,7 @@ options.IndexManagement.code=new gatchan.jedit.lucene.IndexManagement();
 
 lucene.options.IncludeGlobs=*
 lucene.options.IncludeGlobs.label=Include only files matching:
-lucene.options.ExcludeGlobs=*.*~ *.bak *.bmp *.ico *.gif *.gif *.png *.jpg *.class *.exe  *.obj *.jar *.zip *.7z *.rar *.tgz *.wav *.mp3 *.ogg
+lucene.options.ExcludeGlobs=*.*~ *.bak *.bmp *.ico *.gif *.gif *.png *.jpg *.class *.exe  *.obj *.jar *.zip *.7z *.rar *.tar *.gz *.tgz *.wav *.mp3 *.ogg
 lucene.options.ExcludeGlobs.label=... except files matching:
 lucene.options.SearchDockable.label=Search Results Dockable
 lucene.options.SearchStringLength.label=Length of search string field:

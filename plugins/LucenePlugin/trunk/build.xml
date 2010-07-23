@@ -10,7 +10,8 @@
 	<property name="docs-proc.target" value="none"/>
 	<property name="plugin.dependencies" value="CommonControls" />
 	<property name="dist.target" value="dist.complete" />
-	<property name="compiler.source" value="1.6" />
+    <property name="lucene.version" value="3.0.2" />
+    <property name="compiler.source" value="1.6" />
 	<property name="compiler.target" value="1.6" />
 	<property name="jedit.plugins.dir" value="${install.dir}" />
 
@@ -29,15 +30,15 @@
 		<pathelement location="${jedit.plugins.dir}/ProjectViewer.jar"/>
 		<pathelement location="${jedit.plugins.dir}/MarkerSets.jar"/>
 		<pathelement location="${install.dir}/MarkerSets.jar"/>
-		<pathelement location="${install.dir}/lucene-core-3.0.1.jar"/>
-		<pathelement location="${install.dir}/lucene-highlighter-3.0.1.jar"/>
-		<pathelement location="${install.dir}/lucene-memory-3.0.1.jar"/>
+		<pathelement location="${install.dir}/lucene-core-${lucene.version}.jar"/>
+		<pathelement location="${install.dir}/lucene-highlighter-${lucene.version}.jar"/>
+		<pathelement location="${install.dir}/lucene-memory-${lucene.version}.jar"/>
 	</path>
 
 	<target name="build.prepare">
 		<mkdir dir="${build.dir}" />
-		<copy file="lucene-core-3.0.1.jar" todir="${install.dir}" />
-		<copy file="lucene-highlighter-3.0.1.jar" todir="${install.dir}" />
-		<copy file="lucene-memory-3.0.1.jar" todir="${install.dir}" />
+		<copy file="lucene-core-${lucene.version}.jar" todir="${install.dir}" />
+		<copy file="lucene-highlighter-${lucene.version}.jar" todir="${install.dir}" />
+		<copy file="lucene-memory-${lucene.version}.jar" todir="${install.dir}" />
 	</target>
 </project>
