@@ -57,12 +57,7 @@ public class BeautyThread implements Runnable {
             }
 
             // The following properties are set automatically according to the
-            // current buffer settings:
-            // line separator
-            // tab width
-            // indent width
-            // soft tabs
-            /// should soft wrap and line width be included here?
+            // current buffer settings
             Mode mode = buffer.getMode();
             String modeName = mode.getName();
             String ls = buffer.getStringProperty( "lineSeparator" );
@@ -79,9 +74,9 @@ public class BeautyThread implements Runnable {
             beautifier.setWrapMargin( wrapMargin );
             beautifier.setWrapMode( wrapMode );
 
-            // format the buffer
+            // format the buffer contents
             String contents = beautifier.beautify( buffer.getText( 0, buffer.getLength() ) );
-
+            
             // store the string back:
             if ( contents == null || contents.length() == 0 ) {
                 // result string is empty!
@@ -95,7 +90,7 @@ public class BeautyThread implements Runnable {
                 // don't replace the buffer contents if they haven't changed.
                 return;   
             }
-
+            
             // remember and remove all markers:
             Vector markers = ( Vector ) buffer.getMarkers().clone();
             buffer.removeAllMarkers();
