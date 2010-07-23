@@ -305,7 +305,7 @@ PARSER_END(JspParser)
 | <#NO_JSP_COMMENT_END: (~["-"] | "-" ~["-"] | "--" ~["%"] | "--%" ~[">"])+ > 
 	// anything but -->
 | <#NO_HTML_COMMENT_END: (~["-"] | "-" ~["-"] | "--" ~[">"] )+ > 
-
+    // anything but %>
 | <#NO_JSP_TAG_END: ( ~["%"] | ("%" ~[">"]) )+ >
 }
 
@@ -327,32 +327,6 @@ PARSER_END(JspParser)
 <AfterTagState> SPECIAL_TOKEN :
 {
     < (<WHITESPACE>)+ > 
-    {
-        /*
-        String s = matchedToken.image;
-        s = s.replaceAll(" ", "");
-        s = s.replaceAll("\t", "");
-        s = s.replaceAll("\n", "N");
-        writePre(s);
-        */
-        
-        
-        /*
-        String s = matchedToken.image;
-        s = s.replaceAll(" ", "");
-        s = s.replaceAll("\t", "");
-        StringTokenizer st = new StringTokenizer(s, ls, true);
-        int count = st.countTokens();
-        if (collapseBlankLines) {
-            count = Math.min(2, count);   
-        }
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < count; i++) {
-            sb.append(ls);
-        }
-        writePre(sb.toString());
-        */
-    }
 }
 
 <DEFAULT, AfterTagState> TOKEN : 
