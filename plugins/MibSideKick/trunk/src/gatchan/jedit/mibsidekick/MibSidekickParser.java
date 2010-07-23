@@ -3,7 +3,7 @@
 * :tabSize=8:indentSize=8:noTabs=false:
 * :folding=explicit:collapseFolds=1:
 *
-* Copyright (C) 2009 Matthieu Casanova
+* Copyright (C) 2009, 2010 Matthieu Casanova
 *
 * This program is free software; you can redistribute it and/or
 * modify it under the terms of the GNU General Public License
@@ -65,7 +65,8 @@ public class MibSidekickParser extends SideKickParser
 			loader.addDir(file.getParentFile());
 			for (File path : searchPath)
 			{
-				loader.addDir(path);
+				if (path.isDirectory())
+					loader.addDir(path);
 			}
 //			loader.addResourceDir("mibs/iana");
 //			loader.addResourceDir("mibs/ietf");
