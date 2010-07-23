@@ -4,7 +4,7 @@
 plugin.gatchan.jedit.mibsidekick.MibSideKickPlugin.activate=defer
 plugin.gatchan.jedit.mibsidekick.MibSideKickPlugin.name=MibSideKick
 plugin.gatchan.jedit.mibsidekick.MibSideKickPlugin.author=Matthieu Casanova
-plugin.gatchan.jedit.mibsidekick.MibSideKickPlugin.version=1.2.0
+plugin.gatchan.jedit.mibsidekick.MibSideKickPlugin.version=1.2.1
 plugin.gatchan.jedit.mibsidekick.MibSideKickPlugin.depend.0=jdk 1.5
 plugin.gatchan.jedit.mibsidekick.MibSideKickPlugin.depend.1=jedit 04.03.15.00
 plugin.gatchan.jedit.mibsidekick.MibSideKickPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.7
