@@ -140,7 +140,7 @@
     be true so that all of the things defined above are known to the test 
     framework. -->
     <target name="test">
-        <ant antfile="${test.framework.home}/build.xml" target="test" inheritRefs="true">
+        <ant antfile="${test.framework.home}/build.xml" target="-test" inheritRefs="true">
             <reference refid="project.test.sysproperties"/>
         </ant>
     </target>
