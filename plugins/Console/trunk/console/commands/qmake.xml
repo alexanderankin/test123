@@ -35,7 +35,7 @@
             location = customlocation;
         }
         else location=sourcedir;
-		return "cd " + location;
+		return "cd \"" + location + "\"";
 		</COMMAND>
 		<COMMAND SHELL="System" CONFIRM="FALSE">
 			buf = new StringBuffer();
