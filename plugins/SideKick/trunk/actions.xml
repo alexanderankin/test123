@@ -62,5 +62,25 @@
 			buffer.setDirty(false);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="sidekick-jump-to-beginning-of-function" NO_REPEAT="TRUE">
+		<CODE>
+			JumpToBeginningOfFunction(textArea);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="sidekick-jump-to-end-of-function" NO_REPEAT="TRUE">
+		<CODE>
+			JumpToEndOfFunction(textArea);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="sidekick-search-asset" NO_REPEAT="TRUE">
+		<CODE>
+			SearchAsset(textArea, false);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="sidekick-search-asset-exact" NO_REPEAT="TRUE">
+		<CODE>
+			SearchAsset(textArea, true);
+		</CODE>
+	</ACTION>
 
 </ACTIONS>
