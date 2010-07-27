@@ -237,7 +237,10 @@ public class ProjectBuilderPlugin extends EditPlugin implements EBComponent {
    	   	   def update = (ViewerUpdate) message
    	   	   def view = update.getView()
    	   	   if (update.getType() == ViewerUpdate.Type.PROJECT_LOADED && JEDIT.getBooleanProperty("options.projectbuilder.show-toolbar")) {
-   	   	   	   BeanshellToolbar.create(view, (VPTProject) update.getNode())
+   	   	   	   def node = update.getNode()
+   	   	   	   if (node instanceof VPTProject) {
+				   BeanshellToolbar.create(view, (VPTProject) node)
+			   }
    	   	   } else if (update.getType() == ViewerUpdate.Type.GROUP_ACTIVATED) {
    	   	   	   BeanshellToolbar.remove(view)
    	   	   }
