@@ -37,7 +37,6 @@ public class Runner
 
 	// Runs Ctags on a single file. Returns the tag file.
 	public String runOnFile(String file) {
-		System.err.println("Running Ctags on file " + file);
 		Vector<String> what = new Vector<String>();
 		what.add(file);
 		return run(what);
@@ -162,7 +161,6 @@ public class Runner
 		String ctags = GeneralOptionPane.getCtags();
 		String cmd = GeneralOptionPane.getCmd();
 		String tagFile = getTempFile("tags");
-		System.err.println("Runner.run: Producing tag file " + tagFile);
 		Vector<String> cmdLine = new Vector<String>();
 		cmdLine.add(ctags);
 		cmdLine.add("--verbose");	// Allow progress tracking
