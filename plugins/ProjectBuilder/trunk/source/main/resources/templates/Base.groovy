@@ -290,7 +290,7 @@ class TypeRenderer extends JLabel implements ListCellRenderer {
 			setBackground(list.getBackground())
 			setForeground(list.getForeground())
 		}
-		String iconPath = "file://${value.dir.getPath()}/icon.png"
+		def iconPath = new File(value.dir.getPath(), "icon.png").toURI().toString();
 		setIcon(GUIUtilities.loadIcon(iconPath))
 		setText(value.toString())
 		setFont(list.getFont())
