@@ -676,7 +676,6 @@ public class CtagsInterfacePlugin extends EditPlugin
 	private static void parseTagFile(Runner runner, Parser parser,
 		String tagFile, TagHandler handler)
 	{
-		System.err.println("Parsing tag file " + tagFile);
 		parser.parseTagFile(tagFile, handler);
 		runner.releaseFile(tagFile);
 	}
