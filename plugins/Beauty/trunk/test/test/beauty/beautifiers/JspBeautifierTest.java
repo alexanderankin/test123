@@ -337,14 +337,10 @@ public class JspBeautifierTest {
             jEdit.setBooleanProperty("beauty.jsp.collapseBlankLines", true);
 
             StringBuilder before = new StringBuilder();
-            before.append("<%\n");
-            before.append("a !   = null);\n");
-            before.append("%>\n");
+            before.append("<% a !   = null; %>\n");
 
             StringBuilder answer = new StringBuilder();
-            answer.append("<%\n");
-            answer.append("a != null);\n");
-            answer.append("%>\n");
+            answer.append("<% a != null; %>\n");
 
             Beautifier beautifier = new JspBeautifier();
             beautifier.setEditMode("jsp");
@@ -356,7 +352,7 @@ public class JspBeautifierTest {
             beautifier.setWrapMode("none");
             String after = beautifier.beautify(before.toString());
             assertTrue("returned text was null", after != null);
-            assertTrue("jsp test failed.\nbefore:\n|" + before + "|\n\nafter:\n|" + after + "|", answer.toString().equals(after));
+            assertTrue("jsp test failed.\nbefore:\n|" + before + "|\n\nafter:\n|" + after + "|\n\nexpected:\n|" + answer + "|", answer.toString().equals(after));
         } catch (Exception e) {
             e.printStackTrace();
             fail(e.getMessage());

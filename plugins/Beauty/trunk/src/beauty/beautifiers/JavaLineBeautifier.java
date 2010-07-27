@@ -9,7 +9,7 @@ import java.util.regex.*;
 // beautify as well as the standard java parser.
 public class JavaLineBeautifier extends DefaultBeautifier {
     
-    private static Pattern genericPattern = Pattern.compile("\\s*[<]\\s*((\\w*?)\\s*[>]");
+    private static Pattern genericPattern = Pattern.compile("\\s*[<]\\s*(\\w*?)\\s*[>]");
     
     public JavaLineBeautifier() {
         super("java");   

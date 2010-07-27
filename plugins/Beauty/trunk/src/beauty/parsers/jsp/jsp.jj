@@ -619,6 +619,8 @@ boolean JspDirectiveAttribute() :
 
 void JspScriptlet() :
 {
+    // TODO: if scriptlet is more than one line, put the scriptlet start tag
+    // on a new line.
     Token start;
     Token content;
     Token end;
@@ -629,24 +631,38 @@ void JspScriptlet() :
 	end=<JSP_SCRIPTLET_END> 
 	
 	{
-	     writePre(getSpecial(start));
-	     add(start);
-	     writeln();
-	     ++token_source.level;
-	     
+	     String ws = getSpecial(start);
+	     String java = null;
 	     try {
             if (content != null && content.image.trim().length() > 0) {
                 Beautifier beautifier = new JavaLineBeautifier();
                 beautifier.setInitialIndentLevel(token_source.level);
-                String java = beautifier.beautify(content.image.trim());
-                writePre(java);
+                java = beautifier.beautify(content.image.trim());
             }
          }
          catch(ParserException pe) {
              throw new ParseException(pe.getMessage());
          }
+         if (java == null || java.length() == 0) {
+            return; // no need to include empty scriptlet tags   
+         }
+         
+	     if (ws != null && ws.length() > 0) {
+	         writePre(ws);
+	     }
+	     else if (java.trim().indexOf(ls) > 0) {
+	         writeln();   
+	     }
 	     
-	     --token_source.level;
+         add(start);
+         writeln();
+         ++token_source.level;
+         // TODO: adjust leading whitespace:
+         // find line with shortest amount of whitespace, minding tabs
+         // subtract that amount from all lines
+         // add indent to all lines
+         writePre(java);
+         --token_source.level;
 	     add(end);
 	     write();
 	}
@@ -933,7 +949,10 @@ void Element() :
     		{ 
     		    add(endTagName);
     			if (! tagName.equalsIgnoreCase(endTagName.image)) {
-    			    throw new ParseException("Mismatch end tag: start tag '" + tagName + "' does not match end tag '" + endTagName + "'");
+    			    throw new ParseException("Mismatch end tag: start tag '" + tagName + "' at " + 
+    			        startTagName.beginLine + ":" + startTagName.beginColumn + 
+    			        " does not match end tag '" + endTagName + "' at " +
+    			        endTagName.beginLine + ":" + endTagName.beginColumn);
     			}
     		}
     	t=<TAG_END>
