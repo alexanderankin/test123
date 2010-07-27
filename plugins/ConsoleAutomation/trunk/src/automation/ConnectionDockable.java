@@ -3,6 +3,7 @@ package automation;
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -31,14 +32,39 @@ public class ConnectionDockable extends JPanel
 		});
 		add(tabs);
 	}
-	public void add(Connection c)
+	private void runInEDT(Runnable r)
 	{
-		ConnectionWindow cw = new ConnectionWindow(c);
-		tabs.addTab(c.getName(), cw);
+		if (SwingUtilities.isEventDispatchThread())
+			r.run();
+		else
+			try {
+				SwingUtilities.invokeAndWait(r);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 	}
-	public void remove(Connection c)
+	public void add(final Connection c)
 	{
-		tabs.removeTabAt(tabs.indexOfTab(c.getName()));
+		Runnable r = new Runnable()
+		{
+			public void run()
+			{
+				ConnectionWindow cw = new ConnectionWindow(c);
+				tabs.addTab(c.getName(), cw);
+			}
+		};
+		runInEDT(r);
+	}
+	public void remove(final Connection c)
+	{
+		Runnable r = new Runnable()
+		{
+			public void run()
+			{
+				tabs.removeTabAt(tabs.indexOfTab(c.getName()));
+			}
+		};
+		runInEDT(r);
 	}
 	public Connection getCurrent()
 	{
