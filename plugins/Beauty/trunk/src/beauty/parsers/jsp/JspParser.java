@@ -412,30 +412,42 @@ public class JspParser implements JspParserConstants {
   }
 
   final public void JspScriptlet() throws ParseException {
+    // TODO: if scriptlet is more than one line, put the scriptlet start tag
+    // on a new line.
     Token start;
     Token content;
     Token end;
     start = jj_consume_token(JSP_SCRIPTLET_START);
     content = jj_consume_token(JSP_SCRIPTLET);
     end = jj_consume_token(JSP_SCRIPTLET_END);
-             writePre(getSpecial(start));
-             add(start);
-             writeln();
-             ++token_source.level;
-
+             String ws = getSpecial(start);
+             String java = null;
              try {
             if (content != null && content.image.trim().length() > 0) {
                 Beautifier beautifier = new JavaLineBeautifier();
                 beautifier.setInitialIndentLevel(token_source.level);
-                String java = beautifier.beautify(content.image.trim());
-                writePre(java);
+                java = beautifier.beautify(content.image.trim());
             }
          }
          catch(ParserException pe) {
              {if (true) throw new ParseException(pe.getMessage());}
          }
+         if (java == null || java.length() == 0) {
+            {if (true) return;} // no need to include empty scriptlet tags   
+         }
 
-             --token_source.level;
+             if (ws != null && ws.length() > 0) {
+                 writePre(ws);
+             }
+             else if (java.trim().indexOf(ls) > 0) {
+                 writeln();
+             }
+
+         add(start);
+         writeln();
+         ++token_source.level;
+         writePre(java);
+         --token_source.level;
              add(end);
              write();
   }
@@ -762,7 +774,10 @@ public class JspParser implements JspParserConstants {
       endTagName = jj_consume_token(TAG_NAME);
                     add(endTagName);
                         if (! tagName.equalsIgnoreCase(endTagName.image)) {
-                            {if (true) throw new ParseException("Mismatch end tag: start tag '" + tagName + "' does not match end tag '" + endTagName + "'");}
+                            {if (true) throw new ParseException("Mismatch end tag: start tag '" + tagName + "' at " +
+                                startTagName.beginLine + ":" + startTagName.beginColumn +
+                                " does not match end tag '" + endTagName + "' at " +
+                                endTagName.beginLine + ":" + endTagName.beginColumn);}
                         }
       t = jj_consume_token(TAG_END);
                trimWhitespace();
@@ -1227,11 +1242,6 @@ public class JspParser implements JspParserConstants {
     finally { jj_save(1, xla); }
   }
 
-  private boolean jj_3R_47() {
-    if (jj_scan_token(UNPARSED_TEXT_NO_SINGLE_QUOTES)) return true;
-    return false;
-  }
-
   private boolean jj_3R_27() {
     if (jj_scan_token(ATTR_NAME)) return true;
     if (jj_scan_token(ATTR_EQ)) return true;
@@ -1418,18 +1428,8 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
-  private boolean jj_3R_22() {
-    if (jj_3R_26()) return true;
-    return false;
-  }
-
   private boolean jj_3R_20() {
     if (jj_3R_27()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_51() {
-    if (jj_scan_token(EL_EXPRESSION_IN_ATTRIBUTE)) return true;
     return false;
   }
 
@@ -1448,8 +1448,8 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
-  private boolean jj_3R_19() {
-    if (jj_3R_26()) return true;
+  private boolean jj_3R_51() {
+    if (jj_scan_token(EL_EXPRESSION_IN_ATTRIBUTE)) return true;
     return false;
   }
 
@@ -1479,6 +1479,16 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
+  private boolean jj_3R_22() {
+    if (jj_3R_26()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_19() {
+    if (jj_3R_26()) return true;
+    return false;
+  }
+
   private boolean jj_3R_21() {
     if (jj_3R_25()) return true;
     return false;
@@ -1491,6 +1501,11 @@ public class JspParser implements JspParserConstants {
     jj_scanpos = xsp;
     if (jj_3R_22()) return true;
     }
+    return false;
+  }
+
+  private boolean jj_3R_45() {
+    if (jj_scan_token(UNPARSED_TEXT_NO_DOUBLE_QUOTES)) return true;
     return false;
   }
 
@@ -1529,8 +1544,8 @@ public class JspParser implements JspParserConstants {
     return false;
   }
 
-  private boolean jj_3R_45() {
-    if (jj_scan_token(UNPARSED_TEXT_NO_DOUBLE_QUOTES)) return true;
+  private boolean jj_3R_47() {
+    if (jj_scan_token(UNPARSED_TEXT_NO_SINGLE_QUOTES)) return true;
     return false;
   }
 
