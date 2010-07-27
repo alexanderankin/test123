@@ -28,4 +28,10 @@
         <pathelement location="${jedit.plugins.dir}/ErrorList.jar"/>
     </path>
 
+    <selector id="packageFiles">
+	  <or>
+		<filename name="macros/*.*" />
+	  </or>
+    </selector>
+
 </project>

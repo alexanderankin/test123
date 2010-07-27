@@ -61,6 +61,7 @@ public class SideKickPlugin extends EditPlugin
 	public static final String DEFAULT = "default parser";
 
 	//{{{ Private members
+	private static final String MACRO_PATH = "/macros";
 	private static Map<View, SideKick> sidekicks;
 	private static Map<String, SideKickParser> parsers;
 	private static WorkThreadPool worker;
@@ -70,6 +71,7 @@ public class SideKickPlugin extends EditPlugin
 	//{{{ start() method
 	public void start()
 	{
+		BeanShell.getNameSpace().addCommandPath(MACRO_PATH, getClass());
 		sidekicks = new HashMap<View, SideKick>();
 		parsers = new HashMap<String, SideKickParser>();
 		parsedBufferSet = new HashSet<Buffer>();

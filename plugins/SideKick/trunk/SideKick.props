@@ -23,7 +23,13 @@ plugin.sidekick.SideKickPlugin.menu=sidekick-tree \
                                     sidekick-parse \
                                     sidekick-keystroke-parse \
                                     - \
-                                    sidekick-toggle-markers-flag
+                                    sidekick-toggle-markers-flag \
+                                    - \
+                                    sidekick-search-asset \
+                                    sidekick-search-asset-exact \
+                                    sidekick-jump-to-beginning-of-function \
+                                    sidekick-jump-to-end-of-function
+									
 plugin.sidekick.SideKickPlugin.menu.code=new sidekick.SideKickMenuProvider();
 
 sidekick-enhanced-tree.label=Structure Browser
@@ -35,6 +41,10 @@ sidekick-narrow-asset.label=Narrow to Asset at Caret
 sidekick-complete.label=Show Completion Popup
 sidekick-parse.label=Parse Buffer
 sidekick-keystroke-parse.label=Parse on Keystroke
+sidekick-search-asset.label=Search current asset for occurrences of selection
+sidekick-search-asset-exact.label=Search current asset for whole-word occurrences of selection
+sidekick-jump-to-beginning-of-function.label=Jump to beginning of function
+sidekick-jump-to-end-of-function.label=Jump to end of function
 
 # Tree popup menu
 # ( mode-specific menus can replace this default menu
