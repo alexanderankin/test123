@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -184,12 +185,19 @@ public class ConsoleAutomationPlugin extends EditPlugin {
 	}
 	public void showMessage(final String message)
 	{
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run()
-			{
-				JOptionPane.showMessageDialog(null, message);
-			}
-		});
+		try
+		{
+			SwingUtilities.invokeAndWait(new Runnable() {
+				public void run()
+				{
+					JOptionPane.showMessageDialog(null, message);
+				}
+			});
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 	public Map<String, Vector<String>> getMacros()
 	{
