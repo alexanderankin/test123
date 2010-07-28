@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<!-- jEdit buffer-local properties: -->
+<!-- :tabSize=1:indentSize=1:noTabs=true:folding=sidekick: -->
+<book>
+
+<bookinfo><title>Slime</title>
+
+<author><firstname>Damien</firstname><surname>Radtke</surname></author>
+<!--
+ <legalnotice><title>Legal Notice</title>
+  <para>
+   Permission is granted to copy, distribute and/or modify this document
+   under the terms of the GNU Free Documentation License, Version 1.1 or
+   any later version published by the Free Software Foundation; with no
+   <quote>Invariant Sections</quote>, <quote>Front-Cover Texts</quote> or
+   <quote>Back-Cover Texts</quote>, each as defined in the license. A copy of
+   the license can be found in the file <filename>COPYING.DOC.txt</filename>
+   included with jEdit.
+  </para>
+ </legalnotice>
+-->
+</bookinfo>
+
+<chapter id="overview"><title>Overview</title>
+ <para>
+ Slime is a jEdit plugin influenced by SLIME (Superior Lisp Interaction Mode
+ for Emacs). It provides a shell in Console that allows you to have an
+ interactive REPL session (Read Eval Print Loop) running at all times, with
+ actions to evaluate inside it the currently-selected text, the active buffer,
+ or an external file.
+ </para>
+ <para>
+ This version of Slime comes with support for Clojure, Groovy, and Python.
+ </para>
+ <sect1 id="clojure"><title>Clojure</title>
+  To use the Clojure REPL, you need one of two things:
+  <itemizedlist>
+   <listitem>
+    An executable with the name "clojure" on your system path (Windows batch
+    files should have the .bat extension)
+   </listitem>
+   <listitem>
+    An environment variable named "CLOJURE_DIR" whose value is the directory
+    that the clojure jar is in (which should be named simply "clojure.jar")
+   </listitem>
+  </itemizedlist>
+ </sect1>
+ <sect1 id="groovy"><title>Groovy</title>
+  To use the Groovy REPL, you need one of two things:
+  <itemizedlist>
+   <listitem>
+    The "bin" subfolder of groovy's home on your system path (typing "groovysh"
+    into a terminal or command prompt should bring up the REPL).
+   </listitem>
+   <listitem>
+    An environment variable named "GROOVY_HOME" that points to groovy"s home
+    folder.
+   </listitem>
+  </itemizedlist>
+ </sect1>
+ <sect1 id="python"><title>Python</title>
+  To use the Python REPL, you must have the python executable somewhere on your
+  system path.
+ </sect1>
+</chapter>
+</book>
