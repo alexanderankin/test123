@@ -28,7 +28,8 @@ plugin.sidekick.SideKickPlugin.menu=sidekick-tree \
                                     sidekick-search-asset \
                                     sidekick-search-asset-exact \
                                     sidekick-jump-to-beginning-of-function \
-                                    sidekick-jump-to-end-of-function
+                                    sidekick-jump-to-end-of-function \
+                                    -
 									
 plugin.sidekick.SideKickPlugin.menu.code=new sidekick.SideKickMenuProvider();
 
