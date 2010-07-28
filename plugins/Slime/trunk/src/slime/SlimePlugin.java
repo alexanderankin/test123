@@ -31,18 +31,14 @@ public class SlimePlugin extends EditPlugin {
 		}
 	}
 	
+	/**
+	 * Convenience method for starting a REPL in the active view
+	 * This method is called by the menu items in Plugins->Slime->Start
+	 * @param name the name of the REPL to start
+	 */
 	public static void startREPL(String name) {
 		REPL repl = (REPL) ServiceManager.getService("slime.REPL", name);
-		DockableWindowManager wm = 
-						jEdit.getActiveView().getDockableWindowManager();
-						
-		Console console = (Console) wm.getDockable("console");
-		if (console == null) {
-			wm.addDockableWindow("console");
-			console = (Console) wm.getDockable("console");
-		}
-		REPLShell shell = (REPLShell) Shell.getShell("REPL");
-		console.setShell(shell);
+		REPLShell shell = getREPLShell(jEdit.getActiveView());
 		shell.startREPL(repl);
 	}
 	
