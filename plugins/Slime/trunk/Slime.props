@@ -1,0 +1,38 @@
+# ::mode=properties:: #
+# Basic Plugin Information {{{
+plugin.slime.SlimePlugin.activate=defer
+plugin.slime.SlimePlugin.author=Damien Radtke
+plugin.slime.SlimePlugin.description=Plugin for embedding a running REPL \
+	session into the Console.
+plugin.slime.SlimePlugin.docs=index.html
+plugin.slime.SlimePlugin.longdescription=description.html
+plugin.slime.SlimePlugin.name=Slime
+plugin.slime.SlimePlugin.usePluginHome=false
+plugin.slime.SlimePlugin.version=0.1
+# }}} Basic Plugin Information
+
+# Dependencies {{{
+plugin.slime.SlimePlugin.depend.0=jedit 04.03.18.00
+plugin.slime.SlimePlugin.depend.1=jdk 1.5
+plugin.slime.SlimePlugin.depend.2=plugin console.ConsolePlugin 4.4.2
+# }}} Dependencies
+
+# Menu {{{
+plugin.slime.SlimePlugin.menu=- show-repl-shell - eval-selected eval-buffer \
+	eval-file
+plugin.slime.SlimePlugin.menu.code=new slime.SlimeMenuProvider();
+show-repl-shell.label=Show REPL Shell
+stop-repl.label=Stop Running REPL
+eval-selected.label=Evaluate Selected Text
+eval-buffer.label=Evaluate Buffer
+eval-file.label=Evaluate File...
+#}}}
+
+# Messages {{{
+msg.slime.stopped=REPL Stopped.
+msg.slime.none-running=No REPL is running.
+msg.slime.unkown=Unknown REPL: 
+msg.slime.info-message=This shell runs REPL (Read Eval Print Loop) sessions. \
+	To start one, go to Plugins->Slime->Start, or enter the name of the REPL \
+	you want to start in this shell.
+#}}}

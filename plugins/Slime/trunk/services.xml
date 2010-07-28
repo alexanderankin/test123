@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE SERVICES SYSTEM "services.dtd">
+<SERVICES>
+	<SERVICE CLASS="console.Shell" NAME="REPL">
+		new slime.REPLShell();
+	</SERVICE>
+	<SERVICE CLASS="slime.REPL" NAME="Clojure">
+		new slime.repl.Clojure();
+	</SERVICE>
+	<SERVICE CLASS="slime.REPL" NAME="Python">
+		new slime.repl.Python();
+	</SERVICE>
+	<SERVICE CLASS="slime.REPL" NAME="Groovy">
+		new slime.repl.Groovy();
+	</SERVICE>
+</SERVICES>
