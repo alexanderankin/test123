@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE article 
+        PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+        "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+<article>
+<title>ActionHooks Plugin</title><articleinfo>
+<author>
+<othername>Ollie Rutherfurd</othername>
+<email>oliver@jedit.org</email>
+</author>
+<edition>Version 0.5</edition>
+</articleinfo>
+<!-- :mode=rest:lineSeparator=\n:noTabs=true:maxLineLen=68: -->
+<section id="about">
+<title>About</title>
+<para><citetitle>ActionHooks</citetitle> enables one to execute actions or macros in reponse to
+specific <citetitle>EditBus</citetitle> messages. The <citetitle>EditBus</citetitle> is jEdit's mechanism for
+event notification. jEdit &quot;sends&quot; <citetitle>EditBus</citetitle> messages when buffers
+are opened, closed, properties changed; when views are created or
+destroyed; when you switch between edit panes and when other events
+occur. As an example, using <citetitle>ActionHooks</citetitle>, you could write a macro
+to hide all docking areas when you split a view into multiple edit
+panes. An example macro for this is provided <link linkend="hiding-all-docking-areas">below</link>. It would be
+bound to <literal>EditPane.CREATED</literal>.</para><para>This allows for powerful customization of jEdit.</para><para>Other <link linkend="examples">Examples</link> include setting custom buffer properties depending
+on the buffer's path or automatically displaying <citetitle>SideKick's</citetitle>
+<citetitle>Structure Browser</citetitle> when you switch to a buffer containing an XML
+file.</para></section>
+<section id="usage">
+<title>Usage</title>
+<para>To use <citetitle>ActionHooks</citetitle> you must do 2 things.</para><orderedlist>
+<listitem>
+<para>Enable it.</para><para>By default <citetitle>ActionHooks</citetitle> is not enabled. To enable <citetitle>ActionHooks</citetitle>
+select <citetitle>Plugins</citetitle> &gt; <citetitle>ActionHooks</citetitle>. To enable <citetitle>ActionHooks</citetitle> by
+default, select <citetitle>Plugins</citetitle> &gt; <citetitle>Plugin Options</citetitle> &gt; <citetitle>ActionHooks</citetitle> &gt;
+<citetitle>Enable ActionHooks by Default</citetitle>.</para></listitem>
+<listitem>
+<para>Associate actions or macros with events.</para><para>To associate actions or macros with events, go to
+<citetitle>Plugins</citetitle> &gt; <citetitle>Plugin Options</citetitle> &gt; <citetitle>ActionHooks</citetitle>.  You'll see a
+dropdown box with a list of available events 
+(<citetitle>EditBus</citetitle> messages).  Use the buttons below to add, remove,
+or change the execution order for actions or macros
+associated with the selected event.</para></listitem>
+</orderedlist>
+</section>
+<section id="examples">
+<title>Examples</title>
+<section id="showing-structure-browser-for-xml-buffers">
+<title>Showing <citetitle>Structure Browser</citetitle> for XML buffers</title>
+<para>If you associate the following macro with 
+<literal>EditPaneUpdate.BUFFER_CHANGED</literal>, when you open
+or switch to an xml or xsl buffer, <citetitle>SideKick's</citetitle> 
+<citetitle>Structure Browser</citetitle> will be displayed.  If 
+<citetitle>SideKick's</citetitle> <citetitle>Structure Browser</citetitle> is open and you
+switch to a buffer of another type, it will be
+hidden.</para><programlisting>
+void toggleStructureBrowser(View view)
+{
+    DockableWindowManager wm = view.getDockableWindowManager();
+    Buffer buffer = view.getBuffer();
+
+    // can't get mode until done loading
+    if(!buffer.isLoaded())
+    {
+        VFSManager.waitForRequests();
+    }
+
+    String mode = buffer.getMode().getName();
+    if(mode.equals(&quot;xml&quot;)
+        || mode.equals(&quot;xsl&quot;))
+    {
+        // only show if view not split
+        if(view.getEditPanes().length == 1)
+            wm.showDockableWindow(&quot;sidekick-tree&quot;);
+    }
+    else
+    {
+        // hide
+        if(wm.isDockableWindowVisible(&quot;sidekick-tree&quot;))
+            wm.hideDockableWindow(&quot;sidekick-tree&quot;);
+    }
+}
+
+toggleStructureBrowser(view);
+
+// :noTabs=true:lineSeparator=\n:indentSize=4:deepIndent=false:
+</programlisting>
+</section>
+<section id="setting-buffer-properties">
+<title>Setting Buffer Properties</title>
+<para>With the following macro bound to <literal>EditPaneUpdate.BUFFER_CHANGED</literal>,
+custom buffer properties are set when you switch to a buffer whose
+filename contains <literal>project_x</literal> or <literal>project_y</literal>. This can be handy
+when working on projects with different editing conventions from
+your defaults if coding conventions prevent the use of buffer
+local properties.</para><programlisting>
+
+void setProperties(Buffer buffer){
+
+    String name = buffer.getName();
+    String path = buffer.getPath();
+
+    if((path.indexOf(&quot;project_x&quot;) &gt; 0)
+        || (path.indexOf(&quot;project_y&quot;) &gt; 0)
+    )
+    {
+        if(!buffer.isLoaded())
+            VFSManager.waitForRequests();
+        
+        String mode = buffer.getMode().getName();
+        
+        buffer.setProperty(&quot;lineSeparator&quot;,&quot;\n&quot;);
+        buffer.setProperty(&quot;noTabs&quot;,true);
+        
+        if(mode.equals(&quot;xml&quot;))
+        {
+            buffer.setProperty(&quot;tabSize&quot;,2);
+            buffer.setProperty(&quot;indentSize&quot;,2);
+            buffer.setProperty(&quot;folding&quot;,&quot;sidekick&quot;);
+        }
+        else if(mode.equals(&quot;java&quot;))
+        {
+            buffer.setProperty(&quot;tabSize&quot;,4);
+            buffer.setProperty(&quot;indentSize&quot;,4);
+            buffer.setProperty(&quot;deepIndent&quot;,true);
+        }
+        else if(mode.equals(&quot;jsp&quot;))
+        {
+            buffer.setProperty(&quot;tabSize&quot;,2);
+            buffer.setProperty(&quot;indentSize&quot;,2);
+        }
+    
+        buffer.propertiesChanged();
+    }
+
+}
+
+setProperties(buffer);
+
+// :noTabs=true:lineSeparator=\n:indentSize=4:deepIndent=false:
+</programlisting>
+</section>
+<section id="hiding-all-docking-areas">
+<title>Hiding All Docking Areas</title>
+<para>If you bind the following macro to <literal>EditPane.CREATED</literal>, when
+you split a view all docking areas will be collapsed to make room
+for viewing the edit panes.</para><programlisting>
+void hideDockingAreas(View view)
+{
+    // left
+    dock = view.getDockableWindowManager().getLeftDockingArea();
+    if(dock.getCurrent() != null)
+        dock.show(null);
+    
+    // top
+    dock = view.getDockableWindowManager().getTopDockingArea();
+    if(dock.getCurrent() != null)
+        dock.show(null);
+
+    // right
+    dock = view.getDockableWindowManager().getRightDockingArea();
+    if(dock.getCurrent() != null)
+        dock.show(null);
+
+    // bottom
+    dock = view.getDockableWindowManager().getBottomDockingArea();
+    if(dock.getCurrent() != null)
+        dock.show(null);
+
+    view.getTextArea().requestFocus();
+}
+
+hideDockingAreas(view);
+
+// :noTabs=true:lineSeparator=\n:indentSize=4:deepIndent=false:
+</programlisting>
+</section>
+</section>
+<section id="tips">
+<title>Tips</title>
+<itemizedlist>
+<listitem>
+<para>Use <citetitle>Utilities</citetitle> &gt; <citetitle>Troubleshooting</citetitle> &gt; <citetitle>Activity Log</citetitle> (along with
+jEdit's API Documentation) to see when <citetitle>EditBus</citetitle> messages are 
+sent.</para></listitem>
+<listitem>
+<para>Remember that any actions or macros you bind to events
+may be run a lot and/or frequently.  For example, if you 
+bind a macro to <literal>BufferUpdate.LOADED</literal> it will be run for 
+each buffer that jEdit re-opens on startup (if enabled).  
+With a large number of buffers open, then may increase 
+startup time.</para></listitem>
+<listitem>
+<para>If you write macros to bind to <citetitle>EditBus</citetitle> messages, test them
+well.  It's easy to make a bit of a mess of things if jEdit
+starts invoking macros which have errors.  Remember you can always
+disable <citetitle>ActionHooks</citetitle> via <citetitle>Plugins</citetitle> &gt; <citetitle>ActionHooks</citetitle>.</para></listitem>
+<listitem>
+<para>Depending on the event, some operations may not work as expected.
+For example, while a buffer is being saved, the textarea is 
+read-only, so the following macro bound to 
+<literal>BufferUpdate.SAVING</literal> wouldn't work:</para><programlisting>
+textArea.selectAll();
+textArea.removeTrailingWhiteSpace();</programlisting>
+<para>In this specific example, you could work around the issue
+by modifying the buffer itself, but make sure to read jEdit's
+API docs or code so your actions don't produce unwanted results.</para></listitem>
+</itemizedlist>
+</section>
+<section id="extending-actionhooks">
+<title>Extending ActionHooks</title>
+<para>By default <citetitle>ActionHooks</citetitle> supports the following <citetitle>EditBus</citetitle>
+messages:</para><blockquote>
+<itemizedlist>
+<listitem>
+<para><citetitle>BufferUpdate</citetitle></para></listitem>
+<listitem>
+<para><citetitle>EditPaneUpdate</citetitle></para></listitem>
+<listitem>
+<para><citetitle>PropertiesChanged</citetitle></para></listitem>
+<listitem>
+<para><citetitle>ViewUpdate</citetitle></para></listitem>
+</itemizedlist>
+</blockquote>
+<para>Plugins can add support for <citetitle>EditBus</citetitle> messages they provide by
+registering <citetitle>EBMessageHandler</citetitle> subclasses with <citetitle>ActionHooks</citetitle>.</para><section id="ebmessagehandler">
+<title>EBMessageHandler</title>
+<para>An <citetitle>EBMessageHandler</citetitle> does the following:</para><itemizedlist>
+<listitem>
+<para>Tells <citetitle>ActionHooks</citetitle> the name of the <citetitle>EditBus</citetitle> it handles.
+For example, <literal>org.gjt.sp.jedit.msg.BufferUpdate</literal>.</para></listitem>
+<listitem>
+<para>Tells <citetitle>ActionHooks</citetitle> the list of &quot;events&quot; associated
+with the <citetitle>EditBus</citetitle> message it handles. For example,
+<literal>BufferUpdate.LOADED</literal>, <literal>BufferUpdate.CLOSED</literal>, 
+<literal>BufferUpdate.SAVING</literal>, <literal>BufferUpdate.SAVED</literal>.</para></listitem>
+<listitem>
+<para>When an <citetitle>EditBus</citetitle> message is sent an <citetitle>EBMessageHandler</citetitle>
+tells <citetitle>ActionHooks</citetitle> which event it corresponds to.  
+For example, a <literal>BufferUpdate</literal> message is sent for
+<literal>BufferUpdate.LOADED</literal>, <literal>BufferUpdate.CLOSED</literal>, 
+<literal>BufferUpdate.SAVING</literal>, <literal>BufferUpdate.SAVED</literal>.
+The <citetitle>EBMessageHandler</citetitle> must specify which &quot;event&quot; the
+specific <citetitle>EditBus</citetitle> is for.</para></listitem>
+<listitem>
+<para>Tells <citetitle>ActionHooks</citetitle> which view to use for invoking
+EditActions or Macros for an event.</para></listitem>
+</itemizedlist>
+</section>
+<section id="ebmessagehandler-example">
+<title>EBMessageHandler Example</title>
+<para>Writing an <citetitle>EBMessageHandler</citetitle> is actually pretty simple. Here's the
+source for <citetitle>PropertiesChangedHandler</citetitle>:</para><programlisting>
+package actionhooks.handler;
+
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
+
+import actionhooks.EBMessageHandler;
+
+public class PropertiesChangedHandler extends EBMessageHandler
+{
+
+    static String[] events = {&quot;PropertiesChanged&quot;};
+
+    public String getMessageName()
+    {
+        return &quot;org.gjt.sp.jedit.msg.PropertiesChanged&quot;;
+    }
+
+    public View getView(EBMessage msg)
+    {
+        return null;
+    }
+
+    public String[] getEventNames()
+    {
+        return this.events;
+    }
+
+    public String getEventName(EBMessage msg)
+    {
+        return &quot;PropertiesChanged&quot;;
+    }
+
+}</programlisting>
+<para>See the source code for <citetitle>ActionHooks</citetitle> for more examples.</para></section>
+<section id="registering-an-ebmessagehandler">
+<title>Registering an EBMessageHandler</title>
+<para>Plugins register an <citetitle>EBMessageHandler</citetitle> using:</para><programlisting>
+ActionHooksPlugin.registerHandler(&lt;handler&gt;);</programlisting>
+<para>and unregister a handler using:</para><programlisting>
+ActionHooksPlugin.unregisterHandler(&lt;handler&gt;);</programlisting>
+</section>
+</section>
+<section id="version-history">
+<title>Version History</title>
+<itemizedlist>
+<listitem>
+<para>0.5</para><para>Plugins can register EBMessageHandler classes
+to add support for custom EditBus messages.</para></listitem>
+<listitem>
+<para>0.4.1, released 2004-01-10</para><para>First public release</para></listitem>
+</itemizedlist>
+</section>
+<section id="feedback">
+<title>Feedback</title>
+<para>Send bug reports or feature requests to:</para><itemizedlist>
+<listitem>
+<para>Ollie Rutherfurd &lt;<ulink url="mailto:oliver@jedit.org">oliver@jedit.org</ulink>&gt;;</para></listitem>
+<listitem>
+<para>or jEdit-users mailing-list &lt;<ulink url="mailto:jedit-users@lists.sourceforge.net">jedit-users@lists.sourceforge.net</ulink>&gt;;</para></listitem>
+<listitem>
+<para>or jEdit-devel mailing-list &lt;<ulink url="mailto:jedit-devel@lists.sourceforge.net">jedit-devel@lists.sourceforge.net</ulink>&gt;.</para></listitem>
+</itemizedlist>
+</section>
+<section id="license">
+<title>License</title>
+<para>The source code for this plugin is release under the GPL.
+Please see <ulink url="http://www.fsf.org/copyleft/gpl.html">http://www.fsf.org/copyleft/gpl.html</ulink>.</para></section>
+</article>

@@ -1,0 +1,28 @@
+void hideDockingAreas(View view)
+{
+    // left
+    dock = view.getDockableWindowManager().getLeftDockingArea();
+    if(dock.getCurrent() != null)
+        dock.show(null);
+    
+    // top
+    dock = view.getDockableWindowManager().getTopDockingArea();
+    if(dock.getCurrent() != null)
+        dock.show(null);
+
+    // right
+    dock = view.getDockableWindowManager().getRightDockingArea();
+    if(dock.getCurrent() != null)
+        dock.show(null);
+
+    // bottom
+    dock = view.getDockableWindowManager().getBottomDockingArea();
+    if(dock.getCurrent() != null)
+        dock.show(null);
+
+    view.getTextArea().requestFocus();
+}
+
+hideDockingAreas(view);
+
+// :noTabs=true:lineSeparator=\n:indentSize=4:deepIndent=false:

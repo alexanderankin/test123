@@ -1,0 +1,25 @@
+============================
+ActionHooks Plugin Changelog
+============================
+
+0.5
+===
+
+* Refactored message handling & action invoking.
+* Plugins can register EBMessageHandler classes
+  to add support for additional EditBus messages.
+
+0.4.1
+=====
+
+* fixed ArrayIndexOutOfBoundsException when checking for
+  actions to unbind when a plugin is unloaded.
+
+0.4
+===
+
+* renamed from EventHooks to ActionHooks
+* gracefully handle missing actions
+* unloaded bound actions for plugins when they get unloaded
+
+.. :lineSeparator=\n:

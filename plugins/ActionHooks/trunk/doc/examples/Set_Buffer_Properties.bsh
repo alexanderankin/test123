@@ -1,0 +1,44 @@
+
+void setProperties(Buffer buffer){
+
+    String name = buffer.getName();
+    String path = buffer.getPath();
+
+    if((path.indexOf("project_x") > 0)
+        || (path.indexOf("project_y") > 0)
+    )
+    {
+        if(!buffer.isLoaded())
+            VFSManager.waitForRequests();
+        
+        String mode = buffer.getMode().getName();
+        
+        buffer.setProperty("lineSeparator","\n");
+        buffer.setProperty("noTabs",true);
+        
+        if(mode.equals("xml"))
+        {
+            buffer.setProperty("tabSize",2);
+            buffer.setProperty("indentSize",2);
+            buffer.setProperty("folding","sidekick");
+        }
+        else if(mode.equals("java"))
+        {
+            buffer.setProperty("tabSize",4);
+            buffer.setProperty("indentSize",4);
+            buffer.setProperty("deepIndent",true);
+        }
+        else if(mode.equals("jsp"))
+        {
+            buffer.setProperty("tabSize",2);
+            buffer.setProperty("indentSize",2);
+        }
+    
+        buffer.propertiesChanged();
+    }
+
+}
+
+setProperties(buffer);
+
+// :noTabs=true:lineSeparator=\n:indentSize=4:deepIndent=false:
