@@ -1,0 +1,30 @@
+void toggleStructureBrowser(View view)
+{
+    DockableWindowManager wm = view.getDockableWindowManager();
+    Buffer buffer = view.getBuffer();
+
+    // can't get mode until done loading
+    if(!buffer.isLoaded())
+    {
+        VFSManager.waitForRequests();
+    }
+
+    String mode = buffer.getMode().getName();
+    if(mode.equals("xml")
+        || mode.equals("xsl"))
+    {
+        // only show if view not split
+        if(view.getEditPanes().length == 1)
+            wm.showDockableWindow("sidekick-tree");
+    }
+    else
+    {
+        // hide
+        if(wm.isDockableWindowVisible("sidekick-tree"))
+            wm.hideDockableWindow("sidekick-tree");
+    }
+}
+
+toggleStructureBrowser(view);
+
+// :noTabs=true:lineSeparator=\n:indentSize=4:deepIndent=false:
