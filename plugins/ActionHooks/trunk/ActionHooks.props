@@ -27,5 +27,5 @@ options.actionhooks.moveUp=Move Up
 options.actionhooks.moveDown=Move Down
 
 options.actionhooks.select-action.title=Select Action
-
+options.actionhooks.actionSetCombo.label=Action Set:
 # :lineSeparator=\n:

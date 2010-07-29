@@ -275,9 +275,20 @@ class SelectActionDialog extends EnhancedDialog
 			if(actionSet.getActionCount() != 0)
 				actionSets.addElement(actionSet);
 		}
+		Collections.sort(actionSets, new Comparator<ActionSet>()
+		{
+			public int compare(ActionSet actionSet1, ActionSet actionSet2)
+			{
+				return actionSet1.getLabel().compareTo(actionSet2.getLabel());
+			}
+		});
+		JPanel p = new JPanel();
+		p.add(new JLabel(
+			jEdit.getProperty("options.actionhooks.actionSetCombo.label")));
 		combo = new JComboBox(actionSets);
 		combo.addActionListener(actionHandler);
-		content.add(BorderLayout.NORTH, combo);
+		p.add(combo);
+		content.add(BorderLayout.NORTH, p);
 
 		list = new JList();
 		list.setVisibleRowCount(8);
