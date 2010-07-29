@@ -1,6 +1,6 @@
 # ::mode=properties:: #
 # Basic Plugin Information {{{
-plugin.slime.SlimePlugin.activate=defer
+plugin.slime.SlimePlugin.activate=startup
 plugin.slime.SlimePlugin.author=Damien Radtke
 plugin.slime.SlimePlugin.description=Plugin for embedding a running REPL \
 	session into the Console.
@@ -8,7 +8,7 @@ plugin.slime.SlimePlugin.docs=index.html
 plugin.slime.SlimePlugin.longdescription=description.html
 plugin.slime.SlimePlugin.name=Slime
 plugin.slime.SlimePlugin.usePluginHome=false
-plugin.slime.SlimePlugin.version=0.1
+plugin.slime.SlimePlugin.version=1.0
 # }}} Basic Plugin Information
 
 # Dependencies {{{
@@ -17,22 +17,35 @@ plugin.slime.SlimePlugin.depend.1=jdk 1.5
 plugin.slime.SlimePlugin.depend.2=plugin console.ConsolePlugin 4.4.2
 # }}} Dependencies
 
-# Menu {{{
-plugin.slime.SlimePlugin.menu=- show-repl-shell - eval-selected eval-buffer \
-	eval-file
-plugin.slime.SlimePlugin.menu.code=new slime.SlimeMenuProvider();
-show-repl-shell.label=Show REPL Shell
-stop-repl.label=Stop Running REPL
-eval-selected.label=Evaluate Selected Text
-eval-buffer.label=Evaluate Buffer
-eval-file.label=Evaluate File...
+# Messages {{{
+msg.slime.stopped=REPL Stopped. Hit Enter to start it up again.
+msg.slime.info-message=Interactive REPL provided by Slime. To disable this \
+	shell, go to Plugins->Plugin Options->Slime.
+msg.slime.starting=Starting...\n
+msg.slime.error-starting=There was an error starting this REPL. Check the \
+	activity log for details.
+msg.slime.no-process=There is no process running in this shell.
+msg.slime.no-slime-shell.title=No Slime Shell Found
+msg.slime.no-slime-shell.message=You must have a Slime-provided shell open \
+	to use this action.
 #}}}
 
-# Messages {{{
-msg.slime.stopped=REPL Stopped.
-msg.slime.none-running=No REPL is running.
-msg.slime.unkown=Unknown REPL: 
-msg.slime.info-message=This shell runs REPL (Read Eval Print Loop) sessions. \
-	To start one, go to Plugins->Slime->Start, or enter the name of the REPL \
-	you want to start in this shell.
+# Menu {{{
+plugin.slime.SlimePlugin.menu=slime-eval-selected slime-eval-buffer \
+	slime-eval-file
+slime-eval-selected.label=Evaluate Selected Text
+slime-eval-buffer.label=Evaluate Buffer
+slime-eval-file.label=Evaluate File...
+#}}}
+
+# Options {{{
+plugin.slime.SlimePlugin.option-pane=slime
+options.slime.label=Slime
+options.slime.code=new slime.SlimeOptionPane();
+options.slime.enable-shells=Enable the following shells:
+options.slime.restart-required=You will need to restart jEdit for \
+	changes to take effect.
+options.slime.show-clojure=true
+options.slime.show-groovy=true
+options.slime.show-python=true
 #}}}

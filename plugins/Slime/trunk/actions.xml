@@ -2,30 +2,51 @@
 <!DOCTYPE ACTIONS SYSTEM "actions.dtd">
 
 <ACTIONS>
-	<ACTION NAME="show-repl-shell">
+	<ACTION NAME="slime-eval-selected">
 		<CODE>
-			slime.SlimePlugin.getREPLShell(view);
+			console = wm.getDockable("console");
+			if (console != null) {
+				shell = console.getShell();
+				if (shell instanceof slime.SlimeShell) {
+					shell.eval(console, textArea.getSelectedText());
+					return;
+				}
+			}
+			GUIUtilities.error(view, "msg.slime.no-slime-shell", null);
 		</CODE>
 	</ACTION>
-	<ACTION NAME="stop-repl">
+	<ACTION NAME="slime-eval-buffer">
 		<CODE>
-			shell = slime.SlimePlugin.getREPLShell(view);
-			shell.stop(console);
+			console = wm.getDockable("console");
+			if (console != null) {
+				shell = console.getShell();
+				if (shell instanceof slime.SlimeShell) {
+					shell.evalBuffer(console, buffer);
+					return;
+				}
+			}
+			GUIUtilities.error(view, "msg.slime.no-slime-shell", null);
 		</CODE>
 	</ACTION>
-	<ACTION NAME="eval-selected">
+	<ACTION NAME="slime-eval-file">
 		<CODE>
-			slime.SlimePlugin.eval(view, textArea.getSelectedText());
-		</CODE>
-	</ACTION>
-	<ACTION NAME="eval-buffer">
-		<CODE>
-			slime.SlimePlugin.evalBuffer(view, buffer);
-		</CODE>
-	</ACTION>
-	<ACTION NAME="eval-file">
-		<CODE>
-			slime.SlimePlugin.evalFile(view);
+			console = wm.getDockable("console");
+			if (console != null) {
+				shell = console.getShell();
+				if (shell instanceof slime.SlimeShell) {
+					dialog = new VFSFileChooserDialog(view, buffer.getDirectory(),
+						VFSBrowser.OPEN_DIALOG, false);
+					files = dialog.getSelectedFiles();
+					if (files != null) {
+						f = new File(files[0]);
+						buffer = jEdit.openTemporary(view, f.getParent(), f.getName(),
+							false);
+						shell.evalBuffer(console, buffer);
+						return;
+					}
+				}
+			}
+			GUIUtilities.error(view, "msg.slime.no-slime-shell", null);
 		</CODE>
 	</ACTION>
 </ACTIONS>

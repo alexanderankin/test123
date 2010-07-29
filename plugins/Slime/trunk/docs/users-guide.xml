@@ -30,6 +30,11 @@
  or an external file.
  </para>
  <para>
+ Each REPL is provided as a separate shell for the Console plugin. You can
+ easily disable shells that you don't plan on using in Slime's plugin options
+ window.
+ </para>
+ <para>
  This version of Slime comes with support for Clojure, Groovy, and Python.
  </para>
  <sect1 id="clojure"><title>Clojure</title>
@@ -53,7 +58,7 @@
     into a terminal or command prompt should bring up the REPL).
    </listitem>
    <listitem>
-    An environment variable named "GROOVY_HOME" that points to groovy"s home
+    An environment variable named "GROOVY_HOME" that points to groovy's home
     folder.
    </listitem>
   </itemizedlist>
