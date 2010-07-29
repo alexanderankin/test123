@@ -23,7 +23,6 @@ package actionhooks.handler;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
-import org.gjt.sp.util.Log;
 
 import actionhooks.*;
 
@@ -66,7 +65,7 @@ public class EditPaneUpdateHandler extends EBMessageHandler
 
 	public String[] getEventNames()
 	{
-		return this.events;
+		return events;
 	}
 
 	public String getEventName(EBMessage msg)

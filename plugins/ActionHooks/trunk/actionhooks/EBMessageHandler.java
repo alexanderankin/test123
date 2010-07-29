@@ -24,7 +24,6 @@ package actionhooks;
 import java.util.Vector;
 
 import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.Log;
@@ -125,7 +124,8 @@ public abstract class EBMessageHandler
 		}
 
 		// get actions, return if none
-		Vector actions = ActionHooksPlugin.getActionNamesForEvent(event);
+		Vector<String> actions = ActionHooksPlugin.getActionNamesForEvent(
+			event);
 		if(actions.size() == 0)
 			return;
 
@@ -140,9 +140,8 @@ public abstract class EBMessageHandler
 		Log.log(Log.DEBUG, this, "Invoking " + actions.size() 
 								 + " actions for " + event);
 
-		for(int i=0; i < actions.size(); i++)
+		for(String name: actions)
 		{
-			String name = (String)actions.elementAt(i);
 			// XXX special-case macro execution to know about 
 			// errors -- is it possible?
 			try
@@ -152,14 +151,12 @@ public abstract class EBMessageHandler
 			catch(NullPointerException npe)
 			{
 				// XXX offer to unbind action or do automatically?
-				Log.log(Log.ERROR, this,
-						"Trying to invoke action: " + name);
+				Log.log(Log.ERROR, this, "Trying to invoke action: " + name);
 			}
 			catch(Exception e)
 			{
-				Log.log(Log.ERROR, this, 
-					"Error executing " + name 
-					+ " for event " + event);
+				Log.log(Log.ERROR, this,  "Error executing " + name +
+					" for event " + event);
 				e.printStackTrace();
 			}
 		}
