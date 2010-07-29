@@ -23,7 +23,6 @@ package actionhooks.handler;
 
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.msg.PropertiesChanged;
 
 import actionhooks.EBMessageHandler;
 
@@ -44,7 +43,7 @@ public class PropertiesChangedHandler extends EBMessageHandler
 
 	public String[] getEventNames()
 	{
-		return this.events;
+		return events;
 	}
 
 	public String getEventName(EBMessage msg)

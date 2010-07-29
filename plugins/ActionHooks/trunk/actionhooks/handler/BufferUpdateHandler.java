@@ -53,7 +53,7 @@ public class BufferUpdateHandler extends EBMessageHandler
 
 	public String[] getEventNames()
 	{
-		return this.events;
+		return events;
 	}
 
 	public String getEventName(EBMessage msg)

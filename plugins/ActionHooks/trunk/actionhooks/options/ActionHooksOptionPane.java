@@ -30,10 +30,12 @@ import java.awt.*;
 import java.util.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
-import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StandardUtilities;
+
 import actionhooks.*;
 //}}}
 
+@SuppressWarnings("serial")
 public class ActionHooksOptionPane extends AbstractOptionPane
 {
 	//{{{ ActionHooksOptionPane constructor
@@ -45,7 +47,7 @@ public class ActionHooksOptionPane extends AbstractOptionPane
 	//{{{ _init() method
 	protected void _init()
 	{
-		Vector eventNames = ActionHooksPlugin.getEvents();
+		Vector<String> eventNames = ActionHooksPlugin.getEvents();
 		ActionHandler actionHandler = new ActionHandler();
 
 		JPanel eventsPanel = new JPanel(new BorderLayout());
@@ -56,7 +58,8 @@ public class ActionHooksOptionPane extends AbstractOptionPane
 		add(BorderLayout.SOUTH, enabled);
 		eventsPanel.add(BorderLayout.WEST, 
 			new JLabel(jEdit.getProperty("options.actionhooks.event")));
-		MiscUtilities.quicksort(eventNames, new MiscUtilities.StringICaseCompare());
+		Collections.sort(eventNames,
+			new StandardUtilities.StringCompare<String>(true));
 		events = new JComboBox(eventNames);
 		events.addActionListener(actionHandler);
 		eventsPanel.add(BorderLayout.CENTER, events);
@@ -67,19 +70,16 @@ public class ActionHooksOptionPane extends AbstractOptionPane
 			new JScrollPane(actions = new JList()));
 		actions.addListSelectionListener(new ListHandler());
 
-		for(int i=0; i < eventNames.size(); i++)
+		for (String event: eventNames)
 		{
-			String event = (String)eventNames.elementAt(i);
-			Vector _actions = ActionHooksPlugin.getActionsForEvent(event);
+			Vector<EditAction> _actions =
+				ActionHooksPlugin.getActionsForEvent(event);
 			//Log.log(Log.DEBUG, this, "Loading actions for " + event); // ##
 			DefaultListModel model = new DefaultListModel();
 			//Log.log(Log.DEBUG, this, "Actions for " + event + " are " + _actions); // ##
-			for(int j=0; j < _actions.size(); j++)
-			{
-				EditAction action = (EditAction)_actions.elementAt(j);
+			for(EditAction action: _actions)
 				model.addElement(new Action(action.getName(), action.getLabel()));
-			}
-			listModels.put(event,model);
+			listModels.put(event, model);
 		}
 
 		JPanel buttons = new JPanel();
@@ -144,7 +144,8 @@ public class ActionHooksOptionPane extends AbstractOptionPane
 	private JComboBox events;
 	private JList actions;
 	// XXX rename to models
-	private HashMap listModels = new HashMap();
+	private HashMap<String, DefaultListModel> listModels =
+		new HashMap<String, DefaultListModel>();
 	private JCheckBox enabled;
 	private RolloverButton add;
 	private RolloverButton remove;
@@ -166,8 +167,8 @@ public class ActionHooksOptionPane extends AbstractOptionPane
 	{
 		String event = (String)events.getSelectedItem();
 		//Log.log(Log.DEBUG, this, "displaying actions for " + event);	// ##
-		actions.setModel((DefaultListModel)listModels.get(event));
-		DefaultListModel model = (DefaultListModel)listModels.get(event);
+		DefaultListModel model = listModels.get(event);
+		actions.setModel(model);
 		//Log.log(Log.DEBUG, this, "model.size(): " + model.size() + ", " 
 		//	+ model.toString());	// ##
 	} //}}}
@@ -251,6 +252,7 @@ public class ActionHooksOptionPane extends AbstractOptionPane
 	} //}}}
 }
 
+@SuppressWarnings("serial")
 class SelectActionDialog extends EnhancedDialog
 {
 	//{{{ SelectActionDialog() constructor
@@ -267,10 +269,10 @@ class SelectActionDialog extends EnhancedDialog
 		ActionHandler actionHandler = new ActionHandler();
 
 		ActionSet[] actionsList = jEdit.getActionSets();
-		Vector actionSets = new Vector(actionsList.length);
-		for(int i=0; i < actionsList.length; i++)
+		Vector<ActionSet> actionSets =
+			new Vector<ActionSet>(actionsList.length);
+		for (ActionSet actionSet: actionsList)
 		{
-			ActionSet actionSet = actionsList[i];
 			if(actionSet.getActionCount() != 0)
 				actionSets.addElement(actionSet);
 		}
@@ -303,7 +305,7 @@ class SelectActionDialog extends EnhancedDialog
 
 		pack();
 		setLocationRelativeTo(GUIUtilities.getParentDialog(comp));
-		show();
+		setVisible(true);
 	} //}}}
 
 	//{{{ ok() method
@@ -342,7 +344,7 @@ class SelectActionDialog extends EnhancedDialog
 	{
 		ActionSet actionSet = (ActionSet)combo.getSelectedItem();
 		EditAction[] actions = actionSet.getActions();
-		Vector listModel = new Vector(actions.length);
+		Vector<Action> listModel = new Vector<Action>(actions.length);
 
 		for(int i=0; i < actions.length; i++)
 		{
@@ -352,7 +354,7 @@ class SelectActionDialog extends EnhancedDialog
 				continue;
 			listModel.addElement(new Action(action.getName(),label));
 		}
-		MiscUtilities.quicksort(listModel,new ActionCompare());
+		Collections.sort(listModel, new ActionCompare());
 		list.setListData(listModel);
 	} //}}}
 
