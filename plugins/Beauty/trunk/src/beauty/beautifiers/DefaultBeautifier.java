@@ -521,17 +521,18 @@ public class DefaultBeautifier extends Beautifier {
  
     /**
      * This splits the input string into a list of tokens, where a token is either
-     * some text or a comment.  This allows the pad/don't pad and pre/post insert
-     * methods to work only on the text portions and leave the comments alone.  This
-     * uses the jEdit syntax highlighting engine to do the parsing.
+     * some modifiable text, a comment, or a literal.  This allows the pad/don't pad and pre/post insert
+     * methods to work only on the modifiable portions of the input and leave the comments and literals alone.
+     * This uses the jEdit syntax highlighting engine to do the parsing.
      * @param sb Some text to parse.
-     * @param A list of PTokens.
+     * @param A list of PTokens.  Modifiable PTokens have isText set to true.
      */ 
     public List<PToken> parseTokens(StringBuilder sb) {
         List<PToken> ptokens = new ArrayList<PToken>();
         try {
             StringBuilder textBuffer = new StringBuilder();
             StringBuilder commentBuffer = new StringBuilder();
+            StringBuilder literalBuffer = new StringBuilder();
  
             File tempFile = File.createTempFile("tmp", null);
             tempFile.deleteOnExit();
@@ -556,6 +557,8 @@ public class DefaultBeautifier extends Beautifier {
  
                 while (token.id != Token.END) {
                     if (token.id == Token.COMMENT1 || token.id == Token.COMMENT2 || token.id == Token.COMMENT3 || token.id == Token.COMMENT4) {
+                        // hit a comment token and there is text in the textBuffer, so
+                        // create a ptoken for the text
                         if (textBuffer.length() > 0) {
                             PToken textToken = new PToken();
                             textToken.isText = true;
@@ -563,14 +566,52 @@ public class DefaultBeautifier extends Beautifier {
                             ptokens.add(textToken);
                             textBuffer.setLength(0);
                         }
+                        // hit a comment token and there is text in the literalBuffer, so
+                        // create a ptoken for the literal
+                        if (literalBuffer.length() > 0) {
+                            PToken literalToken = new PToken();
+                            literalToken.isText = false;
+                            literalToken.tokenText = literalBuffer.toString();
+                            ptokens.add(literalToken);
+                            literalBuffer.setLength(0);
+                        }
                         commentBuffer.append(currentTokenText);
-                    } else {
+                    } else if (token.id == Token.LITERAL1 || token.id == Token.LITERAL2 || token.id == Token.LITERAL3 || token.id == Token.LITERAL4) {
+                        // hit a literal token and there is text in the textBuffer, so
+                        // create a ptoken for the text
+                        if (textBuffer.length() > 0) {
+                            PToken textToken = new PToken();
+                            textToken.isText = true;
+                            textToken.tokenText = textBuffer.toString();
+                            ptokens.add(textToken);
+                            textBuffer.setLength(0);
+                        }
+                        // hit a literal token and there is text in the literalBuffer, so
+                        // create a ptoken for the literal
                         if (commentBuffer.length() > 0) {
                             PToken commentToken = new PToken();
                             commentToken.isText = false;
                             commentToken.tokenText = commentBuffer.toString();
                             ptokens.add(commentToken);
                             commentBuffer.setLength(0);
+                        }
+                        literalBuffer.append(currentTokenText);
+                    } else {
+                        // in a regular, modifiable piece of code, close out the
+                        // comment and literal buffers
+                        if (commentBuffer.length() > 0) {
+                            PToken commentToken = new PToken();
+                            commentToken.isText = false;
+                            commentToken.tokenText = commentBuffer.toString();
+                            ptokens.add(commentToken);
+                            commentBuffer.setLength(0);
+                        }
+                        if (literalBuffer.length() > 0) {
+                            PToken literalToken = new PToken();
+                            literalToken.isText = false;
+                            literalToken.tokenText = literalBuffer.toString();
+                            ptokens.add(literalToken);
+                            literalBuffer.setLength(0);
                         }
                         textBuffer.append(currentTokenText);
                     }
@@ -601,13 +642,19 @@ public class DefaultBeautifier extends Beautifier {
                 commentToken.tokenText = commentBuffer.toString();
                 ptokens.add(commentToken);
             }
+            if (literalBuffer.length() > 0) {
+                PToken literalToken = new PToken();
+                literalToken.isText = false;
+                literalToken.tokenText = literalBuffer.toString();
+                ptokens.add(literalToken);
+            }
         } catch (IOException ioe) {
             ioe.printStackTrace();
         } 
         return ptokens;
     }
  
-    // A class to tell regular text from comments.
+    // A class to tell modifiable text from comments and literals.
     public class PToken {
         boolean isText = false;
         String tokenText;

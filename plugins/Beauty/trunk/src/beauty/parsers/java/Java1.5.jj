@@ -1524,7 +1524,7 @@ void PreDecrementExpression():
 void UnaryExpressionNotPlusMinus():
 {}
 {
-  ( "~" { add(" ~ "); } | "!" { add(" ! "); } ) UnaryExpression()
+  ( "~" { add(" ~"); } | "!" { add(" !"); } ) UnaryExpression()
 |
   LOOKAHEAD( CastLookahead() )
   CastExpression()

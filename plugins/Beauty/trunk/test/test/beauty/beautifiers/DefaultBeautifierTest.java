@@ -42,18 +42,18 @@ public class DefaultBeautifierTest {
  
     @Test
     public void testParseTokens() {
-        String before = ".pageUserName{\n" + "	color:#5c93c9,#5c93c9;}";
+        String before = ".pageUserName{\n" + "color:#5c93c9,#5c93c9;}";
         DefaultBeautifier db = new DefaultBeautifier("css");
         List<DefaultBeautifier.PToken> tokens = db.parseTokens(new StringBuilder(before));
-        assertTrue("Token count: " + tokens.size(), tokens.size() == 1);
-
-        before = ".pageUserName{\n" + "	color:#5c93c9,#5c93c9; } /* a comment */";
-        tokens = db.parseTokens(new StringBuilder(before));
         assertTrue("Token count: " + tokens.size(), tokens.size() == 2);
 
-        before = ".pageUserName{\n" + "	color:#5c93c9,#5c93c9; /* a comment */ }";
+        before = ".pageUserName{\n" + "	color:#5c93c9,#5c93c9; } /* a com {} ment */";
         tokens = db.parseTokens(new StringBuilder(before));
         assertTrue("Token count: " + tokens.size(), tokens.size() == 3);
+
+        before = ".pageUserName{\n" + "	color:#5c93c9,#5c93c9; /* a com {} ment */ }";
+        tokens = db.parseTokens(new StringBuilder(before));
+        assertTrue("Token count: " + tokens.size(), tokens.size() == 4);
         
         StringBuilder sb = new StringBuilder();
         for (DefaultBeautifier.PToken token : tokens) {
@@ -61,7 +61,7 @@ public class DefaultBeautifierTest {
         }
         assertTrue("Reassembly failure 1", before.equals(sb.toString()));
         
-        before = ".pageUserName{\n" + "	color:#5c93c9,#5c93c9;\n/* a comment\na line or two\nand another */\n }\n";
+        before = ".pageUserName{\n" + "	color:#5c93c9,#5c93c9;\n/* a comment\na line {} or two\nand another */\n }\n";
         tokens = db.parseTokens(new StringBuilder(before));
         sb = new StringBuilder();
         for (DefaultBeautifier.PToken token : tokens) {
