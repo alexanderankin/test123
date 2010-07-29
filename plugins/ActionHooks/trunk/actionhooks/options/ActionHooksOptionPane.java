@@ -116,13 +116,12 @@ public class ActionHooksOptionPane extends AbstractOptionPane
 	//{{{ _save() method
 	protected void _save()
 	{
-		Vector eventNames = ActionHooksPlugin.getEvents();
-		for(int i=0; i < eventNames.size(); i++)
+		Vector<String> eventNames = ActionHooksPlugin.getEvents();
+		for (String event: eventNames)
 		{
-			Vector _actions = new Vector();
-			String event = (String)eventNames.elementAt(i);
-			StringBuffer buffer = new StringBuffer();
-			DefaultListModel model = (DefaultListModel)listModels.get(event);
+			Vector<String> _actions = new Vector<String>();
+			StringBuilder buffer = new StringBuilder();
+			DefaultListModel model = listModels.get(event);
 			for(int j=0; j < model.size(); j++)
 			{
 				if(j > 0)
@@ -346,9 +345,8 @@ class SelectActionDialog extends EnhancedDialog
 		EditAction[] actions = actionSet.getActions();
 		Vector<Action> listModel = new Vector<Action>(actions.length);
 
-		for(int i=0; i < actions.length; i++)
+		for (EditAction action: actions)
 		{
-			EditAction action = actions[i];
 			String label = action.getLabel();
 			if(label == null)
 				continue;
@@ -374,14 +372,11 @@ class SelectActionDialog extends EnhancedDialog
 	} //}}}
 
 	//{{{ ActionCompare
-	static class ActionCompare implements MiscUtilities.Compare
+	static class ActionCompare implements Comparator<Action>
 	{
-		public int compare(Object o1, Object o2)
+		public int compare(Action a1, Action a2)
 		{
-			return MiscUtilities.compareStrings(
-				((Action)o1).label,
-				((Action)o2).label,
-				true);
+			return StandardUtilities.compareStrings(a1.label, a2.label, true);
 		}
 	} //}}}
 }
