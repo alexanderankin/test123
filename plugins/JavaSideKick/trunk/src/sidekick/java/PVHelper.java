@@ -34,7 +34,6 @@ import projectviewer.*;
 import projectviewer.vpt.*;
 import sidekick.java.util.*;
 
-
 public class PVHelper {
 
     // filename to project name lookup
@@ -43,24 +42,24 @@ public class PVHelper {
     /**
      * @return the name of the project containing the given filename
      */
-    public static VPTProject getProjectForFile( String filename ) {
-        if ( filename == null ) {
+    public static VPTProject getProjectForFile(String filename) {
+        if (filename == null) {
             return null;
         }
-        VPTProject project = projectForFile.get( filename );
-        if ( project != null ) {
+        VPTProject project = projectForFile.get(filename);
+        if (project != null) {
             return project;
         }
-        if ( !isProjectViewerAvailable() ) {
+        if (!isProjectViewerAvailable()) {
             return null;
         }
         ProjectManager pm = ProjectManager.getInstance();
-        for ( VPTProject _project : pm.getProjects()) {
+        for (VPTProject _project : pm.getProjects()) {
             Collection nodes = _project.getOpenableNodes();
-            for ( Iterator iter = nodes.iterator(); iter.hasNext(); ) {
-                VPTNode node = ( VPTNode ) iter.next();
-                if ( node != null && filename.equals( node.getNodePath() ) ) {
-                    projectForFile.put( filename, _project );
+            for (Iterator iter = nodes.iterator(); iter.hasNext();) {
+                VPTNode node = (VPTNode) iter.next();
+                if (node != null && filename.equals(node.getNodePath())) {
+                    projectForFile.put(filename, _project);
                     return _project;
                 }
             }
@@ -72,16 +71,16 @@ public class PVHelper {
      * @return true if the ProjectViewer plugin is loaded
      */
     public static boolean isProjectViewerAvailable() {
-        EditPlugin pv = jEdit.getPlugin( "projectviewer.ProjectPlugin", false );
+        EditPlugin pv = jEdit.getPlugin("projectviewer.ProjectPlugin", false);
         return pv != null;
     }
-    
+
     /**
      * @param projectName Get the class path information for this project.
      * @return a Path containing the classpath as set in ProjectViewer for the given project
      */
-    public static Path getClassPathForProject( VPTProject proj ) {
-        return getClassPathForProject( proj, true );   
+    public static Path getClassPathForProject(VPTProject proj) {
+        return getClassPathForProject(proj, true);
     }
 
     /**
@@ -89,65 +88,76 @@ public class PVHelper {
      * @param withJavaClasspath If true, include the paths for System.getProperty("java.class.path").
      * @return a Path containing the classpath as set in ProjectViewer for the given project
      */
-    public static Path getClassPathForProject( VPTProject proj, boolean withJavaClasspath ) {
+    public static Path getClassPathForProject(VPTProject proj, boolean withJavaClasspath) {
         boolean useJavaClasspath = useJavaClasspath(proj);
-        String classpath = proj.getProperty( "java.optionalClasspath" );
-        if (classpath == null) classpath = "";
-        Path path = new Path( classpath );
-        if ( useJavaClasspath && withJavaClasspath ) {
+        String classpath = proj.getProperty("java.optionalClasspath");
+        if (classpath == null) {
+            classpath = "";
+        }
+        Path path = new Path(classpath);
+        if (useJavaClasspath && withJavaClasspath) {
             path.concatSystemClassPath();
         }
-        String buildpath = getBuildOutputPathForProject( proj );
-        if (buildpath.length() > 0) path.concat(buildpath, true);
+        String buildpath = getBuildOutputPathForProject(proj);
+        if (buildpath.length() > 0) {
+            path.concat(buildpath, true);
+        }
         return path;
     }
-    
-    public static boolean useJavaClasspath( VPTProject proj ) {
-        if (proj == null) return true;
-        String prop = proj.getProperty( "java.useJavaClasspath" );
+
+    public static boolean useJavaClasspath(VPTProject proj) {
+        if (proj == null) {
+            return true;
+        }
+        String prop = proj.getProperty("java.useJavaClasspath");
         return (prop != null && prop.equals("true"));
     }
 
-    public static String getBuildOutputPathForProject( VPTProject proj ) {
-        String prop = proj.getProperty( "java.optionalBuildpath" );
-        if (prop == null) prop = "";
+    public static String getBuildOutputPathForProject(VPTProject proj) {
+        String prop = proj.getProperty("java.optionalBuildpath");
+        if (prop == null) {
+            prop = "";
+        }
         return prop;
     }
 
     /**
      * @return a Path containing the sourcepath as set in ProjectViewer for the given project
      */
-    public static Path getSourcePathForProject( VPTProject proj ) {
-        String prop = proj.getProperty( "java.optionalSourcepath" );
-        if (prop == null) prop = "";
-        Path path = new Path( prop );
+    public static Path getSourcePathForProject(VPTProject proj) {
+        String prop = proj.getProperty("java.optionalSourcepath");
+        if (prop == null) {
+            prop = "";
+        }
+        Path path = new Path(prop);
         return path;
     }
-    
+
     /**
      * @return a string representing the path to the root of the current project
      * in the given View.
      */
-    public static String getProjectRoot( View view ) {
-        VPTProject project = ProjectViewer.getActiveProject( view );
+    public static String getProjectRoot(View view) {
+        VPTProject project = ProjectViewer.getActiveProject(view);
         return project == null ? "" : project.getRootPath();
     }
-    
+
     /**
-     * @return the name of the current project in the given view.    
+     * @return the name of the current project in the given view.
      */
-    public static String getProjectName( View view ) {
-        VPTProject project = ProjectViewer.getActiveProject( view );
+    public static String getProjectName(View view) {
+        VPTProject project = ProjectViewer.getActiveProject(view);
         return project == null ? "" : project.getName();
     }
-    
+
     /**
      * @return the current project in the given view.
      */
-    public static VPTProject getProject( View view ) {
-        if (!isProjectViewerAvailable()) return null;
-        return ProjectViewer.getActiveProject( view );
+    public static VPTProject getProject(View view) {
+        if (!isProjectViewerAvailable()) {
+            return null;
+        }
+        return ProjectViewer.getActiveProject(view);
     }
-
 
 }
