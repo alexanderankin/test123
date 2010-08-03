@@ -7,6 +7,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -17,6 +22,8 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import org.gjt.sp.jedit.ActionSet;
+import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
@@ -27,26 +34,26 @@ public class MenuEditor extends JDialog
 	private static final String spaceSeparator = "\\s+";
 	private static final String menuSeparator = "-";
 	private static final String subMenu = "%";
-	private JComboBox menu;
+	private JComboBox menu, actionSet;
 	private JList items, unusedItems;
 	private JButton add, remove, up, down;
 	private JButton ok, apply, cancel, restoreDefault;
-	private DefaultComboBoxModel menuModel;
+	private DefaultComboBoxModel menuModel, actionSetModel;
 	private DefaultListModel itemModel, unusedModel;
 	private ArrayList<MenuElement> menus = new ArrayList<MenuElement>();
+	private HashSet<String> used = new HashSet<String>();
+	private HashMap<String, ArrayList<MenuElement>> unused =
+		new HashMap<String, ArrayList<MenuElement>>();
 
 	public MenuEditor(View view)
 	{
 		super(view, "Menu Editor");
 		initMenuData();
+		initUnusedActions();
 		JPanel contentPanel = new JPanel(new BorderLayout());
 		JPanel center = new JPanel();
-		JPanel from = createPanel();
-		JPanel to = new JPanel(new BorderLayout());
-		to.add(new JLabel("Available items:"), BorderLayout.NORTH);
-		unusedModel = new DefaultListModel();
-		unusedItems = new JList(unusedModel);
-		to.add(new JScrollPane(unusedItems), BorderLayout.CENTER);
+		JPanel from = createMenuPanel();
+		JPanel to = createActionPanel();
 		JPanel movePanel = new JPanel(new GridLayout(0, 1));
 		add = new JButton("Add");
 		remove = new JButton("Remove");
@@ -93,6 +100,44 @@ public class MenuEditor extends JDialog
 		setVisible(true);
 
 	}
+	private JPanel createActionPanel()
+	{
+		JPanel p = new JPanel(new BorderLayout());
+		JPanel actionSetPanel = new JPanel();
+		actionSetPanel.add(new JLabel("Action set:"));
+		actionSetModel = new DefaultComboBoxModel();
+		ArrayList<String> actionSetNames = new ArrayList<String>();
+		for (String actionSet: unused.keySet())
+			actionSetNames.add(actionSet);
+		Collections.sort(actionSetNames);
+		for (String actionSet: actionSetNames)
+			actionSetModel.addElement(actionSet);
+		actionSet = new JComboBox(actionSetModel);
+		actionSetPanel.add(actionSet);
+		p.add(actionSetPanel, BorderLayout.NORTH);
+		JPanel actionPanel = new JPanel(new BorderLayout());
+		actionPanel.add(new JLabel("Available items:"), BorderLayout.NORTH);
+		unusedModel = new DefaultListModel();
+		updateActions((String)actionSetModel.getElementAt(0));
+		unusedItems = new JList(unusedModel);
+		actionPanel.add(new JScrollPane(unusedItems), BorderLayout.CENTER);
+		p.add(actionPanel, BorderLayout.CENTER);
+		actionSet.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e)
+			{
+				if (e.getStateChange() != ItemEvent.SELECTED)
+					return;
+				updateActions((String)e.getItem());
+			}
+		});
+		return p;
+	}
+	private void updateActions(String actionSet)
+	{
+		unusedModel.clear();
+		for (MenuElement child: unused.get(actionSet))
+			unusedModel.addElement(child);
+	}
 	private void applyMenu(MenuElement menuElem)
 	{
 		ArrayList<String> children = new ArrayList<String>();
@@ -136,7 +181,7 @@ public class MenuEditor extends JDialog
 		for (MenuElement menuElem: menus)
 			resetMenu(menuElem);
 	}
-	private JPanel createPanel()
+	private JPanel createMenuPanel()
 	{
 		menuModel = new DefaultComboBoxModel();
 		for (MenuElement menuElem: menus)
@@ -202,6 +247,7 @@ public class MenuEditor extends JDialog
 			boolean isMenu = item.startsWith(subMenu);
 			if (isMenu)
 				item = item.substring(1);
+			used.add(item);
 			MenuElement child = parent.addChild(item);
 			if (isMenu)
 				initMenu(child);
@@ -212,9 +258,37 @@ public class MenuEditor extends JDialog
 		String [] menuIds = getMenus();
 		for (String menuId: menuIds)
 		{
+			used.add(menuId);
 			MenuElement menuElem = new MenuElement(menuId);
 			menus.add(menuElem);
 			initMenu(menuElem);
+		}
+	}
+	private void initUnusedActions()
+	{
+		ActionSet [] actionSets = jEdit.getActionSets();
+		for (ActionSet set: actionSets)
+		{
+			ArrayList<MenuElement> children = new ArrayList<MenuElement>();
+			EditAction [] actions = set.getActions();
+			for (EditAction action: actions)
+			{
+				String name = action.getName();
+				if (used.contains(name))
+					continue;
+				children.add(new MenuElement(name));
+			}
+			if (! children.isEmpty())
+			{
+				Collections.sort(children, new Comparator<MenuElement>() {
+					public int compare(MenuElement o1, MenuElement o2)
+					{
+						return o1.label.compareTo(o2.label);
+					}
+				});
+				String actionSetName = set.getLabel();
+				unused.put(actionSetName, children);
+			}
 		}
 	}
 
