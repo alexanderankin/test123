@@ -27,12 +27,12 @@ public class MenuEditor extends JDialog
 	private static final String spaceSeparator = "\\s+";
 	private static final String menuSeparator = "-";
 	private static final String subMenu = "%";
-	private JComboBox [] menu = new JComboBox[2];
-	private JList [] items = new JList[2];
+	private JComboBox menu;
+	private JList items, unusedItems;
 	private JButton add, remove, up, down;
 	private JButton ok, apply, cancel, restoreDefault;
-	private DefaultComboBoxModel [] menuModel = new DefaultComboBoxModel[2];
-	private DefaultListModel [] itemModel = new DefaultListModel[2];
+	private DefaultComboBoxModel menuModel;
+	private DefaultListModel itemModel, unusedModel;
 	private ArrayList<MenuElement> menus = new ArrayList<MenuElement>();
 
 	public MenuEditor(View view)
@@ -41,8 +41,12 @@ public class MenuEditor extends JDialog
 		initMenuData();
 		JPanel contentPanel = new JPanel(new BorderLayout());
 		JPanel center = new JPanel();
-		JPanel from = createPanel(0);
-		JPanel to = createPanel(1);
+		JPanel from = createPanel();
+		JPanel to = new JPanel(new BorderLayout());
+		to.add(new JLabel("Available items:"), BorderLayout.NORTH);
+		unusedModel = new DefaultListModel();
+		unusedItems = new JList(unusedModel);
+		to.add(new JScrollPane(unusedItems), BorderLayout.CENTER);
 		JPanel movePanel = new JPanel(new GridLayout(0, 1));
 		add = new JButton("Add");
 		remove = new JButton("Remove");
@@ -132,40 +136,40 @@ public class MenuEditor extends JDialog
 		for (MenuElement menuElem: menus)
 			resetMenu(menuElem);
 	}
-	private JPanel createPanel(final int index)
+	private JPanel createPanel()
 	{
-		menuModel[index] = new DefaultComboBoxModel();
+		menuModel = new DefaultComboBoxModel();
 		for (MenuElement menuElem: menus)
-			menuModel[index].addElement(menuElem);
-		menu[index] = new JComboBox(menuModel[index]);
-		itemModel[index] = new DefaultListModel();
-		updateItems(index, menus.get(0));
-		items[index] = new JList(itemModel[index]);
+			menuModel.addElement(menuElem);
+		menu = new JComboBox(menuModel);
+		itemModel = new DefaultListModel();
+		updateItems(menus.get(0));
+		items = new JList(itemModel);
 		JPanel p = new JPanel(new BorderLayout());
 		JPanel menuPanel = new JPanel();
 		menuPanel.add(new JLabel("menu:"));
-		menuPanel.add(menu[index]);
+		menuPanel.add(menu);
 		JPanel itemPanel = new JPanel(new BorderLayout());
 		itemPanel.add(new JLabel("Items:"), BorderLayout.NORTH);
-		itemPanel.add(new JScrollPane(items[index]), BorderLayout.CENTER);
+		itemPanel.add(new JScrollPane(items), BorderLayout.CENTER);
 		p.add(menuPanel, BorderLayout.NORTH);
 		p.add(itemPanel, BorderLayout.CENTER);
-		menu[index].addItemListener(new ItemListener() {
+		menu.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e)
 			{
 				if (e.getStateChange() != ItemEvent.SELECTED)
 					return;
-				updateItems(index, (MenuElement)e.getItem());
+				updateItems((MenuElement)e.getItem());
 			}
 		});
 		return p;
 	}
-	private void updateItems(int index, MenuElement menuElem)
+	private void updateItems(MenuElement menuElem)
 	{
-		itemModel[index].clear();
+		itemModel.clear();
 		for (MenuElement child: menuElem.children)
-			itemModel[index].addElement(child);
+			itemModel.addElement(child);
 	}
 	private String [] getMenus()
 	{
