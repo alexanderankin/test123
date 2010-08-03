@@ -21,9 +21,6 @@ public class MenuEditorPlugin extends EditPlugin
 
 	public static void showMenuEditor(View view)
 	{
-		JDialog dialog = new JDialog(view, "Menu Editor");
-		dialog.setContentPane(new MenuEditor(view));
-		dialog.pack();
-		dialog.setVisible(true);
+		new MenuEditor(view);
 	}
 }
