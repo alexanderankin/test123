@@ -355,7 +355,7 @@ public final class Locator {
      */
     public List<String> getProjectClasses( VPTProject proj, String packageName ) {
         if ( proj == null ) {
-            return null;
+            return null;        // TODO: the javadoc says the return won't be null.
         }
         if ( projectClassNames == null || project != proj ) {
             // need to load jars and class names for the project
