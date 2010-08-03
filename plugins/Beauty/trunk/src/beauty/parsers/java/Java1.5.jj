@@ -1819,6 +1819,7 @@ void IfStatement():
  */
 {
     boolean no_block = false;
+    Token t;
 }
 {
     "if" "("
@@ -1852,8 +1853,43 @@ void IfStatement():
     }
 
     [
-        LOOKAHEAD(1) "else"
-        { trimWhitespace(); trim(); add(" else "); }
+        LOOKAHEAD(1) t="else"
+        // DONE: need to check for comment preceding the 'else', otherwise the
+        // 'else' gets appended to the end of the comment, which in the case of
+        // an END_OF_LINE_COMMENT is very bad.
+        { 
+            Token st = t.specialToken;
+            Token ct = null;    // comment token
+            while (st != null && ct == null) {
+                switch(st.kind) {
+                    // skip over whitespace
+                    case JavaParserConstants.LINE_ENDERS:
+                    case JavaParserConstants.BLANK_LINES:
+                    case JavaParserConstants.SPACES:
+                    case JavaParserConstants.TABS:
+                        st = st.specialToken;
+                        continue;
+                    // check for comment
+                    case JavaParserConstants.END_OF_LINE_COMMENT:
+                    case JavaParserConstants.JAVADOC_COMMENT:
+                    case JavaParserConstants.BLOCK_COMMENT:
+                        ct = st;
+                        break;
+                    default:
+                        continue;
+                }
+            }
+            trimWhitespace(); 
+            trim(); 
+            if (ct != null) {
+                // have comment token preceding 'else', so start 'else' on new line
+                writeln();
+                add("else ");
+            }
+            else {
+                add(" else "); 
+            }
+        }
         {
             if (getToken(1).image.equals("if")) {
                 return;   
