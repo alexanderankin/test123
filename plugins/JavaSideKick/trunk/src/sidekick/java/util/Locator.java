@@ -329,7 +329,10 @@ public final class Locator {
     }
     
     public void reloadProjectJars( VPTProject proj ) {
-		boolean useJavaClasspath = proj.getProperty("java.useJavaClasspath").equals("true");
+        if (proj == null) {
+            return;   
+        }
+		boolean useJavaClasspath = "true".equals(proj.getProperty("java.useJavaClasspath"));
         String classpath = PVHelper.getClassPathForProject(proj, useJavaClasspath).toString();
         if ( classpath == null || classpath.length() == 0 ) {
 			projectJars = new File[] {};
