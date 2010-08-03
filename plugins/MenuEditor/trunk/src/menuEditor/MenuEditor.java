@@ -27,7 +27,6 @@ public class MenuEditor extends JDialog
 	private static final String spaceSeparator = "\\s+";
 	private static final String menuSeparator = "-";
 	private static final String subMenu = "%";
-	private View view;
 	private JComboBox [] menu = new JComboBox[2];
 	private JList [] items = new JList[2];
 	private JButton add, remove, up, down;
@@ -39,7 +38,6 @@ public class MenuEditor extends JDialog
 	public MenuEditor(View view)
 	{
 		super(view, "Menu Editor");
-		this.view = view;
 		initMenuData();
 		JPanel contentPanel = new JPanel(new BorderLayout());
 		JPanel center = new JPanel();
