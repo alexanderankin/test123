@@ -11,6 +11,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -20,11 +21,12 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
 @SuppressWarnings("serial")
-public class MenuEditor extends JPanel
+public class MenuEditor extends JDialog
 {
 	private static final String viewMenuBar = "view.mbar";
 	private static final String spaceSeparator = "\\s+";
 	private static final String menuSeparator = "-";
+	private static final String subMenu = "%";
 	private View view;
 	private JComboBox [] menu = new JComboBox[2];
 	private JList [] items = new JList[2];
@@ -36,9 +38,10 @@ public class MenuEditor extends JPanel
 
 	public MenuEditor(View view)
 	{
+		super(view, "Menu Editor");
 		this.view = view;
 		initMenuData();
-		setLayout(new BorderLayout());
+		JPanel contentPanel = new JPanel(new BorderLayout());
 		JPanel center = new JPanel();
 		JPanel from = createPanel(0);
 		JPanel to = createPanel(1);
@@ -54,14 +57,25 @@ public class MenuEditor extends JPanel
 		center.add(from);
 		center.add(movePanel);
 		center.add(to);
-		add(center, BorderLayout.CENTER);
+		contentPanel.add(center, BorderLayout.CENTER);
 		JPanel bottom = new JPanel();
 		ok = new JButton("Ok");
 		apply = new JButton("Apply");
+		apply.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e)
+			{
+				apply();
+			}
+		});
 		cancel = new JButton("Cancel");
+		cancel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e)
+			{
+				dispose();
+			}
+		});
 		restoreDefault = new JButton("Restore default");
 		restoreDefault.addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent e)
 			{
 				restoreDefault();
@@ -71,14 +85,54 @@ public class MenuEditor extends JPanel
 		bottom.add(apply);
 		bottom.add(cancel);
 		bottom.add(restoreDefault);
-		add(bottom, BorderLayout.SOUTH);
+		contentPanel.add(bottom, BorderLayout.SOUTH);
+		setContentPane(contentPanel);
+		pack();
+		setVisible(true);
+
+	}
+	private void applyMenu(MenuElement menuElem)
+	{
+		ArrayList<String> children = new ArrayList<String>();
+		if (menuElem.children != null)
+		{
+			for (MenuElement childElem: menuElem.children)
+			{
+				if (childElem.children != null)
+				{
+					applyMenu(childElem);
+					children.add(subMenu + childElem.menu);
+				}
+				else
+					children.add(childElem.menu);
+			}
+		}
+		StringBuilder menuString = new StringBuilder();
+		for (String child: children)
+		{
+			if (menuString.length() > 0)
+				menuString.append(" ");
+			menuString.append(child);
+		}
+		jEdit.setProperty(menuElem.menu, menuString.toString());
+	}
+	private void apply()
+	{
+		for (MenuElement menuElem: menus)
+			applyMenu(menuElem);
+	}
+	private void resetMenu(MenuElement menuElem)
+	{
+		jEdit.resetProperty(menuElem.menu);
+		if (menuElem.children == null)
+			return;
+		for (MenuElement childElem: menuElem.children)
+			resetMenu(childElem);
 	}
 	private void restoreDefault()
 	{
 		for (MenuElement menuElem: menus)
-		{
-			
-		}
+			resetMenu(menuElem);
 	}
 	private JPanel createPanel(final int index)
 	{
@@ -143,7 +197,7 @@ public class MenuEditor extends JPanel
 			return;
 		for (String item: menuItems)
 		{
-			boolean isMenu = item.startsWith("%");
+			boolean isMenu = item.startsWith(subMenu);
 			if (isMenu)
 				item = item.substring(1);
 			MenuElement child = parent.addChild(item);
