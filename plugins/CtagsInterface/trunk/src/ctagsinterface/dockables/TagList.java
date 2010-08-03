@@ -84,12 +84,26 @@ public class TagList extends JPanel implements DefaultFocusComponent
 		{
 			public void keyTyped(KeyEvent ke)
 			{
-				ke.consume();
 				char c = ke.getKeyChar();
+				int index = -1;
 				if (c == ' ')
-					jumpTo(tags.getSelectedIndex());
+					index = tags.getSelectedIndex();
 				else if (c >= '1' && c <= '9')
-					jumpTo(c - '1');
+					index = c - '1';
+				if (index >= 0)
+				{
+					ke.consume();
+					jumpTo(index);
+				}
+			}
+			//keyTyped events don't provide a key code
+			public void keyPressed(KeyEvent ke)
+			{
+				if (ke.getKeyCode() == KeyEvent.VK_ENTER)
+				{
+					ke.consume();
+					jumpTo(tags.getSelectedIndex());
+				}
 			}
 		});
 		setTags(null);
@@ -99,6 +113,8 @@ public class TagList extends JPanel implements DefaultFocusComponent
 	{
 		Tag tag = (Tag) tagModel.getElementAt(selectedIndex);
 		CtagsInterfacePlugin.jumpToTag(view, tag);
+		if (view != null)
+			view.getTextArea().requestFocus(); 
 	}
 
 	public void setTags(List<Tag> tags)
