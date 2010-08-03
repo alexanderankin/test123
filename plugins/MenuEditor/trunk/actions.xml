@@ -3,7 +3,7 @@
 <ACTIONS>
 	<ACTION NAME="menu-editor" NO_REPEAT="TRUE">
 		<CODE>
-			menuEditor.MenuEditorPlugin.showMenuEditor(view);
+			new menuEditor.MenuEditor(view);
 		</CODE>
 	</ACTION>
 </ACTIONS>
