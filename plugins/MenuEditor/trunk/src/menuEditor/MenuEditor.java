@@ -118,8 +118,8 @@ public class MenuEditor extends JDialog
 		initData();
 		setContentPane(contentPanel);
 		pack();
+		setLocationRelativeTo(view);
 		setVisible(true);
-
 	}
 	private void initData()
 	{
