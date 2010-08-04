@@ -48,6 +48,12 @@ public class MenuEditor extends JDialog
 		JPanel movePanel = new JPanel(new GridLayout(0, 1));
 		movePanel.setLayout(new BoxLayout(movePanel, BoxLayout.Y_AXIS));
 		add = new JButton("Add");
+		add.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e)
+			{
+				addSelected();
+			}
+		});
 		remove = new JButton("Remove");
 		remove.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e)
@@ -56,7 +62,19 @@ public class MenuEditor extends JDialog
 			}
 		});
 		up = new JButton("Up");
+		up.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e)
+			{
+				moveSelected(true);
+			}
+		});
 		down = new JButton("Down");
+		down.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e)
+			{
+				moveSelected(false);
+			}
+		});
 		movePanel.add(add);
 		movePanel.add(remove);
 		movePanel.add(up);
@@ -109,6 +127,62 @@ public class MenuEditor extends JDialog
 	{
 		initMenuData();
 		initUnusedActions();
+	}
+	private void moveSelected(boolean up)
+	{
+		int [] selected = items.getSelectedIndices();
+		Arrays.sort(selected);
+		MenuElement parentMenu = (MenuElement) menu.getSelectedItem();
+		int [] moved = new int[selected.length];
+		int movedIndex = 0;
+		int selCount = selected.length;
+		int itemCount = itemModel.getSize();
+		int from, to, diff, move, limit; 
+		if (up)
+		{
+			from = 0;
+			to = selCount;
+			diff = 1;
+			move = -1;
+			limit = 0;
+		}
+		else
+		{
+			from = selCount - 1;
+			to = -1;
+			diff = -1;
+			move = 1;
+			limit = itemCount - 1;
+		}
+		// Skip the items that can't move (items at list boundary)
+		while ((from != to) && (selected[from] == limit))
+		{
+			moved[movedIndex++] = selected[from];
+			from += diff;
+			limit += diff;
+		}
+		// Move the items that can move
+		for (; from != to; from += diff)
+		{
+			int i1 = selected[from];
+			int i2 = i1 + move;
+			parentMenu.swapChildren(i1, i2);
+			moved[movedIndex++] = i2;
+		}
+		updateItems(parentMenu);
+		items.setSelectedIndices(moved);
+	}
+	private void addSelected()
+	{
+		MenuElement parentMenu = (MenuElement) menu.getSelectedItem();
+		int [] selected = unusedItems.getSelectedIndices();
+		for (int i: selected)
+		{
+			MenuElement element =
+				(MenuElement) unusedItems.getModel().getElementAt(i);
+			parentMenu.addChild(element);
+		}
+		updateItems(parentMenu);
 	}
 	private void removeSelected()
 	{
@@ -179,7 +253,6 @@ public class MenuEditor extends JDialog
 			menuString.append(child);
 		}
 		jEdit.setProperty(menuElem.menu, menuString.toString());
-		jEdit.saveSettings();
 	}
 	private void apply()
 	{
@@ -329,17 +402,29 @@ public class MenuEditor extends JDialog
 		}
 		public MenuElement addChild(String child)
 		{
+			MenuElement childElem = new MenuElement(child);
+			addChild(childElem);
+			return childElem;
+		}
+		public void addChild(MenuElement child)
+		{
 			if (children == null)
 				children = new ArrayList<MenuElement>();
-			MenuElement childElem = new MenuElement(child); 
-			children.add(childElem);
-			return childElem;
+			children.add(child);
 		}
 		public void removeChildren(int [] indices)
 		{
 			Arrays.sort(indices);
 			for (int i = indices.length - 1; i >= 0; i--)
 				children.remove(indices[i]);
+		}
+		public void swapChildren(int from, int to)
+		{
+			if ((children == null) || (children.size() <= Math.max(from, to)))
+				return;
+			MenuElement temp = children.get(from);
+			children.set(from, children.get(to));
+			children.set(to, temp);
 		}
 	}
 }
