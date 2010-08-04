@@ -199,7 +199,7 @@ public class MenuEditor extends JDialog
 		for (MenuElement menuElem: menus)
 			resetMenu(menuElem);
 		initData();
-		updateItems(menu.getSelectedItem());
+		updateItems((MenuElement) menu.getSelectedItem());
 	}
 	private JPanel createMenuPanel()
 	{
