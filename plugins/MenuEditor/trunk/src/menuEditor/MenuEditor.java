@@ -160,27 +160,37 @@ public class MenuEditor extends JDialog
 			limit += diff;
 		}
 		// Move the items that can move
+		int firstMoved = -1;
 		for (; from != to; from += diff)
 		{
 			int i1 = selected[from];
 			int i2 = i1 + move;
+			if (firstMoved == -1)
+				firstMoved = i2;
 			parentMenu.swapChildren(i1, i2);
 			moved[movedIndex++] = i2;
 		}
 		updateItems(parentMenu);
 		items.setSelectedIndices(moved);
+		items.ensureIndexIsVisible(firstMoved);
 	}
 	private void addSelected()
 	{
 		MenuElement parentMenu = (MenuElement) menu.getSelectedItem();
 		int [] selected = allActions.getSelectedIndices();
+		if (selected.length == 0)
+			return;
+		int [] indices = new int[selected.length];
+		int count = 0;
 		for (int i: selected)
 		{
 			MenuElement element =
 				(MenuElement) allActions.getModel().getElementAt(i);
-			parentMenu.addChild(element);
+			indices[count++] = parentMenu.addChild(element);
 		}
 		updateItems(parentMenu);
+		items.setSelectedIndices(indices);
+		items.ensureIndexIsVisible(indices[0]);
 	}
 	private void removeSelected()
 	{
@@ -400,11 +410,12 @@ public class MenuEditor extends JDialog
 			addChild(childElem);
 			return childElem;
 		}
-		public void addChild(MenuElement child)
+		public int addChild(MenuElement child)
 		{
 			if (children == null)
 				children = new ArrayList<MenuElement>();
 			children.add(child);
+			return children.size() - 1;
 		}
 		public void removeChildren(int [] indices)
 		{
