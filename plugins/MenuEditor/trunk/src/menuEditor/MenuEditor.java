@@ -1,7 +1,6 @@
 package menuEditor;
 
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -12,15 +11,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import javax.swing.*;
 
 import org.gjt.sp.jedit.ActionSet;
 import org.gjt.sp.jedit.EditAction;
@@ -51,10 +42,11 @@ public class MenuEditor extends JDialog
 		initMenuData();
 		initUnusedActions();
 		JPanel contentPanel = new JPanel(new BorderLayout());
-		JPanel center = new JPanel();
+		JPanel center = new JPanel(new BorderLayout(5,5));
 		JPanel from = createMenuPanel();
 		JPanel to = createActionPanel();
 		JPanel movePanel = new JPanel(new GridLayout(0, 1));
+		movePanel.setLayout(new BoxLayout(movePanel, BoxLayout.Y_AXIS));
 		add = new JButton("Add");
 		remove = new JButton("Remove");
 		up = new JButton("Up");
@@ -63,9 +55,9 @@ public class MenuEditor extends JDialog
 		movePanel.add(remove);
 		movePanel.add(up);
 		movePanel.add(down);
-		center.add(from);
+		center.add(from, BorderLayout.WEST);
 		center.add(movePanel);
-		center.add(to);
+		center.add(to, BorderLayout.EAST);
 		contentPanel.add(center, BorderLayout.CENTER);
 		JPanel bottom = new JPanel();
 		ok = new JButton("Ok");
