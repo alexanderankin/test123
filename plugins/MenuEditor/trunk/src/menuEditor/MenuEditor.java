@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 
 import javax.swing.*;
 
@@ -27,20 +26,18 @@ public class MenuEditor extends JDialog
 	private static final String menuSeparator = "-";
 	private static final String subMenu = "%";
 	private JComboBox menu, actionSet;
-	private JList items, unusedItems;
+	private JList items, allActions;
 	private JButton add, remove, up, down;
 	private JButton ok, apply, cancel, restoreDefault;
 	private DefaultComboBoxModel menuModel, actionSetModel;
-	private DefaultListModel itemModel, unusedModel;
+	private DefaultListModel itemModel, allActionsModel;
 	private ArrayList<MenuElement> menus = new ArrayList<MenuElement>();
-	private HashSet<String> used = new HashSet<String>();
-	private HashMap<String, ArrayList<MenuElement>> unused =
+	private HashMap<String, ArrayList<MenuElement>> actionSetMap =
 		new HashMap<String, ArrayList<MenuElement>>();
 
 	public MenuEditor(View view)
 	{
 		super(view, "Menu Editor");
-		initData();
 		JPanel contentPanel = new JPanel(new BorderLayout());
 		JPanel center = new JPanel(new BorderLayout(5,5));
 		JPanel from = createMenuPanel();
@@ -118,6 +115,7 @@ public class MenuEditor extends JDialog
 		bottom.add(cancel);
 		bottom.add(restoreDefault);
 		contentPanel.add(bottom, BorderLayout.SOUTH);
+		initData();
 		setContentPane(contentPanel);
 		pack();
 		setVisible(true);
@@ -126,7 +124,7 @@ public class MenuEditor extends JDialog
 	private void initData()
 	{
 		initMenuData();
-		initUnusedActions();
+		initAllActions();
 	}
 	private void moveSelected(boolean up)
 	{
@@ -175,11 +173,11 @@ public class MenuEditor extends JDialog
 	private void addSelected()
 	{
 		MenuElement parentMenu = (MenuElement) menu.getSelectedItem();
-		int [] selected = unusedItems.getSelectedIndices();
+		int [] selected = allActions.getSelectedIndices();
 		for (int i: selected)
 		{
 			MenuElement element =
-				(MenuElement) unusedItems.getModel().getElementAt(i);
+				(MenuElement) allActions.getModel().getElementAt(i);
 			parentMenu.addChild(element);
 		}
 		updateItems(parentMenu);
@@ -197,21 +195,14 @@ public class MenuEditor extends JDialog
 		JPanel actionSetPanel = new JPanel();
 		actionSetPanel.add(new JLabel("Action set:"));
 		actionSetModel = new DefaultComboBoxModel();
-		ArrayList<String> actionSetNames = new ArrayList<String>();
-		for (String actionSet: unused.keySet())
-			actionSetNames.add(actionSet);
-		Collections.sort(actionSetNames);
-		for (String actionSet: actionSetNames)
-			actionSetModel.addElement(actionSet);
 		actionSet = new JComboBox(actionSetModel);
 		actionSetPanel.add(actionSet);
 		p.add(actionSetPanel, BorderLayout.NORTH);
 		JPanel actionPanel = new JPanel(new BorderLayout());
 		actionPanel.add(new JLabel("Available items:"), BorderLayout.NORTH);
-		unusedModel = new DefaultListModel();
-		updateActions((String)actionSetModel.getElementAt(0));
-		unusedItems = new JList(unusedModel);
-		actionPanel.add(new JScrollPane(unusedItems), BorderLayout.CENTER);
+		allActionsModel = new DefaultListModel();
+		allActions = new JList(allActionsModel);
+		actionPanel.add(new JScrollPane(allActions), BorderLayout.CENTER);
 		p.add(actionPanel, BorderLayout.CENTER);
 		actionSet.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e)
@@ -225,9 +216,9 @@ public class MenuEditor extends JDialog
 	}
 	private void updateActions(String actionSet)
 	{
-		unusedModel.clear();
-		for (MenuElement child: unused.get(actionSet))
-			unusedModel.addElement(child);
+		allActionsModel.clear();
+		for (MenuElement child: actionSetMap.get(actionSet))
+			allActionsModel.addElement(child);
 	}
 	private void applyMenu(MenuElement menuElem)
 	{
@@ -272,16 +263,12 @@ public class MenuEditor extends JDialog
 		for (MenuElement menuElem: menus)
 			resetMenu(menuElem);
 		initData();
-		updateItems((MenuElement) menu.getSelectedItem());
 	}
 	private JPanel createMenuPanel()
 	{
 		menuModel = new DefaultComboBoxModel();
-		for (MenuElement menuElem: menus)
-			menuModel.addElement(menuElem);
 		menu = new JComboBox(menuModel);
 		itemModel = new DefaultListModel();
-		updateItems(menus.get(0));
 		items = new JList(itemModel);
 		JPanel p = new JPanel(new BorderLayout());
 		JPanel menuPanel = new JPanel();
@@ -339,7 +326,6 @@ public class MenuEditor extends JDialog
 			boolean isMenu = item.startsWith(subMenu);
 			if (isMenu)
 				item = item.substring(1);
-			used.add(item);
 			MenuElement child = parent.addChild(item);
 			if (isMenu)
 				initMenu(child);
@@ -347,20 +333,22 @@ public class MenuEditor extends JDialog
 	}
 	private void initMenuData()
 	{
-		used.clear();
 		menus.clear();
 		String [] menuIds = getMenus();
 		for (String menuId: menuIds)
 		{
-			used.add(menuId);
 			MenuElement menuElem = new MenuElement(menuId);
 			menus.add(menuElem);
 			initMenu(menuElem);
 		}
+		menuModel.removeAllElements();
+		for (MenuElement menuElem: menus)
+			menuModel.addElement(menuElem);
+		updateItems(menus.get(0));
 	}
-	private void initUnusedActions()
+	private void initAllActions()
 	{
-		unused.clear();
+		actionSetMap.clear();
 		ActionSet [] actionSets = jEdit.getActionSets();
 		for (ActionSet set: actionSets)
 		{
@@ -369,8 +357,6 @@ public class MenuEditor extends JDialog
 			for (EditAction action: actions)
 			{
 				String name = action.getName();
-				if (used.contains(name))
-					continue;
 				children.add(new MenuElement(name));
 			}
 			if (! children.isEmpty())
@@ -382,9 +368,17 @@ public class MenuEditor extends JDialog
 					}
 				});
 				String actionSetName = set.getLabel();
-				unused.put(actionSetName, children);
+				actionSetMap.put(actionSetName, children);
 			}
 		}
+		ArrayList<String> actionSetNames = new ArrayList<String>();
+		for (String actionSet: actionSetMap.keySet())
+			actionSetNames.add(actionSet);
+		Collections.sort(actionSetNames);
+		actionSetModel.removeAllElements();
+		for (String actionSet: actionSetNames)
+			actionSetModel.addElement(actionSet);
+		updateActions((String)actionSetModel.getElementAt(0));
 	}
 
 	private static class MenuElement
