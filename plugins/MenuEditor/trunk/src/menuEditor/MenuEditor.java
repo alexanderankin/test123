@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -39,8 +40,7 @@ public class MenuEditor extends JDialog
 	public MenuEditor(View view)
 	{
 		super(view, "Menu Editor");
-		initMenuData();
-		initUnusedActions();
+		initData();
 		JPanel contentPanel = new JPanel(new BorderLayout());
 		JPanel center = new JPanel(new BorderLayout(5,5));
 		JPanel from = createMenuPanel();
@@ -49,6 +49,12 @@ public class MenuEditor extends JDialog
 		movePanel.setLayout(new BoxLayout(movePanel, BoxLayout.Y_AXIS));
 		add = new JButton("Add");
 		remove = new JButton("Remove");
+		remove.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e)
+			{
+				removeSelected();
+			}
+		});
 		up = new JButton("Up");
 		down = new JButton("Down");
 		movePanel.add(add);
@@ -61,6 +67,13 @@ public class MenuEditor extends JDialog
 		contentPanel.add(center, BorderLayout.CENTER);
 		JPanel bottom = new JPanel();
 		ok = new JButton("Ok");
+		ok.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e)
+			{
+				apply();
+				dispose();
+			}
+		});
 		apply = new JButton("Apply");
 		apply.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e)
@@ -91,6 +104,18 @@ public class MenuEditor extends JDialog
 		pack();
 		setVisible(true);
 
+	}
+	private void initData()
+	{
+		initMenuData();
+		initUnusedActions();
+	}
+	private void removeSelected()
+	{
+		int [] selected = items.getSelectedIndices();
+		MenuElement parentMenu = (MenuElement) menu.getSelectedItem();
+		parentMenu.removeChildren(selected);
+		updateItems(parentMenu);
 	}
 	private JPanel createActionPanel()
 	{
@@ -154,6 +179,7 @@ public class MenuEditor extends JDialog
 			menuString.append(child);
 		}
 		jEdit.setProperty(menuElem.menu, menuString.toString());
+		jEdit.saveSettings();
 	}
 	private void apply()
 	{
@@ -172,6 +198,8 @@ public class MenuEditor extends JDialog
 	{
 		for (MenuElement menuElem: menus)
 			resetMenu(menuElem);
+		initData();
+		updateItems(menu.getSelectedItem());
 	}
 	private JPanel createMenuPanel()
 	{
@@ -246,6 +274,8 @@ public class MenuEditor extends JDialog
 	}
 	private void initMenuData()
 	{
+		used.clear();
+		menus.clear();
 		String [] menuIds = getMenus();
 		for (String menuId: menuIds)
 		{
@@ -257,6 +287,7 @@ public class MenuEditor extends JDialog
 	}
 	private void initUnusedActions()
 	{
+		unused.clear();
 		ActionSet [] actionSets = jEdit.getActionSets();
 		for (ActionSet set: actionSets)
 		{
@@ -303,6 +334,12 @@ public class MenuEditor extends JDialog
 			MenuElement childElem = new MenuElement(child); 
 			children.add(childElem);
 			return childElem;
+		}
+		public void removeChildren(int [] indices)
+		{
+			Arrays.sort(indices);
+			for (int i = indices.length - 1; i >= 0; i--)
+				children.remove(indices[i]);
 		}
 	}
 }
