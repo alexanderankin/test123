@@ -1,4 +1,4 @@
-plugin.menuEditor.UserExperiencePlugin.activate=defer
+plugin.menuEditor.MenuEditorPlugin.activate=defer
 
 # general plugin information
 plugin.menuEditor.MenuEditorPlugin.name=Menu Editor

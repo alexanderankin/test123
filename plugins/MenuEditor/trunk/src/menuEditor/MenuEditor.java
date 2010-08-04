@@ -200,7 +200,6 @@ public class MenuEditor extends JDialog
 		p.add(menuPanel, BorderLayout.NORTH);
 		p.add(itemPanel, BorderLayout.CENTER);
 		menu.addItemListener(new ItemListener() {
-			@Override
 			public void itemStateChanged(ItemEvent e)
 			{
 				if (e.getStateChange() != ItemEvent.SELECTED)
