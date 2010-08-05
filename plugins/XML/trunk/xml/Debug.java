@@ -22,7 +22,7 @@ public final class Debug
 {
 	
 	/** turn on/off messages about resource resolution */
-	public static final boolean DEBUG_RESOLVER = true;
+	public static final boolean DEBUG_RESOLVER = false;
 
 	/** turn on/off messages about which parser is used */
 	public static final boolean DEBUG_JAXP = false;
@@ -31,15 +31,15 @@ public final class Debug
 	public static final boolean DEBUG_XSD_SCHEMA = false;
 	
 	/** turn on/off messages about RNG schemas to CompletionInfo */
-	public static final boolean DEBUG_RNG_SCHEMA = true;
+	public static final boolean DEBUG_RNG_SCHEMA = false;
 	
 	/** turn on/off messages about DTD to CompletionInfo (in XercesParserImpl) */
-	public static final boolean DEBUG_DTD = true;
+	public static final boolean DEBUG_DTD = false;
 	
 	/** turn on/off messages about Schema discovery */
-	public static final boolean DEBUG_SCHEMA_MAPPING = true;
+	public static final boolean DEBUG_SCHEMA_MAPPING = false;
 	
 	/** turn on/off messages about schema completion */
-	public static final boolean DEBUG_COMPLETION = true;
+	public static final boolean DEBUG_COMPLETION = false;
 }
 
