@@ -759,7 +759,7 @@ public class XercesParserImpl extends XmlParser
 				offset = findTagStart(offset);
 				Position pos = buffer.createPosition(offset);
 
-				XmlTag newTag = new XmlTag(qName,namespaceURI==null ? "" : namespaceURI,pos,attrs);
+				XmlTag newTag = createTag(qName, namespaceURI==null ? "" : namespaceURI, pos, attrs);
 				newTag.namespaceBindings = declaredPrefixes;
 				declaredPrefixes = null;
 				
@@ -782,6 +782,22 @@ public class XercesParserImpl extends XmlParser
 				buffer.readUnlock();
 			}
 		} //}}}
+		
+		private XmlTag createTag(String qname, String namespaceURI, Position pos, Attributes attrs) {
+		    String tagClassName = jEdit.getProperty("xml.xmltag." + buffer.getMode().toString());
+		    if (tagClassName != null) {
+		        try {
+		            Class tagClass = Class.forName(tagClassName);
+		            java.lang.reflect.Constructor con = tagClass.getConstructor(String.class, String.class, Position.class, Attributes.class);
+		            return (XmlTag)con.newInstance(qname, namespaceURI, pos, attrs);
+		        }
+		        catch (Exception e) {
+		             // ignored, just return an XmlTag if this fails   
+		             e.printStackTrace();
+		        }
+		    }
+		    return new XmlTag(qname, namespaceURI, pos, attrs);   
+		}
 
 		//{{{ endElement() method
 		public void endElement(String namespaceURI,

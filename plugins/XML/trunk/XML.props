@@ -142,6 +142,8 @@ mode.xml.sidekick.parser=xml
 mode.xsl.sidekick.parser=xml
 mode.css.sidekick.parser=css
 
+xml.xmltag.Ant=xml.parser.AntXmlTag
+
 # Show attributes in XML tree?
 # 0: none; 1: id only; 2: all
 xml.show-attributes=1
