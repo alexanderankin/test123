@@ -1298,7 +1298,7 @@ public final class SchemaMapping
 		{
 			try
 			{
-				SwingUtilities.invokeAndWait(run);
+				SwingUtilities.invokeLater(run);
 			}
 			catch(Exception e)
 			{
