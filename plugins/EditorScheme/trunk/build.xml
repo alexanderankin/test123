@@ -50,6 +50,7 @@
 			deprecation="on"
 			includeJavaRuntime="yes"
 		>
+			<compilerarg value="-Xlint:unchecked"/>
 			<classpath refid="project.class.path"/>
 		</javac>
 	</target>

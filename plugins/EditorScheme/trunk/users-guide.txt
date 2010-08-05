@@ -95,12 +95,24 @@ http://sourceforge.net/bugs/?group_id=588.
 
 You may also e-mail:
 
-* Ollie Rutherfurd <oliver@jedit.org>;
-* or jEdit-users mailing-list <jedit-users@lists.sourceforge.net>;
-* or jEdit-devel mailing-list <jedit-devel@lists.sourceforge.net>.
+* jEdit-users mailing-list <jedit-users@lists.sourceforge.net>;
+* jEdit-devel mailing-list <jedit-devel@lists.sourceforge.net>.
 
 Change log
 ==========
+
+* Version 1.3, danson. Requires jEdit 4.3.2, Java 1.5
+
+  - Added properties to be able to set colors for Activity log.  Currently only Zenburn scheme uses these.
+  - Cleaned up all deprecation warnings.
+  - Code clean up based on PMD recommendations.
+
+* Version 1.2, Requires jEdit 4.3pre15, Java 1.5
+
+  - Added console.caretColor property to scheme, kpouer
+  - Updated for jEdit 4.3pre15, danson
+  - Updated docs, danson
+  - Updates to Zenburn theme for JDiff highlight colors, danson
 
 * Version 1.1, Requires jEdit 4.2pre2
 

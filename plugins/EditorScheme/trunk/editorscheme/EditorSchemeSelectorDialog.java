@@ -35,6 +35,7 @@ import javax.swing.event.*;
 
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.util.StandardUtilities;
 
 import org.gjt.sp.util.Log;
 //}}}
@@ -47,9 +48,8 @@ public class EditorSchemeSelectorDialog extends EnhancedDialog implements Action
 {
 
 	private EditorScheme selectedScheme;
-	private EditorScheme original;
 	private JList schemeList;
-	Vector schemes;
+	ArrayList<EditorScheme> schemes;
 	private JCheckBox autoApply;
 	private JCheckBoxList groupsList;
 	private JButton closeButton;
@@ -71,15 +71,15 @@ public class EditorSchemeSelectorDialog extends EnhancedDialog implements Action
 
 		// get the list of schemes
 		EditorSchemePlugin.loadSchemes();
-		schemes = new Vector(EditorSchemePlugin.getSchemes());
+		schemes = new ArrayList<EditorScheme>(EditorSchemePlugin.getSchemes());
 
 		// get current settings, but don't add until a new scheme has been applied
-		original = new EditorScheme();
+		EditorScheme original = new EditorScheme();
 		original.getFromCurrent();
 		original.setName(jEdit.getProperty("editor-scheme.selector.currentscheme"));
-		schemes.insertElementAt(original,0);
+		schemes.add(0, original);
 
-		schemeList = new JList(schemes);
+		schemeList = new JList(schemes.toArray(new EditorScheme[0]));
 		schemeList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		schemeList.setCellRenderer(new EditorSchemeListCellRenderer());
 		ListSelectionHandler listSelectionHandler = new ListSelectionHandler();
@@ -96,12 +96,12 @@ public class EditorSchemeSelectorDialog extends EnhancedDialog implements Action
 		main.add(schemesPanel);
 
 		JPanel groupsPanel = new JPanel(new BorderLayout());
-		Vector groups = EditorScheme.getPropertyGroups();
+		ArrayList groups = EditorScheme.getPropertyGroups();
 		JCheckBoxList.Entry[] entries = new JCheckBoxList.Entry[groups.size()];
 		for(int i=0; i < groups.size(); i++)
 		{
 			EditorScheme.PropertyGroup group = 
-				(EditorScheme.PropertyGroup)groups.elementAt(i);
+				(EditorScheme.PropertyGroup)groups.get(i);
 			entries[i] = new JCheckBoxList.Entry(group.apply, group);
 		}
 		groupsList = new JCheckBoxList(entries);
@@ -146,7 +146,7 @@ public class EditorSchemeSelectorDialog extends EnhancedDialog implements Action
 
 		pack();
 		setLocationRelativeTo(view);
-		show();
+		setVisible(true);
 	}//}}}
 
 	//{{{ getPreferredSize
@@ -247,12 +247,12 @@ public class EditorSchemeSelectorDialog extends EnhancedDialog implements Action
 			int i;
 			for(i = 0; i < schemes.size(); i++)
 			{
-				EditorScheme s = (EditorScheme)schemes.elementAt(i);
-				if(MiscUtilities.compareStrings(s.getName(), name , true) > 1)
+				EditorScheme s = (EditorScheme)schemes.get(i);
+				if(StandardUtilities.compareStrings(s.getName(), name , true) > 1)
 					break;
 			}
-			schemes.insertElementAt(scheme,i);
-			schemeList.setListData(schemes);
+			schemes.add(i, scheme);
+			schemeList.setListData(schemes.toArray(new EditorScheme[0]));
 
 		}
 		catch(IOException ioe)
