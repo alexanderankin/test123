@@ -27,18 +27,18 @@ package editorscheme;
 //{{{ imports
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.InputStream;
 import java.io.IOException;
 
+import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.zip.*;
-import javax.swing.JOptionPane;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StandardUtilities;
 //}}}
 
 /**
@@ -53,9 +53,9 @@ public class EditorSchemePlugin extends EditPlugin
 	public static final String NAME = "editor-scheme";
 
 	// schemes loaded from jar
-	private static Vector packagedSchemes;
+	private static ArrayList<EditorScheme> packagedSchemes;
 	// user schemes and schemes loaded from jar
-	private static Vector schemes = null;
+	private static ArrayList<EditorScheme> schemes = null;
 	// location of user's schemes
 	private static String userSchemesPath;
 
@@ -84,26 +84,26 @@ public class EditorSchemePlugin extends EditPlugin
 	public static void loadSchemes()
 	{
 		if(schemes == null)
-			schemes = new Vector();
+			schemes = new ArrayList<EditorScheme>();
 		else
-			schemes.removeAllElements();
+			schemes.clear();
 		loadBuiltinSchemes();
 		loadUserSchemes();
-		MiscUtilities.quicksort(schemes,
-			new MiscUtilities.StringICaseCompare());
+		Collections.sort(schemes,
+			new StandardUtilities.StringCompare<EditorScheme>());
 	}//}}}
 
 
 	//{{{ getSchemes()
 	/**
-	* Get Vector of EditorScheme objects.
+	* Get ArrayList of EditorScheme objects.
 	* @since 0.4.0
 	*/
-	public static Vector getSchemes()
+	public static ArrayList<EditorScheme> getSchemes()
 	{
 		if(schemes == null)
 		{
-			schemes = new Vector();
+			schemes = new ArrayList<EditorScheme>();
 			loadSchemes();
 		}
 		return schemes;
@@ -120,7 +120,7 @@ public class EditorSchemePlugin extends EditPlugin
 		// if packaged schemes haven't been loaded, load them
 		if(packagedSchemes == null)
 		{
-			packagedSchemes = new Vector();
+			packagedSchemes = new ArrayList<EditorScheme>();
 
 			try
 			{
@@ -135,7 +135,7 @@ public class EditorSchemePlugin extends EditPlugin
 					ZipEntry entry = (ZipEntry)entries.nextElement();
 					if(entry.getName().endsWith(EditorScheme.EXTENSION))
 					{
-						packagedSchemes.addElement(
+						packagedSchemes.add(
 							new EditorScheme(zip.getInputStream(entry)));
 					}
 				}
@@ -148,7 +148,7 @@ public class EditorSchemePlugin extends EditPlugin
 		}
 
 		for(int i = 0; i < packagedSchemes.size(); i++)
-			schemes.addElement(packagedSchemes.elementAt(i));
+			schemes.add(packagedSchemes.get(i));
 	}//}}}
 
 
@@ -174,7 +174,7 @@ public class EditorSchemePlugin extends EditPlugin
 			String file = dir.getPath() + File.separator + files[i];
 			EditorScheme scheme = new EditorScheme(file);
 			scheme.setReadOnly(false);
-			schemes.addElement(scheme);
+			schemes.add(scheme);
 		}
 
 	}//}}}

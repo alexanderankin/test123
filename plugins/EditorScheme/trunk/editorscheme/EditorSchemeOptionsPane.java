@@ -24,8 +24,7 @@
 package editorscheme;
 
 //{{{ Imports
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
@@ -50,11 +49,11 @@ public class EditorSchemeOptionsPane extends AbstractOptionPane
 
 		addComponent(Box.createVerticalStrut(3));
 
-		Vector groups = EditorScheme.getPropertyGroups();
+		ArrayList groups = EditorScheme.getPropertyGroups();
 		JCheckBoxList.Entry[] entries = new JCheckBoxList.Entry[groups.size()];
 		for(int i=0; i < groups.size(); i++)
 		{
-			EditorScheme.PropertyGroup group = (EditorScheme.PropertyGroup)groups.elementAt(i);
+			EditorScheme.PropertyGroup group = (EditorScheme.PropertyGroup)groups.get(i);
 			entries[i] = new JCheckBoxList.Entry(group.apply,group);
 		}
 

@@ -5,11 +5,11 @@ plugin.editorscheme.EditorSchemePlugin.activate=defer
 
 plugin.editorscheme.EditorSchemePlugin.name=Editor Scheme
 plugin.editorscheme.EditorSchemePlugin.author=Ollie Rutherfurd
-plugin.editorscheme.EditorSchemePlugin.version=1.2
+plugin.editorscheme.EditorSchemePlugin.version=1.3
 plugin.editorscheme.EditorSchemePlugin.description=EditorScheme lets one easily switch between predefined color and style combinations for jEdit's TextArea and a number of jEdit's Plugins
 plugin.editorscheme.EditorSchemePlugin.docs=index.html
 
-plugin.editorscheme.EditorSchemePlugin.depend.0=jedit 04.03.15.00
+plugin.editorscheme.EditorSchemePlugin.depend.0=jedit 04.03.99.00
 plugin.editorscheme.EditorSchemePlugin.depend.1=jdk 1.5
 
 ### menu
@@ -64,7 +64,8 @@ editor-scheme.property-groups=console \
     errorlist \
     jdiff \
     tasklist \
-    whitespace
+    whitespace \
+    activitylog
 
 # property group names
 editor-scheme.console.name=Console Plugin
@@ -73,6 +74,7 @@ editor-scheme.errorlist.name=Error List Plugin
 editor-scheme.jdiff.name=JDiff Plugin
 editor-scheme.tasklist.name=TaskList Plugin
 editor-scheme.whitespace.name=WhiteSpace Plugin
+editor-scheme.activitylog.name=Activity Log
 
 # properties in each property group
 editor-scheme.console-props=console.font \
@@ -154,4 +156,10 @@ editor-scheme.whitespace-props=white-space.block-color \
     white-space.space-color \
     white-space.tab-color \
     white-space.whitespace-color
+    
+editor-scheme.activitylog-props=log-viewer.message.debug.color \
+    log-viewer.message.message.color \
+    log-viewer.message.notice.color \
+    log-viewer.message.warning.color \
+    log-viewer.message.error.color
 

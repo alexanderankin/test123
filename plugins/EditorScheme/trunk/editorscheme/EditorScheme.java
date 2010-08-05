@@ -29,10 +29,8 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.util.Log;
 import java.io.*;
-import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.StringTokenizer;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Properties;
 //}}}
 
@@ -47,15 +45,15 @@ public class EditorScheme
 	private boolean readOnly;
 
 	public static final String EXTENSION = ".jedit-scheme";
-	private static Vector propertyGroups;
+	private static ArrayList<EditorScheme.PropertyGroup> propertyGroups;
 
 	static {
-		propertyGroups = new Vector();
+		propertyGroups = new ArrayList<EditorScheme.PropertyGroup>();
 		StringTokenizer names = new StringTokenizer(
 			jEdit.getProperty("editor-scheme.property-groups"));
 		while(names.hasMoreElements()){
 			String name = names.nextToken();
-			propertyGroups.addElement(new EditorScheme.PropertyGroup(name));
+			propertyGroups.add(new EditorScheme.PropertyGroup(name));
 		}
 	}
 
@@ -98,13 +96,13 @@ public class EditorScheme
 	{
 		for(int i=0; i < propertyGroups.size(); i++)
 		{
-			PropertyGroup group = (PropertyGroup)propertyGroups.elementAt(i);
+			PropertyGroup group = (PropertyGroup)propertyGroups.get(i);
 			if(group.apply)
 			{
-				Vector names = group.getPropertyNames();
+				ArrayList names = group.getPropertyNames();
 				for(int j=0; j < names.size(); j++)
 				{
-					String name = (String)names.elementAt(j);
+					String name = (String)names.get(j);
 					String value = (String)properties.get(name);
 					jEdit.setProperty(name,value);
 				}
@@ -123,11 +121,11 @@ public class EditorScheme
 	{
 		for(int i=0; i < propertyGroups.size(); i++)
 		{
-			PropertyGroup group = (PropertyGroup)propertyGroups.elementAt(i);
-			Vector names = group.getPropertyNames();
+			PropertyGroup group = (PropertyGroup)propertyGroups.get(i);
+			ArrayList names = group.getPropertyNames();
 			for(int j=0; j < names.size(); j++)
 			{
-				String name = (String)names.elementAt(j);
+				String name = (String)names.get(j);
 				String value = jEdit.getProperty(name);
 				if(value != null)
 					properties.put(name,value);
@@ -161,7 +159,7 @@ public class EditorScheme
 			{
 				inputStream.close();
 			}
-			catch(IOException ioe){}
+			catch(IOException ioe){}        // NOPMD
 		}
 	}
 
@@ -299,7 +297,7 @@ public class EditorScheme
 	/**
 	 * Groups of properties (ErrorList,WhiteSpace,etc..)
 	 */
-	public static Vector getPropertyGroups()
+	public static ArrayList getPropertyGroups()
 	{
 		return propertyGroups;
 	}
@@ -328,7 +326,7 @@ public class EditorScheme
 				jEdit.getProperty(
 					"editor-scheme." + name + "-props"));
 			while(names.hasMoreElements())
-				properties.addElement(names.nextToken());
+				properties.add(names.nextToken());
 		}
 
 		public String toString()
@@ -339,7 +337,7 @@ public class EditorScheme
 		/**
 		 * Returns names of properties in this group.
 		 */
-		public Vector getPropertyNames()
+		public ArrayList getPropertyNames()
 		{
 			return this.properties;
 		}
@@ -353,7 +351,7 @@ public class EditorScheme
 		{
 			for(int i=0; i < properties.size(); i++)
 			{
-				String name = (String)properties.elementAt(i);
+				String name = (String)properties.get(i);
 				String value = (String)scheme.getProperty(name);
 				if(value != null)
 					jEdit.setProperty(name,value);
@@ -367,7 +365,7 @@ public class EditorScheme
 		// whether to use this group, by default
 		boolean apply;
 		// property names
-		Vector properties = new Vector();
+		ArrayList<String> properties = new ArrayList<String>();
 
 	}//}}}
 
