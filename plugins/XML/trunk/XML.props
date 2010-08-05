@@ -3,13 +3,13 @@
 plugin.xml.XmlPlugin.activate=defer
 plugin.xml.XmlPlugin.name=XML
 plugin.xml.XmlPlugin.author=Slava Pestov, Dale Anson, Alan Ezust, Rob McKinnon, Martin Raspe, Jakub Roztocil, Eric Le Lay
-plugin.xml.XmlPlugin.version=2.7.0
+plugin.xml.XmlPlugin.version=2.8.0
 plugin.xml.XmlPlugin.docs=index.html
 
 plugin.xml.XmlPlugin.depend.0=jdk 1.5
 plugin.xml.XmlPlugin.depend.1=jedit 04.03.99.00
 plugin.xml.XmlPlugin.depend.2=plugin xerces.XercesPlugin 2.9.1
-plugin.xml.XmlPlugin.depend.3=plugin errorlist.ErrorListPlugin 1.8
+plugin.xml.XmlPlugin.depend.3=plugin errorlist.ErrorListPlugin 1.9
 plugin.xml.XmlPlugin.depend.4=plugin sidekick.SideKickPlugin 0.9
 plugin.xml.XmlPlugin.depend.5=plugin beauty.BeautyPlugin 0.3.0
 plugin.xml.XmlPlugin.depend.6=plugin CommonControlsPlugin 1.1

@@ -940,6 +940,15 @@ Chapter 22 of <emphasis>DocBook XSL: The Complete Guide</emphasis> by Bob Stayto
 
 <title>Change log</title> <itemizedlist>
 
+ <listitem><para><emphasis role="bold">Version 2.8.0</emphasis>
+ Requires jEdit 4.3 final, Java 1.5, ErrorList 1.9, SideKick 0.9, BeautyPlugin 0.3.0 and XercesPlugin 2.9.1.
+ </para>
+     <itemizedlist>
+      <listitem><para>Added ability to sort attributes per file type, for example, when opening an Ant build file,
+      the 'name' attribute for properties and targets will be displayed first. (Dale Anson)</para></listitem>
+     </itemizedlist>
+ </listitem>
+
  <listitem><para><emphasis role="bold">Version 2.7.0</emphasis>
  Requires jEdit 4.3 final, Java 1.5, ErrorList 1.8, SideKick 0.9, BeautyPlugin 0.3.0 and XercesPlugin 2.9.1.
  </para>
