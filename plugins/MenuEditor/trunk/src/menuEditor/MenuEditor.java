@@ -39,6 +39,7 @@ public class MenuEditor extends JDialog
 	private ArrayList<MenuElement> menus = new ArrayList<MenuElement>();
 	private HashMap<String, ArrayList<MenuElement>> actionSetMap =
 		new HashMap<String, ArrayList<MenuElement>>();
+	private boolean itemListInitialized = false;
 
 	public class ListTransferHandler extends TransferHandler
 	{
@@ -218,6 +219,7 @@ public class MenuEditor extends JDialog
 		pack();
 		setLocationRelativeTo(view);
 		setVisible(true);
+		itemListInitialized = true;
 	}
 	private void initData()
 	{
@@ -228,7 +230,6 @@ public class MenuEditor extends JDialog
 	{
 		int [] selected = items.getSelectedIndices();
 		Arrays.sort(selected);
-		MenuElement parentMenu = (MenuElement) menu.getSelectedItem();
 		int [] moved = new int[selected.length];
 		int movedIndex = 0;
 		int selCount = selected.length;
@@ -265,10 +266,11 @@ public class MenuEditor extends JDialog
 			int i2 = i1 + move;
 			if (firstMoved == -1)
 				firstMoved = i2;
-			parentMenu.swapChildren(i1, i2);
+			MenuElement tmp = (MenuElement) itemModel.get(i1);
+			itemModel.set(i1, itemModel.get(i2));
+			itemModel.set(i2, tmp);
 			moved[movedIndex++] = i2;
 		}
-		updateItems(parentMenu);
 		items.setSelectedIndices(moved);
 		items.ensureIndexIsVisible(firstMoved);
 	}
@@ -293,9 +295,9 @@ public class MenuEditor extends JDialog
 	private void removeSelected()
 	{
 		int [] selected = items.getSelectedIndices();
-		MenuElement parentMenu = (MenuElement) menu.getSelectedItem();
-		parentMenu.removeChildren(selected);
-		updateItems(parentMenu);
+		Arrays.sort(selected);
+		for (int i = selected.length - 1; i >= 0; i--)
+			itemModel.remove(i);
 	}
 	private JPanel createActionPanel()
 	{
@@ -355,6 +357,7 @@ public class MenuEditor extends JDialog
 	}
 	private void apply()
 	{
+		updateMenuElement((MenuElement) menu.getSelectedItem());
 		for (MenuElement menuElem: menus)
 			applyMenu(menuElem);
 	}
@@ -393,12 +396,26 @@ public class MenuEditor extends JDialog
 		menu.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e)
 			{
-				if (e.getStateChange() != ItemEvent.SELECTED)
-					return;
-				updateItems((MenuElement)e.getItem());
+				switch (e.getStateChange())
+				{
+				case ItemEvent.SELECTED:
+					updateItems((MenuElement)e.getItem());
+					break;
+				case ItemEvent.DESELECTED:
+					updateMenuElement((MenuElement)e.getItem());
+					break;
+				}
 			}
 		});
 		return p;
+	}
+	private void updateMenuElement(MenuElement menuElem)
+	{
+		if (! itemListInitialized)
+			return;
+		menuElem.removeAllChildren();
+		for (int i = 0; i < itemModel.size(); i++)
+			menuElem.addChild((MenuElement) itemModel.elementAt(i));
 	}
 	private void updateItems(MenuElement menuElem)
 	{
@@ -518,19 +535,9 @@ public class MenuEditor extends JDialog
 			children.add(child);
 			return children.size() - 1;
 		}
-		public void removeChildren(int [] indices)
+		public void removeAllChildren()
 		{
-			Arrays.sort(indices);
-			for (int i = indices.length - 1; i >= 0; i--)
-				children.remove(indices[i]);
-		}
-		public void swapChildren(int from, int to)
-		{
-			if ((children == null) || (children.size() <= Math.max(from, to)))
-				return;
-			MenuElement temp = children.get(from);
-			children.set(from, children.get(to));
-			children.set(to, temp);
+			children = null;
 		}
 	}
 }
