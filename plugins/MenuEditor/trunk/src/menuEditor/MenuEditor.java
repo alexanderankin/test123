@@ -1,10 +1,15 @@
 package menuEditor;
 
 import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,6 +39,99 @@ public class MenuEditor extends JDialog
 	private ArrayList<MenuElement> menus = new ArrayList<MenuElement>();
 	private HashMap<String, ArrayList<MenuElement>> actionSetMap =
 		new HashMap<String, ArrayList<MenuElement>>();
+
+	public class ListTransferHandler extends TransferHandler
+	{
+		public class MenuElementTransferable implements Transferable
+		{
+			ArrayList<MenuElement> elements = new ArrayList<MenuElement>();
+			@Override
+			public DataFlavor[] getTransferDataFlavors()
+			{
+				return new DataFlavor[]{ flavor };
+			}
+			@Override
+			public boolean isDataFlavorSupported(DataFlavor flavor)
+			{
+				return true;
+			}
+			@Override
+			public Object getTransferData(DataFlavor flavor)
+					throws UnsupportedFlavorException, IOException
+			{
+				return elements;
+			}
+			public void add(Object elem)
+			{
+				elements.add((MenuElement) elem);
+			}
+		}
+
+		DataFlavor flavor = new DataFlavor(this.getClass(), "MenuElementFlavor");  
+		int [] indices;
+
+		@Override
+		public boolean importData(TransferSupport support)
+		{
+			if (! support.isDrop())
+				return false;
+			JList.DropLocation dl =
+				(JList.DropLocation) support.getDropLocation();
+			int index = dl.getIndex();
+			Object data;
+			try
+			{
+				data = support.getTransferable().getTransferData(flavor);
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+				return false;
+			}
+			ArrayList<MenuElement> elements = (ArrayList<MenuElement>) data;
+			for (MenuElement element: elements)
+				itemModel.insertElementAt(element, index++);
+			if (indices != null)
+			{
+				for (int i = 0; i < indices.length; i++)
+					if (indices[i] >= index)
+						indices[i] += elements.size();
+			}
+			return true;
+		}
+
+		@Override
+		public boolean canImport(TransferSupport support)
+		{
+			return true;
+		}
+
+		@Override
+		public int getSourceActions(JComponent c)
+		{
+			return TransferHandler.MOVE;
+		}
+
+		@Override
+		protected Transferable createTransferable(JComponent c)
+		{
+			MenuElementTransferable t = new MenuElementTransferable();
+			JList l = (JList) c;
+			indices = l.getSelectedIndices();
+			for (int index: indices)
+				t.add(l.getModel().getElementAt(index));
+			return t;
+		}
+
+		@Override
+		protected void exportDone(JComponent source, Transferable data,
+				int action)
+		{
+			Arrays.sort(indices);
+			for (int i = indices.length - 1; i >= 0; i--)
+				itemModel.remove(indices[i]);
+		}
+	}
 
 	public MenuEditor(View view)
 	{
@@ -280,6 +378,9 @@ public class MenuEditor extends JDialog
 		menu = new JComboBox(menuModel);
 		itemModel = new DefaultListModel();
 		items = new JList(itemModel);
+		items.setDragEnabled(true);
+		items.setDropMode(DropMode.INSERT);
+		items.setTransferHandler(new ListTransferHandler());
 		JPanel p = new JPanel(new BorderLayout());
 		JPanel menuPanel = new JPanel();
 		menuPanel.add(new JLabel("menu:"));
@@ -391,7 +492,7 @@ public class MenuEditor extends JDialog
 		updateActions((String)actionSetModel.getElementAt(0));
 	}
 
-	private static class MenuElement
+	private static class MenuElement implements Serializable
 	{
 		String menu, label;
 		ArrayList<MenuElement> children;
