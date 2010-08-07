@@ -20,8 +20,10 @@ import javax.swing.*;
 
 import org.gjt.sp.jedit.ActionSet;
 import org.gjt.sp.jedit.EditAction;
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.gui.RolloverButton;
 
 @SuppressWarnings("serial")
 public class MenuEditor extends JDialog
@@ -32,7 +34,7 @@ public class MenuEditor extends JDialog
 	private static final String subMenu = "%";
 	private JComboBox menu, actionSet;
 	private JList items, allActions;
-	private JButton add, remove, up, down;
+	private RolloverButton add, remove, up, down;
 	private JButton ok, apply, cancel, restoreDefault;
 	private DefaultComboBoxModel menuModel, actionSetModel;
 	private DefaultListModel itemModel, allActionsModel;
@@ -52,28 +54,28 @@ public class MenuEditor extends JDialog
 		JPanel to = createActionPanel();
 		JPanel movePanel = new JPanel(new GridLayout(0, 1));
 		movePanel.setLayout(new BoxLayout(movePanel, BoxLayout.Y_AXIS));
-		add = new JButton("Add");
+		add = new RolloverButton(GUIUtilities.loadIcon("ArrowL.png"));
+		remove = new RolloverButton(GUIUtilities.loadIcon("ArrowR.png"));
+		up = new RolloverButton(GUIUtilities.loadIcon("ArrowU.png"));
+		down = new RolloverButton(GUIUtilities.loadIcon("ArrowD.png"));
 		add.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e)
 			{
 				addSelected();
 			}
 		});
-		remove = new JButton("Remove");
 		remove.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e)
 			{
 				removeSelected();
 			}
 		});
-		up = new JButton("Up");
 		up.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e)
 			{
 				moveSelected(true);
 			}
 		});
-		down = new JButton("Down");
 		down.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e)
 			{
