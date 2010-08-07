@@ -16,3 +16,6 @@ plugin.menuEditor.MenuEditorPlugin.menu=menu-editor
 # actions
 menu-editor.label=Menu Editor
 
+# messages
+menu-editor.help=To change menus, use the buttons or drag & drop.
+  
