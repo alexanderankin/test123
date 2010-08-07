@@ -1,11 +1,35 @@
+<html>
+<title>The Menu Editor Plugin</title>
+<body>
+<p>Written by Shlomy Reinstein, August 2010.</p>
 <p>
-CtagsInterface provides source code tagging functionality using the "Exuberant Ctags" tool (http://ctags.sourceforge.net). It automatically invokes Ctags on a list of projects (or source code trees) and keeps the tag information in a HSQL database ( http://hsqldb.org). It can automatically keep track of modifications to the projects (or source trees), re-run Ctags over the modified files and keep the database updated.
-The plugin provides a "Follow tag" function which can be used to follow the tag under the caret, and a "Tag preview" dockable which tracks the caret location and shows the definition of the tag under the caret automatically.
+The Menu Editor plugin allows you to rearrange the jEdit menu
+(File/Edit/Search...), shown at the top of each view. You can
+rearrange the items in each menu, remove items from a menu,
+or add items to a menu.
 </p>
 <p>
-In addition, CtagsInterface provides a convenient API to access the tag database, so that the tag information can be shared with other plugins as well, and to eliminate the need for other plugins to interface with Ctags directly.
+The plugin provides a single dialog, which you can open using
+the plugin menu. The dialog shows the current menus on the left,
+and the available actions on the right. For each of the two,
+there is a combo-box at the top using which you choose the menu
+or action set, and a list below it showing the items of the
+selected menu or the actions in the selected action set.
 </p>
 <p>
-CtagsInterface is highly-configurable and can make use of all the information provided by Ctags. All tag extensions are inserted into the database and made available to other plugins by the API.
+To re-order items in a specific menu, select the items you want
+to move (multiple selection is allowed) and either use
+the up/down buttons to move them, or drag them to the
+desired position in the list.
 </p>
-
+<p>
+To remove items from a menu, select the items, and click the
+right-arrow button, or simply drag them outside the list.
+</p>
+<p>
+To add actions to a menu, select the actions from the list on
+the right, and either click the left-arrow button or simply
+drag them to the list of menu items.
+</p>
+</body>
+</html>
