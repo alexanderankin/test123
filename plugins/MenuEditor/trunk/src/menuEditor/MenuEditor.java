@@ -354,6 +354,7 @@ public class MenuEditor extends JDialog
 			menuString.append(child);
 		}
 		jEdit.setProperty(menuElem.menu, menuString.toString());
+		jEdit.propertiesChanged();
 	}
 	private void apply()
 	{
