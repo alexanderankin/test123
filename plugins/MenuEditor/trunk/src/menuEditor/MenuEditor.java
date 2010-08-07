@@ -54,7 +54,7 @@ public class MenuEditor extends JDialog
 			@Override
 			public boolean isDataFlavorSupported(DataFlavor flavor)
 			{
-				return true;
+				return (ListTransferHandler.this.flavor == flavor);
 			}
 			@Override
 			public Object getTransferData(DataFlavor flavor)
@@ -104,7 +104,7 @@ public class MenuEditor extends JDialog
 		@Override
 		public boolean canImport(TransferSupport support)
 		{
-			return true;
+			return support.isDataFlavorSupported(flavor);
 		}
 
 		@Override
