@@ -104,13 +104,14 @@ public class MenuEditor extends JDialog
 		@Override
 		public boolean canImport(TransferSupport support)
 		{
-			return support.isDataFlavorSupported(flavor);
+			return (support.getComponent() == items) &&
+				(support.isDataFlavorSupported(flavor));
 		}
 
 		@Override
 		public int getSourceActions(JComponent c)
 		{
-			return TransferHandler.MOVE;
+			return (c == items) ? TransferHandler.MOVE : TransferHandler.COPY;
 		}
 
 		@Override
@@ -128,6 +129,8 @@ public class MenuEditor extends JDialog
 		protected void exportDone(JComponent source, Transferable data,
 				int action)
 		{
+			if (source != items)
+				return;
 			Arrays.sort(indices);
 			for (int i = indices.length - 1; i >= 0; i--)
 				itemModel.remove(indices[i]);
@@ -312,6 +315,8 @@ public class MenuEditor extends JDialog
 		actionPanel.add(new JLabel("Available items:"), BorderLayout.NORTH);
 		allActionsModel = new DefaultListModel();
 		allActions = new JList(allActionsModel);
+		allActions.setDragEnabled(true);
+		allActions.setTransferHandler(new ListTransferHandler());
 		actionPanel.add(new JScrollPane(allActions), BorderLayout.CENTER);
 		p.add(actionPanel, BorderLayout.CENTER);
 		actionSet.addItemListener(new ItemListener() {
