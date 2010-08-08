@@ -49,45 +49,10 @@ public class MenuEditor extends JDialog
 		JPanel contentPanel = new JPanel(new BorderLayout(5,5));
 		contentPanel.add(new JLabel(jEdit.getProperty("menu-editor.help")),
 			BorderLayout.NORTH);
-		JPanel center = new JPanel(new BorderLayout(5,5));
 		JPanel from = createMenuPanel();
 		JPanel to = createActionPanel();
-		JPanel movePanel = new JPanel(new GridLayout(0, 1));
-		movePanel.setLayout(new BoxLayout(movePanel, BoxLayout.Y_AXIS));
-		add = new RolloverButton(GUIUtilities.loadIcon("ArrowL.png"));
-		remove = new RolloverButton(GUIUtilities.loadIcon("ArrowR.png"));
-		up = new RolloverButton(GUIUtilities.loadIcon("ArrowU.png"));
-		down = new RolloverButton(GUIUtilities.loadIcon("ArrowD.png"));
-		add.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e)
-			{
-				addSelected();
-			}
-		});
-		remove.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e)
-			{
-				removeSelected();
-			}
-		});
-		up.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e)
-			{
-				moveSelected(true);
-			}
-		});
-		down.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e)
-			{
-				moveSelected(false);
-			}
-		});
-		movePanel.add(add);
-		movePanel.add(remove);
-		movePanel.add(up);
-		movePanel.add(down);
+		JPanel center = new JPanel(new BorderLayout(5, 5));
 		center.add(from, BorderLayout.WEST);
-		center.add(movePanel);
 		center.add(to, BorderLayout.EAST);
 		contentPanel.add(center, BorderLayout.CENTER);
 		JPanel bottom = new JPanel();
@@ -208,7 +173,7 @@ public class MenuEditor extends JDialog
 		int [] selected = items.getSelectedIndices();
 		Arrays.sort(selected);
 		for (int i = selected.length - 1; i >= 0; i--)
-			itemModel.remove(i);
+			itemModel.remove(selected[i]);
 	}
 	private JPanel createActionPanel()
 	{
@@ -305,6 +270,41 @@ public class MenuEditor extends JDialog
 		JPanel itemPanel = new JPanel(new BorderLayout());
 		itemPanel.add(new JLabel("Items:"), BorderLayout.NORTH);
 		itemPanel.add(new JScrollPane(items), BorderLayout.CENTER);
+		JPanel movePanel = new JPanel(new GridLayout(0, 1));
+		movePanel.setLayout(new BoxLayout(movePanel, BoxLayout.Y_AXIS));
+		itemPanel.add(movePanel, BorderLayout.EAST);
+		add = new RolloverButton(GUIUtilities.loadIcon("ArrowL.png"));
+		remove = new RolloverButton(GUIUtilities.loadIcon("ArrowR.png"));
+		up = new RolloverButton(GUIUtilities.loadIcon("ArrowU.png"));
+		down = new RolloverButton(GUIUtilities.loadIcon("ArrowD.png"));
+		add.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e)
+			{
+				addSelected();
+			}
+		});
+		remove.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e)
+			{
+				removeSelected();
+			}
+		});
+		up.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e)
+			{
+				moveSelected(true);
+			}
+		});
+		down.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e)
+			{
+				moveSelected(false);
+			}
+		});
+		movePanel.add(add);
+		movePanel.add(remove);
+		movePanel.add(up);
+		movePanel.add(down);
 		p.add(menuPanel, BorderLayout.NORTH);
 		p.add(itemPanel, BorderLayout.CENTER);
 		menu.addItemListener(new ItemListener() {
@@ -459,17 +459,14 @@ public class MenuEditor extends JDialog
 		public class MenuElementTransferable implements Transferable
 		{
 			ArrayList<MenuElement> elements = new ArrayList<MenuElement>();
-			@Override
 			public DataFlavor[] getTransferDataFlavors()
 			{
 				return new DataFlavor[]{ flavor };
 			}
-			@Override
 			public boolean isDataFlavorSupported(DataFlavor flavor)
 			{
 				return (ListTransferHandler.this.flavor == flavor);
 			}
-			@Override
 			public Object getTransferData(DataFlavor flavor)
 					throws UnsupportedFlavorException, IOException
 			{
