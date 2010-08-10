@@ -28,6 +28,7 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeNode;
 
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.Log;
 
 import sidekick.SideKickParsedData;
@@ -671,7 +672,7 @@ public class XmlParsedData extends SideKickParsedData
  	 * Does nothing.  Subclasse can override for their own purposes, for
  	 * example, the TldXmlParsedData class renames nodes based on child nodes.
  	 */
-	public void done() {
+	public void done(View view) {
 		
 	}
 	

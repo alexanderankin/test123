@@ -58,6 +58,7 @@ public abstract class XmlParser extends SideKickParser
 	//{{{ activate() method
 	public void activate(EditPane editPane)
 	{
+		super.activate(editPane);
 		if(jEdit.getBooleanProperty("xml.tag-highlight"))
 			editPane.getTextArea().addStructureMatcher(highlight);
 	} //}}}
