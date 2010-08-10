@@ -142,7 +142,12 @@ mode.xml.sidekick.parser=xml
 mode.xsl.sidekick.parser=xml
 mode.css.sidekick.parser=css
 
+# specialized tag classes
 xml.xmltag.Ant=xml.parser.AntXmlTag
+xml.xmltag.tld=xml.parser.TldXmlTag
+
+# specialized SideKickParsedData classes
+xml.xmlparseddata.tld=xml.TldXmlParsedData
 
 # Show attributes in XML tree?
 # 0: none; 1: id only; 2: all

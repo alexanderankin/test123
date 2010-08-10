@@ -946,6 +946,13 @@ Chapter 22 of <emphasis>DocBook XSL: The Complete Guide</emphasis> by Bob Stayto
      <itemizedlist>
       <listitem><para>Added ability to sort attributes per file type, for example, when opening an Ant build file,
       the 'name' attribute for properties and targets will be displayed first. (Dale Anson)</para></listitem>
+      <listitem><para>
+        Added the ability for a tag to be renamed based on child tags.  For example, the tld files that define
+        jsp tags do not have attributes for the 'tag' and 'function' elements.  The name of the tag or function
+        is contained in a child element named 'name', so this change renames the nodes visible in the SideKick tree
+        to show the original element name plus the value of the child element, so 'tag' becomes 'tag: somename', 
+        which makes this SideKick much more useful for this kind of file.
+      </para></listitem>
      </itemizedlist>
  </listitem>
 

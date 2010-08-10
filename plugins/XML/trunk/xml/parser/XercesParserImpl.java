@@ -1,11 +1,10 @@
 package xml.parser;
 
 // {{{ imports
-import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
@@ -28,7 +27,6 @@ import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSModel;
 import org.apache.xerces.xs.XSModelGroup;
 import org.apache.xerces.xs.XSNamedMap;
-import org.apache.xerces.xs.XSObject;
 import org.apache.xerces.xs.XSObjectList;
 import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
@@ -97,7 +95,7 @@ public class XercesParserImpl extends XmlParser
 		}
 
 		
-		XmlParsedData data = new XmlParsedData(buffer.getName(),false);
+		XmlParsedData data = createXmlParsedData(buffer, false);
 		
 		if(text.length() == 0)return data;
 		
@@ -267,10 +265,28 @@ public class XercesParserImpl extends XmlParser
 		}
 
 		Collections.sort(data.ids,new IDDecl.Compare());
+		data.done();
 		return data;
 	} //}}}
 
 	//{{{ Private members
+	
+	private XmlParsedData createXmlParsedData(Buffer buffer, boolean html) {
+	    String filename = buffer.getName();
+        String dataClassName = jEdit.getProperty("xml.xmlparseddata." + buffer.getMode().toString());
+        if (dataClassName != null) {
+            try {
+                Class dataClass = Class.forName(dataClassName);
+                java.lang.reflect.Constructor con = dataClass.getConstructor(String.class, Boolean.TYPE);
+                return (XmlParsedData)con.newInstance(filename, html);
+            }
+            catch (Exception e) {
+                 // ignored, just return an XmlParsedData if this fails   
+                 e.printStackTrace();
+            }
+        }
+        return new XmlParsedData(filename, html);   
+	}
 
 	//{{{ ...
 	public XmlTag findParent(EditPane editPane, int caret){
@@ -889,6 +905,12 @@ public class XercesParserImpl extends XmlParser
 				throw new StoppedException();
 
 			empty = false;
+			
+			DefaultMutableTreeNode node = currentNodeStack.peek();
+			XmlTag tag = (XmlTag)node.getUserObject();
+			if (tag.canAddCharacters()) {
+			     tag.addCharacters(Arrays.copyOfRange(ch, start, start + length));   
+			}
 		} //}}}
 
 		//{{{ elementDecl() method

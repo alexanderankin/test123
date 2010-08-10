@@ -37,6 +37,7 @@ public class XmlTag extends Asset
 	public String namespace;
 	/** namespace -> prefix */
 	public Map<String,String> namespaceBindings;
+	private StringBuilder characters = new StringBuilder();
 	//}}}
 
 	//{{{ XmlTag constructor
@@ -127,6 +128,38 @@ public class XmlTag extends Asset
 	//{{{ getPrefix() method
 	public String getPrefix(){
 		return name.contains(":") ? name.substring(0,name.indexOf(":")) : "";
+	}
+	//}}}
+	
+	//{{{ canAddCharacters() method
+	/**
+ 	 * @return <code>true</code> if this tag should accumulate the characters from 
+ 	 * the body of a tag.  This default implementation returns <code>false</code>.
+ 	 * Subclasses may override to return <code>true</code>.
+ 	 */
+	public boolean canAddCharacters(){
+		return false;
+	}
+	//}}}
+	
+	
+	//{{{ addCharacters() method
+	/**
+	 * If <code>canAddCharacters</code> returns true, characters from the body of
+ 	 * the tag will be accumulated.
+ 	 */
+	public void addCharacters(char[] chars){
+		characters.append(chars);
+	}
+	//}}}
+	
+	//{{{ getCharacters() method
+	/**
+ 	 * @return Any characters accumulated from the body of the tag.  Will return
+ 	 * an empty String if <code>canAddCharacters</code> returns <code>false</code>.
+ 	 */
+	public String getCharacters(){
+		return characters.toString();
 	}
 	//}}}
 }
