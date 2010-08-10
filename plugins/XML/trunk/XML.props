@@ -143,13 +143,15 @@ mode.xsl.sidekick.parser=xml
 mode.css.sidekick.parser=css
 
 # specialized tag classes
-xml.xmltag.Ant=xml.parser.AntXmlTag
+xml.xmltag.ant=xml.parser.AntXmlTag
 xml.xmltag.tld=xml.parser.TldXmlTag
 
 # specialized SideKickParsedData classes
+xml.xmlparseddata.ant=xml.AntXmlParsedData
 xml.xmlparseddata.tld=xml.TldXmlParsedData
 
 # toolbar classes
+xml.xmltoolbar.ant=xml.gui.AntModeToolBar
 xml.xmltoolbar.tld=xml.gui.TldModeToolBar
 
 # Show attributes in XML tree?

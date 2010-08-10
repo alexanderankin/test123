@@ -2,15 +2,24 @@
 package xml.parser;
 
 import java.util.*;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+
 import javax.swing.text.Position;
 import org.xml.sax.Attributes;
 
 public class AntXmlTag extends XmlTag {
 
-    String realName = null;
+    public static final ImageIcon TARGET_ICON = new ImageIcon(AntXmlTag.class.getResource("/icons/T.png"));
+    public static final ImageIcon PROPERTY_ICON = new ImageIcon(AntXmlTag.class.getResource("/icons/P.png"));
+    public static final ImageIcon SELECTOR_ICON = new ImageIcon(AntXmlTag.class.getResource("/icons/S.png"));
+    public static final ImageIcon IMPORT_ICON = new ImageIcon(AntXmlTag.class.getResource("/icons/I.png"));
+
+    String originalName = null;
 
     public AntXmlTag(String name, String namespace, Position start, Attributes attributes) {
         super(name, namespace, start, attributes);
+        originalName = name;
         String idName = null;
         String idValue = null;
 
@@ -54,4 +63,25 @@ public class AntXmlTag extends XmlTag {
             idAttributeString = name + ' ' + idName + "=\"" + idValue + '"';
         }
     }
+    
+    public String getOriginalName() {
+        return originalName;   
+    }
+    
+    public Icon getIcon() {
+        if ("target".equals(originalName)) {
+            return TARGET_ICON;
+        }
+        if ("property".equals(originalName)) {
+            return PROPERTY_ICON;   
+        }
+        if ("selector".equals(originalName)) {
+            return SELECTOR_ICON; 
+        }
+        if ("import".equals(originalName)) {
+            return IMPORT_ICON;
+        }
+        return super.getIcon();
+    }
+    
 }
