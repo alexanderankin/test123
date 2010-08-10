@@ -149,6 +149,9 @@ xml.xmltag.tld=xml.parser.TldXmlTag
 # specialized SideKickParsedData classes
 xml.xmlparseddata.tld=xml.TldXmlParsedData
 
+# toolbar classes
+xml.xmltoolbar.tld=xml.gui.TldModeToolBar
+
 # Show attributes in XML tree?
 # 0: none; 1: id only; 2: all
 xml.show-attributes=1
@@ -283,11 +286,17 @@ xml.download-resource.message=This XML file depends on a resource which is store
 options.sidekick.css.label=CSS
 options.sidekick.css.code=new sidekick.css.CssSideKickOptionPane();
 
-# toolbar text
+# css toolbar text
 options.sidekick.css.sortBy=Sort
 options.sidekick.css.sortByLine=Line
 options.sidekick.css.sortByName=Name
 options.sidekick.css.showLineNums=Line Numbers
+
+# xml/tld/ant toolbar text
+options.sidekick.xml.sortBy=Sort by:
+options.sidekick.xml.sortByLine=Line
+options.sidekick.xml.sortByName=Name
+options.sidekick.xml.sortByType=Type
 
 # actions labels
 csssidekick-reload-completion-config.label=Reload css completion config

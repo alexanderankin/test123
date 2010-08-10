@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.Stack;
 import java.util.StringTokenizer;
 
+import javax.swing.JPanel;
 import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -37,6 +38,7 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.Log;
 import org.xml.sax.Attributes;
 import org.xml.sax.ErrorHandler;
@@ -73,12 +75,22 @@ import static xml.Debug.*;
 
 public class XercesParserImpl extends XmlParser
 {
+    private View view = null;
+    
+    // cache the toolbar panels per view
+    private Map<View, JPanel> panels = new HashMap<View, JPanel>();
+    
 	//{{{ XercesParserImpl constructor
 	public XercesParserImpl()
 	{
 		super("xml");
 	} //}}}
-
+	
+	@Override
+	public void activate(View view) {
+	    this.view = view;   
+	}
+	
 	//{{{ parse() method
 	public SideKickParsedData parse(Buffer buffer, DefaultErrorSource errorSource)
 	{
@@ -265,7 +277,7 @@ public class XercesParserImpl extends XmlParser
 		}
 
 		Collections.sort(data.ids,new IDDecl.Compare());
-		data.done();
+		data.done(view);
 		return data;
 	} //}}}
 
@@ -520,6 +532,33 @@ public class XercesParserImpl extends XmlParser
 		}
 	}
 	//}}}
+
+    //{{{ getPanel() method	
+	public JPanel getPanel() {
+	    if (view != null) {
+	        JPanel panel = panels.get(view);
+	        if (panel != null) {
+	             return panel;   
+	        }
+            String panelClassName = jEdit.getProperty("xml.xmltoolbar." + view.getBuffer().getMode().toString());
+            if (panelClassName != null) {
+                try {
+                    Class panelClass = Class.forName(panelClassName);
+                    java.lang.reflect.Constructor con = panelClass.getConstructor(View.class);
+                    panel = (JPanel)con.newInstance(view);
+                    panels.put(view, panel);
+                    return panel;
+                }
+                catch (Exception e) {
+                     // ignored, just return null if this fails
+                }
+            }
+        }
+        return null;
+		
+	}
+	//}}}
+	
 
 	//}}}
 

@@ -84,7 +84,7 @@ public class XmlTag extends Asset
 	} //}}}
 
 	//{{{ getIcon() method
-	public Icon getIcon()
+	public Icon getIcon()                                                                                        
 	{
 		return (empty ? XmlListCellRenderer.EMPTY_ELEMENT_ICON
 			: XmlListCellRenderer.ELEMENT_ICON);
