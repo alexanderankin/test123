@@ -411,6 +411,11 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 
 		if (data != null && data.expansionModel != null) 
 		{
+			// collapse all rows, then expand per the expansion model
+			for (int i = tree.getRowCount() - 1; i >= 0; i--) 
+			{
+				tree.collapseRow(i);
+			}
 			for (Integer row : data.expansionModel) 
 			{
 				tree.expandRow(row);	
