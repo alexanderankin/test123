@@ -23,19 +23,18 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeNode;
 
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.util.StringList;
 import org.gjt.sp.util.Log;
 
 import sidekick.SideKickParsedData;
+import sidekick.Asset;
+import sidekick.IAsset;
 import xml.completion.CompletionInfo;
 import xml.completion.ElementDecl;
-import xml.completion.EntityDecl;
 import xml.completion.IDDecl;
 import xml.parser.TagParser;
 import xml.parser.XmlTag;
@@ -65,6 +64,7 @@ public class XmlParsedData extends SideKickParsedData
 	
 	/**
 	 *  A list of all identifiers encountered during the parse?
+	 * TODO: I can't find that this is actually used anywhere.
 	 */
 	public List<IDDecl> ids;
 
@@ -439,7 +439,7 @@ public class XmlParsedData extends SideKickParsedData
 	//}}}
 	
 	//{{{ getAllowedElements() method
-	/** @returns a list containing Elements or Attributes */
+	/** @return a list containing Elements or Attributes */
 	public List<ElementDecl> getAllowedElements(Buffer buffer, int pos)
 	{
 		
@@ -665,7 +665,16 @@ public class XmlParsedData extends SideKickParsedData
 		return "";
 	}
 	//}}}
-
+	
+	//{{{ done() method
+	/**
+ 	 * Does nothing.  Subclasse can override for their own purposes, for
+ 	 * example, the TldXmlParsedData class renames nodes based on child nodes.
+ 	 */
+	public void done() {
+		
+	}
+	
 	//{{{ Private members
 
 	//{{{ getElementPrefix() method
