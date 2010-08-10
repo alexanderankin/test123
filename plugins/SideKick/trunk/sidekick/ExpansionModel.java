@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * An expansion model for trees.  This essentially just wraps a list of 
  * integers that represent the row numbers in the tree that should be 
- * expanded.  It is not necessar to use this model, but it is convenient
+ * expanded.  It is not necessary to use this model, but it is convenient
  * when creating the list of row numbers.  The value returned by <code>
  * getModel</code> is suitable for setting in the <code>expansionModel</code>
  * field in SideKickParsedData.
