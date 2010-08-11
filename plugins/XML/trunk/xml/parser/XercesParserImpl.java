@@ -1172,6 +1172,7 @@ public class XercesParserImpl extends XmlParser
 		} //}}}
 
 		//{{{ findTagStart() method
+		// TODO: this isn't used, remove?
 		private int findTagStart(int offset)
 		{
 			/*for(int i = offset; i >= 0; i--)
