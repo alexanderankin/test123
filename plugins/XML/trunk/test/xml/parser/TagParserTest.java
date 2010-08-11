@@ -36,6 +36,7 @@ import static org.gjt.sp.jedit.testframework.TestUtils.*;
 import static org.gjt.sp.jedit.testframework.EBFixture.*;
 import org.gjt.sp.jedit.testframework.PluginOptionsFixture;
 import org.gjt.sp.jedit.testframework.TestUtils;
+import static xml.XMLTestUtils.*;
 
 // }}}
 
@@ -453,12 +454,7 @@ public class TagParserTest{
     	Buffer b = openFile(in.getPath());
     	
     	// wait for end of parsing
-    	doInBetween(new Runnable(){
-    			public void run(){
-    				action("sidekick-parse");
-    		}}, 
-    		messageOfClassCondition(sidekick.SideKickUpdate.class),
-    		10000);
+    	parseAndWait();
 		
 		XmlParsedData data = getXmlParsedData();
 		String text = b.getText(0, b.getLength());

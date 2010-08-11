@@ -14,6 +14,7 @@
 package xml.parser;
 
 import java.util.*;
+import java.io.IOException;
 
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
@@ -25,7 +26,10 @@ import com.thaiopensource.util.VoidValue;
 
 
 import org.gjt.sp.util.Log;
+import org.gjt.sp.jedit.Buffer;
 
+import xml.cache.Cache;
+import xml.cache.CacheEntry;
 import xml.completion.CompletionInfo;
 import xml.completion.ElementDecl;
 import static xml.completion.ElementDecl.AttributeDecl;
@@ -46,49 +50,96 @@ public class SchemaToCompletion
 	* @param	current	systemId of the mapping document, to resolve the schema URL
 	* @param	schemaFileNameOrURL	identifier of the schema to load
 	* @param	handler	channel to report errors
+	* @param	requestingBuffer	Buffer requesting the CompletionInfo (for caching)
 	*/
-	public static Map<String,CompletionInfo> rngSchemaToCompletionInfo(String current, String schemaFileNameOrURL, ErrorHandler handler){
+	public static Map<String,CompletionInfo> rngSchemaToCompletionInfo(String current, String schemaFileNameOrURL, ErrorHandler handler, Buffer requestingBuffer){
 		Map<String,CompletionInfo> infos = new HashMap<String,CompletionInfo>();
 
-		com.thaiopensource.relaxng.input.InputFormat pif;
-		
-		if(schemaFileNameOrURL.endsWith(".rnc")){
-			pif = new xml.translate.BufferCompactParseInputFormat();
-		}else{
-			pif = new xml.translate.BufferSAXParseInputFormat();
-		}
+		String realLocation = null;
 		
 		try{
-			InputSource is = xml.Resolver.instance().resolveEntity(
+			realLocation = xml.Resolver.instance().resolveEntityToPath(
 				/*name*/null,
 				/*publicId*/null,
 				current,
 				schemaFileNameOrURL);
+		}catch(IOException ioe){
+			Log.log(Log.ERROR,SchemaToCompletion.class,"error resolving schema location",ioe);
+			return infos;
+		}
+		
+		CacheEntry en = Cache.instance().get(realLocation,"CompletionInfo");
+		if(en == null){
+			if(DEBUG_CACHE)Log.log(Log.DEBUG, SchemaToCompletion.class,"CompletionInfo not found in cache for "+schemaFileNameOrURL);
+
+			com.thaiopensource.relaxng.input.InputFormat pif;
 			
-			SchemaCollection schemas = pif.load(
-				is.getSystemId(),
-				new String[]{},
-				"unused",
-				handler,
-				new xml.translate.EntityResolverWrapper(xml.Resolver.instance(),false));
-			
-			SchemaDocument mainSchema = schemas.getSchemaDocumentMap().get(schemas.getMainUri());
-			
-			Pattern p = mainSchema.getPattern();
-			
-			MyPatternVisitor v = new MyPatternVisitor(infos,schemas);
-			p.accept(v);
-			
-			v.resolveRefs();
-			// use a more intuitive '' key for the completion info
-			// of the no-namespace elements
-			if(infos.containsKey(INHERIT)){
-				infos.put("",infos.get(INHERIT));
-				infos.remove(INHERIT);
+			if(schemaFileNameOrURL.endsWith(".rnc")){
+				pif = new xml.translate.BufferCompactParseInputFormat();
+			}else{
+				pif = new xml.translate.BufferSAXParseInputFormat();
 			}
-		}catch(Exception e){
-			// FIXME: handle exceptions
-			Log.log(Log.ERROR, SchemaToCompletion.class, e);
+			
+			try{
+				InputSource is = xml.Resolver.instance().resolveEntity(
+					/*name*/null,
+					/*publicId*/null,
+					current,
+					schemaFileNameOrURL);
+				
+				SchemaCollection schemas = pif.load(
+					is.getSystemId(),
+					new String[]{},
+					"unused",
+					handler,
+					new xml.translate.EntityResolverWrapper(xml.Resolver.instance(),false));
+				
+				SchemaDocument mainSchema = schemas.getSchemaDocumentMap().get(schemas.getMainUri());
+				
+				Pattern p = mainSchema.getPattern();
+				
+				MyPatternVisitor v = new MyPatternVisitor(infos,schemas);
+				p.accept(v);
+				
+				v.resolveRefs();
+				// use a more intuitive '' key for the completion info
+				// of the no-namespace elements
+				if(infos.containsKey(INHERIT)){
+					infos.put("",infos.get(INHERIT));
+					infos.remove(INHERIT);
+				}
+				
+				
+				//{{{ put everything in cache
+				List<CacheEntry> related = new ArrayList<CacheEntry>(schemas.getSchemaDocumentMap().size());
+				
+				for(String url : schemas.getSchemaDocumentMap().keySet()){
+					if(DEBUG_XSD_SCHEMA)Log.log(Log.DEBUG,SchemaToCompletion.class,"grammar is composed of "+url);
+					try{
+						String realLoc = xml.Resolver.instance().resolveEntityToPath(null, null, current, url);
+						CacheEntry ce = Cache.instance().put(realLoc,"GrammarComponent","Dummy");
+						related.add(ce);
+					}catch(IOException ioe){
+						Log.log(Log.ERROR, SchemaToCompletion.class, "error resolving path for "+url, ioe);
+					}
+				}
+				
+				related.add(Cache.instance().put(realLocation,"CompletionInfo",infos));
+				// mark all components related and requested by the buffer
+				for(CacheEntry ce : related){
+					ce.getRelated().addAll(related);
+					ce.getRelated().remove(ce);
+					ce.getRequestingBuffers().add(requestingBuffer);
+				}
+				//}}}
+				
+			}catch(Exception e){
+				// FIXME: handle exceptions
+				Log.log(Log.ERROR, SchemaToCompletion.class, e);
+			}
+		}else{
+			if(DEBUG_CACHE)Log.log(Log.DEBUG, SchemaToCompletion.class,"found CompletionInfo in cache for "+schemaFileNameOrURL);
+			infos = (Map<String,CompletionInfo>)en.getCachedItem();
 		}
 		return infos;
 	}

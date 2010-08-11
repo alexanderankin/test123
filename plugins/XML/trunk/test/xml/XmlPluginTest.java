@@ -77,22 +77,15 @@ public class XmlPluginTest{
     	File xml = new File(testData,"abstract_substitution/abstract_element_instance.xml");
     	
     	TestUtils.openFile(xml.getPath());
+    	parseAndWait();
     	
     	action("xml-insert-float",1);
     	
-    	
     	FrameFixture insert = TestUtils.findFrameByTitle("XML Insert");
     	
-		// wait for end of parsing
-		simplyWaitForMessageOfClass(sidekick.SideKickUpdate.class,10000);
-		
 		// go into the file
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(530);
-				}
-		});
-		
+		gotoPositionAndWait(530);
+
 		assertThat(insert.list("elements").contents()).contains("ipo:shipComment");
 		assertThat(insert.list("elements").contents()).excludes("ipo:comment").excludes("comment");
 		assertThat(insert.list("elements").contents()).excludes("ipo:otherComment").excludes("otherComment");
@@ -119,14 +112,10 @@ public class XmlPluginTest{
     	
     	TestUtils.openFile(xml.getPath());
     	
-    	action("sidekick-parse",1);
-    	
-		// wait for end of parsing
-		simplyWaitForMessageOfClass(sidekick.SideKickUpdate.class,10000);
+    	parseAndWait();
 		
 		// aa, ab
-		gotoPosition(493);
-
+		gotoPositionAndWait(493);
 		
 		action("sidekick-complete",1);
 		
@@ -139,7 +128,7 @@ public class XmlPluginTest{
 		Pause.pause(500);
 
 		// no popup
-		gotoPosition(540);
+		gotoPositionAndWait(540);
 		action("sidekick-complete",1);
 		try{
 			completion = XMLTestUtils.completionPopup();
@@ -149,7 +138,7 @@ public class XmlPluginTest{
 		}
 		
 		// aa,ab
-		gotoPosition(657);
+		gotoPositionAndWait(657);
 		action("sidekick-complete",1);
 		completion = XMLTestUtils.completionPopup();
 		
@@ -159,7 +148,7 @@ public class XmlPluginTest{
 		Pause.pause(500);
 
 		// aa,ab
-		gotoPosition(771);
+		gotoPositionAndWait(771);
 		action("sidekick-complete",1);
 		completion = XMLTestUtils.completionPopup();
 
@@ -169,7 +158,7 @@ public class XmlPluginTest{
 		Pause.pause(500);
 
 		
-		gotoPosition(834);
+		gotoPositionAndWait(834);
 		action("sidekick-complete",1);
 		try{
 			completion = XMLTestUtils.completionPopup();
@@ -178,7 +167,7 @@ public class XmlPluginTest{
 			//fine
 		}
 		
-		gotoPosition(850);
+		gotoPositionAndWait(850);
 		action("sidekick-complete",1);
 		try{
 			completion = XMLTestUtils.completionPopup();
@@ -311,22 +300,14 @@ public class XmlPluginTest{
 		errorlist.close();
 		
 		// inside ACTIONS
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(151);
-				}
-		});
-
+		gotoPositionAndWait(151);
     	action("xml-insert-float",1);
     	FrameFixture insert = TestUtils.findFrameByTitle("XML Insert");
 		assertThat(insert.list("elements").contents()).containsOnly("ACTION");
 		insert.close();
 		
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(244);
-				}
-		});
+		gotoPositionAndWait(244);
+		
 		// inside CODE
     	action("xml-insert-float",1);
     	insert = TestUtils.findFrameByTitle("XML Insert");
@@ -400,11 +381,8 @@ public class XmlPluginTest{
 		assertThat(insert.list("elements").contents()).containsOnly("ACTION");
 		insert.close();
 		
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(286);
-				}
-		});
+		gotoPositionAndWait(286);
+
 		// inside CODE
     	action("xml-insert-float",1);
     	insert = TestUtils.findFrameByTitle("XML Insert");
@@ -445,11 +423,7 @@ public class XmlPluginTest{
 		assertTrue("got '"+selected+"'",selected.contains("<CODDE"));
 		
 		// inside ACTIONS
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(157);
-				}
-		});
+		gotoPositionAndWait(157);
 
     	action("xml-insert-float",1);
     	FrameFixture insert = TestUtils.findFrameByTitle("XML Insert");
@@ -465,15 +439,10 @@ public class XmlPluginTest{
     	TestUtils.openFile(xml.getPath());
     	
 		// wait for end of parsing
-    	action("sidekick-parse",1);
-		simplyWaitForMessageOfClass(sidekick.SideKickUpdate.class,10000);
+    	parseAndWait();
 		
 		// inside doc
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(115);
-				}
-		});
+		gotoPositionAndWait(115);
 
     	action("xml-insert-float",1);
     	FrameFixture insert = TestUtils.findFrameByTitle("XML Insert");
@@ -481,11 +450,8 @@ public class XmlPluginTest{
 		insert.close();
 		
 		// inside td
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(217);
-				}
-		});
+		gotoPositionAndWait(217);
+
     	action("xml-insert-float",1);
     	insert = TestUtils.findFrameByTitle("XML Insert");
 		assertThat(insert.list("elements").contents()).containsOnly("em");
@@ -498,10 +464,7 @@ public class XmlPluginTest{
     	
     	TestUtils.openFile(xml.getPath());
     	
-    	action("sidekick-parse",1);
-
-		// wait for end of parsing
-		simplyWaitForMessageOfClass(sidekick.SideKickUpdate.class,10000);
+    	parseAndWait();
 		
 		action("error-list-show",1);
 		
@@ -513,6 +476,16 @@ public class XmlPluginTest{
 		assertTrue("got '"+selected+"'",selected.contains("<ACTIONN"));
 				
 		errorlist.close();
+
+    	action("xml-insert-float",1);
+    	FrameFixture insert = TestUtils.findFrameByTitle("XML Insert");
+    	
+
+		// inside body
+		gotoPositionAndWait(166);
+		
+		assertThat(insert.list("elements").contents()).contains("ACTION");
+		insert.close();
 	}
 	
 	
@@ -541,21 +514,13 @@ public class XmlPluginTest{
 		errorlist.close();
 		
 		// inside body
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					gotoPosition(208);
-				}
-		});
-		Pause.pause(500);
+		gotoPositionAndWait(208);
+		
 		assertThat(insert.list("elements").contents()).isEmpty();
 		
 		// inside second comment (succeeds now !)
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					gotoPosition(276);
-				}
-		});
-		Pause.pause(500);
+		gotoPositionAndWait(276);
+		
 		assertThat(insert.list("elements").contents()).contains("p");
 
 		// demonstrate a limitation of local scope when Sidekick tree becomes
@@ -566,16 +531,88 @@ public class XmlPluginTest{
 					b.insert(367, "<comment>");
 				}
 		});
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					gotoPosition(376);
-				}
-		});
-		Pause.pause(500);
+		
+		gotoPositionAndWait(376);
+		
 		assertThat(insert.list("elements").contents()).isEmpty();
 		
 		
 		insert.close();
 		close(view(),b);
+	}
+
+	@Test
+	public void testImportSchema(){
+		
+    	File xml = new File(testData,"import_schema/instance.xml");
+    	
+    	TestUtils.openFile(xml.getPath());
+    	
+    	action("xml-insert-float",1);
+    	FrameFixture insert = TestUtils.findFrameByTitle("XML Insert");
+    	
+		// wait for end of parsing
+    	action("sidekick-parse",1);
+		simplyWaitForMessageOfClass(sidekick.SideKickUpdate.class,10000);
+		
+
+		action("error-list-show",1);
+		
+    	FrameFixture errorlist = TestUtils.findFrameByTitle("Error List");
+		
+    	
+ 		errorlist.tree().selectRow(1);
+		String selected = TestUtils.view().getTextArea().getSelectedText();
+		assertTrue("got '"+selected+"'",selected.startsWith("  <ipo:comment>"));
+		errorlist.close();
+		
+		// inside comment
+		gotoPositionAndWait(391);
+		
+		// fails for the moment
+		assertThat(insert.list("elements").contents()).contains("ipo:comment");
+		
+		gotoPositionAndWait(472);
+		
+		// inside ipo:comment
+		assertThat(insert.list("elements").contents()).isEmpty();
+
+		insert.close();
+		
+	}
+	
+	@Test
+	public void testImportSchemaRNG(){
+    	File xml = new File(testData,"import_schema/relax_ng/instance.xml");
+    	
+    	TestUtils.openFile(xml.getPath());
+    	
+    	parseAndWait();
+    	
+    	action("xml-insert-float",1);
+    	FrameFixture insert = TestUtils.findFrameByTitle("XML Insert");
+    	
+		action("error-list-show",1);
+		
+    	FrameFixture errorlist = TestUtils.findFrameByTitle("Error List");
+		
+    	
+ 		errorlist.tree().selectRow(1);
+		String selected = TestUtils.view().getTextArea().getSelectedText();
+		assertTrue("got '"+selected+"'",selected.startsWith("  <ipo:comment>"));
+		errorlist.close();
+		
+		// inside comment
+		gotoPositionAndWait(320);
+		
+		// fails for the moment
+		assertThat(insert.list("elements").contents()).contains("ipo:comment");
+		
+		gotoPositionAndWait(391);
+		
+		// inside ipo:comment
+		assertThat(insert.list("elements").contents()).isEmpty();
+
+		insert.close();
 	}
 }

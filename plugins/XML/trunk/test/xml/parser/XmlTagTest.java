@@ -71,15 +71,13 @@ public class XmlTagTest{
     	
     	TestUtils.openFile(xml.getPath());
     	
-    	action("sidekick.parser.xml-switch",1);
+    	parseAndWait();
     	
+    	action("sidekick.parser.xml-switch");
     	
     	FrameFixture sidekick = TestUtils.findFrameByTitle("Sidekick");
     	JTreeFixture sourceTree = sidekick.tree();
     	
-		// wait for end of parsing
-		simplyWaitForMessageOfClass(sidekick.SideKickUpdate.class,10000);
-		
 		// inspect the tree
 		selectPath(sourceTree,"ACTIONS");
 		selectPath(sourceTree,"ACTIONS/ACTION/CODE");
@@ -105,15 +103,15 @@ public class XmlTagTest{
     	File xml = new File(testData,"xinclude/conventions.xml");
     	TestUtils.openFile(xml.getPath());
     	
-    	action("sidekick.parser.xml-switch",1);
+    	parseAndWait();
     	
+    	action("sidekick.parser.xml-switch");
+    	
+    	Pause.pause(1000);
     	
     	FrameFixture sidekick = TestUtils.findFrameByTitle("Sidekick");
     	JTreeFixture sourceTree = sidekick.tree();
     	
-		// wait for end of parsing
-		simplyWaitForMessageOfClass(sidekick.SideKickUpdate.class,10000);
-		
 		// inspect the tree
 		selectPath(sourceTree,"chapter id=\"conventions\"");
 		
@@ -125,15 +123,16 @@ public class XmlTagTest{
     	
 		options.OK();
     	
-    	action("sidekick.parser.xml-switch",1);
+		parseAndWait();
+		
+    	action("sidekick.parser.xml-switch");
     	
     	
     	sidekick = TestUtils.findFrameByTitle("Sidekick");
     	sourceTree = sidekick.tree();
     	
-		// wait for end of parsing
-		simplyWaitForMessageOfClass(sidekick.SideKickUpdate.class,10000);
-		
+    	Pause.pause(1000);
+
 		// inspect the tree
 		selectPath(sourceTree,"chapter");
 
@@ -145,15 +144,14 @@ public class XmlTagTest{
     	
 		options.OK();
     	
-    	action("sidekick.parser.xml-switch",1);
+    	parseAndWait();
     	
     	
     	sidekick = TestUtils.findFrameByTitle("Sidekick");
     	sourceTree = sidekick.tree();
     	
-		// wait for end of parsing
-		simplyWaitForMessageOfClass(sidekick.SideKickUpdate.class,10000);
-		
+    	Pause.pause(1000);
+
 		// inspect the tree
 		selectPath(sourceTree,"chapter id=\"conventions\" xml:lang=\"en\"");
     }

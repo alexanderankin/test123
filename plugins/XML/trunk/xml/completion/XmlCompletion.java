@@ -212,7 +212,7 @@ public class XmlCompletion extends SideKickCompletion
 		}
 
 		else
-			throw new IllegalArgumentException("What's this? " + obj);
+			throw new IllegalArgumentException("What's this? " + obj.getClass());
 
 		if(recorder != null)
 			recorder.recordInput(insert,false);

@@ -47,6 +47,7 @@ import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.msg.PluginUpdate;
 
 import static org.gjt.sp.jedit.testframework.EBFixture.*;
+import static org.gjt.sp.jedit.testframework.TestUtils.*;
 
 /**
  * a handful of utility methods.
@@ -97,6 +98,22 @@ public class XMLTestUtils{
 			expectedIn.close();
 			actualIn.close();
 		}
+	}
+	
+	public static void parseAndWait(){
+		doInBetween(
+			new Runnable(){
+				public void run(){
+					action("sidekick-parse");
+				}
+			},
+			messageOfClassCondition(sidekick.SideKickUpdate.class)
+			,10000);
+	}
+
+	public static void gotoPositionAndWait(int pos){
+		gotoPosition(pos);
+		Pause.pause(500);
 	}
 
 	/**
