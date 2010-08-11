@@ -78,7 +78,7 @@ public class XercesParserImpl extends XmlParser
     private View view = null;
     
     // cache the toolbar panels per view
-    private Map<View, JPanel> panels = new HashMap<View, JPanel>();
+    private Map<String, Map<View, JPanel>> panels = new HashMap<String, Map<View, JPanel>>();
     
 	//{{{ XercesParserImpl constructor
 	public XercesParserImpl()
@@ -535,18 +535,25 @@ public class XercesParserImpl extends XmlParser
 
     //{{{ getPanel() method	
 	public JPanel getPanel() {
+	    // TODO: cache panels per view and per mode to reduce creating so many new panels
 	    if (view != null) {
-	        JPanel panel = panels.get(view);
-	        if (panel != null) {
-	             return panel;   
+	        String mode = view.getBuffer().getMode().toString();
+	        Map<View, JPanel> modePanels = panels.get(mode);
+	        if (modePanels == null) {
+	             modePanels = new HashMap<View, JPanel>();
+	             panels.put(mode, modePanels);
 	        }
-            String panelClassName = jEdit.getProperty("xml.xmltoolbar." + view.getBuffer().getMode().toString());
+            JPanel panel = modePanels.get(view);
+            if (panel != null) {
+                 return panel;   
+            }
+            String panelClassName = jEdit.getProperty("xml.xmltoolbar." + mode);
             if (panelClassName != null) {
                 try {
                     Class panelClass = Class.forName(panelClassName);
                     java.lang.reflect.Constructor con = panelClass.getConstructor(View.class);
                     panel = (JPanel)con.newInstance(view);
-                    panels.put(view, panel);
+                    modePanels.put(view, panel);
                     return panel;
                 }
                 catch (Exception e) {
