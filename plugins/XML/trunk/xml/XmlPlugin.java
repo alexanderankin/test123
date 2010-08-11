@@ -64,6 +64,7 @@ public class XmlPlugin extends EBPlugin
 		}
 
 		SchemaMappingManager.initGlobalSchemaMapping(view);
+		xml.cache.Cache.instance().start();
 
 	} //}}}
 
@@ -88,6 +89,7 @@ public class XmlPlugin extends EBPlugin
 		Resolver.instance().uninit();
 		
 		xml.translate.TrangTranslator.stop();
+		xml.cache.Cache.instance().stop();
 	} //}}}
 
 	//{{{ handleMessage() method

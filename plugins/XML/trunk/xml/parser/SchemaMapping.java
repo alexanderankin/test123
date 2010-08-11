@@ -858,7 +858,8 @@ public final class SchemaMapping
 			ValidatorHandler verifierFilter = SchemaLoader.instance().loadJaxpGrammar(
 				null/*current*/,
 				"locate.rng",
-				handler);
+				handler,
+				null/*buffer*/);
 
 			// ValidatorHandler is only the content handler
 			// but it can forward the augmented event to another handler

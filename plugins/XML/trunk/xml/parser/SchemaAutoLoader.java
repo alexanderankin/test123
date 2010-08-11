@@ -17,18 +17,13 @@ package xml.parser;
 
 //{{{ Imports
 import org.xml.sax.XMLReader;
-import org.xml.sax.XMLFilter;
 import org.xml.sax.SAXException;
 import org.xml.sax.InputSource;
 import org.xml.sax.helpers.XMLFilterImpl;
 import org.xml.sax.helpers.NamespaceSupport;
-import javax.xml.parsers.ParserConfigurationException;
-import org.xml.sax.SAXParseException;
 import org.xml.sax.ContentHandler;
-import org.xml.sax.DTDHandler;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ext.EntityResolver2;
-import org.xml.sax.ErrorHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.Attributes;
 
@@ -36,7 +31,6 @@ import javax.xml.validation.ValidatorHandler;
 import javax.xml.validation.TypeInfoProvider;
 
 import java.util.Map;
-import java.util.HashMap;
 import java.util.Enumeration;
 
 import java.io.IOException;
@@ -44,6 +38,7 @@ import java.net.URL;
 import java.net.MalformedURLException;
 
 import org.gjt.sp.util.Log;
+import org.gjt.sp.jedit.Buffer;
 
 import xml.Resolver;
 import xml.completion.CompletionInfo;
@@ -74,7 +69,10 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 	private boolean documentElement;
 	/** document-schema mapping rules */
 	private SchemaMapping mapping;
-
+	
+	/** requesting buffer, for caching */
+	private Buffer requestingBuffer;
+	
 	/** saved publicId from parse() */
 	private String publicId;
 	/** saved systemId from parse() */
@@ -97,10 +95,11 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 	 * @param	parent	parent in the XML parsing chain
 	 * @param	mapping	schema-mapping rules or null if you plan to force the schema
 	 */
-	public SchemaAutoLoader(XMLReader parent,SchemaMapping mapping)
+	public SchemaAutoLoader(XMLReader parent,SchemaMapping mapping, Buffer requestingBuffer)
 	{
 		super(parent);
 		this.mapping=mapping;
+		this.requestingBuffer = requestingBuffer;
 	}
 	//}}}
 
@@ -148,7 +147,7 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 	{
 		// schemas URLs are resolved against the schema mapping file
 		final ValidatorHandler verifierFilter =
-		SchemaLoader.instance().loadJaxpGrammar(baseURI.toString(),schemaURL,getErrorHandler());
+		SchemaLoader.instance().loadJaxpGrammar(baseURI.toString(),schemaURL,getErrorHandler(),requestingBuffer);
 		this.schemaURL = new URL(baseURI,schemaURL).toString();
 		
 		if(needReplay){
@@ -160,44 +159,22 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 			verifierFilter.startDocument();
 		}
 		
-		// experimental : try to get the PSVI informations from the
-		// verifierFilter is for XSD (Xerces's verifier).
-		// the goal is to let SchemaAutoLoader play the TypeInfoProvider
-		// and use it instead of the built-in TypeInfoProvider in Xerces's parser
-		// configuration (=> get completion from an XSD schema selected vi schemas.xml).
-		ContentHandler debugHandler = new org.xml.sax.helpers.DefaultHandler(){
-			private TypeInfoProvider tip = verifierFilter.getTypeInfoProvider();
-			public void startElement(String uri, String localName, String qName, Attributes atts){
-				/*if it's an XSD schema, can be cast to 
-				org.apache.xerces.impl.xs.XSComplexTypeDecl 
-				org.apache.xerces.impl.xs.SchemaGrammar$XSAnyType 
-				org.apache.xerces.impl.dv.xs.XSSimpleTypeDecl
-				
-				don't know how to get the XSModel, to handle abstract elements
-				maybe use XSLoader to load the schema and
-				handle the construction of completion info outside of XercesParserImpl
-				*/
-				if(tip!=null)
-					System.out.println(qName+":"+tip.getElementTypeInfo().getClass() + " = " + tip.getElementTypeInfo());
-			}
-			@Override
-			public void endElement(String p,String q, String r){}
-		};
-		// send events to debugHandler AND further down the chain.
-		ContentHandler handler = new com.thaiopensource.xml.sax.ForkContentHandler(debugHandler,getContentHandler());
-		verifierFilter.setContentHandler(handler);
+		verifierFilter.setContentHandler(getContentHandler());
 		verifierFilter.setErrorHandler(getErrorHandler());
 		verifierFilter.setResourceResolver(Resolver.instance());
 		
 		setContentHandler(verifierFilter);
 		
-		// FIXME: very add-hoc, but who uses other extensions for one's RNG schema ?
+		// FIXME: very add-hoc, but who uses other extensions for one's schema ?
 		if(schemaURL.endsWith("rng") || schemaURL.endsWith("rnc")){
-			Map<String,CompletionInfo> info = SchemaToCompletion.rngSchemaToCompletionInfo(baseURI.toString(),schemaURL,getErrorHandler());
+			Map<String,CompletionInfo> info = SchemaToCompletion.rngSchemaToCompletionInfo(baseURI.toString(),schemaURL,getErrorHandler(),requestingBuffer);
 			if(DEBUG_RNG_SCHEMA)Log.log(Log.DEBUG,SchemaAutoLoader.class,"constructed CompletionInfos : "+info);
 			completions = info;
+		}else if(schemaURL.endsWith("xsd")){
+			Map<String,CompletionInfo> infos = XSDSchemaToCompletion.getCompletionInfoFromSchema(schemaURL,null,null,getErrorHandler(),requestingBuffer);
+			if(DEBUG_XSD_SCHEMA)Log.log(Log.DEBUG,SchemaAutoLoader.class,"constructed CompletionsInfos : "+infos);
+			completions = infos;
 		}
-
 	}
 	
 	/**

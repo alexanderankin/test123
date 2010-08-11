@@ -451,8 +451,20 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 	 * @param current
 	 * @param systemId
 	 */
-	public InputSource resolveEntity(String name, String publicId, String current,
-		String systemId) throws SAXException, java.io.IOException {
+	public String resolveEntityToPath(String name, String publicId, String current,
+		String systemId) throws java.io.IOException {
+		String[]res =resolveEntityToPathInternal(name,publicId,current,systemId);
+		if(res == null)return null;
+		else return res[1];
+	}
+	
+	/**
+	 * systemId may be modified, for instance if resolving docbookx.dtd, 
+	 * the systemId  will be the full jeditresource:XML.jar!.../docbookx.dtd
+	 * @return array [systemId to report, real systemId]
+	 */
+	private String[] resolveEntityToPathInternal(String name, String publicId, String current,
+		String systemId) throws java.io.IOException {
 		
 		if(publicId != null && publicId.length() == 0)
 			publicId = null;
@@ -546,6 +558,29 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 			if(DEBUG_RESOLVER)Log.log(Log.DEBUG,Resolver.class,"was going to fetch it again !");
 			newSystemId = lastChance;
 		}
+		
+		return new String[]{systemId,newSystemId};
+	}
+
+	public InputSource resolveEntity(String name, String publicId, String current,
+		String systemId) throws SAXException, java.io.IOException
+	{
+
+		String[] sids = resolveEntityToPathInternal(name,publicId,current,systemId);
+		if(sids == null)return null;
+		else return openEntity(name, publicId, current,sids[0],sids[1]);
+	}
+	
+	/** open an already resolved Entity.
+	  * Not public because the systemId may have to be changed (see result of resolveEntityToPathInternal)
+	  */
+	private InputSource openEntity(String name, String publicId, String current,
+		String systemId,String newSystemId) throws SAXException, java.io.IOException
+	{
+		// don't throw the IOException, as we don't have a
+		// meaningful message to display to the user
+		if(newSystemId == null)
+			return null;
 
 		Buffer buf = jEdit.getBuffer(PathUtilities.urlToPath(newSystemId));
 		if(buf != null)

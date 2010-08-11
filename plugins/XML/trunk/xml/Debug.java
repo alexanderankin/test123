@@ -41,5 +41,8 @@ public final class Debug
 	
 	/** turn on/off messages about schema completion */
 	public static final boolean DEBUG_COMPLETION = false;
+	
+	/** turn on/off messages about caching */
+	public static final boolean DEBUG_CACHE = false;
 }
 

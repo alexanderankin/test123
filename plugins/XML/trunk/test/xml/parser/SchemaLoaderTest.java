@@ -70,7 +70,8 @@ public class SchemaLoaderTest{
     	ValidatorHandler verifierFilter = l.loadJaxpGrammar(
     			null,
     			rngSchema.getPath(),
-    			new DraconianErrorHandler());
+    			new DraconianErrorHandler(),
+    			null);
     	
     	assertNotNull(verifierFilter);
     	
@@ -93,7 +94,8 @@ public class SchemaLoaderTest{
 		verifierFilter = l.loadJaxpGrammar(
     			null,
     			rngSchema.getPath(),
-    			new DraconianErrorHandler());
+    			new DraconianErrorHandler(),
+    			null);
 		reader.setContentHandler(verifierFilter);
 		verifierFilter.setContentHandler(new DefaultHandler());
 		verifierFilter.setErrorHandler(new DraconianErrorHandler());
@@ -115,7 +117,8 @@ public class SchemaLoaderTest{
     	ValidatorHandler verifierFilter = l.loadJaxpGrammar(
     			null,
     			xsdSchema.getPath(),
-    			new DraconianErrorHandler());
+    			new DraconianErrorHandler(),
+    			null);
     	
     	assertNotNull(verifierFilter);
     	
@@ -138,7 +141,8 @@ public class SchemaLoaderTest{
 		verifierFilter = l.loadJaxpGrammar(
     			null,
     			xsdSchema.getPath(),
-    			new DraconianErrorHandler());
+    			new DraconianErrorHandler(),
+    			null);
 		reader.setContentHandler(verifierFilter);
 		verifierFilter.setContentHandler(new DefaultHandler());
 		verifierFilter.setErrorHandler(new DraconianErrorHandler());
@@ -158,7 +162,8 @@ public class SchemaLoaderTest{
 			ValidatorHandler verifierFilter = l.loadJaxpGrammar(
 					null,
 					"file:/not_there",
-					new DraconianErrorHandler());
+					new DraconianErrorHandler(),
+					null);
 			fail("should throw an exception");
 		}catch(IOException ioe){
 			//fine
@@ -175,7 +180,8 @@ public class SchemaLoaderTest{
 			ValidatorHandler verifierFilter = l.loadJaxpGrammar(
 					null,
 					brokenSchema.toURI().toString(),
-					new DraconianErrorHandler());
+					new DraconianErrorHandler(),
+					null);
 			fail("should throw an exception");
 		}catch(IOException ioe){
 			fail("wrong exception  :"+ioe);

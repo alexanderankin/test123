@@ -87,40 +87,28 @@ public class CopyXPathTest{
 		Registers.getRegister('$').setValue("NULL");
 		
 		// before the root element
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(22);
-				}
-		});
+		gotoPositionAndWait(22);
+		
 		action("xml-copy-xpath");
 		assertEquals("NULL",Registers.getRegister('$').toString());
 
 		// go into the ACTIONS element
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(151);
-				}
-		});
+		gotoPositionAndWait(151);
+		
 		action("xml-copy-xpath");
 		assertEquals("/ACTIONS",Registers.getRegister('$').toString());
 
 		// go into the second ACTION element
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(325);
-				}
-		});
+		gotoPositionAndWait(325);
+		
 		action("xml-copy-xpath");
 		assertEquals("/ACTIONS/ACTION[2]",Registers.getRegister('$').toString());
 
 		Registers.getRegister('$').setValue("NULL");
 
 		// after the closing tag of the root element
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(431);
-				}
-		});
+		gotoPositionAndWait(431);
+
 		action("xml-copy-xpath");
 		assertEquals("NULL",Registers.getRegister('$').toString());
 	}
@@ -143,12 +131,8 @@ public class CopyXPathTest{
     		10000);
 		
 		// go into the b:created element
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(161);
-				}
-		});
-		Pause.pause(500);
+		gotoPositionAndWait(161);
+		
 		GuiActionRunner.execute(new GuiTask(){
 				protected void executeInEDT(){
 					action("xml-copy-xpath");
@@ -158,11 +142,8 @@ public class CopyXPathTest{
 		
 		
 		// go into the first trap
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(511);
-				}
-		});
+		gotoPositionAndWait(511);
+		
 		GuiActionRunner.execute(new GuiTask(){
 				protected void executeInEDT(){
 					action("xml-copy-xpath");
@@ -172,11 +153,8 @@ public class CopyXPathTest{
 		assertNotSame("/a:document/a:trap[1]",Registers.getRegister('$').toString());
 
 		// go into the 2nd trap
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(774);
-				}
-		});
+		gotoPositionAndWait(774);
+		
 		GuiActionRunner.execute(new GuiTask(){
 				protected void executeInEDT(){
 					action("xml-copy-xpath");
@@ -185,11 +163,8 @@ public class CopyXPathTest{
 		assertEquals("/a:document/a:trap[1]",Registers.getRegister('$').toString());
 		
 		// go into the 3rd trap
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(1018);
-				}
-		});
+		gotoPositionAndWait(1018);
+		
 		GuiActionRunner.execute(new GuiTask(){
 				protected void executeInEDT(){
 					action("xml-copy-xpath");
@@ -208,27 +183,16 @@ public class CopyXPathTest{
     	TestUtils.openFile(xml.getPath());
 
 		// wait for end of parsing
-    	doInBetween(new Runnable(){
-    			public void run(){
-    				action("sidekick-parse",1);
-    		}}, 
-    		messageOfClassCondition(sidekick.SideKickUpdate.class),
-    		10000);
+    	parseAndWait();
 
 		// set the register to a known value
 		Registers.getRegister('$').setValue("NULL");
 		
 		// go into the b:created element
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(161);
-				}
-		});
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					action("xml-copy-xpath");
-				}
-		});
+		gotoPositionAndWait(161);
+		
+		action("xml-copy-xpath");
+		
 		assertEquals("NULL",Registers.getRegister('$').toString());
 	}
 	
@@ -241,65 +205,38 @@ public class CopyXPathTest{
     	TestUtils.openFile(xml.getPath());
 
 		// wait for end of parsing
-    	doInBetween(new Runnable(){
-    			public void run(){
-    				action("sidekick-parse",1);
-    		}}, 
-    		messageOfClassCondition(sidekick.SideKickUpdate.class),
-    		10000);
+    	parseAndWait();
 		
 		// go into the doctype
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(62);
-				}
-		});
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					action("xml-copy-xpath");
-				}
-		});
+		gotoPositionAndWait(62);
+		
+		action("xml-copy-xpath");
+		
 		assertEquals("NULL",Registers.getRegister('$').toString());
 		
 		// go into the html
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(117);
-				}
-		});
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					action("xml-copy-xpath");
-				}
-		});
+		gotoPositionAndWait(117);
+		
+		action("xml-copy-xpath");
+		
 		Pause.pause(500);
+		
 		assertEquals("/html",Registers.getRegister('$').toString());
 		
 		// go into the css, right into @import, which is a CSS node
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(300);
-				}
-		});
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					action("xml-copy-xpath");
-				}
-		});
-		assertEquals("/html/head[1]/style[1]",Registers.getRegister('$').toString());
+		gotoPositionAndWait(300);
+		
+		action("xml-copy-xpath");
+		
+		// style turns to uppercase in sidekick
+		assertEquals("/html/head[1]/STYLE[1]",Registers.getRegister('$').toString());
 		
 		// go into the body (second link)
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(659);
-				}
-		});
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					action("xml-copy-xpath");
-				}
-		});
-		assertEquals("/html/body[1]/div[2]/a[1]",Registers.getRegister('$').toString());
+		gotoPositionAndWait(659);
+		
+		action("xml-copy-xpath");
+		
+		assertEquals("/html/body[1]/div[2]/p[2]/a[1]",Registers.getRegister('$').toString());
 
 	}
 }

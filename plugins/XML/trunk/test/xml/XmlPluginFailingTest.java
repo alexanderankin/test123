@@ -67,78 +67,6 @@ public class XmlPluginFailingTest{
         TestUtils.afterClass();
     }
     
-
-	public void testImportSchema(){
-		
-    	File xml = new File(testData,"import_schema/instance.xml");
-    	
-    	TestUtils.openFile(xml.getPath());
-    	
-    	action("xml-insert-float",1);
-    	FrameFixture insert = TestUtils.findFrameByTitle("XML Insert");
-    	
-		// wait for end of parsing
-    	action("sidekick-parse",1);
-		simplyWaitForMessageOfClass(sidekick.SideKickUpdate.class,10000);
-		
-
-		action("error-list-show",1);
-		
-    	FrameFixture errorlist = TestUtils.findFrameByTitle("Error List");
-		
-    	
- 		errorlist.tree().selectRow(1);
-		String selected = TestUtils.view().getTextArea().getSelectedText();
-		assertTrue("got '"+selected+"'",selected.startsWith("<ipo:comment>"));
-		errorlist.close();
-		
-		// inside comment
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(391);
-				}
-		});
-		// fails for the moment
-		assertThat(insert.list("elements").contents()).contains("ipo:comment");
-		
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(472);
-				}
-		});
-		// inside CODE
-		assertThat(insert.list("elements").contents()).isEmpty();
-
-		insert.close();
-		
-	}
-	
-	public void testImportSchemaRNG(){
-    	File xml = new File(testData,"import_schema/relax_ng/instance.xml");
-    	
-    	TestUtils.openFile(xml.getPath());
-    	
-    	action("xml-insert-float",1);
-    	FrameFixture insert = TestUtils.findFrameByTitle("XML Insert");
-    	
-		// wait for end of parsing
-		simplyWaitForMessageOfClass(sidekick.SideKickUpdate.class,10000);
-		
-
-		action("error-list-show",1);
-		
-    	FrameFixture errorlist = TestUtils.findFrameByTitle("Error List");
-		
-    	
- 		errorlist.tree().selectRow(1);
-		String selected = TestUtils.view().getTextArea().getSelectedText();
-		assertTrue("got '"+selected+"'",selected.startsWith("<ipo:comment>"));
-		errorlist.close();
-		
-		insert.close();
-		fail("the schema is not resolved !");
-	}
-
 	/** Completion in JSPs */
 	@Test
 	public void testMixedJSP(){
@@ -163,13 +91,13 @@ public class XmlPluginFailingTest{
 		errorlist.close();
 		
 		// inside body
-		gotoPosition(234);
+		gotoPositionAndWait(234);
 		assertThat(insert.list("elements").contents()).contains("h1");
 		
 		
 		// inside java code
 		// the test fails, because completion is not disabled in java snippets.
-		gotoPosition(296);
+		gotoPositionAndWait(296);
 		assertThat(insert.list("elements").contents()).isEmpty();
 		
 		insert.close();

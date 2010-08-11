@@ -62,7 +62,7 @@ public class SchemaToCompletionTest{
     public void testParentRef(){
     	File f = new File(testData,"parentRef/actual_table.rng");
 		
-    	Map<String,CompletionInfo> rng = SchemaToCompletion.rngSchemaToCompletionInfo(null,f.getPath(),null);
+    	Map<String,CompletionInfo> rng = SchemaToCompletion.rngSchemaToCompletionInfo(null,f.getPath(),null,null);
 		assertEquals(1,rng.size());
 		assertTrue(rng.containsKey(""));
 		CompletionInfo info = rng.get("");
@@ -81,7 +81,7 @@ public class SchemaToCompletionTest{
     public void testRelaxNG(){
     	File f = new File(testData,"../xml/dtds/relaxng.rng");
 		
-    	Map<String,CompletionInfo> rng = SchemaToCompletion.rngSchemaToCompletionInfo(null,f.getPath(),null);
+    	Map<String,CompletionInfo> rng = SchemaToCompletion.rngSchemaToCompletionInfo(null,f.getPath(),null,null);
 		assertEquals(1,rng.size());
 		assertTrue(rng.containsKey("http://relaxng.org/ns/structure/1.0"));
 		CompletionInfo info = rng.get("http://relaxng.org/ns/structure/1.0");
@@ -98,7 +98,7 @@ public class SchemaToCompletionTest{
     public void testLocate(){
     	File f = new File(testData,"../xml/dtds/locate.rng");
 		
-    	Map<String,CompletionInfo> rng = SchemaToCompletion.rngSchemaToCompletionInfo(null,f.getPath(),null);
+    	Map<String,CompletionInfo> rng = SchemaToCompletion.rngSchemaToCompletionInfo(null,f.getPath(),null,null);
 		assertEquals(1,rng.size());
 		assertTrue(rng.containsKey("http://thaiopensource.com/ns/locating-rules/1.0"));
 		CompletionInfo info = rng.get("http://thaiopensource.com/ns/locating-rules/1.0");
@@ -121,7 +121,7 @@ public class SchemaToCompletionTest{
 	public void testOptionalRef(){
     	File f = new File(testData,"optionalRef/schema.rng");
 		
-    	Map<String,CompletionInfo> rng = SchemaToCompletion.rngSchemaToCompletionInfo(null,f.getPath(),null);
+    	Map<String,CompletionInfo> rng = SchemaToCompletion.rngSchemaToCompletionInfo(null,f.getPath(),null,null);
 		assertEquals(1,rng.size());
 		assertTrue(rng.containsKey(""));
 		CompletionInfo info = rng.get("");

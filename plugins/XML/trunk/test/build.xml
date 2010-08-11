@@ -81,7 +81,7 @@
 
     <!-- this selector holds just one test.  This is optional. -->
     <selector id="testcases.current">
-        <filename name="xml/CopyXPathTest.java"/>
+        <filename name="xml/XmlPluginFailingTest.java"/>
     </selector>
 
     <!-- this selector controls which tests to run, set the refid to either
@@ -110,7 +110,18 @@
         </ant>
     </target>
     
-        <!-- shortcut to only compile the tests (don't waste time instrumenting) -->
+    <target name="test-all" description="run all tests">
+		<selector id="junit.testcases">
+			<or>
+				<selector refid="testcases.all"/>
+			</or>
+		</selector>
+        <ant antfile="${test.framework.home}/build.xml" target="-test" inheritRefs="true">
+            <reference refid="project.test.sysproperties"/>
+        </ant>
+    </target>
+
+    <!-- shortcut to only compile the tests (don't waste time instrumenting) -->
     <target name="compile">
         <ant antfile="${test.framework.home}/build.xml" target="-compileTests" inheritRefs="true">
             <reference refid="project.test.sysproperties"/>
