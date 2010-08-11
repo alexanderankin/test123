@@ -8,8 +8,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,12 +20,19 @@ import java.util.HashMap;
 
 import javax.swing.*;
 
+import jdiff.DualDiff;
+import jdiff.util.Diff;
+import jdiff.util.DiffNormalOutput;
+import jdiff.util.DiffOutput;
+import jdiff.util.Diff.Change;
+
 import org.gjt.sp.jedit.ActionSet;
 import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.RolloverButton;
+import org.gjt.sp.util.Log;
 
 @SuppressWarnings("serial")
 public class MenuEditor extends JDialog
@@ -224,6 +233,7 @@ public class MenuEditor extends JDialog
 					children.add(childElem.menu);
 			}
 		}
+		genDiff(menuElem, children);
 		StringBuilder menuString = new StringBuilder();
 		for (String child: children)
 		{
@@ -239,6 +249,27 @@ public class MenuEditor extends JDialog
 		updateMenuElement((MenuElement) menu.getSelectedItem());
 		for (MenuElement menuElem: menus)
 			applyMenu(menuElem);
+	}
+	private void genDiff(MenuElement menu, ArrayList<String> children)
+	{
+		System.err.println("getDiff(" + menu.menu);
+		String [] modified = new String[children.size()];
+		for (int i = 0; i < children.size(); i++)
+			modified[i] = children.get(i);
+		String [] cur = getMenuItems(menu.menu);
+		Diff diff = new Diff(cur, modified);
+		Change edit = diff.diff_2();
+        StringWriter sw = new StringWriter();
+        DiffOutput diffOutput = new DiffNormalOutput(cur, modified);
+        diffOutput.setOut( new BufferedWriter( sw ) );
+        diffOutput.setLineSeparator( "\n" );
+        try {
+            diffOutput.writeScript( edit );
+            System.err.println(sw);
+        }
+        catch ( IOException ioe ) {
+            Log.log( Log.DEBUG, MenuEditor.class, ioe );
+        }
 	}
 	private void resetMenu(MenuElement menuElem)
 	{
@@ -365,11 +396,8 @@ public class MenuEditor extends JDialog
 			return;
 		for (String item: menuItems)
 		{
-			boolean isMenu = item.startsWith(subMenu);
-			if (isMenu)
-				item = item.substring(1);
 			MenuElement child = parent.addChild(item);
-			if (isMenu)
+			if (item.startsWith(subMenu))
 				initMenu(child);
 		}
 	}
@@ -430,7 +458,8 @@ public class MenuEditor extends JDialog
 		public MenuElement(String menu)
 		{
 			this.menu = menu;
-			label = getLabel(menu);
+			String prop = menu.startsWith(subMenu) ? menu.substring(1) : menu;
+			label = getLabel(prop);
 		}
 		public String toString()
 		{
