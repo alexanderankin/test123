@@ -23,23 +23,22 @@ import org.gjt.sp.jedit.View;
  */
 public class AntXmlParsedData extends XmlParsedData {
 
-    public static final int SORT_BY_NAME = 0;
-    public static final int SORT_BY_LINE = 1;
-    public static final int SORT_BY_TYPE = 2;
     private static int sortBy = SORT_BY_TYPE;
+    private static boolean antSortDown = true;
 
     public AntXmlParsedData(String filename, boolean html) {
         super(filename, html);
     }
 
-    /**
-     * Rename the assets contained in the tree nodes to use the value
-     * contained in the body of any child tags named 'name'.
-     */ @Override
+    @Override
     public void done(View view) {
         sort(view);
     }
 
+	public void setSortDirection(boolean down) {
+		antSortDown = down;	
+	}
+	
     public void sort(View view) {
         sortChildren((DefaultMutableTreeNode)root);
         tree.reload();
@@ -82,11 +81,11 @@ public class AntXmlParsedData extends XmlParsedData {
                 case SORT_BY_LINE:
                     Integer my_line = new Integer(((AntXmlTag)tna.getUserObject()).getStart().getOffset());
                     Integer other_line = new Integer(((AntXmlTag)tnb.getUserObject()).getStart().getOffset());
-                    return my_line.compareTo(other_line);
+                    return my_line.compareTo(other_line) * (antSortDown ? 1 : -1);
                 case SORT_BY_TYPE:
-                    String my_on = ((AntXmlTag)tna.getUserObject()).getOriginalName();
-                    String other_on = ((AntXmlTag)tnb.getUserObject()).getOriginalName();
-                    int comp = my_on.compareTo(other_on);
+                    String my_on = ((AntXmlTag)tna.getUserObject()).getOriginalName().toLowerCase();
+                    String other_on = ((AntXmlTag)tnb.getUserObject()).getOriginalName().toLowerCase();
+                    int comp = my_on.compareTo(other_on) * (antSortDown ? 1 : -1);
                     return comp == 0 ? compareNames(tna, tnb) : comp;
                 case SORT_BY_NAME:
                 default:
@@ -96,9 +95,9 @@ public class AntXmlParsedData extends XmlParsedData {
 
         private int compareNames(DefaultMutableTreeNode tna, DefaultMutableTreeNode tnb) {
             // sort by name
-            String my_name = ((AntXmlTag)tna.getUserObject()).getShortString();
-            String other_name = ((AntXmlTag)tnb.getUserObject()).getShortString();
-            return my_name.compareTo(other_name);
+            String my_name = ((AntXmlTag)tna.getUserObject()).getShortString().toLowerCase();
+            String other_name = ((AntXmlTag)tnb.getUserObject()).getShortString().toLowerCase();
+            return my_name.compareTo(other_name) * (antSortDown ? 1 : -1);
         }
     } ;
 

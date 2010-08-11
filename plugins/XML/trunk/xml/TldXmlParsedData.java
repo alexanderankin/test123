@@ -27,10 +27,9 @@ import org.gjt.sp.jedit.View;
  */
 public class TldXmlParsedData extends XmlParsedData {
 
-    public static final int SORT_BY_NAME = 0;
-    public static final int SORT_BY_LINE = 1;
-    public static final int SORT_BY_TYPE = 2;
     private static int sortBy = SORT_BY_NAME;
+    private static boolean tldSortDown = true;
+
 
     public TldXmlParsedData(String filename, boolean html) {
         super(filename, html);
@@ -79,6 +78,10 @@ public class TldXmlParsedData extends XmlParsedData {
         }
     }
 
+	public void setSortDirection(boolean down) {
+		tldSortDown = down;	
+	}
+	
     public void sort(View view) {
         sortChildren((DefaultMutableTreeNode)root);
         tree.reload();
@@ -121,11 +124,11 @@ public class TldXmlParsedData extends XmlParsedData {
                 case SORT_BY_LINE:
                     Integer my_line = new Integer(((TldXmlTag)tna.getUserObject()).getStart().getOffset());
                     Integer other_line = new Integer(((TldXmlTag)tnb.getUserObject()).getStart().getOffset());
-                    return my_line.compareTo(other_line);
+                    return my_line.compareTo(other_line) * (tldSortDown ? 1 : -1);
                 case SORT_BY_TYPE:
-                    String my_on = ((TldXmlTag)tna.getUserObject()).getOriginalName();
-                    String other_on = ((TldXmlTag)tnb.getUserObject()).getOriginalName();
-                    int comp = my_on.compareTo(other_on);
+                    String my_on = ((TldXmlTag)tna.getUserObject()).getOriginalName().toLowerCase();
+                    String other_on = ((TldXmlTag)tnb.getUserObject()).getOriginalName().toLowerCase();
+                    int comp = my_on.compareTo(other_on) * (tldSortDown ? 1 : -1);
                     return comp == 0 ? compareNames(tna, tnb) : comp;
                 case SORT_BY_NAME:
                 default:
@@ -135,9 +138,9 @@ public class TldXmlParsedData extends XmlParsedData {
 
         private int compareNames(DefaultMutableTreeNode tna, DefaultMutableTreeNode tnb) {
             // sort by name
-            String my_name = ((TldXmlTag)tna.getUserObject()).getShortString();
-            String other_name = ((TldXmlTag)tnb.getUserObject()).getShortString();
-            return my_name.compareTo(other_name);
+            String my_name = ((TldXmlTag)tna.getUserObject()).getShortString().toLowerCase();
+            String other_name = ((TldXmlTag)tnb.getUserObject()).getShortString().toLowerCase();
+            return my_name.compareTo(other_name) * (tldSortDown ? 1 : -1);
         }
     } ;
 

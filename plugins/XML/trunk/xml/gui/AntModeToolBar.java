@@ -4,9 +4,13 @@ package xml.gui;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.*;
+
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
+
 import xml.AntXmlParsedData;
+
 import sidekick.SideKickParsedData;
 
 /**
@@ -16,7 +20,12 @@ import sidekick.SideKickParsedData;
 public class AntModeToolBar extends JPanel {
 
     private JComboBox choices;
+    private JButton direction;
     private View view = null;
+
+    private static Icon upIcon = GUIUtilities.loadIcon("22x22/actions/go-up.png");
+    private static Icon downIcon = GUIUtilities.loadIcon("22x22/actions/go-down.png");
+    private boolean down = true;
 
     public AntModeToolBar(View view) {
         this.view = view;
@@ -35,8 +44,13 @@ public class AntModeToolBar extends JPanel {
         choices.addItem(jEdit.getProperty("options.sidekick.xml.sortByLine", "Line"));
         choices.addItem(jEdit.getProperty("options.sidekick.xml.sortByType", "Type"));
 
+        direction = new JButton();
+        direction.setIcon(downIcon);
+        direction.setToolTipText(jEdit.getProperty("options.sidekick.xml.sortDirection", "Sort direction"));
+
         add(sortLabel);
         add(choices);
+        add(direction);
 
         if (view != null) {
             AntXmlParsedData data = (AntXmlParsedData) SideKickParsedData.getParsedData(view);
@@ -52,6 +66,20 @@ public class AntModeToolBar extends JPanel {
                     AntXmlParsedData data = (AntXmlParsedData) SideKickParsedData.getParsedData(view);
                     if (data != null) {
                         data.setSortBy(choices.getSelectedIndex());
+                        data.sort(view);
+                    }
+                }
+            }
+        } );
+
+        direction.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                if (view != null) {
+                    AntXmlParsedData data = (AntXmlParsedData) SideKickParsedData.getParsedData(view);
+                    if (data != null) {
+                        down = !down;
+                        direction.setIcon(down ? downIcon : upIcon);
+                        data.setSortDirection(down);
                         data.sort(view);
                     }
                 }

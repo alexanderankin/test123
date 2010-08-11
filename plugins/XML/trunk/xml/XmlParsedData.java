@@ -18,6 +18,7 @@ package xml;
 //{{{ Imports
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -28,12 +29,14 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeNode;
 
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.jedit.View;
 
 import sidekick.SideKickParsedData;
-import sidekick.Asset;
-import sidekick.IAsset;
+import sidekick.ExpansionModel;
+import sidekick.SideKickUpdate;
+
 import xml.completion.CompletionInfo;
 import xml.completion.ElementDecl;
 import xml.completion.IDDecl;
@@ -41,6 +44,10 @@ import xml.parser.TagParser;
 import xml.parser.XmlTag;
 
 import com.thaiopensource.xml.util.Name;
+
+import java.util.Enumeration;
+
+
 //}}}
 
 /**
@@ -49,8 +56,16 @@ import com.thaiopensource.xml.util.Name;
  */
 public class XmlParsedData extends SideKickParsedData
 {
+	// sorting values
+	public static final int SORT_BY_NAME = 0;
+	public static final int SORT_BY_LINE = 1;
+	public static final int SORT_BY_TYPE = 2;
+	
+	private static int sortBy = SORT_BY_LINE;
+	private boolean sortDown = true;
 	
 	public boolean html;
+	
 	/** indicate that all xmlns: attributes appear only on the root element
 	 *  so there's no need to find the exact namespace context of the parent node.
 	 *  the namespace context of the root element is sufficient
@@ -669,12 +684,102 @@ public class XmlParsedData extends SideKickParsedData
 	
 	//{{{ done() method
 	/**
- 	 * Does nothing.  Subclasse can override for their own purposes, for
- 	 * example, the TldXmlParsedData class renames nodes based on child nodes.
+ 	 * Causes node sorting to be done.  Subclasse can override for their own 
+ 	 * purposes, for example, the TldXmlParsedData class renames nodes based 
+ 	 * on child nodes. 
  	 */
 	public void done(View view) {
-		
+		sort(view);	
 	}
+	//}}}
+	
+	//{{{ setSortBy(int) method
+	public void setSortBy(int by) {
+		switch (by) {
+		    case SORT_BY_NAME:
+		    case SORT_BY_LINE:
+		    case SORT_BY_TYPE:
+			sortBy = by;
+			break;
+		}
+	}
+	//}}}
+	
+	//{{{ getSortBy() method
+	public int getSortBy() {
+		return sortBy;
+	}
+	//}}}
+	
+	//{{{ setSortDirection(boolean) method
+	public void setSortDirection(boolean down) {
+		sortDown = down;	
+	}
+	//}}}
+	
+	//{{{ sort(view) method
+	public void sort(View view) {
+		sortChildren((DefaultMutableTreeNode)root);
+		tree.reload();
+		expansionModel = createExpansionModel().getModel();
+		EditBus.send(new SideKickUpdate(view));
+	}
+	//}}}
+	
+	//{{{ sortChildren(node) method
+	private void sortChildren(DefaultMutableTreeNode node) {
+		List<DefaultMutableTreeNode> children = new ArrayList<DefaultMutableTreeNode>();
+		Enumeration en = node.children();
+		while(en.hasMoreElements()) {
+			children.add((DefaultMutableTreeNode)en.nextElement());   
+		}
+		Collections.sort(children, sorter);
+		node.removeAllChildren();
+		for (DefaultMutableTreeNode child : children) {
+			node.add(child);
+			sortChildren(child);
+		}
+	}
+	//}}
+
+	private Comparator<DefaultMutableTreeNode> sorter = new Comparator<DefaultMutableTreeNode>() {
+		public int compare(DefaultMutableTreeNode tna, DefaultMutableTreeNode tnb) {
+		    int sortBy = getSortBy();
+		    switch (sortBy) {                // NOPMD, no breaks are necessary here
+			case SORT_BY_LINE:
+			    Integer my_line = new Integer(((XmlTag)tna.getUserObject()).getStart().getOffset());
+			    Integer other_line = new Integer(((XmlTag)tnb.getUserObject()).getStart().getOffset());
+			    return my_line.compareTo(other_line) * (sortDown ? 1 : -1);
+			case SORT_BY_TYPE:
+			    String my_on = ((XmlTag)tna.getUserObject()).getName();
+			    String other_on = ((XmlTag)tnb.getUserObject()).getName();
+			    int comp = my_on.compareTo(other_on) * (sortDown ? 1 : -1);
+			    return comp == 0 ? compareNames(tna, tnb) : comp;
+			case SORT_BY_NAME:
+			default:
+			    return compareNames(tna, tnb);
+		    }
+		}
+		
+		private int compareNames(DefaultMutableTreeNode tna, DefaultMutableTreeNode tnb) {
+		    // sort by name
+		    String my_name = ((XmlTag)tna.getUserObject()).getLongString();
+		    String other_name = ((XmlTag)tnb.getUserObject()).getLongString();
+		    return my_name.compareTo(other_name) * (sortDown ? 1 : -1);
+		}
+	} ;
+	
+	//{{{ createExpansionModel() method
+	private ExpansionModel createExpansionModel() {
+		ExpansionModel em = new ExpansionModel();
+		em.add();   // root (filename node)
+		em.add();   // document node
+		for (int i = 0; i < root.getChildAt(0).getChildCount(); i++) {
+		    em.inc();   // first level children.  Is this enough?
+		}
+		return em;
+	}
+	//}}}
 	
 	//{{{ Private members
 
