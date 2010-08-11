@@ -889,6 +889,7 @@ public class XercesParserImpl extends XmlParser
 				if(model != null)
 				{
 					//get the prefix
+					// TODO: 'prefix' is set but not used, remove this section?
 					String prefix;
 					if (qName.length() == sName.length())
 						prefix = "";
@@ -1137,6 +1138,7 @@ public class XercesParserImpl extends XmlParser
 		//{{{ endPrefixMapping() method
 		public void endPrefixMapping(String prefix)
 		{
+		    // TODO: what is this for?  It doesn't do anything.
 			String uri = (String)activePrefixes.get(prefix);
 		} //}}}
 
