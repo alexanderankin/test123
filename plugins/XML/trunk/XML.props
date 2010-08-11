@@ -153,6 +153,7 @@ xml.xmlparseddata.tld=xml.TldXmlParsedData
 # toolbar classes
 xml.xmltoolbar.ant=xml.gui.AntModeToolBar
 xml.xmltoolbar.tld=xml.gui.TldModeToolBar
+xml.xmltoolbar.xml=xml.gui.XmlModeToolBar
 
 # Show attributes in XML tree?
 # 0: none; 1: id only; 2: all
@@ -299,6 +300,7 @@ options.sidekick.xml.sortBy=Sort by:
 options.sidekick.xml.sortByLine=Line
 options.sidekick.xml.sortByName=Name
 options.sidekick.xml.sortByType=Type
+options.sidekick.xml.sortDirection=Sort direction
 
 # actions labels
 csssidekick-reload-completion-config.label=Reload css completion config

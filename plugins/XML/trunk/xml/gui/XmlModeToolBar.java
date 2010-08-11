@@ -9,15 +9,15 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 
-import xml.TldXmlParsedData;
+import xml.XmlParsedData;
 
 import sidekick.SideKickParsedData;
 
 /**
  * This is a toolbar to be added to SideKick. It provides the ability to sort
- * elements in a TLD file.
+ * elements in an Xml file.
  */
-public class TldModeToolBar extends JPanel {
+public class XmlModeToolBar extends JPanel {
 
     private JComboBox choices;
     private JButton direction;
@@ -27,7 +27,7 @@ public class TldModeToolBar extends JPanel {
     private static Icon downIcon = GUIUtilities.loadIcon("22x22/actions/go-down.png");
     private boolean down = true;
 
-    public TldModeToolBar(View view) {
+    public XmlModeToolBar(View view) {
         this.view = view;
         installComponents();
         installListeners();
@@ -39,7 +39,7 @@ public class TldModeToolBar extends JPanel {
 
         JLabel sortLabel = new JLabel(jEdit.getProperty("options.sidekick.xml.sortBy", "Sort by:"));
 
-        // these are added in the same order as the values of SORT_BY_NAME, etc, in TldXmlParsedData.
+        // these are added in the same order as the values of SORT_BY_NAME, etc, in XmlParsedData.
         choices.addItem(jEdit.getProperty("options.sidekick.xml.sortByName", "Name"));
         choices.addItem(jEdit.getProperty("options.sidekick.xml.sortByLine", "Line"));
         choices.addItem(jEdit.getProperty("options.sidekick.xml.sortByType", "Type"));
@@ -53,7 +53,7 @@ public class TldModeToolBar extends JPanel {
         add(direction);
 
         if (view != null) {
-            TldXmlParsedData data = (TldXmlParsedData) SideKickParsedData.getParsedData(view);
+            XmlParsedData data = (XmlParsedData) SideKickParsedData.getParsedData(view);
             int choice = data.getSortBy();
             choices.setSelectedIndex(choice);
         }
@@ -63,7 +63,7 @@ public class TldModeToolBar extends JPanel {
         choices.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent ae) {
                 if (view != null) {
-                    TldXmlParsedData data = (TldXmlParsedData) SideKickParsedData.getParsedData(view);
+                    XmlParsedData data = (XmlParsedData) SideKickParsedData.getParsedData(view);
                     if (data != null) {
                         data.setSortBy(choices.getSelectedIndex());
                         data.sort(view);
@@ -71,11 +71,11 @@ public class TldModeToolBar extends JPanel {
                 }
             }
         } );
-        
-        direction.addActionListener(new ActionListener() {
+
+        direction.addActionListener (new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 if (view != null) {
-                    TldXmlParsedData data = (TldXmlParsedData) SideKickParsedData.getParsedData(view);
+                    XmlParsedData data = (XmlParsedData) SideKickParsedData.getParsedData(view);
                     if (data != null) {
                         down = !down;
                         direction.setIcon(down ? downIcon : upIcon);
@@ -84,6 +84,7 @@ public class TldModeToolBar extends JPanel {
                     }
                 }
             }
-        } );
+        }
+       );
     }
 }
