@@ -73,6 +73,7 @@
                 <filename name="docs/*.html" />
                 <filename name="docs/copying.txt" />
                 <filename name="icons/*.gif" />
+                <filename name="icons/*.png" />
                 <filename name="xml/**/*.xml" />
                 <filename name="xml/**/catalog" />
                 <filename name="xml/**/*.xsd" />
