@@ -62,7 +62,7 @@ public class XmlParsedData extends SideKickParsedData
 	public static final int SORT_BY_TYPE = 2;
 	
 	private static int sortBy = SORT_BY_LINE;
-	private boolean sortDown = true;
+	private static boolean sortDown = true;
 	
 	public boolean html;
 	

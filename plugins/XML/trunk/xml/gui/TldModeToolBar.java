@@ -23,8 +23,8 @@ public class TldModeToolBar extends JPanel {
     private JButton direction;
     private View view = null;
 
-    private static Icon upIcon = GUIUtilities.loadIcon("22x22/actions/go-up.png");
-    private static Icon downIcon = GUIUtilities.loadIcon("22x22/actions/go-down.png");
+    private static ImageIcon upIcon = new ImageIcon(TldModeToolBar.class.getResource("/icons/up.gif"));    
+    private static ImageIcon downIcon = new ImageIcon(TldModeToolBar.class.getResource("/icons/down.gif"));    
     private boolean down = true;
 
     public TldModeToolBar(View view) {
