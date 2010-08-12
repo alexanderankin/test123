@@ -5,7 +5,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.*;
 
-import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 
@@ -23,8 +22,8 @@ public class XmlModeToolBar extends JPanel {
     private JButton direction;
     private View view = null;
 
-    private static Icon upIcon = GUIUtilities.loadIcon("22x22/actions/go-up.png");
-    private static Icon downIcon = GUIUtilities.loadIcon("22x22/actions/go-down.png");
+    private static ImageIcon upIcon = new ImageIcon(XmlModeToolBar.class.getResource("/icons/up.gif"));    
+    private static ImageIcon downIcon = new ImageIcon(XmlModeToolBar.class.getResource("/icons/down.gif"));    
     private boolean down = true;
 
     public XmlModeToolBar(View view) {
