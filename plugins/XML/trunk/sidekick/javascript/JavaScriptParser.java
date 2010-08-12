@@ -93,7 +93,6 @@ public class JavaScriptParser extends SourceParser {
      }
 
      public SideKickParsedData parse( Buffer buffer, String text, DefaultErrorSource errorSource ) {
-         Log.log(Log.DEBUG, this, "+++++ Parsing:\n" + text);
 		data = new SideKickParsedData(buffer.getName());
 		packages = new PackageMap(new PackageComparator());
 		commentList = new ArrayList();
@@ -106,7 +105,6 @@ public class JavaScriptParser extends SourceParser {
      }
 
      protected void parseBuffer(Buffer buffer, String text, DefaultErrorSource errorSource) {
-         Log.log(Log.DEBUG, this, "+++++ startLine = " + startLine);
 		String line;
 		String name;
 		String pkgname;
