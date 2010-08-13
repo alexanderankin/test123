@@ -9,9 +9,11 @@ public class MenuEditorPlugin extends EditPlugin
 
 	public void start()
 	{
+		MenuEditor.start();
 	}
 
 	public void stop()
 	{
+		MenuEditor.stop();
 	}
 }

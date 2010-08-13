@@ -8,7 +8,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringWriter;
@@ -20,11 +24,11 @@ import java.util.HashMap;
 
 import javax.swing.*;
 
-import jdiff.DualDiff;
 import jdiff.util.Diff;
 import jdiff.util.DiffNormalOutput;
 import jdiff.util.DiffOutput;
 import jdiff.util.Diff.Change;
+import jdiff.util.patch.normal.Patch;
 
 import org.gjt.sp.jedit.ActionSet;
 import org.gjt.sp.jedit.EditAction;
@@ -32,7 +36,6 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.RolloverButton;
-import org.gjt.sp.util.Log;
 
 @SuppressWarnings("serial")
 public class MenuEditor extends JDialog
@@ -41,6 +44,9 @@ public class MenuEditor extends JDialog
 	private static final String spaceSeparator = "\\s+";
 	private static final String menuSeparator = "-";
 	private static final String subMenu = "%";
+	private static String [] unchangedMenus;
+	private static HashMap<String, String[]> unchangedMenuItems =
+		new HashMap<String, String[]>();
 	private JComboBox menu, actionSet;
 	private JList items, allActions;
 	private RolloverButton add, remove, up, down;
@@ -51,6 +57,129 @@ public class MenuEditor extends JDialog
 	private HashMap<String, ArrayList<MenuElement>> actionSetMap =
 		new HashMap<String, ArrayList<MenuElement>>();
 	private boolean itemListInitialized = false;
+	private static File home;
+
+	public static void start()
+	{
+		home = jEdit.getPlugin("menuEditor.MenuEditorPlugin").getPluginHome();
+		if (! home.isDirectory())
+			home.mkdir();
+		resetAllMenus();
+		unchangedMenus = getMenus();
+		for (String mi: unchangedMenus)
+		{
+			String [] items = getMenuItems(mi);
+			if (items != null)
+				unchangedMenuItems.put(mi, items);
+		}
+		applyDiff();
+	}
+	public static void stop()
+	{
+	}
+	private static String readFile(String path)
+	{
+		try
+		{
+			BufferedReader input = new BufferedReader(new FileReader(path));
+			StringBuilder contents = new StringBuilder();
+			String line = null;
+			while ((line = input.readLine()) != null)
+				contents.append(line + "\n");
+			input.close();
+			return contents.toString();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	private static void writeFile(String path, String content)
+	{
+		try
+		{
+			BufferedWriter output = new BufferedWriter(new FileWriter(path));
+			output.write(content);
+			output.close();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+	private static String join(String [] lines, char separator)
+	{
+		StringBuilder sb = new StringBuilder();
+		for (String line: lines)
+			sb.append(line + separator);
+		return sb.toString();
+	}
+	private static void applyDiff()
+	{
+		String diffPath = home.getAbsolutePath() + File.separator;
+		for (String menu: unchangedMenus)
+		{
+			String diffFile = diffPath + menu + ".diff";
+			if (! new File(diffFile).exists())
+				continue;
+			String [] items = unchangedMenuItems.get(menu);
+			if (items == null)
+				continue;
+			String diff = readFile(diffFile);
+			String patched;
+			try
+			{
+				patched = Patch.patchNormal(diff, join(items, '\n'));
+			} catch (Exception e)
+			{
+				e.printStackTrace();
+				continue;
+			}
+			String newMenu = join(patched.split("\n"), ' ');
+			jEdit.setProperty(menu, newMenu);
+		}
+		jEdit.propertiesChanged();
+	}
+	private void createDiff(MenuElement menuElem)
+	{
+		String menu = menuElem.menu;
+		jEdit.resetProperty(getMenuPropName(menu));
+		String [] orig = unchangedMenuItems.get(menu);
+		String [] modified = menuElem.getChildren();
+		Diff diff = new Diff(orig, modified);
+		Change edit = diff.diff_2();
+        StringWriter sw = new StringWriter();
+        DiffOutput diffOutput = new DiffNormalOutput(orig, modified);
+        diffOutput.setOut(new BufferedWriter(sw));
+        diffOutput.setLineSeparator("\n");
+        try
+        {
+            diffOutput.writeScript(edit);
+    		String diffPath = home.getAbsolutePath() + File.separator;
+    		String diffFile = diffPath + menu + ".diff";
+            writeFile(diffFile, sw.toString());
+        }
+        catch (Exception e)
+        {
+        	e.printStackTrace();
+        	return;
+        }
+	}
+	private static void resetAllMenus()
+	{
+		jEdit.resetProperty(viewMenuBar);
+		String [] m = getMenus();
+		for (String mi: m)
+			jEdit.resetProperty(getMenuPropName(mi));
+		jEdit.propertiesChanged();
+	}
+	private static String getMenuPropName(String submenu)
+	{
+		if (submenu.startsWith(subMenu))
+			return submenu.substring(1);
+		return submenu;
+	}
 
 	public MenuEditor(View view)
 	{
@@ -217,7 +346,7 @@ public class MenuEditor extends JDialog
 		for (MenuElement child: actionSetMap.get(actionSet))
 			allActionsModel.addElement(child);
 	}
-	private void applyMenu(MenuElement menuElem)
+	private void createMenuDiff(MenuElement menuElem)
 	{
 		ArrayList<String> children = new ArrayList<String>();
 		if (menuElem.children != null)
@@ -226,50 +355,21 @@ public class MenuEditor extends JDialog
 			{
 				if (childElem.children != null)
 				{
-					applyMenu(childElem);
+					createMenuDiff(childElem);
 					children.add(subMenu + childElem.menu);
 				}
 				else
 					children.add(childElem.menu);
 			}
 		}
-		genDiff(menuElem, children);
-		StringBuilder menuString = new StringBuilder();
-		for (String child: children)
-		{
-			if (menuString.length() > 0)
-				menuString.append(" ");
-			menuString.append(child);
-		}
-		jEdit.setProperty(menuElem.menu, menuString.toString());
-		jEdit.propertiesChanged();
+		createDiff(menuElem);
 	}
 	private void apply()
 	{
 		updateMenuElement((MenuElement) menu.getSelectedItem());
 		for (MenuElement menuElem: menus)
-			applyMenu(menuElem);
-	}
-	private void genDiff(MenuElement menu, ArrayList<String> children)
-	{
-		System.err.println("getDiff(" + menu.menu);
-		String [] modified = new String[children.size()];
-		for (int i = 0; i < children.size(); i++)
-			modified[i] = children.get(i);
-		String [] cur = getMenuItems(menu.menu);
-		Diff diff = new Diff(cur, modified);
-		Change edit = diff.diff_2();
-        StringWriter sw = new StringWriter();
-        DiffOutput diffOutput = new DiffNormalOutput(cur, modified);
-        diffOutput.setOut( new BufferedWriter( sw ) );
-        diffOutput.setLineSeparator( "\n" );
-        try {
-            diffOutput.writeScript( edit );
-            System.err.println(sw);
-        }
-        catch ( IOException ioe ) {
-            Log.log( Log.DEBUG, MenuEditor.class, ioe );
-        }
+			createMenuDiff(menuElem);
+		applyDiff();
 	}
 	private void resetMenu(MenuElement menuElem)
 	{
@@ -368,12 +468,12 @@ public class MenuEditor extends JDialog
 		for (MenuElement child: menuElem.children)
 			itemModel.addElement(child);
 	}
-	private String [] getMenus()
+	private static String [] getMenus()
 	{
 		String s = jEdit.getProperty(viewMenuBar);
 		return s.split(spaceSeparator);
 	}
-	private String [] getMenuItems(String menu)
+	private static String [] getMenuItems(String menu)
 	{
 		if (menu.equals(menuSeparator))
 			return null;
@@ -481,6 +581,15 @@ public class MenuEditor extends JDialog
 		public void removeAllChildren()
 		{
 			children = null;
+		}
+		public String [] getChildren()
+		{
+			if (children == null)
+				return null;
+			String [] copy = new String[children.size()];
+			for (int i = 0; i < children.size(); i++)
+				copy[i] = children.get(i).menu;
+			return copy;
 		}
 	}
 	public class ListTransferHandler extends TransferHandler
