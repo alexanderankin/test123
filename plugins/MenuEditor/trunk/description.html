@@ -1,7 +1,8 @@
 <html>
 <title>The Menu Editor Plugin</title>
 <body>
-<p>Written by Shlomy Reinstein, August 2010.</p>
+<h1>Menu Editor</h1>
+<p><i>Written by Shlomy Reinstein, August 2010.</i></p>
 <p>
 The Menu Editor plugin allows you to rearrange the jEdit menu
 (File/Edit/Search...), shown at the top of each view. You can
@@ -30,6 +31,28 @@ right-arrow button, or simply drag them outside the list.
 To add actions to a menu, select the actions from the list on
 the right, and either click the left-arrow button or simply
 drag them to the list of menu items.
+</p>
+<p>
+The buttons at the bottom of the dialog:
+<ul>
+<li>Ok: Apply the changes made in this dialog and close the
+dialog.
+<li>Apply: Apply the changes made in this dialog, but keep
+the dialog open for making more changes.
+<li>Cancel: Discard the changes made in this dialog (since
+the last time you clicked Apply, if you did) and close the
+dialog.
+<li>Restore default: Restore the menus to their original
+contents (the way they are provided with jEdit, with no
+modifications), and keep the dialog open for making
+changes.
+</ul>
+</p>
+<p>
+The plugin stores the list of changes that were made to the
+menus, and re-applies them each time jEdit is started. This
+way, you don't miss changes made by future versions of
+jEdit (such as new menu items).
 </p>
 </body>
 </html>

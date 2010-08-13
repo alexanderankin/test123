@@ -1,4 +1,4 @@
-plugin.menuEditor.MenuEditorPlugin.activate=defer
+plugin.menuEditor.MenuEditorPlugin.activate=startup
 
 # general plugin information
 plugin.menuEditor.MenuEditorPlugin.name=Menu Editor
