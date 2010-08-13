@@ -180,10 +180,14 @@ public class MenuEditor extends JDialog
 			return submenu.substring(1);
 		return submenu;
 	}
+	private static String getProp(String propName)
+	{
+		return jEdit.getProperty(propName);
+	}
 
 	public MenuEditor(View view)
 	{
-		super(view, "Menu Editor");
+		super(view, getProp("menu-editor.dialog.title"));
 		JPanel contentPanel = new JPanel(new BorderLayout(5,5));
 		contentPanel.add(new JLabel(jEdit.getProperty("menu-editor.help")),
 			BorderLayout.NORTH);
@@ -194,7 +198,7 @@ public class MenuEditor extends JDialog
 		center.add(to, BorderLayout.EAST);
 		contentPanel.add(center, BorderLayout.CENTER);
 		JPanel bottom = new JPanel();
-		ok = new JButton("Ok");
+		ok = new JButton(getProp("menu-editor.ok"));
 		ok.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e)
 			{
@@ -202,21 +206,21 @@ public class MenuEditor extends JDialog
 				dispose();
 			}
 		});
-		apply = new JButton("Apply");
+		apply = new JButton(getProp("menu-editor.apply"));
 		apply.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e)
 			{
 				apply();
 			}
 		});
-		cancel = new JButton("Cancel");
+		cancel = new JButton(getProp("menu-editor.cancel"));
 		cancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e)
 			{
 				dispose();
 			}
 		});
-		restoreDefault = new JButton("Restore default");
+		restoreDefault = new JButton(getProp("menu-editor.restoreDefaults"));
 		restoreDefault.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e)
 			{
@@ -317,13 +321,14 @@ public class MenuEditor extends JDialog
 	{
 		JPanel p = new JPanel(new BorderLayout());
 		JPanel actionSetPanel = new JPanel();
-		actionSetPanel.add(new JLabel("Action set:"));
+		actionSetPanel.add(new JLabel(getProp("menu-editor.actionSet")));
 		actionSetModel = new DefaultComboBoxModel();
 		actionSet = new JComboBox(actionSetModel);
 		actionSetPanel.add(actionSet);
 		p.add(actionSetPanel, BorderLayout.NORTH);
 		JPanel actionPanel = new JPanel(new BorderLayout());
-		actionPanel.add(new JLabel("Available items:"), BorderLayout.NORTH);
+		actionPanel.add(new JLabel(getProp("menu-editor.actionSetItems")),
+			BorderLayout.NORTH);
 		allActionsModel = new DefaultListModel();
 		allActions = new JList(allActionsModel);
 		allActions.setDragEnabled(true);
@@ -396,10 +401,11 @@ public class MenuEditor extends JDialog
 		items.setTransferHandler(new ListTransferHandler());
 		JPanel p = new JPanel(new BorderLayout());
 		JPanel menuPanel = new JPanel();
-		menuPanel.add(new JLabel("menu:"));
+		menuPanel.add(new JLabel(getProp("menu-editor.menu")));
 		menuPanel.add(menu);
 		JPanel itemPanel = new JPanel(new BorderLayout());
-		itemPanel.add(new JLabel("Items:"), BorderLayout.NORTH);
+		itemPanel.add(new JLabel(getProp("menu-editor.items")),
+			BorderLayout.NORTH);
 		itemPanel.add(new JScrollPane(items), BorderLayout.CENTER);
 		JPanel movePanel = new JPanel(new GridLayout(0, 1));
 		movePanel.setLayout(new BoxLayout(movePanel, BoxLayout.Y_AXIS));

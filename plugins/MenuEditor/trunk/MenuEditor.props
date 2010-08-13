@@ -17,6 +17,15 @@ plugin.menuEditor.MenuEditorPlugin.menu=menu-editor
 # actions
 menu-editor.label=Menu Editor
 
-# messages
+# Strings
 menu-editor.help=To change menus, use the buttons or drag & drop.
-  
+menu-editor.dialog.title=Menu Editor
+menu-editor.ok=Ok
+menu-editor.apply=Apply
+menu-editor.cancel=Cancel
+menu-editor.restoreDefaults=Restore defaults
+menu-editor.actionSet=Action set:
+menu-editor.actionSetItems=Available items:
+menu-editor.menu=Menu:
+menu-editor.items=Items:
+
