@@ -224,8 +224,8 @@ public class Patch {
             Chunk c = chunks[ i ];
             if ( c.getOp() == 'a' ) {
                 // This will handle an "add" chunk
-                offset -= c.getTarget().length;
                 targetSrc = add( c.getFrom1(), c.getTarget(), targetSrc, offset );
+                offset -= c.getTarget().length;
                 log( "--- Applied an ADD Chunk: ---" );
                 log( c.getName() );
                 log( StringTools.arrayToString( targetSrc ) );
@@ -233,6 +233,7 @@ public class Patch {
             else if ( c.getOp() == 'c' ) {
                 // This will handle an "change" chunk
                 targetSrc = change( c.getFrom1(), c.getFrom2(), c.getTo1(), c.getTo2(), c.getTarget(), targetSrc, offset );
+                offset -= (c.getTo2() - c.getTo1()) - (c.getFrom2() - c.getFrom1());
                 log( "--- Applied an CHANGE Chunk: ---" );
                 log( c.getName() );
                 log( StringTools.arrayToString( targetSrc ) );
@@ -343,7 +344,7 @@ public class Patch {
             linesRemoved = toLine - ( fromLine - 1 );
         int linesInserted = 1; // = 1?
         if ( to2 > 0 ) {
-            linesInserted = to2 - to1;
+            linesInserted = (to2 - to1) + 1;
         }
         log( "--- change() - Ajusting i by: " + ( linesRemoved - linesInserted ) );
         i = i + ( linesRemoved - linesInserted );
