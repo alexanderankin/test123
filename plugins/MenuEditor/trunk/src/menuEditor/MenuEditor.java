@@ -320,11 +320,14 @@ public class MenuEditor extends JDialog
 	private JPanel createActionPanel()
 	{
 		JPanel p = new JPanel(new BorderLayout());
-		JPanel actionSetPanel = new JPanel();
-		actionSetPanel.add(new JLabel(getProp("menu-editor.actionSet")));
+		JPanel actionSetPanel = new JPanel(new BorderLayout());
+		actionSetPanel.add(new JLabel(getProp("menu-editor.actionSet")),
+			BorderLayout.WEST);
 		actionSetModel = new DefaultComboBoxModel();
 		actionSet = new JComboBox(actionSetModel);
-		actionSetPanel.add(actionSet);
+		JPanel actionSetComboPanel = new JPanel(new BorderLayout());
+		actionSetComboPanel.add(actionSet, BorderLayout.WEST);
+		actionSetPanel.add(actionSetComboPanel, BorderLayout.CENTER);
 		p.add(actionSetPanel, BorderLayout.NORTH);
 		JPanel actionPanel = new JPanel(new BorderLayout());
 		actionPanel.add(new JLabel(getProp("menu-editor.actionSetItems")),
@@ -400,9 +403,12 @@ public class MenuEditor extends JDialog
 		items.setDropMode(DropMode.INSERT);
 		items.setTransferHandler(new ListTransferHandler());
 		JPanel p = new JPanel(new BorderLayout());
-		JPanel menuPanel = new JPanel();
-		menuPanel.add(new JLabel(getProp("menu-editor.menu")));
-		menuPanel.add(menu);
+		JPanel menuPanel = new JPanel(new BorderLayout());
+		menuPanel.add(new JLabel(getProp("menu-editor.menu")),
+			BorderLayout.WEST);
+		JPanel menuComboPanel = new JPanel(new BorderLayout());
+		menuComboPanel.add(menu, BorderLayout.WEST);
+		menuPanel.add(menuComboPanel, BorderLayout.CENTER);
 		JPanel itemPanel = new JPanel(new BorderLayout());
 		itemPanel.add(new JLabel(getProp("menu-editor.items")),
 			BorderLayout.NORTH);
