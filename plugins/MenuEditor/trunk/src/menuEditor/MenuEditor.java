@@ -50,6 +50,7 @@ public class MenuEditor extends JDialog
 	private JComboBox menu, actionSet;
 	private JList items, allActions;
 	private RolloverButton add, remove, up, down;
+	private JButton separator; 
 	private JButton ok, apply, cancel, restoreDefault;
 	private DefaultComboBoxModel menuModel, actionSetModel;
 	private DefaultListModel itemModel, allActionsModel;
@@ -317,6 +318,13 @@ public class MenuEditor extends JDialog
 		for (int i = selected.length - 1; i >= 0; i--)
 			itemModel.remove(selected[i]);
 	}
+	private void appendSeparator()
+	{
+		itemModel.addElement(new MenuElement(menuSeparator));
+		int index = itemModel.getSize() - 1;
+		items.setSelectedIndices(new int[]{index});
+		items.ensureIndexIsVisible(index);
+	}
 	private JPanel createActionPanel()
 	{
 		JPanel p = new JPanel(new BorderLayout());
@@ -420,6 +428,7 @@ public class MenuEditor extends JDialog
 		remove = new RolloverButton(GUIUtilities.loadIcon("ArrowR.png"));
 		up = new RolloverButton(GUIUtilities.loadIcon("ArrowU.png"));
 		down = new RolloverButton(GUIUtilities.loadIcon("ArrowD.png"));
+		separator = new JButton("Separator");
 		add.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e)
 			{
@@ -444,10 +453,17 @@ public class MenuEditor extends JDialog
 				moveSelected(false);
 			}
 		});
+		separator.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e)
+			{
+				appendSeparator();
+			}
+		});
 		movePanel.add(add);
 		movePanel.add(remove);
 		movePanel.add(up);
 		movePanel.add(down);
+		movePanel.add(separator);
 		p.add(menuPanel, BorderLayout.NORTH);
 		p.add(itemPanel, BorderLayout.CENTER);
 		menu.addItemListener(new ItemListener() {
