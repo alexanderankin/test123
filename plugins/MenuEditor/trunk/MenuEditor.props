@@ -12,7 +12,7 @@ plugin.menuEditor.MenuEditorPlugin.depend.2=plugin jdiff.JDiffPlugin 3.1.0
 
 plugin.menuEditor.MenuEditorPlugin.docs=description.html
 
-plugin.menuEditor.MenuEditorPlugin.menu=menu-editor
+plugin.menuEditor.MenuEditorPlugin.menu-item=menu-editor
 
 # actions
 menu-editor.label=Menu Editor
