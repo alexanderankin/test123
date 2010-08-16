@@ -21,14 +21,16 @@ local Eclipse installation.  This should be changed per installation.
 3. deleteLargeIcons.bsh:
 
 This macro deletes all icons from the src/icons directory that have a dimension 
-larger than 16 pixels.
+larger than 16 pixels.  Run this from jEdit by choosing it from Macros - 
+Run Other Macro...
 
 
 4. createImageHtml.bsh:
 
-This macro creates an html page named "icons.html" of all the Eclipse icons
+This macro creates an html page named "icons.html" to display all the Eclipse icons
 found in the src/icons folder and puts the "icons.html" file into the docs
-folder.  This macro replaces any previously existing "icons.html" file.
+folder.  This macro replaces any previously existing "icons.html" file.  Run
+this from jEdit by choosing it from Macros - Run Other Macro...
 
 
 5. build.xml:
