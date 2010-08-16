@@ -8,6 +8,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -23,6 +25,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 
 import javax.swing.*;
+import javax.swing.TransferHandler.TransferSupport;
 
 import jdiff.util.Diff;
 import jdiff.util.DiffNormalOutput;
@@ -59,6 +62,8 @@ public class MenuEditor extends JDialog
 		new HashMap<String, ArrayList<MenuElement>>();
 	private boolean itemListInitialized = false;
 	private static File home;
+	private DataFlavor flavor = new DataFlavor(
+		this.getClass(), "MenuElementFlavor");  
 
 	public static void start()
 	{
@@ -459,6 +464,8 @@ public class MenuEditor extends JDialog
 				appendSeparator();
 			}
 		});
+		separator.setTransferHandler(new SeparatorTransferHandler());
+		separator.addMouseListener(new SeparatorMouseListener());
 		movePanel.add(add);
 		movePanel.add(remove);
 		movePanel.add(up);
@@ -620,31 +627,30 @@ public class MenuEditor extends JDialog
 			return copy;
 		}
 	}
+	public class MenuElementTransferable implements Transferable
+	{
+		ArrayList<MenuElement> elements = new ArrayList<MenuElement>();
+		public DataFlavor[] getTransferDataFlavors()
+		{
+			return new DataFlavor[]{ flavor };
+		}
+		public boolean isDataFlavorSupported(DataFlavor flavor)
+		{
+			return (MenuEditor.this.flavor == flavor);
+		}
+		public Object getTransferData(DataFlavor flavor)
+				throws UnsupportedFlavorException, IOException
+		{
+			return elements;
+		}
+		public void add(Object elem)
+		{
+			elements.add((MenuElement) elem);
+		}
+	}
+
 	public class ListTransferHandler extends TransferHandler
 	{
-		public class MenuElementTransferable implements Transferable
-		{
-			ArrayList<MenuElement> elements = new ArrayList<MenuElement>();
-			public DataFlavor[] getTransferDataFlavors()
-			{
-				return new DataFlavor[]{ flavor };
-			}
-			public boolean isDataFlavorSupported(DataFlavor flavor)
-			{
-				return (ListTransferHandler.this.flavor == flavor);
-			}
-			public Object getTransferData(DataFlavor flavor)
-					throws UnsupportedFlavorException, IOException
-			{
-				return elements;
-			}
-			public void add(Object elem)
-			{
-				elements.add((MenuElement) elem);
-			}
-		}
-
-		DataFlavor flavor = new DataFlavor(this.getClass(), "MenuElementFlavor");  
 		int [] indices;
 
 		@Override
@@ -710,6 +716,39 @@ public class MenuEditor extends JDialog
 			Arrays.sort(indices);
 			for (int i = indices.length - 1; i >= 0; i--)
 				itemModel.remove(indices[i]);
+		}
+	}
+	private class SeparatorTransferHandler extends TransferHandler
+	{
+		@Override
+		public boolean canImport(TransferSupport support)
+		{
+			return false;
+		}
+
+		@Override
+		public int getSourceActions(JComponent c)
+		{
+			return TransferHandler.COPY;
+		}
+
+		@Override
+		protected Transferable createTransferable(JComponent c)
+		{
+			MenuElementTransferable t = new MenuElementTransferable();
+			t.add(new MenuElement(menuSeparator));
+			return t;
+		}
+		
+	}
+	private class SeparatorMouseListener extends MouseAdapter
+	{
+		@Override
+		public void mousePressed(MouseEvent e)
+		{
+			JComponent c = (JComponent) e.getSource();
+			TransferHandler handler = c.getTransferHandler();
+			handler.exportAsDrag(c, e, TransferHandler.COPY);
 		}
 	}
 }
