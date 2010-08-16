@@ -1,0 +1,36 @@
+README
+
+To build from svn checkout, just run the build.xml file with Ant.
+
+To build from scratch, run these in order:
+
+1. imageCopy.xml:
+
+The imageCopy file is an Ant build file.  It copies all the Eclipse icons from
+a local Eclipse installation to the src/icons directory.  It copies all .png,
+.gif, and .jpg files without regard to size.  It will overwrite existing files.
+It does not delete any files.
+
+
+2. imageCopy.props:
+
+This property file is used by imageCopy.xml to determine the location of the
+local Eclipse installation.  This should be changed per installation.
+
+
+3. deleteLargeIcons.bsh:
+
+This macro deletes all icons from the src/icons directory that have a dimension 
+larger than 16 pixels.
+
+
+4. createImageHtml.bsh:
+
+This macro creates an html page named "icons.html" of all the Eclipse icons
+found in the src/icons folder and puts the "icons.html" file into the docs
+folder.  This macro replaces any previously existing "icons.html" file.
+
+
+5. build.xml:
+
+Creates and deploys the plugin.
