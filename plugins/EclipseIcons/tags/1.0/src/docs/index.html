@@ -1,0 +1,28 @@
+<html>
+<body>
+<h2>Eclipse Icons</h2>
+
+This plugin provides a set of icons from the Eclipse project for use in jEdit.
+<p>
+To use the icons in your code:
+<p>
+1. Include a dependency on this plugin in your plugin properties file.<br>
+2. In your code, add<br>
+<code>import eclipseicons.EclipseIconsPlugin;</code><br>
+then get an icon like this:<br>
+<br>
+<code>
+   ImageIcon icon = EclipseIconsPlugin.getIcon(filename);
+</code>
+<br>
+<br>
+where "filename" is the name of the file as shown on the <a href="icons.html">icons</a> page,
+e.g.<br>
+<code>
+   ImageIcon icon = EclipseIconsPlugion.getIcon("methpub_obj.gif");
+</code>
+<p>
+<a href="icons.html">Icons</a><br>
+<a href="epl-v10.html">License</a><br>
+</body>
+</html>
