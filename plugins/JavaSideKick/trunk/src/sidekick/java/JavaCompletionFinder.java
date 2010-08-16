@@ -10,6 +10,7 @@ import sidekick.java.util.*;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.syntax.*;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
 
 import sidekick.SideKickParsedData;
 
@@ -34,6 +35,8 @@ import sidekick.SideKickParsedData;
  * Code completion no longer works inside of comments
  * If a word-break character wasn't found, the completion could potentially mix
  * comments with tokens, which occasionally caused errors
+ *
+ * Valid tokens: NULL, OPERATOR, FUNCTION, DIGIT
  */
 public class JavaCompletionFinder {
 
@@ -54,7 +57,10 @@ public class JavaCompletionFinder {
         }
 
         if ( skpd == null ) {
-            return null;
+        	// QUESTION: Does this remove the dependency on the dockable for completion?
+        	skpd = (new sidekick.java.JavaParser()).parse();
+        	//GUIUtilities.error(editPane.getView(), "sidekick.java.msg.bufferNotParsed", null);
+            //return null;
         }
 
         SideKickParsedData.setParsedData( editPane.getView() , skpd );
@@ -63,6 +69,7 @@ public class JavaCompletionFinder {
             data = ( JavaSideKickParsedData ) skpd;
         }
         else {
+        	GUIUtilities.error(editPane.getView(), "sidekick.java.msg.bufferNotParsed", null);
             return null;
         }
 
@@ -102,7 +109,6 @@ public class JavaCompletionFinder {
             return "";
         }
         
-        // Ensure that 'start' is not in a comment
         DefaultTokenHandler handler = new DefaultTokenHandler();
         int lastLine = -1;
         for (int i = caret-1; i>=start; i--) {
@@ -116,9 +122,14 @@ public class JavaCompletionFinder {
         	if (offset == buffer.getLineText(line).length()) offset--;
         	if (offset < 0) continue;
         	Token t = TextUtilities.getTokenAtOffset(handler.getTokens(), offset);
-        	if (t.id == Token.COMMENT1 || t.id == Token.COMMENT2 || t.id == Token.COMMENT3 || t.id == Token.COMMENT4) {
+        	if (t.id != Token.NULL && t.id != Token.DIGIT && t.id != Token.FUNCTION && t.id != Token.OPERATOR) {
         		start = i+1;
         		break;
+        	}
+        	// Skip over parentheses
+        	if (buffer.getText(i, 1).equals(")")) {
+        		i = TextUtilities.findMatchingBracket(buffer, line, offset);
+        		continue;
         	}
         }
 
@@ -135,15 +146,17 @@ public class JavaCompletionFinder {
         word_break_chars += "!;{}";        // NOPMD
 
         // remove line enders and tabs
-        text = text.replaceAll( "[\\n\\r\\t]", "" );
+        text = text.replaceAll( "[\\n\\r\\t]", "" ).trim();
 
         // NOTE: Remove keywords such as "new" and "import" that need to act as word breaks
         // Keywords are saved as a comma-separated list in the jEdit property
         // sidekick.java.wordBreakWords
+        /*
         String[] wordBreakWords = jEdit.getProperty( "sidekick.java.wordBreakWords" ).split(",");
         for (int i = 0; i < wordBreakWords.length; i++) {
             text = text.replace(wordBreakWords[i] + " ", "");
         }
+        */
         
         // read the text backwards until a word break character is found
         // It is possible that there is no word break character
@@ -157,6 +170,7 @@ public class JavaCompletionFinder {
                 break;
             }
         }
+        org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG,this,"Word at cursor: "+text);
         return text;
     }
 
@@ -226,9 +240,37 @@ public class JavaCompletionFinder {
             return getPossibleNonQualifiedCompletions( word );
         }
     }
+    
+    public static ArrayList<String> tokenizeQual(String qualification) {
+    	/*
+    	Buffer temp = jEdit.openTemporary(jEdit.getActiveView(), System.getProperty("java.io.tmpdir"),
+        	"jeditQualifiedTokenizer", true);
+        	*/
+        JEditBuffer temp = new JEditBuffer();
+        temp.insert(0, qualification);
+        ArrayList<String> list = new ArrayList<String>();
+        int i = 0, j = 0;
+        while (true) {
+        	int dot = qualification.indexOf(".", j);
+        	int paren = qualification.indexOf("(", j);
+        	if (dot == -1) {
+        		list.add(qualification.substring(i));
+        		break;
+        	}
+        	if (paren != -1 && paren < dot) {
+        		j = TextUtilities.findMatchingBracket(temp, 0, paren);
+        		continue;
+        	}
+        	list.add(qualification.substring(i, dot));
+        	i = dot+1;
+        	j = i;
+        }
+        return list;
+    }
 
 
     private JavaCompletion getPossibleQualifiedCompletions( String word ) {
+    	System.out.println("Getting qualified completions on "+word);
         String qualification = word.substring( 0, word.lastIndexOf( '.' ) );
 
         // might have super.something
@@ -244,40 +286,60 @@ public class JavaCompletionFinder {
 
 		// Break it down into tokens to allow for completion off a return type
 		// e.g. sb.append("hello").append("world")
-        StringTokenizer tokenizer = new StringTokenizer( qualification , "." );
-        String qual = "", old_token = "";
         Class c = null;
         boolean static_only = false;
-        while (tokenizer.hasMoreTokens()) {
-            String token = old_token + tokenizer.nextToken();
-            qual += token;
-            // Check for nested parentheses
-            int p1 = -1, p2 = -1;
-            int p1count = 0, p2count = 0;
-            while ((p1 = qual.indexOf("(", p1 + 1)) != -1) {
-                p1count++;
-            }
-            while ((p2 = qual.indexOf(")", p2 + 1)) != -1) {
-                p2count++;
-            }
-            if (p1count != p2count) {
-                // We're in a nested parenthese, skip it
-                if (tokenizer.hasMoreTokens()) {
-                    old_token += token;
-                    qual += ".";
-                }
-                continue;
-            }
-            old_token = "";
+        
+        // Tokenize by qualifications
+        // We create a temporary buffer object to make use of the findMatchingBracket() method
+        // This lets us skip over argument parameters when breaking up the full qualification
+        // into segments
+        JEditBuffer temp = new JEditBuffer();
+        // The mode must be set in order to correctly skip literals and comments
+        temp.setMode("java");
+        temp.insert(0, qualification);
+        ArrayList<String> list = new ArrayList<String>();
+        int i = 0, j = 0;
+        while (true) {
+        	int dot = qualification.indexOf(".", j);
+        	int paren = qualification.indexOf("(", j);
+        	if (dot == -1) {
+        		list.add(qualification.substring(i));
+        		break;
+        	}
+        	if (paren != -1 && paren < dot) {
+        		j = TextUtilities.findMatchingBracket(temp, 0, paren);
+        		continue;
+        	}
+        	list.add(qualification.substring(i, dot));
+        	i = dot+1;
+        	j = i;
+        }
+        
+        // 'list' is a list of qualifications, separated by dots
+        // Iterate through the list, with each condition:
+        //
+        //  - If a class has not been determined yet, try to determine a starting class
+        //    (for example, System.out will start with the qualification 'System' which
+        //    resolves to the class java.lang.System; a variable will resolve to its
+        //    declared type; and if these fail, qualifications are joined together in order
+        //    to determine a type, such as in the case of a fully-qualified class name)
+        //
+        //  - If a class has been found, resolve the qualification's field, method, or class
+        //    and use the return type instead
+        String token = "";
+        
+        for (j = 0; j<list.size(); j++) {
             if (c == null) {
+            	if (j>0) token += ".";
+            	token += list.get(j);
                 // Class?
-                c = validateClassName(qual);
+                c = validateClassName(token);
                 if (c == null)
-                    c = getClassForType(qual, (CUNode) data.root.getUserObject());
+                    c = getClassForType(token, (CUNode) data.root.getUserObject());
                 static_only = (c != null);
                 if (c == null) {
                     // Field?
-                    FieldNode node = getLocalVariable(qual);
+                    FieldNode node = getLocalVariable(token);
                     if (node != null) {
                         c = getClassForType(node.getType(), (CUNode) data.root.getUserObject());
                         if (c == null)
@@ -286,10 +348,11 @@ public class JavaCompletionFinder {
                 }
             }
             else {
+            	token = list.get(j);
                 boolean found = false;
                 // Fields
                 Field[] fields = c.getFields();
-                for (int i = 0; i < fields.length; i++) {
+                for (i = 0; i < fields.length; i++) {
                     if (token.equals(fields[i].getName())) {
                         c = fields[i].getType();
                         found = true;
@@ -300,7 +363,7 @@ public class JavaCompletionFinder {
                 if (!found) {
                     // Methods
                     Method[] methods = c.getMethods();
-                    for (int i = 0; i < methods.length; i++) {
+                    for (i = 0; i < methods.length; i++) {
                         if (token.startsWith(methods[i].getName() + "(")) {
                             c = methods[i].getReturnType();
                             found = true;
@@ -311,7 +374,7 @@ public class JavaCompletionFinder {
                     if (!found) {
                         // Subclasses
                         Class[] classes = c.getClasses();
-                        for (int i = 0; i < classes.length; i++) {
+                        for (i = 0; i < classes.length; i++) {
                             if (token.equals(classes[i].getName())) {
                                 c = classes[i];
                                 found = true;
@@ -322,14 +385,12 @@ public class JavaCompletionFinder {
                     }
                 }
             }
-            if (tokenizer.hasMoreTokens())
-                qual += ".";
         }
         if (c == null) {
         	// Might be inside a method call, like: while (tokenizer.<COMPLETION>
         	int paren = qualification.lastIndexOf("(");
         	if (paren != -1) {
-        		String halfWord = qualification.substring(paren+1);
+        		String halfWord = qualification.substring(paren+1).trim();
         		// Class?
                 c = validateClassName(halfWord);
                 if (c == null)
@@ -393,8 +454,12 @@ public class JavaCompletionFinder {
 
     private JavaCompletion getPossibleNonQualifiedCompletions( String word ) {
     	org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, this, "Getting non-qualified completions");
+    	String classTest = new String(word);
+    	if (word.lastIndexOf("(") != -1) {
+    		classTest = word.substring(word.lastIndexOf("(")+1);
+    	}
     	ArrayList<String> pkgs = new ArrayList(
-        		Arrays.asList(Locator.getInstance().getClassName(word)));
+        		Arrays.asList(Locator.getInstance().getClassName(classTest)));
         if (pkgs != null && pkgs.size() > 0) {
         	if (jEdit.getBooleanProperty("sidekick.java.importPackage")) {
         		CUNode cu = (CUNode) data.root.getUserObject();
@@ -403,7 +468,7 @@ public class JavaCompletionFinder {
         			String packageName = ( String ) it.next();
         			if (packageName == null) continue;
         			// might have a fully qualified import
-        			if ( packageName.endsWith( "."+word ) ) {
+        			if ( packageName.endsWith( "."+classTest ) ) {
         				Class c = validateClassName( packageName );
         				if ( c != null ) {
         					pkgs.remove(packageName);
@@ -411,7 +476,7 @@ public class JavaCompletionFinder {
         			}
         			else {
         				// wildcard import, need to add . and type
-        				String className = packageName + "." + word;
+        				String className = packageName + "." + classTest;
         				Class c = validateClassName( className );
         				if ( c != null ) {
         					pkgs.remove(className);
@@ -419,12 +484,12 @@ public class JavaCompletionFinder {
         			}
         		}
         		if (pkgs.size() > 0) {
-        			return new JavaCompletion(editPane.getView(), word, pkgs);
+        			return new JavaCompletion(editPane.getView(), classTest, pkgs);
         		} else {
         			return null;
         		}
         	} else {
-				return new JavaCompletion(editPane.getView(), word, pkgs);
+				return new JavaCompletion(editPane.getView(), classTest, pkgs);
         	}
 		}
         // partialword

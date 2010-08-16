@@ -58,7 +58,7 @@ mode.properties.sidekick.parser=properties
 
 
 #--------------------------------
-# JBrowse properties
+# JavaSideKick properties
 #--------------------------------
 
 # Messages
@@ -71,6 +71,11 @@ sidekick.java.msg.wrongBuffer.message=\
 sidekick.java.msg.notAJavaBuffer.title=Not a java buffer
 sidekick.java.msg.notAJavaBuffer.message=\
     The current buffer [{0}] is not a java buffer.
+sidekick.java.msg.bufferNotParsed.title=Buffer Not Parsed
+sidekick.java.msg.bufferNotParsed.message=The parsed data for this view \
+	was not parsed by JavaSideKick.\nCheck to make sure that java \
+	is set as the parser for this mode,\nand that the buffer has been parsed \
+	in the SideKick dockable.
 
 # Option pane properties
 plugin.sidekick.java.JavaSideKickPlugin.option-group=sidekick.java.general \
@@ -174,7 +179,6 @@ options.sidekick.java.ambiguousClass.message=The class {0} is ambiguous. Use an 
 sidekick.java.showStatusBar=true
 sidekick.java.automaticParse=false
 sidekick.java.sort=false
-sidekick.java.wordBreakWords=new,import,private,public,protected,static,final
 sidekick.java.importPackage=false
 
 #member filters by type
