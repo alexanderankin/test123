@@ -1,0 +1,28 @@
+// This macro deletes any icons with a dimension larger than 16. It is assumed
+// that this macro is in the base folder for the EclipseIcon project and that
+// it is ran from there.
+deleteLargeIcons() {
+    File currentBsh = new File(getSourceFileInfo());
+    File currentDir = currentBsh.getParentFile();
+    File iconsDir = new File(currentDir, "/src/icons");
+    File[] dirs = iconsDir.listFiles();
+
+    for (File dir : dirs) {
+        File[] icons = dir.listFiles();
+        for (int i = 0; i < icons.length; i++) {
+            File icon = icons[i];
+            ImageIcon imageIcon = new ImageIcon(icon.getAbsolutePath());
+            if (imageIcon.getIconHeight() > 16 || imageIcon.getIconWidth() > 16) {
+                icon.delete();
+                continue;
+
+            }
+        }
+        icons = dir.listFiles();
+        if (icons.length == 0) {
+            dir.delete();   
+        }
+    }
+}
+
+deleteLargeIcons();
