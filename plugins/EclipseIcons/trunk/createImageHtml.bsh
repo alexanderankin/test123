@@ -22,13 +22,18 @@ createImageHtml() {
     File[] dirs = iconsDir.listFiles();
 
     // within the icons directory, the icons are in subfolders by name
+    int iconCount = 0;
     for (File dir : dirs) {
         StringBuilder section = new StringBuilder();
         File[] icons = dir.listFiles();
         Arrays.sort(icons);
         for (int i = 0; i < icons.length; i++) {
             File icon = icons[i];
+            if (icon.toString().indexOf(".svn") > 0) {
+                continue;   
+            }
             section.append("<tr><td><img src=\"../icons/").append(dir.getName()).append("/").append(icon.getName()).append("\"></img></td><td>").append(icon.getName()).append("</td></tr>\n");
+            ++iconCount;
         }
         if (section.length() > 0) {
             nav.append("<a href=\"#").append(dir.getName()).append("\">").append(dir.getName()).append("</a>&nbsp;");
@@ -40,8 +45,8 @@ createImageHtml() {
     }
     
     // finish the html
-    html.append("<h2>Eclipse Icons</h2>");
-    html.append("<a href=\"epl-v10.html\">License</a>\n<p>\n");
+    html.append("<h2>Eclipse Icons</h2><p>");
+    html.append(iconCount).append(" icons<p>\n");
     html.append(nav.toString());
     html.append(body.toString());
     html.append("</body></html>");
