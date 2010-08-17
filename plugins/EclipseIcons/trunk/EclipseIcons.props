@@ -3,7 +3,7 @@ plugin.eclipseicons.EclipseIconsPlugin.author=Dale Anson
 plugin.eclipseicons.EclipseIconsPlugin.version=1.0
 plugin.eclipseicons.EclipseIconsPlugin.docs=docs/index.html
 plugin.eclipseicons.EclipseIconsPlugin.activate=defer
-plugin.eclipseicons.EclipseIconsPlugin.depend.0=jdk 1.6
+plugin.eclipseicons.EclipseIconsPlugin.depend.0=jdk 1.5
 plugin.eclipseicons.EclipseIconsPlugin.depend.1=jedit 04.03.99.00
 plugin.eclipseicons.EclipseIconsPlugin.description=The EclipseIcons plugin provides the Eclipse icon set to jEdit.
 
