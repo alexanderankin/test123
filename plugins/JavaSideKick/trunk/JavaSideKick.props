@@ -20,6 +20,7 @@ plugin.sidekick.java.JavaSideKickPlugin.depend.2=plugin errorlist.ErrorListPlugi
 plugin.sidekick.java.JavaSideKickPlugin.depend.3=plugin sidekick.SideKickPlugin 0.9
 plugin.sidekick.java.JavaSideKickPlugin.depend.4=optional plugin projectviewer.ProjectPlugin 3.0.0
 plugin.sidekick.java.JavaSideKickPlugin.depend.5=optional plugin SuperAbbrevsPlugin 0.32
+plugin.sidekick.java.JavaSideKickPlugin.depend.6=plugin eclipseicons.EclipseIconsPlugin 1.0
 
 
 Tiger2.title=JavaSideKick
