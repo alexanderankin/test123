@@ -31,6 +31,7 @@ import javax.swing.event.*;
 import javax.swing.tree.*;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.GUIUtilities;
+import eclipseicons.EclipseIconsPlugin;
 
 import sidekick.java.options.*;
 
@@ -189,122 +190,123 @@ public class TigerLabeler {
 
         // Eclipse icons
         try {
-            E_CU_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/jcu_obj.png"));
+            E_CU_ICON = EclipseIconsPlugin.getIcon("jcu_obj.gif");
         }
         catch (Exception e) {     // NOPMD
         }
         try {
-            E_IMPORT_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/imp_obj.png"));
+            E_IMPORT_ICON = EclipseIconsPlugin.getIcon("imp_obj.gif");
         }
         catch (Exception e) {     // NOPMD
         }
         try {
-            E_INNER_CLASS_PUBLIC_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/innerclass_public_obj.png"));
+            E_INNER_CLASS_PUBLIC_ICON = EclipseIconsPlugin.getIcon("innerclass_public_obj.gif");
         }
         catch (Exception e) {     // NOPMD
         }
         try {
-            E_INNER_CLASS_PROTECTED_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/innerclass_protected_obj.png"));
+            E_INNER_CLASS_PROTECTED_ICON = EclipseIconsPlugin.getIcon("innerclass_protected_obj.gif");
         }
         catch (Exception e) {     // NOPMD
         }
         try {
-            E_INNER_CLASS_PRIVATE_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/innerclass_private_obj.png"));
+            E_INNER_CLASS_PRIVATE_ICON = EclipseIconsPlugin.getIcon("innerclass_private_obj.gif");
         }
         catch (Exception e) {     // NOPMD
         }
         try {
-            E_INNER_CLASS_DEFAULT_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/innerclass_default_obj.png"));
+            E_INNER_CLASS_DEFAULT_ICON = EclipseIconsPlugin.getIcon("innerclass_default_obj.gif");
         }
         catch (Exception e) {     // NOPMD
         }
         try {
-            E_CLASS_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/class_obj.png"));
+            E_CLASS_ICON = EclipseIconsPlugin.getIcon("class_obj.gif");
         }
         catch (Exception e) {     // NOPMD
         }
         try {
-            E_INTERFACE_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/int_obj.png"));
+            E_INTERFACE_ICON = EclipseIconsPlugin.getIcon("int_obj.gif");
         }
         catch (Exception e) {     // NOPMD
         }
         try {
-            E_METHOD_PUBLIC_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/methpub_obj.png"));
+            E_METHOD_PUBLIC_ICON = EclipseIconsPlugin.getIcon("methpub_obj.gif");
+        }
+        catch (Exception e) {     // NOPMD
+            e.printStackTrace();
+        }
+        try {
+            E_METHOD_PROTECTED_ICON = EclipseIconsPlugin.getIcon("methpro_obj.gif");
         }
         catch (Exception e) {     // NOPMD
         }
         try {
-            E_METHOD_PROTECTED_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/methpro_obj.png"));
+            E_METHOD_PRIVATE_ICON = EclipseIconsPlugin.getIcon("methpri_obj.gif");
         }
         catch (Exception e) {     // NOPMD
         }
         try {
-            E_METHOD_PRIVATE_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/methpri_obj.png"));
+            E_METHOD_DEFAULT_ICON = EclipseIconsPlugin.getIcon("methdef_obj.gif");
         }
         catch (Exception e) {     // NOPMD
         }
         try {
-            E_METHOD_DEFAULT_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/methdef_obj.png"));
+            E_CONSTRUCTOR_DEC_ICON = EclipseIconsPlugin.getIcon("constr_ovr.gif");
         }
         catch (Exception e) {     // NOPMD
         }
         try {
-            E_CONSTRUCTOR_DEC_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/constr_ovr.png"));
+            E_FIELD_PUBLIC_ICON = EclipseIconsPlugin.getIcon("field_public_obj.gif");
         }
         catch (Exception e) {     // NOPMD
         }
         try {
-            E_FIELD_PUBLIC_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/field_public_obj.png"));
+            E_FIELD_PROTECTED_ICON = EclipseIconsPlugin.getIcon("field_protected_obj.gif");
         }
         catch (Exception e) {     // NOPMD
         }
         try {
-            E_FIELD_PROTECTED_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/field_protected_obj.png"));
+            E_FIELD_PRIVATE_ICON = EclipseIconsPlugin.getIcon("field_private_obj.gif");
         }
         catch (Exception e) {     // NOPMD
         }
         try {
-            E_FIELD_PRIVATE_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/field_private_obj.png"));
+            E_FIELD_DEFAULT_ICON = EclipseIconsPlugin.getIcon("field_default_obj.gif");
         }
         catch (Exception e) {     // NOPMD
         }
         try {
-            E_FIELD_DEFAULT_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/field_default_obj.png"));
+            E_ENUM_PUBLIC_ICON = EclipseIconsPlugin.getIcon("enum_obj.gif");
         }
         catch (Exception e) {     // NOPMD
         }
         try {
-            E_ENUM_PUBLIC_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/enum_obj.png"));
+            E_ENUM_PROTECTED_ICON = EclipseIconsPlugin.getIcon("enum_protected_obj.gif");
         }
         catch (Exception e) {     // NOPMD
         }
         try {
-            E_ENUM_PROTECTED_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/enum_protected_obj.png"));
+            E_ENUM_PRIVATE_ICON = EclipseIconsPlugin.getIcon("enum_private_obj.gif");
         }
         catch (Exception e) {     // NOPMD
         }
         try {
-            E_ENUM_PRIVATE_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/enum_private_obj.png"));
+            E_ENUM_DEFAULT_ICON = EclipseIconsPlugin.getIcon("enum_default_obj.gif");
         }
         catch (Exception e) {     // NOPMD
         }
         try {
-            E_ENUM_DEFAULT_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/enum_default_obj.png"));
+            E_ABSTRACT_DEC_ICON = EclipseIconsPlugin.getIcon("abstract_co.gif");
         }
         catch (Exception e) {     // NOPMD
         }
         try {
-            E_ABSTRACT_DEC_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/abstract_co.png"));
+            E_STATIC_DEC_ICON = EclipseIconsPlugin.getIcon("static_co.png");
         }
         catch (Exception e) {     // NOPMD
         }
         try {
-            E_STATIC_DEC_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/static_co.png"));
-        }
-        catch (Exception e) {     // NOPMD
-        }
-        try {
-            E_FINAL_DEC_ICON = new ImageIcon(TigerLabeler.class.getClassLoader().getResource("sidekick/java/icons/eclipse/final_co.png"));
+            E_FINAL_DEC_ICON = EclipseIconsPlugin.getIcon("final_co.gif");
         }
         catch (Exception e) {     // NOPMD
         }

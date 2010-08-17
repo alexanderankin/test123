@@ -1,5 +1,6 @@
 package sidekick.java.node;
 
+import java.awt.image.BufferedImage;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Graphics;
@@ -49,7 +50,7 @@ public class IconBlender {
 
         // dumbness checks
         if (observer == null) {
-            throw new NullPointerException("Component passed to IconBlender may not be null.");
+            throw new IllegalArgumentException("Component passed to IconBlender may not be null.");
         }
         if (bottom == null && top == null) {
             return null;
@@ -76,15 +77,14 @@ public class IconBlender {
         }
 
         // create a new image that is just big enough
-        Image newImage = observer.createImage( width, height );
+        // Use a BufferedImage so transparency is handled correctly.
+        BufferedImage newImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         if ( newImage == null ) {
             return null;
         }
 
         // draw the bottom image
         Graphics g = newImage.getGraphics();
-        g.setColor(java.awt.Color.WHITE);
-        g.fillRect(0, 0, width, height);
         switch(bottomLocation) {
             case SwingUtilities.NORTH_WEST:
                 g.drawImage( bottomImage, 0, 0, observer );
