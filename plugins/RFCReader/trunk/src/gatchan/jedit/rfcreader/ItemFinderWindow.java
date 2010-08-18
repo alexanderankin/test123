@@ -203,7 +203,12 @@ public class ItemFinderWindow<E> extends JFrame
 		private void updateList(String s)
 		{
 			itemFinder.updateList(s);
-			if (itemList.getModel().getSize() != 0)
+			int size = itemList.getModel().getSize();
+			if (size == 0)
+			{
+				itemList.clearSelection();
+			}
+			else
 			{
 				window.pack();
 				window.setVisible(true);
