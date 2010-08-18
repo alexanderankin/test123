@@ -4,7 +4,6 @@ package xml.parser;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
@@ -14,7 +13,6 @@ import java.util.StringTokenizer;
 import javax.swing.JPanel;
 import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.xml.XMLConstants;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
@@ -34,8 +32,10 @@ import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.ext.DefaultHandler2;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import sidekick.IAsset;
 import sidekick.SideKickParsedData;
 import xml.Resolver;
+import xml.AntXmlParsedData;
 import xml.XmlParsedData;
 import xml.XmlPlugin;
 import xml.SchemaMappingManager;
@@ -96,7 +96,7 @@ public class XercesParserImpl extends XmlParser
 		}
 
 		
-		XmlParsedData data = createXmlParsedData(buffer, false);
+		XmlParsedData data = createXmlParsedData(buffer.getName(), buffer.getMode().toString(), false);
 		
 		if(text.length() == 0)return data;
 		
@@ -265,6 +265,23 @@ public class XercesParserImpl extends XmlParser
 					schemaLoader.getSchemaURL());
 			}
 		}
+		
+		// danson, a hack(?) to switch the buffer mode to 'ant'.  The first line glob
+		// in the catalog file doesn't necessarily work for Ant files.  If the root
+		// node is "project" and the mode is "xml", switch to "ant" mode.  I checked
+		// through the current catalog file, and at the moment, Ant files are the 
+		// only xml files that need this sort of extra check, so I think this hack
+		// is pretty safe.
+		DefaultMutableTreeNode root = data.root;
+		IAsset rootAsset = (IAsset)root.getUserObject();
+		if ("project".equals(rootAsset.getName())) {
+		     buffer.setMode("ant");
+		     AntXmlParsedData pd = new AntXmlParsedData(buffer.getName(), false);
+		     pd.root = data.root;
+		     pd.tree = data.tree;
+		     pd.expansionModel = data.expansionModel;
+		     data = pd;
+		}
 
 		Collections.sort(data.ids,new IDDecl.Compare());
 		data.done(view);
@@ -276,9 +293,8 @@ public class XercesParserImpl extends XmlParser
 
 	//{{{ Private members
 	
-	private XmlParsedData createXmlParsedData(Buffer buffer, boolean html) {
-	    String filename = buffer.getName();
-        String dataClassName = jEdit.getProperty("xml.xmlparseddata." + buffer.getMode().toString());
+	private XmlParsedData createXmlParsedData(String filename, String modeName, boolean html) {
+        String dataClassName = jEdit.getProperty("xml.xmlparseddata." + modeName);
         if (dataClassName != null) {
             try {
                 Class dataClass = Class.forName(dataClassName);
