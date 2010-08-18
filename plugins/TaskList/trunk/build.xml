@@ -8,17 +8,6 @@
 	the JAR file.  Before running the 'dist' target, you will need to choose
 	whether to generate the documentation using one of these two targets:
 
-	- 'docs-xsltproc': Creates documentation using the xsltproc tool from
-	libxslt, available at http://xmlsoft.org/XSLT
-	- 'docs-xalan': Creates documentation using the Xalan XSLT processor,
-	available at http://xml.apache.org/
-
-	The default processor is xsltproc. You can change the processor to Xalan by
-	setting the docs-proc.target property to xalan. This can be done on the
-	command line by adding '-Ddocs-proc.target=xalan'. If you do not have any
-	documentation, you can remove the 'docs' target from the depends list for
-	the 'dist' target.
-
 	To use this template for building your own plugin, make these changes:
 
 	- Change 'name' property for the <project> to the name of your plugin
@@ -39,7 +28,6 @@
     <property file="${user.home}/build.properties"/>
 	
     <property name="jar.name" value="${ant.project.name}.jar"/>
-    <property name="docs-proc.target" value="xsltproc"/>
 	
     <property name="jedit.install.dir" value="../.."/>
     <property name="src.dir" value="."/>
@@ -65,12 +53,6 @@
 	
     <target name="init">
         <mkdir dir="${build.dir}"/>
-        <delete file="docbook-wrapper.xsl" />
-        <echo file="docbook-wrapper.xsl" message="&lt;xsl:stylesheet"/>
-        <echo file="docbook-wrapper.xsl" append="true" message=" xmlns:xsl='http://www.w3.org/1999/XSL/Transform'"/>
-        <echo file="docbook-wrapper.xsl" append="true" message=" xsl:version='1.0'&gt;"/>
-        <echo file="docbook-wrapper.xsl" append="true" message="&lt;xsl:import href='${docbook.xsl}/html/docbook.xsl'/&gt;"/>
-        <echo file="docbook-wrapper.xsl" append="true" message="&lt;/xsl:stylesheet&gt;"/>
     </target>
 	
     <target name="compile" depends="init">
@@ -89,7 +71,7 @@
     <!--
     <target name="dist" depends="clean,compile">
     -->
-    <target name="dist" depends="clean, compile, docs">
+    <target name="dist" depends="clean, compile">
         <mkdir dir="${install.dir}"/>
         <jar jarfile="${install.dir}/${jar.name}">
             <fileset dir="${build.dir}"/>
@@ -113,35 +95,8 @@
         <reloadPlugin jarfile="${install.dir}/${jar.name}"/>
     </target>
 	
-    <target name="docs" depends="init">
-        <antcall target="docs-${docs-proc.target}"/>
-    </target>
-
-	<!-- Generate docs with xsltproc tool -->
-    <target name="docs-xsltproc" description="Generate user documentation in html format with xsltproc">
-        <exec executable="${xsltproc.executable}">
-            <arg value="--output" />
-            <arg value="index.html" />
-            <arg value="--catalogs" />
-            <arg value="users-guide.xsl" />
-            <arg value="users-guide.xml" />
-            <env key="SGML_CATALOG_FILES"
-                 file="${docbook.catalog}" />
-        </exec>
-    </target>
-
-	<!-- Generate docs with Xalan tool from xml.apache.org -->
-    <target name="docs-xalan">
-        <style style="users-guide.xsl" in="users-guide.xml"/>
-    </target>
-	
     <target name="clean">
         <delete dir="${build.dir}"/>
-        <delete file="docbook-wrapper.xsl"/>
-        <delete>
-            <fileset dir="." includes="**/*~" defaultexcludes="no"/>
-            <fileset dir="." includes="**/*.html" excludes="description.html" defaultexcludes="no"/>
-        </delete>
     </target>
 	
     <target name="tags">
