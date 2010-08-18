@@ -62,7 +62,7 @@ public class XmlParsedData extends SideKickParsedData
 	public static final int SORT_BY_TYPE = 2;
 	
 	private static int sortBy = SORT_BY_LINE;
-	private static boolean sortDown = true;
+	protected static boolean sortDown = true;
 	
 	public boolean html;
 	
@@ -733,7 +733,7 @@ public class XmlParsedData extends SideKickParsedData
 		while(en.hasMoreElements()) {
 			children.add((DefaultMutableTreeNode)en.nextElement());   
 		}
-		Collections.sort(children, sorter);
+		Collections.sort(children, getSorter());
 		node.removeAllChildren();
 		for (DefaultMutableTreeNode child : children) {
 			node.add(child);
@@ -742,35 +742,37 @@ public class XmlParsedData extends SideKickParsedData
 	}
 	//}}
 
-	private Comparator<DefaultMutableTreeNode> sorter = new Comparator<DefaultMutableTreeNode>() {
-		public int compare(DefaultMutableTreeNode tna, DefaultMutableTreeNode tnb) {
-		    int sortBy = getSortBy();
-		    switch (sortBy) {                // NOPMD, no breaks are necessary here
-			case SORT_BY_LINE:
-			    Integer my_line = new Integer(((XmlTag)tna.getUserObject()).getStart().getOffset());
-			    Integer other_line = new Integer(((XmlTag)tnb.getUserObject()).getStart().getOffset());
-			    return my_line.compareTo(other_line) * (sortDown ? 1 : -1);
-			case SORT_BY_TYPE:
-			    String my_on = ((XmlTag)tna.getUserObject()).getName();
-			    String other_on = ((XmlTag)tnb.getUserObject()).getName();
-			    int comp = my_on.compareTo(other_on) * (sortDown ? 1 : -1);
-			    return comp == 0 ? compareNames(tna, tnb) : comp;
-			case SORT_BY_NAME:
-			default:
-			    return compareNames(tna, tnb);
-		    }
-		}
-		
-		private int compareNames(DefaultMutableTreeNode tna, DefaultMutableTreeNode tnb) {
-		    // sort by name
-		    String my_name = ((XmlTag)tna.getUserObject()).getLongString();
-		    String other_name = ((XmlTag)tnb.getUserObject()).getLongString();
-		    return my_name.compareTo(other_name) * (sortDown ? 1 : -1);
-		}
-	} ;
+	protected Comparator<DefaultMutableTreeNode> getSorter() {
+		return new Comparator<DefaultMutableTreeNode>() {
+			public int compare(DefaultMutableTreeNode tna, DefaultMutableTreeNode tnb) {
+			    int sortBy = getSortBy();
+			    switch (sortBy) {                // NOPMD, no breaks are necessary here
+				case SORT_BY_LINE:
+				    Integer my_line = new Integer(((XmlTag)tna.getUserObject()).getStart().getOffset());
+				    Integer other_line = new Integer(((XmlTag)tnb.getUserObject()).getStart().getOffset());
+				    return my_line.compareTo(other_line) * (sortDown ? 1 : -1);
+				case SORT_BY_TYPE:
+				    String my_on = ((XmlTag)tna.getUserObject()).getName();
+				    String other_on = ((XmlTag)tnb.getUserObject()).getName();
+				    int comp = my_on.compareTo(other_on) * (sortDown ? 1 : -1);
+				    return comp == 0 ? compareNames(tna, tnb) : comp;
+				case SORT_BY_NAME:
+				default:
+				    return compareNames(tna, tnb);
+			    }
+			}
+			
+			private int compareNames(DefaultMutableTreeNode tna, DefaultMutableTreeNode tnb) {
+			    // sort by name
+			    String my_name = ((XmlTag)tna.getUserObject()).getLongString();
+			    String other_name = ((XmlTag)tnb.getUserObject()).getLongString();
+			    return my_name.compareTo(other_name) * (sortDown ? 1 : -1);
+			}
+		} ;
+	}
 	
 	//{{{ createExpansionModel() method
-	private ExpansionModel createExpansionModel() {
+	protected ExpansionModel createExpansionModel() {
 		ExpansionModel em = new ExpansionModel();
 		em.add();   // root (filename node)
 		em.add();   // document node
