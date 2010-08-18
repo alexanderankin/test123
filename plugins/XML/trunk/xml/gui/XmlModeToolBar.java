@@ -11,6 +11,7 @@ import org.gjt.sp.jedit.View;
 import xml.XmlParsedData;
 
 import sidekick.SideKickParsedData;
+import eclipseicons.EclipseIconsPlugin;
 
 /**
  * This is a toolbar to be added to SideKick. It provides the ability to sort
@@ -22,8 +23,8 @@ public class XmlModeToolBar extends JPanel {
     private JButton direction;
     private View view = null;
 
-    private static ImageIcon upIcon = new ImageIcon(XmlModeToolBar.class.getResource("/icons/up.gif"));    
-    private static ImageIcon downIcon = new ImageIcon(XmlModeToolBar.class.getResource("/icons/down.gif"));    
+    private static ImageIcon upIcon = EclipseIconsPlugin.getIcon("up.gif");    
+    private static ImageIcon downIcon = EclipseIconsPlugin.getIcon("down.gif");    
     private boolean down = true;
 
     public XmlModeToolBar(View view) {

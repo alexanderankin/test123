@@ -5,13 +5,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.*;
 
-import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 
 import xml.TldXmlParsedData;
 
 import sidekick.SideKickParsedData;
+import eclipseicons.EclipseIconsPlugin;
 
 /**
  * This is a toolbar to be added to SideKick. It provides the ability to sort
@@ -23,8 +23,8 @@ public class TldModeToolBar extends JPanel {
     private JButton direction;
     private View view = null;
 
-    private static ImageIcon upIcon = new ImageIcon(TldModeToolBar.class.getResource("/icons/up.gif"));    
-    private static ImageIcon downIcon = new ImageIcon(TldModeToolBar.class.getResource("/icons/down.gif"));    
+    private static ImageIcon upIcon = EclipseIconsPlugin.getIcon("up.gif");    
+    private static ImageIcon downIcon = EclipseIconsPlugin.getIcon("down.gif");    
     private boolean down = true;
 
     public TldModeToolBar(View view) {

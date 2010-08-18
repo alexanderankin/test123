@@ -5,17 +5,11 @@ import javax.swing.ImageIcon;
 import javax.swing.text.Position;
 import org.xml.sax.Attributes;
 
+import eclipseicons.EclipseIconsPlugin;
+
 // A marker class for nodes in a TLD file.
 public class TldXmlTag extends XmlTag {
 
-    // icons for the main children of <taglib>
-    public static final ImageIcon TAG_ICON = new ImageIcon(TldXmlTag.class.getResource("/icons/T.png"));
-    public static final ImageIcon FUNCTION_ICON = new ImageIcon(TldXmlTag.class.getResource("/icons/F.png"));
-    public static final ImageIcon LISTENER_ICON = new ImageIcon(TldXmlTag.class.getResource("/icons/L.png"));
-    public static final ImageIcon EXTENSION_ICON = new ImageIcon(TldXmlTag.class.getResource("/icons/E.png"));
-    public static final ImageIcon VALIDATOR_ICON = new ImageIcon(TldXmlTag.class.getResource("/icons/V.png"));
-    public static final ImageIcon TAGFILE_ICON = new ImageIcon(TldXmlTag.class.getResource("/icons/tf.png"));
-    
     private String originalName;
 
     public TldXmlTag(String name, String namespace, Position start, Attributes attributes) {
@@ -33,26 +27,25 @@ public class TldXmlTag extends XmlTag {
 
     public Icon getIcon() {
         if ("tag".equals(originalName)) {
-            return TAG_ICON;
+            return EclipseIconsPlugin.getIcon("tag-html.gif"); 
         }
         if ("function".equals(originalName)) {
-            return FUNCTION_ICON;   
-        }
-        if ("listener".equals(originalName)) {
-            return LISTENER_ICON; 
-        }
-        if ("validator".equals(originalName)) {
-            return VALIDATOR_ICON;
+            return EclipseIconsPlugin.getIcon("methpub_obj.gif");
         }
         if ("tag-file".equals(originalName)) {
-            return TAGFILE_ICON;   
+            return EclipseIconsPlugin.getIcon("file_obj.gif");   
+        }
+        if ("listener".equals(originalName)) {
+            return EclipseIconsPlugin.getIcon("activity.gif");
+        }
+        if ("validator".equals(originalName)) {
+            return EclipseIconsPlugin.getIcon("complete_task.gif");
         }
         if ("tag-extension".equals(originalName)) {
-            return EXTENSION_ICON;   
+            return EclipseIconsPlugin.getIcon("tag_generic_emphasized_obj.gif");
         }
-        return super.getIcon();
+        return EclipseIconsPlugin.getIcon("tag.gif");
     }
-
 
     public boolean canAddCharacters() {
         return "name".equals(name);
