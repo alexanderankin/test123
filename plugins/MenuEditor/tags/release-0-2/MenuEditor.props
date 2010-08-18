@@ -1,0 +1,31 @@
+plugin.menuEditor.MenuEditorPlugin.activate=startup
+
+# general plugin information
+plugin.menuEditor.MenuEditorPlugin.name=Menu Editor
+plugin.menuEditor.MenuEditorPlugin.author=Shlomy Reinstein
+plugin.menuEditor.MenuEditorPlugin.version=0.2
+plugin.menuEditor.MenuEditorPlugin.description=Allow editing of jEdit menus
+
+plugin.menuEditor.MenuEditorPlugin.depend.0=jdk 1.6
+plugin.menuEditor.MenuEditorPlugin.depend.1=jedit 04.04.01.00
+plugin.menuEditor.MenuEditorPlugin.depend.2=plugin jdiff.JDiffPlugin 3.1.0
+
+plugin.menuEditor.MenuEditorPlugin.docs=description.html
+
+plugin.menuEditor.MenuEditorPlugin.menu-item=menu-editor
+
+# actions
+menu-editor.label=Menu Editor
+
+# Strings
+menu-editor.help=To change menus, use the buttons or drag & drop.
+menu-editor.dialog.title=Menu Editor
+menu-editor.ok=Ok
+menu-editor.apply=Apply
+menu-editor.cancel=Cancel
+menu-editor.restoreDefaults=Restore defaults
+menu-editor.actionSet=Action set:
+menu-editor.actionSetItems=Available items:
+menu-editor.menu=Menu:
+menu-editor.items=Items:
+
