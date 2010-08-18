@@ -951,7 +951,13 @@ Chapter 22 of <emphasis>DocBook XSL: The Complete Guide</emphasis> by Bob Stayto
         jsp tags do not have attributes for the 'tag' and 'function' elements.  The name of the tag or function
         is contained in a child element named 'name', so this change renames the nodes visible in the SideKick tree
         to show the original element name plus the value of the child element, so 'tag' becomes 'tag: somename', 
-        which makes this SideKick much more useful for this kind of file.
+        which makes this SideKick much more useful for this kind of file. (Dale Anson)
+      </para></listitem>
+      <listitem><para>
+        Added a dependency on the new EclipseIconsPlugin.  These icons are used when displaying Ant and TLD files.
+      </para></listitem>
+      <listitem><para>
+        Added a "hack" to better identify Ant build files.  
       </para></listitem>
      </itemizedlist>
  </listitem>
