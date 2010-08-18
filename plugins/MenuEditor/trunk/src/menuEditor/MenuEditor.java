@@ -25,7 +25,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 
 import javax.swing.*;
-import javax.swing.TransferHandler.TransferSupport;
 
 import jdiff.util.Diff;
 import jdiff.util.DiffNormalOutput;
@@ -723,7 +722,16 @@ public class MenuEditor extends JDialog
 		@Override
 		public boolean canImport(TransferSupport support)
 		{
-			return false;
+			return true;
+		}
+
+		@Override
+		public boolean importData(TransferSupport support)
+		{
+			if (! support.isDrop())
+				return false;
+			appendSeparator();
+			return true;
 		}
 
 		@Override
