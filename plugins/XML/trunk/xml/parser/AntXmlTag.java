@@ -3,17 +3,15 @@ package xml.parser;
 
 import java.util.*;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 
 import javax.swing.text.Position;
 import org.xml.sax.Attributes;
 
+import eclipseicons.EclipseIconsPlugin;
+
 public class AntXmlTag extends XmlTag {
 
-    public static final ImageIcon TARGET_ICON = new ImageIcon(AntXmlTag.class.getResource("/icons/T.png"));
-    public static final ImageIcon PROPERTY_ICON = new ImageIcon(AntXmlTag.class.getResource("/icons/P.png"));
-    public static final ImageIcon SELECTOR_ICON = new ImageIcon(AntXmlTag.class.getResource("/icons/S.png"));
-    public static final ImageIcon IMPORT_ICON = new ImageIcon(AntXmlTag.class.getResource("/icons/I.png"));
+    // TODO: figure out which is the default target and use the target_default.png icon.
 
     String originalName = null;
 
@@ -69,19 +67,25 @@ public class AntXmlTag extends XmlTag {
     }
     
     public Icon getIcon() {
+        if ("project".equals(originalName)) {
+            return EclipseIconsPlugin.getIcon("ant.gif"); 
+        }
         if ("target".equals(originalName)) {
-            return TARGET_ICON;
+            return EclipseIconsPlugin.getIcon("targetpublic_obj.gif");
         }
         if ("property".equals(originalName)) {
-            return PROPERTY_ICON;   
-        }
-        if ("selector".equals(originalName)) {
-            return SELECTOR_ICON; 
+            return EclipseIconsPlugin.getIcon("ant_property.png");   
         }
         if ("import".equals(originalName)) {
-            return IMPORT_ICON;
+            return EclipseIconsPlugin.getIcon("ant_import.png");
         }
-        return super.getIcon();
+        if ("macrodef".equals(originalName)) {
+            return EclipseIconsPlugin.getIcon("ant_macrodef.png");
+        }
+        if ("taskdef".equals(originalName)) {
+            return EclipseIconsPlugin.getIcon("ant_taskdef.png");
+        }
+        return EclipseIconsPlugin.getIcon("ant_task.png");
     }
     
 }

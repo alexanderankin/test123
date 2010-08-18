@@ -99,6 +99,7 @@
         <pathelement location="${jedit.plugins.dir}/xercesImpl.jar"/>
         <pathelement location="${jedit.plugins.dir}/CommonControls.jar"/>
         <pathelement location="${jedit.plugins.dir}/kappalayout.jar"/>
+        <pathelement location="${jedit.plugins.dir}/EclipseIcons.jar"/>
         <pathelement location="."/>
     </path>
 

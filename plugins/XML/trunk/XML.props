@@ -13,6 +13,7 @@ plugin.xml.XmlPlugin.depend.3=plugin errorlist.ErrorListPlugin 1.9
 plugin.xml.XmlPlugin.depend.4=plugin sidekick.SideKickPlugin 0.9
 plugin.xml.XmlPlugin.depend.5=plugin beauty.BeautyPlugin 0.3.0
 plugin.xml.XmlPlugin.depend.6=plugin CommonControlsPlugin 1.1
+plugin.xml.XmlPlugin.depend.7=plugin eclipseicons.EclipseIconsPlugin 1.0
 
 plugin.xml.XmlPlugin.jars=jing.jar relaxngDatatype.jar trang.jar
 
