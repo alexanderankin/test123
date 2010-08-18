@@ -274,6 +274,7 @@ class TaskTypeDialog extends EnhancedDialog {
         label.setBorder( new EmptyBorder( 0, 0, 0, 12 ) );
         panel.add( label );
         panel.add( name = new JTextField( taskType.getName() ) );
+        name.setEditable(false);
 
         // sample
         label = new JLabel( jEdit.getProperty(
@@ -384,14 +385,6 @@ class TaskTypeDialog extends EnhancedDialog {
         _pattern = pattern.getText();
         _sample = sample.getText();
 
-        // make sure fields are all field out
-        if ( _name.length() == 0
-                || _pattern.length() == 0
-                || _sample.length() == 0 ) {
-            GUIUtilities.error( JOptionPane.getFrameForComponent( this ),
-                    "task.not-filled-out", null );
-            return ;
-        }
 
         Pattern re = null;
 
@@ -413,6 +406,19 @@ class TaskTypeDialog extends EnhancedDialog {
                     "task.sample-doesnt-match", null );
             return ;
         }
+        
+        _name = match.group(1);
+        name.setText(_name);
+
+        // make sure fields are all field out
+        if ( _name.length() == 0
+                || _pattern.length() == 0
+                || _sample.length() == 0 ) {
+            GUIUtilities.error( JOptionPane.getFrameForComponent( this ),
+                    "task.not-filled-out", null );
+            return ;
+        }
+
 
         taskType.setName( _name );
         taskType.setPattern( _pattern );
