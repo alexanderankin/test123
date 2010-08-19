@@ -2367,7 +2367,7 @@ Variable Variable():
 //}}}
 
 //{{{ Var()
-Variable Var() :
+Variable Var():
 {
 	Variable variable;
 	final Token token, token2;
@@ -4481,74 +4481,97 @@ StringLiteral evaluableString():
 	(
 		<DOLLARS>
 		(
-			<LBRACE1>
-			(
-				try
-				{
-					expr = Expression()
-					{
-						if (expr instanceof ConstantIdentifier)
-						{
-							expr = new Variable(expr.toString(),
-								expr.getSourceStart(),
-								expr.getSourceEnd(),
-								expr.getBeginLine(),
-								expr.getEndLine(),
-								expr.getBeginColumn(),
-								expr.getEndColumn());
-						}
-						list.add(expr);
-					}
-				}
-				catch (ParseException e)
-				{
-					// ignore in a string
-				}
-			)
-			try
+			expr = dollarBraceInString()
 			{
-				<RBRACE1>
-			}
-			catch (ParseException e)
-			{
-				// ignore in a string
+				list.add(expr);
 			}
 		|
-			try
+			expr = expressionInString()
 			{
-				expr = Expression()
-				{
-					if (expr instanceof ConstantIdentifier)
-					{
-						expr = new Variable(expr.toString(),
-							expr.getSourceStart(),
-							expr.getSourceEnd(),
-							expr.getBeginLine(),
-							expr.getEndLine(),
-							expr.getBeginColumn(),
-							expr.getEndColumn());
-					}
-					list.add(expr);
-				}
+				list.add(expr);
 			}
-			catch (ParseException e)
+		|
+			//{{{ <DOUBLEQUOTE2>
+			end = <DOUBLEQUOTE2>
 			{
-				// ignore in a string
-			}
+				Expression[] expressions = new Expression[list.size()];
+				list.toArray(expressions);
+				return new StringLiteral("",
+							 start.sourceStart,
+							 end.sourceEnd,
+							 start.beginLine,
+							 end.endLine,
+							 start.beginColumn,
+							 end.endColumn,
+							 expressions);
+			} //}}}
 		)
 	)*
-	end = <DOUBLEQUOTE2>
+	//{{{ <DOUBLEQUOTE2>
+		end = <DOUBLEQUOTE2>
+		{
+			Expression[] expressions = new Expression[list.size()];
+			list.toArray(expressions);
+			return new StringLiteral("",
+						 start.sourceStart,
+						 end.sourceEnd,
+						 start.beginLine,
+						 end.endLine,
+						 start.beginColumn,
+						 end.endColumn,
+						 expressions);
+		} //}}}
+} //}}}
+
+//{{{ dollarBraceInString() method
+Expression dollarBraceInString():
+{
+	Expression expr = null;
+}
+{
+	<LBRACE1>
+	expr = expressionInString()
+	try
 	{
-		Expression[] expressions = new Expression[list.size()];
-		list.toArray(expressions);
-		return new StringLiteral("",
-					 start.sourceStart,
-					 end.sourceEnd,
-					 start.beginLine,
-					 end.endLine,
-					 start.beginColumn,
-					 end.endColumn,
-					 expressions);
+		<RBRACE1>
+	}
+	catch (ParseException e)
+	{
+		// ignore in a string
+	}
+	{
+		return expr;
+	}
+} //}}}
+
+//{{{ expressionInString() method
+Expression expressionInString():
+{
+	Expression expr = null;
+}
+{
+	try
+	{
+		expr = Expression()
+		{
+			if (expr instanceof ConstantIdentifier)
+			{
+				expr = new Variable(expr.toString(),
+					expr.getSourceStart(),
+					expr.getSourceEnd(),
+					expr.getBeginLine(),
+					expr.getEndLine(),
+					expr.getBeginColumn(),
+					expr.getEndColumn());
+			}
+		}
+	}
+	catch (ParseException e)
+	{
+		// ignore in a string
+	}
+	{
+		return expr;
 	}
 } //}}}
 
