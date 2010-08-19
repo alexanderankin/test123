@@ -29,8 +29,9 @@ python-eval-file.label=Evaluate file in Python shell ...
 msg.repl.no-process=No process is currently running.\n
 msg.repl.stopped=Stopped.
 msg.repl.starting=Starting...\n
-msg.repl.error-starting=There was an error starting the process. Check the \
-	activity log for details.\n
+msg.repl.error-starting=There was an error starting the process. Ensure that \
+	the executable is configured correctly in the Plugin Options window.\n\
+	For more details on this error, check the activity log.\n
 msg.repl.python.info-message=Interactive Python console.
 #}}} REPL Messages
 
