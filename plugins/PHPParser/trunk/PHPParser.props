@@ -40,6 +40,7 @@ gatchan.phpparser.warnings.methodanalysis.unnecessaryGlobal.text=Unnecessary glo
 gatchan.phpparser.warnings.types.conditionalExpressionCheck.text=inspect conditional expression
 gatchan.phpparser.warnings.classes.method_field_same_name.text=Report method and fields with the same name
 gatchan.phpparser.warnings.phpclosingmissing.text=Report missing '?>'
+gatchan.phpparser.warnings.doubledollar.text=Report $$ syntax
 # }}}
 
 # default value is true
