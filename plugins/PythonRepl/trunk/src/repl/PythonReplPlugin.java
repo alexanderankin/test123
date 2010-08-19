@@ -1,3 +1,4 @@
+package repl;
 /**
  * @author Damien Radtke
  * class PythonReplPlugin
@@ -11,7 +12,9 @@ import org.gjt.sp.jedit.EditPlugin;
 public class PythonReplPlugin extends EditPlugin {
 	public void start() {}
 	public void stop() {
-		PythonShell shell = (PythonShell) Shell.getShell("Python");
-		shell.stop();
+		try {
+			PythonShell shell = (PythonShell) Shell.getShell("Python");
+			shell.stop();
+		} catch (Exception e) {}
 	}
 }
