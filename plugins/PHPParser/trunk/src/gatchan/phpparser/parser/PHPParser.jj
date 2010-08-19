@@ -2337,39 +2337,31 @@ AbstractVariable VariableDeclaratorId() :
 
 //}}}
 //{{{ Variable()
-
-Variable Variable() :
+Variable Variable():
 {
-  Variable variable;
-  final Token dollarToken;
+	Variable variable;
+	final Token dollarToken;
 }
 {
-  dollarToken = <DOLLAR>
-  try {
-    variable = Var()
-  } catch (ParseException e) {
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "identifier expected",
-                                          "identifier",
-                                          e.currentToken.image,
-                                          e.currentToken.sourceEnd,
-                                          e.currentToken.next.sourceStart,
-                                          e.currentToken.endLine,
-                                          e.currentToken.next.beginLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.next.beginColumn));
-    variable = new  Variable("",
-                             dollarToken.sourceStart,
-                             e.currentToken.next.sourceStart,
-                             dollarToken.beginLine,
-                             e.currentToken.next.beginLine,
-                             dollarToken.beginColumn,
-                             e.currentToken.next.beginColumn);
-  }
-  {
-    return variable;
-  }
+	dollarToken = <DOLLAR>
+	try 
+	{
+		variable = Var()
+	}
+	catch (ParseException e)
+	{
+		fireParseError("'variable' expected","=",e.currentToken);
+		variable = new  Variable("",
+			dollarToken.sourceStart,
+			e.currentToken.next.sourceStart,
+			dollarToken.beginLine,
+			e.currentToken.next.beginLine,
+			dollarToken.beginColumn,
+			e.currentToken.next.beginColumn);
+	}
+	{
+		return variable;
+	}
 }
 
 //}}}
@@ -2383,8 +2375,19 @@ Variable Var() :
 }
 {
 	(
+		//{{{ <DOLLAR>
 		token = <DOLLAR> variable = Var()
 		{
+			fireParseMessage(new PHPParseMessageEvent(INFO,
+				PHPParseMessageEvent.MESSAGE_DOUBLE_DOLLAR,
+				path,
+				"You have several $$, this may be a bug",
+				token.sourceStart,
+        			token.sourceEnd,
+        			token.beginLine,
+        			token.endLine,
+        			token.beginColumn,
+        			token.endColumn));
 			variable = new Variable(variable,
 				variable.getSourceStart(),
 				variable.getSourceEnd(),
@@ -2392,7 +2395,8 @@ Variable Var() :
 				variable.getEndLine(),
 				variable.getBeginColumn(),
 				variable.getBeginColumn());
-		}
+		} //}}}
+
 	|
 		token = <LBRACE> expression = Expression() token2 = <RBRACE>
 		{
@@ -5959,7 +5963,7 @@ AbstractCase[] switchStatementColon(final int start, final int end) :
 {
   AbstractCase cas;
   final List cases = new ArrayList();
-  Token token;
+  Token token;                                 
   int pos;
 }
 {
