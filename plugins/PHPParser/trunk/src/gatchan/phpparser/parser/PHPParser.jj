@@ -4386,6 +4386,7 @@ StringLiteral heredoc():
 	Token startToken;
 	Token endToken;
 	String endImage;
+	String startImage;
 }
 {
 	heredocStart = <HEREDOCSTARTTOKEN>
@@ -4393,6 +4394,7 @@ StringLiteral heredoc():
 	{
 		startToken = <IDENTIFIER>
 		{
+			startImage = startToken.image;
 			if(heredocStart.sourceEnd != startToken.sourceStart)
 			{
 				//{{{ Parse error
@@ -4452,7 +4454,7 @@ StringLiteral heredoc():
 			}
 			if (endToken.beginColumn != 1) continue;
 			endImage = (endToken.image.charAt(endToken.image.length()-1) == ';') ? endToken.image.substring(0,endToken.image.length()-2) : endToken.image;
-			if (endImage.equals(startToken.image))
+			if (endImage.equals(startImage))
 			{
 				break;
 			}
