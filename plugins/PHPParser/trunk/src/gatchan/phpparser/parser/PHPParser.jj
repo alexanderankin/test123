@@ -4962,18 +4962,7 @@ Statement expressionStatement():
 	{
 		if (e.currentToken.next.kind != PHPParserConstants.PHPEND)
 		{
-			//{{{ Parse Error
-			fireParseError(new PHPParseErrorEvent(ERROR,
-				path,
-				"';' expected",
-				";",
-				e.currentToken.image,
-				statement.getSourceEnd(),
-				statement.getSourceEnd(),
-				e.currentToken.beginLine,
-				e.currentToken.endLine,
-				e.currentToken.endColumn,
-				e.currentToken.endColumn)); //}}}
+			fireParseError("';' expected", ";", e.currentToken);
 		}
 	}
 	{
@@ -5066,10 +5055,11 @@ Define defineStatement() :
 	}
 }
 
+//{{{ Statement() method
 /**
  * A Normal statement.
  */
-Statement Statement() :
+Statement Statement():
 {
 	Statement statement;
 }
@@ -5080,12 +5070,16 @@ Statement Statement() :
 		statement = BreakStatement()
 	)
 	{
-		statement.getModifiedVariable(tempList);
-		scope.addVariablesList(tempList);
-		tempList.clear();
+		if (statement != null)
+		{
+			statement.getModifiedVariable(tempList);
+			scope.addVariablesList(tempList);
+			tempList.clear();
+		}
 		return statement;
 	}
-}
+} //}}}
+
 
 //}}}
 
