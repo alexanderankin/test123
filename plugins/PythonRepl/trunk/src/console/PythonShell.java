@@ -22,6 +22,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.TextArea;
+import org.gjt.sp.util.Log;
 //}}}
 public class PythonShell extends Shell {
 	private Hashtable<Console, ConsoleState> consoleStateMap;
@@ -40,7 +41,10 @@ public class PythonShell extends Shell {
 	 * Start up Python
 	 */
 	public void init(ConsoleState state) throws IOException {
-		state.p = Runtime.getRuntime().exec("python -i");
+		String exec = "\""+jEdit.getProperty("options.repl.python.exec")+"\"";
+		Log.log(Log.DEBUG,this,"Attempting to start Python process: "+exec);
+		state.p = Runtime.getRuntime().exec(exec+" -i");
+		Log.log(Log.DEBUG,this,"Python started.");
 	}
 	//}}}
 	
