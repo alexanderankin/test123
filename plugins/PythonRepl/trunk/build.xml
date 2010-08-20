@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <project name="PythonRepl" default="build" basedir=".">
 	<!-- mark:build.properties -->
-	<property file="C:\Documents and Settings\E16145\workspace\plugins\build.properties" />
 	<!-- /mark:build.properties -->
 	<!-- <property file="build.properties" /> -->
 	<!-- <property file="../build.properties" /> -->
@@ -17,6 +16,10 @@
 	
 	<!-- jEdit installation properties. -->
 	<!-- mark:properties -->
+	<property name="build.support" value="C:\workspace\jedit\plugins\build-support" />
+	<property name="install.dir" value="C:\Documents and Settings\E16145\.jedit/jars" />
+	<property name="jedit.install.dir" value="C:\Program Files\jEdit" />
+	<property name="jedit.plugins.dir" value="${install.dir}" />
 	<!-- /mark:properties -->
 	<import file="${build.support}/plugin-build.xml" />
 	
@@ -30,13 +33,14 @@
 		"plugin.[plugin class].jars" property. -->
 		<!-- <pathelement path="lib/dependency.jar" /> -->
 		<!-- mark:libs -->
-		<!-- /mark:libs -->
+	<!-- /mark:libs -->
 		
 		<!-- Dependencies that are supplied by other plugins. -->
 		<!-- <pathelement path="${jedit.plugins.dir}/dependency.jar" /> -->
 		<!-- mark:plugins -->
-		<pathelement path="${jedit.plugins.dir}/Console.jar" />
-		<!-- /mark:plugins -->
+	<pathelement path="${jedit.plugins.dir}/Console.jar" />
+	<pathelement path="${jedit.plugins.dir}/ProcessShell.jar" />
+	<!-- /mark:plugins -->
 	</path>
 	
 </project>

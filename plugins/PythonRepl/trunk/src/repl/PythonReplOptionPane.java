@@ -25,7 +25,7 @@ public class PythonReplOptionPane extends AbstractOptionPane {
 	
 	protected void _init() {
 		exec = new JTextField(
-			jEdit.getProperty("options.repl.python.exec"));
+			jEdit.getProperty("options.pythonrepl.exec"));
 		JButton browse = new JButton(
 			jEdit.getProperty("options.pythonrepl.browsebutton-label"));
 		browse.addActionListener(new BrowseHandler());
@@ -40,7 +40,7 @@ public class PythonReplOptionPane extends AbstractOptionPane {
 	}
 	
 	protected void _save() {
-		jEdit.setProperty("options.repl.python.exec", exec.getText());
+		jEdit.setProperty("options.pythonrepl.exec", exec.getText());
 	}
 	
 	class BrowseHandler implements ActionListener {
