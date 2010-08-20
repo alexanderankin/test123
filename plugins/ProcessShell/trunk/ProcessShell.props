@@ -1,0 +1,19 @@
+plugin.procshell.ProcessShellPlugin.activate=defer
+plugin.procshell.ProcessShellPlugin.author=Damien Radtke
+plugin.procshell.ProcessShellPlugin.description=This plugin provides a utility \
+	class for definining a Console shell based on an external process.
+plugin.procshell.ProcessShellPlugin.longdescription=description.html
+plugin.procshell.ProcessShellPlugin.name=ProcessShell
+plugin.procshell.ProcessShellPlugin.usePluginHome=false
+plugin.procshell.ProcessShellPlugin.version=1.0
+
+plugin.repl.PythonReplPlugin.depend.0=jedit 04.03.99.00
+plugin.repl.PythonReplPlugin.depend.1=jdk 1.5
+plugin.repl.PythonReplPlugin.depend.2=plugin console.ConsolePlugin 4.4.2
+
+msg.procshell.no-process=No process is currently running.
+msg.procshell.starting=Starting...\n
+msg.procshell.stopped=Stopped.
+msg.procshell.error-starting=There was an error starting the process. Ensure \
+	that the executable for this shell is configured correctly in the Plugin \
+	Options window. For more details on this error, check the activity log.
