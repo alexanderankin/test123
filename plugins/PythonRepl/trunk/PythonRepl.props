@@ -14,7 +14,7 @@ plugin.repl.PythonReplPlugin.version=1.0
 # Dependencies {{{
 plugin.repl.PythonReplPlugin.depend.0=jedit 04.03.99.00
 plugin.repl.PythonReplPlugin.depend.1=jdk 1.5
-plugin.repl.PythonReplPlugin.depend.2=plugin console.ConsolePlugin 4.4.2
+plugin.repl.PythonReplPlugin.depend.2=plugin procshell.ProcessShellPlugin 1.0
 # }}} Dependencies
 
 # Menu {{{
@@ -25,23 +25,18 @@ python-eval-buffer.label=Evaluate Buffer in Python shell
 python-eval-file.label=Evaluate file in Python shell ...
 # }}} Menu
 
-# REPL Messages {{{
-msg.repl.no-process=No process is currently running.\n
-msg.repl.stopped=Stopped.
-msg.repl.starting=Starting...\n
-msg.repl.error-starting=There was an error starting the process. Ensure that \
-	the executable is configured correctly in the Plugin Options window.\n\
-	For more details on this error, check the activity log.\n
-msg.repl.python.info-message=Interactive Python console.
-#}}} REPL Messages
+# Messages {{{
+msg.pythonrepl.info-message=Interactive Python console.
+# }}} Messages
 
 # Options {{{
 plugin.repl.PythonReplPlugin.option-pane=pythonrepl
 options.pythonrepl.label=Python Repl
 options.pythonrepl.code=new repl.PythonReplOptionPane();
+
 options.pythonrepl.textfield-label=Python executable:
 options.pythonrepl.browsebutton-label=Browse...
 
-options.repl.python.exec=python
+options.pythonrepl.exec=python
 #}}}
 
