@@ -108,7 +108,7 @@ public class PHPParser
 
 	public static final boolean PARSER_DEBUG = false;
 
-	private final List parserListeners = new ArrayList();
+	private final List<PHPParserListener> parserListeners = new ArrayList<PHPParserListener>();
 
 	private String path;
 
@@ -177,9 +177,7 @@ public class PHPParser
 	public void addParserListener(PHPParserListener listener)
 	{
 		if (!parserListeners.contains(listener))
-		{
 			parserListeners.add(listener);
-		}
 	} //}}}
 
 	//{{{ removeParserListener(PHPParserListener listener)
@@ -191,11 +189,8 @@ public class PHPParser
 	//{{{ fireParseError(PHPParseErrorEvent e)
 	public void fireParseError(PHPParseErrorEvent e)
 	{
-		for (int i = 0;i < parserListeners.size();i++)
-		{
-			PHPParserListener listener = (PHPParserListener) parserListeners.get(i);
+		for (PHPParserListener listener : parserListeners) 
 			listener.parseError(e);
-		}
 	} //}}}
 
 	//{{{ fireParseError() methods
@@ -224,11 +219,8 @@ public class PHPParser
 	//{{{ fireParseMessage(PHPParseMessageEvent e)
 	public void fireParseMessage(PHPParseMessageEvent e)
 	{
-		for (int i = 0;i < parserListeners.size();i++)
-		{
-			PHPParserListener listener = (PHPParserListener) parserListeners.get(i);
+		for (PHPParserListener listener: parserListeners) 
 			listener.parseMessage(e);
-		}
 	} //}}}
 
 	//{{{ phpParserTester(String strEval)
