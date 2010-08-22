@@ -143,18 +143,20 @@ mode.xml.sidekick.parser=xml
 mode.xsl.sidekick.parser=xml
 mode.css.sidekick.parser=css
 
-# specialized tag classes
+# specialized tag classes. Mostly, these provide a different icon set for the
+# nodes of these file modes.The naming convention is xml.xmltag.modename, where
+# 'modename' is the name of the mode for the file.
 xml.xmltag.ant=xml.parser.AntXmlTag
 xml.xmltag.tld=xml.parser.TldXmlTag
+xml.xmltag.maven=xml.parser.MvnXmlTag
 
 # specialized SideKickParsedData classes
 xml.xmlparseddata.ant=xml.AntXmlParsedData
 xml.xmlparseddata.tld=xml.TldXmlParsedData
+xml.xmlparseddata.maven=xml.MvnXmlParsedData
 
-# toolbar classes
-xml.xmltoolbar.ant=xml.gui.AntModeToolBar
-xml.xmltoolbar.tld=xml.gui.TldModeToolBar
-xml.xmltoolbar.xml=xml.gui.XmlModeToolBar
+# modes supported by xml toolbar
+xml.xmltoolbar.modes=ant,tld,xml,maven
 
 # Show attributes in XML tree?
 # 0: none; 1: id only; 2: all

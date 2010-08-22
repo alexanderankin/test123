@@ -1,7 +1,6 @@
 package xml.parser;
 
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.text.Position;
 import org.xml.sax.Attributes;
 
@@ -47,6 +46,10 @@ public class TldXmlTag extends XmlTag {
         return EclipseIconsPlugin.getIcon("tag.gif");
     }
 
+	/**
+ 	 * @return <code>true</code> if this tag should accumulate the characters from 
+ 	 * the body of a tag. This method returns true if the tag name is "name".
+ 	 */
     public boolean canAddCharacters() {
         return "name".equals(name);
     }

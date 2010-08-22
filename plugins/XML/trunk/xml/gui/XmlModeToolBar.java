@@ -53,9 +53,11 @@ public class XmlModeToolBar extends JPanel {
         add(direction);
 
         if (view != null) {
-            XmlParsedData data = (XmlParsedData) SideKickParsedData.getParsedData(view);
-            int choice = data.getSortBy();
-            choices.setSelectedIndex(choice);
+            SideKickParsedData data = SideKickParsedData.getParsedData(view);
+            if (data instanceof XmlParsedData) {
+                int choice = ((XmlParsedData)data).getSortBy();
+                choices.setSelectedIndex(choice);
+            }
         }
     }
 

@@ -43,6 +43,7 @@ import xml.completion.CompletionInfo;
 import xml.completion.ElementDecl;
 import xml.completion.EntityDecl;
 import xml.completion.IDDecl;
+import xml.gui.XmlModeToolBar;
 import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
 import static xml.Debug.*;
@@ -65,7 +66,7 @@ public class XercesParserImpl extends XmlParser
     private View view = null;
     
     // cache the toolbar panels per view
-    private Map<String, Map<View, JPanel>> panels = new HashMap<String, Map<View, JPanel>>();
+    private Map<View, JPanel> panels = new HashMap<View, JPanel>();
     
 	//{{{ XercesParserImpl constructor
 	public XercesParserImpl()
@@ -385,29 +386,17 @@ public class XercesParserImpl extends XmlParser
 
     //{{{ getPanel() method	
 	public JPanel getPanel() {
-	    // TODO: cache panels per view and per mode to reduce creating so many new panels
 	    if (view != null) {
 	        String mode = view.getBuffer().getMode().toString();
-	        Map<View, JPanel> modePanels = panels.get(mode);
-	        if (modePanels == null) {
-	             modePanels = new HashMap<View, JPanel>();
-	             panels.put(mode, modePanels);
-	        }
-            JPanel panel = modePanels.get(view);
-            if (panel != null) {
-                 return panel;   
-            }
-            String panelClassName = jEdit.getProperty("xml.xmltoolbar." + mode);
-            if (panelClassName != null) {
-                try {
-                    Class panelClass = Class.forName(panelClassName);
-                    java.lang.reflect.Constructor con = panelClass.getConstructor(View.class);
-                    panel = (JPanel)con.newInstance(view);
-                    modePanels.put(view, panel);
-                    return panel;
+	        String supported = jEdit.getProperty("xml.xmltoolbar.modes");
+	        if (supported.indexOf(mode) > -1) {
+                JPanel panel = panels.get(view);
+                if (panel != null) {
+                     return panel;   
                 }
-                catch (Exception e) { //NOPMD ignored, just return null if this fails
-                }
+                XmlModeToolBar toolbar = new XmlModeToolBar(view);
+                panels.put(view, toolbar);
+                return toolbar;
             }
         }
         return null;
