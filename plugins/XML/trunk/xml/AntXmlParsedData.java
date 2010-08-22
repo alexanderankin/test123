@@ -13,6 +13,8 @@ public class AntXmlParsedData extends XmlParsedData {
     }
 
     @Override
+    // TODO: remove? Currently, this is the same as the super method. If removed,
+    // this entire class can be removed.
     protected ExpansionModel createExpansionModel() {
         ExpansionModel em = new ExpansionModel();
         em.add();   // root (filename node)
