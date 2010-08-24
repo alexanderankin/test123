@@ -1,0 +1,29 @@
+# Ancestor jEdit Plugin
+# Author: Matthieu Casanova
+
+plugin.gatchan.jedit.mibsidekick.MibSideKickPlugin.activate=defer
+plugin.gatchan.jedit.mibsidekick.MibSideKickPlugin.name=MibSideKick
+plugin.gatchan.jedit.mibsidekick.MibSideKickPlugin.author=Matthieu Casanova
+plugin.gatchan.jedit.mibsidekick.MibSideKickPlugin.version=1.2.1
+plugin.gatchan.jedit.mibsidekick.MibSideKickPlugin.depend.0=jdk 1.5
+plugin.gatchan.jedit.mibsidekick.MibSideKickPlugin.depend.1=jedit 04.03.99.00
+plugin.gatchan.jedit.mibsidekick.MibSideKickPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.7
+plugin.gatchan.jedit.mibsidekick.MibSideKickPlugin.depend.3=plugin sidekick.SideKickPlugin 0.7.5
+plugin.gatchan.jedit.mibsidekick.MibSideKickPlugin.description=MibSideKick is a mib parser
+plugin.gatchan.jedit.mibsidekick.MibSideKickPlugin.usePluginHome=true
+plugin.gatchan.jedit.mibsidekick.MibSideKickPlugin.jars=grammatica-1.5.jar mibble-parser-2.9.2.jar mibble-mibs-2.9.2.jar
+plugin.gatchan.jedit.mibsidekick.MibSideKickPlugin.docs=docs/MibSideKick.html
+sidekick.parser.MibParser.label=Mib parser
+mode.smi-mib.sidekick.parser=MibParser
+
+
+# Option pane
+plugin.gatchan.jedit.mibsidekick.MibSideKickPlugin.option-pane=mibsidekick
+
+options.mibsidekick.label=Mib SideKick
+options.mibsidekick.code=new gatchan.jedit.mibsidekick.MibOptionPane();
+
+
+messages.mibsidekick.searchPath=Mib search paths
+messages.mibsidekick.addPath=Add path
+messages.mibsidekick.removePath=Remove selected path
