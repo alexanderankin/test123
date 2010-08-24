@@ -29,13 +29,16 @@ import net.percederberg.mibble.MibLoaderLog;
 import net.percederberg.mibble.browser.MibTreeBuilder;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.ThreadUtilities;
 import sidekick.SideKickParsedData;
 import sidekick.SideKickParser;
 
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeModel;
 import javax.swing.text.Segment;
+import java.awt.*;
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 import java.util.Collection;
 
@@ -70,18 +73,25 @@ public class MibSidekickParser extends SideKickParser
 			}
 //			loader.addResourceDir("mibs/iana");
 //			loader.addResourceDir("mibs/ietf");
-			Mib mib = loader.load(file);
-			SideKickParsedData datas = new SideKickParsedData(buffer.getPath());
-			MibTreeBuilder tree = MibTreeBuilder.getInstance();
-			tree.addMib(mib);
-			TreeModel model = tree.getTree().getModel();
-			Object root = model.getRoot();
-			int count = model.getChildCount(root);
-			for (int i = 0; i < count; i++)
+			final Mib mib = loader.load(file);
+			final SideKickParsedData datas = new SideKickParsedData(buffer.getPath());
+			final MibTreeBuilder tree = MibTreeBuilder.getInstance();
+			Runnable runnable = new Runnable()
 			{
-				Object child = model.getChild(root, i);
-				datas.root.add((MutableTreeNode) child);
-			}
+				public void run()
+				{
+					tree.addMib(mib);
+					TreeModel model = tree.getTree().getModel();
+					Object root = model.getRoot();
+					int count = model.getChildCount(root);
+					for (int i = 0; i < count; i++)
+					{
+						Object child = model.getChild(root, i);
+						datas.root.add((MutableTreeNode) child);
+					}
+				}
+			};
+			EventQueue.invokeAndWait(runnable);
 			return datas;
 		}
 		catch (IOException e)
@@ -112,6 +122,12 @@ public class MibSidekickParser extends SideKickParser
 			}
 
 
+		}
+		catch (InterruptedException e)
+		{
+		}
+		catch (InvocationTargetException e)
+		{
 		}
 		return null;
 	}
