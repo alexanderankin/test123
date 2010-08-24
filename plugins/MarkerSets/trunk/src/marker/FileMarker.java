@@ -10,7 +10,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings("rawtypes")
 public class FileMarker implements Comparable {
 	private static final String SHORTCUT_ATTR = "shortcut";
 	private static final String LINE_ATTR = "line";
@@ -135,6 +135,13 @@ public class FileMarker implements Comparable {
 	
 	public void removePosition()
 	{
+		/* Return if no position was created; this can happen if the marker's
+		 * line is greater than the buffer's line count - i.e. the  buffer was
+		 * cut externally or the marker refers to an untitled buffer that was
+		 * saved.
+		 */
+		if (buffer == null)
+			return;
 		line = buffer.getLineOfOffset(pos.getOffset());
 		pos = null;
 		buffer = null;
