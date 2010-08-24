@@ -166,6 +166,11 @@ TOKEN :
     <FALSE: "false">
     |
     <NULL: "null">
+    |  
+    // json only allows base 10 numbers, no octal or hex or binary, at least, not as a number.
+    // Unicode values are allowed in char and string. Need to define numbers ahead of characters
+    // since numbers can also match as characters.
+    <NUMBER: (["-"])? ((["0"]) | (["1"-"9"] (["0"-"9"])*)) ("." (["0"-"9"])+)? (["e","E"] (["+","-"])? (["0"-"9"])+ )?>
     |
     // a 'char' is any unicode character except " (double quote) or \ (backslash) or
     // control character (unicode range 0000 - 001f).  Certain special characters and
@@ -185,10 +190,6 @@ TOKEN :
     // double quotes, using backslash escapes. A character is represented as a 
     // single character string.
     <STRING: "\"" (<CHAR>)* "\"">
-    |  
-    // json only allows base 10 numbers, no octal or hex or binary, at least, not as a number.
-    // Unicode values are allowed in char and string.
-    <NUMBER: (["-"])? ["1"-"9"] (["0"-"9"])* ("." (["0"-"9"])+)? (["e","E"] (["+","-"])? (["0"-"9"])+ )?>
 }
 
 
