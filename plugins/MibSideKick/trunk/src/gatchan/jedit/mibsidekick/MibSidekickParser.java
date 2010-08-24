@@ -75,11 +75,11 @@ public class MibSidekickParser extends SideKickParser
 //			loader.addResourceDir("mibs/ietf");
 			final Mib mib = loader.load(file);
 			final SideKickParsedData datas = new SideKickParsedData(buffer.getPath());
-			final MibTreeBuilder tree = MibTreeBuilder.getInstance();
 			Runnable runnable = new Runnable()
 			{
 				public void run()
 				{
+					MibTreeBuilder tree = MibTreeBuilder.getInstance();
 					tree.addMib(mib);
 					TreeModel model = tree.getTree().getModel();
 					Object root = model.getRoot();
