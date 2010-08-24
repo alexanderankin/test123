@@ -1,0 +1,33 @@
+<project name="MibSideKick" default="build" basedir=".">
+
+	<!-- Read optional properties from various places -->
+	<!-- Latter ones override previous properties. -->
+	<property file="../build.properties"/>
+	<property file="build.properties"/>
+	<property name="dist.target" value="dist.complete"/>
+	<property name="compiler.source" value="1.5"/>
+	<property name="compiler.target" value="1.5"/>
+
+	<import file="${build.support}/plugin-build.xml"/>
+
+	<path id="project.class.path">
+		<pathelement location="lib/mibble-parser-2.9.2.jar"/>
+		<pathelement location="${jedit.install.dir}/jedit.jar"/>
+		<pathelement location="${install.dir}/ErrorList.jar"/>
+		<pathelement location="${install.dir}/SideKick.jar"/>
+	</path>
+
+	<selector id="packageFiles">
+        <filename name="docs/MibSideKick.html" />
+	</selector>
+
+	<target name="build.post">
+		<copy todir="${install.dir}">
+			<fileset dir="${basedir}/lib">
+				<include name="*.jar" />
+			</fileset>
+		</copy>
+	</target>
+
+
+</project>
