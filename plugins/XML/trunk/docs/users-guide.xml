@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <article xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
  <!-- 
@@ -7,7 +7,7 @@
 
  <articleinfo>
 
- <releaseinfo>Version 2.7.1</releaseinfo>
+ <releaseinfo>Version 2.8.0</releaseinfo>
 
  <authorgroup>
   <author><firstname>Slava</firstname><surname>Pestov</surname></author>
@@ -959,6 +959,22 @@ Chapter 22 of <emphasis>DocBook XSL: The Complete Guide</emphasis> by Bob Stayto
       <listitem><para>
         Added a "hack" to better identify Ant build files.  
       </para></listitem>
+      <listitem><para>
+        Added caching of schemas and completion info in memory.
+        It can't be turned off.
+        It retains cached objects until :
+        <itemizedlist>
+        <listitem><para>all requiring buffers are closed;</para></listitem>
+        <listitem><para>the file is opened in jEdit;</para></listitem>
+        <listitem><para>the file is closed in jEdit;</para></listitem>
+        <listitem><para>the file is modified in jEdit.</para></listitem>
+        </itemizedlist>
+      </para></listitem>
+      <listitem><para>Completion Info is available from XSD schemas
+      declared via schemas.xml. It is also available if the instance document
+      is malformed (bug #2810050 - Eric Le Lay).</para></listitem>
+      <listitem><para>Fixed bugs related to SFTP (bug #3009485 - Eric Le Lay).
+      VFS should be fully supported, now.</para></listitem>
      </itemizedlist>
  </listitem>
 

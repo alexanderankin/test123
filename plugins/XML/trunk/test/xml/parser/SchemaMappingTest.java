@@ -66,8 +66,8 @@ public class SchemaMappingTest{
     }
     
     @Test
-    public void testBuiltInSchema(){
-    	URL builtin = getClass().getClassLoader().getResource("xml/dtds/schemas.xml");
+    public void testBuiltInSchema()  throws URISyntaxException{
+    	URI builtin = getClass().getClassLoader().getResource("xml/dtds/schemas.xml").toURI();
     	SchemaMapping m = SchemaMapping.fromDocument(builtin.toString());
     	assertNotNull(m);
     	
@@ -84,7 +84,7 @@ public class SchemaMappingTest{
     }
     
     @Test
-    public void testAddRule() throws MalformedURLException{
+    public void testAddRule() throws MalformedURLException, URISyntaxException{
     	SchemaMapping m = new SchemaMapping();
 
     	
@@ -93,10 +93,10 @@ public class SchemaMappingTest{
     	assertEquals(new Result(null,"actions.rng"),m.getSchemaForDocument(null, "actions.xml",
 		null,null,"ACTIONS",true));
 		
-    	m.addRule(new URIResourceRule(new URL("file:///"),"actions.xml", "else.rng", false));
+    	m.addRule(new URIResourceRule(new URI("file:///"),"actions.xml", "else.rng", false));
 
     	// test taken into account
-    	assertEquals(new Result(new URL("file:///"),"else.rng"),m.getSchemaForDocument(null, "actions.xml",
+    	assertEquals(new Result(new URI("file:///"),"else.rng"),m.getSchemaForDocument(null, "actions.xml",
 		null,null,"TOTO",true));
 
 		// test precedence ( both match, but first one wins)
@@ -298,7 +298,7 @@ public class SchemaMappingTest{
     
     
     @Test
-    public void testURIResourceRule() throws MalformedURLException{
+    public void testURIResourceRule() throws MalformedURLException, URISyntaxException{
     	Rule r;
     	
     	try{
@@ -343,7 +343,7 @@ public class SchemaMappingTest{
     	assertTrue(r.matchURL("file:///A/../test.txt")); // same path
     	
     	// relative uri as pattern
-    	r = new URIResourceRule(new URL("file:///A/schemas.xml"),"test.txt","target",false);
+    	r = new URIResourceRule(new URI("file:///A/schemas.xml"),"test.txt","target",false);
     	assertTrue(r.matchURL("file:///A/test.txt"));
     	assertFalse(r.matchURL("file:///test.txt"));
     	
@@ -352,8 +352,8 @@ public class SchemaMappingTest{
     }
  
 	@Test
-    public void testBase() throws MalformedURLException{
-     	URL builtin = getClass().getClassLoader().getResource("xml/dtds/schemas.xml");
+    public void testBase() throws MalformedURLException, URISyntaxException{
+     	URI builtin = getClass().getClassLoader().getResource("xml/dtds/schemas.xml").toURI();
     	SchemaMapping m = SchemaMapping.fromDocument(builtin.toString());
     	assertNotNull(m);
 
@@ -362,17 +362,17 @@ public class SchemaMappingTest{
     	assertEquals(new Result(builtin,"relaxng.rng"),m.getSchemaForDocument(null, "actions.rng",
 		null,null,"ACTIONS",true));
 		
-    	m.addRule(new URIResourceRule(new URL("file:///schemas.xml"),"actions.xml", "else.rng", false));
+    	m.addRule(new URIResourceRule(new URI("file:///schemas.xml"),"actions.xml", "else.rng", false));
 
     	// rule base
-    	assertEquals(new Result(new URL("file:///schemas.xml"),"else.rng"),
+    	assertEquals(new Result(new URI("file:///schemas.xml"),"else.rng"),
     		m.getSchemaForDocument(null, "actions.xml",null,null,"TOTO",true));
 
 	}
 	
 	
 	@Test
-	public void testIncludeMapping() throws MalformedURLException{
+	public void testIncludeMapping() throws MalformedURLException, URISyntaxException{
      	
 		try{
 			new SchemaMapping.IncludeMapping(null, (String)null);
@@ -402,7 +402,7 @@ public class SchemaMappingTest{
 			//fine
 		}
 
-		URL builtin = getClass().getClassLoader().getResource("xml/dtds/schemas.xml");
+		URI builtin = getClass().getClassLoader().getResource("xml/dtds/schemas.xml").toURI();
      	
     	SchemaMapping m = new SchemaMapping();
     	
@@ -421,7 +421,7 @@ public class SchemaMappingTest{
 	}
 	
 	@Test
-	public void testTransformURI() throws MalformedURLException, IOException{
+	public void testTransformURI() throws MalformedURLException, URISyntaxException, IOException{
 		Mapping r;
 		
     	try{
@@ -462,9 +462,9 @@ public class SchemaMappingTest{
     	assertNull(r.getSchemaForDocument(null, noXSD.toURL().toString(),null,null,null,true));
 
     	// test result relative to base
-    	r = new TransformURI(existsXML.toURL(),"*.xml","../simple/*.xsd");
+    	r = new TransformURI(existsXML.toURL().toURI(),"*.xml","../simple/*.xsd");
     	
-    	assertEquals(new Result(existsXML.toURL(),"../simple/actions.xsd"),
+    	assertEquals(new Result(existsXML.toURL().toURI(),"../simple/actions.xsd"),
     		r.getSchemaForDocument(null, "actions.xml",null,null,null,true));
 
     	r = new TransformURI(null,"*.xml","../simple/*.xsd");
@@ -474,8 +474,8 @@ public class SchemaMappingTest{
 	}
 	
 	@Test
-	public void testToDocument() throws MalformedURLException, IOException{
-     	URL builtin = getClass().getClassLoader().getResource("xml/dtds/schemas.xml");
+	public void testToDocument() throws MalformedURLException, URISyntaxException, IOException{
+     	URI builtin = getClass().getClassLoader().getResource("xml/dtds/schemas.xml").toURI();
     	SchemaMapping m = new SchemaMapping();
 
 		Mapping r;

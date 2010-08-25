@@ -638,7 +638,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 			final VFS vfs = VFSManager.getVFSForPath(_newSystemId);
 			// use a final array to pass a mutable value from the
 			// invokeAndWait() call
-			final Object[] session = new Object[1];
+			final Object[] sessionArray = new Object[1];
 			Runnable run = new Runnable()
 			{
 				public void run()
@@ -649,7 +649,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
                             && showDownloadResourceDialog(view,_newSystemId))
                         )
 					{
-						session[0] = vfs.createVFSSession(
+						sessionArray[0] = vfs.createVFSSession(
 							_newSystemId,view);
 					}
 				}
@@ -668,8 +668,8 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 					throw new RuntimeException(e);
 				}
 			}
-
-			if(session[0] != null)
+			Object session = sessionArray[0];
+			if(session != null)
 			{
 				InputSource source = new InputSource(systemId);
 				source.setPublicId(publicId);
@@ -678,7 +678,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 					File file;
 					try
 					{
-						file = copyToLocalFile(session[0],vfs,newSystemId);
+						file = copyToLocalFile(session,vfs,newSystemId);
 					}
 					finally
 					{

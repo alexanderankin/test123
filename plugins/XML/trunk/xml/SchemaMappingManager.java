@@ -17,7 +17,6 @@ package xml;
 //{{{ Imports
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.net.URI;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -74,7 +73,6 @@ public final class SchemaMappingManager
 	//{{{ promptSchemaForBuffer() method
 	/**
 	 * - let the user choose a schema file from the VFSBrowser
-	 * TODO: test with VFS
 	 * TODO: clarify property on the buffer vs schema-mapping
 	 */
 	public static void promptSchemaForBuffer(View view, Buffer buffer)
@@ -116,10 +114,10 @@ public final class SchemaMappingManager
 				{
 					try
 					{
-						lMapping = new SchemaMapping(new URL(pathToURL(specificSchema)));
+						lMapping = new SchemaMapping(new URI(pathToURL(specificSchema)));
 						if(gMapping != null)lMapping.ensureIncluded(gMapping);
 					}
-					catch(MalformedURLException ue)
+					catch(URISyntaxException ue)
 					{
 						Log.log(Log.ERROR,SchemaMappingManager.class,ue);
 					}
@@ -132,7 +130,7 @@ public final class SchemaMappingManager
 				
 				try
 				{
-					lMapping.toDocument(specificSchema);
+					lMapping.toDocument(lMapping.getBaseURI().toString());
 				}
 				catch(IOException ioe)
 				{
@@ -359,13 +357,13 @@ public final class SchemaMappingManager
 			MiscUtilities.getParentOfPath(
 				buffer.getPath()),SchemaMapping.SCHEMAS_FILE);
 		
-		URL specificSchemaURL = null;
+		URI specificSchemaURI = null;
 		
 		try
 		{
-			specificSchemaURL = new URL(pathToURL(specificSchema));
+			specificSchemaURI = new URI(pathToURL(specificSchema));
 		}
-		catch(MalformedURLException mfue)
+		catch(URISyntaxException mfue)
 		{
 			// TODO: react to the error 
 			Log.log(Log.ERROR,SchemaMappingManager.class,mfue);
@@ -422,7 +420,7 @@ public final class SchemaMappingManager
 				// no schemas.xml in the buffer's directory : will create one
 				if(lMapping == null)
 				{
-					lMapping = new SchemaMapping(specificSchemaURL);
+					lMapping = new SchemaMapping(specificSchemaURI);
 					if(gMapping != null)lMapping.ensureIncluded(gMapping);
 				}
 				
@@ -438,7 +436,7 @@ public final class SchemaMappingManager
 				
 				try
 				{
-					lMapping.toDocument(specificSchema);
+					lMapping.toDocument(lMapping.getBaseURI().toString());
 				}
 				catch(IOException ioe)
 				{
@@ -461,20 +459,10 @@ public final class SchemaMappingManager
 				if(res == null)
 				{
 				}
-				else{
-					try
-					{
-						String schemaURL = new URL(res.baseURI,res.target).toString();
-						buffer.setStringProperty(BUFFER_SCHEMA_PROP,schemaURL);
-					}
-					catch(MalformedURLException mfue)
-					{
-						// pretty rare !
-						Log.log(Log.ERROR,SchemaMappingManager.class,
-							"unable to resolve schema for typeId : "+res);
-						Log.log(Log.ERROR,SchemaMappingManager.class,
-							mfue);
-					}
+				else
+				{
+					String schemaURL = res.baseURI.resolve(res.target).toString();
+					buffer.setStringProperty(BUFFER_SCHEMA_PROP,schemaURL);
 				}
 			}
 				
@@ -503,7 +491,7 @@ public final class SchemaMappingManager
 	//{{{ getBuiltInSchemaMapping() method
 	public static SchemaMapping getBuiltInSchemaMapping()
 	{
-		URL schemaURL = SchemaMappingManager.class.getClassLoader().getResource(BUILT_IN_SCHEMA);
+		java.net.URL schemaURL = SchemaMappingManager.class.getClassLoader().getResource(BUILT_IN_SCHEMA);
 		
 		if(schemaURL == null)
 		{
@@ -529,27 +517,27 @@ public final class SchemaMappingManager
 			MiscUtilities.getParentOfPath(
 				buffer.getPath()),SchemaMapping.SCHEMAS_FILE);
 		
-		// TODO: VFS
-		File fileSpecificSchema = new File(specificSchema);
-		if(fileSpecificSchema.exists())
+		// VFS-compatible
+		try
 		{
-			try{
-				String schemaURL = fileSpecificSchema.toURI().toURL().toString();
-				mapping = SchemaMapping.fromDocument(schemaURL);
-			}
-			catch(MalformedURLException mfue)
+			URI uriSpecificSchema = new URI(PathUtilities.pathToURL(specificSchema));
+			if(SchemaMapping.resourceExists(uriSpecificSchema))
 			{
-				// may happen if specificSchema is relative, but it should not be the case with buffer.getPath()
-				Log.log(Log.ERROR,SchemaMappingManager.class,
-					"Error converting path for fromDocument : '"+specificSchema+"'");
-				Log.log(Log.ERROR,SchemaMappingManager.class,mfue);
+					String schemaURL = uriSpecificSchema.toString();
+					mapping = SchemaMapping.fromDocument(schemaURL);
+			}
+			else
+			{
+				Log.log(Log.DEBUG, SchemaMappingManager.class,
+					"no schemas.xml in "+specificSchema);
 				mapping = null;
 			}
 		}
-		else
+		catch(URISyntaxException ue)
 		{
-			Log.log(Log.DEBUG, SchemaMappingManager.class,
-				"no schemas.xml in "+buffer.getPath());
+			// may happen if specificSchema is relative, but it should not be the case with buffer.getPath()
+			Log.log(Log.ERROR,SchemaMappingManager.class,
+				"Error converting path for fromDocument : '"+specificSchema+"'",ue);
 			mapping = null;
 		}
 		return mapping;
@@ -623,10 +611,12 @@ public final class SchemaMappingManager
 			SchemaMapping tmp = new SchemaMapping();
 			tmp.ensureIncluded(builtinMapping);
 			try{
-				tmp.toDocument(schemas.getPath());
+				tmp.toDocument(schemas.toURL().toURI().toString());
 			}catch(IOException ioe){
-				Log.log(Log.ERROR,SchemaMappingManager.class,"Unable to save default RelaxNG mappings");
-				Log.log(Log.ERROR,SchemaMappingManager.class,ioe);
+				Log.log(Log.ERROR,SchemaMappingManager.class,"Unable to save default RelaxNG mappings",ioe);
+				return;
+			}catch(URISyntaxException ue){
+				Log.log(Log.ERROR,SchemaMappingManager.class,"Unable to save default RelaxNG mappings",ue);
 				return;
 			}
 		}

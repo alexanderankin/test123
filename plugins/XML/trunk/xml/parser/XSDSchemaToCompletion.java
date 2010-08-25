@@ -289,7 +289,7 @@ public class XSDSchemaToCompletion{
 				}
 				
 				if(grammar == null){
-					Log.log(Log.ERROR, XSDSchemaToCompletion.class, "couldn't load grammar from "+realLocation+" for namespace "+location);
+					Log.log(Log.ERROR, XSDSchemaToCompletion.class, "couldn't load grammar from "+realLocation+" for "+location);
 				}else{
 					
 					XSModel model = ((org.apache.xerces.xni.grammars.XSGrammar)grammar).toXSModel();

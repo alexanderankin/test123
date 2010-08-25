@@ -20,13 +20,11 @@ import org.xml.sax.helpers.DefaultHandler;
 import java.io.*;
 
 import javax.xml.parsers.*; // JAXP
-import org.xml.sax.SAXException;
 import javax.xml.validation.ValidatorHandler;
 
 import java.util.*;
 import java.util.regex.*;
 import java.net.*;
-import java.io.IOException;
 
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.io.VFSManager;
@@ -37,6 +35,7 @@ import org.gjt.sp.jedit.View;
 import javax.swing.SwingUtilities;
 
 import static xml.Debug.*;
+import xml.PathUtilities;
 // }}}
 
 /**
@@ -65,7 +64,7 @@ public final class SchemaMapping
 	private final List<Mapping> rules;
 	
 	/** this schema mapping file's URI */
-	private URL baseURI;
+	private URI baseURI;
 	
 	/**
 	 * empty mapping
@@ -79,7 +78,7 @@ public final class SchemaMapping
 	 * empty mapping
 	 * @param	baseURI		url to resolve relative URLs in this document
 	 */
-	public SchemaMapping(URL baseURI)
+	public SchemaMapping(URI baseURI)
 	{
 		typeIds = new ArrayList<TypeIdMapping>();
 		rules = new ArrayList<Mapping>();
@@ -89,7 +88,7 @@ public final class SchemaMapping
 	/**
 	 * @return this schema mapping's URL or null if it's totally in memory
 	 */
-	public URL getBaseURI(){
+	public URI getBaseURI(){
 		return baseURI;
 	}
 	
@@ -315,7 +314,7 @@ public final class SchemaMapping
 		 * @param	target	typeID or URL
 		 * @param	targetIsTypeId	typeID / URL ?
 		 */
-		public DocumentElementRule(URL baseURI, String prefix, String localName, String target, boolean targetIsTypeId)
+		public DocumentElementRule(URI baseURI, String prefix, String localName, String target, boolean targetIsTypeId)
 		{
 			super(baseURI,target,targetIsTypeId);
 			if((prefix == null || "".equals(prefix))
@@ -356,7 +355,7 @@ public final class SchemaMapping
 		 * @param	targetIsTypeId	typeID / URL ?
 		 * @throws	IllegalArgumentException	if ns is null
 		 */
-		public NamespaceRule(URL baseURI,String ns, String target, boolean targetIsTypeId){
+		public NamespaceRule(URI baseURI,String ns, String target, boolean targetIsTypeId){
 			super(baseURI, target,targetIsTypeId);
 			if(ns == null)throw new IllegalArgumentException("namespace can't be null");
 			namespace=ns;
@@ -400,7 +399,7 @@ public final class SchemaMapping
 		 * @param	targetIsTypeId	typeID / URL ?
 		 * @throws	IllegalArgumentException if pattern is null
 		 */
-		public URIPatternRule(URL baseURI, String pattern, String target, boolean targetIsTypeId)
+		public URIPatternRule(URI baseURI, String pattern, String target, boolean targetIsTypeId)
 		{
 			super(baseURI, target,targetIsTypeId);
 			if(pattern == null)throw new IllegalArgumentException("pattern can't be null");
@@ -473,7 +472,7 @@ public final class SchemaMapping
 		 * @param	targetIsTypeId	typeID / URL ?
 		 * @throws	IllegalArgumentException if pattern is null
 		 */
-		public TransformURI(URL baseURI, String fromPattern, String toPattern)
+		public TransformURI(URI baseURI, String fromPattern, String toPattern)
 		{
 			super(baseURI);
 			if(fromPattern == null)throw new IllegalArgumentException("fromPattern can't be null");
@@ -517,7 +516,6 @@ public final class SchemaMapping
 		{
 			try
 			{
-				URI u = new URI(url).normalize();
 				Matcher m = compPattern.matcher(url);
 				if(m.matches()){
 						// prefix of the URI goes before
@@ -538,15 +536,18 @@ public final class SchemaMapping
 								result += splitToPattern[i+1];
 						}
 					}
-					try{
-					if(resourceExists(new URL(getBaseURI(),result))){
+					URI resultURI;
+					if(getBaseURI() == null){
+						resultURI = new URI(result);
+					}else{
+						resultURI = getBaseURI().resolve(result);
+					}
+					if(resourceExists(resultURI)){
 						return new Result(getBaseURI(),result);
 					}else{
 						if(DEBUG_SCHEMA_MAPPING)Log.log(Log.DEBUG,SchemaMapping.class,"resource '"+result+"' not found for '"+url+"'");
 					}
-					}catch(MalformedURLException mfue){
-						Log.log(Log.ERROR,SchemaMapping.class,"resource '"+result+"' malformed for '"+url+"'",mfue);
-					}
+					
 				}
 			}catch(URISyntaxException use){
 				Log.log(Log.ERROR,SchemaMapping.class,"Malformed:"+url);
@@ -588,7 +589,7 @@ public final class SchemaMapping
 	{
 		/** matched URI */
 		private final String resource;
-		private final URL resURL;
+		private final URI resURL;
 		
 		/**
 		 * @param	base	baseURI to use if resource is relative
@@ -597,20 +598,18 @@ public final class SchemaMapping
 		 * @param	targetIsTypeId	typeID / URL ?
 		 * @throws	IllegalArgumentException	if resource is null
 		 */
-		public URIResourceRule(URL base, String resource,String target, boolean targetIsTypeId)
+		public URIResourceRule(URI base, String resource,String target, boolean targetIsTypeId)
 		{
 			super(base,target,targetIsTypeId);
 			if(resource == null)throw new IllegalArgumentException("resource can't be null");
 			try{
 				URI u = new URI(resource).normalize();
 				if(u.isAbsolute()){
-					resURL = new URL(resource);
+					resURL = u;
 				}else{
 					if(base == null)throw new IllegalArgumentException("base can't be null when resource is relative :"+resource);
-					resURL = new URL(base,resource);
+					resURL = base.resolve(resource);
 				}
-			}catch(MalformedURLException mfe){
-				throw new IllegalArgumentException("resource '"+resource+"' must be a valid url",mfe);
 			}catch(URISyntaxException use){
 				throw new IllegalArgumentException("resource '"+resource+"' must be a valid url",use);
 			}
@@ -626,17 +625,16 @@ public final class SchemaMapping
 			if(resURL!=null){
 				try{
 					URI matchedURI = new URI(url).normalize();
-					URL matchedURL;
+					URI matchedURL;
 					if(matchedURI.isAbsolute()){
-						matchedURL = matchedURI.toURL();
+						matchedURL = matchedURI;
 					}else{
-						matchedURL = new URL(resURL,matchedURI.toString());
+						matchedURL = resURL.resolve(matchedURI);
 					}
 					//System.err.println("resURL:"+resURL+", matchedURL="+matchedURL);
-					return resURL.sameFile(matchedURL);
+					//FIXME: implement sthing like sameFile !
+					return resURL.equals(matchedURL);
 					
-				}catch(MalformedURLException mfue){
-					System.err.println("invalid matched URL : "+url);
 				}catch(URISyntaxException use){
 					System.err.println("invalid matched URL : "+use);
 				}
@@ -659,7 +657,7 @@ public final class SchemaMapping
 	 */
 	public static class DefaultRule extends Rule{
 		
-		public DefaultRule(URL baseURI, String target,boolean targetIsTypeId){
+		public DefaultRule(URI baseURI, String target,boolean targetIsTypeId){
 			super(baseURI, target,targetIsTypeId);
 		}
 		
@@ -706,10 +704,10 @@ public final class SchemaMapping
 		 * @param	targetIsTypeId	typeID / URL ?
 		 * @throws	IllegalArgumentException	if doctype is null
 		 */
-		public DoctypeRule(URL baseURI, String doctype, String target,boolean targetIsTypeId){
+		public DoctypeRule(URI baseURI, String doctype, String target,boolean targetIsTypeId){
 			super(baseURI, target,targetIsTypeId);
 			if(doctype==null)throw new IllegalArgumentException("doctype can't be null");
-			if(doctype=="")throw new IllegalArgumentException("doctype can't be \"\"");
+			if(doctype.length() == 0)throw new IllegalArgumentException("doctype can't be \"\"");
 			this.doctype=doctype;
 		}
 		
@@ -746,7 +744,7 @@ public final class SchemaMapping
 		 * @param	targetIsTypeId	typeID / URL ?
 		 * @throws	IllegalArgumentException	if target is null
 		 */
-		Rule(URL baseURI, String target,boolean targetIsTypeId){
+		Rule(URI baseURI, String target,boolean targetIsTypeId){
 			super(baseURI);
 			if(target==null)throw new IllegalArgumentException("target can't be null");
 			if("".equals(target))throw new IllegalArgumentException("target can't be \"\"");
@@ -834,25 +832,20 @@ public final class SchemaMapping
 			"fromDocument("+url+")");
 		if(url==null)throw new IllegalArgumentException("url can't be null");
 
-		InputSource input = new InputSource(url);
-
 		final SchemaMapping mapping = new SchemaMapping();
 
 		try{
-			mapping.baseURI = new URL(url);
-		}catch(MalformedURLException mfue){
+			mapping.baseURI = new URI(url);
+		}catch(URISyntaxException mfue){
 			throw new IllegalArgumentException("malformed URL: "+url,mfue);
 		}
 		
 		try {
 			
 			XMLReader reader = XMLReaderFactory.createXMLReader();
-			
+			reader.setEntityResolver(xml.Resolver.instance());
 			DefaultHandler handler = new MyHandler(mapping);
 
-			javax.xml.parsers.SAXParserFactory factory = new org.apache.xerces.jaxp.SAXParserFactoryImpl();
-			factory.setNamespaceAware(true);
-			
 			// the input document will be validated, so no error message in the handler
 			// TODO: what happens when there are errors in the document ?
 			ValidatorHandler verifierFilter = SchemaLoader.instance().loadJaxpGrammar(
@@ -867,6 +860,11 @@ public final class SchemaMapping
 			verifierFilter.setContentHandler(handler);
 			
 			verifierFilter.setErrorHandler(handler);
+			
+			// for schemas loaded from VFS, resolve the URL, so that an octet
+			// stream is provided to Xerces, and it doesn't try to create
+			// an sftp://... URL and fail with an "unknown protocol" exception
+			InputSource input = xml.Resolver.instance().resolveEntity(null, url);
 			
 			reader.parse(input);
 
@@ -886,36 +884,98 @@ public final class SchemaMapping
 	
 	/**
 	 * serialize to an XML document
-	 * @param	output	path to the output file
+	 * @param	output	url to the output file
 	 * @throws	IOException	if there is an error during serialization
 	 * FIXME: serialized document could be invalid. Is it worth using proper XML serialization ?
 	 */
-	public void toDocument(String output)throws IOException{
-		FileOutputStream fos = new FileOutputStream(output);
-		Writer out = new OutputStreamWriter(fos,"UTF-8");
-		out.write("<?xml version=\"1.0\" ?>\n");
-		out.write("<locatingRules xmlns=\"http://thaiopensource.com/ns/locating-rules/1.0\">\n");
-		for(Mapping r:rules)
-		{
-			out.write(r.toString());
+	public void toDocument(final String output)throws IOException{
+
+		if(output==null)throw new IllegalArgumentException("url can't be null");
+
+		URI resource = null;
+		try{
+			resource = new URI(output);
+		}catch(URISyntaxException ue){
+			throw new IllegalArgumentException("malformed URL: "+output,ue);
 		}
-		for(TypeIdMapping tid:typeIds)
+
+		// defaults to file
+		String scheme = resource.getScheme();
+		if(scheme == null)scheme = "file";
+		
+		final VFS vfs = VFSManager.getVFSForProtocol(scheme);
+		final Object[]sessionArray = new Object[1];
+		final View view = jEdit.getActiveView();
+		
+		Runnable run = new Runnable()
 		{
-			out.write(tid.toString());
+			public void run()
+			{
+				sessionArray[0] = vfs.createVFSSession(output,view);
+			}
+		};
+		
+		if(SwingUtilities.isEventDispatchThread())
+			run.run();
+		else
+		{
+			try
+			{
+				SwingUtilities.invokeAndWait(run);
+			}
+			catch(Exception e)
+			{
+				throw new RuntimeException(e);
+			}
 		}
-		out.write("</locatingRules>");
-		out.close();
+		
+		Object session = sessionArray[0];
+		if(session != null)
+		{
+			try{
+				// urlToPath because the FileVFS wants a path and SFTPVFS wants an absolute URL
+				// starting with ftp or sftp
+				OutputStream vfsos = vfs._createOutputStream(session,
+					PathUtilities.urlToPath(resource.toString()),view);
+			
+				Writer out = new OutputStreamWriter(vfsos,"UTF-8");
+				out.write("<?xml version=\"1.0\" ?>\n");
+				out.write("<locatingRules xmlns=\"http://thaiopensource.com/ns/locating-rules/1.0\">\n");
+				for(Mapping r:rules)
+				{
+					out.write(r.toString());
+				}
+				for(TypeIdMapping tid:typeIds)
+				{
+					out.write(tid.toString());
+				}
+				out.write("</locatingRules>");
+				out.close();
+
+			}finally{
+				try{
+					vfs._endVFSSession(session,view);
+				}catch(IOException ioe){
+					Log.log(Log.ERROR,SchemaMapping.class,"ending VFS session in toDocument("+output+")",ioe);
+				}
+			}
+
+		}
+		else
+		{
+			throw new IOException("can't create VFS session for "+output);
+		}
 	}
 	
 	private static class MyHandler extends DefaultHandler
 	{
 		private SchemaMapping mapping;
-		private Stack<URL> baseURIs;
+		private Stack<URI> baseURIs;
 		
 		MyHandler(SchemaMapping mapping)
 		{
 			this.mapping = mapping;
-			baseURIs = new Stack<URL>();
+			baseURIs = new Stack<URI>();
 			baseURIs.push(mapping.baseURI);
 		}
 		public void startElement(String uri, String localName, String qName, Attributes attributes)
@@ -930,17 +990,15 @@ public final class SchemaMapping
 				base = attributes.getValue("xml:base");
 				try{
 					URI buri = new URI(base);
-					URL burl;
+					URI burl;
 					if(buri.isAbsolute()){
-						burl = buri.toURL();
+						burl = buri;
 					}else{
-						burl = new URL(baseURIs.peek(),base);
+						burl = baseURIs.peek().resolve(buri);
 					}
 					baseURIs.push(burl);
 				}catch(URISyntaxException use){
 					throw new SAXException("invalid xml:base "+base, use);
-				}catch(MalformedURLException mfue){
-					throw new SAXException("invalid xml:base "+base, mfue);
 				}
 			}
 			else
@@ -1024,10 +1082,8 @@ public final class SchemaMapping
 			{
 				newRule = new DefaultRule(baseURIs.peek(),target,targetIsTypeId);
 			}
-			else if("typeId".equals(localName))
+			else if("typeId".equals(localName) && attributes.getIndex("","id")!=-1)
 			{
-				if(attributes.getIndex("","id")!=-1)
-				{
 					// TODO: check unicity ?
 					String id = attributes.getValue("","id");
 					TypeIdMapping tid = new TypeIdMapping(
@@ -1036,8 +1092,6 @@ public final class SchemaMapping
 						target,
 						targetIsTypeId);
 					mapping.typeIds.add(tid);
-				}
-				
 			}
 			if(newRule != null){
 				if(base != null)newRule.setExplicitBase(base);
@@ -1059,12 +1113,12 @@ public final class SchemaMapping
 		protected SchemaMapping parent;
 		
 		/** this schema mapping file's URI */
-		protected URL baseURI;
+		protected URI baseURI;
 	
 		/** explicit xml:base, if any */
 		protected String base;
 		
-		Mapping(URL baseURI){
+		Mapping(URI baseURI){
 			this.baseURI = baseURI;
 			this.parent = null;
 		}
@@ -1077,14 +1131,14 @@ public final class SchemaMapping
 		/**
 		 * @return this schema mapping's URL or null if it's totally in memory
 		 */
-		public URL getBaseURI(){
+		public URI getBaseURI(){
 			return baseURI;
 		}
 		
 		/**
 		 * for containing SchemaMapping 
 		 */
-		void setBaseURI(URL baseURI){
+		void setBaseURI(URI baseURI){
 			this.baseURI = baseURI;
 		}
 		
@@ -1135,20 +1189,21 @@ public final class SchemaMapping
 		 * @param	rules	URL where to find the rules
 		 * @throws	IllegalArgumentException	if the url is malformed
 		 */
-		public IncludeMapping(URL baseURI, String rules){
+		public IncludeMapping(URI baseURI, String rules){
 			super(baseURI);
 			if(rules==null)throw new IllegalArgumentException("rules can't be null");
 			
 			try{
 				URI u = new URI(rules);
-				URL url;
+				URI url;
 				if(u.isAbsolute()){
-					url = u.toURL();
+					url = u;
 				}else{
-					url = new URL(baseURI,rules);
+					if(baseURI == null)throw new IllegalArgumentException("relative rules '"+rules+"' with null baseURI");
+					else url = baseURI.resolve(rules);
 				}
 				
-				mapping = SchemaMapping.fromDocument(url.toExternalForm());
+				mapping = SchemaMapping.fromDocument(url.toURL().toExternalForm());
 				
 			}catch(MalformedURLException mfue){
 				throw new IllegalArgumentException("rules '"+rules+"' must be an URL",mfue);
@@ -1164,7 +1219,7 @@ public final class SchemaMapping
 		 * @param	mapping	mapping to link to
 		 * @throws	IllegalArgumentException	if mapping is null
 		 */
-		public IncludeMapping(URL baseURI, SchemaMapping mapping){
+		public IncludeMapping(URI baseURI, SchemaMapping mapping){
 			super(baseURI);
 			if(mapping==null)throw new IllegalArgumentException("mapping can't be null");
 			
@@ -1197,10 +1252,10 @@ public final class SchemaMapping
 	
 	
 	public static final class Result{
-		public final URL baseURI;
+		public final URI baseURI;
 		public final String target;
 		
-		public Result(URL baseURI, String target){
+		public Result(URI baseURI, String target){
 			this.baseURI = baseURI;
 			this.target = target;
 		}
@@ -1241,16 +1296,16 @@ public final class SchemaMapping
 		final String tid;
 		final String target;
 		final boolean targetIsTypeId;
-		final URL baseURI;
+		final URI baseURI;
 		
-		TypeIdMapping(URL baseURI, String tid, String target, boolean targetIsTypeId){
+		TypeIdMapping(URI baseURI, String tid, String target, boolean targetIsTypeId){
 			this.baseURI = baseURI;
 			this.tid = tid;
 			this.target = target;
 			this.targetIsTypeId = targetIsTypeId;
 		}
 		
-		public URL getBaseURI(){
+		public URI getBaseURI(){
 			return baseURI;
 		}
 		
@@ -1277,19 +1332,23 @@ public final class SchemaMapping
 	/**
 	 * try to use the VFS to detect if a resource exists
 	 */
-	private static boolean resourceExists(final URL resource){
+	public static boolean resourceExists(final URI resource){
 		if(DEBUG_SCHEMA_MAPPING)Log.log(Log.DEBUG,SchemaMapping.class,"resourceExists("+resource+")");
 		
 		VFSFile f = null;
-		final VFS vfs = VFSManager.getVFSForProtocol(resource.getProtocol());
-		final Object[]session = new Object[1];
+		// defaults to file
+		String scheme = resource.getScheme();
+		if(scheme == null)scheme = "file";
+		
+		final VFS vfs = VFSManager.getVFSForProtocol(scheme);
+		final Object[]sessionArray = new Object[1];
 		final View view = jEdit.getActiveView();
 		
 		Runnable run = new Runnable()
 		{
 			public void run()
 			{
-				session[0] = vfs.createVFSSession(resource.toString(),view);
+				sessionArray[0] = vfs.createVFSSession(resource.toString(),view);
 			}
 		};
 		
@@ -1299,7 +1358,7 @@ public final class SchemaMapping
 		{
 			try
 			{
-				SwingUtilities.invokeLater(run);
+				SwingUtilities.invokeAndWait(run);
 			}
 			catch(Exception e)
 			{
@@ -1307,15 +1366,18 @@ public final class SchemaMapping
 			}
 		}
 		
-		if(session[0] != null)
+		Object session = sessionArray[0];
+		if(session != null)
 		{
 			try{
-				f = vfs._getFile(session[0],resource.getPath(),view);
+				// urlToPath because the FileVFS wants a path and SFTPVFS wants an absolute URL
+				// starting with ftp or sftp
+				f = vfs._getFile(session,PathUtilities.urlToPath(resource.toString()),view);
 			}catch(IOException ioe){
 				Log.log(Log.ERROR,SchemaMapping.class,"error in resourceExists("+resource+")",ioe);
 			}
 			try{
-				vfs._endVFSSession(session[0],view);
+				vfs._endVFSSession(session,view);
 			}catch(IOException ioe){
 				Log.log(Log.ERROR,SchemaMapping.class,"ending VFS session in resourceExists("+resource+")",ioe);
 			}

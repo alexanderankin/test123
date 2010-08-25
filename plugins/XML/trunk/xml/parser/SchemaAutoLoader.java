@@ -34,8 +34,8 @@ import java.util.Map;
 import java.util.Enumeration;
 
 import java.io.IOException;
-import java.net.URL;
-import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.Buffer;
@@ -113,10 +113,10 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 	 * @param	schemaURI	URI of the schema to install
 	 */
 	public void forceSchema(String baseURI, String schemaURI)
-	throws SAXException, IOException, MalformedURLException
+	throws SAXException, IOException, URISyntaxException
 	{
 		this.mapping = null;
-		installJaxpGrammar(new URL(baseURI), schemaURI, false);
+		installJaxpGrammar(new URI(baseURI), schemaURI, false);
 	}
 
 	/**
@@ -143,12 +143,19 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 	 * @param	schemaURL	URL to the schema	
 	 * @param	needReplay	is parsing started and we need to replay events to the verifier
 	 */
-	private void installJaxpGrammar(final URL baseURI, final String schemaURL, boolean needReplay) throws SAXException,IOException
+	private void installJaxpGrammar(final URI baseURI, final String schemaURL, boolean needReplay) throws SAXException,IOException
 	{
 		// schemas URLs are resolved against the schema mapping file
 		final ValidatorHandler verifierFilter =
 		SchemaLoader.instance().loadJaxpGrammar(baseURI.toString(),schemaURL,getErrorHandler(),requestingBuffer);
-		this.schemaURL = new URL(baseURI,schemaURL).toString();
+		if(baseURI == null)
+		{
+			this.schemaURL = schemaURL;
+		}
+		else
+		{
+			this.schemaURL = baseURI.resolve(schemaURL).toString();
+		}
 		
 		if(needReplay){
 			// replay setDocumentLocator() and startDocument(), but only for the new

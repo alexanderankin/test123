@@ -1,6 +1,7 @@
 package xml.parser;
 
 // {{{ imports
+import java.net.URISyntaxException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -189,7 +190,10 @@ public class XercesParserImpl extends XmlParser
 					}
 					catch(IOException ioe)
 					{
-						ioe.printStackTrace();
+						Log.log(Log.ERROR,this,ioe);
+					}
+					catch(URISyntaxException ioe)
+					{
 						Log.log(Log.ERROR,this,ioe);
 					}
 				}
