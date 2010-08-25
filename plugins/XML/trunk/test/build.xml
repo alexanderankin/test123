@@ -6,6 +6,7 @@
     partcular, need the install.dir set to know where to find the plugin
     jar files. -->
     <property file="build.properties"/>
+    <property file="../../build.properties"/>
 
     <property name="build.properties" location="${test.framework.dir}/build.properties"/>
     
