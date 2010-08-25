@@ -550,8 +550,10 @@ CSSNode styleSheet() :
      
         children=afterImportDeclaration()
         {
-            rootNode.setEndLocation(children.get(children.size() - 1).getEndLocation());
-            rootNode.addChildren(children);   
+            if (children != null && children.size() > 0) {
+                rootNode.setEndLocation(children.get(children.size() - 1).getEndLocation());
+                rootNode.addChildren(children);   
+            }
         }
         <EOF> 
             
