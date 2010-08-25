@@ -52,6 +52,8 @@
 		<!-- Common Controls -->
 		<file name="CommonControls.jar"/>
 		<file name="kappalayout.jar"/>
+		<!-- EclipseIcons -->
+		<file name="EclipseIcons.jar"/>
     </filelist>
 
     <!-- include everything needed to let jEdit load the plugin and run the 
@@ -82,7 +84,7 @@
 
     <!-- this selector holds just one test.  This is optional. -->
     <selector id="testcases.current">
-        <filename name="xml/XmlPluginFailingTest.java"/>
+        <filename name="xml/XmlPluginTest.java"/>
     </selector>
 
     <!-- this selector controls which tests to run, set the refid to either
@@ -97,7 +99,7 @@
 
     <!-- set any system properties, this is a way to let tests know things
     without hardcoding values directly in the tests. -->    
-    <property name="test_data" value="../test_data"/>
+    <property name="test_data" location="../test_data"/>
     <propertyset id="project.test.sysproperties">
         <propertyref name="test_data"/>
     </propertyset>

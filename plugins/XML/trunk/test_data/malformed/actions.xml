@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+
+<!--
+  - malformed file (unbalanced ACTIONSMALFORMED at end of document)
+  - the schema is still loaded and available for XML Insert.
+  	This is for plugin bug #2810050 XMLPlugin XercesParserImpl  null CompletionInfo
+  	https://sourceforge.net/tracker/?func=detail&aid=2810050&group_id=588&atid=565475
+  -->
+<ACTIONS
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:noNamespaceSchemaLocation="../simple/actions.xsd"
+   >
+   
+    <ACTION NAME="xmlindenter.indent">
+        <CODE>xml.indent.XmlIndenterPlugin.indentXml(view);</CODE>
+    </ACTION>
+    <ACTION NAME="xmlindenter.toggleSplitAttributes">
+        <CODE>xml.indent.XmlIndenterPlugin.toggleSplitAttributes(view);</CODE>
+    </ACTION>
+	
+</ACTIONSMALFORMED>

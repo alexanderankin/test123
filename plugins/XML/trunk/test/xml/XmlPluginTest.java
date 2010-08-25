@@ -222,21 +222,17 @@ public class XmlPluginTest{
     	
     	TestUtils.openFile(xml.getPath());
     	
+		// wait for end of parsing
+    	parseAndWait();
+
     	action("xml-insert-float",1);
     	
     	
     	FrameFixture insert = TestUtils.findFrameByTitle("XML Insert");
     	
-		// wait for end of parsing
-    	action("sidekick-parse",1);
-		simplyWaitForMessageOfClass(sidekick.SideKickUpdate.class,10000);
-		
 		// go into the file
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(341);
-				}
-		});
+		gotoPositionAndWait(341);
+		
 		// entities declared in the root document appear here
 		assertThat(insert.list("entities").contents()).contains("frag2");
 		// ids declared in other fragment appear heare
@@ -614,5 +610,26 @@ public class XmlPluginTest{
 		assertThat(insert.list("elements").contents()).isEmpty();
 
 		insert.close();
+	}
+	
+	@Test
+	public void testMalformedInstanceDocument(){
+		
+    	File xml = new File(testData,"malformed/actions.xml");
+    	
+    	TestUtils.openFile(xml.getPath());
+    	
+    	action("xml-insert-float",1);
+    	FrameFixture insert = TestUtils.findFrameByTitle("XML Insert");
+    	
+		parseAndWait();
+
+		// inside ACTIONS
+		gotoPositionAndWait(731);
+		
+		assertThat(insert.list("elements").contents()).contains("ACTION");
+		
+		insert.close();
+		
 	}
 }
