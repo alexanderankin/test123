@@ -246,7 +246,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 				uri = jEdit.getProperty(prop + ".uri");
 				Entry se = new Entry(Entry.SYSTEM,id,uri);
 				resourceCache.put(se,uri);
-				Log.log(Log.DEBUG,Resolver.class, "loading cache "+id+" -> "+uri);
+				if(DEBUG_RESOLVER)Log.log(Log.DEBUG,Resolver.class, "loading cache "+id+" -> "+uri);
 			}
 			loadedCache = true;
 		}
@@ -255,6 +255,14 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 
 			catalog = new Catalog();
 			catalog.getCatalogManager().setPreferPublic(true);
+			// don't issue an error "Cannot find CatalogManager.properties"
+			// fix for plugin bug #1090658 - XML plugin can't find CatalogManager.properties
+			// warning: this will also suppress warnings if somebody adds a CatalogManager.properties
+			// and references non-existing catalogs
+			catalog.getCatalogManager().ignoreMissingProperties(DEBUG_RESOLVER);
+			// verbosity to 2 lists which catalogs are loaded and syntax errors
+			// it seems a reasonable default
+			catalog.getCatalogManager().setVerbosity(DEBUG_RESOLVER?Integer.MAX_VALUE:2);
 			catalog.setupReaders();
 			catalogFiles = new HashSet<String>();
 			catalogFiles.add(INTERNALCATALOG);
@@ -270,7 +278,6 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 			}
 			catch(Exception ex1){
 				Log.log(Log.ERROR,Resolver.class,ex1);
-				ex1.printStackTrace();
 			}
 
 
@@ -748,6 +755,15 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 		resourceCache.clear();
 	} //}}}
 
+	/**
+	 * called from actions.xml
+	 */
+	public synchronized void reloadCatalogs()
+	{
+		loadedCatalogs = false;
+		load();
+	}
+	
 	private String resolvePublicOrSystemFromCache(String id, boolean isPublic){
 		Entry e = new Entry(isPublic ? Entry.PUBLIC : Entry.SYSTEM,id,null);
 		if(DEBUG_RESOLVER)Log.log(Log.DEBUG,Resolver.class,"resolvePublicOrSystemFromCache("+id+")");

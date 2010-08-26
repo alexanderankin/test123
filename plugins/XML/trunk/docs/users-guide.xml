@@ -975,6 +975,8 @@ Chapter 22 of <emphasis>DocBook XSL: The Complete Guide</emphasis> by Bob Stayto
       is malformed (bug #2810050 - Eric Le Lay).</para></listitem>
       <listitem><para>Fixed bugs related to SFTP (bug #3009485 - Eric Le Lay).
       VFS should be fully supported, now.</para></listitem>
+      <listitem><para>Suppress error message from Resolver (cannot find CatalogManager.properties)
+      (bug #1090658 - Eric Le Lay)</para></listitem>
      </itemizedlist>
  </listitem>
 
