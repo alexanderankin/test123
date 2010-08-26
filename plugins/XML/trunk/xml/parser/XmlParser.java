@@ -327,7 +327,9 @@ public abstract class XmlParser extends SideKickParser
 						}
 						if (attrName.startsWith(prefix))
 						{
-							allowedCompletions.add(attrName);
+							AttributeDecl newDecl = attrDecl.copy();
+							newDecl.name = attrName;
+							allowedCompletions.add(newDecl);
 						}
 					}
 				}
