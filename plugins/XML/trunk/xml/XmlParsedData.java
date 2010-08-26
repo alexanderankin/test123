@@ -776,8 +776,10 @@ public class XmlParsedData extends SideKickParsedData
 		ExpansionModel em = new ExpansionModel();
 		em.add();   // root (filename node)
 		em.add();   // document node
-		for (int i = 0; i < root.getChildAt(0).getChildCount(); i++) {
-		    em.inc();   // first level children.  Is this enough?
+		if (root.getChildCount() != 0) {
+			for (int i = 0; i < root.getChildAt(0).getChildCount(); i++) {
+			    em.inc();   // first level children.  Is this enough?
+			}
 		}
 		return em;
 	}
