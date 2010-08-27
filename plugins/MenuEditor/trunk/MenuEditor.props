@@ -7,10 +7,10 @@ plugin.menuEditor.MenuEditorPlugin.version=0.3
 plugin.menuEditor.MenuEditorPlugin.description=Allow editing of jEdit menus
 
 plugin.menuEditor.MenuEditorPlugin.depend.0=jdk 1.6
-plugin.menuEditor.MenuEditorPlugin.depend.1=jedit 04.04.01.00
+plugin.menuEditor.MenuEditorPlugin.depend.1=jedit 04.03.99.00
 plugin.menuEditor.MenuEditorPlugin.depend.2=plugin jdiff.JDiffPlugin 3.1.0
 
-plugin.menuEditor.MenuEditorPlugin.docs=description.html
+plugin.menuEditor.MenuEditorPlugin.docs=docs/MenuEditor.html
 
 plugin.menuEditor.MenuEditorPlugin.menu-item=menu-editor
 

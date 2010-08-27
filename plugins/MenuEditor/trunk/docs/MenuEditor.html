@@ -1,0 +1,58 @@
+<html>
+<title>The Menu Editor Plugin</title>
+<body>
+<h1>Menu Editor</h1>
+<p><i>Written by Shlomy Reinstein, August 2010.</i></p>
+<p>
+The Menu Editor plugin allows you to rearrange the jEdit menu
+(File/Edit/Search...), shown at the top of each view. You can
+rearrange the items in each menu, remove items from a menu,
+or add items to a menu.
+</p>
+<p>
+The plugin provides a single dialog, which you can open using
+the plugin menu. The dialog shows the current menus on the left,
+and the available actions on the right. For each of the two,
+there is a combo-box at the top using which you choose the menu
+or action set, and a list below it showing the items of the
+selected menu or the actions in the selected action set.
+</p>
+<p>
+To re-order items in a specific menu, select the items you want
+to move (multiple selection is allowed) and either use
+the up/down buttons to move them, or drag them to the
+desired position in the list.
+</p>
+<p>
+To remove items from a menu, select the items, and click the
+right-arrow button, or simply drag them outside the list.
+</p>
+<p>
+To add actions to a menu, select the actions from the list on
+the right, and either click the left-arrow button or simply
+drag them to the list of menu items.
+</p>
+<p>
+The buttons at the bottom of the dialog:
+<ul>
+<li>Ok: Apply the changes made in this dialog and close the
+dialog.
+<li>Apply: Apply the changes made in this dialog, but keep
+the dialog open for making more changes.
+<li>Cancel: Discard the changes made in this dialog (since
+the last time you clicked Apply, if you did) and close the
+dialog.
+<li>Restore default: Restore the menus to their original
+contents (the way they are provided with jEdit, with no
+modifications), and keep the dialog open for making
+changes.
+</ul>
+</p>
+<p>
+The plugin stores the list of changes that were made to the
+menus, and re-applies them each time jEdit is started. This
+way, you don't miss changes made by future versions of
+jEdit (such as new menu items).
+</p>
+</body>
+</html>
