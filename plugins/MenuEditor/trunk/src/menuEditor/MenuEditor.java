@@ -46,6 +46,8 @@ public class MenuEditor extends JDialog
 	private static final String spaceSeparator = "\\s+";
 	private static final String menuSeparator = "-";
 	private static final String subMenu = "%";
+	private static final String menuBarDiffFile = "mbar.diff";
+	private static final String menuEditorPrefix = "menu-editor.newMenu.";
 	private static String [] unchangedMenus;
 	private static HashMap<String, String[]> unchangedMenuItems =
 		new HashMap<String, String[]>();
@@ -145,7 +147,7 @@ public class MenuEditor extends JDialog
 	private static void applyDiff()
 	{
 		String diffPath = home.getAbsolutePath() + File.separator;
-		applyPropertyDiff(diffPath + "mbar.diff", unchangedMenus, viewMenuBar);
+		applyPropertyDiff(diffPath + menuBarDiffFile, unchangedMenus, viewMenuBar);
 		String [] menus = getMenus();
 		for (String menu: menus)
 		{
@@ -183,7 +185,11 @@ public class MenuEditor extends JDialog
 		String diffPath = home.getAbsolutePath() + File.separator;
 		String diffFile = diffPath + menu + ".diff";
 		String [] orig = unchangedMenuItems.get(menu);
+		if (orig == null)
+			orig = new String [0];
 		String [] modified = menuElem.getChildren();
+		if (modified == null)
+			modified = new String [0];
 		createPropertyDiff(diffFile, orig, modified, property);
 	}
 	private static void resetAllMenus()
@@ -274,7 +280,9 @@ public class MenuEditor extends JDialog
 	}
 	private void editMenuBar()
 	{
-		new MenuBarEditor(this);
+		new MenuBarEditor(this, menus);
+		// This updated 'menus' if there was a change. Now update the UI.
+		updateMenuModel();
 	}
 	private void initData()
 	{
@@ -427,11 +435,26 @@ public class MenuEditor extends JDialog
 		}
 		createDiff(menuElem);
 	}
+	private void createMenuBarDiff()
+	{
+		String diffPath = home.getAbsolutePath() + File.separator;
+		String diffFile = diffPath + menuBarDiffFile;
+		String [] modified = new String [menuModel.getSize()];
+		for (int i = 0; i < menuModel.getSize(); i++)
+		{
+			MenuElement me = (MenuElement) menuModel.getElementAt(i);
+			modified[i] = me.menu;
+			if (me.menu.startsWith(menuEditorPrefix))
+				jEdit.setProperty(me.menu + ".label", me.label);
+		}
+		createPropertyDiff(diffFile, unchangedMenus, modified, viewMenuBar);
+	}
 	private void apply()
 	{
 		updateMenuElement((MenuElement) menu.getSelectedItem());
 		for (MenuElement menuElem: menus)
 			createMenuDiff(menuElem);
+		createMenuBarDiff();
 		applyDiff();
 	}
 	private void resetMenu(MenuElement menuElem)
@@ -444,6 +467,7 @@ public class MenuEditor extends JDialog
 	}
 	private void restoreDefault()
 	{
+		jEdit.resetProperty(viewMenuBar);
 		for (MenuElement menuElem: menus)
 			resetMenu(menuElem);
 		initData();
@@ -542,6 +566,8 @@ public class MenuEditor extends JDialog
 	private void updateItems(MenuElement menuElem)
 	{
 		itemModel.clear();
+		if (menuElem.children == null)
+			return;
 		for (MenuElement child: menuElem.children)
 			itemModel.addElement(child);
 	}
@@ -588,6 +614,10 @@ public class MenuEditor extends JDialog
 			menus.add(menuElem);
 			initMenu(menuElem);
 		}
+		updateMenuModel();
+	}
+	private void updateMenuModel()
+	{
 		menuModel.removeAllElements();
 		for (MenuElement menuElem: menus)
 			menuModel.addElement(menuElem);
@@ -637,6 +667,11 @@ public class MenuEditor extends JDialog
 			this.menu = menu;
 			String prop = menu.startsWith(subMenu) ? menu.substring(1) : menu;
 			label = getLabel(prop);
+		}
+		public MenuElement(String menu, String label)
+		{
+			this.menu = menu;
+			this.label = label;
 		}
 		public String toString()
 		{
@@ -809,19 +844,20 @@ public class MenuEditor extends JDialog
 		DefaultListModel model;
 		RolloverButton up, down, add, remove;
 		JButton ok, cancel;
+		ArrayList<MenuElement> items;
 
-		public MenuBarEditor(JDialog parent)
+		public MenuBarEditor(JDialog parent, ArrayList<MenuElement> items)
 		{
 			super(parent, getProp("menu-editor.menuBarEditor.title"), true);
+			this.items = items;
 			JPanel contentPanel = new JPanel(new BorderLayout(5,5));
 			contentPanel.add(new JLabel(jEdit.getProperty("menu-editor.help")),
 				BorderLayout.NORTH);
 			JPanel center = new JPanel();
 			contentPanel.add(center, BorderLayout.CENTER);
 			model = new DefaultListModel();
-			String [] menuBarItems = getMenus();
-			for (String menu: menuBarItems)
-				model.addElement(new MenuElement(menu));
+			for (MenuElement item: items)
+				model.addElement(item);
 			menus = new JList(model);
 			JPanel menuPanel = new JPanel(new BorderLayout());
 			menuPanel.add(new JLabel(getProp("menu-editor.bar")),
@@ -839,6 +875,20 @@ public class MenuEditor extends JDialog
 			buttonPanel.add(up);
 			buttonPanel.add(down);
 			JPanel bottom = new JPanel();
+			add.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					add();
+				}
+			});
+			remove.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					remove();
+				}
+			});
 			ok = new JButton(getProp("menu-editor.ok"));
 			ok.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e)
@@ -871,21 +921,38 @@ public class MenuEditor extends JDialog
 		}
 		private void ok()
 		{
-			String diffPath = home.getAbsolutePath() + File.separator;
-			String diffFile = diffPath + menu + ".diff";
-			String [] modified = new String [model.getSize()];
-			for (int i = 0; i < model.getSize(); i++)
-				modified[i] = (String) model.get(i);
-			createPropertyDiff(diffFile, unchangedMenus, modified, viewMenuBar);
-			dispose();
+			items.clear();
+			for (int i = 0; i < model.size(); i++)
+				items.add((MenuElement) model.get(i));
+			setVisible(false);
 		}
 		private void cancel()
 		{
-			dispose();
+			setVisible(false);
 		}
 		private void restoreDefault()
 		{
 			
+		}
+		private void add()
+		{
+			String newMenu = JOptionPane.showInputDialog(this, getProp(
+				"newMenu"));
+			if (newMenu == null)
+				return;
+			MenuElement toAdd = new MenuElement(menuEditorPrefix +
+				newMenu, newMenu);
+			int sel = menus.getSelectedIndex();
+			if (sel == -1)
+				model.addElement(toAdd);
+			else
+				model.add(sel + 1, toAdd);
+		}
+		private void remove()
+		{
+			int [] sel = menus.getSelectedIndices();
+			for (int i = sel.length - 1; i >=0; i--)
+				model.remove(i);
 		}
 	}
 }
