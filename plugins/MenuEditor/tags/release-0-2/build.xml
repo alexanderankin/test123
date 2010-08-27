@@ -7,6 +7,8 @@
 
 	<property file="build.properties"/>
 	<property file="../build.properties"/>
+	<property name="docs-proc.target" value="none" />
+
 
 	<property file="build.support" value="../build-support" />
 	<import file="${build.support}/plugin-build.xml" />
@@ -15,7 +17,7 @@
 
 	<selector id="packageFiles">
 	  <or>
-		<filename name="description.html" />
+		<filename name="docs/MenuEditor.html" />
 	  </or>
 	 </selector>
 
