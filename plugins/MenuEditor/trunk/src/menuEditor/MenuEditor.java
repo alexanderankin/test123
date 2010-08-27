@@ -129,7 +129,7 @@ public class MenuEditor extends JDialog
 		if (! new File(diffFile).exists())
 			return;
 		if (items == null)
-			return;
+			items = new String [0];
 		String diff = readFile(diffFile);
 		String patched;
 		try
