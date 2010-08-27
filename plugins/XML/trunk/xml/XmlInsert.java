@@ -202,7 +202,7 @@ public class XmlInsert extends JPanel implements EBComponent
 		else
 		{
 			XmlParsedData data = (XmlParsedData)_data;
-			setDeclaredEntities(data.getNoNamespaceCompletionInfo().entities);
+			setDeclaredEntities(data.entities);
 			setDeclaredIDs(data.ids);
 			html = data.html;
 		}

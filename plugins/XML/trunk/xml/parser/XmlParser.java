@@ -281,12 +281,14 @@ public abstract class XmlParser extends SideKickParser
 			}
 			else if (mode == ENTITY_COMPLETE)
 			{
-				List<EntityDecl> completions = data.getNoNamespaceCompletionInfo().entities;
+				List<EntityDecl> completions = data.entities;
 				for(int i = 0; i < completions.size(); i++)
 				{
 					EntityDecl entity = completions.get(i);
 					if(entity.name.startsWith(word))
+					{
 						allowedCompletions.add(entity);
+					}
 				}
 			}
 			else if (mode == ATTRIB_COMPLETE) 

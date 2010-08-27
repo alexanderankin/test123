@@ -39,6 +39,7 @@ import sidekick.SideKickUpdate;
 
 import xml.completion.CompletionInfo;
 import xml.completion.ElementDecl;
+import xml.completion.EntityDecl;
 import xml.completion.IDDecl;
 import xml.parser.TagParser;
 import xml.parser.XmlTag;
@@ -84,9 +85,25 @@ public class XmlParsedData extends SideKickParsedData
 	 */
 	public List<IDDecl> ids;
 
+	public List<EntityDecl> entities;
+	public Map entityHash;
+	
+	/** entities are added to the noNamespaceCompletionInfo, so if a schema is used
+	 * on top of DTD, the entities are lost.
+	 * To prevent this, the entities are copied into the parsed data
+	 */
 	public void setCompletionInfo(String namespace, CompletionInfo info) {
 		if(namespace == null)namespace = "";
 		mappings.put(namespace, info);
+
+		// if this append, should remove entities declared in this CompletionInfo
+		// and nowhere else.
+		if(info == null)throw new UnsupportedOperationException("setCompletionInfo("+namespace+",null");
+		for(EntityDecl en : info.entities)
+		{
+			// avoid duplicates of &lt;, &amp; etc.
+			if(!entityHash.containsKey(en.name)) addEntity(en);
+		}
 	}
 	
 	//{{{ XmlParsedData constructor
@@ -97,6 +114,8 @@ public class XmlParsedData extends SideKickParsedData
 		mappings = new HashMap<String, CompletionInfo>();
 		ids = new ArrayList<IDDecl>();
 		allNamespacesBindingsAtTop = true;
+		entities = new ArrayList<EntityDecl>();
+		entityHash = new HashMap();
 	} //}}}
 
 	//{{{ getNoNamespaceCompletionInfo() method
@@ -785,6 +804,19 @@ public class XmlParsedData extends SideKickParsedData
 	}
 	//}}}
 	
+	//{{{ addEntity() method
+	public void addEntity(EntityDecl entity)
+	{
+		entities.add(entity);
+		if(entity.type == EntityDecl.INTERNAL
+			&& entity.value.length() == 1)
+		{
+			Character ch = new Character(entity.value.charAt(0));
+			entityHash.put(entity.name, ch);
+			entityHash.put(ch, entity.name);
+		}
+	} //}}}
+
 	//{{{ Private members
 
 	//{{{ getElementPrefix() method

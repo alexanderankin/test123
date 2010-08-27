@@ -24,7 +24,8 @@ import org.fest.swing.core.*;
 import org.fest.swing.finder.*;
 import org.fest.swing.edt.*;
 import org.fest.swing.timing.*;
-
+import org.fest.swing.driver.*;
+import org.fest.swing.cell.*;
 import static org.fest.assertions.Assertions.*;
 
 import org.gjt.sp.jedit.testframework.Log;
@@ -43,6 +44,7 @@ import org.gjt.sp.jedit.Buffer;
 
 import java.io.*;
 
+import java.awt.Component;
 import java.awt.event.KeyEvent;
 import java.awt.event.InputEvent;
 import org.gjt.sp.jedit.gui.CompletionPopup;
@@ -86,19 +88,16 @@ public class XmlPluginTest{
 		// go into the file
 		gotoPositionAndWait(530);
 
-		assertThat(insert.list("elements").contents()).contains("ipo:shipComment");
-		assertThat(insert.list("elements").contents()).excludes("ipo:comment").excludes("comment");
-		assertThat(insert.list("elements").contents()).excludes("ipo:otherComment").excludes("otherComment");
-		assertThat(insert.list("elements").contents()).contains("ipo:concreteOtherComment");
+		assertThat(xmlListContents(insert.list("elements"))).contains("ipo:shipComment");
+		assertThat(xmlListContents(insert.list("elements"))).excludes("ipo:comment").excludes("comment");
+		assertThat(xmlListContents(insert.list("elements"))).excludes("ipo:otherComment").excludes("otherComment");
+		assertThat(xmlListContents(insert.list("elements"))).contains("ipo:concreteOtherComment");
 		
 		// go into the customerComment
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(483);
-				}
-		});
+		gotoPositionAndWait(483);
+		
 		Pause.pause(500);
-		assertThat(insert.list("elements").contents()).contains("customerId");
+		assertThat(xmlListContents(insert.list("elements"))).contains("customerId");
 
 		insert.close();
     }
@@ -122,7 +121,7 @@ public class XmlPluginTest{
 		JWindowFixture completion = XMLTestUtils.completionPopup();
 		
 		completion.requireVisible();
-		assertThat(completion.list().contents()).containsOnly("aa","ab");
+		assertThat(xmlListContents(completion.list())).containsOnly("aa","ab");
 		completion.list().pressAndReleaseKeys(KeyEvent.VK_ESCAPE);
 		
 		Pause.pause(500);
@@ -143,7 +142,7 @@ public class XmlPluginTest{
 		completion = XMLTestUtils.completionPopup();
 		
  		completion.requireVisible();
-		assertThat(completion.list().contents()).containsOnly("aa","ab");
+		assertThat(xmlListContents(completion.list())).containsOnly("aa","ab");
 		completion.list().pressAndReleaseKeys(KeyEvent.VK_ESCAPE);
 		Pause.pause(500);
 
@@ -153,7 +152,7 @@ public class XmlPluginTest{
 		completion = XMLTestUtils.completionPopup();
 
 		completion.requireVisible();
-		assertThat(completion.list().contents()).containsOnly("aa","ab");
+		assertThat(xmlListContents(completion.list())).containsOnly("aa","ab");
 		completion.list().pressAndReleaseKeys(KeyEvent.VK_ESCAPE);
 		Pause.pause(500);
 
@@ -234,9 +233,9 @@ public class XmlPluginTest{
 		gotoPositionAndWait(341);
 		
 		// entities declared in the root document appear here
-		assertThat(insert.list("entities").contents()).contains("frag2");
+		assertThat(xmlListContents(insert.list("entities"))).contains("frag2");
 		// ids declared in other fragment appear heare
-		assertThat(insert.list("ids").contents()).contains("testing [element: <chapter>]");
+		assertThat(xmlListContents(insert.list("ids"))).contains("testing [element: <chapter>]");
 		
 		insert.list("ids").item("testing [element: <chapter>]").click(MouseButton.RIGHT_BUTTON);
 		
@@ -299,7 +298,7 @@ public class XmlPluginTest{
 		gotoPositionAndWait(151);
     	action("xml-insert-float",1);
     	FrameFixture insert = TestUtils.findFrameByTitle("XML Insert");
-		assertThat(insert.list("elements").contents()).containsOnly("ACTION");
+		assertThat(xmlListContents(insert.list("elements"))).containsOnly("ACTION");
 		insert.close();
 		
 		gotoPositionAndWait(244);
@@ -307,7 +306,7 @@ public class XmlPluginTest{
 		// inside CODE
     	action("xml-insert-float",1);
     	insert = TestUtils.findFrameByTitle("XML Insert");
-		assertThat(insert.list("elements").contents()).isEmpty();
+		assertThat(xmlListContents(insert.list("elements"))).isEmpty();
 		insert.close();
 	}
 	
@@ -366,15 +365,11 @@ public class XmlPluginTest{
 		assertTrue("got '"+selected+"'",selected.contains("<CODDE"));
 		
 		// inside ACTIONS
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(219);
-				}
-		});
+		gotoPositionAndWait(219);
 
     	action("xml-insert-float",1);
     	FrameFixture insert = TestUtils.findFrameByTitle("XML Insert");
-		assertThat(insert.list("elements").contents()).containsOnly("ACTION");
+		assertThat(xmlListContents(insert.list("elements"))).containsOnly("ACTION");
 		insert.close();
 		
 		gotoPositionAndWait(286);
@@ -382,7 +377,7 @@ public class XmlPluginTest{
 		// inside CODE
     	action("xml-insert-float",1);
     	insert = TestUtils.findFrameByTitle("XML Insert");
-		assertThat(insert.list("elements").contents()).isEmpty();
+		assertThat(xmlListContents(insert.list("elements"))).isEmpty();
 		insert.close();
 		
 		xml = new File(testData,"relax_ng/actions_valid.xml");
@@ -423,7 +418,7 @@ public class XmlPluginTest{
 
     	action("xml-insert-float",1);
     	FrameFixture insert = TestUtils.findFrameByTitle("XML Insert");
-		assertThat(insert.list("elements").contents()).containsOnly("ACTION");
+		assertThat(xmlListContents(insert.list("elements"))).containsOnly("ACTION");
 		insert.close();
 	}
 	
@@ -442,7 +437,7 @@ public class XmlPluginTest{
 
     	action("xml-insert-float",1);
     	FrameFixture insert = TestUtils.findFrameByTitle("XML Insert");
-		assertThat(insert.list("elements").contents()).containsOnly("p","table");
+		assertThat(xmlListContents(insert.list("elements"))).containsOnly("p","table");
 		insert.close();
 		
 		// inside td
@@ -450,7 +445,7 @@ public class XmlPluginTest{
 
     	action("xml-insert-float",1);
     	insert = TestUtils.findFrameByTitle("XML Insert");
-		assertThat(insert.list("elements").contents()).containsOnly("em");
+		assertThat(xmlListContents(insert.list("elements"))).containsOnly("em");
 		insert.close();
 	}
 
@@ -480,7 +475,7 @@ public class XmlPluginTest{
 		// inside body
 		gotoPositionAndWait(166);
 		
-		assertThat(insert.list("elements").contents()).contains("ACTION");
+		assertThat(xmlListContents(insert.list("elements"))).contains("ACTION");
 		insert.close();
 	}
 	
@@ -512,12 +507,12 @@ public class XmlPluginTest{
 		// inside body
 		gotoPositionAndWait(208);
 		
-		assertThat(insert.list("elements").contents()).isEmpty();
+		assertThat(xmlListContents(insert.list("elements"))).isEmpty();
 		
 		// inside second comment (succeeds now !)
 		gotoPositionAndWait(276);
 		
-		assertThat(insert.list("elements").contents()).contains("p");
+		assertThat(xmlListContents(insert.list("elements"))).contains("p");
 
 		// demonstrate a limitation of local scope when Sidekick tree becomes
 		// out of sync : no completion is available because the parent <comment>
@@ -530,7 +525,7 @@ public class XmlPluginTest{
 		
 		gotoPositionAndWait(376);
 		
-		assertThat(insert.list("elements").contents()).isEmpty();
+		assertThat(xmlListContents(insert.list("elements"))).isEmpty();
 		
 		
 		insert.close();
@@ -542,7 +537,7 @@ public class XmlPluginTest{
 		
     	File xml = new File(testData,"import_schema/instance.xml");
     	
-    	TestUtils.openFile(xml.getPath());
+    	final Buffer b = TestUtils.openFile(xml.getPath());
     	
     	action("xml-insert-float",1);
     	FrameFixture insert = TestUtils.findFrameByTitle("XML Insert");
@@ -566,22 +561,22 @@ public class XmlPluginTest{
 		gotoPositionAndWait(391);
 		
 		// fails for the moment
-		assertThat(insert.list("elements").contents()).contains("ipo:comment");
+		assertThat(xmlListContents(insert.list("elements"))).contains("ipo:comment");
 		
 		gotoPositionAndWait(472);
 		
 		// inside ipo:comment
-		assertThat(insert.list("elements").contents()).isEmpty();
+		assertThat(xmlListContents(insert.list("elements"))).isEmpty();
 
 		insert.close();
-		
+		close(view(),b);
 	}
 	
 	@Test
 	public void testImportSchemaRNG(){
     	File xml = new File(testData,"import_schema/relax_ng/instance.xml");
     	
-    	TestUtils.openFile(xml.getPath());
+    	final Buffer b = TestUtils.openFile(xml.getPath());
     	
     	parseAndWait();
     	
@@ -602,14 +597,16 @@ public class XmlPluginTest{
 		gotoPositionAndWait(320);
 		
 		// fails for the moment
-		assertThat(insert.list("elements").contents()).contains("ipo:comment");
+		assertThat(xmlListContents(insert.list("elements"))).contains("ipo:comment");
 		
 		gotoPositionAndWait(391);
 		
 		// inside ipo:comment
-		assertThat(insert.list("elements").contents()).isEmpty();
+		assertThat(xmlListContents(insert.list("elements"))).isEmpty();
 
 		insert.close();
+		
+		close(view(),b);
 	}
 	
 	@Test
@@ -617,19 +614,84 @@ public class XmlPluginTest{
 		
     	File xml = new File(testData,"malformed/actions.xml");
     	
-    	TestUtils.openFile(xml.getPath());
+    	final Buffer b = TestUtils.openFile(xml.getPath());
     	
-    	action("xml-insert-float",1);
-    	FrameFixture insert = TestUtils.findFrameByTitle("XML Insert");
-    	
+    	// XmlPlugin is not activated for some reason ??
+		action("sidekick.parser.xml-switch");
 		parseAndWait();
 
 		// inside ACTIONS
 		gotoPositionAndWait(731);
 		
-		assertThat(insert.list("elements").contents()).contains("ACTION");
+    	action("xml-insert-float",1);
+    	FrameFixture insert = TestUtils.findFrameByTitle("XML Insert");
+
+		assertThat(xmlListContents(insert.list("elements"))).contains("ACTION");
+		
+		insert.close();
+
+		close(view(),b);
+    	FrameFixture sidekick = TestUtils.findFrameByTitle("Sidekick");
+    	sidekick.close();
+	
+	}
+	
+	@Test
+	public void testDTDWithXSD(){
+    	File xml = new File(testData,"dtd/dtdwithxsd.xml");
+    	
+    	final Buffer b = TestUtils.openFile(xml.getPath());
+    	
+    	action("xml-insert-float",1);
+    	FrameFixture insert = TestUtils.findFrameByTitle("XML Insert");
+    	
+    	// will be prompted to download docbook.xsd
+    	ClickT clickT = new ClickT(Option.NO);
+    	clickT.start();
+    	
+    	parseAndWait();
+		
+    	clickT.waitForClick();
+		// inside ACTIONS
+		gotoPositionAndWait(783);
+		
+		assertThat(xmlListContents(insert.list("entities"))).contains("ecirc");
+		assertThat(xmlListContents(insert.list("entities"))).excludes("ang");
 		
 		insert.close();
 		
+		GuiActionRunner.execute(new GuiTask(){
+				protected void executeInEDT(){
+					b.insert(538, "\n%isoamso;");
+				}
+		});
+		
+		parseAndWait();
+		gotoPositionAndWait(795);
+
+    	action("xml-insert-float",1);
+    	insert = TestUtils.findFrameByTitle("XML Insert");
+    	
+		assertThat(xmlListContents(insert.list("entities"))).contains("ang");
+		
+		insert.close();
+		close(view(),b);
+	}
+	
+	private static final JListCellReader instance = new BasicJListCellReader(
+		new CellRendererReader(){
+			public  String 	valueFrom(Component c) {
+				if(c instanceof XmlListCellRenderer){
+					return ((XmlListCellRenderer)c).getMainText();
+				}else return null;
+			}
+		});
+	
+	public static JListCellReader xmlListCellReader(){
+		return instance;
+	}
+	
+	public static String[] xmlListContents(JListFixture list){
+		return list.cellReader(xmlListCellReader()).contents();
 	}
 }

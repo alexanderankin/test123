@@ -978,6 +978,8 @@ Chapter 22 of <emphasis>DocBook XSL: The Complete Guide</emphasis> by Bob Stayto
       <listitem><para>Suppress error message from Resolver (cannot find CatalogManager.properties)
       (bug #1090658 - Eric Le Lay)</para></listitem>
       <listitem><para>Fix NPE in XmlParsedData (bug #3053499 - Matthieu Casanova)</para></listitem>
+      <listitem><para>XML Insert and the completion popup show a preview of entity values
+      (feature request #1591422 - Eric Le Lay).</para></listitem>
      </itemizedlist>
  </listitem>
 

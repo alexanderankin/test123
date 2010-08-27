@@ -131,7 +131,7 @@ public class XmlActions
 		st.ordinaryChar('/');
 		st.ordinaryChar('=');
 
-		Map entityHash = data.getNoNamespaceCompletionInfo().entityHash;
+		Map entityHash = data.entityHash;
 
 		//{{{ parse tag
 		try
@@ -993,7 +993,7 @@ loop:			for(;;)
 
 		XmlParsedData data = (XmlParsedData)_data;
 
-		Map entityHash = data.getNoNamespaceCompletionInfo().entityHash;
+		Map entityHash = data.entityHash;
 
 		Selection[] selection = textArea.getSelection();
 		for(int i = 0; i < selection.length; i++)
@@ -1053,7 +1053,7 @@ loop:			for(;;)
 
 		XmlParsedData data = (XmlParsedData)_data;
 
-		Map entityHash = data.getNoNamespaceCompletionInfo().entityHash;
+		Map entityHash = data.entityHash;
 
 		Selection[] selection = textArea.getSelection();
 		for(int i = 0; i < selection.length; i++)
