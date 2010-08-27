@@ -78,11 +78,7 @@ public class TagUtilsTest{
 		
 
 		// after bbbb
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(48);
-				}
-		});
+		gotoPositionAndWait(48);
 
 		action("xml-split-tag",1);
 		assertEquals("<a> bbbb</a>",b.getLineText(1));
@@ -90,11 +86,7 @@ public class TagUtilsTest{
 		
 		// just after <a> : was causing an issue since split() believed that it was
 		// inside <a>
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(43);
-				}
-		});
+		gotoPositionAndWait(43);
 		
 		action("xml-split-tag",1);
 		assertEquals("<a></a>",b.getLineText(1));
@@ -103,11 +95,7 @@ public class TagUtilsTest{
 		
 		// just after </b> : was causing an issue since split() believed that it was
 		// inside <a>
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(56);
-				}
-		});
+		gotoPositionAndWait(56);
 		
 		action("xml-split-tag",1);
 		assertEquals("<b></b></a>",b.getLineText(2));
@@ -128,22 +116,14 @@ public class TagUtilsTest{
 		
 
 		// <c:c |xmlns:c="urn:hello">you could
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(62);
-				}
-		});
+		gotoPositionAndWait(62);
 
 		action("xml-split-tag");
 		String text = b.getText(0,b.getLength());
 		action("undo",1);
 		assertThat(text).contains("xmlns:c");
 		
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(131);
-				}
-		});
+		gotoPositionAndWait(131);
 		
 		action("xml-split-tag");
 		text = b.getText(0,b.getLength());
@@ -151,11 +131,7 @@ public class TagUtilsTest{
 		assertThat(text).contains("&lt;");
 		
 		// <simple |a="1" b="2"
-		GuiActionRunner.execute(new GuiTask(){
-				protected void executeInEDT(){
-					TestUtils.view().getTextArea().setCaretPosition(204);
-				}
-		});
+		gotoPositionAndWait(204);
 		
 		action("xml-split-tag");
 		assertEquals("    c = \"3\"",b.getLineText(9));

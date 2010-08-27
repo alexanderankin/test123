@@ -428,6 +428,9 @@ public class XercesParserImpl extends XmlParser
 		/** used to retrieve CompletionInfos for different namespaces (RNG) */
 		SchemaAutoLoader schemaAutoLoader;
 		
+		/** used to register entities with the XmlParsedData at endDTD() */
+		CompletionInfo dtdCompletionInfo;
+		
 		// }}}
 		// {{{ Handler constructor
 		Handler(Buffer buffer, String text, ErrorListErrorHandler errorHandler,
@@ -440,7 +443,7 @@ public class XercesParserImpl extends XmlParser
 			this.currentNodeStack = new Stack<DefaultMutableTreeNode>();
 			this.empty = true;
 			this.schemaAutoLoader = null;
-
+			this.dtdCompletionInfo = null;
 		} // }}}
 
 		private void setSchemaAutoLoader(SchemaAutoLoader sal){
@@ -554,7 +557,7 @@ public class XercesParserImpl extends XmlParser
 			for(Map.Entry<String,CompletionInfo> en: infos.entrySet()){
 				String nsC = en.getKey();
 				Log.log(Log.DEBUG,Handler.class,"setting completion info for :'"+nsC+"'");
-				data.setCompletionInfo(nsC, en.getValue());
+				data.setCompletionInfo(nsC,en.getValue());
 			}
 		}
 
@@ -575,8 +578,7 @@ public class XercesParserImpl extends XmlParser
 					&& schemaAutoLoader.getCompletionInfo() != null
 						&& schemaAutoLoader.getCompletionInfo().containsKey(""))
 				{
-					data.setCompletionInfo("",
-						schemaAutoLoader.getCompletionInfo().get(""));
+					data.setCompletionInfo("",schemaAutoLoader.getCompletionInfo().get(""));
 					// TODO: what about no-namespace ?
 				}
 				
@@ -766,6 +768,7 @@ public class XercesParserImpl extends XmlParser
 			{
 				// DTD in the document itself, don't cache it as it will parsed again anyway
 				if(DEBUG_CACHE)Log.log(Log.DEBUG,Handler.class,"DTD in the document, not caching");
+				dtdCompletionInfo = data.getNoNamespaceCompletionInfo();
 			}
 			else
 			{
@@ -776,14 +779,16 @@ public class XercesParserImpl extends XmlParser
 					if(ce == null)
 					{
 						if(DEBUG_CACHE)Log.log(Log.DEBUG,Handler.class,"CompletionInfo not in cache for DTD, caching");
-						ce = Cache.instance().put(realLocation,COMPLETION_INFO_CACHE_ENTRY,data.getNoNamespaceCompletionInfo());
+						dtdCompletionInfo = data.getNoNamespaceCompletionInfo();
+						ce = Cache.instance().put(realLocation,COMPLETION_INFO_CACHE_ENTRY,dtdCompletionInfo);
 						ce.getRequestingBuffers().add(buffer);
 					}
 					else
 					{
 						if(DEBUG_CACHE)Log.log(Log.DEBUG,Handler.class,"CompletionInfo in cache for DTD, reusing");
 						ce.getRequestingBuffers().add(buffer);
-						data.setCompletionInfo("", (CompletionInfo)ce.getCachedItem());
+						dtdCompletionInfo = (CompletionInfo)ce.getCachedItem();
+						data.setCompletionInfo("", dtdCompletionInfo);
 					}
 				}
 				catch(IOException ioe)
@@ -791,6 +796,17 @@ public class XercesParserImpl extends XmlParser
 					throw new SAXException("error resolving DTD path",ioe);
 				}
 			}
+		}
+		//}}}
+		
+		//{{{ endDTD() method
+		/**
+		 * register the entities in XmlParsedData
+		 */
+		@Override
+		public void endDTD()
+		{
+			data.setCompletionInfo("", dtdCompletionInfo);
 		}
 		//}}}
 		
@@ -851,6 +867,7 @@ public class XercesParserImpl extends XmlParser
 		//{{{ internalEntityDecl() method
 		public void internalEntityDecl(String name, String value)
 		{
+			if(DEBUG_DTD)Log.log(Log.DEBUG,XercesParserImpl.class,"internalEntityDecl("+name+","+value+")");
 			// this is a bit of a hack
 			if(name.startsWith("%"))
 				return;
@@ -863,6 +880,7 @@ public class XercesParserImpl extends XmlParser
 		public void externalEntityDecl(String name, String publicId,
 			String systemId)
 		{
+			if(DEBUG_DTD)Log.log(Log.DEBUG,XercesParserImpl.class,"externalEntityDecl("+name+","+publicId+","+systemId+")");
 			if(name.startsWith("%"))
 				return;
 

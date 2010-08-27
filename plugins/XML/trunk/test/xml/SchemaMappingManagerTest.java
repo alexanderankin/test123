@@ -169,6 +169,12 @@ public class SchemaMappingManagerTest {
 		listen.waitForMessage(10000);
 		
 		try{t.join();}catch(InterruptedException ie){}
+	
+    	// XmlPlugin is not activated for some reason ??
+		action("sidekick.parser.xml-switch");
+		parseAndWait();
+    	FrameFixture sidekick = TestUtils.findFrameByTitle("Sidekick");
+    	sidekick.close();
 		
 		assertThat(new File(relax_ng,"schemas.xml")).exists();
 
