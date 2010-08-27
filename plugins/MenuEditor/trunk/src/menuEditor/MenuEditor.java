@@ -889,6 +889,20 @@ public class MenuEditor extends JDialog
 					remove();
 				}
 			});
+			up.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					moveSelected(true);
+				}
+			});
+			down.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					moveSelected(false);
+				}
+			});
 			ok = new JButton(getProp("menu-editor.ok"));
 			ok.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e)
@@ -943,16 +957,60 @@ public class MenuEditor extends JDialog
 			MenuElement toAdd = new MenuElement(menuEditorPrefix +
 				newMenu, newMenu);
 			int sel = menus.getSelectedIndex();
-			if (sel == -1)
-				model.addElement(toAdd);
-			else
-				model.add(sel + 1, toAdd);
+			model.add(sel + 1, toAdd); // If no selection, add at beginning
 		}
 		private void remove()
 		{
 			int [] sel = menus.getSelectedIndices();
 			for (int i = sel.length - 1; i >=0; i--)
-				model.remove(i);
+				model.remove(sel[i]);
+		}
+		private void moveSelected(boolean up)
+		{
+			int [] selected = menus.getSelectedIndices();
+			int [] moved = new int[selected.length];
+			int movedIndex = 0;
+			int selCount = selected.length;
+			int itemCount = model.getSize();
+			int from, to, diff, move, limit; 
+			if (up)
+			{
+				from = 0;
+				to = selCount;
+				diff = 1;
+				move = -1;
+				limit = 0;
+			}
+			else
+			{
+				from = selCount - 1;
+				to = -1;
+				diff = -1;
+				move = 1;
+				limit = itemCount - 1;
+			}
+			// Skip the items that can't move (items at list boundary)
+			while ((from != to) && (selected[from] == limit))
+			{
+				moved[movedIndex++] = selected[from];
+				from += diff;
+				limit += diff;
+			}
+			// Move the items that can move
+			int firstMoved = -1;
+			for (; from != to; from += diff)
+			{
+				int i1 = selected[from];
+				int i2 = i1 + move;
+				if (firstMoved == -1)
+					firstMoved = i2;
+				MenuElement tmp = (MenuElement) model.get(i1);
+				model.set(i1, model.get(i2));
+				model.set(i2, tmp);
+				moved[movedIndex++] = i2;
+			}
+			menus.setSelectedIndices(moved);
+			menus.ensureIndexIsVisible(firstMoved);
 		}
 	}
 }
