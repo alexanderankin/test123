@@ -58,6 +58,8 @@ public class StringTools {
      * @return the string from the array, every line sperated by delim
      */
     public static String arrayToString(Object[] arr, String delim) {
+    	if (arr.length == 0)
+    		return "";
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < arr.length; i++) {
             sb.append(arr[i].toString()).append(delim);
