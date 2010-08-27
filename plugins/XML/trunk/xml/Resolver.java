@@ -259,7 +259,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 			// fix for plugin bug #1090658 - XML plugin can't find CatalogManager.properties
 			// warning: this will also suppress warnings if somebody adds a CatalogManager.properties
 			// and references non-existing catalogs
-			catalog.getCatalogManager().ignoreMissingProperties(DEBUG_RESOLVER);
+			catalog.getCatalogManager().ignoreMissingProperties(!DEBUG_RESOLVER);
 			// verbosity to 2 lists which catalogs are loaded and syntax errors
 			// it seems a reasonable default
 			catalog.getCatalogManager().setVerbosity(DEBUG_RESOLVER?Integer.MAX_VALUE:2);
