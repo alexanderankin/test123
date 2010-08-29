@@ -240,8 +240,12 @@ public class Patch {
             }
             else if ( c.getOp() == 'd' ) {
                 // This will handle an "delete" chunk
-                targetSrc = delete( c.getFrom1(), c.getFrom2(), targetSrc, offset );
-                offset += c.getFrom2() - c.getFrom1() + 1;
+            	int from1 = c.getFrom1();
+            	int from2 = c.getFrom2();
+            	if ( from2 == 0 )
+            		from2 = from1;
+                targetSrc = delete( from1, from2, targetSrc, offset );
+                offset += from2 - from1 + 1;
                 log( "--- Applied an DELETE Chunk: ---" );
                 log( c.getName() );
                 log( StringTools.arrayToString( targetSrc ) );
@@ -280,8 +284,6 @@ public class Patch {
             log( "### delete() - Argument ERROR" );
             return baseText;
         }
-        if (toLine == 0)
-        	toLine = fromLine;
         // adjust from and to
         fromLine = fromLine - offset;
         toLine = toLine - offset;
