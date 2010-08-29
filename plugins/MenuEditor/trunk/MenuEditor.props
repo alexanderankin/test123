@@ -3,7 +3,7 @@ plugin.menuEditor.MenuEditorPlugin.activate=startup
 # general plugin information
 plugin.menuEditor.MenuEditorPlugin.name=Menu Editor
 plugin.menuEditor.MenuEditorPlugin.author=Shlomy Reinstein
-plugin.menuEditor.MenuEditorPlugin.version=0.3
+plugin.menuEditor.MenuEditorPlugin.version=0.4
 plugin.menuEditor.MenuEditorPlugin.description=Allow editing of jEdit menus
 
 plugin.menuEditor.MenuEditorPlugin.depend.0=jdk 1.6
