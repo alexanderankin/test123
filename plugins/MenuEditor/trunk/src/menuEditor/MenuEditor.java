@@ -398,7 +398,8 @@ public class MenuEditor extends JDialog
 		allActionsModel = new DefaultListModel();
 		allActions = new JList(allActionsModel);
 		allActions.setDragEnabled(true);
-		allActions.setTransferHandler(new ListTransferHandler());
+		allActions.setTransferHandler(new ListTransferHandler(false,
+			allActionsModel));
 		actionPanel.add(new JScrollPane(allActions), BorderLayout.CENTER);
 		p.add(actionPanel, BorderLayout.CENTER);
 		actionSet.addItemListener(new ItemListener() {
@@ -480,7 +481,7 @@ public class MenuEditor extends JDialog
 		items = new JList(itemModel);
 		items.setDragEnabled(true);
 		items.setDropMode(DropMode.INSERT);
-		items.setTransferHandler(new ListTransferHandler());
+		items.setTransferHandler(new ListTransferHandler(true, itemModel));
 		JPanel p = new JPanel(new BorderLayout());
 		JPanel menuPanel = new JPanel(new BorderLayout());
 		menuPanel.add(new JLabel(getProp("menu-editor.menu")),
@@ -728,7 +729,15 @@ public class MenuEditor extends JDialog
 
 	public class ListTransferHandler extends TransferHandler
 	{
+		boolean allowImport;
+		DefaultListModel model;
 		int [] indices;
+
+		public ListTransferHandler(boolean allowImport, DefaultListModel model)
+		{
+			this.allowImport = allowImport;
+			this.model = model;
+		}
 
 		@Override
 		public boolean importData(TransferSupport support)
@@ -750,7 +759,7 @@ public class MenuEditor extends JDialog
 			}
 			ArrayList<MenuElement> elements = (ArrayList<MenuElement>) data;
 			for (MenuElement element: elements)
-				itemModel.insertElementAt(element, index++);
+				model.insertElementAt(element, index++);
 			if (indices != null)
 			{
 				for (int i = 0; i < indices.length; i++)
@@ -763,14 +772,15 @@ public class MenuEditor extends JDialog
 		@Override
 		public boolean canImport(TransferSupport support)
 		{
-			return (support.getComponent() == items) &&
-				(support.isDataFlavorSupported(flavor));
+			return (allowImport && support.isDataFlavorSupported(flavor));
 		}
 
 		@Override
 		public int getSourceActions(JComponent c)
 		{
-			return (c == items) ? TransferHandler.MOVE : TransferHandler.COPY;
+			if (allowImport)
+				return TransferHandler.MOVE;
+			return TransferHandler.COPY;
 		}
 
 		@Override
@@ -788,11 +798,11 @@ public class MenuEditor extends JDialog
 		protected void exportDone(JComponent source, Transferable data,
 				int action)
 		{
-			if (source != items)
+			if (! allowImport)
 				return;
 			Arrays.sort(indices);
 			for (int i = indices.length - 1; i >= 0; i--)
-				itemModel.remove(indices[i]);
+				model.remove(indices[i]);
 		}
 	}
 	private class SeparatorTransferHandler extends TransferHandler
@@ -859,6 +869,9 @@ public class MenuEditor extends JDialog
 			for (MenuElement item: items)
 				model.addElement(item);
 			menus = new JList(model);
+			menus.setDragEnabled(true);
+			menus.setDropMode(DropMode.INSERT);
+			menus.setTransferHandler(new ListTransferHandler(true, model));
 			JPanel menuPanel = new JPanel(new BorderLayout());
 			menuPanel.add(new JLabel(getProp("menu-editor.bar")),
 				BorderLayout.NORTH);
@@ -917,16 +930,8 @@ public class MenuEditor extends JDialog
 					cancel();
 				}
 			});
-			restoreDefault = new JButton(getProp("menu-editor.restoreDefaults"));
-			restoreDefault.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e)
-				{
-					restoreDefault();
-				}
-			});
 			bottom.add(ok);
 			bottom.add(cancel);
-			bottom.add(restoreDefault);
 			contentPanel.add(bottom, BorderLayout.SOUTH);
 			setContentPane(contentPanel);
 			pack();
@@ -944,10 +949,6 @@ public class MenuEditor extends JDialog
 		{
 			setVisible(false);
 		}
-		private void restoreDefault()
-		{
-			
-		}
 		private void add()
 		{
 			String newMenu = JOptionPane.showInputDialog(this, getProp(
@@ -962,8 +963,27 @@ public class MenuEditor extends JDialog
 		private void remove()
 		{
 			int [] sel = menus.getSelectedIndices();
+			boolean undeletable = false;
 			for (int i = sel.length - 1; i >=0; i--)
-				model.remove(sel[i]);
+			{
+				MenuElement elem = (MenuElement) model.get(sel[i]);
+				boolean orig = false;
+				for (String m: unchangedMenus)
+				{
+					if (elem.menu.equals(m))
+					{
+						undeletable = orig = true;
+						continue;
+					}
+				}
+				if (! orig)
+					model.remove(sel[i]);
+			}
+			if (undeletable)
+			{
+				JOptionPane.showMessageDialog(this, getProp(
+					"menu-editor.undeletable"));
+			}
 		}
 		private void moveSelected(boolean up)
 		{
