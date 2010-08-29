@@ -1,0 +1,14 @@
+# Plugin properties
+plugin.git.GitPlugin.activate=defer
+
+plugin.git.GitPlugin.name=Git Plugin
+plugin.git.GitPlugin.author=Alan Ezust
+plugin.git.GitPlugin.version=1.0.2
+plugin.git.GitPlugin.docs=index.html
+plugin.git.GitPlugin.description=Offers a file filter importer for ProjectViewer
+plugin.git.GitPlugin.depend.0=jdk 1.5
+plugin.git.GitPlugin.depend.1=jedit 04.03.99.00
+plugin.git.GitPlugin.depend.2=plugin CommonControlsPlugin 0.9.4
+plugin.git.GitPlugin.depend.3=plugin projectviewer.ProjectPlugin 2.9
+
+git.importer.description=git entries filter
