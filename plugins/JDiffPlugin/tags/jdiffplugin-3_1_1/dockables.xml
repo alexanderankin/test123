@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+
+<DOCKABLES>
+    <DOCKABLE NAME="jdiff-lines">
+        jdiff.DualDiff dualDiff = jdiff.DualDiffManager.getDualDiffFor(view);
+        if (dualDiff != null) {
+            return dualDiff.getDiffLineOverview();
+        }
+        else {
+            return new jdiff.component.DiffLineOverview(view);
+        }
+    </DOCKABLE>
+</DOCKABLES>
+
