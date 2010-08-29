@@ -280,6 +280,8 @@ public class Patch {
             log( "### delete() - Argument ERROR" );
             return baseText;
         }
+        if (toLine == 0)
+        	toLine = fromLine;
         // adjust from and to
         fromLine = fromLine - offset;
         toLine = toLine - offset;

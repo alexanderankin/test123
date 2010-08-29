@@ -2,7 +2,7 @@
 # Author: Andre Kaplan
 plugin.jdiff.JDiffPlugin.name=JDiff Plugin
 plugin.jdiff.JDiffPlugin.author=André Kaplan/Mark Wickens, Dale Anson
-plugin.jdiff.JDiffPlugin.version=3.1.0
+plugin.jdiff.JDiffPlugin.version=3.1.1
 plugin.jdiff.JDiffPlugin.docs=docs/index.html
 plugin.jdiff.JDiffPlugin.description=JDiffPlugin is a visual diff and merge utility for jEdit.
 
