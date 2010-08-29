@@ -1,0 +1,150 @@
+# JDiffPlugin properties
+# Author: Andre Kaplan
+plugin.jdiff.JDiffPlugin.name=JDiff Plugin
+plugin.jdiff.JDiffPlugin.author=André Kaplan/Mark Wickens, Dale Anson
+plugin.jdiff.JDiffPlugin.version=3.1.1
+plugin.jdiff.JDiffPlugin.docs=docs/index.html
+plugin.jdiff.JDiffPlugin.description=JDiffPlugin is a visual diff and merge utility for jEdit.
+
+# Dependencies
+plugin.jdiff.JDiffPlugin.depend.0=jdk 1.5
+plugin.jdiff.JDiffPlugin.depend.1=jedit 04.03.15.00
+plugin.jdiff.JDiffPlugin.depend.2=plugin CommonControlsPlugin 0.9.5
+plugin.jdiff.JDiffPlugin.activate=defer
+
+# Menu
+plugin.jdiff.JDiffPlugin.menu=\
+    toggle-dual-diff \
+    jdiff.show-dual-diff-dialog \
+    jdiff.refresh-diff \
+    - \
+    jdiff.prev-diff \
+    jdiff.next-diff \
+    jdiff.move-right \
+    jdiff.move-left \
+    - \
+    jdiff.toggle-ignore-case \
+    jdiff.toggle-trim-whitespace \
+    jdiff.toggle-ignore-amount-whitespace \
+    jdiff.toggle-ignore-line-separators \
+    jdiff.toggle-ignore-all-whitespace \
+    - \
+    jdiff.diff-normal-output \
+    jdiff.apply-patch
+
+plugin.jdiff.JDiffPlugin.option-group=jdiff.general \
+    jdiff.gui \
+    jdiff.overview
+
+# titles for DockableWindowManager
+jdiff-lines.title=Diff
+jdiff-lines.label=Diff
+
+jdiff-menu.label=JDiff
+
+toggle-dual-diff.label=Dual diff
+jdiff.show-dual-diff-dialog.label=Show dual diff dialog
+jdiff.diff-btn.label=Diff
+jdiff.refresh-diff.label=Refresh diff
+jdiff.prev-diff.label=Go to Previous Difference
+jdiff.next-diff.label=Go to Next Difference
+jdiff.move-right.label=Move current diff block to right, with shift move all non-conflicting to right.
+jdiff.move-left.label=Move current diff block to left, with shift move all non-conflicting to left.
+jdiff.unsplit.label=Unsplit
+jdiff.refresh.label=Refresh
+jdiff.swap-textareas.label=Swap text areas
+jdiff.toggle-ignore-case.label=Ignore case
+jdiff.toggle-trim-whitespace.label=Ignore leading and trailing whitespace
+jdiff.toggle-ignore-amount-whitespace.label=Ignore amount of whitespace
+jdiff.toggle-ignore-line-separators.label=Ignore line separators
+jdiff.toggle-ignore-all-whitespace.label=Ignore all whitespace
+jdiff.auto-show-dockable.label=Automatically show dockable on diff
+jdiff.diff-normal-output.label=Normal Diff Output
+jdiff.apply-patch.label=Apply Patch...
+
+jdiff.ignore-case=false
+jdiff.trim-whitespace=false
+jdiff.ignore-amount-whitespace=false
+jdiff.ignore-line-separators=true;
+jdiff.ignore-all-whitespace=false
+jdiff.heuristic=false
+jdiff.no_discards=false
+
+jdiff.global-virtual-overview=false
+
+jdiff.overview-changed-color=\#FFCC66
+jdiff.overview-deleted-color=\#FF6666
+jdiff.overview-inserted-color=\#99CC66
+jdiff.overview-invalid-color=\#CCCCCC
+jdiff.left-cursor-color=\#000000
+jdiff.right-cursor-color=\#000000
+
+# Option panes titles
+options.jdiff.general.code=new jdiff.options.JDiffOptionPane();
+options.jdiff.general.label=Diff Settings
+options.jdiff.gui.code=new jdiff.options.JDiffGUIOptionPane();
+options.jdiff.gui.label=GUI Settings
+options.jdiff.overview.code=new jdiff.options.JDiffOverviewOptionPane();
+options.jdiff.overview.label=Colors
+
+options.jdiff.diff-options.label=Diff options:
+options.jdiff.ignore-case=Ignore case
+options.jdiff.trim-whitespace=Ignore leading and trailing whitespace
+options.jdiff.ignore-amount-whitespace=Ignore amount of whitespace
+options.jdiff.ignore-line-separators=Ignore line separators
+options.jdiff.ignore-all-whitespace=Ignore all whitespace
+options.jdiff.heuristic=Faster diff heuristic
+options.jdiff.no_discards=Find minimal set of changes
+
+options.jdiff.ui-options.label=UI Options:
+options.jdiff.auto-show-dockable=Automatically show dockable on diff
+options.jdiff.show-line-diff=Show line diff in dockable
+options.jdiff.synchroscroll-on=Synchronize scrolling between left and right text areas
+options.jdiff.horiz-scroll=Scroll horizontally to next/prev diff
+options.jdiff.select-word=Select first word of next/prev diff
+options.jdiff.beep-on-error=Beep on error
+options.jdiff.restore-view=Restore View after diff
+options.jdiff.restore-caret=Restore caret positions after diff
+
+options.jdiff.orientation.label=Merge Toolbar Orientation:
+options.jdiff.toolbar-horizontal=Horizontal
+options.jdiff.toolbar-vertical=Vertical
+options.jdiff.toolbar-compact=Compact
+
+options.jdiff.overview=Colors:
+options.jdiff.overview-changed-color=Changed lines color:\ 
+options.jdiff.overview-deleted-color=Deleted lines color:\ 
+options.jdiff.overview-inserted-color=Inserted lines color:\ 
+options.jdiff.overview-invalid-color=Invalid lines color:\ 
+options.jdiff.left-cursor-color=Left cursor color:\ 
+options.jdiff.right-cursor-color=Right cursor color:\ 
+
+options.jdiff.highlight=Highlight colors:
+options.jdiff.highlight-changed-color=Changed lines color:\ 
+options.jdiff.highlight-deleted-color=Deleted lines color:\ 
+options.jdiff.highlight-inserted-color=Inserted lines color:\ 
+options.jdiff.highlight-invalid-color=Invalid lines color:
+
+jdiff-lines.title=Diff
+
+# Messages
+jdiff.identical-files.title=Identical files
+jdiff.identical-files.message=The two files are identical
+
+jdiff.two-files-needed.title=Two files must be selected
+jdiff.two-files-needed.message=Two files must be selected
+
+jdiff.file-not-found.title=File not found
+jdiff.file-not-found.message=\{0,choice,0\#|1\#Base file does not exist.|2\#New file does not exist.|3\#Base file and new file do not exist.\}
+
+jdiff.file-not-opened.title=File could not be opened
+jdiff.file-not-opened.message=The \{0,choice,0\#base|1\#new\} file could not be opened.
+
+# Labels
+jdiff.dual-diff-dialog.label=Show dual diff display
+jdiff.ok.label=OK
+jdiff.cancel.label=Cancel
+jdiff.choose.label=Choose
+jdiff.base-file.label=Base file:
+jdiff.new-file.label=New file:
+
