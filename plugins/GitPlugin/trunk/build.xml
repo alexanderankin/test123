@@ -1,0 +1,29 @@
+<project name="GitPlugin" default="build" basedir=".">
+<!-- ================================================== -->
+<!-- Build file for the GitPlugin						-->
+<!-- :tabSize=4:indentSize=4:noTabs=false:              -->
+<!-- ================================================== -->
+    	<property file="build.properties" />
+    	<property file="../build.properties" />
+	<property name="javadoc.packagenames"	value="git.*" />
+	<property name="plugin.dependencies" 	value="CommonControls,ProjectViewer" />
+    <property name="docs-proc.target"       value="xsltproc" />
+	<property name="dist.target" 			value="dist.complete" />
+	<property name="compiler.source" value="1.5" />
+	<property name="compiler.target" value="1.5" />
+	<property name="jedit.plugins.dir" value="${install.dir}" />
+
+	<import file="${build.support}/plugin-build.xml" />
+
+    <!-- Extra files that get put into the jar file, above and beyond
+         the default set (which always includes actions,dockables,services.xml,
+         *.props, etc -->
+
+	<!-- Add needed plugins to the classpath. -->
+	<path id="project.class.path">
+		<pathelement location="${jedit.plugins.dir}/ProjectViewer.jar"/>
+		<pathelement location="${jedit.plugins.dir}/CommonControls.jar" />
+		<pathelement location="${jedit.plugins.dir}/InfoViewer.jar" />
+	</path>
+</project>
+
