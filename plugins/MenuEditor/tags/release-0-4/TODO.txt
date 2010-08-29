@@ -1,0 +1,8 @@
+To do:
+- Show also the actual text of each action in the "Available actions"
+  part. Sometimes "New" doesn't mean much - new view, new buffer,
+  new dockable instance?
++ Allow adding menu separators.
+--> Allow adding new menus (not menu items).
+  * applyDiff should also work on the menu bar.
++ Use a single menu item rather than the plugin's menu with a single item.
