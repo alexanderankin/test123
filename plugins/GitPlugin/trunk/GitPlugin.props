@@ -11,4 +11,4 @@ plugin.git.GitPlugin.depend.1=jedit 04.03.99.00
 plugin.git.GitPlugin.depend.2=plugin CommonControlsPlugin 0.9.4
 plugin.git.GitPlugin.depend.3=plugin projectviewer.ProjectPlugin 2.9
 
-git.importer.description=git entries filter
+git.importer.description=use git ls-files

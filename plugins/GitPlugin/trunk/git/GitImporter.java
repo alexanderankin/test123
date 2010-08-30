@@ -1,16 +1,14 @@
 package git;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.TreeSet;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StringList;
 
 import projectviewer.importer.ImporterFileFilter;
 
@@ -18,8 +16,6 @@ public class GitImporter extends ImporterFileFilter
 {
 	TreeSet<String> cache;
 	File cachedDirectory;
-	ProcessBuilder pb;
-	Process p;
 	GitDirFilter fnf;
 	
 	static class GitDirFilter implements FilenameFilter {
@@ -29,9 +25,7 @@ public class GitImporter extends ImporterFileFilter
 	}
 	public GitImporter() {
 		cache = new TreeSet<String>();
-		pb = new ProcessBuilder();
-		String[] cmd = new String[] {"git", "ls-files"};
-		pb.command(cmd);
+
 		fnf = new GitDirFilter();
 	}
 	
@@ -46,48 +40,43 @@ public class GitImporter extends ImporterFileFilter
 				return;
 			}
 		}
-		pb.directory(cachedDirectory);
-		Log.log(Log.DEBUG, this, "gitLsFiles: " + cachedDirectory.toString());
+		Command git = new Command(GitPlugin.gitPath(), "ls-files");
+		git.setWorkDir(cachedDirectory);
+		// Log.log(Log.DEBUG, this, git.toString());
 		try {
-			p = pb.start();
-			p.waitFor();
+			git.exec();
+			git.waitFor();
 		}
 		catch (IOException ioe) {
-			Log.log(Log.ERROR, this, "Unable to run git. exitcode= " + p.exitValue(), ioe);
+			Log.log(Log.ERROR, this, "Unable to run git. exitcode= " + git.getProcess().exitValue(), ioe);
 			return;
 		}
 		catch (InterruptedException ie) {}
-		InputStream is = p.getInputStream();
-		InputStreamReader sr = new InputStreamReader(is);
-		BufferedReader br = new BufferedReader(sr);
-		try  {
-			String s = br.readLine();
-			while (s != null) {			
-				f = new File(cachedDirectory, s);
-				Log.log(Log.DEBUG, this, "Cached: " + f.toString() );
-				cache.add(f.toString());
-				s = br.readLine();
-			}
-		}
-		catch (IOException ioe) {
-			Log.log(Log.ERROR, this, "error", ioe);
+		StringList sl = StringList.split(git.getOutput(), "\n");
+		for (String s: sl) {		
+			f = new File(cachedDirectory, s);
+//			Log.log(Log.DEBUG, this, "Cached: " + f.toString() );
+			cache.add(f.toString());
+			// add its directory also
+			if (!cache.contains(f.getParent()))cache.add(f.getParent());
 		}
 	}
 	
 	@Override
 	public String getRecurseDescription()
 	{
-		return jEdit.getProperty("git.importer.description", "git entries");
+		return jEdit.getProperty("git.importer.description", "use git ls-files");
 	}
 
 	@Override
 	public boolean accept(VFSFile file)
 	{
 		if (cache.isEmpty()) {
-			
 			gitLsFiles(file.getPath());
 		}
-		return cache.contains(file.getPath());
+		boolean retval = cache.contains(file.getPath()); 
+//		Log.log(Log.DEBUG, this, "accepts " + file.getPath() +  "? " + retval);
+		return retval;
 	}
 
 	@Override
