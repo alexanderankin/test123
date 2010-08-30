@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2003, 2009 Matthieu Casanova
+ * Copyright (C) 2003, 2010 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -49,7 +49,6 @@ import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.io.Reader;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 //}}}
@@ -242,7 +241,7 @@ public final class PHPSideKickParser extends SideKickParser
 		Project project = projectManager.getProject();
 
 		//Static class access
-		PHPSideKickCompletion phpSideKickCompletion = null;
+		PHPSideKickCompletion phpSideKickCompletion;
 
 		if (project != null)
 		{
@@ -390,7 +389,7 @@ public final class PHPSideKickParser extends SideKickParser
 	private ClassDeclaration classDeclarationAtOffset(View view, int caret)
 	{
 		SideKickParsedData data = SideKickParsedData.getParsedData(view);
-		ClassDeclaration classDeclaration = null;
+		ClassDeclaration classDeclaration;
 		if (data == null)
 		{
 			return null;
@@ -512,10 +511,8 @@ public final class PHPSideKickParser extends SideKickParser
 		{
 			Map<String, Object> classes = project.getClasses();
 			Collection collection = classes.values();
-			Iterator iterator = collection.iterator();
-			while (iterator.hasNext())
+			for (Object o : collection)
 			{
-				Object o = iterator.next();
 				if (o instanceof PHPItem)
 				{
 					phpSideKickCompletion.addItem(o, startName);
@@ -523,9 +520,8 @@ public final class PHPSideKickParser extends SideKickParser
 				else
 				{
 					List<PHPItem> item = (List<PHPItem>) o;
-					for (int i = 0; i < item.size(); i++)
+					for (PHPItem phpItem : item)
 					{
-						PHPItem phpItem = item.get(i);
 						phpSideKickCompletion.addItem(phpItem, startName);
 					}
 				}
@@ -599,8 +595,8 @@ public final class PHPSideKickParser extends SideKickParser
 						 PHPSideKickCompletion phpSideKickCompletion,
 						 String currentWord)
 	{
-		List methods = classHeader.getMethodsHeaders();
-		List fields = classHeader.getFields();
+		List<MethodHeader> methods = classHeader.getMethodsHeaders();
+		List<FieldDeclaration> fields = classHeader.getFields();
 		phpSideKickCompletion.addOutlineableList(methods, currentWord);
 		phpSideKickCompletion.addOutlineableList(fields, currentWord);
 		String superClassName = classHeader.getSuperClassName();
@@ -619,12 +615,11 @@ public final class PHPSideKickParser extends SideKickParser
 					completeClassMembers(superClassHeader, phpSideKickCompletion, currentWord);
 				}
 			}
-			List interfaceNames = classHeader.getInterfaceNames();
+			List<String> interfaceNames = classHeader.getInterfaceNames();
 			if (interfaceNames != null)
 			{
-				for (int i = 0; i < interfaceNames.size(); i++)
+				for (String interfaceName : interfaceNames)
 				{
-					String interfaceName = (String) interfaceNames.get(i);
 					InterfaceDeclaration anInterface = project.getInterface(interfaceName);
 					if (anInterface == null)
 					{
@@ -644,18 +639,17 @@ public final class PHPSideKickParser extends SideKickParser
 						     PHPSideKickCompletion phpSideKickCompletion,
 						     String currentWord)
 	{
-		List methodsHeaders = interfaceDeclaration.getMethodsHeaders();
+		List<MethodHeader> methodsHeaders = interfaceDeclaration.getMethodsHeaders();
 		phpSideKickCompletion.addOutlineableList(methodsHeaders, currentWord);
 
 		Project project = ProjectManager.getInstance().getProject();
 		if (project != null)
 		{
-			List superInterfaces = interfaceDeclaration.getSuperInterfaces();
+			List<String> superInterfaces = interfaceDeclaration.getSuperInterfaces();
 			if (superInterfaces != null)
 			{
-				for (int i = 0; i < superInterfaces.size(); i++)
+				for (String superInterface : superInterfaces)
 				{
-					String superInterface = (String) superInterfaces.get(i);
 					InterfaceDeclaration anInterface = project.getInterface(superInterface);
 					if (anInterface == null)
 					{

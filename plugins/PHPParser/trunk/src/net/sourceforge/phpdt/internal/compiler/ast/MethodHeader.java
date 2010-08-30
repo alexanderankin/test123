@@ -40,7 +40,7 @@ import java.util.Set;
  */
 public class MethodHeader extends Statement implements PHPItem, Serializable
 {
-	private final List modifiers;
+	private final List<Modifier> modifiers;
 	/** The path of the file containing this class. */
 	private final String path;
 	private final String namespace;
@@ -62,7 +62,7 @@ public class MethodHeader extends Statement implements PHPItem, Serializable
 
 	//{{{ MethodHeader constructor
 	public MethodHeader(String namespace, String path,
-			    List modifiers,
+			    List<Modifier> modifiers,
 			    String name,
 			    boolean reference,
 			    List arguments,
@@ -226,10 +226,10 @@ public class MethodHeader extends Statement implements PHPItem, Serializable
 		if (modifiers == null)
 			return;
 
-		Set modifierKinds = new HashSet(5);
+		Set<String> modifierKinds = new HashSet<String>(5);
 		for (int i = 0; i < modifiers.size(); i++)
 		{
-			Modifier modifier = (Modifier) modifiers.get(i);
+			Modifier modifier = modifiers.get(i);
 			if (modifier.isVisibilityModifier())
 			{
 				if (!modifierKinds.add(Integer.toString(-1)))

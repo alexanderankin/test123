@@ -40,7 +40,7 @@ import java.util.List;
  */
 public class FieldDeclaration extends Statement implements Outlineable, PHPItem, IAsset
 {
-	private List modifiers;
+	private List<Modifier> modifiers;
 	/**
 	 * The path of the file containing this field.
 	 */
@@ -119,7 +119,7 @@ public class FieldDeclaration extends Statement implements Outlineable, PHPItem,
 	 * @param endColumn   end column
 	 */
 	public FieldDeclaration(String namespace,
-				List modifiers,
+				List<Modifier> modifiers,
 				String path,
 				VariableDeclaration variable,
 				OutlineableWithChildren parent,

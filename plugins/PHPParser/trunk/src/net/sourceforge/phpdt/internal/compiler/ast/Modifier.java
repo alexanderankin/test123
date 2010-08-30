@@ -126,18 +126,17 @@ public class Modifier extends AstNode
         return kind;
     }
 
-    public void checkCompatibility(PHPParser parser, List modifiers)
+    public void checkCompatibility(PHPParser parser, List<Modifier> modifiers)
     {
         Map incompatibilities = (Map) incompatibilityMap.get(toString());
         if (incompatibilities != null)
         {
-            for (int i = 0; i < modifiers.size(); i++)
-            {
-                Modifier modifier = (Modifier) modifiers.get(i);
-                String message = (String) incompatibilities.get(modifier.toString());
-                if (message != null)
-                    parser.fireParseError(message, modifier);
-            }
+		for (Modifier modifier : modifiers)
+		{
+			String message = (String) incompatibilities.get(modifier.toString());
+			if (message != null)
+				parser.fireParseError(message, modifier);
+		}
         }
     }
 }
