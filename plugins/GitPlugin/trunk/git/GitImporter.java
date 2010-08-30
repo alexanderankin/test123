@@ -68,7 +68,7 @@ public class GitImporter extends ImporterFileFilter
 	@Override
 	public String getRecurseDescription()
 	{
-		return jEdit.getProperty("git.importer.description", "use git ls-files");
+		return jEdit.getProperty("git.importer.description", "Use git ls-files");
 	}
 
 	@Override

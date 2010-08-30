@@ -6,12 +6,12 @@ plugin.git.GitPlugin.author=Alan Ezust
 plugin.git.GitPlugin.version=0.1
 plugin.git.GitPlugin.docs=index.html
 plugin.git.GitPlugin.description=Offers a file filter importer for ProjectViewer
-plugin.git.GitPlugin.depend.0=jdk 1.5
-plugin.git.GitPlugin.depend.1=jedit 04.03.99.00
-plugin.git.GitPlugin.depend.2=plugin CommonControlsPlugin 0.9.4
-plugin.git.GitPlugin.depend.3=plugin projectviewer.ProjectPlugin 2.9
+plugin.git.GitPlugin.depend.0=jdk 1.6
+plugin.git.GitPlugin.depend.1=jedit 04.04.01.00
+plugin.git.GitPlugin.depend.2=plugin CommonControlsPlugin 1.2
+plugin.git.GitPlugin.depend.3=plugin projectviewer.ProjectPlugin 3.0.1
 
-git.importer.description=use git ls-files
+git.importer.description=Use git ls-files
 plugin.git.GitPlugin.option-pane=git
 
 options.git.label=Git
