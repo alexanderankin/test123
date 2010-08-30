@@ -24,8 +24,9 @@ import java.util.List;
 
 import gatchan.phpparser.parser.Token;
 import gatchan.phpparser.parser.PHPParser;
+import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 
-public final class StringLiteral extends Literal
+public class StringLiteral extends Literal
 {
 	private String source;
 
@@ -34,13 +35,13 @@ public final class StringLiteral extends Literal
 	public StringLiteral(Token token)
 	{
 		this(token.image,
-		     token.sourceStart,
-		     token.sourceEnd,
-		     token.beginLine,
-		     token.endLine,
-		     token.beginColumn,
-		     token.endColumn,
-		     null);
+			token.sourceStart,
+			token.sourceEnd,
+			token.beginLine,
+			token.endLine,
+			token.beginColumn,
+			token.endColumn,
+			null);
 	}
 
 	public StringLiteral(String source,
@@ -73,12 +74,14 @@ public final class StringLiteral extends Literal
 	 *
 	 * @return the expression
 	 */
+	@Override
 	public String toStringExpression()
 	{
 		return source;
 	}
 
-	public void getUsedVariable(List list)
+	@Override
+	public void getUsedVariable(List<VariableUsage> list)
 	{
 		if (expressions != null)
 		{
@@ -89,6 +92,7 @@ public final class StringLiteral extends Literal
 		}
 	}
 
+	@Override
 	public void analyzeCode(PHPParser parser)
 	{
 		if (expressions != null)

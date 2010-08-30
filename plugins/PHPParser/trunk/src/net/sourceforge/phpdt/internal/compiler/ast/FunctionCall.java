@@ -1,6 +1,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
 import gatchan.phpparser.parser.PHPParser;
+import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 
 import java.util.List;
 
@@ -31,12 +32,12 @@ public class FunctionCall extends AbstractSuffixExpression
 			    int endColumn)
 	{
 		super(Type.UNKNOWN,
-		      functionName.getSourceStart(),
-		      sourceEnd,
-		      functionName.getBeginLine(),
-		      endLine,
-		      functionName.getBeginColumn(),
-		      endColumn);
+			functionName.getSourceStart(),
+			sourceEnd,
+			functionName.getBeginLine(),
+			endLine,
+			functionName.getBeginColumn(),
+			endColumn);
 		this.functionName = functionName;
 		this.args = args;
 	}
@@ -51,9 +52,10 @@ public class FunctionCall extends AbstractSuffixExpression
 	 *
 	 * @return the expression
 	 */
+	@Override
 	public String toStringExpression()
 	{
-		StringBuffer buff = new StringBuffer(functionName.toStringExpression());
+		StringBuilder buff = new StringBuilder(functionName.toStringExpression());
 		buff.append('(');
 		if (args != null)
 		{
@@ -76,7 +78,8 @@ public class FunctionCall extends AbstractSuffixExpression
 	 *
 	 * @param list the list where we will put variables
 	 */
-	public void getOutsideVariable(List list)
+	@Override
+	public void getOutsideVariable(List<VariableUsage> list)
 	{
 	}
 
@@ -85,7 +88,8 @@ public class FunctionCall extends AbstractSuffixExpression
 	 *
 	 * @param list the list where we will put variables
 	 */
-	public void getModifiedVariable(List list)
+	@Override
+	public void getModifiedVariable(List<VariableUsage> list)
 	{
 		if (args != null)
 		{
@@ -101,7 +105,8 @@ public class FunctionCall extends AbstractSuffixExpression
 	 *
 	 * @param list the list where we will put variables
 	 */
-	public void getUsedVariable(List list)
+	@Override
+	public void getUsedVariable(List<VariableUsage> list)
 	{
 		functionName.getUsedVariable(list);
 		if (args != null)
@@ -113,6 +118,7 @@ public class FunctionCall extends AbstractSuffixExpression
 		}
 	}
 
+	@Override
 	public Expression expressionAt(int line, int column)
 	{
 		if (functionName.isAt(line, column)) return functionName;
@@ -127,6 +133,7 @@ public class FunctionCall extends AbstractSuffixExpression
 		return null;
 	}
 
+	@Override
 	public void analyzeCode(PHPParser parser)
 	{
 	}

@@ -22,6 +22,7 @@ package net.sourceforge.phpdt.internal.compiler.ast;
 
 import gatchan.phpparser.parser.PHPParser;
 import gatchan.phpparser.parser.Token;
+import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 
 import java.util.List;
 
@@ -30,7 +31,7 @@ import java.util.List;
  *
  * @author Matthieu Casanova
  */
-public final class DummyExpression extends Expression
+public class DummyExpression extends Expression
 {
 	/**
 	 * Instantiate the dummy expression.
@@ -43,11 +44,11 @@ public final class DummyExpression extends Expression
 	 * @param endColumn   ending column
 	 */
 	public DummyExpression(int sourceStart,
-	                       int sourceEnd,
-	                       int beginLine,
-	                       int endLine,
-	                       int beginColumn,
-	                       int endColumn)
+			       int sourceEnd,
+			       int beginLine,
+			       int endLine,
+			       int beginColumn,
+			       int endColumn)
 	{
 		super(Type.UNKNOWN, sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
 	}
@@ -60,12 +61,12 @@ public final class DummyExpression extends Expression
 	public DummyExpression(Token token)
 	{
 		super(Type.UNKNOWN,
-		      token.sourceStart,
-		      token.sourceEnd,
-		      token.beginLine,
-		      token.endLine,
-		      token.beginColumn,
-		      token.endColumn);
+			token.sourceStart,
+			token.sourceEnd,
+			token.beginLine,
+			token.endLine,
+			token.beginColumn,
+			token.endColumn);
 	}
 
 	/**
@@ -80,6 +81,7 @@ public final class DummyExpression extends Expression
 	 *
 	 * @return an empty string
 	 */
+	@Override
 	public String toStringExpression()
 	{
 		return "";
@@ -90,7 +92,8 @@ public final class DummyExpression extends Expression
 	 *
 	 * @param list the list where we will put variables
 	 */
-	public void getOutsideVariable(List list)
+	@Override
+	public void getOutsideVariable(List<VariableUsage> list)
 	{
 	}
 
@@ -99,7 +102,8 @@ public final class DummyExpression extends Expression
 	 *
 	 * @param list the list where we will put variables
 	 */
-	public void getModifiedVariable(List list)
+	@Override
+	public void getModifiedVariable(List<VariableUsage> list)
 	{
 	}
 
@@ -108,15 +112,18 @@ public final class DummyExpression extends Expression
 	 *
 	 * @param list the list where we will put variables
 	 */
-	public void getUsedVariable(List list)
+	@Override
+	public void getUsedVariable(List<VariableUsage> list)
 	{
 	}
 
+	@Override
 	public Expression expressionAt(int line, int column)
 	{
 		return null;
 	}
 
+	@Override
 	public void analyzeCode(PHPParser parser)
 	{
 	}

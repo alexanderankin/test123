@@ -198,7 +198,7 @@ public final class PHPSideKickParser extends SideKickParser
 	{
 		AstNode astNode = (AstNode) sourceNode;
 		Position startPosition = buffer.createPosition(buffer.getLineStartOffset(astNode.getBeginLine() - 1) + astNode.getBeginColumn());
-		System.out.println("ASTNODE="+astNode+" "+astNode.getEndLine());
+		System.out.println("ASTNODE="+astNode+ ' ' +astNode.getEndLine());
 		Position endPosition = buffer.createPosition(buffer.getLineStartOffset(astNode.getEndLine() - 1) + astNode.getEndColumn());
 		IAsset asset = (IAsset) astNode;
 		asset.setStart(startPosition);
@@ -212,6 +212,7 @@ public final class PHPSideKickParser extends SideKickParser
 	} //}}}
 
 	//{{{ supportsCompletion() method
+	@Override
 	public boolean supportsCompletion()
 	{
 		return true;
@@ -223,7 +224,7 @@ public final class PHPSideKickParser extends SideKickParser
 	{
 		Log.log(Log.DEBUG, this, "Requesting sidekick complete");
 		Buffer buffer = editPane.getBuffer();
-		PHPDocument phpDocument = (PHPDocument) buffer.getProperty(PHPSideKickParser.PHPDOCUMENT_PROPERTY);
+		PHPDocument phpDocument = (PHPDocument) buffer.getProperty(PHPDOCUMENT_PROPERTY);
 		if (phpDocument == null)
 		{
 			Log.log(Log.DEBUG, this, "No php document for this buffer");
@@ -250,7 +251,6 @@ public final class PHPSideKickParser extends SideKickParser
 		}
 
 		ClassDeclaration currentClass = classDeclarationAtOffset(editPane.getView(), caret);
-		MethodDeclaration currentMethod;
 
 
 		String lastWord2 = getPreviousWord(caret, buffer);
@@ -265,6 +265,7 @@ public final class PHPSideKickParser extends SideKickParser
 				Log.log(Log.DEBUG, this, "Expression at caret " + expression);
 			}
 		}
+		MethodDeclaration currentMethod;
 		if (currentClass == null)
 		{
 			//We are not inside a class
@@ -386,16 +387,16 @@ public final class PHPSideKickParser extends SideKickParser
 	} //}}}
 
 	//{{{ classDeclarationAtOffset() method
-	private ClassDeclaration classDeclarationAtOffset(View view, int caret)
+	private static ClassDeclaration classDeclarationAtOffset(View view, int caret)
 	{
 		SideKickParsedData data = SideKickParsedData.getParsedData(view);
-		ClassDeclaration classDeclaration;
 		if (data == null)
 		{
 			return null;
 		}
 		int pos = caret;
 		IAsset oldAsset = null;
+		ClassDeclaration classDeclaration;
 		while (true)
 		{
 			IAsset asset = data.getAssetAtOffset(pos);

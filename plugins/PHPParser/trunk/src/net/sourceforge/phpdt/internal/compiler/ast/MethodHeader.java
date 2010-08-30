@@ -22,6 +22,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
 //{{{ Imports
+
 import gatchan.phpparser.parser.PHPParser;
 import gatchan.phpparser.project.itemfinder.PHPItem;
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
@@ -41,16 +42,24 @@ import java.util.Set;
 public class MethodHeader extends Statement implements PHPItem, Serializable
 {
 	private final List<Modifier> modifiers;
-	/** The path of the file containing this class. */
+	/**
+	 * The path of the file containing this class.
+	 */
 	private final String path;
 	private final String namespace;
-	/** The name of the method. */
+	/**
+	 * The name of the method.
+	 */
 	private final String name;
 
-	/** Indicate if the method returns a reference. */
-	private boolean reference;
+	/**
+	 * Indicate if the method returns a reference.
+	 */
+	private final boolean reference;
 
-	/** The arguments. */
+	/**
+	 * The arguments.
+	 */
 	private final List arguments;
 
 	private String cachedToString;
@@ -61,6 +70,7 @@ public class MethodHeader extends Statement implements PHPItem, Serializable
 	private static final long serialVersionUID = -8681675454927194940L;
 
 	//{{{ MethodHeader constructor
+
 	public MethodHeader(String namespace, String path,
 			    List<Modifier> modifiers,
 			    String name,
@@ -88,12 +98,14 @@ public class MethodHeader extends Statement implements PHPItem, Serializable
 	}
 
 	//{{{ getName() method
+
 	public String getName()
 	{
 		return name;
 	} //}}}
 
 	//{{{ getNameLowerCase() method
+
 	public String getNameLowerCase()
 	{
 		if (nameLowerCase == null)
@@ -104,6 +116,7 @@ public class MethodHeader extends Statement implements PHPItem, Serializable
 	} //}}}
 
 	//{{{ toString() methods
+
 	public String toString()
 	{
 		if (cachedToString == null)
@@ -137,27 +150,35 @@ public class MethodHeader extends Statement implements PHPItem, Serializable
 	} //}}}
 
 	//{{{ getOutsideVariable() method
-	public void getOutsideVariable(List list)
+
+	@Override
+	public void getOutsideVariable(List<VariableUsage> list)
 	{
 	} //}}}
 
 	//{{{ getModifiedVariable() method
-	public void getModifiedVariable(List list)
+
+	@Override
+	public void getModifiedVariable(List<VariableUsage> list)
 	{
 	} //}}}
 
 	//{{{ getUsedVariable() method
-	public void getUsedVariable(List list)
+
+	@Override
+	public void getUsedVariable(List<VariableUsage> list)
 	{
 	} //}}}
 
 	//{{{ getArgumentsCount() method
+
 	public int getArgumentsCount()
 	{
 		return arguments.size();
 	} //}}}
 
 	//{{{ getParameters() method
+
 	public void getParameters(List list)
 	{
 		if (arguments != null)
@@ -166,31 +187,34 @@ public class MethodHeader extends Statement implements PHPItem, Serializable
 			{
 				FormalParameter variable = (FormalParameter) arguments.get(i);
 				VariableUsage variableUsage = new VariableUsage(Type.UNKNOWN,
-										variable.getName(),
-										variable.getSourceStart(),
-										variable.getSourceEnd(),
-										variable.getBeginLine(),
-										variable.getEndLine(),
-										variable.getBeginColumn(),
-										variable.getEndColumn());
+					variable.getName(),
+					variable.getSourceStart(),
+					variable.getSourceEnd(),
+					variable.getBeginLine(),
+					variable.getEndLine(),
+					variable.getBeginColumn(),
+					variable.getEndColumn());
 				list.add(variableUsage);
 			}
 		}
 	} //}}}
 
 	//{{{ getPath() method
+
 	public String getPath()
 	{
 		return path;
 	} //}}}
 
 	//{{{ getItemType() method
+
 	public int getItemType()
 	{
 		return METHOD;
 	} //}}}
 
 	//{{{ getIcon() method
+
 	public Icon getIcon()
 	{
 		if (icon == null)
@@ -201,6 +225,8 @@ public class MethodHeader extends Statement implements PHPItem, Serializable
 	} //}}}
 
 	//{{{ expressionAt() method
+
+	@Override
 	public Expression expressionAt(int line, int column)
 	{
 		if (arguments != null)
@@ -215,12 +241,15 @@ public class MethodHeader extends Statement implements PHPItem, Serializable
 	} //}}}
 
 	//{{{ analyzeCode() method
+
+	@Override
 	public void analyzeCode(PHPParser parser)
 	{
 		checkModifiers(parser);
 	} //}}}
 
 	//{{{checkModifiers() method
+
 	private void checkModifiers(PHPParser parser)
 	{
 		if (modifiers == null)

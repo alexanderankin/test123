@@ -22,20 +22,24 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
 import gatchan.phpparser.parser.PHPParser;
+import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 
 import java.util.List;
 
 /**
-* a php echo block. <?= someexpression ?>
-*
-* @author Matthieu Casanova
-*/
-public final class PHPEchoBlock extends Statement
+ * a php echo block. <?= someexpression ?>
+ *
+ * @author Matthieu Casanova
+ */
+public class PHPEchoBlock extends Statement
 {
-	/** the expression. */
+	/**
+	 * the expression.
+	 */
 	private final Expression expr;
 
 	//{{{ PHPEchoBlock constructor
+
 	/**
 	 * @param sourceStart starting offset
 	 * @param sourceEnd   ending offset
@@ -57,20 +61,21 @@ public final class PHPEchoBlock extends Statement
 	} //}}}
 
 	//{{{ toString() method
+
 	/**
 	 * Return the object into String.
 	 *
 	 * @param tab how many tabs (not used here
-	 *
 	 * @return a String
 	 */
+	@Override
 	public String toString(int tab)
 	{
 		String tabs = tabString(tab);
 		String expression = expr.toStringExpression();
 		StringBuilder buff = new StringBuilder(tabs.length() +
-						     expression.length() +
-						     5);
+			expression.length() +
+			5);
 		buff.append(tabs);
 		buff.append("<?=");
 		buff.append(expression);
@@ -79,43 +84,53 @@ public final class PHPEchoBlock extends Statement
 	} //}}}
 
 	//{{{ getOutsideVariable() method
+
 	/**
 	 * Get the variables from outside (parameters, globals ...)
 	 *
 	 * @param list the list where we will put variables
 	 */
-	public void getOutsideVariable(List list)
+	@Override
+	public void getOutsideVariable(List<VariableUsage> list)
 	{
 	} //}}}
 
 	//{{{ getModifiedVariable() method
+
 	/**
 	 * get the modified variables.
 	 *
 	 * @param list the list where we will put variables
 	 */
-	public void getModifiedVariable(List list)
+	@Override
+	public void getModifiedVariable(List<VariableUsage> list)
 	{
 	} //}}}
 
 	//{{{ getUsedVariable() method
+
 	/**
 	 * Get the variables used.
 	 *
 	 * @param list the list where we will put variables
 	 */
-	public void getUsedVariable(List list)
+	@Override
+	public void getUsedVariable(List<VariableUsage> list)
 	{
 		expr.getUsedVariable(list);
 	} //}}}
 
 	//{{{ expressionAt() method
+
+	@Override
 	public Expression expressionAt(int line, int column)
 	{
 		return null;
 	} //}}}
 
 	//{{{ analyzeCode() method
+
+	@Override
 	public void analyzeCode(PHPParser parser)
 	{
 	} //}}}

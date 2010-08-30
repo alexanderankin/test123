@@ -21,6 +21,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
 import gatchan.phpparser.parser.PHPParser;
+import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 
 import java.util.List;
 
@@ -57,17 +58,17 @@ public class Namespace extends Statement
 	}
 
 	@Override
-	public void getOutsideVariable(List list)
+	public void getOutsideVariable(List<VariableUsage> list)
 	{
 	}
 
 	@Override
-	public void getModifiedVariable(List list)
+	public void getModifiedVariable(List<VariableUsage> list)
 	{
 	}
 
 	@Override
-	public void getUsedVariable(List list)
+	public void getUsedVariable(List<VariableUsage> list)
 	{
 	}
 

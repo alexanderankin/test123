@@ -7,23 +7,26 @@ import gatchan.phpparser.parser.PHPParserConstants;
  *
  * @author Matthieu Casanova
  */
-public abstract class OperatorExpression extends Expression {
+public abstract class OperatorExpression extends Expression
+{
 
-  private final int operator;
+	private final int operator;
 
-  protected OperatorExpression(Type type,
-                               int operator,
-                               int sourceStart,
-                               int sourceEnd,
-                               int beginLine,
-                               int endLine,
-                               int beginColumn,
-                               int endColumn) {
-    super(type, sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
-    this.operator = operator;
-  }
+	protected OperatorExpression(Type type,
+				     int operator,
+				     int sourceStart,
+				     int sourceEnd,
+				     int beginLine,
+				     int endLine,
+				     int beginColumn,
+				     int endColumn)
+	{
+		super(type, sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+		this.operator = operator;
+	}
 
-  public String operatorToString() {
-    return PHPParserConstants.tokenImage[operator];
-  }
+	public String operatorToString()
+	{
+		return PHPParserConstants.tokenImage[operator];
+	}
 }

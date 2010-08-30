@@ -9,23 +9,30 @@ import gatchan.phpparser.parser.PHPParser;
  *
  * @author Matthieu Casanova
  */
-public final class NumberLiteral extends Literal {
-  private final String source;
+public class NumberLiteral extends Literal
+{
+	private final String source;
 
-  public NumberLiteral(Type type,Token token) {
-    super(type,token.sourceStart, token.sourceEnd, token.beginLine, token.endLine, token.beginColumn, token.endColumn);
-    source = token.image;
-  }
+	public NumberLiteral(Type type, Token token)
+	{
+		super(type, token.sourceStart, token.sourceEnd, token.beginLine, token.endLine, token.beginColumn, token.endColumn);
+		source = token.image;
+	}
 
-  /**
-   * Return the expression as String.
-   *
-   * @return the expression
-   */
-  public String toStringExpression() {
-    return source;
-  }
+	/**
+	 * Return the expression as String.
+	 *
+	 * @return the expression
+	 */
+	@Override
+	public String toStringExpression()
+	{
+		return source;
+	}
 
-  public void analyzeCode(PHPParser parser) {}
+	@Override
+	public void analyzeCode(PHPParser parser)
+	{
+	}
 
 }

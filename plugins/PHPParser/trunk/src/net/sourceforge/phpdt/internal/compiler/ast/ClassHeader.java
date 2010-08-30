@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.io.Serializable;
 
+import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 import org.gjt.sp.jedit.GUIUtilities;
 
 /**
@@ -42,26 +43,26 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable
 	/**
 	 * The path of the file containing this class.
 	 */
-	private String path;
+	private final String path;
 
 	private final String namespace;
 
 	/**
 	 * The name of the class.
 	 */
-	private String className;
+	private final String className;
 
 	private String nameLowerCase;
 
 	/**
 	 * The name of the superclass.
 	 */
-	private String superClassName;
+	private final String superClassName;
 
 	/**
 	 * The implemented interfaces. It could be null.
 	 */
-	private List<String> interfaceNames;
+	private final List<String> interfaceNames;
 
 	/**
 	 * The methodsHeaders of the class.
@@ -73,7 +74,7 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable
 	 */
 	private final List<ClassConstant> constants = new ArrayList<ClassConstant>();
 
-	private List<Modifier> modifiers = new ArrayList<Modifier>(3);
+	private final List<Modifier> modifiers = new ArrayList<Modifier>(3);
 	/**
 	 * The fields of the class.
 	 * It contains {@link FieldDeclaration}
@@ -152,17 +153,17 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable
 	}
 
 	@Override
-	public void getOutsideVariable(List list)
+	public void getOutsideVariable(List<VariableUsage> list)
 	{
 	}
 
 	@Override
-	public void getModifiedVariable(List list)
+	public void getModifiedVariable(List<VariableUsage> list)
 	{
 	}
 
 	@Override
-	public void getUsedVariable(List list)
+	public void getUsedVariable(List<VariableUsage> list)
 	{
 	}
 

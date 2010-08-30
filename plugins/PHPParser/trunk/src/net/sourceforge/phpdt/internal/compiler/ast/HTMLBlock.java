@@ -22,35 +22,39 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
 import gatchan.phpparser.parser.PHPParser;
+import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 
 import java.util.List;
 
 /**
  * @author Matthieu Casanova
  */
-public final class HTMLBlock extends Statement
+public class HTMLBlock extends Statement
 {
 	private final AstNode[] nodes;
 
 	//{{{ HTMLBlock cosntructor
+
 	public HTMLBlock(AstNode[] nodes)
 	{
 		super(nodes[0].getSourceStart(),
-		      nodes[(nodes.length > 0) ? nodes.length - 1 : 0].getSourceEnd(),
-		      nodes[0].getBeginLine(),
-		      nodes[(nodes.length > 0) ? nodes.length - 1 : 0].getEndLine(),
-		      nodes[0].getBeginColumn(),
-		      nodes[(nodes.length > 0) ? nodes.length - 1 : 0].getEndColumn());
+			nodes[(nodes.length > 0) ? nodes.length - 1 : 0].getSourceEnd(),
+			nodes[0].getBeginLine(),
+			nodes[(nodes.length > 0) ? nodes.length - 1 : 0].getEndLine(),
+			nodes[0].getBeginColumn(),
+			nodes[(nodes.length > 0) ? nodes.length - 1 : 0].getEndColumn());
 		this.nodes = nodes;
 	} //}}}
 
 	//{{{ toString() method
+
 	/**
 	 * Return the object into String.
 	 *
 	 * @param tab how many tabs (not used here
 	 * @return a String
 	 */
+	@Override
 	public String toString(int tab)
 	{
 		StringBuilder buff = new StringBuilder(tabString(tab));
@@ -64,44 +68,54 @@ public final class HTMLBlock extends Statement
 	} //}}}
 
 	//{{{ getOutsideVariable() method
+
 	/**
 	 * Get the variables from outside (parameters, globals ...)
 	 *
 	 * @param list the list where we will put variables
 	 */
-	public void getOutsideVariable(List list)
+	@Override
+	public void getOutsideVariable(List<VariableUsage> list)
 	{
 	} //}}}
 
 	//{{{ getModifiedVariable() method
+
 	/**
 	 * get the modified variables.
 	 *
 	 * @param list the list where we will put variables
 	 */
-	public void getModifiedVariable(List list)
+	@Override
+	public void getModifiedVariable(List<VariableUsage> list)
 	{
 	} //}}}
 
 	//{{{ getUsedVariable() method
+
 	/**
 	 * Get the variables used.
 	 *
 	 * @param list the list where we will put variables
 	 */
-	public void getUsedVariable(List list)
+	@Override
+	public void getUsedVariable(List<VariableUsage> list)
 	{
-		for (AstNode node:nodes)
+		for (AstNode node : nodes)
 			node.getUsedVariable(list);
 	} //}}}
 
 	//{{{ expressionAt() method
+
+	@Override
 	public Expression expressionAt(int line, int column)
 	{
 		return null;
 	} //}}}
 
 	//{{{ analyzeCode() method
+
+	@Override
 	public void analyzeCode(PHPParser parser)
 	{
 	} //}}}

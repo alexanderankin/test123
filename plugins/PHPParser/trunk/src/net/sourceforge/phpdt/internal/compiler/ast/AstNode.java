@@ -3,7 +3,7 @@
 * :tabSize=8:indentSize=8:noTabs=false:
 * :folding=explicit:collapseFolds=1:
 *
-* Copyright (C) 2003, 2009 Matthieu Casanova
+* Copyright (C) 2003, 2010 Matthieu Casanova
 *
 * This program is free software; you can redistribute it and/or
 * modify it under the terms of the GNU General Public License
@@ -22,6 +22,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
 import gatchan.phpparser.parser.PHPParser;
+import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 
 import java.util.List;
 import java.io.Serializable;
@@ -33,7 +34,9 @@ import java.io.Serializable;
  */
 public abstract class AstNode implements Serializable
 {
-	/** Starting and ending position of the node in the sources. */
+	/**
+	 * Starting and ending position of the node in the sources.
+	 */
 	protected int sourceStart;
 	protected int sourceEnd;
 
@@ -43,6 +46,7 @@ public abstract class AstNode implements Serializable
 	protected int endColumn;
 
 	//{{{ AstNode constructors
+
 	protected AstNode()
 	{
 	}
@@ -51,11 +55,11 @@ public abstract class AstNode implements Serializable
 	 * Create a node.
 	 *
 	 * @param sourceStart starting offset
-	 * @param sourceEnd	ending offset
-	 * @param beginLine	begin line
-	 * @param endLine	ending line
+	 * @param sourceEnd   ending offset
+	 * @param beginLine   begin line
+	 * @param endLine     ending line
 	 * @param beginColumn begin column
-	 * @param endColumn	ending column
+	 * @param endColumn   ending column
 	 */
 	protected AstNode(int sourceStart,
 			  int sourceEnd,
@@ -73,11 +77,11 @@ public abstract class AstNode implements Serializable
 	} //}}}
 
 	//{{{ tabString() method
+
 	/**
 	 * Add some tabulations.
 	 *
 	 * @param tab the number of tabulations
-	 *
 	 * @return a String containing some spaces
 	 */
 	public static String tabString(int tab)
@@ -93,12 +97,14 @@ public abstract class AstNode implements Serializable
 	} //}}}
 
 	//{{{ toString() method
+
 	/**
 	 * Return the object into String. It should be overriden
 	 *
 	 * @return a String
 	 */
-	public String toString() {
+	public String toString()
+	{
 		return "****" + super.toString() + "****";
 	} //}}}
 
@@ -106,7 +112,6 @@ public abstract class AstNode implements Serializable
 	 * Return the object into String.
 	 *
 	 * @param tab how many tabs (not used here
-	 *
 	 * @return a String
 	 */
 	public abstract String toString(int tab);
@@ -116,32 +121,34 @@ public abstract class AstNode implements Serializable
 	 *
 	 * @param list the list where we will put variables
 	 */
-	public abstract void getOutsideVariable(List list);
+	public abstract void getOutsideVariable(List<VariableUsage> list);
 
 	/**
 	 * get the modified variables.
 	 *
 	 * @param list the list where we will put variables
 	 */
-	public abstract void getModifiedVariable(List list);
+	public abstract void getModifiedVariable(List<VariableUsage> list);
 
 	/**
 	 * Get the variables used.
 	 *
 	 * @param list the list where we will put variables
 	 */
-	public abstract void getUsedVariable(List list);
+	public abstract void getUsedVariable(List<VariableUsage> list);
 
-	/** This method will analyze the code. by default it will do nothing */
+	/**
+	 * This method will analyze the code. by default it will do nothing
+	 */
 	public abstract void analyzeCode(PHPParser parser);
 
 	//{{{ arrayContains() method
+
 	/**
 	 * Check if the array array contains the object o.
 	 *
 	 * @param array an array
-	 * @param o	  an obejct
-	 *
+	 * @param o     an obejct
 	 * @return true if the array contained the object o
 	 */
 	public final boolean arrayContains(Object[] array, Object o)
@@ -157,66 +164,75 @@ public abstract class AstNode implements Serializable
 	} //}}}
 
 	//{{{ getSourceStart() method
+
 	public int getSourceStart()
 	{
 		return sourceStart;
 	} //}}}
 
 	//{{{ getSourceEnd() method
+
 	public int getSourceEnd()
 	{
 		return sourceEnd;
 	} //}}}
 
 	//{{{ getBeginLine() method
+
 	public int getBeginLine()
 	{
 		return beginLine;
 	} //}}}
 
 	//{{{ getEndLine() method
+
 	public int getEndLine()
 	{
 		return endLine;
 	} //}}}
 
 	//{{{ getBeginColumn() method
+
 	public int getBeginColumn()
 	{
 		return beginColumn;
 	} //}}}
 
 	//{{{ getEndColumn() method
+
 	public int getEndColumn()
 	{
 		return endColumn;
 	} //}}}
 
 	//{{{ setSourceEnd() method
+
 	public void setSourceEnd(int sourceEnd)
 	{
 		this.sourceEnd = sourceEnd;
 	} //}}}
 
 	//{{{ setEndLine() method
+
 	public void setEndLine(int endLine)
 	{
 		this.endLine = endLine;
 	} //}}}
 
 	//{{{ setEndColumn() method
+
 	public void setEndColumn(int endColumn)
 	{
 		this.endColumn = endColumn;
 	} //}}}
 
 	//{{{  isAt() methods
+
 	/**
 	 * Returns true if the line and column position are contained by this node.
 	 *
 	 * @param line   the line
 	 * @param column the column
-	 *
 	 * @return true if the line and column position are contained by this node.
 	 */
 	public boolean isAt(int line, int column)
@@ -230,13 +246,12 @@ public abstract class AstNode implements Serializable
 	 * @param node   the node
 	 * @param line   the line
 	 * @param column the column
-	 *
 	 * @return true if the line and column position are contained by the given node.
 	 */
 	public static boolean isAt(AstNode node, int line, int column)
 	{
 		return (line == node.getBeginLine() && column > node.getBeginColumn()) ||
-		(line == node.getEndLine() && column < node.getEndColumn()) ||
-		(line > node.getBeginLine() && line < node.getEndLine());
+			(line == node.getEndLine() && column < node.getEndColumn()) ||
+			(line > node.getBeginLine() && line < node.getEndLine());
 	} //}}}
 }

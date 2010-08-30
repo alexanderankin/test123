@@ -20,6 +20,7 @@
  */
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
 
@@ -122,17 +123,17 @@ public class InterfaceDeclaration extends Statement implements OutlineableWithCh
 	}
 
 	@Override
-	public void getOutsideVariable(List list)
+	public void getOutsideVariable(List<VariableUsage> list)
 	{
 	}
 
 	@Override
-	public void getModifiedVariable(List list)
+	public void getModifiedVariable(List<VariableUsage> list)
 	{
 	}
 
 	@Override
-	public void getUsedVariable(List list)
+	public void getUsedVariable(List<VariableUsage> list)
 	{
 	}
 

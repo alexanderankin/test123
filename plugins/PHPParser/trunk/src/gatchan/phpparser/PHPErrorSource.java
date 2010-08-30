@@ -34,7 +34,7 @@ import org.gjt.sp.util.Log;
  * @author Matthieu Casanova
  * @version $Id$
  */
-public final class PHPErrorSource implements PHPParserListener
+public class PHPErrorSource implements PHPParserListener
 {
 
 	private DefaultErrorSource errorSource;

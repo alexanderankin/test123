@@ -22,6 +22,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
 //{{{ Imports
+
 import gatchan.phpparser.parser.PHPParseMessageEvent;
 import gatchan.phpparser.parser.PHPParser;
 import gatchan.phpparser.project.itemfinder.PHPItem;
@@ -39,13 +40,13 @@ import java.util.Set;
 //}}}
 
 /**
-* A Method declaration.
-*
-* @author Matthieu Casanova
-*/
+ * A Method declaration.
+ *
+ * @author Matthieu Casanova
+ */
 public class MethodDeclaration extends Expression implements OutlineableWithChildren, IAsset
 {
-	private MethodHeader methodHeader;
+	private final MethodHeader methodHeader;
 
 	private Statement[] statements;
 
@@ -54,24 +55,33 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 	private int bodyLineEnd;
 	private int bodyColumnEnd;
 
-	/** Tell if the method is a class constructor. */
+	/**
+	 * Tell if the method is a class constructor.
+	 */
 	private boolean isConstructor;
 
-	/** The parent object. */
+	/**
+	 * The parent object.
+	 */
 	private transient OutlineableWithChildren parent;
-	/** The outlineable children (those will be in the node array too. */
+	/**
+	 * The outlineable children (those will be in the node array too.
+	 */
 	private final List children = new ArrayList();
 
 	private transient Position start;
 	private transient Position end;
 	private static Icon icon;
 
-	/** The variables assigned in code. This is used during code completion. */
+	/**
+	 * The variables assigned in code. This is used during code completion.
+	 */
 	private transient List assignedVariablesInCode;
 	private static final long serialVersionUID = 8471570829959168564L;
 
 
 	//{{{ MethodDeclaration constructor
+
 	public MethodDeclaration(OutlineableWithChildren parent, MethodHeader methodHeader)
 	{
 		sourceStart = methodHeader.getSourceStart();
@@ -84,13 +94,14 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 	} //}}}
 
 	//{{{ toString() methods
+
 	/**
 	 * Return method into String, with a number of tabs
 	 *
 	 * @param tab the number of tabs
-	 *
 	 * @return the String containing the method
 	 */
+	@Override
 	public String toString(int tab)
 	{
 		StringBuilder buff = new StringBuilder(200);
@@ -111,11 +122,11 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 	} //}}}
 
 	//{{{ toStringStatements() method
+
 	/**
 	 * Return the statements of the method into Strings
 	 *
 	 * @param tab the number of tabs
-	 *
 	 * @return the String containing the statements
 	 */
 	private String toStringStatements(int tab)
@@ -137,66 +148,78 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 	} //}}}
 
 	//{{{ setParent() method
+
 	public void setParent(OutlineableWithChildren parent)
 	{
 		this.parent = parent;
 	} //}}}
 
 	//{{{ getParent() method
+
 	public OutlineableWithChildren getParent()
 	{
 		return parent;
 	} //}}}
 
 	//{{{ add() method
+
 	public boolean add(Outlineable o)
 	{
 		return children.add(o);
 	} //}}}
 
 	//{{{ get() method
+
 	public Outlineable get(int index)
 	{
 		return (Outlineable) children.get(index);
 	} //}}}
 
 	//{{{ size() method
+
 	public int size()
 	{
 		return children.size();
 	} //}}}
 
 	//{{{ getOutsideVariable() method
+
 	/**
 	 * Get the variables from outside (parameters, globals ...)
 	 *
 	 * @param list the list where we will put variables
 	 */
-	public void getOutsideVariable(List list)
+	@Override
+	public void getOutsideVariable(List<VariableUsage> list)
 	{
 	} //}}}
 
 	//{{{ getModifiedVariable() method
+
 	/**
 	 * get the modified variables.
 	 *
 	 * @param list the list where we will put variables
 	 */
-	public void getModifiedVariable(List list)
+	@Override
+	public void getModifiedVariable(List<VariableUsage> list)
 	{
 	} //}}}
 
 	//{{{ getUsedVariable() method
+
 	/**
 	 * This method will analyze the code.
 	 *
 	 * @param list the list where we will put variables
 	 */
-	public void getUsedVariable(List list)
+	@Override
+	public void getUsedVariable(List<VariableUsage> list)
 	{
 	} //}}}
 
 	//{{{ getGlobalVariable() method
+
 	/**
 	 * Get global variables (not parameters).
 	 *
@@ -214,6 +237,7 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 	} //}}}
 
 	//{{{ getAssignedVariableInCode() method
+
 	/**
 	 * get the modified variables.
 	 *
@@ -236,6 +260,7 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 	} //}}}
 
 	//{{{ getUsedVariableInCode() method
+
 	/**
 	 * Get the variables used.
 	 *
@@ -253,13 +278,13 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 	} //}}}
 
 	//{{{ getAssignedVariableInCode
+
 	/**
 	 * Returns the last variable assignation with the given name before the line and column.
 	 *
 	 * @param name   the name of the variable
 	 * @param line   the line
 	 * @param column the column
-	 *
 	 * @return a variable usage or null
 	 */
 	public VariableUsage getAssignedVariableInCode(String name, int line, int column)
@@ -283,6 +308,7 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 	} //}}}
 
 	//{{{ isVariableDeclaredBefore() method
+
 	private static boolean isVariableDeclaredBefore(List list, VariableUsage var)
 	{
 		String name = var.getName();
@@ -299,7 +325,11 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 	} //}}}
 
 	//{{{ analyzeCode() method
-	/** This method will analyze the code. */
+
+	/**
+	 * This method will analyze the code.
+	 */
+	@Override
 	public void analyzeCode(PHPParser parser)
 	{
 		methodHeader.analyzeCode(parser);
@@ -334,6 +364,7 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 	} //}}}
 
 	//{{{ findUnusedParameters() methos
+
 	/**
 	 * This method will add a warning on all unused parameters.
 	 *
@@ -349,31 +380,32 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 			if (!isVariableInList(param.getName(), vars))
 			{
 				parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
-										 PHPParseMessageEvent.MESSAGE_UNUSED_PARAMETERS,
-										 parser.getPath(),
-										 "warning, the parameter " + param.getName() + " seems to be never used in your method",
-										 param.getSourceStart(),
-										 param.getSourceEnd(),
-										 param.getBeginLine(),
-										 param.getEndLine(),
-										 param.getBeginColumn(),
-										 param.getEndColumn()));
+					PHPParseMessageEvent.MESSAGE_UNUSED_PARAMETERS,
+					parser.getPath(),
+					"warning, the parameter " + param.getName() + " seems to be never used in your method",
+					param.getSourceStart(),
+					param.getSourceEnd(),
+					param.getBeginLine(),
+					param.getEndLine(),
+					param.getBeginColumn(),
+					param.getEndColumn()));
 			}
 		}
 	} //}}}
 
 	//{{{ isVariableInList() method
+
 	/**
 	 * Tell if the list of VariableUsage contains a variable named by the name given.
 	 *
 	 * @param name the variable name
 	 * @param list the list of VariableUsage
-	 *
 	 * @return true if the variable is in the list false otherwise
 	 */
 	private static boolean isVariableInList(String name, List list)
 	{
-		for (int i = 0; i < list.size(); i++) {
+		for (int i = 0; i < list.size(); i++)
+		{
 			if (((VariableUsage) list.get(i)).getName().equals(name))
 			{
 				return true;
@@ -383,6 +415,7 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 	} //}}}
 
 	//{{{ findUnknownUsedVars() method
+
 	/**
 	 * This method will add a warning on all used variables in a method that aren't declared before.
 	 *
@@ -401,68 +434,77 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 			{
 				list.add(variableUsage.getName());
 				parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
-										 PHPParseMessageEvent.MESSAGE_VARIABLE_MAY_BE_UNASSIGNED,
-										 parser.getPath(),
-										 "warning, usage of a variable that seems to be unassigned yet : " + variableUsage.getName(),
-										 variableUsage.getSourceStart(),
-										 variableUsage.getSourceEnd(),
-										 variableUsage.getBeginLine(),
-										 variableUsage.getEndLine(),
-										 variableUsage.getBeginColumn(),
-										 variableUsage.getEndColumn()));
+					PHPParseMessageEvent.MESSAGE_VARIABLE_MAY_BE_UNASSIGNED,
+					parser.getPath(),
+					"warning, usage of a variable that seems to be unassigned yet : " + variableUsage.getName(),
+					variableUsage.getSourceStart(),
+					variableUsage.getSourceEnd(),
+					variableUsage.getBeginLine(),
+					variableUsage.getEndLine(),
+					variableUsage.getBeginColumn(),
+					variableUsage.getEndColumn()));
 			}
 		}
 	} //}}}
 
 	//{{{ getName() method
+
 	public String getName()
 	{
 		return methodHeader.getName();
 	} //}}}
 
 	//{{{ getMethodHeader() method
+
 	public MethodHeader getMethodHeader()
 	{
 		return methodHeader;
 	} //}}}
 
 	//{{{ setStatements() method
+
 	public void setStatements(Statement[] statements)
 	{
 		this.statements = statements;
 	} //}}}
 
 	//{{{ getBodyLineStart() method
+
 	public int getBodyLineStart()
 	{
 		return bodyLineStart;
 	} //}}}
 
 	//{{{ setBodyLineStart() method
+
 	public void setBodyLineStart(int bodyLineStart)
 	{
 		this.bodyLineStart = bodyLineStart;
 	} //}}}
 
 	//{{{ getBodyColumnStart() method
+
 	public int getBodyColumnStart()
 	{
 		return bodyColumnStart;
 	} //}}}
 
 	//{{{ setBodyColumnStart() method
+
 	public void setBodyColumnStart(int bodyColumnStart)
 	{
 		this.bodyColumnStart = bodyColumnStart;
 	} //}}}
 
 	//{{{ getBodyLineEnd() method
+
 	public int getBodyLineEnd()
 	{
 		return bodyLineEnd;
 	} //}}}
 
 	//{{{ setBodyLineEnd() method
+
 	public void setBodyLineEnd(int bodyLineEnd)
 	{
 		this.bodyLineEnd = bodyLineEnd;
@@ -470,12 +512,14 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 	} //}}}
 
 	//{{{ getBodyColumnEnd() method
+
 	public int getBodyColumnEnd()
 	{
 		return bodyColumnEnd;
 	} //}}}
 
 	//{{{ setBodyColumnEnd() method
+
 	public void setBodyColumnEnd(int bodyColumnEnd)
 	{
 		this.bodyColumnEnd = bodyColumnEnd;
@@ -483,12 +527,14 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 	} //}}}
 
 	//{{{ getItemType() method
+
 	public int getItemType()
 	{
 		return PHPItem.METHOD;
 	} //}}}
 
 	//{{{ getIcon() method
+
 	public Icon getIcon()
 	{
 		if (icon == null)
@@ -499,6 +545,7 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 	} //}}}
 
 	//{{{ getStart() method
+
 	public Position getStart()
 	{
 
@@ -506,41 +553,49 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 	} //}}}
 
 	//{{{ setStart() method
+
 	public void setStart(Position start)
 	{
 		this.start = start;
 	} //}}}
 
 	//{{{ getEnd() method
+
 	public Position getEnd()
 	{
 		return end;
 	} //}}}
 
 	//{{{ setEnd() method
+
 	public void setEnd(Position end)
 	{
 		this.end = end;
 	} //}}}
 
 	//{{{ getShortString() method
+
 	public String getShortString()
 	{
 		return toString();
 	} //}}}
 
 	//{{{ getLongString() method
+
 	public String getLongString()
 	{
 		return toString();
 	} //}}}
 
 	//{{{ setName() method
+
 	public void setName(String name)
 	{
 	} //}}}
 
 	//{{{ expressionAt() method
+
+	@Override
 	public Expression expressionAt(int line, int column)
 	{
 		if (methodHeader.isAt(line, column))
