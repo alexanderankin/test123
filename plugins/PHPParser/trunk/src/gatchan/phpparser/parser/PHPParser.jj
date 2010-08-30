@@ -27,7 +27,6 @@ options {
   DEBUG_PARSER = false;
   DEBUG_LOOKAHEAD = false;
   DEBUG_TOKEN_MANAGER = false;
-  OPTIMIZE_TOKEN_MANAGER = false;
   ERROR_REPORTING = true;
   JAVA_UNICODE_ESCAPE = true;
   UNICODE_INPUT = false;
@@ -39,6 +38,7 @@ options {
   SANITY_CHECK = true;
   FORCE_LA_CHECK = false;
   COMMON_TOKEN_ACTION = true;
+  TOKEN_EXTENDS = "gatchan.phpparser.parser.PHPToken";
 }
 
 PARSER_BEGIN(PHPParser)
@@ -56,6 +56,7 @@ import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
 //}}}
 
+//{{{ PHPParser class
 /**
  * A PHP Parser originaly written for phpeclipse (http://www.phpeclipse.de).
  *
@@ -396,7 +397,8 @@ public class PHPParser
 			variable.setType(usage.getType());
 		}
 	} //}}}
-}
+} //}}}
+
 
 PARSER_END(PHPParser)
 
@@ -468,7 +470,7 @@ TOKEN_MGR_DECLS:
 | "#"  : IN_SINGLE_LINE_COMMENT
 | <"/**" ~["/"]> { input_stream.backup(1); } : IN_FORMAL_COMMENT
 | "/*" : IN_MULTI_LINE_COMMENT
-} //}}}
+}
 
 
 <IN_SINGLE_LINE_COMMENT> SPECIAL_TOKEN :
@@ -491,7 +493,7 @@ TOKEN_MGR_DECLS:
 MORE :
 {
   < ~[] >
-}
+} //}}}
 
 
 //{{{ PHP5 tokens
@@ -585,14 +587,14 @@ MORE :
 
 <PHPPARSING> TOKEN :
 {
-  <DEFINE   : "define">
-| <GOTO     : "goto">
-| <NULL     : "null">
-| <SUPER    : "super">
-| <THIS     : "this">
-| <TRUE     : "true">
-| <FALSE    : "false">
-| <INSTANCEOF : "instanceof" >
+  <DEFINE     : "define">
+| <GOTO       : "goto">
+| <NULL       : "null">
+| <SUPER      : "super">
+| <THIS       : "this">
+| <TRUE       : "true">
+| <FALSE      : "false">
+| <INSTANCEOF : "instanceof">
 }
 
 //{{{ TYPES
@@ -613,35 +615,35 @@ MORE :
 //{{{ Misc token
 <PHPPARSING,IN_VARIABLE> TOKEN :
 {
-  <AT                 : "@"> : PHPPARSING
-| <BANG               : "!"> : PHPPARSING
-| <TILDE              : "~"> : PHPPARSING
-| <HOOK               : "?"> : PHPPARSING
-| <COLON              : ":"> : PHPPARSING
+  <AT    : "@"> : PHPPARSING
+| <BANG  : "!"> : PHPPARSING
+| <TILDE : "~"> : PHPPARSING
+| <HOOK  : "?"> : PHPPARSING
+| <COLON : ":"> : PHPPARSING
 } //}}}
 
 
 //{{{ OPERATORS
 <PHPPARSING,IN_VARIABLE> TOKEN :
 {
-  <OR_OR              : "||">  : PHPPARSING
-| <AND_AND            : "&&">  : PHPPARSING
-| <PLUS_PLUS          : "++">  : PHPPARSING
-| <MINUS_MINUS        : "--">  : PHPPARSING
-| <PLUS               : "+">   : PHPPARSING
-| <MINUS              : "-">   : PHPPARSING
-| <STAR               : "*">   : PHPPARSING
-| <SLASH              : "/">   : PHPPARSING
-| <BIT_AND            : "&">   : PHPPARSING
-| <BIT_OR             : "|">   : PHPPARSING
-| <BIT_XOR            : "^">   : PHPPARSING
-| <REMAINDER          : "%">   : PHPPARSING
-| <LSHIFT             : "<<">  : PHPPARSING
-| <RSIGNEDSHIFT       : ">>">  : PHPPARSING
-| <RUNSIGNEDSHIFT     : ">>>"> : PHPPARSING
-| <_ORL               : "OR">  : PHPPARSING
-| <XOR                : "XOR"> : PHPPARSING
-| <_ANDL              : "AND"> : PHPPARSING
+  <OR_OR          : "||">  : PHPPARSING
+| <AND_AND        : "&&">  : PHPPARSING
+| <PLUS_PLUS      : "++">  : PHPPARSING
+| <MINUS_MINUS    : "--">  : PHPPARSING
+| <PLUS           : "+">   : PHPPARSING
+| <MINUS          : "-">   : PHPPARSING
+| <STAR           : "*">   : PHPPARSING
+| <SLASH          : "/">   : PHPPARSING
+| <BIT_AND        : "&">   : PHPPARSING
+| <BIT_OR         : "|">   : PHPPARSING
+| <BIT_XOR        : "^">   : PHPPARSING
+| <REMAINDER      : "%">   : PHPPARSING
+| <LSHIFT         : "<<">  : PHPPARSING
+| <RSIGNEDSHIFT   : ">>">  : PHPPARSING
+| <RUNSIGNEDSHIFT : ">>>"> : PHPPARSING
+| <_ORL           : "OR">  : PHPPARSING
+| <XOR            : "XOR"> : PHPPARSING
+| <_ANDL          : "AND"> : PHPPARSING
 } //}}}
 
 
@@ -687,17 +689,22 @@ MORE :
 
 <IN_STRING,SKIPSTRING> TOKEN :
 {
+<DOLLARBRACE : "${"> : DOLLAR_IN_STRING
+}
+
+<IN_STRING,SKIPSTRING> TOKEN :
+{
   <DOLLARS : "$"> : DOLLAR_IN_STRING
 }
 
-<DOLLAR_IN_STRING_EXPR,IN_STRING,DOLLAR_IN_STRING,SKIPSTRING> TOKEN :
+<IN_STRING,DOLLAR_IN_STRING,SKIPSTRING> TOKEN :
 {
   <DOUBLEQUOTE2 : "\""> : PHPPARSING
 }
 
-<DOLLAR_IN_STRING> TOKEN :
+<DOLLAR_IN_STRING> TOKEN:
 {
-  <LBRACE1 : "{"> : DOLLAR_IN_STRING_EXPR
+	<RBRACE1:"}"> : IN_STRING
 }
 
 <IN_STRING> SPECIAL_TOKEN :
@@ -715,22 +722,13 @@ MORE :
     <~[]>
 }
 
-<DOLLAR_IN_STRING_EXPR> TOKEN :
-{
-  <RBRACE1 : "}"> : IN_STRING
-}
-
-/* <DOLLAR_IN_STRING_EXPR> TOKEN :
-{
-  <ID : (~["}"])*>
-} */
 
 <IN_STRING> SKIP :
 {
   <~[]>
 }
 
-<DOLLAR_IN_STRING_EXPR,IN_STRING> SKIP :
+<IN_STRING> SKIP :
 {
   <~[]>
 }
@@ -3642,7 +3640,8 @@ Expression AdditiveExpression():
 //{{{ MultiplicativeExpression()
 Expression MultiplicativeExpression():
 {
-	Expression expr,expr2;
+	Expression expr = null;
+	Expression expr2;
 	int sourceEnd,endLine,endColumn;
 	Token token;
 }
@@ -3654,7 +3653,7 @@ Expression MultiplicativeExpression():
 	catch (ParseException e)
 	{
 		if (errorMessage != null) throw e;
-		errorMessage = "unexpected token '"+e.currentToken.next.image+'\'';
+		errorMessage = "unexpected token "+e.currentToken.next.image;
 		errorStart = this.token.sourceStart;
 		errorEnd   = this.token.sourceEnd;
 		throw e;
@@ -3709,7 +3708,7 @@ Expression UnaryExpression() :
 	}
 	catch (ParseException e)
 	{
-		fireParseError("unexpected token : '"+e.currentToken.image+'\'', "", e.currentToken);
+		fireParseError("unexpected token : "+e.currentToken.image, "", e.currentToken);
 		Token nextToken = getNextToken();
 		while (nextToken.kind != EOF && nextToken.kind != SEMICOLON)
 		{
@@ -4472,17 +4471,22 @@ StringLiteral evaluableString():
 }
 {
 	start = <DOUBLEQUOTE>
+	{
+		int previousState = token_source.curLexState;
+	}
 	(
 		<DOLLARS>
 		(
 			expr = dollarBraceInString()
 			{
 				list.add(expr);
+				token_source.SwitchTo(previousState);
 			}
 		|
 			expr = expressionInString()
 			{
 				list.add(expr);
+				token_source.SwitchTo(previousState);
 			}
 		|
 			//{{{ <DOUBLEQUOTE2>
@@ -4500,10 +4504,20 @@ StringLiteral evaluableString():
 							 expressions);
 			} //}}}
 		)
+	|
+		expr = dollarBraceInString()
+		{
+			list.add(expr);
+		}
 	)*
 	//{{{ <DOUBLEQUOTE2>
-		end = <DOUBLEQUOTE2>
+		(
+			end = <DOUBLEQUOTE>
+		|
+			end = <DOUBLEQUOTE2>
+		)
 		{
+			token_source.SwitchTo(PHPParserConstants.PHPPARSING);
 			Expression[] expressions = new Expression[list.size()];
 			list.toArray(expressions);
 			return new StringLiteral("",
@@ -4523,7 +4537,7 @@ Expression dollarBraceInString():
 	Expression expr = null;
 }
 {
-	<LBRACE1>
+	<DOLLARBRACE>
 	expr = expressionInString()
 	try
 	{
@@ -5376,19 +5390,23 @@ EchoStatement EchoStatement() :
 	Token semicolonToken = null;
 }
 {
-	//{{{ echo
 	echoToken = <ECHO>
-	//}}}
 
 	//{{{ expression
 	expr = Expression()
-	{expressions.add(expr);}
+	{
+		if (expr != null)
+			expressions.add(expr);
+	}
 	//}}}
 
 	//{{{ [,expression]*
 	(
 		<COMMA> expr = Expression()
-		{expressions.add(expr);}
+		{
+			if (expr != null)
+				expressions.add(expr);
+		}
 	)*
 	//}}}
 
@@ -5423,14 +5441,28 @@ EchoStatement EchoStatement() :
 		//{{{ missing ;
 		if (semicolonToken == null)
 		{
-			Expression lastExpression = exprs[exprs.length-1];
+			
+			int end,endLine,endColumn;
+			if (exprs.length != 0)
+			{
+				Expression lastExpression = exprs[exprs.length-1];
+				end = lastExpression.getSourceEnd();
+				endLine = lastExpression.getEndLine();
+				endColumn = lastExpression.getEndColumn();
+			}
+			else
+			{
+				end = echoToken.sourceEnd;
+				endLine = echoToken.endLine;
+				endColumn = echoToken.endColumn;
+			}
 			return new EchoStatement(exprs,
 				echoToken.sourceStart,
-				lastExpression.getSourceEnd(),
+				end,
 				echoToken.beginLine,
-				lastExpression.getEndLine(),
+				endLine,
 				echoToken.beginColumn,
-				lastExpression.getEndColumn());
+				endColumn);
 		} //}}}
 
 		return new EchoStatement(exprs,
