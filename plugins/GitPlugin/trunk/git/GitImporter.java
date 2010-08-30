@@ -12,6 +12,9 @@ import org.gjt.sp.util.StringList;
 
 import projectviewer.importer.ImporterFileFilter;
 
+/** A ProjectViewer file importer service that runs the 
+    git ls-files as a child process */
+
 public class GitImporter extends ImporterFileFilter
 {
 	TreeSet<String> cache;

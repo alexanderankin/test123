@@ -25,5 +25,13 @@
 		<pathelement location="${jedit.plugins.dir}/CommonControls.jar" />
 		<pathelement location="${jedit.plugins.dir}/InfoViewer.jar" />
 	</path>
+	
+	
+    <selector id="packageFiles">
+	  <or>
+      <filename name="index.html" />
+      </or>
+    </selector>
+
 </project>
 
