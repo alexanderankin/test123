@@ -61,24 +61,24 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable
 	/**
 	 * The implemented interfaces. It could be null.
 	 */
-	private List interfaceNames;
+	private List<String> interfaceNames;
 
 	/**
 	 * The methodsHeaders of the class.
 	 */
-	private final List methodsHeaders = new ArrayList();
+	private final List<MethodHeader> methodsHeaders = new ArrayList<MethodHeader>();
 
 	/**
 	 * The constants of the class (for php5).
 	 */
-	private final List constants = new ArrayList();
+	private final List<ClassConstant> constants = new ArrayList<ClassConstant>();
 
-	private List modifiers = new ArrayList(3);
+	private List<Modifier> modifiers = new ArrayList<Modifier>(3);
 	/**
 	 * The fields of the class.
 	 * It contains {@link FieldDeclaration}
 	 */
-	private final List fields = new ArrayList();
+	private final List<FieldDeclaration> fields = new ArrayList<FieldDeclaration>();
 
 	private static transient Icon icon;
 
@@ -89,7 +89,7 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable
 			   String path,
 			   String className,
 			   String superClassName,
-			   List interfaceNames,
+			   List<String> interfaceNames,
 			   int sourceStart,
 			   int sourceEnd,
 			   int beginLine,
@@ -250,7 +250,7 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable
 		constants.add(constant);
 	}
 
-	public List getMethodsHeaders()
+	public List<MethodHeader> getMethodsHeaders()
 	{
 		return methodsHeaders;
 	}
@@ -261,7 +261,7 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable
 	 *
 	 * @return the list of fields of the class
 	 */
-	public List getFields()
+	public List<FieldDeclaration> getFields()
 	{
 		return fields;
 	}
@@ -276,7 +276,7 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable
 	{
 	}
 
-	public List getInterfaceNames()
+	public List<String> getInterfaceNames()
 	{
 		return interfaceNames;
 	}

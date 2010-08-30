@@ -58,8 +58,6 @@ import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
 
 //{{{ PHPParser class
 /**
- * A PHP Parser originaly written for phpeclipse (http://www.phpeclipse.de).
- *
  * @author Matthieu Casanova <chocolat.mou@gmail.com>
  * @version $Id$
  */
@@ -118,7 +116,7 @@ public class PHPParser
 
 	private boolean php5Enabled;
 
-	private Stack scopeStack;
+	private Stack<Scope> scopeStack;
 
 	private Scope scope;
 
@@ -237,7 +235,7 @@ public class PHPParser
 		init();
 		phpDocument = new PHPDocument("_root");
 		scope = new Scope();
-		scopeStack = new Stack();
+		scopeStack = new Stack<Scope>();
 		scopeStack.push(scope);
 		currentSegment = phpDocument;
 		token_source.SwitchTo(PHPParserTokenManager.PHPPARSING);
@@ -257,7 +255,7 @@ public class PHPParser
 		init();
 		phpDocument = new PHPDocument("_root");
 		scope = new Scope();
-		scopeStack = new Stack();
+		scopeStack = new Stack<Scope>();
 		scopeStack.push(scope);
 		currentSegment = phpDocument;
 		phpFile();
@@ -275,7 +273,7 @@ public class PHPParser
 		init();
 		phpDocument = new PHPDocument("_root");
 		scope = new Scope();
-		scopeStack = new Stack();
+		scopeStack = new Stack<Scope>();
 		scopeStack.push(scope);
 		currentSegment = phpDocument;
 		phpFile();
@@ -332,7 +330,7 @@ public class PHPParser
 	{
 		phpDocument = new PHPDocument("_root");
 		scope = new Scope();
-		scopeStack = new Stack();
+		scopeStack = new Stack<Scope>();
 		scopeStack.push(scope);
 		currentSegment = phpDocument;
 		if (jj_input_stream == null)
@@ -982,7 +980,6 @@ void Php() :
 //{{{ namespace() method
 Namespace namespace():
 {
-	Expression expression = null;
 	Token namespaceToken;
 	Token namespaceNameToken = null;
 	Token semicolon;
@@ -1077,8 +1074,8 @@ InterfaceDeclaration interfaceDeclaration() :
 	InterfaceDeclaration interfaceDeclaration;
 	String interfaceNameImage = SYNTAX_ERROR_CHAR;
 	MethodDeclaration methodDeclaration;
-	List superInterfaces = null;
-	List modifiers = new ArrayList(1);
+	List<String> superInterfaces = null;
+	List<Modifier> modifiers = new ArrayList<Modifier>(1);
 	ClassConstant classConstant;
 }
 {
@@ -1099,7 +1096,7 @@ InterfaceDeclaration interfaceDeclaration() :
 		//{{{ extends <IDENTIFIER [, IDENTIFIER]
 		<EXTENDS> nameToken = <IDENTIFIER>
 		{
-			superInterfaces = new ArrayList();
+			superInterfaces = new ArrayList<String>();
 			superInterfaces.add(nameToken.image);
 		}
 		(
@@ -1199,7 +1196,7 @@ InterfaceDeclaration interfaceDeclaration() :
 	}
 	{
 		currentSegment = interfaceDeclaration.getParent();
-		scope = (Scope) scopeStack.pop();
+		scope = scopeStack.pop();
 		return interfaceDeclaration;
 	}
 } //}}}
@@ -1299,12 +1296,10 @@ ClassConstant classConstant() :
  *
  * @return a MethodDeclaration
  */
-MethodDeclaration interfaceMethodDeclaration(List modifiers):
+MethodDeclaration interfaceMethodDeclaration(List<Modifier> modifiers):
 {
 	final MethodDeclaration functionDeclaration;
 	final MethodHeader methodHeader;
-	final Block block;
-	final OutlineableWithChildren seg = currentSegment;
 	final Token functionToken;
 }
 {
@@ -1371,7 +1366,7 @@ ClassDeclaration ClassDeclaration() :
   abstractClassBody(classDeclaration)
   {
     currentSegment = currentSegment.getParent();
-    scope = (Scope) scopeStack.pop();
+    scope = scopeStack.pop();
     pushOnAstNodes(classDeclaration);
     return classDeclaration;
   }
@@ -1407,7 +1402,7 @@ ClassDeclaration ClassDeclaration() :
   ClassBody(classDeclaration)
   {
     currentSegment = currentSegment.getParent();
-    scope = (Scope) scopeStack.pop();
+    scope = scopeStack.pop();
     pushOnAstNodes(classDeclaration);
     return classDeclaration;
   }
@@ -1424,7 +1419,7 @@ ClassHeader classHeader(Token abstractToken) :
 	String classNameImage = SYNTAX_ERROR_CHAR;
 	String superclassNameImage = null;
 	Token interfaceToken;
-	List interfaceNames = null;
+	List<String> interfaceNames = null;
 }
 {
 	//{{{ class
@@ -1475,7 +1470,7 @@ ClassHeader classHeader(Token abstractToken) :
 	//{{{ implements xxx,yyy
 	[
 		{
-			interfaceNames = new ArrayList();
+			interfaceNames = new ArrayList<String>();
 		}
 		<IMPLEMENTS>
 		try
@@ -1624,72 +1619,72 @@ void abstractClassBody(ClassDeclaration classDeclaration) :
 } //}}}
 
 //{{{ ClassBodyDeclaration(ClassDeclaration classDeclaration)
-
 /**
  * A class can contain only methods and fields.
  */
 void ClassBodyDeclaration(ClassDeclaration classDeclaration) :
 {
-  MethodDeclaration method;
-  List fieldList;
-  Modifier modifier;
-  List modifiers = new ArrayList();
-  List fields;
-  ClassConstant classConstant;
+	MethodDeclaration method;
+	List<FieldDeclaration> fieldList;
+	Modifier modifier;
+	List<Modifier> modifiers = new ArrayList<Modifier>();
+	List<FieldDeclaration> fields;
+	ClassConstant classConstant;
 }
 {
-  classConstant = classConstant()
-  {
-    classDeclaration.addConstant(classConstant);
-  }
-  |
-  (
-    modifier = commonModifiers()
-    {
-      modifiers.add(modifier);
-    }
-  )*
-  try {
-    (
-       fields = fieldDeclarationPHP5(modifiers)
-       {
-         for (int i = 0; i < fields.size();i++)
-           classDeclaration.addField((FieldDeclaration) fields.get(i));
-       }
-     |
-     (
-       modifier = methodModifiers()
-       {
-         modifiers.add(modifier);
-       }
-       (
-         modifier = commonModifiers()
-         {
-           modifiers.add(modifier);
-         }
-         )*
-       )*
-       method = methodDeclaration(CONST_METHOD,modifiers)
-       {
-       //  method.analyzeCode(this);
-         classDeclaration.addMethod(method);
-       }
-     )
-  } catch (ParseException e) {
-    fireParseError("unexpected token " + e.currentToken.image, "", e.currentToken);
-  }
-|
-  fieldList  = FieldDeclaration()
-  {
-    if (fieldList != null) {
-      for (int i = 0;i<fieldList.size();i++) {
-        classDeclaration.addField((FieldDeclaration) fieldList.get(i));
-      }
-    }
-  }
-}
-
-//}}}
+	classConstant = classConstant()
+	{
+		classDeclaration.addConstant(classConstant);
+	}
+	|
+	(
+		modifier = commonModifiers()
+		{
+			modifiers.add(modifier);
+		}
+	)*
+	try 
+	{
+		(
+			fields = fieldDeclarationPHP5(modifiers)
+			{
+				for (FieldDeclaration field : fields)
+					classDeclaration.addField(field);
+			}
+		|
+			(
+				modifier = methodModifiers()
+				{
+					modifiers.add(modifier);
+				}
+				(
+					modifier = commonModifiers()
+					{
+						modifiers.add(modifier);
+					}
+					)*
+				)*
+			method = methodDeclaration(CONST_METHOD,modifiers)
+			{
+				//  method.analyzeCode(this);
+				classDeclaration.addMethod(method);
+			}
+		)
+	} 
+	catch (ParseException e) 
+	{
+		fireParseError("unexpected token " + e.currentToken.image, "", e.currentToken);
+	}
+	|
+	fieldList  = FieldDeclaration()
+	{
+		if (fieldList != null)
+		{
+			for (FieldDeclaration field:fieldList) 
+				classDeclaration.addField(field);
+		}
+	}
+} //}}}
 
 //{{{ commonModifiers()
 /**
@@ -1697,19 +1692,21 @@ void ClassBodyDeclaration(ClassDeclaration classDeclaration) :
  */
 Modifier commonModifiers() :
 {
-  Token token = null;
+	Token token;
 }
 {
-  (
-    token = <STATIC>
-  | token = <PUBLIC>
-  | token = <PROTECTED>
-  | token = <PRIVATE>
-  )
-  {
-    return new Modifier(token);
-  }
-
+	(
+		token = <STATIC>
+	|
+		token = <PUBLIC>
+	| 
+		token = <PROTECTED>
+	|
+		token = <PRIVATE>
+	)
+	{
+		return new Modifier(token);
+	}
 } //}}}
 
 //{{{ methodModifiers()
@@ -1730,166 +1727,165 @@ Modifier methodModifiers() :
 } //}}}
 
 //{{{ abstractClassBodyDeclaration(ClassDeclaration classDeclaration)
-
 /**
  * A class can contain only methods and fields.
  */
-void abstractClassBodyDeclaration(ClassDeclaration classDeclaration) :
+void abstractClassBodyDeclaration(ClassDeclaration classDeclaration):
 {
-  MethodDeclaration method;
-  List fieldList;
-  Modifier modifier;
-  List modifiers = new ArrayList();
-  List fields;
-  ClassConstant classConstant;
+	MethodDeclaration method;
+	List<FieldDeclaration> fieldList;
+	Modifier modifier;
+	List<Modifier> modifiers = new ArrayList<Modifier>();
+	List<FieldDeclaration> fields;
+	ClassConstant classConstant;
 }
 {
-  classConstant = classConstant()
-  {
-    classDeclaration.addConstant(classConstant);
-  }
-  |
-  (
-    modifier = commonModifiers()
-    {
-      modifiers.add(modifier);
-    }
-  )*
-  try {
-    (
-       fields = fieldDeclarationPHP5(modifiers)
-       {
-         for (int i = 0; i < fields.size();i++)
-           classDeclaration.addField((FieldDeclaration) fields.get(i));
-       }
-     |
-       (
-        modifier = methodModifiers()
-        {
-          modifiers.add(modifier);
-        }
-        (
-          modifier = commonModifiers()
-          {
-            modifiers.add(modifier);
-          }
-        )*
-       )*
-       method = methodDeclaration(CONST_METHOD, modifiers)
-       {
-         //method.analyzeCode(this);
-         classDeclaration.addMethod(method);
-       }
-     )
-  } catch (ParseException e) {
-    fireParseError("unexpected token " + e.currentToken.image, "", e.currentToken);
-  }
+	classConstant = classConstant()
+	{
+		classDeclaration.addConstant(classConstant);
+	}
 |
-  fieldList = FieldDeclaration()
-  {
-    if (fieldList != null) {
-      for (int i = 0;i<fieldList.size();i++) {
-        classDeclaration.addField((FieldDeclaration) fieldList.get(i));
-      }
-    }
-  }
-}
-
-//}}}
+	(
+		modifier = commonModifiers()
+		{
+			modifiers.add(modifier);
+		}
+	)*
+	try
+	{
+		(
+			fields = fieldDeclarationPHP5(modifiers)
+			{
+				for (FieldDeclaration field:fields)
+					classDeclaration.addField(field);
+			}
+		|
+			(
+				modifier = methodModifiers()
+				{
+					modifiers.add(modifier);
+				}
+				(
+					modifier = commonModifiers()
+					{
+						modifiers.add(modifier);
+					}
+					)*
+				)*
+			method = methodDeclaration(CONST_METHOD, modifiers)
+			{
+				//method.analyzeCode(this);
+				classDeclaration.addMethod(method);
+			}
+		)
+	} 
+	catch (ParseException e)
+	{
+		fireParseError("unexpected token " + e.currentToken.image, "", e.currentToken);
+	}
+|
+	fieldList = FieldDeclaration()
+	{
+		if (fieldList != null) 
+		{
+			for (FieldDeclaration field:fieldList)
+			{
+				classDeclaration.addField(field);
+			}
+		}
+	}
+} //}}}
 
 //{{{ FieldDeclaration()
-
 /**
  * A class field declaration : it's var VariableDeclarator() (, VariableDeclarator())*;.
  * it is only used by ClassBodyDeclaration()
  */
-List FieldDeclaration() :
+List<FieldDeclaration> FieldDeclaration():
 {
-  VariableDeclaration variableDeclaration;
-  final ArrayList arrayList = new ArrayList();
-  final Token varToken;
-  Token semicolonToken = null;
+	VariableDeclaration variableDeclaration;
+	List<FieldDeclaration> arrayList = new ArrayList<FieldDeclaration>();
+	final Token varToken;
 }
 {
-  varToken = <VAR>
-  {
-    if (php5Enabled) {
-      fireParseMessage(new PHPParseMessageEvent(INFO,
-                       PHPParseMessageEvent.MESSAGE_DEPRECATED_VAR_TOKEN,
-                       path,
-                       "The var token is deprecated in php 5",
-                       token));
-    }
-  }
-  try {
-    variableDeclaration = field()
-      {
-        arrayList.add(new FieldDeclaration(namespace,
-        				   path,
-                                           variableDeclaration,
-                                           currentSegment,
-                                           variableDeclaration.getSourceStart(),
-                                           variableDeclaration.getSourceEnd(),
-                                           variableDeclaration.getBeginLine(),
-                                           variableDeclaration.getEndLine(),
-                                           variableDeclaration.getBeginColumn(),
-                                           variableDeclaration.getEndColumn()));
-      }
-    } catch (ParseException e) {
-      final Token semicolon = error_skipto(SEMICOLON);
-      fireParseError(new PHPParseErrorEvent(ERROR,
-                                            path,
-                                            "variable expected",
-                                            "variable",
-                                            e.currentToken.next.image,
-                                            varToken.sourceEnd,
-                                            semicolon.sourceEnd,
-                                            varToken.beginLine,
-                                            semicolon.endLine,
-                                            varToken.endColumn,
-                                            semicolon.endColumn));
-      return null;
-  }
+	varToken = <VAR>
+	{
+		fireParseMessage(new PHPParseMessageEvent(INFO,
+			PHPParseMessageEvent.MESSAGE_DEPRECATED_VAR_TOKEN,
+			path,
+			"The var token is deprecated in php 5",
+			token));
+	}
+	try 
+	{
+		variableDeclaration = field()
+		{
+			arrayList.add(new FieldDeclaration(namespace,
+				path,
+				variableDeclaration,
+				currentSegment,
+				variableDeclaration.getSourceStart(),
+				variableDeclaration.getSourceEnd(),
+				variableDeclaration.getBeginLine(),
+				variableDeclaration.getEndLine(),
+				variableDeclaration.getBeginColumn(),
+				variableDeclaration.getEndColumn()));
+		}
+	} 
+	catch (ParseException e) 
+	{
+		final Token semicolon = error_skipto(SEMICOLON);
+		fireParseError(new PHPParseErrorEvent(ERROR,
+			path,
+			"variable expected",
+			"variable",
+			e.currentToken.next.image,
+			varToken.sourceEnd,
+			semicolon.sourceEnd,
+			varToken.beginLine,
+			semicolon.endLine,
+			varToken.endColumn,
+			semicolon.endColumn));
+		return null;
+	}
+	
+	(
+		<COMMA> variableDeclaration = field()
+		{
+			arrayList.add(new FieldDeclaration(namespace,
+				path,
+				variableDeclaration,
+				currentSegment,
+				variableDeclaration.getSourceStart(),
+				variableDeclaration.getSourceEnd(),
+				variableDeclaration.getBeginLine(),
+				variableDeclaration.getEndLine(),
+				variableDeclaration.getBeginColumn(),
+				variableDeclaration.getEndColumn()));
+		}
+	)*
+	try 
+	{
+		<SEMICOLON>
+	}
+	catch (ParseException e)
+	{
+		fireParseError("';' expected", ";", e.currentToken);
+	}
+	{
+		return arrayList;
+	}
+} //}}}
 
-  (
-    <COMMA> variableDeclaration = field()
-      {
-        arrayList.add(new FieldDeclaration(namespace,
-        				   path,
-                                           variableDeclaration,
-                                           currentSegment,
-                                           variableDeclaration.getSourceStart(),
-                                           variableDeclaration.getSourceEnd(),
-                                           variableDeclaration.getBeginLine(),
-                                           variableDeclaration.getEndLine(),
-                                           variableDeclaration.getBeginColumn(),
-                                           variableDeclaration.getEndColumn()));
-      }
-  )*
-  try {
-    semicolonToken = <SEMICOLON>
-  } catch (ParseException e) {
-    fireParseError("';' expected", ";", e.currentToken);
-  }
-
-  {
-    return arrayList;
-  }
-}
-
-//}}}
 //{{{ fieldDeclarationPHP5()
 /**
  * A class field declaration : it's var VariableDeclarator() (, VariableDeclarator())*;.
  * it is only used by ClassBodyDeclaration()
  */
-List fieldDeclarationPHP5(List modifiers):
+List<FieldDeclaration> fieldDeclarationPHP5(List<Modifier> modifiers):
 {
 	VariableDeclaration variableDeclaration;
-	Token varToken = null;
-	Token modifierToken = null;
-	Modifier modifier;
-	List fields = new ArrayList();
+	List<FieldDeclaration> fields = new ArrayList<FieldDeclaration>();
 	Token comma;
 }
 {
@@ -1909,22 +1905,6 @@ List fieldDeclarationPHP5(List modifiers):
 				variableDeclaration.getEndLine(),
 				variableDeclaration.getBeginColumn(),
 				variableDeclaration.getEndColumn()));
-
-			//{{{ missing var token
-			if (!php5Enabled)
-			{
-				fireParseError(new PHPParseErrorEvent(ERROR,
-					path,
-					"var token expected",
-					"var",
-					variableDeclaration.toStringExpression(),
-					variableDeclaration.getSourceStart()-1,
-					variableDeclaration.getSourceStart(),
-					variableDeclaration.getBeginLine(),
-					variableDeclaration.getBeginLine(),
-					variableDeclaration.getBeginColumn()-1,
-					variableDeclaration.getBeginColumn()));
-			} //}}}
 		}
 	}
 	catch (ParseException e)
@@ -1951,22 +1931,6 @@ List fieldDeclarationPHP5(List modifiers):
 					variableDeclaration.getEndLine(),
 					variableDeclaration.getBeginColumn(),
 					variableDeclaration.getEndColumn()));
-
-				//{{{ missing var token
-				if (!php5Enabled)
-				{
-					fireParseError(new PHPParseErrorEvent(ERROR,
-                                                path,
-                                                "var token expected",
-                                                "var",
-                                                variableDeclaration.toStringExpression(),
-                                                variableDeclaration.getSourceStart()-1,
-                                                variableDeclaration.getSourceStart(),
-                                                variableDeclaration.getBeginLine(),
-                                                variableDeclaration.getBeginLine(),
-                                                variableDeclaration.getBeginColumn()-1,
-                                                variableDeclaration.getBeginColumn()));
-                                } //}}}
                         }
                 }
                 catch (ParseException e)
@@ -1974,38 +1938,7 @@ List fieldDeclarationPHP5(List modifiers):
                 	fireParseError("field declaration expected","field declaration",comma);
                 	return fields;
                 } //}}}
-                )*
-
-        //{{{ semicolon
-        try
-        {
-        	<SEMICOLON>
-        }
-        catch (ParseException e)
-        {
-        	fireParseError("';' expected", ";", e.currentToken);
-        } //}}}
-        {
-        	//{{{ if not php5 raise a warning
-        	if (!php5Enabled)
-        	{
-        		FieldDeclaration firstField = (FieldDeclaration) fields.get(0);
-        		FieldDeclaration lastField = (FieldDeclaration) fields.get(fields.size() - 1);
-        		fireParseError(new PHPParseErrorEvent(WARNING,
-        			path,
-        			"unexpected php 5 field declaration",
-        			"",
-        			"",
-        			firstField.getSourceStart(),
-        			lastField.getSourceEnd(),
-        			firstField.getBeginLine(),
-        			lastField.getEndLine(),
-        			firstField.getBeginColumn(),
-        			lastField.getEndColumn()));
-        	} //}}}
-
-        	return fields;
-        }
+	)*
 }//}}}
 
 //}}}
@@ -2493,36 +2426,37 @@ final Token arrayAssignToken;
 }
 
 //}}}
+
 //{{{ ArrayInitializer()
-
-ArrayVariableDeclaration[] ArrayInitializer() :
+ArrayVariableDeclaration[] ArrayInitializer():
 {
-  ArrayVariableDeclaration expr;
-  final ArrayList list = new ArrayList();
+	ArrayVariableDeclaration expr;
+	List<ArrayVariableDeclaration> list = new ArrayList<ArrayVariableDeclaration>();
 }
 {
-  <LPAREN>
-    [
-      expr = ArrayVariable()
-      {list.add(expr);}
-      ( LOOKAHEAD(2) <COMMA> expr = ArrayVariable()
-        {
-          list.add(expr);
-        }
-      )*
-    ]
-    [
-      <COMMA> {list.add(null);}
-    ]
-  <RPAREN>
-  {
-    ArrayVariableDeclaration[] vars = new ArrayVariableDeclaration[list.size()];
-    list.toArray(vars);
-    return vars;
-  }
-}
-
-//}}}
+	<LPAREN>
+	[
+		expr = ArrayVariable()
+		{
+			list.add(expr);
+		}
+		(
+			LOOKAHEAD(2) <COMMA> expr = ArrayVariable()
+			{
+				list.add(expr);
+			}
+		)*
+	]
+	[
+		<COMMA> {list.add(null);}
+	]
+	<RPAREN>
+	{
+		ArrayVariableDeclaration[] vars = new ArrayVariableDeclaration[list.size()];
+		list.toArray(vars);
+		return vars;
+	}
+} //}}}
 
 
 //}}}
@@ -2536,7 +2470,7 @@ ArrayVariableDeclaration[] ArrayInitializer() :
  *
  * @return a MethodDeclaration
  */
-MethodDeclaration methodDeclaration(int type, List modifiers):
+MethodDeclaration methodDeclaration(int type, List<Modifier> modifiers):
 {
 	MethodDeclaration functionDeclaration;
 	MethodHeader methodHeader;
@@ -2584,12 +2518,11 @@ MethodDeclaration methodDeclaration(int type, List modifiers):
 MethodDeclaration closureDeclaration():
 {
 	MethodDeclaration functionDeclaration;
-	List formalParameters = new ArrayList();
+	List<FormalParameter> formalParameters = new ArrayList<FormalParameter>();
 	MethodHeader methodHeader;
 	Block block;
 	OutlineableWithChildren seg = currentSegment;
 	Token functionToken;
-	Token semicolon;
 }
 {
 	functionToken = <FUNCTION>
@@ -2635,10 +2568,10 @@ MethodDeclaration closureDeclaration():
  *
  * @return a function description for the outline
  */
-MethodHeader methodHeader(Token functionToken,int type, List modifiers):
+MethodHeader methodHeader(Token functionToken,int type, List<Modifier> modifiers):
 {
 	Token reference = null;
-	List formalParameters = new ArrayList();
+	List<FormalParameter> formalParameters = new ArrayList<FormalParameter>();
 	Token methodNameToken;
 	String identifierChar = SYNTAX_ERROR_CHAR;
 }
@@ -2815,7 +2748,7 @@ Token constantIdentifier():
  * FormalParameters follows method identifier.
  * (FormalParameter())
  */
-void FormalParameters(List parameters):
+void FormalParameters(List<FormalParameter> parameters):
 {
   FormalParameter var;
 }
@@ -3640,7 +3573,7 @@ Expression AdditiveExpression():
 //{{{ MultiplicativeExpression()
 Expression MultiplicativeExpression():
 {
-	Expression expr = null;
+	Expression expr;
 	Expression expr2;
 	int sourceEnd,endLine,endColumn;
 	Token token;
@@ -4077,11 +4010,10 @@ Expression instantiation(Token reference):
 //{{{ cloning()
 Expression cloning():
 {
-	Token cloneToken;
 	AbstractVariable variable;
 }
 {
-	cloneToken = <CLONE>
+	<CLONE>
 	variable = VariableDeclaratorId()
 	{
 		return variable;
@@ -4534,7 +4466,7 @@ StringLiteral evaluableString():
 //{{{ dollarBraceInString() method
 Expression dollarBraceInString():
 {
-	Expression expr = null;
+	Expression expr;
 }
 {
 	<DOLLARBRACE>
@@ -4782,7 +4714,7 @@ TryStatement tryStatement() :
 	Token tryToken;
 	Block block;
 	Catch catchClause;
-	List catches = new ArrayList(5);
+	List<Catch> catches = new ArrayList<Catch>(5);
 }
 {
 	tryToken = <TRY>
@@ -5016,7 +4948,7 @@ Define defineStatement() :
 	}
 	try
 	{
-		token = <COMMA>
+		<COMMA>
 		{
 			pos = defineName.getSourceEnd()+1;
 		}
@@ -5624,8 +5556,8 @@ LabeledStatement LabeledStatement() :
 }
 
 //}}}
-//{{{ Block()
 
+//{{{ Block()
 /**
  * A Block is
  * {
@@ -5635,7 +5567,7 @@ LabeledStatement LabeledStatement() :
  */
 Block Block() :
 {
-	List list = new ArrayList();
+	List<Statement> list = new ArrayList<Statement>();
 	Statement statement;
 	Token lbrace;
 	Token rbrace;
@@ -5723,9 +5655,7 @@ Block Block() :
 				 beginColumn,
 				 endColumn);
 	}
-}
-
-//}}}
+} //}}}
 
 //{{{ BlockStatement()
 Statement BlockStatement() :
@@ -5786,7 +5716,7 @@ Statement BlockStatement() :
 /**
  * A Block statement that will not contain any 'break'
  */
-Statement BlockStatementNoBreak() :
+Statement BlockStatementNoBreak():
 {
 	Statement statement;
 }

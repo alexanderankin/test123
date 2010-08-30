@@ -48,12 +48,12 @@ public class InterfaceDeclaration extends Statement implements OutlineableWithCh
 	private final String name;
 	private final String namespace;
 
-	private final List children = new ArrayList();
+	private final List<Outlineable> children = new ArrayList<Outlineable>();
 
 	/**
 	 * The constants of the class (for php5).
 	 */
-	private final List constants = new ArrayList();
+	private final List<ClassConstant> constants = new ArrayList<ClassConstant>();
 
 	private static transient Icon icon;
 	private String nameLowerCase;
@@ -64,12 +64,12 @@ public class InterfaceDeclaration extends Statement implements OutlineableWithCh
 	/**
 	 * The list of the super interfaces names. This list could be null
 	 */
-	private final List superInterfaces;
+	private final List<String> superInterfaces;
 
 	/**
 	 * The methodsHeaders of the class.
 	 */
-	private final List methodsHeaders = new ArrayList();
+	private final List<MethodHeader> methodsHeaders = new ArrayList<MethodHeader>();
 
 	private static final long serialVersionUID = -6768547707320365598L;
 
@@ -77,7 +77,7 @@ public class InterfaceDeclaration extends Statement implements OutlineableWithCh
 				    String path,
 				    OutlineableWithChildren parent,
 				    String name,
-				    List superInterfaces,
+				    List<String> superInterfaces,
 				    int sourceStart,
 				    int beginLine,
 				    int beginColumn)
@@ -164,7 +164,7 @@ public class InterfaceDeclaration extends Statement implements OutlineableWithCh
 
 	public Outlineable get(int index)
 	{
-		return (Outlineable) children.get(index);
+		return children.get(index);
 	}
 
 	public int size()
@@ -258,12 +258,12 @@ public class InterfaceDeclaration extends Statement implements OutlineableWithCh
 		// todo : analyze the interface
 	}
 
-	public List getMethodsHeaders()
+	public List<MethodHeader> getMethodsHeaders()
 	{
 		return methodsHeaders;
 	}
 
-	public List getSuperInterfaces()
+	public List<String> getSuperInterfaces()
 	{
 		return superInterfaces;
 	}
