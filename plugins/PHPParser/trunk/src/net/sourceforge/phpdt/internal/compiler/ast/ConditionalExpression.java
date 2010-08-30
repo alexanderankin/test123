@@ -23,6 +23,7 @@ package net.sourceforge.phpdt.internal.compiler.ast;
 
 import gatchan.phpparser.parser.PHPParser;
 import gatchan.phpparser.parser.PHPParseMessageEvent;
+import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 
 import java.util.List;
 
@@ -31,7 +32,7 @@ import java.util.List;
  *
  * @author Matthieu Casanova
  */
-public final class ConditionalExpression extends OperatorExpression
+public class ConditionalExpression extends OperatorExpression
 {
 	private final Expression condition;
 	private final Expression valueIfTrue;
@@ -57,12 +58,13 @@ public final class ConditionalExpression extends OperatorExpression
 		this.valueIfFalse = valueIfFalse;
 	}
 
+	@Override
 	public String toStringExpression()
 	{
 		String conditionString = condition.toStringExpression();
 		String valueIfTrueString = valueIfTrue.toStringExpression();
 		String valueIfFalse = this.valueIfFalse.toStringExpression();
-		StringBuffer buff = new StringBuffer(8 +
+		StringBuilder buff = new StringBuilder(8 +
 			conditionString.length() +
 			valueIfTrueString.length() +
 			valueIfFalse.length());
@@ -80,7 +82,8 @@ public final class ConditionalExpression extends OperatorExpression
 	 *
 	 * @param list the list where we will put variables
 	 */
-	public void getOutsideVariable(List list)
+	@Override
+	public void getOutsideVariable(List<VariableUsage> list)
 	{
 	}
 
@@ -89,7 +92,8 @@ public final class ConditionalExpression extends OperatorExpression
 	 *
 	 * @param list the list where we will put variables
 	 */
-	public void getModifiedVariable(List list)
+	@Override
+	public void getModifiedVariable(List<VariableUsage> list)
 	{
 		condition.getModifiedVariable(list);
 		valueIfTrue.getModifiedVariable(list);
@@ -101,13 +105,15 @@ public final class ConditionalExpression extends OperatorExpression
 	 *
 	 * @param list the list where we will put variables
 	 */
-	public void getUsedVariable(List list)
+	@Override
+	public void getUsedVariable(List<VariableUsage> list)
 	{
 		condition.getUsedVariable(list);
 		valueIfTrue.getUsedVariable(list);
 		valueIfFalse.getUsedVariable(list);
 	}
 
+	@Override
 	public Expression expressionAt(int line, int column)
 	{
 		if (condition.isAt(line, column)) return condition;
@@ -116,6 +122,7 @@ public final class ConditionalExpression extends OperatorExpression
 		return null;
 	}
 
+	@Override
 	public void analyzeCode(PHPParser parser)
 	{
 		if (valueIfFalse.equals(valueIfTrue))

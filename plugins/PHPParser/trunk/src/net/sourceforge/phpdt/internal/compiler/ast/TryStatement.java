@@ -21,6 +21,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
 import gatchan.phpparser.parser.PHPParser;
+import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 
 import java.util.List;
 
@@ -29,9 +30,9 @@ import java.util.List;
  */
 public class TryStatement extends Statement
 {
-	private Block block;
+	private final Block block;
 
-	private List<Catch> catchs;
+	private final List<Catch> catchs;
 
 	public TryStatement(Block block,
 			    List<Catch> catchs,
@@ -47,12 +48,14 @@ public class TryStatement extends Statement
 		this.catchs = catchs;
 	}
 
+	@Override
 	public String toString(int tab)
 	{
 		return null; //todo implement toString of catch
 	}
 
-	public void getOutsideVariable(List list)
+	@Override
+	public void getOutsideVariable(List<VariableUsage> list)
 	{
 		block.getOutsideVariable(list);
 		for (Catch catched : catchs)
@@ -61,7 +64,8 @@ public class TryStatement extends Statement
 		}
 	}
 
-	public void getModifiedVariable(List list)
+	@Override
+	public void getModifiedVariable(List<VariableUsage> list)
 	{
 		block.getModifiedVariable(list);
 		for (Catch catched : catchs)
@@ -70,7 +74,8 @@ public class TryStatement extends Statement
 		}
 	}
 
-	public void getUsedVariable(List list)
+	@Override
+	public void getUsedVariable(List<VariableUsage> list)
 	{
 		block.getUsedVariable(list);
 		for (Catch catched : catchs)
@@ -79,6 +84,7 @@ public class TryStatement extends Statement
 		}
 	}
 
+	@Override
 	public Expression expressionAt(int line, int column)
 	{
 		if (block.isAt(line, column))
@@ -86,6 +92,7 @@ public class TryStatement extends Statement
 		return null;
 	}
 
+	@Override
 	public void analyzeCode(PHPParser parser)
 	{
 		block.analyzeCode(parser);

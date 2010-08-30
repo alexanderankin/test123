@@ -21,6 +21,7 @@
 */
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
 import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import gatchan.phpparser.project.itemfinder.PHPItem;
@@ -100,6 +101,7 @@ public class ClassConstant extends Statement implements Outlineable, PHPItem, IA
 		return namespace;
 	}
 
+	@Override
 	public Expression expressionAt(int line, int column)
 	{
 		return null;
@@ -111,6 +113,7 @@ public class ClassConstant extends Statement implements Outlineable, PHPItem, IA
 	 * @param tab how many tabs (not used here
 	 * @return a String
 	 */
+	@Override
 	public String toString(int tab)
 	{
 		return tabString(tab) + "const " + name + " = " + (value == null ? "?" : value.toStringExpression());
@@ -121,7 +124,8 @@ public class ClassConstant extends Statement implements Outlineable, PHPItem, IA
 	 *
 	 * @param list the list where we will put variables
 	 */
-	public void getOutsideVariable(List list)
+	@Override
+	public void getOutsideVariable(List<VariableUsage> list)
 	{
 	}
 
@@ -130,7 +134,8 @@ public class ClassConstant extends Statement implements Outlineable, PHPItem, IA
 	 *
 	 * @param list the list where we will put variables
 	 */
-	public void getModifiedVariable(List list)
+	@Override
+	public void getModifiedVariable(List<VariableUsage> list)
 	{
 	}
 
@@ -139,13 +144,15 @@ public class ClassConstant extends Statement implements Outlineable, PHPItem, IA
 	 *
 	 * @param list the list where we will put variables
 	 */
-	public void getUsedVariable(List list)
+	@Override
+	public void getUsedVariable(List<VariableUsage> list)
 	{
 	}
 
 	/**
 	 * This method will analyze the code. by default it will do nothing
 	 */
+	@Override
 	public void analyzeCode(PHPParser parser)
 	{
 	}

@@ -19,6 +19,7 @@
  */
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
 import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 
@@ -35,7 +36,7 @@ import javax.swing.*;
 /**
  * @author Matthieu Casanova
  */
-public final class InclusionExpression extends Expression implements Outlineable, IAsset
+public class InclusionExpression extends Expression implements Outlineable, IAsset
 {
 	private boolean silent;
 	/**
@@ -48,10 +49,11 @@ public final class InclusionExpression extends Expression implements Outlineable
 
 	private transient Position start;
 	private transient Position end;
-	private transient static Icon icon;
+	private static transient Icon icon;
 	private String cachedToString;
 
 	//{{{ InclusionExpression constructor
+
 	public InclusionExpression(OutlineableWithChildren parent,
 				   int keyword,
 				   Expression expression,
@@ -69,27 +71,31 @@ public final class InclusionExpression extends Expression implements Outlineable
 	} //}}}
 
 	//{{{ keywordToString() method
+
 	private String keywordToString()
 	{
 		return PHPParserConstants.tokenImage[keyword];
 	} //}}}
 
 	//{{{ toStringExpression() method
+
+	@Override
 	public String toStringExpression()
 	{
 		return toString();
 	} //}}}
 
 	//{{{ toString() method
+
 	public String toString()
 	{
 		if (cachedToString == null)
 		{
 			String keyword = keywordToString();
-			keyword = keyword.substring(1, keyword.length()-1);
+			keyword = keyword.substring(1, keyword.length() - 1);
 			String expressionString = expression.toStringExpression();
 			StringBuilder buffer = new StringBuilder(keyword.length() +
-							       expressionString.length() + 2);
+				expressionString.length() + 2);
 			if (silent)
 			{
 				buffer.append('@');
@@ -103,45 +109,53 @@ public final class InclusionExpression extends Expression implements Outlineable
 	} //}}}
 
 	//{{{ getParent() method
+
 	public OutlineableWithChildren getParent()
 	{
 		return parent;
 	} //}}}
 
 	//{{{ getOutsideVariable() method
+
 	/**
 	 * Get the variables from outside (parameters, globals ...)
 	 *
 	 * @param list the list where we will put variables
 	 */
-	public void getOutsideVariable(List list)
+	@Override
+	public void getOutsideVariable(List<VariableUsage> list)
 	{
 		expression.getOutsideVariable(list);
 	} //}}}
 
 	//{{{ getModifiedVariable() method
+
 	/**
 	 * get the modified variables.
 	 *
 	 * @param list the list where we will put variables
 	 */
-	public void getModifiedVariable(List list)
+	@Override
+	public void getModifiedVariable(List<VariableUsage> list)
 	{
 		expression.getModifiedVariable(list);
 	} //}}}
 
 	//{{{ getUsedVariable() method
+
 	/**
 	 * Get the variables used.
 	 *
 	 * @param list the list where we will put variables
 	 */
-	public void getUsedVariable(List list)
+	@Override
+	public void getUsedVariable(List<VariableUsage> list)
 	{
 		expression.getUsedVariable(list);
 	} //}}}
 
 	//{{{ getName() method
+
 	public String getName()
 	{
 		//todo : change this
@@ -149,36 +163,42 @@ public final class InclusionExpression extends Expression implements Outlineable
 	} //}}}
 
 	//{{{ getItemType() method
+
 	public int getItemType()
 	{
 		return PHPItem.INCLUDE;
 	} //}}}
 
 	//{{{ getEnd() method
+
 	public Position getEnd()
 	{
 		return end;
 	} //}}}
 
 	//{{{ setEnd() method
+
 	public void setEnd(Position end)
 	{
 		this.end = end;
 	} //}}}
 
 	//{{{ getStart() method
+
 	public Position getStart()
 	{
 		return start;
 	} //}}}
 
 	//{{{ setStart() method
+
 	public void setStart(Position start)
 	{
 		this.start = start;
 	} //}}}
 
 	//{{{ getIcon() method
+
 	public Icon getIcon()
 	{
 		if (icon == null)
@@ -189,29 +209,36 @@ public final class InclusionExpression extends Expression implements Outlineable
 	} //}}}
 
 	//{{{ getShortString() method
+
 	public String getShortString()
 	{
 		return toString();
 	} //}}}
 
 	//{{{ getLongString() method
+
 	public String getLongString()
 	{
 		return toString();
 	} //}}}
 
 	//{{{ setName() method
+
 	public void setName(String name)
 	{
 	} //}}}
 
 	//{{{ expressionAt() method
+
+	@Override
 	public Expression expressionAt(int line, int column)
 	{
 		return expression.isAt(line, column) ? expression : null;
 	} //}}}
 
 	//{{{ analyzeCode() method
+
+	@Override
 	public void analyzeCode(PHPParser parser)
 	{
 		expression.analyzeCode(parser);

@@ -23,6 +23,7 @@ package net.sourceforge.phpdt.internal.compiler.ast;
 
 import gatchan.phpparser.parser.PHPParser;
 import gatchan.phpparser.project.itemfinder.PHPItem;
+import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
 import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import org.gjt.sp.jedit.GUIUtilities;
@@ -171,7 +172,7 @@ public class FieldDeclaration extends Statement implements Outlineable, PHPItem,
 	 * @param list the list where we will put variables
 	 */
 	@Override
-	public void getOutsideVariable(List list)
+	public void getOutsideVariable(List<VariableUsage> list)
 	{
 	}
 
@@ -181,7 +182,7 @@ public class FieldDeclaration extends Statement implements Outlineable, PHPItem,
 	 * @param list the list where we will put variables
 	 */
 	@Override
-	public void getModifiedVariable(List list)
+	public void getModifiedVariable(List<VariableUsage> list)
 	{
 	}
 
@@ -191,7 +192,7 @@ public class FieldDeclaration extends Statement implements Outlineable, PHPItem,
 	 * @param list the list where we will put variables
 	 */
 	@Override
-	public void getUsedVariable(List list)
+	public void getUsedVariable(List<VariableUsage> list)
 	{
 	}
 

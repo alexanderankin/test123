@@ -6,24 +6,32 @@ import gatchan.phpparser.parser.PHPParser;
 /**
  * @author Matthieu Casanova
  */
-public final class FalseLiteral extends MagicLiteral {
+public class FalseLiteral extends MagicLiteral
+{
 
-  public FalseLiteral(Token token) {
-    super(Type.BOOLEAN, token.sourceStart, token.sourceEnd, token.beginLine,token.endLine,token.beginColumn,token.endColumn);
-  }
+	public FalseLiteral(Token token)
+	{
+		super(Type.BOOLEAN, token.sourceStart, token.sourceEnd, token.beginLine, token.endLine, token.beginColumn, token.endColumn);
+	}
 
-  /**
-   * Return the expression as String.
-   * @return the expression
-   */
-  public String toStringExpression() {
-    return "false";//$NON-NLS-1$
-  }
+	/**
+	 * Return the expression as String.
+	 *
+	 * @return the expression
+	 */
+	@Override
+	public String toStringExpression()
+	{
+		return "false";//$NON-NLS-1$
+	}
 
-  public String toString() {
-    return "false";//$NON-NLS-1$
-  }
+	public String toString()
+	{
+		return "false";//$NON-NLS-1$
+	}
 
-  public void analyzeCode(PHPParser parser) {
-  }
+	@Override
+	public void analyzeCode(PHPParser parser)
+	{
+	}
 }

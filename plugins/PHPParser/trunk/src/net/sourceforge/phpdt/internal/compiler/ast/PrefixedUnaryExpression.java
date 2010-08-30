@@ -28,27 +28,28 @@ import gatchan.phpparser.parser.Token;
 public class PrefixedUnaryExpression extends UnaryExpression
 {
 	public PrefixedUnaryExpression(Expression expression,
-	                               int operator,
-	                               int sourceStart,
-	                               int beginLine,
-	                               int beginColumn)
+				       int operator,
+				       int sourceStart,
+				       int beginLine,
+				       int beginColumn)
 	{
 		super(expression, operator, sourceStart, expression.getSourceEnd(), beginLine, expression.getEndLine(),
-		      beginColumn, expression.getEndColumn());
+			beginColumn, expression.getEndColumn());
 	}
 
 	public PrefixedUnaryExpression(Expression expression, Token operatorToken)
 	{
 		super(expression,
-		      operatorToken.kind,
-		      operatorToken.sourceStart,
-		      expression.getSourceEnd(),
-		      operatorToken.beginLine,
-		      expression.getEndLine(),
-		      operatorToken.beginColumn,
-		      expression.getEndColumn());
+			operatorToken.kind,
+			operatorToken.sourceStart,
+			expression.getSourceEnd(),
+			operatorToken.beginLine,
+			expression.getEndLine(),
+			operatorToken.beginColumn,
+			expression.getEndColumn());
 	}
 
+	@Override
 	public String toStringExpression()
 	{
 		return operatorToString() + expression.toStringExpression();

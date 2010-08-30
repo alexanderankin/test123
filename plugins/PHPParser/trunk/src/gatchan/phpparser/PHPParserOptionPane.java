@@ -31,7 +31,7 @@ import javax.swing.*;
  * @author Matthieu Casanova
  * @version $Id$
  */
-public final class PHPParserOptionPane extends AbstractOptionPane
+public class PHPParserOptionPane extends AbstractOptionPane
 {
 	private JCheckBox shortOpenTag;
 	private JCheckBox forEndFor;
@@ -80,6 +80,7 @@ public final class PHPParserOptionPane extends AbstractOptionPane
 	/**
 	 * Initialize the form. This method is automatically called by jEdit
 	 */
+	@Override
 	protected void _init()
 	{
 		addComponent(loadOnStartup = new JCheckBox(jEdit.getProperty("options.gatchan.phpparser.loadOnStartup.text")));
@@ -118,6 +119,7 @@ public final class PHPParserOptionPane extends AbstractOptionPane
 	/**
 	 * Save the properties. This method is automatically called by jEdit
 	 */
+	@Override
 	protected void _save()
 	{
 		if (loadOnStartup.isSelected())

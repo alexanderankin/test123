@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 
+import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
 import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import gatchan.phpparser.project.itemfinder.PHPItem;
@@ -26,10 +27,10 @@ import org.gjt.sp.jedit.GUIUtilities;
  * @author Matthieu Casanova
  * @version $Id$
  */
-public final class ClassDeclaration extends Statement implements OutlineableWithChildren, IAsset
+public class ClassDeclaration extends Statement implements OutlineableWithChildren, IAsset
 {
 
-	private ClassHeader classHeader;
+	private final ClassHeader classHeader;
 
 	private int bodyLineStart;
 	private int bodyColumnStart;
@@ -41,7 +42,7 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
 	 */
 	private MethodDeclaration constructor;
 
-	private List methods = new ArrayList();
+	private final List methods = new ArrayList();
 	private final transient OutlineableWithChildren parent;
 	/**
 	 * The outlineable children (those will be in the node array too.
@@ -132,6 +133,7 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
 	 * @param tab how many tabs before the class
 	 * @return the code of this class into String
 	 */
+	@Override
 	public String toString(int tab)
 	{
 		return classHeader.toString(tab) + toStringBody(tab);
@@ -150,7 +152,7 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
 	 */
 	private String toStringBody(int tab)
 	{
-		StringBuffer buff = new StringBuffer(" {");//$NON-NLS-1$
+		StringBuilder buff = new StringBuilder(" {");//$NON-NLS-1$
 		List fields = classHeader.getFields();
 		if (fields != null)
 		{
@@ -193,7 +195,8 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
 	 *
 	 * @param list the list where we will put variables
 	 */
-	public void getOutsideVariable(List list)
+	@Override
+	public void getOutsideVariable(List<VariableUsage> list)
 	{
 	}
 
@@ -202,7 +205,8 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
 	 *
 	 * @param list the list where we will put variables
 	 */
-	public void getModifiedVariable(List list)
+	@Override
+	public void getModifiedVariable(List<VariableUsage> list)
 	{
 	}
 
@@ -211,7 +215,8 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
 	 *
 	 * @param list the list where we will put variables
 	 */
-	public void getUsedVariable(List list)
+	@Override
+	public void getUsedVariable(List<VariableUsage> list)
 	{
 	}
 
@@ -331,6 +336,7 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
 	{
 	}
 
+	@Override
 	public Expression expressionAt(int line, int column)
 	{
 		for (int i = 0; i < methods.size(); i++)
@@ -347,6 +353,7 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
 		return null;
 	}
 
+	@Override
 	public void analyzeCode(PHPParser parser)
 	{
 		List<FieldDeclaration> fields = classHeader.getFields();

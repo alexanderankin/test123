@@ -20,6 +20,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
 //{{{ Imports
+
 import java.util.List;
 
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
@@ -32,7 +33,7 @@ import gatchan.phpparser.parser.Token;
  *
  * @author Matthieu Casanova
  */
-public final class Variable extends AbstractVariable
+public class Variable extends AbstractVariable
 {
 	/**
 	 * The name of the variable.
@@ -64,21 +65,22 @@ public final class Variable extends AbstractVariable
 	 * Here is an array of all superglobals variables and the special "this".
 	 */
 	public static final String[] SPECIAL_VARS = {_GET,
-						     _POST,
-						     _REQUEST,
-						     _SERVER,
-						     _SESSION,
-						     _this,
-						     GLOBALS,
-						     _COOKIE,
-						     _FILES,
-						     _ENV};
+		_POST,
+		_REQUEST,
+		_SERVER,
+		_SESSION,
+		_this,
+		GLOBALS,
+		_COOKIE,
+		_FILES,
+		_ENV};
 
 	//{{{ Variable constructors
+
 	/**
 	 * Create a new simple variable.
 	 *
-	 * @param name        the name
+	 * @param name	the name
 	 * @param sourceStart the starting position
 	 * @param sourceEnd   the ending position
 	 */
@@ -91,7 +93,7 @@ public final class Variable extends AbstractVariable
 			int endColumn)
 	{
 		super(Type.UNKNOWN, sourceStart, sourceEnd, beginLine,
-		      endLine, beginColumn, endColumn);
+			endLine, beginColumn, endColumn);
 		this.name = name;
 	}
 
@@ -103,8 +105,8 @@ public final class Variable extends AbstractVariable
 	public Variable(Token token)
 	{
 		super(Type.UNKNOWN, token.sourceStart, token.sourceEnd,
-		      token.beginLine, token.endLine, token.beginColumn,
-		      token.endColumn);
+			token.beginLine, token.endLine, token.beginColumn,
+			token.endColumn);
 		this.name = token.image;
 	}
 
@@ -124,7 +126,7 @@ public final class Variable extends AbstractVariable
 			int endColumn)
 	{
 		super(Type.UNKNOWN, sourceStart, sourceEnd, beginLine, endLine,
-		      beginColumn, endColumn);
+			beginColumn, endColumn);
 		this.variable = variable;
 	}
 
@@ -144,22 +146,26 @@ public final class Variable extends AbstractVariable
 			int endColumn)
 	{
 		super(Type.UNKNOWN, sourceStart, sourceEnd, beginLine, endLine,
-		      beginColumn, endColumn);
+			beginColumn, endColumn);
 		this.expression = expression;
 	} //}}}
 
 	//{{{ toStringExpression() method
+
 	/**
 	 * Return the expression as String.
 	 *
 	 * @return the expression
 	 */
+	@Override
 	public String toStringExpression()
 	{
 		return '$' + getName();
 	} //}}}
 
 	//{{{ getName() method
+
+	@Override
 	public String getName()
 	{
 		if (name != null)
@@ -174,34 +180,40 @@ public final class Variable extends AbstractVariable
 	} //}}}
 
 	//{{{ getOutsideVariable() method
+
 	/**
 	 * This method will return the current variable.
 	 *
 	 * @param list we will add the current method to the list
 	 */
-	public void getOutsideVariable(List list)
+	@Override
+	public void getOutsideVariable(List<VariableUsage> list)
 	{
 		getUsedVariable(list);
 	} //}}}
 
 	//{{{ getModifiedVariable() method
+
 	/**
 	 * This method will return the current variable.
 	 *
 	 * @param list we will add the current method to the list
 	 */
-	public void getModifiedVariable(List list)
+	@Override
+	public void getModifiedVariable(List<VariableUsage> list)
 	{
 		getUsedVariable(list);
 	} //}}}
 
 	//{{{ getUsedVariable() mehod
+
 	/**
 	 * This method will return the current variable.
 	 *
 	 * @param list we will add the current method to the list
 	 */
-	public void getUsedVariable(List list)
+	@Override
+	public void getUsedVariable(List<VariableUsage> list)
 	{
 		String varName;
 		if (name != null)
@@ -219,17 +231,19 @@ public final class Variable extends AbstractVariable
 		if (!arrayContains(SPECIAL_VARS, name))
 		{
 			list.add(new VariableUsage(type,
-						   varName,
-						   sourceStart,
-						   sourceEnd,
-						   beginLine,
-						   endLine,
-						   beginColumn,
-						   endColumn));
+				varName,
+				sourceStart,
+				sourceEnd,
+				beginLine,
+				endLine,
+				beginColumn,
+				endColumn));
 		}
 	} //}}}
 
 	//{{{ expressionAt() method
+
+	@Override
 	public Expression expressionAt(int line, int column)
 	{
 		if (variable != null && variable.isAt(line, column)) return variable;
@@ -238,6 +252,8 @@ public final class Variable extends AbstractVariable
 	} //}}}
 
 	//{{{ analyzeCode() method
+
+	@Override
 	public void analyzeCode(PHPParser parser)
 	{
 		if (name == null)
