@@ -24,7 +24,6 @@ options.gatchan.phpparser.option-pane.label=PHP Parser
 options.gatchan.phpparser.option-pane.code=new gatchan.phpparser.PHPParserOptionPane();
 
 # {{{ options
-gatchan.phpparser.php5support.text=php 5 support
 gatchan.phpparser.warnings.deprecatedphp4.varToken.text=report deprecated 'var' token
 
 gatchan.phpparser.warnings.shortOpenTag.text='<?' used instead of '<?php'

@@ -45,14 +45,12 @@ public class PHPParserOptionPane extends AbstractOptionPane
 	private JCheckBox unassignedVariable;
 	private JCheckBox unnecessaryGlobal;
 	private JCheckBox caseSemicolon;
-	private JCheckBox php5Enabled;
 	private JCheckBox loadOnStartup;
 	private JCheckBox deprecatedVarToken;
 	private JCheckBox conditionalExpressionCheck;
 	private JCheckBox methodFieldsSameName;
 	private JCheckBox phpClosingMissing;
 
-	public static final String PROP_PHP5_SUPPORT = "gatchan.phpparser.php5support";
 	public static final String PROP_WARN_SHORT_OPENTAG = "gatchan.phpparser.warnings.shortOpenTag";
 	public static final String PROP_WARN_FORENDFOR = "gatchan.phpparser.warnings.forEndFor";
 	public static final String PROP_WARN_SWITCHENDSWITCH = "gatchan.phpparser.warnings.switchEndSwitch";
@@ -87,7 +85,6 @@ public class PHPParserOptionPane extends AbstractOptionPane
 		String startupMode = jEdit.getProperty("plugin.gatchan.phpparser.PHPParserPlugin.activate");
 		loadOnStartup.setSelected("startup".equals(startupMode));
 
-		addComponent(php5Enabled = createCheckBox(PROP_PHP5_SUPPORT));
 		addComponent(new JLabel("Warnings"));
 		addComponent(phpClosingMissing = createCheckBox(PROP_WARN_MESSAGE_PHP_CLOSING_MISSING));
 		addComponent(deprecatedVarToken = createCheckBox(PROP_WARN_DEPRECATED_VAR_TOKEN));
@@ -130,7 +127,6 @@ public class PHPParserOptionPane extends AbstractOptionPane
 		{
 			jEdit.setProperty("plugin.gatchan.phpparser.PHPParserPlugin.activate", "defer");
 		}
-		jEdit.setBooleanProperty(PROP_PHP5_SUPPORT, php5Enabled.isSelected());
 		jEdit.setBooleanProperty(PROP_WARN_DEPRECATED_VAR_TOKEN, deprecatedVarToken.isSelected());
 		jEdit.setBooleanProperty(PROP_WARN_SHORT_OPENTAG, shortOpenTag.isSelected());
 		jEdit.setBooleanProperty(PROP_WARN_FORENDFOR, forEndFor.isSelected());
