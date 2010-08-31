@@ -47,6 +47,7 @@ import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
 
 import ise.plugin.svn.data.SVNData;
+import ise.plugin.svn.SVNPlugin;
 
 public class Info {
 
@@ -87,7 +88,7 @@ public class Info {
             ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
             // need to log in to remote repository for urls
-            clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager( data.getUsername(), data.getDecryptedPassword() ) );
+            clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager(SVNPlugin.getSvnStorageDir(),  data.getUsername(), data.getDecryptedPassword() ) );
         }
         else {
             // get info from local working directory

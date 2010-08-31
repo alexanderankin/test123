@@ -41,6 +41,7 @@ import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
 
 import ise.plugin.svn.data.*;
+import ise.plugin.svn.SVNPlugin;
 
 /**
  * Lock and unlock commands.
@@ -71,7 +72,7 @@ public class Lock {
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
         // use the svnkit client manager
-        SVNClientManager clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager(data.getUsername(), data.getDecryptedPassword() ));
+        SVNClientManager clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager(SVNPlugin.getSvnStorageDir(), data.getUsername(), data.getDecryptedPassword() ));
 
         // get a working copy client
         SVNWCClient client = clientManager.getWCClient();

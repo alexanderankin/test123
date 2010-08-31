@@ -44,6 +44,7 @@ import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNURL;
 
 import ise.plugin.svn.data.CheckoutData;
+import ise.plugin.svn.SVNPlugin;
 
 import org.tmatesoft.svn.core.wc.SVNStatus;
 import org.tmatesoft.svn.core.wc.SVNStatusClient;
@@ -82,7 +83,7 @@ public class Checkout {
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
         // use the svnkit client manager
-        SVNClientManager clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager( cd.getUsername(), cd.getDecryptedPassword() ) );
+        SVNClientManager clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager(SVNPlugin.getSvnStorageDir(),  cd.getUsername(), cd.getDecryptedPassword() ) );
 
         // get a commit client
         SVNUpdateClient client = clientManager.getUpdateClient();

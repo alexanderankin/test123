@@ -218,7 +218,7 @@ public class TimeLapseAction extends SVNAction {
                 repository = SVNRepositoryFactory.create( SVNURL.parseURIEncoded( url ) );
 
                 // set up authentication
-                ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager( data.getUsername(), data.getDecryptedPassword() );
+                ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(SVNPlugin.getSvnStorageDir(), data.getUsername(), data.getDecryptedPassword() );
                 repository.setAuthenticationManager( authManager );
             }
             catch ( SVNException svne ) {

@@ -27,9 +27,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package ise.plugin.svn;
 
+import java.io.File;
 import java.util.*;
 
 import org.gjt.sp.jedit.EBPlugin;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.msg.ViewUpdate;
@@ -43,6 +45,7 @@ public class SVNPlugin extends EBPlugin {
 
     public final static String NAME = "subversion";
     private static HashMap<View, OutputPanel> panelMap = null;
+    private static File storageDir = null;
 
     public static OutputPanel getOutputPanel( View view ) {
         if ( panelMap == null ) {
@@ -76,5 +79,25 @@ public class SVNPlugin extends EBPlugin {
     }
 
     public void start() {
+    }
+    
+    public static File getSvnStorageDir() {
+        if (storageDir != null) {
+            return storageDir;   
+        }
+        try {
+            File homeDir = jEdit.getPlugin( "ise.plugin.svn.SVNPlugin" ).getPluginHome();
+            if ( !homeDir.exists() ) {
+                homeDir.mkdir();
+            }
+            storageDir = new File(homeDir, ".subversion");
+            if (!storageDir.exists()) {
+                storageDir.mkdir();   
+            }
+            return storageDir;
+        }
+        catch ( Exception ignored ) {
+            return null;
+        }
     }
 }
