@@ -670,32 +670,32 @@ MORE :
 
 <IN_STRING,DOLLAR_IN_STRING,SKIPSTRING> SKIP :
 {
-  <ESCAPED : ("\\" ~[])> : IN_STRING
+	<ESCAPED: ("\\" ~[])> : IN_STRING
 }
 
 <PHPPARSING> TOKEN :
 {
-  <DOUBLEQUOTE : "\""> : IN_STRING
+	<DOUBLEQUOTE: "\""> : IN_STRING
 }
 
 <IN_STRING,SKIPSTRING> TOKEN :
 {
-<DOLLARBRACE : "${"> : DOLLAR_IN_STRING
+	<DOLLARBRACE: "${"> : DOLLAR_IN_STRING
 }
 
 <IN_STRING,SKIPSTRING> TOKEN :
 {
-  <DOLLARS : "$"> : DOLLAR_IN_STRING
+	<DOLLARS: "$">
 }
 
 <IN_STRING,DOLLAR_IN_STRING,SKIPSTRING> TOKEN :
 {
-  <DOUBLEQUOTE2 : "\""> : PHPPARSING
+	<DOUBLEQUOTE2: "\""> : PHPPARSING
 }
 
 <DOLLAR_IN_STRING> TOKEN:
 {
-	<RBRACE1:"}"> : IN_STRING
+	<RBRACE1: "}"> : IN_STRING
 }
 
 <IN_STRING> SPECIAL_TOKEN :
@@ -731,9 +731,12 @@ MORE :
 }
 
 
-<PHPPARSING,IN_VARIABLE> TOKEN : {<DOLLAR : "$"> : IN_VARIABLE}
+<PHPPARSING,IN_VARIABLE> TOKEN:
+{
+	<DOLLAR: "$"> : IN_VARIABLE
+}
 
-<PHPPARSING, IN_VARIABLE,DOLLAR_IN_STRING> TOKEN :
+<PHPPARSING, IN_VARIABLE,DOLLAR_IN_STRING, IN_STRING> TOKEN :
 {
   <IDENTIFIER: ((<LETTER>|<SPECIAL>) (<LETTER>|<DIGIT>|<SPECIAL>)*)>
 |
@@ -4396,6 +4399,7 @@ StringLiteral evaluableString():
 	List<Expression> list = new ArrayList<Expression>();
 	Token start,end;
 	Expression expr;
+	Token identifier;
 }
 {
 	start = <DOUBLEQUOTE>
@@ -4403,40 +4407,21 @@ StringLiteral evaluableString():
 		int previousState = token_source.curLexState;
 	}
 	(
-		<DOLLARS>
-		(
-			expr = dollarBraceInString()
-			{
-				list.add(expr);
-				token_source.SwitchTo(previousState);
-			}
-		|
-			expr = expressionInString()
-			{
-				list.add(expr);
-				token_source.SwitchTo(previousState);
-			}
-		|
-			//{{{ <DOUBLEQUOTE2>
-			end = <DOUBLEQUOTE2>
-			{
-				Expression[] expressions = new Expression[list.size()];
-				list.toArray(expressions);
-				return new StringLiteral("",
-							 start.sourceStart,
-							 end.sourceEnd,
-							 start.beginLine,
-							 end.endLine,
-							 start.beginColumn,
-							 end.endColumn,
-							 expressions);
-			} //}}}
-		)
+		<IDENTIFIER>
 	|
 		expr = dollarBraceInString()
 		{
 			list.add(expr);
 		}
+	|
+		<DOLLARS>
+		[
+			identifier = <IDENTIFIER>
+			{
+				expr = new Variable(identifier);
+				list.add(expr);
+			}
+		] 
 	)*
 	//{{{ <DOUBLEQUOTE2>
 		(
