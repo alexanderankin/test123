@@ -59,10 +59,48 @@ public class CastExpression extends Expression
 			      int beginColumn,
 			      int endColumn)
 	{
-		//todo find good type
 		super(Type.UNKNOWN, sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
 		castTarget = type;
 		this.expression = expression;
+		initType();
+	}
+
+	private void initType()
+	{
+		String target = castTarget.toStringExpression();
+		if ("int".equals(target) ||
+			"integer".equals(target))
+		{
+			setType(Type.INTEGER);
+		}
+		else if ("bool".equals(target) ||
+			"boolean".equals(target))
+		{
+			setType(Type.BOOLEAN);
+		}
+		else if ("float".equals(target) ||
+			"double".equals(target) ||
+			"real".equals(target))
+		{
+			setType(Type.FLOAT);
+		}
+		else if ("string".equals(target))
+		{
+			setType(Type.STRING);
+		}
+		else if ("array".equals(target))
+		{
+			setType(Type.ARRAY);
+		}
+		else if ("object".equals(target))
+		{
+			setType(Type.OBJECT);
+		}
+		else if ("unset".equals(target))
+		{
+			setType(Type.NULL);
+		}
+
 	}
 
 	/**

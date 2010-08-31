@@ -107,8 +107,6 @@ public class PHPParser
 	/** Tell if the parsing should be stopped. */
 	private boolean shouldStop;
 
-	private boolean php5Enabled;
-
 	private Stack<Scope> scopeStack;
 
 	private Scope scope;
@@ -142,12 +140,6 @@ public class PHPParser
 	public String getPath()
 	{
 		return path;
-	} //}}}
-
-	//{{{ setPhp5Enabled(boolean php5Enabled)
-	public void setPhp5Enabled(boolean php5Enabled)
-	{
-		this.php5Enabled = php5Enabled;
 	} //}}}
 
 	//{{{ stop()
@@ -1322,88 +1314,76 @@ MethodDeclaration interfaceMethodDeclaration(List<Modifier> modifiers):
 //{{{ Class methods
 
 //{{{ ClassDeclaration()
-
 /**
  * A Class declaration.
  * class <IDENTIFIER> [extends <IDENTIFIER>] Class body
  *
  * @return a ClassDeclaration
  */
-ClassDeclaration ClassDeclaration() :
+ClassDeclaration ClassDeclaration():
 {
-  ClassHeader classHeader;
-  ClassDeclaration classDeclaration;
-  Token abstractToken = null;
-  Token finalToken = null;
+	ClassHeader classHeader;
+	ClassDeclaration classDeclaration;
+	Token abstractToken = null;
+	Token finalToken = null;
 }
 {
-  abstractToken = <ABSTRACT>
-  {
-    if (!php5Enabled) {
-      fireParseError("unexpected token : abstract", "", abstractToken);
-    }
-  }
-  classHeader = classHeader(abstractToken)
-  {
-    classDeclaration = new ClassDeclaration(currentSegment,
-                                            classHeader,
-                                            classHeader.getSourceStart(),
-                                            classHeader.getSourceEnd(),
-                                            classHeader.getBeginLine(),
-                                            classHeader.getEndLine(),
-                                            classHeader.getBeginColumn(),
-                                            classHeader.getEndColumn());
-      currentSegment.add(classDeclaration);
-      currentSegment = classDeclaration;
-      scope = new Scope();
-      scopeStack.push(scope);
-  }
-  //todo change this
-  abstractClassBody(classDeclaration)
-  {
-    currentSegment = currentSegment.getParent();
-    scope = scopeStack.pop();
-    pushOnAstNodes(classDeclaration);
-    return classDeclaration;
-  }
+	abstractToken = <ABSTRACT>
+	classHeader = classHeader(abstractToken)
+	{
+		classDeclaration = new ClassDeclaration(currentSegment,
+			classHeader,
+			classHeader.getSourceStart(),
+			classHeader.getSourceEnd(),
+			classHeader.getBeginLine(),
+			classHeader.getEndLine(),
+			classHeader.getBeginColumn(),
+			classHeader.getEndColumn());
+		currentSegment.add(classDeclaration);
+		currentSegment = classDeclaration;
+		scope = new Scope();
+		scopeStack.push(scope);
+	}
+	//todo change this
+	abstractClassBody(classDeclaration)
+	{
+		currentSegment = currentSegment.getParent();
+		scope = scopeStack.pop();
+		pushOnAstNodes(classDeclaration);
+		return classDeclaration;
+	}
 |
-   [
-    finalToken = <FINAL>
-    {
-      if (!php5Enabled) {
-        fireParseError("unexpected token : final", "", abstractToken);
-      }
-    }
-  ]
-  classHeader = classHeader(finalToken)
-  {
-    if (finalToken != null)
-    {
-      classHeader.addModifier(new Modifier(finalToken));
-    }
-    classDeclaration = new ClassDeclaration(currentSegment,
-                                            classHeader,
-                                            classHeader.getSourceStart(),
-                                            classHeader.getSourceEnd(),
-                                            classHeader.getBeginLine(),
-                                            classHeader.getEndLine(),
-                                            classHeader.getBeginColumn(),
-                                            classHeader.getEndColumn());
-      currentSegment.add(classDeclaration);
-      currentSegment = classDeclaration;
-      scope = new Scope();
-      scopeStack.push(scope);
-  }
-  //todo change this
-  ClassBody(classDeclaration)
-  {
-    currentSegment = currentSegment.getParent();
-    scope = scopeStack.pop();
-    pushOnAstNodes(classDeclaration);
-    return classDeclaration;
-  }
-}
-//}}}
+	[
+		finalToken = <FINAL>
+	]
+	classHeader = classHeader(finalToken)
+	{
+		if (finalToken != null)
+		{
+			classHeader.addModifier(new Modifier(finalToken));
+		}
+		classDeclaration = new ClassDeclaration(currentSegment,
+			classHeader,
+			classHeader.getSourceStart(),
+			classHeader.getSourceEnd(),
+			classHeader.getBeginLine(),
+			classHeader.getEndLine(),
+			classHeader.getBeginColumn(),
+			classHeader.getEndColumn());
+		currentSegment.add(classDeclaration);
+		currentSegment = classDeclaration;
+		scope = new Scope();
+		scopeStack.push(scope);
+	}
+	//todo change this
+	ClassBody(classDeclaration)
+	{
+		currentSegment = currentSegment.getParent();
+		scope = scopeStack.pop();
+		pushOnAstNodes(classDeclaration);
+		return classDeclaration;
+	}
+} //}}}
 
 //{{{ classHeader(Token abstractToken)
 ClassHeader classHeader(Token abstractToken) :
@@ -4400,6 +4380,7 @@ StringLiteral evaluableString():
 	Token start,end;
 	Expression expr;
 	Token identifier;
+	boolean hasDollar = false;
 }
 {
 	start = <DOUBLEQUOTE>
@@ -4407,21 +4388,26 @@ StringLiteral evaluableString():
 		int previousState = token_source.curLexState;
 	}
 	(
-		<IDENTIFIER>
+		identifier = <IDENTIFIER>
+		{
+			if (hasDollar)
+			{
+				hasDollar = false;
+				expr = new Variable(identifier);
+				list.add(expr);
+			}	
+		}
 	|
 		expr = dollarBraceInString()
 		{
+			hasDollar = false;
 			list.add(expr);
 		}
 	|
 		<DOLLARS>
-		[
-			identifier = <IDENTIFIER>
-			{
-				expr = new Variable(identifier);
-				list.add(expr);
-			}
-		] 
+		{
+			hasDollar = true;
+		}
 	)*
 	//{{{ <DOUBLEQUOTE2>
 		(
