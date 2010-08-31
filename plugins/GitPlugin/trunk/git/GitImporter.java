@@ -51,7 +51,7 @@ public class GitImporter extends ImporterFileFilter
 			git.waitFor();
 		}
 		catch (IOException ioe) {
-			Log.log(Log.ERROR, this, "Unable to run git. exitcode= " + git.getProcess().exitValue(), ioe);
+			Log.log(Log.ERROR, this, "Unable to run git.  ", ioe);
 			return;
 		}
 		catch (InterruptedException ie) {}
@@ -71,7 +71,7 @@ public class GitImporter extends ImporterFileFilter
 		return jEdit.getProperty("git.importer.description", "Use git ls-files");
 	}
 
-	@Override
+	
 	public boolean accept(VFSFile file)
 	{
 		if (cache.isEmpty()) {
@@ -82,7 +82,7 @@ public class GitImporter extends ImporterFileFilter
 		return retval;
 	}
 
-	@Override
+	
 	public String getDescription()
 	{
 		return getRecurseDescription();
