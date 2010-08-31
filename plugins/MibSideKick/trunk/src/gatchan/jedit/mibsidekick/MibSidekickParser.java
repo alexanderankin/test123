@@ -29,13 +29,11 @@ import net.percederberg.mibble.MibLoaderLog;
 import net.percederberg.mibble.browser.MibTreeBuilder;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.util.Log;
-import org.gjt.sp.util.ThreadUtilities;
 import sidekick.SideKickParsedData;
 import sidekick.SideKickParser;
 
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeModel;
-import javax.swing.text.Segment;
 import java.awt.*;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
