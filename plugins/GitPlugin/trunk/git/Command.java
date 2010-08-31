@@ -68,7 +68,7 @@ public class Command
 	public boolean exec() throws IOException
 	{
 		if (process != null)
-			throw new IllegalStateException("can't reuse CommandOutputReader objects");
+			throw new IllegalStateException("can't reuse Command objects");
 
 		// try to run the command.
 		process = pBuilder.start();
