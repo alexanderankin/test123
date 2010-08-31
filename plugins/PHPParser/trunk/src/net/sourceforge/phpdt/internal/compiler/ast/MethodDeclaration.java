@@ -22,7 +22,6 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
 //{{{ Imports
-
 import gatchan.phpparser.parser.PHPParseMessageEvent;
 import gatchan.phpparser.parser.PHPParser;
 import gatchan.phpparser.project.itemfinder.PHPItem;
@@ -33,10 +32,7 @@ import sidekick.IAsset;
 
 import javax.swing.*;
 import javax.swing.text.Position;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 //}}}
 
 /**
@@ -67,7 +63,7 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 	/**
 	 * The outlineable children (those will be in the node array too.
 	 */
-	private final List children = new ArrayList();
+	private final List<Outlineable> children = new ArrayList<Outlineable>();
 
 	private transient Position start;
 	private transient Position end;
@@ -76,7 +72,7 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 	/**
 	 * The variables assigned in code. This is used during code completion.
 	 */
-	private transient List assignedVariablesInCode;
+	private transient List<VariableUsage> assignedVariablesInCode;
 	private static final long serialVersionUID = 8471570829959168564L;
 
 
@@ -134,10 +130,10 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 		StringBuilder buff = new StringBuilder(" {");
 		if (statements != null)
 		{
-			for (int i = 0; i < statements.length; i++)
+			for (Statement statement : statements)
 			{
-				buff.append('\n').append(statements[i].toString(tab));
-				if (!(statements[i] instanceof Block))
+				buff.append('\n').append(statement.toString(tab));
+				if (!(statement instanceof Block))
 				{
 					buff.append(';');
 				}
@@ -172,7 +168,7 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 
 	public Outlineable get(int index)
 	{
-		return (Outlineable) children.get(index);
+		return children.get(index);
 	} //}}}
 
 	//{{{ size() method
@@ -225,13 +221,13 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 	 *
 	 * @param list the list where I will put the variables
 	 */
-	private void getGlobalVariable(List list)
+	private void getGlobalVariable(List<VariableUsage> list)
 	{
 		if (statements != null)
 		{
-			for (int i = 0; i < statements.length; i++)
+			for (Statement statement : statements)
 			{
-				statements[i].getOutsideVariable(list);
+				statement.getOutsideVariable(list);
 			}
 		}
 	} //}}}
@@ -243,16 +239,16 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 	 *
 	 * @return the assigned variables in code.
 	 */
-	private List getAssignedVariableInCode()
+	private List<VariableUsage> getAssignedVariableInCode()
 	{
 		if (assignedVariablesInCode == null)
 		{
-			assignedVariablesInCode = new ArrayList(50);
+			assignedVariablesInCode = new ArrayList<VariableUsage>(50);
 			if (statements != null)
 			{
-				for (int i = 0; i < statements.length; i++)
+				for (Statement statement : statements)
 				{
-					statements[i].getModifiedVariable(assignedVariablesInCode);
+					statement.getModifiedVariable(assignedVariablesInCode);
 				}
 			}
 		}
@@ -260,25 +256,23 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 	} //}}}
 
 	//{{{ getUsedVariableInCode() method
-
 	/**
 	 * Get the variables used.
 	 *
 	 * @param list the list where I will put the variables
 	 */
-	private void getUsedVariableInCode(List list)
+	private void getUsedVariableInCode(List<VariableUsage> list)
 	{
 		if (statements != null)
 		{
-			for (int i = 0; i < statements.length; i++)
+			for (Statement statement : statements)
 			{
-				statements[i].getUsedVariable(list);
+				statement.getUsedVariable(list);
 			}
 		}
 	} //}}}
 
 	//{{{ getAssignedVariableInCode
-
 	/**
 	 * Returns the last variable assignation with the given name before the line and column.
 	 *
@@ -289,11 +283,10 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 	 */
 	public VariableUsage getAssignedVariableInCode(String name, int line, int column)
 	{
-		List assignedVariablesInCode = getAssignedVariableInCode();
+		List<VariableUsage> assignedVariablesInCode = getAssignedVariableInCode();
 		VariableUsage found = null;
-		for (int i = 0; i < assignedVariablesInCode.size(); i++)
+		for (VariableUsage variableUsage : assignedVariablesInCode)
 		{
-			VariableUsage variableUsage = (VariableUsage) assignedVariablesInCode.get(i);
 			if (variableUsage.getEndLine() > line || (variableUsage.getEndLine() == line && variableUsage.getBeginColumn() > column))
 			{
 				// We do not need variables declared after the given line
@@ -308,14 +301,12 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 	} //}}}
 
 	//{{{ isVariableDeclaredBefore() method
-
-	private static boolean isVariableDeclaredBefore(List list, VariableUsage var)
+	private static boolean isVariableDeclaredBefore(Iterable<VariableUsage> list, VariableUsage var)
 	{
 		String name = var.getName();
 		int pos = var.getSourceStart();
-		for (int i = 0; i < list.size(); i++)
+		for (VariableUsage variableUsage : list)
 		{
-			VariableUsage variableUsage = (VariableUsage) list.get(i);
 			if (variableUsage.getName().equals(name) && variableUsage.getSourceStart() < pos)
 			{
 				return true;
@@ -325,7 +316,6 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 	} //}}}
 
 	//{{{ analyzeCode() method
-
 	/**
 	 * This method will analyze the code.
 	 */
@@ -335,26 +325,26 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 		methodHeader.analyzeCode(parser);
 		if (statements != null)
 		{
-			for (int i = 0; i < statements.length; i++)
+			for (Statement statement : statements)
 			{
-				statements[i].analyzeCode(parser);
+				statement.analyzeCode(parser);
 			}
 		}
 
-		List globalsVars = new ArrayList();
+		List<VariableUsage> globalsVars = new ArrayList<VariableUsage>();
 		getGlobalVariable(globalsVars);
-		List modifiedVars = getAssignedVariableInCode();
-		List parameters = new ArrayList(methodHeader.getArgumentsCount());
+		List<VariableUsage> modifiedVars = getAssignedVariableInCode();
+		Collection<VariableUsage> parameters = new ArrayList<VariableUsage>(methodHeader.getArgumentsCount());
 		methodHeader.getParameters(parameters);
 
-		List declaredVars = new ArrayList(globalsVars.size() + modifiedVars.size() + parameters.size());
+		Collection<VariableUsage> declaredVars = new ArrayList<VariableUsage>(globalsVars.size() + modifiedVars.size() + parameters.size());
 		declaredVars.addAll(globalsVars);
 		declaredVars.addAll(modifiedVars);
 		declaredVars.addAll(parameters);
 
-		List usedVars = new ArrayList();
+		List<VariableUsage> usedVars = new ArrayList<VariableUsage>();
 		getUsedVariableInCode(usedVars);
-		List readOrWriteVars = new ArrayList(modifiedVars.size() + usedVars.size());
+		Collection<VariableUsage> readOrWriteVars = new ArrayList<VariableUsage>(modifiedVars.size() + usedVars.size());
 		readOrWriteVars.addAll(modifiedVars);
 		readOrWriteVars.addAll(usedVars);
 
@@ -372,11 +362,10 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 	 * @param vars       the used variable list
 	 * @param parameters the declared variable list
 	 */
-	private static void findUnusedParameters(PHPParser parser, List vars, List parameters)
+	private static void findUnusedParameters(PHPParser parser, Iterable<VariableUsage> vars, Iterable<VariableUsage> parameters)
 	{
-		for (int i = 0; i < parameters.size(); i++)
+		for (VariableUsage param : parameters)
 		{
-			VariableUsage param = (VariableUsage) parameters.get(i);
 			if (!isVariableInList(param.getName(), vars))
 			{
 				parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
@@ -394,7 +383,6 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 	} //}}}
 
 	//{{{ isVariableInList() method
-
 	/**
 	 * Tell if the list of VariableUsage contains a variable named by the name given.
 	 *
@@ -402,11 +390,11 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 	 * @param list the list of VariableUsage
 	 * @return true if the variable is in the list false otherwise
 	 */
-	private static boolean isVariableInList(String name, List list)
+	private static boolean isVariableInList(String name, Iterable<VariableUsage> list)
 	{
-		for (int i = 0; i < list.size(); i++)
+		for (VariableUsage variableUsage : list)
 		{
-			if (((VariableUsage) list.get(i)).getName().equals(name))
+			if (variableUsage.getName().equals(name))
 			{
 				return true;
 			}
@@ -415,7 +403,6 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 	} //}}}
 
 	//{{{ findUnknownUsedVars() method
-
 	/**
 	 * This method will add a warning on all used variables in a method that aren't declared before.
 	 *
@@ -423,12 +410,11 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 	 * @param usedVars     the used variable list
 	 * @param declaredVars the declared variable list
 	 */
-	private static void findUnknownUsedVars(PHPParser parser, List usedVars, List declaredVars)
+	private static void findUnknownUsedVars(PHPParser parser, Collection<VariableUsage> usedVars, Iterable<VariableUsage> declaredVars)
 	{
-		Set list = new HashSet(usedVars.size());
-		for (int i = 0; i < usedVars.size(); i++)
+		Collection<String> list = new HashSet<String>(usedVars.size());
+		for (VariableUsage variableUsage : usedVars)
 		{
-			VariableUsage variableUsage = (VariableUsage) usedVars.get(i);
 			if ("this".equals(variableUsage.getName())) continue; // this is a special variable
 			if (!list.contains(variableUsage.getName()) && !isVariableDeclaredBefore(declaredVars, variableUsage))
 			{
@@ -600,11 +586,13 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 	{
 		if (methodHeader.isAt(line, column))
 			return methodHeader.expressionAt(line, column);
-		for (int i = 0; i < statements.length; i++)
+		if (statements != null)
 		{
-			Statement statement = statements[i];
-			if (statement.isAt(line, column))
-				return statement.expressionAt(line, column);
+			for (Statement statement : statements)
+			{
+				if (statement.isAt(line, column))
+					return statement.expressionAt(line, column);
+			}
 		}
 		return null;
 	} //}}}
