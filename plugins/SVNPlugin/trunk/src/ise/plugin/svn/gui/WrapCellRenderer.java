@@ -17,6 +17,7 @@ import org.gjt.sp.jedit.jEdit;
  */
 public class WrapCellRenderer extends JTextPane implements TableCellRenderer {
 
+    // TODO: use view colors or just let the look and feel handle it?
     private static Color background = jEdit.getColorProperty( "view.bgColor", Color.WHITE );
     private static Color selection = jEdit.getColorProperty( "view.selectionColor", Color.LIGHT_GRAY );
     private static Color foreground = jEdit.getColorProperty( "view.fgColor", Color.BLACK );
