@@ -43,6 +43,7 @@ import org.tmatesoft.svn.core.wc.SVNWCUtil;
 import org.tmatesoft.svn.core.wc.SVNCopySource;
 
 import ise.plugin.svn.data.CopyData;
+import ise.plugin.svn.SVNPlugin;
 
 /**
  * Used to copy or move either a working file to another working file or to the
@@ -70,7 +71,7 @@ public class Copy {
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
         // use the svnkit client manager
-        SVNClientManager clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager( data.getUsername(), data.getDecryptedPassword() ) );
+        SVNClientManager clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager(SVNPlugin.getSvnStorageDir(),  data.getUsername(), data.getDecryptedPassword() ) );
 
         // get a copy client
         SVNCopyClient client = clientManager.getCopyClient();

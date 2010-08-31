@@ -45,6 +45,7 @@ import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
 import ise.plugin.svn.data.DeleteData;
 import ise.plugin.svn.data.DeleteResults;
+import ise.plugin.svn.SVNPlugin;
 
 
 public class Delete {
@@ -67,7 +68,7 @@ public class Delete {
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
         // use the svnkit client manager
-        SVNClientManager clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager(data.getUsername(), data.getDecryptedPassword()) );
+        SVNClientManager clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager(SVNPlugin.getSvnStorageDir(), data.getUsername(), data.getDecryptedPassword()) );
 
         if ( !data.pathsAreURLs() ) {
             // working copies, convert paths to Files

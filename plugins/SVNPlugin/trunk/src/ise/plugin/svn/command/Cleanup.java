@@ -41,6 +41,7 @@ import org.tmatesoft.svn.core.SVNException;
 
 import ise.plugin.svn.data.SVNData;
 import ise.plugin.svn.io.ConsolePrintStream;
+import ise.plugin.svn.SVNPlugin;
 
 
 public class Cleanup {
@@ -74,7 +75,7 @@ public class Cleanup {
         ISVNOptions options = SVNWCUtil.createDefaultOptions( true );
 
         // use the svnkit client manager
-        SVNClientManager clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager(cd.getUsername(), cd.getDecryptedPassword()) );
+        SVNClientManager clientManager = SVNClientManager.newInstance( options, SVNWCUtil.createDefaultAuthenticationManager(SVNPlugin.getSvnStorageDir(), cd.getUsername(), cd.getDecryptedPassword()) );
 
         // get a client
         SVNWCClient client = clientManager.getWCClient();

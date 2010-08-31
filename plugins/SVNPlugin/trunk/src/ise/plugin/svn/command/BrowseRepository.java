@@ -52,6 +52,7 @@ import ise.plugin.svn.gui.DirTreeNode;
 import ise.plugin.svn.io.SVNFile;
 import ise.plugin.svn.library.FileUtilities;
 import ise.plugin.svn.library.PasswordHandler;
+import ise.plugin.svn.SVNPlugin;
 
 
 public class BrowseRepository {
@@ -88,7 +89,7 @@ public class BrowseRepository {
         }
 
         // set up authentication
-        ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager( cd.getUsername(), cd.getDecryptedPassword() );
+        ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(SVNPlugin.getSvnStorageDir(),  cd.getUsername(), cd.getDecryptedPassword() );
         repository.setAuthenticationManager( authManager );
 
         List<DirTreeNode> children = null;
@@ -267,7 +268,7 @@ public class BrowseRepository {
             if ( password != null && password.length() > 0 ) {
                 pwd = PasswordHandler.decryptPassword( password );
             }
-            ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager( username, pwd );
+            ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(SVNPlugin.getSvnStorageDir(),  username, pwd );
             repository.setAuthenticationManager( authManager );
             if ( revision.getDate() != null ) {
                 rev = repository.getDatedRevision( revision.getDate() );
@@ -300,7 +301,7 @@ public class BrowseRepository {
             if ( password != null && password.length() > 0 ) {
                 pwd = PasswordHandler.decryptPassword( password );
             }
-            ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager( username, pwd );
+            ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(SVNPlugin.getSvnStorageDir(),  username, pwd );
             repository.setAuthenticationManager( authManager );
 
             SVNNodeKind nodeKind = repository.checkPath( filepath , revision );
