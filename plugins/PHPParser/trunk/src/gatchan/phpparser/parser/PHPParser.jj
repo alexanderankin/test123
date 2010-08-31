@@ -1195,91 +1195,91 @@ InterfaceDeclaration interfaceDeclaration() :
 } //}}}
 
 //{{{ ClassConstant()
-ClassConstant classConstant() :
+ClassConstant classConstant():
 {
-  Token constToken, token;
-  String constName = SYNTAX_ERROR_CHAR;
-  Expression initializer = null;
-  int end, endLine, endColumn;
+	Token constToken, token;
+	String constName = SYNTAX_ERROR_CHAR;
+	Expression initializer = null;
+	int end, endLine, endColumn;
 }
 {
-  constToken = <CONST>
-  {
-    end = constToken.sourceEnd;
-    endLine = constToken.endLine;
-    endColumn = constToken.endColumn;
-  }
-  //{{{ <IDENTIFIER>
-  try
-  {
-    token = <IDENTIFIER>
-    {
-      constName = token.image;
-      end = token.sourceEnd;
-      endLine = token.endLine;
-      endColumn = token.endColumn;
-    }
-  }
-  catch (ParseException e)
-  {
-    fireParseError("constant expected","constant",e.currentToken.next);
-  } //}}}
-  //{{{ <ASSIGN>
-  try
-  {
-    token = <ASSIGN>
-    {
-      end = token.sourceEnd;
-      endLine = token.endLine;
-      endColumn = token.endColumn;
-    }
-  }
-    catch (ParseException e)
-  {
-    fireParseError("'=' expected","=",e.currentToken.next);
-  } //}}}
-  //{{{ VariableInitializer()
-  try
-  {
-    initializer = VariableInitializer()
-    {
-      end = initializer.getSourceEnd();
-      endLine = initializer.getEndLine();
-      endColumn = initializer.getEndColumn();
-    }
-  }
-    catch (ParseException e)
-  {
-    fireParseError("expression expected","expression",e.currentToken.next);
-  } //}}}
-  //{{{ <SEMICOLON>
-  try
-  {
-    token = <SEMICOLON>
-    {
-      end = token.sourceEnd;
-      endLine = token.endLine;
-      endColumn = token.endColumn;
-    }
-  }
-  catch (ParseException e)
-  {
-    fireParseError("';' expected",";",e.currentToken.next);
-  } //}}}
+	constToken = <CONST>
+	{
+		end = constToken.sourceEnd;
+		endLine = constToken.endLine;
+		endColumn = constToken.endColumn;
+	}
+	//{{{ <IDENTIFIER>
+	try
+	{
+		token = <IDENTIFIER>
+		{
+			constName = token.image;
+			end = token.sourceEnd;
+			endLine = token.endLine;
+			endColumn = token.endColumn;
+		}
+	}
+	catch (ParseException e)
+	{
+		fireParseError("constant expected","constant",e.currentToken.next);
+	} //}}}
+	//{{{ <ASSIGN>
+	try
+	{
+		token = <ASSIGN>
+		{
+			end = token.sourceEnd;
+			endLine = token.endLine;
+			endColumn = token.endColumn;
+		}
+	}
+	catch (ParseException e)
+	{
+		fireParseError("'=' expected","=",e.currentToken.next);
+	} //}}}
+	//{{{ VariableInitializer()
+	try
+	{
+		initializer = VariableInitializer()
+		{
+			end = initializer.getSourceEnd();
+			endLine = initializer.getEndLine();
+			endColumn = initializer.getEndColumn();
+		}
+	}
+	catch (ParseException e)
+	{
+		fireParseError("expression expected","expression",e.currentToken.next);
+	} //}}}
+	//{{{ <SEMICOLON>
+	try
+	{
+		token = <SEMICOLON>
+		{
+			end = token.sourceEnd;
+			endLine = token.endLine;
+			endColumn = token.endColumn;
+		}
+	}
+	catch (ParseException e)
+	{
+		fireParseError("';' expected",";",e.currentToken.next);
+	} //}}}
 
-  {
-    return new ClassConstant(namespace,
-    	    		     path,
-                             currentSegment,
-                             constName,
-                             initializer,
-                             constToken.sourceStart,
-                             end,
-                             constToken.beginLine,
-                             endLine,
-                             constToken.beginColumn,
-                             endColumn);
-  }
+	{
+		return new ClassConstant(namespace,
+			path,
+			currentSegment,
+			constName,
+			initializer,
+			constToken.sourceStart,
+			end,
+			constToken.beginLine,
+			endLine,
+			constToken.beginColumn,
+			endColumn);
+	}
 } //}}}
 
 //{{{ interfaceMethodDeclaration(List modifiers)
@@ -1942,7 +1942,7 @@ List<FieldDeclaration> fieldDeclarationPHP5(List<Modifier> modifiers):
 /**
  * One field declaration
  */
-VariableDeclaration field() :
+VariableDeclaration field():
 {
 	Token identifierToken, lbrace,rbrace;
 	Expression expr;
@@ -2570,7 +2570,9 @@ MethodHeader methodHeader(Token functionToken,int type, List<Modifier> modifiers
 	String identifierChar = SYNTAX_ERROR_CHAR;
 }
 {
-	[reference = <BIT_AND>]
+	[
+		reference = <BIT_AND>
+	]
 	{
 		try
 		{
@@ -3035,9 +3037,9 @@ Expression assignment():
  *
  * @return the assignement operator token
  */
-Token AssignmentOperator() :
+Token AssignmentOperator():
 {
-  Token assignOperator;
+	Token assignOperator;
 }
 {
 	(
@@ -4512,7 +4514,7 @@ Expression expressionInString():
 //}}}
 
 //{{{ Arguments()
-FunctionCall Arguments(Expression func) :
+FunctionCall Arguments(Expression func):
 {
 	Expression[] args = null;
 	Token rparen,lparen;
@@ -4573,13 +4575,13 @@ FunctionCall Arguments(Expression func) :
  * argumentDeclaration() (, argumentDeclaration)*
  * @return an array of arguments
  */
-Expression[] ArgumentList() :
+Expression[] ArgumentList():
 {
 	Expression arg;
 	List<Expression> list = new ArrayList<Expression>();
 }
 {
-	arg = Expression()
+	arg = _argument()
 	{
 		list.add(arg);
 	}
@@ -4587,7 +4589,7 @@ Expression[] ArgumentList() :
 		<COMMA>
 		try
 		{
-			arg = Expression()
+			arg = _argument()
 			{
 				list.add(arg);
 			}
@@ -4603,6 +4605,21 @@ Expression[] ArgumentList() :
 		return arguments;
 	}
 } //}}}
+
+//{{{ _argument() method
+Expression _argument():
+{
+	Expression arg;
+}
+{
+	arg = Expression()
+|
+	arg = closureDeclaration()
+	{
+		return arg;
+	}
+} //}}}
+
 
 //{{{ StatementNoBreak()
 /**
@@ -5675,7 +5692,8 @@ Statement BlockStatement() :
 	{
 		statement = Statement()
 		{
-			if (phpDocument == currentSegment) pushOnAstNodes(statement);
+			if (phpDocument == currentSegment)
+				pushOnAstNodes(statement);
 		}
 	}
 	catch (ParseException e)
