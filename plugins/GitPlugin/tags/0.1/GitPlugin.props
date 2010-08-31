@@ -1,0 +1,19 @@
+# Plugin properties
+plugin.git.GitPlugin.activate=defer
+
+plugin.git.GitPlugin.name=Git Plugin
+plugin.git.GitPlugin.author=Alan Ezust
+plugin.git.GitPlugin.version=0.1
+plugin.git.GitPlugin.docs=index.html
+plugin.git.GitPlugin.description=Offers a file filter importer for ProjectViewer
+plugin.git.GitPlugin.depend.0=jdk 1.6
+plugin.git.GitPlugin.depend.1=jedit 04.03.99.00
+plugin.git.GitPlugin.depend.2=plugin CommonControlsPlugin 1.2
+plugin.git.GitPlugin.depend.3=plugin projectviewer.ProjectPlugin 3.0.1
+
+git.importer.description=Use git ls-files
+plugin.git.GitPlugin.option-pane=git
+
+options.git.label=Git
+options.git.code = new git.OptionPane();
+options.git.path = git executable:
