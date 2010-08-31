@@ -3037,7 +3037,7 @@ Token arrayAssignToken;
  * (FormalParameter())
  */
   final public void FormalParameters(List<FormalParameter> parameters) throws ParseException {
-  FormalParameter var;
+        FormalParameter var;
     try {
       jj_consume_token(LPAREN);
     } catch (ParseException e) {

@@ -22,7 +22,6 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
 //{{{ Imports
-
 import gatchan.phpparser.parser.PHPParser;
 import gatchan.phpparser.project.itemfinder.PHPItem;
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
@@ -30,9 +29,9 @@ import org.gjt.sp.jedit.GUIUtilities;
 
 import javax.swing.*;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 //}}}
 
 /**
@@ -60,7 +59,7 @@ public class MethodHeader extends Statement implements PHPItem, Serializable
 	/**
 	 * The arguments.
 	 */
-	private final List arguments;
+	private final List<FormalParameter> arguments;
 
 	private String cachedToString;
 
@@ -70,12 +69,11 @@ public class MethodHeader extends Statement implements PHPItem, Serializable
 	private static final long serialVersionUID = -8681675454927194940L;
 
 	//{{{ MethodHeader constructor
-
 	public MethodHeader(String namespace, String path,
 			    List<Modifier> modifiers,
 			    String name,
 			    boolean reference,
-			    List arguments,
+			    List<FormalParameter> arguments,
 			    int sourceStart,
 			    int sourceEnd,
 			    int beginLine,
@@ -129,7 +127,7 @@ public class MethodHeader extends Statement implements PHPItem, Serializable
 			{
 				for (int i = 0; i < arguments.size(); i++)
 				{
-					FormalParameter o = (FormalParameter) arguments.get(i);
+					FormalParameter o = arguments.get(i);
 					buff.append(o.toStringExpression());
 					if (i != (arguments.size() - 1))
 					{
@@ -178,14 +176,12 @@ public class MethodHeader extends Statement implements PHPItem, Serializable
 	} //}}}
 
 	//{{{ getParameters() method
-
-	public void getParameters(List list)
+	public void getParameters(Collection<VariableUsage> list)
 	{
 		if (arguments != null)
 		{
-			for (int i = 0; i < arguments.size(); i++)
+			for (FormalParameter variable : arguments)
 			{
-				FormalParameter variable = (FormalParameter) arguments.get(i);
 				VariableUsage variableUsage = new VariableUsage(Type.UNKNOWN,
 					variable.getName(),
 					variable.getSourceStart(),
@@ -231,10 +227,10 @@ public class MethodHeader extends Statement implements PHPItem, Serializable
 	{
 		if (arguments != null)
 		{
-			for (int i = 0; i < arguments.size(); i++)
+			for (FormalParameter formalParameter : arguments)
 			{
-				FormalParameter formalParameter = (FormalParameter) arguments.get(i);
-				if (formalParameter.isAt(line, column)) return formalParameter;
+				if (formalParameter.isAt(line, column))
+					return formalParameter;
 			}
 		}
 		return null;
@@ -249,13 +245,12 @@ public class MethodHeader extends Statement implements PHPItem, Serializable
 	} //}}}
 
 	//{{{checkModifiers() method
-
 	private void checkModifiers(PHPParser parser)
 	{
 		if (modifiers == null)
 			return;
 
-		Set<String> modifierKinds = new HashSet<String>(5);
+		Collection<String> modifierKinds = new HashSet<String>(5);
 		for (int i = 0; i < modifiers.size(); i++)
 		{
 			Modifier modifier = modifiers.get(i);

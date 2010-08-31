@@ -2744,7 +2744,7 @@ Token constantIdentifier():
  */
 void FormalParameters(List<FormalParameter> parameters):
 {
-  FormalParameter var;
+	FormalParameter var;
 }
 {
 	//{{{ LPAREN
