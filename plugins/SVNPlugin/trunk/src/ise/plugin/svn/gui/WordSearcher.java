@@ -35,6 +35,8 @@ public class WordSearcher {
         this.comp = comp;
         this.regex0 = regex0;
         this.regex1 = regex1;
+        // TODO: use null instead of GREEN? null will cause the text area selection
+        // color as provided by the look and feel to be used.
         this.painter = new UnderlineHighlighter.UnderlineHighlightPainter( Color.GREEN );
     }
 
