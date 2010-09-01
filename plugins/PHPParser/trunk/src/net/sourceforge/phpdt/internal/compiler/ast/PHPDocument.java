@@ -246,6 +246,18 @@ public class PHPDocument implements OutlineableWithChildren, IAsset
 		this.nodes = nodes;
 	}
 
+	public void visitNodes(NodeVisitor visitor)
+	{
+		for (AstNode node : nodes)
+		{
+			if (node == null)
+				break;
+			visitor.visit(node);
+			node.visitSubNodes(visitor);
+		}
+	}
+
+
 	public int getItemType()
 	{
 		return PHPItem.DOCUMENT;

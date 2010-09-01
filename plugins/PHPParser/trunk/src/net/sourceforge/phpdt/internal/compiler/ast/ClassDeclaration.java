@@ -416,4 +416,14 @@ public class ClassDeclaration extends Statement implements OutlineableWithChildr
 				node.getEndColumn()));
 		}
 	}
+
+	@Override
+	public void visitSubNodes(NodeVisitor visitor)
+	{
+		for (MethodDeclaration method : methods)
+		{
+			visitor.visit(method);
+			method.visitSubNodes(visitor);
+		}
+	}
 }
