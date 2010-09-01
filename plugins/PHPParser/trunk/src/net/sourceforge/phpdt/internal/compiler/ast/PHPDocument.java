@@ -58,7 +58,7 @@ public class PHPDocument implements OutlineableWithChildren, IAsset
 	/**
 	 * Create the PHPDocument.
 	 *
-	 * @param name the nale f the document
+	 * @param name the name f the document
 	 */
 	public PHPDocument(String name)
 	{
