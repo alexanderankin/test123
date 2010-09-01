@@ -1,3 +1,23 @@
+/*
+ * PHPParserTester.java
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
+ * Copyright (C) 2003, 2010 Matthieu Casanova
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
 package gatchan.phpparser.parser;
 
 import junit.framework.Assert;
@@ -18,7 +38,7 @@ public class PHPParserTester extends TestCase implements PHPParserListener
 
 	public void testNew()
 	{
-		
+
 	}
 
 
@@ -35,7 +55,7 @@ public class PHPParserTester extends TestCase implements PHPParserListener
 		checkPHP("fn()->toto;");
 		checkPHP("$a = float;");
 		checkPHP("$link= mysql_connect($this->mysqlHost, $this->mysqlUser, $this->mysqlPassword)\n" +
-			 "or $errMsg= 'Could not connect: ' . mysql_error();");
+			"or $errMsg= 'Could not connect: ' . mysql_error();");
 		checkPHP("function method(array $array) {\n}");
 		checkPHP("if (true or $b = 2) echo 'coucou';");
 		checkPHP("!feof($fin) && $data = fread($fin, 8096);");
@@ -59,23 +79,23 @@ public class PHPParserTester extends TestCase implements PHPParserListener
 		checkPHP("1 == 1 ? $twovar = $onevar: $twovar = $threevar;");
 		checkPHP("list($a,$b);");
 		checkHTML("<?php\n" +
-			  "$heredoc = <<<EOF\n" +
-			  "?>\n" +
-			  "EOF;\n" +
-			  "?>");
+			"$heredoc = <<<EOF\n" +
+			"?>\n" +
+			"EOF;\n" +
+			"?>");
 		checkPHP("if ($some xor $thing) { }");
 		checkHTML("<?=\"toto\"?>");
 		checkPHP("$ a = <<<ca\n" +
-			 "\n" +
-			 "toto\n" +
-			 "\n" +
-			 "ca;");
+			"\n" +
+			"toto\n" +
+			"\n" +
+			"ca;");
 		checkPHP("$ebus_sql['sel_url_list'] = <<<EOS\n"
-			 + "select rtrim(URL_NAME) as url_name\n" + "	, rtrim(URL) as url\n"
-			 + "	, rtrim(URL_DESC) as url_desc\n" + "from appl_url\n"
-			 + "where appl_instnc_sk = <<INSTNC>>\n"
-			 + "and appl_sect_deftn_sk = <<SECT>>\n" + "order by url_ord\n"
-			 + "EOS;\n");
+			+ "select rtrim(URL_NAME) as url_name\n" + "	, rtrim(URL) as url\n"
+			+ "	, rtrim(URL_DESC) as url_desc\n" + "from appl_url\n"
+			+ "where appl_instnc_sk = <<INSTNC>>\n"
+			+ "and appl_sect_deftn_sk = <<SECT>>\n" + "order by url_ord\n"
+			+ "EOS;\n");
 
 		checkHTML("<?php echo $bgcolor2?>");
 		checkPHP("if ($topic<1) { $topic = 1;}");
@@ -122,11 +142,11 @@ public class PHPParserTester extends TestCase implements PHPParserListener
 		checkPHP("if (isset($test)) { } elseif (isset($lang)) { }");
 		checkPHP("require_once(\"mainfile.php\");  ");
 		checkPHP("if (eregi(\"footer.php\",$PHP_SELF)) {\n"
-			 + "Header(\"Location: index.php\");\n" + "die();\n" + "}\n");
+			+ "Header(\"Location: index.php\");\n" + "die();\n" + "}\n");
 		checkPHP("while (eregi(\"footer.php\",$PHP_SELF)) {\n"
-			 + "Header(\"Location: index.php\");\n" + "die();\n" + "}\n");
+			+ "Header(\"Location: index.php\");\n" + "die();\n" + "}\n");
 		checkPHP("while (eregi(\"footer.php\",$PHP_SELF)) :\n"
-			 + "Header(\"Location: index.php\");\n" + "die();\n" + "endwhile;\n");
+			+ "Header(\"Location: index.php\");\n" + "die();\n" + "endwhile;\n");
 		checkPHP("$tipath = \"images/topics/\";");
 		checkPHP("$reasons = array(\"1\", \"2\",\"test\");");
 		checkPHP("if ($home == 1) { message_box(); blocks(Center);}");
@@ -140,16 +160,16 @@ public class PHPParserTester extends TestCase implements PHPParserListener
 		checkPHP("$AllowableHTML = array(\"b\"=>1,\n \"i\"=>1);");
 		checkPHP("if ($term{0}!=$firstChar) {}");
 		checkPHP("echo \"<center><b>\"._NOADMINYET.\"</b></center><br><br>\"\n"
-			 + ".\"<form action=\\\"admin.php\\\" method=\\\"post\\\">\"\n"
-			 + ".\"<tr><td><b>\"._NICKNAME.\":</b></td><td><input type=\\\"text\\\" name=\\\"name\\\" size=\\\"30\\\" maxlength=\\\"25\\\"></td></tr>\"\n;");
+			+ ".\"<form action=\\\"admin.php\\\" method=\\\"post\\\">\"\n"
+			+ ".\"<tr><td><b>\"._NICKNAME.\":</b></td><td><input type=\\\"text\\\" name=\\\"name\\\" size=\\\"30\\\" maxlength=\\\"25\\\"></td></tr>\"\n;");
 		checkPHP("/* \n overLib is from Eric Bosrup (http://www.bosrup.com/web/overlib/) \n */");
 		checkPHP("if ($arrAtchCookie[1]==0 && $IdAtchPostId!=null){  } ");
 		checkPHP("$arrAtchCookie[1] -= filesize(realpath($AtchTempDir).\"/\".$xattachlist)/ 1024; ");
 		checkPHP("if (!isset($message)){ \n"
-			 + "$message = $myrow[post_text];\n"
-			 + "$message = eregi_replace(\"\\[addsig]\", \"\\n-----------------\\n\" .    $myrow[user_sig], $message); \n"
-			 + "$message = str_replace(\"<BR>\", \"\\n\", $message); \n"
-			 + "$message = str_replace(\"<br>\", \"\\n\", $message); \n } ");
+			+ "$message = $myrow[post_text];\n"
+			+ "$message = eregi_replace(\"\\[addsig]\", \"\\n-----------------\\n\" .    $myrow[user_sig], $message); \n"
+			+ "$message = str_replace(\"<BR>\", \"\\n\", $message); \n"
+			+ "$message = str_replace(\"<br>\", \"\\n\", $message); \n } ");
 		checkPHP(
 			"do {$array[] = array(\"$myrow[uid]\" => \"$myrow[uname]\"); } while($myrow = mysql_fetch_array($result));");
 		checkPHP("$ol = new Overlib();");
@@ -168,21 +188,13 @@ public class PHPParserTester extends TestCase implements PHPParserListener
 		checkPHP("TR_TreeAction::getInstance('containers')->isRoot(5);");
 	}
 
-	public void testParserSuccessPHP5()
-	{
-		phpParser.setPhp5Enabled(true);
-		testParserSuccess();
-	}
-
 	public void testParserSinglePHP5()
 	{
-		phpParser.setPhp5Enabled(true);
 		checkPHP("interface Test { protected function tutu(); }");
 	}
 
 	public void testParserSuccessPHP5SpecialSyntax()
 	{
-		phpParser.setPhp5Enabled(true);
 		checkPHP("TR_TreeAction::getInstance('containers');");
 		checkPHP("TR_TreeAction::getInstance('containers')->isRoot(5);");
 		checkPHP("function method(array $array) {\n}");
