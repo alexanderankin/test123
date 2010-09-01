@@ -1,0 +1,30 @@
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<ACTIONS>
+	<ACTION NAME="javadoc-search">
+		<CODE>
+			String cls = GUIUtilities.input(view, "msg.javadoc.search", null);
+			if (cls != null) {
+				javadoc.JavadocPlugin.search(view, cls);
+			}
+		</CODE>
+	</ACTION>
+	<ACTION NAME="javadoc-search-sel">
+		<CODE>
+			String sel = textArea.getSelectedText();
+			if (sel == null || sel.length() == 0) {
+				textArea.selectWord();
+				sel = textArea.getSelectedText();
+				if (sel == null || sel.length() == 0) {
+						view.getToolkit().beep();
+						return;
+				}
+			}
+			javadoc.JavadocPlugin.search(view, sel);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="javadoc-settings">
+		<CODE>
+			new PluginOptions(view, "javadoc");
+		</CODE>
+	</ACTION>
+</ACTIONS>
