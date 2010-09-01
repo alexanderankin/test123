@@ -1,9 +1,6 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.HashSet;
+import java.util.*;
 
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
@@ -42,12 +39,12 @@ public class ClassDeclaration extends Statement implements OutlineableWithChildr
 	 */
 	private MethodDeclaration constructor;
 
-	private final List methods = new ArrayList();
+	private final Collection<MethodDeclaration> methods = new ArrayList<MethodDeclaration>();
 	private final transient OutlineableWithChildren parent;
 	/**
 	 * The outlineable children (those will be in the node array too.
 	 */
-	private final List children = new ArrayList();
+	private final List<Outlineable> children = new ArrayList<Outlineable>();
 
 	private transient Position start;
 	private transient Position end;
@@ -153,20 +150,18 @@ public class ClassDeclaration extends Statement implements OutlineableWithChildr
 	private String toStringBody(int tab)
 	{
 		StringBuilder buff = new StringBuilder(" {");//$NON-NLS-1$
-		List fields = classHeader.getFields();
+		List<FieldDeclaration> fields = classHeader.getFields();
 		if (fields != null)
 		{
-			for (int i = 0; i < fields.size(); i++)
+			for (FieldDeclaration field : fields)
 			{
-				FieldDeclaration field = (FieldDeclaration) fields.get(i);
 				buff.append('\n'); //$NON-NLS-1$
 				buff.append(field.toString(tab + 1));
 				buff.append(';');//$NON-NLS-1$
 			}
 		}
-		for (int i = 0; i < methods.size(); i++)
+		for (MethodDeclaration o : methods)
 		{
-			MethodDeclaration o = (MethodDeclaration) methods.get(i);
 			buff.append('\n');//$NON-NLS-1$
 			buff.append(o.toString(tab + 1));
 		}
@@ -181,7 +176,7 @@ public class ClassDeclaration extends Statement implements OutlineableWithChildr
 
 	public Outlineable get(int index)
 	{
-		return (Outlineable) children.get(index);
+		return children.get(index);
 	}
 
 	public int size()
@@ -232,9 +227,8 @@ public class ClassDeclaration extends Statement implements OutlineableWithChildr
 
 	public MethodDeclaration insideWichMethodIsThisOffset(int line, int column)
 	{
-		for (int i = 0; i < methods.size(); i++)
+		for (MethodDeclaration methodDeclaration : methods)
 		{
-			MethodDeclaration methodDeclaration = (MethodDeclaration) methods.get(i);
 			if (line == methodDeclaration.getBodyLineStart() && column > methodDeclaration.getBodyColumnStart())
 				return methodDeclaration;
 			if (line == methodDeclaration.getBodyLineEnd() && column < methodDeclaration.getBodyColumnEnd())
@@ -339,16 +333,16 @@ public class ClassDeclaration extends Statement implements OutlineableWithChildr
 	@Override
 	public Expression expressionAt(int line, int column)
 	{
-		for (int i = 0; i < methods.size(); i++)
+		for (MethodDeclaration methodDeclaration : methods)
 		{
-			MethodDeclaration methodDeclaration = (MethodDeclaration) methods.get(i);
-			if (methodDeclaration.isAt(line, column)) return methodDeclaration.expressionAt(line, column);
+			if (methodDeclaration.isAt(line, column))
+				return methodDeclaration.expressionAt(line, column);
 		}
-		List fields = classHeader.getFields();
-		for (int i = 0; i < fields.size(); i++)
+		List<FieldDeclaration> fields = classHeader.getFields();
+		for (FieldDeclaration field : fields)
 		{
-			FieldDeclaration field = (FieldDeclaration) fields.get(i);
-			if (field.isAt(line, column)) return field.expressionAt(line, column);
+			if (field.isAt(line, column))
+				return field.expressionAt(line, column);
 		}
 		return null;
 	}
@@ -357,11 +351,10 @@ public class ClassDeclaration extends Statement implements OutlineableWithChildr
 	public void analyzeCode(PHPParser parser)
 	{
 		List<FieldDeclaration> fields = classHeader.getFields();
-		Set methodsNames = new HashSet(methods.size());
-		Set fieldNames = new HashSet(fields.size());
-		for (int i = 0; i < methods.size(); i++)
+		Collection<String> methodsNames = new HashSet<String>(methods.size());
+		Collection<String> fieldNames = new HashSet<String>(fields.size());
+		for (MethodDeclaration methodDeclaration : methods)
 		{
-			MethodDeclaration methodDeclaration = (MethodDeclaration) methods.get(i);
 			methodDeclaration.analyzeCode(parser);
 			String name = methodDeclaration.getName();
 			checkMethod(methodsNames, name, methodDeclaration.getMethodHeader(), parser,
@@ -377,7 +370,7 @@ public class ClassDeclaration extends Statement implements OutlineableWithChildr
 
 	}
 
-	private void checkMethod(Set itemNames, String name, AstNode node, PHPParser parser, String msg)
+	private static void checkMethod(Collection<String> itemNames, String name, AstNode node, PHPParser parser, String msg)
 	{
 		if (!itemNames.add(name))
 		{
@@ -394,7 +387,7 @@ public class ClassDeclaration extends Statement implements OutlineableWithChildr
 		}
 	}
 
-	private void checkField(Set methodNames, Set fieldNames, String name, AstNode node, PHPParser parser)
+	private static void checkField(Collection<String> methodNames, Collection<String> fieldNames, String name, AstNode node, PHPParser parser)
 	{
 		if (!fieldNames.add(name))
 		{
@@ -423,5 +416,4 @@ public class ClassDeclaration extends Statement implements OutlineableWithChildr
 				node.getEndColumn()));
 		}
 	}
-
 }
