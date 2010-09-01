@@ -36,9 +36,10 @@ public class PythonShell extends ProcessShell {
 	 * Start up Python
 	 */
 	protected void init(ConsoleState state) throws IOException {
-		String exec = "\""+jEdit.getProperty("options.pythonrepl.exec")+"\"";
+		String exec = jEdit.getProperty("options.pythonrepl.exec");
 		Log.log(Log.DEBUG,this,"Attempting to start Python process: "+exec);
-		state.p = Runtime.getRuntime().exec(exec+" -i");
+		ProcessBuilder pb = new ProcessBuilder(exec, "-i");
+		state.p = pb.start();
 		Log.log(Log.DEBUG,this,"Python started.");
 	}
 	//}}}
