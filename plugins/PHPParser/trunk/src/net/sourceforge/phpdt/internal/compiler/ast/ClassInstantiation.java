@@ -47,7 +47,6 @@ public class ClassInstantiation extends PrefixedUnaryExpression
 		}
 		else
 			setType(Type.OBJECT);
-		setType(Type.OBJECT);
 		this.reference = reference;
 	}
 
