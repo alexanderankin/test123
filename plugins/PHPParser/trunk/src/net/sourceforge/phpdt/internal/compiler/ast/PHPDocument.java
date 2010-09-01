@@ -1,3 +1,24 @@
+/*
+ * PHPDocument.java
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
+ * Copyright (C) 2003, 2010 Matthieu Casanova
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
 package net.sourceforge.phpdt.internal.compiler.ast;
 
 import java.util.ArrayList;
@@ -29,7 +50,7 @@ public class PHPDocument implements OutlineableWithChildren, IAsset
 	/**
 	 * The outlineable children (those will be in the node array too.
 	 */
-	private final List children = new ArrayList();
+	private final List<Outlineable> children = new ArrayList<Outlineable>();
 
 	private transient Position start;
 	private transient Position end;
@@ -52,13 +73,11 @@ public class PHPDocument implements OutlineableWithChildren, IAsset
 	public String toString()
 	{
 		StringBuilder buff = new StringBuilder();
-		AstNode node;
 		if (nodes != null)
 		{
-			int i;
-			for (i = 0; i < nodes.length; i++)
+			for (int i = 0; i < nodes.length; i++)
 			{
-				node = nodes[i];
+				AstNode node = nodes[i];
 				if (node == null)
 				{
 					break;
@@ -96,7 +115,7 @@ public class PHPDocument implements OutlineableWithChildren, IAsset
 	 */
 	public Outlineable get(int index)
 	{
-		return (Outlineable) children.get(index);
+		return children.get(index);
 	}
 
 	/**
@@ -154,7 +173,7 @@ public class PHPDocument implements OutlineableWithChildren, IAsset
 	{
 		for (int i = 0; i < children.size(); i++)
 		{
-			Outlineable outlineable = (Outlineable) children.get(i);
+			Outlineable outlineable = children.get(i);
 			if (outlineable.getItemType() == PHPItem.CLASS)
 			{
 				ClassDeclaration classDeclaration = (ClassDeclaration) outlineable;
@@ -180,7 +199,7 @@ public class PHPDocument implements OutlineableWithChildren, IAsset
 	{
 		for (int i = 0; i < children.size(); i++)
 		{
-			Outlineable outlineable = (Outlineable) children.get(i);
+			Outlineable outlineable = children.get(i);
 			if (outlineable.getItemType() == PHPItem.METHOD)
 			{
 				MethodDeclaration methodDeclaration = (MethodDeclaration) outlineable;
