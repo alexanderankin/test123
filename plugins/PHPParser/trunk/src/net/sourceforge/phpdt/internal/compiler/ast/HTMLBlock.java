@@ -3,7 +3,7 @@
 * :tabSize=8:indentSize=8:noTabs=false:
 * :folding=explicit:collapseFolds=1:
 *
-* Copyright (C) 2003, 2009 Matthieu Casanova
+* Copyright (C) 2003, 2010 Matthieu Casanova
 *
 * This program is free software; you can redistribute it and/or
 * modify it under the terms of the GNU General Public License
@@ -33,21 +33,19 @@ public class HTMLBlock extends Statement
 {
 	private final AstNode[] nodes;
 
-	//{{{ HTMLBlock cosntructor
-
+	//{{{ HTMLBlock constructor
 	public HTMLBlock(AstNode[] nodes)
 	{
 		super(nodes[0].getSourceStart(),
-			nodes[(nodes.length > 0) ? nodes.length - 1 : 0].getSourceEnd(),
+			nodes[nodes.length > 0 ? nodes.length - 1 : 0].getSourceEnd(),
 			nodes[0].getBeginLine(),
-			nodes[(nodes.length > 0) ? nodes.length - 1 : 0].getEndLine(),
+			nodes[nodes.length > 0 ? nodes.length - 1 : 0].getEndLine(),
 			nodes[0].getBeginColumn(),
-			nodes[(nodes.length > 0) ? nodes.length - 1 : 0].getEndColumn());
+			nodes[nodes.length > 0 ? nodes.length - 1 : 0].getEndColumn());
 		this.nodes = nodes;
 	} //}}}
 
 	//{{{ toString() method
-
 	/**
 	 * Return the object into String.
 	 *
@@ -68,7 +66,6 @@ public class HTMLBlock extends Statement
 	} //}}}
 
 	//{{{ getOutsideVariable() method
-
 	/**
 	 * Get the variables from outside (parameters, globals ...)
 	 *
@@ -80,7 +77,6 @@ public class HTMLBlock extends Statement
 	} //}}}
 
 	//{{{ getModifiedVariable() method
-
 	/**
 	 * get the modified variables.
 	 *
@@ -92,7 +88,6 @@ public class HTMLBlock extends Statement
 	} //}}}
 
 	//{{{ getUsedVariable() method
-
 	/**
 	 * Get the variables used.
 	 *
@@ -106,7 +101,6 @@ public class HTMLBlock extends Statement
 	} //}}}
 
 	//{{{ expressionAt() method
-
 	@Override
 	public Expression expressionAt(int line, int column)
 	{
@@ -114,7 +108,6 @@ public class HTMLBlock extends Statement
 	} //}}}
 
 	//{{{ analyzeCode() method
-
 	@Override
 	public void analyzeCode(PHPParser parser)
 	{
