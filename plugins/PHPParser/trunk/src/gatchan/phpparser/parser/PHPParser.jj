@@ -511,18 +511,19 @@ MORE :
 
 
 //{{{ KEYWORDS
-<PHPPARSING> TOKEN :
+<PHPPARSING> TOKEN:
 {
-  <CLASS    : "class">
-| <FUNCTION : "function">
-| <NAMESPACE: "namespace"> : IN_NAMESPACE
-| <VAR      : "var">
-| <IF       : "if">
-| <ELSEIF   : "elseif">
-| <ELSE     : "else">
-| <ARRAY    : "array">
-| <BREAK    : "break">
-| <LIST     : "list">
+  <CLASS:	"class">
+| <FUNCTION:	"function">
+| <NAMESPACE:	"namespace"> : IN_NAMESPACE
+| <USE:		"use">
+| <VAR:		"var">
+| <IF:		"if">
+| <ELSEIF:	"elseif">
+| <ELSE:	"else">
+| <ARRAY:	"array">
+| <BREAK:	"break">
+| <LIST:	"list">
 } //}}}
 
 
@@ -2500,10 +2501,27 @@ MethodDeclaration closureDeclaration():
 	Block block;
 	OutlineableWithChildren seg = currentSegment;
 	Token functionToken;
+	Token use;
 }
 {
 	functionToken = <FUNCTION>
 	FormalParameters(formalParameters)
+	[
+		use = <USE>
+		try
+		{
+			{
+				Expression expr = new ConstantIdentifier(use);
+			}
+			Arguments(expr)
+		}
+		catch (ParseException e)
+		{
+			fireParseError("arguments list expected","($a,$b)",e.currentToken.next);
+			error_skipto(LBRACE);
+		}
+	]
+	
 	{
 		methodHeader = new MethodHeader(namespace,
 			path,
