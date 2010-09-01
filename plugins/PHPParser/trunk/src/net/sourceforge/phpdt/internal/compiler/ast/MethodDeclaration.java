@@ -596,4 +596,16 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 		}
 		return null;
 	} //}}}
+
+	@Override
+	public void visitSubNodes(NodeVisitor visitor)
+	{
+		for (AstNode node : statements)
+		{
+			if (node == null)
+				break;
+			visitor.visit(node);
+			node.visitSubNodes(visitor);
+		}
+	}
 }

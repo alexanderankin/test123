@@ -143,7 +143,6 @@ public abstract class AstNode implements Serializable
 	public abstract void analyzeCode(PHPParser parser);
 
 	//{{{ arrayContains() method
-
 	/**
 	 * Check if the array array contains the object o.
 	 *
@@ -151,7 +150,7 @@ public abstract class AstNode implements Serializable
 	 * @param o     an obejct
 	 * @return true if the array contained the object o
 	 */
-	public final boolean arrayContains(Object[] array, Object o)
+	public static boolean arrayContains(Object[] array, Object o)
 	{
 		for (int i = 0; i < array.length; i++)
 		{
@@ -164,70 +163,60 @@ public abstract class AstNode implements Serializable
 	} //}}}
 
 	//{{{ getSourceStart() method
-
 	public int getSourceStart()
 	{
 		return sourceStart;
 	} //}}}
 
 	//{{{ getSourceEnd() method
-
 	public int getSourceEnd()
 	{
 		return sourceEnd;
 	} //}}}
 
 	//{{{ getBeginLine() method
-
 	public int getBeginLine()
 	{
 		return beginLine;
 	} //}}}
 
 	//{{{ getEndLine() method
-
 	public int getEndLine()
 	{
 		return endLine;
 	} //}}}
 
 	//{{{ getBeginColumn() method
-
 	public int getBeginColumn()
 	{
 		return beginColumn;
 	} //}}}
 
 	//{{{ getEndColumn() method
-
 	public int getEndColumn()
 	{
 		return endColumn;
 	} //}}}
 
 	//{{{ setSourceEnd() method
-
 	public void setSourceEnd(int sourceEnd)
 	{
 		this.sourceEnd = sourceEnd;
 	} //}}}
 
 	//{{{ setEndLine() method
-
 	public void setEndLine(int endLine)
 	{
 		this.endLine = endLine;
 	} //}}}
 
 	//{{{ setEndColumn() method
-
 	public void setEndColumn(int endColumn)
 	{
 		this.endColumn = endColumn;
 	} //}}}
 
 	//{{{  isAt() methods
-
 	/**
 	 * Returns true if the line and column position are contained by this node.
 	 *
@@ -254,4 +243,8 @@ public abstract class AstNode implements Serializable
 			(line == node.getEndLine() && column < node.getEndColumn()) ||
 			(line > node.getBeginLine() && line < node.getEndLine());
 	} //}}}
+
+	public void visitSubNodes(NodeVisitor visitor)
+	{
+	}
 }
