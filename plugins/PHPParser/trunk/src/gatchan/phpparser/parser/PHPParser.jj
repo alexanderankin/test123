@@ -596,13 +596,13 @@ MORE :
 
 
 //{{{ Misc token
-<PHPPARSING,IN_VARIABLE> TOKEN :
+<PHPPARSING,IN_VARIABLE> TOKEN:
 {
-  <AT    : "@"> : PHPPARSING
-| <BANG  : "!"> : PHPPARSING
-| <TILDE : "~"> : PHPPARSING
-| <HOOK  : "?"> : PHPPARSING
-| <COLON : ":"> : PHPPARSING
+  <AT:		"@"> : PHPPARSING
+| <BANG:	"!"> : PHPPARSING
+| <TILDE:	"~"> : PHPPARSING
+| <HOOK:	"?"> : PHPPARSING
+| <COLON:	":"> : PHPPARSING
 } //}}}
 
 
@@ -3923,6 +3923,7 @@ Expression instantiation(Token reference):
 {
 	Token newToken;
 	Expression expr;
+	Expression arguments;
 }
 {
 	newToken = <NEW>
@@ -3974,14 +3975,16 @@ Expression instantiation(Token reference):
 			beginLine   = reference.beginLine;
 			beginColumn = reference.beginColumn;
 		}
+	}
+	[
+		expr = Arguments(expr) 
+	]
+	{
 		expr = new ClassInstantiation(expr,
 			reference != null,
 			start,
 			beginLine,
 			beginColumn);
-	}
-	[ expr = Arguments(expr) ]
-	{
 		return expr;
 	}
 } //}}}
@@ -4583,9 +4586,11 @@ Expression _argument():
 	Expression arg;
 }
 {
-	arg = Expression()
-|
-	arg = closureDeclaration()
+	(
+		arg = Expression()
+	|
+		arg = closureDeclaration()
+	)
 	{
 		return arg;
 	}
