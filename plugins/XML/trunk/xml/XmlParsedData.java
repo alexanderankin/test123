@@ -116,6 +116,7 @@ public class XmlParsedData extends SideKickParsedData
 		allNamespacesBindingsAtTop = true;
 		entities = new ArrayList<EntityDecl>();
 		entityHash = new HashMap();
+		setCompletionInfo("",getNoNamespaceCompletionInfo());//register NoNamespaceCompletionInfo at least once for the common entities
 	} //}}}
 
 	//{{{ getNoNamespaceCompletionInfo() method

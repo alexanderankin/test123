@@ -678,6 +678,28 @@ public class XmlPluginTest{
 		close(view(),b);
 	}
 	
+	/** test that predefined entities are proposed even with no completion info */
+	@Test
+	public void testNoCompletionInfo(){
+    	File xml = new File(testData,"tagparser/test.xml");
+    	
+    	final Buffer b = TestUtils.openFile(xml.getPath());
+    	
+    	action("xml-insert-float",1);
+    	FrameFixture insert = TestUtils.findFrameByTitle("XML Insert");
+    	
+    	parseAndWait();
+		
+		// inside p:p
+		gotoPositionAndWait(45);
+		
+		assertThat(xmlListContents(insert.list("entities"))).contains("amp");
+		
+		insert.close();
+		
+		close(view(),b);
+	}
+
 	private static final JListCellReader instance = new BasicJListCellReader(
 		new CellRendererReader(){
 			public  String 	valueFrom(Component c) {
