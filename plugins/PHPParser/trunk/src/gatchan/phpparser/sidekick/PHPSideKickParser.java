@@ -24,7 +24,6 @@ package gatchan.phpparser.sidekick;
 import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
 import gatchan.phpparser.PHPErrorSource;
-import gatchan.phpparser.PHPParserOptionPane;
 import gatchan.phpparser.parser.PHPParser;
 import gatchan.phpparser.parser.ParseException;
 import gatchan.phpparser.parser.ParsingAbortedError;
@@ -59,7 +58,7 @@ import java.util.Map;
  * @author Matthieu Casanova
  * @version $Id$
  */
-public final class PHPSideKickParser extends SideKickParser
+public class PHPSideKickParser extends SideKickParser
 {
 	/**
 	 * the php parser.
@@ -497,6 +496,7 @@ public final class PHPSideKickParser extends SideKickParser
 	 * Build the completion list to follow a 'new'. It will contains classes name
 	 *
 	 * @param startName
+	 * @param lastWord
 	 * @param phpDocument
 	 * @return a completion list
 	 */
