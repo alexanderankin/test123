@@ -3,7 +3,7 @@ plugin.javadoc.JavadocPlugin.name=Javadoc
 plugin.javadoc.JavadocPlugin.author=Damien Radtke
 plugin.javadoc.JavadocPlugin.version=1.1
 plugin.javadoc.JavadocPlugin.description=The Javadoc plugin provides a user \
-	interface for accessing java api documentation. Api trees can be easily \ 
+	interface for accessing java api documentation. Api trees can be easily \
 	opened or searched through by class name.
 plugin.javadoc.JavadocPlugin.docs=index.html
 
