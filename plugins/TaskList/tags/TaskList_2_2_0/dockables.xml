@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+
+<!-- TaskList dockable window -->
+
+<DOCKABLES>
+	<DOCKABLE NAME="tasklist">
+		new tasklist.TaskList(view);
+	</DOCKABLE>
+</DOCKABLES>
+
