@@ -562,9 +562,9 @@ MORE :
 
 <PHPPARSING,IN_VARIABLE> TOKEN :
 {
-  <CLASSACCESS        : "->"> : PHPPARSING
-| <STATICCLASSACCESS  : "::"> : PHPPARSING
-| <ARRAYASSIGN        : "=>"> : PHPPARSING
+  <CLASSACCESS:		"->"> : PHPPARSING
+| <STATICCLASSACCESS:	"::"> : PHPPARSING
+| <ARRAYASSIGN:		"=>"> : PHPPARSING
 }
 
 /* RESERVED WORDS AND LITERALS */
@@ -2688,6 +2688,7 @@ Token methodIdentifier():
 	 | methodIdentifier = <ELSE>
 	 | methodIdentifier = <BREAK>
 	 | methodIdentifier = <NULL>
+	 | methodIdentifier = <CLONE>
 	 )
 	{
 		return methodIdentifier;
@@ -4177,35 +4178,38 @@ ClassAccess classAccess(Expression prefix) :
 }
 {
 	<CLASSACCESS>
-	try {
+	try
+	{
 		(
-		 //{{{ ->{expression}
-		 lbrace = <LBRACE> expression = Expression() rbrace = <RBRACE>
-		 {
-			 expression = new Variable(expression,
-						   lbrace.sourceStart,
-						   rbrace.sourceEnd,
-						   lbrace.beginLine,
-						   rbrace.endLine,
-						   lbrace.beginColumn,
-						   rbrace.endColumn);
-			 setTypeFromScope((Variable) expression);
-		 }
-		 //}}}
+			 //{{{ ->{expression}
+			 lbrace = <LBRACE> expression = Expression() rbrace = <RBRACE>
+			 {
+				 expression = new Variable(expression,
+							   lbrace.sourceStart,
+							   rbrace.sourceEnd,
+							   lbrace.beginLine,
+							   rbrace.endLine,
+							   lbrace.beginColumn,
+							   rbrace.endColumn);
+				 setTypeFromScope((Variable) expression);
+			 }
+			 //}}}
 		 |
-		 methodIdentifier = methodIdentifier()
-		 {
-			 expression = new ConstantIdentifier(methodIdentifier);
-		 }
+			 methodIdentifier = methodIdentifier()
+			 {
+				 expression = new ConstantIdentifier(methodIdentifier);
+			 }
 		 |
-		 listToken = <LIST>
-		 {
-			 expression = new ConstantIdentifier(listToken);
-		 }
+			 listToken = <LIST>
+			 {
+				 expression = new ConstantIdentifier(listToken);
+			 }
 		 |
-		 expression = Variable()
+		 	expression = Variable()
 		 )
-	} catch (ParseException e) {
+	}
+	catch (ParseException e)
+	{
 		fireParseError("expression expected", "expression", e.currentToken);
 		expression = new DummyExpression(e.currentToken);
 	}

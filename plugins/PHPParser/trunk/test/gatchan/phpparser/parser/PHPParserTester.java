@@ -60,6 +60,11 @@ public class PHPParserTester extends TestCase implements PHPParserListener
 		checkPHP("if (true or $b = 2) echo 'coucou';");
 		checkPHP("!feof($fin) && $data = fread($fin, 8096);");
 		checkPHP("if ($foo = bar()) echo 'coucou';");
+
+		checkPHP("echo \"foo$\";");
+		checkPHP("echo \"$1\";");
+		checkPHP("echo \"$\";");
+		checkPHP("echo \"$ foo\";");
 		checkPHP("$b[1];");
 		checkPHP("$b[1]->test;");
 		checkPHP("$b[1]->test();");
