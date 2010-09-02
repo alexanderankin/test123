@@ -73,5 +73,6 @@ public class TaskListPVAction extends projectviewer.action.Action {
         
         TaskList taskList = TaskListPlugin.getTaskList(view);
         taskList.addTab(node.getName(), new ProjectNodeTaskList(view, node));
+        view.getDockableWindowManager().showDockableWindow( "tasklist" );
     }
 }
