@@ -481,8 +481,10 @@ public class TaskListPlugin extends EditPlugin {
      * Parses a Buffer and extracts task item data to be stored in the plugin's
      * collection.
      * @param buffer the Buffer to be parsed
+     * TODO: does this really need to be synchronized?  Should it be moved elsewhere and made non-static?
+     * DONE: removed the synchronized.  No problems so far.
      */
-    public synchronized static void parseBuffer( Buffer buffer ) {
+    public static void parseBuffer( Buffer buffer ) {
         if ( buffer == null ) {
             return ;
         }
