@@ -32,16 +32,25 @@ import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.tree.TreePath;
-import projectviewer.vpt.VPTNode;
+
 import ise.plugin.svn.PVHelper;
 import ise.plugin.svn.command.*;
+
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
+
+import projectviewer.vpt.VPTNode;
+import projectviewer.vpt.VPTProject;
+import projectviewer.config.VersionControlService;
 
 /**
  * ProjectViewer Action to be added to the PV context menu.  This class serves
  * as the menu for a pull-out menu containing the subversion commands.  A JMenu
  * is created per View.
+ * TODO: hide the menu for projects that aren't using Subversion.
+ * TODO: make the menu smarter, remove the "Add" menu item for files already
+ * under subversion control, show only the "Add" menu item for files not under
+ * subversion control.
  */
 public class SVNAction extends projectviewer.action.Action {
 
@@ -122,10 +131,15 @@ public class SVNAction extends projectviewer.action.Action {
     // act accordingly.
     public void prepareForNode( VPTNode node ) {
         View view = viewer.getView();
+        VPTProject project = viewer.getActiveProject(view);
+        String vcService = project.getProperty(VersionControlService.VC_SERVICE_KEY);
+        boolean visible = "Subversion".equals(vcService);
+        
         JMenu menu = menus.get(view);
         if (menu == null) {
             menu = (JMenu)getMenuItem();   
         }
+        menu.setVisible(visible);
         
         //String project_name = PVHelper.getProjectName( view );
         String project_root = PVHelper.getProjectRoot( view );
