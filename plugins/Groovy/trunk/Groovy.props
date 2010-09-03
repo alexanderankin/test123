@@ -1,0 +1,75 @@
+# ::mode=properties:: #
+# Basic Plugin Information {{{
+plugin.groovy.GroovyPlugin.activate=startup
+plugin.groovy.GroovyPlugin.author=Damien Radtke
+plugin.groovy.GroovyPlugin.description=Provides Groovy to jEdit
+plugin.groovy.GroovyPlugin.docs=docs/Groovy.html
+plugin.groovy.GroovyPlugin.longdescription=description.html
+plugin.groovy.GroovyPlugin.name=Groovy
+plugin.groovy.GroovyPlugin.usePluginHome=true
+plugin.groovy.GroovyPlugin.version=0.1
+plugin.groovy.GroovyPlugin.jars=groovy-all-1.7.4.jar
+# }}} Basic Plugin Information
+
+# Dependencies {{{
+plugin.groovy.GroovyPlugin.depend.0=jedit 04.03.18.00
+plugin.groovy.GroovyPlugin.depend.1=jdk 1.5
+plugin.groovy.GroovyPlugin.depend.2=optional plugin javadoc.JavadocPlugin 1.1
+# }}} Dependencies
+
+# Options {{{
+plugin.groovy.GroovyPlugin.option-group=groovy-provider groovy-doc
+options.groovy-provider.label=Provider
+options.groovy-provider.code=new groovy.GroovyProviderOptionPane();
+options.groovy-doc.label=Documentation
+options.groovy-doc.code=new groovy.GroovyDocOptionPane();
+# Possible values:
+#	jar - use the jar included with the plugin
+#	full - let the plugin download a full installation
+#	custom - a user-defined existing installation
+options.groovy.install=jar
+options.groovy.groovy-downloaded=false
+options.groovy.docs-downloaded=false
+options.groovy.groovy-url=http://dist.groovy.codehaus.org/distributions/groovy-binary-1.7.4.zip
+options.groovy.docs-url=http://dist.groovy.codehaus.org/distributions/groovy-docs-1.7.4.zip
+options.groovy.groovy-path=
+options.groovy.doc-path=
+options.groovy.groovy-jar=groovy-all-1.7.4.jar
+
+options.groovy.jar-label=Use included jar
+options.groovy.jar-label.label=Use included jar
+options.groovy.full-label=Download full installation
+options.groovy.custom-label=Use pre-existing installation
+options.groovy.downloaded-label=Full installation downloaded:
+options.groovy.docdownloaded-label=Documentation downloaded:
+options.groovy.downloaded-label.yes=Yes
+options.groovy.downloaded-label.no=No
+options.groovy.forcedownload-label=Force re-download
+options.groovy.removedownload-label=Remove download
+options.groovy.browse-label=Browse...
+options.groovy.custompath-label=Install path:
+options.groovy.downloadpath-label=Download URL:
+options.groovy.downloaddoc-label=Download documentation
+options.groovy.javadoc-msg=<html><i><b>Tip:</b> install the Javadoc plugin before downloading \
+	this documentation to make accessing it easier.</i></html>
+options.groovy.download-done=Groovy downloaded.
+options.groovy.download-error=There was a problem while downloading. \
+	Check the activity log for more information.
+
+options.groovy.download-groovy-prompt.title=Download Groovy
+options.groovy.download-groovy-prompt.message=This option requires you to download \
+	Groovy (about a 13MB download). Continue?
+options.groovy.download-docs-prompt.title=Download Documentation
+options.groovy.download-docs-prompt.message=The documentation is roughly a 16MB \
+	download, and can take up to 96MB on disk. Continue?
+options.groovy.remove-docs-prompt.title=Remove Documentation
+options.groovy.remove-docs-prompt.message=Delete Groovy documentation from disk?
+options.groovy.invalid-custom.title=Groovy not found
+options.groovy.invalid-custom.message=The specified path ({0}) \
+	does not contain a valid Groovy installation.
+
+options.groovy.download-groovy=Downloading Groovy...
+options.groovy.download-docs=Downloading Groovy documentation...
+options.groovy.extracting=Extracting...
+options.groovy.download-done=Done.
+# }}} Options
