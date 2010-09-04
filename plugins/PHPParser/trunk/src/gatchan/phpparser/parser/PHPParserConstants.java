@@ -221,93 +221,93 @@ public interface PHPParserConstants {
   /** RegularExpression Id. */
   int STRING_3 = 125;
   /** RegularExpression Id. */
-  int ESCAPED = 126;
+  int ESCAPED = 128;
   /** RegularExpression Id. */
-  int DOUBLEQUOTE = 127;
+  int DOUBLEQUOTE = 129;
   /** RegularExpression Id. */
-  int DOLLARBRACE = 128;
+  int DOLLARBRACE = 130;
   /** RegularExpression Id. */
-  int DOLLARS = 129;
+  int DOLLARS = 131;
   /** RegularExpression Id. */
-  int DOUBLEQUOTE2 = 130;
+  int DOUBLEQUOTE2 = 132;
   /** RegularExpression Id. */
-  int RBRACE1 = 131;
+  int RBRACE1 = 133;
   /** RegularExpression Id. */
-  int HEREDOCSTARTTOKEN = 137;
+  int HEREDOCSTARTTOKEN = 139;
   /** RegularExpression Id. */
-  int DOLLAR = 138;
+  int DOLLAR = 140;
   /** RegularExpression Id. */
-  int IDENTIFIER = 139;
+  int IDENTIFIER = 141;
   /** RegularExpression Id. */
-  int LETTER = 140;
+  int LETTER = 142;
   /** RegularExpression Id. */
-  int DIGIT = 141;
+  int DIGIT = 143;
   /** RegularExpression Id. */
-  int SPECIAL = 142;
+  int SPECIAL = 144;
   /** RegularExpression Id. */
-  int LPAREN = 144;
+  int LPAREN = 146;
   /** RegularExpression Id. */
-  int RPAREN = 145;
+  int RPAREN = 147;
   /** RegularExpression Id. */
-  int RBRACE = 146;
+  int RBRACE = 148;
   /** RegularExpression Id. */
-  int LBRACKET = 147;
+  int LBRACKET = 149;
   /** RegularExpression Id. */
-  int RBRACKET = 148;
+  int RBRACKET = 150;
   /** RegularExpression Id. */
-  int SEMICOLON = 149;
+  int SEMICOLON = 151;
   /** RegularExpression Id. */
-  int COMMA = 150;
+  int COMMA = 152;
   /** RegularExpression Id. */
-  int DOT = 151;
+  int DOT = 153;
   /** RegularExpression Id. */
-  int LBRACE = 152;
+  int LBRACE = 154;
   /** RegularExpression Id. */
-  int GT = 153;
+  int GT = 155;
   /** RegularExpression Id. */
-  int LT = 154;
+  int LT = 156;
   /** RegularExpression Id. */
-  int EQUAL_EQUAL = 155;
+  int EQUAL_EQUAL = 157;
   /** RegularExpression Id. */
-  int LE = 156;
+  int LE = 158;
   /** RegularExpression Id. */
-  int GE = 157;
+  int GE = 159;
   /** RegularExpression Id. */
-  int NOT_EQUAL = 158;
+  int NOT_EQUAL = 160;
   /** RegularExpression Id. */
-  int DIF = 159;
+  int DIF = 161;
   /** RegularExpression Id. */
-  int BANGDOUBLEEQUAL = 160;
+  int BANGDOUBLEEQUAL = 162;
   /** RegularExpression Id. */
-  int TRIPLEEQUAL = 161;
+  int TRIPLEEQUAL = 163;
   /** RegularExpression Id. */
-  int ASSIGN = 162;
+  int ASSIGN = 164;
   /** RegularExpression Id. */
-  int PLUSASSIGN = 163;
+  int PLUSASSIGN = 165;
   /** RegularExpression Id. */
-  int MINUSASSIGN = 164;
+  int MINUSASSIGN = 166;
   /** RegularExpression Id. */
-  int STARASSIGN = 165;
+  int STARASSIGN = 167;
   /** RegularExpression Id. */
-  int SLASHASSIGN = 166;
+  int SLASHASSIGN = 168;
   /** RegularExpression Id. */
-  int ANDASSIGN = 167;
+  int ANDASSIGN = 169;
   /** RegularExpression Id. */
-  int ORASSIGN = 168;
+  int ORASSIGN = 170;
   /** RegularExpression Id. */
-  int XORASSIGN = 169;
+  int XORASSIGN = 171;
   /** RegularExpression Id. */
-  int DOTASSIGN = 170;
+  int DOTASSIGN = 172;
   /** RegularExpression Id. */
-  int REMASSIGN = 171;
+  int REMASSIGN = 173;
   /** RegularExpression Id. */
-  int TILDEEQUAL = 172;
+  int TILDEEQUAL = 174;
   /** RegularExpression Id. */
-  int LSHIFTASSIGN = 173;
+  int LSHIFTASSIGN = 175;
   /** RegularExpression Id. */
-  int RSIGNEDSHIFTASSIGN = 174;
+  int RSIGNEDSHIFTASSIGN = 176;
   /** RegularExpression Id. */
-  int NAMESPACE_NAME = 175;
+  int NAMESPACE_NAME = 177;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -324,11 +324,13 @@ public interface PHPParserConstants {
   /** Lexical state. */
   int IN_MULTI_LINE_COMMENT = 6;
   /** Lexical state. */
-  int IN_STRING = 7;
+  int HEREDOC = 7;
   /** Lexical state. */
-  int DOLLAR_IN_STRING = 8;
+  int IN_STRING = 8;
   /** Lexical state. */
-  int SKIPSTRING = 9;
+  int DOLLAR_IN_STRING = 9;
+  /** Lexical state. */
+  int SKIPSTRING = 10;
 
   /** Literal token values. */
   String[] tokenImage = {
@@ -458,6 +460,8 @@ public interface PHPParserConstants {
     "<STRING_LITERAL>",
     "<STRING_2>",
     "<STRING_3>",
+    "<token of kind 126>",
+    "<token of kind 127>",
     "<ESCAPED>",
     "\"\\\"\"",
     "\"${\"",
@@ -466,16 +470,16 @@ public interface PHPParserConstants {
     "\"}\"",
     "\"{\"",
     "\"}\"",
-    "<token of kind 134>",
-    "<token of kind 135>",
     "<token of kind 136>",
+    "<token of kind 137>",
+    "<token of kind 138>",
     "\"<<<\"",
     "\"$\"",
     "<IDENTIFIER>",
     "<LETTER>",
     "<DIGIT>",
     "<SPECIAL>",
-    "<token of kind 143>",
+    "<token of kind 145>",
     "\"(\"",
     "\")\"",
     "\"}\"",
