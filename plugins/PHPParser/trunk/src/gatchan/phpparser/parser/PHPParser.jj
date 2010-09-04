@@ -660,7 +660,14 @@ MORE :
 |   <STRING_3: "`"  ( ~["`","\\"]  | "\\" ~[] )* "`">
 }
 
-<IN_STRING,DOLLAR_IN_STRING,SKIPSTRING> SKIP :
+<HEREDOC> SKIP :
+{
+	<("\\" ~[])>
+|
+	<~[]>
+}
+
+<HEREDOC,IN_STRING,DOLLAR_IN_STRING,SKIPSTRING> SKIP :
 {
 	<ESCAPED: ("\\" ~[])> : IN_STRING
 }
@@ -719,7 +726,7 @@ MORE :
 
 <PHPPARSING> TOKEN :
 {
-  <HEREDOCSTARTTOKEN : "<<<">
+	<HEREDOCSTARTTOKEN : "<<<"> : HEREDOC
 }
 
 
@@ -728,7 +735,7 @@ MORE :
 	<DOLLAR: "$"> : IN_VARIABLE
 }
 
-<PHPPARSING, IN_VARIABLE,DOLLAR_IN_STRING, IN_STRING> TOKEN :
+<HEREDOC, PHPPARSING, IN_VARIABLE,DOLLAR_IN_STRING, IN_STRING> TOKEN :
 {
   <IDENTIFIER: ((<LETTER>|<SPECIAL>) (<LETTER>|<DIGIT>|<SPECIAL>)*)>
 |
@@ -4376,9 +4383,6 @@ StringLiteral heredoc():
 		while (true)
 		{
 			endToken = getNextToken();
-			// Ensure that the parser will stay in php mode even if there is a ?> in the string
-			// todo : find another trick it's seems ugly
-			token_source.SwitchTo(PHPPARSING);
 			if (endToken.kind == EOF)
 			{
 				fireParseError("unexpected EOF","",endToken);
@@ -4390,14 +4394,15 @@ StringLiteral heredoc():
 				fireParseError("unexpected token","identifier",endToken);
 				continue;
 			}
-			if (endToken.beginColumn != 1) continue;
+			if (endToken.beginColumn != 1) 
+				continue;
 			endImage = (endToken.image.charAt(endToken.image.length()-1) == ';') ? endToken.image.substring(0,endToken.image.length()-2) : endToken.image;
 			if (endImage.equals(startImage))
 			{
 				break;
 			}
 		}
-
+		token_source.SwitchTo(PHPPARSING);
 		//  return new StringLiteral(jj_input_stream.getCurrentBuffer().substring(startToken.sourceEnd+1,endToken.sourceStart-1),
 		return new StringLiteral("",
 			startToken.sourceEnd+1,
