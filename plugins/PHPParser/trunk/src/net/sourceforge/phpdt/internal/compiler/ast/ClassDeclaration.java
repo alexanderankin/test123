@@ -1,10 +1,29 @@
+/*
+ * ClassDeclaration.java
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
+ * Copyright (C) 2003-2010 Matthieu Casanova
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
 package net.sourceforge.phpdt.internal.compiler.ast;
 
 import java.util.*;
 
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
-import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import gatchan.phpparser.project.itemfinder.PHPItem;
 import gatchan.phpparser.parser.PHPParser;
 import gatchan.phpparser.parser.PHPParseErrorEvent;
@@ -24,7 +43,7 @@ import org.gjt.sp.jedit.GUIUtilities;
  * @author Matthieu Casanova
  * @version $Id$
  */
-public class ClassDeclaration extends Statement implements OutlineableWithChildren, IAsset
+public class ClassDeclaration extends Statement implements Outlineable, IAsset
 {
 
 	private final ClassHeader classHeader;
@@ -40,7 +59,7 @@ public class ClassDeclaration extends Statement implements OutlineableWithChildr
 	private MethodDeclaration constructor;
 
 	private final Collection<MethodDeclaration> methods = new ArrayList<MethodDeclaration>();
-	private final transient OutlineableWithChildren parent;
+	private final transient Outlineable parent;
 	/**
 	 * The outlineable children (those will be in the node array too.
 	 */
@@ -56,7 +75,7 @@ public class ClassDeclaration extends Statement implements OutlineableWithChildr
 	 * @param sourceStart starting offset
 	 * @param sourceEnd   ending offset
 	 */
-	public ClassDeclaration(OutlineableWithChildren parent,
+	public ClassDeclaration(Outlineable parent,
 				ClassHeader classHeader,
 				int sourceStart,
 				int sourceEnd,
@@ -169,7 +188,7 @@ public class ClassDeclaration extends Statement implements OutlineableWithChildr
 		return buff.toString();
 	}
 
-	public OutlineableWithChildren getParent()
+	public Outlineable getParent()
 	{
 		return parent;
 	}

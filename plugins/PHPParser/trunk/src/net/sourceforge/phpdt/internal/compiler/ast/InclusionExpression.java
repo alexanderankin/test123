@@ -21,7 +21,6 @@ package net.sourceforge.phpdt.internal.compiler.ast;
 
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
-import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 
 import java.util.List;
 
@@ -45,7 +44,7 @@ public class InclusionExpression extends Expression implements Outlineable, IAss
 	private final int keyword;
 	private final Expression expression;
 
-	private final transient OutlineableWithChildren parent;
+	private final transient Outlineable parent;
 
 	private transient Position start;
 	private transient Position end;
@@ -54,7 +53,7 @@ public class InclusionExpression extends Expression implements Outlineable, IAss
 
 	//{{{ InclusionExpression constructor
 
-	public InclusionExpression(OutlineableWithChildren parent,
+	public InclusionExpression(Outlineable parent,
 				   int keyword,
 				   Expression expression,
 				   int sourceStart,
@@ -110,7 +109,7 @@ public class InclusionExpression extends Expression implements Outlineable, IAss
 
 	//{{{ getParent() method
 
-	public OutlineableWithChildren getParent()
+	public Outlineable getParent()
 	{
 		return parent;
 	} //}}}
@@ -243,4 +242,19 @@ public class InclusionExpression extends Expression implements Outlineable, IAss
 	{
 		expression.analyzeCode(parser);
 	} //}}}
+
+	public boolean add(Outlineable o)
+	{
+		return false;
+	}
+
+	public Outlineable get(int index)
+	{
+		return null;
+	}
+
+	public int size()
+	{
+		return 0;
+	}
 }

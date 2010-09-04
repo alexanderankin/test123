@@ -52,7 +52,6 @@ import java.util.Stack;
 
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 import net.sourceforge.phpdt.internal.compiler.ast.*;
-import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
 //}}}
 
@@ -75,7 +74,7 @@ public class PHPParser
 	public static final int INFO = 0;
 
 	/** The current segment. */
-	private OutlineableWithChildren currentSegment;
+	private Outlineable currentSegment;
 
 	/** The message of the current ParseException. If it's null it's because the parse exception wasn't handled */
 	private String errorMessage;
@@ -1825,7 +1824,6 @@ List<FieldDeclaration> FieldDeclaration():
 			semicolon.endColumn));
 		return null;
 	}
-	
 	(
 		<COMMA> variableDeclaration = field()
 		{
@@ -1888,7 +1886,6 @@ List<FieldDeclaration> fieldDeclarationPHP5(List<Modifier> modifiers):
 	{
 		Token semicolon = error_skipto(SEMICOLON);
 		fireParseError("field declaration expected","field declaration",semicolon);
-		return fields;
 	} //}}}
 	(
 		comma = <COMMA>
@@ -1912,10 +1909,13 @@ List<FieldDeclaration> fieldDeclarationPHP5(List<Modifier> modifiers):
                 }
                 catch (ParseException e)
                 {
-                	fireParseError("field declaration expected","field declaration",comma);
-                	return fields;
+                	Token semicolon = error_skipto(SEMICOLON);
+                	fireParseError("field declaration expected","field declaration",semicolon);
                 } //}}}
 	)*
+	{
+		return fields;
+	}
 }//}}}
 
 //}}}
@@ -2453,7 +2453,7 @@ MethodDeclaration methodDeclaration(int type, List<Modifier> modifiers):
 	MethodDeclaration functionDeclaration;
 	MethodHeader methodHeader;
 	Block block;
-	OutlineableWithChildren seg = currentSegment;
+	Outlineable seg = currentSegment;
 	Token functionToken;
 	Token semicolon;
 }
@@ -2499,7 +2499,7 @@ MethodDeclaration closureDeclaration():
 	List<FormalParameter> formalParameters = new ArrayList<FormalParameter>();
 	MethodHeader methodHeader;
 	Block block;
-	OutlineableWithChildren seg = currentSegment;
+	Outlineable seg = currentSegment;
 	Token functionToken;
 	Token use;
 }

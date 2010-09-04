@@ -1,10 +1,29 @@
+/*
+ * ClassDeclaration.java
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
+ * Copyright (C) 2003-2010 Matthieu Casanova
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
 package net.sourceforge.phpdt.internal.compiler.ast;
 
 import gatchan.phpparser.project.itemfinder.PHPItem;
 import gatchan.phpparser.parser.PHPParser;
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
-import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import sidekick.IAsset;
 
 import javax.swing.*;
@@ -21,13 +40,13 @@ public class Define extends Statement implements Outlineable, IAsset
 	private final Expression defineName;
 	private final Expression defineValue;
 
-	private final transient OutlineableWithChildren parent;
+	private final transient Outlineable parent;
 
 	private transient Position start;
 	private transient Position end;
 	private String cachedToString;
 
-	public Define(OutlineableWithChildren parent,
+	public Define(Outlineable parent,
 		      Expression defineName,
 		      Expression defineValue,
 		      int sourceStart,
@@ -69,7 +88,7 @@ public class Define extends Statement implements Outlineable, IAsset
 		return cachedToString;
 	}
 
-	public OutlineableWithChildren getParent()
+	public Outlineable getParent()
 	{
 		return parent;
 	}
@@ -174,5 +193,20 @@ public class Define extends Statement implements Outlineable, IAsset
 	public void analyzeCode(PHPParser parser)
 	{
 		// todo analyze define
+	}
+
+	public boolean add(Outlineable o)
+	{
+		return false;
+	}
+
+	public Outlineable get(int index)
+	{
+		return null;
+	}
+
+	public int size()
+	{
+		return 0;
 	}
 }

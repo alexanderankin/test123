@@ -34,7 +34,6 @@ import gatchan.phpparser.project.itemfinder.PHPItem;
 import net.sourceforge.phpdt.internal.compiler.ast.*;
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
-import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
@@ -180,7 +179,7 @@ public class PHPSideKickParser extends SideKickParser
 
 	//{{{ buildChildNodes() method
 	private void buildChildNodes(DefaultMutableTreeNode parent,
-				     OutlineableWithChildren outlineable,
+				     Outlineable outlineable,
 				     Buffer buffer)
 	{
 		for (int i = 0; i < outlineable.size(); i++)
@@ -201,10 +200,7 @@ public class PHPSideKickParser extends SideKickParser
 		asset.setStart(startPosition);
 		asset.setEnd(endPosition);
 		DefaultMutableTreeNode node = new DefaultMutableTreeNode(sourceNode, true);
-		if (sourceNode instanceof OutlineableWithChildren)
-		{
-			buildChildNodes(node, (OutlineableWithChildren) sourceNode, buffer);
-		}
+		buildChildNodes(node, sourceNode, buffer);
 		parent.add(node);
 	} //}}}
 
@@ -420,7 +416,7 @@ public class PHPSideKickParser extends SideKickParser
 	} //}}}
 
 	//{{{ getClassHeader() method
-	private ClassHeader getClassHeader(String className, PHPDocument phpDocument)
+	private ClassHeader getClassHeader(String className, Outlineable phpDocument)
 	{
 		Project project = projectManager.getProject();
 		ClassHeader classHeader = null;
@@ -502,14 +498,14 @@ public class PHPSideKickParser extends SideKickParser
 	 */
 	private SideKickCompletion buildClassNameList(String startName,
 						      String lastWord,
-						      PHPDocument phpDocument)
+						      Outlineable phpDocument)
 	{
 		PHPSideKickCompletion phpSideKickCompletion = new PHPSideKickCompletion(startName, lastWord);
 		Project project = projectManager.getProject();
 		if (project != null)
 		{
 			Map<String, Object> classes = project.getClasses();
-			Collection collection = classes.values();
+			Collection<Object> collection = classes.values();
 			for (Object o : collection)
 			{
 				if (o instanceof PHPItem)
@@ -518,7 +514,7 @@ public class PHPSideKickParser extends SideKickParser
 				}
 				else
 				{
-					List<PHPItem> item = (List<PHPItem>) o;
+					Iterable<PHPItem> item = (Iterable<PHPItem>) o;
 					for (PHPItem phpItem : item)
 					{
 						phpSideKickCompletion.addItem(phpItem, startName);
@@ -541,7 +537,7 @@ public class PHPSideKickParser extends SideKickParser
 	} //}}}
 
 	//{{{ updateProject() method
-	private void updateProject(PHPDocument phpDocument, String path)
+	private void updateProject(Outlineable phpDocument, String path)
 	{
 		Project project = projectManager.getProject();
 		if (project != null)
