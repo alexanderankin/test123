@@ -25,7 +25,6 @@ import gatchan.phpparser.parser.PHPParser;
 import gatchan.phpparser.project.itemfinder.PHPItem;
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
-import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import org.gjt.sp.jedit.GUIUtilities;
 import sidekick.IAsset;
 
@@ -56,7 +55,7 @@ public class FieldDeclaration extends Statement implements Outlineable, PHPItem,
 	/**
 	 * The parent do not need to be serialized.
 	 */
-	private final transient OutlineableWithChildren parent;
+	private final transient Outlineable parent;
 
 	private static transient Icon icon;
 
@@ -71,6 +70,7 @@ public class FieldDeclaration extends Statement implements Outlineable, PHPItem,
 	/**
 	 * Create a field. with public visibility
 	 *
+	 * @param namespace the namespace
 	 * @param path	the path
 	 * @param variable    the variable of the field
 	 * @param parent      the parent class
@@ -84,7 +84,7 @@ public class FieldDeclaration extends Statement implements Outlineable, PHPItem,
 	public FieldDeclaration(String namespace,
 				String path,
 				VariableDeclaration variable,
-				OutlineableWithChildren parent,
+				Outlineable parent,
 				int sourceStart,
 				int sourceEnd,
 				int beginLine,
@@ -108,6 +108,7 @@ public class FieldDeclaration extends Statement implements Outlineable, PHPItem,
 	/**
 	 * Create a field.
 	 *
+	 * @param namespace the namespace
 	 * @param modifiers   a list of {@link Modifier}
 	 * @param path	the path
 	 * @param variable    the variable of the field
@@ -123,7 +124,7 @@ public class FieldDeclaration extends Statement implements Outlineable, PHPItem,
 				List<Modifier> modifiers,
 				String path,
 				VariableDeclaration variable,
-				OutlineableWithChildren parent,
+				Outlineable parent,
 				int sourceStart,
 				int sourceEnd,
 				int beginLine,
@@ -161,7 +162,7 @@ public class FieldDeclaration extends Statement implements Outlineable, PHPItem,
 		return getName();
 	}
 
-	public OutlineableWithChildren getParent()
+	public Outlineable getParent()
 	{
 		return parent;
 	}
@@ -287,5 +288,20 @@ public class FieldDeclaration extends Statement implements Outlineable, PHPItem,
 	public String getNamespace()
 	{
 		return namespace;
+	}
+
+	public boolean add(Outlineable o)
+	{
+		return false;
+	}
+
+	public Outlineable get(int index)
+	{
+		return null;
+	}
+
+	public int size()
+	{
+		return 0;
 	}
 }

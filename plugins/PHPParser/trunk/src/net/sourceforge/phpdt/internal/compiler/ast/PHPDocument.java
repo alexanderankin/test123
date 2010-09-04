@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
-import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import gatchan.phpparser.project.itemfinder.PHPItem;
 import gatchan.phpparser.parser.PHPParser;
 import sidekick.IAsset;
@@ -38,7 +37,7 @@ import javax.swing.*;
  *
  * @author Matthieu Casanova
  */
-public class PHPDocument implements OutlineableWithChildren, IAsset
+public class PHPDocument implements Outlineable, IAsset
 {
 	/**
 	 * The nodes. It will include html nodes or php nodes
@@ -134,7 +133,7 @@ public class PHPDocument implements OutlineableWithChildren, IAsset
 	 *
 	 * @return null
 	 */
-	public OutlineableWithChildren getParent()
+	public Outlineable getParent()
 	{
 		return null;
 	}

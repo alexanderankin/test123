@@ -27,7 +27,6 @@ import gatchan.phpparser.parser.PHPParser;
 import gatchan.phpparser.project.itemfinder.PHPItem;
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
-import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import sidekick.IAsset;
 
 import javax.swing.*;
@@ -40,7 +39,7 @@ import java.util.*;
  *
  * @author Matthieu Casanova
  */
-public class MethodDeclaration extends Expression implements OutlineableWithChildren, IAsset
+public class MethodDeclaration extends Expression implements Outlineable, IAsset
 {
 	private final MethodHeader methodHeader;
 
@@ -59,7 +58,7 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 	/**
 	 * The parent object.
 	 */
-	private transient OutlineableWithChildren parent;
+	private transient Outlineable parent;
 	/**
 	 * The outlineable children (those will be in the node array too.
 	 */
@@ -78,7 +77,7 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 
 	//{{{ MethodDeclaration constructor
 
-	public MethodDeclaration(OutlineableWithChildren parent, MethodHeader methodHeader)
+	public MethodDeclaration(Outlineable parent, MethodHeader methodHeader)
 	{
 		sourceStart = methodHeader.getSourceStart();
 		beginLine = methodHeader.getBeginLine();
@@ -145,14 +144,14 @@ public class MethodDeclaration extends Expression implements OutlineableWithChil
 
 	//{{{ setParent() method
 
-	public void setParent(OutlineableWithChildren parent)
+	public void setParent(Outlineable parent)
 	{
 		this.parent = parent;
 	} //}}}
 
 	//{{{ getParent() method
 
-	public OutlineableWithChildren getParent()
+	public Outlineable getParent()
 	{
 		return parent;
 	} //}}}

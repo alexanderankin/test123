@@ -21,7 +21,6 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
-import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
 
 import java.util.List;
@@ -42,10 +41,10 @@ import sidekick.IAsset;
  * @author Matthieu Casanova
  * @version $Id$
  */
-public class InterfaceDeclaration extends Statement implements OutlineableWithChildren, PHPItem, IAsset
+public class InterfaceDeclaration extends Statement implements Outlineable, PHPItem, IAsset
 {
 	private final String path;
-	private final transient OutlineableWithChildren parent;
+	private final transient Outlineable parent;
 	private final String name;
 	private final String namespace;
 
@@ -76,7 +75,7 @@ public class InterfaceDeclaration extends Statement implements OutlineableWithCh
 
 	public InterfaceDeclaration(String namespace,
 				    String path,
-				    OutlineableWithChildren parent,
+				    Outlineable parent,
 				    String name,
 				    List<String> superInterfaces,
 				    int sourceStart,
@@ -173,7 +172,7 @@ public class InterfaceDeclaration extends Statement implements OutlineableWithCh
 		return children.size();
 	}
 
-	public OutlineableWithChildren getParent()
+	public Outlineable getParent()
 	{
 		return parent;
 	}

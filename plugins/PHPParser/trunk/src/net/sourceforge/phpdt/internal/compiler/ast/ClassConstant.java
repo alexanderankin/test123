@@ -23,7 +23,6 @@ package net.sourceforge.phpdt.internal.compiler.ast;
 
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
-import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import gatchan.phpparser.project.itemfinder.PHPItem;
 import gatchan.phpparser.parser.PHPParser;
 import sidekick.IAsset;
@@ -51,7 +50,7 @@ public class ClassConstant extends Statement implements Outlineable, PHPItem, IA
 	 */
 	private final Expression value;
 
-	private final OutlineableWithChildren parent;
+	private final Outlineable parent;
 
 	private static transient Icon icon;
 
@@ -65,7 +64,7 @@ public class ClassConstant extends Statement implements Outlineable, PHPItem, IA
 	/**
 	 * Create a node.
 	 *
-	 * @param namespace
+	 * @param namespace the namespace
 	 * @param path	the path
 	 * @param parent      the parent class
 	 * @param name	the name of the constant
@@ -78,7 +77,7 @@ public class ClassConstant extends Statement implements Outlineable, PHPItem, IA
 	 * @param endColumn   ending column
 	 */
 	public ClassConstant(String namespace, String path,
-			     OutlineableWithChildren parent,
+			     Outlineable parent,
 			     String name,
 			     Expression value,
 			     int sourceStart,
@@ -162,7 +161,7 @@ public class ClassConstant extends Statement implements Outlineable, PHPItem, IA
 	 *
 	 * @return the parent
 	 */
-	public OutlineableWithChildren getParent()
+	public Outlineable getParent()
 	{
 		return parent;
 	}
@@ -266,5 +265,20 @@ public class ClassConstant extends Statement implements Outlineable, PHPItem, IA
 	public String toString()
 	{
 		return getName();
+	}
+
+	public boolean add(Outlineable o)
+	{
+		return false;
+	}
+
+	public Outlineable get(int index)
+	{
+		return null;
+	}
+
+	public int size()
+	{
+		return 0;
 	}
 }

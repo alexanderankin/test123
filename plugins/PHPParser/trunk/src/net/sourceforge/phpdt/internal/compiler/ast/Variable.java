@@ -20,7 +20,6 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
 //{{{ Imports
-
 import java.util.List;
 
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;

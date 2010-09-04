@@ -1,10 +1,30 @@
+/*
+* GlobalStatement.java
+* :tabSize=8:indentSize=8:noTabs=false:
+* :folding=explicit:collapseFolds=1:
+*
+* Copyright (C) 2003, 2010 Matthieu Casanova
+*
+* This program is free software; you can redistribute it and/or
+* modify it under the terms of the GNU General Public License
+* as published by the Free Software Foundation; either version 2
+* of the License, or any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
 package net.sourceforge.phpdt.internal.compiler.ast;
 
 import java.util.List;
 
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
-import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import gatchan.phpparser.parser.PHPParser;
 import gatchan.phpparser.parser.PHPParseMessageEvent;
 import gatchan.phpparser.project.itemfinder.PHPItem;
@@ -26,13 +46,13 @@ public class GlobalStatement extends Statement implements Outlineable, IAsset
 	 */
 	private final AbstractVariable[] variables;
 
-	private final transient OutlineableWithChildren parent;
+	private final transient Outlineable parent;
 
 	private transient Position start;
 	private transient Position end;
 	private String cachedToString;
 
-	public GlobalStatement(OutlineableWithChildren parent,
+	public GlobalStatement(Outlineable parent,
 			       AbstractVariable[] variables,
 			       int sourceStart,
 			       int sourceEnd,
@@ -70,7 +90,7 @@ public class GlobalStatement extends Statement implements Outlineable, IAsset
 		return tabString(tab) + toString();
 	}
 
-	public OutlineableWithChildren getParent()
+	public Outlineable getParent()
 	{
 		return parent;
 	}
@@ -83,9 +103,9 @@ public class GlobalStatement extends Statement implements Outlineable, IAsset
 	@Override
 	public void getOutsideVariable(List<VariableUsage> list)
 	{
-		for (int i = 0; i < variables.length; i++)
+		for (AbstractVariable variable : variables)
 		{
-			variables[i].getUsedVariable(list);
+			variable.getUsedVariable(list);
 		}
 	}
 
@@ -117,20 +137,20 @@ public class GlobalStatement extends Statement implements Outlineable, IAsset
 	@Override
 	public void analyzeCode(PHPParser parser)
 	{
-		for (int i = 0; i < variables.length; i++)
+		for (AbstractVariable variable : variables)
 		{
-			if (arrayContains(Variable.SPECIAL_VARS, variables[i].getName()))
+			if (arrayContains(Variable.SPECIAL_VARS, variable.getName()))
 			{
 				parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
 					PHPParseMessageEvent.MESSAGE_UNNECESSARY_GLOBAL,
 					parser.getPath(),
-					"warning, you shouldn't request " + variables[i].getName() + " as global",
-					variables[i].sourceStart,
-					variables[i].sourceEnd,
-					variables[i].getBeginLine(),
-					variables[i].getEndLine(),
-					variables[i].getBeginColumn(),
-					variables[i].getEndColumn()));
+					"warning, you shouldn't request " + variable.getName() + " as global",
+					variable.sourceStart,
+					variable.sourceEnd,
+					variable.getBeginLine(),
+					variable.getEndLine(),
+					variable.getBeginColumn(),
+					variable.getEndColumn()));
 			}
 		}
 	}
@@ -188,15 +208,26 @@ public class GlobalStatement extends Statement implements Outlineable, IAsset
 	@Override
 	public Expression expressionAt(int line, int column)
 	{
-		for (int i = 0; i < variables.length; i++)
+		for (AbstractVariable variable : variables)
 		{
-			AbstractVariable variable = variables[i];
-			if (variable.isAt(line, column)) return variable;
+			if (variable.isAt(line, column))
+				return variable;
 		}
 		return null;
 	}
 
-	public void propagateType(List list)
+	public boolean add(Outlineable o)
 	{
+		return false;
+	}
+
+	public Outlineable get(int index)
+	{
+		return null;
+	}
+
+	public int size()
+	{
+		return 0;
 	}
 }
