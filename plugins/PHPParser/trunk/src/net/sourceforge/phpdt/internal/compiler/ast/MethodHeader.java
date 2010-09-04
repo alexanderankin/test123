@@ -56,6 +56,7 @@ public class MethodHeader extends Statement implements PHPItem, Serializable
 	 */
 	private final boolean reference;
 
+	private final ArgumentList uses;
 	/**
 	 * The arguments.
 	 */
@@ -73,6 +74,7 @@ public class MethodHeader extends Statement implements PHPItem, Serializable
 			    List<Modifier> modifiers,
 			    String name,
 			    boolean reference,
+			    ArgumentList uses,
 			    List<FormalParameter> arguments,
 			    int sourceStart,
 			    int sourceEnd,
@@ -87,6 +89,7 @@ public class MethodHeader extends Statement implements PHPItem, Serializable
 		this.path = path;
 		this.name = name;
 		this.reference = reference;
+		this.uses = uses;
 		this.arguments = arguments;
 	} //}}}
 

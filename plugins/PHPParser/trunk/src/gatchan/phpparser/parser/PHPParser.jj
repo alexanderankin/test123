@@ -2502,6 +2502,7 @@ MethodDeclaration closureDeclaration():
 	Outlineable seg = currentSegment;
 	Token functionToken;
 	Token use;
+	ArgumentList useArguments = null;
 }
 {
 	functionToken = <FUNCTION>
@@ -2510,10 +2511,7 @@ MethodDeclaration closureDeclaration():
 		use = <USE>
 		try
 		{
-			{
-				Expression expr = new ConstantIdentifier(use);
-			}
-			Arguments(expr)
+			useArguments = arguments()
 		}
 		catch (ParseException e)
 		{
@@ -2528,6 +2526,7 @@ MethodDeclaration closureDeclaration():
 			null,
 			"",
 			false,
+			useArguments,
 			formalParameters,
 			functionToken.sourceStart,
 			token.sourceEnd,
@@ -2617,6 +2616,7 @@ MethodHeader methodHeader(Token functionToken,int type, List<Modifier> modifiers
 					modifiers,
 					identifierChar,
 					reference != null,
+					null,// use
 					formalParameters,
 					functionToken.sourceStart,
 					token.sourceEnd,
@@ -3912,7 +3912,14 @@ Expression refPrimaryExpression(Token bitAndToken):
 			expr = Variable()  //todo use the bitAndToken parameter ...
 		)
 		(
-			expr = Arguments(expr)
+			{
+				ArgumentList argumentList;
+			}
+			argumentList = arguments()
+			{
+				expr = new FunctionCall(expr,
+					argumentList);
+			}
 		|
 			expr = staticClassAccess(expr)
 		|
@@ -3921,17 +3928,6 @@ Expression refPrimaryExpression(Token bitAndToken):
 			expr = arrayDeclarator(expr)
 		)*
 	)
-	{
-		return expr;
-	}
-} //}}}
-
-//{{{ methodCall()
-Expression methodCall(Expression expr):
-{
-}
-{
-	expr = Arguments(expr)
 	{
 		return expr;
 	}
@@ -3996,7 +3992,13 @@ Expression instantiation(Token reference):
 		}
 	}
 	[
-		expr = Arguments(expr) 
+		{
+			ArgumentList args;
+		}
+		args = arguments()
+		{
+			expr = new FunctionCall(expr,args);
+		}
 	]
 	{
 		expr = new ClassInstantiation(expr,
@@ -4130,7 +4132,16 @@ ClassAccess staticClassAccess(Expression expr):
 				{
 					expr2 =  new ConstantIdentifier(methodIdentifier);
 				}
-				[ LOOKAHEAD(<LPAREN>) arguments = methodCall(expr2) ]
+				[ 
+					LOOKAHEAD(<LPAREN>)
+					{
+						ArgumentList args;
+					}
+					args = arguments()
+					{
+						arguments = new FunctionCall(expr2, args); 
+					}
+				]
 				{
 					expr2.setType(new Type(Type.OBJECT_INT,expr2.toString()));
 					if (arguments == null)
@@ -4509,8 +4520,8 @@ Expression expressionInString():
 
 //}}}
 
-//{{{ Arguments()
-FunctionCall Arguments(Expression func):
+//{{{ arguments()
+ArgumentList arguments():
 {
 	Expression[] args = null;
 	Token rparen,lparen;
@@ -4521,10 +4532,12 @@ FunctionCall Arguments(Expression func):
 	{
 		rparen = <RPAREN>
 		{
-			return new FunctionCall(func,
-				args,
+			return new ArgumentList(args,
+				lparen.sourceStart,
 				rparen.sourceEnd,
+				lparen.beginLine,
 				rparen.endLine,
+				lparen.beginColumn,
 				rparen.endColumn);
 		}
 	} 
@@ -4557,10 +4570,12 @@ FunctionCall Arguments(Expression func):
 			column = args[args.length-1].getBeginColumn();
 		}
 		
-		return new FunctionCall(func,
-			args,
+		return new ArgumentList(args,
+			lparen.sourceStart,
 			sourceEnd,
+			lparen.beginLine,
 			line,
+			lparen.beginColumn,
 			column);
 	}
 } //}}}
