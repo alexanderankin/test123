@@ -2,7 +2,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2003-2010 Matthieu Casanova
+ * Copyright (C) 2010 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,52 +25,54 @@ import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 import java.util.List;
 
 /**
- * A Function call.
+ * An argument list
  *
  * @author Matthieu Casanova
  */
-public class FunctionCall extends AbstractSuffixExpression
+public class ArgumentList extends AstNode
 {
-	/**
-	 * the function name.
-	 */
-	private final Expression functionName;
+	private final Expression[] args;
 
-	/**
-	 * the arguments.
-	 */
-	private final ArgumentList args;
-
-
-	public FunctionCall(Expression functionName,
-			    ArgumentList args)
+	public ArgumentList(Expression[] args,
+			    int sourceStart,
+			    int sourceEnd,
+			    int beginLine,
+			    int endLine,
+			    int beginColumn,
+			    int endColumn)
 	{
-		super(Type.UNKNOWN,
-			functionName.getSourceStart(),
-			args.getSourceEnd(),
-			functionName.getBeginLine(),
-			args.getEndLine(),
-			functionName.getBeginColumn(),
-			args.getEndColumn());
-		this.functionName = functionName;
+		super(sourceStart,
+			sourceEnd,
+			beginLine,
+			endLine,
+			beginColumn,
+			endColumn);
 		this.args = args;
 	}
 
-	public Expression getFunctionName()
+	@Override
+	public String toString(int tab)
 	{
-		return functionName;
+		return toString();
 	}
 
-	/**
-	 * Return the expression as String.
-	 *
-	 * @return the expression
-	 */
 	@Override
-	public String toStringExpression()
+	public String toString()
 	{
-		StringBuilder buff = new StringBuilder(functionName.toStringExpression());
-		buff.append(args.toString());
+		if (args == null)
+			return "()";
+		StringBuilder buff = new StringBuilder();
+		buff.append('(');
+		for (int i = 0; i < args.length; i++)
+		{
+			Expression arg = args[i];
+			if (i != 0)
+			{
+				buff.append(',');
+			}
+			buff.append(arg.toStringExpression());
+		}
+		buff.append(')');
 		return buff.toString();
 	}
 
@@ -92,7 +94,13 @@ public class FunctionCall extends AbstractSuffixExpression
 	@Override
 	public void getModifiedVariable(List<VariableUsage> list)
 	{
-		args.getModifiedVariable(list);
+		if (args != null)
+		{
+			for (Expression arg : args)
+			{
+				arg.getModifiedVariable(list);
+			}
+		}
 	}
 
 	/**
@@ -103,16 +111,27 @@ public class FunctionCall extends AbstractSuffixExpression
 	@Override
 	public void getUsedVariable(List<VariableUsage> list)
 	{
-		functionName.getUsedVariable(list);
-		args.getUsedVariable(list);
+		if (args != null)
+		{
+			for (Expression arg : args)
+			{
+				arg.getUsedVariable(list);
+			}
+		}
 	}
 
-	@Override
 	public Expression expressionAt(int line, int column)
 	{
-		if (functionName.isAt(line, column))
-			return functionName;
-		return args.expressionAt(line, column);
+		if (args == null)
+		{
+			return null;
+		}
+		for (int i = 0; i < args.length; i++)
+		{
+			Expression arg = args[i];
+			if (arg.isAt(line, column)) return arg;
+		}
+		return null;
 	}
 
 	@Override
