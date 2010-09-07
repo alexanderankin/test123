@@ -508,6 +508,7 @@ public class TaskListPlugin extends EditPlugin {
             tokenHandler.init();
 
             int lineStart = buffer.getLineStartOffset( lineNum );
+            int lineEnd = buffer.getLineEndOffset( lineNum );
             buffer.markTokens( lineNum, tokenHandler );
             Token token = tokenHandler.getTokens();
             int tokenStart = lineStart;
@@ -534,7 +535,7 @@ public class TaskListPlugin extends EditPlugin {
                         token = token.next;
                         chunkLength += token.length;
                     }
-                    String text = buffer.getText( chunkStart, chunkLength );
+                    String text = buffer.getText( chunkStart, lineEnd - chunkStart );
                     for ( TaskType taskType : taskTypes ) {
                         Task task = taskType.extractTask( buffer, text, lineNum, chunkStart - lineStart );
                         if ( task != null ) {
