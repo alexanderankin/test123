@@ -3,20 +3,21 @@
 
 	<!-- Read optional properties from various places -->
 	<!-- Latter ones override previous properties. -->
-	<property file="build.properties"/>
     <property file="../build.properties"/>
+    <property file="build.properties"/>
     <property name="dist.target" 			value="dist.complete" />
 	<property name="compiler.source" value="1.5" />
 	<property name="compiler.target" value="1.5" />
 	<property name="docs-proc.target"  value="none"/>
+    <property name="jedit.plugins.dir" value="${install.dir}" />
 
 	
 	<import file="${build.support}/plugin-build.xml" />
 
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar" />
-		<pathelement location="${install.dir}/ErrorList.jar"/>
-		<pathelement location="${install.dir}/SideKick.jar"/>
+		<pathelement location="${jedit.plugins.dir}/ErrorList.jar"/>
+		<pathelement location="${jedit.plugins.dir}/SideKick.jar"/>
 	</path>
 	    <selector id="extraFiles">
         <and>
