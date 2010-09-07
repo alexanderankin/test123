@@ -42,9 +42,11 @@ import java.util.*;
 import java.util.logging.*;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
-import org.gjt.sp.jedit.View;
+
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.buffer.JEditBuffer;
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 /**
@@ -86,6 +88,9 @@ public class BlameAction extends SVNAction {
 
     public void actionPerformed( ActionEvent ae ) {
         if ( paths != null && paths.size() > 0 ) {
+            final EditPane editPane = getView().getEditPane();
+            final JEditTextArea textArea = editPane.getTextArea();
+            final Buffer buffer = editPane.getBuffer();
             data = new LogData();
             data.setPaths( paths );
             data.setPathsAreURLs( pathsAreUrls );
@@ -149,10 +154,9 @@ public class BlameAction extends SVNAction {
                     try {
                         logger.log( Level.INFO, jEdit.getProperty( "ips.Formatting_annotation_info_...", "Formatting annotation info ..." ) );
                         BlameModel model = get();
-                        model.setTextArea( getView().getEditPane().getTextArea() );
+                        model.setTextArea( textArea );
                         BlamePane pane = new BlamePane( model );
-                        JEditTextArea textArea = getView().getEditPane().getTextArea();
-                        JEditBuffer buffer = textArea.getBuffer();
+                        editPane.setBuffer(buffer);
 
                         // remove any previous blame display
                         Object old_blame = buffer.getProperty( "_old_blame_" );
