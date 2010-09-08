@@ -617,7 +617,7 @@ boolean JspDirectiveAttribute() :
 	    String[] parts = s.split(",");
 	    if (parts.length > 1) {
 	        for (int i = 0; i < parts.length; i++) {
-	            String part = parts[i];
+	            String part = parts[i].trim();
 	            if (i == 0) {
 	                add(part + "," + ls);
 	            }
@@ -628,6 +628,9 @@ boolean JspDirectiveAttribute() :
 	                add(token_source.indent + part + "," + ls);
 	            }
 	        }
+	    }
+	    else {
+	        add(s);
 	    }
 	} 
 	{
@@ -929,6 +932,7 @@ void Element() :
     		{
     		    trimWhitespace();
     		    if (padTagEnd) {
+    		        System.out.println("+++++ padding tag end");
     		      add(" ");   
     		    }
     		    add(t);
@@ -1003,34 +1007,21 @@ void Element() :
 
 void Attributes() :
 {
-    boolean haveAttrs = false;
-    int attrCount = 0;
-    boolean adjustedLevel = false;
+    boolean first = true;
 }
 {
     (
-        haveAttrs = Attribute(wrapAttributes && attrCount > 0) 
+        Attribute(wrapAttributes && !first)
         {
-            if (haveAttrs) {
-                ++attrCount;
-                if (wrapAttributes && !adjustedLevel) {
-                    ++token_source.level;  
-                    adjustedLevel = true;
-                }
-            }
+            first = false;   
         }
-    )*   
-    {
-        if (wrapAttributes && adjustedLevel) {
-            --token_source.level;   
-        }
-    }
+    )*
 }
 
-boolean Attribute(boolean onNextLine) : 
+void Attribute(boolean onNextLine) : 
 {
-    boolean added = false;
 }
+
 {
   t=<ATTR_NAME> 
   { 
@@ -1038,20 +1029,25 @@ boolean Attribute(boolean onNextLine) :
       // attribute starts on a new line or it needs a space between the
       // attribute and the previous token.
       if (onNextLine) {
-        writeln();   
+        writeln();
+        token_source.level += 2;
       }
       else {
         add(" ");   
       }
+      
       add(t); 
-      added=true; 
+      
   } 
   (
   	t=<ATTR_EQ>  { add(t); } 
   	AttributeValue()
   )
   {
-    return added;   
+      write();   
+      if (onNextLine) {
+        token_source.level -= 2;
+      }
   }
 }
 
@@ -1539,18 +1535,20 @@ TOKEN_MGR_DECLS :
             // The "while" at the end of a "do" loop is marked as "^while" to
             // differentiate it from a regular "while" block. "else if" is also
             // a special case.
+            /* not needed for jsp
             if (!s.startsWith(" else")
                     && !s.startsWith(" catch")
                     && !s.startsWith(" finally")
                     && !s.startsWith(" ^while")
                     && !s.startsWith(" {")
                     && (!endsWith(outputBuffer, "else") && !endsWith(outputBuffer, "else "))) {
-                s = s.trim();
-                for (int i = 0; i < level; i++) {
-                    s = indent + s;
-                }
             }
-
+            */
+            s = s.trim();
+            for (int i = 0; i < level; i++) {
+                s = indent + s;
+            }
+                    
             // maybe clean out the ^ from the specially marked "while" at the
             // end of a "do" loop
             if (s.startsWith(" ^while")) {

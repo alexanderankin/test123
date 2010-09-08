@@ -6,8 +6,6 @@ import java.util.*;
 import beauty.parsers.ParserException;
 import beauty.parsers.json.*;
 
-import org.gjt.sp.jedit.jEdit;
-
 public class JsonBeautifier extends Beautifier {
 
     private static JsonParser parser = null;
