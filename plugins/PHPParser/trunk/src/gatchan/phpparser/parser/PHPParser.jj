@@ -1605,7 +1605,7 @@ void abstractClassBody(ClassDeclaration classDeclaration) :
 /**
  * A class can contain only methods and fields.
  */
-void ClassBodyDeclaration(ClassDeclaration classDeclaration) :
+void ClassBodyDeclaration(ClassDeclaration classDeclaration):
 {
 	MethodDeclaration method;
 	List<FieldDeclaration> fieldList;
@@ -1786,74 +1786,19 @@ void abstractClassBodyDeclaration(ClassDeclaration classDeclaration):
  */
 List<FieldDeclaration> FieldDeclaration():
 {
-	VariableDeclaration variableDeclaration;
-	List<FieldDeclaration> arrayList = new ArrayList<FieldDeclaration>();
-	Token varToken;
+	List<FieldDeclaration> arrayList;
 }
 {
-	varToken = <VAR>
+	//{{{ <VAR>
+	<VAR>
 	{
 		fireParseMessage(new PHPParseMessageEvent(INFO,
 			PHPParseMessageEvent.MESSAGE_DEPRECATED_VAR_TOKEN,
 			path,
 			"The var token is deprecated in php 5",
 			token));
-	}
-	try 
-	{
-		variableDeclaration = field()
-		{
-			arrayList.add(new FieldDeclaration(namespace,
-				path,
-				variableDeclaration,
-				currentSegment,
-				variableDeclaration.getSourceStart(),
-				variableDeclaration.getSourceEnd(),
-				variableDeclaration.getBeginLine(),
-				variableDeclaration.getEndLine(),
-				variableDeclaration.getBeginColumn(),
-				variableDeclaration.getEndColumn()));
-		}
-	} 
-	catch (ParseException e) 
-	{
-		Token semicolon = error_skipto(SEMICOLON);
-		fireParseError(new PHPParseErrorEvent(ERROR,
-			path,
-			"variable expected",
-			"variable",
-			e.currentToken.next.image,
-			varToken.sourceEnd,
-			semicolon.sourceEnd,
-			varToken.beginLine,
-			semicolon.endLine,
-			varToken.endColumn,
-			semicolon.endColumn));
-		return null;
-	}
-	(
-		<COMMA> variableDeclaration = field()
-		{
-			arrayList.add(new FieldDeclaration(namespace,
-				path,
-				variableDeclaration,
-				currentSegment,
-				variableDeclaration.getSourceStart(),
-				variableDeclaration.getSourceEnd(),
-				variableDeclaration.getBeginLine(),
-				variableDeclaration.getEndLine(),
-				variableDeclaration.getBeginColumn(),
-				variableDeclaration.getEndColumn()));
-		}
-	)*
-	try 
-	{
-		<SEMICOLON>
-	}
-	catch (ParseException e)
-	{
-		fireParseError("';' expected", ";", e.currentToken);
-	}
+	} //}}}
+	arrayList = fieldDeclarationPHP5(null)
 	{
 		return arrayList;
 	}
@@ -1868,7 +1813,6 @@ List<FieldDeclaration> fieldDeclarationPHP5(List<Modifier> modifiers):
 {
 	VariableDeclaration variableDeclaration;
 	List<FieldDeclaration> fields = new ArrayList<FieldDeclaration>();
-	Token comma;
 }
 {
 	//{{{ first field
@@ -1877,16 +1821,10 @@ List<FieldDeclaration> fieldDeclarationPHP5(List<Modifier> modifiers):
 		variableDeclaration = field()
 		{
 			fields.add(new FieldDeclaration(namespace,
+				currentSegment,
 				modifiers,
 				path,
-				variableDeclaration,
-				currentSegment,
-				variableDeclaration.getSourceStart(),
-				variableDeclaration.getSourceEnd(),
-				variableDeclaration.getBeginLine(),
-				variableDeclaration.getEndLine(),
-				variableDeclaration.getBeginColumn(),
-				variableDeclaration.getEndColumn()));
+				variableDeclaration));
 		}
 	}
 	catch (ParseException e)
@@ -1895,23 +1833,17 @@ List<FieldDeclaration> fieldDeclarationPHP5(List<Modifier> modifiers):
 		fireParseError("field declaration expected","field declaration",semicolon);
 	} //}}}
 	(
-		comma = <COMMA>
+		<COMMA>
 		//{{{ additional fields
 		try
 		{
 			variableDeclaration = field()
 			{
 				fields.add(new FieldDeclaration(namespace,
+					currentSegment,
 					modifiers,
 					path,
-					variableDeclaration,
-					currentSegment,
-					variableDeclaration.getSourceStart(),
-					variableDeclaration.getSourceEnd(),
-					variableDeclaration.getBeginLine(),
-					variableDeclaration.getEndLine(),
-					variableDeclaration.getBeginColumn(),
-					variableDeclaration.getEndColumn()));
+					variableDeclaration));
                         }
                 }
                 catch (ParseException e)
@@ -1920,6 +1852,15 @@ List<FieldDeclaration> fieldDeclarationPHP5(List<Modifier> modifiers):
                 	fireParseError("field declaration expected","field declaration",semicolon);
                 } //}}}
 	)*
+	try
+	{
+		<SEMICOLON>
+	}
+	catch (ParseException e)
+	{
+		Token semicolon = error_skipto(SEMICOLON);
+		fireParseError("semocolon expected",";",e.currentToken);
+	}
 	{
 		return fields;
 	}
@@ -1981,6 +1922,7 @@ VariableDeclaration field():
 			e.currentToken.beginColumn,
 			e.currentToken.endColumn);
 	}
+	//{{{ = VariableInitializer()
 	[
 		assignToken = <ASSIGN>
 		try
@@ -2001,19 +1943,12 @@ VariableDeclaration field():
 				e.currentToken.endColumn,
 				e.currentToken.endColumn+1));
 		}
-	]
+	] //}}}
 	{
 		setTypeFromScope(variable);
 		if (assignToken == null)
 		{
-			return new VariableDeclaration(currentSegment,
-				variable,
-				variable.getSourceStart(),
-				variable.getSourceEnd(),
-				variable.getBeginLine(),
-				variable.getEndLine(),
-				variable.getBeginColumn(),
-				variable.getEndColumn());
+			return new VariableDeclaration(currentSegment, variable);
 		}
 		if (initializer == null)
 		{
@@ -2120,13 +2055,7 @@ VariableDeclaration VariableDeclaratorNoSuffix() :
 		if (assignToken == null)
 		{
 			return new VariableDeclaration(currentSegment,
-				variable,
-				variable.getSourceStart(),
-				variable.getSourceEnd(),
-				variable.getBeginLine(),
-				variable.getEndLine(),
-				variable.getBeginColumn(),
-				variable.getEndColumn());
+				variable);
 		}
 		if (initializer == null)
 		{
@@ -2191,13 +2120,7 @@ VariableDeclaration VariableDeclarator() :
 		if (assignToken == null) 
 		{
 			return new VariableDeclaration(currentSegment,
-				variable,
-				variable.getSourceStart(),
-				variable.getSourceEnd(),
-				variable.getBeginLine(),
-				variable.getEndLine(),
-				variable.getBeginColumn(),
-				variable.getEndColumn());
+				variable);
 		}
 		if (initializer == null) 
 		{

@@ -70,7 +70,7 @@ public class FieldDeclaration extends Statement implements Outlineable, PHPItem,
 	/**
 	 * Create a field. with public visibility
 	 *
-	 * @param namespace the namespace
+	 * @param namespace   the namespace
 	 * @param path	the path
 	 * @param variable    the variable of the field
 	 * @param parent      the parent class
@@ -92,47 +92,36 @@ public class FieldDeclaration extends Statement implements Outlineable, PHPItem,
 				int beginColumn,
 				int endColumn)
 	{
-		this(namespace,
-			null,
-			path,
-			variable,
-			parent,
-			sourceStart,
+		super(sourceStart,
 			sourceEnd,
 			beginLine,
 			endLine,
 			beginColumn,
 			endColumn);
+		this.namespace = namespace;
+		this.path = path;
+		this.variable = variable;
+		this.parent = parent;
 	}
 
 	/**
 	 * Create a field.
 	 *
 	 * @param namespace the namespace
-	 * @param modifiers   a list of {@link Modifier}
-	 * @param path	the path
-	 * @param variable    the variable of the field
-	 * @param parent      the parent class
-	 * @param sourceStart the sourceStart
-	 * @param sourceEnd   source end
-	 * @param beginLine   begin line
-	 * @param endLine     end line
-	 * @param beginColumn begin column
-	 * @param endColumn   end column
+	 * @param parent    the parent class
+	 * @param modifiers a list of {@link Modifier}
+	 * @param path      the path
+	 * @param variable  the variable of the field
 	 */
 	public FieldDeclaration(String namespace,
+				Outlineable parent,
 				List<Modifier> modifiers,
 				String path,
-				VariableDeclaration variable,
-				Outlineable parent,
-				int sourceStart,
-				int sourceEnd,
-				int beginLine,
-				int endLine,
-				int beginColumn,
-				int endColumn)
+				VariableDeclaration variable)
 	{
-		super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+		super(variable.getSourceStart(), variable.getSourceStart(),
+			variable.getBeginLine(), variable.getEndLine(),
+			variable.getBeginColumn(), variable.getEndColumn());
 		this.namespace = namespace;
 		this.modifiers = modifiers;
 		this.path = path;
