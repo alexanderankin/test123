@@ -12,7 +12,7 @@ plugin.gatchan.phpparser.PHPParserPlugin.description=PHPParser is a plugin that 
 plugin.gatchan.phpparser.PHPParserPlugin.depend.0=jdk 1.5
 plugin.gatchan.phpparser.PHPParserPlugin.depend.1=jedit 04.03.99.00
 plugin.gatchan.phpparser.PHPParserPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.9
-plugin.gatchan.phpparser.PHPParserPlugin.depend.3=plugin sidekick.SideKickPlugin 0.9.0
+plugin.gatchan.phpparser.PHPParserPlugin.depend.3=plugin sidekick.SideKickPlugin 0.9
 gatchan-phpparser-parse.label=parse
 
 
