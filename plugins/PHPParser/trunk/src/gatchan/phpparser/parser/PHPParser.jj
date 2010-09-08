@@ -966,6 +966,8 @@ void Php() :
 	(
 		namespace()
 	|
+		constantStatement()
+	|
 		BlockStatement()
 	)*
 } //}}}
@@ -997,7 +999,11 @@ Namespace namespace():
 	(
 		//{{{ block
 		<LBRACE>
-		(BlockStatement())*
+		(
+			constantStatement()
+		|
+			BlockStatement()
+		)*
 		<RBRACE>
 		{
 			String namespaceName = namespaceNameToken == null ? null : namespaceNameToken.image;
@@ -1020,7 +1026,11 @@ Namespace namespace():
 			(
 				//{{{ { block()* }
 				<LBRACE>
-				(BlockStatement())*
+				(
+					constantStatement()
+				|
+					BlockStatement()
+				)*
 				<RBRACE>
 				{
 					namespace = Namespace.getNamespace(namespaceNameToken.image);
@@ -4861,8 +4871,80 @@ Statement expressionStatement():
 	}
 } //}}}
 
+//{{{ constantStatement()
+Const constantStatement():
+{
+	Token constToken;
+	Token identifierToken;
+	Expression identifier;
+	Expression value = null;
+}
+{
+	constToken = <CONST>
+	try
+	{
+		identifierToken = <IDENTIFIER>
+		{
+			identifier = new ConstantIdentifier(identifierToken);
+		}
+	}
+	catch (ParseException e)
+	{
+		identifier = new StringLiteral(SYNTAX_ERROR_CHAR,
+			e.currentToken.sourceStart,e.currentToken.sourceEnd,
+					       e.currentToken.beginLine,
+					       e.currentToken.endLine,
+					       e.currentToken.endColumn,
+					       e.currentToken.endColumn+1);
+	}
+	try
+	{
+		<ASSIGN>
+	}
+	catch (ParseException e)
+	{
+		error_skipto(ASSIGN);
+		fireParseError("= expected", "=", e.currentToken);
+	}
+	try
+	{
+		value  = Literal()
+	}
+	catch (ParseException e)
+	{
+		fireParseError("value expected", "value", e.currentToken);
+		value = new StringLiteral(SYNTAX_ERROR_CHAR,
+			e.currentToken.sourceStart,e.currentToken.sourceEnd,
+					       e.currentToken.beginLine,
+					       e.currentToken.endLine,
+					       e.currentToken.endColumn,
+					       e.currentToken.endColumn+1);
+	}
+	try
+	{
+		<SEMICOLON>
+	}
+	catch (ParseException e)
+	{
+		error_skipto(SEMICOLON);
+		fireParseError("; expected", ";", e.currentToken);
+	}
+	{
+		return new Const(currentSegment,
+				  identifier,
+				  value,
+				  constToken.sourceStart,
+				  value.getSourceEnd(),
+				  constToken.beginLine,
+				  value.getEndLine(),
+				  constToken.beginColumn,
+				  value.getEndColumn());
+	}
+	
+} //}}}
+
 //{{{ defineStatement()
-Define defineStatement() :
+Define defineStatement():
 {
 	Expression defineName;
 	Expression defineValue;
@@ -4944,7 +5026,7 @@ Define defineStatement() :
 				  defineToken.beginColumn,
 				  defineToken.endColumn);
 	}
-}
+}//}}}
 
 //{{{ Statement() method
 /**
@@ -4971,8 +5053,6 @@ Statement Statement():
 	}
 } //}}}
 
-
-//}}}
 
 //{{{ htmlBlock()
 /**
