@@ -3355,9 +3355,9 @@ Expression instanceofExpression():
 		{
 			(
 				expr2 = ClassIdentifier()
-				|
+			|
 				expr2 = VariableDeclaratorId()
-				)
+			)
 		}
 		catch (ParseException e)
 		{
@@ -3964,7 +3964,34 @@ Expression cloning():
 }
 {
 	<CLONE>
-	variable = VariableDeclaratorId()
+	(
+		variable = VariableDeclaratorId()
+	|
+		<LPAREN>
+		try
+		{
+			variable = VariableDeclaratorId()
+		}
+		catch (ParseException e)
+		{
+			variable = new Variable(SYNTAX_ERROR_CHAR,
+			e.currentToken.sourceStart,e.currentToken.sourceEnd,
+					       e.currentToken.beginLine,
+					       e.currentToken.endLine,
+					       e.currentToken.beginColumn,
+					       e.currentToken.endColumn);
+			fireParseError("variable expected","variable",e.currentToken.next);
+		}
+		try
+		{
+			<RPAREN>
+		}
+		catch (ParseException e)
+		{
+			fireParseError(") expected",")",e.currentToken.next);
+		}
+		
+	)
 	{
 		return variable;
 	}

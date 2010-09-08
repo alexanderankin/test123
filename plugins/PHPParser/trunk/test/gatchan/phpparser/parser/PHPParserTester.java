@@ -44,6 +44,8 @@ public class PHPParserTester extends TestCase implements PHPParserListener
 
 	public void testParserSuccess()
 	{
+		checkPHP("function objclone() { return clone($z); }");
+		checkPHP("function objclone() { return clone $z; }");
 		checkHTML("<? toto();?>");
 		checkHTML("<? toto($this->highlightfile->linkscripts{$category});?>");
 		checkHTML("<? while (true) : ?>coucou<? endwhile;?>");
