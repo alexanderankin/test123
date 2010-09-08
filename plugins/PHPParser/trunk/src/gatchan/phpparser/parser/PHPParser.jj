@@ -1540,7 +1540,9 @@ void ClassBody(ClassDeclaration classDeclaration) :
 	{
 		fireParseError("'{' expected", "{", e.currentToken);
 	}
-	( ClassBodyDeclaration(classDeclaration) )*
+	(
+		ClassBodyDeclaration(classDeclaration)
+	)*
 	try
 	{
 		rBraceToken = <RBRACE>
@@ -1625,58 +1627,63 @@ void ClassBodyDeclaration(ClassDeclaration classDeclaration):
 	ClassConstant classConstant;
 }
 {
-	classConstant = classConstant()
-	{
-		classDeclaration.addConstant(classConstant);
-	}
-	|
 	(
-		modifier = commonModifiers()
+		classConstant = classConstant()
 		{
-			modifiers.add(modifier);
+			classDeclaration.addConstant(classConstant);
 		}
-	)*
-	try 
-	{
+	|
+		//{{{ modifiers
 		(
-			fields = fieldDeclarationPHP5(modifiers)
+			modifier = commonModifiers()
 			{
-				for (FieldDeclaration field : fields)
-					classDeclaration.addField(field);
+				modifiers.add(modifier);
 			}
-		|
+		)* //}}}
+		//{{{ fields or method
+		try 
+		{
 			(
-				modifier = methodModifiers()
+				fields = fieldDeclarationPHP5(modifiers)
 				{
-					modifiers.add(modifier);
+					for (FieldDeclaration field : fields)
+						classDeclaration.addField(field);
 				}
+			|
 				(
-					modifier = commonModifiers()
+					modifier = methodModifiers()
 					{
 						modifiers.add(modifier);
 					}
+					(
+						modifier = commonModifiers()
+						{
+							modifiers.add(modifier);
+						}
+						)*
 					)*
-				)*
-			method = methodDeclaration(CONST_METHOD,modifiers)
-			{
-				//  method.analyzeCode(this);
-				classDeclaration.addMethod(method);
-			}
-		)
-	} 
-	catch (ParseException e) 
-	{
-		fireParseError("unexpected token " + e.currentToken.image, "", e.currentToken);
-	}
-	|
-	fieldList  = FieldDeclaration()
-	{
-		if (fieldList != null)
+				method = methodDeclaration(CONST_METHOD,modifiers)
+				{
+					//  method.analyzeCode(this);
+					classDeclaration.addMethod(method);
+				}
+			)
+		} 
+		catch (ParseException e) 
 		{
-			for (FieldDeclaration field:fieldList) 
-				classDeclaration.addField(field);
+			fireParseError("unexpected token " + e.currentToken.image, "", e.currentToken);
+		} //}}}
+
+	|
+		fieldList  = FieldDeclaration()
+		{
+			if (fieldList != null)
+			{
+				for (FieldDeclaration field:fieldList) 
+					classDeclaration.addField(field);
+			}
 		}
-	}
+	)
 } //}}}
 
 //{{{ commonModifiers()
