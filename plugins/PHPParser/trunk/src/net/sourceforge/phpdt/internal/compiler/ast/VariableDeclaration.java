@@ -98,19 +98,13 @@ public class VariableDeclaration extends Expression implements Outlineable, IAss
 	/**
 	 * Create a variable.
 	 *
+	 * @param parent the outlineable parent
 	 * @param variable    a variable (in case of $$variablename)
-	 * @param sourceStart the start point
 	 */
 	public VariableDeclaration(Outlineable parent,
-				   AbstractVariable variable,
-				   int sourceStart,
-				   int sourceEnd,
-				   int beginLine,
-				   int endLine,
-				   int beginColumn,
-				   int endColumn)
+				   AbstractVariable variable)
 	{
-		super(Type.NULL, sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+		super(Type.NULL, variable);
 		this.variable = variable;
 		this.parent = parent;
 	}
