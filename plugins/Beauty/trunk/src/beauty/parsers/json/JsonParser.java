@@ -176,8 +176,8 @@ JSON grammar starts here
     case TRUE:
     case FALSE:
     case NULL:
-    case STRING:
     case NUMBER:
+    case STRING:
       elements();
       break;
     default:
@@ -308,7 +308,7 @@ JSON grammar starts here
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x140,0x10000,0x37140,0x400,0x400,0x37140,};
+      jj_la1_0 = new int[] {0x140,0x20000,0x2f140,0x400,0x400,0x2f140,};
    }
 
   /** Constructor with InputStream. */

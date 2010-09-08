@@ -237,16 +237,18 @@ public class JspParserTokenManager implements JspParserConstants
             // The "while" at the end of a "do" loop is marked as "^while" to
             // differentiate it from a regular "while" block. "else if" is also
             // a special case.
+            /* not needed for jsp
             if (!s.startsWith(" else")
                     && !s.startsWith(" catch")
                     && !s.startsWith(" finally")
                     && !s.startsWith(" ^while")
                     && !s.startsWith(" {")
                     && (!endsWith(outputBuffer, "else") && !endsWith(outputBuffer, "else "))) {
-                s = s.trim();
-                for (int i = 0; i < level; i++) {
-                    s = indent + s;
-                }
+            }
+            */
+            s = s.trim();
+            for (int i = 0; i < level; i++) {
+                s = indent + s;
             }
 
             // maybe clean out the ^ from the specially marked "while" at the

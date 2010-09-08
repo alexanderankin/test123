@@ -8,6 +8,9 @@ import beauty.parsers.jsp.*;
 
 import org.gjt.sp.jedit.jEdit;
 
+// TODO: wrap attributes isn't right, last attribute and end tag do not line up
+// correctly with the rest of the tag.  If there is only one attribute, don't
+// put it on a separate line.
 public class JspBeautifier extends Beautifier {
 
     private static JspParser parser = null;

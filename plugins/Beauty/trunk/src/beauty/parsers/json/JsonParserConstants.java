@@ -29,11 +29,11 @@ public interface JsonParserConstants {
   /** RegularExpression Id. */
   int NULL = 14;
   /** RegularExpression Id. */
-  int CHAR = 15;
+  int NUMBER = 15;
   /** RegularExpression Id. */
-  int STRING = 16;
+  int CHAR = 16;
   /** RegularExpression Id. */
-  int NUMBER = 17;
+  int STRING = 17;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -55,9 +55,9 @@ public interface JsonParserConstants {
     "\"true\"",
     "\"false\"",
     "\"null\"",
+    "<NUMBER>",
     "<CHAR>",
     "<STRING>",
-    "<NUMBER>",
   };
 
 }
