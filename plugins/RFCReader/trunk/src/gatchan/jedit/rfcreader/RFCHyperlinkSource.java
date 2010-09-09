@@ -152,7 +152,7 @@ public class RFCHyperlinkSource implements HyperlinkSource
 			pos -= i;
 			String txt = lineText.substring(i);
 			int spacePos = txt.indexOf(' ');
-			String tooltip = txt.substring(spacePos + 1, pos - 1);
+			String tooltip = txt.substring(spacePos + 1, pos - 1).trim();
 			String num = txt.substring(0, spacePos);
 			if (num.endsWith("."))
 			{
