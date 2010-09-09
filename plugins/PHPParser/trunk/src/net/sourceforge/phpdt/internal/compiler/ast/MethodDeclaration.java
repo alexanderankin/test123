@@ -3,7 +3,7 @@
 * :tabSize=8:indentSize=8:noTabs=false:
 * :folding=explicit:collapseFolds=1:
 *
-* Copyright (C) 2003, 2009 Matthieu Casanova
+* Copyright (C) 2003, 2010 Matthieu Casanova
 *
 * This program is free software; you can redistribute it and/or
 * modify it under the terms of the GNU General Public License
@@ -322,12 +322,14 @@ public class MethodDeclaration extends Expression implements Outlineable, IAsset
 	public void analyzeCode(PHPParser parser)
 	{
 		methodHeader.analyzeCode(parser);
-		if (statements != null)
+		if (statements == null)
 		{
-			for (Statement statement : statements)
-			{
-				statement.analyzeCode(parser);
-			}
+			// the method is abstract, no need to analyze it.
+			return;
+		}
+		for (Statement statement : statements)
+		{
+			statement.analyzeCode(parser);
 		}
 
 		List<VariableUsage> globalsVars = new ArrayList<VariableUsage>();
