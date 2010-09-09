@@ -1877,7 +1877,7 @@ List<FieldDeclaration> fieldDeclarationPHP5(List<Modifier> modifiers):
 	catch (ParseException e)
 	{
 		Token semicolon = error_skipto(SEMICOLON);
-		fireParseError("semocolon expected",";",e.currentToken);
+		fireParseError("semicolon expected",";",e.currentToken);
 	}
 	{
 		return fields;
