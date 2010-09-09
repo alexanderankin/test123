@@ -320,6 +320,7 @@ public class PHPParser
 		if (jj_input_stream == null)
 		{
 			jj_input_stream = new JavaCharStream(reader, 1, 1);
+			jj_input_stream.setTabSize(1);
 			token_source = new PHPParserTokenManager(jj_input_stream);
 		}
 		ReInit(reader);
@@ -1071,7 +1072,7 @@ Namespace namespace():
 } //}}}
 
 //{{{ interfaceDeclaration()
-InterfaceDeclaration interfaceDeclaration() :
+InterfaceDeclaration interfaceDeclaration():
 {
 	Token modifierToken;
 	Token interfaceToken, rBraceToken;
