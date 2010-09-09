@@ -2048,7 +2048,7 @@ public class PHPParser implements PHPParserConstants {
       jj_consume_token(SEMICOLON);
     } catch (ParseException e) {
                 Token semicolon = error_skipto(SEMICOLON);
-                fireParseError("semocolon expected",";",e.currentToken);
+                fireParseError("semicolon expected",";",e.currentToken);
     }
                 {if (true) return fields;}
     throw new Error("Missing return statement in function");
