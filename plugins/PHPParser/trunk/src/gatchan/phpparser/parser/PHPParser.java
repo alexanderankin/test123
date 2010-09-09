@@ -276,6 +276,7 @@ public class PHPParser implements PHPParserConstants {
                 if (jj_input_stream == null)
                 {
                         jj_input_stream = new JavaCharStream(reader, 1, 1);
+                        jj_input_stream.setTabSize(1);
                         token_source = new PHPParserTokenManager(jj_input_stream);
                 }
                 ReInit(reader);
