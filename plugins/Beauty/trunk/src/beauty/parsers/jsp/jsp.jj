@@ -654,11 +654,14 @@ void JspScriptlet() :
 	{
 	     String ws = getSpecial(start);
 	     String java = null;
+	     boolean multiline = false;
 	     try {
             if (content != null && content.image.trim().length() > 0) {
                 Beautifier beautifier = new JavaLineBeautifier();
                 beautifier.setInitialIndentLevel(token_source.level);
                 java = beautifier.beautify(content.image.trim());
+                java = java.trim();
+                multiline = java.indexOf(ls) > 0;
             }
          }
          catch(ParserException pe) {
@@ -671,21 +674,39 @@ void JspScriptlet() :
 	     if (ws != null && ws.length() > 0) {
 	         writePre(ws);
 	     }
-	     else if (java.trim().indexOf(ls) > 0) {
+	     else if (multiline) {
 	         writeln();   
 	     }
 	     
          add(start);
-         writeln();
-         ++token_source.level;
+         if (multiline) {
+             writeln();
+             ++token_source.level;
+         }
+         else {
+             write(); 
+             add(" ");
+             write();
+         }
          // TODO: adjust leading whitespace:
          // find line with shortest amount of whitespace, minding tabs
          // subtract that amount from all lines
          // add indent to all lines
          writePre(java);
-         --token_source.level;
+         if (multiline) {
+             --token_source.level;
+         }
+         else {
+            add(" ");   
+            write();
+         }
 	     add(end);
-	     write();
+	     if (multiline) {
+	         writeln();   
+	     }
+	     else {
+	         write();
+	     }
 	}
 }
 
@@ -932,7 +953,6 @@ void Element() :
     		{
     		    trimWhitespace();
     		    if (padTagEnd) {
-    		        System.out.println("+++++ padding tag end");
     		      add(" ");   
     		    }
     		    add(t);
@@ -1014,8 +1034,13 @@ void Attributes() :
         Attribute(wrapAttributes && !first)
         {
             first = false;   
+            add(" ");
         }
     )*
+    {
+        trimWhitespace();
+        write();
+    }
 }
 
 void Attribute(boolean onNextLine) : 
@@ -1044,9 +1069,9 @@ void Attribute(boolean onNextLine) :
   	AttributeValue()
   )
   {
-      write();   
+      //write();   
       if (onNextLine) {
-        token_source.level -= 2;
+          token_source.level -= 2;
       }
   }
 }
@@ -1529,33 +1554,11 @@ TOKEN_MGR_DECLS :
             }
 
             // indent --
-            // most lines get indented, but there are a few special cases:
-            // "else" gets put on the same line as the closing "}" for the "if",
-            // so don't want to indent.  Similarly with "catch" and "finally".
-            // The "while" at the end of a "do" loop is marked as "^while" to
-            // differentiate it from a regular "while" block. "else if" is also
-            // a special case.
-            /* not needed for jsp
-            if (!s.startsWith(" else")
-                    && !s.startsWith(" catch")
-                    && !s.startsWith(" finally")
-                    && !s.startsWith(" ^while")
-                    && !s.startsWith(" {")
-                    && (!endsWith(outputBuffer, "else") && !endsWith(outputBuffer, "else "))) {
-            }
-            */
             s = s.trim();
             for (int i = 0; i < level; i++) {
                 s = indent + s;
             }
                     
-            // maybe clean out the ^ from the specially marked "while" at the
-            // end of a "do" loop
-            if (s.startsWith(" ^while")) {
-                b.deleteCharAt(1);
-                s = b.toString();
-            }
-
             // check if the output buffer does NOT end with a new line.  If it
             // doesn't, remove any leading whitespace from this line
             if (!endsWith(outputBuffer, "\n") && !endsWith(outputBuffer, "\r")) {
@@ -1573,6 +1576,9 @@ TOKEN_MGR_DECLS :
             // buffer and this line -- this handles the case where the output
             // buffer does not end in a space and the new string does not start
             // with a space, want one space in between.
+            // TODO: I don't think the above is true for jsp, need to confirm
+            // that removing this check is okay.
+            /*
             if (!s.startsWith(" ")
                     && !endsWith(outputBuffer, " ")
                     && !endsWith(outputBuffer, "\r")
@@ -1580,6 +1586,7 @@ TOKEN_MGR_DECLS :
                     && outputBuffer.length() > 0) {
                 outputBuffer.append(" ");
             }
+            */
 
             // by the Sun standard, there is no situation where '(' is followed
             // by a space or ')' is preceded with by a space

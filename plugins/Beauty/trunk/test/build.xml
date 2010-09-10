@@ -105,7 +105,7 @@
 
     <!-- this selector holds just one test.  This is optional. -->
     <selector id="testcases.current">
-        <filename name="beauty/beautifiers/JsonBeautifierTest.java"/>
+        <filename name="beauty/beautifiers/JspBeautifierTest.java"/>
     </selector>
 
     <!-- this selector controls which tests to run, set the refid to either
