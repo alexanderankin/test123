@@ -625,7 +625,7 @@ public abstract class SystemShellBuiltIn
 		{
 			ConsoleState cs = getConsoleState(console);
 			
-			output.writeAttrs(null, "echo " + cs.currentDirectory + "\n");
+			output.writeAttrs(null, cs.currentDirectory + "\n");
 			// shell will print prompt with current working dir
 		}
 	} //}}}
