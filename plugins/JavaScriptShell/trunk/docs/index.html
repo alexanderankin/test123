@@ -28,9 +28,13 @@
 	so you can write macros and startup scripts in JavaScript. It also adds a
 	JavaScript shell to the console interface provided by the Console Plugin.</p>
 
-	<p>A feature of JavaScriptShell is that it uses the built in Javascript engine
-	provided by Java 1.6. No external libraries are required.</p>
+	<p>A feature of JavaScriptShell is that it uses the JVM's built-in JavaScript engine
+	as provided by Java 1.6. No external libraries are required.</p>
 
+	<p> This means that like the Beanshell Console shell, the JavaScriptShell 
+	is also a debugging tool, that allows you to introspect (and interact with)
+	the objects that are currently in use by jEdit itself. </p>
+	
 	<p>A major addition to v0.3 is that the <code>print</code>
 	and <code>printnl</code> now work. In the interactive shell the output appears
 	in the console as one would expect. In script and macro mode the output is included
