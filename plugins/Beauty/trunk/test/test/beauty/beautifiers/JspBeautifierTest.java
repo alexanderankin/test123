@@ -89,7 +89,8 @@ public class JspBeautifierTest {
             beautifier.setWrapMode("none");
             String after = beautifier.beautify(before.toString());
             assertTrue("returned text was null", after != null);
-            assertTrue("jsp test failed.\nbefore:\n|" + before + "|\n\nafter:\n|" + after + "|", answer.toString().equals(after));
+            //assertTrue("jsp test failed.\nbefore:\n|" + before + "|\n\nafter:\n|" + after + "|", answer.toString().equals(after));
+            assertTrue("Test 1 failed.", answer.toString().equals(after));
         } catch (Exception e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -162,7 +163,8 @@ public class JspBeautifierTest {
             beautifier.setWrapMode("none");
             String after = beautifier.beautify(before.toString());
             assertTrue("returned text was null", after != null);
-            assertTrue("jsp test failed.\nbefore:\n|" + before + "|\n\nafter:\n|" + after + "|", answer.toString().equals(after));
+            //assertTrue("jsp test failed.\nbefore:\n|" + before + "|\n\nafter:\n|" + after + "|", answer.toString().equals(after));
+            assertTrue("Test 2 failed.", answer.toString().equals(after));
         } catch (Exception e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -198,7 +200,7 @@ public class JspBeautifierTest {
             before.append("        <%-- one line --%>\n");
             before.append("        some text\n");
             before.append("      </span>\n");
-            before.append("      <b> ${whatever}</b>\n");
+            before.append("      <b>${whatever}</b>\n");
             before.append("      <%--\n");
             before.append("        three lines, next line is blank\n");
             before.append("\n");
@@ -222,6 +224,7 @@ public class JspBeautifierTest {
             String after = beautifier.beautify(before.toString());
             assertTrue("returned text was null", after != null);
             assertTrue("jsp test failed.\nbefore:\n|" + before + "|\n\nafter:\n|" + after + "|", before.toString().equals(after));
+            //assertTrue("testComments failed.", before.toString().equals(after));
         } catch (Exception e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -296,7 +299,7 @@ public class JspBeautifierTest {
             answer.append("        <%-- one line --%>\n");
             answer.append("        some text\n");
             answer.append("      </span>\n");
-            answer.append("      <b> ${whatever}</b>\n");
+            answer.append("      <b>${whatever}</b>\n");
             answer.append("      <%--\n");
             answer.append("        three lines, next line is blank\n");
             answer.append("\n");
@@ -319,7 +322,8 @@ public class JspBeautifierTest {
             beautifier.setWrapMode("none");
             String after = beautifier.beautify(before.toString());
             assertTrue("returned text was null", after != null);
-            assertTrue("jsp test failed.\nbefore:\n|" + before + "|\n\nafter:\n|" + after + "|", answer.toString().equals(after));
+            //assertTrue("jsp test failed.\nbefore:\n|" + before + "|\n\nafter:\n|" + after + "|", answer.toString().equals(after));
+            assertTrue("TestComments2 failed.", answer.toString().equals(after));
         } catch (Exception e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -353,6 +357,7 @@ public class JspBeautifierTest {
             String after = beautifier.beautify(before.toString());
             assertTrue("returned text was null", after != null);
             assertTrue("jsp test failed.\nbefore:\n|" + before + "|\n\nafter:\n|" + after + "|\n\nexpected:\n|" + answer + "|", answer.toString().equals(after));
+            //assertTrue("testExclamation failed.", answer.toString().equals(after));
         } catch (Exception e) {
             e.printStackTrace();
             fail(e.getMessage());

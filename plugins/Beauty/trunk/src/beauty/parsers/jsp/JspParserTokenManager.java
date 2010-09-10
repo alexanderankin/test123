@@ -231,31 +231,9 @@ public class JspParserTokenManager implements JspParserConstants
             }
 
             // indent --
-            // most lines get indented, but there are a few special cases:
-            // "else" gets put on the same line as the closing "}" for the "if",
-            // so don't want to indent.  Similarly with "catch" and "finally".
-            // The "while" at the end of a "do" loop is marked as "^while" to
-            // differentiate it from a regular "while" block. "else if" is also
-            // a special case.
-            /* not needed for jsp
-            if (!s.startsWith(" else")
-                    && !s.startsWith(" catch")
-                    && !s.startsWith(" finally")
-                    && !s.startsWith(" ^while")
-                    && !s.startsWith(" {")
-                    && (!endsWith(outputBuffer, "else") && !endsWith(outputBuffer, "else "))) {
-            }
-            */
             s = s.trim();
             for (int i = 0; i < level; i++) {
                 s = indent + s;
-            }
-
-            // maybe clean out the ^ from the specially marked "while" at the
-            // end of a "do" loop
-            if (s.startsWith(" ^while")) {
-                b.deleteCharAt(1);
-                s = b.toString();
             }
 
             // check if the output buffer does NOT end with a new line.  If it
@@ -275,13 +253,17 @@ public class JspParserTokenManager implements JspParserConstants
             // buffer and this line -- this handles the case where the output
             // buffer does not end in a space and the new string does not start
             // with a space, want one space in between.
+            // TODO: I don't think the above is true for jsp, need to confirm
+            // that removing this check is okay.
+            /*
             if (!s.startsWith(" ")
                     && !endsWith(outputBuffer, " ")
-                    && !endsWith(outputBuffer, "\u005cr")
-                    && !endsWith(outputBuffer, "\u005cn")
+                    && !endsWith(outputBuffer, "\r")
+                    && !endsWith(outputBuffer, "\n")
                     && outputBuffer.length() > 0) {
                 outputBuffer.append(" ");
             }
+            */
 
             // by the Sun standard, there is no situation where '(' is followed
             // by a space or ')' is preceded with by a space
