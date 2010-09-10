@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
-<ACTIONS>
-    <ACTION NAME="cppcheck-dir" NO_REPEAT="TRUE">
-       <CODE> 
-           cppcheck.Plugin.checkDirectory(view, browser.getDirectory());
-       </CODE>
-    </ACTION>
-</ACTIONS>
