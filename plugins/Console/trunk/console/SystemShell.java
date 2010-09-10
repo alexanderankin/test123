@@ -705,7 +705,7 @@ public class SystemShell extends Shell
 		commands.put("%kill", new SystemShellBuiltIn.kill());
 		commands.put("%popd", new SystemShellBuiltIn.popd());
 		commands.put("%pushd", new SystemShellBuiltIn.pushd());
-		commands.put("%pwd", new SystemShellBuiltIn.pwd());
+		commands.put("pwd", new SystemShellBuiltIn.pwd());
 		commands.put("%run", new SystemShellBuiltIn.run());
 		commands.put("%set", new SystemShellBuiltIn.set());
 		commands.put("%unalias", new SystemShellBuiltIn.unalias());
@@ -721,14 +721,15 @@ public class SystemShell extends Shell
 		pr.setUpDefaultAliases(aliases);
 
 		// some built-ins can be invoked without the % prefix
+		
 		aliases.put("cd", "%cd");
 		aliases.put("pushd", "%pushd");
 		aliases.put("popd", "%popd");
-		aliases.put("pwd", "%pwd");
+		// aliases.put("pwd", "%pwd");
 		aliases.put("aliases", "%aliases");
 		aliases.put("alias", "%alias");
 		
-		aliases.put("-", "%cd -");
+		aliases.put("-", "cd -");
 
 		/* run ant without adornments to make error parsing easier */
 		aliases.put("ant", "ant -emacs");
