@@ -47,7 +47,7 @@ import projectviewer.config.VersionControlService;
  * ProjectViewer Action to be added to the PV context menu.  This class serves
  * as the menu for a pull-out menu containing the subversion commands.  A JMenu
  * is created per View.
- * TODO: hide the menu for projects that aren't using Subversion.
+ * DONE: hide the menu for projects that aren't using Subversion.
  * TODO: make the menu smarter, remove the "Add" menu item for files already
  * under subversion control, show only the "Add" menu item for files not under
  * subversion control.
@@ -56,13 +56,16 @@ public class SVNAction extends projectviewer.action.Action {
 
     // for property lookup
     public final static String PREFIX = "ise.plugin.svn.pv.";
+    
+    // QUESTION: move "Subversion" to properties file?
+    public final static String SUBVERSION = "Subversion";
 
     // need to have a menu per View, this map stores the relationship
     private static HashMap<View, JMenu> menus = new HashMap<View, JMenu>();
 
     // this won't be displayed in the PV context menu
     public String getText() {
-        return "Subversion";
+        return SUBVERSION;
     }
     
     public static void remove(View view) {
@@ -84,8 +87,7 @@ public class SVNAction extends projectviewer.action.Action {
 
         // set up the menu to be added to Project Viewer's context menu. This
         // will be displayed in the PV context menu.
-        // QUESTION: move "Subversion" to properties file?
-        menu = new JMenu( "Subversion" );
+        menu = new JMenu( SUBVERSION );
 
         // Each subversion command to be added to the context
         // menu has 2 properties, a label and a command.  The properties have a numeric
@@ -132,8 +134,11 @@ public class SVNAction extends projectviewer.action.Action {
     public void prepareForNode( VPTNode node ) {
         View view = viewer.getView();
         VPTProject project = viewer.getActiveProject(view);
-        String vcService = project.getProperty(VersionControlService.VC_SERVICE_KEY);
-        boolean visible = "Subversion".equals(vcService);
+        boolean visible = false;
+        if (project != null) {
+            String vcService = project.getProperty(VersionControlService.VC_SERVICE_KEY);
+            visible = SUBVERSION.equals(vcService);
+        }
         
         JMenu menu = menus.get(view);
         if (menu == null) {
