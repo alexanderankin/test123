@@ -509,12 +509,14 @@ public class TaskListPlugin extends EditPlugin {
 
             int lineStart = buffer.getLineStartOffset( lineNum );
             int lineEnd = buffer.getLineEndOffset( lineNum );
+            lineEnd = lineEnd >= buffer.getLength() ? buffer.getLength() - 1 : lineEnd;
             buffer.markTokens( lineNum, tokenHandler );
             Token token = tokenHandler.getTokens();
             int tokenStart = lineStart;
             int chunkStart = -1;
             int chunkLength = 0;
             int type = -1;
+            boolean foundTask = false;
 
             while ( token.id != Token.END ) {
                 // For 4.2 there are no longer TAB and WHITESPACE tokens
@@ -540,11 +542,14 @@ public class TaskListPlugin extends EditPlugin {
                         Task task = taskType.extractTask( buffer, text, lineNum, chunkStart - lineStart );
                         if ( task != null ) {
                             TaskListPlugin.addTask( task );
-                            break;
+                            foundTask = true;
+                            break;  
                         }
                     }
                 }
-
+                if (foundTask) {
+                    break;   
+                }
                 tokenStart += token.length;
                 token = token.next;
             }
@@ -586,9 +591,12 @@ public class TaskListPlugin extends EditPlugin {
 
         Integer _line = Integer.valueOf( task.getLineIndex() );
         if ( taskMap.get( _line ) != null ) {
+            Task prevTask = taskMap.get(_line);
+            //if (!task.equals(prevTask)) {
             Log.log( Log.ERROR, TaskListPlugin.class,
-                    "Already a task on line " + task.getLineIndex()
-                    + "of buffer: " + task.getBufferPath() ); //##
+                "2 tasks on line: " + task + " and " + prevTask
+                    + " of buffer: " + task.getBufferPath() ); //##
+            //}
         }
 
         taskMap.put( _line, task );
