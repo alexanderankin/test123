@@ -3,7 +3,7 @@ plugin.git.GitPlugin.activate=defer
 
 plugin.git.GitPlugin.name=Git Plugin
 plugin.git.GitPlugin.author=Alan Ezust
-plugin.git.GitPlugin.version=0.1
+plugin.git.GitPlugin.version=0.2
 plugin.git.GitPlugin.docs=index.html
 plugin.git.GitPlugin.description=Offers a file filter importer for ProjectViewer
 plugin.git.GitPlugin.depend.0=jdk 1.6
