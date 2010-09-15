@@ -61,7 +61,12 @@ public class GitImporter extends ImporterFileFilter
 //			Log.log(Log.DEBUG, this, "Cached: " + f.toString() );
 			cache.add(f.toString());
 			// add its directory also
-			if (!cache.contains(f.getParent()))cache.add(f.getParent());
+			while (!f.getParentFile().equals(cachedDirectory)) {
+				if (!cache.contains(f.getParent()))
+					cache.add(f.getParent());
+				f = f.getParentFile();
+			}
+			
 		}
 	}
 	
@@ -78,7 +83,7 @@ public class GitImporter extends ImporterFileFilter
 			gitLsFiles(file.getPath());
 		}
 		boolean retval = cache.contains(file.getPath()); 
-//		Log.log(Log.DEBUG, this, "accepts " + file.getPath() +  "? " + retval);
+		Log.log(Log.DEBUG, this, "accepts " + file.getPath() +  "? " + retval);
 		return retval;
 	}
 
