@@ -60,6 +60,7 @@ public class GitImporter extends ImporterFileFilter
 			f = new File(cachedDirectory, s);
 //			Log.log(Log.DEBUG, this, "Cached: " + f.toString() );
 			cache.add(f.toString());
+
 			// add its directory also
 			while (!f.getParentFile().equals(cachedDirectory)) {
 				if (!cache.contains(f.getParent()))
@@ -83,7 +84,7 @@ public class GitImporter extends ImporterFileFilter
 			gitLsFiles(file.getPath());
 		}
 		boolean retval = cache.contains(file.getPath()); 
-		Log.log(Log.DEBUG, this, "accepts " + file.getPath() +  "? " + retval);
+//		Log.log(Log.DEBUG, this, "accepts " + file.getPath() +  "? " + retval);
 		return retval;
 	}
 
