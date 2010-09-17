@@ -1,0 +1,14 @@
+The GitPlugin source repository has moved.
+
+The last revision available in this SVN repository is 18463.
+
+To get newer versions of the GitPlugin source code, use the git repository:
+
+Anonymous read-only access:
+git clone git://jedit.git.sourceforge.net/gitroot/jedit/GitPlugin
+
+Developer access:
+git clone ssh://[USER]@jedit.git.sourceforge.net/gitroot/jedit/GitPlugin
+
+
+All previous releases and commits are available in the git repository.
