@@ -1,0 +1,65 @@
+<?xml version="1.0" ?>
+
+<!-- Attempt at invoking make from the current buffer's directory -->
+<!--  Jeff Jackowski (http://ro.com/~jeffj), Jan 22, 2004 -->
+
+<!DOCTYPE COMMANDO SYSTEM "commando.dtd">
+
+<COMMANDO>
+	<UI>
+    		<ENTRY LABEL="Rule name" VARNAME="ruleName"
+			DEFAULT="" />
+       
+        <CHOICE LABEL="Make in" VARNAME="makeIn" DEFAULT="projectroot">
+            <OPTION LABEL="Project Root" VALUE="projectroot" />
+            <OPTION LABEL="Source Dir" VALUE="sourcedir" />
+            <OPTION LABEL="Custom Location" VALUE="customloc" />
+        </CHOICE>
+
+        <DIR_ENTRY LABEL="Source Dir" 
+         VARNAME = "sourcedir"
+         EVAL = 'new File(buffer.getPath()).getParent()' />    
+		<!-- <CAPTION LABEL="Config"> -->
+        <DIR_ENTRY LABEL="Project Root" 
+         VARNAME = "projectroot"
+         EVAL = 'getProjectRoot(view, buffer)' />
+         <DIR_ENTRY LABEL="Custom Location" VARNAME = "customlocation" />         
+
+		<ENTRY LABEL="Makefile if not default" VARNAME="makefile"
+			DEFAULT="" />
+		<ENTRY LABEL="Path to make" VARNAME="makePath"
+			DEFAULT="make" />
+			
+		<!-- </CAPTION> -->
+
+		<!-- <TOGGLE LABEL="Generate debug info" VARNAME="debug" /> -->
+	</UI>
+
+	<COMMANDS>
+		<COMMAND CONFIRM="FALSE" SHELL="System">
+        if (makeIn.equals("projectroot")) {
+            location = projectroot;
+        }
+        else if (makeIn.equals("customloc")) {
+            location = customlocation;
+        }
+        else location=sourcedir;
+		return "cd \"" + location +"\"";
+		</COMMAND>
+		<COMMAND SHELL="System" CONFIRM="FALSE">
+			buf = new StringBuffer();
+			buf.append(makePath);
+			buf.append(" ");
+			if (makefile.length() > 0) {
+				buf.append("-f ");
+				buf.append(makefile);
+				buf.append(" ");
+			}
+			if (ruleName.length() > 0) {
+				buf.append(ruleName);
+			}
+			// return value
+			buf.toString();
+		</COMMAND>
+	</COMMANDS>
+</COMMANDO>

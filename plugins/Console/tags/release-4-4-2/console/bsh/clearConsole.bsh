@@ -1,0 +1,12 @@
+/* Clears the console output area. */
+clearConsole(View view)
+{
+	import console.Shell;
+
+	view.getDockableWindowManager().addDockableWindow("console");
+	console = view.getDockableWindowManager().getDockable("console");
+	console.clear();
+}
+
+help.clearConsole
+	= "usage: clearConsole(View view)";
