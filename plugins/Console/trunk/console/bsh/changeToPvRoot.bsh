@@ -11,8 +11,8 @@ changeToPvRoot(view) {
     pv = wm.getDockable("projectviewer");
     con = wm.getDockable("console");
     if ((pv == null) || (con == null)) return;
-    wm.showDockableWindow("console");
     wm.showDockableWindow("projectviewer");
+    wm.showDockableWindow("console");
     sysShell = console.Shell.getShell("System");
     sstate = con.getShellState(sysShell);
     project = pv.getActiveProject(view);
