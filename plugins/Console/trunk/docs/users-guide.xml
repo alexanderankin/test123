@@ -1202,11 +1202,11 @@ of the new buffer. The default value is <quote>text</quote>.</para>
  </chapter>
 
  <chapter id="cvssvn">
- <title> Using Console with cvs/svn </title>
+ <title> Using Console with svn or git </title>
 
- <para> When you commit via the command line versions of <literal>cvs</literal> or <literal>svn</literal>, the tool spawns an external editor for you to enter text with the commit log. The editor that is spawned can be specified by the <literal>VISUAL</literal> or <literal>EDITOR</literal> environment variables. When the editor starts, you are editing a temporary file. When the editor sub-process exits, the commit tool retrieves the temporary file's contents. </para>
+ <para> When you commit via the command line versions of <literal>git</literal> or <literal>svn</literal>, the tool spawns an external editor for you to enter text with the commit log. The editor that is spawned can be specified by the <literal>VISUAL</literal> (for svn) or <literal>EDITOR</literal> (for git) environment variables. When the editor starts, you are editing a temporary file. When the editor sub-process exits, the commit tool retrieves the temporary file's contents. </para>
 
- <para> A batch file or shellscript that runs jEdit can be used as the <literal>VISUAL</literal> editor that is called by command line programs like <literal>cvs</literal> and <literal>svn</literal>, even when run from inside jEdit's Console plugin. Here are some command line options that you should consider passing jEdit when it is started by another program such as cvs/svn:
+ <para> A batch file or shellscript that runs jEdit can be used as the <literal>VISUAL</literal> and <literal>EDITOR</literal> that is called by command line programs like <literal>git</literal> and <literal>svn</literal>, even when run from inside jEdit's Console plugin. Here are some command line options that you should consider passing jEdit when it is started by another program such as cvs/svn:
  </para>
 
  <itemizedlist>
@@ -1216,7 +1216,19 @@ of the new buffer. The default value is <quote>text</quote>.</para>
  <listitem><para> <literal>-newplainview</literal> - open a new window (if jEdit is already running). Some people might prefer <literal>-reuseview</literal> here, depending on the expected behavior of your previous editor. </para></listitem>
 </itemizedlist>
 
-<para> So in summary, if your batch file includes these options, you use it as the <literal>EDITOR</literal> when you commit from the regular command line, or from jEdit's console, and cvs/svn will wait until you close the buffer before sending the log message and your changes to the repository.
+ <para> So I have a shell script called <literal>jeditcommit</literal> that looks like this: </para>
+<programlisting>
+exec java -jar "$JEDIT_HOME/jedit.jar" -wait -noplugins -reuseview -norestore $@
+</programlisting>
+<para> And I have a windows batch file called <literal>jeditcommit.bat</literal> that looks like this: </para>
+<programlisting>
+javaw -jar "%JEDIT_HOME%\jedit.jar" -wait -norestore -noplugins -reuseview %*
+</programlisting>
+
+<para> I set my <literal>EDITOR</literal> and <literal>VISUAL</literal> to <literal>jeditcommit</literal>
+from my regular jEdit startup script, so it is used only from jEdit. </para>
+
+<para> In summary, if your batch file includes these options, you use it as the <literal>EDITOR</literal> when you commit from the regular command line, or from jEdit's console, and cvs/svn will wait until you close the buffer before sending the log message and your changes to the repository.
 </para>
 
 </chapter>
