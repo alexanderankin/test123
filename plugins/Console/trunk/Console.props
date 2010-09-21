@@ -14,9 +14,9 @@ plugin.console.ConsolePlugin.author=Slava Pestov, Alan Ezust
 
 plugin.console.ConsolePlugin.depend.0=jedit 04.03.99.00
 plugin.console.ConsolePlugin.depend.1=jdk 1.5
-plugin.console.ConsolePlugin.depend.2=plugin errorlist.ErrorListPlugin 1.4
+plugin.console.ConsolePlugin.depend.2=plugin errorlist.ErrorListPlugin 1.9
 # ProjectViewer is optional because Console only listens to events from it.
-plugin.console.ConsolePlugin.depend.3=optional plugin projectviewer.ProjectPlugin 2.9
+plugin.console.ConsolePlugin.depend.3=optional plugin projectviewer.ProjectPlugin 3.0
 
 # Menu
 plugin.console.ConsolePlugin.menu=console run-last-console-command - \
