@@ -1525,18 +1525,13 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
   <title>Change log</title>
   <itemizedlist>
 
-  <listitem id="ver4.4.3"><para>
-  <emphasis role="bold">Version 4.4.3</emphasis> Requires jEdit 4.3.99.00, 
-  JDK 1.5, ErrorList 1.4, ProjectViewer 2.9 (optional). <itemizedlist>
-  <listitem><para> Fixed built-in <literal>pwd</literal> system shell command. </para></listitem>
-  </itemizedlist>
-  </para>
-  </listitem>
   <listitem id="ver4.4.2"><para>
-    <emphasis role="bold">Version 4.4.2</emphasis> Requires jEdit 4.3pre17, JDK 1.5, ErrorList 1.4, ProjectViewer 2.9 (optional). <itemizedlist>
+    <emphasis role="bold">Version 4.4.2</emphasis> Requires jEdit 4.3pre99, JDK 1.5, ErrorList 1.4, ProjectViewer 2.9 (optional). <itemizedlist>
     <listitem><para> Un-customize now works even if no FSB is shown yet. </para></listitem>
     <listitem><para> Do checkBufferStatus() in the event dispatch thread (# 2933468 - Dale Anson) </para></listitem>
     <listitem><para> No longer uses objectfactory xml parser (Eric Le Lay # 2927830) </para></listitem>
+    <listitem><para> Fixed built-in <literal>pwd</literal> system shell command. </para></listitem>
+
     </itemizedlist>
     </para>
   </listitem>
