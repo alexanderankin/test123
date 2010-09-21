@@ -1,0 +1,48 @@
+<?xml version="1.0" ?>
+
+<!-- Attempt at invoking qmake from the current buffer's directory -->
+<!--  Alan Ezust -->
+
+<!DOCTYPE COMMANDO SYSTEM "commando.dtd">
+
+<COMMANDO>
+	<UI>
+        <CHOICE LABEL="qmake in" VARNAME="makeIn" DEFAULT="projectroot">
+            <OPTION LABEL="Project Root" VALUE="projectroot" />
+            <OPTION LABEL="Source Dir" VALUE="sourcedir" />
+            <OPTION LABEL="Custom Location" VALUE="customloc" />
+        </CHOICE>
+        <DIR_ENTRY LABEL="Source Dir" 
+         VARNAME = "sourcedir"
+         EVAL = 'new File(buffer.getPath()).getParent()' />    
+		<!-- <CAPTION LABEL="Config"> -->
+        <DIR_ENTRY LABEL="Project Root" 
+         VARNAME = "projectroot"
+         EVAL = 'getProjectRoot(view, buffer)' />
+         <DIR_ENTRY LABEL="Custom Location" VARNAME = "customlocation" />         
+    
+		<TOGGLE LABEL="Build Project file" VARNAME="makeProject" />
+		<ENTRY LABEL="Project file to use" VARNAME="projectFile" 
+                        DEFAULT=" " />
+	</UI>
+
+	<COMMANDS>
+        <COMMAND CONFIRM="FALSE" SHELL="System">
+        if (makeIn.equals("projectroot")) {
+            location = projectroot;
+        }
+        else if (makeIn.equals("customloc")) {
+            location = customlocation;
+        }
+        else location=sourcedir;
+		return "cd \"" + location + "\"";
+		</COMMAND>
+		<COMMAND SHELL="System" CONFIRM="FALSE">
+			buf = new StringBuffer();
+			buf.append("qmake ");
+			if (makeProject) buf.append("-project ");
+			buf.append(projectFile);
+			buf.toString();
+		</COMMAND>
+	</COMMANDS>
+</COMMANDO>
