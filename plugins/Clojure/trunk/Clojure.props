@@ -1,0 +1,34 @@
+# ::mode=properties:: #
+# Basic Plugin Information {{{
+plugin.clojure.ClojurePlugin.activate=startup
+plugin.clojure.ClojurePlugin.author=Damien Radtke
+plugin.clojure.ClojurePlugin.description=Provides Clojure to jEdit
+plugin.clojure.ClojurePlugin.docs=docs/Clojure.html
+plugin.clojure.ClojurePlugin.longdescription=description.html
+plugin.clojure.ClojurePlugin.name=Clojure
+plugin.clojure.ClojurePlugin.usePluginHome=true
+plugin.clojure.ClojurePlugin.version=0.1
+plugin.clojure.ClojurePlugin.jars=clojure-1.2.0.jar
+# }}} Basic Plugin Information
+
+# Dependencies {{{
+plugin.clojure.ClojurePlugin.depend.0=jedit 04.03.18.00
+plugin.clojure.ClojurePlugin.depend.1=jdk 1.5
+# }}} Dependencies
+
+# Options {{{
+plugin.clojure.ClojurePlugin.option-group=clojure-provider
+options.clojure-provider.label=Provider
+options.clojure-provider.code=new clojure.ClojureProviderOptionPane();
+# Possible values:
+#	jar - use the jar included with the plugin
+#	custom - a user-defined existing installation
+options.clojure.install=jar
+options.clojure.clojure-path=
+options.clojure.clojure-jar=clojure-1.2.0.jar
+
+options.clojure.browse-label=Choose local jar
+options.clojure.jar-label=Use included jar
+options.clojure.custom-label=Local Jar:
+# }}} Options
+
