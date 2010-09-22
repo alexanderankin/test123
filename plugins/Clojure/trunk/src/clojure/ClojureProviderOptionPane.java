@@ -72,7 +72,7 @@ public class ClojureProviderOptionPane extends AbstractOptionPane {
 		custom.setLayout(new BoxLayout(custom, BoxLayout.X_AXIS));
 		custom.add(customText);
 		custom.add(browse);
-		addComponent(jEdit.getProperty("options.clojure.custom-label"),
+		addComponent(jEdit.getProperty("options.clojure.path-label"),
 			custom);
 		
 		// Select the appropriate button
@@ -118,7 +118,7 @@ public class ClojureProviderOptionPane extends AbstractOptionPane {
 	class BrowseHandler implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			VFSFileChooserDialog dialog = new VFSFileChooserDialog(
-				jEdit.getActiveView(), System.getProperty("user.dir"),
+				jEdit.getActiveView(), System.getProperty("user.dir")+File.separator,
 				VFSBrowser.OPEN_DIALOG, false, true);
 			String[] files = dialog.getSelectedFiles();
 			if (files != null) {

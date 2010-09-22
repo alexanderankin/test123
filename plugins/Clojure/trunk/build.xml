@@ -13,7 +13,7 @@
 	none: if you supply your own html file as this template does.
 	xsltproc: if you plan on using docbook
 	-->
-	<property name="docs-proc.target" value="none" />
+	<property name="docs-proc.target" value="xsltproc" />
 	
 	<!-- jEdit installation properties. -->
 	<!-- mark:properties -->
@@ -25,7 +25,7 @@
 	<selector id="packageFiles">
 		<and>
 			<or>
-				<filename name="**/Groovy.html" />
+				<filename name="**/Clojure.html" />
 			</or>
 		</and>
 	</selector>
@@ -37,14 +37,13 @@
 		"plugin.[plugin class].jars" property. -->
 		<!-- <pathelement path="lib/dependency.jar" /> -->
 		<!-- mark:libs -->
-	<pathelement path="lib/groovy-all-1.7.4.jar" />
+		<pathelement path="lib/clojure-1.2.0.jar" />
 	<!-- /mark:libs -->
 		
 		<!-- Dependencies that are supplied by other plugins. -->
 		<!-- <pathelement path="${jedit.plugins.dir}/dependency.jar" /> -->
 		<!-- mark:plugins -->
-	<pathelement path="${jedit.plugins.dir}/Console.jar" />
-	<pathelement path="${jedit.plugins.dir}/Javadoc.jar" />
+		<pathelement path="${jedit.plugins.dir}/Console.jar" />
 	<!-- /mark:plugins -->
 	</path>
 	
