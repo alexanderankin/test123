@@ -1,0 +1,30 @@
+# ::mode=properties:: #
+# Basic Plugin Information {{{
+plugin.repl.ClojureReplPlugin.activate=defer
+plugin.repl.ClojureReplPlugin.author=Damien Radtke
+plugin.repl.ClojureReplPlugin.description=Provides a Clojure REPL \
+	(Read-Eval-Print-Loop) to the Console plugin
+plugin.repl.ClojureReplPlugin.docs=index.html
+plugin.repl.ClojureReplPlugin.longdescription=description.html
+plugin.repl.ClojureReplPlugin.name=ClojureRepl
+plugin.repl.ClojureReplPlugin.usePluginHome=false
+plugin.repl.ClojureReplPlugin.version=0.1
+# }}} Basic Plugin Information
+
+# Dependencies {{{
+plugin.repl.ClojureReplPlugin.depend.0=jedit 04.03.18.00
+plugin.repl.ClojureReplPlugin.depend.1=jdk 1.5
+plugin.repl.ClojureReplPlugin.depend.2=plugin clojure.ClojurePlugin 0.1
+# }}} Dependencies
+
+# Menu {{{
+plugin.repl.ClojureReplPlugin.menu=clojure-eval-selected clojure-eval-buffer \
+	clojure-eval-file
+clojure-eval-selected.label=Evaluate selection in Clojure shell
+clojure-eval-buffer.label=Evaluate buffer in Clojure shell
+clojure-eval-file.label=Evaluate file in Clojure shell ...
+# }}} Menu
+
+# Messages {{{
+msg.clojurerepl.info-message=Interactive Clojure console.
+# }}} Messages
