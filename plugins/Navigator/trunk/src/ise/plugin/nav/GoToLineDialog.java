@@ -14,12 +14,14 @@ import org.gjt.sp.jedit.jEdit;
  */
 public class GoToLineDialog extends JDialog {
 
-    static int previousEntry = - 1;
+    static int previousEntry = -1;
 
     private View parent;
     private LineNumberTextField lineEntry;
     private JButton okButton;
     private JButton cancelButton;
+    
+    private boolean cancelled = false;
 
     public GoToLineDialog(View parent) {
         super(parent, jEdit.getProperty("navigator.gotoLine", "Go to line"), true);
@@ -35,7 +37,7 @@ public class GoToLineDialog extends JDialog {
 
         Icon icon = GUIUtilities.loadIcon("22x22/actions/go-jump.png");
 
-        lineEntry = new LineNumberTextField(previousEntry == - 1 ? "" : String.valueOf(previousEntry), 15);
+        lineEntry = new LineNumberTextField(previousEntry == -1 ? "" : String.valueOf(previousEntry), 15);
 
         okButton = new JButton(jEdit.getProperty("common.ok", "OK"));
         cancelButton = new JButton(jEdit.getProperty("common.cancel", "Cancel"));
@@ -64,12 +66,12 @@ public class GoToLineDialog extends JDialog {
                 int line = Integer.parseInt(lineEntry.getText());
                 previousEntry = line >= 0 ? line : 0;
                 close();
-                parent.getTextArea().requestFocus();
             }
         } );
         cancelButton.setMnemonic(KeyEvent.VK_C);
         cancelButton.addActionListener (new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
+                cancelled = true;
                 close();
             }
         } );
@@ -78,9 +80,16 @@ public class GoToLineDialog extends JDialog {
     private void close() {
         setVisible(false);
         dispose();
+        parent.getTextArea().requestFocus();
     }
-
+    
+    /**
+     * @return The line number entered by the user or -1 if the user cancelled.    
+     */
     public int getLineNumber() {
+        if (cancelled) {
+            return -1;   
+        }
         return previousEntry - 1 >= 0 ? previousEntry - 1 : 0;
     }
 }
