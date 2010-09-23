@@ -1,0 +1,19 @@
+
+<project name="Ancestor" default="build" basedir=".">
+
+	<!-- Read optional properties from various places -->
+	<!-- Latter ones override previous properties. -->
+	<property file="../build.properties"/>
+	<property file="build.properties"/>
+	<property name="dist.target" 			value="dist.complete" />
+    <property name="docs-proc.target" value="none" />
+	<property name="compiler.source" value="1.5" />
+	<property name="compiler.target" value="1.5" />
+
+	<import file="${build.support}/plugin-build.xml" />
+
+	<path id="project.class.path">
+		<pathelement location="${jedit.install.dir}/jedit.jar" />
+	</path>
+
+</project>
