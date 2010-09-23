@@ -6,6 +6,7 @@
 	<property file="../build.properties"/>
 	<property file="build.properties"/>
 	<property name="dist.target" 			value="dist.complete" />
+    <property name="docs-proc.target" value="none" />
 	<property name="compiler.source" value="1.5" />
 	<property name="compiler.target" value="1.5" />
 
