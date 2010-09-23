@@ -99,12 +99,6 @@ public class NavigatorPlugin extends EBPlugin {
     private boolean autoJump = false;
     
     /**
-     * To support the 'go to line' feature, this is the last line number that
-     * was shown in the dialog.
-     */
-    private static int lastLine = 0;
-
-    /**
      * @return true if the Navigator buttons should be shown on the main toolbar 
      * for the View.
      */
@@ -489,15 +483,24 @@ public class NavigatorPlugin extends EBPlugin {
     public static void gotoLine(View view) {
         GoToLineDialog dialog = new GoToLineDialog(view);
         int line = dialog.getLineNumber();
+        if (line == -1) {
+            // user cancelled
+            return;   
+        }
         TextArea textArea = view.getEditPane().getTextArea();
         int offset;
         try {
+            // jEdit docs need fixed, the text area docs say getLineStartOffset 
+            // will return -1 on a bad line number, but text area delegates to
+            // buffer, which throws an ArrayIndexOutOfBoundsException.
             offset = textArea.getLineStartOffset(line);
             if (offset == -1) {
+                // on invalid line, go to last line
                 offset = textArea.getLineStartOffset(textArea.getLineCount() - 1);      
             }
         }
         catch(ArrayIndexOutOfBoundsException e) {
+            // go to last line
             offset = textArea.getLineStartOffset(textArea.getLineCount() - 1);      
         }
         textArea.setCaretPosition(offset, true);
