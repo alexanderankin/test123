@@ -44,6 +44,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.msg.*;
+import org.gjt.sp.jedit.textarea.TextArea;
 
 
 /**
@@ -96,6 +97,12 @@ public class NavigatorPlugin extends EBPlugin {
      * should be ignored.
      */
     private boolean autoJump = false;
+    
+    /**
+     * To support the 'go to line' feature, this is the last line number that
+     * was shown in the dialog.
+     */
+    private static int lastLine = 0;
 
     /**
      * @return true if the Navigator buttons should be shown on the main toolbar 
@@ -477,6 +484,23 @@ public class NavigatorPlugin extends EBPlugin {
         if ( navigator != null ) {
             navigator.goForward();
         }
+    }
+    
+    public static void gotoLine(View view) {
+        GoToLineDialog dialog = new GoToLineDialog(view);
+        int line = dialog.getLineNumber();
+        TextArea textArea = view.getEditPane().getTextArea();
+        int offset;
+        try {
+            offset = textArea.getLineStartOffset(line);
+            if (offset == -1) {
+                offset = textArea.getLineStartOffset(textArea.getLineCount() - 1);      
+            }
+        }
+        catch(ArrayIndexOutOfBoundsException e) {
+            offset = textArea.getLineStartOffset(textArea.getLineCount() - 1);      
+        }
+        textArea.setCaretPosition(offset, true);
     }
 
     /**

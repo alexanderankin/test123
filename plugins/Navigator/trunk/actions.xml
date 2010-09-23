@@ -32,13 +32,6 @@
       </CODE>
    </ACTION>
 
-   <ACTION NAME="navigator.forwardList">
-      <CODE>
-         ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
-         plugin.forwardList(view);
-      </CODE>
-   </ACTION>
-
    <ACTION NAME="navigator.combinedList">
       <CODE>
          ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
@@ -61,38 +54,45 @@
 
    <ACTION NAME="navigator.showbuttons" >
     <CODE>
-   ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
-   plugin.showButtons();
+       ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+       plugin.showButtons();
     </CODE>
    </ACTION>
 
    <ACTION NAME="navigator.hidebuttons" >
     <CODE>
-    ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
-    plugin.hideButtons();
+        ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+        plugin.hideButtons();
     </CODE>
     </ACTION>
 
    <ACTION NAME="navigator.toggleScope" >
     <CODE>
-    ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
-    plugin.toggleScope();
+        ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+        plugin.toggleScope();
     </CODE>
-    </ACTION>
+   </ACTION>
     
    <ACTION NAME="navigator.toggleGroupByFile" >
     <CODE>
-    ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
-    plugin.toggleGroupByFile();
+        ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+        plugin.toggleGroupByFile();
     </CODE>
     </ACTION>
     
    <ACTION NAME="navigator.toggleGroupByLine" >
     <CODE>
-    ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
-    plugin.toggleGroupByLine();
+        ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+        plugin.toggleGroupByLine();
     </CODE>
-    </ACTION>
+   </ACTION>
+   
+   <ACTION NAME="navigator.gotoLine" >
+    <CODE>
+        ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+        plugin.gotoLine(view);
+    </CODE>
+   </ACTION>
     
 </ACTIONS>
 
