@@ -63,8 +63,13 @@ public class GoToLineDialog extends JDialog {
         okButton.setMnemonic(KeyEvent.VK_O);
         okButton.addActionListener (new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                int line = Integer.parseInt(lineEntry.getText());
-                previousEntry = line >= 0 ? line : 0;
+                if ("".equals(lineEntry.getText())) {
+                    cancelled = true;       
+                }
+                else {
+                    int line = Integer.parseInt(lineEntry.getText());
+                    previousEntry = line >= 0 ? line : 0;
+                }
                 close();
             }
         } );
