@@ -39,7 +39,7 @@ import org.gjt.sp.jedit.jEdit;
  */
 public class OptionPanel extends AbstractOptionPane {
 
-    private static final String name = "navigator";
+    public static final String NAME = "navigator";
 
     private JCheckBox showOnToolbar = null;
     private JCheckBox groupByFile = null;
@@ -47,6 +47,9 @@ public class OptionPanel extends AbstractOptionPane {
     private JCheckBox showLineText = null;
     private JCheckBox showLineTextSyntax = null;
     private JCheckBox showStripes = null;
+    private JCheckBox showPath = null;
+    private JCheckBox showLineNumber = null;
+    private JCheckBox showCaretOffset = null;
 
     private JRadioButton viewScope = null;
 
@@ -55,7 +58,7 @@ public class OptionPanel extends AbstractOptionPane {
 
 
     public OptionPanel() {
-        super( name );
+        super( NAME );
     }
 
     public void _init() {
@@ -64,7 +67,7 @@ public class OptionPanel extends AbstractOptionPane {
     }
 
     private void installComponents() {
-        setName( name );
+        setName( NAME );
         setBorder( BorderFactory.createEmptyBorder( 11, 11, 11, 11 ) );
 
         // title
@@ -88,6 +91,18 @@ public class OptionPanel extends AbstractOptionPane {
         addComponent( Box.createVerticalStrut( 11 ) );
 
         addComponent( new JLabel( "<html><h4>Configuration Options</h4>" ) );
+        
+        showPath = new JCheckBox("Show path");
+        showPath.setSelected(jEdit.getBooleanProperty("navigator.showPath", true));
+        addComponent(showPath);
+        
+        showLineNumber = new JCheckBox("Show line number");
+        showLineNumber.setSelected(jEdit.getBooleanProperty("navigator.showLineNumber", true));
+        addComponent(showLineNumber);
+        
+        showCaretOffset = new JCheckBox("Show caret offset");
+        showCaretOffset.setSelected(jEdit.getBooleanProperty("navigator.showCaretOffset", true));
+        addComponent(showCaretOffset);
 
         // show on toolbar
         showOnToolbar = new JCheckBox( jEdit.getProperty( "navigator.options.showOnToolbar.label" ) );
@@ -156,14 +171,14 @@ public class OptionPanel extends AbstractOptionPane {
     }
 
     public void _save() {
-        jEdit.setBooleanProperty( name + ".groupByFile", groupByFile.isSelected() );
-        jEdit.setBooleanProperty( name + ".groupByLine", groupByLine.isSelected() );
+        jEdit.setBooleanProperty( NAME + ".groupByFile", groupByFile.isSelected() );
+        jEdit.setBooleanProperty( NAME + ".groupByLine", groupByLine.isSelected() );
         jEdit.setBooleanProperty( NavigatorPlugin.showOnToolBarKey, showOnToolbar.isSelected() );
         jEdit.setBooleanProperty( "navigator.showLineText", showLineText.isSelected() );
         jEdit.setBooleanProperty( "navigator.showLineTextSyntax", showLineTextSyntax.isSelected() );
         jEdit.setBooleanProperty( "navigator.showStripes", showStripes.isSelected() );
         jEdit.setIntegerProperty( "navigator.listSize", listSize.getValue() );
-        jEdit.setIntegerProperty( name + ".maxStackSize", maxStackSize.getValue() );
+        jEdit.setIntegerProperty( NAME + ".maxStackSize", maxStackSize.getValue() );
         int scope;
         if ( viewScope.isSelected() ) {
             scope = NavigatorPlugin.VIEW_SCOPE;
@@ -171,6 +186,9 @@ public class OptionPanel extends AbstractOptionPane {
         else {
             scope = NavigatorPlugin.EDITPANE_SCOPE;
         }
-        jEdit.setIntegerProperty( name + ".scope", scope );
+        jEdit.setIntegerProperty( NAME + ".scope", scope );
+        jEdit.setBooleanProperty("navigator.showPath", showPath.isSelected());
+        jEdit.setBooleanProperty("navigator.showLineNumber", showLineNumber.isSelected());
+        jEdit.setBooleanProperty("navigator.showCaretOffset", showCaretOffset.isSelected());
     }
 }

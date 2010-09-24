@@ -52,6 +52,7 @@
          
          <!-- dependencies on other plugins -->
          <pathelement location="${jedit.plugins.dir}/Code2HTML.jar"/>
+         <pathelement location="${jedit.plugins.dir}/kappalayout.jar"/>
       </path>
    </target>
    

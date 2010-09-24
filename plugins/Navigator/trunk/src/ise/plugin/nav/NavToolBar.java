@@ -57,9 +57,9 @@ public class NavToolBar extends JToolBar {
         setFloatable( false );
 
         // set up the buttons
-        back = new JButton( GUIUtilities.loadIcon( "ArrowL.png" ) );
+        back = new SquareButton( GUIUtilities.loadIcon( "ArrowL.png" ) );
         back.setModel( client.getBackModel() );
-        forward = new JButton( GUIUtilities.loadIcon( "ArrowR.png" ) );
+        forward = new SquareButton( GUIUtilities.loadIcon( "ArrowR.png" ) );
         forward.setModel( client.getForwardModel() );
         back.setMargin( new Insets( 0, 0, 0, 0 ) );
         forward.setMargin( new Insets( 0, 0, 0, 0 ) );

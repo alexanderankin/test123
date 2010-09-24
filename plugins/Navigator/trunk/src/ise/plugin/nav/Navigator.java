@@ -32,6 +32,7 @@ import java.awt.event.*;
 import java.util.*;
 
 import javax.swing.*;
+import javax.swing.event.*;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
@@ -97,6 +98,9 @@ public class Navigator implements ActionListener {
     // flag -- set to true to not addToHistory the nav position while switching to
     // another view or edit pane
     private boolean ignoreUpdates;
+    
+    // list of others that might be interested in when navigation items are changed
+    private Set<ChangeListener> changeListeners = null;
 
     /**
      * Constructor for Navigator
@@ -240,6 +244,7 @@ public class Navigator implements ActionListener {
         current = position;
         forwardHistory.clear();
         setButtonState();
+        notifyChangeListeners();
     }
 
     /**
@@ -280,6 +285,7 @@ public class Navigator implements ActionListener {
     public void remove( Object node ) {
         backHistory.remove( node );
         forwardHistory.remove( node );
+        notifyChangeListeners();
     }
 
     /**
@@ -313,6 +319,7 @@ public class Navigator implements ActionListener {
         current = null;
         forwardHistory.clear();
         setButtonState();
+        notifyChangeListeners();
     }
 
     /**
@@ -455,7 +462,19 @@ public class Navigator implements ActionListener {
         }
         return new NavHistoryPopup( view, this, ( Vector ) forwardHistory.clone() );
     }
-
+    
+    public NavStack getBackListModel() {
+        return (NavStack)backHistory.clone();   
+    }
+    
+    public NavPosition getCurrentPosition() {
+        return new NavPosition(current);   
+    }
+    
+    public NavStack getForwardListModel() {
+        return (NavStack)forwardHistory.clone();   
+    }
+    
     /**
      * Show a popup containing the back history, current position, and forward history.
      */
@@ -507,6 +526,7 @@ public class Navigator implements ActionListener {
             setPosition(current);
             setButtonState();
         }
+        notifyChangeListeners();
     }
 
     /**
@@ -523,6 +543,7 @@ public class Navigator implements ActionListener {
         current = forwardHistory.pop();
         setPosition( current );
         setButtonState();
+        notifyChangeListeners();
     }
 
     /**
@@ -565,5 +586,34 @@ public class Navigator implements ActionListener {
         setPosition( current );
         setButtonState();
         ignoreUpdates = false;
+        notifyChangeListeners();
+    }
+    
+    public void addChangeListener(ChangeListener listener) {
+        if (changeListeners == null) {
+            changeListeners = new HashSet<ChangeListener>();   
+        }
+        changeListeners.add(listener);
+    }
+    
+    public void removeChangeListener(ChangeListener listener) {
+        if (changeListeners != null) {
+            changeListeners.remove(listener);   
+        }
+    }
+    
+    private void notifyChangeListeners() {
+        if (changeListeners == null) {
+            return;   
+        }
+        ChangeEvent event = new ChangeEvent(this);
+        for (ChangeListener listener : changeListeners) {
+            listener.stateChanged(event);       
+        }
+    }
+    
+    public void addListDataListener(ListDataListener listener) {
+        backHistory.addListDataListener(listener);   
+        forwardHistory.addListDataListener(listener);
     }
 }
