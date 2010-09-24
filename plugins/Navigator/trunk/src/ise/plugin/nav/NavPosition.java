@@ -27,7 +27,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package ise.plugin.nav;
 
-
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.jEdit;
@@ -44,6 +43,9 @@ public class NavPosition {
 
     // path of file in Buffer
     public String path = null;
+    
+    // filename of buffer
+    public String name = null;
 
     // caret position
     public int caret = 0;
@@ -73,9 +75,19 @@ public class NavPosition {
         }
         this.editPane = editPane.hashCode();
         path = buffer.getPath();
+        name = buffer.getName();
         caret = caretPosition;
         lineno = buffer.getLineOfOffset( caret );
         this.linetext = linetext == null ? "" : linetext;
+    }
+    
+    public NavPosition(NavPosition other) {
+        editPane = other.editPane;
+        path = other.path;
+        name = other.name;
+        caret = other.caret;
+        lineno = other.lineno;
+        linetext = other.linetext;
     }
 
     /**
@@ -112,8 +124,19 @@ public class NavPosition {
 
     @Override
     public String toString() {
-        // lineno is 0-based, but gutter lines are 1-based, so add one
-        return path + ":" + ( lineno + 1 ) + ":" + caret;
+        boolean showPath = jEdit.getBooleanProperty("navigator.showPath", true);
+        boolean showLineNumber = jEdit.getBooleanProperty("navigator.showLineNumber", true);
+        boolean showCaretOffset = jEdit.getBooleanProperty("navigator.showCaretOffset", true);
+        StringBuilder sb = new StringBuilder();
+        sb.append(showPath ? path : name);
+        if (showLineNumber) {
+            // lineno is 0-based, but gutter lines are 1-based, so add one
+            sb.append(":").append(lineno + 1);   
+        }
+        if (showCaretOffset) {
+            sb.append(":").append(caret);   
+        }
+        return sb.toString();
     }
 
     /**
@@ -121,10 +144,27 @@ public class NavPosition {
      * back and forward popup lists.
      */
     public String toHtml() {
+        boolean showPath = jEdit.getBooleanProperty("navigator.showPath", true);
+        boolean showLineNumber = jEdit.getBooleanProperty("navigator.showLineNumber", true);
+        boolean showCaretOffset = jEdit.getBooleanProperty("navigator.showCaretOffset", true);
+
         // might need to escape the line text as it might already be html
         String text = linetext;
         text = text.replaceAll( "[<]", "&lt;" );
         text = text.replaceAll( "[>]", "&gt;" );
-        return "<html><tt>" + path + ":" + ( lineno + 1 ) + "</tt><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + text;
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append("<html><tt>");
+        sb.append(showPath ? path : name);
+        if (showLineNumber) {
+            // lineno is 0-based, but gutter lines are 1-based, so add one
+            sb.append(":").append(lineno + 1);   
+        }
+        if (showCaretOffset) {
+            sb.append(":").append(caret);   
+        }
+        sb.append("</tt><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+        sb.append(text);
+        return sb.toString();
     }
 }

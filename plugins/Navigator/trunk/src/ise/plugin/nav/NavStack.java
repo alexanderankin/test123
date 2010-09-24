@@ -28,15 +28,20 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ise.plugin.nav;
 
-import java.util.Stack;
+import java.util.*;
+
+import javax.swing.*;
+import javax.swing.event.*;
 
 /**
  * Stack that can have a maximum size.  Another property of this stack is that
  * while it will allow duplicates, it won't allow them consecutively.
  */
-class NavStack<E> extends Stack<E> {
+class NavStack<E> extends Stack<E> implements ListModel {
 
     private int maxSize = 512;
+    
+    private Set<ListDataListener> listeners = null;
 
     /**
      * Create a NavStack with a default size of 512.    
@@ -91,13 +96,22 @@ class NavStack<E> extends Stack<E> {
 
         // okay to add item to stack
         super.push( item );
-
+            
         // remove oldest item if stack is now larger than max size
         if ( size() > maxSize ) {
             remove( 0 );
         }
+        contentsChanged();
         return item;
     }
+    
+    @Override
+    public E pop() {
+        E e = super.pop();
+        contentsChanged();
+        return e;
+    }
+    
 
     @Override
     public String toString() {
@@ -108,5 +122,130 @@ class NavStack<E> extends Stack<E> {
         }
         sb.append( ']' );
         return sb.toString();
+    }
+    
+    public void addListDataListener(ListDataListener listener) {
+        if (listeners == null) {
+            listeners = new HashSet<ListDataListener>();   
+        }
+        listeners.add(listener);
+    }
+    
+    public void removeListDataListener(ListDataListener listener) {
+        if (listeners == null) {
+            return;   
+        }
+        listeners.remove(listener);
+    }
+    
+    public Object getElementAt(int index) {
+        return get(index);    
+    }
+    
+    private void contentsChanged() {
+        if (listeners == null) {
+            return;
+        }   
+        ListDataEvent event = new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, 0, getSize());
+        for (ListDataListener listener : listeners) {
+            listener.contentsChanged(event);   
+        }
+    }
+    
+    public int getSize() {
+        return size();   
+    }
+    
+    public boolean add(E e) {
+        boolean b = super.add(e);
+        if (b) contentsChanged();
+        return b;
+    }
+    
+    public void add(int index, E e) {
+        super.add(index, e);
+        contentsChanged();
+    }
+    
+    public boolean addAll(Collection<? extends E> c) {
+        boolean b = super.addAll(c);
+        if (b) contentsChanged();
+        return b;
+    }
+    
+    public boolean addAll(int index, Collection<? extends E> c) {
+        boolean b = super.addAll(index, c);
+        if (b) contentsChanged();
+        return b;
+    }
+    
+    public void addElement(E e) {
+        super.addElement(e);
+        contentsChanged();
+    }
+    
+    public void clear() {
+        super.clear();
+        contentsChanged();
+    }
+    
+    public void insertElementAt(E e, int index) {
+        super.insertElementAt(e, index);
+        contentsChanged();
+    }
+    
+    public E remove(int index) {
+        E e = super.remove(index);
+        contentsChanged();
+        return e;
+    }
+    
+    public boolean remove(Object o) {
+        boolean b = super.remove(o);
+        if (b) contentsChanged();
+        return b;
+    }
+    
+    public boolean removeAll(Collection<?> c) {
+        boolean b = super.removeAll(c);
+        if (b) contentsChanged();
+        return b;
+    }
+    
+    public void removeAllElements() {
+        super.removeAllElements();
+        contentsChanged();
+    }
+    
+    public boolean removeElement(Object obj) {
+        boolean b = super.removeElement(obj);
+        if (b) contentsChanged();
+        return b;
+    }
+    
+    public void removeElementAt(int index) {
+        super.removeElementAt(index);
+        contentsChanged();
+    }
+    
+    protected void removeRange(int start, int end) {
+        super.removeRange(start, end);
+        contentsChanged();
+    }
+    
+    public E set(int index, E e) {
+        E old = super.set(index, e);
+        contentsChanged();
+        return old;
+    }
+    
+    public void setElementAt(E e, int index) {
+        super.setElementAt(e, index);
+        contentsChanged();
+    }
+    
+    public void setSize(int newSize) {
+        super.setSize(newSize);
+        contentsChanged();
     }
 }
