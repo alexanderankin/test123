@@ -28,7 +28,7 @@ import javax.swing.text.DocumentFilter;
 import javax.swing.text.DocumentFilter.FilterBypass;
 
 
-public class LineNumberTextField extends JTextField {
+public class LineNumberTextField extends JTextField implements ComboBoxEditor {
 
 
     public LineNumberTextField() {
@@ -83,5 +83,17 @@ public class LineNumberTextField extends JTextField {
             }
             return true;
         }
+    }
+    
+    public Component getEditorComponent() {
+        return this;   
+    }
+    
+    public Object getItem() {
+        return getText();   
+    }
+ 
+    public void setItem(Object item) {
+        setText(item == null ? "" : item.toString());
     }
 }
