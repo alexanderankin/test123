@@ -8,7 +8,7 @@ plugin.clojure.ClojurePlugin.longdescription=description.html
 plugin.clojure.ClojurePlugin.name=Clojure
 plugin.clojure.ClojurePlugin.usePluginHome=true
 plugin.clojure.ClojurePlugin.version=1.2.0
-plugin.clojure.ClojurePlugin.jars=clojure-1.2.0.jar
+plugin.clojure.ClojurePlugin.jars=clojure-core-1.2.0.jar clojure-contrib-1.1.0.jar
 # }}} Basic Plugin Information
 
 # Dependencies {{{
@@ -26,7 +26,8 @@ options.clojure-provider.code=new clojure.ClojureProviderOptionPane();
 #	custom - a user-defined existing installation
 options.clojure.install=jar
 options.clojure.clojure-path=
-options.clojure.clojure-jar=clojure-1.2.0.jar
+options.clojure.clojure-core-jar=clojure-core-1.2.0.jar
+options.clojure.clojure-contrib-jar=clojure-contrib-1.1.0.jar
 
 options.clojure.browse-label=Browse...
 options.clojure.jar-label=Use included jar
@@ -34,4 +35,3 @@ options.clojure.custom-label=Use local jar
 
 options.clojure.path-label=Clojure Jar:
 # }}} Options
-

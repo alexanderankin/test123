@@ -5,6 +5,7 @@ package clojure;
  * TODO: comment
  */
 //{{{ Imports
+import clojure.ClojurePlugin;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -19,6 +20,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import javax.swing.JSeparator;
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.GUIUtilities;
@@ -29,101 +31,133 @@ import org.gjt.sp.jedit.jEdit;
 //}}}
 public class ClojureProviderOptionPane extends AbstractOptionPane {
 	
-	private JRadioButton jarButton;
-	private JRadioButton customButton;
-	private ButtonGroup group;
+	private JRadioButton coreIncluded;
+	private JRadioButton coreCustom;
+	private JTextField corePath;
+	private JButton coreBrowse;
+
+	private JRadioButton contribIncluded;
+	private JRadioButton contribCustom;
+	private JTextField contribPath;
+	private JButton contribBrowse;
 	
-	private JTextField downloadPath;
-	private JCheckBox forceDownload;
-	private JCheckBox removeDownloaded;
-	
-	private JButton browse;
-	private JTextField customText;
-	
-	private boolean isDownloaded;
+	private ClojurePlugin plugin;
 	
 	public ClojureProviderOptionPane() {
 		super("clojure-provider");
+		plugin = (ClojurePlugin) jEdit.getPlugin("clojure.ClojurePlugin");
 	}
 	
 	protected void _init() {
-		// Radio buttons
-		JPanel buttonPanel = new JPanel();
-		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-		jarButton = new JRadioButton(
-				jEdit.getProperty("options.clojure.jar-label"));
-		customButton = new JRadioButton(
-				jEdit.getProperty("options.clojure.custom-label"));
-		buttonPanel.add(jarButton);
-		buttonPanel.add(customButton);
-		group = new ButtonGroup();
-		group.add(jarButton);
-		group.add(customButton);
-		addComponent(buttonPanel);
-		addSeparator();
-		
-		// Custom installation path chooser
-		customText = new JTextField(jEdit.getProperty(
-				"options.clojure.custom-path"));
-		browse = new JButton(jEdit.getProperty(
-				"options.clojure.browse-label"));
-		browse.addActionListener(new BrowseHandler());
-		JPanel custom = new JPanel();
-		custom.setLayout(new BoxLayout(custom, BoxLayout.X_AXIS));
-		custom.add(customText);
-		custom.add(browse);
-		addComponent(jEdit.getProperty("options.clojure.path-label"),
-			custom);
-		
-		// Select the appropriate button
-		String mode = jEdit.getProperty("options.clojure.install", "jar");
-		if (mode.equals("custom")) {
-			jarButton.setSelected(false);
-			customButton.setSelected(true);
-			customText.setText(jEdit.getProperty(
-				"options.clojure.clojure-path"));
-		} else {
-			jarButton.setSelected(true);
-			customText.setEnabled(false);
-			browse.setEnabled(false);
-		}
-		
 		ButtonHandler handler = new ButtonHandler();
-		jarButton.addActionListener(handler);
-		customButton.addActionListener(handler);
+
+		// Core
+		JPanel corePanel = new JPanel();
+		corePanel.setLayout(new BoxLayout(corePanel, BoxLayout.X_AXIS));
+		corePanel.add(coreIncluded = new JRadioButton("Included (1.2.0)"));
+		corePanel.add(coreCustom = new JRadioButton("Choose jar"));
+		ButtonGroup coreGroup = new ButtonGroup();
+		coreGroup.add(coreIncluded);
+		coreGroup.add(coreCustom);
+		corePanel.add(new JSeparator(JSeparator.VERTICAL));
+		corePanel.add(corePath = new JTextField());
+		coreBrowse = new JButton("...");
+		coreBrowse.addActionListener(new BrowseHandler(corePath));
+		corePanel.add(coreBrowse);
+		String core = plugin.getClojureCore();
+		if (core.equals(ClojurePlugin.includedCore)) {
+			coreIncluded.setSelected(true);
+			corePath.setEnabled(false);
+			coreBrowse.setEnabled(false);
+		} else {
+			coreCustom.setSelected(true);
+			corePath.setText(core);
+		}
+		coreIncluded.addActionListener(handler);
+		coreCustom.addActionListener(handler);
+		addComponent("Core:", corePanel);
+		
+		// Contrib
+		JPanel contribPanel = new JPanel();
+		contribPanel.setLayout(new BoxLayout(contribPanel, BoxLayout.X_AXIS));
+		contribPanel.add(contribIncluded = new JRadioButton("Included (1.1.0)"));
+		contribPanel.add(contribCustom = new JRadioButton("Choose jar"));
+		ButtonGroup contribGroup = new ButtonGroup();
+		contribGroup.add(contribIncluded);
+		contribGroup.add(contribCustom);
+		contribPanel.add(new JSeparator(JSeparator.VERTICAL));
+		contribPanel.add(contribPath = new JTextField());
+		contribBrowse = new JButton("...");
+		contribBrowse.addActionListener(new BrowseHandler(contribPath));
+		contribPanel.add(contribBrowse);
+		String contrib = plugin.getClojureContrib();
+		if (contrib.equals(ClojurePlugin.includedContrib)) {
+			contribIncluded.setSelected(true);
+			contribPath.setEnabled(false);
+			contribBrowse.setEnabled(false);
+		} else {
+			contribCustom.setSelected(true);
+			contribPath.setText(contrib);
+		}
+		contribIncluded.addActionListener(handler);
+		contribCustom.addActionListener(handler);
+		addComponent("Contrib:", contribPanel);
 	}
 	
 	protected void _save() {
-		ClojurePlugin plugin = (ClojurePlugin) jEdit.getPlugin(
-			"clojure.ClojurePlugin");
-		if (jarButton.isSelected()) {
-			jEdit.setProperty("options.clojure.install", "jar");
+		if (coreIncluded.isSelected()) {
+			plugin.setClojureCore(ClojurePlugin.includedCore);
 		} else {
-			jEdit.setProperty("options.clojure.install", "custom");
-			jEdit.setProperty("options.clojure.download-path",
-				downloadPath.getText());
+			plugin.setClojureCore(corePath.getText());
 		}
-		plugin.setClojureJar();
+
+		if (contribIncluded.isSelected()) {
+			plugin.setClojureContrib(ClojurePlugin.includedContrib);
+		} else {
+			plugin.setClojureContrib(contribPath.getText());
+		}
+
 		plugin.setVars();
 	}
 	
 	class ButtonHandler implements ActionListener {
+
 		public void actionPerformed(ActionEvent e) {
-			boolean isCustom = customButton.isSelected();
-			customText.setEnabled(isCustom);
-			browse.setEnabled(isCustom);
+			Object source = e.getSource();
+			if (source == coreIncluded) {
+				corePath.setEnabled(false);
+				coreBrowse.setEnabled(false);
+			} else if (source == coreCustom) {
+				corePath.setEnabled(true);
+				coreBrowse.setEnabled(true);
+			} else if (source == contribIncluded) {
+				contribPath.setEnabled(false);
+				contribBrowse.setEnabled(false);
+			} else if (source == contribCustom) {
+				contribPath.setEnabled(true);
+				contribBrowse.setEnabled(true);
+			}
 		}
+
 	}
 	
 	class BrowseHandler implements ActionListener {
+
+		private JTextField txt;
+
+		public BrowseHandler(JTextField txt) {
+			this.txt = txt;
+		}
+
 		public void actionPerformed(ActionEvent e) {
 			VFSFileChooserDialog dialog = new VFSFileChooserDialog(
 				jEdit.getActiveView(), System.getProperty("user.dir")+File.separator,
 				VFSBrowser.OPEN_DIALOG, false, true);
 			String[] files = dialog.getSelectedFiles();
-			if (files != null) {
-				customText.setText(files[0]);
+			if (files != null && files.length == 1) {
+				txt.setText(files[0]);
 			}
 		}
+
 	}
 }

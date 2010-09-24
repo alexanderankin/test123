@@ -28,34 +28,57 @@ public class ClojurePlugin extends EditPlugin {
 	public static final String home = EditPlugin.getPluginHome(
 		ClojurePlugin.class).getPath();
 
-	public static final String includedJarPath = MiscUtilities.constructPath(
+	public static final String includedCore = MiscUtilities.constructPath(
 		jEdit.getSettingsDirectory(),
-		"jars/"+jEdit.getProperty("options.clojure.clojure-jar"));
+		"jars/"+jEdit.getProperty("options.clojure.clojure-core-jar"));
+	public static final String includedContrib = MiscUtilities.constructPath(
+		jEdit.getSettingsDirectory(),
+		"jars/"+jEdit.getProperty("options.clojure.clojure-contrib-jar"));
 
-	private String installedJar = null;
-	private String oldBin = null;
+	private String installedCore = includedCore;
+	private String installedContrib = includedContrib;
 
 	public void start() {
-		if (!jEdit.getProperty("options.clojure.install", "jar").equals("jar")) {
-			setClojureJar();
-		} else {
-			installedJar = includedJarPath;
+		if (jEdit.getProperty("options.clojure.clojure-core-path") == null) {
+			jEdit.setProperty("options.clojure.clojure-core-path", includedCore);
 		}
+		if (jEdit.getProperty("options.clojure.clojure-contrib-path") == null) {
+			jEdit.setProperty("options.clojure.clojure-contrib-path", includedContrib);
+		}
+
+		if (!getClojureCore().equals(includedCore)) {
+			setClojureCore(getClojureCore());
+		}
+		if (!getClojureContrib().equals(includedContrib)) {
+			setClojureContrib(getClojureContrib());
+		}
+
 		setVars();
 	}
 	public void stop() {}
 
 	/**
-	 * Set the loaded embeddable clojure jar
-	 * @param path the path of the new clojure jar
+	 * Set the loaded embeddable clojure core jar
 	 */
-	public void setClojureJar() {
-		String path = getClojureJar();
-		if (installedJar != null) {
-			jEdit.removePluginJAR(jEdit.getPluginJAR(installedJar), false);
+	public void setClojureCore(String path) {
+		if (installedCore != null) {
+			jEdit.removePluginJAR(jEdit.getPluginJAR(installedCore), false);
 		}
+		jEdit.setProperty("options.clojure.clojure-core-path", path);
 		jEdit.addPluginJAR(path);
-		installedJar = path;
+		installedCore = path;
+	}
+
+	/**
+	 * Set the loaded embeddable clojure contrib jar
+	 */
+	public void setClojureContrib(String path) {
+		if (installedContrib != null) {
+			jEdit.removePluginJAR(jEdit.getPluginJAR(installedContrib), false);
+		}
+		jEdit.setProperty("options.clojure.clojure-contrib-path", path);
+		jEdit.addPluginJAR(path);
+		installedContrib = path;
 	}
 
 	/**
@@ -63,17 +86,27 @@ public class ClojurePlugin extends EditPlugin {
 	 * - Set CLOJURE to the path of the clojure jar
 	 */
 	public void setVars() {
-		console.ConsolePlugin.setSystemShellVariableValue("CLOJURE", getClojureJar());
+		console.ConsolePlugin.setSystemShellVariableValue("CLOJURE", getClojure());
 	}
 
 	/**
-	 * Returns the location of the clojure jar
+	 * Returns the location of the clojure core jar
 	 */
-	public String getClojureJar() {
-		String install = jEdit.getProperty("options.clojure.install", "jar");
-		String path = (install.equals("jar") ? includedJarPath : 
-			jEdit.getProperty("options.clojure.clojure-path"));
-		return path;
+	public String getClojureCore() {
+		return jEdit.getProperty("options.clojure.clojure-core-path");
+	}
+
+	/**
+	 * Returns the location of the clojure contrib jar
+	 */
+	public String getClojureContrib() {
+		return jEdit.getProperty("options.clojure.clojure-contrib-path");
+	}
+
+	public String getClojure() {
+		String core = getClojureCore();
+		String contrib = getClojureContrib();
+		return core+File.pathSeparator+contrib;
 	}
 
 }
