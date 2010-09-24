@@ -26,6 +26,7 @@ public class Dockable extends JPanel implements ChangeListener {
     private JPanel controlPanel = null;
     private JPanel currentPanel = null;
     private JLabel currentLabel = null;
+    private JPanel flipPanel = null;
 
     private JButton options = null;
     private JButton clear = null;
@@ -135,10 +136,13 @@ public class Dockable extends JPanel implements ChangeListener {
         controlPanel.add("6, 1, 1, 1, W, w, 0", showLineNumber);
         controlPanel.add("6, 2, 1, 1, W, w, 0", showCaretOffset);
         
-        JPanel currentPanel = new JPanel();
-        currentPanel.setVisible(true);
+        currentPanel = new JPanel();
         currentLabel = new JLabel();
         currentPanel.add(currentLabel);
+        
+        JPanel flipPanel = new JPanel(new BorderLayout());
+        flipPanel.add(currentPanel, BorderLayout.NORTH);
+        flipPanel.add(controlPanel, BorderLayout.SOUTH);
 
         JPanel buttonPanel = new JPanel(new KappaLayout());
         buttonPanel.add("0, 0, 1, 3, 0,, 3", back);
@@ -147,8 +151,7 @@ public class Dockable extends JPanel implements ChangeListener {
         buttonPanel.add("3, 0, 1, 3, 0,, 3", options);
 
         JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.add(controlPanel, BorderLayout.WEST);
-        topPanel.add(currentPanel, BorderLayout.WEST);
+        topPanel.add(flipPanel, BorderLayout.WEST);
         topPanel.add(buttonPanel, BorderLayout.EAST);
 
         JPanel middlePanel = new JPanel(new GridLayout(1, 2, 3, 3));
@@ -227,8 +230,9 @@ public class Dockable extends JPanel implements ChangeListener {
             public void actionPerformed(ActionEvent ae) {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        currentPanel.setVisible(!currentPanel.isVisible());
                         controlPanel.setVisible(!controlPanel.isVisible());
+                        currentPanel.setVisible(!currentPanel.isVisible());
+                        flipPanel.invalidate();
                         Dockable.this.repaint();
                     }
                 } );
