@@ -39,7 +39,7 @@ public class ClojureShell extends ProcessShell {
 	protected void init(ConsoleState state) throws IOException {
 		ClojurePlugin clojure = (ClojurePlugin) jEdit.getPlugin("clojure.ClojurePlugin");
 		Log.log(Log.DEBUG,this,"Attempting to start Clojure process");
-		ProcessBuilder pb = new ProcessBuilder("java", "-cp", clojure.getClojureJar(),
+		ProcessBuilder pb = new ProcessBuilder("java", "-cp", clojure.getClojure(),
 				"clojure.main");
 		state.p = pb.start();
 		Log.log(Log.DEBUG,this,"Clojure started.");
