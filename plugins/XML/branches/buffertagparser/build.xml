@@ -143,5 +143,10 @@
         </exec>
     </target>
 
-
+    <target name="test" description="run current unit tests" depends="build">
+ 	    <ant dir="test" inheritAll="false" target="test" useNativeBasedir="true"/>
+ 	</target>
+    <target name="test-all" description="run all unit tests" depends="build">
+    	<ant dir="test" inheritAll="false" target="test-all"/>
+    </target>
 </project>

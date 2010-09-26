@@ -123,6 +123,29 @@ public class CompletionInfo
 		}
 	} //}}}
 
+	//{{{ getAllElements() method
+	public void getElementsStartingWith(String prefix, String name, List<ElementDecl> out)
+	{
+		// only look for global elements, so use elementHash instead of elements
+		for(ElementDecl decl: elementHash.values())
+		{
+			if (decl.isAbstract()) 
+			{
+				List<ElementDecl> repls = decl.findReplacements(prefix);
+				for(ElementDecl e: repls)
+				{
+					if(e.name.startsWith(name))out.add(e);
+				}
+				
+			}
+			else
+			{
+				ElementDecl e = decl.withPrefix(prefix);
+				if(e.name.startsWith(name))out.add(e);
+			}
+		}
+	} //}}}
+
 	//{{{ getElementDeclLocal(CompletionInfo, localName) method
 	/**
 	 * @return the first declaration (global or local) found for localName

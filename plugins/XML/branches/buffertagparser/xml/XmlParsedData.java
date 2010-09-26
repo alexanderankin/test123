@@ -41,7 +41,8 @@ import xml.completion.CompletionInfo;
 import xml.completion.ElementDecl;
 import xml.completion.EntityDecl;
 import xml.completion.IDDecl;
-import xml.parser.TagParser;
+import xml.parser.BufferTagParser.Tag;
+import xml.parser.BufferTagParser;
 import xml.parser.XmlTag;
 
 import com.thaiopensource.xml.util.Name;
@@ -476,17 +477,70 @@ public class XmlParsedData extends SideKickParsedData
 	
 	//{{{ getAllowedElements() method
 	/** @return a list containing Elements or Attributes */
+	public List<ElementDecl> getAllowedElements(Buffer buffer, int pos, String elementToComplete, BufferTagParser.Tag parentTag)
+	{
+		List<ElementDecl> returnValue = new LinkedList<ElementDecl>();
+		String prefix = getElementNamePrefix(elementToComplete);
+		String localName = "".equals(prefix) ? elementToComplete : elementToComplete.substring(prefix.length()+1);
+		System.err.println("getAllowedElts("+prefix+","+localName+","+parentTag+")");
+		if(parentTag == null)
+		{
+			// add everything
+			Iterator iter = mappings.keySet().iterator();
+			while(iter.hasNext())
+			{
+				String ns = (String)iter.next();
+				CompletionInfo info = (CompletionInfo)
+				mappings.get(ns);
+				info.getElementsStartingWith(prefix,localName, returnValue);
+			}
+		}
+		else
+		{
+			ElementDecl parentDecl = null;
+			String parentPrefix = getElementNamePrefix(parentTag.tag);
+			String parentLocalName = "".equals(parentPrefix) ? parentTag.tag : parentTag.tag.substring(parentPrefix.length()+1);
+
+
+			if(html)
+			{
+				parentDecl = getElementDeclInternal(parentTag.tag,pos);
+				returnValue.addAll(parentDecl.getChildElementsStartingWith(Collections.<String,String>emptyMap(), elementToComplete.toLowerCase()));
+			}
+			else
+			{
+				TreePath path = null;
+				Map<String,String> bindings = null;
+				
+				if(allNamespacesBindingsAtTop){
+					if(Debug.DEBUG_COMPLETION)Log.log(Log.DEBUG,XmlParsedData.class, "allNamespacesBindingsAtTop");
+					bindings = getRootNamespaceBindings();
+				}else {
+					path = getTreePathForPosition(pos);
+					bindings = getNamespaceBindings(path);
+				}
+
+				parentDecl = getElementDecl(parentTag.tag,parentTag.start+1);
+				if(parentDecl != null){
+					if(bindings == null)bindings = Collections.<String,String>emptyMap();
+					returnValue.addAll(parentDecl.getChildElementsStartingWith(bindings,localName));
+				}
+			}
+		}
+		Collections.sort(returnValue, new ElementDecl.Compare());
+		return returnValue;
+	}
+	
+	/** @return a list containing Elements or Attributes */
 	public List<ElementDecl> getAllowedElements(Buffer buffer, int pos)
 	{
 		
 		List<ElementDecl> returnValue = new LinkedList<ElementDecl>();
 
-		String text = buffer.getText(0,pos);
-		
-		TagParser.Tag parentTag = null;
+		Tag parentTag = null;
 		try
 		{
-			parentTag = TagParser.findLastOpenTag(buffer.getText(0,pos),pos,this);
+			parentTag = BufferTagParser.findLastOpenTag(buffer,pos,this);
 		}
 		catch (Exception e) {}
 			
@@ -548,20 +602,20 @@ public class XmlParsedData extends SideKickParsedData
 		ArrayList returnValue = new ArrayList();
 
 		// make sure we are not inside a tag
-		if(TagParser.isInsideTag(buffer.getText(0,startPos),startPos)) {
+		if(BufferTagParser.isInsideTag(buffer,startPos)) {
 			return returnValue;
 		}
 
 		// make sure we are not inside a tag
-		if(TagParser.isInsideTag(buffer.getText(0,endPos),endPos)) {
+		if(BufferTagParser.isInsideTag(buffer,endPos)) {
 			return returnValue;
 		}
 
-		TagParser.Tag startParentTag = TagParser.findLastOpenTag(
-			buffer.getText(0,startPos),startPos,this);
+		Tag startParentTag = BufferTagParser.findLastOpenTag(
+			buffer,startPos,this);
 
-		TagParser.Tag endParentTag = TagParser.findLastOpenTag(
-			buffer.getText(0,endPos),endPos,this);
+		Tag endParentTag = BufferTagParser.findLastOpenTag(
+			buffer,endPos,this);
 
 		if(startParentTag == null) { 
 			if(endParentTag == null) {

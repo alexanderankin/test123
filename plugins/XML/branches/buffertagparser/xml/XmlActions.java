@@ -54,10 +54,11 @@ import org.xml.sax.Attributes;
 
 import sidekick.SideKickParsedData;
 import xml.completion.ElementDecl;
+import xml.parser.BufferTagParser;
 import xml.parser.TagParser;
 import xml.parser.XmlTag;
-import xml.parser.TagParser.Tag;
-import xml.parser.TagParser.Attr;
+import xml.parser.BufferTagParser.Tag;
+import xml.parser.BufferTagParser.Attr;
 
 import sidekick.html.parser.html.HtmlDocument;
 import sidekick.util.SideKickElement;
@@ -99,99 +100,24 @@ public class XmlActions
 
 		XmlParsedData data = (XmlParsedData)_data;
 
-		String text = buffer.getText(0,buffer.getLength());
-
 		int caret = textArea.getCaretPosition();
 
-		TagParser.Tag tag = TagParser.getTagAtOffset(text,caret);
-		if(tag == null || tag.type == TagParser.T_END_TAG)
+		Tag tag = BufferTagParser.getTagAtOffset(buffer,caret);
+		if(tag == null || tag.type == BufferTagParser.T_END_TAG)
 		{
 			view.getToolkit().beep();
 			return;
 		}
 
-		// use a StringTokenizer to parse the tag - WTF?!?? Why not find data?
+		boolean empty = tag.type == BufferTagParser.T_STANDALONE_TAG;
+		
 		HashMap attributes = new HashMap();
-		String attributeName = null;
-		boolean seenEquals = false;
-		boolean empty = false;
-
-		/* StringTokenizer does not support disabling or changing
-		 * the escape character, so we have to work around it here. */
-		char backslashSub = 127;
-		StreamTokenizer st = new StreamTokenizer(new StringReader(
-			text.substring(tag.start + tag.tag.length() + 1,
-			tag.end - 1)
-			.replace('\\',backslashSub)));
-		st.resetSyntax();
-		st.wordChars('!',255);
-		st.whitespaceChars(0,' ');
-		st.quoteChar('"');
-		st.quoteChar('\'');
-		st.ordinaryChar('/');
-		st.ordinaryChar('=');
-
-		Map entityHash = data.entityHash;
-
-		//{{{ parse tag
-		try
-		{
-loop:			for(;;)
-			{
-				switch(st.nextToken())
-				{
-				case StreamTokenizer.TT_EOF:
-					if(attributeName != null)
-					{
-						// in HTML, can have attributes
-						// without values.
-						attributes.put(attributeName,
-							attributeName);
-					}
-					break loop;
-				case '=':
-					seenEquals = true;
-					break;
-				case StreamTokenizer.TT_WORD:
-					if(attributeName == null)
-					{
-						attributeName = (data.html
-							? st.sval.toLowerCase()
-							: st.sval);
-						break;
-					}
-					else
-						/* fall thru */;
-				case '"':
-				case '\'':
-					if(attributeName != null)
-					{
-						if(seenEquals)
-						{
-							attributes.put(attributeName,
-								entitiesToCharacters(
-								st.sval.replace(backslashSub,'\\'),
-								entityHash));
-							seenEquals = false;
-						}
-						else if(data.html)
-						{
-							attributes.put(attributeName,
-								Boolean.TRUE);
-						}
-						attributeName = null;
-					}
-					break;
-				case '/':
-					empty = true;
-					break;
-				}
-			}
+		List<BufferTagParser.Attr> attrs = BufferTagParser.getAttrs(buffer,tag);
+		for(Attr a: attrs){
+			String value = a.val;
+			if(value != null && value.length()>=2)value = value.substring(1,value.length()-1);
+			attributes.put(a.name,value);
 		}
-		catch(IOException io)
-		{
-			Log.log(Log.ERROR, XmlActions.class, "this shouldn't happen:", io);
-		} //}}}
 
 		ElementDecl elementDecl = data.getElementDecl(tag.tag,tag.start+1);
 		if(elementDecl == null)
@@ -331,8 +257,8 @@ loop:			for(;;)
 			data = null;
 		}
 		
-		TagParser.Tag tag = TagParser.findLastOpenTag(
-			buffer.getText(0,textArea.getCaretPosition()),
+		Tag tag = BufferTagParser.findLastOpenTag(
+			buffer,
 			textArea.getCaretPosition(),data);
 
 		if(tag != null)
@@ -347,9 +273,9 @@ loop:			for(;;)
 	/**
 	 * Splits tag at caret, so that attributes are on separate lines.
 	 */
-	public static void splitTag(Tag tag, JEditTextArea textArea, String text) {
+	public static void splitTag(Tag tag, JEditTextArea textArea) {
 		View view = textArea.getView();
-		textArea.setSelection(new Selection.Range(tag.start, tag.end));
+		textArea.setSelection(new Selection.Range(tag.start, tag.end+1));
 		SideKickParsedData _data = SideKickParsedData.getParsedData(view);
 		if(!(_data instanceof XmlParsedData))
 		{
@@ -377,7 +303,7 @@ loop:			for(;;)
 		if (user_object instanceof XmlTag) {
 			result.append('<');
 			result.append(tag.tag);
-			List<Attr> attrs = TagParser.getAttrs(text,tag);
+			List<Attr> attrs = BufferTagParser.getAttrs(textArea.getBuffer(),tag);
 			count = attrs.size();
 			if(count>0)result.append(' ');
 			for (int i=0; i<count; ++i) {
@@ -425,17 +351,17 @@ loop:			for(;;)
 	/**
 	 * If inside a HTML or XML, join attributes and tagname all on one line. 
 	 * Otherwise do nothing.
+	 * FIME: doesn't work
 	 */
 	static public void join (View view) {
 		JEditTextArea textArea = view.getTextArea();
 		Buffer buffer = view.getBuffer();
 		int pos = textArea.getCaretPosition();
-		String text = buffer.getText(0,buffer.getLength());
-		Tag tag = TagParser.getTagAtOffset(text, pos);
+		Tag tag = BufferTagParser.getTagAtOffset(buffer, pos);
 		if (tag == null) return; // we're not in a tag;
 		
 		// select it
-		textArea.setSelection(new Selection.Range(tag.start, tag.end));	
+		textArea.setSelection(new Selection.Range(tag.start, tag.end+1));	
 		SideKickParsedData _data = SideKickParsedData.getParsedData(view);
 		if(!(_data instanceof XmlParsedData))
 		{
@@ -456,17 +382,18 @@ loop:			for(;;)
 		if (user_object instanceof XmlTag) {
 			result.append('<');
 			result.append(tag.tag);
-			List<Attr> attrs = TagParser.getAttrs(text,tag);
+			List<Attr> attrs = BufferTagParser.getAttrs(buffer,tag);
 			for(Attr a: attrs)
 			{
 				result.append(' ').append(a.name).append(" = ").append(a.val);
 			}
-			if(tag.type == TagParser.T_STANDALONE_TAG)
+			if(tag.type == BufferTagParser.T_STANDALONE_TAG)
 			{
 				result.append('/');
 			}
 			result.append('>');
 		}
+		// FIXME: why 2 ways of doing it ?
 		else if (user_object instanceof SideKickAsset) {
 			SideKickElement element = ((SideKickAsset)user_object).getElement();
 			if (element instanceof HtmlDocument.Tag) {
@@ -514,10 +441,9 @@ loop:			for(;;)
 		JEditTextArea textArea = view.getTextArea();
 		Buffer buffer = view.getBuffer();
 		int pos = textArea.getCaretPosition();
-		String text = buffer.getText(0,buffer.getLength());
-		Tag t = TagParser.getTagAtOffset(text, pos);
+		Tag t = BufferTagParser.getTagAtOffset(buffer, pos);
 		if (t != null && t.end != pos) { // getTagAtOffset will return a tag if you are just after it
-			splitTag(t, textArea, text);
+			splitTag(t, textArea);
 			return;
 		}
 		if(XmlPlugin.isDelegated(textArea) || !buffer.isEditable())
@@ -536,8 +462,8 @@ loop:			for(;;)
 
 		XmlParsedData data = (XmlParsedData)_data;
 
-		TagParser.Tag tag = TagParser.findLastOpenTag(
-			buffer.getText(0,textArea.getCaretPosition()),
+		Tag tag = BufferTagParser.findLastOpenTag(
+			buffer,
 			textArea.getCaretPosition(),data);
 
 		if(tag != null)
@@ -583,6 +509,7 @@ loop:			for(;;)
 	//}}}
 
 	//{{{ removeTags() method
+	// FIXME: doesn't work with BufferTagParser
 	public static void removeTags(Buffer buffer)
 	{
 		if(!buffer.isEditable())
@@ -684,8 +611,7 @@ loop:			for(;;)
 	{
 
 		final int step = 2;
-
-		String text = textArea.getText();
+		JEditBuffer buffer = textArea.getBuffer();
 		boolean isSel = textArea.getSelectionCount() == 1;
 		int caret, pos;
 
@@ -696,36 +622,36 @@ loop:			for(;;)
 
 		while (pos >= 0)
 		{
-			TagParser.Tag tag = TagParser.getTagAtOffset(text, pos);
+			Tag tag = BufferTagParser.getTagAtOffset(buffer, pos);
 
 			if (tag != null)
 			{
-				TagParser.Tag matchingTag = TagParser.getMatchingTag(text, tag);
+				Tag matchingTag = BufferTagParser.getMatchingTag(buffer, tag);
 				if (matchingTag != null
-					&& ((tag.type == TagParser.T_START_TAG && matchingTag.end >= caret)
-					|| (!isSel && tag.type == TagParser.T_END_TAG && tag.end >= caret)))
+					&& ((tag.type == BufferTagParser.T_START_TAG && matchingTag.end >= caret)
+					|| (!isSel && tag.type == BufferTagParser.T_END_TAG && tag.end >= caret)))
 				{
 					if (tag.start < matchingTag.end)
 					{
 						textArea.setSelection(
-							new Selection.Range(tag.start, matchingTag.end));
+							new Selection.Range(tag.start, matchingTag.end+1));
 						textArea.moveCaretPosition(
-							matchingTag.end);
+							matchingTag.end+1);
 					}
 					else
 					{
 						textArea.setSelection(
-							new Selection.Range(matchingTag.start,tag.end));
+							new Selection.Range(matchingTag.start,tag.end+1));
 						textArea.moveCaretPosition(
 							matchingTag.start);
 					}
 					break;
 				}
-				else if (!isSel && tag.type == TagParser.T_STANDALONE_TAG)
+				else if (!isSel && tag.type == BufferTagParser.T_STANDALONE_TAG)
 				{
 					textArea.setSelection(
-						new Selection.Range(tag.start, tag.end));
-					textArea.moveCaretPosition(tag.end);
+						new Selection.Range(tag.start, tag.end+1));
+					textArea.moveCaretPosition(tag.end+1);
 					break;
 				}
 				else
@@ -754,11 +680,10 @@ loop:			for(;;)
 	 *  Selects tag at caret. Also returns it. Returns null if there is no tag.
 	 * */
 	public static Tag selectTag(JEditTextArea textArea) {
-		String text = textArea.getText();
 		int pos = textArea.getCaretPosition();
-		Tag t = TagParser.getTagAtOffset(text, pos);
+		Tag t = BufferTagParser.getTagAtOffset(textArea.getBuffer(), pos);
 		if (t == null) return null;
-		textArea.setSelection(new Selection.Range(t.start, t.end));
+		textArea.setSelection(new Selection.Range(t.start, t.end+1));
 		return t;
 	} // }}}
 
@@ -771,7 +696,8 @@ loop:			for(;;)
 
 		final int step = 2;
 
-		String text = textArea.getText();
+		JEditBuffer buffer = textArea.getBuffer();
+		
 		boolean isSel = textArea.getSelectionCount() == 1;
 		int caret, pos;
 
@@ -782,11 +708,11 @@ loop:			for(;;)
 
 		while (pos >= 0)
 		{
-			TagParser.Tag tag = TagParser.getTagAtOffset(text, pos);
+			Tag tag = BufferTagParser.getTagAtOffset(buffer, pos);
 			if (tag != null)
 			{
-				TagParser.Tag matchingTag = TagParser.getMatchingTag(text, tag);
-				if (tag.type == TagParser.T_START_TAG)
+				Tag matchingTag = BufferTagParser.getMatchingTag(buffer, tag);
+				if (tag.type == BufferTagParser.T_START_TAG)
 				{
 					if (matchingTag != null
 						&& (matchingTag.start > caret
@@ -795,16 +721,16 @@ loop:			for(;;)
 						if (tag.start < matchingTag.end)
 						{
 							textArea.setSelection(
-								new Selection.Range(tag.end, matchingTag.start));
+								new Selection.Range(tag.end+1, matchingTag.start));
 							textArea.moveCaretPosition(
 								matchingTag.start);
 						}
 						else
 						{
 							textArea.setSelection(
-								new Selection.Range(matchingTag.end,tag.start));
+								new Selection.Range(matchingTag.end+1,tag.start));
 							textArea.moveCaretPosition(
-								matchingTag.end);
+								matchingTag.end+1);
 						}
 						break;
 					}
@@ -860,18 +786,16 @@ loop:			for(;;)
 
 		int caret = textArea.getCaretPosition();
 
-		String text = buffer.getText(0,caret);
-
-		TagParser.Tag tag = TagParser.getTagAtOffset(text,caret - 1);
+		Tag tag = BufferTagParser.getTagAtOffset(buffer,caret - 1);
 		if(tag == null)
 			return;
 
 		ElementDecl decl = data.getElementDecl(tag.tag,tag.start+1);
-		if(tag.type == TagParser.T_STANDALONE_TAG
+		if(tag.type == BufferTagParser.T_STANDALONE_TAG
 			|| (decl != null && decl.empty))
 			return;
 
-		tag = TagParser.findLastOpenTag(text,caret,data);
+		tag = BufferTagParser.findLastOpenTag(buffer,caret,data);
 
 		if(tag != null)
 		{
@@ -890,7 +814,8 @@ loop:			for(;;)
 	} //}}}
 
 	//{{{ completeClosingTag() method
-	public static void completeClosingTag(View view, boolean insertSlash)
+	// called from XmlParser and XmlCompletion
+	public static void completeClosingTag(View view, XmlParsedData data, String closingTag, boolean insertSlash)
 	{
 		JEditTextArea textArea = view.getTextArea();
 
@@ -905,17 +830,7 @@ loop:			for(;;)
 
 		JEditBuffer buffer = textArea.getBuffer();
 
-		if(XmlPlugin.isDelegated(textArea))
-			return;
-
-		SideKickParsedData _data = SideKickParsedData.getParsedData(view);
-
-		if(!(_data instanceof XmlParsedData))
-			return;
-
-		XmlParsedData data = (XmlParsedData)_data;
-
-		if(!buffer.isEditable() || !closeCompletion)
+		if(!buffer.isEditable() || !XmlActions.closeCompletion)
 		{
 			return;
 		}
@@ -924,24 +839,10 @@ loop:			for(;;)
 		if(caret == 1)
 			return;
 
-		String text = buffer.getText(0,buffer.getLength());
-
-		if(text.charAt(caret - 2) != '<')
-			return;
-
-		// check if caret is inside a tag
-		if(TagParser.getTagAtOffset(text,caret) != null)
-			return;
-
-		TagParser.Tag tag = TagParser.findLastOpenTag(text,caret - 2,data);
-
-		if(tag != null)
-		{
-			String insert = tag.tag + ">";
-			if(recorder != null)
-				recorder.recordInput(insert,false);
-			textArea.setSelectedText(insert);
-		}
+		String insert = closingTag + ">";
+		if(recorder != null)
+			recorder.recordInput(insert,false);
+		textArea.setSelectedText(insert);
 	} //}}}
 
 	//{{{ charactersToEntities() methods
