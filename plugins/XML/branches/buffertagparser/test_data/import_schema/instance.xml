@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+
+<purchaseReport
+  xmlns="http://www.example.com/Report"
+  	xmlns:ipo="http://www.example.com/IPO"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.example.com/Report
+	import.xsd
+	http://www.example.com/IPO
+	source.xsd"
+  >
+  <!-- this one is wrong : -->
+  <ipo:comment></ipo:comment>
+  <!--  that one is correct : -->
+  <comment>
+  		<!-- the completion information is missing here ! -->
+  		<ipo:comment>erjrj
+		<!-- the completion information is misleading here : only string content -->
+		</ipo:comment>
+  </comment>
+  
+</purchaseReport>

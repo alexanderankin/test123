@@ -1,0 +1,40 @@
+<?xml version="1.0" ?>
+<a:document
+	xmlns:a="urn:some-a-namespace:1.0"
+	xmlns:b="urn:some-b-namespace:1.0">
+
+	<a:title>This is the title</a:title>
+	
+	<b:created>2009-10-22</b:created>
+
+	<!-- if you invoke xml-copy-xpath inside this, you'll get
+		 /a:document/a:trap[1]
+		 which is wrong, since the "a" prefix is re-bound
+		 in the element.
+		 
+		 The XPath should be "/a:document/b:trap"
+		 or something similar, where the prefix
+		 for trap is different than "a".
+	  -->
+	<a:trap xmlns:a="urn:not-a-namespace">
+		hello, we are not in urn:some-a-namespace:1.0,
+		but you didn't notice, did you ?
+	</a:trap>
+	
+	<!-- if you invoke xml-copy-xpath inside this, you'll get
+		 /a:document/a:trap[1]
+		 which is correct, even if another a:trap appears above.
+	  -->
+	<a:trap i="1">
+		or maybe you noticed...
+	</a:trap>
+	
+	<!-- If you invoke xml-copy-xpath inside this, you should get
+		 /a:document/a:trap[2].
+		 The prefix is reused to simplify the use of the XPath.
+	  -->
+	<b:trap xmlns:b="urn:some-a-namespace:1.0" i="2">
+		but you didn't recognise this one, though it's in the same NS.
+	</b:trap>
+
+</a:document>

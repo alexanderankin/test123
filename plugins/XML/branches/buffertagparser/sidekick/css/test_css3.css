@@ -1,0 +1,782 @@
+/*******************************************************************************
+ CSS3 compatibility test file -- I (danson) made this up by copying and pasting a
+bunch of css example code from the w3c css test suite.  There is a lot of
+repetition, but I think I've got most (all?) use cases covered for the CSS3
+specification.  This should parse with some errors.
+http://www.w3.org/Style/CSS/Test/CSS3/Selectors/20091025/html/full/flat/index.html
+*******************************************************************************/
+
+/******************************************************************************* 
+
+       Selectors 
+
+*******************************************************************************/
+li,p { background-color : lime }
+address { background-color: lime }
+* { color : lime }
+ul, p { color : red }
+*.t1 { color : lime }
+#foo { background-color : lime }
+p { background-color : red }
+
+p { background-color : red }
+p[title] { background-color : lime }
+
+address { background-color : red }
+address[title="foo"] { background-color : lime }
+span[title="a"] { background-color : red }
+
+p { background-color : red }
+p[class~="b"] { background-color : lime }
+address { background-color : red }
+address[title~="foo"] { background-color : lime }
+span[class~="b"] { background-color : red }
+
+p { background: lime; }
+[title~="hello world"] { background: red; }
+/* Section 6.3.1: Represents the att attribute whose value is a
+space-separated list of words, one of which is exactly "val". If this
+selector is used, the words in the value must not contain spaces
+(since they are separated by spaces). */
+
+p { background-color : red }
+p[lang|="en"] { background-color : lime }
+address { background-color : red }
+address[lang="fi"] { background-color : lime }
+span[lang|="fr"] { background-color : red }
+
+p { background-color : red }
+p[title^="foo"] { background-color : lime }
+
+p { background-color : red }
+p[title$="bar"] { background-color : lime }
+
+p { background-color : red }
+p[title*="bar"] { background-color : lime }
+
+li { background-color : red }
+.t1 { background-color : lime }
+li.t2 { background-color : lime }
+.t3 { background-color : red }
+
+p { background-color : red ; border : thick solid red ; padding : 1em }
+p.t1 { background-color : lime }
+p.t2 { border : thick solid green }
+
+div { background: green; color: white; }
+div.teST { background: red; color: yellow; }
+div.te { background: red; color: yellow; }
+div.st { background: red; color: yellow; }
+div.te.st { background: red; color: yellow; }
+
+p { background: green; color: white; }
+.t1.fail { background: red; color: yellow; }
+.fail.t1 { background: red; color: yellow; }
+.t2.fail { background: red; color: yellow; }
+.fail.t2 { background: red; color: yellow; }
+/* Note: This is a valid test even per CSS1, since in CSS1 those rules
+are invalid and should be dropped. */
+
+p { background: red; color: yellow; }
+p.t1.t2 { background: green; color: white; }
+div { background: green; color: white; }
+div.t1 { background: red; color: yellow; }
+address { background: red; color: yellow; }
+address.t5.t5 { background: green; color: white; }
+
+p { background: green; color: white; }
+.t1:not(.t2) { background: red; color: yellow; }
+:not(.t2).t1 { background: red; color: yellow; }
+.t2:not(.t1) { background: red; color: yellow; }
+:not(.t1).t2 { background: red; color: yellow; }
+
+p { background: green; color: white; }
+p:not(.t1):not(.t2) { background: red; color: yellow; }
+div { background: red; color: yellow; }
+div:not(.t1) { background: green; color: white; }
+address { background: green; color: white; }
+address:not(.t5):not(.t5) { background: red; color: yellow; }
+
+li { background-color : red }
+#t1 { background-color : lime }
+li#t2 { background-color : lime }
+li#t3 { background-color : lime }
+#t4 { background-color : red }
+
+p { background: green; color: white; }
+#test#fail { background: red; color: yellow; }
+#fail#test { background: red; color: yellow; }
+#fail { background: red; color: yellow; }
+div { background: red; color: yellow; }
+#pass#pass { background: green; color: white; }
+
+p.test a { background-color : red }
+p.test *:link { background-color : lime }
+
+p.test a { background-color : red }
+p.test *:visited { background-color : lime }
+
+p:hover { background-color : lime }
+a:hover { background-color : lime }
+
+tr:hover { background-color : green }
+td:hover { background-color : lime }
+
+table { border-spacing: 5px; }
+
+p { color: navy; }
+
+.a a:hover { background: green; color: white; }
+
+.b a:hover { background: red; color: yellow; }
+.b a:link { background: green; color: white; }
+
+.c :link { background: green; color: white; }
+.c :visited:hover { background: red; color: yellow; }
+
+div:hover > p:first-child { background-color : lime }
+
+
+:link, :visited { color: navy; text-decoration: none; }
+:link:hover span { background-color : lime }
+
+a:active { background-color : lime }
+
+button:active { background: green; color: white; }
+
+a:focus { background-color : lime }
+
+p:target { background-color : lime }
+
+p { background-color: lime; }
+p:target { background-color: red; }
+
+:root { background-color: green; }
+:target { background-color: red; }
+
+ul > li { background-color : red }
+li:lang(en-GB) { background-color : lime }
+
+button { background-color : red }
+input { background-color : red }
+button:enabled { background-color : lime }
+input:enabled { background-color : lime }
+
+button { background-color : red }
+input { background-color : red }
+button:disabled { background-color : lime }
+input:disabled { background-color : lime }
+
+input, span { background-color : red }
+input:checked, input:checked + span { background-color : lime}
+
+html { background-color : red }
+*:root { background-color: lime }
+
+:root:first-child { background-color: red; }
+:root:last-child { background-color: red; }
+:root:only-child { background-color: red; }
+:root:nth-child(1) { background-color: red; }
+:root:nth-child(n) { background-color: red; }
+:root:nth-last-child(1) { background-color: red; }
+:root:nth-last-child(n) { background-color: red; }
+:root:first-of-type { background-color: red; }
+:root:last-of-type { background-color: red; }
+:root:only-of-type { background-color: red; }
+:root:nth-of-type(1) { background-color: red; }
+:root:nth-of-type(n) { background-color: red; }
+:root:nth-last-of-type(1) { background-color: red; }
+:root:nth-last-of-type(n) { background-color: red; }
+p { color: green; }
+
+* html { background-color: red; }
+* :root { background-color: red; }
+p { color: green; }
+
+.red { background-color : red }
+ul > li:nth-child(odd) { background-color : lime }
+ol > li:nth-child(even) { background-color : lime }
+table.t1 tr:nth-child(-n+4) { background-color : lime }
+table.t2 td:nth-child(3n+1) { background-color : lime }
+
+.green { background-color : lime ! important }
+ul > li:nth-child(odd) { background-color : red }
+ol > li:nth-child(even) { background-color : red }
+table.t1 tr:nth-child(-n+4) { background-color : red }
+table.t2 td:nth-child(3n+1) { background-color : red }
+
+.red { background-color : red }
+ul > li:nth-last-child(odd) { background-color : green }
+ol > li:nth-last-child(even) { background-color : green }
+table.t1 tr:nth-last-child(-n+4) { background-color : green }
+table.t2 td:nth-last-child(3n+1) { background-color : green }
+
+.green { background-color : lime ! important }
+ul > li:nth-last-child(odd) { background-color : red }
+ol > li:nth-last-child(even) { background-color : red }
+table.t1 tr:nth-last-child(-n+4) { background-color : red }
+table.t2 td:nth-last-child(3n+1) { background-color : red }
+
+.red { background-color : red }
+p:nth-of-type(3) { background-color : lime }
+dl > :nth-of-type(3n+1) { background-color : lime }
+
+.red { background-color : red }
+p:nth-last-of-type(3) { background-color : lime }
+dl > :nth-last-of-type(3n+1) { background-color : lime }
+
+.red { background-color : red }
+.t1 td:first-child { background-color : lime }
+p > *:first-child { background-color : lime }
+
+.red { background-color : red }
+.t1 td:last-child { background-color : lime }
+p > *:last-child { background-color : lime }
+
+.red { background-color : red }
+address { margin-bottom : 1em ; margin-left : 1em }
+address:first-of-type { background-color : lime }
+
+.red { background-color : red }
+address { margin-bottom : 1em ; margin-left : 1em }
+address:last-of-type { background-color : lime }
+
+.red { background-color : red }
+p:only-child { background-color : lime }
+div.testText > div > p { margin-left : 1em }
+
+.red { background-color : red }
+.t1 :only-of-type { background-color : lime }
+
+p:first-line { background-color : lime }
+
+p:first-letter { font-size : xx-large ; background-color : lime }
+
+p:first-letter { color: lime; font-size: xx-large; }
+p:before { color: red; content: 'T'; }
+
+p::first-letter { font-size : xx-large ; background-color : lime }
+
+p::first-letter { color: lime; font-size: xx-large; }
+p::before { color: red; content: 'T'; }
+
+p::before { background-color : lime ; content : "GENERATED CONTENT "}
+
+p:before { background-color : lime ; content : "GENERATED CONTENT "}
+
+p::after { background-color : lime ; content : "GENERATED CONTENT "}
+
+p:after { background-color : lime ; content : "GENERATED CONTENT "}
+
+.white { background-color: transparent ! important; }
+.red { background-color: red; }
+div.t1 p { background-color: lime; }
+
+.white { background-color: transparent ! important; }
+.green { background-color: lime; }
+div.t1 p { background-color: red; }
+
+.white { background-color: transparent ! important; }
+.red { background-color: red; }
+div > p.test { background-color: lime; }
+
+.white { background-color: transparent ! important; }
+.green { background-color: lime; }
+div > p.test { background-color: red; }
+
+.fail > div { background: red; color: yellow; }
+.control { background: green; color: white; }
+
+#fail > div { background: red; }
+p { background: green; }
+
+.red { background-color : red }
+div.stub > p + p { background-color : lime }
+
+.green { background-color: lime; }
+.white { background-color: transparent ! important; }
+div.stub > p + p { background-color: red; }
+
+.fail + div { background: red; }
+.control { background: lime; }
+
+.red { background-color : red }
+div.stub > p ~ p { background-color : lime }
+
+.green { background-color : lime ! important }
+div.stub > p ~ p { background-color : red }
+
+div.stub > * { color : red }
+div.stub *:not([title^="si on"]) { color : lime }
+
+div.stub > * { color : red }
+div.stub *:not([title$="tait"]) { color : lime }
+
+div.stub > * { color : red }
+div.stub *:not([title*=" on"]) { color : lime }
+
+div.stub > * { color : red }
+div.stub *:not(.foo) { color : lime }
+
+div.stub > * { color : red }
+div.stub *:not(#foo) { color : lime }
+
+div.stub > * { background-color : red }
+div.stub *:not(:link) { background-color : lime }
+
+div.stub > * { background-color : red }
+div.stub *:not(:visited) { background-color : lime }
+
+div.stub * { color: lime; text-decoration: none; }
+div.stub > * > *:not(:hover) { color: black }
+
+div.stub * { color : lime }
+div.stub > * > *:not(:active) { color : black }
+
+a:not(:focus) { background-color: transparent; }
+a { background-color: lime; }
+
+p { background-color: navy; color: white; }
+p:not(:target) { background-color: white; color: black; }
+
+p { background-color: red; }
+p:not(:target) { background-color: lime; }
+
+div.stub * { background-color : red  }
+div.stub *:not(:lang(fr)) { background-color : green }
+
+button { background-color : red }
+input { background-color : red }
+button:not(:enabled) { background-color : lime }
+input:not(:enabled)  { background-color : lime }
+
+button { background-color : red }
+input { background-color : red }
+button:not(:disabled) { background-color : lime }
+input:not(:disabled) { background-color : lime }
+
+input, span { background-color : red }
+input:not(:checked), input:not(:checked) + span { background-color : lime}
+
+p:not(:root) { background-color: lime; }
+div * { background-color: red; }
+
+html:not(:root), test:not(:root) { background-color: red; }
+p { background-color: lime; }
+
+.red { background-color : red }
+ul > li:not(:nth-child(odd)) { background-color : lime }
+ol > li:not(:nth-child(even)) { background-color : lime }
+table.t1 tr:not(:nth-child(-n+4)) { background-color : lime }
+table.t2 td:not(:nth-child(3n+1)) { background-color : lime }
+table.t1 td, table.t2 td { border : thin black solid }
+
+.green { background-color : lime ! important; }
+ul > li:not(:nth-child(odd)) { background-color : red }
+ol > li:not(:nth-child(even)) { background-color : red }
+table.t1 tr:not(:nth-child(-n+4)) { background-color : red }
+table.t2 td:not(:nth-child(3n+1)) { background-color : red }
+table.t1 td, table.t2 td { border : thin black solid }
+
+.red { background-color : red }
+ul > li:not(:nth-last-child(odd)) { background-color : lime }
+ol > li:not(:nth-last-child(even)) { background-color : lime }
+table.t1 tr:not(:nth-last-child(-n+4)) { background-color : lime }
+table.t2 td:not(:nth-last-child(3n+1)) { background-color : lime }
+table.t1 td, table.t2 td { border : thin black solid }
+
+.green { background-color : lime ! important; }
+ul > li:not(:nth-last-child(odd)) { background-color : red }
+ol > li:not(:nth-last-child(even)) { background-color : red }
+table.t1 tr:not(:nth-last-child(-n+4)) { background-color : red }
+table.t2 td:not(:nth-last-child(3n+1)) { background-color : red }
+table.t1 td, table.t2 td { border : thin black solid }
+
+.red { background-color : red }
+p:not(:nth-of-type(3)) { background-color : lime }
+dl > *:not(:nth-of-type(3n+1)) { background-color : lime }
+
+.green { background-color : lime ! important }
+p:not(:nth-of-type(3)) { background-color : red }
+dl > *:not(:nth-of-type(3n+1)) { background-color : red }
+
+.red { background-color : red }
+p:not(:nth-last-of-type(3)) { background-color : lime }
+dl > *:not(:nth-last-of-type(3n+1)) { background-color : lime }
+
+.green { background-color : lime ! important }
+p:not(:nth-last-of-type(3)) { background-color : red }
+dl > *:not(:nth-last-of-type(3n+1)) { background-color : red }
+
+.red { background-color : red }
+.t1 td:not(:first-child) { background-color : lime }
+p > *:not(:first-child) { background-color : lime }
+table.t1 td { border : thin black solid }
+
+.green { background-color : lime ! important }
+.t1 td:not(:first-child) { background-color : red }
+p > *:not(:first-child) { background-color : red }
+table.t1 td { border : thin black solid }
+
+.red { background-color : red }
+.t1 td:not(:last-child) { background-color : lime }
+p > *:not(:last-child) { background-color : lime }
+table.t1 td { border : thin black solid }
+
+.green { background-color : lime ! important }
+.t1 td:not(:last-child) { background-color : red }
+p > *:not(:last-child) { background-color : red }
+table.t1 td { border : thin black solid }
+
+.red { background-color : red }
+address { margin-bottom : 1em ; margin-left : 1em }
+address:not(:first-of-type) { background-color : lime }
+
+.red { background-color : red }
+address { margin-bottom : 1em ; margin-left : 1em }
+address:not(:last-of-type) { background-color : lime }
+
+.red { background-color : red }
+p:not(:only-child) { background-color : lime }
+div.testText > div > p { margin-left : 1em }
+
+.green { background-color : lime ! important }
+p:not(:only-child) { background-color : lime }
+div.testText > div > p { margin-left : 1em }
+
+.red { background-color : red }
+.t1 *:not(:only-of-type) { background-color : lime }
+
+.green { background-color : lime ! important }
+.t1 *:not(:only-of-type) { background-color : red }
+
+p { background-color : lime }
+p:not(:not(p)) { background-color : red }
+
+p { color: red; }
+blockquote > div p { color: green; }
+
+p { color: red; }
+blockquote + div ~ p { color: green; }
+
+p { color: green ! important; }
+blockquote + div ~ p { color: red; }
+
+p { color: red; }
+blockquote + div p { color: green; }
+
+p { color: green ! important; }
+blockquote + div p { color: red; }
+
+p { color: red; }
+blockquote div > p { color: green; }
+
+p { color: red; }
+blockquote ~ div + p { color: green; }
+
+p { color: green ! important; }
+blockquote ~ div + p { color: red; }
+
+div :not(:enabled):not(:disabled) { background: lime; }
+p { background : red;}
+
+p { background: lime; }
+p:empty { background: red; }
+
+
+address:empty { background: lime; }
+address { background: red; margin: 0; height: 1em; }
+.text { margin: -1em 0 0 0; }
+
+address:empty { background: lime; }
+address { background: red; margin: 0; height: 1em; }
+.text { margin: -1em 0 0 0; }
+
+address:empty { background: lime; }
+address { background: red; margin: 0; height: 1em; }
+.text { margin: -1em 0 0 0; }
+
+address { background: lime; margin: 0; height: 1em; }
+address:empty { background: red; }
+.text { margin: -1em 0 0 0; }
+
+address { background: lime; margin: 0; height: 1em; }
+address:empty { background: red; }
+.text { margin: -1em 0 0 0; }
+
+p { background: lime; }
+p { background: red; }
+
+p { background: lime; }
+.5cm { background: red; }
+
+p { background: lime; }
+.\5cm { background: red; }
+
+p { background: lime; }
+.two\ words { background: red; }
+
+/* the "." and "~=" forms match on a space separated list of words.
+In such a list, a word containing a space can never match, since it
+would by definition be two words. */
+
+p { background: lime; }
+.one.word { background: red; }
+
+.one\.word { background: lime; }
+p { background: red; }
+
+p { background: lime; }
+
+/* next line is an error, '&' is not a valid token in CSS3 */
+/*
+foo & address, p { background: red; }
+*/
+
+p { background: lime; }
+
+/* bad substring matching attribute selector, 
+next line is an error*/
+[*=test] { background: red; }
+
+p { background: lime; }
+
+/* bad 'ends with' substring matching attribute selector,
+next line is an error */
+[$=test] { background: red; }
+
+/* bad 'starts with' substring matching attribute selector,
+next line is an error */
+[^=test] { background: red; }
+
+::selection { background: lime; }
+:selection { background: red; }
+
+p { background: lime; }
+p:subject { background: red; } /* this is not valid CSS, and if UAs
+implemented the experimental :subject pseudo-class they should have
+used the :-vnd-ident syntax. */
+
+p { background: lime; }
+p   * { background: lime; }
+p > * { background: lime; }
+p + * { background: lime; }
+p ~ * { background: lime; }
+
+p:first-letter { background-color: red; }
+p::first-letter { background-color: lime; }
+
+p::first-letter { background-color: red; }
+p:first-letter { background-color: lime; }
+
+p:first-line { background-color: red; }
+p::first-line { background-color: lime; }
+
+p::first-line { background-color: red; }
+p:first-line { background-color: lime; }
+
+span:before { background-color: red; content: 'FAILED'; }
+span::before { background-color: lime; content: 'PASSED'; }
+
+span::before { background-color: red; content: 'FAILED'; }
+span:before { background-color: lime; content: 'PASSED'; }
+
+span:after { background-color: red; content: 'FAILED'; }
+span::after { background-color: lime; content: 'PASSED'; }
+
+span::after { background-color: red; content: 'FAILED'; }
+span:after { background-color: lime; content: 'PASSED'; }
+
+span { color: red; }
+span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span, span { color: green } /* 2049 */
+
+.span { color: red; }
+.span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span, .span { color: green } /* 2049 */
+
+.span { color: red; }
+.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span.span { color: green } /* 2049 */
+
+p.span { color: red; }
+p:not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span):not(.span) { color: green } /* 2049 */
+
+p { color: red; }
+p:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child:first-child { color: green } /* 2049 */
+
+p { color: green; }
+.13 { color: red; }
+
+p { color: green; }
+.\13 { color: red; }
+
+p { color: red; }
+.\31 \33 { color: green; }
+
+p { background: red; color: yellow; }
+p:not(#other).class:not(.fail).test#id#id { background: green; color: white; }
+div { background: green; color: white; }
+div:not(#theid).class:not(.fail).test#theid#theid { background: red; color: yellow; }
+div:not(#other).notclass:not(.fail).test#theid#theid { background: red; color: yellow; }
+div:not(#other).class:not(.test).test#theid#theid { background: red; color: yellow; }
+div:not(#other).class:not(.fail).nottest#theid#theid { background: red; color: yellow; }
+div:not(#other).class:not(.fail).nottest#theid#other { background: red; color: yellow; }
+
+p:selection { color: yellow; background: red; }
+
+div { color: green; }
+p::first-child { color: yellow; background: red; }
+
+div { color: green; }
+p:not(:first-line) { color: yellow; background: red; }
+p:not(:after) { color: yellow; background: red; content: ' THIS TEST HAS FAILED! '; }
+
+p { color: green; }
+span:first-line { background: red; color: yellow; font-size: 4em; }
+span::first-line { background: red; color: yellow; font-size: 4em; }
+
+p { color: green; }
+p:first-line { background: red; color: yellow; font-size: 4em; }
+p::first-line { background: red; color: yellow; font-size: 4em; }
+
+p { color: green; }
+p:first-letter { background: red; color: yellow; font-size: 4em; }
+p::first-letter { background: red; color: yellow; font-size: 4em; }
+
+.cs { color: green; }
+.cs P { background: red; color: yellow; }
+.cs .a { background: red; color: yellow; }
+.cs .span1 span { background: red; color: yellow; }
+.cs .span2 { color: red; }
+.cs .span2 SPAN { color: green; }
+.cs .span2 span { background: red; color: yellow; }
+.ci { color: red; }
+.ci P { background: green; color: white; }
+.ci .a { background: green; color: white; }
+.ci .span1 span { background: green; color: white; }
+.ci .span2 SPAN { background: green; color: white; }
+
+p { color: green; }
+..test { background: red; color: yellow; }
+.foo .quux { background: red; color: yellow; }
+.bar { background: red; color: yellow; }
+
+p { color: lime; }
+p[class$=""] { color: red; }
+
+p { color: lime; }
+p[class^=""] { color: red; }
+
+p { color: lime; }
+p[class*=""] { color: red; }
+
+p { color: red; }
+p:not([class$=""]) { color: lime; }
+
+p { color: red; }
+p:not([class^=""]) { color: lime; }
+
+p { color: red; }
+p:not([class*=""]) { color: lime; }
+
+#test { background: red; display: block; padding: 1em; }
+#test:not(:empty) { background: lime; }
+
+#test1 { background: red; display: block; padding: 1em; margin: 1em; }
+#test1:empty { background: lime; }
+#test2 { background: lime; display: block; padding: 1em; margin: 1em; }
+#test2:empty { background: red; }
+
+#test { background: red; display: block; padding: 1em; }
+#stub ~ div div + div > div { background: lime; }
+
+#two:first-child { background: red; }
+#three:last-child { background: lime; }
+
+
+
+/******************************************************************************* 
+
+       Namespaces
+
+*******************************************************************************/
+   @NAmespace x "http://www.w3.org/1999/xhtml";
+   x|p { background: lime }
+
+   @namespace "1";
+   @namespace dummy "yummy";
+   @namespace "2";
+   *|t { background:lime }
+   t { background:red }
+   
+   @namespace "1";
+   @namespace dummy "yummy";
+   @namespace "2";
+   *|t2 { background:red }
+   t2 { background:lime }
+   
+   @namespace x "1";
+   @namespace dummy "yummy";
+   @namespace x "2";
+   *|t3 { background:red }
+   x|t3 { background:lime }
+
+   x|p { background: lime }
+
+      @namespace url("http://example.com/");
+   *|t { background:lime }
+   t { background:red }
+
+   @namespace url("http://example.com/");
+   *|t2 { background:lime }
+   t2 { background:red }
+
+   @namespace url("HTTP://example.com/");
+   *|t3 { background:lime }
+   t3 { background:red }
+
+   @namespace url("http://example.COM/");
+   *|t4 { background:lime }
+   t4 { background:red }
+
+   @namespace url("%41");
+   *|t5 { background:lime }
+   t5 { background:red }
+   
+   @namespace url("A");
+   *|t6 { background:lime }
+   t6 { background:red }
+
+   *|test { background:red }
+
+   @namespace url(test-a);
+   test { background:lime }
+
+   @namespace url('test-b');
+   test { background:lime }
+
+   @namespace url("test-c");
+   test { background:lime }
+
+   @namespace 'test-d';
+   test { background:lime }
+
+   @namespace "test-e";
+   test { background:lime }
+
+   @namespace/* test */
+   a
+   url(
+test-a );
+
+   @namespace/**/b/**/url(	'test-b'
+);
+
+   @namespace	c	url("test-c"	
+);
+
+   a|test, b|test, c|test { background:lime }
+   
+   
+   @namespace u\00072l("test");
+   *|test { background:red }
+   test { background: lime }
+   

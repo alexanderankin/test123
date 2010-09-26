@@ -1,0 +1,147 @@
+<?xml version="1.0"?>
+
+<!--
+     This is a build.xml file for building the XML plugin.
+
+     The 'dist' target compiles the plugin and creates the JAR file.
+     Before running the 'dist' target, you will need to generate the
+     documentation using one of these two targets:
+
+     To use it for building your own plugin, make these changes:
+
+     - If necessary, add any dependencies to the 'project.class.path'
+       definition
+-->
+
+<project name="XML" default="build" basedir=".">
+
+    <property file="build.properties"/>
+    <property file="../build.properties"/>
+
+	<!-- You should set this property below in your ../build.properties to
+	     the location of the jedit's "build-support/trunk" project
+	     checked out from jEdit's SVN repository -->
+    <property name="build.support" value="../../build-support" />
+    <property name="docs-proc.target"       value="xsltproc" />
+    <property name="compiler.source" value="1.5" />
+    <property name="compiler.target" value="1.5" />
+    <property name="javadoc.packagenames"	value="xml.*, sidekick.*" />
+    <property name="build.dir" value="build"/>
+    <property name="install.dir"  value="../"/>
+    <property name="jedit.plugins.dir" value="${install.dir}" />
+    <property name="lib.dir" value="lib" />
+    <property name="user-doc.xsl" location="docs/users-guide.xsl" />
+    <!-- set this property if we wanted to chunk the user manual :
+    <property name="docbook.xsl.sheet" value="html/chunk.xsl" />
+    -->
+
+    <import file="${build.support}/plugin-build.xml" />
+
+
+    <target name="build.prepare">
+        <copy todir="${install.dir}">
+          <fileset dir="lib" includes="*.jar" />
+        </copy>
+    </target>
+
+    <!-- exclude the test directory -->
+    <selector id="compileFiles">
+    	<or>
+        	<filename name="sidekick/**/*.java" />
+        	<filename name="xml/**/*.java" />
+        </or>
+    </selector>
+
+    <selector id="extraFiles">
+        <and>
+            <or>
+                <filename name="actions.xml" />
+                <filename name="dockables.xml" />
+                <filename name="services.xml" />
+                <filename name="XML.props" />
+                <filename name="LICENSE" />
+                <filename name="README" />
+            </or>
+            <not>
+                <filename name="build/**/*"/>
+             </not>
+        </and>
+    </selector>
+
+    <selector id="packageFiles">
+            <or>
+                <filename name="docs/*.html" />
+                <filename name="docs/copying.txt" />
+                <filename name="icons/*.gif" />
+                <filename name="icons/*.png" />
+                <filename name="xml/**/*.xml" />
+                <filename name="xml/**/catalog" />
+                <filename name="xml/**/*.xsd" />
+                <filename name="xml/**/*.ent" />
+                <filename name="xml/**/*.mod" />
+                <filename name="xml/**/*.png" />
+                <filename name="xml/**/*.dtd" />
+                <filename name="xml/**/*.rng" />
+                <filename name="xml/**/*.rnc" />
+            </or>
+    </selector>
+
+    <path  id="project.class.path">
+        <pathelement location="${ant.home}/lib/ant.jar" />
+        <pathelement location="${lib.dir}/jing.jar"/>
+        <pathelement location="${lib.dir}/trang.jar"/>
+        <pathelement location="${lib.dir}/relaxngDatatype.jar"/>
+        <pathelement location="${jedit.install.dir}/jedit.jar"/>
+        <pathelement location="${jedit.plugins.dir}/Beauty.jar"/>
+        <pathelement location="${jedit.plugins.dir}/ErrorList.jar"/>
+        <pathelement location="${jedit.plugins.dir}/SideKick.jar"/>
+        <pathelement location="${jedit.plugins.dir}/resolver.jar"/>
+        <pathelement location="${jedit.plugins.dir}/xercesImpl.jar"/>
+        <pathelement location="${jedit.plugins.dir}/CommonControls.jar"/>
+        <pathelement location="${jedit.plugins.dir}/kappalayout.jar"/>
+        <pathelement location="${jedit.plugins.dir}/EclipseIcons.jar"/>
+        <pathelement location="."/>
+    </path>
+
+    <echo>project.class.path = ${toString:project.class.path}</echo>
+
+    <!-- Generate ant-complete.xml file with AntComplete task -->
+
+    <target name="ant-complete" depends="compile">
+        <taskdef name="antcomplete" classname="xml.completion.AntCompleteTask" classpath="${build.classes}"/>
+        <antcomplete output="${src.dir}/xml/completion/ant-complete.xml"/>
+    </target>
+
+    <target name="jar" depends="ant-complete, build"
+       description="builds jar + ant-completion info" />
+
+    <target name="dist" depends="docs, jar"
+       description="The whole shebang" />
+
+    <target name="javacc" description="Runs javacc compiler on *.jj files.">
+        <condition property="javacchome.set">
+            <isset property="javacchome"/>
+        </condition>
+        <fail unless="javacchome.set" message="Property 'javacchome' needs to be set."/>
+        <!-- out temporarily, be sure to make these live before release
+        <javacc javacchome="${javacchome}" target="./sidekick/css/parser/CSS3Parser.jj"/>
+        -->
+        <javacc javacchome="${javacchome}" target="./sidekick/html/parser/html/HtmlParser.jj"/>
+        <jjtree javacchome="${javacchome}"
+            target="./sidekick/ecmascript/parser/EcmaScript.jjt"
+        outputdirectory="./sidekick/ecmascript/parser"/>
+        <javacc javacchome="${javacchome}" target="./sidekick/ecmascript/parser/EcmaScript.jj"/>
+        <javacc javacchome="${javacchome}" target="./sidekick/css/parser/CSS3Parser.jj"/>
+        
+    </target>
+
+    <!-- Generate tags using 'ctags' program from ctags.sourceforge.net -->
+    <target name="tags">
+        <exec executable="ctags">
+            <arg value="-R" />
+            <arg path="." />
+        </exec>
+    </target>
+
+
+</project>
