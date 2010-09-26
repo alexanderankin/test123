@@ -239,6 +239,72 @@ public class ElementDecl
 		return children;
 	} //}}}
 
+	//{{{ getChildElementsStartingWith() method
+	public List<ElementDecl> getChildElementsStartingWith(Map<String,String> namespaceContext, String nameToComplete)
+	{
+		ArrayList<ElementDecl>children = new ArrayList<ElementDecl>(completionInfo.elements.size());
+
+		if(any)
+		{
+			for(ElementDecl ch : completionInfo.elements)
+			{
+				if(ch.name.startsWith(nameToComplete))
+				{
+					children.add(ch.withContext(namespaceContext));
+				}
+			}
+		}
+		else
+		{
+			// FIXME: type-safe
+			for(Object o: completionInfo.elementsAllowedAnywhere)
+			{
+				ElementDecl ch = (ElementDecl)o;
+				if(ch.name.startsWith(nameToComplete))
+				{
+					children.add(ch.withContext(namespaceContext));
+				}
+			}
+
+			if(content != null)
+			{
+				Iterator<String> iter = content.iterator();
+				while(iter.hasNext())
+				{
+					ElementDecl decl = null;
+					String n = iter.next();
+					System.err.println("trying "+n+"("+nameToComplete+")");
+					if(elementHash == null){
+						//backward compatible
+						decl = (ElementDecl)completionInfo
+							.elementHash.get(n);
+					}else{
+						decl = elementHash.get(n);
+					}
+						
+					if(decl != null) {
+						if (decl.isAbstract()) 
+						{
+							List<ElementDecl> repls = decl.findReplacementsStartingWith(namespaceContext,name);
+							children.addAll(repls);
+						}
+						else
+						{
+							// FIXME: prefix ?
+							if(n.startsWith(nameToComplete))
+							{
+								ElementDecl e = decl.withContext(namespaceContext);
+								children.add(e);
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		return children;
+	} //}}}
+
 	/**
 	 * Finds all elements which can be replaced by this one. 
 	 *  
@@ -258,6 +324,11 @@ public class ElementDecl
 	 * 
 	 */
 	public List<ElementDecl> findReplacements(Map<String,String> prefix) {
+		return null;
+	}
+	
+	/** FIXME: not implemented */
+	public List<ElementDecl> findReplacementsStartingWith(Map<String,String> prefix, String nameToComplete) {
 		return null;
 	}
 	

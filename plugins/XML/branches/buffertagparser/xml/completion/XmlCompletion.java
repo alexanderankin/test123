@@ -42,13 +42,11 @@ import xml.completion.ElementDecl.AttributeDecl;
 public class XmlCompletion extends SideKickCompletion
 {
 	//{{{ XmlCompletion constructor
-	public XmlCompletion(View view, List items, String txt, XmlParsedData data,
-		String closingTag)
+	public XmlCompletion(View view, List items, String txt, XmlParsedData data)
 	{
 		super(view,txt);
 		this.items = items;
 		this.data = data;
-		this.closingTag = closingTag;
 	} //}}}
 
 	//{{{ getRenderer() method
@@ -80,8 +78,15 @@ public class XmlCompletion extends SideKickCompletion
 			case '/':
 				if(jEdit.getBooleanProperty("xml.close-complete"))
 				{
-					XmlActions.completeClosingTag(view,true);
-					return false;
+					for(Object o: items)
+					{
+						if(o instanceof XmlListCellRenderer.ClosingTag)
+						{
+							String word = ((XmlListCellRenderer.ClosingTag)o).name;
+							XmlActions.completeClosingTag(view,data,word,true);
+							return false;
+						}
+					}
 				}
 			default:
 				Macros.Recorder recorder
@@ -104,7 +109,6 @@ public class XmlCompletion extends SideKickCompletion
 
 	//{{{ Private members
 	private XmlParsedData data;
-	private String closingTag;
 
 	//{{{ insert() method
 	/**
@@ -131,6 +135,7 @@ public class XmlCompletion extends SideKickCompletion
 		}
 		else if(obj instanceof XmlListCellRenderer.ClosingTag)
 		{
+			String closingTag = ((XmlListCellRenderer.ClosingTag)obj).name;
 			insert = ("/" + closingTag + ">")
 				.substring(text.length());
 			caret = 0;

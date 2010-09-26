@@ -7,7 +7,7 @@
   -->
 <ACTIONS>
    
-    <ACTION NAME="xmlindenter.indent">
+    <ACTION 	NAME="xmlindenter.indent">
         <CODE>xml.indent.XmlIndenterPlugin.indentXml(view);</CODE>
     </ACTION>
     <ACTION NAME="xmlindenter.toggleSplitAttributes">

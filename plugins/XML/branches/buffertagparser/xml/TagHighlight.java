@@ -32,17 +32,17 @@ public class TagHighlight implements StructureMatcher
 		}
 
 		int caret = textArea.getCaretPosition();
-		String text = textArea.getText();
-		TagParser.Tag current = TagParser.getTagAtOffset(text,caret);
+		BufferTagParser.Tag current = BufferTagParser.getTagAtOffset(textArea.getBuffer(),caret);
 
 		if(current == null) {
 			return null;
 		}
 		else
 		{
-			TagParser.Tag tag = TagParser.getMatchingTag(text,current);
+			BufferTagParser.Tag tag = BufferTagParser.getMatchingTag(textArea.getBuffer(),current);
 			if(tag != null)
 			{
+				tag.end++;//tag end is at |> not >| which is better for matching
 				tag.startLine = textArea.getLineOfOffset(tag.start);
 				tag.endLine = textArea.getLineOfOffset(tag.end);
 				tag.matcher = this;

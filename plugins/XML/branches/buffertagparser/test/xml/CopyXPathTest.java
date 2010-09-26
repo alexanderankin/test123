@@ -106,10 +106,12 @@ public class CopyXPathTest{
 
 		Registers.getRegister('$').setValue("NULL");
 
+		Pause.pause(1000);
 		// after the closing tag of the root element
 		gotoPositionAndWait(431);
 
 		action("xml-copy-xpath");
+		Pause.pause(1000);
 		assertEquals("NULL",Registers.getRegister('$').toString());
 	}
 

@@ -30,7 +30,7 @@ import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
 import sidekick.*;
 import xml.completion.*;
-import xml.parser.TagParser;
+import xml.parser.BufferTagParser;
 //}}}
 
 public class XmlInsert extends JPanel implements EBComponent
@@ -396,7 +396,7 @@ public class XmlInsert extends JPanel implements EBComponent
 				String t = buffer.getText(0, pos);
 				/* Check if we are inside a tag, and if so, wipe it out before
 				   inserting the one we just created */
-				if (TagParser.isInsideTag(t, pos)) {
+				if (BufferTagParser.isInsideTag(buffer, pos)) {
 					int openAngle = t.lastIndexOf('<');
 					insideTag = new Selection.Range(openAngle, pos);
 				}

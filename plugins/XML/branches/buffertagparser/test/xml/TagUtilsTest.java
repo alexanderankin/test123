@@ -99,7 +99,7 @@ public class TagUtilsTest{
 		
 		action("xml-split-tag",1);
 		assertEquals("<b></b></a>",b.getLineText(2));
-		assertEquals("<a> ",b.getLineText(3));
+		assertEquals("<a>",b.getLineText(3));
 		assertEquals("<c:c xmlns:c=\"urn:hello\">you could",b.getLineText(4));//untouched
 		action("undo",1);
 	}
@@ -134,6 +134,7 @@ public class TagUtilsTest{
 		gotoPositionAndWait(204);
 		
 		action("xml-split-tag");
+		Pause.pause(500);
 		assertEquals("    c = \"3\"",b.getLineText(9));
 		action("undo",1);
 		
