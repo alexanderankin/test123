@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- 
+ This document provides some tests for bug #2801814, solved by Greg Knitt
+ see : http://sourceforge.net/tracker/?func=detail&aid=2801814&group_id=588&atid=565475
+ -->
+<!DOCTYPE root [
+<!ELEMENT root (a)+ >
+<!ELEMENT a (#PCDATA | b )* >
+<!ATTLIST a 
+    aa CDATA #IMPLIED
+    ab CDATA #IMPLIED
+>
+<!ELEMENT b (#PCDATA)>
+<!ATTLIST b 
+    bb CDATA #IMPLIED
+>
+]>
+<root>
+<!-- when asking for completion inside <a> start tag, aa or ab is proposed -->
+<a aa="" > <!-- see : no completion popup here -->text area a1</a>
+
+<!-- the slash inside aa doesn't prevent the completion popup (aa|ab) in start tag -->
+<a aa="../" ></a>
+
+<!-- the completion popup shows on the line after aa="(...)" -->
+<a
+	aa="see : completion in second line"
+	
+>
+</a>
+<!-- no completion popups in any text area -->
+<a>text area a1<b>text area b1</b>text area a2</a>
+</root>

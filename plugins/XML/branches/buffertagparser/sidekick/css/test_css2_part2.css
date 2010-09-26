@@ -1,0 +1,222 @@
+
+P {background-image: url(bg.gif);}
+.one {background-image: none;}
+
+.one {background-image: url(oransqr.gif); background-repeat: repeat-y;}
+.two {background-image: url(oransqr.gif); background-repeat: repeat-x;}
+.three {background-image: url(oransqr.gif); background-repeat: no-repeat;}
+.four {background-image: url(bg.gif); background-position: 50% 50%; background-repeat: repeat-y;}
+.five {background-image: url(crosshair2.gif); background-position: 50% 50%;
+       background-color: red;}
+.six {background-image: url(crosshair2.gif); background-position: center top;
+      background-color: red;}
+.seven {background-image: url(crosshair2.gif); background-position: top left;
+        background-color: red;}
+.eight {background-image: url(crosshair2.gif); background-position: bottom right;
+        background-color: red;}
+.nine {background-image: url(crosshair2.gif); background-position: 50% 50%;
+       background-color: red;}
+
+BODY {background-image: url(bg.gif); background-repeat: repeat-x; background-attachment: fixed;}
+
+BODY {background-image: url(bg.gif); background-position: right top;
+      background-repeat: no-repeat;}
+.one {background-image: url(bg.gif); background-position: center;
+      background-repeat: no-repeat; background-color: aqua;}
+.two {background-image: url(bg.gif); background-position: 50% 50%;
+      background-repeat: no-repeat; background-color: aqua;}
+.three {background-image: url(bg.gif); background-position: bottom right;
+        background-repeat: no-repeat; background-color: aqua;}
+.four {background-image: url(bg.gif); background-position: 100% 100%;
+       background-repeat: no-repeat; background-color: aqua;}
+.five {background-image: url(bg.gif); background-position: 0% 50%;
+       background-repeat: no-repeat; background-color: aqua;}
+.six {background-image: url(bg.gif); background-position: 75% 25%;
+       background-repeat: no-repeat; background-color: aqua;}
+.seven {background-image: url(bg.gif); background-position: 20px 20px;
+       background-repeat: no-repeat; background-color: aqua;}
+
+BODY {background: green url(oransqr.gif) repeat-x center top fixed;}
+.one {background: lime url(oransqr.gif) repeat-y 100% 0%;}
+.two {background: lime url(oransqr.gif) repeat-y center top;}
+.three {background: lime url(oransqr.gif) repeat-x left top;}
+
+.one {word-spacing: 0.3in;}
+.two {word-spacing: 0.5cm;}
+.three {word-spacing: 5mm;}
+.four {word-spacing: 3pt;}
+.five {word-spacing: 0.25pc;}
+.six {word-spacing: 1em;}
+.seven {word-spacing: 1ex;}
+.eight {word-spacing: 5px;}
+.nine {word-spacing: normal;}
+.ten {word-spacing: 300%;}
+.eleven {word-spacing: -0.2em;}
+
+.one {letter-spacing: 0.3in;}
+.two {letter-spacing: 0.5cm;}
+.three {letter-spacing: 5mm;}
+.four {letter-spacing: 3pt;}
+.five {letter-spacing: 0.25pc;}
+.six {letter-spacing: 1em;}
+.seven {letter-spacing: 1ex;}
+.eight {letter-spacing: 5px;}
+.nine {letter-spacing: normal;}
+.ten {letter-spacing: 300%;}
+.eleven {letter-spacing: -0.1em;}
+
+.one {text-decoration: underline;}
+.two {text-decoration: overline;}
+.three {text-decoration: line-through;}
+.four {text-decoration: blink;}
+B.five {text-decoration: none;}
+.six {text-decoration: underline overline;}
+.seven {text-decoration: underline overline line-through;}
+
+P {font-size: 12pt;}
+.one {vertical-align: sub;}
+.two {vertical-align: super;}
+.three {vertical-align: top; font-size: 12pt;}
+.four {vertical-align: text-top; font-size: 12pt;}
+.five {vertical-align: middle; font-size: 12pt;}
+.six {vertical-align: bottom; font-size: 12pt;}
+.seven {vertical-align: text-bottom; font-size: 12pt;}
+.eight {vertical-align: baseline; font-size: 12pt;}
+.nine {vertical-align: 50%; font-size: 12px; line-height: 16px;}
+
+P.example {font-size: 14pt;}
+BIG {font-size: 16pt;}
+SMALL {font-size: 12pt;}
+.ttopalign {vertical-align: text-top;}
+.topalign {vertical-align: top;}
+.midalign {vertical-align: middle;}
+
+.ttn {text-transform: none;}
+.cap {text-transform: capitalize;}
+.upp {text-transform: uppercase;}
+.low {text-transform: lowercase;}
+
+.one {text-align: left;}
+.two {text-align: right;}
+.three {text-align: center;}
+.four {text-align: justify;}
+
+.one {text-indent: 0.5in; background: aqua;}
+.two {text-indent: 2cm; background: aqua;}
+.three {text-indent: 20mm; background: aqua;}
+.four {text-indent: 24pt; background: aqua;}
+.five {text-indent: 2pc; background: aqua;}
+.six {text-indent: 2em; background: aqua;}
+.seven {text-indent: 2ex; background: aqua;}
+.eight {text-indent: 50%; background: aqua;}
+.nine {text-indent: 25px; background: aqua;}
+blockquote {text-indent: 50%; background: aqua;}
+
+.one {line-height: 0.5in; font-size: 12px;}
+.two {line-height: 2cm; font-size: 12px;}
+.three {line-height: 20mm; font-size: 12px;}
+.four {line-height: 24pt; font-size: 12px;}
+.five {line-height: 2pc; font-size: 12px;}
+.six {line-height: 2em; font-size: 12px;}
+.seven {line-height: 3ex; font-size: 12px;}
+.eight {line-height: 200%; font-size: 12px;}
+.nine {line-height: 2; font-size: 12px;}
+.ten {line-height: 50px; font-size: 12px;}
+.eleven {line-height: -1em; font-size: 12px;}
+TABLE .ten {line-height: normal; font-size: 12px;}
+DIV {background-color: silver;}
+SPAN.color {background-color: silver;}
+
+.zero {background-color: silver; margin-top: 0;}
+.one {margin-top: 0.5in; background-color: aqua;}
+.two {margin-top: 25px; background-color: aqua;}
+.three {margin-top: 5em; background-color: aqua;}
+.four {margin-top: 25%; background-color: aqua;}
+.five {margin-top: 25px;}
+.six {margin-top: -10px; background-color: aqua;}
+P, UL {margin-bottom: 0;}
+
+P { margin: 0; padding: 0; text-align:  justify;}
+
+DIV.menu {float: left; clear: left; width: 11em;
+          margin: 0; margin-bottom: 10px; padding: 0.5em;}
+DIV.menu H1 {font-size: 1.2em; margin: 0; padding: 0;}
+DIV.menu UL {margin: 0.2em 0.3em 0.2em 1em; padding: 0;}
+DIV.article {padding: 0.5em; margin: 0; margin-left: 14em; margin-right: 2em;
+             color: black; background: yellow; clear: none;}
+
+html { font: 10px/1 Verdana, sans-serif;
+background-color: blue; color: white; }
+
+body { margin: 1.5em; border: .5em solid black;
+padding: 0; width: 48em; background-color: white; }
+
+dl { margin: 0; border: 0; padding: .5em; }
+
+dt { background-color: rgb(204,0,0); margin: 0; padding: 1em;
+width: 10.638%; /* refers to parent element's width of 47em. = 5em or 50px */
+height: 28em; border: .5em solid black; float: left; }
+
+dd { float: right; margin: 0 0 0 1em; border: 1em solid black;
+padding: 1em; width: 34em; height: 27em; }
+
+ul { margin: 0; border: 0; padding: 0; }
+
+li { display: block; /* i.e., suppress marker */ color: black;
+height: 9em; width: 5em; margin: 0; border: .5em solid black;
+padding: 1em; float: left; background-color: #FC0; }
+
+#bar { background-color: black; color: white; width: 41.17%; /* = 14em */
+border: 0; margin: 0 1em; }
+
+#baz { margin: 1em 0; border: 0; padding: 1em; width: 10em;
+height: 10em; background-color: black; color: white; }
+
+form { margin: 0; display: inline; }
+
+p { margin: 0; }
+
+form p { line-height: 1.9; }
+
+blockquote { margin: 1em 1em 1em 2em; border-width: 1em 1.5em 2em .5em;
+border-style: solid; border-color: black; padding: 1em 0; width: 5em;
+height: 9em; float: left; background-color: #FC0; color: black; }
+
+address { font-style: normal; }
+
+h1 { background-color: black; color: white; float: left; margin: 1em 0;
+border: 0; padding: 1em; width: 10em; height: 10em; font-weight: normal;
+font-size: 1em; }
+
+.zero {margin-left: 0;}
+.one {margin-left: 3em;}
+.two {margin-left: 3ex;}
+.three {margin-left: 36px;}
+.four {margin-left: 0.5in;}
+.five {margin-left: 1.27cm;}
+.six {margin-left: 12.7mm;}
+.seven {margin-left: 36pt;}
+.eight {margin-left: 3pc;}
+.nine {margin-left: +3pc;}
+.ten {font-size: 40px; border-left: 1ex solid purple; background-color: aqua;}
+
+.zero { background: yellow }
+.one { margin-left: 25%; margin-right: 25%; background: white }
+.two { margin-left: 50%; margin-right: 0%; background: white }
+.three {margin-left: 25%;}
+
+BODY {color: black;}
+.one {color: #080;}
+.two {color: #008000;}
+.three {color: rgb(0,128,0);}
+.four {color: rgb(0%,50%,0%);}
+.five {color: rgb(0.0%,50.0%,0.0%);}
+.six {color: green;}
+.seven {color: invalidValue;}
+.eight {color: rgb(0,128,1280);}
+.nine {color: rgb(0,128,255);}
+.ten {color: rgb(50%,500%,60%);}
+.eleven {color: rgb(50%,0%,60%);}
+
+
+

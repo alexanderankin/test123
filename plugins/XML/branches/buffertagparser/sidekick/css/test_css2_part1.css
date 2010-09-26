@@ -1,0 +1,245 @@
+/* CSS2 compatibility test file -- I made this up by copying and pasting a
+bunch of css example code from the w3c css test suite.  There is a lot of
+repetition, but I think I've got most (all?) use cases covered for the CSS2
+specification.  This should parse without error. */
+
+@import url(imptest1.css);
+@import "imptest1a.css";
+UL {color: red;}
+.four {color: purple;}
+@import url(imptest2.css);
+<!--
+P.six {color: green;}
+-->
+
+.one, .two, .three {color: green;}
+
+BODY {color: green;}
+H3 {color: blue;}
+EM {color: purple;}
+.one {font-style: italic;}
+.two {text-decoration: underline;}
+#two,#twot {color: navy;}
+.three {color: purple;}
+.four {
+            color: #203cd8;
+}
+
+#one {color: green;}
+#a1 {color: green;}
+P#two, P#two2 {color: blue;}
+P#three, P#three2 {color: purple;}
+#four {color: green;}
+#a2 {color: green;}
+P#five, P#five2 {color: blue;}
+P#six, P#six2 {color: purple;}
+
+P {color: navy; font-family: serif;}
+HTML BODY TABLE P {color: purple; font-family: sans-serif;}
+EM, UL LI LI {color: green;}
+
+/* This is a CSS1 comment. */
+.one {color: green;} /* Another comment */
+/* The following should not be used:
+.two {color: red;} */
+.three {color: green; /* color: red; */}
+/**
+.four {color: red;} */
+.five {color: green;}
+/**/
+.six {color: green;}
+/*********/
+.seven {color: green;}
+/* a comment **/
+.eight {color: green;}
+
+A {color: green;}
+A:link {color: purple;}
+A:visited {color: lime;}
+A:active {color: maroon;}
+#one,#onet {color: #006600;}
+
+P:first-line {color: green;}
+.two:first-line {font-size: 200%;}
+.three:first-line {font-variant: small-caps;}
+
+P:first-letter {color: maroon;}
+.two:first-letter {font-size: 200%;}
+P.three:first-letter {font-size: 350%;}
+
+P:first-line {font-weight: bold;}
+P.two:first-line {color: green;}
+P:first-line.three {color: red;}
+
+P:first-line {color: green;}
+P:first-letter {color: maroon;}
+.two:first-line {font-size: 200%;}
+.two:first-letter {font-size: 350%;}
+P.three:first-letter {font-size: 350%;}
+P.three:first-line {font-variant: small-caps;}
+
+P {color: green ! important;}
+P {color: red;}
+P#id1,P#id1t {color: purple;}
+
+LI {color: purple;}
+UL LI {color: blue;}
+UL LI LI {color: gray;}
+LI.red {color: green;}
+UL LI.mar {color: #660000;}
+UL LI#gre,UL LI #gret {color: green;}
+.test {color: blue;}
+.test {color: purple;}
+.one {text-decoration: line-through;}
+
+P.one {margin-bottom: 2cm; padding-bottom: 0;}
+P.two {margin-top: 2cm; padding-top: 0;}
+P.three {margin-top: 0; padding-top: 0;}
+P.four {margin-top: -1cm; margin-bottom: 0;
+        padding-top: 0; padding-bottom: 0;}
+DIV.five {margin-top: 1cm; margin-bottom: 1cm;
+          padding-top: 1cm; padding-bottom: 0;}
+P.six {margin-top: 1cm; margin-bottom: 1cm;
+       padding-top: 0; padding-bottom: 0;}
+P.seven {margin-top: 1cm; padding-top: 0;}
+P.eight {margin-bottom: -1cm; padding-bottom: 2cm;}
+P.nine {margin-top: -1cm; padding-top: 1cm;
+        padding-bottom: 0; margin-bottom: 1cm;}
+P.ten {margin-top: 1cm;padding-top: 0;
+       float: left;width: 50%;}
+P.eleven {margin-top: 1cm; padding-top: 0; clear: none;}
+P.twelve {margin-bottom: 0; padding-bottom: 1cm; clear: both;}
+P.thirteen {margin-top: 0; padding-top: 1cm;}
+TABLE {clear: both;}
+
+.ruler {padding: 0px; margin: 0px; border-width: 0px;}
+P#ruled,P#ruledt {background-color: aqua; width: 400px;
+     border-style: solid; border-color: silver;
+     border-top-width: 0px; border-bottom-width: 0px;
+     border-left-width: 40px; border-right-width: 40px;
+     padding-left: 40px; padding-right: 40px;
+     margin-top: 0px; margin-bottom: 0px; margin-left: 40px; margin-right: 40px;}
+
+P.one {margin-left: 10px;}
+DIV.two {margin-left: 10px;}
+P.three {margin-left: 0; width: 50%; margin-right: auto;
+         background-color: gray;}
+P.four {margin-left: auto; width: 50%; margin-right: auto;
+        background-color: gray;}
+P.five {margin-left: auto; width: 50%; margin-right: 0;
+        background-color: gray;}
+P.six {margin-left: auto; width: auto; margin-right: 0;
+       background-color: gray; }
+P.seven {margin-left: 0; width: auto; margin-right: auto;
+         background-color: gray;}
+P.eight {margin-left: auto; width: auto; margin-right: auto;
+         background-color: gray;}
+P.nine {padding-left: auto; padding-right: auto; margin-left: 0; margin-right: 0;
+        width: 50%; background-color: gray;}
+P.ten {margin-left: auto; width: 100%; margin-right: auto;
+       background-color: gray;}
+
+HR.minor {clear: both; width: 5%;}
+HR.major {clear: both; width: 75%; margin: 1.5em;}
+DIV {border: 5px solid purple; padding: 0; margin: 0.125em;}
+P.left, P.right {width: 10em; padding: 1em; margin: 0;
+   border: 1px solid lime; background-color: silver;}
+IMG.left, IMG.right {margin: 0; border: 3px solid black;}
+.left {float: left;}
+.right {float: right;}
+
+P.one {line-height: 200%;}
+SPAN.two {border-style: solid; border-width: 10px; border-color: red;
+          padding: 2pt; margin: 30pt;}
+P.three {font-size: 10pt; line-height: 12pt;}
+SPAN.four {border-style: solid; border-width: 12px; border-color: red;
+          padding: 2pt;}
+
+IMG.one {display: inline;}
+IMG.two {display: block;}
+IMG.three {display: block;
+           margin-right: auto; margin-left: auto; width: auto;}
+IMG.four {display: block;
+          margin-right: auto; margin-left: auto; width: 50%;}
+IMG.five {display: block;
+          margin-right: 0; margin-left: auto; width: 50%;}
+
+P.one {font-size: 14px; line-height: 20px;}
+IMG.onea {vertical-align: text-bottom;
+     width: 200px; height: 200px;}
+IMG.oneb {vertical-align: text-top; width: 200px; height: 200px;}
+
+P.two {font-size: 14px; line-height: 20px;}
+IMG.twoa {vertical-align: text-bottom; width: 100px; height: 100px;
+     padding: 5px; border-style: solid;
+     border-width: 10px; margin: 15px;}
+IMG.twob {vertical-align: text-top;
+          width: 100px; height: 100px;
+     padding: 5px; border-style: solid;
+     border-width: 10px; margin: 15px;}
+
+IMG.twoc {vertical-align: middle; width: 50px; height: 50px;
+     padding: 5px; border-style: solid;
+     border-width: 10px; margin: -10px;}
+
+DIV.a {font-family: serif;}
+DIV.b {font-family: monospace;}
+.one {font-family: serif;}
+.two {font-family: sans-serif;}
+.three {font-family: cursive;}
+.four {font-family: fantasy;}
+.five {font-family: monospace;}
+.six {font-family: sans-serif,cursive;}
+.seven {font-family: monospace,serif;}
+
+.one {font-style: italic;}
+.two {font-style: oblique;}
+.three, I {font-style: normal;}
+
+.one {font-variant: small-caps;}
+.two {font-variant: normal;}
+
+.one {font-weight: bold;}
+.two {font-weight: bolder;}
+.three {font-weight: lighter;}
+.four {font-weight: 100;}
+.five {font-weight: 300;}
+.six {font-weight: 500;}
+.seven {font-weight: 700;}
+.eight {font-weight: 900;}
+.nine {font-weight: normal;}
+B {font-weight: lighter;}
+
+.one {font-size: medium;}
+.two {font-size: larger;}
+.three {font-size: smaller;}
+.four {font-size: xx-small;}
+.five {font-size: x-small;}
+.six {font-size: small;}
+.seven {font-size: large;}
+.eight {font-size: x-large;}
+.nine {font-size: xx-large;}
+.a {font-size: 0.5in;}
+.b {font-size: 1cm;}
+.c {font-size: 10mm;}
+.d {font-size: 18pt;}
+.e {font-size: 1.5pc;}
+.f {font-size: 2em;}
+.g {font-size: 3ex;}
+.h {font-size: 25px;}
+.i {font-size: 200%;}
+.j {font-size: -0.5in;}
+
+BODY {font-size: 12px;}
+.one {font: italic small-caps 13pt Helvetica;}
+.two {font: 150%/150% serif;}
+.three {font: 150%/150% sans-serif;}
+.four {font: small/200% cursive;}
+.five {font: italic small-caps 900 150%/150% sans-serif;}
+.six {font: italic small-caps 100 150%/300% sans-serif;}
+.seven {font: italic small-caps 900 150%/2em monospace;}
+.eight {font: italic small-caps 500 150%/1in sans-serif;}
+.nine {font: oblique normal 700 18px/200% sans-serif;}
+.ten {font: normal 400 80%/2.5 sans-serif;}
+SPAN.color {background-color: silver;}
+

@@ -1,0 +1,17 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!-- :xml.namespaces.disable=true: -->
+<!DOCTYPE wallispage SYSTEM "try.dtd">
+
+<!-- test case for XML namespaces turned off via the xml.namespaces.disable=true
+     property.
+     from bug #1083903 XML Insert element tree bug (imported DTD)
+	 https://sourceforge.net/tracker/index.php?func=detail&aid=1083903&group_id=588&atid=565475
+  -->
+
+
+<!-- here XMLInsert offers you all XTML -->
+<wallispage id="someid">
+<!-- here XMLInser offers you introduction -->
+
+</wallispage>
+

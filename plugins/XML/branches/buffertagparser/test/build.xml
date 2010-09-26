@@ -1,0 +1,133 @@
+<project name="xml_plugin_tests" default="test" basedir=".">
+
+	<property name="junit.usefile" value="on"/>
+    
+    <!-- general properties for plugins from the plugins directory, in 
+    partcular, need the install.dir set to know where to find the plugin
+    jar files. -->
+    <property file="build.properties"/>
+    <property file="../../build.properties"/>
+
+    <property name="build.properties" location="${test.framework.dir}/build.properties"/>
+    
+    <!-- location of the test framework, this should be set in the build.properties
+    file loaded above. -->
+    <property name="test.framework.home" location="/home/danson/src/jEditTestFramework"/>
+    
+    <!-- test source and classes -->
+    <property name="project.test.src.dir" location="${basedir}"/>
+    <property name="project.test.classes.dir" location="${basedir}/classes"/>
+    <mkdir dir="${project.test.classes.dir}"/>
+
+    <property name="project.src.dir" location="${basedir}/.."/>
+
+    <!-- marker property to indicate to the test framework that plugin jars
+    need to be copied -->
+    <property name="copyPluginJars" value=""/>
+    
+    <property name="project.toinstrument.jar" value="XML.jar"/>
+    
+	<path id="project.src.dir" path=".."/>
+    
+    <!-- full list of all jar files necessary to let jEdit load and run
+    the plugin.  All of these files will be copied to the jedit_settings/jar
+    directory. -->
+    <filelist id="plugin.jars" dir="${install.dir}">
+    	<!-- XML libraries -->
+		<file name="XML.jar"/>
+		<file name="jing.jar"/>
+		<file name="relaxngDatatype.jar"/>
+		<file name="trang.jar"/>
+		<!-- XercesPlugin -->
+		<file name="XercesPlugin.jar"/>
+<!--		<file name="xml-apis.jar"/>-->
+		<file name="xercesImpl.jar"/>
+		<file name="resolver.jar"/>
+		<!-- Beauty -->
+		<file name="Beauty.jar"/>
+		<!-- ErrorList -->
+		<file name="ErrorList.jar"/>
+		<!-- Sidekick -->
+		<file name="SideKick.jar"/>
+		<!-- Common Controls -->
+		<file name="CommonControls.jar"/>
+		<file name="kappalayout.jar"/>
+		<!-- EclipseIcons -->
+		<file name="EclipseIcons.jar"/>
+    </filelist>
+
+    <!-- include everything needed to let jEdit load the plugin and run the 
+    unit tests.  This should include all the jars listed in the plugin.jars 
+    file list defined above. -->
+    <path id="project.class.path">
+        <pathelement path="${project.test.classes.dir}"/>
+        <path>
+            <filelist refid="plugin.jars"/>
+        </path>
+    </path>
+
+    <!-- include the classes for which you would like to see the coverage report -->
+    <property name="emma.filter" value="*"/>
+
+    <!-- these are the actual test files to compile.  This is included so it
+    is easy to fine tune which tests are compiled and ran. --> 
+    <selector id="projectFiles">
+        <filename name="**/*.java" />
+    </selector>
+    
+    <!-- this selector holds all test cases.  This is optional. -->
+    <selector id="testcases.all">
+        <or>
+            <filename name="**/*Test.java"/>
+        </or>
+    </selector>
+
+    <!-- this selector holds just one test.  This is optional. -->
+    <selector id="testcases.current">
+        <filename name="xml/SchemaMappingManagerTest.java"/>
+    </selector>
+
+    <!-- this selector controls which tests to run, set the refid to either
+    testcases.current to run just one test or testcases.all to run all tests,
+    or some other selector.  This is NOT optional, if this selector is not
+    defined, no tests will run. -->
+    <selector id="junit.testcases">
+        <or>
+            <selector refid="testcases.current"/>
+        </or>
+    </selector>
+
+    <!-- set any system properties, this is a way to let tests know things
+    without hardcoding values directly in the tests. -->    
+    <property name="test_data" location="../test_data"/>
+    <propertyset id="project.test.sysproperties">
+        <propertyref name="test_data"/>
+    </propertyset>
+    
+    <!-- actually call the test framework to run the tests.  inheritRefs must
+    be true so that all of the things defined above are known to the test 
+    framework. -->
+    <target name="test">
+        <ant antfile="${test.framework.home}/build.xml" target="-test" inheritRefs="true">
+            <reference refid="project.test.sysproperties"/>
+        </ant>
+    </target>
+    
+    <target name="test-all" description="run all tests">
+		<selector id="junit.testcases">
+			<or>
+				<selector refid="testcases.all"/>
+			</or>
+		</selector>
+        <ant antfile="${test.framework.home}/build.xml" target="-test" inheritRefs="true">
+            <reference refid="project.test.sysproperties"/>
+        </ant>
+    </target>
+
+    <!-- shortcut to only compile the tests (don't waste time instrumenting) -->
+    <target name="compile">
+        <ant antfile="${test.framework.home}/build.xml" target="-compileTests" inheritRefs="true">
+            <reference refid="project.test.sysproperties"/>
+        </ant>
+    </target>
+</project>

@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+
+<root
+  xmlns="http://www.example.com/IPO"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.example.com/IPO
+	schema.xsd"
+  >
+
+  <text>
+  <comment>simple comment : no element content</comment>
+  </text>
+
+  <comment>
+	<!-- p is allowed here : it should be proposed ! -->
+	<p>some comment</p>
+  </comment>
+  
+</root>

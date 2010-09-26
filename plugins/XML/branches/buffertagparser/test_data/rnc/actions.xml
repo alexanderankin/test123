@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+
+<!--
+  - invalid file (fix it by removing a D in <CODDE>
+  - the schema is loaded via schemas.xml : it's actions.rnc
+  -->
+<ACTIONS>
+
+    <ACTION NAME="xmlindenter.indent">
+        <CODDE>xml.indent.XmlIndenterPlugin.indentXml(view);</CODDE>
+    </ACTION>
+    <ACTION NAME="xmlindenter.toggleSplitAttributes">
+        <CODE>xml.indent.XmlIndenterPlugin.toggleSplitAttributes(view);</CODE>
+    </ACTION>
+
+</ACTIONS>
