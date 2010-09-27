@@ -13,8 +13,8 @@
 
    <ACTION NAME="navigator.backList">
       <CODE>
-         //ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
-         ise.plugin.nav.NavigatorPlugin.backList(view);
+         ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+         plugin.backList(view);
       </CODE>
    </ACTION>
 
@@ -87,6 +87,7 @@
     </CODE>
    </ACTION>
    
+   <!-- override jEdit's 'goto-line' action -->
    <ACTION NAME="goto-line" >
     <CODE>
         if (jEdit.getBooleanProperty("navigator.useNavigatorGoToLine", false)) {

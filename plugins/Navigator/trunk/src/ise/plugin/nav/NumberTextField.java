@@ -39,6 +39,11 @@ public class NumberTextField extends JTextField implements ComboBoxEditor {
 
     private int minValue = Integer.MIN_VALUE;
     private int maxValue = Integer.MAX_VALUE;
+    
+    // for ComboBoxEditor, keep track of the object being displayed.  This object
+    // should have a <code>toString</code> method that returns a string that parses
+    // into an integer.
+    private Object item = null;
 
     public NumberTextField() {
         super();
@@ -132,15 +137,18 @@ public class NumberTextField extends JTextField implements ComboBoxEditor {
         }
     }
     
+    // ComboBoxEditor methods...
+    
     public Component getEditorComponent() {
         return this;   
     }
     
     public Object getItem() {
-        return getText();   
+        return item;   
     }
     
     public void setItem(Object item) {
+        this.item = item;
         setText(item == null ? "0" : item.toString());   
     }
 }
