@@ -30,7 +30,7 @@
   <h3>Introduction:</h3>
   <p>
   The Navigator Plugin provides a set of "Back" and "Forward" actions similar to a web browser. This is surprisingly
-  handy.
+  handy.  It also provides a "go to line" dialog that can be used to replace jEdit's built in "go to line" dialog.
   <p>
 
   <h3>Configuration:</h3>
@@ -107,7 +107,7 @@
    </li>
    <li>
     Go to Global Options - Docking and add a dockable for the Navigator to	one of the docking areas. These buttons will
-    grey out if the corresponding stacks are empty.
+    grey out if the corresponding stacks are empty and will give you easy control of the Navigator settings.
    </li>
   </ol>
   <p>
@@ -115,6 +115,25 @@
   choose either "Back List" or "Forward List" or "Combined List", then you can pick a specific location from the list popup.  You can also
   assign a shortcut to these lists (Alt+1, Alt+2, and Alt+3, perhaps) by going to the main menu, Utilities, Global Options,
   Shortcuts, choose Plugin: Navigator, and set the shortcut keys.
+  <p>
+  Other ways to access the previously visited locations:
+  <ul>
+  <li>Dock the Navigator dockable in one of the docking areas.  The dockable shows the back and forward lists.</li>
+  <li>Right click on one of the Navigator arrow buttons.  The corresponding list will popup.</li>
+  <li>Add "Show back list" and/or "Show forward list" to the text area context menu.</li>
+  </ul>
+  
+  <h3>Using the "Go to line" dialog</h3>
+  Navigator provided a "Go to line" dialog that can be used as a replacement for jEdit's built in "Go to line dialog.
+  The Navigator dialog has a few features that the jEdit dialog lacks:
+  <ul>
+   <li>Remembers the last line entered so it is easy to go back to that line.</li>
+   <li>Displays a history list of previous lines visited within the current buffer, which helps in moving around
+   in a file.</li>
+  </ul>
+  To use the Navigator "Go to line" dialog rather than the jEdit "Go to line" dialog, just check the box in the Navigator
+  options.  The keyboard shortcut that previously activated the jEdit "Go to line" dialog will now show the Navigator
+  "Go to line" dialog.
 
   <h3>How Navigator works</h3>
   Navigator tracks PositionChanging EditBus messages. These can be sent by the core, or plugins, to notify
