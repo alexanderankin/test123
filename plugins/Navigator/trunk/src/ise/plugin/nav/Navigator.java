@@ -463,7 +463,7 @@ public class Navigator implements ActionListener {
         return new NavHistoryPopup( view, this, ( Vector ) forwardHistory.clone() );
     }
     
-    public NavStack getBackListModel() {
+    public NavStack<NavPosition> getBackListModel() {
         return (NavStack)backHistory.clone();   
     }
     
@@ -471,14 +471,11 @@ public class Navigator implements ActionListener {
         return new NavPosition(current);   
     }
     
-    public NavStack getForwardListModel() {
+    public NavStack<NavPosition> getForwardListModel() {
         return (NavStack)forwardHistory.clone();   
     }
     
-    /**
-     * Show a popup containing the back history, current position, and forward history.
-     */
-    public void combinedList() {
+    public NavStack<NavPosition> getCombinedListModel() {
         NavStack stack = new NavStack( backHistory.size() + forwardHistory.size() + ( current == null ? 0 : 1 ) );
         if ( backHistory != null && backHistory.size() > 0 ) {
             stack.addAll( backHistory );
@@ -489,6 +486,14 @@ public class Navigator implements ActionListener {
         if ( forwardHistory != null && forwardHistory.size() > 0 ) {
             stack.addAll( forwardHistory );
         }
+        return stack;
+    }
+    
+    /**
+     * Show a popup containing the back history, current position, and forward history.
+     */
+    public void combinedList() {
+        NavStack<NavPosition> stack = getCombinedListModel();
         if ( stack.size() > 0 ) {
             new NavHistoryPopup( view, this, ( Vector ) stack, current );
         }

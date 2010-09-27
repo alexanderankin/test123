@@ -20,6 +20,8 @@
 
 package ise.plugin.nav;
 
+import java.awt.Component;
+import javax.swing.ComboBoxEditor;
 import javax.swing.JTextField;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
@@ -33,7 +35,7 @@ import javax.swing.text.DocumentFilter.FilterBypass;
  * values that are acceptable can be set, otherwise, Integer.MIN_VALUE and
  * Integer.MAX_VALUE are used.
  */
-public class NumberTextField extends JTextField {
+public class NumberTextField extends JTextField implements ComboBoxEditor {
 
     private int minValue = Integer.MIN_VALUE;
     private int maxValue = Integer.MAX_VALUE;
@@ -128,5 +130,17 @@ public class NumberTextField extends JTextField {
             int value = Integer.parseInt( string.toString() );
             return value <= maxValue && value >= minValue;
         }
+    }
+    
+    public Component getEditorComponent() {
+        return this;   
+    }
+    
+    public Object getItem() {
+        return getText();   
+    }
+    
+    public void setItem(Object item) {
+        setText(item == null ? "0" : item.toString());   
     }
 }
