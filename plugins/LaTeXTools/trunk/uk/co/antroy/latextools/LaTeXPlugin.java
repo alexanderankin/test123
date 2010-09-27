@@ -57,11 +57,14 @@ public class LaTeXPlugin
     public void handleMessage(EBMessage message) {
     }
 
-	public void start() {
-		super.start();
-		if(System.getProperty("os.name").indexOf("Linux")!= -1) {
-			String linuxErrorStyleSwitch = jEdit.getProperty("latex.compile.c-errors.linux");
-			jEdit.setProperty("latex.compile.c-errors", linuxErrorStyleSwitch);
-		}
-	}
+    public void start() {
+        super.start();
+        if(System.getProperty("os.name").indexOf("Linux")!= -1 &&
+           !jEdit.getBooleanProperty("latex.compile.c-errors.initialized")) {
+            
+            jEdit.setBooleanProperty("latex.compile.c-errors.initialized", true);
+            String linuxErrorStyleSwitch = jEdit.getProperty("latex.compile.c-errors.linux");
+            jEdit.setProperty("latex.compile.c-errors", linuxErrorStyleSwitch);
+        }
+    }
 }
