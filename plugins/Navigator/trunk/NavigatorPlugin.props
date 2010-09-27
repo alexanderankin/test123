@@ -56,7 +56,7 @@ navigator.menu.label=Navigator
 # menu separator to be inserted. This line also must start with the string
 # passed to the GUIUtilities.loadMenu method in createMenuItems. The items
 # are the action names as set in the actions.xml file.
-plugin.ise.plugin.nav.NavigatorPlugin.menu=navigator.back navigator.backList navigator.forward navigator.forwardList navigator.combinedList navigator.gotoLine navigator.clearHistory navigator.toggleScope navigator.toggleGroupByFile navigator.toggleGroupByLine navigator.showdockable
+plugin.ise.plugin.nav.NavigatorPlugin.menu=navigator.back navigator.backList navigator.forward navigator.forwardList navigator.combinedList goto-line navigator.clearHistory navigator.toggleScope navigator.toggleGroupByFile navigator.toggleGroupByLine navigator.showdockable
 #navigator.toolbar
 
 # the next three items are the labels to add to a submenu on
@@ -84,7 +84,8 @@ navigator.toggleGroupByLine.label=Toggle group by line
 
 navigator.combinedList.label=Show combined list
 
-navigator.gotoLine.label=Go to line
+navigator.gotoLine.label=Go to line...
+navigator.useNavigatorGoToLine.label=Use Navigator's 'Go to line' dialog
 
 navigator.options.label=Options
 

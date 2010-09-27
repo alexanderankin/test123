@@ -87,10 +87,14 @@
     </CODE>
    </ACTION>
    
-   <ACTION NAME="navigator.gotoLine" >
+   <ACTION NAME="goto-line" >
     <CODE>
-        ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
-        plugin.gotoLine(view);
+        if (jEdit.getBooleanProperty("navigator.useNavigatorGoToLine", false)) {
+            ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+            plugin.gotoLine(view);
+        } else {
+            textArea.showGoToLineDialog();
+        }
     </CODE>
    </ACTION>
     
