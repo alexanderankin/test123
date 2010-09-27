@@ -11,6 +11,8 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.textarea.TextArea;
 
+import ise.java.awt.KappaLayout;
+
 /**
  * A "go to line" dialog that uses the Navigator history lists.
  */
@@ -34,7 +36,7 @@ public class GoToLineDialog extends EscapeDialog {
     }
 
     private void installComponents() {
-        JPanel mainPanel = new JPanel(new BorderLayout());
+        JPanel mainPanel = new JPanel(new KappaLayout());
         mainPanel.setBorder(BorderFactory.createEmptyBorder(11, 11, 12, 12));
 
         Icon icon = GUIUtilities.loadIcon("22x22/actions/go-jump.png");
@@ -70,13 +72,16 @@ public class GoToLineDialog extends EscapeDialog {
         okButton = new JButton(jEdit.getProperty("common.ok", "OK"));
         cancelButton = new JButton(jEdit.getProperty("common.cancel", "Cancel"));
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 3, 6));
-        buttonPanel.add(okButton);
-        buttonPanel.add(cancelButton);
+        KappaLayout buttonPanelLayout = new KappaLayout();
+        JPanel buttonPanel = new JPanel(buttonPanelLayout);
+        buttonPanel.add("0, 0, 1, 1, 0, w, 3", okButton);
+        buttonPanel.add("1, 0, 1, 1, 0, w, 3", cancelButton);
+        buttonPanelLayout.makeColumnsSameWidth(0, 1);
 
-        mainPanel.add(new JLabel(icon), BorderLayout.WEST);
-        mainPanel.add(lineChooser, BorderLayout.CENTER);
-        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+        mainPanel.add("0, 0, 1, 1, E, , 3", new JLabel(icon));
+        mainPanel.add("1, 0, 2, 1, W, w, 3", lineChooser);
+        mainPanel.add("0, 1", KappaLayout.createVerticalStrut(11));
+        mainPanel.add("1, 2, 2, 1, E,  , 3", buttonPanel);
 
         setContentPane(mainPanel);
 
