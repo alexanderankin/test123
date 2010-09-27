@@ -121,9 +121,16 @@ public class NavPosition {
     public int hashCode() {
         return ( path + lineno + caret ).hashCode();
     }
-
+    
+    
+    // kind of a cheat here -- I want to use these as the objects in a JComboBox,
+    // and I want the editor to be a NumberTextField.  This lets me do that.
     @Override
     public String toString() {
+        return String.valueOf(lineno + 1);
+    }
+
+    public String plainText() {
         boolean showPath = jEdit.getBooleanProperty("navigator.showPath", true);
         boolean showLineNumber = jEdit.getBooleanProperty("navigator.showLineNumber", true);
         boolean showCaretOffset = jEdit.getBooleanProperty("navigator.showCaretOffset", true);
@@ -143,7 +150,7 @@ public class NavPosition {
      * @return an HTML representation of this position for display in the
      * back and forward popup lists.
      */
-    public String toHtml() {
+    public String htmlText() {
         boolean showPath = jEdit.getBooleanProperty("navigator.showPath", true);
         boolean showLineNumber = jEdit.getBooleanProperty("navigator.showLineNumber", true);
         boolean showCaretOffset = jEdit.getBooleanProperty("navigator.showCaretOffset", true);

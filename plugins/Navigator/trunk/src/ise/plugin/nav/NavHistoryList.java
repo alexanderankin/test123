@@ -140,7 +140,7 @@ class NavHistoryList extends JPanel {
             if (pos == null) {
                 return null;
             }
-            String labelText = pos.toString();
+            String labelText = pos.plainText();
             if (jEdit.getBooleanProperty("navigator.showLineText", true)) {
                 EditPane editPane = null;
                 for (EditPane ep : view.getEditPanes()) {
@@ -150,7 +150,7 @@ class NavHistoryList extends JPanel {
                     }
                 }
                 if (editPane == null || !jEdit.getBooleanProperty("navigator.showLineTextSyntax", true)) {
-                    labelText = pos.toHtml();                    // non-syntax highlighted html
+                    labelText = pos.htmlText();                    // non-syntax highlighted html
                 } else {
                     // Have Code2HTML plugin create syntax highlighted html.
                     // First, create a selection for the text of the line
@@ -163,7 +163,7 @@ class NavHistoryList extends JPanel {
                         }
                     }
                     if (buffer == null) {
-                        labelText = pos.toHtml();
+                        labelText = pos.htmlText();
                     } else {
                         int start = buffer.getLineStartOffset(pos.lineno);
                         int end = buffer.getLineEndOffset(pos.lineno);

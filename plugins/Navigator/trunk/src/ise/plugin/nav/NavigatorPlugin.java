@@ -482,28 +482,15 @@ public class NavigatorPlugin extends EBPlugin {
     
     public static void gotoLine(View view) {
         GoToLineDialog dialog = new GoToLineDialog(view);
-        int line = dialog.getLineNumber();
-        if (line == -1) {
+        NavPosition position = dialog.getLineNumber();
+        if (position == null) {
             // user cancelled
             return;   
         }
-        TextArea textArea = view.getEditPane().getTextArea();
-        int offset;
-        try {
-            // jEdit docs need fixed, the text area docs say getLineStartOffset 
-            // will return -1 on a bad line number, but text area delegates to
-            // buffer, which throws an ArrayIndexOutOfBoundsException.
-            offset = textArea.getLineStartOffset(line);
-            if (offset == -1) {
-                // on invalid line, go to last line
-                offset = textArea.getLineStartOffset(textArea.getLineCount() - 1);      
-            }
+        Navigator navigator = getNavigator( view );
+        if ( navigator != null ) {
+            navigator.jump(position);
         }
-        catch(ArrayIndexOutOfBoundsException e) {
-            // go to last line
-            offset = textArea.getLineStartOffset(textArea.getLineCount() - 1);      
-        }
-        textArea.setCaretPosition(offset, true);
     }
 
     /**

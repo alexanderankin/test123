@@ -37,11 +37,13 @@ import javax.swing.event.*;
  * Stack that can have a maximum size.  Another property of this stack is that
  * while it will allow duplicates, it won't allow them consecutively.
  */
-class NavStack<E> extends Stack<E> implements ListModel {
+class NavStack<E> extends Stack<E> implements ComboBoxModel {
 
     private int maxSize = 512;
     
     private Set<ListDataListener> listeners = null;
+    
+    private Object selectedItem = null;
 
     /**
      * Create a NavStack with a default size of 512.    
@@ -246,6 +248,16 @@ class NavStack<E> extends Stack<E> implements ListModel {
     
     public void setSize(int newSize) {
         super.setSize(newSize);
+        contentsChanged();
+    }
+    
+    // for ComboBoxModel
+    public Object getSelectedItem() {
+        return selectedItem;   
+    }
+    
+    public void setSelectedItem(Object item) {
+        selectedItem = item;
         contentsChanged();
     }
 }

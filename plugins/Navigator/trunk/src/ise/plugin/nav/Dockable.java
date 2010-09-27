@@ -140,7 +140,7 @@ public class Dockable extends JPanel implements ChangeListener {
         currentLabel = new JLabel();
         currentPanel.add(currentLabel);
         
-        JPanel flipPanel = new JPanel(new BorderLayout());
+        flipPanel = new JPanel(new BorderLayout());
         flipPanel.add(currentPanel, BorderLayout.NORTH);
         flipPanel.add(controlPanel, BorderLayout.SOUTH);
 
@@ -309,7 +309,7 @@ public class Dockable extends JPanel implements ChangeListener {
                 clear.setEnabled(client.getBackModel().isEnabled() || client.getForwardModel().isEnabled());
                 backList.setModel(client.getBackListModel());
                 forwardList.setModel(client.getForwardListModel());
-                currentLabel.setText(client.getCurrentPosition().toString());
+                currentLabel.setText(client.getCurrentPosition().plainText());
             }
         } );
     }
