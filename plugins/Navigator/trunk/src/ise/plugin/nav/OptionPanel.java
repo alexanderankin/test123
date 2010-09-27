@@ -41,6 +41,7 @@ public class OptionPanel extends AbstractOptionPane {
 
     public static final String NAME = "navigator";
 
+    private JCheckBox useNavigatorGoToLine = null;
     private JCheckBox showOnToolbar = null;
     private JCheckBox groupByFile = null;
     private JCheckBox groupByLine = null;
@@ -72,6 +73,10 @@ public class OptionPanel extends AbstractOptionPane {
 
         // title
         addComponent( new JLabel( "<html><h3>Navigator</h3>" ) );
+        
+        useNavigatorGoToLine = new JCheckBox(jEdit.getProperty("navigator.useNavigatorGoToLine.label", "Use Navigator's 'Go to line' dialog"));
+        useNavigatorGoToLine.setSelected(jEdit.getBooleanProperty("navigator.useNavigatorGoToLine", false));
+        addComponent(useNavigatorGoToLine);
 
         // navigator scope
         addComponent( new JLabel( "<html><h4>Navigator Scope</h4>" ) );
@@ -171,6 +176,7 @@ public class OptionPanel extends AbstractOptionPane {
     }
 
     public void _save() {
+        jEdit.setBooleanProperty( "navigator.useNavigatorGoToLine", useNavigatorGoToLine.isSelected());
         jEdit.setBooleanProperty( NAME + ".groupByFile", groupByFile.isSelected() );
         jEdit.setBooleanProperty( NAME + ".groupByLine", groupByLine.isSelected() );
         jEdit.setBooleanProperty( NavigatorPlugin.showOnToolBarKey, showOnToolbar.isSelected() );
