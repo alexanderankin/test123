@@ -78,10 +78,10 @@ public class GoToLineDialog extends EscapeDialog {
         buttonPanel.add("1, 0, 1, 1, 0, w, 3", cancelButton);
         buttonPanelLayout.makeColumnsSameWidth(0, 1);
 
-        mainPanel.add("0, 0, 1, 1, E, , 3", new JLabel(icon));
+        mainPanel.add("0, 0, 1, 1, E,, 3", new JLabel(icon));
         mainPanel.add("1, 0, 2, 1, W, w, 3", lineChooser);
         mainPanel.add("0, 1", KappaLayout.createVerticalStrut(11));
-        mainPanel.add("1, 2, 2, 1, E,  , 3", buttonPanel);
+        mainPanel.add("1, 2, 2, 1, E,, 3", buttonPanel);
 
         setContentPane(mainPanel);
 
@@ -101,14 +101,15 @@ public class GoToLineDialog extends EscapeDialog {
                 } else {
                     if (selectedItem instanceof NavPosition) {
                         previousEntry = (NavPosition) selectedItem;
+                    } else {
+                        int line = Integer.parseInt(selectedItem.toString());
+                        EditPane editPane = parent.getEditPane();
+                        TextArea textArea = editPane.getTextArea();
+                        if (line >= textArea.getLineCount()) {
+                            line = textArea.getLineCount() - 1;
+                        }
+                        previousEntry = new NavPosition(editPane, parent.getBuffer(), textArea.getLineStartOffset(line - 1), textArea.getLineText(line));
                     }
-                    int line = Integer.parseInt(selectedItem.toString());
-                    EditPane editPane = parent.getEditPane();
-                    TextArea textArea = editPane.getTextArea();
-                    if (line >= textArea.getLineCount()) {
-                        line = textArea.getLineCount() - 1;   
-                    }
-                    previousEntry = new NavPosition(editPane, parent.getBuffer(), textArea.getLineStartOffset(line - 1), textArea.getLineText(line));
                 }
                 close();
             }
