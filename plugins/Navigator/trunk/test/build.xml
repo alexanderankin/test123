@@ -26,6 +26,7 @@
     <filelist id="plugin.jars" dir="${install.dir}">
         <file name="Navigator.jar"/>
         <file name="Code2HTML.jar"/>
+        <file name="CommonControls.jar"/>
     </filelist>
 
     <!-- include everything needed to let jEdit load the plugin and run the 
