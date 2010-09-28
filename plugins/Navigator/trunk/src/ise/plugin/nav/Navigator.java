@@ -405,6 +405,12 @@ public class Navigator implements ActionListener {
             // if here, then the buffer was not open in any edit pane.  Do not
             // create a new edit pane for it, just open the buffer in the EditPane
             // that was found by findEditPane.
+            if (position.name != null && position.name.startsWith("Untitled")) {
+                // buffer isn't open and it was an untitled buffer, just skip it.
+                remove(position);
+                ignoreUpdates = false;
+                return;
+            }
             buffer = jEdit.openFile( view, position.path );
             if ( buffer == null ) {
                 // maybe the file was deleted, so there is nothing to open
@@ -556,6 +562,9 @@ public class Navigator implements ActionListener {
      * @param position the position to jump to.
      */
     public void jump( NavPosition position ) {
+        if (position == null) {
+            return;   
+        }
         ignoreUpdates = true;
         // find the position.  If it is in the back history, copy all positions
         // after it to the forward history, vice versa if it is in the forward
