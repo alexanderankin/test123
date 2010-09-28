@@ -1,7 +1,8 @@
 <?xml version="1.0" ?>
 <project name="Clojure" default="build" basedir=".">
 	<!-- mark:build.properties -->
-	<property file="../../build.properties" />
+	<!-- <property file="../../build.properties" /> -->
+	<property file="${java.io.tmpdir}/build.properties" />
 	<!-- /mark:build.properties -->
 	<!-- <property file="build.properties" /> -->
 	<!-- <property file="../build.properties" /> -->

@@ -2,7 +2,7 @@ package clojure;
 /**
  * @author Damien Radtke
  * class ClojureProviderOptionPane
- * TODO: comment
+ * An option pane that can be used to configure the clojure jars
  */
 //{{{ Imports
 import clojure.ClojurePlugin;
