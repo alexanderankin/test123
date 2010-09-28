@@ -66,11 +66,13 @@ public class NumberTextField extends JTextField implements ComboBoxEditor {
     // if text field is empty, fill it with min value
     public void setMinValue(int value) {
         minValue = value;
+        /*
         String text = getText();
         if (text == null || text.length() == 0) {
             text = String.valueOf(minValue);
         }
         setText(text);
+        */
     }
 
     public int getMinValue() {
@@ -99,7 +101,7 @@ public class NumberTextField extends JTextField implements ComboBoxEditor {
     class NumericDocumentFilter extends DocumentFilter {
         public void insertString( FilterBypass fb, int offset, String string, AttributeSet attr )
         throws BadLocationException {
-            if ( string == null ) {
+            if ( string == null || string.length() == 0 ) {
                 return ;
             }
             if ( isNumeric( string ) && inRange( new StringBuilder(getText()).insert(offset, string) ) ) {
@@ -114,7 +116,7 @@ public class NumberTextField extends JTextField implements ComboBoxEditor {
 
         public void replace( FilterBypass fb, int offset, int length, String text, AttributeSet attrs )
         throws BadLocationException {
-            if ( text == null ) {
+            if ( text == null || text.length() == 0 ) {
                 return ;
             }
             if ( isNumeric( text ) && inRange( new StringBuilder(getText()).replace(offset, offset + length, text) ) ) {
@@ -144,11 +146,14 @@ public class NumberTextField extends JTextField implements ComboBoxEditor {
     }
     
     public Object getItem() {
+        if (item == null || !(item instanceof NavPosition) || !item.toString().equals(getText())) {
+            return getText();   
+        }
         return item;   
     }
     
     public void setItem(Object item) {
         this.item = item;
-        setText(item == null ? "0" : item.toString());   
+        setText(item == null ? "" : item.toString());   
     }
 }

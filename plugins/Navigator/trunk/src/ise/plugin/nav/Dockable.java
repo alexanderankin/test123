@@ -309,7 +309,7 @@ public class Dockable extends JPanel implements ChangeListener {
                 clear.setEnabled(client.getBackModel().isEnabled() || client.getForwardModel().isEnabled());
                 backList.setModel(client.getBackListModel());
                 forwardList.setModel(client.getForwardListModel());
-                currentLabel.setText(client.getCurrentPosition().plainText());
+                currentLabel.setText(client.getCurrentPosition() == null ? "" : client.getCurrentPosition().plainText());
             }
         } );
     }
