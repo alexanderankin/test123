@@ -13,7 +13,7 @@ import org.gjt.sp.util.StringList;
 import projectviewer.importer.ImporterFileFilter;
 
 /** A ProjectViewer file importer service that runs the
-    bzr ls-files as a child process */
+    bzr ls -R as a child process */
 
 public class BzrImporter extends ImporterFileFilter
 {
