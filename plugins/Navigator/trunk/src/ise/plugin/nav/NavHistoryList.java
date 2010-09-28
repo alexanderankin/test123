@@ -27,6 +27,7 @@ package ise.plugin.nav;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,7 +42,7 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.textarea.Selection;
 
 // -- for Code2HTML 0.5
-//import code2html.Code2HTML;
+// import code2html.Code2HTML;
 
 // -- for Code2HTML 0.6
 import code2html.generic.GenericExporter;
@@ -53,6 +54,7 @@ class NavHistoryList extends JPanel {
     private View view;
     private NavPosition initialPosition = null;
     private Navigator navigator = null;
+    private Font textAreaFont = null;
 
     public NavHistoryList(View view, Navigator navigator, Collection<NavPosition> positions) {
         this(view, navigator, positions, null);
@@ -63,9 +65,9 @@ class NavHistoryList extends JPanel {
         this.view = view;
         initialPosition = currentPosition;
         positions = new ArrayList<NavPosition>(positions);
-        Collections.reverse((List) positions);  // it's actually a Stack, so need to reverse it
-        
-        
+        Collections.reverse((List) positions);        // it's actually a Stack, so need to reverse it
+
+
         // create components
         setLayout(new BorderLayout());
         if (NavigatorPlugin.groupByFile()) {
@@ -82,7 +84,12 @@ class NavHistoryList extends JPanel {
         // the gutter since that gives us line numbers.
         // TODO: the original values should be saved and restored somehow...
         jEdit.setBooleanProperty("code2html.use-css", false);
-        jEdit.setBooleanProperty("code2html.show-gutter", true);
+        jEdit.setBooleanProperty("code2html.show-gutter", false);
+        jEdit.setIntegerProperty("code2html.wrap", 0);
+        
+        if (view.getEditPane().getTextArea().getPainter().getStyles() != null && view.getEditPane().getTextArea().getPainter().getStyles().length > 0) {
+            textAreaFont = view.getEditPane().getTextArea().getPainter().getStyles()[0].getFont();   
+        }
 
         // show components
         list.requestFocus();
@@ -104,6 +111,18 @@ class NavHistoryList extends JPanel {
         list.setModel(model);
     }
 
+    // this makes the list recalculate cell dimensions when options change
+    public void updateUI() {
+        super.updateUI();
+        if (list != null) {
+            list.updateUI();
+        }
+    }
+    
+    public void setToolTipText(String tip) {
+        list.setToolTipText(tip);   
+    }
+    
     private Collection<NavPosition> groupByFile(Collection<NavPosition> positions) {
         List<NavPosition> items = new ArrayList<NavPosition>(positions.size());
         HashSet<String> paths = new HashSet<String>();
@@ -129,6 +148,7 @@ class NavHistoryList extends JPanel {
 
         public CellRenderer() {
             setBorder(defaultBorder);
+            setFont(view.getEditPane().getTextArea().getFont());
         }
 
         // value to display
@@ -187,15 +207,21 @@ class NavHistoryList extends JPanel {
                         labelText = exporter.getContentString();
 
                         // clean up the output from code2html, it outputs html, head, and body tags,
-                        // I just want what is between the pre tags
-                        // -- next line can be removed with Code2HTML 0.6 since the getContentString method
-                        // will return only the <pre>...</pre> content.
-                        //labelText = labelText.substring( labelText.indexOf( "<pre>" ), labelText.lastIndexOf( "</pre>" ) + "</pre>".length() );
+                        // I just want what is between the pre tags.
+                        int preIndex = labelText.indexOf("<pre>");
+                        if (preIndex >= 0 ) {
+                            labelText = labelText.substring(preIndex + 5);  // 5 = <pre>.length
+                            preIndex = labelText.lastIndexOf("</pre>");
+                            if (preIndex >= 0) {
+                                labelText = labelText.substring(0, preIndex - 1);
+                            }
+                        }
+                        
+                        // set the font to be the same as the jEdit text area font
+                        labelText = new StringBuilder("<font face=\"").append(textAreaFont.getName()).append("\">").append(labelText).append("</font>").toString();
 
                         // reduce multiple spaces to single space
-                        while (labelText.indexOf("  ") > - 1) {
-                            labelText = labelText.replaceAll("  ", " ");
-                        }
+                        labelText = labelText.replaceAll("[ ]+", " ");
 
                         // remove line separators.  Code2HTML only outputs \n, not \r.
                         labelText = labelText.replaceAll("\n", "");
@@ -210,12 +236,15 @@ class NavHistoryList extends JPanel {
                         sb.append(showPath ? pos.path : pos.name);
                         if (showLineNumber) {
                             // lineno is 0-based, but gutter lines are 1-based, so add one
-                            sb.append(":").append(pos.lineno + 1);   
+                            sb.append(":").append(pos.lineno + 1);
                         }
                         if (showCaretOffset) {
-                            sb.append(":").append(pos.caret);   
+                            sb.append(":").append(pos.caret);
                         }
-                        sb.append("</tt><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+                        if (showPath) {
+                            sb.append("<br>");   
+                        }
+                        sb.append("</tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
                         sb.append(labelText.trim());
                         labelText = sb.toString();
                     }
@@ -223,7 +252,7 @@ class NavHistoryList extends JPanel {
             }
             setText(labelText);
             setEnabled(list.isEnabled());
-            setFont(list.getFont());
+            setFont(view.getEditPane().getTextArea().getFont());
             setOpaque(true);
             setBackground(view.getBackground());
             if (jEdit.getBooleanProperty("navigator.showStripes", true) && index % 2 == 0) {

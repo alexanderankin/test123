@@ -170,7 +170,7 @@ public class NavPosition {
         if (showCaretOffset) {
             sb.append(":").append(caret);   
         }
-        sb.append("</tt><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+        sb.append("</tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
         sb.append(text);
         return sb.toString();
     }
