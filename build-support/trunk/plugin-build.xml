@@ -1,4 +1,4 @@
-<project name="jEditPlugin" default="build">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="jEditPlugin" default="build">
 
     <!-- {{{ Top-Level build file for jEdit plugins. ====== -->
     <!--
@@ -70,6 +70,7 @@
     <property name="build.docs"     value="${build.dir}/docs" />
     <property name="build.javadoc"  value="${build.docs}/javadoc" />
     <property name="build.extras"   value="${build.dir}/extras" />
+    <property name="build.lib"      value="${build.dir}/lib" />
 
     <!-- default compiler flags -->
     <property name="compiler.debug"         value="off" />
@@ -125,6 +126,9 @@
     <path id="default.class.path">
         <pathelement location="${jedit.install.dir}/jedit.jar" />
         <pathelement location="${junit.jar}" />
+        <fileset dir="${build.dir}">
+            <include name="lib/*.jar"/>
+        </fileset>
     </path>
 
     <!-- this is the classpath used by the "compile"
@@ -215,6 +219,51 @@
         </and>
     </selector>
 
+    <!--{{{ Ivy setup *****============================== -->
+    <property name="ivy.install.version" value="2.2.0-rc1" />
+    <condition property="ivy.home" value="${env.IVY_HOME}">
+      <isset property="env.IVY_HOME" />
+    </condition>
+    <property name="ivy.home" value="${user.home}/.ant" />
+    <property name="ivy.jar.dir" value="${ivy.home}/lib" />
+    <property name="ivy.jar.file" value="${ivy.jar.dir}/ivy.jar" />
+    <property name="ivy.settings.file" value="${build.support}/ivysettings.xml" />
+
+    <target name="download-ivy" unless="offline">
+
+        <mkdir dir="${ivy.jar.dir}"/>
+        <!-- download Ivy from web site so that it can be used even without any special installation -->
+        <get src="http://repo2.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar" 
+             dest="${ivy.jar.file}" usetimestamp="true"/>
+    </target>
+
+    <target name="init-ivy" depends="download-ivy">
+      <!-- try to load ivy here from ivy home, in case the user has not already dropped
+              it into ant's lib dir (note that the latter copy will always take precedence).
+              We will not fail as long as local lib dir exists (it may be empty) and
+              ivy is in at least one of ant's lib dir or the local lib dir. -->
+        <path id="ivy.lib.path">
+            <fileset dir="${ivy.jar.dir}" includes="*.jar"/>
+
+        </path>
+        <taskdef resource="org/apache/ivy/ant/antlib.xml"
+                 uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
+    </target>
+    <!--}}}-->
+
+    <!--{{{ Target: resolve ============================== -->
+     <target name="checkIvy">
+        <condition property="ivyPresent">
+            <available file="ivy.xml" type="file"/>
+        </condition>
+    </target>
+    <target name="resolve" description="Retrieve dependencies" 
+        depends="checkIvy,init-ivy" if="ivyPresent">
+            <echo>ivy.xml present, retrieving dependencies</echo>
+            <ivy:retrieve pattern="${build.lib}/[artifact].[ext]"/>
+    </target>
+    <!-- ===============================================}}} -->
+
     <!-- {{{ Target: compile ============================== -->
     <!-- Compiles all the ".java" files present in the
          directory pointed by the "src.dir" property
@@ -233,7 +282,7 @@
          compiler.source: the source option (1.5)
          compiler.listfiles: the listfiles option (no)      -->
     <target name="compile"
-            description="Compile the plugin's classes">
+            description="Compile the plugin's classes" depends="resolve">
 
         <mkdir dir="${build.classes}" />
         <jp.javac>
