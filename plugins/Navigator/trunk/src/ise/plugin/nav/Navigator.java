@@ -38,7 +38,7 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.util.ThreadUtilities;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 /**
@@ -426,7 +426,7 @@ public class Navigator implements ActionListener {
         }
         try {
         	final int caretFinal = caret;
-        	VFSManager.runInAWTThread( new Runnable() {
+        	ThreadUtilities.runInDispatchThread( new Runnable() {
         		public void run() {
                     editPaneForPosition.getTextArea().setCaretPosition( caretFinal, true );
                     editPaneForPosition.getTextArea().requestFocus();
@@ -468,7 +468,7 @@ public class Navigator implements ActionListener {
     }
     
     public NavPosition getCurrentPosition() {
-        return new NavPosition(current);   
+        return current == null ? null : new NavPosition(current);   
     }
     
     public NavStack<NavPosition> getForwardListModel() {

@@ -44,7 +44,9 @@ public class GoToLineDialog extends EscapeDialog {
         // create the combobox model.  Only include items from the Navigator
         // list that are in the current edit pane and buffer by copying those
         // positions to a new NavStack.  A side effect of the copying is the
-        // positions will be reversed in order, which is wanted.
+        // positions will be reversed in order, which is wanted. While NavStack
+        // will allow duplicates, I don't want them in this case since dupes
+        // cause the combobox to not work correctly.
         NavStack<NavPosition> combinedList = NavigatorPlugin.createNavigator(parent).getCombinedListModel();
         if (previousEntry != null) {
             combinedList.push(previousEntry);
@@ -54,18 +56,20 @@ public class GoToLineDialog extends EscapeDialog {
         String bufferPath = parent.getBuffer().getPath();
         while (!combinedList.empty()) {
             NavPosition possible = combinedList.pop();
-            if (possible.editPane == editPaneHashCode && possible.path.equals(bufferPath)) {
+            if (possible.editPane == editPaneHashCode && possible.path.equals(bufferPath) && !comboBoxModel.contains(possible)) {
                 comboBoxModel.push(possible);
             }
         }
 
         lineChooser = new JComboBox((ComboBoxModel) comboBoxModel);
         lineChooser.setEditable(true);
-        if (comboBoxModel.size() > 0) {
+        if (previousEntry != null && comboBoxModel.size() > 0) {
             lineChooser.setSelectedIndex(0);
         }
         NumberTextField editor = new NumberTextField("", 15);
         editor.setMinValue(1);
+        // I decided not to set the max value. Instead, just go to the end of the
+        // buffer if the user enters a line number that is too large.
         lineChooser.setEditor(editor);
         lineChooser.getEditor().selectAll();
 
@@ -95,30 +99,13 @@ public class GoToLineDialog extends EscapeDialog {
         okButton.setMnemonic(KeyEvent.VK_O);
         okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                Object selectedItem = lineChooser.getSelectedItem();
-                if (selectedItem == null || "".equals(selectedItem.toString())) {
-                    cancelled = true;
-                } else {
-                    if (selectedItem instanceof NavPosition) {
-                        previousEntry = (NavPosition) selectedItem;
-                    } else {
-                        int line = Integer.parseInt(selectedItem.toString());
-                        EditPane editPane = parent.getEditPane();
-                        TextArea textArea = editPane.getTextArea();
-                        if (line >= textArea.getLineCount()) {
-                            line = textArea.getLineCount() - 1;
-                        }
-                        previousEntry = new NavPosition(editPane, parent.getBuffer(), textArea.getLineStartOffset(line - 1), textArea.getLineText(line));
-                    }
-                }
-                close();
+                performEnterAction(null);
             }
         } );
         cancelButton.setMnemonic(KeyEvent.VK_C);
         cancelButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                cancelled = true;
-                close();
+                performEscapeAction(null);
             }
         } );
     }
@@ -140,7 +127,50 @@ public class GoToLineDialog extends EscapeDialog {
         return previousEntry;
     }
 
+    public void performEnterAction(KeyEvent e) {
+        if (lineChooser.isPopupVisible()) {
+            lineChooser.hidePopup();
+        }
+        Object selectedItem = null;
+        String editorText = ((JTextField) lineChooser.getEditor()).getText();
+        if (editorText == null || "".equals(editorText)) {
+            cancelled = true;
+        } else {
+            selectedItem = lineChooser.getSelectedItem();
+            if (selectedItem == null) {
+                selectedItem = editorText;
+            } else {
+                if (!selectedItem.toString().equals(editorText)) {
+                    selectedItem = editorText;
+                }
+            }
+            if (selectedItem instanceof NavPosition) {
+                previousEntry = (NavPosition) selectedItem;
+            } else {
+                EditPane editPane = parent.getEditPane();
+                TextArea textArea = editPane.getTextArea();
+                int line = Integer.parseInt(selectedItem.toString());
+                int offset;
+                if (line == 1) {
+                    offset = 0;   
+                }
+                else if (line >= textArea.getLineCount()) {
+                    line = textArea.getLineCount() - 1;
+                    offset = textArea.getBufferLength() - 1;
+                }
+                else {
+                    line -= 1;
+                    offset = textArea.getLineStartOffset(line);
+                }
+                previousEntry = new NavPosition(editPane, parent.getBuffer(), 
+                    offset, textArea.getLineText(line));
+            }
+        }
+        close();
+    }
+
     public void performEscapeAction(KeyEvent e) {
+        cancelled = true;
         close();
     }
 }
