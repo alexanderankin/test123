@@ -75,6 +75,14 @@ class NavHistoryPopup extends JPopupMenu {
         setVisible( true );
     }
 
+    public Dimension getSize() {
+        return getPreferredSize();   
+    }
+    
+    public Dimension getPreferredSize() {
+        return new Dimension(600, super.getPreferredSize().height);
+    }
+
     /**
      * Set the location of the popup on the screen.
      */

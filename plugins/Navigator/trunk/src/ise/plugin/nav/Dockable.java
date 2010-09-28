@@ -110,7 +110,9 @@ public class Dockable extends JPanel implements ChangeListener {
         clear.setToolTipText(jEdit.getProperty("navigator.clearHistory.label", "Clear history"));
 
         backList = new NavHistoryList(client.getView(), client, client.getBackListModel(), null);
+        backList.setToolTipText("Back history, click an item to jump to it.");
         forwardList = new NavHistoryList(client.getView(), client, client.getForwardListModel(), null);
+        forwardList.setToolTipText("Forward history, click an item to jump to it.");
 
         controlPanel = new JPanel(new LambdaLayout());
         controlPanel.setVisible(false);
@@ -138,6 +140,7 @@ public class Dockable extends JPanel implements ChangeListener {
         
         currentPanel = new JPanel();
         currentLabel = new JLabel();
+        currentLabel.setToolTipText("Current position");
         currentPanel.add(currentLabel);
         
         flipPanel = new JPanel(new BorderLayout());
@@ -195,8 +198,8 @@ public class Dockable extends JPanel implements ChangeListener {
                 jEdit.setBooleanProperty("navigator.showLineText", showLineText.isSelected());
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        backList.repaint();
-                        forwardList.repaint();
+                        backList.updateUI();
+                        forwardList.updateUI();
                     }
                 } );
             }
@@ -207,8 +210,8 @@ public class Dockable extends JPanel implements ChangeListener {
                 jEdit.setBooleanProperty("navigator.showLineTextSyntax", showLineTextSyntax.isSelected());
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        backList.repaint();
-                        forwardList.repaint();
+                        backList.updateUI();
+                        forwardList.updateUI();
                     }
                 } );
             }
@@ -219,8 +222,8 @@ public class Dockable extends JPanel implements ChangeListener {
                 jEdit.setBooleanProperty("navigator.showStripes", showStripes.isSelected());
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        backList.repaint();
-                        forwardList.repaint();
+                        backList.updateUI();
+                        forwardList.updateUI();
                     }
                 } );
             }
@@ -271,8 +274,8 @@ public class Dockable extends JPanel implements ChangeListener {
                 jEdit.setBooleanProperty("navigator.showPath", showPath.isSelected());
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        backList.repaint();
-                        forwardList.repaint();
+                        backList.updateUI();
+                        forwardList.updateUI();
                     }
                 } );
             }
@@ -283,8 +286,8 @@ public class Dockable extends JPanel implements ChangeListener {
                 jEdit.setBooleanProperty("navigator.showLineNumber", showLineNumber.isSelected());
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        backList.repaint();
-                        forwardList.repaint();
+                        backList.updateUI();
+                        forwardList.updateUI();
                     }
                 } );
             }
@@ -295,8 +298,8 @@ public class Dockable extends JPanel implements ChangeListener {
                 jEdit.setBooleanProperty("navigator.showCaretOffset", showCaretOffset.isSelected());
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        backList.repaint();
-                        forwardList.repaint();
+                        backList.updateUI();
+                        forwardList.updateUI();
                     }
                 } );
             }
