@@ -101,3 +101,7 @@ navigator.message.No_backward_items=No backward items
 navigator.message.No_forward_items=No forward items
 navigator.message.Info=Info
 navigator.message.Navigator_history_cleared.=Navigator history cleared.
+
+mavigator.backlist.tooltip=Back history, click an item to jump to it.
+navigator.forwardlist.tooltip=Forward history, click an item to jump to it.
+navigator.current.tooltip=Current position
