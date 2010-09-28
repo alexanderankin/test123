@@ -11,9 +11,9 @@ plugin.bzr.BzrPlugin.depend.1=jedit 04.03.99.00
 plugin.bzr.BzrPlugin.depend.2=plugin CommonControlsPlugin 1.2
 plugin.bzr.BzrPlugin.depend.3=plugin projectviewer.ProjectPlugin 3.0.1
 
-git.importer.description=Use bzr ls -R
+bzr.importer.description=Use bzr ls -R
 plugin.bzr.BzrPlugin.option-pane=bzr
 
-options.git.label=Bzr
-options.git.code = new bzr.OptionPane();
-options.git.path = bzr executable:
+options.bzr.label=Bzr
+options.bzr.code = new bzr.OptionPane();
+options.bzr.path = bzr executable:
