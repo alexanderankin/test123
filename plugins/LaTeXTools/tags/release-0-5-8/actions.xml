@@ -1,0 +1,129 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+  <ACTION NAME="latextools-set-main">
+		<CODE>
+		       uk.co.antroy.latextools.macros.ProjectMacros.setMainFile(buffer);
+ 		</CODE>
+  </ACTION>
+  <ACTION NAME="latextools-reset-main">
+		<CODE>
+		       uk.co.antroy.latextools.macros.ProjectMacros.resetMainFile();
+ 		</CODE>
+  </ACTION>
+   <ACTION NAME="latextools-show-main">
+		<CODE>
+		       uk.co.antroy.latextools.macros.ProjectMacros.showMainFile(view);
+ 		</CODE>
+  </ACTION>
+  
+   <ACTION NAME="latextools-increment-phrase">
+		<CODE>
+            uk.co.antroy.latextools.macros.TextMacros.repeat(view,false);
+ 		</CODE>
+  </ACTION>
+  
+  <ACTION NAME="latextools-increment-phrase-from-x">
+		<CODE>
+            uk.co.antroy.latextools.macros.TextMacros.repeat(view,true);
+ 		</CODE>
+  </ACTION>
+  <ACTION NAME="latextools-surround-selection">
+		<CODE>
+            uk.co.antroy.latextools.macros.TextMacros.surround(view);
+ 		</CODE>
+  </ACTION>
+  
+  <ACTION NAME="latextools-insert-environment">
+		<CODE>
+            uk.co.antroy.latextools.macros.TextMacros.newEnvironment(view);
+ 		</CODE>
+  </ACTION>
+  
+  <ACTION NAME="latextools-insert-command">
+		<CODE>
+            uk.co.antroy.latextools.macros.TextMacros.newCommand(view);
+ 		</CODE>
+  </ACTION>
+  
+  <ACTION NAME="latextools-show-image-under-caret">
+        <CODE>
+            manager = view.getDockableWindowManager();
+            manager.showDockableWindow("navigation-dock");
+            uk.co.antroy.latextools.ImageViewer.showInInfoPane(view, buffer);
+        </CODE>
+  </ACTION>
+  
+  <ACTION NAME="latextools-compile">
+		<CODE>
+        uk.co.antroy.latextools.macros.CompilationMacros.compile(view, buffer, false);
+ 		</CODE>
+  </ACTION>
+  
+  <ACTION NAME="latextools-compile-prompt">
+		<CODE>
+        uk.co.antroy.latextools.macros.CompilationMacros.compile(view, buffer, true);
+ 		</CODE>
+  </ACTION>
+
+  <ACTION NAME="latextools-viewoutput">
+		<CODE>
+        uk.co.antroy.latextools.macros.CompilationMacros.viewOutput(view, buffer, false);
+ 		</CODE>
+  </ACTION>
+  
+  <ACTION NAME="latextools-viewoutput-prompt">
+		<CODE>
+        uk.co.antroy.latextools.macros.CompilationMacros.viewOutput(view, buffer, true);
+ 		</CODE>
+  </ACTION>
+  
+  <ACTION NAME="latextools-bibtex">
+		<CODE>
+        uk.co.antroy.latextools.macros.CompilationMacros.bibtex(view, buffer);
+ 		</CODE>
+  </ACTION>
+  
+  <ACTION NAME="latextools-erase-working">
+		<CODE>
+        uk.co.antroy.latextools.macros.CompilationMacros.deleteWorkingFiles(view, buffer);
+ 		</CODE>
+  </ACTION>
+
+  <ACTION NAME="latextools-open-import">
+		<CODE>
+        uk.co.antroy.latextools.macros.ProjectMacros.openImport(view, buffer);
+ 		</CODE>
+  </ACTION>
+
+  <ACTION NAME="latextools-open-main">
+		<CODE>
+        jEdit.openFile(view, uk.co.antroy.latextools.macros.ProjectMacros.getMainTeXPath(buffer));
+ 		</CODE>
+  </ACTION>
+  
+  <ACTION NAME="latextools-rename-label">
+		<CODE>
+        uk.co.antroy.latextools.macros.ProjectMacros.renameLabel(view, buffer);
+ 		</CODE>
+  </ACTION>
+  
+  <ACTION NAME="latextools-find-duplicate-labels">
+		<CODE>
+        manager = view.getDockableWindowManager();
+        manager.showDockableWindow("navigation-dock");
+        uk.co.antroy.latextools.macros.ErrorFindingMacros.displayDuplicateLabels(view, buffer);
+ 		</CODE>
+  </ACTION>
+  
+  <ACTION NAME="latextools-find-orphaned-references">
+		<CODE>
+        manager = view.getDockableWindowManager();
+        manager.showDockableWindow("navigation-dock");
+        uk.co.antroy.latextools.macros.ErrorFindingMacros.displayOrphanedRefs(view, buffer);
+ 		</CODE>
+  </ACTION>
+  
+</ACTIONS>
