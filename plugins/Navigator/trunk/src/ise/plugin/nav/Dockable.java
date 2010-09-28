@@ -10,6 +10,8 @@ import org.gjt.sp.jedit.jEdit;
 import ise.java.awt.KappaLayout;
 import ise.java.awt.LambdaLayout;
 
+// TODO: if the line is too long, the current label will cover the buttons.
+// Need to limit the width of the current label.
 public class Dockable extends JPanel implements ChangeListener {
 
     private Navigator client = null;
@@ -110,9 +112,9 @@ public class Dockable extends JPanel implements ChangeListener {
         clear.setToolTipText(jEdit.getProperty("navigator.clearHistory.label", "Clear history"));
 
         backList = new NavHistoryList(client.getView(), client, client.getBackListModel(), null);
-        backList.setToolTipText("Back history, click an item to jump to it.");
+        backList.setToolTipText(jEdit.getProperty("navigator.backlist.tooltip", "Back history, click an item to jump to it."));
         forwardList = new NavHistoryList(client.getView(), client, client.getForwardListModel(), null);
-        forwardList.setToolTipText("Forward history, click an item to jump to it.");
+        forwardList.setToolTipText(jEdit.getProperty("navigator.forwardlist.tooltip", "Forward history, click an item to jump to it."));
 
         controlPanel = new JPanel(new LambdaLayout());
         controlPanel.setVisible(false);
@@ -140,7 +142,7 @@ public class Dockable extends JPanel implements ChangeListener {
         
         currentPanel = new JPanel();
         currentLabel = new JLabel();
-        currentLabel.setToolTipText("Current position");
+        currentLabel.setToolTipText(jEdit.getProperty("navigator.current.tooltip", "Current position"));
         currentPanel.add(currentLabel);
         
         flipPanel = new JPanel(new BorderLayout());
@@ -312,7 +314,7 @@ public class Dockable extends JPanel implements ChangeListener {
                 clear.setEnabled(client.getBackModel().isEnabled() || client.getForwardModel().isEnabled());
                 backList.setModel(client.getBackListModel());
                 forwardList.setModel(client.getForwardListModel());
-                currentLabel.setText(client.getCurrentPosition() == null ? "" : client.getCurrentPosition().plainText());
+                currentLabel.setText(client.getCurrentPosition() == null ? "" : client.getCurrentPosition().htmlText());
             }
         } );
     }
@@ -326,5 +328,4 @@ public class Dockable extends JPanel implements ChangeListener {
             list.jump();
         }
     }
-
 }

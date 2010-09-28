@@ -154,6 +154,7 @@ public class NavPosition {
         boolean showPath = jEdit.getBooleanProperty("navigator.showPath", true);
         boolean showLineNumber = jEdit.getBooleanProperty("navigator.showLineNumber", true);
         boolean showCaretOffset = jEdit.getBooleanProperty("navigator.showCaretOffset", true);
+        boolean showLineText = jEdit.getBooleanProperty("navigator.showLineText", false);
 
         // might need to escape the line text as it might already be html
         String text = linetext;
@@ -170,8 +171,10 @@ public class NavPosition {
         if (showCaretOffset) {
             sb.append(":").append(caret);   
         }
-        sb.append("</tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-        sb.append(text);
+        sb.append("</tt>");
+        if (showLineText && linetext != null) {
+            sb.append("<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;").append(text);
+        }
         return sb.toString();
     }
 }
