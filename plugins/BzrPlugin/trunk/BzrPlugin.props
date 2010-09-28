@@ -1,0 +1,19 @@
+# Plugin properties
+plugin.bzr.BzrPlugin.activate=defer
+
+plugin.bzr.BzrPlugin.name=Bzr Plugin
+plugin.bzr.BzrPlugin.author=Alan Ezust
+plugin.bzr.BzrPlugin.version=0.2
+plugin.bzr.BzrPlugin.docs=index.html
+plugin.bzr.BzrPlugin.description=Offers a file filter importer for ProjectViewer
+plugin.bzr.BzrPlugin.depend.0=jdk 1.6
+plugin.bzr.BzrPlugin.depend.1=jedit 04.03.99.00
+plugin.bzr.BzrPlugin.depend.2=plugin CommonControlsPlugin 1.2
+plugin.bzr.BzrPlugin.depend.3=plugin projectviewer.ProjectPlugin 3.0.1
+
+git.importer.description=Use bzr ls -R
+plugin.bzr.BzrPlugin.option-pane=bzr
+
+options.git.label=Bzr
+options.git.code = new bzr.OptionPane();
+options.git.path = bzr executable:
