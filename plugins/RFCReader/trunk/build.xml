@@ -21,12 +21,6 @@
         </or>
 	</selector>
 
-    
-	<path id="project.class.path">
-		<pathelement location="${jedit.install.dir}/jedit.jar" />
-		<pathelement location="${jedit.plugins.dir}/Hyperlinks.jar" />
-		<pathelement location="${jedit.plugins.dir}/lucene-core-3.0.1.jar"/>
-	</path>
 
     <selector id="extraFiles">
         <and>
