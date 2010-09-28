@@ -1,0 +1,50 @@
+<!--:wrap=soft: -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>LaTeX Tools - Bugs</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="Stylesheet" type="text/css" href="latex.css">
+<link href="index.html" rel="first">
+<link href="featurereq.html" rel="next">
+<link href="history.html" rel="prev">
+<link href="bugs.html" rel="Notes" title="Bugs">
+<link href="featurereq.html" rel="Notes" title="Feature Requests">
+<link href="history.html" rel="Notes" title="History">
+</head>
+
+<body>
+<DIV ALIGN="center">
+<TABLE cellspacing="1" cellpadding="2" width="80%">
+<TR>
+<th width="5%">ID#</th><th width="10%">Date</th><TH width="15%">Component</TH><th width="65%">Description</th><th width="5%">Target</th>
+</TR>
+<tr><th class="blank"></th><th colspan="4">Notes</th></tr>
+<tr>
+<td class="fix">1</td><td>9.11.02</td><td>Navigator</td><td>Scroll Pane.</td><td class="fix">0.1.1</td>
+</tr>
+<tr><td class="blank"></td><td colspan="4">Scroll pane not resizing correctly.</td></tr>
+<tr>
+<td class="fix">2</td><td>9.11.02</td><td>Navigator</td><td>Not correctly removing options.</td><td class="fix">0.1.2</td>
+</tr>
+<tr><td class="blank"></td><td colspan="4">The HashSet containing the NavigationLists is not removing menus ending with the 0 flag.</td></tr>
+<tr><td class="blank"></td><td colspan="4">HashSets use the equals() method of its members to check if a member already exists. Added (overrode) equals() method in NavigationList class.</td></tr>
+<tr>
+<td class="fix">3</td><td>11.11.02</td><td>Navigator</td><td>Exception when not a TeX file.</td><td class="fix">0.1.1</td>
+</tr>
+<tr><td class="blank"></td><td colspan="4">The Navigator code is throwing an exception when a non-TeX file is the current buffer. Add a test line in to return if it is not a TeX file.</td></tr>
+<tr>
+<td>4</td><td>22.11.02</td><td>Navigator</td><td>Refresh problem</td><td></td>
+</tr>
+<tr>
+  <td class="blank"></td><td colspan="4">Refresh only occurs if the buffer changes - needs to refresh when a new buffer is opened, or closed and at startup.</td>
+</tr>
+
+
+
+<tr><td colspan="5"></td></tr>
+</TABLE>
+</DIV>
+</body>
+</html>
+
