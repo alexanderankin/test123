@@ -287,6 +287,34 @@ public class Navigator implements ActionListener {
         forwardHistory.remove( node );
         notifyChangeListeners();
     }
+    
+    /**
+     * Removes all NavPositions with the given buffer path.  This is mostly used for 
+     * removing nodes for Untitled buffers that have been closed since there is no way 
+     * to get back to those positions.
+     * @parem bufferPath The path of the buffer to remove nodes for.
+     */
+    public void removeAll(String bufferPath) {
+        if (bufferPath == null) {
+            return;   
+        }
+        for (int i = backHistory.getSize() - 1; i >= 0; i--) {
+            NavPosition pos = backHistory.getElementAt(i);
+            if (bufferPath.equals(pos.path)) {
+                backHistory.removeElementAt(i);   
+            }
+        }
+        for (int i = forwardHistory.getSize() - 1; i >= 0; i--) {
+            NavPosition pos = forwardHistory.getElementAt(i);
+            if (bufferPath.equals(pos.path)) {
+                forwardHistory.removeElementAt(i);   
+            }
+        }
+        if (bufferPath.equals(current.path)) {
+            current = currentPosition();   
+        }
+        notifyChangeListeners();
+    }
 
     /**
      * Set the maximum size of the back and forward history stacks.  Both

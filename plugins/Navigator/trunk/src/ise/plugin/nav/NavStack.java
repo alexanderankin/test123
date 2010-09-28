@@ -43,7 +43,7 @@ class NavStack<E> extends Stack<E> implements ComboBoxModel {
 
     private Set<ListDataListener> listeners = null;
 
-    private Object selectedItem = null;
+    private E selectedItem = null;
 
     /**
      * Create a NavStack with a default size of 512.
@@ -140,7 +140,7 @@ class NavStack<E> extends Stack<E> implements ComboBoxModel {
         listeners.remove(listener);
     }
 
-    public Object getElementAt(int index) {
+    public E getElementAt(int index) {
         return get(index);
     }
 
@@ -264,13 +264,13 @@ class NavStack<E> extends Stack<E> implements ComboBoxModel {
     }
 
     // for ComboBoxModel
-    public Object getSelectedItem() {
+    public E getSelectedItem() {
         return selectedItem;
     }
 
     public void setSelectedItem(Object item) {
         if (item != null) {
-            selectedItem = item;
+            selectedItem = (E)item;
             contentsChanged();
         }
     }
