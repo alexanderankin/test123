@@ -44,7 +44,6 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.msg.*;
-import org.gjt.sp.jedit.textarea.TextArea;
 
 
 /**
@@ -539,6 +538,14 @@ public class NavigatorPlugin extends EBPlugin {
                     Navigator n = getNavigator( bu.getView() );
                     if ( n != null ) {
                         n.addToHistory();
+                    }
+                }
+            }
+            else if (BufferUpdate.CLOSED.equals(bu.getWhat())) {
+                if ( bu.getView() != null && bu.getView().getEditPane() != null ) {     // NOPMD
+                    Navigator n = getNavigator( bu.getView() );
+                    if ( n != null ) {
+                        n.removeAll(bu.getBuffer().getPath());
                     }
                 }
             }
