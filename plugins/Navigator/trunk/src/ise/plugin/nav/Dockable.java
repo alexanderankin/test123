@@ -29,6 +29,7 @@ public class Dockable extends JPanel implements ChangeListener {
     private JPanel currentPanel = null;
     private JLabel currentLabel = null;
     private JPanel flipPanel = null;
+    private JPanel buttonPanel = null;
 
     private JButton options = null;
     private JButton clear = null;
@@ -37,6 +38,8 @@ public class Dockable extends JPanel implements ChangeListener {
 
     private NavHistoryList backList = null;
     private NavHistoryList forwardList = null;
+    
+    protected final static int MAX_LINE_LENGTH = 120;
 
     public Dockable(Navigator navigator) {
         this.client = navigator;
@@ -47,7 +50,7 @@ public class Dockable extends JPanel implements ChangeListener {
 
     private void installComponents() {
         setLayout(new BorderLayout());
-        //setBorder( BorderFactory.createEmptyBorder( 11, 11, 11, 11 ) );
+        setBorder( BorderFactory.createEmptyBorder( 0, 6, 0, 1 ) );
 
         // create top panel components...
 
@@ -142,7 +145,7 @@ public class Dockable extends JPanel implements ChangeListener {
 
         currentPanel = new JPanel();
         currentLabel = new JLabel();
-        currentLabel.setText(client.getCurrentPosition() == null ? "" : client.getCurrentPosition().htmlText());
+        currentLabel.setText(client.getCurrentPosition() == null ? "" : client.getCurrentPosition().htmlText(MAX_LINE_LENGTH));
         currentLabel.setToolTipText(jEdit.getProperty("navigator.current.tooltip", "Current position"));
         currentPanel.add(currentLabel);
 
@@ -150,16 +153,19 @@ public class Dockable extends JPanel implements ChangeListener {
         flipPanel.add(currentPanel, BorderLayout.NORTH);
         flipPanel.add(controlPanel, BorderLayout.SOUTH);
 
-        JPanel buttonPanel = new JPanel(new KappaLayout());
+        buttonPanel = new JPanel(new KappaLayout());
         buttonPanel.add("0, 0, 1, 3, 0,, 3", back);
         buttonPanel.add("1, 0, 1, 3, 0,, 3", forward);
         buttonPanel.add("2, 0, 1, 3, 0,, 3", clear);
         buttonPanel.add("3, 0, 1, 3, 0,, 3", options);
 
         JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.add(flipPanel, BorderLayout.WEST);
+        // order is important here -- the first panel has the highest z-order.
+        // If the flip panel is added first and the current label is too long,
+        // it will overlap the buttons and make them unusable.
         topPanel.add(buttonPanel, BorderLayout.EAST);
-
+        topPanel.add(flipPanel, BorderLayout.WEST);
+        
         JPanel middlePanel = new JPanel(new GridLayout(1, 2, 3, 3));
         middlePanel.add(backList);
         middlePanel.add(forwardList);
@@ -315,7 +321,7 @@ public class Dockable extends JPanel implements ChangeListener {
                 clear.setEnabled(client.getBackModel().isEnabled() || client.getForwardModel().isEnabled());
                 backList.setModel(client.getBackListModel());
                 forwardList.setModel(client.getForwardListModel());
-                currentLabel.setText(client.getCurrentPosition() == null ? "" : client.getCurrentPosition().htmlText());
+                currentLabel.setText(client.getCurrentPosition() == null ? "" : client.getCurrentPosition().htmlText(MAX_LINE_LENGTH));
             }
         } );
     }

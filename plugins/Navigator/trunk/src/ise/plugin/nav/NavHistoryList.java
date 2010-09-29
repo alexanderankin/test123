@@ -170,7 +170,7 @@ class NavHistoryList extends JPanel {
                     }
                 }
                 if (editPane == null || !jEdit.getBooleanProperty("navigator.showLineTextSyntax", true)) {
-                    labelText = pos.htmlText();                    // non-syntax highlighted html
+                    labelText = pos.htmlText(Dockable.MAX_LINE_LENGTH);                    // non-syntax highlighted html
                 } else {
                     // Have Code2HTML plugin create syntax highlighted html.
                     // First, create a selection for the text of the line
@@ -185,9 +185,14 @@ class NavHistoryList extends JPanel {
                     if (buffer == null) {
                         labelText = pos.htmlText();
                     } else {
-                        int start = buffer.getLineStartOffset(pos.lineno);
-                        int end = buffer.getLineEndOffset(pos.lineno);
-                        Selection selection = new Selection.Rect(pos.lineno, start, pos.lineno, end);
+                        // protect against pos having an invalid line number
+                        int line = pos.lineno >= buffer.getLineCount() ? buffer.getLineCount() - 1 : pos.lineno;
+                        int start = buffer.getLineStartOffset(line);
+                        int end = buffer.getLineEndOffset(line);
+                        if (end - start > Dockable.MAX_LINE_LENGTH) {
+                            end = start + Dockable.MAX_LINE_LENGTH;   
+                        }
+                        Selection selection = new Selection.Rect(line, start, line, end);
                         Selection[] selections = new Selection[1];
                         selections[0] = selection;
 
@@ -236,7 +241,7 @@ class NavHistoryList extends JPanel {
                         sb.append(showPath ? pos.path : pos.name);
                         if (showLineNumber) {
                             // lineno is 0-based, but gutter lines are 1-based, so add one
-                            sb.append(":").append(pos.lineno + 1);
+                            sb.append(":").append(line + 1);
                         }
                         if (showCaretOffset) {
                             sb.append(":").append(pos.caret);
