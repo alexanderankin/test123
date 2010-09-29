@@ -22,9 +22,11 @@
 			If the Console plugin is installed, this plugin automatically sets the
 			system environment variable CLOJURE to the path of clojure-core and clojure-contrib.
 			So to run a script called 'script.clj', cd to the file's directory (cd $d) and run:
-
+		</para>
+		<para><programlisting>
 			java -cp "$CLOJURE" clojure.main script.clj
-
+		</programlisting></para>
+		<para>
 			Alternatively, this plugin installs a clojure commando file, so scripts can
 			be run by setting it as the interpreter for clojure files (Plugin Options -> Console
 			-> Compile &amp; Run), and then Plugins -> Console -> Run Current Buffer.

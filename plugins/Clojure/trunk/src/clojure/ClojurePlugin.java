@@ -44,10 +44,10 @@ public class ClojurePlugin extends EditPlugin {
 	public static final String includedContrib = MiscUtilities.constructPath(
 		jEdit.getSettingsDirectory(),
 		"jars/"+jEdit.getProperty("options.clojure.clojure-contrib-jar"));
-
+	
 	private String installedCore = null;
 	private String installedContrib = null;
-
+	
 	public void start() {
 		// If core/contrib are not defined, set them to defaults
 		if (jEdit.getProperty(coreProp) == null) {
@@ -60,17 +60,33 @@ public class ClojurePlugin extends EditPlugin {
 
 		installedCore = getClojureCore();
 		if (!installedCore.equals(includedCore)) {
-			jEdit.removePluginJAR(jEdit.getPluginJAR(includedCore));
+			jEdit.removePluginJAR(jEdit.getPluginJAR(includedCore), false);
 			jEdit.addPluginJAR(installedCore);
 		}
 
 		installedContrib = getClojureContrib();
 		if (!installedContrib.equals(includedContrib)) {
-			jEdit.removePluginJAR(jEdit.getPluginJAR(includedContrib));
+			jEdit.removePluginJAR(jEdit.getPluginJAR(includedContrib), false);
 			jEdit.addPluginJAR(installedContrib);
 		}
 
 		setVars();
+		
+		if (jEdit.getPlugin("console.ConsolePlugin") != null) {
+			File clojureCommand = new File(console.ConsolePlugin.getUserCommandDirectory(), "clojure.xml");
+			if (!clojureCommand.exists()) {
+				try {
+					InputStream in = getClass().getResourceAsStream("/commands/clojure.xml");
+					OutputStream out = new FileOutputStream(clojureCommand);
+					IOUtilities.copyStream(null, in, out, false);
+					IOUtilities.closeQuietly(in);
+					IOUtilities.closeQuietly(out);
+					console.ConsolePlugin.rescanCommands();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 	public void stop() {}
 

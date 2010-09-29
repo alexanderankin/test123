@@ -1,8 +1,7 @@
 <?xml version="1.0" ?>
 <project name="Clojure" default="build" basedir=".">
 	<!-- mark:build.properties -->
-	<!-- <property file="../../build.properties" /> -->
-	<property file="${java.io.tmpdir}/build.properties" />
+	<property file="../../build.properties" />
 	<!-- /mark:build.properties -->
 	<!-- <property file="build.properties" /> -->
 	<!-- <property file="../build.properties" /> -->
@@ -26,7 +25,7 @@
 	<selector id="packageFiles">
 		<and>
 			<or>
-				<filename name="**/Clojure.html" />
+				<filename name="commands/*.xml" />
 			</or>
 		</and>
 	</selector>
