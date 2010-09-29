@@ -34,11 +34,11 @@
 	<property name="crosscompiler.lib" 			value="${java.home}/lib"/>
 	<property name="crosscompiler.version" 	value="1.5"/>
 	<property name="jedit.user.home" 				value="${jedit.install.dir}"/>
-	<property name="jedit.jars.dir"  				value="${install.dir}"/>
-	<property name="errorlist.jar"  				value="${jedit.jars.dir}/ErrorList.jar"/>
-	<property name="sidekick.jar"  				 	value="${jedit.jars.dir}/SideKick.jar"/>
-	<property name="console.jar"  					value="${jedit.jars.dir}/Console.jar"/>
-	<property name="gnuregexp.jar"					value="${jedit.jars.dir}/GnuRegexp.jar"/>
+	<property name="jedit.plugins.dir"			value="${install.dir}"/>
+	<property name="errorlist.jar"  				value="${jedit.plugins.dir}/ErrorList.jar"/>
+	<property name="sidekick.jar"  				 	value="${jedit.plugins.dir}/SideKick.jar"/>
+	<property name="console.jar"  					value="${jedit.plugins.dir}/Console.jar"/>
+	<property name="gnuregexp.jar"					value="${jedit.plugins.dir}/GnuRegexp.jar"/>
   <!-- ================================================ -->
   <!-- Classpath definitions                            -->
   <!-- ================================================ -->
@@ -148,7 +148,7 @@
   </target>
 
   <target name="deploy" depends="dist">
-    <copy file="${dist}\LaTeXTools.jar" todir="${jedit.jars.dir}"/>
+    <copy file="${dist}\LaTeXTools.jar" todir="${jedit.plugins.dir}"/>
   	<condition property="can.reload.plugins">
   		<and>
   		    <available classname="org.gjt.sp.jedit.jEdit"/>
@@ -176,7 +176,7 @@
 
 	<target name="reload" if="can.reload.plugins">
 		<taskdef name="reloadPlugin" classname="ReloadPluginTask" classpathref="class.path"/>
-		<reloadPlugin jarfile="${jedit.jars.dir}/LaTeXTools.jar"/>
+		<reloadPlugin jarfile="${install.dir}/LaTeXTools.jar"/>
 	</target>
 
 
