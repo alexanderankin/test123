@@ -528,7 +528,6 @@ public class NavigatorPlugin extends EBPlugin {
         if ( message == null ) {
             return ;
         }
-
         // if a new buffer was loaded, need to add the first position in the
         // buffer to the history
         if ( message instanceof BufferUpdate ) {
@@ -542,7 +541,8 @@ public class NavigatorPlugin extends EBPlugin {
                 }
             }
             else if (BufferUpdate.CLOSED.equals(bu.getWhat())) {
-                if ( bu.getView() != null && bu.getView().getEditPane() != null ) {     // NOPMD
+                // remove any untitled buffers from the history lists since they can't be reopened
+                if ( bu.getView() != null && bu.getView().getEditPane() != null && bu.getBuffer() != null && bu.getBuffer().isUntitled() ) {     // NOPMD
                     Navigator n = getNavigator( bu.getView() );
                     if ( n != null ) {
                         n.removeAll(bu.getBuffer().getPath());
