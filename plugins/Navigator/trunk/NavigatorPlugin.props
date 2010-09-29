@@ -105,3 +105,4 @@ navigator.message.Navigator_history_cleared.=Navigator history cleared.
 mavigator.backlist.tooltip=Back history, click an item to jump to it.
 navigator.forwardlist.tooltip=Forward history, click an item to jump to it.
 navigator.current.tooltip=Current position
+navigator.removingPosition=Navigator: removing invalid position

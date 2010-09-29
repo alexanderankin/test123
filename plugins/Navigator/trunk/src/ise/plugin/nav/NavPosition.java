@@ -43,7 +43,7 @@ public class NavPosition {
 
     // path of file in Buffer
     public String path = null;
-    
+
     // filename of buffer
     public String name = null;
 
@@ -63,24 +63,24 @@ public class NavPosition {
      * @param caretPosition the position of the caret within the text area containing the buffer
      * @param the text of the caret line
      */
-    public NavPosition( EditPane editPane, Buffer buffer, int caretPosition, String linetext ) {
-        if ( editPane == null ) {
-            throw new IllegalArgumentException( "editPane cannot be null" );
+    public NavPosition(EditPane editPane, Buffer buffer, int caretPosition, String linetext) {
+        if (editPane == null) {
+            throw new IllegalArgumentException("editPane cannot be null");
         }
-        if ( buffer == null ) {
-            throw new IllegalArgumentException( "buffer cannot be null" );
+        if (buffer == null) {
+            throw new IllegalArgumentException("buffer cannot be null");
         }
-        if ( caretPosition < 0 ) {
-            throw new IllegalArgumentException( "caret position cannot less than 0" );
+        if (caretPosition < 0) {
+            throw new IllegalArgumentException("caret position cannot less than 0");
         }
         this.editPane = editPane.hashCode();
         path = buffer.getPath();
         name = buffer.getName();
         caret = caretPosition;
-        lineno = buffer.getLineOfOffset( caret );
+        lineno = buffer.getLineOfOffset(caret);
         this.linetext = linetext == null ? "" : linetext;
     }
-    
+
     public NavPosition(NavPosition other) {
         editPane = other.editPane;
         path = other.path;
@@ -95,34 +95,33 @@ public class NavPosition {
      * path, line number, and caret position.
      */
     @Override
-    public boolean equals( Object obj ) {
+    public boolean equals(Object obj) {
         // check for reference equality
-        if ( this == obj ) {
+        if (this == obj) {
             return true;
         }
 
         // type check
-        if ( !( obj instanceof NavPosition ) ) {
+        if (! (obj instanceof NavPosition)) {
             return false;
         }
 
         // cast to correct type
-        NavPosition other = ( NavPosition ) obj;
+        NavPosition other = (NavPosition) obj;
 
         // check fields
         boolean groupByLine = jEdit.getBooleanProperty("navigator.groupByLine", false);
         if (groupByLine) {
-            return ( path.equalsIgnoreCase( other.path ) && lineno == other.lineno );
+            return (path.equalsIgnoreCase(other.path) && lineno == other.lineno);
         }
-        return ( path.equalsIgnoreCase( other.path ) && lineno == other.lineno && caret == other.caret );
+        return (path.equalsIgnoreCase(other.path) && lineno == other.lineno && caret == other.caret);
     }
 
     @Override
     public int hashCode() {
-        return ( path + lineno + caret ).hashCode();
+        return (path + lineno + caret).hashCode();
     }
-    
-    
+
     // kind of a cheat here -- I want to use these as the objects in a JComboBox,
     // and I want the editor to be a NumberTextField.  This lets me do that.
     @Override
@@ -138,10 +137,10 @@ public class NavPosition {
         sb.append(showPath ? path : name);
         if (showLineNumber) {
             // lineno is 0-based, but gutter lines are 1-based, so add one
-            sb.append(":").append(lineno + 1);   
+            sb.append(":").append(lineno + 1);
         }
         if (showCaretOffset) {
-            sb.append(":").append(caret);   
+            sb.append(":").append(caret);
         }
         return sb.toString();
     }
@@ -151,28 +150,40 @@ public class NavPosition {
      * back and forward popup lists.
      */
     public String htmlText() {
+        return htmlText(Integer.MAX_VALUE);
+    }
+
+    /**
+     * @param maxLineLength The maximum number of characters of the line text to display.
+     * @return an HTML representation of this position for display in the
+     * back and forward popup lists.
+     */
+    public String htmlText(int maxLineLength) {
         boolean showPath = jEdit.getBooleanProperty("navigator.showPath", true);
         boolean showLineNumber = jEdit.getBooleanProperty("navigator.showLineNumber", true);
         boolean showCaretOffset = jEdit.getBooleanProperty("navigator.showCaretOffset", true);
         boolean showLineText = jEdit.getBooleanProperty("navigator.showLineText", false);
 
-        // might need to escape the line text as it might already be html
-        String text = linetext;
-        text = text.replaceAll( "[<]", "&lt;" );
-        text = text.replaceAll( "[>]", "&gt;" );
-        
         StringBuilder sb = new StringBuilder();
         sb.append("<html><tt>");
         sb.append(showPath ? path : name);
         if (showLineNumber) {
             // lineno is 0-based, but gutter lines are 1-based, so add one
-            sb.append(":").append(lineno + 1);   
+            sb.append(":").append(lineno + 1);
         }
         if (showCaretOffset) {
-            sb.append(":").append(caret);   
+            sb.append(":").append(caret);
         }
         sb.append("</tt>");
         if (showLineText && linetext != null) {
+            // might need to escape the line text as it might already be html
+            String text = linetext;
+            text = text.trim();
+            text = text.replaceAll("[<]", "&lt;");
+            text = text.replaceAll("[>]", "&gt;");
+            if (text.length() > maxLineLength) {
+                text = text.substring(0, maxLineLength);   
+            }
             sb.append("<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;").append(text);
         }
         return sb.toString();
