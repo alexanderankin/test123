@@ -139,12 +139,13 @@ public class Dockable extends JPanel implements ChangeListener {
         controlPanel.add("6, 0, 1, 1, W, w, 0", showPath);
         controlPanel.add("6, 1, 1, 1, W, w, 0", showLineNumber);
         controlPanel.add("6, 2, 1, 1, W, w, 0", showCaretOffset);
-        
+
         currentPanel = new JPanel();
         currentLabel = new JLabel();
+        currentLabel.setText(client.getCurrentPosition() == null ? "" : client.getCurrentPosition().htmlText());
         currentLabel.setToolTipText(jEdit.getProperty("navigator.current.tooltip", "Current position"));
         currentPanel.add(currentLabel);
-        
+
         flipPanel = new JPanel(new BorderLayout());
         flipPanel.add(currentPanel, BorderLayout.NORTH);
         flipPanel.add(controlPanel, BorderLayout.SOUTH);
@@ -235,8 +236,8 @@ public class Dockable extends JPanel implements ChangeListener {
             public void actionPerformed(ActionEvent ae) {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        controlPanel.setVisible(!controlPanel.isVisible());
-                        currentPanel.setVisible(!currentPanel.isVisible());
+                        controlPanel.setVisible(! controlPanel.isVisible());
+                        currentPanel.setVisible(! currentPanel.isVisible());
                         flipPanel.invalidate();
                         Dockable.this.repaint();
                     }

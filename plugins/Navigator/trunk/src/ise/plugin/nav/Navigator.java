@@ -237,6 +237,7 @@ public class Navigator implements ActionListener {
         if ( current == null ) {
             // first time addToHistory is called
             current = position;
+            notifyChangeListeners();
             return ;
         }
 
