@@ -38,7 +38,7 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.util.ThreadUtilities;
+import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 /**
@@ -278,14 +278,17 @@ public class Navigator implements ActionListener {
     }
 
     /**
-     * Removes an invalid node from the navigation history.
+     * Removes an invalid position from the navigation history.
      *
-     * @param node
-     *                an invalid node
+     * @param position an invalid node
      */
-    public void remove( Object node ) {
-        backHistory.remove( node );
-        forwardHistory.remove( node );
+    public void remove( NavPosition position ) {
+        view.getStatus().setMessage(jEdit.getProperty("navigator.removingPosition", "Navigator: removing invalid position") + ": " + position.plainText());
+        backHistory.remove( position );
+        forwardHistory.remove( position );
+        if (current.equals(position)) {
+            current = currentPosition();   
+        }
         notifyChangeListeners();
     }
     
@@ -403,16 +406,14 @@ public class Navigator implements ActionListener {
         position.editPane = editPane.hashCode();
         return editPane;
     }
-
+    
     /**
-     * Sets the position of the cursor to the given NavPosition.
-     *
-     * @param o
-     *                The new NavPosition value
+     * Validates the given position.  If invalid, the position will be removed
+     * from the history lists.
      */
-    public void setPosition( NavPosition position ) {
+    private boolean validatePosition(NavPosition position) {
         if ( position == null ) {
-            return ;
+            return false;
         }
 
         // stop listening to EditBus events while we are changing buffers
@@ -438,19 +439,66 @@ public class Navigator implements ActionListener {
                 // buffer isn't open and it was an untitled buffer, just skip it.
                 remove(position);
                 ignoreUpdates = false;
-                return;
+                return false;
             }
             buffer = jEdit.openFile( view, position.path );
             if ( buffer == null ) {
                 // maybe the file was deleted, so there is nothing to open
                 remove( position );
                 ignoreUpdates = false;
-                return ;
+                return false;
+            }
+        }
+        
+        if (position.lineno >= buffer.getLineCount()) {
+            // the line no longer exists in the buffer, probably due to editing
+            remove(position);
+            ignoreUpdates = false;
+            return false;
+        }
+        return true;
+    }
+    
+    /**
+     * Sets the position of the cursor to the given NavPosition.  Prior to setting
+     * the position, the position is validated and may be removed from the history
+     * lists under certain conditions, for example, when the file it references
+     * has been deleted, or it references an Untitled buffer that was closed, or
+     * the buffer was shortened due to editing and the position is beyond the new
+     * end of the buffer.
+     *
+     * @param position The new NavPosition value
+     * @return <code>true</code> if the position was valid and set, <code>false</code>
+     * if the position was invalid or otherwise could not be set.
+     *
+     * NOTE: VFSManager is deprecated in jEdit 4.4 and should be replaced with ThreadUtilities.
+     */
+    @SuppressWarnings("deprecation")
+    public boolean setPosition( NavPosition position ) {
+        // validate the position
+        if ( position == null ) {
+            return false;
+        }
+        if (!validatePosition(position)) {
+            return false;   
+        }
+
+        // stop listening to EditBus events while we are changing buffers
+        ignoreUpdates = true;
+
+        // see if the buffer is already open in one of the current edit panes
+        final EditPane editPaneForPosition = findEditPane( position );
+        Buffer[] buffers = editPaneForPosition.getBufferSet().getAllBuffers();
+        Buffer buffer = null;
+        String path = position.path;
+        for ( Buffer b : buffers ) {
+            if ( path.equals( b.getPath() ) ) {
+                buffer = b;
+                break;
             }
         }
 
         // have EditPane and Buffer, display and move the caret
-        ///EditBus.send( new PositionChanging( view.getEditPane() ) );
         editPaneForPosition.setBuffer( buffer );
         int caret = position.caret;
         if ( caret > buffer.getLength() ) {
@@ -461,7 +509,7 @@ public class Navigator implements ActionListener {
         }
         try {
         	final int caretFinal = caret;
-        	ThreadUtilities.runInDispatchThread( new Runnable() {
+        	VFSManager.runInAWTThread( new Runnable() {
         		public void run() {
                     editPaneForPosition.getTextArea().setCaretPosition( caretFinal, true );
                     editPaneForPosition.getTextArea().requestFocus();
@@ -474,6 +522,7 @@ public class Navigator implements ActionListener {
             // it and silently ignore it.
         }
         ignoreUpdates = false;
+        return true;
     }
 
     /**
@@ -556,15 +605,19 @@ public class Navigator implements ActionListener {
         // before going back.
         NavPosition now = currentPosition();
         if ( current.equals( now ) ) {
-            forwardHistory.push( current );
-            current = backHistory.pop();
-            setPosition( current );
-            setButtonState();
+            if (validatePosition(current)) {
+                forwardHistory.push( current );
+                current = backHistory.pop();
+                setPosition( current );
+                setButtonState();
+            }
         }
         else {
-            forwardHistory.push(now);
-            setPosition(current);
-            setButtonState();
+            if (validatePosition(current)) {
+                forwardHistory.push(now);
+                setPosition(current);
+                setButtonState();
+            }
         }
         notifyChangeListeners();
     }
@@ -580,10 +633,12 @@ public class Navigator implements ActionListener {
         if ( current != null ) {
             backHistory.push( current );
         }
-        current = forwardHistory.pop();
-        setPosition( current );
-        setButtonState();
-        notifyChangeListeners();
+        NavPosition possible = forwardHistory.peek();
+        if (setPosition(possible)) {
+            current = forwardHistory.pop();
+            setButtonState();
+            notifyChangeListeners();
+        }
     }
 
     /**
@@ -626,10 +681,11 @@ public class Navigator implements ActionListener {
             backHistory.push( current );
             current = position;
         }
-        setPosition( current );
-        setButtonState();
+        if (setPosition( current )) {
+            setButtonState();
+            notifyChangeListeners();
+        }
         ignoreUpdates = false;
-        notifyChangeListeners();
     }
     
     public void addChangeListener(ChangeListener listener) {
