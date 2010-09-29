@@ -1,6 +1,11 @@
 plugin.uk.co.antroy.latextools.LaTeXPlugin.name=LaTeX Tools
 plugin.uk.co.antroy.latextools.LaTeXPlugin.author=Anthony Roy(former), Jakub Holy(former)
 plugin.uk.co.antroy.latextools.LaTeXPlugin.version=0.5.8
+
+# new jEdit 4.3 plugin API for short description.
+plugin.uk.co.antroy.latextools.LaTeXPlugin.description=A simple LaTeX plugin offering compilation actions and navigation.
+# points to a file relative to the root of the jar
+plugin.uk.co.antroy.latextools.LaTeXPlugin.longdescription=description.html
 plugin.uk.co.antroy.latextools.LaTeXPlugin.docs=index.html
 
 plugin.uk.co.antroy.latextools.LaTeXPlugin.depend.0=jedit 04.03.99.00
@@ -9,7 +14,7 @@ plugin.uk.co.antroy.latextools.LaTeXPlugin.depend.2=plugin errorlist.ErrorListPl
 plugin.uk.co.antroy.latextools.LaTeXPlugin.depend.3=plugin sidekick.SideKickPlugin 0.9
 plugin.uk.co.antroy.latextools.LaTeXPlugin.depend.4=plugin console.ConsolePlugin 4.4
 plugin.uk.co.antroy.latextools.LaTeXPlugin.depend.5=plugin GnuRegexpPlugin 1.0
-
+plugin.null.description=hoi
 #4.2 API - activate plugin
 plugin.uk.co.antroy.latextools.LaTeXPlugin.activate=defer
 
