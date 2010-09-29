@@ -17,3 +17,4 @@ plugin.bzr.BzrPlugin.option-pane=bzr
 options.bzr.label=Bzr
 options.bzr.code = new bzr.OptionPane();
 options.bzr.path = bzr executable:
+options.bzr.browsebutton-label=Browse
