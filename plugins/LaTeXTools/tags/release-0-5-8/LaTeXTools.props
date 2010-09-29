@@ -1,0 +1,158 @@
+plugin.uk.co.antroy.latextools.LaTeXPlugin.name=LaTeX Tools
+plugin.uk.co.antroy.latextools.LaTeXPlugin.author=Anthony Roy(former), Jakub Holy(former)
+plugin.uk.co.antroy.latextools.LaTeXPlugin.version=0.5.8
+
+# new jEdit 4.3 plugin API for short description.
+plugin.uk.co.antroy.latextools.LaTeXPlugin.description=A simple LaTeX plugin offering compilation actions and navigation.
+# points to a file relative to the root of the jar
+plugin.uk.co.antroy.latextools.LaTeXPlugin.longdescription=description.html
+plugin.uk.co.antroy.latextools.LaTeXPlugin.docs=index.html
+
+plugin.uk.co.antroy.latextools.LaTeXPlugin.depend.0=jedit 04.03.99.00
+plugin.uk.co.antroy.latextools.LaTeXPlugin.depend.1=jdk 1.5
+plugin.uk.co.antroy.latextools.LaTeXPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.9
+plugin.uk.co.antroy.latextools.LaTeXPlugin.depend.3=plugin sidekick.SideKickPlugin 0.9
+plugin.uk.co.antroy.latextools.LaTeXPlugin.depend.4=plugin console.ConsolePlugin 4.4
+plugin.uk.co.antroy.latextools.LaTeXPlugin.depend.5=plugin GnuRegexpPlugin 1.0
+plugin.null.description=hoi
+#4.2 API - activate plugin
+plugin.uk.co.antroy.latextools.LaTeXPlugin.activate=defer
+
+#4.2 API - options dialog
+plugin.uk.co.antroy.latextools.LaTeXPlugin.option-group=latextools.general latextools.navigation
+options.latextools.navigation.label = Navigation Options
+options.latextools.navigation.code = new uk.co.antroy.latextools.options.NavigationOptionPane();
+options.latextools.general.label = General Options
+options.latextools.general.code = new uk.co.antroy.latextools.options.LaTeXOptionPane();
+ 
+# Properties for Option panes
+options.bibtex.inserttags = Insert \\cite{} Tag?
+options.bibtex.wordlength=Maximum Letters in Title
+options.bibtex.wordcount=Maximum Words in Title
+options.bibtex.reflength = 10
+options.reference.inserttags = Insert \\ref{} Tag?
+
+options.latextools.general.viewer=<html><h3>Viewer Options
+options.latextools.general.compilation=<html><h3>Compilation Options
+options.latextools.general.classpath=<html><h3>Classpath Options
+options.latextools.general.classpath.tooltip=Provide a semi-colon delimited list of directories to search for imports:
+options.latextools.general.compilation.errortooltip=Passed to latex; use -c-style-errors for MiKTeX and -file-line-error-style for linux distributions
+options.latextools.general.errorlist=Show Errors in Error List?
+options.latextools.navigation.userdir.label=User Navigation File Dir:
+options.latextools.navigation.bibliography=<html><h3>Bibliography Navigation
+options.latextools.navigation.labelnav=<html><h3>Label Navigation
+options.latextools.navigation.listchoose=Use navigation list: 
+options.latextools.navigation.structure=<html><h3>Structure Navigation
+
+# 4.2 API Menu setup
+plugin.uk.co.antroy.latextools.LaTeXPlugin.menu = \
+  latextools-compile \
+  latextools-compile-prompt \
+  latextools-viewoutput \
+  latextools-viewoutput-prompt \
+  latextools-bibtex \
+  latextools-erase-working \
+  - \
+  latextools-rename-label \
+  latextools-show-image-under-caret \
+  latextools-find-duplicate-labels \
+  latextools-find-orphaned-references \
+  - \
+  latextools-insert-environment \
+  latextools-insert-command \
+  - \
+  latextools-set-main \
+  latextools-reset-main \
+  latextools-show-main \
+  - \
+  latextools-navigation-dock \
+  latextools-bibliography-table-dock \
+  latextools-label-table-dock \
+  sidekick-tree
+bibtex.label=BibTeX
+bibtex.title=BibTeX Entries
+bibtex.bibtitle.wordlength=0
+bibtex.bibtitle.wordcount=0
+bibtex.inserttags=true
+
+reference.label=Reference
+reference.title=Label List
+reference.inserttags=true
+
+latextools-bibliography-dock.title = BibTeX Navigator
+latextools-bibliography-dock.label = BibTeX Navigator
+latextools-bibliography-table-dock.title = BibTeX Navigator
+latextools-bibliography-table-dock.label = BibTeX Navigator
+latextools-label-table-dock.title = Label Navigator
+latextools-label-table-dock.label = Label Navigator
+latextools-navigation-dock.title = LaTeX Tools
+latextools-navigation-dock.label = LaTeX Information Panel
+latextools-label-dock.title = Label Navigator
+latextools-label-dock.label = Label Navigator
+
+latextools-image-viewer-dock.title = LaTeX Image Viewer
+latextools-image-viewer-dock.label = Image Viewer
+latextools-show-image-under-caret.title = Display Image Under Caret
+latextools-show-image-under-caret.label = Display Image
+latextools-navigation.nottex = Not parsed.
+latextools-compile.title = Compile
+latextools-compile.label = Compile
+latextools-compile-prompt.title = Compile...
+latextools-compile-prompt.label = Compile...
+latextools-viewoutput.title = View Output
+latextools-viewoutput.label = View Output
+latextools-viewoutput-prompt.title = View Output With...
+latextools-viewoutput-prompt.label = View Output With...
+latextools-bibtex.title = BibTeX
+latextools-bibtex.label = BibTeX
+latextools-erase-working.title = Erase Working Files
+latextools-erase-working.label = Erase Working Files...
+latextools-open-main.title = Open Main File
+latextools-open-main.label = Open Main File
+latextools-open-import.title = Open Import
+latextools-open-import.label = Open Import
+latextools-project-viewer-dock.title = Show Project Tree
+latextools-project-viewer-dock.label = Show Project Tree
+
+labels.label=Labels
+labels.title=Find Labels
+
+latextools-set-main.label = Set Main File
+latextools-reset-main.label = Reset Main File
+latextools-show-main.label = Show Main File Path
+latextools-increment-phrase.label = Increment Phrase
+latextools-increment-phrase-from-x.label = Increment Phrase from...
+latextools-surround-selection.label = Surround Selection
+latextools-insert-environment.label = Insert Environment
+latextools-insert-command.label = Insert Command
+latextools-rename-label.label = Rename Label
+panel.text.refresh=Refresh
+panel.text.reload=Reload
+latextools-find-duplicate-labels.label=Find Duplicate Labels
+latextools-find-orphaned-references.label=Find Orphaned References
+
+tagpair.linenumbers=true
+
+mode.tex.sidekick.parser=latex # Set in ProjectMacros.isTeXFile
+mode.latex.sidekick.parser=latex
+sidekick.parser.latex.label=LaTeX
+
+
+latex.compile.command=pdflatex
+# Switch passed to latex to print file:line:error style messages
+# MiKTeX: -c-style-errors, Linux (TeTeX): -file-line-error-style -halt-on-error
+latex.compile.c-errors=-c-style-errors
+latex.compile.c-errors.linux=-file-line-error-style -halt-on-error
+latex.compile.parse-errors=true
+latex.viewoutput.command=acrord32.exe
+latex.bibtex.command=bibtex
+latex.compile.ext=.tex
+latex.bibtex.ext=
+latex.viewoutput.ext=.pdf
+latex.compile.detach=false
+latex.viewoutput.detach=true
+latex.bibtex.detach=false
+latex.classpath.dirs=
+
+# Buffer modes recognized as TeX modes:
+tex-modes=tex,latex
