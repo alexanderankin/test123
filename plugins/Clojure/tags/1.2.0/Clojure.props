@@ -12,7 +12,7 @@ plugin.clojure.ClojurePlugin.jars=clojure-core-1.2.0.jar clojure-contrib-1.1.0.j
 # }}} Basic Plugin Information
 
 # Dependencies {{{
-plugin.clojure.ClojurePlugin.depend.0=jedit 04.03.18.00
+plugin.clojure.ClojurePlugin.depend.0=jedit 04.03.99.00
 plugin.clojure.ClojurePlugin.depend.1=jdk 1.5
 plugin.clojure.ClojurePlugin.depend.2=optional plugin console.ConsolePlugin 4.4.2
 # }}} Dependencies
