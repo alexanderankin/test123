@@ -1,0 +1,42 @@
+# ::mode=properties:: #
+# Basic Plugin Information {{{
+plugin.python.shell.PythonShellPlugin.activate=defer
+plugin.python.shell.PythonShellPlugin.author=Damien Radtke
+plugin.python.shell.PythonShellPlugin.description=Provides a Console shell \
+	that maintains a running Python Read-Eval-Print-Loop.
+#plugin.python.shell.PythonShellPlugin.docs=index.html
+plugin.python.shell.PythonShellPlugin.longdescription=description.html
+plugin.python.shell.PythonShellPlugin.name=Python Shell
+plugin.python.shell.PythonShellPlugin.usePluginHome=false
+plugin.python.shell.PythonShellPlugin.version=1.0
+# }}} Basic Plugin Information
+
+# Dependencies {{{
+plugin.python.shell.PythonShellPlugin.depend.0=jedit 04.03.99.00
+plugin.python.shell.PythonShellPlugin.depend.1=jdk 1.5
+plugin.python.shell.PythonShellPlugin.depend.2=plugin procshell.ProcessShellPlugin 1.0
+# }}} Dependencies
+
+# Menu {{{
+plugin.python.shell.PythonShellPlugin.menu=python-eval-selected python-eval-buffer \
+	python-eval-file
+python-eval-selected.label=Evaluate Selection in Python shell
+python-eval-buffer.label=Evaluate Buffer in Python shell
+python-eval-file.label=Evaluate file in Python shell ...
+# }}} Menu
+
+# Messages {{{
+msg.python-shell.info-message=Interactive Python console.
+# }}} Messages
+
+# Options {{{
+plugin.python.shell.PythonShellPlugin.option-pane=python-shell
+options.python-shell.label=Python Shell
+options.python-shell.code=new python.shell.PythonShellOptionPane();
+
+options.python-shell.textfield-label=Python executable:
+options.python-shell.browsebutton-label=Browse...
+
+options.python-shell.exec=python
+#}}}
+
