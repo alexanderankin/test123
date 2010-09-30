@@ -4,7 +4,7 @@ plugin.python.shell.PythonShellPlugin.activate=defer
 plugin.python.shell.PythonShellPlugin.author=Damien Radtke
 plugin.python.shell.PythonShellPlugin.description=Provides a Console shell \
 	that maintains a running Python Read-Eval-Print-Loop.
-#plugin.python.shell.PythonShellPlugin.docs=index.html
+plugin.python.shell.PythonShellPlugin.docs=index.html
 plugin.python.shell.PythonShellPlugin.longdescription=description.html
 plugin.python.shell.PythonShellPlugin.name=Python Shell
 plugin.python.shell.PythonShellPlugin.usePluginHome=false
