@@ -10,8 +10,9 @@ import org.gjt.sp.jedit.jEdit;
 import ise.java.awt.KappaLayout;
 import ise.java.awt.LambdaLayout;
 
-// TODO: if the line is too long, the current label will cover the buttons.
-// Need to limit the width of the current label.
+/**
+ * A dockable to show the history lists and some controls.
+ */
 public class Dockable extends JPanel implements ChangeListener {
 
     private Navigator client = null;
@@ -29,7 +30,6 @@ public class Dockable extends JPanel implements ChangeListener {
     private JPanel currentPanel = null;
     private JLabel currentLabel = null;
     private JPanel flipPanel = null;
-    private JPanel buttonPanel = null;
 
     private JButton options = null;
     private JButton clear = null;
@@ -40,7 +40,10 @@ public class Dockable extends JPanel implements ChangeListener {
     private NavHistoryList forwardList = null;
     
     protected final static int MAX_LINE_LENGTH = 120;
-
+    
+    /**
+     * @param navigator The Navigator that this dockable is to act on.    
+     */
     public Dockable(Navigator navigator) {
         this.client = navigator;
         client.addChangeListener(this);
@@ -153,7 +156,7 @@ public class Dockable extends JPanel implements ChangeListener {
         flipPanel.add(currentPanel, BorderLayout.NORTH);
         flipPanel.add(controlPanel, BorderLayout.SOUTH);
 
-        buttonPanel = new JPanel(new KappaLayout());
+        JPanel buttonPanel = new JPanel(new KappaLayout());
         buttonPanel.add("0, 0, 1, 3, 0,, 3", back);
         buttonPanel.add("1, 0, 1, 3, 0,, 3", forward);
         buttonPanel.add("2, 0, 1, 3, 0,, 3", clear);
