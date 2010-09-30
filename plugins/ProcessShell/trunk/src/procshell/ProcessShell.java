@@ -25,22 +25,30 @@ import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.util.Log;
 //}}}
 public abstract class ProcessShell extends Shell {
+
 	protected Hashtable<Console, ConsoleState> consoleStateMap;
+
 	public ProcessShell(String name) {
 		super(name);
 		consoleStateMap = new Hashtable<Console, ConsoleState>();
 	}
 	
-	protected abstract void init(ConsoleState state) throws IOException;
-	protected abstract void onRead(Output output,
-		ConsoleState state, String str);
+	protected abstract void init(ConsoleState state, String command) throws IOException;
+	protected void onRead(ConsoleState state, String str, Output output) {}
+	protected String onWrite(ConsoleState state, String str) throws Exception { return str; }
 	
 	//{{{ openConsole()
+	/**
+	 * When a new console instance is opened, create a new state for it
+	 */
 	public void openConsole(Console console) {
 		consoleStateMap.put(console, new ConsoleState());
 	} //}}}
 	
 	//{{{ closeConsole()
+	/**
+	 * When a console is closed, remove its associated state
+	 */
 	public void closeConsole(Console console) {
 		consoleStateMap.remove(console);
 	} //}}}
@@ -63,7 +71,7 @@ public abstract class ProcessShell extends Shell {
 	public void printPrompt(Console console, Output output) {
 		ConsoleState state = consoleStateMap.get(console);
 		if (state.isNew) {
-			start(console, output);
+			start(console, output, null);
 			state.isNew = false;
 		}
 	} //}}}
@@ -82,12 +90,12 @@ public abstract class ProcessShell extends Shell {
 		if (state.running) {
 			send(console, command, true);
 		} else {
-			start(console, output);
+			start(console, output, command);
 		}
 	} //}}}
 	
 	//{{{ start()
-	protected void start(Console console, Output output) {
+	protected boolean start(Console console, Output output, String command) {
 		ConsoleState state = consoleStateMap.get(console);
 		state.output = output;
 		state.error = output;
@@ -95,15 +103,21 @@ public abstract class ProcessShell extends Shell {
 			output.writeAttrs(ConsolePane.colorAttributes(
 				console.getInfoColor()),
 				jEdit.getProperty("msg.procshell.starting"));
-			init(state);
-			initStreams(console, state);
-			state.running = true;
+			init(state, command);
+			state.running = (state.p != null);
+			if (state.running) {
+				initStreams(console, state);
+			}
 		}
 		catch (IOException e) {
 			e.printStackTrace();
 			console.getOutput().writeAttrs(ConsolePane.colorAttributes(
 				console.getErrorColor()),
 				jEdit.getProperty("msg.procshell.error-starting"));
+			return false;
+		}
+		finally {
+			return true;
 		}
 	} //}}}
 	
@@ -121,38 +135,48 @@ public abstract class ProcessShell extends Shell {
 	
 	/**
 	 * Sends input to the running process
+	 * If no process is running (e.g. the process is not a REPL), start it first
 	 */
-	protected void send(Console console, String str, boolean fromConsole) {
+	protected void send(final Console console, String str, boolean fromConsole) {
 		final ConsoleState state = consoleStateMap.get(console);
 		if (!state.running) {
-			console.getOutput().print(console.getErrorColor(),
-				jEdit.getProperty("msg.procshell.no-process"));
-			return;
-		}
-		final String cmd = str+"\n";
-		if (!fromConsole) {
-			if (str.indexOf("\n") != -1) {
-				console.getOutput().print(console.getInfoColor(), "...");
-			} else {
-				console.getOutput().print(console.getInfoColor(), str);
+			if (!start(console, console.getOutput(), str)) {
+				return;
 			}
-			//output.print(console.getInfoColor(), str);
-		}
-		new Thread() {
-			public void run() {
-				try {
-					state.write(cmd);
-				}
-				catch (IOException e) {
-					e.printStackTrace();
-				}
+			if (state.p == null) {
+				console.getOutput().print(console.getErrorColor(),
+						jEdit.getProperty("msg.procshell.no-process"));
+				return;
 			}
-		}.start();
+		}
+		try {
+			final String cmd = onWrite(state, str)+"\n";
+			if (!fromConsole) {
+				if (str.indexOf("\n") != -1) {
+					console.getOutput().print(console.getInfoColor(), "...");
+				} else {
+					console.getOutput().print(console.getInfoColor(), str);
+				}
+				//output.print(console.getInfoColor(), str);
+			}
+			new Thread() {
+				public void run() {
+					try {
+						state.write(cmd);
+					}
+					catch (IOException e) {
+						e.printStackTrace();
+						console.getOutput().print(console.getErrorColor(),
+								jEdit.getProperty("msg.procshell.no-process"));
+					}
+				}
+			}.start();
+		} catch (Exception e) {}
 	} //}}}
 	
 	//{{{ stop()
 	/**
-	 * Halts the REPL
+	 * Cleans up any running process
 	 */
 	public void stop(Console console) {
 		console.commandDone();
@@ -224,12 +248,14 @@ public abstract class ProcessShell extends Shell {
 					String str = new String(buf, 0, read);
 					Output output = (error ? state.error : state.output);
 					output.writeAttrs(col, str);
-					onRead(output, state, str);
+					onRead(state, str, output);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-				output.print(null, jEdit.getProperty(
-					"msg.procshell.stopped"));
+				console.print(console.getInfoColor(),
+						"\n"+jEdit.getProperty("msg.procshell.stopped"));
+			} finally {
+				state.waiting = false;
 			}
 		}
 	} //}}}

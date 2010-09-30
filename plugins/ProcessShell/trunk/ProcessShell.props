@@ -3,7 +3,8 @@ plugin.procshell.ProcessShellPlugin.author=Damien Radtke
 plugin.procshell.ProcessShellPlugin.description=This plugin provides a utility \
 	class for definining a Console shell based on an external process.
 plugin.procshell.ProcessShellPlugin.longdescription=description.html
-plugin.procshell.ProcessShellPlugin.name=ProcessShell
+plugin.procshell.ProcessShellPlugin.docs=index.html
+plugin.procshell.ProcessShellPlugin.name=Process Shell
 plugin.procshell.ProcessShellPlugin.usePluginHome=false
 plugin.procshell.ProcessShellPlugin.version=1.0
 
