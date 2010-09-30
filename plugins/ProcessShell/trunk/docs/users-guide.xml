@@ -1,0 +1,149 @@
+<?xml version="1.0"?>
+<book>
+	<bookinfo>
+		<title>Process Shell</title>
+		<author>
+			<firstname>Damien</firstname><surname>Radtke</surname>
+		</author>
+	</bookinfo>
+	<chapter id="overview"><title>Overview</title>
+		<para>
+			The Process Shell is an extension of the Console shell that makes it easier
+			to create shells that are based on external processes, e.g. maintaining a
+			constant external process and using the Console to send input and display
+			output to that process.
+		</para>
+	</chapter>
+	<chapter id="using"><title>Developing shells with Process Shell</title>
+		<para>
+			To create a new process-based shell, just create a class that extends
+			procshell.ProcessShell. This class provides a utility layer between your shell
+			and the console Shell class.
+		</para>
+		<para>
+			Implementing a shell is pretty easy. At the minimum, you simply need to implement
+			an init() method that starts up your external process. The shell will automatically
+			send user input from the console to the process' standard input, and display
+			the process' standard output and error.
+		</para>
+		<para>
+			In addition, you may implement optional methods onRead() and onWrite(). onRead()
+			is called when the shell receives output from your process, and can be used
+			to interpret that output as it's received. onWrite() is called when input is about
+			to be sent to your process, and can be used to adjust the input value (such as
+			providing an alias) or throw an exception to prevent input from being sent.
+		</para>
+		<sect1 id="console-state"><title>The Console State</title>
+			<para>
+				Process Shell works by maintaining a state object (the state object class
+				is procshell.ProcessShell.ConsoleState). init, onRead, and onWrite all pass
+				an instance of the ConsoleState. This object has the following useful variables:
+				<orderedlist>
+					<listitem>
+						p: The process instance. This should be instantiated in the init method.
+					</listitem>
+					<listitem>
+						waiting: A boolean value. This is set to true while the process is running,
+						and is automatically set to false when the process quits. The shell's waitFor()
+						method blocks until this value returns false. Shells that maintain a persistent
+						process should manually set this to false when waitFor() should return; e.g.
+						REPL shells such as ClojureShell and PythonShell set this to false when they
+						detect the prompt being printed via onRead().
+					</listitem>
+				</orderedlist>
+			</para>
+		</sect1>
+		<sect1 id="method-signatures"><title>Methods</title>
+			<para>
+				Here are the method signatures for init, onRead, and onWrite:
+				<orderedlist>
+					<listitem>
+						init(ConsoleState state, String command) - this method is called when the shell
+						is first opened, and when the user attempts to send input when the process (state.p)
+						is not defined. When the shell is first opened, command is null; otherwise, command
+						is set to the user's attempted input. Shells that maintain a persistent process
+						will likely simply ignore command, as input is automatically sent to the process;
+						but shells that re-initialize their process based on user input will find it useful.
+					</listitem>
+					<listitem>
+						onRead(ConsoleState state, String str, Output output) - this method is called when
+						the process sends output to the console. output is an instance of console.Output,
+						and str is the output that was received.
+					</listitem>
+					<listitem>
+						onWrite(ConsoleState state, String str) - this method is called when input is about
+						to be sent to the state's process, and should return the input that should actually
+						be sent, or throw an exception if input is not wanted. By default, this method
+						simply returns str, which means no change to input.
+					</listitem>
+				</orderedlist>
+				Another useful method, send(), can be used to implement actions that send different
+				types of input to the shell. Its signature is send(Console console, String str).
+			</para>
+		</sect1>
+		<sect1 id="example"><title>Example</title>
+			As an example of a process shell, here is the source code for the Python Shell:
+			<programlisting>
+public class PythonShell extends ProcessShell {
+	
+	private String prompt = ">>> ";
+	
+	/*
+ 	 * Constructor for Python Shell
+ 	 */
+	public PythonShell() {
+		super("Python");
+	}
+	
+	//{{{ init()
+	/**
+	 * Start up Python
+	 */
+	protected void init(ConsoleState state, String command) throws IOException {
+		String exec = jEdit.getProperty("options.python-shell.exec");
+		Log.log(Log.DEBUG,this,"Attempting to start Python process: "+exec);
+		ProcessBuilder pb = new ProcessBuilder(exec, "-i");
+		state.p = pb.start();
+		Log.log(Log.DEBUG,this,"Python started.");
+	}
+	//}}}
+	
+	//{{{ eval()
+	/**
+	 * Evaluate text
+	 */
+	public void eval(Console console, String str) {
+		str += "\n";
+		str = str.replace("\n", "\\n");
+		str = str.replace("\t", "\\t");
+		str = str.replace("\"", "\\\"");
+		send(console, "exec(\""+str+"\")");
+	} //}}}
+	
+	//{{{ evalBuffer()
+	/**
+	 * Evaluate a buffer
+	 */
+	public void evalBuffer(Console console, Buffer buffer) {
+		send(console, "execfile(\""+buffer.getPath().replace("\\", "/")+"\")");
+	} //}}}
+	
+	protected void onRead(ConsoleState state, String str, Output output) {
+		if (str.indexOf("\n") != -1) {
+			str = str.substring(str.lastIndexOf("\n")+1);
+		}
+		if (str.matches(prompt)) {
+			state.waiting = false;
+			output.commandDone();
+		}
+	}
+	
+	public void printInfoMessage(Output output) {
+		output.print(null, jEdit.getProperty("msg.python-shell.info-message"));
+	}
+	
+}
+			</programlisting>
+		</sect1>
+	</chapter>
+</book>
