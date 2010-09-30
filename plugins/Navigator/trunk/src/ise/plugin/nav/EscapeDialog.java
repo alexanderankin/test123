@@ -70,26 +70,11 @@ public abstract class EscapeDialog extends JDialog implements ContainerListener,
         addKeyAndContainerListenerRecursively(this);
     }
     
-    public EscapeDialog(Window frame, Dialog.ModalityType modalityType) {
-        super(frame, modalityType);
-        addKeyAndContainerListenerRecursively(this);
-    }
-    
     public EscapeDialog(Window frame, String title) {
         super(frame, title);
         addKeyAndContainerListenerRecursively(this);
     }
     
-    public EscapeDialog(Window frame, String title, Dialog.ModalityType modalityType) {
-        super(frame, title, modalityType);
-        addKeyAndContainerListenerRecursively(this);
-    }
-    
-    public EscapeDialog(Window frame, String title, Dialog.ModalityType modalityType, GraphicsConfiguration gc) {
-        super(frame, title, modalityType, gc);
-        addKeyAndContainerListenerRecursively(this);
-    }
-
     // The following function is recursive and is intended for internal use only. 
     // It is private to prevent anyone calling it from other classes.
     // The function takes a Component as an argument and adds this Dialog as a KeyListener to it.

@@ -12,7 +12,7 @@ plugin.ise.plugin.nav.NavigatorPlugin.description=The Navigator Plugin \
     This is surprisingly handy.
 
 # dependencies
-plugin.ise.plugin.nav.NavigatorPlugin.depend.0=jdk 1.6
+plugin.ise.plugin.nav.NavigatorPlugin.depend.0=jdk 1.5
 plugin.ise.plugin.nav.NavigatorPlugin.depend.1=jedit 04.03.99.00
 plugin.ise.plugin.nav.NavigatorPlugin.depend.2=plugin code2html.Code2HTMLPlugin 0.6
 plugin.ise.plugin.nav.NavigatorPlugin.depend.3=plugin CommonControlsPlugin 1.2
