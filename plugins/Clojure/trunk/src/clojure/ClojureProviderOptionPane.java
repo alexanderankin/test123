@@ -63,7 +63,7 @@ public class ClojureProviderOptionPane extends AbstractOptionPane {
 		coreGroup.add(coreCustom);
 		corePanel.add(new JSeparator(JSeparator.VERTICAL));
 		corePanel.add(corePath = new JTextField());
-		coreBrowse = new JButton("...");
+		coreBrowse = new JButton(jEdit.getProperty("vfs.browser.browse.label"));
 		coreBrowse.addActionListener(new BrowseHandler(corePath));
 		corePanel.add(coreBrowse);
 		String core = plugin.getClojureCore();
@@ -89,7 +89,7 @@ public class ClojureProviderOptionPane extends AbstractOptionPane {
 		contribGroup.add(contribCustom);
 		contribPanel.add(new JSeparator(JSeparator.VERTICAL));
 		contribPanel.add(contribPath = new JTextField());
-		contribBrowse = new JButton("...");
+		contribBrowse = new JButton(jEdit.getProperty("vfs.browser.browse.label"));
 		contribBrowse.addActionListener(new BrowseHandler(contribPath));
 		contribPanel.add(contribBrowse);
 		String contrib = plugin.getClojureContrib();
