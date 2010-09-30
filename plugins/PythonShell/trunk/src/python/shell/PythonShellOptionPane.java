@@ -23,27 +23,27 @@ public class PythonShellOptionPane extends AbstractOptionPane {
 	public PythonShellOptionPane() {
 		super("python-shell");
 	}
-	
+
 	protected void _init() {
 		exec = new JTextField(
 			jEdit.getProperty("options.python-shell.exec"));
 		JButton browse = new JButton(
-			jEdit.getProperty("options.python-shell.browsebutton-label"));
+			jEdit.getProperty("vfs.browser.browse.label"));
 		browse.addActionListener(new BrowseHandler());
-		
+
 		JPanel comp = new JPanel();
 		comp.setLayout(new BoxLayout(comp, BoxLayout.X_AXIS));
 		comp.add(exec);
 		comp.add(browse);
-		
+
 		addComponent(jEdit.getProperty("options.python-shell.textfield-label"),
 			comp);
 	}
-	
+
 	protected void _save() {
 		jEdit.setProperty("options.python-shell.exec", exec.getText());
 	}
-	
+
 	class BrowseHandler implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			VFSFileChooserDialog dialog = new VFSFileChooserDialog(
@@ -55,5 +55,5 @@ public class PythonShellOptionPane extends AbstractOptionPane {
 			}
 		}
 	}
-	
+
 }
