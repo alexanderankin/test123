@@ -31,7 +31,7 @@ public class OptionPane extends AbstractOptionPane {
         comp.setLayout(new BoxLayout(comp, BoxLayout.X_AXIS));
         comp.add(bzrPathField);
         JButton browse = new JButton(
-            jEdit.getProperty("options.bzr.browsebutton-label"));
+            jEdit.getProperty("vfs.browser.browse.label"));
         browse.addActionListener(new BrowseHandler());
         comp.add(browse);
         addComponent(jEdit.getProperty("options.bzr.path"), comp);
