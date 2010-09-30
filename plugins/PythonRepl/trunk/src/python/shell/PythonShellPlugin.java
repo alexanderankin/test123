@@ -1,15 +1,14 @@
-package repl;
+package python.shell;
 /**
  * @author Damien Radtke
  * class PythonReplPlugin
- * Main class for the PythonRepl plugin
+ * Main class for the PythonShell plugin
  */
 //{{{ Imports
 import console.Shell;
-import console.PythonShell;
 import org.gjt.sp.jedit.EditPlugin;
 //}}}
-public class PythonReplPlugin extends EditPlugin {
+public class PythonShellPlugin extends EditPlugin {
 	public void start() {}
 	public void stop() {
 		try {
