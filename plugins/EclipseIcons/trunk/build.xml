@@ -67,8 +67,8 @@
                 nowarn="on"
                 destdir="${classes.dir}"
                 srcdir="${src.dir}"
-                target="1.6"
-                source="1.6">
+                target="1.5"
+                source="1.5">
             <classpath refid="classpathref" />
         </javac>
         <copy todir="${classes.dir}/docs" overwrite="no">
