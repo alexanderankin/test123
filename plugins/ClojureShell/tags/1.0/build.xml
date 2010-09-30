@@ -13,7 +13,7 @@
 	none: if you supply your own html file as this template does.
 	xsltproc: if you plan on using docbook
 	-->
-	<property name="docs-proc.target" value="none" />
+	<property name="docs-proc.target" value="xsltproc" />
 	
 	<!-- jEdit installation properties. -->
 	<!-- mark:properties -->
@@ -23,11 +23,6 @@
 	<!-- If you want any extra files to be included with your plugin's jar,
 	such as custom images, you need to specify them here. -->
 	<selector id="packageFiles">
-		<and>
-			<or>
-				<filename name="**/GroovyRepl.html" />
-			</or>
-		</and>
 	</selector>
 	
 	<!-- Add your plugin's specific dependencies here -->
