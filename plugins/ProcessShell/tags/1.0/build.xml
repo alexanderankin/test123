@@ -1,0 +1,9 @@
+<project name="ProcessShell" default="build" basedir=".">
+	<property file="../../build.properties" />
+	<property name="build.dir" value="build"/>
+	<import file="${build.support}/plugin-build.xml" />
+	
+	<path id="project.class.path">
+		<pathelement location="${jedit.plugins.dir}\Console.jar" />
+	</path>
+</project>
