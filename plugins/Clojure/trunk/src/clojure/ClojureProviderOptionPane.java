@@ -54,8 +54,10 @@ public class ClojureProviderOptionPane extends AbstractOptionPane {
 		// Core
 		JPanel corePanel = new JPanel();
 		corePanel.setLayout(new BoxLayout(corePanel, BoxLayout.X_AXIS));
-		corePanel.add(coreIncluded = new JRadioButton("Included (1.2.0)"));
-		corePanel.add(coreCustom = new JRadioButton("Choose jar"));
+		corePanel.add(coreIncluded = new JRadioButton(jEdit.getProperty(
+			"options.clojure.included-core-label")));
+		corePanel.add(coreCustom = new JRadioButton(jEdit.getProperty(
+			"options.clojure.choose-label")));
 		ButtonGroup coreGroup = new ButtonGroup();
 		coreGroup.add(coreIncluded);
 		coreGroup.add(coreCustom);

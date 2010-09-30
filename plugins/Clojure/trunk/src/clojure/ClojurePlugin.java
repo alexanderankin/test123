@@ -72,21 +72,25 @@ public class ClojurePlugin extends EditPlugin {
 
 		setVars();
 		
-		if (jEdit.getPlugin("console.ConsolePlugin") != null) {
-			File clojureCommand = new File(console.ConsolePlugin.getUserCommandDirectory(), "clojure.xml");
-			if (!clojureCommand.exists()) {
-				try {
-					InputStream in = getClass().getResourceAsStream("/commands/clojure.xml");
-					OutputStream out = new FileOutputStream(clojureCommand);
-					IOUtilities.copyStream(null, in, out, false);
-					IOUtilities.closeQuietly(in);
-					IOUtilities.closeQuietly(out);
-					console.ConsolePlugin.rescanCommands();
-				} catch (Exception e) {
-					e.printStackTrace();
+		new Thread() {
+			public void run() {
+				if (jEdit.getPlugin("console.ConsolePlugin") != null) {
+					File clojureCommand = new File(console.ConsolePlugin.getUserCommandDirectory(), "clojure.xml");
+					if (!clojureCommand.exists()) {
+						try {
+							InputStream in = getClass().getResourceAsStream("/commands/clojure.xml");
+							OutputStream out = new FileOutputStream(clojureCommand);
+							IOUtilities.copyStream(null, in, out, false);
+							IOUtilities.closeQuietly(in);
+							IOUtilities.closeQuietly(out);
+							console.ConsolePlugin.rescanCommands();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
 				}
 			}
-		}
+		}.start();
 	}
 	public void stop() {}
 

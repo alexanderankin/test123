@@ -21,17 +21,10 @@ plugin.clojure.ClojurePlugin.depend.2=optional plugin console.ConsolePlugin 4.4.
 plugin.clojure.ClojurePlugin.option-group=clojure-provider
 options.clojure-provider.label=Provider
 options.clojure-provider.code=new clojure.ClojureProviderOptionPane();
-# Possible values:
-#	jar - use the jar included with the plugin
-#	custom - a user-defined existing installation
-options.clojure.install=jar
-options.clojure.clojure-path=
 options.clojure.clojure-core-jar=clojure-core-1.2.0.jar
 options.clojure.clojure-contrib-jar=clojure-contrib-1.1.0.jar
 
-options.clojure.browse-label=Browse...
-options.clojure.jar-label=Use included jar
-options.clojure.custom-label=Use local jar
-
-options.clojure.path-label=Clojure Jar:
+options.clojure.included-core-label=Included (1.2.0)
+options.clojure.included-contrib-label=Included (1.1.0)
+options.clojure.choose-label=Choose jar
 # }}} Options
