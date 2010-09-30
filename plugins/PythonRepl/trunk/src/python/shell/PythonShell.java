@@ -1,10 +1,12 @@
-package console;
+package python.shell;
 /**
  * @author Damien Radtke
  * class PythonShell
  * Embeds an interactive Python session into the console
  */
 //{{{ Imports
+import console.Console;
+import console.Output;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -35,8 +37,8 @@ public class PythonShell extends ProcessShell {
 	/**
 	 * Start up Python
 	 */
-	protected void init(ConsoleState state) throws IOException {
-		String exec = jEdit.getProperty("options.pythonrepl.exec");
+	protected void init(ConsoleState state, String command) throws IOException {
+		String exec = jEdit.getProperty("options.python-shell.exec");
 		Log.log(Log.DEBUG,this,"Attempting to start Python process: "+exec);
 		ProcessBuilder pb = new ProcessBuilder(exec, "-i");
 		state.p = pb.start();
@@ -64,7 +66,7 @@ public class PythonShell extends ProcessShell {
 		send(console, "execfile(\""+buffer.getPath().replace("\\", "/")+"\")");
 	} //}}}
 	
-	protected void onRead(Output output, ConsoleState state, String str) {
+	protected void onRead(ConsoleState state, String str, Output output) {
 		if (str.indexOf("\n") != -1) {
 			str = str.substring(str.lastIndexOf("\n")+1);
 		}
@@ -75,7 +77,7 @@ public class PythonShell extends ProcessShell {
 	}
 	
 	public void printInfoMessage(Output output) {
-		output.print(null, jEdit.getProperty("msg.pythonrepl.info-message"));
+		output.print(null, jEdit.getProperty("msg.python-shell.info-message"));
 	}
 	
 }

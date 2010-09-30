@@ -2,6 +2,6 @@
 <!DOCTYPE SERVICES SYSTEM "services.dtd">
 <SERVICES>
 	<SERVICE NAME="Python" CLASS="console.Shell">
-		new console.PythonShell();
+		new python.shell.PythonShell();
 	</SERVICE>
 </SERVICES>
