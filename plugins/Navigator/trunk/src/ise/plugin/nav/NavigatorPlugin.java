@@ -38,12 +38,16 @@ import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.msg.*;
+import org.gjt.sp.jedit.buffer.BufferAdapter;
+import org.gjt.sp.jedit.buffer.BufferListener;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
 
 
 /**
@@ -96,6 +100,8 @@ public class NavigatorPlugin extends EBPlugin {
      * should be ignored.
      */
     private boolean autoJump = false;
+    
+    private BufferListener bufferListener = null;
     
     /**
      * @return true if the Navigator buttons should be shown on the main toolbar 
@@ -220,6 +226,14 @@ public class NavigatorPlugin extends EBPlugin {
         }
         clearToolBars();
         setToolBars();
+        if (bufferListener == null) {
+            bufferListener = new BufferEditListener();   
+        }
+        Buffer[] openBuffers = jEdit.getBuffers();
+        for (Buffer buffer : openBuffers) {
+            buffer.removeBufferListener(bufferListener);
+            buffer.addBufferListener(bufferListener);
+        }
     }
 
     /**
@@ -549,6 +563,9 @@ public class NavigatorPlugin extends EBPlugin {
                     }
                 }
             }
+            else if (BufferUpdate.CREATED.equals(bu.getWhat())) {
+                bu.getBuffer().addBufferListener(bufferListener);
+            }
         }
         // Note: handle messages in this order: BufferChanging, then PositionChanging,
         // then EditPaneUpdate last because of inheritance.
@@ -646,6 +663,32 @@ public class NavigatorPlugin extends EBPlugin {
                 }
         	}
         		
+        }
+    }
+    
+    class BufferEditListener extends BufferAdapter {
+        public void contentInserted(JEditBuffer buffer, int startLine, int offset, int numLines, int length) {
+            if (buffer == null) {
+                return;   
+            }
+            for (Navigator nav : viewNavigatorMap.values()) {
+                nav.contentInserted((Buffer)buffer, startLine, offset, numLines, length);   
+            }
+            for (Navigator nav : editPaneNavigatorMap.values()) {
+                nav.contentInserted((Buffer)buffer, startLine, offset, numLines, length);   
+            }
+        }
+        
+        public void contentRemoved(JEditBuffer buffer, int startLine, int offset, int numLines, int length) {
+            if (buffer == null) {
+                return;   
+            }
+            for (Navigator nav : viewNavigatorMap.values()) {
+                nav.contentRemoved((Buffer)buffer, startLine, offset, numLines, length);   
+            }
+            for (Navigator nav : editPaneNavigatorMap.values()) {
+                nav.contentRemoved((Buffer)buffer, startLine, offset, numLines, length);   
+            }
         }
     }
 }
