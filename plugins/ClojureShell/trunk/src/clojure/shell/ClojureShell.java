@@ -28,7 +28,7 @@ public class ClojureShell extends ProcessShell {
 	private String prompt = "user=> ";
 	
 	/*
- 	 * Constructor for SlimeShell
+ 	 * Constructor for ClojureShell
  	 */
 	public ClojureShell() {
 		super("Clojure");
@@ -66,7 +66,7 @@ public class ClojureShell extends ProcessShell {
 		send(console, cmd);
 	} //}}}
 	
-	protected void onRead(Output output, ConsoleState state, String str) {
+	protected void onRead(ConsoleState state, String str, Output output) {
 		if (str.indexOf("\n") != -1) {
 			str = str.substring(str.lastIndexOf("\n")+1);
 		}
