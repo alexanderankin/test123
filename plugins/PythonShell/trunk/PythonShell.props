@@ -35,7 +35,6 @@ options.python-shell.label=Python Shell
 options.python-shell.code=new python.shell.PythonShellOptionPane();
 
 options.python-shell.textfield-label=Python executable:
-options.python-shell.browsebutton-label=Browse...
 
 options.python-shell.exec=python
 #}}}
