@@ -734,5 +734,19 @@ public class TigerLabeler {
         return s;
     }
 
+	public static ImageIcon getMethodIcon() {
+		if (!options.getShowIconsLikeEclipse()) {
+			return METHOD_ICON;
+		}
+		return E_METHOD_DEFAULT_ICON;
+	}
+
+	public static ImageIcon getFieldIcon() {
+		if (!options.getShowIconsLikeEclipse()) {
+			return FIELD_ICON;
+		}
+		return E_FIELD_DEFAULT_ICON;
+	}
+
 }
 

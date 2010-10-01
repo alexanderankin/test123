@@ -2,6 +2,7 @@ package sidekick.java;
 // imports
 import java.lang.reflect.*;
 import java.util.*;
+import javax.swing.*;
 
 import sidekick.java.classloader.AntClassLoader;
 import sidekick.java.node.*;
@@ -75,7 +76,7 @@ public class JavaCompletionFinder {
 
         // get the word just before the caret.  It might be a partial word, that's okay.
         String word = getWordAtCursor( editPane.getBuffer() );
-		System.out.println("word = "+word);
+		//System.out.println("word = "+word);
         if ( word == null || word.length() == 0 ) {
             return null;
         }
@@ -109,6 +110,7 @@ public class JavaCompletionFinder {
             return "";
         }
         
+		// Check tokens; this prevents using commented code and keywords such as "new" in completion
         DefaultTokenHandler handler = new DefaultTokenHandler();
         int lastLine = -1;
         for (int i = caret-1; i>=start; i--) {
@@ -119,12 +121,17 @@ public class JavaCompletionFinder {
         		lastLine = line;
         	}
         	int offset = i-buffer.getLineStartOffset(line);
-        	if (offset == buffer.getLineText(line).length()) offset--;
+			String lineText = buffer.getLineText(line);
+        	if (offset == lineText.length()) offset--;
         	if (offset < 0) continue;
         	Token t = TextUtilities.getTokenAtOffset(handler.getTokens(), offset);
+			String tokenText = lineText.substring(t.offset, t.length+t.offset);
         	if (t.id != Token.NULL && t.id != Token.DIGIT && t.id != Token.FUNCTION && t.id != Token.OPERATOR) {
-        		start = i+1;
-        		break;
+				// Ignore special tokens, like "super" and "this"
+				if (!"super".equals(tokenText) && !"this".equals(tokenText)) {
+					start = i+1;
+					break;
+				}
         	}
         	// Skip over parentheses
         	if (buffer.getText(i, 1).equals(")")) {
@@ -148,16 +155,6 @@ public class JavaCompletionFinder {
         // remove line enders and tabs
         text = text.replaceAll( "[\\n\\r\\t]", "" ).trim();
 
-        // NOTE: Remove keywords such as "new" and "import" that need to act as word breaks
-        // Keywords are saved as a comma-separated list in the jEdit property
-        // sidekick.java.wordBreakWords
-        /*
-        String[] wordBreakWords = jEdit.getProperty( "sidekick.java.wordBreakWords" ).split(",");
-        for (int i = 0; i < wordBreakWords.length; i++) {
-            text = text.replace(wordBreakWords[i] + " ", "");
-        }
-        */
-        
         // read the text backwards until a word break character is found
         // It is possible that there is no word break character
         for ( int i = text.length() - 1; i >= 0; i-- ) {
@@ -194,6 +191,7 @@ public class JavaCompletionFinder {
         // needs work.  This doesn't feel right, hand parsing a cast could
         // be difficult as there are several variations in the depth of
         // parens.
+		/*
         int start = -1;
         if ((start = word.lastIndexOf('(')) != -1) {
             int index = word.indexOf(')', start);
@@ -213,6 +211,7 @@ public class JavaCompletionFinder {
                 }
             }
         }
+		*/
 
         char lastChar = word.charAt(word.length() - 1);
         if (lastChar == ')')
@@ -270,17 +269,18 @@ public class JavaCompletionFinder {
 
 
     private JavaCompletion getPossibleQualifiedCompletions( String word ) {
-    	System.out.println("Getting qualified completions on "+word);
+    	//System.out.println("Getting qualified completions on "+word);
         String qualification = word.substring( 0, word.lastIndexOf( '.' ) );
 
         // might have super.something
         if ( "super".equals( qualification ) ) {
-            return getSuperCompletion( word );
+            return getSuperCompletion( word.substring("super.".length()) );
         }
 
         // might have this.something or Class.this.something
         if ( "this".equals( qualification ) )
-            return getThisCompletion( word );
+            return getThisCompletion( word.substring("this.".length()) );
+
         if ( qualification.endsWith( ".this" ) )
             return getQualifiedThisCompletion( word );
 
@@ -331,7 +331,51 @@ public class JavaCompletionFinder {
         for (j = 0; j<list.size(); j++) {
             if (c == null) {
             	if (j>0) token += ".";
-            	token += list.get(j);
+				String newToken = list.get(j);
+				// Special behavior if 'this' is encountered
+				if (newToken.equals("this")) {
+					if (c != null) {
+						static_only = false;
+						continue;
+					} else {
+						// If 'this' is not the first word,
+						// and no class has been found yet,
+						// do nothing. There is nothing to do.
+						if (token.length() > 0) {
+							return null;
+						}
+
+						// Check the class node
+						TigerNode tn = ( TigerNode ) data.getAssetAtOffset( caret );
+						while ( tn.getOrdinal() != TigerNode.CLASS ) {
+							if ( tn.getParent() != null )
+								tn = tn.getParent();
+							else
+								continue; // shouldn't get here
+						}
+
+						// Advance past 'this' and get the next token
+						j++;
+						newToken = list.get(j);
+						// Search through the current class for the field/method called 'newToken'
+						for (int k = 0; k < tn.getChildCount(); k++) {
+							TigerNode child = tn.getChildAt(k);
+							if (newToken.equals(child.getName())) {
+								try {
+									if (child instanceof FieldNode) {
+										FieldNode field = (FieldNode) child;
+										c = getClassForType(field.getType(), (CUNode) data.root.getUserObject());
+									} else if (child instanceof MethodNode) {
+										MethodNode method = (MethodNode) child;
+										c = getClassForType(method.getReturnType().getName(),
+												(CUNode) data.root.getUserObject());
+									}
+								} catch (Exception e) {}
+							}
+						}
+					}
+				}
+            	token += newToken;
                 // Class?
                 c = validateClassName(token);
                 if (c == null)
@@ -530,6 +574,7 @@ public class JavaCompletionFinder {
         List<String> list = new ArrayList<String>( choices );
         JavaCompletion jc = getSuperCompletion( word );
         if ( jc != null ) {
+			// TODO: Convert this to JavaCompletionCandidate
             list.addAll( jc.getChoices() );
         }
         if ( list.size() > 0 ) {
@@ -561,24 +606,50 @@ public class JavaCompletionFinder {
         }
 
         // find the superclass of the enclosing class
+		/*
         Class c = getClassForType( tn.getName(), ( CUNode ) data.root.getUserObject() );
         if ( c != null )
             c = c.getSuperclass();
         if ( c == null )
             return null;
+		*/
+		Class c = null;
+		try {
+			ExtendsNode superclass = (ExtendsNode) tn.getChildAt(0);
+			c = getClassForType(superclass.getName(), (CUNode) data.root.getUserObject());
+		} catch (Exception e) {
+			// There either wasn't a child node, or it wasn't an extended class
+			// First, see if it can be located through getClassForType
+			c = getClassForType( tn.getName(), ( CUNode ) data.root.getUserObject() );
+			if (c != null) {
+				c = c.getSuperclass();
+			}
+			if (c == null) {
+				// Default to Object, since it's the all-powerful superclass
+				try {
+					c = Class.forName("java.lang.Object");
+				} catch (Exception e2) {
+					// Something went seriously wrong
+					e2.printStackTrace();
+					return null;
+				}
+			}
+		}
 
         // get the members (fields and methods) for the class node
         List m = getMembersForClass( c );
         if ( m == null || m.size() == 0 )
             return null;
-        if ( m.size() == 1 && m.get( 0 ).equals( word ) ) {
+        if ( m.size() == 1 && m.get( 0 ).toString().equals( word ) ) {
             return null;
         }
+		
         for ( ListIterator it = m.listIterator(); it.hasNext(); ) {
             if ( !it.next().toString().startsWith( word ) ) {
                 it.remove();
             }
         }
+		
 
         return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, m );
     }
@@ -587,10 +658,6 @@ public class JavaCompletionFinder {
     // returns a completion containing a list of fields and methods contained by
     // the enclosing class
     private JavaCompletion getThisCompletion( String word ) {
-        if ( word.startsWith( "this." ) ) {
-            word = word.substring( "this.".length() );
-        }
-
         // get the containing asset
         TigerNode tn = ( TigerNode ) data.getAssetAtOffset( caret );
 
@@ -609,6 +676,13 @@ public class JavaCompletionFinder {
         if ( m.size() == 1 && m.get( 0 ).equals( word ) ) {
             return null;
         }
+
+        for ( ListIterator it = m.listIterator(); it.hasNext(); ) {
+            if ( !it.next().toString().startsWith( word ) ) {
+                it.remove();
+            }
+        }
+
         return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, m );
     }
 
@@ -919,22 +993,25 @@ public class JavaCompletionFinder {
         for ( Iterator it = cn.getChildren().iterator(); it.hasNext(); ) {
             TigerNode child = ( TigerNode ) it.next();
             String more = "";
+			Icon icon = null;
             switch ( child.getOrdinal() ) {     // NOPMD
                 case TigerNode.ENUM:
                 case TigerNode.FIELD:
                     if (more.length() == 0) {
                         FieldNode fn = (FieldNode) child;
                         more = " : " + fn.getType();
+						icon = TigerLabeler.getFieldIcon();
                     }
                 case TigerNode.METHOD:
                     if (more.length() == 0) {
                         MethodNode mn = (MethodNode) child;
                         more = "(" + mn.getFormalParams(true, false, true, true) +
                                ") : " + mn.getReturnType().getType();
+						icon = TigerLabeler.getMethodIcon();
                     }
                 case TigerNode.CLASS:
                     if ( filter == null || child.getName().startsWith( filter ) ) {
-                        members.add( child.getName() + more );
+                        members.add( new JavaCompletionCandidate(child.getName() + more, icon) );
                     }
             }
         }
@@ -976,13 +1053,17 @@ public class JavaCompletionFinder {
                             params.append( ',' );
                     }
                     params.append( ')' );
-                    list.add( method.getName() + params.toString() + " : " + method.getReturnType().getSimpleName() );
+                    list.add( new JavaCompletionCandidate(
+								method.getName() + params.toString() + " : " + method.getReturnType().getSimpleName(),
+								TigerLabeler.getMethodIcon()) );
                 }
             }
             Field[] fields = c.getFields();
             for ( int i = 0; i < fields.length; i++ ) {
                 if ( filter == null || fields[ i ].getName().startsWith( filter ) )
-                    list.add( fields[ i ].getName() + " : " + fields[ i ].getName() );
+                    list.add( new JavaCompletionCandidate(
+								fields[ i ].getName() + " : " + fields[ i ].getType().getSimpleName(),
+								TigerLabeler.getFieldIcon()) );
             }
         }
         catch ( Exception e ) {
@@ -1013,7 +1094,7 @@ public class JavaCompletionFinder {
                         name.append( ',' );
                 }
                 name.append( ')' );
-                list.add(name.toString());
+                list.add(new JavaCompletionCandidate(name.toString(), TigerLabeler.getMethodIcon()));
             }
         }
         catch (Exception e) {
@@ -1023,5 +1104,37 @@ public class JavaCompletionFinder {
         Collections.sort( constructors );
         return constructors;
     }
+
+	class JavaCompletionCandidate implements Comparable {
+
+		private String text;
+		private Icon icon;
+
+		public JavaCompletionCandidate(String text, Icon icon) {
+			this.text = text;
+			this.icon = icon;
+		}
+
+		public Icon getIcon() {
+			return icon;
+		}
+		
+		public String toString() {
+			return text;
+		}
+
+		/**
+		 * Pass comparison to the string values. The icons are irrelevant.
+		 */
+		public int compareTo(Object ob) {
+			try {
+				JavaCompletionCandidate candid = (JavaCompletionCandidate) ob;
+				return text.compareTo(candid.toString());
+			} catch (ClassCastException e) {
+				return 0;
+			}
+		}
+
+	}
 
 }

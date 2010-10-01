@@ -65,11 +65,6 @@ public final class Locator {
         projectClassNames = getProjectClassNames( project );
     }
 
-	public static Locator newInstance() {
-		cachedSingleton = null;
-		return getInstance();
-	}
-
     public static Locator getInstance() {
         if ( cachedSingleton != null ) {
             Locator cached = cachedSingleton.get();
@@ -282,16 +277,20 @@ public final class Locator {
         if ( projectJars != null && project == proj ) {
             return copyOf( projectJars );
         }
-		this.project = proj;
-		if (project.getProperty("java.optionalClasspath") == null) {
-			project.setProperty("java.optionalClasspath", "");
-			project.setProperty("java.optionalBuildpath", "");
-			project.setProperty("java.optionalSourcepath", "");
-			project.setProperty("java.useJavaClasspath", "true");
-		}
-		reloadProjectJars(proj);
-		if (projectJars == null) projectJars = new File[] {};
-		return copyOf( projectJars );
+        this.project = proj;
+
+        String classpath = PVHelper.getClassPathForProject(proj).toString();
+        if ( classpath == null || classpath.length() == 0 ) {
+        	projectJars = null;
+            return null;
+        }
+        String path_sep = File.pathSeparator;
+        String[] path_jars = classpath.split( path_sep );
+        File[] jars = new File[ path_jars.length ];
+        for ( int i = 0; i < path_jars.length; i++ ) {
+            jars[ i ] = new File( path_jars[ i ] );
+        }
+        return jars;
     }
 
     /**
@@ -304,6 +303,7 @@ public final class Locator {
         if ( projectClassNames != null && project == proj ) {
             return projectClassNames;
         }
+
         return reloadProjectClassNames( project );
     }
 
@@ -329,15 +329,9 @@ public final class Locator {
     }
     
     public void reloadProjectJars( VPTProject proj ) {
-        if (proj == null) {
-            return;   
-        }
-		boolean useJavaClasspath = "true".equals(proj.getProperty("java.useJavaClasspath"));
-        String classpath = PVHelper.getClassPathForProject(proj, useJavaClasspath).toString();
-        if ( classpath == null || classpath.length() == 0 ) {
-			projectJars = new File[] {};
+        String classpath = PVHelper.getClassPathForProject(proj).toString();
+        if ( classpath == null || classpath.length() == 0 )
             return;
-		}
         String path_sep = File.pathSeparator;
         String[] path_jars = classpath.split( path_sep );
         File[] jars = new File[ path_jars.length ];
@@ -355,7 +349,7 @@ public final class Locator {
      */
     public List<String> getProjectClasses( VPTProject proj, String packageName ) {
         if ( proj == null ) {
-            return null;        // TODO: the javadoc says the return won't be null.
+            return null;
         }
         if ( projectClassNames == null || project != proj ) {
             // need to load jars and class names for the project
@@ -390,20 +384,26 @@ public final class Locator {
     public String[] getClassName(String name) {
     	String[] runtime = getRuntimeClassName(name);
     	String[] classpath = null;
-    	if (PVHelper.getProject(jEdit.getActiveView()) == null)
-			classpath = getClassPathClassName(name);
-    	else
-			classpath = getProjectClassName(PVHelper.getProject(jEdit.getActiveView()), name);
+
     	ArrayList<String> all = new ArrayList<String>();
     	
     	for (int i = 0; i<runtime.length; i++) {
     		all.add(runtime[i]);
     	}
-    	if (classpath != null) {
-    		for (int i = 0; i<classpath.length; i++) {
-    			all.add(classpath[i]);
-    		}
-    	}
+
+		Object _proj = PVHelper.getProject(jEdit.getActiveView());
+		if (_proj != null) {
+			projectviewer.vpt.VPTProject proj = (projectviewer.vpt.VPTProject) _proj;
+			classpath = getProjectClassName(proj, name);
+		} else {
+			classpath = getClassPathClassName(name);
+		}
+
+		if (classpath != null) {
+			for (int i = 0; i<classpath.length; i++) {
+				all.add(classpath[i]);
+			}
+		}
     	return all.toArray(new String[] {});
     }
     
