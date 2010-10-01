@@ -71,9 +71,6 @@ public class NavigatorPlugin extends EBPlugin {
      */
     public final static int EDITPANE_SCOPE = 2;
 
-    // the current scope
-    private static int scope = EDITPANE_SCOPE;
-
     // key into property file for show on toolbar value
     public static final String showOnToolBarKey = "navigator.showOnToolbar";
 
@@ -219,7 +216,6 @@ public class NavigatorPlugin extends EBPlugin {
      * only useful when reloading this plugin.
      */
     public void start() {
-        scope = jEdit.getIntegerProperty( "navigator.scope", EDITPANE_SCOPE );      // NOPMD
         for ( View v : jEdit.getViews() ) {
             createNavigator( v );
             createNavigators( v );
@@ -247,14 +243,13 @@ public class NavigatorPlugin extends EBPlugin {
         editPaneNavigatorMap.clear();
         clearToolBars( true );
         toolbarMap.clear();
-        jEdit.setIntegerProperty( "navigator.scope", scope );
     }
 
     /**
      * @return one of VIEW_SCOPE or EDITPANE_SCOPE
      */
     public static int getScope() {
-        return scope;
+        return jEdit.getIntegerProperty( "navigator.scope", VIEW_SCOPE );
     }
 
     /**
@@ -265,7 +260,7 @@ public class NavigatorPlugin extends EBPlugin {
         switch ( scope ) {
             case VIEW_SCOPE:
             case EDITPANE_SCOPE:
-                NavigatorPlugin.scope = scope;
+                jEdit.setIntegerProperty("navigator.scope", scope);
         }
     }
 
@@ -274,6 +269,7 @@ public class NavigatorPlugin extends EBPlugin {
      */
     public static void toggleScope() {
         String msg = null;
+        int scope = jEdit.getIntegerProperty("navigator.scope", VIEW_SCOPE);
         switch ( scope ) {
             case VIEW_SCOPE:
                 scope = EDITPANE_SCOPE;
@@ -611,7 +607,7 @@ public class NavigatorPlugin extends EBPlugin {
                 // create Navigator for EditPane scope
                 createNavigator( editPane );
             }
-            else if ( epu.getWhat().equals( EditPaneUpdate.DESTROYED ) && scope == EDITPANE_SCOPE ) {
+            else if ( epu.getWhat().equals( EditPaneUpdate.DESTROYED ) && jEdit.getIntegerProperty("navigator.scope") == EDITPANE_SCOPE ) {
                 EditPane editPane = epu.getEditPane();
                 editPaneNavigatorMap.remove( editPane );
             }
@@ -647,7 +643,7 @@ public class NavigatorPlugin extends EBPlugin {
             for ( Navigator nav : viewNavigatorMap.values() ) {
                 nav.setMaxHistorySize( jEdit.getIntegerProperty( "navigator.maxStackSize", 512 ) );
             }
-            setScope( jEdit.getIntegerProperty( "navigator.scope", EDITPANE_SCOPE ) );
+            setScope( jEdit.getIntegerProperty( "navigator.scope", VIEW_SCOPE ) );
         }
 
         else if ( message instanceof AutoJump ) {
