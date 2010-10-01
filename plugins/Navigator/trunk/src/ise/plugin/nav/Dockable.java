@@ -5,15 +5,22 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.msg.*;
+
+// common controls
 import ise.java.awt.KappaLayout;
 import ise.java.awt.LambdaLayout;
 
 /**
  * A dockable to show the history lists and some controls.
  */
-public class Dockable extends JPanel implements ChangeListener {
+public class Dockable extends JPanel implements ChangeListener, EBComponent {
 
     private Navigator client = null;
 
@@ -23,6 +30,7 @@ public class Dockable extends JPanel implements ChangeListener {
     private JCheckBox showLineTextSyntax = null;
     private JCheckBox showStripes = null;
     private JRadioButton viewScope = null;
+    private JRadioButton editPaneScope = null;
     private JCheckBox showPath = null;
     private JCheckBox showLineNumber = null;
     private JCheckBox showCaretOffset = null;
@@ -44,8 +52,14 @@ public class Dockable extends JPanel implements ChangeListener {
     /**
      * @param navigator The Navigator that this dockable is to act on.    
      */
-    public Dockable(Navigator navigator) {
-        this.client = navigator;
+    public Dockable(View view) {
+        EditBus.addToBus(this);
+        if (NavigatorPlugin.getScope() == NavigatorPlugin.VIEW_SCOPE) {
+            client = NavigatorPlugin.createNavigator(view);
+        }
+        else {
+            client = NavigatorPlugin.createNavigator(view.getEditPane());   
+        }
         client.addChangeListener(this);
         installComponents();
         installListeners();
@@ -72,7 +86,7 @@ public class Dockable extends JPanel implements ChangeListener {
         JLabel scopeLabel = new JLabel("Scope:");
         viewScope = new JRadioButton(jEdit.getProperty("navigator.viewScope.label", "View scope"));
         viewScope.setName("viewScope");
-        JRadioButton editPaneScope = new JRadioButton(jEdit.getProperty("navigator.editPaneScope.label", "EditPane scope"));
+        editPaneScope = new JRadioButton(jEdit.getProperty("navigator.editPaneScope.label", "EditPane scope"));
         editPaneScope.setName("editPaneScope");
         ButtonGroup buttonGroup = new ButtonGroup();
         buttonGroup.add(viewScope);
@@ -99,6 +113,7 @@ public class Dockable extends JPanel implements ChangeListener {
         showStripes.setName("showStripes");
         showStripes.setSelected(jEdit.getBooleanProperty("navigator.showStripes", true));
 
+        // show the path in the back and forward lists
         showPath = new JCheckBox("Show path");
         showPath.setSelected(jEdit.getBooleanProperty("navigator.showPath", true));
         showLineNumber = new JCheckBox("Show line number");
@@ -106,6 +121,7 @@ public class Dockable extends JPanel implements ChangeListener {
         showCaretOffset = new JCheckBox("Show caret offset");
         showCaretOffset.setSelected(jEdit.getBooleanProperty("navigator.showCaretOffset", true));
 
+        // buttons
         options = new SquareButton(GUIUtilities.loadIcon("22x22/actions/document-properties.png"));
         options.setToolTipText(jEdit.getProperty("navigator.options.label", "Options"));
         back = new SquareButton(GUIUtilities.loadIcon("ArrowL.png"));
@@ -117,11 +133,13 @@ public class Dockable extends JPanel implements ChangeListener {
         clear = new SquareButton(GUIUtilities.loadIcon("22x22/actions/edit-clear.png"));
         clear.setToolTipText(jEdit.getProperty("navigator.clearHistory.label", "Clear history"));
 
+        // history lists
         backList = new NavHistoryList(client.getView(), client, client.getBackListModel(), null);
         backList.setToolTipText(jEdit.getProperty("navigator.backlist.tooltip", "Back history, click an item to jump to it."));
         forwardList = new NavHistoryList(client.getView(), client, client.getForwardListModel(), null);
         forwardList.setToolTipText(jEdit.getProperty("navigator.forwardlist.tooltip", "Forward history, click an item to jump to it."));
 
+        // layout the parts
         controlPanel = new JPanel(new LambdaLayout());
         controlPanel.setVisible(false);
         controlPanel.add("0, 0, 1, 1, W, w, 0", groupByLabel);
@@ -195,12 +213,14 @@ public class Dockable extends JPanel implements ChangeListener {
 
         viewScope.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                int scope;
-                if (viewScope.isSelected()) {
-                    scope = NavigatorPlugin.VIEW_SCOPE;
-                } else {
-                    scope = NavigatorPlugin.EDITPANE_SCOPE;
-                }
+                int scope = viewScope.isSelected() ? NavigatorPlugin.VIEW_SCOPE : NavigatorPlugin.EDITPANE_SCOPE;
+                jEdit.setIntegerProperty(name + ".scope", scope);
+            }
+        } );
+
+        editPaneScope.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                int scope = editPaneScope.isSelected() ? NavigatorPlugin.EDITPANE_SCOPE : NavigatorPlugin.VIEW_SCOPE;
                 jEdit.setIntegerProperty(name + ".scope", scope);
             }
         } );
@@ -318,6 +338,7 @@ public class Dockable extends JPanel implements ChangeListener {
         } );
     }
 
+    // update the UI when the Navigator generates a change event
     public void stateChanged(ChangeEvent ce) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -327,6 +348,23 @@ public class Dockable extends JPanel implements ChangeListener {
                 currentLabel.setText(client.getCurrentPosition() == null ? "" : client.getCurrentPosition().htmlText(MAX_LINE_LENGTH));
             }
         } );
+    }
+    
+    // handle edit pane changed messages if necessary
+    public void handleMessage(EBMessage msg) {
+        if (NavigatorPlugin.getScope() == NavigatorPlugin.VIEW_SCOPE) {
+            return;
+        }
+        if (msg instanceof ViewUpdate) {
+            ViewUpdate vu = (ViewUpdate)msg;
+            if (ViewUpdate.EDIT_PANE_CHANGED.equals(vu.getWhat())) {
+                client = NavigatorPlugin.createNavigator(vu.getView().getEditPane());
+                back.setModel(client.getBackModel());
+                forward.setModel(client.getForwardModel());
+                client.addChangeListener(this);
+                stateChanged(null);
+            }
+        }
     }
 
     class MouseHandler extends MouseAdapter {
