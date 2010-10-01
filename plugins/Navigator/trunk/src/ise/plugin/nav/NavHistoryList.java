@@ -80,13 +80,6 @@ class NavHistoryList extends JPanel {
         JScrollPane scroller = new JScrollPane(list);
         add(scroller, BorderLayout.CENTER);
 
-        // set Code2Html properties, don't want to use css, do want to show
-        // the gutter since that gives us line numbers.
-        // TODO: the original values should be saved and restored somehow...
-        jEdit.setBooleanProperty("code2html.use-css", false);
-        jEdit.setBooleanProperty("code2html.show-gutter", false);
-        jEdit.setIntegerProperty("code2html.wrap", 0);
-        
         if (view.getEditPane().getTextArea().getPainter().getStyles() != null && view.getEditPane().getTextArea().getPainter().getStyles().length > 0) {
             textAreaFont = view.getEditPane().getTextArea().getPainter().getStyles()[0].getFont();   
         }
@@ -197,19 +190,19 @@ class NavHistoryList extends JPanel {
                         selections[0] = selection;
 
                         // Have code2html do the syntax highlighting
-                        // -- this is for Code2HTML 0.5:
-                        /*
-                        Code2HTML c2h = new Code2HTML(
-                                    buffer,
-                                    editPane.getTextArea().getPainter().getStyles(),
-                                    selections
-                                );
-                        labelText = c2h.getHtmlString();
-                        */
-
-                        // -- this is for Code2HTML 0.6:
+                        // set Code2Html properties, don't want to use css, do want to show
+                        // the gutter since that gives us line numbers.
+                        boolean usecss = jEdit.getBooleanProperty("code2html.use-css", false);
+                        boolean showgutter = jEdit.getBooleanProperty("code2html.show-gutter", false);
+                        int wrap = jEdit.getIntegerProperty("code2html.wrap", 0);
+                        jEdit.setBooleanProperty("code2html.use-css", false);
+                        jEdit.setBooleanProperty("code2html.show-gutter", false);
+                        jEdit.setIntegerProperty("code2html.wrap", 0);
                         GenericExporter exporter = (GenericExporter) ((ExporterProvider) ServiceManager.getService("code2html.services.ExporterProvider", "html")).getExporter(buffer, editPane.getTextArea().getPainter().getStyles(), selections);
                         labelText = exporter.getContentString();
+                        jEdit.setBooleanProperty("code2html.use-css", usecss);
+                        jEdit.setBooleanProperty("code2html.show-gutter", showgutter);
+                        jEdit.setIntegerProperty("code2html.wrap", wrap);
 
                         // clean up the output from code2html, it outputs html, head, and body tags,
                         // I just want what is between the pre tags.
