@@ -90,7 +90,6 @@ public class OptionPanel extends AbstractOptionPane {
         addComponent( viewScope );
         addComponent( editPaneScope );
         int scope = NavigatorPlugin.getScope();
-        System.out.println("+++++ scope = " + scope);
         viewScope.setSelected( scope == NavigatorPlugin.VIEW_SCOPE );
         editPaneScope.setSelected( scope == NavigatorPlugin.EDITPANE_SCOPE );
 
