@@ -1,13 +1,20 @@
 package sidekick.java;
 
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.StringTokenizer;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.ListCellRenderer;
+import javax.swing.JLabel;
+import javax.swing.JList;
 
 import sidekick.java.node.*;
-
 import sidekick.SideKickCompletion;
 import sidekick.SideKickParsedData;
+
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.textarea.*;
@@ -50,6 +57,10 @@ public class JavaCompletion extends SideKickCompletion {
         insertionType = type;
     }
 
+	public ListCellRenderer getRenderer() {
+		return new JavaCompletionRenderer();
+	}
+
     public void insert( int index ) {
         String to_replace = text;
         String to_insert = String.valueOf(get(index));
@@ -69,7 +80,7 @@ public class JavaCompletion extends SideKickCompletion {
             to_insert = to_insert.substring(to_insert.indexOf('('));
         }
         else if (jEdit.getBooleanProperty("sidekick.java.importPackage")) {
-        	insertAsImport(to_insert);
+        	insertImport(textArea, to_insert);
         	return;
         }
 
@@ -112,11 +123,22 @@ public class JavaCompletion extends SideKickCompletion {
         }
     }
     
-    private void insertAsImport(String cls) {
-    	JEditBuffer buffer = textArea.getBuffer();
+	/**
+	 * Insert an import directly into the top of the buffer
+	 * @param textArea the text area to insert into
+	 * @param cls the class to import
+	 */
+    public static void insertImport(JEditTextArea textArea, String cls) {
+		if (cls.indexOf(".") == -1) {
+			// No need to import a class in the default package
+			return;
+		}
+		JEditBuffer buffer = textArea.getBuffer();
+		// Create the new import statement
     	String newImport = "import "+cls+";\n";
+		// Locate the start of the class
     	int startOfClass = -1;
-    	SideKickParsedData data = SideKickParsedData.getParsedData(view);
+    	SideKickParsedData data = SideKickParsedData.getParsedData(textArea.getView());
     	for (int i = 0; i<data.root.getChildCount(); i++) {
     		DefaultMutableTreeNode node = (DefaultMutableTreeNode) data.root.getChildAt(i);
     		Object ob = node.getUserObject();
@@ -125,7 +147,9 @@ public class JavaCompletion extends SideKickCompletion {
     			break;
     		}
     	}
+		// If no class is defined, return
     	if (startOfClass == -1) return;
+		// Locate the first import statement
     	int classLine = buffer.getLineOfOffset(startOfClass);
     	int startOfImports = -1;
     	for (int i = 0; i<classLine; i++) {
@@ -135,23 +159,66 @@ public class JavaCompletion extends SideKickCompletion {
     		}
     	}
     	if (startOfImports != -1) {
+			// If an import statement was found
     		boolean inserted = false;
     		int endOfImports = startOfImports;
+			// The root package is used to group imports
+			String newRootPackage = newImport.substring(7,
+					newImport.indexOf("."));
+			String rootPackage = null;
+			// Loop through the import statements, searching for the correct
+			// spot to put it alphabetically
     		for (int i = startOfImports; i<classLine; i++) {
-    			String importLine = buffer.getLineText(i);
-    			if (!importLine.startsWith("import ")) continue;
-    			endOfImports = i;
-    			if (importLine.compareTo(newImport) > 0) {
-    				buffer.insert(textArea.getLineStartOffset(i), newImport);
-    				inserted = true;
-    				break;
-    			}
+				try {
+					String importLine = buffer.getLineText(i);
+					if (!importLine.startsWith("import ")) continue;
+					if (newImport.equals(importLine+"\n")) {
+						// The import already exists, return
+						return;
+					}
+					endOfImports = i;
+					rootPackage = importLine.substring(7,
+							importLine.indexOf("."));
+					if (importLine.compareTo(newImport) > 0) {
+						buffer.insert(textArea.getLineStartOffset(i), newImport+
+								((rootPackage.equals(newRootPackage)) ? "" : "\n"));
+						inserted = true;
+						break;
+					}
+				} catch (Exception e) {}
     		}
-    		if (!inserted)
-    			buffer.insert(textArea.getLineStartOffset(endOfImports+1), newImport);
+    		if (!inserted) {
+				// If it's not inserted it yet, put it at the end
+    			buffer.insert(textArea.getLineStartOffset(endOfImports+1), 
+						((rootPackage.equals(newRootPackage)) ? "" : "\n") + newImport);
+			}
     	}
     	else {
-    		buffer.insert(startOfClass, "//{{{ Imports\n"+newImport+"//}}}\n");
+			// No import statements exist yet, so just insert it above the class
+    		buffer.insert(startOfClass, "\n"+newImport+"\n");
     	}
     }
+
+	class JavaCompletionRenderer extends DefaultListCellRenderer {
+
+		public Component getListCellRendererComponent(
+				JList list,
+				Object value,
+				int index,
+				boolean isSelected,
+				boolean cellHasFocus) {
+
+			JavaCompletionFinder.JavaCompletionCandidate candid =
+				(JavaCompletionFinder.JavaCompletionCandidate) value;
+			JLabel cmp = new JLabel(candid.toString()+"   ", candid.getIcon(), JLabel.LEFT);
+			cmp.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 10));
+			cmp.setOpaque(true);
+			if (isSelected) {
+				cmp.setForeground(list.getSelectionForeground());
+				cmp.setBackground(list.getSelectionBackground());
+			}
+			return cmp;
+		}
+	}
+
 }
