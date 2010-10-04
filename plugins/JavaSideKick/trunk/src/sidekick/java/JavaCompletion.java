@@ -211,7 +211,7 @@ public class JavaCompletion extends SideKickCompletion {
 			JavaCompletionFinder.JavaCompletionCandidate candid =
 				(JavaCompletionFinder.JavaCompletionCandidate) value;
 			JLabel cmp = new JLabel(candid.toString()+"   ", candid.getIcon(), JLabel.LEFT);
-			cmp.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 10));
+			cmp.setFont(jEdit.getFontProperty("view.font"));
 			cmp.setOpaque(true);
 			if (isSelected) {
 				cmp.setForeground(list.getSelectionForeground());
