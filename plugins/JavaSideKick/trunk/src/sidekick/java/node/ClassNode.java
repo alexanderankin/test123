@@ -73,9 +73,7 @@ public class ClassNode extends TigerNode {
     
     public boolean isInnerClass() {
         TigerNode parent = getParent();
-        if (parent != null && parent.getOrdinal() == TigerNode.CLASS)
-            return true;
-        return false;
+		return (parent != null && parent.getOrdinal() == TigerNode.CLASS);
     }
     
 

@@ -278,11 +278,14 @@ public class JavaCompletionFinder {
         }
 
         // might have this.something or Class.this.something
-        if ( "this".equals( qualification ) )
+        if ( "this".equals( qualification ) ) {
             return getThisCompletion( word.substring("this.".length()) );
+		}
 
+		/*
         if ( qualification.endsWith( ".this" ) )
             return getQualifiedThisCompletion( word );
+		*/
 
 		// Break it down into tokens to allow for completion off a return type
 		// e.g. sb.append("hello").append("world")
@@ -328,23 +331,23 @@ public class JavaCompletionFinder {
         //    and use the return type instead
         String token = "";
         
-        for (j = 0; j<list.size(); j++) {
-            if (c == null) {
-            	if (j>0) token += ".";
-				String newToken = list.get(j);
-				// Special behavior if 'this' is encountered
-				if (newToken.equals("this")) {
-					if (c != null) {
-						static_only = false;
-						continue;
-					} else {
-						// If 'this' is not the first word,
-						// and no class has been found yet,
-						// do nothing. There is nothing to do.
-						if (token.length() > 0) {
-							return null;
-						}
+		for (j = 0; j<list.size(); j++) {
+			System.out.println("c = "+c);
+			if (j>0) token += ".";
+			String newToken = list.get(j);
+			if (newToken.equals("this")) {
+				if (c != null) {
+					static_only = false;
+					token += "this";
+				} else {
+					// If 'this' is not the first word,
+					// and no class has been found yet,
+					// do nothing. There is nothing to do.
+					if (token.length() > 0) {
+						return null;
+					}
 
+					if (c == null) {
 						// Check the class node
 						TigerNode tn = ( TigerNode ) data.getAssetAtOffset( caret );
 						while ( tn.getOrdinal() != TigerNode.CLASS ) {
@@ -373,22 +376,43 @@ public class JavaCompletionFinder {
 								} catch (Exception e) {}
 							}
 						}
+						if (c == null) {
+							// This might fail with filtering; if the name isn't exact, c would be null
+							return null;
+						}
 					}
 				}
-            	token += newToken;
-                // Class?
+				continue;
+			}
+			if (c == null) {
+				token += newToken;
+				// Class?
                 c = validateClassName(token);
                 if (c == null)
                     c = getClassForType(token, (CUNode) data.root.getUserObject());
                 static_only = (c != null);
                 if (c == null) {
                     // Field?
-                    FieldNode node = getLocalVariable(token);
-                    if (node != null) {
-                        c = getClassForType(node.getType(), (CUNode) data.root.getUserObject());
-                        if (c == null)
-                            return null;
+                    FieldNode fieldNode = getLocalVariable(token);
+                    if (fieldNode != null) {
+                        c = getClassForType(fieldNode.getType(), (CUNode) data.root.getUserObject());
                     }
+
+					if (c == null) {
+						// Method?
+						MethodNode methodNode = getLocalMethod(token);
+						if (methodNode != null) {
+							c = getClassForType(methodNode.getReturnType().getName(), (CUNode) data.root.getUserObject());
+						}
+
+						if (c == null) {
+							// Class?
+							ClassNode classNode = getLocalClass(token);
+							if (classNode != null) {
+								c = getClassForType(classNode.getType(), (CUNode) data.root.getUserObject());
+							}
+						}
+					}
                 }
             }
             else {
@@ -419,13 +443,16 @@ public class JavaCompletionFinder {
                         // Subclasses
                         Class[] classes = c.getClasses();
                         for (i = 0; i < classes.length; i++) {
-                            if (token.equals(classes[i].getName())) {
+                            if (token.equals(classes[i].getSimpleName())) {
                                 c = classes[i];
                                 found = true;
                                 static_only = true;
                                 break;
                             }
                         }
+						if (!found) {
+							c = null;
+						}
                     }
                 }
             }
@@ -489,7 +516,13 @@ public class JavaCompletionFinder {
             if ( possibles.size() == 1 && possibles.get( 0 ).equals( word ) ) {
                 return null;
             }
-            return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, possibles );
+			ArrayList candids = new ArrayList(possibles.size());
+			for (int k = 0; k < possibles.size(); k++) {
+				candids.add(new JavaCompletionCandidate(possibles.get(k),
+							TigerLabeler.getClassIcon()));
+			}
+			Collections.sort(candids);
+            return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, candids );
         }
 
         return getLocalVariableCompletion( word );
@@ -502,39 +535,15 @@ public class JavaCompletionFinder {
     	if (word.lastIndexOf("(") != -1) {
     		classTest = word.substring(word.lastIndexOf("(")+1);
     	}
-    	ArrayList<String> pkgs = new ArrayList(
+    	ArrayList pkgs = new ArrayList(
         		Arrays.asList(Locator.getInstance().getClassName(classTest)));
         if (pkgs != null && pkgs.size() > 0) {
-        	if (jEdit.getBooleanProperty("sidekick.java.importPackage")) {
-        		CUNode cu = (CUNode) data.root.getUserObject();
-        		List imports = cu.getImports();
-        		for ( Iterator it = imports.iterator(); it.hasNext(); ) {
-        			String packageName = ( String ) it.next();
-        			if (packageName == null) continue;
-        			// might have a fully qualified import
-        			if ( packageName.endsWith( "."+classTest ) ) {
-        				Class c = validateClassName( packageName );
-        				if ( c != null ) {
-        					pkgs.remove(packageName);
-        				}
-        			}
-        			else {
-        				// wildcard import, need to add . and type
-        				String className = packageName + "." + classTest;
-        				Class c = validateClassName( className );
-        				if ( c != null ) {
-        					pkgs.remove(className);
-        				}
-        			}
-        		}
-        		if (pkgs.size() > 0) {
-        			return new JavaCompletion(editPane.getView(), classTest, pkgs);
-        		} else {
-        			return null;
-        		}
-        	} else {
-				return new JavaCompletion(editPane.getView(), classTest, pkgs);
-        	}
+			ArrayList pkgCandidates = new ArrayList(pkgs.size());
+			for (int i = 0; i < pkgs.size(); i++) {
+				pkgCandidates.add(new JavaCompletionCandidate((String) pkgs.get(i),
+							TigerLabeler.getClassIcon()));
+			}
+			return new JavaCompletion(editPane.getView(), classTest, pkgCandidates);
 		}
         // partialword
         // find all fields/variables declarations, methods, and classes in scope
@@ -689,6 +698,9 @@ public class JavaCompletionFinder {
 
     // returns a completion containing a list of fields and methods contained by a
     // specific enclosing class
+	/**
+	 * @Deprecated. This functionality is now implemented in getPossibleQualifiedCompletions()
+	 */
     private JavaCompletion getQualifiedThisCompletion( String word ) {
         int index = word.lastIndexOf( ".this" );
         String classname = word.substring( 0, index );
@@ -697,23 +709,30 @@ public class JavaCompletionFinder {
         TigerNode tn = ( TigerNode ) data.getAssetAtOffset( caret );
 
         // find the first parent class with the classname
-        while ( tn.getOrdinal() != TigerNode.CLASS ) {
-            if ( tn.getName().endsWith( classname ) )
-                break;
-            if ( tn.getParent() != null )
-                tn = tn.getParent();
-            else
-                return null;    // shouldn't get here
-        }
+		while ( tn != null ) {
+			if (tn.getOrdinal() == TigerNode.CLASS && tn.getName().endsWith( classname )) {
+				break;
+			}
+			tn = tn.getParent();
+		}
 
-        // get the members (fields and methods) for the class node
-        List m = getMembersForClass( ( ClassNode ) tn );
-        if ( m == null || m.size() == 0 )
-            return null;
-        if ( m.size() == 1 && m.get( 0 ).equals( word ) ) {
-            return null;
-        }
-        return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, m );
+		if (tn != null) {
+			// get the members (fields and methods) for the class node
+			List m = getMembersForClass( ( ClassNode ) tn );
+			if ( m == null || m.size() == 0 )
+				return null;
+			if ( m.size() == 1 && m.get( 0 ).equals( word ) ) {
+				return null;
+			}
+			return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, m );
+		} else {
+			Class c = getClassForType( classname, (CUNode) data.root.getUserObject() );
+			if (c != null) {
+				return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT,
+						getMembersForClass( c ));
+			}
+			return null;
+		}
     }
 
 
@@ -755,7 +774,8 @@ public class JavaCompletionFinder {
                 for (TigerNode child : children) {
                     if ( child instanceof FieldNode ) {     // LocalVariableNode is a subclass of FieldNode
                         FieldNode lvn = ( FieldNode ) child;
-                        if ( !lvn.isPrimitive() && lvn.getName().startsWith( name ) ) {
+						// This originally used startsWith; switch back if issues arise
+                        if ( !lvn.isPrimitive() && lvn.getName().equals( name ) ) {
                             return lvn;
                         }
                     }
@@ -781,6 +801,52 @@ public class JavaCompletionFinder {
         }
         return null;
     }
+
+	private MethodNode getLocalMethod( String name ) {
+        TigerNode tn = ( TigerNode ) data.getAssetAtOffset( caret );
+        while ( true ) {
+            // check children of the node first
+            List<TigerNode> children = tn.getChildren();
+            if ( children != null ) {
+                for (TigerNode child : children) {
+                    if ( child instanceof MethodNode ) {
+						if ( child.getName().equals(name) ) {
+							return (MethodNode) child;
+						}
+                    }
+                }
+            }
+            // up the tree
+            tn = tn.getParent();
+            if ( tn == null ) {
+                break;
+            }
+		}
+		return null;
+	}
+
+	private ClassNode getLocalClass( String name ) {
+        TigerNode tn = ( TigerNode ) data.getAssetAtOffset( caret );
+        while ( true ) {
+            // check children of the node first
+            List<TigerNode> children = tn.getChildren();
+            if ( children != null ) {
+                for (TigerNode child : children) {
+                    if ( child instanceof ClassNode ) {
+						if ( child.getName().equals(name) ) {
+							return (ClassNode) child;
+						}
+                    }
+                }
+            }
+            // up the tree
+            tn = tn.getParent();
+            if ( tn == null ) {
+                break;
+            }
+		}
+		return null;
+	}
 
     /**
      * Given a type, such as "String" or "Object", and a compilation unit,
@@ -1040,7 +1106,7 @@ public class JavaCompletionFinder {
             Method[] methods = c.getMethods();
             for ( int i = 0; i < methods.length; i++ ) {
                 int modifiers = methods[ i ].getModifiers();
-                if ( static_only && !Modifier.isStatic( modifiers ) ) {
+				if ( static_only != Modifier.isStatic (modifiers )) {
                     continue;
                 }
                 if ( filter == null || methods[ i ].getName().startsWith( filter ) ) {
@@ -1060,11 +1126,26 @@ public class JavaCompletionFinder {
             }
             Field[] fields = c.getFields();
             for ( int i = 0; i < fields.length; i++ ) {
+				int modifiers = fields[ i ].getModifiers();
+				if ( static_only != Modifier.isStatic (modifiers )) {
+					continue;
+				}
                 if ( filter == null || fields[ i ].getName().startsWith( filter ) )
                     list.add( new JavaCompletionCandidate(
 								fields[ i ].getName() + " : " + fields[ i ].getType().getSimpleName(),
 								TigerLabeler.getFieldIcon()) );
             }
+			Class[] classes = c.getClasses();
+			for (int i = 0; i < classes.length; i++) {
+				int modifiers = classes[ i ].getModifiers();
+				if ( static_only != Modifier.isStatic (modifiers )) {
+					continue;
+				}
+				if (filter == null || classes[ i ].getName().startsWith( filter ) ) 
+					list.add(new JavaCompletionCandidate(
+								classes[ i ].getSimpleName(),
+								TigerLabeler.getClassIcon()) );
+			}
         }
         catch ( Exception e ) {
             return null;
