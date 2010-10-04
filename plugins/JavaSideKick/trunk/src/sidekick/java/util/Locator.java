@@ -131,9 +131,10 @@ public final class Locator {
             while ( entries.hasMoreElements() ) {
                 JarEntry entry = ( JarEntry ) entries.nextElement();
                 String classname = entry.getName();
-                if ( classname.endsWith( ".class" ) )
+                if ( classname.endsWith( ".class" ) ) {
                     classname = classname.substring( 0, classname.lastIndexOf( '.' ) );
-                names.add( classname );
+					names.add( classname );
+				}
             }
         }
         catch ( Exception e ) {
@@ -223,6 +224,7 @@ public final class Locator {
         List<String> names = new ArrayList<String>();
         for ( int i = 0; i < jars.length; i++ ) {
             File jar = jars[ i ];
+			/*
             try {
                 JarFile jar_file = new JarFile( jar );
                 Enumeration entries = jar_file.entries();
@@ -244,6 +246,9 @@ public final class Locator {
             catch ( Exception e ) {
                 e.printStackTrace();
             }
+			*/
+			List<String> classes = getJarClassNames(jar);
+			names.addAll(classes);
         }
         return names;
     }
@@ -382,6 +387,8 @@ public final class Locator {
     }
 
     public String[] getClassName(String name) {
+		// Replace dots with dollar signs to support inner classes
+		name = name.replace(".", "$");
     	String[] runtime = getRuntimeClassName(name);
     	String[] classpath = null;
 
@@ -446,7 +453,7 @@ public final class Locator {
         }
         String name = packageName.replaceAll( "[.]", "/" );
         for ( String fullClassName : classNames ) {
-            if ( fullClassName.startsWith( name ) && fullClassName.indexOf( "$" ) < 0 ) {
+            if ( fullClassName.startsWith( name ) && fullClassName.indexOf("/", name.length()) < 0 && fullClassName.indexOf( "$" ) < 0 ) {
                 list.add( fullClassName.substring( fullClassName.lastIndexOf( "/" ) + 1 ) );
             }
         }

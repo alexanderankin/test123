@@ -735,17 +735,27 @@ public class TigerLabeler {
     }
 
 	public static ImageIcon getMethodIcon() {
-		if (!options.getShowIconsLikeEclipse()) {
-			return METHOD_ICON;
+		if (!options.getShowIcons()) return null; 
+		if (options.getShowIconsLikeEclipse()) {
+			return E_METHOD_DEFAULT_ICON;
 		}
-		return E_METHOD_DEFAULT_ICON;
+		return METHOD_ICON;
 	}
 
 	public static ImageIcon getFieldIcon() {
-		if (!options.getShowIconsLikeEclipse()) {
-			return FIELD_ICON;
+		if (!options.getShowIcons()) return null; 
+		if (options.getShowIconsLikeEclipse()) {
+			return E_FIELD_DEFAULT_ICON;
 		}
-		return E_FIELD_DEFAULT_ICON;
+		return FIELD_ICON;
+	}
+
+	public static ImageIcon getClassIcon() {
+		if (!options.getShowIcons()) return null; 
+		if (options.getShowIconsLikeEclipse()) {
+			return E_CLASS_ICON;
+		}
+		return CLASS_ICON;
 	}
 
 }
