@@ -1,0 +1,103 @@
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<!-- $Id$ -->
+<!--
+   NavigatorPlugin actions.
+-->
+<ACTIONS>
+   <ACTION NAME="navigator.back">
+      <CODE>
+         ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+         plugin.goBack(view);
+      </CODE>
+   </ACTION>
+
+   <ACTION NAME="navigator.backList">
+      <CODE>
+         ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+         plugin.backList(view);
+      </CODE>
+   </ACTION>
+
+   <ACTION NAME="navigator.forwardList">
+      <CODE>
+         ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+         plugin.forwardList(view);
+      </CODE>
+   </ACTION>
+
+   <ACTION NAME="navigator.forward">
+      <CODE>
+         ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+         plugin.goForward(view);
+      </CODE>
+   </ACTION>
+
+   <ACTION NAME="navigator.combinedList">
+      <CODE>
+         ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+         plugin.combinedList(view);
+      </CODE>
+   </ACTION>
+
+   <ACTION NAME="navigator.clearHistory">
+      <CODE>
+         ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+         plugin.clearHistory(view);
+      </CODE>
+   </ACTION>
+
+    <ACTION NAME="navigator.showdockable">
+        <CODE>
+            view.getDockableWindowManager().showDockableWindow("Navigator");
+        </CODE>
+    </ACTION>
+
+   <ACTION NAME="navigator.showbuttons" >
+    <CODE>
+       ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+       plugin.showButtons();
+    </CODE>
+   </ACTION>
+
+   <ACTION NAME="navigator.hidebuttons" >
+    <CODE>
+        ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+        plugin.hideButtons();
+    </CODE>
+    </ACTION>
+
+   <ACTION NAME="navigator.toggleScope" >
+    <CODE>
+        ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+        plugin.toggleScope();
+    </CODE>
+   </ACTION>
+    
+   <ACTION NAME="navigator.toggleGroupByFile" >
+    <CODE>
+        ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+        plugin.toggleGroupByFile();
+    </CODE>
+    </ACTION>
+    
+   <ACTION NAME="navigator.toggleGroupByLine" >
+    <CODE>
+        ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+        plugin.toggleGroupByLine();
+    </CODE>
+   </ACTION>
+   
+   <!-- override jEdit's 'goto-line' action -->
+   <ACTION NAME="goto-line" >
+    <CODE>
+        if (jEdit.getBooleanProperty("navigator.useNavigatorGoToLine", false)) {
+            ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+            plugin.gotoLine(view);
+        } else {
+            textArea.showGoToLineDialog();
+        }
+    </CODE>
+   </ACTION>
+    
+</ACTIONS>
+
