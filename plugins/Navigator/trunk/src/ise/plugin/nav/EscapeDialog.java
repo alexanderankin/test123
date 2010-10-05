@@ -10,68 +10,8 @@ import javax.swing.JDialog;
 
 public abstract class EscapeDialog extends JDialog implements ContainerListener, KeyListener {
 
-    public EscapeDialog() {
-        super();
-        addKeyAndContainerListenerRecursively(this);
-    }
-    
-    public EscapeDialog(Dialog frame) {
-        super(frame);
-        addKeyAndContainerListenerRecursively(this);
-    }
-    
-    public EscapeDialog(Dialog frame, boolean modal) {
-        super(frame, modal);
-        addKeyAndContainerListenerRecursively(this);
-    }
-    
-    public EscapeDialog(Dialog frame, String title) {
-        super(frame, title);
-        addKeyAndContainerListenerRecursively(this);
-    }
-    
-    public EscapeDialog(Dialog frame, String title, boolean modal) {
-        super(frame, title, modal);
-        addKeyAndContainerListenerRecursively(this);
-    }
-    
-    public EscapeDialog(Dialog frame, String title, boolean modal, GraphicsConfiguration gc) {
-        super(frame, title, modal, gc);
-        addKeyAndContainerListenerRecursively(this);
-    }
-    
-    public EscapeDialog(Frame frame) {
-        super(frame);
-        addKeyAndContainerListenerRecursively(this);
-    }
-    
-    public EscapeDialog(Frame frame, boolean modal) {
-        super(frame, modal);
-        addKeyAndContainerListenerRecursively(this);
-    }
-    
-    public EscapeDialog(Frame frame, String title) {
-        super(frame, title);
-        addKeyAndContainerListenerRecursively(this);
-    }
-    
     public EscapeDialog(Frame frame, String title, boolean modal) {
         super(frame, title, modal);
-        addKeyAndContainerListenerRecursively(this);
-    }
-    
-    public EscapeDialog(Frame frame, String title, boolean modal, GraphicsConfiguration gc) {
-        super(frame, title, modal, gc);
-        addKeyAndContainerListenerRecursively(this);
-    }
-    
-    public EscapeDialog(Window frame) {
-        super(frame);
-        addKeyAndContainerListenerRecursively(this);
-    }
-    
-    public EscapeDialog(Window frame, String title) {
-        super(frame, title);
         addKeyAndContainerListenerRecursively(this);
     }
     
