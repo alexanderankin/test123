@@ -266,6 +266,21 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     pe = ( ParseException ) e;
                     range = getExceptionLocation( pe );
                 }
+				// This is a fix for hard tabs
+				// Hard tabs mess up column counting, so this would occasionally cause out-of-index errors
+				int tab = (Integer) buffer.getMode().getProperty("tabSize");
+				String sub = "";
+				for (int i = 0; i < tab; i++) {
+					sub += " ";
+				}
+				String startLineText = buffer.getLineText(range.startLine);
+				int index;
+				while ((index = startLineText.indexOf("\t")) != -1) {
+					startLineText = startLineText.replace("\t", sub);
+					if (range.startColumn > index) range.startColumn -= (tab-1);
+					if (range.endColumn > index) range.endColumn -= (tab-1);
+				}
+				// Add the error
                 errorSource.addError( ErrorSource.ERROR, buffer.getPath(), range.startLine, range.startColumn, range.endColumn, e.getMessage() );
             }
         }
@@ -339,6 +354,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
         try {
             Pattern p = Pattern.compile( "(.*?)(\\d+)(.*?)(\\d+)(.*?)" );
             Matcher m = p.matcher( pe.getMessage() );
+			System.out.println("message: "+pe.getMessage());
             if ( m.matches() ) {
                 String ln = m.group( 2 );
                 String cn = m.group( 4 );
