@@ -127,7 +127,8 @@ public class JavaCompletionFinder {
         	if (offset < 0) continue;
         	Token t = TextUtilities.getTokenAtOffset(handler.getTokens(), offset);
 			String tokenText = lineText.substring(t.offset, t.length+t.offset);
-        	if (t.id != Token.NULL && t.id != Token.DIGIT && t.id != Token.FUNCTION) {
+        	if (t.id != Token.NULL && t.id != Token.DIGIT && t.id != Token.FUNCTION && 
+					t.id != Token.LITERAL1 && t.id != Token.LITERAL2 && t.id != Token.LITERAL3 && t.id != Token.LITERAL4) {
 				// This stops at an open parenthese
 				if (t.id == Token.OPERATOR) {
 					char op = lineText.charAt(offset);
@@ -401,6 +402,11 @@ public class JavaCompletionFinder {
 			if (c == null) {
 				token += newToken;
 				// Class?
+				// If it's a string literal, set it to String
+				if (newToken.startsWith("\"") && newToken.endsWith("\"")) {
+					c = validateClassName("java.lang.String");
+					continue;
+				}
                 c = validateClassName(token);
                 if (c == null)
                     c = getClassForType(token, (CUNode) data.root.getUserObject());
