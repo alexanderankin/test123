@@ -627,9 +627,15 @@ public class BufferLocalPlugin extends EBPlugin implements WindowListener {
         canClose = false;
         pausedAt = new Date();
     }
-    public void windowGainedFocus( WindowEvent e ) {}
+    public void windowGainedFocus( WindowEvent e ) {
+        adjustForPause();
+        canClose = true;
+    }
+    public void windowLostFocus( WindowEvent e ) {
+        canClose = false;
+        pausedAt = new Date();
+    }
     public void windowClosing( WindowEvent e ) {}
-    public void windowLostFocus( WindowEvent e ) {}
     public void windowOpened( WindowEvent e ) {}
     public void windowStateChanged( WindowEvent e ) {}
 
