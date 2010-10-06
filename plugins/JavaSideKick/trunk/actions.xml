@@ -6,4 +6,9 @@
 			sidekick.java.JavaSideKickPlugin.insertImportAtCursor(editPane);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="javasidekick-refresh-global">
+		<CODE>
+			sidekick.java.util.Locator.getInstance().refreshGlobal();
+		</CODE>
+	</ACTION>
 </ACTIONS>

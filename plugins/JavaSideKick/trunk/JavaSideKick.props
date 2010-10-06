@@ -29,9 +29,11 @@ Tiger2.label=JavaSideKick
 
 # menu
 # Menu bar properties
-plugin.sidekick.java.JavaSideKickPlugin.menu=sidekick.parser.java-switch javasidekick-insert-import
+plugin.sidekick.java.JavaSideKickPlugin.menu=sidekick.parser.java-switch javasidekick-insert-import \
+	javasidekick-refresh-global
 sidekick.parser.java-switch.label=Java SideKick
 javasidekick-insert-import.label=Insert Import for Class Under Cursor
+javasidekick-refresh-global.label=Refresh Global Classloader
 
 
 # action labels
