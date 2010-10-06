@@ -113,6 +113,7 @@ public class JavaCompletionFinder {
 		// Check tokens; this prevents using commented code and keywords such as "new" in completion
         DefaultTokenHandler handler = new DefaultTokenHandler();
         int lastLine = -1;
+		int closed = 0;
         for (int i = caret-1; i>=start; i--) {
         	int line = buffer.getLineOfOffset(i);
         	if (line != lastLine) {
@@ -126,11 +127,25 @@ public class JavaCompletionFinder {
         	if (offset < 0) continue;
         	Token t = TextUtilities.getTokenAtOffset(handler.getTokens(), offset);
 			String tokenText = lineText.substring(t.offset, t.length+t.offset);
-        	if (t.id != Token.NULL && t.id != Token.DIGIT && t.id != Token.FUNCTION && t.id != Token.OPERATOR) {
-				// Ignore special tokens, like "super" and "this"
-				if (!"super".equals(tokenText) && !"this".equals(tokenText)) {
-					start = i+1;
-					break;
+        	if (t.id != Token.NULL && t.id != Token.DIGIT && t.id != Token.FUNCTION) {
+				// This stops at an open parenthese
+				if (t.id == Token.OPERATOR) {
+					char op = lineText.charAt(offset);
+					if (op == ')')
+						closed++;
+					else {
+						closed--;
+						if (closed < 0) {
+							start = i+1;
+							break;
+						}
+					}
+				} else {
+					// Ignore special tokens, like "super" and "this"
+					if (!"super".equals(tokenText) && !"this".equals(tokenText)) {
+						start = i+1;
+						break;
+					}
 				}
         	}
         	// Skip over parentheses
@@ -332,7 +347,6 @@ public class JavaCompletionFinder {
         String token = "";
         
 		for (j = 0; j<list.size(); j++) {
-			System.out.println("c = "+c);
 			if (j>0) token += ".";
 			String newToken = list.get(j);
 			if (newToken.equals("this")) {
@@ -542,19 +556,23 @@ public class JavaCompletionFinder {
 
     private JavaCompletion getPossibleNonQualifiedCompletions( String word ) {
     	org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, this, "Getting non-qualified completions");
+		word = word.substring(word.lastIndexOf("(")+1);
+		System.out.println("trimmed word = "+word);
+		/*
     	String classTest = new String(word);
     	if (word.lastIndexOf("(") != -1) {
     		classTest = word.substring(word.lastIndexOf("(")+1);
     	}
+		*/
     	ArrayList pkgs = new ArrayList(
-        		Arrays.asList(Locator.getInstance().getClassName(classTest)));
+        		Arrays.asList(Locator.getInstance().getClassName(word)));
         if (pkgs != null && pkgs.size() > 0) {
 			ArrayList pkgCandidates = new ArrayList(pkgs.size());
 			for (int i = 0; i < pkgs.size(); i++) {
 				pkgCandidates.add(new JavaCompletionCandidate((String) pkgs.get(i),
 							TigerLabeler.getClassIcon()));
 			}
-			return new JavaCompletion(editPane.getView(), classTest, JavaCompletion.PACKAGE, pkgCandidates);
+			return new JavaCompletion(editPane.getView(), word, JavaCompletion.PACKAGE, pkgCandidates);
 		}
         // partialword
         // find all fields/variables declarations, methods, and classes in scope
