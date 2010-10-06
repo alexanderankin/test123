@@ -1,0 +1,73 @@
+<html>
+<body>
+<h1>BufferLocal Plugin</h1>
+<b>
+Author: Dale Anson<br>
+Version: @@build.num@@<br>
+Date: @@tstamp@@
+</b>
+<p>
+The BufferLocal Plugin saves the settings made using the Buffer Options dialog
+and restores those settings the next time the file is opened. This means that
+you don't have to manually change the settings each time the file is opened. The
+motivation for this comes from jEdit itself... </p>
+<p> The file that is used to store bufferlocal properties is in your jEdit settings directory,
+and named <tt>.bufferlocalplugin.cfg</tt>. </p>
+<p>
+Swiped directly from the jEdit 4.2 documentation, with emphasis added:
+<p>
+<table border="1" bgcolor="lightgray">
+<tr><td>
+Buffer-local properties provide an alternate way to change editor settings on a
+per-buffer basis. <b><i>While changes made in the Buffer Options dialog box are lost
+after the buffer is closed,</i></b> buffer-local properties take effect each time the
+file is opened, because they are embedded in the file itself.
+<p>
+When jEdit loads a file, it checks the first and last 10 lines for colon-enclosed
+name/value pairs. For example, placing the following in a buffer changes the
+indent width to 4 characters, enables soft tabs, and activates the Perl edit mode:
+<p>
+:indentSize=4:noTabs=true:mode=perl:
+<p>
+Adding buffer-local properties to a buffer takes effect after the next time the
+buffer is saved.
+</td></tr>
+</table>
+<p>
+Unfortunately, there isn't a nice gui to create the buffer-local line, and some
+coding standards prohibit putting such editor/ide specific lines directly into
+the source code.
+<p>
+To get around this, the BufferLocal plugin stores the settings made using the
+Buffer Options dialog box and applies those settings to each file as they are
+opened.
+<p>
+There is no set up or configuration required for this plugin, once installed, it is active.
+Use the Buffer Option dialog to adjust the settings for a file, and those settings
+will automatically be saved and applied to the file the next time it is opened.
+<p>
+Version 1.2:
+<p>
+Originally, BufferLocal was called "BufferMinder" and closed buffers that were open
+for a while but not used. I'll refer to these buffers as "stale".
+Closing stale buffers helps reduce clutter without any work. This feature
+never made it into the initial release, but others have requested it, so it's back now.
+It is off by default, use the Plugin Options to turn it on and to adjust
+how long a file should be unused before it is closed. Files that need saved will
+not be closed, you'll need to save first.
+<p>
+To turn on automatic buffer closing, click 'Plugins' then 'Plugin Options'.
+Select 'BufferLocal' from the tree on the left side. Check the box that says
+'Close files not used'. Set the time limit with the spinner.  Check the box
+'while window is active' to have the timer run only when the jEdit window is
+active.  This means you can open a file, minimize jEdit for a couple of hours
+and you files will still be there when you come back and the timer will pick
+up where it left off.
+<p>
+When the 'Close files not used' box is unchecked, BufferLocal will still
+keep track of stale buffers. You can close stale buffers at any time by
+clicking 'Plugins', then 'BufferLocal', then 'Close Stale Buffers'.
+<p>
+<!-- $Id$ -->
+</body>
+</html>
