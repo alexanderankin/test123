@@ -285,7 +285,8 @@ public class JavaCompletionFinder {
 
 
     private JavaCompletion getPossibleQualifiedCompletions( String word ) {
-    	//System.out.println("Getting qualified completions on "+word);
+		org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, this, "Getting qualified completions");
+
         String qualification = word.substring( 0, word.lastIndexOf( '.' ) );
 
         // might have super.something
@@ -563,7 +564,6 @@ public class JavaCompletionFinder {
     private JavaCompletion getPossibleNonQualifiedCompletions( String word ) {
     	org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, this, "Getting non-qualified completions");
 		word = word.substring(word.lastIndexOf("(")+1);
-		System.out.println("trimmed word = "+word);
 		/*
     	String classTest = new String(word);
     	if (word.lastIndexOf("(") != -1) {
