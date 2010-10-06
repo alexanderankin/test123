@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+    <ACTION NAME="svn.diff-against-base">
+        <CODE>
+            ise.plugin.svn.data.DiffData data = new ise.plugin.svn.data.DiffData();
+            data.addPath(buffer.getPath());
+            data.setPathsAreURLs(false);
+            data.setRevision1(org.tmatesoft.svn.core.wc.SVNRevision.BASE);
+            ise.plugin.svn.action.DiffAction action = new ise.plugin.svn.action.DiffAction( view, data );
+            action.actionPerformed( null );
+        </CODE>
+    </ACTION>
+</ACTIONS>
