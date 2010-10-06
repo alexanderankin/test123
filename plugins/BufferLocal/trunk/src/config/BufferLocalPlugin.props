@@ -11,7 +11,7 @@ plugin.ise.plugin.bmp.BufferLocalPlugin.description=BufferLocal provides a way t
 
 # dependencies
 plugin.ise.plugin.bmp.BufferLocalPlugin.depend.0=jdk 1.5
-plugin.ise.plugin.bmp.BufferLocalPlugin.depend.1=jedit 04.03.15.00
+plugin.ise.plugin.bmp.BufferLocalPlugin.depend.1=jedit 04.03.99.00
 
 # docs
 plugin.ise.plugin.bmp.BufferLocalPlugin.docs=index.html
