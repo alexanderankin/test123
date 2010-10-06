@@ -750,6 +750,14 @@ public class TigerLabeler {
 		return FIELD_ICON;
 	}
 
+	public static ImageIcon getConstructorIcon() {
+		if (!options.getShowIcons()) return null; 
+		if (options.getShowIconsLikeEclipse()) {
+			return E_CONSTRUCTOR_ICON;
+		}
+		return CONSTRUCTOR_ICON;
+	}
+
 	public static ImageIcon getClassIcon() {
 		if (!options.getShowIcons()) return null; 
 		if (options.getShowIconsLikeEclipse()) {

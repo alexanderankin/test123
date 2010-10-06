@@ -1215,6 +1215,10 @@ public class JavaCompletionFinder {
 					if ( Modifier.isPrivate(modifiers) || (Modifier.isProtected(modifiers) && public_only) ) {
 						continue;
 					}
+					// Don't display the class if it's anonymous
+					if ( classes[i].isAnonymousClass() ) {
+						continue;
+					}
 					if (filter == null || classes[ i ].getName().startsWith( filter ) ) 
 						list.add(new JavaCompletionCandidate(
 									classes[ i ].getSimpleName(),
@@ -1253,7 +1257,7 @@ public class JavaCompletionFinder {
                         name.append( ',' );
                 }
                 name.append( ')' );
-                list.add(new JavaCompletionCandidate(name.toString(), TigerLabeler.getMethodIcon()));
+                list.add(new JavaCompletionCandidate(name.toString(), TigerLabeler.getConstructorIcon()));
             }
         }
         catch (Exception e) {
