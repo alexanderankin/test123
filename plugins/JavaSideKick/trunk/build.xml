@@ -3,8 +3,8 @@
     <!-- read build.props to override properties set below -->
 
 	<property file="../../build.properties"/>
-	<!-- <property file="../build.properties"/>
-	<property file="build.properties"/> -->
+	<property file="../build.properties"/>
+	<property file="build.properties"/>
     <property file="JavaSideKick.props"/>
 
     <!-- default location of jedit.jar -->
