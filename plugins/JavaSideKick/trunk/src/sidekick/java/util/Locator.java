@@ -26,9 +26,6 @@ import sidekick.java.classloader.AntClassLoader;
  */
 public final class Locator {
 
-    // list jars and/or directories in the system classpath
-    private File[] classpathJars = null;
-    
     // list of class names in classpathJars
     private List<String> classpathClassNames = null;
     
@@ -39,16 +36,21 @@ public final class Locator {
     private List<String> runtimeClassNames = null;
     
     // list of jars and/or directories defined per project
-    private File[] projectJars = null;
+    //private File[] projectJars = null;
     
     // list of class names in projectJars
     private List<String> projectClassNames = null;
+
+	// list of class names in global classpath
+	// this may also include the system classpath
+	private List<String> globalClassNames = null;
     
     // the current project
     private VPTProject project = null;
     
     // a classloader to load classes found in projectJars
-    private AntClassLoader classloader = null;
+    private AntClassLoader projectClassloader = null;
+	private AntClassLoader globalClassloader = null;
 
     private static SoftReference<Locator> cachedSingleton;
 
@@ -56,13 +58,11 @@ public final class Locator {
      * Not instantiable
      */
     private Locator() {
-        classpathJars = getClassPathJars();
-        classpathClassNames = getClassPathClassNames();
         runtimeJars = getRuntimeJars();
         runtimeClassNames = getRuntimeClassNames();
         project = PVHelper.getProject( jEdit.getActiveView() );
-        projectJars = getProjectJars( project );
-        projectClassNames = getProjectClassNames( project );
+        projectClassNames = reloadProjectClassNames( project );
+		globalClassNames = reloadGlobalClassNames();
     }
 
     public static Locator getInstance() {
@@ -77,15 +77,11 @@ public final class Locator {
         return newOne;
     }
 
-    public ClassLoader getClassLoader() {
-    	return classloader;
+    public ClassLoader getGlobalClassLoader() {
+		return globalClassloader;
     }
 
     public File[] getClassPathJars() {
-        if ( classpathJars != null ) {
-            return copyOf( classpathJars );
-        }
-
         String classpath = System.getProperty( "java.class.path" );
         if ( classpath == null || classpath.length() == 0 )
             return null;
@@ -99,6 +95,7 @@ public final class Locator {
     }
 
     /**
+	 * @Deprecated
      * @return a list of class names of all classes in all jars in the classpath.
      */
     public List<String> getClassPathClassNames() {
@@ -272,56 +269,75 @@ public final class Locator {
     }
 
     public AntClassLoader getProjectClassLoader() {
-        return classloader;   
+        return projectClassloader;   
     }
     
-    public File[] getProjectJars( VPTProject proj ) {
+    private File[] getProjectJars( VPTProject proj ) {
         if ( proj == null ) {
             return null;
         }
-        if ( projectJars != null && project == proj ) {
-            return copyOf( projectJars );
-        }
-        this.project = proj;
-
         String classpath = PVHelper.getClassPathForProject(proj).toString();
         if ( classpath == null || classpath.length() == 0 ) {
-        	projectJars = null;
             return null;
         }
-        String path_sep = File.pathSeparator;
-        String[] path_jars = classpath.split( path_sep );
-        File[] jars = new File[ path_jars.length ];
-        for ( int i = 0; i < path_jars.length; i++ ) {
-            jars[ i ] = new File( path_jars[ i ] );
+		StringTokenizer tokenizer = new StringTokenizer(classpath, File.pathSeparator);
+		int count = tokenizer.countTokens();
+        File[] jars = new File[ count ];
+		for (int i = 0; i < count; i++) {
+            jars[ i ] = new File( tokenizer.nextToken() );
         }
         return jars;
     }
 
+	private File[] getGlobalJars() {
+		String classpath = jEdit.getProperty("sidekick.java.classpath");
+		if (classpath == null || classpath.length() == 0) {
+			return null;
+		}
+		StringTokenizer tokenizer = new StringTokenizer(classpath, File.pathSeparator);
+		int count = tokenizer.countTokens();
+        File[] jars = new File[ count ];
+		for (int i = 0; i < count; i++) {
+            jars[ i ] = new File( tokenizer.nextToken() );
+        }
+        return jars;
+	}
+
     /**
      * @return a list of class names of all classes in all jars in the classpath.
+	 * This method should be the only one used publicly
+	 * It will automatically reload class names if needed
      */
     public List<String> getProjectClassNames( VPTProject proj ) {
-        if ( project == null ) {
+        if ( proj == null ) {
             return null;
         }
-        if ( projectClassNames != null && project == proj ) {
-            return projectClassNames;
-        }
 
-        return reloadProjectClassNames( project );
+		if ( projectClassNames == null || project != proj ) {
+			this.project = proj;
+			projectClassNames = reloadProjectClassNames( proj );
+		}
+
+        return projectClassNames;
     }
 
-    public List<String> reloadProjectClassNames( VPTProject proj ) {
+	public List<String> getGlobalClassNames() {
+		if (globalClassNames == null) {
+			globalClassNames = reloadGlobalClassNames();
+		}
+		return globalClassNames;
+	}
+
+    private List<String> reloadProjectClassNames( VPTProject proj ) {
         // need both a list of names and a classloader for these classes
         File[] jars = getProjectJars( proj );
         if (jars == null) {
             return null;   
         }
-        classloader = new AntClassLoader();
+        projectClassloader = new AntClassLoader();
         List<String> allnames = new ArrayList<String>();
         for ( File jar : jars ) {
-            classloader.addPathFile( jar );
+            projectClassloader.addPathFile( jar );
             List<String> names = null;
             if (!jar.isDirectory()) names = getJarClassNames( jar );
             else names = getDirClassNames(jar, jar.getPath());
@@ -329,10 +345,68 @@ public final class Locator {
                 allnames.addAll( names );
             }
         }
-        projectClassNames = allnames;
         return allnames;
     }
-    
+
+	private List<String> reloadGlobalClassNames() {
+		globalClassloader = new AntClassLoader();
+		File[] jars = getGlobalJars();
+		List<String> allnames = new ArrayList<String>();
+		if (jars != null) {
+			for (File jar : jars) {
+				globalClassloader.addPathFile(jar);
+				List<String> names = null;
+				if (!jar.isDirectory()) names = getJarClassNames(jar);
+				else names = getDirClassNames(jar, jar.getPath());
+				if (names != null) {
+					allnames.addAll(names);
+				}
+			}
+		}
+		// Load system classpath
+		if (jEdit.getBooleanProperty("sidekick.java.classpathIncludeSystem")) {
+			jars = getClassPathJars();
+			for (File jar : jars) {
+				globalClassloader.addPathFile(jar);
+				List<String> names = null;
+				if (!jar.isDirectory()) names = getJarClassNames(jar);
+				else names = getDirClassNames(jar, jar.getPath());
+				if (names != null) {
+					allnames.addAll(names);
+				}
+			}
+		}	
+		// Load jedit libraries and plugins
+		if (jEdit.getBooleanProperty("sidekick.java.classpathIncludePlugins")) {
+			// Load jars from settings
+			jars = new File(jEdit.getSettingsDirectory(), "jars").listFiles();
+			for (File jar : jars) {
+				globalClassloader.addPathFile(jar);
+				List<String> names = null;
+				if (!jar.isDirectory()) names = getJarClassNames(jar);
+				else names = getDirClassNames(jar, jar.getPath());
+				if (names != null) {
+					allnames.addAll(names);
+				}
+			}
+			// Load jars from application
+			jars = new File(jEdit.getJEditHome(), "jars").listFiles();
+			for (File jar : jars) {
+				globalClassloader.addPathFile(jar);
+				List<String> names = null;
+				if (!jar.isDirectory()) names = getJarClassNames(jar);
+				else names = getDirClassNames(jar, jar.getPath());
+				if (names != null) {
+					allnames.addAll(names);
+				}
+			}
+		}
+		return allnames;
+	}
+
+	/**
+	 * @Deprecated
+	 */
     public void reloadProjectJars( VPTProject proj ) {
         String classpath = PVHelper.getClassPathForProject(proj).toString();
         if ( classpath == null || classpath.length() == 0 )
@@ -343,7 +417,7 @@ public final class Locator {
         for ( int i = 0; i < path_jars.length; i++ ) {
             jars[ i ] = new File( path_jars[ i ] );
         }
-        projectJars = jars;
+        //projectJars = jars;
     }
     
     /**
@@ -356,12 +430,12 @@ public final class Locator {
         if ( proj == null ) {
             return null;
         }
-        if ( projectClassNames == null || project != proj ) {
-            // need to load jars and class names for the project
-            projectClassNames = getProjectClassNames( proj );
-        }
-        return getClasses( projectClassNames, packageName );
+        return getClasses( getProjectClassNames(proj), packageName );
     }
+
+	public List<String> getGlobalClasses( String packageName ) {
+		return getClasses( getGlobalClassNames(), packageName );
+	}
 
     /**
      * @param name class name minus the package part, e.g. "String" in "java.lang.String".
@@ -377,9 +451,13 @@ public final class Locator {
         return getClassName( projectClassNames, name );
     }
 
+    public String[] getGlobalClassName( String name ) {
+        return getClassName( globalClassNames, name );
+    }
 
 
     /**
+	 * @Deprecated. The system classpath is now included in global
      * @param name class name minus the package part, e.g. "String" in "java.lang.String".
      */
     public String[] getClassPathClassName( String name ) {
@@ -390,6 +468,7 @@ public final class Locator {
 		// Replace dots with dollar signs to support inner classes
 		name = name.replace(".", "$");
     	String[] runtime = getRuntimeClassName(name);
+		String[] project = null;
     	String[] classpath = null;
 
     	ArrayList<String> all = new ArrayList<String>();
@@ -400,12 +479,23 @@ public final class Locator {
 
 		Object _proj = PVHelper.getProject(jEdit.getActiveView());
 		if (_proj != null) {
+			// If a project is active, load its classes
 			projectviewer.vpt.VPTProject proj = (projectviewer.vpt.VPTProject) _proj;
-			classpath = getProjectClassName(proj, name);
+			project = getProjectClassName(proj, name);
+			// Load the global classpath if it hasn't been disabled for this project
+			if (!"false".equals(proj.getProperty("java.useJavaClasspath"))) {
+				classpath = getGlobalClassName(name);
+			}
 		} else {
-			classpath = getClassPathClassName(name);
+			// No project open, so just load the global classpath
+			classpath = getGlobalClassName(name);
 		}
 
+		if (project != null) {
+			for (int i = 0; i<project.length; i++) {
+				all.add(project[i]);
+			}
+		}
 		if (classpath != null) {
 			for (int i = 0; i<classpath.length; i++) {
 				all.add(classpath[i]);
@@ -802,4 +892,15 @@ public final class Locator {
         System.arraycopy( array, 0, rtn, 0, array.length );
         return rtn;
     }
+
+	public void refreshProject( VPTProject proj ) {
+		if (project == proj) {
+			projectClassNames = reloadProjectClassNames( proj );
+		}
+	}
+
+	public void refreshGlobal() {
+		globalClassNames = reloadGlobalClassNames();
+	}
+
 }

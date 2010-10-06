@@ -18,9 +18,10 @@ plugin.sidekick.java.JavaSideKickPlugin.depend.0=jdk 1.5.0
 plugin.sidekick.java.JavaSideKickPlugin.depend.1=jedit 04.03.99.00
 plugin.sidekick.java.JavaSideKickPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.9
 plugin.sidekick.java.JavaSideKickPlugin.depend.3=plugin sidekick.SideKickPlugin 0.9
-plugin.sidekick.java.JavaSideKickPlugin.depend.4=optional plugin projectviewer.ProjectPlugin 3.0.0
-plugin.sidekick.java.JavaSideKickPlugin.depend.5=optional plugin SuperAbbrevsPlugin 0.32
-plugin.sidekick.java.JavaSideKickPlugin.depend.6=plugin eclipseicons.EclipseIconsPlugin 1.0
+plugin.sidekick.java.JavaSideKickPlugin.depend.4=plugin CommonControlsPlugin 1.2
+plugin.sidekick.java.JavaSideKickPlugin.depend.5=plugin eclipseicons.EclipseIconsPlugin 1.0
+plugin.sidekick.java.JavaSideKickPlugin.depend.6=optional plugin projectviewer.ProjectPlugin 3.0.0
+plugin.sidekick.java.JavaSideKickPlugin.depend.7=optional plugin SuperAbbrevsPlugin 0.32
 
 
 Tiger2.title=JavaSideKick
@@ -28,8 +29,9 @@ Tiger2.label=JavaSideKick
 
 # menu
 # Menu bar properties
-plugin.sidekick.java.JavaSideKickPlugin.menu-item=sidekick.parser.java-switch
+plugin.sidekick.java.JavaSideKickPlugin.menu=sidekick.parser.java-switch javasidekick-insert-import
 sidekick.parser.java-switch.label=Java SideKick
+javasidekick-insert-import.label=Insert Import for Class Under Cursor
 
 
 # action labels
@@ -81,7 +83,8 @@ sidekick.java.msg.bufferNotParsed.message=The parsed data for this view \
 # Option pane properties
 plugin.sidekick.java.JavaSideKickPlugin.option-group=sidekick.java.general \
 	sidekick.java.filter \
-	sidekick.java.display
+	sidekick.java.display \
+	sidekick.java.global
 
 options.sidekick.java.general.label=General
 options.sidekick.java.general.code=new sidekick.java.options.GeneralOptionPane();
@@ -91,6 +94,9 @@ options.sidekick.java.filter.code=new sidekick.java.options.FilterOptionPane();
 
 options.sidekick.java.display.label=Display
 options.sidekick.java.display.code=new sidekick.java.options.DisplayOptionPane();
+
+options.sidekick.java.global.label=Classpath
+options.sidekick.java.global.code=new sidekick.java.options.GlobalClasspathOptionPane();
 
 
 # Global Plugin Options - obsolete
@@ -220,13 +226,20 @@ sidekick.java.custAbsAsItalic=false
 sidekick.java.custStaAsUlined=false
 sidekick.java.custTypeIsSuffixed=false
 
+# Global option pane
+sidekick.java.classpathIncludePlugins.label=Include plugins and libraries
+sidekick.java.classpathIncludeSystem.label=Include system classpath
+sidekick.java.classpathIncludePlugins=true
+sidekick.java.classpathIncludeSystem=true
+
 # ProjectViewer option pane
 plugin.projectviewer.sidekick.java.JavaSideKickPlugin.option-pane=javasidekick.pv.options
-options.javasidekick.pv.options.label=Java classpath settings
+options.javasidekick.pv.options.label=Classpath
 options.javasidekick.pv.options.code=new sidekick.java.options.PVClasspathOptionPane()
 
 # ProjectViewer option pane labels
-sidekick.java.pv.useJavaClasspath.label=Include system classpath?
+sidekick.java.pv.desc=<html><b>JavaSideKick classpath settings</b></html>
+sidekick.java.pv.useJavaClasspath.label=Include global classpath (defined in Plugin Options)
 sidekick.java.pv.useJavaClasspath=true
 sidekick.java.pv.optionalClasspath.label=Classpath:
 sidekick.java.pv.optionalSourcepath.label=Source path:
