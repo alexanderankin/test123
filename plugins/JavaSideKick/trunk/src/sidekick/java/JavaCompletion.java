@@ -30,6 +30,9 @@ public class JavaCompletion extends SideKickCompletion {
     // CONSTRUCTOR means insert everything after the first parenthese
     public static final int CONSTRUCTOR = 4;
 
+	// PACKAGE means package-insertion or import
+	public static final int PACKAGE = 5;
+
     private int insertionType = PARTIAL;
 
     public JavaCompletion(View view, String text, List choices) {
@@ -62,6 +65,7 @@ public class JavaCompletion extends SideKickCompletion {
 	}
 
     public void insert( int index ) {
+		System.out.println("Inserting");
         String to_replace = text;
         String to_insert = String.valueOf(get(index));
 
@@ -79,9 +83,17 @@ public class JavaCompletion extends SideKickCompletion {
             to_replace = "(";
             to_insert = to_insert.substring(to_insert.indexOf('('));
         }
-        else if (jEdit.getBooleanProperty("sidekick.java.importPackage")) {
-        	insertImport(textArea, to_insert);
-        	return;
+		else if (insertionType == PARTIAL) {
+			// Do nothing, as the whole word will get replaced
+		}
+        else if (insertionType == PACKAGE) {
+			if (jEdit.getBooleanProperty("sidekick.java.importPackage")) {
+				// Insert the import statement and return
+				insertImport(textArea, to_insert);
+				return;
+			} else {
+				// Do nothing, as the whole word will get replaced
+			}
         }
 
         int caret = textArea.getCaretPosition();
@@ -128,7 +140,7 @@ public class JavaCompletion extends SideKickCompletion {
 	 * @param textArea the text area to insert into
 	 * @param cls the class to import
 	 */
-    public static void insertImport(JEditTextArea textArea, String cls) {
+    public void insertImport(JEditTextArea textArea, String cls) {
 		if (cls.indexOf(".") == -1) {
 			// No need to import a class in the default package
 			return;

@@ -1,6 +1,10 @@
 package sidekick.java.options;
 
 // imports
+import common.gui.FileTextField;
+import common.gui.pathbuilder.PathBuilder;
+
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
@@ -10,6 +14,7 @@ import java.io.*;
 import java.util.regex.*;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
+
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
@@ -31,7 +36,7 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
     private PathBuilder classpathBuilder;
     private PathBuilder sourcepathBuilder;
     private JCheckBox useJavaClassPath;
-    private JTextField buildPath;
+    private FileTextField buildPath;
     private View view;
     private VPTProject proj;
     public static String PREFIX = "sidekick.java.pv.";
@@ -49,6 +54,8 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
         view = jEdit.getActiveView();
 
         String name = PVHelper.getProjectName( view );
+
+		addComponent(new JLabel(jEdit.getProperty(PREFIX + "desc")));
         
         // Include java.class.path in classpath
         // If prop is null or not equal to "true", set it to false
@@ -58,22 +65,22 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
                     jEdit.getProperty( PREFIX + "useJavaClasspath.label" ),
                     prop.equals("true")
                 );
-        useJavaClassPath.setToolTipText( System.getProperty("java.class.path") );
         addComponent( useJavaClassPath );
 
         // Classpath components
         classpathBuilder = new PathBuilder(
                     jEdit.getProperty( PREFIX + "optionalClasspath.label" )
                 );
-        classpathBuilder.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
+		classpathBuilder.setMultiSelectionEnabled(true);
         classpathBuilder.setFileFilter( new ClasspathFilter() );
         prop = proj.getProperty( "java.optionalClasspath" );
         classpathBuilder.setPath(
             ((prop == null) ? "" : prop)
         );
-        classpathBuilder.setStartDirectory( PVHelper.getProjectRoot( view ) );
+        classpathBuilder.setStartDirectory( proj.getRootPath()+File.separator );
         classpathBuilder.setEnabled( true );
-        classpathBuilder.setDotClassPathType(PathBuilder.LIB);
+		classpathBuilder.setPreferredSize( new Dimension(400, 200) );
+        //classpathBuilder.setDotClassPathType(PathBuilder.LIB);
         addComponent( classpathBuilder );
         addComponent( Box.createVerticalStrut(11));
 
@@ -81,19 +88,21 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
         sourcepathBuilder = new PathBuilder(
                     jEdit.getProperty( PREFIX + "optionalSourcepath.label" )
                 );
-        sourcepathBuilder.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
+		sourcepathBuilder.setMultiSelectionEnabled(true);
         sourcepathBuilder.setFileFilter( new SourceFileFilter() );
         prop = proj.getProperty( "java.optionalSourcepath" );
         sourcepathBuilder.setPath(
             ((prop == null) ? "" : prop)
         );
-        sourcepathBuilder.setStartDirectory( PVHelper.getProjectRoot( view ) );
+        sourcepathBuilder.setStartDirectory( proj.getRootPath()+File.separator );
         sourcepathBuilder.setEnabled( true );
-        sourcepathBuilder.setDotClassPathType(PathBuilder.SRC);
+		sourcepathBuilder.setPreferredSize( new Dimension(400, 200) );
+        //sourcepathBuilder.setDotClassPathType(PathBuilder.SRC);
         addComponent( sourcepathBuilder );
         addComponent( Box.createVerticalStrut(11));
 
         // build path components
+		/*
         JLabel buildPathLabel = new JLabel( jEdit.getProperty( PREFIX + "buildOutputPath.label" ) );
         buildPath = new JTextField( 30 );
         prop = proj.getProperty( "java.optionalBuildpath" );
@@ -113,7 +122,13 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
         buildPathPanel.add( buildPathLabel );
         buildPathPanel.add( buildPath );
         buildPathPanel.add( browse_btn );
-        addComponent( buildPathPanel );
+		*/
+		buildPath = new FileTextField();
+		buildPath.getTextField().setColumns(30);
+		prop = proj.getProperty("java.optionalBuildpath");
+		buildPath.getTextField().setText( ((prop == null) ? "" : prop) );
+		buildPath.setFileSelectionMode( JFileChooser.DIRECTORIES_ONLY );
+        addComponent( jEdit.getProperty(PREFIX + "buildOutputPath.label"), buildPath );
     }
 
     // #_save() : void
@@ -125,12 +140,12 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
             PREFIX + name + ".useJavaClasspath",
             useJavaClassPath.isSelected()
         );
-        */
+		*/
         proj.setProperty(
             "java.useJavaClasspath",
             (useJavaClassPath.isSelected()) ? "true" : "false"
         );
-        /*
+		/*
         jEdit.setProperty(
             PREFIX + name + ".optionalClasspath",
             classpathBuilder.getPath()
@@ -158,12 +173,13 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
         */
         proj.setProperty(
             "java.optionalBuildpath",
-            buildPath.getText()
+            buildPath.getTextField().getText()
         );
-        Locator.getInstance().reloadProjectJars( proj );
-        Locator.getInstance().reloadProjectClassNames( proj );
+
+        Locator.getInstance().refreshProject( proj );
     }
 
+	/*
     public void addComponent( JComponent comp ) {
         GridBagConstraints cons = new GridBagConstraints();
         cons.gridy = y++; // y is a protected member of AbstractOptionPane
@@ -177,7 +193,7 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
         gridBag.setConstraints( comp, cons );
         add( comp );
     }
-
+	*/
 
     private static class ClasspathFilter extends FileFilter {
         public boolean accept( File file ) {

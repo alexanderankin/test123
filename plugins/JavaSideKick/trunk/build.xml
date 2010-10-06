@@ -72,7 +72,8 @@
          <pathelement location="${jedit.plugins.dir}/SideKick.jar"/>
          <pathelement location="${jedit.plugins.dir}/ProjectViewer.jar"/>
          <pathelement location="${jedit.plugins.dir}/SuperAbbrevs.jar"/>
-         <pathelement location="${jedit.plugins.dir}/EclipseIcons.jar"/>
+		 <pathelement location="${jedit.plugins.dir}/EclipseIcons.jar"/>
+         <pathelement location="${jedit.plugins.dir}/CommonControls.jar"/>
       </path>
    </target>
 

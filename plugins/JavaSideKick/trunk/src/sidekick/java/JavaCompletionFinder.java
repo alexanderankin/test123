@@ -74,8 +74,8 @@ public class JavaCompletionFinder {
             return null;
         }
 
-        // get the word just before the caret.  It might be a partial word, that's okay.
-        String word = getWordAtCursor( editPane.getBuffer() );
+		// get the word just before the caret.  It might be a partial word, that's okay.
+		String word = getWordAtCursor( editPane.getBuffer() );
 		//System.out.println("word = "+word);
         if ( word == null || word.length() == 0 ) {
             return null;
@@ -167,7 +167,7 @@ public class JavaCompletionFinder {
                 break;
             }
         }
-        org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG,this,"Word at cursor: "+text);
+        //org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG,this,"Word at cursor: "+text);
         return text;
     }
 
@@ -411,6 +411,17 @@ public class JavaCompletionFinder {
 							if (classNode != null) {
 								c = getClassForType(classNode.getType(), (CUNode) data.root.getUserObject());
 							}
+
+							if (c == null) {
+								// Check for cast
+								String castToken = newToken.trim();
+								if (castToken.startsWith("(") && castToken.endsWith(")")) {
+									int open = castToken.lastIndexOf("(");
+									int close = castToken.indexOf(")");
+									c = getClassForType( castToken.substring(open+1, close),
+											(CUNode) data.root.getUserObject());
+								}
+							}
 						}
 					}
                 }
@@ -507,7 +518,7 @@ public class JavaCompletionFinder {
                         PVHelper.getProject( editPane.getView() ), word );
         }
         if ( possibles == null || possibles.size() == 0 ) {
-            possibles = Locator.getInstance().getClassPathClasses( word );
+            possibles = Locator.getInstance().getGlobalClasses( word );
         }
         if ( possibles == null || possibles.size() == 0 ) {
             possibles = Locator.getInstance().getRuntimeClasses( word );
@@ -543,17 +554,18 @@ public class JavaCompletionFinder {
 				pkgCandidates.add(new JavaCompletionCandidate((String) pkgs.get(i),
 							TigerLabeler.getClassIcon()));
 			}
-			return new JavaCompletion(editPane.getView(), classTest, pkgCandidates);
+			return new JavaCompletion(editPane.getView(), classTest, JavaCompletion.PACKAGE, pkgCandidates);
 		}
         // partialword
         // find all fields/variables declarations, methods, and classes in scope
         TigerNode tn = ( TigerNode ) data.getAssetAtOffset( caret );
-        Set<String> choices = new HashSet<String>();
+        Set<JavaCompletionCandidate> choices = new HashSet<JavaCompletionCandidate>();
         while ( true ) {
             List children = tn.getChildren();
             if ( children != null ) {
                 for ( Iterator it = children.iterator(); it.hasNext(); ) {
                     TigerNode child = ( TigerNode ) it.next();
+					Icon icon = null;
                     switch ( child.getOrdinal() ) {
                         case TigerNode.CONSTRUCTOR:
                         case TigerNode.METHOD:
@@ -561,16 +573,26 @@ public class JavaCompletionFinder {
                             for ( Iterator jt = params.iterator(); jt.hasNext(); ) {
                                 Parameter param = ( Parameter ) jt.next();
                                 if ( param.getName().startsWith( word ) ) {
-                                    choices.add( param.getName() );
+                                    choices.add( new JavaCompletionCandidate(
+												param.getName(),
+											    TigerLabeler.getFieldIcon() ));
                                 }
                             }
+							if (icon == null)
+								icon = TigerLabeler.getMethodIcon();
                         case TigerNode.FIELD:
                         case TigerNode.VARIABLE:
+							if (icon == null)
+								icon = TigerLabeler.getFieldIcon();
                         case TigerNode.CLASS:
                         case TigerNode.ENUM:
                         case TigerNode.INTERFACE:
+							if (icon == null)
+								icon = TigerLabeler.getClassIcon();
                             if ( child.getName().startsWith( word ) ) {
-                                choices.add( child.getName() );
+                                choices.add( new JavaCompletionCandidate(
+									   child.getName(),
+								   	   icon) );
                             }
                             break;
                     }
@@ -580,19 +602,24 @@ public class JavaCompletionFinder {
             if ( tn == null )                 //|| tn.getOrdinal() == TigerNode.COMPILATION_UNIT )
                 break;
         }
-        List<String> list = new ArrayList<String>( choices );
+        List list = new ArrayList( choices.size() );
+		for ( JavaCompletionCandidate choice : choices ) {
+			list.add(choice);
+		}
         JavaCompletion jc = getSuperCompletion( word );
         if ( jc != null ) {
 			// TODO: Convert this to JavaCompletionCandidate
             list.addAll( jc.getChoices() );
         }
+		System.out.println("size = "+list.size());
         if ( list.size() > 0 ) {
             // don't show the completion popup if the only choice is an
             // exact match for the word
-            if ( list.size() == 1 && word.equals( list.get( 0 ) ) )
+            if ( list.size() == 1 && word.equals( list.get( 0 ).toString() ) )
                 return null;
             else {
                 Collections.sort( list );
+				System.out.println("returning new completion");
                 return new JavaCompletion( editPane.getView(), word, list );
             }
         }
@@ -903,6 +930,12 @@ public class JavaCompletionFinder {
             }
         }
 
+		// check in java.lang
+		Class c = validateClassName( "java.lang."+type );
+		if (c != null) {
+			return c;
+		}
+
         String[] classNames = Locator.getInstance().getClassName( type );
 		if (classNames == null || classNames.length == 0) {
 			return null;
@@ -1186,7 +1219,7 @@ public class JavaCompletionFinder {
         return constructors;
     }
 
-	class JavaCompletionCandidate implements Comparable {
+	static class JavaCompletionCandidate implements Comparable {
 
 		private String text;
 		private Icon icon;
