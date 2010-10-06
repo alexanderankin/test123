@@ -135,6 +135,9 @@ public class JavaCompletionFinder {
 					if (op == ')')
 						closed++;
 					else {
+						// Stop at an open parenthese, but not if it's the last character
+						// Otherwise constructor completion breaks
+						if (i == (caret-1)) closed++;
 						closed--;
 						if (closed < 0) {
 							start = i+1;
@@ -635,7 +638,6 @@ public class JavaCompletionFinder {
 			// TODO: Convert this to JavaCompletionCandidate
             list.addAll( jc.getChoices() );
         }
-		System.out.println("size = "+list.size());
         if ( list.size() > 0 ) {
             // don't show the completion popup if the only choice is an
             // exact match for the word
@@ -643,7 +645,6 @@ public class JavaCompletionFinder {
                 return null;
             else {
                 Collections.sort( list );
-				System.out.println("returning new completion");
                 return new JavaCompletion( editPane.getView(), word, list );
             }
         }
@@ -1157,14 +1158,12 @@ public class JavaCompletionFinder {
         if ( c == null )
             return null;
 
-		System.out.println("Getting members for class, public_only = "+public_only);
         Set list = new HashSet();
 
         try {
 			while (c != null) {
 				Method[] methods = c.getDeclaredMethods();
 				for ( int i = 0; i < methods.length; i++ ) {
-					System.out.println("method = "+methods[i]);
 					int modifiers = methods[ i ].getModifiers();
 					// Is it static?
 					if ( static_only != Modifier.isStatic( modifiers )) {

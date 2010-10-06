@@ -518,125 +518,63 @@ plugin too.
 <h4>Code Completion</h4>
 
 <p>
-JavaSideKick completes partial words in context/scope.  See the section <a href="#project_viewer">Integration with ProjectViewer</a>
-for information on how to specify the class path to use for code completion.
-</p>
-Examples:
-</p>
-<pre>
-   String word = getWordAtCursor( );
-   wo
-</pre>
-<p>
-Popup will display option to expand 'wo' to 'word'.
-</p>
-<pre>
-   String word = getWordAtCursor( );
-   int word_length = word.length();
-   wo
-</pre>
-<p>Popup will display options to expand 'wo' to 'word' and 'word_length'.
-</p>
-<pre>
-   String word = getWordAtCursor( );
-   word.
-</pre>
-<p>
-Popup will display all public fields and methods available in java.lang.String.
-</p>
-<pre>
-   String word = getWordAtCursor( );
-   word.rep
-</pre>
-<p>
-Popup will display option to expand 'rep' to 'replace', 'replaceAll', and
-'replaceFirst'.
-</p>
-<pre>
-   this.
-</pre>
-<p>
-Popup will display all fields, methods, classes, and interfaces in the class
-containing the cursor. </p>
-<pre>
-   this.get
-</pre>
-<p>
-Popup will display all fields, methods, classes, and interfaces in the current
-class whose names start with 'get'. </p>
-
-<pre>
-   super.
-</pre>
-<p>
-Popup will display all public fields, methods, classes, and interfaces in
-the super class of the class containing the cursor.  (To do: add protected
-members.)
+JavaSideKick offers several different uses for code completion. The line at the
+end of each example represents the cursor position when completion is invoked
+(Plugins -&gt; SideKick -&gt; Show Completion Popup).
 </p>
 
-<pre>
-   super.get
-</pre>
-<p>
-Popup will display all public fields, methods, classes, and interfaces in
-the super class of the class containing the cursor (To do: add protected
-members.)
-</p>
+<ul>
+	<li>Local variables and methods:
+	<pre>
+	String word = getWordAtCursor();
+	wo
+	</pre>
+	</li>
 
-<b>SideKick settings for completion:</b>
-<p>
-SideKick settings are found in jEdit at: Plugins-&gt;Plugin Options-&gt;SideKick
-</p><p>
-"Show completion popups where possible" must be checked for the completion
-to work. </p>
-<p>
-"Parse on buffer switch and save" is recommended for JavaSideKick in general. </p>
-<p>
-"Parse on keystroke" is recommended for completion to work well. </p>
-<p>
-You'll probably need to play with the "After last keystroke, wait (second)"
-and "After popup trigger keystroke, wait (second)" settings.  For me, I've
-got "After last keystroke" set to 0.75 sec and "After popup trigger" set to
-0.25 sec.  You'll want to adjust based your typing speed, machine speed,
-and coding style. </p>
+	<li>Public methods and fields of a variable:
+	<pre>
+	String word = getWordAtCursor();
+	word.
+	</pre>
+	or, to filter results by name:
+	<pre>
+	String word = getWordAtCursor();
+	word.rep
+	</pre>
+	</li>
 
-<p>
-<b>What doesn't work:</b> </p>
-<p>
-The popup won't show completions for an object that is cast as another object.
-Example: </p>
-<p>
-   Given that MethodNode extends TigerNode: </p>
-<pre>
-   TigerNode tn = it.next();  // 'it' is an Iterator defined elsewhere
-   MethodNode mn = (MethodNode)tn;
-   mn.
-</pre>
-<p>
-<s>The popup will show only fields and methods in TigerNode, not additional
-fields and methods in MethodNode.</s> (Fixed)  Continuing the same example, <s>this won't</s>
-Damien fixed this to work:</p>
+	<li>Methods, fields, and inner classes of the current buffer:
+	<pre>
+	this.
+	</pre>
+	or, values of the buffer's superclass (includes protected values,
+	which are displayed in the popup as italics):
+	<pre>
+	super.
+	</pre>
+	</li>
 
-<pre>
-   List params = ((MethodNode)tn).get
-</pre>
-<p>
-This will now expand to show the "get" methods in MethodNode.
-</p>
-<p>
-Damien fixed this one too:
-<s>
-The popup won't show completions for an object that is an implicit return
-from another object.  Example: </p>
-<pre>
-   StringBuffer sb = new StringBuffer();
-   sb.append("this").app
-</pre>
-<p>
-This should be able to expand to 'append', but won't.
-</s>
-</p>
+	<li>Constructors:
+	<pre>
+	String word = new String(
+	</pre>
+	</li>
 
+	<li>Packages. By default, this will replace the class name with its fully-qualified
+	name, but it is possible to turn on an option which will instead insert an import
+	statement for you at the top of the buffer:
+	<pre>
+	Scanner
+	</pre>
+	</li>
+
+	<li>Casts:
+	<pre>
+	Object ob = getStringAsObject();
+	((String) ob).
+	</pre>
+	</li>
+</ul>
 
 <hr size="1" >
 
