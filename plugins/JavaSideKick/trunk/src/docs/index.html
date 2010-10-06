@@ -527,36 +527,36 @@ end of each example represents the cursor position when completion is invoked
 	<li>Local variables and methods:
 	<pre>
 	String word = getWordAtCursor();
-	wo
+	wo|
 	</pre>
 	</li>
 
 	<li>Public methods and fields of a variable:
 	<pre>
 	String word = getWordAtCursor();
-	word.
+	word.|
 	</pre>
 	or, to filter results by name:
 	<pre>
 	String word = getWordAtCursor();
-	word.rep
+	word.rep|
 	</pre>
 	</li>
 
 	<li>Methods, fields, and inner classes of the current buffer:
 	<pre>
-	this.
+	this.|
 	</pre>
 	or, values of the buffer's superclass (includes protected values,
 	which are displayed in the popup as italics):
 	<pre>
-	super.
+	super.|
 	</pre>
 	</li>
 
 	<li>Constructors:
 	<pre>
-	String word = new String(
+	String word = new String(|
 	</pre>
 	</li>
 
@@ -564,14 +564,14 @@ end of each example represents the cursor position when completion is invoked
 	name, but it is possible to turn on an option which will instead insert an import
 	statement for you at the top of the buffer:
 	<pre>
-	Scanner
+	Scanner|
 	</pre>
 	</li>
 
 	<li>Casts:
 	<pre>
 	Object ob = getStringAsObject();
-	((String) ob).
+	((String) ob).|
 	</pre>
 	</li>
 </ul>
