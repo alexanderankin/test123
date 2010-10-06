@@ -758,5 +758,21 @@ public class TigerLabeler {
 		return CLASS_ICON;
 	}
 
+	public static ImageIcon getInnerClassIcon(boolean isInterface, boolean isEnum) {
+		if (!options.getShowIcons()) return null; 
+		if (options.getShowIconsLikeEclipse()) {
+			if (isInterface)
+				return E_INTERFACE_ICON;
+			else if (isEnum)
+				return E_ENUM_DEFAULT_ICON;
+			return E_INNER_CLASS_DEFAULT_ICON;
+		}
+		if (isInterface)
+			return INTERFACE_ICON;
+		else if (isEnum)
+			return ENUM_ICON;
+		return INNER_CLASS_ICON;
+	}
+
 }
 

@@ -522,7 +522,7 @@ public class JavaCompletionFinder {
                 return new JavaCompletion( editPane.getView(), word, JavaCompletion.PARTIAL,
                         constructors );
             }
-            List members = getMembersForClass( c, filter, static_only );
+            List members = getMembersForClass( c, filter, static_only, true );
             if ( members != null && members.size() > 0 ) {
                 if ( members.size() == 1 && members.get( 0 ).equals( word ) ) {
                     return null;
@@ -697,7 +697,7 @@ public class JavaCompletionFinder {
 		}
 
         // get the members (fields and methods) for the class node
-        List m = getMembersForClass( c );
+        List m = getMembersForClass( c, word, false, false );
         if ( m == null || m.size() == 0 )
             return null;
         if ( m.size() == 1 && m.get( 0 ).toString().equals( word ) ) {
@@ -1150,58 +1150,80 @@ public class JavaCompletionFinder {
 
 
     private List getMembersForClass( Class c, String filter ) {
-        return getMembersForClass( c, filter, false );
+        return getMembersForClass( c, filter, false, true );
     }
 
-    private List getMembersForClass( Class c, String filter, boolean static_only ) {
+    private List getMembersForClass( Class c, String filter, boolean static_only, boolean public_only ) {
         if ( c == null )
             return null;
 
+		System.out.println("Getting members for class, public_only = "+public_only);
         Set list = new HashSet();
 
         try {
-            Method[] methods = c.getMethods();
-            for ( int i = 0; i < methods.length; i++ ) {
-                int modifiers = methods[ i ].getModifiers();
-				if ( static_only != Modifier.isStatic (modifiers )) {
-                    continue;
-                }
-                if ( filter == null || methods[ i ].getName().startsWith( filter ) ) {
-                    Method method = methods[ i ];
-                    Class[] paramTypes = method.getParameterTypes();
-                    StringBuilder params = new StringBuilder("(");
-                    for (int j = 0; j < paramTypes.length; j++) {
-                        params.append( paramTypes[j].getSimpleName() );
-                        if (j < paramTypes.length - 1)
-                            params.append( ',' );
-                    }
-                    params.append( ')' );
-                    list.add( new JavaCompletionCandidate(
-								method.getName() + params.toString() + " : " + method.getReturnType().getSimpleName(),
-								TigerLabeler.getMethodIcon()) );
-                }
-            }
-            Field[] fields = c.getFields();
-            for ( int i = 0; i < fields.length; i++ ) {
-				int modifiers = fields[ i ].getModifiers();
-				if ( static_only != Modifier.isStatic (modifiers )) {
-					continue;
+			while (c != null) {
+				Method[] methods = c.getDeclaredMethods();
+				for ( int i = 0; i < methods.length; i++ ) {
+					System.out.println("method = "+methods[i]);
+					int modifiers = methods[ i ].getModifiers();
+					// Is it static?
+					if ( static_only != Modifier.isStatic( modifiers )) {
+						continue;
+					}
+					// Is it public, or do we want protected?
+					if ( Modifier.isPrivate(modifiers) || (Modifier.isProtected(modifiers) && public_only) ) {
+						continue;
+					}
+					if ( filter == null || methods[ i ].getName().startsWith( filter ) ) {
+						Method method = methods[ i ];
+						Class[] paramTypes = method.getParameterTypes();
+						StringBuilder params = new StringBuilder("(");
+						for (int j = 0; j < paramTypes.length; j++) {
+							params.append( paramTypes[j].getSimpleName() );
+							if (j < paramTypes.length - 1)
+								params.append( ',' );
+						}
+						params.append( ')' );
+						list.add( new JavaCompletionCandidate(
+									method.getName() + params.toString() + " : " + method.getReturnType().getSimpleName(),
+									TigerLabeler.getMethodIcon(), Modifier.isProtected(modifiers)) );
+					}
 				}
-                if ( filter == null || fields[ i ].getName().startsWith( filter ) )
-                    list.add( new JavaCompletionCandidate(
-								fields[ i ].getName() + " : " + fields[ i ].getType().getSimpleName(),
-								TigerLabeler.getFieldIcon()) );
-            }
-			Class[] classes = c.getClasses();
-			for (int i = 0; i < classes.length; i++) {
-				int modifiers = classes[ i ].getModifiers();
-				if ( static_only != Modifier.isStatic (modifiers )) {
-					continue;
+				Field[] fields = c.getDeclaredFields();
+				for ( int i = 0; i < fields.length; i++ ) {
+					int modifiers = fields[ i ].getModifiers();
+					// Is it static?
+					if ( static_only != Modifier.isStatic (modifiers )) {
+						continue;
+					}
+					// Is it public, or do we want protected?
+					if ( Modifier.isPrivate(modifiers) || (Modifier.isProtected(modifiers) && public_only) ) {
+						continue;
+					}
+					if ( filter == null || fields[ i ].getName().startsWith( filter ) )
+						list.add( new JavaCompletionCandidate(
+									fields[ i ].getName() + " : " + fields[ i ].getType().getSimpleName(),
+									TigerLabeler.getFieldIcon(), Modifier.isProtected(modifiers)) );
 				}
-				if (filter == null || classes[ i ].getName().startsWith( filter ) ) 
-					list.add(new JavaCompletionCandidate(
-								classes[ i ].getSimpleName(),
-								TigerLabeler.getClassIcon()) );
+				Class[] classes = c.getDeclaredClasses();
+				for (int i = 0; i < classes.length; i++) {
+					int modifiers = classes[ i ].getModifiers();
+					// Is it static?
+					if ( static_only != Modifier.isStatic (modifiers )) {
+						continue;
+					}
+					// Is it public, or do we want protected?
+					if ( Modifier.isPrivate(modifiers) || (Modifier.isProtected(modifiers) && public_only) ) {
+						continue;
+					}
+					if (filter == null || classes[ i ].getName().startsWith( filter ) ) 
+						list.add(new JavaCompletionCandidate(
+									classes[ i ].getSimpleName(),
+									TigerLabeler.getInnerClassIcon(c.isInterface(), c.isEnum()),
+									Modifier.isProtected(modifiers)) );
+				}
+				// Climb up the inheritance tree
+				c = c.getSuperclass();
 			}
         }
         catch ( Exception e ) {
@@ -1247,10 +1269,16 @@ public class JavaCompletionFinder {
 
 		private String text;
 		private Icon icon;
+		private boolean isProtected;
 
 		public JavaCompletionCandidate(String text, Icon icon) {
+			this(text, icon, false);
+		}
+		
+		public JavaCompletionCandidate(String text, Icon icon, boolean isProtected) {
 			this.text = text;
 			this.icon = icon;
+			this.isProtected = isProtected;
 		}
 
 		public Icon getIcon() {
@@ -1259,6 +1287,10 @@ public class JavaCompletionFinder {
 		
 		public String toString() {
 			return text;
+		}
+
+		public boolean isProtected() {
+			return isProtected;
 		}
 
 		/**

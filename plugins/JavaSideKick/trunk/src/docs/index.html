@@ -59,16 +59,16 @@
 </table>
 
 <p>
-The &quot;Java SideKick&quot; plug-in provides a highly customizable tool for navigating through Java source code. Using SideKick, you can see a tree view for the hierarchy of classes, interfaces, and methods for the file in the current buffer. In addition, attributes, extends, implements and method exception information can be displayed.
+The Java SideKick plug-in provides a highly customizable tool for navigating through Java source code. Using SideKick, you can see a tree view for the hierarchy of classes, interfaces, and methods for the file in the current buffer. In addition, attributes, extends, implements and method exception information can be displayed.
 </p>
 <p>JavaSideKick, as of version 2.3.0, requires Java 1.5.  JavaSideKick parses and displays these files:
 <ul>
 <li>Java source files (.java). All Java 1.5 and earlier syntax is supported, including generics, varargs, autobox and the enhanced "for" loop syntax.</li>
 <li>JavaCC source files (.jj, .jjt).  JavaCC files for JavaCC version 4.0 and 3.x are supported.  Earlier versions have not been tested.</li>
-<li>Property files conforming to java.util.Properties.</li>
+<!-- <li>Property files conforming to java.util.Properties.</li> -->
 </ul>
 </p>
-<p> Like all "SideKick" plugins, JavaSideKick has no dockable view. Instead, it shares its view with other SideKick plugins through the SideKick Dockable. It is suggested you dock this to the left or the right. </p>
+<p> Like all SideKick plugins, JavaSideKick has no dockable view. Instead, it shares its view with other SideKick plugins through the SideKick Dockable. It is suggested you dock this to the left or the right. </p>
 <pre>
 Global Options -&gt; Docking -&gt; SideKick
 </pre>
@@ -517,10 +517,6 @@ plugin too.
 
 <h4>Code Completion</h4>
 
-<p>
-Damien Radtke did a lot of work on making the Java code completion work much better.
-Code completion now works as you'd expect.
-</p>
 <p>
 JavaSideKick completes partial words in context/scope.  See the section <a href="#project_viewer">Integration with ProjectViewer</a>
 for information on how to specify the class path to use for code completion.

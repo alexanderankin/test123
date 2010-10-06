@@ -12,6 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 
 import sidekick.java.node.*;
+import sidekick.SideKickPlugin;
 import sidekick.SideKickCompletion;
 import sidekick.SideKickParsedData;
 
@@ -38,6 +39,7 @@ public class JavaCompletion extends SideKickCompletion {
     public JavaCompletion(View view, String text, List choices) {
         super(view, text, choices);
         determineInsertionType();
+        
     }
 
     public JavaCompletion(View view, String text, int type, List choices) {
@@ -209,6 +211,9 @@ public class JavaCompletion extends SideKickCompletion {
 			// No import statements exist yet, so just insert it above the class
     		buffer.insert(startOfClass, "\n"+newImport+"\n");
     	}
+		// Quietly re-parse after import in order to update imports and class starting location
+        SideKickParsedData skpd = (new JavaParser()).parse((Buffer) buffer, null);
+        SideKickParsedData.setParsedData( view , skpd );
     }
 
 	class JavaCompletionRenderer extends DefaultListCellRenderer {
@@ -223,7 +228,10 @@ public class JavaCompletion extends SideKickCompletion {
 			JavaCompletionFinder.JavaCompletionCandidate candid =
 				(JavaCompletionFinder.JavaCompletionCandidate) value;
 			JLabel cmp = new JLabel(candid.toString()+"   ", candid.getIcon(), JLabel.LEFT);
-			cmp.setFont(jEdit.getFontProperty("view.font"));
+			Font font = jEdit.getFontProperty("view.font");
+			cmp.setFont(new Font(font.getName(),
+						(candid.isProtected()) ? Font.ITALIC : Font.PLAIN,
+						font.getSize()));
 			cmp.setOpaque(true);
 			if (isSelected) {
 				cmp.setForeground(list.getSelectionForeground());
