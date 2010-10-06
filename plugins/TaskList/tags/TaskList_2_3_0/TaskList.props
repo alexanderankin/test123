@@ -1,0 +1,255 @@
+# Properties file for TaskList plugin
+# $Id$
+
+plugin.tasklist.TaskListPlugin.activate=defer
+
+plugin.tasklist.TaskListPlugin.name=TaskList
+plugin.tasklist.TaskListPlugin.author=Ollie Rutherfurd, John Gellene, Dale Anson
+plugin.tasklist.TaskListPlugin.version=2.3
+plugin.tasklist.TaskListPlugin.docs=docs/index.html
+plugin.tasklist.TaskListPlugin.depend.0=jdk 1.5
+plugin.tasklist.TaskListPlugin.depend.1=jedit 04.03.99.00
+plugin.tasklist.TaskListPlugin.depend.2=plugin CommonControlsPlugin 1.2
+plugin.tasklist.TaskListPlugin.depend.3=optional plugin projectviewer.ProjectPlugin 3.1.0
+plugin.tasklist.TaskListPlugin.usePluginHome=true
+plugin.tasklist.TaskListPlugin.description=Shows all "TODO" comments in a file.
+
+### menu
+plugin.tasklist.TaskListPlugin.menu=tasklist \
+	tasklist.parse-buffer \
+	tasklist.parse-all \
+	tasklist.reset-patterns
+
+tasklist.label=Task List
+tasklist.parse-buffer.label=Parse Buffer
+tasklist.parse-all.label=Parse All
+tasklist.reset-patterns.label=Reset task patterns
+
+# File system browser
+tasklist.parse-browser.label=Find Tasks
+plugin.tasklist.TaskListPlugin.browser-menu-item=tasklist.parse-browser
+
+### option panes
+
+plugin.tasklist.TaskListPlugin.option-group=tasklist.general \
+	tasklist.tasktypes \
+	tasklist.modes
+
+options.tasklist.general.label=General
+options.tasklist.general.code=new tasklist.options.TaskListGeneralOptionPane();
+options.tasklist.general.parsedelay=Parse delay:
+options.tasklist.general.buffer.display=Buffer display format:
+options.tasklist.general.sort.choice=Sort tasks by:
+options.tasklist.general.sort.choice.0=Buffer line number
+options.tasklist.general.sort.choice.1=Task tag
+options.tasklist.general.sort.direction=Sort direction:
+options.tasklist.general.sort.direction.0=Ascending
+options.tasklist.general.sort.direction.1=Descending
+options.tasklist.single-click-selection=Single-Click Selection
+options.tasklist.general.table.horizontal-lines=Show horizontal lines
+options.tasklist.general.table.vertical-lines=Show vertical lines
+options.tasklist.general.highlight.tasks=Highlight tasks
+options.tasklist.general.highlight.color=Highlight color:
+options.tasklist.general.buffer.display.fullpath=Complete Path
+options.tasklist.general.buffer.display.namedir=Filename (Directory)
+options.tasklist.general.buffer.display.nameonly=Filename Only
+options.tasklist.general.show-open-files=Show tasks for all open files
+options.tasklist.general.show-project-files=Show tasks for all project files
+
+tasklist.buffer.display=Filename (Directory)
+
+options.tasklist.tasktypes.label=Task Types
+options.tasklist.tasktypes.code=new tasklist.options.TaskListTaskTypesOptionPane();
+options.tasklist.tasktypes.patterns=Patterns
+options.tasklist.tasktypes.add=Add
+options.tasklist.tasktypes.edit=Edit
+options.tasklist.tasktypes.up=Up
+options.tasklist.tasktypes.down=Down
+options.tasklist.tasktypes.remove=Remove
+options.tasklist.tasktypes.reset=Reset
+options.tasklist.tasktype.title=Task Type Properties
+options.tasklist.tasktype.name=Name:
+options.tasklist.tasktype.sample=Sample:
+options.tasklist.tasktype.pattern=Pattern:
+options.tasklist.tasktype.ignorecase=Ignore Case:
+options.tasklist.tasktype.usebuiltin=Use built-in icon:
+options.tasklist.tasktype.usecustom=Use custom icon:
+options.tasklist.tasktype.noicon=(None Selected)
+
+options.tasklist.modes.label=Modes
+options.tasklist.modes.code=new tasklist.options.TaskListModesOptionPane();
+options.tasklist.modes.parse.label=Parse Tasks for these Modes:
+
+# dockable window name
+tasklist.title=Task List
+tasklist.label=Task List
+
+# non-closeable tab names
+tasklist.current-file=Current File
+tasklist.open-files=Open Files
+tasklist.project-files=Project Files
+
+# tab popup labels
+tasklist.close=Close
+tasklist.close-all=Close All
+
+# popup menu items
+tasklist.popup.heading=Change task name
+tasklist.popup.change-menu=Change task tag
+tasklist.popup.delete-task=Delete task
+tasklist.popup.delete-task-tag=Delete task tag
+tasklist.popup.delete-entire-tag=Delete entire task
+tasklist.popup.parse-buffer=Parse buffer
+tasklist.popup.sortby=Sort by
+tasklist.popup.linenumber=Line number
+tasklist.popup.tasktype=Task type
+tasklist.popup.sortdirection=Sort direction
+tasklist.popup.ascending=Ascending
+tasklist.popup.descending=Descending
+tasklist.popup.to-buffer=TaskList results to buffer
+
+# error message string
+tasklist.popup.parse-error=Buffer has changed since last parse. Try again.
+
+# message when a task text can't be removed or changed
+tasklist.buffer-changed.title=Buffer Changed
+tasklist.buffer-changed.message=Task text and buffer text do not match.  \
+	Reparse buffer and try again.
+
+# messages for dialogs concerning resetting of task patterns
+tasklist.reset-query.title=Reset default TaskList patterns
+tasklist.reset-query.message=Do you wish to reset the TaskList parsing \
+	patterns to the default settings?
+tasklist.reset-complete.title=Reset default TaskList patterns
+tasklist.reset-complete.message=TaskList patterns reset to default values.
+
+tasklist.single-click-selection=false
+
+task.not-filled-out.title=Fields not filled out
+task.not-filled-out.message=You must fill out all fields in this dialog box
+
+task.regex-error.title=Regular Expression Error
+task.regex-error.message=Error compiling regular expression: \n\n{0}
+
+task.sample-doesnt-match.title=Pattern doesn't match sample
+task.sample-doesnt-match.message=Regular expression is valid, but doesn't \
+	match the sample text
+	
+# toolbar text and tooltips
+tasklist.toolbar.refresh=Refresh
+tasklist.toolbar.filter=Filter
+
+# by default modes are parsed, here are the default exclusions
+options.tasklist.parse.text=false
+options.tasklist.parse.hex=false
+
+# Initial default settings
+tasklist.highlight.color=#0000ff
+tasklist.table.horizontal-lines=true
+tasklist.table.vertical-lines=false
+tasklist.table.sort-column=1
+tasklist.table.sort-ascending=true
+tasklist.highlight.tasks=false
+
+# Plugin option pane dialog icons
+tasklist.icons=stock_about-16.png \
+	stock_attach-16.png \
+	stock_broken_image-16.png \
+	stock_convert-16.png \
+	stock_exec-16.png \
+	stock_help-16.png \
+	stock_jump-to-16.png \
+	stock_preferences-16.png \
+	stock_right-16.png \
+	stock_search-16.png \
+	stock_spellcheck-16.png \
+	stock_stop-16.png \
+	stock_delete-16.png \
+	Binocular.gif \
+	Debug.gif \
+	DeleteDocument.gif \
+	Document.gif \
+	Done.gif \
+	Exclamation.gif \
+	GreenFlag.gif \
+	Intranet.gif \
+	Magnify.gif \
+	New.gif \
+	Question.gif \
+	RedFlag.gif
+
+# messages for tree displays
+tasklist.loadingtasksfromfiles=Please wait, loading tasks from files...
+tasklist.currentbuffer=Current File:
+tasklist.openfiles.open-files=Open Files:
+tasklist.files.files=Files:
+tasklist.no-tasks-found=No tasks found.
+tasklist.projectfiles.project=Project:
+tasklist.projectfiles.noproject=No project is open.
+tasklist.projectfiles.stop=Stop
+tasklist.projectfiles.start=Start
+tasklist.toggleAll=Toggle All
+
+# Task List task types
+# ^(tasklist.tasktype.\d.\w+)=(.+)$ -> jEdit.setProperty("$1","$2");
+tasklist.tasktype.0.name=DEBUG
+tasklist.tasktype.0.iconpath=stock_preferences-16.png
+tasklist.tasktype.0.ignorecase=false
+tasklist.tasktype.0.pattern=\\s(DEBUG)[\:]?\\s+(.+?)$
+tasklist.tasktype.0.sample=\ DEBUG\: [comment text]
+
+tasklist.tasktype.1.name=DONE
+tasklist.tasktype.1.iconpath=stock_spellcheck-16.png
+tasklist.tasktype.1.ignorecase=false
+tasklist.tasktype.1.pattern=\\s(DONE)[\:]?\\s+(.+?)$
+tasklist.tasktype.1.sample=\ DONE\: [comment text]
+
+tasklist.tasktype.2.name=FIXME
+tasklist.tasktype.2.iconpath=stock_broken_image-16.png
+tasklist.tasktype.2.ignorecase=false
+tasklist.tasktype.2.pattern=\\s(FIXME)[\:]?\\s+(.+?)$
+tasklist.tasktype.2.sample=\ FIXME\: [comment text]
+
+tasklist.tasktype.3.name=IDEA
+tasklist.tasktype.3.iconpath=stock_about-16.png
+tasklist.tasktype.3.ignorecase=false
+tasklist.tasktype.3.pattern=\\s(IDEA)[\:]?\\s+(.+?)$
+tasklist.tasktype.3.sample=\ IDEA\: [comment text]
+
+tasklist.tasktype.4.name=NOTE
+tasklist.tasktype.4.iconpath=stock_attach-16.png
+tasklist.tasktype.4.ignorecase=false
+tasklist.tasktype.4.pattern=\\s(NOTE)[\:]?\\s+(.+?)$
+tasklist.tasktype.4.sample=\ NOTE\: [comment text]
+
+tasklist.tasktype.5.name=QUESTION
+tasklist.tasktype.5.iconpath=stock_help-16.png
+tasklist.tasktype.5.ignorecase=false
+tasklist.tasktype.5.pattern=\\s(QUESTION)[\:]?\\s+(.+?)$
+tasklist.tasktype.5.sample=\ QUESTION\: [comment text]
+
+tasklist.tasktype.6.name=TODO
+tasklist.tasktype.6.iconpath=stock_jump-to-16.png
+tasklist.tasktype.6.ignorecase=false
+tasklist.tasktype.6.pattern=\\s(TODO)[\:]?\\s+(.+?)$
+tasklist.tasktype.6.sample=\ TODO\: [comment text]
+
+# phpdoc todo
+tasklist.tasktype.7.name=@todo
+tasklist.tasktype.7.iconpath=stock_jump-to-16.png
+tasklist.tasktype.7.ignorecase=false
+tasklist.tasktype.7.pattern=\\s*(\\@todo)\\s+(.+)$
+tasklist.tasktype.7.sample=@todo\t Comment
+
+tasklist.tasktype.8.name=XXX
+tasklist.tasktype.8.iconpath=stock_right-16.png
+tasklist.tasktype.8.ignorecase=false
+tasklist.tasktype.8.pattern=\\s(XXX)[\:]?\\s+(.+?)$
+tasklist.tasktype.8.sample=\ XXX [comment text]
+
+tasklist.tasktype.9.iconpath=stock_search-16.png
+tasklist.tasktype.9.ignorecase=false
+tasklist.tasktype.9.name=???
+tasklist.tasktype.9.pattern=\\s([?]{3})[\:]?\\s+(.+?)$
+tasklist.tasktype.9.sample=\ ??? [comment text]
+
