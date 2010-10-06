@@ -33,12 +33,14 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
+import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.buffer.BufferAdapter;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.jedit.msg.BufferChanging;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.EditorExiting;
 import org.gjt.sp.jedit.msg.PluginUpdate;
@@ -244,14 +246,22 @@ public class SideKick
 			(bmsg.getView() != null || bmsg.getBuffer() != view.getBuffer()))
 			return;
 
-		if (bmsg.getWhat() == BufferUpdate.SAVED && isParseOnSave())
-			parse(true);
+		if (bmsg.getWhat() == BufferUpdate.SAVED && isParseOnSave()) 
+			setParser(buffer);
 		else if (bmsg.getWhat() == BufferUpdate.LOADED && isParseOnChange())
 			parse(true);
 		else if(bmsg.getWhat() == BufferUpdate.CLOSED)
 			setErrorSource(null);
 
 	} //}}}
+	
+	//{{{ handleBufferChange() method
+	@EBHandler
+	public void handleBufferChange(BufferChanging bmsg) {
+		buffer = bmsg.getBuffer();
+		buffer.setProperty(SideKickPlugin.PARSER_PROPERTY, null);
+	} //}}}
+	
 
 	//{{{ handleEditPaneUpdate() method
 	@EBHandler
@@ -484,7 +494,8 @@ public class SideKick
 			tree.addParserPanel(parser);
 		parse(true);
 	} //}}}
-
+	
+	
 	//{{{ Inner classes
 
 	//{{{ ParseRequest class
