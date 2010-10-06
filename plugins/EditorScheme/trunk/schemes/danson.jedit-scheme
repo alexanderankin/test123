@@ -3,7 +3,7 @@
 #jEdit Editor Scheme
 scheme.name=danson
 view.bgColor=\#ffffff
-view.caretColor=\#cccccc
+view.caretColor=\#000000
 view.eolMarkerColor=\#ff6633
 view.fgColor=\#000000
 view.gutter.bgColor=\#eeeeee
