@@ -284,27 +284,32 @@ public class SideKickActions
 		{
 			DefaultMutableTreeNode parent = (DefaultMutableTreeNode)
 				node.getParent();
-			for(int i = 0; i < parent.getChildCount(); i++)
-			{
-				if(node == parent.getChildAt(i))
+			if (parent != null) 
+			{				
+				for(int i = 0; i < parent.getChildCount(); i++)
 				{
-					if(i == 0)
+					if(node == parent.getChildAt(i))
 					{
-						if(parent.getUserObject() instanceof IAsset)
+						if(i == 0)
 						{
-							textArea.setCaretPosition(
-								((IAsset)parent.getUserObject())
-								.getStart().getOffset());
+							if(parent.getUserObject() instanceof IAsset)
+							{
+								textArea.setCaretPosition(
+									((IAsset)parent.getUserObject())
+									.getStart().getOffset());
+							}
 						}
+						else
+						{
+							Object child = ((DefaultMutableTreeNode)parent.getChildAt(i - 1)).getUserObject();
+							if (child instanceof IAsset) {
+								IAsset prevAsset = (IAsset)child;
+								if(prevAsset.getEnd() != null)
+									textArea.setCaretPosition(prevAsset.getEnd().getOffset());
+							}
+						}
+						return;
 					}
-					else
-					{
-						IAsset prevAsset = (IAsset)((DefaultMutableTreeNode)
-							parent.getChildAt(i - 1)).getUserObject();
-						if(prevAsset.getEnd() != null)
-							textArea.setCaretPosition(prevAsset.getEnd().getOffset());
-					}
-					return;
 				}
 			}
 		}
@@ -348,7 +353,10 @@ public class SideKickActions
 					{
 						IAsset nextAsset = (IAsset)((DefaultMutableTreeNode)
 							node.getChildAt(i + 1)).getUserObject();
-						textArea.setCaretPosition(nextAsset.getStart().getOffset());
+						int offset = nextAsset.getStart().getOffset() >= textArea.getBufferLength() ? 
+							textArea.getBufferLength() - 1 :
+							nextAsset.getStart().getOffset();
+						textArea.setCaretPosition(offset);
 						return;
 					}
 					else
@@ -357,7 +365,9 @@ public class SideKickActions
 			}
 		}
 
-		textArea.setCaretPosition(((IAsset)node.getUserObject()).getEnd().getOffset());
+		int offset = ((IAsset)node.getUserObject()).getEnd().getOffset();
+		offset = offset >= textArea.getBufferLength() ? textArea.getBufferLength() - 1 : offset;
+		textArea.setCaretPosition(offset);
 	} //}}}
 
 	//{{{ propertiesChanged() method
