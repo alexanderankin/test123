@@ -186,7 +186,10 @@ public class JavaParser extends SideKickParser implements EBComponent {
             if ( optionValues.getShowImports() == true ) {
                 List<ImportNode> imports = compilationUnit.getImportNodes();
                 if ( imports != null && !imports.isEmpty() ) {
-                    DefaultMutableTreeNode importsNode = new DefaultMutableTreeNode( "Imports" );
+                    TigerNode importsParent = new ImportNode("Imports");
+                    importsParent.setStart(ElementUtil.createStartPosition(buffer, imports.get(0)));
+                    importsParent.setEnd(ElementUtil.createEndPosition(buffer, imports.get(imports.size() - 1)));
+                    DefaultMutableTreeNode importsNode = new DefaultMutableTreeNode( importsParent );
                     root.add( importsNode );
                     expansionModel.inc();
                     for ( TigerNode anImport : imports ) {
