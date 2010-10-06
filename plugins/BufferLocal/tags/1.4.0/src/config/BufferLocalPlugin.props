@@ -1,0 +1,34 @@
+# $Id$
+#-----------------------------------
+# Properties for BufferLocal Plugin
+#-----------------------------------
+
+plugin.ise.plugin.bmp.BufferLocalPlugin.name=BufferLocal
+plugin.ise.plugin.bmp.BufferLocalPlugin.author=Dale Anson
+plugin.ise.plugin.bmp.BufferLocalPlugin.version=1.4.0
+plugin.ise.plugin.bmp.BufferLocalPlugin.activate=startup
+plugin.ise.plugin.bmp.BufferLocalPlugin.description=BufferLocal provides a way to save buffer settings on a per-buffer basis without modifying the file.
+
+# dependencies
+plugin.ise.plugin.bmp.BufferLocalPlugin.depend.0=jdk 1.5
+plugin.ise.plugin.bmp.BufferLocalPlugin.depend.1=jedit 04.03.99.00
+
+# docs
+plugin.ise.plugin.bmp.BufferLocalPlugin.docs=index.html
+
+# option pane settings
+plugin.ise.plugin.bmp.BufferLocalPlugin.option-pane=bufferlocal
+options.bufferlocal.label=BufferLocal
+options.bufferlocal.code=new ise.plugin.bmp.OptionPanel(ise.plugin.bmp.BufferLocalPlugin.NAME);
+
+# menu settings
+BufferLocal.menu.label=BufferLocal
+plugin.ise.plugin.bmp.BufferLocalPlugin.menu=bufferlocal.close
+bufferlocal.close.label=Close Stale Buffers
+
+# default property values
+bufferlocal.staleTime=30
+bufferlocal.removeStale=false
+
+
+
