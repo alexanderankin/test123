@@ -244,7 +244,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
         boolean complete_delay = jEdit.getBooleanProperty( "sidekick.complete-delay.toggle", true );
         boolean complete_on = complete_instant || complete_delay;
         if ( !complete_on && errorSource != null ) {
-            handleErrors( errorSource, parser, buffer );
+			handleErrors( errorSource, parser, buffer );
         }
 
         return parsedData;
@@ -258,7 +258,10 @@ public class JavaParser extends SideKickParser implements EBComponent {
         files that aren't actually java files.  Do parse buffers that have yet to be saved, they
         might be java or javacc files eventually.  Otherwise, require a ".java" extension on
         the file. */
-        if ( optionValues.getShowErrors() && ( ( buffer.getPath() == null || buffer.getPath().endsWith( ".java" ) ) || buffer.getMode().getName().equals( "javacc" ) ) ) {
+        if ( optionValues.getShowErrors() &&
+				(!buffer.isDirty() || !optionValues.getIgnoreDirtyBuffers()) && 
+				( ( buffer.getPath() == null || buffer.getPath().endsWith( ".java" ) ) || 
+				buffer.getMode().getName().equals( "javacc" ) ) ) {
             errorSource.clear();
             for ( Iterator it = parser.getErrors().iterator(); it.hasNext(); ) {
                 ErrorNode en = ( ErrorNode ) it.next();
