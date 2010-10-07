@@ -179,4 +179,8 @@ public class OptionValues {
     public boolean getShowErrors() {
         return jEdit.getBooleanProperty( "sidekick.java.showErrors", true );
     }
+
+	public boolean getIgnoreDirtyBuffers() {
+		return jEdit.getBooleanProperty( "sidekick.java.ignoreDirtyBuffers", true );
+	}
 }

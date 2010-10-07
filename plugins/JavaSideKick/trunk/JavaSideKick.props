@@ -151,6 +151,7 @@ options.sidekick.java.showIconsLikeEclipse=like Eclipse
 options.sidekick.java.showLineNums=Line Numbers
 options.sidekick.java.expandClasses=Expand inner classes
 options.sidekick.java.showErrors=Show parse errors in ErrorList
+options.sidekick.java.ignoreDirtyBuffers=Ignore dirty buffers
 options.sidekick.java.parseOnComplete=Parse buffer on code completion (may be slow on large files)
 options.sidekick.java.importPackage=Insert import statement on package completion
 
@@ -214,6 +215,7 @@ sidekick.java.showIconsLikeEclipse=false
 sidekick.java.showLineNums=false
 sidekick.java.sortBy=Name
 sidekick.java.showErrors=true
+sidekick.java.ignoreDirtyBuffers=true
 sidekick.java.parseOnComplete=true
 
 #display style
