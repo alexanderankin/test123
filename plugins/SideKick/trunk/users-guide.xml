@@ -25,6 +25,10 @@
         <firstname>Alan</firstname>
         <surname>Ezust</surname>
       </author>
+      <author>
+        <firstname>Shlomy</firstname>
+        <surname>Reinstein</surname>
+      </author>
     </authorgroup>
 
     <legalnotice>
@@ -409,9 +413,28 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
         <itemizedlist>
           <listitem>
             <para>
-         New macros / actions: search asset for selection and go to begin/end of function. </para>
+                New macros / actions: search asset for selection and go to begin/end of function. 
+            </para>
+          </listitem>
+          <listitem>
             <para>
-         Added a "macros/" dir where additional bsh macros can be placed. </para>
+                Added a "macros/" dir where additional bsh macros can be placed. 
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+                Fixes for 'go to next' and 'go to previous' asset, which also fixes Tracker 3008037.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+                Fix for Shift-Click on sidekick tree to select the entire asset. 
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+                Fix for Tracker 3081956, race condition during parse on save. 
+            </para>
           </listitem>
         </itemizedlist>
       </listitem>
