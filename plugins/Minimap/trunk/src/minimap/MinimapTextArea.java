@@ -80,6 +80,7 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		mml = new MapMouseMotionListener();
 		getPainter().setCursor(
 			Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		getPainter().setWrapGuidePainted(false);
 		lastFoldProp = Options.getFoldProp();
 		squarecolor = Options.getSquareColor();
 		fillsquare = Options.isSquareFilled();
