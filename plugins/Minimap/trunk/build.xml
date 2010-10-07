@@ -16,14 +16,11 @@
 	<property file="${user.home}/build.properties"/>
 	<property name="dist.target" value="build" />
 	<import file="${build.support}/plugin-build.xml" />
+    <property name="docs-proc.target"  value="none"/>
 
     <selector id="packageFiles">
     	<filename name="description.html" />
     </selector>
-
-	<path id="project.class.path">
-		<pathelement location="${jedit.install.dir}/jedit.jar"/>
-	</path>
 </project>
 
 <!-- :indentSize=4:lineSeparator=\n:noTabs=false:tabSize=4: -->
