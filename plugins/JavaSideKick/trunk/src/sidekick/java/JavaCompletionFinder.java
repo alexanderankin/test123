@@ -238,13 +238,13 @@ public class JavaCompletionFinder {
 
         if (lastChar == '(') {
             // Constructors
-            word = word.substring(0, word.length() - 1);
-            Class c = validateClassName(word);
+			String _word = word.substring(0, word.length() - 1);
+            Class c = validateClassName(_word);
             if (c == null) {
-                c = getClassForType(word, (CUNode) data.root.getUserObject() );
+                c = getClassForType(_word, (CUNode) data.root.getUserObject() );
             }
             if (c != null) {
-                return new JavaCompletion( editPane.getView(), word, JavaCompletion.CONSTRUCTOR,
+                return new JavaCompletion( editPane.getView(), _word, JavaCompletion.CONSTRUCTOR,
                         getConstructorsForClass(c) );
             }
         }
@@ -495,7 +495,7 @@ public class JavaCompletionFinder {
         if (c == null) {
         	// Might be inside a method call, like: while (tokenizer.<COMPLETION>
         	int paren = qualification.lastIndexOf("(");
-        	if (paren != -1) {
+        	if (paren != -1 && paren != qualification.length()-1 ) {
         		String halfWord = qualification.substring(paren+1).trim();
         		// Class?
                 c = validateClassName(halfWord);
@@ -520,12 +520,8 @@ public class JavaCompletionFinder {
             String filter = word.substring( word.lastIndexOf( '.' ) + 1 );
             if ( filter != null && filter.length() == 0 )
                 filter = null;
-            // If there is no filter and a parenthese, show constructors
-            if (filter == null && word.endsWith("(")) {
-                List constructors = getConstructorsForClass(c);
-                return new JavaCompletion( editPane.getView(), word, JavaCompletion.PARTIAL,
-                        constructors );
-            }
+			if (filter != null && filter.endsWith("("))
+				filter = filter.substring(0, filter.length()-1);
             List members = getMembersForClass( c, filter, static_only, true );
             if ( members != null && members.size() > 0 ) {
                 if ( members.size() == 1 && members.get( 0 ).equals( word ) ) {
