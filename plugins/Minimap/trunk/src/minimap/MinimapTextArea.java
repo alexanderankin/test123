@@ -332,7 +332,8 @@ public class MinimapTextArea extends JEditEmbeddedTextArea implements EBComponen
 		}
 
 		public void scrolledVertically(TextArea textArea) {
-			scrollToMakeTextAreaVisible();
+			if (textArea.getBuffer() == getBuffer())
+				scrollToMakeTextAreaVisible();
 		}
 	} //}}}
 
