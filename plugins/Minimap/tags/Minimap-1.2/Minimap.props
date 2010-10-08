@@ -1,0 +1,37 @@
+plugin.minimap.MinimapPlugin.name=Minimap
+plugin.minimap.MinimapPlugin.activate=startup
+plugin.minimap.MinimapPlugin.description=Show minimap for the text area
+plugin.minimap.MinimapPlugin.author=Shlomy Reinstein, Matthieu Casanova
+plugin.minimap.MinimapPlugin.version=1.2
+plugin.minimap.MinimapPlugin.docs=description.html
+plugin.minimap.MinimapPlugin.usePluginHome=true
+plugin.minimap.MinimapPlugin.depend.0=jdk 1.5
+plugin.minimap.MinimapPlugin.depend.1=jedit 04.03.99.00
+
+minimap-show.label=Show minimap of current edit pane
+minimap-hide.label=Hide minimap of current edit pane
+minimap-toggle.label=Toggle minimap of current edit pane
+minimap-show-all.label=Show minimaps of all edit panes
+minimap-hide-all.label=Hide minimaps of all edit panes
+
+# menu items
+plugin.minimap.MinimapPlugin.menu=minimap-show minimap-hide minimap-toggle \
+	- \
+	minimap-show-all minimap-hide-all
+
+# options
+plugin.minimap.MinimapPlugin.option-pane=minimap
+options.minimap.label=Minimap
+options.minimap.code=new minimap.Options();
+
+# labels
+labels.minimap.fontFamily=Minimap font family:
+labels.minimap.fontSize=Minimap font size:
+labels.minimap.auto=Automatically add a minimap to all edit panes
+labels.minimap.side=Show minimap on this side of the edit pane:
+labels.minimap.scroll=Allow independent scrolling of minimap
+labels.minimap.fold=Enable folding in minimap
+labels.minimap.time=Fold state update frequency (in milliseconds):
+labels.minimap.squarecolor=Square color label:
+labels.minimap.fillsquare=Fill the square:
+labels.minimap.alpha=Square transparency:
