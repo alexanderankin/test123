@@ -67,7 +67,6 @@ public class JavaCompletion extends SideKickCompletion {
 	}
 
     public void insert( int index ) {
-		System.out.println("Inserting");
         String to_replace = text;
         String to_insert = String.valueOf(get(index));
 

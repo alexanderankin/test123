@@ -360,7 +360,6 @@ public class JavaParser extends SideKickParser implements EBComponent {
         try {
             Pattern p = Pattern.compile( "(.*?)(\\d+)(.*?)(\\d+)(.*?)" );
             Matcher m = p.matcher( pe.getMessage() );
-			System.out.println("message: "+pe.getMessage());
             if ( m.matches() ) {
                 String ln = m.group( 2 );
                 String cn = m.group( 4 );
