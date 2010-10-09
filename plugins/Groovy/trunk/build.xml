@@ -25,7 +25,7 @@
 	<selector id="packageFiles">
 		<and>
 			<or>
-				<filename name="**/Groovy.html" />
+				<filename name="commands/*.xml" />
 			</or>
 		</and>
 	</selector>
