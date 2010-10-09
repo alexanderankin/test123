@@ -11,7 +11,7 @@
 			This plugin comes packaged with Groovy, a dynamic scripting language for the JVM.
 		</para>
 		<para>
-			Groovy version 1.7.4 is included.
+			Groovy version 1.7.5 is included.
 		</para>
 	</chapter>
 	<chapter id="console"><title>Using with Console</title>
