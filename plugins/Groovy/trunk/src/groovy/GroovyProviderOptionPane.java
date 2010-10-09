@@ -108,8 +108,8 @@ public class GroovyProviderOptionPane extends AbstractOptionPane {
 		}
 		public void actionPerformed(ActionEvent e) {
 			VFSFileChooserDialog dialog = new VFSFileChooserDialog(
-				jEdit.getActiveView(), System.getProperty("user.dir"),
-				VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false, true);
+				jEdit.getActiveView(), System.getProperty("user.dir")+File.separator,
+				VFSBrowser.OPEN_DIALOG, false, true);
 			String[] files = dialog.getSelectedFiles();
 			if (files != null) {
 				txt.setText(files[0]);
