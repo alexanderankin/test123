@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<book>
+	<bookinfo>
+		<title>Groovy</title>
+		<author>
+			<firstname>Damien</firstname><surname>Radtke</surname>
+		</author>
+	</bookinfo>
+	<chapter id="overview"><title>Overview</title>
+		<para>
+			This plugin comes packaged with Groovy, a dynamic scripting language for the JVM.
+		</para>
+		<para>
+			Groovy version 1.7.4 is included.
+		</para>
+	</chapter>
+	<chapter id="console"><title>Using with Console</title>
+		<para>
+			If the Console plugin is installed, this plugin automatically sets the
+			system environment variable GROOVY to the path of groovy.
+			So to run a script called 'script.groovy', cd to the file's directory (cd $d) and run:
+		</para>
+		<para><programlisting>
+			java -cp "$GROOVY" groovy.lang.GroovyShell script.groovy
+		</programlisting></para>
+		<para>
+			Alternatively, this plugin provides an enhanced groovy commando file and sets it
+			as the default interpreter for the groovy edit mode. To use it, open up a groovy file and
+			go to Plugins -&gt; Console -&gt; Run Current Buffer.
+		</para>
+	</chapter>
+</book>
