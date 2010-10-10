@@ -18,11 +18,12 @@ plugin.python.shell.PythonShellPlugin.depend.2=plugin procshell.ProcessShellPlug
 # }}} Dependencies
 
 # Menu {{{
-plugin.python.shell.PythonShellPlugin.menu=python-eval-selected python-eval-buffer \
+plugin.python.shell.PythonShellPlugin.menu=console.shell.Python-show  python-eval-selected python-eval-buffer \
 	python-eval-file
 python-eval-selected.label=Evaluate Selection in Python shell
 python-eval-buffer.label=Evaluate Buffer in Python shell
 python-eval-file.label=Evaluate file in Python shell ...
+console.shell.Python-show.label=Show Python Shell
 # }}} Menu
 
 # Messages {{{
