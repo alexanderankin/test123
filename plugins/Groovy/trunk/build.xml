@@ -27,7 +27,6 @@
 	<path id="project.class.path">
 		<pathelement path="lib/groovy-all-1.7.4.jar" />
 		<pathelement path="${jedit.plugins.dir}/Console.jar" />
-		<pathelement path="${jedit.plugins.dir}/Javadoc.jar" />
 	</path>
 	
 </project>
