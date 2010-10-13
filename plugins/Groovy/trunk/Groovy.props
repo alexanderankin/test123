@@ -12,7 +12,7 @@ plugin.groovy.GroovyPlugin.jars=groovy-all-1.7.5.jar
 # }}} Basic Plugin Information
 
 # Dependencies {{{
-plugin.groovy.GroovyPlugin.depend.0=jedit 04.03.18.00
+plugin.groovy.GroovyPlugin.depend.0=jedit 04.03.99.00
 plugin.groovy.GroovyPlugin.depend.1=jdk 1.5
 # }}} Dependencies
 
