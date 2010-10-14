@@ -661,69 +661,19 @@ MORE :
 |   <STRING_3: "`"  ( ~["`","\\"]  | "\\" ~[] )* "`">
 }
 
-<HEREDOC> SKIP :
-{
-	<("\\" ~[])>
-|
-	<~[]>
-}
-
-<HEREDOC,IN_STRING,DOLLAR_IN_STRING,SKIPSTRING> SKIP :
-{
-	<ESCAPED: ("\\" ~[])> : IN_STRING
-}
-
 <PHPPARSING> TOKEN :
 {
 	<DOUBLEQUOTE: "\""> : IN_STRING
 }
 
-<IN_STRING,SKIPSTRING> TOKEN :
+<IN_STRING> TOKEN :
 {
-	<DOLLARBRACE: "${"> : DOLLAR_IN_STRING
-}
-
-<IN_STRING,SKIPSTRING> TOKEN :
-{
+	<DOLLARBRACE: "${">
+|
 	<DOLLARS: "$">
-}
-
-<IN_STRING,DOLLAR_IN_STRING,SKIPSTRING> TOKEN :
-{
+|
 	<DOUBLEQUOTE2: "\""> : PHPPARSING
 }
-
-<DOLLAR_IN_STRING> TOKEN:
-{
-	<RBRACE1: "}"> : IN_STRING
-}
-
-<IN_STRING> SPECIAL_TOKEN :
-{
-    <"{"> : SKIPSTRING
-}
-
-<SKIPSTRING> SPECIAL_TOKEN :
-{
-    <"}"> : IN_STRING
-}
-
-<SKIPSTRING> SKIP :
-{
-    <~[]>
-}
-
-
-<IN_STRING> SKIP :
-{
-  <~[]>
-}
-
-<IN_STRING> SKIP :
-{
-  <~[]>
-}
-
 
 <PHPPARSING> TOKEN :
 {
@@ -736,7 +686,7 @@ MORE :
 	<DOLLAR: "$"> : IN_VARIABLE
 }
 
-<HEREDOC, PHPPARSING, IN_VARIABLE,DOLLAR_IN_STRING, IN_STRING> TOKEN :
+<HEREDOC, PHPPARSING, IN_VARIABLE, IN_STRING> TOKEN :
 {
   <IDENTIFIER: ((<LETTER>|<SPECIAL>) (<LETTER>|<DIGIT>|<SPECIAL>)*)>
 |
@@ -753,10 +703,13 @@ MORE :
   >
 }
 
-<DOLLAR_IN_STRING> SPECIAL_TOKEN :
+<HEREDOC,IN_STRING> SKIP :
 {
- < ~[] > : IN_STRING
-} //}}}
+	<("\\" ~[])>
+|
+	<~[]>
+}
+//}}}
 
 
 //{{{ SEPARATORS
@@ -4393,9 +4346,6 @@ StringLiteral evaluableString():
 }
 {
 	start = <DOUBLEQUOTE>
-	{
-		int previousState = token_source.curLexState;
-	}
 	(
 		identifier = <IDENTIFIER>
 		{
@@ -4407,10 +4357,9 @@ StringLiteral evaluableString():
 			}	
 		}
 	|
-		expr = dollarBraceInString()
+		<DOLLARBRACE>
 		{
-			hasDollar = false;
-			list.add(expr);
+			hasDollar = true;
 		}
 	|
 		<DOLLARS>
@@ -4437,58 +4386,6 @@ StringLiteral evaluableString():
 						 end.endColumn,
 						 expressions);
 		} //}}}
-} //}}}
-
-//{{{ dollarBraceInString() method
-Expression dollarBraceInString():
-{
-	Expression expr;
-}
-{
-	<DOLLARBRACE>
-	expr = expressionInString()
-	try
-	{
-		<RBRACE1>
-	}
-	catch (ParseException e)
-	{
-		// ignore in a string
-	}
-	{
-		return expr;
-	}
-} //}}}
-
-//{{{ expressionInString() method
-Expression expressionInString():
-{
-	Expression expr = null;
-}
-{
-	try
-	{
-		expr = Expression()
-		{
-			if (expr instanceof ConstantIdentifier)
-			{
-				expr = new Variable(expr.toString(),
-					expr.getSourceStart(),
-					expr.getSourceEnd(),
-					expr.getBeginLine(),
-					expr.getEndLine(),
-					expr.getBeginColumn(),
-					expr.getEndColumn());
-			}
-		}
-	}
-	catch (ParseException e)
-	{
-		// ignore in a string
-	}
-	{
-		return expr;
-	}
 } //}}}
 
 //}}}
@@ -4907,15 +4804,60 @@ Statement expressionStatement():
 } //}}}
 
 //{{{ constantStatement()
-Const constantStatement():
+List<Const> constantStatement():
 {
 	Token constToken;
 	Token identifierToken;
 	Expression identifier;
 	Expression value = null;
+	List<Const> constList = new ArrayList<Const>();
+	Const constant;
 }
 {
 	constToken = <CONST>
+	constant = _const()
+	{
+		constList.add(constant);
+	}
+	(
+		<COMMA>
+		try
+		{
+			constant = _const()
+			{
+				constList.add(constant);
+			}
+		}
+		catch (ParseException e)
+		{
+			fireParseError("const expected", "const", e.currentToken);
+		}
+		
+	)*
+	try
+	{
+		<SEMICOLON>
+	}
+	catch (ParseException e)
+	{
+		error_skipto(SEMICOLON);
+		fireParseError("; expected", ";", e.currentToken);
+	}
+	{
+		return constList;
+	}
+	
+} //}}}
+
+//{{{ _const()
+Const _const():
+{
+	Token identifierToken;
+	Expression identifier;
+	Expression value = null;
+}
+{
+	//{{{ IDENTIFIER
 	try
 	{
 		identifierToken = <IDENTIFIER>
@@ -4931,7 +4873,8 @@ Const constantStatement():
 					       e.currentToken.endLine,
 					       e.currentToken.endColumn,
 					       e.currentToken.endColumn+1);
-	}
+	} //}}}
+	//{{{ ASSIGN
 	try
 	{
 		<ASSIGN>
@@ -4940,7 +4883,8 @@ Const constantStatement():
 	{
 		error_skipto(ASSIGN);
 		fireParseError("= expected", "=", e.currentToken);
-	}
+	} //}}}
+	//{{{ Literal()
 	try
 	{
 		value  = Literal()
@@ -4954,29 +4898,20 @@ Const constantStatement():
 					       e.currentToken.endLine,
 					       e.currentToken.endColumn,
 					       e.currentToken.endColumn+1);
-	}
-	try
-	{
-		<SEMICOLON>
-	}
-	catch (ParseException e)
-	{
-		error_skipto(SEMICOLON);
-		fireParseError("; expected", ";", e.currentToken);
-	}
+	} //}}}
 	{
 		return new Const(currentSegment,
 				  identifier,
 				  value,
-				  constToken.sourceStart,
+				  identifier.getSourceStart(),
 				  value.getSourceEnd(),
-				  constToken.beginLine,
+				  identifier.getBeginLine(),
 				  value.getEndLine(),
-				  constToken.beginColumn,
+				  identifier.getBeginColumn(),
 				  value.getEndColumn());
 	}
-	
 } //}}}
+
 
 //{{{ defineStatement()
 Define defineStatement():
