@@ -13,12 +13,6 @@
 
 	
 	<import file="${build.support}/plugin-build.xml" />
-
-	<path id="project.class.path">
-		<pathelement location="${jedit.install.dir}/jedit.jar" />
-		<pathelement location="${jedit.plugins.dir}/ErrorList.jar"/>
-		<pathelement location="${jedit.plugins.dir}/SideKick.jar"/>
-	</path>
 	    <selector id="extraFiles">
         <and>
             <or>

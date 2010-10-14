@@ -221,93 +221,89 @@ public interface PHPParserConstants {
   /** RegularExpression Id. */
   int STRING_3 = 125;
   /** RegularExpression Id. */
-  int ESCAPED = 128;
+  int DOUBLEQUOTE = 126;
   /** RegularExpression Id. */
-  int DOUBLEQUOTE = 129;
+  int DOLLARBRACE = 127;
   /** RegularExpression Id. */
-  int DOLLARBRACE = 130;
+  int DOLLARS = 128;
   /** RegularExpression Id. */
-  int DOLLARS = 131;
+  int DOUBLEQUOTE2 = 129;
   /** RegularExpression Id. */
-  int DOUBLEQUOTE2 = 132;
+  int HEREDOCSTARTTOKEN = 130;
   /** RegularExpression Id. */
-  int RBRACE1 = 133;
+  int DOLLAR = 131;
   /** RegularExpression Id. */
-  int HEREDOCSTARTTOKEN = 139;
+  int IDENTIFIER = 132;
   /** RegularExpression Id. */
-  int DOLLAR = 140;
+  int LETTER = 133;
   /** RegularExpression Id. */
-  int IDENTIFIER = 141;
+  int DIGIT = 134;
   /** RegularExpression Id. */
-  int LETTER = 142;
+  int SPECIAL = 135;
   /** RegularExpression Id. */
-  int DIGIT = 143;
+  int LPAREN = 138;
   /** RegularExpression Id. */
-  int SPECIAL = 144;
+  int RPAREN = 139;
   /** RegularExpression Id. */
-  int LPAREN = 146;
+  int RBRACE = 140;
   /** RegularExpression Id. */
-  int RPAREN = 147;
+  int LBRACKET = 141;
   /** RegularExpression Id. */
-  int RBRACE = 148;
+  int RBRACKET = 142;
   /** RegularExpression Id. */
-  int LBRACKET = 149;
+  int SEMICOLON = 143;
   /** RegularExpression Id. */
-  int RBRACKET = 150;
+  int COMMA = 144;
   /** RegularExpression Id. */
-  int SEMICOLON = 151;
+  int DOT = 145;
   /** RegularExpression Id. */
-  int COMMA = 152;
+  int LBRACE = 146;
   /** RegularExpression Id. */
-  int DOT = 153;
+  int GT = 147;
   /** RegularExpression Id. */
-  int LBRACE = 154;
+  int LT = 148;
   /** RegularExpression Id. */
-  int GT = 155;
+  int EQUAL_EQUAL = 149;
   /** RegularExpression Id. */
-  int LT = 156;
+  int LE = 150;
   /** RegularExpression Id. */
-  int EQUAL_EQUAL = 157;
+  int GE = 151;
   /** RegularExpression Id. */
-  int LE = 158;
+  int NOT_EQUAL = 152;
   /** RegularExpression Id. */
-  int GE = 159;
+  int DIF = 153;
   /** RegularExpression Id. */
-  int NOT_EQUAL = 160;
+  int BANGDOUBLEEQUAL = 154;
   /** RegularExpression Id. */
-  int DIF = 161;
+  int TRIPLEEQUAL = 155;
   /** RegularExpression Id. */
-  int BANGDOUBLEEQUAL = 162;
+  int ASSIGN = 156;
   /** RegularExpression Id. */
-  int TRIPLEEQUAL = 163;
+  int PLUSASSIGN = 157;
   /** RegularExpression Id. */
-  int ASSIGN = 164;
+  int MINUSASSIGN = 158;
   /** RegularExpression Id. */
-  int PLUSASSIGN = 165;
+  int STARASSIGN = 159;
   /** RegularExpression Id. */
-  int MINUSASSIGN = 166;
+  int SLASHASSIGN = 160;
   /** RegularExpression Id. */
-  int STARASSIGN = 167;
+  int ANDASSIGN = 161;
   /** RegularExpression Id. */
-  int SLASHASSIGN = 168;
+  int ORASSIGN = 162;
   /** RegularExpression Id. */
-  int ANDASSIGN = 169;
+  int XORASSIGN = 163;
   /** RegularExpression Id. */
-  int ORASSIGN = 170;
+  int DOTASSIGN = 164;
   /** RegularExpression Id. */
-  int XORASSIGN = 171;
+  int REMASSIGN = 165;
   /** RegularExpression Id. */
-  int DOTASSIGN = 172;
+  int TILDEEQUAL = 166;
   /** RegularExpression Id. */
-  int REMASSIGN = 173;
+  int LSHIFTASSIGN = 167;
   /** RegularExpression Id. */
-  int TILDEEQUAL = 174;
+  int RSIGNEDSHIFTASSIGN = 168;
   /** RegularExpression Id. */
-  int LSHIFTASSIGN = 175;
-  /** RegularExpression Id. */
-  int RSIGNEDSHIFTASSIGN = 176;
-  /** RegularExpression Id. */
-  int NAMESPACE_NAME = 177;
+  int NAMESPACE_NAME = 169;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -324,13 +320,9 @@ public interface PHPParserConstants {
   /** Lexical state. */
   int IN_MULTI_LINE_COMMENT = 6;
   /** Lexical state. */
-  int HEREDOC = 7;
+  int IN_STRING = 7;
   /** Lexical state. */
-  int IN_STRING = 8;
-  /** Lexical state. */
-  int DOLLAR_IN_STRING = 9;
-  /** Lexical state. */
-  int SKIPSTRING = 10;
+  int HEREDOC = 8;
 
   /** Literal token values. */
   String[] tokenImage = {
@@ -460,26 +452,18 @@ public interface PHPParserConstants {
     "<STRING_LITERAL>",
     "<STRING_2>",
     "<STRING_3>",
-    "<token of kind 126>",
-    "<token of kind 127>",
-    "<ESCAPED>",
     "\"\\\"\"",
     "\"${\"",
     "\"$\"",
     "\"\\\"\"",
-    "\"}\"",
-    "\"{\"",
-    "\"}\"",
-    "<token of kind 136>",
-    "<token of kind 137>",
-    "<token of kind 138>",
     "\"<<<\"",
     "\"$\"",
     "<IDENTIFIER>",
     "<LETTER>",
     "<DIGIT>",
     "<SPECIAL>",
-    "<token of kind 145>",
+    "<token of kind 136>",
+    "<token of kind 137>",
     "\"(\"",
     "\")\"",
     "\"}\"",
