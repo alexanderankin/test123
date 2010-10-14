@@ -648,17 +648,12 @@ public class NavigatorPlugin extends EBPlugin {
 
         else if ( message instanceof AutoJump ) {
         	AutoJump aj = ( AutoJump ) message;
-        	if ( aj.getWhat().equals( AutoJump.STARTED ) ) {
-        		autoJump = true;
-        	}
-        	else {
-        		autoJump = false;
-                Navigator n = getNavigator( aj.getView() );
-                if ( n != null ) {
-                    n.addToHistory();
-                }
-        	}
-        		
+        	// Add both sides of the jump (source and destination) to the history 
+            Navigator n = getNavigator( aj.getView() );
+            if ( n != null ) {
+                n.addToHistory();
+            }
+        	autoJump = aj.getWhat().equals( AutoJump.STARTED );
         }
     }
     
