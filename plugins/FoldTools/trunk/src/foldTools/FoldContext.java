@@ -65,17 +65,18 @@ public class FoldContext
 	private ArrayList<LineContext> getContext(int line)
 	{
 		ArrayList<LineContext> localContext = new ArrayList<LineContext>();
-		if (line > 0)
-			localContext.add(getLine(line - 1));
-		if (! printed.contains(line))
+		int before = OptionPane.getLinesBefore();
+		int after = OptionPane.getLinesAfter();
+		for (int i = -before; i <= after + 1; i++)
 		{
-			localContext.add(getLine(line));
-			if (! (printed.contains(line + 1) || (line >= buffer.getLineCount() - 1)))
-			{
-				localContext.add(getLine(line + 1));
-				if (! (printed.contains(line + 2) || (line >= buffer.getLineCount() - 2)))
-					localContext.add(new LineContext(line + 2, "\t..."));
-			}
+			int l = line + i;
+			if (printed.contains(l) || (l < 0) || (l > buffer.getLineCount() - 1))
+				return localContext;
+			if (i <= after)
+				localContext.add(getLine(l));
+			else
+				localContext.add(new LineContext(line + 2, "..."));
+				
 		}
 		return localContext;
 	}
