@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE SERVICES SYSTEM "services.dtd">
+
+<SERVICES>
+	<SERVICE CLASS="org.gjt.sp.jedit.buffer.FoldHandler" NAME="comment">
+		new foldTools.CommentFoldHandler();
+	</SERVICE>
+</SERVICES>
