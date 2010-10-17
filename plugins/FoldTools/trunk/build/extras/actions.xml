@@ -1,0 +1,10 @@
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="show-fold-context" NO_REPEAT="TRUE">
+		<CODE>
+			foldTools.Plugin.showFoldContext(view);
+		</CODE>
+	</ACTION>
+</ACTIONS>
+
