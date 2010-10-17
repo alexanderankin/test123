@@ -100,10 +100,4 @@ public class FoldContext
 		return sb.toString();
 	}
 
-	public String toLabelString()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }
