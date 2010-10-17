@@ -57,6 +57,13 @@ public class FoldContext
 		}
 	}
 
+	public LineContext getLineContext(int index)
+	{
+		if (index < 0 || index >= lines.size())
+			return null;
+		return lines.get(index);
+	}
+
 	private LineContext getLine(int line)
 	{
 		printed.add(line);
