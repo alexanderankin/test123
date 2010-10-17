@@ -9,14 +9,19 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTextPane;
 import javax.swing.Timer;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 import foldTools.FoldContext.LineContext;
@@ -24,6 +29,7 @@ import foldTools.FoldContext.LineContext;
 @SuppressWarnings("serial")
 public class FoldContextDockable extends JPanel
 {
+	private static final String MESSAGE = "messages.foldTools.";
 	private View view;
 	private JTextPane textPane;
 	private FoldContext context;
@@ -32,6 +38,7 @@ public class FoldContextDockable extends JPanel
 	private CaretListener caretListener;
 	private Timer followCaretTimer;
 	private ActionListener updateContext;
+	private JSpinner before, after;
 
 	public FoldContextDockable(View view)
 	{
@@ -57,7 +64,13 @@ public class FoldContextDockable extends JPanel
 		add(new JScrollPane(textPane), BorderLayout.CENTER);
 		JPanel p = new JPanel();
 		add(p, BorderLayout.NORTH);
-		update = new JButton("Update");
+		p.add(new JLabel(getMessage("linesBeforeShort")));
+		before = OptionPane.getContextLinesUi(OptionPane.getLinesBefore());
+		p.add(before);
+		p.add(new JLabel(getMessage("linesAfterShort")));
+		after = OptionPane.getContextLinesUi(OptionPane.getLinesAfter());
+		p.add(after);
+		update = new JButton(getMessage("updateButton"));
 		p.add(update);
 		update.addActionListener(new ActionListener()
 		{
@@ -66,7 +79,7 @@ public class FoldContextDockable extends JPanel
 				setContext(true);
 			}
 		});
-		followCaret = new JCheckBox("Follow caret", false);
+		followCaret = new JCheckBox(getMessage("followCaretCheckBox"), false);
 		p.add(followCaret);
 		followCaret.addActionListener(new ActionListener()
 		{
@@ -85,6 +98,19 @@ public class FoldContextDockable extends JPanel
 		};
 		followCaretTimer = new Timer(0, updateContext);	// will be configured later
 		followCaretTimer.setRepeats(false);
+		ChangeListener cl = new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				OptionPane.setLinesBefore(before);
+				OptionPane.setLinesAfter(after);
+				followCaretTimer.start();
+			}
+		}; 
+		before.addChangeListener(cl);
+		after.addChangeListener(cl);
+	}
+	private String getMessage(String name)
+	{
+		return jEdit.getProperty(MESSAGE + name);
 	}
 	public void setContext(boolean update)
 	{

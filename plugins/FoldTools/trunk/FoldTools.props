@@ -27,6 +27,10 @@ options.foldTools.code=new foldTools.OptionPane();
 messages.foldTools.linesBefore=Number of lines preceding fold start:
 messages.foldTools.linesAfter=Number of lines following fold start:
 messages.foldTools.followCaretDelay=When following caret, wait (milliseconds) after caret is moved:
+messages.foldTools.linesBeforeShort=Preceding lines:
+messages.foldTools.linesAfterShort=Following lines:
+messages.foldTools.updateButton=Update
+messages.foldTools.followCaretCheckBox=Follow caret
 
 # docs
 plugin.foldTools.Plugin.docs=index.html
