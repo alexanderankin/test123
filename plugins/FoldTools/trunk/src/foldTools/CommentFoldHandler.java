@@ -45,8 +45,9 @@ public class CommentFoldHandler extends FoldHandler
 	@Override
 	public int getFoldLevel(JEditBuffer buffer, int lineIndex, Segment seg)
 	{
-		// If this is not a comment line, return 0 (not a comment)
-		if ((lineIndex == 0) || (! isCommentLine(buffer, lineIndex)))
+		// If this is the first line, or not the first of a multi-line comment, return 0
+		if ((lineIndex == 0) || (! isCommentLine(buffer, lineIndex)) ||
+			(! isCommentLine(buffer, lineIndex - 1)))
 			return 0;
 		return 1;
 	}
