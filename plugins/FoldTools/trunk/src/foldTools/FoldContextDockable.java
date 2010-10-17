@@ -8,9 +8,13 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
+import javax.swing.Timer;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
 
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
@@ -24,6 +28,10 @@ public class FoldContextDockable extends JPanel
 	private JTextPane textPane;
 	private FoldContext context;
 	private JButton update;
+	private JCheckBox followCaret;
+	private CaretListener caretListener;
+	private Timer followCaretTimer;
+	private ActionListener updateContext;
 
 	public FoldContextDockable(View view)
 	{
@@ -58,7 +66,25 @@ public class FoldContextDockable extends JPanel
 				setContext(true);
 			}
 		});
+		followCaret = new JCheckBox("Follow caret", false);
+		p.add(followCaret);
+		followCaret.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				followCaretChanged();
+			}
+		});
 		setContext(false);
+		updateContext = new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				setContext(true);
+			}
+		};
+		followCaretTimer = new Timer(0, updateContext);	// will be configured later
+		followCaretTimer.setRepeats(false);
 	}
 	public void setContext(boolean update)
 	{
@@ -71,5 +97,31 @@ public class FoldContextDockable extends JPanel
 		JEditTextArea ta = view.getTextArea();
 		if (line >= 0 && line < ta.getLineCount())
 			ta.setCaretPosition(ta.getLineStartOffset(line));
+	}
+	private void followCaretChanged()
+	{
+		if (followCaret.isSelected() == (caretListener != null))
+			return;
+		JEditTextArea ta = view.getTextArea();
+		if (followCaret.isSelected())
+		{
+			if (OptionPane.getFollowCaretDelay() > 0)
+				updateContext.actionPerformed(null);
+			caretListener = new CaretListener()
+			{
+				public void caretUpdate(CaretEvent e)
+				{
+					int delay = OptionPane.getFollowCaretDelay();
+					followCaretTimer.setInitialDelay(delay);
+					followCaretTimer.restart();
+				}
+			};
+			ta.addCaretListener(caretListener);
+		}
+		else
+		{
+			ta.removeCaretListener(caretListener);
+			caretListener = null;
+		}
 	}
 }

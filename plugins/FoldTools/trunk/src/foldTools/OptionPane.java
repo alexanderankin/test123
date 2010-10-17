@@ -12,7 +12,7 @@ public class OptionPane extends AbstractOptionPane
 {
 	private static final String MESSAGE = "messages.foldTools.";
 	private static final String PROP = "props.foldTools.";
-	private JSpinner before, after;
+	private JSpinner before, after, delay;
 	
 	public OptionPane()
 	{
@@ -23,6 +23,8 @@ public class OptionPane extends AbstractOptionPane
 		addComponent(jEdit.getProperty(MESSAGE + "linesBefore"), before);
 		after = new JSpinner(new SpinnerNumberModel(getLinesAfter(), 0, 10, 1));
 		addComponent(jEdit.getProperty(MESSAGE + "linesAfter"), after);
+		delay = new JSpinner(new SpinnerNumberModel(getFollowCaretDelay(), 0, 5000, 50));
+		addComponent(jEdit.getProperty(MESSAGE + "followCaretDelay"), delay);
 	}
 	@Override
 	public void _save() {
@@ -30,6 +32,8 @@ public class OptionPane extends AbstractOptionPane
 			(Integer)before.getValue()));
 		jEdit.setIntegerProperty(PROP + "linesAfter", Integer.valueOf(
 			(Integer)after.getValue()));
+		jEdit.setIntegerProperty(PROP + "followCaretDelay", Integer.valueOf(
+				(Integer)delay.getValue()));
 	}
 	public static int getLinesBefore()
 	{
@@ -38,5 +42,9 @@ public class OptionPane extends AbstractOptionPane
 	public static int getLinesAfter()
 	{
 		return jEdit.getIntegerProperty(PROP + "linesAfter", 1);
+	}
+	public static int getFollowCaretDelay()
+	{
+		return jEdit.getIntegerProperty(PROP + "followCaretDelay", 500);
 	}
 }
