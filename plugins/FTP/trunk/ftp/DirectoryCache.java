@@ -35,6 +35,7 @@ import java.util.Hashtable;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSFile;
+import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
 
 public class DirectoryCache
@@ -53,37 +54,18 @@ public class DirectoryCache
 		synchronized(lock)
 		{
 			String path = (String)urlToCacheFileHash.get(url);
-			if(path != null)
-			{
-				ObjectInputStream in = null;
-				try
-				{
-					in = new ObjectInputStream(
-						new BufferedInputStream(
-						new FileInputStream(path)));
-					return (VFSFile[])in.readObject();
-				}
-				catch(Exception e)
-				{
-					Log.log(Log.ERROR,DirectoryCache.class,e);
-					return null;
-				}
-				finally
-				{
-					if(in != null)
-					{
-						try
-						{
-							in.close();
-						}
-						catch(Exception e)
-						{
-						}
-					}
-				}
-			}
-			else
+			if(path == null)
 				return null;
+			ObjectInputStream in = null;
+			try {
+				in = new ObjectInputStream(new BufferedInputStream(new FileInputStream(path)));
+				return (VFSFile[]) in.readObject();
+			} catch (Exception e) {
+				Log.log(Log.ERROR, DirectoryCache.class, e);
+				return null;
+			} finally {
+				IOUtilities.closeQuietly(in);
+			}
 		}
 	} //}}}
 
@@ -106,19 +88,15 @@ public class DirectoryCache
 			// filename generation algorithm is really simple...
 			tmpFileCount++;
 			long time = System.currentTimeMillis();
-			String path = MiscUtilities.constructPath(cacheDirectory,
-				"cache-" + tmpFileCount + "-" + time + ".tmp");
+			String path = MiscUtilities.constructPath(cacheDirectory, "cache-" + tmpFileCount + "-" + time + ".tmp");
 
 			ObjectOutputStream out = null;
 			try
 			{
-				out = new ObjectOutputStream(
-					new BufferedOutputStream(
-					new FileOutputStream(path)));
+				out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(path)));
 				out.writeObject(directory);
 
-				Log.log(Log.DEBUG,DirectoryCache.class,"Cached "
-					+ url + " to " + path);
+				Log.log(Log.DEBUG,DirectoryCache.class, "Cached "+ url + " to " + path);
 
 				urlToCacheFileHash.put(url,path);
 			}
@@ -128,16 +106,7 @@ public class DirectoryCache
 			}
 			finally
 			{
-				if(out != null)
-				{
-					try
-					{
-						out.close();
-					}
-					catch(Exception e)
-					{
-					}
-				}
+				IOUtilities.closeQuietly(out);
 			}
 		}
 	} //}}}

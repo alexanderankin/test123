@@ -119,7 +119,7 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 		pack();
 		setLocationRelativeTo(comp);
 		setModal(true);
-		setVisible(true);
+		
 	} //}}}
 	
 	//{{{ ok() method
@@ -328,7 +328,7 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 		String user = userField.getText();
 		if(host.indexOf(":") == -1)
 				host = host + ":" + FtpVFS.getDefaultPort(secure);
-		String key = ConnectionManager.getStoredFtpKey(host, user);
+		String key = secure ? ConnectionManager.getStoredFtpKey(host, user) : null;
 		String pass = ConnectionManager.getPassword(host+"."+user);
 		if (secure)
 		{
