@@ -6,4 +6,10 @@
 	<SERVICE CLASS="org.gjt.sp.jedit.buffer.FoldHandler" NAME="comment">
 		new foldTools.CommentFoldHandler();
 	</SERVICE>
+	<SERVICE CLASS="org.gjt.sp.jedit.buffer.FoldHandler" NAME="composite">
+		ArrayList handlers = new ArrayList();
+		handlers.add(FoldHandler.getFoldHandler("custom"));
+		handlers.add(FoldHandler.getFoldHandler("comment"));
+		new foldTools.CompositeFoldHandler(handlers);
+	</SERVICE>
 </SERVICES>

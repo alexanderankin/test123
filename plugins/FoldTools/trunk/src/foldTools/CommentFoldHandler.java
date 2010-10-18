@@ -27,6 +27,7 @@ public class CommentFoldHandler extends FoldHandler
 			int next = start + token.length;
 			switch (token.id)
 			{
+			case Token.NULL:
 			case Token.COMMENT1:
 			case Token.COMMENT2:
 			case Token.COMMENT3:
