@@ -1,6 +1,7 @@
 package foldTools;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import javax.swing.text.Segment;
 
@@ -10,11 +11,18 @@ import org.gjt.sp.jedit.buffer.JEditBuffer;
 public class CompositeFoldHandler extends FoldHandler {
 
 	private ArrayList<FoldHandler> handlers;
+	private HashSet<FoldHandler> fixedHandlers;
 
 	public CompositeFoldHandler(ArrayList<FoldHandler> handlers)
 	{
 		super(createName(handlers));
 		this.handlers = handlers;
+		fixedHandlers = new HashSet<FoldHandler>();
+		for (FoldHandler h: handlers)
+		{
+			if (isFixedLevelHandler(h))
+				fixedHandlers.add(h);
+		}
 	}
 	private static String createName(ArrayList<FoldHandler> handlers) {
 		StringBuilder sb = new StringBuilder("composite(");
@@ -41,7 +49,7 @@ public class CompositeFoldHandler extends FoldHandler {
 		{
 			level += h.getFoldLevel(buffer, lineIndex, seg);
 			int hprev;
-			if (isFixedLevelHandler(h))
+			if (fixedHandlers.contains(h))
 				hprev = ((lineIndex > 0) ? h.getFoldLevel(buffer, lineIndex - 1, seg) : 0);
 			else
 				hprev = prev;
