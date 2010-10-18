@@ -62,6 +62,10 @@ public abstract class Connection
 	abstract String resolveSymlink(String path, String[] name) throws IOException;
 	
 	abstract void logout() throws IOException;
+	
+	public void logoutQuietly() {
+		try { logout(); } catch (IOException e) { }
+	}
 
 	public boolean inUse() {
 		return inUse;

@@ -25,24 +25,20 @@ package ftp;
 //{{{ Imports
 import java.awt.Component;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.CharBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetEncoder;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
+import org.gjt.sp.jedit.io.LocalFileSaveTask;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSManager;
-import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.ThreadUtilities;
 
 /**
 * FTP VFS.
@@ -453,23 +449,18 @@ public class FtpVFS extends VFS
 		//Log.log(Log.DEBUG, "TEST", buffer.getStringProperty(FtpVFS.MD5SUM_PROPERTY));
 	}
 	
+	
 	/**{@inheritDoc}*/
 	@Override
 	public void _backup(Object session, String path, Component comp) throws IOException {
-		
-		String backupDir = jEdit.getProperty("backup.directory");
-		
-		// Skip local backup if backup directory not set 
-		if (backupDir == null || backupDir.length()==0)
-			return;
 		
 		Buffer buffer = jEdit.getBuffer(path);
 		if (buffer == null)
 			return;
 		
-		FtpAddress uri = new FtpAddress(path);
-		String backFile = "_"+uri.getScheme()+"_"+uri.getUser() + "@" + uri.getHost() + uri.getPath();
-		String backPath = MiscUtilities.concatPath(backupDir, backFile);
+		String backPath = getBackupFilepath(path);
+		if (backPath == null)
+			return;
 		
 		File f = new File(backPath);
 		if (!f.getParentFile().exists())
@@ -481,19 +472,21 @@ public class FtpVFS extends VFS
 			return;
 		}
 		
-		// Store file content
-		FileOutputStream os = new FileOutputStream(f);
-		FileChannel channel = os.getChannel();
-		
-		Charset charset = Charset.forName(buffer.getStringProperty(JEditBuffer.ENCODING));
-		CharsetEncoder encoder = charset.newEncoder();
-		
-		String s = buffer.getText();
-		CharBuffer buf = CharBuffer.allocate(s.length());
-		buf.append(s).flip();
-		
-		channel.write(encoder.encode(buf));
-		IOUtilities.closeQuietly(os);
+		ThreadUtilities.runInBackground( new LocalFileSaveTask(f, buffer.getText(), buffer.getStringProperty(JEditBuffer.ENCODING)) );
+	}
+
+	/**
+	 * @param path
+	 * @param backupDir
+	 * @return
+	 */
+	private String getBackupFilepath(String path) {
+		String backupDir = jEdit.getProperty("backup.directory");
+		if (backupDir == null || backupDir.equals(""))
+			return null;
+		FtpAddress uri = new FtpAddress(path);
+		String backFile = "_"+uri.getScheme()+"_"+uri.getUser() + "@" + uri.getHost() + uri.getPath();
+		return MiscUtilities.concatPath(backupDir, backFile);
 	}
 	
 	//{{{ Private members

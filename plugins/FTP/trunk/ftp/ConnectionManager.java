@@ -24,17 +24,27 @@ package ftp;
 
 //{{{ Imports
 import java.awt.Component;
-import java.io.*;
-import java.util.*;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.ThreadUtilities;
 
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.jcraft.Compression;
-//}}}
 
 public class ConnectionManager
 {
@@ -151,6 +161,7 @@ public class ConnectionManager
 	} //}}}
 
 	//{{{ savePasswords() method
+	//TODO: Can be done in background 
 	protected static void savePasswords() {
 		if (passwordFile == null) {
 			Log.log(Log.WARNING,ConnectionManager.class,"Password File is null - unable to save passwords.");
@@ -240,7 +251,13 @@ public class ConnectionManager
 		/* since this can be called at startup time,
 		 * we need to hide the splash screen. */
 		GUIUtilities.hideSplashScreen();
-		LoginDialog dialog = new LoginDialog(comp, secure, host, user, password);
+		final LoginDialog dialog = new LoginDialog(comp, secure, host, user, password);
+		ThreadUtilities.runInDispatchThreadAndWait(new Runnable() {
+			@Override
+			public void run() {
+				dialog.setVisible(true);
+			}
+		});
 		if(!dialog.isOK())
 			return null;
 		host = dialog.getHost();
@@ -277,18 +294,14 @@ public class ConnectionManager
 	public static Connection getConnection(ConnectionInfo info) throws IOException {
 		Connection connect = null;
 		synchronized(lock) {
-			for(int i = 0; i < connections.size(); i++) {
-				Connection _connect = connections.get(i);
-				if(!_connect.info.equals(info) || _connect.inUse()) continue;
+			for (Connection conn : connections) 
+			{
+				if(!conn.info.equals(info) || conn.inUse()) continue;
 				
-				connect = _connect;
+				connect = conn;
 				if(!connect.checkIfOpen()) {
 					Log.log(Log.DEBUG, ConnectionManager.class, "Connection " + connect + " expired");
-					try {
-						connect.logout();
-					} catch(IOException io) {
-					}
-
+					connect.logoutQuietly();
 					connections.remove(connect);
 					connect = null;
 				}
@@ -337,12 +350,7 @@ public class ConnectionManager
 			}
 
 			Log.log(Log.DEBUG,ConnectionManager.class, "Closing connection to "+ connect.info);
-			try {
-				connect.logout();
-			}
-			catch(IOException io) {
-				Log.log(Log.ERROR,ConnectionManager.class,io);
-			}
+			connect.logoutQuietly();
 			connections.remove(connect);
 		}
 	} //}}}
