@@ -48,5 +48,13 @@
 	<!-- /mark:plugins -->
 	</path>
 	
+	<target name="build.prepare">
+		<!-- Copy over required dependencies to install.dir -->
+		<copy todir="${install.dir}">
+			<fileset dir="lib">
+				<filename name="*.jar"/>
+			</fileset>
+		</copy>
+	</target>
 </project>
 <!-- ::mode=xml:: -->
