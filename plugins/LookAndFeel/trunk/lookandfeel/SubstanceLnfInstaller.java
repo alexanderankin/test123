@@ -26,11 +26,13 @@ public class SubstanceLnfInstaller extends LnfInstaller {
                 "GraphiteGlassLookAndFeel",
                 "Magellan",        
                 //"Magma",                  // removed in 6.0
+                "Mariner",                  // added in 6.1
                 "MistAqua",
                 "MistSilver",
                 "Moderate",
                 "Nebula",
                 "NebulaBrickWall",
+                "OfficeBlack2007",          // added in 6.1
                 "OfficeBlue2007",
                 "OfficeSilver2007",
                 "Raven",
