@@ -21,8 +21,6 @@ package antfarm;
 import java.io.File;
 import java.util.Properties;
 import java.util.StringTokenizer;
-import java.util.Iterator;
-import java.util.Collection;
 
 import console.Console;
 import console.ConsolePlugin;
@@ -41,11 +39,6 @@ import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.Log;
-import projectviewer.ProjectManager;
-import projectviewer.ProjectViewer;
-import projectviewer.vpt.VPTProject;
-import sidekick.java.PVHelper;
-import projectviewer.vpt.VPTNode;
 
 public class AntFarmPlugin extends EditPlugin
 {
