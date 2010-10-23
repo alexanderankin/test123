@@ -17,7 +17,7 @@ public class FoldingModeTypes
 	static
 	{
 		modeTypes = new HashMap<String, Integer>();
-		//modeTypes.put("comment", Fixed);
+		modeTypes.put("comment", Fixed);
 		modeTypes.put("sidekick", Fixed);
 		modeTypes.put("indent", Fixed);
 		modeTypes.put("none", Fixed);
