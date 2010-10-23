@@ -7,9 +7,9 @@
 		new foldTools.CommentFoldHandler();
 	</SERVICE>
 	<SERVICE CLASS="org.gjt.sp.jedit.buffer.FoldHandler" NAME="composite">
-		ArrayList handlers = new ArrayList();
-		handlers.add(FoldHandler.getFoldHandler("custom"));
-		handlers.add(FoldHandler.getFoldHandler("comment"));
+		FoldHandler [] handlers = new FoldHandler[2];
+		handlers[0] = FoldHandler.getFoldHandler("custom");
+		handlers[1] = FoldHandler.getFoldHandler("comment");
 		new foldTools.CompositeFoldHandler(handlers);
 	</SERVICE>
 </SERVICES>
