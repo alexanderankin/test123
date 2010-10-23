@@ -72,6 +72,13 @@ public class OptionPane extends AbstractOptionPane
 				editHandler();
 			}
 		});
+		loadModes(new LoadedModeProcessor()
+		{
+			public void process(HandlerItem handler)
+			{
+				handlerModel.addElement(handler);
+			}
+		});
 	}
 	private void addHandler()
 	{
@@ -106,6 +113,31 @@ public class OptionPane extends AbstractOptionPane
 		setLinesAfter(after);
 		jEdit.setIntegerProperty(PROP + "followCaretDelay", Integer.valueOf(
 				(Integer)delay.getValue()));
+		saveModes();
+	}
+	public interface LoadedModeProcessor
+	{
+		void process(HandlerItem handler);
+	}
+	public static void loadModes(LoadedModeProcessor processor)
+	{
+		int num = jEdit.getIntegerProperty(PROP + "compositeModes");
+		for (int i = 0; i < num; i++)
+		{
+			String base = PROP + "compositeMode." + i + ".";
+			HandlerItem handler = HandlerItem.load(base);
+			if (handler != null)	// Properties could go wrong...
+				processor.process(handler);
+		}
+	}
+	private void saveModes()
+	{
+		jEdit.setIntegerProperty(PROP + "compositeModes", handlerModel.getSize());
+		for (int i = 0; i < handlerModel.getSize(); i++)
+		{
+			HandlerItem handler = (HandlerItem) handlerModel.get(i);
+			handler.save(PROP + "compositeMode." + i + ".");
+		}
 	}
 	public static JSpinner getContextLinesUi(int value)
 	{

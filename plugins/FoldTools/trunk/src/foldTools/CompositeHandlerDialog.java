@@ -22,7 +22,6 @@ import org.gjt.sp.jedit.jEdit;
 @SuppressWarnings("serial")
 public class CompositeHandlerDialog extends JDialog
 {
-	private static final String FOLD_HANDLER_SERVICE = "org.gjt.sp.jedit.buffer.FoldHandler";
 	private static final String MESSAGE = "messages.foldTools.handlerDialog.";
 	private JTextField name;
 	private DefaultListModel model;
@@ -97,7 +96,7 @@ public class CompositeHandlerDialog extends JDialog
 	}
 	private void initModel()
 	{
-		String [] modes = ServiceManager.getServiceNames(FOLD_HANDLER_SERVICE);
+		String [] modes = ServiceManager.getServiceNames(Plugin.FOLD_HANDLER_SERVICE);
 		for (String mode: modes)
 			model.addElement(mode);
 	}
