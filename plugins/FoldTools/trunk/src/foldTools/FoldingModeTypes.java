@@ -40,13 +40,20 @@ public class FoldingModeTypes
 	}
 	public static int askModeType(String mode)
 	{
-		String [] options = { "Unknown", "Fixed", "Non-fixed" };
+		String [] options = { getMessage("modeTypes.unknown"),
+			getMessage("modeTypes.fixed"), getMessage("modeTypes.nonFixed") };
+		String title = getMessage("modeTypes.title");
 		int sel = JOptionPane.showOptionDialog(jEdit.getActiveView(),
-			"Type of folding mode '" + mode + "':", "Unknown folding mode type",
+			jEdit.getProperty(OptionPane.MESSAGE + "modeTypes.ask", new String[] { mode }),
+			title,
 			JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null,
 			options, options[0]);
 		if (sel == JOptionPane.CLOSED_OPTION)
 			return Unknown;
 		return sel;
+	}
+	private static String getMessage(String name)
+	{
+		return jEdit.getProperty(OptionPane.MESSAGE + name);
 	}
 }
