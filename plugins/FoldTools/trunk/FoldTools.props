@@ -45,6 +45,11 @@ messages.foldTools.handlerDialog.ok=Ok
 messages.foldTools.handlerDialog.cancel=Cancel
 messages.foldTools.handlerDialog.noName=Please select a name for the new folding mode.
 messages.foldTools.handlerDialog.noModes=Please select the folding modes to combine.
+messages.foldTools.modeTypes.unknown=Unknown
+messages.foldTools.modeTypes.fixed=Fixed
+messages.foldTools.modeTypes.nonFixed=Non-fixed
+messages.foldTools.modeTypes.ask=Type of folding mode ''{0}'':
+messages.foldTools.modeTypes.title=Unknown folding mode type
 
 # docs
 plugin.foldTools.Plugin.docs=index.html
