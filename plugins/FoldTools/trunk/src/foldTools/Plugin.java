@@ -7,6 +7,23 @@ import org.gjt.sp.jedit.View;
 
 public class Plugin extends EditPlugin
 {
+	public static final String FOLD_HANDLER_SERVICE = "org.gjt.sp.jedit.buffer.FoldHandler";
+
+	public void start()
+	{
+		OptionPane.loadModes(new OptionPane.LoadedModeProcessor()
+		{
+			public void process(HandlerItem handler)
+			{
+				handler.createService();
+			}
+		});
+	}
+	public void stop()
+	{
+		// no need to unload services here; will be done by plugin manager
+	}
+
 	public static void showFoldContext(View view)
 	{
 		FoldContext fc = new FoldContext(view);
