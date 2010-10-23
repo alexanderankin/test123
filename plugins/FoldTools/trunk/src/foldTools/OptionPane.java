@@ -20,8 +20,8 @@ import org.gjt.sp.jedit.jEdit;
 @SuppressWarnings("serial")
 public class OptionPane extends AbstractOptionPane
 {
-	private static final String MESSAGE = "messages.foldTools.";
-	private static final String PROP = "props.foldTools.";
+	public static final String MESSAGE = "messages.foldTools.";
+	public static final String PROP = "props.foldTools.";
 	private JSpinner before, after, delay;
 	private DefaultListModel handlerModel;
 	private JList handlers;

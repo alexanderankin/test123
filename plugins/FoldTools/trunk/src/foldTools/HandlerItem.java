@@ -31,7 +31,16 @@ class HandlerItem
 		jEdit.setProperty(propBase + "name", name);
 		jEdit.setIntegerProperty(propBase + "nModes", modes.length);
 		for (int i = 0; i < modes.length; i++)
-			jEdit.setProperty(propBase + "mode." + i, modes[i]);
+		{
+			String mode = modes[i];
+			jEdit.setProperty(propBase + "mode." + i, mode);
+			if (FoldingModeTypes.getModeType(mode) == FoldingModeTypes.Unknown)
+			{
+				int type = FoldingModeTypes.askModeType(mode);
+				if (type != FoldingModeTypes.Unknown)
+					FoldingModeTypes.setModeType(mode, type);
+			}
+		}
 	}
 	public static HandlerItem load(String propBase)
 	{
