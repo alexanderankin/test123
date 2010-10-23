@@ -31,6 +31,20 @@ messages.foldTools.linesBeforeShort=Preceding lines:
 messages.foldTools.linesAfterShort=Following lines:
 messages.foldTools.updateButton=Update
 messages.foldTools.followCaretCheckBox=Follow caret
+messages.foldTools.compositeHandlers=Composite fold handlers:
+messages.foldTools.addHandler=New...
+messages.foldTools.removeHandler=Remove
+messages.foldTools.editHandler=Edit
+
+# handler dialog
+messages.foldTools.handlerDialog.addHandlerDialog=Create a new folding mode
+messages.foldTools.handlerDialog.editHandlerDialog=Edit a folding mode
+messages.foldTools.handlerDialog.compositeName=Mode name:
+messages.foldTools.handlerDialog.modes=Select modes to combine:
+messages.foldTools.handlerDialog.ok=Ok
+messages.foldTools.handlerDialog.cancel=Cancel
+messages.foldTools.handlerDialog.noName=Please select a name for the new folding mode.
+messages.foldTools.handlerDialog.noModes=Please select the folding modes to combine.
 
 # docs
 plugin.foldTools.Plugin.docs=index.html
