@@ -137,6 +137,7 @@ public class OptionPane extends AbstractOptionPane
 		{
 			HandlerItem handler = (HandlerItem) handlerModel.get(i);
 			handler.save(PROP + "compositeMode." + i + ".");
+			handler.createService();
 		}
 	}
 	public static JSpinner getContextLinesUi(int value)
