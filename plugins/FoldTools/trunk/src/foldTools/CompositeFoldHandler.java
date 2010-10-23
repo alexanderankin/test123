@@ -1,5 +1,7 @@
 package foldTools;
 
+import java.util.HashMap;
+
 import javax.swing.text.Segment;
 
 import org.gjt.sp.jedit.buffer.FoldHandler;
@@ -9,7 +11,18 @@ public class CompositeFoldHandler extends FoldHandler {
 
 	private FoldHandler [] handlers;
 	private boolean [] isFixedHandler;
+	private static final HashMap<String, Boolean> isFixedMode;
 
+	static
+	{
+		isFixedMode = new HashMap<String, Boolean>();
+		isFixedMode.put("comment", Boolean.TRUE);
+		isFixedMode.put("sidekick", Boolean.TRUE);
+		isFixedMode.put("indent", Boolean.TRUE);
+		isFixedMode.put("none", Boolean.TRUE);
+		isFixedMode.put("custom", Boolean.FALSE);
+		isFixedMode.put("explicit", Boolean.FALSE);
+	}
 	public CompositeFoldHandler(FoldHandler [] handlers)
 	{
 		super(createName(handlers));
@@ -32,7 +45,8 @@ public class CompositeFoldHandler extends FoldHandler {
 	private boolean isFixedLevelHandler(FoldHandler h)
 	{
 		String name = h.getName();
-		return (name.equals("comment") || name.equals("indent"));
+		Boolean b = isFixedMode.get(name);
+		return (b == null) ? false : b.booleanValue();
 	}
 	@Override
 	public int getFoldLevel(JEditBuffer buffer, int lineIndex, Segment seg) {
