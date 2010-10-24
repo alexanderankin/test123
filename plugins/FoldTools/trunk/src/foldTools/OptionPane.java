@@ -32,23 +32,26 @@ public class OptionPane extends AbstractOptionPane
 		super("foldTools");
 		setBorder(new EmptyBorder(5, 5, 5, 5));
 
+		addSeparator();
+		addComponent(new JLabel(getMessage("foldContext.label")));
 		before = getContextLinesUi(getLinesBefore());
-		addComponent(jEdit.getProperty(MESSAGE + "linesBefore"), before);
+		addComponent(getMessage("linesBefore"), before);
 		after = getContextLinesUi(getLinesAfter());
-		addComponent(jEdit.getProperty(MESSAGE + "linesAfter"), after);
+		addComponent(getMessage("linesAfter"), after);
 		delay = new JSpinner(new SpinnerNumberModel(getFollowCaretDelay(), 0, 5000, 50));
-		addComponent(jEdit.getProperty(MESSAGE + "followCaretDelay"), delay);
-		addComponent(new JLabel(jEdit.getProperty(MESSAGE + "compositeHandlers")));
+		addComponent(getMessage("followCaretDelay"), delay);
+		addSeparator();
+		addComponent(new JLabel(getMessage("compositeHandlers")));
 		handlerModel = new DefaultListModel();
 		handlers = new JList(handlerModel);
 		handlers.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		addComponent(new JScrollPane(handlers));
 		JPanel p = new JPanel();
-		addHandler = new JButton(jEdit.getProperty(MESSAGE + "addHandler"));
+		addHandler = new JButton(getMessage("addHandler"));
 		p.add(addHandler);
-		removeHandler = new JButton(jEdit.getProperty(MESSAGE + "removeHandler"));
+		removeHandler = new JButton(getMessage("removeHandler"));
 		p.add(removeHandler);
-		editHandler = new JButton(jEdit.getProperty(MESSAGE + "editHandler"));
+		editHandler = new JButton(getMessage("editHandler"));
 		p.add(editHandler);
 		addComponent(p);
 		addHandler.addActionListener(new ActionListener()
@@ -79,6 +82,10 @@ public class OptionPane extends AbstractOptionPane
 				handlerModel.addElement(handler);
 			}
 		});
+	}
+	private String getMessage(String prop)
+	{
+		return jEdit.getProperty(MESSAGE + prop);
 	}
 	private void addHandler()
 	{
