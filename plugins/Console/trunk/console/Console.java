@@ -61,6 +61,7 @@ import org.gjt.sp.util.Log;
 import console.SystemShell.ConsoleState;
 import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
+import org.gjt.sp.util.StandardUtilities;
 //}}}
 
 // {{{ class Console
@@ -523,7 +524,7 @@ implements EBComponent, DefaultFocusComponent
 				recorder.record("runCommandToBuffer(view,\""
 					+ shell.getName()
 					+ "\",\""
-					+ MiscUtilities.charsToEscapes(cmd)
+					+ StandardUtilities.charsToEscapes(cmd)
 					+ "\");");
 			}
 			else
@@ -531,7 +532,7 @@ implements EBComponent, DefaultFocusComponent
 				recorder.record("runCommandInConsole(view,\""
 					+ shell.getName()
 					+ "\",\""
-					+ MiscUtilities.charsToEscapes(cmd)
+					+ StandardUtilities.charsToEscapes(cmd)
 					+ "\");");
 			}
 		}
@@ -707,7 +708,7 @@ implements EBComponent, DefaultFocusComponent
 	private void updateShellList()
 	{
 		String[] shells = Shell.getShellNames();
-		Arrays.sort(shells,new MiscUtilities.StringICaseCompare());
+		Arrays.sort(shells,new StandardUtilities.StringCompare<String>(true));
 		shellCombo.setModel(new DefaultComboBoxModel(shells));
 		shellCombo.setMaximumSize(shellCombo.getPreferredSize());
 	} //}}}
@@ -840,8 +841,7 @@ implements EBComponent, DefaultFocusComponent
 			getOutput().print(getInfoColor(), jEdit.getProperty(
 				"console.completions"));
 
-			Arrays.sort(info.completions,new MiscUtilities
-				.StringICaseCompare());
+			Arrays.sort(info.completions,new StandardUtilities.StringCompare<String>(true));
 
 			for(int i = 0; i < info.completions.length; i++)
 				print(null,info.completions[i]);
