@@ -42,6 +42,7 @@ import org.gjt.sp.jedit.ServiceManager;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.OptionsDialog;
+import org.gjt.sp.util.StandardUtilities;
 import org.gjt.sp.util.StringList;
 // }}}
 
@@ -87,7 +88,7 @@ public class ModeOptionsDialog extends OptionsDialog
 	{
 		modes = new StringList(jEdit.getModes());
 		
-		Collections.sort(modes,new MiscUtilities.StringICaseCompare());
+		Collections.sort(modes,new StandardUtilities.StringCompare(true));
 		modes.add(0, DEFAULT);
 		modeCombo = new JComboBox(modes.toArray());
 		useDefaultsCheck = new JCheckBox(jEdit.getProperty("options.editing.useDefaults"));
