@@ -62,7 +62,7 @@ public class ClojureShell extends ProcessShell {
 	 * Evaluate a buffer
 	 */
 	public void evalBuffer(Console console, Buffer buffer) {
-		String cmd = "(load-file \""+buffer.getPath()+"\")";
+		String cmd = "(load-file \""+buffer.getPath().replace("\\", "\\\\")+"\")";
 		send(console, cmd);
 	} //}}}
 	
