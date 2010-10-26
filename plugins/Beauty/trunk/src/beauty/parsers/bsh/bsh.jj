@@ -925,7 +925,7 @@ void PreDecrementExpression() :
 void UnaryExpressionNotPlusMinus() :
 {  }
 {
-  ( "~" { add(" ~ "); } | "!" { add(" ! "); } ) UnaryExpression()
+  ( "~" { add(" ~"); } | "!" { add(" !"); } ) UnaryExpression()
      
 |
 	// SYNTACTIC_LOOKAHEAD
