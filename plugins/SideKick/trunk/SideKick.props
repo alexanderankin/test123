@@ -95,6 +95,9 @@ options.sidekick.showStatusWindow=true
 options.sidekick.scrollToVisible.label=Scroll to make selection visible as much as possible
 options.sidekick.scrollToVisible=true
 
+options.sidekick.showToolBar.label=Show the assets in a combo-box (inside a toolbar)
+sidekick.showToolBar=false
+
 # Default parse on buffer change switch
 sidekick.buffer-change-parse=true
 sidekick.save-change-parse=true
@@ -147,3 +150,4 @@ options.sidekick.persistentFilter=true
 # filtering).
 options.sidekick.filter-visible-assets.label=Limit filter results to include only currently expanded assets
 options.sidekcik.filter-visible-assets=false
+

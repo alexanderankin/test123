@@ -44,6 +44,10 @@ public class SideKickOptionPane extends AbstractOptionPane
 	//{{{ _init() method
 	protected void _init()
 	{
+		addComponent(showToolBar = new JCheckBox(jEdit.getProperty(
+			"options.sidekick.showToolBar.label")));
+		showToolBar.setSelected(jEdit.getBooleanProperty(
+			"sidekick.showToolBar"));
 		addComponent(showToolTips = new JCheckBox(jEdit.getProperty(
 			"options.sidekick.showToolTips.label")));
 		showToolTips.setSelected(jEdit.getBooleanProperty(
@@ -210,6 +214,7 @@ public class SideKickOptionPane extends AbstractOptionPane
 		jEdit.setProperty("sidekick.auto-parse-delay",String.valueOf(
 			autoParseDelay.getValue()));
 		SideKick.setFollowCaret(treeFollowsCaret.isSelected());
+		jEdit.setBooleanProperty("sidekick.showToolBar", showToolBar.isSelected());
 		jEdit.setBooleanProperty("sidekick.showToolTips", showToolTips.isSelected());
 		jEdit.setBooleanProperty("sidekick.showStatusWindow", showStatusWindow.isSelected());
 		jEdit.setBooleanProperty("sidekick.scrollToVisible", scrollToVisible.isSelected());
@@ -245,6 +250,7 @@ public class SideKickOptionPane extends AbstractOptionPane
 	private JCheckBox completeDelayToggle;
 	private JSlider completeDelay;
 	private JCheckBox autoCompletePopupGetFocus;
+	private JCheckBox showToolBar;
 	private JCheckBox showToolTips;
 	private JCheckBox showStatusWindow;
 	private JTextField acceptChars;

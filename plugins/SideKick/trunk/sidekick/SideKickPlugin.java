@@ -300,6 +300,8 @@ public class SideKickPlugin extends EditPlugin
 		SideKick sideKick = new SideKick(view);
 		sidekicks.put(view, sideKick);
 		sideKick.parse(true);
+		if (jEdit.getBooleanProperty("sidekick.showToolBar"))
+			view.addToolBar(new SideKickToolBar(view));
 	} //}}}
 
 	// {{{ getSideKick() method
