@@ -1,0 +1,7 @@
+<ivy-module version="2.0">
+    <info organisation="jedit-plugins" module="PHPParser"/>
+    <dependencies>
+        <dependency org="jedit-plugins" name="SideKick" rev="1.0"/>
+	<dependency org="jedit-plugins" name="ErrorList" rev="1.9"/>
+    </dependencies>
+</ivy-module>
