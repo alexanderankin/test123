@@ -3,16 +3,16 @@
 plugin.jcompiler.JCompilerPlugin.name=JCompiler
 plugin.jcompiler.JCompilerPlugin.author=Dirk M?bius
 plugin.jcompiler.JCompilerPlugin.contributors=Gerard Smyth, Logan Bauer, Kevin A. Burton, Mike Hansen, Aziz Sharif, Dominic Stolerman, Andreas Sch?rk, Doug Breaux
-plugin.jcompiler.JCompilerPlugin.version=1.8
+plugin.jcompiler.JCompilerPlugin.version=1.9
 plugin.jcompiler.JCompilerPlugin.docs=index.html
 plugin.jcompiler.JCompilerPlugin.activate=defer
-plugin.jcompiler.JCompilerPlugin.depend.0=jedit 04.03.12.00
+plugin.jcompiler.JCompilerPlugin.depend.0=jedit 04.03.99
 plugin.jcompiler.JCompilerPlugin.depend.1=jdk 1.5
-plugin.jcompiler.JCompilerPlugin.depend.2=plugin console.ConsolePlugin 4.2.5.1
-plugin.jcompiler.JCompilerPlugin.depend.3=plugin errorlist.ErrorListPlugin 1.3.1
+plugin.jcompiler.JCompilerPlugin.depend.2=plugin console.ConsolePlugin 4.4.2
+plugin.jcompiler.JCompilerPlugin.depend.3=plugin errorlist.ErrorListPlugin 1.9
 plugin.jcompiler.JCompilerPlugin.depend.4=plugin GnuRegexpPlugin 1.0.1
-plugin.jcompiler.JCompilerPlugin.depend.5=optional plugin sidekick.java.JavaSideKickPlugin 2.3.6
-plugin.jcompiler.JCompilerPlugin.depend.6=optional plugin projectviewer.ProjectPlugin 2.1.3
+plugin.jcompiler.JCompilerPlugin.depend.5=optional plugin sidekick.java.JavaSideKickPlugin 3.0.0
+plugin.jcompiler.JCompilerPlugin.depend.6=optional plugin projectviewer.ProjectPlugin 3.1.0
 plugin.jcompiler.JCompilerPlugin.usePluginHome=true
 plugin.jcompiler.JCompilerPlugin.description=\
     The JCompiler plugin allows for in-process compiling of \

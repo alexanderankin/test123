@@ -25,7 +25,7 @@ package jcompiler;
 
 import java.lang.reflect.*;
 import java.util.StringTokenizer;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.io.*;
 import javax.swing.*;
 import org.gjt.sp.jedit.*;
@@ -33,10 +33,7 @@ import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.*;
 import buildtools.*;
 import sidekick.java.PVHelper;
-import sidekick.java.util.Path;
 import projectviewer.vpt.VPTProject;
-import projectviewer.ProjectManager;
-import projectviewer.ProjectViewer;
 
 
 /**
@@ -283,8 +280,9 @@ public class JCompiler
 				for (int i = 0; i < arguments.length; i++)
 					newargs[i + 1] = arguments[i];
 				Process p = Runtime.getRuntime().exec(newargs);
-				OutputThread threadOut = new OutputThread("external compiler output", p.getInputStream());
-				OutputThread threadErr = new OutputThread("external compiler error output", p.getErrorStream());
+				/// unused
+				///OutputThread threadOut = new OutputThread("external compiler output", p.getInputStream());
+				///OutputThread threadErr = new OutputThread("external compiler error output", p.getErrorStream());
 				p.waitFor();
 			}
 			else if (jEdit.getBooleanProperty("jcompiler.modernCompiler", true))
@@ -370,10 +368,10 @@ public class JCompiler
 		}
 	}
 
-
-	private void print(String property) { output.outputText(jEdit.getProperty(property)); }
-	private void print(String property, Object[] args) { output.outputText(jEdit.getProperty(property, args)); }
-	private void printInfo(String property) { output.outputInfo(jEdit.getProperty(property)); }
+	/// unused
+	///private void print(String property) { output.outputText(jEdit.getProperty(property)); }
+	///private void print(String property, Object[] args) { output.outputText(jEdit.getProperty(property, args)); }
+	///private void printInfo(String property) { output.outputInfo(jEdit.getProperty(property)); }
 	private void printInfo(String property, Object[] args) { output.outputInfo(jEdit.getProperty(property, args)); }
 	private void printError(String property) { output.outputError(jEdit.getProperty(property)); }
 	private void printError(String property, Object[] args) { output.outputError(jEdit.getProperty(property, args)); }
@@ -382,34 +380,34 @@ public class JCompiler
 	private String[] constructArguments(String cp, String srcPath, String outDir, String[] files)
 	{
 		boolean compileExternal = jEdit.getBooleanProperty("jcompiler.compileexternal", false);
-		Vector vectorArgs = new Vector();
+		ArrayList<String> args = new ArrayList<String>();
 
 		if (cp != null && !cp.equals(""))
 		{
-			vectorArgs.addElement("-classpath");
-			vectorArgs.addElement(cp);
+			args.add("-classpath");
+			args.add(cp);
 		}
 
 		if (srcPath != null && !srcPath.equals(""))
 		{
-			vectorArgs.addElement("-sourcepath");
-			vectorArgs.addElement(srcPath);
+			args.add("-sourcepath");
+			args.add(srcPath);
 		}
 
 		if (jEdit.getBooleanProperty("jcompiler.genDebug"))
-			vectorArgs.addElement("-g");
+			args.add("-g");
 
 		if (jEdit.getBooleanProperty("jcompiler.genOptimized"))
-			vectorArgs.addElement("-O");
+			args.add("-O");
 
 		if (jEdit.getBooleanProperty("jcompiler.showdeprecated"))
-			vectorArgs.addElement("-deprecation");
+			args.add("-deprecation");
 
 		if (jEdit.getBooleanProperty("jcompiler.specifyoutputdirectory")
 			&& outDir != null && !outDir.equals(""))
 		{
-			vectorArgs.addElement("-d");
-			vectorArgs.addElement(outDir);
+			args.add("-d");
+			args.add(outDir);
 		}
 
 		String otherOptions = jEdit.getProperty("jcompiler.otheroptions");
@@ -417,7 +415,7 @@ public class JCompiler
 		{
 			StringTokenizer st = new StringTokenizer(otherOptions, " ");
 			while (st.hasMoreTokens())
-				vectorArgs.addElement(st.nextToken());
+				args.add(st.nextToken());
 		}
 
 		if (compileExternal && files.length > 2)
@@ -429,7 +427,7 @@ public class JCompiler
 				for (int i = 0; i < files.length; ++i)
 					tmpFileOutput.println(files[i]);
 				tmpFileOutput.close();
-				vectorArgs.addElement("@" + tmpFile.getAbsolutePath());
+				args.add("@" + tmpFile.getAbsolutePath());
 			}
 			catch (IOException ioex)
 			{
@@ -443,12 +441,10 @@ public class JCompiler
 				tmpFile.delete();
 			tmpFile = null;
 			for (int i = 0; i < files.length; ++i)
-				vectorArgs.addElement(files[i]);
+				args.add(files[i]);
 		}
 
-		String[] arguments = new String[vectorArgs.size()];
-		vectorArgs.copyInto(arguments);
-		return arguments;
+		return args.toArray(new String[args.size()]);
 	}
 
 
@@ -550,17 +546,8 @@ public class JCompiler
 		if (s.length() == 0)
 			return s;
 
-		String basepath;
-		String projectName = getProjectName(bufferFileName);
-		if (projectName != null)
-		{
-			VPTProject proj = ProjectManager.getInstance().getProject(projectName);
-			basepath = proj.getRootPath();
-		}
-		else
-		{
-			basepath = jEdit.getProperty("jcompiler.basepath", "").trim();
-		}
+		VPTProject project = PVHelper.getProjectForFile(bufferFileName);
+		String basepath = project == null ? jEdit.getProperty("jcompiler.basepath", "").trim() : project.getRootPath();
 
 		// fun: $basepath may contain '~' itself
 		basepath = replaceAll(basepath, "~", System.getProperty("user.home", ""));
@@ -707,26 +694,6 @@ public class JCompiler
 			VFSManager.waitForRequests();
 	}
 
-	/**
-	 * Helper function to check if the current file is within a defined project,
-	 * and if the project settings should be used.
-	 * @return the name of the project to take settings from, or null if project
-	 *			based settings should not be used.
-	 */
-	private static String getProjectName(String bufferFileName)
-	{
-		if ((jEdit.getPlugin("sidekick.java.JavaSideKickPlugin", true) != null) &&
-			(jEdit.getPlugin("projectviewer.ProjectPlugin", true) != null) &&
-			(jEdit.getBooleanProperty("jcompiler.useJskPaths", true)))
-		{
-			return PVHelper.getProjectNameForFile(bufferFileName);
-		}
-		else
-		{
-			return null;
-		}
-	}
-
 
 	/**
 	 * Returns the classpath, made up of the expanded classpath
@@ -746,10 +713,10 @@ public class JCompiler
 		String outputDir = getOutputDirectory(bufferFileName);
 
 		String cp;
-		String projectName = getProjectName(bufferFileName);
-		if (projectName != null)
+		VPTProject project = PVHelper.getProjectForFile(bufferFileName);
+		if (project != null)
 		{
-			cp = PVHelper.getClassPathForProject(projectName).toString();
+			cp = PVHelper.getClassPathForProject(project).toString();
 			if (outputDir != null)
 				cp = appendClassPath(cp, outputDir);
 		}
@@ -819,10 +786,10 @@ public class JCompiler
 	public static String getSourcePath(String bufferFileName)
 	{
 		String sp;
-		String projectName = getProjectName(bufferFileName);
-		if (projectName != null)
+		VPTProject project = PVHelper.getProjectForFile(bufferFileName);
+		if (project != null)
 		{
-			sp = PVHelper.getSourcePathForProject(projectName).toString();
+			sp = PVHelper.getSourcePathForProject(project).toString();
 		}
 		else
 		{
@@ -858,10 +825,10 @@ public class JCompiler
 	{
 		String outDir = null;
 		//try and get the project output directory if specified
-		String projectName = getProjectName(bufferFileName);
-		if (projectName != null)
+		VPTProject project = PVHelper.getProjectForFile(bufferFileName);
+		if (project != null)
 		{
-			outDir = PVHelper.getBuildOutputPathForProject(projectName);
+			outDir = PVHelper.getBuildOutputPathForProject(project);
 			if ((outDir != null) && (outDir.equals("")))
 				outDir = null;
 		}
