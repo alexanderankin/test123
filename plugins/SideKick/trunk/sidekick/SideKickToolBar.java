@@ -47,6 +47,7 @@ public class SideKickToolBar extends JToolBar
 			}
 		});
 		add(combo);
+		update();
 		EditBus.addToBus(this);
 	}
 	@EBHandler
