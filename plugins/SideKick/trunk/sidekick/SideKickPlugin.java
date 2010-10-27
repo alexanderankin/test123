@@ -23,7 +23,6 @@
 package sidekick;
 
 //{{{ Imports
-
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.msg.BufferUpdate;
@@ -31,12 +30,13 @@ import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.util.WorkThreadPool;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 //}}}
 
 /**
@@ -66,7 +66,7 @@ public class SideKickPlugin extends EditPlugin
 	private static final String MACRO_PATH = "/macros";
 	private static Map<View, SideKick> sidekicks;
 	private static Map<String, SideKickParser> parsers;
-	private static WorkThreadPool worker;
+	private static Executor executor;
 	private static Set<Buffer> parsedBufferSet;
 	private static Map<View, SideKickToolBar> toolBars;
 	private static boolean toolBarsEnabled;
@@ -275,16 +275,14 @@ public class SideKickPlugin extends EditPlugin
 		sidekick.parse(showParsingMessage);
 	} //}}}
 
-	//{{{ addWorkRequest() method
-	public static void addWorkRequest(Runnable run, boolean inAWT)
+	public static void execute(Runnable runnable)
 	{
-		if(worker == null)
+		if (executor == null)
 		{
-			worker = new WorkThreadPool("SideKick",1);
-			worker.start();
+			executor = Executors.newSingleThreadExecutor();
 		}
-		worker.addWorkRequest(run,inAWT);
-	} //}}}
+		executor.execute(runnable);
+	}
 
 	//{{{ isParsingBuffer()
 	public static boolean isParsingBuffer(Buffer buffer)

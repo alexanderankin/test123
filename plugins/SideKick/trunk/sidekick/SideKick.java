@@ -24,6 +24,7 @@
 package sidekick;
 
 //{{{ Imports
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -183,10 +184,9 @@ public class SideKick
 		DefaultErrorSource errorSource = new DefaultErrorSource("SideKick");
 		SideKickParsedData[] data = new SideKickParsedData[1];
 
-		SideKickPlugin.addWorkRequest(new ParseRequest(
-			parser,buffer,errorSource,data),false);
-		SideKickPlugin.addWorkRequest(new ParseAWTRequest(
-			parser,buffer,errorSource,data),true);
+		ParseRequest parseRequest = new ParseRequest(
+			parser, buffer, errorSource, data);
+		SideKickPlugin.execute(parseRequest);
 	} //}}}
 
 	//{{{ dispose() method
@@ -499,7 +499,7 @@ public class SideKick
 	//{{{ Inner classes
 
 	//{{{ ParseRequest class
-	static class ParseRequest implements Runnable
+	class ParseRequest implements Runnable
 	{
 		SideKickParser parser;
 		Buffer buffer;
@@ -519,6 +519,8 @@ public class SideKick
 		{
 			data[0] = parser.parse(buffer,errorSource);
 			buffer.setProperty(SideKickPlugin.PARSED_DATA_PROPERTY, data[0]);
+			EventQueue.invokeLater(new ParseAWTRequest(
+				parser, buffer, errorSource, data));
 		}
 	} //}}}
 
