@@ -48,6 +48,8 @@ import java.util.Set;
  */
 public class SideKickPlugin extends EditPlugin
 {
+	private static final String SHOW_TOOL_BAR = "sidekick.showToolBar";
+
 	/** The name of the dockable */
 	public static final String NAME = "sidekick-tree";
 	
@@ -66,7 +68,8 @@ public class SideKickPlugin extends EditPlugin
 	private static Map<String, SideKickParser> parsers;
 	private static WorkThreadPool worker;
 	private static Set<Buffer> parsedBufferSet;
-	
+	private static Map<View, SideKickToolBar> toolBars;
+	private static boolean toolBarsEnabled;
 	
 	//{{{ start() method
 	public void start()
@@ -75,6 +78,8 @@ public class SideKickPlugin extends EditPlugin
 		sidekicks = new HashMap<View, SideKick>();
 		parsers = new HashMap<String, SideKickParser>();
 		parsedBufferSet = new HashSet<Buffer>();
+		toolBars = new HashMap<View, SideKickToolBar>();
+		toolBarsEnabled = jEdit.getBooleanProperty(SHOW_TOOL_BAR);
 		View view = jEdit.getFirstView();
 		while(view != null)
 		{
@@ -115,6 +120,7 @@ public class SideKickPlugin extends EditPlugin
 		sidekicks = null;
 		parsers = null;
 		parsedBufferSet = null;
+		toolBars = null;
 	} //}}}
 
 	//{{{ handleViewUpdate() method
@@ -154,6 +160,18 @@ public class SideKickPlugin extends EditPlugin
 	public void handlePropertiesChanged(PropertiesChanged msg)
 	{
 		SideKickActions.propertiesChanged();
+		boolean showToolBar = jEdit.getBooleanProperty(SHOW_TOOL_BAR);
+		if (showToolBar != toolBarsEnabled)
+		{
+			toolBarsEnabled = showToolBar;
+			for (View v: jEdit.getViews())
+			{
+				if (toolBarsEnabled)
+					attachToolBar(v);
+				else
+					detachToolBar(v);
+			}
+		}
 	} //}}}
 
 	/**
@@ -206,11 +224,8 @@ public class SideKickPlugin extends EditPlugin
 	 * @param parserName the new parser we want to use
 	 * @since Sidekick 0.6
 	 */
-	private static String oldName = null;
 	public static void setParserForBuffer(Buffer buffer, String parserName) 
 	{
-		
-		oldName = parserName;
 		if (parserName.equals(NONE) ) {
 			buffer.setStringProperty(PARSER_PROPERTY, parserName);
 			return;
@@ -293,15 +308,33 @@ public class SideKickPlugin extends EditPlugin
 
 	//}}}
 
+	//{{{ attachToolBar() method
+	private static void attachToolBar(View view)
+	{
+		SideKickToolBar toolBar = new SideKickToolBar(view);
+		view.addToolBar(toolBar);
+		toolBars.put(view, toolBar);
+	} //}}}
 
+	//{{{ detachToolBar() method
+	private static void detachToolBar(View view)
+	{
+		SideKickToolBar toolBar = toolBars.remove(view);
+		if (toolBar != null)
+		{
+			view.removeToolBar(toolBar);
+			toolBar.dispose();
+		}
+	} //}}}
+	
 	//{{{ initView() method
 	private static void initView(View view)
 	{
 		SideKick sideKick = new SideKick(view);
 		sidekicks.put(view, sideKick);
 		sideKick.parse(true);
-		if (jEdit.getBooleanProperty("sidekick.showToolBar"))
-			view.addToolBar(new SideKickToolBar(view));
+		if (toolBarsEnabled)
+			attachToolBar(view);
 	} //}}}
 
 	// {{{ getSideKick() method
@@ -316,6 +349,7 @@ public class SideKickPlugin extends EditPlugin
 		SideKick sidekick = sidekicks.get(view);
 		sidekick.dispose();
 		sidekicks.remove(view);
+		detachToolBar(view);
 	} //}}}
 
 	

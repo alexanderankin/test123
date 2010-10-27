@@ -77,6 +77,12 @@ public class SideKickToolBar extends JToolBar
 			path.remove(path.size() - 1);
 		}
 	}
+
+	public void dispose()
+	{
+		EditBus.removeFromBus(this);
+	}
+
 	private static class NodeWrapper
 	{
 		public String pathStr;
@@ -136,4 +142,5 @@ public class SideKickToolBar extends JToolBar
 			return l;
 		}
 	}
+
 }
