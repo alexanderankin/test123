@@ -76,12 +76,12 @@ public class CommandoToolBar extends JToolBar
 	/** Remove the instance from the view */
 	public static void remove()
 	{
-		Iterator itr = smToolBarMap.keySet().iterator();
+		Iterator<View> itr = smToolBarMap.keySet().iterator();
 		while (itr.hasNext())
 		{
-			View v = (View) itr.next();
+			View v = itr.next();
 			if (v == null) continue;
-			CommandoToolBar tb =(CommandoToolBar) smToolBarMap.get(v);
+			CommandoToolBar tb = smToolBarMap.get(v);
 			if (tb != null) {
 				v.removeToolBar(tb);
 			}

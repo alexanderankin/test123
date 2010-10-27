@@ -22,7 +22,6 @@
 
 package console;
 
-import java.util.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.util.Log;

@@ -159,11 +159,10 @@ implements EBComponent, DefaultFocusComponent
 			listener.finalize();
 		}
 		ErrorSource.unregisterErrorSource(errorSource);
-
-		Iterator iter = shellStateMap.values().iterator();
+		Iterator<ShellState> iter = shellStateMap.values().iterator();
 		while(iter.hasNext())
 		{
-			ShellState state = (ShellState)iter.next();
+			ShellState state = iter.next();
 			state.shell.closeConsole(this);
 		}
 		animation.stop();
@@ -300,7 +299,7 @@ implements EBComponent, DefaultFocusComponent
 		if(msg instanceof PropertiesChanged) propertiesChanged();
 		else if (msg instanceof DockableWindowUpdate) {
 			DockableWindowUpdate dwu = (DockableWindowUpdate) msg;
-			if (dwu.getWhat() != null &&  dwu.getWhat().equals(dwu.ACTIVATED))
+			if (dwu.getWhat() != null &&  dwu.getWhat().equals(DockableWindowUpdate.ACTIVATED))
 				if (dwu.getDockable().equals("console")) 
 					scrollToBottom();
 		}
@@ -762,10 +761,10 @@ implements EBComponent, DefaultFocusComponent
 
 			updateShellList();
 
-			Iterator iter = shellStateMap.keySet().iterator();
+			Iterator<String> iter = shellStateMap.keySet().iterator();
 			while(iter.hasNext())
 			{
-				String name = (String)iter.next();
+				String name = iter.next();
 				if(Shell.getShell(name) == null)
 				{
 					if(this.currentShell.getName().equals(name))

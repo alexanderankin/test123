@@ -33,7 +33,6 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
 import projectviewer.event.ViewerUpdate;
-import projectviewer.vpt.VPTNode;
 import org.gjt.sp.jedit.bsh.NameSpace;
 // }}}
 
@@ -88,7 +87,7 @@ public class ProjectTreeListener implements EBComponent
 				catch (InterruptedException ie)
 				{
 				}
-				VPTNode n = vu.getNode();
+				//VPTNode n = vu.getNode();
 				View view = vu.getView();
 				if (view == null || view != jEdit.getActiveView()) return;
 				String code = "changeToPvRoot(view);";

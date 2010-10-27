@@ -32,7 +32,6 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -166,7 +165,7 @@ public class ErrorsOptionPane extends AbstractOptionPane
 
 	protected void _load()
 	{
-		errorListModel.load();
+		errorListModel = ErrorListModel.load();
 	}
 	
 	//{{{ _save() method
@@ -179,14 +178,6 @@ public class ErrorsOptionPane extends AbstractOptionPane
 	
 	//{{{ Private members
 
-	//{{{ createMatcherListModel() method
-	/** @deprecated - use ErrorListModel.load() */
-	private DefaultListModel createMatcherListModel()
-	{
-		return ErrorListModel.load();
-		
-	} //}}}
-	
 	//{{{ updateButtons() method
 	
 	private void updateButtons()

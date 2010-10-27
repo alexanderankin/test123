@@ -69,7 +69,6 @@ import org.gjt.sp.jedit.bsh.UtilEvalError;
 import org.xml.sax.helpers.XMLReaderFactory;
 import org.xml.sax.XMLReader;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import console.Console;
