@@ -29,8 +29,6 @@ import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
-import sidekick.SideKickTree.CaretHandler;
-
 @SuppressWarnings("serial")
 public class SideKickToolBar extends JToolBar
 {
@@ -40,6 +38,8 @@ public class SideKickToolBar extends JToolBar
 	private CaretListener caretListener;
 	private Timer caretTimer;
 	private SideKickParsedData data;
+	private boolean itemChangedByCaretListener = false;
+	private int delayMs;
 
 	public SideKickToolBar(View view)
 	{
@@ -51,6 +51,8 @@ public class SideKickToolBar extends JToolBar
 		{
 			public void itemStateChanged(ItemEvent e)
 			{
+				if (itemChangedByCaretListener)
+					return;
 				if (e.getStateChange() != ItemEvent.SELECTED)
 					return;
 				Object o = e.getItem();
@@ -66,6 +68,7 @@ public class SideKickToolBar extends JToolBar
 		add(combo);
 		update();
 		followCaret = SideKick.isFollowCaret();
+		delayMs = jEdit.getIntegerProperty("sidekick.toolBarUpdateDelay", 200);
 		if (followCaret)
 			addCaretListener();
 		EditBus.addToBus(this);
@@ -79,6 +82,7 @@ public class SideKickToolBar extends JToolBar
 	@EBHandler
 	public void handlePropertiesChanged(PropertiesChanged msg)
 	{
+		delayMs = jEdit.getIntegerProperty("sidekick.toolBarUpdateDelay", 200);
 		boolean newFollowCaret = SideKick.isFollowCaret();
 		if (newFollowCaret != followCaret)
 		{
@@ -155,7 +159,11 @@ public class SideKickToolBar extends JToolBar
 			}
 		}
 		if (selected != null)
+		{
+			itemChangedByCaretListener = true;
 			combo.setSelectedItem(selected);
+			itemChangedByCaretListener = false;
+		}
 	}
 
 	private class CaretHandler implements CaretListener
@@ -180,9 +188,9 @@ public class SideKickToolBar extends JToolBar
 						selectItemAtPosition(s == null ? caret : s.getStart());
 					}
 				});
-				caretTimer.setInitialDelay(500);
 				caretTimer.setRepeats(false);
 			}
+			caretTimer.setInitialDelay(delayMs);
 			caretTimer.start();
 		}
 	}
