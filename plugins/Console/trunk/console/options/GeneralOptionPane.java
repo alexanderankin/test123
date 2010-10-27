@@ -38,6 +38,7 @@ import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.FontSelector;
+import org.gjt.sp.util.StandardUtilities.StringCompare;
 
 import console.gui.Label;
 //}}}
@@ -82,7 +83,8 @@ public class GeneralOptionPane extends AbstractOptionPane implements ActionListe
 		addComponent(jEdit.getProperty("options.console.general.font"), font);
 
 		String[] encodings = MiscUtilities.getEncodings(true);
-		Arrays.sort(encodings,new MiscUtilities.StringICaseCompare());
+		// Arrays.sort(encodings,new MiscUtilities.StringICaseCompare());
+		Arrays.sort(encodings, new StringCompare<String>(true));
 		encoding = new JComboBox(encodings);
 		encoding.setEditable(true);
 		encoding.setSelectedItem(jEdit.getProperty("console.encoding"));
