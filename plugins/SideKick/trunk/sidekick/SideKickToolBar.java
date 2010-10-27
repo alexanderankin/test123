@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JToolBar;
 import javax.swing.Timer;
@@ -132,7 +131,8 @@ public class SideKickToolBar extends JToolBar
 		{
 			TreeNode child = node.getChildAt(i);
 			NodeWrapper nw = new NodeWrapper(path, child);
-			combo.addItem(new NodeWrapper(path, child));
+			if (nw.isAsset())
+				combo.addItem(new NodeWrapper(path, child));
 			path.add(nw.nodeStr);
 			addTree(child, path);
 			path.remove(path.size() - 1);
@@ -229,9 +229,7 @@ public class SideKickToolBar extends JToolBar
 		{
 			StringBuilder sb = new StringBuilder();
 			for (String s: path)
-			{
 				sb.append("[" + s + "]");
-			}
 			return sb.toString();
 		}
 		public boolean contains(int position)
@@ -245,6 +243,10 @@ public class SideKickToolBar extends JToolBar
 				asset.getStart().getOffset() > other.asset.getStart().getOffset() ||
 				asset.getEnd().getOffset() < other.asset.getEnd().getOffset());
 		}
+		public boolean isAsset()
+		{
+			return (asset != null);
+		}
 	}
 
 	private static class ComboCellRenderer extends DefaultListCellRenderer
@@ -252,17 +254,16 @@ public class SideKickToolBar extends JToolBar
 		public Component getListCellRendererComponent(JList list, Object value,
 				int index, boolean isSelected, boolean cellHasFocus)
 		{
-			JLabel l = (JLabel) super.getListCellRendererComponent(list, value,
-				index, isSelected, cellHasFocus);
+			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 			if (value instanceof NodeWrapper)
 			{
 				NodeWrapper nw = (NodeWrapper) value;
-				l.setText(nw.fullStr);
+				setText(nw.fullStr);
 				Icon icon = nw.icon;
 				if (icon != null)
-					l.setIcon(icon);
+					setIcon(icon);
 			}
-			return l;
+			return this;
 		}
 	}
 
