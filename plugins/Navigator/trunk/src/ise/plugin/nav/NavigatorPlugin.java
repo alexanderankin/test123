@@ -584,14 +584,16 @@ public class NavigatorPlugin extends EBPlugin {
         // just before it happens so the last position can be recorded in the
         // history.
         else if ( message instanceof PositionChanging ) {
-            PositionChanging cc = ( PositionChanging ) message;
-            EditPane p = cc.getEditPane();
-            if ( p != null ) {
-                Navigator n = getNavigator( p.getView() );
-                if ( n != null ) {
-                    n.addToHistory();
-                }
-            }
+        	if (! autoJump ) {
+	            PositionChanging cc = ( PositionChanging ) message;
+	            EditPane p = cc.getEditPane();
+	            if ( p != null ) {
+	                Navigator n = getNavigator( p.getView() );
+	                if ( n != null ) {
+	                    n.addToHistory();
+	                }
+	            }
+        	}
         }
 
         // add or remove Navigators if EditPane is created or destroyed
