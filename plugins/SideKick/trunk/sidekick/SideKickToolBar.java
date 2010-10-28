@@ -1,6 +1,8 @@
 package sidekick;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -10,7 +12,9 @@ import java.util.ArrayList;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.Timer;
 import javax.swing.event.CaretEvent;
@@ -122,20 +126,18 @@ public class SideKickToolBar extends JToolBar
 		if (data == null)
 			combo.addItem(jEdit.getProperty("sidekick-tree.not-parsed"));
 		else
-			addTree(data.root, new ArrayList<String>());
+			addTree(data.root, null);
 	}
-	private void addTree(TreeNode node, ArrayList<String> path)
+	private void addTree(TreeNode node, NodeWrapper parent)
 	{
 		// Always insert children only
 		for (int i = 0; i < node.getChildCount(); i++)
 		{
 			TreeNode child = node.getChildAt(i);
-			NodeWrapper nw = new NodeWrapper(path, child);
+			NodeWrapper nw = new NodeWrapper(parent, child);
 			if (nw.isAsset())
-				combo.addItem(new NodeWrapper(path, child));
-			path.add(nw.nodeStr);
-			addTree(child, path);
-			path.remove(path.size() - 1);
+				combo.addItem(nw);
+			addTree(child, nw);
 		}
 	}
 
@@ -197,40 +199,31 @@ public class SideKickToolBar extends JToolBar
 
 	private static class NodeWrapper
 	{
-		public String pathStr;
-		public String nodeStr;
-		public String fullStr;
+		public NodeWrapper parent;
+		public String str;
 		public Icon icon;
 		public Asset asset;
-		public NodeWrapper(ArrayList<String> path, TreeNode node)
+		public NodeWrapper(NodeWrapper parent, TreeNode node)
 		{
-			pathStr = getString(path);
+			this.parent = parent;
 			if (node instanceof DefaultMutableTreeNode)
 			{
 				DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) node;
 				Object o = dmtn.getUserObject();
 				if (o == null)
-					nodeStr = "";
+					str = "";
 				else
 				{
 					if (o instanceof Asset)
 					{
 						asset = (Asset) o;
 						icon = asset.getIcon();
-						nodeStr = asset.getShortString();
+						str = asset.getShortString();
 					}
 					else
-						nodeStr = o.toString();
+						str = o.toString();
 				}
 			}
-			fullStr = pathStr + " " + nodeStr;
-		}
-		private String getString(ArrayList<String> path)
-		{
-			StringBuilder sb = new StringBuilder();
-			for (String s: path)
-				sb.append("[" + s + "]");
-			return sb.toString();
 		}
 		public boolean contains(int position)
 		{
@@ -247,6 +240,16 @@ public class SideKickToolBar extends JToolBar
 		{
 			return (asset != null);
 		}
+		public void addLabel(JPanel p)
+		{
+			if (parent != null)
+				parent.addLabel(p);
+			JLabel l = new JLabel();
+			l.setText(str);
+			if (icon != null)
+				l.setIcon(icon);
+			p.add(l);
+		}
 	}
 
 	private static class ComboCellRenderer extends DefaultListCellRenderer
@@ -254,16 +257,13 @@ public class SideKickToolBar extends JToolBar
 		public Component getListCellRendererComponent(JList list, Object value,
 				int index, boolean isSelected, boolean cellHasFocus)
 		{
-			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+			JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 1));
 			if (value instanceof NodeWrapper)
 			{
 				NodeWrapper nw = (NodeWrapper) value;
-				setText(nw.fullStr);
-				Icon icon = nw.icon;
-				if (icon != null)
-					setIcon(icon);
+				nw.addLabel(p);
 			}
-			return this;
+			return p;
 		}
 	}
 
