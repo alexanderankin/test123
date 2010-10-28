@@ -9,6 +9,7 @@ import java.awt.event.ItemListener;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -31,9 +32,10 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
 
 @SuppressWarnings("serial")
-public class SideKickToolBar extends JToolBar
+public class SideKickToolBar extends JToolBar implements ActionListener
 {
 	private View view;
+	private JButton select;
 	private JComboBox combo;
 	private boolean followCaret;
 	private CaretListener caretListener;
@@ -46,6 +48,9 @@ public class SideKickToolBar extends JToolBar
 	{
 		this.view = view;
 		setFloatable(false);
+		select = new JButton(jEdit.getProperty("sidekick-toolbar.select"));
+		select.addActionListener(this);
+		add(select);
 		combo = new JComboBox();
 		combo.setRenderer(new ComboCellRenderer());
 		combo.addItemListener(new ItemListener()
@@ -59,11 +64,7 @@ public class SideKickToolBar extends JToolBar
 				Object o = e.getItem();
 				if (! (o instanceof NodeWrapper))
 					return;
-				Asset asset = ((NodeWrapper) o).asset;
-				if (asset == null)
-					return;
-				SideKickToolBar.this.view.getTextArea().setCaretPosition(
-					asset.start.getOffset());
+				((NodeWrapper)o).jump(SideKickToolBar.this.view);
 			}
 		});
 		add(combo);
@@ -74,6 +75,19 @@ public class SideKickToolBar extends JToolBar
 			addCaretListener();
 		EditBus.addToBus(this);
 	}
+
+	public void actionPerformed(ActionEvent e)
+	{
+		if (e.getSource() == select)
+		{
+			Object o = combo.getSelectedItem();
+			if (! (o instanceof NodeWrapper))
+				return;
+			NodeWrapper nw = (NodeWrapper) o;
+			nw.select(view);
+		}
+	}
+
 	@EBHandler
 	public void handleSideKickUpdate(SideKickUpdate msg)
 	{
@@ -225,6 +239,19 @@ public class SideKickToolBar extends JToolBar
 				}
 			}
 		}
+		public void jump(View view)
+		{
+			if (asset == null)
+				return;
+			view.getTextArea().setCaretPosition(asset.start.getOffset());
+		}
+		public void select(View view)
+		{
+			if (asset == null)
+				return;
+			view.getTextArea().setSelection(new Selection.Range(asset.start.getOffset(),
+				asset.end.getOffset()));
+		}
 		public boolean contains(int position)
 		{
 			return (asset != null && asset.getStart().getOffset() <= position &&
@@ -266,5 +293,4 @@ public class SideKickToolBar extends JToolBar
 			return p;
 		}
 	}
-
 }
