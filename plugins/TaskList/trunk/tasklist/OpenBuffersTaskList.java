@@ -49,7 +49,7 @@ public class OpenBuffersTaskList extends AbstractTreeTaskList {
 
     @Override
     protected boolean canRun() {
-        return jEdit.getBooleanProperty( "tasklist.show-open-files" );
+        return jEdit.getBooleanProperty( "tasklist.show-open-files", true );
     }
 
     @Override

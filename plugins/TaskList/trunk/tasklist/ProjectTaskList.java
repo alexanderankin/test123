@@ -77,7 +77,7 @@ public class ProjectTaskList extends AbstractTreeTaskList {
             add( new JLabel( jEdit.getProperty( "tasklist.projectfiles.noproject", "No project is open." ) ) );
             return false;
         }
-        return jEdit.getBooleanProperty( "tasklist.show-project-files" );
+        return jEdit.getBooleanProperty( "tasklist.show-project-files", true );
     }
 
     @Override
