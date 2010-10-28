@@ -41,7 +41,7 @@ public class SideKickToolBar extends JToolBar
 	private CaretListener caretListener;
 	private Timer caretTimer;
 	private SideKickParsedData data;
-	private boolean itemChangedByCaretListener = false;
+	private boolean automaticUpdate = false;
 	private int delayMs;
 
 	public SideKickToolBar(View view)
@@ -54,7 +54,7 @@ public class SideKickToolBar extends JToolBar
 		{
 			public void itemStateChanged(ItemEvent e)
 			{
-				if (itemChangedByCaretListener)
+				if (automaticUpdate)
 					return;
 				if (e.getStateChange() != ItemEvent.SELECTED)
 					return;
@@ -121,12 +121,14 @@ public class SideKickToolBar extends JToolBar
 	}
 	private void update()
 	{
+		automaticUpdate = true;
 		data = SideKickParsedData.getParsedData(view);
 		combo.removeAllItems();
 		if (data == null)
 			combo.addItem(jEdit.getProperty("sidekick-tree.not-parsed"));
 		else
 			addTree(data.root, null);
+		automaticUpdate = false;
 	}
 	private void addTree(TreeNode node, NodeWrapper parent)
 	{
@@ -162,9 +164,9 @@ public class SideKickToolBar extends JToolBar
 		}
 		if (selected != null)
 		{
-			itemChangedByCaretListener = true;
+			automaticUpdate = true;
 			combo.setSelectedItem(selected);
-			itemChangedByCaretListener = false;
+			automaticUpdate = false;
 		}
 	}
 
