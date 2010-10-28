@@ -1,13 +1,11 @@
 package sidekick;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.ArrayList;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
@@ -25,12 +23,12 @@ import javax.swing.tree.TreeNode;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.EditPane;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
-import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.jEdit;
 
 @SuppressWarnings("serial")
 public class SideKickToolBar extends JToolBar
