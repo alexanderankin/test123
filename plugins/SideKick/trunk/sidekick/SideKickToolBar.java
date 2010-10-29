@@ -63,8 +63,8 @@ public class SideKickToolBar extends JToolBar implements ActionListener
 			createSplitComboPanel();
 		else
 			createSingleCombo();
-		update();
 		followCaret = SideKick.isFollowCaret();
+		update();
 		delayMs = jEdit.getIntegerProperty("sidekick.toolBarUpdateDelay", 200);
 		if (followCaret)
 			addCaretListener();
@@ -92,6 +92,22 @@ public class SideKickToolBar extends JToolBar implements ActionListener
 	@EBHandler
 	public void handlePropertiesChanged(PropertiesChanged msg)
 	{
+		boolean newSplitCombo = jEdit.getBooleanProperty(SideKickOptionPane.SPLIT_COMBO);
+		if (newSplitCombo != splitCombo)
+		{
+			splitCombo = newSplitCombo;
+			if (splitCombo)
+			{
+				removeSingleCombo();
+				createSplitComboPanel();
+			}
+			else
+			{
+				removeSplitComboPanel();
+				createSingleCombo();
+			}
+			update();
+		}
 		delayMs = jEdit.getIntegerProperty("sidekick.toolBarUpdateDelay", 200);
 		boolean newFollowCaret = SideKick.isFollowCaret();
 		if (newFollowCaret != followCaret)
@@ -134,7 +150,17 @@ public class SideKickToolBar extends JToolBar implements ActionListener
 			updateSplitCombo();
 		else
 			updateSingleCombo();
+		if (followCaret)
+			updateSelectionByCaretPosition();
 		automaticUpdate = false;
+	}
+
+	private void updateSelectionByCaretPosition()
+	{
+		JEditTextArea textArea = view.getTextArea();
+		int caret = textArea.getCaretPosition();
+		Selection s = textArea.getSelectionAtOffset(caret);
+		selectItemAtPosition(s == null ? caret : s.getStart());
 	}
 
 	public void dispose()
@@ -173,6 +199,12 @@ public class SideKickToolBar extends JToolBar implements ActionListener
 			}
 		});
 		add(combo);
+	}
+
+	private void removeSingleCombo()
+	{
+		remove(combo);
+		combo = null;
 	}
 
 	private void updateSingleCombo()
@@ -229,6 +261,15 @@ public class SideKickToolBar extends JToolBar implements ActionListener
 		splitComboPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		add(splitComboPanel);
 		getSplitCombo(0);
+	}
+
+	private void removeSplitComboPanel()
+	{
+		for (JComboBox c: combos)
+			splitComboPanel.remove(c);
+		combos = null;
+		remove(splitComboPanel);
+		splitComboPanel = null;
 	}
 
 	private void updateSplitCombo()
@@ -354,10 +395,7 @@ public class SideKickToolBar extends JToolBar implements ActionListener
 				{
 					public void actionPerformed(ActionEvent evt)
 					{
-						JEditTextArea textArea = view.getTextArea();
-						int caret = textArea.getCaretPosition();
-						Selection s = textArea.getSelectionAtOffset(caret);
-						selectItemAtPosition(s == null ? caret : s.getStart());
+						updateSelectionByCaretPosition();
 					}
 				});
 				caretTimer.setRepeats(false);

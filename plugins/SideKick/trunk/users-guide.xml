@@ -168,6 +168,27 @@
 
   </chapter>
 
+  <chapter id="toolbar">
+    <title>Tool Bar</title>
+    
+    <para>
+  SideKick can optionally display the structure of the buffer in a toolbar, using
+  one or more combo-boxes. This option is useful where screen real-estate is
+  important and the tree takes too much of the screen. To use this option, select
+      <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;
+      <guisubmenu>General</guisubmenu>&gt;<guimenuitem>Show the assets in a
+      combo-box (inside a toolbar).</guimenuitem>
+  By default, a single combo-box is shown, which can be used to jump to various
+  positions inside the buffer, or to show the current asset.
+  There is also an option to show a separate check-box for each level in the
+  SideKick tree. To use this option, select
+      <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;
+      <guisubmenu>General</guisubmenu>&gt;<guimenuitem>Use a separate combo-box
+      for each level of the tree.<guimenuitem>
+    </para>
+  
+  </chapter>
+
   <chapter id="folding">
     <title>Folding</title>
 
