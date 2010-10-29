@@ -13,4 +13,8 @@
 	<SERVICE NAME="rfc" CLASS="gatchan.jedit.hyperlinks.HyperlinkSource">
 		new gatchan.jedit.rfcreader.RFCHyperlinkSource();
 	</SERVICE>
+
+    <SERVICE NAME="numbers" CLASS="gatchan.jedit.rfcreader.RFCIndex">
+		new gatchan.jedit.rfcreader.RFCIndexNumbers();
+	</SERVICE>
 </SERVICES>
