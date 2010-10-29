@@ -21,9 +21,8 @@
  */
 package gatchan.jedit.rfcreader;
 
-import org.gjt.sp.jedit.EditPlugin;
-import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
 
 import java.awt.*;
 import java.io.IOException;
@@ -34,24 +33,50 @@ import java.util.Map;
  * @author Matthieu Casanova
  * @version $Id: Server.java,v 1.33 2007/01/05 15:15:17 matthieu Exp $
  */
-public class RFCReaderPlugin extends EditPlugin
+public class RFCReaderPlugin extends EBPlugin
 {
 	Map<Integer, RFC> rfcList;
-	RFCIndex index;
+	private RFCIndex index;
+
+	private String currentService;
 
 	@Override
 	public void start()
 	{
 		RFCListParser parser = new RFCListParser();
 		rfcList = parser.parse();
-		try
+	}
+
+	public RFCIndex getIndex()
+	{
+		if (index == null)
 		{
-			index = new RFCIndex(getPluginHome(), rfcList);
-			index.load();
+			try
+			{
+				String s = jEdit.getProperty("rfc.indexservice", "numbers");
+				index = ServiceManager.getService(RFCIndex.class, s);
+				if (index == null)
+					index = ServiceManager.getService(RFCIndex.class, "numbers");
+				index.load();
+				currentService = s;
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
 		}
-		catch (IOException e)
+		return index;
+	}
+
+	@EditBus.EBHandler
+	public void handlePropertiesChanged(PropertiesChanged pc)
+	{
+		String s = jEdit.getProperty("rfc.indexservice", "numbers");
+		if (!s.equals(currentService))
 		{
-			e.printStackTrace();
+			currentService = s;
+			index.close();
+			index = null;
 		}
 	}
 
@@ -79,5 +104,8 @@ public class RFCReaderPlugin extends EditPlugin
 		EventQueue.invokeLater(window.requestFocusWorker);
 	}
 
-
+	public Map<Integer, RFC> getRfcList()
+	{
+		return rfcList;
+	}
 }

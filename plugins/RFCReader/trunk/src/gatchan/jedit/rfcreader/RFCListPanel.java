@@ -30,10 +30,7 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Vector;
 
 /**
  * @author Matthieu Casanova
@@ -69,7 +66,7 @@ public class RFCListPanel extends JPanel
 
 
 		RFCReaderPlugin plugin = (RFCReaderPlugin) jEdit.getPlugin("gatchan.jedit.rfcreader.RFCReaderPlugin");
-		index = plugin.index;
+		index = plugin.getIndex();
 		model = new RFCListModel(plugin.rfcList);
 		list = new JList(model);
 
