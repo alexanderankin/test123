@@ -98,6 +98,8 @@ options.sidekick.scrollToVisible=true
 
 options.sidekick.showToolBar.label=Show the assets in a combo-box (inside a toolbar)
 sidekick.showToolBar=false
+options.sidekick.splitCombo.label=Use a separate combo-box for each level of the tree
+sidekick.splitCombo=false
 
 # Default parse on buffer change switch
 sidekick.buffer-change-parse=true

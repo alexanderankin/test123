@@ -29,12 +29,14 @@ import javax.swing.border.TitledBorder;
 import java.awt.event.*;
 import java.awt.*;
 import java.util.Hashtable;
-import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
 //}}}
 
 public class SideKickOptionPane extends AbstractOptionPane
 {
+	public static final String SHOW_TOOL_BAR = "sidekick.showToolBar";
+	public static final String SPLIT_COMBO = "sidekick.splitCombo";
+
 	//{{{ SideKickOptionPane constructor
 	public SideKickOptionPane()
 	{
@@ -46,8 +48,10 @@ public class SideKickOptionPane extends AbstractOptionPane
 	{
 		addComponent(showToolBar = new JCheckBox(jEdit.getProperty(
 			"options.sidekick.showToolBar.label")));
-		showToolBar.setSelected(jEdit.getBooleanProperty(
-			"sidekick.showToolBar"));
+		showToolBar.setSelected(jEdit.getBooleanProperty(SHOW_TOOL_BAR));
+		addComponent(splitCombo = new JCheckBox(jEdit.getProperty(
+			"options.sidekick.splitCombo.label")));
+		splitCombo.setSelected(jEdit.getBooleanProperty(SPLIT_COMBO));
 		addComponent(showToolTips = new JCheckBox(jEdit.getProperty(
 			"options.sidekick.showToolTips.label")));
 		showToolTips.setSelected(jEdit.getBooleanProperty(
@@ -215,7 +219,8 @@ public class SideKickOptionPane extends AbstractOptionPane
 		jEdit.setProperty("sidekick.auto-parse-delay",String.valueOf(
 			autoParseDelay.getValue()));
 		SideKick.setFollowCaret(treeFollowsCaret.isSelected());
-		jEdit.setBooleanProperty("sidekick.showToolBar", showToolBar.isSelected());
+		jEdit.setBooleanProperty(SHOW_TOOL_BAR, showToolBar.isSelected());
+		jEdit.setBooleanProperty(SPLIT_COMBO, splitCombo.isSelected());
 		jEdit.setBooleanProperty("sidekick.showToolTips", showToolTips.isSelected());
 		jEdit.setBooleanProperty("sidekick.showStatusWindow", showStatusWindow.isSelected());
 		jEdit.setBooleanProperty("sidekick.scrollToVisible", scrollToVisible.isSelected());
@@ -252,6 +257,7 @@ public class SideKickOptionPane extends AbstractOptionPane
 	private JSlider completeDelay;
 	private JCheckBox autoCompletePopupGetFocus;
 	private JCheckBox showToolBar;
+	private JCheckBox splitCombo;
 	private JCheckBox showToolTips;
 	private JCheckBox showStatusWindow;
 	private JTextField acceptChars;
