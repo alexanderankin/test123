@@ -6,8 +6,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
 
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -15,11 +15,13 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
+import javax.swing.ListCellRenderer;
 import javax.swing.Timer;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditBus.EBHandler;
@@ -43,6 +45,10 @@ public class SideKickToolBar extends JToolBar implements ActionListener
 	private SideKickParsedData data;
 	private boolean automaticUpdate = false;
 	private int delayMs;
+	private boolean splitCombo;
+	private JPanel splitComboPanel;
+	private ArrayList<JComboBox> combos;
+	private ComboCellRenderer renderer;
 
 	public SideKickToolBar(View view)
 	{
@@ -51,23 +57,12 @@ public class SideKickToolBar extends JToolBar implements ActionListener
 		select = new JButton(jEdit.getProperty("sidekick-toolbar.select"));
 		select.addActionListener(this);
 		add(select);
-		combo = new JComboBox();
-		combo.setRenderer(new ComboCellRenderer());
-		combo.addItemListener(new ItemListener()
-		{
-			public void itemStateChanged(ItemEvent e)
-			{
-				if (automaticUpdate)
-					return;
-				if (e.getStateChange() != ItemEvent.SELECTED)
-					return;
-				Object o = e.getItem();
-				if (! (o instanceof NodeWrapper))
-					return;
-				((NodeWrapper)o).jump(SideKickToolBar.this.view);
-			}
-		});
-		add(combo);
+		renderer = new ComboCellRenderer();
+		splitCombo = jEdit.getBooleanProperty(SideKickOptionPane.SPLIT_COMBO);
+		if (splitCombo)
+			createSplitComboPanel();
+		else
+			createSingleCombo();
 		update();
 		followCaret = SideKick.isFollowCaret();
 		delayMs = jEdit.getIntegerProperty("sidekick.toolBarUpdateDelay", 200);
@@ -135,13 +130,60 @@ public class SideKickToolBar extends JToolBar implements ActionListener
 	{
 		automaticUpdate = true;
 		data = SideKickParsedData.getParsedData(view);
+		if (splitCombo)
+			updateSplitCombo();
+		else
+			updateSingleCombo();
+		automaticUpdate = false;
+	}
+
+	public void dispose()
+	{
+		EditBus.removeFromBus(this);
+	}
+
+	private void selectItemAtPosition(int position)
+	{
+		if (splitCombo)
+			selectItemAtPositionSplitCombo(position);
+		else
+			selectItemAtPositionSingleCombo(position);
+	}
+
+	/*
+	 * Single combo mode
+	 */
+
+	private void createSingleCombo()
+	{
+		combo = new JComboBox();
+		combo.setRenderer(renderer);
+		combo.addItemListener(new ItemListener()
+		{
+			public void itemStateChanged(ItemEvent e)
+			{
+				if (automaticUpdate)
+					return;
+				if (e.getStateChange() != ItemEvent.SELECTED)
+					return;
+				Object o = e.getItem();
+				if (! (o instanceof NodeWrapper))
+					return;
+				((NodeWrapper)o).jump(SideKickToolBar.this.view);
+			}
+		});
+		add(combo);
+	}
+
+	private void updateSingleCombo()
+	{
 		combo.removeAllItems();
 		if (data == null)
 			combo.addItem(jEdit.getProperty("sidekick-tree.not-parsed"));
 		else
 			addTree(data.root, null);
-		automaticUpdate = false;
 	}
+
 	private void addTree(TreeNode node, NodeWrapper parent)
 	{
 		// Always insert children only
@@ -155,12 +197,7 @@ public class SideKickToolBar extends JToolBar implements ActionListener
 		}
 	}
 
-	public void dispose()
-	{
-		EditBus.removeFromBus(this);
-	}
-
-	private void selectItemAtPosition(int position)
+	private void selectItemAtPositionSingleCombo(int position)
 	{
 		NodeWrapper selected = null;
 		for (int i = 0; i < combo.getItemCount(); i++)
@@ -179,6 +216,125 @@ public class SideKickToolBar extends JToolBar implements ActionListener
 			automaticUpdate = true;
 			combo.setSelectedItem(selected);
 			automaticUpdate = false;
+		}
+	}
+
+	/*
+	 * Split combo mode
+	 */
+
+	private void createSplitComboPanel()
+	{
+		combos = new ArrayList<JComboBox>();
+		splitComboPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		add(splitComboPanel);
+		getSplitCombo(0);
+	}
+
+	private void updateSplitCombo()
+	{
+		JComboBox c = combos.get(0);
+		c.removeAllItems();
+		if (data == null)
+			c.addItem(jEdit.getProperty("sidekick-tree.not-parsed"));
+		else
+			addFirstTreeLevel(data.root);
+	}
+	
+	private void addFirstTreeLevel(TreeNode node)
+	{
+		JComboBox c = combos.get(0);
+		addChildrenToSplitCombo(node, c, 0);
+	}
+
+	private void addChildrenToSplitCombo(TreeNode node, JComboBox c, int index)
+	{
+		for (int i = 0; i < node.getChildCount(); i++)
+		{
+			TreeNode child = node.getChildAt(i);
+			NodeWrapper nw = new NodeWrapper(child);
+			c.addItem(nw);
+		}
+		Object o = c.getSelectedItem();
+		if (o != null)
+			updateNextTreeLevel((NodeWrapper)o, index + 1);
+	}
+
+	private JComboBox getSplitCombo(final int index)
+	{
+		if (index < combos.size())
+			return combos.get(index);
+		JComboBox c = new JComboBox();
+		c.setRenderer(renderer);
+		combos.add(c);
+		splitComboPanel.add(c);
+		c.addItemListener(new ItemListener()
+		{
+			public void itemStateChanged(ItemEvent e)
+			{
+				if (automaticUpdate)
+					return;
+				if (e.getStateChange() != ItemEvent.SELECTED)
+					return;
+				Object o = e.getItem();
+				if (! (o instanceof NodeWrapper))
+					return;
+				NodeWrapper nw = (NodeWrapper) o;
+				updateNextTreeLevel(nw, index + 1);
+			}
+		});
+		return c;
+	}
+
+	private void updateNextTreeLevel(NodeWrapper nw, int index)
+	{
+		if (nw.node == null)
+			return;
+		int children = nw.node.getChildCount();
+		if (children == 0)
+		{
+			// This is a leaf node - remove trailing combos and jump to asset if exists
+			while (combos.size() > index)
+			{
+				JComboBox removed = combos.remove(index);
+				splitComboPanel.remove(removed);
+			}
+			if (! automaticUpdate)
+				nw.jump(view);
+		}
+		else
+		{
+			JComboBox c;
+			c = getSplitCombo(index);
+			c.removeAllItems();
+			addChildrenToSplitCombo(nw.node, c, index);
+		}
+	}
+
+	private void selectItemAtPositionSplitCombo(int position)
+	{
+		TreePath tp = data.getTreePathForPosition(position);
+		// Ignore first path element, which is the file itself
+		for (int i = 1; i < tp.getPathCount(); i++)
+		{
+			Object o = tp.getPathComponent(i);
+			JComboBox c = getSplitCombo(i - 1);
+			boolean found = false;
+			for (int j = 0; j < c.getItemCount(); j++)
+			{
+				NodeWrapper nw = (NodeWrapper) c.getItemAt(j);
+				if (nw.node == o)
+				{
+					automaticUpdate = true;
+					c.setSelectedIndex(j);
+					updateNextTreeLevel(nw, i);
+					automaticUpdate = false;
+					found = true;
+					break;
+				}
+			}
+			if (! found)
+				break;
 		}
 	}
 
@@ -217,9 +373,18 @@ public class SideKickToolBar extends JToolBar implements ActionListener
 		public String str;
 		public Icon icon;
 		public Asset asset;
+		public TreeNode node;
+
+		// A constructor for split combo mode - each node shows itself only
+		public NodeWrapper(TreeNode node)
+		{
+			this(null, node);
+		}
+		// A constructor for single combo mode - each node shows the path
 		public NodeWrapper(NodeWrapper parent, TreeNode node)
 		{
 			this.parent = parent;
+			this.node = node;
 			if (node instanceof DefaultMutableTreeNode)
 			{
 				DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) node;
@@ -279,7 +444,7 @@ public class SideKickToolBar extends JToolBar implements ActionListener
 		}
 	}
 
-	private static class ComboCellRenderer extends DefaultListCellRenderer
+	private static class ComboCellRenderer implements ListCellRenderer
 	{
 		public Component getListCellRendererComponent(JList list, Object value,
 				int index, boolean isSelected, boolean cellHasFocus)
