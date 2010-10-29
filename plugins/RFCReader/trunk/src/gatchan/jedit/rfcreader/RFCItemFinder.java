@@ -56,7 +56,7 @@ public class RFCItemFinder implements ItemFinder<RFC>
 			model.reset();
 		else
 		{
-			List<RFC> rfcList = plugin.index.search(s+ '*');
+			List<RFC> rfcList = plugin.getIndex().search(s+ '*');
 			model.setData(rfcList);
 		}
 	}
