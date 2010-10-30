@@ -36,6 +36,7 @@ public class SideKickOptionPane extends AbstractOptionPane
 {
 	public static final String SHOW_TOOL_BAR = "sidekick.showToolBar";
 	public static final String SPLIT_COMBO = "sidekick.splitCombo";
+	public static final String SINGLE_ICON_IN_COMBO = "sidekick.singleIconInCombo";
 
 	//{{{ SideKickOptionPane constructor
 	public SideKickOptionPane()
@@ -46,12 +47,22 @@ public class SideKickOptionPane extends AbstractOptionPane
 	//{{{ _init() method
 	protected void _init()
 	{
-		addComponent(showToolBar = new JCheckBox(jEdit.getProperty(
-			"options.sidekick.showToolBar.label")));
+		JPanel toolbarPanel = new JPanel(new GridLayout(0, 1));
+		toolbarPanel.setBorder(new TitledBorder(jEdit.getProperty(
+			"options.sidekick.toolBar.label")));
+		addComponent(toolbarPanel);
+		showToolBar = new JCheckBox(jEdit.getProperty(
+			"options.sidekick.showToolBar.label"));
 		showToolBar.setSelected(jEdit.getBooleanProperty(SHOW_TOOL_BAR));
-		addComponent(splitCombo = new JCheckBox(jEdit.getProperty(
-			"options.sidekick.splitCombo.label")));
+		toolbarPanel.add(showToolBar);
+		splitCombo = new JCheckBox(jEdit.getProperty(
+			"options.sidekick.splitCombo.label"));
 		splitCombo.setSelected(jEdit.getBooleanProperty(SPLIT_COMBO));
+		toolbarPanel.add(splitCombo);
+		singleIconInCombo = new JCheckBox(jEdit.getProperty(
+			"options.sidekick.singleIconInCombo.label"));
+		singleIconInCombo.setSelected(jEdit.getBooleanProperty(SINGLE_ICON_IN_COMBO));
+		toolbarPanel.add(singleIconInCombo);
 		addComponent(showToolTips = new JCheckBox(jEdit.getProperty(
 			"options.sidekick.showToolTips.label")));
 		showToolTips.setSelected(jEdit.getBooleanProperty(
@@ -221,6 +232,7 @@ public class SideKickOptionPane extends AbstractOptionPane
 		SideKick.setFollowCaret(treeFollowsCaret.isSelected());
 		jEdit.setBooleanProperty(SHOW_TOOL_BAR, showToolBar.isSelected());
 		jEdit.setBooleanProperty(SPLIT_COMBO, splitCombo.isSelected());
+		jEdit.setBooleanProperty(SINGLE_ICON_IN_COMBO, singleIconInCombo.isSelected());
 		jEdit.setBooleanProperty("sidekick.showToolTips", showToolTips.isSelected());
 		jEdit.setBooleanProperty("sidekick.showStatusWindow", showStatusWindow.isSelected());
 		jEdit.setBooleanProperty("sidekick.scrollToVisible", scrollToVisible.isSelected());
@@ -258,6 +270,7 @@ public class SideKickOptionPane extends AbstractOptionPane
 	private JCheckBox autoCompletePopupGetFocus;
 	private JCheckBox showToolBar;
 	private JCheckBox splitCombo;
+	private JCheckBox singleIconInCombo;
 	private JCheckBox showToolTips;
 	private JCheckBox showStatusWindow;
 	private JTextField acceptChars;

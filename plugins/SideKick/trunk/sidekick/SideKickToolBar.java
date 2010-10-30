@@ -49,6 +49,7 @@ public class SideKickToolBar extends JToolBar implements ActionListener
 	private JPanel splitComboPanel;
 	private ArrayList<JComboBox> combos;
 	private ComboCellRenderer renderer;
+	private boolean singleIconInCombo;
 
 	public SideKickToolBar(View view)
 	{
@@ -63,6 +64,8 @@ public class SideKickToolBar extends JToolBar implements ActionListener
 			createSplitComboPanel();
 		else
 			createSingleCombo();
+		singleIconInCombo = jEdit.getBooleanProperty(
+			SideKickOptionPane.SINGLE_ICON_IN_COMBO);
 		followCaret = SideKick.isFollowCaret();
 		update();
 		delayMs = jEdit.getIntegerProperty("sidekick.toolBarUpdateDelay", 200);
@@ -107,6 +110,16 @@ public class SideKickToolBar extends JToolBar implements ActionListener
 				createSingleCombo();
 			}
 			update();
+		}
+		else if (! splitCombo)
+		{
+			boolean newSingleIconInCombo = jEdit.getBooleanProperty(
+					SideKickOptionPane.SINGLE_ICON_IN_COMBO);
+			if (newSingleIconInCombo != singleIconInCombo)
+			{
+				singleIconInCombo = newSingleIconInCombo;
+				update();
+			}
 		}
 		delayMs = jEdit.getIntegerProperty("sidekick.toolBarUpdateDelay", 200);
 		boolean newFollowCaret = SideKick.isFollowCaret();
@@ -203,6 +216,8 @@ public class SideKickToolBar extends JToolBar implements ActionListener
 
 	private void removeSingleCombo()
 	{
+		if (combo == null)
+			return;
 		remove(combo);
 		combo = null;
 	}
@@ -265,6 +280,8 @@ public class SideKickToolBar extends JToolBar implements ActionListener
 
 	private void removeSplitComboPanel()
 	{
+		if (combos == null)
+			return;
 		for (JComboBox c: combos)
 			splitComboPanel.remove(c);
 		combos = null;
@@ -405,7 +422,7 @@ public class SideKickToolBar extends JToolBar implements ActionListener
 		}
 	}
 
-	private static class NodeWrapper
+	private class NodeWrapper
 	{
 		public NodeWrapper parent;
 		public String str;
@@ -470,13 +487,31 @@ public class SideKickToolBar extends JToolBar implements ActionListener
 		{
 			return (asset != null);
 		}
+		public void addParentLabel(JPanel p, Icon childIcon)
+		{
+			if (parent != null)
+				parent.addParentLabel(p, childIcon);
+			JLabel l = new JLabel();
+			l.setText(str);
+			if (singleIconInCombo)
+			{
+				if ((parent == null) && (childIcon != null))
+					l.setIcon(childIcon);
+			}
+			else
+			{
+				if (icon != null)
+					l.setIcon(icon);
+			}
+			p.add(l);
+		}
 		public void addLabel(JPanel p)
 		{
 			if (parent != null)
-				parent.addLabel(p);
+				parent.addParentLabel(p, icon);
 			JLabel l = new JLabel();
 			l.setText(str);
-			if (icon != null)
+			if ((icon != null) && ((! singleIconInCombo) || (parent == null)))
 				l.setIcon(icon);
 			p.add(l);
 		}

@@ -96,10 +96,13 @@ options.sidekick.showStatusWindow=true
 options.sidekick.scrollToVisible.label=Scroll to make selection visible as much as possible
 options.sidekick.scrollToVisible=true
 
-options.sidekick.showToolBar.label=Show the assets in a combo-box (inside a toolbar)
+options.sidekick.toolBar.label=Toolbar options
+options.sidekick.showToolBar.label=Show the toolbar (buffer structure in combo-boxes)
 sidekick.showToolBar=false
 options.sidekick.splitCombo.label=Use a separate combo-box for each level of the tree
 sidekick.splitCombo=false
+options.sidekick.singleIconInCombo.label=In single combo-box mode, hide icons of parent nodes
+sidekick.singleIconInCombo=true
 
 # Default parse on buffer change switch
 sidekick.buffer-change-parse=true
