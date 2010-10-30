@@ -82,7 +82,7 @@ public class SideKickToolBar extends JToolBar implements ActionListener
 			if (! (o instanceof NodeWrapper))
 				return;
 			NodeWrapper nw = (NodeWrapper) o;
-			nw.select(view);
+			nw.select();
 		}
 	}
 
@@ -114,7 +114,7 @@ public class SideKickToolBar extends JToolBar implements ActionListener
 		else if (! splitCombo)
 		{
 			boolean newSingleIconInCombo = jEdit.getBooleanProperty(
-					SideKickOptionPane.SINGLE_ICON_IN_COMBO);
+				SideKickOptionPane.SINGLE_ICON_IN_COMBO);
 			if (newSingleIconInCombo != singleIconInCombo)
 			{
 				singleIconInCombo = newSingleIconInCombo;
@@ -208,7 +208,7 @@ public class SideKickToolBar extends JToolBar implements ActionListener
 				Object o = e.getItem();
 				if (! (o instanceof NodeWrapper))
 					return;
-				((NodeWrapper)o).jump(SideKickToolBar.this.view);
+				((NodeWrapper)o).jump();
 			}
 		});
 		add(combo);
@@ -358,7 +358,7 @@ public class SideKickToolBar extends JToolBar implements ActionListener
 				splitComboPanel.remove(removed);
 			}
 			if (! automaticUpdate)
-				nw.jump(view);
+				nw.jump();
 		}
 		else
 		{
@@ -459,13 +459,13 @@ public class SideKickToolBar extends JToolBar implements ActionListener
 				}
 			}
 		}
-		public void jump(View view)
+		public void jump()
 		{
 			if (asset == null)
 				return;
 			view.getTextArea().setCaretPosition(asset.start.getOffset());
 		}
-		public void select(View view)
+		public void select()
 		{
 			if (asset == null)
 				return;
@@ -495,14 +495,11 @@ public class SideKickToolBar extends JToolBar implements ActionListener
 			l.setText(str);
 			if (singleIconInCombo)
 			{
-				if ((parent == null) && (childIcon != null))
+				if (parent == null)
 					l.setIcon(childIcon);
 			}
 			else
-			{
-				if (icon != null)
-					l.setIcon(icon);
-			}
+				l.setIcon(icon);
 			p.add(l);
 		}
 		public void addLabel(JPanel p)
@@ -511,18 +508,19 @@ public class SideKickToolBar extends JToolBar implements ActionListener
 				parent.addParentLabel(p, icon);
 			JLabel l = new JLabel();
 			l.setText(str);
-			if ((icon != null) && ((! singleIconInCombo) || (parent == null)))
+			if ((! singleIconInCombo) || (parent == null))
 				l.setIcon(icon);
 			p.add(l);
 		}
 	}
 
-	private static class ComboCellRenderer implements ListCellRenderer
+	private class ComboCellRenderer implements ListCellRenderer
 	{
 		public Component getListCellRendererComponent(JList list, Object value,
 				int index, boolean isSelected, boolean cellHasFocus)
 		{
-			JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 1));
+			JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT,
+				(singleIconInCombo ? 7 : 3), 1));
 			if (value instanceof NodeWrapper)
 			{
 				NodeWrapper nw = (NodeWrapper) value;
