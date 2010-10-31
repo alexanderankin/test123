@@ -14,7 +14,7 @@
 		new gatchan.jedit.rfcreader.RFCHyperlinkSource();
 	</SERVICE>
 
-    <SERVICE NAME="numbers" CLASS="gatchan.jedit.rfcreader.RFCIndex">
-		new gatchan.jedit.rfcreader.RFCIndexNumbers();
+    <SERVICE NAME="title" CLASS="gatchan.jedit.rfcreader.RFCIndex">
+		new gatchan.jedit.rfcreader.RFCIndexTitle();
 	</SERVICE>
 </SERVICES>

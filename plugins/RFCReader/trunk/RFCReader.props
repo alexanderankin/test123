@@ -26,8 +26,8 @@ options.rfcreader.code=new gatchan.jedit.rfcreader.RFCReaderOptionPane();
 
 options.rfcreader.rfcsources.0=ietf.org
 options.rfcreader.rfcsources.1=rfc-editor.org
-
-
+options.mirror.label=Mirror:
+options.indexService.label=Index service:
 
 options.rfcreader.rfcsources.rfc.net.label=http://www.rfc.net/
 options.rfcreader.rfcsources.rfc.net.url=http://www.rfc.net/rfc{0}.txt
@@ -49,3 +49,6 @@ rfcreader.index.version=0
 
 
 rfcreader.searchLabel.label=Search RFC:
+
+options.rfcreader.index=title
+service.rfcindex.title.label=Titles Index
