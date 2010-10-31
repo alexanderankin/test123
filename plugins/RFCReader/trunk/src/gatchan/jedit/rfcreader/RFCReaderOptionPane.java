@@ -25,10 +25,12 @@ package gatchan.jedit.rfcreader;
 //{{{ Imports
 
 import org.gjt.sp.jedit.AbstractOptionPane;
+import org.gjt.sp.jedit.ServiceManager;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.Vector;
 //}}}
 
@@ -40,6 +42,7 @@ import java.util.Vector;
 public class RFCReaderOptionPane extends AbstractOptionPane
 {
 	private JList mirrorList;
+	private JComboBox indexService;
 
 	//{{{ RFCReaderOptionPane constructor
 	public RFCReaderOptionPane()
@@ -69,7 +72,13 @@ public class RFCReaderOptionPane extends AbstractOptionPane
 			mirrorList.setSelectedValue(currentMirror, true);
 		else
 			mirrorList.setSelectedIndex(0);
-		addComponent("Mirror : ", new JScrollPane(mirrorList));
+		addComponent(jEdit.getProperty("options.mirror.label"), new JScrollPane(mirrorList));
+
+		String[] serviceNames = ServiceManager.getServiceNames(RFCIndex.class);
+		indexService = new JComboBox(serviceNames);
+		indexService.setSelectedItem(jEdit.getProperty("options.rfcreader.index", RFCReaderPlugin.DEFAULT_INDEX));
+		indexService.setRenderer(new MyCellRenderer());
+		addComponent(jEdit.getProperty("options.indexService.label"), indexService);
 	} //}}}
 
 	//{{{ _save() method
@@ -77,11 +86,12 @@ public class RFCReaderOptionPane extends AbstractOptionPane
 	{
 		Mirror mirror = (Mirror) mirrorList.getSelectedValue();
 		jEdit.setProperty(RFCHyperlink.MIRROR_PROPERTY, mirror.id);
+		jEdit.setProperty("options.rfcreader.index", String.valueOf(indexService.getSelectedItem()));
 		Log.log(Log.DEBUG,this, "Using mirror:"+mirror);
 	} //}}}
 
 	//{{{ Mirror class
-	public static class Mirror
+	private static class Mirror
 	{
 		public String id;
 		public String label;
@@ -89,6 +99,21 @@ public class RFCReaderOptionPane extends AbstractOptionPane
 		public String toString()
 		{
 			return label;
+		}
+	} //}}}
+
+	//{{{ MyCellRenderer class
+	private static class MyCellRenderer extends DefaultListCellRenderer
+	{
+		@Override
+		public Component getListCellRendererComponent(JList list, Object value, int index,
+							      boolean isSelected, boolean cellHasFocus)
+		{
+			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+			String label = jEdit.getProperty("service.rfcindex." + value + ".label",
+				String.valueOf(value));
+			setText(label);
+			return this;
 		}
 	} //}}}
 } //}}}

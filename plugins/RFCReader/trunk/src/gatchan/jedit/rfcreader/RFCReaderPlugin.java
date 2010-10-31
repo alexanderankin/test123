@@ -22,7 +22,9 @@
 package gatchan.jedit.rfcreader;
 
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
+import org.gjt.sp.util.Log;
 
 import java.awt.*;
 import java.io.IOException;
@@ -39,45 +41,14 @@ public class RFCReaderPlugin extends EBPlugin
 	private RFCIndex index;
 
 	private String currentService;
+	public static final String DEFAULT_INDEX = "title";
 
 	@Override
 	public void start()
 	{
+		EditBus.addToBus(this);
 		RFCListParser parser = new RFCListParser();
 		rfcList = parser.parse();
-	}
-
-	public RFCIndex getIndex()
-	{
-		if (index == null)
-		{
-			try
-			{
-				String s = jEdit.getProperty("rfc.indexservice", "numbers");
-				index = ServiceManager.getService(RFCIndex.class, s);
-				if (index == null)
-					index = ServiceManager.getService(RFCIndex.class, "numbers");
-				index.load();
-				currentService = s;
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
-		}
-		return index;
-	}
-
-	@EditBus.EBHandler
-	public void handlePropertiesChanged(PropertiesChanged pc)
-	{
-		String s = jEdit.getProperty("rfc.indexservice", "numbers");
-		if (!s.equals(currentService))
-		{
-			currentService = s;
-			index.close();
-			index = null;
-		}
 	}
 
 	@Override
@@ -86,6 +57,40 @@ public class RFCReaderPlugin extends EBPlugin
 		rfcList = null;
 		index.close();
 		index = null;
+		EditBus.removeFromBus(this);
+	}
+
+	public RFCIndex getIndex()
+	{
+		if (index == null)
+		{
+			try
+			{
+				String s = jEdit.getProperty("options.rfcreader.index", DEFAULT_INDEX);
+				index = ServiceManager.getService(RFCIndex.class, s);
+				if (index == null)
+					index = ServiceManager.getService(RFCIndex.class, DEFAULT_INDEX);
+				index.load();
+				currentService = s;
+			}
+			catch (IOException e)
+			{
+				Log.log(Log.ERROR, this, e);
+			}
+		}
+		return index;
+	}
+
+	@EBHandler
+	public void handlePropertiesChanged(PropertiesChanged msg)
+	{
+		String s = jEdit.getProperty("options.rfcreader.index", DEFAULT_INDEX);
+		if (!s.equals(currentService))
+		{
+			currentService = s;
+			index.close();
+			index = null;
+		}
 	}
 
 	public static void openRFC(View view, int rfcNum)
