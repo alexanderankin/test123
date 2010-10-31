@@ -11,7 +11,7 @@ plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.depend.2=plugin gatchan.jedit.hyp
 plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.depend.3=plugin gatchan.jedit.lucene.LucenePlugin 2.0
 plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.description=RFC Reader is a plugin that makes rfc reading more pleasant
 plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.usePluginHome=true
-plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.docs=index.html
+plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.docs=docs/RFCReader.html
 
 plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.menu=openRFC \
                                                     rfc-panel
