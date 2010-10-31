@@ -1,0 +1,54 @@
+# RFCReader jEdit Plugin
+# Author: Matthieu Casanova
+
+plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.activate=defer
+plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.name=RFCReader
+plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.author=Matthieu Casanova
+plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.version=1.5.0
+plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.depend.0=jdk 1.5
+plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.depend.1=jedit 04.03.99.00
+plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.depend.2=plugin gatchan.jedit.hyperlinks.HyperlinksPlugin 1.0.1
+plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.depend.3=plugin gatchan.jedit.lucene.LucenePlugin 2.0
+plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.description=RFC Reader is a plugin that makes rfc reading more pleasant
+plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.usePluginHome=true
+plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.docs=docs/RFCReader.html
+
+plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.menu=openRFC \
+                                                    rfc-panel
+openRFC.label=Open RFC
+rfc-panel.label=RFC list
+rfc-panel.title=RFC list
+# Option pane
+plugin.gatchan.jedit.rfcreader.RFCReaderPlugin.option-pane=rfcreader
+
+options.rfcreader.label=RFC Reader
+options.rfcreader.code=new gatchan.jedit.rfcreader.RFCReaderOptionPane();
+
+options.rfcreader.rfcsources.0=ietf.org
+options.rfcreader.rfcsources.1=rfc-editor.org
+options.mirror.label=Mirror:
+options.indexService.label=Index service:
+
+options.rfcreader.rfcsources.rfc.net.label=http://www.rfc.net/
+options.rfcreader.rfcsources.rfc.net.url=http://www.rfc.net/rfc{0}.txt
+options.rfcreader.rfcsources.ietf.org.label=http://www.ietf.org/
+options.rfcreader.rfcsources.ietf.org.url=http://www.ietf.org/rfc/rfc{0}.txt
+options.rfcreader.rfcsources.rfc-editor.org.label=http://www.rfc-editor.org
+options.rfcreader.rfcsources.rfc-editor.org.url=http://www.rfc-editor.org/rfc/rfc{0}.txt
+
+#the rfc site that will be used
+options.rfcreader.source=ietf.org
+
+# default folding and sidekick parsing modes for rfc files
+mode.rfc.folding=rfc-chapters
+mode.rfc.customSettings=true
+mode.rfc.sidekick.parser=outline
+mode.rfc.hyperlink.source=rfc
+
+rfcreader.index.version=0
+
+
+rfcreader.searchLabel.label=Search RFC:
+
+options.rfcreader.index=title
+service.rfcindex.title.label=Titles Index
