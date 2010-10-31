@@ -1,0 +1,15 @@
+# RFCFullIndex jEdit Plugin
+# Author: Matthieu Casanova
+
+plugin.com.kpouer.jedit.rfc.full.FullRFCIndexPlugin.activate=defer
+plugin.com.kpouer.jedit.rfc.full.FullRFCIndexPlugin.name=RFCFullIndex
+plugin.com.kpouer.jedit.rfc.full.FullRFCIndexPlugin.author=Matthieu Casanova
+plugin.com.kpouer.jedit.rfc.full.FullRFCIndexPlugin.version=1.0
+plugin.com.kpouer.jedit.rfc.full.FullRFCIndexPlugin.depend.0=jdk 1.5
+plugin.com.kpouer.jedit.rfc.full.FullRFCIndexPlugin.depend.1=jedit 04.04.01.00
+plugin.com.kpouer.jedit.rfc.full.FullRFCIndexPlugin.depend.2=plugin gatchan.jedit.rfcreader.RFCReaderPlugin 1.5.0
+plugin.com.kpouer.jedit.rfc.full.FullRFCIndexPlugin.depend.3=plugin gatchan.jedit.lucene.LucenePlugin 2.0
+plugin.com.kpouer.jedit.rfc.full.FullRFCIndexPlugin.description=Full index of RFCs for use by RFCReader plugin
+plugin.com.kpouer.jedit.rfc.full.FullRFCIndexPlugin.usePluginHome=true
+
+service.rfcindex.full.label=Full Index
