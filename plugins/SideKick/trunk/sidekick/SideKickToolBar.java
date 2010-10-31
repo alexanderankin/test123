@@ -517,30 +517,34 @@ public class SideKickToolBar extends JToolBar implements ActionListener
 		}
 	}
 
-	private class ComboCellRenderer implements ListCellRenderer
+	private class ComboCellRenderer extends JPanel implements ListCellRenderer
 	{
+		public ComboCellRenderer()
+		{
+			setLayout(new FlowLayout(FlowLayout.LEFT, 3, 1));
+		}
 		public Component getListCellRendererComponent(JList list, Object value,
 				int index, boolean isSelected, boolean cellHasFocus)
 		{
-			JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT,
-				(singleIconInCombo ? 7 : 3), 1));
+			((FlowLayout)getLayout()).setHgap((singleIconInCombo ? 7 : 3));
+			removeAll();
 			Color foreground;
 			if (isSelected)
 			{
-				p.setBackground(list.getSelectionBackground());
+				setBackground(list.getSelectionBackground());
 				foreground = list.getSelectionForeground();
 			}
 			else
 			{
-				p.setBackground(list.getBackground());
+				setBackground(list.getBackground());
 				foreground = list.getForeground();
 			}
 			if (value instanceof NodeWrapper)
 			{
 				NodeWrapper nw = (NodeWrapper) value;
-				nw.addLabel(p, foreground);
+				nw.addLabel(this, foreground);
 			}
-			return p;
+			return this;
 		}
 	}
 }
