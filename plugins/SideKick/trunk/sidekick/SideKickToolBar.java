@@ -372,6 +372,8 @@ public class SideKickToolBar extends JToolBar implements ActionListener
 	private void selectItemAtPositionSplitCombo(int position)
 	{
 		TreePath tp = data.getTreePathForPosition(position);
+		if (tp == null)	// No tree node for the caret position
+			return;
 		// Ignore first path element, which is the file itself
 		for (int i = 1; i < tp.getPathCount(); i++)
 		{
