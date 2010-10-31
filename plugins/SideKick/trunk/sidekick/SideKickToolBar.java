@@ -1,7 +1,6 @@
 package sidekick;
 
-import java.awt.Component;
-import java.awt.FlowLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -489,11 +488,12 @@ public class SideKickToolBar extends JToolBar implements ActionListener
 		{
 			return (asset != null);
 		}
-		public void addParentLabel(JPanel p, Icon childIcon)
+		public void addParentLabel(JPanel p, Icon childIcon, Color fg)
 		{
 			if (parent != null)
-				parent.addParentLabel(p, childIcon);
+				parent.addParentLabel(p, childIcon, fg);
 			JLabel l = new JLabel();
+			l.setForeground(fg);
 			l.setText(str);
 			if (singleIconInCombo)
 			{
@@ -504,11 +504,12 @@ public class SideKickToolBar extends JToolBar implements ActionListener
 				l.setIcon(icon);
 			p.add(l);
 		}
-		public void addLabel(JPanel p)
+		public void addLabel(JPanel p, Color fg)
 		{
 			if (parent != null)
-				parent.addParentLabel(p, icon);
+				parent.addParentLabel(p, icon, fg);
 			JLabel l = new JLabel();
+			l.setForeground(fg);
 			l.setText(str);
 			if ((! singleIconInCombo) || (parent == null))
 				l.setIcon(icon);
@@ -523,10 +524,21 @@ public class SideKickToolBar extends JToolBar implements ActionListener
 		{
 			JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT,
 				(singleIconInCombo ? 7 : 3), 1));
+			Color foreground;
+			if (isSelected)
+			{
+				p.setBackground(list.getSelectionBackground());
+				foreground = list.getSelectionForeground();
+			}
+			else
+			{
+				p.setBackground(list.getBackground());
+				foreground = list.getForeground();
+			}
 			if (value instanceof NodeWrapper)
 			{
 				NodeWrapper nw = (NodeWrapper) value;
-				nw.addLabel(p);
+				nw.addLabel(p, foreground);
 			}
 			return p;
 		}
