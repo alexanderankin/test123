@@ -41,12 +41,19 @@ import java.io.*;
 import java.util.Map;
 
 /**
- * com.kpouer.jedit.rfc.full.FullRFCIndexPlugin.buildIndex()
- *
  * @author Matthieu Casanova
  */
 public class FullRFCIndexPlugin extends EditPlugin
 {
+	/**
+	 * This method creates the lucene index. It is usually only called to create the package, the user never needs
+	 * to use this.
+	 * To create the index :
+	 * copy all RFCs to index in the jEdit/rfcs/ folder
+	 * then call the method
+	 * com.kpouer.jedit.rfc.full.FullRFCIndexPlugin.buildIndex()
+	 * @throws IOException
+	 */
 	public static void buildIndex() throws IOException
 	{
 		Directory directory = FSDirectory.open(new File("lucene"));
@@ -62,7 +69,6 @@ public class FullRFCIndexPlugin extends EditPlugin
 			{
 				try
 				{
-
 					File rfcs = new File("rfcs");
 					File[] files = rfcs.listFiles();
 					setMaximum(files.length);
@@ -71,12 +77,12 @@ public class FullRFCIndexPlugin extends EditPlugin
 					{
 						setValue(i);
 						File file = files[i];
-						if (file.getName().startsWith("rfc"))
+						if (file.getName().startsWith("rfc") && file.getName().endsWith(".txt"))
 						{
 							String num = file.getName().substring(3, file.getName().length() - 4);
 							System.out.println(num);
 							Document document = new Document();
-							RFC rfc = null;
+							RFC rfc;
 							try
 							{
 								rfc = map.get(Integer.parseInt(num));
@@ -92,6 +98,7 @@ public class FullRFCIndexPlugin extends EditPlugin
 								continue;
 							}
 							Log.log(Log.DEBUG, FullRFCIndexPlugin.class, "Adding RFC " + num + " file " + file.getName() + " " + rfc.getTitle());
+							setLabel(num + " " + rfc.getTitle());
 							document.add(new Field("number",
 								num, Field.Store.YES,
 								Field.Index.ANALYZED, Field.TermVector.NO));
