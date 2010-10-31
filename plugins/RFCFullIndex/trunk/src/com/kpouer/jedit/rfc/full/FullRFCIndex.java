@@ -40,7 +40,7 @@ import java.io.*;
  */
 public class FullRFCIndex extends AbstractRFCIndex
 {
-	private static int INDEX_VERSION = 0;
+	private static int INDEX_VERSION = 2;
 	private static final String RFCREADER_FULLINDEX_VERSION = "rfcreader.fullindex.version";
 	private static final String PLUGIN_CLASS_NAME = "com.kpouer.jedit.rfc.full.FullRFCIndexPlugin";
 
@@ -69,6 +69,8 @@ public class FullRFCIndex extends AbstractRFCIndex
 		if (jEdit.getIntegerProperty(RFCREADER_FULLINDEX_VERSION,-1) != INDEX_VERSION ||
 			!IndexReader.indexExists(directory))
 		{
+			deleteFolder(luceneIndex);
+			luceneIndex.mkdirs();
 			PluginJAR jar = plugin.getPluginJAR();
 			String[] resources = jar.getResources();
 			for (int i = 0; i < resources.length; i++)
@@ -97,5 +99,18 @@ public class FullRFCIndex extends AbstractRFCIndex
 		}
 		directory = FSDirectory.open(luceneIndex);
 		searcher = new IndexSearcher(directory, true);
+	}
+
+	private static void deleteFolder(File file)
+	{
+		File[] files = file.listFiles();
+		for (File f : files)
+		{
+			if (f.isFile())
+				f.delete();
+			else
+				deleteFolder(file);
+		}
+		file.delete();
 	}
 }
