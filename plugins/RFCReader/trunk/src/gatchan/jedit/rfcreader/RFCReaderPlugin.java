@@ -35,7 +35,7 @@ import java.util.Map;
  * @author Matthieu Casanova
  * @version $Id: Server.java,v 1.33 2007/01/05 15:15:17 matthieu Exp $
  */
-public class RFCReaderPlugin extends EBPlugin
+public class RFCReaderPlugin extends EditPlugin
 {
 	Map<Integer, RFC> rfcList;
 	private RFCIndex index;
