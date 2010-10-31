@@ -15,12 +15,6 @@
 
 	<import file="${build.support}/plugin-build.xml" />
 
-    <selector id="packageFiles">
-        <or>
-            <filename name="index.html" />
-        </or>
-	</selector>
-
 
     <selector id="extraFiles">
         <and>
