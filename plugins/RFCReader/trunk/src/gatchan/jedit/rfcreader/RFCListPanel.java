@@ -39,8 +39,8 @@ public class RFCListPanel extends JPanel
 {
 	private JList list;
 	private HistoryTextField searchField;
-	private RFCIndex index;
 	private RFCListModel model;
+	private RFCReaderPlugin plugin;
 
 	public RFCListPanel()
 	{
@@ -65,8 +65,7 @@ public class RFCListPanel extends JPanel
 		});
 
 
-		RFCReaderPlugin plugin = (RFCReaderPlugin) jEdit.getPlugin("gatchan.jedit.rfcreader.RFCReaderPlugin");
-		index = plugin.getIndex();
+		plugin = (RFCReaderPlugin) jEdit.getPlugin("gatchan.jedit.rfcreader.RFCReaderPlugin");
 		model = new RFCListModel(plugin.rfcList);
 		list = new JList(model);
 
@@ -98,7 +97,7 @@ public class RFCListPanel extends JPanel
 			model.reset();
 		else
 		{
-			List<RFC> rfcs = index.search(s);
+			List<RFC> rfcs = plugin.getIndex().search(s);
 			model.setData(rfcs);
 		}
 	}
