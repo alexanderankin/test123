@@ -61,7 +61,8 @@ public class OptionPane extends AbstractOptionPane
 		addComponent(searchResultsPanel);
 	}
 
-	public void save()
+	@Override
+	public void _save()
 	{
 		jEdit.setProperty(INCLUDE_GLOBS_OPTION, includeFilesTF.getText());
 		jEdit.setProperty(EXCLUDE_GLOBS_OPTION, excludeFilesTF.getText());
