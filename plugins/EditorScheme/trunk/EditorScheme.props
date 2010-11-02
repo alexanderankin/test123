@@ -110,6 +110,7 @@ editor-scheme.editor-props=view.bgColor \
     view.gutter.markerColor \
     view.gutter.noFocusBorderColor \
     view.gutter.structureHighlightColor \
+    view.gutter.selectionAreaBgColor \
     view.lineHighlightColor \
     view.selectionColor \
     view.wrapGuideColor \
@@ -210,6 +211,7 @@ editor-scheme.view.gutter.highlightColor.name=Gutter Highlight Color
 editor-scheme.view.gutter.markerColor.name=Gutter Marker Color
 editor-scheme.view.gutter.noFocusBorderColor.name=Gutter No Focus Border Color
 editor-scheme.view.gutter.structureHighlightColor.name=Gutter Structure Highlight Color
+editor-scheme.view.gutter.selectionAreaBgColor.name=Gutter Selection Area Background Color
 editor-scheme.view.lineHighlightColor.name=Text Area Line Highlight Color
 editor-scheme.view.multipleSelectionColor.name=Text Area Multiple Selection Color
 editor-scheme.view.selectionColor.name=Text Area Selection Color
