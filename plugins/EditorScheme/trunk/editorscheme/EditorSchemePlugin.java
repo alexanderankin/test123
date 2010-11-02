@@ -29,16 +29,15 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.ArrayList;
+import java.util.TreeMap;
 import java.util.zip.*;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.Log;
-import org.gjt.sp.util.StandardUtilities;
 //}}}
 
 /**
@@ -55,7 +54,7 @@ public class EditorSchemePlugin extends EditPlugin
 	// schemes loaded from jar
 	private static ArrayList<EditorScheme> packagedSchemes;
 	// user schemes and schemes loaded from jar
-	private static ArrayList<EditorScheme> schemes = null;
+	private static TreeMap<String, EditorScheme> schemes = null;
 	// location of user's schemes
 	private static String userSchemesPath;
 
@@ -84,13 +83,11 @@ public class EditorSchemePlugin extends EditPlugin
 	public static void loadSchemes()
 	{
 		if(schemes == null)
-			schemes = new ArrayList<EditorScheme>();
+			schemes = new TreeMap<String, EditorScheme>();
 		else
 			schemes.clear();
 		loadBuiltinSchemes();
 		loadUserSchemes();
-		Collections.sort(schemes,
-			new StandardUtilities.StringCompare<EditorScheme>());
 	}//}}}
 
 
@@ -103,11 +100,21 @@ public class EditorSchemePlugin extends EditPlugin
 	{
 		if(schemes == null)
 		{
-			schemes = new ArrayList<EditorScheme>();
+			schemes = new TreeMap<String, EditorScheme>();
 			loadSchemes();
 		}
-		return schemes;
+		return new ArrayList<EditorScheme>(schemes.values());
 	}//}}}
+	
+	
+	public static EditorScheme getScheme(String name) {
+		if(schemes == null)
+		{
+			schemes = new TreeMap<String, EditorScheme>();
+			loadSchemes();
+		}
+		return schemes.get(name);   
+	}
 
 
 	//{{{ loadBuiltinSchemes()
@@ -147,8 +154,10 @@ public class EditorSchemePlugin extends EditPlugin
 			}
 		}
 
-		for(int i = 0; i < packagedSchemes.size(); i++)
-			schemes.add(packagedSchemes.get(i));
+		for(int i = 0; i < packagedSchemes.size(); i++) {
+		    EditorScheme scheme = packagedSchemes.get(i);
+			schemes.put(scheme.getName(), scheme);
+		}
 	}//}}}
 
 
@@ -174,11 +183,9 @@ public class EditorSchemePlugin extends EditPlugin
 			String file = dir.getPath() + File.separator + files[i];
 			EditorScheme scheme = new EditorScheme(file);
 			scheme.setReadOnly(false);
-			schemes.add(scheme);
+			schemes.put(scheme.getName(), scheme);
 		}
 
 	}//}}}
-
-
 }
 

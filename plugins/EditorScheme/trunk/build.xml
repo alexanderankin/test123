@@ -26,6 +26,7 @@
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
 		<pathelement location="${src.dir}"/>
+		<pathelement location="${install.dir}/kappalayout.jar"/>
 	</path>
 
 	<target name="init">
@@ -62,6 +63,7 @@
 			<fileset dir="${build.dir}"/>
 			<fileset dir="${src.dir}">
 				<include name="actions.xml"/>
+				<include name="dockables.xml"/>
 				<include name="**/*.jedit-scheme"/>
 				<include name="**/*.props"/>
 				<include name="**/*.gif"/>
