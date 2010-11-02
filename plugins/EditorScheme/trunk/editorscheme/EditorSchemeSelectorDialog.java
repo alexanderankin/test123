@@ -60,7 +60,7 @@ public class EditorSchemeSelectorDialog extends EnhancedDialog implements Action
 	//{{{ constructor
 	public EditorSchemeSelectorDialog(View view)
 	{
-		super(view, jEdit.getProperty("editor-scheme.selector.title"), true);
+		super(view, jEdit.getProperty("editor-scheme.selector.title"), false);
 
 		JPanel schemesPanel = new JPanel(new BorderLayout());
 		JPanel main = new JPanel(new GridLayout(1,2,5,5));
@@ -139,7 +139,7 @@ public class EditorSchemeSelectorDialog extends EnhancedDialog implements Action
 		closeButton = new JButton(jEdit.getProperty("editor-scheme.close"));
 		closeButton.addActionListener(this);
 		buttonsPanel.add(closeButton);
-
+		
 		buttonsPanel.add(Box.createGlue());
 
 		content.add(buttonsPanel, BorderLayout.SOUTH);

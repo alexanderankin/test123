@@ -87,6 +87,11 @@ public class EditorScheme
 		this();
 		load(inputStream);
 	}
+	
+	public boolean getAutoApply() 
+	{
+	    return jEdit.getBooleanProperty("editor-scheme.autoapply", true);
+	}
 
 
 	/**
@@ -292,12 +297,17 @@ public class EditorScheme
 	public void setProperty(String name, String value)
 	{
 		this.properties.put(name,value);
+		if (getAutoApply()) 
+		{
+		     jEdit.setProperty(name, value); 
+		     jEdit.propertiesChanged();
+		}
 	}
 
 	/**
 	 * Groups of properties (ErrorList,WhiteSpace,etc..)
 	 */
-	public static ArrayList getPropertyGroups()
+	public static ArrayList<EditorScheme.PropertyGroup> getPropertyGroups()
 	{
 		return propertyGroups;
 	}

@@ -12,6 +12,7 @@ plugin.editorscheme.EditorSchemePlugin.docs=index.html
 plugin.editorscheme.EditorSchemePlugin.depend.0=jedit 04.03.99.00
 plugin.editorscheme.EditorSchemePlugin.depend.1=jdk 1.5
 
+
 ### menu
 
 plugin.editorscheme.EditorSchemePlugin.menu-item=editor-scheme-selector
@@ -25,6 +26,11 @@ options.editor-scheme.label=Editor Scheme
 options.editor-scheme.code=new editorscheme.EditorSchemeOptionsPane();
 options.editor-scheme.groups.label=Apply Properties For:
 options.editor-scheme.autoapply.label=Automatically apply selected schemes.
+
+
+### title for DockableWindowManager
+schemeEditor.title=Editor Scheme Editor
+
 
 ### dialog properties
 
@@ -50,15 +56,18 @@ editor-scheme.confirm-update.message=Overwrite properties for {0} with current s
 
 editor-scheme.schemes=Schemes:
 editor-scheme.usegroups=Apply Properties For:
+editor-scheme.usegroup=Use this group
 editor-scheme.autoapply.label=Automatically Apply
 editor-scheme.new=New
 editor-scheme.select=Apply
 editor-scheme.update=Update
 editor-scheme.close=Close
 editor-scheme.autoapply=false
+editor-scheme.save=Save
+editor-scheme.delete=Delete
+editor-scheme.edit=Edit
 
 ### property groups
-
 editor-scheme.property-groups=console \
     editor \
     errorlist \
@@ -66,10 +75,10 @@ editor-scheme.property-groups=console \
     tasklist \
     whitespace \
     activitylog
-
+    
 # property group names
 editor-scheme.console.name=Console Plugin
-editor-scheme.editor.name=jEdit TextArea
+editor-scheme.editor.name=jEdit/TextArea
 editor-scheme.errorlist.name=Error List Plugin
 editor-scheme.jdiff.name=JDiff Plugin
 editor-scheme.tasklist.name=TaskList Plugin
@@ -134,20 +143,14 @@ editor-scheme.editor-props=view.bgColor \
 editor-scheme.errorlist-props=error-list.warningColor \
     error-list.errorColor
 
-editor-scheme.jdiff-props=jdiff.changed-color \
-    jdiff.deleted-color \
-    jdiff.highlight-changed-color \
-    jdiff.highlight-deleted-color \
-    jdiff.highlight-inserted-color \
-    jdiff.inserted-color \
-    jdiff.invalid-color \
-    jdiff.overview-changed-color \
+# daleanson, there used to be more properties for JDiff, but they were 
+# consolidated.  These are the color properties for JDiff 3.1.
+editor-scheme.jdiff-props=jdiff.overview-changed-color \
     jdiff.overview-deleted-color \
     jdiff.overview-inserted-color \
     jdiff.overview-invalid-color \
-    jdiff.selected-highlight-changed-color \
-    jdiff.selected-highlight-deleted-color \
-    jdiff.selected-highlight-inserted-color
+    jdiff.left-cursor-color \
+    jdiff.right-cursor-color
 
 editor-scheme.tasklist-props=tasklist.highlight.color
 
@@ -163,3 +166,86 @@ editor-scheme.activitylog-props=log-viewer.message.debug.color \
     log-viewer.message.warning.color \
     log-viewer.message.error.color
 
+# names for the editor scheme editor panel    
+editor-scheme.console.bgColor.name=Console Background
+editor-scheme.console.caretColor.name=Caret Color
+editor-scheme.console.errorColor.name=Console Error Color
+editor-scheme.console.font.name=Console Font
+editor-scheme.console.fontsize.name=Console Font Size
+editor-scheme.console.fontstyle.name=Console Font Style
+editor-scheme.console.infoColor.name=Console Info Color
+editor-scheme.console.plainColor.name=Console Plain Color
+editor-scheme.console.warningColor.name=Console Warning Color
+
+editor-scheme.error-list.errorColor.name=ErrorList Error Color
+editor-scheme.error-list.warningColor.name=ErrorList Warning Color
+
+editor-scheme.jdiff.left-cursor-color.name=JDiff Left Cursor Color
+editor-scheme.jdiff.overview-changed-color.name=JDiff Changed Color
+editor-scheme.jdiff.overview-deleted-color.name=JDiff Deleted Color
+editor-scheme.jdiff.overview-inserted-color.name=JDiff Inserted Color
+editor-scheme.jdiff.overview-invalid-color.name=JDiff Invalid Color
+editor-scheme.jdiff.right-cursor-color.name=JDiff Right Cursor Color
+
+editor-scheme.log-viewer.message.debug.color.name=Activity Log Debug Color
+editor-scheme.log-viewer.message.error.color.name=Activity Log Error Color
+editor-scheme.log-viewer.message.message.color.name=Activity Log Message Color
+editor-scheme.log-viewer.message.notice.color.name=Activity Log Notice Color
+editor-scheme.log-viewer.message.warning.color.name=Activity Log Warning Color
+
+editor-scheme.tasklist.highlight.color.name=TaskList Highlight Color
+
+editor-scheme.vfs.browser.colors.1.color.name=VFS Browser Color
+
+editor-scheme.view.bgColor.name=Text Area Background Color
+editor-scheme.view.caretColor.name=Text Area Caret Color
+editor-scheme.view.eolMarkerColor.name=Text Area EOL Marker Color
+editor-scheme.view.fgColor.name=Text Area Foreground Color
+editor-scheme.view.gutter.bgColor.name=Gutter Background Color
+editor-scheme.view.gutter.currentLineColor.name=Gutter Current Line Color
+editor-scheme.view.gutter.fgColor.name=Gutter Foreground Color
+editor-scheme.view.gutter.focusBorderColor.name=Gutter Focus Border Color
+editor-scheme.view.gutter.foldColor.name=Gutter Fold Color
+editor-scheme.view.gutter.highlightColor.name=Gutter Highlight Color
+editor-scheme.view.gutter.markerColor.name=Gutter Marker Color
+editor-scheme.view.gutter.noFocusBorderColor.name=Gutter No Focus Border Color
+editor-scheme.view.gutter.structureHighlightColor.name=Gutter Structure Highlight Color
+editor-scheme.view.lineHighlightColor.name=Text Area Line Highlight Color
+editor-scheme.view.multipleSelectionColor.name=Text Area Multiple Selection Color
+editor-scheme.view.selectionColor.name=Text Area Selection Color
+editor-scheme.view.selectionFgColor.name=Text Selection Foreground Color
+editor-scheme.view.status.background.name=Status Bar Background Color
+editor-scheme.view.status.foreground.name=Status Bar Foreground Color
+editor-scheme.view.status.memory.background.name=Status Bar Memory Background Color
+editor-scheme.view.status.memory.foreground.name=Status Bar Memory Foreground Color
+editor-scheme.view.structureHighlightColor.name=Structure Highlight Color
+editor-scheme.view.wrapGuideColor.name=Text Area Wrap Guide Color
+editor-scheme.view.style.comment1.name=Text Area Comment 1 Style
+editor-scheme.view.style.comment2.name=Text Area Comment 2 Style
+editor-scheme.view.style.comment3.name=Text Area Comment 3 Style
+editor-scheme.view.style.comment4.name=Text Area Comment 4 Style
+editor-scheme.view.style.digit.name=Text Area Digit Style
+editor-scheme.view.style.foldLine.0.name=Text Area Fold Line 1 Style
+editor-scheme.view.style.foldLine.1.name=Text Area Fold Line 2 Style
+editor-scheme.view.style.foldLine.2.name=Text Area Fold Line 3 Style
+editor-scheme.view.style.foldLine.3.name=Text Area Fold Line >3 Style
+editor-scheme.view.style.function.name=Text Area Function Style
+editor-scheme.view.style.invalid.name=Text Area Invalid Style
+editor-scheme.view.style.keyword1.name=Text Area Keyword 1 Style
+editor-scheme.view.style.keyword2.name=Text Area Keyword 2 Style
+editor-scheme.view.style.keyword3.name=Text Area Keyword 3 Style
+editor-scheme.view.style.keyword4.name=Text Area Keyword 4 Style
+editor-scheme.view.style.label.name=Text Area Label Style
+editor-scheme.view.style.literal1.name=Text Area Literal 1 Style
+editor-scheme.view.style.literal2.name=Text Area Literal 2 Style
+editor-scheme.view.style.literal3.name=Text Area Literal 3 Style
+editor-scheme.view.style.literal4.name=Text Area Literal 4 Style
+editor-scheme.view.style.markup.name=Text Area Markup Style
+editor-scheme.view.style.operator.name=Text Area Operator Style
+editor-scheme.view.wrapGuideColor.name=Text Area Wrap Guide Color
+
+editor-scheme.white-space.block-color.name=Whitespace Block Color
+editor-scheme.white-space.fold-color.name=Whitespace Fold Color
+editor-scheme.white-space.space-color.name=Whitepsace Space Color
+editor-scheme.white-space.tab-color.name=Whitespace Tab Color
+editor-scheme.white-space.whitespace-color.name=Whitespace Whitespace Color
