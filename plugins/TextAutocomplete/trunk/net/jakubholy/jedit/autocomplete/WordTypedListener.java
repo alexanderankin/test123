@@ -41,7 +41,6 @@ import org.gjt.sp.util.Log;
  * of the buffer changes.
  * 
  * @see net.jakubholy.jedit.autocomplete.WordTypedEvent
- * @see org.gjt.sp.jedit.Buffer#addBufferChangeListener
  * @see org.gjt.sp.jedit.buffer.BufferChangeAdapter
  * @see org.gjt.sp.jedit.buffer.BufferChangeListener
  * 
