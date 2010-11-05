@@ -49,10 +49,18 @@ existing schemes, and update existing schemes.</para>
         <section
             id="creating-schemes">
             <title>Creating Schemes</title>
-            <para>To create a new scheme, select  <citetitle>Plugins</citetitle> -&gt;
+            <para>The old way, still works: To create a new scheme, select  <citetitle>Plugins</citetitle> -&gt;
 <citetitle>Editor Scheme Selector</citetitle>. Press  <citetitle>New</citetitle>  to create a scheme based
 on the current settings. The scheme file will be saved in the
-schemes directory in your jEdit settings directory.</para>
+schemes directory in your jEdit settings directory. Edit by hand.  You can open the your schemes
+easily from within jEdit by going to the menu <citetitle>Utilities</citetitle> -&gt;
+<citetitle>Settings Directory</citetitle> -&gt; <citetitle>schemes</citetitle>.</para>
+            <para>
+            The new way: Use the Editor Scheme Editor dockable.  To create a new scheme, select an existing scheme,
+            then press the <citetitle>New</citetitle> button.  Give your new scheme a name in the dialog that 
+            appears.  Use the various tabs to adjust the colors.  Press the <citetitle>Save</citetitle> button
+            when done.
+            </para>
         </section>
         <section
             id="switching-schemes">
@@ -61,6 +69,7 @@ schemes directory in your jEdit settings directory.</para>
 On the left, is a a list of available schemes, and on the right
 you can select which sets of properties to set when applying a
 scheme. Select the scheme in the list box to apply it.</para>
+<para>Alternatively, use the scheme selector dropdown in the Editor Scheme Editor dockable window.</para>
             <para>To revert to the settings you had when you first opened the dialog,
 select <literal>(Initial Settings)</literal>.</para>
         </section>
@@ -86,6 +95,10 @@ icon (<inlinemediaobject><imageobject><imagedata
                     </textobject>
                 </inlinemediaobject>) can be updated. Choose the scheme you wish to update
 and select <citetitle>Update</citetitle>.</para>
+<para>Alternatively, you can use the Editor Scheme Editor to make adjustments to existing
+schemes.  You can only change normal schemes, not the read-only schemes.  If you'd like
+to adjust a read-only scheme, just make a new scheme based on that read-only scheme, then
+adjust your new scheme.</para>
             <para>
                 <literal>(Initial Settings)</literal> are the settings from when you opened the
 <citetitle>Editor Scheme Selector</citetitle> dialog, and will not change as you
@@ -100,6 +113,8 @@ to the jEdit users mailing list or add them to the "Plugin Patches" bug tracker
 <ulink url="https://sourceforge.net/tracker/?group_id=588&amp;atid=997937">https://sourceforge.net/tracker/?group_id=588&amp;atid=997937</ulink>
 . It would be really nice
 to have schemes from different jEdit users.</para>
+<para>The schemes that you've created are in a "schemes" directory within the jEdit 
+settings directory.</para>
     </section>
     <section
         id="requirements">
@@ -144,6 +159,17 @@ the Sourceforge Bug Tracker at
         id="change-log">
         <title>Change log</title>
         <itemizedlist>
+            <listitem>
+                <para>Version 1.4, danson. Requires jEdit 4.3.2, Java 1.5</para>
+                <itemizedlist>
+                    <listitem>
+                        <para>Added the scheme editor dockable so that it is easier to adjust schemes (tracker 3096955).</para>
+                    </listitem>
+                    <listitem>
+                        <para>Added support for the selection area background color (tracker 3043127).</para>
+                    </listitem>
+                </itemizedlist>
+            </listitem>
             <listitem>
                 <para>Version 1.3, danson. Requires jEdit 4.3.2, Java 1.5</para>
                 <itemizedlist>
