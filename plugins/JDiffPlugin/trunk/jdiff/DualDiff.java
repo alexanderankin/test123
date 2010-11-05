@@ -51,6 +51,7 @@ import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
+import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.jedit.textarea.TextAreaPainter;
@@ -291,43 +292,44 @@ public class DualDiff implements EBComponent {
         SwingUtilities.invokeLater(
             new Runnable() {
                 public void run() {
-                    // remove
-                    EditBus.removeFromBus( DualDiff.this );
-                    removeHandlers();
-                    removeHighlighters();
-                    removeOverviews();
-
-                    // install
-                    installOverviews();
-                    installHighlighters();
-                    installHandlers();
-
-                    // reset overviews
-                    diffLineOverview.clear();
-                    DiffTextAreaModel taModel = new DiffTextAreaModel( DualDiff.this );
-                    diffOverview0.setModel( taModel );
-                    diffOverview0.synchroScrollRight();
-                    diffOverview1.setModel( taModel );
-                    diffOverview1.repaint();
-
-                    EditBus.addToBus( DualDiff.this );
-
-                    // possibly show the dockable
-                    DockableWindowManager dwm = view.getDockableWindowManager();
-                    if ( !dwm.isDockableWindowVisible( DualDiffManager.JDIFF_LINES ) && jEdit.getBooleanProperty( "jdiff.auto-show-dockable" ) ) {
-                        if ( dwm.getDockableWindow( DualDiffManager.JDIFF_LINES ) == null ) {
-                            dwm.addDockableWindow( DualDiffManager.JDIFF_LINES );
-                        }
-                        dwm.showDockableWindow( DualDiffManager.JDIFF_LINES );
-                    }
-
-                    // make sure View divider is in the middle
+                    // if the view isn't split, don't refresh
                     JSplitPane sp = view.getSplitPane();
                     if ( sp != null ) {
+                        // remove
+                        EditBus.removeFromBus( DualDiff.this );
+                        removeHandlers();
+                        removeHighlighters();
+                        removeOverviews();
+    
+                        // install
+                        installOverviews();
+                        installHighlighters();
+                        installHandlers();
+    
+                        // reset overviews
+                        diffLineOverview.clear();
+                        DiffTextAreaModel taModel = new DiffTextAreaModel( DualDiff.this );
+                        diffOverview0.setModel( taModel );
+                        diffOverview0.synchroScrollRight();
+                        diffOverview1.setModel( taModel );
+                        diffOverview1.repaint();
+    
+                        EditBus.addToBus( DualDiff.this );
+    
+                        // possibly show the dockable
+                        DockableWindowManager dwm = view.getDockableWindowManager();
+                        if ( !dwm.isDockableWindowVisible( DualDiffManager.JDIFF_LINES ) && jEdit.getBooleanProperty( "jdiff.auto-show-dockable" ) ) {
+                            if ( dwm.getDockableWindow( DualDiffManager.JDIFF_LINES ) == null ) {
+                                dwm.addDockableWindow( DualDiffManager.JDIFF_LINES );
+                            }
+                            dwm.showDockableWindow( DualDiffManager.JDIFF_LINES );
+                        }
+    
+                        // make sure View divider is in the middle
                         sp.setDividerLocation( 0.5 );
+                        view.invalidate();
+                        view.validate();
                     }
-                    view.invalidate();
-                    view.validate();
                 }
             }
         );
