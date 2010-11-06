@@ -24,7 +24,6 @@ package whitespace;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
-import java.awt.event.MouseEvent;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -33,14 +32,13 @@ import javax.swing.text.Segment;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.DisplayManager;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.TextAreaExtension;
 import org.gjt.sp.jedit.textarea.TextAreaPainter;
-import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StandardUtilities;
 
 
 public class FoldHighlight extends TextAreaExtension
@@ -136,7 +134,7 @@ public class FoldHighlight extends TextAreaExtension
 
             if (virtualLineOffset > 0) {
                 // We expand tabs into physicalLineOffset
-                physicalLineOffset = MiscUtilities.getLeadingWhiteSpaceWidth(
+                physicalLineOffset = StandardUtilities.getLeadingWhiteSpaceWidth(
                     ta.getText(ta.getLineStartOffset(physicalLine), virtualLineOffset),
                     buffer.getTabSize()
                 );

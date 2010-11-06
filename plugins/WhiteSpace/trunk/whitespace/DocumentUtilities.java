@@ -24,10 +24,7 @@ package whitespace;
 import javax.swing.text.Segment;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 
-import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.MiscUtilities;
-
-import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StandardUtilities;
 
 
 public class DocumentUtilities {
@@ -51,7 +48,7 @@ public class DocumentUtilities {
             getLeadingWhiteSpaceInfo(s.array, s.offset, s.count, tabSize, whiteSpaceInfo);
 
             if (whiteSpaceInfo.hasTabs && whiteSpaceInfo.len > 0) {
-                String textOut = MiscUtilities.createWhiteSpace(whiteSpaceInfo.expandedLen, 0);
+                String textOut = StandardUtilities.createWhiteSpace(whiteSpaceInfo.expandedLen, 0);
 
                 buffer.remove(start, whiteSpaceInfo.len);
                 buffer.insert(start, textOut);
@@ -77,7 +74,7 @@ public class DocumentUtilities {
             getLeadingWhiteSpaceInfo(s.array, s.offset, s.count, tabSize, whiteSpaceInfo);
 
             if (whiteSpaceInfo.hasSpaces && whiteSpaceInfo.len > 0) {
-                String textOut = MiscUtilities.createWhiteSpace(whiteSpaceInfo.expandedLen, tabSize);
+                String textOut = StandardUtilities.createWhiteSpace(whiteSpaceInfo.expandedLen, tabSize);
 
                 buffer.remove(start, whiteSpaceInfo.len);
                 buffer.insert(start, textOut);

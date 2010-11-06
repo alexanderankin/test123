@@ -25,8 +25,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.AbstractOptionPane;
-import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.util.SyntaxUtilities;
 
 
 public class FoldOptionPane extends WhiteSpaceAbstractOptionPane
@@ -67,7 +66,7 @@ public class FoldOptionPane extends WhiteSpaceAbstractOptionPane
             this.showFoldTooltipDefault.isSelected()
         );
         jEdit.setProperty("white-space.fold-color",
-            GUIUtilities.getColorHexString(this.foldColor.getBackground())
+            SyntaxUtilities.getColorHexString(this.foldColor.getBackground())
         );
     }
 }

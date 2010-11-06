@@ -24,7 +24,7 @@ package whitespace.options;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.util.SyntaxUtilities;
 
 
 public class ParagraphOptionPane extends WhiteSpaceAbstractOptionPane
@@ -66,7 +66,7 @@ public class ParagraphOptionPane extends WhiteSpaceAbstractOptionPane
             this.indentBlock.isSelected()
         );
         jEdit.setProperty("white-space.block-color",
-            GUIUtilities.getColorHexString(this.blockColor.getBackground())
+            SyntaxUtilities.getColorHexString(this.blockColor.getBackground())
         );
     }
 }
