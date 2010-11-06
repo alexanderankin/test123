@@ -7,6 +7,7 @@ plugin.whitespace.WhiteSpacePlugin.docs=users-guide.html
 plugin.whitespace.WhiteSpacePlugin.depend.0=jdk 1.5
 plugin.whitespace.WhiteSpacePlugin.depend.1=jedit 04.03.99.00
 plugin.whitespace.WhiteSpacePlugin.usePluginHome=true
+plugin.whitespace.WhiteSpacePlugin.description=The main feature of WhiteSpace is to highlight whitespaces
 
 #Menu
 plugin.whitespace.WhiteSpacePlugin.menu= \
