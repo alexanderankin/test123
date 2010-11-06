@@ -25,8 +25,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.AbstractOptionPane;
-import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.util.SyntaxUtilities;
 
 
 public class WhiteSpaceOptionPane extends WhiteSpaceAbstractOptionPane
@@ -70,7 +69,7 @@ public class WhiteSpaceOptionPane extends WhiteSpaceAbstractOptionPane
             this.displayControlChars.isSelected()
         );
         jEdit.setProperty("white-space.whitespace-color",
-            GUIUtilities.getColorHexString(this.whitespaceColor.getBackground())
+            SyntaxUtilities.getColorHexString(this.whitespaceColor.getBackground())
         );
     }
 }

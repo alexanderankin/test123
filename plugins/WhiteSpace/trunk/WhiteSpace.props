@@ -1,11 +1,12 @@
 plugin.whitespace.WhiteSpacePlugin.name=WhiteSpace
 plugin.whitespace.WhiteSpacePlugin.activate=startup
-plugin.whitespace.WhiteSpacePlugin.author=André Kaplan & Nathan Jones
-plugin.whitespace.WhiteSpacePlugin.version=0.9.3
+plugin.whitespace.WhiteSpacePlugin.author=AndrÃ© Kaplan & Nathan Jones
+plugin.whitespace.WhiteSpacePlugin.version=1.0.0
 plugin.whitespace.WhiteSpacePlugin.docs=users-guide.html
 
-plugin.whitespace.WhiteSpacePlugin.depend.0=jdk 1.4
-plugin.whitespace.WhiteSpacePlugin.depend.1=jedit 04.03.03.00
+plugin.whitespace.WhiteSpacePlugin.depend.0=jdk 1.5
+plugin.whitespace.WhiteSpacePlugin.depend.1=jedit 04.03.99.00
+plugin.whitespace.WhiteSpacePlugin.usePluginHome=true
 
 #Menu
 plugin.whitespace.WhiteSpacePlugin.menu= \

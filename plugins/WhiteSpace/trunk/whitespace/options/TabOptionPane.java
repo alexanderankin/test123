@@ -25,8 +25,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.AbstractOptionPane;
-import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.util.SyntaxUtilities;
 
 
 public class TabOptionPane extends WhiteSpaceAbstractOptionPane
@@ -85,7 +84,7 @@ public class TabOptionPane extends WhiteSpaceAbstractOptionPane
         );
 
         jEdit.setProperty("white-space.tab-color",
-            GUIUtilities.getColorHexString(this.tabColor.getBackground())
+            SyntaxUtilities.getColorHexString(this.tabColor.getBackground())
         );
     }
 }
