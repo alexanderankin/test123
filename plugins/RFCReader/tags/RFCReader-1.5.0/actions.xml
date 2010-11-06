@@ -1,0 +1,9 @@
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+    <ACTION NAME="openRFC">
+        <CODE>
+            gatchan.jedit.rfcreader.RFCReaderPlugin.openRFC(view);
+        </CODE>
+    </ACTION>
+</ACTIONS>
