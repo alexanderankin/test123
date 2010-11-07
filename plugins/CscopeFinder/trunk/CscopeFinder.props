@@ -3,10 +3,10 @@ plugin.cscopefinder.CscopeFinderPlugin.activate=defer
 # Plugin information
 plugin.cscopefinder.CscopeFinderPlugin.name=CscopeFinder
 plugin.cscopefinder.CscopeFinderPlugin.author=Dean Hall
-plugin.cscopefinder.CscopeFinderPlugin.version=0.5
+plugin.cscopefinder.CscopeFinderPlugin.version=1.0
 plugin.cscopefinder.CscopeFinderPlugin.docs=index.html
 plugin.cscopefinder.CscopeFinderPlugin.depend.0=jdk 1.5
-plugin.cscopefinder.CscopeFinderPlugin.depend.1=jedit 04.03.06.00
+plugin.cscopefinder.CscopeFinderPlugin.depend.1=jedit 04.03.99.00
 
 # Menu items
 plugin.cscopefinder.CscopeFinderPlugin.menu=cscopefinder-find-symbol \

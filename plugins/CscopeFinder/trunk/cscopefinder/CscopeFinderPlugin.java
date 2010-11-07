@@ -50,8 +50,6 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EditPane;
-import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.TextUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.HistoryModel;
@@ -65,6 +63,7 @@ import org.gjt.sp.jedit.search.SearchAndReplace;
 import org.gjt.sp.jedit.search.SearchFileSet;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StandardUtilities;
 //}}}
 
 public class CscopeFinderPlugin extends EBPlugin
@@ -472,7 +471,7 @@ public class CscopeFinderPlugin extends EBPlugin
 					Log.log(Log.DEBUG, CscopeFinderPlugin.class, "unescaped searchString: " + searchString);	// ##
 					//final String escapedSearchString = "^" + SearchAndReplace.escapeRegexp(searchString, false) + "$";
 					final String escapedSearchString = 
-						MiscUtilities.charsToEscapes(searchString, "\r\t\\()[]{}$^*+?|.");
+						StandardUtilities.charsToEscapes(searchString, "\r\t\\()[]{}$^*+?|.");
 					Log.log(Log.DEBUG, CscopeFinderPlugin.class, "escaped searchString: " + escapedSearchString);	// ##
 					SearchAndReplace.setSearchString(escapedSearchString);
 					SearchAndReplace.find(v);
