@@ -5,7 +5,7 @@ plugin.editorscheme.EditorSchemePlugin.activate=defer
 
 plugin.editorscheme.EditorSchemePlugin.name=Editor Scheme
 plugin.editorscheme.EditorSchemePlugin.author=Ollie Rutherfurd
-plugin.editorscheme.EditorSchemePlugin.version=1.3
+plugin.editorscheme.EditorSchemePlugin.version=1.4
 plugin.editorscheme.EditorSchemePlugin.description=EditorScheme lets one easily switch between predefined color and style combinations for jEdit's TextArea and a number of jEdit's Plugins
 plugin.editorscheme.EditorSchemePlugin.docs=index.html
 
