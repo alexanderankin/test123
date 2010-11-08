@@ -231,6 +231,7 @@ sidekick.java.custStaAsUlined=false
 sidekick.java.custTypeIsSuffixed=false
 
 # Global option pane
+sidekick.java.classpath=
 sidekick.java.classpathIncludePlugins.label=Include plugins and libraries
 sidekick.java.classpathIncludeSystem.label=Include system classpath
 sidekick.java.classpathIncludePlugins=true

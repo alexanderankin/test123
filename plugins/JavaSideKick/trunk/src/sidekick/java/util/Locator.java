@@ -13,6 +13,7 @@ import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.util.Log;
 
 import projectviewer.vpt.VPTProject;
 
@@ -135,7 +136,8 @@ public final class Locator {
             }
         }
         catch ( Exception e ) {
-            e.printStackTrace();
+            Log.log(Log.ERROR, this, "Error opening jar file: "+jar+" ("+e+")");
+        	//e.printStackTrace();
         }
         return names;
     }
