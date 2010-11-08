@@ -2,7 +2,7 @@
     <echo>${java.home}</echo>
     <!-- read build.props to override properties set below -->
 
-	<property file="../../build.properties"/>
+    <property file="${user.home}/build.properties" />
 	<property file="../build.properties"/>
 	<property file="build.properties"/>
     <property file="JavaSideKick.props"/>
