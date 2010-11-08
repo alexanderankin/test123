@@ -125,10 +125,10 @@ public class DisplayOptionPane extends AbstractOptionPane {
         sortByPanel.add( nameRB );
         sortByPanel.add( Box.createHorizontalStrut( 6 ) );
         sortByPanel.add( visibilityRB );
-        ButtonGroup buttonGroup = new ButtonGroup();
-        buttonGroup.add( lineRB );
-        buttonGroup.add( nameRB );
-        buttonGroup.add( visibilityRB );
+        ButtonGroup sortGroup = new ButtonGroup();
+        sortGroup.add( lineRB );
+        sortGroup.add( nameRB );
+        sortGroup.add( visibilityRB );
         addComponent( sortByPanel );
 
         addComponent( Box.createVerticalStrut( 11 ) );
@@ -141,6 +141,10 @@ public class DisplayOptionPane extends AbstractOptionPane {
         visibilityPanel.add( wordsRB );
         visibilityPanel.add( Box.createHorizontalStrut( 6 ) );
         visibilityPanel.add( noneRB );
+        ButtonGroup visGroup = new ButtonGroup();
+        visGroup.add( symbolsRB );
+        visGroup.add( wordsRB );
+        visGroup.add( noneRB );
         addComponent( visibilityPanel );
 
         addComponent( abstractCheckBox );
@@ -246,7 +250,7 @@ public class DisplayOptionPane extends AbstractOptionPane {
         }
         jEdit.setIntegerProperty( "sidekick.java.sortBy", sortBy );
 
-        jEdit.getIntegerProperty( "sidekick.java.displayStyle", displayStyleComboBox.getSelectedIndex() ) ;
+        jEdit.setIntegerProperty( "sidekick.java.displayStyle", displayStyleComboBox.getSelectedIndex() ) ;
 
         jEdit.setBooleanProperty( "sidekick.java.custVisAsSymbol", symbolsRB.isSelected() );
         jEdit.setBooleanProperty( "sidekick.java.custVisAsWord", wordsRB.isSelected() );
