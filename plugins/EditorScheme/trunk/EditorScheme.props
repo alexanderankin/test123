@@ -15,8 +15,13 @@ plugin.editorscheme.EditorSchemePlugin.depend.1=jdk 1.5
 
 ### menu
 
-plugin.editorscheme.EditorSchemePlugin.menu-item=editor-scheme-selector
-editor-scheme-selector.label=Editor Scheme Selector
+plugin.editorscheme.EditorSchemePlugin.menu=\
+    editor-scheme-selector \
+    schemeEditor
+    
+editor-scheme-selector.label=Scheme Selector
+schemeEditor.label=Scheme Editor
+
 
 ### option panes
 
@@ -97,10 +102,16 @@ editor-scheme.console-props=console.font \
     console.errorColor
 
 editor-scheme.editor-props=view.bgColor \
-    view.structureHighlightColor \
+    view.bgColor \
     view.caretColor \
     view.eolMarkerColor \
     view.fgColor \
+    view.lineHighlightColor \
+    view.multipleSelectionColor \
+    view.selectionColor \
+    view.selectionFgColor \
+    view.structureHighlightColor \
+    view.wrapGuideColor \
     view.gutter.bgColor \
     view.gutter.currentLineColor \
     view.gutter.fgColor \
@@ -111,9 +122,6 @@ editor-scheme.editor-props=view.bgColor \
     view.gutter.noFocusBorderColor \
     view.gutter.structureHighlightColor \
     view.gutter.selectionAreaBgColor \
-    view.lineHighlightColor \
-    view.selectionColor \
-    view.wrapGuideColor \
     view.status.background \
     view.status.foreground \
     view.status.memory.foreground \
@@ -202,6 +210,13 @@ editor-scheme.view.bgColor.name=Text Area Background Color
 editor-scheme.view.caretColor.name=Text Area Caret Color
 editor-scheme.view.eolMarkerColor.name=Text Area EOL Marker Color
 editor-scheme.view.fgColor.name=Text Area Foreground Color
+editor-scheme.view.lineHighlightColor.name=Text Area Line Highlight Color
+editor-scheme.view.multipleSelectionColor.name=Text Area Multiple Selection Color
+editor-scheme.view.selectionColor.name=Text Area Selection Color
+editor-scheme.view.selectionFgColor.name=Text Area Selection Foreground Color
+editor-scheme.view.structureHighlightColor.name=Structure Highlight Color
+editor-scheme.view.wrapGuideColor.name=Text Area Wrap Guide Color
+
 editor-scheme.view.gutter.bgColor.name=Gutter Background Color
 editor-scheme.view.gutter.currentLineColor.name=Gutter Current Line Color
 editor-scheme.view.gutter.fgColor.name=Gutter Foreground Color
@@ -212,16 +227,11 @@ editor-scheme.view.gutter.markerColor.name=Gutter Marker Color
 editor-scheme.view.gutter.noFocusBorderColor.name=Gutter No Focus Border Color
 editor-scheme.view.gutter.structureHighlightColor.name=Gutter Structure Highlight Color
 editor-scheme.view.gutter.selectionAreaBgColor.name=Gutter Selection Area Background Color
-editor-scheme.view.lineHighlightColor.name=Text Area Line Highlight Color
-editor-scheme.view.multipleSelectionColor.name=Text Area Multiple Selection Color
-editor-scheme.view.selectionColor.name=Text Area Selection Color
-editor-scheme.view.selectionFgColor.name=Text Selection Foreground Color
 editor-scheme.view.status.background.name=Status Bar Background Color
 editor-scheme.view.status.foreground.name=Status Bar Foreground Color
 editor-scheme.view.status.memory.background.name=Status Bar Memory Background Color
 editor-scheme.view.status.memory.foreground.name=Status Bar Memory Foreground Color
-editor-scheme.view.structureHighlightColor.name=Structure Highlight Color
-editor-scheme.view.wrapGuideColor.name=Text Area Wrap Guide Color
+
 editor-scheme.view.style.comment1.name=Text Area Comment 1 Style
 editor-scheme.view.style.comment2.name=Text Area Comment 2 Style
 editor-scheme.view.style.comment3.name=Text Area Comment 3 Style
@@ -244,7 +254,6 @@ editor-scheme.view.style.literal3.name=Text Area Literal 3 Style
 editor-scheme.view.style.literal4.name=Text Area Literal 4 Style
 editor-scheme.view.style.markup.name=Text Area Markup Style
 editor-scheme.view.style.operator.name=Text Area Operator Style
-editor-scheme.view.wrapGuideColor.name=Text Area Wrap Guide Color
 
 editor-scheme.white-space.block-color.name=Whitespace Block Color
 editor-scheme.white-space.fold-color.name=Whitespace Fold Color
