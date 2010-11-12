@@ -60,7 +60,7 @@
 			}
 
 			buf.append(" clojure.main ");
-			buf.append(script);
+			buf.append("\"" + script + "\"");
 
 			if(!args.equals(""))
 			{
