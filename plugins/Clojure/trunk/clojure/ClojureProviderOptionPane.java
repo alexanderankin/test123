@@ -67,7 +67,7 @@ public class ClojureProviderOptionPane extends AbstractOptionPane {
 		coreBrowse.addActionListener(new BrowseHandler(corePath));
 		corePanel.add(coreBrowse);
 		String core = plugin.getClojureCore();
-		if (core.equals(ClojurePlugin.includedCore)) {
+		if (core.equals(ClojurePlugin.INCLUDED_CORE)) {
 			coreIncluded.setSelected(true);
 			corePath.setEnabled(false);
 			coreBrowse.setEnabled(false);
@@ -93,7 +93,7 @@ public class ClojureProviderOptionPane extends AbstractOptionPane {
 		contribBrowse.addActionListener(new BrowseHandler(contribPath));
 		contribPanel.add(contribBrowse);
 		String contrib = plugin.getClojureContrib();
-		if (contrib.equals(ClojurePlugin.includedContrib)) {
+		if (contrib.equals(ClojurePlugin.INCLUDED_CONTRIB)) {
 			contribIncluded.setSelected(true);
 			contribPath.setEnabled(false);
 			contribBrowse.setEnabled(false);
@@ -108,13 +108,13 @@ public class ClojureProviderOptionPane extends AbstractOptionPane {
 	
 	protected void _save() {
 		if (coreIncluded.isSelected()) {
-			plugin.setClojureCore(ClojurePlugin.includedCore);
+			plugin.setClojureCore(ClojurePlugin.INCLUDED_CORE);
 		} else {
 			plugin.setClojureCore(corePath.getText());
 		}
 
 		if (contribIncluded.isSelected()) {
-			plugin.setClojureContrib(ClojurePlugin.includedContrib);
+			plugin.setClojureContrib(ClojurePlugin.INCLUDED_CONTRIB);
 		} else {
 			plugin.setClojureContrib(contribPath.getText());
 		}
