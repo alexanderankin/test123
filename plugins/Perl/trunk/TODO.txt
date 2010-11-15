@@ -1,0 +1,22 @@
+To do:
+- Actions: step, next - ability to step/next in expression:
+  - jEdit actions
+  - Control panel - debugger buttons
+- Set/remove breakpoints
+  - Via gutter right click
+  - Via action (set breakpoint in current line)
+  - Via expression (b this_function)
+  - Visual indication in gutter
+  - Breakpoint features - skip count / conditions / whatever provided by the debugger
+- Data:
+  - Tooltip with variable value
+  - Watches window
+  - Locals / autos / globals / package variables (according to what's provided by the
+    built-in debugger).
+  - Allow changing values from the various data windows.
+- Call stack.
+- Console for:
+  - Output / error streams
+  - Input and running arbitrary perl commands.
+- Running: Launch configurations.
+
