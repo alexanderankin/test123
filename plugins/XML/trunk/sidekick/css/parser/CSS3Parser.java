@@ -20,11 +20,22 @@ import sidekick.util.*;
 
 public class CSS3Parser implements CSS3ParserConstants {
 
-    private int lineOffset = 0;
     private List<ParseError> parseErrors = new ArrayList<ParseError>();
     private boolean proprietaryAsError = true;
 
     private static char hexdigits[] = { '0' ,'1' ,'2' ,'3' ,'4' ,'5' ,'6' ,'7' ,'8' ,'9' ,'a' ,'b' ,'c' ,'d' ,'e' ,'f' } ;
+
+    /**
+     * The line offset is used when the css to be parsed is only part of a file,
+     * for example when the css is the contents of a style block contained within
+     * an html document.
+     * @param lineOffset The line number of the first line of the css.
+     * @param columnOffset The column number of the first character of the css.
+     */
+    public CSS3Parser(Reader in, int lineOffset, int columnOffset){
+        this(in);
+        jj_input_stream.ReInit(in,lineOffset,columnOffset);
+    }
 
     /**
      * Set the tab size on the input stream.  This should be set to the same
@@ -40,16 +51,6 @@ public class CSS3Parser implements CSS3ParserConstants {
      */
     public int getTabSize() {
         return jj_input_stream.getTabSize(0);
-    }
-
-    /**
-     * The line offset is used when the css to be parsed is only part of a file,
-     * for example when the css is the contents of a style block contained within
-     * an html document.
-     * @param offset The line number of the first line of the css.
-     */
-    public void setLineOffset(int offset) {
-        lineOffset = offset > 0 ? offset : 0;
     }
 
     /**
@@ -84,7 +85,7 @@ public class CSS3Parser implements CSS3ParserConstants {
 
     // regex to extract line and colun from a ParseException message
     // ParseException message look like: "Parse error at line 116, column 5.  Encountered: }"
-    private Pattern pePattern = Pattern.compile( "(.*?)(\\d+)(.*?)(\\d+)(.*?)" );
+    private Pattern pePattern = Pattern.compile( "(.*?)(\u005c\u005cd+)(.*?)(\u005c\u005cd+)(.*?)" );
 
     /**
      * @return attempts to return a Location indicating the location of a parser
@@ -95,7 +96,7 @@ public class CSS3Parser implements CSS3ParserConstants {
     private Range getExceptionLocation( ParseException pe ) {
         Token t = pe.currentToken;
         if ( t != null ) {
-            return new Range( new Location( t.next.beginLine - 1, t.next.beginColumn ), new Location( t.next.endLine - 1, t.next.endColumn ) );
+            return  new Range( new Location( t.next.beginLine, t.next.beginColumn-1 ), new Location( t.next.endLine, t.next.endColumn ) );
         }
 
         // ParseException message look like: "Parse error at line 116, column 5.  Encountered: }"
@@ -137,8 +138,8 @@ public class CSS3Parser implements CSS3ParserConstants {
      */
     public Location getStartLocation(Token t) {
        if (t == null)
-           return new Location(0 + lineOffset, 0);
-       return new Location(t.beginLine + lineOffset, t.beginColumn);
+           return new Location(0, 0);
+       return new Location(t.beginLine, t.beginColumn);
     }
 
     /**
@@ -147,8 +148,8 @@ public class CSS3Parser implements CSS3ParserConstants {
      */
     public Location getEndLocation(Token t) {
        if (t == null)
-           return new Location(0 + lineOffset, 0);
-       return new Location(t.endLine + lineOffset, t.endColumn + 1);
+           return new Location(0, 0);
+       return new Location(t.endLine, t.endColumn + 1);
     }
 
     /**
@@ -3166,14 +3167,14 @@ public class CSS3Parser implements CSS3ParserConstants {
     return s.toString();
   }
 
-  final private boolean jj_2_1(int xla) {
+  private boolean jj_2_1(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_1(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(0, xla); }
   }
 
-  final private boolean jj_3_1() {
+  private boolean jj_3_1() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3R_86()) jj_scanpos = xsp;
@@ -3181,7 +3182,7 @@ public class CSS3Parser implements CSS3ParserConstants {
     return false;
   }
 
-  final private boolean jj_3R_86() {
+  private boolean jj_3R_86() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_scan_token(34)) {
@@ -3191,14 +3192,16 @@ public class CSS3Parser implements CSS3ParserConstants {
     return false;
   }
 
+  /** Generated Token Manager. */
   public CSS3ParserTokenManager token_source;
   SimpleCharStream jj_input_stream;
-  public Token token, jj_nt;
+  /** Current token. */
+  public Token token;
+  /** Next token. */
+  public Token jj_nt;
   private int jj_ntk;
   private Token jj_scanpos, jj_lastpos;
   private int jj_la;
-  public boolean lookingAhead = false;
-  private boolean jj_semLA;
   private int jj_gen;
   final private int[] jj_la1 = new int[130];
   static private int[] jj_la1_0;
@@ -3206,30 +3209,32 @@ public class CSS3Parser implements CSS3ParserConstants {
   static private int[] jj_la1_2;
   static private int[] jj_la1_3;
   static {
-      jj_la1_0();
-      jj_la1_1();
-      jj_la1_2();
-      jj_la1_3();
+      jj_la1_init_0();
+      jj_la1_init_1();
+      jj_la1_init_2();
+      jj_la1_init_3();
    }
-   private static void jj_la1_0() {
+   private static void jj_la1_init_0() {
       jj_la1_0 = new int[] {0x0,0x0,0x0,0xe00000,0xe00000,0x0,0x0,0x200000,0x200000,0x0,0xc00000,0xc00000,0x200000,0x200000,0x200000,0x0,0x0,0x200000,0x200000,0x200000,0x0,0x200000,0x20000000,0x200000,0x0,0x200000,0x200000,0x200000,0x0,0x20000000,0x200000,0x80000000,0x200000,0x200000,0x200000,0x200000,0x0,0x200000,0x200000,0x200000,0x200000,0x200000,0x200000,0x0,0x0,0x200000,0x200000,0x0,0x0,0x200000,0x200000,0x200000,0x200000,0x200000,0x200000,0x200000,0x200000,0x200000,0x200000,0x200000,0x200000,0x200000,0x200000,0x200000,0x20000000,0x200000,0x20000000,0x58000000,0x200000,0x200000,0x58200000,0x8000000,0x200000,0x20000000,0x200000,0x200000,0x200000,0x0,0x0,0x200000,0x0,0x58200000,0x200000,0x200000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x200000,0x200000,0x3000000,0x200000,0x0,0x200000,0x3000000,0x200000,0x0,0x200000,0x200000,0x0,0x200000,0x200000,0x0,0x0,0x0,0x0,0x200000,0x0,0x0,0x200000,0x0,0x200000,0x8000000,0x200000,0x8000000,0x28000000,0x8000000,0x0,0x200000,0x0,0x200000,0x8000000,0x200000,0x0,};
    }
-   private static void jj_la1_1() {
+   private static void jj_la1_init_1() {
       jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x5fc8a01c,0x0,0x0,0x0,0x0,0x0,0x4,0x200001,0x0,0x0,0x0,0x200001,0x0,0x0,0x0,0x4,0x0,0x0,0x0,0x100000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x5fc8a01c,0x0,0x0,0x0,0x0,0x0,0x0,0x4,0x80000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1000,0x0,0x1000,0x0,0x0,0x0,0x0,0x400,0x0,0x0,0x0,0x0,0x0,0x4,0x800,0x0,0x4,0x0,0x0,0x0,0x5fc82018,0x5fc82018,0x5fc82018,0x5fc82018,0x5fc8a01c,0x5fc00000,0x5fc00000,0x8004,0x8004,0x8004,0x0,0x0,0x3c0,0x0,0x5,0x0,0x3c0,0x0,0x5fc8a01c,0x0,0x0,0x5,0x0,0x0,0x0,0x4,0x80000,0x18,0x0,0x0,0x80000,0x0,0x0,0x0,0x40000405,0x0,0x40000405,0xffe0141d,0x400,0xffc00000,0x0,0x20001d,0x0,0xffe0041d,0x0,0x18,};
    }
-   private static void jj_la1_2() {
+   private static void jj_la1_init_2() {
       jj_la1_2 = new int[] {0x0,0x0,0x8,0x0,0x0,0x10,0x20,0x0,0x0,0x500107c4,0x20000,0x20000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x50000004,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x7800,0x7800,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x50000004,0x50000004,0x50000004,0x50000004,0x50000004,0x10000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x50000004,0x0,0x0,0x1,0x0,0x0,0xa0000000,0xa0000000,0x4,0x0,0x0,0x2,0x0,0x0,0x2,0x0,0x1,0x0,0x1,0x88000001,0x0,0x80000001,0x0,0x8000000,0x0,0x88000001,0x0,0x0,};
    }
-   private static void jj_la1_3() {
+   private static void jj_la1_init_3() {
       jj_la1_3 = new int[] {0x3,0x3,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x4,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x4,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x4,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x4,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
    }
   final private JJCalls[] jj_2_rtns = new JJCalls[1];
   private boolean jj_rescan = false;
   private int jj_gc = 0;
 
+  /** Constructor with InputStream. */
   public CSS3Parser(java.io.InputStream stream) {
      this(stream, null);
   }
+  /** Constructor with InputStream and supplied encoding */
   public CSS3Parser(java.io.InputStream stream, String encoding) {
     try { jj_input_stream = new SimpleCharStream(stream, encoding, 1, 1); } catch(java.io.UnsupportedEncodingException e) { throw new RuntimeException(e); }
     token_source = new CSS3ParserTokenManager(jj_input_stream);
@@ -3240,9 +3245,11 @@ public class CSS3Parser implements CSS3ParserConstants {
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
+  /** Reinitialise. */
   public void ReInit(java.io.InputStream stream) {
      ReInit(stream, null);
   }
+  /** Reinitialise. */
   public void ReInit(java.io.InputStream stream, String encoding) {
     try { jj_input_stream.ReInit(stream, encoding, 1, 1); } catch(java.io.UnsupportedEncodingException e) { throw new RuntimeException(e); }
     token_source.ReInit(jj_input_stream);
@@ -3253,6 +3260,7 @@ public class CSS3Parser implements CSS3ParserConstants {
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
+  /** Constructor. */
   public CSS3Parser(java.io.Reader stream) {
     jj_input_stream = new SimpleCharStream(stream, 1, 1);
     token_source = new CSS3ParserTokenManager(jj_input_stream);
@@ -3263,6 +3271,7 @@ public class CSS3Parser implements CSS3ParserConstants {
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
+  /** Reinitialise. */
   public void ReInit(java.io.Reader stream) {
     jj_input_stream.ReInit(stream, 1, 1);
     token_source.ReInit(jj_input_stream);
@@ -3273,6 +3282,7 @@ public class CSS3Parser implements CSS3ParserConstants {
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
+  /** Constructor with generated Token Manager. */
   public CSS3Parser(CSS3ParserTokenManager tm) {
     token_source = tm;
     token = new Token();
@@ -3282,6 +3292,7 @@ public class CSS3Parser implements CSS3ParserConstants {
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
+  /** Reinitialise. */
   public void ReInit(CSS3ParserTokenManager tm) {
     token_source = tm;
     token = new Token();
@@ -3291,7 +3302,7 @@ public class CSS3Parser implements CSS3ParserConstants {
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
-  final private Token jj_consume_token(int kind) throws ParseException {
+  private Token jj_consume_token(int kind) throws ParseException {
     Token oldToken;
     if ((oldToken = token).next != null) token = token.next;
     else token = token.next = token_source.getNextToken();
@@ -3317,7 +3328,7 @@ public class CSS3Parser implements CSS3ParserConstants {
 
   static private final class LookaheadSuccess extends java.lang.Error { }
   final private LookaheadSuccess jj_ls = new LookaheadSuccess();
-  final private boolean jj_scan_token(int kind) {
+  private boolean jj_scan_token(int kind) {
     if (jj_scanpos == jj_lastpos) {
       jj_la--;
       if (jj_scanpos.next == null) {
@@ -3338,6 +3349,8 @@ public class CSS3Parser implements CSS3ParserConstants {
     return false;
   }
 
+
+/** Get the next Token. */
   final public Token getNextToken() {
     if (token.next != null) token = token.next;
     else token = token.next = token_source.getNextToken();
@@ -3346,8 +3359,9 @@ public class CSS3Parser implements CSS3ParserConstants {
     return token;
   }
 
+/** Get the specific Token. */
   final public Token getToken(int index) {
-    Token t = lookingAhead ? jj_scanpos : token;
+    Token t = token;
     for (int i = 0; i < index; i++) {
       if (t.next != null) t = t.next;
       else t = t.next = token_source.getNextToken();
@@ -3355,14 +3369,14 @@ public class CSS3Parser implements CSS3ParserConstants {
     return t;
   }
 
-  final private int jj_ntk() {
+  private int jj_ntk() {
     if ((jj_nt=token.next) == null)
       return (jj_ntk = (token.next=token_source.getNextToken()).kind);
     else
       return (jj_ntk = jj_nt.kind);
   }
 
-  private java.util.Vector jj_expentries = new java.util.Vector();
+  private java.util.List<int[]> jj_expentries = new java.util.ArrayList<int[]>();
   private int[] jj_expentry;
   private int jj_kind = -1;
   private int[] jj_lasttokens = new int[100];
@@ -3377,31 +3391,26 @@ public class CSS3Parser implements CSS3ParserConstants {
       for (int i = 0; i < jj_endpos; i++) {
         jj_expentry[i] = jj_lasttokens[i];
       }
-      boolean exists = false;
-      for (java.util.Enumeration e = jj_expentries.elements(); e.hasMoreElements();) {
-        int[] oldentry = (int[])(e.nextElement());
+      jj_entries_loop: for (java.util.Iterator<?> it = jj_expentries.iterator(); it.hasNext();) {
+        int[] oldentry = (int[])(it.next());
         if (oldentry.length == jj_expentry.length) {
-          exists = true;
           for (int i = 0; i < jj_expentry.length; i++) {
             if (oldentry[i] != jj_expentry[i]) {
-              exists = false;
-              break;
+              continue jj_entries_loop;
             }
           }
-          if (exists) break;
+          jj_expentries.add(jj_expentry);
+          break jj_entries_loop;
         }
       }
-      if (!exists) jj_expentries.addElement(jj_expentry);
       if (pos != 0) jj_lasttokens[(jj_endpos = pos) - 1] = kind;
     }
   }
 
+  /** Generate ParseException. */
   public ParseException generateParseException() {
-    jj_expentries.removeAllElements();
+    jj_expentries.clear();
     boolean[] la1tokens = new boolean[99];
-    for (int i = 0; i < 99; i++) {
-      la1tokens[i] = false;
-    }
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -3428,7 +3437,7 @@ public class CSS3Parser implements CSS3ParserConstants {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
-        jj_expentries.addElement(jj_expentry);
+        jj_expentries.add(jj_expentry);
       }
     }
     jj_endpos = 0;
@@ -3436,18 +3445,20 @@ public class CSS3Parser implements CSS3ParserConstants {
     jj_add_error_token(0, 0);
     int[][] exptokseq = new int[jj_expentries.size()][];
     for (int i = 0; i < jj_expentries.size(); i++) {
-      exptokseq[i] = (int[])jj_expentries.elementAt(i);
+      exptokseq[i] = jj_expentries.get(i);
     }
     return new ParseException(token, exptokseq, tokenImage);
   }
 
+  /** Enable tracing. */
   final public void enable_tracing() {
   }
 
+  /** Disable tracing. */
   final public void disable_tracing() {
   }
 
-  final private void jj_rescan_token() {
+  private void jj_rescan_token() {
     jj_rescan = true;
     for (int i = 0; i < 1; i++) {
     try {
@@ -3466,7 +3477,7 @@ public class CSS3Parser implements CSS3ParserConstants {
     jj_rescan = false;
   }
 
-  final private void jj_save(int index, int xla) {
+  private void jj_save(int index, int xla) {
     JJCalls p = jj_2_rtns[index];
     while (p.gen > jj_gen) {
       if (p.next == null) { p = p.next = new JJCalls(); break; }

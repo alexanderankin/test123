@@ -459,19 +459,9 @@ String StyleBlockContents() :
         | t=<BLOCK_LBR> { sb.append(t.image); }
         )*
         {
-            String contents = sb.toString();
-            contents = contents.trim();
-            // sometimes people wrap the contents of style tags with html comments
-            // to protect older browsers that don't understand style tags from puking.
-            // I'm removing them here as they don't serve a purpose as far as a jEdit
-            // SideKick plugin is concerned.
-            if (contents.startsWith("<!--")) {
-                contents = contents.substring(4);
-            }
-            if (contents.endsWith("-->")) {
-                contents = contents.substring(0, contents.length() - 3);
-            }
-            return contents.trim();
+            // don't trim content, otherwise errors in the first line will be off by
+            // the amount of whitespace trimmed
+            return sb.toString();
         }
       }
       catch(ParseException e) {
@@ -551,12 +541,12 @@ HtmlDocument.HtmlElement StyleBlock() :
 {
   HtmlDocument.AttributeList alist;
   Token firstToken = getToken(1);
-  Token st, et;
+  Token st, est, et;
   String contents = "";
 }
 {
   try {
-    st=<TAG_START> <TAG_STYLE> alist=AttributeList() <TAG_END>
+    st=<TAG_START> <TAG_STYLE> alist=AttributeList() est=<TAG_END>
     {
       token_source.SwitchTo(LexStyle);
     }
@@ -569,6 +559,10 @@ HtmlDocument.HtmlElement StyleBlock() :
         HtmlDocument.TagBlock b = new HtmlDocument.TagBlock("STYLE", alist, seq);
         b.setStartLocation(st.beginLine, st.beginColumn);
         b.setEndLocation(et.endLine, et.endColumn + 1);
+
+		b.startTag.setStartLocation(st.beginLine, st.beginColumn);
+        b.startTag.setEndLocation(est.endLine, est.endColumn + 1);
+
         return b;
     }
   }
