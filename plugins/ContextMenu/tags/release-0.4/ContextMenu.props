@@ -1,0 +1,43 @@
+# $Id$
+
+# Plugin
+plugin.contextmenu.ContextMenuPlugin.name=Context Menu
+plugin.contextmenu.ContextMenuPlugin.author=Jakub Roztocil
+plugin.contextmenu.ContextMenuPlugin.version=0.4
+plugin.contextmenu.ContextMenuPlugin.docs=index.html
+plugin.contextmenu.ContextMenuPlugin.activate=startup
+plugin.contextmenu.ContextMenuPlugin.description=The ContextMenu plugin allows you to change text area's right-click context menu for each mode.
+plugin.contextmenu.ContextMenuPlugin.depend.0=jedit 04.03.99.00
+plugin.contextmenu.ContextMenuPlugin.depend.1=jdk 1.5
+
+# Options
+contextmenu.in-menubar=true
+contextmenu.in-popup=true
+
+# Option labels
+contextmenu.in-menubar.label=Show in Menu Bar
+contextmenu.in-popup.label=Show in Popup
+contextmenu.actions-label=Actions to display in menu:
+contextmenu.modes-label=Mode:
+contextmenu.menu-name.label=Menu label:
+contextmenu.menu-name.tooltip=Insert dolar sign ($) before letter, which you \
+								want to have as shortcut to open menu in \
+								menu bar via A+letter. For example: J$ava
+contextmenu.add-dialog-title=Choose Context Menu entry
+# Action labels
+contextmenu.customize.label=Customize Context Menu
+
+# Option pane
+plugin.contextmenu.ContextMenuPlugin.option-group=contextmenu-general \
+                                                  contextmenu-modes
+options.contextmenu-general.label=General
+options.contextmenu-general.code=new contextmenu.GeneralOptionPane();
+options.contextmenu-modes.label=Menus
+options.contextmenu-modes.code=new contextmenu.ModesOptionPane();
+
+# Menu
+plugin.contextmenu.ContextMenuPlugin.menu=contextmenu.customize
+
+
+contextmenu.customize-mode=Customize This Menu (mode-specific)...
+
