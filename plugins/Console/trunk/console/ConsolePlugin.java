@@ -5,7 +5,7 @@
  *
  * Copyright (C) 1999, 2004 Slava Pestov
  * Portions copyright (C) 1999, 2000 Kevin A. Burton
- * Revised  (c) 2005 by Alan Ezust
+ * Revised 2005, 2010 by Alan Ezust
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -33,6 +33,8 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.TreeMap;
+
 import javax.swing.JOptionPane;
 
 import org.gjt.sp.jedit.*;
@@ -140,8 +142,8 @@ public class ConsolePlugin extends EditPlugin
 	 *
 	 * @return -1 if no error/warning, or an ErrorType.
 	 *      Possible values are:
-	 * 	@ref ErrorSource.ERROR
-	 * 	@ref ErrorSource.WARNING
+	 * 	@see ErrorSource.ERROR
+	 * 	@see ErrorSource.WARNING
 	 *
 	 * Although it is possible derived ErrorSources will return custom error codes.
 	 */
@@ -320,6 +322,9 @@ public class ConsolePlugin extends EditPlugin
 	} // }}}
 
 	// {{{ getSwitchActions()
+	/** @return an array of "Shell Switcher" actions, some that toggle and others
+	 * that just select and focus in the Console dockable.
+	 */
 	public static EditAction[] getSwitchActions() {
 		EditAction[] actions = getShellSwitchActions().getActions();
 		Arrays.sort(actions, new ActionCompare());
@@ -327,11 +332,25 @@ public class ConsolePlugin extends EditPlugin
 	} // }}}
 
 	// {{{ getCommandoCommands() method
+	/** @return only the visible commando commands as EditActions, in
+	 *  a sorted array */
 	public static EditAction[] getCommandoCommands()
 	{
-		EditAction[] actions = allCommands.getActions();
-		Arrays.sort(actions, new ActionCompare());
-		return actions;
+
+		String[] names = allCommands.getActionNames();
+		TreeMap<String, EditAction> actions = new TreeMap<String, EditAction>();
+		for (String name: names) {
+			String label=name;
+			if (label.startsWith("commando.")) {
+				label = name.substring(9);
+			}
+			boolean visible = jEdit.getBooleanProperty("commando.visible." + label, true);
+			if (visible) {
+				actions.put(label, allCommands.getAction(name));
+			}
+		}
+		EditAction[] ar = new EditAction[actions.size()];
+		return actions.values().toArray(ar);
 	} // }}}
 
 	// {{{ compile() method
