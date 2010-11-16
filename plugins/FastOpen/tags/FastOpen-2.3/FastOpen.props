@@ -1,0 +1,35 @@
+#name=value
+plugin.com.patelsoft.fastopen.FastOpenPlugin.name=Fast Open
+plugin.com.patelsoft.fastopen.FastOpenPlugin.author=Jiger Patel
+plugin.com.patelsoft.fastopen.FastOpenPlugin.version=2.3
+plugin.com.patelsoft.fastopen.FastOpenPlugin.docs=docs/index.html
+
+# new to 4.3pre7
+plugin.com.patelsoft.fastopen.FastOpenPlugin.description=FastOpen is a plugin designed to quickly open any file in the currect project by just typing in the first few characters of the filename you want to open.
+plugin.com.patelsoft.fastopen.FastOpenPlugin.longdescription=description.html
+
+#external depencies
+plugin.com.patelsoft.fastopen.FastOpenPlugin.depend.0=jdk 1.5
+plugin.com.patelsoft.fastopen.FastOpenPlugin.depend.1=jedit 04.03.99.00
+plugin.com.patelsoft.fastopen.FastOpenPlugin.depend.2=optional plugin projectviewer.ProjectPlugin 3.0.1
+
+plugin.com.patelsoft.fastopen.FastOpenPlugin.activate=defer
+fastopen.title=Fast Open
+fastopen.label=Fast Open
+
+#Menu Items Settings
+plugin.com.patelsoft.fastopen.FastOpenPlugin.menu=fastopen  fastopenwindow.show fastopen.reindex
+
+fastopenwindow.show.label=Show Fast Open Dialog
+fastopen.reindex.label=Reindex
+
+#Option Pane Settings
+plugin.com.patelsoft.fastopen.FastOpenPlugin.option-pane=fastopen
+options.fastopen.label=FastOpen
+options.fastopen.code=new com.patelsoft.fastopen.FastOpenPlugin.FastOpenOptionPane();
+
+#Default Properties
+fastopen.showrecentfiles=true
+fastopen.indexing.freq=10
+fastopen.indexing.strategy=polling
+fastopen.search.delay=2
