@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<!-- $Id$ -->
+<ACTIONS>
+	<ACTION NAME="contextmenu.customize">
+		<CODE>contextmenu.ContextMenuPlugin.openPluginOptionsDialog();</CODE>
+	</ACTION>
+</ACTIONS>

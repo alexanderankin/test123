@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+<!-- $Id$ -->
+<article>
+	<articleinfo>
+		<title>ContextMenu plugin</title>
+		<author>
+			<firstname>Jakub</firstname>
+			<surname>Roztočil</surname>
+			<email>j.roztocil@gmail.com</email>
+		</author>
+		<edition>Version 0.1</edition>
+		<legalnotice>
+			<title>Legal Notice</title>
+			<para>
+				Permission is granted to copy, distribute and/or modify this document
+				under the terms of the GNU Free Documentation License, Version 1.1 or
+				any later version published by the Free Software Foundation; with no
+				<quote>Invariant Sections</quote>, <quote>Front-Cover Texts</quote> or
+				<quote>Back-Cover Texts</quote>, each as defined in the license. A copy of
+				the license can be found in the file <filename>COPYING.DOC.txt</filename>
+				included with jEdit.
+			</para>
+		</legalnotice>
+	</articleinfo>
+	<section id="summary">
+		<title>Summary</title>
+		<para>
+			The ContextMenu plugin allows you to change the text area's right-click context menu for each
+			mode.
+			To the menu, you can add jEdit's built-in actions, or actions from any plugin, or a macro.
+			Selected actions can be also shown in jEdit's menu bar.
+		</para>
+	</section>
+
+	<section id="options">
+		<title>Options</title>
+		<itemizedlist>
+			<listitem>
+				<itemizedlist>
+					<listitem>
+						<para>
+							<emphasis>Show in Popup</emphasis> -
+							if selected, actions are shown in the
+							text area's context menu before
+							the "Customize This Menu" item.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							<emphasis>Show in Menu Bar</emphasis> -
+							if selected, actions are also shown in jEdit's menu bar.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							<emphasis>Menu label</emphasis> -
+							label for menu in menu bar. Tip:
+							Insert dollar sign ($) before letter, which you
+							want to have as shortcut to access menu
+							via A+<replaceable>letter</replaceable>.
+							For example: <replaceable>J$ava</replaceable>.
+						</para>
+					</listitem>
+				</itemizedlist>
+			</listitem>
+		</itemizedlist>
+	</section>
+	<section id="change-log">
+		<title>Change log</title>
+		<itemizedlist>
+			<listitem>
+				<para>Version 0.4, Requires jEdit 4.3 and Java 1.5</para>
+				<itemizedlist>
+                    <listitem>
+						<para>Sorting combobox of plugins.</para>
+					</listitem>
+					<listitem>
+						<para>Using new sortable ActionSets.</para>
+					</listitem>
+				</itemizedlist>
+			</listitem>
+        
+			<listitem>
+				<para>Version 0.3, Requires jEdit 4.3pre15 and Java 1.5</para>
+				<itemizedlist>
+					<listitem>
+						<para>Using the new DynamicContextMenuService API for creating pop-up menu</para>
+					</listitem>
+				</itemizedlist>
+			</listitem>
+			<listitem>
+				<para>Version 0.1, Requires jEdit 4.3pre6 and Java 1.5</para>
+				<itemizedlist>
+					<listitem>
+						<para>Initial release.</para>
+					</listitem>
+				</itemizedlist>
+			</listitem>
+		</itemizedlist>
+	</section>
+</article>
