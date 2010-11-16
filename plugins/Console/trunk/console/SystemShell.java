@@ -138,7 +138,7 @@ public class SystemShell extends Shell
 		// {{{ executeBuiltIn() method
 
 	public void executeBuiltIn(Console console, Output output, Output error, String command,
-		Vector args)
+		Vector<String> args)
 	{
 		SystemShellBuiltIn builtIn = (SystemShellBuiltIn) commands.get(command);
 		if (builtIn == null)

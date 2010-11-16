@@ -32,6 +32,10 @@ import org.gjt.sp.jedit.*;
 class CommandoThread extends Thread
 {
 	//{{{ CommandoThread constructor
+	/**
+	 * @param console the console to execute the command.
+	 * @param commands a Vector of CommandoHandler.Command objects
+	 */
 	CommandoThread(Console console, Vector commands)
 	{
 		this.console = console;
@@ -113,6 +117,6 @@ class CommandoThread extends Thread
 	} //}}}
 	// {{{ Data Members
 	private Console console;
-	private Vector commands;
+	private Vector<Object> commands;
 	// }}}
 }// }}}
