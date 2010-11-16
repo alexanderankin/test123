@@ -56,6 +56,8 @@
 		<file name="EclipseIcons.jar"/>
     </filelist>
 
+    <fileset id="project.resources" dir="."/>
+    
     <!-- include everything needed to let jEdit load the plugin and run the 
     unit tests.  This should include all the jars listed in the plugin.jars 
     file list defined above. -->
@@ -84,7 +86,7 @@
 
     <!-- this selector holds just one test.  This is optional. -->
     <selector id="testcases.current">
-        <filename name="xml/SchemaMappingManagerTest.java"/>
+        <filename name="sidekick/html/HtmlParserTest.java"/>
     </selector>
 
     <!-- this selector controls which tests to run, set the refid to either

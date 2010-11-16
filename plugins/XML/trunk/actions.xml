@@ -17,6 +17,7 @@
         </CODE>
     </ACTION>
     <ACTION NAME="htmlsidekick-showall" NO_REPEAT="TRUE">
+        <!-- FIXME: no such method -->
         <CODE>
             sidekick.html.HtmlSideKickPlugin.toggleShowAll(view);
         </CODE>

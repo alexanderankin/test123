@@ -44,11 +44,22 @@ import sidekick.util.*;
 
 public class CSS3Parser {
 
-    private int lineOffset = 0;
     private List<ParseError> parseErrors = new ArrayList<ParseError>();
     private boolean proprietaryAsError = true;
 
     private static char hexdigits[] = { '0' ,'1' ,'2' ,'3' ,'4' ,'5' ,'6' ,'7' ,'8' ,'9' ,'a' ,'b' ,'c' ,'d' ,'e' ,'f' } ;
+    
+    /**
+     * The line offset is used when the css to be parsed is only part of a file,
+     * for example when the css is the contents of a style block contained within
+     * an html document.
+     * @param lineOffset The line number of the first line of the css.
+     * @param columnOffset The column number of the first character of the css.
+     */
+    public CSS3Parser(Reader in, int lineOffset, int columnOffset){
+    	this(in);
+    	jj_input_stream.ReInit(in,lineOffset,columnOffset);
+    }
     
     /**
      * Set the tab size on the input stream.  This should be set to the same
@@ -64,16 +75,6 @@ public class CSS3Parser {
      */
     public int getTabSize() {
         return jj_input_stream.getTabSize(0);
-    }
-    
-    /**
-     * The line offset is used when the css to be parsed is only part of a file,
-     * for example when the css is the contents of a style block contained within
-     * an html document.
-     * @param offset The line number of the first line of the css.
-     */
-    public void setLineOffset(int offset) {
-        lineOffset = offset > 0 ? offset : 0;
     }
     
     /**
@@ -119,7 +120,7 @@ public class CSS3Parser {
     private Range getExceptionLocation( ParseException pe ) {
         Token t = pe.currentToken;
         if ( t != null ) {
-            return new Range( new Location( t.next.beginLine - 1, t.next.beginColumn ), new Location( t.next.endLine - 1, t.next.endColumn ) );
+            return  new Range( new Location( t.next.beginLine, t.next.beginColumn-1 ), new Location( t.next.endLine, t.next.endColumn ) );
         }
 
         // ParseException message look like: "Parse error at line 116, column 5.  Encountered: }"
@@ -161,8 +162,8 @@ public class CSS3Parser {
      */
     public Location getStartLocation(Token t) {
        if (t == null)
-           return new Location(0 + lineOffset, 0);
-       return new Location(t.beginLine + lineOffset, t.beginColumn);
+           return new Location(0, 0);
+       return new Location(t.beginLine, t.beginColumn);
     }
 
     /**
@@ -171,8 +172,8 @@ public class CSS3Parser {
      */
     public Location getEndLocation(Token t) {
        if (t == null)
-           return new Location(0 + lineOffset, 0);
-       return new Location(t.endLine + lineOffset, t.endColumn + 1);
+           return new Location(0, 0);
+       return new Location(t.endLine, t.endColumn + 1);
     }
     
     /**

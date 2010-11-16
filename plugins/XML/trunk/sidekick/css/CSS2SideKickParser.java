@@ -53,6 +53,7 @@ public class CSS2SideKickParser extends SideKickParser implements EBComponent {
 
     public static boolean showAll = true;
     private int lineOffset = 0;
+    private int columnOffset = 0;
 
     public CSS2SideKickParser() {
         super( "css" );
@@ -67,6 +68,18 @@ public class CSS2SideKickParser extends SideKickParser implements EBComponent {
     public void setLineOffset( int offset ) {
         if ( offset > 0 ) {
             lineOffset = offset;
+        }
+    }
+
+    /**
+     * If called by another parser to parse part of a file (for example, to parse
+     * a style tag in an html document), this can be set to the offset of the
+     * style tag so that the node locations can be set correctly.
+     * this is not part of the SideKick API
+     */
+    public void setColumnOffset( int offset ) {
+        if ( offset > 0 ) {
+            columnOffset = offset;
         }
     }
 
@@ -123,12 +136,11 @@ public class CSS2SideKickParser extends SideKickParser implements EBComponent {
         StringReader reader = new StringReader( text );
         try {
             // create parser
-            CSS3Parser parser = new CSS3Parser( reader );
-
-            // set line offset, the parser uses this to adjust line numbers in the
+            // set line and column offsets,
+            // the parser uses this to adjust line numbers in the
             // case of a partial file, like when the stylesheet is embedded inside an
             // html document
-            parser.setLineOffset( lineOffset );
+            CSS3Parser parser = new CSS3Parser( reader , lineOffset, columnOffset );
 
             // set tab size so that the parser can accurately calculate line and
             // column positions

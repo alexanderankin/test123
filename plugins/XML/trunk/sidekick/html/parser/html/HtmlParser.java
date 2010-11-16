@@ -347,19 +347,9 @@ public class HtmlParser implements HtmlParserConstants {
           throw new ParseException();
         }
       }
-            String contents = sb.toString();
-            contents = contents.trim();
-            // sometimes people wrap the contents of style tags with html comments
-            // to protect older browsers that don't understand style tags from puking.
-            // I'm removing them here as they don't serve a purpose as far as a jEdit
-            // SideKick plugin is concerned.
-            if (contents.startsWith("<!--")) {
-                contents = contents.substring(4);
-            }
-            if (contents.endsWith("-->")) {
-                contents = contents.substring(0, contents.length() - 3);
-            }
-            {if (true) return contents.trim();}
+            // don't trim content, otherwise errors in the first line will be off by
+            // the amount of whitespace trimmed
+            {if (true) return sb.toString();}
     } catch (ParseException e) {
         addException(e);
     }
@@ -455,13 +445,13 @@ public class HtmlParser implements HtmlParserConstants {
   final public HtmlDocument.HtmlElement StyleBlock() throws ParseException {
   HtmlDocument.AttributeList alist;
   Token firstToken = getToken(1);
-  Token st, et;
+  Token st, est, et;
   String contents = "";
     try {
       st = jj_consume_token(TAG_START);
       jj_consume_token(TAG_STYLE);
       alist = AttributeList();
-      jj_consume_token(TAG_END);
+      est = jj_consume_token(TAG_END);
       token_source.SwitchTo(LexStyle);
       contents = StyleBlockContents();
       et = jj_consume_token(STYLE_END);
@@ -471,6 +461,10 @@ public class HtmlParser implements HtmlParserConstants {
         HtmlDocument.TagBlock b = new HtmlDocument.TagBlock("STYLE", alist, seq);
         b.setStartLocation(st.beginLine, st.beginColumn);
         b.setEndLocation(et.endLine, et.endColumn + 1);
+
+                b.startTag.setStartLocation(st.beginLine, st.beginColumn);
+        b.startTag.setEndLocation(est.endLine, est.endColumn + 1);
+
         {if (true) return b;}
     } catch (ParseException ex) {
     addException(ex);
@@ -604,12 +598,6 @@ public class HtmlParser implements HtmlParserConstants {
     finally { jj_save(3, xla); }
   }
 
-  private boolean jj_3R_7() {
-    if (jj_scan_token(TAG_START)) return true;
-    if (jj_scan_token(TAG_SCRIPT)) return true;
-    return false;
-  }
-
   private boolean jj_3R_6() {
     if (jj_scan_token(TAG_START)) return true;
     if (jj_scan_token(TAG_NAME)) return true;
@@ -635,6 +623,12 @@ public class HtmlParser implements HtmlParserConstants {
   private boolean jj_3R_8() {
     if (jj_scan_token(TAG_START)) return true;
     if (jj_scan_token(TAG_STYLE)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_7() {
+    if (jj_scan_token(TAG_START)) return true;
+    if (jj_scan_token(TAG_SCRIPT)) return true;
     return false;
   }
 

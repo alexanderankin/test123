@@ -340,6 +340,7 @@ options.csssidekick.showProprietaryAsError=true
 # {{{ HTMLSideKick props
 
 # popup menu
+# FIXME: htmlsidekick-expandall action is not defined
 sidekick-tree.html.menu=htmlsidekick-showall htmlsidekick-expandall
 htmlsidekick-showall.label=Show All
 htmlsidekick-expandall.label=Expand All
