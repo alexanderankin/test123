@@ -24,6 +24,7 @@
                 <filename name="lucene/**" />
                 <filename name="services.xml" />
                 <filename name="*.props" />
+                <filename name="docs/RFCFullIndex.html" />
 	        </or>
         </and>
     </selector>
