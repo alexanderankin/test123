@@ -33,8 +33,6 @@ import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
@@ -364,12 +362,13 @@ public class ModesOptionPane extends AbstractOptionPane implements ActionListene
 			JPanel actionPanel = new JPanel(new BorderLayout(6,6));
 
 			ActionSet[] actionsList = jEdit.getActionSets();
-			TreeSet<ActionSet> vec = new TreeSet<ActionSet>();
+			TreeSet<ActionSet> vec = new TreeSet<ActionSet>(new ActionSetCompare());
 			for(int i = 0; i < actionsList.length; i++) {
 				ActionSet actionSet = actionsList[i];
 				if(actionSet.getActionCount() != 0)
 					vec.add(actionSet);
 			}
+			
 			combo = new JComboBox(vec.toArray());
 			combo.addActionListener(actionHandler);
 			actionPanel.add(BorderLayout.NORTH,combo);
@@ -515,6 +514,14 @@ public class ModesOptionPane extends AbstractOptionPane implements ActionListene
 		}
 	} //}}}
 
+	static class ActionSetCompare implements Comparator<ActionSet> {
+		@Override
+		public int compare(ActionSet o1, ActionSet o2)
+		{
+			return StandardUtilities.compareStrings(o1.getLabel(), o2.getLabel(), true);
+		}
+		
+	}
 
 }
 

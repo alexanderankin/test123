@@ -7,7 +7,7 @@ plugin.contextmenu.ContextMenuPlugin.version=0.4
 plugin.contextmenu.ContextMenuPlugin.docs=index.html
 plugin.contextmenu.ContextMenuPlugin.activate=startup
 plugin.contextmenu.ContextMenuPlugin.description=The ContextMenu plugin allows you to change text area's right-click context menu for each mode.
-plugin.contextmenu.ContextMenuPlugin.depend.0=jedit 04.03.16.00
+plugin.contextmenu.ContextMenuPlugin.depend.0=jedit 04.03.99.00
 plugin.contextmenu.ContextMenuPlugin.depend.1=jdk 1.5
 
 # Options
