@@ -45,7 +45,7 @@ public class LookAndFeelOptionPane extends AbstractOptionPane
 
 	private JComboBox lookAndFeels;
 	private JPanel lnfOptionPanel;
-	private Component configComponent;
+	private AbstractOptionPane configComponent;
 	private JCheckBox useFont;
 
 	public LookAndFeelOptionPane() {
@@ -55,7 +55,7 @@ public class LookAndFeelOptionPane extends AbstractOptionPane
 
 	public void _init() {
 		setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
-		String[] lnfs = LnfInstaller.getAvailableLookAndFeels();
+		String[] lnfs = LookAndFeelPlugin.getAvailableLookAndFeels();
 		lookAndFeels = new JComboBox( lnfs );
 		addComponent( useFont = new JCheckBox(
 		            jEdit.getProperty( "lookandfeel.usejeditfont.label" ),
@@ -74,8 +74,8 @@ public class LookAndFeelOptionPane extends AbstractOptionPane
 
 	public void _save() {
 		try {
-			LnfInstaller installer = LnfInstaller.createInstaller( lookAndFeels.getSelectedItem().toString() );
-			installer.saveOptions( configComponent );
+			LookAndFeelInstaller installer = LookAndFeelPlugin.getInstaller( lookAndFeels.getSelectedItem().toString() );
+			configComponent.save();
 			jEdit.setProperty( "lookandfeel.lookandfeel", lookAndFeels.getSelectedItem().toString() );
 			jEdit.setBooleanProperty( "lookandfeel.usejeditfont", useFont.isSelected() );
 			LookAndFeelPlugin.installLookAndFeel( installer );
@@ -92,11 +92,11 @@ public class LookAndFeelOptionPane extends AbstractOptionPane
 	 */
 	public final void itemStateChanged( ItemEvent evt ) {
 		try {
-			LnfInstaller installer = LnfInstaller.createInstaller( lookAndFeels.getSelectedItem().toString() );
+			LookAndFeelInstaller installer = LookAndFeelPlugin.getInstaller( lookAndFeels.getSelectedItem().toString() );
 			if ( configComponent != null ) {
 				lnfOptionPanel.remove( configComponent );
 			}
-			configComponent = installer.getOptionComponent();
+			configComponent = installer.getOptionPane();
 			if ( configComponent != null ) {
 				lnfOptionPanel.add( configComponent );
 			}

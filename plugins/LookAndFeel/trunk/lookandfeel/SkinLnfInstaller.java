@@ -20,53 +20,50 @@
  */
 package lookandfeel;
 
-import com.l2fprod.gui.SkinChooser;
 import com.l2fprod.gui.plaf.skin.Skin;
 import com.l2fprod.gui.plaf.skin.SkinLookAndFeel;
-import java.awt.Component;
 import javax.swing.JCheckBox;
 import javax.swing.UIManager;
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.util.Log;
+import javax.swing.UnsupportedLookAndFeelException;
 
 
 /**
  * Installs the skin look and feel.  See <a href="http://www.l2fprod.com">http://www.l2fprod.com</a>.
  */
-public class SkinLnfInstaller extends LnfInstaller
+public class SkinLnfInstaller implements LookAndFeelInstaller
 {
 
 	public final static String THEMEPACK_PROP = "lookandfeel.skin.themepack";
 	public final static String XTRA_SCROLLBARS_PROP = "lookandfeel.skin.xtra-scrollbars";
 
+	public String getName() {
+		return "Skin";		
+	}
+	
 	/**
 	 * Install a non standard look and feel.
 	 */
-	public void install()
-		throws Exception
+	public void install() throws UnsupportedLookAndFeelException
 	{
-		Skin theme = SkinLookAndFeel.loadThemePack(jEdit.getProperty(THEMEPACK_PROP));
-		SkinLookAndFeel.setSkin(theme);
-		UIManager.setLookAndFeel( new SkinLookAndFeel() );
-		UIManager.put("ScrollBar.alternateLayout",
-			jEdit.getBooleanProperty(XTRA_SCROLLBARS_PROP, false) ? Boolean.TRUE : null);
+		try {
+			Skin theme = SkinLookAndFeel.loadThemePack(jEdit.getProperty(THEMEPACK_PROP));
+			SkinLookAndFeel.setSkin(theme);
+			UIManager.setLookAndFeel( new SkinLookAndFeel() );
+			UIManager.put("ScrollBar.alternateLayout",
+				jEdit.getBooleanProperty(XTRA_SCROLLBARS_PROP, false) ? Boolean.TRUE : null);
+		}
+		catch(Exception e) {
+			throw new UnsupportedLookAndFeelException(e.getMessage());
+		}
 	}
 
 	/**
 	 * Returns a component used to configure the look and feel.
 	 */
-	public Component getOptionComponent()
-	{
-		return new OptionComponent();
-	}
-
-	/**
-	 * Save the configuration from the given {@link getOptionComponent()}.
-	 */
-	public void saveOptions(Component comp)
-	{
-		((OptionComponent) comp).save();
+	public AbstractOptionPane getOptionPane() {
+		return new OptionComponent();	
 	}
 
 	/**

@@ -21,31 +21,34 @@
 package lookandfeel;
 
 import com.oyoaha.swing.plaf.oyoaha.*;
-import java.awt.Component;
 import java.io.File;
 import javax.swing.UIManager;
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
+import javax.swing.UnsupportedLookAndFeelException;
 
 /**
  * Installs the Oyoaha look and feel. See <a href="http://www.l2fprod.com">
  * http://www.l2fprod.com</a> .
  */
-public class OyoahaLnfInstaller extends LnfInstaller
+public class OyoahaLnfInstaller implements LookAndFeelInstaller
 {
 
 	public final static String OYOAHA_THEME_PROP = "lookandfeel.oyoaha.oyoaha-theme";
 	public final static String METAL_THEME_PROP = "lookandfeel.oyoaha.metal-theme";
 
+	public String getName() {
+		return "Oyoaha";		
+	}
+	
 	/**
 	 * Install a non standard look and feel.
 	 */
-	public void install()
-		throws Exception
+	public void install() throws UnsupportedLookAndFeelException
 	{
 		String metalTheme = jEdit.getProperty(METAL_THEME_PROP);
 		String oyoahaTheme = jEdit.getProperty(OYOAHA_THEME_PROP);
-		if (!isEmpty(metalTheme)) {
+		if (!LookAndFeelPlugin.isEmpty(metalTheme)) {
 			OyoahaLookAndFeel.setCurrentTheme(new File(metalTheme));
 		}
 		OyoahaLookAndFeel lnf = new OyoahaLookAndFeel();
@@ -56,17 +59,8 @@ public class OyoahaLnfInstaller extends LnfInstaller
 	/**
 	 * Returns a component used to configure the look and feel.
 	 */
-	public Component getOptionComponent()
-	{
-		return new OptionComponent();
-	}
-
-	/**
-	 * Save the configuration from the given {@link getOptionComponent()}.
-	 */
-	public void saveOptions(Component comp)
-	{
-		((OptionComponent) comp).save();
+	public AbstractOptionPane getOptionPane() {
+		return new OptionComponent();	
 	}
 
 	/**

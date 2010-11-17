@@ -23,13 +23,18 @@ package lookandfeel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import com.digitprop.tonic.*;
+import org.gjt.sp.jedit.AbstractOptionPane;
 
 /**
  * A class for installing the Tonic look and feel
  */
-public class TonicLnfInstaller extends LnfInstaller
+public class TonicLnfInstaller implements LookAndFeelInstaller
 {
 
+	public String getName() {
+		return "Tonic";
+	}
+	
 	/**
 	 * Install a non standard look and feel.
 	 */
@@ -39,4 +44,7 @@ public class TonicLnfInstaller extends LnfInstaller
 		UIManager.put("ClassLoader", TonicLookAndFeel.class.getClassLoader());
 	}
 
+	public AbstractOptionPane getOptionPane() {
+		return null;	
+	}
 }

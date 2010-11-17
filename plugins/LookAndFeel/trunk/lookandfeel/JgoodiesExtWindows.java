@@ -24,13 +24,18 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import com.jgoodies.plaf.windows.ExtWindowsLookAndFeel;
+import org.gjt.sp.jedit.AbstractOptionPane;
 
 /**
  * Installs one of the JGoodies look and feels.
  * See <a href="https://looks.dev.java.net/"</a>.
  */
-public class JgoodiesExtWindows  extends LnfInstaller
+public class JgoodiesExtWindows  implements LookAndFeelInstaller
 {
+	public String getName() {
+		return "Jgoodies Ext Windows";		
+	}
+	
 	/**
 	 * Install a non standard look and feel.
 	 */
@@ -38,5 +43,9 @@ public class JgoodiesExtWindows  extends LnfInstaller
 	{
 		UIManager.setLookAndFeel(new ExtWindowsLookAndFeel());
 		UIManager.put("ClassLoader", ExtWindowsLookAndFeel.class.getClassLoader());
+	}
+	
+	public AbstractOptionPane getOptionPane() {
+		return null;	
 	}
 }

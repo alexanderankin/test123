@@ -1,8 +1,5 @@
 /*
- * LnfInstaller.java - Look And Feel plugin
  * Copyright (C) 2002 Calvin Yu
- *
- * :mode=java:tabSize=4:indentSize=4:noTabs=false:maxLineLen=0:
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -83,7 +80,7 @@ class PathComponent extends Box
 	 */
 	public boolean assertPath(boolean canBeEmpty)
 	{
-		if (canBeEmpty && isEmpty(getPath())) {
+		if (canBeEmpty && LookAndFeelPlugin.isEmpty(getPath())) {
 			return true;
 		}
 		File file = new File(getPath());
@@ -100,7 +97,7 @@ class PathComponent extends Box
 	 */
 	public boolean isPathEmpty()
 	{
-		return isEmpty(getPath());
+		return LookAndFeelPlugin.isEmpty(getPath());
 	}
 
 	/**
@@ -130,7 +127,7 @@ class PathComponent extends Box
 	{
 		File oldFile = null;
 		JFileChooser fc = getFileChooser();
-		if (!isEmpty(path.getText())) {
+		if (!LookAndFeelPlugin.isEmpty(path.getText())) {
 			oldFile = new File(path.getText());
 			fc.setCurrentDirectory(oldFile.getParentFile());
 			fc.setSelectedFile(oldFile);
@@ -169,14 +166,6 @@ class PathComponent extends Box
 		chooser.setCurrentDirectory(
 			new File(startingDirectory == null ? "" : startingDirectory));
 		return chooser;
-	}
-
-	/**
-	 * Returns <code>true</code> if the given string is empty.
-	 */
-	private static boolean isEmpty(String s)
-	{
-		return s == null || s.trim().length() == 0;
 	}
 
 	/**

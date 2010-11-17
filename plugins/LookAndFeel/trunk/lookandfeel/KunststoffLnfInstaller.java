@@ -22,12 +22,17 @@ package lookandfeel;
 
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import org.gjt.sp.jedit.AbstractOptionPane;
 
 /**
  * A class for installing nothing.
  */
-public class KunststoffLnfInstaller extends LnfInstaller
+public class KunststoffLnfInstaller implements LookAndFeelInstaller
 {
+	public String getName() {
+		return "Kunststoff";
+	}
+	
 
 	/**
 	 * Install a non standard look and feel.
@@ -37,4 +42,7 @@ public class KunststoffLnfInstaller extends LnfInstaller
       UIManager.put("ClassLoader", com.incors.plaf.kunststoff.KunststoffLookAndFeel.class.getClassLoader());
 	}
 
+	public AbstractOptionPane getOptionPane() {
+		return null;	
+	}
 }

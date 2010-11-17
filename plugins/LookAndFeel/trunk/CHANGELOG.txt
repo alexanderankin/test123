@@ -1,6 +1,20 @@
 CHANGELOG for LookAndFeel plugin
 ================================
 
+Version 1.6
+-----------
+* Refactored and revised the code to use the Service Manager.  All look and
+feels are now registered as services.  The LnfInstaller is deprecated in favor
+of the much simpler LookAndFeelInstaller that each service must implement.
+
+* Removed the Substance LAF to a separate plugin.  It registers as a service to
+this plugin, so it is loaded separately but acts exactly the same as before.
+
+* Reduced the required Java version to 1.5.  The previous bump to 1.6 was due
+to the Substance LAF requiring Java 1.6.  Since it is now a separate plugin, 
+this plugin can be used in Java 1.5 VMs.
+
+
 Version 1.5
 -----------
 * Updated Substance LAF to version 6.0

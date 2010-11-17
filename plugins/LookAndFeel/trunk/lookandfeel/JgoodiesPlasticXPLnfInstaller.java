@@ -24,13 +24,18 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import com.jgoodies.plaf.plastic.PlasticXPLookAndFeel;
+import org.gjt.sp.jedit.AbstractOptionPane;
 
 /**
  * Installs one of the JGoodies look and feels.
  * See <a href="https://looks.dev.java.net/"</a>.
  */
-public class JgoodiesPlasticXPLnfInstaller  extends LnfInstaller
+public class JgoodiesPlasticXPLnfInstaller  implements LookAndFeelInstaller
 {
+	public String getName() {
+		return "Jgoodies Plastic XP";		
+	}
+	
 	/**
 	 * Install a non standard look and feel.
 	 */
@@ -40,4 +45,7 @@ public class JgoodiesPlasticXPLnfInstaller  extends LnfInstaller
 		UIManager.put("ClassLoader", PlasticXPLookAndFeel.class.getClassLoader());
 	}
 
+	public AbstractOptionPane getOptionPane() {
+		return null;	
+	}
 }

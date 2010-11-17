@@ -1,24 +1,27 @@
 package lookandfeel;
 
-import java.awt.Component;
 import javax.swing.*;
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
 
-public class LipstikLnfInstaller extends LnfInstaller {
+public class LipstikLnfInstaller  implements LookAndFeelInstaller {
 
     public final static String LIPSTIK_MENU_THEME_PROP = "lipstikLF.menuBar";
     public final static String LIPSTIK_THEME_PROP = "lipstikLF.theme";
     private static final String[] themeNames = { "KlearlooksTheme", "LightGrayTheme", "DefaultTheme", "ZenburnTheme" };
 
 
-    public void install() throws UnsupportedLookAndFeelException {
+ 	public String getName() {
+        return "Lipstik";		
+	}
+	
+   public void install() throws UnsupportedLookAndFeelException {
         String menu_theme = jEdit.getProperty( LIPSTIK_MENU_THEME_PROP );
         String theme = jEdit.getProperty( LIPSTIK_THEME_PROP );
-        if ( !isEmpty( menu_theme ) ) {
+        if ( !LookAndFeelPlugin.isEmpty( menu_theme ) ) {
             System.setProperty( LIPSTIK_MENU_THEME_PROP, menu_theme );
         }
-        if ( !isEmpty( theme ) ) {
+        if ( !LookAndFeelPlugin.isEmpty( theme ) ) {
             System.setProperty( LIPSTIK_THEME_PROP, theme );
         }
         else {
@@ -32,16 +35,9 @@ public class LipstikLnfInstaller extends LnfInstaller {
     /**
      * Returns a component used to configure the look and feel.
      */
-    public Component getOptionComponent() {
-        return new OptionComponent();
-    }
-
-    /**
-     * Save the configuration from the given {@link getOptionComponent()}.
-     */
-    public void saveOptions( Component comp ) {
-        ( ( OptionComponent ) comp ).save();
-    }
+	public AbstractOptionPane getOptionPane() {
+		return new OptionComponent();	
+	}
 
     /**
      * The configuration component.
@@ -72,10 +68,10 @@ public class LipstikLnfInstaller extends LnfInstaller {
 
             String menu_theme = jEdit.getProperty( LIPSTIK_MENU_THEME_PROP );
             String theme = jEdit.getProperty( LIPSTIK_THEME_PROP );
-            if ( !isEmpty( menu_theme ) ) {
+            if ( !LookAndFeelPlugin.isEmpty( menu_theme ) ) {
                 menu_choices.setSelectedItem( menu_theme );
             }
-            if ( !isEmpty( theme ) ) {
+            if ( !LookAndFeelPlugin.isEmpty( theme ) ) {
                 System.setProperty( LIPSTIK_THEME_PROP, theme );
                 theme_choices.setSelectedItem( theme );
             }
