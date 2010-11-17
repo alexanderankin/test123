@@ -22,13 +22,18 @@ package lookandfeel;
 
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import org.gjt.sp.jedit.AbstractOptionPane;
 
 /**
  * A class for installing nothing.
  */
-public class MetouiaLnfInstaller extends LnfInstaller
+public class MetouiaLnfInstaller implements LookAndFeelInstaller
 {
 
+	public String getName() {
+		return "Metouia";
+	}
+	
 	/**
 	 * Install a non standard look and feel.
 	 */
@@ -37,4 +42,7 @@ public class MetouiaLnfInstaller extends LnfInstaller
 		UIManager.put("ClassLoader", net.sourceforge.mlf.metouia.MetouiaLookAndFeel.class.getClassLoader());
 	}
 
+	public AbstractOptionPane getOptionPane() {
+		return null;	
+	}
 }

@@ -20,15 +20,24 @@
  */
 package lookandfeel;
 
+import org.gjt.sp.jedit.AbstractOptionPane;
+
 /**
  * A class for installing nothing.
  */
-public class NoneLnfInstaller extends LnfInstaller
+public class NoneLnfInstaller implements LookAndFeelInstaller
 {
 
+	public String getName() {
+		return "None";
+	}
+	
 	/**
 	 * Install a non standard look and feel.
 	 */
 	public void install() {}
 
+	public AbstractOptionPane getOptionPane() {
+		return null;	
+	}
 }

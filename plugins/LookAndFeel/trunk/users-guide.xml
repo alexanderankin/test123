@@ -38,7 +38,7 @@
     <para>
     The <application>LookAndFeel</application> plugin lets you choose between
     different non standard look and feel implementations for jEdit.  Currently,
-    the following look and feel implementations are supported:
+    the following look and feel implementations are included:
   </para>
     <itemizedlist>
       <listitem>
@@ -66,12 +66,16 @@
         <para>Skin (see <xref linkend="skin"/>)</para>
       </listitem>
       <listitem>
-        <para>Substance (see <xref linkend="substance"/>)</para>
-      </listitem>
-      <listitem>
         <para>Tonic (see <xref linkend="tonic"/>)</para>
       </listitem>
     </itemizedlist>
+  
+    <para>
+      Other look and feels may be provided by additional plugins, for example,
+    the popular Substance Look and Feel is provided by the SubstanceLookAndFeel
+    plugin.  This plugin will load the Substance Look and Feel plugin and any
+    other available look and feel plugins automatically.
+    </para>
   </chapter>
 
 
@@ -526,50 +530,6 @@ contact mark@ms-studio.com or visit http://www.ms-studio.com.
     </sect1>
   </chapter>
 
-  <chapter id="substance">
-    <title>The Substance Look And Feel, version 5.3 (27 Sep 2009)</title>
-    <para>
-    The goal of this project is to provide a rock solid, fast and extensible library for creating visually appealing and consistent Swing applications.
-  </para>
-    <para>
-    The website for Substance is
-    <ulink url="https://substance.dev.java.net/">https://substance.dev.java.net/</ulink>.
-  </para>
-    <sect1 id="substance-license">
-      <title>License</title>
-      <para>
-      Substance has a BSD license:
-      </para>
-      <para>
-Copyright (c) 2005-2008 Substance, Kirill Grouchnikov.
-
-All Rights Reserved.
-
-Redistribution and use in source and binary forms, with or without modification, 
-are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, 
-    this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, 
-    this list of conditions and the following disclaimer in the documentation 
-    and/or other materials provided with the distribution.
-    * Neither the names of Kirill Grouchnikov nor the names of its contributors 
-    may be used to endorse or promote products derived from this software without 
-    specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
-IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
-INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
-BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
-LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
-OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
-OF THE POSSIBILITY OF SUCH DAMAGE.      
-      </para>
-    </sect1>
-  </chapter>
   
     <chapter id="feedback">
       <title>Feedback</title>
