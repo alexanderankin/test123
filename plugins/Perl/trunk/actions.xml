@@ -2,64 +2,64 @@
 <!-- $Id: actions.xml 7606 2004-11-07 15:52:36Z orutherfurd $ -->
 
 <ACTIONS>
+	<ACTION NAME="perl-dbg-launch-configs" NO_REPEAT="TRUE">
+		<CODE>
+			perl.Debugger.editLaunchConfigs(view);
+		</CODE>
+	</ACTION>
 	<ACTION NAME="perl-dbg-select" NO_REPEAT="TRUE">
 		<CODE>
-			perl.Debugger.getInstance().selectLaunchConfig(view);
+			perl.Debugger.selectLaunchConfig(view);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="perl-dbg-go" NO_REPEAT="TRUE">
 		<CODE>
-			perl.Debugger.getInstance().go();
+			perl.Debugger.go();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="perl-dbg-next" NO_REPEAT="TRUE">
 		<CODE>
-			perl.Debugger.getInstance().next();
+			perl.Debugger.next();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="perl-dbg-next-exp" NO_REPEAT="TRUE">
 		<CODE>
-			perl.Debugger.getInstance().nextExp();
+			perl.Debugger.nextExp();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="perl-dbg-step" NO_REPEAT="TRUE">
 		<CODE>
-			perl.Debugger.getInstance().step();
+			perl.Debugger.step();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="perl-dbg-step-exp" NO_REPEAT="TRUE">
 		<CODE>
-			perl.Debugger.getInstance().stepExp();
+			perl.Debugger.stepExp();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="perl-dbg-return" NO_REPEAT="TRUE">
 		<CODE>
-			perl.Debugger.getInstance().returnFromFunction();
+			perl.Debugger.returnFromFunction();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="perl-dbg-quit" NO_REPEAT="TRUE">
 		<CODE>
-			perl.Debugger.getInstance().quit();
+			perl.Debugger.quit();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="perl-dbg-run-to-cursor" NO_REPEAT="TRUE">
 		<CODE>
-			perl.Debugger.getInstance().runToCursor();
+			perl.Debugger.runToCursor();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="perl-dbg-toggle-breakpoint" NO_REPEAT="TRUE">
 		<CODE>
-			perl.Debugger.getInstance().toggleBreakpoint(view);
-		</CODE>
-	</ACTION>
-	<ACTION NAME="perl-dbg-launch-configs" NO_REPEAT="TRUE">
-		<CODE>
-			perl.Debugger.getInstance().editLaunchConfigs(view);
+			perl.Debugger.toggleBreakpoint(view);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="perl-dbg-watch-selection" NO_REPEAT="TRUE">
 		<CODE>
-			perl.Debugger.getInstance().watchSelection(view);
+			perl.Debugger.watchSelection(view);
 		</CODE>
 	</ACTION>
 </ACTIONS>
