@@ -2,11 +2,6 @@
 <!-- $Id: actions.xml 7606 2004-11-07 15:52:36Z orutherfurd $ -->
 
 <ACTIONS>
-	<ACTION NAME="perl-dbg-launch-configs" NO_REPEAT="TRUE">
-		<CODE>
-			perl.Debugger.editLaunchConfigs(view);
-		</CODE>
-	</ACTION>
 	<ACTION NAME="perl-dbg-select" NO_REPEAT="TRUE">
 		<CODE>
 			perl.Debugger.selectLaunchConfig(view);
