@@ -141,7 +141,13 @@ public class LaunchConfigOptionPane extends AbstractOptionPane
 	private void makeSelectedDefault()
 	{
 		LaunchConfig sel = (LaunchConfig) list.getSelectedValue();
+		if (sel == null)
+			return;
 		manager.setDefault(sel);
+		// The following is needed for refreshing the list
+		int index = list.getSelectedIndex();
+		model.remove(index);
+		model.add(index, sel);
 	}
 	private void deleteSelected()
 	{
