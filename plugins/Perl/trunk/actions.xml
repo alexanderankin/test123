@@ -9,7 +9,7 @@
 	</ACTION>
 	<ACTION NAME="perl-dbg-go" NO_REPEAT="TRUE">
 		<CODE>
-			perl.Debugger.go();
+			perl.Debugger.go(view);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="perl-dbg-next" NO_REPEAT="TRUE">
