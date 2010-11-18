@@ -60,11 +60,16 @@ perl-dbg-breakpoints.title=Breakpoints
 perl-dbg-breakpoints.label=Breakpoints
 perl-dbg-panel.title=Control Panel
 perl-dbg-panel.label=Control Panel
+perl-dbg-console.title=Perl Console
+perl-dbg-console.label=Perl Console
 
 # Options
-plugin.perl.Plugin.option-pane=perl-dbg
-options.perl-dbg.label=Perl Debugger
-options.perl-dbg.code=new perl.LaunchConfigOptionPane();
+plugin.perl.Plugin.option-group=perl-dbg-general perl-dbg-configs
+options.perl-dbg-general.label=General
+options.perl-dbg-general.code=new perl.GeneralOptionPane();
+options.perl-dbg-configs.label=Launch configurations
+options.perl-dbg-configs.code=new perl.LaunchConfigOptionPane();
+perl.options.perl_path=perl
 
 # Documentation
 plugin.perl.Plugin.docs=description.html
@@ -78,3 +83,4 @@ perl.messages.arguments=arguments
 perl.messages.arguments_tooltip=The arguments for the Perl script
 perl.messages.invalid_launch_config_name=Invalid name for a launch configuration
 perl.messages.configurations=Launch configurations
+perl.messages.perl_path=Perl path:

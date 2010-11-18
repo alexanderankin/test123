@@ -56,7 +56,7 @@ public class LaunchConfigOptionPane extends AbstractOptionPane
 	 **************************************************************************/
 	public LaunchConfigOptionPane()
 	{
-		super("perl-dbg");
+		super("perl-dbg-configs");
 		manager = LaunchConfigManager.getInstance();
 		setBorder(new EmptyBorder(5, 5, 5, 5));
 

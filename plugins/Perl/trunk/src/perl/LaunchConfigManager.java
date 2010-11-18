@@ -100,7 +100,7 @@ public class LaunchConfigManager {
 			}
 		}
 		return new File(f.getAbsolutePath() + File.separator +
-			"configs.xml");
+			"configs.ini");
 	}
 	public void save()
 	{
@@ -114,7 +114,7 @@ public class LaunchConfigManager {
 		int count = configurations.size();
 		p.setProperty("count", String.valueOf(count));
 		for (int i = 0; i < count; i++)
-			configurations.get(i).save("config." + i, p);
+			configurations.get(i).save("config." + i + ".", p);
 		try {
 			p.store(new FileOutputStream(file), "");
 		} catch (Exception e) {
@@ -154,7 +154,7 @@ public class LaunchConfigManager {
 		configurations.clear();
 		for (int i = 0; i < count; i++) {
 			configurations.add(LaunchConfig.load(
-				"config." + i, p));
+				"config." + i + ".", p));
 		}
 	}
 	public String getNewName(String prefix) {

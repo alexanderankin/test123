@@ -5,19 +5,22 @@
 
 <DOCKABLES>
 	<DOCKABLE NAME="perl-dbg-locals" MOVABLE="TRUE">
-		new perl.dockables.Locals(view);
+		new perl.Locals(view);
 	</DOCKABLE>
 	<DOCKABLE NAME="perl-dbg-watches" MOVABLE="TRUE">
-		new perl.dockables.Watches(view);
+		new perl.Watches(view);
 	</DOCKABLE>
 	<DOCKABLE NAME="perl-dbg-stack" MOVABLE="TRUE">
-		new perl.dockables.Stack(view);
+		new perl.Stack(view);
 	</DOCKABLE>
 	<DOCKABLE NAME="perl-dbg-breakpoints" MOVABLE="TRUE">
-		new perl.dockables.Breakpoints(view);
+		new perl.Breakpoints(view);
 	</DOCKABLE>
 	<DOCKABLE NAME="perl-dbg-panel">
-		new perl.dockables.ControlPanel(view);
+		new perl.ControlPanel(view);
+	</DOCKABLE>
+	<DOCKABLE NAME="perl-dbg-console">
+		new perl.Console(view);
 	</DOCKABLE>
 </DOCKABLES>
 
