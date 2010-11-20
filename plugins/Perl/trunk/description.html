@@ -1,4 +1,33 @@
 <html>
-<p>Perl plugin provides an interface to the Perl debugger and some other Perl features in jEdit.
+<p>GdbPlugin enables debugging programs using the gdb debugger directly from jEdit. The plugin provides the following functionality: </p>
+<ul>
+<li>
+Setting/Removing/Toggling breakpoints directly in jEdit buffers.
+</li>
+<li>
+Controlling program execution (the usual continue/step/next/...) - either using actions from the GdbPlugin menu or using a very simple GUI panel.
+</li>
+<li>
+Visualization of breakpoints and the current instruction using icons in the gutter area.
+</li>
+<li>
+Viewing/changing values of expressions and automatic variables (function arguments and variables defined inside the function).
+</li>
+<li>
+Breakpoint dockable which enables editing breakpoint properties (conditions/skip counts/enabled state) and adding watchpoints.
+</li>
+<li>
+Stack trace (normally called "backtrace" in gdb) dockable that enables you to view and quickly jump to the source code of selected stack frames.
+</li>
+<li>
+Defining "launch configurations" - i.e. the applications to debug, their command-line arguments etc.
+</li>
+<li>
+Two Console plugin shell services: "Program" for communication with the debugged program, and "GDB/MI" for controlling the GDB/MI process.
+</li>
+</ul>
+<p>
+The plugin uses gdb/mi (for most functions) for the interface with gdb. The plugin is still under development; as such, it is incomplete and might be unstable.
 </p>
+
 </html>

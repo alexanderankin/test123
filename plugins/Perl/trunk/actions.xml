@@ -2,60 +2,83 @@
 <!-- $Id: actions.xml 7606 2004-11-07 15:52:36Z orutherfurd $ -->
 
 <ACTIONS>
-	<ACTION NAME="perl-dbg-select" NO_REPEAT="TRUE">
+	
+	<ACTION NAME="debugger-kill" NO_REPEAT="TRUE">
 		<CODE>
-			perl.Debugger.selectLaunchConfig(view);
+			perl.core.Debugger.getInstance().kill();
 		</CODE>
 	</ACTION>
-	<ACTION NAME="perl-dbg-go" NO_REPEAT="TRUE">
+	<ACTION NAME="debugger-quit" NO_REPEAT="TRUE">
 		<CODE>
-			perl.Debugger.go(view);
+			perl.core.Debugger.getInstance().quit();
 		</CODE>
 	</ACTION>
-	<ACTION NAME="perl-dbg-next" NO_REPEAT="TRUE">
+	<ACTION NAME="debugger-go" NO_REPEAT="TRUE">
 		<CODE>
-			perl.Debugger.next();
+			perl.core.Debugger.getInstance().go();
 		</CODE>
 	</ACTION>
-	<ACTION NAME="perl-dbg-next-exp" NO_REPEAT="TRUE">
+	<ACTION NAME="debugger-select" NO_REPEAT="TRUE">
 		<CODE>
-			perl.Debugger.nextExp();
+			perl.core.Debugger.getInstance().selectLaunchConfig(view);
 		</CODE>
 	</ACTION>
-	<ACTION NAME="perl-dbg-step" NO_REPEAT="TRUE">
+	<ACTION NAME="debugger-next" NO_REPEAT="TRUE">
 		<CODE>
-			perl.Debugger.step();
+			perl.core.Debugger.getInstance().next();
 		</CODE>
 	</ACTION>
-	<ACTION NAME="perl-dbg-step-exp" NO_REPEAT="TRUE">
+	<ACTION NAME="debugger-step" NO_REPEAT="TRUE">
 		<CODE>
-			perl.Debugger.stepExp();
+			perl.core.Debugger.getInstance().step();
 		</CODE>
 	</ACTION>
-	<ACTION NAME="perl-dbg-return" NO_REPEAT="TRUE">
+	<ACTION NAME="debugger-finish" NO_REPEAT="TRUE">
 		<CODE>
-			perl.Debugger.returnFromFunction();
+			perl.core.Debugger.getInstance().finishCurrentFunction();
 		</CODE>
 	</ACTION>
-	<ACTION NAME="perl-dbg-quit" NO_REPEAT="TRUE">
+	<ACTION NAME="debugger-pause" NO_REPEAT="TRUE">
 		<CODE>
-			perl.Debugger.quit();
+			perl.core.Debugger.getInstance().pause();
 		</CODE>
 	</ACTION>
-	<ACTION NAME="perl-dbg-run-to-cursor" NO_REPEAT="TRUE">
+	<ACTION NAME="debugger-until" NO_REPEAT="TRUE">
 		<CODE>
-			perl.Debugger.runToCursor();
+			perl.core.Debugger.getInstance().runToCursor();
 		</CODE>
 	</ACTION>
-	<ACTION NAME="perl-dbg-toggle-breakpoint" NO_REPEAT="TRUE">
+
+	<ACTION NAME="debugger-toggle-breakpoint" NO_REPEAT="TRUE">
 		<CODE>
-			perl.Debugger.toggleBreakpoint(view);
+			perl.core.Debugger.getInstance().toggleBreakpoint(view);
 		</CODE>
 	</ACTION>
-	<ACTION NAME="perl-dbg-watch-selection" NO_REPEAT="TRUE">
+	<ACTION NAME="debugger-set-breakpoint" NO_REPEAT="TRUE">
 		<CODE>
-			perl.Debugger.watchSelection(view);
+			perl.core.Debugger.getInstance().setBreakpoint(view);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="debugger-remove-breakpoint" NO_REPEAT="TRUE">
+		<CODE>
+			perl.core.Debugger.getInstance().removeBreakpoint(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="debugger-edit-launch-configs" NO_REPEAT="TRUE">
+		<CODE>
+			perl.core.Debugger.getInstance().editLaunchConfigs(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="debugger-watch-selection" NO_REPEAT="TRUE">
+		<CODE>
+			perl.core.Debugger.getInstance().watchSelection(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="debugger-evaluate-selection" NO_REPEAT="TRUE">
+		<CODE>
+			perl.core.Debugger.getInstance().evaluateSelection(view);
+		</CODE>
+	</ACTION>
+
 </ACTIONS>
 
