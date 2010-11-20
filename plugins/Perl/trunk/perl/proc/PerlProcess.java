@@ -51,7 +51,7 @@ public class PerlProcess {
     public PerlProcess(LaunchConfiguration config) throws IOException {
     	program = config.getProgram();
 		String command = jEdit.getProperty(GeneralOptionPane.PERL_PATH_PROP) +
-			" --interpreter=mi " + program;
+			" -d " + program;
 		String cwd = config.getDirectory();
 		String [] env = config.getEnvironmentArray();
 		if (cwd == null || cwd.length() == 0)

@@ -99,7 +99,7 @@ public class Debugger implements DebuggerTool {
 
 	private VariableTooltipTextAreaExtension varTooltipExtension = null;
 
-	private PerlProcess gdbProcess = null;
+	private PerlProcess perlProcess = null;
 
 	public IData getData(String name) {
 		// TODO Auto-generated method stub
@@ -136,8 +136,8 @@ public class Debugger implements DebuggerTool {
 	}
 
 	public void pause() {
-		if (isRunning() && (gdbProcess != null))
-			gdbProcess.pause();
+		if (isRunning() && (perlProcess != null))
+			perlProcess.pause();
 	}
 
 	public void quit() {
@@ -180,9 +180,9 @@ public class Debugger implements DebuggerTool {
 		destroy();
 	}
 	public void destroy() {
-		if (gdbProcess != null) {
-			gdbProcess.destroy();
-			gdbProcess = null;
+		if (perlProcess != null) {
+			perlProcess.destroy();
+			perlProcess = null;
 		}
 	}
 	
@@ -241,16 +241,16 @@ public class Debugger implements DebuggerTool {
 
 	public void start(LaunchConfiguration config) {
 		try {
-			gdbProcess = new PerlProcess(config);
+			perlProcess = new PerlProcess(config);
 		} catch (IOException e) {
 			e.printStackTrace();
-			gdbProcess = null;
+			perlProcess = null;
 			return;
 		}
-		parser = new Parser(this, gdbProcess);
+		parser = new Parser(this, perlProcess);
 		parser.addOutOfBandHandler(new OutOfBandHandler());
 		parser.start();
-		commandManager = new CommandManager(gdbProcess, parser);
+		commandManager = new CommandManager(perlProcess, parser);
 		commandManager.start();
 		GdbState.setState(State.RUNNING);
 		// First set up the arguments

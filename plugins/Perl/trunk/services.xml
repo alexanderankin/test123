@@ -2,10 +2,10 @@
 <!DOCTYPE SERVICES SYSTEM "services.dtd">
 <SERVICES>
     <SERVICE CLASS="console.Shell" NAME="Perl-debugger">
-         new gdb.output.MIShell();
+         new perl.output.MIShell();
     </SERVICE>
     <SERVICE CLASS="console.Shell" NAME="Program">
-         new gdb.output.ProgramShell();
+         new perl.output.ProgramShell();
     </SERVICE>
  </SERVICES>
  
