@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <!DOCTYPE SERVICES SYSTEM "services.dtd">
 <SERVICES>
-    <!-->SERVICE CLASS="console.Shell" NAME="GDB/MI">
+    <SERVICE CLASS="console.Shell" NAME="Perl-debugger">
          new gdb.output.MIShell();
     </SERVICE>
     <SERVICE CLASS="console.Shell" NAME="Program">
          new gdb.output.ProgramShell();
-    </SERVICE-->
+    </SERVICE>
  </SERVICES>
  

@@ -1,86 +1,147 @@
-plugin.perl.Plugin.activate=defer
+plugin.debugger.jedit.Plugin.activate=defer
 
 # general plugin information
-plugin.perl.Plugin.name=Perl
-plugin.perl.Plugin.author=Shlomy Reinstein
-plugin.perl.Plugin.version=0.1
-plugin.perl.Plugin.description=This plugin provides an interface to the Perl debugger
+plugin.debugger.jedit.Plugin.name=Perl
+plugin.debugger.jedit.Plugin.author=Shlomy Reinstein
+plugin.debugger.jedit.Plugin.version=0.1
+plugin.debugger.jedit.Plugin.description=\
+	This plugin provides a jEdit interface for the perl debugger
 
 # Dependencies
  
-plugin.perl.Plugin.depend.0=jdk 1.6
-plugin.perl.Plugin.depend.1=jedit 04.04.01.00
-plugin.perl.Plugin.depend.2=plugin CommonControlsPlugin 0.9.4
+plugin.debugger.jedit.Plugin.depend.0=jdk 1.6
+plugin.debugger.jedit.Plugin.depend.1=jedit 04.04.01.00
+plugin.debugger.jedit.Plugin.depend.2=plugin CommonControlsPlugin 0.9.4
+plugin.debugger.jedit.Plugin.depend.3=plugin console.ConsolePlugin 4.3.2
 	
 # action labels
-perl-dbg-select.label=Debug...
-perl-dbg-launch-configs.label=Edit launch configurations...
-perl-dbg-go.label=Go!
-perl-dbg-next.label=Next
-perl-dbg-next-exp.label=Next expression
-perl-dbg-step.label=Step
-perl-dbg-step-exp.label=Step expression
-perl-dbg-return.label=Return from the current function
-perl-dbg-quit.label=Quit
-perl-dbg-run-to-cursor=Run to cursor
-perl-dbg-toggle-breakpoint.label=Toggle breakpoint
-perl-dbg-watch-selection.label=Add selected text to watches
+debugger-go.base.label=Go!
+debugger-go.label=Go!
+debugger-select.label=Debug...
+debugger-next.label=Next
+debugger-step.label=Step
+debugger-until.label=Run to cursor
+debugger-quit.label=Quit
+debugger-kill.label=Kill
+debugger-finish.label=Return from current function
+debugger-pause.label=Pause
+debugger-toggle-breakpoint.label=Toggle breakpoint
+debugger-set-breakpoint.label=Set breakpoint
+debugger-remove-breakpoint.label=Remove breakpoint
+debugger-edit-launch-configs.label=Edit list of programs to debug
+debugger-watch-selection.label=Add selected text to watches
+debugger-evaluate-selection.label=Evaluate selected text
 
 # menu items
-plugin.perl.Plugin.menu=\
-	perl-dbg-select \
-	perl-dbg-launch-configs \
-	- \
-	perl-dbg-go \
-	perl-dbg-next \
-	perl-dbg-next-exp \
-	perl-dbg-step \
-	perl-dbg-step-exp \
-	perl-dbg-return \
-	perl-dbg-run-to-cursor \
-	- \
-	perl-dbg-quit \
-	perl-dbg-toggle-breakpoint \
-	perl-dbg-watch-selection \
-	- \
-	perl-dbg-locals \
-	perl-dbg-watches \
-	perl-dbg-stack \
-	perl-dbg-breakpoints \
-	perl-dbg-panel
+plugin.debugger.jedit.Plugin.menu=debugger-go \
+  debugger-select \
+  debugger-next \
+  debugger-step \
+  debugger-finish \
+  debugger-until \
+  - \
+  debugger-pause \
+  debugger-quit \
+  debugger-kill \
+  - \
+  debugger-toggle-breakpoint \
+  debugger-set-breakpoint \
+  debugger-remove-breakpoint \
+  - \
+  debugger-watch-selection \
+  debugger-evaluate-selection \
+  - \
+  debugger-panel \
+  debugger-show-variables \
+  debugger-show-stack-trace \
+  debugger-breakpoints \
+  debugger-perl-breakpoints \
+  debugger-show-locals \
+  debugger-watches \
+  console.shell.Perl-debugger-show \
+  console.shell.Program-show \
+  - \
+  debugger-edit-launch-configs
 
 # dockables
-perl-dbg-locals.title=Locals
-perl-dbg-locals.label=Locals
-perl-dbg-watches.title=Watches
-perl-dbg-watches.label=Watches
-perl-dbg-stack.title=Stack
-perl-dbg-stack.label=Stack
-perl-dbg-breakpoints.title=Breakpoints
-perl-dbg-breakpoints.label=Breakpoints
-perl-dbg-panel.title=Control Panel
-perl-dbg-panel.label=Control Panel
-perl-dbg-console.title=Perl Console
-perl-dbg-console.label=Perl Console
+console.shell.Perl-debugger-show.label=Perl Debugger Console
+console.shell.Program-show.label=Program Output
+
+debugger-show-locals.title=Local Variables
+debugger-show-locals.label=Local Variables
+debugger-show-variables.title=Variables
+debugger-show-variables.label=Variables
+debugger-show-stack-trace.title=Stack Trace
+debugger-show-stack-trace.label=Stack Trace
+debugger-watches.title=Expressions
+debugger-watches.label=Expressions
+debugger-breakpoints.title=Breakpoints
+debugger-breakpoints.label=Breakpoints
+debugger-perl-breakpoints.title=Perl Breakpoints (view-only)
+debugger-perl-breakpoints.label=Perl Breakpoints (view-only)
+debugger-panel.title=Perl debugger Panel
+debugger-panel.label=Perl debugger Panel
 
 # Options
-plugin.perl.Plugin.option-group=perl-dbg-general perl-dbg-configs
-options.perl-dbg-general.label=General
-options.perl-dbg-general.code=new perl.GeneralOptionPane();
-options.perl-dbg-configs.label=Launch configurations
-options.perl-dbg-configs.code=new perl.LaunchConfigOptionPane();
-perl.options.perl_path=perl
+plugin.debugger.jedit.Plugin.option-group=debugger.perl debugger.programs
+options.debugger.perl.code=new perl.options.GeneralOptionPane();
+options.debugger.perl.label=General
+options.debugger.perl_path_label=Perl executable:
+options.debugger.perl_path=perl
+options.debugger.use_external_commands_label=Use external commands (ps, kill) for extended features
+options.debugger.use_external_commands=true
+options.debugger.show_program_list_in_panel_label=Provide access to the program list from the Perl Panel.
+options.debugger.show_program_list_in_panel=true
+options.debugger.show_breakpoint_popup=true
+options.debugger.show_breakpoint_popup_label=Show a pop-up message when a breakpoint is hit
+options.debugger.show_breakpoint_error=true
+options.debugger.show_breakpoint_error_label=Show a pop-up message when a breakpoint cannot be set
+options.debugger.array_range_split_size_label=Split large arrays to ranges of size:
+options.debugger.array_range_split_size=100
+options.debugger.char_array_as_string_label=Display fixed-size char arrays as strings
+options.debugger.char_array_as_string=true
+options.debugger.expression_tooltip_label=Display expression value tooltips
+options.debugger.expression_tooltip=true
+options.debugger.expression_regexp_label=Expression discovery regexp for tooltips:
+options.debugger.expression_regexp_tooltip=A regular expression defining the \
+	text at the mouse location whose tooltip should be displayed. \
+	Do not change unless you know what you're doing!
+options.debugger.default_expression_regexp=\\w+((\\[[^\\[]+\\])*((\\.|->)\\w+)*)*
+options.debugger.expression_regexp=\\w+((\\[[^\\[]+\\])*((\\.|->)\\w+)*)*
+options.debugger.single_vars_view_label=Use a single view for local variables and watches
+options.debugger.single_vars_view=false
+options.debugger.programs.code=new perl.options.LaunchConfigOptionPane();
+options.debugger.programs.label=Programs
+options.debugger.configurations_label=Configurations:
+options.debugger.configuration_label=Name:
+options.debugger.configuration_tooltip=The name of this configuration (must contain only letters, digits, spaces and dots).
+options.debugger.program_label=Program:
+options.debugger.program_tooltip=The path to the executable file to debug
+options.debugger.arguments_label=Arguments:
+options.debugger.arguments_tooltip=The command-line arguments for the executable
+options.debugger.directory_label=Working directory:
+options.debugger.directory_tooltip=The directory where perl will run
+options.debugger.environment_label=Environment:
+options.debugger.environment_tooltip=Environment variables to set, in the form: var1=value1,var2=value2,... (e.g. HOME=/usr/shlomy,DISPLAY=:0,LD_LIBRARY_PATH=/usr/lib)
+options.debugger.mi_shell_info_msg=The Perl debugger shell enables interaction with the Perl debugger.
+options.debugger.program_shell_info_msg=The Program shell enables interaction with the program being debugged.
+options.debugger.launch_config_dialog.title=Perl - Programs to debug
+options.debugger.perl_macro_map_label=The following table associates types with GDB macros that will be used to display values of these types:
+options.debugger.type_pattern_label=Actual type regexp:
+options.debugger.type_pattern=(const\\s+)?(\\S+)(\\s*&)?
+options.debugger.type_pattern_default=(const\\s+)?(\\S+)(\\s*&)?
+options.debugger.type_replacement_label=Replacement type:
+options.debugger.type_replacement=$2
+options.debugger.type_replacement_default=$2
 
 # Documentation
-plugin.perl.Plugin.docs=description.html
+plugin.debugger.jedit.Plugin.docs=index.html
 
 # Messages
-perl.messages.configuration=Name:
-perl.messages.configuration_tooltip=The name of the launch configuration
-perl.messages.script=Script:
-perl.messages.script_tooltip=The Perl script to run
-perl.messages.arguments=arguments
-perl.messages.arguments_tooltip=The arguments for the Perl script
-perl.messages.invalid_launch_config_name=Invalid name for a launch configuration
-perl.messages.configurations=Launch configurations
-perl.messages.perl_path=Perl path:
+messages.debugger.debugger_not_started=The debugger is not running yet; start a debug session first.
+messages.debugger.cannot_create_breakpoint=Could not set breakpoint or watchpoint:\n
+messages.debugger.invalid_launch_config_name=The configuration name can only contain letters, digits, spaces and dots.
+messages.debugger.could_not_get_value=Could not get the value of: {0}.
+messages.debugger.pause_not_implemented=The Pause button requires the use of external commands; you need to enable \
+  them in the plugin options, General pane. 
+messages.debugger.program_not_detected=Could not pause program execution. ProcessId could not be detected.

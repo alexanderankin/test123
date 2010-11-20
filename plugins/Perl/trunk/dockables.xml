@@ -4,23 +4,26 @@
 <!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
 
 <DOCKABLES>
-	<DOCKABLE NAME="perl-dbg-locals" MOVABLE="TRUE">
-		new perl.Locals(view);
+	<DOCKABLE NAME="debugger-show-locals">
+		perl.core.Debugger.getInstance().showLocals(view);
 	</DOCKABLE>
-	<DOCKABLE NAME="perl-dbg-watches" MOVABLE="TRUE">
-		new perl.Watches(view);
+	<DOCKABLE NAME="debugger-watches">
+		perl.core.Debugger.getInstance().showWatches(view);
 	</DOCKABLE>
-	<DOCKABLE NAME="perl-dbg-stack" MOVABLE="TRUE">
-		new perl.Stack(view);
+	<DOCKABLE NAME="debugger-show-variables">
+		perl.core.Debugger.getInstance().showVariables(view);
 	</DOCKABLE>
-	<DOCKABLE NAME="perl-dbg-breakpoints" MOVABLE="TRUE">
-		new perl.Breakpoints(view);
+	<DOCKABLE NAME="debugger-show-stack-trace">
+		perl.core.Debugger.getInstance().showStackTrace(view);
 	</DOCKABLE>
-	<DOCKABLE NAME="perl-dbg-panel">
-		new perl.ControlPanel(view);
+	<DOCKABLE NAME="debugger-breakpoints">
+		perl.core.Debugger.getInstance().showBreakpoints(view);
 	</DOCKABLE>
-	<DOCKABLE NAME="perl-dbg-console">
-		new perl.Console(view);
+	<DOCKABLE NAME="debugger-perl-breakpoints">
+		perl.core.Debugger.getInstance().showGdbBreakpoints(view);
+	</DOCKABLE>
+	<DOCKABLE NAME="debugger-panel">
+		perl.core.Debugger.getInstance().showControlPanel(view);
 	</DOCKABLE>
 </DOCKABLES>
 

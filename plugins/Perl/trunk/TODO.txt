@@ -1,22 +1,96 @@
 To do:
-- Actions: step, next - ability to step/next in expression:
-  - jEdit actions
-  - Control panel - debugger buttons
-- Set/remove breakpoints
-  - Via gutter right click
-  - Via action (set breakpoint in current line)
-  - Via expression (b this_function)
-  - Visual indication in gutter
-  - Breakpoint features - skip count / conditions / whatever provided by the debugger
-- Data:
-  - Tooltip with variable value
-  - Watches window
-  - Locals / autos / globals / package variables (according to what's provided by the
-    built-in debugger).
-  - Allow changing values from the various data windows.
-- Call stack.
-- Console for:
-  - Output / error streams
-  - Input and running arbitrary perl commands.
-- Running: Launch configurations.
+- Bugs:
+  - Expression tooltips not removed when debug session ends.
+  - "null" value for empty strings in launch configuration.
+    This includes incorrect "null" parameters on the command-line.
+- BreakpointTable:
+  - Call tableStructureChanged only if it really changed. Otherwise, call
+    dataChanged instead. Set a boolean variable whenever a column is added to
+    the column list to check for structure changes.
+  - Provide 'go to source' by double clicking a breakpoint in the list.
+    Use hard-coded column names for this function, for the file and line number.
+  - Enabled column should use editable check boxes.
+  - Breakpoint editor: Based on the columns and values from the table (model).
+    Since each field (column) requires its own gdb command for setting, only
+    enable editing of a hard-coded set of columns.
+    (This should be good enough for all practical purposes, the structure of
+     the table should be fixed.)
+- Fix breakpoint UI to reflect GDB state rather than plugin actions.
+  Two sets of breakpoints need to be maintained:
+  - Offline list: Simple list of source locations with their "offline" properties
+    (skip count, enabled, ...) to be used when gdb starts running. No need to keep
+    gdb state in this list (E.g. breakpoint numbers).
+  - Online list: List of real gdb breakpoints, available only after gdb starts
+    running. This list does not necessarily have to be maintained in the plugin, as
+    it is maintained by gdb and retrieved from gdb anyway. We can table the bp number
+    from gdb (from the table).
+  Use a single text painter extension, provide different icons for offline list and
+  online list. The extension should check, if the breakpoint is only offline it
+  should mark this with a different icon. If the breakpoint is also online, it means
+  that gdb has accepted it and forget about the offline entry.
+  The table should list both, maybe enabling a filter to hide offline ones when gdb
+  is running.
+- Extend type->macro map to allow 'set', not only 'get'.
+--> Locals/Watches/Variables:
+  - Support changes in tree structure of variable.
+  - Provide an action and a context menu item to change the currently selected
+    variable (leafs only).
+- Watches:
+  - Provide actions and context menu items for:
+    - Add an item to the tree.
+    - Remove an item from the tree.
+    - Modify an item in the tree.
 
+Future:
+- Variables:
+  - Format specificiation (e.g. hexa/decimal/octal/binary)
+  - Editing watches (e.g. just change index of array element in watch expression)
+  - Casting
+- Launch configurations:
+  - Support for core files
+  - Support for attaching to processes
+- Multi-threading support, including views, stack trace etc.
+- Memory/Disassembly/Registers view.
+- Symbol query commands.
+
+Done:
++ Launch configurations:
+  + Move to debugger-specific extension
+  + Improved GUI for the launch configurations (e.g. file dialogs)
++ Breakpoint window:
+  + Move to debugger-specific extension
+  + Skip count
+  + Conditions
+  + Watch points
++ Program output view:
+  + Add program stderr. (at first, merged with stdout)
+  + Allow clearing of contents.
+  + Clear automatically whenever session begins.
++ Complete gdb command-set (e.g. exec-until).
++ Write a short user guide.
++ gdb output console:
+  + Send all gdb output there.
+  + Allow entering commands manually.
++ Bug Fix: Must also wait for "^done" in CLI commands. Otherwise this "^done" might
+  be captured by the handler of the next MI command. 
++ Refactoring:
+  + New GdbState singleton.
+  + New GdbView base for views, registers for gdb state changes, invokes update()
+    and sessionEnded() when appropriate.
+  + Handle manual changes in vars.
+  + Handle changes of current frame.
++ A view that is opened in the middle of a debug session should update itself
+  automatically upon opening.
++ Handle end of session in parser and possibly command manager: parser thread
+  should stop.
++ Locals/Watches/Variables: Add toolbar button for modifying the selected var value.
++ Control panel: Should be aware of the gdb state, enable/disable buttons.
++ Tooltips for variables under caret in the buffer.
++ Fix bug: After responding to Stop button in Console, the Console is not aware
+  that the operation finished and the animation goes on; Call Output.commandDone().
++ Add option to specify format for display of various types
+  (e.g. display Qt4 strings as const char *). Add mapping from type to gdb macro name.
+  Gdb macros will be defined in .gdbinit, and GdbPlugin will run them (with the
+  expression to evaluate as input) and display the output of the macro as value.
++ Add type inference rules for the type->macro map.
+  
