@@ -31,7 +31,7 @@ import debugger.jedit.Plugin;
 public class MIShell extends BaseShell {
 	static final String PREFIX = Plugin.OPTION_PREFIX;
 	static final String MI_SHELL_INFO_MSG_PROP = PREFIX + "mi_shell_info_msg";
-	public static final String NAME = "GDB/MI";
+	public static final String NAME = "Perl-debugger";
 
 	public MIShell() {
 		super(NAME);
