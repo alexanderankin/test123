@@ -107,7 +107,8 @@
 
     <!-- Generate ant-complete.xml file with AntComplete task -->
 
-    <target name="ant-complete" depends="compile">
+    <target name="ant-complete" depends="compile"
+         description="generate completion info for ant build files based on current version of ant">
         <taskdef name="antcomplete" classname="xml.completion.AntCompleteTask" classpath="${build.classes}"/>
         <antcomplete output="${src.dir}/xml/completion/ant-complete.xml"/>
     </target>
@@ -132,7 +133,6 @@
         outputdirectory="./sidekick/ecmascript/parser"/>
         <javacc javacchome="${javacchome}" target="./sidekick/ecmascript/parser/EcmaScript.jj"/>
         <javacc javacchome="${javacchome}" target="./sidekick/css/parser/CSS3Parser.jj"/>
-        
     </target>
 
     <!-- Generate tags using 'ctags' program from ctags.sourceforge.net -->
