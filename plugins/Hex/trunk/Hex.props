@@ -2,12 +2,12 @@ plugin.hex.HexPlugin.activate=defer
 
 plugin.hex.HexPlugin.name=Hex
 plugin.hex.HexPlugin.author=André Kaplan, Matthieu Casanova
-plugin.hex.HexPlugin.version=1.0
+plugin.hex.HexPlugin.version=1.1
 plugin.hex.HexPlugin.docs=index.html
 
 plugin.hex.HexPlugin.description=An hex file system will enable jEdit to open files as hex view
 plugin.hex.HexPlugin.depend.0=jdk 1.5
-plugin.hex.HexPlugin.depend.1=jedit 04.03.10.00
+plugin.hex.HexPlugin.depend.1=jedit 04.03.99.00
 plugin.hex.HexPlugin.usePluginHome=true
 plugin.hex.HexPlugin.browser-menu=vfs.browser.hex
 # vfs actions

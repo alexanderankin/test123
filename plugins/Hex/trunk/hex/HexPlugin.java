@@ -20,44 +20,46 @@
 
 package hex;
 
-import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EBPlugin;
-import org.gjt.sp.jedit.Mode;
+import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.io.VFS;
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 
 
-public class HexPlugin extends EBPlugin
+public class HexPlugin extends EditPlugin
 {
-    public void start() {
-    }
+	public void start()
+	{
+		EditBus.addToBus(this);
+	}
 
 
-    public void stop() {}
+	public void stop()
+	{
+		EditBus.removeFromBus(this);
+	}
 
+	@EditBus.EBHandler
+	public void handleBufferUpdate(BufferUpdate bu)
+	{
+		if (bu.getWhat() == BufferUpdate.LOADED)
+		{
+			Buffer buffer = bu.getBuffer();
+			VFS vfs = buffer.getVFS();
+			Mode mode = null;
+			if (vfs instanceof HexVFS)
+			{
+				mode = jEdit.getMode("hex");
+				if (mode == null)
+				{
+					mode = jEdit.getMode("text");
+				}
+			}
 
-    public void handleMessage(EBMessage message) {
-        if (message instanceof BufferUpdate) {
-            BufferUpdate bu = (BufferUpdate) message;
-
-            if (bu.getWhat() == BufferUpdate.LOADED) {
-                Buffer buffer = bu.getBuffer();
-                VFS    vfs    = buffer.getVFS();
-                Mode   mode   = null;
-                if (vfs instanceof HexVFS) {
-                    mode = jEdit.getMode("hex");
-                    if (mode == null) {
-                        mode = jEdit.getMode("text");
-                    }
-                }
-
-                if ((mode != null) && (mode != buffer.getMode())) {
-                    buffer.setMode(mode);
-                }
-            }
-        }
-    }
+			if ((mode != null) && (mode != buffer.getMode()))
+			{
+				buffer.setMode(mode);
+			}
+		}
+	}
 }
 
