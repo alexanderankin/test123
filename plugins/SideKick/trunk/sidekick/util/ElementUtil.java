@@ -84,7 +84,9 @@ public class ElementUtil {
      */
     public static Position createEndPosition( Buffer buffer, SideKickElement element ) {
         int line_offset = buffer.getLineStartOffset(
-                    Math.max( element.getEndLocation().line - 1, 0 ) );
+            Math.max(
+                Math.min(element.getEndLocation().line - 1, buffer.getLineCount() - 1)
+            , 0));
         int[] totalVirtualWidth = new int[ 1 ];
         int column_offset = buffer.getOffsetOfVirtualColumn(
                     Math.max( element.getEndLocation().line - 1, 0 ),
@@ -106,7 +108,6 @@ public class ElementUtil {
                        return lo + co;
                    }
                };
-
     }
 
     /**
