@@ -374,10 +374,8 @@ public class ConsolePlugin extends EditPlugin
 			if (buffer.isDirty())
 			{
 				Object[] args = { buffer.getName() };
-				int result = GUIUtilities.confirm(view,
-					"commando.not-saved-compile", args,
-					JOptionPane.YES_NO_CANCEL_OPTION,
-					JOptionPane.WARNING_MESSAGE);
+				int result = GUIUtilities.confirm(view, "commando.not-saved-compile", args,
+					JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
 				if (result == JOptionPane.YES_OPTION)
 				{
 					if (!buffer.save(view, null, true))

@@ -3,7 +3,7 @@
 # We provide a custom action set, so we must be activated at startup
 plugin.console.ConsolePlugin.activate=startup
 plugin.console.ConsolePlugin.name=Console
-plugin.console.ConsolePlugin.version=4.4.2
+plugin.console.ConsolePlugin.version=4.4.3
 
 # new jEdit 4.3 plugin API for short description.
 plugin.console.ConsolePlugin.description=A command line shell and plugin interface for adding other custom shells.
