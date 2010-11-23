@@ -1,6 +1,7 @@
 /*
  * HexVFS.java
  * Copyright (c) 2000, 2001, 2002 Andre Kaplan
+ * Portions copyright (C) 2010 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,6 +22,7 @@
 package hex;
 
 import org.gjt.sp.jedit.io.VFS;
+import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
 
@@ -32,172 +34,213 @@ import java.io.InputStream;
 
 public class HexVFS extends VFS
 {
-    public static final String PROTOCOL = "hex";
+	public static final String PROTOCOL = "hex";
 
 
-    public HexVFS() {
-        super(PROTOCOL, VFS.BROWSE_CAP | VFS.READ_CAP);
-    }
+	public HexVFS()
+	{
+		super(PROTOCOL, VFS.BROWSE_CAP | VFS.READ_CAP);
+	}
 
-    public char getFileSeparator() {
-        return File.separatorChar;
-    }
-
-
-    public String getFileName(String path) {
-        String protocol = this.getName();
-
-        if (path.startsWith(protocol + ':')) {
-            String hexPath = path.substring((protocol + ':').length());
-            VFS vfs = VFSManager.getVFSForPath(hexPath);
-
-            return vfs.getFileName(hexPath);
-        } else {
-            VFS vfs = VFSManager.getVFSForPath(path);
-
-            return vfs.getFileName(path);
-        }
-    }
+	public char getFileSeparator()
+	{
+		return File.separatorChar;
+	}
 
 
-    public String getParentOfPath(String path) {
-        String protocol = this.getName();
+	public String getFileName(String path)
+	{
+		String protocol = this.getName();
 
-        if (path.startsWith(protocol + ':')) {
-            String hexPath = path.substring((protocol + ':').length());
-            VFS vfs = VFSManager.getVFSForPath(hexPath);
+		if (path.startsWith(protocol + ':'))
+		{
+			String hexPath = path.substring((protocol + ':').length());
+			VFS vfs = VFSManager.getVFSForPath(hexPath);
 
-            return protocol + ':' + vfs.getParentOfPath(hexPath);
-        } else {
-            VFS vfs = VFSManager.getVFSForPath(path);
+			return vfs.getFileName(hexPath);
+		}
+		else
+		{
+			VFS vfs = VFSManager.getVFSForPath(path);
 
-            return vfs.getParentOfPath(path);
-        }
-    }
-
-
-    public String constructPath(String parent, String path) {
-        String protocol = this.getName();
-
-        if (path.startsWith(protocol + ':')) {
-            String hexPath = parent.substring((protocol + ':').length());
-            VFS vfs = VFSManager.getVFSForPath(hexPath);
-
-            return protocol + ':' + vfs.constructPath(hexPath, path);
-        } else {
-            VFS vfs = VFSManager.getVFSForPath(parent);
-
-            return vfs.constructPath(parent, path);
-        }
-    }
-
-    public VFS.DirectoryEntry[] _listDirectory(Object session, String path,
-        Component comp)
-    {
-        String protocol = this.getName();
-
-        String hexPath = path;
-        if (path.startsWith(protocol + ':')) {
-            hexPath = hexPath.substring(protocol.length() + 1);
-        }
-
-        VFS vfs = VFSManager.getVFSForPath(hexPath);
-
-        try {
-            VFS.DirectoryEntry[] directoryEntries =
-                vfs._listDirectory(session, hexPath, comp);
-
-            if (directoryEntries == null) {
-                return null;
-            }
-
-            VFS.DirectoryEntry[] retVal = new VFS.DirectoryEntry[directoryEntries.length];
-
-            for (int i = 0; i < directoryEntries.length; i++) {
-                retVal[i] = new VFS.DirectoryEntry(
-                    directoryEntries[i].name,
-                    protocol + ':' + directoryEntries[i].path,
-                    protocol + ':' + directoryEntries[i].deletePath,
-                    directoryEntries[i].type,
-                    directoryEntries[i].length,
-                    directoryEntries[i].hidden
-                );
-            }
-
-            return retVal;
-        } catch (IOException ioe) {
-            Log.log(Log.ERROR, this, ioe);
-        }
-
-        return null;
-    }
+			return vfs.getFileName(path);
+		}
+	}
 
 
-    public DirectoryEntry _getDirectoryEntry(Object session, String path,
-        Component comp)
-    {
-        String protocol = this.getName();
+	public String getParentOfPath(String path)
+	{
+		String protocol = this.getName();
 
-        String hexPath = path;
-        if (path.startsWith(protocol + ':')) {
-            hexPath = hexPath.substring(protocol.length() + 1);
-        }
+		if (path.startsWith(protocol + ':'))
+		{
+			String hexPath = path.substring((protocol + ':').length());
+			VFS vfs = VFSManager.getVFSForPath(hexPath);
 
-        VFS vfs = VFSManager.getVFSForPath(hexPath);
+			return protocol + ':' + vfs.getParentOfPath(hexPath);
+		}
+		else
+		{
+			VFS vfs = VFSManager.getVFSForPath(path);
 
-        try {
-            VFS.DirectoryEntry directoryEntry =
-                vfs._getDirectoryEntry(session, hexPath, comp);
-
-            if (directoryEntry == null) {
-                return null;
-            }
-
-            return new VFS.DirectoryEntry(
-                directoryEntry.getName(),
-                protocol + ':' + directoryEntry.getPath(),
-                protocol + ':' + directoryEntry.getDeletePath(),
-                directoryEntry.getType(),
-                directoryEntry.getLength(),
-                directoryEntry.isHidden()
-            );
-        } catch (IOException ioe) {
-            Log.log(Log.ERROR, this, ioe);
-        }
-
-        return null;
-    }
+			return vfs.getParentOfPath(path);
+		}
+	}
 
 
-    public InputStream _createInputStream(Object session,
-        String path, boolean ignoreErrors, Component comp)
-        throws IOException
-    {
-        String protocol = this.getName();
+	public String constructPath(String parent, String path)
+	{
+		String protocol = this.getName();
 
-        String hexPath = path;
-        if (path.startsWith(protocol + ':')) {
-            hexPath = hexPath.substring(protocol.length() + 1);
-        }
+		if (path.startsWith(protocol + ':'))
+		{
+			String hexPath = parent.substring((protocol + ':').length());
+			VFS vfs = VFSManager.getVFSForPath(hexPath);
 
-        VFS vfs = VFSManager.getVFSForPath(hexPath);
+			return protocol + ':' + vfs.constructPath(hexPath, path);
+		}
+		else
+		{
+			VFS vfs = VFSManager.getVFSForPath(parent);
 
-        if (hexPath.endsWith(".marks")) {
-            // .marks not supported
-            return null;
-        }
+			return vfs.constructPath(parent, path);
+		}
+	}
 
-        try {
-            InputStream in = new HexInputStream(
-                vfs._createInputStream(session, hexPath, ignoreErrors, comp)
-            );
+	//{{{ _listFiles() method
+	public VFSFile[] _listFiles(Object session, String directory,
+				    Component comp)
+		throws IOException
+	{
+		String protocol = getName();
 
-            return in;
-        } catch (IOException ioe) {
-            Log.log(Log.ERROR, this, ioe);
-        }
+		String hexPath = directory;
+		if (directory.startsWith(protocol + ':'))
+		{
+			hexPath = hexPath.substring(protocol.length() + 1);
+		}
 
-        return null;
-    }
+		VFS vfs = VFSManager.getVFSForPath(hexPath);
+
+		try
+		{
+			VFSFile[] vfsFiles =
+				vfs._listFiles(session, hexPath, comp);
+
+			if (vfsFiles == null)
+			{
+				return null;
+			}
+
+			VFSFile[] retVal = new VFSFile[vfsFiles.length];
+
+			for (int i = 0; i < vfsFiles.length; i++)
+			{
+				retVal[i] = new VFSFile(
+					vfsFiles[i].getName(),
+					protocol + ':' + vfsFiles[i].getPath(),
+					protocol + ':' + vfsFiles[i].getDeletePath(),
+					vfsFiles[i].getType(),
+					vfsFiles[i].getLength(),
+					vfsFiles[i].isHidden()
+				);
+			}
+
+			return retVal;
+		}
+		catch (IOException ioe)
+		{
+			Log.log(Log.ERROR, this, ioe);
+		}
+
+		return null;
+	} //}}}
+
+	//{{{ _getFile() method
+	/**
+	 * Returns the specified directory entry.
+	 * @param session The session get it with {@link VFS#createVFSSession(String, Component)}
+	 * @param path The path
+	 * @param comp The component that will parent error dialog boxes
+	 * @exception IOException if an I/O error occurred
+	 * @return The specified directory entry, or null if it doesn't exist.
+	 * @since jEdit 4.3pre2
+	 */
+	public VFSFile _getFile(Object session, String path,
+		Component comp)
+		throws IOException
+	{
+		String protocol = getName();
+
+		String hexPath = path;
+		if (path.startsWith(protocol + ':'))
+		{
+			hexPath = hexPath.substring(protocol.length() + 1);
+		}
+
+		VFS vfs = VFSManager.getVFSForPath(hexPath);
+
+		try
+		{
+			VFSFile file =
+				vfs._getFile(session, hexPath, comp);
+
+			if (file == null)
+			{
+				return null;
+			}
+
+			return new VFSFile(
+				file.getName(),
+				protocol + ':' + file.getPath(),
+				protocol + ':' + file.getDeletePath(),
+				file.getType(),
+				file.getLength(),
+				file.isHidden()
+			);
+		}
+		catch (IOException ioe)
+		{
+			Log.log(Log.ERROR, this, ioe);
+		}
+
+		return null;
+	} //}}}
+
+	public InputStream _createInputStream(Object session,
+					      String path, boolean ignoreErrors, Component comp)
+		throws IOException
+	{
+		String protocol = this.getName();
+
+		String hexPath = path;
+		if (path.startsWith(protocol + ':'))
+		{
+			hexPath = hexPath.substring(protocol.length() + 1);
+		}
+
+		VFS vfs = VFSManager.getVFSForPath(hexPath);
+
+		if (hexPath.endsWith(".marks"))
+		{
+			// .marks not supported
+			return null;
+		}
+
+		try
+		{
+			InputStream in = new HexInputStream(
+				vfs._createInputStream(session, hexPath, ignoreErrors, comp)
+			);
+
+			return in;
+		}
+		catch (IOException ioe)
+		{
+			Log.log(Log.ERROR, this, ioe);
+		}
+
+		return null;
+	}
 }
 
