@@ -129,6 +129,7 @@ public class BrowseRepositoryAction extends SVNAction {
                 finally {
                     tree.setCursor( Cursor.getPredefinedCursor( Cursor.DEFAULT_CURSOR ) );
                     tree.setEditable( true );
+                    tree.requestFocus();
                 }
             }
         }
