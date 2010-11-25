@@ -139,9 +139,9 @@ public class LookAndFeelPlugin extends EditPlugin {
     private static void updateAllDialogComponentTreeUIs(Window win) {
         Window[] children = win.getOwnedWindows();
         for (int i = 0; i < children.length; i++) {
-            //if (win instanceof Frame) {
-            //    continue;
-            //}
+            if (win instanceof Frame) {
+                continue;
+            }
             SwingUtilities.updateComponentTreeUI(win);
             updateAllDialogComponentTreeUIs(win);
         }
