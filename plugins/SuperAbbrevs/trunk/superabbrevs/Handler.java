@@ -6,7 +6,7 @@ import java.util.*;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import superabbrevs.template.*;
 
-public class Handler extends BufferChangeAdapter {
+public class Handler extends BufferAdapter {
 	private boolean disabled;
 	private JEditTextArea textArea;
 	private boolean justEdited = false;
@@ -39,59 +39,55 @@ public class Handler extends BufferChangeAdapter {
 	public boolean isDisabled(){
 		return disabled;
 	}
-	
-	public void contentInserted(Buffer buffer, int startLine, int offset, 
-								int numLines, int length){
-		
+
+	public void contentInserted(JEditBuffer buffer, int startLine, int offset, int numLines, int length) {
 		if (!disabled){
 			String insertedText = buffer.getText(offset, length);
-			
+
 			try{
-				
+
 				if(justEdited){
 					offset = caret;
 					oldTemplateLength += length;
 				} else {
 					oldTemplateLength = template.getLength()+length;
 				}
-								
+
 				int fieldOffset = template.getCurrentField().getOffset();
-				
+
 				template.insert(offset,insertedText);
-				
+
 				int offsetChanged = template.getCurrentField().getOffset() - fieldOffset;
-				caret = offset + offsetChanged + length; 
-				
+				caret = offset + offsetChanged + length;
+
 				justEdited = true;
 			} catch (WriteOutsideTemplateException e) {
 				removeHandler(buffer);
 				//System.out.println("Handler removed "+e.getMessage());
-			} 
+			}
 		}
 	}
-	
-	public void contentRemoved(Buffer buffer, int startLine, int offset, 
-							   int numLines, int length){
-		
+
+	public void contentRemoved(JEditBuffer buffer, int startLine, int offset, int numLines, int length) {
 		if (!disabled){
 			try{
 				oldTemplateLength = template.getLength()-length;
-				
+
 				int fieldOffset = template.getCurrentField().getOffset();
 				template.delete(offset,length);
 				int offsetChanged = template.getCurrentField().getOffset() - fieldOffset;
 				caret = offset + offsetChanged;
-				
+
 				justEdited = true;
-				
+
 				textArea.setCaretPosition(caret);
 			} catch (WriteOutsideTemplateException e) {
 				removeHandler(buffer);
 				//System.out.println("Handler removed "+e.getMessage());
 			}
 		}
-	} 
-	
+	}
+
 	/**
 	 * Method postEdit()
 	 */
@@ -127,18 +123,18 @@ public class Handler extends BufferChangeAdapter {
 		
 	public static void putHandler(Buffer buffer, Handler t){
 		Handler h = getHandler(buffer);
-		buffer.removeBufferChangeListener(h);
-		buffer.addBufferChangeListener(t);
+		buffer.removeBufferListener(h);
+		buffer.addBufferListener(t);
 		handlers.put(buffer,t);
 	}
 	
-	public static Handler getHandler(Buffer buffer){
+	public static Handler getHandler(JEditBuffer buffer){
 		return (Handler)handlers.get(buffer);
 	}
 	
-	public static Handler removeHandler(Buffer buffer){
+	public static Handler removeHandler(JEditBuffer buffer){
 		Handler h = getHandler(buffer);
-		buffer.removeBufferChangeListener(h);
+		buffer.removeBufferListener(h);
 		handlers.remove(buffer);
 		return h;
 	}
