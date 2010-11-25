@@ -1,6 +1,6 @@
 plugin.lookandfeel.LookAndFeelPlugin.name=LookAndFeel
 plugin.lookandfeel.LookAndFeelPlugin.author=Dirk Moebius, Jamie LaScolea, David Huttleston Jr., Calvin Yu, Nilo J. Gonzalez, Dale Anson
-plugin.lookandfeel.LookAndFeelPlugin.version=1.6.0
+plugin.lookandfeel.LookAndFeelPlugin.version=1.6.1
 plugin.lookandfeel.LookAndFeelPlugin.docs=index.html
 plugin.lookandfeel.LookAndFeelPlugin.activate=startup
 plugin.lookandfeel.LookAndFeelPlugin.depend.0=jdk 1.5
