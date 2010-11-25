@@ -55,6 +55,7 @@
     <property file="${user.home}/.build.properties"/>
     <property file="${user.home}/build.properties"/>
     <property name="src.dir" value="lookandfeel"/>
+    <property name="docs-proc.target"  value="none" />
 
     <import file="${build.support}/plugin-build.xml" />
 
@@ -84,7 +85,7 @@
 	<!-- Paths -->
     <path id="project.class.path">
         <pathelement location="${jedit.install.dir}/jedit.jar"/>
-        <pathelement location="${install.dir}/LookAndFeel.jar"/>
+        <pathelement location="${jedit.plugins.dir}/LookAndFeel.jar"/>
         <fileset refid="libraries" />
         <pathelement location="${src.dir}"/>
     </path>
