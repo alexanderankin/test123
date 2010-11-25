@@ -72,7 +72,7 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 
 		modeAbbrevs = new Hashtable();
 		Mode[] modes = jEdit.getModes();
-		Arrays.sort(modes,new MiscUtilities.StringICaseCompare());
+		Arrays.sort(modes,new StandardUtilities.StringCompare<Mode>(true));
 		String[] sets = new String[modes.length + 1];
 		sets[0] = "global";
 		modeAbbrevs.put(sets[0],

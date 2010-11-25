@@ -16,14 +16,10 @@
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-import java.util.*;
-import java.io.*;
-
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.*;
 import superabbrevs.SuperAbbrevs;
 import superabbrevs.DisplayAbbrevs;
 
