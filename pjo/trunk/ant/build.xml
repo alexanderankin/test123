@@ -18,6 +18,11 @@
 		<echo>                        packages can be found under -</echo>
 		<echo>                        [sandbox]/[name]-[version]/packages</echo>
 		<echo></echo>
+		<echo>reset                 : Resets the sandbox jEdit install. This</echo>
+		<echo>                        will delete all jEdit properties and</echo>
+		<echo>                        plugins under the settings directory.</echo>
+		<echo>                        [sandbox.dir]/[jedit.version]/settings</echo>
+		<echo></echo>
 		<echo>setup                 : Sets up the pjo-ant build environment. If</echo>
 		<echo>                        you see that the sandbox directory, SCM</echo>
 		<echo>                        targets file, or Packaging targets file is</echo>
@@ -77,6 +82,12 @@ docbook.xsl=${docbook.xsl}
 		<plugin-jedit-version pluginName="${plugin.name}" pluginVersion="${plugin.version}" />
 		<plugin-package pluginJeditVersion="${plugin.jedit.version}" pluginName="${plugin.name}" pluginVersion="${plugin.version}" />
 	</target>
+	<target name="reset">
+		<input addproperty="plugin.name" message="Plugin Name:" />
+		<input addproperty="plugin.version" message="Version:" />
+		<plugin-jedit-version pluginName="${plugin.name}" pluginVersion="${plugin.version}" />
+		<jedit-reset pluginJeditVersion="${plugin.jedit.version}" />
+	</target>
 	<target name="setup">
 		<input addproperty="use.sample.build.properties" message="Would you like to use the sample build.properties file (y/n)?" />
 		<condition property="copy.sample.build.properties">
@@ -91,7 +102,7 @@ docbook.xsl=${docbook.xsl}
 		<input addproperty="junit.jar" message="Path to junit.jar:" />
 		<input addproperty="jedit.version.04.02.install.dir" defaultvalue="${sandbox.dir}/4.2" message="Path to jEdit 4.2 Installation:"/>
 		<input addproperty="jedit.version.04.02.settings.dir" defaultvalue="${jedit.version.04.02.install.dir}/settings" message="jEdit 4.2 Settings Directory:"/>
-		<input addproperty="jedit.version.04.03.install.dir" defaultvalue="${sandbox.dir}/4.3pre16" message="Path to jEdit 4.3 Installation:"/>
+		<input addproperty="jedit.version.04.03.install.dir" defaultvalue="${sandbox.dir}/4.3" message="Path to jEdit 4.3 Installation:"/>
 		<input addproperty="jedit.version.04.03.settings.dir" defaultvalue="${jedit.version.04.03.install.dir}/settings" message="jEdit 4.3 Settings Directory:"/>
 		<antcall target="write-build-properties" />
 	</target>
@@ -119,6 +130,13 @@ jedit.version.04.03.settings.dir=${jedit.version.04.03.settings.dir}
 jedit.svn.url=https://jedit.svn.sourceforge.net/svnroot/jedit
 		</echo>
 	</target>
+	<macrodef name="jedit-reset">
+		<attribute name="pluginJeditVersion" />
+		<sequential>
+			<property name="jedit.settings.dir" value="${jedit.version.@{pluginJeditVersion}.settings.dir}" />
+			<delete dir="${jedit.settings.dir}" />
+		</sequential>
+	</macrodef>
 	<macrodef name="plugin-download">
 		<attribute name="pluginName" />
 		<attribute name="pluginVersion" />
@@ -146,7 +164,8 @@ jedit.svn.url=https://jedit.svn.sourceforge.net/svnroot/jedit
 					<exclude name="@{pluginName}/classes/**"/>
 					<exclude name="@{pluginName}/config/**"/>
 					<exclude name="@{pluginName}/temp/**"/>
-					<include name="**/@{pluginName}.props"/>
+					<!--include name="**/@{pluginName}.props"/-->
+					<include name="**/*.props"/>
 				</fileset>
 				<filterchain>
 					<tokenfilter>
