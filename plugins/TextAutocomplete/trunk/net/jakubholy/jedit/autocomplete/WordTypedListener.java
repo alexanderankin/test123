@@ -41,11 +41,11 @@ import org.gjt.sp.util.Log;
  * of the buffer changes.
  * 
  * @see net.jakubholy.jedit.autocomplete.WordTypedEvent
- * @see org.gjt.sp.jedit.buffer.BufferChangeAdapter
- * @see org.gjt.sp.jedit.buffer.BufferChangeListener
+ * @see org.gjt.sp.jedit.buffer.BufferAdapter
+ * @see org.gjt.sp.jedit.buffer.BufferListener
  * 
  * Note: according to the documentation of jEdit it's prefered to use
- * BufferChangeAdapter since BufferChangeListener might change in the future.
+ * BufferAdapter since BufferListener might change in the future.
  * 
  */
 public class WordTypedListener extends BufferAdapter
