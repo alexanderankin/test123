@@ -26,6 +26,7 @@ import java.awt.Dimension;
 import java.util.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.util.StandardUtilities;
 import xml.completion.*;
 //}}}
 
@@ -382,7 +383,7 @@ class EditTagDialog extends EnhancedDialog
 				return 1;
 			else
 			{
-				return MiscUtilities.compareStrings(
+				return StandardUtilities.compareStrings(
 					attr1.name,attr2.name,true);
 			}
 		}
