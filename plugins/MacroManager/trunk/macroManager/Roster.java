@@ -23,23 +23,20 @@
 package macroManager;
 
 //{{{ Imports
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import java.awt.Component;
 import java.io.*;
 import java.net.*;
 import java.util.zip.*;
 import java.util.*;
-import org.gjt.sp.jedit.io.VFSManager; // we use VFSManager.error() method
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.bufferio.BufferIORequest;
 import org.gjt.sp.util.Log;
 import com.ice.tar.TarArchive;
 //}}}
 
 class Roster
 {
-	
+	public static final int GZIP_MAGIC_1 = 0x1f;
+	public static final int GZIP_MAGIC_2 = 0x8b;
 	public static final int ZIP_MAGIC_1 = 0x50;
 	public static final int ZIP_MAGIC_2 = 0x4b;
 	
@@ -256,8 +253,8 @@ class Roster
 			int secondbyte = in.read();
 			if(firstbyte == ZIP_MAGIC_1 && secondbyte == ZIP_MAGIC_2)
 				archive_zip = true;
-			else if(firstbyte == BufferIORequest.GZIP_MAGIC_1 
-				&& secondbyte == BufferIORequest.GZIP_MAGIC_2)
+			else if(firstbyte == GZIP_MAGIC_1
+				&& secondbyte == GZIP_MAGIC_2)
 				archive_gzip = true;
 			out.write(firstbyte);
 			out.write(secondbyte);
