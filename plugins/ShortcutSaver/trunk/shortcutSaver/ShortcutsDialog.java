@@ -31,6 +31,7 @@ import java.awt.*;
 import java.util.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
+import org.gjt.sp.util.StandardUtilities;
 
 /**
  * Action lists dialog
@@ -170,7 +171,7 @@ public class ShortcutsDialog extends EnhancedDialog implements ActionListener
 					actionSet.getActionNames()));
 			}
 		}
-		Collections.sort(models,new MiscUtilities.StringICaseCompare());
+		Collections.sort(models,new StandardUtilities.StringCompare(true));
 		currentModel = (ShortcutsModel)models.elementAt(0);
 	}
 
