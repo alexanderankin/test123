@@ -25,7 +25,6 @@ import java.util.*;
 
 import org.gjt.sp.jedit.BeanShell;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
@@ -98,9 +97,9 @@ public class TextToolsSorting
 			lines[i] = d.getLineText(lIndices[i]);
 		}
 		
-		java.util.Comparator compare = new MiscUtilities.StringCompare();
+		java.util.Comparator<String> compare = new StandardUtilities.StringCompare<String>(false);
 		if (reverse)
-			compare = new ReverseCompare(compare);
+			compare = new ReverseCompare<String>(compare);
 		
 		Arrays.sort(lines, compare);
 		
@@ -121,22 +120,22 @@ public class TextToolsSorting
 	/**
 	 * A wrapper that reverses a sort.
 	 */
-	static class ReverseCompare implements java.util.Comparator
+	static class ReverseCompare<E> implements java.util.Comparator<E>
 	{
 		//{{{ ReverseCompare constructor
-		ReverseCompare(java.util.Comparator comp)
+		ReverseCompare(java.util.Comparator<E> comp)
 		{
 			this.comp = comp;
 		} //}}}
 		
 		//{{{ compare() method
-		public int compare(Object obj1, Object obj2)
+		public int compare(E obj1, E obj2)
 		{
 			return comp.compare(obj2,obj1);
 		}//}}}
 		
 		//{{{ Private members
-		private java.util.Comparator comp;
+		private java.util.Comparator<E> comp;
 		//}}}
 	} //}}}
 	

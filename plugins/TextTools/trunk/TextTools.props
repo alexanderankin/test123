@@ -1,10 +1,10 @@
 plugin.TextToolsPlugin.name=TextTools
 plugin.TextToolsPlugin.author=mike dillon
-plugin.TextToolsPlugin.version=1.14
+plugin.TextToolsPlugin.version=1.2
 plugin.TextToolsPlugin.docs=TextTools.html
 plugin.TextToolsPlugin.description=This plugin provides a number of small actions for performing text manipulation.
 plugin.TextToolsPlugin.depend.0=jdk 1.5
-plugin.TextToolsPlugin.depend.1=jedit 04.03.05.00
+plugin.TextToolsPlugin.depend.1=jedit 04.03.99.00
 plugin.TextToolsPlugin.activate=defer
 
 # Menu
