@@ -16,6 +16,9 @@
 package xml.completion;
 
 import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.util.StandardUtilities;
+
+import java.util.Comparator;
 
 public class EntityDecl
 {
@@ -59,7 +62,7 @@ public class EntityDecl
 	} //}}}
 
 	//{{{ Compare class
-	public static class Compare implements MiscUtilities.Compare
+	public static class Compare implements Comparator
 	{
 		public int compare(Object obj1, Object obj2)
 		{
@@ -70,7 +73,7 @@ public class EntityDecl
 				return entity2.type - entity1.type;
 			else
 			{
-				return MiscUtilities.compareStrings(
+				return StandardUtilities.compareStrings(
 					entity1.name,
 					entity2.name,true);
 			}
