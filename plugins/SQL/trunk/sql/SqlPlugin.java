@@ -26,7 +26,6 @@ package sql;
 import java.awt.*;
 import java.io.*;
 import java.sql.*;
-import java.text.*;
 import java.util.*;
 import javax.swing.*;
 
@@ -34,7 +33,6 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.io.*;
 import org.gjt.sp.jedit.msg.*;
-import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.util.*;
 
 import projectviewer.*;
@@ -42,7 +40,6 @@ import projectviewer.event.*;
 import projectviewer.config.*;
 import projectviewer.vpt.*;
 
-import sql.*;
 import sql.options.*;
 
 /**

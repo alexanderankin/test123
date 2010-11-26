@@ -23,10 +23,7 @@
 
 package sql.options;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Iterator;
@@ -306,7 +303,7 @@ public class ServersOptionPane extends SqlOptionPane
 
 							                                   rec.setName(name);
 							                                   rec.save(project);
-							                                   VFSManager.runInAWTThread(new Runnable() {
+											   EventQueue.invokeLater(new Runnable() {
 								                                                             public void run()
 								                                                             {
 									                                                             updateServerList();

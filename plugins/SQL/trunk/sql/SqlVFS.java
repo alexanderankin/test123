@@ -35,6 +35,7 @@ import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.io.VFS;
@@ -120,77 +121,51 @@ public class SqlVFS extends VFS
 		return super.getParentOfPath(path);
 	}
 
-
-	/**
-	 *  Description of the Method
-	 *
-	 * @param  session  Description of Parameter
-	 * @param  comp     Description of Parameter
-	 * @return          Description of the Returned Value
-	 * @since
-	 */
-	public String showBrowseDialog(Object[] session, Component comp)
-	{
-		return PROTOCOL + ":/";
-	}
-
-
-	/**
-	 *  Description of the Method
-	 *
-	 * @param  session          Description of Parameter
-	 * @param  path             Description of Parameter
-	 * @param  comp             Description of Parameter
-	 * @return                  Description of the Returned Value
-	 * @exception  IOException  Description of Exception
-	 * @since
-	 */
-	public VFS.DirectoryEntry[] _listDirectory(Object session, String path,
-	                Component comp)
-	throws IOException
+	//{{{ _listFiles() method
+	public VFSFile[] _listFiles(Object session, String directory,
+		Component comp)
+		throws IOException
 	{
 		Log.log(Log.DEBUG, SqlVFS.class,
-		        "Listing " + path);
-		VFS.DirectoryEntry[] retval = null;
+		        "Listing " + directory);
+		VFSFile[] retval;
 
 		final VPTProject project = getProject(session);
-		Log.log(Log.DEBUG, SqlVFS.class, "_listDirectory for " + project);
+		Log.log(Log.DEBUG, SqlVFS.class, "_listFiles for " + project);
 		if (project == null)
 			return null;
 
-		path = normalize(path);
-		final int level = getPathLevel(path);
+		directory = normalize(directory);
+		final int level = getPathLevel(directory);
 
 		int i;
-		int idx;
 		SqlServerRecord rec;
 
 		switch (level)
 		{
 		case ROOT_LEVEL:
 			final Map recs = SqlServerRecord.getAllRecords(project);
-			retval = new VFS.DirectoryEntry[recs.size()];
+			retval = new VFSFile[recs.size()];
 			i = 0;
 			for (Iterator e = recs.values().iterator(); e.hasNext();)
 			{
 				final SqlServerRecord r = (SqlServerRecord) e.next();
 				retval[i++] =
-				        _getDirectoryEntry(session, path + separatorString + r.getName(), comp);
+				        _getFile(session, directory + separatorString + r.getName(), comp);
 			}
 			break;
 		default:
-			rec = getServerRecord(project, path);
+			rec = getServerRecord(project, directory);
 
 			if (rec != null)
-				retval = rec.getServerType().getSubVFS()._listDirectory(session, path, comp, rec, level);
+				retval = rec.getServerType().getSubVFS()._listFiles(session, directory, comp, rec, level);
 			else
 				retval = null;
 		}
 		Log.log(Log.DEBUG, SqlVFS.class,
 		        "Listed total " + (retval == null ? -1 : retval.length) + " items");
 		return retval;
-	}
-
+	} //}}}
 
 	/**
 	 *  Description of the Method
@@ -226,20 +201,10 @@ public class SqlVFS extends VFS
 		return session;
 	}
 
-
-	/**
-	 *  Description of the Method
-	 *
-	 * @param  session          Description of Parameter
-	 * @param  path             Description of Parameter
-	 * @param  comp             Description of Parameter
-	 * @return                  Description of the Returned Value
-	 * @exception  IOException  Description of Exception
-	 * @since
-	 */
-	public DirectoryEntry _getDirectoryEntry(Object session, String path,
-	                Component comp)
-	throws IOException
+	//{{{ _getFile() method
+	public VFSFile _getFile(Object session, String path,
+		Component comp)
+		throws IOException
 	{
 		path = normalize(path);
 
@@ -248,8 +213,8 @@ public class SqlVFS extends VFS
 			return null;
 
 		if (level <= DB_LEVEL)
-			return new VFS.DirectoryEntry(getFileName(path), path, path,
-			                              VFS.DirectoryEntry.FILESYSTEM, 0L, false);
+			return new VFSFile(getFileName(path), path, path,
+			                   VFSFile.FILESYSTEM, 0L, false);
 
 		VPTProject proj = getProject(session);
 		if (proj == null) {
@@ -260,12 +225,11 @@ public class SqlVFS extends VFS
 		if (rec != null)
 		{
 			final SqlSubVFS.VFSObjectRec or = new SqlSubVFS.VFSObjectRec(path);
-			return rec.getServerType().getSubVFS()._getDirectoryEntry(session, or, comp, level);
+			return rec.getServerType().getSubVFS()._getFile(session, or, comp, level);
 		}
 		else
 			return null;
-	}
-
+	} //}}}
 
 	/**
 	 *  Description of the Method
@@ -482,7 +446,7 @@ public class SqlVFS extends VFS
 				return;
 
 			final BufferUpdate umsg = (BufferUpdate) msg;
-			if (umsg.getWhat() != umsg.LOADED)
+			if (umsg.getWhat() != BufferUpdate.LOADED)
 				return;
 
 			final Buffer buffer = umsg.getBuffer();

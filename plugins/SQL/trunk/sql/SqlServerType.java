@@ -107,7 +107,8 @@ public class SqlServerType extends Properties
 	                "/sql/serverTypes/Sybase.xml",
 	                "/sql/serverTypes/Progress.xml",
 	                "/sql/serverTypes/Derby.xml",
-	                "/sql/serverTypes/teradata.xml"
+	                "/sql/serverTypes/teradata.xml",
+	                "/sql/serverTypes/h2.xml"
 	        };
 
 
@@ -647,7 +648,7 @@ public class SqlServerType extends Properties
 		if (dbTypes == null)
 			return;
 
-		MiscUtilities.quicksort(dbTypes, new MiscUtilities.StringICaseCompare());
+		Arrays.sort(dbTypes, new StandardUtilities.StringCompare<String>(true));
 		for (int i = 0; i < dbTypes.length; i++)
 		{
 			final String dbType = dbTypes[i];
