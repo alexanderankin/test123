@@ -18,19 +18,6 @@
   <property name="build.dir" value="build"/>
   <property name="install.dir"  value=".."/>
   <property name="jedit.plugins.dir"  value="${install.dir}"/>
-
-  <path id="project.class.path">
-    <pathelement location="${jedit.install.dir}/jedit.jar"/>
-    <pathelement location="${jedit.plugins.dir}/bsh.jar"/>
-    <pathelement location="${jedit.plugins.dir}/xerces.jar"/>
-    <pathelement location="${jedit.plugins.dir}/bsh.jar"/>
-    <pathelement location="${jedit.plugins.dir}/CommonControls.jar"/>
-    <pathelement location="${jedit.plugins.dir}/Sessions.jar"/>
-    <pathelement location="${jedit.plugins.dir}/ProjectViewer.jar"/>
-    <pathelement location="${jedit.plugins.dir}/ErrorList.jar"/>
-    <pathelement location="."/>
-  </path>
-
     <selector id="extraFiles">
         <and>
             <or>

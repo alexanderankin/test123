@@ -256,7 +256,7 @@ public class SpecialCommentRemover extends Preprocessor
 				        {
 					        final String text = specialCommentField.getText();
 					        allSpecialComments.add(text);
-					        MiscUtilities.quicksort(allSpecialComments,
+					        Collections.sort(allSpecialComments,
 					                                new Comparator()
 					                                {
 						                                public int compare(Object o1, Object o2)

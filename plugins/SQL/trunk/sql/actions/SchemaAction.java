@@ -48,7 +48,7 @@ public class SchemaAction extends SqlSubVFS.ObjectAction
 
 	public int getActionEntryType()
 	{
-		return VFS.DirectoryEntry.DIRECTORY;
+		return VFSFile.DIRECTORY;
 	}
 
 
@@ -106,7 +106,7 @@ public class SchemaAction extends SqlSubVFS.ObjectAction
 	}
 
 
-	public VFS.DirectoryEntry[] getEntries(Object session,
+	public VFSFile[] getEntries(Object session,
 	                                       String path,
 	                                       SqlServerRecord rec)
 	{
@@ -142,14 +142,14 @@ public class SchemaAction extends SqlSubVFS.ObjectAction
 			rec.releaseConnection(conn);
 		}
 
-		final VFS.DirectoryEntry[] retval = new VFS.DirectoryEntry[cols.size()];
+		final VFSFile[] retval = new VFSFile[cols.size()];
 
 		int i = 0;
 		for (Iterator it = cols.iterator(); it.hasNext();)
 		{
 			final SqlSubVFS.VFSObjectRec r = new SqlSubVFS.VFSObjectRec((String)it.next());
 			r.setDir(path);
-			retval[i++] = new SqlSubVFS.SqlDirectoryEntry(r, VFS.DirectoryEntry.FILE);
+			retval[i++] = new SqlSubVFS.SqlDirectoryEntry(r, VFSFile.FILE);
 		}
 
 		return retval;

@@ -28,13 +28,9 @@ import java.io.*;
 import java.sql.*;
 import java.util.*;
 
-import javax.swing.*;
-
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.io.*;
 import org.gjt.sp.util.*;
-
-import sql.*;
 
 /**
  *  Description of the Class
@@ -90,7 +86,7 @@ public class SqlSubVFS
 	 *@exception  IOException  Description of Exception
 	 *@since
 	 */
-	public VFS.DirectoryEntry[] _listDirectory(Object session,
+	public VFSFile[] _listFiles(Object session,
 	                String path,
 	                Component comp,
 	                SqlServerRecord rec,
@@ -99,7 +95,7 @@ public class SqlSubVFS
 	{
 		Log.log(Log.DEBUG, SqlSubVFS.class,
 		        "Listing " + path);
-		VFS.DirectoryEntry[] retval = null;
+		VFSFile[] retval = null;
 
 		int i;
 		ObjectType oType;
@@ -119,7 +115,7 @@ public class SqlSubVFS
 
 			break;
 		case OBJECTGROUP_LEVEL:
-			retval = new VFS.DirectoryEntry[objectTypes.size()];
+			retval = new VFSFile[objectTypes.size()];
 			i = 0;
 			for (Iterator e = objectTypes.keySet().iterator(); e.hasNext();)
 			{
@@ -127,7 +123,7 @@ public class SqlSubVFS
 				final VFSObjectRec r = new VFSObjectRec(otname);
 				r.setDir(path);
 				retval[i++] =
-				        _getDirectoryEntry(session, r, comp, level + 1);
+				        _getFile(session, r, comp, level + 1);
 			}
 			break;
 
@@ -197,7 +193,7 @@ public class SqlSubVFS
 	 *@exception  IOException  Description of Exception
 	 *@since
 	 */
-	public VFS.DirectoryEntry _getDirectoryEntry(Object session, VFSObjectRec rec, Component comp, int level)
+	public VFSFile _getFile(Object session, VFSObjectRec rec, Component comp, int level)
 	throws IOException
 	{
 		Log.log(Log.DEBUG, SqlSubVFS.class, "Getting entry for [" + rec.path + "]/[" + rec.size + "]");
@@ -206,7 +202,7 @@ public class SqlSubVFS
 			final ObjectAction oa = getObjectAction(rec.path);
 			return new SqlDirectoryEntry(rec, oa.getActionEntryType());
 		}
-		return new SqlDirectoryEntry(rec, VFS.DirectoryEntry.DIRECTORY);
+		return new SqlDirectoryEntry(rec, VFSFile.DIRECTORY);
 	}
 
 
@@ -279,7 +275,7 @@ public class SqlSubVFS
 	}
 
 
-	protected VFS.DirectoryEntry[] getObjectActions(Object session,
+	protected VFSFile[] getObjectActions(Object session,
 	                String path,
 	                Component comp,
 	                int level,
@@ -290,13 +286,13 @@ public class SqlSubVFS
 		final ObjectType oType = getObjectType(path);
 		final Set actionNames = oType.getObjectActionNames();
 
-		final VFS.DirectoryEntry[] retval = new VFS.DirectoryEntry[actionNames.size()];
+		final VFSFile[] retval = new VFSFile[actionNames.size()];
 		int i = 0;
 		for (Iterator it = actionNames.iterator(); it.hasNext();)
 		{
 			final VFSObjectRec r = new VFSObjectRec((String)it.next());
 			r.setDir(path);
-			retval[i++] = _getDirectoryEntry(session, r, comp, level + 1);
+			retval[i++] = _getFile(session, r, comp, level + 1);
 		}
 
 		return retval;
@@ -317,7 +313,7 @@ public class SqlSubVFS
 	 *@exception  IOException  Description of Exception
 	 *@since
 	 */
-	protected VFS.DirectoryEntry[] getEntriesFromDb(Object session,
+	protected VFSFile[] getEntriesFromDb(Object session,
 	                String path,
 	                Component comp,
 	                SqlServerRecord rec,
@@ -333,14 +329,14 @@ public class SqlSubVFS
 		if (tableGroups == null)
 			return null;
 
-		final VFS.DirectoryEntry[] retval = new VFS.DirectoryEntry[tableGroups.size()];
+		final VFSFile[] retval = new VFSFile[tableGroups.size()];
 		int i = 0;
 		for (Iterator e = tableGroups.iterator(); e.hasNext();)
 		{
 			final VFSObjectRec r = (VFSObjectRec) e.next();
 			r.setDir(path);
 			retval[i++] =
-			        _getDirectoryEntry(session, r, comp, level + 1);
+			        _getFile(session, r, comp, level + 1);
 		}
 		return retval;
 	}
@@ -437,7 +433,7 @@ public class SqlSubVFS
 	 *
 	 *@author     svu
 	 */
-	public final static class SqlDirectoryEntry extends VFS.DirectoryEntry
+	public final static class SqlDirectoryEntry extends VFSFile
 	{
 		/**
 		 *  Description of the Field
@@ -610,7 +606,7 @@ public class SqlSubVFS
 
 		public int getActionEntryType()
 		{
-			return VFS.DirectoryEntry.FILE;
+			return VFSFile.FILE;
 		}
 
 
@@ -653,7 +649,7 @@ public class SqlSubVFS
 		}
 
 
-		public VFS.DirectoryEntry[] getEntries(Object session,
+		public VFSFile[] getEntries(Object session,
 		                                       String path,
 		                                       SqlServerRecord rec)
 		{
