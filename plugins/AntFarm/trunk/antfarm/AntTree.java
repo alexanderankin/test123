@@ -25,10 +25,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Properties;
-import java.util.Vector;
+import java.util.*;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -793,7 +790,7 @@ public class AntTree extends JTree
 					.getAbsolutePath());
 				projectNodes.addElement(newProjectNode);
 			}
-			MiscUtilities.quicksort(projectNodes, new MiscUtilities.Compare()
+			Collections.sort(projectNodes, new Comparator()
 			{
 				public int compare(Object obj1, Object obj2)
 				{

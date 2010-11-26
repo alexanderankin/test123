@@ -1,7 +1,7 @@
 # Plugin properties
 plugin.antfarm.AntFarmPlugin.name=Ant Farm
 plugin.antfarm.AntFarmPlugin.author=Rick Gibbs, James Scott, Todd Papaioannou, James Wilson, Gerard Smyth, Damien Radtke
-plugin.antfarm.AntFarmPlugin.version=1.7
+plugin.antfarm.AntFarmPlugin.version=1.8
 plugin.antfarm.AntFarmPlugin.docs=index.html
 plugin.antfarm.AntFarmPlugin.activate=defer
 plugin.antfarm.AntFarmPlugin.description=AntFarm provides an interface to the Apache Ant \
