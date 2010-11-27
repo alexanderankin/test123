@@ -37,21 +37,10 @@ import org.xml.sax.*;
 public class LogViewerPlugin extends EditPlugin {
     /** The name of the plugin */
     public final static String NAME = "logviewer";
-    /** The key of the menu property */
-    public final static String MENU = "logviewer.menu";
     /** The prefix for plugin properties */
     public final static String PROPERTY_PREFIX = "logviewer.";
 
     public final static String SETTING_FILE = "logviewer_types.xml";
-
-    /**
-     * Creates menu items
-     *
-     * @param menuItems  The list of current menu items
-     */
-    public void createMenuItems(Vector menuItems) {
-        menuItems.addElement(GUIUtilities.loadMenu(MENU));
-    }
 
     /**
      * Load log file definitions from an xml file.  Each returned LogType

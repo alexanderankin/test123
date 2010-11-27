@@ -3,7 +3,7 @@
 
 plugin.logviewer.LogViewerPlugin.name=Log Viewer
 plugin.logviewer.LogViewerPlugin.author=Don Brown
-plugin.logviewer.LogViewerPlugin.version=0.8
+plugin.logviewer.LogViewerPlugin.version=0.9
 plugin.logviewer.LogViewerPlugin.docs=LogViewer.html
 
 plugin.logviewer.LogViewerPlugin.depend.0=jdk 1.5
