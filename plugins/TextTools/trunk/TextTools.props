@@ -1,6 +1,6 @@
 plugin.TextToolsPlugin.name=TextTools
 plugin.TextToolsPlugin.author=mike dillon
-plugin.TextToolsPlugin.version=1.2
+plugin.TextToolsPlugin.version=1.15
 plugin.TextToolsPlugin.docs=TextTools.html
 plugin.TextToolsPlugin.description=This plugin provides a number of small actions for performing text manipulation.
 plugin.TextToolsPlugin.depend.0=jdk 1.5
