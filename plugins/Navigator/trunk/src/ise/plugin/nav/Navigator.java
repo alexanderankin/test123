@@ -313,7 +313,7 @@ public class Navigator implements ActionListener {
                 forwardHistory.removeElementAt(i);
             }
         }
-        if (current != null && bufferPath.equals(current.path)) {
+        if (current == null || bufferPath.equals(current.path)) {
             current = currentPosition();
         }
         notifyChangeListeners();
