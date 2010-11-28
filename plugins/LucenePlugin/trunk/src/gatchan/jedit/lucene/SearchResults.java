@@ -406,9 +406,8 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 
 	public void setCurrentIndex(String name)
 	{
-		indexes.setSelectedItem(name);
+		indexModel.setSelectedItem(name);
 		indexActionListener.actionPerformed(null);
-		indexes.repaint();
 	}
 
 	//{{{ addNotify() method
@@ -577,6 +576,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		private String[] indexes;
 
 		private String selectedItem;
+		private int selectedIndex;
 
 		private IndexComboBoxModel(String[] indexes)
 		{
@@ -622,7 +622,12 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 
 		public void setSelectedItem(Object selectedItem)
 		{
+			int prev = selectedIndex;
 			this.selectedItem = (String) selectedItem;
+			for (int selectedIndex = 0; selectedIndex < indexes.length; selectedIndex++)
+				if (selectedItem.equals(indexes[selectedIndex]))
+					break;
+			fireContentsChanged(this, prev, selectedIndex);
 		}
 
 		public Object getSelectedItem()
