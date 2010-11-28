@@ -622,11 +622,15 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 
 		public void setSelectedItem(Object selectedItem)
 		{
-			int prev = selectedIndex;
-			this.selectedItem = (String) selectedItem;
-			for (int selectedIndex = 0; selectedIndex < indexes.length; selectedIndex++)
-				if (selectedItem.equals(indexes[selectedIndex]))
+			int i;
+			for (i = 0; i < indexes.length; i++)
+				if (selectedItem.equals(indexes[i]))
 					break;
+			if (i == indexes.length)	// Can't select given item
+				return;
+			int prev = selectedIndex;
+			selectedIndex = i;
+			this.selectedItem = (String) selectedItem;
 			fireContentsChanged(this, prev, selectedIndex);
 		}
 
