@@ -27,6 +27,8 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EditBus.EBHandler;
 
 import projectviewer.event.StructureUpdate;
+import projectviewer.event.ViewerUpdate;
+import projectviewer.vpt.VPTProject;
 
 public class ProjectWatcher
 {
@@ -40,6 +42,13 @@ public class ProjectWatcher
 	{
 		if (su.getType() == StructureUpdate.Type.PROJECT_REMOVED)
 			checkRemoveProjectIndex(su.getNode().getName());
+	}
+
+	@EBHandler
+	public void handleViewerUpdate(ViewerUpdate vu)
+	{
+		if (vu.getType().equals(ViewerUpdate.Type.PROJECT_LOADED))
+			LucenePlugin.instance.setCurrentIndex(vu.getView(), ((VPTProject)vu.getNode()).getName());
 	}
 
 	private void checkRemoveProjectIndex(String project)

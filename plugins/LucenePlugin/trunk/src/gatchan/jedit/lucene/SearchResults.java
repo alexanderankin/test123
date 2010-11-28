@@ -63,6 +63,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 	private final JLabel fileTypeLabel;
 	private final JLabel maxResultsLabel;
 	private boolean shortLabels;
+	private ActionListener indexActionListener;
 
 	public SearchResults(View v)
 	{
@@ -87,7 +88,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		indexModel = new IndexComboBoxModel(items);
 		indexes = new JComboBox(indexModel);
 		indexes.setToolTipText(jEdit.getProperty("lucene.index-combo.tooltip"));
-		indexes.addActionListener(new ActionListener()
+		indexActionListener = new ActionListener()
 		{
 			private Index prevIndex;
 			private ActivityListener listener = new ActivityListener()
@@ -103,18 +104,18 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			}; 
 			public void actionPerformed(ActionEvent e)
 			{
-				if (prevIndex != null)
-					prevIndex.removeActivityListener(listener);
 				Index index = getSelectedIndex();
 				if (index == null)
 					return;
+				if (prevIndex != null)
+					prevIndex.removeActivityListener(listener);
 				prevIndex = index;
 				indexStatus.setText(index.isChanging() ? MESSAGE_INDEXING : MESSAGE_IDLE);
 				index.addActivityListener(listener);
 				jEdit.setProperty(LUCENE_SEARCH_INDEX, index.getName());
 			}
-		});
-
+		};
+		indexes.addActionListener(indexActionListener);
 		// panel.add(new JLabel("Search for:"), BorderLayout.WEST);
 		textLabel = new JLabel(getLabel("lucene.search-string"));
 		searchField = new HistoryTextField("lucene.search-history");
@@ -401,6 +402,13 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 	{
 		if (tree != null)
 			tree.goToPreviousLink();
+	}
+
+	public void setCurrentIndex(String name)
+	{
+		indexes.setSelectedItem(name);
+		indexActionListener.actionPerformed(null);
+		indexes.repaint();
 	}
 
 	//{{{ addNotify() method

@@ -391,10 +391,11 @@ public class LucenePlugin extends EditPlugin
 		return new File(indexFolder, name);
 	}
 
-	private SearchResults getSearchDockable(View view)
+	private SearchResults getSearchDockable(View view, boolean show)
 	{
 		DockableWindowManager dwm = view.getDockableWindowManager();
-		dwm.showDockableWindow(SEARCH_DOCKABLE_NAME);
+		if (show)
+			dwm.showDockableWindow(SEARCH_DOCKABLE_NAME);
 		SearchResults dockable = (SearchResults)
 			dwm.getDockable(SEARCH_DOCKABLE_NAME);
 		return dockable;
@@ -402,7 +403,7 @@ public class LucenePlugin extends EditPlugin
 
 	public void goToNextResult(View view)
 	{
-		SearchResults dockable = getSearchDockable(view);
+		SearchResults dockable = getSearchDockable(view, true);
 		if (dockable == null)	// Should not happen
 			return;
 		dockable.goToNextResult();
@@ -410,7 +411,7 @@ public class LucenePlugin extends EditPlugin
 
 	public void goToPrevResult(View view)
 	{
-		SearchResults dockable = getSearchDockable(view);
+		SearchResults dockable = getSearchDockable(view, true);
 		if (dockable == null)	// Should not happen
 			return;
 		dockable.goToPreviousResult();
@@ -477,5 +478,12 @@ public class LucenePlugin extends EditPlugin
 		ResultProcessor processor = new MarkerListQueryProcessor(index, files, max);
 		index.search(text, "", max, processor);
 		return true;
+	}
+
+	public void setCurrentIndex(View view, String name)
+	{
+		SearchResults dockable = getSearchDockable(view, false);
+		if (dockable != null)
+			dockable.setCurrentIndex(name);
 	}
 }
