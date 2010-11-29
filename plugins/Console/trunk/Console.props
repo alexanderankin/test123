@@ -12,7 +12,7 @@ plugin.console.ConsolePlugin.longdescription=description.html
 plugin.console.ConsolePlugin.docs=index.html
 plugin.console.ConsolePlugin.author=Slava Pestov, Alan Ezust
 
-plugin.console.ConsolePlugin.depend.0=jedit 04.03.99.00
+plugin.console.ConsolePlugin.depend.0=jedit 04.04.99.00
 plugin.console.ConsolePlugin.depend.1=jdk 1.5
 plugin.console.ConsolePlugin.depend.2=plugin errorlist.ErrorListPlugin 1.9
 # ProjectViewer is optional because Console only listens to events from it.
@@ -82,6 +82,7 @@ options.console.general.shellprefix.tooltip=(Experimental) - you can execute com
 options.console.general.font=Font:
 options.console.general.encoding=Character encoding:
 options.console.general.charlimit=Maximum scrollback buffer size (characters):
+options.console.general.historylimit=Maximum number of commands to remember:
 options.console.general.usejEditBgColor=Use jEdit bgColor
 options.console.general.bgColor=Console background:
 options.console.general.plainColor=Plain text:

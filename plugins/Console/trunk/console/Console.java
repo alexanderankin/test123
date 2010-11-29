@@ -5,6 +5,7 @@
  *
  * Copyright (C) 2000, 2005 Slava Pestov
  * parts Copyright (C) 2006 Alan Ezust
+ * parts Copyright (C) 2010 Eric Le Lay
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -200,7 +201,21 @@ implements EBComponent, DefaultFocusComponent
 			return null;
 
 		String name = shell.getName();
-		text.setHistoryModel(getShellHistory(shell));
+		String shellHistory = getShellHistory(shell);
+		String limit = jEdit.getProperty("console.historyLimit");
+		if(limit != null)
+		{
+			try
+			{
+				HistoryModel.getModel(shellHistory).setSize(
+					Integer.parseInt(limit));
+			}
+			catch(NumberFormatException nfe)
+			{
+				jEdit.unsetProperty("console.historyLimit");
+			}
+		}
+		text.setHistoryModel(shellHistory);
 
 		shellState = shellStateMap.get(name);
 		if(shellState == null)
