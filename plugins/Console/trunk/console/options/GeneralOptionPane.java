@@ -4,6 +4,7 @@
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 1999, 2004 Slava Pestov
+ * parts Copyright (C) 2010 Eric Le Lay
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -39,6 +40,7 @@ import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.FontSelector;
 import org.gjt.sp.util.StandardUtilities.StringCompare;
+import org.gjt.sp.jedit.gui.HistoryModel ;
 
 import console.gui.Label;
 //}}}
@@ -59,6 +61,7 @@ public class GeneralOptionPane extends AbstractOptionPane implements ActionListe
 	private JButton errorColor;
 	private JCheckBox showWelcomeMessage;
 	private JTextField limit ;
+	private JTextField limitHistory ;
 	
 	
 	// }}}
@@ -95,6 +98,10 @@ public class GeneralOptionPane extends AbstractOptionPane implements ActionListe
 		limit = new JTextField(jEdit.getProperty("console.outputLimit"));
 		addComponent(limitLabel, limit);
 		
+		Label limitHistoryLabel = new Label("options.console.general.historylimit");
+		limitHistory = new JTextField(jEdit.getProperty("console.historyLimit",
+			String.valueOf(HistoryModel.getDefaultMax())));
+		addComponent(limitHistoryLabel, limitHistory);
 		
 		usejEditBgColor = new JButton("reset");
 		usejEditBgColor.addActionListener(this);
@@ -127,6 +134,13 @@ public class GeneralOptionPane extends AbstractOptionPane implements ActionListe
 		else
 			jEdit.unsetProperty("console.outputLimit");
 		
+		String limithist = limitHistory.getText();
+		if(limithist != null && limithist.length() > 0
+			&& !String.valueOf(HistoryModel.getDefaultMax()).equals(limithist))
+			jEdit.setProperty("console.historyLimit", limithist);
+		else
+			jEdit.unsetProperty("console.historyLimit");
+
  		jEdit.setProperty("console.encoding", 
  			(String)encoding.getSelectedItem());
 
