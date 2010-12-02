@@ -1,0 +1,515 @@
+=============
+Tags Plugin
+=============
+
+:Authors: Kenrick Drew,
+			Ollie Rutherfurd,
+			Shlomy Reinstein
+:Version: 3.1.0
+
+.. $Id$
+
+Introduction
+============
+
+The Tags plugin allows one to "jump" to the definition of a
+class, function, variable, etc... using tag index files.
+For example, in C programs, the user can immediately jump to the
+definition of a desired function or data structure without having
+to know where or what file it is defined. Tag jumping can be
+accomplished by either selecting the desired tag, placing the
+cursor on the tag, or entering the tag.
+
+Tag index files are created by `ctags`_ (http://ctags.sourceforge.net/).
+
+.. _ctags: http://ctags.sourceforge.net/
+
+Creating Tag Index Files
+========================
+
+For the Tags plugin to be useful, you must generate tag index files
+using `ctags`.
+
+To generate a tag index file for all source files in the 
+current directory::
+	
+	ctags *
+
+To generate a tag index file or all source files in the
+current directory and child directories::
+	
+	ctags -R
+
+See the man page or documentation that comes with your version
+of `ctags` for more information on using `ctags`.
+
+Note that file paths in tag index file are relative to the 
+generated file, unless you pass absolute paths to `ctags`.
+
+**Tag index files must be sorted, as the Tags plugin searches
+using a binary search. By default Exuberant CTags sorts generated
+tag index files.**
+
+Usage
+=====
+
+Tag Jumping
+-----------
+
+There are 2 ways to jump to a desired tag:
+
+1. Place the cursor on or select the desired tag. Use
+   `Plugins` > `Tags` > `Follow Tag`.  `Plugins` > `Tags` >
+   `Follow Tag (New View)` will jump to a tag in a new view.
+
+2. `Plugins` > `Tags` > `Follow Tag...` will prompt you for
+   the desired tag. The `Open new view` checkbox will jump
+   to the entered tag in an new view.
+
+The Tag Stack
+-------------
+
+The `Tag Stack` provides a visual history of tags you've followed
+and where you've jumped from.  When you jump to (or `follow`) a 
+tag, both the location you jumped from and the location of the 
+tag you followed are pushed onto the `Tag Stack`.  Aside from
+seeing how you've moved through buffers, the `Tag Stack` enables
+you to jump to any of the positions in the stack.
+
+For each position, the `Tag Stack` displays the line number, filename
+and directory and the contents of the line (in bold).  The line before
+and after are also displayed to provide some context.
+
+  .. image:: tagstack.png
+
+The context menu for the `Tag Stack` provides the follow actions:
+
+`Go to`:
+	Move the caret to the position, leaving the item on the stack.
+
+`Remove`:
+	Remove the selected element from the `Tag Stack`, without
+	changing the caret position.
+
+`Pop`:
+	Move the caret to the topmost position on the stack, and remove
+	the topmost position.
+
+`Clear`:
+	Removes all positions from the `Tag Stack` without moving the caret.
+
+`Tag Stack` actions are accessible via `Plugins` > `Tags`:
+
+`Pop Position`:
+	Return to the topmost position on the stack.  This will
+	also remove the position from the `Tag Stack`.
+
+`Push Position onto Tag Stack`:
+	Puts your current position at the top of the `Tag Stack`.
+
+`Clear Tag Stack`:
+	Removes all elements from the `Tag Stack`.
+
+Each jEdit `View` has it's own stack.
+
+Tag Collisions
+--------------
+
+A tag collision can occur when there is more than one defintion
+for a specific tag as defined in the tag index files. This
+especially occurs on object oriented programming languages, and
+local projects where you are using a global system tag index
+file along with a local tag index file. To easily facilitate
+tag collisions, if more than one tag is found in the tag index
+files, you are presented, located under the cursor, a list of
+choices. You can select the desired tag by either using the
+mouse, keyboard arrow keys or number keys (1 - 9 only).  The
+tag collision list can be dismissed with the Escape (`Esc`) key.
+The tag collision list can also be converted to a dialog
+with the Space key.
+
+If the `Tag List` dockable window is open, the list will be shown
+in the dockable window instead of in a pop-up window. The
+`Tag List` dockable window provides a 'Filter' menu using which
+you can quickly filter the list of tags by the available attribute
+values.
+
+Configuration
+=============
+
+The Tags plugin can be configured under the `Plugins` >
+`Plugin Options...`.
+
+General
+-------
+
+`Position dialogs under cursor`:
+
+    If your window manager is set to have window focus
+    follow the mouse pointer, and doesn't automatically
+    shift the window focus to new dialogs/windows,
+    this option can be helpful. Any dialog that the
+    plugin creates will be automatically placed under
+    the cursor. This is currently experimental. Note
+    that this doesn't work well for window managers
+    which automatically shift focus to new dialogs/windows.
+
+`Tags extend through member access operator`:
+
+    When tagging in the text area, the plugin by
+    default will consider the tag to be the word
+    under the cursor as well as any member access.
+
+`If tag match is found continue searching subsequent tag index files`:
+
+    By default, the first matching tag (or groups of tags
+    if a tag collision occurs) found will stop the search.
+    Using this option will allow all tag files to be searched,
+    results in searches taking longer.
+
+`Use line numbers when following tags, if specified in the tag files`:
+
+    Invoking Ctags with:
+	
+	--fields=+l
+	
+    causes it to add a "line" attribute to each tag, specifying
+    the line number in which the tag is defined. By default,
+    the "follow tag" operation ignores the line attribute of the
+    tag and uses the pattern to locate the tag. This has the
+    advantage that the tag may be located even if the file has
+    changed since it was indexed by Ctags.
+    However, using the pattern to locate the
+    tag does not work if there are multiple tags with the same
+    name and pattern in the file, which is common in object
+    oriented languages (e.g. an actionPerformed method in
+    several anonymous Java classes defined in the same file, or
+    a C function definition and forward declaration in the same
+    file).
+    In such cases, the line numbers can be used to locate the
+    tags. If the line attributes are specified in the tag files,
+    using this option causes the "follow tag" operation to jump
+    to the specified line number instead of searching for the
+    pattern.
+
+`Number of tag files to keep in memory`:
+
+    The tags plugin caches remote tag index files, when
+    editing over FTP, SFTP, etc...  To avoid loading remote
+    tag index files every time you wish to jump to a tag
+    defintion, these are cached.  This value controls how
+    many remote index files to cache in memory.
+
+`Keep local tags files in memory`
+
+    If enabled, tag index file located on the local filesystem
+    are cached in memory, just as remote ones, rather than
+    reading them as a RandomAccessFile.  This may result
+    in slightly faster searching, but can dramatically increase
+    memory usage.
+
+Actions
+-------
+
+List of actions that provide the "follow tag" functionality with
+filtering of the tag list in case of collisions. For example,
+you can create an action that jumps only to function prototypes,
+or only to tags that belong to a certain class.
+The filtering is based on tag attributes. Ctags provides command-
+line options for adding various tag attributes (fields) to its
+tag files, such as access, class, kind, scope etc. For custom
+actions to work, this attribute information must exist in the tag
+files.
+
+Each action that you add has a name, an associated attribute and
+a list of values for that attribute. When the action is invoked,
+it first runs the "follow tag" action, and if tags are found,
+it goes over the list of values one by one, and for each value
+it reduces the list to only those tags having this value for
+the attribute. If tags were found to have this value for the
+attribute, these tags are then used for jumping or for the tag
+collision popup/dockable. If no tags in the list have any of
+the values, the action indicates that no tags were found.
+
+Tag Files
+---------
+
+List of tag index files the Tags plugin uses to search for 
+tag definitions.
+
+"tags" is a special entry that doesn't represent an actual 
+file but rather the name of the file to look for in the current
+buffer's directory.  The Tags plugin can also search for this
+file in the current buffer's parent directories.  Double-click 
+on the entry to edit it.
+
+The order of entries in the list is the order in which files
+will be searched.
+
+Suggested Keyboard Shortcuts and UI
+===================================
+
+Here are some suggested key bindings. These do stomp on
+some jEdit key bindings, but I find that they work well.
+They are based on the vi (and it's clones) key bindings
+for tagging.
+
+====================== ===========
+ Action                 Shortcut
+====================== ===========
+Follow Tag             C+]
+Follow Tag (New View)  C+S+]
+Follow Tag...          A+]
+Pop Position           C+T
+====================== ===========
+
+Keyboard shortcuts can be defined under the `Shortcuts` node
+of the `Global Options` dialog.
+
+Also one can place the tagging commands in the Context Menu.
+Context menu items can be defined under the `Context Menu`
+node of the Global Options dialog.
+
+Where to Find `ctags`
+=====================
+
+You can find the Exuberant C Tags program at:
+
+   http://ctags.sourceforge.net
+
+Exuberant C Tags is also included in the cygwin distribution
+for Windows.
+
+You can also use the standard UNIX ctags program, or the GNU
+C Tags program, but you'll find that Exuberant C Tags
+provides a bit more info (or too much depending on how much
+of a minimalist you are).
+
+License
+=======
+
+The source code is distributed under the GPL. Please see
+http://www.fsf.org/copyleft/gpl.html.
+
+Known Bugs/Limitations
+======================
+
+* Tag index files **MUST** be sorted. This is becuase
+  tags are search for using a binary search.
+* Bachward searching patterns ``(?...?)`` are not supported.
+
+Future Directions
+=================
+
+See TODO.TXT
+
+Feedback
+========
+
+The preferred way to send bug reports or feature requests is
+to use the Sourceforge Bug Tracker at
+http://sourceforge.net/bugs/?group_id=588.
+
+You can also write to:
+
+* jEdit-users mailing-list <jedit-users@lists.sourceforge.net>;
+* jEdit-devel mailing.list <jedit-devel@lists.sourceforge.net>.
+* Matthew Gilbert <gilbert@voxmea.net> (Current Maintainer)
+
+Credits
+=======
+
+* Vim reference manual (Bram Moolenaar)
+* Exuberant C Tags man page (Darren Hiebert)
+
+Changelog
+=========
+
+* Version 3.1.0 (December 2010)
+
+  - Removed deprecated apis.
+
+* Version 3.0.3 (November 2009)
+
+  - Uses jEdit's getScreenBounds to ensure the popup is positioned correctly.
+
+* Version 3.0.2 (July 2009)
+
+  - Adds target specification to build.xml to ensure it runs on all Java
+    versions supported by jEdit.
+
+* Version 3.0.1 (June 2009)
+
+  - Updated for 4.3.16 API changes (removed deprecated CaretChanging).
+  - Uses jEdit "view.font" property instead of hardcoded "Monospace" font.
+
+* Version 2.0.2 (???)
+
+  - Updated for jEdit 4.3 API changes.
+  - Fixed: Random Access Files weren't closed if no tag was found.
+
+* Version 2.0.1 (Mar 2005)
+
+  - Fixed recursive directory search on local FS.
+
+* Version 2.0 (Nov 2004)
+
+  - Tags plugin now uses jEdit's Virtual File Systems 
+    (enabling the plugin to work over FTP, SFTP, etc...).
+  - Tags plugin can no longer be used stand-alone (outside of jEdit).
+  - Various fixes, changes, etc...
+
+* Version 1.1.2, bug fix (Jun 2004)
+
+  - Fixed StringIndexOutOfBoundsException, if tag ended with "\\".
+    Bug report & patch from Ian MacLarty.
+
+* Version 1.1.1, bug fix (Apr 2004)
+
+  - escaping ``$`` when searching for tag definition.
+
+* Version 1.1, update (Dec 2003)
+
+  - Added the ability to specify the sort order of the current
+    buffer tag index file.
+  - Added the ability to clear the tag stack.
+  - Replaced text field in Enter Tag dialog with history text
+    field.
+  - Quickly reject tag index files if last tag in file is
+    less than the tag we are looking for.
+  - Added the ability to specify whether tags extend through
+    the member access operator.
+  - Restore search and replace search string after following tag.
+  - Ability to enable or disable tag index files without having
+    to remove them from the tag index filepath list.
+  - Experimental: Ability for dialogs to appear under the cursor.
+  - Ability to keep tag collision dialog.
+  - Ability to convert tag collision popup into dialog.
+  - Focus to return to history panel when checkbox is used in
+    Enter Tag dialog.
+  - Focus to return to list when checkbox is used in Tag
+    Collision dialog.
+
+  - Updated for jEdit 4.2 plugin API.
+  - Ability to search for tag index files for current buffer
+    in parent directories of the current buffer.
+  - Added `Tag Stack` dockable.
+  - Tag index filenames can contain spaces.
+  - Added `Push Current Position onto Stack`.
+  - Converted docs to DocBook and added a build.xml file.
+
+* Version 1.0.6, bug fixes (Feb 2002)
+
+  - Fixed bug where the escape character ``'\'`` was showing
+    up in the user visible search string.
+  - Used JEditTextArea.offsetToXY() to position popup
+    within folded, and wrapped text.
+  - Requires java 1.3
+  - Requires JEdit 4.0
+
+* Version 1.0.3, update (Nov 2001)
+
+  - Replaced Macros.error with GUIUtilities.error.
+
+* Version 1.0.2, bug fixes (Nov 2001)
+
+  - Fixed bug where if you removed tag index files from
+    the search the code would remember the later entries.
+  - Fixed bug where searching for tag search string in
+    file was using the search file set.
+  - Fixed bug in option panel where changes to the list of
+    tag index files were always committed even if you
+    pressed "Cancel".
+  - Fixed exuberant tag info display when mixed tag files
+    are used.
+  - Removed directions from COPYING.
+  - Added some initial user hidden development code.
+
+* Version 1.0.1, bug fixes (Nov 2001)
+
+  - Fixed bug where if you added a new tag file, then
+    moved that file in the list, a null exception occured
+    during tagging.
+  - If tag collision popup is wider than the screen, place
+    it flush to the left side of the screen.
+  - Ability to have commas in tag index file path names.
+
+* Version 1.0, Initial public release (Oct 2001)
+
+  - Made Enter Tag dialog a stand alone dialog (no JOptionPane).
+  - Moved enter event into KeyPressed() in enter tag dialog.
+  - Added the display of exuberant info from the tag indx file.
+  - Reverted back to platform independent Monospaced font
+    for tag collision list.
+
+* Version 0.9.2 (Oct 2001)
+
+  - Listen for ENTER in Enter Tag dialog.
+  - Use KeyEventWorkaround.processKeyEvent() in key listener.
+  - Removed display of wait cursor when opening tag
+    definition file.
+
+* Version 0.9.1 (Oct 2001)
+
+  - Removed Tags.displayMessage in favor of
+    org.gjt.sp.util.Log.log()
+  - Used ^ and $ from tag index file when searching (regexp)
+  - Fixed bug where search string wasn't complete
+  - Fixed off by 1 bug when tag index file uses line numbers
+
+* Version 0.9 (Oct 2001)
+
+  - Scroll pane for collision dialog.
+  - Added public Tags.pushPosition()
+  - Better display tag information collision list.
+  - Fixed bugs introduced in 0.7.3.
+  - Display tag line numbers in collision list when search
+    string is a line number.
+  - Changed font of collision list from "Monospaced" to
+    "Courier New".
+  - Removed public use of tag catagories.
+  - Fixed Enter Tag dialog focus issue.
+  - Only display 1 - 9 in collision list.
+  - Resolve relative tag defintion files before possible
+    use of tag collision list.
+
+* Version 0.7.3 (Oct 2001)
+
+  - Ability to use number keys with the tag collision popup.
+  - Fixed relative tag defintion file name path problem.
+  - Fixed problem when tagging from command line.
+  - Fixed infinite loop problem when backtracking to
+    beginning of first line in tag index file.
+  - Fixed crash when tag is on last line of tag index file.
+  - Made Java 1.1 compatible
+
+* Version 0.7.2 (Oct 2001)
+
+  - Added the ability to specify the tag index file name,
+    when using the tag index file in the current buffer's
+    directory.
+  - Added error message when tag defintion file does not exist
+  - Updated HTML Documentaiton.
+
+* Version 0.7.1 (Oct 2001)
+
+  - Updated HTML Documentaiton.
+  - Updated labels and property strings.
+  - Let user know if no tag index files have been specified.
+  - Removed tag index file type specification.
+  - Removed some unneeded code.
+
+* Version 0.7 (Oct 2001)
+
+  - HTML Documentation
+  - Use AbstractOptionPane for Global Options dialog
+
+* Version 0.5 (Oct 2001)
+
+  - ??
+
+* Version 0.3 (Sep 2001)
+
+  - Initial beta release
+
+.. :mode=rest:
