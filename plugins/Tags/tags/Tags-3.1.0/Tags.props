@@ -1,0 +1,125 @@
+plugin.tags.TagsPlugin.activate=options.tags.hasDynamicActions
+
+# general plugin information
+plugin.tags.TagsPlugin.name=Tags
+plugin.tags.TagsPlugin.author=Ollie Rutherfurd, Kenrick Drew, Shlomy Reinstein
+plugin.tags.TagsPlugin.version=3.1.0
+plugin.tags.TagsPlugin.docs=doc/users-guide.html
+plugin.tags.TagsPlugin.description=Tags allows jumping to source code tags \
+  using tag files created by the "Exuberant Ctags" tool.
+plugin.tags.TagsPlugin.depend.0=jdk 1.5
+plugin.tags.TagsPlugin.depend.1=jedit 04.03.99.00
+
+# option panes
+plugin.tags.TagsPlugin.option-group=tags.general \
+										 tags.actions \
+										 tags.files
+
+# action labels
+tags-follow-tag.label=Follow Tag
+tags-follow-tag-new-view.label=Follow Tag (New View)
+tags-enter-and-follow-tag.label=Follow Tag...
+tags-push-position.label=Push Postion onto Tag Stack
+tags-pop-tag.label=Pop Position
+tags-clear-tag-stack.label=Clear Tag Stack
+tags-cache-dialog.label=Tag File Cache...
+
+# menu items
+plugin.tags.TagsPlugin.menu=tags-follow-tag \
+							tags-follow-tag-new-view \
+							tags-enter-and-follow-tag \
+							tags-push-position \
+							tags-pop-tag \
+							- \
+							tags-taglist \
+							- \
+							tags-tagstack \
+							tags-tagstack-toggle \
+							tags-tagstack-float \
+							- \
+							tags-clear-tag-stack \
+							- \
+							tags-cache-dialog
+
+# dockables
+tags-tagstack.title=Tag Stack
+tags-tagstack.label=Tag Stack
+tags.tagstack-goto=Go to
+tags.tagstack-remove=Remove
+tags.tagstack-pop=Pop
+tags.tagstack-clear=Clear
+
+tags-taglist.title=Tag List
+tags-taglist.label=Tag List
+
+
+# Messages
+no-tag-index-files.title=Error
+no-tag-index-files.message=No tag index files to search.  Please add tag index files\nfrom the Global Options dialog.
+
+func-not-found.title=Error
+func-not-found.message=\"{0}\" not found!
+
+tag-def-file-not-found.title=Error
+tag-def-file-not-found.message=The tag file name path \"{0}\"\nthat is listed in the tag index file, does not\nexist.  You may need to update your tag index\nfiles.
+
+
+# Tag To dialog strings
+tags.enter-tag-dlg.title=Enter And Follow Tag
+tags.enter-tag-dlg.tag-to.label=Tag to:
+tags.enter-tag-dlg.new-view-checkbox.label=Open new view
+tags.enter-tag-dlg.view-found-tags.label=View incrementally found tags
+tags.enter-tag-dlg.keep-dialog.label=Keep dialog
+
+# Tag collision dialog
+tag-collision-dlg.title=Tag Collisions
+tag-collision-dlg.label=Choose tag:
+
+# Tag collision pop-up
+tag-collision-popup-help.label=ESC key to cancel, SPACE key for dialog
+
+# Option panes
+# general
+options.tags.general.label=General
+options.tags.general.code=new tags.options.GeneralOptionPane();
+options.tags.general.open-dialogs-under-cursor.label=Position dialogs under cursor
+options.tags.general.tag-extends-through-dot.label=Tags extend through member access operator
+options.tags.general.tag-search-all-files.label=If tag match is found continue searching subsequent tag index files
+options.tags.general.tag-use-line-numbers.label=Use line numbers when following tags, if specified in the tag files 
+options.tags.general.cache-size.label=Number of tags files to keep in memory: 
+options.tags.general.cache-local.label=Keep local tags files in memory
+# actions
+options.tags.actions.label=Actions
+options.tags.actions.code=new tags.options.ActionOptionPane();
+options.tags.actions.help=<html><body>\
+  Specify a list of space-separated attribute values in decreasing priority order.<br>\
+  The action will use the first value found in the list of tags.</html>  
+# tag files
+options.tags.files.label=Tag Files
+options.tags.files.code=new tags.options.TagFilesOptionPane();
+options.tags.files.toggle-enable=Enable
+options.tags.files.toggle-disable=Disable
+options.tags.files.edit=Edit...
+options.tags.files.search-current=Search for tags file in buffer's directory
+options.tags.files.search-parents=Search for tags file in buffer's directory or parent directories
+options.tags.files.index.title=Tag File in Current Buffer's Directory
+options.tags.files.index.filename=Filename:
+options.tags.files.index.search-parents=Search parent directories, if not in buffer's directory
+
+# Option values
+options.tags.current-buffer-file-name=tags
+options.tags.tag-search-current-buff-tag-file=true
+options.tags.tags-search-parent-dirs=true
+options.tags.tag-search-all-files=false
+options.tags.tag-use-line-numbers=false 
+options.tags.note-all-tags-in-tag-history=true
+options.tags.open-dialogs-under-cursor=false
+options.tags.tag-extends-through-dot=true
+options.tags.cache-size=5
+options.tags.cache-all=false
+tags.enter-tag-dlg.keep-dialog=false
+
+# cache dialog
+tags-cache-dialog.title=Tag File Cache
+tags.reload=Reload
+

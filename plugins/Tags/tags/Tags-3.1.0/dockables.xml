@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!-- $Id$ -->
+
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+
+<DOCKABLES>
+	<DOCKABLE NAME="tags-tagstack">
+		new tags.TagStack(view);
+	</DOCKABLE>
+	<DOCKABLE NAME="tags-taglist" MOVABLE="TRUE">
+		new tags.ChooseTagListDockable(view);
+	</DOCKABLE>
+</DOCKABLES>
+
+<!-- :noTabs=false:lineSeparator=\r\n:tabSize=4:folding=none: -->
