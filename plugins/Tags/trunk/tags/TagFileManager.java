@@ -33,9 +33,7 @@ import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Vector;
 //}}}
 
@@ -167,7 +165,7 @@ public class TagFileManager
 					break;
 				}
 				// make sure we're not at the FS root
-				entry = vfs._getDirectoryEntry(session, parent, view);
+				entry = vfs._getFile(session, parent, view);
 				if(entry != null && entry.getType() == VFSFile.FILESYSTEM)
 				{
 					Log.log(Log.DEBUG, this, "stopping recurse at: " + parent);
