@@ -5,7 +5,7 @@ Tags Plugin
 :Authors: Kenrick Drew,
 			Ollie Rutherfurd,
 			Shlomy Reinstein
-:Version: 3.0.3
+:Version: 3.1.0
 
 .. $Id$
 
@@ -324,6 +324,10 @@ Credits
 
 Changelog
 =========
+
+* Version 3.1.0 (December 2010)
+
+  - Removed deprecated apis.
 
 * Version 3.0.3 (November 2009)
 

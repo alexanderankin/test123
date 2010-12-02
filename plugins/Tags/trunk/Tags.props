@@ -3,12 +3,12 @@ plugin.tags.TagsPlugin.activate=options.tags.hasDynamicActions
 # general plugin information
 plugin.tags.TagsPlugin.name=Tags
 plugin.tags.TagsPlugin.author=Ollie Rutherfurd, Kenrick Drew, Shlomy Reinstein
-plugin.tags.TagsPlugin.version=3.0.3
+plugin.tags.TagsPlugin.version=3.1.0
 plugin.tags.TagsPlugin.docs=doc/users-guide.html
 plugin.tags.TagsPlugin.description=Tags allows jumping to source code tags \
   using tag files created by the "Exuberant Ctags" tool.
 plugin.tags.TagsPlugin.depend.0=jdk 1.5
-plugin.tags.TagsPlugin.depend.1=jedit 04.03.18.00
+plugin.tags.TagsPlugin.depend.1=jedit 04.03.99.00
 
 # option panes
 plugin.tags.TagsPlugin.option-group=tags.general \
