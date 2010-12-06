@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="MarkdownPlugin" default="build">
+
+	<description>
+		jEdit Markdown Plugin is a plugin for jEdit that can render Markdown text from the current buffer or from selected text. The resulting HTML is written to a new buffer or copied to the clipboard. The plugin can also show a preview in a web-browser (using the Info Viewer plugin).
+	</description>
+	
+    <property name="src.dir" value="src"/>
+    <property name="javadoc.packagenames" value="ua.pico.jedit.markdown"/>
+    <property name="docs-proc.target" value="none"/>
+
+    <property file="build.properties" />
+    <property file="../build.properties" />
+
+    <property name="compiler.target" value="1.5"/>
+    <property name="compiler.source" value="1.5"/>
+    <import file="${build.support}/plugin-build.xml" />
+
+    <path id="project.class.path">
+		<pathelement location="lib/parboiled4j-0.9.9.0.jar"/>
+		<pathelement location="lib/pegdown-0.8.5.4.jar"/>
+	</path>
+
+	<selector id="packageFiles">
+		<filename name="MarkdownPlugin.html" />
+	</selector>
+
+	<target name="build.prepare">
+		<!-- Copy over required dependencies to install.dir -->
+		<copy todir="${install.dir}">
+			<fileset dir="lib">
+				<filename name="*.jar"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<!-- custom target -->
+	<target name="update-version" if="new.version" description="Set the new version">
+		<echo>New version: ${new.version}</echo>
+		<replaceregexp file="${basedir}/MarkdownPlugin.props" byline="true" encoding="UTF-8"
+				match="^(plugin\.ua\.pico\.jedit\.markdown\.MarkdownPlugin\.version)=([0-9.]+)"
+				replace="\1=${new.version}">
+		</replaceregexp>
+		<replaceregexp file="${basedir}/MarkdownPlugin.markdown" byline="true" encoding="UTF-8"
+				match="^(__Version:__)\s(.+)"
+				replace="\1 ${new.version}">
+		</replaceregexp>
+		<replaceregexp file="${basedir}/MarkdownPlugin.html" byline="true" encoding="UTF-8"
+				match="^(&lt;strong&gt;Version:&lt;/strong&gt;)\s(.+)(&lt;/p&gt;)"
+				replace="\1 ${new.version}\3">
+		</replaceregexp>
+	</target>
+
+</project>

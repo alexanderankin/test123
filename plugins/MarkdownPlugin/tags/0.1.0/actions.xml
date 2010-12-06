@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<ACTIONS>
+	<ACTION NAME="markdown.render.buffer">
+		<CODE>
+import javax.swing.JOptionPane;
+
+plugin = jEdit.getPlugin("ua.pico.jedit.markdown.MarkdownPlugin", true);
+
+if (null == plugin) {
+	JOptionPane.showMessageDialog(null,
+		"Can't load Markdown Plugin.\n\nSee 'Utilities » Troubleshooting » Activity Log' for details.",
+		"Markdown Plugin", JOptionPane.ERROR_MESSAGE);
+} else {
+	plugin.renderBuffer(view, buffer);
+}
+		</CODE>
+	</ACTION>
+	<ACTION NAME="markdown.render.selection">
+		<CODE>
+import javax.swing.JOptionPane;
+
+plugin = jEdit.getPlugin("ua.pico.jedit.markdown.MarkdownPlugin", true);
+
+if (null == plugin) {
+	JOptionPane.showMessageDialog(null,
+		"Can't load Markdown Plugin.\n\nSee 'Utilities » Troubleshooting » Activity Log' for details.",
+		"Markdown Plugin", JOptionPane.ERROR_MESSAGE);
+} else {
+	plugin.renderSelection(view, buffer, textArea.getSelection());
+}
+		</CODE>
+	</ACTION>
+	<ACTION NAME="markdown.render.buffer.preview">
+		<CODE>
+import javax.swing.JOptionPane;
+
+plugin = jEdit.getPlugin("ua.pico.jedit.markdown.MarkdownPlugin", true);
+
+if (null == plugin) {
+	JOptionPane.showMessageDialog(null,
+		"Can't load Markdown Plugin.\n\nSee 'Utilities » Troubleshooting » Activity Log' for details.",
+		"Markdown Plugin", JOptionPane.ERROR_MESSAGE);
+} else {
+	plugin.previewBuffer(view, buffer);
+}
+		</CODE>
+	</ACTION>
+	<ACTION NAME="markdown.render.selection.preview">
+		<CODE>
+import javax.swing.JOptionPane;
+
+plugin = jEdit.getPlugin("ua.pico.jedit.markdown.MarkdownPlugin", true);
+
+if (null == plugin) {
+	JOptionPane.showMessageDialog(null,
+		"Can't load Markdown Plugin.\n\nSee 'Utilities » Troubleshooting » Activity Log' for details.",
+		"Markdown Plugin", JOptionPane.ERROR_MESSAGE);
+} else {
+	plugin.previewSelection(view, buffer, textArea.getSelection());
+}
+		</CODE>
+	</ACTION>
+</ACTIONS>

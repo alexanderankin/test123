@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<head><meta charset="UTF-8"/>
+		<title>Markdown Plugin</title>
+	</head>
+	<body>
+<h1>Markdown Plugin</h1>
+<p><strong>Author:</strong> Vitaliy Berdinskikh<br/>
+<strong>Version:</strong> 0.1.0</p>
+<p><strong>MarkdownPlugin</strong> is a plugin for <strong>jEdit</strong> that can render <em>Markdown text</em> from the current buffer or from selected text. The resulting <em>HTML</em> is written to a new buffer or copied to the clipboard. The plugin can also show a preview in a web-browser (using the <strong>Info Viewer</strong> plugin).</p>
+<p><a href="http://daringfireball.net/projects/markdown/" title="Markdown: Main"><em>Markdown</em></a> is an easy-to-read, easy-to-write plain text format. Using this plugin you can convert it to structurally valid <em>XHTML</em> (or <em>HTML</em>).</p>
+<p><strong>MarkdownPlugin</strong> based on <a href="http://wiki.github.com/sirthias/pegdown/">pegdown</a> - the pure java Markdown processor.</p>
+<hr/><h2>Installation</h2>
+<p>Use the plugin manager for easiest installation.</p>
+<p>For manual installation download <a href="http://code.pi.co.ua/jedit-markdown-plugin/downloads/MarkdownPlugin.tar.bz2">MarkdownPlugin.tar.bz2</a> then unpack it to <em>YOUR HOME DIRECTORY</em>/<strong>.jedit/jars</strong>.</p><h2>Usage</h2>
+<p>Two actions provided by this plugin are available in the <em>Markdown</em> menu: render text and show a preview in a web broser. For first action you can choose in plugin's options where plugin put rendered <em>HTML</em>: a new buffer, the jEdit's clipboard or show a preview in a web broser (the same as second action).</p>
+<hr/><h2>Markdown's Formatting Syntax</h2>
+<ul>
+  <li>
+    <p><strong>Paragraphs</strong><br/>
+ A paragraph is one or more consecutive lines of text separated by one or more blank lines. Normal paragraphs should not be indented with spaces or tabs:</p>
+    <pre><code>This is a paragraph. It has two sentences.
+
+This is another paragraph. It also has two sentences.
+</code></pre>
+  </li>
+  <li>
+    <p><strong>Line return</strong><br/>
+ Line breaks inserted in the text are removed from the final result: the web browser is in charge of breaking the lines depending of the available space. To force a line break, insert two spaces at the end of the line.</p>
+  </li>
+  <li>
+    <p><strong>Emphasized text</strong></p>
+    <pre><code>*emphasis* or _emphasis_ (more common)  (e.g., italics)
+
+**strong emphasis** (more common) or __strong emphasis__ (e.g., boldface)
+</code></pre>
+  </li>
+  <li>
+    <p><strong>Code</strong><br/>
+ To include code (formatted in monospace font), you can either:</p>
+    <ul>
+      <li>
+        <p>use &#96;&#96; for one line of code, like in</p>
+        <p>&#96;some code&#96;</p>
+      </li>
+      <li>
+        <p>indent several lines of code by at least four spaces which prevents Markdown from removing all whitespaces, breaking indentation and code layout.</p>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p><strong>Lists</strong></p>
+    <pre><code>* An item in a bulleted (unordered) list
+    * A subitem, indented with 4 spaces
+* Another item in a bulleted list
+
+1. An item in an enumerated (ordered) list
+2. Another item in an enumerated list
+</code></pre>
+  </li>
+  <li>
+    <p><strong>Headings</strong><br/>
+ HTML headings are produced by placing a number of hashes before the header text corresponding to the level of heading desired (HTML offers six levels of headings), like so:</p>
+    <pre><code># First-level heading
+
+#### Fourth-level heading
+</code></pre>
+    <p>The first two heading levels also have an alternate syntax:</p>
+    <pre><code>First-level heading
+===================
+
+Second-level heading
+--------------------
+</code></pre>
+  </li>
+  <li>
+    <p><strong>Blockquotes</strong></p>
+    <pre><code>&gt; This text will be enclosed in an HTML blockquote element.
+&gt; Blockquote elements are reflowable. You may arbitrarily
+&gt; wrap the text to your liking, and it will all be parsed
+&gt; into a single blockquote element.
+</code></pre>
+  </li>
+  <li>
+    <p><strong>Links</strong><br/>
+ Links may be included inline:</p>
+    <pre><code>[link text here](link.address.here &quot;link title here&quot;)
+</code></pre>
+    <p>Alternatively, links can be placed in footnotes outside of the paragraph, being referenced with some sort of reference tag. For example, including the following inline:</p>
+    <pre><code>[link text here][linkref]
+</code></pre>
+    <p>would produce a link if the following showed up outside of the paragraph (or at the end of the document):</p>
+    <pre><code>[linkref]: link.address.here &quot;link title here&quot;
+</code></pre>
+  </li>
+  <li>
+    <p><strong>Images</strong><br/>
+ Referring to images is similar to including links. The syntax requires an exclamation point to indicate the link refers to an image.</p>
+    <p>The image address may be included inline, as with links:</p>
+    <pre><code>![Alt text here](Image URL here &quot;Image title here&quot;)
+</code></pre>
+    <p>It may also be referred to via a reference:</p>
+    <pre><code>![Alt text here][imageref]
+</code></pre>
+    <p>Here, imageref refers to information somewhere after the image:</p>
+    <pre><code>[imageref]: image.url.here &quot;Image title here&quot;
+</code></pre>
+  </li>
+  <li>
+    <p><strong>Horizontal rules</strong><br/>
+ Horizontal rules are created by placing three or more hyphens, asterisks, or underscores on a line by themselves. You may use spaces between the hyphens or asterisks. Each of the following lines will produce a horizontal rule:</p>
+    <pre><code>* * *
+***
+*****
+- - -
+---------------------------------------
+</code></pre>
+  </li>
+</ul>
+<hr/><h2>Supported Markdown Extensions</h2>
+<p>You can choose these extensions in plugin's options. </p>
+<ul>
+  <li>
+    <p><a href="http://michelf.com/projects/php-markdown/extra/#abbr" title="PHP Markdown Extra: Abbreviation"><strong>Abbreviation</strong></a><br/>
+ Support for abbreviations (HTML tag <abbr>). How it works is pretty simple: create an abbreviation definition like this:</p>
+    <pre><code>*[HTML]: Hyper Text Markup Language
+*[W3C]:  World Wide Web Consortium
+</code></pre>
+    <p>then, elsewhere in the document, write text such as:</p>
+    <pre><code>The HTML specification
+is maintained by the W3C.
+</code></pre>
+    <p>and any instance of those words in the text will become:</p>
+    <pre><code>The &lt;abbr title=&quot;Hyper Text Markup Language&quot;&gt;HTML&lt;/abbr&gt; specification
+is maintained by the &lt;abbr title=&quot;World Wide Web Consortium&quot;&gt;W3C&lt;/abbr&gt;.
+</code></pre>
+    <p>Abbreviation are case-sensitive, and will span on multiple words when defined as such. An abbreviation may also have an empty definition, in which case <abbr> tags will be added in the text but the title attribute will be omitted.</p>
+    <pre><code>Operation Tigra Genesis is going well.
+
+*[Tigra Genesis]:
+</code></pre>
+    <p>Abbreviation definition can be anywhere in the document. They are stripped from the final document.</p>
+  </li>
+  <li>
+    <p><a href="http://github.github.com/github-flavored-markdown/" title="Github-flavoured-Markdown: URL autolinking"><strong>Autolinks</strong></a><br/>
+ Markdown plugin will autolink standard URLs, so if you want to link to a URL (instead of setting link text), you can simply enter the URL and it will be turned into a link to that URL.</p>
+  </li>
+  <li>
+    <p><a href="http://github.github.com/github-flavored-markdown/" title="Github-flavoured-Markdown: Newlines"><strong>Hardwraps</strong></a><br/>
+ You can hard wrap paragraphs of text and they will be combined into a single paragraph. The next paragraph contains two phrases separated by a single newline character:</p>
+    <pre><code>Roses are red
+Violets are blue
+</code></pre>
+  </li>
+  <li>
+    <p><strong>Quotes</strong><br/>
+ Beautifys single quotes, double quotes and double angle quotes (&laquo; and &raquo;).</p>
+  </li>
+  <li>
+    <p><strong>Smarts</strong><br/>
+ Beautifys apostrophes, ellipsises ("..." and ". . .") and dashes ("--" and "---").</p>
+  </li>
+  <li>
+    <p><strong>Smartypants</strong><br/>
+ Convenience extension enabling both, <strong>smarts</strong> and <strong>quotes</strong>, at once.</p>
+  </li>
+  <li>
+    <p><a href="http://fletcherpenney.net/multimarkdown/users_guide/multimarkdown_syntax_guide/" title="MultiMarkdown: tables"><strong>Tables</strong></a></p>
+    <pre><code>|             |          Grouping           ||
+First Header  | Second Header | Third Header |
+ ------------ | :-----------: | -----------: |
+Content       |          *Long Cell*        ||
+Content       |   **Cell**    |         Cell |
+
+New section   |     More      |         Data |
+And more      |            And more          |
+[Prototype table]
+</code></pre>
+  </li>
+  <li>
+    <p><strong>No blocks</strong><br/>
+ Suppresses HTML blocks.</p>
+  </li>
+  <li>
+    <p><strong>No inline HTML</strong><br/>
+ Suppresses inline HTML tags.</p>
+  </li>
+  <li>
+    <p><strong>No hypertext</strong><br/>
+ Suppresses HTML blocks as well as inline HTML tags.</p>
+  </li>
+</ul>
+	</body>
+</html>
