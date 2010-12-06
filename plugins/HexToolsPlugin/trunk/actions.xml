@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="parse-hex">
+		<CODE>
+			de.jwi.jedit.hextools.HexToolsPlugin.parseHex(view,textArea);
+		</CODE>
+	</ACTION>
+</ACTIONS>

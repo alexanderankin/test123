@@ -1,0 +1,19 @@
+
+plugin.de.jwi.jedit.hextools.HexToolsPlugin.name=HexTools
+plugin.de.jwi.jedit.hextools.HexToolsPlugin.author=Jürgen Weber
+plugin.de.jwi.jedit.hextools.HexToolsPlugin.version=0.9
+plugin.de.jwi.jedit.hextools.HexToolsPlugin.docs=docs/index.html
+plugin.de.jwi.jedit.hextools.HexToolsPlugin.depend.0=jdk 1.5
+plugin.de.jwi.jedit.hextools.HexToolsPlugin.depend.1=jedit 04.03.00.00
+plugin.de.jwi.jedit.hextools.HexToolsPlugin.activate=defer
+
+plugin.de.jwi.jedit.hextools.HexToolsPlugin.label=HexTools
+
+plugin.de.jwi.jedit.hextools.HexToolsPlugin.menu-item=parse-hex
+parse-hex.label=HexTools
+
+plugin.de.jwi.jedit.hextools.HexToolsPlugin.description=This plugin can be used to extract \
+    hexdump data.
+
+
+
