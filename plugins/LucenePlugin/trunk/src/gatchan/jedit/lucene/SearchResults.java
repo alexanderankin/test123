@@ -48,6 +48,8 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 	private final JList list;
 	private final JCheckBox lineResults;
 	private final JSpinner maxResults;
+	private final JCheckBox filterComments;
+	private final JCheckBox filterLiterals;
 	private final JComboBox indexes;
 	private final MyModel model;
 	private final SourceLinkTree tree;
@@ -79,6 +81,8 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		type.setToolTipText(jEdit.getProperty("lucene.file-type.tooltip"));
 		maxResultsLabel = new JLabel(getLabel("lucene.max-results"));
 		maxResults = new JSpinner(new SpinnerNumberModel(100, 1, 10000, 1));
+		filterComments = new JCheckBox(getLabel("lucene.filter-comments"));
+		filterLiterals = new JCheckBox(getLabel("lucene.filter-literals"));
 		//JPanel maxPanel = new JPanel(new BorderLayout());
 		//maxPanel.add(BorderLayout.WEST, new JLabel("Max results:"));
 		//maxPanel.add(BorderLayout.EAST, maxResults);
@@ -282,6 +286,8 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			p.add(lineResults);
 			p.add(maxResultsLabel);
 			p.add(maxResults);
+			p.add(filterComments);
+			p.add(filterLiterals);
 			p.add(indexes);
 			p.add(clear);
 			p.add(multi);
@@ -313,6 +319,10 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			maxResultsPanel.add(maxResults, BorderLayout.CENTER);
 			p.add(maxResultsPanel, BorderLayout.WEST);
 			p.add(new JPanel(), BorderLayout.CENTER);
+			JPanel filterPanel = new JPanel();
+			searchPanel.add(filterPanel);
+			filterPanel.add(filterComments);
+			filterPanel.add(filterLiterals);
 			JPanel bottom = new JPanel(new BorderLayout());
 			searchPanel.add(bottom);
 			p = new JPanel();
@@ -389,7 +399,8 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		searchField.setText(text);
 		type.setText(fileType);
 		ThreadUtilities.runInBackground(new SearchQuery(index, text, fileType, max,
-			lineResults.isSelected()));
+			lineResults.isSelected(), new TokenFilter(filterComments.isSelected(),
+			filterLiterals.isSelected())));
 	}
 
 	public void goToNextResult()
@@ -487,14 +498,17 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		private final String fileType;
 		private final int max;
 		private final boolean lineResult;
+		private final TokenFilter tokenFilter;
 
-		private SearchQuery(Index index, String text, String fileType, int max, boolean lineResult)
+		private SearchQuery(Index index, String text, String fileType, int max, boolean lineResult,
+			TokenFilter tokenFilter)
 		{
 			this.index = index;
 			this.text = text;
 			this.fileType = fileType;
 			this.max = max;
 			this.lineResult = lineResult;
+			this.tokenFilter = tokenFilter;
 		}
 
 		@Override
@@ -504,7 +518,7 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			ResultProcessor processor;
 			final java.util.List<Object> files = new ArrayList<Object>();
 			if (lineResult)
-				processor = new MarkerListQueryProcessor(index, files, max);
+				processor = new MarkerListQueryProcessor(index, files, max, tokenFilter);
 			else
 				processor = new FileListQueryProcessor(index, files, max);
 			index.search(text, fileType, max, processor);

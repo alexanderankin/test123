@@ -34,6 +34,7 @@ import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.Log;
 
 import gatchan.jedit.lucene.Index.FileProvider;
+
 import org.gjt.sp.util.ThreadUtilities;
 
 import javax.swing.*;
@@ -467,7 +468,7 @@ public class LucenePlugin extends EditPlugin
 	// Plugin-API
 
 	public static boolean search(String indexName, String text, int max,
-		final java.util.List<Object> files)
+		final java.util.List<Object> files, TokenFilter tokenFilter)
 	{
 		LucenePlugin instance = getPluginInstance();
 		if (instance == null)
@@ -475,7 +476,7 @@ public class LucenePlugin extends EditPlugin
 		Index index = instance.getIndex(indexName);
 		if (index == null)
 			return false;
-		ResultProcessor processor = new MarkerListQueryProcessor(index, files, max);
+		ResultProcessor processor = new MarkerListQueryProcessor(index, files, max, tokenFilter);
 		index.search(text, "", max, processor);
 		return true;
 	}
