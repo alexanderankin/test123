@@ -1,0 +1,65 @@
+# Plugin
+plugin.ua.pico.jedit.markdown.MarkdownPlugin.name=Markdown
+plugin.ua.pico.jedit.markdown.MarkdownPlugin.version=0.1.0
+plugin.ua.pico.jedit.markdown.MarkdownPlugin.author=Vitaliy Berdinskikh UR6LAD
+
+# Properties
+plugin.ua.pico.jedit.markdown.MarkdownPlugin.activate=defer
+plugin.ua.pico.jedit.markdown.MarkdownPlugin.usePluginHome=false
+plugin.ua.pico.jedit.markdown.MarkdownPlugin.jars=parboiled4j-0.9.9.0.jar pegdown-0.8.5.4.jar
+plugin.ua.pico.jedit.markdown.MarkdownPlugin.description=Render Markdown text to HTML or preview it in browser
+# TODO: docs longdescription
+plugin.ua.pico.jedit.markdown.MarkdownPlugin.longdescription=description.html
+plugin.ua.pico.jedit.markdown.MarkdownPlugin.docs=MarkdownPlugin.html
+
+# Depends
+plugin.ua.pico.jedit.markdown.MarkdownPlugin.depend.0=jedit 04.03.99.00
+plugin.ua.pico.jedit.markdown.MarkdownPlugin.depend.1=jdk 1.5.0
+plugin.ua.pico.jedit.markdown.MarkdownPlugin.depend.3=plugin infoviewer.InfoViewerPlugin 1.2
+
+# Menu
+plugin.ua.pico.jedit.markdown.MarkdownPlugin.menu=markdown.render.buffer markdown.render.selection - markdown.render.buffer.preview markdown.render.selection.preview
+markdown.render.buffer.label=Render current buffer
+markdown.render.selection.label=Render current selection
+markdown.render.buffer.preview.label=Preview current buffer in browser
+markdown.render.selection.preview.label=Preview current selection in browser
+
+# Options
+plugin.ua.pico.jedit.markdown.MarkdownPlugin.option-pane=markdown
+options.markdown.label=Markdown
+options.markdown.code=new ua.pico.jedit.markdown.MarkdownOptionPane(); 
+# Options field labels
+options.markdown.target.label=Render Markdown text to...
+options.markdown.target.buffer.label=New buffer
+options.markdown.target.clipboard.label=Clipboard
+options.markdown.target.browser.label=Browser
+options.markdown.extensions.label=Markdown extensions
+options.markdown.none.label=The default, standard markup mode without any extensions.
+options.markdown.all.label=Enable all available extensions.
+options.markdown.choose.label=Choose used extensions:
+options.markdown.abbreviations.label=Support for abbreviations in the way of PHP Markdown Extra.
+options.markdown.autolinks.label=Enables plain (undelimited) autolinks the way Github-flavoured-Markdown implements them.
+options.markdown.hardwraps.label=Enables alternative handling of newlines, see Github-flavoured-Markdown.
+options.markdown.quotes.label=Beautifys single quotes, double quotes and double angle quotes (\u00AB and \u00BB).
+options.markdown.smarts.label=Beautifys apostrophes, ellipsises ("..." and ". . .") and dashes ("--" and "---").
+options.markdown.smartypants.label=Convenience extension enabling both, smarts and quotes, at once.
+options.markdown.tables.label=Enables support for tables similar to MultiMarkdown (which is in turn like the PHP Markdown Extra tables, but with colspan support).
+options.markdown.noBlocks.label=Suppresses HTML blocks.
+options.markdown.noInline.label=Suppresses inline HTML tags.
+options.markdown.noHypertext.label=Suppresses HTML blocks as well as inline HTML tags.
+# Options' values
+options.markdown.target=Buffer
+options.markdown.abbreviations=false
+options.markdown.autolinks=false
+options.markdown.hardwraps=false
+options.markdown.quotes=false
+options.markdown.smarts=false
+options.markdown.smartypants=false
+options.markdown.tables=false
+options.markdown.noBlocks=false
+options.markdown.noInline=false
+options.markdown.noHypertext=false
+options.markdown.all=true
+options.markdown.none=false
+
+
