@@ -13,11 +13,14 @@ import org.apache.lucene.search.highlight.Highlighter;
 import org.apache.lucene.search.highlight.QueryScorer;
 import org.apache.lucene.search.highlight.Formatter;
 import org.apache.lucene.analysis.TokenStream;
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.jedit.syntax.DefaultTokenHandler;
+import org.gjt.sp.jedit.syntax.Token;
 import org.gjt.sp.util.IOUtilities;
 import org.gjt.sp.util.IntegerArray;
 import org.gjt.sp.util.Log;
@@ -31,13 +34,14 @@ public class MarkerListQueryProcessor implements ResultProcessor
 	private final Index index;
 	private final List<Object> results;
 	private final int max;
+	private TokenFilter tokenFilter;
 
-	public MarkerListQueryProcessor(Index index,
-	                                List<Object> results, int max)
+	public MarkerListQueryProcessor(Index index, List<Object> results, int max, TokenFilter tokenFilter)
 	{
 		this.index = index;
 		this.results = results;
 		this.max = max;
+		this.tokenFilter = tokenFilter;
 	}
 
 	public boolean process(Query query, float score, Result result)
@@ -55,6 +59,29 @@ public class MarkerListQueryProcessor implements ResultProcessor
 			addLinesMatching(query, s, max - results.size());
 		}
 		return (results.size() < max);
+	}
+
+	private boolean isFiltered(int offsetInLine, String file, int line, String lineText, int lineStart)
+	{
+		if (! tokenFilter.isFiltering())
+			return false;
+		Buffer b = jEdit.openTemporary(jEdit.getActiveView(), new File(file).getParent(), file, false);
+		b.setMode();
+		// Mark the tokens on the line, to filter out comments and strings
+		DefaultTokenHandler tokenHandler = new DefaultTokenHandler();
+		b.markTokens(line, tokenHandler);
+		Token token = tokenHandler.getTokens();
+		int start = lineStart;
+		int indexPos = lineStart + offsetInLine;
+		while(token.id != Token.END)
+		{
+			int next = start + token.length;
+			if (start <= indexPos && next > indexPos)
+				break;
+			start = next;
+			token = token.next;
+		}
+		return tokenFilter.isFiltered(token);
 	}
 
 	private void addLinesMatching(Query query, String file, int max)
@@ -112,8 +139,10 @@ public class MarkerListQueryProcessor implements ResultProcessor
 			int line = Collections.binarySearch(lineStart, tokenStart);
 			if (line < 0)
 				line = -line - 2;
-			FileMarker marker = new FileMarker(file, line, lineText);
 			int startOffset = tokenStart - start;
+			if (isFiltered(startOffset, file, line, lineText, start))
+				continue;
+			FileMarker marker = new FileMarker(file, line, lineText);
 			int endOffset = startOffset + tokenEnd - tokenStart;
 			if (endOffset > lineText.length())
 				endOffset = lineText.length();

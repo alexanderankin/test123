@@ -70,6 +70,10 @@ lucene.line-based.label.long=Line-based results
 lucene.line-based.label.short=Line-based
 lucene.max-results.label.long=Max results:
 lucene.max-results.label.short=
+lucene.filter-comments.label.short=!comments
+lucene.filter-comments.label.long=Filter comments
+lucene.filter-literals.label.short=!literals
+lucene.filter-literals.label.long=Filter literals
 
 lucene.search-string.tooltip=Search string (up/dn arrow keys = history)
 lucene.max.results.tooltip=Max Search Results
