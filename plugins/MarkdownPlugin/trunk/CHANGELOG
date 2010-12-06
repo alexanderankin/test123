@@ -1,0 +1,13 @@
+Version 0.1.0 (2010-12-04)
+---------------------------
+First release
+
+Version 0.0.2 (2010-11-25)
+---------------------------
+* Add 'target' option: plugin can save HTML to a new buffer, to clipboard
+	or to a temporary file then open it in browser (InfoViewer plugin).
+* Preview rendered text in browser.
+
+Version 0.0.1 (2010-11-22)
+---------------------------
+First public beta release

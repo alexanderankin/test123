@@ -1,0 +1,6 @@
+MarkdownPlugin
+Copyright (C) 2010 Vitaliy Berdinskikh UR6LAD
+
+The jEdit plugin to render Markdown text to HTML.
+This library uses the pure java implementation pegdown - markdown in java, implemented using PEG grammar.
+Copyright (C) 2010 Mathias Doenitz (http://github.com/sirthias/pegdown)
