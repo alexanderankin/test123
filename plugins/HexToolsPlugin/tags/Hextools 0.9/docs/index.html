@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>HexTools Plugin</title>
+</head>
+<body>
+<h2>HexTools Plugin 0.9</h2>
+
+<p>Author: Jürgen Weber</p>
+
+<h3>Legal Notice</h3>
+
+
+<p>Permission is granted to copy, distribute and/or modify this
+document under the terms of the GNU Free Documentation License,
+Version 1.1 or any later version published by the Free Software
+Foundation; with no Invariant Sections, Front-Cover Texts or
+Back-Cover Texts, each as defined in the license. A copy of the
+license can be found in the file COPYING.DOC.txt included with
+jEdit.</p>
+<hr>
+<a href="#presentation">Presentation</a><br>
+<a href="#operation">Operation</a><br>
+<a href="#license">License</a><br>
+<a href="#feedback">Feedback</a><br>
+<a href="#history">Change log</a><br>
+
+<hr>
+<a name="presentation">
+
+<h3>Presentation</h3>
+
+<p>HexTools Plugin extracts data from a hex dump and saves into a file or into the clipboard.</p>
+
+<a name="operation">
+<h3>Operation</h3>
+
+Say you have a hex dump like this in a jEdit buffer and you'd like to save the 
+data as binary file (e.g. because your <a href="http://www.jacorb.org/">favorite ORB</a> only saves message data to the log).
+
+<pre>
+00000000  6a 45 64 69 74 20 69 73  20 61 20 67 72 65 61 74  |jEdit is a great|
+00000010  20 74 65 78 74 20 65 64  69 74 6f 72 2e 0d 0a     | text editor...|
+0000001f
+</pre>
+
+Select the data area of the hex dump (it is recommendable to use rectangular 
+selection) and choose Plugins->HexTools.
+
+You get this dialog, where you can choose to save the hexdump data or copy it as String 
+to the clipboard using the selected encoding. 
+
+The conversation works by stripping all whitespace from the selection and parsing  
+two hex digits at a time.
+
+<p><img src="dialog.png"></p>
+
+<hr>
+<a name="license">
+
+<h3>License</h3>
+
+<p>The source code is distributed under the GPL. Please see <a
+href=
+"http://www.fsf.org/copyleft/gpl.html">http://www.fsf.org/copyleft/gpl.html</a></p>
+
+<hr>
+<a name="feedback">
+
+<h3>Feedback</h3>
+
+<p>The preferred way to send bug reports is to use the
+Sourceforge Bug Tracker for jEdit at <a href=
+"http://sourceforge.net/projects/jedit/">http://sourceforge.net/projects/jedit/</a></p>
+
+<p>You can also write to:</p>
+
+<ul>
+<li>
+<p>jEdit-users mailing-list <a href=
+"mailto:jedit-users@lists.sourceforge.net">jedit-users@lists.sourceforge.net</a></p>
+</li>
+
+<li>
+<p>or jEdit-devel mailing-list <a href=
+"mailto:jedit-devel@lists.sourceforge.net">mailto:jedit-devel@lists.sourceforge.net</a></p>
+</li>
+</ul>
+
+<hr>
+<a name="history">
+
+<h3>History</h3>
+
+</body>
+</html>
+
