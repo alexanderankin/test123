@@ -3,5 +3,8 @@ CVS policy file
 plugin: Tags
 author: Ken Drew <kdrew@earthlink.net>
 
+This plugin will be replaced by CtagsInterface.
+Committers: Matthieu Casanova and Shlomy Reinstein.
+
 please do not commit changes to this plugin without first consulting the author.
 
