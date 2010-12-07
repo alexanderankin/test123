@@ -486,6 +486,8 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 			fileTypeLabel.setText(getLabel("lucene.file-type"));
 			maxResultsLabel.setText(getLabel("lucene.max-results"));
 			textLabel.setText(getLabel("lucene.search-string"));
+			filterComments.setText(getLabel("lucene.filter-comments"));
+			filterLiterals.setText(getLabel("lucene.filter-literals"));
 		}
 		if (updateLayout)
 			revalidate();
