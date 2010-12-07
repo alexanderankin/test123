@@ -1,7 +1,6 @@
-CVS policy file
-
-plugin: BufferTabs
-author/maintainer: Andre Kaplan <akaplan@jedit.org>
+Plugin: BufferTabs
 original author:   Jason Ginchereau
 
-please do not commit changes to this plugin without first consulting the author.
+Committers: Andre Kaplan <akaplan@jedit.org>, Matthieu Casanova, Shlomy Reinstein
+
+Others, please submit patches via the patches tracker. 
