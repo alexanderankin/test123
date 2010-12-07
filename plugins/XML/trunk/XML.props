@@ -142,6 +142,7 @@ sidekick.parser.xml.label=XML
 mode.xml.sidekick.parser=xml
 mode.xsl.sidekick.parser=xml
 mode.css.sidekick.parser=css
+mode.jedit-actions.sidekick.parser=xml
 
 # specialized tag classes. Mostly, these provide a different icon set for the
 # nodes of these file modes.The naming convention is xml.xmltag.modename, where
