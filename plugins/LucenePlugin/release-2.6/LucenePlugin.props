@@ -1,0 +1,83 @@
+plugin.gatchan.jedit.lucene.LucenePlugin.activate=startup
+
+plugin.gatchan.jedit.lucene.LucenePlugin.name=LucenePlugin
+plugin.gatchan.jedit.lucene.LucenePlugin.author=Matthieu Casanova, Shlomy Reinstein
+plugin.gatchan.jedit.lucene.LucenePlugin.version=2.6
+plugin.gatchan.jedit.lucene.LucenePlugin.depend.0=jdk 1.6
+plugin.gatchan.jedit.lucene.LucenePlugin.depend.1=jedit 04.04.01.00
+plugin.gatchan.jedit.lucene.LucenePlugin.depend.2=plugin marker.MarkerSetsPlugin 0.4
+plugin.gatchan.jedit.lucene.LucenePlugin.depend.3=optional plugin projectviewer.ProjectPlugin 2.9.0.0
+plugin.gatchan.jedit.lucene.LucenePlugin.jars=lucene-core-3.0.2.jar lucene-highlighter-3.0.2.jar lucene-memory-3.0.2.jar
+plugin.gatchan.jedit.lucene.LucenePlugin.browser-menu=\
+	lucene.add-to-index lucene.add-to-newindex
+plugin.gatchan.jedit.lucene.LucenePlugin.menu=\
+	lucene-search \
+	lucene.search-word-at-caret \
+	- \
+	lucene.go-to-next-result \
+	lucene.go-to-prev-result \
+	- \
+	lucene.remove-index
+plugin.gatchan.jedit.lucene.LucenePlugin.usePluginHome=true
+plugin.gatchan.jedit.lucene.LucenePlugin.docs=docs/LucenePlugin.html
+plugin.gatchan.jedit.lucene.LucenePlugin.description=\
+	LucenePlugin plugin provides an interface to the Lucene search engine in jEdit.
+
+lucene.add-to-index.label=Index selected file(s) in Lucene
+lucene.add-to-newindex.label=<html>Add selected file(s) to a <b>new Lucene index</b></html>
+lucene.search-word-at-caret.label=Search for the word at the caret location
+lucene.go-to-next-result.label=Go to next result
+lucene.go-to-prev-result.label=Go to previous result
+lucene-search.label=Lucene Search
+lucene-search.title=Search with Lucene
+lucene.remove-index.label=Delete an index
+
+lucene.message.NewIndexDialogTitle=New Lucene Index
+lucene.message.IndexName=Name:
+lucene.message.IndexType=Type:
+lucene.message.Analyzer=Analyzer:
+
+# Options
+plugin.gatchan.jedit.lucene.LucenePlugin.option-group=Lucene IndexManagement
+options.Lucene.label=Lucene
+options.Lucene.code=new gatchan.jedit.lucene.OptionPane();
+options.IndexManagement.label=Index Management
+options.IndexManagement.code=new gatchan.jedit.lucene.IndexManagement();
+
+lucene.options.IncludeGlobs=*
+lucene.options.IncludeGlobs.label=Include only files matching:
+lucene.options.ExcludeGlobs=*.*~ *.bak *.bmp *.ico *.gif *.gif *.png *.jpg *.class *.exe  *.obj *.jar *.zip *.7z *.rar *.tar *.gz *.tgz *.wav *.mp3 *.ogg
+lucene.options.ExcludeGlobs.label=... except files matching:
+lucene.options.SearchDockable.label=Search Results Dockable
+lucene.options.SearchStringLength.label=Length of search string field:
+lucene.options.ShortLabels.label=Use short field labels
+
+lucene.index.locked.title=Index locked
+lucene.index.locked.message=The index at path {0} is locked.\n\
+                            It can happens if another processus is currently using it\n\
+                            or there was a problem with the Lucene plugin (a bug or a crash).\n\
+                            Do you want to unlock the index ?
+
+##
+## Search results dockable labels
+##
+
+lucene.search-string.label.long=Search for:
+lucene.search-string.label.short=For:
+lucene.file-type.label.long=file type:
+lucene.file-type.label.short=In:
+lucene.line-based.label.long=Line-based results
+lucene.line-based.label.short=Line-based
+lucene.max-results.label.long=Max results:
+lucene.max-results.label.short=
+lucene.filter-comments.label.short=No comments
+lucene.filter-comments.label.long=Filter comments
+lucene.filter-literals.label.short=No literals
+lucene.filter-literals.label.long=Filter literals
+
+lucene.search-string.tooltip=Search string (up/dn arrow keys = history)
+lucene.max.results.tooltip=Max Search Results
+lucene.results.line-based.tooltip=Show Line-based results
+lucene.file-type.tooltip=File Extension Filter (e.g. java) - globs not allowed
+lucene.index-combo.tooltip=Choose Lucene Index
+
