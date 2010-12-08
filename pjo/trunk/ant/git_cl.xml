@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="SVN Command Line Targets" basedir="." default="help">
 	<target name="checkout-plugin">
-		<input addproperty="clone.url" message="Clone URL:" defaultvalue="git://jedit.git.sourceforge.net/gitroot/jedit/${plugin.name}" />
+		<input addproperty="clone.url" message="Clone URL:" defaultvalue="${jedit.git.url}/${plugin.name}" />
 		<property name="plugin.download.dir" value="${plugin.name}-${plugin.version}" />
 		<condition property="use.tag">
 			<not><equals arg1="trunk" arg2="${plugin.tag}" casesensitive="false" trim="true" /></not>
