@@ -1,5 +1,6 @@
 # The jEdit Subversion url - shouldn't ever change.
 jedit.svn.url=https://jedit.svn.sourceforge.net/svnroot/jedit
+jedit.git.url=git://jedit.git.sourceforge.net/gitroot/jedit
 
 # This is your sandbox directory, all plugins will be downloaded and built from here.
 sandbox.dir=/Users/elberry/development/projects/jEdit/plugins/sandbox
@@ -14,14 +15,23 @@ jedit.version.04.02.install.dir=${sandbox.dir}/4.2
 jedit.version.04.02.settings.dir=${jedit.version.04.02.install.dir}/settings
 
 # Your 4.3 install.
-jedit.version.04.03.install.dir=${sandbox.dir}/4.3pre18
+jedit.version.04.03.install.dir=${sandbox.dir}/4.3
 # Where you want plugins requiring 4.3 to "install" their jars.
 jedit.version.04.03.settings.dir=${jedit.version.04.03.install.dir}/settings
 
+# Your 4.4 install.
+jedit.version.04.04.install.dir=${sandbox.dir}/4.4
+# Where you want plugins requiring 4.3 to "install" their jars.
+jedit.version.04.04.settings.dir=${jedit.version.04.04.install.dir}/settings
+
 # The scm.targets.file defines a file where the SCM targets can be found.
 # Currently, there is only one target, checkout-plugin, which checks out the 
-# plugin's release tag into your sandbox directory.
-scm.targets.file=svn_cl.xml
+# plugin's release tag into your sandbox directory. You can override all
+# SCM targets by using this property. To do this on a per plugin download
+# basis, there are download-[scm] targets provided in the build.xml file.
+# To download a plugin from git, you can use 'ant download-git'. The default
+# is SVN.
+# scm.targets.file=svn_cl.xml
 
 # The package.targets.file defines a file where the packaging targets can be 
 # found. 
@@ -30,14 +40,17 @@ scm.targets.file=svn_cl.xml
 package.targets.file=package.xml
 
 # The build.support file is used by lots of plugins, and is defined here. This
-# property is passed down to all plugin builds.
+# property is passed down to all plugin builds. This should be the absolute
+# path to the build-support directory.
 build.support=/Users/elberry/development/projects/jEdit/build-support
 
-# The junit jar file is used by lots of plugins to run test suites.
+# The junit jar file is used by lots of plugins to run test suites. This
+# should be an absolute path to the junit jar.
 junit.jar=/Users/elberry/development/dependencies/junit/junit-4.5.jar
 
-# The Dockbook DTD - taken from the XML plugin.
-#docbookx.dtd=/usr/share/xml/docbook/schema/dtd/4.5/docbookx.dtd
+# The Dockbook DTD - taken from the XML plugin. Required docbook files are
+# available in jEdit's SVN repo under the pjo/ant directory.
+#docbookx.dtd=[pjo/ant]/docbook/4.4/docbookx.dtd
 #docbook.catalog=/usr/share/xml/docbook/schema/dtd/4.5/docbook.cat
 #docbook.xsl=/usr/share/xml/docbook/stylesheet/nwalsh
 #xsltproc.executable=xsltproc
@@ -46,9 +59,11 @@ junit.jar=/Users/elberry/development/dependencies/junit/junit-4.5.jar
 #scala.home=/home/elberry/development/applications/scala
 #jetty.home=/home/elberry/development/applications/jetty
 
-# Compiler settings.
-compiler.source=1.5
-compiler.target=1.5
+# Compiler settings. You can override all compiler source, and target settings
+# by using these properties. To set them on a per plugin basis, there are
+# java5, and java6 targets which set these properties.
+# compiler.source=1.5
+# compiler.target=1.5
 compiler.debug=on
 
 #::mode=properties::#

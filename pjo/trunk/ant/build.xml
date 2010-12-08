@@ -12,6 +12,19 @@
 		<echo>                        into the sandbox directory. The plugin is</echo>
 		<echo>                        downloaded into this structure -</echo>
 		<echo>                        [sandbox]/[name]-[version]/[name]</echo>
+		<echo>                        Default SCM targets is svn_cl.xml</echo>
+		<echo></echo>
+		<echo>download-bzr          : Uses bzr_cl.xml to download the desired</echo>
+		<echo>                        plugin.</echo>
+		<echo></echo>
+		<echo>download-git          : Uses git_cl.xml to download the desired</echo>
+		<echo>                        plugin.</echo>
+		<echo></echo>
+		<echo>download-hg           : Uses hg_cl.xml to download the desired</echo>
+		<echo>                        plugin.</echo>
+		<echo></echo>
+		<echo>download-svn          : Uses svn_cl.xml to download the desired</echo>
+		<echo>                        plugin.</echo>
 		<echo></echo>
 		<echo>package               : Packages plugin distributables into the 4</echo>
 		<echo>                        package files required for release. Release</echo>
@@ -61,7 +74,7 @@ docbookx.dtd=${docbookx.dtd}
 docbook.xsl=${docbook.xsl}
 		</echo>
 	</target>
-	<target name="build">
+	<target name="build" depends="java5">
 		<input addproperty="plugin.name" message="Plugin Name:" />
 		<input addproperty="plugin.version" message="Version:" />
 		<plugin-jedit-version pluginName="${plugin.name}" pluginVersion="${plugin.version}" />
@@ -71,10 +84,35 @@ docbook.xsl=${docbook.xsl}
 		<copy file="build.properties.sample" tofile="build.properties"/>
 	</target>
 	<target name="download">
+		<property name="scm.targets.file" value="svn_cl.xml" />
 		<input addproperty="plugin.name" message="Plugin Name:" />
 		<input addproperty="plugin.version" message="Version:" />
 		<input addproperty="plugin.tag" message="Release Tag:" defaultvalue="trunk" />
 		<plugin-download pluginName="${plugin.name}" pluginVersion="${plugin.version}" pluginTag="${plugin.tag}" />
+	</target>
+	<target name="download-bzr">
+		<property name="scm.targets.file" value="bzr_cl.xml" />
+		<antcall target="download" />
+	</target>
+	<target name="download-git">
+		<property name="scm.targets.file" value="git_cl.xml" />
+		<antcall target="download" />
+	</target>
+	<target name="download-hg">
+		<property name="scm.targets.file" value="hg_cl.xml" />
+		<antcall target="download" />
+	</target>
+	<target name="download-svn">
+		<property name="scm.targets.file" value="svn_cl.xml" />
+		<antcall target="download" />
+	</target>
+	<target name="java5">
+		<property name="compiler.source" value="1.5" />
+		<property name="compiler.target" value="1.5" />
+	</target>
+	<target name="java6">
+		<property name="compiler.source" value="1.6" />
+		<property name="compiler.target" value="1.6" />
 	</target>
 	<target name="package">
 		<input addproperty="plugin.name" message="Plugin Name:" />
