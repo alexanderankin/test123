@@ -74,11 +74,15 @@ public class LookAndFeelOptionPane extends AbstractOptionPane
 
 	public void _save() {
 		try {
-			LookAndFeelInstaller installer = LookAndFeelPlugin.getInstaller( lookAndFeels.getSelectedItem().toString() );
-			configComponent.save();
+			if (configComponent != null) {
+				configComponent.save();
+			}
 			jEdit.setProperty( "lookandfeel.lookandfeel", lookAndFeels.getSelectedItem().toString() );
 			jEdit.setBooleanProperty( "lookandfeel.usejeditfont", useFont.isSelected() );
-			LookAndFeelPlugin.installLookAndFeel( installer );
+			LookAndFeelInstaller installer = LookAndFeelPlugin.getInstaller( lookAndFeels.getSelectedItem().toString() );
+			if (installer != null) {
+				LookAndFeelPlugin.installLookAndFeel( installer );
+			}
 		}
 		catch ( Exception e ) {
 			Log.log( Log.ERROR, this, e );
@@ -93,6 +97,9 @@ public class LookAndFeelOptionPane extends AbstractOptionPane
 	public final void itemStateChanged( ItemEvent evt ) {
 		try {
 			LookAndFeelInstaller installer = LookAndFeelPlugin.getInstaller( lookAndFeels.getSelectedItem().toString() );
+			if (installer == null) {
+				return;	
+			}
 			if ( configComponent != null ) {
 				lnfOptionPanel.remove( configComponent );
 			}

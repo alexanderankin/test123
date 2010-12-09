@@ -13,8 +13,8 @@
     <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="Kunststoff">
         new lookandfeel.KunststoffLnfInstaller();       
     </SERVICE>                                     
-    <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="Lipstick">
-        new lookandfeel.LipstickLnfInstaller();       
+    <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="Lipstik">
+        new lookandfeel.LipstikLnfInstaller();       
     </SERVICE>                                     
     <SERVICE CLASS="lookandfeel.LookAndFeelInstaller" NAME="Metouia">
         new lookandfeel.MetouiaLnfInstaller();       
