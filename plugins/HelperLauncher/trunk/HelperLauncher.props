@@ -1,11 +1,11 @@
 plugin.helperlauncher.HelperLauncherPlugin.activate=defer
 plugin.helperlauncher.HelperLauncherPlugin.name=HelperLauncher
 plugin.helperlauncher.HelperLauncherPlugin.author=Carmine Lucarelli
-plugin.helperlauncher.HelperLauncherPlugin.version=1.0
+plugin.helperlauncher.HelperLauncherPlugin.version=1.1
 plugin.helperlauncher.HelperLauncherPlugin.docs=help.html
 
-plugin.helperlauncher.HelperLauncherPlugin.depend.0=jedit 04.02.00.00
-plugin.helperlauncher.HelperLauncherPlugin.depend.1=jdk 1.4.1
+plugin.helperlauncher.HelperLauncherPlugin.depend.0=jedit 04.03.99.00
+plugin.helperlauncher.HelperLauncherPlugin.depend.1=jdk 1.5
 plugin.helperlauncher.HelperLauncherPlugin.browser-menu-item=vfs.helperlauncher
 
 #menu
@@ -13,7 +13,7 @@ plugin.helperlauncher.HelperLauncherPlugin.menu-item=helper-launcher
 helper-launcher.label=Helper Launcher
 
 # HelperLauncher
-vfs.helperlauncher.label=Helper Launcher
+vfs.helperlauncher.label=Helper Launcher 
 
 # errors
 HelperLauncher.error.noexecutable.title=Error launching application

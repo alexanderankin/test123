@@ -33,6 +33,7 @@ import java.util.Properties;
  */
 public class HelperLauncherPlugin extends EditPlugin
 {
+	
 	public static void launch(Buffer buffer)
 	{
 		launch(buffer.getPath());
@@ -62,13 +63,14 @@ public class HelperLauncherPlugin extends EditPlugin
 							count + HelperLauncherOptionPane.VALUE);
 						if(app == null)
 						{
+							// TODO: Choose Executable
 							String[] args = {"Blank/Null", "glob " + glob};
 							GUIUtilities.error(jEdit.getActiveView(), 
 								"HelperLauncher.error.noexecutable",
 								args);
 							return;
 						}
-						Runtime.getRuntime().exec(app + " \"" + path + "\"");
+						Runtime.getRuntime().exec(new String[] {app, path}, null);
 						return;
 					}
 					count++;

@@ -18,9 +18,8 @@
  */
 package helperlauncher;
 
-import java.awt.BorderLayout;
+
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.GridBagConstraints;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -29,6 +28,7 @@ import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
+import org.gjt.sp.jedit.OperatingSystem;
 import org.gjt.sp.jedit.jEdit;
 
 public class HelperLauncherOptionPane extends AbstractOptionPane
@@ -55,11 +55,13 @@ public class HelperLauncherOptionPane extends AbstractOptionPane
 
 //		JPanel north = new JPanel(new GridLayout(2, 1, 10, 10));
 //		north.add(new JLabel(jEdit.getProperty("HelperLauncher.options.usage")));
-		
-		_noPrompt = new JCheckBox(jEdit.getProperty(HelperLauncherOptionPane.PROPERTY + "UseWindows.label"));
-		_noPrompt.setSelected(jEdit.getBooleanProperty(HelperLauncherOptionPane.PROPERTY + "UseWindows"));
+		if (OperatingSystem.isWindows()) {
+			_noPrompt = new JCheckBox(jEdit.getProperty(HelperLauncherOptionPane.PROPERTY + "UseWindows.label"));
+			_noPrompt.setSelected(jEdit.getBooleanProperty(HelperLauncherOptionPane.PROPERTY + "UseWindows"));
+			addComponent(_noPrompt);
+		}
+		else _noPrompt = null;
 		//north.add(_noPrompt );
-		addComponent(_noPrompt);
 		
 		//add(BorderLayout.NORTH, north);
 		
@@ -83,9 +85,9 @@ public class HelperLauncherOptionPane extends AbstractOptionPane
 		if ( _table.getCellEditor() != null )
 			_table.getCellEditor().stopCellEditing();
 
-		jEdit.setBooleanProperty(HelperLauncherOptionPane.PROPERTY + "UseWindows",
-			_noPrompt.isSelected()
-			 );
+		if (_noPrompt != null)
+			jEdit.setBooleanProperty(HelperLauncherOptionPane.PROPERTY + 
+				"UseWindows", _noPrompt.isSelected());
 
 		// get rid of old settings
 		deleteGlobalProperties();

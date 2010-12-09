@@ -9,59 +9,18 @@
 <project name="HelperLauncher" default="dist" basedir=".">
 
     <property file="build.properties"/>
-
-    <property name="jedit.install.dir"  value="../.."/>
-    <property name="jar.name"  value="${ant.project.name}.jar"/>
-
-    <property name="src.dir" value="."/>
-    <property name="build.dir" value="build"/>
-    <property name="install.dir"  value=".."/>
-
-
-    <path id="project.class.path">
-        <pathelement location="${jedit.install.dir}/jedit.jar"/>
-        <pathelement location="${src.dir}"/>
-    </path>
-
-
-    <target name="init">
-	<mkdir dir="${build.dir}"/>
-    </target>
-
-
-    <target name="compile" depends="init">
-        <javac
-            srcdir="${src.dir}"
-            destdir="${build.dir}"
-            deprecation="on"
-            includeJavaRuntime="yes"
-        >
-            <classpath refid="project.class.path"/>
-        </javac>
-    </target>
-
-
-    <target name="dist" depends="compile">
-        <mkdir dir="${install.dir}"/>
-
-        <jar jarfile="${install.dir}/${jar.name}">
-            <fileset dir="${build.dir}"/>
-            <fileset dir="${src.dir}">
-                <include name="actions.xml"/>
-                <include name="browser.actions.xml"/>
-                <include name="**/*.props"/>
-                <include name="**/*.html"/>
-            </fileset>
-        </jar>
-    </target>
-
-
-    <target name="clean">
-        <delete dir="${build.dir}"/>
-        <delete>
-            <fileset dir="." includes="users-guide.html"/>
-            <fileset dir="." includes="**/*~"/>
-        </delete>
-    </target>
+    <property file="../build.properties"/>
+    <property name="docs-proc.target"       value="none" />
+    <property name="compiler.source" value="1.5" />
+	<property name="compiler.target" value="1.5" />
+	<property name="build.support" value="../../build-support" />
+	<import file="${build.support}/plugin-build.xml" />
+    <selector id="packageFiles">
+        <or>
+            <filename name="help.html" />
+            <filename name="*actions.xml" />
+            <filename name="*.props" />
+        </or>
+    </selector>
 </project>
 
