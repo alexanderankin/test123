@@ -26,7 +26,7 @@ Workflow
    in jEdits source directory to be sure you are in sync with the SVN repository
 
 4. Tag the sourcecode for release in the SVN repository by doing
-        svn copy https://jedit.svn.sourceforge.net/svnroot/jedit/jEdit/branches/4.3.x https://jedit.svn.sourceforge.net/svnroot/jedit/jEdit/tags/jedit-4-3-3 -m "Tagging 4.3.3 for release."
+        svn copy https://jedit.svn.sourceforge.net/svnroot/jedit/jEdit/branches/4.3.x https://jedit.svn.sourceforge.net/svnroot/jedit/jEdit/tags/jedit-4-3-3 -m "Tagging 4.4 for release."
    with the correct version in the second URL and in the commit message
 
 5. To be sure to work with the exact tagged source, check out the newly tagged source in a new directory by doing
@@ -54,27 +54,27 @@ Workflow
           ant dist
      in the jedit-4-3-3 directory
      In the newly created directory jedit-4-3-3/dist you find 8 files:
-      - jedit4.3.3manual-a4.pdf
-      - jedit4.3.3manual-letter.pdf
-      - jedit4.3.3source.tar.bz2
-      - jedit4.3.3install.jar
-      - jedit-4.3.3-noarch-1sao.tgz
-      - jedit_4.3.3_all.deb
-      - jedit4.3.3install.exe or jedit4.3.3-dist-win-finish.tar.bz2
-      - jedit4.3.3install.dmg or jedit4.3.3-dist-mac-finish.tar.bz2
+      - jedit4.4manual-a4.pdf
+      - jedit4.4manual-letter.pdf
+      - jedit4.4source.tar.bz2
+      - jedit4.4install.jar
+      - jedit-4.4-noarch-1sao.tgz
+      - jedit_4.4_all.deb
+      - jedit4.4install.exe or jedit4.4-dist-win-finish.tar.bz2
+      - jedit4.4install.dmg or jedit4.4-dist-mac-finish.tar.bz2
 
-7.2. If you have jedit4.3.3-dist-win-finish.tar.bz2 in your jedit-4-3-3/dist folder you probably don't run a Windows box, so please hand over this file to someone (e. g. <Björn "Vampire" Kautler> Vampire@jEdit.org) who does and ask him to unpack the file and run
+7.2. If you have jedit4.4-dist-win-finish.tar.bz2 in your jedit-4-3-3/dist folder you probably don't run a Windows box, so please hand over this file to someone (e. g. <Björn "Vampire" Kautler> Vampire@jEdit.org) who does and ask him to unpack the file and run
           ant dist-win-finish
-     and to hand over the resulting file jedit4.3.3install.exe to you. The requirements for this are described in README.SRC.txt
+     and to hand over the resulting file jedit4.4install.exe to you. The requirements for this are described in README.SRC.txt
 
-7.3. If you have jedit4.3.3-dist-mac-finish.tar.bz2 in your jedit-4-3-3/dist folder you probably don't run a Mac OS X box, so please hand over this file to someone (e. g. Björn "Vampire" Kautler <Vampire@jEdit.org>) who does and ask him to unpack the file and run
+7.3. If you have jedit4.4-dist-mac-finish.tar.bz2 in your jedit-4-3-3/dist folder you probably don't run a Mac OS X box, so please hand over this file to someone (e. g. Björn "Vampire" Kautler <Vampire@jEdit.org>) who does and ask him to unpack the file and run
           ant dist-mac-finish
-     and to hand over the resulting file jedit4.3.3install.dmg to you. The requirements for this are described in README.SRC.txt
+     and to hand over the resulting file jedit4.4install.dmg to you. The requirements for this are described in README.SRC.txt
 
-7.4. After you received the final distribution files jedit4.3.3install.exe and jedit4.3.3install.dmg you can delete jedit4.3.3-dist-win-finish.tar.bz2 and jedit4.3.3-dist-mac-finish.tar.bz2
+7.4. After you received the final distribution files jedit4.4install.exe and jedit4.4install.dmg you can delete jedit4.4-dist-win-finish.tar.bz2 and jedit4.4-dist-mac-finish.tar.bz2
 
 8. - Connect to the SourceForge servers via one of the methods described in https://sourceforge.net/apps/trac/sourceforge/wiki/Release%20files%20for%20download
-   - Add the sub-folder "4.3.3" under "/home/frs/project/j/je/jedit/jedit"
+   - Add the sub-folder "4.4" under "/home/frs/project/j/je/jedit/jedit"
    - Upload the 8 final distribution files to the newly created folder on the SourceForge servers
    - Upload the jedit-4-3-3/doc/CHANGES.txt file to the newly created folder on the SourceForge servers
 
@@ -85,76 +85,76 @@ Workflow
             - Name: CHANGES.txt
             - Label: Change Log
             - Release Note: checked
-        - 4.3.3
-            - Name: 4.3.3
-            - Label: jEdit 4.3.3
-            - Release notes for this folder: /jedit/4.3.3/CHANGES.txt
-        - jedit_4.3.3_all.deb
-            - Name: jedit_4.3.3_all.deb
+        - 4.4
+            - Name: 4.4
+            - Label: jEdit 4.4
+            - Release notes for this folder: /jedit/4.4/CHANGES.txt
+        - jedit_4.4_all.deb
+            - Name: jedit_4.4_all.deb
             - Label: Debian Installer
             - Release note: unchecked
-            - Release notes for this file: /jedit/4.3.3/CHANGES.txt
+            - Release notes for this file: /jedit/4.4/CHANGES.txt
             - Platform: <none>
-        - jedit4.3.3source.tar.bz2
-            - Name: jedit4.3.3source.tar.bz2
+        - jedit4.4source.tar.bz2
+            - Name: jedit4.4source.tar.bz2
             - Label: Source Package
             - Release note: unchecked
-            - Release notes for this file: /jedit/4.3.3/CHANGES.txt
+            - Release notes for this file: /jedit/4.4/CHANGES.txt
             - Platform: <none>
-        - jedit4.3.3install.jar
-            - Name: jedit4.3.3install.jar
+        - jedit4.4install.jar
+            - Name: jedit4.4install.jar
             - Label: Java based Installer
             - Release note: unchecked
-            - Release notes for this file: /jedit/4.3.3/CHANGES.txt
+            - Release notes for this file: /jedit/4.4/CHANGES.txt
             - Platform: linux, bsd, solaris, others
-        - jedit4.3.3manual-letter.pdf
-            - Name: jedit4.3.3manual-letter.pdf
+        - jedit4.4manual-letter.pdf
+            - Name: jedit4.4manual-letter.pdf
             - Label: Manual in Letter Paper size
             - Release note: unchecked
-            - Release notes for this file: /jedit/4.3.3/CHANGES.txt
+            - Release notes for this file: /jedit/4.4/CHANGES.txt
             - Platform: <none>
-        - jedit4.3.3manual-a4.pdf
-            - Name: jedit4.3.3manual-a4.pdf
+        - jedit4.4manual-a4.pdf
+            - Name: jedit4.4manual-a4.pdf
             - Label: Manual in A4 Paper size
             - Release note: unchecked
-            - Release notes for this file: /jedit/4.3.3/CHANGES.txt
+            - Release notes for this file: /jedit/4.4/CHANGES.txt
             - Platform: <none>
-        - jedit4.3.3install.dmg
-            - Name: jedit4.3.3install.dmg
+        - jedit4.4install.dmg
+            - Name: jedit4.4install.dmg
             - Label: Mac OS X Installer
             - Release note: unchecked
-            - Release notes for this file: /jedit/4.3.3/CHANGES.txt
+            - Release notes for this file: /jedit/4.4/CHANGES.txt
             - Platform: mac
-        - jedit4.3.3install.exe
-            - Name: jedit4.3.3install.exe
+        - jedit4.4install.exe
+            - Name: jedit4.4install.exe
             - Label: Windows Installer
             - Release note: unchecked
-            - Release notes for this file: /jedit/4.3.3/CHANGES.txt
+            - Release notes for this file: /jedit/4.4/CHANGES.txt
             - Platform: windows
-        - jedit-4.3.3-noarch-1sao.tgz
-            - Name: jedit-4.3.3-noarch-1sao.tgz
+        - jedit-4.4-noarch-1sao.tgz
+            - Name: jedit-4.4-noarch-1sao.tgz
             - Label: Slackware Installer
             - Release note: unchecked
-            - Release notes for this file: /jedit/4.3.3/CHANGES.txt
+            - Release notes for this file: /jedit/4.4/CHANGES.txt
             - Platform: <none>
 
 10. Update the website in the following places:
     - Open sftp://<your sf username>,jedit@web.sourceforge.net/home/groups/j/je/jedit/htdocs/download.html e. g. in jEdit with installed FTP plugin and update the website for the new release, means the filenames, filesizes and amount of pages in the User's Guides
     - Open sftp://<your sf username>,jedit@web.sourceforge.net/home/groups/j/je/jedit/htdocs/jEdit-version.txt e. g. in jEdit with installed FTP plugin and update the versions in the file, which is needed by the LatestVersion Plugin
-    - Open sftp://<your sf username>,jedit@web.sourceforge.net/home/groups/j/je/jedit/htdocs/CHANGES43.txt e. g. in jEdit with installed FTP plugin and copy the contents of jedit-4-3-3/doc/CHANGES.txt to this file
+    - Open sftp://<your sf username>,jedit@web.sourceforge.net/home/groups/j/je/jedit/htdocs/CHANGES44.txt e. g. in jEdit with installed FTP plugin and copy the contents of doc/CHANGES.txt to this file
     - Open sftp://<your sf username>,jedit@web.sourceforge.net/home/groups/j/je/jedit/htdocs/index.php e. g. in jEdit with installed FTP plugin and update the version number and the Last Site Update date
-    - Open sftp://<your sf username>,jedit@web.sourceforge.net/home/groups/j/je/jedit/htdocs/devel.html e. g. in jEdit with installed FTP plugin and add a line for 4.3.3 in the Release Schedule
+    - Open sftp://<your sf username>,jedit@web.sourceforge.net/home/groups/j/je/jedit/htdocs/devel.html e. g. in jEdit with installed FTP plugin and add a line for 4.4 in the Release Schedule
 
 11. Update the plugin wizard
      - Go to http://plugins.jedit.org/wiz/release_add.php?package_id=24
-     - Enter the Version "4.3.3"
+     - Enter the Version "4.4"
      - Switch "Head of Branch" to "main"
      - Check the "Remove" checkbox for the jEdit dependency
-     - Switch the "Low Version" of the JDK dependency to "1.5 [jdk-1.5]"
+     - Switch the "Low Version" of the JDK dependency to "1.6 [jdk-1.6]"
      - Click "Update Dependencies"
      - Click "Create Release"
 
-12. Send an announcement eMail to the jEdit-announce list. The announcement should contain the contents of jedit-4-3-3/doc/CHANGES.txt for this release.
+12. Send an announcement eMail to the jEdit-announce list. The announcement should contain the contents of doc/CHANGES.txt for this release.
     You have to be set up to be able to post to jEdit-announce list.
     The mail should automatically get forwarded to the jedit-users list, but for that you have to be subscribed to that list too.
 
