@@ -63,7 +63,7 @@ public class ProjectTreeListener implements EBComponent
 		console = null;
 	}
 
-	// {{{ projectLoaded()
+	// {{{ handleMessage()
 	/**
 	 * On project change...
 	 */
