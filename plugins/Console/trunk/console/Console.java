@@ -1035,10 +1035,15 @@ implements EBComponent, DefaultFocusComponent
 			int newLength = fb.getDocument().getLength() -
 				length + str.length();
 			fb.replace(offset, length, str, attrs);
-			int limit = jEdit.getIntegerProperty("console.outputLimit", Integer.MAX_VALUE);
+			int limit = jEdit.getIntegerProperty("console.outputLimit", DEFAULT_LIMIT);
 			if(newLength > limit)
 				fb.remove(0, newLength - limit - 1);
 		} //}}}
+	
+		// Not so large default limit to avoid performance down
+		// with large output.
+		// This will be sufficient to first use.
+		private final int DEFAULT_LIMIT = 80/*column*/ * 1000/*lines*/;
 	} //}}}
 
 	// {{{ EvalAction class
