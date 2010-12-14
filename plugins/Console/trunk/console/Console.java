@@ -379,7 +379,7 @@ implements EBComponent, DefaultFocusComponent
 		return plainColor;
 	} // }}}
 
-	// {{ getId() method
+	// {{{ getId() method
 	/** @return a unique identifier starting at 0, representing which instance of Console this is,
 	    or -1 if that value can not be determined. 
 	*/
