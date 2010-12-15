@@ -18,7 +18,7 @@ String installDir = props.get("install.dir")
 String pluginsDir = props.get("jedit.plugins.dir")
 String jeditJarsDir = props.get("jedit.jars.dir")
 String wineExecutable = props.get("wine.executable")
-String winepathExecutable = props.get("winepath.excutable")
+String winepathExecutable = props.get("winepath.executable")
 String innoCompiler = props.get("innosetup.compiler.executable")
 String innoViaWine = props.get("innosetup.via.wine")
 
