@@ -95,36 +95,3 @@ output = command.execute()
 if(output.value == 0) {
 	println "Tag checked out into 'jedit' directory"
 }
-
-println "Copying properties over to appropriate directories"
-String xsl = props.get("docbook.xsl")
-String catalog = props.get("docbook.catalog")
-String xsltproc = props.get("xsltproc.executable")
-String fopDir = props.get("fop.dir")
-String launch4j = props.get("launch4j.dir")
-String installDir = props.get("install.dir")
-String pluginsDir = props.get("jedit.plugins.dir")
-String jeditJarsDir = props.get("jedit.jars.dir")
-
-def jeditProps = """ci.workspace=${workspace}
-docbook.xsl=${xsl}
-docbook.catalog=${catalog}
-xsltproc.executable=${xsltproc}
-fop.dir=${fopDir}
-launch4j.dir=${launch4j}
-"""
-
-def pluginProps = """${jeditProps}
-install.dir=${installDir}
-jedit.plugins.dir=${pluginsDir}
-jedit.jars.dir=${jeditJarsDir}
-"""
-
-File jeditPropsFile = new File(workspace, "jedit/build.properties")
-File pluginPropsFile = new File(workspace, "jedit/jars/build.properties")
-/* NOTE: this assumes that you are not using "update" in the
-   SCM section. This script appends the properties to the
-   files, it does not replace them. */
-jeditPropsFile.append(jeditProps)
-
-pluginPropsFile.append(pluginProps)
