@@ -17,6 +17,10 @@ String launch4j = props.get("launch4j.dir")
 String installDir = props.get("install.dir")
 String pluginsDir = props.get("jedit.plugins.dir")
 String jeditJarsDir = props.get("jedit.jars.dir")
+String wineExecutable = props.get("wine.executable")
+String winepathExecutable = props.get("winepath.excutable")
+String innoCompiler = props.get("innosetup.compiler.executable")
+String innoViaWine = props.get("innosetup.via.wine")
 
 def jeditProps = """## THIS FILE IS GENERATED BASED ON SYSTEM PROPERTIES SUPPLIED TO HUDSON, AND IS USUALLY REPLACED ON EACH BUILD.
 ci.workspace=${workspace}
@@ -25,7 +29,13 @@ docbook.catalog=${catalog}
 xsltproc.executable=${xsltproc}
 fop.dir=${fopDir}
 launch4j.dir=${launch4j}
+wine.executable=${wineExcutable}
+winepath.executable=${winepathExcutable}
+innosetup.compiler.executable=${innoCompiler}
+innosetup.via.wine=${innoViaWine}
 """
+if(props.get("wine.executable")) {
+   
 
 def pluginProps = """${jeditProps}
 install.dir=${installDir}
