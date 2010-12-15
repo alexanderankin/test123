@@ -29,13 +29,11 @@ docbook.catalog=${catalog}
 xsltproc.executable=${xsltproc}
 fop.dir=${fopDir}
 launch4j.dir=${launch4j}
-wine.executable=${wineExcutable}
-winepath.executable=${winepathExcutable}
+wine.executable=${wineExecutable}
+winepath.executable=${winepathExecutable}
 innosetup.compiler.executable=${innoCompiler}
 innosetup.via.wine=${innoViaWine}
 """
-if(props.get("wine.executable")) {
-   
 
 def pluginProps = """${jeditProps}
 install.dir=${installDir}
