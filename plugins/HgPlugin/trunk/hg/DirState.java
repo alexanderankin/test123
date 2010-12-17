@@ -57,6 +57,11 @@ public class DirState
 			System.out.println("Cannot get dirstate: "+e.toString());
 		}
 	}
+
+	/** Creates an empty DirState object */
+	public DirState() {
+		
+	}
 	
 	/**
 	 * Creates a {@link DirState}.

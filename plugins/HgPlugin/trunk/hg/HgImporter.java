@@ -38,17 +38,20 @@ public class HgImporter extends ImporterFileFilter
     public void hgLsFiles(String path) {
         cachedDirectory = new File(path);
         if (!cachedDirectory.isDirectory()) cachedDirectory = cachedDirectory.getParentFile();
+        path = cachedDirectory.getAbsolutePath();
+        
         while (cachedDirectory.list(fnf).length == 0) {
             cachedDirectory = cachedDirectory.getParentFile();
             if (cachedDirectory == null) {
                 Log.log(Log.ERROR, this, "Unable to find .hg folder in " + path);
+                dirState = new DirState();
                 return;
             }
         }
         dirState = new DirState(cachedDirectory);
         for (DirStateEntry entry: dirState.getDirState()) {
             File f = new File(cachedDirectory, entry.getPath());
-			Log.log(Log.DEBUG, this, "Cached: " + f.toString() );
+//			Log.log(Log.DEBUG, this, "Cached: " + f.toString() );
             cache.add(f.toString());			
             // add its directory also
             while (!f.getParentFile().equals(cachedDirectory)) {
@@ -72,7 +75,7 @@ public class HgImporter extends ImporterFileFilter
             hgLsFiles(file.getPath());
         }
         boolean retval = cache.contains(file.getPath());
-        Log.log(Log.DEBUG, this, "accepts " + file.getPath() +  "? " + retval);
+//        Log.log(Log.DEBUG, this, "accepts " + file.getPath() +  "? " + retval);
         return retval;
     }
 
