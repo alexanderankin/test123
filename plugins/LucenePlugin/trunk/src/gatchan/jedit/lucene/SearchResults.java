@@ -100,10 +100,12 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 				public void indexingEnded(Index index)
 				{
 					indexStatus.setText(MESSAGE_IDLE);
+					indexStatus.setToolTipText(MESSAGE_IDLE);
 				}
 				public void indexingStarted(Index index)
-				{
+				{				 
 					indexStatus.setText(MESSAGE_INDEXING);
+					indexStatus.setToolTipText(jEdit.getProperty("task.progress.tooltip", "See Utilities - Troubleshooting - Task Monitor for progress"));
 				}
 			}; 
 			public void actionPerformed(ActionEvent e)
