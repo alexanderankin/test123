@@ -20,13 +20,14 @@
 	<property name="jedit.install.dir"  value="../.."/>
 	<property name="src.dir" value="."/>
 	<property name="install.dir"  value=".."/>
+	<property name="jedit.plugins.dir" value="${install.dir}" />
 	<property name="build.dir" value="build"/>
 	<property name="rst2docbook" value="C:/Python24/Scripts/rst2docbook.py"/>
 
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
 		<pathelement location="${src.dir}"/>
-		<pathelement location="${install.dir}/kappalayout.jar"/>
+		<pathelement location="${jedit.plugins.dir}/kappalayout.jar"/>
 	</path>
 
 	<target name="init">
