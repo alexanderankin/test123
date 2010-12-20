@@ -53,7 +53,7 @@ public class SideKickToolBar extends JToolBar implements ActionListener
 	public SideKickToolBar(View view)
 	{
 		this.view = view;
-		setFloatable(false);
+		setFloatable(jEdit.getBooleanProperty("view.toolbar.floatable"));
 		select = new JButton(jEdit.getProperty("sidekick-toolbar.select"));
 		select.addActionListener(this);
 		add(select);
