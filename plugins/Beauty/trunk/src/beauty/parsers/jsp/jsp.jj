@@ -640,8 +640,6 @@ boolean JspDirectiveAttribute() :
 
 void JspScriptlet() :
 {
-    // TODO: if scriptlet is more than one line, put the scriptlet start tag
-    // on a new line.
     Token start;
     Token content;
     Token end;

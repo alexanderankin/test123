@@ -56,7 +56,7 @@
 options {
     JAVA_UNICODE_ESCAPE=true;
     STATIC=false;
-	/* Print grammar debugging info as we parse 
+	/* Print grammar debugging info as we parse
 	DEBUG_PARSER=true;
 	*/
 	/* Print detailed lookahead debugging info
@@ -743,7 +743,7 @@ void AmbiguousName()  :
 {
 }
 {
-    t=<IDENTIFIER> { add(t); }
+    t=<IDENTIFIER> { trimWhitespace(); add(t); }
   ( LOOKAHEAD(2) "." t=<IDENTIFIER> { add("."); add(t); } )* 
 }
 
@@ -892,13 +892,17 @@ void AdditiveExpression() :
 void MultiplicativeExpression() :
 {  }
 {
-  UnaryExpression() ( ( "*" { add(" * "); } | "/" { add(" / "); } | "%" { add(" % "); } ) UnaryExpression() )*
+  UnaryExpression(false) ( ( "*" { add(" * "); } | "/" { add(" / "); } | "%" { add(" % "); } ) UnaryExpression(false) )*
 }
 
-void UnaryExpression() :
-{  }
+void UnaryExpression(boolean trim) :
+{ 
+    if (trim) {
+        trim(); 
+    }
+}
 {
-  ( "+" { add(" + "); } | "-" { add(" - "); } ) UnaryExpression()
+  ( "+" { add(" + "); } | "-" { add(" - "); } ) UnaryExpression(false)
      
 |
   PreIncrementExpression()
@@ -925,7 +929,7 @@ void PreDecrementExpression() :
 void UnaryExpressionNotPlusMinus() :
 {  }
 {
-  ( "~" { add(" ~"); } | "!" { add(" !"); } ) UnaryExpression()
+  ( "~" { add(" ~"); } | "!" { add(" !"); } ) UnaryExpression(true)
      
 |
 	// SYNTACTIC_LOOKAHEAD
@@ -958,7 +962,7 @@ void CastExpression()  :
 {
 // SYNTACTIC_LOOKAHEAD
     LOOKAHEAD(3)
-  "(" { add("("); } Type() ")" { trim(); add(") "); } UnaryExpression()
+  "(" { add("("); } Type() ")" { trim(); add(") "); } UnaryExpression(false)
 |
   "(" { add("("); } Type() ")" { trim(); add(") "); } UnaryExpressionNotPlusMinus()
 }

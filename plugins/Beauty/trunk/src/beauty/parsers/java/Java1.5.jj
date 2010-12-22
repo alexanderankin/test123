@@ -642,6 +642,10 @@ TOKEN_MGR_DECLS :
     // handle comments like this one
     static void writeEndOfLineComment(String s) {
         String line = s.trim();
+        if (line.startsWith("//")) {
+            line = line.substring(2).trim();
+            line = "// " + line;
+        }
         for (int j = 0; j < level; j++) {
             line = "    " + line;       // 4 spaces
         }
@@ -1738,11 +1742,12 @@ void LabeledStatement():
 }
 
 void Block():
-{}
+{
+}
 {
     "{" { trimWhitespace(); add(" {"); write(); ++token_source.level; }
         ( BlockStatement() )*
-    "}" { add("}"); --token_source.level; write(); }
+    "}" { add("}"); --token_source.level; write(); }    // TODO: don't always want to do this, for example with an anonymous inner class
 }
 
 void BlockStatement():

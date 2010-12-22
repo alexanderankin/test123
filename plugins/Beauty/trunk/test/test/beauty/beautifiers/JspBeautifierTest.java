@@ -89,7 +89,7 @@ public class JspBeautifierTest {
             beautifier.setWrapMode("none");
             String after = beautifier.beautify(before.toString());
             assertTrue("returned text was null", after != null);
-            //assertTrue("jsp test failed.\nbefore:\n|" + before + "|\n\nafter:\n|" + after + "|", answer.toString().equals(after));
+            // assertTrue("jsp test failed.\nbefore:\n|" + before + "|\n\nafter:\n|" + after + "|", answer.toString().equals(after));
             assertTrue("Test 1 failed.", answer.toString().equals(after));
         } catch (Exception e) {
             e.printStackTrace();
@@ -163,7 +163,7 @@ public class JspBeautifierTest {
             beautifier.setWrapMode("none");
             String after = beautifier.beautify(before.toString());
             assertTrue("returned text was null", after != null);
-            //assertTrue("jsp test failed.\nbefore:\n|" + before + "|\n\nafter:\n|" + after + "|", answer.toString().equals(after));
+            // assertTrue("jsp test failed.\nbefore:\n|" + before + "|\n\nafter:\n|" + after + "|", answer.toString().equals(after));
             assertTrue("Test 2 failed.", answer.toString().equals(after));
         } catch (Exception e) {
             e.printStackTrace();
@@ -224,7 +224,7 @@ public class JspBeautifierTest {
             String after = beautifier.beautify(before.toString());
             assertTrue("returned text was null", after != null);
             assertTrue("jsp test failed.\nbefore:\n|" + before + "|\n\nafter:\n|" + after + "|", before.toString().equals(after));
-            //assertTrue("testComments failed.", before.toString().equals(after));
+            // assertTrue("testComments failed.", before.toString().equals(after));
         } catch (Exception e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -322,7 +322,7 @@ public class JspBeautifierTest {
             beautifier.setWrapMode("none");
             String after = beautifier.beautify(before.toString());
             assertTrue("returned text was null", after != null);
-            //assertTrue("jsp test failed.\nbefore:\n|" + before + "|\n\nafter:\n|" + after + "|", answer.toString().equals(after));
+            // assertTrue("jsp test failed.\nbefore:\n|" + before + "|\n\nafter:\n|" + after + "|", answer.toString().equals(after));
             assertTrue("TestComments2 failed.", answer.toString().equals(after));
         } catch (Exception e) {
             e.printStackTrace();
@@ -357,7 +357,7 @@ public class JspBeautifierTest {
             String after = beautifier.beautify(before.toString());
             assertTrue("returned text was null", after != null);
             assertTrue("jsp test failed.\nbefore:\n|" + before + "|\n\nafter:\n|" + after + "|\n\nexpected:\n|" + answer + "|", answer.toString().equals(after));
-            //assertTrue("testExclamation failed.", answer.toString().equals(after));
+            // assertTrue("testExclamation failed.", answer.toString().equals(after));
         } catch (Exception e) {
             e.printStackTrace();
             fail(e.getMessage());

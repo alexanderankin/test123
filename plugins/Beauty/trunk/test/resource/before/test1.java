@@ -8,6 +8,9 @@ public class Test {
         else {
             // whatever
         }
+        if (!something) {
+
+        }
     }
 
 }

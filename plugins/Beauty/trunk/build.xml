@@ -263,6 +263,6 @@
         </java>
     </target>
 
-    <target name="all" depends="javacc,compile,run"/>
+    <target name="all" depends="javacc,dist"/>
 
 </project>

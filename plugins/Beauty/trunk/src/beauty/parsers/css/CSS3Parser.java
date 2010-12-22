@@ -3204,7 +3204,7 @@ public class CSS3Parser implements CSS3ParserConstants {
 
         s.append(tok.image);
     }
-    /* FIXME here, two option, we skip during an error, or outside
+    /* NOTE: (was FIXME) here, two option, we skip during an error, or outside
     an error, currently both can fail with a TokenMgrError, should
     we catch all, or only when filling message for errors?
     
