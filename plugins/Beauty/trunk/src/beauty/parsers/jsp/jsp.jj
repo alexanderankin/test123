@@ -660,7 +660,6 @@ void JspScriptlet() :
                 Beautifier beautifier = new JavaLineBeautifier();
                 beautifier.setInitialIndentLevel(token_source.level);
                 java = beautifier.beautify(content.image.trim());
-                java = java.trim();
                 multiline = java.indexOf(ls) > 0;
             }
          }
@@ -683,24 +682,22 @@ void JspScriptlet() :
              writeln();
              ++token_source.level;
          }
-         else {
-             write(); 
-             add(" ");
-             write();
-         }
+         
          // TODO: adjust leading whitespace:
          // find line with shortest amount of whitespace, minding tabs
          // subtract that amount from all lines
          // add indent to all lines
-         writePre(java);
          if (multiline) {
+             writePre(java);
              --token_source.level;
          }
          else {
+            add(" ");
+            add(java);
             add(" ");   
-            write();
          }
 	     add(end);
+	     
 	     if (multiline) {
 	         writeln();   
 	     }
