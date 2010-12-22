@@ -478,6 +478,10 @@ public class JavaParserTokenManager implements JavaParserConstants
     // handle comments like this one
     static void writeEndOfLineComment(String s) {
         String line = s.trim();
+        if (line.startsWith("//")) {
+            line = line.substring(2).trim();
+            line = "// " + line;
+        }
         for (int j = 0; j < level; j++) {
             line = "    " + line;       // 4 spaces
         }

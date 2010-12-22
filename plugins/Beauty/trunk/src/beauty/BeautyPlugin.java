@@ -3,10 +3,10 @@ package beauty;
 
 
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.syntax.ModeProvider;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.ThreadUtilities;
 
 import java.io.*;
 import java.util.*;
@@ -227,7 +227,7 @@ public class BeautyPlugin extends EditPlugin {
         }
 
         // run the format routine synchronously on the AWT thread
-        VFSManager.runInAWTThread( new BeautyThread( buffer, view, showErrorDialogs, beautifier ) );
+        ThreadUtilities.runInDispatchThread( new BeautyThread( buffer, view, showErrorDialogs, beautifier ) );
 
     }
 

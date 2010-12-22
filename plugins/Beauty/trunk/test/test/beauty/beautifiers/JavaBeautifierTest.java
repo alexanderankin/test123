@@ -348,6 +348,70 @@ public class JavaBeautifierTest {
             fail(e.getMessage());
         }
     }
+
+    @Test
+    public void testSingleLineComment() {
+        try {
+            StringBuilder before = new StringBuilder();
+            before.append("public class Test {\n");
+            before.append("    public int goodSwitch(int condition) {\n");
+            before.append("        //a single line comment\n");
+            before.append("    }\n");
+            before.append("}\n");
+            StringBuilder answer = new StringBuilder();
+            answer.append("public class Test {\n");
+            answer.append("    public int goodSwitch(int condition) {\n");
+            answer.append("        // a single line comment\n");
+            answer.append("    }\n");
+            answer.append("}\n");
+            Beautifier beautifier = new JavaBeautifier();
+            beautifier.setEditMode("java");
+            beautifier.setLineSeparator("\n");
+            beautifier.setTabWidth(4);
+            beautifier.setIndentWidth(4);
+            beautifier.setUseSoftTabs(true);
+            beautifier.setWrapMargin(80);
+            beautifier.setWrapMode("none");
+            String after = beautifier.beautify(before.toString());
+            assertTrue("returned text was null", after != null);
+            assertTrue("'comment' test failed:\nexpected:\n" + answer.toString() + "\nbut was:\n" + after, answer.toString().equals(after));
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
+    }
+    
+    @Test
+    public void testSingleLineComment2() {
+        try {
+            StringBuilder before = new StringBuilder();
+            before.append("public class Test {\n");
+            before.append("    public int goodSwitch(int condition) {\n");
+            before.append("        //       a single line comment\n");
+            before.append("    }\n");
+            before.append("}\n");
+            StringBuilder answer = new StringBuilder();
+            answer.append("public class Test {\n");
+            answer.append("    public int goodSwitch(int condition) {\n");
+            answer.append("        // a single line comment\n");
+            answer.append("    }\n");
+            answer.append("}\n");
+            Beautifier beautifier = new JavaBeautifier();
+            beautifier.setEditMode("java");
+            beautifier.setLineSeparator("\n");
+            beautifier.setTabWidth(4);
+            beautifier.setIndentWidth(4);
+            beautifier.setUseSoftTabs(true);
+            beautifier.setWrapMargin(80);
+            beautifier.setWrapMode("none");
+            String after = beautifier.beautify(before.toString());
+            assertTrue("returned text was null", after != null);
+            assertTrue("'comment' test failed:\nexpected:\n" + answer.toString() + "\nbut was:\n" + after, answer.toString().equals(after));
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
+    }
     
     @Test
     public void testTryCatch() {
