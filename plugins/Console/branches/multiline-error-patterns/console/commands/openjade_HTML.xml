@@ -1,0 +1,75 @@
+<?xml version="1.0" ?>
+
+<!-- This was based around openjade (openjade.sourceforge.net) version 1.3 -->
+
+<!DOCTYPE COMMANDO SYSTEM "commando.dtd">
+
+<COMMANDO>
+	<UI>
+		<CAPTION LABEL="Generic parameters">
+
+		<FILE_ENTRY LABEL="Stylesheet" VARNAME="stylesheet" />
+		<DIR_ENTRY LABEL="Output directory" VARNAME="dir" DEFAULT="." />
+		<ENTRY LABEL="Declaration" VARNAME="dcl" />
+		<FILE_ENTRY LABEL="File name" VARNAME="file"
+			EVAL="buffer.getPath()" />
+
+		</CAPTION>
+
+		<CAPTION LABEL="Stylesheet parameters">
+
+		<TOGGLE LABEL="No chunks (DocBook only)" VARNAME="nochunks" />
+		<TOGGLE LABEL="Write root chunk (DocBook only)" VARNAME="rootchunk" />
+		<ENTRY LABEL="Additional parameters" VARNAME="extra" />
+
+		</CAPTION>
+	</UI>
+
+	<COMMANDS>
+		<COMMAND CONFIRM="FALSE" SHELL="System">
+			buf = new StringBuffer("openjade");
+
+			if(!stylesheet.equals(""))
+			{
+				buf.append(" -d \"");
+				buf.append(stylesheet);
+				buf.append('"');
+			}
+
+			if(!dir.equals(""))
+			{
+				buf.append(" -D \"");
+				buf.append(dir);
+				buf.append('"');
+			}
+
+			buf.append(" -t sgml");
+
+			if(nochunks)
+				buf.append(" -Vnochunks");
+
+			if(rootchunk)
+				buf.append(" -Vrootchunk");
+
+			if(!extra.equals(""))
+			{
+				buf.append(' ');
+				buf.append(extra);
+			}
+
+			if(!dcl.equals(""))
+			{
+				buf.append(" \"");
+				buf.append(dcl);
+				buf.append('"');
+			}
+
+			buf.append(" \"");
+			buf.append(file);
+			buf.append('"');
+
+			// return value
+			buf.toString();
+		</COMMAND>
+	</COMMANDS>
+</COMMANDO>

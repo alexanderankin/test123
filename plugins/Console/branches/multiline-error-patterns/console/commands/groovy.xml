@@ -1,0 +1,32 @@
+<?xml version="1.0" ?>
+
+<!-- This was based around Sun javac 1.3.1. -->
+
+<!DOCTYPE COMMANDO SYSTEM "commando.dtd">
+
+<COMMANDO>
+	<UI>
+		<CAPTION LABEL="Source file(s)">
+
+		<FILE_ENTRY LABEL="Source file(s)" VARNAME="source"
+			EVAL="buffer.getPath()" />
+
+		</CAPTION>
+
+		
+		
+	</UI>
+
+	<COMMANDS>
+		<COMMAND SHELL="System" CONFIRM="FALSE">
+			buf = new StringBuffer();
+			buf.append("groovy ");
+			buf.append(" \"");
+			buf.append(source);
+			buf.append("\"");
+
+			// return value
+			return buf.toString();
+		</COMMAND>
+	</COMMANDS>
+</COMMANDO>
