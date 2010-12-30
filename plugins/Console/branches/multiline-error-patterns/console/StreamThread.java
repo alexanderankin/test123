@@ -4,6 +4,7 @@
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 1999, 2005 Slava Pestov, Alan Ezust, Marcelo Vanzin
+ * Copyright (C) 2010 Eric Le Lay
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,8 +30,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-
-import javax.swing.text.AttributeSet;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
@@ -58,12 +57,11 @@ class StreamThread extends Thread
 
 	private StringBuilder lineBuffer;
 	private boolean pendingCr;
-	private int uncoloredWritten;
+	private WatchDog watchdog;
 	// }}}
 
 	// {{{ StreamThread constructor
 	/**
-	 * @param showStatus - prints the error status when the thread is finished.
 	 */
 	StreamThread(ConsoleProcess process, InputStream in, Color defaultColor)
 	{
@@ -76,7 +74,6 @@ class StreamThread extends Thread
 		copt.setDirectory(currentDirectory);
 		lineBuffer = new StringBuilder(100);
 		pendingCr = false;
-		uncoloredWritten = 0;
 	} // }}}
 
 	// {{{ run() method
@@ -93,69 +90,71 @@ class StreamThread extends Thread
 		}
 
 		Output output = process.getOutput();
+		copt.output = output;
+		// waiting 800ms before flushing current line seems reasonable
+		long watchdogPeriod = jEdit.getIntegerProperty("console.watchdog.period", 800);
+		watchdog = new WatchDog(watchdogPeriod);
+		watchdog.start();
 		try
 		{
 			char[] input = new char[1024];
 			while (!aborted)
 			{
 				int read = isr.read(input, 0, input.length);
-				if (aborted)
-				{
-					break;
-				}
-				else if (read == -1)
-				{
-					if (pendingCr)
+				
+				synchronized(lineBuffer){
+					
+					if (aborted)
 					{
-						flushLine(output, "\r");
+						break;
 					}
-					else if (lineBuffer.length() > 0)
-					{
-						flushLine(output, "");
-					}
-					break;
-				}
-
-				for (int i = 0; i < read; i++)
-				{
-					char c = input[i];
-					if (c == '\n')
-					{
-						if (pendingCr)
-						{
-							flushLine(output, "\r\n");
-						}
-						else
-						{
-							flushLine(output, "\n");
-						}
-					}
-					else
+					else if (read == -1)
 					{
 						if (pendingCr)
 						{
 							flushLine(output, "\r");
 						}
-		
-						if (c == '\r')
+						else if (lineBuffer.length() > 0)
 						{
-							pendingCr = true;
+							flushLine(output, "");
+						}
+						break;
+					}
+	
+					for (int i = 0; i < read; i++)
+					{
+						char c = input[i];
+						if (c == '\n')
+						{
+							if (pendingCr)
+							{
+								flushLine(output, "\r\n");
+							}
+							else
+							{
+								flushLine(output, "\n");
+							}
 						}
 						else
 						{
-							lineBuffer.append(c);
+							if (pendingCr)
+							{
+								flushLine(output, "\r");
+							}
+			
+							if (c == '\r')
+							{
+								pendingCr = true;
+							}
+							else
+							{
+								lineBuffer.append(c);
+							}
 						}
 					}
-				}
+					
+				} // end synchronized
 
-				// Following output shows unterminated lines
-				// such as prompt of interactive programs.
-				if (lineBuffer.length() > uncoloredWritten)
-				{
-					String tail = lineBuffer.substring(uncoloredWritten);
-					output.writeAttrs(null, tail);
-					uncoloredWritten += tail.length();
-				}
 			}
 		}
 		catch (Exception e)
@@ -175,7 +174,7 @@ class StreamThread extends Thread
 		}
 		finally
 		{
-			copt.finishErrorParsing();
+			copt.finishErrorParsing(lineBuffer,true);
 			try
 			{
 				in.close();
@@ -184,6 +183,7 @@ class StreamThread extends Thread
 			{
 			}
 
+			watchdog.interrupt();
 			process.threadDone();
 
 
@@ -201,28 +201,74 @@ class StreamThread extends Thread
 	private void flushLine(Output output, String eol)
 	{
 		// we need to write the line break to the output, but we
-		// can't pass it to the "processLine()" method or the
+		// can't concatenate to the lineBuffer, otherwise
 		// regexps won't recognize anything.
-		String line = lineBuffer.toString();
-		copt.processLine(line);
-		AttributeSet color = ConsolePane.colorAttributes(copt.getColor());
-		if (uncoloredWritten > 0)
-		{
-			output.setAttrs(uncoloredWritten, color);
-			output.writeAttrs(color,
-				lineBuffer.substring(uncoloredWritten) + eol);
-		}
-		else try 
-		{
-			output.writeAttrs(color, line + eol);
-		} catch (Exception err) {
-			Log.log (Log.ERROR, this, "Can't Flush:", err);
-		}
-
-		lineBuffer.setLength(0);
+		// actually, thats not true for error patterns since we use lookingAt()
+		// but still true for warnings...
+		int newStart = copt.processLine(lineBuffer, eol, true);
+		if(newStart > 0)lineBuffer.delete(0, newStart);
 		pendingCr = false;
-		uncoloredWritten = 0;
+		// marking now, because a line truly has been processed
+		watchdog.mark = true;
 	} //}}}
 
+	/**
+	 * callback for the watchdog : tell the CommandOutputParser
+	 * to flush the current lineBuffer.
+	 * Synchronized on lineBuffer, so no interleaving with processing linebuffer in the StreamThread
+	 * thread will happen.
+	 **/
+	void flushLineBuffer()
+	{
+		synchronized(lineBuffer)
+		{
+			if (lineBuffer.length() > 0)
+			{
+				System.err.println("flushing '"+lineBuffer+"'");
+				copt.flushBuffer(lineBuffer,true);
+			}			
+		}
+	}
+	
+	/**
+	 * watchdog to flush buffered lines once there has been no output for
+	 * some time.
+	 * This is necessary to show the command prompt in interactive programs.
+	 * */
+	private class WatchDog extends Thread
+	{
+		volatile boolean mark;
+		private long sleep;
+		
+		WatchDog(long sleep){
+			if(sleep<100)throw new IllegalArgumentException("WatchDog sleep time shouldn't be less than 100ms");
+			this.sleep = sleep;
+		}
+		
+		/**
+		 * while not interrupted, sleep for some time and flush the buffer if it has
+		 * not been processed since last pass.
+		 * marking as processed is done in flushLine() in the StreamThread thread.
+		 * */
+		public void run()
+		{
+			try
+			{
+				while(true)
+				{
+					Thread.sleep(sleep);
+					if(!mark)
+					{
+						flushLineBuffer();
+					}
+					mark = false;
+				}
+			}
+			catch(InterruptedException e)
+			{
+				/* clean exit */
+			}
+		}
+	}
 } // }}}
 

@@ -46,7 +46,7 @@ public class DirectoryStack
 	 * @return true if the directory has changed
 	 *    (i.e. an entering/leaving message has been encountered
 	 */
-	public boolean processLine(String line)
+	public boolean processLine(CharSequence line)
 	{
 		Matcher match = makeEntering.matcher(line);
 		if (match.find())

@@ -93,6 +93,8 @@ public class ErrorMatcher implements Cloneable
 
 	private String file, line, message;
 
+	private boolean hitEnd;
+
 	// }}}
 
 	// {{{ clear()
@@ -110,16 +112,23 @@ public class ErrorMatcher implements Cloneable
 		errors = new StringList();
 		type = -1;
 		label = null;
+		hitEnd = false;
 	}
 
 	// }}}
 
+	public boolean hitEnd()
+	{
+		return hitEnd;
+	}
+	
 	// {{{ matchLine()
-	public String matchLine(String text)
+	public String matchLine(CharSequence text)
 	{
 		try
 		{
 			label = null;
+			hitEnd = false;
 			Matcher matcher = null;
 			if (warningRE != null)
 			{
@@ -128,15 +137,30 @@ public class ErrorMatcher implements Cloneable
 				{
 					label = jEdit.getProperty("options.console.errors.warning");
 					type = ErrorSource.WARNING;
+					hitEnd = false;
+				}
+				else if(matcher.hitEnd())
+				{
+					hitEnd = true;
 				}
 			}
 			if ((label == null) && (errorRE != null))
 			{
 				matcher = errorRE.matcher(text);
-				if (matcher.find())
+				// why is it find() for error and matches for warning ?
+				// https://sourceforge.net/tracker/index.php?func=detail&aid=1764455&group_id=588&atid=300588
+				// Shlomy explains that find is better than matches because it will highlight a portion
+				// why is it not reproduced for warnings also ?
+				// trying lookingAt() because find makes hitEnd() always true when not found
+				if (matcher.lookingAt())
 				{
 					label = jEdit.getProperty("options.console.errors.match");
 					type = ErrorSource.ERROR;
+					hitEnd = false;
+				}
+				else if(matcher.hitEnd())
+				{
+					hitEnd = true;
 				}
 			}
 
@@ -165,6 +189,7 @@ public class ErrorMatcher implements Cloneable
 
 
 	// {{{ findMatches()
+	/** used in ErrorMatchePanel only */
 	public StringList findMatches(String text)
 	{
 		isValid();
@@ -183,7 +208,11 @@ public class ErrorMatcher implements Cloneable
 				{
 					while ( i+1 < sl.length)
 					{
-						// See if there are extra lines to match
+						// CommandOutputParser first tries to match
+						// the following line as a new error and
+						// see if there are extra lines to match
+						// otherwise
+						if(matchLine(sl[i+1]) != null) break;
 						Matcher m = extraRE.matcher(sl[i + 1]);
 						if (!m.matches()) break;
 						try {
@@ -197,6 +226,41 @@ public class ErrorMatcher implements Cloneable
 					}
 				}
 				retval.add(mlb.toString());
+			}
+			else if(hitEnd())
+			{
+				for(int j=i;hitEnd() && j<sl.length;){
+					current += "\n" + sl[++j];
+					ml = matchLine(current);
+					if (ml != null) /* We found a match for some lines */
+					{
+						mlb.append(ml);
+						i = j;
+						if (  extraRE != null )
+						{
+							while ( i+1 < sl.length)
+							{
+								// CommandOutputParser first tries to match
+								// the following line as a new error and
+								// see if there are extra lines to match
+								// otherwise
+								if(matchLine(sl[i+1]) != null) break;
+								Matcher m = extraRE.matcher(sl[i + 1]);
+								if (!m.matches()) break;
+								try {
+									String extra = m.replaceFirst("$1");
+									mlb.append("\n  " + extra);
+								}
+								catch (Exception e) {
+									mlb.append("\n  " + e.getMessage());
+								}
+								++i;
+							}
+						}
+						retval.add(mlb.toString());
+						break;
+					}
+				}
 			}
 		}
 		return retval;
@@ -356,7 +420,7 @@ public class ErrorMatcher implements Cloneable
 	// }}}
 
 	// {{{ match() method
-	public DefaultErrorSource.DefaultError match(View view, String text, String directory,
+	public DefaultErrorSource.DefaultError match(View view, CharSequence text, String directory,
 		ErrorSource errorSource)
 	{
 		String t = matchLine(text);
@@ -376,7 +440,7 @@ public class ErrorMatcher implements Cloneable
 	} // }}}
 
 	// {{{ matchExtra() method
-	public String matchExtra(String text)
+	public String matchExtra(CharSequence text)
 	{
 		if (extraRE == null)
 			return null;

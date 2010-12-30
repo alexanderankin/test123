@@ -42,10 +42,10 @@ public interface Output
 	 * Prints a string of text with the specified color, without the
 	 * terminating newline.
 	 * @param attrs Character attributes
-	 * @param msg The message
+	 * @param text The message
 	 * @since Console 4.0
 	 */
-	void writeAttrs(AttributeSet attrs, String msg);
+	void writeAttrs(AttributeSet attrs, CharSequence text);
 
 	/**
 	 * Changes the attributes of the given text selection to those specified.

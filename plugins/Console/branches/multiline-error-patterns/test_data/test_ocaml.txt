@@ -1,0 +1,17 @@
+        Objective Caml version 3.12.0
+
+# #use "/Users/elelay/Desktop/test_ocaml.ml";;
+type tp = TVar of int | TCon of string | TApp of tp * tp
+type vertexId = VertexId of int
+type vertexTp = VVar | VCon of string | VApp of vertexId * vertexId
+type vertexInfo = vertexTp * tp option
+type edgeId = EdgeId of vertexId * vertexId
+type clique
+type eqGroup = {
+  vertices : (vertexId * vertexInfo) list;
+  edges : edgeId list;
+  cliques : clique list;
+}
+File "/Users/elelay/Desktop/test_ocaml.ml", line 20, characters 18-19:
+Error: This expression has type int but an expression was expected of type
+         'a * 'b
