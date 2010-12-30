@@ -1,0 +1,329 @@
+Buildfile: /Users/elelay/temp/client2/jedittrunk/build.xml
+
+init:
+     [echo] Buildfile for jedit (/Users/elelay/temp/client2/jedittrunk/build.xml)
+
+compile:
+    [javac] Compiling 511 source files to /Users/elelay/temp/client2/jedittrunk/build/classes/core
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/jdesktop/swingworker/SwingPropertyChangeSupport.java:4: warning: unmappable character for encoding UTF-8
+    [javac]  * Copyright © 2005 Sun Microsystems, Inc. All rights
+    [javac]              ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/gui/StatusBar.java:191: warning: [deprecation] org.gjt.sp.util.WorkThreadPool in org.gjt.sp.util has been deprecated
+    [javac] 	public void statusUpdate(final WorkThreadPool threadPool, int threadIndex)
+    [javac]                                        ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/gui/StatusBar.java:227: warning: [deprecation] org.gjt.sp.util.WorkThreadPool in org.gjt.sp.util has been deprecated
+    [javac] 	public void progressUpdate(WorkThreadPool threadPool, int threadIndex)
+    [javac]                                    ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/util/WorkThreadProgressListener.java:31: warning: [deprecation] org.gjt.sp.util.WorkThreadPool in org.gjt.sp.util has been deprecated
+    [javac] 	void statusUpdate(WorkThreadPool threadPool, int threadIndex);
+    [javac]                           ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/util/WorkThreadProgressListener.java:34: warning: [deprecation] org.gjt.sp.util.WorkThreadPool in org.gjt.sp.util has been deprecated
+    [javac] 	void progressUpdate(WorkThreadPool threadPool, int threadIndex);
+    [javac]                             ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/io/VFS.java:44: warning: [deprecation] org.gjt.sp.util.WorkThread in org.gjt.sp.util has been deprecated
+    [javac] import org.gjt.sp.util.WorkThread;
+    [javac]                        ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/util/WorkThreadPool.java:225: warning: [deprecation] org.gjt.sp.util.WorkThread in org.gjt.sp.util has been deprecated
+    [javac] 	public WorkThread getThread(int index)
+    [javac]                ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/util/WorkThreadPool.java:255: warning: [deprecation] org.gjt.sp.util.WorkThread in org.gjt.sp.util has been deprecated
+    [javac] 	void fireStatusChanged(WorkThread thread)
+    [javac]                                ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/util/WorkThreadPool.java:282: warning: [deprecation] org.gjt.sp.util.WorkThread in org.gjt.sp.util has been deprecated
+    [javac] 	void fireProgressChanged(WorkThread thread)
+    [javac]                                  ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/util/WorkThread.java:32: warning: [deprecation] org.gjt.sp.util.WorkThreadPool in org.gjt.sp.util has been deprecated
+    [javac] 	public WorkThread(WorkThreadPool pool, ThreadGroup group, String name)
+    [javac]                           ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/util/WorkThread.java:210: warning: [deprecation] org.gjt.sp.util.WorkThreadPool in org.gjt.sp.util has been deprecated
+    [javac] 	private void doRequest(WorkThreadPool.Request request)
+    [javac]                                ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/browser/BrowserIORequest.java:37: warning: [deprecation] org.gjt.sp.util.WorkRequest in org.gjt.sp.util has been deprecated
+    [javac] class BrowserIORequest extends WorkRequest
+    [javac]                                ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/browser/VFSFileChooserDialog.java:512: warning: [deprecation] org.gjt.sp.util.WorkThreadPool in org.gjt.sp.util has been deprecated
+    [javac] 		public void statusUpdate(final WorkThreadPool threadPool,
+    [javac]                                                ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/browser/VFSFileChooserDialog.java:536: warning: [deprecation] org.gjt.sp.util.WorkThreadPool in org.gjt.sp.util has been deprecated
+    [javac] 		public void progressUpdate(WorkThreadPool threadPool, int threadIndex)
+    [javac]                                            ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/bufferio/BufferIORequest.java:47: warning: [deprecation] org.gjt.sp.util.WorkRequest in org.gjt.sp.util has been deprecated
+    [javac] import org.gjt.sp.util.WorkRequest;
+    [javac]                        ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/bufferio/BufferIORequest.java:55: warning: [deprecation] org.gjt.sp.util.WorkRequest in org.gjt.sp.util has been deprecated
+    [javac] public abstract class BufferIORequest extends WorkRequest
+    [javac]                                               ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/gui/IOProgressMonitor.java:110: warning: [deprecation] org.gjt.sp.util.WorkThreadPool in org.gjt.sp.util has been deprecated
+    [javac] 		public void statusUpdate(WorkThreadPool threadPool, final int threadIndex)
+    [javac]                                          ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/gui/IOProgressMonitor.java:122: warning: [deprecation] org.gjt.sp.util.WorkThreadPool in org.gjt.sp.util has been deprecated
+    [javac] 		public void progressUpdate(WorkThreadPool threadPool, final int threadIndex)
+    [javac]                                            ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/io/VFSManager.java:36: warning: [deprecation] org.gjt.sp.util.WorkThreadPool in org.gjt.sp.util has been deprecated
+    [javac] import org.gjt.sp.util.WorkThreadPool;
+    [javac]                        ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/io/VFSManager.java:172: warning: [deprecation] org.gjt.sp.util.WorkThreadPool in org.gjt.sp.util has been deprecated
+    [javac] 	public static WorkThreadPool getIOThreadPool()
+    [javac]                       ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/io/VFSManager.java:378: warning: [deprecation] org.gjt.sp.util.WorkThreadPool in org.gjt.sp.util has been deprecated
+    [javac] 	private static WorkThreadPool ioThreadPool;
+    [javac]                        ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/textarea/TextAreaTransferHandler.java:33: warning: [deprecation] org.gjt.sp.util.WorkRequest in org.gjt.sp.util has been deprecated
+    [javac] import org.gjt.sp.util.WorkRequest;
+    [javac]                        ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/textarea/TextAreaTransferHandler.java:458: warning: [deprecation] org.gjt.sp.util.WorkRequest in org.gjt.sp.util has been deprecated
+    [javac] 	private static class DraggedURLLoader extends WorkRequest
+    [javac]                                                       ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/input/AbstractInputHandler.java:130: warning: [unchecked] unchecked call to put(K,V) as a member of the raw type java.util.Hashtable
+    [javac] 					hash.put(PREFIX_STR,prefixStr);
+    [javac]                                                 ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/input/AbstractInputHandler.java:132: warning: [unchecked] unchecked call to put(K,V) as a member of the raw type java.util.Hashtable
+    [javac] 					current.put(keyStroke,o);
+    [javac]                                                    ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/input/AbstractInputHandler.java:137: warning: [unchecked] unchecked call to put(K,V) as a member of the raw type java.util.Hashtable
+    [javac] 				current.put(keyStroke,action);
+    [javac]                                            ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/Macros.java:697: warning: [unchecked] unchecked call to add(E) as a member of the raw type java.util.List
+    [javac] 					submenu.add(submenuName);
+    [javac]                                                    ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/Macros.java:698: warning: [unchecked] unchecked call to add(E) as a member of the raw type java.util.List
+    [javac] 					vector.add(submenu);
+    [javac]                                                   ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/Macros.java:732: warning: [unchecked] unchecked call to add(E) as a member of the raw type java.util.List
+    [javac] 			vector.add(newMacro.getName());
+    [javac]                                   ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/EditPane.java:218: warning: [deprecation] runInAWTThread(java.lang.Runnable) in org.gjt.sp.jedit.io.VFSManager has been deprecated
+    [javac] 			VFSManager.runInAWTThread(runnable);
+    [javac]                                   ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/buffer/JEditBuffer.java:100: warning: [unchecked] unchecked conversion
+    [javac] found   : java.util.Set
+    [javac] required: java.util.Set<java.util.Map.Entry>
+    [javac] 		Set<Map.Entry> set = props.entrySet();
+    [javac]                                                    ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/Buffer.java:295: warning: [deprecation] runInAWTThread(java.lang.Runnable) in org.gjt.sp.jedit.io.VFSManager has been deprecated
+    [javac] 			VFSManager.runInAWTThread(runnable);
+    [javac]                                   ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/Buffer.java:349: warning: [deprecation] runInWorkThread(java.lang.Runnable) in org.gjt.sp.jedit.io.VFSManager has been deprecated
+    [javac] 		VFSManager.runInWorkThread(new BufferAutosaveRequest(
+    [javac]                           ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/Buffer.java:590: warning: [deprecation] runInAWTThread(java.lang.Runnable) in org.gjt.sp.jedit.io.VFSManager has been deprecated
+    [javac] 		VFSManager.runInAWTThread(new Runnable()
+    [javac]                           ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/Buffer.java:1772: warning: [deprecation] runInAWTThread(java.lang.Runnable) in org.gjt.sp.jedit.io.VFSManager has been deprecated
+    [javac] 			VFSManager.runInAWTThread(new Runnable()
+    [javac]                                   ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/JEditActionContext.java:112: warning: [unchecked] unchecked cast
+    [javac] found   : java.lang.Object
+    [javac] required: E[]
+    [javac] 		E[] retVal =(E[]) Array.newInstance(clazz, actionSets.size());
+    [javac]                                                    ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/PluginJAR.java:1732: warning: [unchecked] unchecked conversion
+    [javac] found   : java.util.Set
+    [javac] required: java.util.Set<java.util.Map.Entry<java.lang.Object,java.lang.Object>>
+    [javac] 			Set<Map.Entry<Object, Object>> set = map.entrySet();
+    [javac]                                                                          ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/bsh/NameSpace.java:341: warning: [unchecked] unchecked call to put(K,V) as a member of the raw type java.util.Hashtable
+    [javac]             varScope.variables.put(
+    [javac]                                   ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/bsh/NameSpace.java:400: warning: [unchecked] unchecked call to addElement(E) as a member of the raw type java.util.Vector
+    [javac]             v.addElement( e.nextElement() );
+    [javac]                         ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/bsh/NameSpace.java:415: warning: [unchecked] unchecked call to addElement(E) as a member of the raw type java.util.Vector
+    [javac]                 v.addElement( o );
+    [javac]                             ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/bsh/NameSpace.java:419: warning: [unchecked] unchecked call to addElement(E) as a member of the raw type java.util.Vector
+    [javac]                     v.addElement( ov.elementAt( i ) );
+    [javac]                                 ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/bsh/NameSpace.java:716: warning: [unchecked] unchecked call to put(K,V) as a member of the raw type java.util.Hashtable
+    [javac]         variables.put( name, new Variable( name, type, value, modifiers ) );
+    [javac]                      ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/bsh/NameSpace.java:748: warning: [unchecked] unchecked call to put(K,V) as a member of the raw type java.util.Hashtable
+    [javac]             methods.put(name, method);
+    [javac]                        ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/bsh/NameSpace.java:755: warning: [unchecked] unchecked call to put(K,V) as a member of the raw type java.util.Hashtable
+    [javac]                 methods.put(name, method);
+    [javac]                            ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/bsh/NameSpace.java:760: warning: [unchecked] unchecked call to addElement(E) as a member of the raw type java.util.Vector
+    [javac]                 v.addElement( m );
+    [javac]                             ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/bsh/NameSpace.java:761: warning: [unchecked] unchecked call to addElement(E) as a member of the raw type java.util.Vector
+    [javac]                 v.addElement( method );
+    [javac]                             ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/bsh/NameSpace.java:762: warning: [unchecked] unchecked call to put(K,V) as a member of the raw type java.util.Hashtable
+    [javac]                 methods.put( name, v );
+    [javac]                            ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/bsh/NameSpace.java:780: warning: [unchecked] unchecked call to addElement(E) as a member of the raw type java.util.Vector
+    [javac]             _methods.addElement( method );
+    [javac]                                ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/bsh/NameSpace.java:881: warning: [unchecked] unchecked call to put(K,V) as a member of the raw type java.util.Hashtable
+    [javac]         importedClasses.put( Name.suffix(name, 1), name );
+    [javac]                            ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/bsh/NameSpace.java:897: warning: [unchecked] unchecked call to addElement(E) as a member of the raw type java.util.Vector
+    [javac]         importedPackages.addElement(name);
+    [javac]                                    ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/bsh/NameSpace.java:926: warning: [unchecked] unchecked call to addElement(E) as a member of the raw type java.util.Vector
+    [javac]         importedCommands.addElement(name);
+    [javac]                                    ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/bsh/NameSpace.java:1146: warning: [unchecked] unchecked call to put(K,V) as a member of the raw type java.util.Hashtable
+    [javac]         classCache.put(name, c);
+    [javac]                       ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/bsh/NameSpace.java:1342: warning: [unchecked] unchecked call to addElement(E) as a member of the raw type java.util.Vector
+    [javac]             vec.addElement( varNames.nextElement() );
+    [javac]                           ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/bsh/NameSpace.java:1346: warning: [unchecked] unchecked call to addElement(E) as a member of the raw type java.util.Vector
+    [javac]             vec.addElement( methodNames.nextElement() );
+    [javac]                           ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/bsh/NameSpace.java:1360: warning: [unchecked] unchecked call to addElement(E) as a member of the raw type java.util.Vector
+    [javac]         nameSourceListeners.addElement( listener );
+    [javac]                                       ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/bsh/NameSpace.java:1510: warning: [unchecked] unchecked call to put(K,V) as a member of the raw type java.util.Hashtable
+    [javac]             names.put( ambigname, name );
+    [javac]                      ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/bsh/NameSpace.java:1587: warning: [unchecked] unchecked call to addElement(E) as a member of the raw type java.util.Vector
+    [javac]         importedObjects.addElement( obj );
+    [javac]                                   ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/bsh/NameSpace.java:1603: warning: [unchecked] unchecked call to addElement(E) as a member of the raw type java.util.Vector
+    [javac]         importedStatic.addElement( clas );
+    [javac]                                  ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/bsh/NameSpace.java:1643: warning: [unchecked] unchecked call to addElement(E) as a member of the raw type java.util.Vector
+    [javac]         importedCommands.addElement(new CommandPathEntry(path,clas));
+    [javac]                                    ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/bsh/BshClassManager.java:294: warning: [unchecked] unchecked call to put(K,V) as a member of the raw type java.util.Hashtable
+    [javac]             absoluteClassCache.put( name, value );
+    [javac]                                   ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/bsh/BshClassManager.java:296: warning: [unchecked] unchecked call to put(K,V) as a member of the raw type java.util.Hashtable
+    [javac]             absoluteNonClasses.put( name, NOVALUE );
+    [javac]                                   ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/bsh/BshClassManager.java:314: warning: [unchecked] unchecked call to put(K,V) as a member of the raw type java.util.Hashtable
+    [javac]             resolvedStaticMethods.put( sk, method );
+    [javac]                                      ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/bsh/BshClassManager.java:316: warning: [unchecked] unchecked call to put(K,V) as a member of the raw type java.util.Hashtable
+    [javac]             resolvedObjectMethods.put( sk, method );
+    [javac]                                      ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/bsh/BshClassManager.java:498: warning: [unchecked] unchecked call to put(K,V) as a member of the raw type java.util.Hashtable
+    [javac]         definingClasses.put( className, NOVALUE );
+    [javac]                            ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/bsh/BshClassManager.java:499: warning: [unchecked] unchecked call to put(K,V) as a member of the raw type java.util.Hashtable
+    [javac]         definingClassesBaseNames.put( baseName, className );
+    [javac]                                     ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/util/WorkThreadPool.java:55: warning: [deprecation] org.gjt.sp.util.WorkThread in org.gjt.sp.util has been deprecated
+    [javac] 			threads = new WorkThread[count];
+    [javac]                                       ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/util/WorkThreadPool.java:58: warning: [deprecation] org.gjt.sp.util.WorkThread in org.gjt.sp.util has been deprecated
+    [javac] 				threads[i] = new WorkThread(this,threadGroup,name + " #" + (i+1));
+    [javac]                                                  ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/util/WorkThreadPool.java:400: warning: [deprecation] org.gjt.sp.util.WorkThread in org.gjt.sp.util has been deprecated
+    [javac] 			Log.log(Log.ERROR,WorkThread.class,"Exception "
+    [javac]                                           ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/util/WorkThreadPool.java:402: warning: [deprecation] org.gjt.sp.util.WorkThread in org.gjt.sp.util has been deprecated
+    [javac] 			Log.log(Log.ERROR,WorkThread.class,t);
+    [javac]                                           ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/JEditActionSet.java:192: warning: [unchecked] unchecked call to put(K,V) as a member of the raw type java.util.Hashtable
+    [javac] 			context.actionHash.put(action.getName(),this);
+    [javac]                                               ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/JEditActionSet.java:254: warning: [unchecked] unchecked cast
+    [javac] found   : java.lang.Object
+    [javac] required: E
+    [javac] 		return (E) obj;
+    [javac]                            ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/JEditActionSet.java:335: warning: [unchecked] unchecked cast
+    [javac] found   : java.lang.Object
+    [javac] required: E
+    [javac] 			retVal[i++] = (E) value;
+    [javac]                                           ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/io/VFS.java:432: warning: [deprecation] runInWorkThread(java.lang.Runnable) in org.gjt.sp.jedit.io.VFSManager has been deprecated
+    [javac] 			VFSManager.runInWorkThread(request);
+    [javac]                                   ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/io/VFS.java:465: warning: [deprecation] runInWorkThread(java.lang.Runnable) in org.gjt.sp.jedit.io.VFSManager has been deprecated
+    [javac] 		VFSManager.runInWorkThread(new BufferSaveRequest(
+    [javac]                           ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/io/VFS.java:598: warning: [deprecation] runInWorkThread(java.lang.Runnable) in org.gjt.sp.jedit.io.VFSManager has been deprecated
+    [javac] 		VFSManager.runInWorkThread(new BufferInsertRequest(
+    [javac]                           ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/io/VFS.java:1018: warning: [deprecation] org.gjt.sp.util.WorkThread in org.gjt.sp.util has been deprecated
+    [javac] 		WorkThread wt = null;
+    [javac]                 ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/io/VFS.java:1019: warning: [deprecation] org.gjt.sp.util.WorkThread in org.gjt.sp.util has been deprecated
+    [javac] 		if (ct instanceof WorkThread)
+    [javac]                                   ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/io/VFS.java:1021: warning: [deprecation] org.gjt.sp.util.WorkThread in org.gjt.sp.util has been deprecated
+    [javac] 			wt = (WorkThread) ct;
+    [javac]                               ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/Mode.java:214: warning: [unchecked] unchecked conversion
+    [javac] found   : java.util.Map
+    [javac] required: java.util.Map<java.lang.String,java.lang.Object>
+    [javac] 		this.props = props;
+    [javac]                              ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/Mode.java:216: warning: [unchecked] unchecked call to put(K,V) as a member of the raw type java.util.Map
+    [javac] 			props.put("filenameGlob",filenameGlob);
+    [javac]                                  ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/Mode.java:218: warning: [unchecked] unchecked call to put(K,V) as a member of the raw type java.util.Map
+    [javac] 			props.put("firstlineGlob",firstlineGlob);
+    [javac]                                  ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/Mode.java:220: warning: [unchecked] unchecked call to put(K,V) as a member of the raw type java.util.Map
+    [javac] 			props.put("file",filename);
+    [javac]                                  ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/JARClassLoader.java:264: warning: getResources(java.lang.String) in org.gjt.sp.jedit.JARClassLoader overrides getResources(java.lang.String) in java.lang.ClassLoader; return type requires unchecked conversion
+    [javac] found   : java.util.Enumeration
+    [javac] required: java.util.Enumeration<java.net.URL>
+    [javac] 	public Enumeration getResources(String name) throws IOException
+    [javac]                            ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/bsh/Modifiers.java:25: warning: [unchecked] unchecked call to put(K,V) as a member of the raw type java.util.Hashtable
+    [javac] 		Object existing = modifiers.put( name, Void.TYPE/*arbitrary flag*/ );
+    [javac]                                                ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/util/WorkThread.java:55: warning: [deprecation] stop(java.lang.Throwable) in java.lang.Thread has been deprecated
+    [javac] 				stop(new Abort());
+    [javac]                                 ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/util/WorkThread.java:146: warning: [deprecation] stop(java.lang.Throwable) in java.lang.Thread has been deprecated
+    [javac] 				stop(new Abort());
+    [javac]                                 ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/util/WorkThread.java:173: warning: [deprecation] org.gjt.sp.util.WorkThreadPool in org.gjt.sp.util has been deprecated
+    [javac] 		WorkThreadPool.Request request;
+    [javac]                 ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/ServiceManager.java:262: warning: [unchecked] unchecked cast
+    [javac] found   : java.lang.Object
+    [javac] required: E
+    [javac] 		return (E) getService(clazz.getName(), name);
+    [javac]                                      ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/bsh/JJTParserState.java:44: warning: [unchecked] unchecked call to push(E) as a member of the raw type java.util.Stack
+    [javac]     nodes.push(n);
+    [javac]               ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/bsh/JJTParserState.java:78: warning: [unchecked] unchecked call to push(E) as a member of the raw type java.util.Stack
+    [javac]     marks.push(new Integer(mk));
+    [javac]               ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/browser/VFSBrowser.java:701: warning: [deprecation] runInWorkThread(java.lang.Runnable) in org.gjt.sp.jedit.io.VFSManager has been deprecated
+    [javac] 			VFSManager.runInWorkThread(new BrowserIORequest(
+    [javac]                                   ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/browser/VFSBrowser.java:709: warning: [deprecation] runInAWTThread(java.lang.Runnable) in org.gjt.sp.jedit.io.VFSManager has been deprecated
+    [javac] 		VFSManager.runInAWTThread(new Runnable()
+    [javac]                           ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/browser/VFSBrowser.java:739: warning: [deprecation] runInWorkThread(java.lang.Runnable) in org.gjt.sp.jedit.io.VFSManager has been deprecated
+    [javac] 		VFSManager.runInWorkThread(new BrowserIORequest(
+    [javac]                           ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/browser/VFSBrowser.java:745: warning: [deprecation] runInAWTThread(java.lang.Runnable) in org.gjt.sp.jedit.io.VFSManager has been deprecated
+    [javac] 		VFSManager.runInAWTThread(new Runnable()
+    [javac]                           ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/browser/VFSBrowser.java:774: warning: [deprecation] runInWorkThread(java.lang.Runnable) in org.gjt.sp.jedit.io.VFSManager has been deprecated
+    [javac] 		VFSManager.runInWorkThread(new BrowserIORequest(
+    [javac]                           ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/browser/VFSBrowser.java:780: warning: [deprecation] runInAWTThread(java.lang.Runnable) in org.gjt.sp.jedit.io.VFSManager has been deprecated
+    [javac] 		VFSManager.runInAWTThread(new Runnable()
+    [javac]                           ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/browser/VFSBrowser.java:823: warning: [deprecation] runInWorkThread(java.lang.Runnable) in org.gjt.sp.jedit.io.VFSManager has been deprecated
+    [javac] 		VFSManager.runInWorkThread(new BrowserIORequest(
+    [javac]                           ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/browser/VFSBrowser.java:829: warning: [deprecation] runInAWTThread(java.lang.Runnable) in org.gjt.sp.jedit.io.VFSManager has been deprecated
+    [javac] 		VFSManager.runInAWTThread(new Runnable()
+    [javac]                           ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/browser/VFSBrowser.java:999: warning: [deprecation] runInAWTThread(java.lang.Runnable) in org.gjt.sp.jedit.io.VFSManager has been deprecated
+    [javac] 		VFSManager.runInAWTThread(new Runnable()
+    [javac]                           ^
+    [javac] /Users/elelay/temp/client2/jedittrunk/org/gjt/sp/jedit/browser/VFSBrowser.java:1530: warning: [deprecation] runInAWTThread(java.lang.Runnable) in org.gjt.sp.jedit.io.VFSManager has been deprecated
+    [javac] 				VFSManager.runInAWTThread(new Runnable()
+    [javac]                                           ^
+    [javac] Note: Some input files additionally use or override a deprecated API.
+    [javac] Note: Some input files additionally use unchecked or unsafe operations.
+    [javac] 100 warnings
+
+BUILD SUCCESSFUL
+Total time: 34 seconds

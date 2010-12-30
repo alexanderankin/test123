@@ -39,6 +39,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -932,17 +933,21 @@ implements EBComponent, DefaultFocusComponent
 
 		//{{{ writeAttrs() method
 		public void writeAttrs(final AttributeSet attrs,
-			final String msg)
+			final CharSequence msg)
 		{
 			if(SwingUtilities.isEventDispatchThread())
 				writeSafely(attrs,msg);
 			else
 			{
+				// the message must be saved, because it's mutable
+				// and will be modified before the invocation of the Runnable
+				// in the EDT
+				final String savedMsg = msg.toString();
 				SwingUtilities.invokeLater(new Runnable()
 				{
 					public void run()
 					{
-						writeSafely(attrs,msg);
+						writeSafely(attrs,savedMsg);
 					}
 				});
 			}
@@ -994,14 +999,14 @@ implements EBComponent, DefaultFocusComponent
 		} //}}}
 
 		//{{{ writeSafely() method
-		private void writeSafely(AttributeSet attrs, String msg)
+		private void writeSafely(AttributeSet attrs, CharSequence msg)
 		{
 			try
 			{
 				if(attrs != null && StyleConstants.getIcon(attrs) != null)
 					msg = " ";
 				scrollback.insertString(scrollback.getLength(),
-					msg,attrs);
+					msg.toString(),attrs);
 			}
 			catch(BadLocationException bl)
 			{

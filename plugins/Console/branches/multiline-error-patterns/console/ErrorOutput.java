@@ -30,7 +30,7 @@ public class ErrorOutput implements Output
 
 	}
 
-	public void writeAttrs(AttributeSet attrs, String msg)
+	public void writeAttrs(AttributeSet attrs, CharSequence msg)
 	{
 		m_output.writeAttrs(m_set, msg);
 	}

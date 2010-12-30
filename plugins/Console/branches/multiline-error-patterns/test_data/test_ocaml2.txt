@@ -1,0 +1,12 @@
+File "test_ocaml.ml", line 65, characters 12-13:
+Error: Unbound value g
+File "test_ocaml.ml", line 20, characters 18-19:
+Error: This expression has type int but an expression was expected of type
+          'a * 'b
+File "test_ocaml.ml", line 19, characters 11-51:
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+[]
+File "test_ocaml.ml", line 21, characters 3-10:
+Warning 11: this match case is unused.
+

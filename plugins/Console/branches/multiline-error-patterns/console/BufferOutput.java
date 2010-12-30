@@ -71,7 +71,7 @@ public class BufferOutput implements Output
 	} //}}}
 
 	//{{{ write() method
-	public void writeAttrs(AttributeSet attrs, String msg)
+	public void writeAttrs(AttributeSet attrs, CharSequence msg)
 	{
 		buf.append(msg);
 	} //}}}

@@ -151,7 +151,7 @@ public class ConsolePlugin extends EditPlugin
 		String text, String directory, DefaultErrorSource errorSource)
 	{
 		CommandOutputParser parser = getParser(view, directory, errorSource);
-		return parser.processLine(text, false);
+		return parser.processLine(new StringBuilder(text), "", false);
 	} //}}}
 
 	// {{{ stop() method

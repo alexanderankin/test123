@@ -270,7 +270,7 @@ console.beanshell.info=This shell evaluates commands in jEdit's BeanShell \
 
 console.beanshell.prompt=BeanShell>
 ### Error parsing
-console.errors.default=generic perl ant python vhdl msvc q_assert msnet jade antemacs emacs
+console.errors.default=perl ant python vhdl msvc q_assert msnet jade antemacs emacs maven ocaml generic
 
 console.error.make.entering=Entering directory `(.+)'
 console.error.make.leaving=Leaving directory `(.+)'
@@ -285,18 +285,18 @@ console.error.msvc.name=Microsoft Visual C++
 console.error.msvc.filename=$1
 console.error.msvc.line=$2
 console.error.msvc.message=$4
-console.error.msvc.match=([^\\(]*)[\\(](\\d+)[)].:.([^:]*):\\s*(.*)
-console.error.msvc.warning=([^\\(]*)[\\(](\\d+)[)].:.(warning[^:]*):\\s*(.+)
+console.error.msvc.match=([^\\(\\r\\n]*)[\\(](\\d+)[)].\:.([^\:\\r\\n]*)\:[ \\t]*(.*)
+console.error.msvc.warning=([^\\(\\r\\n]*)[\\(](\\d+)[)].\:.(warning[^\:\\r\\n]*)\:[ \\t]*(.+)
 console.error.msvc.extra=\\s+(.*)
 
 console.error.msnet.name=Microsoft.Net
 console.error.msnet.filename=$1
 console.error.msnet.line=$2
 console.error.msnet.message=$4
-console.error.msnet.match=^(.+)\\((\\d+),(\\d+)\\)\\:\\s+(.+)$
+console.error.msnet.match=^(.+)\\((\\d+),(\\d+)\\)\\\:[ \\t]+(.+)$
 
 console.error.q_assert.message=$1
-console.error.q_assert.match=ASSERT\: "(.+)" in file ([^,]+), line (\\d+)
+console.error.q_assert.match=ASSERT\: "(.+)" in file ([^,\\r\\n]+), line (\\d+)
 console.error.q_assert.warning=
 console.error.q_assert.extra=
 console.error.q_assert.line=$3
@@ -305,8 +305,8 @@ console.error.q_assert.name=Q_ASSERT
 console.error.q_assert.testtext=ASSERT\: "fn.toString() \=\= QString("t.mp3")" in file CPPPyWrapperExample.cpp, line 32
 
 console.error.perl.name=Perl
-console.error.perl.extra=\\s\\s(.*)
-console.error.perl.match=(.+) at ([^<>]+) line (\\d+)(\\.|, (.+))
+console.error.perl.extra=[ \\t][ \\t](.*)
+console.error.perl.match=(.+) at ([^<>\r\n]+) line (\\d+)(\\.|, (.+))
 console.error.perl.message=$1 $4
 console.error.perl.filename=$2
 console.error.perl.line=$3
@@ -319,26 +319,26 @@ console.error.jade.line=$3
 console.error.jade.message=$4
 
 console.error.antemacs.name=Ant Emacs
-console.error.antemacs.match=\\s*\\[.+\\]\\s+(.+):(\\d+):\\d+:\\d+:\\d+:(.+)
-console.error.antemacs.warning=\\s*\\[.+\\]\\s+(.+):(\\d+):\\d+:\\d+:\\d+: \
-	(?:Warning|warning|Caution|caution):\\s*(.+)
+console.error.antemacs.match=[ \\t]*\\[.+\\][ \\t]+(.+)\:(\\d+)\:\\d+\:\\d+\:\\d+\:(.+)
+console.error.antemacs.warning=[ \\t]*\\[.+\\][ \\t]+(.+)\:(\\d+)\:\\d+\:\\d+\:\\d+\:\
+	(?\:Warning|warning|Caution|caution)\:[ \\t]*(.+)
 console.error.antemacs.filename=$1
 console.error.antemacs.line=$2
 console.error.antemacs.message=$3
 
 console.error.ant.name=Ant
-console.error.ant.match=\\s*\\[.+\\]\\s+(.+?):(\\d+):(.+)
-console.error.ant.warning=\\s*\\[.+\\]\\s+(.+?):(\\d+):(.+)\
-		(?:Warning|warning|Caution|caution):\\s(.+)
-console.error.ant.extra=\\s*\\[javac\\]\\s*((?:symbol|location|found|required)\\s*:.*)
+console.error.ant.match=[ \\t]*\\[.+\\][ \\t]+(.+?)\:(\\d+)\: (.+)
+console.error.ant.warning=[ \\t]*\\[[^\\[]+\\][ \\t]+(.+?)\:(\\d+)\: (?\:Warning|warning|Caution|caution)\: (.+)
+console.error.ant.extra=\ *\\[javac\\][ \\t]*(.*)
 console.error.ant.filename=$1
 console.error.ant.line=$2
 console.error.ant.message=$3
+console.error.ant.testtext=\ [javac] /somepath/org/jdesktop/swingworker/SwingPropertyChangeSupport.java\:4\: warning\: unmappable character for encoding UTF-8\n    [javac]  * Copyright © 2005 Sun Microsystems, Inc. All rights\n    [javac]              ^\n
 
 console.error.emacs.name=Emacs
 console.error.emacs.match=(.+):(\\d+):\\d+:\\d+:\\d+:(.+)
 console.error.emacs.warning=(.+):(\\d+):\\d+:\\d+:\\d+: \
-	(?:Warning|warning|Caution|caution):\\s*(.+)
+	(?:Warning|warning|Caution|caution):[ \\t]*(.+)
 console.error.emacs.filename=$1
 console.error.emacs.line=$2
 console.error.emacs.message=$3
@@ -347,18 +347,35 @@ console.error.python.name=Python
 console.error.python.filename=$1
 console.error.python.line=$2
 console.error.python.message=$3
-console.error.python.match=\\s+File "([^"]+)", line (\\d+)\\s*(.*)
-console.error.python.extra=((\\w*Error\:|\\s{4})(.*))
+console.error.python.match=[ \\t]+File "([^"]+)", line (\\d+)[ \\t]*(.*)
+console.error.python.extra=((\\w*Error\:|[ \\t]{4})(.*))
 console.error.python.testtext=Traceback (most recent call last)\:\n  File "slackerxp.py", line 541, in ?\n    titleNode \= doc.title\nAttributeError\: 'TagWrapper' object has no attribute 'title'\n\n\n\n\n\n
 console.error.python.warning=
 
 console.error.generic.name=Generic
-console.error.generic.match=((?\:\\w\:)?[^\:]+?)\:(\\d+)\:\\s*(.+)
-console.error.generic.warning=((?\:\\w\:)?[^\:]+?)\:(\\d+)\:\\s*warning\:\\s*(.+)
+console.error.generic.match=((?\:\\w\:)?[^\\n\:]+?)\:(\\d+)\:[ \\t]*(.+)
+console.error.generic.warning=((?\:\\w\:)?[^\\n\:]+?)\:(\\d+)\:[ \\t]*warning\:[ \\t]*(.+)
 console.error.generic.extra=(\\s+(.*)|\\S+\\s*\:.*)
 console.error.generic.filename=$1
 console.error.generic.line=$2
 console.error.generic.message=$3
+
+console.error.ocaml.name=Objective-Caml
+console.error.ocaml.match=File "([^"\\r\\n]+)", line (\\d+), characters (\\d+-\\d+)\:\\nError\:(.+)
+console.error.ocaml.warning=File "([^"\\r\\n]+)", line (\\d+), characters (\\d+-\\d+)\:\\n(Warning .+)
+console.error.ocaml.extra=^(?\!File )(.+) 
+console.error.ocaml.filename=$1
+console.error.ocaml.line=$2
+console.error.ocaml.message=$3:$4
+
+console.error.maven.name=Maven (javac)
+console.error.maven.match=^([^\:\\r\\n]+)\:\\[(\\d+),\\d+\\] (.+)
+console.error.maven.warning=
+console.error.maven.extra=([ \\t]+(.*)|\\S+[ \\t]*\:.*)
+console.error.maven.filename=$1
+console.error.maven.line=$2
+console.error.maven.message=$3
+console.error.maven.testtext=/somepath/src/main/java/xmpp/commands/CommandIQProvider.java\:[61,32] cannot find symbol\nsymbol  \: class PacketExtensionProvider\nlocation\: class xmpp.commands.CommandIQProvider\n\n\n
 
 ### Commando
 
