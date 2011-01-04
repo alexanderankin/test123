@@ -361,9 +361,9 @@ console.error.generic.line=$2
 console.error.generic.message=$3
 
 console.error.ocaml.name=Objective-Caml
-console.error.ocaml.match=File "([^"\\r\\n]+)", line (\\d+), characters (\\d+-\\d+)\:\\nError\:(.+)
-console.error.ocaml.warning=File "([^"\\r\\n]+)", line (\\d+), characters (\\d+-\\d+)\:\\n(Warning .+)
-console.error.ocaml.extra=^(?\!File )(.+) 
+console.error.ocaml.match=File "([^"\\r\\n]+)", line (\\d+), characters (\\d+-\\d+)\:\\r?\\n(?!Warning )([^\\r\\n]+)
+console.error.ocaml.warning=File "([^"\\r\\n]+)", line (\\d+), characters (\\d+-\\d+)\:\\r?\\n(Warning .+)
+console.error.ocaml.extra=((?\!(?:File )|(?:val ))([^#].*)) 
 console.error.ocaml.filename=$1
 console.error.ocaml.line=$2
 console.error.ocaml.message=$3:$4
