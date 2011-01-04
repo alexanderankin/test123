@@ -322,8 +322,6 @@ public class CommandOutputParser
 	// {{{ finishErrorParsing()
 	public void finishErrorParsing(StringBuilder text, boolean disp)
 	{
-		flushBuffer(text,disp);
-		hitEnd = false;
 		// one error could be still pending
 		if (lastError != null)
 		{
@@ -331,21 +329,12 @@ public class CommandOutputParser
 			lastError = null;
 			lastMatcher = null;
 		}
-	} // }}}
-
-	// {{{ flushBuffer() 
-	/**
-	 *  force text out, even if hitEnd()
-	 */
-	public void flushBuffer(StringBuilder text, boolean disp)
-	{
 		// there may be some buffered lines in the pipeline.
 		// force them out (one at a time at worst, if each of them triggers hitEnd() and none matches) 
 		while(text.length()>0){
 			skipFirstLineAndReplay(text,"",disp);
 		}
 		hitEnd = false;
-	}
-	// }}}
+	} // }}}
 
 } // }}}

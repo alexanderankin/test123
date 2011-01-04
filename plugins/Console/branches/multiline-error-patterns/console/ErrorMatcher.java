@@ -229,7 +229,7 @@ public class ErrorMatcher implements Cloneable
 			}
 			else if(hitEnd())
 			{
-				for(int j=i;hitEnd() && j<sl.length;){
+				for(int j=i;hitEnd() && j+1<sl.length;){
 					current += "\n" + sl[++j];
 					ml = matchLine(current);
 					if (ml != null) /* We found a match for some lines */

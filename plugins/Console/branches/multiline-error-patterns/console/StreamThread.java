@@ -225,7 +225,7 @@ class StreamThread extends Thread
 			if (lineBuffer.length() > 0)
 			{
 				System.err.println("flushing '"+lineBuffer+"'");
-				copt.flushBuffer(lineBuffer,true);
+				copt.finishErrorParsing(lineBuffer,true);
 			}			
 		}
 	}
