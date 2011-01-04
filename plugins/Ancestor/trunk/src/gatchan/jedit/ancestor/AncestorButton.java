@@ -45,7 +45,10 @@ public class AncestorButton extends JButton
 			{
 				if (ancestor != null)
 				{
-					ancestor.doAction();
+					if((e.getModifiers() & ActionEvent.CTRL_MASK) != 0)
+						ancestor.closeContainedFiles();
+					else
+						ancestor.doAction();
 				}
 			}
 		});

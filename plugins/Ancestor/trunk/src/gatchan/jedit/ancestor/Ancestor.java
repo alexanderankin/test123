@@ -20,8 +20,10 @@
  */
 package gatchan.jedit.ancestor;
 
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.browser.VFSBrowser;
+import org.gjt.sp.jedit.jEdit;
 
 /**
  * An Ancestor. It represents a parent path for a file.
@@ -54,6 +56,16 @@ public class Ancestor
 	public void doAction()
 	{
 		VFSBrowser.browseDirectory(view, path);
+	} //}}}
+	
+	//{{{ closeFiles() method
+	public void closeContainedFiles()
+	{
+		Buffer b[] = jEdit.getBuffers();
+		
+		for(int i=0; i<b.length; i++)
+			if(b[i].getDirectory().startsWith(path))
+				jEdit.closeBuffer(view,b[i]);
 	} //}}}
 
 }
