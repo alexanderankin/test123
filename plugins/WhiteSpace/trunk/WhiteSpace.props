@@ -1,7 +1,7 @@
 plugin.whitespace.WhiteSpacePlugin.name=WhiteSpace
 plugin.whitespace.WhiteSpacePlugin.activate=startup
 plugin.whitespace.WhiteSpacePlugin.author=André Kaplan & Nathan Jones
-plugin.whitespace.WhiteSpacePlugin.version=1.0.0
+plugin.whitespace.WhiteSpacePlugin.version=1.0.1
 plugin.whitespace.WhiteSpacePlugin.docs=users-guide.html
 
 plugin.whitespace.WhiteSpacePlugin.depend.0=jdk 1.5
