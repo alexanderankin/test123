@@ -202,7 +202,7 @@ public class WhiteSpaceHighlight extends TextAreaExtension
             // Inner whitespaces
             int i_i   = i_l;
             int idx_i = idx_l;
-            for (painter = null; i_i <= i_t && i_i > 0; i_i++, idx_i++) {
+            for (painter = null; i_i <= i_t; i_i++, idx_i++) {
                 char c = array[idx_i];
 
                 if (c == ' ') {
