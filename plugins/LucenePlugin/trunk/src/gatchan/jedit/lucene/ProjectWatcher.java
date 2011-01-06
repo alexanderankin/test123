@@ -48,7 +48,7 @@ public class ProjectWatcher
 	public void handleViewerUpdate(ViewerUpdate vu)
 	{
 		if (vu.getType().equals(ViewerUpdate.Type.PROJECT_LOADED))
-			LucenePlugin.instance.setCurrentIndex(vu.getView(), ((VPTProject)vu.getNode()).getName());
+			LucenePlugin.instance.setCurrentIndex(vu.getView(), vu.getNode().getName());
 	}
 
 	private void checkRemoveProjectIndex(String project)
