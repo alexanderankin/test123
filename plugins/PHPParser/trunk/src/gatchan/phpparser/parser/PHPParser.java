@@ -1327,7 +1327,7 @@ public class PHPParser implements PHPParserConstants {
                 endLine = constToken.endLine;
                 endColumn = constToken.endColumn;
     try {
-      token = jj_consume_token(IDENTIFIER);
+      token = methodIdentifier();
                         constName = token.image;
                         end = token.sourceEnd;
                         endLine = token.endLine;
@@ -11356,7 +11356,7 @@ Token arrayAssignToken;
 
   private boolean jj_3R_266() {
     if (jj_scan_token(CONST)) return true;
-    if (jj_scan_token(IDENTIFIER)) return true;
+    if (jj_3R_144()) return true;
     if (jj_scan_token(ASSIGN)) return true;
     if (jj_3R_209()) return true;
     if (jj_scan_token(SEMICOLON)) return true;
