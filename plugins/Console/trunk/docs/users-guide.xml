@@ -1542,6 +1542,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
     ProjectViewer 2.9 (optional). 
     <itemizedlist>
         <listitem><para> No longer generates hidden commandos in the dialog (available via combobox selector). </para></listitem>
+        <listitem><para> File hyperlinks (#3103198 - Damien Radtke) </para></listitem>
         <listitem><para> Configurable command history size (#2648110 - Eric Le Lay). </para></listitem>
         <listitem><para> Avoided occasional performance down with large output when maximum scroll buffer size is not set. (Kazutoshi Satoda). </para></listitem>
     </itemizedlist> </para>
