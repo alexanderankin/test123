@@ -611,18 +611,15 @@ public final class SchemaMappingManager
 			SchemaMapping tmp = new SchemaMapping();
 			tmp.ensureIncluded(builtinMapping);
 			try{
-				tmp.toDocument(schemas.toURL().toURI().toString());
+				tmp.toDocument(schemas.toURI().toURL().toString());
 			}catch(IOException ioe){
 				Log.log(Log.ERROR,SchemaMappingManager.class,"Unable to save default RelaxNG mappings",ioe);
-				return;
-			}catch(URISyntaxException ue){
-				Log.log(Log.ERROR,SchemaMappingManager.class,"Unable to save default RelaxNG mappings",ue);
 				return;
 			}
 		}
 		try
 		{
-			jEdit.setProperty(SCHEMA_MAPPING_PROP,schemas.toURL().toString());
+			jEdit.setProperty(SCHEMA_MAPPING_PROP,schemas.toURI().toURL().toString());
 		}
 		catch(java.net.MalformedURLException mfe)
 		{

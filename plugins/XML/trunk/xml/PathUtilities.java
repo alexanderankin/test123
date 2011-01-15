@@ -17,6 +17,7 @@ package xml;
 //{{{ Imports
 import java.io.File;
 import java.net.URI;
+import java.net.URL;
 import java.net.MalformedURLException;
 import java.util.regex.Pattern;
 
@@ -82,7 +83,9 @@ public final class PathUtilities
 	
 	//{{{ urlToPath() method
 	/**
-	 * @param	url	file:/ url
+	 * @param	url	file:/ url. 
+	 *				All illegal characters are required to be escaped,
+	 *				likely by a call to File.toURI().toURL()
 	 * @return	path without Scheme
 	 */
 	public static String urlToPath(String url)

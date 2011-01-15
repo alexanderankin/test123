@@ -692,7 +692,7 @@ public class Resolver implements EntityResolver2, LSResourceResolver
 						vfs._endVFSSession(session,null);
 					}
 
-					addUserResource(publicId,systemId,file.toURL().toString());
+					addUserResource(publicId,systemId,file.toURI().toURL().toString());
 					source.setByteStream(new FileInputStream(file));
 				}
 				else
