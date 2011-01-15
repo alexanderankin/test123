@@ -980,6 +980,9 @@ Chapter 22 of <emphasis>DocBook XSL: The Complete Guide</emphasis> by Bob Stayto
       <listitem><para>Fix NPE in XmlParsedData (bug #3053499 - Matthieu Casanova)</para></listitem>
       <listitem><para>XML Insert and the completion popup show a preview of entity values
       (feature request #1591422 - Eric Le Lay).</para></listitem>
+      <listitem><para>Fix various URISyntaxExceptions
+      (plugin patch #3148178 - Kazutoshi Satoda)</para></listitem>
+      
      </itemizedlist>
  </listitem>
 

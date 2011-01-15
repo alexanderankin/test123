@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+
+<!--
+  - valid file
+  - the schema is online, to test the behaviour of Resolver :
+    does it return properly encoded URLs for cached files (JEDIT_SETTINGS/dtds/cacheXYZ.xml)
+    when the settings directory contains spaces (eg on windows) ?
+    To test it:
+    	- open the file on windows,
+    	- accept to cache the schema,
+    	- reparse the file
+    See plugin patch #3148178 - XML: Fix for URISyntaxException about spaces in path
+    https://sourceforge.net/tracker/?func=detail&atid=997937&aid=3148178&group_id=588
+  -->
+<ACTIONS
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:noNamespaceSchemaLocation="https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/XML/trunk/test_data/simple/actions.xsd"
+   >
+   
+    <ACTION NAME="xmlindenter.indent">
+        <CODE>xml.indent.XmlIndenterPlugin.indentXml(view);</CODE>
+    </ACTION>
+    <ACTION NAME="xmlindenter.toggleSplitAttributes">
+        <CODE>xml.indent.XmlIndenterPlugin.toggleSplitAttributes(view);</CODE>
+    </ACTION>
+	
+</ACTIONS>
