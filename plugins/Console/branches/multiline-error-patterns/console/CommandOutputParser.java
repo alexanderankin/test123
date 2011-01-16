@@ -25,6 +25,7 @@ package console;
 // {{{ imports
 import java.awt.Color;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.util.Log;
 import errorlist.DefaultErrorSource;
 import errorlist.DefaultErrorSource.DefaultError;
 import errorlist.ErrorSource;
@@ -158,8 +159,7 @@ public class CommandOutputParser
 			if (error != null)
 			{
 				// Log.log(Log.WARNING,
-				// CommandOutputParserThread.class, "New Error
-				// in dir:" + directory);
+				// CommandOutputParser.class, "New Error in dir:" + directory);
 				lastError = error;
 				lastMatcher = m;
 				int type = lastError.getErrorType();
@@ -325,6 +325,8 @@ public class CommandOutputParser
 		// one error could be still pending
 		if (lastError != null)
 		{
+			if (errorSource.getErrorCount() == 0)
+				ErrorSource.registerErrorSource(errorSource);
 			errorSource.addError(lastError);
 			lastError = null;
 			lastMatcher = null;
