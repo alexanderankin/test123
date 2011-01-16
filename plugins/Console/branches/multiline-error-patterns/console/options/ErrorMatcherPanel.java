@@ -37,6 +37,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.Caret;
 
@@ -125,6 +127,32 @@ class ErrorMatcherPanel extends AbstractOptionPane
 		
 		addComponent(label, line, GridBagConstraints.HORIZONTAL);
 
+		Box b = Box.createHorizontalBox();
+		
+		label = new Label("options.console.errors.startchar", JLabel.RIGHT);
+		startChar = new JTextField(20);
+		
+		b.add(startChar);
+		
+		b.add(new Label("options.console.errors.startoffset", JLabel.RIGHT));
+		startOffset = new JSpinner(new SpinnerNumberModel(0,-10,10,1));
+		startOffset.setMaximumSize(startOffset.getPreferredSize());
+		b.add(startOffset);
+		addComponent(label, b, GridBagConstraints.HORIZONTAL);
+
+		b = Box.createHorizontalBox();
+		
+		label = new Label("options.console.errors.endchar", JLabel.RIGHT);
+		endChar = new JTextField(20);
+		
+		b.add(endChar);
+		
+		b.add(new Label("options.console.errors.endoffset", JLabel.RIGHT));
+		endOffset = new JSpinner(new SpinnerNumberModel(0,-10,10,1));
+		endOffset.setMaximumSize(endOffset.getPreferredSize());
+		b.add(endOffset);
+		addComponent(label, b, GridBagConstraints.HORIZONTAL);
+
 		label = new Label("options.console.errors.message",
 			JLabel.RIGHT);
 		
@@ -198,6 +226,10 @@ class ErrorMatcherPanel extends AbstractOptionPane
 		extra.setText(m.extraPattern);
 		filename.setText(m.fileBackref);
 		line.setText(m.lineBackref);
+		startChar.setText(m.startCharBackref);
+		startOffset.setValue(m.startOffset);
+		endChar.setText(m.endCharBackref);
+		endOffset.setValue(m.endOffset);
 		message.setText(m.messageBackref);
 		testArea.setText(m.testText);
 	}
@@ -216,6 +248,10 @@ class ErrorMatcherPanel extends AbstractOptionPane
 		m.extraPattern = extra.getText();
 		m.fileBackref = filename.getText();
 		m.lineBackref = line.getText();
+		m.startCharBackref = startChar.getText();
+		m.startOffset = (Integer)startOffset.getValue();
+		m.endCharBackref = endChar.getText();
+		m.endOffset = (Integer)endOffset.getValue();
 		m.messageBackref = message.getText();
 		m.testText = testArea.getText();
 
@@ -327,6 +363,14 @@ class ErrorMatcherPanel extends AbstractOptionPane
 
 	private JTextField line;
 
+	private JTextField startChar;
+
+	private JSpinner startOffset;
+
+	private JTextField endChar;
+	
+	private JSpinner endOffset;
+	
 	private JTextField message;
 
 	private JTextArea testArea;

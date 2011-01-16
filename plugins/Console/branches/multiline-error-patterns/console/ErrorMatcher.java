@@ -65,6 +65,14 @@ public class ErrorMatcher implements Cloneable
 
 	public String lineBackref;
 
+	public String startCharBackref;
+
+	public int startOffset;
+
+	public String endCharBackref;
+
+	public int endOffset;
+
 	public String messageBackref;
 
 	public StringList errors = null;
@@ -91,7 +99,7 @@ public class ErrorMatcher implements Cloneable
 
 	private String label;
 
-	private String file, line, message;
+	private String file, line, message, startChar, endChar;
 
 	private boolean hitEnd;
 
@@ -169,6 +177,8 @@ public class ErrorMatcher implements Cloneable
 				matcher.reset(matcher.group());
 				file = matcher.replaceFirst(fileBackref);
 				line = matcher.replaceFirst(lineBackref);
+				startChar = matcher.replaceFirst(startCharBackref);
+				endChar = matcher.replaceFirst(endCharBackref);
 				message = matcher.replaceAll(messageBackref);
 				return toLongString();
 			}
@@ -180,6 +190,7 @@ public class ErrorMatcher implements Cloneable
 			logmsg.add(label);
 			logmsg.add(internalName());
 			logmsg.add(e.getMessage());
+			e.printStackTrace();
 			Log.log(Log.WARNING, ErrorMatcher.class, logmsg.join(":"));
 		}
 		return null;
@@ -271,7 +282,7 @@ public class ErrorMatcher implements Cloneable
 	// {{{ toLongString()
 	public String toLongString()
 	{
-		String retval = "[" + label + "]" + file + ":" + line + ":" + message;
+		String retval = "[" + label + "]" + file + ":" + line + ":" + startChar + ":" + endChar + ":" + message;
 		return retval;
 	} // }}}
 
@@ -287,6 +298,10 @@ public class ErrorMatcher implements Cloneable
 		extraPattern = other.extraPattern;
 		fileBackref = other.fileBackref;
 		lineBackref = other.lineBackref;
+		startCharBackref = other.startCharBackref;
+		startOffset = other.startOffset;
+		endCharBackref = other.endCharBackref;
+		endOffset = other.endOffset;
 		messageBackref = other.messageBackref;
 		testText = other.testText;
 		isValid();
@@ -428,10 +443,28 @@ public class ErrorMatcher implements Cloneable
 			return null;
 
 		String _filename = MiscUtilities.constructPath(directory, file);
+
+		int startc = 0, endc = 0;
+		if(!"".equals(startChar))
+		{
+			try
+			{startc = Math.max(0,Integer.parseInt(startChar)+startOffset);}
+			catch(NumberFormatException nf){}
+		}
+		if(!"".equals(endChar))
+		{
+			try
+			{endc = Math.max(0,Integer.parseInt(endChar)+endOffset);}
+			catch(NumberFormatException nf){}
+		}
+
 		try
 		{
 			return new DefaultError(errorSource, type, _filename,
-				Math.max(0, Integer.parseInt(line) - 1), 0, 0, message);
+				Math.max(0, Integer.parseInt(line) - 1),
+				startc,
+				endc,
+				message);
 		}
 		catch (NumberFormatException nf)
 		{
@@ -471,6 +504,10 @@ public class ErrorMatcher implements Cloneable
 		extraPattern = jEdit.getProperty("console.error." + internalName + ".extra");
 		fileBackref = jEdit.getProperty("console.error." + internalName + ".filename");
 		lineBackref = jEdit.getProperty("console.error." + internalName + ".line");
+		startCharBackref = jEdit.getProperty("console.error." + internalName + ".startchar","");
+		startOffset = jEdit.getIntegerProperty("console.error." + internalName + ".startoffset",0);
+		endCharBackref = jEdit.getProperty("console.error." + internalName + ".endchar","");
+		endOffset = jEdit.getIntegerProperty("console.error." + internalName + ".endoffset",0);
 		messageBackref = jEdit.getProperty("console.error." + internalName + ".message");
 		testText = jEdit.getProperty("console.error." + internalName + ".testtext",
 			"\n\n\n\n\n");
@@ -491,6 +528,10 @@ public class ErrorMatcher implements Cloneable
 		jEdit.setProperty("console.error." + internalName + ".extra", extraPattern);
 		jEdit.setProperty("console.error." + internalName + ".filename", fileBackref);
 		jEdit.setProperty("console.error." + internalName + ".line", lineBackref);
+		jEdit.setProperty("console.error." + internalName + ".startchar", startCharBackref);
+		jEdit.setIntegerProperty("console.error." + internalName + ".startoffset", startOffset);
+		jEdit.setProperty("console.error." + internalName + ".endchar", endCharBackref);
+		jEdit.setIntegerProperty("console.error." + internalName + ".endoffset", endOffset);
 		jEdit.setProperty("console.error." + internalName + ".message", messageBackref);
 	}
 	// }}}

@@ -130,11 +130,17 @@ make: *** [.obj/controller.o] Error 1 \n
 
 options.console.errors.title=Edit Error Pattern
 options.console.errors.name=Name:
-options.console.errors.match=Error Regexp:
+options.console.errors.match=Error regexp:
 options.console.errors.warning=Warning regexp:
 options.console.errors.extra=Extra lines regexp:
 options.console.errors.filename=Filename:
 options.console.errors.line=Line number:
+options.console.errors.startchar=Start character:
+# this is +-
+options.console.errors.startoffset=\u00b1
+options.console.errors.endchar=End character:
+# this is +-
+options.console.errors.endoffset=\u00b1
 options.console.errors.message=Error message:
 
 console.not-filled-out.title=Fields not filled out
@@ -361,20 +367,44 @@ console.error.generic.line=$2
 console.error.generic.message=$3
 
 console.error.ocaml.name=Objective-Caml
-console.error.ocaml.match=File "([^"\\r\\n]+)", line (\\d+), characters (\\d+-\\d+)\:\\r?\\n(?!Warning )([^\\r\\n]+)
-console.error.ocaml.warning=File "([^"\\r\\n]+)", line (\\d+), characters (\\d+-\\d+)\:\\r?\\n(Warning .+)
+console.error.ocaml.match=File "([^"\\r\\n]+)", line (\\d+), characters (\\d+)-(\\d+)\:\\r?\\n(?!Warning )([^\\r\\n]+)
+console.error.ocaml.warning=File "([^"\\r\\n]+)", line (\\d+), characters (\\d+)-(\\d+)\:\\r?\\n(Warning .+)
 console.error.ocaml.extra=((?\!(?:File )|(?:val ))([^#].*)) 
 console.error.ocaml.filename=$1
 console.error.ocaml.line=$2
-console.error.ocaml.message=$3:$4
+console.error.ocaml.startchar=$3
+console.error.ocaml.startoffset=0
+console.error.ocaml.endchar=$4
+console.error.ocaml.endoffset=0
+console.error.ocaml.message=$5
+console.error.ocaml.testtext=File "test_ocaml.ml", line 65, characters 12-13\:\n\
+Error\: Unbound value g\n\
+File "test_ocaml.ml", line 20, characters 18-19\:\n\
+Error\: This expression has type int but an expression was expected of type\n\
+         'a * 'b\n\
+val toto \: titi -> tata list -> tata list = <fun>\n\
+File "test_ocaml.ml", line 19, characters 11-51\:\n\
+Warning 8\: this pattern-matching is not exhaustive.\n\
+Here is an example of a value that is not matched\:\n\
+[]\n\
+File "test_ocaml.ml", line 21, characters 3-10\:\n\
+Warning 11\: this match case is unused.\n\
+File "inventaire.ml", line 194, characters 1-3\:\n\
+Syntax error: ')' expected\n\
+File "hello.ml", line 210, characters 21-37\:\n\
+This expression has type (a * b) list\n\
+but is here used with type (a * c) list\n\
+Type b = d * tp option is not compatible with type c\n\#\n
 
 console.error.maven.name=Maven (javac)
-console.error.maven.match=^([^\:\\r\\n]+)\:\\[(\\d+),\\d+\\] (.+)
+console.error.maven.match=^([^\:\\r\\n]+)\:\\[(\\d+),(\\d+)\\] (.+)
 console.error.maven.warning=
 console.error.maven.extra=([ \\t]+(.*)|\\S+[ \\t]*\:.*)
 console.error.maven.filename=$1
 console.error.maven.line=$2
-console.error.maven.message=$3
+console.error.maven.startchar=$3
+console.error.maven.endchar=
+console.error.maven.message=$4
 console.error.maven.testtext=/somepath/src/main/java/xmpp/commands/CommandIQProvider.java\:[61,32] cannot find symbol\nsymbol  \: class PacketExtensionProvider\nlocation\: class xmpp.commands.CommandIQProvider\n\n\n
 
 ### Commando
