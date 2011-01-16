@@ -140,7 +140,7 @@ class ConsoleProcess
 		}
 		catch (Exception ioe)
 		{
-			Log.log(Log.ERROR, ioe, "ConsoleProcess()");
+			Log.log(Log.ERROR, "ConsoleProcess()", ioe);
 		}
 
 	} // }}}
