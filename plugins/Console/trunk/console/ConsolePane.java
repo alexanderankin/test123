@@ -324,7 +324,7 @@ public class ConsolePane extends JTextPane
 		if (actions == null || actions.length == 0)
 			return;
 
-		if (actions.length == 1)
+		if (actions.length == 0)
 		{
 			((Action) actions[0]).actionPerformed(new ActionEvent(this,
 				ActionEvent.ACTION_PERFORMED, null));
