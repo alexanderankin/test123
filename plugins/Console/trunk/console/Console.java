@@ -52,7 +52,6 @@ import javax.swing.text.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.*;
-import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.DockableWindowUpdate;
 import org.gjt.sp.jedit.msg.VFSPathSelected;
 import org.gjt.sp.jedit.msg.PluginUpdate;
@@ -997,49 +996,12 @@ implements EBComponent, DefaultFocusComponent
 		//{{{ writeSafely() method
 		private void writeSafely(AttributeSet attrs, String msg)
 		{
-			if(attrs != null && StyleConstants.getIcon(attrs) != null)
-				msg = " ";
 			try
 			{
-				// Rather than just print the output, this code searches through it line-by-line
-				// looking for a file-reference match. If it finds one, then it creates a new
-				// AttributeSet with underline for embedding a link to that file in the output
-
-				// This code only supports java exceptions; it should be extended to support other
-				// programs as well
-				String[] lines = msg.split("\n");
-				for (int i = 0; i<lines.length; i++) {
-					String token = lines[i];
-					// This regular expression tests for a java exception
-					if (token.matches("^\\s*?at .*?\\(.*?\\.java:\\d*?\\)$")) {
-						// Create new attribute set with a click action
-						MutableAttributeSet linkAttrs = new SimpleAttributeSet(attrs);
-						StyleConstants.setUnderline(linkAttrs, true);
-						linkAttrs.addAttribute(text.Actions, new Object[] { new JavaExceptionFileReference(token) });
-
-						// This is probably doing it the hard way, but all this does is limit the link
-						// to inside the parentheses; this makes the result cleaner
-						int pre = token.indexOf("(")+1;
-						int post = token.lastIndexOf(")");
-						scrollback.insertString(scrollback.getLength(),
-								token.substring(0, pre), attrs);
-						scrollback.insertString(scrollback.getLength(),
-								token.substring(pre, post), linkAttrs);
-						scrollback.insertString(scrollback.getLength(),
-								token.substring(post), attrs);
-					} else {
-						scrollback.insertString(scrollback.getLength(), token, attrs);
-					}
-					// A workaround to make sure that newlines get printed
-					if (i<(lines.length-1)) {
-						scrollback.insertString(scrollback.getLength(), "\n", attrs);
-					}
-				}
-				if (msg.endsWith("\n"))
-					scrollback.insertString(scrollback.getLength(), "\n", attrs);
-
-				//scrollback.insertString(scrollback.getLength(),
-				//	msg,attrs);
+				if(attrs != null && StyleConstants.getIcon(attrs) != null)
+					msg = " ";
+				scrollback.insertString(scrollback.getLength(),
+					msg,attrs);
 			}
 			catch(BadLocationException bl)
 			{
@@ -1050,52 +1012,6 @@ implements EBComponent, DefaultFocusComponent
 		} //}}}
 	} //}}}
 
-		//{{{ JavaExceptionFileReference class
-		/**
-		 * Experimental support for adding hyperlinks to files from java exceptions.
-		 * This class should probably go somewhere else
-		 */
-		private class JavaExceptionFileReference extends AbstractAction {
-
-			private String lineText;
-
-			public JavaExceptionFileReference(String lineText) {
-				super("Go to location");
-				// Trim off whitespace and the leading "at "
-				this.lineText = lineText.trim().substring(3);
-			}
-
-			public void actionPerformed(ActionEvent e) {
-				// This is also probably pulling this information out the hard way,
-				// but it simply pulls out the class name (ignoring the method name) and 
-				// line number.
-
-				// The file is located by converting the class name to a
-				// relative file path, and checking to see if that file exists relative
-				// to the current working directory.
-				String clazz = lineText.substring(0, lineText.lastIndexOf(".",
-							lineText.indexOf("(")));
-				Integer line = Integer.valueOf(lineText.substring(lineText.lastIndexOf(":")+1, lineText.lastIndexOf(")")));
-				String file = clazz.replace(".", File.separator)+".java";
-		
-				// TODO: Support searching through the classpath
-				// Also add support for opening files in jar archives w/ Archive plugin
-				SystemShell system = (SystemShell) Shell.getShell("System");
-				String workingDirectory = system.getConsoleState(Console.this).currentDirectory;
-				File f = new File(workingDirectory, file);
-				if (f.exists()) {
-					// Open the file, then jump to the line
-					Buffer buffer = jEdit.openFile(getView(), f.getPath());
-					VFSManager.waitForRequests();
-					// ???: Just go to the line, or select it?
-					getView().getTextArea().setCaretPosition(buffer.getLineStartOffset(line-1));
-					getView().getTextArea().requestFocus();
-				}
-			}
-		}
-		//}}}
-
-	
 	// {{{ LengthFilter class
 	static private class LengthFilter extends DocumentFilter
 	{
