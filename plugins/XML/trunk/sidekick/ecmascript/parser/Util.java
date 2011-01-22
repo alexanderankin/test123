@@ -523,7 +523,7 @@ public class Util extends Object {
     /**
      * Transforms a user wildcard into a java.util.regex.Pattern pattern string.
      *
-     * @param wildCard
+     * @param wildcard
      *            wildcard string
      * @return pattern string
      */

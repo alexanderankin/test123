@@ -216,7 +216,7 @@ public final class SchemaMapping
 	 * manually add a typeId mapping.
 	 * If the typeId mapping exists already, it is overriden
 	 *
-	 * @param	typeId	typeId
+	 * @param	tid		typeId
 	 * @param	target	target url or typeId
 	 * @param	targetIsTypeId	is the target itself a type id ?
 	 */
@@ -278,7 +278,6 @@ public final class SchemaMapping
 	 * @param	namespace	namespace of the root element of the parsed document
 	 * @param	prefix		prefix of the root element of the parsed document
 	 * @param	localName	localName of the root element of the parsed document
-	 * @param	followTypeId	if the schema referenced from the typeId should be returned
 	 * @return	matching mapping
 	 */
 	public Mapping getMappingForDocument(String publicId, String systemId,
@@ -467,9 +466,9 @@ public final class SchemaMapping
 		private int starCount;
 		
 		/**
-		 * @param	pattern	matched pattern
-		 * @param	target	typeID or URL
-		 * @param	targetIsTypeId	typeID / URL ?
+		 * @param	baseURI	baseURI to use if resource is relative
+		 * @param	fromPattern	matched pattern
+		 * @param	toPattern	result pattern
 		 * @throws	IllegalArgumentException if pattern is null
 		 */
 		public TransformURI(URI baseURI, String fromPattern, String toPattern)

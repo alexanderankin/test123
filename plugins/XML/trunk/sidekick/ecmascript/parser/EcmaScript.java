@@ -160,11 +160,11 @@ TOKEN:
 |
     < #BACKSLASH_SEQUENCE: "\\" <NON_TERMINATOR> >
 |
-    < #NON_TERMINATOR_FIRSTCHAR: ~["\n","\r"," "," ","*","\\","/"] >
+    < #NON_TERMINATOR_FIRSTCHAR: ~["\n","\r","?","?","*","\\","/"] >
 |
-    < #NON_TERMINATOR_CHAR: ~["\n","\r"," "," ","\\","/"] >
+    < #NON_TERMINATOR_CHAR: ~["\n","\r","?","?","\\","/"] >
 |
-    < #NON_TERMINATOR: ~["\n","\r"," "," "] >
+    < #NON_TERMINATOR: ~["\n","\r","?","?"] >
 |
     < #REGULAR_EXPRESSION_FLAGS: (<IDENTIFIER_PART>)* >
 }
