@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+<DOCKABLES>
+	<DOCKABLE NAME="xml-insert">
+		new xml.XmlInsert(view,position.equals(DockableWindowManager.TOP)
+			|| position.equals(DockableWindowManager.BOTTOM));
+	</DOCKABLE>
+</DOCKABLES>
