@@ -586,8 +586,8 @@ public class Comment extends Object {
      * Returns all javadoc tag values in the list of tags whose keys match the
      * specified key
      *
-     * @param key
-     *            javadoc tag key
+     * @param pattern
+     *            javadoc tag pattern
      * @return List of Tag instances
      */
     public List<Tag> getTags(Pattern pattern) {

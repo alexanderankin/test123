@@ -321,7 +321,7 @@ public class SchemaAutoLoader extends XMLFilterImpl implements EntityResolver2
 
     /**
      * capture the locator, in case we need to pass it to a schema
-     * @see installJaxpGrammar(String)
+     * @see #installJaxpGrammar(java.net.URI,String,boolean)
      */
     @Override
     public void setDocumentLocator(Locator l)

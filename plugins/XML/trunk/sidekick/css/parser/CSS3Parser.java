@@ -133,7 +133,7 @@ public class CSS3Parser implements CSS3ParserConstants {
     }
 
     /**
-     * @param A token to create a location from.
+     * @param t A token to create a location from.
      * @return A location representing the start of the token.
      */
     public Location getStartLocation(Token t) {
@@ -143,7 +143,7 @@ public class CSS3Parser implements CSS3ParserConstants {
     }
 
     /**
-     * @param A token to create a location from.
+     * @param t A token to create a location from.
      * @return A location representing the end of the token.
      */
     public Location getEndLocation(Token t) {

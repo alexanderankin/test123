@@ -100,13 +100,6 @@ public class ElementDecl
 	} //}}}
 
 	//{{{ withPrefix()
-	/**
-	 *  Acts as a filter for getting rid of completions that can't
-	 *  work because of what you already typed
-	 *  
-	 *  @param prefix the prefix you already typed.
-	 *  @return the same object, or null if you can't get there from here.
-	 */
 	public ElementDecl withPrefix(String prefix)
 	{
 		if(prefix.equals(""))
@@ -120,14 +113,7 @@ public class ElementDecl
 		}
 	} //}}}
 
-	//{{{ withPrefix()
-	/**
-	 *  Acts as a filter for getting rid of completions that can't
-	 *  work because of what you already typed
-	 *  
-	 *  @param prefix the prefix you already typed.
-	 *  @return the same object, or null if you can't get there from here.
-	 */
+	//{{{ withContext()
 	public ElementDecl withContext(Map<String,String> context)
 	{
 		String ns = completionInfo.namespace;

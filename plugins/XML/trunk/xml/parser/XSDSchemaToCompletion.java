@@ -255,7 +255,7 @@ public class XSDSchemaToCompletion{
 	 * parse a schema and return CompletionInfos for all its target namespaces
 	 * @param	location			location of the schema to parse
 	 * @param	schemaLocation		namespace-location pairs found in xsi:schemaLocation attribute. Used to resolve imported schema
-	 * @param	nonschemaLocation	location found in xsi:noNamespaceSchemaLocation attribute. Used to resolve imported schema
+	 * @param	nonsSchemaLocation	location found in xsi:noNamespaceSchemaLocation attribute. Used to resolve imported schema
 	 * @param	errorHandler		to report errors while parsing the schema
 	 * @param	buffer				requesting buffer, for caching
 	 */
