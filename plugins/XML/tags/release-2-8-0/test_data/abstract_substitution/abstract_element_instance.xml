@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<!-- validation succeeds when ipo:comment doesn't appear, fails overwise -->
+<purchaseReport
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://www.example.com/Report"
+  xmlns:ipo="http://www.example.com/IPO"
+  xsi:schemaLocation="http://www.example.com/Report
+	abstract_element.xsd
+	http://www.example.com/IPO
+	comments.xsd">
+
+  	<ipo:shipComment>Use gold wrap if possible</ipo:shipComment>
+    <ipo:customerComment>Want this for the holidays!</ipo:customerComment>
+	<!-- bah : no comment is allowed here -->
+	<ipo:comment>I'm abstract, remember ?</ipo:comment>
+</purchaseReport>

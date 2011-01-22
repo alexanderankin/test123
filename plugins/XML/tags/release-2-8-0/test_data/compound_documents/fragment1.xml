@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- :xml.root=root.xml: -->
+<!-- This is one part of a compound document, see root.xml -->
+<chapter xml:id="customizing">
+    <title>Customizing jEdit</title>
+    <section xml:id="customizing-section">
+        <!-- XML Insert dockable shows all the IDs
+         in the compound document : great ! -->
+
+     <title>Title</title>
+    </section>
+<!-- FIXME: an error about absent.xml is reported here -->
+</chapter>

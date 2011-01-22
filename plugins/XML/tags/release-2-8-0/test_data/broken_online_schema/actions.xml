@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+
+<!--
+  - valid file
+  - referencing a broken distant schema (with escaped spaces in the url).
+  => IT WORKS !
+  -->
+<ACTIONS
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:noNamespaceSchemaLocation="https://jedit.svn.sourceforge.net/svnroot/jedit/plugins/XML/trunk/test_data/dir%20with%20space/actions.xsd"
+   >
+   
+    <ACTION NAME="xmlindenter.indent">
+        <CODE>xml.indent.XmlIndenterPlugin.indentXml(view);</CODE>
+    </ACTION>
+    <ACTION NAME="xmlindenter.toggleSplitAttributes">
+        <CODE>xml.indent.XmlIndenterPlugin.toggleSplitAttributes(view);</CODE>
+    </ACTION>
+	
+</ACTIONS>
