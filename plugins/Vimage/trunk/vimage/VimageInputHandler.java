@@ -20,13 +20,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 package vimage;
 
-import java.lang.Class;
-import java.lang.reflect.Method;
+import java.awt.datatransfer.StringSelection;
 import java.lang.StringBuffer;
 
-import java.util.Map;
 import java.util.Vector;
-import java.util.HashMap;
 import java.util.Collection;
 
 import org.gjt.sp.util.Log;
@@ -42,10 +39,8 @@ import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.jedit.BeanShell;
 import org.gjt.sp.jedit.EditAction;
-import org.gjt.sp.jedit.bsh.Interpreter;
 import org.gjt.sp.jedit.bsh.NameSpace;
 import org.gjt.sp.jedit.bsh.BshMethod;
-import org.gjt.sp.jedit.bsh.This;
 import org.gjt.sp.jedit.Registers;
 
 class InvokeBufferListener extends BufferAdapter
@@ -406,7 +401,7 @@ public class VimageInputHandler extends DefaultInputHandler
             // Append the new register text to the saved register text if in append mode
             if ((reg_text != null) && (this.register == orig_reg)) {
                 Registers.Register reg = Registers.getRegister(this.register);
-                reg.setValue(reg_text + reg.toString());
+                reg.setTransferable(new StringSelection(reg_text + reg.toString()));
             }
             buffer.removeBufferListener(listener);
             // TODO: Clean this up
