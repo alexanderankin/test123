@@ -33,6 +33,7 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
@@ -542,7 +543,7 @@ public class BrowseRepositoryPanel extends JPanel {
                         return ;
                     }
                     String url = getUrl( path );
-                    ( ( Registers.ClipboardRegister ) Registers.getRegister( '$' ) ).setValue( url );
+                    Registers.getRegister( '$' ).setTransferable( new StringSelection( url ) );
                 }
             }
         );
