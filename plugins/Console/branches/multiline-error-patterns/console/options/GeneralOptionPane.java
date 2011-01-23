@@ -100,7 +100,7 @@ public class GeneralOptionPane extends AbstractOptionPane implements ActionListe
 		
 		Label limitHistoryLabel = new Label("options.console.general.historylimit");
 		limitHistory = new JTextField(jEdit.getProperty("console.historyLimit",
-			String.valueOf(HistoryModel.getDefaultMax())));
+			/*String.valueOf(HistoryModel.getDefaultMax())*/"20"));
 		addComponent(limitHistoryLabel, limitHistory);
 		
 		usejEditBgColor = new JButton("reset");
@@ -134,13 +134,13 @@ public class GeneralOptionPane extends AbstractOptionPane implements ActionListe
 		else
 			jEdit.unsetProperty("console.outputLimit");
 		
-		String limithist = limitHistory.getText();
+		/*String limithist = limitHistory.getText();
 		if(limithist != null && limithist.length() > 0
 			&& !String.valueOf(HistoryModel.getDefaultMax()).equals(limithist))
 			jEdit.setProperty("console.historyLimit", limithist);
 		else
 			jEdit.unsetProperty("console.historyLimit");
-
+		*/
  		jEdit.setProperty("console.encoding", 
  			(String)encoding.getSelectedItem());
 
