@@ -12,6 +12,7 @@ import org.gjt.sp.util.StringList;
  *
  * @version $Id$
  * @author ezust
+ * @author Eric Le Lay
  * @since Console 4.2.5
  *
  */
@@ -41,10 +42,11 @@ public class ErrorListModel extends DefaultListModel
     } // }}}
 
     // {{{ reset
-	/* writes the default list back to console.errors.list */
+	/* reset the visible list to default, but don't save the changes
+	   to allow for cancel in the option pane
+	 */
 	public void reset() {
-		jEdit.setProperty("console.errors.list", m_default.join(" ") );
-		restore();
+		restore(m_default.join(" ") );
     } // }}}
 	// {{{
 	public void save()
@@ -64,10 +66,18 @@ public class ErrorListModel extends DefaultListModel
 	/* Restores from properties, the default list */
 	public void restore()
 	{
+		restore(jEdit.getProperty("console.errors.list", ""));
+    }
+	
+    /** Restores the given visible list from properties
+     *  @param	visibleList	list of matcher names, separated by spaces
+     */
+	private void restore(String visibleList)
+	{
 		super.clear();
 		m_matchers = new ArrayList<ErrorMatcher>();
 		m_default = StringList.split(jEdit.getProperty("console.errors.default", ""), "\\s+");
-		StringList visible = StringList.split(jEdit.getProperty("console.errors.list", ""), "\\s+");
+		StringList visible = StringList.split(visibleList, "\\s+");
 		if (visible.size() == 0) {
 			jEdit.setProperty("console.errors.list", m_default.join(" "));
 			visible = m_default;
@@ -81,8 +91,6 @@ public class ErrorListModel extends DefaultListModel
 		}
 
     } // }}}
-
-
 
 
 	// {{{ removeElementAt
