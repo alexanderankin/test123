@@ -21,15 +21,14 @@ package xml;
 
 //{{{ Imports
 import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
 import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.*;
 
 import javax.swing.text.Segment;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -42,7 +41,6 @@ import org.gjt.sp.jedit.gui.StatusBar;
 import org.gjt.sp.jedit.msg.PositionChanging;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.Macros;
-import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Registers;
@@ -50,7 +48,6 @@ import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.util.Log;
-import org.xml.sax.Attributes;
 
 import sidekick.SideKickParsedData;
 import xml.completion.ElementDecl;
@@ -1132,7 +1129,7 @@ loop:			for(;;)
 		
 		if(xpath!=null)
 		{
-			Registers.getRegister('$').setValue(xpath);
+			Registers.getRegister('$').setTransferable(new StringSelection(xpath));
 		}
 		
 	}
