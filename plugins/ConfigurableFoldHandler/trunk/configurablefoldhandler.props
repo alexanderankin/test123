@@ -1,7 +1,7 @@
 plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.activate=true
 plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.name=Configurable Fold Handler
-plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.author=C.J.Kent
-plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.version=0.6.3
+plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.author=C.J.Kent, Shlomy Reinstein
+plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.version=0.7
 plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.docs=configurablefolding.html
 plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.depend.0=jedit 04.03.08.00
 plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.depend.1=jdk 1.5

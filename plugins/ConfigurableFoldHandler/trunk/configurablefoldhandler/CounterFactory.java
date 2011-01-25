@@ -23,9 +23,6 @@ package configurablefoldhandler;
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-import org.gjt.sp.util.Log;
-
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * This class creates and returns a new implementation of {@link RegexCounter}.
@@ -38,33 +35,6 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class CounterFactory
 {
-	private Class counterClass;
-	
-	public CounterFactory()
-	{
-		String counterClassName;
-		
-		try
-		{
-			Class.forName("java.util.regex.Pattern");
-			counterClassName = "configurablefoldhandler.JavaRegexCounter";
-		}
-		catch(ClassNotFoundException ex)
-		{
-			counterClassName = "configurablefoldhandler.GNURegexCounter";
-		}
-		
-		try
-		{
-			counterClass = Class.forName(counterClassName);
-		}
-		catch(ClassNotFoundException ex)
-		{
-			// should never happen
-			Log.log(Log.ERROR, this, ex.getMessage());
-		}
-	}
-	
 	/**
 	 * Returns a new {@link FoldCounter} instance.
 	 */
@@ -72,24 +42,8 @@ public class CounterFactory
 		boolean useRegex) throws FoldStringsException
 	{
 		if (useRegex)
-		{
-			try
-			{
-				return (FoldCounter) counterClass.getConstructors()[0]
-					.newInstance(new Object[] { startStr, endStr });
-			}
-			catch(InvocationTargetException e)
-			{
-				throw new FoldStringsException(e.getTargetException());
-			}
-			catch(Exception e)
-			{
-				throw new FoldStringsException(e);
-			}
-		}
+			return new JavaRegexCounter(startStr, endStr);  
 		else
-		{
 			return new PlainCounter(startStr, endStr);
-		}
 	}
 }
