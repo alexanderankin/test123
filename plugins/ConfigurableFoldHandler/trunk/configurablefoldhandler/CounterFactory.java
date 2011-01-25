@@ -25,13 +25,7 @@ package configurablefoldhandler;
 
 
 /**
- * This class creates and returns a new implementation of {@link RegexCounter}.
- * The implementing class depends on the version of Java that is being used.
- * Under Java 1.3 a {@link GNURegexCounter} is returned that uses the
- * <code>gnu.regexp</code> package for matching. Under Java 1.4 a
- * {@link JavaRegexCounter} is returned that uses the
- * <code>java.util.regex</code> classes for matching (and therefore supports a
- * wider range of regex syntax).
+ * This class creates and returns a new implementation of {@link FoldCounter}.
  */
 public class CounterFactory
 {
