@@ -1,0 +1,54 @@
+plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.activate=true
+plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.name=Configurable Fold Handler
+plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.author=C.J.Kent, Shlomy Reinstein
+plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.version=0.7
+plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.docs=configurablefolding.html
+plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.depend.0=jedit 04.03.08.00
+plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.depend.1=jdk 1.5
+plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.description=The ConfigurableFoldHandler plugin adds a new fold handler to jEdit that allows the user to specify the strings that define the start and end of a fold.
+
+# menu
+plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.menu=\
+	configurablefoldhandler.buffer-fold-strings \
+	configurablefoldhandler.create-temp-fold \
+	configurablefoldhandler.create-persistent-fold \
+	configurablefoldhandler.remove-manual-fold
+configurablefoldhandler.buffer-fold-strings.label=Buffer fold strings
+configurablefoldhandler.create-temp-fold.label=Create temporary fold for selected lines
+configurablefoldhandler.create-persistent-fold.label=Create persistent fold for selected lines
+configurablefoldhandler.remove-manual-fold.label=Remove manual fold at caret position
+
+# options pane
+plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.option-pane=configurablefoldhandler
+options.configurablefoldhandler.code=new configurablefoldhandler.ConfigurableFoldHandlerOptionsPane();
+
+options.configurablefoldhandler.label=Configurable Folding
+options.configurablefoldhandler.foldstart=Fold start string:
+options.configurablefoldhandler.foldend=Fold end string:
+options.configurablefoldhandler.separator.default=Default
+options.configurablefoldhandler.separator.mode-specific=Mode-Specific
+options.configurablefoldhandler.mode=Edit mode:
+options.configurablefoldhandler.use-default=Use default fold strings
+options.configurablefoldhandler.use-regex=Use regular expressions
+options.configurablefoldhandler.use-default-mode=Use default fold strings for mode
+options.configurablefoldhandler.dialog.title=Buffer fold strings
+options.configurablefoldhandler.dialog.cancel=Cancel
+options.configurablefoldhandler.dialog.ok=OK
+
+# exception messages
+configurablefoldhandler.exception.emptystring=Neither fold string can be empty.
+
+# message for error box
+configurablefoldhandler.badstrings=The fold strings are not valid. Error:
+configurablefoldhandler.errortitle=ConfigurableFoldHander error
+configurablefoldhandler.optionpaneerror=Unable to create fold strings. Error:\n{0}\nCustom folding disabled for {1} mode.
+configurablefoldhandler.wrongfoldhandler=The operation cannot be performed, because the folding mode is not "custom".
+
+# default fold settings
+configurablefoldhandler.mode.xml.default.startfold=<[^!/\?].*?[^/-]>
+configurablefoldhandler.mode.xml.default.endfold=</.*?>
+configurablefoldhandler.mode.xml.default.use-regex=true
+
+configurablefoldhandler.mode.xsl.default.startfold=<[^!/\?].*?[^/-]>
+configurablefoldhandler.mode.xsl.default.endfold=</.*?>
+configurablefoldhandler.mode.xsl.default.use-regex=true
