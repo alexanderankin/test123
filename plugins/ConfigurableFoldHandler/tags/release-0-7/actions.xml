@@ -1,0 +1,28 @@
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="configurablefoldhandler.buffer-fold-strings">
+		<CODE>
+			import configurablefoldhandler.BufferFoldStringsDialog;
+			new BufferFoldStringsDialog(view).show();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="configurablefoldhandler.create-temp-fold">
+		<CODE>
+			import configurablefoldhandler.ConfigurableFoldHandlerPlugin;
+			ConfigurableFoldHandlerPlugin.createManualFold(textArea, false);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="configurablefoldhandler.create-persistent-fold">
+		<CODE>
+			import configurablefoldhandler.ConfigurableFoldHandlerPlugin;
+			ConfigurableFoldHandlerPlugin.createManualFold(textArea, true);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="configurablefoldhandler.remove-manual-fold">
+		<CODE>
+			import configurablefoldhandler.ConfigurableFoldHandlerPlugin;
+			ConfigurableFoldHandlerPlugin.removeManualFold(textArea);
+		</CODE>
+	</ACTION>
+</ACTIONS>

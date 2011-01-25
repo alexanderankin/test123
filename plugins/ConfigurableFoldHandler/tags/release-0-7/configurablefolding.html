@@ -1,0 +1,116 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>Configurable Fold Handler</title>
+  </head>
+  <body>
+    <h2>Configurable Fold Handler</h2>
+    <p>
+      <b>Chris Kent (<a href="mailto:ckent@espeed.co.uk">ckent@espeed.co.uk</a>), Shlomy Reinstein
+         (<a href="mailto:shlomy@users.sourceforge.net">shlomy@users.sourceforge.net</a>)</b>
+    </p>
+    <p>
+      <h4>Introduction</h4>
+      This plugin adds a fold handler that allows the user to specify the
+      strings that define the start and end of a fold.
+    </p>
+    <p>
+      <h4>Enabling Configurable Folding</h4>
+      To enable configurable folding the folding mode must be set to
+      &quot;custom&quot;. This is done from the folding mode drop downs
+      in the buffer options dialog or by setting the default folding mode
+      in global options->editing or global options->mode-specific options
+      panes.
+    </p>
+    <p>
+      <h4>Fold Strings</h4>
+      Different fold strings can be specified for each edit mode and for
+      individual buffers. Fold settings work in the same way as for other
+      buffer settings. Global and mode-specific options are retained
+      between jEdit sessions but buffer-specific fold strings are only
+      retained as long as the buffer remains open.
+    </p>
+    <p>
+      Defaults fold strings for each mode are set in the Configurable Folding
+      section of the Plugin Options dialog. Fold strings are set for each buffer
+      individually using Plugins->Configurable Fold Handler->Buffer Fold
+      Strings.
+    </p>
+    <p>
+      Fold strings cannot be blank. If invalid strings are entered in the Plugin
+      Options dialog then an error message is displayed and folding is disabled
+      for the selected mode. The Buffer Fold Strings dialog will not allow
+      invalid strings to be entered.
+    </p>
+    <p>
+      <h4>Regular Expressions</h4>
+      If the "Use Regular Expressions" checkbox is selected then the fold
+      handler will treat the strings as regular expressions and use them
+      to match the start and end of folds. 
+    </p>
+    <p>
+      <h4>Multiple Fold Strings</h4>
+      In order to match on multiple strings the "Use Regular Expressions"
+      option should be enabled and the list of strings separated with the
+      | (pipe) character. For example <code>public|private|if|switch
+      </code>. If there are any regular expression special characters in
+      the start or end strings then they'll need to be preceeded with a
+      backslash ('\') character otherwise the folding won't work as
+      anticipated. These characters include the following:
+      <pre>
+  * . \ ? + | [ ] ( ) ^</pre>
+    </p>
+    <p>
+      <h4>Some Example Regular Expressions</h4>
+        For folding XML files with no indent the following start and end
+        strings can be used:
+        <pre>
+  &lt;[^!/\?].*?[^/-]&gt;
+  &lt;/.*?&gt;</pre>
+        These only work properly if tags aren't broken across multiple lines.
+      <p>
+        For Java, C and C++ code the following are useful to fold on
+        both brackets and range comments:
+  <pre>
+  \{|/\*
+  \}|\*/</pre>
+      </p>
+      <p>
+        If the start or end fold string is a substring of the other then
+        normal folding will not work correctly. This can sometimes be
+        worked around using regualar expressions. For example to match
+        the strings <code>Function</code>, <code>End Function</code> the
+        following regular expressions would work:
+        <pre>
+  (?&lt;!End )Function
+  End Function</pre>
+      </p>
+      <p>
+        The following versions are slightly more complete as they specify that the strings must be preceeded and followed by a word break (\b).
+      <pre>
+  (?&lt;!End )\bFunction\b
+  \bEnd Function\b</pre>
+      <p>
+        If anyone has any other useful regular expressions or any default fold
+        strings for any jEdit mode then please let me know and I'll include
+        them.
+      </p>
+    </p>
+	    <p>
+      <h4>Manual folds</h4>
+	  You can also use the plugin to create manual folds, by selecting a range
+	  of lines and using "Plugins->Configurable Fold Handler->Create
+	  ... fold for selected lines". Manual folds can be temporary or persistent.
+	  Manual folds may be helpful, but they must be used with care:
+	  <ul>
+	  <li>They might break the folding of the buffer if they collide with
+	  other folds (e.g. a manual fold in lines 5-8 would collide with another
+	  fold in lines 6-10). Use manual folds only where they don't collide with
+	  other folds.
+	  <li>They are created using fixed line numbers, and do not move when lines
+	  are inserted to the buffer or removed from it. It is recommended to use
+	  manual folds only in buffers that will not be modified.
+	  </ul>
+    </p>
+  </body>
+</html>
