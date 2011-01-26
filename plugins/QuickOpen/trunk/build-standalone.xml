@@ -3,7 +3,8 @@
 <!--
      This is a build file for building the QuickOpen plugin. It can be used
      outside of jEdit's plugi infrastruacture. The 'package' target compiles 
-     the plugin and creates the JAR file.
+     the plugin and creates the JAR file. Use as:
+        ant -f build-standalone.xml
 -->
 
 <project name="QuickOpen" default="build" basedir=".">
