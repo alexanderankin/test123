@@ -1,7 +1,7 @@
 /*
  * @(#)QuickOpenFrameController.java   2011.01.15 at 11:08:08 PST
  *
- * Copyright 2009 MBARI
+ * Copyright 2011 Brian Schlining
  *
  *
  * Unless required by applicable law or agreed to in writing, software

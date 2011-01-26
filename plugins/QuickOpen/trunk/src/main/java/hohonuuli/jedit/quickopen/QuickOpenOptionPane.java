@@ -1,7 +1,7 @@
 /*
  * @(#)QuickOpenOptionPane.java   2011.01.21 at 04:10:05 PST
  *
- * Copyright 2009 MBARI
+ * Copyright 2011 Brian Schlining
  *
  *
  * Unless required by applicable law or agreed to in writing, software
