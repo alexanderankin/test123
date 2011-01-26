@@ -167,8 +167,10 @@ public class FileList {
                 String name = file.getName();
                 boolean isHidden = name.startsWith(".");
                 boolean include = isHidden ? includeHidden : true;
-                if (file.isDirectory() && include && !excludedDirectories.contains(name)) {
-                    process(file);
+                if (file.isDirectory()) {
+                    if (include && !excludedDirectories.contains(name)) {
+                        process(file);
+                    }
                 }
                 else if (include && !excludedExtensions.contains(parseExt(name))) {
                     files.add(file);
