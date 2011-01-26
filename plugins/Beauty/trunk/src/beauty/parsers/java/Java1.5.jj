@@ -2096,8 +2096,80 @@ void TryStatement():
 {}
 {
   "try" { add("try "); } Block()
-  ( "catch" "(" { trimWhitespace(); add(" catch ( "); } FormalParameter() ")" { add(" ) "); } Block() )*
-  [ "finally" { trimWhitespace(); add(" finally"); } Block() ]
+  ( "catch" "(" 
+      { 
+          // DONE: check for comment preceding the 'catch'. See 'else' for how
+          // to handle this. Don't forget to deal with 'finally' also.
+            Token st = t.specialToken;
+            Token ct = null;    // comment token
+            while (st != null && ct == null) {
+                switch(st.kind) {
+                    // skip over whitespace
+                    case JavaParserConstants.LINE_ENDERS:
+                    case JavaParserConstants.BLANK_LINES:
+                    case JavaParserConstants.SPACES:
+                    case JavaParserConstants.TABS:
+                        st = st.specialToken;
+                        continue;
+                    // check for comment
+                    case JavaParserConstants.END_OF_LINE_COMMENT:
+                    case JavaParserConstants.JAVADOC_COMMENT:
+                    case JavaParserConstants.BLOCK_COMMENT:
+                        ct = st;
+                        break;
+                    default:
+                        continue;
+                }
+            }
+            trimWhitespace(); 
+            trim(); 
+            if (ct != null || bracketStyle == BROKEN) {
+                // have comment token preceding 'catch', so start 'catch' on new line
+                writeln();
+                add("catch ( ");
+            }
+            else {
+                add(" catch ( "); 
+            }
+      } 
+      FormalParameter() ")" { add(" ) "); } Block() )*
+  [ 
+    "finally" 
+        { 
+            Token st = t.specialToken;
+            Token ct = null;    // comment token
+            while (st != null && ct == null) {
+                switch(st.kind) {
+                    // skip over whitespace
+                    case JavaParserConstants.LINE_ENDERS:
+                    case JavaParserConstants.BLANK_LINES:
+                    case JavaParserConstants.SPACES:
+                    case JavaParserConstants.TABS:
+                        st = st.specialToken;
+                        continue;
+                    // check for comment
+                    case JavaParserConstants.END_OF_LINE_COMMENT:
+                    case JavaParserConstants.JAVADOC_COMMENT:
+                    case JavaParserConstants.BLOCK_COMMENT:
+                        ct = st;
+                        break;
+                    default:
+                        continue;
+                }
+            }
+            trimWhitespace(); 
+            trim(); 
+            if (ct != null || bracketStyle == BROKEN) {
+                // have comment token preceding 'finally', so start 'finally' on new line
+                writeln();
+                add("finally ");
+            }
+            else {
+                add(" finally"); 
+            }
+        } 
+        Block() 
+  ]
 }
 
 /* We use productions to match >>>, >> and > so that we can keep the
