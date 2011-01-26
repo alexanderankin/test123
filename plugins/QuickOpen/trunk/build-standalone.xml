@@ -1,8 +1,9 @@
 <?xml version="1.0"?>
 
 <!--
-     This is a build.xml file for building the QuickOpen plugin.
-     The 'package' target compiles the plugin and creates the JAR file.
+     This is a build file for building the QuickOpen plugin. It can be used
+     outside of jEdit's plugi infrastruacture. The 'package' target compiles 
+     the plugin and creates the JAR file.
 -->
 
 <project name="QuickOpen" default="build" basedir=".">
@@ -39,7 +40,8 @@
         COMPILE
     -->
     <target name="compile" depends="init">
-        <javac srcdir="${src.java}" destdir="target/classes" deprecation="on" includeJavaRuntime="yes" debug="on">
+        <javac srcdir="${src.java}" destdir="target/classes" deprecation="on" 
+        includeJavaRuntime="yes" debug="on" source="${compiler.source}" target="${compiler.target}">
             <compilerarg value="-Xlint"/>
             <classpath refid="project.class.path"/>
         </javac>
