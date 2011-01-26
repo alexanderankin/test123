@@ -1,77 +1,25 @@
-<?xml version="1.0"?>
-
-<!--
-     This is a build.xml file for building the QuickOpen plugin.
-     The 'package' target compiles the plugin and creates the JAR file.
--->
-
+<?xml version="1.0" ?>
 <project name="QuickOpen" default="build" basedir=".">
-
-    <!-- <import file="../build-support/plugin-build.xml" /> -->
-
-
-    <property file="build.properties"/>
-    <property file="../build.properties"/>
-    <property file="${user.home}/.build.properties"/>
-    <property file="${user.home}/build.properties"/>
-    <property name="jedit.install.dir" value="/Applications/jEdit.app/Contents/Resources/Java/" />
-    <property name="jar.name" value="${ant.project.name}.jar"/>
-    <property name="src.java" value="src/main/java" />
-    <property name="src.resources" value="src/main/resources" />
+	<property file="build.properties" />
+	<property file="../build.properties" />
+	<property name="compiler.source" value="1.6" />
+	<property name="compiler.target" value="1.6" />
+	<property name="src.dir" value="src/main/java" />
 	
-	<!-- define the class path -->
-    <path id="project.class.path">
-        <pathelement location="${jedit.install.dir}/jedit.jar"/>
-        <pathelement location="${src.resources}"/>
-    </path>
-
-    <!--
-        INIT
-    -->
-    <target name="init">
-        <mkdir dir="target" />
-        <mkdir dir="target/classes" />
-    </target>
-
-    <!--
-        COMPILE
-    -->
-    <target name="compile" depends="init">
-        <javac srcdir="${src.java}" destdir="target/classes" deprecation="on" includeJavaRuntime="yes" debug="on">
-            <compilerarg value="-Xlint"/>
-            <classpath refid="project.class.path"/>
-        </javac>
-        <copy todir="target/classes">
-            <fileset dir="${src.resources}" />
-        </copy>
-    </target>
-
-    <!--
-        PACKAGE
-    -->
-    <target name="package" depends="compile">
-    
-        <!-- create jar file -->
-        <jar jarfile="${jar.name}">
-      
-            <!-- add compiled classes to jar. Resources were moved here in compile task -->
-            <fileset dir="target/classes"/>
-
-        </jar>
-    </target>
+	<!-- Documentation process
+	none: if you supply your own html file as this template does.
+	xsltproc: if you plan on using docbook
+	-->
+	<property name="docs-proc.target" value="xsltproc" />
+	<import file="${build.support}/plugin-build.xml" />
 	
-    <!-- cleans build directory -->
-    <target name="clean">
-        <delete dir="target"/>
-        <delete>
-            <fileset dir="." includes="**/*~" defaultexcludes="no"/>
-        </delete>
-        <delete file="${jar.name}" />
-    </target>
-
-    <!--
-        Default Target used by jEdit's plugin build -->
-    <target name="build" depends="package" />
-
+	<!-- If you want any extra files to be included with your plugin's jar,
+	such as custom images, you need to specify them here. -->
+	<selector id="packageFiles">
+		<and>
+			<or>
+				<filename name="resources/*.*" />
+			</or>
+		</and>
+	</selector>
 </project>
-
