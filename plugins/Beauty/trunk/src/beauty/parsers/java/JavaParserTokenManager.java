@@ -37,6 +37,8 @@ public class JavaParserTokenManager implements JavaParserConstants
     // a specific separator
     static String ls = System.getProperty("line.separator");
 
+    static int bracketStyle = JavaParser.ATTACHED;
+
     static void reset() {
         b = new StringBuilder();
         outputBuffer = new StringBuilder();
@@ -52,26 +54,31 @@ public class JavaParserTokenManager implements JavaParserConstants
         ls = le;
     }
 
+    static void setBracketStyle(int style) {
+        bracketStyle = style;
+    }
+
     static void setIndentWidth(int w) {
         indent_width = w;
         if (indent_width <= 0) {
             indent_width = 4;
         }
-        indent = "";
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < w; i++) {
-            indent += " ";
+            sb.append(' ');
         }
+        indent = sb.toString();
         double_indent = indent + indent;
     }
 
     static void setUseSoftTabs(boolean b) {
         useSoftTabs = b;
         if (b) {
-            indent = "\u005ct";
-            double_indent = "\u005ct\u005ct";
+            setIndentWidth(indent_width);
         }
         else {
-            setIndentWidth(indent_width);
+            indent = "\u005ct";
+            double_indent = "\u005ct\u005ct";
         }
     }
 
@@ -413,7 +420,7 @@ public class JavaParserTokenManager implements JavaParserConstants
         // may have trailing whitespace
         String line = lines[0].trim();
         for (int j = 0; j < level; j++) {
-            line = "    " + line;       // 4 spaces
+            line = indent + line;       // 4 spaces
         }
         outputBuffer.append(line);
 
@@ -434,7 +441,7 @@ public class JavaParserTokenManager implements JavaParserConstants
 
             // apply indenting. The Sun rule is 4 spaces.
             for (int j = 0; j < level; j++) {
-                line = "    " + line;
+                line = indent + line;
             }
 
             outputBuffer.append(line);
@@ -451,7 +458,7 @@ public class JavaParserTokenManager implements JavaParserConstants
         // may have trailing whitespace
         String line = lines[0].trim();
         for (int j = 0; j < level; j++) {
-            line = "    " + line;       // 4 spaces
+            line = indent + line;
         }
         outputBuffer.append(line);
 
@@ -468,7 +475,7 @@ public class JavaParserTokenManager implements JavaParserConstants
             outputBuffer.append(ls);
             line = lines[lines.length - 1].trim();
             for (int j = 0; j < level; j++) {
-                line = "    " + line;       // 4 spaces
+                line = indent + line;
             }
             outputBuffer.append(line);
         }
@@ -483,7 +490,7 @@ public class JavaParserTokenManager implements JavaParserConstants
             line = "// " + line;
         }
         for (int j = 0; j < level; j++) {
-            line = "    " + line;       // 4 spaces
+            line = indent + line;
         }
         outputBuffer.append(line).append(ls);
     }

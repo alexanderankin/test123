@@ -6,6 +6,8 @@ import java.util.*;
 import beauty.parsers.ParserException;
 import beauty.parsers.java.*;
 
+import org.gjt.sp.jedit.jEdit;
+
 public class JavaBeautifier extends Beautifier {
 
     private static JavaParser parser = null;
@@ -30,6 +32,7 @@ public class JavaBeautifier extends Beautifier {
             parser.setIndentWidth(getIndentWidth());
             parser.setTabSize(getTabWidth());
             parser.setLineSeparator(getLineSeparator());
+            parser.setBracketStyle(jEdit.getIntegerProperty("beauty.java.bracketStyle", JavaParser.ATTACHED));
 
             // do the parse
             parser.parse();
