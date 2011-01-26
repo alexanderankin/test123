@@ -57,7 +57,7 @@
     <target name="package" depends="compile">
     
         <!-- create jar file -->
-        <jar jarfile="${jar.name}">
+        <jar jarfile="target/${jar.name}">
       
             <!-- add compiled classes to jar. Resources were moved here in compile task -->
             <fileset dir="target/classes"/>
@@ -71,7 +71,6 @@
         <delete>
             <fileset dir="." includes="**/*~" defaultexcludes="no"/>
         </delete>
-        <delete file="${jar.name}" />
     </target>
 
     <!--
