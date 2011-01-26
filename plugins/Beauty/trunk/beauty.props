@@ -27,7 +27,7 @@ beauty.toggleSplitAttributes.label=Split/Unsplit Attributes
 #
 # Option pane properties
 #
-plugin.beauty.BeautyPlugin.option-group=beauty.beautifiers beauty.custom beauty.css beauty.jsp
+plugin.beauty.BeautyPlugin.option-group=beauty.beautifiers beauty.custom beauty.css beauty.jsp beauty.java
 options.beauty.beautifiers.title=Modes
 options.beauty.beautifiers.label=Modes
 options.beauty.beautifiers.code=new beauty.options.BeautifierOptionPane();
@@ -45,6 +45,10 @@ options.beauty.css.code=new beauty.options.CSSOptionPane();
 options.beauty.jsp.title=JSP Beautifier
 options.beauty.jsp.label=JSP Beautifier
 options.beauty.jsp.code=new beauty.options.JspOptionPane();
+
+options.beauty.java.title=Java Beautifier
+options.beauty.java.label=Java Beautifier
+options.beauty.java.code=new beauty.options.JavaOptionPane();
 
 # mode handlers
 mode.html.beauty.beautifier=html

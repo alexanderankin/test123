@@ -34,8 +34,7 @@
       just to test with
     --%>
     <style>
-            /* a comment */
-      li, p {
+            li, p {
                 background-color: lime
             }
             address {
@@ -70,7 +69,9 @@
             }
             span[title = "a"] {
                 background-color: red
-            }</style>
+            }
+
+    </style>
 
     <script>
             /* Finds the lowest common multiple of two numbers */

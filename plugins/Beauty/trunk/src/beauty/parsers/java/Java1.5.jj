@@ -57,6 +57,12 @@ public class JavaParser
     // good place to break a line if it needs wrapped.  You can't type one of
     // these from the keyboard,
     char wrapSep = '\u001c';
+    
+    // bracket styles
+    public static final int ATTACHED = 1;
+    public static final int BROKEN = 2;
+    
+    private int bracketStyle = ATTACHED;
 
     public void setIndentWidth(int i) {
         token_source.setIndentWidth(i);
@@ -92,6 +98,24 @@ public class JavaParser
     private void add(String s) {
         token_source.add(s);
     }
+     
+    private void addStartBracket() {
+        switch(bracketStyle) {
+            case BROKEN:
+                add(lineSep);
+                writeln();
+                add("{");
+                break;
+            case ATTACHED:
+            default:
+                add(" {");
+                break;
+        }
+    }
+    
+    private void addEndBracket() {
+        add("}");
+    }
 
     private void trim() {
         token_source.trim();
@@ -112,6 +136,16 @@ public class JavaParser
     public void setLineSeparator(String le) {
         lineSep = le;
         token_source.setLineSeparator(le);
+    }
+    
+    public void setBracketStyle(int style) {
+        switch(style) {
+            case ATTACHED:
+            case BROKEN:
+                bracketStyle = style;
+                token_source.setBracketStyle(style);
+                break;
+        }
     }
 
    public JavaParser(String fileName)
@@ -200,6 +234,8 @@ TOKEN_MGR_DECLS :
     // line separator, defaults to system line separator, but can be set to
     // a specific separator
     static String ls = System.getProperty("line.separator");
+    
+    static int bracketStyle = JavaParser.ATTACHED;
 
     static void reset() {
         b = new StringBuilder();
@@ -215,27 +251,32 @@ TOKEN_MGR_DECLS :
     static void setLineSeparator(String le) {
         ls = le;
     }
+    
+    static void setBracketStyle(int style) {
+        bracketStyle = style;   
+    }
 
     static void setIndentWidth(int w) {
         indent_width = w;
         if (indent_width <= 0) {
             indent_width = 4;
         }
-        indent = "";
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < w; i++) {
-            indent += " ";
+            sb.append(' ');
         }
+        indent = sb.toString();
         double_indent = indent + indent;
     }
 
     static void setUseSoftTabs(boolean b) {
         useSoftTabs = b;
         if (b) {
-            indent = "\t";
-            double_indent = "\t\t";
+            setIndentWidth(indent_width);
         }
         else {
-            setIndentWidth(indent_width);
+            indent = "\t";
+            double_indent = "\t\t";
         }
     }
 
@@ -577,7 +618,7 @@ TOKEN_MGR_DECLS :
         // may have trailing whitespace
         String line = lines[0].trim();
         for (int j = 0; j < level; j++) {
-            line = "    " + line;       // 4 spaces
+            line = indent + line;       // 4 spaces
         }
         outputBuffer.append(line);
         
@@ -598,7 +639,7 @@ TOKEN_MGR_DECLS :
 
             // apply indenting. The Sun rule is 4 spaces.
             for (int j = 0; j < level; j++) {
-                line = "    " + line;
+                line = indent + line;
             }
             
             outputBuffer.append(line);
@@ -615,7 +656,7 @@ TOKEN_MGR_DECLS :
         // may have trailing whitespace
         String line = lines[0].trim();
         for (int j = 0; j < level; j++) {
-            line = "    " + line;       // 4 spaces
+            line = indent + line;
         }
         outputBuffer.append(line);
         
@@ -632,7 +673,7 @@ TOKEN_MGR_DECLS :
             outputBuffer.append(ls);
             line = lines[lines.length - 1].trim();
             for (int j = 0; j < level; j++) {
-                line = "    " + line;       // 4 spaces
+                line = indent + line;
             }
             outputBuffer.append(line);
         }
@@ -647,7 +688,7 @@ TOKEN_MGR_DECLS :
             line = "// " + line;
         }
         for (int j = 0; j < level; j++) {
-            line = "    " + line;       // 4 spaces
+            line = indent + line;
         }
         outputBuffer.append(line).append(ls);
     }
@@ -1128,10 +1169,10 @@ void EnumDeclaration(int modifiers):
 void EnumBody():
 {}
 {
-    "{" { add("{"); }
+    "{" { addStartBracket(); }
    EnumConstant() ( "," { add(", "); } EnumConstant() )*
    [ ";" { add(";"); write(); } ( ClassOrInterfaceBodyDeclaration(false) )* ]
-   "}" { add("}"); write(); }
+   "}" { addEndBracket(); write(); }
 }
 
 void EnumConstant():
@@ -1161,7 +1202,7 @@ void TypeBound():
 void ClassOrInterfaceBody(boolean isInterface):
 {}
 {
-    "{" { add("{"); write(); ++token_source.level; } ( ClassOrInterfaceBodyDeclaration(isInterface) )* "}" { add("}"); --token_source.level; write(); }
+    "{" { addStartBracket(); write(); ++token_source.level; } ( ClassOrInterfaceBodyDeclaration(isInterface) )* "}" { addEndBracket(); --token_source.level; write(); }
 }
 
 void ClassOrInterfaceBodyDeclaration(boolean isInterface):
@@ -1230,7 +1271,7 @@ void VariableInitializer():
 void ArrayInitializer():
 {}
 {
-    "{" { add("{"); } [ VariableInitializer() ( LOOKAHEAD(2) "," { add(", "); } VariableInitializer() )* ] [ "," { add(", "); } ] "}" { add("}"); write(); }
+    "{" { addStartBracket(); } [ VariableInitializer() ( LOOKAHEAD(2) "," { add(", "); } VariableInitializer() )* ] [ "," { add(", "); } ] "}" { addEndBracket(); write(); }
 }
 
 void MethodDeclaration(int modifiers):
@@ -1272,10 +1313,10 @@ void ConstructorDeclaration(int modifiers):
 {
   [ TypeParameters() ]
   t=<IDENTIFIER> { add(t); } FormalParameters() [ "throws" { add("throws"); } NameList() ]
-  "{" { add("{"); write(); ++token_source.level;}
+  "{" { addStartBracket(); write(); ++token_source.level;}
     [ LOOKAHEAD(ExplicitConstructorInvocation()) ExplicitConstructorInvocation() ]
     ( BlockStatement() )*
-  "}" { add("}"); --token_source.level; write(); }
+  "}" { addEndBracket(); --token_source.level; write(); }
 }
 
 void ExplicitConstructorInvocation():
@@ -1745,9 +1786,9 @@ void Block():
 {
 }
 {
-    "{" { trimWhitespace(); add(" {"); write(); ++token_source.level; }
+    "{" { trimWhitespace(); addStartBracket(); write(); ++token_source.level; }
         ( BlockStatement() )*
-    "}" { add("}"); --token_source.level; write(); }    // TODO: don't always want to do this, for example with an anonymous inner class
+    "}" { addEndBracket(); --token_source.level; write(); }    // TODO: don't always want to do this, for example with an anonymous inner class
 }
 
 void BlockStatement():
@@ -1805,7 +1846,7 @@ void SwitchStatement():
 {
     "switch" "(" { add("switch ("); } Expression() ")" "{" { add(") {"); write(); ++token_source.level; }
         ( SwitchLabel() { ++token_source.level;} ( BlockStatement() )* { --token_source.level;} )*
-    "}" { add("}"); --token_source.level; write(); }
+    "}" { addEndBracket(); --token_source.level; write(); }
 }
 
 void SwitchLabel():
@@ -1840,7 +1881,7 @@ void IfStatement():
         if (!getToken(1).image.equals("{")) {
             trimWhitespace(); 
             trim(); 
-            add("{");
+            addStartBracket();
             writeln();
             ++token_source.level;
             no_block = true;
@@ -1851,7 +1892,7 @@ void IfStatement():
         if (no_block) {
             writeln();
             --token_source.level;
-            add("}");
+            addEndBracket();
             write();
         }
         no_block = false;
@@ -1886,7 +1927,7 @@ void IfStatement():
             }
             trimWhitespace(); 
             trim(); 
-            if (ct != null) {
+            if (ct != null || bracketStyle == BROKEN) {
                 // have comment token preceding 'else', so start 'else' on new line
                 writeln();
                 add("else ");
@@ -1905,7 +1946,7 @@ void IfStatement():
                 // remove any excess whitespace between the 'else' and the '{'
                 trimWhitespace();
                 trim();
-                add(" {");
+                addStartBracket();
                 writeln();
                 ++token_source.level;
                 no_block = true;
@@ -1916,7 +1957,7 @@ void IfStatement():
             if (no_block) {
                 writeln();
                 --token_source.level;
-                add("}");
+                addEndBracket();
                 write();
             }
         }
@@ -1934,7 +1975,7 @@ void WhileStatement():
         // a ";" (indicating an empty statement), add "{" to make sure there is
         // indeed a block written.
         if (!getToken(1).image.equals("{") && !getToken(1).image.equals(";")) {
-            add("{");
+            addStartBracket();
             writeln();
             ++token_source.level;
             no_block = true;
@@ -1945,7 +1986,7 @@ void WhileStatement():
         if (no_block) {
             writeln();
             --token_source.level;
-            add("}");
+            addEndBracket();
             writeln();
         }
     }
@@ -1979,7 +2020,7 @@ void ForStatement():
         // a ";" (indicating an empty statement), add "{" to make sure there is
         // indeed a block written.
         if (!getToken(1).image.equals("{") && !getToken(1).image.equals(";") ) {
-            add("{");
+            addStartBracket();
             writeln();
             ++token_source.level;
             no_block = true;
@@ -1990,7 +2031,7 @@ void ForStatement():
         if (no_block) {
             writeln();
             --token_source.level;
-            add("}");
+            addEndBracket();
             writeln();
         }
     }
@@ -2138,7 +2179,7 @@ void MemberValue():
 void  MemberValueArrayInitializer():
 {}
 {
-    "{" { add("{"); } MemberValue() ( LOOKAHEAD(2) "," { add(", "); } MemberValue() )* [ "," { add(", "); } ] "}" { add("}");  }
+    "{" { addStartBracket(); } MemberValue() ( LOOKAHEAD(2) "," { add(", "); } MemberValue() )* [ "," { add(", "); } ] "}" { addEndBracket();  }
 }
 
 
@@ -2155,7 +2196,7 @@ void AnnotationTypeDeclaration(int modifiers):
 void AnnotationTypeBody():
 {}
 {
-    "{" { add("{"); write(); ++token_source.level; } ( AnnotationTypeMemberDeclaration() )* "}" { --token_source.level; add("}"); write(); }
+    "{" { addStartBracket(); write(); ++token_source.level; } ( AnnotationTypeMemberDeclaration() )* "}" { --token_source.level; addEndBracket(); write(); }
 }
 
 void AnnotationTypeMemberDeclaration():
