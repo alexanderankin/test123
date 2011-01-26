@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<ACTIONS>
+    <ACTION NAME="quickopen.quickopen">
+        <CODE>
+			hohonuuli.jedit.quickopen.QuickOpenPlugin.quickOpen(view);
+    </CODE>
+    </ACTION>
+</ACTIONS>

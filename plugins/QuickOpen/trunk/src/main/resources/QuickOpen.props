@@ -1,0 +1,37 @@
+plugin.hohonuuli.jedit.quickopen.QuickOpenPlugin.activate=defer
+plugin.hohonuuli.jedit.quickopen.QuickOpenPlugin.author=Brian Schlining
+plugin.hohonuuli.jedit.quickopen.QuickOpenPlugin.name=QuickOpen
+plugin.hohonuuli.jedit.quickopen.QuickOpenPlugin.depend.0=jdk 1.6
+plugin.hohonuuli.jedit.quickopen.QuickOpenPlugin.depend.1=jedit 04.03.99.00
+plugin.hohonuuli.jedit.quickopen.QuickOpenPlugin.description=QuickOpen opens files quick
+plugin.hohonuuli.jedit.quickopen.QuickOpenPlugin.longdescription=description.html
+plugin.hohonuuli.jedit.quickopen.QuickOpenPlugin.version=0.1
+
+# plugin menu
+plugin.hohonuuli.jedit.quickopen.QuickOpenPlugin.menu=quickopen.quickopen
+
+# action labels for actions supplied by actions.xml
+quickopen.quickopen.label=Quick Open
+
+# plugin option pane
+plugin.hohonuuli.jedit.quickopen.QuickOpenPlugin.option-pane=quickopen
+# Option pane activation BeanShell snippet
+options.quickopen.label=QuickOpen
+options.quickopen.code=new hohonuuli.jedit.quickopen.QuickOpenOptionPane();
+# default dettings
+options.quickopen.include-hidden.label=Include hidden files and directories
+options.quickopen.include-hidden.tooltip=
+options.quickopen.exclude-extensions.label=Exclude files with these extensions:
+options.quickopen.exclude-extensions.tooltip=Comma separated list
+options.quickopen.exclude-directories.label=Exclude directories named:
+options.quickopen.exclude-directories.tooltip=Comma separated list
+options.quickopen.maximum-files.label=Maximum number of files to scan:
+options.quickopen.maximum-files.tooltip=
+options.quickopen.match-first.label=Match Initial Character
+options.quickopen.match-first.tooltip=When checked the initial search character must match the first letter of a filename
+
+quickopen.include-hidden=false
+quickopen.exclude-extensions=.class, .pyc, .png, .jpg, .jpeg, .gif, .zip, .o
+quickopen.exclude-directories=target, CVS, .hg, .svn, .git
+quickopen.maximum-files=2000
+quickopen.match-first=false
