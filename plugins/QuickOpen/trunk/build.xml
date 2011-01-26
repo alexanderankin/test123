@@ -1,25 +1,31 @@
 <?xml version="1.0" ?>
 <project name="QuickOpen" default="build" basedir=".">
-	<property file="build.properties" />
-	<property file="../build.properties" />
-	<property name="compiler.source" value="1.6" />
-	<property name="compiler.target" value="1.6" />
-	<property name="src.dir" value="src/main/java" />
+    <property file="build.properties"/>
+    <property file="../build.properties"/>
+    <property file="${user.home}/.build.properties"/>
+    <property file="${user.home}/build.properties"/>
+    <property name="compiler.source" value="1.6" />
+    <property name="compiler.target" value="1.6" />
+    <property name="src.dir" value="src/main/java" />
 	
-	<!-- Documentation process
-	none: if you supply your own html file as this template does.
-	xsltproc: if you plan on using docbook
-	-->
-	<property name="docs-proc.target" value="xsltproc" />
-	<import file="${build.support}/plugin-build.xml" />
+
+    <import file="${build.support}/plugin-build.xml" />
 	
 	<!-- If you want any extra files to be included with your plugin's jar,
 	such as custom images, you need to specify them here. -->
-	<selector id="packageFiles">
-		<and>
-			<or>
-				<filename name="resources/*.*" />
-			</or>
-		</and>
-	</selector>
+    <selector id="packageFiles">
+        <and>
+            <or>
+                <filename name="src/main/resources/*.xml" />
+                <filename name="src/main/resources/*.html" />
+                <filename name="src/main/resources/*.props" />
+            </or>
+        </and>
+    </selector>
+	
+    <path id="project.class.path">
+        <pathelement location="${jedit.install.dir}/jedit.jar"/>
+        <pathelement location="${src.dir}"/>
+    </path>
+
 </project>
