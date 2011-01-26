@@ -1,0 +1,432 @@
+/*
+ * @(#)QuickOpenFrame.java   2011.01.15 at 11:07:34 PST
+ *
+ * Copyright 2009 MBARI
+ *
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+
+package hohonuuli.jedit.quickopen;
+
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.util.Log;
+
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
+import java.io.File;
+import java.io.IOException;
+import java.util.UUID;
+
+/**
+ * @author Brian Schlining
+ * @since 2011-01-03
+ */
+public class QuickOpenFrame extends JFrame {
+
+    private static final String downKey = "selectNextRow";
+    private static final String upKey = "selectPreviousRow";
+    private static KeyStroke up = KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0);
+    private static KeyStroke kpUp = KeyStroke.getKeyStroke(KeyEvent.VK_KP_UP, 0);
+    private static KeyStroke kpDown = KeyStroke.getKeyStroke(KeyEvent.VK_KP_DOWN, 0);
+    private static KeyStroke down = KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0);
+    private static KeyStroke cmdW = KeyStroke.getKeyStroke(KeyEvent.VK_W,
+        Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+    private JLabel label = new JLabel("");    // Displays full path at bottom of window
+    private final QuickOpenFrameController controller;
+    private volatile FileList fileList;
+    private JList list;
+    private JScrollPane scrollPane;
+    private JTextField textField;
+    private final View view;
+
+    /**
+     * Constructs ...
+     *
+     * @param view
+     *
+     * @throws HeadlessException
+     */
+    public QuickOpenFrame(View view) throws HeadlessException {
+        Log.log(Log.MESSAGE, this, "Creating a new QuickOpenFrame");
+        this.view = view;
+        controller = new QuickOpenFrameController(this);
+        initialize();
+    }
+
+    /**
+     * @return
+     */
+    public QuickOpenFrameController getController() {
+        return controller;
+    }
+
+    /**
+     * @return
+     */
+    public FileList getFileList() {
+        return fileList;
+    }
+
+    /**
+     * List of files to be quickopened. The JList is backed by a
+     * DefaultListModel of Files.
+     * @return
+     */
+    private JList getList() {
+        if (list == null) {
+            list = new JList();
+            list.setModel(new DefaultListModel());
+            list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            list.setCellRenderer(new FilenameRenderer());
+            list.setVisibleRowCount(17);
+
+            // Set label at bottom with full path of file
+            list.addListSelectionListener(new ListSelectionListener() {
+
+                public void valueChanged(ListSelectionEvent e) {
+                    if (!e.getValueIsAdjusting()) {
+                        Object[] fileObjects = list.getSelectedValues();
+                        File[] files = new File[fileObjects.length];
+
+                        for (int i = 0; i < fileObjects.length; i++) {
+                            files[i] = (File) fileObjects[i];
+                        }
+
+                        if (files.length == 1) {
+                            try {
+                                String path = files[0].getCanonicalPath();
+
+                                label.setText(path);
+                                label.setToolTipText(path);
+                            }
+                            catch (IOException e1) {
+                                label.setText("");
+                            }
+                        }
+                        else {
+                            label.setText("");
+                        }
+                    }
+                }
+
+            });
+
+            // When enter is pressed open the selected file
+            list.addKeyListener(new OpenKeyListener());
+
+            // Open a file on a mouse click
+            list.addMouseListener(new MouseAdapter() {
+
+                @Override
+                public void mouseClicked(MouseEvent e) {
+
+                    // Look for a double click
+                    if (e.getClickCount() == 2) {
+                        Object[] selectedValues = list.getSelectedValues();
+
+                        if (selectedValues.length == 1) {
+                            controller.openFile((File) selectedValues[0]);
+                        }
+                    }
+                }
+
+            });
+
+        }
+
+        return list;
+    }
+
+    private JScrollPane getScrollPane() {
+        if (scrollPane == null) {
+            scrollPane = new JScrollPane(getList(), JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                                         JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        }
+
+        return scrollPane;
+    }
+
+    private JTextField getTextField() {
+        if (textField == null) {
+            textField = new JTextField();
+            textField.setColumns(35);
+            textField.addKeyListener(new OpenKeyListener());
+            textField.getDocument().addDocumentListener(new SearchDocumentListener());
+
+            // --- Configure arrow keys
+            InputMap inputMap = textField.getInputMap(JComponent.WHEN_FOCUSED);
+            ActionMap actionMap = textField.getActionMap();
+
+            // Remove some existing key bindings, they get in our way
+            inputMap.put(cmdW, "none");    // This would eat the close window keys stroke
+
+            // Actions to bind up and down arrows to
+            Action upAction = new AbstractAction() {
+
+                public void actionPerformed(ActionEvent e) {
+                    JList theJList = getList();
+                    int idx = theJList.getSelectedIndex();
+                    if (idx >= 0) {
+                        if (idx == 0 && theJList.getModel().getSize() > 0) {
+                            idx = theJList.getModel().getSize() - 1;
+                        }
+                        else {
+                            idx = idx - 1;
+                        }
+                        theJList.setSelectedIndex(idx);
+                        theJList.ensureIndexIsVisible(idx);
+                        theJList.repaint();
+                    }
+                }
+            };
+            Action downAction = new AbstractAction() {
+
+                public void actionPerformed(ActionEvent e) {
+                    JList theJList = getList();
+                    int idx = theJList.getSelectedIndex();
+                    if (idx >= 0) {
+                        if (idx < theJList.getModel().getSize() - 1) {
+                            idx = idx + 1;
+                        }
+                        else {
+                            idx = 0; // Wrap around
+                        }
+                        theJList.setSelectedIndex(idx);
+                        theJList.ensureIndexIsVisible(idx);
+                        theJList.repaint();
+                    }
+                }
+            };
+
+            inputMap.put(up, upKey);
+            inputMap.put(kpUp, upKey);
+            inputMap.put(down, downKey);
+            inputMap.put(kpDown, downKey);
+            actionMap.put(downKey, downAction);
+            actionMap.put(upKey, upAction);
+        }
+
+        return textField;
+    }
+
+    /**
+     * @return
+     */
+    public View getView() {
+        return view;
+    }
+
+    private void initialize() {
+
+        setLayout(new BorderLayout());
+        add(getTextField(), BorderLayout.NORTH);
+        add(getScrollPane(), BorderLayout.CENTER);
+        add(label, BorderLayout.SOUTH);
+
+        // --- Map C+W to hide the window
+        InputMap inputMap = getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        ActionMap actionMap = getRootPane().getActionMap();
+        String hideKey = "hideTheWindow";
+        Action hideAction = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                QuickOpenFrame.this.setVisible(false);
+            }
+        };
+
+        inputMap.put(cmdW, hideKey);
+        actionMap.put(hideKey, hideAction);
+
+        // --- Window should disappear if it loses focus.
+        addWindowFocusListener(new WindowFocusListener() {
+
+            public void windowGainedFocus(WindowEvent e) {
+
+                // Select all text and request focus
+                JTextField tf = getTextField();
+                String text = tf.getText();
+                tf.setSelectionStart(0);
+                tf.setSelectionEnd(text.length());
+                tf.requestFocus();
+
+            }
+
+            public void windowLostFocus(WindowEvent e) {
+                getTextField().setText("");
+                setVisible(false);
+            }
+        });
+
+    }
+
+    private void setEnableUI(boolean enabled) {
+        getTextField().setEnabled(enabled);
+        getList().setEnabled(enabled);
+        getTextField().requestFocus();
+    }
+
+    /**
+     */
+    public void updateFileList() {
+        setEnableUI(false);
+
+        final File directory = controller.getDirectory();
+
+        setTitle(directory.getAbsolutePath());
+
+        SwingWorker swingWorker = new SwingWorker<FileList, Object>() {
+
+            @Override
+            protected FileList doInBackground() throws Exception {
+                return new FileList(directory);
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    fileList = get();
+                    ((DefaultListModel) getList().getModel()).clear();
+
+                    updateFiles(fileList.getFiles());
+                }
+                catch (Exception e) {
+                    Log.log(Log.ERROR, "Failed to create FileList", e);
+                }
+
+                setEnableUI(true);
+            }
+        };
+
+        swingWorker.execute();
+
+    }
+
+    private void updateFiles(java.util.List<File> files) {
+        DefaultListModel model = (DefaultListModel) getList().getModel();
+
+        model.clear();
+
+        for (File file : files) {
+            model.addElement(file);
+        }
+
+        if (files.size() > 0) {
+            getList().setSelectedIndex(0);
+        }
+    }
+
+    private class FilenameRenderer extends DefaultListCellRenderer {
+
+        /**
+         *
+         * @param list
+         * @param value
+         * @param index
+         * @param isSelected
+         * @param cellHasFocus
+         * @return
+         */
+        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
+                boolean cellHasFocus) {
+
+            super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+            File file = (File) value;
+
+            setText(file.getName());
+            setToolTipText(file.getAbsolutePath());
+
+            return this;
+        }
+    }
+
+
+    private class OpenKeyListener extends KeyAdapter {
+
+        /**
+         *
+         * @param e
+         */
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                Object[] selectedValues = getList().getSelectedValues();
+
+                if (selectedValues.length == 1) {
+                    controller.openFile((File) selectedValues[0]);
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Performs searches as a user types in a the text field. Searches are performed in a
+     * background thread
+     */
+    private class SearchDocumentListener implements DocumentListener {
+
+        private volatile Thread currentThread;
+
+        /**
+         *
+         * @param e
+         */
+        public void changedUpdate(DocumentEvent e) {
+            search();
+        }
+
+        /**
+         *
+         * @param e
+         */
+        public void insertUpdate(DocumentEvent e) {
+            search();
+        }
+
+        /**
+         *
+         * @param e
+         */
+        public void removeUpdate(DocumentEvent e) {
+            search();
+        }
+
+        private void search() {
+            currentThread = new Thread(new Runnable() {
+
+                public void run() {
+                    final java.util.List<File> files = fileList.search(textField.getText());
+
+                    SwingUtilities.invokeLater(new Runnable() {
+
+                        public void run() {
+                            updateFiles(files);
+                        }
+
+                    });
+                }
+
+            }, "SearchThread-" + UUID.randomUUID());
+            currentThread.setDaemon(true);
+            currentThread.run();
+        }
+    }
+}
