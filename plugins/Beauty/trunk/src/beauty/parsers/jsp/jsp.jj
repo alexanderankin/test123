@@ -658,14 +658,14 @@ void JspScriptlet() :
                 Beautifier beautifier = new JavaLineBeautifier();
                 beautifier.setInitialIndentLevel(token_source.level);
                 java = beautifier.beautify(content.image.trim());
+                if (java == null || java.length() == 0) {
+                   return; // no need to include empty scriptlet tags   
+                }
                 multiline = java.indexOf(ls) > 0;
             }
          }
          catch(ParserException pe) {
              throw new ParseException(pe.getMessage());
-         }
-         if (java == null || java.length() == 0) {
-            return; // no need to include empty scriptlet tags   
          }
          
 	     if (ws != null && ws.length() > 0) {
@@ -1295,23 +1295,40 @@ void HtmlStyle() :
     )*
     endToken=<HTML_STYLE_END_TAG>
 	{
+	    String ws = getSpecial(styleToken);
+	    boolean multiline = false;
         try {
             if (style.length() > 0) {
-                CSSBeautifier beautifier = new CSSBeautifier();
+                Beautifier beautifier = new CSSBeautifier();
                 beautifier.setInitialIndentLevel(token_source.level);
                 String css = beautifier.beautify(style.toString().trim());
-                writePre(css);
-                trimWhitespace();
+                if (css == null || css.length() ==0) {
+                    return; // no need to include empty style tags   
+                }
+                multiline = css.indexOf(ls) > 0;
+                
+                if (ws != null && ws.length() > 0) {
+                    writePre(ws);   
+                }
+                if (multiline) {
+                      writePre(css); 
+                }
+                else {
+                    add(" ");
+                    add(css);
+                    add(" ");
+                }
+                add(endToken);
             }
             else if (styleToken != null) {
                 add(styleToken);   
+                if (endToken != null) {
+                    add(endToken);   
+                }
             }
         }
         catch(ParserException pe) {
             throw new ParseException(pe.getMessage());
-        }
-        if (endToken != null) {
-            add(endToken);   
         }
 	}
 }
