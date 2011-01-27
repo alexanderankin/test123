@@ -683,7 +683,7 @@ or via <ulink url="http://www.w3.org/TR/xinclude/">XInclude</ulink>.
 <section id="include-entities">
 <title>External entities</title>
 
-<para>External entities are used in the user guide for jEdit (see <xref linkend="include-entities-1"/>).
+<para>External entities were used in the user guide for jEdit 4.4 and earlier (see <xref linkend="include-entities-1"/>).
 The <code>DOCTYPE</code> declaration lists some entities,
 which are referenced via <code>&amp;your_entity;</code>.
 This is similar to <code>#include</code> directives in C or C++.
@@ -720,6 +720,9 @@ For validation in jEdit, you will also need <xref linkend="child-documents"/>.
 <blockquote>
 <attribution>XML Inclusions (XInclude) Version 1.0 (Second Edition)
 W3C Recommendation 15 November 2006</attribution>
+
+<para>The jEdit 4.5 FAQ and users guide both use XIncludes and xsd schemas to join together child documents into a whole. 
+</para>
 
 <para>XInclude defines a namespace associated with the URI
 <code>http://www.w3.org/2001/XInclude</code>.
