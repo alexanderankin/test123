@@ -721,15 +721,16 @@ For validation in jEdit, you will also need <xref linkend="child-documents"/>.
 <attribution>XML Inclusions (XInclude) Version 1.0 (Second Edition)
 W3C Recommendation 15 November 2006</attribution>
 
-<para>The jEdit 4.5 FAQ and users guide both use
-XIncludes to join together child documents into a
-whole. </para>
-
 <para>XInclude defines a namespace associated with the URI
 <code>http://www.w3.org/2001/XInclude</code>.
 The XInclude namespace contains two elements with the local names <code>include</code> and <code>fallback</code>.
 </para>
 </blockquote>
+
+<para>The jEdit 4.5 FAQ and users guide both use
+XIncludes to join together child documents into a
+whole. </para>
+
 
 <para>The following example shows an inclusion similar to <xref linkend="include-entities-1"/>.</para>
 
