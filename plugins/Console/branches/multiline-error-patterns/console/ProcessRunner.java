@@ -154,7 +154,19 @@ public abstract class ProcessRunner
 		ProcessBuilder processBuilder = new ProcessBuilder();
 		Map<String, String> processEnv = processBuilder.environment();
 		processEnv.clear();
-		processEnv.putAll(env);
+		for(Map.Entry<String,String> en: env.entrySet())
+		{
+			// may happen with %set EDITOR=C:/Program Files
+			// the key EDITOR=C:/Program is invalid
+			try
+			{
+				processEnv.put(en.getKey(),en.getValue());
+			}
+			catch(IllegalArgumentException iae)
+			{
+				Log.log(Log.ERROR,ProcessRunner.class, iae.getMessage());
+			}
+		}
 		prependUserPath(processEnv);
 		processBuilder.directory(new File(dir));
 		// Merge stdout and stderr
@@ -167,7 +179,7 @@ public abstract class ProcessRunner
 		}
 		catch (Exception e)
 		{
-			Log.log(Log.ERROR, e, "Process Runner");
+			Log.log(Log.ERROR, ProcessRunner.class,e);
 		}
 		return null;
 	}
