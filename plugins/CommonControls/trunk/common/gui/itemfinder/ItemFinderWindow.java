@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2010 Matthieu Casanova
+ * Copyright (C) 2011 Matthieu Casanova
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -33,6 +33,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 /**
+ * The ItemFinderWindow is a Window that contains a SearchField and a list of items.
+ * When typing in the search field, the item list is updated, and when selecting an item of that list, an action is
+ * triggered.
+ * To use it, you have to implement {@link ItemFinder}, then instantiate {@link ItemFinderWindow} and make it visible.
  * @author Matthieu Casanova
  */
 public class ItemFinderWindow<E> extends JFrame
