@@ -30,7 +30,7 @@ public final class PHPItemCellRenderer implements ListCellRenderer {
   }
 
   public void setSearchString(String searchString) {
-    this.searchString = searchString.toLowerCase();
+    this.searchString = searchString;
   }
 
   private static final class PHPItemCellPanel extends JPanel {
