@@ -20,8 +20,10 @@
  */
 package gatchan.phpparser;
 
+import common.gui.itemfinder.ItemFinderWindow;
 import gatchan.phpparser.project.ProjectManager;
-import gatchan.phpparser.project.itemfinder.FrameFindItem;
+import gatchan.phpparser.project.itemfinder.PHPItem;
+import gatchan.phpparser.project.itemfinder.PHPItemFinder;
 import gatchan.phpparser.sidekick.PHPSideKickParser;
 import org.gjt.sp.jedit.*;
 
@@ -34,13 +36,15 @@ public class PHPParserPlugin extends EditPlugin
 {
 	private ProjectManager projectManager;
 
-	private static FrameFindItem findItemWindow;
+	private static ItemFinderWindow<PHPItem> itemFinderWindow;
+	private static PHPItemFinder itemFinder;
 
 	@Override
 	public void start()
 	{
 		projectManager = ProjectManager.getInstance();
-		findItemWindow = new FrameFindItem();
+		itemFinder = new PHPItemFinder();
+		itemFinderWindow = new ItemFinderWindow<PHPItem>(itemFinder);
 	}
 
 	@Override
@@ -48,8 +52,9 @@ public class PHPParserPlugin extends EditPlugin
 	{
 		projectManager.dispose();
 		projectManager = null;
-		findItemWindow.dispose();
-		findItemWindow = null;
+		itemFinderWindow.dispose();
+		itemFinderWindow = null;
+		itemFinder = null;
 		Buffer[] buffers = jEdit.getBuffers();
 		for (Buffer buffer : buffers)
 		{
@@ -65,7 +70,7 @@ public class PHPParserPlugin extends EditPlugin
 	 */
 	public static void findClass(View view)
 	{
-		findItem(view, FrameFindItem.CLASS_MODE, FrameFindItem.PROJECT_SCOPE);
+		findItem(view, PHPItemFinder.CLASS_MODE, PHPItemFinder.PROJECT_SCOPE);
 	}
 
 	/**
@@ -75,7 +80,7 @@ public class PHPParserPlugin extends EditPlugin
 	 */
 	public static void findInterface(View view)
 	{
-		findItem(view, FrameFindItem.INTERFACE_MODE, FrameFindItem.PROJECT_SCOPE);
+		findItem(view, PHPItemFinder.INTERFACE_MODE, PHPItemFinder.PROJECT_SCOPE);
 	}
 
 	/**
@@ -85,7 +90,7 @@ public class PHPParserPlugin extends EditPlugin
 	 */
 	public static void findClassOrInterface(View view)
 	{
-		findItem(view, FrameFindItem.CLASS_MODE ^ FrameFindItem.INTERFACE_MODE, FrameFindItem.PROJECT_SCOPE);
+		findItem(view, PHPItemFinder.CLASS_MODE ^ PHPItemFinder.INTERFACE_MODE, PHPItemFinder.PROJECT_SCOPE);
 	}
 
 	/**
@@ -95,7 +100,7 @@ public class PHPParserPlugin extends EditPlugin
 	 */
 	public static void findMethod(View view)
 	{
-		findItem(view, FrameFindItem.METHOD_MODE, FrameFindItem.PROJECT_SCOPE);
+		findItem(view, PHPItemFinder.METHOD_MODE, PHPItemFinder.PROJECT_SCOPE);
 	}
 
 	/**
@@ -105,21 +110,21 @@ public class PHPParserPlugin extends EditPlugin
 	 */
 	public static void findInFile(View view)
 	{
-		findItem(view, FrameFindItem.ALL_MODE, FrameFindItem.FILE_SCOPE);
+		findItem(view, PHPItemFinder.ALL_MODE, PHPItemFinder.FILE_SCOPE);
 	}
 
 	/**
 	 * Open the find item frame for the view in the given mode
 	 *
 	 * @param view  the view
-	 * @param mode  one of the following  {@link FrameFindItem#ALL_MODE}, {@link FrameFindItem#CLASS_MODE} or {@link
-	 *              FrameFindItem#METHOD_MODE}
-	 * @param scope the scope : {@link FrameFindItem#FILE_SCOPE} or {@link FrameFindItem#PROJECT_SCOPE}
+	 * @param mode  one of the following  {@link PHPItemFinder#ALL_MODE}, {@link PHPItemFinder#CLASS_MODE} or {@link
+	 *              PHPItemFinder#METHOD_MODE}
+	 * @param scope the scope : {@link PHPItemFinder#FILE_SCOPE} or {@link PHPItemFinder#PROJECT_SCOPE}
 	 */
 	private static void findItem(View view, int mode, int scope)
 	{
-		findItemWindow.init(view, mode, scope);
-		findItemWindow.setLocationRelativeTo(jEdit.getActiveView());
-		findItemWindow.setVisible(true);
+		itemFinder.init(view, mode, scope);
+		itemFinderWindow.setLocationRelativeTo(jEdit.getActiveView());
+		itemFinderWindow.setVisible(true);
 	}
 }
