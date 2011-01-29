@@ -516,9 +516,9 @@ MORE :
   <CLASS:	"class">
 | <FUNCTION:	"function">
 | <NAMESPACE:	"namespace"> : IN_NAMESPACE
-| <USE:		"use">
-| <VAR:		"var">
-| <IF:		"if">
+| <USE:	"use">
+| <VAR:	"var">
+| <IF:	"if">
 | <ELSEIF:	"elseif">
 | <ELSE:	"else">
 | <ARRAY:	"array">
@@ -618,6 +618,7 @@ MORE :
 | <MINUS          : "-">   : PHPPARSING
 | <STAR           : "*">   : PHPPARSING
 | <SLASH          : "/">   : PHPPARSING
+| <BACKSLASH      : "\\">  : PHPPARSING
 | <BIT_AND        : "&">   : PHPPARSING
 | <BIT_OR         : "|">   : PHPPARSING
 | <BIT_XOR        : "^">   : PHPPARSING
@@ -765,9 +766,9 @@ MORE :
 //}}}
 
 
-<IN_NAMESPACE> TOKEN:
+<IN_NAMESPACE,PHPPARSING> TOKEN:
 {
-	<NAMESPACE_NAME: ((<LETTER>|<SPECIAL>) (<LETTER>|<DIGIT>|<SPECIAL>|"\\")*)> : PHPPARSING
+	<NAMESPACE_NAME: ((<LETTER>|<SPECIAL>) (<LETTER>|<DIGIT>|<SPECIAL>|<BACKSLASH>)*)> : PHPPARSING
 }
 //}}}
 
@@ -3834,18 +3835,37 @@ Expression refPrimaryExpression(Token bitAndToken):
 	}
 } //}}}
 
+Expression fullyQualifiedIdentifier():
+{
+	Token token;
+}
+{
+	<BACKSLASH> token = <NAMESPACE_NAME>
+	{
+		return new ConstantIdentifier(token);
+	}
+|
+	 token = <NAMESPACE_NAME>
+	 {
+	 	 return new ConstantIdentifier(token);
+	 }
+}
+
 //{{{ instantiation()
 Expression instantiation(Token reference):
 {
 	Token newToken;
 	Expression expr;
 	Expression arguments;
+	Expression namespace;
 }
 {
 	newToken = <NEW>
 	try
 	{
 		(
+			expr = fullyQualifiedIdentifier()
+		|
 			expr = ClassIdentifier()
 		|
 			expr = VariableDeclaratorId()
@@ -3870,12 +3890,12 @@ Expression instantiation(Token reference):
 			"class identifier expected",
 			"class identifier",
 			newToken.next.image,
-			newToken.sourceEnd,
 			newToken.next.sourceStart,
-			newToken.endLine,
+			token.sourceStart,
 			newToken.next.beginLine,
-			newToken.endColumn,
-			newToken.next.beginColumn));
+			token.beginLine,
+			newToken.next.beginColumn,
+			token.beginColumn));
 	}
 	{
 		int start, beginLine, beginColumn;
