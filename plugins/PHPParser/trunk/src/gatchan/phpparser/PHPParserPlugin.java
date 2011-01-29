@@ -27,6 +27,8 @@ import gatchan.phpparser.project.itemfinder.PHPItemFinder;
 import gatchan.phpparser.sidekick.PHPSideKickParser;
 import org.gjt.sp.jedit.*;
 
+import java.awt.*;
+
 /**
  * The PHP Parser plugin.
  *
