@@ -235,7 +235,13 @@ public class SVNCommandEventProcessor implements ISVNEventHandler {
         } else if (event.getAction() == SVNEventAction.DELETE) {
             myPrintStream.println(     "D         " + SVNFormatUtil.formatPath(event.getFile()));
         } else if (event.getAction() == SVNEventAction.SKIP) {
-            myPrintStream.println( "Skipped '" + SVNFormatUtil.formatPath(event.getFile()) + "'");
+            String path = SVNFormatUtil.formatPath(event.getFile());
+            if (path != null) {
+                myPrintStream.println( "Skipped '" + path + "'");
+            }
+            else {
+                myPrintStream.println("Skipped file. Check username/password.");   
+            }
             if (myIsExternal && event.getExpectedAction() == SVNEventAction.UPDATE_EXTERNAL) {
                 myIsExternal = false;
                 myIsExternalChanged = false;
