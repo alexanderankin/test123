@@ -74,6 +74,9 @@ public class WrapCellRenderer extends JTextPane implements TableCellRenderer {
             }
             sb.append( word ).append( ' ' );
         }
+        String lastLine = sb.length() > 0 ? sb.toString() : "";
+        lastLine = lastLine.trim();
+        count += lastLine.length() > 0 ? 1 : 0;
         return count;
     }
 }
