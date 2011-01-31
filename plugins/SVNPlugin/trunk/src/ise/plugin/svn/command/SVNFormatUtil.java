@@ -77,8 +77,14 @@ public class SVNFormatUtil {
         return formatted.toString();
     }
     
-    // path relative to the program home directory, or absolute path
+    /**
+     * @param file Path relative to the program home directory, or absolute path.
+     * @return Formatted path or null if <code>file</code> is null.
+     */
     public static String formatPath(File file) {
+        if (file == null) {
+            return null;   
+        }
         String path;
         String rootPath;
         path = file.getAbsolutePath();
