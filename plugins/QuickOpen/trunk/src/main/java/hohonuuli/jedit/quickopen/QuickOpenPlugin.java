@@ -20,6 +20,7 @@ import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.msg.VFSPathSelected;
 import org.gjt.sp.jedit.msg.ViewUpdate;
@@ -126,6 +127,27 @@ public class QuickOpenPlugin extends EBPlugin {
     public void handlePropertiesChanged(PropertiesChanged msg) {
         frameMap.clear();
 
+    }
+
+    //@EBHandler
+    public void handleBufferUpdate(BufferUpdate bufferUpdate) {
+        if (bufferUpdate == BufferUpdate.SAVED) {
+            View view = bufferUpdate.getView();
+            QuickOpenFrame frame = frameMap.get(view);
+            if (frame != null) {
+                String path = bufferUpdate.getBuffer().getPath();
+                try {
+                    File file = new File(path);
+                    boolean found = frame.getFileList().getFiles().contains(file);
+                    if (!found) {
+                        frame.updateFileList();
+                    }
+                }
+                catch (Exception e) {
+                    // Do nothing
+                }
+            }
+        }
     }
 
     /**
