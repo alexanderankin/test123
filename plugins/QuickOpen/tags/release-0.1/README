@@ -1,0 +1,7 @@
+jEdit QuickOpen plugin
+
+to build:
+	ant clean package
+	
+
+The QuickOpen.jar will be created as target/QuickOpen.jar
