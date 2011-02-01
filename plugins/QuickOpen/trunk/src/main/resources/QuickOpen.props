@@ -1,6 +1,7 @@
 plugin.hohonuuli.jedit.quickopen.QuickOpenPlugin.activate=defer
 plugin.hohonuuli.jedit.quickopen.QuickOpenPlugin.author=Brian Schlining
 plugin.hohonuuli.jedit.quickopen.QuickOpenPlugin.name=QuickOpen
+plugin.hohonuuli.jedit.quickopen.QuickOpenPlugin.docs=src/main/resources/QuickOpen.html
 plugin.hohonuuli.jedit.quickopen.QuickOpenPlugin.depend.0=jdk 1.6
 plugin.hohonuuli.jedit.quickopen.QuickOpenPlugin.depend.1=jedit 04.03.99.00
 plugin.hohonuuli.jedit.quickopen.QuickOpenPlugin.description=QuickOpen opens files quick

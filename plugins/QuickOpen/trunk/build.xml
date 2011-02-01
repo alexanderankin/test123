@@ -7,6 +7,7 @@
     <property name="compiler.source" value="1.6" />
     <property name="compiler.target" value="1.6" />
     <property name="src.dir" value="src/main/java" />
+    <property name="docs-proc.target" value="none" />
 	
 
     <import file="${build.support}/plugin-build.xml" />
