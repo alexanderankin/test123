@@ -34,5 +34,5 @@ options.quickopen.match-first.tooltip=When checked the initial search character 
 quickopen.include-hidden=false
 quickopen.exclude-extensions=.class, .pyc, .png, .jpg, .jpeg, .gif, .zip, .o
 quickopen.exclude-directories=target, CVS, .hg, .svn, .git
-quickopen.maximum-files=2000
+quickopen.maximum-files=1000
 quickopen.match-first=false
