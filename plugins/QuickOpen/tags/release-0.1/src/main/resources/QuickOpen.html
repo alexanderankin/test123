@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>QuickOpen Documentation</title>
+</head>
+<body>
+
+    <h1>QuickOpen Documentation</h1>
+    
+    <div class="section">
+        <span>Author: Brian Schlining (bschlining@gmail.com)</span>
+    </div>
+    
+    <h2>About QuickOpen</h2>
+    <div class="section">
+        QuickOpen is a plugin designed to quickly open any file in the current directory by just typing in a few characters of the filename you want to open. It's similar to CommandT for Vim and TextMate's quick open ability. Unlike the FastOpen and OpenIt jEdit plugins, it does not use jEdit's ProjectViewer plugin or require you to configure a source path; instead it allows quick opening of the files, including those in the subdirectories, in the currently selected directory in jEdit's file browser. 
+    </div>
+    
+    <h2>Using QuickOpen</h2>
+    <div class="section">
+        To use QuickOpen, select a directory in jEdit's <em>File Browser</em>. Then run QuickOpen (Plugins->QuickOpen->QuickOpen). The QuickOpen dialog will then appear and you can quickly filter the list of files by typing in a few characters. Select the fiel you wish to open from the list and either press [ENTER] or double click on it to open the file.
+    </div>
+    
+    <h2>Configuration</h2>
+    <h3>Configure a Shortcut</h3>
+    <div class="section">
+        To use QuickOpen, it's highly recommended that you bind the QuickOpen action to a shortcut. To do this:
+        <ol>
+            <li>Open jEdit's preferences (or Global Options) window</li>
+            <li>Select <em>Shortcuts</em></li>
+            <li>In the <em>Edit Shortcuts</em> combobox at the top of the window, select <em>Plugin: QuickOpen</em></li>
+            <li>Set your prefered shortcut, such as [cmd]+T on Macs or [ctrl]+T on Windows or Linux.</li>
+        </ol>
+    </div>
+    <h3>Configuring Options</h3>
+    <div class="section">
+        Under Plugins->Plugin Options ... -> QuickOpen you can configure the following settings:
+        <ul>
+            <li><strong>Include hidden files and directories</strong>: When checked, QuickOpen will inlude files hidden files and the content of hidden directories. (A directory or file is considered 'hidden' if it starts with a '.' (period).) If not checked hidden files and directories will not be included in the file listing.</li>
+            <li><strong>Exclude files with these extensions</strong>: Files which have extensions that match any in this comma separated list will be excluded from QuickOpen's search results.</li>
+            <li><strong>Exclude directories named</strong>: Files in directories whose names match one of those in this comma separated list will not be scanned and will be excluded from QuickOpen's search results.</li>
+            <li><strong>Maximum number of files to scan</strong>: This number specifies the maximum number of files that QuickOpen should scan for in the selected directory. This is included to prevent QuickOpen from scanning doing such things as scanning all files on a harddrive.</li>
+        </ul>
+    </div>
+    
+    <h2>More Details</h2>
+    <h3>Directory Selection</h3>
+    <div class="section">It's important to note that jEdit's File Browser has two panes: the top and the bottom one. Only the bottom pane sends out events to QuickOpen. If it appears that QuickOpen has not selected the correct directory, then single click any file or directory in the lower pane and QuickOpen will update to the current path (ie. the path as shown in the top pane)</div>
+    <h3>Name Matching</h3>
+    <div class="section">
+        After using QuickOpen you will notice that it does not exactly match names with the characters that you typed. QuickOpen matches names as follows:
+        <ol>
+            <li>QuickOpen uses <em>case-insensitive</em> search.</li>
+            <li>The first letter in your search matches against the first letter in the files names. (e.g. if you type 'a' then only files starting with the letter 'a' or 'A' are shown)</li>
+            <li>The filenames that contain the other letters you type, in the same order, are also listed. For example, if you type 'app', possible matches include 'App.java' but also 'APersistenceImpl.java' because they both start with 'a' and also contain two 'p's.
+        </ol>
+    </div>
+    <h3>QuickOpen and Views</h3>
+    <div class="section">
+        Each view gets it's own unique QuickOpen. If you have two or more views open, QuickOpen treats each view separatly, like different projects. 
+    </div>
+</body>
+
+</html>
