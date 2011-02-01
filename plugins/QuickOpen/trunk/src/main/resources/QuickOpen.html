@@ -19,7 +19,7 @@
     
     <h2>Using QuickOpen</h2>
     <div class="section">
-        To use QuickOpen, select a directory in jEdit's <em>File Browser</em>. Then run QuickOpen (Plugins->QuickOpen->QuickOpen). The QuickOpen dialog will then appear and you can quickly filter the list of files by typing in a few characters. Select the fiel you wish to open from the list and either press [ENTER] or double click on it to open the file.
+        To use QuickOpen, select a directory in jEdit's <em>File Browser</em>. Then run QuickOpen (Plugins->QuickOpen->QuickOpen). The QuickOpen dialog will then appear and you can quickly filter the list of files by typing in a few characters. Select the file you wish to open from the list and either press [ENTER] or double click on it to open the file.
     </div>
     
     <h2>Configuration</h2>
@@ -41,6 +41,7 @@
             <li><strong>Exclude files with these extensions</strong>: Files which have extensions that match any in this comma separated list will be excluded from QuickOpen's search results.</li>
             <li><strong>Exclude directories named</strong>: Files in directories whose names match one of those in this comma separated list will not be scanned and will be excluded from QuickOpen's search results.</li>
             <li><strong>Maximum number of files to scan</strong>: This number specifies the maximum number of files that QuickOpen should scan for in the selected directory. This is included to prevent QuickOpen from scanning doing such things as scanning all files on a harddrive.</li>
+            <li><strong>Match Initial Character</strong>: If checked, the first letter you type must match the initial character of the filename.
         </ul>
     </div>
     
@@ -52,7 +53,7 @@
         After using QuickOpen you will notice that it does not exactly match names with the characters that you typed. QuickOpen matches names as follows:
         <ol>
             <li>QuickOpen uses <em>case-insensitive</em> search.</li>
-            <li>The first letter in your search matches against the first letter in the files names. (e.g. if you type 'a' then only files starting with the letter 'a' or 'A' are shown)</li>
+            <li>If the <strong>Match Initial Character</strong> option is set. Then the first letter in your search matches against the first letter in the files names. (e.g. if you type 'a' then only files starting with the letter 'a' or 'A' are shown)</li>
             <li>The filenames that contain the other letters you type, in the same order, are also listed. For example, if you type 'app', possible matches include 'App.java' but also 'APersistenceImpl.java' because they both start with 'a' and also contain two 'p's.
         </ol>
     </div>
