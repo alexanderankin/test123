@@ -45,14 +45,16 @@ public class QuickOpenFrameController {
      */
     public File getDirectory() {
         VFSBrowser vfsBrowser = getVFSBrowser();
-        String path = vfsBrowser.getDirectory();
         File directory = null;
+        if (vfsBrowser != null) {
 
-        try {
-            directory = new File(path);
-        }
-        catch (Exception e) {
-            Log.log(Log.MESSAGE, this, "Failed to parse " + path, e);
+            String path = vfsBrowser.getDirectory();
+            try {
+                directory = new File(path);
+            }
+            catch (Exception e) {
+                Log.log(Log.MESSAGE, this, "Failed to parse " + path, e);
+            }
         }
 
         return directory;
@@ -63,7 +65,6 @@ public class QuickOpenFrameController {
      */
     public VFSBrowser getVFSBrowser() {
         DockableWindowManager windowManager = quickOpenFrame.getView().getDockableWindowManager();
-
         return (VFSBrowser) windowManager.getDockable("vfs.browser");
     }
 
