@@ -15,6 +15,7 @@
 
 package hohonuuli.jedit.quickopen;
 
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.Log;
 
@@ -289,32 +290,38 @@ public class QuickOpenFrame extends JFrame {
 
         final File directory = controller.getDirectory();
 
-        setTitle(directory.getAbsolutePath());
+        if (directory != null) {
 
-        SwingWorker swingWorker = new SwingWorker<FileList, Object>() {
+            setTitle(directory.getAbsolutePath());
 
-            @Override
-            protected FileList doInBackground() throws Exception {
-                return new FileList(directory);
-            }
+            SwingWorker swingWorker = new SwingWorker<FileList, Object>() {
 
-            @Override
-            protected void done() {
-                try {
-                    fileList = get();
-                    ((DefaultListModel) getList().getModel()).clear();
-
-                    updateFiles(fileList.getFiles());
-                }
-                catch (Exception e) {
-                    Log.log(Log.ERROR, "Failed to create FileList", e);
+                @Override
+                protected FileList doInBackground() throws Exception {
+                    return new FileList(directory);
                 }
 
-                setEnableUI(true);
-            }
-        };
+                @Override
+                protected void done() {
+                    try {
+                        fileList = get();
+                        ((DefaultListModel) getList().getModel()).clear();
 
-        swingWorker.execute();
+                        updateFiles(fileList.getFiles());
+                    }
+                    catch (Exception e) {
+                        Log.log(Log.ERROR, "Failed to create FileList", e);
+                    }
+
+                    setEnableUI(true);
+                }
+            };
+
+            swingWorker.execute();
+        }
+        else {
+            GUIUtilities.message(view, "quickopen.message.noDirectory", null);
+        }
 
     }
 
