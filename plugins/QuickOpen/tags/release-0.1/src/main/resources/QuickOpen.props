@@ -4,7 +4,7 @@ plugin.hohonuuli.jedit.quickopen.QuickOpenPlugin.name=QuickOpen
 plugin.hohonuuli.jedit.quickopen.QuickOpenPlugin.docs=src/main/resources/QuickOpen.html
 plugin.hohonuuli.jedit.quickopen.QuickOpenPlugin.depend.0=jdk 1.6
 plugin.hohonuuli.jedit.quickopen.QuickOpenPlugin.depend.1=jedit 04.03.99.00
-plugin.hohonuuli.jedit.quickopen.QuickOpenPlugin.description=QuickOpen opens files quick
+plugin.hohonuuli.jedit.quickopen.QuickOpenPlugin.description=QuickOpen opens files quickly
 plugin.hohonuuli.jedit.quickopen.QuickOpenPlugin.longdescription=description.html
 plugin.hohonuuli.jedit.quickopen.QuickOpenPlugin.version=0.1
 
@@ -36,3 +36,5 @@ quickopen.exclude-extensions=.class, .pyc, .png, .jpg, .jpeg, .gif, .zip, .o
 quickopen.exclude-directories=target, CVS, .hg, .svn, .git
 quickopen.maximum-files=1000
 quickopen.match-first=false
+quickopen.message.noDirectory.title=QuickOpen: No Directory is Selected
+quickopen.message.noDirectory.message=No directory has been selected in jEdit's file browser (Utilities->File System Browser)
