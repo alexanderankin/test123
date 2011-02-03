@@ -44,10 +44,13 @@ import java.awt.Component;
 import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.io.File;
@@ -91,6 +94,13 @@ public class QuickOpenFrame extends JFrame {
         this.view = view;
         controller = new QuickOpenFrameController(this);
         initialize();
+        view.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowGainedFocus(WindowEvent e) {
+                Log.log(Log.DEBUG, this, "Got focus");
+                updateFileList();
+            }
+        });
     }
 
     /**
@@ -192,8 +202,8 @@ public class QuickOpenFrame extends JFrame {
             textField.setColumns(35);
             textField.addKeyListener(new OpenKeyListener());
             // The next 2 lines add a prompt to the text field on Macs
-            textField.putClientProperty( "JTextField.variant", "search");
-            textField.putClientProperty( "JTextField.Search.Prompt", "Search");
+            textField.putClientProperty("JTextField.variant", "search");
+            textField.putClientProperty("JTextField.Search.Prompt", "Search");
             textField.getDocument().addDocumentListener(new SearchDocumentListener());
 
             // --- Configure arrow keys

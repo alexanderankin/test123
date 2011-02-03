@@ -74,12 +74,13 @@ public class QuickOpenPlugin extends EBPlugin {
 
     @Override
     public void handleMessage(EBMessage message) {
+        Log.log(Log.DEBUG, this, "Received " + message);
         if (message instanceof  VFSPathSelected) {
             handleVFSPathSelected((VFSPathSelected) message);
         }
-        else if (message instanceof  ViewUpdate) {
-            handleViewUpdate((ViewUpdate) message);
-        }
+//        else if (message instanceof  ViewUpdate) {
+//            handleViewUpdate((ViewUpdate) message);
+//        }
         else if (message instanceof PropertiesChanged) {
             handlePropertiesChanged((PropertiesChanged) message);
         }
@@ -111,20 +112,20 @@ public class QuickOpenPlugin extends EBPlugin {
     }
 
     //@EBHandler
-    public void handleViewUpdate(ViewUpdate viewUpdate) {
-        View view = viewUpdate.getView();
-
-        if (viewUpdate == ViewUpdate.CLOSED) {
-            frameMap.remove(view);
-        }
-        else if (viewUpdate == ViewUpdate.ACTIVATED) {
-            // Refresh list of files when activated
-            QuickOpenFrame frame = frameMap.get(view);
-            if (frame != null) {
-                frame.updateFileList();
-            }
-        }
-    }
+//    public void handleViewUpdate(ViewUpdate viewUpdate) {
+//        View view = viewUpdate.getView();
+//
+//        if (viewUpdate.getWhat() == ViewUpdate.CLOSED) {
+//            frameMap.remove(view);
+//        }
+//        else if (viewUpdate.getWhat() == ViewUpdate.ACTIVATED) {
+//            // Refresh list of files when activated
+//            QuickOpenFrame frame = frameMap.get(view);
+//            if (frame != null) {
+//                frame.updateFileList();
+//            }
+//        }
+//    }
 
     //@EBHandler
     public void handlePropertiesChanged(PropertiesChanged msg) {
@@ -134,7 +135,7 @@ public class QuickOpenPlugin extends EBPlugin {
 
     //@EBHandler
     public void handleBufferUpdate(BufferUpdate bufferUpdate) {
-        if (bufferUpdate == BufferUpdate.SAVED) {
+        if (bufferUpdate.getWhat() == BufferUpdate.SAVED) {
             View view = bufferUpdate.getView();
             QuickOpenFrame frame = frameMap.get(view);
             if (frame != null) {
@@ -142,12 +143,13 @@ public class QuickOpenPlugin extends EBPlugin {
                 try {
                     File file = new File(path);
                     boolean found = frame.getFileList().getFiles().contains(file);
+                    Log.log(Log.DEBUG, this, "path=" + path + ", file" + file + ", found in list = " + found);
                     if (!found) {
                         frame.updateFileList();
                     }
                 }
                 catch (Exception e) {
-                    // Do nothing
+                    Log.log(Log.ERROR, "Failed to update FileList", e);
                 }
             }
         }
