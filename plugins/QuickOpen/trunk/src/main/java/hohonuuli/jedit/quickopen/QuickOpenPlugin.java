@@ -112,20 +112,20 @@ public class QuickOpenPlugin extends EBPlugin {
     }
 
     //@EBHandler
-//    public void handleViewUpdate(ViewUpdate viewUpdate) {
-//        View view = viewUpdate.getView();
-//
-//        if (viewUpdate.getWhat() == ViewUpdate.CLOSED) {
-//            frameMap.remove(view);
-//        }
-//        else if (viewUpdate.getWhat() == ViewUpdate.ACTIVATED) {
-//            // Refresh list of files when activated
-//            QuickOpenFrame frame = frameMap.get(view);
-//            if (frame != null) {
-//                frame.updateFileList();
-//            }
-//        }
-//    }
+    public void handleViewUpdate(ViewUpdate viewUpdate) {
+        View view = viewUpdate.getView();
+
+        if (viewUpdate.getWhat() == ViewUpdate.CLOSED) {
+            frameMap.remove(view);
+        }
+        else if (viewUpdate.getWhat() == ViewUpdate.ACTIVATED) {
+            // Refresh list of files when activated
+            QuickOpenFrame frame = frameMap.get(view);
+            if (frame != null) {
+                frame.updateFileList();
+            }
+        }
+    }
 
     //@EBHandler
     public void handlePropertiesChanged(PropertiesChanged msg) {

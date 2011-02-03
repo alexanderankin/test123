@@ -96,7 +96,7 @@ public class QuickOpenFrame extends JFrame {
         initialize();
         view.addWindowListener(new WindowAdapter() {
             @Override
-            public void windowGainedFocus(WindowEvent e) {
+            public void windowActivated(WindowEvent e) {
                 Log.log(Log.DEBUG, this, "Got focus");
                 updateFileList();
             }
@@ -340,7 +340,6 @@ public class QuickOpenFrame extends JFrame {
                     try {
                         fileList = get();
                         ((DefaultListModel) getList().getModel()).clear();
-
                         updateFiles(fileList.getFiles());
                     }
                     catch (Exception e) {
@@ -359,7 +358,14 @@ public class QuickOpenFrame extends JFrame {
 
     }
 
+    /**
+     * This method redraws the JList. It's why the UI momentarily hangs when loading
+     * large lists. I don't know how to work around this as it needs to be called on the
+     * swing EDT.
+     * @param files
+     */
     private void updateFiles(java.util.List<File> files) {
+
         DefaultListModel model = (DefaultListModel) getList().getModel();
 
         model.clear();
