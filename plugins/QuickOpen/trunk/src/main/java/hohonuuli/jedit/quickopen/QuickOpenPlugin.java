@@ -83,6 +83,9 @@ public class QuickOpenPlugin extends EBPlugin {
         else if (message instanceof PropertiesChanged) {
             handlePropertiesChanged((PropertiesChanged) message);
         }
+        else if (message instanceof BufferUpdate) {
+            handleBufferUpdate((BufferUpdate) message);
+        }
     }
 
     //@EBHandler
@@ -151,7 +154,7 @@ public class QuickOpenPlugin extends EBPlugin {
     }
 
     /**
-     *
+     * Main entry into plugin. Called from Action menu
      * @param view
      */
     public static void quickOpen(View view) {
