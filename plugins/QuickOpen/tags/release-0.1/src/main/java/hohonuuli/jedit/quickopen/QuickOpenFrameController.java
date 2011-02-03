@@ -57,6 +57,18 @@ public class QuickOpenFrameController {
             }
         }
 
+        if (directory == null) {
+            Log.log(Log.DEBUG, this, "No directory was selected in VFSBrowser. Using directory of current buffer");
+            try {
+                String path = quickOpenFrame.getView().getBuffer().getDirectory();
+                directory = new File(path);
+            }
+            catch (Exception e) {
+                Log.log(Log.MESSAGE, this, "Failed to parse directory of current buffer", e);
+            }
+
+        }
+
         return directory;
     }
 

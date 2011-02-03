@@ -19,22 +19,46 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.Log;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.ActionMap;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.DefaultListModel;
+import javax.swing.InputMap;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.HeadlessException;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+
 
 /**
  * @author Brian Schlining
@@ -70,6 +94,13 @@ public class QuickOpenFrame extends JFrame {
         this.view = view;
         controller = new QuickOpenFrameController(this);
         initialize();
+        view.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowActivated(WindowEvent e) {
+                Log.log(Log.DEBUG, this, "Got focus");
+                updateFileList();
+            }
+        });
     }
 
     /**
@@ -170,6 +201,9 @@ public class QuickOpenFrame extends JFrame {
             textField = new JTextField();
             textField.setColumns(35);
             textField.addKeyListener(new OpenKeyListener());
+            // The next 2 lines add a prompt to the text field on Macs
+            textField.putClientProperty("JTextField.variant", "search");
+            textField.putClientProperty("JTextField.Search.Prompt", "Search");
             textField.getDocument().addDocumentListener(new SearchDocumentListener());
 
             // --- Configure arrow keys
@@ -306,7 +340,6 @@ public class QuickOpenFrame extends JFrame {
                     try {
                         fileList = get();
                         ((DefaultListModel) getList().getModel()).clear();
-
                         updateFiles(fileList.getFiles());
                     }
                     catch (Exception e) {
@@ -325,7 +358,14 @@ public class QuickOpenFrame extends JFrame {
 
     }
 
+    /**
+     * This method redraws the JList. It's why the UI momentarily hangs when loading
+     * large lists. I don't know how to work around this as it needs to be called on the
+     * swing EDT.
+     * @param files
+     */
     private void updateFiles(java.util.List<File> files) {
+
         DefaultListModel model = (DefaultListModel) getList().getModel();
 
         model.clear();
@@ -391,6 +431,7 @@ public class QuickOpenFrame extends JFrame {
     private class SearchDocumentListener implements DocumentListener {
 
         private volatile Thread currentThread;
+        private volatile SwingWorker swingWorker;
 
         /**
          *
@@ -417,23 +458,30 @@ public class QuickOpenFrame extends JFrame {
         }
 
         private void search() {
-            currentThread = new Thread(new Runnable() {
-
-                public void run() {
-                    final java.util.List<File> files = fileList.search(textField.getText());
-
-                    SwingUtilities.invokeLater(new Runnable() {
-
-                        public void run() {
-                            updateFiles(files);
-                        }
-
-                    });
+            
+            if (swingWorker != null && !swingWorker.isDone()) {
+                swingWorker.cancel(true); 
+            }
+            
+            
+            swingWorker = new SwingWorker<List<File>, Object>() {
+                @Override
+                protected List<File> doInBackground() throws Exception {
+                    return  fileList.search(textField.getText());
                 }
 
-            }, "SearchThread-" + UUID.randomUUID());
-            currentThread.setDaemon(true);
-            currentThread.run();
+                @Override
+                protected void done() {
+                    try {
+                        List<File> files = get();
+                        updateFiles(get());
+                    } catch (Exception e) {
+                        Log.log(Log.MESSAGE, "Search did not execute", e);
+                    }
+                }
+            };
+            swingWorker.execute();
+            
         }
     }
 }
