@@ -28,7 +28,7 @@
   echo " java_platform = ".$java_platform." -->";
 ?>
 
-<p> Java 2 version 1.5 or later is required for all versions of jEdit.
+<p> Java 2 version 1.6 or later is required for jEdit 4.4 and later.
 Before installing jEdit, make sure you have a compatible Java virtual machine; see the <a href="index.php?page=compatibility">compatibility</a> page for details. </p>
 
 <h2>Option 1 - manual download and install on any OS</h2>
@@ -37,8 +37,92 @@ Before installing jEdit, make sure you have a compatible Java virtual machine; s
 
 <tr class="hilite">
 <td></td>
+<td colspan=3><b>Latest version (development):</b></td>
+</tr>
+
+<p> Even if you&#039;re &quot;just a user&quot;, you should still try the development version. There are many enhancements and bugfixes. Further, you will see more (and more recent versions of) plugins.
+</p>
+
+<tr class="hilite">
+<td>Download: </td>
+<td><a href="http://sourceforge.net/projects/jedit/files/jedit-devel/4.4pre1/jedit4.4pre1install.jar/download">Java-based installer</a></td>
+<td>2.8 MiB</td>
+<td>(For any operating system)</td>
+</tr>
+
+<tr<?php
+  if($platform == "windows")
+    echo ' class="hilite"';
+?>>
+<td></td>
+<td><a href="http://sourceforge.net/projects/jedit/files/jedit-devel/4.4pre1/jedit4.4pre1install.exe/download">Windows Installer</a></td>
+<td>3.0 MiB</td>
+<td></td>
+</tr>
+
+<tr<?php
+  if($platform == "mac")
+    echo ' class="hilite"';
+?>>
+<td></td>
+<td><a href="http://sourceforge.net/projects/jedit/files/jedit-devel/4.4pre1/jedit4.4pre1install.dmg/download">Mac OS X package</a></td>
+<td>6.7 MiB</td>
+<td></td>
+</tr>
+
+<tr<?php
+  if($platform == "unix")
+    echo ' class="hilite"';
+?>>
+<td></td>
+<td><a href="http://sourceforge.net/projects/jedit/files/jedit-devel/4.4pre1/jedit_4.4pre1_all.deb/download">Debian package</a></td>
+<td>3.7 MiB</td>
+<td></td>
+</tr>
+
+<tr<?php
+  if($platform == "unix")
+    echo ' class="hilite"';
+?>>
+<td></td>
+<td><a href="http://sourceforge.net/projects/jedit/files/jedit-devel/4.4pre1/jedit-4.4pre1-noarch-1sao.tgz/download">Slackware package</a></td>
+<td>3.6 MiB</td>
+<td></td>
+</tr>
+
+<tr>
+<td></td>
+<td><a href="http://sourceforge.net/projects/jedit/files/jedit-devel/4.4pre1/jedit4.4pre1manual-a4.pdf/download">User's guide</a></td>
+<td>0.6 MiB</td>
+<td>(PDF with A4 paper, 139 pages)</td>
+<td></td>
+</tr>
+
+<tr>
+<td></td>
+<td><a href="http://sourceforge.net/projects/jedit/files/jedit-devel/4.4pre1/jedit4.4pre1manual-letter.pdf/download">User's guide</a></td>
+<td>0.6 MiB</td>
+<td>(PDF with US letter paper, 149 pages)</td>
+<td></td>
+</tr>
+
+<tr>
+<td></td>
+<td><a href="http://sourceforge.net/projects/jedit/files/jedit-devel/4.4pre1/jedit4.4pre1source.tar.bz2/download">Source code</a></td>
+<td>2.0 MiB</td>
+<td></td>
+</tr>
+
+
+<tr>
+<td colspan="4"><hr></td>
+</tr>
+
+<tr class="hilite">
+<td></td>
 <td colspan=3><b>Stable version:</b></td>
 </tr>
+
 
 <tr class="hilite">
 <td>Download: </td>
@@ -108,6 +192,20 @@ Before installing jEdit, make sure you have a compatible Java virtual machine; s
 <td><a href="http://sourceforge.net/projects/jedit/files/jedit/4.3.2/jedit4.3.2source.tar.bz2/download">Source code</a></td>
 <td>2.0 MiB</td>
 <td></td>
+</tr>
+
+<tr>
+<td colspan="4"><hr></td>
+</tr>
+
+<tr class="hilite">
+<td></td>
+<td colspan=3><b>Daily Builds:</b></td>
+</tr>
+
+<tr class="hilite">
+<td>Download: </td>
+<td colspan=3><a href="http://www.tellurianring.com/projects/jedit-daily/">Daily Builds</a></td>
 </tr>
 
 </table>
