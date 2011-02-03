@@ -1,4 +1,10 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- jEdit buffer-local properties: -->
+<!-- maxLineLen=0:wrap=soft:indentSize=1:noTabs=true: -->
+<!-- jEdit user's guide -->
+<!-- (C) 1999, 2004 Slava Pestov -->
+<!-- (C) 2001, 2002 John Gellene -->
+<!-- (C) 2005, 2011 Alan Ezust -->
 <book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
 <!-- Console user's guide -->

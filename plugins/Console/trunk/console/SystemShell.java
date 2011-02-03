@@ -573,6 +573,8 @@ public class SystemShell extends Shell
 		if (view == null)
 			return variables.get(varName);
 
+		// ick, I don't like this at all... multiple consoles/view?
+		ConsoleState cs = getConsoleState(ConsolePlugin.getConsole(view));
 		String expansion;
 
 		// Expand some special variables
@@ -599,6 +601,9 @@ public class SystemShell extends Shell
 		}
 		else if (varName.equals("f"))
 			expansion = buffer.getPath();
+		else if (varName.equalsIgnoreCase("pwd")) {
+			expansion = cs.currentDirectory;
+		}
 		else if (varName.equals("n"))
 			expansion = buffer.getName();
 		else if (varName.equals("c"))
@@ -728,6 +733,7 @@ public class SystemShell extends Shell
 		aliases.put("pwd", "%printwd");
 		aliases.put("aliases", "%aliases");
 		aliases.put("alias", "%alias");
+		aliases.put("ver", "%version");
 		
 		aliases.put("-", "%cd -");
 
