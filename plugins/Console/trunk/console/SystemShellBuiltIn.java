@@ -734,9 +734,9 @@ public abstract class SystemShellBuiltIn
 
 		public void execute(Console console, Output output,
 			Output error, Vector<String> args, Hashtable<String, Object> values)
-		{
-			output.print(null,jEdit.getProperty(
-				"plugin.console.ConsolePlugin.version"));
+		{		
+			output.print(null,"jEdit " + jEdit.getBuild() 
+				+ " Console " + jEdit.getProperty("plugin.console.ConsolePlugin.version"));
 		}
 	} //}}}
 
