@@ -13,15 +13,17 @@ Before you read this document, be sure to read first the README.SRC.txt, in the 
 Workflow
 --------
 
-1. Tag the sourcecode for release in the SVN repository by doing
+1. Execute the BeanShell snippet at the end of this file ("Utilities -> BeanShell -> Evaluate Selection") and select the release branch for which you want to create a release in the directory chooser dialog popping up. This will replace the version tags in this document by actual version numbers for easy copy & paste.
+
+2. Tag the sourcecode for release in the SVN repository by doing
         svn copy https://jedit.svn.sourceforge.net/svnroot/jedit/jEdit/branches/[branch] https://jedit.svn.sourceforge.net/svnroot/jedit/jEdit/tags/[tag] -m "Tagging [version] for release."
    with the correct version in the second URL and in the commit message
 
-2. To be sure to work with the exact tagged source, check out the newly tagged source in a new directory by doing
+3. To be sure to work with the exact tagged source, check out the newly tagged source in a new directory by doing
         svn checkout https://jedit.svn.sourceforge.net/svnroot/jedit/jEdit/tags/[tag]
    no matter where. You will find the source in a subfolder [tag] where you executed the command
 
-3. Copy build.properties and jars/build.properties from your jEdit source directory to the newly created [tag] source directory. If you don't have the two, then create them. For the root directory you find a template called build.properties.sample there and for the jars/build.properties you find a template in build-support/build.properties. These are independent and have to be set up correctly. The one in the root directory is for jEdit itself, the one in jars is for the standard plugins.
+4. Copy build.properties and jars/build.properties from your jEdit source directory to the newly created [tag] source directory. If you don't have the two, then create them. For the root directory you find a template called build.properties.sample there and for the jars/build.properties you find a template in build-support/build.properties. These are independent and have to be set up correctly. The one in the root directory is for jEdit itself, the one in jars is for the standard plugins.
    To give an example, in build.properties I customized the following properties:
     - wine.executable=wine
     - winepath.executable=winepath
@@ -38,7 +40,7 @@ Workflow
    You may not need to customize the same properties than me, e. g. if xsltproc is in your PATH environment variable, you may not need to customize xsltproc.executable.
    For further information about what you need to build the source, please read README.SRC.txt in the sources root directory.
 
-4.1. Build the distribution files by doing
+5.1. Build the distribution files by doing
           ant dist
      in the [tag] directory
      In the newly created directory [tag]/dist you find 8 files:
@@ -51,21 +53,21 @@ Workflow
       - jedit[version]install.exe or jedit[version]-dist-win-finish.tar.bz2
       - jedit[version]install.dmg or jedit[version]-dist-mac-finish.tar.bz2
 
-4.2. If you have jedit[version]-dist-win-finish.tar.bz2 in your [tag]/dist folder you probably don't run a Windows box and don't have wine installed and set up, so please hand over this file to someone (e. g. <Björn "Vampire" Kautler> Vampire@jEdit.org) who does and ask him to unpack the file and run
+5.2. If you have jedit[version]-dist-win-finish.tar.bz2 in your [tag]/dist folder you probably don't run a Windows box and don't have wine installed and set up, so please hand over this file to someone (e. g. <BjÃ¶rn "Vampire" Kautler> Vampire@jEdit.org) who does and ask him to unpack the file and run
           ant dist-win-finish
      and to hand over the resulting file jedit[version]install.exe to you. The requirements for this are described in README.SRC.txt
 
-4.3. If you have jedit[version]-dist-mac-finish.tar.bz2 in your [tag]/dist folder you probably don't run a Mac OS X box, so please hand over this file to someone (e. g. Björn "Vampire" Kautler <Vampire@jEdit.org>) who does and ask him to unpack the file and run
+5.3. If you have jedit[version]-dist-mac-finish.tar.bz2 in your [tag]/dist folder you probably don't run a Mac OS X box, so please hand over this file to someone (e. g. BjÃ¶rn "Vampire" Kautler <Vampire@jEdit.org>) who does and ask him to unpack the file and run
           ant dist-mac-finish
      and to hand over the resulting file jedit[version]install.dmg to you. The requirements for this are described in README.SRC.txt
 
-4.4. After you received the final distribution files jedit[version]install.exe and jedit[version]install.dmg you can delete jedit[version]-dist-win-finish.tar.bz2 and jedit[version]-dist-mac-finish.tar.bz2
+5.4. After you received the final distribution files jedit[version]install.exe and jedit[version]install.dmg you can delete jedit[version]-dist-win-finish.tar.bz2 and jedit[version]-dist-mac-finish.tar.bz2
 
-5. - Connect to the SourceForge servers via one of the methods described in https://sourceforge.net/apps/trac/sourceforge/wiki/Release%20files%20for%20download
+6. - Connect to the SourceForge servers via one of the methods described in https://sourceforge.net/apps/trac/sourceforge/wiki/Release%20files%20for%20download
    - Add the sub-folder "[version]" under "/home/frs/project/j/je/jedit/jedit-devel"
    - Upload the 8 final distribution files to the newly created folder on the SourceForge servers
 
-6. - Go to https://sourceforge.net/projects/jedit/files/jedit-devel/[version]/
+7. - Go to https://sourceforge.net/projects/jedit/files/jedit-devel/[version]/
    - Make the following settings for each file after clicking on the respective "i" icon
         - jedit_[version]_all.deb
             - Download Button: Debian Installer
@@ -92,14 +94,14 @@ Workflow
             - Download Button: Slackware Installer
             - Default Download For: <none>
 
-7. Update the website in the following places and also update this state in SVN:
+8. Update the website in the following places and also update this state in SVN:
     - Open sftp://<your sf username>,jedit@web.sourceforge.net/home/groups/j/je/jedit/htdocs/download.html e. g. in jEdit with installed FTP plugin and update the website for the new release, means the filenames, filesizes and amount of pages in the User's Guides
     - Open sftp://<your sf username>,jedit@web.sourceforge.net/home/groups/j/je/jedit/htdocs/jEdit-version.txt e. g. in jEdit with installed FTP plugin and update the versions in the file, which is needed by the LatestVersion Plugin
     - Open sftp://<your sf username>,jedit@web.sourceforge.net/home/groups/j/je/jedit/htdocs/CHANGES44.txt e. g. in jEdit with installed FTP plugin and copy the contents of [tag]/doc/CHANGES.txt to this file
     - Open sftp://<your sf username>,jedit@web.sourceforge.net/home/groups/j/je/jedit/htdocs/index.php e. g. in jEdit with installed FTP plugin and update the version number and the Last Site Update date
     - Open sftp://<your sf username>,jedit@web.sourceforge.net/home/groups/j/je/jedit/htdocs/devel.html e. g. in jEdit with installed FTP plugin and add a line for [version] in the Release Schedule
 
-8. Update the plugin wizard
+9. Update the plugin wizard
      - Go to http://plugins.jedit.org/wiz/release_add.php?package_id=24
      - Enter the Version "[version]"
      - Switch "Head of Branch" to "devel"
@@ -108,15 +110,15 @@ Workflow
      - Click "Update Dependencies"
      - Click "Create Release"
 
-9. Send an announcement eMail to the jEdit-announce list. The announcement should contain some announcing text and in the end the contents of [tag]/doc/CHANGES.txt for this release.
+10. Send an announcement eMail to the jEdit-announce list. The announcement should contain some announcing text and in the end the contents of [tag]/doc/CHANGES.txt for this release.
     You have to be set up to be able to post to jEdit-announce list.
     The mail should automatically get forwarded to the jedit-users list, but for that you have to be subscribed to that list too.
 
-10. Ask Vampire <Vampire@jEdit.org> (Vampire0@#jEdit@chat.freenode.net) to update the topic of the IRC Channel
+11. Ask Vampire <Vampire@jEdit.org> (Vampire0@#jEdit@chat.freenode.net) to update the topic of the IRC Channel
 
-11. Delete the [tag] folder
+12. Delete the [tag] folder
 
-12. Update the version number on the release branch
+13. Update the version number on the release branch
      - Add the following section to doc/CHANGES.txt
 
 {{{ Version [nextVersion]
@@ -153,12 +155,44 @@ Thanks to  for contributing to this release.
        in the root source directory
 
 ====================================================================================================
-branch      = "4.4.x";
-tag         = "jedit-4-4-pre2";
-version     = "4.4pre2";
-nextVersion = "4.4pre3";
-nextBuild   = "04.04.03.00";
-
+import java.util.regex.Pattern;
+fileChooser = new VFSFileChooserDialog(view,
+                                       new File(buffer.getPath())
+                                       .getParentFile()
+                                       .getParentFile()
+                                       .getParentFile()
+                                       .getPath(),
+                                       VFSBrowser.CHOOSE_DIRECTORY_DIALOG,
+                                       false,
+                                       true);
+file = new File(fileChooser.getSelectedFiles()[0], "org/gjt/sp/jedit/jEdit.java");
+fileChars = new char[file.length()];
+reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
+reader.read(fileChars, 0, fileChars.length);
+pattern = Pattern.compile("public static String getBuild\\(\\)[^}]+return \"([^\"]{11})\"");
+matcher = pattern.matcher(new String(fileChars));
+matcher.find();
+build = matcher.group(1);
+major = Integer.parseInt(build.substring(0,2));
+minor = Integer.parseInt(build.substring(3,5));
+beta = Integer.parseInt(build.substring(6,8));
+bugfix = Integer.parseInt(build.substring(9,11));
+branch = major + "." + minor + ".x";
+tag = "jedit-"
+      + major
+      + "-" + minor
+      + (beta != 99 ? "-pre" + beta : (bugfix != 0 ? "-" + bugfix : ""));
+version = major
+          + "." + minor
+          + (beta != 99 ? "pre" + beta : (bugfix != 0 ? "." + bugfix : ""));
+nextVersion = major
+              + "." + minor
+              + (beta != 99 ? "pre" + (beta + 1) : (beta == 99 ? "." + (bugfix + 1) : ""));
+nextBuild = String.format("%02d.%02d.%02d.%02d",
+                          new Object[] { Integer.valueOf(major),
+                                         Integer.valueOf(minor),
+                                         Integer.valueOf(beta == 99 ? beta : beta + 1),
+                                         Integer.valueOf(beta == 99 ? bugfix + 1 : bugfix) });
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(false);
