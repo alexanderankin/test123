@@ -70,6 +70,7 @@ public class XmlCompletion extends SideKickCompletion
 	} //}}}
 
 	//{{{ handleKeystroke() method
+	/* handles keystrokes when a completion popup is active */
 	public boolean handleKeystroke(int index, char ch)
 	{
 		switch(ch)

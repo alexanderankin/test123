@@ -838,8 +838,6 @@ loop:			for(;;)
 		JEditTextArea textArea = view.getTextArea();
 
 		Macros.Recorder recorder = view.getMacroRecorder();
-		if(recorder != null)
-			recorder.recordInput(1,'>',false);
 		textArea.userInput('>');
 
 		Buffer buffer = view.getBuffer();
