@@ -7,7 +7,7 @@
 
  <articleinfo>
 
- <releaseinfo>Version 2.8.0</releaseinfo>
+ <releaseinfo>Version 2.8.1</releaseinfo>
 
  <authorgroup>
   <author><firstname>Slava</firstname><surname>Pestov</surname></author>
@@ -944,6 +944,15 @@ Chapter 22 of <emphasis>DocBook XSL: The Complete Guide</emphasis> by Bob Stayto
 
 
 <title>Change log</title> <itemizedlist>
+
+ <listitem><para><emphasis role="bold">Version 2.8.1</emphasis>
+ Requires jEdit 4.4pre1, Java 1.5, ErrorList 1.9, SideKick 0.9, BeautyPlugin 0.3.0 and XercesPlugin 2.9.1.
+ </para>
+ <itemizedlist>
+  <listitem><para>Fix issue with an extra closing bracket being recorded
+  in macros (#857802 - Eric Le Lay)</para></listitem>
+ </itemizedlist>
+ </listitem>
 
  <listitem><para><emphasis role="bold">Version 2.8.0</emphasis>
  Requires jEdit 4.3 final, Java 1.5, ErrorList 1.9, SideKick 0.9, BeautyPlugin 0.3.0 and XercesPlugin 2.9.1.
