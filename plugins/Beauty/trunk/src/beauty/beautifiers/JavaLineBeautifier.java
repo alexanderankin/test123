@@ -9,7 +9,20 @@ import java.util.regex.*;
 // beautify as well as the standard java parser.
 public class JavaLineBeautifier extends DefaultBeautifier {
     
-    private static Pattern genericPattern = Pattern.compile("\\s*[<]\\s*(\\w*?)\\s*[>]");
+    // pattern to match generics (parameterized types).  
+    // This is pretty lame in that it only looks for <sometext>.  That situation
+    // is handled well, but nested generics are not. For example:
+    // HashMap<String, List<String>> 
+    // would end up as
+    // HashMap<String, List < String>>
+    // where the second < is still treated as an operator.  
+    // The regex does handle things like HashMap<String, String> properly, which
+    // is about as complex as such things get in jsp files. Declarations like
+    // <*> and <?> are not handled at all.
+    // Since the intent of this beautifier is to clean up java scriptlets within 
+    // a jsp file, I'm  not going to worry about it since people really shouldn't 
+    // be using scriptlets much anyway.
+    private final static Pattern genericPattern = Pattern.compile("\\s*[<]\\s*((\\w([,]\\s*)?)+)\\s*[>]");
     
     public JavaLineBeautifier() {
         super("java");   
@@ -25,15 +38,6 @@ public class JavaLineBeautifier extends DefaultBeautifier {
         return s;
     }
     
-    // This is pretty lame in that it only looks for <sometext>.  That situation
-    // is handled well, but nested generics are not. For example:
-    // HashMap<String, List<String>> 
-    // would end up as
-    // HashMap<String, List < String>>
-    // where the second < is still treated as an operator.  Since the intent of
-    // this beautifier is to clean up java scriptlets within a jsp file, I'm 
-    // not going to worry about it since people really shouldn't be using
-    // scriptlets much anyway.
     String adjustGenerics(String s) {
         String ls = getLineSeparator();
         String[] lines = s.split(ls);
