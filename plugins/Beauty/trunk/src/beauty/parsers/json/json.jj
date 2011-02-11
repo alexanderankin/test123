@@ -138,6 +138,7 @@ SKIP :
 // them.  THIS PARSER WILL NOT ACCEPT COMMENTS. However, if you'd rather it just
 // silently skipped over comments, uncomment this block. This will cause the
 // beautifier to remove comments.
+// TODO: add a user setting for this.
 /*
 SKIP : 
 {
@@ -189,6 +190,7 @@ TOKEN :
     // A string is a collection of zero or more Unicode characters, wrapped in 
     // double quotes, using backslash escapes. A character is represented as a 
     // single character string.
+    // TODO: allow strings not wrapped in double quotes -- make it a user setting.
     <STRING: "\"" (<CHAR>)* "\"">
 }
 
@@ -416,11 +418,11 @@ TOKEN_MGR_DECLS :
     static void setUseSoftTabs(boolean b) {
         useSoftTabs = b;
         if (b) {
-            indent = "\t";
-            double_indent = "\t\t";
+            setIndentWidth(indent_width);
         }
         else {
-            setIndentWidth(indent_width);
+            indent = "\t";
+            double_indent = "\t\t";
         }
     }
 
@@ -723,7 +725,9 @@ TOKEN_MGR_DECLS :
     static boolean endsWith(StringBuilder sb, String s) {
         if (sb == null && s == null)
             return true;
-        if (sb == null && sb != null)
+        if (sb == null && s != null)
+            return false;
+        if (s == null)
             return false;
         if (sb.length() < s.length())
             return false;

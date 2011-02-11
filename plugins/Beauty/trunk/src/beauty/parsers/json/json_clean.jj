@@ -116,6 +116,9 @@ TOKEN :
     // A string is a collection of zero or more Unicode characters, wrapped in 
     // double quotes, using backslash escapes. A character is represented as a 
     // single character string.
+    // Note: I have seen a lot of generated json where strings are not wrapped
+    // in double quotes. It might be useful to relax the string definition to 
+    // allow such things.
     <STRING: "\"" (<CHAR>)* "\"">
     |  
     // json only allows base 10 numbers, no octal or hex or binary, at least, not as a number.
@@ -138,7 +141,7 @@ void parse() :
         object() <EOF> 
         |
         array() <EOF> 
-        )
+    )
 }
 
 void object() : 
@@ -181,7 +184,7 @@ void value() :
         <FALSE>  
         |
         <NULL> 
-        ) 
+    ) 
 }
 
 void key() :
@@ -190,7 +193,7 @@ void key() :
 {
     (
         <STRING> 
-        )
+    )
 }
 
 void string() : 
@@ -199,7 +202,7 @@ void string() :
 {
     (
         <STRING> 
-        )
+    )
 }
 
 void number() :
@@ -208,6 +211,6 @@ void number() :
 {
     (
         <NUMBER>  
-        )
+    )
 }
 
