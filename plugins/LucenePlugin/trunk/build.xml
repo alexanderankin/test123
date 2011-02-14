@@ -10,8 +10,8 @@
 	<property name="docs-proc.target" value="none"/>
 	<property name="plugin.dependencies" value="CommonControls" />
 	<property name="dist.target" value="dist.complete" />
-    <property name="lucene.version" value="3.0.2" />
-    <property name="compiler.source" value="1.6" />
+	<property name="lucene.version" value="3.0.3" />
+	<property name="compiler.source" value="1.6" />
 	<property name="compiler.target" value="1.6" />
 	<property name="jedit.plugins.dir" value="${install.dir}" />
 
