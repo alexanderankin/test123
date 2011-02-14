@@ -28,5 +28,18 @@
             gatchan.jedit.lucene.LucenePlugin.instance.goToPrevResult(view);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="lucene.search-in-type" NO_REPEAT="TRUE">
+	   <CODE>
+	       ea = jEdit.getAction("lucene-search");
+	       ea.invoke(view);
+	       dwm = view.getDockableWindowManager();
+	       search = dwm.getDockable("lucene-search");
+	       fileName = buffer.getName();
+	       ext = MiscUtilities.getFileExtension(fileName);
+	       search.setType(ext.substring(1));
+	       search.focusOnDefaultComponent();
+	   </CODE>
+	</ACTION>
+	  
 </ACTIONS>
 
