@@ -435,7 +435,7 @@ public class LucenePlugin extends EditPlugin
 		dockable.search(word, "");
 	}
 
-	private static String getWordAtCaret(View view)
+	public static String getWordAtCaret(View view)
 	{
 		JEditTextArea ta = view.getTextArea();
 		String selected = ta.getSelectedText();
