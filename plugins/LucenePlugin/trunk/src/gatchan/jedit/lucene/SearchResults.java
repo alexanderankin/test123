@@ -398,6 +398,10 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		type.setText(fileType);
 	}
 	
+	public void setText(String text) {
+	    searchField.setText(text);
+	}
+	
 	public void search(String text, String fileType)
 	{
 		Index index = getSelectedIndex();

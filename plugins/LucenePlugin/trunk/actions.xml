@@ -35,9 +35,10 @@
 	       dwm = view.getDockableWindowManager();
 	       search = dwm.getDockable("lucene-search");
 	       fileName = buffer.getName();
-	       ext = MiscUtilities.getFileExtension(fileName);
-	       search.setType(ext.substring(1));
-	       search.focusOnDefaultComponent();
+	       ext = MiscUtilities.getFileExtension(fileName).substring(1);
+	       search.setType(ext);
+	       String word = gatchan.jedit.lucene.LucenePlugin.getWordAtCaret(view);
+	       search.setText(word);
 	   </CODE>
 	</ACTION>
 	  
