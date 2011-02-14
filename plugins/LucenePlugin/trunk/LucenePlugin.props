@@ -12,6 +12,7 @@ plugin.gatchan.jedit.lucene.LucenePlugin.browser-menu=\
 	lucene.add-to-index lucene.add-to-newindex
 plugin.gatchan.jedit.lucene.LucenePlugin.menu=\
 	lucene-search \
+	lucene.search-in-type \
 	lucene.search-word-at-caret \
 	- \
 	lucene.go-to-next-result \
@@ -81,3 +82,4 @@ lucene.results.line-based.tooltip=Show Line-based results
 lucene.file-type.tooltip=File Extension Filter (e.g. java) - globs not allowed
 lucene.index-combo.tooltip=Choose Lucene Index
 
+lucene.search-in-type.label=Search files of this type

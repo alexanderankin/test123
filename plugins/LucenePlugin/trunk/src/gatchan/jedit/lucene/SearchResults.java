@@ -33,6 +33,7 @@ import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.util.*;
 
 @SuppressWarnings("serial")
+/** Dockable for searching */
 public class SearchResults extends JPanel implements DefaultFocusComponent
 {
 	public static final String CURRENT_BUFFER = "__current buffer__";
@@ -392,6 +393,11 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		return LucenePlugin.instance.getIndex(indexName);
 	}
 
+	
+	public void setType(String fileType) {
+		type.setText(fileType);
+	}
+	
 	public void search(String text, String fileType)
 	{
 		Index index = getSelectedIndex();
