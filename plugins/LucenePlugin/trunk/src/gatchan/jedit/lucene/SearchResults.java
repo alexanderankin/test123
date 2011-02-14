@@ -393,13 +393,15 @@ public class SearchResults extends JPanel implements DefaultFocusComponent
 		return LucenePlugin.instance.getIndex(indexName);
 	}
 
-	
-	public void setType(String fileType) {
+
+	public void setType(String fileType)
+	{
 		type.setText(fileType);
 	}
-	
-	public void setText(String text) {
-	    searchField.setText(text);
+
+	public void setText(String text)
+	{
+		searchField.setText(text);
 	}
 	
 	public void search(String text, String fileType)
