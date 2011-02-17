@@ -61,21 +61,22 @@ public class JspParserTokenManager implements JspParserConstants
         if (indent_width <= 0) {
             indent_width = 4;
         }
-        indent = "";
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < w; i++) {
-            indent += " ";
+            sb.append(' ');
         }
+        indent = sb.toString();
         double_indent = indent + indent;
     }
 
     static void setUseSoftTabs(boolean b) {
         useSoftTabs = b;
         if (b) {
-            indent = "\u005ct";
-            double_indent = "\u005ct\u005ct";
+            setIndentWidth(indent_width);
         }
         else {
-            setIndentWidth(indent_width);
+            indent = "\u005ct";
+            double_indent = "\u005ct\u005ct";
         }
     }
 
@@ -379,7 +380,7 @@ public class JspParserTokenManager implements JspParserConstants
     static boolean endsWith(StringBuilder sb, String s) {
         if (sb == null && s == null)
             return true;
-        if (sb == null && sb != null)
+        if (sb == null && s != null)
             return false;
         if (sb.length() < s.length())
             return false;
@@ -394,7 +395,7 @@ public class JspParserTokenManager implements JspParserConstants
         // may have trailing whitespace
         String line = lines[0].trim();
         for (int j = 0; j < level; j++) {
-            line = "    " + line;       // 4 spaces
+            line = indent + line;
         }
         outputBuffer.append(line).append(ls);
 
@@ -414,7 +415,7 @@ public class JspParserTokenManager implements JspParserConstants
 
             // apply indenting. The Sun rule is 4 spaces.
             for (int j = 0; j < level; j++) {
-                line = "    " + line;
+                line = indent + line;
             }
 
             outputBuffer.append(line);
@@ -434,7 +435,7 @@ public class JspParserTokenManager implements JspParserConstants
         // may have trailing whitespace
         String line = lines[0].trim();
         for (int j = 0; j < level; j++) {
-            line = "    " + line;       // 4 spaces
+            line = indent + line;
         }
         outputBuffer.append(line).append(ls);
 
@@ -448,7 +449,7 @@ public class JspParserTokenManager implements JspParserConstants
         // trim it then indent it the same as the first line.
         line = lines[lines.length - 1].trim();
         for (int j = 0; j < level; j++) {
-            line = "    " + line;       // 4 spaces
+            line = indent + line;
         }
         outputBuffer.append(line);
     }
@@ -458,7 +459,7 @@ public class JspParserTokenManager implements JspParserConstants
     static void writeEndOfLineComment(String s) {
         String line = s.trim();
         for (int j = 0; j < level; j++) {
-            line = "    " + line;       // 4 spaces
+            line = indent + line;
         }
         outputBuffer.append(line).append(ls);
     }
