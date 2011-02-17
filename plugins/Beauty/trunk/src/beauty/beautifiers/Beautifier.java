@@ -57,14 +57,17 @@ public abstract class Beautifier {
         return indentWidth;   
     }
     
+    /**
+     * <code>setIndentWidth</code> should be called before this method.    
+     */
     public void setUseSoftTabs(boolean b) {
         softTabs = b;
         if (b) {
-            indent = "\t";
-            doubleIndent = "\t\t";
+            setIndentWidth(indentWidth);
         }
         else {
-            setIndentWidth(indentWidth);
+            indent = "\t";
+            doubleIndent = "\t\t";
         }
     }
     
