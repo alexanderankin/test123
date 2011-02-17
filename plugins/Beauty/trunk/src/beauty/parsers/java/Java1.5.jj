@@ -58,6 +58,9 @@ public class JavaParser
     // these from the keyboard,
     char wrapSep = '\u001c';
     
+    // a non-printable, non-typeable character to represent a non-breaking space
+    char nbsp = '\u001d';
+    
     // bracket styles
     public static final int ATTACHED = 1;
     public static final int BROKEN = 2;
@@ -235,6 +238,9 @@ TOKEN_MGR_DECLS :
     // a specific separator
     static String ls = System.getProperty("line.separator");
     
+    // a non-printable, non-typeable character to represent a non-breaking space
+    static char nbsp = '\u001d';
+
     static int bracketStyle = JavaParser.ATTACHED;
 
     static void reset() {
@@ -419,6 +425,8 @@ TOKEN_MGR_DECLS :
                 }
                 else {
                     s += (String)o;
+                    // replace all non-breaking space chars with actual spaces
+                    s = s.replaceAll("[\u001d]", " ");
                     s = s.replaceAll("[ ]+", " ");
                 }
             }
@@ -428,6 +436,7 @@ TOKEN_MGR_DECLS :
 
             b.append(s);
             s = b.toString();
+
 
             // check for blank line(s)
             String maybe_blank = new String(s);
@@ -496,13 +505,14 @@ TOKEN_MGR_DECLS :
 
             // by the Sun standard, there is no situation where '(' is followed
             // by a space or ')' is preceded with by a space
+            // TODO: make this a user setting, pad parens
             s = s.replaceAll("[(][ ]", "(");
             s = s.replaceAll("[ ][)]", ")");
             
             // there should be no situation where a comma is preceded by a space,
             // although that seems to happen when formatting string arrays.
             s = s.replaceAll("\\s+[,]", ",");
-
+            
             // finally! add the string to the output buffer
             // check for line length, may need to wrap.  Sun says to avoid lines
             // longer than 80 characters.  This doesn't work well yet, so I've 
@@ -603,7 +613,7 @@ TOKEN_MGR_DECLS :
     static boolean endsWith(StringBuilder sb, String s) {
         if (sb == null && s == null)
             return true;
-        if (sb == null && sb != null)
+        if (sb == null && s != null)
             return false;
         if (sb.length() < s.length())
             return false;
@@ -1464,49 +1474,49 @@ void AssignmentOperator():
 {}
 {
   (t="=" | t="*=" | t="/=" | t="%=" | t="+=" | t="-=" | t="<<=" | t=">>=" | t=">>>=" | t="&=" | t="^=" | t="|=")
-  { add(" " + t.image + " "); }
+  { add(" " + t.image + nbsp); }
 }
 
 void ConditionalExpression():
 {}
 {
-    ConditionalOrExpression() [ "?" { add(" ? "); } Expression() ":" { add(" : "); } Expression() ]
+    ConditionalOrExpression() [ "?" { add(" ?" + nbsp); } Expression() ":" { add(" :" + nbsp); } Expression() ]
 }
 
 void ConditionalOrExpression():
 {}
 {
-  ConditionalAndExpression() ( "||" { add(" || "); } ConditionalAndExpression() )*
+  ConditionalAndExpression() ( "||" { add(" ||" + nbsp); } ConditionalAndExpression() )*
 }
 
 void ConditionalAndExpression():
 {}
 {
-  InclusiveOrExpression() ( "&&" { add(" && "); } InclusiveOrExpression() )*
+  InclusiveOrExpression() ( "&&" { add(" &&" + nbsp); } InclusiveOrExpression() )*
 }
 
 void InclusiveOrExpression():
 {}
 {
-  ExclusiveOrExpression() ( "|" { add(" | "); } ExclusiveOrExpression() )*
+  ExclusiveOrExpression() ( "|" { add(" |" + nbsp); } ExclusiveOrExpression() )*
 }
 
 void ExclusiveOrExpression():
 {}
 {
-  AndExpression() ( "^" { add(" ^ "); } AndExpression() )*
+  AndExpression() ( "^" { add(" ^" + nbsp); } AndExpression() )*
 }
 
 void AndExpression():
 {}
 {
-  EqualityExpression() ( "&" { add(" & "); } EqualityExpression() )*
+  EqualityExpression() ( "&" { add(" &" + nbsp); } EqualityExpression() )*
 }
 
 void EqualityExpression():
 {}
 {
-  InstanceOfExpression() ( ( "==" { add(" == "); } | "!=" { add(" != "); } ) InstanceOfExpression() )*
+  InstanceOfExpression() ( ( "==" { add(" ==" + nbsp); } | "!=" { add(" !=" + nbsp); } ) InstanceOfExpression() )*
 }
 
 void InstanceOfExpression():
@@ -1518,25 +1528,25 @@ void InstanceOfExpression():
 void RelationalExpression():
 {}
 {
-  ShiftExpression() ( ( "<" { add(" < "); } | ">" { add(" > "); } | "<=" { add(" <= "); } | ">=" { add(" >= "); } ) ShiftExpression() )*
+  ShiftExpression() ( ( "<" { add(" <" + nbsp); } | ">" { add(" >" + nbsp); } | "<=" { add(" <=" + nbsp); } | ">=" { add(" >=" + nbsp); } ) ShiftExpression() )*
 }
 
 void ShiftExpression():
 {}
 {
-  AdditiveExpression() ( ( "<<" { add(" << "); } | RSIGNEDSHIFT() | RUNSIGNEDSHIFT() ) AdditiveExpression() )*
+  AdditiveExpression() ( ( "<<" { add(" <<" + nbsp); } | RSIGNEDSHIFT() | RUNSIGNEDSHIFT() ) AdditiveExpression() )*
 }
 
 void AdditiveExpression():
 {}
 {
-  MultiplicativeExpression() ( ( "+" { add(" + "); } | "-" { add(" - "); } ) MultiplicativeExpression() )*
+  MultiplicativeExpression() ( ( "+" { add(" +" + nbsp); } | "-" { add(" -" + nbsp); } ) MultiplicativeExpression() )*
 }
 
 void MultiplicativeExpression():
 {}
 {
-  UnaryExpression() ( ( "*" { add(" * "); } | "/" { add(" / "); } | "%" { add(" % "); } ) UnaryExpression() )*
+  UnaryExpression() ( ( "*" { add(" *" + nbsp); } | "/" { add(" /" + nbsp); } | "%" { add(" %" + nbsp); } ) UnaryExpression() )*
 }
 
 void UnaryExpression():
@@ -1545,7 +1555,7 @@ void UnaryExpression():
     // TODO: need to check for line separator following "+" and preserve it.
     // It is fairly common to break long strings into several lines concatenated
     // with +.  It's not good form, I know, but it is still done.
-  ( "+" { add(" + "); } | "-" { add(" - "); } ) UnaryExpression()
+  ( "+" { add(" +"); } | "-" { add(" -"); } ) UnaryExpression()
 |
   PreIncrementExpression()
 |
@@ -1660,9 +1670,9 @@ void PrimarySuffix():
 void Literal():
 {}
 {
-  t=<INTEGER_LITERAL> { add(t); }
+  t=<INTEGER_LITERAL> { trim(); add(t); }
 |
-  t=<FLOATING_POINT_LITERAL> { add(t); }
+  t=<FLOATING_POINT_LITERAL> { trim(); add(t); }
 |
   t=<CHARACTER_LITERAL> { add(t); }
 |
@@ -1844,7 +1854,7 @@ void StatementExpression():
 void SwitchStatement():
 {}
 {
-    "switch" "(" { add("switch ("); } Expression() ")" "{" { add(") {"); write(); ++token_source.level; }
+    "switch" "(" { add("switch ("); } Expression() ")" "{" { add(") "); addStartBracket(); write(); ++token_source.level; }
         ( SwitchLabel() { ++token_source.level;} ( BlockStatement() )* { --token_source.level;} )*
     "}" { addEndBracket(); --token_source.level; write(); }
 }

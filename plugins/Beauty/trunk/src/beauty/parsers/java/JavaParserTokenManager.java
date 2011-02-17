@@ -37,6 +37,9 @@ public class JavaParserTokenManager implements JavaParserConstants
     // a specific separator
     static String ls = System.getProperty("line.separator");
 
+    // a non-printable, non-typeable character to represent a non-breaking space
+    static char nbsp = '\u001d';
+
     static int bracketStyle = JavaParser.ATTACHED;
 
     static void reset() {
@@ -221,6 +224,8 @@ public class JavaParserTokenManager implements JavaParserConstants
                 }
                 else {
                     s += (String)o;
+                    // replace all non-breaking space chars with actual spaces
+                    s = s.replaceAll("[\u001d]", " ");
                     s = s.replaceAll("[ ]+", " ");
                 }
             }
@@ -230,6 +235,7 @@ public class JavaParserTokenManager implements JavaParserConstants
 
             b.append(s);
             s = b.toString();
+
 
             // check for blank line(s)
             String maybe_blank = new String(s);
@@ -298,6 +304,7 @@ public class JavaParserTokenManager implements JavaParserConstants
 
             // by the Sun standard, there is no situation where '(' is followed
             // by a space or ')' is preceded with by a space
+            // TODO: make this a user setting, pad parens
             s = s.replaceAll("[(][ ]", "(");
             s = s.replaceAll("[ ][)]", ")");
 
@@ -405,7 +412,7 @@ public class JavaParserTokenManager implements JavaParserConstants
     static boolean endsWith(StringBuilder sb, String s) {
         if (sb == null && s == null)
             return true;
-        if (sb == null && sb != null)
+        if (sb == null && s != null)
             return false;
         if (sb.length() < s.length())
             return false;
