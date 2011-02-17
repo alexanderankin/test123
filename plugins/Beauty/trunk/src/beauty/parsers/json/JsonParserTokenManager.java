@@ -67,11 +67,11 @@ public class JsonParserTokenManager implements JsonParserConstants
     static void setUseSoftTabs(boolean b) {
         useSoftTabs = b;
         if (b) {
-            indent = "\u005ct";
-            double_indent = "\u005ct\u005ct";
+            setIndentWidth(indent_width);
         }
         else {
-            setIndentWidth(indent_width);
+            indent = "\u005ct";
+            double_indent = "\u005ct\u005ct";
         }
     }
 
@@ -374,7 +374,9 @@ public class JsonParserTokenManager implements JsonParserConstants
     static boolean endsWith(StringBuilder sb, String s) {
         if (sb == null && s == null)
             return true;
-        if (sb == null && sb != null)
+        if (sb == null && s != null)
+            return false;
+        if (s == null)
             return false;
         if (sb.length() < s.length())
             return false;
