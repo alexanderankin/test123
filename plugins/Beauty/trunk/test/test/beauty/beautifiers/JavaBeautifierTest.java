@@ -7,24 +7,20 @@ import beauty.BeautyPlugin;
 import org.gjt.sp.jedit.testframework.TestUtils;
 public class JavaBeautifierTest {
 
-
     @BeforeClass
     public static void setUpjEdit() {
         TestUtils.beforeClass();
     }
-
 
     @AfterClass
     public static void tearDownjEdit() {
         TestUtils.afterClass();
     }
 
-
     @Before
     public void beforeTest() {
         jEdit.getPlugin(BeautyPlugin.class.getName()).getPluginJAR().activatePluginIfNecessary();
     }
-
 
     @Test
     public void testCompilationUnit() {
@@ -53,7 +49,6 @@ public class JavaBeautifierTest {
             fail(e.getMessage());
         }
     }
-
 
     @Test
     public void testIf() {
@@ -97,7 +92,6 @@ public class JavaBeautifierTest {
             fail(e.getMessage());
         }
     }
-
 
     @Test
     public void testIf2() {
@@ -380,7 +374,7 @@ public class JavaBeautifierTest {
             fail(e.getMessage());
         }
     }
-    
+
     @Test
     public void testSingleLineComment2() {
         try {
@@ -412,7 +406,7 @@ public class JavaBeautifierTest {
             fail(e.getMessage());
         }
     }
-    
+
     @Test
     public void testTryCatch() {
         // test the 'do/while' constructs
@@ -451,7 +445,7 @@ public class JavaBeautifierTest {
             fail(e.getMessage());
         }
     }
-    
+
     @Test
     public void testKeywordAndMethodPadding() {
         // keywords followed by a ( should have a space separating the keyword
@@ -462,26 +456,26 @@ public class JavaBeautifierTest {
             before.append("public class Test {\n");
             before.append("    public int noSpaceAfter (int condition) {\n");
             before.append("        // space after for, while, and return\n");
-            before.append("        for(int i = 0; i < 10; i++) {\n");
+            before.append("        for(int i = 0; i < j; i++) {\n");
             before.append("            \n");
             before.append("        }\n");
             before.append("        while(true);\n");
             before.append("        return(i > 10 ? 1 : -1);\n");
             before.append("    }\n");
             before.append("}\n");
-            
+
             StringBuilder answer = new StringBuilder();
             answer.append("public class Test {\n");
             answer.append("    public int noSpaceAfter(int condition) {\n");
             answer.append("        // space after for, while, and return\n");
-            answer.append("        for (int i = 0; i < 10; i++) {\n");
+            answer.append("        for (int i = 0; i < j; i++) {\n");
             answer.append("\n");
             answer.append("        }\n");
             answer.append("        while (true);\n");
-            answer.append("        return (i > 10 ? 1 : - 1);\n");
+            answer.append("        return (i > 10 ? 1 : -1);\n");
             answer.append("    }\n");
             answer.append("}\n");
-            
+
             Beautifier beautifier = new JavaBeautifier();
             beautifier.setEditMode("java");
             beautifier.setLineSeparator("\n");
@@ -497,8 +491,8 @@ public class JavaBeautifierTest {
             e.printStackTrace();
             fail(e.getMessage());
         }
-    }    
-    
+    }
+
     @Test
     public void testAnnotations() {
         // test the various forms of annotations, including annotation type declarations
@@ -539,7 +533,7 @@ public class JavaBeautifierTest {
             sb.append("    String engineer() default \"[unassigned]\";\n");
             sb.append("    String date() default \"[unimplemented]\";\n");
             sb.append("}\n");
-            
+
             Beautifier beautifier = new JavaBeautifier();
             beautifier.setEditMode("java");
             beautifier.setLineSeparator("\n");
@@ -555,8 +549,8 @@ public class JavaBeautifierTest {
             e.printStackTrace();
             fail(e.getMessage());
         }
-    }    
-    
+    }
+
     @Test
     public void testBlankLines() {
         // should be one blank line before each method
@@ -583,7 +577,7 @@ public class JavaBeautifierTest {
             sb.append("    }\n");
             sb.append("}\n");
             sb.append("\n");
-            
+
             Beautifier beautifier = new JavaBeautifier();
             beautifier.setEditMode("java");
             beautifier.setLineSeparator("\n");
@@ -599,6 +593,40 @@ public class JavaBeautifierTest {
             e.printStackTrace();
             fail(e.getMessage());
         }
-    }    
-    
+    }
+
+    @Test
+    public void testOperatorPadding() {
+        try {
+            StringBuilder before = new StringBuilder();
+            before.append("public class Test4 {\n");
+            before.append("    int x = - 1;\n");
+            before.append("    int y = i-j;\n");
+            before.append("    float z = +  0.1;\n");
+            before.append("}\n");
+
+            StringBuilder answer = new StringBuilder();
+            answer.append("public class Test4 {\n");
+            answer.append("    int x = -1;\n");
+            answer.append("    int y = i - j;\n");
+            answer.append("    float z = +0.1;\n");
+            answer.append("}\n");
+
+            Beautifier beautifier = new JavaBeautifier();
+            beautifier.setEditMode("java");
+            beautifier.setLineSeparator("\n");
+            beautifier.setTabWidth(4);
+            beautifier.setIndentWidth(4);
+            beautifier.setUseSoftTabs(true);
+            beautifier.setWrapMargin(80);
+            beautifier.setWrapMode("none");
+            String after = beautifier.beautify(before.toString());
+
+            assertTrue("'operator padding' test failed:\nexpected:\n" + answer.toString() + "\nbut was:\n" + after, answer.toString().equals(after));
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
+    }
+
 }
