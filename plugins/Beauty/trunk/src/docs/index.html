@@ -88,10 +88,10 @@
       Configuration depends on the specific beautifier. Generally, beautifiers will honor the settings for the  buffer and/or mode. So, if you're editing an html file in html mode, then the html beautifier will be used to format the file, and the html beautifier will use the right line enders and tab settings. These settings are controlled by the settings for the buffer and the mode:
       <p>
       <ul>
-         <li>Line separators: as set for the current buffer.
-         <li>Tab width: as set for the current buffer.
-         <li>Indent width: as set for the current buffer.
-         <li>Soft tabs: in this initial release, all tabs are converted to soft tabs. This should be fixed in the next release to honor the soft tab setting for the buffer.
+         <li>Line separators: as set for the current buffer.</li>
+         <li>Tab width: as set for the current buffer.</li>
+         <li>Indent width: as set for the current buffer.</li>
+         <li>Soft tabs: as set for the current buffer.</li>
       </ul>
       <p>
       To set which beautifier to use per mode, use the Beauty option settings under the Plugins - Plugin Options menu.
@@ -115,6 +115,37 @@
          <li><code>java:beauty</code></li>
       </ul>
       For regular Java files, you'll want to use either <code>java:astyle</code> or <code>java:beauty</code>.  The <code>java:custom</code> beautifier is the one used by the JSP beautifier.  It does not beautify as well as either <code>java:astyle</code> or <code>java:beauty</code> but will accept the Java code commonly found in JSP scriptlets where the other two won't.
+      <p>
+      <strong>Java Beautifier</strong>
+      <p>
+      An option pane was added for the Java beautifier in version 0.6. The only option at the moment is whether to use attached or broken brackets.
+      <p>
+      An "attached" bracket is one that is on the end of a line, for example:
+      <p>
+      <code>
+      	<pre>
+      	try {
+      	...
+      	} catch(...) {
+      	...
+      	}
+      	</pre>
+      </code>
+      <p>
+      A "broken" bracket is one that always starts on the next line, for example:
+      <p>
+      <code>
+      	<pre>
+      	try 
+      	{
+      	...
+      	}
+      	catch(...) 
+      	{
+      	...
+      	}
+      	</pre>
+      </code>
       <p>
       <strong>Others</strong>
       <p>
